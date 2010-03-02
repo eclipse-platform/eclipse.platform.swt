@@ -504,11 +504,6 @@ typedef enum {
 	VtblCall__IJ_3CIII_3J_FUNC,
 #endif
 #ifndef JNI64
-	VtblCall__II_3CJ_FUNC,
-#else
-	VtblCall__IJ_3CJ_FUNC,
-#endif
-#ifndef JNI64
 	VtblCall__II_3CJIII_3J_FUNC,
 #else
 	VtblCall__IJ_3CJIII_3J_FUNC,

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int COM_nativeFunctionCount = 175;
-int COM_nativeFunctionCallCount[175];
+int COM_nativeFunctionCount = 174;
+int COM_nativeFunctionCallCount[174];
 char * COM_nativeFunctionNames[] = {
 	"AccessibleObjectFromWindow",
 	"CALLBACK_1setCurrentValue",
@@ -494,11 +494,6 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__II_3CIII_3J",
 #else
 	"VtblCall__IJ_3CIII_3J",
-#endif
-#ifndef JNI64
-	"VtblCall__II_3CJ",
-#else
-	"VtblCall__IJ_3CJ",
 #endif
 #ifndef JNI64
 	"VtblCall__II_3CJIII_3J",

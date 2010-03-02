@@ -658,7 +658,6 @@ public static final native void VariantInit(int /*long*/ pvarg);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, char[] arg1);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, long arg1);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, POINT arg2, int arg3);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, POINT arg2, int arg3);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, POINT arg1, int arg2);

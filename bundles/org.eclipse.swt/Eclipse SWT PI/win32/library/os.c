@@ -17780,6 +17780,33 @@ fail:
 }
 #endif
 
+#if (!defined(NO_VtblCall__II_3CJ) && !defined(JNI64)) || (!defined(NO_VtblCall__IJ_3CJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__II_3CJ)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jcharArray arg2, jlong arg3)
+#else
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__IJ_3CJ)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jcharArray arg2, jlong arg3)
+#endif
+{
+	jchar *lparg2=NULL;
+	jint rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, VtblCall__II_3CJ_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, VtblCall__IJ_3CJ_FUNC);
+#endif
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jchar *, jlong))(*(jintLong **)arg1)[arg0])(arg1, lparg2, arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, VtblCall__II_3CJ_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, VtblCall__IJ_3CJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
 #if (!defined(NO_VtblCall__II_3I) && !defined(JNI64)) || (!defined(NO_VtblCall__IJ_3I) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__II_3I)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jintArray arg2)
@@ -17835,6 +17862,39 @@ fail:
 	OS_NATIVE_EXIT(env, that, VtblCall__II_3I_3B_3I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, VtblCall__IJ_3I_3B_3I_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_VtblCall__II_3I_3B_3J) && !defined(JNI64)) || (!defined(NO_VtblCall__IJ_3I_3B_3J) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__II_3I_3B_3J)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jintArray arg2, jbyteArray arg3, jlongArray arg4)
+#else
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__IJ_3I_3B_3J)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jintArray arg2, jbyteArray arg3, jlongArray arg4)
+#endif
+{
+	jint *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jlong *lparg4=NULL;
+	jint rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, VtblCall__II_3I_3B_3J_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, VtblCall__IJ_3I_3B_3J_FUNC);
+#endif
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jint *, jbyte *, jlong *))(*(jintLong **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseLongArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, VtblCall__II_3I_3B_3J_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, VtblCall__IJ_3I_3B_3J_FUNC);
 #endif
 	return rc;
 }

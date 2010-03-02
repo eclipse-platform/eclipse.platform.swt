@@ -130,7 +130,7 @@ int /*long*/ createShellLink (MenuItem item, String directory) {
 
 	int /*long*/ hHeap = OS.GetProcessHeap ();
 	int /*long*/ pv = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, OS.PROPVARIANT_sizeof());
-	int titlePtr = 0;
+	int /*long*/ titlePtr = 0;
 	PROPERTYKEY key;
 	if ((style & SWT.SEPARATOR) != 0) {
 		OS.MoveMemory (pv, new short [] {OS.VT_BOOL}, 2);
@@ -270,21 +270,21 @@ String getDirectory (char[] appName) {
 	int /*long*/ [] ppv = new int /*long*/ [1];
 	int hr = OS.SHCreateItemInKnownFolder (FOLDERID_LocalAppData, 0, null, IID_IShellItem, ppv);
 	if (hr == OS.S_OK) {
-		int  /*long*/ psiRoot = ppv [0];
+		int /*long*/ psiRoot = ppv [0];
 		hr = OS.CoCreateInstance (CLSID_FileOperation, 0, OS.CLSCTX_INPROC_SERVER, IID_IFileOperation, ppv);
 		if (hr == OS.S_OK) {
 			int /*long*/ pfo = ppv [0];
 			/*IFileOperation.SetOperationFlags*/
 			hr = OS.VtblCall (5, pfo, OS.FOF_NO_UI);
 			if (hr == OS.S_OK) {
-				int  /*long*/ psiAppDir = getDirectory (psiRoot, pfo, appDir, false);
+				int /*long*/ psiAppDir = getDirectory (psiRoot, pfo, appDir, false);
 				if (psiAppDir != 0) {
 					int /*long*/ psiIcoDir = getDirectory (psiAppDir, pfo, ICO_DIR, true);
 					if (psiIcoDir != 0) {
 						/*IShellItem::GetDisplayName*/
 						hr = OS.VtblCall (5, psiIcoDir, OS.SIGDN_FILESYSPATH, ppv);
 						if (hr == OS.S_OK) {
-							int wstr = ppv [0]; 
+							int /*long*/ wstr = ppv [0]; 
 							int length = OS.wcslen (wstr);
 							char [] buffer = new char [length];
 							OS.MoveMemory (buffer, wstr, length * 2);
@@ -308,7 +308,7 @@ String getDirectory (char[] appName) {
 }
 
 int /*long*/ getDirectory (int /*long*/ parent, int /*long*/ pfo, char [] name, boolean delete) {
-	int /*long*/ [] ppv = new int  /*long*/ [1];
+	int /*long*/ [] ppv = new int /*long*/ [1];
 	int hr = OS.SHCreateItemFromRelativeName (parent, name, 0, IID_IShellItem, ppv);
 	if (hr == OS.S_OK) {
 		if (delete) {
