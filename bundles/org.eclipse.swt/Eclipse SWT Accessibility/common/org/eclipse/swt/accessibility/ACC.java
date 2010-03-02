@@ -101,7 +101,7 @@ public class ACC {
 	/** @since 3.6 */
 	public static final int ROLE_GROUP = 0x14;
 	/** @since 3.6 */
-	public static final int ROLE_HEADING = 0x414;
+	public static final int ROLE_HEADING = 0x414; //TODO: add footer, paragraph, etc?
 	/** @since 3.6 */
 	public static final int ROLE_ROW = 0x1c;
 	/** @since 3.6 */
@@ -150,8 +150,10 @@ public class ACC {
 	 */
 	public static final int VISIBLE = 0x01;
 	
-	public static final int TEXT_INSERT = 0;
-	public static final int TEXT_DELETE = 1;
+	public static final int INSERT = 0;
+	public static final int DELETE = 1;
+	public static final int TEXT_INSERT = INSERT;
+	public static final int TEXT_DELETE = DELETE;
 
 	/**
 	 * Typically, a single character is returned. In some cases more than one
@@ -323,114 +325,103 @@ public class ACC {
 	 * 
 	 * @since 3.6
 	 */
-	static final int EVENT_SHOW = 0x8002;
+	public static final int EVENT_SHOW = 0x8002;
 	
 	/**
 	 * Sent when an object is hidden, for example for child objects within a browser document.
-	 * Note: do not send this for child objects when parent object is hidden.
+	 * Note: do not send this for child objects when the parent object is hidden.
 	 * 
 	 * @since 3.6
 	 */
-	static final int EVENT_HIDE = 0x8003;
+	public static final int EVENT_HIDE = 0x8003;
 	
 	/**
 	 * Sent when the z-order of objects in a container has changed,
-	 * for example for a browser document which has been loaded or refreshed.
+	 * for example for a browser document that has been loaded or refreshed.
 	 * 
 	 * @since 3.6
 	 */
-	static final int EVENT_REORDER = 0x8004;
+	public static final int EVENT_REORDER = 0x8004;
 	
 	/**
-	 * Sent when the item with the selection is moved to a different item within a container.
+	 * Sent when the selection within a container changes.
 	 * 
 	 * @since 3.6
 	 */
-	static final int EVENT_SELECTION = 0x8006;
-	
-	/**
-	 * Sent when a new item has been added to the selection within a container.
-	 * 
-	 *  @since 3.6
-	 */
-	static final int EVENT_SELECTIONADD = 0x8007;
-	
-	/**
-	 * Sent when an item has been removed from the selection within a container.
-	 * 
-	 * @since 3.6
-	 */
-	static final int EVENT_SELECTIONREMOVE = 0x8008;
+	public static final int EVENT_SELECTION_CHANGED = 0x8009;
 	
 	/**
 	 * Sent when an object's text selection has changed.
 	 * 
 	 * @since 3.6
 	 */
-	static final int EVENT_TEXTSELECTIONCHANGED = 0x8014;
+	public static final int EVENT_TEXTSELECTIONCHANGED = 0x8014;
 	
 	/**
 	 * Sent when an object's state has changed, for example enabled/disabled, pressed/released, or checked/unchecked.
 	 * 
 	 * @since 3.6
 	 */
-	static final int EVENT_STATECHANGE = 0x800A;
+	public static final int EVENT_STATECHANGE = 0x800A;
 	
 	/**
-	 * Sent when an object moves. Note: only send one notification for the topmost object that has changed.
+	 * Sent when an object moves.
+	 * <p>
+	 * Note: only send one notification for the topmost object that has changed.
+	 * </p>
 	 * 
 	 * @since 3.6
 	 */
-	static final int EVENT_LOCATIONCHANGE = 0x800B;
+	public static final int EVENT_LOCATIONCHANGE = 0x800B;
 	
 	/**
 	 * Sent when an object's name has changed.
 	 * 
 	 * @since 3.6
 	 */
-	static final int EVENT_NAMECHANGE = 0x800C;
+	public static final int EVENT_NAMECHANGE = 0x800C;
 	
 	/**
 	 * Sent when an object's description has changed.
 	 * 
 	 * @since 3.6
 	 */
-	static final int EVENT_DESCRIPTIONCHANGE = 0x800D;
+	public static final int EVENT_DESCRIPTIONCHANGE = 0x800D;
 	
 	/**
 	 * Sent when an object's value has changed.
 	 * 
 	 * @since 3.6
 	 */
-	static final int EVENT_VALUECHANGE = 0x800E;
+	public static final int EVENT_VALUECHANGE = 0x800E;
 	
 	/**
 	 * Sent when entering into menu mode.
 	 * 
 	 * @since 3.6
 	 */
-	static final int EVENT_MENUSTART = 0x0004;
+	public static final int EVENT_MENUSTART = 0x0004;
 	
 	/**
 	 * Sent when leaving from menu mode.
 	 * 
 	 * @since 3.6
 	 */
-	static final int EVENT_MENUEND = 0x0005;
+	public static final int EVENT_MENUEND = 0x0005;
 	
 	/**
 	 * Sent when a popup menu comes up.
 	 * 
 	 * @since 3.6
 	 */
-	static final int EVENT_MENUPOPUPSTART = 0x0006;
+	public static final int EVENT_MENUPOPUPSTART = 0x0006;
 	
 	/**
 	 * Sent just before a popup menu is taken down.
 	 * 
 	 * @since 3.6
 	 */
-	static final int EVENT_MENUPOPUPEND = 0x0007;
+	public static final int EVENT_MENUPOPUPEND = 0x0007;
 
 	/**
 	 * Sent when the loading of a document has completed.
@@ -469,11 +460,142 @@ public class ACC {
 	public static final int EVENT_SECTION_CHANGED = 0x112;
 
 	/**
+	 * Sent when the count or attributes of an accessible object's actions change.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_ACTION_CHANGED = 0x100;
+
+	/**
+	 * Sent when the ending index of this link within the containing string has changed.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_HYPERLINK_END_INDEX_CHANGED = 0x108;
+
+	/**
+	 * Sent when the number of anchors associated with this hyperlink object has changed.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_HYPERLINK_ANCHOR_COUNT_CHANGED = 0x109;
+
+	/**
+	 * Sent when the hyperlink selected state changed from selected to unselected or from unselected to selected.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_HYPERLINK_SELECTED_LINK_CHANGED = 0x10a;
+
+	/**
+	 * Sent when the starting index of this link within the containing string has changed.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_HYPERLINK_START_INDEX_CHANGED = 0x10d;
+
+	/**
+	 * Sent when one of the links associated with the hypertext object has been activated.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_HYPERTEXT_LINK_ACTIVATED = 0x10b;
+
+	/**
+	 * Sent when one of the links associated with the hypertext object has been selected.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_HYPERTEXT_LINK_SELECTED = 0x10c;
+
+	/**
+	 * Sent when the number of hyperlinks associated with a hypertext object changed.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_HYPERTEXT_NLINKS_CHANGED = 0x10f;
+
+	/**
+	 * Sent when an object's attributes changed.
+	 * 
+	 * @see EVENT_TEXT_ATTRIBUTE_CHANGED
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_OBJECT_ATTRIBUTE_CHANGED = 0x200;
+
+	/**
+	 * Sent when a table caption changed.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_TABLE_CAPTION_CHANGED = 0x203;
+
+	/**
+	 * Sent when a table's column description changed.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_TABLE_COLUMN_DESCRIPTION_CHANGED = 0x204;
+
+	/**
+	 * Sent when a table's column header changed.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_TABLE_COLUMN_HEADER_CHANGED = 0x205;
+
+	/**
+	 * Sent when a table's data changed.
+	 * <p>
+	 * The event object is an array of 5 ints specifying the following:<ul>
+	 * <li>type - {@link ACC#INSERT} or {@link ACC#DELETE} - the type of change</li>
+	 * <li>rowStart - the index of the first row that changed</li>
+	 * <li>rowCount - the number of contiguous rows that changed, or 0 if no rows changed</li>
+	 * <li>columnStart - the index of the first column that changed</li>
+	 * <li>columnCount - the number of contiguous columns that changed, or 0 if no columns changed</li>
+	 * </ul></p>
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_TABLE_CHANGED = 0x206;
+
+	/**
+	 * Sent when a table's row description changed.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_TABLE_ROW_DESCRIPTION_CHANGED = 0x207;
+
+	/**
+	 * Sent when a table's row header changed.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_TABLE_ROW_HEADER_CHANGED = 0x208;
+
+	/**
+	 * Sent when a table's summary changed.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_TABLE_SUMMARY_CHANGED = 0x209;
+
+	/**
+	 * Sent when a text object's attributes changed.
+	 * 
+	 * @see EVENT_OBJECT_ATTRIBUTE_CHANGED
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_TEXT_ATTRIBUTE_CHANGED = 0x20a;
+	 
+	/**
 	 * Sent when the caret has moved to a new position.
 	 * 
 	 * @since 3.6
 	 */
-	public static final int EVENT_TEXT_CARET_MOVED = 0x11b; 
+	public static final int EVENT_TEXT_CARET_MOVED = 0x11b;
 
 	/**
 	 * Sent when the caret moved from one column to the next.
@@ -481,6 +603,20 @@ public class ACC {
 	 * @since 3.6
 	 */
 	public static final int EVENT_TEXT_COLUMN_CHANGED = 0x11d;
+
+	/**
+	 * Sent when text was inserted or deleted.
+	 * <p>
+	 * The event object is an array of 4 objects specifying the following:<ul>
+	 * <li>type - {@link ACC#INSERT} or {@link ACC#DELETE} - the type of change</li>
+	 * <li>start - the index of the first character that changed</li>
+	 * <li>end - the index of the last character that changed</li>
+	 * <li>text - the text string that changed</li>
+	 * </ul></p>
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_TEXT_CHANGED = 0x20c;
 
 	/**
 	 * Some attribute of this object is affected by a target object.
