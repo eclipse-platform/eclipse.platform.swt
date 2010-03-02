@@ -32,7 +32,7 @@ import org.eclipse.swt.graphics.*;
  * 
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class TaskBarItem extends Item {
+public class TaskItem extends Item {
 	TaskBar parent;
 	Shell shell;
 	int progress, progressState = SWT.DEFAULT;
@@ -71,7 +71,7 @@ public class TaskBarItem extends Item {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-TaskBarItem (TaskBar parent, int style) {
+TaskItem (TaskBar parent, int style) {
 	super (parent, style);
 	this.parent = parent;
 	parent.createItem (this, -1);
