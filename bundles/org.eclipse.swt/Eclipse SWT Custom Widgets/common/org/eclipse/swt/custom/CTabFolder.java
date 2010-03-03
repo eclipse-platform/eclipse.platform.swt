@@ -3193,7 +3193,7 @@ public void showItem (CTabItem item) {
 void showList (Rectangle rect) {
 	if (items.length == 0 || !showChevron) return;
 	if (showMenu == null || showMenu.isDisposed()) {
-		showMenu = new Menu(this);
+		showMenu = new Menu(getShell(), getStyle() & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT));
 	} else {
 		MenuItem[] items = showMenu.getItems();
 		for (int i = 0; i < items.length; i++) {
