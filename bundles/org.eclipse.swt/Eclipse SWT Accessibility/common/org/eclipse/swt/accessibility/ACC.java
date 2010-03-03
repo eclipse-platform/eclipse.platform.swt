@@ -168,6 +168,13 @@ public class ACC {
 	public static final int TEXT_DELETE = DELETE;
 
 	/**
+	 * A constant specifying that an operation succeeded.
+	 * 
+	 * @since 3.6
+	 */
+	public static final String OK = "OK";
+
+	/**
 	 * Typically, a single character is returned. In some cases more than one
 	 * character is returned, for example, when a document contains field data
 	 * such as a field containing a date, time, or footnote reference. In this
