@@ -40,6 +40,8 @@ public class AccessibleAttributeAdapter implements AccessibleAttributeListener {
 	 * <li>[out] justify - whether or not to justify the text</li>
 	 * <li>[out] alignment - one of <code>SWT#LEFT</code>, <code>SWT#RIGHT</code> or <code>SWT#CENTER</code></li>
 	 * <li>[out] indent - the indent in pixels</li>
+	 * <li>[out] attributes - an array of alternating key and value Strings
+	 * 		which represent additional (i.e. non predefined) attributes</li>
 	 * </ul>
 	 */
 	public void getAttributes(AccessibleAttributeEvent e) {}
@@ -54,6 +56,8 @@ public class AccessibleAttributeAdapter implements AccessibleAttributeListener {
 	 * <li>[out] end - the 0 based offset after the last character of the character range
 	 * 		over which all text attributes match those of offset</li>
 	 * <li>[out] textStyle - the TextStyle of the character range</li>
+	 * <li>[out] attributes - an array of alternating key and value Strings
+	 * 		which represent additional (i.e. non predefined) attributes</li>
 	 * </ul>
 	 */
 	public void getTextAttributes(AccessibleTextAttributeEvent e) {}

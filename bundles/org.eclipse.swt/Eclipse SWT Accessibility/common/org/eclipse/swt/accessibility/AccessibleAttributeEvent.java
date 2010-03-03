@@ -33,8 +33,9 @@ public class AccessibleAttributeEvent extends SWTEventObject {
 	public boolean justify;
 	public int alignment;
 	public int indent;
+	public String [] attributes;
 
-	static final long serialVersionUID = 0L; // TODO: run serialver -show
+	static final long serialVersionUID = 2237016128901566049L;
 
 /**
  * Constructs a new instance of this class.
