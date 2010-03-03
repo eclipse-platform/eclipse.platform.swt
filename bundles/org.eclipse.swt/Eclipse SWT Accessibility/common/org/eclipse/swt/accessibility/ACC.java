@@ -515,7 +515,7 @@ public class ACC {
 	/**
 	 * Sent when a table's data changed.
 	 * <p>
-	 * The event object is an array of 5 ints specifying the following:<ul>
+	 * The eventData object is an array of 5 ints specifying the following:<ul>
 	 * <li>type - {@link ACC#INSERT} or {@link ACC#DELETE} - the type of change</li>
 	 * <li>rowStart - the index of the first row that changed</li>
 	 * <li>rowCount - the number of contiguous rows that changed, or 0 if no rows changed</li>
@@ -574,7 +574,7 @@ public class ACC {
 	/**
 	 * Sent when text was inserted or deleted.
 	 * <p>
-	 * The event object is an array of 4 objects specifying the following:<ul>
+	 * The eventData object is an array of 4 objects specifying the following:<ul>
 	 * <li>type - {@link ACC#INSERT} or {@link ACC#DELETE} - the type of change</li>
 	 * <li>start - the index of the first character that changed</li>
 	 * <li>end - the index of the last character that changed</li>
