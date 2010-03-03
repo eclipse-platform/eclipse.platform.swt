@@ -38,7 +38,7 @@ public interface AccessibleActionListener extends SWTEventListener {
 	 * </p>
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[out] count - the number of actions, or zero if there are no actions
+	 * <li>[out] count - the number of actions, or zero if there are no actions</li>
 	 * </ul>
 	 */
 	public void getActionCount(AccessibleActionEvent e);
@@ -48,7 +48,8 @@ public interface AccessibleActionListener extends SWTEventListener {
 	 * 
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] index - a 0 based index specifying the action to perform.
-	 * 		If the index lies outside the valid range no action is performed.
+	 * 		If the index lies outside the valid range no action is performed.</li>
+	 * <li>[out] result - set to {@link ACC#OK} if the action was performed.</li>
 	 * </ul>
 	 */
 	public void doAction(AccessibleActionEvent e);
@@ -57,9 +58,9 @@ public interface AccessibleActionListener extends SWTEventListener {
 	 * Returns a description of the specified action.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] index - a 0 based index specifying which action's description to return
+	 * <li>[in] index - a 0 based index specifying which action's description to return</li>
 	 * <li>[out] result - a localized string describing the specified action,
-	 * 		or null if the index lies outside the valid range
+	 * 		or null if the index lies outside the valid range</li>
 	 * </ul>
 	 */
 	public void getDescription(AccessibleActionEvent e);
@@ -73,9 +74,9 @@ public interface AccessibleActionListener extends SWTEventListener {
 	 * </p>
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] index - a 0 based index specifying which action's key bindings to return
+	 * <li>[in] index - a 0 based index specifying which action's key bindings to return</li>
 	 * <li>[out] result - a semicolon-delimited string of localized key bindings
-	 * 		(example: "C;CTRL+C"), or null if the index lies outside the valid range
+	 * 		(example: "C;CTRL+C"), or null if the index lies outside the valid range</li>
 	 * </ul>
 	 */
 	public void getKeyBinding(AccessibleActionEvent e);
@@ -88,9 +89,9 @@ public interface AccessibleActionListener extends SWTEventListener {
 	 * </p>
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] index - a 0 based index specifying which action's non-localized name to return
+	 * <li>[in] index - a 0 based index specifying which action's non-localized name to return</li>
 	 * <li>[out] result - the name of the specified action,
-	 * 		or null if the index lies outside the valid range
+	 * 		or null if the index lies outside the valid range</li>
 	 * </ul>
 	 */
 	public void getName(AccessibleActionEvent e);

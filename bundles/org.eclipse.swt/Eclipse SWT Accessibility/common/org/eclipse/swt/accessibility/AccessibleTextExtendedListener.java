@@ -32,8 +32,9 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * Adds a text selection.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] start - the 0 based offset of the first character of the new selection
-	 * <li>[in] end - the 0 based offset after the last character of the new selection
+	 * <li>[in] start - the 0 based offset of the first character of the new selection</li>
+	 * <li>[in] end - the 0 based offset after the last character of the new selection</li>
+	 * <li>[out] result - set to {@link ACC#OK} if the text selection was added</li>
 	 * </ul>
 	 */
 	public void addSelection(AccessibleTextExtendedEvent e);
@@ -42,7 +43,7 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * Returns the total number of characters in the text.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[out] count - the total number of characters
+	 * <li>[out] count - the total number of characters</li>
 	 * </ul>
 	 */
 	public void getCharacterCount(AccessibleTextExtendedEvent e);
@@ -53,7 +54,7 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * 
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[out] count - the number of links and link groups within this hypertext paragraph,
-	 * 		or 0 if there are none
+	 * 		or 0 if there are none</li>
 	 * </ul>
 	 */
 	public void getHyperlinkCount(AccessibleTextExtendedEvent e);
@@ -62,8 +63,8 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * Returns the specified hyperlink.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] index - the 0 based index of the hyperlink to return
-	 * <li>[out] accessible - the specified hyperlink object, or null if the index is invalid
+	 * <li>[in] index - the 0 based index of the hyperlink to return</li>
+	 * <li>[out] accessible - the specified hyperlink object, or null if the index is invalid</li>
 	 * </ul>
 	 */
 	public void getHyperlink(AccessibleTextExtendedEvent e);
@@ -74,9 +75,9 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * This is the case when a link spans the given character index.
 	 * </p>
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] offset - the 0 based offset of the character for which to return the link index.
+	 * <li>[in] offset - the 0 based offset of the character for which to return the link index</li>
 	 * <li>[out] index - the 0 based index of the hyperlink that is associated with this
-	 * 		character offset, or -1 if the offset is not in a link
+	 * 		character offset, or -1 if the offset is not in a link</li>
 	 * </ul>
 	 */
 	public void getHyperlinkIndex(AccessibleTextExtendedEvent e);
@@ -86,11 +87,11 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * 
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] x - the X value in display coordinates for which to look up the offset of the character
-	 * 		that is rendered on the display at that point
+	 * 		that is rendered on the display at that point</li>
 	 * <li>[in] y - the position's Y value for which to look up the offset of the character
-	 * 		that is rendered on the display at that point
+	 * 		that is rendered on the display at that point</li>
 	 * <li>[out] offset - the 0 based offset of the character under the given point,
-	 * 		or -1 if the point is invalid or there is no character under the point
+	 * 		or -1 if the point is invalid or there is no character under the point</li>
 	 * </ul>
 	 */
 	public void getOffsetAtPoint(AccessibleTextExtendedEvent e);
@@ -102,14 +103,14 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * </p>
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] x - the X coordinate of the top left corner of the bounding box, in display relative coordinates
-	 * <li>[in] y - the Y coordinate of the top left corner of the bounding box, in display relative coordinates
-	 * <li>[in] width - the width of the bounding box
-	 * <li>[in] height - the height of the bounding box
-	 * <li>[typical out] start - the 0 based offset of the first character of the substring in the bounding box
-	 * <li>[typical out] end - the 0 based offset after the last character of the substring in the bounding box
+	 * <li>[in] x - the X coordinate of the top left corner of the bounding box, in display relative coordinates</li>
+	 * <li>[in] y - the Y coordinate of the top left corner of the bounding box, in display relative coordinates</li>
+	 * <li>[in] width - the width of the bounding box</li>
+	 * <li>[in] height - the height of the bounding box</li>
+	 * <li>[typical out] start - the 0 based offset of the first character of the substring in the bounding box</li>
+	 * <li>[typical out] end - the 0 based offset after the last character of the substring in the bounding box</li>
 	 * <li>[optional out] ranges - an array of pairs specifying the start and end offsets of each range,
-	 * 		if the text range is clipped by the bounding box
+	 * 		if the text range is clipped by the bounding box</li>
 	 * </ul>
 	 */
 	public void getRanges(AccessibleTextExtendedEvent e);
@@ -118,9 +119,9 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * Returns the character offsets of the specified text selection.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] index - the 0 based index of the selection
-	 * <li>[out] start - the 0 based offset of first selected character
-	 * <li>[out] end - the 0 based offset after the last selected character
+	 * <li>[in] index - the 0 based index of the selection</li>
+	 * <li>[out] start - the 0 based offset of first selected character</li>
+	 * <li>[out] end - the 0 based offset after the last selected character</li>
 	 * </ul>
 	 */
 	public void getSelection(AccessibleTextExtendedEvent e);
@@ -129,7 +130,7 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * Returns the number of active non-contiguous selections.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[out] count - the number of active non-contiguous selections
+	 * <li>[out] count - the number of active non-contiguous selections</li>
 	 * </ul>
 	 */
 	public void getSelectionCount(AccessibleTextExtendedEvent e);
@@ -163,15 +164,15 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * 		<li> {@link ACC#TEXT_BOUNDARY_PARAGRAPH}</li>
 	 * 		<li> {@link ACC#TEXT_BOUNDARY_LINE}</li>
 	 * 		<li> {@link ACC#TEXT_BOUNDARY_ALL}</li>
-	 * 		</ul>
-	 * <li>[in,out] start - the 0 based offset of first character of the substring
-	 * <li>[in,out] end - the 0 based offset after the last character of the substring
-	 * <li>[in,out] count - the number of boundary type units to move to find the substring to return.<ul>
-	 * 		<li>in: look count units before start if count < 0, or after end if count > 0. Look at start if count == 0.
-	 * 		<li>out: the actual number of boundary type units that were moved. This may be fewer than the input count.
-	 * 		</ul>
+	 * 		</ul></li>
+	 * <li>[in,out] start - the 0 based offset of first character of the substring</li>
+	 * <li>[in,out] end - the 0 based offset after the last character of the substring</li>
+	 * <li>[in,out] count - the number of boundary type units to move to find the substring:<ul>
+	 * 		<li>in - look count units before start if count < 0, or after end if count > 0. Look at start if count == 0</li>
+	 * 		<li>out - the actual number of boundary type units that were moved. This may be fewer than the input count</li>
+	 * 		</ul></li>
 	 * <li>[out] result - the requested substring.  This may be empty or null
-	 * 		when no appropriate substring is found, or if the type is invalid.
+	 * 		when no appropriate substring is found, or if the type is invalid.</li>
 	 * </ul>
 	 */
 	public void getText(AccessibleTextExtendedEvent e);
@@ -194,14 +195,14 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * </p>
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] start - the 0 based offset of the first character of the substring in the bounding box
-	 * <li>[in] end - the 0 based offset after the last character of the substring in the bounding box
-	 * <li>[typical out] x - the X coordinate of the top left corner of the bounding box of the specified substring
-	 * <li>[typical out] y - the Y coordinate of the top left corner of the bounding box of the specified substring
-	 * <li>[typical out] width - the width of the bounding box of the specified substring
-	 * <li>[typical out] height - the height of the bounding box of the specified substring
+	 * <li>[in] start - the 0 based offset of the first character of the substring in the bounding box</li>
+	 * <li>[in] end - the 0 based offset after the last character of the substring in the bounding box</li>
+	 * <li>[typical out] x - the X coordinate of the top left corner of the bounding box of the specified substring</li>
+	 * <li>[typical out] y - the Y coordinate of the top left corner of the bounding box of the specified substring</li>
+	 * <li>[typical out] width - the width of the bounding box of the specified substring</li>
+	 * <li>[typical out] height - the height of the bounding box of the specified substring</li>
 	 * <li>[optional out] rectangles - a set of disjoint bounding rectangles, if the specified text range includes
-	 * 		partial lines
+	 * 		partial lines</li>
 	 * </ul>
 	 */
 	public void getTextBounds(AccessibleTextExtendedEvent e);
@@ -213,10 +214,10 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * </p>
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[typical out] start - the 0 based offset of the first character of the visible substring
-	 * <li>[typical out] end - the 0 based offset after the last character of the visible substring
+	 * <li>[typical out] start - the 0 based offset of the first character of the visible substring</li>
+	 * <li>[typical out] end - the 0 based offset after the last character of the visible substring</li>
 	 * <li>[optional out] ranges - an array of pairs specifying the start and end offsets of each range,
-	 * 		if the visible text range is clipped
+	 * 		if the visible text range is clipped</li>
 	 * </ul>
 	 */
 	public void getVisibleRanges(AccessibleTextExtendedEvent e);
@@ -225,7 +226,8 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * Deselects a range of text.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] index - the 0 based index of selection to remove
+	 * <li>[in] index - the 0 based index of selection to remove</li>
+	 * <li>[out] result - set to {@link ACC#OK} if the range of text was deselected</li>
 	 * </ul>
 	 */
 	public void removeSelection(AccessibleTextExtendedEvent e);
@@ -234,8 +236,8 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * Scrolls a specific part of a substring according to the scroll type.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] start - the 0 based offset of the first character of the substring
-	 * <li>[in] end - the 0 based offset after the last character of the substring
+	 * <li>[in] start - the 0 based offset of the first character of the substring</li>
+	 * <li>[in] end - the 0 based offset after the last character of the substring</li>
 	 * <li>[in] type - a scroll type indicating where the substring should be placed
 	 * 		on the screen. One of:<ul>
 	 * 		<li> {@link ACC#SCROLL_TYPE_TOP_LEFT}</li>
@@ -246,10 +248,11 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * 		<li> {@link ACC#SCROLL_TYPE_RIGHT_EDGE}</li>
 	 * 		<li> {@link ACC#SCROLL_TYPE_ANYWHERE}</li>
 	 * 		<li> {@link ACC#SCROLL_TYPE_POINT}</li>
-	 * 		</ul>
+	 * 		</ul></li>
+	 * <li>[optional in] x - for SCROLL_TYPE_POINT, the X coordinate of the destination point in display coordinates</li>
+	 * <li>[optional in] y - for SCROLL_TYPE_POINT, the Y coordinate of the destination point in display coordinates</li>
+	 * <li>[out] result - set to {@link ACC#OK} if the text was scrolled</li>
 	 * </ul>
-	 * <li>[optional in] x - for SCROLL_TYPE_POINT, the X coordinate of the destination point in display coordinates
-	 * <li>[optional in] y - for SCROLL_TYPE_POINT, the Y coordinate of the destination point in display coordinates
 	 */
 	public void scrollText(AccessibleTextExtendedEvent e);
 
@@ -272,7 +275,8 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * </p>
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] offset - the new offset of the caret
+	 * <li>[in] offset - the new offset of the caret</li>
+	 * <li>[out] result - set to {@link ACC#OK} if the caret position was set</li>
 	 * </ul>
 	 */
 	public void setCaretOffset(AccessibleTextExtendedEvent e);
@@ -281,9 +285,10 @@ public interface AccessibleTextExtendedListener extends AccessibleTextListener {
 	 * Changes the bounds of an existing selection.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] index - the 0 based index of the selection to change
-	 * <li>[in] start - the new 0 based offset of the first character of the selection
-	 * <li>[in] end - the new 0 based offset after the last character of the selection
+	 * <li>[in] index - the 0 based index of the selection to change</li>
+	 * <li>[in] start - the new 0 based offset of the first character of the selection</li>
+	 * <li>[in] end - the new 0 based offset after the last character of the selection</li>
+	 * <li>[out] result - set to {@link ACC#OK} if the selection was set</li>
 	 * </ul>
 	 */
 	public void setSelection(AccessibleTextExtendedEvent e);
