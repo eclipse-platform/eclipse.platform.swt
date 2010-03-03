@@ -35,13 +35,13 @@ public interface AccessibleHyperlinkListener extends SWTEventListener {
 	 * 
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] index - a 0 based index identifying the anchor if this object
-	 * 		has more than one link, as in the case of an image map
-	 * <li>[typical out] result - the returned anchor
+	 * 		has more than one link, as in the case of an image map</li>
+	 * <li>[typical out] result - the returned anchor</li>
 	 * <li>[optional out] accessible - the returned anchor.
 	 * 		Note: The returned anchor can either be a string or an accessible.
 	 * 		For example, for a text link this could be the substring of the containing string
 	 * 		where the substring is overridden with link behavior, and for an image link this could be
-	 * 		the accessible for the image.
+	 * 		the accessible for the image.</li>
 	 * </ul>
 	 */
 	public void getAnchor(AccessibleHyperlinkEvent e);
@@ -51,12 +51,12 @@ public interface AccessibleHyperlinkListener extends SWTEventListener {
 	 * 
 	 * @param e an event object containing the following fields:<ul>
 	 * <li>[in] index - a 0 based index identifying the anchor if this object
-	 * 		has more than one link, as in the case of an image map
-	 * <li>[typical out] result - the returned target
+	 * 		has more than one link, as in the case of an image map</li>
+	 * <li>[typical out] result - the returned target</li>
 	 * <li>[optional out] accessible - the returned target.
 	 * 		Note: The returned target can either be a string or an accessible.
 	 * 		For example, this could be a string URI, or the accessible for the target
-	 * 		object to be activated when the link is activated.
+	 * 		object to be activated when the link is activated.</li>
 	 * </ul>
 	 */
 	public void getAnchorTarget(AccessibleHyperlinkEvent e);
@@ -69,7 +69,7 @@ public interface AccessibleHyperlinkListener extends SWTEventListener {
 	 * </p>
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[out] index
+	 * <li>[out] index</li>
 	 * </ul>
 	 */
 	public void getStartIndex(AccessibleHyperlinkEvent e);
@@ -82,7 +82,7 @@ public interface AccessibleHyperlinkListener extends SWTEventListener {
 	 * </p>
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[out] index
+	 * <li>[out] index</li>
 	 * </ul>
 	 */
 	public void getEndIndex(AccessibleHyperlinkEvent e);
