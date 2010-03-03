@@ -110,6 +110,7 @@ public class Display extends Device {
 	public MSG msg = new MSG ();
 
 	static String APP_NAME = "SWT"; //$NON-NLS-1$
+	static String APP_VERSION = ""; //$NON-NLS-1$
 	
 	/* Windows and Events */
 	Event [] eventQueue;
@@ -4387,6 +4388,19 @@ public static String getAppName () {
 }
 
 /**
+ * Returns the application version.
+ *
+ * @return the application version
+ * 
+ * @see #setAppVersion(String)
+ * 
+ * @since 3.6
+ */
+public static String getAppVersion () {
+	return APP_VERSION;
+}
+
+/**
  * On platforms which support it, sets the application name
  * to be the argument. On Motif, for example, this can be used
  * to set the name used for resource lookup.  Specifying
@@ -4396,6 +4410,16 @@ public static String getAppName () {
  */
 public static void setAppName (String name) {
 	APP_NAME = name;
+}
+
+/**
+ * On platforms which support it, sets the application version
+ * to be the argument. Specifying <code>null</code> clears it.
+ *
+ * @param version the new app version or <code>null</code>
+ */
+public static void setAppVersion (String version) {
+	APP_VERSION = version;
 }
 
 void setModalDialog (Dialog modalDailog) {
