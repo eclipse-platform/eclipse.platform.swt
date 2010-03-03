@@ -1392,8 +1392,7 @@ class AccessibleObject {
 					AccessibleTableListener listener = (AccessibleTableListener) listeners.elementAt(i);
 					listener.selectRow(event);
 				}
-				//TODO should listener return if it did it or not
-				return 1;
+				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
 		int /*long*/ parentResult = 0;
@@ -1418,8 +1417,7 @@ class AccessibleObject {
 					AccessibleTableListener listener = (AccessibleTableListener) listeners.elementAt(i);
 					listener.deselectRow(event);
 				}
-				//TODO should listener return if it did it or not
-				return 1;
+				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
 		int /*long*/ parentResult = 0;
@@ -1444,8 +1442,7 @@ class AccessibleObject {
 					AccessibleTableListener listener = (AccessibleTableListener) listeners.elementAt(i);
 					listener.selectColumn(event);
 				}
-				//TODO should listener return if it did it or not
-				return 1;
+				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
 		int /*long*/ parentResult = 0;
@@ -1470,8 +1467,7 @@ class AccessibleObject {
 					AccessibleTableListener listener = (AccessibleTableListener) listeners.elementAt(i);
 					listener.deselectColumn(event);
 				}
-				//TODO should listener return if it did it or not
-				return 1;
+				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
 		int /*long*/ parentResult = 0;
@@ -1739,8 +1735,7 @@ class AccessibleObject {
 					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
 					listener.addSelection(event);
 				}
-				//TODO should listener say it did or not
-				return 1;
+				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
 		int /*long*/ parentResult = 0;
@@ -1765,8 +1760,7 @@ class AccessibleObject {
 					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
 					listener.removeSelection(event);
 				}
-				//TODO should listener say it did or not
-				return 1;
+				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
 		int /*long*/ parentResult = 0;
@@ -1791,8 +1785,7 @@ class AccessibleObject {
 					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
 					listener.setCaretOffset(event);
 				}
-				//TODO should listener say it did or not
-				return 1;
+				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
 		AtkTextIface iface = getTextIface (atkObject);
@@ -1818,8 +1811,7 @@ class AccessibleObject {
 					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
 					listener.setSelection(event);
 				}
-				//TODO should listener say it did or not
-				return 1;
+				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
 		int /*long*/ parentResult = 0;
@@ -2707,7 +2699,7 @@ class AccessibleObject {
 					AccessibleValueListener listener = (AccessibleValueListener) listeners.elementAt(i);
 					listener.setCurrentValue(event);
 				}
-				return 0;
+				return event.value != null ? 1 : 0;
 			}
 		}
 		int /*long*/ parentResult = 0;
