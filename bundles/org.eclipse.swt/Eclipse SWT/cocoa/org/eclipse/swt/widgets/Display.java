@@ -276,6 +276,7 @@ public class Display extends Device {
 	};
 
 	static String APP_NAME;
+	static String APP_VERSION = ""; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
 	static final byte[] SWT_IMAGE = {'S', 'W', 'T', '_', 'I', 'M', 'A', 'G', 'E', '\0'};
@@ -3758,15 +3759,43 @@ public static String getAppName () {
 }
 
 /**
- * On platforms which support it, sets the application name
- * to be the argument. On Motif, for example, this can be used
- * to set the name used for resource lookup.  Specifying
- * <code>null</code> for the name clears it.
+ * Returns the application version.
+ *
+ * @return the application version
+ * 
+ * @see #setAppVersion(String)
+ * 
+ * @since 3.6
+ */
+public static String getAppVersion () {
+	return APP_VERSION;
+}
+
+/**
+ * Sets the application name to the argument.
+ * <p>
+ * The application name can be used in several ways,
+ * depending on the platform and tools being used.
+ * On Motif, for example, this can be used to set
+ * the name used for resource lookup. Accessibility
+ * tools may also ask for the application name.
+ * </p><p>
+ * Specifying <code>null</code> for the name clears it.
+ * </p>
  *
  * @param name the new app name or <code>null</code>
  */
 public static void setAppName (String name) {
 	APP_NAME = name;
+}
+
+/**
+ * Sets the application version to the argument.
+ *
+ * @param version the new app version
+ */
+public static void setAppVersion (String version) {
+	APP_VERSION = version;
 }
 
 //TODO use custom timer instead of timerExec
