@@ -82,7 +82,7 @@ class AccessibleObject {
 					AccessibleActionListener listener = (AccessibleActionListener) listeners.elementAt(i);
 					listener.doAction(event);
 				}
-				return 0;
+				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
 		int /*long*/ parentResult = 0;
@@ -2885,7 +2885,78 @@ class AccessibleObject {
 	}
 	
 	void sendEvent(int event, int childID, Object eventData) {
-		//TODO
+		switch (event) {
+			case ACC.EVENT_SELECTION_CHANGED:
+				OS.g_signal_emit_by_name (handle, ATK.selection_changed);
+				break;
+			case ACC.EVENT_TEXT_SELECTION_CHANGED:
+				OS.g_signal_emit_by_name (handle, ATK.text_selection_changed);
+				break;
+			case ACC.EVENT_STATE_CHANGED:
+				//TODO - needs to have old and new state
+				break;
+			case ACC.EVENT_LOCATION_CHANGED:
+				break;
+			case ACC.EVENT_NAME_CHANGED:
+				OS.g_object_notify(handle, ATK.accessible_name);
+				break;
+			case ACC.EVENT_DESCRIPTION_CHANGED:
+				OS.g_object_notify(handle, ATK.accessible_description);
+				break;
+			case ACC.EVENT_VALUE_CHANGED:
+				OS.g_object_notify(handle, ATK.accessible_value);
+				break;
+			case ACC.EVENT_DOCUMENT_LOAD_COMPLETE:
+				break;
+			case ACC.EVENT_DOCUMENT_LOAD_STOPPED:
+				break;
+			case ACC.EVENT_DOCUMENT_RELOAD:
+				break;
+			case ACC.EVENT_PAGE_CHANGED:
+				break;
+			case ACC.EVENT_SECTION_CHANGED:
+				break;
+			case ACC.EVENT_ACTION_CHANGED:
+				break;
+			case ACC.EVENT_HYPERLINK_END_INDEX_CHANGED:
+				break;
+			case ACC.EVENT_HYPERLINK_ANCHOR_COUNT_CHANGED:
+				break;
+			case ACC.EVENT_HYPERLINK_SELECTED_LINK_CHANGED:
+				break;
+			case ACC.EVENT_HYPERLINK_START_INDEX_CHANGED:
+				break;
+			case ACC.EVENT_HYPERTEXT_LINK_ACTIVATED:
+				break;
+			case ACC.EVENT_HYPERTEXT_LINK_SELECTED:
+				break;
+			case ACC.EVENT_HYPERTEXT_LINK_COUNT_CHANGED:
+				break;
+			case ACC.EVENT_ATTRIBUTE_CHANGED:
+				break;
+			case ACC.EVENT_TABLE_CAPTION_CHANGED:
+				break;
+			case ACC.EVENT_TABLE_COLUMN_DESCRIPTION_CHANGED:
+				break;
+			case ACC.EVENT_TABLE_COLUMN_HEADER_CHANGED:
+				break;
+			case ACC.EVENT_TABLE_CHANGED:
+				break;
+			case ACC.EVENT_TABLE_ROW_DESCRIPTION_CHANGED:
+				break;
+			case ACC.EVENT_TABLE_ROW_HEADER_CHANGED:
+				break;
+			case ACC.EVENT_TABLE_SUMMARY_CHANGED:
+				break;
+			case ACC.EVENT_TEXT_ATTRIBUTE_CHANGED:
+				break;
+			case ACC.EVENT_TEXT_CARET_MOVED:
+				break;
+			case ACC.EVENT_TEXT_COLUMN_CHANGED:
+				break;
+			case ACC.EVENT_TEXT_CHANGED:
+				break;
+		}
 	}
 	
 	void setFocus (int childID) {

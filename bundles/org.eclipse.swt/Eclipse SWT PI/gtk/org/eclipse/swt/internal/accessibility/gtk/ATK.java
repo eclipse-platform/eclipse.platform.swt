@@ -140,6 +140,11 @@ public class ATK extends OS {
 	public static final byte[] text_caret_moved = OS.ascii ("text_caret_moved");
 	public static final byte[] text_selection_changed = OS.ascii ("text_selection_changed");
 	
+	/** Properties */
+	public static final byte[] accessible_name = OS.ascii ("accessible-name");
+	public static final byte[] accessible_description = OS.ascii ("accessible-description");
+	public static final byte[] accessible_value = OS.ascii ("accessible-value");
+	
 /** 64 bit */
 public static final native int AtkObjectFactory_sizeof ();
 public static final native int AtkObjectFactoryClass_sizeof ();
