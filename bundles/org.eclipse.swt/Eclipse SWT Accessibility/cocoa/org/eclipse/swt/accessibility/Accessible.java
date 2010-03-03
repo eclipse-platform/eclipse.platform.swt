@@ -1177,7 +1177,7 @@ public class Accessible {
 					AccessibleActionListener listener = (AccessibleActionListener) accessibleActionListeners.elementAt(i);
 					listener.doAction(event);
 				}
-				return true;
+				return ACC.OK.equals(event.result);
 			}
 		} 
 		return false;
