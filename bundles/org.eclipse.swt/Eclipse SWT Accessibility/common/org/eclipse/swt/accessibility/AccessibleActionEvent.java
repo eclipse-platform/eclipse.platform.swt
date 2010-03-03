@@ -26,14 +26,14 @@ import org.eclipse.swt.internal.*;
 public class AccessibleActionEvent extends SWTEventObject {
 
 	/**
-	 * The value of this field must be set in the accessible table listener method
+	 * The value of this field must be set in the accessible action listener method
 	 * before returning. What to set it to depends on the listener method called.
 	 */
 	public String result;
 	public int count;
 	public int index;
 
-	static final long serialVersionUID = 0L; // TODO: run serialver -show
+	static final long serialVersionUID = 2849066792640153087L;
 
 /**
  * Constructs a new instance of this class.

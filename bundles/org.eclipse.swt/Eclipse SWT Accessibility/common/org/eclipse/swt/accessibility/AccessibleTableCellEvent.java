@@ -31,7 +31,7 @@ public class AccessibleTableCellEvent extends SWTEventObject {
 	public int count;
 	public int index;
 
-	static final long serialVersionUID = 0L; // TODO: run serialver -show
+	static final long serialVersionUID = 7231059449172889781L;
 
 /**
  * Constructs a new instance of this class.

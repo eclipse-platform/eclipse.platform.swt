@@ -28,14 +28,14 @@ public class AccessibleHyperlinkEvent extends SWTEventObject {
 	public Accessible accessible;
 
 	/**
-	 * The value of this field must be set in the accessible table listener method
+	 * The value of this field must be set in the accessible hyperlink listener method
 	 * before returning. What to set it to depends on the listener method called.
 	 */
 	public String result;
 
 	public int index;
 
-	static final long serialVersionUID = 0L; // TODO: run serialver -show
+	static final long serialVersionUID = 6253098373844074544L;
 
 /**
  * Constructs a new instance of this class.

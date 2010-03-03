@@ -40,7 +40,7 @@ public class AccessibleTableEvent extends SWTEventObject {
 	public boolean isSelected;
 	public int[] selected;
 
-	static final long serialVersionUID = 0L; // TODO: run serialver -show
+	static final long serialVersionUID = 1624586163666270447L;
 
 /**
  * Constructs a new instance of this class.

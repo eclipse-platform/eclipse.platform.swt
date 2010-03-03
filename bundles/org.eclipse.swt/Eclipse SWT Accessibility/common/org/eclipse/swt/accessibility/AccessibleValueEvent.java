@@ -27,7 +27,7 @@ public class AccessibleValueEvent extends SWTEventObject {
 
 	public Number value;
 
-	static final long serialVersionUID = 0L; // TODO: run serialver -show
+	static final long serialVersionUID = -465979079760740668L;
 
 /**
  * Constructs a new instance of this class.
