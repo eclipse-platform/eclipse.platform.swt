@@ -112,25 +112,25 @@ class Relation {
 		return refCount;
 	}
 
-	/* get_relationType([out] pbstrRelationType) */
+	/* IAccessibleRelation::get_relationType([out] pbstrRelationType) */
 	int get_relationType(int /*long*/ pbstrRelationType) {
 		setString(pbstrRelationType, relationTypeString[type]);
 		return COM.S_OK;
 	}
 
-	/* get_localizedRelationType([out] pbstrLocalizedRelationType) */
+	/* IAccessibleRelation::get_localizedRelationType([out] pbstrLocalizedRelationType) */
 	int get_localizedRelationType(int /*long*/ pbstrLocalizedRelationType) {
 		setString(pbstrLocalizedRelationType, localizedRelationTypeString[type]);
 		return COM.S_OK;
 	}
 
-	/* get_nTargets([out] pNTargets) */
+	/* IAccessibleRelation::get_nTargets([out] pNTargets) */
 	int get_nTargets(int /*long*/ pNTargets) {
 		COM.MoveMemory(pNTargets, new int [] { targets.length }, 4);
 		return COM.S_OK;
 	}
 
-	/* get_target([in] targetIndex, [out] ppTarget) */
+	/* IAccessibleRelation::get_target([in] targetIndex, [out] ppTarget) */
 	int get_target(int targetIndex, int /*long*/ ppTarget) {
 		if (targetIndex < 0 || targetIndex >= targets.length) return COM.E_INVALIDARG;
 		Accessible target = targets[targetIndex];
@@ -139,7 +139,7 @@ class Relation {
 		return COM.S_OK;
 	}
 
-	/* get_targets([in] maxTargets, [out] ppTargets, [out] pNTargets) */
+	/* IAccessibleRelation::get_targets([in] maxTargets, [out] ppTargets, [out] pNTargets) */
 	int get_targets(int maxTargets, int /*long*/ ppTargets, int /*long*/ pNTargets) {
 		int count = Math.min(targets.length, maxTargets);
 		for (int i = 0; i < count; i++) {
