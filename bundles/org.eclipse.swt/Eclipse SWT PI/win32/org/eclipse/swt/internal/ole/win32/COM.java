@@ -826,7 +826,7 @@ public static final int ROLE_SYSTEM_SPLITBUTTON = 0x3e;
 //public static final int ROLE_SYSTEM_IPADDRESS = 0x3f;
 //public static final int ROLE_SYSTEM_OUTLINEBUTTON = 0x40;
 public static final int STATE_SYSTEM_NORMAL = 0;
-//public static final int STATE_SYSTEM_UNAVAILABLE = 0x1;
+public static final int STATE_SYSTEM_UNAVAILABLE = 0x1;
 public static final int STATE_SYSTEM_SELECTED = 0x2;
 public static final int STATE_SYSTEM_FOCUSED = 0x4;
 public static final int STATE_SYSTEM_PRESSED = 0x8;
@@ -882,6 +882,16 @@ public static final native int CreateStdAccessibleObject (int /*long*/ hwnd, int
  * @param pAcc cast=(LPUNKNOWN)
  */
 public static final native int /*long*/ LresultFromObject (GUID riid, int /*long*/ wParam, int /*long*/ pAcc);
+/**
+ * @method flags=dynamic
+ * @param paccContainer cast=(IAccessible *)
+ * @param iChildStart cast=(LONG)
+ * @param cChildren cast=(LONG)
+ * @param rgvarChildren cast=(VARIANT *)
+ * @param pcObtained cast=(LONG *)
+ */
+public static final native int AccessibleChildren(int /*long*/ paccContainer, int iChildStart, int cChildren, int /*long*/ rgvarChildren, int [] pcObtained);
+
 /*USED*/public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int arg3);
 /*USED*/public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4);
 /*USED,NEW*/public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, int arg1, int arg2, int arg3, long arg4);

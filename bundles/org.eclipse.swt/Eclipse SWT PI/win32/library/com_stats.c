@@ -14,9 +14,10 @@
 
 #ifdef NATIVE_STATS
 
-int COM_nativeFunctionCount = 174;
-int COM_nativeFunctionCallCount[174];
+int COM_nativeFunctionCount = 175;
+int COM_nativeFunctionCallCount[175];
 char * COM_nativeFunctionNames[] = {
+	"AccessibleChildren",
 	"AccessibleObjectFromWindow",
 	"CALLBACK_1setCurrentValue",
 	"CAUUID_1sizeof",

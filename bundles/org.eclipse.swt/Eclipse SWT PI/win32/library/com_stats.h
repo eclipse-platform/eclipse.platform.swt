@@ -25,6 +25,7 @@ extern char* COM_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	AccessibleChildren_FUNC,
 	AccessibleObjectFromWindow_FUNC,
 	CALLBACK_1setCurrentValue_FUNC,
 	CAUUID_1sizeof_FUNC,

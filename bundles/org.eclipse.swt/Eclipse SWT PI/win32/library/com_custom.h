@@ -14,6 +14,7 @@
 #define TYPEDESC_sizeof() sizeof(TYPEDESC)
 
 /* Libraries for dynamic loaded functions */
+#define AccessibleChildren_LIB "oleacc.dll"
 #define AccessibleObjectFromWindow_LIB "oleacc.dll"
 #define CreateStdAccessibleObject_LIB "oleacc.dll"
 #define LresultFromObject_LIB "oleacc.dll"

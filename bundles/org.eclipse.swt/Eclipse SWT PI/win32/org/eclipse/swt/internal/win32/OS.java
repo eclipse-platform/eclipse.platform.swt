@@ -661,9 +661,7 @@ public class OS extends C {
 	public static final int ETS_READONLY = 6;
 	public static final int EVENT_OBJECT_FOCUS = 0x8005;
 	public static final int EVENT_OBJECT_LOCATIONCHANGE = 0x800B;
-//	public static final int EVENT_OBJECT_SELECTION = 0x8006;
 	public static final int EVENT_OBJECT_SELECTIONWITHIN = 0x8009;
-//	public static final int EVENT_OBJECT_STATECHANGE = 0x800A;
 	public static final int EVENT_OBJECT_VALUECHANGE = 0x800E;
 	public static final short FADF_FIXEDSIZE = 0x10;
 	public static final short FADF_HAVEVARTYPE = 0x80;

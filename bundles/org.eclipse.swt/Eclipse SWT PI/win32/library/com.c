@@ -15,6 +15,30 @@
 
 #define COM_NATIVE(func) Java_org_eclipse_swt_internal_ole_win32_COM_##func
 
+#ifndef NO_AccessibleChildren
+JNIEXPORT jint JNICALL COM_NATIVE(AccessibleChildren)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jintLong arg3, jintArray arg4)
+{
+	jint *lparg4=NULL;
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, AccessibleChildren_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)AccessibleChildren((IAccessible *)arg0, (LONG)arg1, (LONG)arg2, (VARIANT *)arg3, (LONG *)lparg4);
+*/
+	{
+		LOAD_FUNCTION(fp, AccessibleChildren)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(IAccessible *, LONG, LONG, VARIANT *, LONG *))fp)((IAccessible *)arg0, (LONG)arg1, (LONG)arg2, (VARIANT *)arg3, (LONG *)lparg4);
+		}
+	}
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	COM_NATIVE_EXIT(env, that, AccessibleChildren_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_AccessibleObjectFromWindow
 JNIEXPORT jint JNICALL COM_NATIVE(AccessibleObjectFromWindow)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2, jintLongArray arg3)

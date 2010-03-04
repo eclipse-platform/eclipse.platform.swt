@@ -85,7 +85,7 @@ public class Accessible {
 		this.parent = checkNull(parent);
 		this.control = parent.control;
 		parent.children.addElement(this);
-		// TODO: Should we use the proxy for lightweight children (for defaults only)?
+		// TODO: Should we use the proxy for lightweight children (for IAccessible defaults only)?
 		this.iaccessible = parent.iaccessible; // use the same proxy for default values?
 	}
 
@@ -1099,32 +1099,10 @@ public class Accessible {
 	/**
 	 * WARNING: API UNDER CONSTRUCTION
 	 * 
-	 * Sends a message to accessible clients indicating that something
-	 * has changed within a custom control.
-	 *
-	 * @param event an <code>ACC</code> constant beginning with EVENT_* indicating the message to send
-	 * @param childID an identifier specifying a child of the control or the control itself
-	 * 
-	 * @exception SWTException <ul>
-	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
-	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
-	 * </ul>
-	 * 
-	 * @since 3.6
-	 */
-	public void sendEvent(int event, int childID) {
-		checkWidget();
-		COM.NotifyWinEvent (event, control.handle, COM.OBJID_CLIENT, childID);
-	}
-
-	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Sends a message with event-specific data to accessible clients
 	 * indicating that something has changed within a custom control.
 	 *
 	 * @param event an <code>ACC</code> constant beginning with EVENT_* indicating the message to send
-	 * @param childID an identifier specifying a child of the control or the control itself
 	 * @param eventData an object containing event-specific data
 	 * 
 	 * @exception SWTException <ul>
@@ -1134,9 +1112,10 @@ public class Accessible {
 	 * 
 	 * @since 3.6
 	 */
-	public void sendEvent(int event, int childID, Object eventData) {
+	public void sendEvent(int event, Object eventData) {
 		checkWidget();
-		COM.NotifyWinEvent (event, control.handle, COM.OBJID_CLIENT, childID);
+		COM.NotifyWinEvent (event, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF);
+		//TODO: parse the data for some events, send location changed for text caret moved event
 	}
 
 	/**
@@ -1187,14 +1166,15 @@ public class Accessible {
 	public void textCaretMoved (int index) {
 		checkWidget();
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_LOCATIONCHANGE, control.handle, COM.OBJID_CARET, COM.CHILDID_SELF);
+		COM.NotifyWinEvent (ACC.EVENT_TEXT_CARET_MOVED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF);
 	}
 	
 	/**
 	 * Sends a message to accessible clients that the text
 	 * within a custom control has changed.
 	 *
-	 * @param type the type of change, one of <code>ACC.NOTIFY_TEXT_INSERT</code>
-	 * or <code>ACC.NOTIFY_TEXT_DELETE</code>
+	 * @param type the type of change, one of <code>ACC.TEXT_INSERT</code>
+	 * or <code>ACC.TEXT_DELETE</code>
 	 * @param startIndex the text index within the control where the insertion or deletion begins
 	 * @param length the non-negative length in characters of the insertion or deletion
 	 *
@@ -1226,7 +1206,7 @@ public class Accessible {
 	 */
 	public void textSelectionChanged () {
 		checkWidget();
-		// not an MSAA event
+		COM.NotifyWinEvent (COM.EVENT_OBJECT_VALUECHANGE, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF);
 	}
 	
 	/* QueryInterface([in] iid, [out] ppvObject)
@@ -2700,15 +2680,48 @@ public class Accessible {
 			listener.getChild(event);
 		}
 		int indexInParent = event.detail;
-		if (indexInParent == -1) {
-			/* The application did not implement CHILDID_CHILD_INDEX,
-			 * so determine the index by looping through the parent's
-			 * children looking for this Accessible. This may be slow,
-			 * so applications are strongly encouraged to implement
-			 * getChild for CHILDID_CHILD_INDEX.
-			 */
-			// TODO
-		}	
+//		if (indexInParent == -1) {
+//			/* The application did not implement CHILDID_CHILD_INDEX,
+//			 * so determine the index by looping through the parent's
+//			 * children looking for this Accessible. This may be slow,
+//			 * so applications are strongly encouraged to implement
+//			 * getChild for CHILDID_CHILD_INDEX.
+//			 */
+//			// TODO
+//			int /*long*/ ppdispParent = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
+//			int code = get_accParent(ppdispParent);
+//			if (code == COM.S_OK) {
+//				VARIANT v = getVARIANT(ppdispParent);
+//				if (v.vt == COM.VT_DISPATCH) {
+//					IAccessible accParent = new IAccessible(v.lVal);
+//					int /*long*/ pcountChildren = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, 4);
+//					code = accParent.get_accChildCount(pcountChildren);
+//					if (code == COM.S_OK) {
+//						int [] childCount = new int[1];
+//						OS.MoveMemory(childCount, pcountChildren, 4);
+//						int[] pcObtained = new int[1];
+//						int /*long*/ rgVarChildren = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof * childCount[0]);
+//						System.out.println("Asking for AccessibleChildren");
+//						code = COM.AccessibleChildren(accParent.getAddress(), 0, childCount[0], rgVarChildren, pcObtained);
+//						if (code == COM.S_OK) {
+//							System.out.println("Got this far - now what?");
+//						} else {
+//							System.out.println("AccessibleChildren failed? code=" + code);
+//						}
+//						OS.GlobalFree(rgVarChildren);
+//					} else {
+//						System.out.println("get_accChildCount failed? code=" + code);
+//					}
+//					OS.GlobalFree (pcountChildren);
+//				} else {
+//					System.out.println("get_accParent did not return VT_DISPATCH? It returned: " + v.vt);
+//				}
+//				COM.VariantClear(ppdispParent);
+//				OS.GlobalFree (ppdispParent);
+//			} else {
+//				System.out.println("get_accParent failed? code=" + code);
+//			}
+//		}
 
 		COM.MoveMemory(pIndexInParent, new int [] { indexInParent }, 4);
 		return indexInParent == -1 ? COM.S_FALSE : COM.S_OK;
@@ -2821,22 +2834,18 @@ public class Accessible {
 
 	/* IAccessibleApplication::get_appName([out] pbstrName) */
 	int get_appName(int /*long*/ pbstrName) {
-		// TODO: use Display.getAppName (version?) new API in Display
-		String appName = "";
-		if (appName.length() == 0) return COM.S_FALSE; // TODO: is S_FALSE ok here?
+		String appName = Display.getAppName();
+		if (appName == null || appName.length() == 0) return COM.S_FALSE;
 		setString(pbstrName, appName);
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is NULL
 	}
 
 	/* IAccessibleApplication::get_appVersion([out] pbstrVersion) */
 	int get_appVersion(int /*long*/ pbstrVersion) {
-		// TODO: use Display.getAppName (version?) new API in Display
-		String appVersion = "";
-		if (appVersion.length() == 0) return COM.S_FALSE; // TODO: is S_FALSE ok here?
+		String appVersion = Display.getAppVersion();
+		if (appVersion == null || appVersion.length() == 0) return COM.S_FALSE;
 		setString(pbstrVersion, appVersion);
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is NULL
 	}
 
 	/* IAccessibleApplication::get_toolkitName([out] pbstrName) */
@@ -2868,7 +2877,6 @@ public class Accessible {
 
 	/* IAccessibleComponent::get_foreground([out] pForeground) */
 	int get_foreground(int /*long*/ pForeground) {
-		// TODO: Do not support foreground for children (support transparently for controls)
 		Color color = control.getForeground();
 		if (color != null) COM.MoveMemory(pForeground, new int [] { color.handle }, 4);
 		return COM.S_OK;
@@ -2876,7 +2884,6 @@ public class Accessible {
 
 	/* IAccessibleComponent::get_background([out] pBackground) */
 	int get_background(int /*long*/ pBackground) {
-		// TODO: Do not support background for children (support transparently for controls)
 		Color color = control.getBackground();
 		if (color != null) COM.MoveMemory(pBackground, new int [] { color.handle }, 4);
 		return COM.S_OK;
@@ -3885,6 +3892,7 @@ public class Accessible {
 		if ((state & ACC.STATE_OFFSCREEN) != 0) osState |= COM.STATE_SYSTEM_OFFSCREEN;
 		if ((state & ACC.STATE_SIZEABLE) != 0) osState |= COM.STATE_SYSTEM_SIZEABLE;
 		if ((state & ACC.STATE_LINKED) != 0) osState |= COM.STATE_SYSTEM_LINKED;
+		if ((state & ACC.STATE_DISABLED) != 0) osState |= COM.STATE_SYSTEM_UNAVAILABLE;
 		return osState;
 	}
 	
@@ -3906,6 +3914,7 @@ public class Accessible {
 		if ((osState & COM.STATE_SYSTEM_OFFSCREEN) != 0) state |= ACC.STATE_OFFSCREEN;
 		if ((osState & COM.STATE_SYSTEM_SIZEABLE) != 0) state |= ACC.STATE_SIZEABLE;
 		if ((osState & COM.STATE_SYSTEM_LINKED) != 0) state |= ACC.STATE_LINKED;
+		if ((osState & COM.STATE_SYSTEM_UNAVAILABLE) != 0) state |= ACC.STATE_DISABLED;
 		return state;
 	}
 
