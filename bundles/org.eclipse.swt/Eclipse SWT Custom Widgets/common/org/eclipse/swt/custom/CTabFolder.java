@@ -763,9 +763,9 @@ public CTabFolderRenderer getRenderer() {
 int getRightItemEdge (GC gc){
 	Rectangle trim = renderer.computeTrim(CTabFolderRenderer.PART_HEADER, SWT.NONE, 0, 0, 0, 0);
 	int x = getSize().x - (trim.width + trim.x) - 3; //TODO: add setter for spacing?
-	if (showMin) x -= renderer.computeSize(CTabFolderRenderer.PART_MIN_BUTTON, SWT.NONE, gc).x;
-	if (showMax) x -= renderer.computeSize(CTabFolderRenderer.PART_MAX_BUTTON, SWT.NONE, gc).x;
-	if (showChevron) x -= renderer.computeSize(CTabFolderRenderer.PART_CHEVRON_BUTTON, SWT.NONE, gc).x;
+	if (showMin) x -= renderer.computeSize(CTabFolderRenderer.PART_MIN_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
+	if (showMax) x -= renderer.computeSize(CTabFolderRenderer.PART_MAX_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
+	if (showChevron) x -= renderer.computeSize(CTabFolderRenderer.PART_CHEVRON_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 	if (topRight != null && topRightAlignment != SWT.FILL) {
 		Point rightSize = topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		x -= rightSize.x + 3;
@@ -2065,7 +2065,7 @@ void setButtonBounds(GC gc) {
 	oldHeight = maxRect.height;
 	maxRect.x = maxRect.y = maxRect.width = maxRect.height = 0;
 	if (showMax) {
-		Point maxSize = renderer.computeSize(CTabFolderRenderer.PART_MAX_BUTTON, SWT.NONE, gc);
+		Point maxSize = renderer.computeSize(CTabFolderRenderer.PART_MAX_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT);
 		maxRect.x = size.x - borderRight - maxSize.x - 3;
 		if (borderRight > 0) maxRect.x += 1;
 		maxRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - maxSize.y)/2: borderTop + (tabHeight - maxSize.y)/2;
@@ -2087,7 +2087,7 @@ void setButtonBounds(GC gc) {
 	oldHeight = minRect.height;
 	minRect.x = minRect.y = minRect.width = minRect.height = 0;
 	if (showMin) {
-		Point minSize = renderer.computeSize(CTabFolderRenderer.PART_MIN_BUTTON, SWT.NONE, gc);
+		Point minSize = renderer.computeSize(CTabFolderRenderer.PART_MIN_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT);
 		minRect.x = size.x - borderRight - maxRect.width - minSize.x - 3;
 		if (borderRight > 0) minRect.x += 1;
 		minRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - minSize.y)/2: borderTop + (tabHeight - minSize.y)/2;
@@ -2120,7 +2120,7 @@ void setButtonBounds(GC gc) {
 					} else {
 						// fill size is 0 if item compressed
 						CTabItem item = items[selectedIndex];
-						int chevronWidth = renderer.computeSize(CTabFolderRenderer.PART_CHEVRON_BUTTON, SWT.NONE, gc).x;
+						int chevronWidth = renderer.computeSize(CTabFolderRenderer.PART_CHEVRON_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 						if (item.x + item.width + 7 + chevronWidth >= rightEdge) break;
 						topRightRect.x = item.x + item.width + 7 + chevronWidth;
 						topRightRect.width = rightEdge - topRightRect.x;
@@ -2167,7 +2167,7 @@ void setButtonBounds(GC gc) {
 	oldWidth = chevronRect.width;
 	oldHeight = chevronRect.height;
 	chevronRect.x = chevronRect.y = chevronRect.height = chevronRect.width = 0;
-	Point chevronSize = renderer.computeSize(CTabFolderRenderer.PART_CHEVRON_BUTTON, SWT.NONE, gc);
+	Point chevronSize = renderer.computeSize(CTabFolderRenderer.PART_CHEVRON_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT);
 	if (single) {
 		if (selectedIndex == -1 || items.length > 1) {
 			chevronRect.width = chevronSize.x;
@@ -2270,7 +2270,7 @@ boolean setItemLocation(GC gc) {
 	int borderTop = -trim.y;
 	Point size = getSize();
 	int y = onBottom ? Math.max(borderBottom, size.y - borderBottom - tabHeight) : borderTop;
-	Point closeButtonSize = renderer.computeSize(CTabFolderRenderer.PART_CLOSE_BUTTON, 0, gc);
+	Point closeButtonSize = renderer.computeSize(CTabFolderRenderer.PART_CLOSE_BUTTON, 0, gc, SWT.DEFAULT, SWT.DEFAULT);
 	if (single) {
 		int defaultX = getDisplay().getBounds().width + 10; // off screen
 		for (int i = 0; i < items.length; i++) {
@@ -2340,7 +2340,7 @@ boolean setItemSize(GC gc) {
 		showChevron = true;
 		if (selectedIndex != -1) {
 			CTabItem tab = items[selectedIndex];
-			int width = renderer.computeSize(selectedIndex, SWT.SELECTED, gc).x;
+			int width = renderer.computeSize(selectedIndex, SWT.SELECTED, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 			width = Math.min(width, getRightItemEdge(gc) - borderLeft);
 			if (tab.height != tabHeight || tab.width != width) {
 				changed = true;
@@ -2350,7 +2350,7 @@ boolean setItemSize(GC gc) {
 				tab.width = width;
 				tab.closeRect.width = tab.closeRect.height = 0;
 				if (showClose || tab.showClose) {
-					Point closeSize = renderer.computeSize(selectedIndex, SWT.SELECTED, gc);
+					Point closeSize = renderer.computeSize(selectedIndex, SWT.SELECTED, gc, SWT.DEFAULT, SWT.DEFAULT);
 					tab.closeRect.width = closeSize.x;
 					tab.closeRect.height = closeSize.y;
 				}
@@ -2363,8 +2363,8 @@ boolean setItemSize(GC gc) {
 
 	int[] widths;
 	int tabAreaWidth = size.x - borderLeft - borderRight - 3;
-	if (showMin) tabAreaWidth -= renderer.computeSize(CTabFolderRenderer.PART_MIN_BUTTON, SWT.NONE, gc).x;
-	if (showMax) tabAreaWidth -= renderer.computeSize(CTabFolderRenderer.PART_MAX_BUTTON, SWT.NONE, gc).x;
+	if (showMin) tabAreaWidth -= renderer.computeSize(CTabFolderRenderer.PART_MIN_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
+	if (showMax) tabAreaWidth -= renderer.computeSize(CTabFolderRenderer.PART_MAX_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 	if (topRightAlignment == SWT.RIGHT && topRight != null) {
 		Point rightSize = topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT, false);
 		tabAreaWidth -= rightSize.x + 3;
@@ -2378,14 +2378,14 @@ boolean setItemSize(GC gc) {
 		int index = priority[i];
 		int state = CTabFolderRenderer.MINIMUM_SIZE;
 		if (index == selectedIndex) state |= SWT.SELECTED;
-		minWidths[index] = renderer.computeSize(index, state, gc).x;
+		minWidths[index] = renderer.computeSize(index, state, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 		minWidth += minWidths[index];
 		if (minWidth > tabAreaWidth) break;
 	}
 	if (minWidth > tabAreaWidth) {
 		// full compression required and a chevron
 		showChevron = items.length > 1;
-		if (showChevron) tabAreaWidth -= renderer.computeSize(CTabFolderRenderer.PART_CHEVRON_BUTTON, SWT.NONE, gc).x;
+		if (showChevron) tabAreaWidth -= renderer.computeSize(CTabFolderRenderer.PART_CHEVRON_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 		widths = minWidths;
 		int index = selectedIndex != -1 ? selectedIndex : 0;
 		if (tabAreaWidth < widths[index]) {
@@ -2397,7 +2397,7 @@ boolean setItemSize(GC gc) {
 		for (int i = 0; i < items.length; i++) {
 			int state = 0;
 			if (i == selectedIndex) state |= SWT.SELECTED;
-			maxWidths[i] = renderer.computeSize(i, state, gc).x;
+			maxWidths[i] = renderer.computeSize(i, state, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 			maxWidth += maxWidths[i];
 		}
 		if (maxWidth <= tabAreaWidth) {
@@ -2442,7 +2442,7 @@ boolean setItemSize(GC gc) {
 			tab.closeRect.width = tab.closeRect.height = 0;
 			if (showClose || tab.showClose) {
 				if (i == selectedIndex || showUnselectedClose) {
-					Point closeSize = renderer.computeSize(CTabFolderRenderer.PART_CLOSE_BUTTON, SWT.NONE, gc);
+					Point closeSize = renderer.computeSize(CTabFolderRenderer.PART_CLOSE_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT);
 					tab.closeRect.width = closeSize.x;
 					tab.closeRect.height = closeSize.y;
 				}
@@ -3269,7 +3269,7 @@ boolean updateItems(int showIndex) {
 			for (int i = priority[0]; i <= showIndex; i++) {
 				int state = CTabFolderRenderer.MINIMUM_SIZE;
 				if (i == selectedIndex) state |= SWT.SELECTED;
-				widths[i] = renderer.computeSize(i, state, gc).x;
+				widths[i] = renderer.computeSize(i, state, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 				width += widths[i];
 				if (width > maxWidth) break;
 			}
@@ -3278,7 +3278,7 @@ boolean updateItems(int showIndex) {
 				for (int i = showIndex; i >= 0; i--) {
 					int state = CTabFolderRenderer.MINIMUM_SIZE;
 					if (i == selectedIndex) state |= SWT.SELECTED;
-					if (widths[i] == 0) widths[i] = renderer.computeSize(i, state, gc).x;
+					if (widths[i] == 0) widths[i] = renderer.computeSize(i, state, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 					width += widths[i];
 					if (width > maxWidth) break;
 					firstIndex = i;
@@ -3288,7 +3288,7 @@ boolean updateItems(int showIndex) {
 				for (int i = showIndex + 1; i < items.length; i++) {
 					int state = CTabFolderRenderer.MINIMUM_SIZE;
 					if (i == selectedIndex) state |= SWT.SELECTED;
-					widths[i] = renderer.computeSize(i, state, gc).x;
+					widths[i] = renderer.computeSize(i, state, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 					width += widths[i];
 					if (width >= maxWidth) break;
 				}
@@ -3296,7 +3296,7 @@ boolean updateItems(int showIndex) {
 					for (int i = priority[0] - 1; i >= 0; i--) {
 						int state = CTabFolderRenderer.MINIMUM_SIZE;
 						if (i == selectedIndex) state |= SWT.SELECTED;
-						if (widths[i] == 0) widths[i] = renderer.computeSize(i, state, gc).x;
+						if (widths[i] == 0) widths[i] = renderer.computeSize(i, state, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 						width += widths[i];
 						if (width > maxWidth) break;
 						firstIndex = i;
@@ -3332,7 +3332,7 @@ boolean updateItems(int showIndex) {
 boolean updateTabHeight(boolean force){
 	int oldHeight = tabHeight;
 	GC gc = new GC(this);
-	tabHeight = renderer.computeSize(CTabFolderRenderer.PART_HEADER, SWT.NONE, gc).y;
+	tabHeight = renderer.computeSize(CTabFolderRenderer.PART_HEADER, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).y;
 	gc.dispose();
 	if (!force && tabHeight == oldHeight) return false;
 	oldSize = null;

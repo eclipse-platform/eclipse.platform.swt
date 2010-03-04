@@ -31,18 +31,18 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	GC gc = new GC(folder);
 	for (int i = 0; i < items.length; i++) {
 		if (folder.single) {
-			tabW = Math.max(tabW, renderer.computeSize(i, SWT.SELECTED, gc).x);
+			tabW = Math.max(tabW, renderer.computeSize(i, SWT.SELECTED, gc, SWT.DEFAULT, SWT.DEFAULT).x);
 		} else {
 			int state = 0;
 			if (i == selectedIndex) state |= SWT.SELECTED;
-			tabW += renderer.computeSize(i, state, gc).x;
+			tabW += renderer.computeSize(i, state, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 		}
 	}
 	tabW += 3;
 	
-	if (folder.showMax) tabW += renderer.computeSize(CTabFolderRenderer.PART_MAX_BUTTON, SWT.NONE, gc).x;
-	if (folder.showMin) tabW += renderer.computeSize(CTabFolderRenderer.PART_MIN_BUTTON, SWT.NONE, gc).x;
-	if (folder.single) tabW += renderer.computeSize(CTabFolderRenderer.PART_CHEVRON_BUTTON, SWT.NONE, gc).x;
+	if (folder.showMax) tabW += renderer.computeSize(CTabFolderRenderer.PART_MAX_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
+	if (folder.showMin) tabW += renderer.computeSize(CTabFolderRenderer.PART_MIN_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
+	if (folder.single) tabW += renderer.computeSize(CTabFolderRenderer.PART_CHEVRON_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 	if (folder.topRight != null) {
 		Point pt = folder.topRight.computeSize(SWT.DEFAULT, folder.tabHeight, flushCache);
 		tabW += 3 + pt.x;

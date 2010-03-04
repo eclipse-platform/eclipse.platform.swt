@@ -379,7 +379,7 @@ public void setImage (Image image) {
 						if (selected) {
 							GC gc = new GC(parent);
 							if (parent.single && (parent.showClose || showClose)) {
-								imageX += renderer.computeSize(CTabFolderRenderer.PART_CLOSE_BUTTON, SWT.NONE, gc).x; 
+								imageX += renderer.computeSize(CTabFolderRenderer.PART_CLOSE_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x; 
 							}
 							int rightEdge = Math.min (x + width, parent.getRightItemEdge(gc));
 							gc.dispose();

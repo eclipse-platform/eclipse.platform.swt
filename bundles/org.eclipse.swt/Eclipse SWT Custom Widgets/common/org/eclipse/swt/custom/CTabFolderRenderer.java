@@ -15,10 +15,14 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
-* WARNING: API UNDER CONSTRUCTION
-*
-* @since 3.6
-*/
+ * WARNING: API UNDER CONSTRUCTION
+ * Instances of this class provide all of the measuring and drawing functionality 
+ * required by <code>CTabFolder</code>. This class can be subclassed in order to
+ * customize the look of a CTabFolder.
+ *
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @since 3.6
+ */
 public class CTabFolderRenderer {
 	
 	protected CTabFolder parent;
@@ -107,7 +111,22 @@ public class CTabFolderRenderer {
 
 	public static final int MINIMUM_SIZE = 1 << 24; //TODO: Should this be a state?
 
+
+	/**
+	 * Constructs a new instance of this class given its parent.
+	 * 
+	 * @param parent CTabFolder
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+	 *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li>
+	 * </ul>
+	 * 
+	 * @see Widget#getStyle
+	 */
 	protected CTabFolderRenderer(CTabFolder parent) {
+		if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+		if (parent.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		this.parent = parent;
 		int style = parent.getStyle();
 		highlight_header = (style & SWT.FLAT) != 0 ? 1 : 3;
@@ -158,7 +177,38 @@ public class CTabFolderRenderer {
 		}
 	}
 
-	protected Point computeSize (int part, int state, GC gc) {
+	/**
+	 * Returns the preferred size of the receiver.
+	 * <p>
+	 * The <em>preferred size</em> of a control is the size that it would
+	 * best be displayed at. The width hint and height hint arguments
+	 * allow the caller to ask a control questions such as "Given a particular
+	 * width, how high does the control need to be to show all of the contents?"
+	 * To indicate that the caller does not wish to constrain a particular 
+	 * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint. 
+	 * </p><p>
+	 * The <code>part</code> value indicated what component the preferred size is 
+	 * to be calculated for. Valid values are any of the part constants:
+	 * <ul> 
+	 * <li>PART_BODY</li> <li>PART_HEADER</li> <li>PART_BORDER</li>
+	 * <li>PART_BACKGROUND</li> <li>PART_MAX_BUTTON</li> 
+	 * <li>PART_MIN_BUTTON</li> <li>PART_CHEVRON_BUTTON</li>
+	 * <li>PART_CLOSE_BUTTON</li> <li>an integer, greater than 0, which coincides
+	 * with the CTabItem index.</li>
+	 * </ul>
+	 *  
+	 * </p>
+	 * @param part a part constant 
+	 * @param state current state (can be <code>SWT.NONE</code> or <code>SWT.SELECTED</code> when
+	 * passing in a CTabItem index to indicate a selected CTabIten)
+	 * @param gc the gc of the receiver
+	 * @param wHint the width hint (can be <code>SWT.DEFAULT</code>)
+	 * @param hHint the height hint (can be <code>SWT.DEFAULT</code>)
+	 * @return the preferred size of the control
+	 * 
+	 * @since 3.6
+	 */
+	protected Point computeSize (int part, int state, GC gc, int wHint, int hHint) {
 		int width = 0, height = 0; 
 		switch (part) {
 			case PART_HEADER:
@@ -170,7 +220,7 @@ public class CTabFolderRenderer {
 						height = gc.textExtent("Default", FLAGS).y + ITEM_TOP_MARGIN + ITEM_BOTTOM_MARGIN; //$NON-NLS-1$
 					} else {
 						for (int i=0; i < items.length; i++) {
-							height = Math.max(height, computeSize(i, SWT.NONE, gc).y);
+							height = Math.max(height, computeSize(i, SWT.NONE, gc, wHint, hHint).y);
 						}
 					}
 					gc.dispose();
@@ -233,7 +283,7 @@ public class CTabFolderRenderer {
 					if (parent.showClose || item.showClose) {
 						if ((state & SWT.SELECTED) != 0 || parent.showUnselectedClose) {
 							if (width > 0) width += INTERNAL_SPACING;
-							width += computeSize(PART_CLOSE_BUTTON, SWT.NONE, gc).x;
+							width += computeSize(PART_CLOSE_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 						}
 					}	
 				}
@@ -245,6 +295,32 @@ public class CTabFolderRenderer {
 		return new Point(width, height);
 	}
 
+	/**
+	 * Given a desired <em>client area</em> for the receiver
+	 * (as described by the arguments), returns the bounding
+	 * rectangle which would be required to produce that client
+	 * area.
+	 * <p>
+	 * In other words, it returns a rectangle such that, if the
+	 * receiver's bounds were set to that rectangle, the area
+	 * of the receiver which is capable of displaying data
+	 * (that is, not covered by the "trimmings") would be the
+	 * rectangle described by the arguments (relative to the
+	 * receiver's parent).
+	 * </p>
+	 * 
+	 * @param part one of the part constants 
+	 * @param state the state of the part
+	 * @param x the desired x coordinate of the client area
+	 * @param y the desired y coordinate of the client area
+	 * @param width the desired width of the client area
+	 * @param height the desired height of the client area
+	 * @return the required bounds to produce the given client area
+	 *
+	 * @see CTabFolderRenderer#computeSize(int, int, GC, int, int) valid part values
+	 *  
+	 * @since 3.6
+	 */
 	protected Rectangle computeTrim (int part, int state, int x, int y, int width, int height) {
 		int borderLeft = parent.borderVisible ? 1 : 0;
 		int borderRight = borderLeft;
@@ -370,6 +446,13 @@ public class CTabFolderRenderer {
 		}
 	}
 	
+	/**
+	 * Dispose of any operating system resources associated with
+	 * the renderer. Called by the CTabFolder parent upon receiving
+	 * the dispose event.
+	 * 
+	 * @since 3.6
+	 */
 	protected void dispose() {
 		disposeAntialiasColors();
 		disposeSelectionHighlightGradientColors();
@@ -395,6 +478,33 @@ public class CTabFolderRenderer {
 		selectionHighlightGradientColorsCache = null;
 	}
 	
+	/**
+	 * Draw a specified part of the CTabFolder using the provided bounds and GC. 
+	 * <p>The valid CTabFolder part constants are:
+	 * <ul>
+	 * <li>PART_BODY - the entire body of the CTabFolder</li>
+	 * <li>PART_HEADER - the upper tab area of the CTabFolder</li>
+	 * <li>PART_BORDER - the border of the CTabFolder</li>
+	 * <li>PART_BACKGROUND - the background of the CTabFolder</li>
+	 * <li>PART_MAX_BUTTON</li> 
+	 * <li>PART_MIN_BUTTON</li>
+	 * <li>PART_CHEVRON_BUTTON</li>
+	 * <li>PART_CLOSE_BUTTON</li>
+	 * <li>Some integer, greater than 0, which coincides with the CTabItem index.</li>
+	 * </ul>
+	 * </p>
+	 * <p>
+	 * The state flag is used to indicate whether the foreground, background or both is to be drawn and, in 
+	 * the case of drawing a CTabItem, whether that item is selected.
+	 * </p>
+	 * 
+	 * @param part part to draw (valid values listed above)
+	 * @param state state of the part (can be any combination of SWT.BACKGROUND, SWT.FOREGROUND and SWT.SELECTED)
+	 * @param bounds the bounds of the part
+	 * @param gc the gc to draw the part on
+	 * 
+	 * @since 3.6
+	 */
 	protected void draw (int part, int state, Rectangle bounds, GC gc) {
 		switch (part) {
 			case PART_BACKGROUND:
