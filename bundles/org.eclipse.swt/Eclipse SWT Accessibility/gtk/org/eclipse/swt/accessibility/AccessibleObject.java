@@ -263,7 +263,7 @@ class AccessibleObject {
 				OS.memmove (parentY, y, 4);
 				OS.memmove (parentWidth, width, 4);
 				OS.memmove (parentHeight, height, 4);
-				AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
+				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 				event.childID = object.id;
 				event.x = parentX [0]; event.y = parentY [0];
 				event.width = parentWidth [0]; event.height = parentHeight [0];
@@ -308,7 +308,7 @@ class AccessibleObject {
 				int[] parentX = new int [1], parentY = new int [1];
 				OS.memmove (parentX, x, 4);
 				OS.memmove (parentY, y, 4);
-				AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
+				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 				event.childID = object.id;
 				event.x = parentX [0]; event.y = parentY [0];
 				int[] topWindowX = new int [1], topWindowY = new int [1];
@@ -349,7 +349,7 @@ class AccessibleObject {
 				int[] parentWidth = new int [1], parentHeight = new int [1];
 				OS.memmove (parentWidth, width, 4);
 				OS.memmove (parentHeight, height, 4);
-				AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
+				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 				event.childID = object.id;
 				event.width = parentWidth [0]; event.height = parentHeight [0];
 				for (int i = 0; i < length; i++) {
@@ -371,7 +371,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleControlListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
+				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 				event.childID = object.id;
 				event.x = (int)/*64*/x; event.y = (int)/*64*/y;
 				int[] topWindowX = new int [1], topWindowY = new int [1];
@@ -504,7 +504,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleEvent event = new AccessibleEvent (object.accessible);
+				AccessibleEvent event = new AccessibleEvent (accessible);
 				event.childID = object.id;
 				if (parentResult != 0) event.result = getString (parentResult);
 				for (int i = 0; i < length; i++) {
@@ -533,7 +533,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleEvent event = new AccessibleEvent (object.accessible);
+				AccessibleEvent event = new AccessibleEvent (accessible);
 				event.childID = object.id;
 				if (parentResult != 0) event.result = getString (parentResult);
 				for (int i = 0; i < length; i++) {
@@ -562,7 +562,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleControlListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
+				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 				event.childID = object.id;
 				event.detail = (int)/*64*/parentResult;
 				for (int i = 0; i < length; i++) {
@@ -580,6 +580,19 @@ class AccessibleObject {
 		if (DEBUG) print ("-->atkObject_get_index_in_parent: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
+			Accessible accessible = object.accessible;
+			Vector listeners = accessible.accessibleControlListeners;
+			AccessibleControlEvent event = new AccessibleControlEvent(accessible);
+			event.childID = ACC.CHILDID_CHILD_INDEX;
+			event.detail = -1;
+			for (int i = 0; i < listeners.size(); i++) {
+				AccessibleControlListener listener = (AccessibleControlListener) listeners.elementAt(i);
+				listener.getChild(event);
+			}
+			if (event.detail != -1) {
+				if (DEBUG) print ("---> " + object.index);
+				return event.detail;
+			}
 			if (object.index != -1) {
 				if (DEBUG) print ("---> " + object.index);
 				return object.index;
@@ -616,7 +629,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleControlListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
+				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 				event.childID = object.id;
 				event.detail = -1;
 				for (int i = 0; i < length; i++) {
@@ -713,7 +726,7 @@ class AccessibleObject {
 			int length = listeners.size();
 			if (length > 0) {
 				int /*long*/ set = parentResult;
-				AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
+				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 				event.childID = object.id;
 				event.detail = -1;
 				for (int i = 0; i < length; i++) {
@@ -768,7 +781,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleControlListeners;
 			int length = listeners.size();
 			if (length > 0) {	
-				AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
+				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 				event.childID = object.id;
 				for (int i = 0; i < length; i++) {
 					AccessibleControlListener listener = (AccessibleControlListener)listeners.elementAt (i);
@@ -797,7 +810,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleControlListeners;
 			int length = listeners.size();
 			if (length > 0) {	
-				AccessibleControlEvent event = new AccessibleControlEvent (object.accessible);
+				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 				event.childID = object.id;
 				for (int i = 0; i < length; i++) {
 					AccessibleControlListener listener = (AccessibleControlListener)listeners.elementAt (i);
