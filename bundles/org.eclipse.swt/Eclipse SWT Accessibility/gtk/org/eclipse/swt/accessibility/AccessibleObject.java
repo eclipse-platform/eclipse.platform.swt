@@ -417,7 +417,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.index = (int)/*int*/link_index;
 				for (int i = 0; i < length; i++) {
 					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
@@ -443,7 +443,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				for (int i = 0; i < length; i++) {
 					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
 					listener.getHyperlinkCount(event);
@@ -467,7 +467,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.offset = (int)/*int*/char_index;
 				event.index = -1;
 				for (int i = 0; i < length; i++) {
@@ -1495,7 +1495,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.start = (int)/*64*/offset;
 				event.end = (int)/*64*/(offset + 1);
 				for (int i = 0; i < length; i++) {
@@ -1544,7 +1544,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.start = (int)/*64*/start_offset;
 				event.end = (int)/*64*/end_offset;
 				for (int i = 0; i < length; i++) {
@@ -1696,7 +1696,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.x = (int)/*64*/x;
 				event.y = (int)/*64*/y;
 				int[] topWindowX = new int [1], topWindowY = new int [1];
@@ -1728,7 +1728,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.start = (int)/*64*/start_offset;
 				event.end = (int)/*64*/end_offset;
 				for (int i = 0; i < length; i++) {
@@ -1754,7 +1754,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.index = (int)/*64*/selection_num;
 				for (int i = 0; i < length; i++) {
 					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
@@ -1779,7 +1779,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.offset = (int)/*64*/offset;
 				for (int i = 0; i < length; i++) {
 					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
@@ -1803,7 +1803,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.index = (int)/*64*/selection_num;
 				event.start = (int)/*64*/start_offset;
 				event.end = (int)/*64*/end_offset;
@@ -1835,7 +1835,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				for (int i = 0; i < length; i++) {
 					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
 					listener.getCaretOffset (event);
@@ -1866,7 +1866,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				AtkTextRectangle atkRect = new AtkTextRectangle();
 				ATK.memmove (atkRect, rect, AtkTextRectangle.sizeof);
 				event.x = atkRect.x;
@@ -1927,7 +1927,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.start = (int)/*64*/offset;
 				event.end = (int)/*64*/(offset + 1);
 				event.type = ACC.TEXT_BOUNDARY_CHAR;
@@ -1956,7 +1956,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				for (int i = 0; i < length; i++) {
 					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
 					listener.getCharacterCount(event);
@@ -1981,7 +1981,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				for (int i = 0; i < length; i++) {
 					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
 					listener.getSelectionCount (event);
@@ -2027,7 +2027,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.index = (int)/*64*/selection_num;
 				event.start = parentStart[0];
 				event.end = parentEnd[0];
@@ -2077,7 +2077,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.start = (int)/*64*/start_offset;
 				event.end = (int)/*64*/end_offset;
 				event.type = ACC.TEXT_BOUNDARY_ALL;
@@ -2110,7 +2110,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.start = event.end = (int)/*64*/offset_value;
 				event.count = 1;
 				switch ((int)/*64*/boundary_type) {
@@ -2305,7 +2305,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.start = event.end = (int)/*64*/offset_value;
 				event.count = 0;
 				switch ((int)/*64*/boundary_type) {
@@ -2443,7 +2443,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(accessible);
+				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.start = event.end = (int)/*64*/offset_value;
 				event.count = -1;
 				switch ((int)/*64*/boundary_type) {

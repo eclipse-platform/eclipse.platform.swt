@@ -115,7 +115,7 @@ public static void main(String[] arg) {
 			public void getCaretOffset(AccessibleTextEvent e) {
 				e.offset = 0;
 			}
-			public void getTextBounds(AccessibleTextExtendedEvent e) {
+			public void getTextBounds(AccessibleTextEvent e) {
 				// for now, assume that start = 0 and end = text.length
 				GC gc = new GC(canvas);
 				Point extent = gc.textExtent(text);
@@ -126,7 +126,7 @@ public static void main(String[] arg) {
 				e.width = rect.width;
 				e.height = rect.height;
 			}
-			public void getText(AccessibleTextExtendedEvent e) {
+			public void getText(AccessibleTextEvent e) {
 				int start = 0, end = text.length();
 				switch (e.type) {
 					case ACC.TEXT_BOUNDARY_ALL:
@@ -179,24 +179,24 @@ public static void main(String[] arg) {
 				}
 				e.result = text.substring(start, end);
 			}
-			public void getSelectionCount(AccessibleTextExtendedEvent e) {
+			public void getSelectionCount(AccessibleTextEvent e) {
 				e.count = 1;
 			}
-			public void getSelection(AccessibleTextExtendedEvent e) {
+			public void getSelection(AccessibleTextEvent e) {
 				// there is only 1 selection, so index = 0
 				getSelectionRange(e);
 				e.start = e.offset;
 				e.end = e.offset + e.length;
 			}
-			public void getRanges(AccessibleTextExtendedEvent e) {
+			public void getRanges(AccessibleTextEvent e) {
 				// for now, ignore bounding box
 				e.start = 0;
 				e.end = text.length() - 1;
 			}
-			public void getCharacterCount(AccessibleTextExtendedEvent e) {
+			public void getCharacterCount(AccessibleTextEvent e) {
 				e.count = text.length();
 			}
-			public void getVisibleRanges(AccessibleTextExtendedEvent e) {
+			public void getVisibleRanges(AccessibleTextEvent e) {
 				e.start = 0;
 				e.end = text.length() - 1;
 			}

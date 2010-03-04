@@ -11,6 +11,7 @@
 package org.eclipse.swt.accessibility;
 
 
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.*;
 
 /**
@@ -33,6 +34,21 @@ import org.eclipse.swt.internal.*;
 public class AccessibleTextEvent extends SWTEventObject {
 	public int childID;				// IN
 	public int offset, length;		// OUT
+	public Accessible accessible;
+
+	/**
+	 * The value of this field must be set in the accessible text extended listener method
+	 * before returning. What to set it to depends on the listener method called.
+	 */
+	public String result;
+	
+	public int count;
+	public int index;
+	public int start, end;
+	public int type;
+	public int x, y, width, height;
+	public int [] ranges;
+	public Rectangle [] rectangles;
 	
 	static final long serialVersionUID = 3977019530868308275L;
 	

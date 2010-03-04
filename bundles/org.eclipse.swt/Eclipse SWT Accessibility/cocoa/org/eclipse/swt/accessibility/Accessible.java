@@ -1241,7 +1241,7 @@ public class Accessible {
 		NSRange range = parameterObject.rangeValue();
 		NSRect rect = new NSRect();
 		if (accessibleTextExtendedListeners.size() > 0) {
-			AccessibleTextExtendedEvent event  = new AccessibleTextExtendedEvent(this);
+			AccessibleTextEvent event  = new AccessibleTextEvent(this);
 			event.childID = childID;
 			event.start = (int)/*64*/range.location;
 			event.end = (int)/*64*/(range.location + range.length);
@@ -1293,7 +1293,7 @@ public class Accessible {
 			NSScreen screen = new NSScreen(screens.objectAtIndex(0));
 			NSRect frame = screen.frame();
 			point.y = frame.height - point.y;
-			AccessibleTextExtendedEvent event  = new AccessibleTextExtendedEvent(this);
+			AccessibleTextEvent event  = new AccessibleTextEvent(this);
 			event.childID = childID;
 			event.x = (int)point.x;
 			event.y = (int)point.y;
@@ -1782,7 +1782,7 @@ public class Accessible {
 	id getInsertionPointLineNumberAttribute (int childID) {
 		id returnValue = null;
 		if (accessibleTextExtendedListeners.size() > 0) {
-			AccessibleTextExtendedEvent event  = new AccessibleTextExtendedEvent(this);
+			AccessibleTextEvent event  = new AccessibleTextEvent(this);
 			event.childID = childID;
 			for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 				AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
@@ -1826,7 +1826,7 @@ public class Accessible {
 		NSNumber charNumberObj = new NSNumber(parameter.id);		
 		int charNumber = charNumberObj.intValue();
 		if (accessibleTextExtendedListeners.size() > 0) {
-			AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+			AccessibleTextEvent event = new AccessibleTextEvent(this);
 			event.childID = childID;
 			event.start = charNumber;
 			event.end = charNumber;
@@ -1880,7 +1880,7 @@ public class Accessible {
 	id getNumberOfCharactersAttribute (int childID) {
 		id returnValue = null;
 		if (accessibleTextExtendedListeners.size() > 0) {
-			AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+			AccessibleTextEvent event = new AccessibleTextEvent(this);
 			event.childID = childID;
 			for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 				AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
@@ -1909,7 +1909,7 @@ public class Accessible {
 		NSNumber lineNumberObj = new NSNumber(parameter.id);		
 		int lineNumber = lineNumberObj.intValue();
 		if (accessibleTextExtendedListeners.size() > 0) {
-			AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+			AccessibleTextEvent event = new AccessibleTextEvent(this);
 			event.childID = childID;
 			event.start = event.end = 0;
 			event.count = lineNumber;
@@ -1943,7 +1943,7 @@ public class Accessible {
 	id getSelectedTextAttribute (int childID) {
 		id returnValue = NSString.string();
 		if (accessibleTextExtendedListeners.size() > 0) {
-			AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+			AccessibleTextEvent event = new AccessibleTextEvent(this);
 			event.childID = childID;
 			event.index = 0;
 			for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
@@ -1992,7 +1992,7 @@ public class Accessible {
 	id getSelectedTextRangeAttribute (int childID) {
 		id returnValue = null;
 		if (accessibleTextExtendedListeners.size() > 0) {
-			AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+			AccessibleTextEvent event = new AccessibleTextEvent(this);
 			event.childID = childID;
 			event.index = 0;
 			for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
@@ -2036,7 +2036,7 @@ public class Accessible {
 		NSValue parameterObject = new NSValue(parameter.id);
 		NSRange range = parameterObject.rangeValue();
 		if (accessibleTextExtendedListeners.size() > 0) {
-			AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+			AccessibleTextEvent event = new AccessibleTextEvent(this);
 			event.childID = childID;
 			event.start = (int) /*64*/ range.location;
 			event.end = (int) /*64*/ (range.location + range.length);
@@ -2066,7 +2066,7 @@ public class Accessible {
 	id getSelectedTextRangesAttribute (int childID) {
 		NSMutableArray returnValue = null;
 		if (accessibleTextExtendedListeners.size() > 0) {
-			AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+			AccessibleTextEvent event = new AccessibleTextEvent(this);
 			event.childID = childID;
 			for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 				AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
@@ -2111,7 +2111,7 @@ public class Accessible {
 	id getVisibleCharacterRangeAttribute (int childID) {
 		NSRange range = new NSRange();
 		if (accessibleTextExtendedListeners.size() > 0) {
-			AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+			AccessibleTextEvent event = new AccessibleTextEvent(this);
 			event.childID = childID;
 			for (int i=0; i<accessibleTextExtendedListeners.size(); i++) {
 				AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
@@ -2438,32 +2438,12 @@ public class Accessible {
 	}
 	
 	/**
-	 * Sends a message to accessible clients indicating that something
-	 * has changed within a custom control.
-	 *
-	 * @param event a constant beginning with EVENT_* indicating the message to send
-	 * @param childID an identifier specifying a child of the control or the control itself
-	 * 
-	 * @exception SWTException <ul>
-	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
-	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
-	 * </ul>
-	 * 
-	 * @since 3.6
-	 */
-	public void sendEvent(int event, int childID) {
-		checkWidget();
-		//TODO: send platform-specific event (i.e. WinEvent with EVENT_OBJECT_* or IA2_EVENT_* on Win, Signal on ATK, Notification on Mac)
-	}
-	
-	/**
 	 * WARNING: API UNDER CONSTRUCTION
 	 * 
 	 * Sends a message with event-specific data to accessible clients
 	 * indicating that something has changed within a custom control.
 	 *
 	 * @param event an <code>ACC</code> constant beginning with EVENT_* indicating the message to send
-	 * @param childID an identifier specifying a child of the control or the control itself
 	 * @param eventData an object containing event-specific data
 	 * 
 	 * @exception SWTException <ul>
@@ -2473,7 +2453,7 @@ public class Accessible {
 	 * 
 	 * @since 3.6
 	 */
-	public void sendEvent(int event, int childID, Object eventData) {
+	public void sendEvent(int event, Object eventData) {
 		checkWidget();
 		//TODO
 	}

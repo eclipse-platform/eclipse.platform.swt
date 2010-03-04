@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
+import java.util.Locale;
 import java.util.Vector;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
@@ -2729,9 +2730,21 @@ public class Accessible {
 
 	/* IAccessible2::get_locale([out] pLocale) */
 	int get_locale(int /*long*/ pLocale) {
-		// TODO: just return current locale - maybe add AccessibleLocale later
-		// Note: need to return an IA2Locale struct: String language, String country, String variant
-		//COM.MoveMemory(pLocale, new int [] { locale }, 4);
+		/* Return the default locale for the JVM. */
+		Locale locale = Locale.getDefault();
+		
+		char[] data = (locale.getLanguage()+"\0").toCharArray();
+		int /*long*/ ptr = COM.SysAllocString(data);
+		COM.MoveMemory(pLocale, new int /*long*/[] {ptr}, OS.PTR_SIZEOF);
+
+		data = (locale.getCountry()+"\0").toCharArray();
+		ptr = COM.SysAllocString(data);
+		COM.MoveMemory(pLocale + OS.PTR_SIZEOF, new int /*long*/[] {ptr}, OS.PTR_SIZEOF);
+
+		data = (locale.getVariant()+"\0").toCharArray();
+		ptr = COM.SysAllocString(data);
+		COM.MoveMemory(pLocale + 2 * OS.PTR_SIZEOF, new int /*long*/[] {ptr}, OS.PTR_SIZEOF);
+		
 		return COM.S_OK;
 	}
 
@@ -2829,6 +2842,7 @@ public class Accessible {
 
 	/* IAccessibleAction::get_localizedName([in] actionIndex, [out] pbstrLocalizedName) */
 	int get_localizedName(int actionIndex, int /*long*/ pbstrLocalizedName) {
+		// TODO: Maybe return getName here also?
 		return COM.S_FALSE;
 	}
 
@@ -3053,7 +3067,7 @@ public class Accessible {
 
 	/* IAccessibleHypertext::get_nHyperlinks([out] pHyperlinkCount) */
 	int get_nHyperlinks(int /*long*/ pHyperlinkCount) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.getHyperlinkCount(event);
@@ -3064,7 +3078,7 @@ public class Accessible {
 
 	/* IAccessibleHypertext::get_hyperlink([in] index, [out] ppHyperlink) */
 	int get_hyperlink(int index, int /*long*/ ppHyperlink) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.index = index;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
@@ -3081,7 +3095,7 @@ public class Accessible {
 
 	/* IAccessibleHypertext::get_hyperlinkIndex([in] charIndex, [out] pHyperlinkIndex) */
 	int get_hyperlinkIndex(int charIndex, int /*long*/ pHyperlinkIndex) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.offset = charIndex;
 		event.index = -1;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
@@ -3523,7 +3537,7 @@ public class Accessible {
 
 	/* IAccessibleText::addSelection([in] startOffset, [in] endOffset) */
 	int addSelection(int startOffset, int endOffset) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.start = startOffset;
 		event.end = endOffset;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
@@ -3567,7 +3581,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_characterExtents([in] offset, [in] coordType, [out] pX, [out] pY, [out] pWidth, [out] pHeight) */
 	int get_characterExtents(int offset, int coordType, int /*long*/ pX, int /*long*/ pY, int /*long*/ pWidth, int /*long*/ pHeight) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.start = offset;
 		event.end = offset;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
@@ -3584,7 +3598,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_nSelections([out] pNSelections) */
 	int get_nSelections(int /*long*/ pNSelections) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.getSelectionCount(event);
@@ -3595,7 +3609,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_offsetAtPoint([in] x, [in] y, [in] coordType, [out] pOffset) */
 	int get_offsetAtPoint(int x, int y, int coordType, int /*long*/ pOffset) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.x = x;
 		event.y = y;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
@@ -3609,7 +3623,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_selection([in] selectionIndex, [out] pStartOffset, [out] pEndOffset) */
 	int get_selection(int selectionIndex, int /*long*/ pStartOffset, int /*long*/ pEndOffset) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.index = selectionIndex;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
@@ -3623,7 +3637,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_text([in] startOffset, [in] endOffset, [out] pbstrText) */
 	int get_text(int startOffset, int endOffset, int /*long*/ pbstrText) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.start = startOffset;
 		event.end = endOffset;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
@@ -3638,7 +3652,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_textBeforeOffset([in] offset, [in] boundaryType, [out] pStartOffset, [out] pEndOffset, [out] pbstrText) */
 	int get_textBeforeOffset(int offset, int boundaryType, int /*long*/ pStartOffset, int /*long*/ pEndOffset, int /*long*/ pbstrText) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.offset = offset;
 		event.type = boundaryType;
 		// TODO: need to implement - use getTextRange
@@ -3656,7 +3670,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_textAfterOffset([in] offset, [in] boundaryType, [out] pStartOffset, [out] pEndOffset, [out] pbstrText) */
 	int get_textAfterOffset(int offset, int boundaryType, int /*long*/ pStartOffset, int /*long*/ pEndOffset, int /*long*/ pbstrText) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.offset = offset;
 		event.type = boundaryType;
 		// TODO: need to implement - use getTextRange
@@ -3674,7 +3688,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_textAtOffset([in] offset, [in] boundaryType, [out] pStartOffset, [out] pEndOffset, [out] pbstrText) */
 	int get_textAtOffset(int offset, int boundaryType, int /*long*/ pStartOffset, int /*long*/ pEndOffset, int /*long*/ pbstrText) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.offset = offset;
 		event.type = boundaryType;
 		// TODO: need to implement - use getTextRange
@@ -3692,7 +3706,7 @@ public class Accessible {
 
 	/* IAccessibleText::removeSelection([in] selectionIndex) */
 	int removeSelection(int selectionIndex) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.index = selectionIndex;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
@@ -3704,7 +3718,7 @@ public class Accessible {
 
 	/* IAccessibleText::setCaretOffset([in] offset) */
 	int setCaretOffset(int offset) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.index = offset;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
@@ -3716,7 +3730,7 @@ public class Accessible {
 
 	/* IAccessibleText::setSelection([in] selectionIndex, [in] startOffset, [in] endOffset) */
 	int setSelection(int selectionIndex, int startOffset, int endOffset) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.index = selectionIndex;
 		event.start = startOffset;
 		event.end = endOffset;
@@ -3730,7 +3744,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_nCharacters([out] pNCharacters) */
 	int get_nCharacters(int /*long*/ pNCharacters) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.getCharacterCount(event);
@@ -3741,7 +3755,7 @@ public class Accessible {
 
 	/* IAccessibleText::scrollSubstringTo([in] startIndex, [in] endIndex, [in] scrollType) */
 	int scrollSubstringTo(int startIndex, int endIndex, int scrollType) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.start = startIndex;
 		event.end = endIndex;
 		event.type = scrollType;
@@ -3755,7 +3769,7 @@ public class Accessible {
 
 	/* IAccessibleText::scrollSubstringToPoint([in] startIndex, [in] endIndex, [in] coordinateType, [in] x, [in] y) */
 	int scrollSubstringToPoint(int startIndex, int endIndex, int coordinateType, int x, int y) {
-		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.type = ACC.SCROLL_TYPE_POINT;
 		event.start = startIndex;
 		event.end = endIndex;
@@ -3773,7 +3787,7 @@ public class Accessible {
 	int get_newText(int /*long*/ pNewText) {
 		// TODO: Try to implement this without providing API
 		return COM.S_FALSE;
-//		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+//		AccessibleTextEvent event = new AccessibleTextEvent(this);
 //		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 //			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 //			listener.getNewText(event);
@@ -3788,7 +3802,7 @@ public class Accessible {
 	int get_oldText(int /*long*/ pOldText) {
 		// TODO: Try to implement this without providing API
 		return COM.S_FALSE;
-//		AccessibleTextExtendedEvent event = new AccessibleTextExtendedEvent(this);
+//		AccessibleTextEvent event = new AccessibleTextEvent(this);
 //		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 //			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 //			listener.getOldText(event);

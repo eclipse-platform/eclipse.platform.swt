@@ -6354,7 +6354,7 @@ void initializeAccessible() {
 		public void getCaretOffset(AccessibleTextEvent e) {
 			e.offset = StyledText.this.getCaretOffset();
 		}
-		public void setCaretOffset(AccessibleTextExtendedEvent e) {
+		public void setCaretOffset(AccessibleTextEvent e) {
 			StyledText.this.setCaretOffset(e.offset);
 		}
 		public void getSelectionRange(AccessibleTextEvent e) {
@@ -6362,7 +6362,7 @@ void initializeAccessible() {
 			e.offset = selection.x;
 			e.length = selection.y;
 		}
-		public void addSelection(AccessibleTextExtendedEvent e) {
+		public void addSelection(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			Point point = st.getSelection();
 			if (point.x == point.y) {
@@ -6371,7 +6371,7 @@ void initializeAccessible() {
 				st.setSelection(e.start, end);
 			}
 		}
-		public void getSelection(AccessibleTextExtendedEvent e) {
+		public void getSelection(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			if (st.blockSelection && st.blockXLocation != -1) {
 				Rectangle rect = st.getBlockSelectionPosition();
@@ -6395,7 +6395,7 @@ void initializeAccessible() {
 				}
 			}
 		}
-		public void getSelectionCount(AccessibleTextExtendedEvent e) {
+		public void getSelectionCount(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			if (st.blockSelection && st.blockXLocation != -1) {
 				Rectangle rect = st.getBlockSelectionPosition();
@@ -6405,7 +6405,7 @@ void initializeAccessible() {
 				e.count = point.x == point.y ? 0 : 1; 
 			}
 		}
-		public void removeSelection(AccessibleTextExtendedEvent e) {
+		public void removeSelection(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			if (e.index == 0) {
 				if (st.blockSelection) {
@@ -6415,7 +6415,7 @@ void initializeAccessible() {
 				}
 			}
 		}
-		public void setSelection(AccessibleTextExtendedEvent e) {
+		public void setSelection(AccessibleTextEvent e) {
 			if (e.index != 0) return;
 			StyledText st = StyledText.this;
 			Point point = st.getSelection();
@@ -6424,17 +6424,17 @@ void initializeAccessible() {
 			if (end == -1) end = st.getCharCount();
 			st.setSelection(e.start, end);
 		}
-		public void getCharacterCount(AccessibleTextExtendedEvent e) {
+		public void getCharacterCount(AccessibleTextEvent e) {
 			e.count = StyledText.this.getCharCount();
 		}
-		public void getOffsetAtPoint(AccessibleTextExtendedEvent e) {
+		public void getOffsetAtPoint(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			Point point = new Point (e.x, e.y);
 			Display display = st.getDisplay();
 			point = display.map(null, st, point);
 			e.offset = st.getOffsetAtPoint(point.x, point.y, null, true);
 		}
-		public void getTextBounds(AccessibleTextExtendedEvent e) {
+		public void getTextBounds(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			int start = e.start;
 			int end = e.end;
@@ -6516,7 +6516,7 @@ void initializeAccessible() {
 			}
 			return ranges;
 		}
-		public void getRanges(AccessibleTextExtendedEvent e) {
+		public void getRanges(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			Point point = new Point (e.x, e.y);
 			Display display = st.getDisplay();
@@ -6527,7 +6527,7 @@ void initializeAccessible() {
 				e.end = e.ranges[e.ranges.length - 1];
 			}
 		}
-		public void getText(AccessibleTextExtendedEvent e) {
+		public void getText(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			int start = e.start;
 			int end = e.end;
@@ -6612,14 +6612,14 @@ void initializeAccessible() {
 			e.count = count;
 			e.result = st.content.getTextRange(start, end - start);
 		}
-		public void getVisibleRanges(AccessibleTextExtendedEvent e) {
+		public void getVisibleRanges(AccessibleTextEvent e) {
 			e.ranges = getRanges(leftMargin, topMargin, clientAreaWidth - rightMargin, clientAreaHeight - bottomMargin);
 			if (e.ranges.length > 0) {
 				e.start = e.ranges[0];
 				e.end = e.ranges[e.ranges.length - 1];
 			}
 		}
-		public void scrollText(AccessibleTextExtendedEvent e) {
+		public void scrollText(AccessibleTextEvent e) {
 			StyledText st = StyledText.this;
 			int topPixel = getTopPixel(), horizontalPixel = st.getHorizontalPixel();
 			switch (e.type) {
