@@ -3179,6 +3179,12 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 	OS.MoveMemory(sp, device.scripts[script], SCRIPT_PROPERTIES.sizeof);
 	boolean shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp);
 	if (!shapeSucceed) {
+		if (sp.fPrivateUseArea) {
+			run.analysis.fNoGlyphIndex = true;
+			shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp);
+		}
+	}
+	if (!shapeSucceed) {
 		int /*long*/ hFont = OS.GetCurrentObject(hdc, OS.OBJ_FONT);
 		int /*long*/ newFont = 0;
 		/*
