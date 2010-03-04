@@ -3222,7 +3222,7 @@ boolean traverse (int traversal, char character, int keyCode, int keyLocation, i
 //			}
 //			case SWT.CR: {
 //				traversal = SWT.TRAVERSE_RETURN;
-//				doit = false;
+//				doit = true;
 //				break;
 //			}
 //			case SWT.ARROW_DOWN:
