@@ -330,13 +330,13 @@ public void create(Composite parent, int style) {
 					site.setFocus();
 					break;
 				}
-				/*
-				* Tabbing out of the browser can fail as a result of the WebSite
-				* control embedded within the Browser.  The workaround is to
-				* listen for traversals and re-perform the traversal on the
-				* appropriate control.
-				*/
 				case SWT.Traverse: {
+					/*
+					 * Tabbing out of the browser can fail as a result of the WebSite
+					 * control embedded within the Browser.  The workaround is to
+					 * listen for traversals and re-perform the traversal on the
+					 * appropriate control.
+					 */
 					if (e.detail == SWT.TRAVERSE_TAB_PREVIOUS && e.widget instanceof WebSite) {
 						/* otherwise will traverse to the Browser control */
 						browser.traverse(SWT.TRAVERSE_TAB_PREVIOUS, e);
@@ -345,6 +345,17 @@ public void create(Composite parent, int style) {
 					if (e.detail == SWT.TRAVERSE_TAB_NEXT && e.widget instanceof Browser) {
 						/* otherwise will traverse to the WebSite control */
 						site.traverse(SWT.TRAVERSE_TAB_NEXT, e);
+						e.doit = false;
+					}
+					/*
+					 * Return traversals can sometimes come through TranslateAccelerator,
+					 * depending on where focus is within the Browser.  Traversal
+					 * events should always be triggered by a key event from the DOM,
+					 * so if a Traversal from TranslateAccelerator is detected
+					 * (e.doit == true) then stop its propagation.
+					 */
+					if (e.detail == SWT.TRAVERSE_RETURN && e.doit && e.widget instanceof Browser) {
+						e.type = SWT.None;
 						e.doit = false;
 					}
 					break;
