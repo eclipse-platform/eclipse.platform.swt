@@ -503,9 +503,14 @@ void setMenu (Menu menu) {
 			if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
 			int /*long*/ pRemovedItems = ppv [0];
 			
-			/*ICustomDestinationList::AddUserTasks*/
-			hr = OS.VtblCall (7, pDestList, poa);
-			if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
+			int [] count = new int [1];
+			/*IObjectArray::GetCount*/
+			OS.VtblCall (3, poa, count);
+			if (count [0] != 0) {
+				/*ICustomDestinationList::AddUserTasks*/
+				hr = OS.VtblCall (7, pDestList, poa);
+				if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
+			}
 			
 			for (int i = 0; i < items.length; i++) {
 				MenuItem item = items [i];
@@ -514,13 +519,17 @@ void setMenu (Menu menu) {
 					if (subMenu != null) {
 						int /*long*/ poa2 = createShellLinkArray (subMenu.getItems (), directory);
 						if (poa2 != 0) {
-							String text = item.getText ();
-							int length = text.length ();
-							buffer = new char [length + 1];
-							text.getChars (0, length, buffer, 0);
-							/*ICustomDestinationList::AppendCategory*/ 
-							hr = OS.VtblCall (5, pDestList, buffer, poa2); 
-							if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT); 
+							/*IObjectArray::GetCount*/
+							OS.VtblCall (3, poa2, count);
+							if (count [0] != 0) {
+								String text = item.getText ();
+								int length = text.length ();
+								buffer = new char [length + 1];
+								text.getChars (0, length, buffer, 0);
+								/*ICustomDestinationList::AppendCategory*/
+								hr = OS.VtblCall (5, pDestList, buffer, poa2);
+								if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
+							}
 							/*IUnknown::Release*/
 							OS.VtblCall (2, poa2);
 						}
