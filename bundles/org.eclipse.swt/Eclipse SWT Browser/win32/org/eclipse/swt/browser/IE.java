@@ -332,34 +332,20 @@ public void create(Composite parent, int style) {
 				}
 				/*
 				* Tabbing out of the browser can fail as a result of the WebSite
-				* embedded within the Browser (eg.- if the WebSite has focus then
-				* a typical backwards-traversal re-assigns focus within the parent
-				* Browser).  The workaround is to listen for traversals and re-
-				* perform the traversal on the appropriate control.
+				* control embedded within the Browser.  The workaround is to
+				* listen for traversals and re-perform the traversal on the
+				* appropriate control.
 				*/
 				case SWT.Traverse: {
-					if (e.widget instanceof WebSite) {
-						if (e.detail == SWT.TRAVERSE_TAB_PREVIOUS && e.doit) {
-							browser.traverse(SWT.TRAVERSE_TAB_PREVIOUS);
-							e.doit = false;
-						}
-					} else { /* instanceof Browser */
-						if (e.detail == SWT.TRAVERSE_TAB_NEXT) {
-							if (ignoreTraverse) {
-								ignoreTraverse = false;
-								break;
-							}
-							ignoreTraverse = true;
-							e.doit = nextTraverseDoit;
-							browser.notifyListeners(e.type, e);
-							e.type = SWT.NONE;
-							if (e.doit) {
-								site.traverse(SWT.TRAVERSE_TAB_NEXT);
-								e.doit = false;
-							}
-						} else {
-							e.doit = nextTraverseDoit;
-						}
+					if (e.detail == SWT.TRAVERSE_TAB_PREVIOUS && e.widget instanceof WebSite) {
+						/* otherwise will traverse to the Browser control */
+						browser.traverse(SWT.TRAVERSE_TAB_PREVIOUS, e);
+						e.doit = false;
+					}
+					if (e.detail == SWT.TRAVERSE_TAB_NEXT && e.widget instanceof Browser) {
+						/* otherwise will traverse to the WebSite control */
+						site.traverse(SWT.TRAVERSE_TAB_NEXT, e);
+						e.doit = false;
 					}
 					break;
 				}
@@ -1429,6 +1415,10 @@ public void stop() {
 	uncRedirect = null;
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
 	auto.invoke(rgdispid[0]);
+}
+
+boolean translateMnemonics () {
+	return false;
 }
 
 void handleDOMEvent (OleEvent e) {

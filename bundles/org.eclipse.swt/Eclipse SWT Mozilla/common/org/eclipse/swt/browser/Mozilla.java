@@ -784,10 +784,6 @@ public void create (Composite parent, int style) {
 					});
 					break;
 				}
-				case SWT.Traverse: {
-					event.doit = nextTraverseDoit;
-					break;
-				}
 			}
 		}
 	};	
@@ -802,9 +798,6 @@ public void create (Composite parent, int style) {
 	};
 	for (int i = 0; i < folderEvents.length; i++) {
 		browser.addListener (folderEvents[i], listener);
-	}
-	if (delegate.sendTraverse ()) {
-		browser.addListener (SWT.Traverse, listener);
 	}
 }
 

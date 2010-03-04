@@ -328,17 +328,12 @@ public void create (Composite parent, int style) {
 					OS.SetKeyboardFocus(OS.GetControlOwner(browser.handle), webViewHandle, (short)-1);
 					break;
 				}
-				case SWT.Traverse: {
-					e.doit = nextTraverseDoit;
-					break;
-				}
 			}
 		}
 	};
 	browser.addListener(SWT.Dispose, listener);
 	browser.addListener(SWT.FocusIn, listener);
 	browser.addListener(SWT.KeyDown, listener); /* needed to make browser traversable */
-	browser.addListener(SWT.Traverse, listener);
 	
 	if (Callback3 == null) Callback3 = new Callback(this.getClass(), "eventProc3", 3); //$NON-NLS-1$
 	int callback3Address = Callback3.getAddress();
@@ -886,6 +881,10 @@ public boolean setUrl(String url, String postData, String[] headers) {
 public void stop() {
 	html = null;
 	Cocoa.objc_msgSend(webView, Cocoa.S_stopLoading, 0);
+}
+
+boolean translateMnemonics() {
+	return false;
 }
 
 /* WebFrameLoadDelegate */

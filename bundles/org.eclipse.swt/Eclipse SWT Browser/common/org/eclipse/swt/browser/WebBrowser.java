@@ -26,7 +26,7 @@ abstract class WebBrowser {
 	StatusTextListener[] statusTextListeners = new StatusTextListener[0];
 	TitleListener[] titleListeners = new TitleListener[0];
 	VisibilityWindowListener[] visibilityWindowListeners = new VisibilityWindowListener[0];
-	boolean jsEnabledChanged, jsEnabled = true, nextTraverseDoit = true;
+	boolean jsEnabledChanged, jsEnabled = true;
 	int nextFunctionIndex = 1;
 	Object evaluateResult;
 
@@ -607,75 +607,66 @@ public void removeVisibilityWindowListener (VisibilityWindowListener listener) {
 
 boolean sendKeyEvent (Event event) {
 	int traversal = SWT.TRAVERSE_NONE;
-	boolean all = false;
+	boolean traverseDoit = true;
 	switch (event.keyCode) {
 		case SWT.ESC: {
 			traversal = SWT.TRAVERSE_ESCAPE;
-			all = true;
-			nextTraverseDoit = true;
+			traverseDoit = true;
 			break;
 		}
 		case SWT.CR: {
 			traversal = SWT.TRAVERSE_RETURN;
-			all = true;
-			nextTraverseDoit = false;
+			traverseDoit = false;
 			break;
 		}
 		case SWT.ARROW_DOWN:
-		case SWT.ARROW_RIGHT:
+		case SWT.ARROW_RIGHT: {
 			traversal = SWT.TRAVERSE_ARROW_NEXT;
-			nextTraverseDoit = false;
+			traverseDoit = false;
 			break;
+		}
 		case SWT.ARROW_UP:
-		case SWT.ARROW_LEFT:
+		case SWT.ARROW_LEFT: {
 			traversal = SWT.TRAVERSE_ARROW_PREVIOUS;
-			nextTraverseDoit = false;
+			traverseDoit = false;
 			break;
-		case SWT.TAB:
+		}
+		case SWT.TAB: {
 			traversal = (event.stateMask & SWT.SHIFT) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
-			nextTraverseDoit = (event.stateMask & SWT.CTRL) != 0;
+			traverseDoit = (event.stateMask & SWT.CTRL) != 0;
 			break;
-		case SWT.PAGE_DOWN:
+		}
+		case SWT.PAGE_DOWN: {
 			if ((event.stateMask & SWT.CTRL) != 0) {
 				traversal = SWT.TRAVERSE_PAGE_NEXT;
-				all = true;
-				nextTraverseDoit = true;
+				traverseDoit = true;
 			}
 			break;
-		case SWT.PAGE_UP:
+		}
+		case SWT.PAGE_UP: {
 			if ((event.stateMask & SWT.CTRL) != 0) {
 				traversal = SWT.TRAVERSE_PAGE_PREVIOUS;
-				all = true;
-				nextTraverseDoit = true;
+				traverseDoit = true;
 			}
 			break;
+		}
+		default: {
+			if (translateMnemonics ()) {
+				if (event.character != 0 && (event.stateMask & (SWT.ALT | SWT.CTRL)) == SWT.ALT) {
+					traversal = SWT.TRAVERSE_MNEMONIC;
+					traverseDoit = true;
+				}
+			}
+			break;
+		}
 	}
+
 	boolean doit = true;
 	if (traversal != SWT.TRAVERSE_NONE) {
-		Control control = browser;
-		Shell shell = control.getShell ();
-		final Event[] traverseEvent = new Event[1];
-		Listener listener = new Listener () {
-			public void handleEvent (Event event) {
-				traverseEvent[0] = event;
-			}
-		};
-		Display display = browser.getDisplay ();
-		display.addFilter (SWT.Traverse, listener);
-		try {
-			do {
-				if (control.traverse (traversal)) {
-					doit = false;
-					break;
-				}
-				if (!traverseEvent[0].doit && control.isListening (SWT.Traverse)) break;
-				if (control == shell) break;
-				control = control.getParent ();
-			} while (all && control != null);
-		} finally {
-			display.removeFilter (SWT.Traverse, listener);
-			nextTraverseDoit = true;
-		}
+		boolean oldEventDoit = event.doit;
+		event.doit = traverseDoit;	
+		doit = !browser.traverse (traversal, event);
+		event.doit = oldEventDoit;
 	}
 	if (doit) {
 		browser.notifyListeners (event.type, event);
@@ -700,4 +691,9 @@ int translateKey (int key) {
 	}
 	return 0;
 }
+
+boolean translateMnemonics () {
+	return true;
+}
+
 }

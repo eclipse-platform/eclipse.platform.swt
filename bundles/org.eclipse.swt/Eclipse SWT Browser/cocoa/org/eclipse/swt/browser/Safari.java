@@ -258,18 +258,12 @@ public void create (Composite parent, int style) {
 					preferences = null;
 					break;
 				}
-				case SWT.Traverse: {
-					e.doit = nextTraverseDoit;
-					break;
-				}
 			}
 		}
 	};
 	browser.addListener(SWT.Dispose, listener);
-	/* Needed to be able to tab into the browser */
-	browser.addListener(SWT.KeyDown, listener);
+	browser.addListener(SWT.KeyDown, listener); /* needed for tabbing into the Browser */
 	browser.addListener(SWT.FocusIn, listener);
-	browser.addListener(SWT.Traverse, listener);
 
 	webView.setFrameLoadDelegate(delegate);
 	webView.setResourceLoadDelegate(delegate);
@@ -597,6 +591,10 @@ public boolean setUrl(String url, String postData, String[] headers) {
 public void stop() {
 	html = null;
 	webView.stopLoading(null);
+}
+
+boolean translateMnemonics() {
+	return false;
 }
 
 /* WebFrameLoadDelegate */

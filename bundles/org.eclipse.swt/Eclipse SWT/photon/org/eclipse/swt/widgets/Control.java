@@ -3134,6 +3134,182 @@ int traversalCode (int key_sym, PhKeyEvent_t ke) {
 	return code;
 }
 
+/**
+ * Performs a platform traversal action corresponding to a <code>KeyDown</code> event.
+ * 
+ * <p>Valid traversal values are
+ * <code>SWT.TRAVERSE_NONE</code>, <code>SWT.TRAVERSE_MNEMONIC</code>,
+ * <code>SWT.TRAVERSE_ESCAPE</code>, <code>SWT.TRAVERSE_RETURN</code>,
+ * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>, 
+ * <code>SWT.TRAVERSE_ARROW_NEXT</code>, <code>SWT.TRAVERSE_ARROW_PREVIOUS</code>,
+ * <code>SWT.TRAVERSE_PAGE_NEXT</code> and <code>SWT.TRAVERSE_PAGE_PREVIOUS</code>.
+ * If <code>traversal</code> is <code>SWT.TRAVERSE_NONE</code> then the Traverse
+ * event is created with standard values based on the KeyDown event.  If
+ * <code>traversal</code> is one of the other traversal constants then the Traverse
+ * event is created with this detail, and its <code>doit</code> is taken from the
+ * KeyDown event. 
+ * </p>
+ *
+ * @param traversal the type of traversal, or <code>SWT.TRAVERSE_NONE</code> to compute
+ * this from <code>event</code>
+ * @param event the KeyDown event
+ * 
+ * @return true if the traversal succeeded
+ *
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_NULL_ARGUMENT if the event is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.6
+ */
+public boolean traverse (int traversal, Event event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return traverse (traversal, event.character, event.keyCode, event.keyLocation, event.stateMask, event.doit);
+}
+
+/**
+ * Performs a platform traversal action corresponding to a <code>KeyDown</code> event.
+ * 
+ * <p>Valid traversal values are
+ * <code>SWT.TRAVERSE_NONE</code>, <code>SWT.TRAVERSE_MNEMONIC</code>,
+ * <code>SWT.TRAVERSE_ESCAPE</code>, <code>SWT.TRAVERSE_RETURN</code>,
+ * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>, 
+ * <code>SWT.TRAVERSE_ARROW_NEXT</code>, <code>SWT.TRAVERSE_ARROW_PREVIOUS</code>,
+ * <code>SWT.TRAVERSE_PAGE_NEXT</code> and <code>SWT.TRAVERSE_PAGE_PREVIOUS</code>.
+ * If <code>traversal</code> is <code>SWT.TRAVERSE_NONE</code> then the Traverse
+ * event is created with standard values based on the KeyDown event.  If
+ * <code>traversal</code> is one of the other traversal constants then the Traverse
+ * event is created with this detail, and its <code>doit</code> is taken from the
+ * KeyDown event. 
+ * </p>
+ *
+ * @param traversal the type of traversal, or <code>SWT.TRAVERSE_NONE</code> to compute
+ * this from <code>event</code>
+ * @param event the KeyDown event
+ * 
+ * @return true if the traversal succeeded
+ *
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_NULL_ARGUMENT if the event is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.6
+ */
+public boolean traverse (int traversal, KeyEvent event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return traverse (traversal, event.character, event.keyCode, event.keyLocation, event.stateMask, event.doit);
+}
+
+boolean traverse (int traversal, char character, int keyCode, int keyLocation, int stateMask, boolean doit) {
+	// the following should work but is not tested
+
+//	if (traversal == SWT.TRAVERSE_NONE) {
+//		switch (keyCode) {
+//			case SWT.ESC: {
+//				traversal = SWT.TRAVERSE_ESCAPE;
+//				doit = true;
+//				break;
+//			}
+//			case SWT.CR: {
+//				traversal = SWT.TRAVERSE_RETURN;
+//				doit = false;
+//				break;
+//			}
+//			case SWT.ARROW_DOWN:
+//			case SWT.ARROW_RIGHT: {
+//				traversal = SWT.TRAVERSE_ARROW_NEXT;
+//				doit = false;
+//				break;
+//			}
+//			case SWT.ARROW_UP:
+//			case SWT.ARROW_LEFT: {
+//				traversal = SWT.TRAVERSE_ARROW_PREVIOUS;
+//				doit = false;
+//				break;
+//			}
+//			case SWT.TAB: {
+//				traversal = (stateMask & SWT.SHIFT) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
+//				doit = true;
+//				break;
+//			}
+//			case SWT.PAGE_DOWN: {
+//				if ((stateMask & SWT.CTRL) != 0) {
+//					traversal = SWT.TRAVERSE_PAGE_NEXT;
+//					doit = true;
+//				}
+//				break;
+//			}
+//			case SWT.PAGE_UP: {
+//				if ((stateMask & SWT.CTRL) != 0) {
+//					traversal = SWT.TRAVERSE_PAGE_PREVIOUS;
+//					doit = true;
+//				}
+//				break;
+//			}
+//			default: {
+//				if (character != 0 && (stateMask & (SWT.ALT | SWT.CTRL)) == SWT.ALT) {
+//					traversal = SWT.TRAVERSE_MNEMONIC;
+//					doit = true;
+//				}
+//				break;
+//			}
+//		}
+//	}
+//
+//	Event event = new Event ();
+//	event.character = character;
+//	event.detail = traversal;
+//	event.doit = doit;
+//	event.keyCode = keyCode;
+//	event.keyLocation = keyLocation;
+//	event.stateMask = stateMask;
+//	Shell shell = getShell ();
+//
+//	boolean all = false;
+//	switch (traversal) {
+//		case SWT.TRAVERSE_ESCAPE:
+//		case SWT.TRAVERSE_RETURN:
+//		case SWT.TRAVERSE_PAGE_NEXT:
+//		case SWT.TRAVERSE_PAGE_PREVIOUS: {
+//			all = true;
+//			// FALL THROUGH
+//		}
+//		case SWT.TRAVERSE_ARROW_NEXT:
+//		case SWT.TRAVERSE_ARROW_PREVIOUS:
+//		case SWT.TRAVERSE_TAB_NEXT:
+//		case SWT.TRAVERSE_TAB_PREVIOUS: {
+//			/* traversal is a valid traversal action */
+//			break;
+//		}
+//		case SWT.TRAVERSE_MNEMONIC: {
+//			return translateMnemonic (event, null) || shell.translateMnemonic (event, this);
+//		}
+//		default: {
+//			/* traversal is not a valid traversal action */
+//			return false;
+//		}
+//	}
+//
+//	Control control = this;
+//	do {
+//		if (control.traverse (event)) return true;
+//		if (!event.doit && control.hooks (SWT.Traverse)) return false;
+//		if (control == shell) return false;
+//		control = control.parent;
+//	} while (all && control != null);
+	return false;
+}
+
 boolean traverse (Event event) {
 	/*
 	* It is possible (but unlikely), that application
