@@ -485,7 +485,7 @@ public class ACC {
 	/**
 	 * Sent when an object's attributes changed.
 	 * 
-	 * @see EVENT_TEXT_ATTRIBUTE_CHANGED
+	 * @see #EVENT_TEXT_ATTRIBUTE_CHANGED
 	 * 
 	 * @since 3.6
 	 */
@@ -551,7 +551,7 @@ public class ACC {
 	/**
 	 * Sent when a text object's attributes changed.
 	 * 
-	 * @see EVENT_OBJECT_ATTRIBUTE_CHANGED
+	 * @see #EVENT_ATTRIBUTE_CHANGED
 	 * 
 	 * @since 3.6
 	 */
@@ -578,7 +578,7 @@ public class ACC {
 	 * <li>type - {@link ACC#INSERT} or {@link ACC#DELETE} - the type of change</li>
 	 * <li>start - the index of the first character that changed</li>
 	 * <li>end - the index of the last character that changed</li>
-	 * <li>text - the text string that changed</li>
+	 * <li>text - the text string that was inserted or deleted</li>
 	 * </ul></p>
 	 * 
 	 * @since 3.6
