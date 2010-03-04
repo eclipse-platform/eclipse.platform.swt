@@ -39,19 +39,18 @@ public class ACC {
 	public static final int STATE_LINKED = 			0x00400000;
 	/** @since 3.6 */
 	public static final int STATE_DISABLED = 		0x00000001;
-//	public static final int STATE_DEFAULT = 		0x00000100;
-//	public static final int STATE_FLOATING = 		0x00001000;
-//	public static final int STATE_MARQUEED = 		0x00002000;
-//	public static final int STATE_ANIMATED = 		0x00004000;
-//	public static final int STATE_MOVEABLE = 		0x00040000;
-//	public static final int STATE_SELFVOICING = 	0x00080000;
-//	public static final int STATE_TRAVERSED = 		0x00800000;
-//	public static final int STATE_EXTSELECTABLE = 	0x02000000;
-//	public static final int STATE_ALERT_LOW = 		0x04000000;
-//	public static final int STATE_ALERT_MEDIUM = 	0x08000000;
-//	public static final int STATE_ALERT_HIGH = 		0x10000000;
-//	public static final int STATE_PROTECTED = 		0x20000000;
-//	public static final int STATE_HASPOPUP = 		0x40000000;
+	/** @since 3.6 */
+	public static final int STATE_ACTIVE = 			0x04000000;
+	/** @since 3.6 */
+	public static final int STATE_SINGLELINE = 		0x08000000;
+	/** @since 3.6 */
+	public static final int STATE_MULTILINE = 		0x10000000;
+	/** @since 3.6 */
+	public static final int STATE_REQUIRED = 		0x02000000;
+	/** @since 3.6 */
+	public static final int STATE_INVALID_ENTRY = 	0x20000000;
+	/** @since 3.6 */
+	public static final int STATE_SUPPORTS_AUTOCOMPLETION = 0x40000000;
 
 	public static final int ROLE_CLIENT_AREA = 0xa;
 	public static final int ROLE_WINDOW = 0x9;
