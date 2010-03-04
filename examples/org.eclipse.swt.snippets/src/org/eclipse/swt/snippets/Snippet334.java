@@ -102,7 +102,7 @@ public static void main(String[] arg) {
 				e.detail = 0;
 			}
 			public void getState (AccessibleControlEvent e) {
-				e.detail = ACC.STATE_NORMAL | ACC.STATE_FOCUSABLE | ACC.STATE_ENABLED;
+				e.detail = ACC.STATE_NORMAL | ACC.STATE_FOCUSABLE;
 				if (canvas.isFocusControl()) e.detail |= ACC.STATE_FOCUSED | ACC.STATE_SELECTABLE;
 			}
 		});
