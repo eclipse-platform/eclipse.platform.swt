@@ -20,38 +20,38 @@ package org.eclipse.swt.accessibility;
  * @since 2.0
  */
 public class ACC {
-	public static final int STATE_NORMAL = 0x00000000;
-	public static final int STATE_SELECTED = 0x00000002;
-	public static final int STATE_SELECTABLE = 0x00200000;
-	public static final int STATE_MULTISELECTABLE = 0x1000000;
-	public static final int STATE_FOCUSED = 0x00000004;
-	public static final int STATE_FOCUSABLE = 0x00100000;
-	public static final int STATE_PRESSED = 0x8;
-	public static final int STATE_CHECKED = 0x10;
-	public static final int STATE_EXPANDED = 0x200;
-	public static final int STATE_COLLAPSED = 0x400;
-	public static final int STATE_HOTTRACKED = 0x80;
-	public static final int STATE_BUSY = 0x800;
-	public static final int STATE_READONLY = 0x40;
-	public static final int STATE_INVISIBLE = 0x8000;
-	public static final int STATE_OFFSCREEN = 0x10000;
-	public static final int STATE_SIZEABLE = 0x20000;
-	public static final int STATE_LINKED = 0x400000;
+	public static final int STATE_NORMAL = 			0x00000000;
+	public static final int STATE_SELECTED = 		0x00000002;
+	public static final int STATE_SELECTABLE = 		0x00200000;
+	public static final int STATE_MULTISELECTABLE = 0x01000000;
+	public static final int STATE_FOCUSED = 		0x00000004;
+	public static final int STATE_FOCUSABLE = 		0x00100000;
+	public static final int STATE_PRESSED = 		0x00000008;
+	public static final int STATE_CHECKED = 		0x00000010;
+	public static final int STATE_EXPANDED = 		0x00000200;
+	public static final int STATE_COLLAPSED = 		0x00000400;
+	public static final int STATE_HOTTRACKED = 		0x00000080;
+	public static final int STATE_BUSY = 			0x00000800;
+	public static final int STATE_READONLY = 		0x00000040;
+	public static final int STATE_INVISIBLE = 		0x00008000;
+	public static final int STATE_OFFSCREEN = 		0x00010000;
+	public static final int STATE_SIZEABLE = 		0x00020000;
+	public static final int STATE_LINKED = 			0x00400000;
 	/** @since 3.6 */
-	public static final int STATE_DISABLED = 0x1;
-//	public static final int STATE_DEFAULT = 0x100;
-//	public static final int STATE_FLOATING = 0x1000;
-//	public static final int STATE_MARQUEED = 0x2000;
-//	public static final int STATE_ANIMATED = 0x4000;
-//	public static final int STATE_MOVEABLE = 0x40000;
-//	public static final int STATE_SELFVOICING = 0x80000;
-//	public static final int STATE_TRAVERSED = 0x800000;
-//	public static final int STATE_EXTSELECTABLE = 0x2000000;
-//	public static final int STATE_ALERT_LOW = 0x4000000;
-//	public static final int STATE_ALERT_MEDIUM = 0x8000000;
-//	public static final int STATE_ALERT_HIGH = 0x10000000;
-//	public static final int STATE_PROTECTED = 0x20000000;
-//	public static final int STATE_HASPOPUP = 0x40000000;
+	public static final int STATE_DISABLED = 		0x00000001;
+//	public static final int STATE_DEFAULT = 		0x00000100;
+//	public static final int STATE_FLOATING = 		0x00001000;
+//	public static final int STATE_MARQUEED = 		0x00002000;
+//	public static final int STATE_ANIMATED = 		0x00004000;
+//	public static final int STATE_MOVEABLE = 		0x00040000;
+//	public static final int STATE_SELFVOICING = 	0x00080000;
+//	public static final int STATE_TRAVERSED = 		0x00800000;
+//	public static final int STATE_EXTSELECTABLE = 	0x02000000;
+//	public static final int STATE_ALERT_LOW = 		0x04000000;
+//	public static final int STATE_ALERT_MEDIUM = 	0x08000000;
+//	public static final int STATE_ALERT_HIGH = 		0x10000000;
+//	public static final int STATE_PROTECTED = 		0x20000000;
+//	public static final int STATE_HASPOPUP = 		0x40000000;
 
 	public static final int ROLE_CLIENT_AREA = 0xa;
 	public static final int ROLE_WINDOW = 0x9;
@@ -354,6 +354,11 @@ public class ACC {
 	
 	/**
 	 * Sent when an object's state has changed, for example enabled/disabled, pressed/released, or checked/unchecked.
+	 * <p>
+	 * The eventData object is an array of 2 ints specifying the following:<ul>
+	 * <li>state - the STATE_* constant identifying the state that changed</li>
+	 * <li>newValue - either 1 or 0, indicating whether the state has changed to true or false</li>
+	 * </ul></p>
 	 * 
 	 * @since 3.6
 	 */
@@ -385,6 +390,11 @@ public class ACC {
 	
 	/**
 	 * Sent when an object's value has changed.
+	 * <p>
+	 * The eventData object is an array of 2 Numbers specifying the following:<ul>
+	 * <li>oldValue - the object's old value</li>
+	 * <li>newValue - the object's new value</li>
+	 * </ul></p>
 	 * 
 	 * @since 3.6
 	 */
