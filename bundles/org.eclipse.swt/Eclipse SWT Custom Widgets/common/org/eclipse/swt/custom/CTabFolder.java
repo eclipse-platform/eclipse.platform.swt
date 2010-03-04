@@ -745,8 +745,6 @@ public boolean getMRUVisible() {
 	return mru;
 }
 /**
- * WARNING: API UNDER CONSTRUCTION
- * 
  * Returns the receiver's renderer.
  *
  * @exception SWTException <ul>
@@ -1897,8 +1895,6 @@ public void setBackground (Color color) {
 	redraw();
 }
 /**
- * WARNING: API UNDER CONSTRUCTION
- * 
  * Specify a gradient of colours to be drawn in the background of the unselected tabs.
  * For example to draw a gradient that varies from dark blue to blue and then to
  * white, use the following call to setBackground:
@@ -1929,8 +1925,6 @@ public void setBackground(Color[] colors, int[] percents) {
 	setBackground(colors, percents, false);
 }
 /**
- * WARNING: API UNDER CONSTRUCTION
- * 
  * Specify a gradient of colours to be drawn in the background of the unselected tab.
  * For example to draw a vertical gradient that varies from dark blue to blue and then to
  * white, use the following call to setBackground:
@@ -2616,8 +2610,6 @@ public void setMRUVisible(boolean show) {
 	}
 }
 /**
- * WARNING: API UNDER CONSTRUCTION
- * 
  * Sets the renderer which is associated with the receiver to be
  * the argument which may be null. In the case of null, the default
  * renderer is used.
