@@ -1588,10 +1588,10 @@ void handleDOMEvent (OleEvent e) {
 		* keys, so the PeekMessage check in the keydown handler always allows a
 		* KeyDown to be sent for this key.  However, keydown and keypress events are 
 		* both sometimes received for OS.VK_RETURN, depending on the page's focus
-		* control.  To handle this, do not send a KeyDown for OS.VK_RETURN here since
-		* one is always sent for it from the keydown handler. 
+		* control.  To handle this, do not send a KeyDown for CR or LF here since
+		* one is always sent for it from the keydown handler.
 		*/
-		if (lastCharCode == OS.VK_RETURN) {
+		if (lastCharCode == SWT.CR || lastCharCode == SWT.LF) {
 			event.dispose();
 			return;
 		}
