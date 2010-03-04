@@ -343,6 +343,11 @@ typedef enum {
 	_1g_1signal_1emit_1by_1name__J_3BJJ_FUNC,
 #endif
 #ifndef JNI64
+	_1g_1signal_1emit_1by_1name__I_3BLorg_eclipse_swt_internal_gtk_GdkRectangle_2_FUNC,
+#else
+	_1g_1signal_1emit_1by_1name__J_3BLorg_eclipse_swt_internal_gtk_GdkRectangle_2_FUNC,
+#endif
+#ifndef JNI64
 	_1g_1signal_1emit_1by_1name__I_3B_3B_FUNC,
 #else
 	_1g_1signal_1emit_1by_1name__J_3B_3B_FUNC,

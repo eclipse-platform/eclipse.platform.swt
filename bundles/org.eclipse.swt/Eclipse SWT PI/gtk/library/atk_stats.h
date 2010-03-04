@@ -58,6 +58,7 @@ typedef enum {
 	_1atk_1object_1factory_1create_1accessible_FUNC,
 	_1atk_1object_1factory_1get_1accessible_1type_FUNC,
 	_1atk_1object_1initialize_FUNC,
+	_1atk_1object_1notify_1state_1change_FUNC,
 	_1atk_1object_1ref_1relation_1set_FUNC,
 	_1atk_1registry_1get_1factory_FUNC,
 	_1atk_1registry_1set_1factory_1type_FUNC,

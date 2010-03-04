@@ -2892,14 +2892,60 @@ class AccessibleObject {
 			case ACC.EVENT_TEXT_SELECTION_CHANGED:
 				OS.g_signal_emit_by_name (handle, ATK.text_selection_changed);
 				break;
-			case ACC.EVENT_STATE_CHANGED:
-				//TODO needs the state that changed
-//				OS.g_signal_emit_by_name (handle, ATK.state_change, );
+			case ACC.EVENT_STATE_CHANGED: {
+				if (!(eventData instanceof int[])) break;
+				int[] array = (int[])eventData;
+				int state =  array[0];
+				int value = array[1];
+				int atkState = -1;
+				switch (state) {
+					case ACC.STATE_SELECTED: atkState = ATK.ATK_STATE_SELECTED; break;
+					case ACC.STATE_SELECTABLE: atkState = ATK.ATK_STATE_SELECTABLE; break;
+					case ACC.STATE_MULTISELECTABLE: atkState = ATK.ATK_STATE_MULTISELECTABLE; break;
+					case ACC.STATE_FOCUSED: atkState = ATK.ATK_STATE_FOCUSED; break;
+					case ACC.STATE_FOCUSABLE: atkState = ATK.ATK_STATE_FOCUSABLE; break;
+					case ACC.STATE_PRESSED: atkState = ATK.ATK_STATE_PRESSED; break;
+					case ACC.STATE_CHECKED: atkState = ATK.ATK_STATE_CHECKED; break;
+					case ACC.STATE_EXPANDED: atkState = ATK.ATK_STATE_EXPANDED; break;
+					case ACC.STATE_COLLAPSED: atkState = ATK.ATK_STATE_EXPANDED; break;
+					case ACC.STATE_HOTTRACKED: atkState = ATK.ATK_STATE_ARMED; break;
+					case ACC.STATE_BUSY: atkState = ATK.ATK_STATE_BUSY; break;
+					case ACC.STATE_READONLY: atkState = ATK.ATK_STATE_EDITABLE; break;
+					case ACC.STATE_INVISIBLE: atkState = ATK.ATK_STATE_VISIBLE; break;
+					case ACC.STATE_OFFSCREEN: atkState = ATK.ATK_STATE_SHOWING; break;
+					case ACC.STATE_SIZEABLE: atkState = ATK.ATK_STATE_RESIZABLE; break;
+					case ACC.STATE_LINKED: break;
+					case ACC.STATE_DISABLED: atkState = ATK.ATK_STATE_ENABLED; break;
+					case ACC.STATE_ACTIVE: atkState = ATK.ATK_STATE_ACTIVE; break;
+					case ACC.STATE_SINGLELINE: atkState = ATK.ATK_STATE_SINGLE_LINE; break;
+					case ACC.STATE_MULTILINE: atkState = ATK.ATK_STATE_MULTI_LINE; break;
+					case ACC.STATE_REQUIRED: atkState = ATK.ATK_STATE_REQUIRED; break;
+					case ACC.STATE_INVALID_ENTRY: atkState = ATK.ATK_STATE_INVALID_ENTRY; break;
+					case ACC.STATE_SUPPORTS_AUTOCOMPLETION: atkState = ATK.ATK_STATE_SUPPORTS_AUTOCOMPLETION; break;
+				}
+				if (atkState == -1) break;
+				ATK.atk_object_notify_state_change(handle, atkState, value != 0);
 				break;
-			case ACC.EVENT_LOCATION_CHANGED:
-				//TODO needs the new bounds
-//				OS.g_signal_emit_by_name (handle, ATK.bounds_changed);
+			}
+			case ACC.EVENT_LOCATION_CHANGED: {
+				Vector listeners = accessible.accessibleControlListeners;
+				int length = listeners.size();
+				GdkRectangle rect = new GdkRectangle();
+				if (length > 0) {
+					AccessibleControlEvent e = new AccessibleControlEvent (accessible);
+					e.childID = id;
+					for (int i = 0; i < length; i++) {
+						AccessibleControlListener listener = (AccessibleControlListener)listeners.elementAt (i);
+						listener.getLocation (e);
+					}
+					rect.x = e.x;
+					rect.y = e.y;
+					rect.width = e.width;
+					rect.height = e.height;
+				}
+				OS.g_signal_emit_by_name (handle, ATK.bounds_changed, rect);
 				break;
+			}
 			case ACC.EVENT_NAME_CHANGED:
 				OS.g_object_notify(handle, ATK.accessible_name);
 				break;
@@ -2991,10 +3037,31 @@ class AccessibleObject {
 				OS.g_signal_emit_by_name (handle, ATK.text_attributes_changed);
 				break;
 			case ACC.EVENT_TEXT_CARET_MOVED:
-			case ACC.EVENT_TEXT_COLUMN_CHANGED:
-				//TODO needs the new position of the caret
-				OS.g_signal_emit_by_name (handle, ATK.text_caret_moved);
+			case ACC.EVENT_TEXT_COLUMN_CHANGED: {
+				int offset = 0;
+				Vector listeners = accessible.accessibleTextExtendedListeners;
+				int length = listeners.size();
+				AccessibleTextEvent e = new AccessibleTextEvent (accessible);
+				if (length > 0) {
+					for (int i = 0; i < length; i++) {
+						AccessibleTextListener listener = (AccessibleTextListener) listeners.elementAt(i);
+						listener.getCaretOffset (e);
+					}
+				} else {
+					listeners = accessible.accessibleTextListeners;
+					length = listeners.size();
+					if (length > 0) {
+						e.childID = id;
+						for (int i = 0; i < length; i++) {
+							AccessibleTextListener listener = (AccessibleTextListener) listeners.elementAt(i);
+							listener.getCaretOffset (e);	
+						}
+					}
+				}
+				offset = e.offset;
+				OS.g_signal_emit_by_name (handle, ATK.text_caret_moved, offset);
 				break;
+			}
 			case ACC.EVENT_TEXT_CHANGED: {
 				if (!(eventData instanceof Object[])) break;
 				Object[] data = (Object[])eventData;

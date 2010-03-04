@@ -2833,6 +2833,19 @@ public static final void g_signal_emit_by_name(int /*long*/ instance, byte[] det
  * @param instance cast=(gpointer)
  * @param detailed_signal cast=(const gchar *),flags=no_out
  */
+public static final native void _g_signal_emit_by_name(int /*long*/ instance, byte[] detailed_signal, GdkRectangle data);
+public static final void g_signal_emit_by_name(int /*long*/ instance, byte[] detailed_signal, GdkRectangle data) {
+	lock.lock();
+	try {
+		_g_signal_emit_by_name(instance, detailed_signal, data);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param instance cast=(gpointer)
+ * @param detailed_signal cast=(const gchar *),flags=no_out
+ */
 public static final native void _g_signal_emit_by_name(int /*long*/ instance, byte[] detailed_signal, int /*long*/ data1, int /*long*/ data2);
 public static final void g_signal_emit_by_name(int /*long*/ instance, byte[] detailed_signal, int /*long*/ data1, int /*long*/ data2) {
 	lock.lock();

@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1354;
-int OS_nativeFunctionCallCount[1354];
+int OS_nativeFunctionCount = 1355;
+int OS_nativeFunctionCallCount[1355];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -333,6 +333,11 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1signal_1emit_1by_1name__I_3BII",
 #else
 	"_1g_1signal_1emit_1by_1name__J_3BJJ",
+#endif
+#ifndef JNI64
+	"_1g_1signal_1emit_1by_1name__I_3BLorg_eclipse_swt_internal_gtk_GdkRectangle_2",
+#else
+	"_1g_1signal_1emit_1by_1name__J_3BLorg_eclipse_swt_internal_gtk_GdkRectangle_2",
 #endif
 #ifndef JNI64
 	"_1g_1signal_1emit_1by_1name__I_3B_3B",

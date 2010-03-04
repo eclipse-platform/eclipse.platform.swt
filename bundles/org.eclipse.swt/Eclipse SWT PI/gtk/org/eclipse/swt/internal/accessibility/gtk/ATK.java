@@ -75,6 +75,7 @@ public class ATK extends OS {
 	public static final int ATK_ROLE_TOOL_BAR = 62;
 	public static final int ATK_ROLE_TOOL_TIP = 63;
 	public static final int ATK_ROLE_TREE = 64;
+	public static final int ATK_STATE_ACTIVE = 1;
 	public static final int ATK_STATE_ARMED = 2;
 	public static final int ATK_STATE_BUSY = 3;
 	public static final int ATK_STATE_CHECKED = 4;
@@ -84,13 +85,18 @@ public class ATK extends OS {
 	public static final int ATK_STATE_EXPANDED = 9;
 	public static final int ATK_STATE_FOCUSABLE = 10;
 	public static final int ATK_STATE_FOCUSED = 11;
+	public static final int ATK_STATE_MULTI_LINE = 15;
 	public static final int ATK_STATE_MULTISELECTABLE = 16;
 	public static final int ATK_STATE_PRESSED = 18;
 	public static final int ATK_STATE_RESIZABLE = 19;
 	public static final int ATK_STATE_SELECTABLE = 20;
 	public static final int ATK_STATE_SELECTED = 21;
 	public static final int ATK_STATE_SHOWING = 23;
+	public static final int ATK_STATE_SINGLE_LINE = 24;
 	public static final int ATK_STATE_TRANSIENT = 26;
+	public static final int ATK_STATE_REQUIRED = 32;
+	public static final int ATK_STATE_INVALID_ENTRY = 33;
+	public static final int ATK_STATE_SUPPORTS_AUTOCOMPLETION = 34;
 	public static final int ATK_STATE_VISIBLE = 28;
 	public static final int ATK_TEXT_BOUNDARY_CHAR = 0;
 	public static final int ATK_TEXT_BOUNDARY_WORD_START = 1;
@@ -321,6 +327,16 @@ public static final void atk_object_initialize (int /*long*/ accessible, int /*l
 	lock.lock();
 	try {
 		_atk_object_initialize(accessible, data);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param accessible cast=(AtkObject *) */
+public static final native void _atk_object_notify_state_change (int /*long*/ accessible, int state, boolean value);
+public static final void atk_object_notify_state_change (int /*long*/ accessible, int state, boolean value) {
+	lock.lock();
+	try {
+		_atk_object_notify_state_change(accessible, state, value);
 	} finally {
 		lock.unlock();
 	}

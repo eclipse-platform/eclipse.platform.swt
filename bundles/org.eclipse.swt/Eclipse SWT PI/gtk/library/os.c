@@ -3897,6 +3897,34 @@ fail:
 }
 #endif
 
+#if (!defined(NO__1g_1signal_1emit_1by_1name__I_3BLorg_eclipse_swt_internal_gtk_GdkRectangle_2) && !defined(JNI64)) || (!defined(NO__1g_1signal_1emit_1by_1name__J_3BLorg_eclipse_swt_internal_gtk_GdkRectangle_2) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1signal_1emit_1by_1name__I_3BLorg_eclipse_swt_internal_gtk_GdkRectangle_2)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jobject arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1signal_1emit_1by_1name__J_3BLorg_eclipse_swt_internal_gtk_GdkRectangle_2)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jobject arg2)
+#endif
+{
+	jbyte *lparg1=NULL;
+	GdkRectangle _arg2, *lparg2=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, _1g_1signal_1emit_1by_1name__I_3BLorg_eclipse_swt_internal_gtk_GdkRectangle_2_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, _1g_1signal_1emit_1by_1name__J_3BLorg_eclipse_swt_internal_gtk_GdkRectangle_2_FUNC);
+#endif
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getGdkRectangleFields(env, arg2, &_arg2)) == NULL) goto fail;
+	g_signal_emit_by_name((gpointer)arg0, (const gchar *)lparg1, lparg2);
+fail:
+	if (arg2 && lparg2) setGdkRectangleFields(env, arg2, lparg2);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, _1g_1signal_1emit_1by_1name__I_3BLorg_eclipse_swt_internal_gtk_GdkRectangle_2_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, _1g_1signal_1emit_1by_1name__J_3BLorg_eclipse_swt_internal_gtk_GdkRectangle_2_FUNC);
+#endif
+}
+#endif
+
 #if (!defined(NO__1g_1signal_1emit_1by_1name__I_3B_3B) && !defined(JNI64)) || (!defined(NO__1g_1signal_1emit_1by_1name__J_3B_3B) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(_1g_1signal_1emit_1by_1name__I_3B_3B)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jbyteArray arg2)

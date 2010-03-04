@@ -363,6 +363,16 @@ JNIEXPORT void JNICALL ATK_NATIVE(_1atk_1object_1initialize)
 }
 #endif
 
+#ifndef NO__1atk_1object_1notify_1state_1change
+JNIEXPORT void JNICALL ATK_NATIVE(_1atk_1object_1notify_1state_1change)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jboolean arg2)
+{
+	ATK_NATIVE_ENTER(env, that, _1atk_1object_1notify_1state_1change_FUNC);
+	atk_object_notify_state_change((AtkObject *)arg0, arg1, arg2);
+	ATK_NATIVE_EXIT(env, that, _1atk_1object_1notify_1state_1change_FUNC);
+}
+#endif
+
 #ifndef NO__1atk_1object_1ref_1relation_1set
 JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1object_1ref_1relation_1set)
 	(JNIEnv *env, jclass that, jintLong arg0)
