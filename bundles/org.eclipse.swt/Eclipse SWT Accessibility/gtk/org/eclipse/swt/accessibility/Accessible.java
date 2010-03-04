@@ -791,29 +791,6 @@ public class Accessible {
 			}
 		}
 	}
-	
-	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
-	 * Sends a message to accessible clients indicating that something
-	 * has changed within a custom control.
-	 *
-	 * @param event an <code>ACC</code> constant beginning with EVENT_* indicating the message to send
-	 * @param childID an identifier specifying a child of the control or the control itself
-	 * 
-	 * @exception SWTException <ul>
-	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
-	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
-	 * </ul>
-	 * 
-	 * @since 3.6
-	 */
-	public void sendEvent(int event, int childID) {
-		checkWidget();
-		if (accessibleObject != null) {
-			accessibleObject.sendEvent(event, childID, null);
-		}
-	}
 
 	/**
 	 * WARNING: API UNDER CONSTRUCTION
@@ -832,10 +809,10 @@ public class Accessible {
 	 * 
 	 * @since 3.6
 	 */
-	public void sendEvent(int event, int childID, Object eventData) {
+	public void sendEvent(int event, Object eventData) {
 		checkWidget();
 		if (accessibleObject != null) {
-			accessibleObject.sendEvent(event, childID, eventData);
+			accessibleObject.sendEvent(event, eventData);
 		}
 	}
 	

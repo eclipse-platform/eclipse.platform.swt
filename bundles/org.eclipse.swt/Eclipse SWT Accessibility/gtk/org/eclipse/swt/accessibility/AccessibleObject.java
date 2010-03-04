@@ -2884,7 +2884,7 @@ class AccessibleObject {
 		OS.g_signal_emit_by_name (handle, ATK.selection_changed);
 	}
 	
-	void sendEvent(int event, int childID, Object eventData) {
+	void sendEvent(int event, Object eventData) {
 		switch (event) {
 			case ACC.EVENT_SELECTION_CHANGED:
 				OS.g_signal_emit_by_name (handle, ATK.selection_changed);
@@ -2893,9 +2893,12 @@ class AccessibleObject {
 				OS.g_signal_emit_by_name (handle, ATK.text_selection_changed);
 				break;
 			case ACC.EVENT_STATE_CHANGED:
-				//TODO - needs to have old and new state
+				//TODO needs the state that changed
+//				OS.g_signal_emit_by_name (handle, ATK.state_change, );
 				break;
 			case ACC.EVENT_LOCATION_CHANGED:
+				//TODO needs the new bounds
+//				OS.g_signal_emit_by_name (handle, ATK.bounds_changed);
 				break;
 			case ACC.EVENT_NAME_CHANGED:
 				OS.g_object_notify(handle, ATK.accessible_name);
@@ -2907,10 +2910,13 @@ class AccessibleObject {
 				OS.g_object_notify(handle, ATK.accessible_value);
 				break;
 			case ACC.EVENT_DOCUMENT_LOAD_COMPLETE:
+				OS.g_signal_emit_by_name (handle, ATK.load_complete);
 				break;
 			case ACC.EVENT_DOCUMENT_LOAD_STOPPED:
+				OS.g_signal_emit_by_name (handle, ATK.load_stopped);
 				break;
 			case ACC.EVENT_DOCUMENT_RELOAD:
+				OS.g_signal_emit_by_name (handle, ATK.reload);
 				break;
 			case ACC.EVENT_PAGE_CHANGED:
 				break;
@@ -2919,43 +2925,92 @@ class AccessibleObject {
 			case ACC.EVENT_ACTION_CHANGED:
 				break;
 			case ACC.EVENT_HYPERLINK_END_INDEX_CHANGED:
+				OS.g_object_notify(handle, ATK.end_index);
 				break;
 			case ACC.EVENT_HYPERLINK_ANCHOR_COUNT_CHANGED:
+				OS.g_object_notify(handle, ATK.number_of_anchors);
 				break;
 			case ACC.EVENT_HYPERLINK_SELECTED_LINK_CHANGED:
+				OS.g_object_notify(handle, ATK.selected_link);
 				break;
 			case ACC.EVENT_HYPERLINK_START_INDEX_CHANGED:
+				OS.g_object_notify(handle, ATK.start_index);
 				break;
 			case ACC.EVENT_HYPERTEXT_LINK_ACTIVATED:
+				OS.g_signal_emit_by_name (handle, ATK.link_activated);
 				break;
 			case ACC.EVENT_HYPERTEXT_LINK_SELECTED:
+				//TODO needs the index the link that was selected
+//				OS.g_signal_emit_by_name (handle, ATK.link_selected);
 				break;
 			case ACC.EVENT_HYPERTEXT_LINK_COUNT_CHANGED:
+				OS.g_object_notify(handle, ATK.accessible_hypertext_nlinks);
 				break;
 			case ACC.EVENT_ATTRIBUTE_CHANGED:
+				OS.g_signal_emit_by_name (handle, ATK.attributes_changed);
 				break;
 			case ACC.EVENT_TABLE_CAPTION_CHANGED:
+				OS.g_object_notify(handle, ATK.accessible_table_caption_object);
 				break;
 			case ACC.EVENT_TABLE_COLUMN_DESCRIPTION_CHANGED:
+				OS.g_object_notify(handle, ATK.accessible_table_column_description);
 				break;
 			case ACC.EVENT_TABLE_COLUMN_HEADER_CHANGED:
+				OS.g_object_notify(handle, ATK.accessible_table_column_header);
 				break;
-			case ACC.EVENT_TABLE_CHANGED:
+			case ACC.EVENT_TABLE_CHANGED: {
+				if (!(eventData instanceof int[])) break;
+				int[] array = (int[])eventData;
+				int type =  array[0];
+				int rowStart = array[1];
+				int rowCount = array[2];
+				int columnStart = array[3];
+				int columnCount = array[4];
+				switch (type) {
+					case ACC.DELETE:
+						if (rowCount > 0) OS.g_signal_emit_by_name (handle, ATK.row_deleted, rowStart, rowCount);
+						if (columnCount > 0) OS.g_signal_emit_by_name (handle, ATK.column_deleted, columnStart, columnCount);
+						break;
+					case ACC.INSERT:
+						if (rowCount > 0) OS.g_signal_emit_by_name (handle, ATK.row_inserted, rowStart, rowCount);
+						if (columnCount > 0) OS.g_signal_emit_by_name (handle, ATK.column_inserted, columnStart, columnCount);
+						break;
+				}
 				break;
+			}
 			case ACC.EVENT_TABLE_ROW_DESCRIPTION_CHANGED:
+				OS.g_object_notify(handle, ATK.accessible_table_row_description);
 				break;
 			case ACC.EVENT_TABLE_ROW_HEADER_CHANGED:
+				OS.g_object_notify(handle, ATK.accessible_table_row_header);
 				break;
 			case ACC.EVENT_TABLE_SUMMARY_CHANGED:
+				OS.g_object_notify(handle, ATK.accessible_table_summary);
 				break;
 			case ACC.EVENT_TEXT_ATTRIBUTE_CHANGED:
+				OS.g_signal_emit_by_name (handle, ATK.text_attributes_changed);
 				break;
 			case ACC.EVENT_TEXT_CARET_MOVED:
-				break;
 			case ACC.EVENT_TEXT_COLUMN_CHANGED:
+				//TODO needs the new position of the caret
+				OS.g_signal_emit_by_name (handle, ATK.text_caret_moved);
 				break;
-			case ACC.EVENT_TEXT_CHANGED:
+			case ACC.EVENT_TEXT_CHANGED: {
+				if (!(eventData instanceof Object[])) break;
+				Object[] data = (Object[])eventData;
+				int type = ((Integer)data[0]).intValue();
+				int start = ((Integer)data[1]).intValue();
+				int end = ((Integer)data[2]).intValue();
+				switch (type) {
+					case ACC.DELETE:
+						OS.g_signal_emit_by_name (handle, ATK.text_changed_delete, start, end -start);
+						break;
+					case ACC.INSERT:
+						OS.g_signal_emit_by_name (handle, ATK.text_changed_insert, start, end -start);
+						break;
+				}
 				break;
+			}
 		}
 	}
 	

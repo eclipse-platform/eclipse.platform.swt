@@ -139,11 +139,35 @@ public class ATK extends OS {
 	public static final byte[] text_changed_delete = OS.ascii ("text_changed::delete");
 	public static final byte[] text_caret_moved = OS.ascii ("text_caret_moved");
 	public static final byte[] text_selection_changed = OS.ascii ("text_selection_changed");
+	public static final byte[] load_complete = OS.ascii ("load-complete");
+	public static final byte[] load_stopped = OS.ascii ("load-stopped");
+	public static final byte[] reload = OS.ascii ("reload");
+	public static final byte[] state_change = OS.ascii ("state-change");
+	public static final byte[] bounds_changed = OS.ascii ("bounds-changed");
+	public static final byte[] link_activated = OS.ascii ("link-activated");
+	public static final byte[] link_selected = OS.ascii ("link-selected");
+	public static final byte[] attributes_changed = OS.ascii ("attributes-changed");
+	public static final byte[] text_attributes_changed = OS.ascii ("text-attributes-changed");
+	public static final byte[] column_deleted = OS.ascii ("column-deleted");
+	public static final byte[] column_inserted = OS.ascii ("column-inserted");
+	public static final byte[] row_deleted = OS.ascii ("row-deleted");
+	public static final byte[] row_inserted = OS.ascii ("row-inserted");
 	
 	/** Properties */
 	public static final byte[] accessible_name = OS.ascii ("accessible-name");
 	public static final byte[] accessible_description = OS.ascii ("accessible-description");
 	public static final byte[] accessible_value = OS.ascii ("accessible-value");
+	public static final byte[] end_index = OS.ascii ("end-index");
+	public static final byte[] number_of_anchors = OS.ascii ("number-of-anchors");
+	public static final byte[] selected_link = OS.ascii ("selected-link");
+	public static final byte[] start_index = OS.ascii ("start-index");
+	public static final byte[] accessible_hypertext_nlinks = OS.ascii ("accessible-hypertext-nlinks");
+	public static final byte[] accessible_table_caption_object = OS.ascii ("accessible-table-caption-object");
+	public static final byte[] accessible_table_column_description = OS.ascii ("accessible-table-column-description");
+	public static final byte[] accessible_table_column_header = OS.ascii ("accessible-table-column-header");
+	public static final byte[] accessible_table_row_description = OS.ascii ("accessible-table-row-description");
+	public static final byte[] accessible_table_row_header = OS.ascii ("accessible-table-row-header");
+	public static final byte[] accessible_table_summary = OS.ascii ("accessible-table-summary");
 	
 /** 64 bit */
 public static final native int AtkObjectFactory_sizeof ();
