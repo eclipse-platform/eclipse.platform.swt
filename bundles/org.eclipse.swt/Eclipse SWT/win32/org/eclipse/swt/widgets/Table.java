@@ -3436,8 +3436,11 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int /*long*/ lPara
 					RECT headerRect = new RECT ();
 					OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
 					OS.MapWindowPoints (hwndHeader, handle, headerRect, 2);
-					rect.left = 0;
 					rect.right = headerRect.right;
+					index = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
+					OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+					OS.MapWindowPoints (hwndHeader, handle, headerRect, 2);
+					rect.left = headerRect.left;
 					pClipRect.left = cellRect.left;
 					pClipRect.right += EXPLORER_EXTRA;
 				} else {
