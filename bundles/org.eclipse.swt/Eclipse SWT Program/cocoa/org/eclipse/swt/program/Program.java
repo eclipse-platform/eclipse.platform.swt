@@ -75,7 +75,7 @@ public static Program findProgram (String extension) {
 				if (url != 0) {
 					NSString bundlePath = new NSURL(url).path();
 					NSBundle bundle = NSBundle.bundleWithPath(bundlePath);
-					program = getProgram(bundle);
+					if (bundle != null) program = getProgram(bundle);
 					OS.CFRelease(url);
 				}
 			}
@@ -114,7 +114,7 @@ public static String [] getExtensions () {
 					NSString fullPath = path.stringByAppendingPathComponent(filePath);
 					if (workspace.isFilePackageAtPath(fullPath)) {
 						NSBundle bundle = NSBundle.bundleWithPath(fullPath);
-						id = bundle.infoDictionary().objectForKey(CFBundleDocumentTypes);
+						id = bundle != null ? bundle.infoDictionary().objectForKey(CFBundleDocumentTypes) : null;
 						if (id != null) {
 							NSDictionary documentTypes = new NSDictionary(id.id);
 							NSEnumerator documentTypesEnumerator = documentTypes.objectEnumerator();
