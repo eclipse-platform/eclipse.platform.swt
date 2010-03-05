@@ -116,7 +116,7 @@ public class ACC {
 	/** @since 3.6 */
 	public static final int ROLE_CALENDAR = 0x2f;
 	/** @since 3.6 */
-	public static final int ROLE_DATE_TIME = 0x405;
+	public static final int ROLE_DATETIME = 0x405;
 
 	public static final int CHILDID_SELF = -1;
 	public static final int CHILDID_NONE = -2;
