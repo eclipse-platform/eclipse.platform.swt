@@ -826,6 +826,8 @@ public class Accessible {
 				returnValue.addObject(OS.NSAccessibilityValueAttribute);
 				break;
 			case ACC.ROLE_TEXT:
+			case ACC.ROLE_PARAGRAPH:
+			case ACC.ROLE_HEADING:
 				returnValue.addObject(OS.NSAccessibilityNumberOfCharactersAttribute);
 				returnValue.addObject(OS.NSAccessibilitySelectedTextAttribute);
 				returnValue.addObject(OS.NSAccessibilitySelectedTextRangeAttribute);
@@ -930,8 +932,6 @@ public class Accessible {
 				break;
 			case ACC.ROLE_GROUP:
 				break;
-			case ACC.ROLE_HEADING:
-				break;
 			case ACC.ROLE_ROW:
 				returnValue.addObject(OS.NSAccessibilityIndexAttribute);
 				returnValue.addObject(OS.NSAccessibilitySelectedAttribute);
@@ -949,6 +949,16 @@ public class Accessible {
 			case ACC.ROLE_DATETIME:
 				break;
 			case ACC.ROLE_CALENDAR:
+				break;
+			case ACC.ROLE_FOOTER:
+				break;
+			case ACC.ROLE_HEADER:
+				break;
+			case ACC.ROLE_FORM:
+				break;
+			case ACC.ROLE_PAGE:
+				break;
+			case ACC.ROLE_SECTION:
 				break;
 		}
 		
@@ -1124,6 +1134,8 @@ public class Accessible {
 		
 		switch(event.detail) {
 			case ACC.ROLE_TEXT:
+			case ACC.ROLE_PARAGRAPH:
+			case ACC.ROLE_HEADING:
 				returnValue.addObject(OS.NSAccessibilityStringForRangeParameterizedAttribute);
 				returnValue.addObject(OS.NSAccessibilityRangeForLineParameterizedAttribute);
 				returnValue.addObject(OS.NSAccessibilityLineForIndexParameterizedAttribute);
@@ -1473,6 +1485,8 @@ public class Accessible {
 					break;
 				case ACC.ROLE_COMBOBOX: // text of the currently selected item
 				case ACC.ROLE_TEXT: // text in the text field
+				case ACC.ROLE_PARAGRAPH: // text in the text field
+				case ACC.ROLE_HEADING: // text in the text field
 					if (value != null) returnValue = NSString.stringWith(value);
 					break;
 				case ACC.ROLE_LABEL: // text in the label
@@ -2667,13 +2681,23 @@ public class Accessible {
 			case ACC.ROLE_CHECKMENUITEM: nsReturnValue = OS.NSAccessibilityMenuButtonRole; break;
 			case ACC.ROLE_RADIOMENUITEM: nsReturnValue = OS.NSAccessibilityMenuButtonRole; break;
 			//don't know the right answer for these:
+			case ACC.ROLE_FOOTER:
+			case ACC.ROLE_HEADER:
+			case ACC.ROLE_FORM:
+			case ACC.ROLE_PAGE:
+			case ACC.ROLE_SECTION:
+				nsReturnValue = OS.NSAccessibilityGroupRole;
+				break;
+			case ACC.ROLE_HEADING:
+			case ACC.ROLE_PARAGRAPH:
+				nsReturnValue = OS.NSAccessibilityTextAreaRole;
+				break;
 			case ACC.ROLE_CLOCK:
 			case ACC.ROLE_DATETIME:
 			case ACC.ROLE_CALENDAR:
 			case ACC.ROLE_ALERT: 
 			case ACC.ROLE_ANIMATION: 
 			case ACC.ROLE_DOCUMENT:
-			case ACC.ROLE_HEADING: 
 			case ACC.ROLE_SPINBUTTON:
 			case ACC.ROLE_STATUSBAR:
 				nsReturnValue = OS.NSAccessibilityUnknownRole;
@@ -2682,47 +2706,6 @@ public class Accessible {
 		return nsReturnValue.getString();
 	}
 
-	int osToRole(NSString osRole) {
-		if (osRole == null) return 0;
-		if (osRole.isEqualToString(OS.NSAccessibilityWindowRole)) return ACC.ROLE_WINDOW;
-		if (osRole.isEqualToString(OS.NSAccessibilityMenuBarRole)) return ACC.ROLE_MENUBAR;
-		if (osRole.isEqualToString(OS.NSAccessibilityMenuRole)) return ACC.ROLE_MENU;
-		if (osRole.isEqualToString(OS.NSAccessibilityMenuItemRole)) return ACC.ROLE_MENUITEM;
-		if (osRole.isEqualToString(OS.NSAccessibilitySplitterRole)) return ACC.ROLE_SEPARATOR;
-		if (osRole.isEqualToString(OS.NSAccessibilityHelpTagRole)) return ACC.ROLE_TOOLTIP;
-		if (osRole.isEqualToString(OS.NSAccessibilityScrollBarRole)) return ACC.ROLE_SCROLLBAR;
-		if (osRole.isEqualToString(OS.NSAccessibilityScrollAreaRole)) return ACC.ROLE_LIST;
-		if (osRole.isEqualToString(concatStringsAsRole(OS.NSAccessibilityWindowRole, OS.NSAccessibilityDialogSubrole))) return ACC.ROLE_DIALOG;
-		if (osRole.isEqualToString(concatStringsAsRole(OS.NSAccessibilityWindowRole, OS.NSAccessibilitySystemDialogSubrole))) return ACC.ROLE_DIALOG;
-		if (osRole.isEqualToString(OS.NSAccessibilityStaticTextRole)) return ACC.ROLE_LABEL;
-		if (osRole.isEqualToString(OS.NSAccessibilityButtonRole)) return ACC.ROLE_PUSHBUTTON;
-		if (osRole.isEqualToString(OS.NSAccessibilityCheckBoxRole)) return ACC.ROLE_CHECKBUTTON;
-		if (osRole.isEqualToString(OS.NSAccessibilityRadioButtonRole)) return ACC.ROLE_RADIOBUTTON;
-		if (osRole.isEqualToString(OS.NSAccessibilityMenuButtonRole)) return ACC.ROLE_SPLITBUTTON;
-		if (osRole.isEqualToString(OS.NSAccessibilityComboBoxRole)) return ACC.ROLE_COMBOBOX;
-		if (osRole.isEqualToString(OS.NSAccessibilityTextFieldRole)) return ACC.ROLE_TEXT;
-		if (osRole.isEqualToString(OS.NSAccessibilityTextAreaRole)) return ACC.ROLE_TEXT;
-		if (osRole.isEqualToString(OS.NSAccessibilityToolbarRole)) return ACC.ROLE_TOOLBAR;
-		if (osRole.isEqualToString(OS.NSAccessibilityListRole)) return ACC.ROLE_LIST;
-		if (osRole.isEqualToString(OS.NSAccessibilityTableRole)) return ACC.ROLE_TABLE;
-		if (osRole.isEqualToString(OS.NSAccessibilityColumnRole)) return ACC.ROLE_COLUMN;
-		if (osRole.isEqualToString(concatStringsAsRole(OS.NSAccessibilityButtonRole, OS.NSAccessibilitySortButtonRole))) return ACC.ROLE_TABLECOLUMNHEADER;
-		if (osRole.isEqualToString(concatStringsAsRole(OS.NSAccessibilityRowRole, OS.NSAccessibilityTableRowSubrole))) return ACC.ROLE_ROW;
-		if (osRole.isEqualToString(OS.NSAccessibilityOutlineRole)) return ACC.ROLE_TREE;
-		if (osRole.isEqualToString(concatStringsAsRole(OS.NSAccessibilityOutlineRole, OS.NSAccessibilityOutlineRowSubrole))) return ACC.ROLE_TREEITEM;
-		if (osRole.isEqualToString(OS.NSAccessibilityTabGroupRole)) return ACC.ROLE_TABFOLDER;
-		if (osRole.isEqualToString(OS.NSAccessibilityProgressIndicatorRole)) return ACC.ROLE_PROGRESSBAR;
-		if (osRole.isEqualToString(OS.NSAccessibilitySliderRole)) return ACC.ROLE_SLIDER;
-		if (osRole.isEqualToString(OS.NSAccessibilityLinkRole)) return ACC.ROLE_LINK;
-		if (osRole.isEqualToString(OS.NSAccessibilityGroupRole)) return ACC.ROLE_CANVAS;
-		if (osRole.isEqualToString(OS.NSAccessibilityGroupRole)) return ACC.ROLE_GROUP;
-		if (osRole.isEqualToString(OS.NSAccessibilityImageRole)) return ACC.ROLE_GRAPHIC;
-		if (osRole.isEqualToString(OS.NSAccessibilityMenuButtonRole)) return ACC.ROLE_CHECKMENUITEM;
-		if (osRole.isEqualToString(OS.NSAccessibilityMenuButtonRole)) return ACC.ROLE_RADIOMENUITEM;
-		if (OS.VERSION >= 0x1060 && osRole.isEqualToString(OS.NSAccessibilityCellRole)) return ACC.ROLE_TABLECELL;
-		return ACC.ROLE_CLIENT_AREA;
-	}
-	
 	/* checkWidget was copied from Widget, and rewritten to work in this package */
 	void checkWidget () {
 		if (!isValidThread ()) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
