@@ -590,6 +590,12 @@ void initNative(String filename) {
 	* GDI+ image loading in this case.
 	*/
 	if (gdip && OS.PTR_SIZEOF == 8 && filename.toLowerCase().endsWith(".gif")) gdip = false;
+	/*
+	* Bug in GDI+. Bitmap.LockBits() fails to load GIF files in 
+	* Windows 7 when the image has a position offset in the first frame.
+	* The fix is to not use GDI+ image loading in this case.
+	*/
+	if ((!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(6, 1)) && filename.toLowerCase().endsWith(".gif")) gdip = false;
 	if (gdip) {
 		int length = filename.length();
 		char[] chars = new char[length+1];
