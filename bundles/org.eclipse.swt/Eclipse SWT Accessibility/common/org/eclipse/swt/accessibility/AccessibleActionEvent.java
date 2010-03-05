@@ -32,6 +32,7 @@ public class AccessibleActionEvent extends SWTEventObject {
 	public String result;
 	public int count;
 	public int index;
+	public boolean localized;
 
 	static final long serialVersionUID = 2849066792640153087L;
 

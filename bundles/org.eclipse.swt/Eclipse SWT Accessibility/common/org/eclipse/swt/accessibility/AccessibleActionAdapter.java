@@ -79,14 +79,15 @@ public class AccessibleActionAdapter implements AccessibleActionListener {
 	public void getKeyBinding(AccessibleActionEvent e) {}
 
 	/**
-	 * Returns the non-localized name of the specified action.
+	 * Returns the name of the specified action.
 	 * <p>
 	 * There is no need to implement this method for single action controls
 	 * since that would be redundant with AccessibleControlListener.getDefaultAction.
 	 * </p>
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] index - a 0 based index specifying which action's non-localized name to return</li>
+	 * <li>[in] index - a 0 based index specifying which action's name to return</li>
+	 * <li>[in] localized - a boolean indicating whether or not to return a localized name</li>
 	 * <li>[out] result - the name of the specified action,
 	 * 		or null if the index lies outside the valid range</li>
 	 * </ul>
