@@ -742,7 +742,6 @@ class AccessibleObject {
 					int state = event.detail;
 					if ((state & ACC.STATE_BUSY) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_BUSY);
 					if ((state & ACC.STATE_CHECKED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_CHECKED);
-					if ((state & ACC.STATE_DISABLED) == 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_ENABLED);
 					if ((state & ACC.STATE_EXPANDED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_EXPANDED);
 					if ((state & ACC.STATE_FOCUSABLE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_FOCUSABLE);
 					if ((state & ACC.STATE_FOCUSED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_FOCUSED);
@@ -755,6 +754,13 @@ class AccessibleObject {
 					if ((state & ACC.STATE_SELECTABLE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_SELECTABLE);
 					if ((state & ACC.STATE_SELECTED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_SELECTED);
 					if ((state & ACC.STATE_SIZEABLE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_RESIZABLE);
+					if ((state & ACC.STATE_DISABLED) == 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_ENABLED);
+					if ((state & ACC.STATE_ACTIVE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_ACTIVE);
+					if ((state & ACC.STATE_SINGLELINE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_SINGLE_LINE);
+					if ((state & ACC.STATE_MULTILINE) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_MULTI_LINE);
+					if ((state & ACC.STATE_REQUIRED) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_REQUIRED);
+					if ((state & ACC.STATE_INVALID_ENTRY) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_INVALID_ENTRY);
+					if ((state & ACC.STATE_SUPPORTS_AUTOCOMPLETION) != 0) ATK.atk_state_set_add_state (set, ATK.ATK_STATE_SUPPORTS_AUTOCOMPLETION);
 					/* Note: STATE_COLLAPSED, STATE_LINKED and STATE_NORMAL have no ATK equivalents */
 				}
 				return set;
