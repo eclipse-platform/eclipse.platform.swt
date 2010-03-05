@@ -342,15 +342,17 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
 	if ((style & SWT.SINGLE) != 0) {
-		NSTextField widget = (NSTextField) view;
-		NSSize size = widget.cell ().cellSize ();
-		width = (int)Math.ceil (size.width);
+		NSCell cell = ((NSTextField) view).cell ();
+		NSSize size = cell.cellSize ();
+		if (cell.title ().length () > 0) {
+			width = (int)Math.ceil (size.width);
+		}
 		height = (int)Math.ceil (size.height);
 
 		Point border = null;
 		if ((style & SWT.BORDER) != 0 && (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT)) {
 			/* determine the size of the cell without its border */
-			NSRect insets = widget.cell ().titleRectForBounds (new NSRect ());
+			NSRect insets = cell.titleRectForBounds (new NSRect ());
 			border = new Point (-(int)Math.ceil (insets.width), -(int)Math.ceil (insets.height));
 			width -= border.x;
 			height -= border.y;
