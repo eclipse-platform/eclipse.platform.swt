@@ -100,8 +100,6 @@ public class ACC {
 	/** @since 3.6 */
 	public static final int ROLE_GROUP = 0x14;
 	/** @since 3.6 */
-	public static final int ROLE_HEADING = 0x414; //TODO: add footer, paragraph, etc?
-	/** @since 3.6 */
 	public static final int ROLE_ROW = 0x1c;
 	/** @since 3.6 */
 	public static final int ROLE_SPINBUTTON = 0x34;
@@ -117,6 +115,20 @@ public class ACC {
 	public static final int ROLE_CALENDAR = 0x2f;
 	/** @since 3.6 */
 	public static final int ROLE_DATETIME = 0x405;
+	/** @since 3.6 */
+	public static final int ROLE_FOOTER = 0x40E;
+	/** @since 3.6 */
+	public static final int ROLE_FORM = 0x410;
+	/** @since 3.6 */
+	public static final int ROLE_HEADER = 0x413;
+	/** @since 3.6 */
+	public static final int ROLE_HEADING = 0x414;
+	/** @since 3.6 */
+	public static final int ROLE_PAGE = 0x41D;
+	/** @since 3.6 */
+	public static final int ROLE_PARAGRAPH = 0x41E;
+	/** @since 3.6 */
+	public static final int ROLE_SECTION = 0x424;
 
 	public static final int CHILDID_SELF = -1;
 	public static final int CHILDID_NONE = -2;
