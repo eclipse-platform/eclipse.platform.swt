@@ -946,14 +946,9 @@ public class Accessible {
 				break;
 			case ACC.ROLE_CLOCK:
 				break;
-			case ACC.ROLE_DATE_EDITOR:
+			case ACC.ROLE_DATETIME:
 				break;
-			case ACC.ROLE_COLOR_CHOOSER:
-				returnValue.addObject(OS.NSAccessibilityValueAttribute);
-				break;
-			case ACC.ROLE_FILE_CHOOSER:
-				break;
-			case ACC.ROLE_FONT_CHOOSER:
+			case ACC.ROLE_CALENDAR:
 				break;
 		}
 		
@@ -2665,7 +2660,6 @@ public class Accessible {
 			//10.6 only -> case ACC.ROLE_CANVAS: nsReturnValue = OS.NSAccessibilityLayoutAreaRole; break;
 			case ACC.ROLE_CANVAS: nsReturnValue = OS.NSAccessibilityGroupRole; break;
 			case ACC.ROLE_GRAPHIC: nsReturnValue = OS.NSAccessibilityImageRole; break;
-			case ACC.ROLE_COLOR_CHOOSER: nsReturnValue = OS.NSAccessibilityColorWellRole; break;
 		
 			//CLIENT_AREA uses NSAccessibilityGroupRole already
 			case ACC.ROLE_GROUP: nsReturnValue = OS.NSAccessibilityGroupRole; break;  
@@ -2673,16 +2667,15 @@ public class Accessible {
 			case ACC.ROLE_CHECKMENUITEM: nsReturnValue = OS.NSAccessibilityMenuButtonRole; break;
 			case ACC.ROLE_RADIOMENUITEM: nsReturnValue = OS.NSAccessibilityMenuButtonRole; break;
 			//don't know the right answer for these:
+			case ACC.ROLE_CLOCK:
+			case ACC.ROLE_DATETIME:
+			case ACC.ROLE_CALENDAR:
 			case ACC.ROLE_ALERT: 
 			case ACC.ROLE_ANIMATION: 
 			case ACC.ROLE_DOCUMENT:
 			case ACC.ROLE_HEADING: 
 			case ACC.ROLE_SPINBUTTON:
 			case ACC.ROLE_STATUSBAR:
-			case ACC.ROLE_CLOCK:
-			case ACC.ROLE_DATE_EDITOR:
-			case ACC.ROLE_FILE_CHOOSER:
-			case ACC.ROLE_FONT_CHOOSER:
 				nsReturnValue = OS.NSAccessibilityUnknownRole;
 		}
 
@@ -2726,7 +2719,6 @@ public class Accessible {
 		if (osRole.isEqualToString(OS.NSAccessibilityImageRole)) return ACC.ROLE_GRAPHIC;
 		if (osRole.isEqualToString(OS.NSAccessibilityMenuButtonRole)) return ACC.ROLE_CHECKMENUITEM;
 		if (osRole.isEqualToString(OS.NSAccessibilityMenuButtonRole)) return ACC.ROLE_RADIOMENUITEM;
-		if (osRole.isEqualToString(OS.NSAccessibilityColorWellRole)) return ACC.ROLE_COLOR_CHOOSER;
 		if (OS.VERSION >= 0x1060 && osRole.isEqualToString(OS.NSAccessibilityCellRole)) return ACC.ROLE_TABLECELL;
 		return ACC.ROLE_CLIENT_AREA;
 	}
