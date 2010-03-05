@@ -112,15 +112,11 @@ public class ACC {
 	/** @since 3.6 */
 	public static final int ROLE_RADIOMENUITEM = 0x431;
 	/** @since 3.6 */
-	public static final int ROLE_CLOCK = 0x3d; // maybe ??
+	public static final int ROLE_CLOCK = 0x3d;
 	/** @since 3.6 */
-	public static final int ROLE_DATE_EDITOR = 0x405; // maybe ??
+	public static final int ROLE_CALENDAR = 0x2f;
 	/** @since 3.6 */
-	public static final int ROLE_COLOR_CHOOSER = 0x404; // maybe ??
-	/** @since 3.6 */
-	public static final int ROLE_FILE_CHOOSER = 0x412; // maybe ??
-	/** @since 3.6 */
-	public static final int ROLE_FONT_CHOOSER = 0x413; // maybe ??
+	public static final int ROLE_DATE_TIME = 0x405;
 
 	public static final int CHILDID_SELF = -1;
 	public static final int CHILDID_NONE = -2;
@@ -338,21 +334,21 @@ public class ACC {
 	public static final int SCROLL_TYPE_POINT = 7;
 
 	/**
-	 * Sent when the selection within a container changes.
+	 * Send when the selection within a container has changed.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_SELECTION_CHANGED = 0x8009;
 	
 	/**
-	 * Sent when an object's text selection has changed.
+	 * Send when an object's text selection has changed.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_TEXT_SELECTION_CHANGED = 0x8014;
 	
 	/**
-	 * Sent when an object's state has changed, for example enabled/disabled, pressed/released, or checked/unchecked.
+	 * Send when an object's state has changed, for example enabled/disabled, pressed/released, or checked/unchecked.
 	 * <p>
 	 * The eventData object is an array of 2 ints specifying the following:<ul>
 	 * <li>state - the STATE_* constant identifying the state that changed</li>
@@ -364,7 +360,7 @@ public class ACC {
 	public static final int EVENT_STATE_CHANGED = 0x800A;
 	
 	/**
-	 * Sent when an object moves.
+	 * Send when an object has moved.
 	 * <p>
 	 * Note: only send one notification for the topmost object that has changed.
 	 * </p>
@@ -374,21 +370,21 @@ public class ACC {
 	public static final int EVENT_LOCATION_CHANGED = 0x800B;
 	
 	/**
-	 * Sent when an object's name has changed.
+	 * Send when an object's name has changed.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_NAME_CHANGED = 0x800C;
 	
 	/**
-	 * Sent when an object's description has changed.
+	 * Send when an object's description has changed.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_DESCRIPTION_CHANGED = 0x800D;
 	
 	/**
-	 * Sent when an object's value has changed.
+	 * Send when an object's value has changed.
 	 * <p>
 	 * The eventData object is an array of 2 Numbers specifying the following:<ul>
 	 * <li>oldValue - the object's old value</li>
@@ -400,28 +396,28 @@ public class ACC {
 	public static final int EVENT_VALUE_CHANGED = 0x800E;
 
 	/**
-	 * Sent when the loading of a document has completed.
+	 * Send when the loading of a document has completed.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_DOCUMENT_LOAD_COMPLETE = 0x105;
 
 	/**
-	 * Sent when the loading of a document was interrupted.
+	 * Send when the loading of a document was interrupted.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_DOCUMENT_LOAD_STOPPED = 0x106;
 
 	/**
-	 * Sent when the document contents are being reloaded.
+	 * Send when the document contents are being reloaded.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_DOCUMENT_RELOAD = 0x107;
 
 	/**
-	 * Sent when a slide changed in a presentation document
+	 * Send when a slide changed in a presentation document
 	 * or a page boundary was crossed in a word processing document. 
 	 * 
 	 * @since 3.6
@@ -429,70 +425,71 @@ public class ACC {
 	public static final int EVENT_PAGE_CHANGED = 0x111;
 
 	/**
-	 * Sent when the caret moved from one section to the next.
+	 * Send when the caret moved from one section to the next.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_SECTION_CHANGED = 0x112;
 
 	/**
-	 * Sent when the count or attributes of an accessible object's actions change.
+	 * Send when the count or attributes of an accessible object's actions have changed.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_ACTION_CHANGED = 0x100;
 
 	/**
-	 * Sent when the ending index of this link within the containing string has changed.
-	 * 
-	 * @since 3.6
-	 */
-	public static final int EVENT_HYPERLINK_END_INDEX_CHANGED = 0x108;
-
-	/**
-	 * Sent when the number of anchors associated with this hyperlink object has changed.
-	 * 
-	 * @since 3.6
-	 */
-	public static final int EVENT_HYPERLINK_ANCHOR_COUNT_CHANGED = 0x109;
-
-	/**
-	 * Sent when the hyperlink selected state changed from selected to unselected or from unselected to selected.
-	 * 
-	 * @since 3.6
-	 */
-	public static final int EVENT_HYPERLINK_SELECTED_LINK_CHANGED = 0x10a;
-
-	/**
-	 * Sent when the starting index of this link within the containing string has changed.
+	 * Send when the starting index of this link within the containing string has changed.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_HYPERLINK_START_INDEX_CHANGED = 0x10d;
 
 	/**
-	 * Sent when one of the links associated with the hypertext object has been activated.
+	 * Send when the ending index of this link within the containing string has changed.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_HYPERLINK_END_INDEX_CHANGED = 0x108;
+
+	/**
+	 * Send when the number of anchors associated with this hyperlink object has changed.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_HYPERLINK_ANCHOR_COUNT_CHANGED = 0x109;
+
+	/**
+	 * Send when the hyperlink selected state changed from selected to unselected
+	 * or from unselected to selected.
+	 * 
+	 * @since 3.6
+	 */
+	public static final int EVENT_HYPERLINK_SELECTED_LINK_CHANGED = 0x10a;
+
+	/**
+	 * Send when one of the links associated with the hypertext object has been activated.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_HYPERTEXT_LINK_ACTIVATED = 0x10b;
 
 	/**
-	 * Sent when one of the links associated with the hypertext object has been selected.
+	 * Send when one of the links associated with the hypertext object has been selected.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_HYPERTEXT_LINK_SELECTED = 0x10c;
 
 	/**
-	 * Sent when the number of hyperlinks associated with a hypertext object changed.
+	 * Send when the number of hyperlinks associated with a hypertext object has changed.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_HYPERTEXT_LINK_COUNT_CHANGED = 0x10f;
 
 	/**
-	 * Sent when an object's attributes changed.
+	 * Send when an object's attributes have changed.
 	 * 
 	 * @see #EVENT_TEXT_ATTRIBUTE_CHANGED
 	 * 
@@ -501,28 +498,28 @@ public class ACC {
 	public static final int EVENT_ATTRIBUTE_CHANGED = 0x200;
 
 	/**
-	 * Sent when a table caption changed.
+	 * Send when a table caption has changed.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_TABLE_CAPTION_CHANGED = 0x203;
 
 	/**
-	 * Sent when a table's column description changed.
+	 * Send when a table's column description has changed.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_TABLE_COLUMN_DESCRIPTION_CHANGED = 0x204;
 
 	/**
-	 * Sent when a table's column header changed.
+	 * Send when a table's column header has changed.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_TABLE_COLUMN_HEADER_CHANGED = 0x205;
 
 	/**
-	 * Sent when a table's data changed.
+	 * Send when a table's data has changed.
 	 * <p>
 	 * The eventData object is an array of 5 ints specifying the following:<ul>
 	 * <li>type - {@link ACC#INSERT} or {@link ACC#DELETE} - the type of change</li>
@@ -537,28 +534,28 @@ public class ACC {
 	public static final int EVENT_TABLE_CHANGED = 0x206;
 
 	/**
-	 * Sent when a table's row description changed.
+	 * Send when a table's row description has changed.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_TABLE_ROW_DESCRIPTION_CHANGED = 0x207;
 
 	/**
-	 * Sent when a table's row header changed.
+	 * Send when a table's row header has changed.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_TABLE_ROW_HEADER_CHANGED = 0x208;
 
 	/**
-	 * Sent when a table's summary changed.
+	 * Send when a table's summary has changed.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_TABLE_SUMMARY_CHANGED = 0x209;
 
 	/**
-	 * Sent when a text object's attributes changed.
+	 * Send when a text object's attributes have changed.
 	 * 
 	 * @see #EVENT_ATTRIBUTE_CHANGED
 	 * 
@@ -567,21 +564,21 @@ public class ACC {
 	public static final int EVENT_TEXT_ATTRIBUTE_CHANGED = 0x20a;
 	 
 	/**
-	 * Sent when the caret has moved to a new position.
+	 * Send when the caret has moved to a new position.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_TEXT_CARET_MOVED = 0x11b;
 
 	/**
-	 * Sent when the caret moved from one column to the next.
+	 * Send when the caret has moved from one column to the next.
 	 * 
 	 * @since 3.6
 	 */
 	public static final int EVENT_TEXT_COLUMN_CHANGED = 0x11d;
 
 	/**
-	 * Sent when text was inserted or deleted.
+	 * Send when text was inserted or deleted.
 	 * <p>
 	 * The eventData object is an array of 4 objects specifying the following:<ul>
 	 * <li>type - {@link ACC#INSERT} or {@link ACC#DELETE} - the type of change</li>
