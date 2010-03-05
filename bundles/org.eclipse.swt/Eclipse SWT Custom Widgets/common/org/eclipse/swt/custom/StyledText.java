@@ -6356,6 +6356,7 @@ void initializeAccessible() {
 		}
 		public void setCaretOffset(AccessibleTextEvent e) {
 			StyledText.this.setCaretOffset(e.offset);
+			e.result = ACC.OK;
 		}
 		public void getSelectionRange(AccessibleTextEvent e) {
 			Point selection = StyledText.this.getSelectionRange();
@@ -6369,6 +6370,7 @@ void initializeAccessible() {
 				int end = e.end;
 				if (end == -1) end = st.getCharCount();
 				st.setSelection(e.start, end);
+				e.result = ACC.OK;
 			}
 		}
 		public void getSelection(AccessibleTextEvent e) {
@@ -6413,6 +6415,7 @@ void initializeAccessible() {
 				} else {
 					st.clearSelection(false);
 				}
+				e.result = ACC.OK;
 			}
 		}
 		public void setSelection(AccessibleTextEvent e) {
@@ -6423,6 +6426,7 @@ void initializeAccessible() {
 			int end = e.end;
 			if (end == -1) end = st.getCharCount();
 			st.setSelection(e.start, end);
+			e.result = ACC.OK;
 		}
 		public void getCharacterCount(AccessibleTextEvent e) {
 			e.count = StyledText.this.getCharCount();
@@ -6660,6 +6664,7 @@ void initializeAccessible() {
 			}
 			st.setTopPixel(topPixel);
 			st.setHorizontalPixel(horizontalPixel);
+			e.result = ACC.OK;
 		}
 	});
 	accessible.addAccessibleAttributeListener(new AccessibleAttributeAdapter() {
