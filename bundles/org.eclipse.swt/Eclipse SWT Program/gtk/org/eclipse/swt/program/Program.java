@@ -995,7 +995,7 @@ public static boolean launch(String fileName) {
 * that this method returns an appropriate result.
 *
 * @param fileName the file or program name or URL (http:// or https://)
-* @param workingDirectory the name of the working directory or null
+* @param workingDir the name of the working directory or null
 * @return <code>true</code> if the file is launched, otherwise <code>false</code>
 * 
 * @exception IllegalArgumentException <ul>

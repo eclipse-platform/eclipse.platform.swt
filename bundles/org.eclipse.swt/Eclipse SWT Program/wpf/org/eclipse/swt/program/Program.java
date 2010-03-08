@@ -248,17 +248,17 @@ public static boolean launch (String fileName) {
  * that this method returns an appropriate result.
  *
  * @param fileName the file or program name or URL (http:// or https://)
- * @param workingDirectory the name of the working directory or null
+ * @param workingDir the name of the working directory or null
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
  * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
- *    <li>ERROR_INVALID_ARGUMENT when workingDirectory is not valid</li>
+ *    <li>ERROR_INVALID_ARGUMENT when workingDir is not valid</li>
  * </ul>
  * 
  * @since 3.6
  */
-public static boolean launch (String fileName, String workingDirectory) {
+public static boolean launch (String fileName, String workingDir) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);	
 	int hHeap = Win32.GetProcessHeap ();
 	int length = fileName.length ();
