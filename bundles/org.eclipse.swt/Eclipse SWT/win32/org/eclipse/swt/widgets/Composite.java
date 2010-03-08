@@ -315,8 +315,6 @@ void createHandle () {
 }
 
 /** 
- * WARNING: API UNDER CONSTRUCTION
- *  
  * Fills the interior of the rectangle specified by the arguments,
  * with the receiver's background. 
  *
