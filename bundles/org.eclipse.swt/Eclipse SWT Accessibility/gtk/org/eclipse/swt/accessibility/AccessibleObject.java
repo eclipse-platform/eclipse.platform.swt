@@ -3005,12 +3005,13 @@ class AccessibleObject {
 			case ACC.EVENT_HYPERLINK_START_INDEX_CHANGED:
 				OS.g_object_notify(handle, ATK.start_index);
 				break;
-			case ACC.EVENT_HYPERTEXT_LINK_ACTIVATED:
+			case ACC.EVENT_HYPERLINK_ACTIVATED:
 				OS.g_signal_emit_by_name (handle, ATK.link_activated);
 				break;
 			case ACC.EVENT_HYPERTEXT_LINK_SELECTED:
-				//TODO needs the index the link that was selected
-//				OS.g_signal_emit_by_name (handle, ATK.link_selected);
+				if (!(eventData instanceof Integer)) break;
+				int index =  ((Integer)eventData).intValue();
+				OS.g_signal_emit_by_name (handle, ATK.link_selected, index);
 				break;
 			case ACC.EVENT_HYPERTEXT_LINK_COUNT_CHANGED:
 				OS.g_object_notify(handle, ATK.accessible_hypertext_nlinks);
