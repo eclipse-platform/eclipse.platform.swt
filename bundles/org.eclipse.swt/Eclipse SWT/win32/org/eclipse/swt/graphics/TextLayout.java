@@ -3094,8 +3094,8 @@ public void setWidth (int width) {
 }
 
 /**
- * Sets the wrap indent of the receiver. This indent it applied to the all line  
- * in the paragraph but the first line.  
+ * Sets the wrap indent of the receiver. This indent is applied to all lines
+ * in the paragraph except the first line.  
  *
  * @param wrapIndent new wrap indent
  * 
