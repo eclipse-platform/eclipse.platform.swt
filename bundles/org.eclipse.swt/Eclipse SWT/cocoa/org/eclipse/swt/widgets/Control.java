@@ -1178,7 +1178,7 @@ void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int im
 			phase.y += imgHeight - backgroundImage.getBounds().height;
 		}
 		if (gcView != null) {
-			NSPoint pt = gcView.convertPoint_toView_(new NSPoint(), controlView);
+			NSPoint pt = gcView.convertPoint_toView_(new NSPoint(), view);
 			phase.x += pt.x;
 			phase.y -= pt.y;
 		}
