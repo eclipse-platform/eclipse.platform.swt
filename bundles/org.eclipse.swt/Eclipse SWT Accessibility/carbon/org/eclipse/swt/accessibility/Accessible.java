@@ -14,7 +14,6 @@ package org.eclipse.swt.accessibility;
 import java.util.Vector;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.carbon.*;
-import org.eclipse.swt.internal.ole.win32.COM;
 import org.eclipse.swt.widgets.*;
 
 /**
