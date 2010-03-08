@@ -2068,6 +2068,7 @@ class AccessibleObject {
 					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
 					listener.getText(event);
 				}
+				if (parentResult != 0) OS.g_free(parentResult);
 				return getStringPtr (event.result);
 			}
 			if (selection_num == 0) {
@@ -2084,7 +2085,11 @@ class AccessibleObject {
 					}
 					OS.memmove (start_offset, new int[] {event.offset}, 4);
 					OS.memmove (end_offset, new int[] {event.offset + event.length}, 4);
-					//TODO return the selected text, should we free parent result
+					if (parentResult != 0) OS.g_free(parentResult);
+					String text = object.getText();
+					if (text != null && text.length () > event.offset && text.length() >= event.offset + event.length) {
+						return getStringPtr (text.substring(event.offset, event.offset + event.length));
+					}
 					return 0;
 				}
 			}
@@ -2784,7 +2789,7 @@ class AccessibleObject {
 			}
 			return event.result;
 		}
-		return null;
+		return parentText;
 	}
 
 	static int /*long*/ gObjectClass_finalize (int /*long*/ atkObject) {
