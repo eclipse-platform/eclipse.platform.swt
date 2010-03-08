@@ -705,6 +705,24 @@ class AccessibleObject {
 		if (DEBUG) print ("-->atkObject_ref_child: " + index + " of: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null && object.id == ACC.CHILDID_SELF) {
+			Accessible accessible = object.accessible;
+			Vector listeners = accessible.accessibleControlListeners;
+			int length = listeners.size();
+			if (length > 0) {
+				AccessibleControlEvent event = new AccessibleControlEvent(accessible);
+				event.childID = ACC.CHILDID_CHILD_AT_INDEX;
+				event.detail = (int)/*64*/index;
+				for (int i = 0; i < length; i++) {
+					AccessibleControlListener listener = (AccessibleControlListener) listeners.elementAt(i);
+					listener.getChild(event);
+				}
+				if (event.accessible != null) {
+					AccessibleObject accObject = event.accessible.getAccessibleObject();
+					if (accObject != null) {
+						return OS.g_object_ref (accObject.handle);	
+					}
+				}
+			}
 			object.updateChildren ();
 			AccessibleObject accObject = object.getChildByIndex ((int)/*64*/index);	
 			if (accObject != null) {
