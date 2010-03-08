@@ -569,6 +569,20 @@ public class Accessible {
 	public void removeRelation(int type, Accessible target) {
 	}
 	
+	/**
+	 * Sends a message with event-specific data to accessible clients
+	 * indicating that something has changed within a custom control.
+	 *
+	 * @param event an <code>ACC</code> constant beginning with EVENT_* indicating the message to send
+	 * @param eventData an object containing event-specific data
+	 * 
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 * 
+	 * @since 3.6
+	 */
 	public void sendEvent(int event, Object eventData) {
 	}
 
