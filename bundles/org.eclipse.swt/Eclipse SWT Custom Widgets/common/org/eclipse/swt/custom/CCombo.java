@@ -1101,6 +1101,7 @@ void listEvent (Event event) {
 			e.keyLocation = event.keyLocation;
 			e.stateMask = event.stateMask;
 			notifyListeners (SWT.KeyUp, e);
+			event.doit = e.doit;
 			break;
 		}
 		case SWT.KeyDown: {
@@ -1129,6 +1130,7 @@ void listEvent (Event event) {
 			e.keyLocation = event.keyLocation;
 			e.stateMask = event.stateMask;
 			notifyListeners(SWT.KeyDown, e);
+			event.doit = e.doit;
 			break;
 			
 		}
