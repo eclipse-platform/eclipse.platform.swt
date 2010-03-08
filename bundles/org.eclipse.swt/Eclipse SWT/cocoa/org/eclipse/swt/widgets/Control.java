@@ -1154,10 +1154,10 @@ NSView eventView () {
 }
 
 void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int imgHeight) {
-	fillBackground(view, context, rect, imgHeight, 0, 0);
+	fillBackground(view, context, rect, imgHeight, null, 0, 0);
 }
 
-void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int imgHeight, int tx, int ty) {
+void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int imgHeight, NSView gcView, int tx, int ty) {
 	Control control = findBackgroundControl();
 	if (control == null) control = this;
 	Image image = control.backgroundImage;
@@ -1177,6 +1177,13 @@ void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int im
 			phase = view.convertPoint_toView_(phase, controlView);
 			phase.y += imgHeight - backgroundImage.getBounds().height;
 		}
+		if (gcView != null) {
+			NSPoint pt = gcView.convertPoint_toView_(new NSPoint(), controlView);
+			phase.x += pt.x;
+			phase.y -= pt.y;
+		}
+		phase.x -= tx;
+		phase.y += ty;
 		context.setPatternPhase(phase);
 		NSBezierPath.fillRect(rect);
 		context.restoreGraphicsState();

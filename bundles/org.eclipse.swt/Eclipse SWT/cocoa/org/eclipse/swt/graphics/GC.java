@@ -2613,6 +2613,7 @@ public Pattern getForegroundPattern() {
  */
 public GCData getGCData() {	
 	if (handle == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	checkGC(TRANSFORM | CLIPPING);
 	return data;	
 }
 
