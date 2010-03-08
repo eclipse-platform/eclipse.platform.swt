@@ -90,7 +90,11 @@ public class Accessible {
 	/**
 	 * Constructs a new instance of this class given its parent.
 	 * 
-	 * @param parent the Accessible parent
+	 * @param parent the Accessible parent, which must not be null
+	 * 
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+	 * </ul>
 	 * 
 	 * @see Control#getAccessible
 	 * 
@@ -105,6 +109,7 @@ public class Accessible {
 	
 	/**
 	 * @since 3.5
+	 * @deprecated
 	 */
 	protected Accessible() {
 	}
@@ -208,7 +213,7 @@ public class Accessible {
 	 * be notified when an accessible client asks for custom text control
 	 * specific information. The listener is notified by sending it
 	 * one of the messages defined in the <code>AccessibleTextListener</code>
-	 * interface.
+	 * and <code>AccessibleTextExtendedListener</code> interfaces.
 	 *
 	 * @param listener the listener that should be notified when the receiver
 	 * is asked for custom text control specific information
@@ -222,6 +227,7 @@ public class Accessible {
 	 * </ul>
 	 *
 	 * @see AccessibleTextListener
+	 * @see AccessibleTextExtendedListener
 	 * @see #removeAccessibleTextListener
 	 * 
 	 * @since 3.0
@@ -402,7 +408,7 @@ public class Accessible {
 	 * Adds a relation with the specified type and target
 	 * to the receiver's set of relations.
 	 * 
-	 * @param type a constant beginning with RELATION_* indicating the type of relation
+	 * @param type an <code>ACC</code> constant beginning with RELATION_* indicating the type of relation
 	 * @param target the accessible that is the target for this relation
 	 * 
 	 * @since 3.6
@@ -1204,13 +1210,19 @@ public class Accessible {
 	
 	/**
 	 * Disposes of the operating system resources associated with
-	 * the receiver.
+	 * the receiver, and removes the receiver from its parent's
+	 * list of children.
 	 * <p>
 	 * This method should be called when an accessible that was created
-	 * with the public constructor is no longer needed.
-	 * It is not necessary to call this for instances of Accessible that
-	 * were retrieved with Control#getAccessible.
+	 * with the public constructor <code>Accessible(Accessible parent)</code>
+	 * is no longer needed. You do not need to call this when the receiver's
+	 * control is disposed, because all <code>Accessible</code> instances
+	 * associated with a control are released when the control is disposed.
+	 * It is also not necessary to call this for instances of <code>Accessible</code>
+	 * that were retrieved with <code>Control.getAccessible()</code>.
 	 * </p>
+	 * 
+	 * @since 3.6
 	 */
 	public void dispose () {
 		if (parent == null) return;
@@ -2257,6 +2269,7 @@ public class Accessible {
 	 * </ul>
 	 *
 	 * @see AccessibleTextListener
+	 * @see AccessibleTextExtendedListener
 	 * @see #addAccessibleTextListener
 	 * 
 	 * @since 3.0
@@ -2437,7 +2450,7 @@ public class Accessible {
 	 * Removes the relation with the specified type and target
 	 * from the receiver's set of relations.
 	 * 
-	 * @param type a constant beginning with RELATION_* indicating the type of relation
+	 * @param type an <code>ACC</code> constant beginning with RELATION_* indicating the type of relation
 	 * @param target the accessible that is the target for this relation
 	 * 
 	 * @since 3.6
@@ -2447,8 +2460,6 @@ public class Accessible {
 	}
 	
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Sends a message with event-specific data to accessible clients
 	 * indicating that something has changed within a custom control.
 	 *
@@ -2560,8 +2571,8 @@ public class Accessible {
 	 * Sends a message to accessible clients that the text
 	 * within a custom control has changed.
 	 *
-	 * @param type the type of change, one of <code>ACC.NOTIFY_TEXT_INSERT</code>
-	 * or <code>ACC.NOTIFY_TEXT_DELETE</code>
+	 * @param type the type of change, one of <code>ACC.TEXT_INSERT</code>
+	 * or <code>ACC.TEXT_DELETE</code>
 	 * @param startIndex the text index within the control where the insertion or deletion begins
 	 * @param length the non-negative length in characters of the insertion or deletion
 	 *

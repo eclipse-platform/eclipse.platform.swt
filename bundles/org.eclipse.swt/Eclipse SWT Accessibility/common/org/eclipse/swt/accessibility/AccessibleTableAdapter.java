@@ -11,8 +11,6 @@
 package org.eclipse.swt.accessibility;
 
 /**
- * WARNING: API UNDER CONSTRUCTION
- * 
  * This adapter class provides default implementations for the
  * methods in the <code>AccessibleTableListener</code> interface.
  * <p>

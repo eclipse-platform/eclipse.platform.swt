@@ -480,14 +480,18 @@ public class ACC {
 	public static final int EVENT_HYPERLINK_SELECTED_LINK_CHANGED = 0x10a;
 
 	/**
-	 * Send when one of the links associated with the hypertext object has been activated.
+	 * Send when the hyperlink has been activated.
 	 * 
 	 * @since 3.6
 	 */
-	public static final int EVENT_HYPERTEXT_LINK_ACTIVATED = 0x10b;
+	public static final int EVENT_HYPERLINK_ACTIVATED = 0x10b;
 
 	/**
 	 * Send when one of the links associated with the hypertext object has been selected.
+	 * <p>
+	 * The eventData object is an Integer that represents the index of the selected link
+	 * in the hypertext object.
+	 * </p>
 	 * 
 	 * @since 3.6
 	 */

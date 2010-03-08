@@ -14,6 +14,7 @@ package org.eclipse.swt.accessibility;
 import java.util.Vector;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.ole.win32.COM;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -85,8 +86,6 @@ public class Accessible {
 	int[] osChildIDCache = new int[0];
 	
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Constructs a new instance of this class given its parent.
 	 * 
 	 * @param parent the Accessible parent, which must not be null
@@ -229,8 +228,6 @@ public class Accessible {
 	}
 	
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleAction</code> interface.
@@ -258,8 +255,6 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleHyperlink</code> interface.
@@ -287,8 +282,6 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleTable</code> interface.
@@ -316,8 +309,6 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleTableCell</code> interface.
@@ -345,8 +336,6 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleValue</code> interface.
@@ -374,8 +363,6 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleAttribute</code> interface.
@@ -403,8 +390,6 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Adds a relation with the specified type and target
 	 * to the receiver's set of relations.
 	 * 
@@ -419,8 +404,6 @@ public class Accessible {
 	}
 	
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Disposes of the operating system resources associated with
 	 * the receiver, and removes the receiver from its parent's
 	 * list of children.
@@ -1379,8 +1362,6 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleAction</code> interface.
@@ -1408,8 +1389,6 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleHyperlink</code> interface.
@@ -1437,8 +1416,6 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleTable</code> interface.
@@ -1466,8 +1443,6 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleTableCell</code> interface.
@@ -1495,8 +1470,6 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleValue</code> interface.
@@ -1524,8 +1497,6 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleAttribute</code> interface.
@@ -1553,8 +1524,6 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
 	 * Removes the relation with the specified type and target
 	 * from the receiver's set of relations.
 	 * 
@@ -1568,45 +1537,7 @@ public class Accessible {
 		// TODO
 	}
 	
-	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
-	 * Sends a message to accessible clients indicating that something
-	 * has changed within a custom control.
-	 *
-	 * @param event an <code>ACC</code> constant beginning with EVENT_* indicating the message to send
-	 * @param childID an identifier specifying a child of the control or the control itself
-	 * 
-	 * @exception SWTException <ul>
-	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
-	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
-	 * </ul>
-	 * 
-	 * @since 3.6
-	 */
-	public void sendEvent(int event, int childID) {
-		checkWidget();
-		// TODO
-	}
-
-	/**
-	 * WARNING: API UNDER CONSTRUCTION
-	 * 
-	 * Sends a message with event-specific data to accessible clients
-	 * indicating that something has changed within a custom control.
-	 *
-	 * @param event an <code>ACC</code> constant beginning with EVENT_* indicating the message to send
-	 * @param childID an identifier specifying a child of the control or the control itself
-	 * @param eventData an object containing event-specific data
-	 * 
-	 * @exception SWTException <ul>
-	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
-	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
-	 * </ul>
-	 * 
-	 * @since 3.6
-	 */
-	public void sendEvent(int event, int childID, Object eventData) {
+	public void sendEvent(int event, Object eventData) {
 		checkWidget();
 		// TODO
 	}
@@ -1672,8 +1603,8 @@ public class Accessible {
 	 * Sends a message to accessible clients that the text
 	 * within a custom control has changed.
 	 *
-	 * @param type the type of change, one of <code>ACC.NOTIFY_TEXT_INSERT</code>
-	 * or <code>ACC.NOTIFY_TEXT_DELETE</code>
+	 * @param type the type of change, one of <code>ACC.TEXT_INSERT</code>
+	 * or <code>ACC.TEXT_DELETE</code>
 	 * @param startIndex the text index within the control where the insertion or deletion begins
 	 * @param length the non-negative length in characters of the insertion or deletion
 	 *

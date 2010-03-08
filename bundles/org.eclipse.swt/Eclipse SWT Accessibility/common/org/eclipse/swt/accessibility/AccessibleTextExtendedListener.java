@@ -11,8 +11,6 @@
 package org.eclipse.swt.accessibility;
 
 /**
- * WARNING: API UNDER CONSTRUCTION
- * 
  * Classes which implement this interface provide methods
  * that handle AccessibleTextExtended events.
  * <p>
