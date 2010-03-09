@@ -281,7 +281,7 @@ public static boolean launch (String fileName, String workingDir) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		if (isExecutable(fileName)) {
+		if (workingDir != null && isExecutable(fileName)) {
 			try {
 				Compatibility.exec(new String[] {fileName}, null, workingDir);
 				return true;

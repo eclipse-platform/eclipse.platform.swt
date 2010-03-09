@@ -771,7 +771,7 @@ public static boolean launch (String fileName, String workingDir) {
 static boolean launch (Display display, String fileName, String workingDir) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	
-	if (isExecutable(display, fileName)) {
+	if (workingDir != null && isExecutable(display, fileName)) {
 		try {
 			Compatibility.exec (new String [] {fileName}, null, workingDir);
 			return true;
