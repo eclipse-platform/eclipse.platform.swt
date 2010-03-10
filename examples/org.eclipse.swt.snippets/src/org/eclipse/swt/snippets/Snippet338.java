@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Control example snippet: send custom Traverse events
+ * Control example snippet: perform custom traversals
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
