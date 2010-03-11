@@ -348,8 +348,7 @@ public class CTabFolderRenderer {
 				}
 				break;
 			case PART_HEADER:
-				x = x - borderLeft;
-				width = width + borderLeft + borderRight; 
+				//no trim 
 				break;
 			case PART_BORDER:
 				x = x - borderLeft;

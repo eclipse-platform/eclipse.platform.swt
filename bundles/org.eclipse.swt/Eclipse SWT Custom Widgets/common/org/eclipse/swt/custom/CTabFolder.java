@@ -570,7 +570,7 @@ public CTabItem getItem (Point pt) {
 	//checkWidget();
 	if (items.length == 0) return null;
 	Point size = getSize();
-	Rectangle trim = renderer.computeTrim(CTabFolderRenderer.PART_HEADER, SWT.NONE, 0, 0, 0, 0);
+	Rectangle trim = renderer.computeTrim(CTabFolderRenderer.PART_BORDER, SWT.NONE, 0, 0, 0, 0);
 	if (size.x <= trim.width) return null;
 	if (showChevron && chevronRect.contains(pt)) return null;
 	for (int i = 0; i < priority.length; i++) {
@@ -769,7 +769,7 @@ public CTabFolderRenderer getRenderer() {
 	return renderer;
 }
 int getRightItemEdge (GC gc){
-	Rectangle trim = renderer.computeTrim(CTabFolderRenderer.PART_HEADER, SWT.NONE, 0, 0, 0, 0);
+	Rectangle trim = renderer.computeTrim(CTabFolderRenderer.PART_BORDER, SWT.NONE, 0, 0, 0, 0);
 	int x = getSize().x - (trim.width + trim.x) - 3; //TODO: add setter for spacing?
 	if (showMin) x -= renderer.computeSize(CTabFolderRenderer.PART_MIN_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 	if (showMax) x -= renderer.computeSize(CTabFolderRenderer.PART_MAX_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
@@ -2335,7 +2335,7 @@ boolean setItemSize(GC gc) {
 	Point size = getSize();
 	if (size.x <= 0 || size.y <= 0) return changed;
 
-	Rectangle trim = renderer.computeTrim(CTabFolderRenderer.PART_HEADER, SWT.NONE, 0, 0, 0, 0);
+	Rectangle trim = renderer.computeTrim(CTabFolderRenderer.PART_BORDER, SWT.NONE, 0, 0, 0, 0);
 	int borderRight = trim.width + trim.x;
 	int borderLeft = -trim.x;
 	
@@ -3263,7 +3263,7 @@ boolean updateItems(int showIndex) {
 		// make sure selected item will be showing
 		int firstIndex = showIndex;
 		if (priority[0] < showIndex) {
-			Rectangle trim = renderer.computeTrim(CTabFolderRenderer.PART_HEADER, SWT.NONE, 0, 0, 0, 0);
+			Rectangle trim = renderer.computeTrim(CTabFolderRenderer.PART_BORDER, SWT.NONE, 0, 0, 0, 0);
 			int borderLeft = -trim.x;
 			int maxWidth = getRightItemEdge(gc) - borderLeft;
 			int width = 0;
