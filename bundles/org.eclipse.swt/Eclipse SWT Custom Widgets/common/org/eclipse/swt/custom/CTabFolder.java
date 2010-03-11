@@ -298,9 +298,19 @@ static int checkStyle (Composite parent, int style) {
 	// MULTI is the default
 	if ((style & SWT.MULTI) != 0) style = style & ~SWT.SINGLE;
 	// reduce the flash by not redrawing the entire area on a Resize event
-	style |= SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED;
-
-	return style;
+	style |= SWT.NO_REDRAW_RESIZE;
+	
+	//TEMPORARY CODE
+	/*
+	 * In Right To Left orientation on Windows, all GC calls that use a brush are drawing 
+	 * offset by one pixel.  This results in some parts of the CTabFolder not drawing correctly.
+	 * To alleviate some of the appearance problems, allow the OS to draw the background.
+	 * This does not draw correctly but the result is less obviously wrong.
+	 */
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) return style;
+	if ((parent.getStyle() & SWT.MIRRORED) != 0 && (style & SWT.LEFT_TO_RIGHT) == 0) return style;
+	
+	return style | SWT.DOUBLE_BUFFERED;
 }
 
 /**
