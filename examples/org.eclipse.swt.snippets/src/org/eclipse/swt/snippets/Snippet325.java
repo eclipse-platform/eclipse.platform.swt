@@ -87,7 +87,7 @@ public class Snippet325 {
 			styledText = editor;
 		}
 		void handleMouseMove(Event e) {
-			int [] tabs = styledText.getTabsStop();
+			int [] tabs = styledText.getTabStops();
 			int margin = styledText.getLeftMargin() + styledText.getBorderWidth();
 			int count = tabs.length;
 			int newIndex = -1;
@@ -126,7 +126,7 @@ public class Snippet325 {
 		
 		void handleDragMark (Event e) {
 			if (hover <= 0) return;
-			int [] tabs = styledText.getTabsStop();
+			int [] tabs = styledText.getTabStops();
 			int margin = styledText.getLeftMargin() + styledText.getBorderWidth();
 			int count = tabs.length;
 			int x = e.x - margin;
@@ -171,7 +171,7 @@ public class Snippet325 {
 		void handlePaint(Event e) {
 			Display display = e.display;
 			GC gc = e.gc;
-			int [] tabs = styledText.getTabsStop();
+			int [] tabs = styledText.getTabStops();
 			int margin = styledText.getLeftMargin() + styledText.getBorderWidth();
 			int x = margin;
 			gc.setBackground(display.getSystemColor(hover == 0 ? SWT.COLOR_RED : SWT.COLOR_BLACK));
