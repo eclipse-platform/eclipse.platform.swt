@@ -2344,7 +2344,7 @@ boolean setItemSize(GC gc) {
 				tab.width = width;
 				tab.closeRect.width = tab.closeRect.height = 0;
 				if (showClose || tab.showClose) {
-					Point closeSize = renderer.computeSize(selectedIndex, SWT.SELECTED, gc, SWT.DEFAULT, SWT.DEFAULT);
+					Point closeSize = renderer.computeSize(CTabFolderRenderer.PART_CLOSE_BUTTON, SWT.SELECTED, gc, SWT.DEFAULT, SWT.DEFAULT);
 					tab.closeRect.width = closeSize.x;
 					tab.closeRect.height = closeSize.y;
 				}
