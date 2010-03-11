@@ -4244,7 +4244,7 @@ public int getLineIndex(int y) {
  *    <li>ERROR_INVALID_ARGUMENT when the index is invalid</li>
  * </ul>
  * 
- * @see #getTabsStop()
+ * @see #getTabStops()
  * 
  * @since 3.6
  */
@@ -5057,7 +5057,7 @@ public StyleRange[] getStyleRanges(int start, int length, boolean includeRanges)
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @see #getTabsStop()
+ * @see #getTabStops()
  */
 public int getTabs() {
 	checkWidget();
@@ -5075,7 +5075,7 @@ public int getTabs() {
  * 
  * @since 3.6
  */
-public int[] getTabsStop() {
+public int[] getTabStops() {
 	checkWidget();
 	if (tabs == null) return new int [] {renderer.tabWidth};
 	int[] result = new int[tabs.length];
@@ -6674,7 +6674,7 @@ void initializeAccessible() {
 			e.topMargin = st.getTopMargin();
 			e.rightMargin = st.getRightMargin();
 			e.bottomMargin = st.getBottomMargin();
-			e.tabStops = st.getTabsStop();
+			e.tabStops = st.getTabStops();
 			e.justify = st.getJustify();
 			e.alignment = st.getAlignment();
 			e.indent = st.getIndent(); 
@@ -9730,7 +9730,7 @@ public void setTabs(int tabs) {
  *    <li>ERROR_INVALID_ARGUMENT - if a tab stop is negavite or less than the previous stop in the list</li>
  * </ul>
  * 
- * @see StyledText#getTabsStop()
+ * @see StyledText#getTabStops()
  * 
  * @since 3.6
  */
