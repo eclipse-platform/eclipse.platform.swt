@@ -78,6 +78,12 @@ public class OS extends C {
 	
 	public static final int /*long*/ sel_setColor_forAttribute_ = sel_registerName("setColor:forAttribute:");
 	
+	/* NSTextAttachmentCell */
+	/** @method callback_types=NSPoint;id;SEL;,callback_flags=struct;none;none; */
+	public static final native int /*long*/ CALLBACK_cellBaselineOffset(int /*long*/ func);
+	public static final int /*long*/ protocol_NSTextAttachmentCell = objc_getProtocol("NSTextAttachmentCell");
+	public static final int /*long*/ sel_cellBaselineOffset = sel_registerName("cellBaselineOffset");
+	
 	/*10.6 Accessibility Strings*/
 	/** @method flags=const dynamic no_gen*/
 	public static final native int /*long*/ NSAccessibilityRowIndexRangeAttribute();
@@ -425,8 +431,6 @@ public static final native int /*long*/ CALLBACK_accessibilityHitTest_(int /*lon
 public static final native int /*long*/ CALLBACK_attributedSubstringFromRange_(int /*long*/ func);
 /** @method callback_types=BOOL;id;SEL;NSIndexSet*;NSPoint;,callback_flags=none;none;none;none;struct; */
 public static final native int /*long*/ CALLBACK_canDragRowsWithIndexes_atPoint_(int /*long*/ func);
-/** @method callback_types=NSPoint;id;SEL;,callback_flags=struct;none;none; */
-public static final native int /*long*/ CALLBACK_cellBaselineOffset(int /*long*/ func);
 /** @method callback_types=NSSize;id;SEL;,callback_flags=struct;none;none; */
 public static final native int /*long*/ CALLBACK_cellSize(int /*long*/ func);
 /** @method callback_types=NSUInteger;id;SEL;NSPoint;,callback_flags=none;none;none;struct; */

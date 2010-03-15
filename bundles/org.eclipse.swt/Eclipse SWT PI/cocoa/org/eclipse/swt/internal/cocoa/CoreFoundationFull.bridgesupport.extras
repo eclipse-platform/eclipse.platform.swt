@@ -81,11 +81,4 @@
 		<arg name="encoding" swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
-	<function name="CFURLCreateStringByReplacingPercentEscapesUsingEncoding" swt_gen="true">
-		<arg name="allocator" swt_gen="true"></arg>
-		<arg name="origString" swt_gen="true"></arg>
-		<arg name="charsToLeaveEscaped" swt_gen="true"></arg>
-		<arg name="encoding" swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
 </signatures>
