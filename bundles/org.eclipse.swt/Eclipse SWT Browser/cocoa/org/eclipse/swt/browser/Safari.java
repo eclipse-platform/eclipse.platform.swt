@@ -607,9 +607,7 @@ void webView_didChangeLocationWithinPageForFrame(int /*long*/ sender, int /*long
 	NSString s = url.absoluteString();
 	int length = (int)/*64*/s.length();
 	if (length == 0) return;
-	int /*long*/ ptr = OS.CFURLCreateStringByReplacingPercentEscapesUsingEncoding (0, s.id, NSString.string().id, OS.kCFStringEncodingUTF8);
-	String url2 = new NSString(ptr).getString();
-	OS.CFRelease(ptr);
+	String url2 = s.getString();
 	/*
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
@@ -838,9 +836,7 @@ void webView_didCommitLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 	NSString s = url.absoluteString();
 	int length = (int)/*64*/s.length();
 	if (length == 0) return;
-	int /*long*/ ptr = OS.CFURLCreateStringByReplacingPercentEscapesUsingEncoding (0, s.id, NSString.string().id, OS.kCFStringEncodingUTF8);
-	String url2 = new NSString(ptr).getString();
-	OS.CFRelease(ptr);
+	String url2 = s.getString();
 	/*
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
@@ -1347,9 +1343,7 @@ void webView_mouseDidMoveOverElement_modifierFlags (int /*long*/ sender, int /*l
 	if (length == 0) {
 		urlString = "";	//$NON-NLS-1$
 	} else {
-		int /*long*/ ptr = OS.CFURLCreateStringByReplacingPercentEscapesUsingEncoding (0, url.id, NSString.string().id, OS.kCFStringEncodingUTF8);
-		urlString = new NSString(ptr).getString();
-		OS.CFRelease(ptr);
+		urlString = url.getString();
 	}
 	if (urlString.equals(lastHoveredLinkURL)) return;
 
@@ -1411,9 +1405,7 @@ void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int 
 		return;
 	}
 	NSString s = url.absoluteString();
-	int /*long*/ ptr = OS.CFURLCreateStringByReplacingPercentEscapesUsingEncoding (0, s.id, NSString.string().id, OS.kCFStringEncodingUTF8);
-	String url2 = new NSString(ptr).getString();
-	OS.CFRelease(ptr);
+	String url2 = s.getString();
 	/*
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.

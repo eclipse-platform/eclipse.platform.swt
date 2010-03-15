@@ -2769,13 +2769,6 @@ public static final native int /*long*/ CFURLCreateFromFSRef(int /*long*/ alloca
  */
 public static final native int /*long*/ CFURLCreateStringByAddingPercentEscapes(int /*long*/ allocator, int /*long*/ originalString, int /*long*/ charactersToLeaveUnescaped, int /*long*/ legalURLCharactersToBeEscaped, int encoding);
 /**
- * @param allocator cast=(CFAllocatorRef)
- * @param origString cast=(CFStringRef)
- * @param charsToLeaveEscaped cast=(CFStringRef)
- * @param encoding cast=(CFStringEncoding)
- */
-public static final native int /*long*/ CFURLCreateStringByReplacingPercentEscapesUsingEncoding(int /*long*/ allocator, int /*long*/ origString, int /*long*/ charsToLeaveEscaped, int encoding);
-/**
  * @param data cast=(void*)
  * @param width cast=(size_t)
  * @param height cast=(size_t)

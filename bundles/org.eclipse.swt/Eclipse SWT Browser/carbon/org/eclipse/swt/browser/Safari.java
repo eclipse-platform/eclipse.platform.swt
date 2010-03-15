@@ -896,10 +896,6 @@ void didChangeLocationWithinPageForFrame(int frame) {
 	int s = Cocoa.objc_msgSend(url, Cocoa.S_absoluteString);
 	int length = OS.CFStringGetLength(s);
 	if (length == 0) return;
-	int emptyString = Cocoa.objc_msgSend(Cocoa.C_NSString, Cocoa.S_string);
-	s = OS.CFURLCreateStringByReplacingPercentEscapes (0, s, emptyString);
-	OS.CFRelease(emptyString);
-	length = OS.CFStringGetLength(s);
 	char[] buffer = new char[length];
 	CFRange range = new CFRange();
 	range.length = length;
@@ -1152,10 +1148,6 @@ void didCommitLoadForFrame(int frame) {
 	int s = Cocoa.objc_msgSend(url, Cocoa.S_absoluteString);	
 	int length = OS.CFStringGetLength(s);
 	if (length == 0) return;
-	int emptyString = Cocoa.objc_msgSend(Cocoa.C_NSString, Cocoa.S_string);
-	s = OS.CFURLCreateStringByReplacingPercentEscapes (0, s, emptyString);
-	OS.CFRelease(emptyString);
-	length = OS.CFStringGetLength(s);
 	char[] buffer = new char[length];
 	CFRange range = new CFRange();
 	range.length = length;
@@ -1713,10 +1705,6 @@ void mouseDidMoveOverElement (int elementInformation, int modifierFlags) {
 	if (length == 0) {
 		urlString = "";	//$NON-NLS-1$
 	} else {
-		int emptyString = Cocoa.objc_msgSend(Cocoa.C_NSString, Cocoa.S_string);
-		stringPtr = OS.CFURLCreateStringByReplacingPercentEscapes (0, stringPtr, emptyString);
-		OS.CFRelease(emptyString);
-		length = OS.CFStringGetLength(stringPtr);
 		char[] chars = new char[length];
 		CFRange range = new CFRange();
 		range.length = length;
@@ -1765,9 +1753,6 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 		return;
 	}
 	int s = Cocoa.objc_msgSend(url, Cocoa.S_absoluteString);
-	int emptyString = Cocoa.objc_msgSend(Cocoa.C_NSString, Cocoa.S_string);
-	s = OS.CFURLCreateStringByReplacingPercentEscapes (0, s, emptyString);
-	OS.CFRelease(emptyString);
 	int length = OS.CFStringGetLength(s);
 	char[] buffer = new char[length];
 	CFRange range = new CFRange();
