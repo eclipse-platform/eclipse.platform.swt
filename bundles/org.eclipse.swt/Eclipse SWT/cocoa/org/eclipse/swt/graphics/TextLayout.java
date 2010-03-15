@@ -10,8 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import org.eclipse.swt.internal.C;
-import org.eclipse.swt.internal.Compatibility;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
 
@@ -55,6 +54,10 @@ public final class TextLayout extends Resource {
 	int[] lineOffsets;
 	NSRect[] lineBounds;
 	
+	// the following Callbacks are never freed
+	static Callback textLayoutCallback2;
+	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
+	
 	static final int TAB_COUNT = 32;
 	static final int UNDERLINE_THICK = 1 << 16;
 	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
@@ -64,7 +67,8 @@ public final class TextLayout extends Resource {
 	static class StyleItem {
 		TextStyle style;
 		int start;
-
+		int /*long*/ jniRef;
+		NSCell cell;
 		public String toString () {
 			return "StyleItem {" + start + ", " + style + "}";
 		}
@@ -262,7 +266,22 @@ void computeRuns() {
 			attrStr.addAttribute(OS.NSBaselineOffsetAttributeName, NSNumber.numberWithInt(style.rise), range);
 		}
 		if (style.metrics != null) {
-			//TODO implement metrics 
+			initClasses();
+			char [] buffer = new char [(int)range.length];
+			for (int j = 0; j < buffer.length; j++) {
+				buffer[j] = '\uFFFC';
+			}
+			NSString string = NSString.stringWithCharacters(buffer, buffer.length);
+			attrStr.replaceCharactersInRange(range, string);
+			
+			run.jniRef =  OS.NewGlobalRef(run);
+			if (run.jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			run.cell = (SWTTextAttachmentCell) new SWTTextAttachmentCell().alloc().init();
+			OS.object_setInstanceVariable(run.cell.id, SWT_OBJECT, run.jniRef);
+
+			NSTextAttachment attachment = ((NSTextAttachment)new NSTextAttachment().alloc()).initWithFileWrapper(null);
+			attachment.setAttachmentCell(run.cell);
+			attrStr.addAttribute(OS.NSAttachmentAttributeName, attachment, range);
 		}
 	}
 	attrStr.endEditing();
@@ -642,6 +661,15 @@ void fixRect(NSRect rect) {
 void freeRuns() {
 	lineBounds = null;
 	lineOffsets = null;
+	for (int i = 0; i < stylesCount - 1; i++) {
+		StyleItem run = styles[i];
+		if (run.cell != null) {
+			OS.object_setInstanceVariable(run.cell.id, SWT_OBJECT, 0);
+			run.cell = null;
+			OS.DeleteGlobalRef(run.jniRef);
+			run.jniRef = 0;
+		}
+	}
 }
 
 /** 
@@ -1480,6 +1508,26 @@ public int getWrapIndent () {
 	return wrapIndent;
 }
 
+void initClasses () {
+	String className = "SWTTextAttachmentCell";
+	if (OS.objc_lookUpClass(className) != 0) return;
+	
+	textLayoutCallback2 = new Callback(getClass(), "textLayoutProc", 2);
+	int /*long*/ proc2 = textLayoutCallback2.getAddress();
+	if (proc2 == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+	int /*long*/ cellBaselineOffsetProc = OS.CALLBACK_cellBaselineOffset(proc2);
+	int /*long*/ cellSizeProc = OS.CALLBACK_NSTextAttachmentCell_cellSize(proc2);
+	
+	byte[] types = {'*','\0'};
+	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
+	int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSCell, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addProtocol(cls, OS.protocol_NSTextAttachmentCell);
+	OS.class_addMethod(cls, OS.sel_cellSize, cellSizeProc, "@:");
+	OS.class_addMethod(cls, OS.sel_cellBaselineOffset, cellBaselineOffsetProc, "@:");
+	OS.objc_registerClassPair(cls);
+}
+
 /**
  * Returns <code>true</code> if the text layout has been disposed,
  * and <code>false</code> otherwise.
@@ -2026,6 +2074,35 @@ public void setWidth (int width) {
 public String toString () {
 	if (isDisposed()) return "TextLayout {*DISPOSED*}";
 	return "TextLayout {" + text + "}";
+}
+
+static int /*long*/ textLayoutProc(int /*long*/ id, int /*long*/ sel) {
+	int /*long*/ [] jniRef = new int /*long*/ [1];
+	OS.object_getInstanceVariable(id, SWT_OBJECT, jniRef);
+	if (jniRef[0] == 0) return 0;
+	StyleItem run = (StyleItem) OS.JNIGetObject(jniRef[0]);
+	if (run == null) return 0;
+	TextStyle style = run.style;
+	if (style == null) return 0;
+	GlyphMetrics metrics = style.metrics;
+	if (metrics == null) return 0;
+	if (sel == OS.sel_cellSize) {
+		NSSize size = new NSSize();
+		size.width = metrics.width;
+		size.height = metrics.ascent + metrics.descent;
+		/* NOTE that this is freed in C */
+		int /*long*/ result = OS.malloc(NSSize.sizeof);
+		OS.memmove(result, size, NSSize.sizeof);
+		return result;
+	} else if (sel == OS.sel_cellBaselineOffset) {
+		NSPoint point = new NSPoint();
+		point.y = -metrics.descent;
+		/* NOTE that this is freed in C */
+		int /*long*/ result = OS.malloc(NSPoint.sizeof);
+		OS.memmove(result, point, NSPoint.sizeof);
+		return result;
+	}
+	return 0;
 }
 
 /*
