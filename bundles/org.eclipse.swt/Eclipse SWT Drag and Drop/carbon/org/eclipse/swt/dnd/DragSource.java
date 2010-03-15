@@ -283,30 +283,8 @@ void drag(Event dragEvent) {
 		Transfer transfer = transferAgents[i];
 		if (transfer != null) {
 			int[] types = transfer.getTypeIds();
-			if (transfer instanceof FileTransfer) {
-				TransferData transferData = new TransferData();
-				transferData.type = types[0];
-				DNDEvent event2 = new DNDEvent();
-				event2.widget = this;
-				event2.time = (int)System.currentTimeMillis(); 
-				event2.dataType = transferData; 
-				notifyListeners(DND.DragSetData, event2);
-				if (event2.data != null) {
-					for (int j = 0; j < types.length; j++) {
-						transferData.type = types[j];
-						transfer.javaToNative(event2.data, transferData);
-						if (transferData.result == OS.noErr) {
-							for (int k = 0; k < transferData.data.length; k++) {
-								byte[] datum = transferData.data[k];
-								OS.AddDragItemFlavor(theDrag[0], 1 + k, types[j], datum, datum.length, 0);
-							}
-						}
-					}
-				}
-			} else {
-				for (int j = 0; j < types.length; j++) {
-					OS.AddDragItemFlavor(theDrag[0], 1, types[j], null, 0, 0);	
-				}	
+			for (int j = 0; j < types.length; j++) {
+				OS.AddDragItemFlavor(theDrag[0], 1, types[j], null, 0, 0);
 			}
 		}
 	}
@@ -390,11 +368,18 @@ int dragSendDataProc(int theType, int dragSendRefCon, int theItemRef, int theDra
 	if (transfer == null) return OS.badDragFlavorErr;
 	transfer.javaToNative(event.data, transferData);
 	if (transferData.result != OS.noErr) return transferData.result;
-	// Except for FileTransfer (see #drag), only one item can be transferred
-	// in a Drag operation
 	byte[] datum = transferData.data[0];
 	if (datum == null) return OS.cantGetFlavorErr;
-	return OS.SetDragItemFlavorData(theDrag, theItemRef, theType, datum, datum.length, 0);
+	int rc = OS.SetDragItemFlavorData(theDrag, theItemRef, theType, datum, datum.length, 0);
+	if (rc == OS.noErr && transfer instanceof FileTransfer) {
+		for (int i = 1; i < transferData.data.length; i++) {
+			datum = transferData.data[i];
+			if (datum == null) return OS.cantGetFlavorErr;
+			rc = OS.AddDragItemFlavor(theDrag, 1 + i, theType, datum, datum.length, 0);
+			if (rc != OS.noErr) break;
+		}
+	}
+	return rc;
 }
 
 /**
