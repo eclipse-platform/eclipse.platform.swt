@@ -159,6 +159,15 @@ String fixDelimiter(String str) {
 	return buffer.toString();
 }
 
+String getParamName(Node param) {
+	NamedNodeMap paramAttributes = param.getAttributes();
+	Node swtName = paramAttributes.getNamedItem("swt_param_name");
+	String paramName = swtName != null ? swtName.getNodeValue() : paramAttributes.getNamedItem("name").getNodeValue();
+	if (paramName.length() == 0) paramName = "arg" + paramAttributes.getNamedItem("index").getNodeValue();
+	if (paramName.equals("boolean")) paramName = "b";
+	return paramName;
+}
+
 void generateMethods(String className, ArrayList methods) {
 	for (Iterator iterator = methods.iterator(); iterator.hasNext();) {
 		Node method = (Node)iterator.next();
@@ -198,7 +207,6 @@ void generateMethods(String className, ArrayList methods) {
 		for (int k = 0; k < params.getLength(); k++) {
 			Node param = params.item(k);
 			if ("arg".equals(param.getNodeName())) {
-				NamedNodeMap paramAttributes = param.getAttributes();
 				if (!first) out(", ");
 				String type = getJavaType(param), type64 = getJavaType64(param);
 				out( type);
@@ -209,10 +217,7 @@ void generateMethods(String className, ArrayList methods) {
 				}
 				first = false;
 				out(" ");
-				String paramName = paramAttributes.getNamedItem("name").getNodeValue();
-				if (paramName.length() == 0) paramName = "arg" + paramAttributes.getNamedItem("index").getNodeValue();
-				if (paramName.equals("boolean")) paramName = "b";
-				out(paramName);
+				out(getParamName(param));
 			}
 		}
 		out(") {");
@@ -262,12 +267,9 @@ void generateMethods(String className, ArrayList methods) {
 		for (int k = 0; k < params.getLength(); k++) {
 			Node param = params.item(k);
 			if ("arg".equals(param.getNodeName())) {
-				NamedNodeMap paramAttributes = param.getAttributes();
 				if (!first) out(", ");
 				first = false;
-				String paramName = paramAttributes.getNamedItem("name").getNodeValue();
-				if (paramName.length() == 0) paramName = "arg" + paramAttributes.getNamedItem("index").getNodeValue();
-				if (paramName.equals("boolean")) paramName = "b";
+				String paramName = getParamName(param);
 				if (isObject(param)) {
 					out(paramName);
 					out(" != null ? ");
@@ -704,7 +706,7 @@ public String[] getExtraAttributeNames(Node node) {
 	} else if (name.equals("retval")) {
 		return new String[]{"swt_java_type", "swt_java_type64", "swt_alloc"};
 	} else if (name.equals("arg")) {
-		return new String[]{"swt_java_type", "swt_java_type64"};
+		return new String[]{"swt_java_type", "swt_java_type64", "swt_param_name"};
 	}
 	return new String[0];
 }
@@ -1580,13 +1582,13 @@ void generateFunctions() {
 					for (int j = 0; j < params.getLength(); j++) {
 						Node param = params.item(j);
 						if ("arg".equals(param.getNodeName())) {
-							NamedNodeMap paramAttributes = param.getAttributes();
 							out(" * @param ");
-							out(paramAttributes.getNamedItem("name").getNodeValue());
+							out(getParamName(param));
 							if (isStruct(param)) {
 								out(" flags=struct");
 							} else {
 								out(" cast=");
+								NamedNodeMap paramAttributes = param.getAttributes();
 								Node declaredType = paramAttributes.getNamedItem("declared_type");
 								String cast = declaredType.getNodeValue();
 								if (!cast.startsWith("(")) out("(");
@@ -1621,7 +1623,6 @@ void generateFunctions() {
 					for (int j = 0; j < params.getLength(); j++) {
 						Node param = params.item(j);
 						if ("arg".equals(param.getNodeName())) {
-							NamedNodeMap paramAttributes = param.getAttributes();
 							if (!first) out(", ");
 							first = false;
 							String type = getType(param), type64 = getType64(param);
@@ -1632,7 +1633,7 @@ void generateFunctions() {
 								out("*/");
 							}
 							out(" ");
-							out(paramAttributes.getNamedItem("name").getNodeValue());
+							out(getParamName(param));
 						}
 					}
 					generateVariadics(node);
