@@ -2167,7 +2167,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	//NSTextInput protocol
-	OS.class_addProtocol(cls, OS.objc_getProtocol("NSTextInput"));
+	OS.class_addProtocol(cls, OS.protocol_NSTextInput);
 	OS.class_addMethod(cls, OS.sel_hasMarkedText, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_markedRange, markedRangeProc, "@:");
 	OS.class_addMethod(cls, OS.sel_selectedRange, selectedRangeProc, "@:");
