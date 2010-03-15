@@ -210,7 +210,7 @@ void updateImage () {
 	NSDockTile dock = app.dockTile ();
 	boolean drawImage = overlayImage != null && dock.badgeLabel () == null;
 	if (!drawImage && !drawProgress && !drawIntermidiate) {
-		app.setApplicationIconImage (null);
+		app.setApplicationIconImage (defaultImage);
 		return;
 	}
 	
