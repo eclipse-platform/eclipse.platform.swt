@@ -76,6 +76,8 @@ public class OS extends C {
 	public static final int /*long*/ sel_isSelectorExcludedFromWebScript_ = sel_registerName("isSelectorExcludedFromWebScript:");
 	public static final int /*long*/ sel_webScriptNameForSelector_ = sel_registerName("webScriptNameForSelector:");
 	
+	public static final int /*long*/ sel_setColor_forAttribute_ = sel_registerName("setColor:forAttribute:");
+	
 	/*10.6 Accessibility Strings*/
 	/** @method flags=const dynamic no_gen*/
 	public static final native int /*long*/ NSAccessibilityRowIndexRangeAttribute();

@@ -2303,6 +2303,7 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_windowWillClose_, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_changeColor_, dialogProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_setColor_forAttribute_, dialogProc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_changeFont_, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection_, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_panel_shouldShowFilename_, dialogProc4, "@:@@");
@@ -4721,6 +4722,12 @@ static int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		FileDialog dialog = (FileDialog)OS.JNIGetObject(jniRef[0]);
 		if (dialog == null) return 0;
 		return dialog.panel_shouldShowFilename(id, sel, arg0, arg1);
+	}
+	if (sel == OS.sel_setColor_forAttribute_) {
+		FontDialog dialog = (FontDialog)OS.JNIGetObject(jniRef[0]);
+		if (dialog == null) return 0;
+		dialog.setColor_forAttribute(id, sel, arg0, arg1);
+		return 0;
 	}
 	return 0;
 }

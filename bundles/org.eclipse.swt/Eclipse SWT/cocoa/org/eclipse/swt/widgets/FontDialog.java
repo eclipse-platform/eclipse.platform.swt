@@ -171,6 +171,18 @@ public FontData open () {
 	return fontData;
 }
 
+void setColor_forAttribute(int /*long*/ id, int /*long*/ sel, int /*long*/ colorArg, int /*long*/ attribute) {
+	if (attribute != 0 && NSString.stringWith("NSColor").isEqualToString(new NSString(attribute))) { //$NON-NLS-1$
+		if (colorArg != 0) {
+			NSColor color = new NSColor(colorArg);
+			color = color.colorUsingColorSpaceName(OS.NSCalibratedRGBColorSpace);
+			rgb = new RGB((int)(color.redComponent() * 255), (int)(color.greenComponent() * 255), (int)(color.blueComponent() * 255));
+		} else {
+			rgb = null;
+		}
+	}
+}
+
 /**
  * Sets a FontData object describing the font to be
  * selected by default in the dialog, or null to let
