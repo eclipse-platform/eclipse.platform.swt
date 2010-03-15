@@ -81,6 +81,8 @@ public class OS extends C {
 	/* NSTextAttachmentCell */
 	/** @method callback_types=NSPoint;id;SEL;,callback_flags=struct;none;none; */
 	public static final native int /*long*/ CALLBACK_cellBaselineOffset(int /*long*/ func);
+	/** @method callback_types=NSSize;id;SEL;,callback_flags=struct;none;none; */
+	public static final native int /*long*/ CALLBACK_NSTextAttachmentCell_cellSize(int /*long*/ func);
 	public static final int /*long*/ protocol_NSTextAttachmentCell = objc_getProtocol("NSTextAttachmentCell");
 	public static final int /*long*/ sel_cellBaselineOffset = sel_registerName("cellBaselineOffset");
 	

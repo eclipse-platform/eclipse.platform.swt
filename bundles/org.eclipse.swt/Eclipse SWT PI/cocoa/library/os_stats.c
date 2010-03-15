@@ -14,11 +14,12 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 553;
-int OS_nativeFunctionCallCount[553];
+int OS_nativeFunctionCount = 554;
+int OS_nativeFunctionCallCount[554];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
+	"CALLBACK_1NSTextAttachmentCell_1cellSize",
 	"CALLBACK_1accessibilityHitTest_1",
 	"CALLBACK_1attributedSubstringFromRange_1",
 	"CALLBACK_1canDragRowsWithIndexes_1atPoint_1",

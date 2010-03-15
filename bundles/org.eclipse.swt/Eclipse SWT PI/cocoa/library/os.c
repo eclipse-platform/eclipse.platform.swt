@@ -62,6 +62,34 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(AcquireRootMenu)
 }
 #endif
 
+#ifndef NO_CALLBACK_1NSTextAttachmentCell_1cellSize
+static jintLong CALLBACK_1NSTextAttachmentCell_1cellSize;
+static NSSize proc_CALLBACK_1NSTextAttachmentCell_1cellSize(id arg0, SEL arg1) {
+	NSSize* lprc = ((NSSize* (*)(id, SEL))CALLBACK_1NSTextAttachmentCell_1cellSize)(arg0, arg1);
+	NSSize rc;
+	if (lprc) {
+		rc = *lprc;
+		free(lprc);
+	} else {
+		memset(&rc, 0, sizeof(NSSize));
+	}
+	return rc;
+}
+static jintLong CALLBACK_NSTextAttachmentCell_cellSize(jintLong func) {
+	CALLBACK_1NSTextAttachmentCell_1cellSize = func;
+	return (jintLong)proc_CALLBACK_1NSTextAttachmentCell_1cellSize;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1NSTextAttachmentCell_1cellSize)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1NSTextAttachmentCell_1cellSize_FUNC);
+	rc = (jintLong)CALLBACK_NSTextAttachmentCell_cellSize(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1NSTextAttachmentCell_1cellSize_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CALLBACK_1accessibilityHitTest_1
 static jintLong CALLBACK_1accessibilityHitTest_1;
 static id proc_CALLBACK_1accessibilityHitTest_1(id arg0, SEL arg1, NSPoint arg2) {
