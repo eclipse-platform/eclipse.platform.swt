@@ -425,6 +425,8 @@ public static final native int /*long*/ CALLBACK_accessibilityHitTest_(int /*lon
 public static final native int /*long*/ CALLBACK_attributedSubstringFromRange_(int /*long*/ func);
 /** @method callback_types=BOOL;id;SEL;NSIndexSet*;NSPoint;,callback_flags=none;none;none;none;struct; */
 public static final native int /*long*/ CALLBACK_canDragRowsWithIndexes_atPoint_(int /*long*/ func);
+/** @method callback_types=NSPoint;id;SEL;,callback_flags=struct;none;none; */
+public static final native int /*long*/ CALLBACK_cellBaselineOffset(int /*long*/ func);
 /** @method callback_types=NSSize;id;SEL;,callback_flags=struct;none;none; */
 public static final native int /*long*/ CALLBACK_cellSize(int /*long*/ func);
 /** @method callback_types=NSUInteger;id;SEL;NSPoint;,callback_flags=none;none;none;struct; */
@@ -1504,6 +1506,7 @@ public static final int /*long*/ sel_setAlpha_ = sel_registerName("setAlpha:");
 public static final int /*long*/ sel_setAlphaValue_ = sel_registerName("setAlphaValue:");
 public static final int /*long*/ sel_setApplicationIconImage_ = sel_registerName("setApplicationIconImage:");
 public static final int /*long*/ sel_setApplicationNameForUserAgent_ = sel_registerName("setApplicationNameForUserAgent:");
+public static final int /*long*/ sel_setAttachmentCell_ = sel_registerName("setAttachmentCell:");
 public static final int /*long*/ sel_setAttributedString_ = sel_registerName("setAttributedString:");
 public static final int /*long*/ sel_setAttributedStringValue_ = sel_registerName("setAttributedStringValue:");
 public static final int /*long*/ sel_setAttributedTitle_ = sel_registerName("setAttributedTitle:");
@@ -2480,6 +2483,9 @@ public static final NSString NSAccessibilityWindowRole = new NSString(NSAccessib
 /** @method flags=const */
 public static final native int /*long*/ NSApplicationDidChangeScreenParametersNotification();
 public static final NSString NSApplicationDidChangeScreenParametersNotification = new NSString(NSApplicationDidChangeScreenParametersNotification());
+/** @method flags=const */
+public static final native int /*long*/ NSAttachmentAttributeName();
+public static final NSString NSAttachmentAttributeName = new NSString(NSAttachmentAttributeName());
 /** @method flags=const */
 public static final native int /*long*/ NSBackgroundColorAttributeName();
 public static final NSString NSBackgroundColorAttributeName = new NSString(NSBackgroundColorAttributeName());
