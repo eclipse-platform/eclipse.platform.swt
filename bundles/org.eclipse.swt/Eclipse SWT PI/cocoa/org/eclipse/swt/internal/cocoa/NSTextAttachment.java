@@ -24,9 +24,9 @@ public NSTextAttachment(id id) {
 	super(id);
 }
 
-public id initWithFileWrapper(NSFileWrapper fileWrapper) {
+public NSTextAttachment initWithFileWrapper(NSFileWrapper fileWrapper) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithFileWrapper_, fileWrapper != null ? fileWrapper.id : 0);
-	return result != 0 ? new id(result) : null;
+	return result == this.id ? this : (result != 0 ? new NSTextAttachment(result) : null);
 }
 
 public void setAttachmentCell(id cell) {
