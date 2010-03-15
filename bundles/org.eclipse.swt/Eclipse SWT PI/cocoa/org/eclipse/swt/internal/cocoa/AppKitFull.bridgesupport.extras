@@ -109,6 +109,7 @@
 	<constant name="NSAccessibilityWindowAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityWindowRole" swt_gen="true"></constant>
 	<constant name="NSApplicationDidChangeScreenParametersNotification" swt_gen="true"></constant>
+	<constant name="NSAttachmentAttributeName" swt_gen="true"></constant>
 	<constant name="NSBackgroundColorAttributeName" swt_gen="true"></constant>
 	<constant name="NSBaselineOffsetAttributeName" swt_gen="true"></constant>
 	<constant name="NSCalibratedRGBColorSpace" swt_gen="true"></constant>
@@ -3659,6 +3660,10 @@
 	<class name="NSTextAttachment" swt_gen="mixed">
 		<method selector="initWithFileWrapper:" swt_gen="true">
 			<arg name="fileWrapper" swt_gen="true"></arg>
+			<retval swt_gen="true" swt_java_type="NSTextAttachment" swt_java_type64="NSTextAttachment"></retval>
+		</method>
+		<method selector="setAttachmentCell:" swt_gen="true">
+			<arg name="cell" swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
