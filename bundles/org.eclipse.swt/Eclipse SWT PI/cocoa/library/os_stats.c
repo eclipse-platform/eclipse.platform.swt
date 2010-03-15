@@ -14,14 +14,15 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 551;
-int OS_nativeFunctionCallCount[551];
+int OS_nativeFunctionCount = 553;
+int OS_nativeFunctionCallCount[553];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
 	"CALLBACK_1accessibilityHitTest_1",
 	"CALLBACK_1attributedSubstringFromRange_1",
 	"CALLBACK_1canDragRowsWithIndexes_1atPoint_1",
+	"CALLBACK_1cellBaselineOffset",
 	"CALLBACK_1cellSize",
 	"CALLBACK_1characterIndexForPoint_1",
 	"CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1",
@@ -296,6 +297,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSAccessibilityWindowRole",
 	"NSAffineTransformStruct_1sizeof",
 	"NSApplicationDidChangeScreenParametersNotification",
+	"NSAttachmentAttributeName",
 	"NSBackgroundColorAttributeName",
 	"NSBaselineOffsetAttributeName",
 	"NSBeep",

@@ -122,6 +122,34 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1canDragRowsWithIndexes_1atPoint_1
 }
 #endif
 
+#ifndef NO_CALLBACK_1cellBaselineOffset
+static jintLong CALLBACK_1cellBaselineOffset;
+static NSPoint proc_CALLBACK_1cellBaselineOffset(id arg0, SEL arg1) {
+	NSPoint* lprc = ((NSPoint* (*)(id, SEL))CALLBACK_1cellBaselineOffset)(arg0, arg1);
+	NSPoint rc;
+	if (lprc) {
+		rc = *lprc;
+		free(lprc);
+	} else {
+		memset(&rc, 0, sizeof(NSPoint));
+	}
+	return rc;
+}
+static jintLong CALLBACK_cellBaselineOffset(jintLong func) {
+	CALLBACK_1cellBaselineOffset = func;
+	return (jintLong)proc_CALLBACK_1cellBaselineOffset;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1cellBaselineOffset)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1cellBaselineOffset_FUNC);
+	rc = (jintLong)CALLBACK_cellBaselineOffset(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1cellBaselineOffset_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CALLBACK_1cellSize
 static jintLong CALLBACK_1cellSize;
 static NSSize proc_CALLBACK_1cellSize(id arg0, SEL arg1) {
@@ -3828,6 +3856,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSApplicationDidChangeScreenParametersNotif
 	OS_NATIVE_ENTER(env, that, NSApplicationDidChangeScreenParametersNotification_FUNC);
 	rc = (jintLong)NSApplicationDidChangeScreenParametersNotification;
 	OS_NATIVE_EXIT(env, that, NSApplicationDidChangeScreenParametersNotification_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAttachmentAttributeName
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAttachmentAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAttachmentAttributeName_FUNC);
+	rc = (jintLong)NSAttachmentAttributeName;
+	OS_NATIVE_EXIT(env, that, NSAttachmentAttributeName_FUNC);
 	return rc;
 }
 #endif
