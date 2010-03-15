@@ -38,6 +38,7 @@ public class TaskItem extends Item {
 	int progress, progressState = SWT.DEFAULT;
 	Image overlayImage;
 	String overlayText = "";
+	boolean showingText = false;
 	Menu menu;
 	
 	static final int PROGRESS_MAX = 100;
@@ -179,6 +180,16 @@ public int getProgress () {
 public int getProgressState () {
 	checkWidget ();
 	return progressState;
+}
+
+void recreate () {
+	if (showingText) {
+		if (overlayText.length () != 0) updateText ();
+	} else {
+		if (overlayImage != null) updateImage ();
+	}
+	if (progress != 0) updateProgress ();
+	if (progressState != SWT.DEFAULT) updateProgressState ();
 }
 
 void releaseHandle () {
@@ -358,12 +369,7 @@ public void setProgress (int progress) {
 	progress = Math.max (0, Math.min (progress, PROGRESS_MAX));
 	if (this.progress == progress) return;
 	this.progress = progress;
-	if (progressState == SWT.INDETERMINATE) return;
-	if (progressState == SWT.DEFAULT) return;
-	int /*long*/ mTaskbarList3 = parent.mTaskbarList3;
-	int /*long*/ hwnd = shell.handle;
-	/* ITaskbarList3::SetProgressValue */
-	OS.VtblCall (9, mTaskbarList3, hwnd, (long)progress, (long)PROGRESS_MAX);
+	updateProgress ();
 }
 
 /**
@@ -406,19 +412,7 @@ public void setProgressState (int progressState) {
 	if (shell == null) return;
 	if (this.progressState == progressState) return;
 	this.progressState = progressState;
-	int tbpFlags = OS.TBPF_NOPROGRESS;
-	switch (progressState) {
-		case SWT.NORMAL: tbpFlags = OS.TBPF_NORMAL; break;
-		case SWT.ERROR: tbpFlags = OS.TBPF_ERROR; break;
-		case SWT.PAUSED: tbpFlags = OS.TBPF_PAUSED; break;
-		case SWT.INDETERMINATE: tbpFlags = OS.TBPF_INDETERMINATE; break;
-	}
-	int /*long*/ mTaskbarList3 = parent.mTaskbarList3;
-	int /*long*/ hwnd = shell.handle;
-	/* ITaskbarList3::SetProgressValue */
-	OS.VtblCall (9, mTaskbarList3, hwnd, (long)progress, (long)PROGRESS_MAX);
-	/* ITaskbarList3::SetProgressState */
-	OS.VtblCall (10, mTaskbarList3, hwnd, tbpFlags);
+	updateProgressState ();
 }
 
 void setShell (Shell shell) {
@@ -432,6 +426,7 @@ void setShell (Shell shell) {
 }
 
 void updateImage () {
+	showingText = false;
 	Image image2 = null;
 	int /*long*/ hIcon = 0;
 	switch (overlayImage.type) {
@@ -450,7 +445,33 @@ void updateImage () {
 	if (image2 != null) image2.dispose ();
 }
 
+void updateProgress () {
+	if (progressState == SWT.INDETERMINATE) return;
+	if (progressState == SWT.DEFAULT) return;
+	int /*long*/ mTaskbarList3 = parent.mTaskbarList3;
+	int /*long*/ hwnd = shell.handle;
+	/* ITaskbarList3::SetProgressValue */
+	OS.VtblCall (9, mTaskbarList3, hwnd, (long)progress, (long)PROGRESS_MAX);
+}
+
+void updateProgressState () {
+	int tbpFlags = OS.TBPF_NOPROGRESS;
+	switch (progressState) {
+		case SWT.NORMAL: tbpFlags = OS.TBPF_NORMAL; break;
+		case SWT.ERROR: tbpFlags = OS.TBPF_ERROR; break;
+		case SWT.PAUSED: tbpFlags = OS.TBPF_PAUSED; break;
+		case SWT.INDETERMINATE: tbpFlags = OS.TBPF_INDETERMINATE; break;
+	}
+	int /*long*/ mTaskbarList3 = parent.mTaskbarList3;
+	int /*long*/ hwnd = shell.handle;
+	/* ITaskbarList3::SetProgressValue */
+	OS.VtblCall (9, mTaskbarList3, hwnd, (long)progress, (long)PROGRESS_MAX);
+	/* ITaskbarList3::SetProgressState */
+	OS.VtblCall (10, mTaskbarList3, hwnd, tbpFlags);
+}
+
 void updateText () {
+	showingText = true;
 	/* Create resources */
 	int width = 16, height = 16;
 	int /*long*/ hdc = OS.GetDC (0);

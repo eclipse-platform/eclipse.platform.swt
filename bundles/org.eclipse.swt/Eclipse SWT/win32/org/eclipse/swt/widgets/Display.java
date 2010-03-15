@@ -395,7 +395,8 @@ public class Display extends Device {
 	static final int SWT_TRAYICONMSG	= OS.WM_APP + 4;
 	static final int SWT_NULL			= OS.WM_APP + 5;
 	static final int SWT_RUNASYNC		= OS.WM_APP + 6;
-	static int SWT_TASKBARCREATED;
+	static int TASKBARCREATED;
+	static int TASKBARBUTTONCREATED;
 	static int SWT_RESTORECARET;
 	static int DI_GETDRAGIMAGE;
 	static int SWT_OPENDOC;
@@ -2712,8 +2713,9 @@ protected void init () {
 		idleHook = OS.SetWindowsHookEx (OS.WH_FOREGROUNDIDLE, foregroundIdleProc, 0, threadId);
 	}
 	
-	/* Register custom messages message */
-	SWT_TASKBARCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarCreated", true)); //$NON-NLS-1$
+	/* Register window messages */
+	TASKBARCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarCreated", true)); //$NON-NLS-1$
+	TASKBARBUTTONCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarButtonCreated", true)); //$NON-NLS-1$
 	SWT_RESTORECARET = OS.RegisterWindowMessage (new TCHAR (0, "SWT_RESTORECARET", true)); //$NON-NLS-1$
 	DI_GETDRAGIMAGE = OS.RegisterWindowMessage (new TCHAR (0, "ShellGetDragImage", true)); //$NON-NLS-1$
 	SWT_OPENDOC = OS.RegisterWindowMessage(new TCHAR (0, "SWT_OPENDOC", true)); //$NON-NLS-1$
@@ -3246,7 +3248,7 @@ int /*long*/ messageProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPar
 			break;
 		}
 		default: {
-			if ((int)/*64*/msg == SWT_TASKBARCREATED) {
+			if ((int)/*64*/msg == TASKBARCREATED) {
 				if (tray != null) {
 					TrayItem [] items = tray.items;
 					for (int i=0; i<items.length; i++) {
@@ -4801,6 +4803,18 @@ int /*long*/ windowProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wPara
 					if (0 <= plvfi.iSubItem && plvfi.iSubItem < columnCount) {
 						if (!columnVisible [plvfi.iSubItem]) return 0;
 					}
+					break;
+				}
+			}
+		}
+	}
+	if ((int)/*64*/msg == TASKBARBUTTONCREATED) {
+		if (taskBar != null) {
+			TaskItem [] items = taskBar.items;
+			for (int i=0; i<items.length; i++) {
+				TaskItem item = items [i];
+				if (item != null && item.shell != null && item.shell.handle == hwnd) {
+					item.recreate ();
 					break;
 				}
 			}
