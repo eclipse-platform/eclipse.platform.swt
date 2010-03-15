@@ -301,11 +301,11 @@ void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
 	if (!(OS.GetDeviceCaps(gc.handle, OS.TECHNOLOGY) == OS.DT_RASPRINTER)) {
 		int bits = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
 		if ((bits & OS.WS_VISIBLE) == 0) {
-			OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 1, 0);
+			OS.ShowWindow (hwnd, OS.SW_SHOW);
 		}
 		success = OS.PrintWindow (hwnd, hdc, 0);
 		if ((bits & OS.WS_VISIBLE) == 0) {
-			OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
+			OS.ShowWindow (hwnd, OS.SW_HIDE);
 		}
 	}
 	
