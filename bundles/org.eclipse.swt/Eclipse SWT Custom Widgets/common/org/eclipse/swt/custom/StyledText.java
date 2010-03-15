@@ -6712,6 +6712,7 @@ void initializeAccessible() {
 			if (isFocusControl()) state |= ACC.STATE_FOCUSED;
 			if (!isVisible()) state |= ACC.STATE_INVISIBLE;
 			if (!getEditable()) state |= ACC.STATE_READONLY;
+			if ((getStyle() & SWT.SINGLE) == 0) state |= ACC.STATE_MULTILINE;
 			e.detail = state;
 		}
 		public void getValue(AccessibleControlEvent e) {
