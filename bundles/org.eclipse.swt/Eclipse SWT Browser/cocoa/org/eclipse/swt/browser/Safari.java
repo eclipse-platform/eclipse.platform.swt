@@ -202,6 +202,9 @@ public void create (Composite parent, int style) {
 	if (webView == null) SWT.error(SWT.ERROR_NO_HANDLES);
 	webView.initWithFrame(browser.view.frame(), null, null);
 	webView.setAutoresizingMask(OS.NSViewWidthSizable | OS.NSViewHeightSizable);
+	if (webView.respondsToSelector(OS.sel__setDashboardBehavior)) {
+		OS.objc_msgSend(webView.id, OS.sel__setDashboardBehavior, 2, 1);
+	}
 	final SWTWebViewDelegate delegate = (SWTWebViewDelegate)new SWTWebViewDelegate().alloc().init();
 	Display display = browser.getDisplay();
 	display.setData(ADD_WIDGET_KEY, new Object[] {delegate, browser});

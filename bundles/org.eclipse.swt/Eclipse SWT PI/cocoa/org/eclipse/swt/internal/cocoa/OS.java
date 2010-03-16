@@ -64,6 +64,8 @@ public class OS extends C {
 
 	public static final int /*long*/ sel__drawThemeProgressArea_ = OS.sel_registerName("_drawThemeProgressArea:");
 	
+	public static final int /*long*/ sel__setDashboardBehavior = OS.sel_registerName("_setDashboardBehavior:to:");
+
 	public static final int /*long*/ sel__setNeedsToUseHeartBeatWindow_ = OS.sel_registerName("_setNeedsToUseHeartBeatWindow:");
 
 	public static final int /*long*/ class_WebPanelAuthenticationHandler = OS.objc_getClass("WebPanelAuthenticationHandler");
