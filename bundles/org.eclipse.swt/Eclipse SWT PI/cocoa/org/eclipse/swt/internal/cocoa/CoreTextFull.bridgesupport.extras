@@ -13,50 +13,50 @@
 	<enum name="kCTWritingDirectionNatural" swt_gen="true"></enum>
 	<enum name="kCTWritingDirectionRightToLeft" swt_gen="true"></enum>
 	<function name="CTFontGetAscent" swt_gen="true">
-		<arg name="font" swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CTFontGetDescent" swt_gen="true">
-		<arg name="font" swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CTFontGetLeading" swt_gen="true">
-		<arg name="font" swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CTLineCreateWithAttributedString" swt_gen="true">
-		<arg name="string" swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CTLineDraw" swt_gen="true">
-		<arg name="line" swt_gen="true"></arg>
-		<arg name="context" swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 	</function>
 	<function name="CTLineGetTypographicBounds" swt_gen="true">
-		<arg name="line" swt_gen="true"></arg>
-		<arg name="ascent" swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
-		<arg name="descent" swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
-		<arg name="leading" swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
+		<arg swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
+		<arg swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CTParagraphStyleCreate" swt_gen="true">
-		<arg name="settings" swt_gen="true"></arg>
-		<arg name="settingCount" swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CTTypesetterCreateLine" swt_gen="true">
-		<arg name="typesetter" swt_gen="true"></arg>
-		<arg name="stringRange" swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CTTypesetterCreateWithAttributedString" swt_gen="true">
-		<arg name="string" swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CTTypesetterSuggestLineBreak" swt_gen="true">
-		<arg name="typesetter" swt_gen="true"></arg>
-		<arg name="startIndex" swt_gen="true"></arg>
-		<arg name="width" swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 </signatures>

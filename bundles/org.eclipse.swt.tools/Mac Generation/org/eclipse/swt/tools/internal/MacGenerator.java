@@ -706,7 +706,7 @@ public String[] getExtraAttributeNames(Node node) {
 	} else if (name.equals("retval")) {
 		return new String[]{"swt_java_type", "swt_java_type64", "swt_alloc"};
 	} else if (name.equals("arg")) {
-		return new String[]{"swt_java_type", "swt_java_type64", "swt_param_name"};
+		return new String[]{"swt_java_type", "swt_java_type64", "swt_param_name", "swt_param_cast"};
 	}
 	return new String[0];
 }
@@ -716,16 +716,32 @@ public String getFileName(String xmlPath) {
 	return file.getName();
 }
 
+int indexOfNode(Node node) {
+	Node parent = node.getParentNode();
+	int count = 0;
+	Node temp = parent.getFirstChild();
+	while (temp != node) {
+		count++;
+		temp = temp.getNextSibling();
+	}
+	return count;
+}
+
 String getKey (Node node) {
 	StringBuffer buffer = new StringBuffer();
 	while (node != null) {
 		if (buffer.length() > 0) buffer.append("_");
 		String name = node.getNodeName();
 		StringBuffer key = new StringBuffer(name);
-		Node nameAttrib = getIDAttribute(node);
-		if (nameAttrib != null) {
+		if ("arg".equals(name)) {
 			key.append("-");
-			key.append(nameAttrib.getNodeValue());
+			key.append(indexOfNode(node));
+		} else {
+			Node nameAttrib = getIDAttribute(node);
+			if (nameAttrib != null) {
+				key.append("-");
+				key.append(nameAttrib.getNodeValue());
+			}
 		}
 		NamedNodeMap attributes = node.getAttributes();
 		if (attributes != null) {
@@ -1589,7 +1605,8 @@ void generateFunctions() {
 							} else {
 								out(" cast=");
 								NamedNodeMap paramAttributes = param.getAttributes();
-								Node declaredType = paramAttributes.getNamedItem("declared_type");
+								Node swtCast = paramAttributes.getNamedItem("swt_param_cast");
+								Node declaredType = swtCast != null ? swtCast : paramAttributes.getNamedItem("declared_type");
 								String cast = declaredType.getNodeValue();
 								if (!cast.startsWith("(")) out("(");
 								out(cast);

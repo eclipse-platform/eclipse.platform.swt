@@ -35,29 +35,29 @@
 	<enum name="NSURLRequestReloadIgnoringLocalCacheData" swt_gen="true"></enum>
 	<enum name="NSUTF8StringEncoding" swt_gen="true"></enum>
 	<function name="NSEqualRects" swt_gen="true">
-		<arg name="aRect" swt_gen="true"></arg>
-		<arg name="bRect" swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="NSFileTypeForHFSTypeCode" swt_gen="true">
-		<arg name="hfsFileTypeCode" swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="NSGetSizeAndAlignment" swt_gen="true">
-		<arg name="typePtr" swt_gen="true"></arg>
-		<arg name="sizep" swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
-		<arg name="alignp" swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
+		<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="NSPointInRect" swt_gen="true">
-		<arg name="aPoint" swt_gen="true"></arg>
-		<arg name="aRect" swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="NSSearchPathForDirectoriesInDomains" swt_gen="true">
-		<arg name="directory" swt_gen="true"></arg>
-		<arg name="domainMask" swt_gen="true"></arg>
-		<arg name="expandTilde" swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="NSTemporaryDirectory" swt_gen="true">
@@ -73,22 +73,22 @@
 			<retval swt_gen="true" swt_java_type="NSArray"></retval>
 		</method>
 		<method class_method="true" selector="arrayWithObject:" swt_gen="true">
-			<arg name="anObject" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSArray"></retval>
 		</method>
 		<method selector="containsObject:" swt_gen="true">
-			<arg name="anObject" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="count" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="indexOfObjectIdenticalTo:" swt_gen="true">
-			<arg name="anObject" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="objectAtIndex:" swt_gen="true">
-			<arg name="index" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -97,28 +97,28 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="handleFailureInFunction:file:lineNumber:description:" swt_gen="true">
-			<arg name="functionName" swt_gen="true"></arg>
-			<arg name="fileName" swt_gen="true"></arg>
-			<arg name="line" swt_gen="true"></arg>
-			<arg name="description" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="handleFailureInMethod:object:file:lineNumber:description:" swt_gen="true">
-			<arg name="selector" swt_gen="true"></arg>
-			<arg name="object" swt_gen="true"></arg>
-			<arg name="fileName" swt_gen="true"></arg>
-			<arg name="line" swt_gen="true"></arg>
-			<arg name="description" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSAttributedString" swt_gen="mixed">
 		<method selector="attributedSubstringFromRange:" swt_gen="true">
-			<arg name="range" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initWithString:" swt_gen="true">
-			<arg name="str" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSAttributedString"></retval>
 		</method>
 		<method selector="length" swt_gen="true">
@@ -130,7 +130,7 @@
 	</class>
 	<class name="NSAutoreleasePool" swt_gen="mixed">
 		<method class_method="true" selector="enableFreedObjectCheck:" swt_gen="true">
-			<arg name="enable" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -142,11 +142,11 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="bundleWithIdentifier:" swt_gen="true">
-			<arg name="identifier" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="bundleWithPath:" swt_gen="true">
-			<arg name="path" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="infoDictionary" swt_gen="true">
@@ -156,12 +156,12 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="objectForInfoDictionaryKey:" swt_gen="true">
-			<arg name="key" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="pathForResource:ofType:" swt_gen="true">
-			<arg name="name" swt_gen="true"></arg>
-			<arg name="ext" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="resourcePath" swt_gen="true">
@@ -173,13 +173,13 @@
 			<retval swt_gen="true" swt_java_type="NSCalendarDate"></retval>
 		</method>
 		<method class_method="true" selector="dateWithYear:month:day:hour:minute:second:timeZone:" swt_gen="true">
-			<arg name="year" swt_gen="true"></arg>
-			<arg name="month" swt_gen="true"></arg>
-			<arg name="day" swt_gen="true"></arg>
-			<arg name="hour" swt_gen="true"></arg>
-			<arg name="minute" swt_gen="true"></arg>
-			<arg name="second" swt_gen="true"></arg>
-			<arg name="aTimeZone" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSCalendarDate"></retval>
 		</method>
 		<method selector="dayOfMonth" swt_gen="true">
@@ -206,7 +206,7 @@
 	</class>
 	<class name="NSCharacterSet" swt_gen="mixed">
 		<method selector="characterIsMember:" swt_gen="true">
-			<arg name="aCharacter" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="decimalDigitCharacterSet" swt_gen="true">
@@ -235,17 +235,17 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="dataWithBytes:length:" swt_gen="true">
-			<arg name="bytes" swt_gen="true" swt_java_type="byte[]"></arg>
-			<arg name="length" swt_gen="true"></arg>
+			<arg swt_gen="true" swt_java_type="byte[]"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSData"></retval>
 		</method>
 		<method selector="getBytes:" swt_gen="true">
-			<arg name="buffer" swt_gen="true" swt_java_type="byte[]"></arg>
+			<arg swt_gen="true" swt_java_type="byte[]"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="getBytes:length:" swt_gen="true">
-			<arg name="buffer" swt_gen="true"></arg>
-			<arg name="length" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="length" swt_gen="true">
@@ -254,12 +254,12 @@
 	</class>
 	<class name="NSDate" swt_gen="mixed">
 		<method selector="dateWithCalendarFormat:timeZone:" swt_gen="true">
-			<arg name="format" swt_gen="true"></arg>
-			<arg name="aTimeZone" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="dateWithTimeIntervalSinceNow:" swt_gen="true">
-			<arg name="secs" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSDate"></retval>
 		</method>
 		<method class_method="true" selector="distantFuture" swt_gen="true">
@@ -280,19 +280,19 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="dictionaryWithObject:forKey:" swt_gen="true">
-			<arg name="object" swt_gen="true"></arg>
-			<arg name="key" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSDictionary"></retval>
 		</method>
 		<method selector="objectEnumerator" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="objectForKey:" swt_gen="true">
-			<arg name="aKey" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="valueForKey:" swt_gen="true">
-			<arg name="key" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -323,47 +323,47 @@
 	</class>
 	<class name="NSFileManager" swt_gen="mixed">
 		<method selector="createFileAtPath:contents:attributes:" swt_gen="true">
-			<arg name="path" swt_gen="true"></arg>
-			<arg name="data" swt_gen="true"></arg>
-			<arg name="attr" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="defaultManager" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="enumeratorAtPath:" swt_gen="true">
-			<arg name="path" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="fileExistsAtPath:" swt_gen="true">
-			<arg name="path" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="fileExistsAtPath:isDirectory:" swt_gen="true">
-			<arg name="path" swt_gen="true"></arg>
-			<arg name="isDirectory" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="isExecutableFileAtPath:" swt_gen="true">
-			<arg name="path" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="removeItemAtPath:error:" swt_gen="true">
-			<arg name="path" swt_gen="true"></arg>
-			<arg name="error" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSFormatter" swt_gen="mixed">
 		<method selector="stringForObjectValue:" swt_gen="true">
-			<arg name="obj" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSHTTPCookie" swt_gen="mixed">
 		<method class_method="true" selector="cookiesWithResponseHeaderFields:forURL:" swt_gen="true">
-			<arg name="headerFields" swt_gen="true"></arg>
-			<arg name="URL" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="isSessionOnly" swt_gen="true">
@@ -381,15 +381,15 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="cookiesForURL:" swt_gen="true">
-			<arg name="URL" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="deleteCookie:" swt_gen="true">
-			<arg name="cookie" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setCookie:" swt_gen="true">
-			<arg name="cookie" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="sharedHTTPCookieStorage" swt_gen="true">
@@ -400,7 +400,7 @@
 	</class>
 	<class name="NSIndexSet" swt_gen="mixed">
 		<method selector="containsIndex:" swt_gen="true">
-			<arg name="value" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="count" swt_gen="true">
@@ -410,17 +410,17 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="getIndexes:maxCount:inIndexRange:" swt_gen="true">
-			<arg name="indexBuffer" swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
-			<arg name="bufferSize" swt_gen="true"></arg>
-			<arg name="range" swt_gen="true"></arg>
+			<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initWithIndex:" swt_gen="true">
-			<arg name="value" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSIndexSet"></retval>
 		</method>
 		<method selector="initWithIndexesInRange:" swt_gen="true">
-			<arg name="range" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSIndexSet"></retval>
 		</method>
 	</class>
@@ -432,13 +432,13 @@
 	</class>
 	<class name="NSKeyedArchiver" swt_gen="mixed" swt_superclass="NSCoder">
 		<method class_method="true" selector="archivedDataWithRootObject:" swt_gen="true">
-			<arg name="rootObject" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSKeyedUnarchiver" swt_gen="mixed" swt_superclass="NSCoder">
 		<method class_method="true" selector="unarchiveObjectWithData:" swt_gen="true">
-			<arg name="data" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -454,42 +454,42 @@
 	</class>
 	<class name="NSMutableArray" swt_gen="mixed" swt_superclass="NSArray">
 		<method selector="addObject:" swt_gen="true">
-			<arg name="anObject" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="addObjectsFromArray:" swt_gen="true">
-			<arg name="otherArray" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="arrayWithCapacity:" swt_gen="true">
-			<arg name="numItems" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSMutableArray"></retval>
 		</method>
 		<method selector="initWithCapacity:" swt_gen="true">
-			<arg name="numItems" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSMutableArray"></retval>
 		</method>
 		<method selector="removeLastObject" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="removeObject:" swt_gen="true">
-			<arg name="anObject" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="removeObjectAtIndex:" swt_gen="true">
-			<arg name="index" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="removeObjectIdenticalTo:" swt_gen="true">
-			<arg name="anObject" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSMutableAttributedString" swt_gen="mixed" swt_superclass="NSAttributedString">
 		<method selector="addAttribute:value:range:" swt_gen="true">
-			<arg name="name" swt_gen="true"></arg>
-			<arg name="value" swt_gen="true"></arg>
-			<arg name="range" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="beginEditing" swt_gen="true">
@@ -499,12 +499,12 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="removeAttribute:range:" swt_gen="true">
-			<arg name="name" swt_gen="true"></arg>
-			<arg name="range" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setAttributedString:" swt_gen="true">
-			<arg name="attrString" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -514,79 +514,79 @@
 	</class>
 	<class name="NSMutableDictionary" swt_gen="mixed" swt_superclass="NSDictionary">
 		<method class_method="true" selector="dictionaryWithCapacity:" swt_gen="true">
-			<arg name="numItems" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSMutableDictionary"></retval>
 		</method>
 		<method selector="initWithCapacity:" swt_gen="true">
-			<arg name="numItems" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSMutableDictionary"></retval>
 		</method>
 		<method selector="removeObjectForKey:" swt_gen="true">
-			<arg name="aKey" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setDictionary:" swt_gen="true">
-			<arg name="otherDictionary" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setObject:forKey:" swt_gen="true">
-			<arg name="anObject" swt_gen="true"></arg>
-			<arg name="aKey" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setValue:forKey:" swt_gen="true">
-			<arg name="value" swt_gen="true"></arg>
-			<arg name="key" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSMutableIndexSet" swt_gen="mixed" swt_superclass="NSIndexSet">
 		<method selector="addIndex:" swt_gen="true">
-			<arg name="value" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSMutableSet" swt_gen="mixed" swt_superclass="NSSet">
 		<method selector="addObjectsFromArray:" swt_gen="true">
-			<arg name="array" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSMutableString" swt_gen="mixed" swt_superclass="NSString">
 		<method selector="appendString:" swt_gen="true">
-			<arg name="aString" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="replaceCharactersInRange:withString:" swt_gen="true">
-			<arg name="range" swt_gen="true"></arg>
-			<arg name="aString" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setString:" swt_gen="true">
-			<arg name="aString" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSMutableURLRequest" swt_gen="mixed" swt_superclass="NSURLRequest">
 		<method selector="setCachePolicy:" swt_gen="true">
-			<arg name="policy" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setHTTPBody:" swt_gen="true">
-			<arg name="data" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setHTTPMethod:" swt_gen="true">
-			<arg name="method" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setURL:" swt_gen="true">
-			<arg name="URL" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setValue:forHTTPHeaderField:" swt_gen="true">
-			<arg name="value" swt_gen="true"></arg>
-			<arg name="field" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -602,23 +602,23 @@
 	</class>
 	<class name="NSNotificationCenter" swt_gen="mixed">
 		<method selector="addObserver:selector:name:object:" swt_gen="true">
-			<arg name="observer" swt_gen="true"></arg>
-			<arg name="aSelector" swt_gen="true"></arg>
-			<arg name="aName" swt_gen="true"></arg>
-			<arg name="anObject" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="defaultCenter" swt_gen="true">
 			<retval swt_gen="true" swt_java_type="NSNotificationCenter"></retval>
 		</method>
 		<method selector="removeObserver:" swt_gen="true">
-			<arg name="observer" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="removeObserver:name:object:" swt_gen="true">
-			<arg name="observer" swt_gen="true"></arg>
-			<arg name="aName" swt_gen="true"></arg>
-			<arg name="anObject" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -639,19 +639,19 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="numberWithBool:" swt_gen="true">
-			<arg name="value" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="numberWithDouble:" swt_gen="true">
-			<arg name="value" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="numberWithInt:" swt_gen="true">
-			<arg name="value" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="numberWithInteger:" swt_gen="true">
-			<arg name="value" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -678,39 +678,39 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setAllowsFloats:" swt_gen="true">
-			<arg name="flag" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setMaximum:" swt_gen="true">
-			<arg name="number" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setMaximumFractionDigits:" swt_gen="true">
-			<arg name="number" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setMaximumIntegerDigits:" swt_gen="true">
-			<arg name="number" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setMinimum:" swt_gen="true">
-			<arg name="number" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setMinimumFractionDigits:" swt_gen="true">
-			<arg name="number" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setMinimumIntegerDigits:" swt_gen="true">
-			<arg name="number" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setNumberStyle:" swt_gen="true">
-			<arg name="style" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setPartialStringValidationEnabled:" swt_gen="true">
-			<arg name="b" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -719,14 +719,14 @@
 			<retval swt_gen="true" swt_java_type="NSObject"></retval>
 		</method>
 		<method selector="cancelAuthenticationChallenge:" swt_gen="true">
-			<arg name="challenge" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="className" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="conformsToProtocol:" swt_gen="true">
-			<arg name="aProtocol" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="copy" swt_gen="true">
@@ -739,31 +739,31 @@
 			<retval swt_gen="true" swt_java_type="NSObject"></retval>
 		</method>
 		<method selector="isEqual:" swt_gen="true">
-			<arg name="object" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="isEqualTo:" swt_gen="true">
-			<arg name="object" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="isKindOfClass:" swt_gen="true">
-			<arg name="aClass" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="mutableCopy" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="performSelectorOnMainThread:withObject:waitUntilDone:" swt_gen="true">
-			<arg name="aSelector" swt_gen="true"></arg>
-			<arg name="arg" swt_gen="true"></arg>
-			<arg name="wait" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="release" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="respondsToSelector:" swt_gen="true">
-			<arg name="aSelector" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="retain" swt_gen="true">
@@ -773,20 +773,20 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setValue:forKey:" swt_gen="true">
-			<arg name="value" swt_gen="true"></arg>
-			<arg name="key" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="superclass" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="useCredential:forAuthenticationChallenge:" swt_gen="true">
-			<arg name="credential" swt_gen="true"></arg>
-			<arg name="challenge" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="valueForKey:" swt_gen="true">
-			<arg name="key" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -804,8 +804,8 @@
 	</class>
 	<class name="NSRunLoop" swt_gen="mixed">
 		<method selector="addTimer:forMode:" swt_gen="true">
-			<arg name="timer" swt_gen="true"></arg>
-			<arg name="mode" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="currentRunLoop" swt_gen="true">
@@ -815,8 +815,8 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="runMode:beforeDate:" swt_gen="true">
-			<arg name="mode" swt_gen="true"></arg>
-			<arg name="limitDate" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -846,32 +846,32 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="characterAtIndex:" swt_gen="true">
-			<arg name="index" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="int" swt_java_type64="long"></retval>
 		</method>
 		<method selector="compare:" swt_gen="true">
-			<arg name="string" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="fileSystemRepresentation" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="getCharacters:" swt_gen="true">
-			<arg name="buffer" swt_gen="true" swt_java_type="char[]"></arg>
+			<arg swt_gen="true" swt_java_type="char[]"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="getCharacters:range:" swt_gen="true">
-			<arg name="buffer" swt_gen="true" swt_java_type="char[]"></arg>
-			<arg name="aRange" swt_gen="true"></arg>
+			<arg swt_gen="true" swt_java_type="char[]"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initWithCharacters:length:" swt_gen="true">
-			<arg name="characters" swt_gen="true" swt_java_type="char[]"></arg>
-			<arg name="length" swt_gen="true"></arg>
+			<arg swt_gen="true" swt_java_type="char[]"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSString"></retval>
 		</method>
 		<method selector="isEqualToString:" swt_gen="true">
-			<arg name="aString" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="lastPathComponent" swt_gen="true">
@@ -890,19 +890,19 @@
 			<retval swt_gen="true" swt_java_type="NSString"></retval>
 		</method>
 		<method selector="stringByAddingPercentEscapesUsingEncoding:" swt_gen="true">
-			<arg name="enc" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="stringByAppendingPathComponent:" swt_gen="true">
-			<arg name="str" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="stringByAppendingPathExtension:" swt_gen="true">
-			<arg name="str" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="stringByAppendingString:" swt_gen="true">
-			<arg name="aString" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="stringByDeletingLastPathComponent" swt_gen="true">
@@ -912,21 +912,21 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="stringByReplacingOccurrencesOfString:withString:" swt_gen="true">
-			<arg name="target" swt_gen="true"></arg>
-			<arg name="replacement" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="stringWithCharacters:length:" swt_gen="true">
-			<arg name="characters" swt_gen="true" swt_java_type="char[]"></arg>
-			<arg name="length" swt_gen="true"></arg>
+			<arg swt_gen="true" swt_java_type="char[]"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSString"></retval>
 		</method>
 		<method class_method="true" selector="stringWithFormat:" swt_gen="true">
-			<arg name="stringWithFormat" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSString"></retval>
 		</method>
 		<method class_method="true" selector="stringWithUTF8String:" swt_gen="true">
-			<arg name="nullTerminatedCString" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSString"></retval>
 		</method>
 	</class>
@@ -951,15 +951,15 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="scheduledTimerWithTimeInterval:target:selector:userInfo:repeats:" swt_gen="true">
-			<arg name="ti" swt_gen="true"></arg>
-			<arg name="aTarget" swt_gen="true"></arg>
-			<arg name="aSelector" swt_gen="true"></arg>
-			<arg name="userInfo" swt_gen="true"></arg>
-			<arg name="yesOrNo" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setFireDate:" swt_gen="true">
-			<arg name="date" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="userInfo" swt_gen="true">
@@ -968,14 +968,14 @@
 	</class>
 	<class name="NSURL" swt_gen="mixed">
 		<method class_method="true" selector="URLWithString:" swt_gen="true">
-			<arg name="URLString" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSURL"></retval>
 		</method>
 		<method selector="absoluteString" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="fileURLWithPath:" swt_gen="true">
-			<arg name="path" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSURL"></retval>
 		</method>
 		<method selector="isFileURL" swt_gen="true">
@@ -1001,9 +1001,9 @@
 	</class>
 	<class name="NSURLCredential" swt_gen="mixed">
 		<method class_method="true" selector="credentialWithUser:password:persistence:" swt_gen="true">
-			<arg name="user" swt_gen="true"></arg>
-			<arg name="password" swt_gen="true"></arg>
-			<arg name="persistence" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="hasPassword" swt_gen="true">
@@ -1021,8 +1021,8 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setDestination:allowOverwrite:" swt_gen="true">
-			<arg name="path" swt_gen="true"></arg>
-			<arg name="allowOverwrite" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -1042,11 +1042,11 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initWithURL:" swt_gen="true">
-			<arg name="URL" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSURLRequest"></retval>
 		</method>
 		<method class_method="true" selector="requestWithURL:" swt_gen="true">
-			<arg name="URL" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSURLRequest"></retval>
 		</method>
 	</class>
@@ -1071,19 +1071,19 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="valueWithPoint:" swt_gen="true">
-			<arg name="point" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="valueWithRange:" swt_gen="true">
-			<arg name="range" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="valueWithRect:" swt_gen="true">
-			<arg name="rect" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="valueWithSize:" swt_gen="true">
-			<arg name="size" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -1099,8 +1099,8 @@
 	</class>
 	<informal_protocol name="NSURLDownloadDelegate" swt_gen="mixed">
 		<method selector="download:decideDestinationWithSuggestedFilename:" swt_gen="true">
-			<arg name="download" swt_gen="true"></arg>
-			<arg name="filename" swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
 </signatures>
