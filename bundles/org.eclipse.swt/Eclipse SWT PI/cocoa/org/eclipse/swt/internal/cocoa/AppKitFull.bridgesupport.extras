@@ -1,387 +1,5 @@
 <?xml version="1.0" encoding="UTF8"?>
 <signatures swt_gen="mixed">
-	<constant name="NSAccessibilityBoundsForRangeParameterizedAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityButtonRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityCheckBoxRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityChildrenAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityColorWellRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityColumnRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityColumnsAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityComboBoxRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityConfirmAction" swt_gen="true"></constant>
-	<constant name="NSAccessibilityContentsAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityDescriptionAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityDialogSubrole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityEnabledAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityExpandedAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityFloatingWindowSubrole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityFocusedAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityFocusedUIElementChangedNotification" swt_gen="true"></constant>
-	<constant name="NSAccessibilityGridRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityGroupRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityHeaderAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityHelpAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityHelpTagRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityHorizontalOrientationValue" swt_gen="true"></constant>
-	<constant name="NSAccessibilityHorizontalScrollBarAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityImageRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityIncrementorRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityIndexAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityInsertionPointLineNumberAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityLabelValueAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityLineForIndexParameterizedAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityLinkRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityLinkTextAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityLinkedUIElementsAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityListRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityMaxValueAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityMenuBarRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityMenuButtonRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityMenuItemRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityMenuRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityMinValueAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityNextContentsAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityNumberOfCharactersAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityOrientationAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityOutlineRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityOutlineRowSubrole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityParentAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityPopUpButtonRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityPositionAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityPressAction" swt_gen="true"></constant>
-	<constant name="NSAccessibilityPreviousContentsAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityProgressIndicatorRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityRTFForRangeParameterizedAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityRadioButtonRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityRadioGroupRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityRangeForIndexParameterizedAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityRangeForLineParameterizedAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityRangeForPositionParameterizedAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityRoleAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityRoleDescriptionAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityRowRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityRowsAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityScrollAreaRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityScrollBarRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySelectedAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySelectedChildrenAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySelectedChildrenChangedNotification" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySelectedColumnsAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySelectedRowsAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySelectedTextAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySelectedTextChangedNotification" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySelectedTextRangeAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySelectedTextRangesAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityServesAsTitleForUIElementsAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySizeAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySliderRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySortButtonRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySplitterRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityStandardWindowSubrole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityStaticTextRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityStringForRangeParameterizedAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityStyleRangeForIndexParameterizedAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySubroleAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySystemDialogSubrole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityTabGroupRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityTableRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityTableRowSubrole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityTabsAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityTextAreaRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityTextFieldRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityTextLinkSubrole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityTitleAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityTitleUIElementAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityToolbarRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityTopLevelUIElementAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityUnknownRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityUnknownSubrole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityValueAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityValueChangedNotification" swt_gen="true"></constant>
-	<constant name="NSAccessibilityValueDescriptionAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityValueIndicatorRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityVerticalOrientationValue" swt_gen="true"></constant>
-	<constant name="NSAccessibilityVerticalScrollBarAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityVisibleCharacterRangeAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityVisibleChildrenAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityVisibleColumnsAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityVisibleRowsAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityWindowAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityWindowRole" swt_gen="true"></constant>
-	<constant name="NSApplicationDidChangeScreenParametersNotification" swt_gen="true"></constant>
-	<constant name="NSAttachmentAttributeName" swt_gen="true"></constant>
-	<constant name="NSBackgroundColorAttributeName" swt_gen="true"></constant>
-	<constant name="NSBaselineOffsetAttributeName" swt_gen="true"></constant>
-	<constant name="NSCalibratedRGBColorSpace" swt_gen="true"></constant>
-	<constant name="NSCursorAttributeName" swt_gen="true"></constant>
-	<constant name="NSDeviceRGBColorSpace" swt_gen="true"></constant>
-	<constant name="NSDeviceResolution" swt_gen="true"></constant>
-	<constant name="NSDragPboard" swt_gen="true"></constant>
-	<constant name="NSEventTrackingRunLoopMode" swt_gen="true"></constant>
-	<constant name="NSFilenamesPboardType" swt_gen="true"></constant>
-	<constant name="NSFontAttributeName" swt_gen="true"></constant>
-	<constant name="NSForegroundColorAttributeName" swt_gen="true"></constant>
-	<constant name="NSHTMLPboardType" swt_gen="true"></constant>
-	<constant name="NSLinkAttributeName" swt_gen="true"></constant>
-	<constant name="NSObliquenessAttributeName" swt_gen="true"></constant>
-	<constant name="NSOutlineViewColumnDidMoveNotification" swt_gen="true"></constant>
-	<constant name="NSParagraphStyleAttributeName" swt_gen="true"></constant>
-	<constant name="NSPrintAllPages" swt_gen="true"></constant>
-	<constant name="NSPrintCopies" swt_gen="true"></constant>
-	<constant name="NSPrintFirstPage" swt_gen="true"></constant>
-	<constant name="NSPrintJobDisposition" swt_gen="true"></constant>
-	<constant name="NSPrintLastPage" swt_gen="true"></constant>
-	<constant name="NSPrintMustCollate" swt_gen="true"></constant>
-	<constant name="NSPrintPreviewJob" swt_gen="true"></constant>
-	<constant name="NSPrintSaveJob" swt_gen="true"></constant>
-	<constant name="NSPrintSavePath" swt_gen="true"></constant>
-	<constant name="NSPrintScalingFactor" swt_gen="true"></constant>
-	<constant name="NSPrintSpoolJob" swt_gen="true"></constant>
-	<constant name="NSRTFPboardType" swt_gen="true"></constant>
-	<constant name="NSStrikethroughColorAttributeName" swt_gen="true"></constant>
-	<constant name="NSStrikethroughStyleAttributeName" swt_gen="true"></constant>
-	<constant name="NSStringPboardType" swt_gen="true"></constant>
-	<constant name="NSStrokeWidthAttributeName" swt_gen="true"></constant>
-	<constant name="NSSystemColorsDidChangeNotification" swt_gen="true"></constant>
-	<constant name="NSTIFFPboardType" swt_gen="true"></constant>
-	<constant name="NSTableViewColumnDidMoveNotification" swt_gen="true"></constant>
-	<constant name="NSToolbarCustomizeToolbarItemIdentifier" swt_gen="true"></constant>
-	<constant name="NSToolbarDidRemoveItemNotification" swt_gen="true"></constant>
-	<constant name="NSToolbarFlexibleSpaceItemIdentifier" swt_gen="true"></constant>
-	<constant name="NSToolbarPrintItemIdentifier" swt_gen="true"></constant>
-	<constant name="NSToolbarSeparatorItemIdentifier" swt_gen="true"></constant>
-	<constant name="NSToolbarShowColorsItemIdentifier" swt_gen="true"></constant>
-	<constant name="NSToolbarShowFontsItemIdentifier" swt_gen="true"></constant>
-	<constant name="NSToolbarSpaceItemIdentifier" swt_gen="true"></constant>
-	<constant name="NSToolbarWillAddItemNotification" swt_gen="true"></constant>
-	<constant name="NSURLPboardType" swt_gen="true"></constant>
-	<constant name="NSUnderlineColorAttributeName" swt_gen="true"></constant>
-	<constant name="NSUnderlineStyleAttributeName" swt_gen="true"></constant>
-	<constant name="NSViewGlobalFrameDidChangeNotification" swt_gen="true"></constant>
-	<enum name="NSAlertFirstButtonReturn" swt_gen="true"></enum>
-	<enum name="NSAlertSecondButtonReturn" swt_gen="true"></enum>
-	<enum name="NSAlertThirdButtonReturn" swt_gen="true"></enum>
-	<enum name="NSAlphaFirstBitmapFormat" swt_gen="true"></enum>
-	<enum name="NSAlphaNonpremultipliedBitmapFormat" swt_gen="true"></enum>
-	<enum name="NSAlternateKeyMask" swt_gen="true"></enum>
-	<enum name="NSApplicationDefined" swt_gen="true"></enum>
-	<enum name="NSApplicationDelegateReplySuccess" swt_gen="true"></enum>
-	<enum name="NSAtTop" swt_gen="true"></enum>
-	<enum name="NSBackingStoreBuffered" swt_gen="true"></enum>
-	<enum name="NSBackspaceCharacter" swt_gen="true"></enum>
-	<enum name="NSBevelLineJoinStyle" swt_gen="true"></enum>
-	<enum name="NSBezelBorder" swt_gen="true"></enum>
-	<enum name="NSBoldFontMask" swt_gen="true"></enum>
-	<enum name="NSBorderlessWindowMask" swt_gen="true"></enum>
-	<enum name="NSBottomTabsBezelBorder" swt_gen="true"></enum>
-	<enum name="NSBoxCustom" swt_gen="true"></enum>
-	<enum name="NSBoxSeparator" swt_gen="true"></enum>
-	<enum name="NSButtLineCapStyle" swt_gen="true"></enum>
-	<enum name="NSCancelButton" swt_gen="true"></enum>
-	<enum name="NSCarriageReturnCharacter" swt_gen="true"></enum>
-	<enum name="NSCenterTextAlignment" swt_gen="true"></enum>
-	<enum name="NSClockAndCalendarDatePickerStyle" swt_gen="true"></enum>
-	<enum name="NSClosableWindowMask" swt_gen="true"></enum>
-	<enum name="NSClosePathBezierPathElement" swt_gen="true"></enum>
-	<enum name="NSCommandKeyMask" swt_gen="true"></enum>
-	<enum name="NSCompositeClear" swt_gen="true"></enum>
-	<enum name="NSCompositeCopy" swt_gen="true"></enum>
-	<enum name="NSCompositeSourceOver" swt_gen="true"></enum>
-	<enum name="NSCompositeXOR" swt_gen="true"></enum>
-	<enum name="NSControlKeyMask" swt_gen="true"></enum>
-	<enum name="NSCriticalAlertStyle" swt_gen="true"></enum>
-	<enum name="NSCurveToBezierPathElement" swt_gen="true"></enum>
-	<enum name="NSDeleteCharacter" swt_gen="true"></enum>
-	<enum name="NSDeviceIndependentModifierFlagsMask" swt_gen="true"></enum>
-	<enum name="NSDragOperationCopy" swt_gen="true"></enum>
-	<enum name="NSDragOperationDelete" swt_gen="true"></enum>
-	<enum name="NSDragOperationEvery" swt_gen="true"></enum>
-	<enum name="NSDragOperationLink" swt_gen="true"></enum>
-	<enum name="NSDragOperationMove" swt_gen="true"></enum>
-	<enum name="NSDragOperationNone" swt_gen="true"></enum>
-	<enum name="NSEnterCharacter" swt_gen="true"></enum>
-	<enum name="NSEvenOddWindingRule" swt_gen="true"></enum>
-	<enum name="NSFileHandlingPanelOKButton" swt_gen="true"></enum>
-	<enum name="NSFlagsChanged" swt_gen="true"></enum>
-	<enum name="NSFocusRingTypeNone" swt_gen="true"></enum>
-	<enum name="NSHelpFunctionKey" swt_gen="true"></enum>
-	<enum name="NSHelpKeyMask" swt_gen="true"></enum>
-	<enum name="NSHourMinuteDatePickerElementFlag" swt_gen="true"></enum>
-	<enum name="NSHourMinuteSecondDatePickerElementFlag" swt_gen="true"></enum>
-	<enum name="NSImageAbove" swt_gen="true"></enum>
-	<enum name="NSImageAlignCenter" swt_gen="true"></enum>
-	<enum name="NSImageAlignLeft" swt_gen="true"></enum>
-	<enum name="NSImageAlignRight" swt_gen="true"></enum>
-	<enum name="NSImageCacheNever" swt_gen="true"></enum>
-	<enum name="NSImageInterpolationDefault" swt_gen="true"></enum>
-	<enum name="NSImageInterpolationHigh" swt_gen="true"></enum>
-	<enum name="NSImageInterpolationLow" swt_gen="true"></enum>
-	<enum name="NSImageInterpolationNone" swt_gen="true"></enum>
-	<enum name="NSImageLeft" swt_gen="true"></enum>
-	<enum name="NSImageOnly" swt_gen="true"></enum>
-	<enum name="NSImageOverlaps" swt_gen="true"></enum>
-	<enum name="NSInformationalAlertStyle" swt_gen="true"></enum>
-	<enum name="NSItalicFontMask" swt_gen="true"></enum>
-	<enum name="NSJustifiedTextAlignment" swt_gen="true"></enum>
-	<enum name="NSKeyDown" swt_gen="true"></enum>
-	<enum name="NSKeyUp" swt_gen="true"></enum>
-	<enum name="NSLandscapeOrientation" swt_gen="true"></enum>
-	<enum name="NSLeftMouseDown" swt_gen="true"></enum>
-	<enum name="NSLeftMouseDownMask" swt_gen="true"></enum>
-	<enum name="NSLeftMouseDragged" swt_gen="true"></enum>
-	<enum name="NSLeftMouseDraggedMask" swt_gen="true"></enum>
-	<enum name="NSLeftMouseUp" swt_gen="true"></enum>
-	<enum name="NSLeftMouseUpMask" swt_gen="true"></enum>
-	<enum name="NSLeftTabStopType" swt_gen="true"></enum>
-	<enum name="NSLeftTextAlignment" swt_gen="true"></enum>
-	<enum name="NSLineBreakByClipping" swt_gen="true"></enum>
-	<enum name="NSLineBreakByTruncatingMiddle" swt_gen="true"></enum>
-	<enum name="NSLineBreakByWordWrapping" swt_gen="true"></enum>
-	<enum name="NSLineToBezierPathElement" swt_gen="true"></enum>
-	<enum name="NSMiniaturizableWindowMask" swt_gen="true"></enum>
-	<enum name="NSMiterLineJoinStyle" swt_gen="true"></enum>
-	<enum name="NSMixedState" swt_gen="true"></enum>
-	<enum name="NSMomentaryLightButton" swt_gen="true"></enum>
-	<enum name="NSMouseEntered" swt_gen="true"></enum>
-	<enum name="NSMouseExited" swt_gen="true"></enum>
-	<enum name="NSMouseMoved" swt_gen="true"></enum>
-	<enum name="NSMoveToBezierPathElement" swt_gen="true"></enum>
-	<enum name="NSNewlineCharacter" swt_gen="true"></enum>
-	<enum name="NSNoBorder" swt_gen="true"></enum>
-	<enum name="NSNoImage" swt_gen="true"></enum>
-	<enum name="NSNoTitle" swt_gen="true"></enum>
-	<enum name="NSNonZeroWindingRule" swt_gen="true"></enum>
-	<enum name="NSOffState" swt_gen="true"></enum>
-	<enum name="NSOnState" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAAccumSize" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAAlphaSize" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAColorSize" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFADepthSize" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFADoubleBuffer" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFASampleBuffers" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFASamples" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAStencilSize" swt_gen="true"></enum>
-	<enum name="NSOpenGLPFAStereo" swt_gen="true"></enum>
-	<enum name="NSOtherMouseDown" swt_gen="true"></enum>
-	<enum name="NSOtherMouseDragged" swt_gen="true"></enum>
-	<enum name="NSOtherMouseUp" swt_gen="true"></enum>
-	<enum name="NSOutlineViewDropOnItemIndex" swt_gen="true"></enum>
-	<enum name="NSPageDownFunctionKey" swt_gen="true"></enum>
-	<enum name="NSPageUpFunctionKey" swt_gen="true"></enum>
-	<enum name="NSPortraitOrientation" swt_gen="true"></enum>
-	<enum name="NSPrintPanelShowsPageSetupAccessory" swt_gen="true"></enum>
-	<enum name="NSProgressIndicatorPreferredThickness" swt_gen="true"></enum>
-	<enum name="NSPushOnPushOffButton" swt_gen="true"></enum>
-	<enum name="NSRadioButton" swt_gen="true"></enum>
-	<enum name="NSRegularControlSize" swt_gen="true"></enum>
-	<enum name="NSResizableWindowMask" swt_gen="true"></enum>
-	<enum name="NSRightMouseDown" swt_gen="true"></enum>
-	<enum name="NSRightMouseDragged" swt_gen="true"></enum>
-	<enum name="NSRightMouseUp" swt_gen="true"></enum>
-	<enum name="NSRightTextAlignment" swt_gen="true"></enum>
-	<enum name="NSRoundLineCapStyle" swt_gen="true"></enum>
-	<enum name="NSRoundLineJoinStyle" swt_gen="true"></enum>
-	<enum name="NSRoundedBezelStyle" swt_gen="true"></enum>
-	<enum name="NSScaleNone" swt_gen="true"></enum>
-	<enum name="NSScrollWheel" swt_gen="true"></enum>
-	<enum name="NSScrollerDecrementLine" swt_gen="true"></enum>
-	<enum name="NSScrollerDecrementPage" swt_gen="true"></enum>
-	<enum name="NSScrollerIncrementLine" swt_gen="true"></enum>
-	<enum name="NSScrollerIncrementPage" swt_gen="true"></enum>
-	<enum name="NSScrollerKnob" swt_gen="true"></enum>
-	<enum name="NSScrollerKnobSlot" swt_gen="true"></enum>
-	<enum name="NSShadowlessSquareBezelStyle" swt_gen="true"></enum>
-	<enum name="NSShiftKeyMask" swt_gen="true"></enum>
-	<enum name="NSSmallControlSize" swt_gen="true"></enum>
-	<enum name="NSSquareLineCapStyle" swt_gen="true"></enum>
-	<enum name="NSStatusWindowLevel" swt_gen="true"></enum>
-	<enum name="NSSwitchButton" swt_gen="true"></enum>
-	<enum name="NSSystemDefined" swt_gen="true"></enum>
-	<enum name="NSTabCharacter" swt_gen="true"></enum>
-	<enum name="NSTableColumnNoResizing" swt_gen="true"></enum>
-	<enum name="NSTableColumnUserResizingMask" swt_gen="true"></enum>
-	<enum name="NSTableViewDropAbove" swt_gen="true"></enum>
-	<enum name="NSTableViewDropOn" swt_gen="true"></enum>
-	<enum name="NSTableViewGridNone" swt_gen="true"></enum>
-	<enum name="NSTableViewNoColumnAutoresizing" swt_gen="true"></enum>
-	<enum name="NSTableViewSolidVerticalGridLineMask" swt_gen="true"></enum>
-	<enum name="NSTerminateCancel" swt_gen="true"></enum>
-	<enum name="NSTerminateNow" swt_gen="true"></enum>
-	<enum name="NSTextFieldAndStepperDatePickerStyle" swt_gen="true"></enum>
-	<enum name="NSTitledWindowMask" swt_gen="true"></enum>
-	<enum name="NSUnderlineStyleDouble" swt_gen="true"></enum>
-	<enum name="NSUnderlineStyleNone" swt_gen="true"></enum>
-	<enum name="NSUnderlineStyleSingle" swt_gen="true"></enum>
-	<enum name="NSUnderlineStyleThick" swt_gen="true"></enum>
-	<enum name="NSViewHeightSizable" swt_gen="true"></enum>
-	<enum name="NSViewMaxXMargin" swt_gen="true"></enum>
-	<enum name="NSViewMaxYMargin" swt_gen="true"></enum>
-	<enum name="NSViewMinXMargin" swt_gen="true"></enum>
-	<enum name="NSViewMinYMargin" swt_gen="true"></enum>
-	<enum name="NSViewWidthSizable" swt_gen="true"></enum>
-	<enum name="NSWarningAlertStyle" swt_gen="true"></enum>
-	<enum name="NSWindowAbove" swt_gen="true"></enum>
-	<enum name="NSWindowBelow" swt_gen="true"></enum>
-	<enum name="NSWindowCollectionBehaviorCanJoinAllSpaces" swt_gen="true"></enum>
-	<enum name="NSWindowCollectionBehaviorDefault" swt_gen="true"></enum>
-	<enum name="NSWindowCollectionBehaviorMoveToActiveSpace" swt_gen="true"></enum>
-	<enum name="NSWritingDirectionLeftToRight" swt_gen="true"></enum>
-	<enum name="NSWritingDirectionNatural" swt_gen="true"></enum>
-	<enum name="NSWritingDirectionRightToLeft" swt_gen="true"></enum>
-	<enum name="NSYearMonthDatePickerElementFlag" swt_gen="true"></enum>
-	<enum name="NSYearMonthDayDatePickerElementFlag" swt_gen="true"></enum>
-	<function name="NSAccessibilityActionDescription" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSAccessibilityPostNotification" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-	</function>
-	<function name="NSAccessibilityRaiseBadArgumentException" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-	</function>
-	<function name="NSAccessibilityRoleDescription" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSAccessibilityRoleDescriptionForUIElement" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSAccessibilityUnignoredAncestor" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSAccessibilityUnignoredChildren" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSAccessibilityUnignoredChildrenForOnlyChild" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSAccessibilityUnignoredDescendant" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSBeep" swt_gen="true"></function>
-	<function name="NSBitsPerPixelFromDepth" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSCopyBits" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-	</function>
-	<function name="NSNumberOfColorComponents" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
 	<class name="NSATSTypesetter" swt_superclass="NSTypesetter">
 	</class>
 	<class name="NSActionCell" swt_gen="mixed" swt_superclass="NSCell">
@@ -3061,6 +2679,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
+	<class name="NSSecureTextField" swt_gen="true" swt_superclass="NSTextField"></class>
 	<class name="NSSecureTextFieldCell" swt_superclass="NSTextFieldCell">
 	</class>
 	<class name="NSSegmentedCell" swt_gen="mixed" swt_superclass="NSActionCell">
@@ -4548,6 +4167,388 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
+	<constant name="NSAccessibilityBoundsForRangeParameterizedAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityButtonRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityCheckBoxRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityChildrenAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityColorWellRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityColumnRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityColumnsAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityComboBoxRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityConfirmAction" swt_gen="true"></constant>
+	<constant name="NSAccessibilityContentsAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityDescriptionAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityDialogSubrole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityEnabledAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityExpandedAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityFloatingWindowSubrole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityFocusedAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityFocusedUIElementChangedNotification" swt_gen="true"></constant>
+	<constant name="NSAccessibilityGridRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityGroupRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityHeaderAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityHelpAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityHelpTagRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityHorizontalOrientationValue" swt_gen="true"></constant>
+	<constant name="NSAccessibilityHorizontalScrollBarAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityImageRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityIncrementorRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityIndexAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityInsertionPointLineNumberAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityLabelValueAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityLineForIndexParameterizedAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityLinkRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityLinkTextAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityLinkedUIElementsAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityListRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityMaxValueAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityMenuBarRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityMenuButtonRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityMenuItemRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityMenuRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityMinValueAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityNextContentsAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityNumberOfCharactersAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityOrientationAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityOutlineRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityOutlineRowSubrole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityParentAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityPopUpButtonRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityPositionAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityPressAction" swt_gen="true"></constant>
+	<constant name="NSAccessibilityPreviousContentsAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityProgressIndicatorRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityRTFForRangeParameterizedAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityRadioButtonRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityRadioGroupRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityRangeForIndexParameterizedAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityRangeForLineParameterizedAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityRangeForPositionParameterizedAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityRoleAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityRoleDescriptionAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityRowRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityRowsAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityScrollAreaRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityScrollBarRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySelectedAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySelectedChildrenAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySelectedChildrenChangedNotification" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySelectedColumnsAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySelectedRowsAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySelectedTextAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySelectedTextChangedNotification" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySelectedTextRangeAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySelectedTextRangesAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityServesAsTitleForUIElementsAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySizeAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySliderRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySortButtonRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySplitterRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityStandardWindowSubrole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityStaticTextRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityStringForRangeParameterizedAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityStyleRangeForIndexParameterizedAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySubroleAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySystemDialogSubrole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityTabGroupRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityTableRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityTableRowSubrole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityTabsAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityTextAreaRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityTextFieldRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityTextLinkSubrole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityTitleAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityTitleUIElementAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityToolbarRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityTopLevelUIElementAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityUnknownRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityUnknownSubrole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityValueAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityValueChangedNotification" swt_gen="true"></constant>
+	<constant name="NSAccessibilityValueDescriptionAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityValueIndicatorRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityVerticalOrientationValue" swt_gen="true"></constant>
+	<constant name="NSAccessibilityVerticalScrollBarAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityVisibleCharacterRangeAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityVisibleChildrenAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityVisibleColumnsAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityVisibleRowsAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityWindowAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityWindowRole" swt_gen="true"></constant>
+	<constant name="NSApplicationDidChangeScreenParametersNotification" swt_gen="true"></constant>
+	<constant name="NSAttachmentAttributeName" swt_gen="true"></constant>
+	<constant name="NSBackgroundColorAttributeName" swt_gen="true"></constant>
+	<constant name="NSBaselineOffsetAttributeName" swt_gen="true"></constant>
+	<constant name="NSCalibratedRGBColorSpace" swt_gen="true"></constant>
+	<constant name="NSCursorAttributeName" swt_gen="true"></constant>
+	<constant name="NSDeviceRGBColorSpace" swt_gen="true"></constant>
+	<constant name="NSDeviceResolution" swt_gen="true"></constant>
+	<constant name="NSDragPboard" swt_gen="true"></constant>
+	<constant name="NSEventTrackingRunLoopMode" swt_gen="true"></constant>
+	<constant name="NSFilenamesPboardType" swt_gen="true"></constant>
+	<constant name="NSFontAttributeName" swt_gen="true"></constant>
+	<constant name="NSForegroundColorAttributeName" swt_gen="true"></constant>
+	<constant name="NSHTMLPboardType" swt_gen="true"></constant>
+	<constant name="NSLinkAttributeName" swt_gen="true"></constant>
+	<constant name="NSObliquenessAttributeName" swt_gen="true"></constant>
+	<constant name="NSOutlineViewColumnDidMoveNotification" swt_gen="true"></constant>
+	<constant name="NSParagraphStyleAttributeName" swt_gen="true"></constant>
+	<constant name="NSPrintAllPages" swt_gen="true"></constant>
+	<constant name="NSPrintCopies" swt_gen="true"></constant>
+	<constant name="NSPrintFirstPage" swt_gen="true"></constant>
+	<constant name="NSPrintJobDisposition" swt_gen="true"></constant>
+	<constant name="NSPrintLastPage" swt_gen="true"></constant>
+	<constant name="NSPrintMustCollate" swt_gen="true"></constant>
+	<constant name="NSPrintPreviewJob" swt_gen="true"></constant>
+	<constant name="NSPrintSaveJob" swt_gen="true"></constant>
+	<constant name="NSPrintSavePath" swt_gen="true"></constant>
+	<constant name="NSPrintScalingFactor" swt_gen="true"></constant>
+	<constant name="NSPrintSpoolJob" swt_gen="true"></constant>
+	<constant name="NSRTFPboardType" swt_gen="true"></constant>
+	<constant name="NSStrikethroughColorAttributeName" swt_gen="true"></constant>
+	<constant name="NSStrikethroughStyleAttributeName" swt_gen="true"></constant>
+	<constant name="NSStringPboardType" swt_gen="true"></constant>
+	<constant name="NSStrokeWidthAttributeName" swt_gen="true"></constant>
+	<constant name="NSSystemColorsDidChangeNotification" swt_gen="true"></constant>
+	<constant name="NSTIFFPboardType" swt_gen="true"></constant>
+	<constant name="NSTableViewColumnDidMoveNotification" swt_gen="true"></constant>
+	<constant name="NSToolbarCustomizeToolbarItemIdentifier" swt_gen="true"></constant>
+	<constant name="NSToolbarDidRemoveItemNotification" swt_gen="true"></constant>
+	<constant name="NSToolbarFlexibleSpaceItemIdentifier" swt_gen="true"></constant>
+	<constant name="NSToolbarPrintItemIdentifier" swt_gen="true"></constant>
+	<constant name="NSToolbarSeparatorItemIdentifier" swt_gen="true"></constant>
+	<constant name="NSToolbarShowColorsItemIdentifier" swt_gen="true"></constant>
+	<constant name="NSToolbarShowFontsItemIdentifier" swt_gen="true"></constant>
+	<constant name="NSToolbarSpaceItemIdentifier" swt_gen="true"></constant>
+	<constant name="NSToolbarWillAddItemNotification" swt_gen="true"></constant>
+	<constant name="NSURLPboardType" swt_gen="true"></constant>
+	<constant name="NSUnderlineColorAttributeName" swt_gen="true"></constant>
+	<constant name="NSUnderlineStyleAttributeName" swt_gen="true"></constant>
+	<constant name="NSViewGlobalFrameDidChangeNotification" swt_gen="true"></constant>
+	<enum name="NSAlertFirstButtonReturn" swt_gen="true"></enum>
+	<enum name="NSAlertSecondButtonReturn" swt_gen="true"></enum>
+	<enum name="NSAlertThirdButtonReturn" swt_gen="true"></enum>
+	<enum name="NSAlphaFirstBitmapFormat" swt_gen="true"></enum>
+	<enum name="NSAlphaNonpremultipliedBitmapFormat" swt_gen="true"></enum>
+	<enum name="NSAlternateKeyMask" swt_gen="true"></enum>
+	<enum name="NSApplicationDefined" swt_gen="true"></enum>
+	<enum name="NSApplicationDelegateReplySuccess" swt_gen="true"></enum>
+	<enum name="NSAtTop" swt_gen="true"></enum>
+	<enum name="NSBackingStoreBuffered" swt_gen="true"></enum>
+	<enum name="NSBackspaceCharacter" swt_gen="true"></enum>
+	<enum name="NSBevelLineJoinStyle" swt_gen="true"></enum>
+	<enum name="NSBezelBorder" swt_gen="true"></enum>
+	<enum name="NSBoldFontMask" swt_gen="true"></enum>
+	<enum name="NSBorderlessWindowMask" swt_gen="true"></enum>
+	<enum name="NSBottomTabsBezelBorder" swt_gen="true"></enum>
+	<enum name="NSBoxCustom" swt_gen="true"></enum>
+	<enum name="NSBoxSeparator" swt_gen="true"></enum>
+	<enum name="NSButtLineCapStyle" swt_gen="true"></enum>
+	<enum name="NSCancelButton" swt_gen="true"></enum>
+	<enum name="NSCarriageReturnCharacter" swt_gen="true"></enum>
+	<enum name="NSCenterTextAlignment" swt_gen="true"></enum>
+	<enum name="NSClockAndCalendarDatePickerStyle" swt_gen="true"></enum>
+	<enum name="NSClosableWindowMask" swt_gen="true"></enum>
+	<enum name="NSClosePathBezierPathElement" swt_gen="true"></enum>
+	<enum name="NSCommandKeyMask" swt_gen="true"></enum>
+	<enum name="NSCompositeClear" swt_gen="true"></enum>
+	<enum name="NSCompositeCopy" swt_gen="true"></enum>
+	<enum name="NSCompositeSourceOver" swt_gen="true"></enum>
+	<enum name="NSCompositeXOR" swt_gen="true"></enum>
+	<enum name="NSControlKeyMask" swt_gen="true"></enum>
+	<enum name="NSCriticalAlertStyle" swt_gen="true"></enum>
+	<enum name="NSCurveToBezierPathElement" swt_gen="true"></enum>
+	<enum name="NSDeleteCharacter" swt_gen="true"></enum>
+	<enum name="NSDeviceIndependentModifierFlagsMask" swt_gen="true"></enum>
+	<enum name="NSDragOperationCopy" swt_gen="true"></enum>
+	<enum name="NSDragOperationDelete" swt_gen="true"></enum>
+	<enum name="NSDragOperationEvery" swt_gen="true"></enum>
+	<enum name="NSDragOperationLink" swt_gen="true"></enum>
+	<enum name="NSDragOperationMove" swt_gen="true"></enum>
+	<enum name="NSDragOperationNone" swt_gen="true"></enum>
+	<enum name="NSEnterCharacter" swt_gen="true"></enum>
+	<enum name="NSEvenOddWindingRule" swt_gen="true"></enum>
+	<enum name="NSFileHandlingPanelOKButton" swt_gen="true"></enum>
+	<enum name="NSFlagsChanged" swt_gen="true"></enum>
+	<enum name="NSFocusRingTypeNone" swt_gen="true"></enum>
+	<enum name="NSHelpFunctionKey" swt_gen="true"></enum>
+	<enum name="NSHelpKeyMask" swt_gen="true"></enum>
+	<enum name="NSHourMinuteDatePickerElementFlag" swt_gen="true"></enum>
+	<enum name="NSHourMinuteSecondDatePickerElementFlag" swt_gen="true"></enum>
+	<enum name="NSImageAbove" swt_gen="true"></enum>
+	<enum name="NSImageAlignCenter" swt_gen="true"></enum>
+	<enum name="NSImageAlignLeft" swt_gen="true"></enum>
+	<enum name="NSImageAlignRight" swt_gen="true"></enum>
+	<enum name="NSImageCacheNever" swt_gen="true"></enum>
+	<enum name="NSImageInterpolationDefault" swt_gen="true"></enum>
+	<enum name="NSImageInterpolationHigh" swt_gen="true"></enum>
+	<enum name="NSImageInterpolationLow" swt_gen="true"></enum>
+	<enum name="NSImageInterpolationNone" swt_gen="true"></enum>
+	<enum name="NSImageLeft" swt_gen="true"></enum>
+	<enum name="NSImageOnly" swt_gen="true"></enum>
+	<enum name="NSImageOverlaps" swt_gen="true"></enum>
+	<enum name="NSInformationalAlertStyle" swt_gen="true"></enum>
+	<enum name="NSItalicFontMask" swt_gen="true"></enum>
+	<enum name="NSJustifiedTextAlignment" swt_gen="true"></enum>
+	<enum name="NSKeyDown" swt_gen="true"></enum>
+	<enum name="NSKeyUp" swt_gen="true"></enum>
+	<enum name="NSLandscapeOrientation" swt_gen="true"></enum>
+	<enum name="NSLeftMouseDown" swt_gen="true"></enum>
+	<enum name="NSLeftMouseDownMask" swt_gen="true"></enum>
+	<enum name="NSLeftMouseDragged" swt_gen="true"></enum>
+	<enum name="NSLeftMouseDraggedMask" swt_gen="true"></enum>
+	<enum name="NSLeftMouseUp" swt_gen="true"></enum>
+	<enum name="NSLeftMouseUpMask" swt_gen="true"></enum>
+	<enum name="NSLeftTabStopType" swt_gen="true"></enum>
+	<enum name="NSLeftTextAlignment" swt_gen="true"></enum>
+	<enum name="NSLineBreakByClipping" swt_gen="true"></enum>
+	<enum name="NSLineBreakByTruncatingMiddle" swt_gen="true"></enum>
+	<enum name="NSLineBreakByWordWrapping" swt_gen="true"></enum>
+	<enum name="NSLineToBezierPathElement" swt_gen="true"></enum>
+	<enum name="NSMiniaturizableWindowMask" swt_gen="true"></enum>
+	<enum name="NSMiterLineJoinStyle" swt_gen="true"></enum>
+	<enum name="NSMixedState" swt_gen="true"></enum>
+	<enum name="NSMomentaryLightButton" swt_gen="true"></enum>
+	<enum name="NSMouseEntered" swt_gen="true"></enum>
+	<enum name="NSMouseExited" swt_gen="true"></enum>
+	<enum name="NSMouseMoved" swt_gen="true"></enum>
+	<enum name="NSMoveToBezierPathElement" swt_gen="true"></enum>
+	<enum name="NSNewlineCharacter" swt_gen="true"></enum>
+	<enum name="NSNoBorder" swt_gen="true"></enum>
+	<enum name="NSNoImage" swt_gen="true"></enum>
+	<enum name="NSNoTitle" swt_gen="true"></enum>
+	<enum name="NSNonZeroWindingRule" swt_gen="true"></enum>
+	<enum name="NSOffState" swt_gen="true"></enum>
+	<enum name="NSOnState" swt_gen="true"></enum>
+	<enum name="NSOpenGLPFAAccumSize" swt_gen="true"></enum>
+	<enum name="NSOpenGLPFAAlphaSize" swt_gen="true"></enum>
+	<enum name="NSOpenGLPFAColorSize" swt_gen="true"></enum>
+	<enum name="NSOpenGLPFADepthSize" swt_gen="true"></enum>
+	<enum name="NSOpenGLPFADoubleBuffer" swt_gen="true"></enum>
+	<enum name="NSOpenGLPFASampleBuffers" swt_gen="true"></enum>
+	<enum name="NSOpenGLPFASamples" swt_gen="true"></enum>
+	<enum name="NSOpenGLPFAStencilSize" swt_gen="true"></enum>
+	<enum name="NSOpenGLPFAStereo" swt_gen="true"></enum>
+	<enum name="NSOtherMouseDown" swt_gen="true"></enum>
+	<enum name="NSOtherMouseDragged" swt_gen="true"></enum>
+	<enum name="NSOtherMouseUp" swt_gen="true"></enum>
+	<enum name="NSOutlineViewDropOnItemIndex" swt_gen="true"></enum>
+	<enum name="NSPageDownFunctionKey" swt_gen="true"></enum>
+	<enum name="NSPageUpFunctionKey" swt_gen="true"></enum>
+	<enum name="NSPortraitOrientation" swt_gen="true"></enum>
+	<enum name="NSPrintPanelShowsPageSetupAccessory" swt_gen="true"></enum>
+	<enum name="NSProgressIndicatorPreferredThickness" swt_gen="true"></enum>
+	<enum name="NSPushOnPushOffButton" swt_gen="true"></enum>
+	<enum name="NSRadioButton" swt_gen="true"></enum>
+	<enum name="NSRegularControlSize" swt_gen="true"></enum>
+	<enum name="NSResizableWindowMask" swt_gen="true"></enum>
+	<enum name="NSRightMouseDown" swt_gen="true"></enum>
+	<enum name="NSRightMouseDragged" swt_gen="true"></enum>
+	<enum name="NSRightMouseUp" swt_gen="true"></enum>
+	<enum name="NSRightTextAlignment" swt_gen="true"></enum>
+	<enum name="NSRoundLineCapStyle" swt_gen="true"></enum>
+	<enum name="NSRoundLineJoinStyle" swt_gen="true"></enum>
+	<enum name="NSRoundedBezelStyle" swt_gen="true"></enum>
+	<enum name="NSScaleNone" swt_gen="true"></enum>
+	<enum name="NSScrollWheel" swt_gen="true"></enum>
+	<enum name="NSScrollerDecrementLine" swt_gen="true"></enum>
+	<enum name="NSScrollerDecrementPage" swt_gen="true"></enum>
+	<enum name="NSScrollerIncrementLine" swt_gen="true"></enum>
+	<enum name="NSScrollerIncrementPage" swt_gen="true"></enum>
+	<enum name="NSScrollerKnob" swt_gen="true"></enum>
+	<enum name="NSScrollerKnobSlot" swt_gen="true"></enum>
+	<enum name="NSShadowlessSquareBezelStyle" swt_gen="true"></enum>
+	<enum name="NSShiftKeyMask" swt_gen="true"></enum>
+	<enum name="NSSmallControlSize" swt_gen="true"></enum>
+	<enum name="NSSquareLineCapStyle" swt_gen="true"></enum>
+	<enum name="NSStatusWindowLevel" swt_gen="true"></enum>
+	<enum name="NSSwitchButton" swt_gen="true"></enum>
+	<enum name="NSSystemDefined" swt_gen="true"></enum>
+	<enum name="NSTabCharacter" swt_gen="true"></enum>
+	<enum name="NSTableColumnNoResizing" swt_gen="true"></enum>
+	<enum name="NSTableColumnUserResizingMask" swt_gen="true"></enum>
+	<enum name="NSTableViewDropAbove" swt_gen="true"></enum>
+	<enum name="NSTableViewDropOn" swt_gen="true"></enum>
+	<enum name="NSTableViewGridNone" swt_gen="true"></enum>
+	<enum name="NSTableViewNoColumnAutoresizing" swt_gen="true"></enum>
+	<enum name="NSTableViewSolidVerticalGridLineMask" swt_gen="true"></enum>
+	<enum name="NSTerminateCancel" swt_gen="true"></enum>
+	<enum name="NSTerminateNow" swt_gen="true"></enum>
+	<enum name="NSTextFieldAndStepperDatePickerStyle" swt_gen="true"></enum>
+	<enum name="NSTitledWindowMask" swt_gen="true"></enum>
+	<enum name="NSUnderlineStyleDouble" swt_gen="true"></enum>
+	<enum name="NSUnderlineStyleNone" swt_gen="true"></enum>
+	<enum name="NSUnderlineStyleSingle" swt_gen="true"></enum>
+	<enum name="NSUnderlineStyleThick" swt_gen="true"></enum>
+	<enum name="NSViewHeightSizable" swt_gen="true"></enum>
+	<enum name="NSViewMaxXMargin" swt_gen="true"></enum>
+	<enum name="NSViewMaxYMargin" swt_gen="true"></enum>
+	<enum name="NSViewMinXMargin" swt_gen="true"></enum>
+	<enum name="NSViewMinYMargin" swt_gen="true"></enum>
+	<enum name="NSViewWidthSizable" swt_gen="true"></enum>
+	<enum name="NSWarningAlertStyle" swt_gen="true"></enum>
+	<enum name="NSWindowAbove" swt_gen="true"></enum>
+	<enum name="NSWindowBelow" swt_gen="true"></enum>
+	<enum name="NSWindowCollectionBehaviorCanJoinAllSpaces" swt_gen="true"></enum>
+	<enum name="NSWindowCollectionBehaviorDefault" swt_gen="true"></enum>
+	<enum name="NSWindowCollectionBehaviorMoveToActiveSpace" swt_gen="true"></enum>
+	<enum name="NSWritingDirectionLeftToRight" swt_gen="true"></enum>
+	<enum name="NSWritingDirectionNatural" swt_gen="true"></enum>
+	<enum name="NSWritingDirectionRightToLeft" swt_gen="true"></enum>
+	<enum name="NSYearMonthDatePickerElementFlag" swt_gen="true"></enum>
+	<enum name="NSYearMonthDayDatePickerElementFlag" swt_gen="true"></enum>
+	<function name="NSAccessibilityActionDescription" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="NSAccessibilityPostNotification" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+	</function>
+	<function name="NSAccessibilityRaiseBadArgumentException" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+	</function>
+	<function name="NSAccessibilityRoleDescription" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="NSAccessibilityRoleDescriptionForUIElement" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="NSAccessibilityUnignoredAncestor" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="NSAccessibilityUnignoredChildren" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="NSAccessibilityUnignoredChildrenForOnlyChild" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="NSAccessibilityUnignoredDescendant" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="NSBeep" swt_gen="true"></function>
+	<function name="NSBitsPerPixelFromDepth" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="NSCopyBits" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+	</function>
+	<function name="NSNumberOfColorComponents" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
 	<informal_protocol name="NSAccessibility" swt_gen="true">
 		<method selector="accessibilityActionDescription:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -4865,6 +4866,29 @@
 			<arg swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
+	<informal_protocol name="NSTextInput" swt_gen="true">
+		<method selector="attributedSubstringFromRange:" swt_gen="true" swt_gen_custom_callback="true">
+			<arg swt_gen="true"></arg>
+		</method>
+		<method selector="characterIndexForPoint:" swt_gen="true" swt_gen_custom_callback="true">
+			<arg swt_gen="true"></arg>
+		</method>
+		<method selector="firstRectForCharacterRange:" swt_gen="true" swt_gen_custom_callback="true">
+			<arg swt_gen="true"></arg>
+		</method>
+		<method selector="hasMarkedText" swt_gen="true"></method>
+		<method selector="insertText:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+		</method>
+		<method selector="markedRange" swt_gen="true" swt_gen_custom_callback="true"></method>
+		<method selector="selectedRange" swt_gen="true" swt_gen_custom_callback="true"></method>
+		<method selector="setMarkedText:selectedRange:" swt_gen="true" swt_gen_custom_callback="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+		</method>
+		<method selector="unmarkText" swt_gen="true"></method>
+		<method selector="validAttributesForMarkedText" swt_gen="true"></method>
+	</informal_protocol>
 	<informal_protocol name="NSTextViewDelegate" swt_gen="mixed">
 		<method selector="textView:clickedOnLink:atIndex:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -4937,30 +4961,6 @@
 			<arg swt_gen="true"></arg>
 		</method>
 		<method selector="windowWillClose:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-		</method>
-	</informal_protocol>
-	<class name="NSSecureTextField" swt_gen="true" swt_superclass="NSTextField"></class>
-	<informal_protocol name="NSTextInput" swt_gen="true">
-		<method selector="markedRange" swt_gen="true" swt_gen_custom_callback="true"></method>
-		<method selector="insertText:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-		</method>
-		<method selector="unmarkText" swt_gen="true"></method>
-		<method selector="hasMarkedText" swt_gen="true"></method>
-		<method selector="validAttributesForMarkedText" swt_gen="true"></method>
-		<method selector="characterIndexForPoint:" swt_gen="true" swt_gen_custom_callback="true">
-			<arg swt_gen="true"></arg>
-		</method>
-		<method selector="attributedSubstringFromRange:" swt_gen="true" swt_gen_custom_callback="true">
-			<arg swt_gen="true"></arg>
-		</method>
-		<method selector="selectedRange" swt_gen="true" swt_gen_custom_callback="true"></method>
-		<method selector="setMarkedText:selectedRange:" swt_gen="true" swt_gen_custom_callback="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-		</method>
-		<method selector="firstRectForCharacterRange:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg swt_gen="true"></arg>
 		</method>
 	</informal_protocol>

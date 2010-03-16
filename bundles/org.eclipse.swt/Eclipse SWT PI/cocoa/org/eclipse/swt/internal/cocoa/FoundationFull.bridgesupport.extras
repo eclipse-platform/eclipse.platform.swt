@@ -1,68 +1,5 @@
 <?xml version="1.0" encoding="UTF8"?>
 <signatures swt_gen="mixed">
-	<struct name="NSAffineTransformStruct" swt_gen="true">
-		<field name="m11" swt_gen="true"></field>
-		<field name="m12" swt_gen="true"></field>
-		<field name="m21" swt_gen="true"></field>
-		<field name="m22" swt_gen="true"></field>
-		<field name="tX" swt_gen="true"></field>
-		<field name="tY" swt_gen="true"></field>
-	</struct>
-	<struct name="NSPoint" swt_gen="true">
-		<field name="x" swt_gen="true"></field>
-		<field name="y" swt_gen="true"></field>
-	</struct>
-	<struct name="NSRange" swt_gen="true">
-		<field name="location" swt_gen="true"></field>
-		<field name="length" swt_gen="true"></field>
-	</struct>
-	<struct name="NSRect" swt_gen="true">
-		<field name="origin" swt_gen="true"></field>
-		<field name="size" swt_gen="true"></field>
-	</struct>
-	<struct name="NSSize" swt_gen="true">
-		<field name="width" swt_gen="true"></field>
-		<field name="height" swt_gen="true"></field>
-	</struct>
-	<constant name="NSDefaultRunLoopMode" swt_gen="true"></constant>
-	<constant name="NSErrorFailingURLStringKey" swt_gen="true"></constant>
-	<enum name="NSAllApplicationsDirectory" swt_gen="true"></enum>
-	<enum name="NSAllDomainsMask" swt_gen="true"></enum>
-	<enum name="NSNotFound" swt_gen="true"></enum>
-	<enum name="NSOrderedSame" swt_gen="true"></enum>
-	<enum name="NSURLCredentialPersistenceForSession" swt_gen="true"></enum>
-	<enum name="NSURLErrorBadURL" swt_gen="true"></enum>
-	<enum name="NSURLRequestReloadIgnoringLocalCacheData" swt_gen="true"></enum>
-	<enum name="NSUTF8StringEncoding" swt_gen="true"></enum>
-	<function name="NSEqualRects" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSFileTypeForHFSTypeCode" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSGetSizeAndAlignment" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
-		<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSPointInRect" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSSearchPathForDirectoriesInDomains" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSTemporaryDirectory" swt_gen="true">
-		<retval swt_gen="true"></retval>
-	</function>
 	<class name="NSAppleEventDescriptor" swt_gen="mixed">
 		<method selector="initListDescriptor" swt_gen="true">
 			<retval swt_gen="true" swt_java_type="NSAppleEventDescriptor"></retval>
@@ -1097,10 +1034,73 @@
 	</class>
 	<class name="NSXMLElement" swt_superclass="NSXMLNode">
 	</class>
+	<constant name="NSDefaultRunLoopMode" swt_gen="true"></constant>
+	<constant name="NSErrorFailingURLStringKey" swt_gen="true"></constant>
+	<enum name="NSAllApplicationsDirectory" swt_gen="true"></enum>
+	<enum name="NSAllDomainsMask" swt_gen="true"></enum>
+	<enum name="NSNotFound" swt_gen="true"></enum>
+	<enum name="NSOrderedSame" swt_gen="true"></enum>
+	<enum name="NSURLCredentialPersistenceForSession" swt_gen="true"></enum>
+	<enum name="NSURLErrorBadURL" swt_gen="true"></enum>
+	<enum name="NSURLRequestReloadIgnoringLocalCacheData" swt_gen="true"></enum>
+	<enum name="NSUTF8StringEncoding" swt_gen="true"></enum>
+	<function name="NSEqualRects" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="NSFileTypeForHFSTypeCode" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="NSGetSizeAndAlignment" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
+		<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="NSPointInRect" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="NSSearchPathForDirectoriesInDomains" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="NSTemporaryDirectory" swt_gen="true">
+		<retval swt_gen="true"></retval>
+	</function>
 	<informal_protocol name="NSURLDownloadDelegate" swt_gen="mixed">
 		<method selector="download:decideDestinationWithSuggestedFilename:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
+	<struct name="NSAffineTransformStruct" swt_gen="true">
+		<field name="m11" swt_gen="true"></field>
+		<field name="m12" swt_gen="true"></field>
+		<field name="m21" swt_gen="true"></field>
+		<field name="m22" swt_gen="true"></field>
+		<field name="tX" swt_gen="true"></field>
+		<field name="tY" swt_gen="true"></field>
+	</struct>
+	<struct name="NSPoint" swt_gen="true">
+		<field name="x" swt_gen="true"></field>
+		<field name="y" swt_gen="true"></field>
+	</struct>
+	<struct name="NSRange" swt_gen="true">
+		<field name="length" swt_gen="true"></field>
+		<field name="location" swt_gen="true"></field>
+	</struct>
+	<struct name="NSRect" swt_gen="true">
+		<field name="origin" swt_gen="true"></field>
+		<field name="size" swt_gen="true"></field>
+	</struct>
+	<struct name="NSSize" swt_gen="true">
+		<field name="height" swt_gen="true"></field>
+		<field name="width" swt_gen="true"></field>
+	</struct>
 </signatures>

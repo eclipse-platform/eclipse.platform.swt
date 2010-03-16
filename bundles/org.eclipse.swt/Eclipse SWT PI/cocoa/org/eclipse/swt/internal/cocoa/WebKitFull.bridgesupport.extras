@@ -242,6 +242,9 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
+	<informal_protocol name="WebDocumentRepresentation" swt_gen="true">
+		<method selector="documentSource" swt_gen="true"></method>
+	</informal_protocol>
 	<informal_protocol name="WebFrameLoadDelegate" swt_gen="mixed">
 		<method selector="webView:didChangeLocationWithinPageForFrame:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -273,6 +276,16 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 		</method>
+	</informal_protocol>
+	<informal_protocol name="WebOpenPanelResultListener" swt_gen="true">
+		<method selector="chooseFilename:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+		</method>
+	</informal_protocol>
+	<informal_protocol name="WebPolicyDecisionListener" swt_gen="true">
+		<method selector="download" swt_gen="true"></method>
+		<method selector="ignore" swt_gen="true"></method>
+		<method selector="use" swt_gen="true"></method>
 	</informal_protocol>
 	<informal_protocol name="WebPolicyDelegate" swt_gen="true">
 		<method selector="webView:decidePolicyForMIMEType:request:frame:decisionListener:" swt_gen="true">
@@ -411,18 +424,5 @@
 		<method selector="webViewUnfocus:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 		</method>
-	</informal_protocol>
-	<informal_protocol name="WebOpenPanelResultListener" swt_gen="true">
-		<method selector="chooseFilename:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-		</method>
-	</informal_protocol>
-	<informal_protocol name="WebDocumentRepresentation" swt_gen="true">
-		<method selector="documentSource" swt_gen="true"></method>
-	</informal_protocol>
-	<informal_protocol name="WebPolicyDecisionListener" swt_gen="true">
-		<method selector="use" swt_gen="true"></method>
-		<method selector="download" swt_gen="true"></method>
-		<method selector="ignore" swt_gen="true"></method>
 	</informal_protocol>
 </signatures>

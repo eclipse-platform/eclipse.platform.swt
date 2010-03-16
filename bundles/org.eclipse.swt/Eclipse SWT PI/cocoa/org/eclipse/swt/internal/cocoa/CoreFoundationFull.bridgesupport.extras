@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF8"?>
 <signatures swt_gen="mixed">
-	<struct name="CFRange" swt_gen="true">
-		<field name="location" swt_gen="true"></field>
-		<field name="length" swt_gen="true"></field>
-	</struct>
 	<constant name="kCFAllocatorDefault" swt_gen="true"></constant>
 	<constant name="kCFRunLoopCommonModes" swt_gen="true"></constant>
 	<enum name="kCFRunLoopBeforeWaiting" swt_gen="true"></enum>
@@ -81,4 +77,8 @@
 		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
+	<struct name="CFRange" swt_gen="true">
+		<field name="length" swt_gen="true"></field>
+		<field name="location" swt_gen="true"></field>
+	</struct>
 </signatures>

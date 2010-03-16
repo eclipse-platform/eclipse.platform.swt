@@ -652,6 +652,7 @@ void saveExtraAttributes(String xmlPath, Document document) {
 		filter[0] = "class_method";
 		filter[1] = "swt_.*";
 		System.arraycopy(names, 0, filter, 2, names.length);
+		writer.setIDAttributes(names);
 		writer.setAttributeFilter(filter);
 		writer.setNodeFilter("swt_");
 		writer.print(document);

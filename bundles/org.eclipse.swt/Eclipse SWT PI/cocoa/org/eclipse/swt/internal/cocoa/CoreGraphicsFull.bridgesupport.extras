@@ -1,29 +1,5 @@
 <?xml version="1.0" encoding="UTF8"?>
 <signatures swt_gen="mixed">
-	<struct name="CGAffineTransform" swt_gen="true">
-		<field name="a" swt_gen="true"></field>
-		<field name="b" swt_gen="true"></field>
-		<field name="c" swt_gen="true"></field>
-		<field name="d" swt_gen="true"></field>
-		<field name="tx" swt_gen="true"></field>
-		<field name="ty" swt_gen="true"></field>
-	</struct>
-	<struct name="CGPathElement" swt_gen="true">
-		<field name="type" swt_gen="true"></field>
-		<field name="points" swt_gen="true"></field>
-	</struct>
-	<struct name="CGPoint" swt_gen="true">
-		<field name="x" swt_gen="true"></field>
-		<field name="y" swt_gen="true"></field>
-	</struct>
-	<struct name="CGRect" swt_gen="true">
-		<field name="origin" swt_gen="true"></field>
-		<field name="size" swt_gen="true"></field>
-	</struct>
-	<struct name="CGSize" swt_gen="true">
-		<field name="width" swt_gen="true"></field>
-		<field name="height" swt_gen="true"></field>
-	</struct>
 	<cftype name="CGMutablePathRef" swt_gen="true"></cftype>
 	<enum name="kCGBlendModeDifference" swt_gen="true"></enum>
 	<enum name="kCGEventFilterMaskPermitLocalKeyboardEvents" swt_gen="true"></enum>
@@ -344,4 +320,28 @@
 		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
+	<struct name="CGAffineTransform" swt_gen="true">
+		<field name="a" swt_gen="true"></field>
+		<field name="b" swt_gen="true"></field>
+		<field name="c" swt_gen="true"></field>
+		<field name="d" swt_gen="true"></field>
+		<field name="tx" swt_gen="true"></field>
+		<field name="ty" swt_gen="true"></field>
+	</struct>
+	<struct name="CGPathElement" swt_gen="true">
+		<field name="points" swt_gen="true"></field>
+		<field name="type" swt_gen="true"></field>
+	</struct>
+	<struct name="CGPoint" swt_gen="true">
+		<field name="x" swt_gen="true"></field>
+		<field name="y" swt_gen="true"></field>
+	</struct>
+	<struct name="CGRect" swt_gen="true">
+		<field name="origin" swt_gen="true"></field>
+		<field name="size" swt_gen="true"></field>
+	</struct>
+	<struct name="CGSize" swt_gen="true">
+		<field name="height" swt_gen="true"></field>
+		<field name="width" swt_gen="true"></field>
+	</struct>
 </signatures>
