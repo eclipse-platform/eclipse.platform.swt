@@ -271,8 +271,10 @@ void computeRuns() {
 			for (int j = 0; j < buffer.length; j++) {
 				buffer[j] = '\uFFFC';
 			}
-			NSString string = NSString.stringWithCharacters(buffer, buffer.length);
+			NSString string = (NSString) new NSString().alloc();
+			string = string.initWithCharacters(buffer, buffer.length);
 			attrStr.replaceCharactersInRange(range, string);
+			string.release();
 			
 			run.jniRef =  OS.NewGlobalRef(run);
 			if (run.jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -282,6 +284,7 @@ void computeRuns() {
 			NSTextAttachment attachment = ((NSTextAttachment)new NSTextAttachment().alloc()).initWithFileWrapper(null);
 			attachment.setAttachmentCell(run.cell);
 			attrStr.addAttribute(OS.NSAttachmentAttributeName, attachment, range);
+			attachment.release();
 		}
 	}
 	attrStr.endEditing();
@@ -665,6 +668,7 @@ void freeRuns() {
 		StyleItem run = styles[i];
 		if (run.cell != null) {
 			OS.object_setInstanceVariable(run.cell.id, SWT_OBJECT, 0);
+			run.cell.release();
 			run.cell = null;
 			OS.DeleteGlobalRef(run.jniRef);
 			run.jniRef = 0;
