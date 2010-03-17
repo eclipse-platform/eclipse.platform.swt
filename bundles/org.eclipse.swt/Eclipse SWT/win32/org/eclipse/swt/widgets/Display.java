@@ -4424,6 +4424,8 @@ public static void setAppName (String name) {
  * Sets the application version to the argument.
  *
  * @param version the new app version
+ * 
+ * @since 3.6
  */
 public static void setAppVersion (String version) {
 	APP_VERSION = version;
