@@ -2777,6 +2777,9 @@
 		<method class_method="true" selector="systemStatusBar" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="thickness" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 	</class>
 	<class name="NSStatusItem" swt_gen="mixed">
 		<method selector="drawStatusBarBackgroundInRect:withHighlight:" swt_gen="true">
@@ -3857,10 +3860,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="close" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="contentRectForFrameRect:" swt_gen="true">
-			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="contentView" swt_gen="true">

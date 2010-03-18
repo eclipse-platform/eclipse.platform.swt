@@ -4495,7 +4495,7 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 							if (!application.isActive()) {
 								application.activateIgnoringOtherApps(true);
 							}
-							NSRect rect = window.contentRectForFrameRect(window.frame());
+							NSRect rect = window.contentView().frame();
 							NSPoint pt = window.convertBaseToScreen(nsEvent.locationInWindow());
 							if (OS.NSPointInRect(pt, rect)) beep ();
 						}

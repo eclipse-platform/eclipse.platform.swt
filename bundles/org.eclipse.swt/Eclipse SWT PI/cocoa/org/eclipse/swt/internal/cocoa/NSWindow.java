@@ -54,12 +54,6 @@ public void close() {
 	OS.objc_msgSend(this.id, OS.sel_close);
 }
 
-public NSRect contentRectForFrameRect(NSRect frameRect) {
-	NSRect result = new NSRect();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_contentRectForFrameRect_, frameRect);
-	return result;
-}
-
 public NSView contentView() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_contentView);
 	return result != 0 ? new NSView(result) : null;

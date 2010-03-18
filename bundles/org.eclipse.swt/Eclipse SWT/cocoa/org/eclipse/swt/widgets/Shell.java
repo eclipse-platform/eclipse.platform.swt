@@ -549,7 +549,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	rect.width = trim.width;
 	rect.height = trim.height;
 	if (window != null) {
-		if (!fixResize()) {
+		if (!fullScreen && !fixResize()) {
 			float /*double*/ h = rect.height;
 			rect = window.frameRectForContentRect(rect);
 			rect.y += h-rect.height;
@@ -800,11 +800,11 @@ public Rectangle getClientArea () {
 	checkWidget();
 	NSRect rect;
 	if (window != null) {
-		rect = window.frame();
 		if (!fixResize ()) {
-			rect = window.contentRectForFrameRect(rect);
+			rect = window.contentView().frame();
 		} else {
 			float /*double*/ scaleFactor = window.userSpaceScaleFactor();
+			rect = window.frame();
 			rect.width /= scaleFactor;
 			rect.height /= scaleFactor;
 		}
@@ -1479,7 +1479,7 @@ public void setFullScreen (boolean fullScreen) {
 		fullScreenFrame = NSScreen.mainScreen().frame();
 		if (getMonitor().equals(display.getPrimaryMonitor ())) {
 			if (menuBar != null) {
-				float /*double*/ menuBarHt = currentFrame.height - contentView().frame().height;
+				float /*double*/ menuBarHt = NSStatusBar.systemStatusBar().thickness();
 				fullScreenFrame.height -= menuBarHt;
 				OS.SetSystemUIMode(OS.kUIModeContentHidden, 0);
 			} 

@@ -38,4 +38,8 @@ public static NSStatusBar systemStatusBar() {
 	return result != 0 ? new NSStatusBar(result) : null;
 }
 
+public float /*double*/ thickness() {
+	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_thickness);
+}
+
 }
