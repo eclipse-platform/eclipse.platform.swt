@@ -342,6 +342,8 @@
 			<arg line="build32.sh"/>
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
+			<env key="XULRUNNER_SDK" value="/Users/Shared/xulrunner/1.8.0.1/mozilla/dist/i386/dist/sdk"/>
+			<env key="XULRUNNER_LIBS" value="$(XULRUNNER_SDK)/lib/libxpcomglue.a $(XULRUNNER_SDK)/../../../ppc/dist/sdk/lib/libxpcomglue.a"/>
 		</exec>
 		<antcall target="refresh_fragment">
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx"/>
@@ -355,6 +357,8 @@
 			<arg line="build64.sh"/>
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
+			<env key="XULRUNNER_SDK" value="/Users/Shared/xulrunner/64-bit/mozilla/dist"/>
+			<env key="XULRUNNER_LIBS" value="$(XULRUNNER_SDK)/lib/libxpcomglue.a"/>
 		</exec>
 		<antcall target="refresh_fragment">
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.x86_64"/>
