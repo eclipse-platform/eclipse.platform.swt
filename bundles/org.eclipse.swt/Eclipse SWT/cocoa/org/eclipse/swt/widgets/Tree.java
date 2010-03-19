@@ -1871,6 +1871,10 @@ public int indexOf (TreeItem item) {
 	return -1;
 }
 
+boolean isTransparent() {
+	return true;
+}
+
 boolean isTrim (NSView view) {
 	if (super.isTrim (view)) return true;
 	return view.id == headerView.id;

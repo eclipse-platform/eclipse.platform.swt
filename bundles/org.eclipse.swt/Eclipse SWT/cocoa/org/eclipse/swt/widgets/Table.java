@@ -1845,6 +1845,10 @@ public boolean isSelected (int index) {
 	return ((NSTableView)view).isRowSelected(index);
 }
 
+boolean isTransparent() {
+	return true;
+}
+
 boolean isTrim (NSView view) {
 	if (super.isTrim (view)) return true;
 	return view.id == headerView.id;
