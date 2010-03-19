@@ -213,17 +213,17 @@ int filterProc (int theItem, int infoPtr, int callBackUD, int filterMode) {
 				if (OS.AEGetDescData (desc, fsRef, fsRef.length) == OS.noErr) {
 					int url = OS.CFURLCreateFromFSRef (OS.kCFAllocatorDefault, fsRef);
 					if (url != 0) {
-						int ext = OS.CFURLCopyPathExtension (url);
+						int fName = OS.CFURLCopyLastPathComponent(url);
 						OS.CFRelease (url);
-						if (ext != 0) {
-							char [] buffer= new char [OS.CFStringGetLength (ext)];
+						if (fName != 0) {
+							char [] buffer= new char [OS.CFStringGetLength (fName)];
 							if (buffer.length > 0) {
 								CFRange range = new CFRange ();
 								range.length = buffer.length;
-								OS.CFStringGetCharacters (ext, range, buffer);
+								OS.CFStringGetCharacters (fName, range, buffer);
 							}
-							OS.CFRelease (ext);
-							String extension = new String (buffer);
+							OS.CFRelease (fName);
+							String fileName = new String (buffer);
 							String extensions = filterExtensions [filterIndex];
 							int start = 0, length = extensions.length ();
 							result = 0;
@@ -236,7 +236,7 @@ int filterProc (int theItem, int infoPtr, int callBackUD, int filterMode) {
 									break;
 								}
 								if (filter.startsWith ("*.")) filter = filter.substring (2);
-								if (filter.toLowerCase ().equals(extension.toLowerCase ()))  {
+								if (fileName.toLowerCase ().endsWith("." + filter.toLowerCase ()))  {
 									result = 1;
 									break;
 								}

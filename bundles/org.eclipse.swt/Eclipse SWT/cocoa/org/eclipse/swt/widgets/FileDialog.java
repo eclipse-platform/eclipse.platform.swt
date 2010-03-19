@@ -356,21 +356,18 @@ int /*long*/ panel_shouldShowFilename (int /*long*/ id, int /*long*/ sel, int /*
 			if (isDirectory[0] != 0) {
 				return 1;
 			} else {
-				NSString ext = path.pathExtension();
-				if (ext != null) {
-					int filterIndex = (int)/*64*/popup.indexOfSelectedItem();
-					String extension = ext.getString();
-					String extensions = filterExtensions [filterIndex];
-					int start = 0, length = extensions.length ();
-					while (start < length) {
-						int index = extensions.indexOf (EXTENSION_SEPARATOR, start);
-						if (index == -1) index = length;
-						String filter = extensions.substring (start, index).trim ();
-						if (filter.equals ("*") || filter.equals ("*.*")) return 1;
-						if (filter.startsWith ("*.")) filter = filter.substring (2);
-						if (filter.toLowerCase ().equals(extension.toLowerCase ())) return 1;
-						start = index + 1;
-					}
+				String fileName = path.lastPathComponent().getString();
+				int filterIndex = (int)/*64*/popup.indexOfSelectedItem();
+				String extensions = filterExtensions [filterIndex];
+				int start = 0, length = extensions.length ();
+				while (start < length) {
+					int index = extensions.indexOf (EXTENSION_SEPARATOR, start);
+					if (index == -1) index = length;
+					String filter = extensions.substring (start, index).trim ();
+					if (filter.equals ("*") || filter.equals ("*.*")) return 1;
+					if (filter.startsWith ("*.")) filter = filter.substring (2);
+					if ((fileName.toLowerCase ()).endsWith("." + filter.toLowerCase ())) return 1;
+					start = index + 1;
 				}
 				return 0;
 			}
