@@ -59,8 +59,12 @@ import org.eclipse.swt.events.*;
 
 public class Combo extends Composite {
 	boolean noSelection, ignoreDefaultSelection, ignoreCharacter, ignoreModify, ignoreResize, lockText;
-	int scrollWidth, visibleCount = 5;
+	int scrollWidth, visibleCount;
 	int /*long*/ cbtHook;
+
+	static final int SIMPLE_VISIBLE_COUNT = 5;
+	static final int VISIBLE_COUNT = 30;
+
 	/**
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
@@ -519,6 +523,11 @@ void createHandle () {
 		SetWindowPos (handle, 0, 0, 0, 0x3FFF, 0x3FFF, flags);
 		SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
 	}
+}
+
+void createWidget() {
+	visibleCount = (style & SWT.SIMPLE) != 0 ? SIMPLE_VISIBLE_COUNT : VISIBLE_COUNT;
+	super.createWidget();
 }
 
 /**
@@ -1434,6 +1443,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	* items and ignore the height value that the programmer supplies.
 	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
+		int visibleCount = getItemCount() == 0 ? SIMPLE_VISIBLE_COUNT : this.visibleCount;
 		height = getTextHeight () + (getItemHeight () * visibleCount) + 2;
 		/*
 		* Feature in Windows.  When a drop down combo box is resized,
