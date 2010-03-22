@@ -416,7 +416,7 @@
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="3"/>
+			<param name="library_count" value="4"/>
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.x86_64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
