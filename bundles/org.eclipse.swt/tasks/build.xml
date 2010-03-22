@@ -463,7 +463,7 @@
 	
 	<target name="check_fragment_libraries" depends="get_version">
 		<property name="checkdir" value="~/build/check_libraries"/>
-		<property name="library_count" value="110"/>
+		<property name="library_count" value="111"/>
 		<property name="fragment" value="org.eclipse.swt.win32.win32.x86 org.eclipse.swt.win32.win32.x86_64 org.eclipse.swt.win32.win32.ia64 org.eclipse.swt.win32.wce_ppc.arm org.eclipse.swt.wpf.win32.x86 org.eclipse.swt.photon.qnx.x86 org.eclipse.swt.carbon.macosx org.eclipse.swt.cocoa.macosx org.eclipse.swt.cocoa.macosx.x86_64 org.eclipse.swt.gtk.linux.ppc org.eclipse.swt.gtk.linux.ppc64 org.eclipse.swt.gtk.linux.x86 org.eclipse.swt.gtk.linux.x86_64 org.eclipse.swt.gtk.solaris.sparc org.eclipse.swt.gtk.solaris.x86 org.eclipse.swt.motif.linux.x86 org.eclipse.swt.motif.aix.ppc org.eclipse.swt.motif.hpux.ia64_32 org.eclipse.swt.motif.solaris.sparc"/>
 		<sshexec host="${m_linux_x86}" 
 			username="swtbuild" 
