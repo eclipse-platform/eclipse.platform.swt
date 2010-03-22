@@ -62,6 +62,8 @@ public class Combo extends Composite {
 	boolean ignoreSetObject, ignoreSelection;
 	NSRange selectionRange;
 
+	static final int VISIBLE_COUNT = 10;
+
 	/**
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
@@ -429,6 +431,7 @@ void createHandle () {
 	} else {
 		NSComboBox widget = (NSComboBox)new SWTComboBox().alloc();
 		widget.init();
+		widget.setNumberOfVisibleItems(VISIBLE_COUNT);
 		widget.setDelegate(widget);
 		view = widget;
 	}

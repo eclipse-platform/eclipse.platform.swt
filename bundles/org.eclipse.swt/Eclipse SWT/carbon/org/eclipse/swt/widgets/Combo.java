@@ -66,6 +66,8 @@ public class Combo extends Composite {
 	String lastText = "";
 	ControlEditTextSelectionRec selection;
 
+	static final int VISIBLE_COUNT = 10;
+
 	/**
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
@@ -518,6 +520,7 @@ void createHandle () {
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
 		OS.SetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kTXNDrawCaretWhenInactiveTag, 4, new byte [ ]{0});
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kHIComboBoxNumVisibleItemsTag, 4, new int[] {VISIBLE_COUNT});
 		OS.HIViewSetVisible (handle, true);
 	}
 }
