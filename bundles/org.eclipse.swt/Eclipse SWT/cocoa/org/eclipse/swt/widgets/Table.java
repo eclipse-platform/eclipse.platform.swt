@@ -1055,16 +1055,19 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rec
 				range.length = newStr.length();
 				newStr.removeAttribute(OS.NSForegroundColorAttributeName, range);
 				int alignment = columnCount == 0 ? SWT.LEFT : columns[columnIndex].style & (SWT.LEFT | SWT.CENTER | SWT.RIGHT);
+				NSSize size = newStr.size();
 				NSRect newRect = new NSRect();
 				newRect.x = rect.x + TEXT_GAP;
 				newRect.y = rect.y;
 				newRect.width = rect.width - TEXT_GAP;
 				switch (alignment) {
 					case SWT.CENTER: newRect.width -= TEXT_GAP / 2.0f + 1; break;
-					case SWT.RIGHT: newRect.width -= TEXT_GAP; break;
+					case SWT.RIGHT: {
+						if (rect.width > size.width) newRect.width -= TEXT_GAP;
+						break;
+					}
 				}
 				newRect.height = rect.height;
-				NSSize size = newStr.size();
 				if (newRect.height > size.height) {
 					newRect.y += (newRect.height - size.height) / 2;
 					newRect.height = size.height;
