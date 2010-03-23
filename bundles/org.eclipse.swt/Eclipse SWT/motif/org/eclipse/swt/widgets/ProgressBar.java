@@ -321,7 +321,7 @@ public void setSelection (int value) {
 	if (selection < minimum) selection = minimum;
 	if (selection > maximum) selection = maximum;
 	setThumb(selection - minimum);
-	update ();
+	if (isVisible ()) update ();
 }
 /**
  * Sets the state of the receiver. The state must be one of these values:
