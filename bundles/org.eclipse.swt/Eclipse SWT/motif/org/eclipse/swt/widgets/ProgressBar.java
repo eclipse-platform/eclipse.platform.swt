@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -124,17 +124,17 @@ void createHandle (int index) {
 	};
 	handle = OS.XmCreateScrollBar (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	if ((style & SWT.INDETERMINATE) != 0) createTimer ();
+	if ((style & SWT.INDETERMINATE) != 0) createTimer (DELAY);
 }
 void createWidget (int index) {
 	super.createWidget (index);
 	foreground = defaultForeground ();
 }
-void createTimer () {
+void createTimer (int delay) {
 	int xDisplay = display.xDisplay;
 	int windowTimerProc = display.windowTimerProc;
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-	timerId = OS.XtAppAddTimeOut (xtContext, DELAY, windowTimerProc, handle);
+	timerId = OS.XtAppAddTimeOut (xtContext, delay, windowTimerProc, handle);
 }
 void destroyTimer () {
 	if (timerId != 0) OS.XtRemoveTimeOut (timerId);
@@ -319,7 +319,7 @@ public void setSelection (int value) {
 	if (selection < minimum) selection = minimum;
 	if (selection > maximum) selection = maximum;
 	setThumb(selection - minimum);
-	update ();
+	if (isVisible ()) update ();
 }
 /**
  * Sets the state of the receiver. The state must be one of these values:
@@ -370,11 +370,13 @@ void setThumb (int sliderSize) {
 	display.setWarnings (warnings);
 }
 int timerProc (int id) {
+	long time = System.currentTimeMillis();
 	int minimum = getMinimum ();
 	int range = getMaximum () - minimum + 1;
 	int value = getSelection () - minimum + 1;
 	setSelection (minimum + (value % range));	
-	createTimer ();
+	time = System.currentTimeMillis() - time;
+	createTimer (DELAY + (int)time);
 	return 0;
 }
 int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
