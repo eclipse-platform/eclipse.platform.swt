@@ -57,6 +57,8 @@ public class Menu extends Widget {
 	MenuItem cascade, defaultItem;
 	Decorations parent;
 
+	static final int GAP = 4;
+
 /**
  * Constructs a new instance of this class given its parent,
  * and sets the style for the instance so that the instance
@@ -684,9 +686,65 @@ void menuWillOpen(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 	visible = true;
 	sendEvent (SWT.Show);
 	if (isDisposed()) return;
-	for (int i=0; i<items.length; i++) {
+	float /*double*/ width = 0;
+	NSAttributedString[] strs = new NSAttributedString[itemCount];
+	for (int i=0; i<itemCount; i++) {
 		MenuItem item = items [i];
-		if (item != null)  item.updateAccelerator (true);
+		NSMenuItem nsItem = item.nsItem;
+		strs[i] = nsItem.attributedTitle();
+		NSImage nsImage = nsItem.image();
+		float /*double*/ w = GAP;
+		if (strs[i] != null) {
+			w += strs[i].size().width;
+		}
+		if (nsImage != null) {
+			w += (nsImage.size().width + GAP);
+		}
+		if (strs[i] != null) width = Math.max(width, w);
+	}
+	for (int i=0; i<itemCount; i++) {
+		MenuItem item = items [i];
+		if (item.accelerator != 0 || strs[i] == null || (style & SWT.BAR) != 0 || (item.style & SWT.CASCADE) != 0) continue;
+		int accelIndex = item.text.indexOf ('\t');
+		if (accelIndex != -1) {
+			String accelText = item.text.substring (accelIndex);
+			int length = accelText.length ();
+			if (length > 1) {
+				NSMenuItem nsItem = item.nsItem;
+				NSImage nsImage = nsItem.image();
+				float /*double*/ tab = width;
+				if (nsImage != null) {
+					tab -= (nsImage.size().width + GAP);
+				}
+				NSMutableAttributedString str = new NSMutableAttributedString(strs[i].mutableCopy());
+				
+				/* Append accelerator text */
+				NSString label = (NSString) new NSString().alloc();
+				label = label.initWithString(accelText);
+				NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(1);
+				dict.setObject (NSFont.menuBarFontOfSize(0), OS.NSFontAttributeName);
+				NSAttributedString attribStr = ((NSAttributedString) new NSAttributedString ().alloc ()).initWithString (label, dict);
+				dict.release();
+				label.release();
+				str.appendAttributedString(attribStr);
+				attribStr.release();
+				
+				/* Align accelerator text */
+				NSRange range = new NSRange();
+				range.length = str.length();
+				NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
+				paragraphStyle.setTabStops(NSArray.array());
+				NSTextTab stop = (NSTextTab)new NSTextTab().alloc();
+				stop = stop.initWithType(OS.NSLeftTabStopType, tab);
+				paragraphStyle.addTabStop(stop);
+				stop.release();
+				str.addAttribute(OS.NSParagraphStyleAttributeName, paragraphStyle, range);
+				paragraphStyle.release ();
+				
+				nsItem.setAttributedTitle(str);
+				str.release();
+			}
+		}
 	}
 }
 
@@ -694,9 +752,10 @@ void menuDidClose(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 	sendEvent (SWT.Hide);
 	if (isDisposed()) return;
 	visible = false;
-	for (int i=0; i<items.length; i++) {
+	for (int i=0; i<itemCount; i++) {
 		MenuItem item = items [i];
-		if (item != null)  item.updateAccelerator (false);
+		if ((item.style & SWT.SEPARATOR) != 0) continue;
+		item.updateText();
 	}
 }
 

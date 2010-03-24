@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,6 +27,11 @@ public NSMenuItem(id id) {
 public NSAttributedString attributedTitle() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_attributedTitle);
 	return result != 0 ? new NSAttributedString(result) : null;
+}
+
+public NSImage image() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_image);
+	return result != 0 ? new NSImage(result) : null;
 }
 
 public NSMenuItem initWithTitle(NSString aString, int /*long*/ aSelector, NSString charCode) {

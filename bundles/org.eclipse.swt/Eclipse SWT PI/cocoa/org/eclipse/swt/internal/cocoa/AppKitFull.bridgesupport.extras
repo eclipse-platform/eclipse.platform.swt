@@ -1763,6 +1763,9 @@
 		<method selector="attributedTitle" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="image" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="initWithTitle:action:keyEquivalent:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
