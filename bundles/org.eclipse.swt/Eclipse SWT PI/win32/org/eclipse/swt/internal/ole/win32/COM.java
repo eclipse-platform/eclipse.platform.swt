@@ -861,6 +861,13 @@ public static final int STATE_SYSTEM_MULTISELECTABLE = 0x1000000;
 /* IA2 additional constants */
 public static final int IA2_COORDTYPE_SCREEN_RELATIVE = 0;
 public static final int IA2_COORDTYPE_PARENT_RELATIVE = 1;
+public static final int IA2_STATE_ACTIVE = 					0x00000001;
+public static final int IA2_STATE_SINGLE_LINE =				0x00002000;
+public static final int IA2_STATE_MULTI_LINE = 				0x00000200;
+public static final int IA2_STATE_REQUIRED = 				0x00000800;
+public static final int IA2_STATE_INVALID_ENTRY = 			0x00000040;
+public static final int IA2_STATE_SUPPORTS_AUTOCOMPLETION =	0x00008000;
+public static final int IA2_STATE_EDITABLE =				0x00000008;
 
 /** Accessibility natives */
 
