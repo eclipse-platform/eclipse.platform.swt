@@ -349,6 +349,7 @@ class TableTab extends ScrollableTab {
 		/* Create the extra widgets */
 		noScrollButton = new Button (styleGroup, SWT.CHECK);
 		noScrollButton.setText ("SWT.NO_SCROLL");
+		noScrollButton.moveAbove(borderButton);
 		checkButton = new Button (styleGroup, SWT.CHECK);
 		checkButton.setText ("SWT.CHECK");
 		fullSelectionButton = new Button (styleGroup, SWT.CHECK);
