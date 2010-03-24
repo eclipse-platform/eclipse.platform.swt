@@ -479,12 +479,13 @@
 			keyfile="${keyfile}" 
 			trust="true"
 			command="hostname"/>
-		<sshexec host="${m_linux_rh3_x86}" 
+		<sshexec host="${m_linux_x86_64}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
 			command="hostname"/>
-		<sshexec host="${m_linux_x86_64}" 
+		<!-- These machines are only used for 3.5.x builds. -->
+		<!--sshexec host="${m_linux_rh3_x86}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
@@ -493,7 +494,7 @@
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
-			command="hostname"/>
+			command="hostname"/-->
 		<sshexec host="${m_linux_ppc}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
