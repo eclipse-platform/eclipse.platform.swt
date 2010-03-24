@@ -179,7 +179,7 @@ public class ACC {
 	 * 
 	 * @since 3.6
 	 */
-	public static final String OK = "OK";
+	public static final String OK = "OK"; //$NON-NLS-1$
 
 	/**
 	 * Typically, a single character is returned. In some cases more than one
