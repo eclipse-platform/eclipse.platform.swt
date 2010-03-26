@@ -39,7 +39,7 @@ public static void main(String[] args) {
 		return;
 	}
 	browser.setText(createPage(0));
-    browser.addLocationListener(new LocationAdapter() {
+	browser.addLocationListener(new LocationAdapter() {
 	    public void changing(LocationEvent event) {
 			String location = event.location;
 			int index = location.indexOf(PREAMBLE); 
