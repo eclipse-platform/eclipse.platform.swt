@@ -62,7 +62,7 @@ public class Combo extends Composite {
 	boolean ignoreSetObject, ignoreSelection;
 	NSRange selectionRange;
 
-	static final int VISIBLE_COUNT = 10;
+	static final int VISIBLE_COUNT = 5;
 
 	/**
 	 * the operating system limit for the number of characters
@@ -431,7 +431,6 @@ void createHandle () {
 	} else {
 		NSComboBox widget = (NSComboBox)new SWTComboBox().alloc();
 		widget.init();
-		widget.setNumberOfVisibleItems(VISIBLE_COUNT);
 		widget.setDelegate(widget);
 		view = widget;
 	}
@@ -446,6 +445,13 @@ NSAttributedString createString(String string) {
 void createWidget() {
 	text = "";
 	super.createWidget();
+	if ((style & SWT.READ_ONLY) == 0) {
+		NSComboBox widget = (NSComboBox)view;
+		NSScreen screen = widget.window().screen();
+		NSRect rect = screen != null ? screen.frame() : NSScreen.mainScreen().frame();
+		int visibleCount = Math.max(VISIBLE_COUNT, (int)(rect.height / 3 / widget.itemHeight()));
+		widget.setNumberOfVisibleItems(visibleCount);
+	}
 }
 
 /**
