@@ -62,8 +62,7 @@ public class Combo extends Composite {
 	int scrollWidth, visibleCount;
 	int /*long*/ cbtHook;
 
-	static final int SIMPLE_VISIBLE_COUNT = 5;
-	static final int VISIBLE_COUNT = 30;
+	static final int VISIBLE_COUNT = 5;
 
 	/**
 	 * the operating system limit for the number of characters
@@ -526,8 +525,26 @@ void createHandle () {
 }
 
 void createWidget() {
-	visibleCount = (style & SWT.SIMPLE) != 0 ? SIMPLE_VISIBLE_COUNT : VISIBLE_COUNT;
 	super.createWidget();
+	visibleCount = VISIBLE_COUNT;
+	if ((style & SWT.SIMPLE) == 0) {
+		int itemHeight = (int)/*64*/OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
+		if (itemHeight != OS.CB_ERR && itemHeight != 0) {
+			int maxHeight = 0;
+			if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (4, 10)) {
+				RECT rect = new RECT ();
+				OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
+				maxHeight = (rect.bottom - rect.top) / 3;
+			} else {
+				int /*long*/ hmonitor = OS.MonitorFromWindow (handle, OS.MONITOR_DEFAULTTONEAREST);
+				MONITORINFO lpmi = new MONITORINFO ();
+				lpmi.cbSize = MONITORINFO.sizeof;
+				OS.GetMonitorInfo (hmonitor, lpmi);
+				maxHeight = (lpmi.rcWork_bottom - lpmi.rcWork_top) / 3;
+			}
+			visibleCount = Math.max(visibleCount, maxHeight / itemHeight);
+		}
+	}
 }
 
 /**
@@ -1443,7 +1460,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	* items and ignore the height value that the programmer supplies.
 	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
-		int visibleCount = getItemCount() == 0 ? SIMPLE_VISIBLE_COUNT : this.visibleCount;
+		int visibleCount = getItemCount() == 0 ? VISIBLE_COUNT : this.visibleCount;
 		height = getTextHeight () + (getItemHeight () * visibleCount) + 2;
 		/*
 		* Feature in Windows.  When a drop down combo box is resized,

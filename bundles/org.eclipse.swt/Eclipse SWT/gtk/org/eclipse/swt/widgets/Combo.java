@@ -58,7 +58,7 @@ import org.eclipse.swt.events.*;
  */
 public class Combo extends Composite {
 	int /*long*/ buttonHandle, entryHandle, listHandle, textRenderer, cellHandle, popupHandle, menuHandle;
-	int lastEventTime, visibleCount = 30;
+	int lastEventTime, visibleCount = 10;
 	int /*long*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
 	String [] items = new String [0];
