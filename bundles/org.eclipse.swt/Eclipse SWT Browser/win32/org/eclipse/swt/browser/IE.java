@@ -28,7 +28,7 @@ class IE extends WebBrowser {
 	OleListener domListener;
 	OleAutomation[] documents = new OleAutomation[0];
 
-	boolean back, forward, delaySetText, ignoreDispose, ignoreTraverse, initialNavigateComplete;
+	boolean back, forward, delaySetText, ignoreDispose, ignoreTraverse, performingInitialNavigate;
 	boolean installFunctionsOnDocumentComplete, untrustedText;
 	Point location;
 	Point size;
@@ -377,7 +377,7 @@ public void create(Composite parent, int style) {
 				switch (event.type) {
 					case BeforeNavigate2: {
 						/* don't send client events if the initial navigate to about:blank has not completed */
-						if (!initialNavigateComplete) break;
+						if (performingInitialNavigate) break;
 
 						Variant varResult = event.arguments[1];
 						String url = varResult.getString();
@@ -417,7 +417,7 @@ public void create(Composite parent, int style) {
 						}
 
 						/* Disallow local file system accesses if the browser content is untrusted */
-						if (url.startsWith(PROTOCOL_FILE) && getUrl().startsWith(ABOUT_BLANK) && untrustedText) {
+						if (url.startsWith(PROTOCOL_FILE) && _getUrl().startsWith(ABOUT_BLANK) && untrustedText) {
 							Variant cancel = event.arguments[6];
 							if (cancel != null) {
 								int /*long*/ pCancel = cancel.getByRef();
@@ -471,17 +471,15 @@ public void create(Composite parent, int style) {
 						break;
 					}
 					case DocumentComplete: {
-						if (!initialNavigateComplete) {
+						if (performingInitialNavigate) {
 							/* this event marks the completion of the initial navigate to about:blank */
-							initialNavigateComplete = true;
+							performingInitialNavigate = false;
 
 							/* if browser content has been provided by the client then set it now */
 							if (pendingText != null) {
 								setText((String)pendingText[0], ((Boolean)pendingText[1]).booleanValue());
-							} else {
-								if (pendingUrl != null) {
-									setUrl((String)pendingUrl[0], (String)pendingUrl[1], (String[])pendingUrl[2]);
-								}
+							} else if (pendingUrl != null) {
+								setUrl((String)pendingUrl[0], (String)pendingUrl[1], (String[])pendingUrl[2]);
 							}
 							pendingText = pendingUrl = null;
 							break;
@@ -790,7 +788,7 @@ public void create(Composite parent, int style) {
 					}
 					case ProgressChange: {
 						/* don't send client events if the initial navigate to about:blank has not completed */
-						if (!initialNavigateComplete) break;
+						if (performingInitialNavigate) break;
 
 						Variant arg1 = event.arguments[0];
 						int nProgress = arg1.getType() != OLE.VT_I4 ? 0 : arg1.getInt(); // may be -1
@@ -810,7 +808,7 @@ public void create(Composite parent, int style) {
 					}
 					case StatusTextChange: {
 						/* don't send client events if the initial navigate to about:blank has not completed */
-						if (!initialNavigateComplete) break;
+						if (performingInitialNavigate) break;
 
 						Variant arg1 = event.arguments[0];
 						if (arg1.getType() == OLE.VT_BSTR) {
@@ -827,7 +825,7 @@ public void create(Composite parent, int style) {
 					}
 					case TitleChange: {
 						/* don't send client events if the initial navigate to about:blank has not completed */
-						if (!initialNavigateComplete) break;
+						if (performingInitialNavigate) break;
 
 						Variant arg1 = event.arguments[0];
 						if (arg1.getType() == OLE.VT_BSTR) {
@@ -929,16 +927,6 @@ public void create(Composite parent, int style) {
 	int[] rgdispid = auto.getIDsOfNames(new String[] {"RegisterAsDropTarget"}); //$NON-NLS-1$
 	if (rgdispid != null) auto.setProperty(rgdispid[0], variant);
 	variant.dispose();
-
-	/*
-	* Navigate initially to about:blank, in order to be consistent with
-	* the other browser implementations which auto-navigate there on startup,
-	* and to work around IE bug http://support.microsoft.com/kb/320153.  Any
-	* content that is set via setUrl() or setText() will be held as pending
-	* until the first DocumentComplete callback is received, indicating the
-	* completion of this initial navigate to about:blank.
-	*/
-	navigate(ABOUT_BLANK, null, null, true);
 }
 
 public boolean back() {
@@ -1123,6 +1111,16 @@ public String getText() {
 }
 
 public String getUrl() {
+	/*
+	 * If the url is "" then return ABOUT_BLANK in order to be consistent
+	 * with the other Browser implementations which auto-navigate to ABOUT_BLANK
+	 * when opened.
+	 */
+	String result = _getUrl();
+	return result.length() != 0 ? result : ABOUT_BLANK;
+}
+
+String _getUrl() {
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "LocationURL" }); //$NON-NLS-1$
 	Variant pVarResult = auto.getProperty(rgdispid[0]);
 	if (pVarResult == null || pVarResult.getType() != OLE.VT_BSTR) return ""; //$NON-NLS-1$
@@ -1208,7 +1206,7 @@ public void refresh() {
 	* workaround is to not unload the Acrobat libraries if > MAX_PDF PDF
 	* files have been opened.
 	*/
-	String url = getUrl();
+	String url = _getUrl();
 	int extensionIndex = url.lastIndexOf('.');
 	if (extensionIndex != -1) {
 		String extension = url.substring(extensionIndex);
@@ -1277,10 +1275,12 @@ void setHTML (String string) {
 
 public boolean setText(final String html, boolean trusted) {
 	/*
-	* If the browser has not completed its initial navigate to about:blank
-	* then delay setting this text content until the navigate has completed.
+	* If the browser is navigating to about:blank in response to its first
+	* setUrl() invocation then delay setting this text content until the
+	* navigate has completed.  about:blank will be re-navigated to in order
+	* to ensure that all expected client events are sent.
 	*/
-	if (!initialNavigateComplete) {
+	if (performingInitialNavigate) {
 		pendingText = new Object[] {html, new Boolean (trusted)};
 		pendingUrl = null;
 		return true;
@@ -1288,14 +1288,14 @@ public boolean setText(final String html, boolean trusted) {
 
 	/*
 	* If the html field is non-null then the about:blank page is already being
-	* loaded, so no Stop or Navigate is required.  Just set the html that is to
-	* be shown.
+	* loaded from a previous setText() invocation, so no Stop or Navigate is
+	* required.  Just set the html that is to be shown.
 	*/
 	boolean blankLoading = this.html != null;
 	this.html = html;
 	untrustedText = !trusted;
 	if (blankLoading) return true;
-	
+
 	/*
 	* Navigate to the blank page and insert the given html when
 	* receiving the next DocumentComplete notification.  See the
@@ -1312,7 +1312,6 @@ public boolean setText(final String html, boolean trusted) {
 	* workaround is to not invoke 'stop' when no request has been set since
 	* that instance was created.
 	*/
-	int[] rgdispid;
 
 	/*
 	* Stopping the loading of a page causes DocumentComplete events from previous
@@ -1322,13 +1321,15 @@ public boolean setText(final String html, boolean trusted) {
 	* DocumentComplete.  The Browser's ReadyState can be used to determine whether
 	* these extra events will be received or not.
 	*/
-	rgdispid = auto.getIDsOfNames(new String[] { "ReadyState" }); //$NON-NLS-1$
-	Variant pVarResult = auto.getProperty(rgdispid[0]);
-	if (pVarResult == null) return false;
-	delaySetText = pVarResult.getInt() != READYSTATE_COMPLETE;
-	pVarResult.dispose();
-	rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
-	auto.invoke(rgdispid[0]);
+	if (_getUrl().length() != 0) {
+		int[] rgdispid = auto.getIDsOfNames(new String[] { "ReadyState" }); //$NON-NLS-1$
+		Variant pVarResult = auto.getProperty(rgdispid[0]);
+		if (pVarResult == null) return false;
+		delaySetText = pVarResult.getInt() != READYSTATE_COMPLETE;
+		pVarResult.dispose();
+		rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
+		auto.invoke(rgdispid[0]);
+	}
 
 	/*
 	* Feature in IE.  If the current page is about:blank then a DocumentComplete
@@ -1336,7 +1337,7 @@ public boolean setText(final String html, boolean trusted) {
 	* content will not be set.  The workaround is to skip this re-navigation and
 	* just set the content here if not vetoed by a LocationListener.  
 	*/
-	if (getUrl().equals(ABOUT_BLANK)) {
+	if (_getUrl().equals(ABOUT_BLANK)) {
 		Runnable runnable = new Runnable() {
 			public void run() {
 				if (browser.isDisposed()) return;
@@ -1362,7 +1363,7 @@ public boolean setText(final String html, boolean trusted) {
 		return true;
 	}
 
-	rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
+	int[] rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
 	Variant[] rgvarg = new Variant[1];
 	rgvarg[0] = new Variant(ABOUT_BLANK);
 	int[] rgdispidNamedArgs = new int[1];
@@ -1373,7 +1374,7 @@ public boolean setText(final String html, boolean trusted) {
 		oldValue = hResult == COM.S_OK;
 		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
 	}
-	pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
+	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
 	if (!OS.IsWinCE && IEVersion >= 7) {
 		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, oldValue);
 	}
@@ -1385,17 +1386,20 @@ public boolean setText(final String html, boolean trusted) {
 }
 
 public boolean setUrl(String url, String postData, String headers[]) {
+	html = uncRedirect = null;
+
 	/*
-	* If the browser has not completed its initial navigate to about:blank
-	* then delay setting this url until the navigate has completed.
+	* If the browser has not shown any content yet then first navigate to
+	* about:blank to work around IE bug http://support.microsoft.com/kb/320153,
+	* then navigate to the requested url once about:blank has loaded.
 	*/
-	if (!initialNavigateComplete) {
+	if (_getUrl().length() == 0) {
 		pendingText = null;
 		pendingUrl = new Object[] {url, postData, headers};
+		performingInitialNavigate = true;
+		navigate (ABOUT_BLANK, null, null, true);
 		return true;
 	}
-
-	html = uncRedirect = null;
 
 	/*
 	* Bug in Internet Explorer.  For some reason, Navigating to an xml document before
@@ -1418,7 +1422,7 @@ public void stop() {
 	* Just clear the pending url and text fields so that any pending content
 	* will not be set into the browser when the about:blank navigate completes.
 	*/
-	if (!initialNavigateComplete) {
+	if (performingInitialNavigate) {
 		pendingText = pendingUrl = null;
 		return;
 	}
