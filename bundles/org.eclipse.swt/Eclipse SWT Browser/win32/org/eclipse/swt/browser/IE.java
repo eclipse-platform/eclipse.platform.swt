@@ -1427,6 +1427,13 @@ public void stop() {
 		return;
 	}
 
+	/*
+	* Feature of IE.  Invoking Stop in IE before any content has been shown
+	* displays a Navigation Cancelled error page.  The workaround is to not
+	* invoke Stop if no content has been shown yet. 
+	*/
+	if (_getUrl().length() == 0) return;
+
 	uncRedirect = null;
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
 	auto.invoke(rgdispid[0]);
