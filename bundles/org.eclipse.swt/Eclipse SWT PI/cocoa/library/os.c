@@ -1014,6 +1014,28 @@ JNIEXPORT void JNICALL OS_NATIVE(CFRunLoopObserverInvalidate)
 }
 #endif
 
+#ifndef NO_CFRunLoopRunInMode
+JNIEXPORT jint JNICALL OS_NATIVE(CFRunLoopRunInMode)
+	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1, jboolean arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFRunLoopRunInMode_FUNC);
+	rc = (jint)CFRunLoopRunInMode((CFStringRef)arg0, (CFTimeInterval)arg1, (Boolean)arg2);
+	OS_NATIVE_EXIT(env, that, CFRunLoopRunInMode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFRunLoopStop
+JNIEXPORT void JNICALL OS_NATIVE(CFRunLoopStop)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, CFRunLoopStop_FUNC);
+	CFRunLoopStop((CFRunLoopRef)arg0);
+	OS_NATIVE_EXIT(env, that, CFRunLoopStop_FUNC);
+}
+#endif
+
 #ifndef NO_CFStringCreateWithCharacters
 JNIEXPORT jintLong JNICALL OS_NATIVE(CFStringCreateWithCharacters)
 	(JNIEnv *env, jclass that, jintLong arg0, jcharArray arg1, jintLong arg2)

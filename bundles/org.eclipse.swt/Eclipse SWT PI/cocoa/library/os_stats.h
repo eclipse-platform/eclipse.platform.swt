@@ -75,6 +75,8 @@ typedef enum {
 	CFRunLoopGetCurrent_FUNC,
 	CFRunLoopObserverCreate_FUNC,
 	CFRunLoopObserverInvalidate_FUNC,
+	CFRunLoopRunInMode_FUNC,
+	CFRunLoopStop_FUNC,
 	CFStringCreateWithCharacters_FUNC,
 	CFURLCreateFromFSRef_FUNC,
 	CFURLCreateStringByAddingPercentEscapes_FUNC,

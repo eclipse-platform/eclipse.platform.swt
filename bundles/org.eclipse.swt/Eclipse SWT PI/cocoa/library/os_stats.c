@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 554;
-int OS_nativeFunctionCallCount[554];
+int OS_nativeFunctionCount = 556;
+int OS_nativeFunctionCallCount[556];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -67,6 +67,8 @@ char * OS_nativeFunctionNames[] = {
 	"CFRunLoopGetCurrent",
 	"CFRunLoopObserverCreate",
 	"CFRunLoopObserverInvalidate",
+	"CFRunLoopRunInMode",
+	"CFRunLoopStop",
 	"CFStringCreateWithCharacters",
 	"CFURLCreateFromFSRef",
 	"CFURLCreateStringByAddingPercentEscapes",

@@ -2764,6 +2764,16 @@ public static final native int /*long*/ CFRunLoopObserverCreate(int /*long*/ all
  */
 public static final native void CFRunLoopObserverInvalidate(int /*long*/ observer);
 /**
+ * @param mode cast=(CFStringRef)
+ * @param seconds cast=(CFTimeInterval)
+ * @param returnAfterSourceHandled cast=(Boolean)
+ */
+public static final native int CFRunLoopRunInMode(int /*long*/ mode, double seconds, boolean returnAfterSourceHandled);
+/**
+ * @param rl cast=(CFRunLoopRef)
+ */
+public static final native void CFRunLoopStop(int /*long*/ rl);
+/**
  * @param alloc cast=(CFAllocatorRef)
  * @param chars cast=(UniChar*)
  * @param numChars cast=(CFIndex)
