@@ -202,12 +202,11 @@ public class Browser1 {
 				if (verbose) System.out.print(result ? "." : "E");
 				if (!result) fail++; 
 			}
-		// TEMPORARILY DON'T RUN TO DETERMINE IF THIS IS THE TEST THAT FAILS INTERMITTENTLY
-//			for (int i = 0; i < urls.length; i++) {
-//				boolean result = test2(urls[i]); 
-//				if (verbose) System.out.print(result ? "." : "E");
-//				if (!result) fail++; 
-//			}
+			for (int i = 0; i < urls.length; i++) {
+				boolean result = test2(urls[i]); 
+				if (verbose) System.out.print(result ? "." : "E");
+				if (!result) fail++; 
+			}
 		}
 		return fail == 0;
 	}
