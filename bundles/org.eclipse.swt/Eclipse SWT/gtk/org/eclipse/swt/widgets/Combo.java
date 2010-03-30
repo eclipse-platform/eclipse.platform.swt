@@ -1406,7 +1406,11 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 
 int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	int /*long*/ result = super.gtk_key_press_event (widget, event);
-	if (result != 0) fixIM ();
+	if (result != 0) {
+	    gdkEventKey = 0;
+	    fixIM ();
+	    return result;
+	}
 	if (gdkEventKey == -1) result = 1;
 	gdkEventKey = 0;
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0) && (style & SWT.READ_ONLY) == 0) {
