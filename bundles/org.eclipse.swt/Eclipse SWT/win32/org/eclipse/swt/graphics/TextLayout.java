@@ -751,7 +751,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							if (gdipLinkColor == 0) gdipLinkColor = createGdipBrush(linkColor, alpha);
 							gdipFg = gdipLinkColor;
 						}
-						if (gdipFont != 0) {
+						if (gdipFont != 0 && !run.analysis.fNoGlyphIndex) {
 							pRect = drawRunTextGDIP(gdipGraphics, run, rect, gdipFont, baseline, gdipFg, gdipSelForeground, selectionStart, selectionEnd, alpha);
 						} else {
 							int fg = style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK ? linkColor : foreground;

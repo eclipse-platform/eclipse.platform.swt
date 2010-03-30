@@ -698,6 +698,7 @@ public class OS extends C {
 	public static final int GCS_CURSORPOS = 0x0080;
 	public static final int GDT_VALID = 0;
 	public static final int GET_FEATURE_FROM_PROCESS = 0x2;
+	public static final int GGI_MARK_NONEXISTING_GLYPHS = 1;
 	public static final int GLPS_CLOSED = 1;
 	public static final int GLPS_OPENED = 2;
 	public static final int GM_ADVANCED = 2;
@@ -4156,6 +4157,8 @@ public static final native int GetFontLanguageInfo (int /*long*/ hdc);
 public static final native int /*long*/ GetForegroundWindow ();
 /** @param hdc cast=(HDC) */
 public static final native int GetGraphicsMode (int /*long*/ hdc);
+/** @param hdc cast=(HDC) */
+public static final native int GetGlyphIndicesW(int /*long*/ hdc, char[] lpstr, int c, short[] pgi, int fl);
 /**
  * @param idThread cast=(DWORD)
  * @param lpgui cast=(LPGUITHREADINFO)

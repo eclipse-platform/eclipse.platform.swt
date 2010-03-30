@@ -288,6 +288,7 @@ typedef enum {
 	GetFontLanguageInfo_FUNC,
 	GetForegroundWindow_FUNC,
 	GetGUIThreadInfo_FUNC,
+	GetGlyphIndicesW_FUNC,
 	GetGraphicsMode_FUNC,
 	GetIconInfo_FUNC,
 	GetKeyNameTextA_FUNC,

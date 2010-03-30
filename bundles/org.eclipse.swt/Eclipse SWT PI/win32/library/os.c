@@ -4052,6 +4052,25 @@ fail:
 }
 #endif
 
+#ifndef NO_GetGlyphIndicesW
+JNIEXPORT jint JNICALL OS_NATIVE(GetGlyphIndicesW)
+	(JNIEnv *env, jclass that, jintLong arg0, jcharArray arg1, jint arg2, jshortArray arg3, jint arg4)
+{
+	jchar *lparg1=NULL;
+	jshort *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetGlyphIndicesW_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jint)GetGlyphIndicesW((HDC)arg0, lparg1, arg2, lparg3, arg4);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
+	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetGlyphIndicesW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetGraphicsMode
 JNIEXPORT jint JNICALL OS_NATIVE(GetGraphicsMode)
 	(JNIEnv *env, jclass that, jintLong arg0)
