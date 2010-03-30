@@ -44,8 +44,9 @@ public class Browser extends Composite {
 	int userStyle;
 	boolean isClosing;
 
-	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
+	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
+	static final String PROPERTY_USEWEBKITGTK = "org.eclipse.swt.browser.UseWebKitGTK"; //$NON-NLS-1$
 
 /**
  * Constructs a new instance of this class given its parent
@@ -84,40 +85,45 @@ public Browser (Composite parent, int style) {
 	String platform = SWT.getPlatform ();
 	Display display = parent.getDisplay ();
 	if ("gtk".equals (platform)) display.setData (NO_INPUT_METHOD, null); //$NON-NLS-1$
-	String className = null;
+	String classNames[] = null;
 	if ((style & SWT.MOZILLA) != 0) {
-		className = "org.eclipse.swt.browser.Mozilla"; //$NON-NLS-1$
+		classNames = new String[] {"org.eclipse.swt.browser.Mozilla"}; //$NON-NLS-1$
 	} else {
 		if ("win32".equals (platform) || "wpf".equals (platform)) { //$NON-NLS-1$ $NON-NLS-2$
-			className = "org.eclipse.swt.browser.IE"; //$NON-NLS-1$
+			classNames = new String[] {"org.eclipse.swt.browser.IE"}; //$NON-NLS-1$
 		} else if ("motif".equals (platform)) { //$NON-NLS-1$
-			className = "org.eclipse.swt.browser.Mozilla"; //$NON-NLS-1$
+			classNames = new String[] {"org.eclipse.swt.browser.Mozilla"}; //$NON-NLS-1$
 		} else if ("gtk".equals (platform)) { //$NON-NLS-1$
-			className = "org.eclipse.swt.browser.Mozilla"; //$NON-NLS-1$
+			if (System.getProperty (PROPERTY_USEWEBKITGTK) != null) {
+				classNames = new String[] {"org.eclipse.swt.browser.WebKit", "org.eclipse.swt.browser.Mozilla"}; //$NON-NLS-1$ //$NON-NLS-2$
+			} else {
+				classNames = new String[] {"org.eclipse.swt.browser.Mozilla"}; //$NON-NLS-1$
+			}
 		} else if ("carbon".equals (platform) || "cocoa".equals (platform)) { //$NON-NLS-1$
-			className = "org.eclipse.swt.browser.Safari"; //$NON-NLS-1$
+			classNames = new String[] {"org.eclipse.swt.browser.Safari"}; //$NON-NLS-1$
 		} else if ("photon".equals (platform)) { //$NON-NLS-1$
-			className = "org.eclipse.swt.browser.Voyager"; //$NON-NLS-1$
+			classNames = new String[] {"org.eclipse.swt.browser.Voyager"}; //$NON-NLS-1$
 		} else {
 			dispose ();
 			SWT.error (SWT.ERROR_NO_HANDLES);
 		}
 	}
 
-	try {
-		Class clazz = Class.forName (className);
-		webBrowser = (WebBrowser)clazz.newInstance ();
-	} catch (ClassNotFoundException e) {
-	} catch (IllegalAccessException e) {
-	} catch (InstantiationException e) {
+	for (int i = 0; i < classNames.length; i++) {
+		try {
+			Class clazz = Class.forName (classNames[i]);
+			webBrowser = (WebBrowser)clazz.newInstance ();
+			if (webBrowser != null) {
+				webBrowser.setBrowser (this);
+				if (webBrowser.create (parent, style)) return;
+			}
+		} catch (ClassNotFoundException e) {
+		} catch (IllegalAccessException e) {
+		} catch (InstantiationException e) {
+		}
 	}
-	if (webBrowser == null) {
-		dispose ();
-		SWT.error (SWT.ERROR_NO_HANDLES);
-	}
-
-	webBrowser.setBrowser (this);
-	webBrowser.create (parent, style);
+	dispose ();
+	SWT.error (SWT.ERROR_NO_HANDLES);
 }
 
 static Composite checkParent (Composite parent) {

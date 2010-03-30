@@ -250,7 +250,7 @@ class IE extends WebBrowser {
 		NativePendingCookies = null;
 	}
 
-public void create(Composite parent, int style) {
+public boolean create(Composite parent, int style) {
 	this.style = style;
 	frame = new OleFrame(browser, SWT.NONE);
 
@@ -927,6 +927,8 @@ public void create(Composite parent, int style) {
 	int[] rgdispid = auto.getIDsOfNames(new String[] {"RegisterAsDropTarget"}); //$NON-NLS-1$
 	if (rgdispid != null) auto.setProperty(rgdispid[0], variant);
 	variant.dispose();
+
+	return true;
 }
 
 public boolean back() {

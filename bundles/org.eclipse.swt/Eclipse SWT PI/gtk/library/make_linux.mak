@@ -27,6 +27,7 @@ GNOME_PREFIX = swt-gnome
 MOZILLA_PREFIX = swt-mozilla$(GCC_VERSION)
 XULRUNNER_PREFIX = swt-xulrunner
 XPCOMINIT_PREFIX = swt-xpcominit
+WEBKIT_PREFIX = swt-webkit
 GLX_PREFIX = swt-glx
 
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -39,6 +40,7 @@ GNOME_LIB = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 XULRUNNER_LIB = lib$(XULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 XPCOMINIT_LIB = lib$(XPCOMINIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+WEBKIT_LIB = lib$(WEBKIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GLX_LIB = lib$(GLX_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 CAIROCFLAGS = `pkg-config --cflags cairo`
@@ -89,6 +91,9 @@ MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
 	-DNO_nsDynamicFunctionLoad
 XULRUNNEREXCLUDES = -DNO__1NS_1InitXPCOM2
 
+WEBKITCFLAGS = `pkg-config --cflags gtk+-2.0` -I/usr/include/webkit-1.0 -I/usr/include/libsoup-2.4
+WEBKITLIBS = -lwebkit-1.0
+
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
 AWT_OBJECTS = swt_awt.o
@@ -99,6 +104,7 @@ GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
 XULRUNNER_OBJECTS = swt.o xpcomxul.o xpcomxul_custom.o xpcomxul_structs.o xpcomxul_stats.o
 XPCOMINIT_OBJECTS = swt.o xpcominit.o xpcominit_structs.o xpcominit_stats.o
+WEBKIT_OBJECTS = swt.o webkit.o webkit_structs.o webkit_stats.o
 GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 
 CFLAGS = -O -Wall \
@@ -266,6 +272,23 @@ xpcominit_structs.o: xpcominit_structs.cpp
 	
 xpcominit_stats.o: xpcominit_stats.cpp
 	$(CXX) $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcominit_stats.cpp
+
+#
+# WebKit lib
+#
+make_webkit: $(WEBKIT_LIB)
+
+$(WEBKIT_LIB): $(WEBKIT_OBJECTS)
+	$(CC) $(LFLAGS) -o $(WEBKIT_LIB) $(WEBKIT_OBJECTS) $(WEBKITLIBS)
+
+webkit.o: webkitgtk.c 
+	$(CC) $(CFLAGS) $(WEBKITCFLAGS) -c webkitgtk.c -o webkit.o
+
+webkit_structs.o: webkitgtk_structs.c 
+	$(CC) $(CFLAGS) $(WEBKITCFLAGS) -c webkitgtk_structs.c -o webkit_structs.o
+	
+webkit_stats.o: webkitgtk_stats.c webkitgtk_stats.h
+	$(CC) $(CFLAGS) $(WEBKITCFLAGS) -c webkitgtk_stats.c -o webkit_stats.o
 
 #
 # GLX lib

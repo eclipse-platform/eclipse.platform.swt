@@ -1335,6 +1335,30 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1GDK_1TYPE_1PIXBUF)
 }
 #endif
 
+#ifndef NO__1GString_1len
+JNIEXPORT jint JNICALL OS_NATIVE(_1GString_1len)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GString_1len_FUNC);
+	rc = (jint)((GString *)arg0)->len;
+	OS_NATIVE_EXIT(env, that, _1GString_1len_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1GString_1str
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1GString_1str)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GString_1str_FUNC);
+	rc = (jintLong)((GString *)arg0)->str;
+	OS_NATIVE_EXIT(env, that, _1GString_1str_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GTK_1IS_1BUTTON
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1BUTTON)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1427,6 +1451,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1PLUG)
 	OS_NATIVE_ENTER(env, that, _1GTK_1IS_1PLUG_FUNC);
 	rc = (jboolean)GTK_IS_PLUG(arg0);
 	OS_NATIVE_EXIT(env, that, _1GTK_1IS_1PLUG_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1GTK_1IS_1SCROLLED_1WINDOW
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1SCROLLED_1WINDOW)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1IS_1SCROLLED_1WINDOW_FUNC);
+	rc = (jboolean)GTK_IS_SCROLLED_WINDOW(arg0);
+	OS_NATIVE_EXIT(env, that, _1GTK_1IS_1SCROLLED_1WINDOW_FUNC);
 	return rc;
 }
 #endif
@@ -3700,6 +3736,34 @@ fail:
 }
 #endif
 
+#if (!defined(NO__1g_1object_1set__I_3B_3BI) && !defined(JNI64)) || (!defined(NO__1g_1object_1set__J_3B_3BJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1set__I_3B_3BI)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jbyteArray arg2, jintLong arg3)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1set__J_3B_3BJ)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jbyteArray arg2, jintLong arg3)
+#endif
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, _1g_1object_1set__I_3B_3BI_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, _1g_1object_1set__J_3B_3BJ_FUNC);
+#endif
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	g_object_set((gpointer)arg0, (const gchar *)lparg1, lparg2, (const gchar *)NULL);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, _1g_1object_1set__I_3B_3BI_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, _1g_1object_1set__J_3B_3BJ_FUNC);
+#endif
+}
+#endif
+
 #ifndef NO__1g_1object_1set_1qdata
 JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1set_1qdata)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2)
@@ -3960,6 +4024,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1signal_1handler_1disconnect)
 	OS_NATIVE_ENTER(env, that, _1g_1signal_1handler_1disconnect_FUNC);
 	g_signal_handler_disconnect((gpointer)arg0, (gulong)arg1);
 	OS_NATIVE_EXIT(env, that, _1g_1signal_1handler_1disconnect_FUNC);
+}
+#endif
+
+#ifndef NO__1g_1signal_1handler_1find
+JNIEXPORT jint JNICALL OS_NATIVE(_1g_1signal_1handler_1find)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jintLong arg4, jintLong arg5, jintLong arg6)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1signal_1handler_1find_FUNC);
+	rc = (jint)g_signal_handler_find((gpointer)arg0, arg1, arg2, (GQuark)arg3, (GClosure *)arg4, (gpointer)arg5, (gpointer)arg6);
+	OS_NATIVE_EXIT(env, that, _1g_1signal_1handler_1find_FUNC);
+	return rc;
 }
 #endif
 

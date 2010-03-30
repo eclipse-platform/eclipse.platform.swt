@@ -36,6 +36,7 @@
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/glx"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
 	<classpathentry kind="src" path="Eclipse SWT Theme/gtk"/>
+	<classpathentry kind="src" path="Eclipse SWT WebKit/gtk"/>
 	<classpathentry kind="lib" path="extra_jars/exceptions.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

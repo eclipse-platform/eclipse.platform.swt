@@ -146,6 +146,8 @@ typedef enum {
 	_1GDK_1ROOT_1PARENT_FUNC,
 	_1GDK_1TYPE_1COLOR_FUNC,
 	_1GDK_1TYPE_1PIXBUF_FUNC,
+	_1GString_1len_FUNC,
+	_1GString_1str_FUNC,
 	_1GTK_1IS_1BUTTON_FUNC,
 	_1GTK_1IS_1CELL_1RENDERER_1PIXBUF_FUNC,
 	_1GTK_1IS_1CELL_1RENDERER_1TEXT_FUNC,
@@ -154,6 +156,7 @@ typedef enum {
 	_1GTK_1IS_1IMAGE_1MENU_1ITEM_FUNC,
 	_1GTK_1IS_1MENU_1ITEM_FUNC,
 	_1GTK_1IS_1PLUG_FUNC,
+	_1GTK_1IS_1SCROLLED_1WINDOW_FUNC,
 	_1GTK_1IS_1SOCKET_FUNC,
 	_1GTK_1IS_1WINDOW_FUNC,
 	_1GTK_1STOCK_1CANCEL_FUNC,
@@ -318,6 +321,11 @@ typedef enum {
 #else
 	_1g_1object_1set__J_3BZJ_FUNC,
 #endif
+#ifndef JNI64
+	_1g_1object_1set__I_3B_3BI_FUNC,
+#else
+	_1g_1object_1set__J_3B_3BJ_FUNC,
+#endif
 	_1g_1object_1set_1qdata_FUNC,
 	_1g_1object_1unref_FUNC,
 	_1g_1quark_1from_1string_FUNC,
@@ -353,6 +361,7 @@ typedef enum {
 	_1g_1signal_1emit_1by_1name__J_3B_3B_FUNC,
 #endif
 	_1g_1signal_1handler_1disconnect_FUNC,
+	_1g_1signal_1handler_1find_FUNC,
 	_1g_1signal_1handlers_1block_1matched_FUNC,
 	_1g_1signal_1handlers_1disconnect_1matched_FUNC,
 	_1g_1signal_1handlers_1unblock_1matched_FUNC,

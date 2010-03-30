@@ -150,7 +150,7 @@ class Safari extends WebBrowser {
 		NativePendingCookies = null;
 	}
 
-public void create (Composite parent, int style) {
+public boolean create (Composite parent, int style) {
 	/*
 	* Note.  Loading the webkit bundle on Jaguar causes a crash.
 	* The workaround is to detect any OS prior to 10.30 and fail
@@ -401,6 +401,8 @@ public void create (Composite parent, int style) {
 		int preferences = Cocoa.objc_msgSend(Cocoa.C_WebPreferences, Cocoa.S_standardPreferences);
 		Cocoa.objc_msgSend(preferences, Cocoa.S_setJavaEnabled, 0);
 	}
+
+	return true;
 }
 
 static int eventProc3(int nextHandler, int theEvent, int userData) {

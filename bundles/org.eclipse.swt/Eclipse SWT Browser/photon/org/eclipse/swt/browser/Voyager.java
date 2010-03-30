@@ -32,7 +32,7 @@ class Voyager extends WebBrowser {
 	/* Package Name */
 	static Callback callback;
 
-public void create(Composite parent, int style) {
+public boolean create(Composite parent, int style) {
 	/* use Photon's built-in anchoring for resizing */
 	int[] args = {
 			OS.Pt_ARG_ANCHOR_FLAGS,
@@ -108,6 +108,8 @@ public void create(Composite parent, int style) {
 		browser.addListener(folderEvents[i], listener);
 	}
 	OS.PtRealizeWidget(webHandle);
+
+	return true;
 }
 
 static int webProc(int handle, int data, int info) {

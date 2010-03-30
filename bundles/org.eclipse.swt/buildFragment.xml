@@ -216,6 +216,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/gnome/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/gtk/"/>
+			<fileset dir="${plugindir}/Eclipse SWT WebKit/gtk/"/>
 		</copy>
 		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>

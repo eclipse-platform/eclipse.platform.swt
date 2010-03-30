@@ -397,7 +397,7 @@ class Mozilla extends WebBrowser {
 		};
 	}
 
-public void create (Composite parent, int style) {
+public boolean create (Composite parent, int style) {
 	delegate = new MozillaDelegate (browser);
 	final Display display = parent.getDisplay ();
 
@@ -799,6 +799,8 @@ public void create (Composite parent, int style) {
 	for (int i = 0; i < folderEvents.length; i++) {
 		browser.addListener (folderEvents[i], listener);
 	}
+
+	return true;
 }
 
 public boolean back () {

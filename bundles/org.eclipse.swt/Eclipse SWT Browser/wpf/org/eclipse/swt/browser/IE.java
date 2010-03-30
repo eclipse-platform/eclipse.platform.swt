@@ -28,7 +28,7 @@ class IE extends WebBrowser {
 		};
 	}
 
-public void create(Composite parent, int style) {
+public boolean create(Composite parent, int style) {
 	frame = OS.gcnew_Frame();
 	if (frame == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.Frame_NavigationUIVisibility(frame, OS.NavigationUIVisibility_Hidden);
@@ -64,6 +64,8 @@ public void create(Composite parent, int style) {
 	};
 	browser.addListener(SWT.Resize, listener);
 	browser.addListener(SWT.Dispose, listener);
+
+	return true;
 }
 
 public boolean back() {

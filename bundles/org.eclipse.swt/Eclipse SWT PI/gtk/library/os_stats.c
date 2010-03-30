@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1355;
-int OS_nativeFunctionCallCount[1355];
+int OS_nativeFunctionCount = 1360;
+int OS_nativeFunctionCallCount[1360];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -138,6 +138,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1GDK_1ROOT_1PARENT",
 	"_1GDK_1TYPE_1COLOR",
 	"_1GDK_1TYPE_1PIXBUF",
+	"_1GString_1len",
+	"_1GString_1str",
 	"_1GTK_1IS_1BUTTON",
 	"_1GTK_1IS_1CELL_1RENDERER_1PIXBUF",
 	"_1GTK_1IS_1CELL_1RENDERER_1TEXT",
@@ -146,6 +148,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1GTK_1IS_1IMAGE_1MENU_1ITEM",
 	"_1GTK_1IS_1MENU_1ITEM",
 	"_1GTK_1IS_1PLUG",
+	"_1GTK_1IS_1SCROLLED_1WINDOW",
 	"_1GTK_1IS_1SOCKET",
 	"_1GTK_1IS_1WINDOW",
 	"_1GTK_1STOCK_1CANCEL",
@@ -310,6 +313,11 @@ char * OS_nativeFunctionNames[] = {
 #else
 	"_1g_1object_1set__J_3BZJ",
 #endif
+#ifndef JNI64
+	"_1g_1object_1set__I_3B_3BI",
+#else
+	"_1g_1object_1set__J_3B_3BJ",
+#endif
 	"_1g_1object_1set_1qdata",
 	"_1g_1object_1unref",
 	"_1g_1quark_1from_1string",
@@ -345,6 +353,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1signal_1emit_1by_1name__J_3B_3B",
 #endif
 	"_1g_1signal_1handler_1disconnect",
+	"_1g_1signal_1handler_1find",
 	"_1g_1signal_1handlers_1block_1matched",
 	"_1g_1signal_1handlers_1disconnect_1matched",
 	"_1g_1signal_1handlers_1unblock_1matched",

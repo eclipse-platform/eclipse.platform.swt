@@ -171,7 +171,7 @@ abstract class WebBrowser {
 		{19,	SWT.PAUSE},
 		{3,		SWT.BREAK},
 
-		/* Safari-specific */
+		/* WebKit/Safari-specific */
 		{186,	';'},
 		{187,	'='},
 		{189,	'-'},
@@ -300,7 +300,7 @@ static void SetPendingCookies (Vector pendingCookies) {
 	}
 }
 
-public abstract void create (Composite parent, int style);
+public abstract boolean create (Composite parent, int style);
 
 static String CreateErrorString (String error) {
 	return ERROR_ID + error;

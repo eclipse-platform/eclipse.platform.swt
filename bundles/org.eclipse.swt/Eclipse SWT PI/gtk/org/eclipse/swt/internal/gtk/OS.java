@@ -42,6 +42,7 @@ public class OS extends C {
 	public static final int ATK_RELATION_LABELLED_BY = 4;
 	public static final int G_FILE_TEST_IS_DIR = 1 << 2;
 	public static final int G_FILE_TEST_IS_EXECUTABLE = 1 << 3;
+	public static final int G_SIGNAL_MATCH_FUNC = 1 << 3;
 	public static final int G_SIGNAL_MATCH_DATA = 1 << 4;
 	public static final int G_SIGNAL_MATCH_ID = 1 << 0;
 	public static final int GDK_2BUTTON_PRESS = 0x5;
@@ -1440,6 +1441,15 @@ public static final boolean GTK_IS_BUTTON(int /*long*/ obj) {
 		lock.unlock();
 	}
 }
+public static final native boolean _GTK_IS_SCROLLED_WINDOW(int /*long*/ obj);
+public static final boolean GTK_IS_SCROLLED_WINDOW(int /*long*/ obj) {
+	lock.lock();
+	try {
+		return _GTK_IS_SCROLLED_WINDOW(obj);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native boolean _GTK_IS_WINDOW(int /*long*/ obj);
 public static final boolean GTK_IS_WINDOW(int /*long*/ obj) {
 	lock.lock();
@@ -2644,6 +2654,20 @@ public static final void g_object_set(int /*long*/ object, byte[] first_property
 }
 /**
  * @param object cast=(gpointer)
+ * @param first_property_name cast=(const gchar *),flags=no_out
+ * @param terminator cast=(const gchar *),flags=sentinel
+ */
+public static final native void _g_object_set(int /*long*/ object, byte[] first_property_name, byte[] data, int /*long*/ terminator);
+public static final void g_object_set(int /*long*/ object, byte[] first_property_name, byte[] data, int /*long*/ terminator) {
+	lock.lock();
+	try {
+		_g_object_set(object, first_property_name, data, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param object cast=(gpointer)
  * @param first_property_name cast=(const gchar *)
  * @param terminator cast=(const gchar *),flags=sentinel
  */
@@ -2883,6 +2907,22 @@ public static final void g_signal_handler_disconnect(int /*long*/ instance, int 
 }
 /**
  * @param instance cast=(gpointer)
+ * @param detail cast=(GQuark)
+ * @param closure cast=(GClosure *)
+ * @param func cast=(gpointer)
+ * @param data cast=(gpointer)
+ */
+public static final native int _g_signal_handler_find(int /*long*/ instance, int mask, int signal_id, int detail, int /*long*/ closure, int /*long*/ func, int /*long*/ data);
+public static final int g_signal_handler_find(int /*long*/ instance, int mask, int signal_id, int detail, int /*long*/ closure, int /*long*/ func, int /*long*/ data) {
+	lock.lock();
+	try {
+		return _g_signal_handler_find(instance, mask, signal_id, detail, closure, func, data);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param instance cast=(gpointer)
  * @param mask cast=(GSignalMatchType)
  * @param signal_id cast=(guint)
  * @param detail cast=(GQuark)
@@ -3014,6 +3054,32 @@ public static final void g_strfreev(int /*long*/ string_array) {
 	lock.lock();
 	try {
 		_g_strfreev(string_array);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=getter
+ * @param string cast=(GString *)
+ */
+public static final native int _GString_len(int /*long*/ string);
+public static final int GString_len(int /*long*/ string) {
+	lock.lock();
+	try { 
+		return _GString_len(string);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=getter
+ * @param string cast=(GString *)
+ */
+public static final native int /*long*/ _GString_str(int /*long*/ string);
+public static final int /*long*/ GString_str(int /*long*/ string) {
+	lock.lock();
+	try { 
+		return _GString_str(string);
 	} finally {
 		lock.unlock();
 	}
