@@ -648,6 +648,10 @@ void forceResize () {
  */
 public Accessible getAccessible () {
 	checkWidget ();
+	return _getAccessible ();
+}
+
+Accessible _getAccessible () {
 	if (accessible == null) {
 		accessible = Accessible.internal_new_Accessible (this);
 	}
@@ -1910,7 +1914,7 @@ public void removePaintListener(PaintListener listener) {
 void removeRelation () {
 	if (!isDescribedByLabel ()) return;		/* there will not be any */
 	if (labelRelation != null) {
-		getAccessible().removeRelation (ACC.RELATION_LABELLED_BY, labelRelation.getAccessible());
+		_getAccessible().removeRelation (ACC.RELATION_LABELLED_BY, labelRelation._getAccessible());
 		labelRelation = null;
 	}
 }

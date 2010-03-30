@@ -109,7 +109,7 @@ static int checkStyle (int style) {
 void addRelation (Control control) {
 	if (!control.isDescribedByLabel ()) return;
 	if (labelHandle == 0) return;
-	control.getAccessible().addRelation(ACC.RELATION_LABELLED_BY, getAccessible());
+	control._getAccessible().addRelation(ACC.RELATION_LABELLED_BY, _getAccessible());
 	control.labelRelation = this;
 }
 
