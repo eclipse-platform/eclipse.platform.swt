@@ -119,7 +119,7 @@ class Safari extends WebBrowser {
 		NativePendingCookies = null;
 	}
 
-public void create (Composite parent, int style) {
+public boolean create (Composite parent, int style) {
 	if (delegateClass == 0) {
 		Class safariClass = this.getClass();
 		Callback3 = new Callback(safariClass, "browserProc", 3); //$NON-NLS-1$
@@ -280,6 +280,8 @@ public void create (Composite parent, int style) {
 		/* disable applets */
 		WebPreferences.standardPreferences().setJavaEnabled(false);
 	}
+
+	return true;
 }
 
 public boolean back() {
