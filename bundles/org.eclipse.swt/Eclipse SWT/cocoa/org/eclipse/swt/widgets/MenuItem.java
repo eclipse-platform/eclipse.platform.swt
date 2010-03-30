@@ -801,5 +801,75 @@ void updateText () {
 	label.release();
 }
 
+boolean updateAccelerator (boolean show) {
+	if (accelerator != 0) return false;
+	int mask = 0, key = 0;
+	if (show) {
+		char [] buffer = new char [text.length ()];
+		text.getChars (0, buffer.length, buffer, 0);
+		int i=0, j=0;
+		while (i < buffer.length) {
+			if (buffer [i] == '\t') break;
+			if ((buffer [j++] = buffer [i++]) == '&') {
+				if (i == buffer.length) {continue;}
+				if (buffer [i] == '&') {i++; continue;}
+				j--;
+			}
+		}
+		if (i < buffer.length && buffer [i] == '\t') {
+			for (j = i + 1; j < buffer.length; j++) {
+				switch (buffer [j]) {
+					case '\u2303': mask |= OS.NSControlKeyMask; i++; break;
+					case '\u2325': mask |= OS.NSAlternateKeyMask; i++; break;
+					case '\u21E7': mask |= OS.NSShiftKeyMask; i++; break;
+					case '\u2318': mask |= OS.NSCommandKeyMask; i++; break;
+					default:
+						j = buffer.length;
+						break;
+				}
+			}
+			switch (buffer.length - i - 1) {
+				case 1:
+					key = buffer [i + 1];
+					if (key == 0x2423) key = ' ';
+					break;
+				case 2:
+					if (buffer [i + 1] == 'F') {
+						switch (buffer [i + 2]) {
+							case '1': key = 0xF704; break;
+							case '2': key = 0xF705; break;
+							case '3': key = 0xF706; break;
+							case '4': key = 0xF707; break;
+							case '5': key = 0xF708; break;
+							case '6': key = 0xF709; break;
+							case '7': key = 0xF70A; break;
+							case '8': key = 0xF70B; break;
+							case '9': key = 0xF70C; break;
+						}
+					}
+					break;
+				case 3:
+					if (buffer [i + 1] == 'F' && buffer [i + 2] == '1') {
+						switch (buffer [i + 3]) {
+							case '0': key = 0xF70D; break;
+							case '1': key = 0xF70E; break;
+							case '2': key = 0xF70F; break;
+							case '3': key = 0xF710; break;
+							case '4': key = 0xF711; break;
+							case '5': key = 0xF712; break;
+						}
+					}
+					break;
+			}
+		}
+	}
+	nsItem.setKeyEquivalentModifierMask (mask);
+	NSString nsstring = (NSString) new NSString().alloc();
+	nsstring = nsstring.initWithString(key == 0 ? "" : String.valueOf ((char)key));
+	nsItem.setKeyEquivalent (nsstring.lowercaseString ());
+	nsstring.release();
+	return key != 0;
+}
+
 }
 

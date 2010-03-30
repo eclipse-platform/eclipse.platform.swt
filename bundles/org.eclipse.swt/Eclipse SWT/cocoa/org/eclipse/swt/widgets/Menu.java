@@ -704,6 +704,7 @@ void menuWillOpen(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 	}
 	for (int i=0; i<itemCount; i++) {
 		MenuItem item = items [i];
+		if (item.updateAccelerator(true)) continue;
 		if (item.accelerator != 0 || strs[i] == null || (style & SWT.BAR) != 0 || (item.style & SWT.CASCADE) != 0) continue;
 		int accelIndex = item.text.indexOf ('\t');
 		if (accelIndex != -1) {
@@ -754,6 +755,7 @@ void menuDidClose(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 	visible = false;
 	for (int i=0; i<itemCount; i++) {
 		MenuItem item = items [i];
+		item.updateAccelerator(false);
 		if ((item.style & SWT.SEPARATOR) != 0) continue;
 		item.updateText();
 	}
