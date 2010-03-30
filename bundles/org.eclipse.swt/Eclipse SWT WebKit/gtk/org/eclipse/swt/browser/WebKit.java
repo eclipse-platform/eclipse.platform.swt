@@ -1775,13 +1775,13 @@ Object convertToJava (int /*long*/ ctx, int /*long*/ value) {
 		case WebKitGTK.kJSTypeString: {
 			int /*long*/ string = WebKitGTK.JSValueToStringCopy (ctx, value, null);
 			if (string == 0) return ""; //$NON-NLS-1$
-			int length = (int)/*64*/WebKitGTK.JSStringGetMaximumUTF8CStringSize (string);
-			byte[] bytes = new byte[length];
+			int /*long*/ length = WebKitGTK.JSStringGetMaximumUTF8CStringSize (string);
+			byte[] bytes = new byte[(int)/*64*/length];
 			length = WebKitGTK.JSStringGetUTF8CString (string, bytes, length);
 			WebKitGTK.JSStringRelease (string);
 			try {
 				/* length-1 is needed below to exclude the terminator character */
-				return new String (bytes, 0, length - 1, CHARSET_UTF8);
+				return new String (bytes, 0, (int)/*64*/length - 1, CHARSET_UTF8);
 			} catch (UnsupportedEncodingException e) {
 				return new String (Converter.mbcsToWcs (null, bytes));
 			}
