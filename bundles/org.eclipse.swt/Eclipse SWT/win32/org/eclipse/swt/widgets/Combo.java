@@ -289,7 +289,9 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 		switch (msg) {
 			case OS.WM_SIZE: {
 				ignoreResize = true;
+				if ((style & SWT.READ_ONLY) == 0) lockText = true;
 				int /*long*/ result = OS.CallWindowProc (ComboProc, hwnd, msg, wParam, lParam);
+				if ((style & SWT.READ_ONLY) == 0) lockText = false;
 				ignoreResize = false;
 				return result;
 			}
