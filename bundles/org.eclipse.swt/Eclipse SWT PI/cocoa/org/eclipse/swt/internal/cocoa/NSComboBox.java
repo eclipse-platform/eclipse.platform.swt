@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,6 +38,10 @@ public int /*long*/ indexOfSelectedItem() {
 
 public void insertItemWithObjectValue(id object, int /*long*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_insertItemWithObjectValue_atIndex_, object != null ? object.id : 0, index);
+}
+
+public float /*double*/ itemHeight() {
+	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_itemHeight);
 }
 
 public id itemObjectValueAtIndex(int /*long*/ index) {

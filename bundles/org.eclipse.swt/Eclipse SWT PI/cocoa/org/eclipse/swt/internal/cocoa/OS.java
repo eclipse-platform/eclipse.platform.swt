@@ -1207,6 +1207,7 @@ public static final int /*long*/ sel_isZoomed = sel_registerName("isZoomed");
 public static final int /*long*/ sel_itemArray = sel_registerName("itemArray");
 public static final int /*long*/ sel_itemAtIndex_ = sel_registerName("itemAtIndex:");
 public static final int /*long*/ sel_itemAtRow_ = sel_registerName("itemAtRow:");
+public static final int /*long*/ sel_itemHeight = sel_registerName("itemHeight");
 public static final int /*long*/ sel_itemIdentifier = sel_registerName("itemIdentifier");
 public static final int /*long*/ sel_itemObjectValueAtIndex_ = sel_registerName("itemObjectValueAtIndex:");
 public static final int /*long*/ sel_itemTitleAtIndex_ = sel_registerName("itemTitleAtIndex:");
