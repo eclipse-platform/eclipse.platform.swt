@@ -1214,10 +1214,13 @@ NSNumber callRunBeforeUnloadConfirmPanelWithMessage(int /*long*/ messageID, int 
 
 boolean webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame(int /*long*/ sender, int /*long*/ messageID, int /*long*/ frame) {
 	NSString message = new NSString(messageID);
-	String text = message.getString();
-	text = Compatibility.getMessage("SWT_OnBeforeUnload_Message", new String[] {"\n\n" + text + "\n\n"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	StringBuffer text = new StringBuffer(Compatibility.getMessage("SWT_OnBeforeUnload_Message1")); //$NON-NLS-1$
+	text.append("\n\n"); //$NON-NLS-1$
+	text.append(message.getString());
+	text.append("\n\n"); //$NON-NLS-1$
+	text.append(Compatibility.getMessage("SWT_OnBeforeUnload_Message2")); //$NON-NLS-1$
 	MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION | SWT.SHEET);
-	messageBox.setMessage(text);
+	messageBox.setMessage(text.toString());
 	return messageBox.open() == SWT.OK;
 }
 

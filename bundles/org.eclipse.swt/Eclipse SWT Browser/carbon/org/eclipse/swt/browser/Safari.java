@@ -1553,16 +1553,18 @@ int callRunBeforeUnloadConfirmPanelWithMessage(int /*long*/ messageID, int /*lon
 }
 
 int runBeforeUnloadConfirmPanelWithMessage(int message, int frame) {
+	StringBuffer text = new StringBuffer(Compatibility.getMessage("SWT_OnBeforeUnload_Message1")); //$NON-NLS-1$
+	text.append ("\n\n"); //$NON-NLS-1$
 	int length = OS.CFStringGetLength(message);
 	char[] buffer = new char[length];
 	CFRange range = new CFRange();
 	range.length = length;
 	OS.CFStringGetCharacters(message, range, buffer);
-	String text = new String(buffer);
-	text = Compatibility.getMessage("SWT_OnBeforeUnload_Message", new String[] {"\n\n" + text + "\n\n"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-
+	text.append(new String(buffer));
+	text.append("\n\n"); //$NON-NLS-1$
+	text.append(Compatibility.getMessage("SWT_OnBeforeUnload_Message2")); //$NON-NLS-1$
 	MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
-	messageBox.setMessage(text);
+	messageBox.setMessage(text.toString());
 	return messageBox.open() == SWT.OK ? 1 : 0;
 }
 
