@@ -2359,7 +2359,7 @@ public void drawText (String string, int x, int y, int flags) {
 }
 
 boolean useGDIP (int /*long*/ hdc, char[] buffer) {
-	if (!OS.IsUnicode) return false;
+	if (OS.IsWinCE || !OS.IsUnicode) return false;
 	short[] glyphs = new short[buffer.length];
 	OS.GetGlyphIndicesW(hdc, buffer, buffer.length, glyphs, OS.GGI_MARK_NONEXISTING_GLYPHS);
 	for (int i = 0; i < glyphs.length; i++) {

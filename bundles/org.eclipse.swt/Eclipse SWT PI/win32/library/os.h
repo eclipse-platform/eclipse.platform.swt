@@ -261,6 +261,7 @@
 #define NO_GetDIBColorTable
 #define NO_GetDIBits
 #define NO_GetFontLanguageInfo
+#define NO_GetGlyphIndicesW
 #define NO_GetGraphicsMode
 #define NO_GetGUIThreadInfo
 #define NO_GetIconInfo

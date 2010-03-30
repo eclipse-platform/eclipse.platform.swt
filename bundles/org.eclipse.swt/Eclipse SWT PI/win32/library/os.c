@@ -4062,7 +4062,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetGlyphIndicesW)
 	OS_NATIVE_ENTER(env, that, GetGlyphIndicesW_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)GetGlyphIndicesW((HDC)arg0, lparg1, arg2, lparg3, arg4);
+	rc = (jint)GetGlyphIndicesW((HDC)arg0, lparg1, arg2, (LPWORD)lparg3, arg4);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
 	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);

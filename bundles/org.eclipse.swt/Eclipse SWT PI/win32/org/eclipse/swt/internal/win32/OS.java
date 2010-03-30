@@ -4157,7 +4157,10 @@ public static final native int GetFontLanguageInfo (int /*long*/ hdc);
 public static final native int /*long*/ GetForegroundWindow ();
 /** @param hdc cast=(HDC) */
 public static final native int GetGraphicsMode (int /*long*/ hdc);
-/** @param hdc cast=(HDC) */
+/**
+ * @param hdc cast=(HDC)
+ * @param pgi cast=(LPWORD)
+ */
 public static final native int GetGlyphIndicesW(int /*long*/ hdc, char[] lpstr, int c, short[] pgi, int fl);
 /**
  * @param idThread cast=(DWORD)
