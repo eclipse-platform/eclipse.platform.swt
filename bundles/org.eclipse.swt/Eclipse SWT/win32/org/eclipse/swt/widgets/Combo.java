@@ -2425,6 +2425,9 @@ LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 			sendFocusEvent (SWT.FocusIn);
 			if (isDisposed ()) return LRESULT.ZERO;
 			break;
+		case OS.CBN_DROPDOWN:
+			setCursor ();
+			break;
 		case OS.CBN_KILLFOCUS:
 			/*
 			* Bug in Windows.  When a combo box that is read only

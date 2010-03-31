@@ -340,6 +340,7 @@ public class OS extends C {
 	public static final int BTNS_GROUP = 0x4;
 	public static final int BTNS_SEP = 0x1;
 	public static final int BTNS_SHOWTEXT = 0x40;
+	public static final int CBN_DROPDOWN = 0x7;
 	public static final int CBN_EDITCHANGE = 0x5;
 	public static final int CBN_KILLFOCUS = 0x4;
 	public static final int CBN_SELCHANGE = 0x1;
