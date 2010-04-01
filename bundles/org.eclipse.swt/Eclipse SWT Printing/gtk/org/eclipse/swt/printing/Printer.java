@@ -501,6 +501,8 @@ public void endJob() {
 	if (printJob == 0) return;
 	Cairo.cairo_surface_finish(surface);
 	OS.gtk_print_job_send(printJob, 0, 0, 0);
+	OS.g_object_unref(printJob);
+	printJob = 0;
 }
 
 /**
@@ -514,8 +516,9 @@ public void cancelJob() {
 	checkDevice();
 	if (printJob == 0) return;
 	//TODO: Need to implement (waiting on gtk bug 339323) 
-	//OS.g_object_unref(printJob);
-	//printJob = 0;
+	Cairo.cairo_surface_finish(surface);
+	OS.g_object_unref(printJob);
+	printJob = 0;
 }
 
 /**
