@@ -1512,9 +1512,11 @@ public void setFullScreen (boolean fullScreen) {
 	int mask = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
 	if ((style & mask) != 0) {
 		if (fullScreen) {
-			styleFlags = styleFlags & ~OS.WS_CAPTION;
+			styleFlags &= ~(OS.WS_CAPTION | OS.WS_MAXIMIZEBOX | OS.WS_MINIMIZEBOX);
 		} else {
-			styleFlags = styleFlags | OS.WS_CAPTION;
+			styleFlags |= OS.WS_CAPTION;
+			if ((style & SWT.MAX) != 0) styleFlags |= OS.WS_MAXIMIZEBOX;
+			if ((style & SWT.MIN) != 0) styleFlags |= OS.WS_MINIMIZEBOX;
 		}
 	}
 	if (fullScreen) wasMaximized = getMaximized ();
