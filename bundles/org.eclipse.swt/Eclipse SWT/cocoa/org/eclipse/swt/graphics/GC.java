@@ -2613,7 +2613,8 @@ public Pattern getForegroundPattern() {
  */
 public GCData getGCData() {	
 	if (handle == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	checkGC(TRANSFORM | CLIPPING);
+	NSAutoreleasePool pool = checkGC(TRANSFORM | CLIPPING);
+	uncheckGC(pool);
 	return data;	
 }
 
