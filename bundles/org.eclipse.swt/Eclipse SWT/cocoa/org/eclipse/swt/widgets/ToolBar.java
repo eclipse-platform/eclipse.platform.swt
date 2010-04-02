@@ -11,11 +11,10 @@
 package org.eclipse.swt.widgets;
 
  
-import org.eclipse.swt.internal.cocoa.*;
- 
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class support the layout of selectable
@@ -49,7 +48,8 @@ public class ToolBar extends Composite {
 	int itemCount;
 	ToolItem [] items;
 	NSArray accessibilityAttributes = null;
-	
+	ToolItem lastFocus;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -229,6 +229,7 @@ void destroyItem (ToolItem item) {
 		index++;
 	}
 	if (index == itemCount) return;
+	if (item == lastFocus) lastFocus = null;
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
 	item.view.removeFromSuperview();
@@ -259,6 +260,19 @@ Widget findTooltip (NSPoint pt) {
 		if (OS.NSPointInRect(pt, item.view.frame())) return item;
 	}
 	return super.findTooltip (pt);
+}
+
+boolean forceFocus (NSView focusView) {
+	if (lastFocus != null && lastFocus.setFocus ()) return true;
+	ToolItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		ToolItem item = items [i];
+		if (item.setFocus ()) {
+			lastFocus = item;
+			return true;
+		}
+	}
+	return super.forceFocus (focusView);
 }
 
 /**
@@ -537,5 +551,47 @@ public void setRedraw (boolean redraw) {
 	super.setRedraw (redraw);
 	if (redraw && drawCount == 0) relayout();
 }
+
+boolean translateTraversal (int key, NSEvent theEvent, boolean[] consume) {
+	boolean result = super.translateTraversal (key, theEvent, consume);
+	if (result) return result;
+	boolean next = false;
+	switch (key) {
+	case 126: /* Up arrow */
+	case 123: /* Left arrow */
+		next = false; break;
+	case 125: /* Down arrow */
+	case 124: /* Right arrow */
+		next = true; break;
+	default: return false;
+	}
+	ToolItem[] items = getItems();
+	ToolItem item = lastFocus;
+	int length = items.length;
+	int index = 0;
+	while (index < length) {
+		if (items [index] == item) break;
+		index++;
+	}
+	/*
+	 * It is possible (but unlikely), that application
+	 * code could have disposed the widget in focus in
+	 * or out events.  Ensure that a disposed widget is
+	 * not accessed.
+	 */
+	if (index == length) return false;
+	int start = index, offset = (next) ? 1 : -1;
+	while ((index = (index + offset + length) % length) != start) {
+		ToolItem child = items [index];
+		if (!child.isDisposed ()) {
+			if (child.setFocus ()) {
+				lastFocus = child;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 
 }

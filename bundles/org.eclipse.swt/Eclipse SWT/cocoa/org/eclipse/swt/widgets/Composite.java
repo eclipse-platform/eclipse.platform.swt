@@ -535,7 +535,7 @@ boolean isTabGroup () {
 }
 
 void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	if (view.window ().firstResponder ().id == id) {
+	if (hasFocus()) {
 		if ((state & CANVAS) != 0) {
 			Shell s = this.getShell();
 			NSArray array = NSArray.arrayWithObject (new NSEvent (theEvent));

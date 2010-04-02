@@ -1305,12 +1305,16 @@ public boolean forceFocus () {
 	shell.setSavedFocus (null);
 	NSView focusView = focusView ();
 	if (!focusView.canBecomeKeyView()) return false;
-	boolean result = view.window ().makeFirstResponder (focusView);
+	boolean result = forceFocus(focusView);
 	if (isDisposed ()) return false;
 	shell.bringToTop (false);
 	if (isDisposed ()) return false;
 	shell.setSavedFocus (this);
 	return result;
+}
+
+boolean forceFocus (NSView focusView) {
+	return view.window ().makeFirstResponder (focusView);
 }
 
 /**
@@ -2087,7 +2091,7 @@ public boolean isVisible () {
 }
 
 void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	if (view.window ().firstResponder ().id == id) {
+	if (hasFocus()) {
 		Shell s = this.getShell();
 		s.keyInputHappened = false;
 		boolean textInput = OS.objc_msgSend (id, OS.sel_conformsToProtocol_, OS.objc_getProtocol ("NSTextInput")) != 0;

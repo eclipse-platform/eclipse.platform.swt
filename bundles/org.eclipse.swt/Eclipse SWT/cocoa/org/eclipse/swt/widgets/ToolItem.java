@@ -801,6 +801,12 @@ public void setDisabledImage (Image image) {
 	updateImage (true);
 }
 
+boolean setFocus () {
+	if (button == null) return false;
+	if (!isEnabled ()) return false;
+	return view.window ().makeFirstResponder (button);
+}
+
 /**
  * Sets the receiver's hot image to the argument, which may be
  * null indicating that no hot image should be displayed.
