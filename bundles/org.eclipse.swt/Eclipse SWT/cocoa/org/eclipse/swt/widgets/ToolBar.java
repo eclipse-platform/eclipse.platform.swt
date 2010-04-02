@@ -101,45 +101,6 @@ public ToolBar (Composite parent, int style) {
 	}
 }
 
-int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
-	
-	if (accessibilityAttributes == null) {
-		NSMutableArray ourAttributes = NSMutableArray.arrayWithCapacity(10);
-		ourAttributes.addObject(OS.NSAccessibilityRoleAttribute);
-		ourAttributes.addObject(OS.NSAccessibilityRoleDescriptionAttribute);
-		ourAttributes.addObject(OS.NSAccessibilityParentAttribute);
-		ourAttributes.addObject(OS.NSAccessibilityPositionAttribute);
-		ourAttributes.addObject(OS.NSAccessibilitySizeAttribute);
-		ourAttributes.addObject(OS.NSAccessibilityWindowAttribute);
-		ourAttributes.addObject(OS.NSAccessibilityTopLevelUIElementAttribute);
-		ourAttributes.addObject(OS.NSAccessibilityHelpAttribute);
-		ourAttributes.addObject(OS.NSAccessibilityEnabledAttribute);
-		ourAttributes.addObject(OS.NSAccessibilityFocusedAttribute);
-		ourAttributes.addObject(OS.NSAccessibilityChildrenAttribute);
-
-		if (accessible != null) {
-			// See if the accessible will override or augment the standard list.
-			// Help, title, and description can be overridden.
-			NSMutableArray extraAttributes = NSMutableArray.arrayWithCapacity(3);
-			extraAttributes.addObject(OS.NSAccessibilityHelpAttribute);
-			extraAttributes.addObject(OS.NSAccessibilityDescriptionAttribute);
-			extraAttributes.addObject(OS.NSAccessibilityTitleAttribute);
-
-			for (int i = (int)/*64*/extraAttributes.count() - 1; i >= 0; i--) {
-				NSString attribute = new NSString(extraAttributes.objectAtIndex(i).id);
-				if (accessible.internal_accessibilityAttributeValue(attribute, ACC.CHILDID_SELF) != null) {
-					ourAttributes.addObject(extraAttributes.objectAtIndex(i));
-				}
-			}
-		}
-		
-		accessibilityAttributes = ourAttributes;
-		accessibilityAttributes.retain();
-	}
-	
-	return accessibilityAttributes.id;
-}
-
 int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	NSString nsAttributeName = new NSString(arg0);
 	
@@ -157,6 +118,13 @@ int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int
 			int /*long*/ roleDescription = OS.NSAccessibilityRoleDescription(role.id, 0);
 			return roleDescription;
 		}
+	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityChildrenAttribute)) {
+		NSMutableArray returnValue = NSMutableArray.arrayWithCapacity(itemCount);
+		
+		for (int i = 0; i < itemCount; i++) {
+			returnValue.addObject(new id(getItem(i).accessibleHandle()));
+		}
+		return returnValue.id;
 	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityEnabledAttribute)) {
 		return NSNumber.numberWithBool(isEnabled()).id;
 	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityFocusedAttribute)) {
@@ -169,7 +137,8 @@ int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int
 
 boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
 	// Toolbars aren't ignored.
-	return false;	
+	if (id == view.id) return false;
+	return super.accessibilityIsIgnored(id, sel);	
 }
 
 static int checkStyle (int style) {

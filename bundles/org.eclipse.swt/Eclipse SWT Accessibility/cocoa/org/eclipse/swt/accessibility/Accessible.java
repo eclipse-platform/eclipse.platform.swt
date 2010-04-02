@@ -1599,7 +1599,7 @@ public class Accessible {
 				listener.getChildCount(event);
 			}
 			int childCount = event.detail;
-			if (childCount > 0) {
+			if (childCount >= 0) {
 				for (int i = 0; i < accessibleControlListeners.size(); i++) {
 					AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 					listener.getChildren(event);
@@ -1623,8 +1623,6 @@ public class Accessible {
 					}
 				}
 				returnValue = new id(OS.NSAccessibilityUnignoredChildren(childArray.id));
-			} else {
-				returnValue = NSArray.array();
 			}
 		} else {
 			// Lightweight children have no children of their own.

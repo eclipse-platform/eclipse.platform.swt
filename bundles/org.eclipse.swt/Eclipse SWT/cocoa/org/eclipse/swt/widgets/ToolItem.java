@@ -134,6 +134,12 @@ public ToolItem (ToolBar parent, int style, int index) {
 	parent.createItem (this, index);
 }
 
+int /*long*/ accessibleHandle() {
+	if (button != null && button.cell() != null) return button.cell().id;
+	if (view != null) return view.id;
+	return 0;
+}
+
 int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	NSString nsAttributeName = new NSString(arg0);
 
@@ -165,9 +171,18 @@ int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int 
 	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityEnabledAttribute)) {
 		NSNumber value = NSNumber.numberWithBool(getEnabled());
 		return value.id;
+	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityParentAttribute)) {
+		// Parent of the toolitem is always its toolbar.
+		return parent.view.id;
 	}
 
 	return super.accessibilityAttributeValue(id, sel, arg0);
+}
+
+boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
+	// The interesting part of a ToolItem is its button, if it has one.
+	if (id == accessibleHandle()) return false;
+	return super.accessibilityIsIgnored(id, sel);
 }
 
 /**
