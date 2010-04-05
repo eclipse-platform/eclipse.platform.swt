@@ -380,6 +380,10 @@ public int getRowCount () {
 	return layout (rect.width, rect.height, false) [0];
 }
 
+boolean hasKeyboardFocus(int inId) {
+	return hasFocus();
+}
+
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 

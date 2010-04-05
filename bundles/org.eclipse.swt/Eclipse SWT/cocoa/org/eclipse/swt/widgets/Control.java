@@ -935,7 +935,7 @@ void destroyWidget () {
 }
 
 void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ selector) {
-	if (view.window ().firstResponder ().id == id) {
+	if (hasKeyboardFocus(id)) {
 		if (imeInComposition ()) return;
 		Shell s = this.getShell();
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
@@ -1241,7 +1241,7 @@ void fixFocus (Control focusControl) {
 }
 
 void flagsChanged (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	if (view.window ().firstResponder ().id == id) {
+	if (hasKeyboardFocus(id)) {
 		if ((state & SAFARI_EVENTS_FIX) == 0) {
 			Shell s = this.getShell();
 			s.keyInputHappened = false;
@@ -1800,7 +1800,7 @@ boolean imeInComposition () {
 }
 
 boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
-	if (view.window ().firstResponder ().id == id) {
+	if (hasKeyboardFocus(id)) {
 		Shell s = this.getShell();
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
 		if (nsEvent != null) {
@@ -2091,7 +2091,7 @@ public boolean isVisible () {
 }
 
 void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	if (hasFocus()) {
+	if (hasKeyboardFocus(id)) {
 		Shell s = this.getShell();
 		s.keyInputHappened = false;
 		boolean textInput = OS.objc_msgSend (id, OS.sel_conformsToProtocol_, OS.objc_getProtocol ("NSTextInput")) != 0;
@@ -2124,8 +2124,12 @@ void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	super.keyDown (id, sel, theEvent);
 }
 
+boolean hasKeyboardFocus(int inId) {
+	return view.window().firstResponder().id == inId;
+}
+
 void keyUp (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	if (view.window ().firstResponder ().id == id) {
+	if (hasKeyboardFocus(id)) {
 		NSEvent nsEvent = new NSEvent (theEvent);
 		if (!sendKeyEvent (nsEvent, SWT.KeyUp)) return;
 	}
