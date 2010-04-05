@@ -2124,7 +2124,7 @@ void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	super.keyDown (id, sel, theEvent);
 }
 
-boolean hasKeyboardFocus(int inId) {
+boolean hasKeyboardFocus(int /*long*/ inId) {
 	return view.window().firstResponder().id == inId;
 }
 
