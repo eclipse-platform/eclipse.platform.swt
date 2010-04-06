@@ -437,7 +437,7 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 		if (styles[i].metrics != null) {
 			if (ranges == null) ranges = layout.getRanges();
 			int start = ranges[i << 1];
-			int length = ranges[(i << 1) + 1] - start;
+			int length = ranges[(i << 1) + 1] - start + 1;
 			Point point = layout.getLocation(start, false);
 			FontMetrics metrics = layout.getLineMetrics(layout.getLineIndex(start));
 			StyleRange style = (StyleRange)((StyleRange)styles[i]).clone();
