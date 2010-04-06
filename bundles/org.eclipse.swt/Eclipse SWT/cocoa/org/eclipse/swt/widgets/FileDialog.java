@@ -258,8 +258,8 @@ public String open () {
 	}
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
 	display.setModalDialog(this);
-	NSString dir = filterPath != null ? NSString.stringWith(filterPath) : null;
-	NSString file = fileName != null ? NSString.stringWith(fileName) : null;
+	NSString dir = (filterPath != null && filterPath.length() > 0) ? NSString.stringWith(filterPath) : null;
+	NSString file = (fileName != null && fileName.length() > 0) ? NSString.stringWith(fileName) : null;
 	int /*long*/ response = panel.runModalForDirectory(dir, file);
 	if (parent != null && (style & SWT.SHEET) != 0) {
 		application.endSheet(panel, 0);
