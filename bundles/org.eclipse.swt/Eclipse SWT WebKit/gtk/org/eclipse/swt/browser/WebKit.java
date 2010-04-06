@@ -44,12 +44,13 @@ public class WebKit extends WebBrowser {
 	static final String PROPERTY_LENGTH = "length"; //$NON-NLS-1$
 	static final String PROPERTY_PROXYHOST = "network.proxy_host"; //$NON-NLS-1$
 	static final String PROPERTY_PROXYPORT = "network.proxy_port"; //$NON-NLS-1$
+	static final String PROTOCOL_FILE = "file://"; //$NON-NLS-1$
 	static final String PROTOCOL_HTTP = "http://"; //$NON-NLS-1$
 	static final String URI_FILEROOT = "file:///"; //$NON-NLS-1$
 	static final String USER_AGENT = "user-agent"; //$NON-NLS-1$
 	static final int MAX_PORT = 65535;
 	static final int MAX_PROGRESS = 100;
-	static final int[] MIN_VERSION = {1, 1, 90};
+	static final int[] MIN_VERSION = {1, 2, 0};
 	static final char SEPARATOR_FILE = System.getProperty ("file.separator").charAt (0); //$NON-NLS-1$
 	static final int STOP_PROPOGATE = 1;
 
@@ -1242,17 +1243,27 @@ public boolean setText (String html, boolean trusted) {
 public boolean setUrl (String url, String postData, String[] headers) {
 	this.postData = postData;
 	this.headers = headers;
+
 	/*
-	* WebKit attempts to open the exact url string that is given to it, and
-	* will not infer an http protocol if it's not specified.  Detect the case
-	* of a non-local file and prepend the http:// protocol if it's needed.   
+	* WebKitGTK attempts to open the exact url string that is passed to it and
+	* will not infer a protocol if it's not specified.  Detect the case of an
+	* invalid URL string and try to fix it by prepending an appropriate protocol.
 	*/
-	if (url.charAt (0) != SEPARATOR_FILE) {
-		/* not a local file */
+	try {
+		new URL(url);
+	} catch (MalformedURLException e) {
+		String testUrl = null;
+		if (url.charAt (0) == SEPARATOR_FILE) {
+			/* appears to be a local file */
+			testUrl = PROTOCOL_FILE + url; 
+		} else {
+			testUrl = PROTOCOL_HTTP + url;
+		}
 		try {
-			new URL(url);
-		} catch (MalformedURLException e) {
-			url = PROTOCOL_HTTP + url;
+			new URL (testUrl);
+			url = testUrl;		/* adding the protocol made the url valid */
+		} catch (MalformedURLException e2) {
+			/* adding the protocol did not make the url valid, so do nothing */
 		}
 	}
 
