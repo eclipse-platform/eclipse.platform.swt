@@ -11,10 +11,9 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.cocoa.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * This class is the abstract superclass of all classes which
@@ -72,12 +71,6 @@ Scrollable () {
  */
 public Scrollable (Composite parent, int style) {
 	super (parent, style);
-}
-
-boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
-	// Always ignore scrollers.
-	if (scrollView != null && id == scrollView.id) return true;
-	return super.accessibilityIsIgnored(id, sel);	
 }
 
 /**
