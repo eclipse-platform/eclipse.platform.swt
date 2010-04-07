@@ -6220,7 +6220,7 @@ void handleTextChanged(TextChangedEvent event) {
 		claimRightFreeSpace();
 	}
 	
-	sendAccessibleTextChanged(lastTextChangeStart, lastTextChangeNewCharCount, lastTextChangeReplaceCharCount);
+	sendAccessibleTextChanged(lastTextChangeStart, lastTextChangeNewCharCount, 0);
 	lastCharCount += lastTextChangeNewCharCount;
 	lastCharCount -= lastTextChangeReplaceCharCount;
 	setAlignment();
@@ -6258,7 +6258,7 @@ void handleTextChanging(TextChangingEvent event) {
 	} else {
 		scrollText(srcY, destY);
 	}
-
+	sendAccessibleTextChanged(lastTextChangeStart, 0, lastTextChangeReplaceCharCount);
 	renderer.textChanging(event);
 	
 	// Update the caret offset if it is greater than the length of the content.
