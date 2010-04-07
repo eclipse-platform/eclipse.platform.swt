@@ -16,6 +16,9 @@
 		<property name="logExtension" value=".xml" />
 		<property name="javacSource" value="1.3" />
 		<property name="javacTarget" value="1.2" />
+		<condition property="bootclasspath" value="">
+			<equals arg1="${swt.os}" arg2="macosx"/>
+		</condition>
 		<path id="path_bootclasspath">
 			<fileset dir="${java.home}/lib">
 				<include name="*.jar" />
@@ -72,8 +75,8 @@
 			<fileset dir="${temp.folder}/@dot.bin" />
 		</copy>
 		<jar jarfile="${build.result.folder}/${jar.filename}" basedir="${temp.folder}/@dot.bin" />
-		<delete dir="${temp.folder}/@dot.bin" />
-		<delete dir="${temp.folder}/@dot.src" />
+		<!--delete dir="${temp.folder}/@dot.bin" />
+		<delete dir="${temp.folder}/@dot.src" /-->
 	</target>
 
 	<target name="build.jars" depends="init">
