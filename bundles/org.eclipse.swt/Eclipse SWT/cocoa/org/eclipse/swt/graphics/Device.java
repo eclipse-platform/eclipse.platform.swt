@@ -10,8 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import java.util.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.Compatibility;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -364,39 +366,35 @@ NSScreen getPrimaryScreen () {
 public FontData[] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
 	if (!scalable) return new FontData[0];
-	int count = 0;
+	List fdsList = new ArrayList();
 	NSArray families = NSFontManager.sharedFontManager().availableFontFamilies();
-	int /*long*/ familyCount = families.count();
-	FontData[] fds = new FontData[100];
-	for (int i = 0; i < familyCount; i++) {
-		NSString nsFamily = new NSString(families.objectAtIndex(i));
-		String name = nsFamily.getString();
-		NSArray fonts = NSFontManager.sharedFontManager().availableMembersOfFontFamily(nsFamily);
-		int fontCount = (int)/*64*/fonts.count();
-		for (int j = 0; j < fontCount; j++) {
-			NSArray fontDetails = new NSArray(fonts.objectAtIndex(j));
-			String nsName = new NSString(fontDetails.objectAtIndex(0)).getString();
-			int /*long*/ weight = new NSNumber(fontDetails.objectAtIndex(2)).integerValue();
-			int /*long*/ traits = new NSNumber(fontDetails.objectAtIndex(3)).integerValue();
-			int style = SWT.NORMAL;
-			if ((traits & OS.NSItalicFontMask) != 0) style |= SWT.ITALIC;
-			if (weight == 9) style |= SWT.BOLD;
-			if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
-				FontData data = new FontData(name, 0, style);
-				data.nsName = nsName;
-				if (count == fds.length) {
-					FontData[] newFds = new FontData[fds.length + 100];
-					System.arraycopy(fds, 0, newFds, 0, fds.length);
-					fds = newFds;
+	if (families != null) {
+		int /*long*/ familyCount = families.count();
+		for (int i = 0; i < familyCount; i++) {
+			NSString nsFamily = new NSString(families.objectAtIndex(i));
+			String name = nsFamily.getString();
+			NSArray fonts = NSFontManager.sharedFontManager().availableMembersOfFontFamily(nsFamily);
+			
+			if (fonts != null) {
+				int fontCount = (int)/*64*/fonts.count();
+				for (int j = 0; j < fontCount; j++) {
+					NSArray fontDetails = new NSArray(fonts.objectAtIndex(j));
+					String nsName = new NSString(fontDetails.objectAtIndex(0)).getString();
+					int /*long*/ weight = new NSNumber(fontDetails.objectAtIndex(2)).integerValue();
+					int /*long*/ traits = new NSNumber(fontDetails.objectAtIndex(3)).integerValue();
+					int style = SWT.NORMAL;
+					if ((traits & OS.NSItalicFontMask) != 0) style |= SWT.ITALIC;
+					if (weight == 9) style |= SWT.BOLD;
+					if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
+						FontData data = new FontData(name, 0, style);
+						data.nsName = nsName;
+						fdsList.add(data);
+					}
 				}
-				fds[count++] = data;
 			}
 		}
 	}
-	if (count == fds.length) return fds;
-	FontData[] result = new FontData[count];
-	System.arraycopy(fds, 0, result, 0, count);
-	return result;
+	return (FontData[])fdsList.toArray();
 }
 
 Point getScreenDPI () {
