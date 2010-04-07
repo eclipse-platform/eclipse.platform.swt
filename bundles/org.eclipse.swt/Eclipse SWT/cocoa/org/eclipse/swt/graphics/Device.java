@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import java.util.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -366,15 +364,16 @@ NSScreen getPrimaryScreen () {
 public FontData[] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
 	if (!scalable) return new FontData[0];
-	List fdsList = new ArrayList();
+	int count = 0;
 	NSArray families = NSFontManager.sharedFontManager().availableFontFamilies();
+	FontData[] fds = new FontData[100];
 	if (families != null) {
 		int /*long*/ familyCount = families.count();
 		for (int i = 0; i < familyCount; i++) {
 			NSString nsFamily = new NSString(families.objectAtIndex(i));
 			String name = nsFamily.getString();
 			NSArray fonts = NSFontManager.sharedFontManager().availableMembersOfFontFamily(nsFamily);
-			
+
 			if (fonts != null) {
 				int fontCount = (int)/*64*/fonts.count();
 				for (int j = 0; j < fontCount; j++) {
@@ -388,13 +387,21 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 					if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
 						FontData data = new FontData(name, 0, style);
 						data.nsName = nsName;
-						fdsList.add(data);
+						if (count == fds.length) {
+							FontData[] newFds = new FontData[fds.length + 100];
+							System.arraycopy(fds, 0, newFds, 0, fds.length);
+							fds = newFds;
+						}
+						fds[count++] = data;
 					}
 				}
 			}
 		}
 	}
-	return (FontData[])fdsList.toArray();
+	if (count == fds.length) return fds;
+	FontData[] result = new FontData[count];
+	System.arraycopy(fds, 0, result, 0, count);
+	return result;
 }
 
 Point getScreenDPI () {
