@@ -1734,6 +1734,7 @@ public static final int /*long*/ sel_setUIDelegate_ = sel_registerName("setUIDel
 public static final int /*long*/ sel_setURL_ = sel_registerName("setURL:");
 public static final int /*long*/ sel_setUpPrintOperationDefaultValues = sel_registerName("setUpPrintOperationDefaultValues");
 public static final int /*long*/ sel_setUsesAlternatingRowBackgroundColors_ = sel_registerName("setUsesAlternatingRowBackgroundColors:");
+public static final int /*long*/ sel_setUsesScreenFonts_ = sel_registerName("setUsesScreenFonts:");
 public static final int /*long*/ sel_setUsesThreadedAnimation_ = sel_registerName("setUsesThreadedAnimation:");
 public static final int /*long*/ sel_setValue_forHTTPHeaderField_ = sel_registerName("setValue:forHTTPHeaderField:");
 public static final int /*long*/ sel_setValue_forKey_ = sel_registerName("setValue:forKey:");

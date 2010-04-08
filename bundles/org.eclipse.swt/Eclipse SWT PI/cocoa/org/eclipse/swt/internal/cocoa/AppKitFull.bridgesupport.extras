@@ -1678,6 +1678,10 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setUsesScreenFonts:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="typesetter" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
