@@ -37,16 +37,16 @@
 		<method selector="button" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="clientX" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="clientY" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="ctrlKey" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="metaKey" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="screenX" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="screenY" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="shiftKey" swt_gen="true">
@@ -62,16 +62,16 @@
 		<method selector="altKey" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="clientX" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="clientY" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="ctrlKey" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="metaKey" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="screenX" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="screenY" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="shiftKey" swt_gen="true">

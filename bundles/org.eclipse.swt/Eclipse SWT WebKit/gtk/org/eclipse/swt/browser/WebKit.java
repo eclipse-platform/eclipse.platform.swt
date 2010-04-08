@@ -899,10 +899,10 @@ boolean handleEvent (Object[] arguments) {
 	}
 
 	/*
-	 * The position of mouse events is received in screen-relative co-ordinates
+	 * The position of mouse events is received in screen-relative coordinates
 	 * in order to handle pages with frames, since frames express their event
-	 * co-ordinates relative to themselves rather than relative to their top-
-	 * level page.  Convert screen-relative co-ordinates to be browser-relative.
+	 * coordinates relative to themselves rather than relative to their top-
+	 * level page.  Convert screen-relative coordinates to be browser-relative.
 	 */
 	Point position = new Point (((Double)arguments[1]).intValue (), ((Double)arguments[2]).intValue ());
 	position = browser.getDisplay ().map (null, browser, position); 

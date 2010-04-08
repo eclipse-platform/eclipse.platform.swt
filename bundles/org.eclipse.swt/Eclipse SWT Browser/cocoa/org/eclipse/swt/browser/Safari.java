@@ -1531,8 +1531,18 @@ void handleEvent(int /*long*/ evtId) {
 
 	if (DOMEVENT_MOUSEWHEEL.equals(type)) {
 		DOMWheelEvent event = new DOMWheelEvent(evtId);
-		int clientX = event.clientX();
-		int clientY = event.clientY();
+
+		/*
+		 * The position of mouse events is received in screen-relative coordinates
+		 * in order to handle pages with frames, since frames express their event
+		 * coordinates relative to themselves rather than relative to their top-
+		 * level page.  Convert screen-relative coordinates to be browser-relative.
+		 */
+		int screenX = event.screenX();
+		int screenY = event.screenY();
+		Point position = new Point(screenX, screenY);
+		position = browser.getDisplay().map(null, browser, position);
+
 		int delta = event.wheelDelta();
 		boolean ctrl = event.ctrlKey();
 		boolean shift = event.shiftKey();
@@ -1541,7 +1551,7 @@ void handleEvent(int /*long*/ evtId) {
 		Event mouseEvent = new Event();
 		mouseEvent.type = SWT.MouseWheel;
 		mouseEvent.widget = browser;
-		mouseEvent.x = clientX; mouseEvent.y = clientY;
+		mouseEvent.x = position.x; mouseEvent.y = position.y;
 		mouseEvent.count = delta / 120;
 		mouseEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
 		browser.notifyListeners (mouseEvent.type, mouseEvent);
@@ -1552,8 +1562,17 @@ void handleEvent(int /*long*/ evtId) {
 
 	DOMMouseEvent event = new DOMMouseEvent(evtId);
 
-	int clientX = event.clientX();
-	int clientY = event.clientY();
+	/*
+	 * The position of mouse events is received in screen-relative coordinates
+	 * in order to handle pages with frames, since frames express their event
+	 * coordinates relative to themselves rather than relative to their top-
+	 * level page.  Convert screen-relative coordinates to be browser-relative.
+	 */
+	int screenX = event.screenX();
+	int screenY = event.screenY();
+	Point position = new Point(screenX, screenY);
+	position = browser.getDisplay().map(null, browser, position);
+
 	int detail = event.detail();
 	int button = event.button();
 	boolean ctrl = event.ctrlKey();
@@ -1563,7 +1582,7 @@ void handleEvent(int /*long*/ evtId) {
 
 	Event mouseEvent = new Event ();
 	mouseEvent.widget = browser;
-	mouseEvent.x = clientX; mouseEvent.y = clientY;
+	mouseEvent.x = position.x; mouseEvent.y = position.y;
 	mouseEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
 	if (DOMEVENT_MOUSEDOWN.equals (type)) {
 		mouseEvent.type = SWT.MouseDown;
@@ -1595,7 +1614,7 @@ void handleEvent(int /*long*/ evtId) {
 	if (detail == 2 && DOMEVENT_MOUSEDOWN.equals (type)) {
 		mouseEvent = new Event ();
 		mouseEvent.widget = browser;
-		mouseEvent.x = clientX; mouseEvent.y = clientY;
+		mouseEvent.x = position.x; mouseEvent.y = position.y;
 		mouseEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
 		mouseEvent.type = SWT.MouseDoubleClick;
 		mouseEvent.button = button + 1;

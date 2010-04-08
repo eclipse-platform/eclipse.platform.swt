@@ -1954,13 +1954,21 @@ void handleEvent(int evt) {
 
 	/* mouse event */
 
-	int clientX = Cocoa.objc_msgSend(evt, Cocoa.S_clientX);
-	int clientY = Cocoa.objc_msgSend(evt, Cocoa.S_clientY);
-	int detail = Cocoa.objc_msgSend(evt, Cocoa.S_detail);
+	/*
+	 * The position of mouse events is received in screen-relative coordinates
+	 * in order to handle pages with frames, since frames express their event
+	 * coordinates relative to themselves rather than relative to their top-
+	 * level page.  Convert screen-relative coordinates to be browser-relative.
+	 */
+	int screenX = Cocoa.objc_msgSend(evt, Cocoa.S_screenX);
+	int screenY = Cocoa.objc_msgSend(evt, Cocoa.S_screenY);
+	Point position = new Point(screenX, screenY);
+	position = browser.getDisplay().map(null, browser, position);
 
-	Event mouseEvent = new Event ();
+	int detail = Cocoa.objc_msgSend(evt, Cocoa.S_detail);
+	Event mouseEvent = new Event();
 	mouseEvent.widget = browser;
-	mouseEvent.x = clientX; mouseEvent.y = clientY;
+	mouseEvent.x = position.x; mouseEvent.y = position.y;
 	mouseEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
 
 	if (DOMEVENT_MOUSEDOWN.equals (typeString)) {
@@ -2001,7 +2009,7 @@ void handleEvent(int evt) {
 		int button = Cocoa.objc_msgSend(evt, Cocoa.S_button);
 		mouseEvent = new Event ();
 		mouseEvent.widget = browser;
-		mouseEvent.x = clientX; mouseEvent.y = clientY;
+		mouseEvent.x = position.x; mouseEvent.y = position.y;
 		mouseEvent.stateMask = (alt ? SWT.ALT : 0) | (ctrl ? SWT.CTRL : 0) | (shift ? SWT.SHIFT : 0) | (meta ? SWT.COMMAND : 0);
 		mouseEvent.type = SWT.MouseDoubleClick;
 		mouseEvent.button = button + 1;
