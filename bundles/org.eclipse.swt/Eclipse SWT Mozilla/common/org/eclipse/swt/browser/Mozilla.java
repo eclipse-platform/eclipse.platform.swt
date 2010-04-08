@@ -4062,11 +4062,22 @@ int HandleEvent (int /*long*/ event) {
 		}
 	}
 
-	int[] aClientX = new int[1], aClientY = new int[1], aDetail = new int[1]; /* PRInt32 */
-	rc = domMouseEvent.GetClientX (aClientX);
+	int[] aScreenX = new int[1], aScreenY = new int[1]; /* PRInt32 */
+
+	/*
+	 * The position of mouse events is received in screen-relative coordinates
+	 * in order to handle pages with frames, since frames express their event
+	 * coordinates relative to themselves rather than relative to their top-
+	 * level page.  Convert screen-relative coordinates to be browser-relative.
+	 */
+	rc = domMouseEvent.GetScreenX (aScreenX);
 	if (rc != XPCOM.NS_OK) error (rc);
-	rc = domMouseEvent.GetClientY (aClientY);
+	rc = domMouseEvent.GetScreenY (aScreenY);
 	if (rc != XPCOM.NS_OK) error (rc);
+	Point position = new Point (aScreenX[0], aScreenY[0]);
+	position = browser.getDisplay ().map (null, browser, position);
+
+	int[] aDetail = new int[1]; /* PRInt32 */
 	rc = domMouseEvent.GetDetail (aDetail);
 	if (rc != XPCOM.NS_OK) error (rc);
 	short[] aButton = new short[1]; /* PRUint16 */
@@ -4085,7 +4096,7 @@ int HandleEvent (int /*long*/ event) {
 
 	Event mouseEvent = new Event ();
 	mouseEvent.widget = browser;
-	mouseEvent.x = aClientX[0]; mouseEvent.y = aClientY[0];
+	mouseEvent.x = position.x; mouseEvent.y = position.y;
 	mouseEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0 ? SWT.CTRL : 0) | (aShiftKey[0] != 0 ? SWT.SHIFT : 0) | (aMetaKey[0] != 0 ? SWT.COMMAND : 0);
 
 	if (XPCOM.DOMEVENT_MOUSEDOWN.equals (typeString)) {
@@ -4133,7 +4144,7 @@ int HandleEvent (int /*long*/ event) {
 	if (aDetail[0] == 2 && XPCOM.DOMEVENT_MOUSEDOWN.equals (typeString)) {
 		mouseEvent = new Event ();
 		mouseEvent.widget = browser;
-		mouseEvent.x = aClientX[0]; mouseEvent.y = aClientY[0];
+		mouseEvent.x = position.x; mouseEvent.y = position.y;
 		mouseEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0 ? SWT.CTRL : 0) | (aShiftKey[0] != 0 ? SWT.SHIFT : 0) | (aMetaKey[0] != 0 ? SWT.COMMAND : 0);
 		mouseEvent.type = SWT.MouseDoubleClick;
 		mouseEvent.button = aButton[0] + 1;
