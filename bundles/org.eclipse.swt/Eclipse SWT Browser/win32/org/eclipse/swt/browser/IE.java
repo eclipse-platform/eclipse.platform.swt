@@ -120,8 +120,8 @@ class IE extends WebBrowser {
 	static final String PROTOCOL_FILE = "file://"; //$NON-NLS-1$
 	static final String PROPERTY_ALTKEY = "altKey"; //$NON-NLS-1$
 	static final String PROPERTY_BUTTON = "button"; //$NON-NLS-1$
-	static final String PROPERTY_CLIENTX = "clientX"; //$NON-NLS-1$
-	static final String PROPERTY_CLIENTY = "clientY"; //$NON-NLS-1$
+	static final String PROPERTY_SCREENX = "screenX"; //$NON-NLS-1$
+	static final String PROPERTY_SCREENY = "screenY"; //$NON-NLS-1$
 	static final String PROPERTY_CTRLKEY = "ctrlKey"; //$NON-NLS-1$
 	static final String PROPERTY_FROMELEMENT = "fromElement"; //$NON-NLS-1$
 	static final String PROPERTY_KEYCODE = "keyCode"; //$NON-NLS-1$
@@ -1738,23 +1738,31 @@ void handleDOMEvent (OleEvent e) {
 		}
 	}
 
-	int x, y, mask = 0;
+	int mask = 0;
 	Event newEvent = new Event();
 	newEvent.widget = browser;
 
-	rgdispid = event.getIDsOfNames(new String[] { PROPERTY_CLIENTX });
+	/*
+	 * The position of mouse events is received in screen-relative coordinates
+	 * in order to handle pages with frames, since frames express their event
+	 * coordinates relative to themselves rather than relative to their top-
+	 * level page.  Convert screen-relative coordinates to be browser-relative.
+	 */
+	rgdispid = event.getIDsOfNames(new String[] { PROPERTY_SCREENX });
 	dispIdMember = rgdispid[0];
 	pVarResult = event.getProperty(dispIdMember);
-	x = pVarResult.getInt();
-	newEvent.x = x;
+	int screenX = pVarResult.getInt();
 	pVarResult.dispose();
 
-	rgdispid = event.getIDsOfNames(new String[] { PROPERTY_CLIENTY });
+	rgdispid = event.getIDsOfNames(new String[] { PROPERTY_SCREENY });
 	dispIdMember = rgdispid[0];
 	pVarResult = event.getProperty(dispIdMember);
-	y = pVarResult.getInt();
-	newEvent.y = y;
+	int screenY = pVarResult.getInt();
 	pVarResult.dispose();
+	
+	Point position = new Point(screenX, screenY);
+	position = browser.getDisplay().map(null, browser, position);
+	newEvent.x = position.x; newEvent.y = position.y;
 
 	rgdispid = event.getIDsOfNames(new String[] { PROPERTY_CTRLKEY });
 	dispIdMember = rgdispid[0];
@@ -1834,7 +1842,7 @@ void handleDOMEvent (OleEvent e) {
 		newEvent = new Event ();
 		newEvent.widget = browser;
 		newEvent.type = SWT.MouseDoubleClick;
-		newEvent.x = x; newEvent.y = y;
+		newEvent.x = position.x; newEvent.y = position.y;
 		newEvent.stateMask = mask;
 		newEvent.type = SWT.MouseDoubleClick;
 		newEvent.button = 1; /* dblclick only comes for button 1 and does not set the button property */
