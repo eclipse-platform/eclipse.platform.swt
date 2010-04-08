@@ -47,7 +47,10 @@ public final class GCData {
 	public int textAntialias = SWT.DEFAULT;
 	public int fillRule = SWT.FILL_EVEN_ODD;
 	public Image image;
-	
+
+	public NSTextStorage textStorage;
+	public NSLayoutManager layoutManager;
+	public NSTextContainer textContainer;
 	public NSColor fg, bg;
 	public float /*double*/ drawXOffset, drawYOffset;
 	public NSRect paintRect;
