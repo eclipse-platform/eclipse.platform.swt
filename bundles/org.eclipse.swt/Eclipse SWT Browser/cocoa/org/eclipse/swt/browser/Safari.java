@@ -692,10 +692,7 @@ void webView_didFailProvisionalLoadWithError_forFrame(int /*long*/ sender, int /
 }
 
 void webView_didFinishLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
-	hookDOMMouseListeners(frameID);
 	if (frameID == webView.mainFrame().id) {
-		hookDOMKeyListeners(frameID);
-
 		/*
 		 * If html is not null then there is html from a previous setText() call
 		 * waiting to be set into the about:blank page once it has completed loading. 
@@ -896,7 +893,11 @@ void webView_didCommitLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 			statusTextListeners[i].changed(statusText);
 		}
 		if (browser.isDisposed()) return;
+
+		hookDOMKeyListeners(frameID);
 	}
+
+	hookDOMMouseListeners(frameID);
 
 	LocationEvent location = new LocationEvent(browser);
 	location.display = display;

@@ -957,11 +957,7 @@ void didFailProvisionalLoadWithError(int error, int frame) {
 }
 
 void didFinishLoadForFrame(int frame) {
-	hookDOMFocusListeners(frame);
-	hookDOMMouseListeners(frame);
 	if (frame == Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame)) {
-		hookDOMKeyListeners(frame);
-
 		/*
 		 * If html is not null then there is html from a previous setText() call
 		 * waiting to be set into the about:blank page once it has completed loading. 
@@ -1208,7 +1204,12 @@ void didCommitLoadForFrame(int frame) {
 			statusTextListeners[i].changed(statusText);
 		}
 		if (browser.isDisposed()) return;
+
+		hookDOMKeyListeners(frame);
 	}
+
+	hookDOMFocusListeners(frame);
+	hookDOMMouseListeners(frame);
 
 	LocationEvent location = new LocationEvent(browser);
 	location.display = display;
