@@ -52,13 +52,10 @@ public class Accessible {
 		OS.NSAccessibilityFocusedAttribute,
 		OS.NSAccessibilityParentAttribute,
 		OS.NSAccessibilityChildrenAttribute,
-		OS.NSAccessibilityVisibleChildrenAttribute,
 		OS.NSAccessibilityPositionAttribute,
 		OS.NSAccessibilitySizeAttribute,
 		OS.NSAccessibilityWindowAttribute,
 		OS.NSAccessibilityTopLevelUIElementAttribute,
-		OS.NSAccessibilityServesAsTitleForUIElementsAttribute,
-		OS.NSAccessibilityTitleUIElementAttribute,
 		OS.NSAccessibilityEnabledAttribute,
 	};
 	
@@ -753,6 +750,19 @@ public class Accessible {
 			return null;
 		
 		if ((childID == ACC.CHILDID_SELF) && (attributeNames != null)) {
+			// See if this object has a label or is a label for something else. If so, add that to the list.
+			if (relations[ACC.RELATION_LABEL_FOR] != null) {
+				if (!attributeNames.containsObject(OS.NSAccessibilityServesAsTitleForUIElementsAttribute)) attributeNames.addObject(OS.NSAccessibilityServesAsTitleForUIElementsAttribute);
+			} else {
+				attributeNames.removeObject(OS.NSAccessibilityServesAsTitleForUIElementsAttribute);
+			}
+			
+			if (relations[ACC.RELATION_LABELLED_BY] != null) {
+				if (!attributeNames.containsObject(OS.NSAccessibilityTitleUIElementAttribute)) attributeNames.addObject(OS.NSAccessibilityTitleUIElementAttribute);
+			} else {
+				attributeNames.removeObject(OS.NSAccessibilityTitleUIElementAttribute);
+			}
+
 			return retainedAutoreleased(attributeNames);
 		}
 		
@@ -778,9 +788,11 @@ public class Accessible {
 				break;
 			case ACC.ROLE_MENUBAR:
 				returnValue.addObject(OS.NSAccessibilitySelectedChildrenAttribute);
+				returnValue.addObject(OS.NSAccessibilityVisibleChildrenAttribute);
 				break;
 			case ACC.ROLE_MENU:
 				returnValue.addObject(OS.NSAccessibilitySelectedChildrenAttribute);
+				returnValue.addObject(OS.NSAccessibilityVisibleChildrenAttribute);
 				break;
 			case ACC.ROLE_MENUITEM:
 				break;
@@ -840,7 +852,7 @@ public class Accessible {
 				returnValue.addObject(OS.NSAccessibilityInsertionPointLineNumberAttribute);
 				returnValue.addObject(OS.NSAccessibilitySelectedTextRangesAttribute);
 				returnValue.addObject(OS.NSAccessibilityVisibleCharacterRangeAttribute);
-				returnValue.addObject(OS.NSAccessibilityValueAttribute);
+				returnValue.addObject(OS.NSAccessibilityValueAttribute);				
 				break;
 			case ACC.ROLE_TOOLBAR:
 				break;
@@ -852,6 +864,7 @@ public class Accessible {
 				returnValue.addObject(OS.NSAccessibilityHeaderAttribute);
 				returnValue.addObject(OS.NSAccessibilityVisibleRowsAttribute);
 				returnValue.addObject(OS.NSAccessibilityVisibleColumnsAttribute);
+				returnValue.addObject(OS.NSAccessibilityVisibleChildrenAttribute);
 				break;
 			case ACC.ROLE_LISTITEM:
 				returnValue.addObject(OS.NSAccessibilityValueAttribute);
@@ -939,6 +952,7 @@ public class Accessible {
 			case ACC.ROLE_GROUP:
 				break;
 			case ACC.ROLE_ROW:
+				returnValue.addObject(OS.NSAccessibilityVisibleChildrenAttribute);
 				returnValue.addObject(OS.NSAccessibilityIndexAttribute);
 				returnValue.addObject(OS.NSAccessibilitySelectedAttribute);
 				break;
@@ -1565,7 +1579,7 @@ public class Accessible {
 
 		// Invalid childID at this point means the application did not implement getFocus, so 
 		// let the default handler return the native focus.
-		boolean hasFocus = (this.control.view.window().firstResponder() == control.view);
+		boolean hasFocus = control.isFocusControl();
 		return NSNumber.numberWithBool(hasFocus);
 	}
 	
@@ -2045,7 +2059,7 @@ public class Accessible {
 		id returnValue = null;
 		Relation relation = relations[ACC.RELATION_LABEL_FOR];
 		if (relation != null) returnValue = relation.getServesAsTitleForUIElements();
-		return returnValue == null ? NSArray.array() : returnValue;
+		return returnValue;
 	}
 	
 	id getStringForRangeParameterizedAttribute (id parameter, int childID) {
