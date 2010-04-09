@@ -73,6 +73,7 @@ class AccessibleFactory {
 	static final Callback AtkObjectCB_get_role;
 	static final Callback AtkObjectCB_ref_child;
 	static final Callback AtkObjectCB_ref_state_set;
+	static final Callback AtkObjectCB_get_attributes;
 	
 	/* Selection callbacks */
 	static final Callback AtkSelectionCB_is_child_selected;
@@ -171,6 +172,7 @@ class AccessibleFactory {
 		AtkObjectCB_ref_state_set = newCallback (AccessibleObject.class, "atkObject_ref_state_set", 1); //$NON-NLS-1$
 		AtkObjectCB_get_index_in_parent = newCallback (AccessibleObject.class, "atkObject_get_index_in_parent", 1); //$NON-NLS-1$
 		AtkObjectCB_ref_child = newCallback (AccessibleObject.class, "atkObject_ref_child", 2); //$NON-NLS-1$
+		AtkObjectCB_get_attributes = newCallback (AccessibleObject.class, "atkObject_get_attributes", 1); //$NON-NLS-1$
 		AtkSelectionCB_is_child_selected = newCallback (AccessibleObject.class, "atkSelection_is_child_selected", 2); //$NON-NLS-1$
 		AtkSelectionCB_ref_selection = newCallback (AccessibleObject.class, "atkSelection_ref_selection", 2); //$NON-NLS-1$
 		AtkTableCB_ref_at = newCallback (AccessibleObject.class, "atkTable_ref_at", 3); //$NON-NLS-1$
@@ -426,6 +428,7 @@ class AccessibleFactory {
 		objectClass.ref_state_set = AtkObjectCB_ref_state_set.getAddress ();
 		objectClass.get_index_in_parent = AtkObjectCB_get_index_in_parent.getAddress ();
 		objectClass.ref_child = AtkObjectCB_ref_child.getAddress ();
+		objectClass.get_attributes = AtkObjectCB_get_attributes.getAddress ();
 		int /*long*/ gObjectClass = OS.G_OBJECT_CLASS (klass);
 		GObjectClass objectClassStruct = new GObjectClass ();
 		OS.memmove (objectClassStruct, gObjectClass);

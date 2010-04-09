@@ -41,8 +41,8 @@ class AccessibleObject {
 	
 	static final int ROW_ROLE, COLUMN_ROLE;
 	static {
-		ROW_ROLE = ATK.atk_role_register(Converter.wcsToMbcs(null, "row", true));
-		COLUMN_ROLE = ATK.atk_role_register(Converter.wcsToMbcs(null, "column", true));
+		ROW_ROLE = ATK.atk_role_register(Converter.wcsToMbcs(null, "row", true)); //$NON-NLS-1$
+		COLUMN_ROLE = ATK.atk_role_register(Converter.wcsToMbcs(null, "column", true)); //$NON-NLS-1$
 	}
 
 	AccessibleObject (int /*long*/ type, int /*long*/ widget, Accessible accessible, boolean isLightweight) {
@@ -515,6 +515,96 @@ class AccessibleObject {
 				if (event.result == null) return parentResult;
 				if (descriptionPtr != -1) OS.g_free (descriptionPtr);
 				return descriptionPtr = getStringPtr (event.result);
+			}
+		}
+		return parentResult;
+	}
+
+	static int /*long*/ atkObject_get_attributes (int /*long*/ atkObject) {
+		if (DEBUG) print ("-->atkObject_get_attributes: " + atkObject);
+		AccessibleObject object = getAccessibleObject (atkObject);
+		int /*long*/ parentResult = 0;
+		AtkObjectClass objectClass = getObjectClass (atkObject);
+		if (objectClass.get_attributes != 0) {
+			parentResult = ATK.call (objectClass.get_attributes, atkObject);
+		}
+		if (object != null) {
+			Accessible accessible = object.accessible;
+			Vector listeners = accessible.accessibleAttributeListeners;
+			int length = listeners.size();
+			if (length > 0) {
+				AccessibleAttributeEvent event = new AccessibleAttributeEvent (accessible);
+				event.topMargin = event.bottomMargin = event.leftMargin = event.rightMargin = event.alignment = event.indent = -1;
+				for (int i = 0; i < length; i++) {
+					AccessibleAttributeListener listener = (AccessibleAttributeListener)listeners.elementAt (i);
+					listener.getAttributes (event);
+				}
+				AtkAttribute attr = new AtkAttribute();
+				if (event.leftMargin != -1) {
+					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_LEFT_MARGIN));
+					attr.value = getStringPtr (String.valueOf(event.leftMargin));
+					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
+					parentResult = OS.g_list_append(parentResult, attrPtr);
+				}
+				if (event.rightMargin != -1) {
+					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_RIGHT_MARGIN));
+					attr.value = getStringPtr (String.valueOf(event.rightMargin));
+					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
+					parentResult = OS.g_list_append(parentResult, attrPtr);
+				}
+				if (event.topMargin != -1) {
+					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					attr.name = getStringPtr ("top-margin"); //$NON-NLS-1$
+					attr.value = getStringPtr (String.valueOf(event.topMargin));
+					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
+					parentResult = OS.g_list_append(parentResult, attrPtr);
+				}
+				if (event.bottomMargin != -1) {
+					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					attr.name = getStringPtr ("bottom-margin"); //$NON-NLS-1$
+					attr.value = getStringPtr (String.valueOf(event.bottomMargin));
+					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
+					parentResult = OS.g_list_append(parentResult, attrPtr);
+				}
+				if (event.indent != -1) {
+					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_INDENT));
+					attr.value = getStringPtr (String.valueOf(event.indent));
+					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
+					parentResult = OS.g_list_append(parentResult, attrPtr);
+				}
+				if (event.justify) {
+					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_JUSTIFICATION));
+					attr.value = getStringPtr ("fill"); //$NON-NLS-1$
+					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
+					parentResult = OS.g_list_append(parentResult, attrPtr);
+				} else if (event.alignment != -1) {
+					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_JUSTIFICATION));
+					String str = "left"; //$NON-NLS-1$
+					switch (event.alignment) {
+						case SWT.LEFT: str = "left"; break; //$NON-NLS-1$
+						case SWT.RIGHT: str = "right"; break; //$NON-NLS-1$
+						case SWT.CENTER: str = "center"; break; //$NON-NLS-1$
+					}
+					attr.value = getStringPtr (str);
+					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
+					parentResult = OS.g_list_append(parentResult, attrPtr);
+				}
+				//TODO - tabStops
+				if (event.attributes != null) {
+					int end = event.attributes.length / 2 * 2;
+					for (int i = 0; i < end; i+= 2) {
+						int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+						attr.name = getStringPtr (event.attributes[i]);
+						attr.value = getStringPtr (event.attributes[i + 1]);
+						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
+						parentResult = OS.g_list_append(parentResult, attrPtr);
+					}
+				}
 			}
 		}
 		return parentResult;
@@ -1644,12 +1734,12 @@ class AccessibleObject {
 					if (style.underline) {
 						int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_UNDERLINE));
-						String str = "none";
+						String str = "none"; //$NON-NLS-1$
 						switch (style.underlineStyle) {
-							case SWT.UNDERLINE_DOUBLE: str = "double"; break;
-							case SWT.UNDERLINE_SINGLE: str = "single"; break;
-							case SWT.UNDERLINE_ERROR: str = "error"; break;
-							case SWT.UNDERLINE_SQUIGGLE: str = "squiggle"; break;
+							case SWT.UNDERLINE_DOUBLE: str = "double"; break; //$NON-NLS-1$
+							case SWT.UNDERLINE_SINGLE: str = "single"; break; //$NON-NLS-1$
+							case SWT.UNDERLINE_ERROR: str = "error"; break; //$NON-NLS-1$
+							case SWT.UNDERLINE_SQUIGGLE: str = "squiggle"; break; //$NON-NLS-1$
 						}
 						attr.value = getStringPtr (str);
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
@@ -1706,7 +1796,7 @@ class AccessibleObject {
 					if (color != null && !color.isDisposed()) {
 						int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_FG_COLOR));
-						attr.value = getStringPtr ((color.handle.red & 0xFFFF) + "," + (color.handle.blue & 0xFFFF) + "," + (color.handle.blue & 0xFFFF));
+						attr.value = getStringPtr ((color.handle.red & 0xFFFF) + "," + (color.handle.blue & 0xFFFF) + "," + (color.handle.blue & 0xFFFF)); //$NON-NLS-1$ //$NON-NLS-2$
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_list_append(result, attrPtr);
 					}
@@ -1714,7 +1804,7 @@ class AccessibleObject {
 					if (color != null && !color.isDisposed()) {
 						int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_BG_COLOR));
-						attr.value = getStringPtr ((color.handle.red & 0xFFFF) + "," + (color.handle.blue & 0xFFFF) + "," + (color.handle.blue & 0xFFFF));
+						attr.value = getStringPtr ((color.handle.red & 0xFFFF) + "," + (color.handle.blue & 0xFFFF) + "," + (color.handle.blue & 0xFFFF)); //$NON-NLS-1$ //$NON-NLS-2$
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_list_append(result, attrPtr);
 					}
