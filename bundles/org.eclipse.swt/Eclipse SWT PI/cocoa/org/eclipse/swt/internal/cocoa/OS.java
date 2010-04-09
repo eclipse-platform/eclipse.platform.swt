@@ -1390,6 +1390,7 @@ public static final int /*long*/ sel_rangeValue = sel_registerName("rangeValue")
 public static final int /*long*/ sel_realm = sel_registerName("realm");
 public static final int /*long*/ sel_recentSearches = sel_registerName("recentSearches");
 public static final int /*long*/ sel_rectArrayForCharacterRange_withinSelectedCharacterRange_inTextContainer_rectCount_ = sel_registerName("rectArrayForCharacterRange:withinSelectedCharacterRange:inTextContainer:rectCount:");
+public static final int /*long*/ sel_rectArrayForGlyphRange_withinSelectedGlyphRange_inTextContainer_rectCount_ = sel_registerName("rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:rectCount:");
 public static final int /*long*/ sel_rectForPart_ = sel_registerName("rectForPart:");
 public static final int /*long*/ sel_rectOfColumn_ = sel_registerName("rectOfColumn:");
 public static final int /*long*/ sel_rectOfRow_ = sel_registerName("rectOfRow:");

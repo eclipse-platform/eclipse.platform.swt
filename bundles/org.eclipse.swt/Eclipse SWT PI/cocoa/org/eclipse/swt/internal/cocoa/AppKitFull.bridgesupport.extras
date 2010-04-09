@@ -1659,6 +1659,13 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:rectCount:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="removeTemporaryAttribute:forCharacterRange:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>

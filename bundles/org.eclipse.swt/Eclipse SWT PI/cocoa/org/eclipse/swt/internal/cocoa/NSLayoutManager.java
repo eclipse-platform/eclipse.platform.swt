@@ -112,6 +112,10 @@ public int /*long*/ rectArrayForCharacterRange(NSRange charRange, NSRange selCha
 	return OS.objc_msgSend(this.id, OS.sel_rectArrayForCharacterRange_withinSelectedCharacterRange_inTextContainer_rectCount_, charRange, selCharRange, container != null ? container.id : 0, rectCount);
 }
 
+public int /*long*/ rectArrayForGlyphRange(NSRange glyphRange, NSRange selGlyphRange, NSTextContainer container, int /*long*/ rectCount) {
+	return OS.objc_msgSend(this.id, OS.sel_rectArrayForGlyphRange_withinSelectedGlyphRange_inTextContainer_rectCount_, glyphRange, selGlyphRange, container != null ? container.id : 0, rectCount);
+}
+
 public void removeTemporaryAttribute(NSString attrName, NSRange charRange) {
 	OS.objc_msgSend(this.id, OS.sel_removeTemporaryAttribute_forCharacterRange_, attrName != null ? attrName.id : 0, charRange);
 }
