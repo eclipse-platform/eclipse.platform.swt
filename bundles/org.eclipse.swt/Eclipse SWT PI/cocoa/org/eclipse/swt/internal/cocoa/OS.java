@@ -3372,13 +3372,19 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
 /**
  * @method flags=cast
  * @param arg0 flags=struct
+ * @param arg1 flags=struct
+ */
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRange arg0, NSRange arg1, int /*long*/ arg2, int[] /*long[]*/ arg3);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
  */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRange arg0, int /*long*/ arg1);
 /**
  * @method flags=cast
  * @param arg0 flags=struct
  */
-public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRange arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5);
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSRange arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, byte[] arg5);
 /**
  * @method flags=cast
  * @param arg0 flags=struct

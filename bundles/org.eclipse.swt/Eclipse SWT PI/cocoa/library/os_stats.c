@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 556;
-int OS_nativeFunctionCallCount[556];
+int OS_nativeFunctionCount = 557;
+int OS_nativeFunctionCallCount[557];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -719,9 +719,9 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRange_2J",
 #endif
 #ifndef JNI64
-	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRange_2IIIII",
+	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRange_2IIII_3B",
 #else
-	"objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRange_2JJJJJ",
+	"objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRange_2JJJJ_3B",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2",
@@ -732,6 +732,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRange_2II",
 #else
 	"objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRange_2JJ",
+#endif
+#ifndef JNI64
+	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRange_2I_3I",
+#else
+	"objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRange_2J_3J",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2",

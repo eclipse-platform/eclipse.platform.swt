@@ -890,13 +890,8 @@ public int getLevel(int offset) {
 		NSRange range  = new NSRange();
 		range.location = glyphOffset;
 		range.length = 1;
-		int /*long*/ pBidiLevels = OS.malloc(1);
 		byte[] bidiLevels = new byte[1];
-		int /*long*/ result = layoutManager.getGlyphsInRange(range, 0, 0, 0, 0, pBidiLevels);
-		if (result > 0) {
-			OS.memmove(bidiLevels, pBidiLevels, 1);
-		}
-		OS.free(pBidiLevels);
+		layoutManager.getGlyphsInRange(range, 0, 0, 0, 0, bidiLevels);
 		return bidiLevels[0];
 	} finally {
 		if (pool != null) pool.release();
@@ -1086,20 +1081,14 @@ public Point getLocation(int offset, boolean trailing) {
 		NSRange range  = new NSRange();
 		range.location = glyphIndex;
 		range.length = 1;
-		int /*long*/ pBidiLevels = OS.malloc(1);
-		int /*long*/ result = layoutManager.getGlyphsInRange(range, 0, 0, 0, 0, pBidiLevels);
+		byte[] bidiLevels = new byte[1];
+		int /*long*/ result = layoutManager.getGlyphsInRange(range, 0, 0, 0, 0, bidiLevels);
 		if (result > 0) {
-			byte[] bidiLevels = new byte[1];
-			OS.memmove(bidiLevels, pBidiLevels, 1);
 			rtl = (bidiLevels[0] & 1) != 0;
 		}
-		OS.free(pBidiLevels);
 		if (trailing != rtl) {
-			int /*long*/ pRectCount = OS.malloc(C.PTR_SIZEOF);
-			int /*long*/ pArray = layoutManager.rectArrayForGlyphRange(range, range, textContainer, pRectCount);
 			int /*long*/ [] rectCount = new int /*long*/ [1];
-			OS.memmove(rectCount, pRectCount, C.PTR_SIZEOF);
-			OS.free(pRectCount);
+			int /*long*/ pArray = layoutManager.rectArrayForGlyphRange(range, range, textContainer, rectCount);
 			if (rectCount[0] > 0) {
 				NSRect bounds = new NSRect();
 				OS.memmove(bounds, pArray, NSRect.sizeof);

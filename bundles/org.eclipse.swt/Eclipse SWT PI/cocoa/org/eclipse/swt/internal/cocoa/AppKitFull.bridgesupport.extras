@@ -1612,7 +1612,7 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
+			<arg swt_gen="true" swt_java_type="byte[]"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="glyphIndexForCharacterAtIndex:" swt_gen="true">
@@ -1663,7 +1663,7 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
+			<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="removeTemporaryAttribute:forCharacterRange:" swt_gen="true">
