@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1852,6 +1852,7 @@ int XStructureNotify (int w, int client_data, int call_data, int continue_to_dis
 			}
 			return 0;
 		case OS.MapNotify:
+			reparented = true;
 			if (minimized) {
 				minimized = false;
 				sendEvent (SWT.Deiconify);
