@@ -16,3 +16,9 @@
 #include "os.h"
 #include <atk/atk.h>
 #include "atk_custom.h"
+
+#if (GTK_MAJOR_VERSION>=2 && GTK_MINOR_VERSION>=10)
+#define SWT_AtkObjectClass_get_attributes get_attributes
+#else
+#define SWT_AtkObjectClass_get_attributes pad1
+#endif 

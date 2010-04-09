@@ -62,4 +62,6 @@ public class AtkObjectClass {
 	public int /*long*/ state_change;
 	/** @field cast=(void (*)()) */
 	public int /*long*/ visible_data_changed;
+	/** @field accessor=SWT_AtkObjectClass_get_attributes,cast=(AtkAttributeSet* (*)()) */
+	public int /*long*/ get_attributes;
 }

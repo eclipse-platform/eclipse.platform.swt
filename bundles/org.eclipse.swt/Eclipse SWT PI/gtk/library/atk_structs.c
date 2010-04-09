@@ -204,7 +204,7 @@ void setAtkHypertextIfaceFields(JNIEnv *env, jobject lpObject, AtkHypertextIface
 typedef struct AtkObjectClass_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID get_name, get_description, get_parent, get_n_children, ref_child, get_index_in_parent, ref_relation_set, get_role, get_layer, get_mdi_zorder, ref_state_set, set_name, set_description, set_parent, set_role, connect_property_change_handler, remove_property_change_handler, initialize, children_changed, focus_event, property_change, state_change, visible_data_changed;
+	jfieldID get_name, get_description, get_parent, get_n_children, ref_child, get_index_in_parent, ref_relation_set, get_role, get_layer, get_mdi_zorder, ref_state_set, set_name, set_description, set_parent, set_role, connect_property_change_handler, remove_property_change_handler, initialize, children_changed, focus_event, property_change, state_change, visible_data_changed, get_attributes;
 } AtkObjectClass_FID_CACHE;
 
 AtkObjectClass_FID_CACHE AtkObjectClassFc;
@@ -236,6 +236,7 @@ void cacheAtkObjectClassFields(JNIEnv *env, jobject lpObject)
 	AtkObjectClassFc.property_change = (*env)->GetFieldID(env, AtkObjectClassFc.clazz, "property_change", I_J);
 	AtkObjectClassFc.state_change = (*env)->GetFieldID(env, AtkObjectClassFc.clazz, "state_change", I_J);
 	AtkObjectClassFc.visible_data_changed = (*env)->GetFieldID(env, AtkObjectClassFc.clazz, "visible_data_changed", I_J);
+	AtkObjectClassFc.get_attributes = (*env)->GetFieldID(env, AtkObjectClassFc.clazz, "get_attributes", I_J);
 	AtkObjectClassFc.cached = 1;
 }
 
@@ -265,6 +266,7 @@ AtkObjectClass *getAtkObjectClassFields(JNIEnv *env, jobject lpObject, AtkObject
 	lpStruct->property_change = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkObjectClassFc.property_change);
 	lpStruct->state_change = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkObjectClassFc.state_change);
 	lpStruct->visible_data_changed = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkObjectClassFc.visible_data_changed);
+	lpStruct->SWT_AtkObjectClass_get_attributes = (AtkAttributeSet* (*)())(*env)->GetIntLongField(env, lpObject, AtkObjectClassFc.get_attributes);
 	return lpStruct;
 }
 
@@ -294,6 +296,7 @@ void setAtkObjectClassFields(JNIEnv *env, jobject lpObject, AtkObjectClass *lpSt
 	(*env)->SetIntLongField(env, lpObject, AtkObjectClassFc.property_change, (jintLong)lpStruct->property_change);
 	(*env)->SetIntLongField(env, lpObject, AtkObjectClassFc.state_change, (jintLong)lpStruct->state_change);
 	(*env)->SetIntLongField(env, lpObject, AtkObjectClassFc.visible_data_changed, (jintLong)lpStruct->visible_data_changed);
+	(*env)->SetIntLongField(env, lpObject, AtkObjectClassFc.get_attributes, (jintLong)lpStruct->SWT_AtkObjectClass_get_attributes);
 }
 #endif
 
