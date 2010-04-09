@@ -452,13 +452,10 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			NSBezierPath path = NSBezierPath.bezierPath();
 			NSRect rect = new NSRect();
 			if (hasSelection) {
-				int /*long*/ pRectCount = OS.malloc(C.PTR_SIZEOF);
 				range.location = translateOffset(selectionStart);
 				range.length = translateOffset(selectionEnd - selectionStart + 1);
-				int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, textContainer, pRectCount);
 				int /*long*/ [] rectCount = new int /*long*/ [1];
-				OS.memmove(rectCount, pRectCount, C.PTR_SIZEOF);
-				OS.free(pRectCount);
+				int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, textContainer, rectCount);
 				for (int k = 0; k < rectCount[0]; k++, pArray += NSRect.sizeof) {
 					OS.memmove(rect, pArray, NSRect.sizeof);
 					fixRect(rect);
@@ -527,11 +524,8 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 							range.location = Math.max(lineStart, start);
 							range.length = Math.min(lineEnd, end) + 1 - range.location;
 							if (range.length > 0) {
-								int /*long*/ pRectCount = OS.malloc(C.PTR_SIZEOF);
-								int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, textContainer, pRectCount);
 								int /*long*/ [] rectCount = new int /*long*/ [1];
-								OS.memmove(rectCount, pRectCount, C.PTR_SIZEOF);
-								OS.free(pRectCount);
+								int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, textContainer, rectCount);
 								NSRect rect = new NSRect();
 								gc.handle.saveGraphicsState();
 								float /*double*/ baseline = layoutManager.typesetter().baselineOffsetInLayoutManager(layoutManager, lineStart);
@@ -598,11 +592,8 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 							range.location = Math.max(lineStart, start);
 							range.length = Math.min(lineEnd, end) + 1 - range.location;
 							if (range.length > 0) {
-								int /*long*/ pRectCount = OS.malloc(C.PTR_SIZEOF);
-								int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, textContainer, pRectCount);
 								int /*long*/ [] rectCount = new int /*long*/ [1];
-								OS.memmove(rectCount, pRectCount, C.PTR_SIZEOF);
-								OS.free(pRectCount);
+								int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, textContainer, rectCount);
 								NSRect rect = new NSRect();
 								gc.handle.saveGraphicsState();
 								float /*double*/ [] color = null;
@@ -775,11 +766,8 @@ public Rectangle getBounds(int start, int end) {
 		NSRange range = new NSRange();
 		range.location = start;
 		range.length = end - start + 1;
-		int /*long*/ pRectCount = OS.malloc(C.PTR_SIZEOF);
-		int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, textContainer, pRectCount);
 		int /*long*/ [] rectCount = new int /*long*/ [1];
-		OS.memmove(rectCount, pRectCount, C.PTR_SIZEOF);
-		OS.free(pRectCount);
+		int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, textContainer, rectCount);
 		NSRect rect = new NSRect();
 		int left = 0x7FFFFFFF, right = 0;
 		int top = 0x7FFFFFFF, bottom = 0;

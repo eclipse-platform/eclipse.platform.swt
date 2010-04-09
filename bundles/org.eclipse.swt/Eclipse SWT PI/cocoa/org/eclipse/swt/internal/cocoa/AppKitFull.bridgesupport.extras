@@ -1656,7 +1656,7 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
+			<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:rectCount:" swt_gen="true">

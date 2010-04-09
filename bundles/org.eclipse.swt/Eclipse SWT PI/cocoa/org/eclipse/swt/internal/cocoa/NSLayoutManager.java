@@ -108,7 +108,7 @@ public int /*long*/ numberOfGlyphs() {
 	return OS.objc_msgSend(this.id, OS.sel_numberOfGlyphs);
 }
 
-public int /*long*/ rectArrayForCharacterRange(NSRange charRange, NSRange selCharRange, NSTextContainer container, int /*long*/ rectCount) {
+public int /*long*/ rectArrayForCharacterRange(NSRange charRange, NSRange selCharRange, NSTextContainer container, int[] /*long[]*/ rectCount) {
 	return OS.objc_msgSend(this.id, OS.sel_rectArrayForCharacterRange_withinSelectedCharacterRange_inTextContainer_rectCount_, charRange, selCharRange, container != null ? container.id : 0, rectCount);
 }
 

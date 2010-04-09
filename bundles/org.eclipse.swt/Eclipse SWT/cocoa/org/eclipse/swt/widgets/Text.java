@@ -693,11 +693,8 @@ public Point getCaretLocation () {
 	NSLayoutManager layoutManager = widget.layoutManager();
 	NSTextContainer container = widget.textContainer();
 	NSRange range = widget.selectedRange();
-	int /*long*/ pRectCount = OS.malloc(C.PTR_SIZEOF);
-	int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, container, pRectCount);
 	int /*long*/ [] rectCount = new int /*long*/ [1];
-	OS.memmove(rectCount, pRectCount, C.PTR_SIZEOF);
-	OS.free(pRectCount);
+	int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, container, rectCount);
 	NSRect rect = new NSRect();
 	if (rectCount[0] > 0) OS.memmove(rect, pArray, NSRect.sizeof);
 	return new Point((int)rect.x, (int)rect.y);

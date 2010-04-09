@@ -7024,36 +7024,6 @@ fail:
 }
 #endif
 
-#if (!defined(NO_objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRange_2II) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRange_2JJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRange_2II)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2, jobject arg3, jintLong arg4, jintLong arg5)
-#else
-JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRange_2JJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2, jobject arg3, jintLong arg4, jintLong arg5)
-#endif
-{
-	NSRange _arg2, *lparg2=NULL;
-	NSRange _arg3, *lparg3=NULL;
-	jintLong rc = 0;
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRange_2II_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRange_2JJ_FUNC);
-#endif
-	if (arg2) if ((lparg2 = getNSRangeFields(env, arg2, &_arg2)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = getNSRangeFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSRange, NSRange, jintLong, jintLong))objc_msgSend)(arg0, arg1, *lparg2, *lparg3, arg4, arg5);
-fail:
-	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
-	if (arg2 && lparg2) setNSRangeFields(env, arg2, lparg2);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRange_2II_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRange_2JJ_FUNC);
-#endif
-	return rc;
-}
-#endif
-
 #if (!defined(NO_objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRange_2I_3I) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRange_2J_3J) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRange_2I_3I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2, jobject arg3, jintLong arg4, jintLongArray arg5)
