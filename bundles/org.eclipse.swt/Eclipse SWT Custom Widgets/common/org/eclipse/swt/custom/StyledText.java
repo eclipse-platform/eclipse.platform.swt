@@ -6689,17 +6689,29 @@ void initializeAccessible() {
 			offset = offset - lineOffset;
 			e.textStyle = layout.getStyle(offset);
 			int[] ranges = layout.getRanges();
-			int index = 0;
-			while (index < ranges.length) {
-				int start = ranges[index++];
-				int end = ranges[index++];
-				if (start <= offset && offset <= end) {
-					e.start = lineOffset + start;
-					e.end = lineOffset + end + 1;
-					break;
-				}
-			}
+			int length = layout.getText().length();
 			st.renderer.disposeTextLayout(layout);
+			int index = 0;
+			int end = 0;
+			while (index < ranges.length) {
+				int styleStart = ranges[index++];
+				int styleEnd = ranges[index++];
+				if (styleStart <= offset && offset <= styleEnd) {
+					e.start = lineOffset + styleStart;
+					e.end = lineOffset + styleEnd + 1;
+					return;
+				}
+				if (styleStart > offset) {
+					e.start = lineOffset + end;
+					e.end = lineOffset + styleStart;
+					return;
+				}
+				end = styleEnd + 1;
+			}
+			if (index == ranges.length) {
+				e.start = lineOffset + end;
+				e.end = lineOffset + length;
+			}
 		}
 	});
 	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
