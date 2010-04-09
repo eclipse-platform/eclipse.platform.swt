@@ -6682,14 +6682,29 @@ void initializeAccessible() {
 		public void getTextAttributes(AccessibleTextAttributeEvent e) {
 			StyledText st = StyledText.this;
 			int contentLength = st.getCharCount();
+			if (!isListening(LineGetStyle) && st.renderer.styleCount == 0) {
+				e.start = 0;
+				e.end = contentLength;
+				return;
+			}
 			int offset = Math.max(0, Math.min(e.offset, contentLength - 1));
 			int lineIndex = st.getLineAtOffset(offset);
 			int lineOffset = st.getOffsetAtLine(lineIndex);
-			TextLayout layout = st.renderer.getTextLayout(lineIndex);
+			int lineLength = st.getContent().getLine(lineIndex).length();
+			int lineCount = st.getLineCount();
 			offset = offset - lineOffset;
+			if (offset >= lineLength) {
+				e.start = lineOffset + lineLength;
+				if (lineIndex + 1 < lineCount) {
+					e.end = st.getOffsetAtLine(lineIndex + 1);
+				} else  {
+					e.end = contentLength;
+				}
+				return;
+			}
+			TextLayout layout = st.renderer.getTextLayout(lineIndex);
 			e.textStyle = layout.getStyle(offset);
 			int[] ranges = layout.getRanges();
-			int length = layout.getText().length();
 			st.renderer.disposeTextLayout(layout);
 			int index = 0;
 			int end = 0;
@@ -6710,7 +6725,11 @@ void initializeAccessible() {
 			}
 			if (index == ranges.length) {
 				e.start = lineOffset + end;
-				e.end = lineOffset + length;
+				if (lineIndex + 1 < lineCount) {
+					e.end = st.getOffsetAtLine(lineIndex + 1);
+				} else  {
+					e.end = contentLength;
+				}
 			}
 		}
 	});
