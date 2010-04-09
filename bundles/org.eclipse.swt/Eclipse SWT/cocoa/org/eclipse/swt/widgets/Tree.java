@@ -1224,14 +1224,21 @@ NSRect expansionFrameWithFrame_inView(int /*long*/ id, int /*long*/ sel, NSRect 
 	if (toolTipText == null) {
 		NSRect rect = super.expansionFrameWithFrame_inView(id, sel, cellRect, view);
 		NSCell cell = new NSCell(id);
+		NSAttributedString str = cell.attributedStringValue();
+		NSSize textSize = str.size();
+		NSRect expansionRect;
 		if (rect.width != 0 && rect.height != 0) {
 			if (hooks(SWT.MeasureItem)) {
+				expansionRect = cellRect;
 				NSSize cellSize = cell.cellSize();
-				cellRect.width = cellSize.width;
-				return cellRect;
+				expansionRect.width = cellSize.width;
+			} else {
+				expansionRect = rect;
+			}
+			if (textSize.height > expansionRect.height) {
+				expansionRect.height = textSize.height;
 			}
 		} else {
-			NSRect expansionRect;
 			if (hooks(SWT.MeasureItem)) {
 				expansionRect = cellRect;
 				NSSize cellSize = cell.cellSize();
@@ -1241,13 +1248,17 @@ NSRect expansionFrameWithFrame_inView(int /*long*/ id, int /*long*/ sel, NSRect 
 				NSSize cellSize = super.cellSize(id, OS.sel_cellSize);
 				expansionRect.width = cellSize.width;
 			}
-			NSRect contentRect = scrollView.contentView().bounds();
-			OS.NSIntersectionRect(contentRect, expansionRect, contentRect);
-			if (!OS.NSEqualRects(expansionRect, contentRect)) {
-				return expansionRect;
+			if (textSize.height > expansionRect.height) {
+				expansionRect.height = textSize.height;
+			} else {
+				NSRect contentRect = scrollView.contentView().bounds();
+				OS.NSIntersectionRect(contentRect, expansionRect, contentRect);
+				if (OS.NSEqualRects(expansionRect, contentRect)) {
+					return new NSRect();
+				}
 			}
 		}
-		return rect;
+		return expansionRect;
 	}
 	return new NSRect();
 }
