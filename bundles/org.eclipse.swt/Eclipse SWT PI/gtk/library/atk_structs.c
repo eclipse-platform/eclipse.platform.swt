@@ -266,7 +266,7 @@ AtkObjectClass *getAtkObjectClassFields(JNIEnv *env, jobject lpObject, AtkObject
 	lpStruct->property_change = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkObjectClassFc.property_change);
 	lpStruct->state_change = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkObjectClassFc.state_change);
 	lpStruct->visible_data_changed = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkObjectClassFc.visible_data_changed);
-	lpStruct->SWT_AtkObjectClass_get_attributes = (AtkAttributeSet* (*)())(*env)->GetIntLongField(env, lpObject, AtkObjectClassFc.get_attributes);
+	lpStruct->SWT_AtkObjectClass_get_attributes = (SWT_AtkObjectClass_get_attributes_cast)(*env)->GetIntLongField(env, lpObject, AtkObjectClassFc.get_attributes);
 	return lpStruct;
 }
 

@@ -19,6 +19,8 @@
 
 #if (GTK_MAJOR_VERSION>=2 && GTK_MINOR_VERSION>=10)
 #define SWT_AtkObjectClass_get_attributes get_attributes
+#define SWT_AtkObjectClass_get_attributes_cast AtkAttributeSet* (*)()
 #else
 #define SWT_AtkObjectClass_get_attributes pad1
+#define SWT_AtkObjectClass_get_attributes_cast AtkFunction
 #endif 
