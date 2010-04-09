@@ -39,7 +39,12 @@ public class OS extends C {
 	public static final int kLSUnknownType = 0;
 	public static final int kLSUnknownCreator = 0;
 	public static final int kLSRolesAll = 0xFFFFFFFF;
-	
+	public static final int kAXUnderlineStyleNone = 0x0;
+	public static final int kAXUnderlineStyleSingle = 0x1; 
+	public static final int kAXUnderlineStyleThick = 0x2; 
+	public static final int kAXUnderlineStyleDouble = 0x9;
+
+
 	public static final int /*long*/ sel_sendSearchSelection = sel_registerName("sendSearchSelection");
 	public static final int /*long*/ sel_sendCancelSelection = sel_registerName("sendCancelSelection");
 	public static final int /*long*/ sel_sendSelection = sel_registerName("sendSelection");
@@ -975,6 +980,7 @@ public static final int /*long*/ sel_disabledControlTextColor = sel_registerName
 public static final int /*long*/ sel_discardCursorRects = sel_registerName("discardCursorRects");
 public static final int /*long*/ sel_display = sel_registerName("display");
 public static final int /*long*/ sel_displayIfNeeded = sel_registerName("displayIfNeeded");
+public static final int /*long*/ sel_displayName = sel_registerName("displayName");
 public static final int /*long*/ sel_displayRectIgnoringOpacity_inContext_ = sel_registerName("displayRectIgnoringOpacity:inContext:");
 public static final int /*long*/ sel_distantFuture = sel_registerName("distantFuture");
 public static final int /*long*/ sel_doCommandBySelector_ = sel_registerName("doCommandBySelector:");
@@ -2168,6 +2174,12 @@ public static final int NSUTF8StringEncoding = 4;
 
 /** Globals */
 /** @method flags=const */
+public static final native int /*long*/ NSAccessibilityAttributedStringForRangeParameterizedAttribute();
+public static final NSString NSAccessibilityAttributedStringForRangeParameterizedAttribute = new NSString(NSAccessibilityAttributedStringForRangeParameterizedAttribute());
+/** @method flags=const */
+public static final native int /*long*/ NSAccessibilityBackgroundColorTextAttribute();
+public static final NSString NSAccessibilityBackgroundColorTextAttribute = new NSString(NSAccessibilityBackgroundColorTextAttribute());
+/** @method flags=const */
 public static final native int /*long*/ NSAccessibilityBoundsForRangeParameterizedAttribute();
 public static final NSString NSAccessibilityBoundsForRangeParameterizedAttribute = new NSString(NSAccessibilityBoundsForRangeParameterizedAttribute());
 /** @method flags=const */
@@ -2218,6 +2230,24 @@ public static final NSString NSAccessibilityFocusedAttribute = new NSString(NSAc
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilityFocusedUIElementChangedNotification();
 public static final NSString NSAccessibilityFocusedUIElementChangedNotification = new NSString(NSAccessibilityFocusedUIElementChangedNotification());
+/** @method flags=const */
+public static final native int /*long*/ NSAccessibilityFocusedWindowChangedNotification();
+public static final NSString NSAccessibilityFocusedWindowChangedNotification = new NSString(NSAccessibilityFocusedWindowChangedNotification());
+/** @method flags=const */
+public static final native int /*long*/ NSAccessibilityFontFamilyKey();
+public static final NSString NSAccessibilityFontFamilyKey = new NSString(NSAccessibilityFontFamilyKey());
+/** @method flags=const */
+public static final native int /*long*/ NSAccessibilityFontNameKey();
+public static final NSString NSAccessibilityFontNameKey = new NSString(NSAccessibilityFontNameKey());
+/** @method flags=const */
+public static final native int /*long*/ NSAccessibilityFontSizeKey();
+public static final NSString NSAccessibilityFontSizeKey = new NSString(NSAccessibilityFontSizeKey());
+/** @method flags=const */
+public static final native int /*long*/ NSAccessibilityFontTextAttribute();
+public static final NSString NSAccessibilityFontTextAttribute = new NSString(NSAccessibilityFontTextAttribute());
+/** @method flags=const */
+public static final native int /*long*/ NSAccessibilityForegroundColorTextAttribute();
+public static final NSString NSAccessibilityForegroundColorTextAttribute = new NSString(NSAccessibilityForegroundColorTextAttribute());
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilityGridRole();
 public static final NSString NSAccessibilityGridRole = new NSString(NSAccessibilityGridRole());
@@ -2287,6 +2317,9 @@ public static final NSString NSAccessibilityMenuRole = new NSString(NSAccessibil
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilityMinValueAttribute();
 public static final NSString NSAccessibilityMinValueAttribute = new NSString(NSAccessibilityMinValueAttribute());
+/** @method flags=const */
+public static final native int /*long*/ NSAccessibilityMisspelledTextAttribute();
+public static final NSString NSAccessibilityMisspelledTextAttribute = new NSString(NSAccessibilityMisspelledTextAttribute());
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilityNextContentsAttribute();
 public static final NSString NSAccessibilityNextContentsAttribute = new NSString(NSAccessibilityNextContentsAttribute());
@@ -2405,6 +2438,12 @@ public static final NSString NSAccessibilityStandardWindowSubrole = new NSString
 public static final native int /*long*/ NSAccessibilityStaticTextRole();
 public static final NSString NSAccessibilityStaticTextRole = new NSString(NSAccessibilityStaticTextRole());
 /** @method flags=const */
+public static final native int /*long*/ NSAccessibilityStrikethroughColorTextAttribute();
+public static final NSString NSAccessibilityStrikethroughColorTextAttribute = new NSString(NSAccessibilityStrikethroughColorTextAttribute());
+/** @method flags=const */
+public static final native int /*long*/ NSAccessibilityStrikethroughTextAttribute();
+public static final NSString NSAccessibilityStrikethroughTextAttribute = new NSString(NSAccessibilityStrikethroughTextAttribute());
+/** @method flags=const */
 public static final native int /*long*/ NSAccessibilityStringForRangeParameterizedAttribute();
 public static final NSString NSAccessibilityStringForRangeParameterizedAttribute = new NSString(NSAccessibilityStringForRangeParameterizedAttribute());
 /** @method flags=const */
@@ -2413,6 +2452,9 @@ public static final NSString NSAccessibilityStyleRangeForIndexParameterizedAttri
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilitySubroleAttribute();
 public static final NSString NSAccessibilitySubroleAttribute = new NSString(NSAccessibilitySubroleAttribute());
+/** @method flags=const */
+public static final native int /*long*/ NSAccessibilitySuperscriptTextAttribute();
+public static final NSString NSAccessibilitySuperscriptTextAttribute = new NSString(NSAccessibilitySuperscriptTextAttribute());
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilitySystemDialogSubrole();
 public static final NSString NSAccessibilitySystemDialogSubrole = new NSString(NSAccessibilitySystemDialogSubrole());
@@ -2450,6 +2492,15 @@ public static final NSString NSAccessibilityToolbarRole = new NSString(NSAccessi
 public static final native int /*long*/ NSAccessibilityTopLevelUIElementAttribute();
 public static final NSString NSAccessibilityTopLevelUIElementAttribute = new NSString(NSAccessibilityTopLevelUIElementAttribute());
 /** @method flags=const */
+public static final native int /*long*/ NSAccessibilityURLAttribute();
+public static final NSString NSAccessibilityURLAttribute = new NSString(NSAccessibilityURLAttribute());
+/** @method flags=const */
+public static final native int /*long*/ NSAccessibilityUnderlineColorTextAttribute();
+public static final NSString NSAccessibilityUnderlineColorTextAttribute = new NSString(NSAccessibilityUnderlineColorTextAttribute());
+/** @method flags=const */
+public static final native int /*long*/ NSAccessibilityUnderlineTextAttribute();
+public static final NSString NSAccessibilityUnderlineTextAttribute = new NSString(NSAccessibilityUnderlineTextAttribute());
+/** @method flags=const */
 public static final native int /*long*/ NSAccessibilityUnknownRole();
 public static final NSString NSAccessibilityUnknownRole = new NSString(NSAccessibilityUnknownRole());
 /** @method flags=const */
@@ -2482,6 +2533,9 @@ public static final NSString NSAccessibilityVisibleChildrenAttribute = new NSStr
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilityVisibleColumnsAttribute();
 public static final NSString NSAccessibilityVisibleColumnsAttribute = new NSString(NSAccessibilityVisibleColumnsAttribute());
+/** @method flags=const */
+public static final native int /*long*/ NSAccessibilityVisibleNameKey();
+public static final NSString NSAccessibilityVisibleNameKey = new NSString(NSAccessibilityVisibleNameKey());
 /** @method flags=const */
 public static final native int /*long*/ NSAccessibilityVisibleRowsAttribute();
 public static final NSString NSAccessibilityVisibleRowsAttribute = new NSString(NSAccessibilityVisibleRowsAttribute());
@@ -2581,6 +2635,9 @@ public static final NSString NSPrintSpoolJob = new NSString(NSPrintSpoolJob());
 /** @method flags=const */
 public static final native int /*long*/ NSRTFPboardType();
 public static final NSString NSRTFPboardType = new NSString(NSRTFPboardType());
+/** @method flags=const */
+public static final native int /*long*/ NSSpellingStateAttributeName();
+public static final NSString NSSpellingStateAttributeName = new NSString(NSSpellingStateAttributeName());
 /** @method flags=const */
 public static final native int /*long*/ NSStrikethroughColorAttributeName();
 public static final NSString NSStrikethroughColorAttributeName = new NSString(NSStrikethroughColorAttributeName());

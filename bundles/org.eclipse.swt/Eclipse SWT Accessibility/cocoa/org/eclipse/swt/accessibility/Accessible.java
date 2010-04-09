@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
+import java.net.*;
 import java.util.*;
 
 import org.eclipse.swt.*;
@@ -1063,6 +1064,8 @@ public class Accessible {
 		if (attribute.isEqualToString(OS.NSAccessibilityLineForIndexParameterizedAttribute)) return getLineForIndexParameterizedAttribute(parameter, childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityBoundsForRangeParameterizedAttribute)) return getBoundsForRangeParameterizedAttribute(parameter, childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityRangeForPositionParameterizedAttribute)) return getRangeForPositionParameterizedAttribute(parameter, childID);
+		if (attribute.isEqualToString(OS.NSAccessibilityAttributedStringForRangeParameterizedAttribute)) return getAttributedStringForRangeParameterizedAttribute(parameter, childID);
+		if (attribute.isEqualToString(OS.NSAccessibilityStyleRangeForIndexParameterizedAttribute)) return getStyleRangeForIndexAttribute(parameter, childID);
 		if (OS.VERSION >= 0x1060 && attribute.isEqualToString(OS.NSAccessibilityCellForColumnAndRowParameterizedAttribute)) return getCellForColumnAndRowParameter(parameter, childID);
 		return null;
 	}
@@ -1161,6 +1164,8 @@ public class Accessible {
 				returnValue.addObject(OS.NSAccessibilityLineForIndexParameterizedAttribute);
 				returnValue.addObject(OS.NSAccessibilityBoundsForRangeParameterizedAttribute);
 				returnValue.addObject(OS.NSAccessibilityRangeForPositionParameterizedAttribute);
+				returnValue.addObject(OS.NSAccessibilityAttributedStringForRangeParameterizedAttribute);
+				returnValue.addObject(OS.NSAccessibilityStyleRangeForIndexParameterizedAttribute);
 				break;
 			case ACC.ROLE_TABLE:
 				if (OS.VERSION >= 0x1060) returnValue.addObject(OS.NSAccessibilityCellForColumnAndRowParameterizedAttribute);
@@ -1266,6 +1271,140 @@ public class Accessible {
 	 */
 	public void internal_dispose_Accessible() {
 		release(true);
+	}
+
+	id getAttributedStringForRangeParameterizedAttribute(id parameter, int childID) {
+		id stringFragment = getStringForRangeParameterizedAttribute(parameter, childID);
+		NSMutableAttributedString attribString = (NSMutableAttributedString)new NSMutableAttributedString().alloc();
+		attribString.initWithString(new NSString(stringFragment), null);
+		attribString.autorelease();
+		
+		// Parameter is an NSRange wrapped in an NSValue. 
+		NSValue parameterObject = new NSValue(parameter.id);
+		NSRange range = parameterObject.rangeValue();
+		
+		AccessibleTextAttributeEvent event = new AccessibleTextAttributeEvent(this);
+		
+		event.offset = (int) /*64*/ range.location;
+		event.start = event.end = -1;
+		
+		while (event.offset < range.location + range.length) {
+			if (accessibleAttributeListeners.size() > 0) {
+				for (int i = 0; i < accessibleAttributeListeners.size(); i++) {
+					AccessibleAttributeListener listener = (AccessibleAttributeListener) accessibleAttributeListeners.elementAt(i);
+					listener.getTextAttributes(event);
+				}
+			}
+
+			if (event.start == -1 && event.end == -1) {
+				return stringFragment;
+			} else {
+				event.offset = event.end;
+			}			
+
+			NSRange attributeRange = new NSRange();
+			attributeRange.location = event.start;
+			attributeRange.length = event.end - event.start;
+			
+			if (attributeRange.location < range.location) {
+				attributeRange.length -= (range.location - attributeRange.location);
+				attributeRange.location = range.location;
+			}
+			
+			if (attributeRange.location + attributeRange.length > range.location + range.length) {
+				attributeRange.length = range.location + range.length - attributeRange.location; 
+			}
+			
+			if (event.textStyle != null) {
+				TextStyle ts = event.textStyle;
+				if (ts.font != null) {
+					NSMutableDictionary fontInfoDict = NSMutableDictionary.dictionaryWithCapacity(4);
+
+					NSFont fontUsed = ts.font.handle;
+					// Get font name and size from NSFont
+					NSString fontName = fontUsed.fontName();
+					fontInfoDict.setValue(fontName, OS.NSAccessibilityFontNameKey);
+					NSString familyName = fontUsed.familyName();
+					fontInfoDict.setValue(familyName, OS.NSAccessibilityFontFamilyKey);
+					NSString displayName = fontUsed.displayName();
+					fontInfoDict.setValue(displayName, OS.NSAccessibilityVisibleNameKey);
+					float /*double*/ fontSize = fontUsed.pointSize();
+					fontInfoDict.setValue(NSNumber.numberWithDouble(fontSize), OS.NSAccessibilityFontSizeKey);
+
+					attribString.addAttribute(OS.NSAccessibilityFontTextAttribute, fontInfoDict, attributeRange);
+				}
+				
+				if (ts.foreground != null) {
+					float /*double*/[] comps = ts.foreground.handle;
+					NSColor fgColor = NSColor.colorWithDeviceRed(comps[0], comps[1], comps[2], comps[3]);
+					attribString.addAttribute(OS.NSAccessibilityForegroundColorTextAttribute, fgColor, attributeRange);
+				}
+				
+				if (ts.background != null) {
+					float /*double*/[] comps = ts.background.handle;
+					NSColor fgColor = NSColor.colorWithDeviceRed(comps[0], comps[1], comps[2], comps[3]);
+					attribString.addAttribute(OS.NSAccessibilityBackgroundColorTextAttribute, fgColor, attributeRange);
+				}
+				
+				if (ts.underline) {
+					int style = ts.underlineStyle;
+					NSString attribute = OS.NSAccessibilityUnderlineTextAttribute;
+					NSNumber styleObj = null;
+					switch (style) {
+					case SWT.UNDERLINE_SINGLE:
+						styleObj = NSNumber.numberWithInt(OS.kAXUnderlineStyleSingle);
+						break;
+					case SWT.UNDERLINE_DOUBLE:
+						styleObj = NSNumber.numberWithInt(OS.kAXUnderlineStyleDouble);
+						break;
+					case SWT.UNDERLINE_SQUIGGLE:
+						attribute = OS.NSAccessibilityMisspelledTextAttribute;
+						styleObj = NSNumber.numberWithBool(true);
+						break;
+					default:
+						styleObj = NSNumber.numberWithInt(OS.kAXUnderlineStyleNone);
+					}
+					
+					attribString.addAttribute(attribute, styleObj, attributeRange);					
+				}
+				
+				if (ts.underlineColor != null) {
+					float /*double*/ [] comps = ts.underlineColor.handle;
+					NSColor fgColor = NSColor.colorWithDeviceRed(comps[0], comps[1], comps[2], comps[3]);
+					attribString.addAttribute(OS.NSAccessibilityUnderlineColorTextAttribute, fgColor, attributeRange);
+				}
+				
+				if (ts.strikeout) {
+					attribString.addAttribute(OS.NSAccessibilityStrikethroughTextAttribute, NSNumber.numberWithBool(true), attributeRange);
+					
+					if (ts.strikeoutColor != null) {
+						float /*double*/ [] comps = ts.strikeoutColor.handle;
+						NSColor fgColor = NSColor.colorWithDeviceRed(comps[0], comps[1], comps[2], comps[3]);
+						attribString.addAttribute(OS.NSAccessibilityStrikethroughColorTextAttribute, fgColor, attributeRange);
+					}
+				}
+				
+				if (ts.data != null) {
+					if (ts.data instanceof URL) {
+						URL dataAsURL = (URL)ts.data;
+						NSURL linkURL = NSURL.URLWithString(NSString.stringWith(dataAsURL.toExternalForm()));
+						attribString.addAttribute(OS.NSAccessibilityLinkTextAttribute, linkURL, attributeRange);
+					}
+				}
+			}
+		}
+		
+//		// Now add the alignment, justification, and indent, if available.
+//		AccessibleAttributeEvent docAttributes = new AccessibleAttributeEvent(this);
+//		docAttributes.indent = Integer.MAX_VALUE; // if unchanged no listener filled it in.
+//		if (accessibleAttributeListeners.size() > 0) {
+//			for (int i = 0; i < accessibleAttributeListeners.size(); i++) {
+//				AccessibleAttributeListener listener = (AccessibleAttributeListener) accessibleAttributeListeners.elementAt(i);
+//				listener.getAttributes(docAttributes);
+//			}
+//		}
+
+		return attribString;
 	}
 
 	id getBoundsForRangeParameterizedAttribute(id parameter, int childID) {
@@ -2137,6 +2276,43 @@ public class Accessible {
 				range.length = event.length;
 				returnValue.addObject(NSValue.valueWithRange(range));
 			}
+		}
+		return returnValue;
+	}
+	
+	id getStyleRangeForIndexAttribute (id parameter, int childID) {
+		id returnValue = null;
+
+		// Parameter is an NSRange wrapped in an NSValue. 
+		NSNumber parameterObject = new NSNumber(parameter.id);
+		int index = parameterObject.intValue();
+		
+		if (accessibleAttributeListeners.size() > 0) {
+			AccessibleTextAttributeEvent event = new AccessibleTextAttributeEvent(this);
+			event.offset = (int) /*64*/ index;
+			
+			// Marker values -- if -1 after calling getTextAttributes, no one implemented it.
+			event.start = event.end = -1;
+			
+			for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+				AccessibleAttributeListener listener = (AccessibleAttributeListener) accessibleTextExtendedListeners.elementAt(i);
+				listener.getTextAttributes(event);
+			}
+
+			NSRange range = new NSRange();
+			if (event.start == -1 && event.end == -1) {
+				range.location = index;
+				range.length = 0;
+			} else {
+				range.location = event.start;
+				range.length = event.end - event.start;
+			}
+			returnValue = NSValue.valueWithRange(range);
+		} else {
+			NSRange range = new NSRange();
+			range.location = index;
+			range.length = 0;
+			returnValue = NSValue.valueWithRange(range);
 		}
 		return returnValue;
 	}

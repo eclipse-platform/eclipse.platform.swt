@@ -1257,6 +1257,9 @@
 		<method selector="descender" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="displayName" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="familyName" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4183,6 +4186,8 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
+	<constant name="NSAccessibilityAttributedStringForRangeParameterizedAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityBackgroundColorTextAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityBoundsForRangeParameterizedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityButtonRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityCheckBoxRole" swt_gen="true"></constant>
@@ -4200,6 +4205,12 @@
 	<constant name="NSAccessibilityFloatingWindowSubrole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityFocusedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityFocusedUIElementChangedNotification" swt_gen="true"></constant>
+	<constant name="NSAccessibilityFocusedWindowChangedNotification" swt_gen="true"></constant>
+	<constant name="NSAccessibilityFontFamilyKey" swt_gen="true"></constant>
+	<constant name="NSAccessibilityFontNameKey" swt_gen="true"></constant>
+	<constant name="NSAccessibilityFontSizeKey" swt_gen="true"></constant>
+	<constant name="NSAccessibilityFontTextAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityForegroundColorTextAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityGridRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityGroupRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityHeaderAttribute" swt_gen="true"></constant>
@@ -4223,6 +4234,7 @@
 	<constant name="NSAccessibilityMenuItemRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityMenuRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityMinValueAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityMisspelledTextAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityNextContentsAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityNumberOfCharactersAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityOrientationAttribute" swt_gen="true"></constant>
@@ -4262,9 +4274,12 @@
 	<constant name="NSAccessibilitySplitterRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityStandardWindowSubrole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityStaticTextRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityStrikethroughColorTextAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityStrikethroughTextAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityStringForRangeParameterizedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityStyleRangeForIndexParameterizedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySubroleAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySuperscriptTextAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySystemDialogSubrole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTabGroupRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTableRole" swt_gen="true"></constant>
@@ -4277,6 +4292,9 @@
 	<constant name="NSAccessibilityTitleUIElementAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityToolbarRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTopLevelUIElementAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityURLAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityUnderlineColorTextAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityUnderlineTextAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityUnknownRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityUnknownSubrole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityValueAttribute" swt_gen="true"></constant>
@@ -4288,6 +4306,7 @@
 	<constant name="NSAccessibilityVisibleCharacterRangeAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityVisibleChildrenAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityVisibleColumnsAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityVisibleNameKey" swt_gen="true"></constant>
 	<constant name="NSAccessibilityVisibleRowsAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityWindowAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityWindowRole" swt_gen="true"></constant>
@@ -4321,6 +4340,7 @@
 	<constant name="NSPrintScalingFactor" swt_gen="true"></constant>
 	<constant name="NSPrintSpoolJob" swt_gen="true"></constant>
 	<constant name="NSRTFPboardType" swt_gen="true"></constant>
+	<constant name="NSSpellingStateAttributeName" swt_gen="true"></constant>
 	<constant name="NSStrikethroughColorAttributeName" swt_gen="true"></constant>
 	<constant name="NSStrikethroughStyleAttributeName" swt_gen="true"></constant>
 	<constant name="NSStringPboardType" swt_gen="true"></constant>

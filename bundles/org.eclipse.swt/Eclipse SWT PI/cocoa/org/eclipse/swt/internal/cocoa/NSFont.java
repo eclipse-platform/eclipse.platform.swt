@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,6 +35,11 @@ public static NSFont controlContentFontOfSize(float /*double*/ fontSize) {
 
 public float /*double*/ descender() {
 	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_descender);
+}
+
+public NSString displayName() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_displayName);
+	return result != 0 ? new NSString(result) : null;
 }
 
 public NSString familyName() {
