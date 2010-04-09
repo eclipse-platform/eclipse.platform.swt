@@ -1082,8 +1082,19 @@ public Point getLocation(int offset, boolean trailing) {
 		int /*long*/ glyphIndex = layoutManager.glyphIndexForCharacterAtIndex(offset);
 		NSRect rect = layoutManager.lineFragmentUsedRectForGlyphAtIndex(glyphIndex, 0);
 		NSPoint point = layoutManager.locationForGlyphAtIndex(glyphIndex);
-		if (trailing) {
-			NSRange range = new NSRange();
+		boolean rtl = false;
+		NSRange range  = new NSRange();
+		range.location = glyphIndex;
+		range.length = 1;
+		int /*long*/ pBidiLevels = OS.malloc(1);
+		byte[] bidiLevels = new byte[1];
+		int /*long*/ result = layoutManager.getGlyphsInRange(range, 0, 0, 0, 0, pBidiLevels);
+		if (result > 0) {
+			OS.memmove(bidiLevels, pBidiLevels, 1);
+			rtl = (bidiLevels[0] & 1) != 0;
+		}
+		OS.free(pBidiLevels);
+		if (trailing != rtl) {
 			range.location = offset;
 			range.length = 1;
 			int /*long*/ pRectCount = OS.malloc(C.PTR_SIZEOF);
