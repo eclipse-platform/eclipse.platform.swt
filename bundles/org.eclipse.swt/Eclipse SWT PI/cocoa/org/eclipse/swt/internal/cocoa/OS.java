@@ -2911,6 +2911,10 @@ public static final native int /*long*/ CGBitmapContextGetData(int /*long*/ c);
  * @param components cast=(CGFloat*)
  */
 public static final native int /*long*/ CGColorCreate(int /*long*/ space, float[] /*double[]*/ components);
+/**
+ * @param color cast=(CGColorRef)
+ */
+public static final native void CGColorRelease(int /*long*/ color);
 public static final native int /*long*/ CGColorSpaceCreateDeviceRGB();
 /**
  * @param space cast=(CGColorSpaceRef)

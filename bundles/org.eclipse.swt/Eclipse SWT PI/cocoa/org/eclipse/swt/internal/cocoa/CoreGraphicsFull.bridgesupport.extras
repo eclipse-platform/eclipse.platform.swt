@@ -50,6 +50,9 @@
 		<arg swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
+	<function name="CGColorRelease" swt_gen="true">
+		<arg swt_gen="true"></arg>
+	</function>
 	<function name="CGColorSpaceCreateDeviceRGB" swt_gen="true">
 		<retval swt_gen="true"></retval>
 	</function>

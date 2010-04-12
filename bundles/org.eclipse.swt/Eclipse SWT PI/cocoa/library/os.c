@@ -1144,6 +1144,16 @@ fail:
 }
 #endif
 
+#ifndef NO_CGColorRelease
+JNIEXPORT void JNICALL OS_NATIVE(CGColorRelease)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGColorRelease_FUNC);
+	CGColorRelease((CGColorRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGColorRelease_FUNC);
+}
+#endif
+
 #ifndef NO_CGColorSpaceCreateDeviceRGB
 JNIEXPORT jintLong JNICALL OS_NATIVE(CGColorSpaceCreateDeviceRGB)
 	(JNIEnv *env, jclass that)

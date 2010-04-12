@@ -85,6 +85,7 @@ typedef enum {
 	CGBitmapContextCreateImage_FUNC,
 	CGBitmapContextGetData_FUNC,
 	CGColorCreate_FUNC,
+	CGColorRelease_FUNC,
 	CGColorSpaceCreateDeviceRGB_FUNC,
 	CGColorSpaceRelease_FUNC,
 	CGContextAddPath_FUNC,

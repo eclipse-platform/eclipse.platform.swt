@@ -6704,6 +6704,15 @@ void initializeAccessible() {
 			}
 			TextLayout layout = st.renderer.getTextLayout(lineIndex);
 			e.textStyle = layout.getStyle(offset);
+			
+			// If no override info available, use defaults. Don't supply default colors, though.
+			if (e.textStyle == null) {
+				e.textStyle = new StyleRange(new TextStyle(st.getFont(), st.foreground, st.background));
+			} else {
+				if (e.textStyle.foreground == null) e.textStyle.foreground = st.foreground;
+				if (e.textStyle.background == null) e.textStyle.background = st.background;
+			}
+			
 			int[] ranges = layout.getRanges();
 			st.renderer.disposeTextLayout(layout);
 			int index = 0;

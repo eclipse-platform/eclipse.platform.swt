@@ -402,6 +402,14 @@ public class Accessible {
 		accessibleAttributeListeners.addElement(listener);
 	}
 
+	void addCGColor(float /*double*/ [] comps, NSMutableAttributedString inAttribString, NSString inAttribute, NSRange inRange) {
+		int /*long*/ cgColorSpace = OS.CGColorSpaceCreateDeviceRGB();
+		int /*long*/ cgColor = OS.CGColorCreate(cgColorSpace, comps);
+		OS.CGColorSpaceRelease(cgColorSpace);
+		inAttribString.addAttribute(inAttribute, new id(cgColor), inRange);
+	    OS.CGColorRelease(cgColor);
+	}
+
 	/**
 	 * Adds a relation with the specified type and target
 	 * to the receiver's set of relations.
@@ -1306,15 +1314,6 @@ public class Accessible {
 			attributeRange.location = event.start;
 			attributeRange.length = event.end - event.start;
 			
-			if (attributeRange.location < range.location) {
-				attributeRange.length -= (range.location - attributeRange.location);
-				attributeRange.location = range.location;
-			}
-			
-			if (attributeRange.location + attributeRange.length > range.location + range.length) {
-				attributeRange.length = range.location + range.length - attributeRange.location; 
-			}
-			
 			if (event.textStyle != null) {
 				TextStyle ts = event.textStyle;
 				if (ts.font != null) {
@@ -1335,15 +1334,11 @@ public class Accessible {
 				}
 				
 				if (ts.foreground != null) {
-					float /*double*/[] comps = ts.foreground.handle;
-					NSColor fgColor = NSColor.colorWithDeviceRed(comps[0], comps[1], comps[2], comps[3]);
-					attribString.addAttribute(OS.NSAccessibilityForegroundColorTextAttribute, fgColor, attributeRange);
+					addCGColor(ts.foreground.handle, attribString, OS.NSAccessibilityForegroundColorTextAttribute, attributeRange);
 				}
 				
 				if (ts.background != null) {
-					float /*double*/[] comps = ts.background.handle;
-					NSColor fgColor = NSColor.colorWithDeviceRed(comps[0], comps[1], comps[2], comps[3]);
-					attribString.addAttribute(OS.NSAccessibilityBackgroundColorTextAttribute, fgColor, attributeRange);
+					addCGColor(ts.background.handle, attribString, OS.NSAccessibilityBackgroundColorTextAttribute, attributeRange);
 				}
 				
 				if (ts.underline) {
@@ -1369,18 +1364,14 @@ public class Accessible {
 				}
 				
 				if (ts.underlineColor != null) {
-					float /*double*/ [] comps = ts.underlineColor.handle;
-					NSColor fgColor = NSColor.colorWithDeviceRed(comps[0], comps[1], comps[2], comps[3]);
-					attribString.addAttribute(OS.NSAccessibilityUnderlineColorTextAttribute, fgColor, attributeRange);
+					addCGColor(ts.underlineColor.handle, attribString, OS.NSAccessibilityUnderlineColorTextAttribute, attributeRange);
 				}
 				
 				if (ts.strikeout) {
 					attribString.addAttribute(OS.NSAccessibilityStrikethroughTextAttribute, NSNumber.numberWithBool(true), attributeRange);
 					
 					if (ts.strikeoutColor != null) {
-						float /*double*/ [] comps = ts.strikeoutColor.handle;
-						NSColor fgColor = NSColor.colorWithDeviceRed(comps[0], comps[1], comps[2], comps[3]);
-						attribString.addAttribute(OS.NSAccessibilityStrikethroughColorTextAttribute, fgColor, attributeRange);
+						addCGColor(ts.strikeoutColor.handle, attribString, OS.NSAccessibilityStrikethroughColorTextAttribute, attributeRange);
 					}
 				}
 				
@@ -1394,16 +1385,37 @@ public class Accessible {
 			}
 		}
 		
-//		// Now add the alignment, justification, and indent, if available.
-//		AccessibleAttributeEvent docAttributes = new AccessibleAttributeEvent(this);
-//		docAttributes.indent = Integer.MAX_VALUE; // if unchanged no listener filled it in.
-//		if (accessibleAttributeListeners.size() > 0) {
-//			for (int i = 0; i < accessibleAttributeListeners.size(); i++) {
-//				AccessibleAttributeListener listener = (AccessibleAttributeListener) accessibleAttributeListeners.elementAt(i);
-//				listener.getAttributes(docAttributes);
-//			}
-//		}
+		// Now add the alignment, justification, and indent, if available.
+		AccessibleAttributeEvent docAttributes = new AccessibleAttributeEvent(this);
+		docAttributes.indent = Integer.MAX_VALUE; // if unchanged no listener filled it in.
+		if (accessibleAttributeListeners.size() > 0) {
+			for (int i = 0; i < accessibleAttributeListeners.size(); i++) {
+				AccessibleAttributeListener listener = (AccessibleAttributeListener) accessibleAttributeListeners.elementAt(i);
+				listener.getAttributes(docAttributes);
+			}
+		}
 
+		if (docAttributes.indent != Integer.MAX_VALUE) {
+			NSMutableDictionary paragraphDict = NSMutableDictionary.dictionaryWithCapacity(3);
+			int osAlignment = 0;
+			// FIXME: Doesn't account for right-to-left text?
+			switch (docAttributes.alignment) {
+			case SWT.CENTER:
+				osAlignment = OS.NSCenterTextAlignment;
+				break;
+			case SWT.RIGHT:
+				osAlignment = OS.NSRightTextAlignment;
+				break;
+			case SWT.LEFT:
+			default:
+				osAlignment = OS.NSLeftTextAlignment;
+				break;
+			}
+			paragraphDict.setValue(NSNumber.numberWithInt(osAlignment), NSString.stringWith("AXTextAlignment"));
+			//paragraphDict.setValue(NSNumber.numberWithInt(osAlignment), NSString.stringWith("AXVisualTextAlignment"));
+			attribString.addAttribute(NSString.stringWith("AXParagraphStyle"), paragraphDict, range);
+		}
+		
 		return attribString;
 	}
 
