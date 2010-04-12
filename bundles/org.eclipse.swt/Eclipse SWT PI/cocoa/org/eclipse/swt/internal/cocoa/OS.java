@@ -56,6 +56,7 @@ public class OS extends C {
 	public static final int /*long*/ sel_handleNotification_ = sel_registerName("handleNotification:");
 	public static final int /*long*/ sel_callJava = sel_registerName("callJava:index:arg:");
 	public static final int /*long*/ sel_callRunBeforeUnloadConfirmPanelWithMessage = sel_registerName("callRunBeforeUnloadConfirmPanelWithMessage:arg:");
+	public static final int /*long*/ sel_createPanelDidEnd = sel_registerName("createPanelDidEnd:returnCode:contextInfo:");
 	public static final int /*long*/ sel_systemSettingsChanged_ = sel_registerName("systemSettingsChanged:");
 	public static final int /*long*/ sel_panelDidEnd_returnCode_contextInfo_ = sel_registerName("panelDidEnd:returnCode:contextInfo:");
 	public static final int /*long*/ sel_updateOpenGLContext_ = sel_registerName("updateOpenGLContext:");
@@ -76,6 +77,7 @@ public class OS extends C {
 	public static final int /*long*/ class_WebPanelAuthenticationHandler = OS.objc_getClass("WebPanelAuthenticationHandler");
 	public static final int /*long*/ sel_sharedHandler = sel_registerName("sharedHandler");
 	public static final int /*long*/ sel_startAuthentication = sel_registerName("startAuthentication:window:");
+	public static final int /*long*/ sel_setAllowsAnyHTTPSCertificate = sel_registerName("setAllowsAnyHTTPSCertificate:forHost:");
 	
 	public static final int /*long*/ sel_accessibleHandle = sel_registerName("accessibleHandle");
 
@@ -319,6 +321,32 @@ public static final native int /*long*/ JSStringCreateWithUTF8CString (byte[] st
  * @param string cast=(JSStringRef)
  */
 public static final native void JSStringRelease (int /*long*/ string);
+
+
+/** Certificate Security */
+
+/**
+ * @param certType cast=(CSSM_CERT_TYPE)
+ * @param policyOID cast=(CSSM_OID *)
+ * @param value cast=(CSSM_DATA *)
+ * @param policySearch cast=(SecPolicySearchRef *) 
+ */
+public static final native int SecPolicySearchCreate(int /*long*/ certType, int /*long*/ policyOID, int /*long*/ value, int /*long*/ [] policySearch);
+
+/**
+ * @param searchRef cast=(SecPolicySearchRef)
+ * @param policyRef cast=(SecPolicyRef *)
+ */
+public static final native int SecPolicySearchCopyNext(int /*long*/ searchRef, int /*long*/ [] policyRef);
+
+/** 
+ * @param certificates cast=(CFArrayRef)
+ * @param policies cast=(CFTypeRef)
+ * @param trustRef cast=(SecTrustRef *) 
+ */
+public static final native int SecTrustCreateWithCertificates(int /*long*/ certificates, int /*long*/ policies, int /*long*/ [] trustRef);
+
+public static final int CSSM_CERT_X_509v3 = 0x3;
 
 
 /** Custom callbacks */
@@ -642,6 +670,8 @@ public static final int /*long*/ class_NSValue = objc_getClass("NSValue");
 public static final int /*long*/ class_NSView = objc_getClass("NSView");
 public static final int /*long*/ class_NSWindow = objc_getClass("NSWindow");
 public static final int /*long*/ class_NSWorkspace = objc_getClass("NSWorkspace");
+public static final int /*long*/ class_SFCertificatePanel = objc_getClass("SFCertificatePanel");
+public static final int /*long*/ class_SFCertificateTrustPanel = objc_getClass("SFCertificateTrustPanel");
 public static final int /*long*/ class_WebDataSource = objc_getClass("WebDataSource");
 public static final int /*long*/ class_WebFrame = objc_getClass("WebFrame");
 public static final int /*long*/ class_WebFrameView = objc_getClass("WebFrameView");
@@ -796,6 +826,7 @@ public static final int /*long*/ sel_beginDocument = sel_registerName("beginDocu
 public static final int /*long*/ sel_beginEditing = sel_registerName("beginEditing");
 public static final int /*long*/ sel_beginPageInRect_atPlacement_ = sel_registerName("beginPageInRect:atPlacement:");
 public static final int /*long*/ sel_beginSheet_modalForWindow_modalDelegate_didEndSelector_contextInfo_ = sel_registerName("beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo:");
+public static final int /*long*/ sel_beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_trust_message_ = sel_registerName("beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:trust:message:");
 public static final int /*long*/ sel_beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo_ = sel_registerName("beginSheetModalForWindow:modalDelegate:didEndSelector:contextInfo:");
 public static final int /*long*/ sel_beginSheetWithPrintInfo_modalForWindow_delegate_didEndSelector_contextInfo_ = sel_registerName("beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:");
 public static final int /*long*/ sel_bestRepresentationForDevice_ = sel_registerName("bestRepresentationForDevice:");
@@ -1519,6 +1550,7 @@ public static final int /*long*/ sel_setAllowsMultipleSelection_ = sel_registerN
 public static final int /*long*/ sel_setAllowsUserCustomization_ = sel_registerName("setAllowsUserCustomization:");
 public static final int /*long*/ sel_setAlpha_ = sel_registerName("setAlpha:");
 public static final int /*long*/ sel_setAlphaValue_ = sel_registerName("setAlphaValue:");
+public static final int /*long*/ sel_setAlternateButtonTitle_ = sel_registerName("setAlternateButtonTitle:");
 public static final int /*long*/ sel_setApplicationIconImage_ = sel_registerName("setApplicationIconImage:");
 public static final int /*long*/ sel_setApplicationNameForUserAgent_ = sel_registerName("setApplicationNameForUserAgent:");
 public static final int /*long*/ sel_setAttachmentCell_ = sel_registerName("setAttachmentCell:");
@@ -1711,6 +1743,7 @@ public static final int /*long*/ sel_setSelectedSegment_ = sel_registerName("set
 public static final int /*long*/ sel_setSelectedTextAttributes_ = sel_registerName("setSelectedTextAttributes:");
 public static final int /*long*/ sel_setServicesMenu_ = sel_registerName("setServicesMenu:");
 public static final int /*long*/ sel_setShouldAntialias_ = sel_registerName("setShouldAntialias:");
+public static final int /*long*/ sel_setShowsHelp_ = sel_registerName("setShowsHelp:");
 public static final int /*long*/ sel_setShowsPrintPanel_ = sel_registerName("setShowsPrintPanel:");
 public static final int /*long*/ sel_setShowsProgressPanel_ = sel_registerName("setShowsProgressPanel:");
 public static final int /*long*/ sel_setShowsResizeIndicator_ = sel_registerName("setShowsResizeIndicator:");
@@ -1756,6 +1789,7 @@ public static final int /*long*/ sel_setWindingRule_ = sel_registerName("setWind
 public static final int /*long*/ sel_setWorksWhenModal_ = sel_registerName("setWorksWhenModal:");
 public static final int /*long*/ sel_setWraps_ = sel_registerName("setWraps:");
 public static final int /*long*/ sel_sharedApplication = sel_registerName("sharedApplication");
+public static final int /*long*/ sel_sharedCertificateTrustPanel = sel_registerName("sharedCertificateTrustPanel");
 public static final int /*long*/ sel_sharedColorPanel = sel_registerName("sharedColorPanel");
 public static final int /*long*/ sel_sharedFontManager = sel_registerName("sharedFontManager");
 public static final int /*long*/ sel_sharedFontPanel = sel_registerName("sharedFontPanel");
@@ -2169,6 +2203,8 @@ public static final int NSNotFound = 2147483647;
 public static final int NSOrderedSame = 0;
 public static final int NSURLCredentialPersistenceForSession = 1;
 public static final int NSURLErrorBadURL = -1000;
+public static final int NSURLErrorSecureConnectionFailed = -1200;
+public static final int NSURLErrorServerCertificateNotYetValid = -1204;
 public static final int NSURLRequestReloadIgnoringLocalCacheData = 1;
 public static final int NSUTF8StringEncoding = 4;
 
@@ -3616,6 +3652,8 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, boolean arg5, boolean arg6, int /*long*/ arg7, int /*long*/ arg8, int /*long*/ arg9);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, boolean arg5, boolean arg6, int /*long*/ arg7, int /*long*/ arg8, int /*long*/ arg9, int /*long*/ arg10);
+/** @method flags=cast */
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5, int /*long*/ arg6);
 /** @method flags=cast */

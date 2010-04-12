@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF8"?>
+<signatures swt_gen="mixed">
+	<class name="SFCertificatePanel" swt_gen="mixed" swt_superclass="NSPanel">
+		<method selector="setAlternateButtonTitle:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setShowsHelp:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="SFCertificateTrustPanel" swt_gen="mixed" swt_superclass="SFCertificatePanel">
+		<method selector="beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:trust:message:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method class_method="true" selector="sharedCertificateTrustPanel" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+</signatures>

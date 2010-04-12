@@ -35,7 +35,7 @@ CFLAGS = -c -xobjective-c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_S
 	-I /System/Library/Frameworks/JavaVM.framework/Headers \
 	-I /System/Library/Frameworks/Cocoa.framework/Headers \
 	-I /System/Library/Frameworks/JavaScriptCore.framework/Headers
-LFLAGS = -bundle $(ARCHS) -framework JavaVM -framework Cocoa -framework WebKit -framework CoreServices -framework JavaScriptCore
+LFLAGS = -bundle $(ARCHS) -framework JavaVM -framework Cocoa -framework WebKit -framework CoreServices -framework JavaScriptCore -framework Security -framework SecurityInterface
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_stats.o os_custom.o
 XULRUNNER_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o xpcominit.o xpcominit_structs.o xpcominit_stats.o

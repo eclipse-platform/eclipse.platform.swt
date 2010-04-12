@@ -37,6 +37,7 @@ public class OS extends C {
 	public static final int checkMark = 18;
 	public static final int cmdKey = 1 << 8;
 	public static final int controlKey = 1 << 12;
+	public static final int CSSM_CERT_X_509v3 = 0x3;
 	public static final int diamondMark = 19;
 	public static final int dragNotAcceptedErr = -1857;
 	public static final int errControlIsNotEmbedder = -30590;
@@ -4569,6 +4570,28 @@ public static final native int SameProcess(int [] psn1, int[] psn2, boolean[] re
  * @param updateRgn cast=(RgnHandle)
  */
 public static final native void ScrollRect(Rect rect, short dh, short dv, int updateRgn);
+
+/**
+ * @param certType cast=(CSSM_CERT_TYPE)
+ * @param policyOID cast=(CSSM_OID *)
+ * @param value cast=(CSSM_DATA *)
+ * @param policySearch cast=(SecPolicySearchRef *) 
+ */
+public static final native int SecPolicySearchCreate(int certType, int policyOID, int value, int[] policySearch);
+
+/**
+ * @param searchRef cast=(SecPolicySearchRef)
+ * @param policyRef cast=(SecPolicyRef *)
+ */
+public static final native int SecPolicySearchCopyNext(int searchRef, int[] policyRef);
+
+/** 
+ * @param certificates cast=(CFArrayRef)
+ * @param policies cast=(CFTypeRef)
+ * @param trustRef cast=(SecTrustRef *) 
+ */
+public static final native int SecTrustCreateWithCertificates(int certificates, int policies, int[] trustRef);
+
 /**
  * @param src1 flags=no_out
  * @param src2 flags=no_out

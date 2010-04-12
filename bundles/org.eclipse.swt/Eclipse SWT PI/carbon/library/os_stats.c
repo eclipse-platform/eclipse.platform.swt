@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1003;
-int OS_nativeFunctionCallCount[1003];
+int OS_nativeFunctionCount = 1006;
+int OS_nativeFunctionCallCount[1006];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -826,6 +826,9 @@ char * OS_nativeFunctionNames[] = {
 	"RunStandardAlert",
 	"SameProcess",
 	"ScrollRect",
+	"SecPolicySearchCopyNext",
+	"SecPolicySearchCreate",
+	"SecTrustCreateWithCertificates",
 	"SectRect",
 	"SectRgn",
 	"SelectWindow",

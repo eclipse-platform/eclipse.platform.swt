@@ -350,4 +350,11 @@ fail:
 	return (id)proc(0, user_data, 37, (int)arg, (int)arg0, 0, 0);
 }
 
+/* invalid certificate handler */
+
+-(void)createPanelDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+{
+	proc(0, user_data, 38, (int)sheet, returnCode, (int)contextInfo, 0);
+}
+
 @end

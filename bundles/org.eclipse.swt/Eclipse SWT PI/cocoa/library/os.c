@@ -2498,6 +2498,30 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityActionDescription)
 }
 #endif
 
+#ifndef NO_NSAccessibilityAttributedStringForRangeParameterizedAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityAttributedStringForRangeParameterizedAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityAttributedStringForRangeParameterizedAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityAttributedStringForRangeParameterizedAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityAttributedStringForRangeParameterizedAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityBackgroundColorTextAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityBackgroundColorTextAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityBackgroundColorTextAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityBackgroundColorTextAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityBackgroundColorTextAttribute_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSAccessibilityBoundsForRangeParameterizedAttribute
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityBoundsForRangeParameterizedAttribute)
 	(JNIEnv *env, jclass that)
@@ -2698,6 +2722,78 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityFocusedUIElementChangedNotif
 	OS_NATIVE_ENTER(env, that, NSAccessibilityFocusedUIElementChangedNotification_FUNC);
 	rc = (jintLong)NSAccessibilityFocusedUIElementChangedNotification;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityFocusedUIElementChangedNotification_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityFocusedWindowChangedNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityFocusedWindowChangedNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityFocusedWindowChangedNotification_FUNC);
+	rc = (jintLong)NSAccessibilityFocusedWindowChangedNotification;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityFocusedWindowChangedNotification_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityFontFamilyKey
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityFontFamilyKey)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityFontFamilyKey_FUNC);
+	rc = (jintLong)NSAccessibilityFontFamilyKey;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityFontFamilyKey_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityFontNameKey
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityFontNameKey)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityFontNameKey_FUNC);
+	rc = (jintLong)NSAccessibilityFontNameKey;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityFontNameKey_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityFontSizeKey
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityFontSizeKey)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityFontSizeKey_FUNC);
+	rc = (jintLong)NSAccessibilityFontSizeKey;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityFontSizeKey_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityFontTextAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityFontTextAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityFontTextAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityFontTextAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityFontTextAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityForegroundColorTextAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityForegroundColorTextAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityForegroundColorTextAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityForegroundColorTextAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityForegroundColorTextAttribute_FUNC);
 	return rc;
 }
 #endif
@@ -2974,6 +3070,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityMinValueAttribute)
 	OS_NATIVE_ENTER(env, that, NSAccessibilityMinValueAttribute_FUNC);
 	rc = (jintLong)NSAccessibilityMinValueAttribute;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityMinValueAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityMisspelledTextAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityMisspelledTextAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityMisspelledTextAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityMisspelledTextAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityMisspelledTextAttribute_FUNC);
 	return rc;
 }
 #endif
@@ -3490,6 +3598,30 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityStaticTextRole)
 }
 #endif
 
+#ifndef NO_NSAccessibilityStrikethroughColorTextAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityStrikethroughColorTextAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityStrikethroughColorTextAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityStrikethroughColorTextAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityStrikethroughColorTextAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityStrikethroughTextAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityStrikethroughTextAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityStrikethroughTextAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityStrikethroughTextAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityStrikethroughTextAttribute_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSAccessibilityStringForRangeParameterizedAttribute
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityStringForRangeParameterizedAttribute)
 	(JNIEnv *env, jclass that)
@@ -3522,6 +3654,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilitySubroleAttribute)
 	OS_NATIVE_ENTER(env, that, NSAccessibilitySubroleAttribute_FUNC);
 	rc = (jintLong)NSAccessibilitySubroleAttribute;
 	OS_NATIVE_EXIT(env, that, NSAccessibilitySubroleAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilitySuperscriptTextAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilitySuperscriptTextAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilitySuperscriptTextAttribute_FUNC);
+	rc = (jintLong)NSAccessibilitySuperscriptTextAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilitySuperscriptTextAttribute_FUNC);
 	return rc;
 }
 #endif
@@ -3666,6 +3810,42 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityTopLevelUIElementAttribute)
 	OS_NATIVE_ENTER(env, that, NSAccessibilityTopLevelUIElementAttribute_FUNC);
 	rc = (jintLong)NSAccessibilityTopLevelUIElementAttribute;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityTopLevelUIElementAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityURLAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityURLAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityURLAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityURLAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityURLAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityUnderlineColorTextAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityUnderlineColorTextAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityUnderlineColorTextAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityUnderlineColorTextAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityUnderlineColorTextAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityUnderlineTextAttribute
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityUnderlineTextAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityUnderlineTextAttribute_FUNC);
+	rc = (jintLong)NSAccessibilityUnderlineTextAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityUnderlineTextAttribute_FUNC);
 	return rc;
 }
 #endif
@@ -3846,6 +4026,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityVisibleColumnsAttribute)
 	OS_NATIVE_ENTER(env, that, NSAccessibilityVisibleColumnsAttribute_FUNC);
 	rc = (jintLong)NSAccessibilityVisibleColumnsAttribute;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityVisibleColumnsAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityVisibleNameKey
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityVisibleNameKey)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityVisibleNameKey_FUNC);
+	rc = (jintLong)NSAccessibilityVisibleNameKey;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityVisibleNameKey_FUNC);
 	return rc;
 }
 #endif
@@ -4462,6 +4654,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSSize_1sizeof)
 }
 #endif
 
+#ifndef NO_NSSpellingStateAttributeName
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSSpellingStateAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSSpellingStateAttributeName_FUNC);
+	rc = (jintLong)NSSpellingStateAttributeName;
+	OS_NATIVE_EXIT(env, that, NSSpellingStateAttributeName_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSStrikethroughColorAttributeName
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSStrikethroughColorAttributeName)
 	(JNIEnv *env, jclass that)
@@ -4869,6 +5073,54 @@ JNIEXPORT void JNICALL OS_NATIVE(RectRgn)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, RectRgn_FUNC);
+}
+#endif
+
+#ifndef NO_SecPolicySearchCopyNext
+JNIEXPORT jint JNICALL OS_NATIVE(SecPolicySearchCopyNext)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1)
+{
+	jintLong *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SecPolicySearchCopyNext_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)SecPolicySearchCopyNext((SecPolicySearchRef)arg0, (SecPolicyRef *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, SecPolicySearchCopyNext_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SecPolicySearchCreate
+JNIEXPORT jint JNICALL OS_NATIVE(SecPolicySearchCreate)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLongArray arg3)
+{
+	jintLong *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SecPolicySearchCreate_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jint)SecPolicySearchCreate((CSSM_CERT_TYPE)arg0, (CSSM_OID *)arg1, (CSSM_DATA *)arg2, (SecPolicySearchRef *)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, SecPolicySearchCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SecTrustCreateWithCertificates
+JNIEXPORT jint JNICALL OS_NATIVE(SecTrustCreateWithCertificates)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2)
+{
+	jintLong *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SecTrustCreateWithCertificates_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)SecTrustCreateWithCertificates((CFArrayRef)arg0, (CFTypeRef)arg1, (SecTrustRef *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, SecTrustCreateWithCertificates_FUNC);
+	return rc;
 }
 #endif
 
@@ -6317,6 +6569,29 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJJJJJ)(JNIEnv *env, jclass
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIIIIII_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJJJJJJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_objc_1msgSend__IIIIIIII) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJJJJJJJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__IIIIIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jintLong arg6, jintLong arg7)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJJJJJJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jintLong arg6, jintLong arg7)
+#endif
+{
+	jintLong rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__IIIIIIII_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJJJJJJ_FUNC);
+#endif
+	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, jintLong, jintLong, jintLong, jintLong, jintLong))objc_msgSend)(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIIIIIII_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJJJJJJJ_FUNC);
 #endif
 	return rc;
 }

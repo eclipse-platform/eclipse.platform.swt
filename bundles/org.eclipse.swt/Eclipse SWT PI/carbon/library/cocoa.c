@@ -288,6 +288,18 @@ JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__IIIIII)
 }
 #endif
 
+#ifndef NO_objc_1msgSend__IIIIIIII
+JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__IIIIIIII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7)
+{
+	jint rc = 0;
+	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend__IIIIIIII_FUNC);
+	rc = (jint)objc_msgSend((id)arg0, (SEL)arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+	Cocoa_NATIVE_EXIT(env, that, objc_1msgSend__IIIIIIII_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2
 JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 556;
-int OS_nativeFunctionCallCount[556];
+int OS_nativeFunctionCount = 577;
+int OS_nativeFunctionCallCount[577];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -178,6 +178,8 @@ char * OS_nativeFunctionNames[] = {
 	"LineTo",
 	"MoveTo",
 	"NSAccessibilityActionDescription",
+	"NSAccessibilityAttributedStringForRangeParameterizedAttribute",
+	"NSAccessibilityBackgroundColorTextAttribute",
 	"NSAccessibilityBoundsForRangeParameterizedAttribute",
 	"NSAccessibilityButtonRole",
 	"NSAccessibilityCellForColumnAndRowParameterizedAttribute",
@@ -198,6 +200,12 @@ char * OS_nativeFunctionNames[] = {
 	"NSAccessibilityFloatingWindowSubrole",
 	"NSAccessibilityFocusedAttribute",
 	"NSAccessibilityFocusedUIElementChangedNotification",
+	"NSAccessibilityFocusedWindowChangedNotification",
+	"NSAccessibilityFontFamilyKey",
+	"NSAccessibilityFontNameKey",
+	"NSAccessibilityFontSizeKey",
+	"NSAccessibilityFontTextAttribute",
+	"NSAccessibilityForegroundColorTextAttribute",
 	"NSAccessibilityGridRole",
 	"NSAccessibilityGroupRole",
 	"NSAccessibilityHeaderAttribute",
@@ -221,6 +229,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSAccessibilityMenuItemRole",
 	"NSAccessibilityMenuRole",
 	"NSAccessibilityMinValueAttribute",
+	"NSAccessibilityMisspelledTextAttribute",
 	"NSAccessibilityNextContentsAttribute",
 	"NSAccessibilityNumberOfCharactersAttribute",
 	"NSAccessibilityOrientationAttribute",
@@ -265,9 +274,12 @@ char * OS_nativeFunctionNames[] = {
 	"NSAccessibilitySplitterRole",
 	"NSAccessibilityStandardWindowSubrole",
 	"NSAccessibilityStaticTextRole",
+	"NSAccessibilityStrikethroughColorTextAttribute",
+	"NSAccessibilityStrikethroughTextAttribute",
 	"NSAccessibilityStringForRangeParameterizedAttribute",
 	"NSAccessibilityStyleRangeForIndexParameterizedAttribute",
 	"NSAccessibilitySubroleAttribute",
+	"NSAccessibilitySuperscriptTextAttribute",
 	"NSAccessibilitySystemDialogSubrole",
 	"NSAccessibilityTabGroupRole",
 	"NSAccessibilityTableRole",
@@ -280,6 +292,9 @@ char * OS_nativeFunctionNames[] = {
 	"NSAccessibilityTitleUIElementAttribute",
 	"NSAccessibilityToolbarRole",
 	"NSAccessibilityTopLevelUIElementAttribute",
+	"NSAccessibilityURLAttribute",
+	"NSAccessibilityUnderlineColorTextAttribute",
+	"NSAccessibilityUnderlineTextAttribute",
 	"NSAccessibilityUnignoredAncestor",
 	"NSAccessibilityUnignoredChildren",
 	"NSAccessibilityUnignoredChildrenForOnlyChild",
@@ -295,6 +310,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSAccessibilityVisibleCharacterRangeAttribute",
 	"NSAccessibilityVisibleChildrenAttribute",
 	"NSAccessibilityVisibleColumnsAttribute",
+	"NSAccessibilityVisibleNameKey",
 	"NSAccessibilityVisibleRowsAttribute",
 	"NSAccessibilityWindowAttribute",
 	"NSAccessibilityWindowRole",
@@ -345,6 +361,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSRect_1sizeof",
 	"NSSearchPathForDirectoriesInDomains",
 	"NSSize_1sizeof",
+	"NSSpellingStateAttributeName",
 	"NSStrikethroughColorAttributeName",
 	"NSStrikethroughStyleAttributeName",
 	"NSStringPboardType",
@@ -374,6 +391,9 @@ char * OS_nativeFunctionNames[] = {
 	"QDRegionToRects",
 	"RectInRgn",
 	"RectRgn",
+	"SecPolicySearchCopyNext",
+	"SecPolicySearchCreate",
+	"SecTrustCreateWithCertificates",
 	"SectRgn",
 	"SetFrontProcess",
 	"SetRect",
@@ -597,6 +617,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IIIIIII",
 #else
 	"objc_1msgSend__JJJJJJJ",
+#endif
+#ifndef JNI64
+	"objc_1msgSend__IIIIIIII",
+#else
+	"objc_1msgSend__JJJJJJJJ",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__IIIIIIIII",

@@ -772,6 +772,7 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 35: didReceiveAuthenticationChallengefromDataSource(arg0, arg1, arg2); break;
 		case 36: ret = runBeforeUnloadConfirmPanelWithMessage(arg0, arg1); break;
 		case 37: ret = callRunBeforeUnloadConfirmPanelWithMessage(arg0, arg1); break;
+		case 38: createPanelDidEnd(arg0, arg1, arg2); break;
 	}
 	return ret;
 }
@@ -953,6 +954,80 @@ void didFailProvisionalLoadWithError(int error, int frame) {
 		* event) or failed (didFailProvisionalLoadWithError).
 		*/
 		identifier = 0;
+	}
+
+	int errorCode = Cocoa.objc_msgSend(error, Cocoa.S_code);
+	if (Cocoa.NSURLErrorBadURL < errorCode) return;
+
+	int failingURL = 0;
+	int info = Cocoa.objc_msgSend(error, Cocoa.S_userInfo);
+	if (info != 0) {
+		int keyString = createNSString("NSErrorFailingURLKey"); //$NON-NLS-1$
+		failingURL = Cocoa.objc_msgSend(info, Cocoa.S_valueForKey, keyString);
+		OS.CFRelease(keyString);
+	}
+
+	if (failingURL != 0 && Cocoa.NSURLErrorServerCertificateNotYetValid <= errorCode && errorCode <= Cocoa.NSURLErrorSecureConnectionFailed) {
+		/* handle invalid certificate error */
+		int keyString = createNSString("NSErrorPeerCertificateChainKey"); //$NON-NLS-1$
+		int certificates = Cocoa.objc_msgSend(info, Cocoa.S_objectForKey, keyString);
+		OS.CFRelease(keyString);
+
+		int[] policySearch = new int[1];
+		int[] policyRef = new int[1];
+		int[] trustRef = new int[1];
+		boolean success = false;
+		int result = OS.SecPolicySearchCreate(OS.CSSM_CERT_X_509v3, 0, 0, policySearch);
+		if (result == 0 && policySearch[0] != 0) {
+			result = OS.SecPolicySearchCopyNext(policySearch[0], policyRef);
+			if (result == 0 && policyRef[0] != 0) {
+				result = OS.SecTrustCreateWithCertificates(certificates, policyRef[0], trustRef);
+				if (result == 0 && trustRef[0] != 0) {
+					int panel = Cocoa.objc_msgSend(Cocoa.C_SFCertificateTrustPanel, Cocoa.S_sharedCertificateTrustPanel);
+					String failingUrlString = getString(Cocoa.objc_msgSend(failingURL, Cocoa.S_absoluteString));
+					String message = Compatibility.getMessage("SWT_InvalidCert_Message", new Object[] {failingUrlString}); //$NON-NLS-1$
+					int nsString = createNSString(Compatibility.getMessage("SWT_Cancel")); //$NON-NLS-1$
+					Cocoa.objc_msgSend(panel, Cocoa.S_setAlternateButtonTitle, nsString);
+					OS.CFRelease(nsString);
+					Cocoa.objc_msgSend(panel, Cocoa.S_setShowsHelp, 1);
+					Cocoa.objc_msgSend(failingURL, Cocoa.S_retain);
+					int window = Cocoa.objc_msgSend(webView, Cocoa.S_window);
+					nsString = createNSString(message);
+					Cocoa.objc_msgSend(panel, Cocoa.S_beginSheetForWindow, window, delegate, Cocoa.S_createPanelDidEnd, failingURL, trustRef[0], nsString);
+					OS.CFRelease(nsString);
+					success = true;
+				}
+			}
+		}
+
+		if (trustRef[0] != 0) OS.CFRelease(trustRef[0]);
+		if (policyRef[0] != 0) OS.CFRelease(policyRef[0]);
+		if (policySearch[0] != 0) OS.CFRelease(policySearch[0]);
+		if (success) return;
+	}
+
+	/* handle other types of errors */
+	int description = Cocoa.objc_msgSend(error, Cocoa.S_localizedDescription);
+	if (description != 0) {
+		String descriptionString = getString(description);
+		String message = failingURL != 0 ? getString(Cocoa.objc_msgSend(failingURL, Cocoa.S_absoluteString)) + "\n\n" : ""; //$NON-NLS-1$ //$NON-NLS-2$
+		message += Compatibility.getMessage ("SWT_Page_Load_Failed", new Object[] {descriptionString}); //$NON-NLS-1$
+		MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.ICON_ERROR);
+		messageBox.setMessage(message);
+		messageBox.open();
+	}
+}
+
+void createPanelDidEnd(int sheet, int returnCode, int contextInfo) {
+	Cocoa.objc_msgSend(contextInfo, Cocoa.S_autorelease);
+	if (returnCode != Cocoa.NSFileHandlingPanelOKButton) return;	/* nothing more to do */
+
+	int /*long*/ method = Cocoa.class_getClassMethod(Cocoa.C_NSURLRequest, Cocoa.S_setAllowsAnyHTTPSCertificate);
+	if (method != 0) {
+		int host = Cocoa.objc_msgSend(contextInfo, Cocoa.S_host);
+		int urlString = Cocoa.objc_msgSend(contextInfo, Cocoa.S_absoluteString);
+		Cocoa.objc_msgSend(Cocoa.C_NSURLRequest, Cocoa.S_setAllowsAnyHTTPSCertificate, 1, host);
+		setUrl(getString(urlString), null, null);
 	}
 }
 

@@ -11619,6 +11619,54 @@ fail:
 }
 #endif
 
+#ifndef NO_SecPolicySearchCopyNext
+JNIEXPORT jint JNICALL OS_NATIVE(SecPolicySearchCopyNext)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SecPolicySearchCopyNext_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)SecPolicySearchCopyNext((SecPolicySearchRef)arg0, (SecPolicyRef *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, SecPolicySearchCopyNext_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SecPolicySearchCreate
+JNIEXPORT jint JNICALL OS_NATIVE(SecPolicySearchCreate)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3)
+{
+	jint *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SecPolicySearchCreate_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jint)SecPolicySearchCreate((CSSM_CERT_TYPE)arg0, (CSSM_OID *)arg1, (CSSM_DATA *)arg2, (SecPolicySearchRef *)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, SecPolicySearchCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SecTrustCreateWithCertificates
+JNIEXPORT jint JNICALL OS_NATIVE(SecTrustCreateWithCertificates)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SecTrustCreateWithCertificates_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)SecTrustCreateWithCertificates((CFArrayRef)arg0, (CFTypeRef)arg1, (SecTrustRef *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, SecTrustCreateWithCertificates_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SectRect
 JNIEXPORT jboolean JNICALL OS_NATIVE(SectRect)
 	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jobject arg2)

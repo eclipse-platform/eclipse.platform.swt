@@ -25,7 +25,8 @@ class Safari extends WebBrowser {
 	WebPreferences preferences;
 	SWTWebViewDelegate delegate;
 	boolean loadingText, untrustedText;
-	String lastHoveredLinkURL, lastNavigateURL;
+	String lastHoveredLinkURL, lastNavigateURL, lastPostData;
+	String[] lastHeaders;
 	String html;
 	int /*long*/ identifier;
 	int resourceCount;
@@ -185,6 +186,7 @@ public boolean create (Composite parent, int style) {
 		OS.class_addMethod(delegateClass, OS.sel_webView_windowScriptObjectAvailable_, proc4, "@:@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_callJava, proc5, "@:@@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_callRunBeforeUnloadConfirmPanelWithMessage, proc4, "@:@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_createPanelDidEnd, proc5, "@:@@@"); //$NON-NLS-1$
 		OS.objc_registerClassPair(delegateClass);
 
  		int /*long*/ metaClass = OS.objc_getMetaClass (className);
@@ -249,7 +251,8 @@ public boolean create (Composite parent, int style) {
 					Safari.this.delegate.release();
 					Safari.this.delegate = null;
 					html = null;
-					lastHoveredLinkURL = lastNavigateURL = null;
+					lastHoveredLinkURL = lastNavigateURL = lastPostData = null;
+					lastHeaders = null;
 
 					Enumeration elements = functions.elements ();
 					while (elements.hasMoreElements ()) {
@@ -382,8 +385,10 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 	} else if (sel == OS.sel_webView_runJavaScriptConfirmPanelWithMessage_initiatedByFrame_) {
 		return safari.webView_runJavaScriptConfirmPanelWithMessage(arg0, arg1);
 	} else if (sel == OS.sel_callJava) {
-		id result = safari.callJava (arg0, arg1, arg2);
+		id result = safari.callJava(arg0, arg1, arg2);
 		return result == null ? 0 : result.id;
+	} else if (sel == OS.sel_createPanelDidEnd) {
+		safari.createPanelDidEnd(arg0, arg1, arg2);
 	}
 	return 0;
 }
@@ -543,6 +548,9 @@ public boolean setText(String html, boolean trusted) {
 
 public boolean setUrl(String url, String postData, String[] headers) {
 	html = null;
+	lastNavigateURL = url;
+	lastPostData = postData;
+	lastHeaders = headers;
 
 	if (url.indexOf('/') == 0) {
 		url = PROTOCOL_FILE + url;
@@ -668,26 +676,69 @@ void webView_didFailProvisionalLoadWithError_forFrame(int /*long*/ sender, int /
 
 	NSError nserror = new NSError(error);
 	int /*long*/ errorCode = nserror.code();
-	if (errorCode <= OS.NSURLErrorBadURL) {
-		NSString description = nserror.localizedDescription();
-		if (description != null) {
-			String descriptionString = description.getString();
-			String urlString = null;
-			NSDictionary info = nserror.userInfo();
-			if (info != null) {
-				NSString key = new NSString(OS.NSErrorFailingURLStringKey());
-				id id = info.valueForKey(key);
-				if (id != null) {
-					NSString url = new NSString(id);
-					urlString = url.getString();
+	if (OS.NSURLErrorBadURL < errorCode) return;
+
+	NSURL failingURL = null;
+	NSDictionary info = nserror.userInfo();
+	if (info != null) {
+		id id = info.valueForKey(NSString.stringWith("NSErrorFailingURLKey")); //$NON-NLS-1$
+		if (id != null) failingURL = new NSURL(id);
+	}
+
+	if (failingURL != null && OS.NSURLErrorServerCertificateNotYetValid <= errorCode && errorCode <= OS.NSURLErrorSecureConnectionFailed) {
+		/* handle invalid certificate error */
+		id certificates = info.objectForKey(NSString.stringWith("NSErrorPeerCertificateChainKey")); //$NON-NLS-1$
+
+		int /*long*/[] policySearch = new int /*long*/[1];
+		int /*long*/[] policyRef = new int /*long*/[1];
+		int /*long*/[] trustRef = new int /*long*/[1];
+		boolean success = false;
+		int result = OS.SecPolicySearchCreate(OS.CSSM_CERT_X_509v3, 0, 0, policySearch);
+		if (result == 0 && policySearch[0] != 0) {
+			result = OS.SecPolicySearchCopyNext(policySearch[0], policyRef);
+			if (result == 0 && policyRef[0] != 0) {
+				result = OS.SecTrustCreateWithCertificates(certificates.id, policyRef[0], trustRef);
+				if (result == 0 && trustRef[0] != 0) {
+					SFCertificateTrustPanel panel = SFCertificateTrustPanel.sharedCertificateTrustPanel();
+					String failingUrlString = failingURL.absoluteString().getString();
+					String message = Compatibility.getMessage("SWT_InvalidCert_Message", new Object[] {failingUrlString}); //$NON-NLS-1$
+					panel.setAlternateButtonTitle(NSString.stringWith(Compatibility.getMessage("SWT_Cancel"))); //$NON-NLS-1$
+					panel.setShowsHelp(true);
+					failingURL.retain();
+					NSWindow window = browser.getShell().view.window();
+					panel.beginSheetForWindow(window, delegate, OS.sel_createPanelDidEnd, failingURL.id, trustRef[0], NSString.stringWith(message));
+					success = true;
 				}
 			}
-			String message = urlString != null ? urlString + "\n\n" : ""; //$NON-NLS-1$ //$NON-NLS-2$
-			message += Compatibility.getMessage ("SWT_Page_Load_Failed", new Object[] {descriptionString}); //$NON-NLS-1$
-			MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.ICON_ERROR);
-			messageBox.setMessage(message);
-			messageBox.open();
 		}
+
+		if (trustRef[0] != 0) OS.CFRelease(trustRef[0]);
+		if (policyRef[0] != 0) OS.CFRelease(policyRef[0]);
+		if (policySearch[0] != 0) OS.CFRelease(policySearch[0]);
+		if (success) return;
+	}
+
+	/* handle other types of errors */
+	NSString description = nserror.localizedDescription();
+	if (description != null) {
+		String descriptionString = description.getString();
+		String message = failingURL != null ? failingURL.absoluteString().getString() + "\n\n" : ""; //$NON-NLS-1$ //$NON-NLS-2$
+		message += Compatibility.getMessage ("SWT_Page_Load_Failed", new Object[] {descriptionString}); //$NON-NLS-1$
+		MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.ICON_ERROR);
+		messageBox.setMessage(message);
+		messageBox.open();
+	}
+}
+
+void createPanelDidEnd(int /*long*/ sheet, int /*long*/ returnCode, int /*long*/ contextInfo) {
+	NSURL failingURL = new NSURL(contextInfo);
+	failingURL.autorelease();
+	if (returnCode != OS.NSFileHandlingPanelOKButton) return;	/* nothing more to do */
+
+	int /*long*/ method = OS.class_getClassMethod(OS.class_NSURLRequest, OS.sel_setAllowsAnyHTTPSCertificate);
+	if (method != 0) {
+		OS.objc_msgSend(OS.class_NSURLRequest, OS.sel_setAllowsAnyHTTPSCertificate, 1, failingURL.host().id);
+		setUrl(failingURL.absoluteString().getString(), null, null);
 	}
 }
 

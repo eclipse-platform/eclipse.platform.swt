@@ -52,6 +52,7 @@ public static final int C_WebScriptObject = Cocoa.objc_getClass("WebScriptObject
 public static final int C_WebUndefined = Cocoa.objc_getClass("WebUndefined"); //$NON-NLS-1$
 public static final int C_NSData = Cocoa.objc_getClass("NSData"); //$NON-NLS-1$
 public static final int C_NSFileManager = Cocoa.objc_getClass("NSFileManager"); //$NON-NLS-1$
+public static final int C_SFCertificateTrustPanel = Cocoa.objc_getClass("SFCertificateTrustPanel"); //$NON-NLS-1$
 
 /* Objective-C method selectors */
 public static final int S_absoluteString = Cocoa.sel_registerName("absoluteString"); //$NON-NLS-1$
@@ -60,6 +61,7 @@ public static final int S_addObject = Cocoa.sel_registerName("addObject:"); //$N
 public static final int S_alloc = Cocoa.sel_registerName("alloc"); //$NON-NLS-1$
 public static final int S_arrayWithCapacity = Cocoa.sel_registerName("arrayWithCapacity:"); //$NON-NLS-1$
 public static final int S_autorelease = Cocoa.sel_registerName("autorelease"); //$NON-NLS-1$
+public static final int S_beginSheetForWindow = Cocoa.sel_registerName("beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:trust:message:"); //$NON-NLS-1$
 public static final int S_boolValue = Cocoa.sel_registerName("boolValue"); //$NON-NLS-1$
 public static final int S_cancel = Cocoa.sel_registerName("cancel"); //$NON-NLS-1$
 public static final int S_cancelAuthenticationChallenge = Cocoa.sel_registerName("cancelAuthenticationChallenge:"); //$NON-NLS-1$
@@ -67,12 +69,14 @@ public static final int S_canGoBack = Cocoa.sel_registerName("canGoBack"); //$NO
 public static final int S_canGoForward = Cocoa.sel_registerName("canGoForward"); //$NON-NLS-1$
 public static final int S_canShowMIMEType = Cocoa.sel_registerName("canShowMIMEType:"); //$NON-NLS-1$
 public static final int S_chooseFilename = Cocoa.sel_registerName("chooseFilename:"); //$NON-NLS-1$
+public static final int S_code = Cocoa.sel_registerName("code"); //$NON-NLS-1$
 public static final int S_compare = Cocoa.sel_registerName("compare:"); //$NON-NLS-1$
 public static final int S_cookies = Cocoa.sel_registerName("cookies"); //$NON-NLS-1$
 public static final int S_cookiesWithResponseHeaderFields = Cocoa.sel_registerName("cookiesWithResponseHeaderFields:forURL:"); //$NON-NLS-1$
 public static final int S_cookiesForURL = Cocoa.sel_registerName("cookiesForURL:"); //$NON-NLS-1$
 public static final int S_copy = Cocoa.sel_registerName("copy:"); //$NON-NLS-1$
 public static final int S_count = Cocoa.sel_registerName("count"); //$NON-NLS-1$
+public static final int S_createPanelDidEnd = Cocoa.sel_registerName("createPanelDidEnd:returnCode:contextInfo:"); //$NON-NLS-1$
 public static final int S_credentialWithUser = Cocoa.sel_registerName("credentialWithUser:password:persistence:"); //$NON-NLS-1$
 public static final int S_cut = Cocoa.sel_registerName("cut:"); //$NON-NLS-1$
 public static final int S_dataWithBytes = Cocoa.sel_registerName("dataWithBytes:length:"); //$NON-NLS-1$
@@ -103,6 +107,7 @@ public static final int S_isKindOfClass = Cocoa.sel_registerName("isKindOfClass:
 public static final int S_isSessionOnly = Cocoa.sel_registerName("isSessionOnly"); //$NON-NLS-1$
 public static final int S_loadHTMLStringBaseURL = Cocoa.sel_registerName("loadHTMLString:baseURL:"); //$NON-NLS-1$
 public static final int S_loadRequest = Cocoa.sel_registerName("loadRequest:"); //$NON-NLS-1$
+public static final int S_localizedDescription = Cocoa.sel_registerName("localizedDescription"); //$NON-NLS-1$
 public static final int S_length = Cocoa.sel_registerName("length"); //$NON-NLS-1$
 public static final int S_mainFrame = Cocoa.sel_registerName("mainFrame"); //$NON-NLS-1$
 public static final int S_mainMenu = Cocoa.sel_registerName("mainMenu"); //$NON-NLS-1$
@@ -112,6 +117,7 @@ public static final int S_numberWithBool = Cocoa.sel_registerName("numberWithBoo
 public static final int S_numberWithDouble = Cocoa.sel_registerName("numberWithDouble:"); //$NON-NLS-1$
 public static final int S_numberWithInt = Cocoa.sel_registerName("numberWithInt:"); //$NON-NLS-1$
 public static final int S_objectAtIndex = Cocoa.sel_registerName("objectAtIndex:"); //$NON-NLS-1$
+public static final int S_objectForKey = Cocoa.sel_registerName("objectForKey:"); //$NON-NLS-1$
 public static final int S_pageTitle = Cocoa.sel_registerName("pageTitle"); //$NON-NLS-1$
 public static final int S_password = Cocoa.sel_registerName("password"); //$NON-NLS-1$
 public static final int S_paste = Cocoa.sel_registerName("paste:"); //$NON-NLS-1$
@@ -131,6 +137,8 @@ public static final int S_requestWithURL = Cocoa.sel_registerName("requestWithUR
 public static final int S_request = Cocoa.sel_registerName("request"); //$NON-NLS-1$
 public static final int S_retainCount = Cocoa.sel_registerName("retainCount"); //$NON-NLS-1$
 public static final int S_sender = Cocoa.sel_registerName("sender"); //$NON-NLS-1$
+public static final int S_setAllowsAnyHTTPSCertificate = Cocoa.sel_registerName("setAllowsAnyHTTPSCertificate:forHost:"); //$NON-NLS-1$
+public static final int S_setAlternateButtonTitle = Cocoa.sel_registerName("setAlternateButtonTitle:"); //$NON-NLS-1$
 public static final int S_setApplicationNameForUserAgent = Cocoa.sel_registerName("setApplicationNameForUserAgent:"); //$NON-NLS-1$
 public static final int S_setCachePolicy = Cocoa.sel_registerName("setCachePolicy:"); //$NON-NLS-1$
 public static final int S_setCookie = Cocoa.sel_registerName("setCookie:"); //$NON-NLS-1$
@@ -143,9 +151,11 @@ public static final int S_setJavaScriptEnabled = Cocoa.sel_registerName("setJava
 public static final int S_setMainMenu = Cocoa.sel_registerName("setMainMenu:"); //$NON-NLS-1$
 public static final int S_setPolicyDelegate = Cocoa.sel_registerName("setPolicyDelegate:"); //$NON-NLS-1$
 public static final int S_setResourceLoadDelegate = Cocoa.sel_registerName("setResourceLoadDelegate:"); //$NON-NLS-1$
+public static final int S_setShowsHelp = Cocoa.sel_registerName("setShowsHelp:"); //$NON-NLS-1$
 public static final int S_setStatusText = Cocoa.sel_registerName("setStatusText:"); //$NON-NLS-1$
 public static final int S_setUIDelegate = Cocoa.sel_registerName("setUIDelegate:"); //$NON-NLS-1$
 public static final int S_sharedApplication = Cocoa.sel_registerName("sharedApplication"); //$NON-NLS-1$
+public static final int S_sharedCertificateTrustPanel = Cocoa.sel_registerName("sharedCertificateTrustPanel"); //$NON-NLS-1$
 public static final int S_sharedHTTPCookieStorage = Cocoa.sel_registerName("sharedHTTPCookieStorage"); //$NON-NLS-1$
 public static final int S_sharedHandler = Cocoa.sel_registerName("sharedHandler"); //$NON-NLS-1$
 public static final int S_standardPreferences = Cocoa.sel_registerName("standardPreferences"); //$NON-NLS-1$
@@ -155,6 +165,7 @@ public static final int S_takeStringURLFrom = Cocoa.sel_registerName("takeString
 public static final int S_undefined = Cocoa.sel_registerName("undefined"); //$NON-NLS-1$
 public static final int S_use = Cocoa.sel_registerName("use"); //$NON-NLS-1$
 public static final int S_user = Cocoa.sel_registerName("user"); //$NON-NLS-1$
+public static final int S_userInfo = Cocoa.sel_registerName("userInfo"); //$NON-NLS-1$
 public static final int S_useCredential = Cocoa.sel_registerName("useCredential:forAuthenticationChallenge:"); //$NON-NLS-1$
 public static final int S_valueForKey = Cocoa.sel_registerName("valueForKey:"); //$NON-NLS-1$
 public static final int S_webFrame = Cocoa.sel_registerName("webFrame"); //$NON-NLS-1$
@@ -237,6 +248,8 @@ public static final int NSAlphaNonpremultipliedBitmapFormat = 1 << 1;
 public static final int NSControlKeyMask = 1 << 18;
 public static final int NSDeviceIndependentModifierFlagsMask = 0xffff0000;
 
+public static final int NSFileHandlingPanelOKButton = 1;
+
 public static final int NSMoveToBezierPathElement = 0;
 public static final int NSLineToBezierPathElement = 1;
 public static final int NSCurveToBezierPathElement = 2;
@@ -245,6 +258,9 @@ public static final int NSClosePathBezierPathElement = 3;
 public static final int NSOrderedSame = 0;
 
 public static final int NSURLCredentialPersistenceForSession = 1;
+public static final int NSURLErrorBadURL = -1000;
+public static final int NSURLErrorServerCertificateNotYetValid = -1204;
+public static final int NSURLErrorSecureConnectionFailed = -1200;
 public static final int NSURLRequestReloadIgnoringLocalCacheData = 1;
 
 public static final int NSAllDomainsMask = 0xffff;
@@ -387,6 +403,11 @@ public static final native int objc_msgSend(int object, int selector, int arg0, 
  * @param selector cast=(SEL)
  */
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1, int arg2, int arg3);
+/**
+ * @param object cast=(id)
+ * @param selector cast=(SEL)
+ */
+public static final native int objc_msgSend(int object, int selector, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5);
 /**
  * @param object cast=(id)
  * @param selector cast=(SEL)

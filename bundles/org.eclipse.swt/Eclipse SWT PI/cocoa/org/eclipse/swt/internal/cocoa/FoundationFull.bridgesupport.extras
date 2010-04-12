@@ -915,6 +915,9 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSURL"></retval>
 		</method>
+		<method selector="host" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="isFileURL" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -1042,6 +1045,8 @@
 	<enum name="NSOrderedSame" swt_gen="true"></enum>
 	<enum name="NSURLCredentialPersistenceForSession" swt_gen="true"></enum>
 	<enum name="NSURLErrorBadURL" swt_gen="true"></enum>
+	<enum name="NSURLErrorSecureConnectionFailed" swt_gen="true"></enum>
+	<enum name="NSURLErrorServerCertificateNotYetValid" swt_gen="true"></enum>
 	<enum name="NSURLRequestReloadIgnoringLocalCacheData" swt_gen="true"></enum>
 	<enum name="NSUTF8StringEncoding" swt_gen="true"></enum>
 	<function name="NSEqualRects" swt_gen="true">
