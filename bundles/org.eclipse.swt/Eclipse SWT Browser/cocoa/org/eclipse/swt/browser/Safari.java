@@ -25,8 +25,7 @@ class Safari extends WebBrowser {
 	WebPreferences preferences;
 	SWTWebViewDelegate delegate;
 	boolean loadingText, untrustedText;
-	String lastHoveredLinkURL, lastNavigateURL, lastPostData;
-	String[] lastHeaders;
+	String lastHoveredLinkURL, lastNavigateURL;
 	String html;
 	int /*long*/ identifier;
 	int resourceCount;
@@ -251,8 +250,7 @@ public boolean create (Composite parent, int style) {
 					Safari.this.delegate.release();
 					Safari.this.delegate = null;
 					html = null;
-					lastHoveredLinkURL = lastNavigateURL = lastPostData = null;
-					lastHeaders = null;
+					lastHoveredLinkURL = lastNavigateURL = null;
 
 					Enumeration elements = functions.elements ();
 					while (elements.hasMoreElements ()) {
@@ -549,8 +547,6 @@ public boolean setText(String html, boolean trusted) {
 public boolean setUrl(String url, String postData, String[] headers) {
 	html = null;
 	lastNavigateURL = url;
-	lastPostData = postData;
-	lastHeaders = headers;
 
 	if (url.indexOf('/') == 0) {
 		url = PROTOCOL_FILE + url;
