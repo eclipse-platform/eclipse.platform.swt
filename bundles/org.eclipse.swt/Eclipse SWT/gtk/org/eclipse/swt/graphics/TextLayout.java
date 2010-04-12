@@ -113,13 +113,15 @@ void computeRuns () {
 	char[] chars = null;
 	int segementsLength = segmentsText.length();
 	int nSegments = segementsLength - text.length();
-	int offsetCount = nSegments; 
+	int offsetCount = nSegments;
+	int[] lineOffsets = null; 
 	if ((ascent != -1  || descent != -1) && segementsLength > 0) {
 		PangoRectangle rect = new PangoRectangle();
 		if (ascent != -1) rect.y =  -(ascent  * OS.PANGO_SCALE);
 		rect.height = (Math.max(0, ascent) + Math.max(0, descent)) * OS.PANGO_SCALE;
 		int lineCount = OS.pango_layout_get_line_count(layout);
 		chars = new char[segementsLength + lineCount * 2];
+		lineOffsets = new int [lineCount];
 		int oldPos = 0, lineIndex = 0;
 		PangoLayoutLine line = new PangoLayoutLine();
 		while (lineIndex < lineCount) {
@@ -144,6 +146,7 @@ void computeRuns () {
 			chars[pos + lineIndex * 2] = ZWS;
 			chars[pos + lineIndex * 2 + 1] = ZWNBS;
 			segmentsText.getChars(oldPos, pos, chars,  oldPos + lineIndex * 2);
+			lineOffsets[lineIndex] = pos + lineIndex * 2; 
 			oldPos = pos;
 			lineIndex++;
 		}
@@ -159,11 +162,14 @@ void computeRuns () {
 	invalidOffsets = new int[offsetCount];
 	if (offsetCount > 0) {
 		offsetCount = 0;
+		int lineIndex = 0;
 		int segmentCount = 0;
 		for (int i = 0; i < chars.length; i++) {
 			char c = chars[i];
-			if (c == ZWNBS || c == ZWS) {
-				invalidOffsets[offsetCount++] = i;
+			if (c == ZWS && lineOffsets != null && i == lineOffsets[lineIndex]) {
+				invalidOffsets[offsetCount++] = i;		//ZWS
+				invalidOffsets[offsetCount++] = ++i;	//ZWNBS
+				lineIndex++;
 			} else if (segmentCount < nSegments && i - offsetCount == segments[segmentCount]) {
 				invalidOffsets[offsetCount++] = i;
 				segmentCount++;
