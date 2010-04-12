@@ -31,6 +31,8 @@ import org.eclipse.swt.internal.win32.*;
 public class URLTransfer extends ByteArrayTransfer {
 
 	static URLTransfer _instance = new URLTransfer();
+	static final String CFSTR_INETURLW = "UniformResourceLocatorW"; //$NON-NLS-1$
+	static final int CFSTR_INETURLIDW = registerType(CFSTR_INETURLW);
 	static final String CFSTR_INETURL = "UniformResourceLocator"; //$NON-NLS-1$
 	static final int CFSTR_INETURLID = registerType(CFSTR_INETURL);
 
@@ -62,24 +64,37 @@ public void javaToNative (Object object, TransferData transferData){
 	transferData.result = COM.E_FAIL;
 	// URL is stored as a null terminated byte array
 	String url = ((String)object);
-	int count = url.length();
-	char[] chars = new char[count + 1];
-	url.getChars(0, count, chars, 0);
-	int codePage = OS.GetACP();
-	int cchMultiByte = OS.WideCharToMultiByte(codePage, 0, chars, -1, null, 0, null, null);
-	if (cchMultiByte == 0) {
+	if (transferData.type == CFSTR_INETURLIDW) {
+		int charCount = url.length ();
+		char[] chars = new char[charCount+1];
+		url.getChars (0, charCount, chars, 0);
+		int byteCount = chars.length * 2;
+		int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, byteCount);
+		OS.MoveMemory(newPtr, chars, byteCount);
 		transferData.stgmedium = new STGMEDIUM();
-		transferData.result = COM.DV_E_STGMEDIUM;
-		return;
+		transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
+		transferData.stgmedium.unionField = newPtr;
+		transferData.stgmedium.pUnkForRelease = 0;
+		transferData.result = COM.S_OK;
+	} else if (transferData.type == CFSTR_INETURLID) {
+		int count = url.length();
+		char[] chars = new char[count + 1];
+		url.getChars(0, count, chars, 0);
+		int codePage = OS.GetACP();
+		int cchMultiByte = OS.WideCharToMultiByte(codePage, 0, chars, -1, null, 0, null, null);
+		if (cchMultiByte == 0) {
+			transferData.stgmedium = new STGMEDIUM();
+			transferData.result = COM.DV_E_STGMEDIUM;
+			return;
+		}
+		int /*long*/ lpMultiByteStr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, cchMultiByte);
+		OS.WideCharToMultiByte(codePage, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
+		transferData.stgmedium = new STGMEDIUM();
+		transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
+		transferData.stgmedium.unionField = lpMultiByteStr;
+		transferData.stgmedium.pUnkForRelease = 0;
+		transferData.result = COM.S_OK;
 	}
-	int /*long*/ lpMultiByteStr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, cchMultiByte);
-	OS.WideCharToMultiByte(codePage, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
-	transferData.stgmedium = new STGMEDIUM();
-	transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
-	transferData.stgmedium.unionField = lpMultiByteStr;
-	transferData.stgmedium.pUnkForRelease = 0;
-	transferData.result = COM.S_OK;
-	return;
 }
 
 /**
@@ -104,29 +119,52 @@ public Object nativeToJava(TransferData transferData){
 	if (transferData.result != COM.S_OK) return null;
 	int /*long*/ hMem = stgmedium.unionField;
 	try {
-		int /*long*/ lpMultiByteStr = OS.GlobalLock(hMem);
-		if (lpMultiByteStr == 0) return null;
-		try {
-			int codePage = OS.GetACP();
-			int cchWideChar  = OS.MultiByteToWideChar (codePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, null, 0);
-			if (cchWideChar == 0) return null;
-			char[] lpWideCharStr = new char [cchWideChar - 1];
-			OS.MultiByteToWideChar (codePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
-			return new String(lpWideCharStr);
-		} finally {
-			OS.GlobalUnlock(hMem);
+		if (transferData.type == CFSTR_INETURLIDW) {
+			/* Ensure byteCount is a multiple of 2 bytes */
+			int size = OS.GlobalSize(hMem) / 2 * 2;
+			if (size == 0) return null;
+			char[] chars = new char[size/2];
+			int /*long*/ ptr = OS.GlobalLock(hMem);
+			if (ptr == 0) return null;
+			try {
+				OS.MoveMemory(chars, ptr, size);
+				int length = chars.length;
+				for (int i=0; i<chars.length; i++) {
+					if (chars [i] == '\0') {
+						length = i;
+						break;
+					}
+				}
+				return new String (chars, 0, length);
+			} finally {
+				OS.GlobalUnlock(hMem);	
+			}
+		} else if (transferData.type == CFSTR_INETURLID) {
+			int /*long*/ lpMultiByteStr = OS.GlobalLock(hMem);
+			if (lpMultiByteStr == 0) return null;
+			try {
+				int codePage = OS.GetACP();
+				int cchWideChar  = OS.MultiByteToWideChar (codePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, null, 0);
+				if (cchWideChar == 0) return null;
+				char[] lpWideCharStr = new char [cchWideChar - 1];
+				OS.MultiByteToWideChar (codePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
+				return new String(lpWideCharStr);
+			} finally {
+				OS.GlobalUnlock(hMem);
+			}
 		}
 	} finally {
 		OS.GlobalFree(hMem);
 	}
+	return null;
 }
 
 protected int[] getTypeIds(){
-	return new int[] {CFSTR_INETURLID};
+	return new int[] {CFSTR_INETURLIDW, CFSTR_INETURLID};
 }
 
 protected String[] getTypeNames(){
-	return new String[] {CFSTR_INETURL}; 
+	return new String[] {CFSTR_INETURLW, CFSTR_INETURL}; 
 }
 
 boolean checkURL(Object object) {
