@@ -6709,8 +6709,12 @@ void initializeAccessible() {
 			if (e.textStyle == null) {
 				e.textStyle = new StyleRange(new TextStyle(st.getFont(), st.foreground, st.background));
 			} else {
-				if (e.textStyle.foreground == null) e.textStyle.foreground = st.foreground;
-				if (e.textStyle.background == null) e.textStyle.background = st.background;
+				if (e.textStyle.foreground == null || e.textStyle.background == null) {
+					TextStyle currStyle = e.textStyle;
+					e.textStyle = new StyleRange(new TextStyle(currStyle.font, currStyle.foreground, currStyle.background));
+					if (e.textStyle.foreground == null) e.textStyle.foreground = st.foreground;
+					if (e.textStyle.background == null) e.textStyle.background = st.background;
+				}
 			}
 			
 			int[] ranges = layout.getRanges();
