@@ -283,7 +283,12 @@ class AccessibleFactory {
 	}
 	
 	static int /*long*/ getParentType (int /*long*/ widgetType) {
-		return ((LONG) Factories.get(new LONG(widgetType))).value;
+		LONG type = null;
+		while (widgetType != 0 && (type = (LONG)Factories.get(new LONG(widgetType))) == null) {
+			widgetType = OS.g_type_parent (widgetType);
+		}
+		if (type == null) return 0;
+		return ((LONG)type).value;
 	}
 
 	static int /*long*/ atkObjectFactory_create_accessible (int /*long*/ widget) {
