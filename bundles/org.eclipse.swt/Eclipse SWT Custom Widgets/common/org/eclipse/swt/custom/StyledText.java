@@ -6710,10 +6710,11 @@ void initializeAccessible() {
 				e.textStyle = new StyleRange(new TextStyle(st.getFont(), st.foreground, st.background));
 			} else {
 				if (e.textStyle.foreground == null || e.textStyle.background == null) {
-					TextStyle currStyle = e.textStyle;
-					e.textStyle = new StyleRange(new TextStyle(currStyle.font, currStyle.foreground, currStyle.background));
-					if (e.textStyle.foreground == null) e.textStyle.foreground = st.foreground;
-					if (e.textStyle.background == null) e.textStyle.background = st.background;
+					TextStyle newTS = new StyleRange(new TextStyle(e.textStyle));
+					if (newTS.foreground == null) newTS.foreground = st.foreground;
+					if (newTS.background == null) newTS.background = st.background;
+					if (newTS.font == null) newTS.font = st.getFont();
+					e.textStyle = newTS;
 				}
 			}
 			

@@ -1069,6 +1069,7 @@ public class Accessible {
 	public id internal_accessibilityAttributeValue_forParameter(NSString attribute, id parameter, int childID) {
 		if (attribute.isEqualToString(OS.NSAccessibilityStringForRangeParameterizedAttribute)) return getStringForRangeParameterizedAttribute(parameter, childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityRangeForLineParameterizedAttribute)) return getRangeForLineParameterizedAttribute(parameter, childID);
+		if (attribute.isEqualToString(OS.NSAccessibilityRangeForIndexParameterizedAttribute)) return getRangeForIndexParameterizedAttribute(parameter, childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityLineForIndexParameterizedAttribute)) return getLineForIndexParameterizedAttribute(parameter, childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityBoundsForRangeParameterizedAttribute)) return getBoundsForRangeParameterizedAttribute(parameter, childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityRangeForPositionParameterizedAttribute)) return getRangeForPositionParameterizedAttribute(parameter, childID);
@@ -1169,6 +1170,7 @@ public class Accessible {
 			case ACC.ROLE_HEADING:
 				returnValue.addObject(OS.NSAccessibilityStringForRangeParameterizedAttribute);
 				returnValue.addObject(OS.NSAccessibilityRangeForLineParameterizedAttribute);
+				returnValue.addObject(OS.NSAccessibilityRangeForIndexParameterizedAttribute);
 				returnValue.addObject(OS.NSAccessibilityLineForIndexParameterizedAttribute);
 				returnValue.addObject(OS.NSAccessibilityBoundsForRangeParameterizedAttribute);
 				returnValue.addObject(OS.NSAccessibilityRangeForPositionParameterizedAttribute);
@@ -1311,7 +1313,7 @@ public class Accessible {
 			}			
 
 			NSRange attributeRange = new NSRange();
-			attributeRange.location = event.start;
+			attributeRange.location = event.start - range.location;
 			attributeRange.length = event.end - event.start;
 			
 			if (event.textStyle != null) {
@@ -2123,7 +2125,44 @@ public class Accessible {
 		}
 		return returnValue;
 	}
-	
+
+	id getRangeForIndexParameterizedAttribute (id parameter, int childID) {
+		id returnValue = null;
+		// The parameter is an NSNumber with the character number.
+		NSNumber charNumberObj = new NSNumber(parameter.id);		
+		int charNumber = charNumberObj.intValue();
+		if (accessibleTextExtendedListeners.size() > 0) {
+			AccessibleTextEvent event = new AccessibleTextEvent(this);
+			event.childID = childID;
+			event.start = event.end = 0;
+			event.count = charNumber;
+			event.type = ACC.TEXT_BOUNDARY_CHAR;
+			for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+				AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+				listener.getText(event);
+			}
+			NSRange range = new NSRange();
+			range.location = event.start;
+			range.length = event.end - event.start;
+			returnValue = NSValue.valueWithRange(range);
+		} else {
+//			AccessibleControlEvent event = new AccessibleControlEvent(this);
+//			event.childID = childID;
+//			event.result = null;
+//			for (int i = 0; i < accessibleControlListeners.size(); i++) {
+//				AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+//				listener.getValue(event);
+//			}
+//			if (event.result != null) {
+//				NSRange range = rangeForLineNumber (lineNumber, event.result);
+//				if (range.location != -1) {
+//					returnValue = NSValue.valueWithRange(range);
+//				}
+//			}
+		}
+		return returnValue;
+	}
+
 	id getSelectedTextAttribute (int childID) {
 		id returnValue = NSString.string();
 		if (accessibleTextExtendedListeners.size() > 0) {
@@ -2306,8 +2345,8 @@ public class Accessible {
 			// Marker values -- if -1 after calling getTextAttributes, no one implemented it.
 			event.start = event.end = -1;
 			
-			for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
-				AccessibleAttributeListener listener = (AccessibleAttributeListener) accessibleTextExtendedListeners.elementAt(i);
+			for (int i = 0; i < accessibleAttributeListeners.size(); i++) {
+				AccessibleAttributeListener listener = (AccessibleAttributeListener) accessibleAttributeListeners.elementAt(i);
 				listener.getTextAttributes(event);
 			}
 
