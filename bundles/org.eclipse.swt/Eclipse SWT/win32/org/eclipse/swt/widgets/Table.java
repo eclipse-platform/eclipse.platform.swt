@@ -291,7 +291,7 @@ void _getItems (TableItem [] result, int count) {
 		/* NOTE: Null items will be in the array when keyCount != count */
 		for (int i=0; i<keyCount; i++) {
 			if (keys [i] >= count) break;
-			result [keys [i]] = items [i];
+			result [keys [i]] = items [keys [i]];
 		}
 	}
 }
