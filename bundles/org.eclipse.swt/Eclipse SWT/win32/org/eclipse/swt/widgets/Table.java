@@ -4882,9 +4882,8 @@ boolean setScrollWidth (TableItem item, boolean force) {
 				imageIndent = Math.max (imageIndent, item.imageIndent);
 				hFont = item.fontHandle (0);
 			} else {
-				//TODO - save item in a temporary
-				if (_getItem (index, false) != null) {
-					TableItem tableItem = _getItem (index, false);
+				TableItem tableItem = _getItem (index, false);
+				if (tableItem != null) {
 					string = tableItem.text;
 					imageIndent = Math.max (imageIndent, tableItem.imageIndent);
 					hFont = tableItem.fontHandle (0);
