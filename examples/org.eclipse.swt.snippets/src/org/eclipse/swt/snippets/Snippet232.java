@@ -13,6 +13,9 @@ package org.eclipse.swt.snippets;
 /* 
  * Tree example snippet: show results as a bar chart in tree
  *
+ * For more info on custom-drawing TableItem and TreeItem content see 
+ * http://www.eclipse.org/articles/article.php?file=Article-CustomDrawingTableAndTreeItems/index.html
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  * 
