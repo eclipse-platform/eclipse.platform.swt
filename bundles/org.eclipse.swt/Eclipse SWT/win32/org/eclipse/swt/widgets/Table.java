@@ -257,6 +257,10 @@ TableItem _getItem (int index, boolean create, int count) {
 		if (items [index] != null) return items [index];
 		return items [index] = new TableItem (this, SWT.NONE, -1, false);
 	} else {
+		if ((style & SWT.VIRTUAL) == 0 || !create) {
+			if (keyCount == 0) return null;
+			if (index > keys [keyCount - 1]) return null;
+		}
 		int keyIndex = binarySearch (keys, 0, keyCount, index); 
 		if ((style & SWT.VIRTUAL) == 0 || !create) {
 			return keyIndex < 0 ? null : items [keyIndex]; 
