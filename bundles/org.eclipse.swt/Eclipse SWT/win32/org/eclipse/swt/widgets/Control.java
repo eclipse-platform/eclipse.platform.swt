@@ -445,6 +445,20 @@ public void addTraverseListener (TraverseListener listener) {
 	addListener (SWT.Traverse,typedListener);
 }
 
+int binarySearch (int [] indices, int start, int end, int index) {
+	int low = start, high = end - 1;
+	while (low <= high) {
+		int mid = (low + high) >>> 1;
+		if (indices [mid] == index) return mid;
+		if (indices [mid] < index) {
+			low = mid + 1;
+		} else {
+			high = mid - 1;
+		}
+	}
+	return -low - 1;
+}
+
 int /*long*/ borderHandle () {
 	return handle;
 }

@@ -387,21 +387,6 @@ void _setItemCount (int count, int itemCount) {
 	}
 }
 
-//TODO - move this method to the class that contains sort()
-int binarySearch (int [] indices, int start, int end, int index) {
-	int low = start, high = end - 1;
-	while (low <= high) {
-		int mid = (low + high) >>> 1;
-		if (indices [mid] == index) return mid;
-		if (indices [mid] < index) {
-			low = mid + 1;
-		} else {
-			high = mid - 1;
-		}
-	}
-	return -low - 1;
-}
-
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the user changes the receiver's selection, by sending
