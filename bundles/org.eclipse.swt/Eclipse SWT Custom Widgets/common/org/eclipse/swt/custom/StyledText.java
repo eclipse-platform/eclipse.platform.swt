@@ -6707,14 +6707,14 @@ void initializeAccessible() {
 			
 			// If no override info available, use defaults. Don't supply default colors, though.
 			if (e.textStyle == null) {
-				e.textStyle = new StyleRange(new TextStyle(st.getFont(), st.foreground, st.background));
+				e.textStyle = new TextStyle(st.getFont(), st.foreground, st.background);
 			} else {
 				if (e.textStyle.foreground == null || e.textStyle.background == null) {
-					TextStyle newTS = new StyleRange(new TextStyle(e.textStyle));
-					if (newTS.foreground == null) newTS.foreground = st.foreground;
-					if (newTS.background == null) newTS.background = st.background;
-					if (newTS.font == null) newTS.font = st.getFont();
-					e.textStyle = newTS;
+					TextStyle textStyle = new TextStyle(e.textStyle);
+					if (textStyle.foreground == null) textStyle.foreground = st.foreground;
+					if (textStyle.background == null) textStyle.background = st.background;
+					if (textStyle.font == null) textStyle.font = st.getFont();
+					e.textStyle = textStyle;
 				}
 			}
 			
