@@ -41,6 +41,8 @@ public final class Font extends Resource {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int /*long*/ handle;
 	
@@ -213,7 +215,7 @@ public FontData[] getFontData() {
  * @param device the device on which to allocate the color
  * @param handle the handle for the font
  * 
- * @private
+ * @noreference This method is not intended to be referenced by clients.
  */
 public static Font gtk_new(Device device, int /*long*/ handle) {
 	Font font = new Font(device);

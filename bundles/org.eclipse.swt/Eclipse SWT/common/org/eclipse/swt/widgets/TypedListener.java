@@ -46,6 +46,8 @@ public class TypedListener implements Listener {
  * </p>
  *
  * @param listener the event listener to store in the receiver
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public TypedListener (SWTEventListener listener) {
 	eventListener = listener;
@@ -61,6 +63,8 @@ public TypedListener (SWTEventListener listener) {
  * </p>
  *
  * @return the receiver's event listener
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public SWTEventListener getEventListener () {
 	return eventListener;
@@ -75,6 +79,8 @@ public SWTEventListener getEventListener () {
  * referenced from application code.
  * </p>
  * @param e the event to handle
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public void handleEvent (Event e) {
 	switch (e.type) {

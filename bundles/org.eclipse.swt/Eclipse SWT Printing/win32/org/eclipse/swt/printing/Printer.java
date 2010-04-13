@@ -47,6 +47,8 @@ public final class Printer extends Device {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int /*long*/ handle;
 
@@ -268,6 +270,8 @@ protected void create(DeviceData deviceData) {
  *
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public int /*long*/ internal_new_GC(GCData data) {
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -298,6 +302,8 @@ public int /*long*/ internal_new_GC(GCData data) {
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC(int /*long*/ hDC, GCData data) {
 	if (data != null) isGCCreated = false;

@@ -66,6 +66,8 @@ public final class GC extends Resource {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int handle;
 	
@@ -3101,8 +3103,9 @@ public Pattern getForegroundPattern() {
  * 
  * @see GCData
  * 
- * @since 3.2
  * @noreference This method is not intended to be referenced by clients.
+ * 
+ * @since 3.2
  */
 public GCData getGCData() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -3566,6 +3569,8 @@ public void setAntialias(int antialias) {
  * @param data the data for the receiver.
  *
  * @return a new <code>GC</code>
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public static GC motif_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
@@ -3588,6 +3593,8 @@ public static GC motif_new(Drawable drawable, GCData data) {
  * @param data the data for the receiver.
  *
  * @return a new <code>GC</code>
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public static GC motif_new(int xGC, GCData data) {
 	GC gc = new GC();

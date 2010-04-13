@@ -133,6 +133,8 @@ public class Accessible {
 	 *
 	 * @param control the control to get the accessible object for
 	 * @return the platform specific accessible object
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
 	 */
 	public static Accessible internal_new_Accessible(Control control) {
 		return new Accessible(control);
@@ -443,6 +445,8 @@ public class Accessible {
 	 * available on all platforms, and should never be called from
 	 * application code.
 	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
 	 */
 	public void internal_dispose_Accessible() {
 		if (axuielementref != 0) {
@@ -464,6 +468,8 @@ public class Accessible {
 	 * available on all platforms, and should never be called from
 	 * application code.
 	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
 	 */
 	public int internal_kEventAccessibleGetChildAtPoint (int nextHandler, int theEvent, int userData) {
 		if (axuielementref != 0) {
@@ -506,6 +512,8 @@ public class Accessible {
 	 * available on all platforms, and should never be called from
 	 * application code.
 	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
 	 */
 	public int internal_kEventAccessibleGetFocusedChild (int nextHandler, int theEvent, int userData) {
 		if (axuielementref != 0) {
@@ -566,6 +574,8 @@ public class Accessible {
 	 * available on all platforms, and should never be called from
 	 * application code.
 	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
 	 */
 	public int internal_kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
 		int code = userData; // userData flags whether nextHandler has already been called
@@ -622,6 +632,8 @@ public class Accessible {
 	 * available on all platforms, and should never be called from
 	 * application code.
 	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
 	 */
 	public int internal_kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
 		if (axuielementref != 0) {

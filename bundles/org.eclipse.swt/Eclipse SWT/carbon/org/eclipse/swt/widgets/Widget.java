@@ -1566,6 +1566,8 @@ public void removeListener (int eventType, Listener handler) {
  *
  * @see Listener
  * @see #addListener
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 protected void removeListener (int eventType, SWTEventListener handler) {
 	checkWidget();

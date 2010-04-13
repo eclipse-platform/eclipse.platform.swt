@@ -377,6 +377,8 @@ public static Shell gtk_new (Display display, int /*long*/ handle) {
  * @param handle the handle for the shell
  * @return a new shell object containing the specified display and handle
  * 
+ * @noreference This method is not intended to be referenced by clients.
+ * 
  * @since 3.3
  */
 public static Shell internal_new (Display display, int /*long*/ handle) {

@@ -36,6 +36,8 @@ public final class FontMetrics {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public TEXTMETRIC handle;
 	
@@ -173,6 +175,8 @@ public int hashCode() {
  *
  * @param handle the <code>TEXTMETRIC</code> containing information about a font
  * @return a new font metrics object containing the specified <code>TEXTMETRIC</code>
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public static FontMetrics win32_new(TEXTMETRIC handle) {
 	FontMetrics fontMetrics = new FontMetrics();

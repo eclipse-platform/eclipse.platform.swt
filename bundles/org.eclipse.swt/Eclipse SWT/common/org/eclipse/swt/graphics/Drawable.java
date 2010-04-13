@@ -41,6 +41,8 @@ public interface Drawable {
  *
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
  
 public int /*long*/ internal_new_GC (GCData data);
@@ -57,6 +59,8 @@ public int /*long*/ internal_new_GC (GCData data);
  *
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data 
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC (int /*long*/ handle, GCData data);
 

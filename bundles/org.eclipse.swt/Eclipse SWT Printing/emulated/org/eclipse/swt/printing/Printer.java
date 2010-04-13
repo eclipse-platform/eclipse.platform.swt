@@ -128,6 +128,8 @@ public Printer(PrinterData data) {
  *
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public int internal_new_GC(GCData data) {
 	return 0;
@@ -145,6 +147,8 @@ public int internal_new_GC(GCData data) {
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC(int xGC, GCData data) {
 }

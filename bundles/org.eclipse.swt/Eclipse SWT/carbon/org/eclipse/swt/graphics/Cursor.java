@@ -54,6 +54,8 @@ public final class Cursor extends Resource {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int handle;
 
@@ -634,7 +636,7 @@ public String toString () {
  * @param device the device on which to allocate the color
  * @param handle the handle for the cursor
  * 
- * @private
+ * @noreference This method is not intended to be referenced by clients.
  */
 public static Cursor carbon_new(Device device, int handle) {
 	Cursor cursor = new Cursor(device);

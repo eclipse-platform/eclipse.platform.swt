@@ -53,6 +53,8 @@ public abstract class Widget {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int handle;
 	int style, state;
@@ -903,6 +905,8 @@ public void removeListener (int eventType, Listener handler) {
  *
  * @see Listener
  * @see #addListener
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 protected void removeListener (int eventType, SWTEventListener handler) {
 	checkWidget();

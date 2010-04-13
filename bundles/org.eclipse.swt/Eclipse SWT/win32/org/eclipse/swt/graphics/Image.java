@@ -79,6 +79,8 @@ public final class Image extends Resource implements Drawable {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int type;
 	
@@ -91,6 +93,8 @@ public final class Image extends Resource implements Drawable {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int /*long*/ handle;
 	
@@ -1967,6 +1971,8 @@ void init(ImageData i) {
  *
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public int /*long*/ internal_new_GC (GCData data) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -2010,7 +2016,9 @@ public int /*long*/ internal_new_GC (GCData data) {
  * </p>
  *
  * @param hDC the platform specific GC handle
- * @param data the platform specific GC data 
+ * @param data the platform specific GC data
+ * 
+ *  @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC (int /*long*/ hDC, GCData data) {
 	OS.DeleteDC(hDC);
@@ -2124,6 +2132,8 @@ public String toString () {
  * @param type the type of the image (<code>SWT.BITMAP</code> or <code>SWT.ICON</code>)
  * @param handle the OS handle for the image
  * @return a new image object containing the specified device, type and handle
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public static Image win32_new(Device device, int type, int /*long*/ handle) {
 	Image image = new Image(device);

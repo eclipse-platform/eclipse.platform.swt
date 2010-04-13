@@ -12,17 +12,43 @@ package org.eclipse.swt.graphics;
 
 
 public class DeviceData {
-	/*
-	* The following fields are platform dependent.
-	* <p>
-	* <b>IMPORTANT:</b> These fields are <em>not</em> part of the SWT
-	* public API. They are marked public only so that they can be shared
-	* within the packages provided by SWT. They are not available on all
-	* platforms and should never be accessed from application code.
-	* </p>
-	*/
+	/**
+	 * This field is platform dependent.
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked protected only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
+	 */
 	public String display_name;
+
+	/**
+	 * This field is platform dependent.
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked protected only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
+	 */
 	public String application_name;
+
+	/**
+	 * This field is platform dependent.
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked protected only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
+	 */
 	public String application_class;
 
 	/*

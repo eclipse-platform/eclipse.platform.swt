@@ -217,6 +217,8 @@ public OleControlSite(Composite parent, int style, String progId) {
  *     <li>ERROR_CANNOT_OPEN_FILE when failed to open file
  * </ul>
  * 
+ * @noreference This method is not intended to be referenced by clients.
+ * 
  * @since 3.5
  */
 public OleControlSite(Composite parent, int style, String progId, File file) {

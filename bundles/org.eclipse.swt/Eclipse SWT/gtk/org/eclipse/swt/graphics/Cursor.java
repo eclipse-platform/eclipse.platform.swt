@@ -51,6 +51,8 @@ public final class Cursor extends Resource {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int /*long*/ handle;
 
@@ -477,7 +479,7 @@ public boolean equals(Object object) {
  * @param device the device on which to allocate the color
  * @param handle the handle for the cursor
  * 
- * @private
+ * @noreference This method is not intended to be referenced by clients.
  */
 public static Cursor gtk_new(Device device, int /*long*/ handle) {
 	Cursor cursor = new Cursor(device);

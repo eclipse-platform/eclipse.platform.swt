@@ -367,6 +367,8 @@ public Shell (Shell parent, int style) {
  * @param display the display for the shell
  * @param handle the handle for the shell
  * @return a new shell object containing the specified display and handle
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public static Shell wpf_new (Display display, int handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, true);
@@ -386,6 +388,8 @@ public static Shell wpf_new (Display display, int handle) {
  * @param display the display for the shell
  * @param handle the handle for the shell
  * @return a new shell object containing the specified display and handle
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  * 
  * @since 3.3
  */

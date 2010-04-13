@@ -806,6 +806,8 @@ boolean filters (int eventType) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public Widget findWidget (int handle) {
 	checkDevice ();
@@ -831,6 +833,8 @@ public Widget findWidget (int handle) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  * 
  * @since 3.1
  */
@@ -1698,6 +1702,8 @@ public Thread getThread () {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
  * </ul>
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public int internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
@@ -1811,6 +1817,8 @@ void HandleOperationPosted (int sender, int e) {
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC (int dc, GCData data) {
 	//TODO - the wrong drawing context was created

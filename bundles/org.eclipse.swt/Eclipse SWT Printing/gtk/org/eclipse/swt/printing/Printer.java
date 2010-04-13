@@ -367,6 +367,8 @@ public Font getSystemFont () {
  *
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public int /*long*/ internal_new_GC(GCData data) {
 	GdkVisual visual = new GdkVisual ();
@@ -407,6 +409,8 @@ public int /*long*/ internal_new_GC(GCData data) {
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC(int /*long*/ gdkGC, GCData data) {
 	if (data != null) isGCCreated = false;

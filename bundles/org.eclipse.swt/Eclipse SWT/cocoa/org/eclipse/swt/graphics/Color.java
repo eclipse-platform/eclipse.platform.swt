@@ -40,6 +40,8 @@ public final class Color extends Resource {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public float /*double*/ [] handle;
 
@@ -216,7 +218,7 @@ public RGB getRGB () {
  * @param device the device on which to allocate the color
  * @param handle the handle for the color
  * 
- * @private
+ * @noreference This method is not intended to be referenced by clients.
  */
 public static Color cocoa_new(Device device, float /*double*/ [] rgbColor) {
 	Color color = new Color(device);

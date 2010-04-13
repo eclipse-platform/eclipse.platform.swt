@@ -76,6 +76,8 @@ public final class Image extends Resource implements Drawable {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int type;
 	
@@ -88,6 +90,8 @@ public final class Image extends Resource implements Drawable {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public NSImage handle;
 	
@@ -773,7 +777,7 @@ public ImageData getImageData() {
  * @param handle the OS handle for the image
  * @param data the OS data for the image
  *
- * @private
+ * @noreference This method is not intended to be referenced by clients.
  */
 public static Image cocoa_new(Device device, int type, NSImage nsImage) {
 	Image image = new Image(device);
@@ -1098,6 +1102,8 @@ void initNative(String filename) {
  *
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public int /*long*/ internal_new_GC (GCData data) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -1154,6 +1160,8 @@ public int /*long*/ internal_new_GC (GCData data) {
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC (int /*long*/ context, GCData data) {
 	NSAutoreleasePool pool = null;

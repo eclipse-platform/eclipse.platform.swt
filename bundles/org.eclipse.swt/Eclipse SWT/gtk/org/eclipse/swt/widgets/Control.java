@@ -2995,6 +2995,8 @@ void gtk_widget_size_request (int /*long*/ widget, GtkRequisition requisition) {
  *
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public int /*long*/ internal_new_GC (GCData data) {
 	checkWidget ();
@@ -3037,7 +3039,9 @@ int /*long*/ imHandle () {
  * </p>
  *
  * @param hDC the platform specific GC handle
- * @param data the platform specific GC data 
+ * @param data the platform specific GC data
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC (int /*long*/ gdkGC, GCData data) {
 	checkWidget ();

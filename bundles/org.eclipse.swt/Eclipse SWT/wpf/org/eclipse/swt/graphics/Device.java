@@ -501,6 +501,8 @@ protected void init () {
  *
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public abstract int internal_new_GC (GCData data);
 
@@ -516,6 +518,8 @@ public abstract int internal_new_GC (GCData data);
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public abstract void internal_dispose_GC (int hDC, GCData data);
 

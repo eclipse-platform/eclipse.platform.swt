@@ -51,6 +51,8 @@ public final class FontData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public String fontFamily;
 	
@@ -63,6 +65,8 @@ public final class FontData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int style;
 
@@ -75,6 +79,8 @@ public final class FontData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */	
 	public int weight;
 	
@@ -87,6 +93,8 @@ public final class FontData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int stretch;
 	
@@ -99,6 +107,8 @@ public final class FontData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public int height;
 	
@@ -526,6 +536,8 @@ public String toString() {
  * @param data the <code>LOGFONT</code> for the font data
  * @param height the height of the font data
  * @return a new font data object containing the specified <code>LOGFONT</code> and height
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  */
 public static FontData wpf_new(String fontFamily, int style, int weight, int stretch, int height) {
 	FontData data = new FontData();

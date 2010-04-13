@@ -55,6 +55,8 @@ public final class Variant {
  * @param pVarDest destination pointer to a variant
  * @param varSrc source <code>Variant</code>
  *
+ * @noreference This method is not intended to be referenced by clients.
+ *
  * @since 3.3
  */
 public static void win32_copy (int /*long*/ pVarDest, Variant varSrc) {
@@ -75,6 +77,8 @@ public static void win32_copy (int /*long*/ pVarDest, Variant varSrc) {
  * @param pVariant pointer to a variant
  *
  * @return a new <code>Variant</code>
+ * 
+ * @noreference This method is not intended to be referenced by clients.
  *
  * @since 3.3
  */
