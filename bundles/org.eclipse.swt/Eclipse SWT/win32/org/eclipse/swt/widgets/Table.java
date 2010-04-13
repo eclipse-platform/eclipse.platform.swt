@@ -72,8 +72,9 @@ import org.eclipse.swt.events.*;
 
 public class Table extends Composite {
 	TableItem [] items;
+	int [] keys;
 	TableColumn [] columns;
-	int columnCount, customCount;
+	int columnCount, customCount, keyCount;
 	ImageList imageList, headerImageList;
 	TableItem currentItem;
 	TableColumn sortColumn;
@@ -95,6 +96,7 @@ public class Table extends Composite {
 	static final int V_SCROLL_LIMIT = 16;
 	static final int DRAG_IMAGE_SIZE = 301;
 	static final boolean EXPLORER_THEME = true;
+	static boolean COMPRESS_ITEMS = true;
 	static final int /*long*/ TableProc;
 	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
 	static {
@@ -155,10 +157,249 @@ void _addListener (int eventType, Listener listener) {
 	}
 }
 
+boolean _checkGrow (int count) {
+	//TODO - code could be shared but it would mix keyed and non-keyed logic
+	if (keys == null) {
+		if (count == items.length) {
+			/*
+			* Grow the array faster when redraw is off or the
+			* table is not visible.  When the table is painted,
+			* the items array is resized to be smaller to reduce
+			* memory usage.
+			*/
+			boolean small = getDrawing () && OS.IsWindowVisible (handle);
+			int length = small ? items.length + 4 : Math.max (4, items.length * 3 / 2);
+			TableItem [] newItems = new TableItem [length];
+			System.arraycopy (items, 0, newItems, 0, items.length);
+			items = newItems;
+		}
+	} else {
+		//TODO - don't shrink when count is very small (ie. 2 or 4 elements)?
+		//TODO - why? if setItemCount(1000000) is used after a shrink, then we won't compress
+		//TODO - get rid of ignoreShrink?
+		if (!ignoreShrink && keyCount > count / 2) {
+			boolean small = getDrawing () && OS.IsWindowVisible (handle);
+			int length = small ? count + 4 : Math.max (4, count * 3 / 2);
+			TableItem [] newItems = new TableItem [length];
+			for (int i=0; i<keyCount; i++) {
+				newItems [keys [i]] = items [i];
+			}
+			items = newItems;
+			keys = null;
+			keyCount = 0;
+			return true;
+		} else {
+			//TODO - grow by page size or screen height?
+			//TODO - experiment to determine an optimal growth rate for keys
+			if (keyCount == keys.length) {
+				boolean small = getDrawing () && OS.IsWindowVisible (handle);
+				int length = small ? keys.length + 4 : Math.max (4, keys.length * 3 / 2);
+				int [] newKeys = new int [length];
+				System.arraycopy (keys, 0, newKeys, 0, keys.length);
+				keys = newKeys;
+				TableItem [] newItems = new TableItem [length];
+				System.arraycopy (items, 0, newItems, 0, items.length);
+				items = newItems;
+			}
+		}
+	}
+	return false;
+}
+
+void _checkShrink () {
+	//TODO - code could be shared but it would mix keyed and non-keyed logic
+	//TODO - move ignoreShrink test back to the caller
+	if (keys == null) {
+		if (!ignoreShrink) {
+			/* Resize the item array to match the item count */
+			int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+			if (items.length > 4 && items.length - count > 3) {
+				int length = Math.max (4, (count + 3) / 4 * 4);
+				TableItem [] newItems = new TableItem [length];
+				System.arraycopy (items, 0, newItems, 0, count);
+				items = newItems;
+			}
+		}
+	} else {
+		if (!ignoreShrink) {
+			if (keys.length > 4 && keys.length - keyCount > 3) {
+				int length = Math.max (4, (keyCount + 3) / 4 * 4);
+				int [] newKeys = new int [length];
+				System.arraycopy (keys, 0, newKeys, 0, keyCount);
+				keys = newKeys;
+				TableItem [] newItems = new TableItem [length];
+				System.arraycopy (items, 0, newItems, 0, keyCount);
+				items = newItems;
+			}
+		}
+	}
+}
+
+void _clearItems () {
+	items = null;
+	keys = null;
+	keyCount = 0;
+}
+
 TableItem _getItem (int index) {
-	if ((style & SWT.VIRTUAL) == 0) return items [index];
-	if (items [index] != null) return items [index];
-	return items [index] = new TableItem (this, SWT.NONE, -1, false);
+	return _getItem (index, true);
+}
+
+//TODO - check senders who have count (watch methods that change the count)
+TableItem _getItem (int index, boolean create) {
+	return _getItem (index, create, -1);
+}
+
+TableItem _getItem (int index, boolean create, int count) {
+	//TODO - code could be shared but it would mix keyed and non-keyed logic
+	if (keys == null) {
+		if ((style & SWT.VIRTUAL) == 0 || !create) return items [index];
+		if (items [index] != null) return items [index];
+		return items [index] = new TableItem (this, SWT.NONE, -1, false);
+	} else {
+		int keyIndex = binarySearch (keys, 0, keyCount, index); 
+		if ((style & SWT.VIRTUAL) == 0 || !create) {
+			return keyIndex < 0 ? null : items [keyIndex]; 
+		}
+        if (keyIndex < 0) {
+        	if (count == -1) {
+        		count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+        	}
+        	//TODO - _checkGrow() doesn't return a value, check keys == null instead
+	        if (_checkGrow (count)) {
+	    		if (items [index] != null) return items [index];
+	    		return items [index] = new TableItem (this, SWT.NONE, -1, false);
+	        }
+	        keyIndex = -keyIndex - 1;
+	        if (keyIndex < keyCount) { 
+	        	System.arraycopy(keys, keyIndex, keys, keyIndex + 1, keyCount - keyIndex); 
+	        	System.arraycopy(items, keyIndex, items, keyIndex + 1, keyCount - keyIndex); 
+	        } 
+	        keyCount++; 
+	        keys [keyIndex] = index; 
+        } else {
+    		if (items [keyIndex] != null) return items [keyIndex];
+        }
+        return items [keyIndex] = new TableItem (this, SWT.NONE, -1, false);
+	}
+}
+
+void _getItems (TableItem [] result, int count) {
+	if (keys == null) {
+		System.arraycopy (items, 0, result, 0, count);
+	} else {
+		/* NOTE: Null items will be in the array when keyCount != count */
+		for (int i=0; i<keyCount; i++) {
+			if (keys [i] >= count) break;
+			result [keys [i]] = items [i];
+		}
+	}
+}
+
+boolean _hasItems () {
+	return items != null;
+}
+
+void _initItems () {
+	items = new TableItem [4];
+	if (COMPRESS_ITEMS) {
+		if ((style & SWT.VIRTUAL) != 0) {
+			keyCount = 0;
+			keys = new int [4];
+		}
+	}
+}
+
+/* NOTE: The array has already been grown to have space for the new item */
+void _insertItem (int index, TableItem item, int count) {
+	if (keys == null) {
+		System.arraycopy (items, index, items, index + 1, count - index);
+		items [index] = item;
+	} else {
+		int keyIndex = binarySearch (keys, 0, keyCount, index); 
+        if (keyIndex < 0) keyIndex = -keyIndex - 1;
+        System.arraycopy(keys, keyIndex, keys, keyIndex + 1, keyCount - keyIndex); 
+        keys [keyIndex] = index;
+        System.arraycopy(items, keyIndex, items, keyIndex + 1, keyCount - keyIndex); 
+        items [keyIndex] = item;
+        keyCount++;
+        for (int i=keyIndex + 1; i<keyCount; i++) keys[i]++;
+	}
+}
+
+void _removeItem (int index, int count) {
+	if (keys == null) {
+		System.arraycopy (items, index + 1, items, index, --count - index);
+		items [count] = null;
+	} else {
+		int keyIndex = binarySearch (keys, 0, keyCount, index); 
+        if (keyIndex < 0) {
+        	keyIndex = -keyIndex - 1;
+        } else {
+        	--keyCount;
+    		System.arraycopy (keys, keyIndex + 1, keys, keyIndex, keyCount - keyIndex);
+    		keys [keyCount] = 0;
+    		System.arraycopy (items, keyIndex + 1, items, keyIndex, keyCount - keyIndex);
+    		items [keyCount] = null;
+        }
+        for (int i=keyIndex; i<keyCount; i++) --keys[i];
+	}
+}
+
+/* NOTE: Removes from start to index - 1 */
+void _removeItems (int start, int index, int count) {
+	if (keys == null) {
+		System.arraycopy (items, index, items, start, count - index);
+		for (int i=count-(index-start); i<count; i++) items [i] = null;
+	} else {
+		int end = index;
+		int left = binarySearch (keys, 0, keyCount, start);
+		if (left < 0) left = -left - 1;
+		int right = binarySearch (keys, left, keyCount, end);
+		if (right < 0) right = -right - 1;
+		//TODO - optimize when left and right are the same
+		System.arraycopy (keys, right, keys, left, keyCount - right);
+		for (int i=keyCount-(right-left); i<keyCount; i++) keys [i] = 0;
+		System.arraycopy (items, right, items, left, keyCount - right);
+		for (int i=keyCount-(right-left); i<keyCount; i++) items [i] = null;
+		keyCount -= (right - left);
+		for (int i=left; i<keyCount; i++) keys[i] -= (right - left);
+	}
+}
+
+void _setItemCount (int count, int itemCount) {
+	if (keys == null) {
+		int length = Math.max (4, (count + 3) / 4 * 4);
+		TableItem [] newItems = new TableItem [length];
+		System.arraycopy (items, 0, newItems, 0, Math.min (count, itemCount));
+		items = newItems;
+	} else {
+		int index = Math.min (count, itemCount);
+		keyCount = binarySearch (keys, 0, keyCount, index); 
+	    if (keyCount < 0) keyCount = -keyCount - 1;
+	    int length = Math.max (4, (keyCount + 3) / 4 * 4);
+	    int [] newKeys = new int [length];
+		System.arraycopy (keys, 0, newKeys, 0, keyCount);
+		keys = newKeys;
+		TableItem [] newItems = new TableItem [length];
+		System.arraycopy (items, 0, newItems, 0, keyCount);
+		items = newItems;
+	}
+}
+
+//TODO - move this method to the class that contains sort()
+int binarySearch (int [] indices, int start, int end, int index) {
+	int low = start, high = end - 1;
+	while (low <= high) {
+		int mid = (low + high) >>> 1;
+		if (indices [mid] == index) return mid;
+		if (indices [mid] < index) {
+			low = mid + 1;
+		} else {
+			high = mid - 1;
+		}
+	}
+	return -low - 1;
 }
 
 /**
@@ -749,6 +990,8 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*lo
 	* TVM_INSERTITEM calls NM_CUSTOMDRAW before the new item
 	* has been added to the array.  The fix is to check for
 	* null.
+	* 
+	* NOTE: Force the item to be created if it does not exist.
 	*/
 	TableItem item = _getItem ((int)/*64*/nmcd.dwItemSpec);
 	if (item == null || item.isDisposed ()) return null;
@@ -978,7 +1221,7 @@ public void clear (int index) {
 	checkWidget ();
 	int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	TableItem item = items [index];
+	TableItem item = _getItem (index, false);
 	if (item != null) {
 		if (item != currentItem) item.clear ();
 		/*
@@ -1043,7 +1286,7 @@ public void clear (int start, int end) {
 		LVITEM lvItem = null;
 		boolean cleared = false;
 		for (int i=start; i<=end; i++) {
-			TableItem item = items [i];
+			TableItem item = _getItem (i, false);
 			if (item != null) {
 				if (item != currentItem) {
 					cleared = true;
@@ -1076,7 +1319,7 @@ public void clear (int start, int end) {
 			if (currentItem == null && getDrawing () && OS.IsWindowVisible (handle)) {
 				OS.SendMessage (handle, OS.LVM_REDRAWITEMS, start, end);
 			}
-			TableItem item = start == end ? items [start] : null; 
+			TableItem item = start == end ? _getItem (start, false) : null; 
 			setScrollWidth (item, false);
 		}
 	}
@@ -1118,7 +1361,7 @@ public void clear (int [] indices) {
 	boolean cleared = false;
 	for (int i=0; i<indices.length; i++) {
 		int index = indices [i];
-		TableItem item = items [index];
+		TableItem item = _getItem (index, false);
 		if (item != null) {
 			if (item != currentItem) {
 				cleared = true;
@@ -1175,7 +1418,7 @@ public void clearAll () {
 	boolean cleared = false;
 	int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	for (int i=0; i<count; i++) {
-		TableItem item = items [i];
+		TableItem item = _getItem (i, false);
 		if (item != null) {
 			if (item != currentItem) {
 				cleared = true;
@@ -1423,7 +1666,7 @@ void createItem (TableColumn column, int index) {
 	}
 	int itemCount = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	for (int i=0; i<itemCount; i++) {
-		TableItem item = items [i];
+		TableItem item = _getItem (i, false);
 		if (item != null) {
 			String [] strings = item.strings;
 			if (strings != null) {
@@ -1577,19 +1820,7 @@ void createItem (TableColumn column, int index) {
 void createItem (TableItem item, int index) {
 	int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
-	if (count == items.length) {
-		/*
-		* Grow the array faster when redraw is off or the
-		* table is not visible.  When the table is painted,
-		* the items array is resized to be smaller to reduce
-		* memory usage.
-		*/
-		boolean small = getDrawing () && OS.IsWindowVisible (handle);
-		int length = small ? items.length + 4 : Math.max (4, items.length * 3 / 2);
-		TableItem [] newItems = new TableItem [length];
-		System.arraycopy (items, 0, newItems, 0, items.length);
-		items = newItems;
-	}
+	_checkGrow (count);
 	LVITEM lvItem = new LVITEM ();
 	lvItem.mask = OS.LVIF_TEXT | OS.LVIF_IMAGE;
 	lvItem.iItem = index;
@@ -1612,8 +1843,7 @@ void createItem (TableItem item, int index) {
 	int result = (int)/*64*/OS.SendMessage (handle, OS.LVM_INSERTITEM, 0, lvItem);
 	ignoreSelect = ignoreShrink = false;
 	if (result == -1) error (SWT.ERROR_ITEM_NOT_ADDED);
-	System.arraycopy (items, index, items, index + 1, count - index);
-	items [index] = item;
+	_insertItem (index, item, count);
 	setDeferResize (false);
 	
 	/* Resize to show the first item */
@@ -1623,7 +1853,7 @@ void createItem (TableItem item, int index) {
 void createWidget () {
 	super.createWidget ();
 	itemHeight = hotIndex = -1;
-	items = new TableItem [4];
+	_initItems ();
 	columns = new TableColumn [4];
 }
 
@@ -1853,7 +2083,7 @@ void destroyItem (TableColumn column) {
 	columns [columnCount] = null;
 	int itemCount = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	for (int i=0; i<itemCount; i++) {
-		TableItem item = items [i];
+		TableItem item = _getItem (i, false);
 		if (item != null) {
 			if (columnCount == 0) {
 				item.strings = null;
@@ -1973,7 +2203,7 @@ void destroyItem (TableItem item) {
 	int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	int index = 0;
 	while (index < count) {
-		if (items [index] == item) break;
+		if (_getItem (index, false) == item) break;
 		index++;
 	}
 	if (index == count) return;
@@ -1982,8 +2212,8 @@ void destroyItem (TableItem item) {
 	int /*long*/ code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 	ignoreSelect = ignoreShrink = false;
 	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	System.arraycopy (items, index + 1, items, index, --count - index);
-	items [count] = null;
+	_removeItem (index, count);
+	--count;
 	if (count == 0) setTableEmpty ();
 	setDeferResize (false);
 }
@@ -2432,7 +2662,7 @@ public TableItem [] getItems () {
 			result [i] = _getItem (i);
 		}
 	} else {
-		System.arraycopy (items, 0, result, 0, count);
+		_getItems (result, count);
 	}
 	return result;
 }
@@ -2774,19 +3004,26 @@ public int indexOf (TableColumn column) {
 public int indexOf (TableItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	if (1 <= lastIndexOf && lastIndexOf < count - 1) {
-		if (items [lastIndexOf] == item) return lastIndexOf;
-		if (items [lastIndexOf + 1] == item) return ++lastIndexOf;
-		if (items [lastIndexOf - 1] == item) return --lastIndexOf;
-	}
-	if (lastIndexOf < count / 2) {
-		for (int i=0; i<count; i++) {
-			if (items [i] == item) return lastIndexOf = i;
+	//TODO - find other loops that can be optimized
+	if (keys == null) {
+		int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+		if (1 <= lastIndexOf && lastIndexOf < count - 1) {
+			if (_getItem (lastIndexOf, false) == item) return lastIndexOf;
+			if (_getItem (lastIndexOf + 1, false) == item) return ++lastIndexOf;
+			if (_getItem (lastIndexOf - 1, false) == item) return --lastIndexOf;
+		}
+		if (lastIndexOf < count / 2) {
+			for (int i=0; i<count; i++) {
+				if (_getItem (i, false) == item) return lastIndexOf = i;
+			}
+		} else {
+			for (int i=count - 1; i>=0; --i) {
+				if (_getItem (i, false) == item) return lastIndexOf = i;
+			}
 		}
 	} else {
-		for (int i=count - 1; i>=0; --i) {
-			if (items [i] == item) return lastIndexOf = i;
+		for (int i=0; i<keyCount; i++) {
+			if (items [i] == item) return keys [i];
 		}
 	}
 	return -1;
@@ -2831,7 +3068,7 @@ void register () {
 }
 
 void releaseChildren (boolean destroy) {
-	if (items != null) {
+	if (_hasItems ()) {
 		int itemCount = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		/*
 		* Feature in Windows 98.  When there are a large number
@@ -2852,19 +3089,26 @@ void releaseChildren (boolean destroy) {
 			resizeCount = 1;
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 			for (int i=itemCount-1; i>=0; --i) {
-				TableItem item = items [i];
+				TableItem item = _getItem (i, false);
 				if (item != null && !item.isDisposed ()) item.release (false);
 				ignoreSelect = ignoreShrink = true;
 				OS.SendMessage (handle, OS.LVM_DELETEITEM, i, 0);
 				ignoreSelect = ignoreShrink = false;
 			}
 		} else {
-			for (int i=0; i<itemCount; i++) {
-				TableItem item = items [i];
-				if (item != null && !item.isDisposed ()) item.release (false);
+			if (keys == null) {
+				for (int i=0; i<itemCount; i++) {
+					TableItem item = _getItem (i, false);
+					if (item != null && !item.isDisposed ()) item.release (false);
+				}
+			} else {
+				for (int i=0; i<keyCount; i++) {
+					TableItem item = items [i];
+					if (item != null && !item.isDisposed ()) item.release (false);
+				}
 			}
 		}
-		items = null;
+		_clearItems ();
 	}
 	if (columns != null) {
 		for (int i=0; i<columnCount; i++) {
@@ -2929,14 +3173,14 @@ public void remove (int [] indices) {
 	for (int i=0; i<newIndices.length; i++) {
 		int index = newIndices [i];
 		if (index != last) {
-			TableItem item = items [index];
+			TableItem item = _getItem (index, false);
 			if (item != null && !item.isDisposed ()) item.release (false);
 			ignoreSelect = ignoreShrink = true;
 			int /*long*/ code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 			ignoreSelect = ignoreShrink = false;
 			if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-			System.arraycopy (items, index + 1, items, index, --count - index);
-			items [count] = null;
+			_removeItem(index, count);
+			--count;
 			last = index;
 		}
 	}
@@ -2962,15 +3206,15 @@ public void remove (int index) {
 	checkWidget ();
 	int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	TableItem item = items [index];
+	TableItem item = _getItem (index, false);
 	if (item != null && !item.isDisposed ()) item.release (false);
 	setDeferResize (true);
 	ignoreSelect = ignoreShrink = true;
 	int /*long*/ code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 	ignoreSelect = ignoreShrink = false;
 	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	System.arraycopy (items, index + 1, items, index, --count - index);
-	items [count] = null;
+	_removeItem (index, count);
+	--count;
 	if (count == 0) setTableEmpty ();
 	setDeferResize (false);
 }
@@ -3004,7 +3248,7 @@ public void remove (int start, int end) {
 		setDeferResize (true);
 		int index = start;
 		while (index <= end) {
-			TableItem item = items [index];
+			TableItem item = _getItem (index, false);
 			if (item != null && !item.isDisposed ()) item.release (false);
 			ignoreSelect = ignoreShrink = true;
 			int /*long*/ code = OS.SendMessage (handle, OS.LVM_DELETEITEM, start, 0);
@@ -3012,8 +3256,7 @@ public void remove (int start, int end) {
 			if (code == 0) break;
 			index++;
 		}
-		System.arraycopy (items, index, items, start, count - index);
-		for (int i=count-(index-start); i<count; i++) items [i] = null;
+		_removeItems (start, index, count);
 		if (index <= end) error (SWT.ERROR_ITEM_NOT_REMOVED);
 		/*
 		* This code is intentionally commented.  It is not necessary
@@ -3037,7 +3280,7 @@ public void removeAll () {
 	checkWidget ();
 	int itemCount = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	for (int i=0; i<itemCount; i++) {
-		TableItem item = items [i];
+		TableItem item = _getItem (i, false);
 		if (item != null && !item.isDisposed ()) item.release (false);
 	}
 	/*
@@ -3158,10 +3401,10 @@ public void select (int [] indices) {
 }
 
 void reskinChildren (int flags) {
-	if (items != null) {
+	if (_hasItems ()) {
 		int itemCount = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		for (int i=0; i<itemCount; i++) {
-			TableItem item = items [i];
+			TableItem item = _getItem (i, false);
 			if (item != null) item.reskin (flags);
 		}
 	}
@@ -4363,7 +4606,7 @@ public void setItemCount (int count) {
 	if (!isVirtual) setRedraw (false);
 	int index = count;
 	while (index < itemCount) {
-		TableItem item = items [index];
+		TableItem item = _getItem (index, false);
 		if (item != null && !item.isDisposed ()) item.release (false);
 		if (!isVirtual) {
 			ignoreSelect = ignoreShrink = true;
@@ -4374,10 +4617,7 @@ public void setItemCount (int count) {
 		index++;
 	}
 	if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	int length = Math.max (4, (count + 3) / 4 * 4);
-	TableItem [] newItems = new TableItem [length];
-	System.arraycopy (items, 0, newItems, 0, Math.min (count, itemCount));
-	items = newItems;
+	_setItemCount (count, itemCount);
 	if (isVirtual) {
 		int flags = OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL;
 		OS.SendMessage (handle, OS.LVM_SETITEMCOUNT, count, flags);
@@ -4393,7 +4633,7 @@ public void setItemCount (int count) {
 		}
 	} else {
 		for (int i=itemCount; i<count; i++) {
-			items [i] = new TableItem (this, SWT.NONE, i, true);
+			new TableItem (this, SWT.NONE, i, true);
 		}
 	}
 	if (!isVirtual) setRedraw (true);
@@ -4642,8 +4882,9 @@ boolean setScrollWidth (TableItem item, boolean force) {
 				imageIndent = Math.max (imageIndent, item.imageIndent);
 				hFont = item.fontHandle (0);
 			} else {
-				if (items [index] != null) {
-					TableItem tableItem = items [index];
+				//TODO - save item in a temporary
+				if (_getItem (index, false) != null) {
+					TableItem tableItem = _getItem (index, false);
 					string = tableItem.text;
 					imageIndent = Math.max (imageIndent, tableItem.imageIndent);
 					hFont = tableItem.fontHandle (0);
@@ -4968,7 +5209,7 @@ void setTableEmpty () {
 			if (OS.COMCTL32_MAJOR < 6) style &= ~SWT.DOUBLE_BUFFERED;
 		}
 	}
-	items = new TableItem [4];
+	_initItems ();
 	if (columnCount == 0) {
 		OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, 0);
 		setScrollWidth (null, false);
@@ -5815,16 +6056,7 @@ LRESULT WM_MOUSEHOVER (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
-	if (!ignoreShrink) {
-		/* Resize the item array to match the item count */
-		int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-		if (items.length > 4 && items.length - count > 3) {
-			int length = Math.max (4, (count + 3) / 4 * 4);
-			TableItem [] newItems = new TableItem [length];
-			System.arraycopy (items, 0, newItems, 0, count);
-			items = newItems;
-		}
-	}
+	_checkShrink();
 	if (fixScrollWidth) setScrollWidth (null, true);
 	if (!OS.IsWinCE && OS.COMCTL32_MAJOR < 6) {
 		if ((style & SWT.DOUBLE_BUFFERED) != 0 || findImageControl () != null) {
@@ -6342,6 +6574,8 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			* TVM_INSERTITEM calls LVN_GETDISPINFO before the item
 			* has been added to the array.  The fix is to check for
 			* null.
+			* 
+			* NOTE: Force the item to be created if it does not exist.
 			*/
 			TableItem item = _getItem (plvfi.iItem);
 			if (item == null) break;

@@ -370,7 +370,7 @@ public void pack () {
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 		int count = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETITEMCOUNT, 0, 0);
 		for (int i=0; i<count; i++) {
-			TableItem item = parent.items [i];
+			TableItem item = parent._getItem (i, false);
 			if (item != null) {
 				int /*long*/ hFont = item.fontHandle (index);
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
