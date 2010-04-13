@@ -141,7 +141,7 @@ class SWTAccessibleDelegate extends NSObject {
 	}
 
 	boolean accessibilityIsAttributeSettable(NSString attribute) {
-		return false;
+		return accessible.internal_accessibilityIsAttributeSettable(attribute, childID);
 	}
 
 	// Returns the deepest descendant of the UIElement hierarchy that contains the point. You can assume the point has already been determined to lie within the receiver. Override this method to do deeper hit testing within a UIElement - e.g. a NSMatrix would test its cells. The point is bottom-left relative screen coordinates.
@@ -163,7 +163,7 @@ class SWTAccessibleDelegate extends NSObject {
 	}
 	
 	void accessibilitySetValue_forAttribute(id value, NSString attribute) {
-		accessible.internal_accessibilitySetValue_forAttribute(value, attribute);
+		accessible.internal_accessibilitySetValue_forAttribute(value, attribute, childID);
 	}
 	
 	static NSArray retainedAutoreleased(NSArray inObject) {

@@ -632,6 +632,17 @@ public class Accessible {
 		return returnValue == null ? NSArray.array() : returnValue;
 	}
 	
+	/**
+	 * Gets the human-readable description of an action. 
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
 	public id internal_accessibilityActionDescription(NSString action, int childID) {
 		NSString returnValue = NSString.string();
 		String actionName = action.getString();
@@ -666,6 +677,17 @@ public class Accessible {
 		return returnValue;
 	}
 	
+	/**
+	 * Gets the array of action names that this object can perform. 
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
 	public NSArray internal_accessibilityActionNames(int childID) {
 		if (accessibleActionListeners.size() > 0) {
 			AccessibleActionEvent event = new AccessibleActionEvent(this);
@@ -737,13 +759,40 @@ public class Accessible {
 		}
 	}
 	
-	public boolean internal_accessibilityIsAttributeSettable(NSString attribute) {
+	/**
+	 * Checks to see if the specified attribute can be set by a screen reader or other
+	 * assistive service. 
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
+	public boolean internal_accessibilityIsAttributeSettable(NSString attribute, int childID) {
+		if (accessibleTextExtendedListeners.size() > 0) {
+			if (attribute.isEqualToString(OS.NSAccessibilitySelectedTextRangeAttribute)) return true;
+			if (attribute.isEqualToString(OS.NSAccessibilityVisibleCharacterRangeAttribute)) return true;
+		}
 		if (accessibleValueListeners.size() > 0) {
 			if (attribute.isEqualToString(OS.NSAccessibilityValueAttribute)) return true;
 		}
 		return false;
 	}
 	
+	/**
+	 * Gets the array of attributes this object supports. 
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
 	public NSArray internal_accessibilityAttributeNames(int childID) {
 		// The supported attribute set depends on the role played by the control.
 		// We may need to add or remove from the base set as needed.
@@ -1020,6 +1069,18 @@ public class Accessible {
 		}
 	}
 
+	/**
+	 * Returns the value for the specified attribute. Return type depends on the attribute
+	 * being queried; see the implementations of the accessor methods for details. 
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
 	public id internal_accessibilityAttributeValue(NSString attribute, int childID) {
 		if (attribute.isEqualToString(OS.NSAccessibilityRoleAttribute)) return getRoleAttribute(childID);
 		if (attribute.isEqualToString(OS.NSAccessibilitySubroleAttribute)) return getSubroleAttribute(childID);
@@ -1067,7 +1128,19 @@ public class Accessible {
 		// If this object don't know how to get the value it's up to the control itself to return an attribute value.
 		return null;
 	}
-
+	
+	/**
+	 * Returns the value of the specified attribute, using the supplied parameter. Return
+	 * and parameter types vary depending on the attribute being queried. 
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
 	public id internal_accessibilityAttributeValue_forParameter(NSString attribute, id parameter, int childID) {
 		if (attribute.isEqualToString(OS.NSAccessibilityStringForRangeParameterizedAttribute)) return getStringForRangeParameterizedAttribute(parameter, childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityRangeForLineParameterizedAttribute)) return getRangeForLineParameterizedAttribute(parameter, childID);
@@ -1081,8 +1154,20 @@ public class Accessible {
 		return null;
 	}
 
-	// Returns the UI Element that has the focus. You can assume that the search for the focus has already been narrowed down to the receiver.
-	// Override this method to do a deeper search with a UIElement - e.g. a NSMatrix would determine if one of its cells has the focus.
+	/**
+	 * Returns the UI Element that has the focus. You can assume that the search 
+	 * for the focus has already been narrowed down to the receiver.
+	 * Override this method to do a deeper search with a UIElement - 
+	 * e.g. a NSMatrix would determine if one of its cells has the focus. 
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
 	public id internal_accessibilityFocusedUIElement(int childID) {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = ACC.CHILDID_MULTIPLE; // set to invalid value, to test if the application sets it in getFocus()
@@ -1109,9 +1194,20 @@ public class Accessible {
 		return new id(OS.NSAccessibilityUnignoredAncestor(childIDToOs(event.childID).id));
 	}
 
-	// Returns the deepest descendant of the UIElement hierarchy that contains the point. 
-	// You can assume the point has already been determined to lie within the receiver.
-	// Override this method to do deeper hit testing within a UIElement - e.g. a NSMatrix would test its cells. The point is bottom-left relative screen coordinates.
+	/**
+	 * Returns the deepest descendant of the UIElement hierarchy that contains the point. 
+	 * You can assume the point has already been determined to lie within the receiver.
+	 * Override this method to do deeper hit testing within a UIElement - e.g. a NSMatrix 
+	 * would test its cells. The point is bottom-left relative screen coordinates.
+	 *
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
 	public id internal_accessibilityHitTest(NSPoint point, int childID) {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.x = (int) point.x;
@@ -1140,12 +1236,34 @@ public class Accessible {
 		return new id(OS.NSAccessibilityUnignoredAncestor(childIDToOs(event.childID).id));
 	}
 
-	// Return YES if the UIElement doesn't show up to the outside world - i.e. its parent should return the UIElement's children as its own - cutting the UIElement out. E.g. NSControls are ignored when they are single-celled.
+	/**
+	 * Return YES if the UIElement doesn't show up to the outside world - 
+	 * i.e. its parent should return the UIElement's children as its own - 
+	 * cutting the UIElement out. E.g. NSControls are ignored when they are single-celled.
+	 *
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
 	public boolean internal_accessibilityIsIgnored(int childID) {
 		return false;
 	}
 
-	// parameterized attribute methods
+	/**
+	 * Return the array of supported attributes that take parameters.
+	 *
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
 	public NSArray internal_accessibilityParameterizedAttributeNames(int childID) {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = childID;
@@ -1194,6 +1312,17 @@ public class Accessible {
 		}
 	}
 
+	/**
+	 * Performs the specified action.
+	 *
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
 	public boolean internal_accessibilityPerformAction(NSString action, int childID) {
 		String actionName = action.getString();
 		if (accessibleActionListeners.size() > 0) {
@@ -1227,7 +1356,22 @@ public class Accessible {
 		return false;
 	}
 
-	public void internal_accessibilitySetValue_forAttribute(id value, NSString attribute) {
+	/**
+	 * Set the value of the specified attribute to the given value.
+	 * Unsupported attributes are ignored.
+	 *
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
+	public void internal_accessibilitySetValue_forAttribute(id value, NSString attribute, int childId) {
+		if (attribute.isEqualToString(OS.NSAccessibilitySelectedTextRangeAttribute)) setSelectedTextRangeAttribute(value, childId);
+		if (attribute.isEqualToString(OS.NSAccessibilityVisibleCharacterRangeAttribute)) setVisibleCharacterRangeAttribute(value, childId);
+		
 		if (accessibleValueListeners.size() > 0) {
 			AccessibleValueEvent event = new AccessibleValueEvent(this);
 			NSNumber number = new NSNumber(value);
@@ -1440,7 +1584,13 @@ public class Accessible {
 				listener.getTextBounds(event);
 			}
 			rect.x = event.x;
-			rect.y = event.y;
+			
+			// Flip y coordinate for Cocoa.
+			NSArray screens = NSScreen.screens();
+			NSScreen screen = new NSScreen(screens.objectAtIndex(0));
+			NSRect frame = screen.frame();
+			rect.y = frame.height - event.y - event.height;
+			
 			rect.width = event.width;
 			rect.height = event.height;
 			returnValue = NSValue.valueWithRect(rect);
@@ -2702,25 +2852,6 @@ public class Accessible {
 		//TODO: platform-specific? (we will manage the set on Windows)
 	}
 	
-	/**
-	 * Sends a message with event-specific data to accessible clients
-	 * indicating that something has changed within a custom control.
-	 *
-	 * @param event an <code>ACC</code> constant beginning with EVENT_* indicating the message to send
-	 * @param eventData an object containing event-specific data
-	 * 
-	 * @exception SWTException <ul>
-	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
-	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
-	 * </ul>
-	 * 
-	 * @since 3.6
-	 */
-	public void sendEvent(int event, Object eventData) {
-		checkWidget();
-		//TODO
-	}
-
 	void release(boolean destroy) {
 		Iterator childIter = children.iterator();
 		while(childIter.hasNext()) {
@@ -2761,6 +2892,25 @@ public class Accessible {
 	}
 	
 	/**
+	 * Sends a message with event-specific data to accessible clients
+	 * indicating that something has changed within a custom control.
+	 *
+	 * @param event an <code>ACC</code> constant beginning with EVENT_* indicating the message to send
+	 * @param eventData an object containing event-specific data
+	 * 
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 * 
+	 * @since 3.6
+	 */
+	public void sendEvent(int event, Object eventData) {
+		checkWidget();
+		//TODO
+	}
+
+	/**
 	 * Sends a message to accessible clients that the child selection
 	 * within a custom container control has changed.
 	 *
@@ -2791,6 +2941,37 @@ public class Accessible {
 		checkWidget();
 		OS.NSAccessibilityPostNotification(control.view.id, OS.NSAccessibilityFocusedUIElementChangedNotification.id);
 	}
+
+	void setSelectedTextRangeAttribute(id value, int childId) {
+		NSRange newRange = new NSValue(value.id).rangeValue();
+		if (accessibleTextExtendedListeners.size() > 0) {
+			AccessibleTextEvent event = new AccessibleTextEvent(this);
+			event.index = 0;
+			event.start = (int)newRange.location;
+			event.end = (int)(newRange.location + newRange.length);
+
+			for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+				AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+				listener.removeSelection(event);
+				listener.addSelection(event);
+			}
+		} 
+	}
+
+	void setVisibleCharacterRangeAttribute(id value, int childId) {
+		NSRange newRange = new NSValue(value.id).rangeValue();
+		if (accessibleTextExtendedListeners.size() > 0) {
+			AccessibleTextEvent event = new AccessibleTextEvent(this);
+			event.type = ACC.SCROLL_TYPE_TOP_LEFT;
+			event.start = (int)newRange.location;
+			event.end = (int)(newRange.location + newRange.length);
+
+			for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+				AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+				listener.scrollText(event);
+			}
+		} 
+	}	
 
 	/**
 	 * Sends a message to accessible clients that the text

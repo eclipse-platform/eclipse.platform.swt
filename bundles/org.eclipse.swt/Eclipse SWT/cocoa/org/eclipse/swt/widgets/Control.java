@@ -285,7 +285,7 @@ boolean accessibilityIsAttributeSettable(int /*long*/ id, int /*long*/ sel, int 
 	boolean returnValue = false;
 	if (id == view.id && accessible != null) {
 		NSString attribute = new NSString (arg0);
-		returnValue = accessible.internal_accessibilityIsAttributeSettable(attribute);
+		returnValue = accessible.internal_accessibilityIsAttributeSettable(attribute, ACC.CHILDID_SELF);
 	}
 	if (!returnValue) {
 		returnValue = super.accessibilityIsAttributeSettable(id, sel, arg0);
@@ -297,7 +297,7 @@ void accessibilitySetValue_forAttribute(int /*long*/ id, int /*long*/ sel, int /
 	if (id == view.id && accessible != null) {
 		id value = new id(arg0);
 		NSString attribute = new NSString(arg1);
-		accessible.internal_accessibilitySetValue_forAttribute(value, attribute);
+		accessible.internal_accessibilitySetValue_forAttribute(value, attribute, ACC.CHILDID_SELF);
 	} else {
 		super.accessibilitySetValue_forAttribute(id, sel, arg0, arg1);
 	}
