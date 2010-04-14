@@ -246,7 +246,7 @@
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
 			<env key="JAVA_HOME" value="/home/swtbuild/java5/ibm-java2-s390x-50"/>
-			<env key="MODEL" value="s390"/>
+			<env key="MODEL" value="s390x"/>
 			<!--
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk"/>
 			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.8.0.4/gecko-sdk"/>
@@ -260,7 +260,7 @@
 			<arg line="${clean}"/>
 		</exec>
 		<antcall target="refresh_fragment">
-			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390x"/>
 		</antcall>
 	</target>
 
@@ -1023,8 +1023,8 @@
 		</copy>
 		<condition property="real_target" value="build_remote" else="${build_target}">
 			<or>
-				<equals arg1="${build_target}" arg2="build_gtk_linux_s390"/>
-				<equals arg1="${build_target}" arg2="build_gtk_linux_s390x"/>
+				<!--equals arg1="${build_target}" arg2="build_gtk_linux_s390"/>
+				<equals arg1="${build_target}" arg2="build_gtk_linux_s390x"/-->
 				<equals arg1="${build_target}" arg2="build_test"/>
 			</or>
 		</condition>

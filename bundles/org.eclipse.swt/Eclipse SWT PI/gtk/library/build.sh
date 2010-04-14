@@ -90,12 +90,12 @@ if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} 
 		SWT_LFLAGS=-m64
 		export SWT_LFLAGS
 	fi
-	if [ ${MODEL} = 's390' ]; then
-		SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -m31"	
-		SWT_LFLAGS=-m31
-		export SWT_LFLAGS
-	fi
 	export SWT_PTR_CFLAGS
+fi
+if [ ${MODEL} = 's390' ]; then
+	SWT_PTR_CFLAGS="-m31"	
+	SWT_LFLAGS=-m31
+	export SWT_LFLAGS SWT_PTR_CFLAGS
 fi
 
 if [ x`pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "xYES" ]; then
