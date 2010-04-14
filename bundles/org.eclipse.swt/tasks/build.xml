@@ -1097,7 +1097,7 @@
 	</target>
 	
 	<target name="build_remote">
-		<property name="zipname" value="rhel4vh_${fragment}"/>		
+		<property name="zipname" value="${fragment}"/>		
 		<property name="remotetmpdir" value="~/build/${zipname}"/>
 		<property name="remotemachine" value="h4245030.boeblingen.de.ibm.com"/>
 		<zip destfile="../${zipname}.zip" basedir=".." includes="${zipname}/**/*"/>
@@ -1119,7 +1119,7 @@
 
 	<!-- Params: machine, pre_commands, cp, fragment, build_target -->
 	<target name="build_ssh" depends="set_natives_changed">
-		<property name="tmpdir" value="~/build/${machine}_${fragment}"/>
+		<property name="tmpdir" value="~/build/${fragment}"/>
 		<property name="pre_commands" value=""/>
 		<property name="pre_commands1" value=""/>
 		<property name="build_version" value=""/>
@@ -1250,7 +1250,7 @@
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390x"/>
 			<param name="build_target" value="build_test"/>
-			<param name="pre_commands1" value="cp ~/build/fixed_tasks/* ~/build/rhel4vh_org.eclipse.swt.gtk.linux.s390/${tasks}; "/>
+			<param name="pre_commands1" value="cp ~/build/fixed_tasks/* ~/build/org.eclipse.swt.gtk.linux.s390x/${tasks}; "/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=${ant_home}/bin:$PATH; "/>
 		</antcall>
 	</target>
