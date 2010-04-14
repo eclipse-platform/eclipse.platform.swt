@@ -82,6 +82,8 @@ public class WebKit extends WebBrowser {
 	static final int WINDOW_OBJECT_CLEARED = 14;
 	static final int CONSOLE_MESSAGE = 15;
 
+	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
+
 	// the following Callbacks are never freed
 	static Callback Proc2, Proc3, Proc4, Proc5, Proc6;
 	static Callback JSObjectHasPropertyProc, JSObjectGetPropertyProc, JSObjectCallAsFunctionProc;
@@ -546,6 +548,16 @@ public boolean create (Composite parent, int style) {
 		};	
 	};
 
+	/*
+	* Bug in WebKitGTK.  MouseOver/MouseLeave events are not consistently sent from
+	* the DOM when the mouse enters and exits the browser control, see
+	* https://bugs.webkit.org/show_bug.cgi?id=35246.  As a workaround for sending
+	* MouseEnter/MouseExit events, swt's default mouse enter/exit mechanism is used,
+	* but in order to do this the Browser's default sub-window check behavior must
+	* be changed.
+	*/
+	browser.setData (KEY_CHECK_SUBWINDOW, Boolean.FALSE);
+
 	return true;
 }
 
@@ -563,10 +575,17 @@ void addEventHandlers (boolean top) {
 		buffer.append ("document.addEventListener('mousedown', SWTmousehandler, true);"); //$NON-NLS-1$
 		buffer.append ("document.addEventListener('mouseup', SWTmousehandler, true);"); //$NON-NLS-1$
 		buffer.append ("document.addEventListener('mousemove', SWTmousehandler, true);"); //$NON-NLS-1$
-		buffer.append ("document.addEventListener('mouseover', SWTmousehandler, true);"); //$NON-NLS-1$
-		buffer.append ("document.addEventListener('mouseout', SWTmousehandler, true);"); //$NON-NLS-1$
 		buffer.append ("document.addEventListener('mousewheel', SWTmousehandler, true);"); //$NON-NLS-1$
 		buffer.append ("document.addEventListener('dragstart', SWTmousehandler, true);"); //$NON-NLS-1$
+
+		/*
+		* The following two lines are intentionally commented because they cannot be used to
+		* consistently send MouseEnter/MouseExit events until https://bugs.webkit.org/show_bug.cgi?id=35246
+		* is fixed.
+		*/ 
+		//buffer.append ("document.addEventListener('mouseover', SWTmousehandler, true);"); //$NON-NLS-1$
+		//buffer.append ("document.addEventListener('mouseout', SWTmousehandler, true);"); //$NON-NLS-1$
+
 		execute (buffer.toString ());
 	} else {
 		StringBuffer buffer = new StringBuffer ("for (var i = 0; i < frames.length; i++) {"); //$NON-NLS-1$
@@ -894,9 +913,14 @@ boolean handleEvent (Object[] arguments) {
 	 * fired for mouse movements into or out of the Browser, do not fire an
 	 * event if there is a related target element.
 	 */
-	if (type.equals (DOMEVENT_MOUSEOVER) || type.equals (DOMEVENT_MOUSEOUT)) {
-		if (((Boolean)arguments[9]).booleanValue ()) return true;
-	}
+
+	/*
+	* The following is intentionally commented because MouseOver and MouseOut events
+	* are not being hooked until https://bugs.webkit.org/show_bug.cgi?id=35246 is fixed.
+	*/ 
+	//if (type.equals (DOMEVENT_MOUSEOVER) || type.equals (DOMEVENT_MOUSEOUT)) {
+	//	if (((Boolean)arguments[9]).booleanValue ()) return true;
+	//}
 
 	/*
 	 * The position of mouse events is received in screen-relative coordinates
@@ -947,10 +971,16 @@ boolean handleEvent (Object[] arguments) {
 	} else if (type.equals (DOMEVENT_MOUSEWHEEL)) {
 		mouseEvent.type = SWT.MouseWheel;
 		mouseEvent.count = ((Double)arguments[3]).intValue ();
-	} else if (type.equals (DOMEVENT_MOUSEOVER)) {
-		mouseEvent.type = SWT.MouseEnter;
-	} else if (type.equals (DOMEVENT_MOUSEOUT)) {
-		mouseEvent.type = SWT.MouseExit;
+
+	/*
+	* The following is intentionally commented because MouseOver and MouseOut events
+	* are not being hooked until https://bugs.webkit.org/show_bug.cgi?id=35246 is fixed.
+	*/ 
+	//} else if (type.equals (DOMEVENT_MOUSEOVER)) {
+	//	mouseEvent.type = SWT.MouseEnter;
+	//} else if (type.equals (DOMEVENT_MOUSEOUT)) {
+	//	mouseEvent.type = SWT.MouseExit;
+
 	} else if (type.equals (DOMEVENT_DRAGSTART)) {
 		mouseEvent.type = SWT.DragDetect;
 		mouseEvent.button = ((Double)arguments[4]).intValue () + 1;

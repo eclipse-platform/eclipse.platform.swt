@@ -251,7 +251,7 @@ Widget [] computeTabList () {
 }
 
 void createHandle (int index) {
-	state |= HANDLE | CANVAS;
+	state |= HANDLE | CANVAS | CHECK_SUBWINDOW;
 	boolean scrolled = (style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0;
 	if (!scrolled) state |= THEME_BACKGROUND;
 	createHandle (index, true, scrolled || (style & SWT.BORDER) != 0);
@@ -1412,7 +1412,7 @@ void showWidget () {
 }
 
 boolean checkSubwindow () {
-	return true;
+	return (state & CHECK_SUBWINDOW) != 0;
 }
 
 boolean translateMnemonic (Event event, Control control) {

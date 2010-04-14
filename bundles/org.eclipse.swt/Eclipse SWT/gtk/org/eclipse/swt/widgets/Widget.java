@@ -98,7 +98,10 @@ public abstract class Widget {
 	
 	/* Notify of the opportunity to skin this widget */
 	static final int SKIN_NEEDED = 1<<24;
-	
+
+	/* Should sub-windows be checked when EnterNotify received */
+	static final int CHECK_SUBWINDOW = 1<<25;
+
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
@@ -176,6 +179,7 @@ public abstract class Widget {
 	static final int LAST_SIGNAL = 70;
 	
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
+	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -514,6 +518,9 @@ public Object getData () {
 public Object getData (String key) {
 	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (key.equals (KEY_CHECK_SUBWINDOW)) {
+		return new Boolean ((state & CHECK_SUBWINDOW) != 0);
+	}
 	if (key.equals(IS_ACTIVE)) return new Boolean(isActive ());
 	if ((state & KEYED_DATA) != 0) {
 		Object [] table = (Object []) data;
@@ -1423,6 +1430,18 @@ public void setData (Object data) {
 public void setData (String key, Object value) {
 	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
+
+	if (key.equals (KEY_CHECK_SUBWINDOW)) {
+		if (value != null && value instanceof Boolean) {
+			if (((Boolean)value).booleanValue ()) {
+				state |= CHECK_SUBWINDOW;
+			} else {
+				state &= ~CHECK_SUBWINDOW;
+			}
+		}
+		return;
+	}
+
 	int index = 1;
 	Object [] table = null;
 	if ((state & KEYED_DATA) != 0) {
