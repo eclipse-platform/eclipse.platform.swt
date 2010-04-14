@@ -1071,24 +1071,24 @@
 	</target>
 	
 	<target name="build_remote">
-		<property name="scp" value="scp"/>
 		<property name="zipname" value="rhel4vh_${fragment}"/>		
+		<property name="remotetmpdir" value="~/build/${zipname}"/>
+		<property name="remotemachine" value="janis"/>
 		<zip destfile="../${zipname}.zip" basedir=".." includes="${zipname}/**/*"/>
-		<!--exec executable="${scp}">
-		    <arg value="../${fragment}.zip"/>
-		    <arg value="swtbuild@${machine}:~/build"/>
+		<exec executable="scp">
+		    <arg value="../${zipname}.zip"/>
+		    <arg value="swtbuild@${remotemachine}:~/build"/>
 		</exec>
-		<property name="remotetmpdir" value="~/build/${machine}_${fragment}"/>
-		<sshexec host="${machine}" 
+		<!--sshexec host="${machine}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
 			output="${logdir}/${build_version}/${fragment}.log"
-	 		command="${pre_commands} rm -rf ${remotetmpdir}; cd ~/build; unzip -qq ~/build/${fragment}.zip; rm ~/build/${fragment}.zip; dos2unix ${remotetmpdir}/${builddir}/*; cd ${remotetmpdir}/${tasks}; if ant -f build.xml ${build_target} ${properties}; then cd ~/build; zip -q -r ${fragment}.zip ${fragment}; rm -rf ${remotetmpdir}; else cd; rm -rf 1${remotetmpdir}; exit 1; fi"/>
-		<exec executable="${scp}">
-		    <arg value="swtbuild@${machine}:~/build/${fragment}.zip"/>
+	 		command="${pre_commands} rm -rf ${remotetmpdir}; cd ~/build; unzip -qq ~/build/${fragment}.zip; rm ~/build/${fragment}.zip; dos2unix ${remotetmpdir}/${builddir}/*; cd ${remotetmpdir}/${tasks}; if ant -f build.xml ${build_target} ${properties}; then cd ~/build; zip -q -r ${fragment}.zip ${fragment}; rm -rf ${remotetmpdir}; else cd; rm -rf 1${remotetmpdir}; exit 1; fi"/-->
+		<exec executable="scp">
+		    <arg value="swtbuild@${remotemachine}:~/build/${zipname}.zip"/>
 		    <arg value=".."/>
-		</exec-->
+		</exec>
 		<unzip src="../${zipname}.zip" dest=".."/>
 	</target>
 
