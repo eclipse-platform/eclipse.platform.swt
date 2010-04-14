@@ -241,23 +241,24 @@
 	
 	<target name="build_test" depends="init_build">
 		<property name="clean" value="clean"/>
-		<property name="targets" value="make_mozilla install"/>
+		<property name="targets" value="install"/>
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
-			<env key="CC" value="cc"/>
-			<env key="CXX" value="CC"/>
-			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/JDKs/x86/ibm-java2-i386-50"/>
-			<env key="MOZILLA_SDK" value="/bluebird/teamswt/bog/mozilla/solaris_x86/1.7/mozilla/dist/sdk"/>
-			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/xulrunner/1.8.0.1/solaris-x86/mozilla/dist/sdk"/>
-			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/include"/>
-			<env key="MOZILLA_LIBS" value="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
+			<env key="JAVA_HOME" value="/home/swtbuild/java5/ibm-java2-s390x-50"/>
+			<!--
+			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk"/>
+			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.8.0.4/gecko-sdk"/>
+			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/mozilla-config.h -I${MOZILLA_SDK}/../include/xpcom -I${MOZILLA_SDK}/../include/nspr -I${MOZILLA_SDK}/../include/embed_base -I${MOZILLA_SDK}/../include/embedstring -I${MOZILLA_SDK}/../include/string"/>
+			<env key="MOZILLA_LIBS" value="${MOZILLA_SDK}/../lib/libembedstring.a -L${MOZILLA_SDK}/../bin -L${MOZILLA_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"/>
 			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
 			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
+			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86/lib/pkgconfig"/>
+			-->
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
 		</exec>
 		<antcall target="refresh_fragment">
-			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
 		</antcall>
 	</target>
 
@@ -1096,21 +1097,21 @@
 	<target name="build_remote">
 		<property name="zipname" value="rhel4vh_${fragment}"/>		
 		<property name="remotetmpdir" value="~/build/${zipname}"/>
-		<property name="remotemachine" value="tswtopensol"/>
+		<property name="remotemachine" value="h4245030"/>
 		<zip destfile="../${zipname}.zip" basedir=".." includes="${zipname}/**/*"/>
 		<exec executable="scp">
 		    <arg value="../${zipname}.zip"/>
-		    <arg value="swtbuild@${remotemachine}:~/build/a.zip"/>
+		    <arg value="swtbuild@${remotemachine}:~/build"/>
 		</exec>
-		<!--sshexec host="${remotemachine}" 
+		<sshexec host="${remotemachine}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
 			output="${logdir}/${build_version}/${fragment}.log"
-	 		command="${pre_commands} rm -rf ${remotetmpdir}; cd ~/build; unzip -qq ~/build/${zipname}.zip; rm ~/build/${zipname}.zip; dos2unix ${remotetmpdir}/${builddir}/*; cd ${remotetmpdir}/${tasks}; if ant -f build.xml ${build_target} ${properties}; then cd ~/build; zip -q -r ${zipname}.zip ${zipname}; rm -rf ${remotetmpdir}; else cd; rm -rf 1${remotetmpdir}; exit 1; fi"/-->
+	 		command="${pre_commands} rm -rf ${remotetmpdir}; cd ~/build; unzip -qq ~/build/${zipname}.zip; rm ~/build/${zipname}.zip; dos2unix ${remotetmpdir}/${builddir}/*; cd ${remotetmpdir}/${tasks}; if ant -f build.xml ${build_target} ${properties}; then cd ~/build; zip -q -r ${zipname}.zip ${zipname}; rm -rf ${remotetmpdir}; else cd; rm -rf ${remotetmpdir}; exit 1; fi"/>
 		<exec executable="scp">
-		    <arg value="swtbuild@${remotemachine}:~/build/a.zip"/>
-		    <arg value="../b.zip"/>
+		    <arg value="swtbuild@${remotemachine}:~/build/${zipname}.zip"/>
+		    <arg value=".."/>
 		</exec>
 		<unzip src="../${zipname}.zip" dest=".."/>
 	</target>
@@ -1245,8 +1246,8 @@
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_linux_x86}"/>
 			<param name="cp" value="${cp_gtk}"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86"/>
-			<param name="build_target" value="build_test"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390"/>
+			<param name="build_target" value="build_gtk_linux_s390"/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=${ant_home}/bin:$PATH; "/>
 		</antcall>
 	</target>
