@@ -6,6 +6,7 @@
 	<property name="m_linux_rh3_x86_64"  value="na"/>
 	<property name="m_linux_ppc"  value="na"/>
 	<property name="m_linux_ppc64"  value="na"/>
+	<property name="m_linux_s390"  value="na"/>
 	<property name="m_solaris_sparc"  value="na"/>
 	<property name="m_solaris_x86"  value="na"/>
 	<property name="m_aix"  value="na"/>
