@@ -262,6 +262,30 @@
 	
 	<target name="build_gtk_linux_s390" depends="init_build">
 		<echo>gtk_linux_s390 is not being built</echo>
+		<!--
+		<property name="clean" value="clean"/>
+		<property name="targets" value="install"/>
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
+			<arg value="build.sh"/>
+			<env key="JAVA_HOME" value="/home/swtbuild/java5/ibm-java2-s390x-50"/>
+			-->
+			<!--
+			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk"/>
+			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.8.0.4/gecko-sdk"/>
+			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/mozilla-config.h -I${MOZILLA_SDK}/../include/xpcom -I${MOZILLA_SDK}/../include/nspr -I${MOZILLA_SDK}/../include/embed_base -I${MOZILLA_SDK}/../include/embedstring -I${MOZILLA_SDK}/../include/string"/>
+			<env key="MOZILLA_LIBS" value="${MOZILLA_SDK}/../lib/libembedstring.a -L${MOZILLA_SDK}/../bin -L${MOZILLA_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"/>
+			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
+			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
+			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86/lib/pkgconfig"/>
+			-->
+			<!--
+			<arg line="${targets}"/>
+			<arg line="${clean}"/>
+		</exec>
+		<antcall target="refresh_fragment">
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
+		</antcall>
+		-->
 	</target>
 	
 	<target name="build_gtk_linux_s390x" depends="init_build">
@@ -972,7 +996,13 @@
 		<copy todir="${builddir}" flatten="true">
 			<fileset dir="org.eclipse.swt" includes="**/library/"/>
 		</copy>
-		<antcall target="${build_target}"/>
+		<condition property="real_target" value="build_remote" else="${build_target}">
+			<or>
+				<equals arg1="${build_target}" arg2="gtk_linux_s390"/>
+				<equals arg1="${build_target}" arg2="gtk_linux_s390x"/>
+			</or>
+		</condition>
+		<antcall target="${real_target}"/>
 	</target>
 
 	<!-- Params: cp, fragment, build_target -->
@@ -1038,6 +1068,27 @@
 
 	<target name="set_natives_changed" if="natives_changed">
 		<property name="extra_properties" value="-Dnatives_changed=${natives_changed}"/>
+	</target>
+	
+	<target name="build_remote">
+		<property name="scp" value="scp"/>
+		<zip destfile="../${fragment}.zip" basedir=".." includes="${fragment}/**/*"/>
+		<!--exec executable="${scp}">
+		    <arg value="../${fragment}.zip"/>
+		    <arg value="swtbuild@${machine}:~/build"/>
+		</exec>
+		<property name="remotetmpdir" value="~/build/${fragment}"/>
+		<sshexec host="${machine}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			trust="true"
+			output="${logdir}/${build_version}/${fragment}.log"
+	 		command="${pre_commands} rm -rf ${remotetmpdir}; cd ~/build; unzip -qq ~/build/${fragment}.zip; rm ~/build/${fragment}.zip; dos2unix ${remotetmpdir}/${builddir}/*; cd ${remotetmpdir}/${tasks}; if ant -f build.xml ${build_target} ${properties}; then cd ~/build; zip -q -r ${fragment}.zip ${fragment}; rm -rf ${remotetmpdir}; else cd; rm -rf 1${remotetmpdir}; exit 1; fi"/>
+		<exec executable="${scp}">
+		    <arg value="swtbuild@${machine}:~/build/${fragment}.zip"/>
+		    <arg value=".."/>
+		</exec-->
+		<unzip src="../${fragment}.zip" dest=".."/>
 	</target>
 
 	<!-- Params: machine, pre_commands, cp, fragment, build_target -->
@@ -1163,6 +1214,16 @@
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390"/>
 			<param name="build_target" value="build_gtk_linux_s390"/>
+		</antcall>
+	</target>
+	
+	<target name="test">
+		<antcall target="build_ssh">
+			<param name="machine" value="${m_linux_x86}"/>
+			<param name="cp" value="${cp_gtk}"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390"/>
+			<param name="build_target" value="build_gtk_linux_s390"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=${ant_home}/bin:$PATH; "/>
 		</antcall>
 	</target>
 
