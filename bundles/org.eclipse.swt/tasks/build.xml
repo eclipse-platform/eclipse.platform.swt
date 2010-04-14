@@ -1121,6 +1121,7 @@
 	<target name="build_ssh" depends="set_natives_changed">
 		<property name="tmpdir" value="~/build/${machine}_${fragment}"/>
 		<property name="pre_commands" value=""/>
+		<property name="pre_commands1" value=""/>
 		<property name="build_version" value=""/>
 		<property name="extra_properties" value=""/>
 		<property name="properties" value="-Dcp=&quot;${cp}&quot; -Dfragment=${fragment} -DcvsRsh=ssh -Dbuild_target=${build_target} -DTAG=${TAG} ${extra_properties}"/>
@@ -1129,7 +1130,7 @@
 			keyfile="${keyfile}" 
 			trust="true"
 			output="${logdir}/${build_version}/${fragment}.log"
-	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; export CVS_RSH=ssh; cvs -d ${cvsRoot} checkout ${TAG} ${tasks}; if ant -f ${tasks}/build.xml build_fragment ${properties}; then cd; rm -rf ${tmpdir}; else cd; rm -rf ${tmpdir}; exit 1; fi"/>
+	 		command="${pre_commands} rm -rf ${tmpdir}; mkdir ${tmpdir}; cd ${tmpdir}; export CVS_RSH=ssh; cvs -d ${cvsRoot} checkout ${TAG} ${tasks}; ${pre_commands1} if ant -f ${tasks}/build.xml build_fragment ${properties}; then cd; rm -rf ${tmpdir}; else cd; rm -rf ${tmpdir}; exit 1; fi"/>
 	</target>
 
 	<!-- Convert SWT 32 bit java and C source to 64 bit  -->
@@ -1249,6 +1250,7 @@
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390"/>
 			<param name="build_target" value="build_gtk_linux_s390"/>
+			<param name="pre_commands1" value="cp ~/build/fixed_tasks/* ~build/rhel4vh_org.eclipse.swt.gtk.linux.s390/${tasks}"/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=${ant_home}/bin:$PATH; "/>
 		</antcall>
 	</target>
