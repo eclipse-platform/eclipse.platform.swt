@@ -242,9 +242,11 @@
 	<target name="build_test" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="install"/>
+		
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
 			<env key="JAVA_HOME" value="/home/swtbuild/java5/ibm-java2-s390x-50"/>
+			<env key="MODEL" value="s390"/>
 			<!--
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk"/>
 			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.8.0.4/gecko-sdk"/>
@@ -258,7 +260,7 @@
 			<arg line="${clean}"/>
 		</exec>
 		<antcall target="refresh_fragment">
-			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390"/>
 		</antcall>
 	</target>
 
