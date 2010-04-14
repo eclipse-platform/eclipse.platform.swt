@@ -1248,7 +1248,7 @@
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_linux_x86}"/>
 			<param name="cp" value="${cp_gtk}"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390x"/>
 			<param name="build_target" value="build_test"/>
 			<param name="pre_commands1" value="cp ~/build/fixed_tasks/* ~/build/rhel4vh_org.eclipse.swt.gtk.linux.s390/${tasks}; "/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=${ant_home}/bin:$PATH; "/>
