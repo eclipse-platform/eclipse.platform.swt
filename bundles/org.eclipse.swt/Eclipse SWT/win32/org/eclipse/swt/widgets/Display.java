@@ -3500,6 +3500,23 @@ public boolean post (Event event) {
 					}
 				}
 				inputs.dwFlags = type == SWT.KeyUp ? OS.KEYEVENTF_KEYUP : 0;
+				switch (inputs.wVk) {
+					case OS.VK_INSERT:
+					case OS.VK_DELETE:
+					case OS.VK_HOME:
+					case OS.VK_END:
+					case OS.VK_PRIOR:
+					case OS.VK_NEXT:
+					case OS.VK_UP:
+					case OS.VK_DOWN:
+					case OS.VK_LEFT:
+					case OS.VK_RIGHT:
+					case OS.VK_NUMLOCK:
+					case OS.VK_SNAPSHOT:
+					case OS.VK_CANCEL:
+					case OS.VK_DIVIDE:
+						inputs.dwFlags |= OS.KEYEVENTF_EXTENDEDKEY;
+				}
 				int /*long*/ hHeap = OS.GetProcessHeap ();
 				int /*long*/ pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, INPUT.sizeof);
 				OS.MoveMemory(pInputs, new int[] {OS.INPUT_KEYBOARD}, 4);

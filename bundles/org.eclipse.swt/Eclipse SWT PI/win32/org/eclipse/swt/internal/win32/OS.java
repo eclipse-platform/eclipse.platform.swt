@@ -879,6 +879,7 @@ public class OS extends C {
 	public static final int KEY_NOTIFY = 0x10;
 	public static final int KEY_QUERY_VALUE = 0x1;
 	public static final int KEY_READ = 0x20019;
+	public static final int KEYEVENTF_EXTENDEDKEY = 0x0001;
 	public static final int KEYEVENTF_KEYUP = 0x0002;
 	public static final int L_MAX_URL_LENGTH = 2084;
 //	public static final int LANG_KOREAN = 0x12;
