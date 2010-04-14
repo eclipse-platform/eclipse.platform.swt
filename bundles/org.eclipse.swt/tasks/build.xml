@@ -1072,12 +1072,12 @@
 	
 	<target name="build_remote">
 		<property name="scp" value="scp"/>
-		<zip destfile="../${fragment}.zip" basedir=".." includes="${fragment}/**/*"/>
+		<zip destfile="../${machine}_${fragment}.zip" basedir=".." includes="${machine}_${fragment}/**/*"/>
 		<!--exec executable="${scp}">
 		    <arg value="../${fragment}.zip"/>
 		    <arg value="swtbuild@${machine}:~/build"/>
 		</exec>
-		<property name="remotetmpdir" value="~/build/${fragment}"/>
+		<property name="remotetmpdir" value="~/build/${machine}_${fragment}"/>
 		<sshexec host="${machine}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
