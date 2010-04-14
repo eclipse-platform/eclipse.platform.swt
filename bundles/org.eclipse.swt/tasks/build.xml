@@ -238,7 +238,7 @@
 			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86"/>
 		</antcall>
 	</target>
-	
+
 	<target name="build_gtk_solaris_sparc" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="make_mozilla install"/>
@@ -262,7 +262,6 @@
 	
 	<target name="build_gtk_linux_s390" depends="init_build">
 		<echo>gtk_linux_s390 is not being built</echo>
-		
 	</target>
 	
 	<target name="build_gtk_linux_s390x" depends="init_build">
@@ -1215,7 +1214,7 @@
 			<param name="build_target" value="build_gtk_linux_s390"/>
 		</antcall>
 	</target>
-	
+
 	<target name="gtk_linux_s390x">
 		<property name="thefragment" value="org.eclipse.swt.gtk.linux.s390x"/>
 		<antcall target="build_ssh">
