@@ -239,31 +239,6 @@
 		</antcall>
 	</target>
 	
-	<target name="build_test" depends="init_build">
-		<property name="clean" value="clean"/>
-		<property name="targets" value="install"/>
-		
-		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
-			<arg value="build.sh"/>
-			<env key="JAVA_HOME" value="/home/swtbuild/java5/ibm-java2-s390x-50"/>
-			<env key="MODEL" value="s390x"/>
-			<!--
-			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk"/>
-			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.8.0.4/gecko-sdk"/>
-			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/mozilla-config.h -I${MOZILLA_SDK}/../include/xpcom -I${MOZILLA_SDK}/../include/nspr -I${MOZILLA_SDK}/../include/embed_base -I${MOZILLA_SDK}/../include/embedstring -I${MOZILLA_SDK}/../include/string"/>
-			<env key="MOZILLA_LIBS" value="${MOZILLA_SDK}/../lib/libembedstring.a -L${MOZILLA_SDK}/../bin -L${MOZILLA_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"/>
-			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
-			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
-			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86/lib/pkgconfig"/>
-			-->
-			<arg line="${targets}"/>
-			<arg line="${clean}"/>
-		</exec>
-		<antcall target="refresh_fragment">
-			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390x"/>
-		</antcall>
-	</target>
-
 	<target name="build_gtk_solaris_sparc" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="make_mozilla install"/>
@@ -287,13 +262,16 @@
 	
 	<target name="build_gtk_linux_s390" depends="init_build">
 		<echo>gtk_linux_s390 is not being built</echo>
-		<!--
+		
+	</target>
+	
+	<target name="build_gtk_linux_s390x" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="install"/>
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
 			<env key="JAVA_HOME" value="/home/swtbuild/java5/ibm-java2-s390x-50"/>
-			-->
+			<env key="MODEL" value="s390x"/>
 			<!--
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk"/>
 			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.8.0.4/gecko-sdk"/>
@@ -303,18 +281,12 @@
 			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
 			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86/lib/pkgconfig"/>
 			-->
-			<!--
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
 		</exec>
 		<antcall target="refresh_fragment">
-			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390x"/>
 		</antcall>
-		-->
-	</target>
-	
-	<target name="build_gtk_linux_s390x" depends="init_build">
-		<echo>gtk_linux_s390x is not being built</echo>
 	</target>
 
 	<target name="build_motif_linux" depends="init_build">
@@ -1021,11 +993,10 @@
 		<copy todir="${builddir}" flatten="true">
 			<fileset dir="org.eclipse.swt" includes="**/library/"/>
 		</copy>
-		<condition property="real_target" value="build_remote" else="${build_target}">
+		<condition property="real_target" value="build_s390" else="${build_target}">
 			<or>
-				<!--equals arg1="${build_target}" arg2="build_gtk_linux_s390"/>
-				<equals arg1="${build_target}" arg2="build_gtk_linux_s390x"/-->
-				<equals arg1="${build_target}" arg2="build_test"/>
+				<!--equals arg1="${build_target}" arg2="build_gtk_linux_s390"/-->
+				<equals arg1="${build_target}" arg2="build_gtk_linux_s390x"/>
 			</or>
 		</condition>
 		<antcall target="${real_target}"/>
@@ -1096,10 +1067,11 @@
 		<property name="extra_properties" value="-Dnatives_changed=${natives_changed}"/>
 	</target>
 	
-	<target name="build_remote">
+	<target name="build_s390">
 		<property name="zipname" value="${fragment}"/>		
 		<property name="remotetmpdir" value="~/build/${zipname}"/>
-		<property name="remotemachine" value="h4245030.boeblingen.de.ibm.com"/>
+		<property name="remotemachine" value="${m_linux_s390}"/>
+		<property name="s390_path" value="/home/swtbuild/ant/apache-ant-1.8.0RC1/bin:/home/swtbuild/java5/ibm-java2-s390x-50/bin:/usr/kerberos/bin:/usr/local/bin:/bin:/usr/bin:/usr/X11R6/bin:/home/swtbuild/bin"/>
 		<zip destfile="../${zipname}.zip" basedir=".." includes="${zipname}/**/*"/>
 		<exec executable="scp">
 		    <arg value="../${zipname}.zip"/>
@@ -1109,7 +1081,7 @@
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
- 			command="export PATH=/home/swtbuild/ant/apache-ant-1.8.0RC1/bin:/home/swtbuild/java5/ibm-java2-s390x-50/bin:/usr/kerberos/bin:/usr/local/bin:/bin:/usr/bin:/usr/X11R6/bin:/home/swtbuild/bin; cd ~/build; rm -rf ${remotetmpdir}; unzip -qq ~/build/${zipname}.zip; rm ~/build/${zipname}.zip; cd ${remotetmpdir}/${tasks}; if ant -f build.xml ${build_target} ${properties}; then cd ~/build; zip -q -r ${zipname}.zip ${zipname}; rm -rf ${remotetmpdir}; else cd; rm -rf ${remotetmpdir}; exit 1; fi"/>
+ 			command="export PATH=${s390_path}; cd ~/build; rm -rf ${remotetmpdir}; unzip -qq ~/build/${zipname}.zip; rm ~/build/${zipname}.zip; cd ${remotetmpdir}/${tasks}; if ant -f build.xml ${build_target}; then cd ~/build; zip -q -r ${zipname}.zip ${zipname}; rm -rf ${remotetmpdir}; else cd; rm -rf ${remotetmpdir}; exit 1; fi"/>
 		<exec executable="scp">
 		    <arg value="swtbuild@${remotemachine}:~/build/${zipname}.zip"/>
 		    <arg value=".."/>
@@ -1244,22 +1216,15 @@
 		</antcall>
 	</target>
 	
-	<target name="test">
+	<target name="gtk_linux_s390x">
+		<property name="thefragment" value="org.eclipse.swt.gtk.linux.s390x"/>
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_linux_x86}"/>
 			<param name="cp" value="${cp_gtk}"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390x"/>
-			<param name="build_target" value="build_test"/>
-			<param name="pre_commands1" value="cp ~/build/fixed_tasks/* ~/build/org.eclipse.swt.gtk.linux.s390x/${tasks}; "/>
-			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=${ant_home}/bin:$PATH; "/>
-		</antcall>
-	</target>
-
-	<target name="gtk_linux_s390x">
-		<antcall target="build_local">
-			<param name="cp" value="${cp_gtk}"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390x"/>
+			<param name="fragment" value="${thefragment}"/>
 			<param name="build_target" value="build_gtk_linux_s390x"/>
+			<param name="pre_commands1" value="cp ~/build/fixed_tasks/* ~/build/${thefragment}/${tasks}; "/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=${ant_home}/bin:$PATH; "/>
 		</antcall>
 	</target>
 
