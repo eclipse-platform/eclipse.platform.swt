@@ -1072,7 +1072,8 @@
 	
 	<target name="build_remote">
 		<property name="scp" value="scp"/>
-		<zip destfile="../${machine}_${fragment}.zip" basedir=".." includes="${machine}_${fragment}/**/*"/>
+		<property name="zipname" value="rhel4vh_${fragment}"/>		
+		<zip destfile="../${zipname}.zip" basedir=".." includes="${zipname}/**/*"/>
 		<!--exec executable="${scp}">
 		    <arg value="../${fragment}.zip"/>
 		    <arg value="swtbuild@${machine}:~/build"/>
@@ -1088,7 +1089,7 @@
 		    <arg value="swtbuild@${machine}:~/build/${fragment}.zip"/>
 		    <arg value=".."/>
 		</exec-->
-		<unzip src="../${fragment}.zip" dest=".."/>
+		<unzip src="../${zipname}.zip" dest=".."/>
 	</target>
 
 	<!-- Params: machine, pre_commands, cp, fragment, build_target -->
