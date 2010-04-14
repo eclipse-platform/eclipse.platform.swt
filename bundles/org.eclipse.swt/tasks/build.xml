@@ -1096,7 +1096,7 @@
 	<target name="build_remote">
 		<property name="zipname" value="rhel4vh_${fragment}"/>		
 		<property name="remotetmpdir" value="~/build/${zipname}"/>
-		<property name="remotemachine" value="${m_solaris_x86}"/>
+		<property name="remotemachine" value="tswtopensol"/>
 		<zip destfile="../${zipname}.zip" basedir=".." includes="${zipname}/**/*"/>
 		<exec executable="scp">
 		    <arg value="../${zipname}.zip"/>
