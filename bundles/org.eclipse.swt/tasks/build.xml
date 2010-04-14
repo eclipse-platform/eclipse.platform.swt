@@ -998,8 +998,8 @@
 		</copy>
 		<condition property="real_target" value="build_remote" else="${build_target}">
 			<or>
-				<equals arg1="${build_target}" arg2="gtk_linux_s390"/>
-				<equals arg1="${build_target}" arg2="gtk_linux_s390x"/>
+				<equals arg1="${build_target}" arg2="build_gtk_linux_s390"/>
+				<equals arg1="${build_target}" arg2="build_gtk_linux_s390x"/>
 			</or>
 		</condition>
 		<antcall target="${real_target}"/>
