@@ -57,7 +57,6 @@ public class Accessible {
 		OS.NSAccessibilitySizeAttribute,
 		OS.NSAccessibilityWindowAttribute,
 		OS.NSAccessibilityTopLevelUIElementAttribute,
-		OS.NSAccessibilityEnabledAttribute,
 	};
 	
 	NSMutableArray attributeNames = null;
@@ -851,10 +850,12 @@ public class Accessible {
 				returnValue.addObject(OS.NSAccessibilityVisibleChildrenAttribute);
 				break;
 			case ACC.ROLE_MENU:
+				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
 				returnValue.addObject(OS.NSAccessibilitySelectedChildrenAttribute);
 				returnValue.addObject(OS.NSAccessibilityVisibleChildrenAttribute);
 				break;
 			case ACC.ROLE_MENUITEM:
+				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
 				break;
 			case ACC.ROLE_SEPARATOR:
 				returnValue.addObject(OS.NSAccessibilityMaxValueAttribute);
@@ -880,22 +881,23 @@ public class Accessible {
 //				returnValue.addObject(OS.NSAccessibilityMinimizedAttribute);
 				break;
 			case ACC.ROLE_LABEL:
+				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
 				returnValue.addObject(OS.NSAccessibilityValueAttribute);
 				break;
 			case ACC.ROLE_PUSHBUTTON:
+				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
 				returnValue.addObject(OS.NSAccessibilityTitleAttribute);
 				break;
 			case ACC.ROLE_CHECKBUTTON:
-				returnValue.addObject(OS.NSAccessibilityValueAttribute);
-				returnValue.addObject(OS.NSAccessibilityTitleAttribute);
-				break;
 			case ACC.ROLE_RADIOBUTTON:
+				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
 				returnValue.addObject(OS.NSAccessibilityValueAttribute);
 				returnValue.addObject(OS.NSAccessibilityTitleAttribute);
 				break;
 			case ACC.ROLE_SPLITBUTTON:
 				break;
 			case ACC.ROLE_COMBOBOX:
+				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
 				returnValue.addObject(OS.NSAccessibilityExpandedAttribute);
 				returnValue.addObject(OS.NSAccessibilityNumberOfCharactersAttribute);
 				returnValue.addObject(OS.NSAccessibilitySelectedTextAttribute);
@@ -906,6 +908,7 @@ public class Accessible {
 			case ACC.ROLE_TEXT:
 			case ACC.ROLE_PARAGRAPH:
 			case ACC.ROLE_HEADING:
+				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
 				returnValue.addObject(OS.NSAccessibilityNumberOfCharactersAttribute);
 				returnValue.addObject(OS.NSAccessibilitySelectedTextAttribute);
 				returnValue.addObject(OS.NSAccessibilitySelectedTextRangeAttribute);
@@ -917,6 +920,7 @@ public class Accessible {
 			case ACC.ROLE_TOOLBAR:
 				break;
 			case ACC.ROLE_LIST:
+				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
 				returnValue.addObject(OS.NSAccessibilityColumnsAttribute);
 				returnValue.addObject(OS.NSAccessibilitySelectedColumnsAttribute);
 				returnValue.addObject(OS.NSAccessibilityRowsAttribute);
@@ -930,6 +934,7 @@ public class Accessible {
 				returnValue.addObject(OS.NSAccessibilityValueAttribute);
 				break;
 			case ACC.ROLE_TABLE:
+				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
 				returnValue.addObject(OS.NSAccessibilityColumnsAttribute);
 				returnValue.addObject(OS.NSAccessibilitySelectedColumnsAttribute);
 				returnValue.addObject(OS.NSAccessibilityRowsAttribute);
@@ -944,6 +949,7 @@ public class Accessible {
 				if (OS.VERSION >= 0x1060) returnValue.addObject(OS.NSAccessibilityColumnIndexRangeAttribute);
 				break;
 			case ACC.ROLE_TABLEROWHEADER:
+				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
 				returnValue.addObject(OS.NSAccessibilitySelectedAttribute);
 				returnValue.addObject(OS.NSAccessibilityIndexAttribute);
 				break;
@@ -970,15 +976,18 @@ public class Accessible {
 				returnValue.addObject(OS.NSAccessibilityTabsAttribute);
 				break;
 			case ACC.ROLE_TABITEM:
+				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
 				returnValue.addObject(OS.NSAccessibilityValueAttribute);
 				returnValue.addObject(OS.NSAccessibilityTitleAttribute);
 				break;
 			case ACC.ROLE_PROGRESSBAR:
+				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
 				returnValue.addObject(OS.NSAccessibilityMaxValueAttribute);
 				returnValue.addObject(OS.NSAccessibilityMinValueAttribute);
 				returnValue.addObject(OS.NSAccessibilityValueAttribute);
 				break;
 			case ACC.ROLE_SLIDER:
+				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
 				returnValue.addObject(OS.NSAccessibilityMaxValueAttribute);
 				returnValue.addObject(OS.NSAccessibilityMinValueAttribute);
 				returnValue.addObject(OS.NSAccessibilityValueAttribute);
@@ -989,6 +998,7 @@ public class Accessible {
 				break;
 			case ACC.ROLE_LINK:
 				//TODO
+				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
 //				returnValue.addObject(OS.NSAccessibilityURLAttribute);
 //				visited
 				break;
@@ -1222,11 +1232,11 @@ public class Accessible {
 		}
 		
 		// The listener did not respond, so let Cocoa figure it out.
-		if (event.childID == ACC.CHILDID_MULTIPLE)
+		if (event.childID == ACC.CHILDID_MULTIPLE && event.accessible == null)
 			return null;
 		
 		if (event.accessible != null) {
-			return new id(OS.NSAccessibilityUnignoredAncestor(event.accessible.control.view.id));
+			return new id(OS.NSAccessibilityUnignoredAncestor(event.accessible.delegate.id));
 		}
 	
 		if (event.childID == ACC.CHILDID_SELF || event.childID == ACC.CHILDID_NONE) {
@@ -1562,7 +1572,6 @@ public class Accessible {
 				break;
 			}
 			paragraphDict.setValue(NSNumber.numberWithInt(osAlignment), NSString.stringWith("AXTextAlignment"));
-			//paragraphDict.setValue(NSNumber.numberWithInt(osAlignment), NSString.stringWith("AXVisualTextAlignment"));
 			attribString.addAttribute(NSString.stringWith("AXParagraphStyle"), paragraphDict, range);
 		}
 		
@@ -1620,7 +1629,7 @@ public class Accessible {
 			returnValue = NSString.stringWith(event.result);
 		}
 		
-		return returnValue == null ? NSString.string() : returnValue;
+		return returnValue;
 	}
 
 	id getRangeForPositionParameterizedAttribute(id parameter, int childID) {
@@ -1718,7 +1727,7 @@ public class Accessible {
 	
 	id getTitleAttribute (int childID) {
 		
-		id returnValue = NSString.string();
+		id returnValue = null;
 		
 		/*
 		* Feature of the Macintosh.  The text of a Label is returned in its value,
@@ -1845,7 +1854,8 @@ public class Accessible {
 	
 	id getEnabledAttribute (int childID) {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.detail = -1;
+		event.detail = ACC.STATE_NORMAL;
+		event.childID = childID;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getState(event);
@@ -1858,18 +1868,16 @@ public class Accessible {
 	id getFocusedAttribute (int childID) {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = ACC.CHILDID_MULTIPLE; // set to invalid value, to test if the application sets it in getFocus()
-		event.accessible = null;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getFocus(event);
 		}
 
 		/* The application can optionally answer an accessible. */
-		// FIXME:
-//		if (event.accessible != null) {
-//			boolean hasFocus = (event.accessible.childID == childID) && (event.accessible.control == this.control);
-//			return NSNumber.numberWithBool(hasFocus);
-//		}
+		if (event.accessible != null) {
+			boolean hasFocus = (event.accessible.index == childID) && (event.accessible.control == this.control);
+			return NSNumber.numberWithBool(hasFocus);
+		}
 		
 		/* Or the application can answer a valid child ID, including CHILDID_SELF and CHILDID_NONE. */
 		if (event.childID == ACC.CHILDID_SELF) {
@@ -1886,8 +1894,7 @@ public class Accessible {
 
 		// Invalid childID at this point means the application did not implement getFocus, so 
 		// let the default handler return the native focus.
-		boolean hasFocus = control.isFocusControl();
-		return NSNumber.numberWithBool(hasFocus);
+		return null;
 	}
 	
 	id getParentAttribute (int childID) {

@@ -3536,6 +3536,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityServesAsTitleForUIElementsAt
 }
 #endif
 
+#ifndef NO_NSAccessibilityShowMenuAction
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityShowMenuAction)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityShowMenuAction_FUNC);
+	rc = (jintLong)NSAccessibilityShowMenuAction;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityShowMenuAction_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSAccessibilitySizeAttribute
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilitySizeAttribute)
 	(JNIEnv *env, jclass that)

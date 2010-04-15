@@ -11,7 +11,6 @@
 package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
 
@@ -97,42 +96,8 @@ public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
-	if (accessible != null) {		
-		if ((textView != null && (id == textView.id || id == textView.cell().id)) || (imageView != null && (id == imageView.id || id == imageView.cell().id))) {
-			// See if the accessible will override or augment the standard list.
-			// Help, title, and description can be overridden.
-			NSMutableArray extraAttributes = NSMutableArray.arrayWithCapacity(3);
-			extraAttributes.addObject(OS.NSAccessibilityHelpAttribute);
-			extraAttributes.addObject(OS.NSAccessibilityDescriptionAttribute);
-			extraAttributes.addObject(OS.NSAccessibilityTitleAttribute);
-
-			for (int i = (int)/*64*/extraAttributes.count() - 1; i >= 0; i--) {
-				NSString attribute = new NSString(extraAttributes.objectAtIndex(i).id);
-				if (accessible.internal_accessibilityAttributeValue(attribute, ACC.CHILDID_SELF) == null) {
-					extraAttributes.removeObjectAtIndex(i);
-				}
-			}
-
-			if (extraAttributes.count() > 0) {
-				int /*long*/ superResult = super.accessibilityAttributeNames(id, sel);
-				NSArray baseAttributes = new NSArray(superResult);
-				NSMutableArray mutableAttributes = NSMutableArray.arrayWithCapacity(baseAttributes.count() + 1);
-				mutableAttributes.addObjectsFromArray(baseAttributes);
-				
-				for (int i = 0; i < extraAttributes.count(); i++) {
-					id currAttribute = extraAttributes.objectAtIndex(i);
-					if (!mutableAttributes.containsObject(currAttribute)) {
-						mutableAttributes.addObject(currAttribute);
-					}
-				}
-				
-				return mutableAttributes.id;
-			}
-		}
-	}
-
-	return super.accessibilityAttributeNames(id, sel);
+int /*long*/ accessibleHandle() {
+	return eventView().id;	
 }
 
 boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {

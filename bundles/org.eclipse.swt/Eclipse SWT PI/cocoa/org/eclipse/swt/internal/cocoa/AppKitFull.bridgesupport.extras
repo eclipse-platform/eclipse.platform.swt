@@ -4268,6 +4268,7 @@
 	<constant name="NSAccessibilitySelectedTextRangeAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySelectedTextRangesAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityServesAsTitleForUIElementsAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityShowMenuAction" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySizeAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySliderRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySortButtonRole" swt_gen="true"></constant>

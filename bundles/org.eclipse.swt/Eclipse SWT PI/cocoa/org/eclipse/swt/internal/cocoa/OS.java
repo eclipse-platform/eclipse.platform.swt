@@ -2456,6 +2456,9 @@ public static final NSString NSAccessibilitySelectedTextRangesAttribute = new NS
 public static final native int /*long*/ NSAccessibilityServesAsTitleForUIElementsAttribute();
 public static final NSString NSAccessibilityServesAsTitleForUIElementsAttribute = new NSString(NSAccessibilityServesAsTitleForUIElementsAttribute());
 /** @method flags=const */
+public static final native int /*long*/ NSAccessibilityShowMenuAction();
+public static final NSString NSAccessibilityShowMenuAction = new NSString(NSAccessibilityShowMenuAction());
+/** @method flags=const */
 public static final native int /*long*/ NSAccessibilitySizeAttribute();
 public static final NSString NSAccessibilitySizeAttribute = new NSString(NSAccessibilitySizeAttribute());
 /** @method flags=const */

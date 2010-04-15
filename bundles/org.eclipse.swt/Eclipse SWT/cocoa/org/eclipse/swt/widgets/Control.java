@@ -123,11 +123,19 @@ boolean acceptsFirstMouse (int /*long*/ id, int /*long*/ sel, int /*long*/ theEv
 }
 
 int /*long*/ accessibleHandle() {
-	return view.id;
+	int /*long*/ returnValue = view.id;
+	
+	if (view instanceof NSControl) {
+		if (((NSControl) view).cell() != null) {
+			returnValue = ((NSControl) view).cell().id;
+		}
+			
+	}
+	return returnValue;
 }
 
 int /*long*/ accessibilityActionDescription(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
-	if (id == view.id && accessible != null) {
+	if (id == accessibleHandle() && accessible != null) {
 		NSString actionName = new NSString(arg0);
 		id returnValue = accessible.internal_accessibilityActionDescription(actionName, ACC.CHILDID_SELF);
 		if (returnValue != null) return returnValue.id;
@@ -136,7 +144,7 @@ int /*long*/ accessibilityActionDescription(int /*long*/ id, int /*long*/ sel, i
 }
 
 int /*long*/ accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
-	if (id == view.id && accessible != null) {
+	if (id == accessibleHandle() && accessible != null) {
 		NSArray returnValue = accessible.internal_accessibilityActionNames(ACC.CHILDID_SELF);
 		if (returnValue != null) return returnValue.id;
 	}
@@ -146,44 +154,9 @@ int /*long*/ accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
 
 int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 	
-	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell() != null && ((NSControl)view).cell().id == id)) {
-		if (accessible != null) {
-			
-			// First, see if the accessible is going to define a set of attributes for the control.
-			// If it does, return that.
-			NSArray returnValue = accessible.internal_accessibilityAttributeNames(ACC.CHILDID_SELF);
-			if (returnValue != null) return returnValue.id;
-			
-			// If not, see if it will override or augment the standard list.
-			// Help, title, and description can be overridden.
-			NSMutableArray extraAttributes = NSMutableArray.arrayWithCapacity(3);
-			extraAttributes.addObject(OS.NSAccessibilityHelpAttribute);
-			extraAttributes.addObject(OS.NSAccessibilityDescriptionAttribute);
-			extraAttributes.addObject(OS.NSAccessibilityTitleAttribute);
-
-			for (int i = (int)/*64*/extraAttributes.count() - 1; i >= 0; i--) {
-				NSString attribute = new NSString(extraAttributes.objectAtIndex(i).id);
-				if (accessible.internal_accessibilityAttributeValue(attribute, ACC.CHILDID_SELF) == null) {
-					extraAttributes.removeObjectAtIndex(i);
-				}
-			}
-
-			if (extraAttributes.count() > 0) {
-				int /*long*/ superResult = super.accessibilityAttributeNames(id, sel);
-				NSArray baseAttributes = new NSArray(superResult);
-				NSMutableArray mutableAttributes = NSMutableArray.arrayWithCapacity(baseAttributes.count() + 1);
-				mutableAttributes.addObjectsFromArray(baseAttributes);
-				
-				for (int i = 0; i < extraAttributes.count(); i++) {
-					id currAttribute = extraAttributes.objectAtIndex(i);
-					if (!mutableAttributes.containsObject(currAttribute)) {
-						mutableAttributes.addObject(currAttribute);
-					}
-				}
-				
-				return mutableAttributes.id;
-			}
-		}
+	if (id == accessibleHandle() && accessible != null) {			
+		NSArray returnValue = accessible.internal_accessibilityAttributeNames(ACC.CHILDID_SELF);
+		if (returnValue != null) return returnValue.id;
 	}
 
 	return super.accessibilityAttributeNames(id, sel);
@@ -191,18 +164,16 @@ int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 
 int /*long*/ accessibilityParameterizedAttributeNames(int /*long*/ id, int /*long*/ sel) {
 
-	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell() != null && ((NSControl)view).cell().id == id)) {
-		if (accessible != null) {
-			NSArray returnValue = accessible.internal_accessibilityParameterizedAttributeNames(ACC.CHILDID_SELF);
-			if (returnValue != null) return returnValue.id;
-		}
+	if (id == accessibleHandle() && accessible != null) {
+		NSArray returnValue = accessible.internal_accessibilityParameterizedAttributeNames(ACC.CHILDID_SELF);
+		if (returnValue != null) return returnValue.id;
 	}
 
 	return super.accessibilityParameterizedAttributeNames(id, sel);
 }
 
 void accessibilityPerformAction(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
-	if (id == view.id && accessible != null) {
+	if (id == accessibleHandle() && accessible != null) {
 		NSString action = new NSString(arg0);
 		if (accessible.internal_accessibilityPerformAction(action, ACC.CHILDID_SELF)) return;
 	}
@@ -212,10 +183,8 @@ void accessibilityPerformAction(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 int /*long*/ accessibilityFocusedUIElement(int /*long*/ id, int /*long*/ sel) {
 	id returnValue = null;
 
-	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell() != null && ((NSControl)view).cell().id == id)) {
-		if (accessible != null) {
-			returnValue = accessible.internal_accessibilityFocusedUIElement(ACC.CHILDID_SELF);
-		}
+	if (id == accessibleHandle() && accessible != null) {
+		returnValue = accessible.internal_accessibilityFocusedUIElement(ACC.CHILDID_SELF);
 	}
 
 	// If we had an accessible and it didn't handle the attribute request, let the
@@ -229,10 +198,8 @@ int /*long*/ accessibilityFocusedUIElement(int /*long*/ id, int /*long*/ sel) {
 int /*long*/ accessibilityHitTest(int /*long*/ id, int /*long*/ sel, NSPoint point) {
 	id returnValue = null;
 
-	if (id == view.id || (view instanceof NSControl && ((NSControl)view).cell() != null && ((NSControl)view).cell().id == id)) {
-		if (accessible != null) {
-			returnValue = accessible.internal_accessibilityHitTest(point, ACC.CHILDID_SELF);
-		}
+	if (id == accessibleHandle() && accessible != null) {
+		returnValue = accessible.internal_accessibilityHitTest(point, ACC.CHILDID_SELF);
 	}
 
 	// If we had an accessible and it didn't handle the attribute request, let the
@@ -248,7 +215,7 @@ int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int 
 	int /*long*/ returnValue = 0;
 	id returnObject = null;
 	
-	if (id == view.id && accessible != null) {
+	if (id == accessibleHandle() && accessible != null) {
 		returnObject = accessible.internal_accessibilityAttributeValue(attribute, ACC.CHILDID_SELF);
 	}
 
@@ -268,7 +235,7 @@ int /*long*/ accessibilityAttributeValue_forParameter(int /*long*/ id, int /*lon
 	
 	id returnValue = null;
 	
-	if (id == view.id && accessible != null) {
+	if (id == accessibleHandle() && accessible != null) {
 		id parameter = new id(arg1);
 		returnValue = accessible.internal_accessibilityAttributeValue_forParameter(attribute, parameter, ACC.CHILDID_SELF);
 	}
@@ -283,7 +250,7 @@ int /*long*/ accessibilityAttributeValue_forParameter(int /*long*/ id, int /*lon
 
 boolean accessibilityIsAttributeSettable(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	boolean returnValue = false;
-	if (id == view.id && accessible != null) {
+	if (id == accessibleHandle() && accessible != null) {
 		NSString attribute = new NSString (arg0);
 		returnValue = accessible.internal_accessibilityIsAttributeSettable(attribute, ACC.CHILDID_SELF);
 	}
@@ -294,7 +261,7 @@ boolean accessibilityIsAttributeSettable(int /*long*/ id, int /*long*/ sel, int 
 }
 
 void accessibilitySetValue_forAttribute(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
-	if (id == view.id && accessible != null) {
+	if (id == accessibleHandle() && accessible != null) {
 		id value = new id(arg0);
 		NSString attribute = new NSString(arg1);
 		accessible.internal_accessibilitySetValue_forAttribute(value, attribute, ACC.CHILDID_SELF);

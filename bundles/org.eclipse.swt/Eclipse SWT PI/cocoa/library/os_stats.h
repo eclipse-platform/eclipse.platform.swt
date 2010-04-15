@@ -277,6 +277,7 @@ typedef enum {
 	NSAccessibilitySelectedTextRangeAttribute_FUNC,
 	NSAccessibilitySelectedTextRangesAttribute_FUNC,
 	NSAccessibilityServesAsTitleForUIElementsAttribute_FUNC,
+	NSAccessibilityShowMenuAction_FUNC,
 	NSAccessibilitySizeAttribute_FUNC,
 	NSAccessibilitySliderRole_FUNC,
 	NSAccessibilitySortButtonRole_FUNC,

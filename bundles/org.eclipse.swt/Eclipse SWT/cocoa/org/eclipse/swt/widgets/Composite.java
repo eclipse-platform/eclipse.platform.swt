@@ -12,7 +12,6 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
 
@@ -137,27 +136,42 @@ boolean acceptsFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	return super.acceptsFirstResponder (id, sel);
 }
 
-int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
-	
-	if (id == view.id) {
-		if (accessible != null) {
-			// If there is an accessible, it may provide its own list of attributes if it's a lightweight control.
-			// If not, let Cocoa handle it for this view.
-			id returnObject = accessible.internal_accessibilityAttributeNames(ACC.CHILDID_SELF);
-			if (returnObject != null) return returnObject.id;
+int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	NSString nsAttributeName = new NSString(arg0);
+	int /*long*/ superValue = super.accessibilityAttributeValue(id, sel, arg0);
+
+	if ((state & CANVAS) != 0) {
+		// If this Composite has an Accessible that defined a role, return that, unless the
+		// supplied role was NSAccessibilityUnknownRole.  In that case, return an SWT-specific constant.
+		// This lets the accessibility hierarchy know there's a container here.
+		if (id == accessibleHandle()) {
+			if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleAttribute)) {
+				if (superValue != 0) {
+					NSString role = new NSString(superValue);
+					if (!role.isEqualToString(OS.NSAccessibilityUnknownRole)) return superValue;
+				}
+				
+				NSString role = NSString.stringWith("SWTComposite");
+				return role.id;
+			} else if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleDescriptionAttribute)) {
+				if (superValue != 0) {
+					NSString role = new NSString(superValue);
+					if (!role.isEqualToString(OS.NSAccessibilityUnknownSubrole)) return superValue;
+				}
+				
+				NSString roleDescription = NSString.stringWith("generic container view");
+				return roleDescription.id;
+			}
 		}
 	}
 	
-	return super.accessibilityAttributeNames(id, sel);
+	return superValue;
 }
 
+
 boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
-	// If we have an accessible and it represents a valid accessible role, this view is not ignored.
-	if (view != null && id == view.id) {
-		if (accessible != null) {
-			id role = accessible.internal_accessibilityAttributeValue(OS.NSAccessibilityRoleAttribute, ACC.CHILDID_SELF);
-			if (role != null) return false; 
-		}
+	if (id == view.id && view instanceof SWTCanvasView) {
+		return false;
 	}
 
 	return super.accessibilityIsIgnored(id, sel);	

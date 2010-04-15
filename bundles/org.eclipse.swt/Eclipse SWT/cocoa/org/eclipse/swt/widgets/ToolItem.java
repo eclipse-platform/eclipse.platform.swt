@@ -140,6 +140,48 @@ int /*long*/ accessibleHandle() {
 	return 0;
 }
 
+int /*long*/ accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
+
+	int /*long*/ returnValue = super.accessibilityActionNames(id, sel);
+	
+	if (id == accessibleHandle()) {
+		if ((style & SWT.DROP_DOWN) != 0) {
+			NSArray baseArray = new NSArray(returnValue);
+			NSMutableArray ourNames = NSMutableArray.arrayWithCapacity(baseArray.count() + 1);
+			ourNames.addObjectsFromArray(baseArray);
+			ourNames.addObject(OS.NSAccessibilityShowMenuAction);
+			returnValue = ourNames.id;
+		}
+	} else {
+		returnValue = super.accessibilityActionNames(id, sel);
+	}
+	return returnValue;
+}
+
+int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
+
+	int /*long*/ returnValue = super.accessibilityAttributeNames(id, sel);
+	
+	if (id == accessibleHandle()) {
+		if ((style & (SWT.CHECK|SWT.RADIO)) !=0) {
+			NSArray baseArray = new NSArray(returnValue);
+			NSMutableArray ourNames = NSMutableArray.arrayWithCapacity(baseArray.count() + 1);
+			ourNames.addObjectsFromArray(baseArray);
+			ourNames.addObject(OS.NSAccessibilityValueAttribute);
+			returnValue = ourNames.id;
+		} else if ((style & SWT.DROP_DOWN) != 0) {
+			NSArray baseArray = new NSArray(returnValue);
+			NSMutableArray ourNames = NSMutableArray.arrayWithCapacity(baseArray.count() + 1);
+			ourNames.addObjectsFromArray(baseArray);
+			ourNames.addObject(OS.NSAccessibilityChildrenAttribute);
+			returnValue = ourNames.id;
+		}
+	} else {
+		returnValue = super.accessibilityAttributeNames(id, sel);
+	}
+	return returnValue;
+}
+
 int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	NSString nsAttributeName = new NSString(arg0);
 
@@ -170,6 +212,10 @@ int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int 
 		return value.id;
 	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityEnabledAttribute)) {
 		NSNumber value = NSNumber.numberWithBool(getEnabled());
+		return value.id;
+	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityChildrenAttribute)) {
+		// 
+		NSArray value = NSArray.array();
 		return value.id;
 	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityParentAttribute)) {
 		// Parent of the toolitem is always its toolbar.
