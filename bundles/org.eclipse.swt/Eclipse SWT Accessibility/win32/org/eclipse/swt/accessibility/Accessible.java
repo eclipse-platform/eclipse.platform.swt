@@ -44,6 +44,10 @@ import org.eclipse.swt.internal.ole.win32.*;
  */
 public class Accessible {
 	static final int MAX_RELATION_TYPES = 15;
+	static final int TABLE_MODEL_CHANGE_SIZE = 5;
+	static final int TEXT_CHANGE_SIZE = 4;
+	static final boolean DEBUG = Device.DEBUG;
+	static int UniqueID = 1;
 	int refCount = 0, enumIndex = 0;
 	COMObject objIAccessible, objIEnumVARIANT, objIServiceProvider, objIAccessible2, objIAccessibleAction,
 		objIAccessibleApplication, objIAccessibleComponent, objIAccessibleEditableText, objIAccessibleHyperlink,
@@ -66,6 +70,10 @@ public class Accessible {
 	Accessible parent;
 	Vector children = new Vector();
 	Control control;
+	int uniqueID = 0;
+	int [] tableChange; // type, rowStart, rowCount, columnStart, columnCount
+	Object [] textDeleted; // type, start, end, text
+	Object [] textInserted; // type, start, end, text
 
 	/**
 	 * Constructs a new instance of this class given its parent.
@@ -1087,8 +1095,95 @@ public class Accessible {
 	 */
 	public void sendEvent(int event, Object eventData) {
 		checkWidget();
-		COM.NotifyWinEvent (event, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF);
-		//TODO: parse the data for some events, send location changed for text caret moved event
+		switch (event) {
+			case ACC.EVENT_TABLE_CHANGED: {
+				if (!(eventData instanceof int[] && ((int[])eventData).length == TABLE_MODEL_CHANGE_SIZE)) break;
+				tableChange = (int[])eventData;
+				COM.NotifyWinEvent (COM.IA2_EVENT_TABLE_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF);
+				break;
+			}
+			case ACC.EVENT_TEXT_CHANGED: {
+				if (!(eventData instanceof Object[] && ((Object[])eventData).length == TEXT_CHANGE_SIZE)) break;
+				Object[] data = (Object[])eventData;
+				int type = ((Integer)data[0]).intValue();
+				switch (type) {
+					case ACC.DELETE:
+						textDeleted = (Object[])eventData;
+						COM.NotifyWinEvent (COM.IA2_EVENT_TEXT_REMOVED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF);
+						break;
+					case ACC.INSERT:
+						textInserted = (Object[])eventData;
+						COM.NotifyWinEvent (COM.IA2_EVENT_TEXT_INSERTED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF);
+						break;
+				}
+				break;
+			}
+			case ACC.EVENT_HYPERTEXT_LINK_SELECTED: {
+				if (!(eventData instanceof Integer)) break;
+	//			int index = ((Integer)eventData).intValue();
+				// TODO: IA2 currently does not use the index, however the plan is to use it in future
+				COM.NotifyWinEvent (COM.IA2_EVENT_HYPERTEXT_LINK_SELECTED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF);
+				break;
+			}
+			case ACC.EVENT_VALUE_CHANGED:
+				COM.NotifyWinEvent (COM.EVENT_OBJECT_VALUECHANGE, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_STATE_CHANGED:
+				COM.NotifyWinEvent (COM.EVENT_OBJECT_STATECHANGE, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_SELECTION_CHANGED:
+				COM.NotifyWinEvent (COM.EVENT_OBJECT_SELECTIONWITHIN, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_TEXT_SELECTION_CHANGED:
+				COM.NotifyWinEvent (COM.EVENT_OBJECT_TEXTSELECTIONCHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_LOCATION_CHANGED:
+				COM.NotifyWinEvent (COM.EVENT_OBJECT_LOCATIONCHANGE, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_NAME_CHANGED:
+				COM.NotifyWinEvent (COM.EVENT_OBJECT_NAMECHANGE, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_DESCRIPTION_CHANGED:
+				COM.NotifyWinEvent (COM.EVENT_OBJECT_DESCRIPTIONCHANGE, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_DOCUMENT_LOAD_COMPLETE:
+				COM.NotifyWinEvent (COM.IA2_EVENT_DOCUMENT_LOAD_COMPLETE, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_DOCUMENT_LOAD_STOPPED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_DOCUMENT_LOAD_STOPPED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_DOCUMENT_RELOAD:
+				COM.NotifyWinEvent (COM.IA2_EVENT_DOCUMENT_RELOAD, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_PAGE_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_PAGE_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_SECTION_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_SECTION_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_ACTION_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_ACTION_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_HYPERLINK_START_INDEX_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_HYPERLINK_START_INDEX_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_HYPERLINK_END_INDEX_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_HYPERLINK_END_INDEX_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_HYPERLINK_ANCHOR_COUNT_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_HYPERLINK_ANCHOR_COUNT_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_HYPERLINK_SELECTED_LINK_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_HYPERLINK_SELECTED_LINK_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_HYPERLINK_ACTIVATED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_HYPERLINK_ACTIVATED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_HYPERTEXT_LINK_COUNT_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_HYPERTEXT_LINK_COUNT_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_ATTRIBUTE_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_ATTRIBUTE_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_TABLE_CAPTION_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_TABLE_CAPTION_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_TABLE_COLUMN_DESCRIPTION_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_TABLE_COLUMN_DESCRIPTION_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_TABLE_COLUMN_HEADER_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_TABLE_COLUMN_HEADER_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_TABLE_ROW_DESCRIPTION_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_TABLE_ROW_DESCRIPTION_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_TABLE_ROW_HEADER_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_TABLE_ROW_HEADER_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_TABLE_SUMMARY_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_TABLE_SUMMARY_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_TEXT_ATTRIBUTE_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_TEXT_ATTRIBUTE_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_TEXT_CARET_MOVED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_TEXT_CARET_MOVED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+			case ACC.EVENT_TEXT_COLUMN_CHANGED:
+				COM.NotifyWinEvent (COM.IA2_EVENT_TEXT_COLUMN_CHANGED, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF); break;
+		}
 	}
 
 	/**
@@ -1163,6 +1258,24 @@ public class Accessible {
 	 */
 	public void textChanged (int type, int startIndex, int length) {
 		checkWidget();
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
+		event.start = startIndex;
+		event.end = startIndex + length;
+		event.count = 0;
+		event.type = ACC.TEXT_BOUNDARY_ALL;
+		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			listener.getText(event);
+		}
+		if (event.result != null) {
+			Object[] eventData = new Object[] {
+					new Integer(type),
+					new Integer(startIndex),
+					new Integer(startIndex + length),
+					event.result};
+			sendEvent(ACC.EVENT_TEXT_CHANGED, eventData);
+			return;
+		}
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_VALUECHANGE, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF);
 	}
 	
@@ -1189,7 +1302,7 @@ public class Accessible {
 	int QueryInterface(COMObject comObject, int /*long*/ iid, int /*long*/ ppvObject) {
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, iid, GUID.sizeof);
-//		System.out.println("QueryInterface guid=" + guidString(guid));
+		if (DEBUG && interesting(guid)) print("QueryInterface guid=" + guidString(guid));
 
 		if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
 			COM.MoveMemory(ppvObject, new int /*long*/[] { comObject.getAddress() }, OS.PTR_SIZEOF);
@@ -1319,7 +1432,8 @@ public class Accessible {
 		COM.MoveMemory(service, guidService, GUID.sizeof);
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, riid, GUID.sizeof);
-//		System.out.println("QueryService service=" + guidString(service) + " guid=" + guidString(guid));
+		if (DEBUG && interesting(service) && interesting(guid))
+			print("QueryService service=" + guidString(service) + " guid=" + guidString(guid));
 
 		if (COM.IsEqualGUID(service, COM.IIDIAccessible)) {
 			if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDispatch) | COM.IsEqualGUID(guid, COM.IIDIAccessible)) {
@@ -1450,6 +1564,28 @@ public class Accessible {
 	}
 	
 	// ---------------------- START TEMPORARY DEBUG CODE
+	boolean interesting(GUID guid) {
+		//if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessible)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIEnumVARIANT)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIServiceProvider)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessible2)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleRelation)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleAction)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleComponent)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleValue)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleText)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleEditableText)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHyperlink)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHypertext)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable2)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTableCell)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleImage)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleApplication)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleContext)) return true;
+		return false;
+	}
 	String guidString(GUID guid) {
 		final GUID IIDIAccessibleHandler = IIDFromString("{03022430-ABC4-11D0-BDE2-00AA001A1953}"); //$NON-NLS-1$
 		final GUID IIDIAccessor = IIDFromString("{0C733A8C-2A1C-11CE-ADE5-00AA0044773D}"); //$NON-NLS-1$
@@ -2295,10 +2431,11 @@ public class Accessible {
 			state &= ~ COM.STATE_SYSTEM_CHECKED;
 			state |= COM.STATE_SYSTEM_MIXED;
 		}
+		if (DEBUG) printState("IAccessible::get_accState(" + v.lVal + ") returning ", state);
 		setIntVARIANT(pvarState, COM.VT_I4, state);
 		return COM.S_OK;
 	}
-	
+
 	/* get_accValue([in] varChild, [out] pszValue) */
 	int get_accValue(int /*long*/ varChild, int /*long*/ pszValue) {
 		VARIANT v = getVARIANT(varChild);
@@ -2577,7 +2714,8 @@ public class Accessible {
 //		COM.MoveMemory(pSimilarItemsInGroup, new int [] { similarItemsInGroup }, 4);
 		//find this guy's index in the collection
 //		COM.MoveMemory(pPositionInGroup, new int [] { positionInGroup }, 4);
-		return COM.S_OK;
+//		return COM.S_OK;
+		return COM.S_FALSE;
 		// TODO: @retval S_OK if at least one value is valid @retval S_FALSE if no values are valid
 	}
 
@@ -2589,7 +2727,30 @@ public class Accessible {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getState(event);
 		}
-		COM.MoveMemory(pStates, new int [] { event.detail }, 4);
+		int states = event.detail;
+		int ia2States = 0;
+		if ((states & ACC.STATE_ACTIVE) != 0) ia2States |= COM.IA2_STATE_ACTIVE;
+		if ((states & ACC.STATE_SINGLELINE) != 0) ia2States |= COM.IA2_STATE_SINGLE_LINE;
+		if ((states & ACC.STATE_MULTILINE) != 0) ia2States |= COM.IA2_STATE_MULTI_LINE;
+		if ((states & ACC.STATE_REQUIRED) != 0) ia2States |= COM.IA2_STATE_REQUIRED;
+		if ((states & ACC.STATE_INVALID_ENTRY) != 0) ia2States |= COM.IA2_STATE_INVALID_ENTRY;
+		if ((states & ACC.STATE_SUPPORTS_AUTOCOMPLETION) != 0) ia2States |= COM.IA2_STATE_SUPPORTS_AUTOCOMPLETION;
+		
+		/* If the role is text, then set IA2_STATE_EDITABLE.
+		 * Note that IA2_STATE_EDITABLE is not the opposite of STATE_READONLY.
+		 * Instead, it means: "has a caret, supports IAccessibleText, and is a text editing environment".
+		 */
+		AccessibleControlEvent event2 = new AccessibleControlEvent(this);
+		event2.childID = ACC.CHILDID_SELF;
+		for (int i = 0; i < accessibleControlListeners.size(); i++) {
+			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			listener.getRole(event2);
+		}
+		if (event2.detail == ACC.ROLE_TEXT) {
+			ia2States |= COM.IA2_STATE_EDITABLE;
+		}
+		if (DEBUG) printIA2States("IAccessible2::get_states returning ", ia2States);
+		COM.MoveMemory(pStates, new int [] { ia2States }, 4);
 		return COM.S_OK;
 	}
 
@@ -2632,7 +2793,7 @@ public class Accessible {
 
 	/* IAccessible2::get_uniqueID([out] pUniqueID) */
 	int get_uniqueID(int /*long*/ pUniqueID) {
-		int /*long*/ uniqueID = getAddress();
+		if (uniqueID == 0) uniqueID = UniqueID++;
 		COM.MoveMemory(pUniqueID, new int /*long*/ [] { uniqueID }, 4);
 		return COM.S_OK;
 	}
@@ -2653,14 +2814,14 @@ public class Accessible {
 			listener.getChild(event);
 		}
 		int indexInParent = event.detail;
-//		if (indexInParent == -1) {
+		if (indexInParent == -1) {
 //			/* The application did not implement CHILDID_CHILD_INDEX,
 //			 * so determine the index by looping through the parent's
 //			 * children looking for this Accessible. This may be slow,
 //			 * so applications are strongly encouraged to implement
 //			 * getChild for CHILDID_CHILD_INDEX.
 //			 */
-//			// TODO
+//			// TODO: finish this. See also get_groupPosition
 //			int /*long*/ ppdispParent = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
 //			int code = get_accParent(ppdispParent);
 //			if (code == COM.S_OK) {
@@ -2694,7 +2855,7 @@ public class Accessible {
 //			} else {
 //				System.out.println("get_accParent failed? code=" + code);
 //			}
-//		}
+		}
 
 		COM.MoveMemory(pIndexInParent, new int [] { indexInParent }, 4);
 		return indexInParent == -1 ? COM.S_FALSE : COM.S_OK;
@@ -2728,11 +2889,34 @@ public class Accessible {
 			listener.getAttributes(event);
 		}
 		String attributes = "";
-		// TODO: Create an attributes string from the event data
-		if (attributes.length() == 0) return COM.S_FALSE; // TODO: is S_FALSE ok here?
+		attributes += "margin-left:" + event.leftMargin + ";";
+		attributes += "margin-top:" + event.topMargin + ";";
+		attributes += "margin-right:" + event.rightMargin + ";";
+		attributes += "margin-bottom:" + event.bottomMargin + ";";
+		if (event.tabStops != null) {
+			for (int i = 0; i < event.tabStops.length; i++) {
+				attributes += "tab-stop:position=" + event.tabStops[i] + ";";
+			}
+		}
+		if (event.justify) attributes += "text-align:justify;";
+		attributes += "text-align:" + (event.alignment == SWT.LEFT ? "left" : event.alignment == SWT.RIGHT ? "right" : "center") + ";";
+		attributes += "text-indent:" + event.indent + ";";
+		if (event.attributes != null) attributes += event.attributes;
+
+		/* If the role is text, then specify the text model for JAWS. */
+		// TODO: Should StyledText set event.attributes = "text-model:a1;"; ?
+		AccessibleControlEvent event2 = new AccessibleControlEvent(this);
+		event2.childID = ACC.CHILDID_SELF;
+		for (int i = 0; i < accessibleControlListeners.size(); i++) {
+			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			listener.getRole(event2);
+		}
+		if (event2.detail == ACC.ROLE_TEXT) {
+			attributes += "text-model:a1;";
+		}
 		setString(pbstrAttributes, attributes);
+		if (attributes.length() == 0) return COM.S_FALSE;
 		return COM.S_OK;
-		// TODO: @retval S_FALSE returned if there is nothing to return, [out] value is NULL
 	}
 
 	/* IAccessibleAction::get_nActions([out] pNActions) */
@@ -2765,8 +2949,8 @@ public class Accessible {
 			AccessibleActionListener listener = (AccessibleActionListener) accessibleActionListeners.elementAt(i);
 			listener.getDescription(event);
 		}
-		if (event.result == null || event.result.length() == 0) return COM.S_FALSE;
 		setString(pbstrDescription, event.result);
+		if (event.result == null || event.result.length() == 0) return COM.S_FALSE;
 		return COM.S_OK;
 	}
 
@@ -2779,9 +2963,8 @@ public class Accessible {
 			listener.getKeyBinding(event);
 		}
 		String keyBindings = event.result;
-		if (keyBindings == null) return COM.S_FALSE;
-		int length = keyBindings.length();
-		if (length == 0) return COM.S_FALSE;
+		int length = 0;
+		if (keyBindings != null) length = keyBindings.length();
 		int i = 0, count = 0;
 		while (i < length) {
 			if (count == nMaxBindings) break;
@@ -2795,6 +2978,10 @@ public class Accessible {
 			i = j + 1;
 		}
 		COM.MoveMemory(pNBindings, new int [] { count }, 4);
+		if (count == 0) {
+			setString(ppbstrKeyBindings, null);
+			return COM.S_FALSE;
+		}
 		return COM.S_OK;
 	}
 
@@ -2802,26 +2989,43 @@ public class Accessible {
 	int get_name(int actionIndex, int /*long*/ pbstrName) {
 		AccessibleActionEvent event = new AccessibleActionEvent(this);
 		event.index = actionIndex;
+		event.localized = false;
 		for (int i = 0; i < accessibleActionListeners.size(); i++) {
 			AccessibleActionListener listener = (AccessibleActionListener) accessibleActionListeners.elementAt(i);
 			listener.getName(event);
 		}
-		if (event.result == null || event.result.length() == 0) return COM.S_FALSE; // TODO: is S_FALSE ok here?
+		if (event.result == null || event.result.length() == 0) {
+			setString(pbstrName, null);
+			return COM.S_FALSE;
+		}
 		setString(pbstrName, event.result);
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is NULL@retval E_INVALIDARG if bad [in] passed, [out] value is NULL
 	}
 
 	/* IAccessibleAction::get_localizedName([in] actionIndex, [out] pbstrLocalizedName) */
 	int get_localizedName(int actionIndex, int /*long*/ pbstrLocalizedName) {
-		// TODO: Maybe return getName here also?
-		return COM.S_FALSE;
+		AccessibleActionEvent event = new AccessibleActionEvent(this);
+		event.index = actionIndex;
+		event.localized = true;
+		for (int i = 0; i < accessibleActionListeners.size(); i++) {
+			AccessibleActionListener listener = (AccessibleActionListener) accessibleActionListeners.elementAt(i);
+			listener.getName(event);
+		}
+		if (event.result == null || event.result.length() == 0) {
+			setString(pbstrLocalizedName, null);
+			return COM.S_FALSE;
+		}
+		setString(pbstrLocalizedName, event.result);
+		return COM.S_OK;
 	}
 
 	/* IAccessibleApplication::get_appName([out] pbstrName) */
 	int get_appName(int /*long*/ pbstrName) {
 		String appName = Display.getAppName();
-		if (appName == null || appName.length() == 0) return COM.S_FALSE;
+		if (appName == null || appName.length() == 0) {
+			setString(pbstrName, null);
+			return COM.S_FALSE;
+		}
 		setString(pbstrName, appName);
 		return COM.S_OK;
 	}
@@ -2829,7 +3033,10 @@ public class Accessible {
 	/* IAccessibleApplication::get_appVersion([out] pbstrVersion) */
 	int get_appVersion(int /*long*/ pbstrVersion) {
 		String appVersion = Display.getAppVersion();
-		if (appVersion == null || appVersion.length() == 0) return COM.S_FALSE;
+		if (appVersion == null || appVersion.length() == 0) {
+			setString(pbstrVersion, null);
+			return COM.S_FALSE;
+		}
 		setString(pbstrVersion, appVersion);
 		return COM.S_OK;
 	}
@@ -2865,6 +3072,7 @@ public class Accessible {
 	int get_foreground(int /*long*/ pForeground) {
 		Color color = control.getForeground();
 		if (color != null) COM.MoveMemory(pForeground, new int [] { color.handle }, 4);
+		if (DEBUG) print("IAccessibleComponent::get_foreground returning " + (color == null ? "null" : "" + color.handle));
 		return COM.S_OK;
 	}
 
@@ -2872,6 +3080,7 @@ public class Accessible {
 	int get_background(int /*long*/ pBackground) {
 		Color color = control.getBackground();
 		if (color != null) COM.MoveMemory(pBackground, new int [] { color.handle }, 4);
+		if (DEBUG) print("IAccessibleComponent::get_background returning " + (color == null ? "null" : "" + color.handle));
 		return COM.S_OK;
 	}
 
@@ -2989,10 +3198,15 @@ public class Accessible {
 			AccessibleHyperlinkListener listener = (AccessibleHyperlinkListener) accessibleHyperlinkListeners.elementAt(i);
 			listener.getAnchor(event);
 		}
-		if (event.result == null || event.result.length() == 0) return COM.S_FALSE; // TODO: is S_FALSE ok here?
-		// TODO: pAnchor is a VARIANT that can be either a bstr (event.string) or a dispatch (event.accessible)
+		Accessible accessible = event.accessible;
+		if (accessible != null) {
+			accessible.AddRef();
+			setPtrVARIANT(pAnchor, COM.VT_DISPATCH, accessible.getAddress());
+			return COM.S_OK;
+		}
+		setStringVARIANT(pAnchor, event.result);
+		if (event.result == null) return COM.S_FALSE;
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is NULL@retval E_INVALIDARG if bad [in] passed, [out] value is NULL
 	}
 
 	/* IAccessibleHyperlink::get_anchorTarget([in] index, [out] pAnchorTarget) */
@@ -3003,9 +3217,15 @@ public class Accessible {
 			AccessibleHyperlinkListener listener = (AccessibleHyperlinkListener) accessibleHyperlinkListeners.elementAt(i);
 			listener.getAnchorTarget(event);
 		}
-		// TODO: pAnchorTarget is a VARIANT that can be either a bstr (event.string) or a dispatch (event.accessible)
+		Accessible accessible = event.accessible;
+		if (accessible != null) {
+			accessible.AddRef();
+			setPtrVARIANT(pAnchorTarget, COM.VT_DISPATCH, accessible.getAddress());
+			return COM.S_OK;
+		}
+		setStringVARIANT(pAnchorTarget, event.result);
+		if (event.result == null) return COM.S_FALSE;
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is NULL@retval E_INVALIDARG if bad [in] passed, [out] value is NULL
 	}
 
 	/* IAccessibleHyperlink::get_startIndex([out] pIndex) */
@@ -3032,9 +3252,8 @@ public class Accessible {
 
 	/* IAccessibleHyperlink::get_valid([out] pValid) */
 	int get_valid(int /*long*/ pValid) {
-		// TODO: deprecated - should we return S_FALSE or E_NOTIMPL?
+		/* Deprecated. */
 		return COM.E_NOTIMPL;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is FALSE
 	}
 
 	/* IAccessibleHypertext::get_nHyperlinks([out] pHyperlinkCount) */
@@ -3057,12 +3276,13 @@ public class Accessible {
 			listener.getHyperlink(event);
 		}
 		Accessible accessible = event.accessible;
-		if (accessible != null) {
-			accessible.AddRef();
-			setPtrVARIANT(ppHyperlink, COM.VT_DISPATCH, accessible.getAddress());
+		if (accessible == null) {
+			setIntVARIANT(ppHyperlink, COM.VT_EMPTY, 0);
+			return COM.E_INVALIDARG;
 		}
+		accessible.AddRef();
+		setPtrVARIANT(ppHyperlink, COM.VT_DISPATCH, accessible.getAddress());
 		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed, [out] value is NULL
 	}
 
 	/* IAccessibleHypertext::get_hyperlinkIndex([in] charIndex, [out] pHyperlinkIndex) */
@@ -3074,35 +3294,34 @@ public class Accessible {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.getHyperlinkIndex(event);
 		}
-		if (event.index == -1) return COM.S_FALSE;
 		COM.MoveMemory(pHyperlinkIndex, new int [] { event.index }, 4);
+		if (event.index == -1) return COM.S_FALSE;
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is -1@retval E_INVALIDARG if bad [in] passed, [out] value is NULL
 	}
 
 	/* IAccessibleImage::get_description([out] pbstrDescription) */
 	int get_description(int /*long*/ pbstrDescription) {
 		// TODO: Does it make sense to just reuse description?
 		AccessibleEvent event = new AccessibleEvent(this);
+		event.childID = ACC.CHILDID_SELF;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
 			listener.getDescription(event);
 		}
-		if (event.result == null || event.result.length() == 0) return COM.S_FALSE; // TODO: is S_FALSE ok here?
 		setString(pbstrDescription, event.result);
+		if (event.result == null) return COM.S_FALSE;
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is NULL
 	}
 
 	/* IAccessibleImage::get_imagePosition([in] coordinateType, [out] pX, [out] pY) */
 	int get_imagePosition(int coordinateType, int /*long*/ pX, int /*long*/ pY) {
 		// TODO: does it make sense to just reuse getLocation?
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
+		event.childID = ACC.CHILDID_SELF;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getLocation(event);
 		}
-		// TODO: make sure to return the correct coordinateType
 		COM.MoveMemory(pX, new int [] { event.x }, 4);
 		COM.MoveMemory(pY, new int [] { event.y }, 4);
 		return COM.S_OK;
@@ -3130,12 +3349,10 @@ public class Accessible {
 			listener.getCell(event);
 		}
 		Accessible accessible = event.accessible;
-		if (accessible != null) {
-			accessible.AddRef();
-			setPtrVARIANT(ppCell, COM.VT_DISPATCH, accessible.getAddress());
-		}
+		if (accessible == null) return COM.E_INVALIDARG;
+		accessible.AddRef();
+		COM.MoveMemory(ppCell, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
 		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed, [out] value is NULL
 	}
 
 	/* IAccessibleTable2::get_caption([out] ppAccessible) */
@@ -3146,12 +3363,13 @@ public class Accessible {
 			listener.getCaption(event);
 		}
 		Accessible accessible = event.accessible;
-		if (accessible != null) {
-			accessible.AddRef();
-			setPtrVARIANT(ppAccessible, COM.VT_DISPATCH, accessible.getAddress());
+		if (accessible == null) {
+			COM.MoveMemory(ppAccessible, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+			return COM.S_FALSE;
 		}
+		accessible.AddRef();
+		COM.MoveMemory(ppAccessible, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is NULL
 	}
 
 	/* IAccessibleTable2::get_columnDescription([in] column, [out] pbstrDescription) */
@@ -3162,10 +3380,9 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.getColumnDescription(event);
 		}
-		if (event.result == null || event.result.length() == 0) return COM.S_FALSE; // TODO: is S_FALSE ok here?
 		setString(pbstrDescription, event.result);
+		if (event.result == null) return COM.S_FALSE;
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is NULL@retval E_INVALIDARG if bad [in] passed, [out] value is NULL
 	}
 
 	/* IAccessibleTable2::get_nColumns([out] pColumnCount) */
@@ -3231,10 +3448,9 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.getRowDescription(event);
 		}
-		if (event.result == null || event.result.length() == 0) return COM.S_FALSE; // TODO: is S_FALSE ok here?
 		setString(pbstrDescription, event.result);
+		if (event.result == null) return COM.S_FALSE;
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is NULL@retval E_INVALIDARG if bad [in] passed, [out] value is NULL
 	}
 
 	/* IAccessibleTable2::get_selectedCells([out] ppCells, [out] pNSelectedCells) */
@@ -3244,7 +3460,7 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.getSelectedCells(event);
 		}
-		// TODO: Handle array, not just first element
+		// TODO: Handle array, not just first element NOTE: NOT a variant
 		if (event.accessibles == null || event.accessibles.length == 0) return COM.S_FALSE;
 		Accessible accessible = event.accessibles[0];
 		if (accessible != null) {
@@ -3293,9 +3509,12 @@ public class Accessible {
 			listener.getSummary(event);
 		}
 		Accessible accessible = event.accessible;
-		if (accessible == null) return COM.S_FALSE;
+		if (accessible == null) {
+			COM.MoveMemory(ppAccessible, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+			return COM.S_FALSE;
+		}
 		accessible.AddRef();
-		setPtrVARIANT(ppAccessible, COM.VT_DISPATCH, accessible.getAddress());
+		COM.MoveMemory(ppAccessible, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
@@ -3307,8 +3526,8 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.isColumnSelected(event);
 		}
+		COM.MoveMemory(pIsSelected, new int [] {event.isSelected ? 1 : 0}, 4);
 		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed, [out] value is FALSE
 	}
 
 	/* IAccessibleTable2::get_isRowSelected([in] row, [out] pIsSelected) */
@@ -3319,8 +3538,8 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.isRowSelected(event);
 		}
+		COM.MoveMemory(pIsSelected, new int [] {event.isSelected ? 1 : 0}, 4);
 		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed, [out] value is FALSE
 	}
 
 	/* IAccessibleTable2::selectRow([in] row) */
@@ -3331,8 +3550,8 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.setSelectedRow(event);
 		}
+		if (event.result != ACC.OK) return COM.E_INVALIDARG;
 		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed
 	}
 
 	/* IAccessibleTable2::selectColumn([in] column) */
@@ -3343,8 +3562,8 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.setSelectedColumn(event);
 		}
+		if (event.result != ACC.OK) return COM.E_INVALIDARG;
 		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed
 	}
 
 	/* IAccessibleTable2::unselectRow([in] row) */
@@ -3355,8 +3574,8 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.deselectRow(event);
 		}
+		if (event.result != ACC.OK) return COM.E_INVALIDARG;
 		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed
 	}
 
 	/* IAccessibleTable2::unselectColumn([in] column) */
@@ -3367,22 +3586,19 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.deselectColumn(event);
 		}
+		if (event.result != ACC.OK) return COM.E_INVALIDARG;
 		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed
 	}
 
 	/* IAccessibleTable2::get_modelChange([out] pModelChange) */
 	int get_modelChange(int /*long*/ pModelChange) {
-		// TODO: implement this... return the most recent row and column values associated with the change
-//		AccessibleTableEvent event = new AccessibleTableEvent(this);
-//		for (int i = 0; i < accessibleTableListeners.size(); i++) {
-//			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
-//			listener.getModelChange(event);
-//		}
-//		// TODO: create modelChange struct to return from event data
-//		//COM.MoveMemory(pModelChange, new int [] { event.modelChange }, 4);
-//		return COM.S_OK;
-//		// TODO: @retval S_FALSE if there is nothing to return, [out] value is NULL
+		if (tableChange != null) {
+			// TODO: verify that this works...
+			COM.MoveMemory(pModelChange, tableChange, tableChange.length * 4);
+			tableChange = null;
+			return COM.S_OK;
+		}
+		COM.MoveMemory(pModelChange, new int [] { 0 }, OS.PTR_SIZEOF);
 		return COM.S_FALSE;
 	}
 
@@ -3404,7 +3620,7 @@ public class Accessible {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
 			listener.getColumnHeaders(event);
 		}
-		// TODO: Handle array, not just first element
+		// TODO: Handle array, not just first element. NOTE: NOT variant
 		Accessible accessible = event.accessibles[0];
 		if (accessible != null) {
 			accessible.AddRef();
@@ -3444,7 +3660,7 @@ public class Accessible {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
 			listener.getRowHeaders(event);
 		}
-		// TODO: Handle array, not just first element
+		// TODO: Handle array, not just first element. NOTE: NOT variant
 		Accessible accessible = event.accessibles[0];
 		if (accessible != null) {
 			accessible.AddRef();
@@ -3500,10 +3716,13 @@ public class Accessible {
 			listener.getTable(event);
 		}
 		Accessible accessible = event.accessible;
-		if (accessible != null) {
-			accessible.AddRef();
-			setPtrVARIANT(ppTable, COM.VT_DISPATCH, accessible.getAddress());
+		if (accessible == null) {
+			// TODO: This is not supposed to return S_FALSE. How do we fail gracefully? SWT exception?
+			COM.MoveMemory(ppTable, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+			return COM.S_FALSE;
 		}
+		accessible.AddRef();
+		COM.MoveMemory(ppTable, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
@@ -3516,8 +3735,8 @@ public class Accessible {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.addSelection(event);
 		}
+		if (event.result != ACC.OK) return COM.E_INVALIDARG;
 		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed
 	}
 
 	/* IAccessibleText::get_attributes([in] offset, [out] pStartOffset, [out] pEndOffset, [out] pbstrTextAttributes) */
@@ -3528,52 +3747,117 @@ public class Accessible {
 			AccessibleAttributeListener listener = (AccessibleAttributeListener) accessibleAttributeListeners.elementAt(i);
 			listener.getTextAttributes(event);
 		}
+		String textAttributes = "";
+		TextStyle style = event.textStyle;
+		if (style != null) {
+			if (style.rise != 0) {
+				textAttributes += "text-position:";
+				if (style.rise > 0) textAttributes += "super";
+				else textAttributes += "sub";
+			}
+			if (style.underline) {
+				textAttributes += "text-underline-type:";
+				switch (style.underlineStyle) {
+					case SWT.UNDERLINE_SINGLE: textAttributes += "single;"; break;
+					case SWT.UNDERLINE_DOUBLE: textAttributes += "double;"; break;
+					case SWT.UNDERLINE_SQUIGGLE: textAttributes += "single;text-underline-style:wave;"; break;
+					case SWT.UNDERLINE_ERROR: textAttributes += "single;text-underline-style:wave;invalid:true;"; break;
+					default: textAttributes += "none;"; break;
+				}
+				// TODO: style.underlineColor is not currently part of the IA2 spec. If provided, it would be "text-underline-color:rgb(n,n,n);"
+			}
+			if (style.strikeout) {
+				textAttributes += "text-line-through-type:single";
+				// TODO: style.strikeoutColor is not currently part of the IA2 spec. If provided, it would be "text-line-through-color:rgb(n,n,n);"
+			}
+			Font font = style.font;
+			if (font != null && !font.isDisposed()) {
+				FontData fontData = font.getFontData()[0];
+				textAttributes += "font-family:" + fontData.getName() + ";";
+				textAttributes += "font-size:" + fontData.getHeight() + "pt;";
+				textAttributes += "font-style:" + (fontData.data.lfItalic != 0 ? "italic" : "normal") + ";";
+				textAttributes += "font-weight:" + fontData.data.lfWeight + ";";
+			}
+			Color color = style.foreground;
+			if (color != null && !color.isDisposed()) {
+				textAttributes += "color:rgb(" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + ");";
+			}
+			color = style.background;
+			if (color != null && !color.isDisposed()) {
+				textAttributes += "background-color:rgb(" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + ");";
+			}
+		}
+		if (event.attributes != null) textAttributes += event.attributes;
+		if (DEBUG) print("IAccessibleText::get_attributes(" + offset + ") returning start = " + event.start + ", end = " + event.end + ", attributes = " + textAttributes);
 		COM.MoveMemory(pStartOffset, new int [] { event.start }, 4);
 		COM.MoveMemory(pEndOffset, new int [] { event.end }, 4);
-		String textAttributes = "";
-		// TODO: Construct text attributes string from event data
-		if (textAttributes.length() == 0) return COM.S_FALSE; // TODO: is S_FALSE ok here?
 		setString(pbstrTextAttributes, textAttributes);
+		if (textAttributes.length() == 0) return COM.S_FALSE;
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] values are 0s and NULL respectively@retval E_INVALIDARG if bad [in] passed, [out] values are 0s and NULL respectively
 	}
 
 	/* IAccessibleText::get_caretOffset([out] pOffset) */
 	int get_caretOffset(int /*long*/ pOffset) {
-		// TODO: already in old API (in super interface)
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
-		for (int i = 0; i < accessibleTextListeners.size(); i++) {
-			AccessibleTextListener listener = (AccessibleTextListener) accessibleTextListeners.elementAt(i);
+		event.offset = -1;
+		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+			AccessibleTextListener listener = (AccessibleTextListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.getCaretOffset (event);
 		}
+		if (event.offset == -1) {
+			for (int i = 0; i < accessibleTextListeners.size(); i++) {
+				event.childID = ACC.CHILDID_SELF;
+				AccessibleTextListener listener = (AccessibleTextListener) accessibleTextListeners.elementAt(i);
+				listener.getCaretOffset (event);
+			}
+		}
+		if (DEBUG) print("IAccessibleText::get_caretOffset returning " + event.offset);
 		COM.MoveMemory(pOffset, new int [] { event.offset }, 4);
+		if (event.offset == -1) return COM.S_FALSE;
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if the caret is not currently active on this object, i.e. the
 	}
 
 	/* IAccessibleText::get_characterExtents([in] offset, [in] coordType, [out] pX, [out] pY, [out] pWidth, [out] pHeight) */
 	int get_characterExtents(int offset, int coordType, int /*long*/ pX, int /*long*/ pY, int /*long*/ pWidth, int /*long*/ pHeight) {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
-		event.start = offset;
-		event.end = offset;
+		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			listener.getCharacterCount(event);
+		}
+		int length = event.count;
+		event.count = 0;
+		event.start = offset < 0 ? 0 : offset;
+		event.end = offset >= length ? length : offset + 1;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.getTextBounds(event);
 		}
+		/* Note: event.rectangles is not used here, because IAccessibleText::get_characterExtents is just for one character. */
 		COM.MoveMemory(pX, new int [] { event.x }, 4);
 		COM.MoveMemory(pY, new int [] { event.y }, 4);
 		COM.MoveMemory(pWidth, new int [] { event.width }, 4);
 		COM.MoveMemory(pHeight, new int [] { event.height }, 4);
+		if (event.width == 0 && event.height == 0) return COM.E_INVALIDARG;
 		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed, [out] values are 0s
 	}
 
 	/* IAccessibleText::get_nSelections([out] pNSelections) */
 	int get_nSelections(int /*long*/ pNSelections) {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
+		event.count = -1;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.getSelectionCount(event);
+		}
+		if (event.count == -1) {
+			event.childID = ACC.CHILDID_SELF;
+			event.offset = -1;
+			event.length = 0;
+			for (int i = 0; i < accessibleTextListeners.size(); i++) {
+				AccessibleTextListener listener = (AccessibleTextListener) accessibleTextListeners.elementAt(i);
+				listener.getSelectionRange (event);
+			}
+			event.count = event.offset != -1 && event.length > 0 ? 1 : 0;
 		}
 		COM.MoveMemory(pNSelections, new int [] { event.count }, 4);
 		return COM.S_OK;
@@ -3584,27 +3868,50 @@ public class Accessible {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.x = x;
 		event.y = y;
+		event.offset = -1;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.getOffsetAtPoint(event);
 		}
-		COM.MoveMemory(pOffset, new int [] { event.index }, 4);
+		COM.MoveMemory(pOffset, new int [] { event.offset }, 4);
+		/*
+		 * Note that the current IA2 spec says to return 0 when there's nothing to return,
+		 * but since 0 is a valid return value, the spec is going to be updated to return -1.
+		 */
+		if (event.offset == -1) return COM.S_FALSE;
 		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed, [out] value is 0
 	}
 
 	/* IAccessibleText::get_selection([in] selectionIndex, [out] pStartOffset, [out] pEndOffset) */
 	int get_selection(int selectionIndex, int /*long*/ pStartOffset, int /*long*/ pEndOffset) {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.index = selectionIndex;
+		event.start = -1;
+		event.end = -1;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.getSelection(event);
 		}
+		if (event.start == -1 && selectionIndex == 0) {
+			event.childID = ACC.CHILDID_SELF;
+			event.offset = -1;
+			event.length = 0;
+			for (int i = 0; i < accessibleTextListeners.size(); i++) {
+				AccessibleTextListener listener = (AccessibleTextListener) accessibleTextListeners.elementAt(i);
+				listener.getSelectionRange (event);
+			}
+			event.start = event.offset;
+			event.end = event.offset + event.length;
+		}
+		if (DEBUG) print("IAccessibleText::get_selection(" + selectionIndex + ") returning " + event.start + ", " + event.end);
 		COM.MoveMemory(pStartOffset, new int [] { event.start }, 4);
 		COM.MoveMemory(pEndOffset, new int [] { event.end }, 4);
+		/*
+		 * Note that the current IA2 spec says to return 0,0 when there's nothing to return,
+		 * but since 0 is a valid return value, the spec is going to be updated to return -1,-1.
+		 */
+		if (event.start == -1) return COM.S_FALSE;
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] values are 0s@retval E_INVALIDARG if bad [in] passed, [out] values are 0s
 	}
 
 	/* IAccessibleText::get_text([in] startOffset, [in] endOffset, [out] pbstrText) */
@@ -3612,68 +3919,115 @@ public class Accessible {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.start = startOffset;
 		event.end = endOffset;
+		event.count = 0;
+		event.type = ACC.TEXT_BOUNDARY_ALL;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.getText(event);
 		}
-		if (event.result == null || event.result.length() == 0) return COM.S_FALSE; // TODO: is S_FALSE ok here?
+		if (event.result == null) {
+			AccessibleControlEvent e = new AccessibleControlEvent(this);
+			e.childID = ACC.CHILDID_SELF;
+			for (int i = 0; i < accessibleControlListeners.size(); i++) {
+				AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+				listener.getRole(e);
+				listener.getValue(e);
+			}
+			// TODO: Consider passing the value through for other roles as well (i.e. combo, etc). Keep in sync with get_nCharacters.
+			if (e.detail == ACC.ROLE_TEXT) {
+				event.result = e.result;
+			}
+		}
+		if (DEBUG) print("IAccessibleText::get_text(" + startOffset + ", " + endOffset + ") returning " + event.result);
 		setString(pbstrText, event.result);
+		if (event.result == null) return COM.E_INVALIDARG;
 		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed, [out] value is NULL
 	}
 
 	/* IAccessibleText::get_textBeforeOffset([in] offset, [in] boundaryType, [out] pStartOffset, [out] pEndOffset, [out] pbstrText) */
 	int get_textBeforeOffset(int offset, int boundaryType, int /*long*/ pStartOffset, int /*long*/ pEndOffset, int /*long*/ pbstrText) {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
-		event.offset = offset;
-		event.type = boundaryType;
-		// TODO: need to implement - use getTextRange
-//		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
-//			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
-//			listener.getTextBeforeOffset(event);
-//		}
+		event.start = offset;
+		event.end = offset;
+		event.count = -1;
+		switch (boundaryType) {
+			case COM.IA2_TEXT_BOUNDARY_CHAR: event.type = ACC.TEXT_BOUNDARY_CHAR; break;
+			case COM.IA2_TEXT_BOUNDARY_WORD: event.type = ACC.TEXT_BOUNDARY_WORD; break;
+			case COM.IA2_TEXT_BOUNDARY_SENTENCE: event.type = ACC.TEXT_BOUNDARY_SENTENCE; break;
+			case COM.IA2_TEXT_BOUNDARY_PARAGRAPH: event.type = ACC.TEXT_BOUNDARY_PARAGRAPH; break;
+			case COM.IA2_TEXT_BOUNDARY_LINE: event.type = ACC.TEXT_BOUNDARY_LINE; break;
+			default: return COM.E_INVALIDARG;
+		}
+		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			listener.getText(event);
+		}
 		COM.MoveMemory(pStartOffset, new int [] { event.start }, 4);
 		COM.MoveMemory(pEndOffset, new int [] { event.end }, 4);
-		if (event.result == null || event.result.length() == 0) return COM.S_FALSE; // TODO: is S_FALSE ok here?
 		setString(pbstrText, event.result);
+		if (event.result == null) return COM.S_FALSE;
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if the requested boundary type is not implemented, such as@retval E_INVALIDARG if bad [in] passed, [out] values are 0s and NULL respectively
 	}
 
 	/* IAccessibleText::get_textAfterOffset([in] offset, [in] boundaryType, [out] pStartOffset, [out] pEndOffset, [out] pbstrText) */
 	int get_textAfterOffset(int offset, int boundaryType, int /*long*/ pStartOffset, int /*long*/ pEndOffset, int /*long*/ pbstrText) {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
-		event.offset = offset;
-		event.type = boundaryType;
-		// TODO: need to implement - use getTextRange
-//		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
-//			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
-//			listener.getTextAfterOffset(event);
-//		}
+		event.start = offset;
+		event.end = offset;
+		event.count = 1;
+		switch (boundaryType) {
+			case COM.IA2_TEXT_BOUNDARY_CHAR: event.type = ACC.TEXT_BOUNDARY_CHAR; break;
+			case COM.IA2_TEXT_BOUNDARY_WORD: event.type = ACC.TEXT_BOUNDARY_WORD; break;
+			case COM.IA2_TEXT_BOUNDARY_SENTENCE: event.type = ACC.TEXT_BOUNDARY_SENTENCE; break;
+			case COM.IA2_TEXT_BOUNDARY_PARAGRAPH: event.type = ACC.TEXT_BOUNDARY_PARAGRAPH; break;
+			case COM.IA2_TEXT_BOUNDARY_LINE: event.type = ACC.TEXT_BOUNDARY_LINE; break;
+			default: return COM.E_INVALIDARG;
+		}
+		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			listener.getText(event);
+		}
 		COM.MoveMemory(pStartOffset, new int [] { event.start }, 4);
 		COM.MoveMemory(pEndOffset, new int [] { event.end }, 4);
-		if (event.result == null || event.result.length() == 0) return COM.S_FALSE; // TODO: is S_FALSE ok here?
 		setString(pbstrText, event.result);
+		if (event.result == null) return COM.S_FALSE;
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if the requested boundary type is not implemented, such as@retval E_INVALIDARG if bad [in] passed, [out] values are 0s and NULL respectively
 	}
 
 	/* IAccessibleText::get_textAtOffset([in] offset, [in] boundaryType, [out] pStartOffset, [out] pEndOffset, [out] pbstrText) */
 	int get_textAtOffset(int offset, int boundaryType, int /*long*/ pStartOffset, int /*long*/ pEndOffset, int /*long*/ pbstrText) {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
-		event.offset = offset;
-		event.type = boundaryType;
-		// TODO: need to implement - use getTextRange
-//		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
-//			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
-//			listener.getTextAtOffset(event);
-//		}
+		event.start = offset;
+		event.end = offset;
+		event.count = 0;
+		switch (boundaryType) {
+			case COM.IA2_TEXT_BOUNDARY_CHAR: event.type = ACC.TEXT_BOUNDARY_CHAR; break;
+			case COM.IA2_TEXT_BOUNDARY_WORD: event.type = ACC.TEXT_BOUNDARY_WORD; break;
+			case COM.IA2_TEXT_BOUNDARY_SENTENCE: event.type = ACC.TEXT_BOUNDARY_SENTENCE; break;
+			case COM.IA2_TEXT_BOUNDARY_PARAGRAPH: event.type = ACC.TEXT_BOUNDARY_PARAGRAPH; break;
+			case COM.IA2_TEXT_BOUNDARY_LINE: event.type = ACC.TEXT_BOUNDARY_LINE; break;
+			case COM.IA2_TEXT_BOUNDARY_ALL: {
+				event.type = ACC.TEXT_BOUNDARY_ALL;
+				event.start = 0;
+				for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+					listener.getCharacterCount(event);
+				}
+				event.end = event.count;
+				event.count = 0;
+				break;
+			}
+			default: return COM.E_INVALIDARG;
+		}
+		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			listener.getText(event);
+		}
 		COM.MoveMemory(pStartOffset, new int [] { event.start }, 4);
 		COM.MoveMemory(pEndOffset, new int [] { event.end }, 4);
-		if (event.result == null || event.result.length() == 0) return COM.S_FALSE; // TODO: is S_FALSE ok here?
 		setString(pbstrText, event.result);
+		if (event.result == null) return COM.S_FALSE;
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if the requested boundary type is not implemented, such as@retval E_INVALIDARG if bad [in] passed, [out] values are 0s and NULL respectively
 	}
 
 	/* IAccessibleText::removeSelection([in] selectionIndex) */
@@ -3684,20 +4038,20 @@ public class Accessible {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.removeSelection(event);
 		}
+		if (event.result != ACC.OK) return COM.E_INVALIDARG;
 		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed
 	}
 
 	/* IAccessibleText::setCaretOffset([in] offset) */
 	int setCaretOffset(int offset) {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
-		event.index = offset;
+		event.offset = offset;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.setCaretOffset(event);
 		}
+		if (event.result != ACC.OK) return COM.E_INVALIDARG; // TODO: @retval E_FAIL if the caret cannot be set ?
 		return COM.S_OK;
-		// TODO: @retval E_FAIL if the caret cannot be set@retval E_INVALIDARG if bad [in] passed
 	}
 
 	/* IAccessibleText::setSelection([in] selectionIndex, [in] startOffset, [in] endOffset) */
@@ -3710,16 +4064,29 @@ public class Accessible {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.setSelection(event);
 		}
+		if (DEBUG) print("IAccessibleText::setSelection(index=" + selectionIndex + ", start=" + event.start + ", end=" + event.end + ") returning " + (event.result == ACC.OK ? "OK" : "INVALIDARG"));
+		if (event.result != ACC.OK) return COM.E_INVALIDARG;
 		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed
 	}
 
 	/* IAccessibleText::get_nCharacters([out] pNCharacters) */
 	int get_nCharacters(int /*long*/ pNCharacters) {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
+		event.count = -1;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.getCharacterCount(event);
+		}
+		if (event.count == -1) {
+			AccessibleControlEvent e = new AccessibleControlEvent(this);
+			e.childID = ACC.CHILDID_SELF;
+			for (int i = 0; i < accessibleControlListeners.size(); i++) {
+				AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+				listener.getRole(e);
+				listener.getValue(e);
+			}
+			// TODO: Consider passing the value through for other roles as well (i.e. combo, etc). Keep in sync with get_text.
+			event.count = e.detail == ACC.ROLE_TEXT && e.result != null ? e.result.length() : 0;
 		}
 		COM.MoveMemory(pNCharacters, new int [] { event.count }, 4);
 		return COM.S_OK;
@@ -3730,59 +4097,71 @@ public class Accessible {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.start = startIndex;
 		event.end = endIndex;
-		event.type = scrollType;
+		switch (scrollType) {
+			case COM.IA2_SCROLL_TYPE_TOP_LEFT: event.type = ACC.SCROLL_TYPE_TOP_LEFT; break;
+			case COM.IA2_SCROLL_TYPE_BOTTOM_RIGHT: event.type = ACC.SCROLL_TYPE_BOTTOM_RIGHT; break;
+			case COM.IA2_SCROLL_TYPE_TOP_EDGE: event.type = ACC.SCROLL_TYPE_TOP_EDGE; break;
+			case COM.IA2_SCROLL_TYPE_BOTTOM_EDGE: event.type = ACC.SCROLL_TYPE_BOTTOM_EDGE; break;
+			case COM.IA2_SCROLL_TYPE_LEFT_EDGE: event.type = ACC.SCROLL_TYPE_LEFT_EDGE; break;
+			case COM.IA2_SCROLL_TYPE_RIGHT_EDGE: event.type = ACC.SCROLL_TYPE_RIGHT_EDGE; break;
+			case COM.IA2_SCROLL_TYPE_ANYWHERE: event.type = ACC.SCROLL_TYPE_ANYWHERE; break;
+		}
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.scrollText(event);
 		}
+		if (event.result != ACC.OK) return COM.E_INVALIDARG;
 		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed
 	}
 
 	/* IAccessibleText::scrollSubstringToPoint([in] startIndex, [in] endIndex, [in] coordinateType, [in] x, [in] y) */
 	int scrollSubstringToPoint(int startIndex, int endIndex, int coordinateType, int x, int y) {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
-		event.type = ACC.SCROLL_TYPE_POINT;
 		event.start = startIndex;
 		event.end = endIndex;
+		event.type = ACC.SCROLL_TYPE_POINT;
 		event.x = x;
 		event.y = y;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.scrollText(event);
 		}
+		if (event.result != ACC.OK) return COM.E_INVALIDARG; // TODO: @retval S_FALSE if the object is already at the specified location.
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if the object is already at the specified location.@retval E_INVALIDARG if bad [in] passed
 	}
 
 	/* IAccessibleText::get_newText([out] pNewText) */
 	int get_newText(int /*long*/ pNewText) {
-		// TODO: Try to implement this without providing API
-		return COM.S_FALSE;
-//		AccessibleTextEvent event = new AccessibleTextEvent(this);
-//		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
-//			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
-//			listener.getNewText(event);
-//		}
-//		// TODO: create a text segment struct using the data in the event
-//		//COM.MoveMemory(pNewText, new int [] { event.string }, 4);
-//		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is NULL
+		String text = null;
+		int start = 0;
+		int end = 0;
+		if (textInserted != null) {
+			text = (String) textInserted[3];
+			start = ((Integer)textInserted[1]).intValue();
+			end = ((Integer)textInserted[2]).intValue();
+		}
+		setString(pNewText, text);
+		COM.MoveMemory(pNewText + OS.PTR_SIZEOF, new int [] {start}, 4);
+		COM.MoveMemory(pNewText + OS.PTR_SIZEOF + 4, new int [] {end}, 4);
+		if (textInserted == null) return COM.S_FALSE;
+		return COM.S_OK;
 	}
 
 	/* IAccessibleText::get_oldText([out] pOldText) */
 	int get_oldText(int /*long*/ pOldText) {
-		// TODO: Try to implement this without providing API
-		return COM.S_FALSE;
-//		AccessibleTextEvent event = new AccessibleTextEvent(this);
-//		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
-//			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
-//			listener.getOldText(event);
-//		}
-//		// TODO: create a text segment struct using the data in the event
-//		//COM.MoveMemory(pOldText, new int [] { event.string }, 4);
-//		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is nothing to return, [out] value is NULL
+		String text = null;
+		int start = 0;
+		int end = 0;
+		if (textDeleted != null) {
+			text = (String) textDeleted[3];
+			start = ((Integer)textDeleted[1]).intValue();
+			end = ((Integer)textDeleted[2]).intValue();
+		}
+		setString(pOldText, text);
+		COM.MoveMemory(pOldText + OS.PTR_SIZEOF, new int [] {start}, 4);
+		COM.MoveMemory(pOldText + OS.PTR_SIZEOF + 4, new int [] {end}, 4);
+		if (textDeleted == null) return COM.S_FALSE;
+		return COM.S_OK;
 	}
 
 	/* IAccessibleValue::get_currentValue([out] pCurrentValue) */
@@ -3936,6 +4315,30 @@ public class Accessible {
 			case ACC.ROLE_PROGRESSBAR: return COM.ROLE_SYSTEM_PROGRESSBAR;
 			case ACC.ROLE_SLIDER: return COM.ROLE_SYSTEM_SLIDER;
 			case ACC.ROLE_LINK: return COM.ROLE_SYSTEM_LINK;
+			case ACC.ROLE_ALERT: return COM.ROLE_SYSTEM_ALERT;
+			case ACC.ROLE_ANIMATION: return COM.ROLE_SYSTEM_ANIMATION;
+			case ACC.ROLE_COLUMN: return COM.ROLE_SYSTEM_COLUMN;
+			case ACC.ROLE_DOCUMENT: return COM.ROLE_SYSTEM_DOCUMENT;
+			case ACC.ROLE_GRAPHIC: return COM.ROLE_SYSTEM_GRAPHIC;
+			case ACC.ROLE_GROUP: return COM.ROLE_SYSTEM_GROUPING;
+			case ACC.ROLE_ROW: return COM.ROLE_SYSTEM_ROW;
+			case ACC.ROLE_SPINBUTTON: return COM.ROLE_SYSTEM_SPINBUTTON;
+			case ACC.ROLE_STATUSBAR: return COM.ROLE_SYSTEM_STATUSBAR;
+			case ACC.ROLE_CLOCK: return COM.ROLE_SYSTEM_CLOCK;
+			case ACC.ROLE_CALENDAR: return COM.ROLE_SYSTEM_DROPLIST;
+
+			/* The rest are IA2 roles, so return the closest match. */
+			case ACC.ROLE_CANVAS: return COM.ROLE_SYSTEM_CLIENT;
+			case ACC.ROLE_CHECKMENUITEM: return COM.ROLE_SYSTEM_MENUITEM;
+			case ACC.ROLE_RADIOMENUITEM: return COM.ROLE_SYSTEM_MENUITEM;
+			case ACC.ROLE_DATETIME: return COM.ROLE_SYSTEM_DROPLIST;
+			case ACC.ROLE_FOOTER: return COM.ROLE_SYSTEM_CLIENT;
+			case ACC.ROLE_FORM: return COM.ROLE_SYSTEM_CLIENT;
+			case ACC.ROLE_HEADER: return COM.ROLE_SYSTEM_CLIENT;
+			case ACC.ROLE_HEADING: return COM.ROLE_SYSTEM_CLIENT;
+			case ACC.ROLE_PAGE: return COM.ROLE_SYSTEM_CLIENT;
+			case ACC.ROLE_PARAGRAPH: return COM.ROLE_SYSTEM_CLIENT;
+			case ACC.ROLE_SECTION: return COM.ROLE_SYSTEM_CLIENT;
 		}
 		return COM.ROLE_SYSTEM_CLIENT;
 	}
@@ -3972,6 +4375,17 @@ public class Accessible {
 			case COM.ROLE_SYSTEM_PROGRESSBAR: return ACC.ROLE_PROGRESSBAR;
 			case COM.ROLE_SYSTEM_SLIDER: return ACC.ROLE_SLIDER;
 			case COM.ROLE_SYSTEM_LINK: return ACC.ROLE_LINK;
+			case COM.ROLE_SYSTEM_ALERT: return ACC.ROLE_ALERT;
+			case COM.ROLE_SYSTEM_ANIMATION: return ACC.ROLE_ANIMATION;
+			case COM.ROLE_SYSTEM_COLUMN: return ACC.ROLE_COLUMN;
+			case COM.ROLE_SYSTEM_DOCUMENT: return ACC.ROLE_DOCUMENT;
+			case COM.ROLE_SYSTEM_GRAPHIC: return ACC.ROLE_GRAPHIC;
+			case COM.ROLE_SYSTEM_GROUPING: return ACC.ROLE_GROUP;
+			case COM.ROLE_SYSTEM_ROW: return ACC.ROLE_ROW;
+			case COM.ROLE_SYSTEM_SPINBUTTON: return ACC.ROLE_SPINBUTTON;
+			case COM.ROLE_SYSTEM_STATUSBAR: return ACC.ROLE_STATUSBAR;
+			case COM.ROLE_SYSTEM_CLOCK: return ACC.ROLE_CLOCK;
+			case COM.ROLE_SYSTEM_DROPLIST: return ACC.ROLE_CALENDAR;
 		}
 		return ACC.ROLE_CLIENT_AREA;
 	}
@@ -3999,7 +4413,7 @@ public class Accessible {
 	void setPtrVARIANT(int /*long*/ variant, short vt, int /*long*/ lVal) {
 		if (vt == COM.VT_DISPATCH || vt == COM.VT_UNKNOWN) {
 			COM.MoveMemory(variant, new short[] { vt }, 2);
-			COM.MoveMemory(variant + 8, new int /*long*/[] { lVal }, OS.PTR_SIZEOF);
+			COM.MoveMemory(variant + 8, new int /*long*/ [] { lVal }, OS.PTR_SIZEOF);
 		}
 	}
 	
@@ -4020,9 +4434,22 @@ public class Accessible {
 	}
 
 	void setString(int /*long*/ psz, String string) {
-		char[] data = (string + "\0").toCharArray();
-		int /*long*/ ptr = COM.SysAllocString(data);
+		int /*long*/ ptr = 0;
+		if (string != null) {
+			char[] data = (string + "\0").toCharArray();
+			ptr = COM.SysAllocString(data);
+		}
 		COM.MoveMemory(psz, new int /*long*/ [] { ptr }, OS.PTR_SIZEOF);
+	}
+	
+	void setStringVARIANT(int /*long*/ variant, String string) {
+		int /*long*/ ptr = 0;
+		if (string != null) {
+			char[] data = (string + "\0").toCharArray();
+			ptr = COM.SysAllocString(data);
+		}
+		COM.MoveMemory(variant, new short[] { ptr == 0 ? COM.VT_EMPTY : COM.VT_BSTR }, 2);
+		COM.MoveMemory(variant + 8, new int /*long*/ [] { ptr }, OS.PTR_SIZEOF);
 	}
 	
 	/* checkWidget was copied from Widget, and rewritten to work in this package */
@@ -4035,4 +4462,44 @@ public class Accessible {
 	boolean isValidThread () {
 		return control.getDisplay ().getThread () == Thread.currentThread ();
 	}
+	
+	// START DEBUG CODE
+	static void print (String str) {
+		System.out.println (str);
+	}
+	
+	void printState(String str, int state) {
+		System.out.print(str + state);
+		if ((state & COM.STATE_SYSTEM_SELECTED) != 0) System.out.print(" STATE_SYSTEM_SELECTED");
+		if ((state & COM.STATE_SYSTEM_SELECTABLE) != 0) System.out.print(" STATE_SYSTEM_SELECTABLE");
+		if ((state & COM.STATE_SYSTEM_MULTISELECTABLE) != 0) System.out.print(" STATE_SYSTEM_MULTISELECTABLE");
+		if ((state & COM.STATE_SYSTEM_FOCUSED) != 0) System.out.print(" STATE_SYSTEM_FOCUSED");
+		if ((state & COM.STATE_SYSTEM_FOCUSABLE) != 0) System.out.print(" STATE_SYSTEM_FOCUSABLE");
+		if ((state & COM.STATE_SYSTEM_PRESSED) != 0) System.out.print(" STATE_SYSTEM_PRESSED");
+		if ((state & COM.STATE_SYSTEM_CHECKED) != 0) System.out.print(" STATE_SYSTEM_CHECKED");
+		if ((state & COM.STATE_SYSTEM_EXPANDED) != 0) System.out.print(" STATE_SYSTEM_EXPANDED");
+		if ((state & COM.STATE_SYSTEM_COLLAPSED) != 0) System.out.print(" STATE_SYSTEM_COLLAPSED");
+		if ((state & COM.STATE_SYSTEM_HOTTRACKED) != 0) System.out.print(" STATE_SYSTEM_HOTTRACKED");
+		if ((state & COM.STATE_SYSTEM_BUSY) != 0) System.out.print(" STATE_SYSTEM_BUSY");
+		if ((state & COM.STATE_SYSTEM_READONLY) != 0) System.out.print(" STATE_SYSTEM_READONLY");
+		if ((state & COM.STATE_SYSTEM_INVISIBLE) != 0) System.out.print(" STATE_SYSTEM_INVISIBLE");
+		if ((state & COM.STATE_SYSTEM_OFFSCREEN) != 0) System.out.print(" STATE_SYSTEM_OFFSCREEN");
+		if ((state & COM.STATE_SYSTEM_SIZEABLE) != 0) System.out.print(" STATE_SYSTEM_SIZEABLE");
+		if ((state & COM.STATE_SYSTEM_LINKED) != 0) System.out.print(" STATE_SYSTEM_LINKED");
+		if ((state & COM.STATE_SYSTEM_UNAVAILABLE) != 0) System.out.print(" STATE_SYSTEM_UNAVAILABLE");
+		System.out.println();
+	}
+	
+	void printIA2States(String str, int ia2States) {
+		System.out.print(str + ia2States);
+		if ((ia2States & COM.IA2_STATE_ACTIVE) != 0) System.out.print(" IA2_STATE_ACTIVE");
+		if ((ia2States & COM.IA2_STATE_EDITABLE) != 0) System.out.print(" IA2_STATE_EDITABLE");
+		if ((ia2States & COM.IA2_STATE_SINGLE_LINE) != 0) System.out.print(" IA2_STATE_SINGLE_LINE");
+		if ((ia2States & COM.IA2_STATE_MULTI_LINE) != 0) System.out.print(" IA2_STATE_MULTI_LINE");
+		if ((ia2States & COM.IA2_STATE_REQUIRED) != 0) System.out.print(" IA2_STATE_REQUIRED");
+		if ((ia2States & COM.IA2_STATE_INVALID_ENTRY) != 0) System.out.print(" IA2_STATE_INVALID_ENTRY");
+		if ((ia2States & COM.IA2_STATE_SUPPORTS_AUTOCOMPLETION) != 0) System.out.print("IA2_STATE_SUPPORTS_AUTOCOMPLETION");
+		System.out.println();
+	}
+	// END DEBUG CODE
 }
