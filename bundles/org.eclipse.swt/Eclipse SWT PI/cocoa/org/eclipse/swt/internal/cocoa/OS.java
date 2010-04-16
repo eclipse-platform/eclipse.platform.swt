@@ -2441,9 +2441,6 @@ public static final NSString NSAccessibilitySelectedChildrenAttribute = new NSSt
 public static final native int /*long*/ NSAccessibilitySelectedChildrenChangedNotification();
 public static final NSString NSAccessibilitySelectedChildrenChangedNotification = new NSString(NSAccessibilitySelectedChildrenChangedNotification());
 /** @method flags=const */
-public static final native int /*long*/ NSAccessibilitySelectedChildrenMovedNotification();
-public static final NSString NSAccessibilitySelectedChildrenMovedNotification = new NSString(NSAccessibilitySelectedChildrenMovedNotification());
-/** @method flags=const */
 public static final native int /*long*/ NSAccessibilitySelectedColumnsAttribute();
 public static final NSString NSAccessibilitySelectedColumnsAttribute = new NSString(NSAccessibilitySelectedColumnsAttribute());
 /** @method flags=const */

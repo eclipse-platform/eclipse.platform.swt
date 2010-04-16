@@ -272,7 +272,6 @@ typedef enum {
 	NSAccessibilitySelectedAttribute_FUNC,
 	NSAccessibilitySelectedChildrenAttribute_FUNC,
 	NSAccessibilitySelectedChildrenChangedNotification_FUNC,
-	NSAccessibilitySelectedChildrenMovedNotification_FUNC,
 	NSAccessibilitySelectedColumnsAttribute_FUNC,
 	NSAccessibilitySelectedRowsAttribute_FUNC,
 	NSAccessibilitySelectedTextAttribute_FUNC,
