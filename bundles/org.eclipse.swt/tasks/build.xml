@@ -559,7 +559,7 @@
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
-			command="hostname; ping -c ${m_linux_s390};"/>
+			command="hostname; ping -c 1 ${m_linux_s390};"/>
 		</parallel>
 	</target>
 	
