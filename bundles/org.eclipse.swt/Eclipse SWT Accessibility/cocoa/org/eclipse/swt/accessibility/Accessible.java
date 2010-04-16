@@ -3150,7 +3150,8 @@ public class Accessible {
 				} else {
 					nsReturnValue = concatStringsAsRole(OS.NSAccessibilityRowRole, OS.NSAccessibilityTableRowSubrole);
 				}
-			case ACC.ROLE_TABLECOLUMNHEADER: nsReturnValue = OS.NSAccessibilitySortButtonRole; break;
+				break;
+			case ACC.ROLE_TABLECOLUMNHEADER: nsReturnValue = OS.NSAccessibilityGroupRole; break;
 			case ACC.ROLE_TABLEROWHEADER: nsReturnValue = concatStringsAsRole(OS.NSAccessibilityRowRole, OS.NSAccessibilityTableRowSubrole); break;
 			case ACC.ROLE_TREE: nsReturnValue = OS.NSAccessibilityOutlineRole; break;
 			case ACC.ROLE_TREEITEM: nsReturnValue = concatStringsAsRole(OS.NSAccessibilityOutlineRole, OS.NSAccessibilityOutlineRowSubrole); break;
