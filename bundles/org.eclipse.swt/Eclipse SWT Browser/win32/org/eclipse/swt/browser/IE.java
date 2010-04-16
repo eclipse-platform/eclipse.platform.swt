@@ -120,13 +120,14 @@ class IE extends WebBrowser {
 	static final String PROTOCOL_FILE = "file://"; //$NON-NLS-1$
 	static final String PROPERTY_ALTKEY = "altKey"; //$NON-NLS-1$
 	static final String PROPERTY_BUTTON = "button"; //$NON-NLS-1$
-	static final String PROPERTY_SCREENX = "screenX"; //$NON-NLS-1$
-	static final String PROPERTY_SCREENY = "screenY"; //$NON-NLS-1$
 	static final String PROPERTY_CTRLKEY = "ctrlKey"; //$NON-NLS-1$
+	static final String PROPERTY_DOCUMENT = "Document"; //$NON-NLS-1$
 	static final String PROPERTY_FROMELEMENT = "fromElement"; //$NON-NLS-1$
 	static final String PROPERTY_KEYCODE = "keyCode"; //$NON-NLS-1$
 	static final String PROPERTY_REPEAT = "repeat"; //$NON-NLS-1$
 	static final String PROPERTY_RETURNVALUE = "returnValue"; //$NON-NLS-1$
+	static final String PROPERTY_SCREENX = "screenX"; //$NON-NLS-1$
+	static final String PROPERTY_SCREENY = "screenY"; //$NON-NLS-1$
 	static final String PROPERTY_SHIFTKEY = "shiftKey"; //$NON-NLS-1$
 	static final String PROPERTY_TOELEMENT = "toElement"; //$NON-NLS-1$
 	static final String PROPERTY_TYPE = "type"; //$NON-NLS-1$
@@ -940,7 +941,7 @@ public boolean back() {
 
 public boolean close() {
 	boolean result = true;
-	int[] rgdispid = auto.getIDsOfNames(new String[]{"Document"}); //$NON-NLS-1$
+	int[] rgdispid = auto.getIDsOfNames(new String[] {PROPERTY_DOCUMENT});
 	int dispIdMember = rgdispid[0];
 	Variant pVarResult = auto.getProperty(dispIdMember);
 	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) {
@@ -1020,7 +1021,7 @@ static Variant createSafeArray(String string) {
 
 public boolean execute(String script) {
 	/* get IHTMLDocument2 */
-	int[] rgdispid = auto.getIDsOfNames(new String[]{"Document"}); //$NON-NLS-1$
+	int[] rgdispid = auto.getIDsOfNames(new String[] {PROPERTY_DOCUMENT});
 	int dispIdMember = rgdispid[0];
 	Variant pVarResult = auto.getProperty(dispIdMember);
 	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) {
@@ -1073,7 +1074,7 @@ String getDeleteFunctionString (String functionName) {
 
 public String getText() {
 	/* get the document object */
-	int[] rgdispid = auto.getIDsOfNames(new String[]{"Document"}); //$NON-NLS-1$
+	int[] rgdispid = auto.getIDsOfNames(new String[] {PROPERTY_DOCUMENT});
 	Variant pVarResult = auto.getProperty(rgdispid[0]);
 	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) {
 		if (pVarResult != null) pVarResult.dispose ();
@@ -1249,7 +1250,7 @@ void setHTML (String string) {
 		* buffer hGlobal.
 		*/
 		if (OS.CreateStreamOnHGlobal(hGlobal, true, ppstm) == OS.S_OK) {
-			int[] rgdispid = auto.getIDsOfNames(new String[] {"Document"}); //$NON-NLS-1$
+			int[] rgdispid = auto.getIDsOfNames(new String[] {PROPERTY_DOCUMENT});
 			Variant pVarResult = auto.getProperty(rgdispid[0]);
 			IDispatch dispatchDocument = pVarResult.getDispatch();
 			int /*long*/ [] ppvObject = new int /*long*/ [1];
@@ -1817,7 +1818,7 @@ void handleDOMEvent (OleEvent e) {
 }
 
 void hookDOMListeners(OleAutomation webBrowser, final boolean isTop) {
-	int[] rgdispid = webBrowser.getIDsOfNames(new String[]{ "Document" }); //$NON-NLS-1$
+	int[] rgdispid = webBrowser.getIDsOfNames(new String[] { PROPERTY_DOCUMENT });
 	int dispIdMember = rgdispid[0];
 	Variant	pVarResult = webBrowser.getProperty(dispIdMember);
 	if (pVarResult == null) return;
