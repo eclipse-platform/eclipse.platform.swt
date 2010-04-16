@@ -555,6 +555,11 @@
 			keyfile="${keyfile}" 
 			trust="true"
 			command="hostname"/>
+		<sshexec host="${m_linux_x86}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			trust="true"
+			command="hostname; ping -c ${m_linux_s390};"/>
 		</parallel>
 	</target>
 	
