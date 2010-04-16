@@ -155,11 +155,11 @@ int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int 
 		int value = (style & SWT.VERTICAL) != 0 ? location.x : location.y;
 		return NSNumber.numberWithInt(value).id;
 	} else if (attributeName.isEqualToString (OS.NSAccessibilityMaxValueAttribute)) {
-		NSRect parentBounds = view.bounds();
+		NSRect parentFrame = parent.topView().frame();
 		float /*double*/ maxValue = (style & SWT.VERTICAL) != 0 ?
-				parentBounds.width :
-				parentBounds.height;
-		return NSNumber.numberWithInt((int)maxValue).id;
+							parentFrame.width :
+							parentFrame.height;
+		return NSNumber.numberWithDouble(maxValue).id;
 	} else if (attributeName.isEqualToString (OS.NSAccessibilityMinValueAttribute)) {
 		return NSNumber.numberWithInt(0).id;
 	} else if (attributeName.isEqualToString (OS.NSAccessibilityNextContentsAttribute)) {
