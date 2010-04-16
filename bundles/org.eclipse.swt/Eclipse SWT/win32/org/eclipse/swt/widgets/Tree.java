@@ -94,6 +94,9 @@ public class Tree extends Composite {
 	boolean ignoreDrawSelection, ignoreDrawHot, ignoreFullSelection, explorerTheme;
 	int scrollWidth, selectionForeground;
 	int /*long*/ headerToolTipHandle, itemToolTipHandle;
+	int /*long*/ lastTimerID = -1;
+	int lastTimerCount;
+	static final int TIMER_MAX_COUNT = 8;
 	static final int INSET = 3;
 	static final int GRID_WIDTH = 1;
 	static final int SORT_WIDTH = 10;
@@ -1525,6 +1528,36 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 		case OS.WM_TIMER: {
 			if (findImageControl () != null) {
 				hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+			}
+
+			/* Bug in Windows. When the expandos are visible (or in process of fading away)
+			 * and the tree control is hidden the animation timer does not stop calling the 
+			 * window proc till the tree is visible again. This can cause performance problems
+			 * specially in cases there the application has several tree controls in this state.
+			 * The fix is to detect a timer that repeats itself several times when the control
+			 * is not visible and stop it. The timer is stopped by sending a fake mouse move event.
+			 * 
+			 * Note: Just killing the timer could cause some internal clean up task related to the 
+			 * animation not to run.
+			 */
+			int /*long*/ bits = OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
+			if ((bits & OS.TVS_EX_FADEINOUTEXPANDOS) != 0) {
+				if (!OS.IsWindowVisible (hwnd)) {
+					if (lastTimerID == wParam) {
+						lastTimerCount++;
+					} else {
+						lastTimerCount = 0;
+					}
+					lastTimerID = wParam;
+					if (lastTimerCount >= TIMER_MAX_COUNT) {
+						OS.CallWindowProc (TreeProc, handle, OS.WM_MOUSEMOVE, 0, 0);
+						lastTimerID = -1;
+						lastTimerCount = 0;
+					}
+				} else {
+					lastTimerID = -1;
+					lastTimerCount = 0;
+				}
 			}
 			break;
 		}
