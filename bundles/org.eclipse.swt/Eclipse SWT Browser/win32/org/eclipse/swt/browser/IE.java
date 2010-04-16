@@ -1463,45 +1463,10 @@ void handleDOMEvent (OleEvent e) {
 		lastKeyCode = translateKey (pVarResult.getInt());
 		pVarResult.dispose();
 
-		boolean consume = false;
-		OleAutomation document = null;
-		OleAutomation htmlWindow2 = null;
-		OleAutomation htmlEvent = null;
-		/* get IHTMLDocument2 */
-		rgdispid = auto.getIDsOfNames (new String[] {"Document"}); //$NON-NLS-1$
-		pVarResult = auto.getProperty (rgdispid[0]);
-		if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) {
-			if (pVarResult != null) pVarResult.dispose ();
-		} else {
-			document = pVarResult.getAutomation ();
-			pVarResult.dispose ();
-			/* get IHTMLWindow2 */
-			rgdispid = document.getIDsOfNames (new String[] {"parentWindow"}); //$NON-NLS-1$
-			pVarResult = document.getProperty (rgdispid[0]);
-			if (pVarResult == null || pVarResult.getType () == COM.VT_EMPTY) {
-				if (pVarResult != null) pVarResult.dispose ();
-			} else {
-				htmlWindow2 = pVarResult.getAutomation ();
-				pVarResult.dispose ();
-				/* get IHTMLEventObj */
-				rgdispid = htmlWindow2.getIDsOfNames (new String[] {"event"}); //$NON-NLS-1$
-				pVarResult = htmlWindow2.getProperty (rgdispid[0]);
-				if (pVarResult == null || pVarResult.getType () == COM.VT_EMPTY) {
-					if (pVarResult != null) pVarResult.dispose ();
-				} else {
-					htmlEvent = pVarResult.getAutomation ();
-					pVarResult.dispose ();
-					/* check event's returnValue property */
-					rgdispid = htmlEvent.getIDsOfNames (new String[] {"returnValue"}); //$NON-NLS-1$
-					pVarResult = htmlEvent.getProperty (rgdispid[0]);
-					consume = pVarResult != null && pVarResult.getType () == OLE.VT_BOOL && !pVarResult.getBoolean ();
-					pVarResult.dispose ();
-				}
-			}
-		}
-		if (htmlEvent != null) htmlEvent.dispose ();
-		if (htmlWindow2 != null) htmlWindow2.dispose ();
-		if (document != null) document.dispose ();
+		rgdispid = event.getIDsOfNames (new String[] {PROPERTY_RETURNVALUE});
+		pVarResult = event.getProperty (rgdispid[0]);
+		boolean consume = pVarResult != null && pVarResult.getType () == OLE.VT_BOOL && !pVarResult.getBoolean ();
+		pVarResult.dispose ();
 
 		MSG msg = new MSG ();
 		int flags = OS.PM_NOYIELD | (consume ? OS.PM_REMOVE : OS.PM_NOREMOVE);
