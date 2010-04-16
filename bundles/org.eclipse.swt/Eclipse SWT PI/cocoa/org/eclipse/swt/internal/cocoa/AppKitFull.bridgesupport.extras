@@ -4235,6 +4235,7 @@
 	<constant name="NSAccessibilityMenuRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityMinValueAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityMisspelledTextAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityMovedNotification" swt_gen="true"></constant>
 	<constant name="NSAccessibilityNextContentsAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityNumberOfCharactersAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityOrientationAttribute" swt_gen="true"></constant>
@@ -4252,6 +4253,7 @@
 	<constant name="NSAccessibilityRangeForIndexParameterizedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRangeForLineParameterizedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRangeForPositionParameterizedAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityResizedNotification" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRoleAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRoleDescriptionAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRowRole" swt_gen="true"></constant>
@@ -4261,6 +4263,7 @@
 	<constant name="NSAccessibilitySelectedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySelectedChildrenAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySelectedChildrenChangedNotification" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySelectedChildrenMovedNotification" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySelectedColumnsAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySelectedRowsAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySelectedTextAttribute" swt_gen="true"></constant>
@@ -4290,6 +4293,7 @@
 	<constant name="NSAccessibilityTextFieldRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTextLinkSubrole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTitleAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityTitleChangedNotification" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTitleUIElementAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityToolbarRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTopLevelUIElementAttribute" swt_gen="true"></constant>

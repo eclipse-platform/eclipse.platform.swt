@@ -3096,6 +3096,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityMisspelledTextAttribute)
 }
 #endif
 
+#ifndef NO_NSAccessibilityMovedNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityMovedNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityMovedNotification_FUNC);
+	rc = (jintLong)NSAccessibilityMovedNotification;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityMovedNotification_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSAccessibilityNextContentsAttribute
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityNextContentsAttribute)
 	(JNIEnv *env, jclass that)
@@ -3320,6 +3332,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityRangeForPositionParameterize
 }
 #endif
 
+#ifndef NO_NSAccessibilityResizedNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityResizedNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityResizedNotification_FUNC);
+	rc = (jintLong)NSAccessibilityResizedNotification;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityResizedNotification_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSAccessibilityRoleAttribute
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityRoleAttribute)
 	(JNIEnv *env, jclass that)
@@ -3448,6 +3472,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilitySelectedChildrenChangedNotif
 	OS_NATIVE_ENTER(env, that, NSAccessibilitySelectedChildrenChangedNotification_FUNC);
 	rc = (jintLong)NSAccessibilitySelectedChildrenChangedNotification;
 	OS_NATIVE_EXIT(env, that, NSAccessibilitySelectedChildrenChangedNotification_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilitySelectedChildrenMovedNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilitySelectedChildrenMovedNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilitySelectedChildrenMovedNotification_FUNC);
+	rc = (jintLong)NSAccessibilitySelectedChildrenMovedNotification;
+	OS_NATIVE_EXIT(env, that, NSAccessibilitySelectedChildrenMovedNotification_FUNC);
 	return rc;
 }
 #endif
@@ -3796,6 +3832,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityTitleAttribute)
 	OS_NATIVE_ENTER(env, that, NSAccessibilityTitleAttribute_FUNC);
 	rc = (jintLong)NSAccessibilityTitleAttribute;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityTitleAttribute_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityTitleChangedNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityTitleChangedNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityTitleChangedNotification_FUNC);
+	rc = (jintLong)NSAccessibilityTitleChangedNotification;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityTitleChangedNotification_FUNC);
 	return rc;
 }
 #endif

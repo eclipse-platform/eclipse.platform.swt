@@ -2914,7 +2914,54 @@ public class Accessible {
 	 */
 	public void sendEvent(int event, Object eventData) {
 		checkWidget();
-		//TODO
+
+		id eventSource = accessibleHandle(this);
+
+		switch (event) {
+		case ACC.EVENT_TABLE_CHANGED:
+		case ACC.EVENT_TEXT_CHANGED:
+		case ACC.EVENT_VALUE_CHANGED:
+		case ACC.EVENT_STATE_CHANGED:
+		case ACC.EVENT_PAGE_CHANGED:
+		case ACC.EVENT_SECTION_CHANGED:
+		case ACC.EVENT_ACTION_CHANGED:
+		case ACC.EVENT_HYPERLINK_START_INDEX_CHANGED:
+		case ACC.EVENT_HYPERLINK_END_INDEX_CHANGED:
+		case ACC.EVENT_HYPERLINK_ANCHOR_COUNT_CHANGED:
+		case ACC.EVENT_HYPERLINK_SELECTED_LINK_CHANGED:
+		case ACC.EVENT_HYPERLINK_ACTIVATED:
+		case ACC.EVENT_HYPERTEXT_LINK_COUNT_CHANGED:
+		case ACC.EVENT_ATTRIBUTE_CHANGED:
+		case ACC.EVENT_TABLE_CAPTION_CHANGED:
+		case ACC.EVENT_TABLE_COLUMN_DESCRIPTION_CHANGED:
+		case ACC.EVENT_TABLE_COLUMN_HEADER_CHANGED:
+		case ACC.EVENT_TABLE_ROW_DESCRIPTION_CHANGED:
+		case ACC.EVENT_TABLE_ROW_HEADER_CHANGED:
+		case ACC.EVENT_TABLE_SUMMARY_CHANGED:
+		case ACC.EVENT_TEXT_ATTRIBUTE_CHANGED:
+		case ACC.EVENT_TEXT_COLUMN_CHANGED:
+			OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilityValueChangedNotification.id); break;
+
+		case ACC.EVENT_SELECTION_CHANGED:
+			OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilitySelectedChildrenChangedNotification.id); break;
+		case ACC.EVENT_TEXT_SELECTION_CHANGED:
+			OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilitySelectedTextChangedNotification.id); break;
+		case ACC.EVENT_LOCATION_CHANGED:
+			OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilityMovedNotification.id); break;
+		case ACC.EVENT_NAME_CHANGED:
+		case ACC.EVENT_DESCRIPTION_CHANGED:
+			OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilityTitleChangedNotification.id); break;
+		case ACC.EVENT_TEXT_CARET_MOVED:
+			OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilitySelectedTextChangedNotification.id); break;
+
+		// None of these correspond to anything in Cocoa. 
+		case ACC.EVENT_HYPERTEXT_LINK_SELECTED:
+		case ACC.EVENT_DOCUMENT_LOAD_COMPLETE:
+		case ACC.EVENT_DOCUMENT_LOAD_STOPPED:
+		case ACC.EVENT_DOCUMENT_RELOAD:
+			break;
+
+		}
 	}
 
 	/**
