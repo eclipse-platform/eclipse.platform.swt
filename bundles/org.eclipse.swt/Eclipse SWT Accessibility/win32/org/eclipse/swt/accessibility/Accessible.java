@@ -2901,7 +2901,11 @@ public class Accessible {
 		if (event.justify) attributes += "text-align:justify;";
 		attributes += "text-align:" + (event.alignment == SWT.LEFT ? "left" : event.alignment == SWT.RIGHT ? "right" : "center") + ";";
 		attributes += "text-indent:" + event.indent + ";";
-		if (event.attributes != null) attributes += event.attributes;
+		if (event.attributes != null) {
+			for (int i = 0; i + 1 < event.attributes.length; i += 2) {
+				attributes += event.attributes[i] + ":" + event.attributes[i+1] + ";";
+			}
+		}
 
 		/* If the role is text, then specify the text model for JAWS. */
 		// TODO: Should StyledText set event.attributes = "text-model:a1;"; ?
@@ -3787,7 +3791,11 @@ public class Accessible {
 				textAttributes += "background-color:rgb(" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + ");";
 			}
 		}
-		if (event.attributes != null) textAttributes += event.attributes;
+		if (event.attributes != null) {
+			for (int i = 0; i + 1 < event.attributes.length; i += 2) {
+				textAttributes += event.attributes[i] + ":" + event.attributes[i+1] + ";";
+			}
+		}
 		if (DEBUG) print("IAccessibleText::get_attributes(" + offset + ") returning start = " + event.start + ", end = " + event.end + ", attributes = " + textAttributes);
 		COM.MoveMemory(pStartOffset, new int [] { event.start }, 4);
 		COM.MoveMemory(pEndOffset, new int [] { event.end }, 4);
