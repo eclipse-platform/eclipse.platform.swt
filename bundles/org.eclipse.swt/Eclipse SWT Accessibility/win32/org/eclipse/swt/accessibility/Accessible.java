@@ -50,7 +50,7 @@ public class Accessible {
 	static int UniqueID = 1;
 	int refCount = 0, enumIndex = 0;
 	COMObject objIAccessible, objIEnumVARIANT, objIServiceProvider, objIAccessible2, objIAccessibleAction,
-		objIAccessibleApplication, objIAccessibleComponent, objIAccessibleEditableText, objIAccessibleHyperlink,
+		objIAccessibleApplication, objIAccessibleComponent, /*objIAccessibleEditableText,*/ objIAccessibleHyperlink,
 		objIAccessibleHypertext, objIAccessibleImage, objIAccessibleTable2, objIAccessibleTableCell,
 		objIAccessibleText, objIAccessibleValue; /* objIAccessibleRelation is defined in Relation class */
 	IAccessible iaccessible;
@@ -249,20 +249,21 @@ public class Accessible {
 		};
 	}
 
-	void createIAccessibleEditableText() {
-		objIAccessibleEditableText = new COMObject(new int[] {2,0,0,2,2,2,2,1,3,3}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessibleEditableText, args[0], args[1]);}
-			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-			public int /*long*/ method3(int /*long*/[] args) {return copyText((int)/*64*/args[0], (int)/*64*/args[1]);}
-			public int /*long*/ method4(int /*long*/[] args) {return deleteText((int)/*64*/args[0], (int)/*64*/args[1]);}
-			public int /*long*/ method5(int /*long*/[] args) {return insertText((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method6(int /*long*/[] args) {return cutText((int)/*64*/args[0], (int)/*64*/args[1]);}
-			public int /*long*/ method7(int /*long*/[] args) {return pasteText((int)/*64*/args[0]);}
-			public int /*long*/ method8(int /*long*/[] args) {return replaceText((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
-			public int /*long*/ method9(int /*long*/[] args) {return setAttributes((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
-		};
-	}
+	// This method is intentionally commented. We are not providing IAccessibleEditableText at this time.
+//	void createIAccessibleEditableText() {
+//		objIAccessibleEditableText = new COMObject(new int[] {2,0,0,2,2,2,2,1,3,3}) {
+//			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessibleEditableText, args[0], args[1]);}
+//			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+//			public int /*long*/ method2(int /*long*/[] args) {return Release();}
+//			public int /*long*/ method3(int /*long*/[] args) {return copyText((int)/*64*/args[0], (int)/*64*/args[1]);}
+//			public int /*long*/ method4(int /*long*/[] args) {return deleteText((int)/*64*/args[0], (int)/*64*/args[1]);}
+//			public int /*long*/ method5(int /*long*/[] args) {return insertText((int)/*64*/args[0], args[1]);}
+//			public int /*long*/ method6(int /*long*/[] args) {return cutText((int)/*64*/args[0], (int)/*64*/args[1]);}
+//			public int /*long*/ method7(int /*long*/[] args) {return pasteText((int)/*64*/args[0]);}
+//			public int /*long*/ method8(int /*long*/[] args) {return replaceText((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+//			public int /*long*/ method9(int /*long*/[] args) {return setAttributes((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+//		};
+//	}
 
 	void createIAccessibleHyperlink() {
 		objIAccessibleHyperlink = new COMObject(new int[] {2,0,0,/*IAA>>*/2,0,0,1,1,2,4,2,2,/*<<IAA*/2,2,1,1,1}) {
@@ -1385,9 +1386,10 @@ public class Accessible {
 				objIAccessibleComponent.dispose();
 			objIAccessibleComponent = null;
 
-			if (objIAccessibleEditableText != null)
-				objIAccessibleEditableText.dispose();
-			objIAccessibleEditableText = null;
+			// The following lines are intentionally commented. We are not providing IAccessibleEditableText at this time.
+//			if (objIAccessibleEditableText != null)
+//				objIAccessibleEditableText.dispose();
+//			objIAccessibleEditableText = null;
 
 			if (objIAccessibleHyperlink != null)
 				objIAccessibleHyperlink.dispose();
@@ -1501,8 +1503,8 @@ public class Accessible {
 			return COM.S_OK;
 		}
 		
-		// TODO: We are not providing the EditableText interface at this time
-//		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleEditableText)/*&& accessibleEditableTextListeners.size() > 0*/) {
+		// The following lines are intentionally commented. We are not providing IAccessibleEditableText at this time.
+//		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleEditableText) && accessibleEditableTextListeners.size() > 0) {
 //			if (objIAccessibleEditableText == null) createIAccessibleEditableText();
 //			COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleEditableText.getAddress() }, OS.PTR_SIZEOF);
 //			AddRef();
@@ -2335,7 +2337,7 @@ public class Accessible {
 				if (v.vt == COM.VT_I4) {
 					osChild = osToChildID(v.lVal);
 				} else if (v.vt == COM.VT_DISPATCH) {
-					osChildObject = v.lVal;
+					osChildObject = v.lVal; // TODO: don't use struct; lVal is an int
 				} else if (v.vt == COM.VT_UNKNOWN) {
 					osChild = ACC.CHILDID_MULTIPLE;
 					// TODO: Should get IEnumVARIANT from punkVal field, and enumerate children...
@@ -2478,9 +2480,9 @@ public class Accessible {
 		return COM.E_NOTIMPL;
 	}
 	
+	// We may support this method with IAccessibleEditableText, but we are not providing IAccessibleEditableText at this time.
 	/* put_accValue([in] varChild, [in] szValue) */
 	int put_accValue(int /*long*/ varChild, int /*long*/ szValue) {
-		// TODO: Are we going to support this (in EditableText)?
 		/* MSAA: this method is typically only used for edit controls. */
 		int code = COM.DISP_E_MEMBERNOTFOUND;
 		if (iaccessible != null) {
@@ -3088,10 +3090,9 @@ public class Accessible {
 		return COM.S_OK;
 	}
 
+	// The following 7 method are intentionally commented. We are not providing IAccessibleEditableText at this time.
 	/* IAccessibleEditableText::copyText([in] startOffset, [in] endOffset) */
-	int copyText(int startOffset, int endOffset) {
-		// TODO: Do not provide at this time
-		return COM.DISP_E_MEMBERNOTFOUND;
+//	int copyText(int startOffset, int endOffset) {
 //		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
 //		event.start = startOffset;
 //		event.end = endOffset;
@@ -3099,14 +3100,12 @@ public class Accessible {
 //			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
 //			listener.copyText(event);
 //		}
+//		if (event.result != ACC.OK) return COM.E_INVALIDARG;
 //		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed
-	}
-
-	/* IAccessibleEditableText::deleteText([in] startOffset, [in] endOffset) */
-	int deleteText(int startOffset, int endOffset) {
-		// TODO: Do not provide at this time
-		return COM.DISP_E_MEMBERNOTFOUND;
+//	}
+//
+//	/* IAccessibleEditableText::deleteText([in] startOffset, [in] endOffset) */
+//	int deleteText(int startOffset, int endOffset) {
 //		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
 //		event.start = startOffset;
 //		event.end = endOffset;
@@ -3114,29 +3113,25 @@ public class Accessible {
 //			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
 //			listener.deleteText(event);
 //		}
+//		if (event.result != ACC.OK) return COM.E_INVALIDARG;
 //		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed
-	}
-
-	/* IAccessibleEditableText::insertText([in] offset, [in] pbstrText) */
-	int insertText(int offset, int /*long*/ pbstrText) {
-		// TODO: Do not provide at this time
-		return COM.DISP_E_MEMBERNOTFOUND;
+//	}
+//
+//	/* IAccessibleEditableText::insertText([in] offset, [in] pbstrText) */
+//	int insertText(int offset, int /*long*/ pbstrText) {
 //		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
-//		event.index = offset;
+//		event.offset = offset;
 //		event.string = pbstrText;
 //		for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
 //			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
 //			listener.insertText(event);
 //		}
+//		if (event.result != ACC.OK) return COM.E_INVALIDARG;
 //		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed
-	}
-
-	/* IAccessibleEditableText::cutText([in] startOffset, [in] endOffset) */
-	int cutText(int startOffset, int endOffset) {
-		// TODO: Do not provide at this time
-		return COM.DISP_E_MEMBERNOTFOUND;
+//	}
+//
+//	/* IAccessibleEditableText::cutText([in] startOffset, [in] endOffset) */
+//	int cutText(int startOffset, int endOffset) {
 //		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
 //		event.start = startOffset;
 //		event.end = endOffset;
@@ -3144,28 +3139,24 @@ public class Accessible {
 //			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
 //			listener.cutText(event);
 //		}
+//		if (event.result != ACC.OK) return COM.E_INVALIDARG;
 //		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed
-	}
-
-	/* IAccessibleEditableText::pasteText([in] offset) */
-	int pasteText(int offset) {
-		// TODO: Do not provide at this time
-		return COM.DISP_E_MEMBERNOTFOUND;
+//	}
+//
+//	/* IAccessibleEditableText::pasteText([in] offset) */
+//	int pasteText(int offset) {
 //		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
-//		event.index = offset;
+//		event.offset = offset;
 //		for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
 //			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
 //			listener.pasteText(event);
 //		}
+//		if (event.result != ACC.OK) return COM.E_INVALIDARG;
 //		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed
-	}
-
-	/* IAccessibleEditableText::replaceText([in] startOffset, [in] endOffset, [in] pbstrText) */
-	int replaceText(int startOffset, int endOffset, int /*long*/ pbstrText) {
-		// TODO: Do not provide at this time
-		return COM.DISP_E_MEMBERNOTFOUND;
+//	}
+//
+//	/* IAccessibleEditableText::replaceText([in] startOffset, [in] endOffset, [in] pbstrText) */
+//	int replaceText(int startOffset, int endOffset, int /*long*/ pbstrText) {
 //		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
 //		event.start = startOffset;
 //		event.end = endOffset;
@@ -3174,14 +3165,12 @@ public class Accessible {
 //			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
 //			listener.replaceText(event);
 //		}
+//		if (event.result != ACC.OK) return COM.E_INVALIDARG;
 //		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed
-	}
-
-	/* IAccessibleEditableText::setAttributes([in] startOffset, [in] endOffset, [in] pbstrAttributes) */
-	int setAttributes(int startOffset, int endOffset, int /*long*/ pbstrAttributes) {
-		// TODO: Do not provide at this time
-		return COM.DISP_E_MEMBERNOTFOUND;
+//	}
+//
+//	/* IAccessibleEditableText::setAttributes([in] startOffset, [in] endOffset, [in] pbstrAttributes) */
+//	int setAttributes(int startOffset, int endOffset, int /*long*/ pbstrAttributes) {
 //		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
 //		event.start = startOffset;
 //		event.end = endOffset;
@@ -3190,9 +3179,9 @@ public class Accessible {
 //			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
 //			listener.setAttributes(event);
 //		}
+//		if (event.result != ACC.OK) return COM.E_INVALIDARG;
 //		return COM.S_OK;
-		// TODO: @retval E_INVALIDARG if bad [in] passed
-	}
+//	}
 
 	/* IAccessibleHyperlink::get_anchor([in] index, [out] pAnchor) */
 	int get_anchor(int index, int /*long*/ pAnchor) {
@@ -4188,6 +4177,7 @@ public class Accessible {
 	int setCurrentValue(int /*long*/ value) {
 		AccessibleValueEvent event = new AccessibleValueEvent(this);
 		event.value = getNumberVARIANT(value);
+		// TODO: clip to min/max? See IA2 doc.
 		for (int i = 0; i < accessibleValueListeners.size(); i++) {
 			AccessibleValueListener listener = (AccessibleValueListener) accessibleValueListeners.elementAt(i);
 			listener.setCurrentValue(event);
