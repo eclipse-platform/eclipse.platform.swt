@@ -1465,7 +1465,7 @@ public class Accessible {
 				IServiceProvider iserviceProvider = new IServiceProvider(ppv[0]);
 				int /*long*/ [] ppvx = new int /*long*/ [1];
 				code = iserviceProvider.QueryService(service, guid, ppvx);
-				COM.MoveMemory(ppvObject, new int /*long*/[] { ppvx[0] }, OS.PTR_SIZEOF);
+				COM.MoveMemory(ppvObject, ppvx, OS.PTR_SIZEOF);
 				return code;
 			}
 		}
@@ -1842,15 +1842,14 @@ public class Accessible {
 				VARIANT v = getVARIANT(pvarChild);
 				if (v.vt == COM.VT_I4) osChild = osToChildID(v.lVal);
 				else if (v.vt == COM.VT_DISPATCH) {
-					osChildObject = v.lVal;
+					osChildObject = v.lVal; // TODO: don't use struct. lVal is an int.
 				}
 			}
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		// TODO: Should also look up Accessible for osChildObject
 		event.childID = osChild;
-		//event.accessible = Accessible for osChildObject;
+		// TODO: event.accessible = Accessible for osChildObject;
 		event.x = xLeft;
 		event.y = yTop;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
@@ -1923,9 +1922,9 @@ public class Accessible {
 		return code;
 	}
 	
+	// TODO: Consider supporting this in future.
 	/* accSelect([in] flagsSelect, [in] varChild) */
 	int accSelect(int flagsSelect, int /*long*/ varChild) {
-		// TODO: Probably need to support this?
 		int code = COM.DISP_E_MEMBERNOTFOUND;
 		if (iaccessible != null) {
 			/* Currently, we don't expose this as API. Forward to the proxy. */
@@ -2710,15 +2709,17 @@ public class Accessible {
 		// TODO: handle where possible - maybe add AccessibleGroup later
 		//get the role
 		//if it has role tree, then the level is the value else 0 (for N/A)
-//		COM.MoveMemory(pGroupLevel, new int [] { groupLevel }, 4);
+		int groupLevel = 0;
+		COM.MoveMemory(pGroupLevel, new int [] { groupLevel }, 4);
 		//get the children of the parent
-		//collect all children with the same role
-//		COM.MoveMemory(pSimilarItemsInGroup, new int [] { similarItemsInGroup }, 4);
-		//find this guy's index in the collection
-//		COM.MoveMemory(pPositionInGroup, new int [] { positionInGroup }, 4);
-//		return COM.S_OK;
-		return COM.S_FALSE;
-		// TODO: @retval S_OK if at least one value is valid @retval S_FALSE if no values are valid
+		//collect all children with the same role, if none, then 0 (for N/A)
+		int similarItemsInGroup = 0;
+		COM.MoveMemory(pSimilarItemsInGroup, new int [] { similarItemsInGroup }, 4);
+		//find this guy's 1-based index in the children of the parent (0 for N/A)
+		int positionInGroup = 0;
+		COM.MoveMemory(pPositionInGroup, new int [] { positionInGroup }, 4);
+		if (groupLevel == 0 && similarItemsInGroup == 0 && positionInGroup == 0) return COM.S_FALSE;
+		return COM.S_OK;
 	}
 
 	/* IAccessible2::get_states([out] pStates) */
@@ -2738,7 +2739,7 @@ public class Accessible {
 		if ((states & ACC.STATE_INVALID_ENTRY) != 0) ia2States |= COM.IA2_STATE_INVALID_ENTRY;
 		if ((states & ACC.STATE_SUPPORTS_AUTOCOMPLETION) != 0) ia2States |= COM.IA2_STATE_SUPPORTS_AUTOCOMPLETION;
 		
-		/* If the role is text, then set IA2_STATE_EDITABLE.
+		/* If the role is text and there are TextExtendedListeners, then set IA2_STATE_EDITABLE.
 		 * Note that IA2_STATE_EDITABLE is not the opposite of STATE_READONLY.
 		 * Instead, it means: "has a caret, supports IAccessibleText, and is a text editing environment".
 		 */
@@ -2748,7 +2749,7 @@ public class Accessible {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getRole(event2);
 		}
-		if (event2.detail == ACC.ROLE_TEXT) {
+		if (event2.detail == ACC.ROLE_TEXT && accessibleTextExtendedListeners.size() > 0) {
 			ia2States |= COM.IA2_STATE_EDITABLE;
 		}
 		if (DEBUG) printIA2States("IAccessible2::get_states returning ", ia2States);
@@ -2824,6 +2825,8 @@ public class Accessible {
 //			 * getChild for CHILDID_CHILD_INDEX.
 //			 */
 //			// TODO: finish this. See also get_groupPosition
+			// this won't work because VARIANT.sizeof isn't big enough on 64-bit machines.
+			// just create an  int /*long*/ [] ppdispParent - it's not a variant anyhow... 
 //			int /*long*/ ppdispParent = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
 //			int code = get_accParent(ppdispParent);
 //			if (code == COM.S_OK) {
@@ -2910,7 +2913,6 @@ public class Accessible {
 		}
 
 		/* If the role is text, then specify the text model for JAWS. */
-		// TODO: Should StyledText set event.attributes = "text-model:a1;"; ?
 		AccessibleControlEvent event2 = new AccessibleControlEvent(this);
 		event2.childID = ACC.CHILDID_SELF;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
@@ -2944,6 +2946,7 @@ public class Accessible {
 			AccessibleActionListener listener = (AccessibleActionListener) accessibleActionListeners.elementAt(i);
 			listener.doAction(event);
 		}
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
 		return COM.S_OK;
 	}
 
@@ -3077,16 +3080,16 @@ public class Accessible {
 	/* IAccessibleComponent::get_foreground([out] pForeground) */
 	int get_foreground(int /*long*/ pForeground) {
 		Color color = control.getForeground();
-		if (color != null) COM.MoveMemory(pForeground, new int [] { color.handle }, 4);
-		if (DEBUG) print("IAccessibleComponent::get_foreground returning " + (color == null ? "null" : "" + color.handle));
+		COM.MoveMemory(pForeground, new int [] { color.handle }, 4);
+		if (DEBUG) print("IAccessibleComponent::get_foreground returning " + color.handle);
 		return COM.S_OK;
 	}
 
 	/* IAccessibleComponent::get_background([out] pBackground) */
 	int get_background(int /*long*/ pBackground) {
 		Color color = control.getBackground();
-		if (color != null) COM.MoveMemory(pBackground, new int [] { color.handle }, 4);
-		if (DEBUG) print("IAccessibleComponent::get_background returning " + (color == null ? "null" : "" + color.handle));
+		COM.MoveMemory(pBackground, new int [] { color.handle }, 4);
+		if (DEBUG) print("IAccessibleComponent::get_background returning " + color.handle);
 		return COM.S_OK;
 	}
 
@@ -3100,7 +3103,7 @@ public class Accessible {
 //			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
 //			listener.copyText(event);
 //		}
-//		if (event.result != ACC.OK) return COM.E_INVALIDARG;
+//		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
 //		return COM.S_OK;
 //	}
 //
@@ -3113,7 +3116,7 @@ public class Accessible {
 //			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
 //			listener.deleteText(event);
 //		}
-//		if (event.result != ACC.OK) return COM.E_INVALIDARG;
+//		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
 //		return COM.S_OK;
 //	}
 //
@@ -3126,7 +3129,7 @@ public class Accessible {
 //			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
 //			listener.insertText(event);
 //		}
-//		if (event.result != ACC.OK) return COM.E_INVALIDARG;
+//		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
 //		return COM.S_OK;
 //	}
 //
@@ -3139,7 +3142,7 @@ public class Accessible {
 //			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
 //			listener.cutText(event);
 //		}
-//		if (event.result != ACC.OK) return COM.E_INVALIDARG;
+//		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
 //		return COM.S_OK;
 //	}
 //
@@ -3151,7 +3154,7 @@ public class Accessible {
 //			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
 //			listener.pasteText(event);
 //		}
-//		if (event.result != ACC.OK) return COM.E_INVALIDARG;
+//		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
 //		return COM.S_OK;
 //	}
 //
@@ -3165,7 +3168,7 @@ public class Accessible {
 //			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
 //			listener.replaceText(event);
 //		}
-//		if (event.result != ACC.OK) return COM.E_INVALIDARG;
+//		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
 //		return COM.S_OK;
 //	}
 //
@@ -3179,7 +3182,7 @@ public class Accessible {
 //			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
 //			listener.setAttributes(event);
 //		}
-//		if (event.result != ACC.OK) return COM.E_INVALIDARG;
+//		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
 //		return COM.S_OK;
 //	}
 
@@ -3322,6 +3325,7 @@ public class Accessible {
 
 	/* IAccessibleImage::get_imageSize([out] pHeight, [out] pWidth) */
 	int get_imageSize(int /*long*/ pHeight, int /*long*/ pWidth) {
+		// TODO: does it make sense to just reuse getLocation?
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
@@ -3342,6 +3346,7 @@ public class Accessible {
 			listener.getCell(event);
 		}
 		Accessible accessible = event.accessible;
+		if (DEBUG) print("IAccessibleTable2::get_cellAt(row=" + row + ", column=" + column + ") returning " + accessible);
 		if (accessible == null) return COM.E_INVALIDARG;
 		accessible.AddRef();
 		COM.MoveMemory(ppCell, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
@@ -3356,6 +3361,7 @@ public class Accessible {
 			listener.getCaption(event);
 		}
 		Accessible accessible = event.accessible;
+		if (DEBUG) print("IAccessibleTable2::get_caption() returning " + accessible);
 		if (accessible == null) {
 			COM.MoveMemory(ppAccessible, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
 			return COM.S_FALSE;
@@ -3374,6 +3380,7 @@ public class Accessible {
 			listener.getColumnDescription(event);
 		}
 		setString(pbstrDescription, event.result);
+		if (DEBUG) print("IAccessibleTable2::get_columnDescription(column=" + column + ") returning " + event.result);
 		if (event.result == null) return COM.S_FALSE;
 		return COM.S_OK;
 	}
@@ -3385,6 +3392,7 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.getColumnCount(event);
 		}
+		if (DEBUG) print("IAccessibleTable2::get_nColumns() returning " + event.count);
 		COM.MoveMemory(pColumnCount, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
@@ -3396,6 +3404,7 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.getRowCount(event);
 		}
+		if (DEBUG) print("IAccessibleTable2::get_nRows() returning " + event.count);
 		COM.MoveMemory(pRowCount, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
@@ -3407,6 +3416,7 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.getSelectedCellCount(event);
 		}
+		if (DEBUG) print("IAccessibleTable2::get_nSelectedCells() returning " + event.count);
 		COM.MoveMemory(pCellCount, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
@@ -3418,6 +3428,7 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.getSelectedColumnCount(event);
 		}
+		if (DEBUG) print("IAccessibleTable2::get_nSelectedColumns() returning " + event.count);
 		COM.MoveMemory(pColumnCount, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
@@ -3429,6 +3440,7 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.getSelectedRowCount(event);
 		}
+		if (DEBUG) print("IAccessibleTable2::get_nSelectedRows() returning " + event.count);
 		COM.MoveMemory(pRowCount, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
@@ -3442,6 +3454,7 @@ public class Accessible {
 			listener.getRowDescription(event);
 		}
 		setString(pbstrDescription, event.result);
+		if (DEBUG) print("IAccessibleTable2::get_rowDescription(row=" + row + ") returning " + event.result);
 		if (event.result == null) return COM.S_FALSE;
 		return COM.S_OK;
 	}
@@ -3453,16 +3466,26 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.getSelectedCells(event);
 		}
-		// TODO: Handle array, not just first element NOTE: NOT a variant
-		if (event.accessibles == null || event.accessibles.length == 0) return COM.S_FALSE;
-		Accessible accessible = event.accessibles[0];
-		if (accessible != null) {
-			accessible.AddRef();
-			setPtrVARIANT(ppCells, COM.VT_DISPATCH, accessible.getAddress());
+		if (DEBUG) print("IAccessibleTable2::get_selectedCells() returning " + (event.accessibles == null ? "null" : "accessibles[" + event.accessibles.length + "]"));
+		if (event.accessibles == null || event.accessibles.length == 0) {
+			COM.MoveMemory(ppCells, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+			COM.MoveMemory(pNSelectedCells, new int [] { 0 }, 4);
+			return COM.S_FALSE;
 		}
-		COM.MoveMemory(pNSelectedCells, new int [] { event.count }, 4);
+		int length = event.accessibles.length;
+		int /*long*/ pv = COM.CoTaskMemAlloc(length * OS.PTR_SIZEOF);
+		int count = 0;
+		for (int i = 0; i < length; i++) {
+			Accessible accessible = event.accessibles[i];
+			if (accessible != null) {
+				accessible.AddRef();
+				COM.MoveMemory(pv + i * OS.PTR_SIZEOF, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+				count++;
+			}
+		}
+		COM.MoveMemory(ppCells, new int /*long*/ [] { pv }, OS.PTR_SIZEOF);
+		COM.MoveMemory(pNSelectedCells, new int [] { count }, 4);
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there are none, [out] values are NULL and 0 respectively
 	}
 
 	/* IAccessibleTable2::get_selectedColumns([out] ppSelectedColumns, [out] pNColumns) */
@@ -3472,12 +3495,18 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.getSelectedColumns(event);
 		}
-		if (event.selected == null || event.selected.length == 0) return COM.S_FALSE;
-		// TODO: return whole array of selected items, not just first
-		COM.MoveMemory(ppSelectedColumns, new int [] { event.selected[0] }, 4);
-		COM.MoveMemory(pNColumns, new int [] { event.count }, 4);
+		int count = event.selected == null ? 0 : event.selected.length;
+		if (DEBUG) print("IAccessibleTable2::get_selectedColumns() returning " + (count == 0 ? "null" : "selected[" + count + "]"));
+		if (count == 0) {
+			COM.MoveMemory(ppSelectedColumns, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+			COM.MoveMemory(pNColumns, new int [] { 0 }, 4);
+			return COM.S_FALSE;
+		}
+		int /*long*/ pv = COM.CoTaskMemAlloc(count * 4);
+		COM.MoveMemory(pv, event.selected, count * 4);
+		COM.MoveMemory(ppSelectedColumns, new int /*long*/ [] { pv }, OS.PTR_SIZEOF);
+		COM.MoveMemory(pNColumns, new int [] { count }, 4);
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there are none, [out] values are NULL and 0 respectively
 	}
 
 	/* IAccessibleTable2::get_selectedRows([out] ppSelectedRows, [out] pNRows) */
@@ -3487,10 +3516,17 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.getSelectedRows(event);
 		}
-		if (event.selected == null || event.selected.length == 0) return COM.S_FALSE;
-		// TODO: return whole array of selected items, not just first
-		COM.MoveMemory(ppSelectedRows, new int [] { event.selected[0] }, 4);
-		COM.MoveMemory(pNRows, new int [] { event.count }, 4);
+		int count = event.selected == null ? 0 : event.selected.length;
+		if (DEBUG) print("IAccessibleTable2::get_selectedRows() returning " + (count == 0 ? "null" : "selected[" + count + "]"));
+		if (count == 0) {
+			COM.MoveMemory(ppSelectedRows, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+			COM.MoveMemory(pNRows, new int [] { 0 }, 4);
+			return COM.S_FALSE;
+		}
+		int /*long*/ pv = COM.CoTaskMemAlloc(count * 4);
+		COM.MoveMemory(pv, event.selected, count * 4);
+		COM.MoveMemory(ppSelectedRows, new int /*long*/ [] { pv }, OS.PTR_SIZEOF);
+		COM.MoveMemory(pNRows, new int [] { count }, 4);
 		return COM.S_OK;
 	}
 
@@ -3502,6 +3538,7 @@ public class Accessible {
 			listener.getSummary(event);
 		}
 		Accessible accessible = event.accessible;
+		if (DEBUG) print("IAccessibleTable2::get_summary() returning " + accessible);
 		if (accessible == null) {
 			COM.MoveMemory(ppAccessible, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
 			return COM.S_FALSE;
@@ -3519,6 +3556,7 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.isColumnSelected(event);
 		}
+		if (DEBUG) print("IAccessibleTable2::get_isColumnSelected() returning " + event.isSelected);
 		COM.MoveMemory(pIsSelected, new int [] {event.isSelected ? 1 : 0}, 4);
 		return COM.S_OK;
 	}
@@ -3531,6 +3569,7 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.isRowSelected(event);
 		}
+		if (DEBUG) print("IAccessibleTable2::get_isRowSelected() returning " + event.isSelected);
 		COM.MoveMemory(pIsSelected, new int [] {event.isSelected ? 1 : 0}, 4);
 		return COM.S_OK;
 	}
@@ -3543,7 +3582,8 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.setSelectedRow(event);
 		}
-		if (event.result != ACC.OK) return COM.E_INVALIDARG;
+		if (DEBUG) print("IAccessibleTable2::selectRow() returning " + (event.result == null ? "E_INVALIDARG" : event.result));
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
 		return COM.S_OK;
 	}
 
@@ -3555,7 +3595,8 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.setSelectedColumn(event);
 		}
-		if (event.result != ACC.OK) return COM.E_INVALIDARG;
+		if (DEBUG) print("IAccessibleTable2::selectColumn() returning " + (event.result == null ? "E_INVALIDARG" : event.result));
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
 		return COM.S_OK;
 	}
 
@@ -3567,7 +3608,8 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.deselectRow(event);
 		}
-		if (event.result != ACC.OK) return COM.E_INVALIDARG;
+		if (DEBUG) print("IAccessibleTable2::unselectRow() returning " + (event.result == null ? "E_INVALIDARG" : event.result));
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
 		return COM.S_OK;
 	}
 
@@ -3579,20 +3621,20 @@ public class Accessible {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
 			listener.deselectColumn(event);
 		}
-		if (event.result != ACC.OK) return COM.E_INVALIDARG;
+		if (DEBUG) print("IAccessibleTable2::unselectColumn() returning " + (event.result == null ? "E_INVALIDARG" : event.result));
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
 		return COM.S_OK;
 	}
 
 	/* IAccessibleTable2::get_modelChange([out] pModelChange) */
 	int get_modelChange(int /*long*/ pModelChange) {
-		if (tableChange != null) {
-			// TODO: verify that this works...
-			COM.MoveMemory(pModelChange, tableChange, tableChange.length * 4);
-			tableChange = null;
-			return COM.S_OK;
+		if (DEBUG) print("IAccessibleTable2::get_modelChange() returning " + (tableChange == null ? "null" : "tableChange=" + tableChange[0] + ", " + tableChange[1] + ", " + tableChange[2] + ", " + tableChange[3]));
+		if (tableChange == null) {
+			COM.MoveMemory(pModelChange, new int /*long*/ [] { 0 }, OS.PTR_SIZEOF);
+			return COM.S_FALSE;
 		}
-		COM.MoveMemory(pModelChange, new int [] { 0 }, OS.PTR_SIZEOF);
-		return COM.S_FALSE;
+		COM.MoveMemory(pModelChange, tableChange, tableChange.length * 4);
+		return COM.S_OK;
 	}
 
 	/* IAccessibleTableCell::get_columnExtent([out] pNColumnsSpanned) */
@@ -3602,6 +3644,7 @@ public class Accessible {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
 			listener.getColumnSpan(event);
 		}
+		if (DEBUG) print("IAccessibleTableCell::get_columnExtent() returning " + event.count);
 		COM.MoveMemory(pNColumnsSpanned, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
@@ -3613,15 +3656,26 @@ public class Accessible {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
 			listener.getColumnHeaders(event);
 		}
-		// TODO: Handle array, not just first element. NOTE: NOT variant
-		Accessible accessible = event.accessibles[0];
-		if (accessible != null) {
-			accessible.AddRef();
-			setPtrVARIANT(ppCellAccessibles, COM.VT_DISPATCH, accessible.getAddress());
+		if (DEBUG) print("IAccessibleTableCell::get_columnHeaderCells() returning " + (event.accessibles == null ? "null" : "accessibles[" + event.accessibles.length + "]"));
+		if (event.accessibles == null || event.accessibles.length == 0) {
+			COM.MoveMemory(ppCellAccessibles, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+			COM.MoveMemory(pNColumnHeaderCells, new int [] { 0 }, 4);
+			return COM.S_FALSE;
 		}
-		COM.MoveMemory(pNColumnHeaderCells, new int [] { event.count }, 4);
+		int length = event.accessibles.length;
+		int /*long*/ pv = COM.CoTaskMemAlloc(length * OS.PTR_SIZEOF);
+		int count = 0;
+		for (int i = 0; i < length; i++) {
+			Accessible accessible = event.accessibles[i];
+			if (accessible != null) {
+				accessible.AddRef();
+				COM.MoveMemory(pv + i * OS.PTR_SIZEOF, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+				count++;
+			}
+		}
+		COM.MoveMemory(ppCellAccessibles, new int /*long*/ [] { pv }, OS.PTR_SIZEOF);
+		COM.MoveMemory(pNColumnHeaderCells, new int [] { count }, 4);
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is no header, [out] values are NULL and 0 respectively
 	}
 
 	/* IAccessibleTableCell::get_columnIndex([out] pColumnIndex) */
@@ -3631,6 +3685,7 @@ public class Accessible {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
 			listener.getColumnIndex(event);
 		}
+		if (DEBUG) print("IAccessibleTableCell::get_columnIndex() returning " + event.index);
 		COM.MoveMemory(pColumnIndex, new int [] { event.index }, 4);
 		return COM.S_OK;
 	}
@@ -3642,6 +3697,7 @@ public class Accessible {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
 			listener.getRowSpan(event);
 		}
+		if (DEBUG) print("IAccessibleTableCell::get_rowExtent() returning " + event.count);
 		COM.MoveMemory(pNRowsSpanned, new int [] { event.count }, 4);
 		return COM.S_OK;
 	}
@@ -3653,15 +3709,26 @@ public class Accessible {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
 			listener.getRowHeaders(event);
 		}
-		// TODO: Handle array, not just first element. NOTE: NOT variant
-		Accessible accessible = event.accessibles[0];
-		if (accessible != null) {
-			accessible.AddRef();
-			setPtrVARIANT(ppCellAccessibles, COM.VT_DISPATCH, accessible.getAddress());
+		if (DEBUG) print("IAccessibleTableCell::get_rowHeaderCells() returning " + (event.accessibles == null ? "null" : "accessibles[" + event.accessibles.length + "]"));
+		if (event.accessibles == null || event.accessibles.length == 0) {
+			COM.MoveMemory(ppCellAccessibles, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+			COM.MoveMemory(pNRowHeaderCells, new int [] { 0 }, 4);
+			return COM.S_FALSE;
 		}
-		COM.MoveMemory(pNRowHeaderCells, new int [] { event.count }, 4);
+		int length = event.accessibles.length;
+		int /*long*/ pv = COM.CoTaskMemAlloc(length * OS.PTR_SIZEOF);
+		int count = 0;
+		for (int i = 0; i < length; i++) {
+			Accessible accessible = event.accessibles[i];
+			if (accessible != null) {
+				accessible.AddRef();
+				COM.MoveMemory(pv + i * OS.PTR_SIZEOF, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+				count++;
+			}
+		}
+		COM.MoveMemory(ppCellAccessibles, new int /*long*/ [] { pv }, OS.PTR_SIZEOF);
+		COM.MoveMemory(pNRowHeaderCells, new int [] { count }, 4);
 		return COM.S_OK;
-		// TODO: @retval S_FALSE if there is no header, [out] values are NULL and 0 respectively
 	}
 
 	/* IAccessibleTableCell::get_rowIndex([out] pRowIndex) */
@@ -3671,6 +3738,7 @@ public class Accessible {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
 			listener.getRowIndex(event);
 		}
+		if (DEBUG) print("IAccessibleTableCell::get_rowIndex() returning " + event.index);
 		COM.MoveMemory(pRowIndex, new int [] { event.index }, 4);
 		return COM.S_OK;
 	}
@@ -3682,6 +3750,8 @@ public class Accessible {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
 			listener.isSelected(event);
 		}
+		if (DEBUG) print("IAccessibleTableCell::get_isSelected() returning " + event.isSelected);
+		COM.MoveMemory(pIsSelected, new int [] {event.isSelected ? 1 : 0}, 4);
 		return COM.S_OK;
 	}
 
@@ -3709,8 +3779,9 @@ public class Accessible {
 			listener.getTable(event);
 		}
 		Accessible accessible = event.accessible;
+		if (DEBUG) print("IAccessibleTableCell::get_table() returning " + accessible);
 		if (accessible == null) {
-			// TODO: This is not supposed to return S_FALSE. How do we fail gracefully? SWT exception?
+			// TODO: This is not supposed to return S_FALSE. We need to lookup the table role parent and return that.
 			COM.MoveMemory(ppTable, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
 			return COM.S_FALSE;
 		}
@@ -3728,7 +3799,7 @@ public class Accessible {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.addSelection(event);
 		}
-		if (event.result != ACC.OK) return COM.E_INVALIDARG;
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
 		return COM.S_OK;
 	}
 
@@ -3757,11 +3828,11 @@ public class Accessible {
 					case SWT.UNDERLINE_ERROR: textAttributes += "single;text-underline-style:wave;invalid:true;"; break;
 					default: textAttributes += "none;"; break;
 				}
-				// TODO: style.underlineColor is not currently part of the IA2 spec. If provided, it would be "text-underline-color:rgb(n,n,n);"
+				// style.underlineColor is not currently part of the IA2 spec. If provided, it would be "text-underline-color:rgb(n,n,n);"
 			}
 			if (style.strikeout) {
 				textAttributes += "text-line-through-type:single";
-				// TODO: style.strikeoutColor is not currently part of the IA2 spec. If provided, it would be "text-line-through-color:rgb(n,n,n);"
+				// style.strikeoutColor is not currently part of the IA2 spec. If provided, it would be "text-line-through-color:rgb(n,n,n);"
 			}
 			Font font = style.font;
 			if (font != null && !font.isDisposed()) {
@@ -4035,7 +4106,7 @@ public class Accessible {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.removeSelection(event);
 		}
-		if (event.result != ACC.OK) return COM.E_INVALIDARG;
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
 		return COM.S_OK;
 	}
 
@@ -4047,7 +4118,7 @@ public class Accessible {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.setCaretOffset(event);
 		}
-		if (event.result != ACC.OK) return COM.E_INVALIDARG; // TODO: @retval E_FAIL if the caret cannot be set ?
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG; // TODO: @retval E_FAIL if the caret cannot be set ?
 		return COM.S_OK;
 	}
 
@@ -4061,8 +4132,8 @@ public class Accessible {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.setSelection(event);
 		}
-		if (DEBUG) print("IAccessibleText::setSelection(index=" + selectionIndex + ", start=" + event.start + ", end=" + event.end + ") returning " + (event.result == ACC.OK ? "OK" : "INVALIDARG"));
-		if (event.result != ACC.OK) return COM.E_INVALIDARG;
+		if (DEBUG) print("IAccessibleText::setSelection(index=" + selectionIndex + ", start=" + event.start + ", end=" + event.end + ") returning " + (event.result.equals(ACC.OK) ? "OK" : "INVALIDARG"));
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
 		return COM.S_OK;
 	}
 
@@ -4107,7 +4178,7 @@ public class Accessible {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.scrollText(event);
 		}
-		if (event.result != ACC.OK) return COM.E_INVALIDARG;
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
 		return COM.S_OK;
 	}
 
@@ -4123,7 +4194,7 @@ public class Accessible {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.scrollText(event);
 		}
-		if (event.result != ACC.OK) return COM.E_INVALIDARG; // TODO: @retval S_FALSE if the object is already at the specified location.
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG; // TODO: @retval S_FALSE if the object is already at the specified location.
 		return COM.S_OK;
 	}
 
