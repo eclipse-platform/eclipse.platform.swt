@@ -127,7 +127,7 @@ public class Accessible {
 
 	void createIAccessible() {
 		objIAccessible = new COMObject(new int[] {2,0,0,1,3,5,8,1,1,2,2,2,2,2,2,2,3,2,1,1,2,2,5,3,3,1,2,2}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessible, args[0], args[1]);}
+			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 			// method3 GetTypeInfoCount - not implemented
@@ -187,7 +187,7 @@ public class Accessible {
 
 	void createIAccessible2() {
 		objIAccessible2 = new COMObject(new int[] {2,0,0,/*IA>>*/1,3,5,8,1,1,2,2,2,2,2,2,2,3,2,1,1,2,2,5,3,3,1,2,2,/*<<IA*/1,2,3,1,1,3,3,1,1,1,1,3,3,1,1,1,1,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessible2, args[0], args[1]);}
+			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 			// We will not add the IAccessible methods here because "AT's should not rely on IA inheritance"
@@ -214,7 +214,7 @@ public class Accessible {
 
 	void createIAccessibleAction() {
 		objIAccessibleAction = new COMObject(new int[] {2,0,0,1,1,2,4,2,2}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessibleAction, args[0], args[1]);}
+			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 			public int /*long*/ method3(int /*long*/[] args) {return get_nActions(args[0]);}
@@ -228,7 +228,7 @@ public class Accessible {
 
 	void createIAccessibleApplication() {
 		objIAccessibleApplication = new COMObject(new int[] {2,0,0,1,1,1,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessibleApplication, args[0], args[1]);}
+			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 			public int /*long*/ method3(int /*long*/[] args) {return get_appName(args[0]);}
@@ -240,7 +240,7 @@ public class Accessible {
 
 	void createIAccessibleComponent() {
 		objIAccessibleComponent = new COMObject(new int[] {2,0,0,2,1,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessibleComponent, args[0], args[1]);}
+			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 			public int /*long*/ method3(int /*long*/[] args) {return get_locationInParent(args[0], args[1]);}
@@ -252,7 +252,7 @@ public class Accessible {
 	// This method is intentionally commented. We are not providing IAccessibleEditableText at this time.
 //	void createIAccessibleEditableText() {
 //		objIAccessibleEditableText = new COMObject(new int[] {2,0,0,2,2,2,2,1,3,3}) {
-//			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessibleEditableText, args[0], args[1]);}
+//			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 //			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 //			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 //			public int /*long*/ method3(int /*long*/[] args) {return copyText((int)/*64*/args[0], (int)/*64*/args[1]);}
@@ -267,7 +267,7 @@ public class Accessible {
 
 	void createIAccessibleHyperlink() {
 		objIAccessibleHyperlink = new COMObject(new int[] {2,0,0,/*IAA>>*/2,0,0,1,1,2,4,2,2,/*<<IAA*/2,2,1,1,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessibleHyperlink, args[0], args[1]);}
+			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 			// IAccessibleAction
@@ -288,7 +288,7 @@ public class Accessible {
 
 	void createIAccessibleHypertext() {
 		objIAccessibleHypertext = new COMObject(new int[] {2,0,0,/*IAT>>*/2,4,1,6,1,4,3,3,5,5,5,1,1,3,1,3,5,1,1,/*<<IAT*/1,2,2}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessibleHypertext, args[0], args[1]);}
+			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 			// IAccessibleText
@@ -320,7 +320,7 @@ public class Accessible {
 
 	void createIAccessibleImage() {
 		objIAccessibleImage = new COMObject(new int[] {2,0,0,1,3,2}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessibleImage, args[0], args[1]);}
+			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 			public int /*long*/ method3(int /*long*/[] args) {return get_description(args[0]);}
@@ -331,7 +331,7 @@ public class Accessible {
 
 	void createIAccessibleTable2() {
 		objIAccessibleTable2 = new COMObject(new int[] {2,0,0,3,1,2,1,1,1,1,1,2,2,2,2,1,2,2,1,1,1,1,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessibleTable2, args[0], args[1]);}
+			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 			public int /*long*/ method3(int /*long*/[] args) {return get_cellAt((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
@@ -359,7 +359,7 @@ public class Accessible {
 
 	void createIAccessibleTableCell() {
 		objIAccessibleTableCell = new COMObject(new int[] {2,0,0,1,2,1,1,2,1,1,5,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessibleTableCell, args[0], args[1]);}
+			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 			public int /*long*/ method3(int /*long*/[] args) {return get_columnExtent(args[0]);}
@@ -376,7 +376,7 @@ public class Accessible {
 
 	void createIAccessibleText() {
 		objIAccessibleText = new COMObject(new int[] {2,0,0,2,4,1,6,1,4,3,3,5,5,5,1,1,3,1,3,5,1,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessibleText, args[0], args[1]);}
+			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 			public int /*long*/ method3(int /*long*/[] args) {return addSelection((int)/*64*/args[0], (int)/*64*/args[1]);}
@@ -403,7 +403,7 @@ public class Accessible {
 
 	void createIAccessibleValue() {
 		objIAccessibleValue = new COMObject(new int[] {2,0,0,1,1,1,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessibleValue, args[0], args[1]);}
+			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 			public int /*long*/ method3(int /*long*/[] args) {return get_currentValue(args[0]);}
@@ -423,7 +423,7 @@ public class Accessible {
 
 	void createIEnumVARIANT() {
 		objIEnumVARIANT = new COMObject(new int[] {2,0,0,3,1,0,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIEnumVARIANT, args[0], args[1]);}
+			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
 			public int /*long*/ method3(int /*long*/[] args) {return Next((int)/*64*/args[0], args[1], args[2]);}
@@ -435,7 +435,7 @@ public class Accessible {
 
 	void createIServiceProvider() {
 		objIServiceProvider = new COMObject(new int[] {2,0,0,3}) {
-		    public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIServiceProvider, args[0], args[1]);}
+		    public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 		    public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 		    public int /*long*/ method2(int /*long*/[] args) {return Release();}        
 		    public int /*long*/ method3(int /*long*/[] args) {return QueryService(args[0], args[1], args[2]);}
@@ -1300,13 +1300,14 @@ public class Accessible {
 	 * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
 	 * must be incremented before returning.  Caller is responsible for releasing ppvObject.
 	 */
-	int QueryInterface(COMObject comObject, int /*long*/ iid, int /*long*/ ppvObject) {
+	int QueryInterface(int /*long*/ iid, int /*long*/ ppvObject) {
+		COM.MoveMemory(ppvObject, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, iid, GUID.sizeof);
 		if (DEBUG && interesting(guid)) print("QueryInterface guid=" + guidString(guid));
 
 		if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
-			COM.MoveMemory(ppvObject, new int /*long*/[] { comObject.getAddress() }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppvObject, new int /*long*/[] { getAddress() }, OS.PTR_SIZEOF);
 			AddRef();
 			return COM.S_OK;
 		}
@@ -1334,9 +1335,7 @@ public class Accessible {
 		}
 
 		int code = queryAccessible2Interfaces(guid, ppvObject);
-		if (code == COM.S_OK) {
-			return COM.S_OK;
-		}
+		if (code != COM.S_FALSE) return code;
 
 		if (iaccessible != null) {
 			/* Forward any other GUIDs to the OS proxy. */
@@ -1423,13 +1422,13 @@ public class Accessible {
 				if (relations[i] != null) relations[i].Release();
 			}
 			// TODO: also remove all relations for which 'this' is a target??
-			// (if so, need to make relations array static so all Accessibles can see it).
 		}
 		return refCount;
 	}
 
 	/* QueryService([in] guidService, [in] riid, [out] ppvObject) */
 	int QueryService(int /*long*/ guidService, int /*long*/ riid, int /*long*/ ppvObject) {
+		COM.MoveMemory(ppvObject, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
 		GUID service = new GUID();
 		COM.MoveMemory(service, guidService, GUID.sizeof);
 		GUID guid = new GUID();
@@ -1444,17 +1443,13 @@ public class Accessible {
 				AddRef();
 				return COM.S_OK;
 			}
-			
-			/* NOTE: The following 2 lines shouldn't work, according to the IA2 specification,
-			 * but this is what existing AT's use, so we need to support it.
-			 */
 			int code = queryAccessible2Interfaces(guid, ppvObject);
-			if (code == COM.S_OK) return code;
+			if (code != COM.S_FALSE) return code;
 		}
 
 		if (COM.IsEqualGUID(service, COM.IIDIAccessible2)) {
 			int code = queryAccessible2Interfaces(guid, ppvObject);
-			if (code == COM.S_OK) return code;
+			if (code != COM.S_FALSE) return code;
 		}
 
 		if (iaccessible != null) {
@@ -1474,19 +1469,27 @@ public class Accessible {
 	}
 
 	int queryAccessible2Interfaces(GUID guid, int /*long*/ ppvObject) {
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessible2)
-				&& (accessibleControlListeners.size() > 0 || accessibleScrollListeners.size() > 0 || accessibleAttributeListeners.size() > 0)) {
-			if (objIAccessible2 == null) createIAccessible2();
-			COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessible2.getAddress() }, OS.PTR_SIZEOF);
-			AddRef();
-			return COM.S_OK;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessible2)) {
+			if (accessibleActionListeners.size() > 0 || accessibleAttributeListeners.size() > 0 ||
+					accessibleHyperlinkListeners.size() > 0 || accessibleScrollListeners.size() > 0 ||
+					accessibleTableListeners.size() > 0 || accessibleTableCellListeners.size() > 0 ||
+					accessibleTextExtendedListeners.size() > 0 || accessibleValueListeners.size() > 0 || getRelationCount() > 0) {
+				if (objIAccessible2 == null) createIAccessible2();
+				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessible2.getAddress() }, OS.PTR_SIZEOF);
+				AddRef();
+				return COM.S_OK;
+			}
+			return COM.E_NOINTERFACE;
 		}
 		
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleAction) && accessibleActionListeners.size() > 0) {
-			if (objIAccessibleAction == null) createIAccessibleAction();
-			COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleAction.getAddress() }, OS.PTR_SIZEOF);
-			AddRef();
-			return COM.S_OK;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleAction)) {
+			if (accessibleActionListeners.size() > 0) {
+				if (objIAccessibleAction == null) createIAccessibleAction();
+				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleAction.getAddress() }, OS.PTR_SIZEOF);
+				AddRef();
+				return COM.S_OK;
+			}
+			return COM.E_NOINTERFACE;
 		}
 		
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleApplication)) {
@@ -1496,323 +1499,104 @@ public class Accessible {
 			return COM.S_OK;
 		}
 		
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleComponent) && accessibleControlListeners.size() > 0) {
-			if (objIAccessibleComponent == null) createIAccessibleComponent();
-			COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleComponent.getAddress() }, OS.PTR_SIZEOF);
-			AddRef();
-			return COM.S_OK;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleComponent)) {
+			if (accessibleControlListeners.size() > 0) { // TODO: can we reduce the scope of this somehow?
+				if (objIAccessibleComponent == null) createIAccessibleComponent();
+				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleComponent.getAddress() }, OS.PTR_SIZEOF);
+				AddRef();
+				return COM.S_OK;
+			}
+			return COM.E_NOINTERFACE;
 		}
 		
-		// The following lines are intentionally commented. We are not providing IAccessibleEditableText at this time.
-//		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleEditableText) && accessibleEditableTextListeners.size() > 0) {
-//			if (objIAccessibleEditableText == null) createIAccessibleEditableText();
-//			COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleEditableText.getAddress() }, OS.PTR_SIZEOF);
-//			AddRef();
-//			return COM.S_OK;
-//		}
-		
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHyperlink) && accessibleHyperlinkListeners.size() > 0) {
-			if (objIAccessibleHyperlink == null) createIAccessibleHyperlink();
-			COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleHyperlink.getAddress() }, OS.PTR_SIZEOF);
-			AddRef();
-			return COM.S_OK;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleEditableText)) {
+			// The following lines are intentionally commented. We are not supporting IAccessibleEditableText at this time.
+//			if (accessibleEditableTextListeners.size() > 0) {
+//				if (objIAccessibleEditableText == null) createIAccessibleEditableText();
+//				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleEditableText.getAddress() }, OS.PTR_SIZEOF);
+//				AddRef();
+//				return COM.S_OK;
+//			}
+			return COM.E_NOINTERFACE;
 		}
 		
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHypertext) && accessibleTextExtendedListeners.size() > 0) {
-			if (objIAccessibleHypertext == null) createIAccessibleHypertext();
-			COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleHypertext.getAddress() }, OS.PTR_SIZEOF);
-			AddRef();
-			return COM.S_OK;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHyperlink)) {
+			if (accessibleHyperlinkListeners.size() > 0) {
+				if (objIAccessibleHyperlink == null) createIAccessibleHyperlink();
+				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleHyperlink.getAddress() }, OS.PTR_SIZEOF);
+				AddRef();
+				return COM.S_OK;
+			}
+			return COM.E_NOINTERFACE;
 		}
 		
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleImage)
-				&& (accessibleListeners.size() > 0 || accessibleControlListeners.size() > 0)) {
-			if (objIAccessibleImage == null) createIAccessibleImage();
-			COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleImage.getAddress() }, OS.PTR_SIZEOF);
-			AddRef();
-			return COM.S_OK;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHypertext)) {
+			if (accessibleTextExtendedListeners.size() > 0) {
+				if (objIAccessibleHypertext == null) createIAccessibleHypertext();
+				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleHypertext.getAddress() }, OS.PTR_SIZEOF);
+				AddRef();
+				return COM.S_OK;
+			}
+			return COM.E_NOINTERFACE;
 		}
 		
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable2) && accessibleTableListeners.size() > 0) {
-			if (objIAccessibleTable2 == null) createIAccessibleTable2();
-			COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleTable2.getAddress() }, OS.PTR_SIZEOF);
-			AddRef();
-			return COM.S_OK;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleImage)) {
+			if (getRole() == ACC.ROLE_GRAPHIC && (accessibleListeners.size() > 0 || accessibleControlListeners.size() > 0)) {
+				if (objIAccessibleImage == null) createIAccessibleImage();
+				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleImage.getAddress() }, OS.PTR_SIZEOF);
+				AddRef();
+				return COM.S_OK;
+			}
+			return COM.E_NOINTERFACE;
 		}
 		
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTableCell) && accessibleTableCellListeners.size() > 0) {
-			if (objIAccessibleTableCell == null) createIAccessibleTableCell();
-			COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleTableCell.getAddress() }, OS.PTR_SIZEOF);
-			AddRef();
-			return COM.S_OK;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable)) {
+			// We are not supporting IAccessibleTable at this time.
+			return COM.E_NOINTERFACE;
 		}
 		
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleText)
-				&& (accessibleTextListeners.size() > 0 || accessibleTextExtendedListeners.size() > 0 || accessibleAttributeListeners.size() > 0)) {
-			if (objIAccessibleText == null) createIAccessibleText();
-			COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleText.getAddress() }, OS.PTR_SIZEOF);
-			AddRef();
-			return COM.S_OK;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable2)) {
+			if (accessibleTableListeners.size() > 0) {
+				if (objIAccessibleTable2 == null) createIAccessibleTable2();
+				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleTable2.getAddress() }, OS.PTR_SIZEOF);
+				AddRef();
+				return COM.S_OK;
+			}
+			return COM.E_NOINTERFACE;
 		}
 		
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleValue) && accessibleValueListeners.size() > 0) {
-			if (objIAccessibleValue == null) createIAccessibleValue();
-			COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleValue.getAddress() }, OS.PTR_SIZEOF);
-			AddRef();
-			return COM.S_OK;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTableCell)) {
+			if (accessibleTableCellListeners.size() > 0) {
+				if (objIAccessibleTableCell == null) createIAccessibleTableCell();
+				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleTableCell.getAddress() }, OS.PTR_SIZEOF);
+				AddRef();
+				return COM.S_OK;
+			}
+			return COM.E_NOINTERFACE;
+		}
+		
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleText)) {
+			if (accessibleTextExtendedListeners.size() > 0 || accessibleAttributeListeners.size() > 0) {
+				if (objIAccessibleText == null) createIAccessibleText();
+				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleText.getAddress() }, OS.PTR_SIZEOF);
+				AddRef();
+				return COM.S_OK;
+			}
+			return COM.E_NOINTERFACE;
+		}
+		
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleValue)) {
+			if (accessibleValueListeners.size() > 0) {
+				if (objIAccessibleValue == null) createIAccessibleValue();
+				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleValue.getAddress() }, OS.PTR_SIZEOF);
+				AddRef();
+				return COM.S_OK;
+			}
+			return COM.E_NOINTERFACE;
 		}
 
-		return COM.E_NOINTERFACE;
+		return COM.S_FALSE;
 	}
-	
-	// ---------------------- START TEMPORARY DEBUG CODE
-	boolean interesting(GUID guid) {
-		//if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessible)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIEnumVARIANT)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIServiceProvider)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessible2)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleRelation)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleAction)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleComponent)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleValue)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleText)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleEditableText)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHyperlink)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHypertext)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable2)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTableCell)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleImage)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleApplication)) return true;
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleContext)) return true;
-		return false;
-	}
-	String guidString(GUID guid) {
-		final GUID IIDIAccessibleHandler = IIDFromString("{03022430-ABC4-11D0-BDE2-00AA001A1953}"); //$NON-NLS-1$
-		final GUID IIDIAccessor = IIDFromString("{0C733A8C-2A1C-11CE-ADE5-00AA0044773D}"); //$NON-NLS-1$
-		final GUID IIDIAdviseSink2 = IIDFromString("{00000125-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIBindCtx = IIDFromString("{0000000E-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDICreateErrorInfo = IIDFromString("{22F03340-547D-101B-8E65-08002B2BD119}"); //$NON-NLS-1$
-		final GUID IIDICreateTypeInfo = IIDFromString("{00020405-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDICreateTypeLib = IIDFromString("{00020406-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIDataAdviseHolder = IIDFromString("{00000110-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIEnumConnectionPoints = IIDFromString("{B196B285-BAB4-101A-B69C-00AA00341D07}"); //$NON-NLS-1$
-		final GUID IIDIEnumConnections = IIDFromString("{B196B287-BAB4-101A-B69C-00AA00341D07}"); //$NON-NLS-1$
-		final GUID IIDIEnumMoniker = IIDFromString("{00000102-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIEnumOLEVERB = IIDFromString("{00000104-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIEnumSTATDATA = IIDFromString("{00000105-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIEnumSTATSTG = IIDFromString("{0000000D-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIEnumString = IIDFromString("{00000101-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIEnumUnknown = IIDFromString("{00000100-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIErrorInfo = IIDFromString("{1CF2B120-547D-101B-8E65-08002B2BD119}"); //$NON-NLS-1$
-		final GUID IIDIErrorLog = IIDFromString("{3127CA40-446E-11CE-8135-00AA004BB851}"); //$NON-NLS-1$
-		final GUID IIDIExternalConnection = IIDFromString("{00000019-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIFontDisp = IIDFromString("{BEF6E003-A874-101A-8BBA-00AA00300CAB}"); //$NON-NLS-1$
-		final GUID IIDILockBytes = IIDFromString("{0000000A-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIMalloc = IIDFromString("{00000002-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIMallocSpy = IIDFromString("{0000001D-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIMarshal = IIDFromString("{00000003-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIMessageFilter = IIDFromString("{00000016-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIMoniker = IIDFromString("{0000000F-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIOleAdviseHolder = IIDFromString("{00000111-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIOleCache = IIDFromString("{0000011E-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIOleCache2 = IIDFromString("{00000128-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIOleCacheControl = IIDFromString("{00000129-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIOleItemContainer = IIDFromString("{0000011C-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIParseDisplayName = IIDFromString("{0000011A-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIPerPropertyBrowsing = IIDFromString("{376BD3AA-3845-101B-84ED-08002B2EC713}"); //$NON-NLS-1$
-		final GUID IIDIPersistMemory = IIDFromString("{BD1AE5E0-A6AE-11CE-BD37-504200C10000}"); //$NON-NLS-1$
-		final GUID IIDIPersistPropertyBag = IIDFromString("{37D84F60-42CB-11CE-8135-00AA004BB851}"); //$NON-NLS-1$
-		final GUID IIDIPicture = IIDFromString("{7BF80980-BF32-101A-8BBB-00AA00300CAB}"); //$NON-NLS-1$
-		final GUID IIDIPictureDisp = IIDFromString("{7BF80981-BF32-101A-8BBB-00AA00300CAB}"); //$NON-NLS-1$
-		final GUID IIDIPropertyBag = IIDFromString("{55272A00-42CB-11CE-8135-00AA004BB851}"); //$NON-NLS-1$
-		final GUID IIDIPropertyPage = IIDFromString("{B196B28D-BAB4-101A-B69C-00AA00341D07}"); //$NON-NLS-1$
-		final GUID IIDIPropertyPage2 = IIDFromString("{01E44665-24AC-101B-84ED-08002B2EC713}"); //$NON-NLS-1$
-		final GUID IIDIPropertyPageSite = IIDFromString("{B196B28C-BAB4-101A-B69C-00AA00341D07}"); //$NON-NLS-1$
-		final GUID IIDIPSFactoryBuffer = IIDFromString("{D5F569D0-593B-101A-B569-08002B2DBF7A}"); //$NON-NLS-1$
-		final GUID IIDIRootStorage = IIDFromString("{00000012-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIROTData = IIDFromString("{F29F6BC0-5021-11CE-AA15-00006901293F}"); //$NON-NLS-1$
-		final GUID IIDIRpcChannelBuffer = IIDFromString("{D5F56B60-593B-101A-B569-08002B2DBF7A}"); //$NON-NLS-1$
-		final GUID IIDIRpcProxyBuffer = IIDFromString("{D5F56A34-593B-101A-B569-08002B2DBF7A}"); //$NON-NLS-1$
-		final GUID IIDIRpcStubBuffer = IIDFromString("{D5F56AFC-593B-101A-B569-08002B2DBF7A}"); //$NON-NLS-1$
-		final GUID IIDIRunnableObject = IIDFromString("{00000126-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIRunningObjectTable = IIDFromString("{00000010-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDISimpleFrameSite = IIDFromString("{742B0E01-14E6-101B-914E-00AA00300CAB}"); //$NON-NLS-1$
-		final GUID IIDIStdMarshalInfo = IIDFromString("{00000018-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDISupportErrorInfo = IIDFromString("{DF0B3D60-548F-101B-8E65-08002B2BD119}"); //$NON-NLS-1$
-		final GUID IIDITypeComp = IIDFromString("{00020403-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDITypeLib = IIDFromString("{00020402-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIViewObject = IIDFromString("{0000010D-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDIdentityUnmarshal = IIDFromString("{0000001b-0000-0000-c000-000000000046}"); //$NON-NLS-1$
-		final GUID IIDInternalMSMarshaller = IIDFromString("{4c1e39e1-e3e3-4296-aa86-ec938d896e92}"); //$NON-NLS-1$
-		final GUID IIDIAccIdentity = IIDFromString("{7852B78D-1CFD-41C1-A615-9C0C85960B5F}"); //$NON-NLS-1$
-		final GUID IIDIAccPropServer = IIDFromString("{76C0DBBB-15E0-4E7B-B61B-20EEEA2001E0}"); //$NON-NLS-1$
-		final GUID IIDIAccPropServices = IIDFromString("{6E26E776-04F0-495D-80E4-3330352E3169}"); //$NON-NLS-1$
-		if (COM.IsEqualGUID(guid, COM.IID_IDropTargetHelper)) return "IID_IDropTargetHelper";
-		if (COM.IsEqualGUID(guid, COM.IID_IDragSourceHelper)) return "IID_IDragSourceHelper";
-		if (COM.IsEqualGUID(guid, COM.IID_IDragSourceHelper2)) return "IID_IDragSourceHelper2";
-		if (COM.IsEqualGUID(guid, COM.IIDJavaBeansBridge)) return "IIDJavaBeansBridge";
-		if (COM.IsEqualGUID(guid, COM.IIDShockwaveActiveXControl)) return "IIDShockwaveActiveXControl";
-		if (COM.IsEqualGUID(guid, COM.IIDIEditorSiteTime)) return "IIDIEditorSiteTime";
-		if (COM.IsEqualGUID(guid, COM.IIDIEditorSiteProperty)) return "IIDIEditorSiteProperty";
-		if (COM.IsEqualGUID(guid, COM.IIDIEditorBaseProperty)) return "IIDIEditorBaseProperty";
-		if (COM.IsEqualGUID(guid, COM.IIDIEditorSite)) return "IIDIEditorSite";
-		if (COM.IsEqualGUID(guid, COM.IIDIEditorService)) return "IIDIEditorService";
-		if (COM.IsEqualGUID(guid, COM.IIDIEditorManager)) return "IIDIEditorManager";
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessible)) return "IIDIAccessible";
-		if (COM.IsEqualGUID(guid, IIDIAccessibleHandler)) return "IIDIAccessibleHandler";
-		if (COM.IsEqualGUID(guid, IIDIAccessor)) return "IIDIAccessor";
-		if (COM.IsEqualGUID(guid, COM.IIDIAdviseSink)) return "IIDIAdviseSink";
-		if (COM.IsEqualGUID(guid, IIDIAdviseSink2)) return "IIDIAdviseSink2";
-		if (COM.IsEqualGUID(guid, IIDIBindCtx)) return "IIDIBindCtx";
-		if (COM.IsEqualGUID(guid, COM.IIDIClassFactory)) return "IIDIClassFactory";
-		if (COM.IsEqualGUID(guid, COM.IIDIClassFactory2)) return "IIDIClassFactory2";
-		if (COM.IsEqualGUID(guid, COM.IIDIConnectionPoint)) return "IIDIConnectionPoint";
-		if (COM.IsEqualGUID(guid, COM.IIDIConnectionPointContainer)) return "IIDIConnectionPointContainer";
-		if (COM.IsEqualGUID(guid, IIDICreateErrorInfo)) return "IIDICreateErrorInfo";
-		if (COM.IsEqualGUID(guid, IIDICreateTypeInfo)) return "IIDICreateTypeInfo";
-		if (COM.IsEqualGUID(guid, IIDICreateTypeLib)) return "IIDICreateTypeLib";
-		if (COM.IsEqualGUID(guid, IIDIDataAdviseHolder)) return "IIDIDataAdviseHolder";
-		if (COM.IsEqualGUID(guid, COM.IIDIDataObject)) return "IIDIDataObject";
-		if (COM.IsEqualGUID(guid, COM.IIDIDispatch)) return "IIDIDispatch";
-		if (COM.IsEqualGUID(guid, COM.IIDIDispatchEx)) return "IIDIDispatchEx";
-		if (COM.IsEqualGUID(guid, COM.IIDIDocHostUIHandler)) return "IIDIDocHostUIHandler";	
-		if (COM.IsEqualGUID(guid, COM.IIDIDocHostShowUI)) return "IIDIDocHostShowUI";	
-		if (COM.IsEqualGUID(guid, COM.IIDIDropSource)) return "IIDIDropSource";
-		if (COM.IsEqualGUID(guid, COM.IIDIDropTarget)) return "IIDIDropTarget";
-		if (COM.IsEqualGUID(guid, IIDIEnumConnectionPoints)) return "IIDIEnumConnectionPoints";
-		if (COM.IsEqualGUID(guid, IIDIEnumConnections)) return "IIDIEnumConnections";
-		if (COM.IsEqualGUID(guid, COM.IIDIEnumFORMATETC)) return "IIDIEnumFORMATETC";
-		if (COM.IsEqualGUID(guid, IIDIEnumMoniker)) return "IIDIEnumMoniker";
-		if (COM.IsEqualGUID(guid, IIDIEnumOLEVERB)) return "IIDIEnumOLEVERB";
-		if (COM.IsEqualGUID(guid, IIDIEnumSTATDATA)) return "IIDIEnumSTATDATA";
-		if (COM.IsEqualGUID(guid, IIDIEnumSTATSTG)) return "IIDIEnumSTATSTG";
-		if (COM.IsEqualGUID(guid, IIDIEnumString)) return "IIDIEnumString";
-		if (COM.IsEqualGUID(guid, IIDIEnumUnknown)) return "IIDIEnumUnknown";
-		if (COM.IsEqualGUID(guid, COM.IIDIEnumVARIANT)) return "IIDIEnumVARIANT";
-		if (COM.IsEqualGUID(guid, IIDIErrorInfo)) return "IIDIErrorInfo";
-		if (COM.IsEqualGUID(guid, IIDIErrorLog)) return "IIDIErrorLog";
-		if (COM.IsEqualGUID(guid, IIDIExternalConnection)) return "IIDIExternalConnection";
-		if (COM.IsEqualGUID(guid, COM.IIDIFont)) return "IIDIFont";
-		if (COM.IsEqualGUID(guid, IIDIFontDisp)) return "IIDIFontDisp";
-	//	if (COM.IsEqualGUID(guid, COM.IIDIHTMLDocumentEvents2)) return "IIDIHTMLDocumentEvents2";
-		if (COM.IsEqualGUID(guid, COM.IIDIInternetSecurityManager)) return "IIDIInternetSecurityManager";
-		if (COM.IsEqualGUID(guid, COM.IIDIAuthenticate)) return "IIDIAuthenticate";
-		if (COM.IsEqualGUID(guid, COM.IIDIJScriptTypeInfo)) return "IIDIJScriptTypeInfo";
-		if (COM.IsEqualGUID(guid, IIDILockBytes)) return "IIDILockBytes";
-		if (COM.IsEqualGUID(guid, IIDIMalloc)) return "IIDIMalloc";
-		if (COM.IsEqualGUID(guid, IIDIMallocSpy)) return "IIDIMallocSpy";
-		if (COM.IsEqualGUID(guid, IIDIMarshal)) return "IIDIMarshal";
-		if (COM.IsEqualGUID(guid, IIDIMessageFilter)) return "IIDIMessageFilter";
-		if (COM.IsEqualGUID(guid, IIDIMoniker)) return "IIDIMoniker";
-		if (COM.IsEqualGUID(guid, IIDIOleAdviseHolder)) return "IIDIOleAdviseHolder";
-		if (COM.IsEqualGUID(guid, IIDIOleCache)) return "IIDIOleCache";
-		if (COM.IsEqualGUID(guid, IIDIOleCache2)) return "IIDIOleCache2";
-		if (COM.IsEqualGUID(guid, IIDIOleCacheControl)) return "IIDIOleCacheControl";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleClientSite)) return "IIDIOleClientSite";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleCommandTarget)) return "IIDIOleCommandTarget";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleContainer)) return "IIDIOleContainer";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleControl)) return "IIDIOleControl";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleControlSite)) return "IIDIOleControlSite";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleDocument)) return "IIDIOleDocument";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleDocumentSite)) return "IIDIOleDocumentSite";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleInPlaceActiveObject)) return "IIDIOleInPlaceActiveObject";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleInPlaceFrame)) return "IIDIOleInPlaceFrame";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleInPlaceObject)) return "IIDIOleInPlaceObject";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleInPlaceSite)) return "IIDIOleInPlaceSite";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleInPlaceUIWindow)) return "IIDIOleInPlaceUIWindow";
-		if (COM.IsEqualGUID(guid, IIDIOleItemContainer)) return "IIDIOleItemContainer";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleLink)) return "IIDIOleLink";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleObject)) return "IIDIOleObject";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleWindow)) return "IIDIOleWindow";
-		if (COM.IsEqualGUID(guid, IIDIParseDisplayName)) return "IIDIParseDisplayName";
-		if (COM.IsEqualGUID(guid, IIDIPerPropertyBrowsing)) return "IIDIPerPropertyBrowsing";
-		if (COM.IsEqualGUID(guid, COM.IIDIPersist)) return "IIDIPersist";
-		if (COM.IsEqualGUID(guid, COM.IIDIPersistFile)) return "IIDIPersistFile";
-		if (COM.IsEqualGUID(guid, IIDIPersistMemory)) return "IIDIPersistMemory";
-		if (COM.IsEqualGUID(guid, IIDIPersistPropertyBag)) return "IIDIPersistPropertyBag";
-		if (COM.IsEqualGUID(guid, COM.IIDIPersistStorage)) return "IIDIPersistStorage";
-		if (COM.IsEqualGUID(guid, COM.IIDIPersistStream)) return "IIDIPersistStream";
-		if (COM.IsEqualGUID(guid, COM.IIDIPersistStreamInit)) return "IIDIPersistStreamInit";
-		if (COM.IsEqualGUID(guid, IIDIPicture)) return "IIDIPicture";
-		if (COM.IsEqualGUID(guid, IIDIPictureDisp)) return "IIDIPictureDisp";
-		if (COM.IsEqualGUID(guid, IIDIPropertyBag)) return "IIDIPropertyBag";
-		if (COM.IsEqualGUID(guid, COM.IIDIPropertyNotifySink)) return "IIDIPropertyNotifySink";
-		if (COM.IsEqualGUID(guid, IIDIPropertyPage)) return "IIDIPropertyPage";
-		if (COM.IsEqualGUID(guid, IIDIPropertyPage2)) return "IIDIPropertyPage2";
-		if (COM.IsEqualGUID(guid, IIDIPropertyPageSite)) return "IIDIPropertyPageSite";
-		if (COM.IsEqualGUID(guid, COM.IIDIProvideClassInfo)) return "IIDIProvideClassInfo";
-		if (COM.IsEqualGUID(guid, COM.IIDIProvideClassInfo2)) return "IIDIProvideClassInfo2";
-		if (COM.IsEqualGUID(guid, IIDIPSFactoryBuffer)) return "IIDIPSFactoryBuffer";
-		if (COM.IsEqualGUID(guid, IIDIRootStorage)) return "IIDIRootStorage";
-		if (COM.IsEqualGUID(guid, IIDIROTData)) return "IIDIROTData";
-		if (COM.IsEqualGUID(guid, IIDIRpcChannelBuffer)) return "IIDIRpcChannelBuffer";
-		if (COM.IsEqualGUID(guid, IIDIRpcProxyBuffer)) return "IIDIRpcProxyBuffer";
-		if (COM.IsEqualGUID(guid, IIDIRpcStubBuffer)) return "IIDIRpcStubBuffer";
-		if (COM.IsEqualGUID(guid, IIDIRunnableObject)) return "IIDIRunnableObject";
-		if (COM.IsEqualGUID(guid, IIDIRunningObjectTable)) return "IIDIRunningObjectTable";
-		if (COM.IsEqualGUID(guid, IIDISimpleFrameSite)) return "IIDISimpleFrameSite";
-		if (COM.IsEqualGUID(guid, COM.IIDIServiceProvider)) return "IIDIServiceProvider";
-		if (COM.IsEqualGUID(guid, COM.IIDISpecifyPropertyPages)) return "IIDISpecifyPropertyPages";
-		if (COM.IsEqualGUID(guid, IIDIStdMarshalInfo)) return "IIDIStdMarshalInfo";
-		if (COM.IsEqualGUID(guid, COM.IIDIStorage)) return "IIDIStorage";
-		if (COM.IsEqualGUID(guid, COM.IIDIStream)) return "IIDIStream";
-		if (COM.IsEqualGUID(guid, IIDISupportErrorInfo)) return "IIDISupportErrorInfo";
-		if (COM.IsEqualGUID(guid, IIDITypeComp)) return "IIDITypeComp";
-		if (COM.IsEqualGUID(guid, IIDITypeLib)) return "IIDITypeLib";
-		if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) return "IIDIUnknown";
-		if (COM.IsEqualGUID(guid, IIDIViewObject)) return "IIDIViewObject";
-		if (COM.IsEqualGUID(guid, COM.IIDIViewObject2)) return "IIDIViewObject2";
-		if (COM.IsEqualGUID(guid, COM.CGID_DocHostCommandHandler)) return "CGID_DocHostCommandHandler";
-		if (COM.IsEqualGUID(guid, COM.CGID_Explorer)) return "CGID_Explorer";
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessible2)) return "IIDIAccessible2";
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleRelation)) return "IIDIAccessibleRelation";
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleAction)) return "IIDIAccessibleAction";
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleComponent)) return "IIDIAccessibleComponent";
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleValue)) return "IIDIAccessibleValue";
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleText)) return "IIDIAccessibleText";
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleEditableText)) return "IIDIAccessibleEditableText";
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHyperlink)) return "IIDIAccessibleHyperlink";
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHypertext)) return "IIDIAccessibleHypertext";
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable)) return "IIDIAccessibleTable";
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable2)) return "IIDIAccessibleTable2";
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTableCell)) return "IIDIAccessibleTableCell";
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleImage)) return "IIDIAccessibleImage";
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleApplication)) return "IIDIAccessibleApplication";
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleContext)) return "IIDIAccessibleContext";
-		if (COM.IsEqualGUID(guid, IIDIdentityUnmarshal)) return "IIDIdentityUnmarshal";
-		if (COM.IsEqualGUID(guid, IIDInternalMSMarshaller)) return "IIDInternalMSMarshaller";
-		if (COM.IsEqualGUID(guid, IIDIAccIdentity)) return "IIDIAccIdentity";
-		if (COM.IsEqualGUID(guid, IIDIAccPropServer)) return "IIDIAccPropServer";
-		if (COM.IsEqualGUID(guid, IIDIAccPropServices)) return "IIDIAccPropServices";
-		return StringFromIID(guid);
-	}
-	static GUID IIDFromString(String lpsz) {
-		int length = lpsz.length();
-		char[] buffer = new char[length + 1];
-		lpsz.getChars(0, length, buffer, 0);
-		GUID lpiid = new GUID();
-		if (COM.IIDFromString(buffer, lpiid) == COM.S_OK) return lpiid;
-		return null;
-	}
-	static String StringFromIID(GUID guid) {
-		return '{' + toHex(guid.Data1, 8) + "-" + 
-        toHex(guid.Data2, 4) + "-" + 
-        toHex(guid.Data3, 4) + "-" + 
-        toHex(guid.Data4[0], 2) + toHex(guid.Data4[1], 2) + "-" + 
-        toHex(guid.Data4[2], 2) + toHex(guid.Data4[3], 2) + toHex(guid.Data4[4], 2) + toHex(guid.Data4[5], 2) + toHex(guid.Data4[6], 2) + toHex(guid.Data4[7], 2) + '}';
-	}
-	static final String zeros = "00000000";
-	static String toHex(int v, int length) {
-		String t = Integer.toHexString(v).toUpperCase();
-		int tlen = t.length();
-		if (tlen > length) {
-			t = t.substring(tlen - length);
-		}
-		return zeros.substring(0, Math.max(0, length - tlen)) + t;
-	}
-// ------------- END TEMPORARY DEBUG CODE
 	
 	/* accDoDefaultAction([in] varChild) */
 	int accDoDefaultAction(int /*long*/ varChild) {
@@ -2275,6 +2059,7 @@ public class Accessible {
 	 * must be incremented before returning.  The caller is responsible for releasing ppdispParent.
 	 */
 	int get_accParent(int /*long*/ ppdispParent) {
+		if (DEBUG) System.out.println("get_accParent");
 		int code = COM.DISP_E_MEMBERNOTFOUND;
 		if (iaccessible != null) {
 			/* Currently, we don't expose this as API. Forward to the proxy. */
@@ -2316,6 +2101,7 @@ public class Accessible {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getRole(event);
 		}
+		if (DEBUG) print("IAccessible::get_accRole(" + v.lVal + ") returning " + getRoleString(roleToOs(event.detail)));
 		setIntVARIANT(pvarRole, COM.VT_I4, roleToOs(event.detail));
 		return COM.S_OK;
 	}
@@ -2325,6 +2111,7 @@ public class Accessible {
 	 * must be incremented before returning.  The caller is responsible for releasing pvarChildren.
 	 */
 	int get_accSelection(int /*long*/ pvarChildren) {
+		if (DEBUG) System.out.println("get_accSelection");
 		int osChild = ACC.CHILDID_NONE;
 		int /*long*/ osChildObject = 0;
 		if (iaccessible != null) {
@@ -2432,7 +2219,7 @@ public class Accessible {
 			state &= ~ COM.STATE_SYSTEM_CHECKED;
 			state |= COM.STATE_SYSTEM_MIXED;
 		}
-		if (DEBUG) printState("IAccessible::get_accState(" + v.lVal + ") returning ", state);
+		if (DEBUG) print("IAccessible::get_accState(" + v.lVal + ") returning " + getStateString(state));
 		setIntVARIANT(pvarState, COM.VT_I4, state);
 		return COM.S_OK;
 	}
@@ -2467,6 +2254,7 @@ public class Accessible {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getValue(event);
 		}
+		if (DEBUG) print("IAccessible::get_accValue(" + v.lVal + ") returning " + event.result);
 		if (event.result == null) return code;
 		// empty string is a valid value, so do not test for it
 		setString(pszValue, event.result);
@@ -2641,10 +2429,7 @@ public class Accessible {
 	
 	/* IAccessible2::get_nRelations([out] pNRelations) */
 	int get_nRelations(int /*long*/ pNRelations) {
-		int count = 0;
-		for (int type = 0; type < MAX_RELATION_TYPES; type++) {
-			if (relations[type] != null) count++;
-		}
+		int count = getRelationCount();
 		COM.MoveMemory(pNRelations, new int [] { count }, 4);
 		return COM.S_OK;
 	}
@@ -2682,13 +2467,9 @@ public class Accessible {
 
 	/* IAccessible2::get_role([out] pRole) */
 	int get_role(int /*long*/ pRole) {
-		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = ACC.CHILDID_SELF;
-		for (int i = 0; i < accessibleControlListeners.size(); i++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-			listener.getRole(event);
-		}
-		COM.MoveMemory(pRole, new int [] { event.detail }, 4);
+		int role = getRole();
+		if (DEBUG) print("IAccessible::get_accRole() returning " + getRoleString(role));
+		COM.MoveMemory(pRole, new int [] { role }, 4);
 		return COM.S_OK;
 	}
 
@@ -2743,16 +2524,10 @@ public class Accessible {
 		 * Note that IA2_STATE_EDITABLE is not the opposite of STATE_READONLY.
 		 * Instead, it means: "has a caret, supports IAccessibleText, and is a text editing environment".
 		 */
-		AccessibleControlEvent event2 = new AccessibleControlEvent(this);
-		event2.childID = ACC.CHILDID_SELF;
-		for (int i = 0; i < accessibleControlListeners.size(); i++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-			listener.getRole(event2);
-		}
-		if (event2.detail == ACC.ROLE_TEXT && accessibleTextExtendedListeners.size() > 0) {
+		if (getRole() == ACC.ROLE_TEXT && accessibleTextExtendedListeners.size() > 0) {
 			ia2States |= COM.IA2_STATE_EDITABLE;
 		}
-		if (DEBUG) printIA2States("IAccessible2::get_states returning ", ia2States);
+		if (DEBUG) print("IAccessible2::get_states returning " + getIA2StatesString(ia2States));
 		COM.MoveMemory(pStates, new int [] { ia2States }, 4);
 		return COM.S_OK;
 	}
@@ -2913,13 +2688,7 @@ public class Accessible {
 		}
 
 		/* If the role is text, then specify the text model for JAWS. */
-		AccessibleControlEvent event2 = new AccessibleControlEvent(this);
-		event2.childID = ACC.CHILDID_SELF;
-		for (int i = 0; i < accessibleControlListeners.size(); i++) {
-			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-			listener.getRole(event2);
-		}
-		if (event2.detail == ACC.ROLE_TEXT) {
+		if (getRole() == ACC.ROLE_TEXT) {
 			attributes += "text-model:a1;";
 		}
 		setString(pbstrAttributes, attributes);
@@ -2986,6 +2755,7 @@ public class Accessible {
 			}
 			i = j + 1;
 		}
+		if (DEBUG) print("IAccessibleAction::get_keyBinding(index=" + actionIndex + ",max=" + nMaxBindings+ ") returning count=" + count);
 		COM.MoveMemory(pNBindings, new int [] { count }, 4);
 		if (count == 0) {
 			setString(ppbstrKeyBindings, null);
@@ -4459,6 +4229,25 @@ public class Accessible {
 		return ACC.ROLE_CLIENT_AREA;
 	}
 
+	int getRelationCount() {
+		int count = 0;
+		for (int type = 0; type < MAX_RELATION_TYPES; type++) {
+			if (relations[type] != null) count++;
+		}
+		return count;
+	}
+
+	int getRole() {
+		AccessibleControlEvent event = new AccessibleControlEvent(this);
+		event.childID = ACC.CHILDID_SELF;
+		for (int i = 0; i < accessibleControlListeners.size(); i++) {
+			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			listener.getRole(event);
+		}
+		int role = event.detail;
+		return role;
+	}
+
 	VARIANT getVARIANT(int /*long*/ variant) {
 		VARIANT v = new VARIANT();
 		COM.MoveMemory(v, variant, VARIANT.sizeof);
@@ -4537,38 +4326,346 @@ public class Accessible {
 		System.out.println (str);
 	}
 	
-	void printState(String str, int state) {
-		System.out.print(str + state);
-		if ((state & COM.STATE_SYSTEM_SELECTED) != 0) System.out.print(" STATE_SYSTEM_SELECTED");
-		if ((state & COM.STATE_SYSTEM_SELECTABLE) != 0) System.out.print(" STATE_SYSTEM_SELECTABLE");
-		if ((state & COM.STATE_SYSTEM_MULTISELECTABLE) != 0) System.out.print(" STATE_SYSTEM_MULTISELECTABLE");
-		if ((state & COM.STATE_SYSTEM_FOCUSED) != 0) System.out.print(" STATE_SYSTEM_FOCUSED");
-		if ((state & COM.STATE_SYSTEM_FOCUSABLE) != 0) System.out.print(" STATE_SYSTEM_FOCUSABLE");
-		if ((state & COM.STATE_SYSTEM_PRESSED) != 0) System.out.print(" STATE_SYSTEM_PRESSED");
-		if ((state & COM.STATE_SYSTEM_CHECKED) != 0) System.out.print(" STATE_SYSTEM_CHECKED");
-		if ((state & COM.STATE_SYSTEM_EXPANDED) != 0) System.out.print(" STATE_SYSTEM_EXPANDED");
-		if ((state & COM.STATE_SYSTEM_COLLAPSED) != 0) System.out.print(" STATE_SYSTEM_COLLAPSED");
-		if ((state & COM.STATE_SYSTEM_HOTTRACKED) != 0) System.out.print(" STATE_SYSTEM_HOTTRACKED");
-		if ((state & COM.STATE_SYSTEM_BUSY) != 0) System.out.print(" STATE_SYSTEM_BUSY");
-		if ((state & COM.STATE_SYSTEM_READONLY) != 0) System.out.print(" STATE_SYSTEM_READONLY");
-		if ((state & COM.STATE_SYSTEM_INVISIBLE) != 0) System.out.print(" STATE_SYSTEM_INVISIBLE");
-		if ((state & COM.STATE_SYSTEM_OFFSCREEN) != 0) System.out.print(" STATE_SYSTEM_OFFSCREEN");
-		if ((state & COM.STATE_SYSTEM_SIZEABLE) != 0) System.out.print(" STATE_SYSTEM_SIZEABLE");
-		if ((state & COM.STATE_SYSTEM_LINKED) != 0) System.out.print(" STATE_SYSTEM_LINKED");
-		if ((state & COM.STATE_SYSTEM_UNAVAILABLE) != 0) System.out.print(" STATE_SYSTEM_UNAVAILABLE");
-		System.out.println();
+	String getStateString(int state) {
+		StringBuffer stateString = new StringBuffer();
+		if ((state & COM.STATE_SYSTEM_SELECTED) != 0) stateString.append(" STATE_SYSTEM_SELECTED");
+		if ((state & COM.STATE_SYSTEM_SELECTABLE) != 0) stateString.append(" STATE_SYSTEM_SELECTABLE");
+		if ((state & COM.STATE_SYSTEM_MULTISELECTABLE) != 0) stateString.append(" STATE_SYSTEM_MULTISELECTABLE");
+		if ((state & COM.STATE_SYSTEM_FOCUSED) != 0) stateString.append(" STATE_SYSTEM_FOCUSED");
+		if ((state & COM.STATE_SYSTEM_FOCUSABLE) != 0) stateString.append(" STATE_SYSTEM_FOCUSABLE");
+		if ((state & COM.STATE_SYSTEM_PRESSED) != 0) stateString.append(" STATE_SYSTEM_PRESSED");
+		if ((state & COM.STATE_SYSTEM_CHECKED) != 0) stateString.append(" STATE_SYSTEM_CHECKED");
+		if ((state & COM.STATE_SYSTEM_EXPANDED) != 0) stateString.append(" STATE_SYSTEM_EXPANDED");
+		if ((state & COM.STATE_SYSTEM_COLLAPSED) != 0) stateString.append(" STATE_SYSTEM_COLLAPSED");
+		if ((state & COM.STATE_SYSTEM_HOTTRACKED) != 0) stateString.append(" STATE_SYSTEM_HOTTRACKED");
+		if ((state & COM.STATE_SYSTEM_BUSY) != 0) stateString.append(" STATE_SYSTEM_BUSY");
+		if ((state & COM.STATE_SYSTEM_READONLY) != 0) stateString.append(" STATE_SYSTEM_READONLY");
+		if ((state & COM.STATE_SYSTEM_INVISIBLE) != 0) stateString.append(" STATE_SYSTEM_INVISIBLE");
+		if ((state & COM.STATE_SYSTEM_OFFSCREEN) != 0) stateString.append(" STATE_SYSTEM_OFFSCREEN");
+		if ((state & COM.STATE_SYSTEM_SIZEABLE) != 0) stateString.append(" STATE_SYSTEM_SIZEABLE");
+		if ((state & COM.STATE_SYSTEM_LINKED) != 0) stateString.append(" STATE_SYSTEM_LINKED");
+		if ((state & COM.STATE_SYSTEM_UNAVAILABLE) != 0) stateString.append(" STATE_SYSTEM_UNAVAILABLE");
+		stateString.append("Unknown state[s] (" + Integer.toHexString(state) + ")");
+		return stateString.toString();
 	}
 	
-	void printIA2States(String str, int ia2States) {
-		System.out.print(str + ia2States);
-		if ((ia2States & COM.IA2_STATE_ACTIVE) != 0) System.out.print(" IA2_STATE_ACTIVE");
-		if ((ia2States & COM.IA2_STATE_EDITABLE) != 0) System.out.print(" IA2_STATE_EDITABLE");
-		if ((ia2States & COM.IA2_STATE_SINGLE_LINE) != 0) System.out.print(" IA2_STATE_SINGLE_LINE");
-		if ((ia2States & COM.IA2_STATE_MULTI_LINE) != 0) System.out.print(" IA2_STATE_MULTI_LINE");
-		if ((ia2States & COM.IA2_STATE_REQUIRED) != 0) System.out.print(" IA2_STATE_REQUIRED");
-		if ((ia2States & COM.IA2_STATE_INVALID_ENTRY) != 0) System.out.print(" IA2_STATE_INVALID_ENTRY");
-		if ((ia2States & COM.IA2_STATE_SUPPORTS_AUTOCOMPLETION) != 0) System.out.print("IA2_STATE_SUPPORTS_AUTOCOMPLETION");
-		System.out.println();
+	String getRoleString(int role) {
+		switch (role) {
+			case COM.ROLE_SYSTEM_CLIENT: return "ROLE_SYSTEM_CLIENT";
+			case COM.ROLE_SYSTEM_WINDOW: return "ROLE_SYSTEM_WINDOW";
+			case COM.ROLE_SYSTEM_MENUBAR: return "ROLE_SYSTEM_MENUBAR";
+			case COM.ROLE_SYSTEM_MENUPOPUP: return "ROLE_SYSTEM_MENUPOPUP";
+			case COM.ROLE_SYSTEM_MENUITEM: return "ROLE_SYSTEM_MENUITEM";
+			case COM.ROLE_SYSTEM_SEPARATOR: return "ROLE_SYSTEM_SEPARATOR";
+			case COM.ROLE_SYSTEM_TOOLTIP: return "ROLE_SYSTEM_TOOLTIP";
+			case COM.ROLE_SYSTEM_SCROLLBAR: return "ROLE_SYSTEM_SCROLLBAR";
+			case COM.ROLE_SYSTEM_DIALOG: return "ROLE_SYSTEM_DIALOG";
+			case COM.ROLE_SYSTEM_STATICTEXT: return "ROLE_SYSTEM_STATICTEXT";
+			case COM.ROLE_SYSTEM_PUSHBUTTON: return "ROLE_SYSTEM_PUSHBUTTON";
+			case COM.ROLE_SYSTEM_CHECKBUTTON: return "ROLE_SYSTEM_CHECKBUTTON";
+			case COM.ROLE_SYSTEM_RADIOBUTTON: return "ROLE_SYSTEM_RADIOBUTTON";
+			case COM.ROLE_SYSTEM_SPLITBUTTON: return "ROLE_SYSTEM_SPLITBUTTON";
+			case COM.ROLE_SYSTEM_COMBOBOX: return "ROLE_SYSTEM_COMBOBOX";
+			case COM.ROLE_SYSTEM_TEXT: return "ROLE_SYSTEM_TEXT";
+			case COM.ROLE_SYSTEM_TOOLBAR: return "ROLE_SYSTEM_TOOLBAR";
+			case COM.ROLE_SYSTEM_LIST: return "ROLE_SYSTEM_LIST";
+			case COM.ROLE_SYSTEM_LISTITEM: return "ROLE_SYSTEM_LISTITEM";
+			case COM.ROLE_SYSTEM_TABLE: return "ROLE_SYSTEM_TABLE";
+			case COM.ROLE_SYSTEM_CELL: return "ROLE_SYSTEM_CELL";
+			case COM.ROLE_SYSTEM_COLUMNHEADER: return "ROLE_SYSTEM_COLUMNHEADER";
+			case COM.ROLE_SYSTEM_ROWHEADER: return "ROLE_SYSTEM_ROWHEADER";
+			case COM.ROLE_SYSTEM_OUTLINE: return "ROLE_SYSTEM_OUTLINE";
+			case COM.ROLE_SYSTEM_OUTLINEITEM: return "ROLE_SYSTEM_OUTLINEITEM";
+			case COM.ROLE_SYSTEM_PAGETABLIST: return "ROLE_SYSTEM_PAGETABLIST";
+			case COM.ROLE_SYSTEM_PAGETAB: return "ROLE_SYSTEM_PAGETAB";
+			case COM.ROLE_SYSTEM_PROGRESSBAR: return "ROLE_SYSTEM_PROGRESSBAR";
+			case COM.ROLE_SYSTEM_SLIDER: return "ROLE_SYSTEM_SLIDER";
+			case COM.ROLE_SYSTEM_LINK: return "ROLE_SYSTEM_LINK";
+			case COM.ROLE_SYSTEM_ALERT: return "ROLE_SYSTEM_ALERT";
+			case COM.ROLE_SYSTEM_ANIMATION: return "ROLE_SYSTEM_ANIMATION";
+			case COM.ROLE_SYSTEM_COLUMN: return "ROLE_SYSTEM_COLUMN";
+			case COM.ROLE_SYSTEM_DOCUMENT: return "ROLE_SYSTEM_DOCUMENT";
+			case COM.ROLE_SYSTEM_GRAPHIC: return "ROLE_SYSTEM_GRAPHIC";
+			case COM.ROLE_SYSTEM_GROUPING: return "ROLE_SYSTEM_GROUPING";
+			case COM.ROLE_SYSTEM_ROW: return "ROLE_SYSTEM_ROW";
+			case COM.ROLE_SYSTEM_SPINBUTTON: return "ROLE_SYSTEM_SPINBUTTON";
+			case COM.ROLE_SYSTEM_STATUSBAR: return "ROLE_SYSTEM_STATUSBAR";
+			case COM.ROLE_SYSTEM_CLOCK: return "ROLE_SYSTEM_CLOCK";
+			case COM.ROLE_SYSTEM_DROPLIST: return "ROLE_SYSTEM_DROPLIST";
+			// IA2 roles
+			case ACC.ROLE_CANVAS: return "IA2_ROLE_CANVAS";
+			case ACC.ROLE_CHECKMENUITEM: return "IA2_ROLE_CHECKMENUITEM";
+			case ACC.ROLE_RADIOMENUITEM: return "IA2_ROLE_RADIOMENUITEM";
+			case ACC.ROLE_DATETIME: return "IA2_ROLE_DATETIME";
+			case ACC.ROLE_FOOTER: return "IA2_ROLE_FOOTER";
+			case ACC.ROLE_FORM: return "IA2_ROLE_FORM";
+			case ACC.ROLE_HEADER: return "IA2_ROLE_HEADER";
+			case ACC.ROLE_HEADING: return "IA2_ROLE_HEADING";
+			case ACC.ROLE_PAGE: return "IA2_ROLE_PAGE";
+			case ACC.ROLE_PARAGRAPH: return "IA2_ROLE_PARAGRAPH";
+			case ACC.ROLE_SECTION: return "IA2_ROLE_SECTION";
+		}
+		return "Unknown role (" + role + ")";
+	}
+	
+	String getIA2StatesString(int ia2States) {
+		StringBuffer stateString = new StringBuffer();
+		if ((ia2States & COM.IA2_STATE_ACTIVE) != 0) stateString.append(" IA2_STATE_ACTIVE");
+		if ((ia2States & COM.IA2_STATE_EDITABLE) != 0) stateString.append(" IA2_STATE_EDITABLE");
+		if ((ia2States & COM.IA2_STATE_SINGLE_LINE) != 0) stateString.append(" IA2_STATE_SINGLE_LINE");
+		if ((ia2States & COM.IA2_STATE_MULTI_LINE) != 0) stateString.append(" IA2_STATE_MULTI_LINE");
+		if ((ia2States & COM.IA2_STATE_REQUIRED) != 0) stateString.append(" IA2_STATE_REQUIRED");
+		if ((ia2States & COM.IA2_STATE_INVALID_ENTRY) != 0) stateString.append(" IA2_STATE_INVALID_ENTRY");
+		if ((ia2States & COM.IA2_STATE_SUPPORTS_AUTOCOMPLETION) != 0) stateString.append(" IA2_STATE_SUPPORTS_AUTOCOMPLETION");
+		stateString.append("Unknown IA2 state[s] (" + ia2States + ")");
+		return stateString.toString();
+	}
+
+	boolean interesting(GUID guid) {
+		if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessible)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIEnumVARIANT)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIServiceProvider)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessible2)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleRelation)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleAction)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleComponent)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleValue)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleText)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleEditableText)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHyperlink)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHypertext)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable2)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTableCell)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleImage)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleApplication)) return true;
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleContext)) return true;
+		return false;
+	}
+	String guidString(GUID guid) {
+		final GUID IIDIAccessibleHandler = IIDFromString("{03022430-ABC4-11D0-BDE2-00AA001A1953}"); //$NON-NLS-1$
+		final GUID IIDIAccessor = IIDFromString("{0C733A8C-2A1C-11CE-ADE5-00AA0044773D}"); //$NON-NLS-1$
+		final GUID IIDIAdviseSink2 = IIDFromString("{00000125-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIBindCtx = IIDFromString("{0000000E-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDICreateErrorInfo = IIDFromString("{22F03340-547D-101B-8E65-08002B2BD119}"); //$NON-NLS-1$
+		final GUID IIDICreateTypeInfo = IIDFromString("{00020405-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDICreateTypeLib = IIDFromString("{00020406-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIDataAdviseHolder = IIDFromString("{00000110-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIEnumConnectionPoints = IIDFromString("{B196B285-BAB4-101A-B69C-00AA00341D07}"); //$NON-NLS-1$
+		final GUID IIDIEnumConnections = IIDFromString("{B196B287-BAB4-101A-B69C-00AA00341D07}"); //$NON-NLS-1$
+		final GUID IIDIEnumMoniker = IIDFromString("{00000102-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIEnumOLEVERB = IIDFromString("{00000104-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIEnumSTATDATA = IIDFromString("{00000105-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIEnumSTATSTG = IIDFromString("{0000000D-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIEnumString = IIDFromString("{00000101-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIEnumUnknown = IIDFromString("{00000100-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIErrorInfo = IIDFromString("{1CF2B120-547D-101B-8E65-08002B2BD119}"); //$NON-NLS-1$
+		final GUID IIDIErrorLog = IIDFromString("{3127CA40-446E-11CE-8135-00AA004BB851}"); //$NON-NLS-1$
+		final GUID IIDIExternalConnection = IIDFromString("{00000019-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIFontDisp = IIDFromString("{BEF6E003-A874-101A-8BBA-00AA00300CAB}"); //$NON-NLS-1$
+		final GUID IIDILockBytes = IIDFromString("{0000000A-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIMalloc = IIDFromString("{00000002-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIMallocSpy = IIDFromString("{0000001D-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIMarshal = IIDFromString("{00000003-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIMessageFilter = IIDFromString("{00000016-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIMoniker = IIDFromString("{0000000F-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIOleAdviseHolder = IIDFromString("{00000111-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIOleCache = IIDFromString("{0000011E-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIOleCache2 = IIDFromString("{00000128-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIOleCacheControl = IIDFromString("{00000129-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIOleItemContainer = IIDFromString("{0000011C-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIParseDisplayName = IIDFromString("{0000011A-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIPerPropertyBrowsing = IIDFromString("{376BD3AA-3845-101B-84ED-08002B2EC713}"); //$NON-NLS-1$
+		final GUID IIDIPersistMemory = IIDFromString("{BD1AE5E0-A6AE-11CE-BD37-504200C10000}"); //$NON-NLS-1$
+		final GUID IIDIPersistPropertyBag = IIDFromString("{37D84F60-42CB-11CE-8135-00AA004BB851}"); //$NON-NLS-1$
+		final GUID IIDIPicture = IIDFromString("{7BF80980-BF32-101A-8BBB-00AA00300CAB}"); //$NON-NLS-1$
+		final GUID IIDIPictureDisp = IIDFromString("{7BF80981-BF32-101A-8BBB-00AA00300CAB}"); //$NON-NLS-1$
+		final GUID IIDIPropertyBag = IIDFromString("{55272A00-42CB-11CE-8135-00AA004BB851}"); //$NON-NLS-1$
+		final GUID IIDIPropertyPage = IIDFromString("{B196B28D-BAB4-101A-B69C-00AA00341D07}"); //$NON-NLS-1$
+		final GUID IIDIPropertyPage2 = IIDFromString("{01E44665-24AC-101B-84ED-08002B2EC713}"); //$NON-NLS-1$
+		final GUID IIDIPropertyPageSite = IIDFromString("{B196B28C-BAB4-101A-B69C-00AA00341D07}"); //$NON-NLS-1$
+		final GUID IIDIPSFactoryBuffer = IIDFromString("{D5F569D0-593B-101A-B569-08002B2DBF7A}"); //$NON-NLS-1$
+		final GUID IIDIRootStorage = IIDFromString("{00000012-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIROTData = IIDFromString("{F29F6BC0-5021-11CE-AA15-00006901293F}"); //$NON-NLS-1$
+		final GUID IIDIRpcChannelBuffer = IIDFromString("{D5F56B60-593B-101A-B569-08002B2DBF7A}"); //$NON-NLS-1$
+		final GUID IIDIRpcProxyBuffer = IIDFromString("{D5F56A34-593B-101A-B569-08002B2DBF7A}"); //$NON-NLS-1$
+		final GUID IIDIRpcStubBuffer = IIDFromString("{D5F56AFC-593B-101A-B569-08002B2DBF7A}"); //$NON-NLS-1$
+		final GUID IIDIRunnableObject = IIDFromString("{00000126-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIRunningObjectTable = IIDFromString("{00000010-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDISimpleFrameSite = IIDFromString("{742B0E01-14E6-101B-914E-00AA00300CAB}"); //$NON-NLS-1$
+		final GUID IIDIStdMarshalInfo = IIDFromString("{00000018-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDISupportErrorInfo = IIDFromString("{DF0B3D60-548F-101B-8E65-08002B2BD119}"); //$NON-NLS-1$
+		final GUID IIDITypeComp = IIDFromString("{00020403-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDITypeLib = IIDFromString("{00020402-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIViewObject = IIDFromString("{0000010D-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDIdentityUnmarshal = IIDFromString("{0000001b-0000-0000-c000-000000000046}"); //$NON-NLS-1$
+		final GUID IIDInternalMSMarshaller = IIDFromString("{4c1e39e1-e3e3-4296-aa86-ec938d896e92}"); //$NON-NLS-1$
+		final GUID IIDIAccIdentity = IIDFromString("{7852B78D-1CFD-41C1-A615-9C0C85960B5F}"); //$NON-NLS-1$
+		final GUID IIDIAccPropServer = IIDFromString("{76C0DBBB-15E0-4E7B-B61B-20EEEA2001E0}"); //$NON-NLS-1$
+		final GUID IIDIAccPropServices = IIDFromString("{6E26E776-04F0-495D-80E4-3330352E3169}"); //$NON-NLS-1$
+		if (COM.IsEqualGUID(guid, COM.IID_IDropTargetHelper)) return "IID_IDropTargetHelper";
+		if (COM.IsEqualGUID(guid, COM.IID_IDragSourceHelper)) return "IID_IDragSourceHelper";
+		if (COM.IsEqualGUID(guid, COM.IID_IDragSourceHelper2)) return "IID_IDragSourceHelper2";
+		if (COM.IsEqualGUID(guid, COM.IIDJavaBeansBridge)) return "IIDJavaBeansBridge";
+		if (COM.IsEqualGUID(guid, COM.IIDShockwaveActiveXControl)) return "IIDShockwaveActiveXControl";
+		if (COM.IsEqualGUID(guid, COM.IIDIEditorSiteTime)) return "IIDIEditorSiteTime";
+		if (COM.IsEqualGUID(guid, COM.IIDIEditorSiteProperty)) return "IIDIEditorSiteProperty";
+		if (COM.IsEqualGUID(guid, COM.IIDIEditorBaseProperty)) return "IIDIEditorBaseProperty";
+		if (COM.IsEqualGUID(guid, COM.IIDIEditorSite)) return "IIDIEditorSite";
+		if (COM.IsEqualGUID(guid, COM.IIDIEditorService)) return "IIDIEditorService";
+		if (COM.IsEqualGUID(guid, COM.IIDIEditorManager)) return "IIDIEditorManager";
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessible)) return "IIDIAccessible";
+		if (COM.IsEqualGUID(guid, IIDIAccessibleHandler)) return "IIDIAccessibleHandler";
+		if (COM.IsEqualGUID(guid, IIDIAccessor)) return "IIDIAccessor";
+		if (COM.IsEqualGUID(guid, COM.IIDIAdviseSink)) return "IIDIAdviseSink";
+		if (COM.IsEqualGUID(guid, IIDIAdviseSink2)) return "IIDIAdviseSink2";
+		if (COM.IsEqualGUID(guid, IIDIBindCtx)) return "IIDIBindCtx";
+		if (COM.IsEqualGUID(guid, COM.IIDIClassFactory)) return "IIDIClassFactory";
+		if (COM.IsEqualGUID(guid, COM.IIDIClassFactory2)) return "IIDIClassFactory2";
+		if (COM.IsEqualGUID(guid, COM.IIDIConnectionPoint)) return "IIDIConnectionPoint";
+		if (COM.IsEqualGUID(guid, COM.IIDIConnectionPointContainer)) return "IIDIConnectionPointContainer";
+		if (COM.IsEqualGUID(guid, IIDICreateErrorInfo)) return "IIDICreateErrorInfo";
+		if (COM.IsEqualGUID(guid, IIDICreateTypeInfo)) return "IIDICreateTypeInfo";
+		if (COM.IsEqualGUID(guid, IIDICreateTypeLib)) return "IIDICreateTypeLib";
+		if (COM.IsEqualGUID(guid, IIDIDataAdviseHolder)) return "IIDIDataAdviseHolder";
+		if (COM.IsEqualGUID(guid, COM.IIDIDataObject)) return "IIDIDataObject";
+		if (COM.IsEqualGUID(guid, COM.IIDIDispatch)) return "IIDIDispatch";
+		if (COM.IsEqualGUID(guid, COM.IIDIDispatchEx)) return "IIDIDispatchEx";
+		if (COM.IsEqualGUID(guid, COM.IIDIDocHostUIHandler)) return "IIDIDocHostUIHandler";	
+		if (COM.IsEqualGUID(guid, COM.IIDIDocHostShowUI)) return "IIDIDocHostShowUI";	
+		if (COM.IsEqualGUID(guid, COM.IIDIDropSource)) return "IIDIDropSource";
+		if (COM.IsEqualGUID(guid, COM.IIDIDropTarget)) return "IIDIDropTarget";
+		if (COM.IsEqualGUID(guid, IIDIEnumConnectionPoints)) return "IIDIEnumConnectionPoints";
+		if (COM.IsEqualGUID(guid, IIDIEnumConnections)) return "IIDIEnumConnections";
+		if (COM.IsEqualGUID(guid, COM.IIDIEnumFORMATETC)) return "IIDIEnumFORMATETC";
+		if (COM.IsEqualGUID(guid, IIDIEnumMoniker)) return "IIDIEnumMoniker";
+		if (COM.IsEqualGUID(guid, IIDIEnumOLEVERB)) return "IIDIEnumOLEVERB";
+		if (COM.IsEqualGUID(guid, IIDIEnumSTATDATA)) return "IIDIEnumSTATDATA";
+		if (COM.IsEqualGUID(guid, IIDIEnumSTATSTG)) return "IIDIEnumSTATSTG";
+		if (COM.IsEqualGUID(guid, IIDIEnumString)) return "IIDIEnumString";
+		if (COM.IsEqualGUID(guid, IIDIEnumUnknown)) return "IIDIEnumUnknown";
+		if (COM.IsEqualGUID(guid, COM.IIDIEnumVARIANT)) return "IIDIEnumVARIANT";
+		if (COM.IsEqualGUID(guid, IIDIErrorInfo)) return "IIDIErrorInfo";
+		if (COM.IsEqualGUID(guid, IIDIErrorLog)) return "IIDIErrorLog";
+		if (COM.IsEqualGUID(guid, IIDIExternalConnection)) return "IIDIExternalConnection";
+		if (COM.IsEqualGUID(guid, COM.IIDIFont)) return "IIDIFont";
+		if (COM.IsEqualGUID(guid, IIDIFontDisp)) return "IIDIFontDisp";
+	//	if (COM.IsEqualGUID(guid, COM.IIDIHTMLDocumentEvents2)) return "IIDIHTMLDocumentEvents2";
+		if (COM.IsEqualGUID(guid, COM.IIDIInternetSecurityManager)) return "IIDIInternetSecurityManager";
+		if (COM.IsEqualGUID(guid, COM.IIDIAuthenticate)) return "IIDIAuthenticate";
+		if (COM.IsEqualGUID(guid, COM.IIDIJScriptTypeInfo)) return "IIDIJScriptTypeInfo";
+		if (COM.IsEqualGUID(guid, IIDILockBytes)) return "IIDILockBytes";
+		if (COM.IsEqualGUID(guid, IIDIMalloc)) return "IIDIMalloc";
+		if (COM.IsEqualGUID(guid, IIDIMallocSpy)) return "IIDIMallocSpy";
+		if (COM.IsEqualGUID(guid, IIDIMarshal)) return "IIDIMarshal";
+		if (COM.IsEqualGUID(guid, IIDIMessageFilter)) return "IIDIMessageFilter";
+		if (COM.IsEqualGUID(guid, IIDIMoniker)) return "IIDIMoniker";
+		if (COM.IsEqualGUID(guid, IIDIOleAdviseHolder)) return "IIDIOleAdviseHolder";
+		if (COM.IsEqualGUID(guid, IIDIOleCache)) return "IIDIOleCache";
+		if (COM.IsEqualGUID(guid, IIDIOleCache2)) return "IIDIOleCache2";
+		if (COM.IsEqualGUID(guid, IIDIOleCacheControl)) return "IIDIOleCacheControl";
+		if (COM.IsEqualGUID(guid, COM.IIDIOleClientSite)) return "IIDIOleClientSite";
+		if (COM.IsEqualGUID(guid, COM.IIDIOleCommandTarget)) return "IIDIOleCommandTarget";
+		if (COM.IsEqualGUID(guid, COM.IIDIOleContainer)) return "IIDIOleContainer";
+		if (COM.IsEqualGUID(guid, COM.IIDIOleControl)) return "IIDIOleControl";
+		if (COM.IsEqualGUID(guid, COM.IIDIOleControlSite)) return "IIDIOleControlSite";
+		if (COM.IsEqualGUID(guid, COM.IIDIOleDocument)) return "IIDIOleDocument";
+		if (COM.IsEqualGUID(guid, COM.IIDIOleDocumentSite)) return "IIDIOleDocumentSite";
+		if (COM.IsEqualGUID(guid, COM.IIDIOleInPlaceActiveObject)) return "IIDIOleInPlaceActiveObject";
+		if (COM.IsEqualGUID(guid, COM.IIDIOleInPlaceFrame)) return "IIDIOleInPlaceFrame";
+		if (COM.IsEqualGUID(guid, COM.IIDIOleInPlaceObject)) return "IIDIOleInPlaceObject";
+		if (COM.IsEqualGUID(guid, COM.IIDIOleInPlaceSite)) return "IIDIOleInPlaceSite";
+		if (COM.IsEqualGUID(guid, COM.IIDIOleInPlaceUIWindow)) return "IIDIOleInPlaceUIWindow";
+		if (COM.IsEqualGUID(guid, IIDIOleItemContainer)) return "IIDIOleItemContainer";
+		if (COM.IsEqualGUID(guid, COM.IIDIOleLink)) return "IIDIOleLink";
+		if (COM.IsEqualGUID(guid, COM.IIDIOleObject)) return "IIDIOleObject";
+		if (COM.IsEqualGUID(guid, COM.IIDIOleWindow)) return "IIDIOleWindow";
+		if (COM.IsEqualGUID(guid, IIDIParseDisplayName)) return "IIDIParseDisplayName";
+		if (COM.IsEqualGUID(guid, IIDIPerPropertyBrowsing)) return "IIDIPerPropertyBrowsing";
+		if (COM.IsEqualGUID(guid, COM.IIDIPersist)) return "IIDIPersist";
+		if (COM.IsEqualGUID(guid, COM.IIDIPersistFile)) return "IIDIPersistFile";
+		if (COM.IsEqualGUID(guid, IIDIPersistMemory)) return "IIDIPersistMemory";
+		if (COM.IsEqualGUID(guid, IIDIPersistPropertyBag)) return "IIDIPersistPropertyBag";
+		if (COM.IsEqualGUID(guid, COM.IIDIPersistStorage)) return "IIDIPersistStorage";
+		if (COM.IsEqualGUID(guid, COM.IIDIPersistStream)) return "IIDIPersistStream";
+		if (COM.IsEqualGUID(guid, COM.IIDIPersistStreamInit)) return "IIDIPersistStreamInit";
+		if (COM.IsEqualGUID(guid, IIDIPicture)) return "IIDIPicture";
+		if (COM.IsEqualGUID(guid, IIDIPictureDisp)) return "IIDIPictureDisp";
+		if (COM.IsEqualGUID(guid, IIDIPropertyBag)) return "IIDIPropertyBag";
+		if (COM.IsEqualGUID(guid, COM.IIDIPropertyNotifySink)) return "IIDIPropertyNotifySink";
+		if (COM.IsEqualGUID(guid, IIDIPropertyPage)) return "IIDIPropertyPage";
+		if (COM.IsEqualGUID(guid, IIDIPropertyPage2)) return "IIDIPropertyPage2";
+		if (COM.IsEqualGUID(guid, IIDIPropertyPageSite)) return "IIDIPropertyPageSite";
+		if (COM.IsEqualGUID(guid, COM.IIDIProvideClassInfo)) return "IIDIProvideClassInfo";
+		if (COM.IsEqualGUID(guid, COM.IIDIProvideClassInfo2)) return "IIDIProvideClassInfo2";
+		if (COM.IsEqualGUID(guid, IIDIPSFactoryBuffer)) return "IIDIPSFactoryBuffer";
+		if (COM.IsEqualGUID(guid, IIDIRootStorage)) return "IIDIRootStorage";
+		if (COM.IsEqualGUID(guid, IIDIROTData)) return "IIDIROTData";
+		if (COM.IsEqualGUID(guid, IIDIRpcChannelBuffer)) return "IIDIRpcChannelBuffer";
+		if (COM.IsEqualGUID(guid, IIDIRpcProxyBuffer)) return "IIDIRpcProxyBuffer";
+		if (COM.IsEqualGUID(guid, IIDIRpcStubBuffer)) return "IIDIRpcStubBuffer";
+		if (COM.IsEqualGUID(guid, IIDIRunnableObject)) return "IIDIRunnableObject";
+		if (COM.IsEqualGUID(guid, IIDIRunningObjectTable)) return "IIDIRunningObjectTable";
+		if (COM.IsEqualGUID(guid, IIDISimpleFrameSite)) return "IIDISimpleFrameSite";
+		if (COM.IsEqualGUID(guid, COM.IIDIServiceProvider)) return "IIDIServiceProvider";
+		if (COM.IsEqualGUID(guid, COM.IIDISpecifyPropertyPages)) return "IIDISpecifyPropertyPages";
+		if (COM.IsEqualGUID(guid, IIDIStdMarshalInfo)) return "IIDIStdMarshalInfo";
+		if (COM.IsEqualGUID(guid, COM.IIDIStorage)) return "IIDIStorage";
+		if (COM.IsEqualGUID(guid, COM.IIDIStream)) return "IIDIStream";
+		if (COM.IsEqualGUID(guid, IIDISupportErrorInfo)) return "IIDISupportErrorInfo";
+		if (COM.IsEqualGUID(guid, IIDITypeComp)) return "IIDITypeComp";
+		if (COM.IsEqualGUID(guid, IIDITypeLib)) return "IIDITypeLib";
+		if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) return "IIDIUnknown";
+		if (COM.IsEqualGUID(guid, IIDIViewObject)) return "IIDIViewObject";
+		if (COM.IsEqualGUID(guid, COM.IIDIViewObject2)) return "IIDIViewObject2";
+		if (COM.IsEqualGUID(guid, COM.CGID_DocHostCommandHandler)) return "CGID_DocHostCommandHandler";
+		if (COM.IsEqualGUID(guid, COM.CGID_Explorer)) return "CGID_Explorer";
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessible2)) return "IIDIAccessible2";
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleRelation)) return "IIDIAccessibleRelation";
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleAction)) return "IIDIAccessibleAction";
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleComponent)) return "IIDIAccessibleComponent";
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleValue)) return "IIDIAccessibleValue";
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleText)) return "IIDIAccessibleText";
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleEditableText)) return "IIDIAccessibleEditableText";
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHyperlink)) return "IIDIAccessibleHyperlink";
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHypertext)) return "IIDIAccessibleHypertext";
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable)) return "IIDIAccessibleTable";
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable2)) return "IIDIAccessibleTable2";
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTableCell)) return "IIDIAccessibleTableCell";
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleImage)) return "IIDIAccessibleImage";
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleApplication)) return "IIDIAccessibleApplication";
+		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleContext)) return "IIDIAccessibleContext";
+		if (COM.IsEqualGUID(guid, IIDIdentityUnmarshal)) return "IIDIdentityUnmarshal";
+		if (COM.IsEqualGUID(guid, IIDInternalMSMarshaller)) return "IIDInternalMSMarshaller";
+		if (COM.IsEqualGUID(guid, IIDIAccIdentity)) return "IIDIAccIdentity";
+		if (COM.IsEqualGUID(guid, IIDIAccPropServer)) return "IIDIAccPropServer";
+		if (COM.IsEqualGUID(guid, IIDIAccPropServices)) return "IIDIAccPropServices";
+		return StringFromIID(guid);
+	}
+	static GUID IIDFromString(String lpsz) {
+		int length = lpsz.length();
+		char[] buffer = new char[length + 1];
+		lpsz.getChars(0, length, buffer, 0);
+		GUID lpiid = new GUID();
+		if (COM.IIDFromString(buffer, lpiid) == COM.S_OK) return lpiid;
+		return null;
+	}
+	static String StringFromIID(GUID guid) {
+		return '{' + toHex(guid.Data1, 8) + "-" + 
+        toHex(guid.Data2, 4) + "-" + 
+        toHex(guid.Data3, 4) + "-" + 
+        toHex(guid.Data4[0], 2) + toHex(guid.Data4[1], 2) + "-" + 
+        toHex(guid.Data4[2], 2) + toHex(guid.Data4[3], 2) + toHex(guid.Data4[4], 2) + toHex(guid.Data4[5], 2) + toHex(guid.Data4[6], 2) + toHex(guid.Data4[7], 2) + '}';
+	}
+	static final String zeros = "00000000";
+	static String toHex(int v, int length) {
+		String t = Integer.toHexString(v).toUpperCase();
+		int tlen = t.length();
+		if (tlen > length) {
+			t = t.substring(tlen - length);
+		}
+		return zeros.substring(0, Math.max(0, length - tlen)) + t;
 	}
 	// END DEBUG CODE
 }
