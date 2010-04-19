@@ -140,8 +140,8 @@ public static final int /*long*/ JSObjectGetPrivate (int /*long*/ object) {
  * @param propertyName cast=(JSStringRef)
  * @param exception cast=(JSValueRef*)
  */
-public static final native int _JSObjectGetProperty (int /*long*/ ctx, int /*long*/ object, int /*long*/ propertyName, int /*long*/[] exception);
-public static final int JSObjectGetProperty (int /*long*/ ctx, int /*long*/ object, int /*long*/ propertyName, int /*long*/[] exception) {
+public static final native int /*long*/ _JSObjectGetProperty (int /*long*/ ctx, int /*long*/ object, int /*long*/ propertyName, int /*long*/[] exception);
+public static final int /*long*/ JSObjectGetProperty (int /*long*/ ctx, int /*long*/ object, int /*long*/ propertyName, int /*long*/[] exception) {
 	lock.lock();
 	try {
 		return _JSObjectGetProperty (ctx, object, propertyName, exception);
@@ -156,8 +156,8 @@ public static final int JSObjectGetProperty (int /*long*/ ctx, int /*long*/ obje
  * @param propertyIndex cast=(unsigned)
  * @param exception cast=(JSValueRef*)
  */
-public static final native int _JSObjectGetPropertyAtIndex (int /*long*/ ctx, int /*long*/ object, int propertyIndex, int /*long*/[] exception);
-public static final int JSObjectGetPropertyAtIndex (int /*long*/ ctx, int /*long*/ object, int propertyIndex, int /*long*/[] exception) {
+public static final native int /*long*/ _JSObjectGetPropertyAtIndex (int /*long*/ ctx, int /*long*/ object, int propertyIndex, int /*long*/[] exception);
+public static final int /*long*/ JSObjectGetPropertyAtIndex (int /*long*/ ctx, int /*long*/ object, int propertyIndex, int /*long*/[] exception) {
 	lock.lock();
 	try {
 		return _JSObjectGetPropertyAtIndex (ctx, object, propertyIndex, exception);

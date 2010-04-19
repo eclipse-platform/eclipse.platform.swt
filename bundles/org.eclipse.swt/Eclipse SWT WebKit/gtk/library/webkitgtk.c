@@ -84,14 +84,14 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1JSObjectGetPrivate)
 #endif
 
 #ifndef NO__1JSObjectGetProperty
-JNIEXPORT jint JNICALL WebKitGTK_NATIVE(_1JSObjectGetProperty)
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1JSObjectGetProperty)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLongArray arg3)
 {
 	jintLong *lparg3=NULL;
-	jint rc = 0;
+	jintLong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, _1JSObjectGetProperty_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)JSObjectGetProperty((JSContextRef)arg0, (JSObjectRef)arg1, (JSStringRef)arg2, (JSValueRef*)lparg3);
+	rc = (jintLong)JSObjectGetProperty((JSContextRef)arg0, (JSObjectRef)arg1, (JSStringRef)arg2, (JSValueRef*)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1JSObjectGetProperty_FUNC);
@@ -100,14 +100,14 @@ fail:
 #endif
 
 #ifndef NO__1JSObjectGetPropertyAtIndex
-JNIEXPORT jint JNICALL WebKitGTK_NATIVE(_1JSObjectGetPropertyAtIndex)
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1JSObjectGetPropertyAtIndex)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintLongArray arg3)
 {
 	jintLong *lparg3=NULL;
-	jint rc = 0;
+	jintLong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, _1JSObjectGetPropertyAtIndex_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)JSObjectGetPropertyAtIndex((JSContextRef)arg0, (JSObjectRef)arg1, (unsigned)arg2, (JSValueRef*)lparg3);
+	rc = (jintLong)JSObjectGetPropertyAtIndex((JSContextRef)arg0, (JSObjectRef)arg1, (unsigned)arg2, (JSValueRef*)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1JSObjectGetPropertyAtIndex_FUNC);
