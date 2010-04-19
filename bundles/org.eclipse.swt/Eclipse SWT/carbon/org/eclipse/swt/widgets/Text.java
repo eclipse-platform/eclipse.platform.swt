@@ -1897,7 +1897,7 @@ void setBackground (int control, float [] color) {
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	Rectangle bounds = null;
 	if (txnObject == 0 && resize) bounds = getBounds ();
-	int result = super.setBounds(x, y, width, height, move, resize, events);
+	int result = super.setBounds (x, y, width, height, move, resize, events);
 	if (bounds != null && (result & RESIZED) != 0) {
 		/*
 		* Feature in the Macintosh.  When the caret is moved,
