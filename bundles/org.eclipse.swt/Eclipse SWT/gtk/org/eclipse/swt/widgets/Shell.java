@@ -1616,7 +1616,11 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	if (resize) {
 		width = Math.max (1, Math.max (minWidth, width - trimWidth ()));
 		height = Math.max (1, Math.max (minHeight, height - trimHeight ()));
-		if ((style & SWT.RESIZE) != 0) OS.gtk_window_resize (shellHandle, width, height);
+		/*
+		* If the shell is created without a RESIZE style bit, and the
+		* minWidth/minHeight has been set, allow the resize.
+		*/
+		if ((style & SWT.RESIZE) != 0 || (minHeight != 0 || minWidth != 0)) OS.gtk_window_resize (shellHandle, width, height);
 		boolean changed = width != oldWidth || height != oldHeight;
 		if (changed) {
 			oldWidth = width;
