@@ -839,21 +839,27 @@ static Program gio_getProgram(Display display, String mimeType) {
 static Program gio_getProgram (Display display, int /*long*/ application) {
 	Program program = new Program();
 	program.display = display;
+	int length;
+	byte[] buffer;
 	int /*long*/ applicationName = OS.g_app_info_get_name (application);
-	int length = OS.strlen (applicationName);
-	byte[] buffer = new byte [length];
-	OS.memmove (buffer, applicationName, length);		
-	program.name = new String (Converter.mbcsToWcs (null, buffer));
+	if (applicationName != 0) {
+		length = OS.strlen (applicationName);
+		if (length > 0) {
+			buffer = new byte [length];
+			OS.memmove (buffer, applicationName, length);
+			program.name = new String (Converter.mbcsToWcs (null, buffer));
+		}
+	}
 	int /*long*/ applicationCommand = OS.g_app_info_get_executable (application);
-	length = OS.strlen (applicationCommand);
-	buffer = new byte [length];
-	OS.memmove (buffer, applicationCommand, length);		
-	program.command = new String (Converter.mbcsToWcs (null, buffer));
+	if (applicationCommand != 0) {
+		length = OS.strlen (applicationCommand);
+		if (length > 0) {
+			buffer = new byte [length];
+			OS.memmove (buffer, applicationCommand, length);
+			program.command = new String (Converter.mbcsToWcs (null, buffer));
+		}
+	}
 	program.gnomeExpectUri = OS.g_app_info_supports_uris(application);
-	int /*long*/ applicationId = OS.g_app_info_get_id (application);
-	length = OS.strlen(applicationId);
-	buffer = new byte[length + 1];
-	OS.memmove(buffer, applicationId, length);
 	int /*long*/ icon = OS.g_app_info_get_icon(application);
 	if (icon != 0) {
 		int /*long*/ icon_name = OS.g_icon_to_string(icon);
