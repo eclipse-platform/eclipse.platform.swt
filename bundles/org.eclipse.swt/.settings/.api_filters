@@ -80,6 +80,26 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="Eclipse SWT Accessibility/win32/org/eclipse/swt/accessibility/Accessible.java" type="org.eclipse.swt.accessibility.Accessible">
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.accessibility.Accessible"/>
+                <message_argument value="internal_dispose_Accessible()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.accessibility.Accessible"/>
+                <message_argument value="internal_new_Accessible(Control)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.accessibility.Accessible"/>
+                <message_argument value="internal_WM_GETOBJECT(int, int)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="Eclipse SWT Browser/common/org/eclipse/swt/browser/AuthenticationListener.java" type="org.eclipse.swt.browser.AuthenticationListener">
         <filter id="576720909">
             <message_arguments>
@@ -380,6 +400,18 @@
         </filter>
     </resource>
     <resource path="Eclipse SWT OLE Win32/win32/org/eclipse/swt/ole/win32/Variant.java" type="org.eclipse.swt.ole.win32.Variant">
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.ole.win32.Variant"/>
+                <message_argument value="win32_new(int)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.ole.win32.Variant"/>
+                <message_argument value="win32_copy(int, Variant)"/>
+            </message_arguments>
+        </filter>
         <filter id="389242988">
             <message_arguments>
                 <message_argument value="org.eclipse.swt.ole.win32.Variant"/>
@@ -400,6 +432,18 @@
             <message_arguments>
                 <message_argument value="org.eclipse.swt.printing.Printer"/>
                 <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.printing.Printer"/>
+                <message_argument value="internal_new_GC(GCData)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.printing.Printer"/>
+                <message_argument value="internal_dispose_GC(int, GCData)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -586,6 +630,12 @@
         </filter>
     </resource>
     <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/ImageData.java" type="org.eclipse.swt.graphics.ImageData">
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.ImageData"/>
+                <message_argument value="internal_new(int, int, int, PaletteData, int, byte[], int, byte[], byte[], int, int, int, int, int, int, int)"/>
+            </message_arguments>
+        </filter>
         <filter id="576725006">
             <message_arguments>
                 <message_argument value="CloneableCompatibility"/>
@@ -633,6 +683,18 @@
         </filter>
     </resource>
     <resource path="Eclipse SWT/common/org/eclipse/swt/widgets/TypedListener.java" type="org.eclipse.swt.widgets.TypedListener">
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.TypedListener"/>
+                <message_argument value="getEventListener()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.TypedListener"/>
+                <message_argument value="handleEvent(Event)"/>
+            </message_arguments>
+        </filter>
         <filter id="338948223">
             <message_arguments>
                 <message_argument value="org.eclipse.swt.widgets.TypedListener"/>
@@ -647,12 +709,24 @@
                 <message_argument value="handle"/>
             </message_arguments>
         </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Color"/>
+                <message_argument value="win32_new(Device, int)"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="Eclipse SWT/win32/org/eclipse/swt/graphics/Cursor.java" type="org.eclipse.swt.graphics.Cursor">
         <filter id="338940029">
             <message_arguments>
                 <message_argument value="org.eclipse.swt.graphics.Cursor"/>
                 <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Cursor"/>
+                <message_argument value="win32_new(Device, int)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -663,12 +737,30 @@
                 <message_argument value="hPalette"/>
             </message_arguments>
         </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Device"/>
+                <message_argument value="internal_dispose_GC(int, GCData)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Device"/>
+                <message_argument value="internal_new_GC(GCData)"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="Eclipse SWT/win32/org/eclipse/swt/graphics/Font.java" type="org.eclipse.swt.graphics.Font">
         <filter id="338940029">
             <message_arguments>
                 <message_argument value="org.eclipse.swt.graphics.Font"/>
                 <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Font"/>
+                <message_argument value="win32_new(Device, int)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -685,6 +777,12 @@
                 <message_argument value="height"/>
             </message_arguments>
         </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.FontData"/>
+                <message_argument value="win32_new(LOGFONT, float)"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="Eclipse SWT/win32/org/eclipse/swt/graphics/FontMetrics.java" type="org.eclipse.swt.graphics.FontMetrics">
         <filter id="338940029">
@@ -693,12 +791,30 @@
                 <message_argument value="handle"/>
             </message_arguments>
         </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.FontMetrics"/>
+                <message_argument value="win32_new(TEXTMETRIC)"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="Eclipse SWT/win32/org/eclipse/swt/graphics/GC.java" type="org.eclipse.swt.graphics.GC">
         <filter id="338940029">
             <message_arguments>
                 <message_argument value="org.eclipse.swt.graphics.GC"/>
                 <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GC"/>
+                <message_argument value="win32_new(int, GCData)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GC"/>
+                <message_argument value="win32_new(Drawable, GCData)"/>
             </message_arguments>
         </filter>
         <filter id="338944126">
@@ -722,12 +838,12 @@
         </filter>
         <filter id="1143996420">
             <message_arguments>
-                <message_argument value="hGDIFont"/>
+                <message_argument value="org.eclipse.swt.graphics.GCData"/>
             </message_arguments>
         </filter>
         <filter id="1143996420">
             <message_arguments>
-                <message_argument value="org.eclipse.swt.graphics.GCData"/>
+                <message_argument value="hGDIFont"/>
             </message_arguments>
         </filter>
     </resource>
@@ -742,6 +858,24 @@
             <message_arguments>
                 <message_argument value="org.eclipse.swt.graphics.Image"/>
                 <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Image"/>
+                <message_argument value="internal_dispose_GC(int, GCData)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Image"/>
+                <message_argument value="internal_new_GC(GCData)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Image"/>
+                <message_argument value="win32_new(Device, int, int)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -766,6 +900,12 @@
             <message_arguments>
                 <message_argument value="org.eclipse.swt.graphics.Region"/>
                 <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Region"/>
+                <message_argument value="win32_new(Device, int)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -817,6 +957,18 @@
                 <message_argument value="handle"/>
             </message_arguments>
         </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.Control"/>
+                <message_argument value="internal_dispose_GC(int, GCData)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.Control"/>
+                <message_argument value="internal_new_GC(GCData)"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/CoolBar.java" type="org.eclipse.swt.widgets.CoolBar">
         <filter id="336744520">
@@ -863,6 +1015,30 @@
             <message_arguments>
                 <message_argument value="org.eclipse.swt.widgets.Display"/>
                 <message_argument value="msg"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.Display"/>
+                <message_argument value="internal_dispose_GC(int, GCData)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.Display"/>
+                <message_argument value="findWidget(int)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.Display"/>
+                <message_argument value="internal_new_GC(GCData)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.Display"/>
+                <message_argument value="findWidget(int, int)"/>
             </message_arguments>
         </filter>
     </resource>
@@ -991,6 +1167,20 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Shell.java" type="org.eclipse.swt.widgets.Shell">
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.Shell"/>
+                <message_argument value="win32_new(Display, int)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.Shell"/>
+                <message_argument value="internal_new(Display, int)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Slider.java" type="org.eclipse.swt.widgets.Slider">
         <filter id="336744520">
             <message_arguments>
@@ -1106,6 +1296,14 @@
             <message_arguments>
                 <message_argument value="org.eclipse.swt.widgets.TreeItem"/>
                 <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Widget.java" type="org.eclipse.swt.widgets.Widget">
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.Widget"/>
+                <message_argument value="removeListener(int, SWTEventListener)"/>
             </message_arguments>
         </filter>
     </resource>
