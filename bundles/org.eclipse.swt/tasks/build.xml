@@ -266,7 +266,7 @@
 	
 	<target name="build_gtk_linux_s390x" depends="init_build">
 		<property name="clean" value="clean"/>
-		<property name="targets" value="install"/>
+		<property name="targets" value="make_mozilla make_xulrunner make_xpcominit install"/>
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
 			<env key="JAVA_HOME" value="/home/swtbuild/java5/ibm-java2-s390x-50"/>
