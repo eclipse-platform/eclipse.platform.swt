@@ -29,7 +29,7 @@ class IE extends WebBrowser {
 	OleAutomation[] documents = new OleAutomation[0];
 
 	boolean back, forward, delaySetText, ignoreDispose, ignoreTraverse, performingInitialNavigate;
-	boolean installFunctionsOnDocumentComplete, untrustedText;
+	boolean installFunctionsOnDocumentComplete, untrustedText, isRefresh;
 	Point location;
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
@@ -45,6 +45,7 @@ class IE extends WebBrowser {
 	static final int BeforeNavigate2 = 0xfa;
 	static final int CommandStateChange = 0x69;
 	static final int DocumentComplete = 0x103;
+	static final int DownloadComplete = 0x68;
 	static final int NavigateComplete2 = 0xfc;
 	static final int NewWindow2 = 0xfb;
 	static final int OnMenuBar = 0x100;
@@ -377,6 +378,8 @@ public boolean create(Composite parent, int style) {
 			if (auto != null) {
 				switch (event.type) {
 					case BeforeNavigate2: {
+						isRefresh = false; /* refreshes do not come through here */
+
 						/* don't send client events if the initial navigate to about:blank has not completed */
 						if (performingInitialNavigate) break;
 
@@ -569,6 +572,40 @@ public boolean create(Composite parent, int style) {
 						* the other arguments.  
 						*/
 						//dispatch.Release();
+						break;
+					}
+					case DownloadComplete: {
+						/*
+						 * IE feature.  Some events that swt relies on are not sent when
+						 * a page is refreshed as opposed to being navigated to.  The
+						 * workaround is to use DownloadComplete as an indication that a
+						 * refresh has completed.   
+						 */
+						if (!isRefresh) break;
+						isRefresh = false;
+
+						/*
+						* NavigateComplete is not received for refreshes, so re-hook
+						* BrowserFunctions here. 
+						*/
+						Enumeration elements = functions.elements ();
+						while (elements.hasMoreElements ()) {
+							BrowserFunction function = (BrowserFunction)elements.nextElement ();
+							execute (function.functionString);
+						}
+
+						/*
+						 * DocumentComplete is not received for refreshes, but clients may rely
+						 * on this event for tasks like hooking javascript listeners, so send the
+						 * event here.
+						 */
+						ProgressEvent progressEvent = new ProgressEvent(browser);
+						progressEvent.display = browser.getDisplay();
+						progressEvent.widget = browser;
+						for (int i = 0; i < progressListeners.length; i++) {
+							progressListeners[i].completed(progressEvent);
+						}						
+
 						break;
 					}
 					case NavigateComplete2: {
@@ -904,6 +941,7 @@ public boolean create(Composite parent, int style) {
 	site.addEventListener(BeforeNavigate2, oleListener);
 	site.addEventListener(CommandStateChange, oleListener);
 	site.addEventListener(DocumentComplete, oleListener);
+	site.addEventListener(DownloadComplete, oleListener);
 	site.addEventListener(NavigateComplete2, oleListener);
 	site.addEventListener(NavigateError, oleListener);
 	site.addEventListener(NewWindow2, oleListener);
@@ -1221,6 +1259,7 @@ public void refresh() {
 		}
 	}
 
+	isRefresh = true;
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Refresh" }); //$NON-NLS-1$
 	auto.invoke(rgdispid[0]);
 }
@@ -1534,6 +1573,7 @@ void handleDOMEvent (OleEvent e) {
 			case SWT.DEL: lastCharCode = keyEvent.character = SWT.DEL; break;
 			case SWT.TAB: lastCharCode = keyEvent.character = SWT.TAB; break;
 		}
+
 		if (!sendKeyEvent(keyEvent)) {
 			rgdispid = event.getIDsOfNames(new String[] { PROPERTY_RETURNVALUE });
 			dispIdMember = rgdispid[0];
@@ -1541,6 +1581,13 @@ void handleDOMEvent (OleEvent e) {
 			event.setProperty(dispIdMember, pVarFalse);
 			pVarFalse.dispose();
 		}
+
+		/*
+		* Pressing F5 refreshes the current page.  If this is about to happen
+		* then set isRefresh to true so that received IE events will be treated
+		* accordingly.
+		*/
+		if (lastKeyCode == SWT.F5) isRefresh = true;
 
 		event.dispose();
 		return;
