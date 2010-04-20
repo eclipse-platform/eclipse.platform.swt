@@ -279,7 +279,7 @@
 			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
 			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
 			-->
-			<env key="PKG_CONFIG_PATH" value="/usr/local/cairo31/lib/pkgconfig"/>
+			<env key="PKG_CONFIG_PATH" value="/usr/local/cairo64/lib/pkgconfig"/>
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
 		</exec>
