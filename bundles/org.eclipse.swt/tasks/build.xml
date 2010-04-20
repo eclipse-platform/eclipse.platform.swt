@@ -278,8 +278,8 @@
 			<env key="MOZILLA_LIBS" value="${MOZILLA_SDK}/../lib/libembedstring.a -L${MOZILLA_SDK}/../bin -L${MOZILLA_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"/>
 			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
 			<env key="XULRUNNER_LIBS" value="-L${XULRUNNER_SDK}/lib -lxpcomglue"/>
-			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86/lib/pkgconfig"/>
 			-->
+			<env key="PKG_CONFIG_PATH" value="/usr/local/cairo31/lib/pkgconfig"/>
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
 		</exec>
