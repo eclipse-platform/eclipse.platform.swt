@@ -12703,6 +12703,16 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1socket_1new)
 }
 #endif
 
+#ifndef NO__1gtk_1spin_1button_1configure
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1spin_1button_1configure)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jint arg3)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1spin_1button_1configure_FUNC);
+	gtk_spin_button_configure((GtkSpinButton*)arg0, (GtkAdjustment *)arg1, arg2, arg3);
+	OS_NATIVE_EXIT(env, that, _1gtk_1spin_1button_1configure_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1spin_1button_1get_1adjustment
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1spin_1button_1get_1adjustment)
 	(JNIEnv *env, jclass that, jintLong arg0)

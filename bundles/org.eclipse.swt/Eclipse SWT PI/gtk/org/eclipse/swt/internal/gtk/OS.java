@@ -9895,6 +9895,19 @@ public static final int /*long*/ gtk_spin_button_new(int /*long*/ adjustment, do
 		lock.unlock();
 	}
 }
+/** 
+ * @param spin_button cast=(GtkSpinButton*)
+ * @param adjustment cast=(GtkAdjustment *) 
+ **/
+public static final native void _gtk_spin_button_configure(int /*long*/ spin_button, int /*long*/ adjustment, double climb_rate, int digits);
+public static final void gtk_spin_button_configure(int /*long*/ spin_button, int /*long*/ adjustment, double climb_rate, int digits) {
+	lock.lock();
+	try {
+		_gtk_spin_button_configure(spin_button, adjustment, climb_rate, digits);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param spin_button cast=(GtkSpinButton*) */
 public static final native int /*long*/ _gtk_spin_button_get_adjustment(int /*long*/ spin_button);
 public static final int /*long*/ gtk_spin_button_get_adjustment(int /*long*/ spin_button) {

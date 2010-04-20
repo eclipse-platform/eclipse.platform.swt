@@ -998,6 +998,7 @@ typedef enum {
 	_1gtk_1settings_1get_1default_FUNC,
 	_1gtk_1socket_1get_1id_FUNC,
 	_1gtk_1socket_1new_FUNC,
+	_1gtk_1spin_1button_1configure_FUNC,
 	_1gtk_1spin_1button_1get_1adjustment_FUNC,
 	_1gtk_1spin_1button_1get_1digits_FUNC,
 	_1gtk_1spin_1button_1new_FUNC,

@@ -47,6 +47,7 @@ public class Spinner extends Composite {
 	int lastEventTime = 0;
 	int /*long*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
+	double climbRate = 1;
 	
 	/**
 	 * the operating system limit for the number of characters
@@ -292,7 +293,7 @@ void createHandle (int index) {
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	int /*long*/ adjustment = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
 	if (adjustment == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = OS.gtk_spin_button_new (adjustment, 1, 0);
+	handle = OS.gtk_spin_button_new (adjustment, climbRate, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
@@ -1077,15 +1078,17 @@ public void setDigits (int value) {
 		adjustment.lower *= factor;
 		adjustment.step_increment *= factor;
 		adjustment.page_increment *= factor;
+		climbRate *= factor;
 	} else {
 		adjustment.value /= factor;
 		adjustment.upper /= factor;
 		adjustment.lower /= factor;
 		adjustment.step_increment /= factor;
 		adjustment.page_increment /= factor;
+		climbRate /= factor;
 	}
 	OS.memmove (hAdjustment, adjustment);
-	OS.gtk_spin_button_set_digits (handle, value);
+	OS.gtk_spin_button_configure (handle, hAdjustment, climbRate, value);
 }
 
 /**
@@ -1124,7 +1127,15 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 	OS.gtk_spin_button_set_range (handle, minimum / factor, maximum / factor);
 	OS.gtk_spin_button_set_increments (handle, increment / factor, pageIncrement / factor);
 	OS.gtk_spin_button_set_value (handle, selection / factor);
-	OS.gtk_spin_button_set_digits (handle, digits);
+	/*
+	* The value of climb-rate indicates the acceleration rate 
+	* to spin the value when the button is pressed and hold 
+	* on the arrow button. This value should be varied 
+	* depending upon the value of digits.
+	*/
+	climbRate = 1.0 / factor;
+	int /*long*/ adjustment = OS.gtk_spin_button_get_adjustment(handle);
+	OS.gtk_spin_button_configure (handle, adjustment, climbRate, digits);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
