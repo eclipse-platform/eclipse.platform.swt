@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1006;
-int OS_nativeFunctionCallCount[1006];
+int OS_nativeFunctionCount = 1010;
+int OS_nativeFunctionCallCount[1010];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -691,6 +691,7 @@ char * OS_nativeFunctionNames[] = {
 	"LMGetKbdType",
 	"LSCopyAllRoleHandlersForContentType",
 	"LSCopyDisplayNameForRef",
+	"LSCopyItemAttribute",
 	"LSFindApplicationForInfo",
 	"LSGetApplicationForInfo",
 	"LSOpenApplication",
@@ -976,8 +977,10 @@ char * OS_nativeFunctionNames[] = {
 	"TrackDrag",
 	"TrackMouseLocationWithOptions",
 	"UCKeyTranslate",
+	"UTTypeConformsTo",
 	"UTTypeCreateAllIdentifiersForTag",
 	"UTTypeCreatePreferredIdentifierForTag",
+	"UTTypeEqual",
 	"UnionRect",
 	"UnionRgn",
 	"UpdateDataBrowserItems",
@@ -998,6 +1001,7 @@ char * OS_nativeFunctionNames[] = {
 	"kFontPanelAttributeValuesKey",
 	"kFontPanelAttributesKey",
 	"kHIViewWindowContentID",
+	"kLSItemContentType",
 	"kPMDocumentFormatPDF",
 	"kPMGraphicsContextCoreGraphics",
 	"kUTTagClassFilenameExtension",

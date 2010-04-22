@@ -257,9 +257,7 @@ static int getURL(String fileName) {
 
 static boolean isExecutable (String fileName) {
 	boolean result = false;
-	char[] chars = new char[fileName.length()];
-	fileName.getChars(0, chars.length, chars, 0);
-	int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
+	int str = createCFString(fileName);
 	if (str != 0) {
 		int fileManager = Cocoa.objc_msgSend(Cocoa.C_NSFileManager, Cocoa.S_defaultManager);
 		int ptr = OS.malloc (1);
@@ -267,15 +265,40 @@ static boolean isExecutable (String fileName) {
 			if (fileManager != 0 && Cocoa.objc_msgSend(fileManager, Cocoa.S_fileExistsAtPath_isDirectory, str, ptr) != 0) {
 				byte[] isDirectory = new byte[1];
 				OS.memmove(isDirectory, ptr, 1);
-				if (isDirectory[0] == 0) {
-					result = Cocoa.objc_msgSend(fileManager, Cocoa.S_isExecutableFileAtPath, str) != 0;
+				if (isDirectory[0] == 0 && Cocoa.objc_msgSend (fileManager, Cocoa.S_isExecutableFileAtPath, str) != 0) {
+					int url = OS.CFURLCreateWithFileSystemPath(OS.kCFAllocatorDefault, str, OS.kCFURLPOSIXPathStyle, false);
+					if (url != 0) {
+						byte[] fsRef = new byte[80];
+						if (OS.CFURLGetFSRef(url, fsRef)) {
+							int [] type = new int[1];
+							OS.LSCopyItemAttribute(fsRef, OS.kLSRolesAll, OS.kLSItemContentType(), type);
+							if (type[0] != 0) {
+								int exeUti = createCFString("public.unix-executable"); //$NON-NLS-1$
+								result = OS.UTTypeConformsTo(type[0], exeUti);
+								OS.CFRelease(exeUti);
+								if (!result) {
+									int scriptUti = createCFString("public.shell-script"); //$NON-NLS-1$
+									result = OS.UTTypeEqual(type[0], scriptUti);
+									OS.CFRelease(scriptUti);
+								}
+								OS.CFRelease(type[0]);
+							}
+						}
+						OS.CFRelease(url);
+					}
 				}
 			}
+			OS.free(ptr);
 		}
-		OS.free(ptr);
 		OS.CFRelease(str);
 	}
 	return result;
+}
+
+static int createCFString(String string) {
+	char [] buffer = new char[string.length()];
+	string.getChars(0, buffer.length, buffer, 0);
+	return OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, buffer, buffer.length);
 }
 
 /**

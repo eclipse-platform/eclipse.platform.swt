@@ -9711,6 +9711,25 @@ fail:
 }
 #endif
 
+#ifndef NO_LSCopyItemAttribute
+JNIEXPORT jint JNICALL OS_NATIVE(LSCopyItemAttribute)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jintArray arg3)
+{
+	jbyte *lparg0=NULL;
+	jint *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, LSCopyItemAttribute_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jint)LSCopyItemAttribute((const FSRef *)lparg0, (LSRolesMask)arg1, (CFStringRef)arg2, (CFTypeRef *)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, LSCopyItemAttribute_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_LSFindApplicationForInfo
 JNIEXPORT jint JNICALL OS_NATIVE(LSFindApplicationForInfo)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jintArray arg4)
@@ -13585,6 +13604,18 @@ fail:
 }
 #endif
 
+#ifndef NO_UTTypeConformsTo
+JNIEXPORT jboolean JNICALL OS_NATIVE(UTTypeConformsTo)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, UTTypeConformsTo_FUNC);
+	rc = (jboolean)UTTypeConformsTo((CFStringRef)arg0, (CFStringRef)arg1);
+	OS_NATIVE_EXIT(env, that, UTTypeConformsTo_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_UTTypeCreateAllIdentifiersForTag
 JNIEXPORT jint JNICALL OS_NATIVE(UTTypeCreateAllIdentifiersForTag)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -13605,6 +13636,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(UTTypeCreatePreferredIdentifierForTag)
 	OS_NATIVE_ENTER(env, that, UTTypeCreatePreferredIdentifierForTag_FUNC);
 	rc = (jint)UTTypeCreatePreferredIdentifierForTag((CFStringRef)arg0, (CFStringRef)arg1, (CFStringRef)arg2);
 	OS_NATIVE_EXIT(env, that, UTTypeCreatePreferredIdentifierForTag_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_UTTypeEqual
+JNIEXPORT jboolean JNICALL OS_NATIVE(UTTypeEqual)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, UTTypeEqual_FUNC);
+	rc = (jboolean)UTTypeEqual((CFStringRef)arg0, (CFStringRef)arg1);
+	OS_NATIVE_EXIT(env, that, UTTypeEqual_FUNC);
 	return rc;
 }
 #endif
@@ -13856,6 +13899,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(kHIViewWindowContentID)
 	OS_NATIVE_ENTER(env, that, kHIViewWindowContentID_FUNC);
 	rc = (jint)&kHIViewWindowContentID;
 	OS_NATIVE_EXIT(env, that, kHIViewWindowContentID_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_kLSItemContentType
+JNIEXPORT jint JNICALL OS_NATIVE(kLSItemContentType)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, kLSItemContentType_FUNC);
+	rc = (jint)kLSItemContentType;
+	OS_NATIVE_EXIT(env, that, kLSItemContentType_FUNC);
 	return rc;
 }
 #endif

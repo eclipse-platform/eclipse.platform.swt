@@ -1092,6 +1092,8 @@ public static final native int kFontPanelAttributeSizesKey();
 /** @method flags=const */
 public static final native int kFontPanelAttributeValuesKey();	
 /** @method flags=const */
+public static final native int kLSItemContentType();
+/** @method flags=const */
 public static final native int kUTTagClassFilenameExtension();
 /** @method flags=const address */
 public static final native int kHIViewWindowContentID();
@@ -3981,6 +3983,13 @@ public static final native int LSFindApplicationForInfo(int inCreator, int inBun
  */
 public static final native int LSCopyAllRoleHandlersForContentType(int inContentType, int inRoleMask);
 /**
+ * @param inItem cast=(const FSRef *)
+ * @param inRoles cast=(LSRolesMask)
+ * @param inAttributeName cast=(CFStringRef)
+ * @param outValue cast=(CFTypeRef *)
+ */
+public static final native int  LSCopyItemAttribute (byte[] inItem, int inRoles, int inAttributeName, int[] outValue);
+/**
  * @param inType cast=(OSType)
  * @param inCreator cast=(OSType)
  * @param inExtension cast=(CFStringRef)
@@ -5339,6 +5348,11 @@ public static final native int TrackDrag(int theDrag, EventRecord theEvent, int 
  */
 public static final native int TrackMouseLocationWithOptions(int inPort, int inOptions, double inTime, Point outPt, int [] outModifiers, short[] outResult);
 /**
+ * @param inUTI cast=(CFStringRef)
+ * @param inConformsToUTI cast=(CFStringRef)
+ */
+public static final native boolean UTTypeConformsTo(int inUTI, int inConformsToUTI);
+/**
  * @param inTagClass cast=(CFStringRef)
  * @param inTag cast=(CFStringRef)
  * @param inConformingToUTI cast=(CFStringRef)
@@ -5350,6 +5364,11 @@ public static final native int UTTypeCreatePreferredIdentifierForTag(int inTagCl
  * @param inConformingToUTI cast=(CFStringRef)
  */
 public static final native int UTTypeCreateAllIdentifiersForTag(int inTagClass, int inTag, int inConformingToUTI);
+/**
+ * @param inUTI1 cast=(CFStringRef)
+ * @param inUTI2 cast=(CFStringRef)
+ */
+public static final native boolean UTTypeEqual(int inUTI1, int inUTI2);
 /**
  * @param srcA flags=no_out
  * @param srcB flags=no_out
