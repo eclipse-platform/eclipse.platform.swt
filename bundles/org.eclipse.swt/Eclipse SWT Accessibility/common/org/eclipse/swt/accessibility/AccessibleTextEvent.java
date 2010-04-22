@@ -34,20 +34,29 @@ import org.eclipse.swt.internal.*;
 public class AccessibleTextEvent extends SWTEventObject {
 	public int childID;				// IN
 	public int offset, length;		// OUT
+	/** @since 3.6 */
 	public Accessible accessible;
 
 	/**
 	 * The value of this field must be set in the accessible text extended listener method
 	 * before returning. What to set it to depends on the listener method called.
+	 * @since 3.6
 	 */
 	public String result;
 	
+	/** @since 3.6 */
 	public int count;
+	/** @since 3.6 */
 	public int index;
+	/** @since 3.6 */
 	public int start, end;
+	/** @since 3.6 */
 	public int type;
+	/** @since 3.6 */
 	public int x, y, width, height;
+	/** @since 3.6 */
 	public int [] ranges;
+	/** @since 3.6 */
 	public Rectangle [] rectangles;
 	
 	static final long serialVersionUID = 3977019530868308275L;
