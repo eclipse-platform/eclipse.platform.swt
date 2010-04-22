@@ -2005,7 +2005,7 @@ public static final native int /*long*/ _g_file_info_get_content_type (int /*lon
 public static final int /*long*/ g_file_info_get_content_type (int /*long*/ info) {
 	lock.lock();
 	try {
-		return g_file_info_get_content_type (info);
+		return _g_file_info_get_content_type (info);
 	} finally {
 		lock.unlock();
 	}
