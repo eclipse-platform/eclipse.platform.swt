@@ -583,7 +583,14 @@ static boolean gnome_isExecutable(String fileName) {
 	int /*long*/ uri = GNOME.gnome_vfs_make_uri_from_input(fileNameBuffer);
 	int /*long*/ mimeType = GNOME.gnome_vfs_get_mime_type(uri);
 	GNOME.g_free(uri);
-	return GNOME.gnome_vfs_mime_can_be_executable(mimeType);
+	
+	byte[] exeType = Converter.wcsToMbcs (null, "application/x-executable", true); //$NON-NLS-1$
+	boolean result = GNOME.gnome_vfs_mime_type_get_equivalence(mimeType, exeType) != GNOME.GNOME_VFS_MIME_UNRELATED;
+	if (!result) {
+		byte [] shellType = Converter.wcsToMbcs (null, "application/x-shellscript", true); //$NON-NLS-1$
+		result = GNOME.gnome_vfs_mime_type_get_equivalence(mimeType, shellType) == GNOME.GNOME_VFS_MIME_IDENTICAL;
+	}
+	return result;
 }
 
 /**
@@ -720,7 +727,7 @@ static boolean isExecutable(Display display, String fileName) {
 	switch(getDesktop(display)) {
 		case DESKTOP_GNOME_24:
 		case DESKTOP_GNOME: return gnome_isExecutable(fileName);
-		case DESKTOP_CDE: return cde_isExecutable(fileName);
+		case DESKTOP_CDE: return false; //cde_isExecutable(fileName);
 	}
 	return false;
 }
@@ -776,7 +783,7 @@ static boolean launch (Display display, String fileName, String workingDir) {
 			Compatibility.exec (new String [] {fileName}, null, workingDir);
 			return true;
 		} catch (IOException e) {
-			//
+			return false;
 		}
 	}
 	switch (getDesktop (display)) {
@@ -799,7 +806,13 @@ static boolean launch (Display display, String fileName, String workingDir) {
 			}
 			break;
 	}
-	return false;
+	/* If the above launch attempts didn't launch the file, then try with exec().*/
+	try {
+		Compatibility.exec (new String [] {fileName}, null, workingDir);
+		return true;
+	} catch (IOException e) {
+		return false;
+	}
 }
 
 /**
