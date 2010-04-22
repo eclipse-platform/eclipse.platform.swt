@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -62,6 +62,15 @@ public boolean openURLs(NSArray urls, NSString bundleIdentifier, int /*long*/ op
 public static NSWorkspace sharedWorkspace() {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSWorkspace, OS.sel_sharedWorkspace);
 	return result != 0 ? new NSWorkspace(result) : null;
+}
+
+public boolean type(NSString firstTypeName, NSString secondTypeName) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_type_conformsToType_, firstTypeName != null ? firstTypeName.id : 0, secondTypeName != null ? secondTypeName.id : 0);
+}
+
+public NSString typeOfFile(NSString absoluteFilePath, int /*long*/ outError) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_typeOfFile_error_, absoluteFilePath != null ? absoluteFilePath.id : 0, outError);
+	return result != 0 ? new NSString(result) : null;
 }
 
 }

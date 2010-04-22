@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 582;
-int OS_nativeFunctionCallCount[582];
+int OS_nativeFunctionCount = 583;
+int OS_nativeFunctionCallCount[583];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -408,6 +408,7 @@ char * OS_nativeFunctionNames[] = {
 	"TISGetInputSourceProperty",
 	"TransformProcessType",
 	"UCKeyTranslate",
+	"UTTypeEqual",
 	"UnionRgn",
 	"_1_1BIG_1ENDIAN_1_1",
 	"call",

@@ -175,6 +175,12 @@ public static final native int GetSystemUIMode(int[] outMode, int[] outOptions);
  */
 public static final native int UCKeyTranslate (int /*long*/ keyLayoutPtr, short virtualKeyCode, short keyAction, int modifierKeyState, int keyboardType, int keyTranslateOptions, int[] deadKeyState, int maxStringLength, int[] actualStringLength, char[] unicodeString);
 /**
+ * @param inUTI1 cast=(CFStringRef)
+ * @param inUTI2 cast=(CFStringRef)
+ */
+public static final native boolean UTTypeEqual(int /*long*/ inUTI1, int /*long*/ inUTI2);
+
+/**
  * @method flags=dynamic
  * @param metric cast=(SInt32 *)
 */
@@ -1900,6 +1906,8 @@ public static final int /*long*/ sel_transformStruct = sel_registerName("transfo
 public static final int /*long*/ sel_transformUsingAffineTransform_ = sel_registerName("transformUsingAffineTransform:");
 public static final int /*long*/ sel_translateXBy_yBy_ = sel_registerName("translateXBy:yBy:");
 public static final int /*long*/ sel_type = sel_registerName("type");
+public static final int /*long*/ sel_type_conformsToType_ = sel_registerName("type:conformsToType:");
+public static final int /*long*/ sel_typeOfFile_error_ = sel_registerName("typeOfFile:error:");
 public static final int /*long*/ sel_types = sel_registerName("types");
 public static final int /*long*/ sel_typesetter = sel_registerName("typesetter");
 public static final int /*long*/ sel_unarchiveObjectWithData_ = sel_registerName("unarchiveObjectWithData:");

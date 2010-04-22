@@ -416,6 +416,7 @@ typedef enum {
 	TISGetInputSourceProperty_FUNC,
 	TransformProcessType_FUNC,
 	UCKeyTranslate_FUNC,
+	UTTypeEqual_FUNC,
 	UnionRgn_FUNC,
 	_1_1BIG_1ENDIAN_1_1_FUNC,
 	call_FUNC,

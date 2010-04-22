@@ -5364,6 +5364,18 @@ fail:
 }
 #endif
 
+#ifndef NO_UTTypeEqual
+JNIEXPORT jboolean JNICALL OS_NATIVE(UTTypeEqual)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, UTTypeEqual_FUNC);
+	rc = (jboolean)UTTypeEqual((CFStringRef)arg0, (CFStringRef)arg1);
+	OS_NATIVE_EXIT(env, that, UTTypeEqual_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_UnionRgn
 JNIEXPORT void JNICALL OS_NATIVE(UnionRgn)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)

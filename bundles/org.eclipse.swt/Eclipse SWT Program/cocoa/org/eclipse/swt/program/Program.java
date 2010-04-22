@@ -235,7 +235,10 @@ static boolean isExecutable (String fileName) {
 		byte[] isDirectory = new byte[1];
 		OS.memmove(isDirectory, ptr, 1);
 		if (isDirectory[0] == 0 && manager.isExecutableFileAtPath(path)) {
-			result = true;
+			NSWorkspace ws = NSWorkspace.sharedWorkspace();
+			NSString type = ws.typeOfFile(path, 0);
+			result = type != null && (ws.type(type, NSString.stringWith("public.unix-executable")) || //$NON-NLS-1$
+					OS.UTTypeEqual(type.id, NSString.stringWith("public.shell-script").id)); //$NON-NLS-1$
 		}
 	}
 	OS.free(ptr);
