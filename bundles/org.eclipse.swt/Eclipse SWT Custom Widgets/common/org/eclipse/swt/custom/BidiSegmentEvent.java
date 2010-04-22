@@ -93,7 +93,7 @@ public class BidiSegmentEvent extends TypedEvent {
 	/** 
 	 * characters to be used in the segment boundaries (optional)
 	 * 
-	 * since 3.6
+	 * @since 3.6
 	 */
 	public char[] segmentsChars;
 		
