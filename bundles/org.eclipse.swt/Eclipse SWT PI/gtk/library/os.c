@@ -2737,6 +2737,30 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1closure_1unref)
 }
 #endif
 
+#ifndef NO__1g_1content_1type_1equals
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1content_1type_1equals)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1content_1type_1equals_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)g_content_type_equals(arg0, lparg1);
+*/
+	{
+		LOAD_FUNCTION(fp, g_content_type_equals)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, jbyte *))fp)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1content_1type_1equals_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1g_1content_1type_1get_1mime_1type
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1content_1type_1get_1mime_1type)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -2757,6 +2781,30 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1content_1type_1get_1mime_1type)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, _1g_1content_1type_1get_1mime_1type_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1content_1type_1is_1a
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1content_1type_1is_1a)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1content_1type_1is_1a_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)g_content_type_is_a(arg0, lparg1);
+*/
+	{
+		LOAD_FUNCTION(fp, g_content_type_is_a)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, jbyte *))fp)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1content_1type_1is_1a_FUNC);
 	return rc;
 }
 #endif
@@ -2905,6 +2953,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1file_1icon_1get_1file)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1g_1file_1icon_1get_1file_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1file_1info_1get_1content_1type
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1file_1info_1get_1content_1type)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1file_1info_1get_1content_1type_FUNC);
+/*
+	rc = (jintLong)g_file_info_get_content_type(arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, g_file_info_get_content_type)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1g_1file_1info_1get_1content_1type_FUNC);
 	return rc;
 }
 #endif

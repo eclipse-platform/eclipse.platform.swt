@@ -312,6 +312,7 @@ static boolean cde_init(Display display) {
 static boolean cde_isExecutable(String fileName) {
 	byte [] fileNameBuffer = Converter.wcsToMbcs(null, fileName, true);
 	return OS.access(fileNameBuffer, OS.X_OK) == 0;
+	//TODO find the content type of the file and check if it is executable
 }
 
 static String[] parseCommand(String cmd) {
@@ -564,7 +565,14 @@ static boolean gnome_isExecutable(String fileName) {
 	int /*long*/ uri = GNOME.gnome_vfs_make_uri_from_input(fileNameBuffer);
 	int /*long*/ mimeType = GNOME.gnome_vfs_get_mime_type(uri);
 	GNOME.g_free(uri);
-	return GNOME.gnome_vfs_mime_can_be_executable(mimeType);
+	
+	byte[] exeType = Converter.wcsToMbcs (null, "application/x-executable", true); //$NON-NLS-1$
+	boolean result = GNOME.gnome_vfs_mime_type_get_equivalence(mimeType, exeType) != GNOME.GNOME_VFS_MIME_UNRELATED;
+	if (!result) {
+		byte [] shellType = Converter.wcsToMbcs (null, "application/x-shellscript", true); //$NON-NLS-1$
+		result = GNOME.gnome_vfs_mime_type_get_equivalence(mimeType, shellType) == GNOME.GNOME_VFS_MIME_IDENTICAL;
+	}
+	return result;
 }
 
 /**
@@ -904,7 +912,27 @@ static Program[] gio_getPrograms(Display display) {
 static boolean gio_isExecutable(String fileName) {
 	byte[] fileNameBuffer = Converter.wcsToMbcs (null, fileName, true);
 	if (OS.g_file_test(fileNameBuffer, OS.G_FILE_TEST_IS_DIR)) return false;
-	return OS.g_file_test(fileNameBuffer, OS.G_FILE_TEST_IS_EXECUTABLE);
+	if (!OS.g_file_test(fileNameBuffer, OS.G_FILE_TEST_IS_EXECUTABLE)) return false;
+	int /*long*/ file = OS.g_file_new_for_path (fileNameBuffer);
+	boolean result = false;
+	if (file != 0) {
+		byte[] buffer = Converter.wcsToMbcs (null, "*", true); //$NON-NLS-1$
+		int /*long*/ fileInfo = OS.g_file_query_info(file, buffer, 0, 0, 0);
+		if (fileInfo != 0) {
+			int /*long*/ contentType = OS.g_file_info_get_content_type(fileInfo);
+			if (contentType != 0) {
+				byte[] exeType = Converter.wcsToMbcs (null, "application/x-executable", true); //$NON-NLS-1$
+				result = OS.g_content_type_is_a(contentType, exeType);
+				if (!result) {
+					byte [] shellType = Converter.wcsToMbcs (null, "application/x-shellscript", true); //$NON-NLS-1$
+					result = OS.g_content_type_equals(contentType, shellType);
+				}
+			}
+			OS.g_object_unref(fileInfo);
+		}
+		OS.g_object_unref (file);
+	}
+	return result;
 }
 
 /**
@@ -970,7 +998,7 @@ static boolean isExecutable(Display display, String fileName) {
 		case DESKTOP_GIO: return gio_isExecutable(fileName);
 		case DESKTOP_GNOME_24:
 		case DESKTOP_GNOME: return gnome_isExecutable(fileName);
-		case DESKTOP_CDE: return cde_isExecutable(fileName);
+		case DESKTOP_CDE: return false; //cde_isExecutable()
 	}
 	return false;
 }
@@ -1025,7 +1053,7 @@ static boolean launch (Display display, String fileName, String workingDir) {
 			Compatibility.exec (new String [] {fileName}, null, workingDir);
 			return true;
 		} catch (IOException e) {
-			//
+			return false;
 		}
 	}
 	switch (getDesktop (display)) {
@@ -1050,7 +1078,13 @@ static boolean launch (Display display, String fileName, String workingDir) {
 			}
 			break;
 	}
-	return false;
+	/* If the above launch attempts didn't launch the file, then try with exec().*/
+	try {
+		Compatibility.exec (new String [] {fileName}, null, workingDir);
+		return true;
+	} catch (IOException e) {
+		return false;
+	}
 }
 
 /**

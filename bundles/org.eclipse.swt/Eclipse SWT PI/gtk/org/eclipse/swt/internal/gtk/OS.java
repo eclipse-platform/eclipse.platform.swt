@@ -1950,13 +1950,26 @@ public static final int /*long*/ g_data_input_stream_read_line(int /*long*/ stre
 		lock.unlock();
 	}
 }
-
-//gboolean            g_content_type_is_unknown           (const char *type);
-///** @method flags=dynamic */
-//public static final native int /*long*/ _g_content_type_get_mime_type(int /*long*/ type);
-//public static final int /*long*/ g_content_type_get_mime_type(int /*long*/ type) {
-//	
-//}
+/** @method flags=dynamic */
+public static final native boolean _g_content_type_equals(int /*long*/ type1, byte[] type2);
+public static final boolean g_content_type_equals(int /*long*/ type1, byte[] type2) {
+	lock.lock();
+	try {
+		return _g_content_type_equals(type1, type2);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native boolean _g_content_type_is_a(int /*long*/ type, byte[] supertype);
+public static final boolean g_content_type_is_a(int /*long*/ type, byte[] supertype) {
+	lock.lock();
+	try {
+		return _g_content_type_is_a(type, supertype);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @method flags=dynamic */
 public static final native int /*long*/ _g_content_type_get_mime_type(byte[] mime_type);
 public static final int /*long*/ g_content_type_get_mime_type(byte[] mime_type) {
@@ -1983,6 +1996,16 @@ public static final int /*long*/ g_desktop_app_info_new_from_filename(byte[] fil
 	lock.lock();
 	try {
 		return _g_desktop_app_info_new_from_filename(fileName);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_file_info_get_content_type (int /*long*/ info);
+public static final int /*long*/ g_file_info_get_content_type (int /*long*/ info) {
+	lock.lock();
+	try {
+		return g_file_info_get_content_type (info);
 	} finally {
 		lock.unlock();
 	}

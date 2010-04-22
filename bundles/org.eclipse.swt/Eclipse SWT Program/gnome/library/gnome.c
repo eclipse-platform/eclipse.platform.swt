@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2010 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -263,18 +263,6 @@ JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1application_1launch)
 }
 #endif
 
-#ifndef NO__1gnome_1vfs_1mime_1can_1be_1executable
-JNIEXPORT jboolean JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1can_1be_1executable)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jboolean rc = 0;
-	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1mime_1can_1be_1executable_FUNC);
-	rc = (jboolean)gnome_vfs_mime_can_be_executable((const char *)arg0);
-	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1can_1be_1executable_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gnome_1vfs_1mime_1extensions_1list_1free
 JNIEXPORT void JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1extensions_1list_1free)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -335,6 +323,22 @@ JNIEXPORT jintLong JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1type_1from_1name)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1type_1from_1name_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gnome_1vfs_1mime_1type_1get_1equivalence
+JNIEXPORT jintLong JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1type_1get_1equivalence)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jintLong rc = 0;
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1mime_1type_1get_1equivalence_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jintLong)gnome_vfs_mime_type_get_equivalence((const char *)arg0, (const char *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1type_1get_1equivalence_FUNC);
 	return rc;
 }
 #endif

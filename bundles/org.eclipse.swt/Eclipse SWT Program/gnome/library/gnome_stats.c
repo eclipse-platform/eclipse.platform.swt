@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2010 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -38,12 +38,12 @@ char * GNOME_nativeFunctionNames[] = {
 	"_1gnome_1vfs_1make_1uri_1from_1input_1with_1dirs",
 	"_1gnome_1vfs_1mime_1application_1free",
 	"_1gnome_1vfs_1mime_1application_1launch",
-	"_1gnome_1vfs_1mime_1can_1be_1executable",
 	"_1gnome_1vfs_1mime_1extensions_1list_1free",
 	"_1gnome_1vfs_1mime_1get_1default_1application",
 	"_1gnome_1vfs_1mime_1get_1extensions_1list",
 	"_1gnome_1vfs_1mime_1registered_1mime_1type_1list_1free",
 	"_1gnome_1vfs_1mime_1type_1from_1name",
+	"_1gnome_1vfs_1mime_1type_1get_1equivalence",
 	"_1gnome_1vfs_1url_1show",
 	"memmove",
 };

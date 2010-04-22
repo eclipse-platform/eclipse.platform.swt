@@ -25,6 +25,9 @@ public static final int GNOME_FILE_DOMAIN_PIXMAP = 4;
 public static final int GNOME_ICON_LOOKUP_FLAGS_NONE = 0;
 public static final int GNOME_PARAM_NONE = 0;
 public static final int GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS = 0;
+public static final int GNOME_VFS_MIME_IDENTICAL = 1;
+public static final int GNOME_VFS_MIME_PARENT = 2;
+public static final int GNOME_VFS_MIME_UNRELATED = 0;
 public static final int GNOME_VFS_OK = 0;
 public static final int GNOME_VFS_MAKE_URI_DIR_NONE = 0;
 public static final int GNOME_VFS_MAKE_URI_DIR_HOMEDIR = 1<<0;
@@ -191,16 +194,6 @@ public static final void gnome_vfs_mime_application_free(int /*long*/ applicatio
 		lock.unlock();
 	}
 }
-/** @param mimeType cast=(const char *) */
-public static final native boolean _gnome_vfs_mime_can_be_executable(int /*long*/ mimeType);
-public static final boolean gnome_vfs_mime_can_be_executable(int /*long*/ mimeType) {
-	lock.lock();
-	try {
-		return _gnome_vfs_mime_can_be_executable(mimeType);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param command_string cast=(const char *) */
 public static final native boolean _gnome_vfs_is_executable_command_string(byte[] command_string);
 public static final boolean gnome_vfs_is_executable_command_string(byte[] command_string) {
@@ -271,6 +264,19 @@ public static final int /*long*/ gnome_vfs_mime_type_from_name(byte[] file) {
 	lock.lock();
 	try {
 		return _gnome_vfs_mime_type_from_name(file);
+	} finally {
+		lock.unlock();
+	}
+}
+/** 
+ * @param mime_type cast=(const char *)
+ * @param base_mime_type cast=(const char *) 
+ */
+public static final native int /*long*/ _gnome_vfs_mime_type_get_equivalence(int /*long*/ mime_type, byte [] base_mime_type);
+public static final int /*long*/ gnome_vfs_mime_type_get_equivalence(int /*long*/ mime_type, byte [] base_mime_type) {
+	lock.lock();
+	try {
+		return _gnome_vfs_mime_type_get_equivalence(mime_type, base_mime_type);
 	} finally {
 		lock.unlock();
 	}
