@@ -42,6 +42,7 @@ class Mozilla extends WebBrowser {
 	XPCOMObject tooltipListener;
 	XPCOMObject domEventListener;
 	XPCOMObject badCertListener;
+
 	int chromeFlags = nsIWebBrowserChrome.CHROME_DEFAULT;
 	int registerFunctionsOnState = 0;
 	int refCount, lastKeyCode, lastCharCode, authCount;
@@ -62,6 +63,8 @@ class Mozilla extends WebBrowser {
 	static Hashtable AllFunctions = new Hashtable ();
 	static Listener DisplayListener;
 	static boolean Initialized, IsPre_1_8, IsPre_1_9, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
+	static String oldProxyHostFTP, oldProxyHostHTTP, oldProxyHostSSL;
+	static int oldProxyPortFTP = -1, oldProxyPortHTTP = -1, oldProxyPortSSL = -1, oldProxyType = -1;
 
 	/* XULRunner detect constants */
 	static final String GRERANGE_LOWER = "1.8.1.2"; //$NON-NLS-1$
@@ -71,6 +74,7 @@ class Mozilla extends WebBrowser {
 	static final boolean UpperRangeInclusive = true;
 
 	static final int MAX_PORT = 65535;
+	static final String DEFAULTVALUE_STRING = "default"; //$NON-NLS-1$
 	static final String SEPARATOR_OS = System.getProperty ("file.separator"); //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String DISPOSE_LISTENER_HOOKED = "org.eclipse.swt.browser.Mozilla.disposeListenerHooked"; //$NON-NLS-1$
@@ -158,8 +162,10 @@ class Mozilla extends WebBrowser {
 
 					nsIPrefService prefService = new nsIPrefService (result[0]);
 					result[0] = 0;
+					revertProxySettings (prefService);
 					rc = prefService.SavePrefFile (prefFile.getAddress ());
 					prefService.Release ();
+
 					prefFile.Release ();
 				}
 				serviceManager.Release ();
@@ -200,6 +206,112 @@ class Mozilla extends WebBrowser {
 					XPCOMInitWasGlued = false;
 				}
 				Initialized = false;
+			}
+
+			void revertProxySettings (nsIPrefService prefService) {
+				/* the proxy settings are typically not set, so check for this first */
+				boolean hostSet = oldProxyHostFTP != null || oldProxyHostHTTP != null || oldProxyHostSSL != null;
+				if (!hostSet && oldProxyPortFTP == -1 && oldProxyPortHTTP == -1 && oldProxyPortSSL == -1 && oldProxyType == -1) return;
+
+				int /*long*/[] result = new int /*long*/[1];
+				byte[] buffer = new byte[1];
+				int rc = prefService.GetBranch (buffer, result);	/* empty buffer denotes root preference level */
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+				nsIPrefBranch prefBranch = new nsIPrefBranch (result[0]);
+				result[0] = 0;
+
+				if (hostSet) {
+					rc = XPCOM.NS_GetComponentManager (result);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+					nsIComponentManager componentManager = new nsIComponentManager (result[0]);
+					result[0] = 0;
+
+					byte[] contractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFLOCALIZEDSTRING_CONTRACTID, true);
+					rc = componentManager.CreateInstanceByContractID (contractID, 0, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+					nsIPrefLocalizedString localizedString = new nsIPrefLocalizedString (result[0]);
+					result[0] = 0;
+
+					if (oldProxyHostFTP != null) {
+						buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_FTP, true);
+						if (oldProxyHostFTP.equals (DEFAULTVALUE_STRING)) {
+							rc = prefBranch.ClearUserPref (buffer);
+							if (rc != XPCOM.NS_OK) error (rc);
+						} else {
+							int length = oldProxyHostFTP.length ();
+							char[] charBuffer = new char[length];
+							oldProxyHostFTP.getChars (0, length, charBuffer, 0);
+							rc = localizedString.SetDataWithLength (length, charBuffer);
+							if (rc != XPCOM.NS_OK) error (rc);
+							rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
+							if (rc != XPCOM.NS_OK) error (rc);
+						}
+					}
+
+					if (oldProxyHostHTTP != null) {
+						buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_HTTP, true);
+						if (oldProxyHostHTTP.equals (DEFAULTVALUE_STRING)) {
+							rc = prefBranch.ClearUserPref (buffer);
+							if (rc != XPCOM.NS_OK) error (rc);
+						} else {
+							int length = oldProxyHostHTTP.length ();
+							char[] charBuffer = new char[length];
+							oldProxyHostHTTP.getChars (0, length, charBuffer, 0);
+							rc = localizedString.SetDataWithLength (length, charBuffer);
+							if (rc != XPCOM.NS_OK) error (rc);
+							rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
+							if (rc != XPCOM.NS_OK) error (rc);
+						}
+					}
+
+					if (oldProxyHostSSL != null) {
+						buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_SSL, true);
+						if (oldProxyHostSSL.equals (DEFAULTVALUE_STRING)) {
+							rc = prefBranch.ClearUserPref (buffer);
+							if (rc != XPCOM.NS_OK) error (rc);
+						} else {
+							int length = oldProxyHostSSL.length ();
+							char[] charBuffer = new char[length];
+							oldProxyHostSSL.getChars (0, length, charBuffer, 0);
+							rc = localizedString.SetDataWithLength (length, charBuffer);
+							if (rc != XPCOM.NS_OK) error (rc);
+							rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
+							if (rc != XPCOM.NS_OK) error (rc);
+						}
+					}
+
+					localizedString.Release ();
+					componentManager.Release ();
+				}
+
+				if (oldProxyPortFTP != -1) {
+					buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYPORT_FTP, true);
+					rc = prefBranch.SetIntPref (buffer, oldProxyPortFTP);
+					if (rc != XPCOM.NS_OK) error (rc);
+				}
+				if (oldProxyPortHTTP != -1) {
+					buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYPORT_HTTP, true);
+					rc = prefBranch.SetIntPref (buffer, oldProxyPortHTTP);
+					if (rc != XPCOM.NS_OK) error (rc);
+				}
+				if (oldProxyPortSSL != -1) {
+					buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYPORT_SSL, true);
+					rc = prefBranch.SetIntPref (buffer, oldProxyPortSSL);
+					if (rc != XPCOM.NS_OK) error (rc);
+				}
+				if (oldProxyType != -1) {
+					buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYTYPE, true);
+					rc = prefBranch.SetIntPref (buffer, oldProxyType);
+					if (rc != XPCOM.NS_OK) error (rc);
+				}
+
+				prefBranch.Release ();
 			}
 		};
 
@@ -1869,37 +1981,109 @@ void initPreferences (nsIServiceManager serviceManager, nsIComponentManager comp
 
 		localizedString = new nsIPrefLocalizedString (result[0]);
 		result[0] = 0;
+		
 		int length = proxyHost.length ();
-		char[] charBuffer = new char[length + 1];
+		char[] charBuffer = new char[length];
 		proxyHost.getChars (0, length, charBuffer, 0);
 		rc = localizedString.SetDataWithLength (length, charBuffer);
 		if (rc != XPCOM.NS_OK) error (rc);
+
 		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_FTP, true);
+		rc = prefBranch.GetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+		if (rc == XPCOM.NS_OK && result[0] != 0) {
+			nsIPrefLocalizedString value = new nsIPrefLocalizedString (result[0]);
+			result[0] = 0;
+			rc = value.ToString (result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
+			length = XPCOM.strlen_PRUnichar (result[0]);
+			char[] dest = new char[length];
+			XPCOM.memmove (dest, result[0], length * 2);
+			oldProxyHostFTP = new String (dest);
+		} else {
+			/* value is default */
+			oldProxyHostFTP = DEFAULTVALUE_STRING;
+		}
+		result[0] = 0;
 		rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
 		if (rc != XPCOM.NS_OK) error (rc);
+
 		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_HTTP, true);
+		rc = prefBranch.GetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+		if (rc == XPCOM.NS_OK && result[0] != 0) {
+			nsIPrefLocalizedString value = new nsIPrefLocalizedString (result[0]);
+			result[0] = 0;
+			rc = value.ToString (result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
+			length = XPCOM.strlen_PRUnichar (result[0]);
+			char[] dest = new char[length];
+			XPCOM.memmove (dest, result[0], length * 2);
+			oldProxyHostHTTP = new String (dest);
+		} else {
+			/* value is default */
+			oldProxyHostHTTP = DEFAULTVALUE_STRING;
+		}
+		result[0] = 0;
 		rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
 		if (rc != XPCOM.NS_OK) error (rc);
+
 		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYHOST_SSL, true);
+		rc = prefBranch.GetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+		if (rc == XPCOM.NS_OK && result[0] != 0) {
+			nsIPrefLocalizedString value = new nsIPrefLocalizedString (result[0]);
+			result[0] = 0;
+			rc = value.ToString (result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
+			length = XPCOM.strlen_PRUnichar (result[0]);
+			char[] dest = new char[length];
+			XPCOM.memmove (dest, result[0], length * 2);
+			oldProxyHostSSL = new String (dest);
+		} else {
+			/* value is default */
+			oldProxyHostSSL = DEFAULTVALUE_STRING;
+		}
+		result[0] = 0;
 		rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
 		if (rc != XPCOM.NS_OK) error (rc);
+
 		localizedString.Release ();
 	}
 
+	int[] intResult = new int[1]; /* C long*/
 	if (port != -1) {
 		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYPORT_FTP, true);
+		rc = prefBranch.GetIntPref (buffer, intResult);
+		if (rc != XPCOM.NS_OK) error (rc);
+		oldProxyPortFTP = intResult[0];
+		intResult[0] = 0;
 		rc = prefBranch.SetIntPref (buffer, port);
 		if (rc != XPCOM.NS_OK) error (rc);
+
 		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYPORT_HTTP, true);
+		rc = prefBranch.GetIntPref (buffer, intResult);
+		if (rc != XPCOM.NS_OK) error (rc);
+		oldProxyPortHTTP = intResult[0];
+		intResult[0] = 0;
 		rc = prefBranch.SetIntPref (buffer, port);
 		if (rc != XPCOM.NS_OK) error (rc);
+
 		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYPORT_SSL, true);
+		rc = prefBranch.GetIntPref (buffer, intResult);
+		if (rc != XPCOM.NS_OK) error (rc);
+		oldProxyPortSSL = intResult[0];
+		intResult[0] = 0;
 		rc = prefBranch.SetIntPref (buffer, port);
 		if (rc != XPCOM.NS_OK) error (rc);
 	}
 
 	if (proxyHost != null || port != -1) {
 		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_PROXYTYPE, true);
+		rc = prefBranch.GetIntPref (buffer, intResult);
+		if (rc != XPCOM.NS_OK) error (rc);
+		oldProxyType = intResult[0];
+		intResult[0] = 0;
 		rc = prefBranch.SetIntPref (buffer, 1);
 		if (rc != XPCOM.NS_OK) error (rc);
 	}
