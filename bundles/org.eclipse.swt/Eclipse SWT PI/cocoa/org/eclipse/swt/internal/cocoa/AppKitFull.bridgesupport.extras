@@ -4275,6 +4275,7 @@
 	<constant name="NSAccessibilitySelectedChildrenChangedNotification" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySelectedColumnsAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySelectedRowsAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilitySelectedRowsChangedNotification" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySelectedTextAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySelectedTextChangedNotification" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySelectedTextRangeAttribute" swt_gen="true"></constant>

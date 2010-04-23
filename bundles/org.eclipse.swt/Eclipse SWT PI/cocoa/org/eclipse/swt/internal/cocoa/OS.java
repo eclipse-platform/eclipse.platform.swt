@@ -2455,6 +2455,9 @@ public static final NSString NSAccessibilitySelectedColumnsAttribute = new NSStr
 public static final native int /*long*/ NSAccessibilitySelectedRowsAttribute();
 public static final NSString NSAccessibilitySelectedRowsAttribute = new NSString(NSAccessibilitySelectedRowsAttribute());
 /** @method flags=const */
+public static final native int /*long*/ NSAccessibilitySelectedRowsChangedNotification();
+public static final NSString NSAccessibilitySelectedRowsChangedNotification = new NSString(NSAccessibilitySelectedRowsChangedNotification());
+/** @method flags=const */
 public static final native int /*long*/ NSAccessibilitySelectedTextAttribute();
 public static final NSString NSAccessibilitySelectedTextAttribute = new NSString(NSAccessibilitySelectedTextAttribute());
 /** @method flags=const */

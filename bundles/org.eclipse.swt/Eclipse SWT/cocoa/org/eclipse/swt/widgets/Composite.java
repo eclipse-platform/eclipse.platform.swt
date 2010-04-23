@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
 
@@ -169,12 +170,13 @@ int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int
 }
 
 
-boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
-	if (id == view.id && view instanceof SWTCanvasView) {
-		return false;
+boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {	
+	if (id == accessibleHandle()) {
+		// If a Composite or subclass has an Accessible it should not be ignored.
+		if (accessible != null) return accessible.internal_accessibilityIsIgnored(ACC.CHILDID_SELF);
 	}
-
-	return super.accessibilityIsIgnored(id, sel);	
+	
+	return super.accessibilityIsIgnored(id, sel);
 }
 
 /**

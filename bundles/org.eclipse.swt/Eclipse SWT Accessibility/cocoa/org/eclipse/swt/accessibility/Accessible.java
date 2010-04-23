@@ -77,12 +77,14 @@ public class Accessible {
 	Relation relations[] = new Relation[MAX_RELATION_TYPES];
 	Accessible parent;
 	Control control;
+	int currentRole = -1;
 
 	Map /*<Integer, SWTAccessibleDelegate>*/ childToIdMap = new HashMap();
-	Vector children = new Vector();
 	SWTAccessibleDelegate delegate;
 
 	int index = -1;
+
+	TableAccessibleDelegate tableDelegate;
 	
 	/**
 	 * Constructs a new instance of this class given its parent.
@@ -98,10 +100,10 @@ public class Accessible {
 	 * @since 3.6
 	 */
 	public Accessible(Accessible parent) {
-		this.parent = checkNull(parent);
+		if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+		this.parent = parent;
 		this.control = parent.control;
 		delegate = new SWTAccessibleDelegate(this, ACC.CHILDID_SELF);
-		parent.children.add(this);
 	}
 	
 	/**
@@ -113,15 +115,6 @@ public class Accessible {
 
 	Accessible(Control control) {
 		this.control = control;
-	}
-	
-	void addAccessibleChild(Accessible accessible) {
-		children.add(accessible);
-	}
-	
-	static Accessible checkNull (Accessible parent) {
-		if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-		return parent;
 	}
 	
 	/**
@@ -428,6 +421,35 @@ public class Accessible {
 		relations[type].addTarget(target);
 	}
 	
+	void checkRole(int role) {
+		// A lightweight control can change its role at any time, so track
+		// the current role for the control.  If it changes, reset the attribute list.
+		if (role != currentRole) {
+			currentRole = role;
+			
+			if (attributeNames != null) {
+				attributeNames.release();
+				attributeNames = null;
+			}
+			
+			if (parameterizedAttributeNames != null) {
+				parameterizedAttributeNames.release();
+				parameterizedAttributeNames = null;
+			}
+			
+			if (actionNames != null) {
+				actionNames.release();
+				actionNames = null;
+			}
+		}
+	}
+
+	void createTableDelegate() {
+		if (tableDelegate == null) {
+			tableDelegate = new TableAccessibleDelegate(this);
+		}
+	}
+	
 	id getColumnIndexRangeAttribute(int childID) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListeners.size(); i++) {
@@ -457,33 +479,17 @@ public class Accessible {
 	id getSelectedAttribute(int childID) {
 		if (accessibleTableListeners.size() > 0) {
 			AccessibleTableEvent event = new AccessibleTableEvent(this);
+			event.row = index;
 			for (int i = 0; i < accessibleTableListeners.size(); i++) {
 				AccessibleTableListener listener = (AccessibleTableListener)accessibleTableListeners.elementAt(i);
-				listener.getSelectedRows(event);
-			}
-			if (event.accessibles != null) {
-				for (int i = 0; i < event.accessibles.length; i++) {
-					if (this.equals(event.accessibles[i])) return NSNumber.numberWithBool(true);
-				}
-			}
-			for (int i = 0; i < accessibleTableListeners.size(); i++) {
-				AccessibleTableListener listener = (AccessibleTableListener)accessibleTableListeners.elementAt(i);
-				listener.getSelectedColumns(event);
-			}
-			if (event.accessibles != null) {
-				for (int i = 0; i < event.accessibles.length; i++) {
-					if (this.equals(event.accessibles[i])) return NSNumber.numberWithBool(true);
-				}
-			}
-		}
-		if (accessibleTableCellListeners.size() > 0) {
-			AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
-			for (int i = 0; i < accessibleTableCellListeners.size(); i++) {
-				AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
-				listener.isSelected(event);
+				if (currentRole == ACC.ROLE_ROW)
+					listener.isRowSelected(event);
+				else
+					listener.isColumnSelected(event);
 			}
 			return NSNumber.numberWithBool(event.isSelected);
 		}
+
 		return NSNumber.numberWithBool(false);
 	}
 
@@ -504,6 +510,7 @@ public class Accessible {
 	}
 	
 	id getVisibleColumnsAttribute(int childID) {
+		if (accessibleTableListeners.size() == 0) return null;		
 		id returnValue = null;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
@@ -523,6 +530,7 @@ public class Accessible {
 	}
 
 	id getVisibleRowsAttribute(int childID) {
+		if (accessibleTableListeners.size() == 0) return null;		
 		id returnValue = null;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
@@ -542,6 +550,7 @@ public class Accessible {
 	}
 
 	id getSelectedRowsAttribute(int childID) {
+		if (accessibleTableListeners.size() == 0) return null;		
 		id returnValue = null;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
@@ -560,33 +569,58 @@ public class Accessible {
 				if (event.accessible != null) array.addObject(event.accessible.delegate);
 			}
 			returnValue = array;
-		} else {
-			returnValue = NSArray.array();
-		}
-		return returnValue;
-	}
-	
-	id getRowsAttribute(int childID) {
-		id returnValue = null;
-		AccessibleTableEvent event = new AccessibleTableEvent(this);
-		for (int i = 0; i < accessibleTableListeners.size(); i++) {
-			AccessibleTableListener listener = (AccessibleTableListener)accessibleTableListeners.elementAt(i);
-			listener.getRows(event);
-		}
-		if (event.accessibles != null) {
-			NSMutableArray array = NSMutableArray.arrayWithCapacity(event.accessibles.length);
-			Object[] rows = event.accessibles;
-			for (int i = 0; i < rows.length; i++) {
-				Accessible acc = (Accessible) rows[i];
-				acc.index = i;
-				array.addObject(acc.delegate);
-			}
-			returnValue = array;
 		}
 		return returnValue == null ? NSArray.array() : returnValue;
 	}
+	
+
+	int getRowCount() {
+		AccessibleTableEvent event = new AccessibleTableEvent(this);
+		
+		for (int i = 0; i < accessibleTableListeners.size(); i++) {
+			AccessibleTableListener listener = (AccessibleTableListener)accessibleTableListeners.elementAt(i);
+			listener.getRowCount(event);
+		}
+		
+		return event.count;
+	}
+
+	id getRowsAttribute(int childID) {
+		if (accessibleTableListeners.size() == 0) return null;
+		
+		AccessibleTableEvent event = new AccessibleTableEvent(this);
+		for (int i = 0; i < accessibleTableListeners.size(); i++) {
+			AccessibleTableListener listener = (AccessibleTableListener)accessibleTableListeners.elementAt(i);
+			listener.getRowCount(event);
+			listener.getRows(event);
+		}
+		
+		if (event.accessibles == null) event.accessibles = new Accessible[0];
+		
+		if (event.count != event.accessibles.length) {
+			createTableDelegate();
+
+			// Rerun the row query now that our accessible is in place.
+			for (int i = 0; i < accessibleTableListeners.size(); i++) {
+				AccessibleTableListener listener = (AccessibleTableListener)accessibleTableListeners.elementAt(i);
+				listener.getRowCount(event);
+				listener.getRows(event);
+			}
+		}
+
+		NSMutableArray array = NSMutableArray.arrayWithCapacity(event.accessibles.length);
+		Object[] rows = event.accessibles;
+		for (int i = 0; i < rows.length; i++) {
+			Accessible acc = (Accessible) rows[i];
+			acc.index = i;
+			array.addObject(acc.delegate);
+		}
+		return array;
+	}
 
 	id getSelectedColumnsAttribute(int childID) {
+		if (accessibleTableListeners.size() == 0) return null;
+		
 		id returnValue = null;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
@@ -605,30 +639,52 @@ public class Accessible {
 				if (event.accessible != null) array.addObject(event.accessible.delegate);
 			}
 			returnValue = array;
-		} else {
-			returnValue = NSArray.array();
 		}
-		return returnValue;
+		return returnValue == null ? NSArray.array() : returnValue;
+	}
+	
+	int getColumnCount() {
+		AccessibleTableEvent event = new AccessibleTableEvent(this);
+		
+		for (int i = 0; i < accessibleTableListeners.size(); i++) {
+			AccessibleTableListener listener = (AccessibleTableListener)accessibleTableListeners.elementAt(i);
+			listener.getColumnCount(event);
+		}
+		
+		return event.count;
 	}
 	
 	id getColumnsAttribute(int childID) {
-		id returnValue = null;
+		if (accessibleTableListeners.size() == 0) return null;
+
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
 			AccessibleTableListener listener = (AccessibleTableListener)accessibleTableListeners.elementAt(i);
+			listener.getColumnCount(event);
 			listener.getColumns(event);
 		}
-		if (event.accessibles != null) {
-			NSMutableArray array = NSMutableArray.arrayWithCapacity(event.accessibles.length);
-			Accessible[] accessibles = event.accessibles;
-			for (int i = 0; i < accessibles.length; i++) {
-				Accessible acc = accessibles[i];
-				acc.index = i;
-				array.addObject(acc.delegate);
+
+		if (event.accessibles == null) event.accessibles = new Accessible[0];
+
+		if (event.count != event.accessibles.length) {
+			createTableDelegate();
+
+			// Rerun the Column query, now that our adapter is in place.
+			for (int i = 0; i < accessibleTableListeners.size(); i++) {
+				AccessibleTableListener listener = (AccessibleTableListener)accessibleTableListeners.elementAt(i);
+				listener.getColumnCount(event);
+				listener.getColumns(event);
 			}
-			returnValue = array;
 		}
-		return returnValue == null ? NSArray.array() : returnValue;
+
+		NSMutableArray array = NSMutableArray.arrayWithCapacity(event.accessibles.length);
+		Accessible[] accessibles = event.accessibles;
+		for (int i = 0; i < accessibles.length; i++) {
+			Accessible acc = accessibles[i];
+			acc.index = i;
+			array.addObject(acc.delegate);
+		}
+		return array;
 	}
 	
 	/**
@@ -718,6 +774,8 @@ public class Accessible {
 			if (event.detail == -1) {
 				return null;
 			}
+	
+			checkRole(event.detail);
 			
 			if ((childID == ACC.CHILDID_SELF) && (actionNames != null)) {
 				return retainedAutoreleased(actionNames);
@@ -808,6 +866,8 @@ public class Accessible {
 		if (event.detail == -1)
 			return null;
 		
+		checkRole(event.detail);
+				
 		if ((childID == ACC.CHILDID_SELF) && (attributeNames != null)) {
 			// See if this object has a label or is a label for something else. If so, add that to the list.
 			if (relations[ACC.RELATION_LABEL_FOR] != null) {
@@ -937,21 +997,15 @@ public class Accessible {
 				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
 				returnValue.addObject(OS.NSAccessibilityColumnsAttribute);
 				returnValue.addObject(OS.NSAccessibilitySelectedColumnsAttribute);
+				returnValue.addObject(OS.NSAccessibilityVisibleColumnsAttribute);
 				returnValue.addObject(OS.NSAccessibilityRowsAttribute);
 				returnValue.addObject(OS.NSAccessibilitySelectedRowsAttribute);
 				returnValue.addObject(OS.NSAccessibilityVisibleRowsAttribute);
-				returnValue.addObject(OS.NSAccessibilityVisibleColumnsAttribute);
 				returnValue.addObject(OS.NSAccessibilityHeaderAttribute);
 				break;
 			case ACC.ROLE_TABLECELL:
-				returnValue.addObject(OS.NSAccessibilitySelectedAttribute);
-				if (OS.VERSION >= 0x1060) returnValue.addObject(OS.NSAccessibilityRowIndexRangeAttribute);
-				if (OS.VERSION >= 0x1060) returnValue.addObject(OS.NSAccessibilityColumnIndexRangeAttribute);
-				break;
-			case ACC.ROLE_TABLEROWHEADER:
 				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
-				returnValue.addObject(OS.NSAccessibilitySelectedAttribute);
-				returnValue.addObject(OS.NSAccessibilityIndexAttribute);
+				returnValue.addObject(OS.NSAccessibilityValueAttribute);
 				break;
 			case ACC.ROLE_TREE:
 				returnValue.addObject(OS.NSAccessibilityColumnsAttribute);
@@ -1009,6 +1063,8 @@ public class Accessible {
 			case ACC.ROLE_CANVAS:
 				break;
 			case ACC.ROLE_COLUMN:
+				returnValue.removeObject(OS.NSAccessibilityChildrenAttribute);
+				returnValue.removeObject(OS.NSAccessibilityFocusedAttribute);
 				returnValue.addObject(OS.NSAccessibilityIndexAttribute);
 				returnValue.addObject(OS.NSAccessibilitySelectedAttribute);
 				returnValue.addObject(OS.NSAccessibilityRowsAttribute);
@@ -1260,7 +1316,21 @@ public class Accessible {
 	 * @noreference This method is not intended to be referenced by clients.
 	 */
 	public boolean internal_accessibilityIsIgnored(int childID) {
-		return false;
+		AccessibleControlEvent event = new AccessibleControlEvent(this);
+		event.childID = childID;
+		event.detail = -1;
+		for (int i = 0; i < accessibleControlListeners.size(); i++) {
+			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
+			listener.getRole(event);
+		}
+
+		boolean shouldIgnore = (event.detail == -1);
+		
+		if (shouldIgnore) {
+			shouldIgnore = getTitleAttribute(childID) == null && getHelpAttribute(childID) == null && getDescriptionAttribute(childID) == null;
+		}
+		
+		return shouldIgnore;
 	}
 
 	/**
@@ -1287,6 +1357,8 @@ public class Accessible {
 		// return the default set for the control.
 		if (event.detail == -1)
 			return null;
+		
+		checkRole(event.detail);
 		
 		if ((childID == ACC.CHILDID_SELF) && (parameterizedAttributeNames != null)) {
 			return retainedAutoreleased(parameterizedAttributeNames);
@@ -1442,6 +1514,8 @@ public class Accessible {
 	}
 
 	id getAttributedStringForRangeParameterizedAttribute(id parameter, int childID) {
+		if (accessibleAttributeListeners.size() == 0) return null;
+		
 		id stringFragment = getStringForRangeParameterizedAttribute(parameter, childID);
 		NSMutableAttributedString attribString = (NSMutableAttributedString)new NSMutableAttributedString().alloc();
 		attribString.initWithString(new NSString(stringFragment), null);
@@ -1579,6 +1653,8 @@ public class Accessible {
 	}
 
 	id getBoundsForRangeParameterizedAttribute(id parameter, int childID) {
+		if (accessibleTextExtendedListeners.size() == 0) return null;
+		
 		id returnValue = null;
 		NSValue parameterObject = new NSValue(parameter.id);
 		NSRange range = parameterObject.rangeValue();
@@ -1607,7 +1683,6 @@ public class Accessible {
 			//FIXME???
 			//how to implement with old listener
 		}
-		returnValue = NSValue.valueWithRect(rect);
 		return returnValue;
 	}
 	
@@ -1831,6 +1906,7 @@ public class Accessible {
 				case ACC.ROLE_HEADING: // text in the text field
 					if (value != null) returnValue = NSString.stringWith(value);
 					break;
+				case ACC.ROLE_TABLECELL: // text in the cell
 				case ACC.ROLE_LABEL: // text in the label
 					/* On a Mac, the 'value' of a label is the same as the 'name' of the label. */
 					AccessibleEvent e = new AccessibleEvent(this);
@@ -1881,8 +1957,7 @@ public class Accessible {
 		
 		/* Or the application can answer a valid child ID, including CHILDID_SELF and CHILDID_NONE. */
 		if (event.childID == ACC.CHILDID_SELF) {
-			boolean hasFocus = (event.childID == childID);
-			return NSNumber.numberWithBool(hasFocus);
+			return NSNumber.numberWithBool(true);
 		}
 		if (event.childID == ACC.CHILDID_NONE) {
 			return NSNumber.numberWithBool(false);
@@ -1919,6 +1994,15 @@ public class Accessible {
 	id getChildrenAttribute (int childID) {
 		id returnValue = null; 
 		if (childID == ACC.CHILDID_SELF) {
+			// Test for a table first.
+			if (currentRole == ACC.ROLE_TABLE) {
+				// If the row count differs from the row elements returned,
+				// we need to create our own adapter to map the cells onto 
+				// rows and columns.  The rows and columns attributes determine that for us.
+				getRowsAttribute(childID);
+				getColumnsAttribute(childID);
+			}
+			
 			AccessibleControlEvent event = new AccessibleControlEvent(this);
 			event.childID = childID;
 			event.detail = -1; // set to impossible value to test if app resets
@@ -2269,7 +2353,7 @@ public class Accessible {
 			range.location = event.start;
 			range.length = event.end - event.start;
 			returnValue = NSValue.valueWithRange(range);
-		} else {
+		} else if (accessibleControlListeners.size() > 0){
 			AccessibleControlEvent event = new AccessibleControlEvent(this);
 			event.childID = childID;
 			event.result = null;
@@ -2306,7 +2390,7 @@ public class Accessible {
 			range.location = event.start;
 			range.length = event.end - event.start;
 			returnValue = NSValue.valueWithRange(range);
-		} else {
+		} else if (accessibleControlListeners.size() > 0) {
 //			AccessibleControlEvent event = new AccessibleControlEvent(this);
 //			event.childID = childID;
 //			event.result = null;
@@ -2345,7 +2429,7 @@ public class Accessible {
 			}
 			String text = event.result;
 			if (text != null) returnValue = NSString.stringWith(text);
-		} else {
+		} else if (accessibleTextListeners.size() > 0) {
 			AccessibleTextEvent event = new AccessibleTextEvent(this);
 			event.childID = childID;
 			event.offset = -1;
@@ -2387,7 +2471,7 @@ public class Accessible {
 			range.location = event.start;
 			range.length = event.end - event.start;
 			returnValue = NSValue.valueWithRange(range);
-		} else {
+		} else if (accessibleTextExtendedListeners.size() > 0) {
 			AccessibleTextEvent event = new AccessibleTextEvent(this);
 			event.childID = childID;
 			event.offset = -1;
@@ -2430,7 +2514,7 @@ public class Accessible {
 				listener.getText(event);
 			}
 			if (event.result != null) returnValue = NSString.stringWith(event.result);
-		} else {
+		} else if (accessibleControlListeners.size() > 0) {
 			AccessibleControlEvent event = new AccessibleControlEvent(this);
 			event.childID = childID;
 			event.result = null;
@@ -2470,7 +2554,7 @@ public class Accessible {
 					returnValue.addObject(NSValue.valueWithRange(range));
 				}
 			}
-		} else {
+		} else if (accessibleTextListeners.size() > 0) {
 			AccessibleTextEvent event = new AccessibleTextEvent(this);
 			event.childID = childID;
 			event.offset = -1;
@@ -2493,44 +2577,37 @@ public class Accessible {
 	}
 	
 	id getStyleRangeForIndexAttribute (id parameter, int childID) {
-		id returnValue = null;
+		if (accessibleAttributeListeners.size() == 0) return null;
 
 		// Parameter is an NSRange wrapped in an NSValue. 
 		NSNumber parameterObject = new NSNumber(parameter.id);
 		int index = parameterObject.intValue();
 		
-		if (accessibleAttributeListeners.size() > 0) {
-			AccessibleTextAttributeEvent event = new AccessibleTextAttributeEvent(this);
-			event.offset = (int) /*64*/ index;
-			
-			// Marker values -- if -1 after calling getTextAttributes, no one implemented it.
-			event.start = event.end = -1;
-			
-			for (int i = 0; i < accessibleAttributeListeners.size(); i++) {
-				AccessibleAttributeListener listener = (AccessibleAttributeListener) accessibleAttributeListeners.elementAt(i);
-				listener.getTextAttributes(event);
-			}
+		AccessibleTextAttributeEvent event = new AccessibleTextAttributeEvent(this);
+		event.offset = (int) /*64*/ index;
 
-			NSRange range = new NSRange();
-			if (event.start == -1 && event.end == -1) {
-				range.location = index;
-				range.length = 0;
-			} else {
-				range.location = event.start;
-				range.length = event.end - event.start;
-			}
-			returnValue = NSValue.valueWithRange(range);
-		} else {
-			NSRange range = new NSRange();
+		// Marker values -- if -1 after calling getTextAttributes, no one implemented it.
+		event.start = event.end = -1;
+
+		for (int i = 0; i < accessibleAttributeListeners.size(); i++) {
+			AccessibleAttributeListener listener = (AccessibleAttributeListener) accessibleAttributeListeners.elementAt(i);
+			listener.getTextAttributes(event);
+		}
+
+		NSRange range = new NSRange();
+		if (event.start == -1 && event.end == -1) {
 			range.location = index;
 			range.length = 0;
-			returnValue = NSValue.valueWithRange(range);
+		} else {
+			range.location = event.start;
+			range.length = event.end - event.start;
 		}
-		return returnValue;
+
+		return NSValue.valueWithRange(range);
 	}
 	
 	id getVisibleCharacterRangeAttribute (int childID) {
-		NSRange range = new NSRange();
+		NSRange range = null;
 		if (accessibleTextExtendedListeners.size() > 0) {
 			AccessibleTextEvent event = new AccessibleTextEvent(this);
 			event.childID = childID;
@@ -2538,9 +2615,10 @@ public class Accessible {
 				AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 				listener.getVisibleRanges(event);
 			}
+			range = new NSRange();
 			range.location = event.start;
 			range.length = event.end - event.start;
-		} else {
+		} else if (accessibleControlListeners.size() > 0) {
 			AccessibleControlEvent event = new AccessibleControlEvent(this);
 			event.childID = childID;
 			event.result = null;
@@ -2549,14 +2627,13 @@ public class Accessible {
 				listener.getValue(event);
 			}
 			if (event.result != null) {
+				range = new NSRange();
 				range.location = 0;
 				range.length = event.result.length();
-			} else {
-				return null;
 			}
 		}
 
-		return NSValue.valueWithRange(range);
+		return (range != null) ? NSValue.valueWithRange(range) : null;
 	}
 
 	int lineNumberForOffset (String text, int offset) {
@@ -2860,38 +2937,34 @@ public class Accessible {
 	}
 	
 	void release(boolean destroy) {
-		Iterator childIter = children.iterator();
-		while(childIter.hasNext()) {
-			Accessible accessible = (Accessible) childIter.next();
-			accessible.release(false);
-		}
-		children = null;
-		if (destroy && parent != null) parent.children.remove(this);
-		
 		if (actionNames != null) actionNames.release();
 		actionNames = null;
 		if (attributeNames != null) attributeNames.release();
 		attributeNames = null;
 		if (parameterizedAttributeNames != null) parameterizedAttributeNames.release();
 		parameterizedAttributeNames = null;
-		if (delegate != null) delegate.release();
+		if (delegate != null) {
+			delegate.internal_dispose_SWTAccessibleDelegate();
+			delegate.release();
+		}
 		delegate = null;
 		relations = null;
 		
-		Collection delegates = childToIdMap.values();
-		Iterator iter = delegates.iterator();
-		while (iter.hasNext()) {
-			SWTAccessibleDelegate childDelegate = (SWTAccessibleDelegate)iter.next();
-			childDelegate.internal_dispose_SWTAccessibleDelegate();
+		if (childToIdMap != null) {
+			Collection delegates = childToIdMap.values();
+			Iterator iter = delegates.iterator();
+			while (iter.hasNext()) {
+				SWTAccessibleDelegate childDelegate = (SWTAccessibleDelegate)iter.next();
+				childDelegate.internal_dispose_SWTAccessibleDelegate();
+				childDelegate.release();
+			}
+			childToIdMap.clear();
+			childToIdMap = null;
 		}
-		childToIdMap.clear();
-		childToIdMap = null;
+		
+		if (tableDelegate != null) tableDelegate.release();
 	}
 	
-	void releaseAccessibleChildren() {
-
-	}
-
 	static NSArray retainedAutoreleased(NSArray inObject) {
 		id temp = inObject.retain();
 		id temp2 = new NSObject(temp.id).autorelease();
@@ -2977,7 +3050,11 @@ public class Accessible {
 	 */
 	public void selectionChanged () {
 		checkWidget();
-		OS.NSAccessibilityPostNotification(control.view.id, OS.NSAccessibilitySelectedChildrenChangedNotification.id);
+		if (currentRole == ACC.ROLE_TABLE) {
+			OS.NSAccessibilityPostNotification(control.view.id, OS.NSAccessibilitySelectedRowsChangedNotification.id);
+		} else {
+			OS.NSAccessibilityPostNotification(control.view.id, OS.NSAccessibilitySelectedChildrenChangedNotification.id);
+		}
 	}
 
 	/**
@@ -3144,15 +3221,9 @@ public class Accessible {
 			case ACC.ROLE_COLUMN: nsReturnValue =  OS.NSAccessibilityColumnRole; break;
 			case ACC.ROLE_ROW: nsReturnValue =  concatStringsAsRole(OS.NSAccessibilityRowRole, OS.NSAccessibilityTableRowSubrole); break;
 			case ACC.ROLE_TABLE: nsReturnValue = OS.NSAccessibilityTableRole; break;
-			case ACC.ROLE_TABLECELL: 
-				if (OS.VERSION >= 0x1060) {
-					nsReturnValue = OS.NSAccessibilityCellRole;
-				} else {
-					nsReturnValue = concatStringsAsRole(OS.NSAccessibilityRowRole, OS.NSAccessibilityTableRowSubrole);
-				}
-				break;
+			case ACC.ROLE_TABLECELL: nsReturnValue = OS.NSAccessibilityStaticTextRole; break; 
 			case ACC.ROLE_TABLECOLUMNHEADER: nsReturnValue = OS.NSAccessibilityGroupRole; break;
-			case ACC.ROLE_TABLEROWHEADER: nsReturnValue = concatStringsAsRole(OS.NSAccessibilityRowRole, OS.NSAccessibilityTableRowSubrole); break;
+			case ACC.ROLE_TABLEROWHEADER: nsReturnValue = OS.NSAccessibilityGroupRole; break;
 			case ACC.ROLE_TREE: nsReturnValue = OS.NSAccessibilityOutlineRole; break;
 			case ACC.ROLE_TREEITEM: nsReturnValue = concatStringsAsRole(OS.NSAccessibilityOutlineRole, OS.NSAccessibilityOutlineRowSubrole); break;
 			case ACC.ROLE_TABFOLDER: nsReturnValue = OS.NSAccessibilityTabGroupRole; break;

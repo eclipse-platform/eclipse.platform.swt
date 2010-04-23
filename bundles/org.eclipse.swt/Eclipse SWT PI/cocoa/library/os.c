@@ -3500,6 +3500,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilitySelectedRowsAttribute)
 }
 #endif
 
+#ifndef NO_NSAccessibilitySelectedRowsChangedNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilitySelectedRowsChangedNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilitySelectedRowsChangedNotification_FUNC);
+	rc = (jintLong)NSAccessibilitySelectedRowsChangedNotification;
+	OS_NATIVE_EXIT(env, that, NSAccessibilitySelectedRowsChangedNotification_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSAccessibilitySelectedTextAttribute
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilitySelectedTextAttribute)
 	(JNIEnv *env, jclass that)
