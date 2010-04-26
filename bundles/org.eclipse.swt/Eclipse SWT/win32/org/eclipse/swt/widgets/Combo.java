@@ -1886,13 +1886,7 @@ public void setVisibleItemCount (int count) {
 	checkWidget ();
 	if (count < 0) return;
 	visibleCount = count;
-	if ((style & SWT.DROP_DOWN) != 0) {
-		forceResize ();
-		RECT rect = new RECT ();
-		OS.GetWindowRect (handle, rect);
-		int flags = OS.SWP_NOMOVE | OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
-		setBounds (0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
-	}
+	updateDropDownHeight ();
 }
 
 void subclass () {
@@ -1955,6 +1949,27 @@ void unsubclass () {
 	int /*long*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
 	if (hwndList != 0 && ListProc != 0) {
 		OS.SetWindowLongPtr (hwndList, OS.GWLP_WNDPROC, ListProc);
+	}
+}
+
+void updateDropDownHeight () {
+	/* 
+	* Feature in Windows.  If the combo box has the CBS_DROPDOWN
+	* or CBS_DROPDOWNLIST style, Windows uses the height that the
+	* programmer sets in SetWindowPos () to control height of the
+	* drop down list.  See #setBounds() for more details.
+	*/
+	if ((style & SWT.DROP_DOWN) != 0) {
+		RECT rect = new RECT ();
+		OS.SendMessage (handle, OS.CB_GETDROPPEDCONTROLRECT, 0, rect);
+		int visibleCount = getItemCount() == 0 ? VISIBLE_COUNT : this.visibleCount;
+		int height = getTextHeight () + (getItemHeight () * visibleCount) + 2;
+		if (height != (rect.bottom - rect.top)) {
+			forceResize ();
+			OS.GetWindowRect (handle, rect);
+			int flags = OS.SWP_NOMOVE | OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
+			SetWindowPos (handle, 0, 0, 0, rect.right - rect.left, height, flags);
+		}
 	}
 }
 
@@ -2427,6 +2442,7 @@ LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 			break;
 		case OS.CBN_DROPDOWN:
 			setCursor ();
+			updateDropDownHeight ();
 			break;
 		case OS.CBN_KILLFOCUS:
 			/*
