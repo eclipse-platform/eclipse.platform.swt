@@ -277,7 +277,7 @@ void computeRuns (GC gc) {
 				}
 			}
 		} 
-		if (wrapWidth != -1 && lineWidth + run.width > wrapWidth && !run.tab) {
+		if (wrapWidth != -1 && lineWidth + run.width > wrapWidth && !run.tab && !run.lineBreak) {
 			int start = 0;
 			int[] piDx = new int[run.length];
 			if (run.style != null && run.style.metrics != null) {
