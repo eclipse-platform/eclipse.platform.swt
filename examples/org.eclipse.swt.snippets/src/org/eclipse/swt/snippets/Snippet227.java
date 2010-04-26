@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 /* 
- * Tree example snippet: draw multiple lines in a tree item
+ * Tree example snippet: draw multiple lines of text in a tree item
  *
  * For more info on custom-drawing TableItem and TreeItem content see 
  * http://www.eclipse.org/articles/article.php?file=Article-CustomDrawingTableAndTreeItems/index.html
