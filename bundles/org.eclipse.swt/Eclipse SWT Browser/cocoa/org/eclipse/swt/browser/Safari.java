@@ -493,7 +493,7 @@ public boolean forward () {
 }
 
 public String getBrowserType () {
-	return "safari"; //$NON-NLS-1$
+	return "webkit"; //$NON-NLS-1$
 }
 
 public String getText() {

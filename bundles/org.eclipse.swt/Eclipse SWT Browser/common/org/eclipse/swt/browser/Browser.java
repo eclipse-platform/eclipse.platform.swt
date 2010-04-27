@@ -595,7 +595,7 @@ public boolean forward () {
 
 /**
  * Returns the type of native browser being used by this instance.
- * Examples: "mozilla", "ie", "safari", "voyager"
+ * Examples: "ie", "mozilla", "voyager", "webkit"
  *
  * @return the type of the native browser
  * 
