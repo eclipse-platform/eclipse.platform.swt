@@ -913,6 +913,9 @@ public static final int IA2_TEXT_BOUNDARY_PARAGRAPH = 		3;
 public static final int IA2_TEXT_BOUNDARY_LINE = 			4;
 public static final int IA2_TEXT_BOUNDARY_ALL = 			5;
 
+public static final int IA2_TEXT_OFFSET_LENGTH = 			-1;
+public static final int IA2_TEXT_OFFSET_CARET = 			-2;
+
 public static final int IA2_SCROLL_TYPE_TOP_LEFT = 			0;
 public static final int IA2_SCROLL_TYPE_BOTTOM_RIGHT = 		1;
 public static final int IA2_SCROLL_TYPE_TOP_EDGE = 			2;
