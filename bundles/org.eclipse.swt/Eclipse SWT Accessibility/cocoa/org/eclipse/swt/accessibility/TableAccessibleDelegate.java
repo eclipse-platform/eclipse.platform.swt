@@ -279,4 +279,10 @@ class TableAccessibleDelegate {
 			childColumnToIdMap = null;
 		}
 	}
+	
+	void reset() {
+		release();
+		childColumnToIdMap = new HashMap();
+		childRowToIdMap = new HashMap();
+	}
 }

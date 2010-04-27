@@ -4266,6 +4266,7 @@
 	<constant name="NSAccessibilityResizedNotification" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRoleAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRoleDescriptionAttribute" swt_gen="true"></constant>
+	<constant name="NSAccessibilityRowCountChangedNotification" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRowRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRowsAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityScrollAreaRole" swt_gen="true"></constant>

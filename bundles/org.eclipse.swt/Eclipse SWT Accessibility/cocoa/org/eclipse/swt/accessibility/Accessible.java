@@ -2991,7 +2991,6 @@ public class Accessible {
 		id eventSource = accessibleHandle(this);
 
 		switch (event) {
-		case ACC.EVENT_TABLE_CHANGED:
 		case ACC.EVENT_TEXT_CHANGED:
 		case ACC.EVENT_VALUE_CHANGED:
 		case ACC.EVENT_STATE_CHANGED:
@@ -3026,7 +3025,14 @@ public class Accessible {
 			OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilityTitleChangedNotification.id); break;
 		case ACC.EVENT_TEXT_CARET_MOVED:
 			OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilitySelectedTextChangedNotification.id); break;
-
+		case ACC.EVENT_TABLE_CHANGED:
+			if (tableDelegate != null) {
+				tableDelegate.reset();
+				getRowsAttribute(ACC.CHILDID_SELF);
+				getColumnsAttribute(ACC.CHILDID_SELF);
+			}
+			OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilityRowCountChangedNotification.id); break;
+			
 		// None of these correspond to anything in Cocoa. 
 		case ACC.EVENT_HYPERTEXT_LINK_SELECTED:
 		case ACC.EVENT_DOCUMENT_LOAD_COMPLETE:

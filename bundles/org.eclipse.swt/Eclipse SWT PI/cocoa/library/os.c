@@ -3392,6 +3392,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityRoleDescriptionForUIElement)
 }
 #endif
 
+#ifndef NO_NSAccessibilityRowCountChangedNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityRowCountChangedNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityRowCountChangedNotification_FUNC);
+	rc = (jintLong)NSAccessibilityRowCountChangedNotification;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityRowCountChangedNotification_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSAccessibilityRowRole
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityRowRole)
 	(JNIEnv *env, jclass that)

@@ -2428,6 +2428,9 @@ public static final NSString NSAccessibilityRoleAttribute = new NSString(NSAcces
 public static final native int /*long*/ NSAccessibilityRoleDescriptionAttribute();
 public static final NSString NSAccessibilityRoleDescriptionAttribute = new NSString(NSAccessibilityRoleDescriptionAttribute());
 /** @method flags=const */
+public static final native int /*long*/ NSAccessibilityRowCountChangedNotification();
+public static final NSString NSAccessibilityRowCountChangedNotification = new NSString(NSAccessibilityRowCountChangedNotification());
+/** @method flags=const */
 public static final native int /*long*/ NSAccessibilityRowRole();
 public static final NSString NSAccessibilityRowRole = new NSString(NSAccessibilityRowRole());
 /** @method flags=const */

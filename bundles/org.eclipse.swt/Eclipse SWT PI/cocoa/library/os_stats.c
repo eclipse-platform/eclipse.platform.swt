@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 584;
-int OS_nativeFunctionCallCount[584];
+int OS_nativeFunctionCount = 585;
+int OS_nativeFunctionCallCount[585];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -256,6 +256,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSAccessibilityRoleDescription",
 	"NSAccessibilityRoleDescriptionAttribute",
 	"NSAccessibilityRoleDescriptionForUIElement",
+	"NSAccessibilityRowCountChangedNotification",
 	"NSAccessibilityRowIndexRangeAttribute",
 	"NSAccessibilityRowRole",
 	"NSAccessibilityRowsAttribute",

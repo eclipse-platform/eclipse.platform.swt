@@ -264,6 +264,7 @@ typedef enum {
 	NSAccessibilityRoleDescription_FUNC,
 	NSAccessibilityRoleDescriptionAttribute_FUNC,
 	NSAccessibilityRoleDescriptionForUIElement_FUNC,
+	NSAccessibilityRowCountChangedNotification_FUNC,
 	NSAccessibilityRowIndexRangeAttribute_FUNC,
 	NSAccessibilityRowRole_FUNC,
 	NSAccessibilityRowsAttribute_FUNC,
