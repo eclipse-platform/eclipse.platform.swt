@@ -43,6 +43,9 @@ public class AccessibleActionExample {
 		shell.setLayout(new FillLayout());
 		shell.setText("Accessible Action Example");
 		
+		Button button = new Button(shell, SWT.PUSH);
+		button.setText("Button");
+		
 		final Canvas customButton = new Canvas(shell, SWT.NONE) {
 			public Point computeSize(int wHint, int hHint, boolean changed) {
 				GC gc = new GC(this);
