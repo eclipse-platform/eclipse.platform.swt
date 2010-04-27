@@ -24,6 +24,7 @@ import org.eclipse.swt.accessibility.*;
  * to provide information pertaining to actions to an AT.
  */
 public class AccessibleActionExample {
+	static int MARGIN = 20;
 	static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_accessibility"); //$NON-NLS-1$
 	static String getResourceString(String key) {
 		try {
@@ -39,11 +40,19 @@ public class AccessibleActionExample {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
-		shell.setLayout(new GridLayout());
+		shell.setLayout(new FillLayout());
 		shell.setText("Accessible Action Example");
 		
-		final Canvas customButton = new Canvas(shell, SWT.NONE);
-		customButton.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		final Canvas customButton = new Canvas(shell, SWT.NONE) {
+			public Point computeSize(int wHint, int hHint, boolean changed) {
+				GC gc = new GC(this);
+				Point point = gc.stringExtent(buttonText);
+				gc.dispose();
+				point.x += MARGIN;
+				point.y += MARGIN;
+				return point;
+			}
+		};
 		customButton.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
 				Rectangle clientArea = customButton.getClientArea();
