@@ -48,6 +48,7 @@ public class CTabItem extends Item {
 	
 	Rectangle closeRect = new Rectangle(0, 0, 0, 0);
 	int closeImageState = SWT.BACKGROUND;
+	int state = SWT.NONE;
 	boolean showClose = false;
 	boolean showing = false;
 

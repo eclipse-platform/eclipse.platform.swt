@@ -1360,6 +1360,10 @@ void onMouse(Event event) {
 					item.closeImageState = SWT.BACKGROUND;
 					redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
 				}
+				if ((item.state & SWT.HOT) != 0) {
+					item.state &= ~SWT.HOT;
+					redraw(item.x, item.y, item.width, item.height, false);
+				}
 				if (i == selectedIndex && item.closeImageState != SWT.NONE) {
 					item.closeImageState = SWT.NONE;
 					redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
@@ -1479,10 +1483,18 @@ void onMouse(Event event) {
 							redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
 						}
 					}
-				} 
+					if ((item.state & SWT.HOT) == 0) {
+						item.state |= SWT.HOT;
+						redraw(item.x, item.y, item.width, item.height, false);
+					}
+				}
 				if (i != selectedIndex && item.closeImageState != SWT.BACKGROUND && !close) {
 					item.closeImageState = SWT.BACKGROUND;
 					redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+				}
+				if ((item.state & SWT.HOT) != 0 && !close) {
+					item.state &= ~SWT.HOT;
+					redraw(item.x, item.y, item.width, item.height, false);
 				}
 				if (i == selectedIndex && item.closeImageState != SWT.NONE && !close) {
 					item.closeImageState = SWT.NONE;
@@ -1694,7 +1706,7 @@ void onPaint(Event event) {
 		for (int i=0; i < items.length; i++) {
 			Rectangle itemBounds = items[i].getBounds();
 			if (i != selectedIndex && event.getBounds().intersects(itemBounds)) {
-				renderer.draw(i, SWT.BACKGROUND | SWT.FOREGROUND, itemBounds, gc);
+				renderer.draw(i, SWT.BACKGROUND | SWT.FOREGROUND | items[i].state , itemBounds, gc);
 			}
 		}
 	}
@@ -1704,7 +1716,7 @@ void onPaint(Event event) {
 	gc.setBackground(gcBackground);	
 	
 	if (selectedIndex != -1) { 
-		renderer.draw(selectedIndex, SWT.SELECTED | SWT.BACKGROUND | SWT.FOREGROUND, items[selectedIndex].getBounds(), gc);
+		renderer.draw(selectedIndex, items[selectedIndex].state | SWT.BACKGROUND | SWT.FOREGROUND, items[selectedIndex].getBounds(), gc);
 	}
 	
 	gc.setFont(gcFont);
@@ -2691,9 +2703,11 @@ public void setSelection(int index) {
 	selectedIndex = index;
 	if (oldIndex != -1) {
 		items[oldIndex].closeImageState = SWT.BACKGROUND;
+		items[oldIndex].state &= ~SWT.SELECTED;
 	}
 	selection.closeImageState = SWT.NONE;
 	selection.showing = false;
+	selection.state |= SWT.SELECTED;
 
 	Control newControl = selection.control;
 	Control oldControl = null;
