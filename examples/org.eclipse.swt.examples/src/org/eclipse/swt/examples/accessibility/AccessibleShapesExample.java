@@ -10,15 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.accessibility;
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
+
 /**
  * This example creates some Shapes in a Shell and uses a FillLayout to position them.
  * The Shape class is a simple example of the use of the SWT Accessibility API.
  * A Shape is accessible, but it does not have any accessible children.
  */
-import org.eclipse.swt.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-
 public class AccessibleShapesExample {
 	static Display display;
 	static Shell shell;
@@ -30,15 +30,15 @@ public class AccessibleShapesExample {
 		
 		Shape redSquare = new Shape(shell, SWT.NONE);
 		redSquare.setColor(SWT.COLOR_RED);
-		redSquare.setShape("square");
+		redSquare.setShape(Shape.SQUARE);
 		
 		Shape blueCircle = new Shape(shell, SWT.NONE);
 		blueCircle.setColor(SWT.COLOR_BLUE);
-		blueCircle.setShape("circle");
+		blueCircle.setShape(Shape.CIRCLE);
 
 		Shape greenSquare = new Shape(shell, SWT.NONE);
 		greenSquare.setColor(SWT.COLOR_GREEN);
-		greenSquare.setShape("square");
+		greenSquare.setShape(Shape.SQUARE);
 
 		shell.pack();
 		shell.open();

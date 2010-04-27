@@ -25,9 +25,12 @@ import org.eclipse.swt.accessibility.*;
  * "label" or "static text" whose name is its color and shape.
  */
 public class Shape extends Canvas {
+	static final int SQUARE = 0;
+	static final int CIRCLE = 1;
+	static final int TRIANGLE = 2;
 	static ResourceBundle bundle = ResourceBundle.getBundle("examples_accessibility");
 	int color = SWT.COLOR_BLUE;
-	String shape = "square";
+	int shape = SQUARE;
 	
 	/**
 	 * Constructs a new instance of this class given its parent
@@ -51,7 +54,7 @@ public class Shape extends Canvas {
 				gc.setBackground(c);
 				Rectangle rect = getClientArea();
 				int length = Math.min(rect.width, rect.height);
-				if (shape.equals(bundle.getString("circle"))) {
+				if (shape == CIRCLE) {
 					gc.fillOval(0, 0, length, length);
 				} else {
 					gc.fillRectangle(0, 0, length, length);
@@ -97,15 +100,16 @@ public class Shape extends Canvas {
 		getAccessible().addAccessibleListener(new AccessibleAdapter() {
 			public void getName(AccessibleEvent e) {
 				MessageFormat formatter = new MessageFormat("");
-				formatter.applyPattern(bundle.getString("name"));	
-				String colorName = bundle.getString("color" + color);
-				e.result = formatter.format(new String [] {colorName, shape}); //$NON_NLS$
+				formatter.applyPattern(bundle.getString("name"));  //$NON_NLS$
+				String colorName = bundle.getString("color" + color); //$NON_NLS$
+				String shapeName = bundle.getString("shape" + shape); //$NON_NLS$
+				e.result = formatter.format(new String [] {colorName, shapeName}); //$NON_NLS$
 			}
 		});
 		
 		getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
 			public void getRole(AccessibleControlEvent e) {
-				e.detail = ACC.ROLE_LABEL;
+				e.detail = ACC.ROLE_GRAPHIC;
 			}
 			public void getState(AccessibleControlEvent e) {
 				e.detail = ACC.STATE_FOCUSABLE;
@@ -121,17 +125,17 @@ public class Shape extends Canvas {
 	 * @return the color, which may be any of the SWT.COLOR_ constants
 	 */
 	public int getColor () {
-		return this.color;
+		return color;
 	}
 
 	/**
 	 * Return the receiver's shape.
-	 * The default shape is "square".
+	 * The default shape is SQUARE.
 	 * 
-	 * @return the shape name string, which may be either "circle" or "square"
+	 * @return the shape, which may be either CIRCLE or SQUARE
 	 */
-	public String getShape () {
-		return this.shape;
+	public int getShape () {
+		return shape;
 	}
 
 	/**
@@ -145,12 +149,12 @@ public class Shape extends Canvas {
 	}
 
 	/**
-	 * Set the receiver's shape to the specified shape name string.
-	 * The default shape is "square".
+	 * Set the receiver's shape to the specified shape.
+	 * The default shape is SQUARE.
 	 * 
-	 * @param shape a string that can be either "circle" or "square"
+	 * @param shape an int that can be either CIRCLE or SQUARE
 	 */
-	public void setShape (String shape) {
+	public void setShape (int shape) {
 		this.shape = shape;
 	}
 }
