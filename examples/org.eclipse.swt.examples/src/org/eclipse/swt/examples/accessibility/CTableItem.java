@@ -426,7 +426,7 @@ Accessible getAccessible(final Accessible accessibleTable, final int columnIndex
 				/* CTable cells do not have children, so just return the index in parent. */
 				switch (e.childID) {
 					case ACC.CHILDID_CHILD_INDEX:
-						e.detail = columnIndex;
+						e.detail = index * Math.max(1, parent.getColumnCount()) + columnIndex + parent.getColumnCount();
 						break;
 				}
 			}
