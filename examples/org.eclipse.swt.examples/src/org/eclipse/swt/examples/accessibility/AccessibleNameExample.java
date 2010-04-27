@@ -20,17 +20,18 @@ import org.eclipse.swt.accessibility.*;
  * This example shows a very common, simple use of the SWT Accessibility API:
  * giving an accessible name to a button that has only an image (and no text).
  */
-public class SimpleButtonNameExample {
+public class AccessibleNameExample {
 
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout());
+		shell.setText("Accessible Name");
 		
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("Button"); // the first button's accessible name is "Button"
 		
-		Image image = new Image(display, SimpleButtonNameExample.class.getResourceAsStream("run.gif"));
+		Image image = new Image(display, AccessibleNameExample.class.getResourceAsStream("run.gif"));
 		button = new Button(shell, SWT.PUSH);
 		button.setImage(image);
 		button.getAccessible().addAccessibleListener(new AccessibleAdapter() {
