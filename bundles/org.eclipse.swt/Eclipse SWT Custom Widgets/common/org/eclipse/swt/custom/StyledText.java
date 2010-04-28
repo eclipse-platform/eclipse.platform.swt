@@ -8343,7 +8343,6 @@ void setCaretLocation(Point location, int direction) {
 		} else {
 			caret.setLocation(location);
 		}
-		getAccessible().textCaretMoved(getCaretOffset());
 		if (direction != caretDirection) {
 			caretDirection = direction;
 			if (isDefaultCaret) {
@@ -8412,6 +8411,7 @@ void setCaretOffset(int offset, int alignment) {
 			event.end = caretOffset;
 			notifyListeners(CaretMoved, event);
 		}
+		getAccessible().textCaretMoved(caretOffset);
 	}
 	if (alignment != SWT.DEFAULT) {
 		caretAlignment = alignment;
