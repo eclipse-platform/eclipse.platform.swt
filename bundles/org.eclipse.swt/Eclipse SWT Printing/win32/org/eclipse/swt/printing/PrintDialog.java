@@ -327,16 +327,18 @@ public PrinterData open() {
 	/* Initialize PRINTDLG fields, including DEVMODE. */
 	pd.Flags = OS.PD_RETURNDEFAULT;
 	if (OS.PrintDlg(pd)) {
-	
+		if (pd.hDevNames != 0) {
+			OS.GlobalFree(pd.hDevNames);
+			pd.hDevNames = 0;
+		}
+
 		/*
 		 * If user setup info from a previous print dialog was specified,
 		 * then restore the previous DEVMODE struct.
 		 */
-		int /*long*/ lpInitData = 0;
-		int /*long*/ hHeap = OS.GetProcessHeap();
 		byte devmodeData [] = printerData.otherData;
 		if (devmodeData != null && devmodeData.length != 0) {
-			lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, devmodeData.length);
+			int /*long*/ lpInitData = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, devmodeData.length);
 			OS.MoveMemory(lpInitData, devmodeData, devmodeData.length);
 			if (pd.hDevMode != 0) OS.GlobalFree(pd.hDevMode);
 			pd.hDevMode = lpInitData;
@@ -407,7 +409,6 @@ public PrinterData open() {
 			TCHAR buffer = new TCHAR(0, size);
 			OS.MoveMemory(buffer, ptr, size);	
 			OS.GlobalUnlock(hMem);
-			if (pd.hDevNames != 0) OS.GlobalFree(pd.hDevNames);
 	
 			int driverOffset = offsets[0];
 			int i = 0;
@@ -460,10 +461,16 @@ public PrinterData open() {
 				data.orientation = dmOrientation == OS.DMORIENT_LANDSCAPE ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;
 			}
 			OS.GlobalUnlock(hMem);
-			if (pd.hDevMode != 0) OS.GlobalFree(pd.hDevMode);
-			if (lpInitData != 0) OS.HeapFree(hHeap, 0, lpInitData);
 			printerData = data;
 		}
+	}
+	if (pd.hDevNames != 0) {
+		OS.GlobalFree(pd.hDevNames);
+		pd.hDevNames = 0;
+	}
+	if (pd.hDevMode != 0) {
+		OS.GlobalFree(pd.hDevMode);
+		pd.hDevMode = 0;
 	}
 	/* Destroy the BIDI orientation window */
 	if (hwndParent != hwndOwner) {
