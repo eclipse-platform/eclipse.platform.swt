@@ -599,7 +599,7 @@ public class Accessible {
 					OS.CFRelease(stringRef);
 				}
 			}
-			if (accessibleTextListeners.size() > 0) {
+			if (accessibleTextListeners.size() > 0 || accessibleTextExtendedListeners.size() > 0) {
 				for (int i = 0; i < textAttributes.length; i++) {
 					if (!contains(osAllAttributes, textAttributes[i])) {
 						int stringRef = stringToStringRef(textAttributes[i]);
