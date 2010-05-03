@@ -39,6 +39,7 @@ public static void main(String[] args) {
 	liveLabel.getAccessible().addAccessibleAttributeListener(new AccessibleAttributeAdapter() {
 		public void getAttributes(AccessibleAttributeEvent e) {
 			e.attributes = new String[] {
+					"container-live", "true",
 					"aria-live", "assertive",
 					"aria-atomic", "true"
 				};
