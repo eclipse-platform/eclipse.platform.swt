@@ -560,15 +560,29 @@ boolean translateTraversal (int key, NSEvent theEvent, boolean[] consume) {
 	boolean result = super.translateTraversal (key, theEvent, consume);
 	if (result) return result;
 	boolean next = false;
+	boolean checkPopup = false;
 	switch (key) {
-	case 126: /* Up arrow */
 	case 123: /* Left arrow */
 		next = false; break;
-	case 125: /* Down arrow */
 	case 124: /* Right arrow */
 		next = true; break;
+	case 126: /* Up arrow */
+		next = false;
+		checkPopup = true;
+		break;
+	case 125: /* Down arrow */
+		next = true;
+		checkPopup = true;
+		break;
+		
 	default: return false;
 	}
+	consume [0] = true;
+	
+	if (checkPopup && lastFocus != null) {
+		if (lastFocus.handleKeyDown()) return false;
+	}
+	
 	ToolItem[] items = getItems();
 	ToolItem item = lastFocus;
 	int length = items.length;
@@ -590,7 +604,7 @@ boolean translateTraversal (int key, NSEvent theEvent, boolean[] consume) {
 		if (!child.isDisposed ()) {
 			if (child.setFocus ()) {
 				lastFocus = child;
-				return true;
+				return false;
 			}
 		}
 	}

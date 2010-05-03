@@ -272,6 +272,20 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+boolean handleKeyDown() {
+	if ((style & SWT.DROP_DOWN) != 0) {
+		NSRect frame = view.frame();
+		Event event = new Event ();
+		event.detail = SWT.ARROW;
+		event.x = (int)frame.x;
+		event.y = (int)(frame.y + frame.height);
+		sendSelectionEvent (SWT.Selection, event, false);
+		return true;
+	} else {
+		return false;
+	}
+}
+
 Point computeSize () {
 	checkWidget();
 	int width = 0, height = 0;
