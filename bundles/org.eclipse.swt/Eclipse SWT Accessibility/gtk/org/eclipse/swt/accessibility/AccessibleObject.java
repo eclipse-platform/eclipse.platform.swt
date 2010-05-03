@@ -2871,7 +2871,8 @@ class AccessibleObject {
 		if (childId == ACC.CHILDID_NONE || childId == ACC.CHILDID_MULTIPLE) return null;
 		if (children != null) {
 			for (int i = 0; i < children.length; i++) {
-				if (children[i] != null && children[i].id == childId) return children [0];
+				AccessibleObject child = children[i];
+				if (child != null && child.id == childId) return child;
 			}
 		}
 		return null;
