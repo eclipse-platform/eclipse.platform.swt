@@ -910,6 +910,7 @@ public static final int /*long*/ sel_columnIndexesInRect_ = sel_registerName("co
 public static final int /*long*/ sel_columnWithIdentifier_ = sel_registerName("columnWithIdentifier:");
 public static final int /*long*/ sel_comboBoxSelectionDidChange_ = sel_registerName("comboBoxSelectionDidChange:");
 public static final int /*long*/ sel_comboBoxWillDismiss_ = sel_registerName("comboBoxWillDismiss:");
+public static final int /*long*/ sel_comboBoxWillPopUp_ = sel_registerName("comboBoxWillPopUp:");
 public static final int /*long*/ sel_compare_ = sel_registerName("compare:");
 public static final int /*long*/ sel_concat = sel_registerName("concat");
 public static final int /*long*/ sel_conformsToProtocol_ = sel_registerName("conformsToProtocol:");

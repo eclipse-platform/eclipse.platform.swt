@@ -4686,6 +4686,9 @@
 		<method selector="comboBoxWillDismiss:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 		</method>
+		<method selector="comboBoxWillPopUp:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+		</method>
 	</informal_protocol>
 	<informal_protocol name="NSDraggingDestination" swt_gen="mixed">
 		<method selector="draggingEnded:" swt_gen="true">

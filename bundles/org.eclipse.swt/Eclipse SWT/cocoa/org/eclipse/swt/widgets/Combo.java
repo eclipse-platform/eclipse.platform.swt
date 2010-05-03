@@ -61,6 +61,7 @@ public class Combo extends Composite {
 	boolean receivingFocus;
 	boolean ignoreSetObject, ignoreSelection;
 	NSRange selectionRange;
+	boolean listVisible;
 
 	static final int VISIBLE_COUNT = 5;
 
@@ -427,6 +428,7 @@ void createHandle () {
 		widget.menu().setAutoenablesItems(false);
 		widget.setTarget(widget);
 		widget.setAction(OS.sel_sendSelection);
+		widget.menu().setDelegate(widget);
 		view = widget;
 	} else {
 		NSComboBox widget = (NSComboBox)new SWTComboBox().alloc();
@@ -452,6 +454,14 @@ void createWidget() {
 		int visibleCount = Math.max(VISIBLE_COUNT, (int)(rect.height / 3 / widget.itemHeight()));
 		widget.setNumberOfVisibleItems(visibleCount);
 	}
+}
+
+void comboBoxWillDismiss(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	listVisible = false;
+}
+
+void comboBoxWillPopUp(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	listVisible = true;
 }
 
 /**
@@ -708,8 +718,8 @@ public String [] getItems () {
  * @since 3.4
  */
 public boolean getListVisible () {
-	//TODO
-	return false;
+	checkWidget ();
+	return listVisible;
 }
 
 String getNameText () {
@@ -949,6 +959,14 @@ public int indexOf (String string, int start) {
 
 boolean isEventView (int /*long*/ id) {
 	return true;
+}
+
+void menuWillOpen(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
+	listVisible = true;
+}
+
+void menuDidClose(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
+	listVisible = false;
 }
 
 void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {

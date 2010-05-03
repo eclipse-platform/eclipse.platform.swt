@@ -548,6 +548,12 @@ void createWidget () {
 void comboBoxSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 }
 
+void comboBoxWillDismiss(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+}
+
+void comboBoxWillPopUp(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+}
+
 void deregister () {
 }
 

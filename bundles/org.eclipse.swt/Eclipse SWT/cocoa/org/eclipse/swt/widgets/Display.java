@@ -2201,6 +2201,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_textDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textViewDidChangeSelection_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_comboBoxSelectionDidChange_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_comboBoxWillDismiss_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_comboBoxWillPopUp_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_textView_willChangeSelectionFromCharacterRange_toCharacterRange_, textWillChangeSelectionProc, "@:@{NSRange}{NSRange}");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
@@ -2318,6 +2320,8 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSPopUpButton, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_menuWillOpen_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_menuDidClose_, proc3, "@:@");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -5078,6 +5082,10 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		return result;
 	} else if (sel == OS.sel_comboBoxSelectionDidChange_) {
 		widget.comboBoxSelectionDidChange(id, sel, arg0);
+	} else if (sel == OS.sel_comboBoxWillDismiss_) {
+		widget.comboBoxWillDismiss(id, sel, arg0);
+	} else if (sel == OS.sel_comboBoxWillPopUp_) {
+		widget.comboBoxWillPopUp(id, sel, arg0);
 	} else if (sel == OS.sel_drawViewBackgroundInRect_) {
 		NSRect rect = new NSRect();
 		OS.memmove(rect, arg0, NSRect.sizeof);
