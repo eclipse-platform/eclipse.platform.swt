@@ -1314,7 +1314,7 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 		}
 		return 0;
 	}
-	return super.gtk_leave_notify_event (widget, event);
+	return super.gtk_motion_notify_event (widget, event);
 }
 
 int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
