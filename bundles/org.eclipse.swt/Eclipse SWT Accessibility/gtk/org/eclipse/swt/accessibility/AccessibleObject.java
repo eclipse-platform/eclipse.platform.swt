@@ -2727,7 +2727,7 @@ class AccessibleObject {
 	
 	static void setGValue (int /*long*/ value, Number number) {
 		if (number == null) return;
-		OS.g_value_unset(value);
+		if (OS.G_VALUE_TYPE(value) != 0) OS.g_value_unset(value);
 		if (number instanceof Double) {
 			OS.g_value_init(value, OS.G_TYPE_DOUBLE());
 			OS.g_value_set_double(value, number.doubleValue());
