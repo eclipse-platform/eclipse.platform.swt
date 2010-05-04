@@ -323,10 +323,7 @@ class AccessibleFactory {
 	
 	static void createAccessible (Accessible accessible) {
 		int /*long*/ controlHandle = accessible.getControlHandle ();
-		int /*long*/ widgetType = OS.G_OBJECT_TYPE (controlHandle);
-		int /*long*/ registry = ATK.atk_get_default_registry ();
-		int /*long*/ factory = ATK.atk_registry_get_factory (registry, widgetType);
-		ATK.atk_object_factory_create_accessible (factory, controlHandle);
+		OS.gtk_widget_get_accessible(controlHandle);
 	}
 
 	static int /*long*/ getType (String widgetTypeName, Accessible accessible, int /*long*/ parentType, int childId) {
