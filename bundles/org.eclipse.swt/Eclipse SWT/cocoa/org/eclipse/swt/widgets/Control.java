@@ -4329,8 +4329,21 @@ public void update () {
 void update (boolean all) {
 //	checkWidget();
 	if (display.isPainting.containsObject(view)) return;
-	//TODO - not all
-	view.displayIfNeeded ();
+	Shell shell = getShell();
+	NSWindow window = shell.deferFlushing ? view.window() : null;
+	try {
+		if (window != null) {
+			window.retain();
+			window.disableFlushWindow();
+		}
+		//TODO - not all
+		view.displayIfNeeded ();
+	} finally {
+		if (window != null) {
+			window.enableFlushWindow();
+			window.release();
+		}
+	}
 }
 
 void updateBackgroundColor () {

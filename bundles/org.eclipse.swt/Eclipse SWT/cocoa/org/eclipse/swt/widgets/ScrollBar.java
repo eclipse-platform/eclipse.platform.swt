@@ -11,11 +11,10 @@
 package org.eclipse.swt.widgets;
 
  
-import org.eclipse.swt.internal.cocoa.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -90,7 +89,7 @@ public class ScrollBar extends Widget {
 	int increment = 1;
 	int pageIncrement = 10;
 	id target;
-	int /*long*/ actionSelector;;
+	int /*long*/ actionSelector;
 
 ScrollBar () {
 	/* Do nothing */
@@ -430,61 +429,50 @@ void releaseWidget () {
 
 void sendSelection () {
 	NSWindow window = view.window ();
-	boolean disableFlush = target == null;
-	try {
-		if (disableFlush) {
-			window.retain ();
-			window.disableFlushWindow ();
-		}
-		int value = 0;
-		if (target != null) {
-			view.sendAction(actionSelector, target);
-		} else {
-			value = getSelection ();
-		}
-		NSPoint point;
-		NSEvent nsEvent = NSApplication.sharedApplication().currentEvent();
-		if (nsEvent != null) {
-			point = nsEvent.locationInWindow();
-			if (nsEvent.window() == null) point = window.convertScreenToBase(point);
-		} else {
-			point = window.mouseLocationOutsideOfEventStream();
-		}
-		int hitPart = (int)/*64*/((NSScroller)view).testPart(point);
-		Event event = new Event();
-		switch (hitPart) {
-		    case OS.NSScrollerDecrementLine:
-		        value -= increment;
-		        event.detail = SWT.ARROW_UP;
-		        break;
-		    case OS.NSScrollerDecrementPage:
-		        value -= pageIncrement;
-		        event.detail = SWT.PAGE_UP;
-		        break;
-		    case OS.NSScrollerIncrementLine:
-		        value += increment;
-		        event.detail = SWT.ARROW_DOWN;
-		        break;
-		    case OS.NSScrollerIncrementPage:
-		        value += pageIncrement;
-		        event.detail = SWT.PAGE_DOWN;
-		        break;
-		    case OS.NSScrollerKnob:
-				event.detail = SWT.DRAG;
-		        break;
-		}
-		if (target == null) {
-			if (event.detail != SWT.DRAG) {
-				setSelection(value);
-			}
-		}
-		sendSelectionEvent(SWT.Selection, event, true);
-	} finally {
-		if (disableFlush) {
-			window.enableFlushWindow ();
-			window.release ();
+	if (target == null) parent.getShell().deferFlushing();
+	int value = 0;
+	if (target != null) {
+		view.sendAction(actionSelector, target);
+	} else {
+		value = getSelection ();
+	}
+	NSPoint point;
+	NSEvent nsEvent = NSApplication.sharedApplication().currentEvent();
+	if (nsEvent != null) {
+		point = nsEvent.locationInWindow();
+		if (nsEvent.window() == null) point = window.convertScreenToBase(point);
+	} else {
+		point = window.mouseLocationOutsideOfEventStream();
+	}
+	int hitPart = (int)/*64*/((NSScroller)view).testPart(point);
+	Event event = new Event();
+	switch (hitPart) {
+	case OS.NSScrollerDecrementLine:
+		value -= increment;
+		event.detail = SWT.ARROW_UP;
+		break;
+	case OS.NSScrollerDecrementPage:
+		value -= pageIncrement;
+		event.detail = SWT.PAGE_UP;
+		break;
+	case OS.NSScrollerIncrementLine:
+		value += increment;
+		event.detail = SWT.ARROW_DOWN;
+		break;
+	case OS.NSScrollerIncrementPage:
+		value += pageIncrement;
+		event.detail = SWT.PAGE_DOWN;
+		break;
+	case OS.NSScrollerKnob:
+		event.detail = SWT.DRAG;
+		break;
+	}
+	if (target == null) {
+		if (event.detail != SWT.DRAG) {
+			setSelection(value);
 		}
 	}
+	sendSelectionEvent(SWT.Selection, event, true);
 }
 
 /**

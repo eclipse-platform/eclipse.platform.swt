@@ -118,7 +118,7 @@ public class Shell extends Decorations {
 	NSWindow window;
 	SWTWindowDelegate windowDelegate;
 	int /*long*/ tooltipOwner, tooltipTag, tooltipUserData;
-	boolean opened, moved, resized, fullScreen, center;
+	boolean opened, moved, resized, fullScreen, center, deferFlushing;
 	Control lastActive;
 	Rectangle normalBounds;
 	boolean keyInputHappened;
@@ -518,6 +518,10 @@ void center () {
 	setLocation (x, y);
 }
 
+void clearDeferFlushing (int /*long*/ id, int /*long*/ sel) {
+	deferFlushing = false;
+}
+
 /**
  * Requests that the window manager close the receiver in
  * the same way it would be closed when the user clicks on
@@ -647,6 +651,11 @@ void createHandle () {
 		OS.object_setClass (id.id, OS.objc_getClass ("SWTEditorView"));
 	}
 
+}
+
+void deferFlushing () {
+	deferFlushing = true;
+	view.performSelector(OS.sel_clearDeferFlushing, null, 0.0, display.runLoopModes());
 }
 
 void deregister () {

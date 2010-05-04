@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.cocoa.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * This class is the abstract superclass of all user interface objects.  
@@ -509,6 +508,9 @@ protected void checkWidget () {
 	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (display.thread != Thread.currentThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if ((state & DISPOSED) != 0) error (SWT.ERROR_WIDGET_DISPOSED);
+}
+
+void clearDeferFlushing (int /*long*/ id, int /*long*/ sel) {
 }
 
 boolean textView_clickOnLink_atIndex(int /*long*/ id, int /*long*/ sel, int /*long*/ textView, int /*long*/ link, int /*long*/ charIndex) {

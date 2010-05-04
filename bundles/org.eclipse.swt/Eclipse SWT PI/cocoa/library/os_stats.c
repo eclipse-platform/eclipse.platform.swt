@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 585;
-int OS_nativeFunctionCallCount[585];
+int OS_nativeFunctionCount = 587;
+int OS_nativeFunctionCallCount[587];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -346,6 +346,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSHTMLPboardType",
 	"NSIntersectionRect",
 	"NSLinkAttributeName",
+	"NSModalPanelRunLoopMode",
 	"NSNumberOfColorComponents",
 	"NSObliquenessAttributeName",
 	"NSOutlineViewColumnDidMoveNotification",
@@ -605,6 +606,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IIII",
 #else
 	"objc_1msgSend__JJJJ",
+#endif
+#ifndef JNI64
+	"objc_1msgSend__IIIIDI",
+#else
+	"objc_1msgSend__JJJJDJ",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__IIIII",

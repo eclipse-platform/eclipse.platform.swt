@@ -4465,6 +4465,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSLinkAttributeName)
 }
 #endif
 
+#ifndef NO_NSModalPanelRunLoopMode
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSModalPanelRunLoopMode)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSModalPanelRunLoopMode_FUNC);
+	rc = (jintLong)NSModalPanelRunLoopMode;
+	OS_NATIVE_EXIT(env, that, NSModalPanelRunLoopMode_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSNumberOfColorComponents
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSNumberOfColorComponents)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -6571,6 +6583,29 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJJ)(JNIEnv *env, jclass th
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIII_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJJJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_objc_1msgSend__IIIIDI) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJJJDJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__IIIIDI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jdouble arg4, jintLong arg5)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJJJDJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jdouble arg4, jintLong arg5)
+#endif
+{
+	jintLong rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__IIIIDI_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJJDJ_FUNC);
+#endif
+	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, jintLong, jdouble, jintLong))objc_msgSend)(arg0, arg1, arg2, arg3, arg4, arg5);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__IIIIDI_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJJJDJ_FUNC);
 #endif
 	return rc;
 }

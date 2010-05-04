@@ -690,6 +690,13 @@
 		<method selector="mutableCopy" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="performSelector:withObject:afterDelay:inModes:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="performSelectorOnMainThread:withObject:waitUntilDone:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>

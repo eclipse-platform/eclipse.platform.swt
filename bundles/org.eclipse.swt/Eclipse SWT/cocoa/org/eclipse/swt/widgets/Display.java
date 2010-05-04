@@ -119,8 +119,8 @@ public class Display extends Device {
 	Control currentControl, trackingControl, tooltipControl;
 	Widget tooltipTarget;
 	
-	NSMutableArray isPainting, needsDisplay, needsDisplayInRect;
-
+	NSMutableArray isPainting, needsDisplay, needsDisplayInRect, runLoopModes;
+	
 	NSDictionary markedAttributes;
 	
 	/* Fonts */
@@ -2189,6 +2189,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_updateOpenGLContext_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_clearDeferFlushing, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -3390,7 +3391,8 @@ void releaseDisplay () {
 	if (needsDisplay != null) needsDisplay.release();
 	if (needsDisplayInRect != null) needsDisplayInRect.release();
 	if (isPainting != null) isPainting.release();
-	needsDisplay = needsDisplayInRect = isPainting = null;
+	if (runLoopModes != null) runLoopModes.release();
+	needsDisplay = needsDisplayInRect = isPainting = runLoopModes = null;
 	
 	modalShells = null;
 	modalDialog = null;
@@ -3624,6 +3626,20 @@ boolean runDeferredLayouts () {
 		return true;
 	}	
 	return false;
+}
+
+NSArray runLoopModes() {
+	if (runLoopModes == null) {
+		runLoopModes = NSMutableArray.arrayWithCapacity(3);
+		runLoopModes.addObject(OS.NSEventTrackingRunLoopMode);
+		runLoopModes.addObject(OS.NSDefaultRunLoopMode);
+		runLoopModes.addObject(OS.NSModalPanelRunLoopMode);
+		runLoopModes.retain();
+	}
+	
+	runLoopModes.retain();
+	runLoopModes.autorelease();
+	return runLoopModes;
 }
 
 boolean runPaint () {
@@ -4862,6 +4878,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel) {
 		return widget.shouldDrawInsertionPoint(id, sel) ? 1 : 0;
 	} else if (sel == OS.sel_accessibleHandle) {
 		return widget.accessibleHandle();
+	} else if (sel == OS.sel_clearDeferFlushing) {
+		widget.clearDeferFlushing(id, sel);
 	}
 	return 0;
 }

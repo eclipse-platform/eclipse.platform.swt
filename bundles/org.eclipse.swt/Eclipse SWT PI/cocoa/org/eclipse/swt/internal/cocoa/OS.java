@@ -81,6 +81,8 @@ public class OS extends C {
 	
 	public static final int /*long*/ sel_accessibleHandle = sel_registerName("accessibleHandle");
 
+	public static final int /*long*/ sel_clearDeferFlushing = sel_registerName("clearDeferFlushing");
+
 	/* These are not generated in order to avoid creating static methods on all classes */
 	public static final int /*long*/ sel_isSelectorExcludedFromWebScript_ = sel_registerName("isSelectorExcludedFromWebScript:");
 	public static final int /*long*/ sel_webScriptNameForSelector_ = sel_registerName("webScriptNameForSelector:");
@@ -1405,6 +1407,7 @@ public static final int /*long*/ sel_path = sel_registerName("path");
 public static final int /*long*/ sel_pathExtension = sel_registerName("pathExtension");
 public static final int /*long*/ sel_pathForResource_ofType_ = sel_registerName("pathForResource:ofType:");
 public static final int /*long*/ sel_performDragOperation_ = sel_registerName("performDragOperation:");
+public static final int /*long*/ sel_performSelector_withObject_afterDelay_inModes_ = sel_registerName("performSelector:withObject:afterDelay:inModes:");
 public static final int /*long*/ sel_performSelectorOnMainThread_withObject_waitUntilDone_ = sel_registerName("performSelectorOnMainThread:withObject:waitUntilDone:");
 public static final int /*long*/ sel_pixelsHigh = sel_registerName("pixelsHigh");
 public static final int /*long*/ sel_pixelsWide = sel_registerName("pixelsWide");
@@ -2654,6 +2657,9 @@ public static final NSString NSHTMLPboardType = new NSString(NSHTMLPboardType())
 public static final native int /*long*/ NSLinkAttributeName();
 public static final NSString NSLinkAttributeName = new NSString(NSLinkAttributeName());
 /** @method flags=const */
+public static final native int /*long*/ NSModalPanelRunLoopMode();
+public static final NSString NSModalPanelRunLoopMode = new NSString(NSModalPanelRunLoopMode());
+/** @method flags=const */
 public static final native int /*long*/ NSObliquenessAttributeName();
 public static final NSString NSObliquenessAttributeName = new NSString(NSObliquenessAttributeName());
 /** @method flags=const */
@@ -3669,6 +3675,8 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, NSRange arg2);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, boolean arg2);
+/** @method flags=cast */
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, double arg2, int /*long*/ arg3);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2);
 /** @method flags=cast */

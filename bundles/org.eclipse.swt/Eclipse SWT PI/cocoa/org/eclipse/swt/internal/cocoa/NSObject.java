@@ -112,6 +112,10 @@ public id mutableCopy() {
 	return result != 0 ? new id(result) : null;
 }
 
+public void performSelector(int /*long*/ aSelector, id anArgument, double delay, NSArray modes) {
+	OS.objc_msgSend(this.id, OS.sel_performSelector_withObject_afterDelay_inModes_, aSelector, anArgument != null ? anArgument.id : 0, delay, modes != null ? modes.id : 0);
+}
+
 public void performSelectorOnMainThread(int /*long*/ aSelector, id arg, boolean wait) {
 	OS.objc_msgSend(this.id, OS.sel_performSelectorOnMainThread_withObject_waitUntilDone_, aSelector, arg != null ? arg.id : 0, wait);
 }

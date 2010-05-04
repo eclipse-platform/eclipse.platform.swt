@@ -354,6 +354,7 @@ typedef enum {
 	NSHTMLPboardType_FUNC,
 	NSIntersectionRect_FUNC,
 	NSLinkAttributeName_FUNC,
+	NSModalPanelRunLoopMode_FUNC,
 	NSNumberOfColorComponents_FUNC,
 	NSObliquenessAttributeName_FUNC,
 	NSOutlineViewColumnDidMoveNotification_FUNC,
@@ -613,6 +614,11 @@ typedef enum {
 	objc_1msgSend__IIII_FUNC,
 #else
 	objc_1msgSend__JJJJ_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend__IIIIDI_FUNC,
+#else
+	objc_1msgSend__JJJJDJ_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSend__IIIII_FUNC,
