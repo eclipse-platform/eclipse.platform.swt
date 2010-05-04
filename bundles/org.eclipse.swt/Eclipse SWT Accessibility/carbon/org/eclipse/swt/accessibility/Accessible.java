@@ -75,7 +75,8 @@ public class Accessible {
 	Vector accessibleHyperlinkListeners = new Vector();
 	Vector accessibleTableListeners = new Vector();
 	Vector accessibleTableCellListeners = new Vector();
-	Vector accessibleTextExtendedListeners = new Vector();
+	// This line is intentionally commented. See addAccessibleTextListener.
+	// Vector accessibleTextExtendedListeners = new Vector();
 	Vector accessibleValueListeners = new Vector();
 	Vector accessibleAttributeListeners = new Vector();
 	Accessible parent;
@@ -220,11 +221,13 @@ public class Accessible {
 	public void addAccessibleTextListener (AccessibleTextListener listener) {
 		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-		if (listener instanceof AccessibleTextExtendedListener) {
-			accessibleTextExtendedListeners.addElement (listener);		
-		} else {
+		// Carbon won't be adding the additional extended listener features for 3.6
+		// so no need to segregate the two listener types.
+//		if (listener instanceof AccessibleTextExtendedListener) {
+//			accessibleTextExtendedListeners.addElement (listener);		
+//		} else {
 			accessibleTextListeners.addElement (listener);
-		}
+//		}
 	}
 	
 	/**
@@ -599,7 +602,7 @@ public class Accessible {
 					OS.CFRelease(stringRef);
 				}
 			}
-			if (accessibleTextListeners.size() > 0 || accessibleTextExtendedListeners.size() > 0) {
+			if (accessibleTextListeners.size() > 0) {
 				for (int i = 0; i < textAttributes.length; i++) {
 					if (!contains(osAllAttributes, textAttributes[i])) {
 						int stringRef = stringToStringRef(textAttributes[i]);
@@ -1364,11 +1367,13 @@ public class Accessible {
 	public void removeAccessibleTextListener (AccessibleTextListener listener) {
 		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-		if (listener instanceof AccessibleTextExtendedListener) {
-			accessibleTextExtendedListeners.removeElement (listener);
-		} else {
+		// Carbon won't be adding the additional extended listener features for 3.6
+		// so no need to segregate the two listener types.
+//		if (listener instanceof AccessibleTextExtendedListener) {
+//			accessibleTextExtendedListeners.removeElement (listener);
+//		} else {
 			accessibleTextListeners.removeElement (listener);
-		}
+//		}
 	}
 
 	/**
