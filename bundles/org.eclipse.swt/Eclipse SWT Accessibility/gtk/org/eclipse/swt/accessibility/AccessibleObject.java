@@ -479,8 +479,8 @@ class AccessibleObject {
 		}
 		int /*long*/ parentResult = 0;
 		AtkHypertextIface iface = getHypertextIface (atkObject);
-		if (iface != null && iface.get_link != 0) {
-			parentResult = ATK.call (iface.get_link, atkObject, char_index);
+		if (iface != null && iface.get_link_index != 0) {
+			parentResult = ATK.call (iface.get_link_index, atkObject, char_index);
 		}
 		return parentResult;
 	}
@@ -1914,7 +1914,7 @@ class AccessibleObject {
 	}
 	
 	static int /*long*/ atkText_set_caret_offset (int /*long*/ atkObject, int /*long*/ offset) {
-		if (DEBUG) print ("-->atkText_gset_character_offset");
+		if (DEBUG) print ("-->atkText_set_caret_offset");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			Accessible accessible = object.accessible;
@@ -1931,8 +1931,8 @@ class AccessibleObject {
 			}
 		}
 		AtkTextIface iface = getTextIface (atkObject);
-		if (iface != null && iface.get_character_at_offset != 0) {
-			return ATK.call (iface.get_character_at_offset, atkObject, offset);
+		if (iface != null && iface.set_caret_offset != 0) {
+			return ATK.call (iface.set_caret_offset, atkObject, offset);
 		}
 		return 0;
 	}
