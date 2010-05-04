@@ -109,7 +109,7 @@ public class Display extends Device {
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer;
 	Thread thread;
-	boolean allowTimers, runAsyncMessages;
+	boolean allowTimers = true, runAsyncMessages = true;
 
 	GCData[] contexts;
 
@@ -4277,7 +4277,9 @@ public void timerExec (int milliseconds, Runnable runnable) {
 	}
 	NSNumber userInfo = NSNumber.numberWithInt(index);
 	NSTimer timer = NSTimer.scheduledTimerWithTimeInterval(milliseconds / 1000.0, timerDelegate, OS.sel_timerProc_, userInfo, false);
-	NSRunLoop.currentRunLoop().addTimer(timer, OS.NSEventTrackingRunLoopMode);
+	NSRunLoop runLoop = NSRunLoop.currentRunLoop();
+	runLoop.addTimer(timer, OS.NSModalPanelRunLoopMode);
+	runLoop.addTimer(timer, OS.NSEventTrackingRunLoopMode);
 	timer.retain();
 	if (timer != null) {
 		nsTimers [index] = timer;
