@@ -2554,7 +2554,8 @@ public class Accessible {
 	/* IAccessible2::get_role([out] pRole) */
 	int get_role(int /*long*/ pRole) {
 		int role = getRole();
-		if (DEBUG) print(this + ".IAccessible::get_accRole() returning " + getRoleString(role) + hresult(COM.S_OK));
+		if (role == 0) role = getDefaultRole();
+		if (DEBUG) print(this + ".IAccessible2::get_role() returning " + getRoleString(role) + hresult(COM.S_OK));
 		COM.MoveMemory(pRole, new int [] { role }, 4);
 		return COM.S_OK;
 	}
@@ -4426,6 +4427,25 @@ public class Accessible {
 		return event.detail;
 	}
 
+	int getDefaultRole() {
+		int role;
+		role = COM.ROLE_SYSTEM_CLIENT;
+		if (iaccessible != null) {
+			/* Get the default role from the OS. */
+			int /*long*/ varChild = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
+			setIntVARIANT(varChild, COM.VT_I4, COM.CHILDID_SELF);
+			int /*long*/ pvarRole = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
+			int code = iaccessible.get_accRole(varChild, pvarRole);
+			if (code == COM.S_OK) {
+				VARIANT v = getVARIANT(pvarRole);
+				if (v.vt == COM.VT_I4) role = v.lVal;
+			}
+			OS.GlobalFree(varChild);
+			OS.GlobalFree(pvarRole);
+		}
+		return role;
+	}
+
 	VARIANT getVARIANT(int /*long*/ variant) {
 		VARIANT v = new VARIANT();
 		COM.MoveMemory(v, variant, VARIANT.sizeof);
@@ -4914,7 +4934,11 @@ public class Accessible {
 	}
 	public String toString () {
 		String toString = super.toString();
-		if (DEBUG) return toString.substring(toString.lastIndexOf('.') + 1) + "(" + getRoleString(getRole()) + ")";
+		if (DEBUG) {
+			int role = getRole();
+			if (role == 0) role = getDefaultRole();
+			return toString.substring(toString.lastIndexOf('.') + 1) + "(" + getRoleString(role) + ")";
+		}
 		return toString;
 	}
 	// END DEBUG CODE
