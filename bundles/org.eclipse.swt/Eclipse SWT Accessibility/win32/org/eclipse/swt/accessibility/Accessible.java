@@ -2524,9 +2524,9 @@ public class Accessible {
 			Relation relation = (Relation)relations[type];
 			if (relation != null) i++;
 			if (i == relationIndex) {
-				if (DEBUG) print(this + ".IAccessible2::get_relation(" + relationIndex + ") returning " + relation.objIAccessibleRelation.getAddress() + hresult(COM.S_OK));
+				if (DEBUG) print(this + ".IAccessible2::get_relation(" + relationIndex + ") returning " + relation.getAddress() + hresult(COM.S_OK));
 				relation.AddRef();
-				COM.MoveMemory(ppRelation, new int /*long*/[] { relation.objIAccessibleRelation.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(ppRelation, new int /*long*/[] { relation.getAddress() }, OS.PTR_SIZEOF);
 				return COM.S_OK;
 			}
 		}
@@ -2542,7 +2542,7 @@ public class Accessible {
 			Relation relation = (Relation)relations[type];
 			if (relation != null) {
 				relation.AddRef();
-				COM.MoveMemory(ppRelations + count * OS.PTR_SIZEOF, new int /*long*/[] { relation.objIAccessibleRelation.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(ppRelations + count * OS.PTR_SIZEOF, new int /*long*/[] { relation.getAddress() }, OS.PTR_SIZEOF);
 				count++;
 			}
 		}

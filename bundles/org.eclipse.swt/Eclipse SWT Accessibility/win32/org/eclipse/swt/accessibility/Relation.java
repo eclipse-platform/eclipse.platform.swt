@@ -15,7 +15,7 @@ import org.eclipse.swt.internal.ole.win32.*;
 
 class Relation {
 	Accessible accessible;
-	COMObject objIAccessibleRelation = null;
+	COMObject objIAccessibleRelation;
 	int refCount;
 	int type;
 	Accessible[] targets;
@@ -60,22 +60,35 @@ class Relation {
 		this.targets = new Accessible[0];
 	}
 	
+	int /*long*/ getAddress() {
+		/* The address of a Relation is the address of its IAccessibleRelation COMObject. */
+		if (objIAccessibleRelation == null) createIAccessibleRelation();
+		return objIAccessibleRelation.getAddress();
+	}
+	
+	void createIAccessibleRelation() {
+		objIAccessibleRelation = new COMObject(new int[] {2,0,0,1,1,1,2,3}) {
+			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+			public int /*long*/ method2(int /*long*/[] args) {return Release();}
+			public int /*long*/ method3(int /*long*/[] args) {return get_relationType(args[0]);}
+			public int /*long*/ method4(int /*long*/[] args) {return get_localizedRelationType(args[0]);}
+			public int /*long*/ method5(int /*long*/[] args) {return get_nTargets(args[0]);}
+			public int /*long*/ method6(int /*long*/[] args) {return get_target((int)/*64*/args[0], args[1]);}
+			public int /*long*/ method7(int /*long*/[] args) {return get_targets((int)/*64*/args[0], args[1], args[2]);}
+		};
+	}
+
 	/* QueryInterface([in] iid, [out] ppvObject)
 	 * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
 	 * must be incremented before returning.  Caller is responsible for releasing ppvObject.
 	 */
-	int QueryInterface(COMObject comObject, int /*long*/ iid, int /*long*/ ppvObject) {
+	int QueryInterface(int /*long*/ iid, int /*long*/ ppvObject) {
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, iid, GUID.sizeof);
 
-		if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
-			COM.MoveMemory(ppvObject, new int /*long*/[] { comObject.getAddress() }, OS.PTR_SIZEOF);
-			AddRef();
-			return COM.S_OK;
-		}
-
-		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleRelation)) {
-			COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleRelation.getAddress() }, OS.PTR_SIZEOF);
+		if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIAccessibleRelation)) {
+			COM.MoveMemory(ppvObject, new int /*long*/[] { getAddress() }, OS.PTR_SIZEOF);
 			AddRef();
 			return COM.S_OK;
 		}
@@ -84,19 +97,6 @@ class Relation {
 	}
 
 	int AddRef() {
-		if (refCount == 0) {
-			/* Create the COMObject on the first AddRef. */
-			objIAccessibleRelation = new COMObject(new int[] {2,0,0,1,1,1,2,3}) {
-				public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(objIAccessibleRelation, args[0], args[1]);}
-				public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-				public int /*long*/ method2(int /*long*/[] args) {return Release();}
-				public int /*long*/ method3(int /*long*/[] args) {return get_relationType(args[0]);}
-				public int /*long*/ method4(int /*long*/[] args) {return get_localizedRelationType(args[0]);}
-				public int /*long*/ method5(int /*long*/[] args) {return get_nTargets(args[0]);}
-				public int /*long*/ method6(int /*long*/[] args) {return get_target((int)/*64*/args[0], args[1]);}
-				public int /*long*/ method7(int /*long*/[] args) {return get_targets((int)/*64*/args[0], args[1], args[2]);}
-			};
-		}
 		refCount++;
 		return refCount;
 	}
