@@ -12,7 +12,7 @@ package org.eclipse.swt.snippets;
  
 /*
  * Accessibility example snippet: tell a screen reader about updates
- * to a non-focused descriptive area (sometimes called a "live region")
+ * to a non-focused descriptive area
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -31,21 +31,11 @@ public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
 	shell.setLayout(new GridLayout());
-	shell.setText("Live Region Example");
+	shell.setText("Description Relation Example");
 	
 	final Label liveLabel = new Label(shell, SWT.BORDER);
 	liveLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	liveLabel.setText("Live region messages go here");
-	liveLabel.getAccessible().addAccessibleAttributeListener(new AccessibleAttributeAdapter() {
-		public void getAttributes(AccessibleAttributeEvent e) {
-			e.attributes = new String[] {
-					"aria-live", "assertive",
-					"aria-atomic", "true",
-					"container-live", "assertive",
-					"container-atomic", "true"
-				};
-		}
-	});
 	
 	new Label(shell, SWT.NONE).setText("Type an integer from 1 to 4:");
 	
