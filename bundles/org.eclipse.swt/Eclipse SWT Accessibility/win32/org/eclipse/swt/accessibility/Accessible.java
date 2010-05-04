@@ -1609,7 +1609,7 @@ public class Accessible {
 		}
 		
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleText)) {
-			if (accessibleTextExtendedListeners.size() > 0 || accessibleAttributeListeners.size() > 0) {
+			if (accessibleTextExtendedListeners.size() > 0 /* || accessibleAttributeListeners.size() > 0*/) {
 				if (objIAccessibleText == null) createIAccessibleText();
 				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleText.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
