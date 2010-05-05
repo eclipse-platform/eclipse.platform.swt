@@ -2209,6 +2209,9 @@ class AccessibleObject {
 					if (text != null && text.length () > event.offset && text.length() >= event.offset + event.length) {
 						return getStringPtr (text.substring(event.offset, event.offset + event.length));
 					}
+					if (iface != null && iface.get_text != 0) {
+						return ATK.call (iface.get_text, atkObject, event.offset, event.offset + event.length);
+					}
 					return 0;
 				}
 			}
@@ -2245,6 +2248,10 @@ class AccessibleObject {
 				text = text.substring ((int)/*64*/start_offset, (int)/*64*/end_offset);
 				return getStringPtr (text);
 			}
+		}
+		AtkTextIface iface = getTextIface (atkObject);
+		if (iface != null && iface.get_text != 0) {
+			return ATK.call (iface.get_text, atkObject, start_offset, end_offset);
 		}
 		return 0;
 	}
@@ -2441,6 +2448,10 @@ class AccessibleObject {
 				return getStringPtr (text);
 			} 
 		}
+		AtkTextIface iface = getTextIface (atkObject);
+		if (iface != null && iface.get_text_after_offset != 0) {
+			return ATK.call (iface.get_text_after_offset, atkObject, offset_value, boundary_type, start_offset, end_offset);
+		}
 		return 0;
 	}
 
@@ -2578,6 +2589,10 @@ class AccessibleObject {
 				text = text.substring (startBounds, endBounds);
 				return getStringPtr (text);
 			} 
+		}
+		AtkTextIface iface = getTextIface (atkObject);
+		if (iface != null && iface.get_text_at_offset != 0) {
+			return ATK.call (iface.get_text_at_offset, atkObject, offset_value, boundary_type, start_offset, end_offset);
 		}
 		return 0;
 	}
@@ -2721,6 +2736,10 @@ class AccessibleObject {
 				text = text.substring (startBounds, endBounds);
 				return getStringPtr (text);
 			}
+		}
+		AtkTextIface iface = getTextIface (atkObject);
+		if (iface != null && iface.get_text_before_offset != 0) {
+			return ATK.call (iface.get_text_before_offset, atkObject, offset_value, boundary_type, start_offset, end_offset);
 		}
 		return 0;
 	}
@@ -2884,22 +2903,21 @@ class AccessibleObject {
 	}
 	
 	String getText () {
-		int /*long*/ parentResult = 0;
-		String parentText = "";	//$NON-NLS-1$
-		AtkTextIface iface = getTextIface (handle);
-		if (iface != null && iface.get_character_count != 0) {
-			int /*long*/ characterCount = ATK.call (iface.get_character_count, handle);
-			if (characterCount > 0 && iface.get_text != 0) {
-				parentResult = ATK.call (iface.get_text, handle, 0, characterCount);
-				if (parentResult != 0) {
-					parentText = getString (parentResult);
-					OS.g_free(parentResult);
-				}
-			}
-		}
 		Vector listeners = accessible.accessibleControlListeners;
 		int length = listeners.size();
 		if (length > 0) {
+			String parentText = "";	//$NON-NLS-1$
+			AtkTextIface iface = getTextIface (handle);
+			if (iface != null && iface.get_character_count != 0) {
+				int /*long*/ characterCount = ATK.call (iface.get_character_count, handle);
+				if (characterCount > 0 && iface.get_text != 0) {
+					int /*long*/ parentResult = ATK.call (iface.get_text, handle, 0, characterCount);
+					if (parentResult != 0) {
+						parentText = getString (parentResult);
+						OS.g_free(parentResult);
+					}
+				}
+			}
 			AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 			event.childID = id;
 			event.result = parentText;
@@ -2909,7 +2927,7 @@ class AccessibleObject {
 			}
 			return event.result;
 		}
-		return parentText;
+		return null;
 	}
 
 	static int /*long*/ gObjectClass_finalize (int /*long*/ atkObject) {
