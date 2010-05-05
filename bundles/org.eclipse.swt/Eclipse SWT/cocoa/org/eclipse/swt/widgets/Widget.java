@@ -56,7 +56,7 @@ public abstract class Widget {
 	static final int KEYED_DATA       = 1 << 2;
 	static final int DISABLED         = 1 << 3;
 	static final int HIDDEN           = 1 << 4;
-	static final int GRAB	             = 1 << 5;
+	static final int HOT			  = 1 << 5;
 	static final int MOVED            = 1 << 6;
 	static final int RESIZED          = 1 << 7;
 	static final int EXPANDING        = 1 << 8;

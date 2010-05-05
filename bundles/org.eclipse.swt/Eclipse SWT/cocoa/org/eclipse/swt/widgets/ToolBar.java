@@ -543,6 +543,41 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
+boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
+	switch (type) {
+	case SWT.MouseEnter:
+	case SWT.MouseMove:
+		// Start with the global mouse location, as the MouseEnter may occur due to
+		// an application-activated event, which isn't associated with a window.
+		NSPoint toolbarPoint = NSEvent.mouseLocation();
+		toolbarPoint = view.window().convertScreenToBase(toolbarPoint);
+		toolbarPoint = view.convertPoint_fromView_(toolbarPoint, null);
+		for (int i = 0; i < itemCount; i++) {
+			ToolItem item = items [i];
+			int currState = item.state;
+			
+			if (OS.NSPointInRect(toolbarPoint, item.view.frame())) {
+				item.state |= Widget.HOT;
+			} else {
+				item.state &= ~Widget.HOT;				
+			}
+			
+			if (currState != item.state) item.updateImage(true);
+		}
+		break;
+	case SWT.MouseExit:
+		for (int i = 0; i < itemCount; i++) {
+			ToolItem item = items [i];
+			int currState = item.state;
+			item.state &= ~Widget.HOT;				
+			if (currState != item.state) item.updateImage(true);
+		}
+		break;
+	}
+	
+	return super.sendMouseEvent(nsEvent, type, send);
+}
+
 void setFont(NSFont font) {
 	for (int i = 0; i < itemCount; i++) {
 		ToolItem item = items[i];

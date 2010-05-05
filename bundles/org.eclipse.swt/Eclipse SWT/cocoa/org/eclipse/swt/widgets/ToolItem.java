@@ -425,6 +425,7 @@ void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 void enableWidget(boolean enabled) {
 	if ((style & SWT.SEPARATOR) == 0) {
 		((NSButton)button).setEnabled(enabled);
+		updateImage(true);
 	}
 }
 
@@ -1036,16 +1037,18 @@ String tooltipText () {
 
 void updateImage (boolean layout) {
 	if ((style & SWT.SEPARATOR) != 0) return;
-	Image image = null;
-	if (hotImage != null) {
-		image = hotImage;
+	Image newImage = null;
+
+	if ((state & DISABLED) == DISABLED && disabledImage != null) {
+		newImage = disabledImage;
 	} else {
-		if (this.image != null) {
-			image = this.image;
+		if ((state & HOT) == HOT && hotImage != null) {
+			newImage = hotImage;
 		} else {
-			image = disabledImage;
+			newImage = image;
 		}
 	}
+
 	NSButton widget = (NSButton)button;
 	/*
 	 * Feature in Cocoa.  If the NSImage object being set into the button is
@@ -1054,13 +1057,13 @@ void updateImage (boolean layout) {
 	 * if the NSImage object's content has changed since it was last set
 	 * into the button.  The workaround is to explicitly redraw the button.
 	 */
-	widget.setImage(image != null ? image.handle : null);
+	widget.setImage(newImage != null ? newImage.handle : null);
 	widget.setNeedsDisplay(true);
-	if (text.length() != 0 && image != null) {
+	if (text.length() != 0 && newImage != null) {
 		if ((parent.style & SWT.RIGHT) != 0) {
 			widget.setImagePosition(OS.NSImageLeft);
 		} else {
-			((NSButton)button).setImagePosition(OS.NSImageAbove);		
+			widget.setImagePosition(OS.NSImageAbove);		
 		}
 	} else {	
 		widget.setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);		
