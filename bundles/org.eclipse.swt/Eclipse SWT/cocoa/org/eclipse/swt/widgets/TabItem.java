@@ -114,6 +114,25 @@ public TabItem (TabFolder parent, int style, int index) {
 	parent.createItem (this, index);
 }
 
+int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	
+	if (id == nsItem.id) {
+		NSString nsAttributeName = new NSString(arg0);
+
+		if (nsAttributeName.isEqualToString(OS.NSAccessibilityTitleAttribute)) {
+			if (text != null) {
+				return NSString.stringWith(text).id;
+			}
+		} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityHelpAttribute)) {
+			if (toolTipText != null) {
+				return NSString.stringWith(toolTipText).id;
+			}
+		}
+	}
+	
+	return super.accessibilityAttributeValue(id, sel, arg0);
+}
+
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }

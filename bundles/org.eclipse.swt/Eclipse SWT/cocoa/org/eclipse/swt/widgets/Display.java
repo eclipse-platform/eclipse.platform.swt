@@ -2486,6 +2486,7 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sizeOfLabel_, sizeOfLabelProc, "@::");
 	OS.class_addMethod(cls, OS.sel_drawLabel_inRect_, drawLabelInRectProc, "@::{NSRect}");
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTTextView";
