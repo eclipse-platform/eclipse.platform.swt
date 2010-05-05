@@ -46,6 +46,7 @@ public class Link extends Control {
 	String [] ids;
 	int [] mnemonics;
 	NSColor linkColor;
+	int focusIndex;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -115,6 +116,13 @@ boolean textView_clickOnLink_atIndex(int /*long*/ id, int /*long*/ sel, int /*lo
 	Event event = new Event ();
 	event.text = str.getString();
 	sendSelectionEvent (SWT.Selection, event, true);
+	for (int i = 0; i < offsets.length; i++) {
+		if ((charIndex >= offsets[i].x) && (charIndex <= offsets[i].y)) {
+			focusIndex = i;
+			break;
+		}
+	}
+	redrawWidget(view, false);
 	return true;
 }
 
@@ -172,6 +180,8 @@ void createHandle () {
 	
 	scrollView = scrollWidget;
 	view = widget;
+	
+	focusIndex = -1;
 }
 
 void createWidget () {
@@ -190,8 +200,26 @@ void deregister () {
 	if (scrollView != null) display.removeWidget (scrollView);
 }
 
-void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
-	fillBackground (view, context, rect, -1);
+void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rectangle) {
+	fillBackground (view, context, rectangle, -1);
+	if (!hasFocus() || focusIndex == -1) return;
+	int [] outMetric = new int [1];
+	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
+	outMetric[0]--;
+	CGRect r = new CGRect();
+	NSRect[] rect = getRectangles(focusIndex);
+	if (rect == null) return;
+	for (int i = 0; i < rect.length && rect[i] != null; i++) {
+		r.origin.x = rect[i].x + outMetric[0];
+		r.origin.y = rect[i].y + outMetric[0];
+		/*
+		 * sometimes the rect[i].width is smaller than 2 * outMetric and subtracting
+		 * it makes r.size.width < 0
+		 */
+		r.size.width = rect[i].width - outMetric[0];
+		r.size.height = rect[i].height - (2 * outMetric[0]);
+		OS.HIThemeDrawFocusRect(r, true, context.graphicsPort(), OS.kHIThemeOrientationNormal);
+	}
 }
 
 void enableWidget (boolean enabled) {
@@ -214,6 +242,56 @@ void enableWidget (boolean enabled) {
 	dict.setDictionary(linkTextAttributes);
 	dict.setValue(enabled ? linkColor : nsColor, OS.NSForegroundColorAttributeName);
 	widget.setLinkTextAttributes(dict);
+	redrawWidget(view, false);
+}
+
+NSRect[] getRectangles(int linkIndex) {
+	/*
+	 * Returns the focus rectangles to be drawn for a link. Number of
+	 * rectangles is > 1 when the link has multiple lines.
+	 */
+	if (linkIndex == -1) return null;
+	
+	NSTextView widget = ((NSTextView)view);
+	NSLayoutManager layoutManager = widget.layoutManager();
+	NSRange range = new NSRange();
+	range.location = offsets[linkIndex].x;
+	range.length = offsets[linkIndex].y - offsets[linkIndex].x + 1;
+	NSRange glyphRange = layoutManager.glyphRangeForCharacterRange(range, 0);
+
+	int /*long*/ rangePtr = OS.malloc(NSRange.sizeof);
+	NSRange lineRange = new NSRange();
+	
+	/* compute number of lines in the link */
+	int numberOfLines = 0;
+	int /*long*/ index = glyphRange.location;
+	int /*long*/ glyphEndIndex = glyphRange.location + glyphRange.length;
+	while (index < glyphEndIndex) {
+		numberOfLines++;
+		layoutManager.lineFragmentUsedRectForGlyphAtIndex(index, rangePtr, true);
+		OS.memmove(lineRange, rangePtr, NSRange.sizeof);
+		index = lineRange.location + lineRange.length;
+	}
+	
+	/* compute the enclosing rectangle(s) for the link*/
+	NSRect [] result = new NSRect[numberOfLines];
+	index = glyphRange.location;
+	for (int i = 0; index < glyphEndIndex && i < numberOfLines; i++) {
+		NSRect usedRect = layoutManager.lineFragmentUsedRectForGlyphAtIndex(index, rangePtr, true);
+		OS.memmove(lineRange, rangePtr, NSRange.sizeof);
+		index = lineRange.location + lineRange.length;
+		
+		if (lineRange.location < glyphRange.location) {
+			lineRange.length = index - glyphRange.location;
+			lineRange.location = glyphRange.location;
+		}
+		if (index > glyphEndIndex) lineRange.length = glyphEndIndex - lineRange.location;
+		NSRect boundsRect = layoutManager.boundingRectForGlyphRange(lineRange, widget.textContainer());
+		result[i] = new NSRect();
+		OS.NSIntersectionRect(result[i], usedRect, boundsRect);
+	}
+	OS.free(rangePtr);
+	return result;
 }
 
 String getNameText () {
@@ -429,6 +507,47 @@ int parseMnemonics (char[] buffer, int start, int end, StringBuffer result) {
 	return mnemonic;
 }
 
+void sendFocusEvent(int type) {
+	if (focusIndex != -1) redrawWidget(view, false);
+	super.sendFocusEvent(type);
+}
+
+boolean sendKeyEvent(int type, Event event) {
+	boolean result = super.sendKeyEvent (type, event);
+	if (!result) return result;
+	if (focusIndex == -1) return result;
+	if (type != SWT.KeyDown)  return result;
+	
+	int keyCode = event.keyCode;
+	switch (keyCode) {
+	case SWT.CR:
+	case SWT.KEYPAD_CR:
+	case 32: /* Space */
+		Event event1 = new Event ();
+		event1.text = ids [focusIndex];
+		sendEvent (SWT.Selection, event1);
+		break;
+	case SWT.TAB:
+		int modifierFlags = event.stateMask;
+		boolean next = (modifierFlags & SWT.SHIFT) == 0;
+		if (next) {
+			if (focusIndex < offsets.length - 1) {
+				focusIndex++;
+				redraw ();
+				return false;
+			}
+		} else {
+			if (focusIndex > 0) {
+				focusIndex--;
+				redraw ();
+				return false;
+			} 
+		}
+		break;
+	}
+	return result;
+}
+
 void setBackgroundColor(NSColor nsColor) {
 	setBackground(nsColor);
 }
@@ -499,6 +618,7 @@ public void setText (String string) {
 	text = string;
 	NSTextView widget = (NSTextView)view;
 	widget.setString(NSString.stringWith(parse(string)));
+	focusIndex = offsets.length > 0 ? 0 : -1 ;
 	NSTextStorage textStorage = widget.textStorage();
 	NSRange range = new NSRange();
 	range.length = textStorage.length();
@@ -525,6 +645,22 @@ NSView topView () {
 	return scrollView;
 }
 
+int traversalCode (int key, NSEvent theEvent) {
+	if (offsets.length == 0) return  0;
+	int bits = super.traversalCode (key, theEvent);
+	if (key == 48 /* Tab */ && theEvent != null) {
+		int /*long*/ modifierFlags = theEvent.modifierFlags();
+		boolean next = (modifierFlags & OS.NSShiftKeyMask) == 0;
+		if (next && focusIndex < offsets.length - 1) {
+			return bits & ~ SWT.TRAVERSE_TAB_NEXT;
+		}
+		if (!next && focusIndex > 0) {
+			return bits & ~ SWT.TRAVERSE_TAB_PREVIOUS;
+		}
+	}
+	return bits;
+}
+
 void updateCursorRects (boolean enabled) {
 	super.updateCursorRects (enabled);
 	if (scrollView == null) return;
@@ -533,23 +669,6 @@ void updateCursorRects (boolean enabled) {
 	updateCursorRects (enabled, contentView);
 	contentView.setDocumentCursor (enabled ? NSCursor.IBeamCursor () : null);
 }
-
-//int traversalCode (int key, int theEvent) {
-//	if (offsets.length == 0) return 0;
-//	int bits = super.traversalCode (key, theEvent);
-//	if (key == 48 /* Tab */ && theEvent != 0) {
-//		int [] modifiers = new int [1];
-//		OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-//		boolean next = (modifiers [0] & OS.shiftKey) == 0;
-//		if (next && focusIndex < offsets.length - 1) {
-//			return bits & ~ SWT.TRAVERSE_TAB_NEXT;
-//		}
-//		if (!next && focusIndex > 0) {
-//			return bits & ~ SWT.TRAVERSE_TAB_PREVIOUS;
-//		}
-//	}
-//	return bits;
-//}
 
 }
 
