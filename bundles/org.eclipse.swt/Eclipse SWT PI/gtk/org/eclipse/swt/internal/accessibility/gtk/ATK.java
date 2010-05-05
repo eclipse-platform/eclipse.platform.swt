@@ -170,6 +170,7 @@ public class ATK extends OS {
 	public static final byte[] column_inserted = OS.ascii ("column-inserted");
 	public static final byte[] row_deleted = OS.ascii ("row-deleted");
 	public static final byte[] row_inserted = OS.ascii ("row-inserted");
+	public static final byte[] focus_event = OS.ascii ("focus-event");
 	
 	/** Properties */
 	public static final byte[] accessible_name = OS.ascii ("accessible-name");

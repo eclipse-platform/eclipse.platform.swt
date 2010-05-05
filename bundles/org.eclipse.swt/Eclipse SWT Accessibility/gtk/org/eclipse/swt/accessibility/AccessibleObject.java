@@ -3252,7 +3252,8 @@ class AccessibleObject {
 		updateChildren ();
 		AccessibleObject accObject = getChildByID (childID);
 		if (accObject != null) {
-			ATK.atk_focus_tracker_notify (accObject.handle);
+			OS.g_signal_emit_by_name (accObject.handle, ATK.focus_event, 1, 0);
+			ATK.atk_object_notify_state_change(accObject.handle, ATK.ATK_STATE_FOCUSED, true);
 		}
 	}
 	
