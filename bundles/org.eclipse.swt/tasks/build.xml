@@ -1099,9 +1099,11 @@
 	<target name="build_s390">
 		<property name="zipname" value="${fragment}"/>		
 		<property name="remotetmpdir" value="~/build/${zipname}"/>
-		<property name="remotemachine" value="${m_linux_s390}"/>
-		<property name="s390x_path" value="/home/swtbuild/ant/apache-ant-1.8.0RC1/bin:/home/swtbuild/java5/ibm-java2-s390x-50/bin:/usr/kerberos/bin:/usr/local/bin:/bin:/usr/bin:/usr/X11R6/bin:/home/swtbuild/bin"/>
-		<property name="s390_path" value="/home/swtbuild/ant/apache-ant-1.8.0RC1/bin:/home/swtbuild/java5/ibm-java2-s390-50/bin:/usr/kerberos/bin:/usr/local/bin:/bin:/usr/bin:/usr/X11R6/bin:/home/swtbuild/bin"/>
+		<condition property="remotemachine" value="${m_linux_s390}" else="${m_linux_s390x}">
+			<or>
+				<equals arg1="${build_target}" arg2="build_gtk_linux_s390"/>
+			</or>
+		</condition>
 		<zip destfile="../${zipname}.zip" basedir=".." includes="${zipname}/**/*"/>
 		<exec executable="scp">
 		    <arg value="../${zipname}.zip"/>
