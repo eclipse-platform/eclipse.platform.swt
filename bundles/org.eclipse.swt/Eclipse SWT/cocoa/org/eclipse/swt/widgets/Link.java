@@ -42,7 +42,6 @@ public class Link extends Control {
 	NSScrollView scrollView;
 	String text;
 	Point [] offsets;
-	Point selection;
 	String [] ids;
 	int [] mnemonics;
 	NSColor linkColor;
@@ -180,8 +179,6 @@ void createHandle () {
 	
 	scrollView = scrollWidget;
 	view = widget;
-	
-	focusIndex = -1;
 }
 
 void createWidget () {
@@ -189,6 +186,10 @@ void createWidget () {
 	text = "";
 	NSDictionary dict = ((NSTextView)view).linkTextAttributes();
 	linkColor = new NSColor(dict.valueForKey(OS.NSForegroundColorAttributeName));
+	offsets = new Point [0];
+	ids = new String [0];
+	mnemonics = new int [0]; 
+	focusIndex = -1;
 }
 
 NSFont defaultNSFont () {
