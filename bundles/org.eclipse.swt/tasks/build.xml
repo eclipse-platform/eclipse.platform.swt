@@ -262,7 +262,7 @@
 	
 	<target name="build_gtk_linux_s390" depends="init_build">
 		<property name="clean" value="clean"/>
-		<property name="targets" value="make_mozilla make_xulrunner make_xpcominit install"/>
+		<property name="targets" value="install"/>
 		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
 			<arg value="build.sh"/>
 			<env key="JAVA_HOME" value="/home/swtbuild/java5/ibm-java2-s390-50"/>
@@ -1111,7 +1111,7 @@
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
- 			command="export PATH=${s390_path}; echo $PATH; cd ~/build; rm -rf ${remotetmpdir}; unzip -qq ~/build/${zipname}.zip; rm ~/build/${zipname}.zip; cd ${remotetmpdir}/${tasks}; if ant -f build.xml ${build_target}; then cd ~/build; zip -q -r ${zipname}.zip ${zipname}; rm -rf ${remotetmpdir}; else cd; rm -rf ${remotetmpdir}; exit 1; fi"/>
+ 			command="echo $PATH; cd ~/build; rm -rf ${remotetmpdir}; unzip -qq ~/build/${zipname}.zip; rm ~/build/${zipname}.zip; cd ${remotetmpdir}/${tasks}; if ant -f build.xml ${build_target}; then cd ~/build; zip -q -r ${zipname}.zip ${zipname}; rm -rf ${remotetmpdir}; else cd; rm -rf ${remotetmpdir}; exit 1; fi"/>
 		<exec executable="scp">
 		    <arg value="swtbuild@${remotemachine}:~/build/${zipname}.zip"/>
 		    <arg value=".."/>
