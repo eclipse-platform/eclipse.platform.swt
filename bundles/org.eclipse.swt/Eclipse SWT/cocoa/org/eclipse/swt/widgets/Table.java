@@ -1219,7 +1219,10 @@ public Rectangle getClientArea () {
 	Rectangle rect = super.getClientArea ();
 	NSTableHeaderView headerView = ((NSTableView) view).headerView ();
 	if (headerView != null) {
+		// The origin of the table is the top-left of the rows of the table,
+		// not the header.  Adjust the y value accordingly.
 		int height =  (int) headerView.bounds ().height;
+		rect.y -= height;
 		rect.height += height;
 	}
 	return rect;
