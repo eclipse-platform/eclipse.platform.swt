@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.internal.cocoa.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class represent a selectable
@@ -129,28 +128,47 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
-	int width, height;
-	//TODO wrapping, wHint
-	int borderStyle = hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder;
-	NSSize borderSize = NSScrollView.frameSizeForContentSize(new NSSize(), false, false, borderStyle);
-	NSTextView widget = (NSTextView)view;
-	NSSize size = widget.textStorage().size();
-	width = (int)(size.width + borderSize.width);
-	height = (int)(size.height + borderSize.height);
+
+	int width = 0, height = 0;
+	NSLayoutManager layoutManager = (NSLayoutManager)new NSLayoutManager ().alloc ().init ();
+	NSTextContainer textContainer = (NSTextContainer)new NSTextContainer ().alloc ();
+	NSSize size = new NSSize ();
+	size.width = size.height = Float.MAX_VALUE;
+	if (wHint != SWT.DEFAULT) size.width = wHint;
+	if (hHint != SWT.DEFAULT) size.height = hHint;
+	textContainer.initWithContainerSize (size);
+	textContainer.setLineFragmentPadding(2);
+	layoutManager.addTextContainer (textContainer);
+
+	NSTextStorage textStorage = (NSTextStorage)new NSTextStorage ().alloc ().init ();
+	textStorage.setAttributedString (((NSTextView)view).textStorage ());
+	layoutManager.setTextStorage (textStorage);
+	layoutManager.glyphRangeForTextContainer (textContainer);
+
+	NSRect rect = layoutManager.usedRectForTextContainer (textContainer);
+	width = layoutManager.numberOfGlyphs () == 0 ? DEFAULT_WIDTH : (int)Math.ceil (rect.width);
+	height = (int)Math.ceil (rect.height);
+	textStorage.release ();
+	textContainer.release ();
+	layoutManager.release ();
+
+	if (width <= 0) width = DEFAULT_WIDTH;
+	if (height <= 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	int border = getBorderWidth ();
-	width += border * 2;
-	height += border * 2;
 
-	// TODO is this true?  if so, can this rounding be turned off?
-	/*
-	 * Bug in Cocoa.  NSTextStorage.size() seems to return a width
-	 * value that is rounded down, because its result is never
-	 * fractional.  The workaround is to increment width by 1
-	 * to ensure that it is wide enough to show the full text.  
-	 */
-	width += 1;
+	// Accommodate any border.
+	size.width = width;
+	size.height = height;
+	int border = hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder;
+	size = NSScrollView.frameSizeForContentSize(size, false, false, border);
+	width = (int)size.width;
+	height = (int)size.height;
+
+	if (!hasBorder()) {
+		width += 2;
+		height += 2;
+	}
 	return new Point (width, height);
 }
 
@@ -159,15 +177,19 @@ void createHandle () {
 	NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
 	scrollWidget.init();
 	scrollWidget.setDrawsBackground(false);
+	scrollWidget.setAutoresizesSubviews (true);
 	scrollWidget.setBorderType(hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder);
 
 	NSTextView widget = (NSTextView)new SWTTextView().alloc();
 	widget.init();
 	widget.setEditable(false);
+	NSSize size = new NSSize ();
+	size.width = size.height = Float.MAX_VALUE;
+	widget.setMaxSize (size);
 	widget.setDrawsBackground(false);
 	widget.setDelegate(widget);
 	widget.setAutoresizingMask (OS.NSViewWidthSizable | OS.NSViewHeightSizable);
-	widget.textContainer().setLineFragmentPadding(0);
+	widget.textContainer().setLineFragmentPadding(2);
 	widget.setFont(getFont().handle);
 	widget.setAlignment (OS.NSLeftTextAlignment);
 
