@@ -267,7 +267,7 @@
 			<arg value="build.sh"/>
 			<env key="JAVA_HOME" value="/home/swtbuild/java5/ibm-java2-s390-50"/>
 			<env key="MODEL" value="s390"/>
-			<env key="MOZILLA_SDK" value="/home/swtbuild/mozilla1.7.13/mozilla/dist/sdk"/>
+			<env key="MOZILLA_SDK" value="/home/swtbuild/mozilla-1.7.13/mozilla/dist/sdk"/>
 			<env key="MOZILLA_INCLUDES" value="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/../include/xpcom -I${MOZILLA_SDK}/../include/nspr -I${MOZILLA_SDK}/../include/embed_base -I${MOZILLA_SDK}/../include/embedstring -I${MOZILLA_SDK}/../include/string"/>
 			<env key="MOZILLA_LIBS" value="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"/>
 			<env key="XULRUNNER_SDK" value="/home/swtbuild/xulrunner-1.8.0.1/mozilla/dist/sdk"/>
