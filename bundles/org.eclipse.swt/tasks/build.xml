@@ -1111,7 +1111,7 @@
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
- 			command="export PATH=${s390_path}; cd ~/build; rm -rf ${remotetmpdir}; unzip -qq ~/build/${zipname}.zip; rm ~/build/${zipname}.zip; cd ${remotetmpdir}/${tasks}; if ant -f build.xml ${build_target}; then cd ~/build; zip -q -r ${zipname}.zip ${zipname}; rm -rf ${remotetmpdir}; else cd; rm -rf ${remotetmpdir}; exit 1; fi"/>
+ 			command="cd ~/build; rm -rf ${remotetmpdir}; unzip -qq ~/build/${zipname}.zip; rm ~/build/${zipname}.zip; cd ${remotetmpdir}/${tasks}; if ant -f build.xml ${build_target}; then cd ~/build; zip -q -r ${zipname}.zip ${zipname}; rm -rf ${remotetmpdir}; else cd; rm -rf ${remotetmpdir}; exit 1; fi"/>
 		<exec executable="scp">
 		    <arg value="swtbuild@${remotemachine}:~/build/${zipname}.zip"/>
 		    <arg value=".."/>
