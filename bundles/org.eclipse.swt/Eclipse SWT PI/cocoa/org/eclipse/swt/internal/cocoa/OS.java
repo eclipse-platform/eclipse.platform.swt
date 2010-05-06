@@ -89,6 +89,8 @@ public class OS extends C {
 	
 	public static final int /*long*/ sel_setColor_forAttribute_ = sel_registerName("setColor:forAttribute:");
 	
+	public static final int /*long*/ sel_javaRunLoopMode = sel_registerName("javaRunLoopMode");
+
 	/* NSTextAttachmentCell */
 	/** @method callback_types=NSPoint;id;SEL;,callback_flags=struct;none;none; */
 	public static final native int /*long*/ CALLBACK_cellBaselineOffset(int /*long*/ func);

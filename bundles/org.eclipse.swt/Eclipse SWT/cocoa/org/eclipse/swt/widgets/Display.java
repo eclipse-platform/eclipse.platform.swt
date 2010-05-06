@@ -1974,6 +1974,15 @@ protected void init () {
 	runLoopObserver = OS.CFRunLoopObserverCreate (0, activities, true, 0, observerProc, 0);
 	if (runLoopObserver == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.CFRunLoopAddObserver (OS.CFRunLoopGetCurrent (), runLoopObserver, OS.kCFRunLoopCommonModes ());
+
+	// Add AWT Runloop mode for SWT/AWT.
+	int /*long*/ cls = OS.objc_lookUpClass("JNFRunLoop"); //$NON-NLS-1$
+	if (cls != 0) {
+		int /*long*/ mode = OS.objc_msgSend(cls, OS.sel_javaRunLoopMode);
+		if (mode != 0) {
+			OS.CFRunLoopAddObserver (OS.CFRunLoopGetCurrent (), runLoopObserver, mode);
+		}
+	}
 	
 	cursorSetCallback = new Callback(this, "cursorSetProc", 2);
 	int /*long*/ cursorSetProc = cursorSetCallback.getAddress();
