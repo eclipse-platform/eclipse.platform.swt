@@ -6685,6 +6685,7 @@ void initializeAccessible() {
 			if (!isListening(LineGetStyle) && st.renderer.styleCount == 0) {
 				e.start = 0;
 				e.end = contentLength;
+				e.textStyle = new TextStyle(st.getFont(), st.foreground, st.background);
 				return;
 			}
 			int offset = Math.max(0, Math.min(e.offset, contentLength - 1));
@@ -6709,7 +6710,7 @@ void initializeAccessible() {
 			if (e.textStyle == null) {
 				e.textStyle = new TextStyle(st.getFont(), st.foreground, st.background);
 			} else {
-				if (e.textStyle.foreground == null || e.textStyle.background == null) {
+				if (e.textStyle.foreground == null || e.textStyle.background == null || e.textStyle.font == null) {
 					TextStyle textStyle = new TextStyle(e.textStyle);
 					if (textStyle.foreground == null) textStyle.foreground = st.foreground;
 					if (textStyle.background == null) textStyle.background = st.background;
