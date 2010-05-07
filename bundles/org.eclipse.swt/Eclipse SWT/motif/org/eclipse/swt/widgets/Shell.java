@@ -2082,6 +2082,7 @@ int XStructureNotify (int w, int client_data, int call_data, int continue_to_dis
 			}
 			return 0;
 		case OS.MapNotify:
+			reparented = true;
 			if (minimized) {
 				minimized = false;
 				sendEvent (SWT.Deiconify);
