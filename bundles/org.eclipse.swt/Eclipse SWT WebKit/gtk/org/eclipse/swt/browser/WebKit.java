@@ -50,7 +50,7 @@ public class WebKit extends WebBrowser {
 	static final String USER_AGENT = "user-agent"; //$NON-NLS-1$
 	static final int MAX_PORT = 65535;
 	static final int MAX_PROGRESS = 100;
-	static final int[] MIN_VERSION = {1, 1, 90};
+	static final int[] MIN_VERSION = {1, 2, 0};
 	static final char SEPARATOR_FILE = System.getProperty ("file.separator").charAt (0); //$NON-NLS-1$
 	static final int STOP_PROPOGATE = 1;
 
