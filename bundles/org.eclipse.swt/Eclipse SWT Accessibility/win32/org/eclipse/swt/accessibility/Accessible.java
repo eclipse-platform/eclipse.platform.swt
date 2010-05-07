@@ -187,7 +187,38 @@ public class Accessible {
 			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-			// We will not add the IAccessible methods here because "AT's should not rely on IA inheritance"
+			
+			/* 
+			 * Even though the IA2 spec says "AT's should not rely on IA inheritance",
+			 * some AT's do rely on it, so we need to implement the IAccessible methods here.
+			 */
+			// method3 GetTypeInfoCount - not implemented
+			// method4 GetTypeInfo - not implemented
+			// method5 GetIDsOfNames - not implemented
+			// method6 Invoke - not implemented
+			public int /*long*/ method7(int /*long*/[] args) {return get_accParent(args[0]);}
+			public int /*long*/ method8(int /*long*/[] args) {return get_accChildCount(args[0]);}
+			public int /*long*/ method9(int /*long*/[] args) {return get_accChild(args[0], args[1]);}
+			public int /*long*/ method10(int /*long*/[] args) {return get_accName(args[0], args[1]);}
+			public int /*long*/ method11(int /*long*/[] args) {return get_accValue(args[0], args[1]);}
+			public int /*long*/ method12(int /*long*/[] args) {return get_accDescription(args[0], args[1]);}
+			public int /*long*/ method13(int /*long*/[] args) {return get_accRole(args[0], args[1]);}
+			public int /*long*/ method14(int /*long*/[] args) {return get_accState(args[0], args[1]);}
+			public int /*long*/ method15(int /*long*/[] args) {return get_accHelp(args[0], args[1]);}
+			public int /*long*/ method16(int /*long*/[] args) {return get_accHelpTopic(args[0], args[1], args[2]);}
+			public int /*long*/ method17(int /*long*/[] args) {return get_accKeyboardShortcut(args[0], args[1]);}
+			public int /*long*/ method18(int /*long*/[] args) {return get_accFocus(args[0]);}
+			public int /*long*/ method19(int /*long*/[] args) {return get_accSelection(args[0]);}
+			public int /*long*/ method20(int /*long*/[] args) {return get_accDefaultAction(args[0], args[1]);}
+			public int /*long*/ method21(int /*long*/[] args) {return accSelect((int)/*64*/args[0], args[1]);}
+			public int /*long*/ method22(int /*long*/[] args) {return accLocation(args[0], args[1], args[2], args[3], args[4]);}
+			public int /*long*/ method23(int /*long*/[] args) {return accNavigate((int)/*64*/args[0], args[1], args[2]);}
+			public int /*long*/ method24(int /*long*/[] args) {return accHitTest((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+			public int /*long*/ method25(int /*long*/[] args) {return accDoDefaultAction(args[0]);}
+			public int /*long*/ method26(int /*long*/[] args) {return put_accName(args[0], args[1]);}
+			public int /*long*/ method27(int /*long*/[] args) {return put_accValue(args[0], args[1]);}
+
+			// IAccessible2 methods
 			public int /*long*/ method28(int /*long*/[] args) {return get_nRelations(args[0]);}
 			public int /*long*/ method29(int /*long*/[] args) {return get_relation((int)/*64*/args[0], args[1]);}
 			public int /*long*/ method30(int /*long*/[] args) {return get_relations((int)/*64*/args[0], args[1], args[2]);}
@@ -207,6 +238,33 @@ public class Accessible {
 			public int /*long*/ method44(int /*long*/[] args) {return get_locale(args[0]);}
 			public int /*long*/ method45(int /*long*/[] args) {return get_attributes(args[0]);}
 		};
+
+		/* If the callback takes a struct parameter (for example, a VARIANT),
+		 * then create a custom callback that dereferences the struct and
+		 * passes a pointer to the original callback.
+		 */
+		int /*long*/ ppVtable = objIAccessible2.ppVtable;
+		int /*long*/[] pVtable = new int /*long*/[1];
+		COM.MoveMemory(pVtable, ppVtable, OS.PTR_SIZEOF);
+		int /*long*/[] funcs = new int /*long*/[28];
+		COM.MoveMemory(funcs, pVtable[0], OS.PTR_SIZEOF * funcs.length);
+		funcs[9] = COM.get_accChild_CALLBACK(funcs[9]);
+		funcs[10] = COM.get_accName_CALLBACK(funcs[10]);
+		funcs[11] = COM.get_accValue_CALLBACK(funcs[11]);
+		funcs[12] = COM.get_accDescription_CALLBACK(funcs[12]);
+		funcs[13] = COM.get_accRole_CALLBACK(funcs[13]);
+		funcs[14] = COM.get_accState_CALLBACK(funcs[14]);
+		funcs[15] = COM.get_accHelp_CALLBACK(funcs[15]);
+		funcs[16] = COM.get_accHelpTopic_CALLBACK(funcs[16]);
+		funcs[17] = COM.get_accKeyboardShortcut_CALLBACK(funcs[17]);
+		funcs[20] = COM.get_accDefaultAction_CALLBACK(funcs[20]);
+		funcs[21] = COM.accSelect_CALLBACK(funcs[21]);
+		funcs[22] = COM.accLocation_CALLBACK(funcs[22]);
+		funcs[23] = COM.accNavigate_CALLBACK(funcs[23]);
+		funcs[25] = COM.accDoDefaultAction_CALLBACK(funcs[25]);
+		funcs[26] = COM.put_accName_CALLBACK(funcs[26]);
+		funcs[27] = COM.put_accValue_CALLBACK(funcs[27]);
+		COM.MoveMemory(pVtable[0], funcs, OS.PTR_SIZEOF * funcs.length);
 	}
 
 	void createIAccessibleAction() {
