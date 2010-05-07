@@ -960,18 +960,24 @@ boolean gio_execute(String fileName) {
 	boolean result = false;
 	byte[] commandBuffer = Converter.wcsToMbcs (null, command, true);
 	byte[] nameBuffer = Converter.wcsToMbcs (null, name, true);
-	int /*long*/ application = OS.g_app_info_create_from_commandline(commandBuffer, nameBuffer, gnomeExpectUri ? OS.G_APP_INFO_CREATE_SUPPORTS_URIS : OS.G_APP_INFO_CREATE_NONE, 0);
+	int /*long*/ application = OS.g_app_info_create_from_commandline(commandBuffer, nameBuffer, gnomeExpectUri
+				? OS.G_APP_INFO_CREATE_SUPPORTS_URIS : OS.G_APP_INFO_CREATE_NONE, 0);
 	if (application != 0) {
 		byte[] fileNameBuffer = Converter.wcsToMbcs (null, fileName, true);
-		int /*long*/ file = OS.g_file_new_for_path (fileNameBuffer);
+		int /*long*/ file = 0;
+		if (OS.g_app_info_supports_uris (application)) {
+			file = OS.g_file_new_for_uri (fileNameBuffer);
+		} else {
+			file = OS.g_file_new_for_path (fileNameBuffer);
+		}
 		if (file != 0) {
 			int /*long*/ list = OS.g_list_append (0, file);
 			result = OS.g_app_info_launch (application, list, 0, 0);
-			OS.g_list_free(list);
+			OS.g_list_free (list);
 			OS.g_object_unref (file);
 		}
 		OS.g_object_unref (application);
-	}	
+	}
 	return result;
 }
 

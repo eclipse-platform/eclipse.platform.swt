@@ -3023,6 +3023,30 @@ fail:
 }
 #endif
 
+#ifndef NO__1g_1file_1new_1for_1uri
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1file_1new_1for_1uri)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1file_1new_1for_1uri_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)g_file_new_for_uri(lparg0);
+*/
+	{
+		LOAD_FUNCTION(fp, g_file_new_for_uri)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jbyte *))fp)(lparg0);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1file_1new_1for_1uri_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1g_1file_1query_1info
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1file_1query_1info)
 	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2, jintLong arg3, jintLong arg4)

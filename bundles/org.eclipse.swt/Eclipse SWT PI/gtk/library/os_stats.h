@@ -254,6 +254,7 @@ typedef enum {
 	_1g_1file_1info_1get_1content_1type_FUNC,
 	_1g_1file_1info_1get_1modification_1time_FUNC,
 	_1g_1file_1new_1for_1path_FUNC,
+	_1g_1file_1new_1for_1uri_FUNC,
 	_1g_1file_1query_1info_FUNC,
 	_1g_1file_1read_FUNC,
 	_1g_1file_1test_FUNC,

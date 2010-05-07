@@ -2061,6 +2061,16 @@ public static final int /*long*/ g_file_new_for_path(byte[] fileName) {
 	}
 }
 /** @method flags=dynamic */
+public static final native int /*long*/ _g_file_new_for_uri(byte[] fileName);
+public static final int /*long*/ g_file_new_for_uri(byte[] fileName) {
+	lock.lock();
+	try {
+		return _g_file_new_for_uri(fileName);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
 public static final native int /*long*/ _g_file_query_info  (int /*long*/ file, byte[] attributes, int /*long*/ flags, int /*long*/ cancellable, int /*long*/ error);
 public static final int /*long*/ g_file_query_info  (int /*long*/ file,byte[] attributes, int /*long*/ flags, int /*long*/ cancellable, int /*long*/ error) {
 	lock.lock();
