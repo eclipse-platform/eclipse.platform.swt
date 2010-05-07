@@ -148,6 +148,10 @@ public FontData open () {
 			OS.g_list_free (pixbufs);
 		}
 	}
+	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+		int /*long*/ group = OS.gtk_window_get_group(0);
+		OS.gtk_window_group_add_window (group, handle);
+	}
 	OS.gtk_window_set_modal (handle, true);
 	if (fontData != null) {
 		Font font = new Font (display, fontData);

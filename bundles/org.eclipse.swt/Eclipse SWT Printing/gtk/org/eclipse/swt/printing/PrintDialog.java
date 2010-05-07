@@ -355,7 +355,11 @@ public PrinterData open() {
 		OS.gtk_print_unix_dialog_set_settings(handle, settings);
 		OS.gtk_print_unix_dialog_set_page_setup(handle, page_setup);
 		OS.g_object_unref(settings);
-		OS.g_object_unref(page_setup);		
+		OS.g_object_unref(page_setup);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+			int /*long*/ group = OS.gtk_window_get_group(0);
+			OS.gtk_window_group_add_window (group, handle);
+		}
 		OS.gtk_window_set_modal(handle, true);
 		PrinterData data = null;
 		//TODO: Handle 'Print Preview' (GTK_RESPONSE_APPLY).

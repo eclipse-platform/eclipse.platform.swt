@@ -167,6 +167,16 @@ public int open () {
 	OS.gtk_window_set_title(handle,buffer);
 	display.addIdleProc ();
 	Dialog oldModal = null;
+	/*
+	* In order to allow the dialog to be modal of it's
+	* parent shells, it is required to assign the 
+	* dialog to the same window group as of the shells.
+	*/
+	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+		int /*long*/ group = OS.gtk_window_get_group(0);
+		OS.gtk_window_group_add_window (group, handle);
+	}
+	
 	if (OS.gtk_window_get_modal (handle)) {
 		oldModal = display.getModalDialog ();
 		display.setModalDialog (this);

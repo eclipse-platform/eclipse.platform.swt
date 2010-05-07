@@ -2145,12 +2145,25 @@ int trimWidth () {
 void updateModal () {
 	if (OS.GTK_IS_PLUG (shellHandle)) return;
 	int /*long*/ group = 0;
+	boolean isModalShell = false;
 	if (display.getModalDialog () == null) {
 		Shell modal = getModalShell ();
 		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 		Composite shell = null;
 		if (modal == null) {
-			if ((style & mask) != 0) shell = this;
+			if ((style & mask) != 0) {
+				shell = this;
+				/*
+				* Feature in GTK. If a modal shell is reassigned to
+				* a different group, then it's modal state is not.
+				* persisted against the new group. 
+				* The fix is to reset the modality before it is changed
+				* into a different group and then, set back after it
+				* assigned into new group.
+				*/
+				isModalShell = OS.gtk_window_get_modal (shellHandle);
+				if (isModalShell) OS.gtk_window_set_modal (shellHandle, false);
+			}
 		} else {
 			shell = modal;
 		}
@@ -2173,6 +2186,7 @@ void updateModal () {
 	}
 	if (group != 0) {
 		OS.gtk_window_group_add_window (group, shellHandle);
+		if (isModalShell) OS.gtk_window_set_modal (shellHandle, true);
 	} else {
 		if (modalGroup != 0) {
 			OS.gtk_window_group_remove_window (modalGroup, shellHandle);
