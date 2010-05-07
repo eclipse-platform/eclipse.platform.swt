@@ -6578,7 +6578,6 @@ void initializeAccessible() {
 					if (count > 0) {
 						while (count-- > 0) { 
 							int newEnd = st.getWordNext(end, SWT.MOVEMENT_WORD_START);
-							if (newEnd == contentLength) break;
 							if (newEnd == end) break;
 							newCount++;
 							end = newEnd;
@@ -6586,13 +6585,22 @@ void initializeAccessible() {
 						start = end;
 						end = st.getWordNext(start, SWT.MOVEMENT_WORD_END);
 					} else {
-						while (count++ <= 0) {
+						if (st.getWordPrevious(Math.min(start + 1, contentLength), SWT.MOVEMENT_WORD_START) == start) {
+							//start is a word start already
+							count++;
+						}
+						while (count <= 0) {
 							int newStart = st.getWordPrevious(start, SWT.MOVEMENT_WORD_START);
 							if (newStart == start) break;
+							count++;
 							start = newStart;
 							if (count != 0) newCount--;
 						}
-						end = st.getWordNext(start, SWT.MOVEMENT_WORD_END);
+						if (count <= 0 && start == 0) {
+							end = start;
+						} else {
+							end = st.getWordNext(start, SWT.MOVEMENT_WORD_END);
+						}
 					}
 					count = newCount;
 					break;
