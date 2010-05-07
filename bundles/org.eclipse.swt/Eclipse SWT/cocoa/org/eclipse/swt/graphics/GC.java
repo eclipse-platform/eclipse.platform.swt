@@ -2531,12 +2531,18 @@ public FontMetrics getFontMetrics() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAutoreleasePool pool = checkGC(FONT);
 	try {
-		NSFont font = data.font.handle;
-		int ascent = (int)(0.5f + font.ascender());
-		int descent = (int)(0.5f + (-font.descender() + font.leading()));	
-		String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
-		int averageCharWidth = stringExtent(s).x / s.length();
-		return FontMetrics.cocoa_new(ascent, descent, averageCharWidth, 0, ascent + descent);
+		if (data.textStorage == null) createLayout();
+		String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";  //$NON-NLS-1$
+		NSAttributedString attribStr = createString(s, 0, false);
+		data.textStorage.setAttributedString(attribStr);
+		attribStr.release();
+		NSLayoutManager layoutManager = data.layoutManager;
+		layoutManager.glyphRangeForTextContainer(data.textContainer);
+		NSRect rect = layoutManager.usedRectForTextContainer(data.textContainer);
+		int width = (int)Math.ceil(rect.width);
+		int ascent = (int)layoutManager.defaultBaselineOffsetForFont(data.font.handle);
+		int height = (int)layoutManager.defaultLineHeightForFont(data.font.handle);
+		return FontMetrics.cocoa_new(ascent, height - ascent, width / s.length(), 0, height);
 	} finally {
 		uncheckGC(pool);
 	}

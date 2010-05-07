@@ -1021,9 +1021,8 @@ public FontMetrics getLineMetrics (int lineIndex) {
 		int length = text.length();
 		if (length == 0) {
 			Font font = this.font != null ? this.font : device.systemFont;
-			NSFont nsFont = font.handle;
-			int ascent = (int)(0.5f + nsFont.ascender());
-			int descent = (int)(0.5f + (-nsFont.descender() + nsFont.leading()));	
+			int ascent = (int)layoutManager.defaultBaselineOffsetForFont(font.handle);
+			int descent = (int)layoutManager.defaultLineHeightForFont(font.handle) - ascent;
 			ascent = Math.max(ascent, this.ascent);
 			descent = Math.max(descent, this.descent);
 			return FontMetrics.cocoa_new(ascent, descent, 0, 0, ascent + descent);
