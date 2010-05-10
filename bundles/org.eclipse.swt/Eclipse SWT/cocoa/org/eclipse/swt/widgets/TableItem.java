@@ -11,10 +11,9 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.cocoa.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -293,7 +292,14 @@ public Rectangle getBounds () {
 		cell.setTitle (str);
 		str.release();
 	}
-	NSSize size = cell.cellSize ();
+	// Inlined for performance.  Also prevents a NPE or potential loop, because cellSize() will
+	// eventually send another MeasureItem event.
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = cell.id;
+	super_struct.super_class = OS.objc_msgSend(cell.id, OS.sel_superclass);
+	NSSize size = new NSSize();
+	OS.objc_msgSendSuper_stret(size, super_struct, OS.sel_cellSize);
+//	NSSize size = cell.cellSize ();
 	NSRect columnRect = widget.rectOfColumn (columnIndex);
 	size.width = Math.min (size.width, columnRect.width - (titleRect.x - columnRect.x));
 	return new Rectangle ((int)titleRect.x, (int)titleRect.y, (int)Math.ceil (size.width), (int)Math.ceil (titleRect.height));
