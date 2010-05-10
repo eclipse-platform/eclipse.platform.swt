@@ -574,11 +574,10 @@
 			keyfile="${keyfile}" 
 			trust="true"
 			command="hostname"/>
-		<sshexec host="${m_linux_s390}" 
-			username="swtbuild" 
-			keyfile="${keyfile}" 
-			trust="true"
-			command="hostname"/>
+		</parallel>
+	</target>
+
+	<target name="check_s390_machines">
 		<sshexec host="${m_linux_x86}" 
 			username="swtbuild" 
 			keyfile="${keyfile}"
@@ -589,7 +588,6 @@
 			keyfile="${keyfile}" 
 			trust="true"
 			command="hostname; ping -c 1 ${m_linux_s390x};"/>
-		</parallel>
 	</target>
 	
 	<target name="check_compilation">
