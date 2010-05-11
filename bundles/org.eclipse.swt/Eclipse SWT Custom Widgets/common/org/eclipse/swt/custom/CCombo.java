@@ -136,6 +136,12 @@ public CCombo (Composite parent, int style) {
 	filter = new Listener() {
 		public void handleEvent(Event event) {
 			if (isDisposed ()) return;
+			if (event.type == SWT.Selection) {
+				if (event.widget instanceof ScrollBar) {
+					handleScroll(event);
+				}
+				return;
+			}
 			Shell shell = ((Control)event.widget).getShell ();
 			if (shell == CCombo.this.getShell ()) {
 				handleFocus (SWT.FocusOut);
@@ -532,7 +538,9 @@ public void deselectAll () {
 }
 void dropDown (boolean drop) {
 	if (drop == isDropped ()) return;
+	Display display = getDisplay ();
 	if (!drop) {
+		display.removeFilter (SWT.Selection, filter);
 		popup.setVisible (false);
 		if (!isDisposed () && isFocusControl()) {
 			text.setFocus();
@@ -559,7 +567,6 @@ void dropDown (boolean drop) {
 	
 	int index = list.getSelectionIndex ();
 	if (index != -1) list.setTopIndex (index);
-	Display display = getDisplay ();
 	Rectangle listRect = list.getBounds ();
 	Rectangle parentRect = display.map (getParent (), null, getBounds ());
 	Point comboSize = getSize ();
@@ -573,6 +580,14 @@ void dropDown (boolean drop) {
 	popup.setBounds (x, y, width, height);
 	popup.setVisible (true);
 	if (isFocusControl()) list.setFocus ();
+	
+	/*
+	 * Add a filter to listen to scrolling of the parent composite, when the
+	 * drop-down is visible. Remove the filter when drop-down is not
+	 * visible.
+	 */
+	display.removeFilter (SWT.Selection, filter);
+	display.addFilter (SWT.Selection, filter);
 }
 /*
  * Return the lowercase of the first non-'&' character following
@@ -865,6 +880,12 @@ void handleFocus (int type) {
 		}
 	}
 }
+void handleScroll(Event event) {
+	ScrollBar scrollBar = (ScrollBar)event.widget;
+	Control scrollableParent = scrollBar.getParent();
+	if (scrollableParent.equals(list)) return;
+	if (isParentScrolling(scrollableParent)) dropDown(false);
+}
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 
@@ -1022,6 +1043,15 @@ public boolean isFocusControl () {
 		return true;
 	} 
 	return super.isFocusControl ();
+}
+boolean isParentScrolling(Control scrollableParent) {
+	Control parent = this.getParent();
+	while (parent != null) {
+		if (parent.equals(scrollableParent))
+			return true;
+		parent = parent.getParent();
+	}
+	return false;
 }
 void internalLayout (boolean changed) {
 	if (isDropped ()) dropDown (false);
