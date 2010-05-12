@@ -154,12 +154,24 @@ int /*long*/ accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
 
 int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 	
-	if (id == accessibleHandle() && accessible != null) {			
-		NSArray returnValue = accessible.internal_accessibilityAttributeNames(ACC.CHILDID_SELF);
-		if (returnValue != null) return returnValue.id;
+	int /*long*/ returnValue = 0;
+	
+	if (id == accessibleHandle() && accessible != null) {
+		// See if the accessible is defining the attribute set for the control.
+		id value = accessible.internal_accessibilityAttributeNames(ACC.CHILDID_SELF);
+		returnValue = (value != null ? value.id : 0);
+		
+		// If not, ask Cocoa for the set for this control.
+		if (returnValue == 0) returnValue = super.accessibilityAttributeNames(id, sel);
+		
+		// Add relationship attributes.
+		returnValue = accessible.internal_addRelationAttributes(returnValue);
 	}
 
-	return super.accessibilityAttributeNames(id, sel);
+	// If the SWT accessibility didn't give us anything get the default for the view/cell.
+	if (returnValue == 0) returnValue = super.accessibilityAttributeNames(id, sel);
+	
+	return returnValue;
 }
 
 int /*long*/ accessibilityParameterizedAttributeNames(int /*long*/ id, int /*long*/ sel) {
@@ -209,6 +221,14 @@ int /*long*/ accessibilityHitTest(int /*long*/ id, int /*long*/ sel, NSPoint poi
 	else
 		return returnValue.id;
 }
+
+//boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {	
+//	if (id == accessibleHandle() && accessible != null) {
+//		return accessible.internal_accessibilityIsIgnored(ACC.CHILDID_SELF);
+//	}
+//	
+//	return super.accessibilityIsIgnored(id, sel);
+//}
 
 int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	NSString attribute = new NSString(arg0);

@@ -866,33 +866,15 @@ public class Accessible {
 			return null;
 		
 		checkRole(event.detail);
-				
-		if ((childID == ACC.CHILDID_SELF) && (attributeNames != null)) {
-			// See if this object has a label or is a label for something else. If so, add that to the list.
-			if (relations[ACC.RELATION_LABEL_FOR] != null) {
-				if (!attributeNames.containsObject(OS.NSAccessibilityServesAsTitleForUIElementsAttribute)) attributeNames.addObject(OS.NSAccessibilityServesAsTitleForUIElementsAttribute);
-			} else {
-				attributeNames.removeObject(OS.NSAccessibilityServesAsTitleForUIElementsAttribute);
-			}
-			
-			if (relations[ACC.RELATION_LABELLED_BY] != null) {
-				if (!attributeNames.containsObject(OS.NSAccessibilityTitleUIElementAttribute)) attributeNames.addObject(OS.NSAccessibilityTitleUIElementAttribute);
-			} else {
-				attributeNames.removeObject(OS.NSAccessibilityTitleUIElementAttribute);
-			}
-
-			return retainedAutoreleased(attributeNames);
-		}
 		
+		// If the attributes haven't changed return the cached list.
+		if (attributeNames != null) return retainedAutoreleased(attributeNames);
+		
+		// Set up the base set of attributes.
 		NSMutableArray returnValue = NSMutableArray.arrayWithCapacity(baseAttributes.length);
 
-		/* Add our list of supported attributes to the array.
-		 * Make sure each attribute name is not already in the array before appending.
-		 */
 		for (int i = 0; i < baseAttributes.length; i++) {
-			if (!returnValue.containsObject(baseAttributes[i])) {
-				returnValue.addObject(baseAttributes[i]);
-			}
+			returnValue.addObject(baseAttributes[i]);
 		}
 		
 		switch(event.detail) {
@@ -1529,6 +1511,8 @@ public class Accessible {
 		event.offset = (int) /*64*/ range.location;
 		event.start = event.end = -1;
 		
+		NSRange attributeRange = new NSRange();
+		
 		while (event.offset < range.location + range.length) {
 			if (accessibleAttributeListeners.size() > 0) {
 				for (int i = 0; i < accessibleAttributeListeners.size(); i++) {
@@ -1537,15 +1521,22 @@ public class Accessible {
 				}
 			}
 
-			if (event.start == -1 && event.end == -1) {
-				return stringFragment;
-			} else {
-				event.offset = event.end;
-			}			
-
-			NSRange attributeRange = new NSRange();
+			if (event.start == -1 && event.end == -1) return stringFragment;
+			
 			attributeRange.location = event.start - range.location;
 			attributeRange.length = event.end - event.start;
+
+			if (attributeRange.location < 0) {
+				attributeRange.length -= -attributeRange.location;
+				attributeRange.location = 0;
+			}
+
+			if (attributeRange.location + attributeRange.length > range.length) {
+				attributeRange.length = range.length - attributeRange.location;
+			}
+			
+			event.offset = event.end;
+
 			
 			if (event.textStyle != null) {
 				TextStyle ts = event.textStyle;
@@ -1645,6 +1636,7 @@ public class Accessible {
 				break;
 			}
 			paragraphDict.setValue(NSNumber.numberWithInt(osAlignment), NSString.stringWith("AXTextAlignment"));
+			range.location = 0;
 			attribString.addAttribute(NSString.stringWith("AXParagraphStyle"), paragraphDict, range);
 		}
 		
@@ -2932,7 +2924,10 @@ public class Accessible {
 	 * @since 3.6
 	 */
 	public void removeRelation(int type, Accessible target) {
-		//TODO: platform-specific? (we will manage the set on Windows)
+		checkWidget();
+		if (relations[type] != null) {
+			relations[type].removeTarget(target);
+		}
 	}
 	
 	void release(boolean destroy) {
@@ -3281,6 +3276,39 @@ public class Accessible {
 	/* isValidThread was copied from Widget, and rewritten to work in this package */
 	boolean isValidThread () {
 		return control.getDisplay ().getThread () == Thread.currentThread ();
+	}
+
+	/**
+	 * Adds relationship attributes if needed to the property list. 
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
+	public int /*long*/ internal_addRelationAttributes(int /*long*/ defaultAttributes) {
+		NSArray attributes = new NSArray(defaultAttributes);
+		NSMutableArray returnArray = NSMutableArray.arrayWithCapacity(attributes.count());
+		returnArray.addObjectsFromArray(attributes);
+		
+		// See if this object has a label or is a label for something else. If so, add that to the list.
+		if (relations[ACC.RELATION_LABEL_FOR] != null) {
+			if (!returnArray.containsObject(OS.NSAccessibilityServesAsTitleForUIElementsAttribute)) returnArray.addObject(OS.NSAccessibilityServesAsTitleForUIElementsAttribute);
+			if (!returnArray.containsObject(OS.NSAccessibilityTitleAttribute)) returnArray.addObject(OS.NSAccessibilityTitleAttribute);
+		} else {
+			returnArray.removeObject(OS.NSAccessibilityServesAsTitleForUIElementsAttribute);
+		}
+
+		if (relations[ACC.RELATION_LABELLED_BY] != null) {
+			if (!returnArray.containsObject(OS.NSAccessibilityTitleUIElementAttribute)) returnArray.addObject(OS.NSAccessibilityTitleUIElementAttribute);
+		} else {
+			returnArray.removeObject(OS.NSAccessibilityTitleUIElementAttribute);
+		}
+
+		return returnArray.id;
 	}
 
 }
