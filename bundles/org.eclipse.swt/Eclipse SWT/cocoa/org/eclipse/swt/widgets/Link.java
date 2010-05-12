@@ -347,6 +347,12 @@ void register () {
 	display.addWidget(scrollView, this);
 }
 
+void releaseHandle () {
+	super.releaseHandle ();
+	if (scrollView != null) scrollView.release();
+	scrollView = null;
+}
+
 void releaseWidget () {
 	super.releaseWidget ();
 	offsets = null;
