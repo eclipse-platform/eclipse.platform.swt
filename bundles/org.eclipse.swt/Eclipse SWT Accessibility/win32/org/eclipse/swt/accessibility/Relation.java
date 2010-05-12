@@ -58,6 +58,7 @@ class Relation {
 		this.accessible = accessible;
 		this.type = type;
 		this.targets = new Accessible[0];
+		AddRef();
 	}
 	
 	int /*long*/ getAddress() {
@@ -135,7 +136,7 @@ class Relation {
 		if (targetIndex < 0 || targetIndex >= targets.length) return COM.E_INVALIDARG;
 		Accessible target = targets[targetIndex];
 		target.AddRef();
-		COM.MoveMemory(ppTarget, new int /*long*/[] { target.objIAccessible.getAddress() }, OS.PTR_SIZEOF);
+		COM.MoveMemory(ppTarget, new int /*long*/[] { target.getAddress() }, OS.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
@@ -145,7 +146,7 @@ class Relation {
 		for (int i = 0; i < count; i++) {
 			Accessible target = targets[i];
 			target.AddRef();
-			COM.MoveMemory(ppTargets + i * OS.PTR_SIZEOF, new int /*long*/[] { target.objIAccessible.getAddress() }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppTargets + i * OS.PTR_SIZEOF, new int /*long*/[] { target.getAddress() }, OS.PTR_SIZEOF);
 		}
 		COM.MoveMemory(pNTargets, new int [] { count }, 4);
 		return COM.S_OK;
