@@ -510,6 +510,18 @@ int GetSecurityId(int /*long*/ pwszUrl, int /*long*/ pbSecurityId, int /*long*/ 
 int ProcessUrlAction(int /*long*/ pwszUrl, int dwAction, int /*long*/ pPolicy, int cbPolicy, int /*long*/ pContext, int cbContext, int dwFlags, int dwReserved) {
 	ignoreNextMessage = false;
 
+	/*
+	* If the current page is about:blank and is trusted then
+	* override default zone elevation settings to allow the action.  
+	*/
+	if (dwAction == IE.URLACTION_FEATURE_ZONE_ELEVATION) {
+	    IE ie = (IE)((Browser)getParent().getParent()).webBrowser;
+	    if (ie.auto != null && ie._getUrl().startsWith(IE.ABOUT_BLANK) && !ie.untrustedText) {
+			if (cbPolicy >= 4) COM.MoveMemory(pPolicy, new int[] {IE.URLPOLICY_ALLOW}, 4);
+			return COM.S_OK;
+	    }
+	}
+
 	int policy = IE.INET_E_DEFAULT_ACTION;
 
 	if (dwAction >= IE.URLACTION_JAVA_MIN && dwAction <= IE.URLACTION_JAVA_MAX) {

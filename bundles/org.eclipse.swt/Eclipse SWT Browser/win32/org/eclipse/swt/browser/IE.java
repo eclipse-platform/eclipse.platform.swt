@@ -78,6 +78,7 @@ class IE extends WebBrowser {
 	static final int URLACTION_ACTIVEX_MIN = 0x00001200;
 	static final int URLACTION_ACTIVEX_MAX = 0x000013ff;
 	static final int URLACTION_ACTIVEX_RUN = 0x00001200;
+	static final int URLACTION_FEATURE_ZONE_ELEVATION = 0x00002101;
 	static final int URLACTION_JAVA_MIN = 0x00001C00;
 	static final int URLACTION_JAVA_MAX = 0x00001Cff;
 	static final int URLACTION_SCRIPT_RUN = 0x00001400;
