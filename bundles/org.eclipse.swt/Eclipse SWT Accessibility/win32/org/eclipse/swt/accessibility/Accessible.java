@@ -91,6 +91,7 @@ public class Accessible {
 		this.parent = checkNull(parent);
 		this.control = parent.control;
 		parent.children.addElement(this);
+		AddRef();
 	}
 
 	/**
