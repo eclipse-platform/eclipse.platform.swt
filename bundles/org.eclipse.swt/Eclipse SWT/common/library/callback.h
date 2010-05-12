@@ -23,6 +23,10 @@
 #define RETURN_CAST (LRESULT)
 #endif
 
+#if defined COCOA
+#import <Foundation/Foundation.h>
+#endif
+
 #ifndef RETURN_TYPE
 #define RETURN_TYPE jintLong
 #endif
