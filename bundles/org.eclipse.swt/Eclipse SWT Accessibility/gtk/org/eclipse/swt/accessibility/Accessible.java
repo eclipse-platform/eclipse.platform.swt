@@ -65,6 +65,13 @@ public class Accessible {
 			this.type = type;
 			this.target = target;
 		}
+
+		public boolean equals(Object object) {
+			if (object == this) return true;
+			if (!(object instanceof Relation)) return false;
+			Relation relation = (Relation)object;
+			return (relation.type == this.type) && (relation.target == this.target);
+		}
 	}
 	
 	/**
@@ -373,7 +380,9 @@ public class Accessible {
 	public void addRelation(int type, Accessible target) {
 		checkWidget();
 		if (relations == null) relations = new Vector();
-		relations.add(new Relation(type, target));
+		Relation relation = new Relation(type, target);
+		if (relations.indexOf(relation) != -1) return;
+		relations.add(relation);
 		if (accessibleObject != null) accessibleObject.addRelation(type, target);
 	}
 	
@@ -749,16 +758,11 @@ public class Accessible {
 	public void removeRelation(int type, Accessible target) {
 		checkWidget();
 		if (relations == null) return;
-		for (int i = relations.size() - 1; i >= 0; i--) {
-			Relation relation = (Relation)relations.elementAt(i);
-			if (relation.type == type && relation.target == target) {
-				relations.remove(i);
-				if (accessibleObject != null) {
-					accessibleObject.removeRelation(relation.type, relation.target);
-				}
-				break;
-			}
-		}
+		Relation relation = new Relation(type, target);
+		int index = relations.indexOf(relation);
+		if (index == -1) return;
+		relations.remove(index);
+		if (accessibleObject != null) accessibleObject.removeRelation(type, target);
 	}
 
 	/**
