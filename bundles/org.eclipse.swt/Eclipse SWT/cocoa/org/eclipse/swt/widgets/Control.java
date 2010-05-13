@@ -222,14 +222,6 @@ int /*long*/ accessibilityHitTest(int /*long*/ id, int /*long*/ sel, NSPoint poi
 		return returnValue.id;
 }
 
-//boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {	
-//	if (id == accessibleHandle() && accessible != null) {
-//		return accessible.internal_accessibilityIsIgnored(ACC.CHILDID_SELF);
-//	}
-//	
-//	return super.accessibilityIsIgnored(id, sel);
-//}
-
 int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	NSString attribute = new NSString(arg0);
 	int /*long*/ returnValue = 0;

@@ -1511,8 +1511,6 @@ public class Accessible {
 		event.offset = (int) /*64*/ range.location;
 		event.start = event.end = -1;
 		
-		NSRange attributeRange = new NSRange();
-		
 		while (event.offset < range.location + range.length) {
 			if (accessibleAttributeListeners.size() > 0) {
 				for (int i = 0; i < accessibleAttributeListeners.size(); i++) {
@@ -1521,22 +1519,15 @@ public class Accessible {
 				}
 			}
 
-			if (event.start == -1 && event.end == -1) return stringFragment;
-			
+			if (event.start == -1 && event.end == -1) {
+				return stringFragment;
+			} else {
+				event.offset = event.end;
+			}			
+
+			NSRange attributeRange = new NSRange();
 			attributeRange.location = event.start - range.location;
 			attributeRange.length = event.end - event.start;
-
-			if (attributeRange.location < 0) {
-				attributeRange.length -= -attributeRange.location;
-				attributeRange.location = 0;
-			}
-
-			if (attributeRange.location + attributeRange.length > range.length) {
-				attributeRange.length = range.length - attributeRange.location;
-			}
-			
-			event.offset = event.end;
-
 			
 			if (event.textStyle != null) {
 				TextStyle ts = event.textStyle;
@@ -1636,7 +1627,6 @@ public class Accessible {
 				break;
 			}
 			paragraphDict.setValue(NSNumber.numberWithInt(osAlignment), NSString.stringWith("AXTextAlignment"));
-			range.location = 0;
 			attribString.addAttribute(NSString.stringWith("AXParagraphStyle"), paragraphDict, range);
 		}
 		
@@ -3281,7 +3271,7 @@ public class Accessible {
 	/**
 	 * Adds relationship attributes if needed to the property list. 
 	 * <p>
-	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
 	 * public API. It is marked public only so that it can be shared
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
