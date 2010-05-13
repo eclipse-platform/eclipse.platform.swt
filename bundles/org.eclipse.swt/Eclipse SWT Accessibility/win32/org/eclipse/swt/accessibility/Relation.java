@@ -153,13 +153,22 @@ class Relation {
 	}
 
 	void addTarget(Accessible target) {
+		if (containsTarget(target)) return;
 		Accessible[] newTargets = new Accessible[targets.length + 1];
 		System.arraycopy(targets, 0, newTargets, 0, targets.length);
 		newTargets[targets.length] = target;
 		targets = newTargets;
 	}
 
+	boolean containsTarget(Accessible target) {
+		for (int i = 0; i < targets.length; i++) {
+			if (targets[i] == target) return true;
+		}
+		return false;
+	}
+
 	void removeTarget(Accessible target) {
+		if (!containsTarget(target)) return;
 		Accessible[] newTargets = new Accessible[targets.length - 1];
 		int j = 0;
 		for (int i = 0; i < targets.length; i++) {
