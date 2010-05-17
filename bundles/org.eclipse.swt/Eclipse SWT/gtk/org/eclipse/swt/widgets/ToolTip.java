@@ -499,6 +499,8 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 			x += IMAGE_SIZE;
 		}
 		x += INSET;
+		Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
+		OS.gdk_gc_set_foreground (gdkGC, foreground.handle);
 		OS.gdk_draw_layout (window, gdkGC, x, y, layoutText);
 		int [] w = new int [1], h = new int [1];
 		OS.pango_layout_get_size (layoutText, w, h);
@@ -506,6 +508,8 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	}
 	if (layoutMessage != 0) {
 		x = BORDER + PADDING + INSET;
+		Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
+		OS.gdk_gc_set_foreground (gdkGC, foreground.handle);
 		OS.gdk_draw_layout (window, gdkGC, x, y, layoutMessage);
 	}
 	OS.g_object_unref (gdkGC);
