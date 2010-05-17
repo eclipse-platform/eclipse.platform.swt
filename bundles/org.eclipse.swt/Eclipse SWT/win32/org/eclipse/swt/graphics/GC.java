@@ -2425,7 +2425,10 @@ void drawText(int /*long*/ gdipGraphics, String string, int x, int y, int flags,
 				case '\n':
 					if ((flags & SWT.DRAW_DELIMITER) != 0) {
 						int l = end - start - 1;
-						if (c == '\r' && end != length && chars[end] == '\n') end++;
+						if (c == '\r' && end != length && chars[end] == '\n') {
+							end++;
+							i++;
+						}
 						RectF bounds = drawText(gdipGraphics, chars, start, l, drawX, drawY, flags, mnemonicIndex, lptm, size == null);
 						drawY += Math.ceil(bounds.Height);
 						width = Math.max(width, drawX + (int)Math.ceil(bounds.Width));
