@@ -47,6 +47,8 @@ public class Accessible {
 	static final int TABLE_MODEL_CHANGE_SIZE = 5;
 	static final int TEXT_CHANGE_SIZE = 4;
 	static final boolean DEBUG = false;
+	static final String PROPERTY_USEIA2 = "org.eclipse.swt.accessibility.UseIA2"; //$NON-NLS-1$
+	static boolean UseIA2 = true;
 	static int UniqueID = -0x10;
 	int refCount = 0, enumIndex = 0;
 	COMObject objIAccessible, objIEnumVARIANT, objIServiceProvider, objIAccessible2, objIAccessibleAction,
@@ -74,6 +76,13 @@ public class Accessible {
 	Object [] textDeleted; // type, start, end, text
 	Object [] textInserted; // type, start, end, text
 
+	static {
+		String property = System.getProperty (PROPERTY_USEIA2);
+		if (property != null && property.equalsIgnoreCase ("false")) { //$NON-NLS-1$
+			UseIA2 = false;
+		}
+	}
+	
 	/**
 	 * Constructs a new instance of this class given its parent.
 	 * 
@@ -1187,6 +1196,7 @@ public class Accessible {
 	 */
 	public void sendEvent(int event, Object eventData) {
 		checkWidget();
+		if (!UseIA2) return;
 		if (DEBUG) print(this + ".NotifyWinEvent " + getEventString(event) + " hwnd=" + control.handle + " childID=" + eventChildID());
 		switch (event) {
 			case ACC.EVENT_TABLE_CHANGED: {
@@ -1331,6 +1341,7 @@ public class Accessible {
 		checkWidget();
 		if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_LOCATIONCHANGE hwnd=" + control.handle + " childID=" + eventChildID());
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_LOCATIONCHANGE, control.handle, COM.OBJID_CARET, eventChildID());
+		if (!UseIA2) return;
 		if (DEBUG) print(this + ".NotifyWinEvent IA2_EVENT_TEXT_CARET_MOVED hwnd=" + control.handle + " childID=" + eventChildID());
 		COM.NotifyWinEvent (COM.IA2_EVENT_TEXT_CARET_MOVED, control.handle, COM.OBJID_CLIENT, eventChildID());
 	}
@@ -1429,6 +1440,7 @@ public class Accessible {
 		}
 		
 		if (COM.IsEqualGUID(guid, COM.IIDIServiceProvider)) {
+			if (!UseIA2) return COM.E_NOINTERFACE;
 			if (accessibleActionListeners.size() > 0 || accessibleAttributeListeners.size() > 0 ||
 				accessibleHyperlinkListeners.size() > 0 || accessibleTableListeners.size() > 0 ||
 				accessibleTableCellListeners.size() > 0 || accessibleTextExtendedListeners.size() > 0 ||
