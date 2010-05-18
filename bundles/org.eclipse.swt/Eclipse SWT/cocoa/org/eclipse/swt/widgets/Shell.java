@@ -520,6 +520,7 @@ void center () {
 
 void clearDeferFlushing (int /*long*/ id, int /*long*/ sel) {
 	deferFlushing = false;
+	if (window != null) window.flushWindowIfNeeded();
 }
 
 /**

@@ -1101,6 +1101,7 @@ public static final int /*long*/ sel_flagsChanged_ = sel_registerName("flagsChan
 public static final int /*long*/ sel_floatValue = sel_registerName("floatValue");
 public static final int /*long*/ sel_flushBuffer = sel_registerName("flushBuffer");
 public static final int /*long*/ sel_flushGraphics = sel_registerName("flushGraphics");
+public static final int /*long*/ sel_flushWindowIfNeeded = sel_registerName("flushWindowIfNeeded");
 public static final int /*long*/ sel_font = sel_registerName("font");
 public static final int /*long*/ sel_fontName = sel_registerName("fontName");
 public static final int /*long*/ sel_fontWithFamily_traits_weight_size_ = sel_registerName("fontWithFamily:traits:weight:size:");
