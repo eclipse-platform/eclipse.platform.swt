@@ -3752,6 +3752,7 @@ public void setVisible (boolean visible) {
 		}
 	}
 	topView().setHidden(!visible);
+	if (isDisposed ()) return;
 	invalidateVisibleRegion();
 	if (!visible) {
 		/*
