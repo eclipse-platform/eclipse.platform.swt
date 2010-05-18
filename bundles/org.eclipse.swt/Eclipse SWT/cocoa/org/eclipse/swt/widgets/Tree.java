@@ -940,7 +940,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rec
 	boolean drawForeground = true;
 	boolean isSelected = cell.isHighlighted();
 	boolean drawSelection = isSelected;
-	boolean hasFocus = hooksErase && hasFocus ();
+	boolean hasFocus = hasFocus ();
 
 	Color selectionBackground = null, selectionForeground = null;
 	if (isSelected && (hooksErase || hooksPaint)) {
