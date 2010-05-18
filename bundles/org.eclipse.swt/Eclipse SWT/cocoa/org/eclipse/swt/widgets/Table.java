@@ -2971,8 +2971,10 @@ void sendDoubleSelection() {
 		if ((style & SWT.CHECK) != 0) {
 			NSArray columns = tableView.tableColumns ();
 			int columnIndex = (int)/*64*/tableView.clickedColumn ();
-			id column = columns.objectAtIndex (columnIndex);
-			if (column.id == checkColumn.id) return;
+			if (columnIndex != -1) {
+				id column = columns.objectAtIndex (columnIndex);
+				if (column.id == checkColumn.id) return;
+			}
 		}
 		Event event = new Event ();
 		event.item = _getItem (rowIndex);

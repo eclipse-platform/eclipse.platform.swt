@@ -2415,8 +2415,10 @@ void sendDoubleSelection() {
 		if ((style & SWT.CHECK) != 0) {
 			NSArray columns = outlineView.tableColumns ();
 			int columnIndex = (int)/*64*/outlineView.clickedColumn ();
-			id column = columns.objectAtIndex (columnIndex);
-			if (column.id == checkColumn.id) return;
+			if (columnIndex != -1) {
+				id column = columns.objectAtIndex (columnIndex);
+				if (column.id == checkColumn.id) return;
+			}
 		}
 		TreeItem item = (TreeItem) display.getWidget (outlineView.itemAtRow (rowIndex).id);
 		Event event = new Event ();
