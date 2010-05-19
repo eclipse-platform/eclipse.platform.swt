@@ -6699,20 +6699,14 @@ void initializeAccessible() {
 			int offset = Math.max(0, Math.min(e.offset, contentLength - 1));
 			int lineIndex = st.getLineAtOffset(offset);
 			int lineOffset = st.getOffsetAtLine(lineIndex);
-			int lineLength = st.getContent().getLine(lineIndex).length();
 			int lineCount = st.getLineCount();
 			offset = offset - lineOffset;
-			if (offset >= lineLength) {
-				e.start = lineOffset + lineLength;
-				if (lineIndex + 1 < lineCount) {
-					e.end = st.getOffsetAtLine(lineIndex + 1);
-				} else  {
-					e.end = contentLength;
-				}
-				return;
-			}
+			
 			TextLayout layout = st.renderer.getTextLayout(lineIndex);
-			e.textStyle = layout.getStyle(offset);
+			int lineLength = layout.getText().length();
+			if (lineLength > 0) {
+				e.textStyle = layout.getStyle(Math.max(0, Math.min(offset, lineLength - 1)));
+			}
 			
 			// If no override info available, use defaults. Don't supply default colors, though.
 			if (e.textStyle == null) {
@@ -6725,6 +6719,17 @@ void initializeAccessible() {
 					if (textStyle.font == null) textStyle.font = st.getFont();
 					e.textStyle = textStyle;
 				}
+			}
+			
+			//offset at line delimiter case
+			if (offset >= lineLength) {
+				e.start = lineOffset + lineLength;
+				if (lineIndex + 1 < lineCount) {
+					e.end = st.getOffsetAtLine(lineIndex + 1);
+				} else  {
+					e.end = contentLength;
+				}
+				return;
 			}
 			
 			int[] ranges = layout.getRanges();
