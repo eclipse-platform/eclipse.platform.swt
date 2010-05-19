@@ -1055,6 +1055,9 @@ public class Accessible {
 			case ACC.ROLE_DOCUMENT:
 				break;
 			case ACC.ROLE_GRAPHIC:
+				returnValue.addObject(OS.NSAccessibilityEnabledAttribute);
+				returnValue.addObject(OS.NSAccessibilityTitleAttribute);
+				returnValue.addObject(OS.NSAccessibilityDescriptionAttribute);
 				break;
 			case ACC.ROLE_GROUP:
 				break;
@@ -1511,6 +1514,8 @@ public class Accessible {
 		event.offset = (int) /*64*/ range.location;
 		event.start = event.end = -1;
 		
+		NSRange attributeRange = new NSRange();
+		
 		while (event.offset < range.location + range.length) {
 			if (accessibleAttributeListeners.size() > 0) {
 				for (int i = 0; i < accessibleAttributeListeners.size(); i++) {
@@ -1519,16 +1524,27 @@ public class Accessible {
 				}
 			}
 
-			if (event.start == -1 && event.end == -1) {
-				return stringFragment;
-			} else {
-				event.offset = event.end;
-			}			
-
-			NSRange attributeRange = new NSRange();
+			if (event.start == -1 && event.end == -1) return stringFragment;
+			
+			// The returned attributed string must have zero-based attributes.
 			attributeRange.location = event.start - range.location;
 			attributeRange.length = event.end - event.start;
-			
+
+			// attributeRange.location can be negative if the start of the requested range falls in the middle of a style run.
+			// If that happens, clamp to zero and adjust the length by the amount of adjustment.
+			if (attributeRange.location < 0) {
+				attributeRange.length -= -attributeRange.location;
+				attributeRange.location = 0;
+			}
+
+			// Likewise, make sure the last attribute set does not run past the end of the requested range. 
+			if (attributeRange.location + attributeRange.length > range.length) {
+				attributeRange.length = range.length - attributeRange.location;
+			}
+
+			// Reset the offset so we pick up the next set of attributes that change.
+			event.offset = event.end;
+
 			if (event.textStyle != null) {
 				TextStyle ts = event.textStyle;
 				if (ts.font != null) {
@@ -1627,6 +1643,7 @@ public class Accessible {
 				break;
 			}
 			paragraphDict.setValue(NSNumber.numberWithInt(osAlignment), NSString.stringWith("AXTextAlignment"));
+			range.location = 0;
 			attribString.addAttribute(NSString.stringWith("AXParagraphStyle"), paragraphDict, range);
 		}
 		
