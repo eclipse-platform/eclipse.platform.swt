@@ -5343,7 +5343,7 @@ int getWordNext (int offset, int movement) {
 		lineOffset = content.getOffsetAtLine(lineIndex);
 		lineText = content.getLine(lineIndex);
 		int lineLength = lineText.length();
-		if (offset == lineOffset + lineLength) {
+		if (offset >= lineOffset + lineLength) {
 			newOffset = content.getOffsetAtLine(lineIndex + 1);
 		} else {
 			TextLayout layout = renderer.getTextLayout(lineIndex);
@@ -5370,8 +5370,9 @@ int getWordPrevious(int offset, int movement) {
 			int nextLineOffset = content.getOffsetAtLine(lineIndex - 1); 
 			newOffset = nextLineOffset + nextLineText.length();
 		} else {
+			int layoutOffset = Math.min(offset - lineOffset, lineText.length());
 			TextLayout layout = renderer.getTextLayout(lineIndex);
-			newOffset = lineOffset + layout.getPreviousOffset(offset - lineOffset, movement);
+			newOffset = lineOffset + layout.getPreviousOffset(layoutOffset, movement);
 			renderer.disposeTextLayout(layout); 
 		}
 	}
