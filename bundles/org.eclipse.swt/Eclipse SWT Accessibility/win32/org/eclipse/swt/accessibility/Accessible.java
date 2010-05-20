@@ -4040,7 +4040,7 @@ public class Accessible {
 					}
 					event.end = event.start;
 					event.start = start;
-					event.type = COM.IA2_TEXT_BOUNDARY_ALL;
+					event.type = ACC.TEXT_BOUNDARY_ALL;
 					event.count = 0;
 					for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 						AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
@@ -4093,7 +4093,7 @@ public class Accessible {
 					}
 					event.end = event.start;
 					event.start = start;
-					event.type = COM.IA2_TEXT_BOUNDARY_ALL;
+					event.type = ACC.TEXT_BOUNDARY_ALL;
 					event.count = 0;
 					for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 						AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
@@ -4153,7 +4153,7 @@ public class Accessible {
 					}
 					event.end = event.start;
 					event.start = start;
-					event.type = COM.IA2_TEXT_BOUNDARY_ALL;
+					event.type = ACC.TEXT_BOUNDARY_ALL;
 					event.count = 0;
 					for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 						AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
