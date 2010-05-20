@@ -1782,18 +1782,22 @@ public class Accessible {
 			listener.getRole(event);
 		}
 		if (event.detail != -1) {
-			String appRole = roleToOs (event.detail);
-			String appSubrole = null;
-			int index = appRole.indexOf(':');
-			if (index != -1) {
-				appSubrole = appRole.substring(index + 1);
-				appRole = appRole.substring(0, index);
+			if (event.detail == ACC.ROLE_TABITEM) {
+				returnValue = new NSString(OS.NSAccessibilityRoleDescription (NSString.stringWith("AXTab").id, 0));
+			} else {
+				String appRole = roleToOs (event.detail);
+				String appSubrole = null;
+				int index = appRole.indexOf(':');
+				if (index != -1) {
+					appSubrole = appRole.substring(index + 1);
+					appRole = appRole.substring(0, index);
+				}
+				NSString nsAppRole = NSString.stringWith(appRole);
+				NSString nsAppSubrole = null;
+				
+				if (appSubrole != null) nsAppSubrole = NSString.stringWith(appSubrole);
+				returnValue = new NSString(OS.NSAccessibilityRoleDescription (((nsAppRole != null) ? nsAppRole.id : 0), (nsAppSubrole != null) ? nsAppSubrole.id : 0));
 			}
-			NSString nsAppRole = NSString.stringWith(appRole);
-			NSString nsAppSubrole = null;
-			
-			if (appSubrole != null) nsAppSubrole = NSString.stringWith(appSubrole);
-			returnValue = new NSString(OS.NSAccessibilityRoleDescription (((nsAppRole != null) ? nsAppRole.id : 0), (nsAppSubrole != null) ? nsAppSubrole.id : 0));
 		}
 		return returnValue;
 	}
