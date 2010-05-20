@@ -4008,7 +4008,7 @@ public class Accessible {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		int charCount = getCharacterCount();
 		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? charCount : offset == COM.IA2_TEXT_OFFSET_CARET ? getCaretOffset() : offset;
-		event.end = event.start == charCount ? event.start : event.start + 1;
+		event.end = event.start;
 		event.count = -1;
 		switch (boundaryType) {
 			case COM.IA2_TEXT_BOUNDARY_CHAR: event.type = ACC.TEXT_BOUNDARY_CHAR; break;
@@ -4018,9 +4018,35 @@ public class Accessible {
 			case COM.IA2_TEXT_BOUNDARY_LINE: event.type = ACC.TEXT_BOUNDARY_LINE; break;
 			default: return COM.E_INVALIDARG;
 		}
+		int eventStart = event.start;
+		int eventEnd = event.end;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.getText(event);
+		}
+		if (event.end < charCount) {
+			switch (boundaryType) {
+				case COM.IA2_TEXT_BOUNDARY_WORD:
+				case COM.IA2_TEXT_BOUNDARY_SENTENCE:
+				case COM.IA2_TEXT_BOUNDARY_PARAGRAPH:
+				case COM.IA2_TEXT_BOUNDARY_LINE:
+					int start = event.start;
+					event.start = eventStart;
+					event.end = eventEnd;
+					event.count = 0;
+					for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+						AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+						listener.getText(event);
+					}
+					event.end = event.start;
+					event.start = start;
+					event.type = COM.IA2_TEXT_BOUNDARY_ALL;
+					event.count = 0;
+					for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+						AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+						listener.getText(event);
+					}
+			}
 		}
 		if (DEBUG) print(this + ".IAccessibleText::get_textBeforeOffset(" + offset + ") returning start=" + event.start + ", end=" + event.end + " " + event.result + hresult(event.result == null ? COM.S_FALSE : COM.S_OK));
 		COM.MoveMemory(pStartOffset, new int [] { event.start }, 4);
@@ -4035,7 +4061,7 @@ public class Accessible {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		int charCount = getCharacterCount();
 		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? charCount : offset == COM.IA2_TEXT_OFFSET_CARET ? getCaretOffset() : offset;
-		event.end = event.start == charCount ? event.start : event.start + 1;
+		event.end = event.start;
 		event.count = 1;
 		switch (boundaryType) {
 			case COM.IA2_TEXT_BOUNDARY_CHAR: event.type = ACC.TEXT_BOUNDARY_CHAR; break;
@@ -4045,9 +4071,35 @@ public class Accessible {
 			case COM.IA2_TEXT_BOUNDARY_LINE: event.type = ACC.TEXT_BOUNDARY_LINE; break;
 			default: return COM.E_INVALIDARG;
 		}
+		int eventStart = event.start;
+		int eventEnd = event.end;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.getText(event);
+		}
+		if (event.end < charCount) {
+			switch (boundaryType) {
+				case COM.IA2_TEXT_BOUNDARY_WORD:
+				case COM.IA2_TEXT_BOUNDARY_SENTENCE:
+				case COM.IA2_TEXT_BOUNDARY_PARAGRAPH:
+				case COM.IA2_TEXT_BOUNDARY_LINE:
+					int start = event.start;
+					event.start = eventStart;
+					event.end = eventEnd;
+					event.count = 2;
+					for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+						AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+						listener.getText(event);
+					}
+					event.end = event.start;
+					event.start = start;
+					event.type = COM.IA2_TEXT_BOUNDARY_ALL;
+					event.count = 0;
+					for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+						AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+						listener.getText(event);
+					}
+			}
 		}
 		if (DEBUG) print(this + ".IAccessibleText::get_textAfterOffset(" + offset + ") returning start=" + event.start + ", end=" + event.end + " " + event.result + hresult(event.result == null ? COM.S_FALSE : COM.S_OK));
 		COM.MoveMemory(pStartOffset, new int [] { event.start }, 4);
@@ -4062,7 +4114,7 @@ public class Accessible {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		int charCount = getCharacterCount();
 		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? charCount : offset == COM.IA2_TEXT_OFFSET_CARET ? getCaretOffset() : offset;
-		event.end = event.start == charCount ? event.start : event.start + 1;
+		event.end = event.start;
 		event.count = 0;
 		switch (boundaryType) {
 			case COM.IA2_TEXT_BOUNDARY_CHAR: event.type = ACC.TEXT_BOUNDARY_CHAR; break;
@@ -4079,9 +4131,35 @@ public class Accessible {
 			}
 			default: return COM.E_INVALIDARG;
 		}
+		int eventStart = event.start;
+		int eventEnd = event.end;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.getText(event);
+		}
+		if (event.end < charCount) {
+			switch (boundaryType) {
+				case COM.IA2_TEXT_BOUNDARY_WORD:
+				case COM.IA2_TEXT_BOUNDARY_SENTENCE:
+				case COM.IA2_TEXT_BOUNDARY_PARAGRAPH:
+				case COM.IA2_TEXT_BOUNDARY_LINE:
+					int start = event.start;
+					event.start = eventStart;
+					event.end = eventEnd;
+					event.count = 1;
+					for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+						AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+						listener.getText(event);
+					}
+					event.end = event.start;
+					event.start = start;
+					event.type = COM.IA2_TEXT_BOUNDARY_ALL;
+					event.count = 0;
+					for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+						AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+						listener.getText(event);
+					}
+			}
 		}
 		if (DEBUG) print(this + ".IAccessibleText::get_textAtOffset(" + offset + ") returning start=" + event.start + ", end=" + event.end + " " + event.result + hresult(event.result == null ? COM.S_FALSE : COM.S_OK));
 		COM.MoveMemory(pStartOffset, new int [] { event.start }, 4);
