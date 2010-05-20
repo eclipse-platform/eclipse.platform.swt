@@ -68,7 +68,7 @@ CFLAGS = -O1 -DNDEBUG $(cflags) $(cvarsmt) $(CFLAGS) \
 	/I"$(JAVA_HOME)\include" /I"$(JAVA_HOME)\include\win32" /I.
 RCFLAGS = $(rcflags) $(rcvars) $(RCFLAGS) -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
 
-all: make_swt make_awt make_gdip make_wgl $(XULRUNNER_MAKE)
+all: make_swt make_awt make_gdip make_wgl
 
 xpcom_custom.obj: xpcom_custom.cpp
 	cl $(MOZILLACFLAGS) xpcom_custom.cpp
@@ -154,7 +154,7 @@ swt_xpcom.res:
 swt_xpcominit.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(XPCOMINIT_LIB)\" -r -fo swt_xpcom.res swt_xpcom.rc
 
-install: all
+install:
 	copy *.dll $(OUTPUT_DIR)
 
 clean:

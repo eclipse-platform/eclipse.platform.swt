@@ -66,10 +66,16 @@
 
 	<target name="build_win32_x86" depends="init_build">
 		<property name="clean" value="clean"/>
-		<property name="targets" value="x86 install"/>
+		<property name="targets" value="x86 all install"/>
 		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat" failonerror="true">
 			<env key="JAVA_HOME" value=""/>
 			<arg line="${targets}"/>
+			<arg line="${clean}"/>
+		</exec>
+		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat" failonerror="true">
+			<env key="JAVA_HOME" value=""/>
+			<env key="BUILD_XULRUNNER" value="true"/>
+			<arg line="x86 make_xulrunner install"/>
 			<arg line="${clean}"/>
 		</exec>
 		<antcall target="refresh_fragment">
@@ -79,7 +85,7 @@
 
 	<target name="build_win32_x86_64" depends="init_build">
 		<property name="clean" value="clean"/>
-		<property name="targets" value="x86_64 install"/>
+		<property name="targets" value="x86_64 all install"/>
 		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat" failonerror="true">
 			<env key="JAVA_HOME" value=""/>
 			<arg line="${targets}"/>
@@ -92,7 +98,7 @@
 
 	<target name="build_win32_ia64" depends="init_build">
 		<property name="clean" value="clean"/>
-		<property name="targets" value="ia64 install"/>
+		<property name="targets" value="ia64 all install"/>
 		<exec dir="${basedir}/${builddir}" executable="${basedir}/${builddir}/build.bat" failonerror="true">
 			<env key="JAVA_HOME" value=""/>
 			<arg line="${targets}"/>
