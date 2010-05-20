@@ -2264,6 +2264,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
+				int /*long*/ charCount = atkText_get_character_count (atkObject);
 				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.start = event.end = (int)/*64*/offset_value;
 				event.count = 1;
@@ -2276,9 +2277,57 @@ class AccessibleObject {
 					case ATK.ATK_TEXT_BOUNDARY_LINE_START: event.type = ACC.TEXT_BOUNDARY_LINE; break; 
 					case ATK.ATK_TEXT_BOUNDARY_LINE_END: event.type = ACC.TEXT_BOUNDARY_LINE; break; 
 				}
+				int eventStart = event.start;
+				int eventEnd = event.end;
 				for (int i = 0; i < length; i++) {
 					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
 					listener.getText(event);
+				}
+				switch ((int)/*64*/boundary_type) {
+					case ATK.ATK_TEXT_BOUNDARY_WORD_START: 
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START: 
+					case ATK.ATK_TEXT_BOUNDARY_LINE_START:
+						if (event.end < charCount) {
+							int start = event.start;
+							event.start = eventStart;
+							event.end = eventEnd;
+							event.count = 2;
+							for (int i = 0; i < length; i++) {
+								AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
+								listener.getText(event);
+							}
+							event.end = event.start;
+							event.start = start;
+							event.type = ACC.TEXT_BOUNDARY_ALL;
+							event.count = 0;
+							for (int i = 0; i < length; i++) {
+								AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
+								listener.getText(event);
+							}
+						}
+						break;
+					case ATK.ATK_TEXT_BOUNDARY_WORD_END: 
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END: 
+					case ATK.ATK_TEXT_BOUNDARY_LINE_END:
+						if (0 < event.start) {
+							int end = event.end;
+							event.start = eventStart;
+							event.end = eventEnd;
+							event.count = 0;
+							for (int i = 0; i < length; i++) {
+								AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
+								listener.getText(event);
+							}
+							event.start = event.end;
+							event.end = end;
+							event.type = ACC.TEXT_BOUNDARY_ALL;
+							event.count = 0;
+							for (int i = 0; i < length; i++) {
+								AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
+								listener.getText(event);
+							}
+						}
+						break;
 				}
 				OS.memmove (start_offset, new int[] {event.start}, 4);
 				OS.memmove (end_offset, new int[] {event.end}, 4);
@@ -2463,6 +2512,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
+				int /*long*/ charCount = atkText_get_character_count (atkObject);
 				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.start = event.end = (int)/*64*/offset_value;
 				event.count = 0;
@@ -2475,9 +2525,57 @@ class AccessibleObject {
 					case ATK.ATK_TEXT_BOUNDARY_LINE_START: event.type = ACC.TEXT_BOUNDARY_LINE; break; 
 					case ATK.ATK_TEXT_BOUNDARY_LINE_END: event.type = ACC.TEXT_BOUNDARY_LINE; break; 
 				}
+				int eventStart = event.start;
+				int eventEnd = event.end;
 				for (int i = 0; i < length; i++) {
 					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
 					listener.getText(event);
+				}
+				switch ((int)/*64*/boundary_type) {
+					case ATK.ATK_TEXT_BOUNDARY_WORD_START: 
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START: 
+					case ATK.ATK_TEXT_BOUNDARY_LINE_START:
+						if (event.end < charCount) {
+							int start = event.start;
+							event.start = eventStart;
+							event.end = eventEnd;
+							event.count = 1;
+							for (int i = 0; i < length; i++) {
+								AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
+								listener.getText(event);
+							}
+							event.end = event.start;
+							event.start = start;
+							event.type = ACC.TEXT_BOUNDARY_ALL;
+							event.count = 0;
+							for (int i = 0; i < length; i++) {
+								AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
+								listener.getText(event);
+							}
+						}
+						break;
+					case ATK.ATK_TEXT_BOUNDARY_WORD_END: 
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END: 
+					case ATK.ATK_TEXT_BOUNDARY_LINE_END:
+						if (0 < event.start) {
+							int end = event.end;
+							event.start = eventStart;
+							event.end = eventEnd;
+							event.count = -1;
+							for (int i = 0; i < length; i++) {
+								AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
+								listener.getText(event);
+							}
+							event.start = event.end;
+							event.end = end;
+							event.type = ACC.TEXT_BOUNDARY_ALL;
+							event.count = 0;
+							for (int i = 0; i < length; i++) {
+								AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
+								listener.getText(event);
+							}
+						}
+						break;
 				}
 				OS.memmove (start_offset, new int[] {event.start}, 4);
 				OS.memmove (end_offset, new int[] {event.end}, 4);
@@ -2605,6 +2703,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
+				int /*long*/ charCount = atkText_get_character_count (atkObject);
 				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.start = event.end = (int)/*64*/offset_value;
 				event.count = -1;
@@ -2617,12 +2716,60 @@ class AccessibleObject {
 					case ATK.ATK_TEXT_BOUNDARY_LINE_START: event.type = ACC.TEXT_BOUNDARY_LINE; break; 
 					case ATK.ATK_TEXT_BOUNDARY_LINE_END: event.type = ACC.TEXT_BOUNDARY_LINE; break; 
 				}
+				int eventStart = event.start;
+				int eventEnd = event.end;
 				for (int i = 0; i < length; i++) {
 					AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
 					listener.getText(event);
 				}
 				OS.memmove (start_offset, new int[] {event.start}, 4);
 				OS.memmove (end_offset, new int[] {event.end}, 4);
+				switch ((int)/*64*/boundary_type) {
+					case ATK.ATK_TEXT_BOUNDARY_WORD_START: 
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START: 
+					case ATK.ATK_TEXT_BOUNDARY_LINE_START:
+						if (event.end < charCount) {
+							int start = event.start;
+							event.start = eventStart;
+							event.end = eventEnd;
+							event.count = 0;
+							for (int i = 0; i < length; i++) {
+								AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
+								listener.getText(event);
+							}
+							event.end = event.start;
+							event.start = start;
+							event.type = ACC.TEXT_BOUNDARY_ALL;
+							event.count = 0;
+							for (int i = 0; i < length; i++) {
+								AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
+								listener.getText(event);
+							}
+						}
+						break;
+					case ATK.ATK_TEXT_BOUNDARY_WORD_END: 
+					case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END: 
+					case ATK.ATK_TEXT_BOUNDARY_LINE_END:
+						if (0 < event.start) {
+							int end = event.end;
+							event.start = eventStart;
+							event.end = eventEnd;
+							event.count = -2;
+							for (int i = 0; i < length; i++) {
+								AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
+								listener.getText(event);
+							}
+							event.start = event.end;
+							event.end = end;
+							event.type = ACC.TEXT_BOUNDARY_ALL;
+							event.count = 0;
+							for (int i = 0; i < length; i++) {
+								AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) listeners.elementAt(i);
+								listener.getText(event);
+							}
+						}
+						break;
+				}
 				return getStringPtr (event.result);
 			}
 			int offset = (int)/*64*/offset_value;
