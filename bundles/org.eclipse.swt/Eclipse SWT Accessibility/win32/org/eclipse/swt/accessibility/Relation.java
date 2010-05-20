@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.internal.ole.win32.*;
 
@@ -37,21 +38,21 @@ class Relation {
 		"subwindowOf",		//$NON-NLS-1$
 	};
 	static final String[] localizedRelationTypeString = {
-		"controlled by",
-		"controller for",
-		"described by",
-		"description for",
-		"embedded by",
-		"embeds",
-		"flows from",
-		"flows to",
-		"label for",
-		"labelled by",
-		"member of",
-		"node child of",
-		"parent window of",
-		"popup for",
-		"subwindow of",
+		SWT.getMessage("SWT_Controlled_By"),	//$NON-NLS-1$
+		SWT.getMessage("SWT_Controller_For"),	//$NON-NLS-1$
+		SWT.getMessage("SWT_Described_By"),		//$NON-NLS-1$
+		SWT.getMessage("SWT_Description_For"),	//$NON-NLS-1$
+		SWT.getMessage("SWT_Embedded_By"),		//$NON-NLS-1$
+		SWT.getMessage("SWT_Embeds"),			//$NON-NLS-1$
+		SWT.getMessage("SWT_Flows_From"),		//$NON-NLS-1$
+		SWT.getMessage("SWT_Flows_To"),			//$NON-NLS-1$
+		SWT.getMessage("SWT_Label_For"),		//$NON-NLS-1$
+		SWT.getMessage("SWT_Labelled_By"),		//$NON-NLS-1$
+		SWT.getMessage("SWT_Member_Of"),		//$NON-NLS-1$
+		SWT.getMessage("SWT_Node_Child_Of"),	//$NON-NLS-1$
+		SWT.getMessage("SWT_Parent_Window_Of"),	//$NON-NLS-1$
+		SWT.getMessage("SWT_Popup_For"),		//$NON-NLS-1$
+		SWT.getMessage("SWT_Subwindow_Of"),		//$NON-NLS-1$
 	};
 
 	Relation(Accessible accessible, int type) {
