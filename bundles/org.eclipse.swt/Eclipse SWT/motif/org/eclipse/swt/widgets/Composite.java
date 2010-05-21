@@ -354,7 +354,6 @@ public void drawBackground (GC gc, int x, int y, int width, int height, int offs
 				short [] control_x = new short [1], control_y = new short [1];
 				OS.XtTranslateCoords (control.handle, (short) 0, (short) 0, control_x, control_y);
 				int tileX = root_x[0] - control_x[0], tileY = root_y[0] - control_y[0];
-				System.out.println(tileX + ":" + tileY);
 				OS.XSetFillStyle (xDisplay, xGC, OS.FillTiled);
 				OS.XSetTSOrigin (xDisplay, xGC, -tileX - offsetX, -tileY - offsetY);
 				OS.XSetTile (xDisplay, xGC, control.backgroundImage.pixmap);
