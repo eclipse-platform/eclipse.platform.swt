@@ -667,7 +667,7 @@ public class SWT {
 	public static final int ImeComposition = 43;
 
 	/**
-	 * The orientation change event type (value is 43).  
+	 * The orientation change event type (value is 44).  
 	 * <p>
 	 * On some platforms the orientation of text widgets
 	 * can be changed by keyboard shortcut.
