@@ -2478,7 +2478,7 @@ public int getWrapIndent () {
  * <p>
  * This method gets the dispose state for the text layout.
  * When a text layout has been disposed, it is an error to
- * invoke any other method using the text layout.
+ * invoke any other method (except {@link #dispose()}) using the text layout.
  * </p>
  *
  * @return <code>true</code> when the text layout is disposed and <code>false</code> otherwise

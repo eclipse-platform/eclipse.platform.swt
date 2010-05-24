@@ -470,7 +470,7 @@ public int hashCode () {
  * <p>
  * This method gets the dispose state for the cursor.
  * When a cursor has been disposed, it is an error to
- * invoke any other method using the cursor.
+ * invoke any other method (except {@link #dispose()}) using the cursor.
  *
  * @return <code>true</code> when the cursor is disposed and <code>false</code> otherwise
  */

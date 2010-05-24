@@ -419,6 +419,7 @@ int /*long*/ DeferWindowPos(int /*long*/ hWinPosInfo, int /*long*/ hWnd, int /*l
  * <code>true</code> when sent the message <code>isDisposed()</code>.
  * Any internal connections between the widgets in the tree will
  * have been removed to facilitate garbage collection.
+ * This method does nothing if the widget is already disposed.
  * <p>
  * NOTE: This method is not called recursively on the descendants
  * of the receiver. This means that, widget implementers can not
@@ -689,7 +690,7 @@ boolean hooks (int eventType) {
  * <p>
  * This method gets the dispose state for the widget.
  * When a widget has been disposed, it is an error to
- * invoke any other method using the widget.
+ * invoke any other method (except {@link #dispose()}) using the widget.
  * </p>
  *
  * @return <code>true</code> when the widget is disposed and <code>false</code> otherwise

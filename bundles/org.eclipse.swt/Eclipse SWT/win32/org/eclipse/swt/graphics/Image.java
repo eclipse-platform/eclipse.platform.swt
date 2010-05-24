@@ -2030,7 +2030,7 @@ public void internal_dispose_GC (int /*long*/ hDC, GCData data) {
  * <p>
  * This method gets the dispose state for the image.
  * When an image has been disposed, it is an error to
- * invoke any other method using the image.
+ * invoke any other method (except {@link #dispose()}) using the image.
  *
  * @return <code>true</code> when the image is disposed and <code>false</code> otherwise
  */

@@ -218,7 +218,7 @@ void init (FontData fd) {
  * <p>
  * This method gets the dispose state for the font.
  * When a font has been disposed, it is an error to
- * invoke any other method using the font.
+ * invoke any other method (except {@link #dispose()}) using the font.
  *
  * @return <code>true</code> when the font is disposed and <code>false</code> otherwise
  */
