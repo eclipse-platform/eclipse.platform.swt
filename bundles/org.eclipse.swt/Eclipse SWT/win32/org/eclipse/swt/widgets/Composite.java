@@ -319,7 +319,7 @@ void createHandle () {
  * with the receiver's background. 
  *
  * <p>The <code>offsetX</code> and <code>offsetY</code> are used to map from
- * the gc origin to the origin of the parent image background. This is useful
+ * the <code>gc</code> origin to the origin of the parent image background. This is useful
  * to ensure proper alignment of the image background.</p>
  * 
  * @param gc the gc where the rectangle is to be filled
@@ -733,7 +733,7 @@ public void layout (Control [] changed) {
  * calling <code>Composite.setLayoutDeferred(true)</code> and scheduling a call
  * to <code>Composite.setLayoutDeferred(false)</code>, which will happen when
  * appropriate (usually before the next event is handled). When this flag is set,
- * the application should not call <code>Composite.setLayoutDeferred()</code>.
+ * the application should not call <code>Composite.setLayoutDeferred(boolean)</code>.
  * </p>
  * <p>
  * Note: Layout is different from painting. If a child is

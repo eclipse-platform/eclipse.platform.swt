@@ -4230,7 +4230,7 @@ public int getLineIndex(int y) {
 	return line;
 }
 /**
- * Returns the tab stops of the line at the given index.
+ * Returns the tab stops of the line at the given <code>index</code>.
  * 
  * @param index the index of the line
  * 
@@ -4262,7 +4262,7 @@ public int[] getLineTabStops(int index) {
 	return result;
 }
 /**
- * Returns the wrap indentation of the line at the given index.
+ * Returns the wrap indentation of the line at the given <code>index</code>.
  * 
  * @param index the index of the line
  * 
@@ -9042,7 +9042,7 @@ public void setLineSpacing(int lineSpacing) {
 /**
  * Sets the tab stops of the specified lines.
  * <p>
- * Should not be called if a LineStyleListener has been set since the listener 
+ * Should not be called if a <code>LineStyleListener</code> has been set since the listener 
  * maintains the line attributes.
  * </p><p>
  * All line attributes are maintained relative to the line text, not the 
@@ -9099,7 +9099,7 @@ public void setLineTabStops(int startLine, int lineCount, int[] tabStops) {
 /**
  * Sets the wrap indent of the specified lines.
  * <p>
- * Should not be called if a LineStyleListener has been set since the listener 
+ * Should not be called if a <code>LineStyleListener</code> has been set since the listener 
  * maintains the line attributes.
  * </p><p>
  * All line attributes are maintained relative to the line text, not the 

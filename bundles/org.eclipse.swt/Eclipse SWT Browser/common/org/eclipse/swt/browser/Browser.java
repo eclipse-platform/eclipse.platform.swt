@@ -510,7 +510,7 @@ public boolean execute (String script) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #dispose
+ * @see #dispose()
  * 
  * @since 3.6
  */
@@ -989,11 +989,11 @@ public boolean setText (String html) {
  * Renders a string containing HTML.  The rendering of the content occurs asynchronously.
  * The rendered page can be given either trusted or untrusted permissions. 
  * <p>
- * The html parameter is Unicode-encoded since it is a java <code>String</code>.
+ * The <code>html</code> parameter is Unicode-encoded since it is a java <code>String</code>.
  * As a result, the HTML meta tag charset should not be set. The charset is implied
  * by the <code>String</code> itself.
  * <p>
- * The trusted parameter affects the permissions that will be granted to the rendered
+ * The <code>trusted</code> parameter affects the permissions that will be granted to the rendered
  * page.  Specifying <code>true</code> for trusted gives the page permissions equivalent
  * to a page on the local file system, while specifying <code>false</code> for trusted
  * gives the page permissions equivalent to a page from the internet.  Page content should
@@ -1005,7 +1005,7 @@ public boolean setText (String html) {
  * @param trusted <code>false</code> if the rendered page should be granted restricted
  * permissions and <code>true</code> otherwise
  *
- * @return true if the operation was successful and false otherwise.
+ * @return <code>true</code> if the operation was successful and <code>false</code> otherwise.
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the html is null</li>
@@ -1066,7 +1066,7 @@ public boolean setUrl (String url) {
  * @param postData post data to be sent with the request, or <code>null</code>
  * @param headers header lines to be sent with the request, or <code>null</code> 
  *
- * @return true if the operation was successful and false otherwise.
+ * @return <code>true</code> if the operation was successful and <code>false</code> otherwise.
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>

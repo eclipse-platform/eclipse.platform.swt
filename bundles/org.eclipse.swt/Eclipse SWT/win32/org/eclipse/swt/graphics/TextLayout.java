@@ -2827,7 +2827,7 @@ public void setOrientation (int orientation) {
 
 /**
  * Sets the offsets of the receiver's text segments. Text segments are used to
- * override the default behaviour of the bidirectional algorithm.
+ * override the default behavior of the bidirectional algorithm.
  * Bidirectional reordering can happen within a text segment but not 
  * between two adjacent segments.
  * <p>
@@ -2870,7 +2870,7 @@ public void setSegments(int[] segments) {
  * are set by calling <code>setSegments(int[])</code>. The application can
  * use this API to insert Unicode Control Characters in the text to control
  * the display of the text and bidi reordering. The characters are not 
- * accessible by any other API in </code>TextLayout<code>.
+ * accessible by any other API in <code>TextLayout</code>.
  * 
  * @param segmentsChars the segments characters 
  *

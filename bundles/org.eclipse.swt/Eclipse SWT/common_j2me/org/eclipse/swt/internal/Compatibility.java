@@ -286,7 +286,7 @@ public static boolean isWhitespace(char c) {
  * The new process inherits the environment of the caller.
  * </p>
  *
- * @param program the name of the program to execute
+ * @param prog the name of the program to execute
  *
  * @exception IOException
  *  if the program cannot be executed
@@ -327,21 +327,21 @@ public static void exec(String[] progArray) throws java.io.IOException{
 }
 
 /**
- * Execute progArray[0] in a separate platform process with the specified
- * environment and working directory if the underlying platform support
+ * Execute prog[0] in a separate platform process with the specified
+ * environment and working directory if the underlying platform supports
  * this.
  * <p>
  * If envp is null the new process inherits the environment of the caller.
  * <p>
  * 
- * @param progArray
+ * @param prog
  *            array containing the program to execute and its arguments
  * @param envp
  *            array of strings, each element of which has environment
- *            variable settings in format name=value.
- * @param dir
+ *            variable settings in the format name=value
+ * @param workingDir
  *            the working directory of the new process, or null if the new
- *            process should inherit the working directory of the caller.
+ *            process should inherit the working directory of the caller
  * 
  * @exception IOException
  *                if the program cannot be executed

@@ -127,7 +127,7 @@ public OleAutomation(OleClientSite clientSite) {
 	}
 }
 /**
- * Creates an OleAutomation object for the specified progID.
+ * Creates an OleAutomation object for the specified <code>progID</code>.
  *
  * @param progId the unique program identifier of an OLE Document application; 
  *               the value of the ProgID key or the value of the VersionIndependentProgID key specified

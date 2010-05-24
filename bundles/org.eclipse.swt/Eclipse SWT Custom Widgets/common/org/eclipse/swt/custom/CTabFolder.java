@@ -756,12 +756,17 @@ public boolean getMRUVisible() {
 }
 /**
  * Returns the receiver's renderer.
+ * 
+ * @return the receiver's renderer
  *
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
+ * @see #setRenderer(CTabFolderRenderer)
+ * @see CTabFolderRenderer
+ * 
  * @since 3.6
  */
 public CTabFolderRenderer getRenderer() {
@@ -1917,7 +1922,7 @@ public void setBackground (Color color) {
 	redraw();
 }
 /**
- * Specify a gradient of colours to be drawn in the background of the unselected tabs.
+ * Specify a gradient of colors to be drawn in the background of the unselected tabs.
  * For example to draw a gradient that varies from dark blue to blue and then to
  * white, use the following call to setBackground:
  * <pre>
@@ -1933,8 +1938,8 @@ public void setBackground (Color color) {
  *               background gradient. The value <code>null</code> can be used inside the array of 
  *               Color to specify the background color.
  * @param percents an array of integers between 0 and 100 specifying the percent of the width 
- *                 of the widget at which the color should change.  The size of the percents array must be one 
- *                 less than the size of the colors array.
+ *                 of the widget at which the color should change.  The size of the <code>percents</code>
+ *                 array must be one less than the size of the <code>colors</code> array.
  * 
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
@@ -1947,7 +1952,7 @@ public void setBackground(Color[] colors, int[] percents) {
 	setBackground(colors, percents, false);
 }
 /**
- * Specify a gradient of colours to be drawn in the background of the unselected tab.
+ * Specify a gradient of colors to be drawn in the background of the unselected tab.
  * For example to draw a vertical gradient that varies from dark blue to blue and then to
  * white, use the following call to setBackground:
  * <pre>
@@ -1963,10 +1968,10 @@ public void setBackground(Color[] colors, int[] percents) {
  *               background gradient. The value <code>null</code> can be used inside the array of 
  *               Color to specify the background color.
  * @param percents an array of integers between 0 and 100 specifying the percent of the width 
- *                 of the widget at which the color should change.  The size of the percents array must be one 
- *                 less than the size of the colors array.
+ *                 of the widget at which the color should change.  The size of the <code>percents</code>
+ *                 array must be one less than the size of the <code>colors</code> array.
  * 
- * @param vertical indicate the direction of the gradient.  True is vertical and false is horizontal. 
+ * @param vertical indicate the direction of the gradient. <code>True</code> is vertical and <code>false</code> is horizontal. 
  * 
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
@@ -2643,6 +2648,8 @@ public void setMRUVisible(boolean show) {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
+ * @see CTabFolderRenderer
+ * 
  * @since 3.6
  */
 public void setRenderer(CTabFolderRenderer renderer) {

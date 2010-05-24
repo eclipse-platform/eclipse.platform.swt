@@ -193,7 +193,7 @@ public class CTabFolderRenderer {
 	 * </ul>
 	 * </p>
 	 * <p>
-	 * The state parameter may be one of the following: 
+	 * The <code>state</code> parameter may be one of the following: 
 	 * <ul>
 	 * <li>SWT.NONE</li>
 	 * <li>SWT.SELECTED - whether the part is selected</li>
@@ -479,8 +479,8 @@ public class CTabFolderRenderer {
 	}
 	
 	/**
-	 * Draw a specified part of the CTabFolder using the provided bounds and GC. 
-	 * <p>The valid CTabFolder part constants are:
+	 * Draw a specified <code>part</code> of the CTabFolder using the provided <code>bounds</code> and <code>GC</code>. 
+	 * <p>The valid CTabFolder <code>part</code> constants are:
 	 * <ul>
 	 * <li>PART_BODY - the entire body of the CTabFolder</li>
 	 * <li>PART_HEADER - the upper tab area of the CTabFolder</li>
@@ -494,7 +494,7 @@ public class CTabFolderRenderer {
 	 * </ul>
 	 * </p>
 	 * <p>
-	 * The state parameter may be a combination of: 
+	 * The <code>state</code> parameter may be a combination of: 
 	 * <ul>
 	 * <li>SWT.BACKGROUND - whether the background should be drawn</li>
 	 * <li>SWT.FOREGROUND - whether the foreground should be drawn</li>

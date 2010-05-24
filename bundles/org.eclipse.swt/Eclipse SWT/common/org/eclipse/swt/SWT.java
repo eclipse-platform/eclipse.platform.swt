@@ -669,7 +669,7 @@ public class SWT {
 	/**
 	 * The orientation change event type (value is 43).  
 	 * <p>
-	 * On some platforms of orientation of text widgets
+	 * On some platforms the orientation of text widgets
 	 * can be changed by keyboard shortcut.
 	 * The application can use the <code>doit</code> field
 	 * of the event to stop the change from happening.

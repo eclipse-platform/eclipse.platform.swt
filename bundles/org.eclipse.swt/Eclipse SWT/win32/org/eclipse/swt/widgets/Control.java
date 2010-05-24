@@ -3751,7 +3751,7 @@ public boolean traverse (int traversal) {
  * this from <code>event</code>
  * @param event the KeyDown event
  * 
- * @return true if the traversal succeeded
+ * @return <code>true</code> if the traversal succeeded
  *
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_NULL_ARGUMENT if the event is null</li>
@@ -3789,7 +3789,7 @@ public boolean traverse (int traversal, Event event) {
  * this from <code>event</code>
  * @param event the KeyDown event
  * 
- * @return true if the traversal succeeded
+ * @return <code>true</code> if the traversal succeeded
  *
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_NULL_ARGUMENT if the event is null</li>

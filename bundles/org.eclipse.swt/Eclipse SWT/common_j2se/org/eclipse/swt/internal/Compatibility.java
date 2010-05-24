@@ -283,13 +283,19 @@ public static void exec(String[] progArray) throws java.io.IOException{
 }
 
 /**
- * Execute prog in a separate platform process if the
- * underlying platform support this.
+ * Execute prog[0] in a separate platform process if the
+ * underlying platform supports this.
  * <p>
  * The new process inherits the environment of the caller.
  * <p>
  *
- * @param prog containing the program to execute and its arguments
+ * @param prog array containing the program to execute and its arguments
+ * @param envp
+ *            array of strings, each element of which has environment
+ *            variable settings in the format name=value
+ * @param workingDir
+ *            the working directory of the new process, or null if the new
+ *            process should inherit the working directory of the caller
  *
  * @exception IOException
  *  if the program cannot be executed
