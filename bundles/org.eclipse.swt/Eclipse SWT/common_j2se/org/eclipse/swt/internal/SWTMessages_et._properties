@@ -1,0 +1,23 @@
+# Copyright by many contributors; see http://babel.eclipse.org/
+SWT_Yes=Jah
+SWT_No=Ei
+SWT_OK=OK
+SWT_Cancel=T\u00fchista
+SWT_Abort=Katkesta
+SWT_Retry=Proovi uuesti
+SWT_Ignore=Ignoreeri
+SWT_Sample=N\u00e4ide
+SWT_A_Sample_Text=N\u00e4idis tekst
+SWT_Selection=Valik
+SWT_Save=Salvesta
+SWT_Remove=Eemalda
+SWT_Up=\u00dcles
+SWT_Down=Alla
+SWT_InputMethods=Sisestamis meetodid
+SWT_Press=Vajuta
+SWT_Open=Ava
+SWT_Close=Sulge
+SWT_Minimize=V\u00e4henda
+SWT_Maximize=Suurenda
+SWT_Restore=Taasta
+SWT_Download_Started=Laen alla...
