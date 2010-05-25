@@ -556,7 +556,7 @@ public class SWT {
 	/**
 	 * The mouse vertical wheel event type (value is 37).
 	 * 
-	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Control#addMouseWheelListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
 	 * 
@@ -581,7 +581,7 @@ public class SWT {
 	 * Newer applications should use {@link #MouseVerticalWheel} instead 
 	 * of {@link #MouseWheel} to make code more understandable.
 	 *  
-	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Control#addMouseWheelListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
 	 * 

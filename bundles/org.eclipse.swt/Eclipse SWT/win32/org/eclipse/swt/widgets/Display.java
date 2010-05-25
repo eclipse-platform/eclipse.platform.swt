@@ -79,7 +79,7 @@ import org.eclipse.swt.graphics.*;
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Close, Dispose, Settings</dd>
+ * <dd>Close, Dispose, OpenDocument, Settings, Skin</dd>
  * </dl>
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
