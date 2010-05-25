@@ -12,6 +12,9 @@ package org.eclipse.swt.snippets;
 
 /*
  * SWT OpenGL snippet: capture a LWJGL drawing to an SWT Image
+ * 
+ * This example is essentially Snippet195 with the capture() method
+ * added.  It should be easily adaptable to other OpenGL packages.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
