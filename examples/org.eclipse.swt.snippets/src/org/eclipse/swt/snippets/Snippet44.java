@@ -24,7 +24,7 @@ public class Snippet44 {
 
 public static void main (String [] args) {
 	Display display = new Display ();
-	final Cursor cursor = new Cursor (display, SWT.CURSOR_HAND);
+	final Cursor cursor = display.getSystemCursor(SWT.CURSOR_HAND);
 	Shell shell = new Shell (display);
 	shell.open ();
 	final Button b = new Button (shell, 0);
@@ -38,7 +38,6 @@ public static void main (String [] args) {
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
-	cursor.dispose ();
 	display.dispose ();
 }
 } 
