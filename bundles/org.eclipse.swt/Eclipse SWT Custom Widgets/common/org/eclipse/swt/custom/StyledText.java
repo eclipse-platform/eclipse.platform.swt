@@ -5331,6 +5331,9 @@ int getWrapWidth () {
 	return -1;
 }
 int getWordNext (int offset, int movement) {
+	return getWordNext(offset, movement, false);
+}
+int getWordNext (int offset, int movement, boolean ignoreListener) {
 	int newOffset, lineOffset;
 	String lineText;
 	if (offset >= getCharCount()) {
@@ -5351,9 +5354,13 @@ int getWordNext (int offset, int movement) {
 			renderer.disposeTextLayout(layout);
 		}
 	}
+	if (ignoreListener) return newOffset; 
 	return sendWordBoundaryEvent(WordNext, movement, offset, newOffset, lineText, lineOffset);
 }
 int getWordPrevious(int offset, int movement) {
+	return getWordPrevious(offset, movement, false); 
+}
+int getWordPrevious(int offset, int movement, boolean ignoreListener) {
 	int newOffset, lineOffset;
 	String lineText;
 	if (offset <= 0) {
@@ -5376,6 +5383,7 @@ int getWordPrevious(int offset, int movement) {
 			renderer.disposeTextLayout(layout); 
 		}
 	}
+	if (ignoreListener) return newOffset;
 	return sendWordBoundaryEvent(WordPrevious, movement, offset, newOffset, lineText, lineOffset);
 }
 /**
@@ -6578,20 +6586,20 @@ void initializeAccessible() {
 					int newCount = 0;
 					if (count > 0) {
 						while (count-- > 0) { 
-							int newEnd = st.getWordNext(end, SWT.MOVEMENT_WORD_START);
+							int newEnd = st.getWordNext(end, SWT.MOVEMENT_WORD_START, true);
 							if (newEnd == end) break;
 							newCount++;
 							end = newEnd;
 						}
 						start = end;
-						end = st.getWordNext(start, SWT.MOVEMENT_WORD_END);
+						end = st.getWordNext(start, SWT.MOVEMENT_WORD_END, true);
 					} else {
-						if (st.getWordPrevious(Math.min(start + 1, contentLength), SWT.MOVEMENT_WORD_START) == start) {
+						if (st.getWordPrevious(Math.min(start + 1, contentLength), SWT.MOVEMENT_WORD_START, true) == start) {
 							//start is a word start already
 							count++;
 						}
 						while (count <= 0) {
-							int newStart = st.getWordPrevious(start, SWT.MOVEMENT_WORD_START);
+							int newStart = st.getWordPrevious(start, SWT.MOVEMENT_WORD_START, true);
 							if (newStart == start) break;
 							count++;
 							start = newStart;
@@ -6600,7 +6608,7 @@ void initializeAccessible() {
 						if (count <= 0 && start == 0) {
 							end = start;
 						} else {
-							end = st.getWordNext(start, SWT.MOVEMENT_WORD_END);
+							end = st.getWordNext(start, SWT.MOVEMENT_WORD_END, true);
 						}
 					}
 					count = newCount;
