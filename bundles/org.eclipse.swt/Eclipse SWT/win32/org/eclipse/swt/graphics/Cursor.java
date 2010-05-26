@@ -12,6 +12,7 @@ package org.eclipse.swt.graphics;
 
 
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.*;
 
 /**
@@ -151,6 +152,10 @@ Cursor(Device device) {
  * <p>
  * You must dispose the cursor when it is no longer required. 
  * </p>
+ * NOTE:
+ * It is recommended to use {@link Display#getSystemCursor(int)}
+ * instead of using this constructor. This way you can avoid the 
+ * overhead of disposing the Cursor resource.
  *
  * @param device the device on which to allocate the cursor
  * @param style the style of cursor to allocate
