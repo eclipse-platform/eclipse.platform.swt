@@ -1374,38 +1374,6 @@ public boolean setText(final String html, boolean trusted) {
 		auto.invoke(rgdispid[0]);
 	}
 
-	/*
-	* Feature in IE.  If the current page is about:blank then a DocumentComplete
-	* callback will not be received by re-navigating to about:blank, and the new
-	* content will not be set.  The workaround is to skip this re-navigation and
-	* just set the content here if not vetoed by a LocationListener.  
-	*/
-	if (_getUrl().equals(ABOUT_BLANK)) {
-		Runnable runnable = new Runnable() {
-			public void run() {
-				if (browser.isDisposed()) return;
-				LocationEvent newEvent = new LocationEvent(browser);
-				newEvent.display = browser.getDisplay();
-				newEvent.widget = browser;
-				newEvent.location = ABOUT_BLANK;
-				newEvent.doit = true;
-				for (int i = 0; i < locationListeners.length; i++) {
-					locationListeners[i].changing(newEvent);
-				}
-				boolean doit = newEvent.doit && !browser.isDisposed();
-				if (doit) setHTML(html);
-			}
-		};
-
-		if (delaySetText) {
-			delaySetText = false;
-			browser.getDisplay().asyncExec(runnable);
-		} else {
-			runnable.run();
-		}
-		return true;
-	}
-
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
 	Variant[] rgvarg = new Variant[1];
 	rgvarg[0] = new Variant(ABOUT_BLANK);
