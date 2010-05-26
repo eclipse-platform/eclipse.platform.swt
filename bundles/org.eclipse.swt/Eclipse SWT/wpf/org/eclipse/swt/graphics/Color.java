@@ -235,7 +235,7 @@ void init(int red, int green, int blue) {
  * <p>
  * This method gets the dispose state for the color.
  * When a color has been disposed, it is an error to
- * invoke any other method using the color.
+ * invoke any other method (except {@link #dispose()}) using the color.
  *
  * @return <code>true</code> when the color is disposed and <code>false</code> otherwise
  */

@@ -441,6 +441,18 @@ void setForegroundPixel (int pixel) {
  * include the mnemonic character and line delimiters. The only delimiter
  * the HREF attribute supports is the quotation mark (").
  * </p>
+ * <p>
+ * Mnemonics are indicated by an '&amp;' that causes the next
+ * character to be the mnemonic. The receiver can have a    
+ * mnemonic in the text preceding each link. When the user presses a
+ * key sequence that matches the mnemonic, focus is assigned
+ * to the link that follows the text. Mnemonics in links and in
+ * the trailing text are ignored. On most platforms,
+ * the mnemonic appears underlined but may be emphasised in a
+ * platform specific manner.  The mnemonic indicator character
+ * '&amp;' can be escaped by doubling it in the string, causing
+ * a single '&amp;' to be displayed.
+ * </p> 
  * 
  * @param string the new text
  *

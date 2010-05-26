@@ -2981,12 +2981,45 @@ public class Accessible {
 	 * indicating that something has changed within a custom control.
 	 *
 	 * @param event an <code>ACC</code> constant beginning with EVENT_* indicating the message to send
-	 * @param eventData an object containing event-specific data
+	 * @param eventData an object containing event-specific data, or null if there is no event-specific data
 	 * 
 	 * @exception SWTException <ul>
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
 	 * </ul>
+	 * 
+	 * @see ACC#EVENT_ACTION_CHANGED
+	 * @see ACC#EVENT_ATTRIBUTE_CHANGED
+	 * @see ACC#EVENT_DESCRIPTION_CHANGED
+	 * @see ACC#EVENT_DOCUMENT_LOAD_COMPLETE
+	 * @see ACC#EVENT_DOCUMENT_LOAD_STOPPED
+	 * @see ACC#EVENT_DOCUMENT_RELOAD
+	 * @see ACC#EVENT_HYPERLINK_ACTIVATED
+	 * @see ACC#EVENT_HYPERLINK_ANCHOR_COUNT_CHANGED
+	 * @see ACC#EVENT_HYPERLINK_END_INDEX_CHANGED
+	 * @see ACC#EVENT_HYPERLINK_SELECTED_LINK_CHANGED
+	 * @see ACC#EVENT_HYPERLINK_START_INDEX_CHANGED
+	 * @see ACC#EVENT_HYPERTEXT_LINK_COUNT_CHANGED
+	 * @see ACC#EVENT_HYPERTEXT_LINK_SELECTED
+	 * @see ACC#EVENT_LOCATION_CHANGED
+	 * @see ACC#EVENT_NAME_CHANGED
+	 * @see ACC#EVENT_PAGE_CHANGED
+	 * @see ACC#EVENT_SECTION_CHANGED
+	 * @see ACC#EVENT_SELECTION_CHANGED
+	 * @see ACC#EVENT_STATE_CHANGED
+	 * @see ACC#EVENT_TABLE_CAPTION_CHANGED
+	 * @see ACC#EVENT_TABLE_CHANGED
+	 * @see ACC#EVENT_TABLE_COLUMN_DESCRIPTION_CHANGED
+	 * @see ACC#EVENT_TABLE_COLUMN_HEADER_CHANGED
+	 * @see ACC#EVENT_TABLE_ROW_DESCRIPTION_CHANGED
+	 * @see ACC#EVENT_TABLE_ROW_HEADER_CHANGED
+	 * @see ACC#EVENT_TABLE_SUMMARY_CHANGED
+	 * @see ACC#EVENT_TEXT_ATTRIBUTE_CHANGED
+	 * @see ACC#EVENT_TEXT_CARET_MOVED
+	 * @see ACC#EVENT_TEXT_CHANGED
+	 * @see ACC#EVENT_TEXT_COLUMN_CHANGED
+	 * @see ACC#EVENT_TEXT_SELECTION_CHANGED
+	 * @see ACC#EVENT_VALUE_CHANGED
 	 * 
 	 * @since 3.6
 	 */

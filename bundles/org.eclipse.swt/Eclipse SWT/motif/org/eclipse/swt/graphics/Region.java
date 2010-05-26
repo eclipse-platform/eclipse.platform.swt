@@ -387,7 +387,7 @@ public boolean intersects (Rectangle rect) {
  * <p>
  * This method gets the dispose state for the region.
  * When a region has been disposed, it is an error to
- * invoke any other method using the region.
+ * invoke any other method (except {@link #dispose()}) using the region.
  *
  * @return <code>true</code> when the region is disposed, and <code>false</code> otherwise
  */

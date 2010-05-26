@@ -90,6 +90,10 @@ Cursor(Device device) {
  * <p>
  * You must dispose the cursor when it is no longer required. 
  * </p>
+ * NOTE:
+ * It is recommended to use {@link org.eclipse.swt.widgets.Display#getSystemCursor(int)}
+ * instead of using this constructor. This way you can avoid the 
+ * overhead of disposing the Cursor resource.
  *
  * @param device the device on which to allocate the cursor
  * @param style the style of cursor to allocate
@@ -426,7 +430,7 @@ public int hashCode () {
  * <p>
  * This method gets the dispose state for the cursor.
  * When a cursor has been disposed, it is an error to
- * invoke any other method using the cursor.
+ * invoke any other method (except {@link #dispose()}) using the cursor.
  *
  * @return <code>true</code> when the cursor is disposed and <code>false</code> otherwise
  */

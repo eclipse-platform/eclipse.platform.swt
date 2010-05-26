@@ -26,6 +26,12 @@ import org.eclipse.swt.internal.photon.OS;
  *     String textData = "Hello World";
  * </code></pre>
  * 
+ * <p>Note the <code>TextTransfer</code> does not change the content of the text
+ * data. For a better integration with the platform, the application should convert
+ * the line delimiters used in the text data to the standard line delimiter used by the
+ * platform.
+ * </p>
+ * 
  * @see Transfer
  */
 public class TextTransfer extends ByteArrayTransfer {

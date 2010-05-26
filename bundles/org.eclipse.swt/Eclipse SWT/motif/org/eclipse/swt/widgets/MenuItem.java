@@ -230,7 +230,13 @@ public void addHelpListener (HelpListener listener) {
  * When <code>widgetSelected</code> is called, the stateMask field of the event object is valid.
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
- *
+ * <p>
+ * When the <code>SWT.RADIO</code> style bit is set, the <code>widgetSelected</code> method is
+ * also called when the receiver loses selection because another item in the same radio group 
+ * was selected by the user. During <code>widgetSelected</code> the application can use
+ * <code>getSelection()</code> to determine the current selected state of the receiver.
+ * </p>
+ * 
  * @param listener the listener which should be notified when the menu item is selected by the user
  *
  * @exception IllegalArgumentException <ul>

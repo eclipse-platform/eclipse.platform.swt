@@ -325,8 +325,31 @@ void becomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 }
 
 /**
+ * Marks the widget to be skinned. 
+ * <p>
+ * The skin event is sent to the receiver's display when appropriate (usually before the next event
+ * is handled). Widgets are automatically marked for skinning upon creation as well as when its skin
+ * id or class changes. The skin id and/or class can be changed by calling <code>Display.setData(String, Object)</code> 
+ * with the keys SWT.SKIN_ID and/or SWT.SKIN_CLASS. Once the skin event is sent to a widget, it 
+ * will not be sent again unless <code>reskin(int)</code> is called on the widget or on an ancestor 
+ * while specifying the <code>SWT.ALL</code> flag.  
+ * </p>
+ * <p>
+ * The parameter <code>flags</code> may be either:
+ * <dl>
+ * <dt><b>SWT.ALL</b></dt>
+ * <dd>all children in the receiver's widget tree should be skinned</dd>
+ * <dt><b>SWT.NONE</b></dt>
+ * <dd>only the receiver should be skinned</dd>
+ * </dl>
+ * </p>
+ * @param flags the flags specifying how to reskin
  * 
- * @param flags
+ * @exception SWTException 
+ * <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  * @since 3.6
  */
 public void reskin (int flags) {
@@ -575,6 +598,7 @@ void destroyWidget () {
  * <code>true</code> when sent the message <code>isDisposed()</code>.
  * Any internal connections between the widgets in the tree will
  * have been removed to facilitate garbage collection.
+ * This method does nothing if the widget is already disposed.
  * <p>
  * NOTE: This method is not called recursively on the descendants
  * of the receiver. This means that, widget implementers can not
@@ -928,7 +952,7 @@ boolean isActive () {
  * <p>
  * This method gets the dispose state for the widget.
  * When a widget has been disposed, it is an error to
- * invoke any other method using the widget.
+ * invoke any other method (except {@link #dispose()}) using the widget.
  * </p>
  *
  * @return <code>true</code> when the widget is disposed and <code>false</code> otherwise

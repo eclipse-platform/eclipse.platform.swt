@@ -78,7 +78,7 @@ import org.eclipse.swt.graphics.*;
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Close, Dispose, Settings</dd>
+ * <dd>Close, Dispose, OpenDocument, Settings, Skin</dd>
  * </dl>
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -1643,6 +1643,18 @@ public Image getSystemImage (int id) {
 	return null;
 }
 
+/**
+ * Returns the single instance of the system taskBar or null
+ * when there is no system taskBar available for the platform.
+ *
+ * @return the system taskBar or <code>null</code>
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.6
+ */
 public TaskBar getSystemTaskBar () {
 	checkDevice ();
 	return null;
@@ -2822,10 +2834,16 @@ public void setData (Object data) {
 }
 
 /**
- * On platforms which support it, sets the application name
- * to be the argument. On Motif, for example, this can be used
- * to set the name used for resource lookup.  Specifying
- * <code>null</code> for the name clears it.
+ * Sets the application name to the argument.
+ * <p>
+ * The application name can be used in several ways,
+ * depending on the platform and tools being used.
+ * On Motif, for example, this can be used to set
+ * the name used for resource lookup. Accessibility
+ * tools may also ask for the application name.
+ * </p><p>
+ * Specifying <code>null</code> for the name clears it.
+ * </p>
  *
  * @param name the new app name or <code>null</code>
  */

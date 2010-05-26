@@ -79,7 +79,7 @@ import org.eclipse.swt.graphics.*;
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Close, Dispose, Settings</dd>
+ * <dd>Close, Dispose, OpenDocument, Settings, Skin</dd>
  * </dl>
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -1956,6 +1956,18 @@ public Image getSystemImage (int style) {
 	if (imagePixmap == 0) return null;
 	return Image.motif_new (this, SWT.ICON, imagePixmap, maskPixmap);
 }
+/**
+ * Returns the single instance of the system taskBar or null
+ * when there is no system taskBar available for the platform.
+ *
+ * @return the system taskBar or <code>null</code>
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.6
+ */
 public TaskBar getSystemTaskBar () {
 	checkDevice ();
 	return null;
@@ -2477,9 +2489,9 @@ public int internal_new_GC (GCData data) {
  * </p>
  *
  * @param hDC the platform specific GC handle
- * @param data the platform specific GC data
+ * @param data the platform specific GC data 
  * 
- *  @noreference This method is not intended to be referenced by clients.
+ * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC (int gc, GCData data) {
 	OS.XFreeGC(xDisplay, gc);
@@ -3416,6 +3428,8 @@ public static void setAppName (String name) {
  * Sets the application version to the argument.
  *
  * @param version the new app version
+ * 
+ * @since 3.6
  */
 public static void setAppVersion (String version) {
 	APP_VERSION = version;

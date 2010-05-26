@@ -1157,6 +1157,17 @@ public int[] getSegments() {
 	return segments;
 }
 
+/**
+ * Returns the segments characters of the receiver.
+ *
+ * @return the segments characters
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
 public char[] getSegmentsChars () {
 	checkLayout();
 	return segmentsChars;
@@ -1261,6 +1272,17 @@ public int getWidth () {
 	return wrapWidth;
 }
 
+/**
+* Returns the receiver's wrap indent.
+*
+* @return the receiver's wrap indent
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+* </ul>
+* 
+* @since 3.6
+*/
 public int getWrapIndent () {
 	checkLayout();
 	return wrapIndent;
@@ -1272,7 +1294,7 @@ public int getWrapIndent () {
  * <p>
  * This method gets the dispose state for the text layout.
  * When a text layout has been disposed, it is an error to
- * invoke any other method using the text layout.
+ * invoke any other method (except {@link #dispose()}) using the text layout.
  * </p>
  *
  * @return <code>true</code> when the text layout is disposed and <code>false</code> otherwise
@@ -1484,7 +1506,7 @@ public void setFont (Font font) {
 }
 
 /**
- * Sets the indent of the receiver. This indent it applied of the first line of 
+ * Sets the indent of the receiver. This indent is applied to the first line of 
  * each paragraph.  
  *
  * @param indent new indent
@@ -1492,6 +1514,8 @@ public void setFont (Font font) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ * 
+ * @see #setWrapIndent(int)
  * 
  * @since 3.2
  */
@@ -1564,7 +1588,7 @@ public void setSpacing (int spacing) {
 
 /**
  * Sets the offsets of the receiver's text segments. Text segments are used to
- * override the default behaviour of the bidirectional algorithm.
+ * override the default behavior of the bidirectional algorithm.
  * Bidirectional reordering can happen within a text segment but not 
  * between two adjacent segments.
  * <p>
@@ -1573,12 +1597,18 @@ public void setSpacing (int spacing) {
  * always be zero and the last one should always be equals to length of
  * the text.
  * </p>
+ * <p>
+ * When segments characters are set, the segments are the offsets where
+ * the characters are inserted in the text.
+ * <p> 
  * 
  * @param segments the text segments offset
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ * 
+ * @see #setSegmentsChars(char[])
  */
 public void setSegments(int[] segments) {
 	checkLayout();
@@ -1596,6 +1626,23 @@ public void setSegments(int[] segments) {
 	this.segments = segments;
 }
 
+/**
+ * Sets the characters to be used in the segments boundaries. The segments 
+ * are set by calling <code>setSegments(int[])</code>. The application can
+ * use this API to insert Unicode Control Characters in the text to control
+ * the display of the text and bidi reordering. The characters are not 
+ * accessible by any other API in <code>TextLayout</code>.
+ * 
+ * @param segmentsChars the segments characters 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #setSegments(int[])
+ * 
+ * @since 3.6
+ */
 public void setSegmentsChars(char[] segmentsChars) {
 	checkLayout();
 	if (this.segmentsChars == null && segmentsChars == null) return;
@@ -1776,6 +1823,20 @@ public void setWidth (int width) {
 	this.wrapWidth = width;
 }
 
+/**
+ * Sets the wrap indent of the receiver. This indent is applied to all lines
+ * in the paragraph except the first line.  
+ *
+ * @param wrapIndent new wrap indent
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #setIndent(int)
+ * 
+ * @since 3.6
+ */
 public void setWrapIndent (int wrapIndent) {
 	checkLayout();
 	if (wrapIndent < 0) return;

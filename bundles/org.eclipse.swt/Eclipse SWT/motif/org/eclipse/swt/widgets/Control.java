@@ -26,7 +26,8 @@ import org.eclipse.swt.accessibility.*;
  * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
  * <dt><b>Events:</b>
  * <dd>DragDetect, FocusIn, FocusOut, Help, KeyDown, KeyUp, MenuDetect, MouseDoubleClick, MouseDown, MouseEnter,
- *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse</dd>
+ *     MouseExit, MouseHover, MouseUp, MouseMove, MouseWheel, MouseHorizontalWheel, MouseVerticalWheel, Move,
+ *     Paint, Resize, Traverse</dd>
  * </dl>
  * </p><p>
  * Only one of LEFT_TO_RIGHT or RIGHT_TO_LEFT may be specified.
@@ -650,7 +651,7 @@ int defaultForeground () {
  * @return <code>true</code> if the gesture occurred, and <code>false</code> otherwise.
  *
  * @exception IllegalArgumentException <ul>
- *   <li>ERROR_NULL_ARGUMENT when the event is null</li>
+ *   <li>ERROR_NULL_ARGUMENT if the event is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -691,7 +692,7 @@ public boolean dragDetect (Event event) {
  * @return <code>true</code> if the gesture occurred, and <code>false</code> otherwise.
  *
  * @exception IllegalArgumentException <ul>
- *   <li>ERROR_NULL_ARGUMENT when the event is null</li>
+ *   <li>ERROR_NULL_ARGUMENT if the event is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1169,6 +1170,11 @@ int getMinimumHeight () {
  * Returns the receiver's monitor.
  * 
  * @return the receiver's monitor
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  * 
  * @since 3.0
  */
@@ -3316,7 +3322,7 @@ int traversalCode (int key, XKeyEvent xEvent) {
  * this from <code>event</code>
  * @param event the KeyDown event
  * 
- * @return true if the traversal succeeded
+ * @return <code>true</code> if the traversal succeeded
  *
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_NULL_ARGUMENT if the event is null</li>
@@ -3353,7 +3359,7 @@ public boolean traverse (int traversal, Event event) {
  * this from <code>event</code>
  * @param event the KeyDown event
  * 
- * @return true if the traversal succeeded
+ * @return <code>true</code> if the traversal succeeded
  *
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_NULL_ARGUMENT if the event is null</li>
@@ -3490,7 +3496,8 @@ boolean traverse (Event event) {
  * traversal action. The argument should be one of the constants:
  * <code>SWT.TRAVERSE_ESCAPE</code>, <code>SWT.TRAVERSE_RETURN</code>, 
  * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>, 
- * <code>SWT.TRAVERSE_ARROW_NEXT</code> and <code>SWT.TRAVERSE_ARROW_PREVIOUS</code>.
+ * <code>SWT.TRAVERSE_ARROW_NEXT</code>, <code>SWT.TRAVERSE_ARROW_PREVIOUS</code>,
+ * <code>SWT.TRAVERSE_PAGE_NEXT</code> and <code>SWT.TRAVERSE_PAGE_PREVIOUS</code>.
  *
  * @param traversal the type of traversal
  * @return true if the traversal succeeded

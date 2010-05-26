@@ -95,12 +95,13 @@ public static boolean launch (String fileName) {
 /**
  * Launches the operating system executable associated with the file or
  * URL (http:// or https://).  If the file is an executable then the
- * executable is launched.  If a valid working directory is specified
- * it is used as working directory for the launched program.
+ * executable is launched. The program is launched with the specified
+ * working directory only when the <code>workingDir</code> exists and
+ * <code>fileName</code> is an executable.
  * Note that a <code>Display</code> must already exist to guarantee
  * that this method returns an appropriate result.
  *
- * @param fileName the file or program name or URL (http:// or https://)
+ * @param fileName the file name or program name or URL (http:// or https://)
  * @param workingDir the name of the working directory or null
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
  * 

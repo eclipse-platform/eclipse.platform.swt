@@ -2959,7 +2959,7 @@ public boolean isClipped() {
  * <p>
  * This method gets the dispose state for the GC.
  * When a GC has been disposed, it is an error to
- * invoke any other method using the GC.
+ * invoke any other method (except {@link #dispose()}) using the GC.
  *
  * @return <code>true</code> when the GC is disposed and <code>false</code> otherwise
  */

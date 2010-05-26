@@ -608,7 +608,7 @@ void init(PathData data) {
  * <p>
  * This method gets the dispose state for the Path.
  * When a Path has been disposed, it is an error to
- * invoke any other method using the Path.
+ * invoke any other method (except {@link #dispose()}) using the Path.
  *
  * @return <code>true</code> when the Path is disposed, and <code>false</code> otherwise
  */

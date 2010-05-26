@@ -843,10 +843,10 @@ public Color getBackground (int columnIndex) {
 	return cellBackgrounds [columnIndex];
 }
 /**
- * Returns a rectangle describing the receiver's size and location
- * relative to its parent.
+ * Returns a rectangle describing the size and location of the receiver's
+ * text relative to its parent.
  *
- * @return the receiver's bounding rectangle
+ * @return the bounding rectangle of the receiver's text
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2495,8 +2495,6 @@ public void setFont (int columnIndex, Font font) {
  *
  * @param color the new color (or null)
  *
- * @since 2.0
- * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
  * </ul>

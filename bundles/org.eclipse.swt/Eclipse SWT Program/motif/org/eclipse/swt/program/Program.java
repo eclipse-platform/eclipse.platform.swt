@@ -750,24 +750,24 @@ public static boolean launch(String fileName) {
 }
 
 /**
-* Launches the operating system executable associated with the file or
-* URL (http:// or https://).  If the file is an executable then the
-* executable is launched.  If a valid working directory is specified 
-* it is used as the working directory for the launched program.
-* Note that a <code>Display</code> must already exist to guarantee
-* that this method returns an appropriate result.
-*
-* @param fileName the file or program name or URL (http:// or https://)
-* @param workingDir the name of the working directory or null
-* @return <code>true</code> if the file is launched, otherwise <code>false</code>
-* 
-* @exception IllegalArgumentException <ul>
-*    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
-*    <li>ERROR_INVALID_ARGUMENT when workingDir is not valid</li>
-* </ul>
-* 
-* @since 3.6
-*/
+ * Launches the operating system executable associated with the file or
+ * URL (http:// or https://).  If the file is an executable then the
+ * executable is launched. The program is launched with the specified
+ * working directory only when the <code>workingDir</code> exists and
+ * <code>fileName</code> is an executable.
+ * Note that a <code>Display</code> must already exist to guarantee
+ * that this method returns an appropriate result.
+ *
+ * @param fileName the file name or program name or URL (http:// or https://)
+ * @param workingDir the name of the working directory or null
+ * @return <code>true</code> if the file is launched, otherwise <code>false</code>
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
 public static boolean launch (String fileName, String workingDir) {
 	return launch(Display.getCurrent(), fileName, workingDir);
 }

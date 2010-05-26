@@ -285,6 +285,33 @@ void createScrolledHandle (int parentHandle) {
 	createScrollBars ();
 }
 
+/** 
+ * Fills the interior of the rectangle specified by the arguments,
+ * with the receiver's background. 
+ *
+ * <p>The <code>offsetX</code> and <code>offsetY</code> are used to map from
+ * the <code>gc</code> origin to the origin of the parent image background. This is useful
+ * to ensure proper alignment of the image background.</p>
+ * 
+ * @param gc the gc where the rectangle is to be filled
+ * @param x the x coordinate of the rectangle to be filled
+ * @param y the y coordinate of the rectangle to be filled
+ * @param width the width of the rectangle to be filled
+ * @param height the height of the rectangle to be filled
+ * @param offsetX the image background x offset 
+ * @param offsetY the image background y offset
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the gc has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
 public void drawBackground (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
 	drawBackground(gc, offsetX, offsetY, width, height);
 }
@@ -767,6 +794,64 @@ public void layout (Control [] changed) {
 	layout (changed, SWT.NONE);
 }
 
+/**
+ * Forces a lay out (that is, sets the size and location) of all widgets that 
+ * are in the parent hierarchy of the changed control up to and including the 
+ * receiver. 
+ * <p>
+ * The parameter <code>flags</code> may be a combination of:
+ * <dl>
+ * <dt><b>SWT.ALL</b></dt>
+ * <dd>all children in the receiver's widget tree should be laid out</dd>
+ * <dt><b>SWT.CHANGED</b></dt>
+ * <dd>the layout must flush its caches</dd>
+ * <dt><b>SWT.DEFER</b></dt>
+ * <dd>layout will be deferred</dd>
+ * </dl>
+ * </p>
+ * <p>
+ * When the <code>changed</code> array is specified, the flags <code>SWT.ALL</code>
+ * and <code>SWT.CHANGED</code> have no effect. In this case, the layouts in the 
+ * hierarchy must not rely on any information cached about the changed control or
+ * any of its ancestors.  The layout may (potentially) optimize the
+ * work it is doing by assuming that none of the peers of the changed
+ * control have changed state since the last layout.
+ * If an ancestor does not have a layout, skip it.
+ * </p>
+ * <p>
+ * When the <code>changed</code> array is not specified, the flag <code>SWT.ALL</code>
+ * indicates that the whole widget tree should be laid out. And the flag
+ * <code>SWT.CHANGED</code> indicates that the layouts should flush any cached
+ * information for all controls that are laid out. 
+ * </p>
+ * <p>
+ * The <code>SWT.DEFER</code> flag always causes the layout to be deferred by
+ * calling <code>Composite.setLayoutDeferred(true)</code> and scheduling a call
+ * to <code>Composite.setLayoutDeferred(false)</code>, which will happen when
+ * appropriate (usually before the next event is handled). When this flag is set,
+ * the application should not call <code>Composite.setLayoutDeferred(boolean)</code>.
+ * </p>
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
+ * 
+ * @param changed a control that has had a state change which requires a recalculation of its size
+ * @param flags the flags specifying how the layout should happen
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if any of the controls in changed is null or has been disposed</li> 
+ *    <li>ERROR_INVALID_PARENT - if any control in changed is not in the widget tree of the receiver</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.6
+ */
 public void layout (Control [] changed, int flags) {
 	checkWidget ();
 	if (changed != null) {

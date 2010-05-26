@@ -278,7 +278,7 @@ void reskinChildren (int flags) {
  * the source area to the destination and then causing the area
  * of the source which is not covered by the destination to
  * be repainted. Children that intersect the rectangle are
- * optionally moved during the operation. In addition, outstanding
+ * optionally moved during the operation. In addition, all outstanding
  * paint events are flushed before the source area is copied to
  * ensure that the contents of the canvas are drawn correctly.
  *

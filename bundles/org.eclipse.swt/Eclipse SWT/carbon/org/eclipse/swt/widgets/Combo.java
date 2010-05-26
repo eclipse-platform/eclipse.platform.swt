@@ -46,7 +46,7 @@ import org.eclipse.swt.internal.carbon.Rect;
  * <dt><b>Styles:</b></dt>
  * <dd>DROP_DOWN, READ_ONLY, SIMPLE</dd>
  * <dt><b>Events:</b></dt>
- * <dd>DefaultSelection, Modify, Selection, Verify</dd>
+ * <dd>DefaultSelection, Modify, Selection, Verify, OrientationChange</dd>
  * </dl>
  * <p>
  * Note: Only one of the styles DROP_DOWN and SIMPLE may be specified.

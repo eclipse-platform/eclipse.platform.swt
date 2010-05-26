@@ -697,11 +697,11 @@ public void setIncrement (int value) {
 }
 /**
  * Sets the maximum value that the receiver will allow.  This new
- * value will be ignored if it is not greater than the receiver's current
+ * value will be ignored if it is less than the receiver's current
  * minimum value.  If the new maximum is applied then the receiver's
  * selection value will be adjusted if necessary to fall within its new range.
  *
- * @param value the new maximum, which must be greater than the current minimum
+ * @param value the new maximum, which must be greater than or equal to the current minimum
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -720,11 +720,11 @@ public void setMaximum (int value) {
 }
 /**
  * Sets the minimum value that the receiver will allow.  This new
- * value will be ignored if it is not less than the receiver's
+ * value will be ignored if it is greater than the receiver's
  * current maximum value.  If the new minimum is applied then the receiver's
  * selection value will be adjusted if necessary to fall within its new range.
  *
- * @param value the new minimum, which must be less than the current maximum
+ * @param value the new minimum, which must be less than or equal to the current maximum
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

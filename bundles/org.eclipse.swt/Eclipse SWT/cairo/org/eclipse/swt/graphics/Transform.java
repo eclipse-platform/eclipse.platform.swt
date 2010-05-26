@@ -213,7 +213,7 @@ public void invert() {
  * <p>
  * This method gets the dispose state for the Transform.
  * When a Transform has been disposed, it is an error to
- * invoke any other method using the Transform.
+ * invoke any other method (except {@link #dispose()}) using the Transform.
  *
  * @return <code>true</code> when the Transform is disposed, and <code>false</code> otherwise
  */
