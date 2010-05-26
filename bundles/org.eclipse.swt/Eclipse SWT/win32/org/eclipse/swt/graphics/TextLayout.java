@@ -2764,7 +2764,7 @@ public void setFont (Font font) {
 }
 
 /**
- * Sets the indent of the receiver. This indent it applied to the first line of 
+ * Sets the indent of the receiver. This indent is applied to the first line of 
  * each paragraph.  
  *
  * @param indent new indent
