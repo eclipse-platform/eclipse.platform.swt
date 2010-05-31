@@ -1,4 +1,3 @@
-@echo off
 @rem ***************************************************************************
 @rem Copyright (c) 2000, 2010 IBM Corporation and others.
 @rem All rights reserved. This program and the accompanying materials
@@ -7,7 +6,7 @@
 @rem http://www.eclipse.org/legal/epl-v10.html
 @rem
 @rem Contributors:
-@rem rem      IBM Corporation - initial API and implementation
+@rem      IBM Corporation - initial API and implementation
 @rem ***************************************************************************
 
 @echo off
