@@ -3290,14 +3290,18 @@ void release (boolean destroy) {
 			if (children [index] == this) break;
 			index++;
 		}
-		if (0 < index && (index + 1) < children.length) {
-			next = children [index + 1];
+		if (index > 0) {
 			previous = children [index - 1];
 		}
+		if (index + 1 < children.length) {
+			next = children [index + 1];
+			next.removeRelation ();
+		}
+		removeRelation ();
 	}
 	super.release (destroy);
 	if (destroy) {
-		if (previous != null) previous.addRelation (next);
+		if (previous != null && next != null) previous.addRelation (next);
 	}
 }
 
