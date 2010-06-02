@@ -26,11 +26,19 @@ import org.eclipse.swt.widgets.*;
  * 		gridData.horizontalAlignment = GridData.FILL;
  * 		gridData.grabExcessHorizontalSpace = true;
  * 		button1.setLayoutData(gridData);
+ * 
+ * 		gridData = new GridData();
+ * 		gridData.horizontalAlignment = GridData.FILL;
+ * 		gridData.verticalAlignment = GridData.FILL;
+ * 		gridData.grabExcessHorizontalSpace = true;
+ * 		gridData.grabExcessVerticalSpace = true;
+ * 		gridData.horizontalSpan = 2;
+ * 		button2.setLayoutData(gridData);
  * </pre>
- * The second is to take advantage of convenience style bits defined 
- * by <code>GridData</code>:
+ * The second is to take advantage of <code>GridData</code> convenience constructors, for example: 
  * <pre>
- *      button1.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
+ *      button1.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, true, false));
+ *      button2.setLayoutData(new GridData (SWT.FILL, SWT.FILL, true, true, 2, 1));
  * </pre>
  * </p>
  * <p>
