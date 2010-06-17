@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.*;
 
 public class Snippet31 {
 
+	static Tracker tracker = null;
 public static void main (String [] args) {
 	final Display display = new Display ();
 	final Shell shell = new Shell (display);
@@ -41,7 +42,7 @@ public static void main (String [] args) {
 					if (Math.abs (deltaX) < JITTER && Math.abs (deltaY) < JITTER) {
 						return;
 					}
-					Tracker tracker = new Tracker (display, SWT.NONE);
+					tracker = new Tracker (display, SWT.NONE);
 					Rectangle rect = display.map (shell, null, shell.getClientArea ());
 					rect.x -= deltaX;
 					rect.y -= deltaY;
@@ -50,6 +51,10 @@ public static void main (String [] args) {
 					//FALL THROUGH
 				case SWT.MouseUp:
 					point = null;
+					if (tracker != null) {
+						tracker.dispose ();
+						tracker = null;
+					}
 					break;
 			}
 		}
