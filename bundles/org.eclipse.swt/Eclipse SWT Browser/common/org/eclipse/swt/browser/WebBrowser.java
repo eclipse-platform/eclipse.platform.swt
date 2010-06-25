@@ -171,7 +171,7 @@ abstract class WebBrowser {
 		{19,	SWT.PAUSE},
 		{3,		SWT.BREAK},
 
-		/* WebKit/Safari-specific */
+		/* WebKit-specific */
 		{186,	';'},
 		{187,	'='},
 		{189,	'-'},

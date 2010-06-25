@@ -5688,7 +5688,7 @@ public static final String kAXDateFieldRole    = "AXDateField";
 public static final String kAXHelpTagRole      = "AXHelpTag";
 public static final String kAXMatteRole        = "AXMatteRole";
 public static final String kAXDockItemRole     = "AXDockItem";
-public static final String kAXLinkRole         = "AXLink";  // as seen in Safari
+public static final String kAXLinkRole         = "AXLink";  // as seen in WebKit
 
 public static final String kAXCloseButtonSubrole       = "AXCloseButton";
 public static final String kAXMinimizeButtonSubrole    = "AXMinimizeButton";

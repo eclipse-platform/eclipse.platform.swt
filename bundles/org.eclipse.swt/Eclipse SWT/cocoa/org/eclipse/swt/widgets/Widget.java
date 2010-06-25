@@ -79,9 +79,9 @@ public abstract class Widget {
 	static final int FOREIGN_HANDLE = 1<<17;
 	static final int DRAG_DETECT = 1<<18;
 
-	/* Safari fixes */
-	static final int SAFARI_EVENTS_FIX = 1<<19;
-	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
+	/* WebKit fixes */
+	static final int WEBKIT_EVENTS_FIX = 1<<19;
+	static final String WEBKIT_EVENTS_FIX_KEY = "org.eclipse.swt.internal.webKitEventsFix"; //$NON-NLS-1$
 	static final String GLCONTEXT_KEY = "org.eclipse.swt.internal.cocoa.glcontext"; //$NON-NLS-1$
 	
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.isActive"; //$NON-NLS-1$
@@ -1394,7 +1394,7 @@ void sendEvent (int eventType, Event event, boolean send) {
 }
 
 boolean sendKeyEvent (NSEvent nsEvent, int type) {
-	if ((state & SAFARI_EVENTS_FIX) != 0) return true;
+	if ((state & WEBKIT_EVENTS_FIX) != 0) return true;
 	Event event = new Event ();
 	if (!setKeyState (event, type, nsEvent)) return true;
 	return sendKeyEvent (type, event);
@@ -1467,8 +1467,8 @@ void sendVerticalSelection () {
  */
 public void setData (Object data) {
 	checkWidget();
-	if (SAFARI_EVENTS_FIX_KEY.equals (data)) {
-		state |= SAFARI_EVENTS_FIX;
+	if (WEBKIT_EVENTS_FIX_KEY.equals (data)) {
+		state |= WEBKIT_EVENTS_FIX;
 		return;
 	}
 	if ((state & KEYED_DATA) != 0) {

@@ -1224,7 +1224,7 @@ void fixFocus (Control focusControl) {
 
 void flagsChanged (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (hasKeyboardFocus(id)) {
-		if ((state & SAFARI_EVENTS_FIX) == 0) {
+		if ((state & WEBKIT_EVENTS_FIX) == 0) {
 			Shell s = this.getShell();
 			s.keyInputHappened = false;
 			int mask = 0;

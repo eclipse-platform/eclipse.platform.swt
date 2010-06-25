@@ -22,7 +22,7 @@ import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-class Safari extends WebBrowser {
+class WebKit extends WebBrowser {
 	
 	/* Objective-C WebView delegate */
 	int delegate;
@@ -62,7 +62,7 @@ class Safari extends WebBrowser {
 	static final String USER_AGENT = "user-agent"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final String BROWSER_WINDOW = "org.eclipse.swt.browser.Browser.Window"; //$NON-NLS-1$
-	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
+	static final String WEBKIT_EVENTS_FIX_KEY = "org.eclipse.swt.internal.webKitEventsFix"; //$NON-NLS-1$
 
 	/* event strings */
 	static final String DOMEVENT_KEYUP = "keyup"; //$NON-NLS-1$
@@ -162,7 +162,7 @@ public boolean create (Composite parent, int style) {
 	}
 	
 	/*
-	* Bug in Safari on OSX 10.5 (Leopard) only.  VoiceOver no longer follows focus when
+	* Bug in WebKit on OSX 10.5 (Leopard) only.  VoiceOver no longer follows focus when
 	* HIWebViewCreate is used to create a WebView.  The VoiceOver cursor (activated by
 	* Control+Alt+arrows) continues to work, but keyboard focus is not tracked.  The fix
 	* is to create the WebView with HICocoaViewCreate (api introduced in OSX 10.5) when
@@ -198,11 +198,11 @@ public boolean create (Composite parent, int style) {
 	* to the DOM instead.
 	*/
 	if (!(OS.VERSION < 0x1040)) {
-		browser.setData(SAFARI_EVENTS_FIX_KEY);
+		browser.setData(WEBKIT_EVENTS_FIX_KEY);
 	}
 
 	/*
-	* Bug in Safari.  For some reason, every application must contain
+	* Bug in WebKit.  For some reason, every application must contain
 	* a visible window that has never had a WebView or mouse move events
 	* are not delivered.  This seems to happen after a browser has been
 	* either hidden or disposed in any window.  The fix is to create a
@@ -228,7 +228,7 @@ public boolean create (Composite parent, int style) {
 	}
 	
 	/*
-	* Bug in Safari. The WebView does not draw properly if it is embedded as
+	* Bug in WebKit. The WebView does not draw properly if it is embedded as
 	* sub view of the browser handle.  The fix is to add the web view to the
 	* window root control and resize it on top of the browser handle.
 	* 
@@ -242,11 +242,11 @@ public boolean create (Composite parent, int style) {
 	OS.HIViewChangeFeatures(webViewHandle, OS.kHIViewFeatureIsOpaque, 0);
 
 	/*
-	* Bug in Safari. The WebView does not receive mouse and key events when it is added
-	* to a visible top window.  It is assumed that Safari hooks its own event listener
+	* Bug in WebKit. The WebView does not receive mouse and key events when it is added
+	* to a visible top window.  It is assumed that WebKit hooks its own event listener
 	* when the top window emits the kEventWindowShown event. The workaround is to send a
 	* fake kEventWindowShown event to the top window after the WebView has been added
-	* to the HIView (after the top window is visible) to give Safari a chance to hook
+	* to the HIView (after the top window is visible) to give WebKit a chance to hook
 	* events.
 	*/
 	OS.HIViewSetVisible(webViewHandle, true);	
@@ -260,7 +260,7 @@ public boolean create (Composite parent, int style) {
 
 	/*
 	* This code is intentionally commented. Setting a group name is the right thing
-	* to do in order to avoid multiple open window requests. For some reason, Safari
+	* to do in order to avoid multiple open window requests. For some reason, WebKit
 	* crashes when requested to reopen the same window if that window was previously
 	* closed. This may be because that window was not correctly closed. 
 	*/	
@@ -408,7 +408,7 @@ public boolean create (Composite parent, int style) {
 static int eventProc3(int nextHandler, int theEvent, int userData) {
 	Widget widget = Display.getCurrent().findWidget(userData);
 	if (widget instanceof Browser) {
-		return ((Safari)((Browser)widget).webBrowser).handleCallback(nextHandler, theEvent);
+		return ((WebKit)((Browser)widget).webBrowser).handleCallback(nextHandler, theEvent);
 	}
 	return OS.eventNotHandledErr;
 }
@@ -416,7 +416,7 @@ static int eventProc3(int nextHandler, int theEvent, int userData) {
 static int eventProc7(int webview, int userData, int selector, int arg0, int arg1, int arg2, int arg3) {
 	Widget widget = Display.getCurrent().findWidget(userData);
 	if (widget instanceof Browser) {
-		return ((Safari)((Browser)widget).webBrowser).handleCallback(selector, arg0, arg1, arg2, arg3);
+		return ((WebKit)((Browser)widget).webBrowser).handleCallback(selector, arg0, arg1, arg2, arg3);
 	}
 	return 0;
 }
@@ -542,7 +542,7 @@ int handleCallback(int nextHandler, int theEvent) {
 				}
 				case OS.kEventControlDraw: {
 					/*
-					 * Bug on Safari. The web view cannot be obscured by other views above it.
+					 * Bug on WebKit. The web view cannot be obscured by other views above it.
 					 * This problem is specified in the apple documentation for HiWebViewCreate.
 					 * The workaround is to don't draw the web view when it is not visible.
 					 */
@@ -569,7 +569,7 @@ int handleCallback(int nextHandler, int theEvent) {
 				case OS.kEventControlBoundsChanged:
 				case OS.kEventControlVisibilityChanged: {
 					/*
-					 * Bug on Safari. The web view cannot be obscured by other views above it.
+					 * Bug on WebKit. The web view cannot be obscured by other views above it.
 					 * This problem is specified in the apple documentation for HiWebViewCreate.
 					 * The workaround is to hook kEventControlVisibilityChanged on the browser
 					 * and move the browser out of the screen when hidden and restore its bounds
@@ -586,7 +586,7 @@ int handleCallback(int nextHandler, int theEvent) {
 						OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(browser.handle)), OS.kHIViewWindowContentID(), contentView);
 						OS.HIViewConvertRect(bounds, browser.handle, contentView[0]);
 						/* 
-						* Bug in Safari.  For some reason, the web view will display incorrectly or
+						* Bug in WebKit.  For some reason, the web view will display incorrectly or
 						* blank depending on its contents, if its size is set to a value smaller than
 						* MIN_SIZE. It will not display properly even after the size is made larger.
 						* The fix is to avoid setting sizes smaller than MIN_SIZE. 
@@ -602,7 +602,7 @@ int handleCallback(int nextHandler, int theEvent) {
 			switch (eventKind) {
 				case OS.kEventWindowBoundsChanged:
 					/*
-					 * Bug on Safari. Resizing the height of a Shell containing a Browser at
+					 * Bug on WebKit. Resizing the height of a Shell containing a Browser at
 					 * a fixed location causes the Browser to redraw at a wrong location.
 					 * The web view is a HIView container that internally hosts
 					 * a Cocoa NSView that uses a coordinates system with the origin at the
@@ -623,7 +623,7 @@ int handleCallback(int nextHandler, int theEvent) {
 						OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(browser.handle)), OS.kHIViewWindowContentID(), contentView);
 						OS.HIViewConvertRect(bounds, browser.handle, contentView[0]);
 						/* 
-						* Bug in Safari.  For some reason, the web view will display incorrectly or
+						* Bug in WebKit.  For some reason, the web view will display incorrectly or
 						* blank depending on its contents, if its size is set to a value smaller than
 						* MIN_SIZE. It will not display properly even after the size is made larger.
 						* The fix is to avoid setting sizes smaller than MIN_SIZE. 
@@ -641,7 +641,7 @@ int handleCallback(int nextHandler, int theEvent) {
 			switch (eventKind) {
 				case OS.kEventRawKeyDown: {
 					/*
-					* Bug in Safari. The WebView blocks the propagation of certain Carbon events
+					* Bug in WebKit. The WebView blocks the propagation of certain Carbon events
 					* such as kEventRawKeyDown. On the Mac, Carbon events propagate from the
 					* Focus Target Handler to the Control Target Handler, Window Target and finally
 					* the Application Target Handler. It is assumed that WebView hooks its events
@@ -651,7 +651,7 @@ int handleCallback(int nextHandler, int theEvent) {
 					* used by SWT to send a SWT.KeyDown event.
 					* The workaround is to hook kEventRawKeyDown on the Control Target Handler which gets
 					* called before the WebView hook on the Window Target Handler. Then, forward this event
-					* directly to the Application Target Handler. Note that if in certain conditions Safari
+					* directly to the Application Target Handler. Note that if in certain conditions WebKit
 					* does not block the kEventRawKeyDown, then multiple kEventTextInputUnicodeForKeyEvent
 					* events might be generated as a result of this workaround.
 					*/
@@ -855,7 +855,7 @@ public boolean setUrl(String url, String postData, String[] headers) {
 					if (key.length() > 0 && value.length() > 0) {
 						if (key.equalsIgnoreCase(USER_AGENT)) {
 							/*
-							* Feature of Safari.  The user-agent header value cannot be overridden
+							* Feature of WebKit.  The user-agent header value cannot be overridden
 							* here.  The workaround is to temporarily set the value on the WebView
 							* and then remove it after the loading of the request has begun.
 							*/
@@ -941,11 +941,11 @@ void didChangeLocationWithinPageForFrame(int frame) {
 void didFailProvisionalLoadWithError(int error, int frame) {
 	if (frame == Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame)) {
 		/*
-		* Feature on Safari.  The identifier is used here as a marker for the events 
+		* Feature on WebKit.  The identifier is used here as a marker for the events 
 		* related to the top frame and the URL changes related to that top frame as 
 		* they should appear on the location bar of a browser.  It is expected to reset
 		* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
-		* the identifierForInitialRequest event is received.  However, Safari fires
+		* the identifierForInitialRequest event is received.  However, WebKit fires
 		* the didFinishLoadingFromDataSource event before the entire content of the
 		* top frame is loaded.  It is possible to receive multiple willSendRequest 
 		* events in this interval, causing the Browser widget to send unwanted
@@ -1098,11 +1098,11 @@ void didFinishLoadForFrame(int frame) {
 		if (browser.isDisposed()) return;
 
 		/*
-		* Feature on Safari.  The identifier is used here as a marker for the events 
+		* Feature on WebKit.  The identifier is used here as a marker for the events 
 		* related to the top frame and the URL changes related to that top frame as 
 		* they should appear on the location bar of a browser.  It is expected to reset
 		* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
-		* the identifierForInitialRequest event is received.  Howeever, Safari fires
+		* the identifierForInitialRequest event is received.  Howeever, WebKit fires
 		* the didFinishLoadingFromDataSource event before the entire content of the
 		* top frame is loaded.  It is possible to receive multiple willSendRequest 
 		* events in this interval, causing the Browser widget to send unwanted
@@ -1118,7 +1118,7 @@ void hookDOMFocusListeners(int frame) {
 	/*
 	* These listeners only need to be hooked for OSX 10.4 (Tiger).  The WebKit on
 	* OSX < 10.4 does not send these DOM events, and tab traversals that exit
-	* Safari are handled as of OSX 10.5 as a result of using HICocoaViewCreate,
+	* WebKit are handled as of OSX 10.5 as a result of using HICocoaViewCreate,
 	* which makes these listeners unnecessary.
 	*/
 	if (!(0x1040 <= OS.VERSION && OS.VERSION < 0x1050)) return;
@@ -1249,7 +1249,7 @@ void didCommitLoadForFrame(int frame) {
 		/*
 		* Each invocation of setText() causes didCommitLoadForFrame to be invoked twice,
 		* once for the initial navigate to about:blank, and once for the auto-navigate
-		* to about:blank that Safari does when loadHTMLStringBaseURL is invoked.  If
+		* to about:blank that WebKit does when loadHTMLStringBaseURL is invoked.  If
 		* this is the first didCommitLoadForFrame callback received for a setText()
 		* invocation then do not send any events or re-install registered BrowserFunctions. 
 		*/
@@ -1308,11 +1308,11 @@ void windowScriptObjectAvailable (int windowScriptObject) {
 
 void didFinishLoadingFromDataSource(int identifier, int dataSource) {
 	/*
-	* Feature on Safari.  The identifier is used here as a marker for the events 
+	* Feature on WebKit.  The identifier is used here as a marker for the events 
 	* related to the top frame and the URL changes related to that top frame as 
 	* they should appear on the location bar of a browser.  It is expected to reset
 	* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
-	* the identifierForInitialRequest event is received.  Howeever, Safari fires
+	* the identifierForInitialRequest event is received.  Howeever, WebKit fires
 	* the didFinishLoadingFromDataSource event before the entire content of the
 	* top frame is loaded.  It is possible to receive multiple willSendRequest 
 	* events in this interval, causing the Browser widget to send unwanted
@@ -1326,11 +1326,11 @@ void didFinishLoadingFromDataSource(int identifier, int dataSource) {
 
 void didFailLoadingWithError(int identifier, int error, int dataSource) {
 	/*
-	* Feature on Safari.  The identifier is used here as a marker for the events 
+	* Feature on WebKit.  The identifier is used here as a marker for the events 
 	* related to the top frame and the URL changes related to that top frame as 
 	* they should appear on the location bar of a browser.  It is expected to reset
 	* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
-	* the identifierForInitialRequest event is received.  Howeever, Safari fires
+	* the identifierForInitialRequest event is received.  Howeever, WebKit fires
 	* the didFinishLoadingFromDataSource event before the entire content of the
 	* top frame is loaded.  It is possible to receive multiple willSendRequest 
 	* events in this interval, causing the Browser widget to send unwanted
@@ -1551,11 +1551,11 @@ int createWebViewWithRequest(int request) {
 
 	int webView = 0;
 	Browser browser = null;
-	if (newEvent.browser != null && newEvent.browser.webBrowser instanceof Safari) {
+	if (newEvent.browser != null && newEvent.browser.webBrowser instanceof WebKit) {
 		browser = newEvent.browser;
 	}
 	if (browser != null && !browser.isDisposed()) {
-		webView = ((Safari)browser.webBrowser).webView;
+		webView = ((WebKit)browser.webBrowser).webView;
 		
 		if (request != 0) {
 			//mainFrame = [webView mainFrame];
@@ -1570,8 +1570,8 @@ int createWebViewWithRequest(int request) {
 
 void webViewShow(int sender) {
 	/*
-	* Feature on WebKit.  The Safari WebKit expects the application
-	* to create a new Window using the Objective C Cocoa API in response
+	* Feature on WebKit.  WebKit expects the application to
+	* create a new Window using the Objective C Cocoa API in response
 	* to UIDelegate.createWebViewWithRequest. The application is then
 	* expected to use Objective C Cocoa API to make this window visible
 	* when receiving the UIDelegate.webViewShow message.  For some reason,
@@ -1589,7 +1589,7 @@ void webViewShow(int sender) {
 	if (location != null) newEvent.location = location;
 	if (size != null) newEvent.size = size;
 	/*
-	* Feature in Safari.  Safari's tool bar contains
+	* Feature in WebKit.  WebKit's tool bar contains
 	* the address bar.  The address bar is displayed
 	* if the tool bar is displayed. There is no separate
 	* notification for the address bar.
@@ -1695,8 +1695,8 @@ void webViewClose() {
 	browser.dispose();
 	if (parent.isDisposed()) return;
 	/*
-	* Feature on WebKit.  The Safari WebKit expects the application
-	* to create a new Window using the Objective C Cocoa API in response
+	* Feature on WebKit.  WebKit expects the application to
+	* create a new Window using the Objective C Cocoa API in response
 	* to UIDelegate.createWebViewWithRequest. The application is then
 	* expected to use Objective C Cocoa API to make this window visible
 	* when receiving the UIDelegate.webViewShow message.  For some reason,
@@ -1814,7 +1814,7 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 	int url = Cocoa.objc_msgSend(request, Cocoa.S_URL);
 	if (loadingText) {
 		/* 
-		 * Safari is auto-navigating to about:blank in response to a loadHTMLString()
+		 * WebKit is auto-navigating to about:blank in response to a loadHTMLString()
 		 * invocation.  This navigate should always proceed without sending an event
 		 * since it is preceded by an explicit navigate to about:blank in setText().
 		 */
@@ -1900,7 +1900,7 @@ void decideDestinationWithSuggestedFilename (int download, int filename) {
 	String name = new String(buffer);
 
 	/*
-	* Bug in Safari.  As of OSX 10.5.5, showing the file dialog here invokes this
+	* Bug in WebKit.  As of OSX 10.5.5, showing the file dialog here invokes this
 	* callback a second time when the file dialog runs the event loop, which
 	* always leads to a crash.  The workaround is to choose a location to save
 	* the file without showing the file dialog. 
@@ -1985,7 +1985,7 @@ void handleEvent(int evt) {
 		}
 		keyEvent.keyCode = translateKey(keyCode);
 		/*
-		* Safari maps the Delete key's character to 0xf728.  Detect
+		* WebKit maps the Delete key's character to 0xf728.  Detect
 		* this key and set its character to SWT.DEL so that the
 		* Browser's key events are consistent with other controls.
 		*/
@@ -2009,9 +2009,9 @@ void handleEvent(int evt) {
 		}
 
 		/*
-		* Bug in Safari.  As a result of using HIWebViewCreate on OSX versions < 10.5 (Leopard), attempting
-		* to traverse out of Safari backwards (Shift+Tab) leaves it in a strange state where Safari no
-		* longer has focus but still receives keys.  The Carbon-based Safari examples have the same
+		* Bug in WebKit.  As a result of using HIWebViewCreate on OSX versions < 10.5 (Leopard), attempting
+		* to traverse out of WebKit backwards (Shift+Tab) leaves it in a strange state where WebKit no
+		* longer has focus but still receives keys.  The Carbon-based WebKit examples have the same
 		* problem.  The workaround is to only allow forward Tab traversals in the Browser on OSX < 10.5.
 		*/
 		if (doit && OS.VERSION < 0x1050 && keyEvent.keyCode == SWT.TAB && (keyEvent.stateMask & SWT.SHIFT) != 0) {
@@ -2065,7 +2065,7 @@ void handleEvent(int evt) {
 		}
 	} else if (DOMEVENT_MOUSEMOVE.equals (typeString)) {
 		/*
-		* Feature in Safari.  Spurious and redundant mousemove events are received in
+		* Feature in WebKit.  Spurious and redundant mousemove events are received in
 		* various contexts, including following every MouseUp.  The workaround is to
 		* not fire MouseMove events whose x and y values match the last MouseMove.  
 		*/

@@ -20,7 +20,7 @@ import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-class Safari extends WebBrowser {
+class WebKit extends WebBrowser {
 	WebView webView;
 	WebPreferences preferences;
 	SWTWebViewDelegate delegate;
@@ -54,7 +54,7 @@ class Safari extends WebBrowser {
 	static final String POST = "POST"; //$NON-NLS-1$
 	static final String USER_AGENT = "user-agent"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
-	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
+	static final String WEBKIT_EVENTS_FIX_KEY = "org.eclipse.swt.internal.webKitEventsFix"; //$NON-NLS-1$
 	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
 
 	/* event strings */
@@ -121,20 +121,20 @@ class Safari extends WebBrowser {
 
 public boolean create (Composite parent, int style) {
 	if (delegateClass == 0) {
-		Class safariClass = this.getClass();
-		Callback3 = new Callback(safariClass, "browserProc", 3); //$NON-NLS-1$
+		Class webKitClass = this.getClass();
+		Callback3 = new Callback(webKitClass, "browserProc", 3); //$NON-NLS-1$
 		int /*long*/ proc3 = Callback3.getAddress();
 		if (proc3 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		Callback4 = new Callback(safariClass, "browserProc", 4); //$NON-NLS-1$
+		Callback4 = new Callback(webKitClass, "browserProc", 4); //$NON-NLS-1$
 		int /*long*/ proc4 = Callback4.getAddress();
 		if (proc4 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		Callback5 = new Callback(safariClass, "browserProc", 5); //$NON-NLS-1$
+		Callback5 = new Callback(webKitClass, "browserProc", 5); //$NON-NLS-1$
 		int /*long*/ proc5 = Callback5.getAddress();
 		if (proc5 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		Callback6 = new Callback(safariClass, "browserProc", 6); //$NON-NLS-1$
+		Callback6 = new Callback(webKitClass, "browserProc", 6); //$NON-NLS-1$
 		int /*long*/ proc6 = Callback6.getAddress();
 		if (proc6 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		Callback7 = new Callback(safariClass, "browserProc", 7); //$NON-NLS-1$
+		Callback7 = new Callback(webKitClass, "browserProc", 7); //$NON-NLS-1$
 		int /*long*/ proc7 = Callback7.getAddress();
 		if (proc7 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		int /*long*/ setFrameProc = OS.CALLBACK_webView_setFrame_(proc4);
@@ -197,7 +197,7 @@ public boolean create (Composite parent, int style) {
 	* Override the default event mechanism to not send key events so
 	* that the browser can send them by listening to the DOM instead.
 	*/
-	browser.setData(SAFARI_EVENTS_FIX_KEY);
+	browser.setData(WEBKIT_EVENTS_FIX_KEY);
 
 	WebView webView = (WebView)new WebView().alloc();
 	if (webView == null) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -217,7 +217,7 @@ public boolean create (Composite parent, int style) {
 		public void handleEvent(Event e) {
 			switch (e.type) {
 				case SWT.FocusIn:
-					Safari.this.webView.window().makeFirstResponder(Safari.this.webView);
+					WebKit.this.webView.window().makeFirstResponder(WebKit.this.webView);
 					break;
 				case SWT.Dispose: {
 					/* make this handler run after other dispose listeners */
@@ -239,16 +239,16 @@ public boolean create (Composite parent, int style) {
 						e.display.setData(ADD_WIDGET_KEY, new Object[] {delegate, null});
 					}
 
-					Safari.this.webView.setFrameLoadDelegate(null);
-					Safari.this.webView.setResourceLoadDelegate(null);
-					Safari.this.webView.setUIDelegate(null);
-					Safari.this.webView.setPolicyDelegate(null);
-					Safari.this.webView.setDownloadDelegate(null);
+					WebKit.this.webView.setFrameLoadDelegate(null);
+					WebKit.this.webView.setResourceLoadDelegate(null);
+					WebKit.this.webView.setUIDelegate(null);
+					WebKit.this.webView.setPolicyDelegate(null);
+					WebKit.this.webView.setDownloadDelegate(null);
 
-					Safari.this.webView.release();
-					Safari.this.webView = null;
-					Safari.this.delegate.release();
-					Safari.this.delegate = null;
+					WebKit.this.webView.release();
+					WebKit.this.webView = null;
+					WebKit.this.delegate.release();
+					WebKit.this.delegate = null;
 					html = null;
 					lastHoveredLinkURL = lastNavigateURL = null;
 
@@ -301,17 +301,17 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
-	Safari safari = (Safari)((Browser)widget).webBrowser;
+	WebKit webKit = (WebKit)((Browser)widget).webBrowser;
 	if (sel == OS.sel_webViewShow_) {
-		safari.webViewShow(arg0);
+		webKit.webViewShow(arg0);
 	} else if (sel == OS.sel_webViewClose_) {
-		safari.webViewClose(arg0);
+		webKit.webViewClose(arg0);
 	} else if (sel == OS.sel_webViewFocus_) {
-		safari.webViewFocus(arg0);
+		webKit.webViewFocus(arg0);
 	} else if (sel == OS.sel_webViewUnfocus_) {
-		safari.webViewUnfocus(arg0);
+		webKit.webViewUnfocus(arg0);
 	} else if (sel == OS.sel_handleEvent_) {
-		safari.handleEvent(arg0);
+		webKit.handleEvent(arg0);
 	}
 	return 0;
 }
@@ -319,41 +319,41 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
-	Safari safari = (Safari)((Browser)widget).webBrowser;
+	WebKit webKit = (WebKit)((Browser)widget).webBrowser;
 	if (sel == OS.sel_webView_didChangeLocationWithinPageForFrame_) {
-		safari.webView_didChangeLocationWithinPageForFrame(arg0, arg1);
+		webKit.webView_didChangeLocationWithinPageForFrame(arg0, arg1);
 	} else if (sel == OS.sel_webView_didFinishLoadForFrame_) {
-		safari.webView_didFinishLoadForFrame(arg0, arg1);
+		webKit.webView_didFinishLoadForFrame(arg0, arg1);
 	} else if (sel == OS.sel_webView_didStartProvisionalLoadForFrame_) {
-		safari.webView_didStartProvisionalLoadForFrame(arg0, arg1);
+		webKit.webView_didStartProvisionalLoadForFrame(arg0, arg1);
 	} else if (sel == OS.sel_webView_didCommitLoadForFrame_) {
-		safari.webView_didCommitLoadForFrame(arg0, arg1);
+		webKit.webView_didCommitLoadForFrame(arg0, arg1);
 	} else if (sel == OS.sel_webView_setFrame_) {
-		safari.webView_setFrame(arg0, arg1);
+		webKit.webView_setFrame(arg0, arg1);
 	} else if (sel == OS.sel_webView_createWebViewWithRequest_) {
-		return safari.webView_createWebViewWithRequest(arg0, arg1);		
+		return webKit.webView_createWebViewWithRequest(arg0, arg1);		
 	} else if (sel == OS.sel_webView_setStatusBarVisible_) {
-		safari.webView_setStatusBarVisible(arg0, arg1 != 0);
+		webKit.webView_setStatusBarVisible(arg0, arg1 != 0);
 	} else if (sel == OS.sel_webView_setResizable_) {
-		safari.webView_setResizable(arg0, arg1 != 0);
+		webKit.webView_setResizable(arg0, arg1 != 0);
 	} else if (sel == OS.sel_webView_setStatusText_) {
-		safari.webView_setStatusText(arg0, arg1);
+		webKit.webView_setStatusText(arg0, arg1);
 	} else if (sel == OS.sel_webView_setToolbarsVisible_) {
-		safari.webView_setToolbarsVisible(arg0, arg1 != 0);
+		webKit.webView_setToolbarsVisible(arg0, arg1 != 0);
 	} else if (sel == OS.sel_webView_runJavaScriptAlertPanelWithMessage_) {
-		safari.webView_runJavaScriptAlertPanelWithMessage(arg0, arg1);
+		webKit.webView_runJavaScriptAlertPanelWithMessage(arg0, arg1);
 	} else if (sel == OS.sel_webView_runJavaScriptConfirmPanelWithMessage_) {
-		return safari.webView_runJavaScriptConfirmPanelWithMessage(arg0, arg1);
+		return webKit.webView_runJavaScriptConfirmPanelWithMessage(arg0, arg1);
 	} else if (sel == OS.sel_webView_runOpenPanelForFileButtonWithResultListener_) {
-		safari.webView_runOpenPanelForFileButtonWithResultListener(arg0, arg1);
+		webKit.webView_runOpenPanelForFileButtonWithResultListener(arg0, arg1);
 	} else if (sel == OS.sel_download_decideDestinationWithSuggestedFilename_) {
-		safari.download_decideDestinationWithSuggestedFilename(arg0, arg1);
+		webKit.download_decideDestinationWithSuggestedFilename(arg0, arg1);
 	} else if (sel == OS.sel_webView_printFrameView_) {
-		safari.webView_printFrameView(arg0, arg1);
+		webKit.webView_printFrameView(arg0, arg1);
 	} else if (sel == OS.sel_webView_windowScriptObjectAvailable_) {
-		safari.webView_windowScriptObjectAvailable (arg0, arg1);
+		webKit.webView_windowScriptObjectAvailable (arg0, arg1);
 	} else if (sel == OS.sel_callRunBeforeUnloadConfirmPanelWithMessage) {
-		return safari.callRunBeforeUnloadConfirmPanelWithMessage (arg0, arg1).id;
+		return webKit.callRunBeforeUnloadConfirmPanelWithMessage (arg0, arg1).id;
 	}
 	return 0;
 }
@@ -361,32 +361,32 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
-	Safari safari = (Safari)((Browser)widget).webBrowser;
+	WebKit webKit = (WebKit)((Browser)widget).webBrowser;
 	if (sel == OS.sel_webView_didFailProvisionalLoadWithError_forFrame_) {
-		safari.webView_didFailProvisionalLoadWithError_forFrame(arg0, arg1, arg2);
+		webKit.webView_didFailProvisionalLoadWithError_forFrame(arg0, arg1, arg2);
 	} else if (sel == OS.sel_webView_didReceiveTitle_forFrame_) {
-		safari.webView_didReceiveTitle_forFrame(arg0, arg1, arg2);
+		webKit.webView_didReceiveTitle_forFrame(arg0, arg1, arg2);
 	} else if (sel == OS.sel_webView_resource_didFinishLoadingFromDataSource_) {
-		safari.webView_resource_didFinishLoadingFromDataSource(arg0, arg1, arg2);
+		webKit.webView_resource_didFinishLoadingFromDataSource(arg0, arg1, arg2);
 	} else if (sel == OS.sel_webView_identifierForInitialRequest_fromDataSource_) {
-		return safari.webView_identifierForInitialRequest_fromDataSource(arg0, arg1, arg2);
+		return webKit.webView_identifierForInitialRequest_fromDataSource(arg0, arg1, arg2);
 	} else if (sel == OS.sel_webView_contextMenuItemsForElement_defaultMenuItems_) {
-		return safari.webView_contextMenuItemsForElement_defaultMenuItems(arg0, arg1, arg2);
+		return webKit.webView_contextMenuItemsForElement_defaultMenuItems(arg0, arg1, arg2);
 	} else if (sel == OS.sel_webView_mouseDidMoveOverElement_modifierFlags_) {
-		safari.webView_mouseDidMoveOverElement_modifierFlags(arg0, arg1, arg2);
+		webKit.webView_mouseDidMoveOverElement_modifierFlags(arg0, arg1, arg2);
 	} else if (sel == OS.sel_webView_unableToImplementPolicyWithError_frame_) {
-		safari.webView_unableToImplementPolicyWithError_frame(arg0, arg1, arg2);
+		webKit.webView_unableToImplementPolicyWithError_frame(arg0, arg1, arg2);
 	} else if (sel == OS.sel_webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame_) {
-		return safari.webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame(arg0, arg1, arg2) ? 1 : 0;
+		return webKit.webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame(arg0, arg1, arg2) ? 1 : 0;
 	} else if (sel == OS.sel_webView_runJavaScriptAlertPanelWithMessage_initiatedByFrame_) {
-		safari.webView_runJavaScriptAlertPanelWithMessage(arg0, arg1);
+		webKit.webView_runJavaScriptAlertPanelWithMessage(arg0, arg1);
 	} else if (sel == OS.sel_webView_runJavaScriptConfirmPanelWithMessage_initiatedByFrame_) {
-		return safari.webView_runJavaScriptConfirmPanelWithMessage(arg0, arg1);
+		return webKit.webView_runJavaScriptConfirmPanelWithMessage(arg0, arg1);
 	} else if (sel == OS.sel_callJava) {
-		id result = safari.callJava(arg0, arg1, arg2);
+		id result = webKit.callJava(arg0, arg1, arg2);
 		return result == null ? 0 : result.id;
 	} else if (sel == OS.sel_createPanelDidEnd) {
-		safari.createPanelDidEnd(arg0, arg1, arg2);
+		webKit.createPanelDidEnd(arg0, arg1, arg2);
 	}
 	return 0;
 }
@@ -394,11 +394,11 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
-	Safari safari = (Safari)((Browser)widget).webBrowser;
+	WebKit webKit = (WebKit)((Browser)widget).webBrowser;
 	if (sel == OS.sel_webView_resource_didFailLoadingWithError_fromDataSource_) {
-		safari.webView_resource_didFailLoadingWithError_fromDataSource(arg0, arg1, arg2, arg3);
+		webKit.webView_resource_didFailLoadingWithError_fromDataSource(arg0, arg1, arg2, arg3);
 	} else if (sel == OS.sel_webView_resource_didReceiveAuthenticationChallenge_fromDataSource_) {
-		safari.webView_resource_didReceiveAuthenticationChallenge_fromDataSource(arg0, arg1, arg2, arg3);
+		webKit.webView_resource_didReceiveAuthenticationChallenge_fromDataSource(arg0, arg1, arg2, arg3);
 	}
 	return 0;
 }
@@ -406,15 +406,15 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4) {
 	Widget widget = Display.getCurrent().findWidget(id);
 	if (widget == null) return 0;
-	Safari safari = (Safari)((Browser)widget).webBrowser;
+	WebKit webKit = (WebKit)((Browser)widget).webBrowser;
 	if (sel == OS.sel_webView_resource_willSendRequest_redirectResponse_fromDataSource_) {
-		return safari.webView_resource_willSendRequest_redirectResponse_fromDataSource(arg0, arg1, arg2, arg3, arg4);
+		return webKit.webView_resource_willSendRequest_redirectResponse_fromDataSource(arg0, arg1, arg2, arg3, arg4);
 	} else if (sel == OS.sel_webView_decidePolicyForMIMEType_request_frame_decisionListener_) {
-		safari.webView_decidePolicyForMIMEType_request_frame_decisionListener(arg0, arg1, arg2, arg3, arg4);
+		webKit.webView_decidePolicyForMIMEType_request_frame_decisionListener(arg0, arg1, arg2, arg3, arg4);
 	} else if (sel == OS.sel_webView_decidePolicyForNavigationAction_request_frame_decisionListener_) {
-		safari.webView_decidePolicyForNavigationAction_request_frame_decisionListener(arg0, arg1, arg2, arg3, arg4);
+		webKit.webView_decidePolicyForNavigationAction_request_frame_decisionListener(arg0, arg1, arg2, arg3, arg4);
 	} else if (sel == OS.sel_webView_decidePolicyForNewWindowAction_request_newFrameName_decisionListener_) {
-		safari.webView_decidePolicyForNewWindowAction_request_newFrameName_decisionListener(arg0, arg1, arg2, arg3, arg4);
+		webKit.webView_decidePolicyForNewWindowAction_request_newFrameName_decisionListener(arg0, arg1, arg2, arg3, arg4);
 	}
 	return 0;
 }
@@ -578,7 +578,7 @@ public boolean setUrl(String url, String postData, String[] headers) {
 					if (key.length() > 0 && value.length() > 0) {
 						if (key.equalsIgnoreCase(USER_AGENT)) {
 							/*
-							* Feature of Safari.  The user-agent header value cannot be overridden
+							* Feature of WebKit.  The user-agent header value cannot be overridden
 							* here.  The workaround is to temporarily set the value on the WebView
 							* and then remove it after the loading of the request has begun.
 							*/
@@ -655,11 +655,11 @@ void webView_didChangeLocationWithinPageForFrame(int /*long*/ sender, int /*long
 void webView_didFailProvisionalLoadWithError_forFrame(int /*long*/ sender, int /*long*/ error, int /*long*/ frame) {
 	if (frame == webView.mainFrame().id) {
 		/*
-		* Feature on Safari.  The identifier is used here as a marker for the events 
+		* Feature on WebKit.  The identifier is used here as a marker for the events 
 		* related to the top frame and the URL changes related to that top frame as 
 		* they should appear on the location bar of a browser.  It is expected to reset
 		* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
-		* the identifierForInitialRequest event is received.  However, Safari fires
+		* the identifierForInitialRequest event is received.  However, WebKit fires
 		* the didFinishLoadingFromDataSource event before the entire content of the
 		* top frame is loaded.  It is possible to receive multiple willSendRequest 
 		* events in this interval, causing the Browser widget to send unwanted
@@ -804,11 +804,11 @@ void webView_didFinishLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 		if (browser.isDisposed()) return;
 
 		/*
-		* Feature on Safari.  The identifier is used here as a marker for the events 
+		* Feature on WebKit.  The identifier is used here as a marker for the events 
 		* related to the top frame and the URL changes related to that top frame as 
 		* they should appear on the location bar of a browser.  It is expected to reset
 		* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
-		* the identifierForInitialRequest event is received.  However, Safari fires
+		* the identifierForInitialRequest event is received.  However, WebKit fires
 		* the didFinishLoadingFromDataSource event before the entire content of the
 		* top frame is loaded.  It is possible to receive multiple willSendRequest 
 		* events in this interval, causing the Browser widget to send unwanted
@@ -909,7 +909,7 @@ void webView_didCommitLoadForFrame(int /*long*/ sender, int /*long*/ frameID) {
 		/*
 		* Each invocation of setText() causes webView_didCommitLoadForFrame to be invoked
 		* twice, once for the initial navigate to about:blank, and once for the auto-navigate
-		* to about:blank that Safari does when loadHTMLString is invoked.  If this is the
+		* to about:blank that WebKit does when loadHTMLString is invoked.  If this is the
 		* first webView_didCommitLoadForFrame callback received for a setText() invocation
 		* then do not send any events or re-install registered BrowserFunctions. 
 		*/
@@ -966,11 +966,11 @@ void webView_windowScriptObjectAvailable (int /*long*/ webView, int /*long*/ win
 
 void webView_resource_didFinishLoadingFromDataSource(int /*long*/ sender, int /*long*/ identifier, int /*long*/ dataSource) {
 	/*
-	* Feature on Safari.  The identifier is used here as a marker for the events 
+	* Feature on WebKit.  The identifier is used here as a marker for the events 
 	* related to the top frame and the URL changes related to that top frame as 
 	* they should appear on the location bar of a browser.  It is expected to reset
 	* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
-	* the identifierForInitialRequest event is received.  However, Safari fires
+	* the identifierForInitialRequest event is received.  However, WebKit fires
 	* the didFinishLoadingFromDataSource event before the entire content of the
 	* top frame is loaded.  It is possible to receive multiple willSendRequest 
 	* events in this interval, causing the Browser widget to send unwanted
@@ -984,11 +984,11 @@ void webView_resource_didFinishLoadingFromDataSource(int /*long*/ sender, int /*
 
 void webView_resource_didFailLoadingWithError_fromDataSource(int /*long*/ sender, int /*long*/ identifier, int /*long*/ error, int /*long*/ dataSource) {
 	/*
-	* Feature on Safari.  The identifier is used here as a marker for the events 
+	* Feature on WebKit.  The identifier is used here as a marker for the events 
 	* related to the top frame and the URL changes related to that top frame as 
 	* they should appear on the location bar of a browser.  It is expected to reset
 	* the identifier to 0 when the event didFinishLoadingFromDataSource related to 
-	* the identifierForInitialRequest event is received.  However, Safari fires
+	* the identifierForInitialRequest event is received.  However, WebKit fires
 	* the didFinishLoadingFromDataSource event before the entire content of the
 	* top frame is loaded.  It is possible to receive multiple willSendRequest 
 	* events in this interval, causing the Browser widget to send unwanted
@@ -1187,11 +1187,11 @@ int /*long*/ webView_createWebViewWithRequest(int /*long*/ sender, int /*long*/ 
 	}
 	WebView result = null;
 	Browser browser = null;
-	if (newEvent.browser != null && newEvent.browser.webBrowser instanceof Safari) {
+	if (newEvent.browser != null && newEvent.browser.webBrowser instanceof WebKit) {
 		browser = newEvent.browser;
 	}
 	if (browser != null && !browser.isDisposed()) {
-		result = ((Safari)browser.webBrowser).webView;
+		result = ((WebKit)browser.webBrowser).webView;
 		if (request != 0) {
 			WebFrame mainFrame = result.mainFrame();
 			mainFrame.loadRequest(new NSURLRequest(request));
@@ -1202,8 +1202,8 @@ int /*long*/ webView_createWebViewWithRequest(int /*long*/ sender, int /*long*/ 
 
 void webViewShow(int /*long*/ sender) {
 	/*
-	* Feature on WebKit.  The Safari WebKit expects the application
-	* to create a new Window using the Objective C Cocoa API in response
+	* Feature on WebKit.  WebKit expects the application to
+	* create a new Window using the Objective C Cocoa API in response
 	* to UIDelegate.createWebViewWithRequest. The application is then
 	* expected to use Objective C Cocoa API to make this window visible
 	* when receiving the UIDelegate.webViewShow message.  For some reason,
@@ -1221,7 +1221,7 @@ void webViewShow(int /*long*/ sender) {
 	if (location != null) newEvent.location = location;
 	if (size != null) newEvent.size = size;
 	/*
-	* Feature in Safari.  Safari's tool bar contains
+	* Feature in WebKit.  WebKit's tool bar contains
 	* the address bar.  The address bar is displayed
 	* if the tool bar is displayed. There is no separate
 	* notification for the address bar.
@@ -1314,8 +1314,8 @@ void webViewClose(int /*long*/ sender) {
 	browser.dispose();
 	if (parent.isDisposed()) return;
 	/*
-	* Feature on WebKit.  The Safari WebKit expects the application
-	* to create a new Window using the Objective C Cocoa API in response
+	* Feature on WebKit.  WebKit expects the application to
+	* create a new Window using the Objective C Cocoa API in response
 	* to UIDelegate.createWebViewWithRequest. The application is then
 	* expected to use Objective C Cocoa API to make this window visible
 	* when receiving the UIDelegate.webViewShow message.  For some reason,
@@ -1443,7 +1443,7 @@ void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int 
 
 	if (loadingText) {
 		/* 
-		 * Safari is auto-navigating to about:blank in response to a loadHTMLString()
+		 * WebKit is auto-navigating to about:blank in response to a loadHTMLString()
 		 * invocation.  This navigate should always proceed without sending an event
 		 * since it is preceded by an explicit navigate to about:blank in setText().
 		 */
@@ -1648,7 +1648,7 @@ void handleEvent(int /*long*/ evtId) {
 		}
 	} else if (DOMEVENT_MOUSEMOVE.equals (type)) {
 		/*
-		* Bug in Safari.  Spurious and redundant mousemove events are received in
+		* Bug in WebKit.  Spurious and redundant mousemove events are received in
 		* various contexts, including following every MouseUp.  The workaround is
 		* to not fire MouseMove events whose x and y values match the last MouseMove  
 		*/

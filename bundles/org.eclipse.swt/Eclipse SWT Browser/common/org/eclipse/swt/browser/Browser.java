@@ -101,7 +101,7 @@ public Browser (Composite parent, int style) {
 				classNames = new String[] {"org.eclipse.swt.browser.Mozilla"}; //$NON-NLS-1$
 			}
 		} else if ("carbon".equals (platform) || "cocoa".equals (platform)) { //$NON-NLS-1$
-			classNames = new String[] {"org.eclipse.swt.browser.Safari"}; //$NON-NLS-1$
+			classNames = new String[] {"org.eclipse.swt.browser.WebKit"}; //$NON-NLS-1$
 		} else if ("photon".equals (platform)) { //$NON-NLS-1$
 			classNames = new String[] {"org.eclipse.swt.browser.Voyager"}; //$NON-NLS-1$
 		} else {

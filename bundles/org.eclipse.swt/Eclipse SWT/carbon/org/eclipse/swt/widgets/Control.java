@@ -3022,7 +3022,7 @@ boolean sendMouseEvent (int type, short button, int count, boolean send, int cho
 
 boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int chord, short x, short y, int modifiers) {
 	if (!hooks (type) && !filters (type)) return true;
-	if ((state & SAFARI_EVENTS_FIX) != 0) {
+	if ((state & WEBKIT_EVENTS_FIX) != 0) {
 		switch (type) {
 			case SWT.MouseUp:
 			case SWT.MouseMove:

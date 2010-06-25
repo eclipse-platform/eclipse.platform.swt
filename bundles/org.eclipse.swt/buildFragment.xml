@@ -135,7 +135,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/carbon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/carbon/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Browser/carbon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT WebKit/carbon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/carbon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
@@ -172,7 +172,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/cocoa/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Browser/cocoa/"/>
+			<fileset dir="${plugindir}/Eclipse SWT WebKit/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>

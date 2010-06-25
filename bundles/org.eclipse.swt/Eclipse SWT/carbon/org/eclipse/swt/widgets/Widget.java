@@ -86,9 +86,9 @@ public abstract class Widget {
 	static final int FOREIGN_HANDLE = 1<<17;
 	static final int DRAG_DETECT = 1<<18;
 
-	/* Safari fixes */
-	static final int SAFARI_EVENTS_FIX = 1<<19;
-	static final String SAFARI_EVENTS_FIX_KEY = "org.eclipse.swt.internal.safariEventsFix"; //$NON-NLS-1$
+	/* WebKit fixes */
+	static final int WEBKIT_EVENTS_FIX = 1<<19;
+	static final String WEBKIT_EVENTS_FIX_KEY = "org.eclipse.swt.internal.webKitEventsFix"; //$NON-NLS-1$
 	
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.isActive"; //$NON-NLS-1$
 
@@ -1688,7 +1688,7 @@ void sendEvent (int eventType, Event event, boolean send) {
 }
 
 boolean sendKeyEvent (int type, int theEvent) {
-	if ((state & SAFARI_EVENTS_FIX) != 0) return true;
+	if ((state & WEBKIT_EVENTS_FIX) != 0) return true;
 	int [] length = new int [1];
 	int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
 	if (status == OS.noErr && length [0] > 2) {
@@ -1834,8 +1834,8 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
  */
 public void setData (Object data) {
 	checkWidget();
-	if (SAFARI_EVENTS_FIX_KEY.equals(data)) {
-		state |= SAFARI_EVENTS_FIX;
+	if (WEBKIT_EVENTS_FIX_KEY.equals(data)) {
+		state |= WEBKIT_EVENTS_FIX;
 		return;
 	}
 	if ((state & KEYED_DATA) != 0) {
