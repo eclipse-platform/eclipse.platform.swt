@@ -2774,8 +2774,7 @@ void hookDOMListeners (nsIDOMEventTarget target, boolean isTop) {
 void unhookDOMListeners () {
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.GetContentDOMWindow (result);
-	if (rc != XPCOM.NS_OK) error (rc);
-	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+	if (rc != XPCOM.NS_OK || result[0] == 0) return;
 
 	nsIDOMWindow window = new nsIDOMWindow (result[0]);
 	result[0] = 0;
