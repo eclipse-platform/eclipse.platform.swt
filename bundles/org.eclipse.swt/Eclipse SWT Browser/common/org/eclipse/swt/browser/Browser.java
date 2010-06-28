@@ -94,12 +94,7 @@ public Browser (Composite parent, int style) {
 		} else if ("motif".equals (platform)) { //$NON-NLS-1$
 			classNames = new String[] {"org.eclipse.swt.browser.Mozilla"}; //$NON-NLS-1$
 		} else if ("gtk".equals (platform)) { //$NON-NLS-1$
-			String property = System.getProperty (PROPERTY_USEWEBKITGTK);
-			if (property != null && property.equalsIgnoreCase ("true")) { //$NON-NLS-1$
-				classNames = new String[] {"org.eclipse.swt.browser.WebKit", "org.eclipse.swt.browser.Mozilla"}; //$NON-NLS-1$ //$NON-NLS-2$
-			} else {
-				classNames = new String[] {"org.eclipse.swt.browser.Mozilla"}; //$NON-NLS-1$
-			}
+			classNames = new String[] {"org.eclipse.swt.browser.WebKit", "org.eclipse.swt.browser.Mozilla"}; //$NON-NLS-1$ //$NON-NLS-2$
 		} else if ("carbon".equals (platform) || "cocoa".equals (platform)) { //$NON-NLS-1$
 			classNames = new String[] {"org.eclipse.swt.browser.WebKit"}; //$NON-NLS-1$
 		} else if ("photon".equals (platform)) { //$NON-NLS-1$
