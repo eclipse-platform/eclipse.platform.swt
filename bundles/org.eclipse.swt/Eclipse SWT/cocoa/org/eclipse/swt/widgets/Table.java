@@ -605,11 +605,7 @@ void createItem (TableItem item, int index) {
 	}
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
-	NSTableView widget = (NSTableView)view;
-	setRedraw(false);
-	widget.noteNumberOfRowsChanged ();
-	widget.tile();
-	setRedraw(true);
+	updateRowCount();
 	if (index != itemCount) fixSelection (index, true);
 }
 
@@ -844,11 +840,7 @@ void destroyItem (TableItem item) {
 	if (index != itemCount - 1) fixSelection (index, false); 
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	NSTableView widget = (NSTableView)view;
-	setRedraw(false);
-	widget.noteNumberOfRowsChanged ();
-	widget.tile();
-	setRedraw(true);
+	updateRowCount();
 	if (itemCount == 0) setTableEmpty ();
 }
 
@@ -1923,6 +1915,14 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 				Event event = new Event ();
 				event.item = _getItem ((int)/*64*/row);
 				sendSelectionEvent (SWT.Selection, event, false);
+				
+				// Feature in Cocoa: This code path handles the case of an unmodified click on an already-selected row.
+				// If other rows are selected they will de-select and fire a tableViewSelectionDidChange message.
+				// To keep the order of events correct, send the selection event here and ignore the next
+				// tableViewSelectionDidChange message.  We'll reset the flag when the message is received.
+				if (widget.selectedRowIndexes().count() > 1) {
+					ignoreSelect = true;
+				}
 			}
 		}
 	}
@@ -2022,11 +2022,7 @@ public void remove (int index) {
 	if (index != itemCount - 1) fixSelection (index, false);
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	NSTableView widget = (NSTableView)view;
-	setRedraw(false);
-	widget.noteNumberOfRowsChanged ();
-	widget.tile();
-	setRedraw(true);
+	updateRowCount();
 	if (itemCount == 0) {
 		setTableEmpty ();
 	}
@@ -2087,11 +2083,7 @@ public void remove (int start, int end) {
 			items [i] = null;
 		}
 		itemCount -= length;
-		NSTableView widget = (NSTableView)view;
-		setRedraw(false);
-		widget.noteNumberOfRowsChanged();
-		widget.tile();
-		setRedraw(true);
+		updateRowCount();
 	}
 	if (itemCount == 0) {
 		setTableEmpty ();
@@ -2136,11 +2128,7 @@ public void remove (int [] indices) {
 			last = index;
 		}
 	}
-	NSTableView widget = (NSTableView)view;
-	setRedraw(false);
-	widget.noteNumberOfRowsChanged();
-	widget.tile();
-	setRedraw(true);
+	updateRowCount();
 	if (itemCount == 0) {
 		setTableEmpty ();
 	}
@@ -2161,11 +2149,7 @@ public void removeAll () {
 		if (item != null && !item.isDisposed ()) item.release (false);
 	}
 	setTableEmpty ();
-	NSTableView widget = (NSTableView)view;
-	setRedraw(false);
-	widget.noteNumberOfRowsChanged ();
-	widget.tile();
-	setRedraw(true);
+	updateRowCount();
 }
 
 /**
@@ -2480,7 +2464,6 @@ public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
 	if (count == itemCount) return;
-	if (count == itemCount) return;
 	TableItem [] children = items;
 	if (count < itemCount) {
 		for (int index = count; index < itemCount; index ++) {
@@ -2504,11 +2487,7 @@ public void setItemCount (int count) {
 	children = newItems;
 	this.items = newItems;
 	this.itemCount = count;
-	NSTableView widget = (NSTableView)view;
-	setRedraw(false);
-	widget.noteNumberOfRowsChanged ();
-	widget.tile();
-	setRedraw(true);
+	updateRowCount();
 }
 
 /*public*/ void setItemHeight (int itemHeight) {
@@ -3112,6 +3091,10 @@ void sendSelection () {
 
 void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	if (didSelect) return;
+	if (ignoreSelect) {
+		ignoreSelect = false;
+		return;
+	}
 	sendSelection();
 }
 
@@ -3247,5 +3230,15 @@ void updateCursorRects (boolean enabled) {
 	super.updateCursorRects (enabled);
 	if (headerView == null) return;
 	updateCursorRects (enabled, headerView);
+}
+
+void updateRowCount() {
+	NSTableView table = (NSTableView)view;
+	setRedraw(false);
+	ignoreSelect = true;
+	table.noteNumberOfRowsChanged();
+	ignoreSelect = false;
+	table.tile();
+	setRedraw(true);
 }
 }

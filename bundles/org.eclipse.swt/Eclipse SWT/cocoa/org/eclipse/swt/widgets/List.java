@@ -120,11 +120,7 @@ public void add (String string) {
 		items = newItems;
 	}
 	items [itemCount++] = string;
-	NSTableView widget = (NSTableView)view;
-	setRedraw(false);
-	widget.noteNumberOfRowsChanged ();
-	widget.tile();
-	setRedraw(true);
+	updateRowCount();
 	setScrollWidth(string);
 }
 
@@ -162,11 +158,7 @@ public void add (String string, int index) {
 	}
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = string;
-	NSTableView widget = (NSTableView)view;
-	setRedraw(false);
-	widget.noteNumberOfRowsChanged ();
-	widget.tile();
-	setRedraw(true);
+	updateRowCount();
 	if (index != itemCount) fixSelection (index, true);
 	setScrollWidth(string);
 }
@@ -756,6 +748,21 @@ int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEve
 	return super.menuForEvent(id, sel, theEvent);
 }
 
+void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	NSTableView widget = (NSTableView)view;
+	NSEvent nsEvent = new NSEvent(theEvent);
+	NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
+	int row = (int)/*64*/widget.rowAtPoint(pt);
+	if (row != -1 && (nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == 0) {
+		if (widget.isRowSelected(row) && widget.selectedRowIndexes().count() == 1) {
+			if (0 <= row && row < itemCount) {
+				sendSelectionEvent (SWT.Selection);
+			}
+		}
+	}
+	super.mouseDownSuper(id, sel, theEvent);
+}
+
 int /*long*/ numberOfRowsInTableView(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView) {
 	return itemCount;
 }
@@ -795,11 +802,7 @@ void remove (int index, boolean fixScroll) {
 	if (index != itemCount - 1) fixSelection (index, false);
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	NSTableView widget = (NSTableView)view;
-	setRedraw(false);
-	widget.noteNumberOfRowsChanged ();
-	widget.tile();
-	setRedraw(true);
+	updateRowCount();
 	if (fixScroll) setScrollWidth();
 }
 
@@ -904,11 +907,7 @@ public void removeAll () {
 	checkWidget();
 	items = new String [4];
 	itemCount = 0;
-	NSTableView widget = (NSTableView)view;
-	setRedraw(false);
-	widget.noteNumberOfRowsChanged ();
-	widget.tile();
-	setRedraw(true);
+	updateRowCount();
 	setScrollWidth();
 }
 
@@ -1425,6 +1424,16 @@ int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long
 	NSAttributedString attribStr = createString(items[(int)/*64*/rowIndex], null, fg, SWT.LEFT, false, getEnabled(), false);
 	attribStr.autorelease();
 	return attribStr.id;
+}
+
+void updateRowCount() {
+	NSTableView widget = (NSTableView)view;
+	setRedraw(false);
+	ignoreSelect = true;
+	widget.noteNumberOfRowsChanged ();
+	ignoreSelect = false;
+	widget.tile();
+	setRedraw(true);
 }
 
 }

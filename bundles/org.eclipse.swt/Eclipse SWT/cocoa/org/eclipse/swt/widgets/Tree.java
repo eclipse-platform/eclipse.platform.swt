@@ -1952,6 +1952,14 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 					Event event = new Event ();
 					event.item = item;
 					sendSelectionEvent (SWT.Selection, event, false);
+
+					// Feature in Cocoa: This code path handles the case of an unmodified click on an already-selected row.
+					// If other rows are selected they will de-select and fire a outlineViewSelectionDidChange message.
+					// To keep the order of events correct, send the selection event here and ignore the next
+					// outlineViewSelectionDidChange message.  We'll reset the flag when the message is received.
+					if (widget.selectedRowIndexes().count() > 1) {
+						ignoreSelect = true;
+					}
 				}
 			}
 		}
@@ -2166,6 +2174,10 @@ void sendSelection () {
 
 void outlineViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	if (didSelect) return;
+	if (ignoreSelect) {
+		ignoreSelect = false;
+		return;
+	}
 	sendSelection ();
 }
 
@@ -2254,7 +2266,9 @@ public void removeAll () {
 	itemCount = 0;
 	imageBounds = null;
 	insertItem = null;
+	ignoreSelect = true;
 	((NSOutlineView) view).reloadData ();
+	ignoreSelect = false;
 	setScrollWidth ();
 }
 
