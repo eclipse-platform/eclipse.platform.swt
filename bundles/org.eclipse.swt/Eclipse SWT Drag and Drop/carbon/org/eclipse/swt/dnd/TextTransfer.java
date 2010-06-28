@@ -36,10 +36,10 @@ import org.eclipse.swt.internal.carbon.OS;
 public class TextTransfer extends ByteArrayTransfer {
 
 	static TextTransfer _instance = new TextTransfer();
-	static final String UT16 = "ut16"; //$NON-NLS-1$
-	static final String UTF8 = "utf8"; //$NON-NLS-1$
-	static final int UT16ID = OS.kScrapFlavorTypeUTF16External;
-	static final int UTF8ID = ('u'<<24) + ('t'<<16) + ('f'<<8) + '8';
+	static final String UTXT = "utxt"; //$NON-NLS-1$
+	static final String TEXT = "TEXT"; //$NON-NLS-1$
+	static final int UTXTID = OS.kScrapFlavorTypeUnicode;
+	static final int TEXTID = OS.kScrapFlavorTypeText;
 
 TextTransfer() {}
 
@@ -72,9 +72,9 @@ public void javaToNative (Object object, TransferData transferData) {
 	transferData.result = -1;
 	
 	switch (transferData.type) {
-		case UTF8ID: 
-		case UT16ID: {
-			int encoding = transferData.type == UTF8ID ? OS.kCFStringEncodingUTF8 : OS.kCFStringEncodingUnicode;
+		case TEXTID: 
+		case UTXTID: {
+			int encoding = transferData.type == TEXTID ? OS.CFStringGetSystemEncoding(): OS.kCFStringEncodingUnicode;
 			int cfstring = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
 			if (cfstring == 0) return;
 			byte[] buffer = null;
@@ -82,10 +82,10 @@ public void javaToNative (Object object, TransferData transferData) {
 				CFRange range = new CFRange();
 				range.length = chars.length;
 				int[] size = new int[1];
-				int numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', true, null, 0, size);
+				int numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', false, null, 0, size);
 				if (numChars == 0) return;
 				buffer = new byte[size[0]];
-				numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', true, buffer, size [0], size);
+				numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', false, buffer, size [0], size);
 				if (numChars == 0) return;
 			} finally {
 				OS.CFRelease(cfstring);
@@ -112,10 +112,10 @@ public Object nativeToJava(TransferData transferData){
 	if (transferData.data.length == 0 || transferData.data[0].length == 0) return null;
 	byte[] buffer = transferData.data[0];
 	switch (transferData.type) {
-		case UTF8ID: 
-		case UT16ID: {
-			int encoding = transferData.type == UTF8ID ? OS.kCFStringEncodingUTF8 : OS.kCFStringEncodingUnicode;
-			int cfstring = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
+		case TEXTID: 
+		case UTXTID: {
+			int encoding = transferData.type == TEXTID ? OS.CFStringGetSystemEncoding() : OS.kCFStringEncodingUnicode;
+			int cfstring = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, false);
 			if (cfstring == 0) return null;
 			try {
 				int length = OS.CFStringGetLength(cfstring);
@@ -134,11 +134,11 @@ public Object nativeToJava(TransferData transferData){
 }
 
 protected int[] getTypeIds() {
-	return new int[] {UT16ID, UTF8ID};
+	return new int[] {UTXTID, TEXTID};
 }
 
 protected String[] getTypeNames() {
-	return new String[] {UT16, UTF8};
+	return new String[] {UTXT, TEXT};
 }
 
 boolean checkText(Object object) {
