@@ -1144,10 +1144,9 @@ public class Accessible {
 		if (attribute.isEqualToString(OS.NSAccessibilityEnabledAttribute)) return getEnabledAttribute(childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityFocusedAttribute)) return getFocusedAttribute(childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityParentAttribute)) return getParentAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityChildrenAttribute)) return getChildrenAttribute(childID);
-		/* SWT has no visible children API*/
-		if (attribute.isEqualToString(OS.NSAccessibilityVisibleChildrenAttribute)) return getChildrenAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityContentsAttribute)) return getChildrenAttribute(childID);
+		if (attribute.isEqualToString(OS.NSAccessibilityChildrenAttribute)) return getChildrenAttribute(childID, false);
+		if (attribute.isEqualToString(OS.NSAccessibilityVisibleChildrenAttribute)) return getChildrenAttribute(childID, true);
+		if (attribute.isEqualToString(OS.NSAccessibilityContentsAttribute)) return getChildrenAttribute(childID, false);
 		// FIXME:  There's no specific API just for tabs, which won't include the buttons (if any.)
 		if (attribute.isEqualToString(OS.NSAccessibilityTabsAttribute)) return getTabsAttribute(childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityWindowAttribute)) return getWindowAttribute(childID);
@@ -1993,7 +1992,7 @@ public class Accessible {
 		return returnValue;
 	}
 	
-	id getChildrenAttribute (int childID) {
+	id getChildrenAttribute (int childID, boolean visibleOnly) {
 		id returnValue = null; 
 		if (childID == ACC.CHILDID_SELF) {
 			// Test for a table first.
@@ -2013,6 +2012,7 @@ public class Accessible {
 				listener.getChildCount(event);
 			}
 			int childCount = event.detail;
+			event.detail = (visibleOnly ? ACC.VISIBLE : 0);
 			if (childCount >= 0) {
 				for (int i = 0; i < accessibleControlListeners.size(); i++) {
 					AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
