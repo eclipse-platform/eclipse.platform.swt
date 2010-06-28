@@ -43,6 +43,8 @@ import org.eclipse.swt.widgets.*;
  */
 public class Accessible {
 
+	static boolean DEBUG = false;
+	
 	static final int MAX_RELATION_TYPES = 15;
 
 	static NSString[] baseAttributes = { 
@@ -1144,10 +1146,9 @@ public class Accessible {
 		if (attribute.isEqualToString(OS.NSAccessibilityEnabledAttribute)) return getEnabledAttribute(childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityFocusedAttribute)) return getFocusedAttribute(childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityParentAttribute)) return getParentAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityChildrenAttribute)) return getChildrenAttribute(childID);
-		/* SWT has no visible children API*/
-		if (attribute.isEqualToString(OS.NSAccessibilityVisibleChildrenAttribute)) return getChildrenAttribute(childID);
-		if (attribute.isEqualToString(OS.NSAccessibilityContentsAttribute)) return getChildrenAttribute(childID);
+		if (attribute.isEqualToString(OS.NSAccessibilityChildrenAttribute)) return getChildrenAttribute(childID, false);
+		if (attribute.isEqualToString(OS.NSAccessibilityVisibleChildrenAttribute)) return getChildrenAttribute(childID, true);
+		if (attribute.isEqualToString(OS.NSAccessibilityContentsAttribute)) return getChildrenAttribute(childID, false);
 		// FIXME:  There's no specific API just for tabs, which won't include the buttons (if any.)
 		if (attribute.isEqualToString(OS.NSAccessibilityTabsAttribute)) return getTabsAttribute(childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityWindowAttribute)) return getWindowAttribute(childID);
@@ -1993,7 +1994,7 @@ public class Accessible {
 		return returnValue;
 	}
 	
-	id getChildrenAttribute (int childID) {
+	id getChildrenAttribute (int childID, boolean visibleOnly) {
 		id returnValue = null; 
 		if (childID == ACC.CHILDID_SELF) {
 			// Test for a table first.
@@ -2013,6 +2014,7 @@ public class Accessible {
 				listener.getChildCount(event);
 			}
 			int childCount = event.detail;
+			event.detail = (visibleOnly ? ACC.VISIBLE : 0);
 			if (childCount >= 0) {
 				for (int i = 0; i < accessibleControlListeners.size(); i++) {
 					AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
@@ -3027,6 +3029,7 @@ public class Accessible {
 		checkWidget();
 
 		id eventSource = accessibleHandle(this);
+		if (DEBUG) System.out.println("sendEvent: 0x" + Integer.toHexString(event) + ", data = " + eventData + ", source = " + eventSource);
 
 		switch (event) {
 		case ACC.EVENT_TEXT_CHANGED:
@@ -3069,7 +3072,13 @@ public class Accessible {
 				getRowsAttribute(ACC.CHILDID_SELF);
 				getColumnsAttribute(ACC.CHILDID_SELF);
 			}
-			OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilityRowCountChangedNotification.id); break;
+			if (eventData != null) {
+				int[] eventParams = (int[])eventData;
+				// Slot 2 of the array is the number of rows that were either added or deleted. If non-zero, fire a notification.
+				// Cocoa doesn't have a notification for a change in the number of columns.
+				if (eventParams[2] != 0) OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilityRowCountChangedNotification.id);
+			}
+			break;
 			
 		// None of these correspond to anything in Cocoa. 
 		case ACC.EVENT_HYPERTEXT_LINK_SELECTED:
@@ -3094,10 +3103,12 @@ public class Accessible {
 	 */
 	public void selectionChanged () {
 		checkWidget();
+		id eventSource = accessibleHandle(this);
+		if (DEBUG) System.out.println("selectionChanged on " + eventSource);
 		if (currentRole == ACC.ROLE_TABLE) {
-			OS.NSAccessibilityPostNotification(control.view.id, OS.NSAccessibilitySelectedRowsChangedNotification.id);
+			OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilitySelectedRowsChangedNotification.id);
 		} else {
-			OS.NSAccessibilityPostNotification(control.view.id, OS.NSAccessibilitySelectedChildrenChangedNotification.id);
+			OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilitySelectedChildrenChangedNotification.id);
 		}
 	}
 
@@ -3114,7 +3125,9 @@ public class Accessible {
 	 */
 	public void setFocus(int childID) {
 		checkWidget();
-		OS.NSAccessibilityPostNotification(control.view.id, OS.NSAccessibilityFocusedUIElementChangedNotification.id);
+		id accessible = childIDToOs(childID);
+		if (DEBUG) System.out.println("setFocus on " + accessible);
+		OS.NSAccessibilityPostNotification(accessible.id, OS.NSAccessibilityFocusedUIElementChangedNotification.id);
 	}
 
 	void setSelectedTextRangeAttribute(id value, int childId) {
@@ -3337,6 +3350,14 @@ public class Accessible {
 		NSArray attributes = new NSArray(defaultAttributes);
 		NSMutableArray returnArray = NSMutableArray.arrayWithCapacity(attributes.count());
 		returnArray.addObjectsFromArray(attributes);
+		
+		if (getTitleAttribute(ACC.CHILDID_SELF) != null) {
+			if (!returnArray.containsObject(OS.NSAccessibilityTitleAttribute)) returnArray.addObject(OS.NSAccessibilityTitleAttribute);
+		}
+		
+		if (getDescriptionAttribute(ACC.CHILDID_SELF) != null) {
+			if (!returnArray.containsObject(OS.NSAccessibilityDescriptionAttribute)) returnArray.addObject(OS.NSAccessibilityDescriptionAttribute);
+		}
 		
 		// See if this object has a label or is a label for something else. If so, add that to the list.
 		if (relations[ACC.RELATION_LABEL_FOR] != null) {
