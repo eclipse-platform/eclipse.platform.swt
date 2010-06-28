@@ -3338,6 +3338,14 @@ public class Accessible {
 		NSMutableArray returnArray = NSMutableArray.arrayWithCapacity(attributes.count());
 		returnArray.addObjectsFromArray(attributes);
 		
+		if (getTitleAttribute(ACC.CHILDID_SELF) != null) {
+			if (!returnArray.containsObject(OS.NSAccessibilityTitleAttribute)) returnArray.addObject(OS.NSAccessibilityTitleAttribute);
+		}
+		
+		if (getDescriptionAttribute(ACC.CHILDID_SELF) != null) {
+			if (!returnArray.containsObject(OS.NSAccessibilityDescriptionAttribute)) returnArray.addObject(OS.NSAccessibilityDescriptionAttribute);
+		}
+		
 		// See if this object has a label or is a label for something else. If so, add that to the list.
 		if (relations[ACC.RELATION_LABEL_FOR] != null) {
 			if (!returnArray.containsObject(OS.NSAccessibilityServesAsTitleForUIElementsAttribute)) returnArray.addObject(OS.NSAccessibilityServesAsTitleForUIElementsAttribute);
