@@ -779,7 +779,7 @@ public class OS extends C {
 	public static final int kPMShowPageAttributesPDE = 1 << 8;
 	public static final int kQDUseCGTextMetrics = (1 << 2);
 	public static final int kQDUseCGTextRendering = (1 << 1);
-	public static final int kScrapFlavorTypeUTF16External = ('u'<<24) + ('t'<<16) + ('1'<<8) + '6';
+	public static final int kScrapFlavorTypeUnicode = ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
 	public static final int kScrapFlavorTypeText = ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
 	public static final boolean kScrollBarsSyncAlwaysActive = true;
 	public static final boolean kScrollBarsSyncWithFocus = false;
@@ -966,7 +966,8 @@ public class OS extends C {
 	public static final int kWindowCollapseBoxAttribute = (1 << 3);
 	public static final int kWindowCompositingAttribute = (1 << 19);
 	public static final int kWindowContentRgn = 33;
-	public static final int kWindowGroupAttrHideOnCollapse = 16;
+	public static final int kWindowGroupAttrHideOnCollapse = (1 << 4);
+	public static final int kWindowGroupAttrSelectAsLayer = (1 << 0);
 	public static final int kWindowHorizontalZoomAttribute = 1 << 1;
 	public static final int kWindowVerticalZoomAttribute  = 1 << 2;
 	public static final int kWindowFullZoomAttribute = (OS.kWindowVerticalZoomAttribute | OS.kWindowHorizontalZoomAttribute);
