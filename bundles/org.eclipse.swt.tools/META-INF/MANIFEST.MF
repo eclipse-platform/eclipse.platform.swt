@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
 Bundle-SymbolicName: org.eclipse.swt.tools; singleton:=true
-Bundle-Version: 3.6.0.qualifier
+Bundle-Version: 3.7.0.qualifier
 Bundle-Activator: org.eclipse.swt.tools.Activator
 Bundle-ManifestVersion: 2
 Export-Package: org.eclipse.swt.tools,
