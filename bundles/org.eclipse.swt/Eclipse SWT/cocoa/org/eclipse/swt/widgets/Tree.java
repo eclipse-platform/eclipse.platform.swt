@@ -1881,6 +1881,11 @@ boolean isTrim (NSView view) {
 	return view.id == headerView.id;
 }
 
+void keyDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	ignoreSelect = false;
+	super.keyDown(id, sel, theEvent);
+}
+
 int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (id != headerView.id) {
 		/*
@@ -1938,6 +1943,7 @@ void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 }
 
 void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	ignoreSelect = false;
 	NSOutlineView widget = (NSOutlineView)view;
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
@@ -2174,10 +2180,6 @@ void sendSelection () {
 
 void outlineViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	if (didSelect) return;
-	if (ignoreSelect) {
-		ignoreSelect = false;
-		return;
-	}
 	sendSelection ();
 }
 

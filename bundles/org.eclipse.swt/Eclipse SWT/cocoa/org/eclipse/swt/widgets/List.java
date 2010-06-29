@@ -42,7 +42,7 @@ public class List extends Scrollable {
 	NSTableColumn column;
 	String [] items;
 	int itemCount;
-	boolean ignoreSelect;
+	boolean ignoreSelect, didSelect;
 
 	static int NEXT_ID;
 
@@ -749,6 +749,7 @@ int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEve
 }
 
 void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	ignoreSelect = false;
 	NSTableView widget = (NSTableView)view;
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
@@ -756,11 +757,13 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (row != -1 && (nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == 0) {
 		if (widget.isRowSelected(row) && widget.selectedRowIndexes().count() == 1) {
 			if (0 <= row && row < itemCount) {
-				sendSelectionEvent (SWT.Selection);
+				sendSelection();
 			}
 		}
 	}
+	didSelect = false;
 	super.mouseDownSuper(id, sel, theEvent);
+	didSelect = false;
 }
 
 int /*long*/ numberOfRowsInTableView(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView) {
@@ -1081,7 +1084,7 @@ public void selectAll () {
 
 void sendDoubleSelection() {
 	if (((NSTableView)view).clickedRow () != -1) {
-		sendSelectionEvent (SWT.DefaultSelection);
+		sendSelection();
 	}
 }
 
@@ -1098,6 +1101,11 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 		}
 	}
 	return result;
+}
+
+void sendSelection () {
+	if (ignoreSelect) return;
+	sendSelectionEvent(SWT.Selection);
 }
 
 void setBackgroundColor(NSColor nsColor) {
@@ -1411,8 +1419,13 @@ public void showSelection () {
 }
 
 void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
-	if (ignoreSelect) return;
-	sendSelectionEvent (SWT.Selection);
+	if (didSelect) return;
+	sendSelection();
+}
+
+void tableViewSelectionIsChanging (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+	didSelect = true;
+	sendSelection();
 }
 
 boolean tableView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
