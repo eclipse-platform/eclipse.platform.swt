@@ -3460,6 +3460,10 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setUsesFontPanel:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="shouldChangeTextInRange:replacementString:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
