@@ -2095,9 +2095,9 @@ public class Accessible {
 			return COM.S_FALSE;
 		}
 		if (childID == ACC.CHILDID_SELF) {
-			if (DEBUG) print(this + ".IAccessible::get_accFocus() returning accessible " + getAddress() + hresult(COM.S_OK));
+			if (DEBUG) print(this + ".IAccessible::get_accFocus() returning CHILDID_SELF " + hresult(COM.S_OK));
 			AddRef();
-			setPtrVARIANT(pvarChild, COM.VT_DISPATCH, getAddress());
+			setIntVARIANT(pvarChild, COM.VT_I4, COM.CHILDID_SELF);
 			return COM.S_OK;
 		}
 		if (DEBUG) print(this + ".IAccessible::get_accFocus() returning childID " + childIDToOs(childID) + hresult(COM.S_OK));
