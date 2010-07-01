@@ -155,10 +155,10 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 	int [] context = null;
 	if ((style & SWT.ARROW) != 0) {
 		boolean invert = false;
-		if (OS.VERSION < 0x1050) {
-			invert = (style & SWT.UP) != 0;
-		} else {
+		if (OS.VERSION == 0x1050) {
 			invert = (style & SWT.UP) != 0 || (style & SWT.LEFT) != 0;
+		} else {
+			invert = (style & SWT.UP) != 0;
 		}
 		if (invert) {
 			context = new int [1];
