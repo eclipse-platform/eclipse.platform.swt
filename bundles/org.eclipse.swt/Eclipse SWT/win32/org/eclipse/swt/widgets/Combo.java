@@ -289,9 +289,10 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 		switch (msg) {
 			case OS.WM_SIZE: {
 				ignoreResize = true;
+				boolean oldLockText = lockText;
 				if ((style & SWT.READ_ONLY) == 0) lockText = true;
 				int /*long*/ result = OS.CallWindowProc (ComboProc, hwnd, msg, wParam, lParam);
-				if ((style & SWT.READ_ONLY) == 0) lockText = false;
+				if ((style & SWT.READ_ONLY) == 0) lockText = oldLockText;
 				ignoreResize = false;
 				return result;
 			}
@@ -1722,6 +1723,7 @@ void setScrollWidth (int scrollWidth) {
 	* by ignoring all WM_SETTEXT messages during processing of
 	* CB_SETDROPPEDWIDTH.
 	*/
+	boolean oldLockText = lockText;
 	if ((style & SWT.READ_ONLY) == 0) lockText = true;
 	if (scroll) {
 		OS.SendMessage (handle, OS.CB_SETDROPPEDWIDTH, 0, 0);
@@ -1731,7 +1733,7 @@ void setScrollWidth (int scrollWidth) {
 		OS.SendMessage (handle, OS.CB_SETDROPPEDWIDTH, scrollWidth, 0);
 		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, 0, 0);
 	}
-	if ((style & SWT.READ_ONLY) == 0) lockText = false;
+	if ((style & SWT.READ_ONLY) == 0) lockText = oldLockText;
 }
 
 void setScrollWidth (TCHAR buffer, boolean grow) {
@@ -2223,9 +2225,10 @@ LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	* by ignoring all WM_SETTEXT messages during processing of
 	* WM_SIZE.
 	*/
+	boolean oldLockText = lockText;
 	if ((style & SWT.READ_ONLY) == 0) lockText = true;
 	LRESULT result = super.WM_SIZE (wParam, lParam);
-	if ((style & SWT.READ_ONLY) == 0) lockText = false;
+	if ((style & SWT.READ_ONLY) == 0) lockText = oldLockText;
 	/*
 	* Feature in Windows.  When CB_SETDROPPEDWIDTH is called with
 	* a width that is smaller than the current size of the combo
