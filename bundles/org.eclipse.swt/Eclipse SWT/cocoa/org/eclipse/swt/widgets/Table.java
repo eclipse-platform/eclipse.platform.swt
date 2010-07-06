@@ -1843,6 +1843,11 @@ boolean isTransparent() {
 	return true;
 }
 
+void keyDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	ignoreSelect = false;
+	super.keyDown(id, sel, theEvent);
+}
+
 boolean isTrim (NSView view) {
 	if (super.isTrim (view)) return true;
 	return view.id == headerView.id;
@@ -1905,6 +1910,7 @@ void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 }
 
 void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	ignoreSelect = false;
 	NSTableView widget = (NSTableView)view;
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
@@ -3091,10 +3097,6 @@ void sendSelection () {
 
 void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	if (didSelect) return;
-	if (ignoreSelect) {
-		ignoreSelect = false;
-		return;
-	}
 	sendSelection();
 }
 
