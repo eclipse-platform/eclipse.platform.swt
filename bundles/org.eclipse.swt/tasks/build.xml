@@ -519,7 +519,7 @@
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
-			command="rm -rf ${checkdir}; mkdir ${checkdir}; cd ${checkdir}; export CVS_RSH=ssh; cvs -q -d ${cvsRoot} checkout ${fragment} | grep '[0-9][0-9][0-9][0-9].'; a=`find -name *${swt_version}* | grep -c ${swt_version}`; b=`find . -regex .*[0-9][0-9][0-9][0-9].* | grep -v -c ${swt_version}`; echo Found \&quot;$a\&quot; libraries with version \&quot;${swt_version}\&quot; and \&quot;$b\&quot; libraries with old versions; if [[ &quot;$a&quot; = &quot;${library_count}&quot; &amp;&amp; &quot;$b&quot; = '0' ]]; then cd; rm -rf ${checkdir}; echo Success; else cd; rm -rf ${checkdir}; echo Failed. Expecting ${library_count} and 0; exit 1; fi"/>
+			command="rm -rf ${checkdir}; mkdir ${checkdir}; cd ${checkdir}; export CVS_RSH=ssh; cvs -q -d ${cvsRoot} checkout ${TAG} ${fragment} | grep '[0-9][0-9][0-9][0-9].'; a=`find -name *${swt_version}* | grep -c ${swt_version}`; b=`find . -regex .*[0-9][0-9][0-9][0-9].* | grep -v -c ${swt_version}`; echo Found \&quot;$a\&quot; libraries with version \&quot;${swt_version}\&quot; and \&quot;$b\&quot; libraries with old versions; if [[ &quot;$a&quot; = &quot;${library_count}&quot; &amp;&amp; &quot;$b&quot; = '0' ]]; then cd; rm -rf ${checkdir}; echo Success; else cd; rm -rf ${checkdir}; echo Failed. Expecting ${library_count} and 0; exit 1; fi"/>
 	</target>	
 	
 	<target name="check_machines">
