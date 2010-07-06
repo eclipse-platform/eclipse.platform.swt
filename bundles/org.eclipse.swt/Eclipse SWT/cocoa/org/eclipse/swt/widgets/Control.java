@@ -1248,7 +1248,6 @@ void flagsChanged (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 			if (mask != 0) {
 				s.keyInputHappened = true;
 				int type = (mask & modifiers) != 0 ? SWT.KeyDown : SWT.KeyUp;
-				if (type == SWT.KeyDown) s.keyInputHappened = true;
 				Event event = new Event();
 				event.keyCode = keyCode;
 				setLocationMask(event, nsEvent);
@@ -1792,7 +1791,7 @@ boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
 		if (nsEvent != null) {
 			int /*long*/ type = nsEvent.type ();
-			if ((!s.keyInputHappened && type == OS.NSKeyDown) || type == OS.NSSystemDefined) {
+			if (type == OS.NSKeyDown || type == OS.NSSystemDefined) {
 				NSString str = new NSString (string);
 				if (str.isKindOfClass (OS.class_NSAttributedString)) {
 					str = new NSAttributedString (string).string ();
