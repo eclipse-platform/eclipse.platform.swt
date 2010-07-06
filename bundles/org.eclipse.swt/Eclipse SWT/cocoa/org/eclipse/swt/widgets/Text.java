@@ -514,8 +514,8 @@ void createHandle () {
 //		widget.setAction(OS.sel_sendSelection);
 		widget.setRichText (false);
 		widget.setDelegate(widget);
-		widget.setUsesFontPanel(false);
 		widget.setFont (display.getSystemFont ().handle);
+		widget.setUsesFontPanel(false);
 
 		view = widget;
 		scrollView = scrollWidget;
