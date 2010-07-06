@@ -1967,8 +1967,25 @@ void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 				display.checkEnterExit (trimControl, nsEvent, false);
 				if (trimControl != null) trimControl.sendMouseEvent (nsEvent, type, false);
 			}
+			
+			// Tooltip updating: Find the widget under the cursor. If it changed, clear the tooltip from
+			// the last tracked item and send a tooltip event to make it visible on the new widget. 
 			Widget target = null;
-			if (control != null) target = control.findTooltip (nsEvent.locationInWindow());
+			if (control != null) {
+				NSPoint eventPoint = nsEvent.locationInWindow();
+				if (hitView[0] != null) {
+					NSWindow eventWindow = nsEvent.window();
+
+					// If a NSMouseMoved happens on an inactive window, convert the
+					// event coordinates to the window of the target view.
+					if (eventWindow != null && eventWindow != hitView[0].window()) {
+						eventPoint = eventWindow.convertBaseToScreen(eventPoint);
+						eventPoint = hitView[0].window().convertScreenToBase(eventPoint);
+					}
+				}				
+				target = control.findTooltip (eventPoint);
+			}
+			
 			if (display.tooltipControl != control || display.tooltipTarget != target) {
 				Control oldControl = display.tooltipControl;
 				Shell oldShell = oldControl != null && !oldControl.isDisposed() ? oldControl.getShell() : null;
