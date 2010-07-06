@@ -1084,7 +1084,7 @@ public void selectAll () {
 
 void sendDoubleSelection() {
 	if (((NSTableView)view).clickedRow () != -1) {
-		sendSelection();
+		sendSelectionEvent (SWT.DefaultSelection);
 	}
 }
 
