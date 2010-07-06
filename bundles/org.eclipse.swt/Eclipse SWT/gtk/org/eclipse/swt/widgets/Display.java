@@ -4226,14 +4226,14 @@ int /*long*/ signalProc (int /*long*/ gobject, int /*long*/ arg1, int /*long*/ u
 					int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (OS.GTK_WIDGET_WINDOW( shellHandle));
 					int /*long*/ [] type = new int /*long*/ [1];
 					int /*long*/ [] format = new int /*long*/ [1];
-					long [] nitems = new long [1];
-					long [] bytes_after = new long [1];
+					int [] nitems = new int [1];
+					int [] bytes_after = new int [1];
 					int /*long*/ [] data = new int /*long*/ [1];
-					OS.XGetWindowProperty (OS.GDK_DISPLAY (), xWindow, atom, 0l, -1l, true, OS.AnyPropertyType,
+					OS.XGetWindowProperty (OS.GDK_DISPLAY (), xWindow, atom, 0, -1, true, OS.AnyPropertyType,
 							type, format, nitems, bytes_after, data);
 					
 					if (nitems [0] > 0) {
-						byte [] buffer = new byte [(int)/*64*/nitems [0]];
+						byte [] buffer = new byte [nitems [0]];
 						OS.memmove(buffer, data [0], buffer.length);
 						OS.XFree (data [0]);
 						char[] chars = Converter.mbcsToWcs(null, buffer);

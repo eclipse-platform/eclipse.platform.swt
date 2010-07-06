@@ -1893,26 +1893,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1XGetSelectionOwner)
 
 #ifndef NO__1XGetWindowProperty
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1XGetWindowProperty)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jlong arg3, jlong arg4, jboolean arg5, jintLong arg6, jintLongArray arg7, jintLongArray arg8, jlongArray arg9, jlongArray arg10, jintLongArray arg11)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3, jint arg4, jboolean arg5, jintLong arg6, jintLongArray arg7, jintArray arg8, jintArray arg9, jintArray arg10, jintLongArray arg11)
 {
 	jintLong *lparg7=NULL;
-	jintLong *lparg8=NULL;
-	jlong *lparg9=NULL;
-	jlong *lparg10=NULL;
+	jint *lparg8=NULL;
+	jint *lparg9=NULL;
+	jint *lparg10=NULL;
 	jintLong *lparg11=NULL;
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1XGetWindowProperty_FUNC);
 	if (arg7) if ((lparg7 = (*env)->GetIntLongArrayElements(env, arg7, NULL)) == NULL) goto fail;
-	if (arg8) if ((lparg8 = (*env)->GetIntLongArrayElements(env, arg8, NULL)) == NULL) goto fail;
-	if (arg9) if ((lparg9 = (*env)->GetLongArrayElements(env, arg9, NULL)) == NULL) goto fail;
-	if (arg10) if ((lparg10 = (*env)->GetLongArrayElements(env, arg10, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL)) == NULL) goto fail;
+	if (arg9) if ((lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL)) == NULL) goto fail;
+	if (arg10) if ((lparg10 = (*env)->GetIntArrayElements(env, arg10, NULL)) == NULL) goto fail;
 	if (arg11) if ((lparg11 = (*env)->GetIntLongArrayElements(env, arg11, NULL)) == NULL) goto fail;
 	rc = (jintLong)XGetWindowProperty((Display *)arg0, (Window)arg1, (Atom)arg2, arg3, arg4, arg5, (Atom)arg6, (Atom*)lparg7, (int *)lparg8, (unsigned long *)lparg9, (unsigned long *)lparg10, (unsigned char **)lparg11);
 fail:
 	if (arg11 && lparg11) (*env)->ReleaseIntLongArrayElements(env, arg11, lparg11, 0);
-	if (arg10 && lparg10) (*env)->ReleaseLongArrayElements(env, arg10, lparg10, 0);
-	if (arg9 && lparg9) (*env)->ReleaseLongArrayElements(env, arg9, lparg9, 0);
-	if (arg8 && lparg8) (*env)->ReleaseIntLongArrayElements(env, arg8, lparg8, 0);
+	if (arg10 && lparg10) (*env)->ReleaseIntArrayElements(env, arg10, lparg10, 0);
+	if (arg9 && lparg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
+	if (arg8 && lparg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
 	if (arg7 && lparg7) (*env)->ReleaseIntLongArrayElements(env, arg7, lparg7, 0);
 	OS_NATIVE_EXIT(env, that, _1XGetWindowProperty_FUNC);
 	return rc;

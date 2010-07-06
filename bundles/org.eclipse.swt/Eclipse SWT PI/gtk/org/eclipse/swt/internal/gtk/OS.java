@@ -885,9 +885,9 @@ public static final int /*long*/ XGetSelectionOwner(int /*long*/ display, int /*
  * @param bytes_after_return cast=(unsigned long *)
  * @param prop_return cast=(unsigned char **)
  */
-public static final native int /*long*/ _XGetWindowProperty(int /*long*/ display, int /*long*/ window, int /*long*/ property, long offset, long length, boolean delete, int /*long*/ req_type, int /*long*/ [] actual_type_return, int /*long*/ [] actual_format_return , long[] nitems_return, long[] bytes_after_return, int /*long*/ [] prop_return);
+public static final native int /*long*/ _XGetWindowProperty(int /*long*/ display, int /*long*/ window, int /*long*/ property, int offset, int length, boolean delete, int /*long*/ req_type, int /*long*/ [] actual_type_return, int [] actual_format_return , int[] nitems_return, int[] bytes_after_return, int /*long*/ [] prop_return);
 public static final int /*long*/ XGetWindowProperty(
-		int /*long*/ display, int /*long*/ window, int /*long*/ property, long offset, long length, boolean delete, int /*long*/ req_type, int /*long*/ [] actual_type_return, int /*long*/ [] actual_format_return, long[] nitems_return, long[] bytes_after_return, int /*long*/ [] prop_return) {
+		int /*long*/ display, int /*long*/ window, int /*long*/ property, int offset, int length, boolean delete, int /*long*/ req_type, int [] actual_type_return, int [] actual_format_return, int[] nitems_return, int[] bytes_after_return, int /*long*/ [] prop_return) {
 	lock.lock();
 	try {
 		return _XGetWindowProperty(display, window, property, offset, length, delete, req_type, actual_type_return, actual_format_return , nitems_return, bytes_after_return, prop_return);
