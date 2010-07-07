@@ -441,10 +441,12 @@
 			<param name="library_count" value="1"/>
 			<param name="fragment" value="org.eclipse.swt.win32.wce_ppc.arm"/>
 		</antcall>
+		<!-- WPF is not being built
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="2"/>
 			<param name="fragment" value="org.eclipse.swt.wpf.win32.x86"/>
 		</antcall>
+		-->
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="1"/>
 			<param name="fragment" value="org.eclipse.swt.photon.qnx.x86"/>
@@ -513,13 +515,16 @@
 	
 	<target name="check_fragment_libraries" depends="get_version">
 		<property name="checkdir" value="~/build/check_libraries"/>
+		<!-- WPF is not being built
 		<property name="library_count" value="130"/>
+		-->
+		<property name="library_count" value="128"/>
 		<property name="fragment" value="org.eclipse.swt.win32.win32.x86 org.eclipse.swt.win32.win32.x86_64 org.eclipse.swt.win32.win32.ia64 org.eclipse.swt.win32.wce_ppc.arm org.eclipse.swt.wpf.win32.x86 org.eclipse.swt.photon.qnx.x86 org.eclipse.swt.carbon.macosx org.eclipse.swt.cocoa.macosx org.eclipse.swt.cocoa.macosx.x86_64 org.eclipse.swt.gtk.linux.ppc org.eclipse.swt.gtk.linux.ppc64 org.eclipse.swt.gtk.linux.x86 org.eclipse.swt.gtk.linux.x86_64 org.eclipse.swt.gtk.linux.s390 org.eclipse.swt.gtk.linux.s390x org.eclipse.swt.gtk.solaris.sparc org.eclipse.swt.gtk.solaris.x86 org.eclipse.swt.motif.linux.x86 org.eclipse.swt.motif.aix.ppc org.eclipse.swt.motif.hpux.ia64_32 org.eclipse.swt.motif.solaris.sparc"/>
 		<sshexec host="${m_linux_x86}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
-			command="rm -rf ${checkdir}; mkdir ${checkdir}; cd ${checkdir}; export CVS_RSH=ssh; cvs -q -d ${cvsRoot} checkout ${fragment} | grep '[0-9][0-9][0-9][0-9].'; a=`find -name *${swt_version}* | grep -c ${swt_version}`; b=`find . -regex .*[0-9][0-9][0-9][0-9].* | grep -v -c ${swt_version}`; echo Found \&quot;$a\&quot; libraries with version \&quot;${swt_version}\&quot; and \&quot;$b\&quot; libraries with old versions; if [[ &quot;$a&quot; = &quot;${library_count}&quot; &amp;&amp; &quot;$b&quot; = '0' ]]; then cd; rm -rf ${checkdir}; echo Success; else cd; rm -rf ${checkdir}; echo Failed. Expecting ${library_count} and 0; exit 1; fi"/>
+			command="rm -rf ${checkdir}; mkdir ${checkdir}; cd ${checkdir}; export CVS_RSH=ssh; cvs -q -d ${cvsRoot} checkout ${TAG} ${fragment} | grep '[0-9][0-9][0-9][0-9].'; a=`find -name *${swt_version}* | grep -c ${swt_version}`; b=`find . -regex .*[0-9][0-9][0-9][0-9].* | grep -v -c ${swt_version}`; echo Found \&quot;$a\&quot; libraries with version \&quot;${swt_version}\&quot; and \&quot;$b\&quot; libraries with old versions; if [[ &quot;$a&quot; = &quot;${library_count}&quot; &amp;&amp; &quot;$b&quot; = '0' ]]; then cd; rm -rf ${checkdir}; echo Success; else cd; rm -rf ${checkdir}; echo Failed. Expecting ${library_count} and 0; exit 1; fi"/>
 	</target>	
 	
 	<target name="check_machines">
