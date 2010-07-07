@@ -1038,6 +1038,9 @@ void initAccessible() {
 					}
 				}
 			}
+			if (childID == ACC.CHILDID_SELF) {
+				shortcut = "Ctrl+PageDown"; //$NON-NLS-1$
+			}
 			e.result = shortcut;
 		}
 	});
