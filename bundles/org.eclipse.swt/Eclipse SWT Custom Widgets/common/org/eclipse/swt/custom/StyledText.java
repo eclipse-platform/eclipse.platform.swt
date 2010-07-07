@@ -205,6 +205,7 @@ public class StyledText extends Canvas {
 		int pageWidth;									// width of a printer page in pixels
 		int startPage;									// first page to print
 		int endPage;									// last page to print
+		int scope;										// scope of print job
 		int startLine;									// first (wrapped) line to print
 		int endLine;									// last (wrapped) line to print
 		boolean singleLine;								// widget single line mode
@@ -230,7 +231,8 @@ public class StyledText extends Canvas {
 		startPage = 1;
 		endPage = Integer.MAX_VALUE;
 		PrinterData data = printer.getPrinterData();
-		if (data.scope == PrinterData.PAGE_RANGE) {
+		scope = data.scope;
+		if (scope == PrinterData.PAGE_RANGE) {
 			startPage = data.startPage;
 			endPage = data.endPage;
 			if (endPage < startPage) {
@@ -238,7 +240,7 @@ public class StyledText extends Canvas {
 				endPage = startPage;
 				startPage = temp;
 			}
-		} else if (data.scope == PrinterData.SELECTION) {
+		} else if (scope == PrinterData.SELECTION) {
 			selection = styledText.getSelectionRange();
 		}
 		printerRenderer = new StyledTextRenderer(printer, null);
@@ -437,11 +439,10 @@ public class StyledText extends Canvas {
 		StyledTextContent content = printerRenderer.content;
 		startLine = 0;
 		endLine = singleLine ? 0 : content.getLineCount() - 1;
-		PrinterData data = printer.getPrinterData();
-		if (data.scope == PrinterData.PAGE_RANGE) {
+		if (scope == PrinterData.PAGE_RANGE) {
 			int pageSize = clientArea.height / lineHeight;//WRONG
 			startLine = (startPage - 1) * pageSize;
-		} else if (data.scope == PrinterData.SELECTION) {
+		} else if (scope == PrinterData.SELECTION) {
 			startLine = content.getLineAtOffset(selection.x);
 			if (selection.y > 0) {
 				endLine = content.getLineAtOffset(selection.x + selection.y - 1);
