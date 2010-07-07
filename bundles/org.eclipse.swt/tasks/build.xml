@@ -603,7 +603,7 @@
 	
 	<target name="check_compilation">
 		<property name="cvsRsh" value="plink"/>
-		<property name="tmpdir" value="${tmphome}/workspace64"/>
+		<property name="tmpdir" value="${tmphome}/workspace-check-compile${TAG}"/>
 		<property name="project" value="org.eclipse.swt"/>
 		<property name="projectDir" value="${tmpdir}/org.eclipse.swt"/>
 		<property name="buildDir" value="${tmpdir}/build"/>
