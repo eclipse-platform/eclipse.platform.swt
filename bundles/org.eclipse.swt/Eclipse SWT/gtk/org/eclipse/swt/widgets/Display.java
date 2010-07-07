@@ -4225,7 +4225,7 @@ int /*long*/ signalProc (int /*long*/ gobject, int /*long*/ arg1, int /*long*/ u
 				if (atom == OS.gdk_x11_atom_to_xatom (gdkEvent.atom)) {
 					int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (OS.GTK_WIDGET_WINDOW( shellHandle));
 					int /*long*/ [] type = new int /*long*/ [1];
-					int /*long*/ [] format = new int /*long*/ [1];
+					int [] format = new int [1];
 					int [] nitems = new int [1];
 					int [] bytes_after = new int [1];
 					int /*long*/ [] data = new int /*long*/ [1];
