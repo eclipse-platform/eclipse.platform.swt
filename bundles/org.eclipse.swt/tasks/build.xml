@@ -713,7 +713,7 @@
 		<replace file="${tmpdir}/${make_common}" token="comma_ver=${comma_ver}" value="comma_ver=${new_comma_ver}"/>
 
 		<!-- Commit the files -->
-		<!--cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="commit"/>
 				<argument value="-m"/>
@@ -723,7 +723,7 @@
 				<argument value="${make_common}"/>
 				<argument value="${version_file}"/>
 			</commandline>
-		</cvs-->
+		</cvs>
 	
 		<!-- See bug 201700 -->
 		<!--antcall target="update_manifest"/-->
