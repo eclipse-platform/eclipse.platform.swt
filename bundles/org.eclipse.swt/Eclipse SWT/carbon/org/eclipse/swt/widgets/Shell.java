@@ -590,6 +590,11 @@ void createHandle () {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		if (OS.IsWindowVisible (shellHandle)) state &= ~HIDDEN;
 	}
+	if ((style & SWT.RESIZE) != 0) {
+		int [] growBox = new int [1];
+		OS.HIViewFindByID (OS.HIViewGetRoot (shellHandle), OS.kHIViewWindowGrowBoxID(), growBox);
+		if (growBox[0] != 0) OS.HIGrowBoxViewSetTransparent(growBox[0], true);
+	}
 	int [] outGroup = new int [1];
 	OS.CreateWindowGroup (OS.kWindowGroupAttrHideOnCollapse, outGroup);
 	if (outGroup [0] == 0) error (SWT.ERROR_NO_HANDLES);
@@ -1677,6 +1682,11 @@ public void setFullScreen (boolean fullScreen) {
 		}
 		OS.ChangeWindowAttributes (shellHandle, attributes, OS.kWindowNoTitleBarAttribute);
 		OS.SetSystemUIMode (OS.kUIModeNormal, 0);
+		if ((style & SWT.RESIZE) != 0) {
+			int [] growBox = new int [1];
+			OS.HIViewFindByID (OS.HIViewGetRoot (shellHandle), OS.kHIViewWindowGrowBoxID(), growBox);
+			if (growBox[0] != 0) OS.HIGrowBoxViewSetTransparent(growBox[0], true);
+		}
 		if (maximized) {
 			setMaximized (true);
 		} else {

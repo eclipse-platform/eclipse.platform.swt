@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1010;
-int OS_nativeFunctionCallCount[1010];
+int OS_nativeFunctionCount = 1012;
+int OS_nativeFunctionCallCount[1012];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -555,6 +555,7 @@ char * OS_nativeFunctionNames[] = {
 	"HIComboBoxSetListVisible",
 	"HICopyAccessibilityRoleDescription",
 	"HICreateTransformedCGImage",
+	"HIGrowBoxViewSetTransparent",
 	"HIObjectCopyClassID",
 	"HIObjectCreate",
 	"HIObjectRegisterSubclass",
@@ -1001,6 +1002,7 @@ char * OS_nativeFunctionNames[] = {
 	"kFontPanelAttributeValuesKey",
 	"kFontPanelAttributesKey",
 	"kHIViewWindowContentID",
+	"kHIViewWindowGrowBoxID",
 	"kLSItemContentType",
 	"kPMDocumentFormatPDF",
 	"kPMGraphicsContextCoreGraphics",

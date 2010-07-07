@@ -1097,6 +1097,8 @@ public static final native int kLSItemContentType();
 public static final native int kUTTagClassFilenameExtension();
 /** @method flags=const address */
 public static final native int kHIViewWindowContentID();
+/** @method flags=const address */
+public static final native int kHIViewWindowGrowBoxID();
 /** @method flags=const */
 public static final native int kPMDocumentFormatPDF();
 /** @method flags=const */
@@ -3726,6 +3728,11 @@ public static final native int HIViewGetSuperview(int inView);
  * @param outView cast=(HIViewRef *)
  */
 public static final native int HIViewGetViewForMouseEvent(int inView, int inEvent, int[] outView);
+/** 
+ * @param inGrowBoxView cast=(HIViewRef) 
+ * @param inTransparent cast=(Boolean)
+ */
+public static final native int HIGrowBoxViewSetTransparent(int inGrowBoxView, boolean inTransparent);
 /** @param inView cast=(HIViewRef) */
 public static final native boolean HIViewIsDrawingEnabled (int inView);
 /** @param inView cast=(HIViewRef) */

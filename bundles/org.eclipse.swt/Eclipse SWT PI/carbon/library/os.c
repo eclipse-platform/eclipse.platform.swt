@@ -7665,6 +7665,18 @@ fail:
 }
 #endif
 
+#ifndef NO_HIGrowBoxViewSetTransparent
+JNIEXPORT jint JNICALL OS_NATIVE(HIGrowBoxViewSetTransparent)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIGrowBoxViewSetTransparent_FUNC);
+	rc = (jint)HIGrowBoxViewSetTransparent((HIViewRef)arg0, (Boolean)arg1);
+	OS_NATIVE_EXIT(env, that, HIGrowBoxViewSetTransparent_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HIObjectCopyClassID
 JNIEXPORT jint JNICALL OS_NATIVE(HIObjectCopyClassID)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -13899,6 +13911,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(kHIViewWindowContentID)
 	OS_NATIVE_ENTER(env, that, kHIViewWindowContentID_FUNC);
 	rc = (jint)&kHIViewWindowContentID;
 	OS_NATIVE_EXIT(env, that, kHIViewWindowContentID_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_kHIViewWindowGrowBoxID
+JNIEXPORT jint JNICALL OS_NATIVE(kHIViewWindowGrowBoxID)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, kHIViewWindowGrowBoxID_FUNC);
+	rc = (jint)&kHIViewWindowGrowBoxID;
+	OS_NATIVE_EXIT(env, that, kHIViewWindowGrowBoxID_FUNC);
 	return rc;
 }
 #endif
