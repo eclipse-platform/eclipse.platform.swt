@@ -42,7 +42,7 @@
 	<property name="builddir" value="org.eclipse.swt/bin/library"/>
 	<property name="logdir" value="S:/swt-builddir/logs"/>
 	<property name="tmphome" value="S:/swt-builddir/tmp"/>
-	<property name="ant_home" value="~/build/apache-ant-1.7.1"/>
+	<property name="ant_home" value="~/build/apache-ant-1.8.1"/>
 
 	<property name="cp_common" value="'org.eclipse.swt/Eclipse SWT/common/library' 'org.eclipse.swt/Eclipse SWT Mozilla/common/library' 'org.eclipse.swt/Eclipse SWT PI/common/library'"/>
 	<property name="cp_win32" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/win32/library' 'org.eclipse.swt/Eclipse SWT AWT/win32/library' 'org.eclipse.swt/Eclipse SWT OpenGL/win32/library'"/>
@@ -815,7 +815,7 @@
 		<echo>New tag=${swt_new_tag}.</echo>
 	</target>
 
-	<!-- Set swt_version, new_version, old_version (and min_ver, maj_ver, new_min_ver, old_min_ver) from the make_common.mak  -->
+	<!-- Set swt_version, new_version, (and min_ver, maj_ver, new_min_ver) from the make_common.mak  -->
 	<target name="get_version" unless="swt_version">
 		<property name="tmpdir" value="."/>
 		<property name="cvsRsh" value="plink"/>
@@ -831,18 +831,16 @@
 		<loadproperties srcFile="${tmpdir}/${make_common}"/>
 		<copy file="${tmpdir}/${make_common}" tofile="${tmpdir}/tmp.txt" overwrite="true"/>
 		<propertyfile file="${tmpdir}/tmp.txt">
-			<entry key="old_min_ver" default="${min_ver}" type="int" operation="-"/>
 			<entry key="new_min_ver" default="${min_ver}" type="int" operation="+"/>
 		</propertyfile>
 		<loadproperties srcFile="${tmpdir}/tmp.txt"/>
 		<property name="swt_version" value="${maj_ver}${min_ver}"/>
 		<property name="new_version" value="${maj_ver}${new_min_ver}"/>
-		<property name="old_version" value="${maj_ver}${old_min_ver}"/>
 		<replace file="${tmpdir}/tmp.txt" token="comma_ver=${comma_ver}" value="new_comma_ver=${new_version}"/>
 		<replaceregexp file="${tmpdir}/tmp.txt" match="new_comma_ver=(\d)(\d)(\d)(\d)" replace="new_comma_ver=\1,\2,\3,\4" byline="true"/>
 		<loadproperties srcFile="${tmpdir}/tmp.txt"/>
 		<delete file="${tmpdir}/tmp.txt"/>
-		<echo>Version=${swt_version}; Old=${old_version}; New=${new_version}; New comma_ver=${new_comma_ver}</echo>
+		<echo>Version=${swt_version}; New=${new_version}; New comma_ver=${new_comma_ver}</echo>
 	</target>
 
 	<!-- Set natives_changed if there are changes in the C code -->
@@ -882,7 +880,7 @@
 		<echo>Removing ${removed_files}</echo>
 		<cvs dest="${fragment}" command="remove -f ${removed_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 		<echo>Commiting ${removed_files}</echo>
-		<cvs dest="${fragment}" command="commit -m 'remove v${old_version}' ${removed_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
+		<cvs dest="${fragment}" command="commit -m 'remove old libs v${swt_version}' ${removed_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 		<echo>Adding ${added_files}</echo>
 		<cvs dest="${fragment}" command="add -kb ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
@@ -939,16 +937,18 @@
 		</cvs>
 	</target>
 
-	<!-- Params: fragment, swt_version, old_version -->
+	<!-- Params: fragment, swt_version -->
 	<target name="commit_fragment" depends="get_version" if="natives_changed">
+		<fileset id="removeid" dir="${fragment}">
+			<filename regex="[0-9][0-9][0-9][0-9]."/>
+			<filename regex="${swt_version}." negate="true"/>
+		</fileset>
+		
 		<copy todir="${fragment}" overwrite="false">
-			<fileset dir="${fragment}" includes="*${old_version}*"/>
-			<regexpmapper from="(.*)${old_version}(.*)" to="\1${swt_version}\2"/>
+			<fileset refid="removeid"/>
+			<regexpmapper from="(.*)[0-9][0-9][0-9][0-9](.*)" to="\1${swt_version}\2"/>
 		</copy>
-		<chmod perm="755">
-			<fileset dir="${fragment}" includes="*${swt_version}*"/>
-		</chmod>
-		<fileset id="removeid" dir="${fragment}" includes="*${old_version}*"/>
+		
 		<property name="rfiles" refid="removeid"/>
 		<echo file="tmp">removed_files=${rfiles}</echo>
 		<replace file="tmp" token=";" value=" "/>
@@ -961,6 +961,10 @@
 		<replace file="tmp" token=";" value=" "/>
 		<loadproperties srcfile="tmp"/>
 		<delete file="tmp"/>
+
+		<chmod perm="755">
+			<fileset dir="${fragment}" includes="*${swt_version}*"/>
+		</chmod>
 
 		<condition property="is_new_version">
 			<not>
@@ -1348,6 +1352,7 @@
 			<param name="cp" value="${cp_cocoa}"/>
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx"/>
 			<param name="build_target" value="build_cocoa_x86_and_ppc"/>
+			<param name="pre_commands" value="export PATH=${ant_home}/bin:$PATH; "/>
 		</antcall>
 	</target>
 
@@ -1357,6 +1362,7 @@
 			<param name="cp" value="${cp_cocoa}"/>
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.x86_64"/>
 			<param name="build_target" value="build_cocoa_x86_64"/>
+			<param name="pre_commands" value="export PATH=${ant_home}/bin:$PATH; "/>
 		</antcall>
 	</target>
 
@@ -1366,6 +1372,7 @@
 			<param name="cp" value="${cp_carbon}"/>
 			<param name="fragment" value="org.eclipse.swt.carbon.macosx"/>
 			<param name="build_target" value="build_carbon"/>
+			<param name="pre_commands" value="export PATH=${ant_home}/bin:$PATH; "/>
 		</antcall>
 	</target>
 
