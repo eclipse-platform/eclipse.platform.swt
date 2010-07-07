@@ -16,8 +16,8 @@ package org.eclipse.swt.accessibility;
  * <p>
  * After creating an instance of a class that implements
  * this interface it can be added to an accessible using the
- * <code>addAccessibleTextExtendedListener</code> method and removed using
- * the <code>removeAccessibleTextExtendedListener</code> method.
+ * <code>addAccessibleTextListener</code> method and removed using
+ * the <code>removeAccessibleTextListener</code> method.
  * </p>
  *
  * @see AccessibleTextExtendedAdapter
