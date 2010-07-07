@@ -713,7 +713,7 @@
 		<replace file="${tmpdir}/${make_common}" token="comma_ver=${comma_ver}" value="comma_ver=${new_comma_ver}"/>
 
 		<!-- Commit the files -->
-		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+		<!--cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
 			<commandline>
 				<argument value="commit"/>
 				<argument value="-m"/>
@@ -723,7 +723,7 @@
 				<argument value="${make_common}"/>
 				<argument value="${version_file}"/>
 			</commandline>
-		</cvs>
+		</cvs-->
 	
 		<!-- See bug 201700 -->
 		<!--antcall target="update_manifest"/-->
@@ -1382,26 +1382,26 @@
 			<format property="build_version" pattern="yyyyMMddkkmmss"/>
 		</tstamp>
 		<mkdir dir="${logdir}/${build_version}"/>
-		<parallel failonany="false">
-			<antcall target="win32_x86"/>
-			<antcall target="win32_x86_64"/>
-			<antcall target="win32_ia64"/>
-			<antcall target="wince"/>
-			<antcall target="wpf_x86"/>
-			<antcall target="gtk_linux_x86"/>
-			<antcall target="gtk_linux_x86_64"/>
-			<antcall target="gtk_linux_ppc"/>
-			<antcall target="gtk_solaris_x86"/>
-			<antcall target="gtk_solaris_sparc"/>
-			<antcall target="motif_linux"/>
-			<antcall target="motif_aix"/>
-			<antcall target="motif_solaris"/>
-			<antcall target="motif_hpux"/>
-			<antcall target="cocoa_x86_and_ppc"/>
-			<antcall target="cocoa_x86_64"/>
-			<antcall target="carbon"/>
-			<antcall target="photon"/>
-		</parallel>
+		<antcall target="carbon"/>
+		<antcall target="cocoa_x86_64"/>
+		<antcall target="cocoa_x86_and_ppc"/>
+		<antcall target="gtk_linux_ppc"/>
+		<antcall target="gtk_linux_ppc64"/>
+		<antcall target="gtk_linux_s390"/>
+		<antcall target="gtk_linux_s390x"/>
+		<antcall target="gtk_linux_x86"/>
+		<antcall target="gtk_linux_x86_64"/>
+		<antcall target="gtk_solaris_x86"/>
+		<antcall target="gtk_solaris_sparc"/>
+		<antcall target="motif_aix"/>
+		<antcall target="motif_hpux"/>
+		<antcall target="motif_linux"/>
+		<antcall target="motif_solaris"/>
+		<antcall target="photon"/>
+		<antcall target="win32_ia64"/>
+		<antcall target="win32_x86"/>
+		<antcall target="win32_x86_64"/>
+		<antcall target="wince"/>
 	</target>
 
 </project>
