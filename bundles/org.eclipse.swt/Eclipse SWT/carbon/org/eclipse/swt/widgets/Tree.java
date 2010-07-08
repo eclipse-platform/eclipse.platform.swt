@@ -2329,6 +2329,7 @@ int itemNotificationProc (int browser, int id, int message) {
 		case OS.kDataBrowserItemDeselected: {
 			wasSelected = true;
 			if (ignoreSelect) break;
+			int selectedId = id;
 			int [] first = new int [1], last = new int [1];
 			OS.GetDataBrowserSelectionAnchor (handle, first, last);
 			boolean selected = false;
@@ -2345,6 +2346,7 @@ int itemNotificationProc (int browser, int id, int message) {
 						selected = true;
 					} else {
 						selected = first [0] == last [0];
+						if (last [0] != 0) selectedId = last [0];
 					}
 				}
 			} else {
@@ -2354,7 +2356,7 @@ int itemNotificationProc (int browser, int id, int message) {
 				anchorFirst = first [0];
 				anchorLast = last [0];
 				Event event = new Event ();
-				event.item = _getItem (id, true);
+				event.item = _getItem (selectedId, true);
 				sendSelectionEvent (SWT.Selection, event, false);
 			}
 			break;

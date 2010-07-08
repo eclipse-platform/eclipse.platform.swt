@@ -2189,6 +2189,8 @@ int itemNotificationProc (int browser, int id, int message) {
 						selected = true;
 					} else {
 						selected = first [0] == last [0];
+						index = getIndex (last [0]);
+						if (0 <= index && index < items.length) item = _getItem (index);
 					}
 				}
 			} else {
