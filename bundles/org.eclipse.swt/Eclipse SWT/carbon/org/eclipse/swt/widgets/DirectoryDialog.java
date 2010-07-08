@@ -35,6 +35,7 @@ import org.eclipse.swt.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class DirectoryDialog extends Dialog {
+	int dialog;
 	String message = "", filterPath = "";
 
 /**
@@ -163,9 +164,11 @@ public String open () {
 			}
 		}
 		Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
+		dialog = outDialog[0];
 		display.setModalDialog(this);
 		OS.NavDialogRun (outDialog [0]);
 		display.setModalDialog(null);
+		dialog = 0;
 		if (OS.NavDialogGetUserAction (outDialog [0]) == OS.kNavUserActionChoose) {
 			NavReplyRecord record = new NavReplyRecord ();
 			OS.NavDialogGetReply (outDialog [0], record);

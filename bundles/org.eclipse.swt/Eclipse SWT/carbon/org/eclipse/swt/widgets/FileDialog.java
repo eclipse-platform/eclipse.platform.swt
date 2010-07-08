@@ -37,6 +37,7 @@ import org.eclipse.swt.internal.carbon.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class FileDialog extends Dialog {
+	int dialog;
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];
 	String [] fileNames = new String[0];	
@@ -362,9 +363,11 @@ public String open () {
 			OS.NavCustomControl (outDialog [0], OS.kNavCtlSelectCustomType, spec);
 		}
 		Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
+		dialog = outDialog[0];
 		display.setModalDialog(this);
 		OS.NavDialogRun (outDialog [0]);
 		display.setModalDialog(null);
+		dialog = 0;
 		int action = OS.NavDialogGetUserAction (outDialog [0]);
 		switch (action) {
 			case OS.kNavUserActionOpen:

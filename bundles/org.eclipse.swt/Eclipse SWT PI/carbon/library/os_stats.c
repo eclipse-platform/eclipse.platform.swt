@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1012;
-int OS_nativeFunctionCallCount[1012];
+int OS_nativeFunctionCount = 1013;
+int OS_nativeFunctionCallCount[1013];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -714,6 +714,7 @@ char * OS_nativeFunctionNames[] = {
 	"NavDialogGetReply",
 	"NavDialogGetSaveFileName",
 	"NavDialogGetUserAction",
+	"NavDialogGetWindow",
 	"NavDialogRun",
 	"NavDialogSetFilterTypeIdentifiers",
 	"NavDialogSetSaveFileName",

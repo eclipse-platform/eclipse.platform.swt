@@ -641,6 +641,7 @@ void deregister () {
 }
 
 void destroyWidget () {
+	setWindowModal (display.getModalDialog (), false, true);
 	int theWindow = shellHandle;
 	/*
 	* Bug in the Macintosh.  Under certain circumstances, yet to
@@ -1914,6 +1915,42 @@ public void setVisible (boolean visible) {
 	setWindowVisible (visible);
 }
 
+void setWindowModal (Dialog dialog, boolean modal, boolean destroy) {
+	if (dialog == null) return;
+	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL | SWT.PRIMARY_MODAL)) == 0) return;
+	if (isDisposed()) return;
+	/*
+	* Bug in Carbon.  For some reason, when a modal shell is opened while a file dialog is showing, neither
+	* window can be dismissed.  The fix is to temporarily change the modality of the file dialog and put the
+	* modal shell in the same group of the file dialog. 
+	*/
+	int dialogHandle = 0;
+	if (dialog instanceof FileDialog) dialogHandle = ((FileDialog)dialog).dialog;
+	if (dialog instanceof DirectoryDialog) dialogHandle = ((DirectoryDialog)dialog).dialog;
+	if (dialogHandle == 0) return;
+	if (modal) {
+		OS.SetWindowModality (OS.NavDialogGetWindow (dialogHandle), OS.kWindowModalityNone, 0);
+		int windowClass = (style & SWT.TITLE) != 0 ? OS.kMovableModalWindowClass : OS.kModalWindowClass;
+		OS.SetWindowGroup (shellHandle, OS.GetWindowGroupOfClass (windowClass));
+		OS.SelectWindow (shellHandle);
+	} else {
+		if (!destroy) {
+			int parentGroup;
+			if ((style & SWT.ON_TOP) != 0) {
+				parentGroup = OS.GetWindowGroupOfClass (OS.kFloatingWindowClass);		
+			} else {
+				if (parent != null) {
+					parentGroup = parent.getShell ().windowGroup;
+				} else {
+					parentGroup = OS.GetWindowGroupOfClass (OS.kDocumentWindowClass);
+				}
+			}
+			OS.SetWindowGroup (shellHandle, parentGroup);
+		}
+		OS.SetWindowModality (OS.NavDialogGetWindow (dialogHandle), OS.kWindowModalityAppModal, 0);
+	}
+}
+
 void setWindowVisible (boolean visible) {
 	if (OS.IsWindowVisible (shellHandle) == visible) return;
 	if (visible) {
@@ -1933,6 +1970,7 @@ void setWindowVisible (boolean visible) {
 			OS.SetWindowModality (shellHandle, inModalKind, inUnavailableWindow);
 			if (inUnavailableWindow != 0) OS.CollapseWindow (inUnavailableWindow, false);
 		}
+		setWindowModal(display.getModalDialog(), true, false);
 		int topHandle = topHandle ();
 		OS.SetControlVisibility (topHandle, true, false);
 		int [] scope = new int [1];
@@ -1985,6 +2023,7 @@ void setWindowVisible (boolean visible) {
 			}
 		}
 	} else {
+		setWindowModal(display.getModalDialog(), false, false);
 		/*
 		* Bug in the Macintosh.  Under certain circumstances, yet to
 		* be determined, calling HideWindow() and then DisposeWindow()

@@ -10053,6 +10053,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NavDialogGetUserAction)
 }
 #endif
 
+#ifndef NO_NavDialogGetWindow
+JNIEXPORT jint JNICALL OS_NATIVE(NavDialogGetWindow)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NavDialogGetWindow_FUNC);
+	rc = (jint)NavDialogGetWindow((NavDialogRef)arg0);
+	OS_NATIVE_EXIT(env, that, NavDialogGetWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NavDialogRun
 JNIEXPORT jint JNICALL OS_NATIVE(NavDialogRun)
 	(JNIEnv *env, jclass that, jint arg0)
