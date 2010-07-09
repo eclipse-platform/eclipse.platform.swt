@@ -63,6 +63,7 @@ public class Snippet217 {
 		Combo combo = new Combo(styledText, SWT.NONE);
 		combo.add("item 1");
 		combo.add("another item");
+		combo.setText(combo.getItem(0));
 		offset = text.indexOf('\uFFFC', offset + 1);
 		addControl(combo, offset);
 		combo.setLocation(styledText.getLocationAtOffset(offset));
