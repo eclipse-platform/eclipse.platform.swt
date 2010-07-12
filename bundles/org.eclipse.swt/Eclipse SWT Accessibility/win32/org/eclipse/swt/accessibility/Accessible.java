@@ -92,6 +92,7 @@ public class Accessible {
 	 *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
 	 * </ul>
 	 * 
+	 * @see #dispose
 	 * @see Control#getAccessible
 	 * 
 	 * @since 3.6
