@@ -332,7 +332,7 @@ public class Accessible {
 //	}
 
 	void createIAccessibleHyperlink() {
-		objIAccessibleHyperlink = new COMObject(new int[] {2,0,0,/*IAA>>*/2,0,0,1,1,2,4,2,2,/*<<IAA*/2,2,1,1,1}) {
+		objIAccessibleHyperlink = new COMObject(new int[] {2,0,0,/*IAA>>*/1,1,2,4,2,2,/*<<IAA*/2,2,1,1,1}) {
 			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 			public int /*long*/ method2(int /*long*/[] args) {return Release();}
