@@ -517,9 +517,10 @@
 		<property name="checkdir" value="~/build/check_libraries"/>
 		<!-- WPF is not being built
 		<property name="library_count" value="130"/>
+		<property name="fragment" value="org.eclipse.swt.win32.win32.x86 org.eclipse.swt.win32.win32.x86_64 org.eclipse.swt.win32.win32.ia64 org.eclipse.swt.win32.wce_ppc.arm org.eclipse.swt.wpf.win32.x86 org.eclipse.swt.photon.qnx.x86 org.eclipse.swt.carbon.macosx org.eclipse.swt.cocoa.macosx org.eclipse.swt.cocoa.macosx.x86_64 org.eclipse.swt.gtk.linux.ppc org.eclipse.swt.gtk.linux.ppc64 org.eclipse.swt.gtk.linux.x86 org.eclipse.swt.gtk.linux.x86_64 org.eclipse.swt.gtk.linux.s390 org.eclipse.swt.gtk.linux.s390x org.eclipse.swt.gtk.solaris.sparc org.eclipse.swt.gtk.solaris.x86 org.eclipse.swt.motif.linux.x86 org.eclipse.swt.motif.aix.ppc org.eclipse.swt.motif.hpux.ia64_32 org.eclipse.swt.motif.solaris.sparc"/>
 		-->
 		<property name="library_count" value="128"/>
-		<property name="fragment" value="org.eclipse.swt.win32.win32.x86 org.eclipse.swt.win32.win32.x86_64 org.eclipse.swt.win32.win32.ia64 org.eclipse.swt.win32.wce_ppc.arm org.eclipse.swt.wpf.win32.x86 org.eclipse.swt.photon.qnx.x86 org.eclipse.swt.carbon.macosx org.eclipse.swt.cocoa.macosx org.eclipse.swt.cocoa.macosx.x86_64 org.eclipse.swt.gtk.linux.ppc org.eclipse.swt.gtk.linux.ppc64 org.eclipse.swt.gtk.linux.x86 org.eclipse.swt.gtk.linux.x86_64 org.eclipse.swt.gtk.linux.s390 org.eclipse.swt.gtk.linux.s390x org.eclipse.swt.gtk.solaris.sparc org.eclipse.swt.gtk.solaris.x86 org.eclipse.swt.motif.linux.x86 org.eclipse.swt.motif.aix.ppc org.eclipse.swt.motif.hpux.ia64_32 org.eclipse.swt.motif.solaris.sparc"/>
+		<property name="fragment" value="org.eclipse.swt.win32.win32.x86 org.eclipse.swt.win32.win32.x86_64 org.eclipse.swt.win32.win32.ia64 org.eclipse.swt.win32.wce_ppc.arm org.eclipse.swt.photon.qnx.x86 org.eclipse.swt.carbon.macosx org.eclipse.swt.cocoa.macosx org.eclipse.swt.cocoa.macosx.x86_64 org.eclipse.swt.gtk.linux.ppc org.eclipse.swt.gtk.linux.ppc64 org.eclipse.swt.gtk.linux.x86 org.eclipse.swt.gtk.linux.x86_64 org.eclipse.swt.gtk.linux.s390 org.eclipse.swt.gtk.linux.s390x org.eclipse.swt.gtk.solaris.sparc org.eclipse.swt.gtk.solaris.x86 org.eclipse.swt.motif.linux.x86 org.eclipse.swt.motif.aix.ppc org.eclipse.swt.motif.hpux.ia64_32 org.eclipse.swt.motif.solaris.sparc"/>
 		<sshexec host="${m_linux_x86}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
@@ -723,8 +724,9 @@
 		<replace file="${tmpdir}/${library_j2me}" token="MAJOR_VERSION = ${maj_ver}" value="MAJOR_VERSION = ${new_maj_ver}"/>
 		<replace file="${tmpdir}/${library_j2se}" token="MINOR_VERSION = ${min_ver}" value="MINOR_VERSION = ${new_min_ver}"/>
 		<replace file="${tmpdir}/${library_j2me}" token="MINOR_VERSION = ${min_ver}" value="MINOR_VERSION = ${new_min_ver}"/>
-		<replace file="${tmpdir}/${version_file}" token="version ${maj_ver}.${min_ver}" value="version ${maj_ver}.${new_min_ver}"/>
+		<replace file="${tmpdir}/${version_file}" token="version ${maj_ver}.${min_ver}" value="version ${new_maj_ver}.${new_min_ver}"/>
 		<replace file="${tmpdir}/${make_common}" token="min_ver=${min_ver}" value="min_ver=${new_min_ver}"/>
+		<replace file="${tmpdir}/${make_common}" token="maj_ver=${maj_ver}" value="maj_ver=${new_maj_ver}"/>
 		<replace file="${tmpdir}/${make_common}" token="comma_ver=${comma_ver}" value="comma_ver=${new_comma_ver}"/>
 
 		<!-- Commit the files -->
@@ -830,7 +832,7 @@
 		<echo>New tag=${swt_new_tag}.</echo>
 	</target>
 
-	<!-- Set swt_version, new_version, (and min_ver, maj_ver, new_min_ver) from the make_common.mak  -->
+	<!-- Set swt_version, new_version, (and min_ver, maj_ver, new_min_ver, new_maj_ver) from the make_common.mak  -->
 	<target name="get_version" unless="swt_version">
 		<property name="tmpdir" value="."/>
 		<property name="cvsRsh" value="plink"/>
@@ -847,6 +849,7 @@
 		<copy file="${tmpdir}/${make_common}" tofile="${tmpdir}/tmp.txt" overwrite="true"/>
 		<propertyfile file="${tmpdir}/tmp.txt">
 			<entry key="new_min_ver" default="${min_ver}" type="int" operation="+"/>
+			<entry key="new_maj_ver" default="${maj_ver}" type="int" operation="="/>
 		</propertyfile>
 		<loadproperties srcFile="${tmpdir}/tmp.txt"/>
 		<property name="swt_version" value="${maj_ver}${min_ver}"/>
