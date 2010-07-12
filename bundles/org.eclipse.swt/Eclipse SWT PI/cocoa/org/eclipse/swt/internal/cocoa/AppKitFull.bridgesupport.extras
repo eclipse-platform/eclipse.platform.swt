@@ -2091,6 +2091,10 @@
 	<class name="NSPICTImageRep" swt_superclass="NSImageRep">
 	</class>
 	<class name="NSPanel" swt_gen="mixed" swt_superclass="NSWindow">
+		<method selector="setFloatingPanel:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setWorksWhenModal:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -4540,6 +4544,7 @@
 	<enum name="NSUnderlineStyleNone" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleSingle" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleThick" swt_gen="true"></enum>
+	<enum name="NSUtilityWindowMask" swt_gen="true"></enum>
 	<enum name="NSViewHeightSizable" swt_gen="true"></enum>
 	<enum name="NSViewMaxXMargin" swt_gen="true"></enum>
 	<enum name="NSViewMaxYMargin" swt_gen="true"></enum>

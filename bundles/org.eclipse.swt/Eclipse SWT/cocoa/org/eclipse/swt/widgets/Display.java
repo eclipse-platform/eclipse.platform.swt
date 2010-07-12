@@ -2574,6 +2574,19 @@ void initClasses () {
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
+	className = "SWTPanel";
+	cls = OS.objc_allocateClassPair(OS.class_NSPanel, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_helpRequested_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_canBecomeKeyWindow, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_becomeKeyWindow, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_makeFirstResponder_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_noResponderFor_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_view_stringForToolTip_point_userData_, view_stringForToolTip_point_userDataProc, "@:@i{NSPoint}@");
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
+	OS.objc_registerClassPair(cls);
+	
 	className = "SWTWindowDelegate";
 	cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);

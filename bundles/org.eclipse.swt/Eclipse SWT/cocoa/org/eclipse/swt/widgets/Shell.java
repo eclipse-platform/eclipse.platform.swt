@@ -570,8 +570,13 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle () {
 	state |= HIDDEN;
 	if (window == null && view == null) {
-		window = (NSWindow) new SWTWindow ().alloc ();
 		int styleMask = OS.NSBorderlessWindowMask;
+		if ((style & SWT.TOOL) != 0) {
+			window = (NSWindow) new SWTPanel().alloc();
+			styleMask |= OS.NSUtilityWindowMask;
+ 		} else {
+ 			window = (NSWindow) new SWTWindow().alloc ();
+ 		}
 		if ((style & SWT.NO_TRIM) == 0) {
 			if ((style & SWT.TITLE) != 0) styleMask |= OS.NSTitledWindowMask;
 			if ((style & SWT.CLOSE) != 0) styleMask |= OS.NSClosableWindowMask;
@@ -586,6 +591,11 @@ void createHandle () {
 		window = window.initWithContentRect(new NSRect(), styleMask, OS.NSBackingStoreBuffered, (style & SWT.ON_TOP) != 0, screen);
 		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0 || (style & (SWT.TOOL | SWT.SHEET)) != 0) {
 			window.setHasShadow (true);
+		}
+		if ((style & SWT.TOOL) != 0) {
+			// Feature in Cocoa: NSPanels that use NSUtilityWindowMask are always promoted to the floating window layer.
+			// Fix is to call setFloatingPanel:NO, which turns off this behavior.
+			((NSPanel)window).setFloatingPanel(false);
 		}
 		if ((style & SWT.NO_TRIM) == 0) {
 			NSSize size = window.minSize();
