@@ -39,7 +39,7 @@ CDE_LIBS = -G -L$(CDE_HOME)/lib -L$(CDE_HOME)/lib/hpux32 -lDtSvc
 AWT_PREFIX = swt-awt
 AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 AWT_OBJS = swt_awt.o
-AWT_LIBS = -G  -L/usr/lib -lX11 -lc -L$(AWT_HOME) -ljawt 
+AWT_LIBS = -G  -L/usr/lib -lX11 -lc -L$(AWT_HOME) -L$(AWT_HOME)/server -ljawt 
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
 
