@@ -199,10 +199,16 @@ int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int 
 				return description;
 			}
 		}
-	} else if (nsAttributeName.isEqualToString (OS.NSAccessibilityTitleAttribute) || nsAttributeName.isEqualToString (OS.NSAccessibilityDescriptionAttribute)) {
+	} else if (nsAttributeName.isEqualToString (OS.NSAccessibilityTitleAttribute)) {
+		String accessibleText = text.length() > 0 ? text : toolTipText;
+		if (accessibleText != null) {
+			return NSString.stringWith(accessibleText).id;
+		} else {
+			return NSString.string().id;
+		}
+	} else if (nsAttributeName.isEqualToString (OS.NSAccessibilityHelpAttribute)) {
 		String accessibleText = toolTipText;
-		if (accessibleText == null || accessibleText.equals("")) accessibleText = text;
-		if (!(accessibleText == null || accessibleText.equals(""))) {
+		if (accessibleText != null) {
 			return NSString.stringWith(accessibleText).id;
 		} else {
 			return NSString.string().id;
