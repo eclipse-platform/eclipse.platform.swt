@@ -966,7 +966,8 @@ public class OS extends C {
 	public static final int kWindowCollapseBoxAttribute = (1 << 3);
 	public static final int kWindowCompositingAttribute = (1 << 19);
 	public static final int kWindowContentRgn = 33;
-	public static final int kWindowGroupAttrHideOnCollapse = 16;
+	public static final int kWindowGroupAttrHideOnCollapse = (1 << 4);
+	public static final int kWindowGroupAttrSelectAsLayer = (1 << 0);
 	public static final int kWindowHorizontalZoomAttribute = 1 << 1;
 	public static final int kWindowVerticalZoomAttribute  = 1 << 2;
 	public static final int kWindowFullZoomAttribute = (OS.kWindowVerticalZoomAttribute | OS.kWindowHorizontalZoomAttribute);

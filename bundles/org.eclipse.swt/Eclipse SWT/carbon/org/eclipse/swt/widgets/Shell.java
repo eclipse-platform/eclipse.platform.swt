@@ -596,7 +596,7 @@ void createHandle () {
 		if (growBox[0] != 0) OS.HIGrowBoxViewSetTransparent(growBox[0], true);
 	}
 	int [] outGroup = new int [1];
-	OS.CreateWindowGroup (OS.kWindowGroupAttrHideOnCollapse, outGroup);
+	OS.CreateWindowGroup (OS.kWindowGroupAttrHideOnCollapse | OS.kWindowGroupAttrSelectAsLayer, outGroup);
 	if (outGroup [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	windowGroup = outGroup [0];
 	int parentGroup;
