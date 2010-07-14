@@ -14,12 +14,11 @@
 
 /*#define NDEBUG*/
 
-#include <Carbon/Carbon.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-#include <JavaScriptCore/JSBase.h>
-#include <JavaScriptCore/JSStringRef.h>
+#include <Carbon/Carbon.h>
+#include <Security/Security.h>
+#include <JavaScriptCore/JavaScriptCore.h>
 
 #include "os_custom.h"
 
