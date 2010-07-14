@@ -104,6 +104,11 @@ boolean acceptsFirstResponder(int /*long*/ id, int /*long*/ sel) {
 	return super.acceptsFirstResponder (id, sel);
 }
 
+boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
+	if (id == view.id) return true;
+	return super.accessibilityIsIgnored(id, sel);	
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's text is modified, by sending
@@ -519,6 +524,12 @@ public String getText () {
 public int getTextLimit () {
 	checkWidget();
     return textLimit;
+}
+
+boolean handleIsAccessible(int /*long*/ id) {
+	// All subviews of a Spinner can have their accessible properties overridden.
+	// The top-level NSView is already ignored, so we don't need to test for that.
+	return true;
 }
 
 boolean isEventView (int /*long*/ id) {
