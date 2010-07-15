@@ -338,6 +338,11 @@ public String getText () {
 	return text;
 }
 
+boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, int type) {
+	super.mouseEvent (id, sel, theEvent, type);
+	return new NSEvent (theEvent).type () != OS.NSLeftMouseDown;
+}
+
 boolean shouldDrawInsertionPoint(int /*long*/ id, int /*long*/ sel) {
 	return false;
 }
