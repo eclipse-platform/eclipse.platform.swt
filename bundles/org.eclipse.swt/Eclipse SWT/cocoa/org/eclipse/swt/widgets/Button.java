@@ -618,6 +618,23 @@ void setBackgroundImage(NSImage image) {
 	}
 }
 
+void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
+		int heightThreshold = 32;
+		if (display.smallFonts) {
+			heightThreshold = 28;
+		}
+
+		NSButton button = (NSButton)view;
+		if (height > heightThreshold) {
+			button.setBezelStyle(OS.NSRegularSquareBezelStyle);
+		} else {
+			button.setBezelStyle(OS.NSRoundedBezelStyle);
+		}
+	}
+	super.setBounds(x, y, width, height, move, resize);
+}
+
 void setFont (NSFont font) {
 	if (text != null) {
 		((NSButton)view).setAttributedTitle(createString());

@@ -4505,6 +4505,7 @@
 	<enum name="NSPushOnPushOffButton" swt_gen="true"></enum>
 	<enum name="NSRadioButton" swt_gen="true"></enum>
 	<enum name="NSRegularControlSize" swt_gen="true"></enum>
+	<enum name="NSRegularSquareBezelStyle" swt_gen="true"></enum>
 	<enum name="NSResizableWindowMask" swt_gen="true"></enum>
 	<enum name="NSRightMouseDown" swt_gen="true"></enum>
 	<enum name="NSRightMouseDragged" swt_gen="true"></enum>

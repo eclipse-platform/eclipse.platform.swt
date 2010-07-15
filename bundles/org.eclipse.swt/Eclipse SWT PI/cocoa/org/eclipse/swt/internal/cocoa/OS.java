@@ -2126,6 +2126,7 @@ public static final int NSProgressIndicatorPreferredThickness = 14;
 public static final int NSPushOnPushOffButton = 1;
 public static final int NSRadioButton = 4;
 public static final int NSRegularControlSize = 0;
+public static final int NSRegularSquareBezelStyle = 2;
 public static final int NSResizableWindowMask = 8;
 public static final int NSRightMouseDown = 3;
 public static final int NSRightMouseDragged = 7;
