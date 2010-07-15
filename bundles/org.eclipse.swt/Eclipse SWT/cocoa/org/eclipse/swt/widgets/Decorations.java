@@ -427,11 +427,10 @@ boolean restoreFocus () {
 }
 
 void saveFocus () {
-//	int window = OS.GetControlOwner (handle);
-//	Control control = display.getFocusControl (window, false);
-//	if (control != null && control != this && this == control.menuShell ()) {
-//		setSavedFocus (control);
-//	}
+	Control control = display.getFocusControl ();
+	if (control != null && control != this && this == control.menuShell ()) {
+		setSavedFocus (control);
+	}
 }
 
 /**

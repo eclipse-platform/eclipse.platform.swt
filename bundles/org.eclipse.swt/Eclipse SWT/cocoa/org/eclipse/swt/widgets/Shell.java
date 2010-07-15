@@ -1901,6 +1901,8 @@ void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 	display.setMenuBar (menuBar);
 	sendEvent (SWT.Activate);
 	if (isDisposed ()) return;
+	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
+	if (isDisposed ()) return;
 	Shell parentShell = this;
 	while (parentShell.parent != null) {
 		parentShell = (Shell) parentShell.parent;
@@ -1958,6 +1960,11 @@ void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notificatio
 void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	super.windowDidResignKey(id, sel, notification);
 	sendEvent (SWT.Deactivate);
+	if (isDisposed ()) return;
+	setActiveControl (null);
+	if (isDisposed ()) return;
+	saveFocus ();
+	display.setMenuBar(null);
 }
 
 void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
