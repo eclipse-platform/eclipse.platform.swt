@@ -1130,7 +1130,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 			ToolItem item = items [index];
 			if (item != null) {	
 				/*
-				* But in Windows.  When the  arrow keys are used to change
+				* Bug in Windows.  When the  arrow keys are used to change
 				* the hot item, for some reason, Windows displays the tool
 				* tip for the hot item in at (0, 0) on the screen rather
 				* than next to the current hot item.  This fix is to disallow
@@ -1513,7 +1513,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 				switch (lpnmhi.dwFlags) {
 					case OS.HICF_MOUSE: {
 						/*
-						* But in Windows.  When the tool bar has focus, a mouse is
+						* Bug in Windows.  When the tool bar has focus, a mouse is
 						* in an item and hover help for that item is displayed and
 						* then the arrow keys are used to change the hot item,
 						* for some reason, Windows snaps the hot item back to the
