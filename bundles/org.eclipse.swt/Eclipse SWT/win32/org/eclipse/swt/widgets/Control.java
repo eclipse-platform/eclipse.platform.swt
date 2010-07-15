@@ -1024,8 +1024,11 @@ void forceResize () {
 
 /**
  * Returns the accessible object for the receiver.
+ * <p>
  * If this is the first time this object is requested,
- * then the object is created and returned.
+ * then the object is created and returned. The object
+ * returned by getAccessible() does not need to be disposed.
+ * </p>
  *
  * @return the accessible object
  *
