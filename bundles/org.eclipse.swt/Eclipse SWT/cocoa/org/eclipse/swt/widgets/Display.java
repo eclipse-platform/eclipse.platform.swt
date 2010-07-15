@@ -115,7 +115,8 @@ public class Display extends Device {
 
 	Caret currentCaret;
 	
-	boolean sendEvent;
+	boolean sendEvent, deferDoubleClick;
+
 	Control currentControl, trackingControl, tooltipControl;
 	Widget tooltipTarget;
 	
@@ -4518,6 +4519,10 @@ void applicationSendTrackingEvent (NSEvent nsEvent, Control trackingControl) {
 			Control control = trackingControl;
 			this.trackingControl = null;
 			control.sendMouseEvent (nsEvent, SWT.MouseUp, false);
+			if (deferDoubleClick) {
+				control.sendMouseEvent(nsEvent, SWT.MouseDoubleClick, false);
+				deferDoubleClick = false;
+			}
 			break;
 		case OS.NSLeftMouseDragged:
 		case OS.NSRightMouseDragged:

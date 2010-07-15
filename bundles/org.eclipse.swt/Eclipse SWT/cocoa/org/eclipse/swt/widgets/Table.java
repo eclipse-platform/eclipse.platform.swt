@@ -3243,4 +3243,9 @@ void updateRowCount() {
 	table.tile();
 	setRedraw(true);
 }
+
+boolean wantsDoubleClickAtMouseDown() {
+	return false;
+}
+
 }

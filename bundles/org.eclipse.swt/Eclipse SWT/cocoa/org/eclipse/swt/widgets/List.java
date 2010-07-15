@@ -1449,4 +1449,8 @@ void updateRowCount() {
 	setRedraw(true);
 }
 
+boolean wantsDoubleClickAtMouseDown() {
+	return false;
+}
+
 }

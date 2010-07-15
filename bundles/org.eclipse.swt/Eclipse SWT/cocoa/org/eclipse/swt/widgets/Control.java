@@ -2241,12 +2241,20 @@ boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, in
 			display.checkEnterExit (display.findControl(true), nsEvent, false);
 			break;
 	}
-	sendMouseEvent (nsEvent, type, false);	
+	sendMouseEvent (nsEvent, type, false);
 	if (type == SWT.MouseDown && nsEvent.clickCount() == 2) {
-		sendMouseEvent (nsEvent, SWT.MouseDoubleClick, false);
+		if (wantsDoubleClickAtMouseDown()) {
+			sendMouseEvent (nsEvent, SWT.MouseDoubleClick, false);
+		} else {
+			display.deferDoubleClick = true;
+		}
 	}
 	if (dragging) sendMouseEvent(nsEvent, SWT.DragDetect, false);
 	if (consume != null && consume[0]) return false;
+	return true;
+}
+
+boolean wantsDoubleClickAtMouseDown() {
 	return true;
 }
 
