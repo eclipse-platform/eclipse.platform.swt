@@ -2536,17 +2536,26 @@ public FontMetrics getFontMetrics() {
 	NSAutoreleasePool pool = checkGC(FONT);
 	try {
 		if (data.textStorage == null) createLayout();
-		String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";  //$NON-NLS-1$
-		NSAttributedString attribStr = createString(s, 0, false);
-		data.textStorage.setAttributedString(attribStr);
-		attribStr.release();
-		NSLayoutManager layoutManager = data.layoutManager;
-		layoutManager.glyphRangeForTextContainer(data.textContainer);
-		NSRect rect = layoutManager.usedRectForTextContainer(data.textContainer);
-		int width = (int)Math.ceil(rect.width);
-		int ascent = (int)layoutManager.defaultBaselineOffsetForFont(data.font.handle);
-		int height = (int)layoutManager.defaultLineHeightForFont(data.font.handle);
-		return FontMetrics.cocoa_new(ascent, height - ascent, width / s.length(), 0, height);
+
+		if (data.font.metrics == null) {
+			String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";  //$NON-NLS-1$
+			NSMutableDictionary dict = ((NSMutableDictionary)new NSMutableDictionary().alloc()).initWithCapacity(3);
+			dict.setObject(data.font.handle, OS.NSFontAttributeName);
+			data.font.addTraits(dict);
+			NSAttributedString attribStr = ((NSAttributedString)new NSAttributedString().alloc()).initWithString(NSString.stringWith(s), dict);
+			data.textStorage.setAttributedString(attribStr);
+			attribStr.release();
+			dict.release();
+			NSLayoutManager layoutManager = data.layoutManager;
+			layoutManager.glyphRangeForTextContainer(data.textContainer);
+			NSRect rect = layoutManager.usedRectForTextContainer(data.textContainer);
+			int avgWidth = (int) Math.ceil(rect.width) / s.length();
+			int ascent = (int)layoutManager.defaultBaselineOffsetForFont(data.font.handle);
+			int height = (int)layoutManager.defaultLineHeightForFont(data.font.handle);
+			data.font.metrics = FontMetrics.cocoa_new(ascent, height - ascent, avgWidth, 0, height); 
+		}
+		
+		return data.font.metrics;
 	} finally {
 		uncheckGC(pool);
 	}
@@ -3924,7 +3933,7 @@ public Point textExtent(String string, int flags) {
 	try {
 		int length = string.length();
 		if (data.textStorage == null) createLayout();
-		NSAttributedString attribStr = createString(length == 0 ? " " : string, flags, true); //$NON-NLS-1$
+		NSAttributedString attribStr = createString(length == 0 ? " " : string, flags, false); //$NON-NLS-1$
 		data.textStorage.setAttributedString(attribStr);
 		attribStr.release();
 		data.layoutManager.glyphRangeForTextContainer(data.textContainer);

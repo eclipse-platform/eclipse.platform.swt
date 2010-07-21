@@ -130,4 +130,21 @@ public int hashCode() {
 	return ascent ^ descent ^ averageCharWidth ^ leading ^ height;
 }
 
+String getName () {
+	String string = getClass ().getName ();
+	int index = string.lastIndexOf ('.');
+	if (index == -1) return string;
+	return string.substring (index + 1, string.length ());
+}
+
+public String toString() {
+	return getName() + 
+		"{" 
+		+ " ascent=" + ascent
+		+ " descent=" + descent
+		+ " averageCharWidth=" + averageCharWidth
+		+ " leading=" + leading
+		+ " height=" + height
+		+ "}";
+}
 }

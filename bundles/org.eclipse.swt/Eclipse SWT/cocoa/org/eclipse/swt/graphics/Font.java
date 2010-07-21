@@ -60,6 +60,12 @@ public final class Font extends Resource {
 	 */
 	public int extraTraits;
 	
+	/**
+	 * FontMetrics of this font. This has to be calculated by GC, so it's more
+	 * efficient to do it once and store it with the Font.
+	 */
+	FontMetrics metrics = null;
+	
 	static final double SYNTHETIC_BOLD = -2.5;
 	static final double SYNTHETIC_ITALIC = 0.2;
 
@@ -200,6 +206,7 @@ void addTraits(NSMutableDictionary dict) {
 void destroy() {
 	handle.release();
 	handle = null;
+	metrics = null;
 }
 
 /**
