@@ -124,6 +124,8 @@ void createHandle () {
 	NSBox widget = (NSBox)new SWTBox().alloc();
 	widget.init();
 	widget.setTitlePosition(OS.NSNoTitle);
+	widget.setContentViewMargins(new NSSize());
+	
 	NSView contentWidget = (NSView)new SWTView().alloc();
 	contentWidget.init();
 //	contentWidget.setDrawsBackground(false);
