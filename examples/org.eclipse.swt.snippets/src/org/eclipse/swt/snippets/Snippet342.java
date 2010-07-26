@@ -12,7 +12,7 @@ package org.eclipse.swt.snippets;
 
 /*
  * GridLayout snippet: grow/shrink a wrappable Text's height to show its
- * content without scrollbars
+ * content as it changes
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
