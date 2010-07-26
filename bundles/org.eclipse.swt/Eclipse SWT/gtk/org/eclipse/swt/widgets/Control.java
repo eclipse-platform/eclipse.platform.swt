@@ -1107,6 +1107,7 @@ public void moveAbove (Control control) {
 	if (control != null) {
 		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (parent != control.parent) return;
+		if (this == control) return;
 	}
 	setZOrder (control, true, true);
 }
@@ -1136,6 +1137,7 @@ public void moveBelow (Control control) {
 	if (control != null) {
 		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if (parent != control.parent) return;
+		if (this == control) return;
 	}
 	setZOrder (control, false, true);
 }
