@@ -1805,31 +1805,41 @@ boolean imeInComposition () {
 }
 
 boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
-	if (hasKeyboardFocus(id)) {
-		Shell s = this.getShell();
-		NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
-		if (nsEvent != null) {
-			int /*long*/ type = nsEvent.type ();
-			if (type == OS.NSKeyDown || type == OS.NSSystemDefined) {
-				NSString str = new NSString (string);
-				if (str.isKindOfClass (OS.class_NSAttributedString)) {
-					str = new NSAttributedString (string).string ();
-				}
-				int length = (int)/*64*/str.length ();
-				char[] buffer = new char [length];
-				str.getCharacters(buffer);
-				for (int i = 0; i < buffer.length; i++) {
-					s.keyInputHappened = true;
-					Event event = new Event ();
-					if (i == 0 && type == OS.NSKeyDown) setKeyState (event, SWT.KeyDown, nsEvent);
-					event.character = buffer [i];
-					if (!sendKeyEvent (SWT.KeyDown, event)) return false;
+	// sendKeyEvent may do something to run the event loop.  That would cause
+	// 'string' to be released before any superclass could use it, so save it
+	// until this method finishes.
+	NSObject saver = new NSObject(string);
+	saver.retain();
+	try {
+		if (hasKeyboardFocus(id)) {
+			Shell s = this.getShell();
+			NSEvent nsEvent = NSApplication.sharedApplication ().currentEvent ();
+			if (nsEvent != null) {
+				int /*long*/ type = nsEvent.type ();
+				if (type == OS.NSKeyDown || type == OS.NSSystemDefined) {
+					NSString str = new NSString (string);
+					if (str.isKindOfClass (OS.class_NSAttributedString)) {
+						str = new NSAttributedString (string).string ();
+					}
+					int length = (int)/*64*/str.length ();
+					char[] buffer = new char [length];
+					str.getCharacters(buffer);
+					for (int i = 0; i < buffer.length; i++) {
+						s.keyInputHappened = true;
+						Event event = new Event ();
+						if (i == 0 && type == OS.NSKeyDown) setKeyState (event, SWT.KeyDown, nsEvent);
+						event.character = buffer [i];
+						if (!sendKeyEvent (SWT.KeyDown, event)) return false;
+					}
 				}
 			}
+			if ((state & CANVAS) != 0) return true;
 		}
-		if ((state & CANVAS) != 0) return true;
+
+		return super.insertText (id, sel, string);
+	} finally {
+		saver.release();
 	}
-	return super.insertText (id, sel, string);
 }
 
 /**	 
