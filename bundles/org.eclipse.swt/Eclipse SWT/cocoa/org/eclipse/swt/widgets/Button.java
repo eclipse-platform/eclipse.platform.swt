@@ -175,8 +175,17 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int height = (int)Math.ceil (size.height);
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
-		if (display.smallFonts) height += EXTRA_HEIGHT;
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0 && image != null) {
+		NSCell cell = ((NSControl)view).cell();
+		if (cell != null && cell.controlSize() == OS.NSSmallControlSize) {
+			height += EXTRA_HEIGHT;
+			if (height > 28) {
+				cell.setControlSize (OS.NSRegularControlSize);
+			} else {
+				cell.setControlSize(OS.NSSmallControlSize);
+			}
+			setFont(getFont());
+		}
 		width += EXTRA_WIDTH;
 	}
 	return new Point (width, height);
@@ -250,7 +259,15 @@ void createWidget() {
 	super.createWidget ();
 }
 
+Font defaultFont () {
+	return Font.cocoa_new (display, defaultNSFont ());
+}
+
 NSFont defaultNSFont() {
+	NSCell cell = ((NSControl)view).cell();
+	if (cell != null && cell.controlSize() == OS.NSSmallControlSize) {
+		return NSFont.systemFontOfSize (NSFont.systemFontSizeForControlSize (OS.NSSmallControlSize));
+	}
 	return display.buttonFont;
 }
 
@@ -271,9 +288,12 @@ void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ i
 	* when set to small size. The fix to subclass the button cell
     * and offset the image drawing.
 	*/
-	if (display.smallFonts && (style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
-		rect.y += EXTRA_HEIGHT / 2;
-		rect.height += EXTRA_HEIGHT;
+	NSCell cell = ((NSControl)this.view).cell();
+	if (cell != null && cell.controlSize() == OS.NSRegularControlSize) {
+		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
+			rect.y += EXTRA_HEIGHT / 2;
+			rect.height += EXTRA_HEIGHT;
+		}
 	}
 	callSuper (id, sel, image, rect, view);
 }
@@ -621,7 +641,9 @@ void setBackgroundImage(NSImage image) {
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
 		int heightThreshold = 32;
-		if (display.smallFonts) {
+		
+		NSCell cell = ((NSControl)view).cell();
+		if (cell != null && cell.controlSize() == OS.NSSmallControlSize) {
 			heightThreshold = 28;
 		}
 
