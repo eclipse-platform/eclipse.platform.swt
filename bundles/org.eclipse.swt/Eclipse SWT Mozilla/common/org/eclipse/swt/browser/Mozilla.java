@@ -65,6 +65,8 @@ class Mozilla extends WebBrowser {
 	static boolean Initialized, IsPre_1_8, IsPre_1_9, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
 	static String oldProxyHostFTP, oldProxyHostHTTP, oldProxyHostSSL;
 	static int oldProxyPortFTP = -1, oldProxyPortHTTP = -1, oldProxyPortSSL = -1, oldProxyType = -1;
+	static byte[] pathBytes_JSEvaluateUCScriptForPrincipals;
+	static byte[] pathBytes_NSFree;
 
 	/* XULRunner detect constants */
 	static final String GRERANGE_LOWER = "1.8.1.2"; //$NON-NLS-1$
@@ -438,7 +440,24 @@ class Mozilla extends WebBrowser {
 				int length = C.strlen (cookieString);
 				bytes = new byte[length];
 				XPCOM.memmove (bytes, cookieString, length);
-				C.free (cookieString);
+
+				/*
+				 * NS_Free was introduced in mozilla 1.8, prior to this the standard free() call
+				 * was to be used.  Try to free the cookie string with NS_Free first, and if it fails
+				 * then assume that an older mozilla is being used, and use C's free() instead. 
+				 */
+				if (pathBytes_NSFree == null) {
+					String mozillaPath = getMozillaPath () + MozillaDelegate.getLibraryName () + '\0';
+					try {
+						pathBytes_NSFree = mozillaPath.getBytes ("UTF-8"); //$NON-NLS-1$
+					} catch (UnsupportedEncodingException e) {
+						pathBytes_NSFree = mozillaPath.getBytes ();
+					}
+				}
+				if (!XPCOM.NS_Free (pathBytes_NSFree, cookieString)) {
+					C.free (cookieString);
+				}
+
 				String allCookies = new String (MozillaDelegate.mbcsToWcs (null, bytes));
 				StringTokenizer tokenizer = new StringTokenizer (allCookies, ";"); //$NON-NLS-1$
 				while (tokenizer.hasMoreTokens ()) {
@@ -560,7 +579,7 @@ public boolean create (Composite parent, int style) {
 				*/
 			}
 		} else {
-			mozillaPath += SEPARATOR_OS + delegate.getLibraryName ();
+			mozillaPath += SEPARATOR_OS + MozillaDelegate.getLibraryName ();
 			isXULRunner = true;
 		}
 
@@ -600,7 +619,7 @@ public boolean create (Composite parent, int style) {
 						if (mozillaPath.indexOf("xulrunner") == -1) { //$NON-NLS-1$
 							isXULRunner = false;	
 						} else {
-							mozillaPath += SEPARATOR_OS + delegate.getLibraryName ();
+							mozillaPath += SEPARATOR_OS + MozillaDelegate.getLibraryName ();
 							path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
 							rc = XPCOMInit.XPCOMGlueStartup (path);
 							if (rc != XPCOM.NS_OK) {
@@ -1226,12 +1245,13 @@ public boolean execute (String script) {
 								int /*long*/ principals = result[0];
 								result[0] = 0;
 								principal.Release ();
-								String mozillaPath = LocationProvider.mozillaPath + delegate.getJSLibraryName () + '\0';
-								byte[] pathBytes = null;
-								try {
-									pathBytes = mozillaPath.getBytes ("UTF-8"); //$NON-NLS-1$
-								} catch (UnsupportedEncodingException e) {
-									pathBytes = mozillaPath.getBytes ();
+								if (pathBytes_JSEvaluateUCScriptForPrincipals == null) {
+									String mozillaPath = getMozillaPath () + delegate.getJSLibraryName () + '\0';
+									try {
+										pathBytes_JSEvaluateUCScriptForPrincipals = mozillaPath.getBytes ("UTF-8"); //$NON-NLS-1$
+									} catch (UnsupportedEncodingException e) {
+										pathBytes_JSEvaluateUCScriptForPrincipals = mozillaPath.getBytes ();
+									}
 								}
 
 								aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CONTEXTSTACK_CONTRACTID, true);
@@ -1244,7 +1264,7 @@ public boolean execute (String script) {
 								result[0] = 0;
 								rc = stack.Push (nativeContext);
 								if (rc != XPCOM.NS_OK) error (rc);
-								boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals (pathBytes, nativeContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result) != 0;
+								boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals (pathBytes_JSEvaluateUCScriptForPrincipals, nativeContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result) != 0;
 								result[0] = 0;
 								rc = stack.Pop (result);
 								if (rc != XPCOM.NS_OK) error (rc);
@@ -1343,6 +1363,53 @@ public boolean forward () {
 
 public String getBrowserType () {
 	return "mozilla"; //$NON-NLS-1$
+}
+
+static String getMozillaPath () {
+	if (LocationProvider != null) return LocationProvider.mozillaPath;
+	if (!Initialized) return "";
+
+	int /*long*/[] result = new int /*long*/[1];
+	int rc = XPCOM.NS_GetServiceManager (result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+	result[0] = 0;
+	byte[] buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_DIRECTORYSERVICE_CONTRACTID, true);
+	rc = serviceManager.GetServiceByContractID (buffer, nsIDirectoryService.NS_IDIRECTORYSERVICE_IID, result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+	serviceManager.Release();
+
+	nsIDirectoryService directoryService = new nsIDirectoryService (result[0]);
+	result[0] = 0;
+	rc = directoryService.QueryInterface (nsIProperties.NS_IPROPERTIES_IID, result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+	directoryService.Release ();
+
+	nsIProperties properties = new nsIProperties (result[0]);
+	result[0] = 0;
+	buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_GRE_DIR, true);
+	rc = properties.Get (buffer, nsIFile.NS_IFILE_IID, result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+	properties.Release ();
+
+	nsIFile mozillaDir = new nsIFile (result[0]);
+	result[0] = 0;
+	int /*long*/ path = XPCOM.nsEmbedCString_new ();
+	rc = mozillaDir.GetNativePath (path);
+	if (rc != XPCOM.NS_OK) error (rc);
+	int length = XPCOM.nsEmbedCString_Length (path);
+	int /*long*/ ptr = XPCOM.nsEmbedCString_get (path);
+	buffer = new byte[length];
+	XPCOM.memmove (buffer, ptr, length);
+	XPCOM.nsEmbedCString_delete (path);
+	mozillaDir.Release ();
+
+	return new String (MozillaDelegate.mbcsToWcs (null, buffer)) + SEPARATOR_OS;
 }
 
 int getNextFunctionIndex () {
