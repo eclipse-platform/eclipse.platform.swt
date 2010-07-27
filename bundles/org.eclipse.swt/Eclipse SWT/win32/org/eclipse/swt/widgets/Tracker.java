@@ -365,6 +365,7 @@ void drawRectangles (Rectangle [] rects, boolean stippled) {
 			rect1.top = rect.y - bandWidth;
 			rect1.right = rect.x + rect.width + bandWidth * 2;
 			rect1.bottom = rect.y + rect.height + bandWidth * 2;
+			OS.MapWindowPoints (0, hwndOpaque, rect1, 2);
 			OS.RedrawWindow (hwndOpaque, rect1, 0, OS.RDW_INVALIDATE);
 		}
 		return;
@@ -910,12 +911,20 @@ int /*long*/ transparentProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ 
 					oldBrush = OS.SelectObject (hDC, OS.GetStockObject(OS.BLACK_BRUSH));
 				}
 				Rectangle[] rects = this.rectangles;
+				RECT rect1 = new RECT ();
 				for (int i=0; i<rects.length; i++) {
 					Rectangle rect = rects [i];
-					OS.PatBlt (hDC, rect.x, rect.y, rect.width, bandWidth, OS.PATCOPY);
-					OS.PatBlt (hDC, rect.x, rect.y + bandWidth, bandWidth, rect.height - (bandWidth * 2), OS.PATCOPY);
-					OS.PatBlt (hDC, rect.x + rect.width - bandWidth, rect.y + bandWidth, bandWidth, rect.height - (bandWidth * 2), OS.PATCOPY);
-					OS.PatBlt (hDC, rect.x, rect.y + rect.height - bandWidth, rect.width, bandWidth, OS.PATCOPY);
+					rect1.left = rect.x;
+					rect1.top  = rect.y;
+					rect1.right = rect.x + rect.width;
+					rect1.bottom = rect.y + rect.height;
+					OS.MapWindowPoints (0, hwndOpaque, rect1, 2);
+					int width = rect1.right - rect1.left;
+					int height = rect1.bottom - rect1.top;
+					OS.PatBlt (hDC, rect1.left, rect1.top, width, bandWidth, OS.PATCOPY);
+					OS.PatBlt (hDC, rect1.left, rect1.top + bandWidth, bandWidth, height - (bandWidth * 2), OS.PATCOPY);
+					OS.PatBlt (hDC, rect1.right - bandWidth, rect1.top + bandWidth, bandWidth, height - (bandWidth * 2), OS.PATCOPY);
+					OS.PatBlt (hDC, rect1.left, rect1.bottom - bandWidth, width, bandWidth, OS.PATCOPY);
 				}
 				OS.SelectObject (hDC, oldBrush);
 				if (stippled) {
