@@ -41,6 +41,10 @@ static Browser findBrowser (int handle) {
 	return null;
 }
 
+static String getLibraryName () {
+	return "libxpcom.dylib"; //$NON-NLS-1$
+}
+
 static char[] mbcsToWcs (String codePage, byte [] buffer) {
 	int encoding = OS.CFStringGetSystemEncoding ();
 	int cfstring = OS.CFStringCreateWithBytes (OS.kCFAllocatorDefault, buffer, buffer.length, encoding, false);
@@ -200,10 +204,6 @@ int getHandle () {
 
 String getJSLibraryName () {
 	return "libmozjs.dylib"; //$NON-NLS-1$
-}
-
-String getLibraryName () {
-	return "libxpcom.dylib"; //$NON-NLS-1$
 }
 
 String getProfilePath () {

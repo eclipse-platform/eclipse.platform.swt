@@ -77,6 +77,10 @@ static Browser findBrowser (Control control, int gtkHandle) {
 	return null;
 }
 
+static String getLibraryName () {
+	return "libxpcom.so"; //$NON-NLS-1$
+}
+
 static char[] mbcsToWcs (String codePage, byte [] buffer) {
 	return Converter.mbcsToWcs (codePage, buffer);
 }
@@ -114,10 +118,6 @@ int getHandle() {
 
 String getJSLibraryName () {
 	return "libmozjs.so"; //$NON-NLS-1$
-}
-
-String getLibraryName () {
-	return "libxpcom.so"; //$NON-NLS-1$
 }
 
 String getProfilePath () {

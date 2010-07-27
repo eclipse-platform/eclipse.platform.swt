@@ -166,7 +166,16 @@ public static final int JS_EvaluateUCScriptForPrincipals(byte[] mozillaPath, int
 		lock.unlock();
 	}
 }
-
+/** @method flags=no_gen */
+public static final native boolean _NS_Free(byte[] mozillaPath, int /*long*/ aPtr);
+public static final boolean NS_Free(byte[] mozillaPath, int /*long*/ aPtr) {
+	lock.lock();
+	try {
+		return _NS_Free(mozillaPath, aPtr);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param result cast=(nsIComponentManager**) */
 public static final native int _NS_GetComponentManager(int /*long*/[] result);
 public static final int NS_GetComponentManager(int /*long*/[] result) {

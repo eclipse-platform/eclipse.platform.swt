@@ -32,6 +32,10 @@ static Browser findBrowser (int /*long*/ handle) {
 	return (Browser)display.findWidget (handle);
 }
 
+static String getLibraryName () {
+	return "libxpcom.dylib"; //$NON-NLS-1$
+}
+
 static char[] mbcsToWcs (String codePage, byte [] buffer) {
 //	int encoding = OS.CFStringGetSystemEncoding ();
 //	int cfstring = OS.CFStringCreateWithBytes (OS.kCFAllocatorDefault, buffer, buffer.length, encoding, false);
@@ -99,10 +103,6 @@ int /*long*/ getHandle () {
 
 String getJSLibraryName () {
 	return "libmozjs.dylib"; //$NON-NLS-1$
-}
-
-String getLibraryName () {
-	return "libxpcom.dylib"; //$NON-NLS-1$
 }
 
 String getProfilePath () {

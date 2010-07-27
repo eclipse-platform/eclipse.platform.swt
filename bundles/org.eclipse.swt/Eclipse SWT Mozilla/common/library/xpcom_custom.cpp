@@ -85,4 +85,46 @@ fail:
 }
 #endif
 
+#ifndef NO__1NS_1Free
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1NS_1Free)
+	(JNIEnv *env, jclass that, jbyteArray mozillaPath, jintLong arg0)
+{
+	jbyte *lpmozillaPath=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, _1NS_1Free_FUNC);
+	if (mozillaPath) if ((lpmozillaPath = env->GetByteArrayElements(mozillaPath, NULL)) == NULL) goto fail;
+/*
+	NS_Free((void*)arg0);
+*/
+	{
+	
+#ifdef _WIN32
+		LOAD_FUNCTION(fp, NS_Free)
+		if (fp) {
+			((jint (*)(void *))fp)((void *)arg0);
+			rc = 1;
+		}
+#else
+#define CALLING_CONVENTION
+		static int initialized = 0;
+		static void *fp = NULL;
+		if (!initialized) {
+			void* handle = dlopen((const char *)lpmozillaPath, RTLD_LAZY);
+			if (handle) {
+				fp = dlsym(handle, "NS_Free");
+			}
+			initialized = 1;
+		}
+		if (fp) {
+			((jint (CALLING_CONVENTION*)(void *))fp)((void *)arg0);
+			rc = 1;
+		}
+#endif /* _WIN32 */
+	}
+fail:
+	if (mozillaPath && lpmozillaPath) env->ReleaseByteArrayElements(mozillaPath, lpmozillaPath, 0);
+	XPCOM_NATIVE_EXIT(env, that, _1NS_1Free_FUNC);
+	return rc;
+}
+#endif
 }

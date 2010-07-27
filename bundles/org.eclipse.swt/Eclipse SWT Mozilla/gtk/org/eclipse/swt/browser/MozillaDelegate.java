@@ -68,6 +68,10 @@ static Browser findBrowser (int /*long*/ handle) {
 	return (Browser)display.findWidget (parent); 
 }
 
+static String getLibraryName () {
+	return "libxpcom.so"; //$NON-NLS-1$
+}
+
 static char[] mbcsToWcs (String codePage, byte [] buffer) {
 	return Converter.mbcsToWcs (codePage, buffer);
 }
@@ -102,10 +106,6 @@ int /*long*/ getHandle () {
 
 String getJSLibraryName () {
 	return "libmozjs.so"; //$NON-NLS-1$
-}
-
-String getLibraryName () {
-	return "libxpcom.so"; //$NON-NLS-1$
 }
 
 String getProfilePath () {

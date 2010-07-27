@@ -31,6 +31,10 @@ static Browser findBrowser (int /*long*/ handle) {
 	return (Browser)display.findWidget (handle);
 }
 
+static String getLibraryName () {
+	return "xpcom.dll"; //$NON-NLS-1$
+}
+
 static char[] mbcsToWcs (String codePage, byte[] buffer) {
 	char[] chars = new char[buffer.length];
 	int charCount = OS.MultiByteToWideChar (OS.CP_ACP, OS.MB_PRECOMPOSED, buffer, buffer.length, chars, chars.length);
@@ -88,10 +92,6 @@ int /*long*/ getHandle () {
 
 String getJSLibraryName () {
 	return "js3250.dll"; //$NON-NLS-1$
-}
-
-String getLibraryName () {
-	return "xpcom.dll"; //$NON-NLS-1$
 }
 
 String getProfilePath () {
