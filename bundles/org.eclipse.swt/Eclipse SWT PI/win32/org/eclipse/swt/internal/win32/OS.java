@@ -356,9 +356,9 @@ public class OS extends C {
 	public static final int CBS_CHECKEDDISABLED = 8;
 	public static final int CBS_CHECKEDHOT = 6;
 	public static final int CBS_CHECKEDPRESSED = 7;
-	public static final int CBS_MIXEDDISABLED = 0;
-	public static final int CBS_MIXEDHOT = 0;
-	public static final int CBS_MIXEDPRESSED = 0;
+	public static final int CBS_MIXEDDISABLED = 12;
+	public static final int CBS_MIXEDHOT = 10;
+	public static final int CBS_MIXEDPRESSED = 11;
 	public static final int CBS_UNCHECKEDDISABLED = 4;
 	public static final int CBS_UNCHECKEDHOT = 2;
 	public static final int CBS_UNCHECKEDPRESSED = 3;
