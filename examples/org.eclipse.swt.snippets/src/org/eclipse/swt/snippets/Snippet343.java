@@ -42,7 +42,7 @@ public static void main(String[] args) {
 
 	final StyledText text = new StyledText(expandBar, SWT.MULTI | SWT.WRAP);
 	expandItem1.setControl(text);
-	text.setText("initial text that wraps if long enough");
+	text.setText("initial text that will wrap if it's long enough");
 
 	/* update the item's height if needed in response to changes in the text's size */ 
 	final int TRIAL_WIDTH = 100;
@@ -77,6 +77,7 @@ public static void main(String[] args) {
 	/* set the item's initial height */
 	Point size = text.computeSize(expandBar.getClientArea().width, SWT.DEFAULT);
 	expandItem1.setHeight(size.y);
+	expandItem1.setExpanded(true);
 
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();
