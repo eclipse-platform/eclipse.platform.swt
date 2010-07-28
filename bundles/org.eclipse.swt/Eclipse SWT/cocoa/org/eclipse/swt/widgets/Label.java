@@ -287,6 +287,10 @@ void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 	fillBackground(view, context, rect, -1);
 }
 
+boolean drawsBackground() {
+    return background != null;
+}
+
 NSView eventView () {
 	return ((NSBox)view).contentView();
 }

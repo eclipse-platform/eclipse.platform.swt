@@ -1114,6 +1114,10 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 
+boolean drawsBackground() {
+    return true;
+}
+
 void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != paintView().id) return;
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return;
@@ -1159,6 +1163,7 @@ void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int im
 }
 
 void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int imgHeight, NSView gcView, int tx, int ty) {
+	if (!drawsBackground()) return;
 	Control control = findBackgroundControl();
 	if (control == null) control = this;
 	Image image = control.backgroundImage;
@@ -1213,7 +1218,7 @@ Cursor findCursor () {
 
 Control findBackgroundControl () {
 	if (backgroundImage != null || background != null) return this;
-	return (state & PARENT_BACKGROUND) != 0 ? parent.findBackgroundControl () : null;
+	return (!isTransparent() && (state & PARENT_BACKGROUND) != 0) ? parent.findBackgroundControl () : null;
 }
 
 Menu [] findMenus (Control control) {
@@ -3056,6 +3061,7 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 }
 
 void setBackground () {
+	if (!drawsBackground()) return;
 	Control control = findBackgroundControl ();
 	if (control == null) control = this;
 	if (control.backgroundImage != null) {

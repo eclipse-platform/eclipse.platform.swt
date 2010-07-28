@@ -337,6 +337,10 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cel
 
 }
 
+boolean drawsBackground() {
+	return background != null;
+}
+
 void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 	if ((style & SWT.ARROW) != 0) {	
 		NSRect frame = view.frame();
