@@ -1393,7 +1393,8 @@ int /*long*/ gtk_icon_release (int /*long*/ widget, int /*long*/ icon_pos, int /
 		e.detail = SWT.ICON_SEARCH;
 	} else {
 		e.detail = SWT.ICON_CANCEL;
-		OS.gtk_editable_delete_text (handle, 0, -1);
+		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+		OS.gtk_editable_delete_text (handle, 0, (int)/*64*/OS.g_utf8_strlen (ptr, -1));
 	}
 	sendSelectionEvent (SWT.DefaultSelection, e, false);
 	return 0;
