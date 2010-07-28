@@ -120,7 +120,7 @@ public class OS extends C {
 		}
 		
 		/* Make the process DPI aware for Windows Vista */
-		if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) OS.SetProcessDPIAware ();
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) OS.SetProcessDPIAware ();
 
 		/* Get the DBCS flag */
 		boolean dbcsEnabled = OS.GetSystemMetrics (SM_DBCSENABLED) != 0;
