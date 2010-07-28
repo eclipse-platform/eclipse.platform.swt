@@ -1256,6 +1256,7 @@ int /*long*/ gtk_delete_range (int /*long*/ widget, int /*long*/ iter1, int /*lo
 
 int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /*long*/ end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
+	if (end_pos == -1) end_pos = OS.g_utf8_strlen (OS.gtk_entry_get_text (handle), -1);
 	String newText = verifyText ("", (int)/*64*/start_pos, (int)/*64*/end_pos);
 	if (newText == null) {
 		/* Remember the selection when the text was deleted */
@@ -1393,8 +1394,7 @@ int /*long*/ gtk_icon_release (int /*long*/ widget, int /*long*/ icon_pos, int /
 		e.detail = SWT.ICON_SEARCH;
 	} else {
 		e.detail = SWT.ICON_CANCEL;
-		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
-		OS.gtk_editable_delete_text (handle, 0, (int)/*64*/OS.g_utf8_strlen (ptr, -1));
+		OS.gtk_editable_delete_text (handle, 0, -1);
 	}
 	sendSelectionEvent (SWT.DefaultSelection, e, false);
 	return 0;
