@@ -1256,6 +1256,7 @@ int /*long*/ gtk_delete_range (int /*long*/ widget, int /*long*/ iter1, int /*lo
 
 int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /*long*/ end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
+	if (end_pos == -1) end_pos = OS.g_utf8_strlen (OS.gtk_entry_get_text (handle), -1);
 	String newText = verifyText ("", (int)/*64*/start_pos, (int)/*64*/end_pos);
 	if (newText == null) {
 		/* Remember the selection when the text was deleted */

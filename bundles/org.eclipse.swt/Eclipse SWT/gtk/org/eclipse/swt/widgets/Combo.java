@@ -1269,6 +1269,7 @@ int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /
 		return 0;
 	}
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
+	if (end_pos == -1) end_pos = OS.g_utf8_strlen (OS.gtk_entry_get_text (entryHandle), -1);
 	String newText = verifyText ("", (int)/*64*/start_pos, (int)/*64*/end_pos);
 	if (newText == null) {
 		OS.g_signal_stop_emission_by_name (entryHandle, OS.delete_text);
