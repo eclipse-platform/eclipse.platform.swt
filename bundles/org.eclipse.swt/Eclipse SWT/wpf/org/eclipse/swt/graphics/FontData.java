@@ -375,7 +375,7 @@ public int getStyle() {
  * @see #equals
  */
 public int hashCode () {
-	return style ^ weight ^ stretch ^ getName().hashCode();
+	return style ^ weight ^ stretch ^ getHeight () << 8 ^ getName().hashCode();
 }
 
 /**

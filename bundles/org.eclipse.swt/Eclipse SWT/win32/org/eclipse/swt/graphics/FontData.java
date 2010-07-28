@@ -461,8 +461,8 @@ public int getStyle() {
  * @see #equals
  */
 public int hashCode () {
-	return data.lfCharSet ^ getHeight() ^ data.lfWidth ^ data.lfEscapement ^
-		data.lfOrientation ^ data.lfWeight ^ data.lfItalic ^data.lfUnderline ^
+	return data.lfCharSet ^ getHeight() << 8 ^ data.lfWidth ^ data.lfEscapement ^
+		data.lfOrientation ^ data.lfWeight ^ data.lfItalic ^ data.lfUnderline ^
 		data.lfStrikeOut ^ data.lfCharSet ^ data.lfOutPrecision ^
 		data.lfClipPrecision ^ data.lfQuality ^ data.lfPitchAndFamily ^
 		getName().hashCode();
