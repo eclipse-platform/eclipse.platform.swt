@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,6 +41,7 @@ typedef enum {
 	_1Call__JJJ_3BII_3I_FUNC,
 #endif
 	_1JS_1EvaluateUCScriptForPrincipals_FUNC,
+	_1NS_1Free_FUNC,
 	_1NS_1GetComponentManager_FUNC,
 	_1NS_1GetServiceManager_FUNC,
 	_1NS_1InitXPCOM2_FUNC,
