@@ -26,9 +26,6 @@ static int callbackEnabled = 1;
 static int callbackEntryCount = 0;
 static int initialized = 0;
 static jint JNI_VERSION = 0;
-#ifdef COCOA
-static NSException *nsException = nil;
-#endif
 
 #ifdef DEBUG_CALL_PRINTS
 static int counter = 0;
@@ -1247,13 +1244,6 @@ jintLong callback(int index, ...)
 	va_end(vl);
 	ATOMIC_DEC(callbackEntryCount);
 
-#ifdef COCOA
-	if (callbackEntryCount == 0 && nsException) {
-		[nsException release];
-		nsException = nil;
-	}
-#endif
-				
 done:
 	/* If an exception has occurred in Java, return the error result. */
 	if ((ex = (*env)->ExceptionOccurred(env))) {
@@ -1263,12 +1253,6 @@ done:
 		(*env)->ExceptionDescribe(env);
 #endif
 		result = callbackData[index].errorResult;
-#ifdef COCOA
-		if (nsException == NULL) {
-			nsException = [[NSException alloc] initWithName:NSGenericException reason:@"Java exception occurred" userInfo:nil];
-			[nsException raise];
-		}
-#endif
 	}
 
 	if (detach) {
