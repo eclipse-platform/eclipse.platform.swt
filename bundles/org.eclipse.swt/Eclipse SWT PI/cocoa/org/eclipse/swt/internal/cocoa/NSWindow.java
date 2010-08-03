@@ -292,6 +292,10 @@ public void setHasShadow(boolean hasShadow) {
 	OS.objc_msgSend(this.id, OS.sel_setHasShadow_, hasShadow);
 }
 
+public void setHidesOnDeactivate(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setHidesOnDeactivate_, flag);
+}
+
 public void setLevel(int /*long*/ newLevel) {
 	OS.objc_msgSend(this.id, OS.sel_setLevel_, newLevel);
 }

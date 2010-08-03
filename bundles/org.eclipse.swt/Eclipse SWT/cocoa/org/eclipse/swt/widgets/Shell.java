@@ -596,6 +596,11 @@ void createHandle () {
 			// Feature in Cocoa: NSPanels that use NSUtilityWindowMask are always promoted to the floating window layer.
 			// Fix is to call setFloatingPanel:NO, which turns off this behavior.
 			((NSPanel)window).setFloatingPanel(false);
+			// By default, panels hide on deactivation. 
+			((NSPanel)window).setHidesOnDeactivate(false);
+			// Normally a panel doesn't become key unless something inside it needs to be first responder.
+			// TOOL shells always become key, so disable that behavior.
+			((NSPanel)window).setBecomesKeyOnlyIfNeeded(false);
 		}
 		if ((style & SWT.NO_TRIM) == 0) {
 			NSSize size = window.minSize();

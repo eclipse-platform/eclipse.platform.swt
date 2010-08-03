@@ -4271,6 +4271,20 @@ fail:
 }
 #endif
 
+#ifndef NO_NSCountWindows
+JNIEXPORT void JNICALL OS_NATIVE(NSCountWindows)
+	(JNIEnv *env, jclass that, jintLongArray arg0)
+{
+	jintLong *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, NSCountWindows_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetIntLongArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	NSCountWindows((NSInteger*)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseIntLongArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, NSCountWindows_FUNC);
+}
+#endif
+
 #ifndef NO_NSCursorAttributeName
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSCursorAttributeName)
 	(JNIEnv *env, jclass that)
@@ -5009,6 +5023,20 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSViewGlobalFrameDidChangeNotification)
 	rc = (jintLong)NSViewGlobalFrameDidChangeNotification;
 	OS_NATIVE_EXIT(env, that, NSViewGlobalFrameDidChangeNotification_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_NSWindowList
+JNIEXPORT void JNICALL OS_NATIVE(NSWindowList)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1)
+{
+	jintLong *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, NSWindowList_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	NSWindowList((NSInteger)arg0, (NSInteger*)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, NSWindowList_FUNC);
 }
 #endif
 

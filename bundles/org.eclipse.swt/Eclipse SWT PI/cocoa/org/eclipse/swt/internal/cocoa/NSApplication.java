@@ -148,6 +148,11 @@ public void unhideAllApplications(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_unhideAllApplications_, sender != null ? sender.id : 0);
 }
 
+public NSWindow windowWithWindowNumber(int /*long*/ windowNum) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_windowWithWindowNumber_, windowNum);
+	return result != 0 ? new NSWindow(result) : null;
+}
+
 public NSArray windows() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_windows);
 	return result != 0 ? new NSArray(result) : null;

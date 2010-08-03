@@ -4435,17 +4435,29 @@ Control findControl (boolean checkTrim) {
 Control findControl (boolean checkTrim, NSView[] hitView) {
 	NSView view = null;
 	NSPoint screenLocation = NSEvent.mouseLocation();
-	NSArray windows = application.orderedWindows();
-	for (int i = 0, count = (int)/*64*/windows.count(); i < count && view == null; i++) {
-		NSWindow window = new NSWindow(windows.objectAtIndex(i));
-		NSView contentView = window.contentView();
-		if (contentView != null && OS.NSPointInRect(screenLocation, window.frame())) {
-			NSPoint location = window.convertScreenToBase(screenLocation);
-			view = contentView.hitTest (location);
-			if (view == null && !checkTrim) {
-				view = contentView;
+	
+	// Use NSWindowList instead of [NSApplication orderedWindows] because orderedWindows
+	// skips NSPanels. See bug 321614.
+	int /*long*/ outCount[] = new int /*long*/ [1];
+	OS.NSCountWindows(outCount);
+	int /*long*/ windowIDs[] = new int /*long*/ [(int)outCount[0]];
+	OS.NSWindowList(outCount[0], windowIDs);
+
+	for (int i = 0, count = windowIDs.length; i < count && view == null; i++) {
+		NSWindow window = application.windowWithWindowNumber(windowIDs[i]);
+		// NSWindowList returns all window numbers for all processes. If the window 
+		// number passed to windowWithWindowNumber returns nil the window doesn't belong to
+		// this process.
+		if (window != null) {
+			NSView contentView = window.contentView();
+			if (contentView != null && OS.NSPointInRect(screenLocation, window.frame())) {
+				NSPoint location = window.convertScreenToBase(screenLocation);
+				view = contentView.hitTest (location);
+				if (view == null && !checkTrim) {
+					view = contentView;
+				}
+				break;
 			}
-			break;
 		}
 	}
 	Control control = null;

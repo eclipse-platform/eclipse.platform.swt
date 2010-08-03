@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 587;
-int OS_nativeFunctionCallCount[587];
+int OS_nativeFunctionCount = 589;
+int OS_nativeFunctionCallCount[589];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -330,6 +330,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSBitsPerPixelFromDepth",
 	"NSCalibratedRGBColorSpace",
 	"NSCopyBits",
+	"NSCountWindows",
 	"NSCursorAttributeName",
 	"NSDefaultRunLoopMode",
 	"NSDeviceRGBColorSpace",
@@ -391,6 +392,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSUnderlineColorAttributeName",
 	"NSUnderlineStyleAttributeName",
 	"NSViewGlobalFrameDidChangeNotification",
+	"NSWindowList",
 	"NewGlobalRef",
 	"NewRgn",
 	"OffsetRgn",

@@ -82,7 +82,7 @@ public class OS extends C {
 	public static final int /*long*/ sel_accessibleHandle = sel_registerName("accessibleHandle");
 
 	public static final int /*long*/ sel_clearDeferFlushing = sel_registerName("clearDeferFlushing");
-
+	
 	/* These are not generated in order to avoid creating static methods on all classes */
 	public static final int /*long*/ sel_isSelectorExcludedFromWebScript_ = sel_registerName("isSelectorExcludedFromWebScript:");
 	public static final int /*long*/ sel_webScriptNameForSelector_ = sel_registerName("webScriptNameForSelector:");
@@ -1581,6 +1581,7 @@ public static final int /*long*/ sel_setBackgroundLayoutEnabled_ = sel_registerN
 public static final int /*long*/ sel_setBadgeLabel_ = sel_registerName("setBadgeLabel:");
 public static final int /*long*/ sel_setBaseWritingDirection_ = sel_registerName("setBaseWritingDirection:");
 public static final int /*long*/ sel_setBaseWritingDirection_range_ = sel_registerName("setBaseWritingDirection:range:");
+public static final int /*long*/ sel_setBecomesKeyOnlyIfNeeded_ = sel_registerName("setBecomesKeyOnlyIfNeeded:");
 public static final int /*long*/ sel_setBezelStyle_ = sel_registerName("setBezelStyle:");
 public static final int /*long*/ sel_setBorderType_ = sel_registerName("setBorderType:");
 public static final int /*long*/ sel_setBorderWidth_ = sel_registerName("setBorderWidth:");
@@ -1665,6 +1666,7 @@ public static final int /*long*/ sel_setHeaderCell_ = sel_registerName("setHeade
 public static final int /*long*/ sel_setHeaderView_ = sel_registerName("setHeaderView:");
 public static final int /*long*/ sel_setHidden_ = sel_registerName("setHidden:");
 public static final int /*long*/ sel_setHiddenUntilMouseMoves_ = sel_registerName("setHiddenUntilMouseMoves:");
+public static final int /*long*/ sel_setHidesOnDeactivate_ = sel_registerName("setHidesOnDeactivate:");
 public static final int /*long*/ sel_setHighlightMode_ = sel_registerName("setHighlightMode:");
 public static final int /*long*/ sel_setHighlighted_ = sel_registerName("setHighlighted:");
 public static final int /*long*/ sel_setHighlightedTableColumn_ = sel_registerName("setHighlightedTableColumn:");
@@ -2002,6 +2004,7 @@ public static final int /*long*/ sel_windowFrameTextColor = sel_registerName("wi
 public static final int /*long*/ sel_windowNumber = sel_registerName("windowNumber");
 public static final int /*long*/ sel_windowShouldClose_ = sel_registerName("windowShouldClose:");
 public static final int /*long*/ sel_windowWillClose_ = sel_registerName("windowWillClose:");
+public static final int /*long*/ sel_windowWithWindowNumber_ = sel_registerName("windowWithWindowNumber:");
 public static final int /*long*/ sel_windows = sel_registerName("windows");
 public static final int /*long*/ sel_worksWhenModal = sel_registerName("worksWhenModal");
 public static final int /*long*/ sel_wraps = sel_registerName("wraps");
@@ -2845,9 +2848,18 @@ public static final native int /*long*/ NSBitsPerPixelFromDepth(int depth);
  */
 public static final native void NSCopyBits(int /*long*/ srcGState, NSRect srcRect, NSPoint destPoint);
 /**
+ * @param count cast=(NSInteger*)
+ */
+public static final native void NSCountWindows(int[] /*long[]*/ count);
+/**
  * @param colorSpaceName cast=(NSString*)
  */
 public static final native int /*long*/ NSNumberOfColorComponents(int /*long*/ colorSpaceName);
+/**
+ * @param size cast=(NSInteger)
+ * @param list cast=(NSInteger*)
+ */
+public static final native void NSWindowList(int /*long*/ size, int[] /*long[]*/ list);
 /**
  * @param alloc cast=(CFAllocatorRef)
  * @param str cast=(CFStringRef)

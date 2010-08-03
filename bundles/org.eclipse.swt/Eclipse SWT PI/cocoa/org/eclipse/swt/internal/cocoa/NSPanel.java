@@ -24,6 +24,10 @@ public NSPanel(id id) {
 	super(id);
 }
 
+public void setBecomesKeyOnlyIfNeeded(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setBecomesKeyOnlyIfNeeded_, flag);
+}
+
 public void setFloatingPanel(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setFloatingPanel_, flag);
 }

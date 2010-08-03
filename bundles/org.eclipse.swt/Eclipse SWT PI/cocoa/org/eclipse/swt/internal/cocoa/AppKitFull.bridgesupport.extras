@@ -211,6 +211,10 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="windowWithWindowNumber:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="windows" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -2094,6 +2098,10 @@
 	<class name="NSPICTImageRep" swt_superclass="NSImageRep">
 	</class>
 	<class name="NSPanel" swt_gen="mixed" swt_superclass="NSWindow">
+		<method selector="setBecomesKeyOnlyIfNeeded:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setFloatingPanel:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -4097,6 +4105,10 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setHidesOnDeactivate:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setLevel:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -4614,9 +4626,16 @@
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 	</function>
+	<function name="NSCountWindows" swt_gen="true">
+		<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
+	</function>
 	<function name="NSNumberOfColorComponents" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
+	</function>
+	<function name="NSWindowList" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
 	</function>
 	<informal_protocol name="NSAccessibility" swt_gen="true">
 		<method selector="accessibilityActionDescription:" swt_gen="true">
