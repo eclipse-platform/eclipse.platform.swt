@@ -1069,6 +1069,11 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	OS.GetWindowActivationScope (shellHandle, outScope); 
 	if (outScope [0] == OS.kWindowActivationScopeNone) return result;
 	if (!active) {
+		Shell[] shells = display.getShells ();
+		for (int i = 0; i < shells.length; i++) {
+			Shell shell = shells [i];
+			if (shell.active && !shell.isDisposed ()) shell.kEventWindowDeactivated ();
+		}
 		active = true;
 		deferDispose = true;
 		Display display = this.display;
@@ -1154,15 +1159,20 @@ int kEventWindowCollapsing (int nextHandler, int theEvent, int userData) {
 int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	kEventWindowDeactivated ();
+	return result;
+}
+
+void kEventWindowDeactivated () {
 	if (active) {
 		active = false;
 		deferDispose = true;
 		Display display = this.display;
 		display.activeShell = this;
 		sendEvent (SWT.Deactivate);
-		if (isDisposed ()) return result;
+		if (isDisposed ()) return;
 		setActiveControl (null);
-		if (isDisposed ()) return result;
+		if (isDisposed ()) return;
 		display.activeShell = null;
 		saveFocus ();
 		if (savedFocus != null) {
@@ -1180,7 +1190,6 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 		display.setMenuBar (null);
 		deferDispose = false;
 	}
-	return result;
 }
 
 int kEventWindowDrawContent (int nextHandler, int theEvent, int userData) {

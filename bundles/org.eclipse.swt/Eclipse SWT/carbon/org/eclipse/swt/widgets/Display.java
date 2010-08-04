@@ -401,6 +401,14 @@ int appleEventProc (int nextHandler, int theEvent, int userData) {
 	switch (eventClass) {
 		case OS.kEventClassApplication: 
 			switch (eventKind) {
+				case OS.kEventAppDeactivated: {
+					Shell [] shells = getShells ();
+					for (int i = 0; i < shells.length; i++) {
+						Shell shell = shells [i];
+						if (shell.active && !shell.isDisposed ()) shell.kEventWindowDeactivated ();
+					}
+					break;
+				}
 				case OS.kEventAppAvailableWindowBoundsChanged: {
 					/* Reset the dock image in case the dock has been restarted */
 					if (dockImage != 0) {
@@ -2297,6 +2305,7 @@ void initializeCallbacks () {
 	};
 	OS.InstallEventHandler (appTarget, mouseProc, mask2.length / 2, mask2, 0, null);
 	int [] mask3 = new int[] {
+		OS.kEventClassApplication, OS.kEventAppDeactivated,
 		OS.kEventClassApplication, OS.kEventAppAvailableWindowBoundsChanged,
 		OS.kEventClassAppleEvent, OS.kEventAppleEvent,
 	};
