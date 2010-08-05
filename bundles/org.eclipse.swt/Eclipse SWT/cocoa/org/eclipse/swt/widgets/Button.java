@@ -175,17 +175,17 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int height = (int)Math.ceil (size.height);
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0 && image != null) {
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
 		NSCell cell = ((NSControl)view).cell();
-		if (cell != null && cell.controlSize() == OS.NSSmallControlSize) {
-			height += EXTRA_HEIGHT;
-			if (height > 28) {
-				cell.setControlSize (OS.NSRegularControlSize);
-			} else {
-				cell.setControlSize(OS.NSSmallControlSize);
-			}
-			setFont(getFont());
+		if (cell.controlSize() == OS.NSSmallControlSize && image != null) height += EXTRA_HEIGHT;
+		if (height > 28) {
+			cell.setControlSize (OS.NSRegularControlSize);
+		} else {
+			cell.setControlSize(OS.NSSmallControlSize);
 		}
+		setFont(getFont());
+
+		// TODO: Why is this necessary?
 		width += EXTRA_WIDTH;
 	}
 	return new Point (width, height);
