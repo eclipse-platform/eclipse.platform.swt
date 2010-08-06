@@ -595,6 +595,13 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 			int bits = SWT.ON_TOP | SWT.NO_FOCUS;
 			if ((shell.style & bits) == bits) return OS.noErr;
 		}
+		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
+			short [] button = new short [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
+			if (button [0] == 1) {
+				if (getChildrenCount() == 0) setFocus ();
+			}
+		}
 	}
 	return result;
 }
