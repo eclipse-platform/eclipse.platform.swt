@@ -279,10 +279,17 @@ static DropTarget FindDropTarget(int theWindow, int theDrag) {
 	OS.SetEventParameter (event[0], OS.kEventParamWindowMouseLocation, OS.typeHIPoint, CGPoint.sizeof, inPoint);
 	OS.HIViewGetViewForMouseEvent (theRoot [0], event [0], theControl);
 	OS.ReleaseEvent(event[0]);
-	if (!OS.IsControlEnabled(theControl[0])) return null;				
-	Widget widget = display.findWidget(theControl[0]);
-	if (widget == null) return null;
-	return (DropTarget)widget.getData(DND.DROP_TARGET_KEY);
+	if (!OS.IsControlEnabled(theControl[0])) return null;
+	DropTarget dropTarget = null;
+	do {
+		Widget widget = display.findWidget(theControl[0]);
+		if (widget != null) {
+			dropTarget = (DropTarget) widget.getData(DND.DROP_TARGET_KEY);
+			if (dropTarget != null) break;
+		}
+		OS.GetSuperControl (theControl [0], theControl);
+	} while (theControl [0] != 0);
+	return dropTarget;
 }
 /**
  * Adds the listener to the collection of listeners who will
