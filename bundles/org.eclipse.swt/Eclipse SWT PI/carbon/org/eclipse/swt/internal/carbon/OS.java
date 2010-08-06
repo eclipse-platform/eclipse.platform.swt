@@ -4088,6 +4088,8 @@ public static final native void NavDialogDispose(int dialogHandle);
 public static final native int NavDialogGetSaveFileName(int dialogHandle);
 /** @param dialogHandle cast=(NavDialogRef) */
 public static final native int NavDialogGetUserAction(int dialogHandle);
+/** @param dialog cast=(NavDialogRef) */
+public static final native int NavDialogGetWindow(int dialog);
 /** @param dialogHandle cast=(NavDialogRef) */
 public static final native int NavDialogRun(int dialogHandle);
 /**

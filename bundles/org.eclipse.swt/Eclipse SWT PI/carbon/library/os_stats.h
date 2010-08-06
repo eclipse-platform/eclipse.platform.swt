@@ -722,6 +722,7 @@ typedef enum {
 	NavDialogGetReply_FUNC,
 	NavDialogGetSaveFileName_FUNC,
 	NavDialogGetUserAction_FUNC,
+	NavDialogGetWindow_FUNC,
 	NavDialogRun_FUNC,
 	NavDialogSetFilterTypeIdentifiers_FUNC,
 	NavDialogSetSaveFileName_FUNC,
