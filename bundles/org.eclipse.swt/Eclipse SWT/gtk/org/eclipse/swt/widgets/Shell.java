@@ -728,6 +728,7 @@ int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*
 						display.activeShell = this;
 						display.activePending = false;
 						sendEvent (SWT.Activate);
+						if (isDisposed ()) return 0;
 						if (isCustomResize ()) {
 							OS.gdk_window_invalidate_rect (OS.GTK_WIDGET_WINDOW (shellHandle), null, false);
 						}
@@ -749,6 +750,7 @@ int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*
 							display.activeShell = null;
 							display.activePending = false;
 						}
+						if (isDisposed ()) return 0;
 						if (isCustomResize ()) {
 							OS.gdk_window_invalidate_rect (OS.GTK_WIDGET_WINDOW (shellHandle), null, false);
 						}
