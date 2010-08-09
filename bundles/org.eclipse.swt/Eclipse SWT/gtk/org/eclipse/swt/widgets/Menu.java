@@ -301,9 +301,15 @@ void createHandle (int index) {
 }
 
 void createIMMenu (int /*long*/ imHandle) {
-	if (this.imHandle == imHandle) return;
-	this.imHandle = imHandle;
-	if (imHandle == 0) {
+	boolean showInputMethod = false;
+	int /*long*/ settings = OS.gtk_settings_get_default ();
+	if (settings != 0) {
+		int [] buffer = new int [1];
+		OS.g_object_get (settings, OS.gtk_show_input_method_menu, buffer, 0);
+		showInputMethod = buffer[0] != 0;
+	}
+	if (imHandle == 0 || !showInputMethod) {
+		this.imHandle = 0;
 		if (imItem != 0) {
 			OS.gtk_widget_destroy (imItem);
 			imItem = 0;
@@ -313,7 +319,10 @@ void createIMMenu (int /*long*/ imHandle) {
 			imSeparator = 0;
 		}
 		return;
-	} 
+	}
+	if (this.imHandle == imHandle) return;
+	this.imHandle = imHandle;
+	
 	if (imSeparator == 0) {
 		imSeparator = OS.gtk_separator_menu_item_new ();
 		OS.gtk_widget_show (imSeparator);

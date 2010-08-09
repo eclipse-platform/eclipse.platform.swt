@@ -521,6 +521,7 @@ public class OS extends C {
 	public static final byte[] gtk_cursor_blink_time = ascii("gtk-cursor-blink-time");
 	public static final byte[] gtk_double_click_time = ascii("gtk-double-click-time");
 	public static final byte[] gtk_entry_select_on_focus = ascii("gtk-entry-select-on-focus");
+	public static final byte[] gtk_show_input_method_menu = ascii("gtk-show-input-method-menu");
 	public static final byte[] inner_border = ascii("inner-border");
 	public static final byte[] horizontal_separator = ascii("horizontal-separator");
 	public static final byte[] inconsistent = ascii("inconsistent");
