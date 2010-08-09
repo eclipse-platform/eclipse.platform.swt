@@ -1969,7 +1969,6 @@ void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 	setActiveControl (null);
 	if (isDisposed ()) return;
 	saveFocus ();
-	display.setMenuBar(null);
 }
 
 void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
