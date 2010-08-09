@@ -193,7 +193,6 @@ public class ImageAnalyzer {
 				greenColor.dispose();
 				blueColor.dispose();
 				fixedWidthFont.dispose();
-				crossCursor.dispose();
 			}
 		});
 
@@ -204,7 +203,7 @@ public class ImageAnalyzer {
 		greenColor = new Color(display, 0, 255, 0);
 		blueColor = new Color(display, 0, 0, 255);
 		fixedWidthFont = new Font(display, "courier", 10, 0);
-		crossCursor = new Cursor(display, SWT.CURSOR_CROSS);
+		crossCursor = display.getSystemCursor(SWT.CURSOR_CROSS);
 		
 		// Add a menu bar and widgets.
 		createMenuBar();
@@ -768,7 +767,7 @@ public class ImageAnalyzer {
 	void menuComposeAlpha(int alpha_op) {
 		if (image == null) return;
 		animate = false; // stop any animation in progress
-		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
+		Cursor waitCursor = display.getSystemCursor(SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
 		imageCanvas.setCursor(waitCursor);
 		try {
@@ -798,7 +797,6 @@ public class ImageAnalyzer {
 		} finally {
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
-			waitCursor.dispose();
 		}
 	}
 
@@ -817,7 +815,7 @@ public class ImageAnalyzer {
 		if (filename == null)
 			return;
 
-		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
+		Cursor waitCursor = display.getSystemCursor(SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
 		imageCanvas.setCursor(waitCursor);
 		try {
@@ -848,7 +846,6 @@ public class ImageAnalyzer {
 		} finally {
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
-			waitCursor.dispose();
 		}
 	}
 	
@@ -866,7 +863,7 @@ public class ImageAnalyzer {
 		if (filename == null)
 			return;
 
-		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
+		Cursor waitCursor = display.getSystemCursor(SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
 		imageCanvas.setCursor(waitCursor);
 		ImageLoader oldLoader = loader;
@@ -912,7 +909,6 @@ public class ImageAnalyzer {
 		} finally {
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
-			waitCursor.dispose();
 		}
 	}
 	
@@ -926,7 +922,7 @@ public class ImageAnalyzer {
 		String urlname = textPrompter.open();
 		if (urlname == null) return;
 
-		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
+		Cursor waitCursor = display.getSystemCursor(SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
 		imageCanvas.setCursor(waitCursor);
 		ImageLoader oldLoader = loader;
@@ -971,7 +967,6 @@ public class ImageAnalyzer {
 		} finally {
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
-			waitCursor.dispose();
 		}
 	}
 
@@ -1039,7 +1034,7 @@ public class ImageAnalyzer {
 			return;
 		}
 
-		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
+		Cursor waitCursor = display.getSystemCursor(SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
 		imageCanvas.setCursor(waitCursor);
 		try {
@@ -1054,7 +1049,6 @@ public class ImageAnalyzer {
 		} finally {
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
-			waitCursor.dispose();
 		}
 	}
 
@@ -1103,7 +1097,7 @@ public class ImageAnalyzer {
 				return;
 		}
 		
-		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
+		Cursor waitCursor = display.getSystemCursor(SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
 		imageCanvas.setCursor(waitCursor);
 		try {
@@ -1144,7 +1138,6 @@ public class ImageAnalyzer {
 		} finally {
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
-			waitCursor.dispose();
 		}
 	}
 
@@ -1187,7 +1180,7 @@ public class ImageAnalyzer {
 				return;
 		}
 		
-		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
+		Cursor waitCursor = display.getSystemCursor(SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
 		imageCanvas.setCursor(waitCursor);
 		try {
@@ -1203,7 +1196,6 @@ public class ImageAnalyzer {
 		} finally {
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
-			waitCursor.dispose();
 		}
 	}
 
@@ -1260,7 +1252,7 @@ public class ImageAnalyzer {
 	void menuReopen() {
 		if (currentName == null) return;
 		animate = false; // stop any animation in progress
-		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
+		Cursor waitCursor = display.getSystemCursor(SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
 		imageCanvas.setCursor(waitCursor);
 		try {
@@ -1288,7 +1280,6 @@ public class ImageAnalyzer {
 		} finally {	
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
-			waitCursor.dispose();
 		}
 	}
 	

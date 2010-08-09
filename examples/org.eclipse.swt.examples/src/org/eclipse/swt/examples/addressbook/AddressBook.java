@@ -201,7 +201,7 @@ private String encodeLine(String[] tableItems) {
 	return line;
 }
 private boolean findEntry() {
-	Cursor waitCursor = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+	Cursor waitCursor = shell.getDisplay().getSystemCursor(SWT.CURSOR_WAIT);
 	shell.setCursor(waitCursor);
 	
 	boolean matchCase = searchDialog.getMatchCase();
@@ -229,7 +229,6 @@ private boolean findEntry() {
 	}
 	
 	shell.setCursor(null);
-	waitCursor.dispose();
 		
 	return found;
 }
@@ -279,7 +278,7 @@ private void openAddressBook() {
 		return;
 	}
 	
-	Cursor waitCursor = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+	Cursor waitCursor = shell.getDisplay().getSystemCursor(SWT.CURSOR_WAIT);
 	shell.setCursor(waitCursor);
 	
 	FileReader fileReader = null;
@@ -305,7 +304,6 @@ private void openAddressBook() {
 	} finally {	
 		
 		shell.setCursor(null);
-		waitCursor.dispose();
 	
 		if(fileReader != null) {
 			try {
@@ -368,7 +366,6 @@ private boolean save() {
 		return false;
 	} finally {
 		shell.setCursor(null);
-		waitCursor.dispose();
 		
 		if(fileWriter != null) {
 			try {

@@ -92,7 +92,7 @@ class IconCache {
 		if (stockCursors == null) {
 			stockCursors = new Cursor[] {
 				null,
-				new Cursor(display, SWT.CURSOR_WAIT)
+				display.getSystemCursor(SWT.CURSOR_WAIT)
 			};
 		}
 		iconCache = new Hashtable();
@@ -114,13 +114,7 @@ class IconCache {
 				image.dispose();
 			}
 		}
-		if (stockCursors != null) {
-			for (int i = 0; i < stockCursors.length; ++i) {
-				final Cursor cursor = stockCursors[i];
-				if (cursor != null) cursor.dispose();
-			}
-			stockCursors = null;
-		}
+		stockCursors = null;
 	}
 	/**
 	 * Creates a stock image

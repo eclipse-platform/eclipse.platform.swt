@@ -80,10 +80,7 @@ public void dispose() {
 	if (mouseMoveListener != null)
 		example.canvas.removeMouseMoveListener(mouseMoveListener);
 	
-	if (cursor != null) {
-		cursor.dispose();
-		cursor = null;
-	}
+	cursor = null;
 }
 
 /**
@@ -110,7 +107,7 @@ private boolean isHovering(MouseEvent e) {
  */
 public void createControlPanel(Composite parent) {
 	if (cursor == null) { 
-		cursor = new Cursor(parent.getDisplay(), SWT.CURSOR_HAND);
+		cursor = parent.getDisplay().getSystemCursor(SWT.CURSOR_HAND);
 	}
 
 	mouseMoveListener = new MouseMoveListener() {
