@@ -599,16 +599,7 @@ void createHandle () {
 	OS.CreateWindowGroup (OS.kWindowGroupAttrHideOnCollapse | OS.kWindowGroupAttrSelectAsLayer, outGroup);
 	if (outGroup [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	windowGroup = outGroup [0];
-	int parentGroup;
-	if ((style & SWT.ON_TOP) != 0) {
-		parentGroup = OS.GetWindowGroupOfClass (OS.kFloatingWindowClass);		
-	} else {
-		if (parent != null) {
-			parentGroup = parent.getShell ().windowGroup;
-		} else {
-			parentGroup = OS.GetWindowGroupOfClass (OS.kDocumentWindowClass);
-		}
-	}
+	int parentGroup = getParentGroup ();
 	OS.SetWindowGroup (shellHandle, parentGroup);
 	OS.SetWindowGroupParent (windowGroup, parentGroup);
 	OS.SetWindowGroupOwner (windowGroup, shellHandle);
@@ -911,6 +902,17 @@ public boolean getModified () {
 	return OS.IsWindowModified (shellHandle);
 }
 
+int getParentGroup () {
+	if ((style & SWT.ON_TOP) != 0) {
+		return OS.GetWindowGroupOfClass (OS.kUtilityWindowClass);
+	} else {
+		if (parent != null) {
+			return parent.getShell ().windowGroup;
+		} else {
+			return OS.GetWindowGroupOfClass (OS.kDocumentWindowClass);
+		}
+	}
+}
 
 float [] getParentBackground () {
 	return null;
@@ -1944,16 +1946,7 @@ void setWindowModal (Dialog dialog, boolean modal, boolean destroy) {
 		OS.SelectWindow (shellHandle);
 	} else {
 		if (!destroy) {
-			int parentGroup;
-			if ((style & SWT.ON_TOP) != 0) {
-				parentGroup = OS.GetWindowGroupOfClass (OS.kFloatingWindowClass);		
-			} else {
-				if (parent != null) {
-					parentGroup = parent.getShell ().windowGroup;
-				} else {
-					parentGroup = OS.GetWindowGroupOfClass (OS.kDocumentWindowClass);
-				}
-			}
+			int parentGroup = getParentGroup ();
 			OS.SetWindowGroup (shellHandle, parentGroup);
 		}
 		OS.SetWindowModality (OS.NavDialogGetWindow (dialogHandle), OS.kWindowModalityAppModal, 0);
