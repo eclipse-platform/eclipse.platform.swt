@@ -102,7 +102,7 @@ public class CBanner extends Composite {
 public CBanner(Composite parent, int style) {
 	super(parent, checkStyle(style));
 	super.setLayout(new CBannerLayout());
-	resizeCursor = new Cursor(getDisplay(), SWT.CURSOR_SIZEWE);
+	resizeCursor = getDisplay().getSystemCursor(SWT.CURSOR_SIZEWE);
 	
 	listener = new Listener() {
 		public void handleEvent(Event e) {
@@ -261,7 +261,6 @@ void onDispose(Event event) {
 	notifyListeners(SWT.Dispose, event);
 	event.type = SWT.None;
 
-	if (resizeCursor != null) resizeCursor.dispose();
 	resizeCursor = null;
 	left = null;
 	right = null;
