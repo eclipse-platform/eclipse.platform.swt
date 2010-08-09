@@ -698,6 +698,10 @@ void _drawThemeProgressArea (int /*long*/ id, int /*long*/ sel, int /*long*/ arg
 void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 }
 
+int /*long*/ imageView () {
+	return 0;
+}
+
 void redrawWidget (NSView view, boolean children) {
 	view.setNeedsDisplay(true);
 }

@@ -80,6 +80,7 @@ public class OS extends C {
 	public static final int /*long*/ sel_setAllowsAnyHTTPSCertificate = sel_registerName("setAllowsAnyHTTPSCertificate:forHost:");
 	
 	public static final int /*long*/ sel_accessibleHandle = sel_registerName("accessibleHandle");
+	public static final int /*long*/ sel_getImageView = sel_registerName("getImageView");
 
 	public static final int /*long*/ sel_clearDeferFlushing = sel_registerName("clearDeferFlushing");
 	

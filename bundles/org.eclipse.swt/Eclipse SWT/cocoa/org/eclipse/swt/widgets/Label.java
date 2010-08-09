@@ -287,6 +287,10 @@ void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 	fillBackground(view, context, rect, -1);
 }
 
+int /*long*/ imageView() {
+	return imageView.id;
+};
+
 boolean drawsBackground() {
     return background != null;
 }

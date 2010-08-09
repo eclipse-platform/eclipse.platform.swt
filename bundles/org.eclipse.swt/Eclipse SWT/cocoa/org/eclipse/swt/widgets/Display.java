@@ -2050,6 +2050,7 @@ void addEventMethods (int /*long*/ cls, int /*long*/ proc2, int /*long*/ proc3, 
 		OS.class_addMethod(cls, OS.sel_becomeFirstResponder, proc2, "@:");
 		OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 		OS.class_addMethod(cls, OS.sel_updateTrackingAreas, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_getImageView, proc2, "@:");
 	}
 	if (needsDisplayInRectProc != 0) {
 		OS.class_addMethod(cls, OS.sel_setNeedsDisplayInRect_, needsDisplayInRectProc, "@:{NSRect}");
@@ -4916,6 +4917,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel) {
 		return widget.accessibilityAttributeNames(id, sel);
 	} else if (sel == OS.sel_accessibilityParameterizedAttributeNames) {
 		return widget.accessibilityParameterizedAttributeNames(id, sel);
+	} else if (sel == OS.sel_getImageView) {
+		return widget.imageView();
 	} else if (sel == OS.sel_accessibilityFocusedUIElement) {
 		return widget.accessibilityFocusedUIElement(id, sel);
 	} else if (sel == OS.sel_accessibilityIsIgnored) {

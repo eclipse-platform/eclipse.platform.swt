@@ -128,7 +128,18 @@ void addDragHandlers() {
 	// If we already added it, no need to do it again.
 	int /*long*/ procPtr = OS.class_getMethodImplementation(cls, OS.sel_draggingEntered_);
 	if (procPtr == proc3Args) return;
+	addDragHandlers(cls);
+	
+	// If the content view can be image view, then add the dragging methods to image view too.
+	// This is used by Label so that dragging can work even when the Label has an image set on it.
+	int imageView = 0;
+	if ((imageView = OS.objc_msgSend(control.view.id, OS.sel_getImageView)) != 0) {
+		cls = OS.object_getClass(imageView);
+		addDragHandlers(cls);
+	}
+}
 
+void addDragHandlers (int /*long*/ cls) {
 	// Add the NSDraggingDestination callbacks
 	OS.class_addMethod(cls, OS.sel_draggingEntered_, proc3Args, "@:@");
 	OS.class_addMethod(cls, OS.sel_draggingUpdated_, proc3Args, "@:@");
