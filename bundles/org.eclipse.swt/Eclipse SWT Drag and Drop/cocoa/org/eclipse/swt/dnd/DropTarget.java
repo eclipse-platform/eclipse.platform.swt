@@ -132,7 +132,7 @@ void addDragHandlers() {
 	
 	// If the content view can be image view, then add the dragging methods to image view too.
 	// This is used by Label so that dragging can work even when the Label has an image set on it.
-	int imageView = 0;
+	int /*long*/ imageView = 0;
 	if ((imageView = OS.objc_msgSend(control.view.id, OS.sel_getImageView)) != 0) {
 		cls = OS.object_getClass(imageView);
 		addDragHandlers(cls);
