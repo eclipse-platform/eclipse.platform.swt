@@ -4336,7 +4336,7 @@ void setDeferResize (boolean defer) {
 
 void setCheckboxImageList (int width, int height, boolean fixScroll) {
 	if ((style & SWT.CHECK) == 0) return;
-	int count = 4, flags = 0;
+	int count = 8, flags = 0;
 	if (OS.IsWinCE) {
 		flags |= OS.ILC_COLOR;
 	} else {
@@ -4394,7 +4394,23 @@ void setCheckboxImageList (int width, int height, boolean fixScroll) {
 		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
 		rect.left += width;  rect.right += width;
 		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_MIXEDNORMAL, rect, null);
+		rect.left += width;  rect.right += width;
+		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDDISABLED, rect, null);
+		rect.left += width;  rect.right += width;
+		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_CHECKEDDISABLED, rect, null);
+		rect.left += width;  rect.right += width;
+		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDDISABLED, rect, null);
+		rect.left += width;  rect.right += width;
+		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_MIXEDDISABLED, rect, null);
 	} else {
+		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_FLAT);
+		rect.left += width;  rect.right += width;
+		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_FLAT);
+		rect.left += width;  rect.right += width;
+		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
+		rect.left += width;  rect.right += width;
+		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
+		rect.left += width;  rect.right += width;
 		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_FLAT);
 		rect.left += width;  rect.right += width;
 		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_FLAT);
@@ -6663,6 +6679,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 					int state = 1;
 					if (item.checked) state++;
 					if (item.grayed) state +=2;
+					if (!OS.IsWindowEnabled (handle)) state += 4;
 					plvfi.state = state << 12;
 					plvfi.stateMask = OS.LVIS_STATEIMAGEMASK;
 					move = true;
