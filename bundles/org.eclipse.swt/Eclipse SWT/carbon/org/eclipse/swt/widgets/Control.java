@@ -79,6 +79,7 @@ public abstract class Control extends Widget implements Drawable {
 	Accessible accessible;
 
 	static final String RESET_VISIBLE_REGION = "org.eclipse.swt.internal.resetVisibleRegion"; //$NON-NLS-1$
+	static final String DRAG_STARTED = "org.eclipse.swt.internal.dragStarted";	//$NON-NLS-1$
 
 
 Control () {

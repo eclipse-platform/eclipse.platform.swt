@@ -110,6 +110,7 @@ public class DragSource extends Widget {
 	DragSourceEffect dragEffect;
 
 	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
+	static final String DRAG_STARTED = "org.eclipse.swt.internal.dragStarted";	//$NON-NLS-1$
 	static Callback DragSendDataProc;
 	
 	static {
@@ -327,7 +328,9 @@ void drag(Event dragEvent) {
 		theEvent.what = (short)OS.osEvt;
 		theEvent.where_h = pt.h;
 		theEvent.where_v = pt.v;	
+		control.setData(DRAG_STARTED, new Object());
 		int result = OS.TrackDrag(theDrag[0], theEvent, theRegion);
+		control.setData(DRAG_STARTED, null);
 		int operation = DND.DROP_NONE;
 		if (result == OS.noErr) { 
 			int[] outAction = new int[1];
