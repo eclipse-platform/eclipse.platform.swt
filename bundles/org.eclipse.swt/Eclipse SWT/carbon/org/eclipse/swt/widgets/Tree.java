@@ -2312,6 +2312,25 @@ int itemNotificationProc (int browser, int id, int message) {
 		}
 		return OS.noErr;
 	}
+	
+	/*
+	 * The items in the databrowser lose their selection when we
+	 * drag them (when we call OS.TrackDrag() in DragSource.drag()).
+	 * We get kDataBrowserItemDeselected notification message
+	 * for each of the items. The workaround is to select the
+	 * deselected items in this case. DRAG_STARTED is set/unset
+	 * before/after the call to OS.TrackDrag().
+	 * 
+	 * This doesn't happen for Tree with SWT.SINGLE style because
+	 * we have set the OS.kDataBrowserNeverEmptySelectionSet flag.
+	 */
+	if (message == OS.kDataBrowserItemDeselected && (style & SWT.MULTI) != 0 && getData(DRAG_STARTED) != null) {
+		ignoreSelect = true;
+		OS.SetDataBrowserSelectedItems (handle, 1, new int[] {id}, OS.kDataBrowserItemsAdd);
+		ignoreSelect = false;
+		return OS.noErr;
+	}
+
 	switch (message) {
 		case OS.kDataBrowserItemSelected:
 			savedAnchor = 0;
