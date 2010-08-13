@@ -996,6 +996,7 @@ public void setVisible (boolean visible) {
 		display.addPopup (this);
 	} else {
 		display.removePopup (this);
+		_setVisible(false);
 	}
 }
 	
