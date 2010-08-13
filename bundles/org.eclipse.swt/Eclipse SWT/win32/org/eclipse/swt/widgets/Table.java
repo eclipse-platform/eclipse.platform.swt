@@ -6585,18 +6585,38 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 			if (item == null) break;
 			
 			/*
-			* When an item is being deleted from a virtual table, do not
-			* allow the application to provide data for a new item that
-			* becomes visible until the item has been removed from the
-			* items array.  Because arbitrary application code can run
-			* during the callback, the items array might be accessed
-			* in an inconsistent state.  Rather than answering the data
-			* right away, queue a redraw for later.
+			* Feature in Windows. On Vista, the list view expects the item array 
+			* to be up to date when a LVM_DELETEITEM message is being processed.
+			*  
+			* Also, when the table is virtual, do not allow the application to 
+			* provide data for a new item that becomes visible until the item has
+			* been removed from the items array.  Because arbitrary application
+			* code can run during the callback, the items array might be accessed 
+			* in an inconsistent state.
+			*   
+			* On both cases, Rather than answering the data right away, queue a 
+			* redraw for later.
 			*/
-			if ((style & SWT.VIRTUAL) != 0 && !item.cached) {
-				if (ignoreShrink) {
-					OS.SendMessage (handle, OS.LVM_REDRAWITEMS, plvfi.iItem, plvfi.iItem);
+			if (ignoreShrink) {
+				/*
+				* Feature in Windows Vista and newer. Using LVM_REDRAWITEMS causes LVN_GETDISPINFO
+				* to be sent before the method returns. For this reason, LVM_REDRAWITEMS
+				* can never be used from a LVN_GETDISPINFO handler. The fix is to 
+				* InvalidateRect() passing the bounds for the entire item.
+				*/
+				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+					RECT rect = new RECT ();
+					rect.left = OS.LVIR_BOUNDS;
+					ignoreCustomDraw = true;
+					int /*long*/ code = OS.SendMessage (handle, OS. LVM_GETITEMRECT, plvfi.iItem, rect);
+					ignoreCustomDraw = false;
+					if (code != 0) OS.InvalidateRect (handle, rect, true);
 					break;
+				} else {
+					if ((style & SWT.VIRTUAL) != 0 && !item.cached) {
+						OS.SendMessage (handle, OS.LVM_REDRAWITEMS, plvfi.iItem, plvfi.iItem);
+						break;
+					}
 				}
 			}
 			
