@@ -319,13 +319,6 @@ void enableWidget (boolean enabled) {
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	if (scrollView == null) return false;
 	if ((state & CANVAS) == 0) return false;
-	if (visible) {
-		if ((bar.state & HIDDEN) == 0) return false;
-		bar.state &= ~HIDDEN;
-	} else {
-		if ((bar.state & HIDDEN) != 0) return false;
-		bar.state |= HIDDEN;
-	}
 	if ((bar.style & SWT.HORIZONTAL) != 0) {
 		scrollView.setHasHorizontalScroller (visible);
 	} else {

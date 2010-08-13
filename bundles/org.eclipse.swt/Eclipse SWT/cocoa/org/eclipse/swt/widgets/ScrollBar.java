@@ -360,7 +360,7 @@ public Rectangle getThumbTrackBounds () {
  */
 public boolean getVisible () {
 	checkWidget();
-	return (state & HIDDEN) == 0;
+	return !(view.isHidden());
 }
 
 /**
@@ -720,6 +720,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
+	if (visible != view.isHidden()) return;
 	parent.setScrollBarVisible (this, visible);
 }
 
