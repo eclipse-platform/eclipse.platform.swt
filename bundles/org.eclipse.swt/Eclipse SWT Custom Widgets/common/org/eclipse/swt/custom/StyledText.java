@@ -999,6 +999,7 @@ public class StyledText extends Canvas {
 				write("\\highlight");
 				write(colorIndex);
 			}
+			int fontStyle = style.fontStyle;
 			Font font = style.font;
 			if (font != null) {
 				int fontIndex = getFontIndex(font);
@@ -1007,13 +1008,13 @@ public class StyledText extends Canvas {
 				FontData fontData = font.getFontData()[0];
 				write("\\fs");
 				write(fontData.getHeight() * 2);
-			} else {
-				if ((style.fontStyle & SWT.BOLD) != 0) {
-					write("\\b"); 
-				}
-				if ((style.fontStyle & SWT.ITALIC) != 0) {
-					write("\\i"); 
-				}
+				fontStyle = fontData.getStyle();
+			}
+			if ((fontStyle & SWT.BOLD) != 0) {
+				write("\\b");
+			}
+			if ((fontStyle & SWT.ITALIC) != 0) {
+				write("\\i");
 			}
 			if (style.underline) {
 				write("\\ul");
@@ -1027,13 +1028,11 @@ public class StyledText extends Canvas {
 			// guard against invalid styles and let style processing continue
 			copyEnd = Math.max(copyEnd, lineIndex);
 			write(line, lineIndex, copyEnd);
-			if (font == null) {
-				if ((style.fontStyle & SWT.BOLD) != 0) {
-					write("\\b0"); 
-				}
-				if ((style.fontStyle & SWT.ITALIC) != 0) {
-					write("\\i0"); 
-				}
+			if ((fontStyle & SWT.BOLD) != 0) {
+				write("\\b0");
+			}
+			if ((style.fontStyle & SWT.ITALIC) != 0) {
+				write("\\i0");
 			}
 			if (style.underline) {
 				write("\\ul0");
@@ -5293,6 +5292,7 @@ int getVisualLineIndex(TextLayout layout, int offsetInLine) {
 		int lineY = layout.getLineBounds(lineIndex).y;
 		int caretY = getCaret().getLocation().y - topMargin - getLinePixel(getCaretLine());
 		if (lineY > caretY) lineIndex--;
+		caretAlignment = OFFSET_LEADING;
  	}
 	return lineIndex;
 }
