@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1365;
-int OS_nativeFunctionCallCount[1365];
+int OS_nativeFunctionCount = 1366;
+int OS_nativeFunctionCallCount[1366];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -1753,6 +1753,7 @@ char * OS_nativeFunctionNames[] = {
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2JJ",
 #endif
+	"pangoLayoutNewProc_1CALLBACK",
 	"realpath",
 };
 

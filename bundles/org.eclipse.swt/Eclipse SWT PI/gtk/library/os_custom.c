@@ -35,6 +35,25 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GDK_1WINDOWING_1X11)
 }
 #endif
 
+#ifndef NO_pangoLayoutNewProc_1CALLBACK
+static jintLong superPangoLayoutNewProc;
+static PangoLayout * pangoLayoutNewProc (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties) {
+	PangoLayout* layout = ((PangoLayout * (*)(GType, guint, GObjectConstructParam *))superPangoLayoutNewProc)(type, n_construct_properties, construct_properties);
+	pango_layout_set_auto_dir (layout, 0);
+	return layout;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(pangoLayoutNewProc_1CALLBACK)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, pangoLayoutNewProc_1CALLBACK_FUNC);
+	superPangoLayoutNewProc = arg0;
+	rc = (jintLong)pangoLayoutNewProc;
+	OS_NATIVE_EXIT(env, that, pangoLayoutNewProc_1CALLBACK_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1file_1chooser_1dialog_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1, jint arg2, jintLong arg3, jint arg4, jintLong arg5, jint arg6, jintLong arg7)
