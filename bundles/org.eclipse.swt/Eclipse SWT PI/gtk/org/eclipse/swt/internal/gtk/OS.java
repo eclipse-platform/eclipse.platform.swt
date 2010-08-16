@@ -1390,6 +1390,12 @@ public static final int /*long*/ XRenderFindVisualFormat(int /*long*/ display, i
 	}
 }
 
+/** Custom callbacks */
+
+/** @method flags=no_gen */
+public static final native int /*long*/ pangoLayoutNewProc_CALLBACK(int /*long*/ func);
+
+
 /** Natives */
 public static final native int Call (int /*long*/ func, int /*long*/ arg0, int arg1, int arg2);
 public static final native long Call (int /*long*/ func, int /*long*/ arg0, int arg1, long arg2);

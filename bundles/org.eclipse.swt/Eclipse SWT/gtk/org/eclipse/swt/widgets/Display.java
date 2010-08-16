@@ -287,8 +287,7 @@ public class Display extends Device {
 	int lastEventTime, lastUserEventTime;
 	
 	/* Pango layout constructor */
-	int /*long*/ pangoLayoutNewProc, pangoLayoutNewDefaultProc;
-	Callback pangoLayoutNewCallback;
+	int /*long*/ pangoLayoutNewProc;
 	
 	/* Custom Resize */
 	double resizeLocationX, resizeLocationY;
@@ -2593,13 +2592,10 @@ void initializeCallbacks () {
 
 void initializeSubclasses () {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		pangoLayoutNewCallback = new Callback (this, "pangoLayoutNewProc", 3); //$NON-NLS-1$
-		pangoLayoutNewProc = pangoLayoutNewCallback.getAddress ();
-		if (pangoLayoutNewProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		int /*long*/ pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
 		int /*long*/ pangoLayoutClass = OS.g_type_class_ref (pangoLayoutType);
-		pangoLayoutNewDefaultProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoLayoutClass);
-		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, pangoLayoutNewProc);
+		pangoLayoutNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoLayoutClass);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, OS.pangoLayoutNewProc_CALLBACK(pangoLayoutNewProc));
 		OS.g_type_class_unref (pangoLayoutClass);
 	}
 }
@@ -2952,12 +2948,6 @@ int /*long*/ mouseHoverProc (int /*long*/ handle) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.hoverProc (handle);
-}
-
-int /*long*/ pangoLayoutNewProc (int /*long*/ type, int /*long*/ n_construct_properties, int /*long*/ construct_properties) {
-	int /*long*/ layout = OS.Call (pangoLayoutNewDefaultProc, type, (int)/*64*/n_construct_properties, construct_properties);
-	OS.pango_layout_set_auto_dir (layout, false);
-	return layout;
 }
 
 /**
@@ -3379,11 +3369,9 @@ void releaseDisplay () {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		int /*long*/ pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
 		int /*long*/ pangoLayoutClass = OS.g_type_class_ref (pangoLayoutType);
-		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, pangoLayoutNewDefaultProc);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, pangoLayoutNewProc);
 		OS.g_type_class_unref (pangoLayoutClass);
-		pangoLayoutNewCallback.dispose ();
-		pangoLayoutNewCallback = null;
-		pangoLayoutNewDefaultProc = pangoLayoutNewProc = 0;
+		pangoLayoutNewProc = 0;
 	}
 	
 	/* Release the sleep resources */

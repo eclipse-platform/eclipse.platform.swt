@@ -1761,5 +1761,6 @@ typedef enum {
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2JJ_FUNC,
 #endif
+	pangoLayoutNewProc_1CALLBACK_FUNC,
 	realpath_FUNC,
 } OS_FUNCS;
