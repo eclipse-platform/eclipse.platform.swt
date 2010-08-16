@@ -622,8 +622,6 @@ public static final native int /*long*/ localeconv_decimal_point();
  */
 public static final native int /*long*/ realpath(byte[] path, byte[] realPath);
 
-
-
 /** Object private fields accessors */
 
 
