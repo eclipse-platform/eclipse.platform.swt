@@ -47,9 +47,12 @@ public PopupList(Shell parent) {
 * @since 3.0 
 */
 public PopupList(Shell parent, int style) {
+	int listStyle = SWT.SINGLE | SWT.V_SCROLL;
+	if ((style & SWT.H_SCROLL) != 0) listStyle |= SWT.H_SCROLL;
+	
 	shell = new Shell(parent, checkStyle(style));
 	
-	list = new List(shell, SWT.SINGLE | SWT.V_SCROLL);	
+	list = new List(shell, listStyle);	
 
 	// close dialog if user selects outside of the shell
 	shell.addListener(SWT.Deactivate, new Listener() {
