@@ -1174,17 +1174,6 @@ public void setItems (String [] items) {
 	setScrollWidth();
 }
 
-boolean setScrollBarVisible(ScrollBar bar, boolean visible) {
-	if ((bar.style & SWT.HORIZONTAL) != 0) {
-		scrollView.setHasHorizontalScroller (visible);
-	} else {
-		scrollView.setHasVerticalScroller (visible);
-	}
-	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
-	sendEvent (SWT.Resize);
-	return true;
-}
-
 boolean setScrollWidth (String item) {
 	if ((style & SWT.H_SCROLL) == 0) return false;
 	NSCell cell = column.dataCell ();

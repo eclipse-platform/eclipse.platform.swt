@@ -2776,17 +2776,6 @@ public void setRedraw (boolean redraw) {
 	}
 }
 
-boolean setScrollBarVisible(ScrollBar bar, boolean visible) {
-	if ((bar.style & SWT.HORIZONTAL) != 0) {
-		scrollView.setHasHorizontalScroller (visible);
-	} else {
-		scrollView.setHasVerticalScroller (visible);
-	}
-	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
-	sendEvent (SWT.Resize);
-	return true;
-}
-
 boolean setScrollWidth () {
 	return setScrollWidth (true, items, true);
 }
