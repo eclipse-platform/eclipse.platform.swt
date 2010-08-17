@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 589;
-int OS_nativeFunctionCallCount[589];
+int OS_nativeFunctionCount = 592;
+int OS_nativeFunctionCallCount[592];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -26,6 +26,7 @@ char * OS_nativeFunctionNames[] = {
 	"CALLBACK_1cellBaselineOffset",
 	"CALLBACK_1cellSize",
 	"CALLBACK_1characterIndexForPoint_1",
+	"CALLBACK_1columnAtPoint_1",
 	"CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1",
 	"CALLBACK_1draggedImage_1beganAt_1",
 	"CALLBACK_1draggedImage_1endedAt_1operation_1",
@@ -38,6 +39,7 @@ char * OS_nativeFunctionNames[] = {
 	"CALLBACK_1drawWithExpansionFrame_1inView_1",
 	"CALLBACK_1expansionFrameWithFrame_1inView_1",
 	"CALLBACK_1firstRectForCharacterRange_1",
+	"CALLBACK_1headerRectOfColumn_1",
 	"CALLBACK_1highlightSelectionInClipRect_1",
 	"CALLBACK_1hitTestForEvent_1inRect_1ofView_1",
 	"CALLBACK_1hitTest_1",
@@ -989,6 +991,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JZLorg_eclipse_swt_internal_cocoa_NSRect_2",
 #endif
 	"objc_1msgSendSuper_1bool",
+#ifndef JNI64
+	"objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2II",
+#else
+	"objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJ",
+#endif
 #ifndef JNI64
 	"objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2",
 #else

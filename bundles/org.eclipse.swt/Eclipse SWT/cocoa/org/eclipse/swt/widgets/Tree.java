@@ -155,6 +155,32 @@ TreeItem _getItem (TreeItem parentItem, int index, boolean create) {
 	return item;
 }
 
+int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	int /*long*/ returnValue = 0;
+	NSString attributeName = new NSString(arg0);
+	
+	// If the check column is visible, don't report it back as a column for accessibility purposes.
+	// The check column is meant to appear as a part of the first column.
+	if (attributeName.isEqualToString (OS.NSAccessibilityColumnsAttribute) || attributeName.isEqualToString(OS.NSAccessibilityVisibleColumnsAttribute)) {
+		if ((style & SWT.CHECK) != 0) {
+			int /*long*/ superValue = super.accessibilityAttributeValue(id, sel, arg0);
+			if (superValue != 0) {
+				NSArray columns = new NSArray(superValue);
+				NSMutableArray columnsWithoutCheck = NSMutableArray.arrayWithCapacity(columns.count() - 1);
+				columnsWithoutCheck.addObjectsFromArray(columns);
+				columnsWithoutCheck.removeObjectAtIndex(0);
+				returnValue = columnsWithoutCheck.id;
+			}
+		}
+	}
+	
+	if (returnValue != 0) {
+		return returnValue;
+	} else {
+		return super.accessibilityAttributeValue(id, sel, arg0);
+	}
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the user changes the receiver's selection, by sending
@@ -430,6 +456,14 @@ void collapseItem_collapseChildren (int /*long*/ id, int /*long*/ sel, int /*lon
 	setScrollWidth ();
 }
 
+int /*long*/ columnAtPoint(int /*long*/ id, int /*long*/ sel, NSPoint point) {
+	if ((style & SWT.CHECK) != 0) {
+		if (point.x <= getCheckColumnWidth() && point.y < headerView.frame().height) return 1;
+	}
+	
+	return super.columnAtPoint(id, sel, point);
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -552,6 +586,7 @@ void createHandle () {
 		buttonCell.init ();
 		checkColumn.setDataCell (buttonCell);
 		buttonCell.setButtonType (OS.NSSwitchButton);
+		buttonCell.setControlSize (OS.NSSmallControlSize);
 		buttonCell.setImagePosition (OS.NSImageOnly);
 		buttonCell.setAllowsMixedState (true);
 		checkColumn.setWidth (getCheckColumnWidth ());
@@ -1776,6 +1811,23 @@ public TreeItem getTopItem () {
 	return (TreeItem)display.getWidget (item.id);
 }
 
+NSRect headerRectOfColumn (int /*long*/ id, int /*long*/ sel, int /*long*/ column) {
+	if ((style & SWT.CHECK) == 0) return callSuperRect(id, sel, column);
+	
+	if (column == 0) {
+		NSRect returnValue = callSuperRect(id, sel, column);
+		returnValue.width = 0;
+		return returnValue;
+	}
+	if (column == 1) {
+		NSRect returnValue = callSuperRect(id, sel, column);
+		returnValue.width += getCheckColumnWidth();
+		returnValue.x -= getCheckColumnWidth();
+		return returnValue;
+	}
+	return callSuperRect(id, sel, column);
+}
+
 void highlightSelectionInClipRect(int /*long*/ id, int /*long*/ sel, int /*long*/ rect) {
 	if (hooks (SWT.EraseItem)) return;
 	if ((style & SWT.HIDE_SELECTION) != 0 && !hasFocus()) return;
@@ -2131,6 +2183,7 @@ void outlineViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ a
 			if (isDisposed ()) return;
 		}
 	}
+	headerView.setNeedsDisplay(true);
 }
 
 void outlineViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
@@ -2630,6 +2683,7 @@ void setFont (NSFont font) {
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
 	((NSOutlineView) view).setHeaderView (show ? headerView : null);
+	scrollView.tile();
 }
 
 /**
@@ -2878,12 +2932,6 @@ public void setSelection (TreeItem [] items) {
 			}
 		}
 	}
-}
-
-void setSmallSize () {
-	if (checkColumn == null) return;
-	checkColumn.dataCell ().setControlSize (OS.NSSmallControlSize);
-	checkColumn.setWidth (getCheckColumnWidth ());
 }
 
 /**

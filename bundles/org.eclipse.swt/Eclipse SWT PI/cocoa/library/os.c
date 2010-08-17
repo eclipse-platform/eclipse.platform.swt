@@ -226,6 +226,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1characterIndexForPoint_1)
 }
 #endif
 
+#ifndef NO_CALLBACK_1columnAtPoint_1
+static jintLong CALLBACK_1columnAtPoint_1;
+static NSInteger proc_CALLBACK_1columnAtPoint_1(id arg0, SEL arg1, NSPoint arg2) {
+	return ((NSInteger (*)(id, SEL, NSPoint*))CALLBACK_1columnAtPoint_1)(arg0, arg1, &arg2);
+}
+static jintLong CALLBACK_columnAtPoint_(jintLong func) {
+	CALLBACK_1columnAtPoint_1 = func;
+	return (jintLong)proc_CALLBACK_1columnAtPoint_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1columnAtPoint_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1columnAtPoint_1_FUNC);
+	rc = (jintLong)CALLBACK_columnAtPoint_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1columnAtPoint_1_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1
 static jintLong CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1;
 static BOOL proc_CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1(id arg0, SEL arg1, NSEvent* arg2, NSSize arg3, BOOL arg4) {
@@ -478,6 +498,34 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1firstRectForCharacterRange_1)
 	OS_NATIVE_ENTER(env, that, CALLBACK_1firstRectForCharacterRange_1_FUNC);
 	rc = (jintLong)CALLBACK_firstRectForCharacterRange_(arg0);
 	OS_NATIVE_EXIT(env, that, CALLBACK_1firstRectForCharacterRange_1_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CALLBACK_1headerRectOfColumn_1
+static jintLong CALLBACK_1headerRectOfColumn_1;
+static NSRect proc_CALLBACK_1headerRectOfColumn_1(id arg0, SEL arg1, NSInteger arg2) {
+	NSRect* lprc = ((NSRect* (*)(id, SEL, NSInteger))CALLBACK_1headerRectOfColumn_1)(arg0, arg1, arg2);
+	NSRect rc;
+	if (lprc) {
+		rc = *lprc;
+		free(lprc);
+	} else {
+		memset(&rc, 0, sizeof(NSRect));
+	}
+	return rc;
+}
+static jintLong CALLBACK_headerRectOfColumn_(jintLong func) {
+	CALLBACK_1headerRectOfColumn_1 = func;
+	return (jintLong)proc_CALLBACK_1headerRectOfColumn_1;
+}
+JNIEXPORT jintLong JNICALL OS_NATIVE(CALLBACK_1headerRectOfColumn_1)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CALLBACK_1headerRectOfColumn_1_FUNC);
+	rc = (jintLong)CALLBACK_headerRectOfColumn_(arg0);
+	OS_NATIVE_EXIT(env, that, CALLBACK_1headerRectOfColumn_1_FUNC);
 	return rc;
 }
 #endif
@@ -8726,6 +8774,38 @@ fail:
 	if (arg0 && lparg0) setobjc_superFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSendSuper_1bool_FUNC);
 	return rc;
+}
+#endif
+
+#if (!defined(NO_objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2II) && !defined(JNI64)) || (!defined(NO_objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2II)(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jintLong arg2, jintLong arg3)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJ)(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jintLong arg2, jintLong arg3)
+#endif
+{
+	NSRect _arg0, *lparg0=NULL;
+	struct objc_super _arg1, *lparg1=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJ_FUNC);
+#endif
+	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getobjc_superFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		*lparg0 = (*(NSRect (*)(struct objc_super *, jintLong, jintLong))objc_msgSendSuper_stret)(lparg1, arg2, arg3);
+	} else {
+		*lparg0 = (*(NSRect (*)(struct objc_super *, jintLong, jintLong))objc_msgSendSuper)(lparg1, arg2, arg3);
+	}
+fail:
+	if (arg1 && lparg1) setobjc_superFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJ_FUNC);
+#endif
 }
 #endif
 

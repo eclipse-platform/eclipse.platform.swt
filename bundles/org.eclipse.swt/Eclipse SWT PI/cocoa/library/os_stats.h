@@ -34,6 +34,7 @@ typedef enum {
 	CALLBACK_1cellBaselineOffset_FUNC,
 	CALLBACK_1cellSize_FUNC,
 	CALLBACK_1characterIndexForPoint_1_FUNC,
+	CALLBACK_1columnAtPoint_1_FUNC,
 	CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1_FUNC,
 	CALLBACK_1draggedImage_1beganAt_1_FUNC,
 	CALLBACK_1draggedImage_1endedAt_1operation_1_FUNC,
@@ -46,6 +47,7 @@ typedef enum {
 	CALLBACK_1drawWithExpansionFrame_1inView_1_FUNC,
 	CALLBACK_1expansionFrameWithFrame_1inView_1_FUNC,
 	CALLBACK_1firstRectForCharacterRange_1_FUNC,
+	CALLBACK_1headerRectOfColumn_1_FUNC,
 	CALLBACK_1highlightSelectionInClipRect_1_FUNC,
 	CALLBACK_1hitTestForEvent_1inRect_1ofView_1_FUNC,
 	CALLBACK_1hitTest_1_FUNC,
@@ -997,6 +999,11 @@ typedef enum {
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JZLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
 #endif
 	objc_1msgSendSuper_1bool_FUNC,
+#ifndef JNI64
+	objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2II_FUNC,
+#else
+	objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJ_FUNC,
+#endif
 #ifndef JNI64
 	objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
 #else

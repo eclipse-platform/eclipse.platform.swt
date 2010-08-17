@@ -296,6 +296,14 @@ int /*long*/ callSuperObject(int /*long*/ id, int /*long*/ sel, int /*long*/ arg
 	return OS.objc_msgSendSuper(super_struct, sel, arg0);
 }
 
+NSRect callSuperRect(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	NSRect result = new NSRect();
+	OS.objc_msgSendSuper_stret(result, super_struct, sel, arg0);
+	return result;
+}
 boolean canDragRowsWithIndexes_atPoint(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
 	// Trees/tables are not draggable unless explicitly told they are.
 	return false;
@@ -303,6 +311,13 @@ boolean canDragRowsWithIndexes_atPoint(int /*long*/ id, int /*long*/ sel, int /*
 
 int /*long*/ characterIndexForPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ point) {
 	return OS.NSNotFound;
+}
+
+int /*long*/ columnAtPoint(int /*long*/ id, int /*long*/ sel, NSPoint point) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel, point);
 }
 
 boolean acceptsFirstMouse (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
@@ -909,6 +924,10 @@ public int getStyle () {
 
 boolean hasMarkedText (int /*long*/ id, int /*long*/ sel) {
 	return false;
+}
+
+NSRect headerRectOfColumn (int /*long*/ id, int /*long*/ sel, int /*long*/ column) {
+	return callSuperRect(id, sel, column);
 }
 
 void helpRequested(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {

@@ -2152,6 +2152,8 @@ void initClasses () {
 	int /*long*/ drawViewBackgroundInRectProc = OS.CALLBACK_drawViewBackgroundInRect_(proc3);
 	int /*long*/ drawBackgroundInClipRectProc = OS.CALLBACK_drawBackgroundInClipRect_(proc3);
 	int /*long*/ scrollClipView_ToPointProc = OS.CALLBACK_scrollClipView_toPoint_(proc4);
+	int /*long*/ headerRectOfColumnProc = OS.CALLBACK_headerRectOfColumn_(proc3);
+	int /*long*/ columnAtPointProc = OS.CALLBACK_columnAtPoint_(proc3);
 	
 	byte[] types = {'*','\0'};
 	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
@@ -2184,7 +2186,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair (OS.class_NSButtonCell, className, 0);
 	OS.class_addIvar (cls, SWT_OBJECT, size, (byte)align, types);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
-	OS.class_addMethod (cls, OS.sel_drawImage_withFrame_inView_, drawImageWithFrameInViewProc, "@:@{NSFrame}@");
+	OS.class_addMethod (cls, OS.sel_drawImage_withFrame_inView_, drawImageWithFrameInViewProc, "@:@{NSRect}@");
 	OS.class_addMethod(cls, OS.sel_cellSize, cellSizeProc, "@:");
 	OS.class_addMethod(cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
 	OS.class_addMethod(cls, OS.sel_titleRectForBounds_, titleRectForBoundsProc, "@:{NSRect}");
@@ -2468,6 +2470,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_updateTrackingAreas, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_menuForEvent_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_headerRectOfColumn_, headerRectOfColumnProc, "@:i");
+	OS.class_addMethod(cls, OS.sel_columnAtPoint_, columnAtPointProc, "@:{NSPoint}");
 	//TODO hitTestProc and drawRectProc should be set Control.setRegion()? 
 	OS.objc_registerClassPair(cls);
 
@@ -4989,6 +4993,10 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		NSRect rect = new NSRect();
 		OS.memmove(rect, arg0, NSRect.sizeof);
 		widget.drawRect(id, sel, rect);
+	} else if (sel == OS.sel_columnAtPoint_) {
+		NSPoint point = new NSPoint();
+		OS.memmove(point, arg0, NSPoint.sizeof);
+		return widget.columnAtPoint(id, sel, point);
 	} else if (sel == OS.sel__drawThemeProgressArea_) {
 		widget._drawThemeProgressArea(id, sel, arg0);
 	} else if (sel == OS.sel_setFrameOrigin_) {
@@ -5131,6 +5139,12 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		widget.setNeedsDisplayInRect(id, sel, arg0);
 	} else if (sel == OS.sel_setImage_) {
 		widget.setImage(id, sel, arg0);
+	} else if (sel == OS.sel_headerRectOfColumn_) {
+		NSRect rect = widget.headerRectOfColumn(id, sel, arg0);
+		/* NOTE that this is freed in C */
+		int /*long*/ result = OS.malloc (NSRect.sizeof);
+		OS.memmove (result, rect, NSRect.sizeof);
+		return result;
 	} else if (sel == OS.sel_imageRectForBounds_) {
 		NSRect rect = new NSRect();
 		OS.memmove(rect, arg0, NSRect.sizeof);

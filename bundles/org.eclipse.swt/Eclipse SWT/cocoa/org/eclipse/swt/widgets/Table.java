@@ -123,6 +123,32 @@ public Table (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	int /*long*/ returnValue = 0;
+	NSString attributeName = new NSString(arg0);
+	
+	// If the check column is visible, don't report it back as a column for accessibility purposes.
+	// The check column is meant to appear as a part of the first column.
+	if (attributeName.isEqualToString (OS.NSAccessibilityColumnsAttribute) || attributeName.isEqualToString(OS.NSAccessibilityVisibleColumnsAttribute)) {
+		if ((style & SWT.CHECK) != 0) {
+			int /*long*/ superValue = super.accessibilityAttributeValue(id, sel, arg0);
+			if (superValue != 0) {
+				NSArray columns = new NSArray(superValue);
+				NSMutableArray columnsWithoutCheck = NSMutableArray.arrayWithCapacity(columns.count() - 1);
+				columnsWithoutCheck.addObjectsFromArray(columns);
+				columnsWithoutCheck.removeObjectAtIndex(0);
+				returnValue = columnsWithoutCheck.id;
+			}
+		}
+	}
+	
+	if (returnValue != 0) {
+		return returnValue;
+	} else {
+		return super.accessibilityAttributeValue(id, sel, arg0);
+	}
+}
+
 void _addListener (int eventType, Listener listener) {
 	super._addListener (eventType, listener);
 	clearCachedWidth(items);
@@ -409,6 +435,14 @@ void clearCachedWidth (TableItem[] items) {
 	}
 }
 
+int /*long*/ columnAtPoint(int /*long*/ id, int /*long*/ sel, NSPoint point) {
+	if ((style & SWT.CHECK) != 0) {
+		if (point.x <= getCheckColumnWidth() && point.y < headerView.frame().height) return 1;
+	}
+	
+	return super.columnAtPoint(id, sel, point);
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0;
@@ -519,6 +553,7 @@ void createHandle () {
 		buttonCell.init ();
 		checkColumn.setDataCell (buttonCell);
 		buttonCell.setButtonType (OS.NSSwitchButton);
+		buttonCell.setControlSize(OS.NSSmallControlSize);
 		buttonCell.setImagePosition (OS.NSImageOnly);
 		buttonCell.setAllowsMixedState (true);
 		checkColumn.setWidth(getCheckColumnWidth());
@@ -544,7 +579,7 @@ void createHandle () {
 	dataCell = (NSTextFieldCell)new SWTImageTextCell ().alloc ().init ();
 	dataCell.setLineBreakMode(OS.NSLineBreakByClipping);
 	firstColumn.setDataCell (dataCell);
-
+	widget.setHighlightedTableColumn(null);
 	scrollView = scrollWidget;
 	view = widget;
 }
@@ -996,17 +1031,13 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rec
 			destRect.y = rect.y + (float)Math.ceil((rect.height - imageBounds.height) / 2);
 			destRect.width = imageBounds.width;
 			destRect.height = imageBounds.height;
-			NSRect srcRect = new NSRect();
-			NSSize size = image.size();
-			srcRect.width = size.width;
-			srcRect.height = size.height;
 			context.saveGraphicsState();
 			NSBezierPath.bezierPathWithRect(rect).addClip();
 			NSAffineTransform transform = NSAffineTransform.transform();
 			transform.scaleXBy(1, -1);
 			transform.translateXBy(0, -(destRect.height + 2 * destRect.y));
 			transform.concat();
-			image.drawInRect(destRect, srcRect, OS.NSCompositeSourceOver, 1);
+			image.drawInRect(destRect, new NSRect(), OS.NSCompositeSourceOver, 1);
 			context.restoreGraphicsState();
 			int imageWidth = imageBounds.width + IMAGE_GAP;
 			rect.x += imageWidth;
@@ -1719,6 +1750,23 @@ public int getTopIndex () {
 	int /*64*/ rowAtPoint = (int)/*64*/((NSTableView)view).rowAtPoint(point);
 	if (rowAtPoint == -1) return 0; /* Empty table */ 
 	return rowAtPoint;	
+}
+
+NSRect headerRectOfColumn (int /*long*/ id, int /*long*/ sel, int /*long*/ column) {
+	if ((style & SWT.CHECK) == 0) return callSuperRect(id, sel, column);
+	
+	if (column == 0) {
+		NSRect returnValue = callSuperRect(id, sel, column);
+		returnValue.width = 0;
+		return returnValue;
+	}
+	if (column == 1) {
+		NSRect returnValue = callSuperRect(id, sel, column);
+		returnValue.width += getCheckColumnWidth();
+		returnValue.x -= getCheckColumnWidth();
+		return returnValue;
+	}
+	return callSuperRect(id, sel, column);
 }
 
 void highlightSelectionInClipRect(int /*long*/ id, int /*long*/ sel, int /*long*/ rect) {
@@ -2448,6 +2496,7 @@ void setFont (NSFont font) {
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
 	((NSTableView)view).setHeaderView (show ? headerView : null);
+	scrollView.tile();
 }
 
 void setImage (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
@@ -2771,12 +2820,6 @@ public void setSelection (TableItem [] items) {
 	}
 }
 
-void setSmallSize () {
-	if (checkColumn == null) return;
-	checkColumn.dataCell ().setControlSize (OS.NSSmallControlSize);
-	checkColumn.setWidth (getCheckColumnWidth ());
-}
-
 /**
  * Sets the column used by the sort indicator for the receiver. A null
  * value will clear the sort indicator.  The current sort column is cleared 
@@ -3049,6 +3092,7 @@ void tableViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ aNo
 			if (isDisposed ()) return;
 		}
 	}
+	headerView.setNeedsDisplay(true);
 }
 
 void tableViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {

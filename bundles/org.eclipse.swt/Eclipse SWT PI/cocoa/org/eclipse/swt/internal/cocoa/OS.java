@@ -483,6 +483,8 @@ public static final native int /*long*/ CALLBACK_canDragRowsWithIndexes_atPoint_
 public static final native int /*long*/ CALLBACK_cellSize(int /*long*/ func);
 /** @method callback_types=NSUInteger;id;SEL;NSPoint;,callback_flags=none;none;none;struct; */
 public static final native int /*long*/ CALLBACK_characterIndexForPoint_(int /*long*/ func);
+/** @method callback_types=NSInteger;id;SEL;NSPoint;,callback_flags=none;none;none;struct; */
+public static final native int /*long*/ CALLBACK_columnAtPoint_(int /*long*/ func);
 /** @method callback_types=BOOL;id;SEL;NSEvent*;NSSize;BOOL;,callback_flags=none;none;none;none;struct;none; */
 public static final native int /*long*/ CALLBACK_dragSelectionWithEvent_offset_slideBack_(int /*long*/ func);
 /** @method callback_types=void;id;SEL;NSImage*;NSPoint;,callback_flags=none;none;none;none;struct; */
@@ -507,6 +509,8 @@ public static final native int /*long*/ CALLBACK_drawWithExpansionFrame_inView_(
 public static final native int /*long*/ CALLBACK_expansionFrameWithFrame_inView_(int /*long*/ func);
 /** @method callback_types=NSRect;id;SEL;NSRange;,callback_flags=struct;none;none;struct; */
 public static final native int /*long*/ CALLBACK_firstRectForCharacterRange_(int /*long*/ func);
+/** @method callback_types=NSRect;id;SEL;NSInteger;,callback_flags=struct;none;none;none; */
+public static final native int /*long*/ CALLBACK_headerRectOfColumn_(int /*long*/ func);
 /** @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
 public static final native int /*long*/ CALLBACK_highlightSelectionInClipRect_(int /*long*/ func);
 /** @method callback_types=NSView*;id;SEL;NSPoint;,callback_flags=none;none;none;struct; */
@@ -2107,6 +2111,7 @@ public static final int NSNoBorder = 0;
 public static final int NSNoImage = 0;
 public static final int NSNoTitle = 0;
 public static final int NSNonZeroWindingRule = 0;
+public static final int NSNonactivatingPanelMask = 128;
 public static final int NSOffState = 0;
 public static final int NSOnState = 1;
 public static final int NSOpenGLPFAAccumSize = 14;
@@ -3406,6 +3411,8 @@ public static final native void objc_msgSendSuper_stret(NSRect result, objc_supe
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSendSuper_stret(NSRect result, objc_super superId, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
+/** @method flags=cast */
+public static final native void objc_msgSendSuper_stret(NSRect result, objc_super superId, int /*long*/ sel, int /*long*/ arg0);
 /** @method flags=cast */
 public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, int /*long*/ sel);
 /** @method flags=cast */
