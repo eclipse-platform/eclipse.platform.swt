@@ -236,6 +236,15 @@ int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int 
 	// superclass handle it.
 	if (returnObject == null) {
 		returnValue = super.accessibilityAttributeValue(id, sel, arg0);
+		
+		// Feature in Cocoa: SWT doesn't use setToolTip for tooltip support, so if the
+		// help attribute was requested return toolTipText.
+		if (returnObject == null) {
+			if (attribute.isEqualToString(OS.NSAccessibilityHelpAttribute)) {
+				if (toolTipText != null) returnValue = NSString.stringWith(toolTipText).id;
+			}
+		}
+		
 	} else {
 		returnValue = returnObject.id;
 	}
