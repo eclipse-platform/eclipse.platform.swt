@@ -3271,7 +3271,7 @@ public class Accessible {
 			return COM.E_INVALIDARG;
 		}
 		accessible.AddRef();
-		setPtrVARIANT(ppHyperlink, COM.VT_DISPATCH, accessible.getAddress());
+		COM.MoveMemory(ppHyperlink, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
