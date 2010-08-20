@@ -1618,9 +1618,6 @@ void initExternal (String profilePath) {
 void initFactories (nsIServiceManager serviceManager, nsIComponentManager componentManager, boolean isXULRunner) {
 	int /*long*/[] result = new int /*long*/[1];
 
-	PromptService2Factory factory = new PromptService2Factory ();
-	factory.AddRef ();
-
 	int rc = componentManager.QueryInterface (nsIComponentRegistrar.NS_ICOMPONENTREGISTRAR_IID, result);
 	if (rc != XPCOM.NS_OK) {
 		browser.dispose ();
@@ -1635,6 +1632,8 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 	result[0] = 0;
 	componentRegistrar.AutoRegister (0);	 /* detect the External component */ 
 
+	PromptService2Factory factory = new PromptService2Factory ();
+	factory.AddRef ();
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PROMPTSERVICE_CONTRACTID, true); 
 	byte[] aClassName = MozillaDelegate.wcsToMbcs (null, "swtPromptService", true); //$NON-NLS-1$
 	rc = componentRegistrar.RegisterFactory (XPCOM.NS_PROMPTSERVICE_CID, aClassName, aContractID, factory.getAddress ());
