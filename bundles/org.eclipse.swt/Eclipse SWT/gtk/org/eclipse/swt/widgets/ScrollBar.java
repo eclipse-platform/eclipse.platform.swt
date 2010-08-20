@@ -490,7 +490,6 @@ int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
 		case OS.GTK_SCROLL_STEP_LEFT:
 		case OS.GTK_SCROLL_STEP_BACKWARD:	event.detail = SWT.ARROW_UP; break;
 	}
-	detail = OS.GTK_SCROLL_NONE;
 	if (!dragSent) detail = OS.GTK_SCROLL_NONE;
 	sendSelectionEvent (SWT.Selection, event, false);
 	parent.updateScrollBarValue (this);
@@ -504,7 +503,7 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 		case OS.GDK_BUTTON_RELEASE: {
 			GdkEventButton gdkEventButton = new GdkEventButton ();
 			OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
-			if (gdkEventButton.button == 1 && detail == SWT.DRAG) {
+			if (gdkEventButton.button == 1 && detail == OS.GTK_SCROLL_JUMP) {
 				if (!dragSent) {
 					Event event = new Event ();
 					event.detail = SWT.DRAG;
