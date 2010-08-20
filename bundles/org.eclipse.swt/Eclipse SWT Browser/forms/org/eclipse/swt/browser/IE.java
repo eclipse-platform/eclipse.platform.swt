@@ -28,7 +28,7 @@ class IE extends WebBrowser {
 		};
 	}
 
-public boolean create(Composite parent, int style) {
+public void create(Composite parent, int style) {
 	host = OS.gcnew_WindowsFormsHost();
 	if (host == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	webBrowser = OS.gcnew_WebBrowser();
@@ -87,8 +87,6 @@ public boolean create(Composite parent, int style) {
 	};
 	browser.addListener(SWT.Resize, listener);
 	browser.addListener(SWT.Dispose, listener);
-
-	return true;
 }
 
 public boolean back() {

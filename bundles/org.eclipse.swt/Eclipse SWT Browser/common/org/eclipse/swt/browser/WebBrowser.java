@@ -300,7 +300,7 @@ static void SetPendingCookies (Vector pendingCookies) {
 	}
 }
 
-public abstract boolean create (Composite parent, int style);
+public abstract void create (Composite parent, int style);
 
 static String CreateErrorString (String error) {
 	return ERROR_ID + error;

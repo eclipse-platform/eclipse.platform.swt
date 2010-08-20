@@ -93,6 +93,8 @@ public class WebKit extends WebBrowser {
 			Library.loadLibrary ("swt-webkit"); // $NON-NLS-1$
 			LibraryLoaded = true;
 		} catch (Throwable e) {
+			/* do not initialize the Callbacks below */
+			return;
 		}
 
 		Proc2 = new Callback (WebKit.class, "Proc", 2); //$NON-NLS-1$
@@ -207,6 +209,19 @@ static Browser findBrowser (int /*long*/ webView) {
 	int /*long*/ parent = OS.gtk_widget_get_parent (webView);
 	parent = OS.gtk_widget_get_parent (parent);
 	return (Browser)Display.getCurrent ().findWidget (parent);
+}
+
+static boolean isInstalled () {
+	if (!LibraryLoaded) return false;
+	// TODO webkit_check_version() should take care of the following, but for some
+	// reason this symbol is missing from the latest build.  If it is present in
+	// Linux distro-provided builds then replace the following with this call.
+	int major = WebKitGTK.webkit_major_version ();
+	int minor = WebKitGTK.webkit_minor_version ();
+	int micro = WebKitGTK.webkit_micro_version ();
+	return major > MIN_VERSION[0] ||
+		(major == MIN_VERSION[0] && minor > MIN_VERSION[1]) ||
+		(major == MIN_VERSION[0] && minor == MIN_VERSION[1] && micro >= MIN_VERSION[2]);
 }
 
 static int /*long*/ JSObjectCallAsFunctionProc (int /*long*/ ctx, int /*long*/ function, int /*long*/ thisObject, int /*long*/ argumentCount, int /*long*/ arguments, int /*long*/ exception) {
@@ -395,21 +410,8 @@ int /*long*/ webViewProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ a
 	}
 }
 
-public boolean create (Composite parent, int style) {
-	if (!LibraryLoaded) return false;
-
+public void create (Composite parent, int style) {
 	if (ExternalClass == 0) {
-		// TODO webkit_check_version() should do the following, but for some reason
-		// this symbol is missing from the latest build.  If it is present in Linux
-		// distro-provided builds then replace the following with this call.
-		int major = WebKitGTK.webkit_major_version ();
-		int minor = WebKitGTK.webkit_minor_version ();
-		int micro = WebKitGTK.webkit_micro_version ();
-		boolean success = major > MIN_VERSION[0] ||
-			(major == MIN_VERSION[0] && minor > MIN_VERSION[1]) ||
-			(major == MIN_VERSION[0] && minor == MIN_VERSION[1] && micro >= MIN_VERSION[2]);
-		if (!success) return false;
-
 		if (Device.DEBUG) {
 			System.out.println("WebKit version " + major + "." + minor + "." + micro); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
@@ -557,8 +559,6 @@ public boolean create (Composite parent, int style) {
 	* be changed.
 	*/
 	browser.setData (KEY_CHECK_SUBWINDOW, Boolean.FALSE);
-
-	return true;
 }
 
 void addEventHandlers (boolean top) {

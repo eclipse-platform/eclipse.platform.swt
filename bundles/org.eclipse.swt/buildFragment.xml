@@ -136,9 +136,9 @@
 			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/carbon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT WebKit/carbon/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Mozilla/carbon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>			<fileset dir="${plugindir}/Eclipse SWT Browser/carbon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Mozilla/carbon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/carbon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/common/"/>
@@ -173,9 +173,9 @@
 			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT WebKit/cocoa/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Mozilla/cocoa/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>			<fileset dir="${plugindir}/Eclipse SWT Browser/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Mozilla/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/common/"/>
@@ -209,7 +209,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/gtk/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>			<fileset dir="${plugindir}/Eclipse SWT Browser/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
@@ -257,7 +257,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/emulated/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/motif/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>			<fileset dir="${plugindir}/Eclipse SWT Browser/motif/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/motif/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>

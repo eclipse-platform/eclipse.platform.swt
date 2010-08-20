@@ -27,6 +27,7 @@
     <classpathentry kind="src" path="Eclipse SWT Program/common"/>
     <classpathentry kind="src" path="Eclipse SWT Program/cocoa"/>
     <classpathentry kind="src" path="Eclipse SWT Browser/common"/>
+    <classpathentry kind="src" path="Eclipse SWT Browser/cocoa"/>
     <classpathentry kind="src" path="Eclipse SWT WebKit/cocoa"/>
     <classpathentry kind="src" path="Eclipse SWT Mozilla/common"/>
     <classpathentry kind="src" path="Eclipse SWT Mozilla/cocoa"/>

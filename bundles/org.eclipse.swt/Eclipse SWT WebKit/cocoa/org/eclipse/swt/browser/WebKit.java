@@ -119,7 +119,7 @@ class WebKit extends WebBrowser {
 		NativePendingCookies = null;
 	}
 
-public boolean create (Composite parent, int style) {
+public void create (Composite parent, int style) {
 	if (delegateClass == 0) {
 		Class webKitClass = this.getClass();
 		Callback3 = new Callback(webKitClass, "browserProc", 3); //$NON-NLS-1$
@@ -281,8 +281,6 @@ public boolean create (Composite parent, int style) {
 		/* disable applets */
 		WebPreferences.standardPreferences().setJavaEnabled(false);
 	}
-
-	return true;
 }
 
 public boolean back() {

@@ -83,40 +83,15 @@ public Browser (Composite parent, int style) {
 	userStyle = style;
 
 	String platform = SWT.getPlatform ();
-	Display display = parent.getDisplay ();
-	if ("gtk".equals (platform)) display.setData (NO_INPUT_METHOD, null); //$NON-NLS-1$
-	String classNames[] = null;
-	if ((style & SWT.MOZILLA) != 0) {
-		classNames = new String[] {"org.eclipse.swt.browser.Mozilla"}; //$NON-NLS-1$
-	} else {
-		if ("win32".equals (platform) || "wpf".equals (platform)) { //$NON-NLS-1$ $NON-NLS-2$
-			classNames = new String[] {"org.eclipse.swt.browser.IE"}; //$NON-NLS-1$
-		} else if ("motif".equals (platform)) { //$NON-NLS-1$
-			classNames = new String[] {"org.eclipse.swt.browser.Mozilla"}; //$NON-NLS-1$
-		} else if ("gtk".equals (platform)) { //$NON-NLS-1$
-			classNames = new String[] {"org.eclipse.swt.browser.WebKit", "org.eclipse.swt.browser.Mozilla"}; //$NON-NLS-1$ //$NON-NLS-2$
-		} else if ("carbon".equals (platform) || "cocoa".equals (platform)) { //$NON-NLS-1$
-			classNames = new String[] {"org.eclipse.swt.browser.WebKit"}; //$NON-NLS-1$
-		} else if ("photon".equals (platform)) { //$NON-NLS-1$
-			classNames = new String[] {"org.eclipse.swt.browser.Voyager"}; //$NON-NLS-1$
-		} else {
-			dispose ();
-			SWT.error (SWT.ERROR_NO_HANDLES);
-		}
+	if ("gtk".equals (platform)) { //$NON-NLS-1$
+		parent.getDisplay ().setData (NO_INPUT_METHOD, null);
 	}
 
-	for (int i = 0; i < classNames.length; i++) {
-		try {
-			Class clazz = Class.forName (classNames[i]);
-			webBrowser = (WebBrowser)clazz.newInstance ();
-			if (webBrowser != null) {
-				webBrowser.setBrowser (this);
-				if (webBrowser.create (parent, style)) return;
-			}
-		} catch (ClassNotFoundException e) {
-		} catch (IllegalAccessException e) {
-		} catch (InstantiationException e) {
-		}
+	webBrowser = new BrowserFactory ().createWebBrowser (style);
+	if (webBrowser != null) {
+		webBrowser.setBrowser (this);
+		webBrowser.create (parent, style);
+		return;
 	}
 	dispose ();
 	SWT.error (SWT.ERROR_NO_HANDLES);
