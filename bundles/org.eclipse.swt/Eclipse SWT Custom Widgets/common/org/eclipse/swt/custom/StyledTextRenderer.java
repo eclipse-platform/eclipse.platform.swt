@@ -514,7 +514,8 @@ boolean hasLink(int offset) {
 				}
 			} else {
 				for (int i = 0; i < styles.length; i++) {
-					if (styles[i].start <= offset && offset < styles[i].start + styles[i].length && styles[i >> 1].underline && styles[i >> 1].underlineStyle == SWT.UNDERLINE_LINK) {
+					StyleRange style = styles[i]; 
+					if (style.start <= offset && offset < style.start + style.length && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
 						return true;
 					}
 				}
