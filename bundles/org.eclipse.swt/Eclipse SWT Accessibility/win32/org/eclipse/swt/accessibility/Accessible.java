@@ -75,6 +75,7 @@ public class Accessible {
 	int [] tableChange; // type, rowStart, rowCount, columnStart, columnCount
 	Object [] textDeleted; // type, start, end, text
 	Object [] textInserted; // type, start, end, text
+	ToolItem item;
 
 	static {
 		String property = System.getProperty (PROPERTY_USEIA2);
@@ -126,6 +127,11 @@ public class Accessible {
 		iaccessible = new IAccessible(ppvObject[0]);
 		createIAccessible();
 		AddRef();
+	}
+
+	Accessible(Accessible parent, int /*long*/ iaccessible_address) {
+		this(parent);
+		iaccessible = new IAccessible(iaccessible_address);
 	}
 
 	static Accessible checkNull (Accessible parent) {
@@ -1886,20 +1892,72 @@ public class Accessible {
 			COM.MoveMemory(ppdispChild, new int /*long*/[] { getAddress() }, OS.PTR_SIZEOF);
 			return COM.S_OK;
 		}
+		final int childID = osToChildID(v.lVal);
 		int code = COM.S_FALSE;
+		Accessible osAccessible = null;
 		if (iaccessible != null) {
 			/* Get the default child from the OS. */
 			code = iaccessible.get_accChild(varChild, ppdispChild);
 			if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
+			if (code == COM.S_OK && control instanceof ToolBar) {
+				ToolBar toolBar = (ToolBar) control;
+				final ToolItem item = toolBar.getItem(childID);
+				if (item != null && (item.getStyle() & SWT.DROP_DOWN) != 0) {
+					int /*long*/[] addr = new int /*long*/[1];
+					COM.MoveMemory(addr, ppdispChild, OS.PTR_SIZEOF);
+					boolean found = false;
+					for (int i = 0; i < children.size(); i++) {
+						Accessible accChild = (Accessible)children.elementAt(i);
+						if (accChild.item == item) {
+							/* 
+							 * MSAA uses a new accessible for the child
+							 * so we dispose the old and use the new.
+							 */
+							accChild.dispose();
+							accChild.item = null;
+							found = true;
+							break;
+						}
+					}
+					osAccessible = new Accessible(this, addr[0]);
+					osAccessible.item = item;
+					if (!found) {
+						item.addListener(SWT.Dispose, new Listener() {
+							public void handleEvent(Event e) {
+								for (int i = 0; i < children.size(); i++) {
+									Accessible accChild = (Accessible)children.elementAt(i);
+									if (accChild.item == item) {
+										accChild.dispose();
+									}
+								}
+							}
+						});
+					}
+					osAccessible.addAccessibleListener(new AccessibleAdapter() {
+						public void getName(AccessibleEvent e) {
+							if (e.childID == ACC.CHILDID_SELF) {
+								AccessibleEvent event = new AccessibleEvent(Accessible.this);
+								event.childID = childID;
+								for (int i = 0; i < accessibleListeners.size(); i++) {
+									AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
+									listener.getName(event);
+								}
+								e.result = event.result;
+							}
+						}
+					});
+				}
+			}
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = osToChildID(v.lVal);
+		event.childID = childID;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getChild(event);
 		}
 		Accessible accessible = event.accessible;
+		if (accessible == null) accessible = osAccessible;
 		if (accessible != null) {
 			if (DEBUG) print(this + ".IAccessible::get_accChild(" + v.lVal + ") returning " + accessible.getAddress() + hresult(COM.S_OK));
 			accessible.AddRef();
