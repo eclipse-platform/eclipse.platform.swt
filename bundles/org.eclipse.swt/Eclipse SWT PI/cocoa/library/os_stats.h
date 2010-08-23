@@ -176,6 +176,7 @@ typedef enum {
 	GetCurrentButtonState_FUNC,
 	GetCurrentProcess_FUNC,
 	GetDblTime_FUNC,
+	GetIconRefFromTypeInfo_FUNC,
 	GetRegionBounds_FUNC,
 	GetSystemUIMode_FUNC,
 	GetThemeMetric_FUNC,

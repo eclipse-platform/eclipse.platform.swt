@@ -1801,6 +1801,22 @@ public Cursor getSystemCursor (int id) {
 	return cursors [id];
 }
 
+NSImage getSystemImageForID(int osType) {
+	int /*long*/ iconRef[] = new int /*long*/ [1];
+	OS.GetIconRefFromTypeInfo(OS.kSystemIconsCreator, osType, 0, 0, 0, iconRef);
+	NSImage nsImage = (NSImage)new NSImage().alloc();
+	nsImage = nsImage.initWithIconRef(iconRef[0]);
+	/*
+	 * Feature in Cocoa. GetIconRefFromTypeInfo returns a huge icon that scales well.  Resize
+	 * it to 32x32, which is what NSWorkspace does.
+	 */
+	NSSize size = new NSSize();
+	size.width = size.height = 32.0f;
+	nsImage.setSize(size);
+	nsImage.setScalesWhenResized(true);
+	return nsImage;
+}
+
 /**
  * Returns the matching standard platform image for the given
  * constant, which should be one of the icon constants
@@ -1832,26 +1848,20 @@ public Image getSystemImage (int id) {
 	switch(id) {
 		case SWT.ICON_ERROR: {	
 			if (errorImage != null) return errorImage;
-			NSImage nsImage = NSWorkspace.sharedWorkspace ().iconForFileType (new NSString (OS.NSFileTypeForHFSTypeCode (OS.kAlertStopIcon)));
-			if (nsImage == null) return null;
-			nsImage.retain ();
-			return errorImage = Image.cocoa_new (this, SWT.ICON, nsImage);
+			NSImage img = getSystemImageForID(OS.kAlertStopIcon);
+			return errorImage = Image.cocoa_new (this, SWT.ICON, img);
 		}
 		case SWT.ICON_INFORMATION:
 		case SWT.ICON_QUESTION:
 		case SWT.ICON_WORKING: {
 			if (infoImage != null) return infoImage;
-			NSImage nsImage = NSWorkspace.sharedWorkspace ().iconForFileType (new NSString (OS.NSFileTypeForHFSTypeCode (OS.kAlertNoteIcon)));
-			if (nsImage == null) return null;
-			nsImage.retain ();
-			return infoImage = Image.cocoa_new (this, SWT.ICON, nsImage);
+			NSImage img = getSystemImageForID(OS.kAlertNoteIcon);
+			return infoImage = Image.cocoa_new (this, SWT.ICON, img);
 		}
 		case SWT.ICON_WARNING: {
 			if (warningImage != null) return warningImage;
-			NSImage nsImage = NSWorkspace.sharedWorkspace ().iconForFileType (new NSString (OS.NSFileTypeForHFSTypeCode (OS.kAlertCautionIcon)));
-			if (nsImage == null) return null;
-			nsImage.retain ();
-			return warningImage = Image.cocoa_new (this, SWT.ICON, nsImage);
+			NSImage img = getSystemImageForID(OS.kAlertCautionIcon);
+			return warningImage = Image.cocoa_new (this, SWT.ICON, img);
 		}
 	}
 	return null;

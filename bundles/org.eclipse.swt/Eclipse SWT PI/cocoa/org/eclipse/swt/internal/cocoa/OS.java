@@ -27,6 +27,7 @@ public class OS extends C {
 	public static final int gestaltSystemVersion = ('s'<<24) + ('y'<<16) + ('s'<<8) + 'v';
 	public static final int noErr = 0;
 	public static final int kProcessTransformToForegroundApplication = 1;
+	public static final int kSystemIconsCreator = ('m' << 24) + ('a' << 16) + ('c' << 8) + 's';
 	public static final int kAlertCautionIcon = ('c'<<24) + ('a'<<16) + ('u'<<8) + 't';
 	public static final int kAlertNoteIcon = ('n'<<24) + ('o'<<16) + ('t'<<8) + 'e';
 	public static final int kAlertStopIcon = ('s'<<24) + ('t'<<16) + ('o'<<8) + 'p';
@@ -142,6 +143,14 @@ public static final native int SetThemeCursor(int themeCursor);
 public static final native int GetCurrentButtonState();
 /** @method flags=dynamic */
 public static final native int GetDblTime();
+/** @method flags=dynamic
+	@param inCreator cast=(OSType) 
+	@param inType cast=(OSType) 
+	@param inExtension cast=(CFStringRef) 
+	@param inMIMEType cast=(CFStringRef) 
+	@param inUsageFlags cast=(IconServicesUsageFlags) 
+	@param outIconRef cast=(IconRef *) */
+public static final native int GetIconRefFromTypeInfo(int inCreator, int inType, int /*long*/ inExtension, int /*long*/ inMIMEType, int inUsageFlags, int /*long*/ outIconRef[]);
 /** @method flags=dynamic 
     @param  cast=(CGContextRef) */
 public static final native int /*long*/ CGContextCopyPath(int /*long*/ context);
@@ -1200,6 +1209,7 @@ public static final int /*long*/ sel_initWithFormat_shareContext_ = sel_register
 public static final int /*long*/ sel_initWithFrame_ = sel_registerName("initWithFrame:");
 public static final int /*long*/ sel_initWithFrame_frameName_groupName_ = sel_registerName("initWithFrame:frameName:groupName:");
 public static final int /*long*/ sel_initWithFrame_pullsDown_ = sel_registerName("initWithFrame:pullsDown:");
+public static final int /*long*/ sel_initWithIconRef_ = sel_registerName("initWithIconRef:");
 public static final int /*long*/ sel_initWithIdentifier_ = sel_registerName("initWithIdentifier:");
 public static final int /*long*/ sel_initWithImage_hotSpot_ = sel_registerName("initWithImage:hotSpot:");
 public static final int /*long*/ sel_initWithIndex_ = sel_registerName("initWithIndex:");
@@ -1753,6 +1763,7 @@ public static final int /*long*/ sel_setResizingMask_ = sel_registerName("setRes
 public static final int /*long*/ sel_setResourceLoadDelegate_ = sel_registerName("setResourceLoadDelegate:");
 public static final int /*long*/ sel_setRichText_ = sel_registerName("setRichText:");
 public static final int /*long*/ sel_setRowHeight_ = sel_registerName("setRowHeight:");
+public static final int /*long*/ sel_setScalesWhenResized_ = sel_registerName("setScalesWhenResized:");
 public static final int /*long*/ sel_setScrollable_ = sel_registerName("setScrollable:");
 public static final int /*long*/ sel_setSearchButtonCell_ = sel_registerName("setSearchButtonCell:");
 public static final int /*long*/ sel_setSegmentCount_ = sel_registerName("setSegmentCount:");

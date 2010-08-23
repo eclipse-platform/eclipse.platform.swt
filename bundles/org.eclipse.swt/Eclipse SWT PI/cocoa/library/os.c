@@ -2332,6 +2332,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetDblTime)
 }
 #endif
 
+#ifndef NO_GetIconRefFromTypeInfo
+JNIEXPORT jint JNICALL OS_NATIVE(GetIconRefFromTypeInfo)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintLong arg2, jintLong arg3, jint arg4, jintLongArray arg5)
+{
+	jintLong *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetIconRefFromTypeInfo_FUNC);
+	if (arg5) if ((lparg5 = (*env)->GetIntLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)GetIconRefFromTypeInfo((OSType)arg0, (OSType)arg1, (CFStringRef)arg2, (CFStringRef)arg3, (IconServicesUsageFlags)arg4, (IconRef *)lparg5);
+*/
+	{
+		LOAD_FUNCTION(fp, GetIconRefFromTypeInfo)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(OSType, OSType, CFStringRef, CFStringRef, IconServicesUsageFlags, IconRef *))fp)((OSType)arg0, (OSType)arg1, (CFStringRef)arg2, (CFStringRef)arg3, (IconServicesUsageFlags)arg4, (IconRef *)lparg5);
+		}
+	}
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntLongArrayElements(env, arg5, lparg5, 0);
+	OS_NATIVE_EXIT(env, that, GetIconRefFromTypeInfo_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetRegionBounds
 JNIEXPORT void JNICALL OS_NATIVE(GetRegionBounds)
 	(JNIEnv *env, jclass that, jintLong arg0, jshortArray arg1)

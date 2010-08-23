@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -66,6 +66,11 @@ public id initWithData(NSData data) {
 	return result != 0 ? new id(result) : null;
 }
 
+public NSImage initWithIconRef(int /*long*/ iconRef) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIconRef_, iconRef);
+	return result == this.id ? this : (result != 0 ? new NSImage(result) : null);
+}
+
 public NSImage initWithSize(NSSize aSize) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithSize_, aSize);
 	return result == this.id ? this : (result != 0 ? new NSImage(result) : null);
@@ -86,6 +91,10 @@ public NSArray representations() {
 
 public void setCacheMode(int /*long*/ mode) {
 	OS.objc_msgSend(this.id, OS.sel_setCacheMode_, mode);
+}
+
+public void setScalesWhenResized(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setScalesWhenResized_, flag);
 }
 
 public void setSize(NSSize aSize) {

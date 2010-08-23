@@ -1488,6 +1488,10 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="initWithIconRef:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true" swt_java_type="NSImage"></retval>
+		</method>
 		<method selector="initWithSize:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSImage"></retval>
@@ -1503,6 +1507,10 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setCacheMode:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setScalesWhenResized:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>

@@ -52,3 +52,4 @@
 #define NSAccessibilityCellRole_LIB "com.apple.Cocoa"
 #define NSAccessibilityColumnIndexRangeAttribute_LIB "com.apple.Cocoa"
 #define NSAccessibilityRowIndexRangeAttribute_LIB "com.apple.Cocoa"
+#define GetIconRefFromTypeInfo_LIB "com.apple.LaunchServices"
