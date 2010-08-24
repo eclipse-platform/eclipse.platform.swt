@@ -610,13 +610,16 @@ char _findMnemonic (String string) {
  * Return the Label immediately preceding the receiver in the z-order, 
  * or null if none. 
  */
-Label getAssociatedLabel () {
+String getAssociatedLabel () {
 	Control[] siblings = getParent ().getChildren ();
 	for (int i = 0; i < siblings.length; i++) {
 		if (siblings [i] == this) {
-			if (i > 0 && siblings [i-1] instanceof Label) {
-				return (Label) siblings [i-1];
+			if (i > 0) {
+				Control sibling = siblings [i-1];
+				if (sibling instanceof Label) return ((Label) sibling).getText();
+				if (sibling instanceof CLabel) return ((CLabel) sibling).getText();
 			}
+			break;
 		}
 	}
 	return null;
@@ -937,22 +940,19 @@ void initAccessible() {
 	AccessibleAdapter accessibleAdapter = new AccessibleAdapter () {
 		public void getName (AccessibleEvent e) {
 			String name = null;
-			Label label = getAssociatedLabel ();
-			if (label != null) {
-				name = stripMnemonic (label.getText());
+			String text = getAssociatedLabel ();
+			if (text != null) {
+				name = stripMnemonic (text);
 			}
 			e.result = name;
 		}
 		public void getKeyboardShortcut(AccessibleEvent e) {
 			String shortcut = null;
-			Label label = getAssociatedLabel ();
-			if (label != null) {
-				String text = label.getText ();
-				if (text != null) {
-					char mnemonic = _findMnemonic (text);
-					if (mnemonic != '\0') {
-						shortcut = "Alt+"+mnemonic; //$NON-NLS-1$
-					}
+			String text = getAssociatedLabel ();
+			if (text != null) {
+				char mnemonic = _findMnemonic (text);
+				if (mnemonic != '\0') {
+					shortcut = "Alt+"+mnemonic; //$NON-NLS-1$
 				}
 			}
 			e.result = shortcut;
