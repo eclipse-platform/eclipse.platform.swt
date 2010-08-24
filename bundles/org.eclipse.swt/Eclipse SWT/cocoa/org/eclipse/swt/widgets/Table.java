@@ -1762,8 +1762,9 @@ NSRect headerRectOfColumn (int /*long*/ id, int /*long*/ sel, int /*long*/ colum
 	}
 	if (column == 1) {
 		NSRect returnValue = callSuperRect(id, sel, column);
-		returnValue.width += getCheckColumnWidth();
-		returnValue.x -= getCheckColumnWidth();
+		// Save a call to [NSTableView intercellSpacing] by using our constant.
+		returnValue.width += (checkColumn.width() + CELL_GAP);
+		returnValue.x -= (checkColumn.width() + CELL_GAP);
 		return returnValue;
 	}
 	return callSuperRect(id, sel, column);
