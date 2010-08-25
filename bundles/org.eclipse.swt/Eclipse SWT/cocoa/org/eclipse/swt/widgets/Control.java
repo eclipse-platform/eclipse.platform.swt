@@ -866,7 +866,7 @@ NSAttributedString createString (String string, Font font, float /*double*/ [] f
 	NSMutableParagraphStyle paragraphStyle = (NSMutableParagraphStyle)new NSMutableParagraphStyle ().alloc ().init ();
 	paragraphStyle.setLineBreakMode (wrap ? OS.NSLineBreakByWordWrapping : OS.NSLineBreakByClipping);
 	if (alignment != 0) {
-		int align = SWT.LEFT;
+		int align = OS.NSLeftTextAlignment;
 		if ((alignment & SWT.CENTER) != 0) {
 			align = OS.NSCenterTextAlignment;
 		} else if ((alignment & SWT.RIGHT) != 0) {
