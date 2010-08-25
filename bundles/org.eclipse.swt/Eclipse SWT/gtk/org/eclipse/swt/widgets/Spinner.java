@@ -1082,7 +1082,9 @@ public void setDigits (int value) {
 		adjustment.page_increment /= factor;
 	}
 	OS.memmove (hAdjustment, adjustment);
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_spin_button_set_digits (handle, value);
+	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
 /**
