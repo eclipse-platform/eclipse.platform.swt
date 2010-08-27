@@ -117,7 +117,7 @@ public class WebKit extends WebBrowser {
 				public void run () {
 					if (!LibraryLoaded) return;
 					int /*long*/ session = WebKitGTK.webkit_get_default_session ();
-					int type = WebKitGTK.soup_cookie_jar_get_type ();
+					int /*long*/ type = WebKitGTK.soup_cookie_jar_get_type ();
 					int /*long*/ jar = WebKitGTK.soup_session_get_feature (session, type);
 					if (jar == 0) return;
 					int /*long*/ cookies = WebKitGTK.soup_cookie_jar_all_cookies (jar);
@@ -140,7 +140,7 @@ public class WebKit extends WebBrowser {
 				public void run () {
 					if (!LibraryLoaded) return;
 					int /*long*/ session = WebKitGTK.webkit_get_default_session ();
-					int type = WebKitGTK.soup_cookie_jar_get_type ();
+					int /*long*/ type = WebKitGTK.soup_cookie_jar_get_type ();
 					int /*long*/ jar = WebKitGTK.soup_session_get_feature (session, type);
 					if (jar == 0) return;
 					byte[] bytes = Converter.wcsToMbcs (null, CookieUrl, true);
@@ -173,7 +173,7 @@ public class WebKit extends WebBrowser {
 				public void run () {
 					if (!LibraryLoaded) return;
 					int /*long*/ session = WebKitGTK.webkit_get_default_session ();
-					int type = WebKitGTK.soup_cookie_jar_get_type ();
+					int /*long*/ type = WebKitGTK.soup_cookie_jar_get_type ();
 					int /*long*/ jar = WebKitGTK.soup_session_get_feature (session, type);
 					if (jar == 0) {
 						/* this happens if a navigation has not occurred yet */
