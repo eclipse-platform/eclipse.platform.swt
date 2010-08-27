@@ -438,8 +438,7 @@ int [] layoutHorizontal (int width, int height, boolean resize) {
 			item.setVisible (visible);
 			Control control = item.control;
 			if (control != null) {
-				int controlY = y + (itemHeight - size.y) / 2;
-				control.setBounds (x, controlY, size.x, itemHeight - (controlY - y));
+				control.setBounds (x, y, size.x, itemHeight);
 			}
 		}
 		x += xSpacing + size.x;
@@ -475,8 +474,7 @@ int [] layoutVertical (int width, int height, boolean resize) {
 			item.setVisible (visible);
 			Control control = item.control;
 			if (control != null) {
-				int controlX = x + (itemWidth - size.x) / 2;
-				control.setBounds (controlX, y, itemWidth - (controlX - x), size.y);
+				control.setBounds (x, y, itemWidth, size.y);
 			}
 		}
 		y += ySpacing + size.y;
