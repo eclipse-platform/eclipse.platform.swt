@@ -52,6 +52,8 @@ public class Button extends Control {
 	static final int EXTRA_HEIGHT = 2;
 	static final int EXTRA_WIDTH = 6;
 	static final int IMAGE_GAP = 2;
+	static final int SMALL_BUTTON_HEIGHT = 28;
+	static final int REGULAR_BUTTON_HEIGHT = 32;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -140,6 +142,12 @@ NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
 		size.width += imageSize.width + IMAGE_GAP;
 		size.height = Math.max(size.height, imageSize.height);
 	}
+
+	if (image != null && ((style & (SWT.PUSH|SWT.TOGGLE)) !=0) && (style & SWT.FLAT) == 0) {
+		NSCell cell = new NSCell(id);
+		if (cell.controlSize() == OS.NSSmallControlSize) size.height += EXTRA_HEIGHT;
+	}
+	
 	return size;
 }
 
@@ -176,15 +184,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
-		NSCell cell = ((NSControl)view).cell();
-		if (cell.controlSize() == OS.NSSmallControlSize && image != null) height += EXTRA_HEIGHT;
-		if (height > 28) {
-			cell.setControlSize (OS.NSRegularControlSize);
-		} else {
-			cell.setControlSize(OS.NSSmallControlSize);
-		}
-		setFont(getFont());
-
 		// TODO: Why is this necessary?
 		width += EXTRA_WIDTH;
 	}
@@ -265,10 +264,7 @@ Font defaultFont () {
 
 NSFont defaultNSFont() {
 	NSCell cell = ((NSControl)view).cell();
-	if (cell != null && cell.controlSize() == OS.NSSmallControlSize) {
-		return NSFont.systemFontOfSize (NSFont.systemFontSizeForControlSize (OS.NSSmallControlSize));
-	}
-	return display.buttonFont;
+	return NSFont.systemFontOfSize (NSFont.systemFontSizeForControlSize (cell.controlSize()));
 }
 
 void deregister () {
@@ -644,11 +640,11 @@ void setBackgroundImage(NSImage image) {
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
-		int heightThreshold = 32;
+		int heightThreshold = REGULAR_BUTTON_HEIGHT;
 		
 		NSCell cell = ((NSControl)view).cell();
 		if (cell != null && cell.controlSize() == OS.NSSmallControlSize) {
-			heightThreshold = 28;
+			heightThreshold = SMALL_BUTTON_HEIGHT;
 		}
 
 		NSButton button = (NSButton)view;
@@ -740,6 +736,21 @@ public void setImage (Image image) {
 	} else {
 		((NSButton)view).setAttributedTitle(createString());
 	}
+	
+	if (image != null) {
+		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
+			NSSize size = ((NSButton)view).cell().cellSize ();
+			int height = (int)Math.ceil(size.height);
+			NSCell cell = ((NSControl)view).cell();
+			if (height > SMALL_BUTTON_HEIGHT) {
+				cell.setControlSize(OS.NSRegularControlSize);
+			} else if (display.smallFonts){
+				cell.setControlSize(OS.NSSmallControlSize);
+			}
+			setFont(getFont());
+		}
+	}
+
 	updateAlignment ();
 }
 
