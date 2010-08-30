@@ -324,6 +324,7 @@ public class OS extends C {
 	public static final int BS_GROUPBOX = 0x7;
 	public static final int BS_ICON = 0x40;
 	public static final int BS_LEFT = 0x100;
+	public static final int BS_MULTILINE = 0x2000;
 	public static final int BS_NOTIFY = 0x4000;
 	public static final int BS_OWNERDRAW = 0xb;
 	public static final int BS_PATTERN = 0x3;
