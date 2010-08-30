@@ -6405,6 +6405,16 @@ fail:
 }
 #endif
 
+#ifndef NO_objc_1disposeClassPair
+JNIEXPORT void JNICALL OS_NATIVE(objc_1disposeClassPair)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, objc_1disposeClassPair_FUNC);
+	objc_disposeClassPair((Class)arg0);
+	OS_NATIVE_EXIT(env, that, objc_1disposeClassPair_FUNC);
+}
+#endif
+
 #ifndef NO_objc_1getClass
 JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1getClass)
 	(JNIEnv *env, jclass that, jstring arg0)

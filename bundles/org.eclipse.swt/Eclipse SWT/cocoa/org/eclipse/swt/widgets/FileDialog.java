@@ -204,7 +204,9 @@ public String open () {
 	fileNames = new String [0];
 	int /*long*/ method = 0;
 	int /*long*/ methodImpl = 0;
-	Callback callback = null;
+	int /*long*/ savePanelClass = 0;
+	int /*long*/ swtSavePanelClass = 0;
+	Callback callback = null, performKeyEquivalentCallback = null;
 	if ((style & SWT.SAVE) != 0) {
 		NSSavePanel savePanel = NSSavePanel.savePanel();
 		panel = savePanel;
@@ -215,6 +217,15 @@ public String open () {
 			method = OS.class_getInstanceMethod(OS.class_NSSavePanel, OS.sel_overwriteExistingFileCheck);
 			if (method != 0) methodImpl = OS.method_setImplementation(method, proc);
 		}
+		
+		String className = "SWTSavePanel";
+		performKeyEquivalentCallback = new Callback(this, "performKeyEquivalent", 3);
+		int /*long*/ proc = performKeyEquivalentCallback.getAddress();
+		if (proc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		swtSavePanelClass = OS.objc_allocateClassPair(OS.object_getClass(panel.id), className, 0);
+		OS.class_addMethod(swtSavePanelClass, OS.sel_performKeyEquivalent_, proc, "@:@");
+		OS.objc_registerClassPair(swtSavePanelClass);
+		savePanelClass = OS.object_setClass(panel.id, swtSavePanelClass);
 	} else {
 		NSOpenPanel openPanel = NSOpenPanel.openPanel();
 		openPanel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
@@ -268,6 +279,11 @@ public String open () {
 	if (!overwrite) {
 		if (method != 0) OS.method_setImplementation(method, methodImpl);
 		if (callback != null) callback.dispose();
+	}
+	if ((style & SWT.SAVE) != 0) {
+		OS.object_setClass(panel.id, savePanelClass);
+		OS.objc_disposeClassPair(swtSavePanelClass);
+		if (performKeyEquivalentCallback != null) performKeyEquivalentCallback.dispose();
 	}
 	if (popup != null) {
 		filterIndex = (int)/*64*/popup.indexOfSelectedItem();
@@ -374,6 +390,44 @@ int /*long*/ panel_shouldShowFilename (int /*long*/ id, int /*long*/ sel, int /*
 		}
 	}
 	return 1;
+}
+
+int /*long*/ performKeyEquivalent(int /*long*/ id, int /*long*/ sel, int /*long*/ arg) {
+	NSEvent nsEvent = new NSEvent(arg);
+	int stateMask = 0;
+	int /*long*/ selector = 0;
+	int /*long*/ modifierFlags = nsEvent.modifierFlags();
+	if ((modifierFlags & OS.NSAlternateKeyMask) != 0) stateMask |= SWT.ALT;
+	if ((modifierFlags & OS.NSShiftKeyMask) != 0) stateMask |= SWT.SHIFT;
+	if ((modifierFlags & OS.NSControlKeyMask) != 0) stateMask |= SWT.CONTROL;
+	if ((modifierFlags & OS.NSCommandKeyMask) != 0) stateMask |= SWT.COMMAND;
+	if (stateMask == SWT.COMMAND) {
+		short keyCode = nsEvent.keyCode ();
+		switch (keyCode) {
+			case 7: /* X */
+				selector = OS.sel_cut_;
+				break;
+			case 8: /* C */
+				selector = OS.sel_copy_;
+				break;
+			case 9: /* V */
+				selector = OS.sel_paste_;
+				break;
+			case 0: /* A */
+				selector = OS.sel_selectAll_;
+				break;
+		}
+		
+		if (selector != 0) {
+			NSApplication.sharedApplication().sendAction(selector, null, panel);
+			return 1;
+		}
+	}
+
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel, arg);
 }
 
 void sendSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ arg) {

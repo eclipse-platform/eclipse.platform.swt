@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 593;
-int OS_nativeFunctionCallCount[593];
+int OS_nativeFunctionCount = 594;
+int OS_nativeFunctionCallCount[594];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -562,6 +562,7 @@ char * OS_nativeFunctionNames[] = {
 #endif
 	"method_1setImplementation",
 	"objc_1allocateClassPair",
+	"objc_1disposeClassPair",
 	"objc_1getClass",
 	"objc_1getMetaClass",
 	"objc_1getProtocol",

@@ -447,6 +447,8 @@ public static final native String class_getName(int /*long*/ cls);
 public static final native void instrumentObjcMessageSends(boolean val);
 /** @param superclass cast=(Class) */
 public static final native int /*long*/ objc_allocateClassPair(int /*long*/ superclass, String name, int /*long*/ extraBytes);
+/** @param klass cast=(Class) */
+public static final native void objc_disposeClassPair(int /*long*/ klass);
 public static final native int /*long*/ objc_getClass(String className);
 public static final native int /*long*/ objc_getMetaClass(String name);
 public static final native int /*long*/ objc_getProtocol(String name);
@@ -1425,6 +1427,7 @@ public static final int /*long*/ sel_path = sel_registerName("path");
 public static final int /*long*/ sel_pathExtension = sel_registerName("pathExtension");
 public static final int /*long*/ sel_pathForResource_ofType_ = sel_registerName("pathForResource:ofType:");
 public static final int /*long*/ sel_performDragOperation_ = sel_registerName("performDragOperation:");
+public static final int /*long*/ sel_performKeyEquivalent_ = sel_registerName("performKeyEquivalent:");
 public static final int /*long*/ sel_performSelector_withObject_afterDelay_inModes_ = sel_registerName("performSelector:withObject:afterDelay:inModes:");
 public static final int /*long*/ sel_performSelectorOnMainThread_withObject_waitUntilDone_ = sel_registerName("performSelectorOnMainThread:withObject:waitUntilDone:");
 public static final int /*long*/ sel_pixelsHigh = sel_registerName("pixelsHigh");
@@ -1562,6 +1565,7 @@ public static final int /*long*/ sel_selectedTextAttributes = sel_registerName("
 public static final int /*long*/ sel_selectedTextBackgroundColor = sel_registerName("selectedTextBackgroundColor");
 public static final int /*long*/ sel_selectedTextColor = sel_registerName("selectedTextColor");
 public static final int /*long*/ sel_sendAction_to_ = sel_registerName("sendAction:to:");
+public static final int /*long*/ sel_sendAction_to_from_ = sel_registerName("sendAction:to:from:");
 public static final int /*long*/ sel_sendEvent_ = sel_registerName("sendEvent:");
 public static final int /*long*/ sel_sender = sel_registerName("sender");
 public static final int /*long*/ sel_separatorItem = sel_registerName("separatorItem");

@@ -570,6 +570,7 @@ typedef enum {
 #endif
 	method_1setImplementation_FUNC,
 	objc_1allocateClassPair_FUNC,
+	objc_1disposeClassPair_FUNC,
 	objc_1getClass_FUNC,
 	objc_1getMetaClass_FUNC,
 	objc_1getProtocol_FUNC,

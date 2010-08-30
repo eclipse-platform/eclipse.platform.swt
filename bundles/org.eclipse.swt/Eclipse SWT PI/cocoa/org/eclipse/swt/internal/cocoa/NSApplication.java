@@ -111,6 +111,10 @@ public int /*long*/ runModalForWindow(NSWindow theWindow) {
 	return OS.objc_msgSend(this.id, OS.sel_runModalForWindow_, theWindow != null ? theWindow.id : 0);
 }
 
+public boolean sendAction(int /*long*/ theAction, id theTarget, id sender) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_sendAction_to_from_, theAction, theTarget != null ? theTarget.id : 0, sender != null ? sender.id : 0);
+}
+
 public void sendEvent(NSEvent theEvent) {
 	OS.objc_msgSend(this.id, OS.sel_sendEvent_, theEvent != null ? theEvent.id : 0);
 }
