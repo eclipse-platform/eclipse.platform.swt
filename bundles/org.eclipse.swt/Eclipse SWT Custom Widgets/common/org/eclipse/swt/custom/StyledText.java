@@ -167,6 +167,7 @@ public class StyledText extends Canvas {
 	int lineSpacing;
 	int alignmentMargin;
 	int newOrientation = SWT.NONE;
+	int accCaretOffset;
 	
 	//block selection
 	boolean blockSelection;
@@ -2408,6 +2409,7 @@ void doBlockSelection(boolean sendEvent) {
 	if (sendEvent) {
 		sendSelectionEvent();
 	}
+	sendAccessibleTextCaretMoved();
 }
 /**
  * Replaces the selection with the character or insert the character at the 
@@ -3216,6 +3218,7 @@ void doSelection(int direction) {
 		internalRedrawRange(redrawStart, redrawEnd - redrawStart);
 		sendSelectionEvent();
 	}
+	sendAccessibleTextCaretMoved();
 }
 /**
  * Moves the caret to the next character or to the beginning of the 
@@ -7795,6 +7798,7 @@ void resetCache(int firstLine, int count) {
 void resetSelection() {
 	selection.x = selection.y = caretOffset;
 	selectionAnchor = -1;
+	sendAccessibleTextCaretMoved();
 }
 
 public void scroll(int destX, int destY, int x, int y, int width, int height, boolean all) {
@@ -7927,6 +7931,12 @@ void scrollText(int srcY, int destY) {
 	}
 	if ((clientAreaHeight - bottomMargin < destY + scrollHeight) && (clientAreaHeight > destY)) {
 		super.redraw(leftMargin, clientAreaHeight - bottomMargin, scrollWidth, bottomMargin, false);
+	}
+}
+void sendAccessibleTextCaretMoved() {
+	if (caretOffset != accCaretOffset) {
+		accCaretOffset = caretOffset;
+		getAccessible().textCaretMoved(caretOffset);
 	}
 }
 void sendAccessibleTextChanged(int start, int newCharCount, int replaceCharCount) {
@@ -8435,7 +8445,6 @@ void setCaretOffset(int offset, int alignment) {
 			event.end = caretOffset;
 			notifyListeners(CaretMoved, event);
 		}
-		getAccessible().textCaretMoved(caretOffset);
 	}
 	if (alignment != SWT.DEFAULT) {
 		caretAlignment = alignment;
@@ -9480,6 +9489,7 @@ void setSelection(int start, int length, boolean sendEvent, boolean doBlock) {
 				setCaretOffset(end, PREVIOUS_OFFSET_TRAILING);
 			}
 			internalRedrawRange(selection.x, selection.y - selection.x);
+			sendAccessibleTextCaretMoved();
 		}
 	}
 }
