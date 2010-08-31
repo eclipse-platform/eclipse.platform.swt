@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -34,6 +35,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class ColorDialog extends Dialog {
+	NSColorPanel panel;
 	RGB rgb;
 	boolean selected;
 
@@ -120,7 +122,20 @@ public RGB getRGB() {
  * </ul>
  */
 public RGB open() {	
-	NSColorPanel panel = NSColorPanel.sharedColorPanel();
+	panel = NSColorPanel.sharedColorPanel();
+	// Install a callback so editing keys work.
+	int /*long*/ panelClass = 0;
+	int /*long*/ swtPanelClass = 0;
+	Callback performKeyEquivalentCallback = null;
+	String className = "SWTFileDialogPanel";
+	performKeyEquivalentCallback = new Callback(this, "performKeyEquivalent", 3);
+	int /*long*/ proc = performKeyEquivalentCallback.getAddress();
+	if (proc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	swtPanelClass = OS.objc_allocateClassPair(OS.object_getClass(panel.id), className, 0);
+	OS.class_addMethod(swtPanelClass, OS.sel_performKeyEquivalent_, proc, "@:@");
+	OS.objc_registerClassPair(swtPanelClass);
+	panelClass = OS.object_setClass(panel.id, swtPanelClass);
+	
 	if (rgb != null) {
 		NSColor color = NSColor.colorWithDeviceRed(rgb.red / 255f, rgb.green / 255f, rgb.blue / 255f, 1);
 		panel.setColor(color);
@@ -137,6 +152,9 @@ public RGB open() {
 	display.setModalDialog(this);
 	NSApplication.sharedApplication().runModalForWindow(panel);
 	display.setModalDialog(null);
+	OS.object_setClass(panel.id, panelClass);
+	OS.objc_disposeClassPair(swtPanelClass);
+	if (performKeyEquivalentCallback != null) performKeyEquivalentCallback.dispose();
 	panel.setDelegate(null);
 	delegate.release();
 	OS.DeleteGlobalRef(jniRef);
@@ -160,6 +178,44 @@ public RGB open() {
  */
 public void setRGB(RGB rgb) {
 	this.rgb = rgb;
+}
+
+int /*long*/ performKeyEquivalent(int /*long*/ id, int /*long*/ sel, int /*long*/ arg) {
+	NSEvent nsEvent = new NSEvent(arg);
+	int stateMask = 0;
+	int /*long*/ selector = 0;
+	int /*long*/ modifierFlags = nsEvent.modifierFlags();
+	if ((modifierFlags & OS.NSAlternateKeyMask) != 0) stateMask |= SWT.ALT;
+	if ((modifierFlags & OS.NSShiftKeyMask) != 0) stateMask |= SWT.SHIFT;
+	if ((modifierFlags & OS.NSControlKeyMask) != 0) stateMask |= SWT.CONTROL;
+	if ((modifierFlags & OS.NSCommandKeyMask) != 0) stateMask |= SWT.COMMAND;
+	if (stateMask == SWT.COMMAND) {
+		short keyCode = nsEvent.keyCode ();
+		switch (keyCode) {
+			case 7: /* X */
+				selector = OS.sel_cut_;
+				break;
+			case 8: /* C */
+				selector = OS.sel_copy_;
+				break;
+			case 9: /* V */
+				selector = OS.sel_paste_;
+				break;
+			case 0: /* A */
+				selector = OS.sel_selectAll_;
+				break;
+		}
+		
+		if (selector != 0) {
+			NSApplication.sharedApplication().sendAction(selector, null, panel);
+			return 1;
+		}
+	}
+
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel, arg);
 }
 
 void windowWillClose(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {

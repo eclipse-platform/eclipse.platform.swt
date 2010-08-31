@@ -204,8 +204,8 @@ public String open () {
 	fileNames = new String [0];
 	int /*long*/ method = 0;
 	int /*long*/ methodImpl = 0;
-	int /*long*/ savePanelClass = 0;
-	int /*long*/ swtSavePanelClass = 0;
+	int /*long*/ panelClass = 0;
+	int /*long*/ swtPanelClass = 0;
 	Callback callback = null, performKeyEquivalentCallback = null;
 	if ((style & SWT.SAVE) != 0) {
 		NSSavePanel savePanel = NSSavePanel.savePanel();
@@ -217,20 +217,22 @@ public String open () {
 			method = OS.class_getInstanceMethod(OS.class_NSSavePanel, OS.sel_overwriteExistingFileCheck);
 			if (method != 0) methodImpl = OS.method_setImplementation(method, proc);
 		}
-		
-		String className = "SWTSavePanel";
-		performKeyEquivalentCallback = new Callback(this, "performKeyEquivalent", 3);
-		int /*long*/ proc = performKeyEquivalentCallback.getAddress();
-		if (proc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		swtSavePanelClass = OS.objc_allocateClassPair(OS.object_getClass(panel.id), className, 0);
-		OS.class_addMethod(swtSavePanelClass, OS.sel_performKeyEquivalent_, proc, "@:@");
-		OS.objc_registerClassPair(swtSavePanelClass);
-		savePanelClass = OS.object_setClass(panel.id, swtSavePanelClass);
 	} else {
 		NSOpenPanel openPanel = NSOpenPanel.openPanel();
 		openPanel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
 		panel = openPanel;
 	}
+	
+	// Install a callback so editing keys work.
+	String className = "SWTFileDialogPanel";
+	performKeyEquivalentCallback = new Callback(this, "performKeyEquivalent", 3);
+	int /*long*/ proc = performKeyEquivalentCallback.getAddress();
+	if (proc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	swtPanelClass = OS.objc_allocateClassPair(OS.object_getClass(panel.id), className, 0);
+	OS.class_addMethod(swtPanelClass, OS.sel_performKeyEquivalent_, proc, "@:@");
+	OS.objc_registerClassPair(swtPanelClass);
+	panelClass = OS.object_setClass(panel.id, swtPanelClass);
+	
 	panel.setCanCreateDirectories(true);
 	OS.objc_msgSend(panel.id, OS.sel_setShowsHiddenFiles_, true);
 	int /*long*/ jniRef = 0;
@@ -280,11 +282,11 @@ public String open () {
 		if (method != 0) OS.method_setImplementation(method, methodImpl);
 		if (callback != null) callback.dispose();
 	}
-	if ((style & SWT.SAVE) != 0) {
-		OS.object_setClass(panel.id, savePanelClass);
-		OS.objc_disposeClassPair(swtSavePanelClass);
-		if (performKeyEquivalentCallback != null) performKeyEquivalentCallback.dispose();
-	}
+
+	OS.object_setClass(panel.id, panelClass);
+	OS.objc_disposeClassPair(swtPanelClass);
+	if (performKeyEquivalentCallback != null) performKeyEquivalentCallback.dispose();
+
 	if (popup != null) {
 		filterIndex = (int)/*64*/popup.indexOfSelectedItem();
 	} else {

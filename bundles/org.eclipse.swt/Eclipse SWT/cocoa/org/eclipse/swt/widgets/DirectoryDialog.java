@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
 
@@ -35,6 +36,7 @@ import org.eclipse.swt.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class DirectoryDialog extends Dialog {
+	NSOpenPanel panel;
 	String message = "", filterPath = "";
 
 /**
@@ -123,8 +125,22 @@ public String getMessage () {
  */
 public String open () {
 	String directoryPath = null;
-	NSOpenPanel panel = NSOpenPanel.openPanel();
-    OS.objc_msgSend(panel.id, OS.sel_setShowsHiddenFiles_, true);
+	panel = NSOpenPanel.openPanel();
+
+	// Install a callback so editing keys work.
+	int /*long*/ panelClass = 0;
+	int /*long*/ swtPanelClass = 0;
+	String className = "SWTFileDialogPanel";
+	Callback performKeyEquivalentCallback = null;
+	performKeyEquivalentCallback = new Callback(this, "performKeyEquivalent", 3);
+	int /*long*/ proc = performKeyEquivalentCallback.getAddress();
+	if (proc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	swtPanelClass = OS.objc_allocateClassPair(OS.object_getClass(panel.id), className, 0);
+	OS.class_addMethod(swtPanelClass, OS.sel_performKeyEquivalent_, proc, "@:@");
+	OS.objc_registerClassPair(swtPanelClass);
+	panelClass = OS.object_setClass(panel.id, swtPanelClass);
+	
+	OS.objc_msgSend(panel.id, OS.sel_setShowsHiddenFiles_, true);
 	panel.setCanCreateDirectories(true);
 	panel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
@@ -143,12 +159,53 @@ public String open () {
 		application.endSheet(panel, 0);
 	}
 	display.setModalDialog(null);
+	OS.object_setClass(panel.id, panelClass);
+	OS.objc_disposeClassPair(swtPanelClass);
+	if (performKeyEquivalentCallback != null) performKeyEquivalentCallback.dispose();
 	if (response == OS.NSFileHandlingPanelOKButton) {
 		NSString filename = panel.filename();
 		directoryPath = filterPath = filename.getString();
 	}
 //	options.optionFlags = OS.kNavSupportPackages | OS.kNavAllowOpenPackages | OS.kNavAllowInvisibleFiles;
 	return directoryPath;
+}
+
+int /*long*/ performKeyEquivalent(int /*long*/ id, int /*long*/ sel, int /*long*/ arg) {
+	NSEvent nsEvent = new NSEvent(arg);
+	int stateMask = 0;
+	int /*long*/ selector = 0;
+	int /*long*/ modifierFlags = nsEvent.modifierFlags();
+	if ((modifierFlags & OS.NSAlternateKeyMask) != 0) stateMask |= SWT.ALT;
+	if ((modifierFlags & OS.NSShiftKeyMask) != 0) stateMask |= SWT.SHIFT;
+	if ((modifierFlags & OS.NSControlKeyMask) != 0) stateMask |= SWT.CONTROL;
+	if ((modifierFlags & OS.NSCommandKeyMask) != 0) stateMask |= SWT.COMMAND;
+	if (stateMask == SWT.COMMAND) {
+		short keyCode = nsEvent.keyCode ();
+		switch (keyCode) {
+			case 7: /* X */
+				selector = OS.sel_cut_;
+				break;
+			case 8: /* C */
+				selector = OS.sel_copy_;
+				break;
+			case 9: /* V */
+				selector = OS.sel_paste_;
+				break;
+			case 0: /* A */
+				selector = OS.sel_selectAll_;
+				break;
+		}
+		
+		if (selector != 0) {
+			NSApplication.sharedApplication().sendAction(selector, null, panel);
+			return 1;
+		}
+	}
+
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel, arg);
 }
 
 /**
