@@ -167,7 +167,8 @@ public class Display extends Device {
 	static Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	static Callback dialogCallback3, dialogCallback4, dialogCallback5;
 	static Callback applicationCallback2, applicationCallback3, applicationCallback4, applicationCallback6;
-	
+	static Callback performKeyEquivalentCallback;
+
 	/* Display Shutdown */
 	Runnable [] disposeList;
 	
@@ -3260,6 +3261,44 @@ int /*long*/ observerProc (int /*long*/ observer, int /*long*/ activity, int /*l
 	return 0;
 }
 
+static int /*long*/ performKeyEquivalent(int /*long*/ id, int /*long*/ sel, int /*long*/ arg) {
+	NSEvent nsEvent = new NSEvent(arg);
+	int stateMask = 0;
+	int /*long*/ selector = 0;
+	int /*long*/ modifierFlags = nsEvent.modifierFlags();
+	if ((modifierFlags & OS.NSAlternateKeyMask) != 0) stateMask |= SWT.ALT;
+	if ((modifierFlags & OS.NSShiftKeyMask) != 0) stateMask |= SWT.SHIFT;
+	if ((modifierFlags & OS.NSControlKeyMask) != 0) stateMask |= SWT.CONTROL;
+	if ((modifierFlags & OS.NSCommandKeyMask) != 0) stateMask |= SWT.COMMAND;
+	if (stateMask == SWT.COMMAND) {
+		short keyCode = nsEvent.keyCode ();
+		switch (keyCode) {
+			case 7: /* X */
+				selector = OS.sel_cut_;
+				break;
+			case 8: /* C */
+				selector = OS.sel_copy_;
+				break;
+			case 9: /* V */
+				selector = OS.sel_paste_;
+				break;
+			case 0: /* A */
+				selector = OS.sel_selectAll_;
+				break;
+		}
+		
+		if (selector != 0) {
+			NSApplication.sharedApplication().sendAction(selector, null, NSApplication.sharedApplication());
+			return 1;
+		}
+	}
+
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel, arg);
+}
+
 /**
  * Reads an event from the operating system's event queue,
  * dispatches it appropriately, and returns <code>true</code>
@@ -3807,6 +3846,24 @@ void sendEvent (EventTable table, Event event) {
 	} finally {
 		sendEventCount--;
 	}
+}
+
+void subclassPanel(id panel, String swtClassName) {
+	if (performKeyEquivalentCallback == null) performKeyEquivalentCallback = new Callback(getClass(), "performKeyEquivalent", 3);
+	int /*long*/ proc = performKeyEquivalentCallback.getAddress();
+	if (proc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	int /*long*/ cls = OS.object_getClass(panel.id);
+	if (cls == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	// If the implementation is the callback's the class is already subclassed, so don't do it again.
+	int /*long*/ procPtr = OS.class_getMethodImplementation(cls, OS.sel_performKeyEquivalent_);
+	if (procPtr == proc) return;
+	int /*long*/ swtPanelClass = OS.objc_getClass(swtClassName);
+	if (swtPanelClass == 0) {
+		swtPanelClass = OS.objc_allocateClassPair(OS.object_getClass(panel.id), swtClassName, 0);
+		OS.class_addMethod(swtPanelClass, OS.sel_performKeyEquivalent_, proc, "@:@");
+		OS.objc_registerClassPair(swtPanelClass);
+	}
+	OS.object_setClass(panel.id, swtPanelClass);
 }
 
 static NSString getApplicationName() {

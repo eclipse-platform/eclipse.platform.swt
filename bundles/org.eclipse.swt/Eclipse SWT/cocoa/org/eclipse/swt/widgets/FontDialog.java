@@ -35,7 +35,6 @@ import org.eclipse.swt.internal.cocoa.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class FontDialog extends Dialog {
-	NSFontPanel panel;
 	FontData fontData;
 	RGB rgb;
 	boolean selected;
@@ -144,21 +143,9 @@ public RGB getRGB () {
  */
 public FontData open () {
 	Display display = parent != null ? parent.display : Display.getCurrent ();	
-	panel = NSFontPanel.sharedFontPanel();
-
-	// Install a callback so editing keys work.
-	int /*long*/ panelClass = 0;
-	int /*long*/ swtPanelClass = 0;
-	Callback performKeyEquivalentCallback = null;
+	NSFontPanel panel = NSFontPanel.sharedFontPanel();
 	String className = "SWTFontDialogPanel";
-	performKeyEquivalentCallback = new Callback(this, "performKeyEquivalent", 3);
-	int /*long*/ proc = performKeyEquivalentCallback.getAddress();
-	if (proc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	swtPanelClass = OS.objc_allocateClassPair(OS.object_getClass(panel.id), className, 0);
-	OS.class_addMethod(swtPanelClass, OS.sel_performKeyEquivalent_, proc, "@:@");
-	OS.objc_registerClassPair(swtPanelClass);
-	panelClass = OS.object_setClass(panel.id, swtPanelClass);
-	
+	display.subclassPanel(panel, className);
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
 	boolean create = fontData != null;
 	Font font = create ? new Font(display, fontData) : display.getSystemFont();
@@ -174,9 +161,6 @@ public FontData open () {
 	display.setModalDialog(this);
 	NSApplication.sharedApplication().runModalForWindow(panel);
 	display.setModalDialog(null);
-	OS.object_setClass(panel.id, panelClass);
-	OS.objc_disposeClassPair(swtPanelClass);
-	if (performKeyEquivalentCallback != null) performKeyEquivalentCallback.dispose();
 	if (selected) {
 		NSFont nsFont = panel.panelConvertFont(font.handle);
 		if (nsFont != null) {
@@ -188,44 +172,6 @@ public FontData open () {
 	OS.DeleteGlobalRef(jniRef);
 	if (create) font.dispose();
 	return fontData;
-}
-
-int /*long*/ performKeyEquivalent(int /*long*/ id, int /*long*/ sel, int /*long*/ arg) {
-	NSEvent nsEvent = new NSEvent(arg);
-	int stateMask = 0;
-	int /*long*/ selector = 0;
-	int /*long*/ modifierFlags = nsEvent.modifierFlags();
-	if ((modifierFlags & OS.NSAlternateKeyMask) != 0) stateMask |= SWT.ALT;
-	if ((modifierFlags & OS.NSShiftKeyMask) != 0) stateMask |= SWT.SHIFT;
-	if ((modifierFlags & OS.NSControlKeyMask) != 0) stateMask |= SWT.CONTROL;
-	if ((modifierFlags & OS.NSCommandKeyMask) != 0) stateMask |= SWT.COMMAND;
-	if (stateMask == SWT.COMMAND) {
-		short keyCode = nsEvent.keyCode ();
-		switch (keyCode) {
-			case 7: /* X */
-				selector = OS.sel_cut_;
-				break;
-			case 8: /* C */
-				selector = OS.sel_copy_;
-				break;
-			case 9: /* V */
-				selector = OS.sel_paste_;
-				break;
-			case 0: /* A */
-				selector = OS.sel_selectAll_;
-				break;
-		}
-		
-		if (selector != 0) {
-			NSApplication.sharedApplication().sendAction(selector, null, panel);
-			return 1;
-		}
-	}
-
-	objc_super super_struct = new objc_super();
-	super_struct.receiver = id;
-	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
-	return OS.objc_msgSendSuper(super_struct, sel, arg);
 }
 
 void setColor_forAttribute(int /*long*/ id, int /*long*/ sel, int /*long*/ colorArg, int /*long*/ attribute) {
