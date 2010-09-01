@@ -107,7 +107,7 @@ public class ControlsWithLabelsExample {
 		list.setItems(new String[] {"Item0", "Item1", "Item2"});
 
 		new Label(comp, SWT.NONE).setText("Label for Spinner");
-		spinner = new Spinner(comp, SWT.NONE);
+		spinner = new Spinner(comp, SWT.BORDER);
 
 		new Label(comp, SWT.NONE).setText("Label for Single-line Text");
 		textSingle = new Text(comp, SWT.SINGLE | SWT.BORDER);
@@ -255,7 +255,7 @@ public class ControlsWithLabelsExample {
 		new Label(comp, SWT.NONE).setText("Label for Sash");
 		sash = new Sash(comp, SWT.NONE);
 
-		comp.setSize(comp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		comp.pack();
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {
