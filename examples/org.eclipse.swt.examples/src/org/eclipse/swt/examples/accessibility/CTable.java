@@ -529,6 +529,15 @@ void createItem (CTableItem item) {
 		items [i].index = i;
 	}
 
+	/* Rows were added, so notify the accessible. */
+	int[] eventData = new int[5];
+	eventData[0] = ACC.INSERT;
+	eventData[1] = index;
+	eventData[2] = 1;
+	eventData[3] = 0;
+	eventData[4] = 0;
+	getAccessible().sendEvent(ACC.EVENT_TABLE_CHANGED, eventData);
+
 	/* update scrollbars */
 	updateVerticalBar ();
 	Rectangle bounds = item.getBounds (false);
@@ -655,7 +664,10 @@ public void deselectAll () {
 			redrawItem (oldSelection [i].index, true);
 		}
 	}
-	getAccessible().selectionChanged();
+	for (int i = 0; i < oldSelection.length; i++) {
+		oldSelection[i].getAccessible(getAccessible(), 0).selectionChanged();
+	}
+	if (oldSelection.length > 0) getAccessible().selectionChanged();
 }
 void deselectItem (CTableItem item) {
 	int index = getSelectionIndex (item);
@@ -669,6 +681,7 @@ void deselectItem (CTableItem item) {
 		index,
 		newSelectedItems.length - index);
 	selectedItems = newSelectedItems;
+	item.getAccessible(getAccessible(), 0).selectionChanged();
 }
 void destroyItem (CTableColumn column) {
 	headerHideToolTip ();
@@ -821,10 +834,10 @@ void destroyItem (CTableItem item) {
 
 	int[] eventData = new int[5];
 	eventData[0] = ACC.DELETE;
-	eventData[1] = 0;
-	eventData[2] = 0;
-	eventData[3] = index;
-	eventData[4] = 1;
+	eventData[1] = index;
+	eventData[2] = 1;
+	eventData[3] = 0;
+	eventData[4] = 0;
 	getAccessible().sendEvent(ACC.EVENT_TABLE_CHANGED, eventData);
 }
 Image getArrowDownImage () {
@@ -3300,6 +3313,13 @@ public void remove (int index) {
 	checkWidget ();
 	if (!(0 <= index && index < itemsCount)) SWT.error (SWT.ERROR_INVALID_RANGE);
 	items [index].dispose ();
+	int[] eventData = new int[5];
+	eventData[0] = ACC.DELETE;
+	eventData[1] = index;
+	eventData[2] = 1;
+	eventData[3] = 0;
+	eventData[4] = 0;
+	getAccessible().sendEvent(ACC.EVENT_TABLE_CHANGED, eventData);
 }
 /**
  * Removes the items from the receiver which are
@@ -3329,6 +3349,15 @@ public void remove (int start, int end) {
 		for (int i = end; i >= start; i--) {
 			items [i].dispose ();
 		}
+		
+		int[] eventData = new int[5];
+		eventData[0] = ACC.DELETE;
+		eventData[1] = start;
+		eventData[2] = end - start + 1;
+		eventData[3] = 0;
+		eventData[4] = 0;
+		getAccessible().sendEvent(ACC.EVENT_TABLE_CHANGED, eventData);
+
 	}
 }
 /**
@@ -3358,9 +3387,16 @@ public void remove (int [] indices) {
 		SWT.error (SWT.ERROR_INVALID_RANGE);
 	}
 	int lastRemovedIndex = -1;
+	int[] eventData = new int[5];
 	for (int i = 0; i < newIndices.length; i++) {
 		if (newIndices [i] != lastRemovedIndex) {
 			items [newIndices [i]].dispose ();
+			eventData[0] = ACC.DELETE;
+			eventData[1] = newIndices[i];
+			eventData[2] = 1;
+			eventData[3] = 0;
+			eventData[4] = 0;
+			getAccessible().sendEvent(ACC.EVENT_TABLE_CHANGED, eventData);
 			lastRemovedIndex = newIndices [i];
 		}
 	}
@@ -3578,6 +3614,9 @@ public void selectAll () {
 	if (isFocusControl () || (getStyle () & SWT.HIDE_SELECTION) == 0) {
 		redraw ();
 	}
+	for (int i = 0; i < selectedItems.length; i++) {
+		selectedItems[i].getAccessible(getAccessible(), 0).selectionChanged();
+	}
 	getAccessible().selectionChanged();
 }
 void selectItem (CTableItem item, boolean addToSelection) {
@@ -3591,12 +3630,18 @@ void selectItem (CTableItem item, boolean addToSelection) {
 				}
 			}
 		}
+		for (int i = 0; i < oldSelectedItems.length; i++) {
+			oldSelectedItems[i].getAccessible(getAccessible(), 0).selectionChanged();
+		}
 	} else {
 		if (item.isSelected ()) return;
 		selectedItems = new CTableItem [selectedItems.length + 1];
 		System.arraycopy (oldSelectedItems, 0, selectedItems, 0, oldSelectedItems.length);
 		selectedItems [selectedItems.length - 1] = item;
 	}
+
+	item.getAccessible(getAccessible(), 0).selectionChanged();
+	getAccessible().selectionChanged();
 }
 public void setBackground (Color color) {
 	checkWidget ();
@@ -3674,10 +3719,12 @@ public void setColumnOrder (int [] order) {
 void setFocusItem (CTableItem item, boolean redrawOldFocus) {
 	if (item == focusItem) return;
 	CTableItem oldFocusItem = focusItem;
+	if (oldFocusItem != null) oldFocusItem.getAccessible(getAccessible(), 0).setFocus(ACC.CHILDID_SELF);
 	focusItem = item;
 	if (redrawOldFocus && oldFocusItem != null) {
 		redrawItem (oldFocusItem.index, true);
 	}
+	if (focusItem != null) focusItem.getAccessible(getAccessible(), 0).setFocus(ACC.CHILDID_SELF);
 }
 public void setFont (Font value) {
 	checkWidget ();
@@ -3984,21 +4031,27 @@ void setSelection (CTableItem[] items, boolean updateViewport) {
 		return;
 	}
 
+	boolean tableSelectionChanged = false;
 	if (isFocusControl () || (getStyle () & SWT.HIDE_SELECTION) == 0) {
 		for (int i = 0; i < oldSelection.length; i++) {
 			if (!oldSelection [i].isSelected ()) {
 				redrawItem (oldSelection [i].index, true);
+				oldSelection[i].getAccessible(getAccessible(), 0).selectionChanged();
+				tableSelectionChanged = true;
 			}
 		}
 		for (int i = 0; i < selectedItems.length; i++) {
 			redrawItem (selectedItems [i].index, true);
+			selectedItems[i].getAccessible(getAccessible(), 0).selectionChanged();
+			tableSelectionChanged = true;
 		}
 	}
 	if (updateViewport) {
 		showItem (selectedItems [0]);
 		setFocusItem (selectedItems [0], true);
 	}
-	getAccessible().selectionChanged();
+	
+	if (tableSelectionChanged) getAccessible().selectionChanged();
 }
 /**
  * Sets the column used by the sort indicator for the receiver. A null
