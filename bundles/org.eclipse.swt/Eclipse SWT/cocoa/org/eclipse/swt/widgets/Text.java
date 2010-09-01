@@ -343,7 +343,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if ((style & SWT.SINGLE) != 0) {
 		NSCell cell = ((NSTextField) view).cell ();
 		NSSize size = cell.cellSize ();
-		if (cell.title ().length () > 0) {
+		NSString str = ((NSTextField) view).stringValue();
+		if (str.length () > 0) {
 			width = (int)Math.ceil (size.width);
 		}
 		height = (int)Math.ceil (size.height);
@@ -736,7 +737,7 @@ public int getCaretPosition () {
 public int getCharCount () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		return (int)/*64*/new NSCell (((NSControl) view).cell ()).title ().length ();
+		return (int)((NSControl) view).stringValue().length ();
 	} else {
 		return (int)/*64*/((NSTextView) view).textStorage ().length ();
 	}
@@ -802,7 +803,7 @@ public boolean getEditable () {
 char [] getEditText () {
 	NSString str = null;
 	if ((style & SWT.SINGLE) != 0) {
-		str = new NSTextFieldCell (((NSTextField) view).cell ()).title ();
+		str = ((NSTextField) view).stringValue();
 	} else {
 		str = ((NSTextView)view).textStorage().string();
 	}
@@ -822,7 +823,7 @@ char [] getEditText () {
 char [] getEditText (int start, int end) {
 	NSString str = null;
 	if ((style & SWT.SINGLE) != 0) {
-		str = new NSTextFieldCell (((NSTextField) view).cell ()).title ();
+		str = ((NSTextField) view).stringValue();
 	} else {
 		str = ((NSTextView)view).textStorage().string();
 	}
@@ -984,7 +985,7 @@ public Point getSelection () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
 		if (selectionRange == null) {
-			NSString str = new NSTextFieldCell (((NSTextField) view).cell ()).title ();
+			NSString str = ((NSTextField) view).stringValue();
 			return new Point((int)/*64*/str.length (), (int)/*64*/str.length ());
 		}
 		return new Point ((int)/*64*/selectionRange.location, (int)/*64*/(selectionRange.location + selectionRange.length));
@@ -1590,8 +1591,13 @@ void setEditText (String string) {
 		buffer = new char [Math.min(string.length (), textLimit)];
 		string.getChars (0, buffer.length, buffer, 0);
 	}
+	NSTextField text = (NSTextField)view;
 	NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
-	new NSCell (((NSTextField) view).cell ()).setTitle (nsstring);
+	text.setStringValue(nsstring);
+	NSText fieldEditor = text.currentEditor();
+	if (fieldEditor != null) {
+		fieldEditor.setString(nsstring);
+	}
 	selectionRange = null;
 }
 
@@ -1755,7 +1761,7 @@ public void setSelection (int start) {
 public void setSelection (int start, int end) {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		NSString str = new NSCell (((NSTextField) view).cell ()).title ();
+		NSString str = ((NSTextField) view).stringValue();
 		int length = (int)/*64*/str.length ();
 		int selStart = Math.min (Math.max (Math.min (start, end), 0), length);
 		int selEnd = Math.min (Math.max (Math.max (start, end), 0), length);
