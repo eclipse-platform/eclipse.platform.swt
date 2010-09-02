@@ -573,7 +573,7 @@ void createHandle () {
 		int styleMask = OS.NSBorderlessWindowMask;
 		if ((style & SWT.TOOL) != 0) {
 			window = (NSWindow) new SWTPanel().alloc();
-			styleMask |= OS.NSUtilityWindowMask;
+			styleMask |= OS.NSUtilityWindowMask | OS.NSNonactivatingPanelMask;
  		} else {
  			window = (NSWindow) new SWTWindow().alloc ();
  		}
