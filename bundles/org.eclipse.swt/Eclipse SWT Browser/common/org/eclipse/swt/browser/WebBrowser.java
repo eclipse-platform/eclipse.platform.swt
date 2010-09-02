@@ -325,7 +325,7 @@ public void createFunction (BrowserFunction function) {
 		Object key = keys.nextElement ();
 		BrowserFunction current = (BrowserFunction)functions.get (key);
 		if (current.name.equals (function.name)) {
-			functions.remove (key);
+			deregisterFunction (current);
 			break;
 		}
 	}
