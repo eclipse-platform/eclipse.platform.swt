@@ -461,6 +461,21 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 					TCHAR buffer = new TCHAR (getCodePage (), text, true);
 					RECT rect = new RECT ();
 					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
+					if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+						flags = OS.DT_CALCRECT | OS.DT_WORDBREAK;
+						rect.right = wHint - width - 2 * border;
+						if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+							rect.right -= CHECK_WIDTH + 3; 
+						} else {
+							rect.right -= 6;
+						}
+						if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+							rect.right -= 2;
+							if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+								rect.right -= 2;
+							}
+						}
+					}
 					OS.DrawText (hDC, buffer, -1, rect, flags);
 					width += rect.right - rect.left;
 					height = Math.max (height, rect.bottom - rect.top);
@@ -1142,6 +1157,7 @@ int widgetStyle () {
 	if ((style & SWT.LEFT) != 0) bits |= OS.BS_LEFT;
 	if ((style & SWT.CENTER) != 0) bits |= OS.BS_CENTER;
 	if ((style & SWT.RIGHT) != 0) bits |= OS.BS_RIGHT;
+	if ((style & SWT.WRAP) != 0) bits |= OS.BS_MULTILINE;
 	if ((style & SWT.PUSH) != 0) return bits | OS.BS_PUSHBUTTON | OS.WS_TABSTOP;
 	if ((style & SWT.CHECK) != 0) return bits | OS.BS_CHECKBOX | OS.WS_TABSTOP;
 	if ((style & SWT.RADIO) != 0) return bits | OS.BS_RADIOBUTTON;
