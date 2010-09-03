@@ -295,7 +295,16 @@ typedef enum {
 	_1g_1main_1context_1query_FUNC,
 	_1g_1main_1context_1release_FUNC,
 	_1g_1malloc_FUNC,
-	_1g_1object_1get_FUNC,
+#ifndef JNI64
+	_1g_1object_1get__I_3B_3II_FUNC,
+#else
+	_1g_1object_1get__J_3B_3IJ_FUNC,
+#endif
+#ifndef JNI64
+	_1g_1object_1get__I_3B_3JI_FUNC,
+#else
+	_1g_1object_1get__J_3B_3JJ_FUNC,
+#endif
 	_1g_1object_1get_1qdata_FUNC,
 	_1g_1object_1new_FUNC,
 	_1g_1object_1notify_FUNC,
@@ -598,6 +607,8 @@ typedef enum {
 	_1gtk_1accel_1group_1new_FUNC,
 	_1gtk_1accel_1groups_1activate_FUNC,
 	_1gtk_1accel_1label_1set_1accel_1widget_FUNC,
+	_1gtk_1accelerator_1get_1default_1mod_1mask_FUNC,
+	_1gtk_1accelerator_1parse_FUNC,
 	_1gtk_1adjustment_1changed_FUNC,
 	_1gtk_1adjustment_1new_FUNC,
 	_1gtk_1adjustment_1set_1value_FUNC,

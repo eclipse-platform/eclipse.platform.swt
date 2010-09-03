@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1366;
-int OS_nativeFunctionCallCount[1366];
+int OS_nativeFunctionCount = 1369;
+int OS_nativeFunctionCallCount[1369];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -287,7 +287,16 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1main_1context_1query",
 	"_1g_1main_1context_1release",
 	"_1g_1malloc",
-	"_1g_1object_1get",
+#ifndef JNI64
+	"_1g_1object_1get__I_3B_3II",
+#else
+	"_1g_1object_1get__J_3B_3IJ",
+#endif
+#ifndef JNI64
+	"_1g_1object_1get__I_3B_3JI",
+#else
+	"_1g_1object_1get__J_3B_3JJ",
+#endif
 	"_1g_1object_1get_1qdata",
 	"_1g_1object_1new",
 	"_1g_1object_1notify",
@@ -590,6 +599,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1accel_1group_1new",
 	"_1gtk_1accel_1groups_1activate",
 	"_1gtk_1accel_1label_1set_1accel_1widget",
+	"_1gtk_1accelerator_1get_1default_1mod_1mask",
+	"_1gtk_1accelerator_1parse",
 	"_1gtk_1adjustment_1changed",
 	"_1gtk_1adjustment_1new",
 	"_1gtk_1adjustment_1set_1value",

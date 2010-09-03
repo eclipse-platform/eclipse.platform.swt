@@ -3633,20 +3633,59 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1malloc)
 }
 #endif
 
-#ifndef NO__1g_1object_1get
-JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1get)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintArray arg2, jintLong arg3)
+#if (!defined(NO__1g_1object_1get__I_3B_3II) && !defined(JNI64)) || (!defined(NO__1g_1object_1get__J_3B_3IJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1get__I_3B_3II)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintArray arg2, jintLong arg3)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1get__J_3B_3IJ)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintArray arg2, jintLong arg3)
+#endif
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1g_1object_1get_FUNC);
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, _1g_1object_1get__I_3B_3II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, _1g_1object_1get__J_3B_3IJ_FUNC);
+#endif
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	g_object_get((GObject *)arg0, (const gchar *)lparg1, lparg2, (const gchar *)NULL);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
-	OS_NATIVE_EXIT(env, that, _1g_1object_1get_FUNC);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, _1g_1object_1get__I_3B_3II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, _1g_1object_1get__J_3B_3IJ_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO__1g_1object_1get__I_3B_3JI) && !defined(JNI64)) || (!defined(NO__1g_1object_1get__J_3B_3JJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1get__I_3B_3JI)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jlongArray arg2, jintLong arg3)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1get__J_3B_3JJ)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jlongArray arg2, jintLong arg3)
+#endif
+{
+	jbyte *lparg1=NULL;
+	jlong *lparg2=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, _1g_1object_1get__I_3B_3JI_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, _1g_1object_1get__J_3B_3JJ_FUNC);
+#endif
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	g_object_get((GObject *)arg0, (const gchar *)lparg1, lparg2, (const gchar *)NULL);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, _1g_1object_1get__I_3B_3JI_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, _1g_1object_1get__J_3B_3JJ_FUNC);
+#endif
 }
 #endif
 
@@ -7247,6 +7286,35 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1accel_1label_1set_1accel_1widget)
 	OS_NATIVE_ENTER(env, that, _1gtk_1accel_1label_1set_1accel_1widget_FUNC);
 	gtk_accel_label_set_accel_widget((GtkAccelLabel *)arg0, (GtkWidget *)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1accel_1label_1set_1accel_1widget_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1accelerator_1get_1default_1mod_1mask
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1accelerator_1get_1default_1mod_1mask)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1accelerator_1get_1default_1mod_1mask_FUNC);
+	rc = (jint)gtk_accelerator_get_default_mod_mask();
+	OS_NATIVE_EXIT(env, that, _1gtk_1accelerator_1get_1default_1mod_1mask_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1accelerator_1parse
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1accelerator_1parse)
+	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1accelerator_1parse_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_accelerator_parse((const gchar *)arg0, (guint *)lparg1, (GdkModifierType *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1accelerator_1parse_FUNC);
 }
 #endif
 

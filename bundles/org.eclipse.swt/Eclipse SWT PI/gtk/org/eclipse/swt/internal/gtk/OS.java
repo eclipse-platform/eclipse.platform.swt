@@ -513,6 +513,7 @@ public class OS extends C {
 	public static final byte[] expander_size = ascii("expander-size");
 	public static final byte[] fixed_height_mode = ascii("fixed-height-mode");
 	public static final byte[] focus_line_width = ascii("focus-line-width");
+	public static final byte[] focus_padding = ascii("focus-padding");
 	public static final byte[] font_desc = ascii("font-desc");
 	public static final byte[] foreground_gdk = ascii("foreground-gdk");
 	public static final byte[] grid_line_width = ascii("grid-line-width");
@@ -522,12 +523,16 @@ public class OS extends C {
 	public static final byte[] gtk_double_click_time = ascii("gtk-double-click-time");
 	public static final byte[] gtk_entry_select_on_focus = ascii("gtk-entry-select-on-focus");
 	public static final byte[] gtk_show_input_method_menu = ascii("gtk-show-input-method-menu");
+	public static final byte[] gtk_menu_bar_accel = ascii("gtk-menu-bar-accel");
 	public static final byte[] inner_border = ascii("inner-border");
 	public static final byte[] horizontal_separator = ascii("horizontal-separator");
 	public static final byte[] inconsistent = ascii("inconsistent");
+	public static final byte[] indicator_size = ascii("indicator-size");
+	public static final byte[] indicator_spacing = ascii("indicator-spacing");
 	public static final byte[] interior_focus = ascii("interior-focus");
 	public static final byte[] mode = ascii("mode");
 	public static final byte[] model = ascii("model");
+	public static final byte[] spacing = ascii("spacing");
 	public static final byte[] pixbuf = ascii("pixbuf");
 	public static final byte[] text = ascii("text");
 	public static final byte[] xalign = ascii("xalign");
@@ -621,6 +626,8 @@ public static final native int /*long*/ localeconv_decimal_point();
  * @param realPath cast=(char *)
  */
 public static final native int /*long*/ realpath(byte[] path, byte[] realPath);
+
+
 
 /** Object private fields accessors */
 
@@ -2621,6 +2628,20 @@ public static final int /*long*/ g_malloc(int /*long*/ size) {
  */
 public static final native void _g_object_get(int /*long*/ object, byte[] first_property_name, int[] value, int /*long*/ terminator);
 public static final void g_object_get(int /*long*/ object, byte[] first_property_name, int[] value, int /*long*/ terminator) {
+	lock.lock();
+	try {
+		_g_object_get(object, first_property_name, value, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param object cast=(GObject *)
+ * @param first_property_name cast=(const gchar *),flags=no_out
+ * @param terminator cast=(const gchar *),flags=sentinel
+ */
+public static final native void _g_object_get(int /*long*/ object, byte[] first_property_name, long[] value, int /*long*/ terminator);
+public static final void g_object_get(int /*long*/ object, byte[] first_property_name, long[] value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_g_object_get(object, first_property_name, value, terminator);
@@ -5574,6 +5595,29 @@ public static final void gdk_window_thaw_updates(int /*long*/ window) {
 	lock.lock();
 	try {
 		_gdk_window_thaw_updates(window);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _gtk_accelerator_get_default_mod_mask();
+public static final int gtk_accelerator_get_default_mod_mask() {
+	lock.lock();
+	try {
+		return _gtk_accelerator_get_default_mod_mask();
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param accelerator cast=(const gchar *)
+ * @param accelerator_key cast=(guint *)
+ * @param accelerator_mods cast=(GdkModifierType *)
+ */
+public static final native void _gtk_accelerator_parse(int /*long*/ accelerator, int [] accelerator_key, int [] accelerator_mods);
+public static final void gtk_accelerator_parse(int /*long*/ accelerator, int [] accelerator_key, int [] accelerator_mods) {
+	lock.lock();
+	try {
+		_gtk_accelerator_parse(accelerator, accelerator_key, accelerator_mods);
 	} finally {
 		lock.unlock();
 	}
