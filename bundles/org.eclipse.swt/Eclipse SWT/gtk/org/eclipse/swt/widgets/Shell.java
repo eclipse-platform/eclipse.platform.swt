@@ -1320,9 +1320,33 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
-	/* Stop menu mnemonics when the shell is disabled */
 	if (widget == shellHandle) {
-		return (state & DISABLED) != 0 ? 1 : 0;
+		/* Stop menu mnemonics when the shell is disabled */
+		if ((state & DISABLED) != 0) return 1;
+		
+		if (menuBar != null && !menuBar.isDisposed ()) {
+			Control focusControl = display.getFocusControl ();
+			if (focusControl != null && (focusControl.hooks (SWT.KeyDown) || focusControl.filters (SWT.KeyDown))) {
+				int /*long*/ [] accel = new int /*long*/ [1];
+				int /*long*/ setting = OS.gtk_settings_get_default ();
+				OS.g_object_get (setting, OS.gtk_menu_bar_accel, accel, 0);
+				if (accel [0] != 0) {
+					int [] keyval = new int [1];
+					int [] mods = new int [1];
+					OS.gtk_accelerator_parse (accel [0], keyval, mods);
+					OS.g_free (accel [0]);
+					if (keyval [0] != 0) {
+						GdkEventKey keyEvent = new GdkEventKey ();
+						OS.memmove (keyEvent, event, GdkEventKey.sizeof);
+						int mask = OS.gtk_accelerator_get_default_mod_mask ();
+						if (keyEvent.keyval == keyval [0] && (keyEvent.state & mask) == (mods [0] & mask)) {
+							return focusControl.gtk_key_press_event (focusControl.focusHandle (), event);
+						}
+					}
+				}
+			}
+		}
+		return 0;
 	}
 	return super.gtk_key_press_event (widget, event);
 }
