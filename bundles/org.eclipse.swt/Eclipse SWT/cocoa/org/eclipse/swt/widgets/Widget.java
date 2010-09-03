@@ -268,6 +268,15 @@ NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
 	return result;
 }
 
+NSSize cellSizeForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	NSSize result = new NSSize();
+	OS.objc_msgSendSuper_stret(result, super_struct, sel, cellFrame);
+	return result;
+}
+
 boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
@@ -657,6 +666,15 @@ void drawBackgroundInClipRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {
 }
 
 void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ image, NSRect rect, int /*long*/ view) {
+}
+
+NSRect drawTitleWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ title, NSRect rect, int /*long*/ view) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	NSRect result = new NSRect();
+	OS.objc_msgSendSuper_stret(result, super_struct, sel, title, rect, view);
+	return result;
 }
 
 void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cellFrame, int /*long*/ view) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,12 @@ public static NSAttributedString attributedStringWithAttachment(NSTextAttachment
 public NSDictionary attributesAtIndex(int /*long*/ location, int /*long*/ range, NSRange rangeLimit) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_attributesAtIndex_longestEffectiveRange_inRange_, location, range, rangeLimit);
 	return result != 0 ? new NSDictionary(result) : null;
+}
+
+public NSRect boundingRectWithSize(NSSize size, int /*long*/ options) {
+	NSRect result = new NSRect();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_boundingRectWithSize_options_, size, options);
+	return result;
 }
 
 public NSRange doubleClickAtIndex(int /*long*/ location) {

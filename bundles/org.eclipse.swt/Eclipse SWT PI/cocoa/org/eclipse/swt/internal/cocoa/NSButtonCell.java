@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,6 +31,12 @@ public NSColor backgroundColor() {
 
 public void drawImage(NSImage image, NSRect frame, NSView controlView) {
 	OS.objc_msgSend(this.id, OS.sel_drawImage_withFrame_inView_, image != null ? image.id : 0, frame, controlView != null ? controlView.id : 0);
+}
+
+public NSRect drawTitle(NSAttributedString title, NSRect frame, NSView controlView) {
+	NSRect result = new NSRect();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_drawTitle_withFrame_inView_, title != null ? title.id : 0, frame, controlView != null ? controlView.id : 0);
+	return result;
 }
 
 public void setBackgroundColor(NSColor color) {

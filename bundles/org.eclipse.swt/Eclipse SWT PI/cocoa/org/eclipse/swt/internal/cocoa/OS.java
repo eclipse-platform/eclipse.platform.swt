@@ -492,6 +492,8 @@ public static final native int /*long*/ CALLBACK_attributedSubstringFromRange_(i
 public static final native int /*long*/ CALLBACK_canDragRowsWithIndexes_atPoint_(int /*long*/ func);
 /** @method callback_types=NSSize;id;SEL;,callback_flags=struct;none;none; */
 public static final native int /*long*/ CALLBACK_cellSize(int /*long*/ func);
+/** @method callback_types=NSSize;id;SEL;NSRect;,callback_flags=struct;none;none;struct; */
+public static final native int /*long*/ CALLBACK_cellSizeForBounds_(int /*long*/ func);
 /** @method callback_types=NSUInteger;id;SEL;NSPoint;,callback_flags=none;none;none;struct; */
 public static final native int /*long*/ CALLBACK_characterIndexForPoint_(int /*long*/ func);
 /** @method callback_types=NSInteger;id;SEL;NSPoint;,callback_flags=none;none;none;struct; */
@@ -512,6 +514,8 @@ public static final native int /*long*/ CALLBACK_drawInteriorWithFrame_inView_(i
 public static final native int /*long*/ CALLBACK_drawLabel_inRect_(int /*long*/ func);
 /** @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
 public static final native int /*long*/ CALLBACK_drawRect_(int /*long*/ func);
+/** @method callback_types=NSRect;id;SEL;NSAttributedString*;NSRect;NSView*;,callback_flags=struct;none;none;none;struct;none; */
+public static final native int /*long*/ CALLBACK_drawTitle_withFrame_inView_(int /*long*/ func);
 /** @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
 public static final native int /*long*/ CALLBACK_drawViewBackgroundInRect_(int /*long*/ func);
 /** @method callback_types=void;id;SEL;NSRect;NSView*;,callback_flags=none;none;none;struct;none; */
@@ -868,6 +872,7 @@ public static final int /*long*/ sel_blueComponent = sel_registerName("blueCompo
 public static final int /*long*/ sel_boolValue = sel_registerName("boolValue");
 public static final int /*long*/ sel_borderWidth = sel_registerName("borderWidth");
 public static final int /*long*/ sel_boundingRectForGlyphRange_inTextContainer_ = sel_registerName("boundingRectForGlyphRange:inTextContainer:");
+public static final int /*long*/ sel_boundingRectWithSize_options_ = sel_registerName("boundingRectWithSize:options:");
 public static final int /*long*/ sel_bounds = sel_registerName("bounds");
 public static final int /*long*/ sel_bundleIdentifier = sel_registerName("bundleIdentifier");
 public static final int /*long*/ sel_bundlePath = sel_registerName("bundlePath");
@@ -1081,6 +1086,7 @@ public static final int /*long*/ sel_drawLabel_inRect_ = sel_registerName("drawL
 public static final int /*long*/ sel_drawRect_ = sel_registerName("drawRect:");
 public static final int /*long*/ sel_drawSortIndicatorWithFrame_inView_ascending_priority_ = sel_registerName("drawSortIndicatorWithFrame:inView:ascending:priority:");
 public static final int /*long*/ sel_drawStatusBarBackgroundInRect_withHighlight_ = sel_registerName("drawStatusBarBackgroundInRect:withHighlight:");
+public static final int /*long*/ sel_drawTitle_withFrame_inView_ = sel_registerName("drawTitle:withFrame:inView:");
 public static final int /*long*/ sel_drawViewBackgroundInRect_ = sel_registerName("drawViewBackgroundInRect:");
 public static final int /*long*/ sel_drawWithExpansionFrame_inView_ = sel_registerName("drawWithExpansionFrame:inView:");
 public static final int /*long*/ sel_drawingRectForBounds_ = sel_registerName("drawingRectForBounds:");
@@ -2172,6 +2178,7 @@ public static final int NSShiftKeyMask = 131072;
 public static final int NSSmallControlSize = 1;
 public static final int NSSquareLineCapStyle = 2;
 public static final int NSStatusWindowLevel = 25;
+public static final int NSStringDrawingUsesLineFragmentOrigin = 1;
 public static final int NSSwitchButton = 3;
 public static final int NSSystemDefined = 14;
 public static final int NSTabCharacter = 9;
@@ -3428,8 +3435,18 @@ public static final native void objc_msgSendSuper_stret(NSRect result, objc_supe
 public static final native void objc_msgSendSuper_stret(NSRect result, objc_super superId, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
 /** @method flags=cast */
 public static final native void objc_msgSendSuper_stret(NSRect result, objc_super superId, int /*long*/ sel, int /*long*/ arg0);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
+public static final native void objc_msgSendSuper_stret(NSRect result, objc_super superId, int /*long*/ sel, int /*long*/ arg0, NSRect arg1, int /*long*/ arg2);
 /** @method flags=cast */
 public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, int /*long*/ sel);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, int /*long*/ sel, NSRect arg0);
 /** @method flags=cast */
 public static final native void objc_msgSendSuper_stret(NSSize result, objc_super superId, int /*long*/ sel, boolean arg0);
 
@@ -3798,8 +3815,18 @@ public static final native void objc_msgSend_stret(NSRect result, int /*long*/ i
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSRect result, int /*long*/ id, int /*long*/ sel, NSRect arg0, int /*long*/ arg1);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native void objc_msgSend_stret(NSRect result, int /*long*/ id, int /*long*/ sel, NSSize arg0, int /*long*/ arg1);
 /** @method flags=cast */
 public static final native void objc_msgSend_stret(NSRect result, int /*long*/ id, int /*long*/ sel, int /*long*/ arg0);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
+public static final native void objc_msgSend_stret(NSRect result, int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSRect arg1, int /*long*/ arg2);
 /** @method flags=cast */
 public static final native void objc_msgSend_stret(NSRect result, int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
 /** @method flags=cast */

@@ -238,6 +238,11 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="boundingRectWithSize:options:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="doubleClickAtIndex:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -631,6 +636,12 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="drawTitle:withFrame:inView:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setBackgroundColor:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -658,7 +669,7 @@
 		<method selector="cellSize" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="cellSizeForBounds:" swt_gen="true">
+		<method selector="cellSizeForBounds:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4564,6 +4575,7 @@
 	<enum name="NSSmallControlSize" swt_gen="true"></enum>
 	<enum name="NSSquareLineCapStyle" swt_gen="true"></enum>
 	<enum name="NSStatusWindowLevel" swt_gen="true"></enum>
+	<enum name="NSStringDrawingUsesLineFragmentOrigin" swt_gen="true"></enum>
 	<enum name="NSSwitchButton" swt_gen="true"></enum>
 	<enum name="NSSystemDefined" swt_gen="true"></enum>
 	<enum name="NSTabCharacter" swt_gen="true"></enum>

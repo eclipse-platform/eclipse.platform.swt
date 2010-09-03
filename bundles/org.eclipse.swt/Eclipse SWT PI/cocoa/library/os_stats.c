@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 594;
-int OS_nativeFunctionCallCount[594];
+int OS_nativeFunctionCount = 600;
+int OS_nativeFunctionCallCount[600];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -25,6 +25,7 @@ char * OS_nativeFunctionNames[] = {
 	"CALLBACK_1canDragRowsWithIndexes_1atPoint_1",
 	"CALLBACK_1cellBaselineOffset",
 	"CALLBACK_1cellSize",
+	"CALLBACK_1cellSizeForBounds_1",
 	"CALLBACK_1characterIndexForPoint_1",
 	"CALLBACK_1columnAtPoint_1",
 	"CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1",
@@ -35,6 +36,7 @@ char * OS_nativeFunctionNames[] = {
 	"CALLBACK_1drawInteriorWithFrame_1inView_1",
 	"CALLBACK_1drawLabel_1inRect_1",
 	"CALLBACK_1drawRect_1",
+	"CALLBACK_1drawTitle_1withFrame_1inView_1",
 	"CALLBACK_1drawViewBackgroundInRect_1",
 	"CALLBACK_1drawWithExpansionFrame_1inView_1",
 	"CALLBACK_1expansionFrameWithFrame_1inView_1",
@@ -999,6 +1001,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJ",
 #endif
 #ifndef JNI64
+	"objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2IILorg_eclipse_swt_internal_cocoa_NSRect_2I",
+#else
+	"objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJLorg_eclipse_swt_internal_cocoa_NSRect_2J",
+#endif
+#ifndef JNI64
 	"objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2",
 #else
 	"objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSRect_2",
@@ -1012,6 +1019,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2I",
 #else
 	"objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2J",
+#endif
+#ifndef JNI64
+	"objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRect_2",
+#else
+	"objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSRect_2",
 #endif
 #ifndef JNI64
 	"objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2IZ",
@@ -1154,6 +1166,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2JJJJZ",
 #endif
 #ifndef JNI64
+	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IIILorg_eclipse_swt_internal_cocoa_NSRect_2I",
+#else
+	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2JJJLorg_eclipse_swt_internal_cocoa_NSRect_2J",
+#endif
+#ifndef JNI64
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSRange_2I",
 #else
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2JJLorg_eclipse_swt_internal_cocoa_NSRange_2J",
@@ -1167,6 +1184,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSRect_2I",
 #else
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2JJLorg_eclipse_swt_internal_cocoa_NSRect_2J",
+#endif
+#ifndef JNI64
+	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSSize_2I",
+#else
+	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2J",
 #endif
 #ifndef JNI64
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2II",

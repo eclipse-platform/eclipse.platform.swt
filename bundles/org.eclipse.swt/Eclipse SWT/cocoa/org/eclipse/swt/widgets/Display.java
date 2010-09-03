@@ -2138,9 +2138,11 @@ void initClasses () {
 	int /*long*/ drawWithExpansionFrameProc = OS.CALLBACK_drawWithExpansionFrame_inView_ (proc4);
 	int /*long*/ imageRectForBoundsProc = OS.CALLBACK_imageRectForBounds_ (proc3);
 	int /*long*/ titleRectForBoundsProc = OS.CALLBACK_titleRectForBounds_ (proc3);
+	int /*long*/ cellSizeForBoundsProc = OS.CALLBACK_cellSizeForBounds_ (proc3);
 	int /*long*/ hitTestForEvent_inRect_ofViewProc = OS.CALLBACK_hitTestForEvent_inRect_ofView_ (proc5);
 	int /*long*/ cellSizeProc = OS.CALLBACK_cellSize (proc2);
 	int /*long*/ drawImageWithFrameInViewProc = OS.CALLBACK_drawImage_withFrame_inView_ (proc5);
+	int /*long*/ drawTitleWithFrameInViewProc = OS.CALLBACK_drawTitle_withFrame_inView_ (proc5);
 	int /*long*/ setFrameOriginProc = OS.CALLBACK_setFrameOrigin_(proc3);
 	int /*long*/ setFrameSizeProc = OS.CALLBACK_setFrameSize_(proc3);
 	int /*long*/ hitTestProc = OS.CALLBACK_hitTest_(proc3);
@@ -2198,9 +2200,11 @@ void initClasses () {
 	OS.class_addIvar (cls, SWT_OBJECT, size, (byte)align, types);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
 	OS.class_addMethod (cls, OS.sel_drawImage_withFrame_inView_, drawImageWithFrameInViewProc, "@:@{NSRect}@");
+	OS.class_addMethod (cls, OS.sel_drawTitle_withFrame_inView_, drawTitleWithFrameInViewProc, "@:@{NSRect}@");
 	OS.class_addMethod(cls, OS.sel_cellSize, cellSizeProc, "@:");
 	OS.class_addMethod(cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
 	OS.class_addMethod(cls, OS.sel_titleRectForBounds_, titleRectForBoundsProc, "@:{NSRect}");
+	OS.class_addMethod(cls, OS.sel_cellSizeForBounds_, cellSizeForBoundsProc, "@:{NSRect}");
 	OS.objc_registerClassPair (cls);
 
 	className = "SWTCanvasView";
@@ -5228,6 +5232,14 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		int /*long*/ result = OS.malloc (NSRect.sizeof);
 		OS.memmove (result, rect, NSRect.sizeof);
 		return result;
+	} else if (sel == OS.sel_cellSizeForBounds_) {
+		NSRect rect = new NSRect();
+		OS.memmove(rect, arg0, NSRect.sizeof);
+		NSSize size = widget.cellSizeForBounds(id, sel, rect);
+		/* NOTE that this is freed in C */
+		int /*long*/ result = OS.malloc (NSSize.sizeof);
+		OS.memmove (result, size, NSSize.sizeof);
+		return result;
 	} else if (sel == OS.sel_setObjectValue_) {
 		widget.setObjectValue(id, sel, arg0);
 	} else if (sel == OS.sel_updateOpenGLContext_) {
@@ -5346,6 +5358,14 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		NSRect rect = new NSRect ();
 		OS.memmove (rect, arg1, NSRect.sizeof);
 		widget.drawImageWithFrameInView (id, sel, arg0, rect, arg2);
+	} else if (sel == OS.sel_drawTitle_withFrame_inView_) {
+		NSRect rect = new NSRect ();
+		OS.memmove (rect, arg1, NSRect.sizeof);
+		rect = widget.drawTitleWithFrameInView (id, sel, arg0, rect, arg2);
+		/* NOTE that this is freed in C */
+		int /*long*/ result = OS.malloc (NSRect.sizeof);
+		OS.memmove (result, rect, NSRect.sizeof);
+		return result;
 	} else if (sel == OS.sel_hitTestForEvent_inRect_ofView_) {
 		NSRect rect = new NSRect ();
 		OS.memmove (rect, arg1, NSRect.sizeof);

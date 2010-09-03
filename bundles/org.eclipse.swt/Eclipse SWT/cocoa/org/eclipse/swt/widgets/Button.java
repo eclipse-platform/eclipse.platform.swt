@@ -54,6 +54,7 @@ public class Button extends Control {
 	static final int IMAGE_GAP = 2;
 	static final int SMALL_BUTTON_HEIGHT = 28;
 	static final int REGULAR_BUTTON_HEIGHT = 32;
+	static final int MAX_SIZE = 40000;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -135,19 +136,40 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.DefaultSelection,typedListener);
 }
 
-NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
-	NSSize size = super.cellSize(id, sel);
+NSSize cellSizeForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) {
+	NSSize size = super.cellSizeForBounds(id, sel, cellFrame);
 	if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
 		NSSize imageSize = image.handle.size();
 		size.width += imageSize.width + IMAGE_GAP;
 		size.height = Math.max(size.height, imageSize.height);
 	}
-
-	if (image != null && ((style & (SWT.PUSH|SWT.TOGGLE)) !=0) && (style & SWT.FLAT) == 0) {
-		NSCell cell = new NSCell(id);
-		if (cell.controlSize() == OS.NSSmallControlSize) size.height += EXTRA_HEIGHT;
+	
+	if (((style & (SWT.PUSH|SWT.TOGGLE)) !=0) && (style & (SWT.FLAT|SWT.WRAP)) == 0) {
+		if (image != null) {
+			NSCell cell = new NSCell(id);
+			if (cell.controlSize() == OS.NSSmallControlSize) size.height += EXTRA_HEIGHT;
+		}
+		// TODO: Why is this necessary?
+		size.width += EXTRA_WIDTH;
 	}
 	
+	if ((style & SWT.WRAP) != 0 && text.length() != 0 && cellFrame.width < MAX_SIZE) {
+		NSCell cell = new NSCell (id);
+		NSRect titleRect = cell.titleRectForBounds(cellFrame);
+		NSSize wrapSize = new NSSize();
+		wrapSize.width = titleRect.width;
+		wrapSize.height = MAX_SIZE;
+		NSAttributedString attribStr = createString(text, null, foreground, style, true, true, true);
+		NSRect rect = attribStr.boundingRectWithSize(wrapSize, OS.NSStringDrawingUsesLineFragmentOrigin);
+		attribStr.release();
+		float /*double*/ trimHeight = size.height - titleRect.height;
+		size.height = rect.height;
+		if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
+			NSSize imageSize = image.handle.size();
+			size.height = Math.max(size.height, imageSize.height);
+		}
+		size.height += trimHeight;
+	}
 	return size;
 }
 
@@ -178,15 +200,20 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int height = hHint != SWT.DEFAULT ? hHint : 14;
 		return new Point (width, height);
 	}
-	NSSize size = ((NSButton)view).cell ().cellSize ();
+	NSSize size = null;
+	NSCell cell = ((NSButton)view).cell ();
+	if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+		NSRect rect = new NSRect ();
+		rect.width = wHint;
+		rect.height = hHint != SWT.DEFAULT ? hHint : MAX_SIZE;
+		size = cell.cellSizeForBounds (rect);
+	} else {
+		size = cell.cellSize ();
+	}
 	int width = (int)Math.ceil (size.width);
 	int height = (int)Math.ceil (size.height);
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
-		// TODO: Why is this necessary?
-		width += EXTRA_WIDTH;
-	}
 	return new Point (width, height);
 }
 
@@ -200,34 +227,25 @@ void createHandle () {
 	if ((style & SWT.PUSH) == 0) state |= THEME_BACKGROUND;
 	NSButton widget = (NSButton)new SWTButton().alloc();
 	widget.init();
-	/*
-	* Feature in Cocoa.  Images touch the edge of rounded buttons
-	* when set to small size. The fix to subclass the button cell
-    * and offset the image drawing.
-	*/
-//	if (display.smallFonts && (style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
-		NSButtonCell cell = (NSButtonCell)new SWTButtonCell ().alloc ().init ();
-		widget.setCell (cell);
-		cell.release ();
-//	}
+	NSButtonCell cell = (NSButtonCell)new SWTButtonCell ().alloc ().init ();
+	widget.setCell (cell);
+	cell.release ();
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
+		NSView superview = parent.view;
+		while (superview != null) {
+			if (superview.isKindOfClass(OS.class_NSTableView)) {
+				style |= SWT.FLAT;
+				break;
+			}
+			superview = superview.superview();
+		}
+	}
 	int type = OS.NSMomentaryLightButton;
 	if ((style & SWT.PUSH) != 0) {
-		boolean flat = (style & SWT.FLAT) != 0;
-		if (!flat) {
-			NSView superview = widget.superview();
-			while (superview != null) {
-				if (superview.isKindOfClass(OS.class_NSTableView)) {
-					flat = true;
-					break;
-				}
-				superview = superview.superview();
-			}
-		}
-		if (flat) {
+		if ((style & SWT.FLAT) != 0) {
 			widget.setBezelStyle(OS.NSShadowlessSquareBezelStyle);
-//			if ((style & SWT.BORDER) == 0) widget.setShowsBorderOnlyWhileMouseInside(true);
 		} else {
-			widget.setBezelStyle(OS.NSRoundedBezelStyle);
+			widget.setBezelStyle((style & SWT.WRAP) != 0 ? OS.NSRegularSquareBezelStyle : OS.NSRoundedBezelStyle);
 		}
 	} else if ((style & SWT.CHECK) != 0) {
 		type = OS.NSSwitchButton;
@@ -237,9 +255,8 @@ void createHandle () {
 		type = OS.NSPushOnPushOffButton;
 		if ((style & SWT.FLAT) != 0) {
 			widget.setBezelStyle(OS.NSShadowlessSquareBezelStyle);
-//			if ((style & SWT.BORDER) == 0) widget.setShowsBorderOnlyWhileMouseInside(true);
 		} else {
-			widget.setBezelStyle(OS.NSRoundedBezelStyle);
+			widget.setBezelStyle((style & SWT.WRAP) != 0 ? OS.NSRegularSquareBezelStyle : OS.NSRoundedBezelStyle);
 		}
 	} else if ((style & SWT.ARROW) != 0) {
 		widget.setBezelStyle(OS.NSShadowlessSquareBezelStyle);
@@ -286,7 +303,7 @@ void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ i
 	*/
 	NSCell cell = ((NSControl)this.view).cell();
 	if (cell != null && cell.controlSize() == OS.NSRegularControlSize) {
-		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
+		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & (SWT.FLAT | SWT.WRAP)) == 0) {
 			rect.y += EXTRA_HEIGHT / 2;
 			rect.height += EXTRA_HEIGHT;
 		}
@@ -331,6 +348,33 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cel
 		NSGraphicsContext.static_restoreGraphicsState();
 	}
 
+}
+
+NSRect drawTitleWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ title, NSRect titleRect, int /*long*/ view) {
+	boolean wrap = (style & SWT.WRAP) != 0 && text.length() != 0;
+	if (wrap) {
+		NSSize wrapSize = new NSSize();
+		wrapSize.width = titleRect.width;
+		wrapSize.height = MAX_SIZE;
+		NSAttributedString attribStr = createString(text, null, foreground, style, true, true, true);
+		NSRect rect = attribStr.boundingRectWithSize(wrapSize, OS.NSStringDrawingUsesLineFragmentOrigin);
+		switch (style & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) {
+			case SWT.LEFT:
+				rect.x = titleRect.x;
+				break;
+			case SWT.CENTER:
+				rect.x = titleRect.x + (titleRect.width - rect.width) / 2f;
+				break;
+			case SWT.RIGHT:
+				rect.x = titleRect.x + titleRect.width - rect.width;
+				break;
+		}
+		rect.y = titleRect.y + (titleRect.height - rect.height) / 2;
+		attribStr.drawInRect(rect);
+		attribStr.release ();
+		return rect;
+	}
+	return super.drawTitleWithFrameInView(id, sel, title, titleRect, view);
 }
 
 boolean drawsBackground() {
@@ -639,7 +683,7 @@ void setBackgroundImage(NSImage image) {
 }
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & (SWT.FLAT | SWT.WRAP)) == 0) {
 		int heightThreshold = REGULAR_BUTTON_HEIGHT;
 		
 		NSCell cell = ((NSControl)view).cell();
@@ -738,10 +782,10 @@ public void setImage (Image image) {
 	}
 	
 	if (image != null) {
-		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & SWT.FLAT) == 0) {
-			NSSize size = ((NSButton)view).cell().cellSize ();
+		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0 && (style & (SWT.FLAT | SWT.WRAP)) == 0) {
+			NSCell cell = ((NSButton)view).cell();
+			NSSize size = cell.cellSize ();
 			int height = (int)Math.ceil(size.height);
-			NSCell cell = ((NSControl)view).cell();
 			if (height > SMALL_BUTTON_HEIGHT) {
 				cell.setControlSize(OS.NSRegularControlSize);
 			} else if (display.smallFonts){
