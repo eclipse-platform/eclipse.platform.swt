@@ -114,6 +114,8 @@ boolean textView_clickOnLink_atIndex(int /*long*/ id, int /*long*/ sel, int /*lo
 	Event event = new Event ();
 	event.text = str.getString();
 	sendSelectionEvent (SWT.Selection, event, true);
+	// Widget may be disposed at this point.
+	if (isDisposed()) return true;
 	for (int i = 0; i < offsets.length; i++) {
 		if ((charIndex >= offsets[i].x) && (charIndex <= offsets[i].y)) {
 			focusIndex = i;
