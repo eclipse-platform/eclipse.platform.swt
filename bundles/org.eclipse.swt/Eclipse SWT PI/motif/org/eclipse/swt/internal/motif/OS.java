@@ -557,6 +557,7 @@ public class OS extends C {
 	public static final int XmNsliderSize = malloc ("sliderSize", 4);
 	public static final int XmNsliderVisual = malloc ("sliderVisual", 4);
 	public static final int XmNsourceCursorIcon = malloc ("sourceCursorIcon", 4);
+	public static final int XmNspacing = malloc ("spacing", 2);
 	public static final int XmNspinBoxChildType = malloc ("spinBoxChildType", 2);
 	public static final int XmNspotLocation = malloc ("spotLocation", 4);
 	public static final int XmNstateCursorIcon = malloc ("stateCursorIcon", 4);

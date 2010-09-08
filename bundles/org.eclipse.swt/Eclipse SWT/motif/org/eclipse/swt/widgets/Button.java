@@ -144,20 +144,47 @@ void _setImage (Image image) {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 void _setText (String string) {
-	char [] text = new char [string.length ()];
-	string.getChars (0, text.length, text, 0);
-	int mnemonic = fixMnemonic (text);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), text, true);
-	int xmString = OS.XmStringParseText (
-		buffer,
-		0,
-		OS.XmFONTLIST_DEFAULT_TAG, 
-		OS.XmCHARSET_TEXT, 
-		null,
-		0,
-		0);	
+	/* Strip out mnemonic marker symbols, and remember the mnemonic. */
+	char [] unicode = new char [string.length ()];
+	string.getChars (0, unicode.length, unicode, 0);
+	int mnemonic = fixMnemonic (unicode);
+	
+	/* Wrap the text if necessary, and convert to mbcs. */
+	byte [] buffer = null;
+	if ((style & SWT.WRAP) != 0) {
+		int [] argList = {
+			OS.XmNwidth, 0,        /* 1 */
+			OS.XmNmarginWidth, 0,  /* 3 */
+			OS.XmNmarginLeft, 0,   /* 5 */
+			OS.XmNmarginRight, 0,  /* 7 */
+			OS.XmNspacing, 0,      /* 9 */
+			OS.XmNdefaultButtonShadowThickness, 0, /* 11 */
+		};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		int width = argList [1] - argList [3] * 2 - argList[5] - argList[7] - argList[9] - argList[11] * 2;
+		if (mnemonic != 0) string = new String (unicode);
+		string = display.wrapText (string, font, width);
+		buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+	} else {
+		buffer = Converter.wcsToMbcs (getCodePage (), unicode, true);
+	}
+	
+	int xmString = OS.XmStringGenerate(buffer, null, OS.XmCHARSET_TEXT, null);
 	if (xmString == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-	if (mnemonic == 0) mnemonic = OS.XK_VoidSymbol;
+		
+	/*
+	* Bug in Solaris.  If a mnemonic is defined to be a character
+	* that appears in a string in a position that follows a '\n',
+	* Solaris segment faults.  For example, a label with text
+	* "Hello\nthe&re" would GP since "r" appears after '\n'.
+	*
+	* The fix is to remove mnemonics from labels that contain
+	* '\n', which is fine since such labels generally just act
+	* as descriptive texts anyways.
+	*/ 
+	if (mnemonic == 0 || string.indexOf ('\n') != -1) {
+		mnemonic = OS.XK_VoidSymbol;
+	}
 	int [] argList = {
 		OS.XmNlabelType, OS.XmSTRING,
 		OS.XmNlabelString, xmString,
@@ -233,24 +260,52 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
 		return new Point (width, height);
 	}
-	XtWidgetGeometry result = new XtWidgetGeometry ();
-	result.request_mode = OS.CWWidth | OS.CWHeight;
-	int [] argList2 = {OS.XmNrecomputeSize, 1};
-	OS.XtSetValues(handle, argList2, argList2.length / 2);
-	OS.XtQueryGeometry (handle, null, result);
-	int [] argList3 = {OS.XmNrecomputeSize, 0};
-	OS.XtSetValues(handle, argList3, argList3.length / 2);
-	width += result.width;
-	height += result.height;
+	int [] argList = {OS.XmNlabelType, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	int labelType = argList [1];
+	if (labelType == OS.XmSTRING && (style & SWT.WRAP) != 0) {
+		/* If we are wrapping text, calculate the height based on wHint. */
+		int [] argList2 = {
+			OS.XmNmarginTop, 0,     /* 1 */
+			OS.XmNmarginBottom, 0,  /* 3 */
+			OS.XmNmarginHeight, 0,  /* 5 */
+			OS.XmNmarginWidth, 0,   /* 7 */
+			OS.XmNmarginLeft, 0,    /* 9 */
+			OS.XmNmarginRight, 0,   /* 11 */
+			OS.XmNspacing, 0, /* 13 */
+			OS.XmNdefaultButtonShadowThickness, 0, /* 15 */
+		};
+		OS.XtGetValues (handle, argList2, argList2.length / 2);
+		int trimWidth = (argList2 [7] * 2) + argList2 [9] + argList2 [11] + argList2 [13] + 2 * border + 2 * argList2[15];
+		String string = text;
+		if (wHint != SWT.DEFAULT) {
+			string = display.wrapText (string, font, wHint - trimWidth);
+		}
+		GC gc = new GC (this);
+		Point extent = gc.textExtent (string);
+		gc.dispose ();
+		height = extent.y + argList2 [1] + argList2 [3] + (argList2 [5] * 2) + (border * 2);
+		if (wHint == SWT.DEFAULT) {
+			width = extent.x + trimWidth;
+		}
+	} else {
+		XtWidgetGeometry result = new XtWidgetGeometry ();
+		result.request_mode = OS.CWWidth | OS.CWHeight;
+		int [] argList2 = {OS.XmNrecomputeSize, 1};
+		OS.XtSetValues(handle, argList2, argList2.length / 2);
+		OS.XtQueryGeometry (handle, null, result);
+		int [] argList3 = {OS.XmNrecomputeSize, 0};
+		OS.XtSetValues(handle, argList3, argList3.length / 2);
+		width += result.width;
+		height += result.height;
+	}
 	/*
 	 * Feature in Motif. If a button's labelType is XmSTRING but it
 	 * has no label set into it yet, recomputing the size will
 	 * not take into account the height of the font, as we would
 	 * like it to. Take care of this case.
 	 */
-	int [] argList = {OS.XmNlabelType, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (argList [1] == OS.XmSTRING) {
+	if (labelType == OS.XmSTRING) {
 		int [] argList1 = {OS.XmNlabelString, 0};
 		OS.XtGetValues (handle, argList1, argList1.length / 2);
 		int xmString = argList1 [1];
@@ -656,6 +711,16 @@ void setBackgroundPixel (int pixel) {
 	if (argList [1] == OS.XmPIXMAP) _setImage (image);
 }
 
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	if (changed && resize && (style & SWT.WRAP) != 0) {
+		int [] argList = {OS.XmNlabelType, 0,};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		if (argList [1] == OS.XmSTRING) _setText (text);
+	} 
+	return changed;
+}
+
 void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
 	if (getShell ().parent == null) return;
@@ -685,7 +750,12 @@ public void setFont (Font font) {
 		OS.XmStringFree (xmString);
 	}
 	super.setFont (font);
-	if (fixString) OS.XtSetValues (handle, argList1, argList1.length / 2);	
+	if (fixString) OS.XtSetValues (handle, argList1, argList1.length / 2);
+	if ((style & SWT.WRAP) != 0) {
+		int [] argList = {OS.XmNlabelType, 0,};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		if (argList [1] == OS.XmSTRING) _setText (text);
+	} 
 }
 /**
  * Sets the grayed state of the receiver.  This state change 
