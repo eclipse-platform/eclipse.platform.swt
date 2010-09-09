@@ -526,12 +526,12 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1soup_1cookie_1jar_1get_1cookies)
 #endif
 
 #ifndef NO__1soup_1cookie_1jar_1get_1type
-JNIEXPORT jint JNICALL WebKitGTK_NATIVE(_1soup_1cookie_1jar_1get_1type)
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1soup_1cookie_1jar_1get_1type)
 	(JNIEnv *env, jclass that)
 {
-	jint rc = 0;
+	jintLong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, _1soup_1cookie_1jar_1get_1type_FUNC);
-	rc = (jint)soup_cookie_jar_get_type();
+	rc = (jintLong)soup_cookie_jar_get_type();
 	WebKitGTK_NATIVE_EXIT(env, that, _1soup_1cookie_1jar_1get_1type_FUNC);
 	return rc;
 }
@@ -604,7 +604,7 @@ fail:
 
 #ifndef NO__1soup_1session_1add_1feature_1by_1type
 JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1soup_1session_1add_1feature_1by_1type)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	WebKitGTK_NATIVE_ENTER(env, that, _1soup_1session_1add_1feature_1by_1type_FUNC);
 	soup_session_add_feature_by_type((SoupSession *)arg0, (GType)arg1);
@@ -634,7 +634,7 @@ JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1soup_1session_1feature_1detach)
 
 #ifndef NO__1soup_1session_1get_1feature
 JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1soup_1session_1get_1feature)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	jintLong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, _1soup_1session_1get_1feature_FUNC);
@@ -855,12 +855,12 @@ fail:
 #endif
 
 #ifndef NO__1webkit_1soup_1auth_1dialog_1get_1type
-JNIEXPORT jint JNICALL WebKitGTK_NATIVE(_1webkit_1soup_1auth_1dialog_1get_1type)
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1soup_1auth_1dialog_1get_1type)
 	(JNIEnv *env, jclass that)
 {
-	jint rc = 0;
+	jintLong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1soup_1auth_1dialog_1get_1type_FUNC);
-	rc = (jint)webkit_soup_auth_dialog_get_type();
+	rc = (jintLong)webkit_soup_auth_dialog_get_type();
 	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1soup_1auth_1dialog_1get_1type_FUNC);
 	return rc;
 }

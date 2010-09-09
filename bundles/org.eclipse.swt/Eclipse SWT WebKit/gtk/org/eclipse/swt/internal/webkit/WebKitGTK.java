@@ -537,8 +537,8 @@ public static final int /*long*/ soup_cookie_jar_get_cookies (int /*long*/ jar, 
 	}
 }
 
-public static final native int _soup_cookie_jar_get_type ();
-public static final int soup_cookie_jar_get_type () {
+public static final native int /*long*/ _soup_cookie_jar_get_type ();
+public static final int /*long*/ soup_cookie_jar_get_type () {
 	lock.lock();
 	try {
 		return _soup_cookie_jar_get_type ();
@@ -689,8 +689,8 @@ public static final void soup_message_headers_append (int /*long*/ headers, byte
  * @param session cast=(SoupSession *)
  * @param type cast=(GType)
  */
-public static final native void _soup_session_add_feature_by_type (int /*long*/ session, int type);
-public static final void soup_session_add_feature_by_type (int /*long*/ session, int type) {
+public static final native void _soup_session_add_feature_by_type (int /*long*/ session, int /*long*/ type);
+public static final void soup_session_add_feature_by_type (int /*long*/ session, int /*long*/ type) {
 	lock.lock();
 	try {
 		_soup_session_add_feature_by_type (session, type);
@@ -703,8 +703,8 @@ public static final void soup_session_add_feature_by_type (int /*long*/ session,
  * @param session cast=(SoupSession *)
  * @param feature_type cast=(GType)
  */
-public static final native int /*long*/ _soup_session_get_feature (int /*long*/ session, int feature_type);
-public static final int /*long*/ soup_session_get_feature (int /*long*/ session, int feature_type) {
+public static final native int /*long*/ _soup_session_get_feature (int /*long*/ session, int /*long*/ feature_type);
+public static final int /*long*/ soup_session_get_feature (int /*long*/ session, int /*long*/ feature_type) {
 	lock.lock();
 	try {
 		return _soup_session_get_feature (session, feature_type);
@@ -963,8 +963,8 @@ public static final int /*long*/ webkit_network_request_new (byte[] uri) {
 	}
 }
 
-public static final native int _webkit_soup_auth_dialog_get_type ();
-public static final int webkit_soup_auth_dialog_get_type () {
+public static final native int /*long*/ _webkit_soup_auth_dialog_get_type ();
+public static final int /*long*/ webkit_soup_auth_dialog_get_type () {
 	lock.lock();
 	try {
 		return _webkit_soup_auth_dialog_get_type ();
