@@ -111,8 +111,11 @@ Rectangle computeBounds () {
 	if (item == null || column == -1 || item.isDisposed()) return new Rectangle(0, 0, 0, 0);
 	Rectangle cell = item.getBounds(column);
 	Rectangle rect = item.getImageBounds(column);
-	cell.x = rect.x + rect.width;
-	cell.width -= rect.width;
+	if (rect.width != 0) {
+		int imageGap = Math.max(rect.x - cell.x, 0);
+		cell.x = rect.x + rect.width;
+		cell.width -= (imageGap + rect.width);
+	}
 	Rectangle area = table.getClientArea();
 	if (cell.x < area.x + area.width) {
 		if (cell.x + cell.width > area.x + area.width) {
