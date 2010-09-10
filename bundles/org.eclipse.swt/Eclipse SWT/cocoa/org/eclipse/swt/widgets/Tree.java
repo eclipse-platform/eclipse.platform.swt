@@ -1025,13 +1025,15 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rec
 		data.paintRect = cellRect;
 		GC gc = GC.cocoa_new (this, data);
 		gc.setFont (item.getFont (columnIndex));
-		if (isSelected) {
-			gc.setForeground (selectionForeground);
+		Color fg;
+		if (isSelected && ((style & SWT.HIDE_SELECTION) == 0 || hasFocus)) {
+			fg = selectionForeground;
 			gc.setBackground (selectionBackground);
 		} else {
-			gc.setForeground (item.getForeground (columnIndex));
+			fg = item.getForeground (columnIndex);
 			gc.setBackground (item.getBackground (columnIndex));
 		}
+		gc.setForeground (fg);
 		if (!drawExpansion) {
 			gc.setClipping ((int)(cellRect.x - offsetX), (int)(cellRect.y - offsetY), (int)cellRect.width, (int)cellRect.height);
 		}
@@ -1041,7 +1043,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rec
 		event.index = columnIndex;
 		event.detail = SWT.FOREGROUND;
 		if (drawBackground) event.detail |= SWT.BACKGROUND;
-		if (isSelected) event.detail |= SWT.SELECTED;
+		if (isSelected && ((style & SWT.HIDE_SELECTION) == 0 || hasFocus)) event.detail |= SWT.SELECTED;
 		event.x = (int)cellRect.x;
 		event.y = (int)cellRect.y;
 		event.width = (int)cellRect.width;
@@ -1068,6 +1070,10 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rec
 			cellRect.height -= spacing.height;
 			callSuper (widget.id, OS.sel_highlightSelectionInClipRect_, cellRect);
 			cellRect.height += spacing.height;
+		}
+	} else {
+		if (isSelected && (style & SWT.HIDE_SELECTION) != 0 && !hasFocus) {
+			userForeground = item.getForeground (columnIndex);
 		}
 	}
 
