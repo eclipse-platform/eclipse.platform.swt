@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1366;
-int OS_nativeFunctionCallCount[1366];
+int OS_nativeFunctionCount = 1367;
+int OS_nativeFunctionCallCount[1367];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -364,6 +364,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1signal_1lookup",
 	"_1g_1signal_1remove_1emission_1hook",
 	"_1g_1signal_1stop_1emission_1by_1name",
+	"_1g_1slist_1append",
 	"_1g_1slist_1data",
 	"_1g_1slist_1free",
 	"_1g_1slist_1length",

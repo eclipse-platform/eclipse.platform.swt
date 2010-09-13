@@ -372,6 +372,7 @@ typedef enum {
 	_1g_1signal_1lookup_FUNC,
 	_1g_1signal_1remove_1emission_1hook_FUNC,
 	_1g_1signal_1stop_1emission_1by_1name_FUNC,
+	_1g_1slist_1append_FUNC,
 	_1g_1slist_1data_FUNC,
 	_1g_1slist_1free_FUNC,
 	_1g_1slist_1length_FUNC,

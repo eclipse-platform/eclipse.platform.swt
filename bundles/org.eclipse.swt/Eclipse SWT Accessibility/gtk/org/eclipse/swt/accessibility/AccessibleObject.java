@@ -545,42 +545,42 @@ class AccessibleObject {
 					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_LEFT_MARGIN));
 					attr.value = getStringPtr (String.valueOf(event.leftMargin));
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-					parentResult = OS.g_list_append(parentResult, attrPtr);
+					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				}
 				if (event.rightMargin != -1) {
 					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_RIGHT_MARGIN));
 					attr.value = getStringPtr (String.valueOf(event.rightMargin));
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-					parentResult = OS.g_list_append(parentResult, attrPtr);
+					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				}
 				if (event.topMargin != -1) {
 					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 					attr.name = getStringPtr ("top-margin"); //$NON-NLS-1$
 					attr.value = getStringPtr (String.valueOf(event.topMargin));
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-					parentResult = OS.g_list_append(parentResult, attrPtr);
+					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				}
 				if (event.bottomMargin != -1) {
 					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 					attr.name = getStringPtr ("bottom-margin"); //$NON-NLS-1$
 					attr.value = getStringPtr (String.valueOf(event.bottomMargin));
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-					parentResult = OS.g_list_append(parentResult, attrPtr);
+					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				}
 				if (event.indent != -1) {
 					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_INDENT));
 					attr.value = getStringPtr (String.valueOf(event.indent));
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-					parentResult = OS.g_list_append(parentResult, attrPtr);
+					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				}
 				if (event.justify) {
 					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_JUSTIFICATION));
 					attr.value = getStringPtr ("fill"); //$NON-NLS-1$
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-					parentResult = OS.g_list_append(parentResult, attrPtr);
+					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				} else if (event.alignment != -1) {
 					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_JUSTIFICATION));
@@ -592,7 +592,7 @@ class AccessibleObject {
 					}
 					attr.value = getStringPtr (str);
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-					parentResult = OS.g_list_append(parentResult, attrPtr);
+					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				}
 				//TODO - tabStops
 				if (event.attributes != null) {
@@ -602,7 +602,7 @@ class AccessibleObject {
 						attr.name = getStringPtr (event.attributes[i]);
 						attr.value = getStringPtr (event.attributes[i + 1]);
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-						parentResult = OS.g_list_append(parentResult, attrPtr);
+						parentResult = OS.g_slist_append(parentResult, attrPtr);
 					}
 				}
 			}
@@ -1729,7 +1729,7 @@ class AccessibleObject {
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_RISE));
 						attr.value = getStringPtr (String.valueOf(style.rise));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-						result = OS.g_list_append(result, attrPtr);
+						result = OS.g_slist_append(result, attrPtr);
 					}
 					if (style.underline) {
 						int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
@@ -1743,14 +1743,14 @@ class AccessibleObject {
 						}
 						attr.value = getStringPtr (str);
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-						result = OS.g_list_append(result, attrPtr);
+						result = OS.g_slist_append(result, attrPtr);
 					}
 					if (style.strikeout) {
 						int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STRIKETHROUGH));
 						attr.value = getStringPtr ("1");
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-						result = OS.g_list_append(result, attrPtr);
+						result = OS.g_slist_append(result, attrPtr);
 					}
 					Font font = style.font;
 					if (font != null && !font.isDisposed()) {
@@ -1760,37 +1760,37 @@ class AccessibleObject {
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_FAMILY_NAME));
 						attr.value = ATK.g_strdup (OS.pango_font_description_get_family (font.handle));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-						result = OS.g_list_append(result, attrPtr);
+						result = OS.g_slist_append(result, attrPtr);
 						
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_SIZE));
 						attr.value = getStringPtr (String.valueOf (OS.pango_font_description_get_size(font.handle) / OS.PANGO_SCALE));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-						result = OS.g_list_append(result, attrPtr);
+						result = OS.g_slist_append(result, attrPtr);
 						
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STYLE));
 						attr.value = ATK.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_STYLE, OS.pango_font_description_get_style(font.handle)));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-						result = OS.g_list_append(result, attrPtr);
+						result = OS.g_slist_append(result, attrPtr);
 						
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_VARIANT));
 						attr.value = ATK.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_VARIANT, OS.pango_font_description_get_variant(font.handle)));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-						result = OS.g_list_append(result, attrPtr);
+						result = OS.g_slist_append(result, attrPtr);
 						
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STRETCH));
 						attr.value = ATK.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_STRETCH, OS.pango_font_description_get_stretch(font.handle)));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-						result = OS.g_list_append(result, attrPtr);
+						result = OS.g_slist_append(result, attrPtr);
 						
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_WEIGHT));
 						attr.value = getStringPtr (String.valueOf (OS.pango_font_description_get_weight(font.handle)));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-						result = OS.g_list_append(result, attrPtr);
+						result = OS.g_slist_append(result, attrPtr);
 					}
 					Color color = style.foreground;
 					if (color != null && !color.isDisposed()) {
@@ -1798,7 +1798,7 @@ class AccessibleObject {
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_FG_COLOR));
 						attr.value = getStringPtr ((color.handle.red & 0xFFFF) + "," + (color.handle.blue & 0xFFFF) + "," + (color.handle.blue & 0xFFFF)); //$NON-NLS-1$ //$NON-NLS-2$
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-						result = OS.g_list_append(result, attrPtr);
+						result = OS.g_slist_append(result, attrPtr);
 					}
 					color = style.background;
 					if (color != null && !color.isDisposed()) {
@@ -1806,7 +1806,7 @@ class AccessibleObject {
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_BG_COLOR));
 						attr.value = getStringPtr ((color.handle.red & 0xFFFF) + "," + (color.handle.blue & 0xFFFF) + "," + (color.handle.blue & 0xFFFF)); //$NON-NLS-1$ //$NON-NLS-2$
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-						result = OS.g_list_append(result, attrPtr);
+						result = OS.g_slist_append(result, attrPtr);
 					}
 				}
 				if (event.attributes != null) {
@@ -1816,7 +1816,7 @@ class AccessibleObject {
 						attr.name = getStringPtr (event.attributes[i]);
 						attr.value = getStringPtr (event.attributes[i + 1]);
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
-						result = OS.g_list_append(result, attrPtr);
+						result = OS.g_slist_append(result, attrPtr);
 					}
 				}
 				return result;

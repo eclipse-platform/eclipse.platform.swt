@@ -4207,6 +4207,18 @@ fail:
 }
 #endif
 
+#ifndef NO__1g_1slist_1append
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1slist_1append)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1slist_1append_FUNC);
+	rc = (jintLong)g_slist_append((GSList *)arg0, (gpointer)arg1);
+	OS_NATIVE_EXIT(env, that, _1g_1slist_1append_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1g_1slist_1data
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1slist_1data)
 	(JNIEnv *env, jclass that, jintLong arg0)
