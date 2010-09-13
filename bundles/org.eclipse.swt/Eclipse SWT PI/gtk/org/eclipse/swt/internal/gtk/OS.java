@@ -3068,6 +3068,19 @@ public static final boolean /*long*/ g_source_remove (int /*long*/ tag) {
 		lock.unlock();
 	}
 }
+/**
+ * @param list cast=(GSList *)
+ * @param data cast=(gpointer)
+ */
+public static final native int /*long*/ _g_slist_append(int /*long*/ list, int /*long*/ data);
+public static final int /*long*/ g_slist_append(int /*long*/ list, int /*long*/ data) {
+	lock.lock();
+	try {
+		return _g_slist_append(list, data);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param list cast=(GSList *) */
 public static final native int /*long*/ _g_slist_data (int /*long*/ list);
 public static final int /*long*/ g_slist_data (int /*long*/ list) {
