@@ -146,7 +146,7 @@ public RGB open() {
 	if (selected) {
 		NSColor color = panel.color();
 		if (color != null) {
-			color = color.colorUsingColorSpaceName(OS.NSCalibratedRGBColorSpace);
+			color = color.colorUsingColorSpaceName(OS.NSDeviceRGBColorSpace);
 			rgb = new RGB((int)(color.redComponent() * 255), (int)(color.greenComponent() * 255), (int)(color.blueComponent() * 255));
 		}
 	}
