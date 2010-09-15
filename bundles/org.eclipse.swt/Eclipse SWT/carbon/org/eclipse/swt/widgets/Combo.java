@@ -1268,13 +1268,20 @@ void releaseHandle () {
 	/*
 	* Bug in the Macintosh.  Carbon segments fault if the combo box has
 	* keyboard focus and it is disposed or its parent is disposed because
-	* there is an outstanding timer that runs after the widget is dispoed.
+	* there is an outstanding timer that runs after the widget is disposed.
 	* The fix is to remove the combo box from its parent and dispose it when
 	* the display is idle.
 	* 
 	* NOTE: The problem does not happen when the window is disposed.
+	* 
+	* NOTE: Pixel corruption happens on the parent window when the 
+	* a drop down combo is not in focus and the contents is scrolled
+	* to the left.  This is avoided by setting to combo size to zero.  
 	*/
 	if ((getShell ().state & DISPOSE_SENT) == 0) {
+		if ((style & SWT.DROP_DOWN) != 0) {
+			OS.HIViewSetFrame (handle, new CGRect ());
+		}
 		display.addToDisposeWindow (handle);
 	}
 	super.releaseHandle ();
