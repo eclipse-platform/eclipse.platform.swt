@@ -1276,13 +1276,11 @@ void releaseHandle () {
 	* 
 	* NOTE: Pixel corruption happens on the parent window when the 
 	* a drop down combo is not in focus and the contents is scrolled
-	* to the left.  This is avoided by clearing the text.  
+	* to the left.  This is avoided by setting to combo size to zero.  
 	*/
 	if ((getShell ().state & DISPOSE_SENT) == 0) {
 		if ((style & SWT.DROP_DOWN) != 0) {
-			int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, new char[1], 1);
-			OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
-			OS.CFRelease (ptr);
+			OS.HIViewSetFrame (handle, new CGRect ());
 		}
 		display.addToDisposeWindow (handle);
 	}
