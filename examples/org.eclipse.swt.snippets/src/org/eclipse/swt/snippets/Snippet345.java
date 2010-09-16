@@ -42,7 +42,7 @@ public class Snippet345 {
 		button.setText(string);
 		button = new Button(shell, SWT.CHECK | SWT.WRAP);
 		button.setText(string);
-		shell.pack();
+		shell.setSize(shell.computeSize(200, SWT.DEFAULT));
 		shell.open ();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
