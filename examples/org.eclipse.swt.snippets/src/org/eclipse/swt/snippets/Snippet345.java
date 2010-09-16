@@ -13,6 +13,7 @@ package org.eclipse.swt.snippets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -30,6 +31,7 @@ public class Snippet345 {
 	public static void main (String[] args) {
 		final Display  display = new Display ();
 		final Shell shell = new Shell ();
+		shell.setLayout(new FillLayout(SWT.VERTICAL));
 		String string = "The quick brown fox jumped over the lazy brown dog";
 		Button button;
 		button = new Button(shell, SWT.PUSH | SWT.WRAP);
@@ -40,20 +42,7 @@ public class Snippet345 {
 		button.setText(string);
 		button = new Button(shell, SWT.CHECK | SWT.WRAP);
 		button.setText(string);
-		shell.addListener(SWT.Resize, new Listener() {
-			public void handleEvent(Event e) {
-				Rectangle rect = shell.getClientArea();
-				Control[] children = shell.getChildren();
-				for (int i = 0; i < children.length; i++) {
-					Control control = children[i];
-					Point size = control.computeSize(rect.width, SWT.DEFAULT);
-					control.setBounds(rect.x, rect.y, rect.width, size.y);
-					rect.y += size.y;
-				}
-//				shell.setSize(shell.getSize().x, rect.y + 30);
-			}
-		});
-		shell.setSize (400, 200);
+		shell.pack();
 		shell.open ();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
