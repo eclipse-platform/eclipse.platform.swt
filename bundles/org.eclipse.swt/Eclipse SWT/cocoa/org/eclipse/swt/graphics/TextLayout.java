@@ -151,6 +151,7 @@ void computeRuns() {
 	NSRange range = new NSRange();
 	range.length = attrStr.length();
 	attrStr.addAttribute(OS.NSFontAttributeName, defaultFont.handle, range);
+	attrStr.addAttribute(OS.NSLigatureAttributeName, NSNumber.numberWithInt(0), range);
 	defaultFont.addTraits(attrStr, range);
 	//TODO ascend descent wrap
 	NSMutableParagraphStyle paragraph = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();

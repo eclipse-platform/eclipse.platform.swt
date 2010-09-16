@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 600;
-int OS_nativeFunctionCallCount[600];
+int OS_nativeFunctionCount = 601;
+int OS_nativeFunctionCallCount[601];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -351,6 +351,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSGetSizeAndAlignment",
 	"NSHTMLPboardType",
 	"NSIntersectionRect",
+	"NSLigatureAttributeName",
 	"NSLinkAttributeName",
 	"NSModalPanelRunLoopMode",
 	"NSNumberOfColorComponents",

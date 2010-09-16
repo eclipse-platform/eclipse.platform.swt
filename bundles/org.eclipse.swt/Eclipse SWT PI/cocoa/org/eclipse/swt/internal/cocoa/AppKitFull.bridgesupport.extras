@@ -4398,6 +4398,7 @@
 	<constant name="NSFontAttributeName" swt_gen="true"></constant>
 	<constant name="NSForegroundColorAttributeName" swt_gen="true"></constant>
 	<constant name="NSHTMLPboardType" swt_gen="true"></constant>
+	<constant name="NSLigatureAttributeName" swt_gen="true"></constant>
 	<constant name="NSLinkAttributeName" swt_gen="true"></constant>
 	<constant name="NSModalPanelRunLoopMode" swt_gen="true"></constant>
 	<constant name="NSObliquenessAttributeName" swt_gen="true"></constant>

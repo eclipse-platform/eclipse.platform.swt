@@ -359,6 +359,7 @@ typedef enum {
 	NSGetSizeAndAlignment_FUNC,
 	NSHTMLPboardType_FUNC,
 	NSIntersectionRect_FUNC,
+	NSLigatureAttributeName_FUNC,
 	NSLinkAttributeName_FUNC,
 	NSModalPanelRunLoopMode_FUNC,
 	NSNumberOfColorComponents_FUNC,

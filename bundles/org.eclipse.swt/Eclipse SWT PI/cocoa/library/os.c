@@ -4595,6 +4595,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSHTMLPboardType)
 }
 #endif
 
+#ifndef NO_NSLigatureAttributeName
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSLigatureAttributeName)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSLigatureAttributeName_FUNC);
+	rc = (jintLong)NSLigatureAttributeName;
+	OS_NATIVE_EXIT(env, that, NSLigatureAttributeName_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSLinkAttributeName
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSLinkAttributeName)
 	(JNIEnv *env, jclass that)

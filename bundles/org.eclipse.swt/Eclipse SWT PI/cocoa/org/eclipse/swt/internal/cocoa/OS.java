@@ -2692,6 +2692,9 @@ public static final NSString NSForegroundColorAttributeName = new NSString(NSFor
 public static final native int /*long*/ NSHTMLPboardType();
 public static final NSString NSHTMLPboardType = new NSString(NSHTMLPboardType());
 /** @method flags=const */
+public static final native int /*long*/ NSLigatureAttributeName();
+public static final NSString NSLigatureAttributeName = new NSString(NSLigatureAttributeName());
+/** @method flags=const */
 public static final native int /*long*/ NSLinkAttributeName();
 public static final NSString NSLinkAttributeName = new NSString(NSLinkAttributeName());
 /** @method flags=const */
