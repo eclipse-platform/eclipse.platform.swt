@@ -2099,6 +2099,9 @@ void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 			}
 			break;
 	}
+	
+	// Window may have been disposed at this point.
+	if (isDisposed()) return;
 	super.windowSendEvent (id, sel, event);
 }
 
