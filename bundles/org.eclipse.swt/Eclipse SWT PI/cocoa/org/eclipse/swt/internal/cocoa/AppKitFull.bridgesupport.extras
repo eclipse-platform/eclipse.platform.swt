@@ -4437,6 +4437,13 @@
 	<constant name="NSUnderlineColorAttributeName" swt_gen="true"></constant>
 	<constant name="NSUnderlineStyleAttributeName" swt_gen="true"></constant>
 	<constant name="NSViewGlobalFrameDidChangeNotification" swt_gen="true"></constant>
+	<constant name="NSWindowDidBecomeKeyNotification" swt_gen="true"></constant>
+	<constant name="NSWindowDidDeminiaturizeNotification" swt_gen="true"></constant>
+	<constant name="NSWindowDidMiniaturizeNotification" swt_gen="true"></constant>
+	<constant name="NSWindowDidMoveNotification" swt_gen="true"></constant>
+	<constant name="NSWindowDidResignKeyNotification" swt_gen="true"></constant>
+	<constant name="NSWindowDidResizeNotification" swt_gen="true"></constant>
+	<constant name="NSWindowWillCloseNotification" swt_gen="true"></constant>
 	<enum name="NSAlertFirstButtonReturn" swt_gen="true"></enum>
 	<enum name="NSAlertSecondButtonReturn" swt_gen="true"></enum>
 	<enum name="NSAlertThirdButtonReturn" swt_gen="true"></enum>

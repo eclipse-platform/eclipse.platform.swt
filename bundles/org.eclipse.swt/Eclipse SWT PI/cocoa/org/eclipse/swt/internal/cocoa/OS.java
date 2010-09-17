@@ -2809,6 +2809,27 @@ public static final NSString NSUnderlineStyleAttributeName = new NSString(NSUnde
 public static final native int /*long*/ NSViewGlobalFrameDidChangeNotification();
 public static final NSString NSViewGlobalFrameDidChangeNotification = new NSString(NSViewGlobalFrameDidChangeNotification());
 /** @method flags=const */
+public static final native int /*long*/ NSWindowDidBecomeKeyNotification();
+public static final NSString NSWindowDidBecomeKeyNotification = new NSString(NSWindowDidBecomeKeyNotification());
+/** @method flags=const */
+public static final native int /*long*/ NSWindowDidDeminiaturizeNotification();
+public static final NSString NSWindowDidDeminiaturizeNotification = new NSString(NSWindowDidDeminiaturizeNotification());
+/** @method flags=const */
+public static final native int /*long*/ NSWindowDidMiniaturizeNotification();
+public static final NSString NSWindowDidMiniaturizeNotification = new NSString(NSWindowDidMiniaturizeNotification());
+/** @method flags=const */
+public static final native int /*long*/ NSWindowDidMoveNotification();
+public static final NSString NSWindowDidMoveNotification = new NSString(NSWindowDidMoveNotification());
+/** @method flags=const */
+public static final native int /*long*/ NSWindowDidResignKeyNotification();
+public static final NSString NSWindowDidResignKeyNotification = new NSString(NSWindowDidResignKeyNotification());
+/** @method flags=const */
+public static final native int /*long*/ NSWindowDidResizeNotification();
+public static final NSString NSWindowDidResizeNotification = new NSString(NSWindowDidResizeNotification());
+/** @method flags=const */
+public static final native int /*long*/ NSWindowWillCloseNotification();
+public static final NSString NSWindowWillCloseNotification = new NSString(NSWindowWillCloseNotification());
+/** @method flags=const */
 public static final native int /*long*/ kCFAllocatorDefault();
 /** @method flags=const */
 public static final native int /*long*/ kCFRunLoopCommonModes();

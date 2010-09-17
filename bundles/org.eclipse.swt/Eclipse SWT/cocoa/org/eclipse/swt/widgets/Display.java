@@ -95,6 +95,9 @@ import org.eclipse.swt.internal.cocoa.*;
  */
 public class Display extends Device {
 	
+	static byte[] types = {'*','\0'};
+	static int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
+
 	/* Windows and Events */
 	Event [] eventQueue;
 	EventTable eventTable, filterTable;
@@ -1157,6 +1160,19 @@ public Shell getActiveShell () {
 		if (widget instanceof Shell) {
 			return (Shell)widget;
 		}
+		
+		// Embedded shell test: If the NSWindow isn't an SWTWindow walk up the
+		// hierarchy from the hit view to see if some view maps to a Shell.
+		NSPoint windowLocation = window.mouseLocationOutsideOfEventStream();
+		NSView hitView = window.contentView().hitTest(windowLocation);
+		while (hitView != null) {
+			widget = getWidget(hitView.id);
+			if (widget instanceof Shell) {
+				break;
+			}
+			hitView = hitView.superview();
+		}
+		return (Shell)widget;
 	}
 	return null;
 }
@@ -2103,6 +2119,27 @@ int /*long*/ registerCellSubclass(int /*long*/ cellClass, int size, int align, b
 	return cls;
 }
 
+int /*long*/ createWindowSubclass(int /*long*/ baseClass, String newClass) {
+	int /*long*/ cls = OS.objc_allocateClassPair(baseClass, newClass, 0);
+	int /*long*/ proc3 = windowCallback3.getAddress();
+	int /*long*/ proc2 = windowCallback2.getAddress();
+	int /*long*/ proc4 = windowCallback4.getAddress();
+	int /*long*/ view_stringForToolTip_point_userDataProc = OS.CALLBACK_view_stringForToolTip_point_userData_(proc4);
+	int /*long*/ accessibilityHitTestProc = OS.CALLBACK_accessibilityHitTest_(proc3);
+
+	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_helpRequested_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_canBecomeKeyWindow, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_becomeKeyWindow, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_makeFirstResponder_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_noResponderFor_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_view_stringForToolTip_point_userData_, view_stringForToolTip_point_userDataProc, "@:@i{NSPoint}@");
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
+	OS.objc_registerClassPair(cls);
+	return cls;	
+}
+
 void initClasses () {
 	if (OS.objc_lookUpClass ("SWTView") != 0) return;
 	
@@ -2167,9 +2204,6 @@ void initClasses () {
 	int /*long*/ scrollClipView_ToPointProc = OS.CALLBACK_scrollClipView_toPoint_(proc4);
 	int /*long*/ headerRectOfColumnProc = OS.CALLBACK_headerRectOfColumn_(proc3);
 	int /*long*/ columnAtPointProc = OS.CALLBACK_columnAtPoint_(proc3);
-	
-	byte[] types = {'*','\0'};
-	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
 
 	String className;
 	int /*long*/ cls;
@@ -2583,17 +2617,7 @@ void initClasses () {
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTWindow";
-	cls = OS.objc_allocateClassPair(OS.class_NSWindow, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_helpRequested_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_canBecomeKeyWindow, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_becomeKeyWindow, proc2, "@:");
-	OS.class_addMethod(cls, OS.sel_makeFirstResponder_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_noResponderFor_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_view_stringForToolTip_point_userData_, view_stringForToolTip_point_userDataProc, "@:@i{NSPoint}@");
-	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
-	OS.objc_registerClassPair(cls);
+	createWindowSubclass(OS.class_NSWindow, className);
 	
 	className = "SWTPanel";
 	cls = OS.objc_allocateClassPair(OS.class_NSPanel, className, 0);

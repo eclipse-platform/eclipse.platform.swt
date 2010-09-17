@@ -5166,6 +5166,78 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSViewGlobalFrameDidChangeNotification)
 }
 #endif
 
+#ifndef NO_NSWindowDidBecomeKeyNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSWindowDidBecomeKeyNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSWindowDidBecomeKeyNotification_FUNC);
+	rc = (jintLong)NSWindowDidBecomeKeyNotification;
+	OS_NATIVE_EXIT(env, that, NSWindowDidBecomeKeyNotification_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSWindowDidDeminiaturizeNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSWindowDidDeminiaturizeNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSWindowDidDeminiaturizeNotification_FUNC);
+	rc = (jintLong)NSWindowDidDeminiaturizeNotification;
+	OS_NATIVE_EXIT(env, that, NSWindowDidDeminiaturizeNotification_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSWindowDidMiniaturizeNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSWindowDidMiniaturizeNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSWindowDidMiniaturizeNotification_FUNC);
+	rc = (jintLong)NSWindowDidMiniaturizeNotification;
+	OS_NATIVE_EXIT(env, that, NSWindowDidMiniaturizeNotification_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSWindowDidMoveNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSWindowDidMoveNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSWindowDidMoveNotification_FUNC);
+	rc = (jintLong)NSWindowDidMoveNotification;
+	OS_NATIVE_EXIT(env, that, NSWindowDidMoveNotification_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSWindowDidResignKeyNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSWindowDidResignKeyNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSWindowDidResignKeyNotification_FUNC);
+	rc = (jintLong)NSWindowDidResignKeyNotification;
+	OS_NATIVE_EXIT(env, that, NSWindowDidResignKeyNotification_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSWindowDidResizeNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSWindowDidResizeNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSWindowDidResizeNotification_FUNC);
+	rc = (jintLong)NSWindowDidResizeNotification;
+	OS_NATIVE_EXIT(env, that, NSWindowDidResizeNotification_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSWindowList
 JNIEXPORT void JNICALL OS_NATIVE(NSWindowList)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1)
@@ -5177,6 +5249,18 @@ JNIEXPORT void JNICALL OS_NATIVE(NSWindowList)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, NSWindowList_FUNC);
+}
+#endif
+
+#ifndef NO_NSWindowWillCloseNotification
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSWindowWillCloseNotification)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSWindowWillCloseNotification_FUNC);
+	rc = (jintLong)NSWindowWillCloseNotification;
+	OS_NATIVE_EXIT(env, that, NSWindowWillCloseNotification_FUNC);
+	return rc;
 }
 #endif
 

@@ -474,7 +474,7 @@ public void addShellListener(ShellListener listener) {
 
 void becomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 	Display display = this.display;
-	display.keyWindow = window;
+	display.keyWindow = view.window();
 	super.becomeKeyWindow(id, sel);
 	display.checkFocus();
 	display.keyWindow = null;
@@ -490,7 +490,8 @@ void bringToTop (boolean force) {
 }
 
 boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
-	if (window.styleMask () == OS.NSBorderlessWindowMask) return true;
+	// Only answer if SWT created the window.
+	if (window != null) if (window.styleMask () == OS.NSBorderlessWindowMask) return true;
 	return super.canBecomeKeyWindow (id, sel);
 }
 
@@ -540,13 +541,13 @@ void clearDeferFlushing (int /*long*/ id, int /*long*/ sel) {
  */
 public void close () {
 	checkWidget();
-	closeWidget ();
+	closeWidget (false);
 }
 
-void closeWidget () {
+void closeWidget (boolean force) {
 	Event event = new Event ();
 	sendEvent (SWT.Close, event);
-	if (event.doit && !isDisposed ()) dispose ();
+	if ((force || event.doit) && !isDisposed ()) dispose ();
 }
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
@@ -653,10 +654,30 @@ void createHandle () {
 		style |= SWT.NO_BACKGROUND;
 	}
 	
-	if (window != null) {
+	windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
+
+	if (window == null) {
+		NSWindow hostWindow = view.window();
+		int /*long*/ windowClass = OS.object_getClass(hostWindow.id);
+		int /*long*/ sendEventImpl = OS.class_getMethodImplementation(windowClass, OS.sel_sendEvent_);
+		if (sendEventImpl != Display.windowCallback3.getAddress()) {
+			int /*long*/ embeddedSubclass = display.createWindowSubclass(windowClass, "SWTAWTWindow");
+			OS.object_setClass(hostWindow.id, embeddedSubclass);
+		}
+
+		// Register for notifications. An embedded shell has no control over the host window,
+		// so it isn't correct to install a delegate.
+		NSNotificationCenter defaultCenter = NSNotificationCenter.defaultCenter();
+		defaultCenter.addObserver(windowDelegate, OS.sel_windowDidBecomeKey_, OS.NSWindowDidBecomeKeyNotification, hostWindow);
+		defaultCenter.addObserver(windowDelegate, OS.sel_windowDidDeminiaturize_, OS.NSWindowDidDeminiaturizeNotification, hostWindow);
+		defaultCenter.addObserver(windowDelegate, OS.sel_windowDidMiniaturize_, OS.NSWindowDidMiniaturizeNotification, hostWindow);
+		defaultCenter.addObserver(windowDelegate, OS.sel_windowDidMove_, OS.NSWindowDidMoveNotification, hostWindow);
+		defaultCenter.addObserver(windowDelegate, OS.sel_windowDidResize_, OS.NSWindowDidResizeNotification, hostWindow);
+		defaultCenter.addObserver(windowDelegate, OS.sel_windowDidResignKey_, OS.NSWindowDidResignKeyNotification, hostWindow);
+		defaultCenter.addObserver(windowDelegate, OS.sel_windowWillClose_, OS.NSWindowWillCloseNotification, hostWindow);
+	} else {
 		if (parent != null) window.setCollectionBehavior(OS.NSWindowCollectionBehaviorMoveToActiveSpace);
 		window.setAcceptsMouseMovedEvents(true);
-		windowDelegate = (SWTWindowDelegate)new SWTWindowDelegate().alloc().init();
 		window.setDelegate(windowDelegate);
 	}
 	
@@ -676,7 +697,11 @@ void deferFlushing () {
 
 void deregister () {
 	super.deregister ();
-	if (window != null) display.removeWidget (window);
+	if (window != null) {
+		display.removeWidget (window);
+	} else {
+		display.removeWidget (view.window());
+	}
 	if (windowDelegate != null) display.removeWidget (windowDelegate);
 }
 
@@ -735,7 +760,10 @@ boolean fixResize () {
 	* Feature in Cocoa.  It is not possible to have a resizable window
 	* without the title bar.  The fix is to resize the content view on
 	* top of the title bar.
+	* 
+	* Never do this when the shell is embedded, because the window belongs to the AWT.
 	*/
+	if (window == null) return false;
 	if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.RESIZE) != 0 && (style & (SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX)) == 0) {
 			return true;
@@ -838,7 +866,7 @@ public Rectangle getClientArea () {
 			rect.height /= scaleFactor;
 		}
 	} else {
-		rect = scrollView != null ? scrollView.frame() : view.frame();
+		rect = topView().frame();
 	}
 	int width = (int)rect.width, height = (int)rect.height;
 	if (scrollView != null) {
@@ -1145,6 +1173,21 @@ void makeKeyAndOrderFront() {
 	window.makeKeyAndOrderFront (null);
 }
 
+void mouseMoved(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	super.mouseMoved(id, sel, theEvent);
+
+	/**
+	 * Bug in AWT. WebViews need to have a mouseMove: handled by the window so it can generate
+	 * DOMMouseMove events and also provide proper feedback to the window. However, the top-level
+	 * view in an AWT window does not have the NSWindow as a next responder.
+	 * 
+	 * Fix is to forward the message to the window if this is an embedded shell (that is, window == null)
+	 */
+	if (id == view.id && window == null) {
+		view.window().mouseMoved(new NSEvent(theEvent));		
+	}
+}
+
 void noResponderFor(int /*long*/ id, int /*long*/ sel, int /*long*/ selector) {
 	/**
 	 * Feature in Cocoa.  If the selector is keyDown and nothing has handled the event
@@ -1209,8 +1252,17 @@ public boolean print (GC gc) {
 }
 
 void register () {
+	/*
+	 * Note that if there are multiple SWT_AWT shells only the last one created
+	 * will be associated with the NSWindow. This is okay, and intentional because 
+	 * all of the NSWindow overrides operate on the entire window. 
+	 */
 	super.register ();
-	if (window != null) display.addWidget (window, this);
+	if (window != null) {
+		display.addWidget (window, this);
+	} else  {
+		display.addWidget (view.window(), this);
+	}
 	if (windowDelegate != null) display.addWidget (windowDelegate, this);
 }
 
@@ -1227,6 +1279,7 @@ void releaseChildren (boolean destroy) {
 
 void releaseHandle () {
 	if (window != null) window.setDelegate(null);
+	NSNotificationCenter.defaultCenter().removeObserver(windowDelegate);
 	if (windowDelegate != null) windowDelegate.release();
 	windowDelegate = null;
 	super.releaseHandle ();
@@ -1284,9 +1337,10 @@ void reskinChildren (int flags) {
 
 void sendToolTipEvent (boolean enter) {
 	if (!isVisible()) return;
+	NSWindow eventWindow = view.window();
 	if (tooltipTag == 0) {
-		NSView view = window.contentView();
-		tooltipTag = view.addToolTipRect(new NSRect(), window, 0);
+		NSView view = eventWindow.contentView();
+		tooltipTag = view.addToolTipRect(new NSRect(), eventWindow, 0);
 		if (tooltipTag != 0) {
 			NSTrackingArea trackingArea = new NSTrackingArea(tooltipTag);
 			id owner = trackingArea.owner();
@@ -1302,8 +1356,8 @@ void sendToolTipEvent (boolean enter) {
 		}
 	}
 	if (tooltipTag == 0 || tooltipOwner == 0 || tooltipUserData == 0) return;
-	NSPoint pt = window.convertScreenToBase(NSEvent.mouseLocation());
-	NSEvent event = NSEvent.enterExitEventWithType(enter ? OS.NSMouseEntered : OS.NSMouseExited, pt, 0, 0, window.windowNumber(), null, 0, tooltipTag, tooltipUserData);
+	NSPoint pt = eventWindow.convertScreenToBase(NSEvent.mouseLocation());
+	NSEvent event = NSEvent.enterExitEventWithType(enter ? OS.NSMouseEntered : OS.NSMouseExited, pt, 0, 0, eventWindow.windowNumber(), null, 0, tooltipTag, tooltipUserData);
 	OS.objc_msgSend(tooltipOwner, enter ? OS.sel_mouseEntered_ : OS.sel_mouseExited_, event.id);
 }
 
@@ -1901,9 +1955,10 @@ int /*long*/ view_stringForToolTip_point_userData (int /*long*/ id, int /*long*/
 }
 
 void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
-	super.windowDidBecomeKey(id, sel, notification);
-	Display display = this.display;
-	display.setMenuBar (menuBar);
+	if (window != null) {
+		Display display = this.display;
+		display.setMenuBar (menuBar);
+	}
 	sendEvent (SWT.Activate);
 	if (isDisposed ()) return;
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
@@ -1963,7 +2018,6 @@ void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notificatio
 }
 
 void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
-	super.windowDidResignKey(id, sel, notification);
 	sendEvent (SWT.Deactivate);
 	if (isDisposed ()) return;
 	setActiveControl (null);
@@ -1986,6 +2040,8 @@ void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 				Control trimControl = control;
 				if (trimControl != null && trimControl.isTrim (hitView[0])) trimControl = null;
 				display.checkEnterExit (trimControl, nsEvent, false);
+				// Browser will send MouseMoved in response to a DOM event, so don't send it here.
+				if (trimControl != null && (trimControl.state & WEBKIT_EVENTS_FIX) != 0) trimControl = null;
 				if (trimControl != null) trimControl.sendMouseEvent (nsEvent, type, false);
 			}
 			
@@ -2036,7 +2092,7 @@ void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 						case 25:
 						case OS.NSPageDownFunctionKey:
 						case OS.NSPageUpFunctionKey:
-							window.firstResponder().keyDown(nsEvent);
+							view.window().firstResponder().keyDown(nsEvent);
 							return;
 					}
 				}
@@ -2047,8 +2103,12 @@ void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 }
 
 boolean windowShouldClose(int /*long*/ id, int /*long*/ sel, int /*long*/ window) {
-	if (isEnabled()) closeWidget ();
+	if (isEnabled()) closeWidget (false);
 	return false;
+}
+
+void windowWillClose(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	closeWidget(true);
 }
 
 }
