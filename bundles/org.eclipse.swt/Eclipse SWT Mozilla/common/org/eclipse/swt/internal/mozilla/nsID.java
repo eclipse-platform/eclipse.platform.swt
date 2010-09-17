@@ -36,6 +36,8 @@ public class nsID {
 	public byte[] m3 = new byte[8];
 	public static final int sizeof = 16;
 
+	static final String zeros = "00000000"; //$NON-NLS-1$
+
 public nsID() {
 }
 
@@ -118,4 +120,20 @@ public void Parse(String aIDStr) {
 	}
 }
 
+static String toHex(int v, int length) {
+	String t = Integer.toHexString(v).toUpperCase();
+	int tlen = t.length();
+	if (tlen > length) {
+		t = t.substring(tlen - length);
+	}
+	return zeros.substring(0, Math.max(0, length - tlen)) + t;
+}
+
+public String toString() {
+	return '{' + toHex(m0, 8) + "-" + 
+    	toHex(m1, 4) + "-" + 
+    	toHex(m2, 4) + "-" + 
+    	toHex(m3[0], 2) + toHex(m3[1], 2) + "-" + 
+    	toHex(m3[2], 2) + toHex(m3[3], 2) + toHex(m3[4], 2) + toHex(m3[5], 2) + toHex(m3[6], 2) + toHex(m3[7], 2) + '}';
+}
 }
