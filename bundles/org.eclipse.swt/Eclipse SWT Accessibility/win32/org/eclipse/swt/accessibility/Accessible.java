@@ -5145,7 +5145,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, IIDIAccPropServer)) return "IIDIAccPropServer";
 		if (COM.IsEqualGUID(guid, IIDIAccPropServices)) return "IIDIAccPropServices";
 		}
-		return StringFromIID(guid);
+		return guid.toString();
 	}
 	static GUID IIDFromString(String lpsz) {
 		if (DEBUG) {
@@ -5156,22 +5156,6 @@ public class Accessible {
 		if (COM.IIDFromString(buffer, lpiid) == COM.S_OK) return lpiid;
 		}
 		return null;
-	}
-	static String StringFromIID(GUID guid) {
-		return '{' + toHex(guid.Data1, 8) + "-" + 
-        toHex(guid.Data2, 4) + "-" + 
-        toHex(guid.Data3, 4) + "-" + 
-        toHex(guid.Data4[0], 2) + toHex(guid.Data4[1], 2) + "-" + 
-        toHex(guid.Data4[2], 2) + toHex(guid.Data4[3], 2) + toHex(guid.Data4[4], 2) + toHex(guid.Data4[5], 2) + toHex(guid.Data4[6], 2) + toHex(guid.Data4[7], 2) + '}';
-	}
-	static final String zeros = "00000000";
-	static String toHex(int v, int length) {
-		String t = Integer.toHexString(v).toUpperCase();
-		int tlen = t.length();
-		if (tlen > length) {
-			t = t.substring(tlen - length);
-		}
-		return zeros.substring(0, Math.max(0, length - tlen)) + t;
 	}
 	public String toString () {
 		String toString = super.toString();
