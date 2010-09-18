@@ -857,7 +857,7 @@ NSAttributedString createString (String string, Font font, float /*double*/ [] f
 	addTraits(dict, font);
 	if (enabled) {
 		if (foreground != null) {
-			NSColor color = NSColor.colorWithDeviceRed(foreground[0], foreground[1], foreground[2], foreground[3]);
+			NSColor color = NSColor.colorWithCalibratedRed(foreground[0], foreground[1], foreground[2], foreground[3]);
 			dict.setObject (color, OS.NSForegroundColorAttributeName);
 		}
 	} else {
@@ -1206,7 +1206,7 @@ void fillBackground (NSView view, NSGraphicsContext context, NSRect rect, int im
 		alpha = background[3];
 	}
 	context.saveGraphicsState ();
-	NSColor.colorWithDeviceRed (background [0], background [1], background [2], alpha).setFill ();
+	NSColor.colorWithCalibratedRed (background [0], background [1], background [2], alpha).setFill ();
 	NSBezierPath.fillRect (rect);
 	context.restoreGraphicsState ();
 }
@@ -3068,7 +3068,7 @@ void setBackground () {
 		setBackgroundImage (control.backgroundImage.handle);
 	} else {
 		float /*double*/ [] color = control.background != null ? control.background : control.defaultBackground().handle;
-		NSColor nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]);
+		NSColor nsColor = NSColor.colorWithCalibratedRed(color[0], color[1], color[2], color[3]);
 		setBackgroundColor (nsColor);
 	}
 }
@@ -4412,7 +4412,7 @@ void updateBackgroundColor () {
 	Control control = findBackgroundControl ();
 	if (control == null) control = this;
 	float /*double*/ [] color = control.background != null ? control.background : control.defaultBackground().handle;
-	NSColor nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]);
+	NSColor nsColor = NSColor.colorWithCalibratedRed(color[0], color[1], color[2], color[3]);
 	setBackgroundColor (nsColor);
 }
 

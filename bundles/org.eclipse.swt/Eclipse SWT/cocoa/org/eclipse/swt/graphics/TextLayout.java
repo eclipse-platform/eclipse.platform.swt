@@ -217,19 +217,19 @@ void computeRuns() {
 		}
 		Color foreground = style.foreground;
 		if (foreground != null) {
-			NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
+			NSColor color = NSColor.colorWithCalibratedRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
 			attrStr.addAttribute(OS.NSForegroundColorAttributeName, color, range);
 		}
 		Color background = style.background;
 		if (background != null) {
-			NSColor color = NSColor.colorWithDeviceRed(background.handle[0], background.handle[1], background.handle[2], 1);
+			NSColor color = NSColor.colorWithCalibratedRed(background.handle[0], background.handle[1], background.handle[2], 1);
 			attrStr.addAttribute(OS.NSBackgroundColorAttributeName, color, range);
 		}
 		if (style.strikeout) {
 			attrStr.addAttribute(OS.NSStrikethroughStyleAttributeName, NSNumber.numberWithInt(OS.NSUnderlineStyleSingle), range);
 			Color strikeColor = style.strikeoutColor;
 			if (strikeColor != null) {
-				NSColor color = NSColor.colorWithDeviceRed(strikeColor.handle[0], strikeColor.handle[1], strikeColor.handle[2], 1);
+				NSColor color = NSColor.colorWithCalibratedRed(strikeColor.handle[0], strikeColor.handle[1], strikeColor.handle[2], 1);
 				attrStr.addAttribute(OS.NSStrikethroughColorAttributeName, color, range);
 			}
 		}
@@ -248,7 +248,7 @@ void computeRuns() {
 				case SWT.UNDERLINE_LINK: {
 					underlineStyle = OS.NSUnderlineStyleSingle;
 					if (foreground == null) {
-						NSColor color = NSColor.colorWithDeviceRed(LINK_FOREGROUND.red / 255f, LINK_FOREGROUND.green / 255f, LINK_FOREGROUND.blue / 255f, 1);
+						NSColor color = NSColor.colorWithCalibratedRed(LINK_FOREGROUND.red / 255f, LINK_FOREGROUND.green / 255f, LINK_FOREGROUND.blue / 255f, 1);
 						attrStr.addAttribute(OS.NSForegroundColorAttributeName, color, range);
 					}
 					break;
@@ -258,7 +258,7 @@ void computeRuns() {
 				attrStr.addAttribute(OS.NSUnderlineStyleAttributeName, NSNumber.numberWithInt(underlineStyle), range);
 				Color underlineColor = style.underlineColor;
 				if (underlineColor != null) {
-					NSColor color = NSColor.colorWithDeviceRed(underlineColor.handle[0], underlineColor.handle[1], underlineColor.handle[2], 1);
+					NSColor color = NSColor.colorWithCalibratedRed(underlineColor.handle[0], underlineColor.handle[1], underlineColor.handle[2], 1);
 					attrStr.addAttribute(OS.NSUnderlineColorAttributeName, color, range);
 				}
 			}
@@ -449,7 +449,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 		if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
 			if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
-			NSColor selectionColor = NSColor.colorWithDeviceRed(selectionBackground.handle[0], selectionBackground.handle[1], selectionBackground.handle[2], selectionBackground.handle[3]);
+			NSColor selectionColor = NSColor.colorWithCalibratedRed(selectionBackground.handle[0], selectionBackground.handle[1], selectionBackground.handle[2], selectionBackground.handle[3]);
 			NSBezierPath path = NSBezierPath.bezierPath();
 			NSRect rect = new NSRect();
 			if (hasSelection) {
@@ -534,7 +534,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								if (style.underlineColor != null) color = style.underlineColor.handle;
 								if (color == null && style.foreground != null) color = style.foreground.handle;
 								if (color != null) {
-									NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]).setStroke();
+									NSColor.colorWithCalibratedRed(color[0], color[1], color[2], color[3]).setStroke();
 								}
 								for (int k = 0; k < rectCount[0]; k++, pArray += NSRect.sizeof) {
 									OS.memmove(rect, pArray, NSRect.sizeof);
@@ -601,7 +601,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								if (style.borderColor != null) color = style.borderColor.handle;
 								if (color == null && style.foreground != null) color = style.foreground.handle;
 								if (color != null) {
-									NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]).setStroke();
+									NSColor.colorWithCalibratedRed(color[0], color[1], color[2], color[3]).setStroke();
 								}
 								int width = 1;
 								float[] dashes = null;

@@ -11,9 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 
 /**

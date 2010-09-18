@@ -171,8 +171,8 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 		this.color2 = color2.handle;
 		this.alpha1 = alpha1;
 		this.alpha2 = alpha2;
-		NSColor start = NSColor.colorWithDeviceRed(color1.handle[0], color1.handle[1], color1.handle[2], alpha1 / 255f);
-		NSColor end = NSColor.colorWithDeviceRed(color2.handle[0], color2.handle[1], color2.handle[2], alpha2 / 255f);
+		NSColor start = NSColor.colorWithCalibratedRed(color1.handle[0], color1.handle[1], color1.handle[2], alpha1 / 255f);
+		NSColor end = NSColor.colorWithCalibratedRed(color2.handle[0], color2.handle[1], color2.handle[2], alpha2 / 255f);
 		gradient = ((NSGradient)new NSGradient().alloc()).initWithStartingColor(start, end);
 		init();
 	} finally {

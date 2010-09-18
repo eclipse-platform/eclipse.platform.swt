@@ -401,8 +401,8 @@ void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 		if (getSelection ()) {
 			NSRect bounds = view.bounds();
 			context.saveGraphicsState();
-			NSColor.colorWithDeviceRed(0.1f, 0.1f, 0.1f, 0.1f).setFill();
-			NSColor.colorWithDeviceRed(0.2f, 0.2f, 0.2f, 0.2f).setStroke();
+			NSColor.colorWithCalibratedRed(0.1f, 0.1f, 0.1f, 0.1f).setFill();
+			NSColor.colorWithCalibratedRed(0.2f, 0.2f, 0.2f, 0.2f).setStroke();
 			NSBezierPath.fillRect(bounds);
 			bounds.x += 0.5f;
 			bounds.y += 0.5f;

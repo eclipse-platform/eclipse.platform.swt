@@ -248,7 +248,7 @@ public Image(Device device, Image srcImage, int flag) {
 		handle = (NSImage)new NSImage().alloc();
 		handle = handle.initWithSize(size);
 		NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-		rep = rep.initWithBitmapDataPlanes(0, width, height, srcRep.bitsPerSample(), srcRep.samplesPerPixel(), srcRep.hasAlpha(), srcRep.isPlanar(), OS.NSDeviceRGBColorSpace, format, srcRep.bytesPerRow(), bpp);
+		rep = rep.initWithBitmapDataPlanes(0, width, height, srcRep.bitsPerSample(), srcRep.samplesPerPixel(), srcRep.hasAlpha(), srcRep.isPlanar(), OS.NSCalibratedRGBColorSpace, format, srcRep.bytesPerRow(), bpp);
 		handle.addRepresentation(rep);
 		rep.release();
 		handle.setCacheMode(OS.NSImageCacheNever);
@@ -844,7 +844,7 @@ void init(int width, int height) {
 	size.height = height;
 	handle = handle.initWithSize(size);
 	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-	rep = rep.initWithBitmapDataPlanes(0, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
+	rep = rep.initWithBitmapDataPlanes(0, width, height, 8, 3, false, false, OS.NSCalibratedRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
 	OS.memset(rep.bitmapData(), 0xFF, width * height * 4);
 	handle.addRepresentation(rep);
 	rep.release();
@@ -958,7 +958,7 @@ void init(ImageData image) {
 	size.height = height;
 	handle = handle.initWithSize(size);
 	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-	rep = rep.initWithBitmapDataPlanes(0, width, height, 8, hasAlpha ? 4 : 3, hasAlpha, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
+	rep = rep.initWithBitmapDataPlanes(0, width, height, 8, hasAlpha ? 4 : 3, hasAlpha, false, OS.NSCalibratedRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
 	OS.memmove(rep.bitmapData(), buffer, dataSize);	
 	handle.addRepresentation(rep);
 	rep.release();
@@ -1000,7 +1000,7 @@ void initNative(String filename) {
 		size.height = height;
 		handle = handle.initWithSize(size);
 		NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-		rep = rep.initWithBitmapDataPlanes(0, width, height, 8, hasAlpha ? 4 : 3, hasAlpha, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
+		rep = rep.initWithBitmapDataPlanes(0, width, height, 8, hasAlpha ? 4 : 3, hasAlpha, false, OS.NSCalibratedRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
 		handle.addRepresentation(rep);
 		rep.release();
 		handle.setCacheMode(OS.NSImageCacheNever);

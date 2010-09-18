@@ -13,7 +13,6 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -126,7 +125,7 @@ public RGB open() {
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
 	display.subclassPanel(panel, className);
 	if (rgb != null) {
-		NSColor color = NSColor.colorWithDeviceRed(rgb.red / 255f, rgb.green / 255f, rgb.blue / 255f, 1);
+		NSColor color = NSColor.colorWithCalibratedRed(rgb.red / 255f, rgb.green / 255f, rgb.blue / 255f, 1);
 		panel.setColor(color);
 	}
 	SWTPanelDelegate delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
@@ -146,7 +145,7 @@ public RGB open() {
 	if (selected) {
 		NSColor color = panel.color();
 		if (color != null) {
-			color = color.colorUsingColorSpaceName(OS.NSDeviceRGBColorSpace);
+			color = color.colorUsingColorSpaceName(OS.NSCalibratedRGBColorSpace);
 			rgb = new RGB((int)(color.redComponent() * 255), (int)(color.greenComponent() * 255), (int)(color.blueComponent() * 255));
 		}
 	}

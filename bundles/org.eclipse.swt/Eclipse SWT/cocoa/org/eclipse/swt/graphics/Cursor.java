@@ -169,7 +169,7 @@ public Cursor(Device device, int style) {
 			size.width = width;
 			size.height =  height;
 			nsImage = nsImage.initWithSize(size);
-			nsImageRep = nsImageRep.initWithBitmapDataPlanes(0, width, height, 8, 4, true, false, OS.NSDeviceRGBColorSpace, 
+			nsImageRep = nsImageRep.initWithBitmapDataPlanes(0, width, height, 8, 4, true, false, OS.NSCalibratedRGBColorSpace, 
 					OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width*4, 32);
 			OS.memmove(nsImageRep.bitmapData(), WAIT_SOURCE, WAIT_SOURCE.length);
 			nsImage.addRepresentation(nsImageRep);
@@ -282,7 +282,7 @@ void createNSCursor(int hotspotX, int hotspotY, byte[] buffer, int width, int he
 	size.height =  height;
 	nsImage = nsImage.initWithSize(size);
 	nsImageRep = nsImageRep.initWithBitmapDataPlanes(0, width, height,
-			8, 4, true, false, OS.NSDeviceRGBColorSpace,
+			8, 4, true, false, OS.NSCalibratedRGBColorSpace,
 			OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
 	OS.memmove(nsImageRep.bitmapData(), buffer, buffer.length);
 	nsImage.addRepresentation(nsImageRep);

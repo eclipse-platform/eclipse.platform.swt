@@ -846,15 +846,11 @@
 		<method class_method="true" selector="clearColor" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="colorUsingColorSpace:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="colorUsingColorSpaceName:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method class_method="true" selector="colorWithDeviceRed:green:blue:alpha:" swt_gen="true">
+		<method class_method="true" selector="colorWithCalibratedRed:green:blue:alpha:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -952,7 +948,7 @@
 		</method>
 	</class>
 	<class name="NSColorSpace" swt_gen="mixed">
-		<method class_method="true" selector="deviceRGBColorSpace" swt_gen="true">
+		<method class_method="true" selector="genericRGBColorSpace" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -4390,7 +4386,6 @@
 	<constant name="NSBaselineOffsetAttributeName" swt_gen="true"></constant>
 	<constant name="NSCalibratedRGBColorSpace" swt_gen="true"></constant>
 	<constant name="NSCursorAttributeName" swt_gen="true"></constant>
-	<constant name="NSDeviceRGBColorSpace" swt_gen="true"></constant>
 	<constant name="NSDeviceResolution" swt_gen="true"></constant>
 	<constant name="NSDragPboard" swt_gen="true"></constant>
 	<constant name="NSEventTrackingRunLoopMode" swt_gen="true"></constant>

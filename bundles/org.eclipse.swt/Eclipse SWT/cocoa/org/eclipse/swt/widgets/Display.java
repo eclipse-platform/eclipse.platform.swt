@@ -1760,7 +1760,7 @@ float /*double*/ [] getWidgetColorRGB (int id) {
 
 float /*double*/ [] getWidgetColorRGB (NSColor color) {
 	if (color == null) return null;
-	color = color.colorUsingColorSpace(NSColorSpace.deviceRGBColorSpace());
+	color = color.colorUsingColorSpaceName(OS.NSCalibratedRGBColorSpace);
 	if (color == null) return null;
 	float /*double*/[] components = new float /*double*/[(int)/*64*/color.numberOfComponents()];
 	color.getComponents(components);	

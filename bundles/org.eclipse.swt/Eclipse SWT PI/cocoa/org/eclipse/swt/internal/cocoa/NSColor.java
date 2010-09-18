@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -52,18 +52,13 @@ public static NSColor clearColor() {
 	return result != 0 ? new NSColor(result) : null;
 }
 
-public NSColor colorUsingColorSpace(NSColorSpace space) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_colorUsingColorSpace_, space != null ? space.id : 0);
-	return result == this.id ? this : (result != 0 ? new NSColor(result) : null);
-}
-
 public NSColor colorUsingColorSpaceName(NSString colorSpace) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_colorUsingColorSpaceName_, colorSpace != null ? colorSpace.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSColor(result) : null);
 }
 
-public static NSColor colorWithDeviceRed(float /*double*/ red, float /*double*/ green, float /*double*/ blue, float /*double*/ alpha) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_colorWithDeviceRed_green_blue_alpha_, red, green, blue, alpha);
+public static NSColor colorWithCalibratedRed(float /*double*/ red, float /*double*/ green, float /*double*/ blue, float /*double*/ alpha) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_colorWithCalibratedRed_green_blue_alpha_, red, green, blue, alpha);
 	return result != 0 ? new NSColor(result) : null;
 }
 
