@@ -346,6 +346,7 @@ typedef enum {
 	NSCountWindows_FUNC,
 	NSCursorAttributeName_FUNC,
 	NSDefaultRunLoopMode_FUNC,
+	NSDeviceRGBColorSpace_FUNC,
 	NSDeviceResolution_FUNC,
 	NSDragPboard_FUNC,
 	NSEqualRects_FUNC,

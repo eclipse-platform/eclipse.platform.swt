@@ -62,6 +62,11 @@ public static NSColor colorWithCalibratedRed(float /*double*/ red, float /*doubl
 	return result != 0 ? new NSColor(result) : null;
 }
 
+public static NSColor colorWithDeviceRed(float /*double*/ red, float /*double*/ green, float /*double*/ blue, float /*double*/ alpha) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_colorWithDeviceRed_green_blue_alpha_, red, green, blue, alpha);
+	return result != 0 ? new NSColor(result) : null;
+}
+
 public static NSColor colorWithPatternImage(NSImage image) {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_colorWithPatternImage_, image != null ? image.id : 0);
 	return result != 0 ? new NSColor(result) : null;

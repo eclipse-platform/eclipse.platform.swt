@@ -857,6 +857,13 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method class_method="true" selector="colorWithDeviceRed:green:blue:alpha:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method class_method="true" selector="colorWithPatternImage:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -4386,6 +4393,7 @@
 	<constant name="NSBaselineOffsetAttributeName" swt_gen="true"></constant>
 	<constant name="NSCalibratedRGBColorSpace" swt_gen="true"></constant>
 	<constant name="NSCursorAttributeName" swt_gen="true"></constant>
+	<constant name="NSDeviceRGBColorSpace" swt_gen="true"></constant>
 	<constant name="NSDeviceResolution" swt_gen="true"></constant>
 	<constant name="NSDragPboard" swt_gen="true"></constant>
 	<constant name="NSEventTrackingRunLoopMode" swt_gen="true"></constant>

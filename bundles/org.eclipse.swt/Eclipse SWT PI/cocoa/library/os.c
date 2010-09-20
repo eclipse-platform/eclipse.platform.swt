@@ -4437,6 +4437,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSDefaultRunLoopMode)
 }
 #endif
 
+#ifndef NO_NSDeviceRGBColorSpace
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSDeviceRGBColorSpace)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSDeviceRGBColorSpace_FUNC);
+	rc = (jintLong)NSDeviceRGBColorSpace;
+	OS_NATIVE_EXIT(env, that, NSDeviceRGBColorSpace_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSDeviceResolution
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSDeviceResolution)
 	(JNIEnv *env, jclass that)

@@ -929,6 +929,7 @@ public static final int /*long*/ sel_colorAtX_y_ = sel_registerName("colorAtX:y:
 public static final int /*long*/ sel_colorSpaceName = sel_registerName("colorSpaceName");
 public static final int /*long*/ sel_colorUsingColorSpaceName_ = sel_registerName("colorUsingColorSpaceName:");
 public static final int /*long*/ sel_colorWithCalibratedRed_green_blue_alpha_ = sel_registerName("colorWithCalibratedRed:green:blue:alpha:");
+public static final int /*long*/ sel_colorWithDeviceRed_green_blue_alpha_ = sel_registerName("colorWithDeviceRed:green:blue:alpha:");
 public static final int /*long*/ sel_colorWithPatternImage_ = sel_registerName("colorWithPatternImage:");
 public static final int /*long*/ sel_columnAtPoint_ = sel_registerName("columnAtPoint:");
 public static final int /*long*/ sel_columnIndexesInRect_ = sel_registerName("columnIndexesInRect:");
@@ -2669,6 +2670,9 @@ public static final NSString NSCalibratedRGBColorSpace = new NSString(NSCalibrat
 /** @method flags=const */
 public static final native int /*long*/ NSCursorAttributeName();
 public static final NSString NSCursorAttributeName = new NSString(NSCursorAttributeName());
+/** @method flags=const */
+public static final native int /*long*/ NSDeviceRGBColorSpace();
+public static final NSString NSDeviceRGBColorSpace = new NSString(NSDeviceRGBColorSpace());
 /** @method flags=const */
 public static final native int /*long*/ NSDeviceResolution();
 public static final NSString NSDeviceResolution = new NSString(NSDeviceResolution());
