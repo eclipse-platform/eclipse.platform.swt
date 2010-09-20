@@ -1179,6 +1179,10 @@ int /*long*/ outlineView_numberOfChildrenOfItem(int /*long*/ id, int /*long*/ se
 	return 0;
 }
 
+int /*long*/ outlineView_selectionIndexesForProposedSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ indexSet) {
+	return indexSet;
+}
+
 void outlineView_willDisplayCell_forTableColumn_item(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ cell, int /*long*/ tableColumn, int /*long*/ item) {
 }
 
@@ -1878,6 +1882,10 @@ void tableView_didClickTableColumn(int /*long*/ id, int /*long*/ sel, int /*long
 
 int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
 	return 0;
+}
+
+int /*long*/ tableView_selectionIndexesForProposedSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ indexSet) {
+	return indexSet;
 }
 
 void tableView_setObjectValue_forTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ anObject, int /*long*/ aTableColumn, int /*long*/ rowIndex) {	

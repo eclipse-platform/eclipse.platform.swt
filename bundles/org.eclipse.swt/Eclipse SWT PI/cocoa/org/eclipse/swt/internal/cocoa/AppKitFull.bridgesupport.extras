@@ -4763,6 +4763,16 @@
 			<arg swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
+	<informal_protocol name="NSControlTextEditingDelegate" swt_gen="mixed">
+		<method selector="outlineView:selectionIndexesForProposedSelection:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+		</method>
+		<method selector="tableView:selectionIndexesForProposedSelection:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+		</method>
+	</informal_protocol>
 	<informal_protocol name="NSDraggingDestination" swt_gen="mixed">
 		<method selector="draggingEnded:" swt_gen="true">
 			<arg swt_gen="true"></arg>

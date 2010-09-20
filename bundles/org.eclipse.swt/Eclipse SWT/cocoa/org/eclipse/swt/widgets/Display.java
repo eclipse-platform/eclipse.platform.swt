@@ -2363,6 +2363,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_child_ofItem_, proc5, "@:@i@");
 	OS.class_addMethod(cls, OS.sel_outlineView_isItemExpandable_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_numberOfChildrenOfItem_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_selectionIndexesForProposedSelection_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_objectValueForTableColumn_byItem_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_willDisplayCell_forTableColumn_item_, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_setObjectValue_forTableColumn_byItem_, proc6, "@:@@@@");
@@ -2538,7 +2539,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableView_setObjectValue_forTableColumn_row_, proc6, "@:@@@i");
 	OS.class_addMethod(cls, OS.sel_tableViewColumnDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableViewColumnDidResize_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_tableView_didClickTableColumn_, proc4, "@:@");
+	OS.class_addMethod(cls, OS.sel_tableView_didClickTableColumn_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_tableView_selectionIndexesForProposedSelection_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_canDragRowsWithIndexes_atPoint_, canDragRowsWithIndexes_atPoint_Proc, "@:@{NSPoint=ff}");
 	OS.class_addMethod(cls, OS.sel_tableView_writeRowsWithIndexes_toPasteboard_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_drawBackgroundInClipRect_, drawBackgroundInClipRectProc, "@:{NSRect}");
@@ -5323,8 +5325,12 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		return widget.accessibilityAttributeValue_forParameter(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_tableView_didClickTableColumn_) {
 		widget.tableView_didClickTableColumn (id, sel, arg0, arg1);
+	} else if (sel == OS.sel_tableView_selectionIndexesForProposedSelection_) {
+		return widget.tableView_selectionIndexesForProposedSelection(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_outlineView_didClickTableColumn_) {
 		widget.outlineView_didClickTableColumn (id, sel, arg0, arg1);
+	} else if (sel == OS.sel_outlineView_selectionIndexesForProposedSelection_) {
+		return widget.outlineView_selectionIndexesForProposedSelection(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_shouldChangeTextInRange_replacementString_) {
 		return widget.shouldChangeTextInRange_replacementString(id, sel, arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_canDragRowsWithIndexes_atPoint_) {

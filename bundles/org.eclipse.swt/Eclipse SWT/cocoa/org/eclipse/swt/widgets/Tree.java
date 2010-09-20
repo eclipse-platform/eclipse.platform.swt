@@ -2092,6 +2092,26 @@ int /*long*/ outlineView_numberOfChildrenOfItem (int /*long*/ id, int /*long*/ s
 	return ((TreeItem) display.getWidget (item)).itemCount;
 }
 
+int /*long*/ outlineView_selectionIndexesForProposedSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ indexSet) {
+	if ((style & SWT.SINGLE) != 0) {
+		/*
+		 * Feature in Cocoa.  Calling setAllowsEmptySelection will automatically select the first row of the list. 
+		 * And, single-selection NSTable/OutlineViews allow the user to de-select the selected item via command-click.
+		 * This is normal platform behavior, but for compatibility with other platforms, if the SINGLE style is in use,
+		 * force a selection by seeing if the proposed selection set is empty, and if so, put back the currently selected row.  
+		 */
+		NSIndexSet indexes = new NSIndexSet(indexSet);
+		NSOutlineView table = new NSOutlineView(aTableView);			
+		if (indexes.count() != 1 && table.selectedRow() != -1) {
+			NSIndexSet newSelection = (NSIndexSet)new NSIndexSet().alloc();
+			newSelection = newSelection.initWithIndex(table.selectedRow());
+			return newSelection.id;
+		}
+	}
+	
+	return indexSet;
+}
+
 void outlineView_willDisplayCell_forTableColumn_item (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ cell, int /*long*/ tableColumn, int /*long*/ itemID) {
 	if (checkColumn != null && tableColumn == checkColumn.id) return;
 	TreeItem item = (TreeItem) display.getWidget(itemID);

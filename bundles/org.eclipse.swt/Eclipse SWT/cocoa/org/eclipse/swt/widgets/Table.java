@@ -3182,6 +3182,27 @@ int /*long*/ tableView_objectValueForTableColumn_row (int /*long*/ id, int /*lon
 	return item.createString (0).id;
 }
 
+int /*long*/ tableView_selectionIndexesForProposedSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ indexSet) {
+
+	if ((style & SWT.SINGLE) != 0) {
+		/*
+		 * Feature in Cocoa.  Calling setAllowsEmptySelection will automatically select the first row of the list. 
+		 * And, single-selection NSTable/OutlineViews allow the user to de-select the selected item via command-click.
+		 * This is normal platform behavior, but for compatibility with other platforms, if the SINGLE style is in use,
+		 * force a selection by seeing if the proposed selection set is empty, and if so, put back the currently selected row.  
+		 */
+		NSIndexSet indexes = new NSIndexSet(indexSet);
+		NSTableView table = new NSTableView(aTableView);			
+		if (indexes.count() != 1 && table.selectedRow() != -1) {
+			NSIndexSet newSelection = (NSIndexSet)new NSIndexSet().alloc();
+			newSelection = newSelection.initWithIndex(table.selectedRow());
+			return newSelection.id;
+		}
+	}
+	
+	return indexSet;
+}
+
 void tableView_setObjectValue_forTableColumn_row (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ anObject, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
 	if (checkColumn != null && aTableColumn == checkColumn.id)  {
 		TableItem item = items [(int)/*64*/rowIndex];
