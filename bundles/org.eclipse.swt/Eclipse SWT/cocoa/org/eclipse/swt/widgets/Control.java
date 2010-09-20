@@ -1822,6 +1822,9 @@ boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 			if (nsEvent != null) {
 				int /*long*/ type = nsEvent.type ();
 				if (type == OS.NSKeyDown || type == OS.NSSystemDefined) {
+					boolean [] consume = new boolean [1];
+					if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return true;
+					if (isDisposed ()) return true;
 					NSString str = new NSString (string);
 					if (str.isKindOfClass (OS.class_NSAttributedString)) {
 						str = new NSAttributedString (string).string ();
@@ -1836,6 +1839,7 @@ boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 						event.character = buffer [i];
 						if (!sendKeyEvent (SWT.KeyDown, event)) return false;
 					}
+					if (consume [0]) return false;
 				}
 			}
 			if ((state & CANVAS) != 0) return true;
