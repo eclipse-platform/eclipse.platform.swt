@@ -868,6 +868,23 @@ public class Display extends Device {
 	}
 
 	/**
+	 * Returns the single instance of the application menu bar or null
+	 * when there is no application menu bar for the platform.
+	 *
+	 * @return the application menu bar or <code>null</code>
+	 * 
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+	 * </ul>
+	 *
+	 * @since 3.7
+	 */
+	public Menu getAppMenuBar () {
+		checkDevice ();
+		return null;
+	}
+
+	/**
 	 * Returns a rectangle describing the receiver's size and location. Note
 	 * that on multi-monitor systems the origin can be negative.
 	 * 

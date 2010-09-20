@@ -657,7 +657,7 @@ public void setMenu (Menu menu) {
 		if ((menu.style & SWT.DROP_DOWN) == 0) {
 			error (SWT.ERROR_MENU_NOT_DROP_DOWN);
 		}
-		if (menu.parent != parent.parent) {
+		if (parent.parent != null && menu.parent != parent.parent) {
 			error (SWT.ERROR_INVALID_PARENT);
 		}
 	} 

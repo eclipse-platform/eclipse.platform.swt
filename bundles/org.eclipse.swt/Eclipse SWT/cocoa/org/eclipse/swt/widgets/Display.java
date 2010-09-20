@@ -184,6 +184,9 @@ public class Display extends Device {
 	TrayItem currentTrayItem;
 	Menu trayItemMenu;
 	
+	/* Main menu bar and application menu */
+	Menu appMenuBar;
+
 	/* TaskBar */
 	TaskBar taskBar;
 	
@@ -1885,6 +1888,26 @@ public Image getSystemImage (int id) {
 }
 
 /**
+ * Returns the single instance of the application menu bar or null
+ * when there is no application menu bar for the platform.
+ *
+ * @return the application menu bar or <code>null</code>
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.7
+ */
+public Menu getAppMenuBar () {
+	checkDevice ();
+	if (appMenuBar != null) return appMenuBar;
+	appMenuBar = new Menu (this);
+	setMenuBar(appMenuBar);
+	return appMenuBar;
+}
+
+/**
  * Returns the single instance of the system tray or null
  * when there is no system tray available for the platform.
  *
@@ -3444,6 +3467,8 @@ protected void release () {
 	disposeList = null;
 	synchronizer.releaseSynchronizer ();
 	synchronizer = null;
+	if (appMenuBar != null) appMenuBar.dispose();
+	appMenuBar = null;
 	releaseDisplay ();
 	super.release ();
 }
@@ -4170,6 +4195,7 @@ public void setData (String key, Object value) {
 
 void setMenuBar (Menu menu) {
 	if (menu == menuBar) return;
+	if (appMenuBar != null && menu != appMenuBar) return;
 	menuBar = menu;
 	//remove all existing menu items except the application menu
 	NSMenu menubar = application.mainMenu();

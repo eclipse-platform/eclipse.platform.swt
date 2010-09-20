@@ -127,9 +127,21 @@ public Menu (Control parent) {
  * @see Widget#getStyle
  */
 public Menu (Decorations parent, int style) {
-	super (parent, checkStyle (style));
+	checkSubclass ();
+	checkParent (parent);
+	this.style = checkStyle(style);
+	if (parent != null) {
+		display = parent.display;
+	} else {
+		display = Display.getCurrent ();
+		if (display == null) display = Display.getDefault ();
+		if (!display.isValidThread ()) {
+			error (SWT.ERROR_THREAD_INVALID_ACCESS);
+		}
+	}
 	this.parent = parent;
-	createWidget ();
+	reskinWidget();
+	createWidget();
 }
 
 /**
@@ -188,6 +200,18 @@ public Menu (MenuItem parentItem) {
 	this (checkNull (parentItem).parent);
 }
 
+Menu (Display display) {
+	if (display == null) display = Display.getCurrent ();
+	if (display == null) display = Display.getDefault ();
+	if (!display.isValidThread ()) {
+		error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	}
+	this.display = display;
+	this.style = SWT.BAR;
+	reskinWidget();
+	createWidget();
+}
+
 static Control checkNull (Control control) {
 	if (control == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return control;
@@ -201,6 +225,16 @@ static Menu checkNull (Menu menu) {
 static MenuItem checkNull (MenuItem item) {
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return item;
+}
+
+void checkParent (Widget parent) {
+	// A null parent is okay when the app menu bar is in use.
+	if (parent == null && Display.getDefault().appMenuBar == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (parent != null) {
+		if (parent.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		parent.checkWidget ();
+		parent.checkOpen ();
+	}
 }
 
 static int checkStyle (int style) {
@@ -567,6 +601,7 @@ public Menu getParentMenu () {
  */
 public Shell getShell () {
 	checkWidget ();
+	if (this == display.appMenuBar) return null;
 	return parent.getShell ();
 }
 
@@ -590,7 +625,10 @@ public Shell getShell () {
 public boolean getVisible () {
 	checkWidget ();
 	if ((style & SWT.BAR) != 0) {
-		return this == parent.menuShell ().menuBar;
+		if (this == display.appMenuBar) 
+			return display.application.isActive();
+		else
+			return this == parent.menuShell ().menuBar;
 	}
 	if ((style & SWT.POP_UP) != 0) {
 		Menu [] popups = display.popups;
@@ -645,6 +683,7 @@ public int indexOf (MenuItem item) {
  */
 public boolean isEnabled () {
 	checkWidget ();
+	if (this == display.appMenuBar) return getEnabled();
 	Menu parentMenu = getParentMenu ();
 	if (parentMenu == null) {
 		return getEnabled () && parent.isEnabled ();
@@ -790,7 +829,7 @@ void releaseHandle () {
 void releaseParent () {
 	super.releaseParent ();
 	if (cascade != null) cascade.setMenu (null);
-	if ((style & SWT.BAR) != 0 && this == parent.menuBar) {
+	if ((style & SWT.BAR) != 0 && parent != null && this == parent.menuBar) {
 		parent.setMenuBar (null);
 	}
 }
