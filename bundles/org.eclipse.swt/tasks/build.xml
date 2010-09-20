@@ -310,6 +310,36 @@
 		</antcall>
 	</target>
 
+	<target name="build_gtk_aix_ppc" depends="init_build">
+		<property name="clean" value="clean"/>
+		<property name="targets" value="install"/>
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
+			<arg value="build.sh"/>
+			<env key="MODEL" value="ppc"/>
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/aixj9_r5"/>
+			<arg line="${targets}"/>
+			<arg line="${clean}"/>
+		</exec>
+		<antcall target="refresh_fragment">
+			<param name="fragment" value="org.eclipse.swt.gtk.aix.ppc"/>
+		</antcall>
+	</target>
+
+	<target name="build_gtk_aix_ppc64" depends="init_build">
+		<property name="clean" value="clean"/>
+		<property name="targets" value="install"/>
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
+			<arg value="build.sh"/>
+			<env key="MODEL" value="ppc64"/>
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/JDKs/AIX/PPC64/j564/sdk"/>
+			<arg line="${targets}"/>
+			<arg line="${clean}"/>
+		</exec>
+		<antcall target="refresh_fragment">
+			<param name="fragment" value="org.eclipse.swt.gtk.aix.ppc64"/>
+		</antcall>
+	</target>
+
 	<target name="build_motif_linux" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="make_mozilla make_xulrunner make_xpcominit make_cairo install"/>
@@ -331,7 +361,7 @@
 			<param name="fragment" value="org.eclipse.swt.motif.linux.x86"/>
 		</antcall>
 	</target>
-
+	
 	<target name="build_motif_aix" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="install"/>

@@ -29,6 +29,10 @@ if [ "${OS}" = "" ]; then
 	OS=`uname -s`
 fi
 case $OS in
+	"AIX")
+		SWT_OS=aix
+		MAKEFILE=make_aix.mak
+		;;
 	"SunOS")
 		SWT_OS=solaris
 		PROC=`uname -i`
@@ -85,10 +89,16 @@ if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} 
 		export XLIB64
 	fi
 	if [ ${MODEL} = 'ppc64' ]; then
-		SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -m64"	
-		XLIB64="${XLIB64} -L/usr/lib64"
-		SWT_LFLAGS=-m64
-		export SWT_LFLAGS
+		if [ ${OS} = 'AIX' ]; then
+			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -maix64"
+			SWT_LFLAGS=-maix64
+			export SWT_LFLAGS
+		else
+			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -m64"	
+			XLIB64="${XLIB64} -L/usr/lib64"
+			SWT_LFLAGS=-m64
+			export SWT_LFLAGS
+		fi
 	fi
 	export SWT_PTR_CFLAGS
 fi
@@ -149,7 +159,7 @@ fi
 
 # Find AWT if available
 if [ -z "${AWT_LIB_PATH}" ]; then
-	if [ -f ${JAVA_HOME}/jre/lib/${AWT_ARCH}/libjawt.so ]; then
+	if [ -f ${JAVA_HOME}/jre/lib/${AWT_ARCH}/libjawt.* ]; then
 		AWT_LIB_PATH=${JAVA_HOME}/jre/lib/${AWT_ARCH}
 		export AWT_LIB_PATH
 	else
@@ -158,7 +168,7 @@ if [ -z "${AWT_LIB_PATH}" ]; then
 	fi
 fi
 
-if [ -f ${AWT_LIB_PATH}/libjawt.so ]; then
+if [ -f ${AWT_LIB_PATH}/libjawt.* ]; then
 	echo "libjawt.so found, the SWT/AWT integration library will be compiled."
 	MAKE_AWT=make_awt
 else
