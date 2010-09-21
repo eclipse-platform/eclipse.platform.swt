@@ -2120,6 +2120,7 @@ public static final int NSLeftTabStopType = 0;
 public static final int NSLeftTextAlignment = 0;
 public static final int NSLineBreakByClipping = 2;
 public static final int NSLineBreakByTruncatingMiddle = 5;
+public static final int NSLineBreakByTruncatingTail = 4;
 public static final int NSLineBreakByWordWrapping = 0;
 public static final int NSLineToBezierPathElement = 1;
 public static final int NSMiniaturizableWindowMask = 4;

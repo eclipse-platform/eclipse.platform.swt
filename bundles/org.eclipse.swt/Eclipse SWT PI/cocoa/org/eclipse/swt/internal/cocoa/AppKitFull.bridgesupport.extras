@@ -4525,6 +4525,7 @@
 	<enum name="NSLeftTextAlignment" swt_gen="true"></enum>
 	<enum name="NSLineBreakByClipping" swt_gen="true"></enum>
 	<enum name="NSLineBreakByTruncatingMiddle" swt_gen="true"></enum>
+	<enum name="NSLineBreakByTruncatingTail" swt_gen="true"></enum>
 	<enum name="NSLineBreakByWordWrapping" swt_gen="true"></enum>
 	<enum name="NSLineToBezierPathElement" swt_gen="true"></enum>
 	<enum name="NSMiniaturizableWindowMask" swt_gen="true"></enum>

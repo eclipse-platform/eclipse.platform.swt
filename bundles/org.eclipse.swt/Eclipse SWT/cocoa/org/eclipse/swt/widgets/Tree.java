@@ -611,7 +611,7 @@ void createHandle () {
 	widget.addTableColumn (firstColumn);
 	widget.setOutlineTableColumn (firstColumn);
 	dataCell = (NSTextFieldCell)new SWTImageTextCell ().alloc ().init ();
-	dataCell.setLineBreakMode(OS.NSLineBreakByClipping);
+	dataCell.setLineBreakMode(OS.NSLineBreakByTruncatingTail);
 	firstColumn.setDataCell (dataCell);
 	
 	scrollView = scrollWidget;

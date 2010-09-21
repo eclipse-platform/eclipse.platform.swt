@@ -577,7 +577,7 @@ void createHandle () {
 	firstColumn.headerCell ().setTitle (str);
 	widget.addTableColumn (firstColumn);
 	dataCell = (NSTextFieldCell)new SWTImageTextCell ().alloc ().init ();
-	dataCell.setLineBreakMode(OS.NSLineBreakByClipping);
+	dataCell.setLineBreakMode(OS.NSLineBreakByTruncatingTail);
 	firstColumn.setDataCell (dataCell);
 	widget.setHighlightedTableColumn(null);
 	scrollView = scrollWidget;
