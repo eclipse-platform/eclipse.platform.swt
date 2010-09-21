@@ -3196,6 +3196,7 @@ int /*long*/ tableView_selectionIndexesForProposedSelection (int /*long*/ id, in
 		if (indexes.count() != 1 && table.selectedRow() != -1) {
 			NSIndexSet newSelection = (NSIndexSet)new NSIndexSet().alloc();
 			newSelection = newSelection.initWithIndex(table.selectedRow());
+			newSelection.autorelease();
 			return newSelection.id;
 		}
 	}
