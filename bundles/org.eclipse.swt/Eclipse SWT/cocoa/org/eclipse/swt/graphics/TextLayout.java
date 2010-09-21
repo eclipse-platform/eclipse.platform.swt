@@ -291,8 +291,8 @@ void computeRuns() {
 	attrStr.endEditing();
 
 	NSSize size = new NSSize();
-	size.width = wrapWidth != -1 ? wrapWidth : Float.MAX_VALUE;
-	size.height = Float.MAX_VALUE;
+	size.width = wrapWidth != -1 ? wrapWidth : OS.MAX_TEXT_CONTAINER_SIZE;
+	size.height = OS.MAX_TEXT_CONTAINER_SIZE;
 	if (textStorage == null) {
 		textStorage = (NSTextStorage)new NSTextStorage().alloc().init();
 		layoutManager = (NSLayoutManager)new NSLayoutManager().alloc().init();

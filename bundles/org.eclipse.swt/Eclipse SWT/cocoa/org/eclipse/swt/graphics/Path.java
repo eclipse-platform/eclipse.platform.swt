@@ -359,8 +359,8 @@ public void addString(String string, float x, float y, Font font) {
 		NSLayoutManager layoutManager = (NSLayoutManager)new NSLayoutManager().alloc().init();
 		NSTextContainer textContainer = (NSTextContainer)new NSTextContainer().alloc();
 		NSSize size = new NSSize();
-		size.width = Float.MAX_VALUE;
-		size.height = Float.MAX_VALUE;
+		size.width = OS.MAX_TEXT_CONTAINER_SIZE;
+		size.height = OS.MAX_TEXT_CONTAINER_SIZE;
 		textContainer.initWithContainerSize(size);
 		textStorage.addLayoutManager(layoutManager);
 		layoutManager.addTextContainer(textContainer);

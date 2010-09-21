@@ -742,8 +742,8 @@ static int /*long*/ createCGPathRef(NSBezierPath nsPath) {
 
 void createLayout () {
 	NSSize size = new NSSize();
-	size.width = Float.MAX_VALUE;
-	size.height = Float.MAX_VALUE;
+	size.width = OS.MAX_TEXT_CONTAINER_SIZE;
+	size.height = OS.MAX_TEXT_CONTAINER_SIZE;
 	NSTextStorage textStorage = (NSTextStorage)new NSTextStorage().alloc().init();
 	NSLayoutManager layoutManager = (NSLayoutManager)new NSLayoutManager().alloc().init();
 	layoutManager.setBackgroundLayoutEnabled(NSThread.isMainThread());

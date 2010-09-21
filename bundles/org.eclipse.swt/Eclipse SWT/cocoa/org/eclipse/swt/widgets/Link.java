@@ -135,7 +135,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	NSLayoutManager layoutManager = (NSLayoutManager)new NSLayoutManager ().alloc ().init ();
 	NSTextContainer textContainer = (NSTextContainer)new NSTextContainer ().alloc ();
 	NSSize size = new NSSize ();
-	size.width = size.height = Float.MAX_VALUE;
+	size.width = size.height = OS.MAX_TEXT_CONTAINER_SIZE;
 	if (wHint != SWT.DEFAULT) size.width = wHint;
 	if (hHint != SWT.DEFAULT) size.height = hHint;
 	textContainer.initWithContainerSize (size);

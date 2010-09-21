@@ -24,6 +24,19 @@ public class OS extends C {
 		VERSION = response [0] & 0xffff;		
 	}
 	
+	/*
+	 *  Magic number explanation, from Cocoa's TextSizingExample:
+	 *  
+	 *  "The first is called LargeNumberForText [1.0e7] and it was not arbitrarily chosen.
+	 *  The actual value was chosen to be around the largest floating point value possible that can preserve at least pixel precision. [...]
+	 *  It is not wise to use bigger dimensions for text system objects because, even if you ever fill all that space, 
+	 *  by the time you get to the far reaches, the letters won't have the precision necessary to look and act correctly. 
+	 *  [...] Because the Cocoa text system respects this limit in various ways, a second constant, NotQuiteAsLargeNumberForText, is used for the 
+	 *  field-like text views created by the FieldAspect class. This is simply half of LargeNumberForText; at sizes as large as LargeNumberForText, 
+	 *  the text system stops aligning text, for various reasons."
+	 */
+	public static final float /*double*/ MAX_TEXT_CONTAINER_SIZE = 0.5e7f;
+	
 	public static final int gestaltSystemVersion = ('s'<<24) + ('y'<<16) + ('s'<<8) + 'v';
 	public static final int noErr = 0;
 	public static final int kProcessTransformToForegroundApplication = 1;
