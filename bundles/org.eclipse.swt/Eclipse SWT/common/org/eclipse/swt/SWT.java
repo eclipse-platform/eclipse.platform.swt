@@ -3850,20 +3850,6 @@ public class SWT {
 	public static final int ALL = 1 << 0;
 	
 	/**
-	 * Constant for the About menu item
-	 * 
-	 * @see org.eclipse.swt.widgets.Display#getApplicationMenuItem(int)
-	 * 
-	 * @since 3.7
-	 */
-	public static final int MENU_ITEM_ABOUT = 0;
-	public static final int MENU_ITEM_PREFERENCES = 1;
-	public static final int MENU_ITEM_HIDE = 2;
-	public static final int MENU_ITEM_HIDE_OTHERS = 3;
-	public static final int MENU_ITEM_SHOW_ALL= 4;
-	public static final int MENU_ITEM_QUIT = 5;
-
-	/**
 	 * Key value for setting and getting the skin class of a widget. 
 	 * 
 	 * @see org.eclipse.swt.widgets.Widget#getData(String)
