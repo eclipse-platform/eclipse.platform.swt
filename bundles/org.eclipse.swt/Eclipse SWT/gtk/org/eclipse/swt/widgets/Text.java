@@ -981,22 +981,7 @@ int getTabWidth (int tabs) {
  * </ul>
  */
 public String getText () {
-	checkWidget ();
-	int /*long*/ address;
-	if ((style & SWT.SINGLE) != 0) {
-		address = OS.gtk_entry_get_text (handle);
-	} else {
-		byte [] start =  new byte [ITER_SIZEOF];
-		byte [] end =  new byte [ITER_SIZEOF];
-		OS.gtk_text_buffer_get_bounds (bufferHandle, start, end);
-		address = OS.gtk_text_buffer_get_text (bufferHandle, start, end, true);
-	}
-	if (address == 0) return "";
-	int length = OS.strlen (address);
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, address, length);
-	if ((style & SWT.MULTI) != 0) OS.g_free (address);
-	return new String (Converter.mbcsToWcs (null, buffer));
+	return new String (getTextChars());
 }
 
 /**
@@ -1041,6 +1026,40 @@ public String getText (int start, int end) {
 	OS.memmove (buffer, address, length);
 	OS.g_free (address);
 	return new String (Converter.mbcsToWcs (null, buffer));
+}
+
+/**
+ * Returns the widget's text as a character array.
+ * <p>
+ * The text for a text widget is the characters in the widget, or
+ * a zero length array if this has never been set.
+ * </p>
+ *
+ * @return a character array that contains the widget's text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.7
+ */
+public char [] getTextChars () {
+	checkWidget ();
+	int /*long*/ address;
+	if ((style & SWT.SINGLE) != 0) {
+		address = OS.gtk_entry_get_text (handle);
+	} else {
+		byte [] start =  new byte [ITER_SIZEOF];
+		byte [] end =  new byte [ITER_SIZEOF];
+		OS.gtk_text_buffer_get_bounds (bufferHandle, start, end);
+		address = OS.gtk_text_buffer_get_text (bufferHandle, start, end, true);
+	}
+	if (address == 0) return new char[0];
+	int length = OS.strlen (address);
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, address, length);
+	if ((style & SWT.MULTI) != 0) OS.g_free (address);
+	return Converter.mbcsToWcs (null, buffer);
 }
 
 /**
@@ -2040,8 +2059,47 @@ public void setText (String string) {
 		string = verifyText (string, 0, getCharCount ());
 		if (string == null) return;
 	}
+	char [] text = new char [string.length()];
+	string.getChars(0, text.length, text, 0);
+	setText (text);
+}
+
+/**
+ * Sets the contents of the receiver to the characters in the array. If the receiver has style
+ * SINGLE and the argument contains multiple lines of text, the result of this
+ * operation is undefined and may vary from platform to platform.
+ *
+ * @param text a character array that contains the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.7
+ */
+public void setTextChars (char [] text) {
+	checkWidget ();
+	if (text == null) error (SWT.ERROR_NULL_ARGUMENT);
+	/*
+	* Feature in gtk.  When text is set in gtk, separate events are fired for the deletion and 
+	* insertion of the text.  This is not wrong, but is inconsistent with other platforms.  The
+	* fix is to block the firing of these events and fire them ourselves in a consistent manner. 
+	*/
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		String string = verifyText (new String(text), 0, getCharCount ());
+		if (string == null) return;
+		text = new char [string.length()];
+		string.getChars (0, text.length, text, 0);
+	}
+	setText (text);
+}
+
+void setText (char [] text) {
 	if ((style & SWT.SINGLE) != 0) {
-		byte [] buffer = Converter.wcsToMbcs (null, string, true);
+		byte [] buffer = Converter.wcsToMbcs (null, text, true);
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
@@ -2050,7 +2108,7 @@ public void setText (String string) {
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 	} else {
-		byte [] buffer = Converter.wcsToMbcs (null, string, false);
+		byte [] buffer = Converter.wcsToMbcs (null, text, false);
 		byte [] position =  new byte [ITER_SIZEOF];
 		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_RANGE);
@@ -2175,7 +2233,7 @@ int traversalCode (int key, GdkEventKey event) {
 }
 
 String verifyText (String string, int start, int end) {
-	if (string.length () == 0 && start == end) return null;
+	if (string != null && string.length () == 0 && start == end) return null;
 	Event event = new Event ();
 	event.text = string;
 	event.start = start;

@@ -58,7 +58,8 @@ import org.eclipse.swt.events.*;
 public class Text extends Scrollable {
 	char echoCharacter;
 	boolean ignoreChange;
-	String hiddenText, message;
+	char [] hiddenText;
+	String message;
 	int drawCount;
 	Color disabledColor;
 	
@@ -462,7 +463,8 @@ ScrollBar createScrollBar (int type) {
 }
 void createWidget (int index) {
 	super.createWidget (index);	
-	hiddenText = message = "";
+	hiddenText = new char [0];
+	message = "";
 	if ((style & SWT.PASSWORD) != 0) setEchoChar ('*');
 	if ((style & SWT.SINGLE) != 0) {
 		disabledColor = new Color (display, MSG_FOREGROUND);
@@ -660,7 +662,7 @@ public boolean getEditable () {
 public int getLineCount () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return 1;
-	int lastChar = echoCharacter != '\0' ? hiddenText.length () : OS.XmTextGetLastPosition (handle);
+	int lastChar = echoCharacter != '\0' ? hiddenText.length : OS.XmTextGetLastPosition (handle);
 	return getLineNumber (lastChar) + 1;
 }
 /**
@@ -712,7 +714,7 @@ int getLineNumber (int position) {
 		int length = page;
 		if (start + page > position) length = position - start;
 		if (echoCharacter != '\0') {
-			hiddenText.getChars (start, start + length, buffer, 0);
+			System.arraycopy (hiddenText, start, buffer, 0, length);
 		} else {
 			if (OS.IsLinux) {
 				OS.XmTextGetSubstring (handle, start, length, buffer1.length, buffer1);
@@ -891,15 +893,7 @@ public int getTabs () {
  * </ul>
  */
 public String getText () {
-	checkWidget();
-	if (echoCharacter != '\0') return hiddenText;
-	int ptr = OS.XmTextGetString (handle);
-	if (ptr == 0) return "";
-	int length = OS.strlen (ptr);
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, ptr, length);
-	OS.XtFree (ptr);
-	return new String (Converter.mbcsToWcs (getCodePage (), buffer));
+	return new String (getTextChars());
 }
 /**
  * Returns a range of text.  Returns an empty string if the
@@ -923,13 +917,13 @@ public String getText (int start, int end) {
 	checkWidget();
 	if (!(start <= end && 0 <= end)) return "";
 	boolean hasEcho = echoCharacter != '\0';
-	int length = hasEcho ? hiddenText.length () : OS.XmTextGetLastPosition (handle);
+	int length = hasEcho ? hiddenText.length : OS.XmTextGetLastPosition (handle);
 	if (length == 0) return "";
 	end = Math.min (end, length - 1);
 	if (start > end) return "";
 	start = Math.max (0, start);
-	if (hasEcho) return hiddenText.substring (start, end + 1);
 	int numChars = end - start + 1;
+	if (hasEcho) return new String(hiddenText, start, numChars);
 	int bufLength = numChars * OS.MB_CUR_MAX () + 1;
 	byte [] buffer = new byte [bufLength];
 	int code = OS.XmTextGetSubstring (handle, start, numChars, bufLength, buffer);
@@ -940,6 +934,36 @@ public String getText (int start, int end) {
 	}
 	char [] unicode = Converter.mbcsToWcs (getCodePage (), buffer);
 	return new String (unicode, 0, numChars);
+}
+/**
+ * Returns the widget's text as a character array.
+ * <p>
+ * The text for a text widget is the characters in the widget, or
+ * a zero length array if this has never been set.
+ * </p>
+ *
+ * @return a character array that contains the widget's text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.7
+ */
+public char [] getTextChars () {
+	checkWidget();
+	if (echoCharacter != '\0') {
+		char [] text = new char [hiddenText.length];
+		System.arraycopy(hiddenText, 0, text, 0, text.length);
+		return text;
+	}
+	int ptr = OS.XmTextGetString (handle);
+	if (ptr == 0) return new char [0];
+	int length = OS.strlen (ptr);
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, ptr, length);
+	OS.XtFree (ptr);
+	return Converter.mbcsToWcs (getCodePage (), buffer);
 }
 /**
  * Returns the maximum number of characters that the receiver is capable of holding. 
@@ -1092,7 +1116,8 @@ public void paste () {
 }
 void releaseWidget () {
 	super.releaseWidget ();
-	hiddenText = message = null;
+	hiddenText = null;
+	message = null;
 	if (disabledColor != null) disabledColor.dispose ();
 	disabledColor = null;
 }
@@ -1265,18 +1290,18 @@ public void setEchoChar (char echo) {
 	checkWidget();
 	if ((style & SWT.MULTI) != 0) return;
 	if (echoCharacter == echo) return;
-	String newText;
+	char [] newText;
 	if (echo == 0) {
 		newText = hiddenText;
-		hiddenText = "";
+		hiddenText = new char [0];
 	} else {
-		newText = hiddenText = getText();
+		newText = hiddenText = getTextChars ();
 	}
 	echoCharacter = echo;
 	Point selection = getSelection();
 	boolean oldValue = ignoreChange;
 	ignoreChange = true;
-	setText(newText);
+	setTextChars(newText);
 	setSelection(selection);
 	ignoreChange = oldValue;
 }
@@ -1531,6 +1556,33 @@ public void setText (String string) {
 	display.setWarnings(warnings);
 }
 /**
+ * Sets the contents of the receiver to the characters in the array. If the receiver has style
+ * SINGLE and the argument contains multiple lines of text, the result of this
+ * operation is undefined and may vary from platform to platform.
+ *
+ * @param text a character array that contains the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.7
+ */
+public void setTextChars (char [] text) {
+	checkWidget();
+	if (text == null) error (SWT.ERROR_NULL_ARGUMENT);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), text, true);
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	OS.XmTextSetString (handle, buffer);
+	OS.XmTextSetInsertionPosition (handle, 0);
+	display.setWarnings(warnings);
+}
+
+/**
  * Sets the maximum number of characters that the receiver
  * is capable of holding to be the argument.
  * <p>
@@ -1709,9 +1761,12 @@ int XmNmodifyVerifyCallback (int w, int client_data, int call_data) {
 	}
 	if (newText != null) {
 		if (echoCharacter != '\0' && (textVerify.doit != 0)) {
-			String prefix = hiddenText.substring (0, textVerify.startPos);
-			String suffix = hiddenText.substring (textVerify.endPos, hiddenText.length ());
-			hiddenText = prefix + newText + suffix;
+			String string = new String (hiddenText);
+			String prefix = string.substring (0, textVerify.startPos);
+			String suffix = string.substring (textVerify.endPos, string.length ());
+			string = prefix + newText + suffix;
+			hiddenText = new char [string.length()];
+			string.getChars(0, hiddenText.length, hiddenText, 0);
 			char [] charBuffer = new char [newText.length ()];
 			for (int i=0; i<charBuffer.length; i++) {
 				charBuffer [i] = echoCharacter;
