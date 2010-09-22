@@ -4951,4 +4951,41 @@ static String withCrLf (String string) {
 	return result.toString ();
 }
 
+static char [] withCrLf (char [] string) {
+	/* If the string is empty, return the string. */
+	int length = string.length;
+	if (length == 0) return string;
+	
+	/*
+	* Check for an LF or CR/LF and assume the rest of
+	* the string is formated that way.  This will not
+	* work if the string contains mixed delimiters.
+	* Also, compute the number of lines.
+	*/
+	int count = 0;
+	for (int i = 0; i < string.length; i++) {
+		if (string [i] == '\n') {
+			count++;
+			if (count == 1 && i > 0 && string [i - 1] == '\r') return string;
+		}
+	}
+	if (count == 0) return string;
+
+	/*
+	* The string is formatted with LF.  
+	*/
+	count += length;
+
+	/* Create a new string with the CR/LF line terminator. */
+	char [] result = new char [count];
+	for (int i = 0, j = 0; i < length && j < count; i++) {
+		if (string [i] == '\n') {
+			result [j++] = '\r';
+		}
+		result [j++] = string [i];
+	}
+	
+	return result;
+}
+
 }

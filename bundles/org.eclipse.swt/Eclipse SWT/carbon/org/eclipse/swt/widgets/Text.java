@@ -71,7 +71,8 @@ public class Text extends Scrollable {
 	ControlEditTextSelectionRec selection;
 	char echoCharacter;
 	boolean doubleClick;
-	String hiddenText, message;
+	char [] hiddenText;
+	String message;
 	
 	/**
 	* The maximum number of characters that can be entered
@@ -1205,6 +1206,30 @@ public String getText (int start, int end) {
 	}
 }
 
+/**
+ * Returns the widget's text as a character array.
+ * <p>
+ * The text for a text widget is the characters in the widget, or
+ * a zero length array if this has never been set.
+ * </p>
+ *
+ * @return a character array that contains the widget's text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.7
+ */
+public char [] getTextChars () {
+	checkWidget();
+	if (txnObject == 0) {
+		return getEditText ();
+	} else {
+		return getTXNChars (OS.kTXNStartOffset, OS.kTXNEndOffset);
+	}
+}
+
 char [] getEditText () {
 	int [] ptr = new int [1];
 	int [] actualSize = new int [1];
@@ -1215,7 +1240,7 @@ char [] getEditText () {
 	range.length = length;
 	char [] buffer = new char [range.length];
 	if (hiddenText != null) {
-		hiddenText.getChars (0, range.length, buffer, 0);
+		System.arraycopy (hiddenText, 0, buffer, 0, range.length);
 	} else {
 		OS.CFStringGetCharacters (ptr [0], range, buffer);
 	}
@@ -1237,7 +1262,7 @@ char [] getEditText (int start, int end) {
 	range.length = Math.max (0, end - start + 1);
 	char [] buffer = new char [range.length];
 	if (hiddenText != null) {
-		hiddenText.getChars (range.location, range.location + range.length, buffer, 0);
+		System.arraycopy (hiddenText, range.location, buffer, 0, range.length);
 	} else {
 		OS.CFStringGetCharacters (ptr [0], range, buffer);
 	}
@@ -1685,7 +1710,8 @@ void register () {
 void releaseWidget () {
 	super.releaseWidget ();
 	txnObject = 0;
-	hiddenText = message = null;
+	hiddenText = null;
+	message = null;
 }
 
 /**
@@ -1994,7 +2020,7 @@ public void setEchoChar (char echo) {
 	if (txnObject == 0) {
 		if ((style & SWT.PASSWORD) == 0) {
 			Point selection = getSelection ();
-			String text = getText ();
+			char [] text = getTextChars ();
 			echoCharacter = echo;
 			setEditText (text);
 			setSelection (selection);
@@ -2318,18 +2344,62 @@ public void setText (String string) {
 	sendModifyEvent (true);
 }
 
+/**
+ * Sets the contents of the receiver to the characters in the array. If the receiver has style
+ * SINGLE and the argument contains multiple lines of text, the result of this
+ * operation is undefined and may vary from platform to platform.
+ *
+ * @param text a character array that contains the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.7
+ */
+public void setTextChars (char [] text) {
+	checkWidget();
+	if (text == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		String string = verifyText (new String (text), 0, getCharCount (), null);
+		if (string == null) return;
+		text = new char [string.length()];
+		string.getChars (0, text.length, text, 0);
+	}
+	if (txnObject == 0) {
+		setEditText (text);
+	} else {
+		setTXNText (OS.kTXNStartOffset, OS.kTXNEndOffset, text);
+		OS.TXNSetSelection (txnObject, OS.kTXNStartOffset, OS.kTXNStartOffset);
+		OS.TXNShowSelection (txnObject, false);
+	}
+	sendModifyEvent (true);
+}
+
 void setEditText (String string) {
+	char [] text = new char [string.length()];
+	string.getChars (0, text.length, text, 0);
+	setEditText (text);
+}
+
+void setEditText (char [] text) {
 	char [] buffer;
+	int length = Math.min(text.length, textLimit);
 	if ((style & SWT.PASSWORD) == 0 && echoCharacter != '\0') {
-		hiddenText = string;
-		buffer = new char [Math.min(hiddenText.length (), textLimit)];
-		for (int i = 0; i < buffer.length; i++) buffer [i] = echoCharacter;
+		hiddenText = new char [length];
+		buffer = new char [length];
+		for (int i = 0; i < length; i++) {
+			hiddenText [i] = text [i];
+			buffer [i] = echoCharacter;
+		}
 	} else {
 		hiddenText = null;
-		buffer = new char [Math.min(string.length (), textLimit)];
-		string.getChars (0, buffer.length, buffer, 0);
+		buffer = text;
 	}
-	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
 	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
 	OS.CFRelease (ptr);
@@ -2337,7 +2407,13 @@ void setEditText (String string) {
 }
 
 void setTXNText (int iStartOffset, int iEndOffset, String string) {
-	int length = string.length ();
+	char [] text = new char [string.length()];
+	string.getChars (0, text.length, text, 0);
+	setTXNText (iStartOffset, iEndOffset, text);
+}
+
+void setTXNText (int iStartOffset, int iEndOffset, char [] text) {
+	int length = text.length;
 	if (textLimit != LIMIT) {
 		int charCount = OS.TXNDataSize (txnObject) / 2;
 		int start = iStartOffset, end = iEndOffset;
@@ -2352,12 +2428,10 @@ void setTXNText (int iStartOffset, int iEndOffset, String string) {
 		}
 		if (charCount - (end - start) + length > textLimit) length = textLimit - charCount + (end - start);
 	}
-	char [] buffer = new char [length];
-	string.getChars (0, buffer.length, buffer, 0);
 	boolean readOnly = (style & SWT.READ_ONLY) != 0;
 	int [] tag = new int [] {OS.kTXNIOPrivilegesTag};
 	if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {0});
-	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, buffer.length * 2, iStartOffset, iEndOffset);
+	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, text, length * 2, iStartOffset, iEndOffset);
 	if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {1});
 
 	/*

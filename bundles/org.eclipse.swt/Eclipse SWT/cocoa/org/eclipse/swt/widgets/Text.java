@@ -57,7 +57,8 @@ public class Text extends Scrollable {
 	int textLimit = LIMIT, tabs = 8;
 	char echoCharacter;
 	boolean doubleClick, receivingFocus;
-	String hiddenText, message;
+	char [] hiddenText;
+	String message;
 	NSRange selectionRange;
 	id targetSearch, targetCancel;
 	int /*long*/ actionSearch, actionCancel;
@@ -801,6 +802,11 @@ public boolean getEditable () {
 }
 
 char [] getEditText () {
+	if (hiddenText != null) {
+		char [] text = new char [hiddenText.length];
+		System.arraycopy (hiddenText, 0, text, 0, text.length);
+		return text;
+	}
 	NSString str = null;
 	if ((style & SWT.SINGLE) != 0) {
 		str = ((NSTextField) view).stringValue();
@@ -810,13 +816,9 @@ char [] getEditText () {
 
 	int length = (int)/*64*/str.length ();
 	char [] buffer = new char [length];
-	if (hiddenText != null) {
-		hiddenText.getChars (0, length, buffer, 0);
-	} else {
-		NSRange range = new NSRange ();
-		range.length = length;
-		str.getCharacters (buffer, range);
-	}
+	NSRange range = new NSRange ();
+	range.length = length;
+	str.getCharacters (buffer, range);
 	return buffer;
 }
 
@@ -837,7 +839,7 @@ char [] getEditText (int start, int end) {
 	range.length = Math.max (0, end - start + 1);
 	char [] buffer = new char [(int)/*64*/range.length];
 	if (hiddenText != null) {
-		hiddenText.getChars ((int)/*64*/range.location, (int)/*64*/(range.location + range.length), buffer, 0);
+		System.arraycopy (hiddenText, (int)/*64*/range.location, buffer, 0, buffer.length);
 	} else {
 		str.getCharacters (buffer, range);
 	}
@@ -1125,6 +1127,37 @@ public String getText (int start, int end) {
 }
 
 /**
+ * Returns the widget's text as a character array.
+ * <p>
+ * The text for a text widget is the characters in the widget, or
+ * a zero length array if this has never been set.
+ * </p>
+ *
+ * @return a character array that contains the widget's text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @see #setTextChars(char[])
+ * @since 3.7
+ */
+public char[] getTextChars () {
+	checkWidget ();
+	if ((style & SWT.SINGLE) != 0) {
+		return getEditText ();
+	} else {
+		NSString str = ((NSTextView)view).textStorage ().string ();
+		int length = (int)/*64*/str.length ();
+		char [] buffer = new char [length];
+		NSRange range = new NSRange ();
+		range.length = length;
+		str.getCharacters (buffer, range);
+		return buffer;
+	}
+}
+
+/**
  * Returns the maximum number of characters that the receiver is capable of holding. 
  * <p>
  * If this has not been changed by <code>setTextLimit()</code>,
@@ -1334,7 +1367,8 @@ void register() {
 void releaseWidget () {
 	super.releaseWidget ();
 	if ((style & SWT.SINGLE) != 0) ((NSControl)view).abortEditing();
-	hiddenText = message = null;
+	hiddenText = null;
+	message = null;
 	selectionRange = null;
 }
 
@@ -1548,7 +1582,7 @@ public void setEchoChar (char echo) {
 	if ((style & SWT.MULTI) != 0) return;
 	if ((style & SWT.PASSWORD) == 0) {
 		Point selection = getSelection ();
-		String text = getText ();
+		char [] text = getTextChars ();
 		echoCharacter = echo;
 		setEditText (text);
 		setSelection (selection);
@@ -1581,20 +1615,29 @@ public void setEditable (boolean editable) {
 }
 
 void setEditText (String string) {
+	char [] text = new char [string.length()];
+	string.getChars(0, text.length, text, 0);
+	setEditText (text);
+}
+
+void setEditText (char[] text) {
 	char [] buffer;
+	int length = Math.min(text.length, textLimit);
 	if ((style & SWT.PASSWORD) == 0 && echoCharacter != '\0') {
-		hiddenText = string;
-		buffer = new char [Math.min(hiddenText.length (), textLimit)];
-		for (int i = 0; i < buffer.length; i++) buffer [i] = echoCharacter;
+		hiddenText = new char [length];
+		buffer = new char [length];
+		for (int i = 0; i < length; i++) {
+			hiddenText [i] = text [i];
+			buffer [i] = echoCharacter;
+		}
 	} else {
 		hiddenText = null;
-		buffer = new char [Math.min(string.length (), textLimit)];
-		string.getChars (0, buffer.length, buffer, 0);
+		buffer = text;
 	}
-	NSTextField text = (NSTextField)view;
-	NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
-	text.setStringValue(nsstring);
-	NSText fieldEditor = text.currentEditor();
+	NSTextField widget = (NSTextField)view;
+	NSString nsstring = NSString.stringWithCharacters (buffer, length);
+	widget.setStringValue(nsstring);
+	NSText fieldEditor = widget.currentEditor();
 	if (fieldEditor != null) {
 		fieldEditor.setString(nsstring);
 	}
@@ -1898,6 +1941,50 @@ public void setText (String string) {
 }
 
 /**
+ * Sets the contents of the receiver to the characters in the array. If the receiver has style
+ * SINGLE and the argument contains multiple lines of text, the result of this
+ * operation is undefined and may vary from platform to platform.
+ *
+ * @param text a character array that contains the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @see #getTextChars()
+ * @since 3.7
+ */
+public void setTextChars (char[] text) {
+	checkWidget ();
+	if (text == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		String string = verifyText (new String (text), 0, getCharCount (), null);
+		if (string == null) return;
+		text = new char [string.length()];
+		string.getChars (0, text.length, text, 0);
+	}
+	if ((style & SWT.SINGLE) != 0) {
+		setEditText (text);
+		NSText fieldEditor = ((NSControl)view).currentEditor();
+		if (fieldEditor != null) {
+			NSRange range = new NSRange();
+			fieldEditor.setSelectedRange (range);
+			fieldEditor.scrollRangeToVisible (range);
+		}
+	} else {
+		NSTextView widget = (NSTextView)view;
+		int length = Math.min(text.length, textLimit);
+		NSString str = NSString.stringWithCharacters(text, length);
+		widget.setString (str);
+		widget.setSelectedRange(new NSRange());
+	}
+	sendEvent (SWT.Modify);
+}
+
+/**
  * Sets the maximum number of characters that the receiver
  * is capable of holding to be the argument.
  * <p>
@@ -1953,13 +2040,14 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 	NSRange range = new NSRange();
 	OS.memmove(range, affectedCharRange, NSRange.sizeof);
 	boolean result = callSuperBoolean(id, sel, range, replacementString);
-	String text = new NSString(replacementString).getString();
-	if (!hooks(SWT.Verify) && echoCharacter =='\0') {
-		if (!result || (getCharCount() - range.length + text.length() > textLimit)) {
+	NSString nsString = new NSString(replacementString);
+	if (!hooks(SWT.Verify) && ((echoCharacter =='\0') || (style & SWT.PASSWORD) != 0)) {
+		if (!result || (getCharCount() - range.length + nsString.length() > textLimit)) {
 			return false;
 		}
 		return true;
 	}
+	String text = nsString.getString();
 	String newText = text;
 	if (hooks (SWT.Verify)) {
 		NSEvent currentEvent = display.application.currentEvent();

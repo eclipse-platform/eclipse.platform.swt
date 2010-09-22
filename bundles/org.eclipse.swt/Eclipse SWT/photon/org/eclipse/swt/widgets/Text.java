@@ -830,6 +830,26 @@ public String getText (int start, int end) {
 }
 
 /**
+ * Returns the widget's text as a character array.
+ * <p>
+ * The text for a text widget is the characters in the widget, or
+ * a zero length array if this has never been set.
+ * </p>
+ *
+ * @return a character array that contains the widget's text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.7
+ */
+public char [] getTextChars () {
+	checkWidget();
+	return new char [0];
+}
+
+/**
  * Returns the widget text.
  * <p>
  * The text for a text widget is the characters in the widget, or
@@ -1516,6 +1536,25 @@ public void setText (String string) {
 	OS.memmove (ptr, buffer, buffer.length);
 	OS.PtSetResource (handle, OS.Pt_ARG_TEXT_STRING, ptr, 0);
 	OS.free (ptr);
+}
+/**
+ * Sets the contents of the receiver to the characters in the array. If the receiver has style
+ * SINGLE and the argument contains multiple lines of text, the result of this
+ * operation is undefined and may vary from platform to platform.
+ *
+ * @param text a character array that contains the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.7
+ */
+public void setTextChars (char [] text) {
+	checkWidget();
 }
 
 /**

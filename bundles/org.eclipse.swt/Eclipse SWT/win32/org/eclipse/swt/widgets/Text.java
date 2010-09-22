@@ -1124,6 +1124,33 @@ public String getText () {
 }
 
 /**
+ * Returns the widget's text as a character array.
+ * <p>
+ * The text for a text widget is the characters in the widget, or
+ * a zero length array if this has never been set.
+ * </p>
+ *
+ * @return a character array that contains the widget's text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @see #setTextChars(char[])
+ * @since 3.7
+ */
+public char[] getTextChars () {
+	checkWidget ();
+	int length = OS.GetWindowTextLength (handle);
+	if (length == 0) return new char[0];
+	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+	OS.GetWindowText (handle, buffer, length + 1);
+	char [] chars = new char [length];
+	System.arraycopy (buffer.chars, 0, chars, 0, length);
+	return chars;
+}
+
+/**
  * Returns a range of text.  Returns an empty string if the
  * start of the range is greater than the end.
  * <p>
@@ -1958,6 +1985,56 @@ public void setText (String string) {
 	int limit = (int)/*64*/OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
 	if (string.length () > limit) string = string.substring (0, limit);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	OS.SetWindowText (handle, buffer);
+	/*
+	* Bug in Windows.  When the widget is multi line
+	* text widget, it does not send a WM_COMMAND with
+	* control code EN_CHANGE from SetWindowText () to
+	* notify the application that the text has changed.
+	* The fix is to send the event.
+	*/
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((bits & OS.ES_MULTILINE) != 0) {
+		sendEvent (SWT.Modify);
+		// widget could be disposed at this point
+	}
+}
+
+/**
+ * Sets the contents of the receiver to the characters in the array. If the receiver has style
+ * SINGLE and the argument contains multiple lines of text, the result of this
+ * operation is undefined and may vary from platform to platform.
+ *
+ * @param text a character array that contains the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @see #getTextChars()
+ * @since 3.7
+ */
+public void setTextChars (char[] text) {
+	checkWidget ();
+	if (text == null) error (SWT.ERROR_NULL_ARGUMENT);
+	text = Display.withCrLf (text);
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		int length = OS.GetWindowTextLength (handle);
+		String string = verifyText (new String (text), 0, length, null);
+		if (string == null) return;
+		text = new char [string.length()];
+		string.getChars (0, text.length, text, 0);
+	}
+	int limit = (int)/*64*/OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
+	if (text.length > limit) {
+		char [] temp = new char [limit];
+		for (int i = 0; i < limit; i++) temp [i] = text [i];
+		text = temp;
+	}
+	TCHAR buffer = new TCHAR (getCodePage (), text, true);
 	OS.SetWindowText (handle, buffer);
 	/*
 	* Bug in Windows.  When the widget is multi line
