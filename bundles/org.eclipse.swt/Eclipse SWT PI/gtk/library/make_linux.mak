@@ -92,7 +92,7 @@ MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
 XULRUNNEREXCLUDES = -DNO__1NS_1InitXPCOM2
 
 WEBKITCFLAGS = `pkg-config --cflags gtk+-2.0` -I/usr/include/webkit-1.0 -I/usr/include/libsoup-2.4
-WEBKITLIBS = -lwebkit-1.0
+WEBKITLIBS = `pkg-config --libs webkit-1.0`
 
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
