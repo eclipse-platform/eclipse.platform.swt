@@ -30,6 +30,8 @@
 
 #ifdef AIX
 #define LIB_VFS "libgnomevfs-2.a(libgnomevfs-2.so.0)"
+#elif HPUX
+#define LIB_VFS "libgnomevfs-2.so"
 #else
 #define LIB_VFS "libgnomevfs-2.so.0"
 #endif

@@ -340,6 +340,44 @@
 		</antcall>
 	</target>
 
+	<target name="build_gtk_hpux_ia64_32" depends="init_build">
+		<property name="clean" value="clean"/>
+		<property name="targets" value="install"/>
+		<property environment="env"/>
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
+			<arg value="build.sh"/>
+			<env key="MODEL" value="ia64_32"/>
+			<env key="JAVA_HOME" value="/opt/java1.5"/>
+			<env key="AWT_HOME" value="/opt/java1.5/jre/lib/IA64N/"/>
+			<env key="PATH" value="/opt/gtk2.6/bin:${env.PATH}"/>
+			<env key="PKG_CONFIG_PATH" value="/opt/gtk2.6/lib/pkgconfig"/>
+			<arg line="${targets}"/>
+			<arg line="${clean}"/>
+		</exec>
+		<antcall target="refresh_fragment">
+			<param name="fragment" value="org.eclipse.swt.gtk.hpux.ia64_32"/>
+		</antcall>
+	</target>
+	
+	<target name="build_gtk_hpux_ia64" depends="init_build">
+		<property name="clean" value="clean"/>
+		<property name="targets" value="install"/>
+		<property environment="env"/>
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
+			<arg value="build.sh"/>
+			<env key="MODEL" value="ia64"/>
+			<env key="JAVA_HOME" value="/opt/java1.5"/>
+			<env key="AWT_HOME" value="/opt/java1.5/jre/lib/IA64W/"/>
+			<env key="PATH" value="/bluebird/teamswt/bog/gtk/hpux/bin:${env.PATH}"/>
+			<env key="PKG_CONFIG_PATH" value="/bluebird/teamswt/bog/gtk/hpux/lib/pkgconfig"/>
+			<arg line="${targets}"/>
+			<arg line="${clean}"/>
+		</exec>
+		<antcall target="refresh_fragment">
+			<param name="fragment" value="org.eclipse.swt.gtk.hpux.ia64"/>
+		</antcall>
+	</target>
+				
 	<target name="build_motif_linux" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="make_mozilla make_xulrunner make_xpcominit make_cairo install"/>

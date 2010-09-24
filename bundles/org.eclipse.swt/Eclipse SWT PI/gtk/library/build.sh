@@ -33,6 +33,10 @@ case $OS in
 		SWT_OS=aix
 		MAKEFILE=make_aix.mak
 		;;
+	"HP-UX")
+		SWT_OS=hpux
+		MAKEFILE=make_hpux.mak
+		;;
 	"SunOS")
 		SWT_OS=solaris
 		PROC=`uname -i`
@@ -97,6 +101,13 @@ if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} 
 			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -m64"	
 			XLIB64="${XLIB64} -L/usr/lib64"
 			SWT_LFLAGS=-m64
+			export SWT_LFLAGS
+		fi
+	fi
+	if [ ${MODEL} = 'ia64' ]; then
+		if [ ${OS} = 'HP-UX' ]; then
+			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -mlp64"
+			SWT_LFLAGS=-mlp64
 			export SWT_LFLAGS
 		fi
 	fi

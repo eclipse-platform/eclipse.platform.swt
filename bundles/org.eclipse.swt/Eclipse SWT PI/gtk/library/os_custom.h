@@ -34,6 +34,15 @@
 #define LIB_PANGOCAIRO "libpangocairo-1.0.a(libpangocairo-1.0.so.0)"
 #define LIB_GIO "libgio-2.0.a(libgio-2.0.so.0)"
 #define LIB_FONTCONFIG "libfontconfig.a(libfontconfig.so.1)"
+#elif HPUX
+#define LIB_XRENDER "libXrender.so"
+#define LIB_GTK "libgtk-x11-2.0.so"
+#define LIB_GDK "libgdk-x11-2.0.so"
+#define LIB_ATK "libatk-1.0.so"
+#define LIB_PANGO "libpango-1.0.so"
+#define LIB_PANGOCAIRO "libpangocairo-1.0.so"
+#define LIB_GIO "libgio-2.0.so"
+#define LIB_FONTCONFIG "libfontconfig.so"
 #else
 #define LIB_XRENDER "libXrender.so"
 #define LIB_GTK "libgtk-x11-2.0.so.0"
