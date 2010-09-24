@@ -41,8 +41,10 @@ case $OS in
 		SWT_OS=solaris
 		PROC=`uname -i`
 		MAKEFILE=make_solaris.mak
-		if uname -p > /dev/null 2>&1; then
-			MODEL=`uname -p`
+		if [ "${MODEL}" = "" ]; then
+			if uname -p > /dev/null 2>&1; then
+				MODEL=`uname -p`
+			fi
 		fi
 		if [ ${MODEL} = 'i386' ]; then
 			MAKEFILE=make_solaris_x86.mak
@@ -75,6 +77,10 @@ case $MODEL in
 		SWT_ARCH=x86_64
 		AWT_ARCH=amd64
 		;;
+	"sparc64")
+		SWT_ARCH=$MODEL
+		AWT_ARCH=sparcv9
+		;;
 	i?86)
 		SWT_ARCH=x86
 		AWT_ARCH=i386
@@ -86,7 +92,7 @@ case $MODEL in
 esac
 echo "Model is ${MODEL}"
 # For 64-bit CPUs, we have a switch
-if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} = 's390x' ]; then
+if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} = 'sparc64'  -o ${MODEL} = 's390x' ]; then
 	SWT_PTR_CFLAGS=-DJNI64
 	if [ -d /lib64 ]; then
 		XLIB64=-L/usr/X11R6/lib64
@@ -111,6 +117,12 @@ if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' -o ${MODEL} 
 			export SWT_LFLAGS
 		fi
 	fi
+	if [ ${MODEL} = 'sparc64' ]; then
+			SWT_PTR_CFLAGS="${SWT_PTR_CFLAGS} -xarch=v9"
+			SWT_LFLAGS="-xarch=v9"
+			SWT_CDE_64SUFFIX="/64"
+			export SWT_LFLAGS SWT_CDE_64SUFFIX
+	fi
 	export SWT_PTR_CFLAGS
 fi
 if [ ${MODEL} = 's390' ]; then
@@ -119,7 +131,7 @@ if [ ${MODEL} = 's390' ]; then
 	export SWT_LFLAGS SWT_PTR_CFLAGS
 fi
 
-if [ x`pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "xYES" ]; then
+if [ x`pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "xYES"  -a 	 ${MODEL} != "sparc64" 	]; then
 	echo "libgnomeui-2.0 found, compiling SWT program support using GNOME"
 	MAKE_GNOME=make_gnome
 else
@@ -135,7 +147,7 @@ else
 	echo "    *** Advanced graphics support using cairo will not be compiled."
 fi
 
-if [ -z "${MOZILLA_INCLUDES}" -a -z "${MOZILLA_LIBS}" ]; then
+if [ -z "${MOZILLA_INCLUDES}" -a -z "${MOZILLA_LIBS}" -a ${MODEL} != 'sparc64' ]; then
 	if [ x`pkg-config --exists mozilla-xpcom && echo YES` = "xYES" ]; then
 		MOZILLA_INCLUDES=`pkg-config --cflags mozilla-xpcom`
 		MOZILLA_LIBS=`pkg-config --libs mozilla-xpcom`

@@ -245,6 +245,29 @@
 		</antcall>
 	</target>
 
+	<target name="build_gtk_solaris_sparc64" depends="init_build">
+		<property name="clean" value="clean"/>
+		<property name="targets" value="install"/>
+		<exec dir="${basedir}/${builddir}" executable="sh" failonerror="true">
+			<arg value="build.sh"/>
+			<env key="CC" value="cc"/>
+			<env key="CXX" value="CC"/>
+			<env key="CDE_HOME" value="/usr/dt"/>
+			<env key="JAVA_HOME" value="/bluebird/teamswt/swt-builddir/JDKs/SOLARIS/SPARC64/jdk1.5.0_22"/>
+			<env key="MODEL" value="sparc64"/>
+			<!--env key="PATH" value="/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/bin"/-->
+			<!--env key="PKG_CONFIG_PATH" value="/usr/local/cairo-1.4.10/lib/pkgconfig/"/>
+			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.4/gecko-sdk"/>
+			<env key="MOZILLA_INCLUDES" value="-I${MOZILLA_SDK} -I${MOZILLA_SDK}/xpcom/include -I${MOZILLA_SDK}/nspr/include -I${MOZILLA_SDK}/embed_base/include -I${MOZILLA_SDK}/embedstring/include -I${MOZILLA_SDK}/string/include"/>
+			<env key="MOZILLA_LIBS" value="${MOZILLA_SDK}/embedstring/bin/libembedstring.a -L${MOZILLA_SDK}/xpcom/bin -L${MOZILLA_SDK}/nspr/bin -lxpcom -lnspr4 -lplds4 -lplc4"/-->
+			<arg line="${targets}"/>
+			<arg line="${clean}"/>
+		</exec>
+		<antcall target="refresh_fragment">
+			<param name="fragment" value="org.eclipse.swt.gtk.solaris.sparc64"/>
+		</antcall>
+	</target>
+	
 	<target name="build_gtk_solaris_sparc" depends="init_build">
 		<property name="clean" value="clean"/>
 		<property name="targets" value="make_mozilla install"/>
@@ -254,6 +277,7 @@
 			<env key="CXX" value="CC"/>
 			<env key="CDE_HOME" value="/usr/dt"/>
 			<env key="JAVA_HOME" value="/usr/j2se"/>
+			<!--env key="PATH" value="/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/bin"/-->
 			<env key="PKG_CONFIG_PATH" value="/usr/local/cairo-1.4.10/lib/pkgconfig/"/>
 			<env key="MOZILLA_SDK" value="/bluebird/teamswt/swt-builddir/geckoSDK/1.4/gecko-sdk"/>
 			<env key="MOZILLA_INCLUDES" value="-I${MOZILLA_SDK} -I${MOZILLA_SDK}/xpcom/include -I${MOZILLA_SDK}/nspr/include -I${MOZILLA_SDK}/embed_base/include -I${MOZILLA_SDK}/embedstring/include -I${MOZILLA_SDK}/string/include"/>

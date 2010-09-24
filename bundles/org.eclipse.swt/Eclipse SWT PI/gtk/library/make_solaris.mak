@@ -48,9 +48,9 @@ CAIROLIBS = `pkg-config --libs-only-L cairo` -lcairo
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
 GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthread-2.0 -L/usr/openwin/lib -Wl,-R -Wl,/usr/openwin/lib -lXtst
 
-CDE_LIBS = -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lXt -lX11 -lDtSvc
+CDE_LIBS = -L$(CDE_HOME)/lib$(SWT_CDE_64SUFFIX) -R$(CDE_HOME)/lib$(SWT_CDE_64SUFFIX) -lXt -lX11 -lDtSvc
 
-AWT_LFLAGS = -G -s
+AWT_LFLAGS = -G -s $(SWT_LFLAGS)
 AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt
 
 ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0`
@@ -108,7 +108,7 @@ CFLAGS = -O \
 		-K PIC \
 		${SWT_PTR_CFLAGS} \
 		-I$(CDE_HOME)/include
-LFLAGS = -G -K PIC -s
+LFLAGS = -G -K PIC -s $(SWT_LFLAGS)
 
 
 all: make_swt make_atk make_awt make_glx make_cde
