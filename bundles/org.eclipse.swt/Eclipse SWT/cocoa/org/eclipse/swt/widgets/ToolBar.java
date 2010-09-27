@@ -248,7 +248,7 @@ void enableWidget(boolean enabled) {
 	for (int i = 0; i < itemCount; i++) {
 		ToolItem item = items[i];
 		if (item != null) {
-			item.enableWidget(enabled);
+			item.enableWidget(enabled && item.getEnabled());
 		}
 	}
 }
