@@ -297,7 +297,9 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 		}
 	}
 
-	Widget widget = Display.getCurrent().findWidget(id);
+	Display d = Display.getCurrent();
+	if (d == null || d.isDisposed()) return 0;
+	Widget widget = d.findWidget(id);
 	if (widget == null) return 0;
 	WebKit webKit = (WebKit)((Browser)widget).webBrowser;
 	if (sel == OS.sel_webViewShow_) {
@@ -315,7 +317,9 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 }
 
 static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
-	Widget widget = Display.getCurrent().findWidget(id);
+	Display d = Display.getCurrent();
+	if (d == null || d.isDisposed()) return 0;
+	Widget widget = d.findWidget(id);
 	if (widget == null) return 0;
 	WebKit webKit = (WebKit)((Browser)widget).webBrowser;
 	if (sel == OS.sel_webView_didChangeLocationWithinPageForFrame_) {
@@ -357,7 +361,9 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 }
 
 static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
-	Widget widget = Display.getCurrent().findWidget(id);
+	Display d = Display.getCurrent();
+	if (d == null || d.isDisposed()) return 0;
+	Widget widget = d.findWidget(id);
 	if (widget == null) return 0;
 	WebKit webKit = (WebKit)((Browser)widget).webBrowser;
 	if (sel == OS.sel_webView_didFailProvisionalLoadWithError_forFrame_) {
@@ -390,7 +396,9 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 }
 
 static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
-	Widget widget = Display.getCurrent().findWidget(id);
+	Display d = Display.getCurrent();
+	if (d == null || d.isDisposed()) return 0;
+	Widget widget = d.findWidget(id);
 	if (widget == null) return 0;
 	WebKit webKit = (WebKit)((Browser)widget).webBrowser;
 	if (sel == OS.sel_webView_resource_didFailLoadingWithError_fromDataSource_) {
@@ -402,7 +410,9 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 }
 
 static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4) {
-	Widget widget = Display.getCurrent().findWidget(id);
+	Display d = Display.getCurrent();
+	if (d == null || d.isDisposed()) return 0;
+	Widget widget = d.findWidget(id);
 	if (widget == null) return 0;
 	WebKit webKit = (WebKit)((Browser)widget).webBrowser;
 	if (sel == OS.sel_webView_resource_willSendRequest_redirectResponse_fromDataSource_) {

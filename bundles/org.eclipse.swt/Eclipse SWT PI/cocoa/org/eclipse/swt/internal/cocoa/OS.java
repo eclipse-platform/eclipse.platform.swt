@@ -44,6 +44,11 @@ public class OS extends C {
 	public static final int kAlertCautionIcon = ('c'<<24) + ('a'<<16) + ('u'<<8) + 't';
 	public static final int kAlertNoteIcon = ('n'<<24) + ('o'<<16) + ('t'<<8) + 'e';
 	public static final int kAlertStopIcon = ('s'<<24) + ('t'<<16) + ('o'<<8) + 'p';
+	public static final int kHICommandHide = ('h'<<24) + ('i'<<16) + ('d'<<8) + 'e';
+	public static final int kHICommandHideOthers = ('h'<<24) + ('i'<<16) + ('d'<<8) + 'o';
+	public static final int kHICommandShowAll = ('s'<<24) + ('h'<<16) + ('a'<<8) + 'l';
+	public static final int kHICommandQuit = ('q'<<24) + ('u'<<16) + ('i'<<8) + 't';
+	public static final int kHICommandServices = ('s'<<24) + ('e'<<16) + ('r'<<8) + 'v';
 	public static final int shiftKey = 1 << 9;
 	public static final int kThemeMetricFocusRectOutset = 7;
 	public static final int kHIThemeOrientationNormal = 0;
@@ -128,6 +133,10 @@ public class OS extends C {
 	public static final native int /*long*/ NSAccessibilityCellRole();
 	public static final NSString NSAccessibilityCellRole = new NSString(NSAccessibilityCellRole());
 
+	/* AWT application delegate. Remove these when JavaRuntimeSupport.framework has bridgesupport generated for it. */
+	public static final int /*long*/ class_JRSAppKitAWT = objc_getClass("JRSAppKitAWT");
+	public static final int /*long*/ sel_awtAppDelegate = sel_registerName("awtAppDelegate");
+	
 /** JNI natives */
 
 /** @method flags=jni */
@@ -262,6 +271,19 @@ public static final native int CancelMenuTracking (int /*long*/ inRootMenu, bool
  * @param outAppURL cast=(CFURLRef *)
  */
 public static final native int /*long*/ LSGetApplicationForInfo(int inType, int inCreator,int /*long*/ inExtension, int inRoleMask, byte[] outAppRef, int[] outAppURL);
+/** @method flags=dynamic
+ * @param mHandle cast=(MenuRef)
+ * @param commandId cast=(MenuCommand)
+ * @param index cast=(UInt32)
+ * @param outMenu cast=(MenuRef *)
+ * @param outIndex cast=(MenuItemIndex *)
+ */
+public static final native int GetIndMenuItemWithCommandID(int /*long*/ mHandle, int commandId, int index, int /*long*/ [] outMenu, short[] outIndex);
+/** @method flags=dynamic
+ * @param mHandle cast=(MenuRef)
+ * @param index cast=(short)
+ */
+public static final native void DeleteMenuItem(int /*long*/ mHandle, short index);
 
 /** C calls */
 
@@ -1815,6 +1837,7 @@ public static final int /*long*/ sel_setSubmenu_ = sel_registerName("setSubmenu:
 public static final int /*long*/ sel_setSubmenu_forItem_ = sel_registerName("setSubmenu:forItem:");
 public static final int /*long*/ sel_setTabStops_ = sel_registerName("setTabStops:");
 public static final int /*long*/ sel_setTabViewType_ = sel_registerName("setTabViewType:");
+public static final int /*long*/ sel_setTag_ = sel_registerName("setTag:");
 public static final int /*long*/ sel_setTag_forSegment_ = sel_registerName("setTag:forSegment:");
 public static final int /*long*/ sel_setTarget_ = sel_registerName("setTarget:");
 public static final int /*long*/ sel_setTextColor_ = sel_registerName("setTextColor:");

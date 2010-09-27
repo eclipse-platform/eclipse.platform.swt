@@ -53,3 +53,5 @@
 #define NSAccessibilityColumnIndexRangeAttribute_LIB "com.apple.Cocoa"
 #define NSAccessibilityRowIndexRangeAttribute_LIB "com.apple.Cocoa"
 #define GetIconRefFromTypeInfo_LIB "com.apple.LaunchServices"
+#define GetIndMenuItemWithCommandID_LIB "com.apple.Carbon"
+#define DeleteMenuItem_LIB "com.apple.Carbon"

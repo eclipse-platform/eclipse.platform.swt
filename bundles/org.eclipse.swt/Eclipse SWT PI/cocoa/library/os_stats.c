@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 608;
-int OS_nativeFunctionCallCount[608];
+int OS_nativeFunctionCount = 610;
+int OS_nativeFunctionCallCount[610];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -162,6 +162,7 @@ char * OS_nativeFunctionNames[] = {
 	"CloseRgn",
 	"CopyRgn",
 	"DeleteGlobalRef",
+	"DeleteMenuItem",
 	"DiffRgn",
 	"DisposeRgn",
 	"EmptyRgn",
@@ -171,6 +172,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetCurrentProcess",
 	"GetDblTime",
 	"GetIconRefFromTypeInfo",
+	"GetIndMenuItemWithCommandID",
 	"GetRegionBounds",
 	"GetSystemUIMode",
 	"GetThemeMetric",

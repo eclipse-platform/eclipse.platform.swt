@@ -2233,6 +2233,24 @@ JNIEXPORT void JNICALL OS_NATIVE(DeleteGlobalRef)
 }
 #endif
 
+#ifndef NO_DeleteMenuItem
+JNIEXPORT void JNICALL OS_NATIVE(DeleteMenuItem)
+	(JNIEnv *env, jclass that, jintLong arg0, jshort arg1)
+{
+	OS_NATIVE_ENTER(env, that, DeleteMenuItem_FUNC);
+/*
+	DeleteMenuItem((MenuRef)arg0, (short)arg1);
+*/
+	{
+		LOAD_FUNCTION(fp, DeleteMenuItem)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(MenuRef, short))fp)((MenuRef)arg0, (short)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, DeleteMenuItem_FUNC);
+}
+#endif
+
 #ifndef NO_DiffRgn
 JNIEXPORT void JNICALL OS_NATIVE(DiffRgn)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
@@ -2408,6 +2426,33 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetIconRefFromTypeInfo)
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntLongArrayElements(env, arg5, lparg5, 0);
 	OS_NATIVE_EXIT(env, that, GetIconRefFromTypeInfo_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetIndMenuItemWithCommandID
+JNIEXPORT jint JNICALL OS_NATIVE(GetIndMenuItemWithCommandID)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jintLongArray arg3, jshortArray arg4)
+{
+	jintLong *lparg3=NULL;
+	jshort *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetIndMenuItemWithCommandID_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetShortArrayElements(env, arg4, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)GetIndMenuItemWithCommandID((MenuRef)arg0, (MenuCommand)arg1, (UInt32)arg2, (MenuRef *)lparg3, (MenuItemIndex *)lparg4);
+*/
+	{
+		LOAD_FUNCTION(fp, GetIndMenuItemWithCommandID)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(MenuRef, MenuCommand, UInt32, MenuRef *, MenuItemIndex *))fp)((MenuRef)arg0, (MenuCommand)arg1, (UInt32)arg2, (MenuRef *)lparg3, (MenuItemIndex *)lparg4);
+		}
+	}
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseShortArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, GetIndMenuItemWithCommandID_FUNC);
 	return rc;
 }
 #endif

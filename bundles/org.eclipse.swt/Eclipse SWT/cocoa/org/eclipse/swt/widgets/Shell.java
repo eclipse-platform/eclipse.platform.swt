@@ -545,6 +545,7 @@ public void close () {
 }
 
 void closeWidget (boolean force) {
+	if (display.isDisposed()) return;
 	Event event = new Event ();
 	sendEvent (SWT.Close, event);
 	if ((force || event.doit) && !isDisposed ()) dispose ();
@@ -1152,7 +1153,7 @@ public boolean isVisible () {
 boolean makeFirstResponder (int /*long*/ id, int /*long*/ sel, int /*long*/ responder) {
 	Display display = this.display;
 	boolean result = super.makeFirstResponder(id, sel, responder);
-	display.checkFocus();
+	if (!display.isDisposed()) display.checkFocus();
 	return result;
 }
 
@@ -2018,6 +2019,7 @@ void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notificatio
 }
 
 void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	if (display.isDisposed()) return;
 	sendEvent (SWT.Deactivate);
 	if (isDisposed ()) return;
 	setActiveControl (null);

@@ -97,6 +97,10 @@ public void setSubmenu(NSMenu submenu) {
 	OS.objc_msgSend(this.id, OS.sel_setSubmenu_, submenu != null ? submenu.id : 0);
 }
 
+public void setTag(int /*long*/ anInt) {
+	OS.objc_msgSend(this.id, OS.sel_setTag_, anInt);
+}
+
 public void setTarget(id anObject) {
 	OS.objc_msgSend(this.id, OS.sel_setTarget_, anObject != null ? anObject.id : 0);
 }

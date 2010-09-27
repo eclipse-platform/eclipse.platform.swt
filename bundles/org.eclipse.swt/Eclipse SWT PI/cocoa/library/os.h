@@ -15,12 +15,11 @@
 /*#define NDEBUG*/
 /*#define DEBUG_EXCEPTIONS*/
 
-#include <Cocoa/Cocoa.h>
-#include <WebKit/WebView.h>
 #import <objc/objc-runtime.h>
-
-#include <JavaScriptCore/JSBase.h>
-#include <JavaScriptCore/JSStringRef.h>
+#include <Cocoa/Cocoa.h>
+#include <Carbon/Carbon.h>
+#include <WebKit/WebKit.h>
+#include <JavaScriptCore/JavaScriptCore.h>
 
 #include "os_custom.h"
 

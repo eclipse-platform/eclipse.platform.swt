@@ -310,7 +310,8 @@ public class Display extends Device {
 	NSTimer nsTimers [];
 	SWTWindowDelegate timerDelegate;
 	static SWTApplicationDelegate applicationDelegate;
-
+	static NSObject currAppDelegate;
+	
 	/* Settings */
 	boolean runSettings;
 	SWTWindowDelegate settingsDelegate;
@@ -887,16 +888,10 @@ void createDisplay (DeviceData data) {
 		OS.class_addMethod(cls, OS.sel_application_openFile_, appProc4, "@:@@");
 		OS.class_addMethod(cls, OS.sel_application_openFiles_, appProc4, "@:@@");
 		OS.class_addMethod(cls, OS.sel_applicationShouldHandleReopen_hasVisibleWindows_, appProc4, "@:@B");
-		OS.class_addMethod(cls, OS.sel_applicationShouldTerminate_, appProc4, "@:@B");
+		OS.class_addMethod(cls, OS.sel_applicationShouldTerminate_, appProc3, "@:@");
 		OS.objc_registerClassPair(cls);
 	}
-	if (!isEmbedded) {
-		if (applicationDelegate == null) {
-			applicationDelegate = (SWTApplicationDelegate)new SWTApplicationDelegate().alloc().init();
-			application.setDelegate(applicationDelegate);
-		}
-	}
-	
+
 	int[] bufferMode = new int[1], bufferOptions = new int[1];
 	OS.GetSystemUIMode(bufferMode, bufferOptions);
 	systemUIMode = bufferMode[0];
@@ -926,7 +921,13 @@ void createMainMenu () {
 	
 	title = NSString.stringWith(SWT.getMessage("Preferences..."));
 	menuItem = appleMenu.addItemWithTitle(title, 0, NSString.stringWith(","));
-	
+
+	/* 
+	 * Through the magic of nib decompilation, the prefs item must have a tag of 42
+	 * or else the AWT won't be able to find it.
+	 */
+	menuItem.setTag(42);
+
 	appleMenu.addItem(NSMenuItem.separatorItem());
 	
 	title = NSString.stringWith(SWT.getMessage("Services"));
@@ -2010,25 +2011,51 @@ protected void init () {
 	initColors ();
 	initFonts ();
 	
-	if (!isEmbedded) {
-		/*
-		 * Feature in Cocoa:  NSApplication.finishLaunching() adds an apple menu to the menu bar that isn't accessible via NSMenu.
-		 * If Display objects are created and disposed of multiple times in a single process, another apple menu is added to the menu bar.
-		 * It must be called or the dock icon will continue to bounce. So, it should only be called once per process, not just once per
-		 * creation of a Display.  Use a static so creation of additional Display objects won't affect the menu bar. 
-		 */
-		if (!Display.launched) {
-			application.finishLaunching();
-			Display.launched = true;
-			
-			/* only add the shutdown hook once */
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-				public void run() {
-					NSApplication.sharedApplication().terminate(null);
+	/*
+	 * Create an application delegate for app-level notifications.  The AWT may have already set a delegate;
+	 * if so, hold on to it so messages can be forwarded to it.
+	 */
+	if (applicationDelegate == null) {
+		applicationDelegate = (SWTApplicationDelegate)new SWTApplicationDelegate().alloc().init();
+		
+		if (currAppDelegate == null) {
+			if (OS.class_JRSAppKitAWT != 0) {
+				int /*long*/ currDelegatePtr = OS.objc_msgSend(OS.class_JRSAppKitAWT, OS.sel_awtAppDelegate);
+				if (currDelegatePtr != 0) {
+					currAppDelegate = new NSObject(currDelegatePtr);
+					currAppDelegate.retain();
 				}
-			});
+			}
+			application.setDelegate(applicationDelegate);
+		} else {
+			// TODO: register for notification to find out when AWT finishes loading.  Waiting on new value from Apple.
 		}
 	}
+	
+	/*
+	 * Feature in Cocoa:  NSApplication.finishLaunching() adds an apple menu to the menu bar that isn't accessible via NSMenu.
+	 * If Display objects are created and disposed of multiple times in a single process, another apple menu is added to the menu bar.
+	 * It must be called or the dock icon will continue to bounce. So, it should only be called once per process, not just once per
+	 * creation of a Display.  Use a static so creation of additional Display objects won't affect the menu bar. 
+	 */
+	if (!Display.launched) {
+		application.finishLaunching();
+		Display.launched = true;
+
+		/* only add the shutdown hook once */
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				NSApplication.sharedApplication().terminate(null);
+			}
+		});
+	}
+	
+	/*
+	 * Call init to force the AWT delegate to re-attach itself to the application menu. 
+	 */
+	if (currAppDelegate != null) {
+		currAppDelegate.init();
+	} 
 	
 	observerCallback = new Callback (this, "observerProc", 3); //$NON-NLS-1$
 	int /*long*/ observerProc = observerCallback.getAddress ();
@@ -3933,6 +3960,10 @@ static NSString getApplicationName() {
 			name = new NSString(value);
 		}
 	}
+	if (name == null) {
+		String macAppName = System.getProperty("com.apple.mrj.application.apple.menu.about.name");
+		if (macAppName != null) name = NSString.stringWith(macAppName);
+	}
 	if (name == null) name = NSString.stringWith("SWT");
 	return name;
 }
@@ -4744,6 +4775,31 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 
 void applicationWillFinishLaunching (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	boolean loaded = false;
+	
+	/*
+	 * Bug in AWT:  If the AWT starts up first when the VM was started on the first thread it assumes that
+	 * a Carbon-based SWT will be used, so it calls NSApplicationLoad().  This causes the Carbon menu
+	 * manager to create an application menu that isn't accessible via NSMenu.  It is, however, accessible
+	 * via the Carbon menu manager, so find and delete the menu items it added. 
+	 * 
+	 * Note that this code will continue to work if Apple does change this. GetIndMenuWithCommandID will
+	 * return a non-zero value indicating failure, which we ignore.
+	 */
+	if (isEmbedded) {
+		int /*long*/ outMenu [] = new int /*long*/ [1];
+		short outIndex[] = new short[1];
+		int status = OS.GetIndMenuItemWithCommandID(0, OS.kHICommandHide, 1, outMenu, outIndex);
+		if (status == 0) OS.DeleteMenuItem(outMenu[0], outIndex[0]);
+		status = OS.GetIndMenuItemWithCommandID(0, OS.kHICommandHideOthers, 1, outMenu, outIndex);
+		if (status == 0) OS.DeleteMenuItem(outMenu[0], outIndex[0]);
+		status = OS.GetIndMenuItemWithCommandID(0, OS.kHICommandShowAll, 1, outMenu, outIndex);
+		if (status == 0) OS.DeleteMenuItem(outMenu[0], outIndex[0]);
+		status = OS.GetIndMenuItemWithCommandID(0, OS.kHICommandQuit, 1, outMenu, outIndex);
+		if (status == 0) OS.DeleteMenuItem(outMenu[0], outIndex[0]);
+		status = OS.GetIndMenuItemWithCommandID(0, OS.kHICommandServices, 1, outMenu, outIndex);
+		if (status == 0) OS.DeleteMenuItem(outMenu[0], outIndex[0]);
+	}
+
 	NSBundle bundle = NSBundle.bundleWithIdentifier(NSString.stringWith("com.apple.JavaVM"));
 	NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
 	NSString path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
@@ -4806,19 +4862,33 @@ static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel) {
 static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	//TODO optimize getting the display
 	Display display = getCurrent ();
-	if (display == null) {
+	if (display == null && id != applicationDelegate.id) {
 		objc_super super_struct = new objc_super ();
 		super_struct.receiver = id;
 		super_struct.super_class = OS.objc_msgSend (id, OS.sel_superclass);
 		return OS.objc_msgSendSuper (super_struct, sel, arg0);
 	}
+
+	if (currAppDelegate != null) {
+		if (currAppDelegate.respondsToSelector(sel)) OS.objc_msgSend(currAppDelegate.id, sel, arg0);
+	}
+	
 	NSApplication application = display.application;
 	if (sel == OS.sel_sendEvent_) {
 		display.applicationSendEvent (id, sel, arg0);
 	} else if (sel == OS.sel_applicationWillFinishLaunching_) {
 		display.applicationWillFinishLaunching(id, sel, arg0);
-	} else if (sel == OS.sel_terminate_) {
-		// Do nothing here -- without a definition of sel_terminate we get a warning dumped to the console.
+	} else if (sel == OS.sel_applicationShouldTerminate_) {
+		int returnVal = OS.NSTerminateCancel;
+		if (!display.disposing) {
+			Event event = new Event ();
+			display.sendEvent (SWT.Close, event);
+			if (event.doit) {
+				display.dispose();
+				returnVal = OS.NSTerminateNow;
+			}
+		}
+		return returnVal;
 	} else if (sel == OS.sel_orderFrontStandardAboutPanel_) {
 //		application.orderFrontStandardAboutPanel(application);
 	} else if (sel == OS.sel_hideOtherApplications_) {
@@ -4848,38 +4918,37 @@ static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*lon
 
 static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
 	Display display = getCurrent();
-	if (display != null) {
-		if (sel == OS.sel_application_openFile_) {
-			String file = new NSString(arg1).getString();
+
+	if (display == null && id != applicationDelegate.id) {
+		objc_super super_struct = new objc_super ();
+		super_struct.receiver = id;
+		super_struct.super_class = OS.objc_msgSend (id, OS.sel_superclass);
+		return OS.objc_msgSendSuper (super_struct, sel, arg0, arg1);
+	}
+
+	// Forward to the AWT, if necessary.
+	if (currAppDelegate != null) {
+		if (currAppDelegate.respondsToSelector(sel)) OS.objc_msgSend(currAppDelegate.id, sel, arg0, arg1);
+	} 
+
+	if (sel == OS.sel_application_openFile_) {
+		String file = new NSString(arg1).getString();
+		Event event = new Event();
+		event.text = file;
+		display.sendEvent(SWT.OpenDocument, event);
+		return 1;
+	} else if (sel == OS.sel_application_openFiles_) {
+		NSArray files = new NSArray(arg1);
+		int /*long*/ count = files.count();
+		for (int i=0; i<count; i++) {
+			String file = new NSString(files.objectAtIndex(i)).getString();
 			Event event = new Event();
 			event.text = file;
 			display.sendEvent(SWT.OpenDocument, event);
-			return 1;
-		} else if (sel == OS.sel_application_openFiles_) {
-			NSArray files = new NSArray(arg1);
-			int /*long*/ count = files.count();
-			for (int i=0; i<count; i++) {
-				String file = new NSString(files.objectAtIndex(i)).getString();
-				Event event = new Event();
-				event.text = file;
-				display.sendEvent(SWT.OpenDocument, event);
-			}
-			new NSApplication(arg0).replyToOpenOrPrint(OS.NSApplicationDelegateReplySuccess);
-		} 
-		else if (sel == OS.sel_applicationShouldHandleReopen_hasVisibleWindows_) {
-			return 1;
 		}
-		else if (sel == OS.sel_applicationShouldTerminate_) {
-			if (!display.disposing) {
-				Event event = new Event ();
-				display.sendEvent (SWT.Close, event);
-				if (event.doit) {
-					display.dispose();
-					return OS.NSTerminateNow;
-				}
-			}
-			return OS.NSTerminateCancel;
-		}
+		new NSApplication(arg0).replyToOpenOrPrint(OS.NSApplicationDelegateReplySuccess);
+	}  else if (sel == OS.sel_applicationShouldHandleReopen_hasVisibleWindows_) {
+		return 1;
 	}
 	return 0;
 }
@@ -4887,7 +4956,7 @@ static int /*long*/ applicationProc(int /*long*/ id, int /*long*/ sel, int /*lon
 static int /*long*/ applicationProc(int /*long*/ id, int /*long*/sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
 	//TODO optimize getting the display
 	Display display = getCurrent ();
-	if (display == null) {
+	if (display == null && id != applicationDelegate.id) {
 		objc_super super_struct = new objc_super ();
 		super_struct.receiver = id;
 		super_struct.super_class = OS.objc_msgSend (id, OS.sel_superclass);
