@@ -258,7 +258,7 @@ public void create(Composite parent, int style) {
 	frame = new OleFrame(browser, SWT.NONE);
 
 	try {
-		site = new WebSite(frame, SWT.NONE, ProgId); //$NON-NLS-1$
+		site = new WebSite(frame, SWT.NONE, ProgId);
 	} catch (SWTException e) {
 		browser.dispose();
 		SWT.error(SWT.ERROR_NO_HANDLES);
