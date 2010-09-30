@@ -1533,6 +1533,26 @@
 		</antcall>
 	</target>
 
+	<target name="gtk_aix_ppc">
+		<antcall target="build_ssh">
+			<param name="machine" value="${m_aix}"/>
+			<param name="cp" value="${cp_gtk}"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.aix.ppc"/>
+			<param name="build_target" value="build_gtk_aix_ppc"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/AIX/sdk; export PATH=${ant_home}/bin:~/build/cvs_bin/AIX:$PATH;"/>
+		</antcall>
+	</target>
+
+	<target name="gtk_aix_ppc64">
+		<antcall target="build_ssh">
+			<param name="machine" value="${m_aix}"/>
+			<param name="cp" value="${cp_gtk}"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.aix.ppc64"/>
+			<param name="build_target" value="build_gtk_aix_ppc64"/>
+			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/AIX/sdk; export PATH=${ant_home}/bin:~/build/cvs_bin/AIX:$PATH;"/>
+		</antcall>
+	</target>
+
 	<target name="gtk_solaris_x86">
 		<antcall target="build_ssh">
 			<param name="machine" value="${m_solaris_x86}"/>
