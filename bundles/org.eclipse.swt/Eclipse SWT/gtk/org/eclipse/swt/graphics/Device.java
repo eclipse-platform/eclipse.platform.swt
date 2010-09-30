@@ -567,8 +567,10 @@ protected void init () {
 			useXRender = major_versionp[0] > 0 || (major_versionp[0] == 0 && minor_versionp[0] >= 8);
 		}
 	}
-
-	if (debug) {
+	//TODO: Remove; temporary code only
+	boolean fixAIX = OS.IsAIX && OS.PTR_SIZEOF == 8;
+	
+	if (debug || fixAIX) {
 		if (xDisplay != 0) {
 			/* Create the warning and error callbacks */
 			Class clazz = getClass ();
@@ -589,7 +591,7 @@ protected void init () {
 					XIOErrorProc = OS.XSetIOErrorHandler (XNullIOErrorProc);
 				}
 			}
-			OS.XSynchronize (xDisplay, true);
+			if (debug) OS.XSynchronize (xDisplay, true);
 		}
 	}
 	
@@ -883,7 +885,9 @@ static int /*long*/ XErrorProc (int /*long*/ xDisplay, int /*long*/ xErrorEvent)
 			if (DEBUG || device.debug) {
 				new SWTError ().printStackTrace ();
 			}
-			OS.Call (XErrorProc, xDisplay, xErrorEvent);
+			//TODO: Remove; temporary code only
+			boolean fixAIX = OS.IsAIX && OS.PTR_SIZEOF == 8;
+			if (!fixAIX) OS.Call (XErrorProc, xDisplay, xErrorEvent);
 		}
 	} else {
 		if (DEBUG) new SWTError ().printStackTrace ();
