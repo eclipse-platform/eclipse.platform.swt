@@ -161,8 +161,17 @@ void checkCairo() {
 	if (CAIRO_LOADED) return;
 	try {
 		/* Check if cairo is available on the system */
-		byte[] buffer = Converter.wcsToMbcs(null, "libcairo.so.2", true);
-		int /*long*/ libcairo = OS.dlopen(buffer, OS.RTLD_LAZY);
+		byte[] buffer ;
+		int flags = OS.RTLD_LAZY;
+		if (OS.IsAIX) {
+			 buffer = Converter.wcsToMbcs(null, "libcairo.a(libcairo.so.2)", true);
+			 flags |= OS.RTLD_MEMBER;
+		} else  if (OS.IsHPUX) {
+			 buffer = Converter.wcsToMbcs(null, "libcairo.so", true);
+		} else {
+			buffer =  Converter.wcsToMbcs(null, "libcairo.so.2", true);
+		}
+		int /*long*/ libcairo = OS.dlopen(buffer, flags);
 		if (libcairo != 0) {
 			OS.dlclose(libcairo);
 		} else {

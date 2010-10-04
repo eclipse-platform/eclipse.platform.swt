@@ -115,8 +115,17 @@ static int getDesktop(final Display display) {
 				}
 			});
 			/* Check for the existence of libgio libraries */
-			byte[] buffer = Converter.wcsToMbcs(null, "libgio-2.0.so.0", true);
-			int /*long*/ libgio = OS.dlopen(buffer, OS.RTLD_LAZY);
+			byte[] buffer ;
+			int flags = OS.RTLD_LAZY;
+			if (OS.IsAIX) {
+				 buffer = Converter.wcsToMbcs(null, "libgio-2.0.a(libgio-2.0.so.0)", true);
+				 flags |= OS.RTLD_MEMBER;
+			} else  if (OS.IsHPUX) {
+				 buffer = Converter.wcsToMbcs(null, "libgio-2.0.so", true);
+			} else {
+				buffer =  Converter.wcsToMbcs(null, "libgio-2.0.so.0", true);
+			}
+			int /*long*/ libgio = OS.dlopen(buffer, flags);
 			if (libgio != 0) {
 				buffer = Converter.wcsToMbcs(null, "g_app_info_launch_default_for_uri", true);
 				int /*long*/ g_app_info_launch_default_for_uri = OS.dlsym(libgio, buffer);
