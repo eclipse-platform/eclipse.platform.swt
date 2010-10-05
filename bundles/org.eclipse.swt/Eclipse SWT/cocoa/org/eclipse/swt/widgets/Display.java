@@ -1904,7 +1904,11 @@ public Menu getAppMenuBar () {
 	checkDevice ();
 	if (appMenuBar != null) return appMenuBar;
 	appMenuBar = new Menu (this);
-	setMenuBar(appMenuBar);
+	
+	// If there is an active menu bar don't replace it.
+	// It will be updated when the next Shell without a menu bar activates.
+	if (menuBar == null) setMenuBar(appMenuBar);
+	
 	return appMenuBar;
 }
 
@@ -4225,8 +4229,11 @@ public void setData (String key, Object value) {
 }
 
 void setMenuBar (Menu menu) {
+	// If passed a null menu bar don't clear out the menu bar, but switch back to the 
+	// application menu bar instead, if it exists.  If the app menu bar is already active
+	// we jump out without harming the current menu bar.
+	if (menu == null) menu = appMenuBar;
 	if (menu == menuBar) return;
-	if (appMenuBar != null && menu != appMenuBar) return;
 	menuBar = menu;
 	//remove all existing menu items except the application menu
 	NSMenu menubar = application.mainMenu();
