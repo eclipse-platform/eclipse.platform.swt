@@ -1522,7 +1522,7 @@ public void addVerifyListener(VerifyListener verifyListener) {
  */
 public void addWordMovementListener(MovementListener movementListener) {
 	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (movementListener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	addListener(WordNext, new StyledTextListener(movementListener));
 	addListener(WordPrevious, new StyledTextListener(movementListener));
 }
