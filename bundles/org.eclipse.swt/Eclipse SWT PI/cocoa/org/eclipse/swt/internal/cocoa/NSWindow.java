@@ -312,6 +312,14 @@ public void setReleasedWhenClosed(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setReleasedWhenClosed_, flag);
 }
 
+public void setRepresentedFilename(NSString aString) {
+	OS.objc_msgSend(this.id, OS.sel_setRepresentedFilename_, aString != null ? aString.id : 0);
+}
+
+public void setRepresentedURL(NSURL url) {
+	OS.objc_msgSend(this.id, OS.sel_setRepresentedURL_, url != null ? url.id : 0);
+}
+
 public void setShowsResizeIndicator(boolean show) {
 	OS.objc_msgSend(this.id, OS.sel_setShowsResizeIndicator_, show);
 }

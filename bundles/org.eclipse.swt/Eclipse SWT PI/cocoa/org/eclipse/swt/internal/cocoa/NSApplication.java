@@ -33,6 +33,10 @@ public NSImage applicationIconImage() {
 	return result != 0 ? new NSImage(result) : null;
 }
 
+public void arrangeInFront(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_arrangeInFront_, sender != null ? sender.id : 0);
+}
+
 public void beginSheet(NSWindow sheet, NSWindow docWindow, id modalDelegate, int /*long*/ didEndSelector, int /*long*/ contextInfo) {
 	OS.objc_msgSend(this.id, OS.sel_beginSheet_modalForWindow_modalDelegate_didEndSelector_contextInfo_, sheet != null ? sheet.id : 0, docWindow != null ? docWindow.id : 0, modalDelegate != null ? modalDelegate.id : 0, didEndSelector, contextInfo);
 }
