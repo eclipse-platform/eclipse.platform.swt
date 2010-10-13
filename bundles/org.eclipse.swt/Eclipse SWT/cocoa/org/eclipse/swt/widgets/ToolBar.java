@@ -47,8 +47,10 @@ import org.eclipse.swt.internal.cocoa.*;
 public class ToolBar extends Composite {
 	int itemCount;
 	ToolItem [] items;
+	NSToolbar nsToolbar;
 	NSArray accessibilityAttributes = null;
 	ToolItem lastFocus;
+	static int NEXT_ID;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -84,7 +86,11 @@ public class ToolBar extends Composite {
  * @see Widget#getStyle()
  */
 public ToolBar (Composite parent, int style) {
-	super (parent, checkStyle (style));
+	this(parent, style, false);
+}
+
+ToolBar(Composite parent, int style, boolean internal) {
+	super (parent, checkStyle (parent, style, internal));
 	
 	/*
 	* Ensure that either of HORIZONTAL or VERTICAL is set.
@@ -141,7 +147,7 @@ boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
 	return super.accessibilityIsIgnored(id, sel);	
 }
 
-static int checkStyle (int style) {
+static int checkStyle (Composite parent, int style, boolean internal) {
 	/*
 	* Even though it is legal to create this widget
 	* with scroll bars, they serve no useful purpose
@@ -149,7 +155,38 @@ static int checkStyle (int style) {
 	* widget's client area.  The fix is to clear
 	* the SWT style.
 	*/
-	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
+	int newStyle = style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
+	
+	/*
+	 * Only internal clients can create an NSToolbar-based ToolBar.
+	 */
+	if (!internal && (newStyle & SWT.SMOOTH) != 0) {
+		newStyle &= ~SWT.SMOOTH;
+	}
+	
+	/*
+	 * A unified toolbar can only be parented to a Shell, and
+	 * there can only be one unified toolbar per shell. If neither of these
+	 * conditions hold, turn off the SMOOTH flag.
+	 */
+	if ((style & SWT.SMOOTH) != 0) {
+		if (parent instanceof Shell) {
+			Shell s = (Shell)parent;
+			if (s.window.toolbar() != null) newStyle &= ~SWT.SMOOTH;
+		} else {
+			newStyle &= ~SWT.SMOOTH;
+		}
+	}
+	
+	/*
+	 * Unified toolbar only supports a horizontal layout, and doesn't wrap.
+	 */
+	if ((newStyle & SWT.SMOOTH) != 0) {
+		newStyle &= ~(SWT.VERTICAL | SWT.WRAP); 
+		newStyle |= SWT.HORIZONTAL;
+	}
+	
+	return newStyle;
 }
 
 protected void checkSubclass () {
@@ -186,20 +223,39 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle () {
-	state |= THEME_BACKGROUND;
-	if (hasBorder()) {
-		NSRect rect = new NSRect();
-		NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
-		scrollWidget.initWithFrame (rect);
-		scrollWidget.setDrawsBackground(false);
-		scrollWidget.setBorderType(OS.NSBezelBorder);
-		scrollView = scrollWidget;
+	if ((style & SWT.SMOOTH) != 0) {
+		nsToolbar = ((NSToolbar)new SWTToolbar().alloc()).initWithIdentifier(NSString.stringWith(String.valueOf(NEXT_ID++)));
+		nsToolbar.setDelegate(nsToolbar);
+		nsToolbar.setDisplayMode(OS.NSToolbarDisplayModeIconOnly);
+		NSWindow window = parent.view.window();
+		window.setToolbar(nsToolbar);
+		nsToolbar.setVisible(true);
+		NSArray views = window.contentView().superview().subviews();
+		for (int i = 0; i < views.count(); i++) {
+			id id = views.objectAtIndex(i);
+			if (new NSObject(id).className().getString().equals("NSToolbarView")) {
+				view = new NSView(id);
+				OS.object_setClass(view.id, OS.objc_getClass("SWTToolbarView"));
+				view.retain();
+				break;
+			}
+		}
+		style &= ~SWT.SMOOTH;
+	} else {
+		state |= THEME_BACKGROUND;
+		if (hasBorder()) {
+			NSRect rect = new NSRect();
+			NSScrollView scrollWidget = (NSScrollView)new SWTScrollView().alloc();
+			scrollWidget.initWithFrame (rect);
+			scrollWidget.setDrawsBackground(false);
+			scrollWidget.setBorderType(OS.NSBezelBorder);
+			scrollView = scrollWidget;
+		}
+		NSView widget = (NSView)new SWTView().alloc();
+		widget.init();
+		view = widget;
+		if (scrollView != null) view.setAutoresizingMask(OS.NSViewHeightSizable | OS.NSViewWidthSizable);
 	}
-	NSView widget = (NSView)new SWTView().alloc();
-	widget.init();
-//	widget.setDrawsBackground(false);
-	view = widget;
-	if (scrollView != null) view.setAutoresizingMask(OS.NSViewHeightSizable | OS.NSViewWidthSizable);
 }
 
 void createItem (ToolItem item, int index) {
@@ -209,10 +265,14 @@ void createItem (ToolItem item, int index) {
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
-	item.createWidget();
-	view.addSubview(item.view);
+    item.createWidget();
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
+	if (nsToolbar != null) {
+        nsToolbar.insertItemWithItemIdentifier(item.getItemID(), index);	    
+	} else {
+        view.addSubview(item.view);
+	}
 	relayout ();
 }
 
@@ -220,6 +280,15 @@ void createWidget () {
 	super.createWidget ();
 	items = new ToolItem [4];
 	itemCount = 0;
+}
+
+NSFont defaultNSFont() {
+	return NSFont.systemFontOfSize(11.0f);
+}
+
+void deregister () {
+	super.deregister ();
+	if (nsToolbar != null) display.removeWidget (nsToolbar);
 }
 
 void destroyItem (ToolItem item) {
@@ -232,7 +301,11 @@ void destroyItem (ToolItem item) {
 	if (item == lastFocus) lastFocus = null;
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	item.view.removeFromSuperview();
+	if (nsToolbar != null) {
+		nsToolbar.removeItemAtIndex(index);
+	} else {
+		item.view.removeFromSuperview();
+	}
 	relayout ();
 }
 
@@ -260,6 +333,25 @@ Widget findTooltip (NSPoint pt) {
 		if (OS.NSPointInRect(pt, item.view.frame())) return item;
 	}
 	return super.findTooltip (pt);
+}
+
+void setZOrder() {
+	if (nsToolbar != null) return;
+	super.setZOrder();
+}
+
+public Rectangle getBounds () {
+	checkWidget();
+
+	if (nsToolbar != null) {
+		// The NSToolbar's view will always be a child of the Shell, so we can just
+		// convert the frame to window-relative coordinates.
+		NSRect rect = view.frame();
+		rect = view.convertRect_toView_(rect, null);
+		return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+	}
+	
+	return super.getBounds();
 }
 
 boolean forceFocus (NSView focusView) {
@@ -448,6 +540,37 @@ int [] layoutHorizontal (int width, int height, boolean resize) {
 	return new int [] {rows, maxX, y + itemHeight};
 }
 
+int [] layoutUnified (int width, int height, boolean resize) {
+	int x = 0, y = 0;
+	int itemHeight = 0, maxX = 0;
+	Point [] sizes = new Point [itemCount];
+	NSRect [] containerRects = new NSRect[itemCount];
+	// This next line relies on the observation that all of the toolbar item views are children of the first
+	// subview of the NSToolbarView.
+	NSArray itemViewers = new NSView(view.subviews().objectAtIndex(0)).subviews();
+	for (int i=0; i<itemCount; i++) {
+		Point size = sizes [i] = items [i].computeSize ();
+		containerRects [i] = new NSView(itemViewers.objectAtIndex(i)).frame();
+		if (i == 0) x = (int) containerRects[0].x;
+		itemHeight = Math.max (itemHeight, size.y);
+	}
+	for (int i=0; i<itemCount; i++) {
+		ToolItem item = items [i];
+		Point size = sizes [i];
+		if (resize) {
+			item.setBounds (0, 0, size.x, itemHeight);
+			Control control = item.control;
+			if (control != null) {
+				control.setBounds (x, y, size.x, itemHeight);
+			}
+		}
+		x += containerRects[i].width;
+		maxX = Math.max (maxX, x);
+	}
+	
+	return new int [] {1, maxX, itemHeight};
+}
+
 int [] layoutVertical (int width, int height, boolean resize) {
 	int xSpacing = 2, ySpacing = 0;
 	int marginWidth = 0, marginHeight = 0;
@@ -485,11 +608,20 @@ int [] layoutVertical (int width, int height, boolean resize) {
 }
 
 int [] layout (int nWidth, int nHeight, boolean resize) {
+	if (nsToolbar != null) {
+		return layoutUnified(nWidth, nHeight, resize);
+	}
+
 	if ((style & SWT.VERTICAL) != 0) {
 		return layoutVertical (nWidth, nHeight, resize);
 	} else {
 		return layoutHorizontal (nWidth, nHeight, resize);
 	}
+}
+
+void register() {
+	super.register();
+	if (nsToolbar != null) display.addWidget (nsToolbar, this);
 }
 
 void relayout () {
@@ -513,7 +645,13 @@ void releaseChildren (boolean destroy) {
 }
 
 void releaseHandle () {
-	super.releaseHandle ();
+    super.releaseHandle ();
+
+    if (nsToolbar != null) {
+        nsToolbar.release();
+        nsToolbar = null;
+	}
+
 	if (accessibilityAttributes != null) accessibilityAttributes.release();
 	accessibilityAttributes = null;
 }
@@ -547,14 +685,13 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	case SWT.MouseMove:
 		// Start with the global mouse location, as the MouseEnter may occur due to
 		// an application-activated event, which isn't associated with a window.
-		NSPoint toolbarPoint = NSEvent.mouseLocation();
-		toolbarPoint = view.window().convertScreenToBase(toolbarPoint);
-		toolbarPoint = view.convertPoint_fromView_(toolbarPoint, null);
+		NSPoint windowPoint = NSEvent.mouseLocation();
+		windowPoint = view.window().convertScreenToBase(windowPoint);
 		for (int i = 0; i < itemCount; i++) {
 			ToolItem item = items [i];
 			int currState = item.state;
-			
-			if (OS.NSPointInRect(toolbarPoint, item.view.frame())) {
+			NSPoint viewPoint = item.view.convertPoint_fromView_(windowPoint, null); 
+			if (item.view.mouse(viewPoint, item.view.bounds())) {
 				item.state |= Widget.HOT;
 			} else {
 				item.state &= ~Widget.HOT;				
@@ -576,6 +713,13 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	return super.sendMouseEvent(nsEvent, type, send);
 }
 
+void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	// In the unified toolbar case, the toolbar view size and position is completely controlled
+	// by the window, so don't change its bounds or location.
+	if (nsToolbar != null) return;
+	super.setBounds(x, y, width, height, move, resize);
+}
+	
 void setFont(NSFont font) {
 	for (int i = 0; i < itemCount; i++) {
 		ToolItem item = items[i];
@@ -587,6 +731,53 @@ public void setRedraw (boolean redraw) {
 	checkWidget();
 	super.setRedraw (redraw);
 	if (redraw && drawCount == 0) relayout();
+}
+
+public void setVisible(boolean visible) {
+    if (nsToolbar != null) nsToolbar.setVisible(visible);
+    super.setVisible(visible);
+}
+
+int /*long*/ toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(int /*long*/ id, int /*long*/ sel, int /*long*/ toolbar, int /*long*/ itemIdentifier, boolean flag) {
+	NSString itemID = new NSString(itemIdentifier);
+	for (int j = 0; j < itemCount; j++) {
+		ToolItem item = items[j];
+		if (itemID.isEqual(item.nsItem.itemIdentifier())) {
+			return item.nsItem.id;
+		}
+	}
+	return 0;
+}
+
+/*
+ * Returns an array of all toolbar item IDs allowed to be in the toolbar. Since the ToolBar created all of the ToolItems
+ * return all of the item IDs.
+ */
+int /*long*/ toolbarAllowedItemIdentifiers(int /*long*/ id, int /*long*/ sel, int /*long*/ toolbar) {
+	NSMutableArray array = NSMutableArray.arrayWithCapacity(itemCount);
+	for (int i = 0; i < itemCount; i++) {
+		array.addObject(items[i].nsItem.itemIdentifier());
+	}
+	return array.id;
+}
+
+/*
+ * This delegate method isn't really needed because ToolBars aren't customizable, but it's required according to the documentation.
+ */
+int /*long*/ toolbarDefaultItemIdentifiers(int /*long*/ id, int /*long*/ sel, int /*long*/ toolbar) {
+	return toolbarAllowedItemIdentifiers(id, sel, toolbar);
+}
+
+/*
+ * toolbarSelectableItemIdentifiers returns an array of all items that can be the selected item, as determined
+ * by setSelectedItemIdentifier. 
+ */
+int /*long*/ toolbarSelectableItemIdentifiers(int /*long*/ id, int /*long*/ sel, int /*long*/ toolbar) {
+	NSMutableArray array = NSMutableArray.arrayWithCapacity(itemCount);
+	for (int i = 0; i < itemCount; i++) {
+		if ((items[i].style & SWT.RADIO) != 0) array.addObject(items[i].nsItem.itemIdentifier());
+	}
+	return array.id;
 }
 
 boolean translateTraversal (int key, NSEvent theEvent, boolean[] consume) {

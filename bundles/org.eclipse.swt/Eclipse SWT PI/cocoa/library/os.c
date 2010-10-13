@@ -1290,6 +1290,20 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextAddPath)
 }
 #endif
 
+#ifndef NO_CGContextBeginTransparencyLayerWithRect
+JNIEXPORT void JNICALL OS_NATIVE(CGContextBeginTransparencyLayerWithRect)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+{
+	CGRect _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGContextBeginTransparencyLayerWithRect_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	CGContextBeginTransparencyLayerWithRect((CGContextRef)arg0, *lparg1, (CFDictionaryRef)arg2);
+fail:
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CGContextBeginTransparencyLayerWithRect_FUNC);
+}
+#endif
+
 #ifndef NO_CGContextCopyPath
 JNIEXPORT jintLong JNICALL OS_NATIVE(CGContextCopyPath)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1346,6 +1360,16 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextDrawImage)
 fail:
 	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, CGContextDrawImage_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextEndTransparencyLayer
+JNIEXPORT void JNICALL OS_NATIVE(CGContextEndTransparencyLayer)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGContextEndTransparencyLayer_FUNC);
+	CGContextEndTransparencyLayer((CGContextRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGContextEndTransparencyLayer_FUNC);
 }
 #endif
 
@@ -4908,6 +4932,20 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSRange_1sizeof)
 	rc = (jint)NSRange_sizeof();
 	OS_NATIVE_EXIT(env, that, NSRange_1sizeof_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_NSRectFillUsingOperation
+JNIEXPORT void JNICALL OS_NATIVE(NSRectFillUsingOperation)
+	(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
+{
+	NSRect _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, NSRectFillUsingOperation_FUNC);
+	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	NSRectFillUsingOperation(*lparg0, (NSCompositingOperation)arg1);
+fail:
+	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, NSRectFillUsingOperation_FUNC);
 }
 #endif
 
@@ -9435,6 +9473,36 @@ fail:
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2, jobject arg3)
+#else
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2, jobject arg3)
+#endif
+{
+	NSPoint _arg2, *lparg2=NULL;
+	NSRect _arg3, *lparg3=NULL;
+	jboolean rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
+#endif
+	if (arg2) if ((lparg2 = getNSPointFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jboolean)((BOOL (*)(jintLong, jintLong, NSPoint, NSRect))objc_msgSend_bool)(arg0, arg1, *lparg2, *lparg3);
+fail:
+	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
+	if (arg2 && lparg2) setNSPointFields(env, arg2, lparg2);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
 #endif
 	return rc;
 }

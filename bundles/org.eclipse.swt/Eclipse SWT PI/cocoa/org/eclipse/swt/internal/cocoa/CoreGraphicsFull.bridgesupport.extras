@@ -63,9 +63,17 @@
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 	</function>
+	<function name="CGContextBeginTransparencyLayerWithRect" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+	</function>
 	<function name="CGContextDrawImage" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+	</function>
+	<function name="CGContextEndTransparencyLayer" swt_gen="true">
 		<arg swt_gen="true"></arg>
 	</function>
 	<function name="CGContextFillRect" swt_gen="true">

@@ -308,7 +308,7 @@ void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ i
 			rect.height += EXTRA_HEIGHT;
 		}
 	}
-	callSuper (id, sel, image, rect, view);
+	super.drawImageWithFrameInView(id, sel, image, rect, view);
 }
 
 void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cellRect, int /*long*/ viewid) {

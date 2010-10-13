@@ -114,6 +114,10 @@ public void setAttributedStringValue(NSAttributedString obj) {
 	OS.objc_msgSend(this.id, OS.sel_setAttributedStringValue_, obj != null ? obj.id : 0);
 }
 
+public void setBackgroundStyle(int /*long*/ style) {
+	OS.objc_msgSend(this.id, OS.sel_setBackgroundStyle_, style);
+}
+
 public void setBaseWritingDirection(int /*long*/ writingDirection) {
 	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, writingDirection);
 }

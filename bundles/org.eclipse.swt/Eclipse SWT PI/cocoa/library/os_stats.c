@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 610;
-int OS_nativeFunctionCallCount[610];
+int OS_nativeFunctionCount = 614;
+int OS_nativeFunctionCallCount[614];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -85,9 +85,11 @@ char * OS_nativeFunctionNames[] = {
 	"CGColorSpaceCreateDeviceRGB",
 	"CGColorSpaceRelease",
 	"CGContextAddPath",
+	"CGContextBeginTransparencyLayerWithRect",
 	"CGContextCopyPath",
 	"CGContextCopyWindowContentsToRect",
 	"CGContextDrawImage",
+	"CGContextEndTransparencyLayer",
 	"CGContextFillRect",
 	"CGContextRelease",
 	"CGContextReplacePathWithStrokedPath",
@@ -375,6 +377,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSPrintSpoolJob",
 	"NSRTFPboardType",
 	"NSRange_1sizeof",
+	"NSRectFillUsingOperation",
 	"NSRect_1sizeof",
 	"NSSearchPathForDirectoriesInDomains",
 	"NSSize_1sizeof",
@@ -1079,6 +1082,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2",
 #else
 	"objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2",
+#endif
+#ifndef JNI64
+	"objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2",
+#else
+	"objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2",
 #endif
 #ifndef JNI64
 	"objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSRange_2I",

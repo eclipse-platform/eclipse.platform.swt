@@ -2133,6 +2133,7 @@ void addEventMethods (int /*long*/ cls, int /*long*/ proc2, int /*long*/ proc3, 
 		OS.class_addMethod(cls, OS.sel_resetCursorRects, proc2, "@:");
 		OS.class_addMethod(cls, OS.sel_updateTrackingAreas, proc2, "@:");
 		OS.class_addMethod(cls, OS.sel_getImageView, proc2, "@:");
+		OS.class_addMethod(cls, OS.sel_mouseDownCanMoveWindow, proc2, "@:");
 	}
 	if (needsDisplayInRectProc != 0) {
 		OS.class_addMethod(cls, OS.sel_setNeedsDisplayInRect_, needsDisplayInRectProc, "@:{NSRect}");
@@ -2275,6 +2276,7 @@ void initClasses () {
 	cls = OS.objc_allocateClassPair(OS.class_NSButton, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_validateMenuItem_, proc3, "@:@");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
@@ -2290,7 +2292,6 @@ void initClasses () {
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);	
 	OS.class_addMethod (cls, OS.sel_drawImage_withFrame_inView_, drawImageWithFrameInViewProc, "@:@{NSRect}@");
 	OS.class_addMethod (cls, OS.sel_drawTitle_withFrame_inView_, drawTitleWithFrameInViewProc, "@:@{NSRect}@");
-	OS.class_addMethod(cls, OS.sel_cellSize, cellSizeProc, "@:");
 	OS.class_addMethod(cls, OS.sel_drawInteriorWithFrame_inView_, drawInteriorWithFrameInViewProc, "@:{NSRect}@");
 	OS.class_addMethod(cls, OS.sel_titleRectForBounds_, titleRectForBoundsProc, "@:{NSRect}");
 	OS.class_addMethod(cls, OS.sel_cellSizeForBounds_, cellSizeForBoundsProc, "@:{NSRect}");
@@ -2687,6 +2688,25 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_noResponderFor_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_view_stringForToolTip_point_userData_, view_stringForToolTip_point_userDataProc, "@:@i{NSPoint}@");
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
+	OS.objc_registerClassPair(cls);
+	
+	className = "SWTToolbar";
+	cls = OS.objc_allocateClassPair(OS.class_NSToolbar, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_, proc5, "@:@@Z");
+	OS.class_addMethod(cls, OS.sel_toolbarAllowedItemIdentifiers_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_toolbarDefaultItemIdentifiers_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_toolbarSelectableItemIdentifiers_, proc3, "@:@");
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
+	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
+	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
+	OS.objc_registerClassPair(cls);
+	
+	className = "SWTToolbarView";
+	cls = OS.objc_allocateClassPair(OS.class_NSToolbarView, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
+	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTWindowDelegate";
@@ -4252,6 +4272,7 @@ void setMenuBar (Menu menu) {
 	}
 	//set parent of each item to NULL and add them to menubar
 	if (menu != null) {
+		//menubar.setTitle(menu.g)
 		MenuItem[] items = menu.getItems();
 		for (int i = 0; i < items.length; i++) {
 			MenuItem item = items[i];
@@ -4616,7 +4637,7 @@ Control findControl (boolean checkTrim, NSView[] hitView) {
 		// number passed to windowWithWindowNumber returns nil the window doesn't belong to
 		// this process.
 		if (window != null) {
-			NSView contentView = window.contentView();
+			NSView contentView = window.contentView().superview();
 			if (contentView != null && OS.NSPointInRect(screenLocation, window.frame())) {
 				NSPoint location = window.convertScreenToBase(screenLocation);
 				view = contentView.hitTest (location);
@@ -5124,6 +5145,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel) {
 		return widget.accessibilityParameterizedAttributeNames(id, sel);
 	} else if (sel == OS.sel_getImageView) {
 		return widget.imageView();
+	} else if (sel == OS.sel_mouseDownCanMoveWindow) {
+		return (widget.mouseDownCanMoveWindow(id, sel) ? 1 : 0);
 	} else if (sel == OS.sel_accessibilityFocusedUIElement) {
 		return widget.accessibilityFocusedUIElement(id, sel);
 	} else if (sel == OS.sel_accessibilityIsIgnored) {
@@ -5398,6 +5421,14 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		widget.windowDidMiniturize(id, sel, arg0);
 	} else if (sel == OS.sel_windowDidDeminiaturize_) {
 		widget.windowDidDeminiturize(id, sel, arg0);
+	} else if (sel == OS.sel_toolbarAllowedItemIdentifiers_) {
+		return widget.toolbarAllowedItemIdentifiers(id, sel, arg0);
+	} else if (sel == OS.sel_toolbarDefaultItemIdentifiers_) {
+		return widget.toolbarDefaultItemIdentifiers(id, sel, arg0);
+	} else if (sel == OS.sel_toolbarSelectableItemIdentifiers_) {
+		return widget.toolbarSelectableItemIdentifiers(id, sel, arg0);
+	} else if (sel == OS.sel_validateMenuItem_) {
+		return (widget.validateMenuItem(id, sel, arg0) ? 1 : 0);
 	}
 	return 0;
 }
@@ -5508,6 +5539,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		return (widget.tableView_writeRowsWithIndexes_toPasteboard(id, sel, arg0, arg1, arg2) ? 1 : 0);
 	} else if (sel == OS.sel_outlineView_writeItems_toPasteboard_) {
 		return (widget.outlineView_writeItems_toPasteboard(id, sel, arg0, arg1, arg2) ? 1 : 0);
+	} else if (sel == OS.sel_toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_) {
+		return widget.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(id, sel, arg0, arg1, arg2 != 0);
 	}
 	return 0;
 }

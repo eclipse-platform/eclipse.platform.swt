@@ -203,6 +203,14 @@ public NSMenu menuForEvent(NSEvent event) {
 	return result != 0 ? new NSMenu(result) : null;
 }
 
+public boolean mouse(NSPoint aPoint, NSRect aRect) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_mouse_inRect_, aPoint, aRect);
+}
+
+public boolean mouseDownCanMoveWindow() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_mouseDownCanMoveWindow);
+}
+
 public void registerForDraggedTypes(NSArray newTypes) {
 	OS.objc_msgSend(this.id, OS.sel_registerForDraggedTypes_, newTypes != null ? newTypes.id : 0);
 }

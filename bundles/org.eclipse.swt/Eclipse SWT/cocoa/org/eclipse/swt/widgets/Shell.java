@@ -124,6 +124,7 @@ public class Shell extends Decorations {
 	boolean keyInputHappened;
 	NSRect currentFrame;
 	NSRect fullScreenFrame;
+	ToolBar toolBar;
 	
 	static int DEFAULT_CLIENT_WIDTH = -1;
 	static int DEFAULT_CLIENT_HEIGHT = -1;
@@ -408,6 +409,17 @@ public static Shell internal_new (Display display, int /*long*/ handle) {
  */
 public static Shell cocoa_new (Display display, int /*long*/ handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, true);
+}
+
+Control [] _getChildren () {
+	Control [] children = super._getChildren();
+	if (toolBar != null) {
+		Control [] newChildren = new Control [children.length + 1];
+		System.arraycopy (children, 0, newChildren, 1, children.length);
+		newChildren[0] = toolBar;
+		children = newChildren;
+	}
+	return children;
 }
 
 static int checkStyle (Shell parent, int style) {
@@ -1104,6 +1116,31 @@ float getThemeAlpha () {
 	return 1;
 }
 
+/**
+ * WARNING: API UNDER COSTRUCTION
+ * This API should be considered experimental and subject to change before the final release.
+ *
+ * Returns the instance of the ToolBar object representing the tool bar that can appear on the
+ * trim of the shell. This will return <code>null</code> if the platform does not support tool bars that
+ * not part of the content area of the shell, or if the style of the shell does not support a 
+ * tool bar. 
+ * <p>
+ * 
+ * @return a ToolBar object representing the window's tool bar or null.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.7
+ */
+public ToolBar getToolBar() {
+	checkWidget();
+	if (toolBar == null) toolBar = new ToolBar(this, SWT.HORIZONTAL | SWT.SMOOTH, true);
+	return toolBar;
+}
+
 boolean hasBorder () {
 	return false;
 }
@@ -1172,6 +1209,26 @@ void makeKeyAndOrderFront() {
 		if (parentWindow.isMiniaturized()) parentWindow.deminiaturize(null);
 	}
 	window.makeKeyAndOrderFront (null);
+}
+
+Point minimumSize (int wHint, int Hint, boolean changed) {
+	// minimumSize is used by computeSize() to figure out how big the view
+	// (or, in this case, the content view of the Shell) should be.
+	// An NSToolbar does not contribute to the content area, but must be
+	// accounted for. If the shell has a toolbar but no other children
+	// this will return the width of the toolbar and a height of 1
+	Control [] children = _getChildren ();
+	int width = 0, height = 0;
+	for (int i=0; i<children.length; i++) {
+		Rectangle rect = children [i].getBounds ();
+		width = Math.max (width, rect.x + rect.width);
+		if (children[i] != toolBar)	{
+			height = Math.max (height, rect.y + rect.height);
+		} else {
+			height = Math.max (height, 1);
+		}
+	}
+	return new Point (width, height);
 }
 
 void mouseMoved(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {

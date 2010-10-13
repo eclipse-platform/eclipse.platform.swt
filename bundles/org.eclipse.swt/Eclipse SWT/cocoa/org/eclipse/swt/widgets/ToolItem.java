@@ -39,7 +39,10 @@ import org.eclipse.swt.internal.cocoa.*;
 public class ToolItem extends Item {
 	NSView view;
 	NSButton button;
-	int width = DEFAULT_SEPARATOR_WIDTH;
+	NSToolbarItem nsItem;
+	NSMenuItem nsMenuRep;
+	NSString id;
+	int width;
 	ToolBar parent;
 	Image hotImage, disabledImage;
 	String toolTipText;
@@ -302,20 +305,22 @@ Point computeSize () {
 	checkWidget();
 	int width = 0, height = 0;
 	if ((style & SWT.SEPARATOR) != 0) {
+		// In the unified toolbar case the width is ignored if 0, DEFAULT, or SEPARATOR_FILL.
 		if ((parent.style & SWT.HORIZONTAL) != 0) {
 			width = getWidth ();
+			if (width == SWT.DEFAULT) width = DEFAULT_SEPARATOR_WIDTH;
 			height = DEFAULT_HEIGHT;
 		} else {
 			width = DEFAULT_WIDTH;
 			height = getWidth ();
+			if (height == SWT.DEFAULT) width = DEFAULT_SEPARATOR_WIDTH;
 		}
 		if (control != null) {
 			height = Math.max (height, control.getMininumHeight ());
 		}
 	} else {
 		if (text.length () != 0 || image != null) {
-			NSButton widget = (NSButton)button;
-			NSSize size = widget.cell().cellSize();
+			NSSize size = button.cell().cellSize();
 			width = (int)Math.ceil(size.width);
 			height = (int)Math.ceil(size.height);
 		} else {
@@ -325,19 +330,38 @@ Point computeSize () {
 		if ((style & SWT.DROP_DOWN) != 0) {
 			width += ARROW_WIDTH + INSET;
 		}
-		width += INSET * 2;
-		height += INSET * 2;
+		
+		if (parent.nsToolbar == null || image != null) {
+			width += INSET * 2;
+			height += INSET * 2;
+		} else {
+			height -= 2;
+		}
 	}
 	return new Point (width, height);
 }
 
 void createHandle () {
+	if (parent.nsToolbar != null) {
+		id = NSString.stringWith(String.valueOf(ToolBar.NEXT_ID++));
+		id.retain();
+		nsItem = ((NSToolbarItem)new NSToolbarItem().alloc()).initWithItemIdentifier(id);
+		nsItem.setAction(OS.sel_sendSelection);
+		nsMenuRep = ((NSMenuItem)new SWTMenuItem().alloc()).initWithTitle(NSString.string(), OS.sel_sendSelection, NSString.string());
+		nsItem.setMenuFormRepresentation(nsMenuRep);
+	} 
+
 	if ((style & SWT.SEPARATOR) != 0) {
-		NSBox widget = (NSBox)new SWTBox().alloc();
-		widget.init();
-		widget.setBoxType(OS.NSBoxSeparator);
-		widget.setBorderWidth(0);
-		view = widget;
+		if (parent.nsToolbar != null) {
+			view = (NSView)new SWTView().alloc();
+			view.init();
+		} else {
+			NSBox widget = (NSBox)new SWTBox().alloc();
+			widget.init();
+			widget.setBoxType(OS.NSBoxSeparator);
+			widget.setBorderWidth(0);
+			view = widget;
+		}
 	} else {
 		NSView widget = (NSView)new SWTView().alloc();
 		widget.init();
@@ -351,9 +375,14 @@ void createHandle () {
 		NSButtonCell cell = (NSButtonCell)new SWTButtonCell ().alloc ().init ();
 		button.setCell (cell);
 		cell.release();
+		if (parent.nsToolbar != null) {
+			cell.setHighlightsBy(OS.NSContentsCellMask);
+			cell.setBackgroundStyle(OS.NSBackgroundStyleRaised);
+		}
 		button.setBordered(false);
 		button.setAction(OS.sel_sendSelection);
 		button.setTarget(button);
+		if (nsMenuRep != null) nsMenuRep.setTarget(button);
 		Font font = parent.font != null ? parent.font : parent.defaultFont ();
 		button.setFont(font.handle);
 		button.setImagePosition(OS.NSImageOverlaps);
@@ -393,12 +422,52 @@ void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ i
 			rect.y += 3;			
 		}
 	}
-	callSuper (id, sel, image, rect, view);
+	int /*long*/ cgContext = NSGraphicsContext.currentContext().graphicsPort();
+	NSCell cell = new NSCell(id);
+	boolean drawSelected = (parent.nsToolbar != null) && getSelection() && ((style & SWT.CHECK) != 0) && !cell.isHighlighted();
+
+	if (drawSelected) {
+		NSGraphicsContext.currentContext().saveGraphicsState();
+		CGRect cgRect = new CGRect();
+		cgRect.origin.x = rect.x;
+		cgRect.origin.y = rect.y;
+		cgRect.size.width = rect.width;
+		cgRect.size.height = rect.height;
+		OS.CGContextBeginTransparencyLayerWithRect(cgContext, cgRect, 0);
+	}
+
+	super.drawImageWithFrameInView(id, sel, image, rect, view);
+
+	if (drawSelected) {
+		NSColor.colorWithCalibratedRed(0,0,0,.3f).setFill();
+		OS.NSRectFillUsingOperation(rect, OS.NSCompositeSourceAtop);
+		OS.CGContextEndTransparencyLayer(cgContext);
+		NSGraphicsContext.currentContext().restoreGraphicsState();
+	}
+}
+
+NSRect drawTitleWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ title, NSRect titleRect, int /*long*/ view) {
+    boolean hiliteShadow = new NSButtonCell(id).isHighlighted() && parent.nsToolbar != null && text.length() > 0 && image == null;
+    
+    // An unbordered cell doesn't draw any highlighting when pushed or selected, so we have to do it here.
+    if (hiliteShadow) {
+    	NSColor transWhiteColor = NSColor.colorWithCalibratedRed(1.0f, 1.0f, 1.0f, .8f);
+		NSAttributedString attribStr = new NSAttributedString(title);
+		NSMutableAttributedString tmpString = new NSMutableAttributedString(attribStr.mutableCopy());
+		NSRange range = new NSRange();
+		range.location = 0;
+		range.length = attribStr.length();
+		tmpString.addAttribute(OS.NSForegroundColorAttributeName, transWhiteColor, range);
+		tmpString.autorelease();
+		title = tmpString.id;
+    }
+	return super.drawTitleWithFrameInView(id, sel, title, titleRect, view);
 }
 
 void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id == view.id) {
-		if (getSelection ()) {
+		boolean drawSelected = getSelection() && (parent.nsToolbar == null); 
+		if (drawSelected) {
 			NSRect bounds = view.bounds();
 			context.saveGraphicsState();
 			NSColor.colorWithCalibratedRed(0.1f, 0.1f, 0.1f, 0.1f).setFill();
@@ -435,6 +504,10 @@ void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 }
 
 void enableWidget(boolean enabled) {
+	if (parent.nsToolbar != null) {
+		nsItem.setEnabled(enabled);
+	} 
+
 	if ((style & SWT.SEPARATOR) == 0) {
 		((NSButton)button).setEnabled(enabled);
 		updateImage(true);
@@ -454,6 +527,15 @@ void enableWidget(boolean enabled) {
  */
 public Rectangle getBounds () {
 	checkWidget();
+	if (parent.nsToolbar != null) {
+		NSRect rect = view.frame();
+		// ToolItems in the unified toolbar are not contained directly within the Toolbar.
+		// Convert the toolitem rect from toolitem-relative coordinates to its
+		// parent, the toolbar, relative coordinates.
+		rect = parent.view.convertRect_fromView_(rect, view);
+		return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+	} 
+
 	NSRect rect = view.frame();
 	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 }
@@ -538,6 +620,26 @@ public boolean getEnabled () {
 public Image getHotImage () {
 	checkWidget();
 	return hotImage;
+}
+
+NSString getItemID() {
+    NSString itemID = id;
+    
+    // For separators, return a Cocoa constant for the tool item ID.
+    if ((style & SWT.SEPARATOR) != 0) {
+    	// If we are using a non-default width or control use that instead.  
+    	if (width <= 0 && control == null) {
+    		if (width == 0) {
+    			itemID = OS.NSToolbarSeparatorItemIdentifier;
+    		} else if (width == SWT.DEFAULT) {
+    			itemID = OS.NSToolbarSpaceItemIdentifier;
+    		} else if (width == SWT.SEPARATOR_FILL) {
+    			itemID = OS.NSToolbarFlexibleSpaceItemIdentifier;
+    		}
+    	}
+    }
+    
+    return itemID;
 }
 
 /**
@@ -652,6 +754,11 @@ void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	}
 }
 
+boolean mouseDownCanMoveWindow(int /*long*/ id, int /*long*/ sel) {
+	if (id == view.id) return false;
+	return super.mouseDownCanMoveWindow(id, sel);
+}
+
 void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (!parent.mouseEvent(parent.view.id, sel, theEvent, SWT.MouseUp)) return;
 	super.mouseUp(id, sel, theEvent);
@@ -737,6 +844,18 @@ void releaseHandle () {
 	if (view != null) view.release ();
 	if (button != null) button.release ();
 	view = button = null;
+	if (nsItem != null) {
+	    nsItem.release();
+	    nsItem = null;
+	}
+	if (id != null) {
+	    id.release();
+	    id = null;
+	}
+	if (nsMenuRep != null) {
+		nsMenuRep.release();
+		nsMenuRep = null;
+	}
 	parent = null;
 }
 
@@ -770,18 +889,35 @@ void sendSelection () {
 
 void setBounds (int x, int y, int width, int height) {
 	NSRect rect = new NSRect();
-	rect.x = x;
-	rect.y = y;
-	rect.width = width;
-	rect.height = height;
-	view.setFrame(rect);
-	if (button != null) {
-		rect.x = 0;
-		rect.y = 0;
+	if (parent.nsToolbar == null) {
+		rect.x = x;
+		rect.y = y;
 		rect.width = width;
 		rect.height = height;
-		if ((style & SWT.DROP_DOWN) != 0) rect.width -= ARROW_WIDTH + INSET;
-		button.setFrame(rect);
+		view.setFrame(rect);
+		if (button != null) {
+			rect.x = 0;
+			rect.y = 0;
+			rect.width = width;
+			rect.height = height;
+			if ((style & SWT.DROP_DOWN) != 0) rect.width -= ARROW_WIDTH + INSET;
+			button.setFrame(rect);
+		}
+	} else {
+		// Let the NSToolbar manage the position of the view in the toolbar.
+		NSSize newSize = new NSSize();
+		newSize.height = height;
+		newSize.width = width;
+		// Temporarily clear the view. This will force the item and toolbar to re-layout
+		// when the view is set again.
+		nsItem.setView(null);
+		view.setFrameSize(newSize);
+		if ((style & SWT.DROP_DOWN) != 0) newSize.width -= ARROW_WIDTH + INSET;
+		if (button != null) button.setFrameSize(newSize);
+		if ((style & SWT.DROP_DOWN) != 0) newSize.width += ARROW_WIDTH + INSET;
+		nsItem.setMinSize(newSize);
+		nsItem.setMaxSize(newSize);
+		nsItem.setView(view);
 	}
 }
 
@@ -808,11 +944,16 @@ public void setControl (Control control) {
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (this.control == control) return;
-	NSBox widget = (NSBox)view;
-	if (control == null) {
-		widget.setBoxType(OS.NSBoxSeparator);
+
+	if (parent.nsToolbar == null) {
+        NSBox widget = (NSBox)view;
+        if (control == null) {
+        	widget.setBoxType(OS.NSBoxSeparator);
+        } else {
+        	widget.setBoxType(OS.NSBoxCustom);
+        }
 	} else {
-		widget.setBoxType(OS.NSBoxCustom);
+		nsItem.setMenuFormRepresentation(control == null ? nsMenuRep : NSMenuItem.separatorItem());
 	}
 	this.control = control;
 	view.setHidden(control != null);
@@ -941,6 +1082,13 @@ public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	this.selection = selected;
+	
+	if (parent.nsToolbar != null) {
+		if ((style & SWT.RADIO) != 0 && selection) {
+			parent.nsToolbar.setSelectedItemIdentifier(nsItem.itemIdentifier());
+		}
+	}
+	
 	view.setNeedsDisplay(true);
 }
 
@@ -975,6 +1123,13 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
 	NSButton widget = (NSButton)button;
+	if (parent.nsToolbar != null) {
+		char [] chars = new char [text.length ()];
+		text.getChars (0, chars.length, chars, 0);
+		int length = fixMnemonic (chars);
+		nsMenuRep.setTitle(NSString.stringWithCharacters(chars, length));
+	}
+
 	widget.setAttributedTitle(createString());
 	if (text.length() != 0 && image != null) {
 		if ((parent.style & SWT.RIGHT) != 0) {
@@ -1010,8 +1165,15 @@ public void setText (String string) {
  */
 public void setToolTipText (String string) {
 	checkWidget();
-	toolTipText = string;
-	parent.checkToolTip (this);
+    toolTipText = string;
+	if (parent.nsToolbar != null) {
+        char[] chars = new char [toolTipText.length ()];
+        string.getChars (0, chars.length, chars, 0);
+        int length = fixMnemonic (chars);
+        nsItem.setToolTip(NSString.stringWithCharacters (chars, length));
+	} else {
+        parent.checkToolTip (this);
+	}
 }
 
 void setVisible (boolean visible) {
@@ -1028,7 +1190,14 @@ void setVisible (boolean visible) {
 /**
  * Sets the width of the receiver, for <code>SEPARATOR</code> ToolItems.
  *
- * @param width the new width
+ * @param width the new width. If the new value is <code>SWT.DEFAULT</code>,
+ * the width is a fixed-width area whose amount is determined by the platform.
+ * If the new value is 0 a vertical or horizontal line will be drawn, depending
+ * on the setting of the corresponding style bit (<code>SWT.VERTICAL</code> or 
+ * <code>SWT.HORIZONTAL</code>). If the new value is <code>SWT.SEPARATOR_FILL</code>
+ * a variable-width space is inserted that acts as a spring between the two adjoining
+ * items which will push them out to the extent of the containing ToolBar.
+ * 
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1038,8 +1207,14 @@ void setVisible (boolean visible) {
 public void setWidth (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
-	if (width < 0 || this.width == width) return;
+	if (width < SWT.SEPARATOR_FILL || this.width == width) return;
 	this.width = width;
+	if (parent.nsToolbar != null) {
+		NSToolbar toolbar = parent.nsToolbar;
+		int index = parent.indexOf(this);
+		toolbar.removeItemAtIndex(index);
+		toolbar.insertItemWithItemIdentifier(getItemID(), index);
+	}
 	parent.relayout();
 }
 
@@ -1081,6 +1256,10 @@ void updateImage (boolean layout) {
 		widget.setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);		
 	}
 	parent.relayout();
+}
+
+boolean validateMenuItem(int /*long*/ id, int /*long*/ sel, int /*long*/ menuItem) {
+	return isEnabled();
 }
 
 }

@@ -666,6 +666,7 @@ void drawBackgroundInClipRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {
 }
 
 void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ image, NSRect rect, int /*long*/ view) {
+	callSuper(id, sel, image, rect, view);
 }
 
 NSRect drawTitleWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ title, NSRect rect, int /*long*/ view) {
@@ -1060,6 +1061,10 @@ void keyUp (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 
 void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	mouseDownSuper(id, sel, theEvent);
+}
+
+boolean mouseDownCanMoveWindow(int /*long*/ id, int /*long*/ sel) {
+	return callSuperBoolean(id, sel);
 }
 
 void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
@@ -1922,6 +1927,21 @@ NSRect titleRectForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) 
 	return result;
 }
 
+int /*long*/ toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(int /*long*/ id, int /*long*/ sel, int /*long*/ toolbar, int /*long*/ itemID, boolean flag) {
+	return 0;
+}
+
+int /*long*/ toolbarAllowedItemIdentifiers(int /*long*/ id, int /*long*/ sel, int /*long*/ toolbar) {
+	return 0;
+}
+
+int /*long*/ toolbarDefaultItemIdentifiers(int /*long*/ id, int /*long*/ sel, int /*long*/ toolbar) {
+	return 0;
+}
+
+int /*long*/ toolbarSelectableItemIdentifiers(int /*long*/ id, int /*long*/ sel, int /*long*/ toolbar) {
+	return 0;
+}
 String tooltipText () {
 	return null;
 }
@@ -1961,6 +1981,10 @@ void tabView_willSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long
 
 boolean tableView_writeRowsWithIndexes_toPasteboard(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
 	return false;
+}
+
+boolean validateMenuItem(int /*long*/ id, int /*long*/ sel, int /*long*/ menuItem) {
+	return true;
 }
 
 int /*long*/ view_stringForToolTip_point_userData (int /*long*/ id, int /*long*/ sel, int /*long*/ view, int /*long*/ tag, int /*long*/ point, int /*long*/ userData) {

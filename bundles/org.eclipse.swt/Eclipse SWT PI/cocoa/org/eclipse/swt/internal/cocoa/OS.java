@@ -137,6 +137,8 @@ public class OS extends C {
 	public static final int /*long*/ class_JRSAppKitAWT = objc_getClass("JRSAppKitAWT");
 	public static final int /*long*/ sel_awtAppDelegate = sel_registerName("awtAppDelegate");
 	
+	public static final int /*long*/ class_NSToolbarView = objc_getClass("NSToolbarView");
+
 /** JNI natives */
 
 /** @method flags=jni */
@@ -757,6 +759,7 @@ public static final int /*long*/ protocol_NSDraggingDestination = objc_getProtoc
 public static final int /*long*/ protocol_NSDraggingSource = objc_getProtocol("NSDraggingSource");
 public static final int /*long*/ protocol_NSFontManagerResponderMethod = objc_getProtocol("NSFontManagerResponderMethod");
 public static final int /*long*/ protocol_NSMenuDelegate = objc_getProtocol("NSMenuDelegate");
+public static final int /*long*/ protocol_NSMenuValidation = objc_getProtocol("NSMenuValidation");
 public static final int /*long*/ protocol_NSOutlineViewDataSource = objc_getProtocol("NSOutlineViewDataSource");
 public static final int /*long*/ protocol_NSOutlineViewDelegate = objc_getProtocol("NSOutlineViewDelegate");
 public static final int /*long*/ protocol_NSOutlineViewNotifications = objc_getProtocol("NSOutlineViewNotifications");
@@ -1376,7 +1379,9 @@ public static final int /*long*/ sel_minimumSize = sel_registerName("minimumSize
 public static final int /*long*/ sel_minuteOfHour = sel_registerName("minuteOfHour");
 public static final int /*long*/ sel_modifierFlags = sel_registerName("modifierFlags");
 public static final int /*long*/ sel_monthOfYear = sel_registerName("monthOfYear");
+public static final int /*long*/ sel_mouse_inRect_ = sel_registerName("mouse:inRect:");
 public static final int /*long*/ sel_mouseDown_ = sel_registerName("mouseDown:");
+public static final int /*long*/ sel_mouseDownCanMoveWindow = sel_registerName("mouseDownCanMoveWindow");
 public static final int /*long*/ sel_mouseDragged_ = sel_registerName("mouseDragged:");
 public static final int /*long*/ sel_mouseEntered_ = sel_registerName("mouseEntered:");
 public static final int /*long*/ sel_mouseExited_ = sel_registerName("mouseExited:");
@@ -1641,6 +1646,7 @@ public static final int /*long*/ sel_setAutoresizingMask_ = sel_registerName("se
 public static final int /*long*/ sel_setAutosaveExpandedItems_ = sel_registerName("setAutosaveExpandedItems:");
 public static final int /*long*/ sel_setBackgroundColor_ = sel_registerName("setBackgroundColor:");
 public static final int /*long*/ sel_setBackgroundLayoutEnabled_ = sel_registerName("setBackgroundLayoutEnabled:");
+public static final int /*long*/ sel_setBackgroundStyle_ = sel_registerName("setBackgroundStyle:");
 public static final int /*long*/ sel_setBadgeLabel_ = sel_registerName("setBadgeLabel:");
 public static final int /*long*/ sel_setBaseWritingDirection_ = sel_registerName("setBaseWritingDirection:");
 public static final int /*long*/ sel_setBaseWritingDirection_range_ = sel_registerName("setBaseWritingDirection:range:");
@@ -1733,6 +1739,7 @@ public static final int /*long*/ sel_setHidesOnDeactivate_ = sel_registerName("s
 public static final int /*long*/ sel_setHighlightMode_ = sel_registerName("setHighlightMode:");
 public static final int /*long*/ sel_setHighlighted_ = sel_registerName("setHighlighted:");
 public static final int /*long*/ sel_setHighlightedTableColumn_ = sel_registerName("setHighlightedTableColumn:");
+public static final int /*long*/ sel_setHighlightsBy_ = sel_registerName("setHighlightsBy:");
 public static final int /*long*/ sel_setHorizontalScroller_ = sel_registerName("setHorizontalScroller:");
 public static final int /*long*/ sel_setHorizontallyResizable_ = sel_registerName("setHorizontallyResizable:");
 public static final int /*long*/ sel_setIcon_ = sel_registerName("setIcon:");
@@ -1776,6 +1783,7 @@ public static final int /*long*/ sel_setMaximumFractionDigits_ = sel_registerNam
 public static final int /*long*/ sel_setMaximumIntegerDigits_ = sel_registerName("setMaximumIntegerDigits:");
 public static final int /*long*/ sel_setMenu_ = sel_registerName("setMenu:");
 public static final int /*long*/ sel_setMenu_forSegment_ = sel_registerName("setMenu:forSegment:");
+public static final int /*long*/ sel_setMenuFormRepresentation_ = sel_registerName("setMenuFormRepresentation:");
 public static final int /*long*/ sel_setMessage_ = sel_registerName("setMessage:");
 public static final int /*long*/ sel_setMessageText_ = sel_registerName("setMessageText:");
 public static final int /*long*/ sel_setMinSize_ = sel_registerName("setMinSize:");
@@ -1820,6 +1828,7 @@ public static final int /*long*/ sel_setSegmentCount_ = sel_registerName("setSeg
 public static final int /*long*/ sel_setSegmentStyle_ = sel_registerName("setSegmentStyle:");
 public static final int /*long*/ sel_setSelectable_ = sel_registerName("setSelectable:");
 public static final int /*long*/ sel_setSelected_forSegment_ = sel_registerName("setSelected:forSegment:");
+public static final int /*long*/ sel_setSelectedItemIdentifier_ = sel_registerName("setSelectedItemIdentifier:");
 public static final int /*long*/ sel_setSelectedRange_ = sel_registerName("setSelectedRange:");
 public static final int /*long*/ sel_setSelectedSegment_ = sel_registerName("setSelectedSegment:");
 public static final int /*long*/ sel_setSelectedTextAttributes_ = sel_registerName("setSelectedTextAttributes:");
@@ -2005,6 +2014,7 @@ public static final int /*long*/ sel_userInfo = sel_registerName("userInfo");
 public static final int /*long*/ sel_userSpaceScaleFactor = sel_registerName("userSpaceScaleFactor");
 public static final int /*long*/ sel_usesAlternatingRowBackgroundColors = sel_registerName("usesAlternatingRowBackgroundColors");
 public static final int /*long*/ sel_validAttributesForMarkedText = sel_registerName("validAttributesForMarkedText");
+public static final int /*long*/ sel_validateMenuItem_ = sel_registerName("validateMenuItem:");
 public static final int /*long*/ sel_validateVisibleColumns = sel_registerName("validateVisibleColumns");
 public static final int /*long*/ sel_value = sel_registerName("value");
 public static final int /*long*/ sel_valueForKey_ = sel_registerName("valueForKey:");
@@ -2090,6 +2100,7 @@ public static final int NSAlternateKeyMask = 524288;
 public static final int NSApplicationDefined = 15;
 public static final int NSApplicationDelegateReplySuccess = 0;
 public static final int NSAtTop = 2;
+public static final int NSBackgroundStyleRaised = 2;
 public static final int NSBackingStoreBuffered = 2;
 public static final int NSBackspaceCharacter = 8;
 public static final int NSBevelLineJoinStyle = 2;
@@ -2109,8 +2120,10 @@ public static final int NSClosePathBezierPathElement = 3;
 public static final int NSCommandKeyMask = 1048576;
 public static final int NSCompositeClear = 0;
 public static final int NSCompositeCopy = 1;
+public static final int NSCompositeSourceAtop = 5;
 public static final int NSCompositeSourceOver = 2;
 public static final int NSCompositeXOR = 10;
+public static final int NSContentsCellMask = 1;
 public static final int NSControlKeyMask = 262144;
 public static final int NSCriticalAlertStyle = 2;
 public static final int NSCurveToBezierPathElement = 2;
@@ -2236,6 +2249,7 @@ public static final int NSTerminateCancel = 0;
 public static final int NSTerminateNow = 1;
 public static final int NSTextFieldAndStepperDatePickerStyle = 0;
 public static final int NSTitledWindowMask = 1;
+public static final int NSToolbarDisplayModeIconOnly = 2;
 public static final int NSUnderlineStyleDouble = 9;
 public static final int NSUnderlineStyleNone = 0;
 public static final int NSUnderlineStyleSingle = 1;
@@ -2951,6 +2965,11 @@ public static final native void NSCountWindows(int[] /*long[]*/ count);
  */
 public static final native int /*long*/ NSNumberOfColorComponents(int /*long*/ colorSpaceName);
 /**
+ * @param aRect flags=struct
+ * @param op cast=(NSCompositingOperation)
+ */
+public static final native void NSRectFillUsingOperation(NSRect aRect, int /*long*/ op);
+/**
  * @param size cast=(NSInteger)
  * @param list cast=(NSInteger*)
  */
@@ -3073,11 +3092,21 @@ public static final native void CGColorSpaceRelease(int /*long*/ space);
  */
 public static final native void CGContextAddPath(int /*long*/ context, int /*long*/ path);
 /**
+ * @param context cast=(CGContextRef)
+ * @param rect flags=struct
+ * @param auxiliaryInfo cast=(CFDictionaryRef)
+ */
+public static final native void CGContextBeginTransparencyLayerWithRect(int /*long*/ context, CGRect rect, int /*long*/ auxiliaryInfo);
+/**
  * @param c cast=(CGContextRef)
  * @param rect flags=struct
  * @param image cast=(CGImageRef)
  */
 public static final native void CGContextDrawImage(int /*long*/ c, CGRect rect, int /*long*/ image);
+/**
+ * @param context cast=(CGContextRef)
+ */
+public static final native void CGContextEndTransparencyLayer(int /*long*/ context);
 /**
  * @param c cast=(CGContextRef)
  * @param rect flags=struct
@@ -3526,6 +3555,12 @@ public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long
  * @param arg0 flags=struct
  */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, NSPoint arg0);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ * @param arg1 flags=struct
+ */
+public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, NSPoint arg0, NSRect arg1);
 /**
  * @method flags=cast
  * @param arg0 flags=struct

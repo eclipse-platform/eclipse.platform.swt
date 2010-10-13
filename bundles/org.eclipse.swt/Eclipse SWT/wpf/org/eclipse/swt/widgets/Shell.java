@@ -841,6 +841,29 @@ public Shell getShell () {
 	return this;
 }
 
+/**
+ * WARNING: API UNDER COSTRUCTION
+ * This API should be considered experimental and subject to change before the final release.
+ *
+ * Returns the instance of the ToolBar object representing the tool bar that can appear on the
+ * trim of the shell. This will return <code>null</code> if the platform does not support tool bars that
+ * not part of the content area of the shell, or if the style of the shell does not support a 
+ * tool bar. 
+ * <p>
+ * 
+ * @return a ToolBar object representing the window's tool bar or null.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.7
+ */
+public ToolBar getToolBar() {
+	return null;
+}
+
 public boolean getVisible () {
 	checkWidget ();
 	if ((style & SWT.ON_TOP) != 0)return OS.Popup_IsOpen (shellHandle);

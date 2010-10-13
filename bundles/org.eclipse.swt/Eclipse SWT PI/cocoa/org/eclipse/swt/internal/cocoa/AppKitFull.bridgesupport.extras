@@ -654,6 +654,10 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setHighlightsBy:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setImagePosition:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -743,6 +747,10 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setAttributedStringValue:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setBackgroundStyle:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3551,6 +3559,9 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="isVisible" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="removeItemAtIndex:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -3564,6 +3575,10 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setDisplayMode:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setSelectedItemIdentifier:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3597,6 +3612,10 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setMaxSize:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setMenuFormRepresentation:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3810,6 +3829,14 @@
 		</method>
 		<method selector="menuForEvent:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="mouse:inRect:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="mouseDownCanMoveWindow" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="registerForDraggedTypes:" swt_gen="true">
@@ -4472,6 +4499,7 @@
 	<enum name="NSApplicationDefined" swt_gen="true"></enum>
 	<enum name="NSApplicationDelegateReplySuccess" swt_gen="true"></enum>
 	<enum name="NSAtTop" swt_gen="true"></enum>
+	<enum name="NSBackgroundStyleRaised" swt_gen="true"></enum>
 	<enum name="NSBackingStoreBuffered" swt_gen="true"></enum>
 	<enum name="NSBackspaceCharacter" swt_gen="true"></enum>
 	<enum name="NSBevelLineJoinStyle" swt_gen="true"></enum>
@@ -4491,8 +4519,10 @@
 	<enum name="NSCommandKeyMask" swt_gen="true"></enum>
 	<enum name="NSCompositeClear" swt_gen="true"></enum>
 	<enum name="NSCompositeCopy" swt_gen="true"></enum>
+	<enum name="NSCompositeSourceAtop" swt_gen="true"></enum>
 	<enum name="NSCompositeSourceOver" swt_gen="true"></enum>
 	<enum name="NSCompositeXOR" swt_gen="true"></enum>
+	<enum name="NSContentsCellMask" swt_gen="true"></enum>
 	<enum name="NSControlKeyMask" swt_gen="true"></enum>
 	<enum name="NSCriticalAlertStyle" swt_gen="true"></enum>
 	<enum name="NSCurveToBezierPathElement" swt_gen="true"></enum>
@@ -4618,6 +4648,7 @@
 	<enum name="NSTerminateNow" swt_gen="true"></enum>
 	<enum name="NSTextFieldAndStepperDatePickerStyle" swt_gen="true"></enum>
 	<enum name="NSTitledWindowMask" swt_gen="true"></enum>
+	<enum name="NSToolbarDisplayModeIconOnly" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleDouble" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleNone" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleSingle" swt_gen="true"></enum>
@@ -4694,6 +4725,10 @@
 	<function name="NSNumberOfColorComponents" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
+	</function>
+	<function name="NSRectFillUsingOperation" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 	</function>
 	<function name="NSWindowList" swt_gen="true">
 		<arg swt_gen="true"></arg>
@@ -4848,6 +4883,11 @@
 			<arg swt_gen="true"></arg>
 		</method>
 		<method selector="menuWillOpen:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+		</method>
+	</informal_protocol>
+	<informal_protocol name="NSMenuValidation" swt_gen="true">
+		<method selector="validateMenuItem:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 		</method>
 	</informal_protocol>

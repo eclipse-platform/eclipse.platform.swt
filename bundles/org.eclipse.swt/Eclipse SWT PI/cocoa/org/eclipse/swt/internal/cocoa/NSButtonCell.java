@@ -47,6 +47,10 @@ public void setButtonType(int /*long*/ aType) {
 	OS.objc_msgSend(this.id, OS.sel_setButtonType_, aType);
 }
 
+public void setHighlightsBy(int /*long*/ aType) {
+	OS.objc_msgSend(this.id, OS.sel_setHighlightsBy_, aType);
+}
+
 public void setImagePosition(int /*long*/ aPosition) {
 	OS.objc_msgSend(this.id, OS.sel_setImagePosition_, aPosition);
 }

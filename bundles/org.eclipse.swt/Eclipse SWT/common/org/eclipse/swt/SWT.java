@@ -1010,6 +1010,14 @@ public class SWT {
 	 */
 	public static final int SEPARATOR = 1 << 1;
 
+    /**
+     * Constant representing a flexible space separator in a ToolBar.
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>ToolItem.setWidth()</code></li>
+	 * </ul></p>
+     */
+    public static final int SEPARATOR_FILL = -2;
+
 	/**
 	 * Style constant for toggle button behavior (value is 1&lt;&lt;1).
 	 * <p><b>Used By:</b><ul>

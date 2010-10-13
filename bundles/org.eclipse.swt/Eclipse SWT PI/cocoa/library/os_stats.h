@@ -93,9 +93,11 @@ typedef enum {
 	CGColorSpaceCreateDeviceRGB_FUNC,
 	CGColorSpaceRelease_FUNC,
 	CGContextAddPath_FUNC,
+	CGContextBeginTransparencyLayerWithRect_FUNC,
 	CGContextCopyPath_FUNC,
 	CGContextCopyWindowContentsToRect_FUNC,
 	CGContextDrawImage_FUNC,
+	CGContextEndTransparencyLayer_FUNC,
 	CGContextFillRect_FUNC,
 	CGContextRelease_FUNC,
 	CGContextReplacePathWithStrokedPath_FUNC,
@@ -383,6 +385,7 @@ typedef enum {
 	NSPrintSpoolJob_FUNC,
 	NSRTFPboardType_FUNC,
 	NSRange_1sizeof_FUNC,
+	NSRectFillUsingOperation_FUNC,
 	NSRect_1sizeof_FUNC,
 	NSSearchPathForDirectoriesInDomains_FUNC,
 	NSSize_1sizeof_FUNC,
@@ -1087,6 +1090,11 @@ typedef enum {
 	objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
 #else
 	objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
+#else
+	objc_1msgSend_1bool__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSend_1bool__IILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC,
