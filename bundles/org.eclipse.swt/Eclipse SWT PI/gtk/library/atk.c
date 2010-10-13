@@ -55,6 +55,18 @@ JNIEXPORT jintLong JNICALL ATK_NATIVE(ATK_1TYPE_1COMPONENT)
 }
 #endif
 
+#ifndef NO_ATK_1TYPE_1EDITABLE_1TEXT
+JNIEXPORT jintLong JNICALL ATK_NATIVE(ATK_1TYPE_1EDITABLE_1TEXT)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	ATK_NATIVE_ENTER(env, that, ATK_1TYPE_1EDITABLE_1TEXT_FUNC);
+	rc = (jintLong)ATK_TYPE_EDITABLE_TEXT;
+	ATK_NATIVE_EXIT(env, that, ATK_1TYPE_1EDITABLE_1TEXT_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ATK_1TYPE_1HYPERTEXT
 JNIEXPORT jintLong JNICALL ATK_NATIVE(ATK_1TYPE_1HYPERTEXT)
 	(JNIEnv *env, jclass that)
@@ -219,6 +231,18 @@ JNIEXPORT jintLong JNICALL ATK_NATIVE(_1ATK_1COMPONENT_1GET_1IFACE)
 	ATK_NATIVE_ENTER(env, that, _1ATK_1COMPONENT_1GET_1IFACE_FUNC);
 	rc = (jintLong)ATK_COMPONENT_GET_IFACE(arg0);
 	ATK_NATIVE_EXIT(env, that, _1ATK_1COMPONENT_1GET_1IFACE_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1ATK_1EDITABLETEXT_1GET_1IFACE
+JNIEXPORT jintLong JNICALL ATK_NATIVE(_1ATK_1EDITABLETEXT_1GET_1IFACE)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	ATK_NATIVE_ENTER(env, that, _1ATK_1EDITABLETEXT_1GET_1IFACE_FUNC);
+	rc = (jintLong)ATK_EDITABLETEXT_GET_IFACE(arg0);
+	ATK_NATIVE_EXIT(env, that, _1ATK_1EDITABLETEXT_1GET_1IFACE_FUNC);
 	return rc;
 }
 #endif
@@ -737,6 +761,27 @@ JNIEXPORT void JNICALL ATK_NATIVE(memmove__JLorg_eclipse_swt_internal_accessibil
 }
 #endif
 
+#if (!defined(NO_memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL ATK_NATIVE(memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+#else
+JNIEXPORT void JNICALL ATK_NATIVE(memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+#endif
+{
+#ifndef JNI64
+	ATK_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2_FUNC);
+#else
+	ATK_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2_FUNC);
+#endif
+	if (arg1) getAtkEditableTextIfaceFields(env, arg1, (AtkEditableTextIface *)arg0);
+#ifndef JNI64
+	ATK_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2_FUNC);
+#else
+	ATK_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2_FUNC);
+#endif
+}
+#endif
+
 #if (!defined(NO_memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL ATK_NATIVE(memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
@@ -995,6 +1040,27 @@ JNIEXPORT void JNICALL ATK_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibili
 	ATK_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2I_FUNC);
 #else
 	ATK_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2J_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2I) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2J) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL ATK_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2I)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
+#else
+JNIEXPORT void JNICALL ATK_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2J)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
+#endif
+{
+#ifndef JNI64
+	ATK_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2I_FUNC);
+#else
+	ATK_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2J_FUNC);
+#endif
+	if (arg0) setAtkEditableTextIfaceFields(env, arg0, (AtkEditableTextIface *)arg1);
+#ifndef JNI64
+	ATK_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2I_FUNC);
+#else
+	ATK_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2J_FUNC);
 #endif
 }
 #endif

@@ -51,6 +51,18 @@ void setAtkComponentIfaceFields(JNIEnv *env, jobject lpObject, AtkComponentIface
 #define AtkComponentIface_sizeof() 0
 #endif
 
+#ifndef NO_AtkEditableTextIface
+void cacheAtkEditableTextIfaceFields(JNIEnv *env, jobject lpObject);
+AtkEditableTextIface *getAtkEditableTextIfaceFields(JNIEnv *env, jobject lpObject, AtkEditableTextIface *lpStruct);
+void setAtkEditableTextIfaceFields(JNIEnv *env, jobject lpObject, AtkEditableTextIface *lpStruct);
+#define AtkEditableTextIface_sizeof() sizeof(AtkEditableTextIface)
+#else
+#define cacheAtkEditableTextIfaceFields(a,b)
+#define getAtkEditableTextIfaceFields(a,b,c) NULL
+#define setAtkEditableTextIfaceFields(a,b,c)
+#define AtkEditableTextIface_sizeof() 0
+#endif
+
 #ifndef NO_AtkHypertextIface
 void cacheAtkHypertextIfaceFields(JNIEnv *env, jobject lpObject);
 AtkHypertextIface *getAtkHypertextIfaceFields(JNIEnv *env, jobject lpObject, AtkHypertextIface *lpStruct);

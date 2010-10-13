@@ -32,6 +32,7 @@ typedef enum {
 	ATK_1IS_1NO_1OP_1OBJECT_1FACTORY_FUNC,
 	ATK_1TYPE_1ACTION_FUNC,
 	ATK_1TYPE_1COMPONENT_FUNC,
+	ATK_1TYPE_1EDITABLE_1TEXT_FUNC,
 	ATK_1TYPE_1HYPERTEXT_FUNC,
 	ATK_1TYPE_1OBJECT_1FACTORY_FUNC,
 	ATK_1TYPE_1SELECTION_FUNC,
@@ -46,6 +47,7 @@ typedef enum {
 	GTK_1TYPE_1ACCESSIBLE_FUNC,
 	_1ATK_1ACTION_1GET_1IFACE_FUNC,
 	_1ATK_1COMPONENT_1GET_1IFACE_FUNC,
+	_1ATK_1EDITABLETEXT_1GET_1IFACE_FUNC,
 	_1ATK_1HYPERTEXT_1GET_1IFACE_FUNC,
 	_1ATK_1OBJECT_1FACTORY_1CLASS_FUNC,
 	_1ATK_1SELECTION_1GET_1IFACE_FUNC,
@@ -118,6 +120,11 @@ typedef enum {
 	memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2_FUNC,
 #endif
 #ifndef JNI64
+	memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2_FUNC,
 #else
 	memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2_FUNC,
@@ -176,6 +183,11 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2I_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2J_FUNC,
+#endif
+#ifndef JNI64
+	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2I_FUNC,
+#else
+	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkEditableTextIface_2J_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2I_FUNC,

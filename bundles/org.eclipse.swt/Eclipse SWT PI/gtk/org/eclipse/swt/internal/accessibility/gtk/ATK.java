@@ -204,6 +204,8 @@ public static final native int /*long*/ ATK_TYPE_ACTION ();
 /** @method flags=const */
 public static final native int /*long*/ ATK_TYPE_COMPONENT ();
 /** @method flags=const */
+public static final native int /*long*/ ATK_TYPE_EDITABLE_TEXT ();
+/** @method flags=const */
 public static final native int /*long*/ ATK_TYPE_HYPERTEXT ();
 /** @method flags=const */
 public static final native int /*long*/ ATK_TYPE_SELECTION ();
@@ -240,6 +242,15 @@ public static final int /*long*/ ATK_SELECTION_GET_IFACE (int /*long*/ obj) {
 	lock.lock();
 	try {
 		return _ATK_SELECTION_GET_IFACE(obj);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _ATK_EDITABLETEXT_GET_IFACE (int /*long*/ handle);
+public static final int /*long*/ ATK_EDITABLETEXT_GET_IFACE (int /*long*/ handle) {
+	lock.lock();
+	try {
+		return _ATK_EDITABLETEXT_GET_IFACE(handle);
 	} finally {
 		lock.unlock();
 	}
@@ -546,6 +557,7 @@ public static final int /*long*/ call (int /*long*/ function, int /*long*/ arg0,
 public static final native int /*long*/ g_strdup (int /*long*/ str);
 public static final native void memmove (AtkActionIface dest, int /*long*/ src);
 public static final native void memmove (AtkComponentIface dest, int /*long*/ src);
+public static final native void memmove (AtkEditableTextIface dest, int /*long*/ src);
 public static final native void memmove (AtkHypertextIface dest, int /*long*/ src);
 public static final native void memmove (AtkObjectClass dest, int /*long*/ src);
 public static final native void memmove (AtkObjectFactoryClass  dest, int /*long*/ src);
@@ -556,6 +568,7 @@ public static final native void memmove (AtkValueIface dest, int /*long*/ src);
 public static final native void memmove (GtkAccessible  dest, int /*long*/ src);
 public static final native void memmove (int /*long*/ dest, AtkActionIface src);
 public static final native void memmove (int /*long*/ dest, AtkComponentIface src);
+public static final native void memmove (int /*long*/ dest, AtkEditableTextIface src);
 public static final native void memmove (int /*long*/ dest, AtkHypertextIface src);
 public static final native void memmove (int /*long*/ dest, AtkObjectClass src);
 public static final native void memmove (int /*long*/ dest, AtkObjectFactoryClass src);

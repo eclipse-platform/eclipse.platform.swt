@@ -163,6 +163,55 @@ void setAtkComponentIfaceFields(JNIEnv *env, jobject lpObject, AtkComponentIface
 }
 #endif
 
+#ifndef NO_AtkEditableTextIface
+typedef struct AtkEditableTextIface_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID set_run_attributes, set_text_contents, insert_text, copy_text, cut_text, delete_text, paste_text;
+} AtkEditableTextIface_FID_CACHE;
+
+AtkEditableTextIface_FID_CACHE AtkEditableTextIfaceFc;
+
+void cacheAtkEditableTextIfaceFields(JNIEnv *env, jobject lpObject)
+{
+	if (AtkEditableTextIfaceFc.cached) return;
+	AtkEditableTextIfaceFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	AtkEditableTextIfaceFc.set_run_attributes = (*env)->GetFieldID(env, AtkEditableTextIfaceFc.clazz, "set_run_attributes", I_J);
+	AtkEditableTextIfaceFc.set_text_contents = (*env)->GetFieldID(env, AtkEditableTextIfaceFc.clazz, "set_text_contents", I_J);
+	AtkEditableTextIfaceFc.insert_text = (*env)->GetFieldID(env, AtkEditableTextIfaceFc.clazz, "insert_text", I_J);
+	AtkEditableTextIfaceFc.copy_text = (*env)->GetFieldID(env, AtkEditableTextIfaceFc.clazz, "copy_text", I_J);
+	AtkEditableTextIfaceFc.cut_text = (*env)->GetFieldID(env, AtkEditableTextIfaceFc.clazz, "cut_text", I_J);
+	AtkEditableTextIfaceFc.delete_text = (*env)->GetFieldID(env, AtkEditableTextIfaceFc.clazz, "delete_text", I_J);
+	AtkEditableTextIfaceFc.paste_text = (*env)->GetFieldID(env, AtkEditableTextIfaceFc.clazz, "paste_text", I_J);
+	AtkEditableTextIfaceFc.cached = 1;
+}
+
+AtkEditableTextIface *getAtkEditableTextIfaceFields(JNIEnv *env, jobject lpObject, AtkEditableTextIface *lpStruct)
+{
+	if (!AtkEditableTextIfaceFc.cached) cacheAtkEditableTextIfaceFields(env, lpObject);
+	lpStruct->set_run_attributes = (gboolean (*)())(*env)->GetIntLongField(env, lpObject, AtkEditableTextIfaceFc.set_run_attributes);
+	lpStruct->set_text_contents = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkEditableTextIfaceFc.set_text_contents);
+	lpStruct->insert_text = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkEditableTextIfaceFc.insert_text);
+	lpStruct->copy_text = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkEditableTextIfaceFc.copy_text);
+	lpStruct->cut_text = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkEditableTextIfaceFc.cut_text);
+	lpStruct->delete_text = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkEditableTextIfaceFc.delete_text);
+	lpStruct->paste_text = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkEditableTextIfaceFc.paste_text);
+	return lpStruct;
+}
+
+void setAtkEditableTextIfaceFields(JNIEnv *env, jobject lpObject, AtkEditableTextIface *lpStruct)
+{
+	if (!AtkEditableTextIfaceFc.cached) cacheAtkEditableTextIfaceFields(env, lpObject);
+	(*env)->SetIntLongField(env, lpObject, AtkEditableTextIfaceFc.set_run_attributes, (jintLong)lpStruct->set_run_attributes);
+	(*env)->SetIntLongField(env, lpObject, AtkEditableTextIfaceFc.set_text_contents, (jintLong)lpStruct->set_text_contents);
+	(*env)->SetIntLongField(env, lpObject, AtkEditableTextIfaceFc.insert_text, (jintLong)lpStruct->insert_text);
+	(*env)->SetIntLongField(env, lpObject, AtkEditableTextIfaceFc.copy_text, (jintLong)lpStruct->copy_text);
+	(*env)->SetIntLongField(env, lpObject, AtkEditableTextIfaceFc.cut_text, (jintLong)lpStruct->cut_text);
+	(*env)->SetIntLongField(env, lpObject, AtkEditableTextIfaceFc.delete_text, (jintLong)lpStruct->delete_text);
+	(*env)->SetIntLongField(env, lpObject, AtkEditableTextIfaceFc.paste_text, (jintLong)lpStruct->paste_text);
+}
+#endif
+
 #ifndef NO_AtkHypertextIface
 typedef struct AtkHypertextIface_FID_CACHE {
 	int cached;
