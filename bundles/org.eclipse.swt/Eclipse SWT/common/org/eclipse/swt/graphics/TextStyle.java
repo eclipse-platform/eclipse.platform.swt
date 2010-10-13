@@ -262,8 +262,8 @@ public int hashCode() {
 	if (background != null) hash ^= background.hashCode();	
 	if (font != null) hash ^= font.hashCode();
 	if (metrics != null) hash ^= metrics.hashCode();
-	if (underline) hash ^= hash;
-	if (strikeout) hash ^= hash;
+	if (underline) hash ^= (hash << 1);
+	if (strikeout) hash ^= (hash << 2);
 	hash ^= rise;
 	if (underlineColor != null) hash ^= underlineColor.hashCode();
 	if (strikeoutColor != null) hash ^= strikeoutColor.hashCode();
