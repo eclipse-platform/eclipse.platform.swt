@@ -2170,6 +2170,9 @@ void markLayout (boolean changed, boolean all) {
 
 int /*long*/ menuForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (!isEnabled ()) return 0;
+	NSEvent nsEvent = new NSEvent(theEvent);
+	display.clickCount = (int)(display.clickCountButton == nsEvent.buttonNumber() ? nsEvent.clickCount() : 1);
+	display.clickCountButton = (int)nsEvent.buttonNumber();
 
 	NSPoint pt = NSEvent.mouseLocation();
 	pt.y = (int) (display.getPrimaryFrame().height - pt.y);
@@ -2257,23 +2260,15 @@ boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, in
 		case OS.NSLeftMouseUp:
 		case OS.NSRightMouseUp:
 		case OS.NSOtherMouseUp:
+			if (display.clickCount == 2) {
+				sendMouseEvent (nsEvent, SWT.MouseDoubleClick, false);
+			}
 			display.checkEnterExit (display.findControl(true), nsEvent, false);
 			break;
 	}
 	sendMouseEvent (nsEvent, type, false);
-	if (type == SWT.MouseDown && nsEvent.clickCount() == 2) {
-		if (wantsDoubleClickAtMouseDown()) {
-			sendMouseEvent (nsEvent, SWT.MouseDoubleClick, false);
-		} else {
-			display.deferDoubleClick = true;
-		}
-	}
 	if (dragging) sendMouseEvent(nsEvent, SWT.DragDetect, false);
 	if (consume != null && consume[0]) return false;
-	return true;
-}
-
-boolean wantsDoubleClickAtMouseDown() {
 	return true;
 }
 
@@ -3038,7 +3033,7 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 			break;
 		}
 	}
-	if (event.button != 0) event.count = (int)/*64*/nsEvent.clickCount();
+	if (event.button != 0) event.count = display.clickCount;
 	NSPoint windowPoint;
 	NSView view = eventView ();
 	if (nsEvent == null || nsEvent.type() == OS.NSMouseMoved) {

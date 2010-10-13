@@ -3155,9 +3155,5 @@ void updateCursorRects (boolean enabled) {
 	updateCursorRects (enabled, headerView);
 }
 
-boolean wantsDoubleClickAtMouseDown() {
-	return false;
-}
-
 }
 

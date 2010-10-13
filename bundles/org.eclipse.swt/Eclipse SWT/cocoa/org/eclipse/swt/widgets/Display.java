@@ -118,7 +118,8 @@ public class Display extends Device {
 
 	Caret currentCaret;
 	
-	boolean sendEvent, deferDoubleClick;
+	boolean sendEvent;
+	int clickCountButton, clickCount;
 
 	Control currentControl, trackingControl, tooltipControl;
 	Widget tooltipTarget;
@@ -4692,15 +4693,16 @@ void applicationSendTrackingEvent (NSEvent nsEvent, Control trackingControl) {
 		case OS.NSLeftMouseUp:
 		case OS.NSRightMouseUp:
 		case OS.NSOtherMouseUp:
+			clickCount = (int)(clickCountButton == nsEvent.buttonNumber() ? nsEvent.clickCount() : 1);
+			clickCountButton = (int)nsEvent.buttonNumber();
 			checkEnterExit (findControl (true), nsEvent, true);
 			if (trackingControl.isDisposed()) return;
 			Control control = trackingControl;
 			this.trackingControl = null;
-			control.sendMouseEvent (nsEvent, SWT.MouseUp, false);
-			if (deferDoubleClick) {
-				control.sendMouseEvent(nsEvent, SWT.MouseDoubleClick, false);
-				deferDoubleClick = false;
+			if (clickCount == 2) {
+				control.sendMouseEvent (nsEvent, SWT.MouseDoubleClick, false);
 			}
+			control.sendMouseEvent (nsEvent, SWT.MouseUp, false);
 			break;
 		case OS.NSLeftMouseDragged:
 		case OS.NSRightMouseDragged:
