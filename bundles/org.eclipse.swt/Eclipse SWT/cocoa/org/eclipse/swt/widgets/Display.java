@@ -4637,7 +4637,8 @@ Control findControl (boolean checkTrim, NSView[] hitView) {
 		// number passed to windowWithWindowNumber returns nil the window doesn't belong to
 		// this process.
 		if (window != null) {
-			NSView contentView = window.contentView().superview();
+			NSView contentView = window.contentView();
+			if (contentView != null) contentView = contentView.superview();
 			if (contentView != null && OS.NSPointInRect(screenLocation, window.frame())) {
 				NSPoint location = window.convertScreenToBase(screenLocation);
 				view = contentView.hitTest (location);
