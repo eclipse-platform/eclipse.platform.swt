@@ -2088,13 +2088,15 @@ void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 	NSEvent nsEvent = new NSEvent (event);
 	int type = (int)/*64*/nsEvent.type ();
 	switch (type) {
+		case OS.NSLeftMouseDown:
+		case OS.NSRightMouseDown:
+		case OS.NSOtherMouseDown:
+			display.clickCount = (int)(display.clickCountButton == nsEvent.buttonNumber() ? nsEvent.clickCount() : 1);
+			display.clickCountButton = (int)nsEvent.buttonNumber();
+			break;
 		case OS.NSLeftMouseUp:
 		case OS.NSRightMouseUp:
 		case OS.NSOtherMouseUp:
-			display.clickCount = (int)(display.clickCountButton == nsEvent.buttonNumber() ? nsEvent.clickCount() : 1);
-			display.clickCountButton = (int)nsEvent.buttonNumber();
-			// FALL THROUGH
-			
 		case OS.NSMouseMoved:
 			NSView[] hitView = new NSView[1];
 			Control control = display.findControl (false, hitView);

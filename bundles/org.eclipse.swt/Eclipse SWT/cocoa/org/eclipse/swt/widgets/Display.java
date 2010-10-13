@@ -4272,7 +4272,6 @@ void setMenuBar (Menu menu) {
 	}
 	//set parent of each item to NULL and add them to menubar
 	if (menu != null) {
-		//menubar.setTitle(menu.g)
 		MenuItem[] items = menu.getItems();
 		for (int i = 0; i < items.length; i++) {
 			MenuItem item = items[i];
@@ -4710,13 +4709,13 @@ void applicationSendTrackingEvent (NSEvent nsEvent, Control trackingControl) {
 		case OS.NSLeftMouseDown:
 		case OS.NSRightMouseDown:
 		case OS.NSOtherMouseDown:
+			clickCount = (int)(clickCountButton == nsEvent.buttonNumber() ? nsEvent.clickCount() : 1);
+			clickCountButton = (int)nsEvent.buttonNumber();
 			trackingControl.sendMouseEvent (nsEvent, SWT.MouseDown, true);
 			break;
 		case OS.NSLeftMouseUp:
 		case OS.NSRightMouseUp:
 		case OS.NSOtherMouseUp:
-			clickCount = (int)(clickCountButton == nsEvent.buttonNumber() ? nsEvent.clickCount() : 1);
-			clickCountButton = (int)nsEvent.buttonNumber();
 			checkEnterExit (findControl (true), nsEvent, true);
 			if (trackingControl.isDisposed()) return;
 			Control control = trackingControl;

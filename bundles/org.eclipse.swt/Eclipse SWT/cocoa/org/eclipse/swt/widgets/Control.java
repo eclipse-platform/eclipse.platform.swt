@@ -2170,9 +2170,6 @@ void markLayout (boolean changed, boolean all) {
 
 int /*long*/ menuForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (!isEnabled ()) return 0;
-	NSEvent nsEvent = new NSEvent(theEvent);
-	display.clickCount = (int)(display.clickCountButton == nsEvent.buttonNumber() ? nsEvent.clickCount() : 1);
-	display.clickCountButton = (int)nsEvent.buttonNumber();
 
 	NSPoint pt = NSEvent.mouseLocation();
 	pt.y = (int) (display.getPrimaryFrame().height - pt.y);
