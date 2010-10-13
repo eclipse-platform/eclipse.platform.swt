@@ -255,6 +255,32 @@ public class Accessible {
 	}
 
 	/**
+	 * WARNING: API UNDER COSTRUCTION
+	 * 
+	 * Adds the listener to the collection of listeners that will be
+	 * notified when an accessible client asks for any of the properties
+	 * defined in the <code>AccessibleEditableText</code> interface.
+	 *
+	 * @param listener the listener that should be notified when the receiver
+	 * is asked for <code>AccessibleEditableText</code> interface properties
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+	 * </ul>
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 *
+	 * @see AccessibleEditableTextListener
+	 * @see #removeAccessibleEditableTextListener
+	 * 
+	 * @since 3.7
+	 */
+	public void addAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
+	}
+
+	/**
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleHyperlink</code> interface.
@@ -439,6 +465,32 @@ public class Accessible {
 	public void removeAccessibleActionListener(AccessibleActionListener listener) {
 	}
 
+	/**
+	 * WARNING: API UNDER COSTRUCTION
+	 * 
+	 * Removes the listener from the collection of listeners that will be
+	 * notified when an accessible client asks for any of the properties
+	 * defined in the <code>AccessibleEditableText</code> interface.
+	 *
+	 * @param listener the listener that should no longer be notified when the receiver
+	 * is asked for <code>AccessibleEditableText</code> interface properties
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+	 * </ul>
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 *
+	 * @see AccessibleEditableTextListener
+	 * @see #addAccessibleEditableTextListener
+	 * 
+	 * @since 3.7
+	 */
+	public void removeAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
+	}
+	
 	/**
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties

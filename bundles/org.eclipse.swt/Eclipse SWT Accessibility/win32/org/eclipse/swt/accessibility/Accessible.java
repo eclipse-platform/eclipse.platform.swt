@@ -52,7 +52,7 @@ public class Accessible {
 	static int UniqueID = -0x10;
 	int refCount = 0, enumIndex = 0;
 	COMObject objIAccessible, objIEnumVARIANT, objIServiceProvider, objIAccessible2, objIAccessibleAction,
-		objIAccessibleApplication, /*objIAccessibleComponent,*/ /*objIAccessibleEditableText,*/ objIAccessibleHyperlink,
+		objIAccessibleApplication, /*objIAccessibleComponent,*/ objIAccessibleEditableText, objIAccessibleHyperlink,
 		objIAccessibleHypertext, /*objIAccessibleImage,*/ objIAccessibleTable2, objIAccessibleTableCell,
 		objIAccessibleText, objIAccessibleValue; /* objIAccessibleRelation is defined in Relation class */
 	IAccessible iaccessible;
@@ -60,6 +60,7 @@ public class Accessible {
 	Vector accessibleControlListeners = new Vector();
 	Vector accessibleTextListeners = new Vector ();
 	Vector accessibleActionListeners = new Vector();
+	Vector accessibleEditableTextListeners = new Vector();
 	Vector accessibleHyperlinkListeners = new Vector();
 	Vector accessibleTableListeners = new Vector();
 	Vector accessibleTableCellListeners = new Vector();
@@ -322,21 +323,20 @@ public class Accessible {
 //		};
 //	}
 
-	// This method is intentionally commented. We are not providing IAccessibleEditableText at this time.
-//	void createIAccessibleEditableText() {
-//		objIAccessibleEditableText = new COMObject(new int[] {2,0,0,2,2,2,2,1,3,3}) {
-//			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-//			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-//			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-//			public int /*long*/ method3(int /*long*/[] args) {return copyText((int)/*64*/args[0], (int)/*64*/args[1]);}
-//			public int /*long*/ method4(int /*long*/[] args) {return deleteText((int)/*64*/args[0], (int)/*64*/args[1]);}
-//			public int /*long*/ method5(int /*long*/[] args) {return insertText((int)/*64*/args[0], args[1]);}
-//			public int /*long*/ method6(int /*long*/[] args) {return cutText((int)/*64*/args[0], (int)/*64*/args[1]);}
-//			public int /*long*/ method7(int /*long*/[] args) {return pasteText((int)/*64*/args[0]);}
-//			public int /*long*/ method8(int /*long*/[] args) {return replaceText((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
-//			public int /*long*/ method9(int /*long*/[] args) {return setAttributes((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
-//		};
-//	}
+	void createIAccessibleEditableText() {
+		objIAccessibleEditableText = new COMObject(new int[] {2,0,0,2,2,2,2,1,3,3}) {
+			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+			public int /*long*/ method2(int /*long*/[] args) {return Release();}
+			public int /*long*/ method3(int /*long*/[] args) {return copyText((int)/*64*/args[0], (int)/*64*/args[1]);}
+			public int /*long*/ method4(int /*long*/[] args) {return deleteText((int)/*64*/args[0], (int)/*64*/args[1]);}
+			public int /*long*/ method5(int /*long*/[] args) {return insertText((int)/*64*/args[0], args[1]);}
+			public int /*long*/ method6(int /*long*/[] args) {return cutText((int)/*64*/args[0], (int)/*64*/args[1]);}
+			public int /*long*/ method7(int /*long*/[] args) {return pasteText((int)/*64*/args[0]);}
+			public int /*long*/ method8(int /*long*/[] args) {return replaceText((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+			public int /*long*/ method9(int /*long*/[] args) {return setAttributes((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+		};
+	}
 
 	void createIAccessibleHyperlink() {
 		objIAccessibleHyperlink = new COMObject(new int[] {2,0,0,/*IAA>>*/1,1,2,4,2,2,/*<<IAA*/2,2,1,1,1}) {
@@ -648,6 +648,35 @@ public class Accessible {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		accessibleActionListeners.addElement(listener);
+	}
+
+	/**
+	 * WARNING: API UNDER COSTRUCTION
+	 * 
+	 * Adds the listener to the collection of listeners that will be
+	 * notified when an accessible client asks for any of the properties
+	 * defined in the <code>AccessibleEditableText</code> interface.
+	 *
+	 * @param listener the listener that should be notified when the receiver
+	 * is asked for <code>AccessibleEditableText</code> interface properties
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+	 * </ul>
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 *
+	 * @see AccessibleEditableTextListener
+	 * @see #removeAccessibleEditableTextListener
+	 * 
+	 * @since 3.7
+	 */
+	public void addAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
+	    checkWidget();
+	    if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	    accessibleEditableTextListeners.addElement(listener);
 	}
 
 	/**
@@ -998,6 +1027,35 @@ public class Accessible {
 		accessibleActionListeners.removeElement(listener);
 	}
 
+	/**
+	 * WARNING: API UNDER COSTRUCTION
+	 * 
+	 * Removes the listener from the collection of listeners that will be
+	 * notified when an accessible client asks for any of the properties
+	 * defined in the <code>AccessibleEditableText</code> interface.
+	 *
+	 * @param listener the listener that should no longer be notified when the receiver
+	 * is asked for <code>AccessibleEditableText</code> interface properties
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+	 * </ul>
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 *
+	 * @see AccessibleEditableTextListener
+	 * @see #addAccessibleEditableTextListener
+	 * 
+	 * @since 3.7
+	 */
+	public void removeAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
+	    checkWidget();
+	    if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	    accessibleEditableTextListeners.removeElement(listener);
+	}
+	
 	/**
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
@@ -1519,10 +1577,9 @@ public class Accessible {
 //				objIAccessibleComponent.dispose();
 //			objIAccessibleComponent = null;
 
-			// The following lines are intentionally commented. We are not providing IAccessibleEditableText at this time.
-//			if (objIAccessibleEditableText != null)
-//				objIAccessibleEditableText.dispose();
-//			objIAccessibleEditableText = null;
+			if (objIAccessibleEditableText != null)
+				objIAccessibleEditableText.dispose();
+			objIAccessibleEditableText = null;
 
 			if (objIAccessibleHyperlink != null)
 				objIAccessibleHyperlink.dispose();
@@ -1653,13 +1710,12 @@ public class Accessible {
 		}
 		
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleEditableText)) {
-			// The following lines are intentionally commented. We are not supporting IAccessibleEditableText at this time.
-//			if (accessibleEditableTextListeners.size() > 0) {
-//				if (objIAccessibleEditableText == null) createIAccessibleEditableText();
-//				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleEditableText.getAddress() }, OS.PTR_SIZEOF);
-//				AddRef();
-//				return COM.S_OK;
-//			}
+			if (accessibleEditableTextListeners.size() > 0) {
+				if (objIAccessibleEditableText == null) createIAccessibleEditableText();
+				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleEditableText.getAddress() }, OS.PTR_SIZEOF);
+				AddRef();
+				return COM.S_OK;
+			}
 			return COM.E_NOINTERFACE;
 		}
 		
@@ -2508,15 +2564,38 @@ public class Accessible {
 		return COM.E_NOTIMPL;
 	}
 	
-	// We may support this method with IAccessibleEditableText, but we are not providing IAccessibleEditableText at this time.
 	/* put_accValue([in] varChild, [in] szValue) */
 	int put_accValue(int /*long*/ varChild, int /*long*/ szValue) {
-		/* MSAA: this method is typically only used for edit controls. */
+		/* MSAA: this method is supported for some UI elements (usually edit controls). */
+		VARIANT v = getVARIANT(varChild);
+		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
 		int code = COM.DISP_E_MEMBERNOTFOUND;
-		if (iaccessible != null) {
-			/* Currently, we don't expose this as API. Forward to the proxy. */
+		if (v.lVal == COM.CHILDID_SELF && accessibleEditableTextListeners.size() > 0) {
+			/*
+			 * If the object supports AccessibleEditableTextListener.replaceText,
+			 * then give the object a chance to handle this event.
+			 */
+			AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
+			event.start = 0;
+			event.end = getCharacterCount();
+			if (event.end >= 0) {
+				int size = COM.SysStringByteLen(szValue);
+				char [] buffer = new char [(size + 1) / 2];
+				OS.MoveMemory (buffer, szValue, size);
+				event.string = new String (buffer);
+				for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
+					AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+					listener.replaceText(event);
+				}
+				if (event.result != null && event.result.equals(ACC.OK)) code = COM.S_OK;
+				if (DEBUG) print(this + ".IAccessible::put_accValue(" + v.lVal + ", \"" + event.string + "\") returning " + hresult(code));
+			}
+		}
+		if (code != COM.S_OK && iaccessible != null) {
+			/* If the object did not handle the event, then forward to the proxy. */
 			code = iaccessible.put_accValue(varChild, szValue);
 			if (code == COM.E_INVALIDARG) code = COM.DISP_E_MEMBERNOTFOUND; // proxy doesn't know about app childID
+			if (DEBUG) print(this + ".IAccessible::put_accValue(" + v.lVal + ") returning " + hresult(code) + " from proxy");
 		}
 		return code;
 	}
@@ -3132,105 +3211,190 @@ public class Accessible {
 //		return COM.S_OK;
 //	}
 
-	// The following 7 method are intentionally commented. We are not providing IAccessibleEditableText at this time.
-//	/* IAccessibleEditableText::copyText([in] startOffset, [in] endOffset) */
-//	int copyText(int startOffset, int endOffset) {
-//		if (DEBUG) print(this + ".IAccessibleEditableText::copyText");
-//		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
-//		event.start = startOffset;
-//		event.end = endOffset;
-//		for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
-//			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
-//			listener.copyText(event);
-//		}
-//		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
-//		return COM.S_OK;
-//	}
-//
-//	/* IAccessibleEditableText::deleteText([in] startOffset, [in] endOffset) */
-//	int deleteText(int startOffset, int endOffset) {
-//		if (DEBUG) print(this + ".IAccessibleEditableText::deleteText");
-//		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
-//		event.start = startOffset;
-//		event.end = endOffset;
-//		for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
-//			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
-//			listener.deleteText(event);
-//		}
-//		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
-//		return COM.S_OK;
-//	}
-//
-//	/* IAccessibleEditableText::insertText([in] offset, [in] pbstrText) */
-//	int insertText(int offset, int /*long*/ pbstrText) {
-//		if (DEBUG) print(this + ".IAccessibleEditableText::insertText");
-//		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
-//		event.offset = offset;
-//		event.string = pbstrText;
-//		for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
-//			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
-//			listener.insertText(event);
-//		}
-//		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
-//		return COM.S_OK;
-//	}
-//
-//	/* IAccessibleEditableText::cutText([in] startOffset, [in] endOffset) */
-//	int cutText(int startOffset, int endOffset) {
-//		if (DEBUG) print(this + ".IAccessibleEditableText::cutText");
-//		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
-//		event.start = startOffset;
-//		event.end = endOffset;
-//		for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
-//			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
-//			listener.cutText(event);
-//		}
-//		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
-//		return COM.S_OK;
-//	}
-//
-//	/* IAccessibleEditableText::pasteText([in] offset) */
-//	int pasteText(int offset) {
-//		if (DEBUG) print(this + ".IAccessibleEditableText::pasteText");
-//		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
-//		event.offset = offset;
-//		for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
-//			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
-//			listener.pasteText(event);
-//		}
-//		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
-//		return COM.S_OK;
-//	}
-//
-//	/* IAccessibleEditableText::replaceText([in] startOffset, [in] endOffset, [in] pbstrText) */
-//	int replaceText(int startOffset, int endOffset, int /*long*/ pbstrText) {
-//		if (DEBUG) print(this + ".IAccessibleEditableText::replaceText");
-//		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
-//		event.start = startOffset;
-//		event.end = endOffset;
-//		event.string = pbstrText;
-//		for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
-//			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
-//			listener.replaceText(event);
-//		}
-//		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
-//		return COM.S_OK;
-//	}
-//
-//	/* IAccessibleEditableText::setAttributes([in] startOffset, [in] endOffset, [in] pbstrAttributes) */
-//	int setAttributes(int startOffset, int endOffset, int /*long*/ pbstrAttributes) {
-//		if (DEBUG) print(this + ".IAccessibleEditableText::setAttributes");
-//		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
-//		event.start = startOffset;
-//		event.end = endOffset;
-//		event.attributes = pbstrAttributes;
-//		for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
-//			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
-//			listener.setAttributes(event);
-//		}
-//		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
-//		return COM.S_OK;
-//	}
+	/* IAccessibleEditableText::copyText([in] startOffset, [in] endOffset) */
+	int copyText(int startOffset, int endOffset) {
+		if (DEBUG) print(this + ".IAccessibleEditableText::copyText, start=" + startOffset + ", end=" + endOffset);
+		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
+		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
+		event.end = endOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : endOffset;
+		for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
+			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+			listener.copyText(event);
+		}
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
+		return COM.S_OK;
+	}
+
+	/* IAccessibleEditableText::deleteText([in] startOffset, [in] endOffset) */
+	int deleteText(int startOffset, int endOffset) {
+		if (DEBUG) print(this + ".IAccessibleEditableText::deleteText, start=" + startOffset + ", end=" + endOffset);
+		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
+		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
+		event.end = endOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : endOffset;
+		event.string = "";
+		for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
+			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+			listener.replaceText(event);
+		}
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
+		return COM.S_OK;
+	}
+
+	/* IAccessibleEditableText::insertText([in] offset, [in] pbstrText) */
+	int insertText(int offset, int /*long*/ pbstrText) {
+		if (DEBUG) print(this + ".IAccessibleEditableText::insertText, offset=" + offset + ", pbstrText=" + pbstrText);
+		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
+		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : offset;
+		event.end = event.start;
+		event.string = getString(pbstrText);
+		for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
+			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+			listener.replaceText(event);
+		}
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
+		return COM.S_OK;
+	}
+
+	/* IAccessibleEditableText::cutText([in] startOffset, [in] endOffset) */
+	int cutText(int startOffset, int endOffset) {
+		if (DEBUG) print(this + ".IAccessibleEditableText::cutText, start=" + startOffset + ", end=" + endOffset);
+		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
+		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
+		event.end = endOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : endOffset;
+		for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
+			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+			listener.cutText(event);
+		}
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
+		return COM.S_OK;
+	}
+
+	/* IAccessibleEditableText::pasteText([in] offset) */
+	int pasteText(int offset) {
+		if (DEBUG) print(this + ".IAccessibleEditableText::pasteText, offset=" + offset);
+		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
+		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : offset;
+		event.end = event.start;
+		for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
+			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+			listener.pasteText(event);
+		}
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
+		return COM.S_OK;
+	}
+
+	/* IAccessibleEditableText::replaceText([in] startOffset, [in] endOffset, [in] pbstrText) */
+	int replaceText(int startOffset, int endOffset, int /*long*/ pbstrText) {
+		if (DEBUG) print(this + ".IAccessibleEditableText::replaceText, start=" + startOffset + ", end=" + endOffset + ", pbstrText=" + pbstrText);
+		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
+		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
+		event.end = endOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : endOffset;
+		event.string = getString(pbstrText);
+		for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
+			AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+			listener.replaceText(event);
+		}
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
+		return COM.S_OK;
+	}
+
+	/* IAccessibleEditableText::setAttributes([in] startOffset, [in] endOffset, [in] pbstrAttributes) */
+	int setAttributes(int startOffset, int endOffset, int /*long*/ pbstrAttributes) {
+		if (DEBUG) print(this + ".IAccessibleEditableText::setAttributes, start=" + startOffset + ", end=" + endOffset + ", pbstrAttributes=" + pbstrAttributes);
+		AccessibleTextAttributeEvent event = new AccessibleTextAttributeEvent(this);
+		String string = getString(pbstrAttributes);
+		if (string != null && string.length() > 0) {
+			event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
+			event.end = endOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : endOffset;
+			TextStyle style = new TextStyle();
+			String [] attributes = new String [0];
+			FontData fontData = null;
+			int points = 10; // used for default rise
+			String [] rawAttributes = string.split(";");
+			for (int i = 0; i < rawAttributes.length; i++) {
+				String attribute[] = rawAttributes[i].split(":");
+				if (attribute[0].equals("text-position")) {
+					if (attribute[1].equals("super")) style.rise = points / 2;
+					else if (attribute[1].equals("sub")) style.rise = - points / 2;
+				} else if (attribute[0].equals("text-underline-type")) {
+					style.underline = true;
+					if (attribute[1].equals("double")) style.underlineStyle = SWT.UNDERLINE_DOUBLE;
+					else if (attribute[1].equals("single")) {
+						if (style.underlineStyle != SWT.UNDERLINE_SQUIGGLE && style.underlineStyle != SWT.UNDERLINE_ERROR) {
+							style.underlineStyle = SWT.UNDERLINE_SINGLE;
+						}
+					}
+				} else if (attribute[0].equals("text-underline-style") && attribute[1].equals("wave")) {
+					style.underline = true;
+					style.underlineStyle = SWT.UNDERLINE_SQUIGGLE;
+				} else if (attribute[0].equals("invalid") && attribute[1].equals("true")) {
+					style.underline = true;
+					style.underlineStyle = SWT.UNDERLINE_ERROR;
+				} else if (attribute[0].equals("text-line-through-type")) {
+					if (attribute[1].equals("single")) style.strikeout = true;
+				} else if (attribute[0].equals("font-family")) {
+					if (fontData == null) fontData = new FontData ();
+					fontData.setName(attribute[1]);
+				} else if (attribute[0].equals("font-size")) {
+					try {
+						points = Integer.parseInt(attribute[1].replace("pt", ""));
+						if (fontData == null) fontData = new FontData ();
+						fontData.setHeight(points);
+						if (style.rise > 0) style.rise = points / 2;
+						else if (style.rise < 0) style.rise = - points / 2;
+					} catch (NumberFormatException ex) {}
+				} else if (attribute[0].equals("font-style")) {
+					if (attribute[1].equals("italic")) {
+						if (fontData == null) fontData = new FontData ();
+						fontData.setStyle(fontData.getStyle() | SWT.ITALIC);
+					}
+				} else if (attribute[0].equals("font-weight")) {
+					if (attribute[1].equals("bold")) {
+						if (fontData == null) fontData = new FontData ();
+						fontData.setStyle(fontData.getStyle() | SWT.BOLD);
+					} else {
+						try {
+							int weight = Integer.parseInt(attribute[1]);
+							if (fontData == null) fontData = new FontData ();
+							if (weight > 400) fontData.setStyle(fontData.getStyle() | SWT.BOLD);
+						} catch (NumberFormatException ex) {}
+					}
+				} else if (attribute[0].equals("color")) {
+					style.foreground = colorFromString(attribute[1]);
+				} else if (attribute[0].equals("background-color")) {
+					style.background = colorFromString(attribute[1]);
+				}
+				/* Pass every attribute through, in case an application wants
+				 * to implement a feature in more detail than TextStyle.
+				 */
+				String [] newAttributes = new String [attributes.length + 2];
+				System.arraycopy (attributes, 0, newAttributes, 0, attributes.length);
+				newAttributes[attributes.length] = attribute[0];
+				newAttributes[attributes.length + 1] = attribute[1];
+				attributes = newAttributes;
+			}
+			if (fontData != null) {
+				style.font = new Font(control.getDisplay(), fontData);
+			}
+			event.textStyle = style;
+			if (attributes.length > 0) event.attributes = attributes;
+			for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
+				AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+				listener.setTextAttributes(event);
+			}
+			if (style.font != null) {
+				style.font.dispose();
+			}
+			if (style.foreground != null) {
+				style.foreground.dispose();
+			}
+			if (style.background != null) {
+				style.background.dispose();
+			}
+		}
+		if (event.result == null || !event.result.equals(ACC.OK)) return COM.E_INVALIDARG;
+		return COM.S_OK;
+	}
 
 	/* IAccessibleHyperlink::get_anchor([in] index, [out] pAnchor) */
 	int get_anchor(int index, int /*long*/ pAnchor) {
@@ -3932,6 +4096,7 @@ public class Accessible {
 		return COM.S_OK;
 	}
 
+	/* IAccessibleText::get_characterExtents([in] offset, [in] coordType, [out] pX, [out] pY, [out] pWidth, [out] pHeight) */
 	int get_characterExtents(int offset, int coordType, int /*long*/ pX, int /*long*/ pY, int /*long*/ pWidth, int /*long*/ pHeight) {
 		int length = getCharacterCount();
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
@@ -4611,6 +4776,23 @@ public class Accessible {
 		return ACC.ROLE_CLIENT_AREA;
 	}
 
+	/*
+	 * Return a Color given a string of the form "rgb(n,n,n)".
+	 */
+	Color colorFromString(String rgbString) {
+		try {
+			int open = rgbString.indexOf('(');
+			int comma1 = rgbString.indexOf(',');
+			int comma2 = rgbString.indexOf(',', comma1 + 1);
+			int close = rgbString.indexOf(')');
+			int r = Integer.parseInt(rgbString.substring(open + 1, comma1));
+			int g = Integer.parseInt(rgbString.substring(comma1 + 1, comma2));
+			int b = Integer.parseInt(rgbString.substring(comma2 + 1, close));
+			return new Color(control.getDisplay(), r, g, b);
+		} catch (NumberFormatException ex) {}
+		return null;
+	}
+
 	int getCaretOffset() {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.offset = -1;
@@ -4628,7 +4810,6 @@ public class Accessible {
 		return event.offset;
 	}
 
-	/* IAccessibleText::get_characterExtents([in] offset, [in] coordType, [out] pX, [out] pY, [out] pWidth, [out] pHeight) */
 	int getCharacterCount() {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.count = -1;
@@ -4687,6 +4868,16 @@ public class Accessible {
 		return role;
 	}
 
+	String getString(int /*long*/ psz) {
+		int /*long*/ [] ptr = new int /*long*/ [1];
+		OS.MoveMemory (ptr, psz, OS.PTR_SIZEOF);
+		int size = COM.SysStringByteLen(ptr [0]);
+		if (size == 0) return "";
+		char [] buffer = new char [(size + 1) / 2];
+		OS.MoveMemory (buffer, ptr [0], size);
+		return new String (buffer);
+	}
+	
 	VARIANT getVARIANT(int /*long*/ variant) {
 		VARIANT v = new VARIANT();
 		COM.MoveMemory(v, variant, VARIANT.sizeof);

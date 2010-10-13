@@ -29,6 +29,9 @@ class AccessibleFactory {
 		ACC.ROLE_SPLITBUTTON, ACC.ROLE_SPINBUTTON,
 		ACC.ROLE_CHECKMENUITEM, ACC.ROLE_RADIOMENUITEM,
 	};
+	static final int[] editableTextRoles = {
+		ACC.ROLE_TEXT, ACC.ROLE_COMBOBOX, ACC.ROLE_PARAGRAPH, ACC.ROLE_DOCUMENT,
+	};
 	static final int[] hypertextRoles = {
 		ACC.ROLE_TEXT, ACC.ROLE_LINK, ACC.ROLE_PARAGRAPH,
 	};
@@ -37,7 +40,7 @@ class AccessibleFactory {
 	};
 	static final int[] textRoles = {
 		ACC.ROLE_COMBOBOX, ACC.ROLE_LINK, ACC.ROLE_LABEL, ACC.ROLE_TEXT, ACC.ROLE_STATUSBAR,
-		ACC.ROLE_PARAGRAPH,
+		ACC.ROLE_PARAGRAPH, ACC.ROLE_DOCUMENT,
 	};
 	static final int[] tableRoles = {
 		ACC.ROLE_TABLE, ACC.ROLE_TREE,
@@ -59,6 +62,15 @@ class AccessibleFactory {
 	static final Callback AtkComponentCB_get_size;
 	static final Callback AtkComponentCB_ref_accessible_at_point;
 	
+	/* EditableText callbacks */
+	static final Callback AtkEditableTextCB_set_run_attributes;
+	static final Callback AtkEditableTextCB_set_text_contents;
+	static final Callback AtkEditableTextCB_insert_text;
+	static final Callback AtkEditableTextCB_copy_text;
+	static final Callback AtkEditableTextCB_cut_text;
+	static final Callback AtkEditableTextCB_delete_text;
+	static final Callback AtkEditableTextCB_paste_text;
+
 	/* Hypertext callbacks */
 	static final Callback AtkHypertextCB_get_link;
 	static final Callback AtkHypertextCB_get_n_links;
@@ -136,6 +148,7 @@ class AccessibleFactory {
 	/* interface initialization callbacks */
 	static final Callback InitActionIfaceCB;		
 	static final Callback InitComponentIfaceCB;
+	static final Callback InitEditableTextIfaceCB;
 	static final Callback InitHypertextIfaceCB;
 	static final Callback GTypeInfo_base_init_type;
 	static final Callback InitSelectionIfaceCB;
@@ -146,6 +159,7 @@ class AccessibleFactory {
 	/* interface definitions */
 	static final int /*long*/ ActionIfaceDefinition;
 	static final int /*long*/ ComponentIfaceDefinition;
+	static final int /*long*/ EditableTextIfaceDefinition;
 	static final int /*long*/ HypertextIfaceDefinition;
 	static final int /*long*/ SelectionIfaceDefinition;
 	static final int /*long*/ TableIfaceDefinition;
@@ -161,6 +175,13 @@ class AccessibleFactory {
 		AtkComponentCB_get_position = newCallback (AccessibleObject.class, "atkComponent_get_position", 4); //$NON-NLS-1$
 		AtkComponentCB_get_size = newCallback (AccessibleObject.class, "atkComponent_get_size", 4); //$NON-NLS-1$
 		AtkComponentCB_ref_accessible_at_point = newCallback (AccessibleObject.class, "atkComponent_ref_accessible_at_point", 4); //$NON-NLS-1$
+		AtkEditableTextCB_set_run_attributes = newCallback (AccessibleObject.class, "atkEditableText_set_run_attributes", 4); //$NON-NLS-1$
+		AtkEditableTextCB_set_text_contents = newCallback (AccessibleObject.class, "atkEditableText_set_text_contents", 2); //$NON-NLS-1$
+		AtkEditableTextCB_insert_text = newCallback (AccessibleObject.class, "atkEditableText_insert_text", 4); //$NON-NLS-1$
+		AtkEditableTextCB_copy_text = newCallback (AccessibleObject.class, "atkEditableText_copy_text", 3); //$NON-NLS-1$
+		AtkEditableTextCB_cut_text = newCallback (AccessibleObject.class, "atkEditableText_cut_text", 3); //$NON-NLS-1$
+		AtkEditableTextCB_delete_text = newCallback (AccessibleObject.class, "atkEditableText_delete_text", 3); //$NON-NLS-1$
+		AtkEditableTextCB_paste_text = newCallback (AccessibleObject.class, "atkEditableText_paste_text", 2); //$NON-NLS-1$
 		AtkHypertextCB_get_link = newCallback (AccessibleObject.class, "atkHypertext_get_link", 2); //$NON-NLS-1$
 		AtkHypertextCB_get_n_links = newCallback (AccessibleObject.class, "atkHypertext_get_n_links", 1); //$NON-NLS-1$
 		AtkHypertextCB_get_link_index = newCallback (AccessibleObject.class, "atkHypertext_get_link_index", 2); //$NON-NLS-1$
@@ -236,6 +257,12 @@ class AccessibleFactory {
 		interfaceInfo.interface_init = InitComponentIfaceCB.getAddress ();
 		ComponentIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);
 		OS.memmove (ComponentIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
+		/* EditableText interface */
+		InitEditableTextIfaceCB = newCallback (AccessibleFactory.class, "initEditableTextIfaceCB", 1); //$NON-NLS-1$
+		interfaceInfo = new GInterfaceInfo ();
+		interfaceInfo.interface_init = InitEditableTextIfaceCB.getAddress ();
+		EditableTextIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);  
+		OS.memmove (EditableTextIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 		/* Hypertext interface */
 		InitHypertextIfaceCB = newCallback (AccessibleFactory.class, "initHypertextIfaceCB", 1); //$NON-NLS-1$
 		interfaceInfo = new GInterfaceInfo ();
@@ -334,11 +361,17 @@ class AccessibleFactory {
 			AccessibleControlListener listener = (AccessibleControlListener)listeners.elementAt (i);
 			listener.getRole (event);
 		}
-		boolean action = false, hypertext = false, selection = false, table = false, text = false, value = false;
+		boolean action = false, editableText = false, hypertext = false, selection = false, table = false, text = false, value = false;
 		if (event.detail != 0) {	/* a role was specified */
 			for (int i = 0; i < actionRoles.length; i++) {
 				if (event.detail == actionRoles [i]) {
 					action = true;
+					break;
+				}
+			}
+			for (int i = 0; i < editableTextRoles.length; i++) {
+				if (event.detail == editableTextRoles [i]) {
+					editableText = true;
 					break;
 				}
 			}
@@ -373,10 +406,11 @@ class AccessibleFactory {
 				}
 			}
 		} else {
-			action = hypertext = selection = table = text = value = true;
+			action = editableText = hypertext = selection = table = text = value = true;
 		}
 		String swtTypeName = SWT_TYPE_PREFIX + widgetTypeName;
 		if (action) swtTypeName += "Action"; //$NON-NLS-1$
+		if (editableText) swtTypeName += "EditableText"; //$NON-NLS-1$
 		if (hypertext) swtTypeName += "Hypertext"; //$NON-NLS-1$
 		if (selection) swtTypeName += "Selection"; //$NON-NLS-1$
 		if (table) swtTypeName += "Table"; //$NON-NLS-1$
@@ -402,6 +436,7 @@ class AccessibleFactory {
 			type = OS.g_type_register_static (parentType, nameBytes, definition, 0);
 			OS.g_type_add_interface_static (type, ATK.ATK_TYPE_COMPONENT(), ComponentIfaceDefinition);
 			if (action) OS.g_type_add_interface_static (type, ATK.ATK_TYPE_ACTION(), ActionIfaceDefinition);
+			if (editableText) OS.g_type_add_interface_static (type, ATK.ATK_TYPE_EDITABLE_TEXT(), EditableTextIfaceDefinition);
 			if (hypertext) OS.g_type_add_interface_static (type, ATK.ATK_TYPE_HYPERTEXT(), HypertextIfaceDefinition);
 			if (selection) OS.g_type_add_interface_static (type, ATK.ATK_TYPE_SELECTION(), SelectionIfaceDefinition);
 			if (table) OS.g_type_add_interface_static (type, ATK.ATK_TYPE_TABLE(), TableIfaceDefinition);
@@ -459,6 +494,20 @@ class AccessibleFactory {
 		inter.get_position = AtkComponentCB_get_position.getAddress ();
 		inter.get_size = AtkComponentCB_get_size.getAddress ();
 		inter.ref_accessible_at_point = AtkComponentCB_ref_accessible_at_point.getAddress ();
+		ATK.memmove (iface, inter);
+		return 0;
+	}
+
+	static int /*long*/ initEditableTextIfaceCB (int /*long*/ iface) {
+		AtkEditableTextIface inter = new AtkEditableTextIface ();
+		ATK.memmove (inter, iface);
+		inter.set_run_attributes = AtkEditableTextCB_set_run_attributes.getAddress ();
+		inter.set_text_contents = AtkEditableTextCB_set_text_contents.getAddress ();
+		inter.insert_text = AtkEditableTextCB_insert_text.getAddress ();
+		inter.copy_text = AtkEditableTextCB_copy_text.getAddress ();
+		inter.cut_text = AtkEditableTextCB_cut_text.getAddress ();
+		inter.delete_text = AtkEditableTextCB_delete_text.getAddress ();
+		inter.paste_text = AtkEditableTextCB_paste_text.getAddress ();
 		ATK.memmove (iface, inter);
 		return 0;
 	}

@@ -51,8 +51,8 @@ public interface AccessibleAttributeListener extends SWTEventListener {
 	 * Returns text attributes specific to this Accessible object.
 	 * 
 	 * @param e an event object containing the following fields:<ul>
-	 * <li>[in] offset - the 0 based text offset</li>
-	 * <li>[out] start - the starting offset of the character range
+	 * <li>[in] offset - the 0 based text offset for which to return attribute information</li>
+	 * <li>[out] start - the 0 based starting offset of the character range
 	 * 		over which all text attributes match those of offset</li>
 	 * <li>[out] end - the 0 based offset after the last character of the character range
 	 * 		over which all text attributes match those of offset</li>

@@ -15,21 +15,63 @@ import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class are sent as a result of accessibility clients
- * sending AccessibleAttribute messages to an accessible object.
+ * sending AccessibleAttribute or AccessibleEditableText messages to an
+ * accessible object.
  *
  * @see AccessibleAttributeListener
  * @see AccessibleAttributeAdapter
+ * @see AccessibleEditableTextListener
+ * @see AccessibleEditableTextAdapter
  *
  * @since 3.6
  */
 public class AccessibleTextAttributeEvent extends SWTEventObject {
 
+	/**
+	 * [in] the 0-based text offset for which to return attribute information
+	 * 
+	 * @see AccessibleAttributeListener#getTextAttributes
+	 */
 	public int offset;
+
+	/**
+	 * [in/out] the starting and ending offsets of the character range
+	 * 
+	 * @see AccessibleAttributeListener#getTextAttributes
+	 * @see AccessibleEditableTextListener#setTextAttributes
+	 */
 	public int start, end;
+
+	/**
+	 * [in/out] the TextStyle of the character range
+	 * 
+	 * @see AccessibleAttributeListener#getTextAttributes
+	 * @see AccessibleEditableTextListener#setTextAttributes
+	 */
 	public TextStyle textStyle;
+	
+	/**
+	 * [in/out] an array of alternating key and value Strings
+	 * that represent additional (i.e. non predefined) attributes
+	 * 
+	 * @see AccessibleAttributeListener#getTextAttributes
+	 * @see AccessibleEditableTextListener#setTextAttributes
+	 */
 	public String [] attributes;
 
-	static final long serialVersionUID = 0L; // TODO: run serialver -show
+	/**
+	 * WARNING: API UNDER COSTRUCTION
+	 * 
+	 * [out] Set this field to {@link ACC#OK} if the operation
+	 * was completed successfully, and null otherwise.
+	 * 
+	 * @see AccessibleEditableTextListener#setTextAttributes
+	 * 
+	 * @since 3.7
+	 */
+	public String result;
+
+	static final long serialVersionUID = 7131825608864332802L;
 
 /**
  * Constructs a new instance of this class.
@@ -49,9 +91,11 @@ public AccessibleTextAttributeEvent(Object source) {
 public String toString () {
 	return "AccessibleAttributeEvent {"
 		+ " offset=" + offset   //$NON-NLS-1$
-		+ " startOffset=" + start   //$NON-NLS-1$
-		+ " endOffset=" + end   //$NON-NLS-1$
+		+ " start=" + start   //$NON-NLS-1$
+		+ " end=" + end   //$NON-NLS-1$
 		+ " textStyle=" + textStyle   //$NON-NLS-1$
+		+ " attributes=" + attributes   //$NON-NLS-1$
+		+ " result=" + result   //$NON-NLS-1$
 		+ "}";  //$NON-NLS-1$
 }
 }

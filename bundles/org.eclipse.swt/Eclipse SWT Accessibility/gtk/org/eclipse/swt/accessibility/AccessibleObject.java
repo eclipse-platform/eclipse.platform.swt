@@ -400,6 +400,211 @@ class AccessibleObject {
 		return parentResult;
 	}	
 
+	
+	static AtkEditableTextIface getEditableTextIface (int /*long*/ atkObject) {
+		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_EDITABLE_TEXT())) {
+			AtkEditableTextIface iface = new AtkEditableTextIface ();
+			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_EDITABLETEXT_GET_IFACE (atkObject)));
+			return iface;
+		}
+		return null;
+	}
+	
+//	gboolean atk_editable_text_set_run_attributes(AtkEditableText *text, AtkAttributeSet *attrib_set, gint start_offset, gint end_offset);
+	static int /*long*/ atkEditableText_set_run_attributes (int /*long*/ atkObject, int /*long*/ attrib_set, int /*long*/ start_offset, int /*long*/ end_offset) {
+		if (DEBUG) print ("-->atkEditableText_set_run_attributes");
+		AccessibleObject object = getAccessibleObject (atkObject);
+		if (object != null) {
+			Accessible accessible = object.accessible;
+			Vector listeners = accessible.accessibleEditableTextListeners;
+			int length = listeners.size();
+			if (length > 0) {
+				AccessibleTextAttributeEvent event = new AccessibleTextAttributeEvent(accessible);
+				event.start = (int)/*64*/start_offset;
+				event.end = (int)/*64*/end_offset;
+				// TODO: get attrib_set and set event.textStyle and event.attributes (see atkText_get_run_attributes)
+				for (int i = 0; i < length; i++) {
+					AccessibleEditableTextListener listener = (AccessibleEditableTextListener) listeners.elementAt(i);
+					listener.setTextAttributes(event);
+				}
+				// TODO: dispose event.textStyle font/foreground/background
+				return ACC.OK.equals(event.result) ? 1 : 0;
+			}
+		}
+		int /*long*/ parentResult = 0;
+		AtkEditableTextIface iface = getEditableTextIface (atkObject);
+		if (iface != null && iface.set_run_attributes != 0) {
+			parentResult = ATK.call (iface.set_run_attributes, atkObject, attrib_set, start_offset, end_offset);
+		}
+		return parentResult;
+	}
+
+//	void atk_editable_text_set_text_contents (AtkEditableText *text, const gchar *string);
+	static int /*long*/ atkEditableText_set_text_contents (int /*long*/ atkObject, int /*long*/ string) {
+		if (DEBUG) print ("-->atkEditableText_set_text_contents");
+		AccessibleObject object = getAccessibleObject (atkObject);
+		if (object != null) {
+			Accessible accessible = object.accessible;
+			Vector listeners = accessible.accessibleEditableTextListeners;
+			int length = listeners.size();
+			if (length > 0) {
+				AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(accessible);
+				event.start = 0;
+				String text = object.getText ();
+				event.end = text == null ? 0 : text.length ();
+				event.string = getString (string);
+				for (int i = 0; i < length; i++) {
+					AccessibleEditableTextListener listener = (AccessibleEditableTextListener) listeners.elementAt(i);
+					listener.replaceText(event);
+				}
+				return ACC.OK.equals(event.result) ? 1 : 0;
+			}
+		}
+		int /*long*/ parentResult = 0;
+		AtkEditableTextIface iface = getEditableTextIface (atkObject);
+		if (iface != null && iface.set_run_attributes != 0) {
+			parentResult = ATK.call (iface.set_run_attributes, atkObject, string);
+		}
+		return parentResult;
+	}
+
+//	void atk_editable_text_insert_text (AtkEditableText *text, const gchar *string, gint length, gint *position);
+	static int /*long*/ atkEditableText_insert_text (int /*long*/ atkObject, int /*long*/ string, int /*long*/ string_length, int /*long*/ position) {
+		if (DEBUG) print ("-->atkEditableText_insert_text");
+		AccessibleObject object = getAccessibleObject (atkObject);
+		if (object != null) {
+			Accessible accessible = object.accessible;
+			Vector listeners = accessible.accessibleEditableTextListeners;
+			int length = listeners.size();
+			if (length > 0) {
+				AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(accessible);
+				int[] pos = new int [1];
+				OS.memmove (pos, position, OS.PTR_SIZEOF);
+				event.start = event.end = pos[0];
+				event.string = getString (string);
+				for (int i = 0; i < length; i++) {
+					AccessibleEditableTextListener listener = (AccessibleEditableTextListener) listeners.elementAt(i);
+					listener.replaceText(event);
+				}
+				return ACC.OK.equals(event.result) ? 1 : 0;
+			}
+		}
+		int /*long*/ parentResult = 0;
+		AtkEditableTextIface iface = getEditableTextIface (atkObject);
+		if (iface != null && iface.set_run_attributes != 0) {
+			parentResult = ATK.call (iface.set_run_attributes, atkObject, string, string_length, position);
+		}
+		return parentResult;
+	}
+
+//	void atk_editable_text_copy_text (AtkEditableText *text, gint start_pos, gint end_pos);
+	static int /*long*/ atkEditableText_copy_text(int /*long*/ atkObject, int /*long*/ start_pos, int /*long*/ end_pos) {
+		if (DEBUG) print ("-->atkEditableText_copy_text");
+		AccessibleObject object = getAccessibleObject (atkObject);
+		if (object != null) {
+			Accessible accessible = object.accessible;
+			Vector listeners = accessible.accessibleEditableTextListeners;
+			int length = listeners.size();
+			if (length > 0) {
+				AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(accessible);
+				event.start = (int)/*64*/start_pos;
+				event.end = (int)/*64*/end_pos;
+				for (int i = 0; i < length; i++) {
+					AccessibleEditableTextListener listener = (AccessibleEditableTextListener) listeners.elementAt(i);
+					listener.copyText(event);
+				}
+				return ACC.OK.equals(event.result) ? 1 : 0;
+			}
+		}
+		int /*long*/ parentResult = 0;
+		AtkEditableTextIface iface = getEditableTextIface (atkObject);
+		if (iface != null && iface.set_run_attributes != 0) {
+			parentResult = ATK.call (iface.set_run_attributes, atkObject, start_pos, end_pos);
+		}
+		return parentResult;
+	}
+
+//	void atk_editable_text_cut_text (AtkEditableText *text, gint start_pos, gint end_pos);
+	static int /*long*/ atkEditableText_cut_text (int /*long*/ atkObject, int /*long*/ start_pos, int /*long*/ end_pos) {
+		if (DEBUG) print ("-->atkEditableText_cut_text");
+		AccessibleObject object = getAccessibleObject (atkObject);
+		if (object != null) {
+			Accessible accessible = object.accessible;
+			Vector listeners = accessible.accessibleEditableTextListeners;
+			int length = listeners.size();
+			if (length > 0) {
+				AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(accessible);
+				event.start = (int)/*64*/start_pos;
+				event.end = (int)/*64*/end_pos;
+				for (int i = 0; i < length; i++) {
+					AccessibleEditableTextListener listener = (AccessibleEditableTextListener) listeners.elementAt(i);
+					listener.cutText(event);
+				}
+				return ACC.OK.equals(event.result) ? 1 : 0;
+			}
+		}
+		int /*long*/ parentResult = 0;
+		AtkEditableTextIface iface = getEditableTextIface (atkObject);
+		if (iface != null && iface.set_run_attributes != 0) {
+			parentResult = ATK.call (iface.set_run_attributes, atkObject, start_pos, end_pos);
+		}
+		return parentResult;
+	}
+	
+//	void atk_editable_text_delete_text (AtkEditableText *text, gint start_pos, gint end_pos);
+	static int /*long*/ atkEditableText_delete_text (int /*long*/ atkObject, int /*long*/ start_pos, int /*long*/ end_pos) {
+		if (DEBUG) print ("-->atkEditableText_delete_text");
+		AccessibleObject object = getAccessibleObject (atkObject);
+		if (object != null) {
+			Accessible accessible = object.accessible;
+			Vector listeners = accessible.accessibleEditableTextListeners;
+			int length = listeners.size();
+			if (length > 0) {
+				AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(accessible);
+				event.start = (int)/*64*/start_pos;
+				event.end = (int)/*64*/end_pos;
+				event.string = "";
+				for (int i = 0; i < length; i++) {
+					AccessibleEditableTextListener listener = (AccessibleEditableTextListener) listeners.elementAt(i);
+					listener.replaceText(event);
+				}
+				return ACC.OK.equals(event.result) ? 1 : 0;
+			}
+		}
+		int /*long*/ parentResult = 0;
+		AtkEditableTextIface iface = getEditableTextIface (atkObject);
+		if (iface != null && iface.set_run_attributes != 0) {
+			parentResult = ATK.call (iface.set_run_attributes, atkObject, start_pos, end_pos);
+		}
+		return parentResult;
+	}
+
+//	void atk_editable_text_paste_text (AtkEditableText *text, gint position);
+	static int /*long*/ atkEditableText_paste_text (int /*long*/ atkObject, int /*long*/ position) {
+		if (DEBUG) print ("-->atkEditableText_paste_text");
+		AccessibleObject object = getAccessibleObject (atkObject);
+		if (object != null) {
+			Accessible accessible = object.accessible;
+			Vector listeners = accessible.accessibleEditableTextListeners;
+			int length = listeners.size();
+			if (length > 0) {
+				AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(accessible);
+				event.start = (int)/*64*/position;
+				for (int i = 0; i < length; i++) {
+					AccessibleEditableTextListener listener = (AccessibleEditableTextListener) listeners.elementAt(i);
+					listener.pasteText(event);
+				}
+				return ACC.OK.equals(event.result) ? 1 : 0;
+			}
+		}
+		int /*long*/ parentResult = 0;
+		AtkEditableTextIface iface = getEditableTextIface (atkObject);
+		if (iface != null && iface.set_run_attributes != 0) {
+			parentResult = ATK.call (iface.set_run_attributes, atkObject, position);
+		}
+		return parentResult;
+	}
+	
 	static AtkHypertextIface getHypertextIface (int /*long*/ atkObject) {
 		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_HYPERTEXT())) {
 			AtkHypertextIface iface = new AtkHypertextIface ();
