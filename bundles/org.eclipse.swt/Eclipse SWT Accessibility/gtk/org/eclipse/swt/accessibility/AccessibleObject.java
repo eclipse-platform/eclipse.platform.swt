@@ -404,7 +404,7 @@ class AccessibleObject {
 	static AtkEditableTextIface getEditableTextIface (int /*long*/ atkObject) {
 		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_EDITABLE_TEXT())) {
 			AtkEditableTextIface iface = new AtkEditableTextIface ();
-			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_EDITABLETEXT_GET_IFACE (atkObject)));
+			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_EDITABLE_TEXT_GET_IFACE (atkObject)));
 			return iface;
 		}
 		return null;

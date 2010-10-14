@@ -246,11 +246,11 @@ public static final int /*long*/ ATK_SELECTION_GET_IFACE (int /*long*/ obj) {
 		lock.unlock();
 	}
 }
-public static final native int /*long*/ _ATK_EDITABLETEXT_GET_IFACE (int /*long*/ handle);
-public static final int /*long*/ ATK_EDITABLETEXT_GET_IFACE (int /*long*/ handle) {
+public static final native int /*long*/ _ATK_EDITABLE_TEXT_GET_IFACE (int /*long*/ handle);
+public static final int /*long*/ ATK_EDITABLE_TEXT_GET_IFACE (int /*long*/ handle) {
 	lock.lock();
 	try {
-		return _ATK_EDITABLETEXT_GET_IFACE(handle);
+		return _ATK_EDITABLE_TEXT_GET_IFACE(handle);
 	} finally {
 		lock.unlock();
 	}
