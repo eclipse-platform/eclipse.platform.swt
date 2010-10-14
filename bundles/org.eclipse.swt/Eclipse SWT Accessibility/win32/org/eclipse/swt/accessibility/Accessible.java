@@ -3307,77 +3307,87 @@ public class Accessible {
 			event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
 			event.end = endOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : endOffset;
 			TextStyle style = new TextStyle();
-			String [] attributes = new String [0];
 			FontData fontData = null;
 			int points = 10; // used for default rise
-			String [] rawAttributes = string.split(";");
-			for (int i = 0; i < rawAttributes.length; i++) {
-				String attribute[] = rawAttributes[i].split(":");
-				if (attribute[0].equals("text-position")) {
-					if (attribute[1].equals("super")) style.rise = points / 2;
-					else if (attribute[1].equals("sub")) style.rise = - points / 2;
-				} else if (attribute[0].equals("text-underline-type")) {
+			String [] attributes = new String [0];
+			int begin = 0;
+			int end = string.indexOf(';');
+			while (end != -1 && end + 1 <= string.length()) {
+				String keyValue = string.substring(begin, end).trim();
+				int colonIndex = keyValue.indexOf(':');
+				if (colonIndex != -1 && colonIndex + 1 < keyValue.length()) {
+					String [] newAttributes = new String [attributes.length + 2];
+					System.arraycopy (attributes, 0, newAttributes, 0, attributes.length);
+					newAttributes[attributes.length] = keyValue.substring(0, colonIndex).trim();
+					newAttributes[attributes.length + 1] = keyValue.substring(colonIndex + 1).trim();
+					attributes = newAttributes;
+				}
+				begin = end + 1;
+				end = string.indexOf(';', begin);
+			}
+			for (int i = 0; i+1 < attributes.length; i+=2) {
+				String key = attributes[i];
+				String value = attributes[i+1];
+				if (key.equals("text-position")) {
+					if (value.equals("super")) style.rise = points / 2;
+					else if (value.equals("sub")) style.rise = - points / 2;
+				} else if (key.equals("text-underline-type")) {
 					style.underline = true;
-					if (attribute[1].equals("double")) style.underlineStyle = SWT.UNDERLINE_DOUBLE;
-					else if (attribute[1].equals("single")) {
+					if (value.equals("double")) style.underlineStyle = SWT.UNDERLINE_DOUBLE;
+					else if (value.equals("single")) {
 						if (style.underlineStyle != SWT.UNDERLINE_SQUIGGLE && style.underlineStyle != SWT.UNDERLINE_ERROR) {
 							style.underlineStyle = SWT.UNDERLINE_SINGLE;
 						}
 					}
-				} else if (attribute[0].equals("text-underline-style") && attribute[1].equals("wave")) {
+				} else if (key.equals("text-underline-style") && value.equals("wave")) {
 					style.underline = true;
 					style.underlineStyle = SWT.UNDERLINE_SQUIGGLE;
-				} else if (attribute[0].equals("invalid") && attribute[1].equals("true")) {
+				} else if (key.equals("invalid") && value.equals("true")) {
 					style.underline = true;
 					style.underlineStyle = SWT.UNDERLINE_ERROR;
-				} else if (attribute[0].equals("text-line-through-type")) {
-					if (attribute[1].equals("single")) style.strikeout = true;
-				} else if (attribute[0].equals("font-family")) {
+				} else if (key.equals("text-line-through-type")) {
+					if (value.equals("single")) style.strikeout = true;
+				} else if (key.equals("font-family")) {
 					if (fontData == null) fontData = new FontData ();
-					fontData.setName(attribute[1]);
-				} else if (attribute[0].equals("font-size")) {
+					fontData.setName(value);
+				} else if (key.equals("font-size")) {
 					try {
-						points = Integer.parseInt(attribute[1].replace("pt", ""));
+						String pts = value.endsWith("pt") ? value.substring(0, value.length() - 2) : value;
+						points = Integer.parseInt(pts);
 						if (fontData == null) fontData = new FontData ();
 						fontData.setHeight(points);
 						if (style.rise > 0) style.rise = points / 2;
 						else if (style.rise < 0) style.rise = - points / 2;
 					} catch (NumberFormatException ex) {}
-				} else if (attribute[0].equals("font-style")) {
-					if (attribute[1].equals("italic")) {
+				} else if (key.equals("font-style")) {
+					if (value.equals("italic")) {
 						if (fontData == null) fontData = new FontData ();
 						fontData.setStyle(fontData.getStyle() | SWT.ITALIC);
 					}
-				} else if (attribute[0].equals("font-weight")) {
-					if (attribute[1].equals("bold")) {
+				} else if (key.equals("font-weight")) {
+					if (value.equals("bold")) {
 						if (fontData == null) fontData = new FontData ();
 						fontData.setStyle(fontData.getStyle() | SWT.BOLD);
 					} else {
 						try {
-							int weight = Integer.parseInt(attribute[1]);
+							int weight = Integer.parseInt(value);
 							if (fontData == null) fontData = new FontData ();
 							if (weight > 400) fontData.setStyle(fontData.getStyle() | SWT.BOLD);
 						} catch (NumberFormatException ex) {}
 					}
-				} else if (attribute[0].equals("color")) {
-					style.foreground = colorFromString(attribute[1]);
-				} else if (attribute[0].equals("background-color")) {
-					style.background = colorFromString(attribute[1]);
+				} else if (key.equals("color")) {
+					style.foreground = colorFromString(value);
+				} else if (key.equals("background-color")) {
+					style.background = colorFromString(value);
 				}
-				/* Pass every attribute through, in case an application wants
-				 * to implement a feature in more detail than TextStyle.
-				 */
-				String [] newAttributes = new String [attributes.length + 2];
-				System.arraycopy (attributes, 0, newAttributes, 0, attributes.length);
-				newAttributes[attributes.length] = attribute[0];
-				newAttributes[attributes.length + 1] = attribute[1];
-				attributes = newAttributes;
 			}
-			if (fontData != null) {
-				style.font = new Font(control.getDisplay(), fontData);
+			if (attributes.length > 0) {
+				event.attributes = attributes;
+				if (fontData != null) {
+					style.font = new Font(control.getDisplay(), fontData);
+				}
+				if (!style.equals(new TextStyle())) event.textStyle = style;
 			}
-			event.textStyle = style;
-			if (attributes.length > 0) event.attributes = attributes;
 			for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
 				AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
 				listener.setTextAttributes(event);
