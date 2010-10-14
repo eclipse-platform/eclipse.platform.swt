@@ -2631,11 +2631,6 @@ void doLineEnd() {
 		int[] offsets = layout.getLineOffsets();
 		lineEndOffset = lineOffset + offsets[lineIndex + 1];
 		renderer.disposeTextLayout(layout);
-		
-		int OFFSETS_EXTRA_OFFSET = 1;
-        boolean isLastLine = offsets.length == lineIndex + 1 + OFFSETS_EXTRA_OFFSET;
-        if (!isLastLine)
-            lineEndOffset--;
 	} else {
 		int lineLength = content.getLine(caretLine).length();
 		lineEndOffset = lineOffset + lineLength;
