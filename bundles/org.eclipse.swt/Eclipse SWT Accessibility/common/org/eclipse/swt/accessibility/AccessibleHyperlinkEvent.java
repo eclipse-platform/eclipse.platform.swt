@@ -51,7 +51,7 @@ public AccessibleHyperlinkEvent(Object source) {
  * @return a string representation of the event
  */
 public String toString () {
-	return "AccessibleHyperlinkEvent {"
+	return "AccessibleHyperlinkEvent {" //$NON-NLS-1$
 		+ "accessible=" + accessible   //$NON-NLS-1$
 		+ " string=" + result   //$NON-NLS-1$
 		+ " index=" + index   //$NON-NLS-1$

@@ -50,7 +50,7 @@ public AccessibleActionEvent(Object source) {
  * @return a string representation of the event
  */
 public String toString () {
-	return "AccessibleActionEvent {"
+	return "AccessibleActionEvent {" //$NON-NLS-1$
 		+ "string=" + result   //$NON-NLS-1$
 		+ " count=" + count   //$NON-NLS-1$
 		+ " index=" + index   //$NON-NLS-1$

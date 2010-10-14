@@ -89,12 +89,12 @@ public AccessibleTextAttributeEvent(Object source) {
  * @return a string representation of the event
  */
 public String toString () {
-	return "AccessibleAttributeEvent {"
+	return "AccessibleAttributeEvent {" //$NON-NLS-1$
 		+ " offset=" + offset   //$NON-NLS-1$
 		+ " start=" + start   //$NON-NLS-1$
 		+ " end=" + end   //$NON-NLS-1$
 		+ " textStyle=" + textStyle   //$NON-NLS-1$
-		+ " attributes=" + attributes   //$NON-NLS-1$
+		+ " attributes=" + attributes + "[" + attributes.length + "]"   //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		+ " result=" + result   //$NON-NLS-1$
 		+ "}";  //$NON-NLS-1$
 }

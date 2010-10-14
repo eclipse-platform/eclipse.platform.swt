@@ -82,7 +82,7 @@ public AccessibleEditableTextEvent(Object source) {
  * @return a string representation of the event
  */
 public String toString () {
-	return "AccessibleEditableTextEvent {"
+	return "AccessibleEditableTextEvent {" //$NON-NLS-1$
 		+ "start=" + start   //$NON-NLS-1$
 		+ " end=" + end   //$NON-NLS-1$
 		+ " string=" + string   //$NON-NLS-1$

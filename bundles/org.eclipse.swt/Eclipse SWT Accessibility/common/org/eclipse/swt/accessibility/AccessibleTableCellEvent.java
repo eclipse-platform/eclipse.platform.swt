@@ -47,7 +47,7 @@ public AccessibleTableCellEvent(Object source) {
  * @return a string representation of the event
  */
 public String toString () {
-	return "AccessibleTableCellEvent {"
+	return "AccessibleTableCellEvent {" //$NON-NLS-1$
 		+ " accessibles=" + accessibles   //$NON-NLS-1$
 		+ " isSelected=" + isSelected   //$NON-NLS-1$
 		+ " count=" + count   //$NON-NLS-1$

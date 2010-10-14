@@ -56,7 +56,7 @@ public AccessibleTableEvent(Object source) {
  * @return a string representation of the event
  */
 public String toString () {
-	return "AccessibleTableEvent {"
+	return "AccessibleTableEvent {" //$NON-NLS-1$
 		+ "accessible=" + accessible   //$NON-NLS-1$
 		+ " accessibles=" + accessibles   //$NON-NLS-1$
 		+ " string=" + result   //$NON-NLS-1$

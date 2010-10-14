@@ -51,7 +51,7 @@ public AccessibleAttributeEvent(Object source) {
  * @return a string representation of the event
  */
 public String toString () {
-	return "AccessibleAttributeEvent {"
+	return "AccessibleAttributeEvent {" //$NON-NLS-1$
 		+ " topMargin=" + topMargin   //$NON-NLS-1$
 		+ " bottomMargin=" + bottomMargin   //$NON-NLS-1$
 		+ " leftMargin=" + leftMargin   //$NON-NLS-1$
