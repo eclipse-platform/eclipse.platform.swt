@@ -864,6 +864,9 @@ public class Accessible {
 			if (attribute.isEqualToString(OS.NSAccessibilitySelectedTextRangeAttribute)) return true;
 			if (attribute.isEqualToString(OS.NSAccessibilityVisibleCharacterRangeAttribute)) return true;
 		}
+		if (accessibleEditableTextListeners.size() > 0) {
+			if (attribute.isEqualToString(OS.NSAccessibilitySelectedTextAttribute)) return true;
+		}
 		if (accessibleValueListeners.size() > 0) {
 			if (attribute.isEqualToString(OS.NSAccessibilityValueAttribute)) return true;
 		}
@@ -1467,6 +1470,7 @@ public class Accessible {
 	 */
 	public void internal_accessibilitySetValue_forAttribute(id value, NSString attribute, int childId) {
 		if (attribute.isEqualToString(OS.NSAccessibilitySelectedTextRangeAttribute)) setSelectedTextRangeAttribute(value, childId);
+		if (attribute.isEqualToString(OS.NSAccessibilitySelectedTextAttribute)) setSelectedTextAttribute(value, childId);
 		if (attribute.isEqualToString(OS.NSAccessibilityVisibleCharacterRangeAttribute)) setVisibleCharacterRangeAttribute(value, childId);
 		
 		if (accessibleValueListeners.size() > 0) {
@@ -2344,26 +2348,23 @@ public class Accessible {
 	
 	id getNumberOfCharactersAttribute (int childID) {
 		id returnValue = null;
-		if (accessibleTextExtendedListeners.size() > 0) {
-			AccessibleTextEvent event = new AccessibleTextEvent(this);
-			event.childID = childID;
-			for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
-				AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
-				listener.getCharacterCount(event);
-			}
-			returnValue = NSNumber.numberWithInt(event.count);
-		} else {
-			AccessibleControlEvent event = new AccessibleControlEvent(this);
-			event.childID = childID;
-			event.result = null;
+		AccessibleTextEvent event = new AccessibleTextEvent(this);
+		event.count = -1;
+		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
+			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
+			listener.getCharacterCount(event);
+		}
+		if (event.count == -1) {
+			AccessibleControlEvent e = new AccessibleControlEvent(this);
+			e.childID = ACC.CHILDID_SELF;
 			for (int i = 0; i < accessibleControlListeners.size(); i++) {
 				AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
-				listener.getValue(event);
+				listener.getRole(e);
+				listener.getValue(e);
 			}
-			String appValue = event.result;
-			if (appValue != null) {
-				returnValue = NSNumber.numberWithInt(appValue.length());
-			}
+			// TODO: Consider passing the value through for other roles as well (i.e. combo, etc). Keep in sync with get_text.
+			event.count = e.detail == ACC.ROLE_TEXT && e.result != null ? e.result.length() : 0;
+			returnValue = NSNumber.numberWithInt(event.count);
 		}
 		return returnValue;
 	}
@@ -2566,7 +2567,7 @@ public class Accessible {
 	}
 	
 	id getSelectedTextRangesAttribute (int childID) {
-		NSMutableArray returnValue = null;
+		NSMutableArray returnValue = NSMutableArray.arrayWithCapacity(3);
 		if (accessibleTextExtendedListeners.size() > 0) {
 			AccessibleTextEvent event = new AccessibleTextEvent(this);
 			event.childID = childID;
@@ -2575,7 +2576,6 @@ public class Accessible {
 				listener.getSelectionCount(event);
 			}
 			if (event.count > 0) {
-				returnValue = NSMutableArray.arrayWithCapacity(event.count);
 				for (int i = 0; i < event.count; i++) {
 					event.index = i;
 					for (int j = 0; j < accessibleTextExtendedListeners.size(); j++) {
@@ -2600,12 +2600,14 @@ public class Accessible {
 			}
 
 			if (event.offset != -1) {
-				returnValue = NSMutableArray.arrayWithCapacity(1);
 				NSRange range = new NSRange();
 				range.location = event.offset;
 				range.length = event.length;
 				returnValue.addObject(NSValue.valueWithRange(range));
 			}
+		}
+		if (returnValue.count() == 0) {
+			returnValue.addObject(NSValue.valueWithRange(new NSRange()));
 		}
 		return returnValue;
 	}
@@ -3187,6 +3189,32 @@ public class Accessible {
 		id accessible = childIDToOs(childID);
 		if (DEBUG) System.out.println("setFocus on " + accessible);
 		OS.NSAccessibilityPostNotification(accessible.id, OS.NSAccessibilityFocusedUIElementChangedNotification.id);
+	}
+
+	void setSelectedTextAttribute(id value, int childId) {
+		NSString newText = new NSString(value.id);
+		int rangeStart = 0;
+		id charsValue = getNumberOfCharactersAttribute(childId); 
+		int rangeEnd = new NSNumber(charsValue).intValue();
+		id rangeObj = getSelectedTextRangeAttribute(childId);
+		
+		if (rangeObj != null) {
+			NSRange range = new NSValue(rangeObj).rangeValue();
+			rangeStart = (int)/*64*/range.location;
+			rangeEnd = (int)/*64*/(range.location + range.length);
+		}
+		
+		if (accessibleEditableTextListeners.size() > 0) {
+			AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
+			event.start = rangeStart;
+			event.end = rangeEnd;
+			event.string = newText.getString();
+
+			for (int i = 0; i < accessibleEditableTextListeners.size(); i++) {
+				AccessibleEditableTextListener listener = (AccessibleEditableTextListener) accessibleEditableTextListeners.elementAt(i);
+				listener.replaceText(event);
+			}
+		} 
 	}
 
 	void setSelectedTextRangeAttribute(id value, int childId) {
