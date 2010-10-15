@@ -94,7 +94,7 @@ public String toString () {
 		+ " start=" + start   //$NON-NLS-1$
 		+ " end=" + end   //$NON-NLS-1$
 		+ " textStyle=" + textStyle   //$NON-NLS-1$
-		+ " attributes=" + attributes + "[" + attributes.length + "]"   //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		+ " attributes=" + attributes   //$NON-NLS-1$
 		+ " result=" + result   //$NON-NLS-1$
 		+ "}";  //$NON-NLS-1$
 }
