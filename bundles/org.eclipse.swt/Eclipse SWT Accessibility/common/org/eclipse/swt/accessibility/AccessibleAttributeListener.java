@@ -58,7 +58,7 @@ public interface AccessibleAttributeListener extends SWTEventListener {
 	 * 		over which all text attributes match those of offset</li>
 	 * <li>[out] textStyle - the TextStyle of the character range</li>
 	 * <li>[out] attributes - an array of alternating key and value Strings
-	 * 		which represent additional (i.e. non predefined) attributes</li>
+	 * 		that represent additional attributes that do not correspond to TextStyle fields</li>
 	 * </ul>
 	 */
 	public void getTextAttributes(AccessibleTextAttributeEvent e);

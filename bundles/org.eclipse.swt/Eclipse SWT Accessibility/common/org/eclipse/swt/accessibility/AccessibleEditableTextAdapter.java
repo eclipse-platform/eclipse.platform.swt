@@ -97,9 +97,11 @@ public class AccessibleEditableTextAdapter implements AccessibleEditableTextList
 	 * <li>[in] end - the 0 based offset after the last character of the substring
 	 * 		whose attributes are modified</li>
 	 * <li>[in] textStyle - the TextStyle which contains attributes that replace the old set of attributes.
-	 * 		The foreground, background, and font fields of this TextStyle are only valid for the duration of the event.</li>
-	 * <li>[in] attributes - an array of alternating key and value Strings which
-	 * 		represent additional (i.e. non predefined) attributes that replace the old set of attributes</li>
+	 * 		The foreground, background, and font fields of this TextStyle are only valid for the duration of the event.
+	 * 		The value of this field may be null if none of the attributes to be set correspond to TextStyle fields.</li>
+	 * <li>[in] attributes - an array of alternating key and value Strings that represent the complete
+	 * 		set of attributes to replace the old set of attributes.
+	 * 		The value of this field may be null if no attributes are to be set.</li>
 	 * <li>[out] result - set to {@link ACC#OK} if the operation was completed successfully</li>
 	 * </ul>
 	 */

@@ -52,7 +52,7 @@ public class AccessibleTextAttributeEvent extends SWTEventObject {
 	
 	/**
 	 * [in/out] an array of alternating key and value Strings
-	 * that represent additional (i.e. non predefined) attributes
+	 * that represent attributes that do not correspond to TextStyle fields
 	 * 
 	 * @see AccessibleAttributeListener#getTextAttributes
 	 * @see AccessibleEditableTextListener#setTextAttributes
