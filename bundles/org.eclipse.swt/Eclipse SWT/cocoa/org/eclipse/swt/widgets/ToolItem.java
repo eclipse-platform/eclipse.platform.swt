@@ -42,7 +42,7 @@ public class ToolItem extends Item {
 	NSToolbarItem nsItem;
 	NSMenuItem nsMenuRep;
 	NSString id;
-	int width;
+	int width = DEFAULT_SEPARATOR_WIDTH;
 	ToolBar parent;
 	Image hotImage, disabledImage;
 	String toolTipText;
@@ -308,12 +308,12 @@ Point computeSize () {
 		// In the unified toolbar case the width is ignored if 0, DEFAULT, or SEPARATOR_FILL.
 		if ((parent.style & SWT.HORIZONTAL) != 0) {
 			width = getWidth ();
-			if (width == SWT.DEFAULT) width = DEFAULT_SEPARATOR_WIDTH;
+			if (width <= 0) width = DEFAULT_SEPARATOR_WIDTH;
 			height = DEFAULT_HEIGHT;
 		} else {
 			width = DEFAULT_WIDTH;
 			height = getWidth ();
-			if (height == SWT.DEFAULT) width = DEFAULT_SEPARATOR_WIDTH;
+			if (height <= 0) height = DEFAULT_SEPARATOR_WIDTH;
 		}
 		if (control != null) {
 			height = Math.max (height, control.getMininumHeight ());
@@ -628,8 +628,8 @@ NSString getItemID() {
     // For separators, return a Cocoa constant for the tool item ID.
     if ((style & SWT.SEPARATOR) != 0) {
     	// If we are using a non-default width or control use that instead.  
-    	if (width <= 0 && control == null) {
-    		if (width == 0) {
+    	if (control == null) {
+    		if (width == DEFAULT_SEPARATOR_WIDTH || width == 0) {
     			itemID = OS.NSToolbarSeparatorItemIdentifier;
     		} else if (width == SWT.DEFAULT) {
     			itemID = OS.NSToolbarSpaceItemIdentifier;
