@@ -2320,6 +2320,9 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_isOpaque, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_updateOpenGLContext_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_clearDeferFlushing, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_validRequestorForSendType_returnType_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_readSelectionFromPasteboard_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_writeSelectionToPasteboard_types_, proc4, "@:@@");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -5429,6 +5432,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		return widget.toolbarSelectableItemIdentifiers(id, sel, arg0);
 	} else if (sel == OS.sel_validateMenuItem_) {
 		return (widget.validateMenuItem(id, sel, arg0) ? 1 : 0);
+	} else if (sel == OS.sel_readSelectionFromPasteboard_) {
+		return (widget.readSelectionFromPasteboard(id, sel, arg0) ? 1 : 0);
 	}
 	return 0;
 }
@@ -5492,6 +5497,10 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		widget.scrollClipViewToPoint (id, sel, arg0, point);
 	} else if (sel == OS.sel_accessibilitySetValue_forAttribute_) {
 		widget.accessibilitySetValue_forAttribute(id, sel, arg0, arg1);
+	} else if (sel == OS.sel_validRequestorForSendType_returnType_) {
+		return widget.validRequestorForSendType(id, sel, arg0, arg1);
+	} else if (sel == OS.sel_writeSelectionToPasteboard_types_) {
+		return (widget.writeSelectionToPasteboard(id, sel, arg0, arg1) ? 1 : 0);
 	}
 	return 0;
 }

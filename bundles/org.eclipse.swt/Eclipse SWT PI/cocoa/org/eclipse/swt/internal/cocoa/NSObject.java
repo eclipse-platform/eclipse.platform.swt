@@ -62,6 +62,14 @@ public int /*long*/ draggingSourceOperationMask() {
 	return OS.objc_msgSend(this.id, OS.sel_draggingSourceOperationMask);
 }
 
+public boolean readSelectionFromPasteboard(NSPasteboard pboard) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_readSelectionFromPasteboard_, pboard != null ? pboard.id : 0);
+}
+
+public boolean writeSelectionToPasteboard(NSPasteboard pboard, NSArray types) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_writeSelectionToPasteboard_types_, pboard != null ? pboard.id : 0, types != null ? types.id : 0);
+}
+
 public NSObject autorelease() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_autorelease);
 	return result == this.id ? this : (result != 0 ? new NSObject(result) : null);

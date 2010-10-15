@@ -148,4 +148,9 @@ public void scrollWheel(NSEvent theEvent) {
 	OS.objc_msgSend(this.id, OS.sel_scrollWheel_, theEvent != null ? theEvent.id : 0);
 }
 
+public id validRequestorForSendType(NSString sendType, NSString returnType) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_validRequestorForSendType_returnType_, sendType != null ? sendType.id : 0, returnType != null ? returnType.id : 0);
+	return result != 0 ? new id(result) : null;
+}
+
 }

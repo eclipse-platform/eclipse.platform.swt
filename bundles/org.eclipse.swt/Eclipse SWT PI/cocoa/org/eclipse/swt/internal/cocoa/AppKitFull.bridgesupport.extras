@@ -2000,6 +2000,15 @@
 		<method selector="draggingSourceOperationMask" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="readSelectionFromPasteboard:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="writeSelectionToPasteboard:types:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 	</class>
 	<class name="NSObjectController" swt_superclass="NSController">
 	</class>
@@ -2571,6 +2580,11 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="scrollWheel:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="validRequestorForSendType:returnType:" swt_gen="true">
+			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>

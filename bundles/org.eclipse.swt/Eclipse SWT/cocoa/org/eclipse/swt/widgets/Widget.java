@@ -305,6 +305,13 @@ int /*long*/ callSuperObject(int /*long*/ id, int /*long*/ sel, int /*long*/ arg
 	return OS.objc_msgSendSuper(super_struct, sel, arg0);
 }
 
+int /*long*/ callSuperObject(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper(super_struct, sel, arg0, arg1);
+}
+
 NSRect callSuperRect(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
@@ -2032,6 +2039,18 @@ void updateOpenGLContext(int /*long*/ id, int /*long*/ sel, int /*long*/ notific
 
 boolean shouldDrawInsertionPoint(int /*long*/ id, int /*long*/ sel) {
 	return callSuperBoolean(id, sel);
+}
+
+boolean readSelectionFromPasteboard(int /*long*/ id, int /*long*/ sel, int /*long*/ pasteboard) {
+	return false;
+}
+
+int /*long*/ validRequestorForSendType(int /*long*/ id, int /*long*/ sel, int /*long*/ sendType, int /*long*/ returnType) {
+	return callSuperObject(id, sel, sendType, returnType);
+}
+
+boolean writeSelectionToPasteboard(int /*long*/ id, int /*long*/ sel, int /*long*/ pasteboard, int /*long*/ types) {
+	return false;
 }
 
 }

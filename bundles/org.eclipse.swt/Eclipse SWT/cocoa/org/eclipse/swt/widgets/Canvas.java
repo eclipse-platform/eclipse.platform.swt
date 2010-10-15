@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
 
@@ -41,6 +42,16 @@ public class Canvas extends Composite {
 	Caret caret;
 	IME ime;
 	NSOpenGLContext context;
+
+	static NSMutableArray supportedPboardTypes;
+	
+	static { 
+		// This array is leaked.
+		supportedPboardTypes = NSMutableArray.arrayWithCapacity(1);
+		supportedPboardTypes.retain();
+		supportedPboardTypes.addObject(OS.NSStringPboardType);
+		//supportedPboardTypes.addObject(OS.NSRTFPboardType);
+	};
 
 Canvas () {
 	/* Do nothing */
@@ -253,6 +264,41 @@ boolean isOpaque (int /*long*/ id, int /*long*/ sel) {
 NSRange markedRange (int /*long*/ id, int /*long*/ sel) {
 	if (ime != null) return ime.markedRange (id, sel);
 	return super.markedRange (id, sel);
+}
+
+boolean readSelectionFromPasteboard(int /*long*/ id, int /*long*/ sel, int /*long*/ pasteboard) {
+    boolean result = false;
+    NSPasteboard pboard = new NSPasteboard(pasteboard);
+    NSArray availableTypes = pboard.types();
+    NSString type;
+    
+    for (int /*long*/ i = 0; i < supportedPboardTypes.count(); i++) {
+    	if (result) break;
+    	type = new NSString(supportedPboardTypes.objectAtIndex(i));
+        if (availableTypes.containsObject(type)) {
+            result = readSelectionFromPasteboard(pboard, type);
+        }
+    }
+    return result;
+}
+
+boolean readSelectionFromPasteboard(NSPasteboard pboard, NSString type) {
+    boolean result = false;
+    NSString newSelection = null;
+    if (type.isEqualToString(OS.NSStringPboardType)) {
+        NSString string = pboard.stringForType(OS.NSStringPboardType);
+        if (string != null && string.length() > 0) {
+        	newSelection = string;
+        }
+    }
+
+    if (newSelection != null) {
+    	Accessible acc = getAccessible();
+    	acc.internal_accessibilitySetValue_forAttribute(newSelection, OS.NSAccessibilitySelectedTextAttribute, ACC.CHILDID_SELF);
+    	result = true;
+    }
+
+    return result;
 }
 
 void releaseChildren (boolean destroy) {
@@ -493,8 +539,72 @@ int /*long*/ validAttributesForMarkedText (int /*long*/ id, int /*long*/ sel) {
 	return super.validAttributesForMarkedText(id, sel);
 }
 
+int /*long*/ validRequestorForSendType(int /*long*/ id, int /*long*/ sel, int /*long*/ sendType, int /*long*/ returnType) {
+	if (id == view.id) {
+		Accessible acc = getAccessible();
+		if (acc != null) {
+			// This returns null if there are no additional overrides. Since this is only checked to see if there is
+			// a StyledText or other control that supports reading and writing of the selection there's no need to bother
+			// with checking the default values. They will be picked up in the default implementation.
+			NSArray attributes = acc.internal_accessibilityAttributeNames(ACC.CHILDID_SELF);
+			if (attributes != null) {
+				boolean canReturn = attributes.containsObject(OS.NSAccessibilitySelectedTextAttribute);
+				boolean canSend = acc.internal_accessibilityIsAttributeSettable(OS.NSAccessibilitySelectedTextAttribute, ACC.CHILDID_SELF);
+				boolean canHandlePBoardType = supportedPboardTypes.containsObject(new id(sendType)) && supportedPboardTypes.containsObject(new id(returnType)); 
+				if (canReturn && canSend && canHandlePBoardType) {
+					id selection = acc.internal_accessibilityAttributeValue(OS.NSAccessibilitySelectedTextAttribute, ACC.CHILDID_SELF);
+					if (selection != null) {
+						NSString selectionString = new NSString(selection);
+						if (selectionString.length() > 0) return view.id;
+					}
+				}
+			}
+		}
+	}
+	
+	return super.validRequestorForSendType(id, sel, sendType, returnType);
+}
+
 void updateOpenGLContext(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	if (context != null) ((NSOpenGLContext)context).update();
+}
+
+boolean writeSelectionToPasteboard(int /*long*/ id, int /*long*/ sel, int /*long*/ pasteboardObj, int /*long*/ typesObj) {
+    boolean result = false;
+    NSPasteboard pboard = new NSPasteboard(pasteboardObj);
+    NSArray types = new NSArray(typesObj);
+    NSMutableArray typesToDeclare = NSMutableArray.arrayWithCapacity(2);
+    NSString type;
+    
+    for (int /*long*/ i = 0; i < supportedPboardTypes.count(); i++) {
+    	type = new NSString(supportedPboardTypes.objectAtIndex(i));
+        if (types.containsObject(type)) typesToDeclare.addObject(type);
+    }
+
+    if (typesToDeclare.count() > 0) {
+        pboard.declareTypes(typesToDeclare, view);
+        for (int /*long*/ i = 0; i < typesToDeclare.count(); i++) {
+        	type = new NSString(typesToDeclare.objectAtIndex(i));
+            if (writeSelectionToPasteboard(pboard, type)) result = true;
+        }
+    }
+
+    return result;
+}
+    
+boolean writeSelectionToPasteboard(NSPasteboard pboard, NSString type) {
+	boolean result = false;
+
+	if (type.isEqualToString(OS.NSStringPboardType)) {
+		Accessible acc = getAccessible();
+		id selection = acc.internal_accessibilityAttributeValue(OS.NSAccessibilitySelectedTextAttribute, ACC.CHILDID_SELF);
+		if (selection != null) {
+			NSString selectionString = new NSString(selection);
+			if (selectionString.length() > 0) result = pboard.setString(selectionString, OS.NSStringPboardType);
+		}
+	}
+
+	return result;
 }
 
 }
