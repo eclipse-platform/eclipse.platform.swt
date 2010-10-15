@@ -3312,7 +3312,7 @@ public class Accessible {
 			String [] attributes = new String [0];
 			int begin = 0;
 			int end = string.indexOf(';');
-			while (end != -1 && end + 1 <= string.length()) {
+			while (end != -1 && end < string.length()) {
 				String keyValue = string.substring(begin, end).trim();
 				int colonIndex = keyValue.indexOf(':');
 				if (colonIndex != -1 && colonIndex + 1 < keyValue.length()) {
