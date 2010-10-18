@@ -1402,7 +1402,7 @@ public boolean setUrl(String url, String postData, String headers[]) {
 	* about:blank to work around IE bug http://support.microsoft.com/kb/320153,
 	* then navigate to the requested url once about:blank has loaded.
 	*/
-	if (_getUrl().length() == 0) {
+	if (_getUrl().length() == 0 && !ABOUT_BLANK.equalsIgnoreCase(url)) {
 		pendingText = null;
 		pendingUrl = new Object[] {url, postData, headers};
 		performingInitialNavigate = true;
