@@ -634,26 +634,26 @@ public PathData getPathData() {
 				case OS.NSMoveToBezierPathElement:
 					types[typeCount++] = SWT.PATH_MOVE_TO;
 					OS.memmove(pt, points, NSPoint.sizeof);
-					pointArray[pointCount++] = (int)pt.x;
-					pointArray[pointCount++] = (int)pt.y;
+					pointArray[pointCount++] = (float)pt.x;
+					pointArray[pointCount++] = (float)pt.y;
 					break;
 				case OS.NSLineToBezierPathElement:
 					types[typeCount++] = SWT.PATH_LINE_TO;
 					OS.memmove(pt, points, NSPoint.sizeof);
-					pointArray[pointCount++] = (int)pt.x;
-					pointArray[pointCount++] = (int)pt.y;
+					pointArray[pointCount++] = (float)pt.x;
+					pointArray[pointCount++] = (float)pt.y;
 					break;
 				case OS.NSCurveToBezierPathElement:
 					types[typeCount++] = SWT.PATH_CUBIC_TO;
 					OS.memmove(pt, points, NSPoint.sizeof);
-					pointArray[pointCount++] = (int)pt.x;
-					pointArray[pointCount++] = (int)pt.y;
+					pointArray[pointCount++] = (float)pt.x;
+					pointArray[pointCount++] = (float)pt.y;
 					OS.memmove(pt, points + NSPoint.sizeof, NSPoint.sizeof);
-					pointArray[pointCount++] = (int)pt.x;
-					pointArray[pointCount++] = (int)pt.y;
+					pointArray[pointCount++] = (float)pt.x;
+					pointArray[pointCount++] = (float)pt.y;
 					OS.memmove(pt, points + NSPoint.sizeof + NSPoint.sizeof, NSPoint.sizeof);
-					pointArray[pointCount++] = (int)pt.x;
-					pointArray[pointCount++] = (int)pt.y;
+					pointArray[pointCount++] = (float)pt.x;
+					pointArray[pointCount++] = (float)pt.y;
 					break;
 				case OS.NSClosePathBezierPathElement:
 					types[typeCount++] = SWT.PATH_CLOSE;
