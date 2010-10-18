@@ -2176,7 +2176,9 @@ int /*long*/ registerCellSubclass(int /*long*/ cellClass, int size, int align, b
 }
 
 int /*long*/ createWindowSubclass(int /*long*/ baseClass, String newClass) {
-	int /*long*/ cls = OS.objc_allocateClassPair(baseClass, newClass, 0);
+	int /*long*/ cls = OS.objc_lookUpClass(newClass);
+	if (cls != 0) return cls;
+	cls = OS.objc_allocateClassPair(baseClass, newClass, 0);
 	int /*long*/ proc3 = windowCallback3.getAddress();
 	int /*long*/ proc2 = windowCallback2.getAddress();
 	int /*long*/ proc4 = windowCallback4.getAddress();
