@@ -1061,6 +1061,7 @@ public void setLayout (Layout layout) {
  * @since 3.1
  */
 public void setLayoutDeferred (boolean defer) {
+	checkWidget();
 	if (!defer) {
 		if (--layoutCount == 0) {
 			if ((state & LAYOUT_CHILD) != 0 || (state & LAYOUT_NEEDED) != 0) {
