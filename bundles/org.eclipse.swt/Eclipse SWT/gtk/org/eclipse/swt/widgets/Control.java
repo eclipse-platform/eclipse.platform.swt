@@ -163,6 +163,8 @@ void fixFocus (Control focusControl) {
 	int /*long*/ focusHandle = shell.vboxHandle;
 	OS.GTK_WIDGET_SET_FLAGS (focusHandle, OS.GTK_CAN_FOCUS);
 	OS.gtk_widget_grab_focus (focusHandle);
+	// widget could be disposed at this point
+	if (isDisposed ()) return;
 	OS.GTK_WIDGET_UNSET_FLAGS (focusHandle, OS.GTK_CAN_FOCUS);
 }
 
@@ -2168,6 +2170,8 @@ boolean forceFocus (int /*long*/ focusHandle) {
 	/* When the control is zero sized it must be realized */
 	OS.gtk_widget_realize (focusHandle);
 	OS.gtk_widget_grab_focus (focusHandle);
+	// widget could be disposed at this point
+	if (isDisposed ()) return false;
 	Shell shell = getShell ();
 	int /*long*/ shellHandle = shell.shellHandle;
 	int /*long*/ handle = OS.gtk_window_get_focus (shellHandle);

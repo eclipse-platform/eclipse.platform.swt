@@ -513,6 +513,8 @@ boolean setFocus () {
 	if (!OS.gtk_widget_get_child_visible (handle)) return false;
 	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
 	OS.gtk_widget_grab_focus (handle);
+	// widget could be disposed at this point
+	if (isDisposed ()) return false;
 	boolean result = OS.gtk_widget_is_focus (handle);
 	if (!result) OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_CAN_FOCUS);
 	return result;
