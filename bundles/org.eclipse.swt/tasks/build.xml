@@ -1647,6 +1647,7 @@
 			<param name="cp" value="${cp_carbon}"/>
 			<param name="fragment" value="org.eclipse.swt.carbon.macosx"/>
 			<param name="build_target" value="build_carbon"/>
+			<param name="TAG" value="${TAG}"/>
 			<param name="pre_commands" value="export PATH=${ant_home}/bin:$PATH; "/>
 		</antcall>
 	</target>
