@@ -727,8 +727,8 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 			TextStyle style = run.style;
 			boolean hasAdorners = style != null && (style.underline || style.strikeout || style.borderStyle != SWT.NONE);
 			if (run.length == 0) continue;
-			if (drawX > clip.x + clip.width && !hasAdorners) break;
-			if (drawX + run.width >= clip.x || hasAdorners) {
+			if (drawX > clip.x + clip.width) break;
+			if (drawX + run.width >= clip.x) {
 				boolean skipTab = run.tab && !hasAdorners;
 				if (!skipTab && (!run.lineBreak || run.softBreak) && !(style != null && style.metrics != null)) {
 					OS.SetRect(rect, drawX, drawY, drawX + run.width, drawY + lineHeight);
@@ -757,15 +757,15 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							int fg = style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK ? linkColor : foreground;
 							pRect = drawRunTextGDIPRaster(gdipGraphics, run, rect, baseline, fg, selForeground, selectionStart, selectionEnd);
 						}
-						underlineClip = drawUnderlineGDIP(gdipGraphics, x, drawY + baseline, lineUnderlinePos, drawY + lineHeight, lineRuns, i, gdipFg, gdipSelForeground, underlineClip, pRect, selectionStart, selectionEnd, alpha);
-						strikeoutClip = drawStrikeoutGDIP(gdipGraphics, x, drawY + baseline, lineRuns, i, gdipFg, gdipSelForeground, strikeoutClip, pRect, selectionStart, selectionEnd, alpha);
-						borderClip = drawBorderGDIP(gdipGraphics, x, drawY, lineHeight, lineRuns, i, gdipFg, gdipSelForeground, borderClip, pRect, selectionStart, selectionEnd, alpha);
+						underlineClip = drawUnderlineGDIP(gdipGraphics, x, drawY + baseline, lineUnderlinePos, drawY + lineHeight, lineRuns, i, gdipFg, gdipSelForeground, underlineClip, pRect, selectionStart, selectionEnd, alpha, clip);
+						strikeoutClip = drawStrikeoutGDIP(gdipGraphics, x, drawY + baseline, lineRuns, i, gdipFg, gdipSelForeground, strikeoutClip, pRect, selectionStart, selectionEnd, alpha, clip);
+						borderClip = drawBorderGDIP(gdipGraphics, x, drawY, lineHeight, lineRuns, i, gdipFg, gdipSelForeground, borderClip, pRect, selectionStart, selectionEnd, alpha, clip);
 					}  else {
 						int fg = style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK ? linkColor : foreground;
 						pRect = drawRunText(hdc, run, rect, baseline, fg, selForeground, selectionStart, selectionEnd);
-						underlineClip = drawUnderline(hdc, x, drawY + baseline, lineUnderlinePos, drawY + lineHeight, lineRuns, i, fg, selForeground, underlineClip, pRect, selectionStart, selectionEnd);
-						strikeoutClip = drawStrikeout(hdc, x, drawY + baseline, lineRuns, i, fg, selForeground, strikeoutClip, pRect, selectionStart, selectionEnd);
-						borderClip = drawBorder(hdc, x, drawY, lineHeight, lineRuns, i, fg, selForeground, borderClip, pRect,  selectionStart, selectionEnd);
+						underlineClip = drawUnderline(hdc, x, drawY + baseline, lineUnderlinePos, drawY + lineHeight, lineRuns, i, fg, selForeground, underlineClip, pRect, selectionStart, selectionEnd, clip);
+						strikeoutClip = drawStrikeout(hdc, x, drawY + baseline, lineRuns, i, fg, selForeground, strikeoutClip, pRect, selectionStart, selectionEnd, clip);
+						borderClip = drawBorder(hdc, x, drawY, lineHeight, lineRuns, i, fg, selForeground, borderClip, pRect,  selectionStart, selectionEnd, clip);
 					}
 				}
 			}
@@ -780,13 +780,14 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	if (selBackground != 0) OS.DeleteObject (selBackground);
 }
 
-RECT drawBorder(int /*long*/ hdc, int x, int y, int lineHeight, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd) {
+RECT drawBorder(int /*long*/ hdc, int x, int y, int lineHeight, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, Rectangle drawClip) {
 	StyleItem run = line[index]; 
 	TextStyle style = run.style;
 	if (style == null) return null;
 	if (style.borderStyle == SWT.NONE) return null;
 	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
-	if (index + 1 >= line.length || !style.isAdherentBorder(line[index + 1].style)) {
+	boolean lastRunVisible = drawClip != null && (x + run.x + run.width) > (drawClip.x + drawClip.width);
+	if (index + 1 >= line.length || lastRunVisible || !style.isAdherentBorder(line[index + 1].style)) {
 		int left = run.x;
 		int start = run.start;
 		int end = run.start + run.length - 1;
@@ -823,7 +824,14 @@ RECT drawBorder(int /*long*/ hdc, int x, int y, int lineHeight, StyleItem[] line
 		logBrush.lbColor = /*64*/(int)color;
 		int /*long*/ newPen = OS.ExtCreatePen(lineStyle | OS.PS_GEOMETRIC, Math.max(1, lineWidth), logBrush, 0, null);
 		int /*long*/ oldPen = OS.SelectObject(hdc, newPen);
-		OS.Rectangle(hdc, x + left, y, x + run.x + run.width, y + lineHeight);
+		RECT drawRect = new RECT();
+		OS.SetRect(drawRect, x + left, y, x + run.x + run.width, y + lineHeight);
+		if (drawClip != null) {
+			RECT lpDrawClip = new RECT();
+			OS.SetRect(lpDrawClip, drawClip.x - lineWidth, drawClip.y, drawClip.x + drawClip.width + lineWidth, drawClip.y + drawClip.height);
+			OS.IntersectRect(drawRect, lpDrawClip, drawRect);
+		}
+		OS.Rectangle(hdc, drawRect.left,drawRect.top, drawRect.right, drawRect.bottom);
 		OS.SelectObject(hdc, oldPen);
 		OS.DeleteObject(newPen);
 		if (clipRect != null) {
@@ -834,7 +842,7 @@ RECT drawBorder(int /*long*/ hdc, int x, int y, int lineHeight, StyleItem[] line
 			logBrush.lbColor = /*64*/(int)selectionColor;
 			int /*long*/ selPen = OS.ExtCreatePen (lineStyle | OS.PS_GEOMETRIC, Math.max(1, lineWidth), logBrush, 0, null);
 			oldPen = OS.SelectObject(hdc, selPen);
-			OS.Rectangle(hdc, x + left, y, x + run.x + run.width, y + lineHeight);
+			OS.Rectangle(hdc, drawRect.left, drawRect.top, drawRect.right, drawRect.bottom);
 			OS.RestoreDC(hdc, state);
 			OS.SelectObject(hdc, oldPen);
 			OS.DeleteObject(selPen);
@@ -845,13 +853,14 @@ RECT drawBorder(int /*long*/ hdc, int x, int y, int lineHeight, StyleItem[] line
 	return clipRect;
 }
 
-RECT drawBorderGDIP(int /*long*/ graphics, int x, int y, int lineHeight, StyleItem[] line, int index, int /*long*/ color, int /*long*/ selectionColor, RECT clipRect, RECT pRect,  int selectionStart, int selectionEnd, int alpha) {
+RECT drawBorderGDIP(int /*long*/ graphics, int x, int y, int lineHeight, StyleItem[] line, int index, int /*long*/ color, int /*long*/ selectionColor, RECT clipRect, RECT pRect,  int selectionStart, int selectionEnd, int alpha, Rectangle drawClip) {
 	StyleItem run = line[index]; 
 	TextStyle style = run.style;
 	if (style == null) return null;
 	if (style.borderStyle == SWT.NONE) return null;
 	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
-	if (index + 1 >= line.length || !style.isAdherentBorder(line[index + 1].style)) {
+	boolean lastRunVisible = drawClip != null && (x + run.x + run.width) > (drawClip.x + drawClip.width);
+	if (index + 1 >= line.length || lastRunVisible || !style.isAdherentBorder(line[index + 1].style)) {
 		int left = run.x;
 		int start = run.start;
 		int end = run.start + run.length - 1;
@@ -1118,13 +1127,14 @@ RECT drawRunTextGDIPRaster(int /*long*/ graphics, StyleItem run, RECT rect, int 
 	return pRect;
 }
 
-RECT drawStrikeout(int /*long*/ hdc, int x, int baseline, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd) {
+RECT drawStrikeout(int /*long*/ hdc, int x, int baseline, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, Rectangle drawClip) {
 	StyleItem run = line[index];
 	TextStyle style = run.style;
 	if (style == null) return null;
 	if (!style.strikeout) return null;
 	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
-	if (index + 1 >= line.length || !style.isAdherentStrikeout(line[index + 1].style)) {
+	boolean lastRunVisible = drawClip != null && (x + run.x + run.width) > (drawClip.x + drawClip.width);
+	if (index + 1 >= line.length || lastRunVisible || !style.isAdherentStrikeout(line[index + 1].style)) {
 		int left = run.x;
 		int start = run.start;
 		int end = run.start + run.length - 1;
@@ -1166,13 +1176,14 @@ RECT drawStrikeout(int /*long*/ hdc, int x, int baseline, StyleItem[] line, int 
 	return clipRect;
 }
 
-RECT drawStrikeoutGDIP(int /*long*/ graphics, int x, int baseline, StyleItem[] line, int index, int /*long*/ color, int /*long*/ selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, int alpha) {
+RECT drawStrikeoutGDIP(int /*long*/ graphics, int x, int baseline, StyleItem[] line, int index, int /*long*/ color, int /*long*/ selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, int alpha, Rectangle drawClip) {
 	StyleItem run = line[index];
 	TextStyle style = run.style;
 	if (style == null) return null;
 	if (!style.strikeout) return null;
 	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
-	if (index + 1 >= line.length || !style.isAdherentStrikeout(line[index + 1].style)) {
+	boolean lastRunVisible = drawClip != null && (x + run.x + run.width) > (drawClip.x + drawClip.width);
+	if (index + 1 >= line.length || lastRunVisible || !style.isAdherentStrikeout(line[index + 1].style)) {
 		int left = run.x;
 		int start = run.start;
 		int end = run.start + run.length - 1;
@@ -1222,13 +1233,14 @@ RECT drawStrikeoutGDIP(int /*long*/ graphics, int x, int baseline, StyleItem[] l
 	return clipRect;
 }
 
-RECT drawUnderline(int /*long*/ hdc, int x, int baseline, int lineUnderlinePos, int lineBottom, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd) {
+RECT drawUnderline(int /*long*/ hdc, int x, int baseline, int lineUnderlinePos, int lineBottom, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, Rectangle drawClip) {
 	StyleItem run = line[index];
 	TextStyle style = run.style;
 	if (style == null) return null;
 	if (!style.underline) return null;
 	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
-	if (index + 1 >= line.length || !style.isAdherentUnderline(line[index + 1].style)) {
+	boolean lastRunVisible = drawClip != null && (x + run.x + run.width) > (drawClip.x + drawClip.width);
+	if (index + 1 >= line.length || lastRunVisible || !style.isAdherentUnderline(line[index + 1].style)) {
 		int left = run.x;
 		int start = run.start;
 		int end = run.start + run.length - 1;
@@ -1350,13 +1362,14 @@ RECT drawUnderline(int /*long*/ hdc, int x, int baseline, int lineUnderlinePos, 
 	return clipRect;
 }
 
-RECT drawUnderlineGDIP (int /*long*/ graphics, int x, int baseline, int lineUnderlinePos, int lineBottom, StyleItem[] line, int index, int /*long*/ color, int /*long*/ selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, int alpha) {
+RECT drawUnderlineGDIP (int /*long*/ graphics, int x, int baseline, int lineUnderlinePos, int lineBottom, StyleItem[] line, int index, int /*long*/ color, int /*long*/ selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, int alpha, Rectangle drawClip) {
 	StyleItem run = line[index];
 	TextStyle style = run.style;
 	if (style == null) return null;
 	if (!style.underline) return null;
 	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
-	if (index + 1 >= line.length || !style.isAdherentUnderline(line[index + 1].style)) {
+	boolean lastRunVisible = drawClip != null && (x + run.x + run.width) > (drawClip.x + drawClip.width);
+	if (index + 1 >= line.length || lastRunVisible || !style.isAdherentUnderline(line[index + 1].style)) {
 		int left = run.x;
 		int start = run.start;
 		int end = run.start + run.length - 1;
