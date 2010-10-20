@@ -893,7 +893,7 @@
 	</target>
 	
 	<target name="increment_version">
-		<property name="tmpdir" value="${tmphome}/inc"/>
+		<property name="tmpdir" value="${tmphome}/inc${TAG}"/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
 		<antcall target="increment_version_imp"/>
@@ -1234,7 +1234,7 @@
 
 	<!-- depends on 'get_new_tag' to define swt_new_tag, swt_version, maj_ver and min_ver -->
 	<target name="tag_projects">
-		<property name="tmpdir" value="${tmphome}/tag"/>
+		<property name="tmpdir" value="${tmphome}/tag${TAG}"/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
 		<antcall target="tag_projects_imp"/>
@@ -1350,7 +1350,7 @@
 	<!-- Params: cp, fragment, build_target -->
 	<target name="build_local">
 		<property name="cvsRsh" value="plink"/>
-		<property name="tmpdir" value="${tmphome}/${fragment}"/>
+		<property name="tmpdir" value="${tmphome}/${fragment}${TAG}"/>
 		<property name="build_version" value=""/>
 		<delete dir="${tmpdir}" quiet="true"/>
 		<mkdir dir="${tmpdir}"/>
@@ -1374,7 +1374,7 @@
 	</target>
 	
 	<target name="build_s390">
-		<property name="zipname" value="${fragment}"/>		
+		<property name="zipname" value="${fragment}${TAG}"/>		
 		<property name="remotetmpdir" value="~/build/${zipname}"/>
 		<condition property="remotemachine" value="${m_linux_s390}" else="${m_linux_s390x}">
 			<or>
@@ -1400,7 +1400,7 @@
 
 	<!-- Params: machine, pre_commands, cp, fragment, build_target -->
 	<target name="build_ssh" depends="set_natives_changed">
-		<property name="tmpdir" value="~/build/${fragment}"/>
+		<property name="tmpdir" value="~/build/${fragment}${TAG}"/>
 		<property name="pre_commands" value=""/>
 		<property name="pre_commands1" value=""/>
 		<property name="build_version" value=""/>
