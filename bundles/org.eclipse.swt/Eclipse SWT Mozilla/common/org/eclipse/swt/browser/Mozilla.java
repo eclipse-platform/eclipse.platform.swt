@@ -3719,8 +3719,6 @@ int SetVisibility (int aVisibility) {
 				visibilityWindowListeners[i].hide (event);
 			}
 		}
-	} else {
-		visible = aVisibility != 0;
 	}
 	return XPCOM.NS_OK;     	
 }
