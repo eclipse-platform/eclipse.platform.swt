@@ -2529,12 +2529,15 @@ int /*long*/ rendererGetSizeProc (int /*long*/ cell, int /*long*/ widget, int /*
 	if (!ignoreSize && OS.GTK_IS_CELL_RENDERER_TEXT (cell)) {
 		int /*long*/ iter = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX2);
 		TableItem item = null;
+		boolean isSelected = false;
 		if (iter != 0) {
 			int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 			int [] buffer = new int [1];
 			OS.memmove (buffer, OS.gtk_tree_path_get_indices (path), 4);
 			int index = buffer [0];
 			item = _getItem (index);
+			int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
+			isSelected = OS.gtk_tree_selection_path_is_selected (selection, path);
 			OS.gtk_tree_path_free (path);
 		}
 		if (item != null) {
@@ -2567,6 +2570,7 @@ int /*long*/ rendererGetSizeProc (int /*long*/ cell, int /*long*/ widget, int /*
 				event.gc = gc;
 				event.width = contentWidth [0];
 				event.height = contentHeight [0];
+				if (isSelected) event.detail = SWT.SELECTED;
 				sendEvent (SWT.MeasureItem, event);
 				gc.dispose ();
 				contentWidth [0] = event.width - imageWidth;

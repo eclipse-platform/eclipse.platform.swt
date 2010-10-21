@@ -924,6 +924,7 @@ int getPreferredWidth (int columnIndex) {
 		event.y = parent.getItemY (this);
 		event.width = width;
 		event.height = parent.itemHeight;
+		event.detail = isSelected () ? SWT.SELECTED : 0;
 		parent.sendEvent (SWT.MeasureItem, event);
 		if (parent.itemHeight != event.height) {
 			parent.customHeightSet = true;
@@ -1083,6 +1084,7 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 	Pattern oldForegroundPattern = gc.getForegroundPattern ();
 	int oldInterpolation = gc.getInterpolation ();
 	int oldTextAntialias = gc.getTextAntialias ();
+	boolean isSelected = isSelected ();
 
 	if (parent.hooks (SWT.MeasureItem)) {
 		int contentWidth = getContentWidth (columnIndex);
@@ -1096,6 +1098,7 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 		event.y = parent.getItemY (this);
 		event.width = contentWidth;
 		event.height = parent.itemHeight;
+		event.detail = isSelected ? SWT.SELECTED : 0;
 		parent.sendEvent (SWT.MeasureItem, event);
 		event.gc = null;
 		if (gc.isDisposed ()) return false;
@@ -1153,7 +1156,6 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 		parent.drawBackground (gc, cellBounds.x, cellBounds.y, fillWidth, cellBounds.height, 0, 0);
 	}
 
-	boolean isSelected = isSelected ();
 	boolean isFocusItem = parent.focusItem == this && parent.isFocusControl ();
 	boolean drawBackground = true;
 	boolean drawForeground = true;

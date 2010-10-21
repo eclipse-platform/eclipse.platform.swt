@@ -2564,6 +2564,12 @@ int /*long*/ rendererGetSizeProc (int /*long*/ cell, int /*long*/ widget, int /*
 				event.gc = gc;
 				event.width = contentWidth [0];
 				event.height = contentHeight [0];
+				int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
+				int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
+				if (OS.gtk_tree_selection_path_is_selected (selection, path)) {
+					event.detail = SWT.SELECTED;
+				}
+				OS.gtk_tree_path_free (path);
 				sendEvent (SWT.MeasureItem, event);
 				gc.dispose ();
 				contentWidth [0] = event.width - imageWidth;
