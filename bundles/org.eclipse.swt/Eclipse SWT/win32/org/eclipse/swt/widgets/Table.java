@@ -3746,6 +3746,7 @@ Event sendMeasureItemEvent (TableItem item, int row, int column, int /*long*/ hD
 	event.y = itemRect.top;
 	event.width = itemRect.right - itemRect.left;
 	event.height = itemRect.bottom - itemRect.top;
+	event.detail = isSelected (indexOf (item)) ? SWT.SELECTED : 0;
 	sendEvent (SWT.MeasureItem, event);
 	event.gc = null;
 	gc.dispose ();
