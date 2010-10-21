@@ -1025,20 +1025,6 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	}
 }
 
-boolean setFixedFocus () {
-	checkWidget ();
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
-		if (child.setRadioFocus (false)) return true;
-	}
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
-		if (child.setFixedFocus ()) return true;
-	}
-	return super.setFixedFocus ();
-}
-
 public boolean setFocus () {
 	checkWidget ();
 	Control [] children = _getChildren ();

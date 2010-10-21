@@ -949,8 +949,15 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 void fixFocus (Control focusControl) {
 	Shell shell = getShell ();
 	Control control = this;
-	while (control != shell && (control = control.parent) != null) {
-		if (control.setFixedFocus ()) return;
+	Display display = this.display;
+	boolean oldFixFocus = display.fixFocus;
+	display.fixFocus = true;
+	try {
+		while (control != shell && (control = control.parent) != null) {
+				if (control.setFocus ()) return;
+		}
+	} finally {
+		display.fixFocus = oldFixFocus;
 	}
 	shell.setSavedFocus (focusControl);
 	OS.SetFocus (0);
@@ -2976,11 +2983,6 @@ public void setEnabled (boolean enabled) {
 	}
 	enableWidget (enabled);
 	if (fixFocus) fixFocus (control);
-}
-
-boolean setFixedFocus () {
-	if ((style & SWT.NO_FOCUS) != 0) return false;
-	return forceFocus ();
 }
 
 /**

@@ -921,14 +921,15 @@ void setDefault (boolean value) {
 	OS.SendMessage (handle, OS.BM_SETSTYLE, bits, 1);
 }
 
-boolean setFixedFocus () {
+public boolean setFocus () {
+	checkWidget ();
 	/*
 	* Feature in Windows.  When a radio button gets focus, 
 	* it selects the button in WM_SETFOCUS.  The fix is to
 	* not assign focus to an unselected radio button.
 	*/
-	if ((style & SWT.RADIO) != 0 && !getSelection ()) return false;
-	return super.setFixedFocus ();
+	if ((style & SWT.RADIO) != 0 && !getSelection () && display.fixFocus) return false;
+	return super.setFocus ();
 }
 
 /**
