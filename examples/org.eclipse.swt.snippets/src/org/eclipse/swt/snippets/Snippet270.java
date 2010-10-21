@@ -26,6 +26,8 @@ import org.eclipse.swt.browser.*;
 
 public class Snippet270 {
 
+static final int BROWSER_STYLE = SWT.NONE;
+
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
@@ -33,7 +35,7 @@ public static void main(String[] args) {
 	shell.setLayout(new FillLayout());
 	final Browser browser;
 	try {
-		browser = new Browser(shell, SWT.NONE);
+		browser = new Browser(shell, BROWSER_STYLE);
 	} catch (SWTError e) {
 		System.out.println("Could not instantiate Browser: " + e.getMessage());
 		display.dispose();
@@ -57,7 +59,7 @@ static void initialize(final Display display, Browser browser) {
 			Shell shell = new Shell(display);
 			shell.setText("New Window");
 			shell.setLayout(new FillLayout());
-			Browser browser = new Browser(shell, SWT.NONE);
+			Browser browser = new Browser(shell, BROWSER_STYLE);
 			initialize(display, browser);
 			event.browser = browser;
 		}
