@@ -588,7 +588,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long
 			if (drawItem) {
 				if (i != 0) {
 					if (hooks (SWT.MeasureItem)) {
-						sendMeasureItemEvent (item, index, hDC);
+						sendMeasureItemEvent (item, index, hDC, selected ? SWT.SELECTED : 0);
 						if (isDisposed () || item.isDisposed ()) break;
 					}
 					if (hooks (SWT.EraseItem)) {
@@ -977,7 +977,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 		//TODO - BUG - measure and erase sent when first column is clipped
 		Event measureEvent = null;
 		if (hooks (SWT.MeasureItem)) {
-			measureEvent = sendMeasureItemEvent (item, index, hDC);
+			measureEvent = sendMeasureItemEvent (item, index, hDC, selected ? SWT.SELECTED : 0);
 			if (isDisposed () || item.isDisposed ()) return null;
 		}
 		selectionForeground = -1;
@@ -2728,7 +2728,9 @@ boolean findCell (int x, int y, TreeItem [] item, int [] index, RECT [] cellRect
 				cellRect [0].right = Math.min (cellRect [0].right, rect.right);
 				if (OS.PtInRect (cellRect [0], pt)) {
 					if (isCustomToolTip ()) {
-						Event event = sendMeasureItemEvent (item [0], order [index [0]], hDC);
+						int state = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETITEMSTATE, lpht.hItem, OS.TVIS_SELECTED);
+						int detail = (state & OS.TVIS_SELECTED) != 0 ? SWT.SELECTED : 0;
+						Event event = sendMeasureItemEvent (item [0], order [index [0]], hDC, detail);
 						if (isDisposed () || item [0].isDisposed ()) break;
 						itemRect [0] = new RECT ();
 						itemRect [0].left = event.x;
@@ -3618,7 +3620,9 @@ boolean hitTestSelection (int /*long*/ hItem, int x, int y) {
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	int /*long*/ hFont = item.fontHandle (order [index [0]]);
 	if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
-	Event event = sendMeasureItemEvent (item, order [index [0]], hDC);
+	int state = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+	int detail = (state & OS.TVIS_SELECTED) != 0 ? SWT.SELECTED : 0;
+	Event event = sendMeasureItemEvent (item, order [index [0]], hDC, detail);
 	if (event.getBounds ().contains (x, y)) result = true;
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
@@ -4375,7 +4379,7 @@ Event sendEraseItemEvent (TreeItem item, NMTTCUSTOMDRAW nmcd, int column, RECT c
 	return event;
 }
 
-Event sendMeasureItemEvent (TreeItem item, int index, int /*long*/ hDC) {
+Event sendMeasureItemEvent (TreeItem item, int index, int /*long*/ hDC, int detail) {
 	RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
 	int nSavedDC = OS.SaveDC (hDC);
 	GCData data = new GCData ();
@@ -4390,6 +4394,7 @@ Event sendMeasureItemEvent (TreeItem item, int index, int /*long*/ hDC) {
 	event.y = itemRect.top;
 	event.width = itemRect.right - itemRect.left;
 	event.height = itemRect.bottom - itemRect.top;
+	event.detail = detail;
 	sendEvent (SWT.MeasureItem, event);
 	event.gc = null;
 	gc.dispose ();
