@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -153,6 +153,18 @@ void setNSSizeFields(JNIEnv *env, jobject lpObject, NSSize *lpStruct);
 #define getNSSizeFields(a,b,c) NULL
 #define setNSSizeFields(a,b,c)
 #define NSSize_sizeof() 0
+#endif
+
+#ifndef NO_PMResolution
+void cachePMResolutionFields(JNIEnv *env, jobject lpObject);
+PMResolution *getPMResolutionFields(JNIEnv *env, jobject lpObject, PMResolution *lpStruct);
+void setPMResolutionFields(JNIEnv *env, jobject lpObject, PMResolution *lpStruct);
+#define PMResolution_sizeof() sizeof(PMResolution)
+#else
+#define cachePMResolutionFields(a,b)
+#define getPMResolutionFields(a,b,c) NULL
+#define setPMResolutionFields(a,b,c)
+#define PMResolution_sizeof() 0
 #endif
 
 #ifndef NO_objc_super

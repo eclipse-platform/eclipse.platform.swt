@@ -5415,6 +5415,126 @@ JNIEXPORT void JNICALL OS_NATIVE(OpenRgn)
 }
 #endif
 
+#ifndef NO_PMPrinterGetIndexedPrinterResolution
+JNIEXPORT jintLong JNICALL OS_NATIVE(PMPrinterGetIndexedPrinterResolution)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+{
+	PMResolution _arg2, *lparg2=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, PMPrinterGetIndexedPrinterResolution_FUNC);
+	if (arg2) if ((lparg2 = getPMResolutionFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
+	rc = (jintLong)PMPrinterGetIndexedPrinterResolution((PMPrinter)arg0, arg1, (PMResolution *)lparg2);
+*/
+	{
+		LOAD_FUNCTION(fp, PMPrinterGetIndexedPrinterResolution)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrinter, jint, PMResolution *))fp)((PMPrinter)arg0, arg1, (PMResolution *)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) setPMResolutionFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, PMPrinterGetIndexedPrinterResolution_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PMPrinterGetOutputResolution
+JNIEXPORT jintLong JNICALL OS_NATIVE(PMPrinterGetOutputResolution)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2)
+{
+	PMResolution _arg2, *lparg2=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, PMPrinterGetOutputResolution_FUNC);
+	if (arg2) if ((lparg2 = getPMResolutionFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
+	rc = (jintLong)PMPrinterGetOutputResolution((PMPrinter)arg0, (PMPrintSettings)arg1, (PMResolution *)lparg2);
+*/
+	{
+		LOAD_FUNCTION(fp, PMPrinterGetOutputResolution)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrinter, PMPrintSettings, PMResolution *))fp)((PMPrinter)arg0, (PMPrintSettings)arg1, (PMResolution *)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) setPMResolutionFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, PMPrinterGetOutputResolution_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PMPrinterGetPrinterResolutionCount
+JNIEXPORT jintLong JNICALL OS_NATIVE(PMPrinterGetPrinterResolutionCount)
+	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, PMPrinterGetPrinterResolutionCount_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)PMPrinterGetPrinterResolutionCount((PMPrinter)arg0, lparg1);
+*/
+	{
+		LOAD_FUNCTION(fp, PMPrinterGetPrinterResolutionCount)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrinter, jint *))fp)((PMPrinter)arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, PMPrinterGetPrinterResolutionCount_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionGetCurrentPrinter
+JNIEXPORT jintLong JNICALL OS_NATIVE(PMSessionGetCurrentPrinter)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1)
+{
+	jintLong *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, PMSessionGetCurrentPrinter_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)PMSessionGetCurrentPrinter((PMPrintSession)arg0, (PMPrinter *)lparg1);
+*/
+	{
+		LOAD_FUNCTION(fp, PMSessionGetCurrentPrinter)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrintSession, PMPrinter *))fp)((PMPrintSession)arg0, (PMPrinter *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, PMSessionGetCurrentPrinter_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionGetDestinationType
+JNIEXPORT jintLong JNICALL OS_NATIVE(PMSessionGetDestinationType)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jshortArray arg2)
+{
+	jshort *lparg2=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, PMSessionGetDestinationType_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)PMSessionGetDestinationType((PMPrintSession)arg0, arg1, lparg2);
+*/
+	{
+		LOAD_FUNCTION(fp, PMSessionGetDestinationType)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrintSession, jintLong, jshort *))fp)((PMPrintSession)arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, PMSessionGetDestinationType_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_PtInRgn
 JNIEXPORT jboolean JNICALL OS_NATIVE(PtInRgn)
 	(JNIEnv *env, jclass that, jshortArray arg0, jintLong arg1)

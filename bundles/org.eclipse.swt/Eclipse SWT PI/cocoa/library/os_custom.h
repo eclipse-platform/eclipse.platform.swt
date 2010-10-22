@@ -55,3 +55,8 @@
 #define GetIconRefFromTypeInfo_LIB "com.apple.LaunchServices"
 #define GetIndMenuItemWithCommandID_LIB "com.apple.Carbon"
 #define DeleteMenuItem_LIB "com.apple.Carbon"
+#define PMSessionGetCurrentPrinter_LIB "com.apple.ApplicationServices"
+#define PMSessionGetDestinationType_LIB "com.apple.ApplicationServices"
+#define PMPrinterGetPrinterResolutionCount_LIB "com.apple.ApplicationServices"
+#define PMPrinterGetOutputResolution_LIB "com.apple.ApplicationServices"
+#define PMPrinterGetIndexedPrinterResolution_LIB "com.apple.ApplicationServices"

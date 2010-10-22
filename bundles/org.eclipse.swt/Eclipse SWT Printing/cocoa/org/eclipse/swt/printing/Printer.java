@@ -545,7 +545,38 @@ public Point getDPI() {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		//TODO get output resolution
+		int /*long*/ pmPrintSession = printInfo.PMPrintSession();
+		int /*long*/ printer[] = new int /*long*/ [1]; 
+		int /*long*/ err = OS.PMSessionGetCurrentPrinter(pmPrintSession, printer);
+		
+		if (err == OS.noErr) {
+			int /*long*/ printSettings = printInfo.PMPrintSettings();
+			short[] destType = new short[1];
+			if (OS.PMSessionGetDestinationType(pmPrintSession, printSettings, destType) == OS.noErr) {
+				if (destType[0] == OS.kPMDestinationPrinter) {
+					PMResolution resolution =  new PMResolution();
+					
+					if (OS.PMPrinterGetOutputResolution(printer[0], printSettings, resolution) != OS.noErr) {
+						int numberOfResolutions[] = new int[1];
+						if (OS.PMPrinterGetPrinterResolutionCount(printer[0], numberOfResolutions) == OS.noErr) {
+							PMResolution tempResolution = new PMResolution();
+							tempResolution.hRes = tempResolution.vRes = 300.0;							
+							for (int i = 1; i <= numberOfResolutions[0]; i++) {
+								// PMPrinterGetIndexedPrinterResolution indexes are 1-based.
+								if (OS.PMPrinterGetIndexedPrinterResolution(printer[0], i, tempResolution) == OS.noErr) {
+									if (tempResolution.vRes > resolution.vRes && tempResolution.hRes > resolution.hRes) {
+										resolution = tempResolution;
+									}
+								}
+							}
+						}
+					}
+					
+					return new Point((int)resolution.hRes, (int)resolution.vRes);
+				}
+			}
+		}
+		
 		return getIndependentDPI();
 	} finally {
 		if (pool != null) pool.release();

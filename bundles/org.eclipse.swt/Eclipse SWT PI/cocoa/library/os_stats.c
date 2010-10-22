@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 614;
-int OS_nativeFunctionCallCount[614];
+int OS_nativeFunctionCount = 619;
+int OS_nativeFunctionCallCount[619];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -415,6 +415,11 @@ char * OS_nativeFunctionNames[] = {
 	"NewRgn",
 	"OffsetRgn",
 	"OpenRgn",
+	"PMPrinterGetIndexedPrinterResolution",
+	"PMPrinterGetOutputResolution",
+	"PMPrinterGetPrinterResolutionCount",
+	"PMSessionGetCurrentPrinter",
+	"PMSessionGetDestinationType",
 	"PtInRgn",
 	"QDRegionToRects",
 	"RectInRgn",

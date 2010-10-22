@@ -62,6 +62,7 @@ public class OS extends C {
 	public static final int kAXUnderlineStyleSingle = 0x1; 
 	public static final int kAXUnderlineStyleThick = 0x2; 
 	public static final int kAXUnderlineStyleDouble = 0x9;
+	public static final int kPMDestinationPrinter = 1;
 
 
 	public static final int /*long*/ sel_sendSearchSelection = sel_registerName("sendSearchSelection");
@@ -286,6 +287,32 @@ public static final native int GetIndMenuItemWithCommandID(int /*long*/ mHandle,
  * @param index cast=(short)
  */
 public static final native void DeleteMenuItem(int /*long*/ mHandle, short index);
+/** @method flags=dynamic
+ * @param pmSessionInfo cast=(PMPrintSession)
+ * @param outPMPrinter cast=(PMPrinter *)
+ */
+public static final native int /*long*/ PMSessionGetCurrentPrinter(int /*long*/ pmSessionInfo, int /*long*/[] outPMPrinter);
+/** @method flags=dynamic
+ * @param pmSessionInfo cast=(PMPrintSession)
+ * @param outPMPrinter cast=(PMPrintSettings)
+ */
+public static final native int /*long*/ PMSessionGetDestinationType(int /*long*/ pmSessionInfo, int /*long*/ pmPrintSettings, short[] outDestinationType);
+/** @method flags=dynamic
+ * @param pmPrinter cast=(PMPrinter)
+ * @param pmPrintSettings cast=(PMPrintSettings)
+ */
+public static final native int /*long*/ PMPrinterGetPrinterResolutionCount(int /*long*/ pmPrinter, int[] outNumResolutions);
+/** @method flags=dynamic
+ * @param pmPrinter cast=(PMPrinter)
+ * @param pmPrintSettings cast=(PMPrintSettings)
+ * @param outResolution cast=(PMResolution *)
+ */
+public static final native int /*long*/ PMPrinterGetOutputResolution(int /*long*/ pmPrinter, int /*long*/ pmPrintSettings, PMResolution outResolution);
+/** @method flags=dynamic
+ * @param pmPrinter cast=(PMPrinter)
+ * @param outResolution cast=(PMResolution *)
+ */
+public static final native int /*long*/ PMPrinterGetIndexedPrinterResolution(int /*long*/ pmPrinter, int index, PMResolution outResolution);
 
 /** C calls */
 
@@ -790,6 +817,8 @@ public static final int /*long*/ protocol_WebUIDelegate = objc_getProtocol("WebU
 public static final int /*long*/ sel_CGEvent = sel_registerName("CGEvent");
 public static final int /*long*/ sel_DOMDocument = sel_registerName("DOMDocument");
 public static final int /*long*/ sel_IBeamCursor = sel_registerName("IBeamCursor");
+public static final int /*long*/ sel_PMPrintSession = sel_registerName("PMPrintSession");
+public static final int /*long*/ sel_PMPrintSettings = sel_registerName("PMPrintSettings");
 public static final int /*long*/ sel_TIFFRepresentation = sel_registerName("TIFFRepresentation");
 public static final int /*long*/ sel_URL = sel_registerName("URL");
 public static final int /*long*/ sel_URLFromPasteboard_ = sel_registerName("URLFromPasteboard:");

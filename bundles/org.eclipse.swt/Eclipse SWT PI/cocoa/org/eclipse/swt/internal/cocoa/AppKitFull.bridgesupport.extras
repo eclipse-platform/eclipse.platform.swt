@@ -2291,6 +2291,12 @@
 	<class name="NSPredicateEditor" swt_superclass="NSRuleEditor">
 	</class>
 	<class name="NSPrintInfo" swt_gen="mixed">
+		<method selector="PMPrintSession" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="PMPrintSettings" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method class_method="true" selector="defaultPrinter" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>

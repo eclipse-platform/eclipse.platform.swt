@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -462,6 +462,40 @@ void setNSSizeFields(JNIEnv *env, jobject lpObject, NSSize *lpStruct)
 	if (!NSSizeFc.cached) cacheNSSizeFields(env, lpObject);
 	(*env)->SetFloatDoubleField(env, lpObject, NSSizeFc.width, (jfloatDouble)lpStruct->width);
 	(*env)->SetFloatDoubleField(env, lpObject, NSSizeFc.height, (jfloatDouble)lpStruct->height);
+}
+#endif
+
+#ifndef NO_PMResolution
+typedef struct PMResolution_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID hRes, vRes;
+} PMResolution_FID_CACHE;
+
+PMResolution_FID_CACHE PMResolutionFc;
+
+void cachePMResolutionFields(JNIEnv *env, jobject lpObject)
+{
+	if (PMResolutionFc.cached) return;
+	PMResolutionFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PMResolutionFc.hRes = (*env)->GetFieldID(env, PMResolutionFc.clazz, "hRes", "D");
+	PMResolutionFc.vRes = (*env)->GetFieldID(env, PMResolutionFc.clazz, "vRes", "D");
+	PMResolutionFc.cached = 1;
+}
+
+PMResolution *getPMResolutionFields(JNIEnv *env, jobject lpObject, PMResolution *lpStruct)
+{
+	if (!PMResolutionFc.cached) cachePMResolutionFields(env, lpObject);
+	lpStruct->hRes = (*env)->GetDoubleField(env, lpObject, PMResolutionFc.hRes);
+	lpStruct->vRes = (*env)->GetDoubleField(env, lpObject, PMResolutionFc.vRes);
+	return lpStruct;
+}
+
+void setPMResolutionFields(JNIEnv *env, jobject lpObject, PMResolution *lpStruct)
+{
+	if (!PMResolutionFc.cached) cachePMResolutionFields(env, lpObject);
+	(*env)->SetDoubleField(env, lpObject, PMResolutionFc.hRes, (jdouble)lpStruct->hRes);
+	(*env)->SetDoubleField(env, lpObject, PMResolutionFc.vRes, (jdouble)lpStruct->vRes);
 }
 #endif
 
