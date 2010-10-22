@@ -261,7 +261,8 @@ int calculateWidth (TreeItem[] items, int index, GC gc, boolean recurse) {
 
 NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
 	NSSize size = super.cellSize(id, sel);
-	NSImage image = new NSCell(id).image();
+	NSCell cell = new NSCell(id);
+	NSImage image = cell.image();
 	if (image != null) size.width += imageBounds.width + IMAGE_GAP;
 	if (hooks(SWT.MeasureItem)) {
 		int /*long*/ [] outValue = new int /*long*/ [1];
@@ -276,7 +277,7 @@ NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
 				break;
 			}
 		}
-		sendMeasureItem (item, columnIndex, size);
+		sendMeasureItem (item, cell.isHighlighted(), columnIndex, size);
 	}
 	return size;
 }
@@ -1011,7 +1012,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rec
 	NSGraphicsContext context = NSGraphicsContext.currentContext ();
 	
 	if (hooksMeasure) {
-		sendMeasureItem(item, columnIndex, contentSize);
+		sendMeasureItem(item, cell.isHighlighted(), columnIndex, contentSize);
 	}
 
 	Color userForeground = null;
@@ -2539,7 +2540,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	return result;
 }
 
-void sendMeasureItem (TreeItem item, int columnIndex, NSSize size) {
+void sendMeasureItem (TreeItem item, boolean selected, int columnIndex, NSSize size) {
 	NSOutlineView widget = (NSOutlineView)this.view;
 	int contentWidth = (int)Math.ceil (size.width);
 	NSSize spacing = widget.intercellSpacing();
@@ -2554,6 +2555,7 @@ void sendMeasureItem (TreeItem item, int columnIndex, NSSize size) {
 	event.index = columnIndex;
 	event.width = contentWidth;
 	event.height = itemHeight;
+	if (selected && ((style & SWT.HIDE_SELECTION) == 0 || hasFocus())) event.detail |= SWT.SELECTED;
 	sendEvent (SWT.MeasureItem, event);
 	gc.dispose ();
 	if (!isDisposed () && !item.isDisposed ()) {

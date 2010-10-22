@@ -124,7 +124,7 @@ static Table checkNull (Table control) {
 	return control;
 }
 
-int calculateWidth (int index, GC gc) {
+int calculateWidth (int index, GC gc, boolean rowSelected) {
 	if (index == 0 && width != -1) return width;
 	Font font = null;
 	if (cellFont != null) font = cellFont[index];
@@ -171,6 +171,7 @@ int calculateWidth (int index, GC gc) {
 		int height = (int)widget.rowHeight ();
 		event.width = width;
 		event.height = height;
+		if (rowSelected && ((parent.style & SWT.HIDE_SELECTION) == 0 || parent.hasFocus())) event.detail |= SWT.SELECTED;
 		parent.sendEvent (SWT.MeasureItem, event);
 		if (height < event.height) {
 			widget.setRowHeight (event.height);

@@ -276,6 +276,7 @@ int calculateWidth (int index, GC gc) {
 		int height = (int)widget.rowHeight ();
 		event.width = width;
 		event.height = height;
+		event.detail = (cell.isHighlighted() && ((style & SWT.HIDE_SELECTION) == 0 || parent.hasFocus()))  ? SWT.SELECTED : 0;
 		parent.sendEvent (SWT.MeasureItem, event);
 		if (height < event.height) {
 			widget.setRowHeight (event.height);

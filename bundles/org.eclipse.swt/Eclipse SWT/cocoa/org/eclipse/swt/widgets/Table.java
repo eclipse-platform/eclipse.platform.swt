@@ -200,7 +200,7 @@ int calculateWidth (TableItem[] items, int index, GC gc) {
 	for (int i=0; i < itemCount; i++) {
 		TableItem item = items [i];
 		if (item != null && item.cached) {
-			width = Math.max (width, item.calculateWidth (index, gc));
+			width = Math.max (width, item.calculateWidth (index, gc, isSelected(index)));
 		}
 	}
 	return width;
@@ -208,7 +208,8 @@ int calculateWidth (TableItem[] items, int index, GC gc) {
 
 NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
 	NSSize size = super.cellSize(id, sel);
-	NSImage image = new NSCell(id).image();
+	NSCell cell = new NSCell(id);
+	NSImage image = cell.image();
 	if (image != null) size.width += imageBounds.width + IMAGE_GAP;
 	if (hooks(SWT.MeasureItem)) {
 		int /*long*/ [] outValue = new int /*long*/ [1];
@@ -224,7 +225,7 @@ NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
 				break;
 			}
 		}
-		sendMeasureItem (item, columnIndex, size);
+		sendMeasureItem (item, columnIndex, size, cell.isHighlighted());
 	}
 	return size;
 }
@@ -955,7 +956,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rec
 	NSGraphicsContext context = NSGraphicsContext.currentContext ();
 
 	if (hooksMeasure) {
-		sendMeasureItem(item, columnIndex, contentSize);
+		sendMeasureItem(item, columnIndex, contentSize, isSelected);
 	}
 	
 	Color userForeground = null;
@@ -2627,7 +2628,7 @@ boolean setScrollWidth (TableItem item) {
 		return false;
 	}
 	GC gc = new GC (this);
-	int newWidth = item.calculateWidth (0, gc);
+	int newWidth = item.calculateWidth (0, gc, isSelected(indexOf(item)));
 	gc.dispose ();
 	int oldWidth = (int)firstColumn.width ();
 	if (oldWidth < newWidth) {
@@ -2651,7 +2652,7 @@ boolean setScrollWidth (TableItem [] items, boolean set) {
 	for (int i = 0; i < items.length; i++) {
 		TableItem item = items [i];
 		if (item != null) {
-			newWidth = Math.max (newWidth, item.calculateWidth (0, gc));
+			newWidth = Math.max (newWidth, item.calculateWidth (0, gc, isSelected(indexOf(item))));
 		}
 	}
 	gc.dispose ();
@@ -3031,7 +3032,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	return result;
 }
 
-void sendMeasureItem (TableItem item, int columnIndex, NSSize size) {
+void sendMeasureItem (TableItem item, int columnIndex, NSSize size, boolean isSelected) {
 	NSTableView widget = (NSTableView)this.view;
 	int contentWidth = (int)Math.ceil (size.width);
 	NSSize spacing = widget.intercellSpacing();
@@ -3046,6 +3047,7 @@ void sendMeasureItem (TableItem item, int columnIndex, NSSize size) {
 	event.index = columnIndex;
 	event.width = contentWidth;
 	event.height = itemHeight;
+	if (isSelected && ((style & SWT.HIDE_SELECTION) == 0 || hasFocus())) event.detail |= SWT.SELECTED;
 	sendEvent (SWT.MeasureItem, event);
 	gc.dispose ();
 	if (!isDisposed () && !item.isDisposed ()) {
