@@ -1071,13 +1071,17 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 	 * To check for an actual drag we need to pull off mouse moved and mouse up events
 	 * to detect if the user dragged outside of a 10 x 10 box centered on the mouse down location.
 	 * We still want the view to see the events, so save them and re-post when done checking.
+	 * If no motion happens for .3 seconds, bail.
 	 */
 	NSEvent mouseUpEvent = null;
 	NSMutableArray dragEvents = NSMutableArray.arrayWithCapacity(10);
+	NSDate timeout = NSDate.dateWithTimeIntervalSinceNow(0.3);
 
 	while (eventType != OS.NSLeftMouseUp) {
 		NSEvent event = application.nextEventMatchingMask((OS.NSLeftMouseUpMask | OS.NSLeftMouseDraggedMask),
-				NSDate.distantFuture(), OS.NSEventTrackingRunLoopMode, true);
+				timeout, OS.NSEventTrackingRunLoopMode, true);
+		// No event means nextEventMatchingMask timed out, so no drag.
+		if (event == null) break;
 		eventType = event.type();
 		
 		if (eventType == OS.NSLeftMouseDragged) {
