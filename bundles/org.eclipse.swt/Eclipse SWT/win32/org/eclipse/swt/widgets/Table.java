@@ -3746,7 +3746,23 @@ Event sendMeasureItemEvent (TableItem item, int row, int column, int /*long*/ hD
 	event.y = itemRect.top;
 	event.width = itemRect.right - itemRect.left;
 	event.height = itemRect.bottom - itemRect.top;
-	event.detail = isSelected (indexOf (item)) ? SWT.SELECTED : 0;
+	boolean drawSelected = false;
+	if (OS.IsWindowEnabled (handle)) {
+		LVITEM lvItem = new LVITEM ();
+		lvItem.mask = OS.LVIF_STATE;
+		lvItem.stateMask = OS.LVIS_SELECTED;
+		lvItem.iItem = (int)/*64*/row;
+		int /*long*/ result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
+		boolean selected = (result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0);
+		if (selected && (column == 0 || (style & SWT.FULL_SELECTION) != 0)) {
+			if (OS.GetFocus () == handle || display.getHighContrast ()) {
+				drawSelected = true;
+			} else {
+				drawSelected = (style & SWT.HIDE_SELECTION) == 0;
+			}
+		}
+	}
+	if (drawSelected) event.detail |= SWT.SELECTED;
 	sendEvent (SWT.MeasureItem, event);
 	event.gc = null;
 	gc.dispose ();
