@@ -703,6 +703,19 @@ void calculateVisibleRegion (NSView view, int /*long*/ visibleRgn, boolean clipC
 	OS.DisposeRgn (tempRgn);
 }
 
+void cancelOperation(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
+	// Cmd-. and escape arrive here. Forward the current event as a key event.
+	if (hasKeyboardFocus(id)) {
+		NSEvent nsEvent = NSApplication.sharedApplication().currentEvent();
+		Shell s = this.getShell();
+		s.keyInputHappened = false;
+		boolean [] consume = new boolean [1];
+		if (translateTraversal (nsEvent.keyCode (), nsEvent, consume)) return;
+		if (isDisposed ()) return;
+		if (!sendKeyEvent (nsEvent, SWT.KeyDown)) return;
+	}
+}
+
 void checkBackground () {
 	Shell shell = getShell ();
 	if (this == shell) return;

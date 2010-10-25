@@ -2126,6 +2126,7 @@ void addEventMethods (int /*long*/ cls, int /*long*/ proc2, int /*long*/ proc3, 
 		OS.class_addMethod(cls, OS.sel_shouldDelayWindowOrderingForEvent_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_acceptsFirstMouse_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_changeColor_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_cancelOperation_, proc3, "@:@");
 	}
 	if (proc2 != 0) {
 		OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
@@ -5436,6 +5437,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		return (widget.validateMenuItem(id, sel, arg0) ? 1 : 0);
 	} else if (sel == OS.sel_readSelectionFromPasteboard_) {
 		return (widget.readSelectionFromPasteboard(id, sel, arg0) ? 1 : 0);
+	} else if (sel == OS.sel_cancelOperation_) {
+		widget.cancelOperation(id, sel, arg0);
 	}
 	return 0;
 }

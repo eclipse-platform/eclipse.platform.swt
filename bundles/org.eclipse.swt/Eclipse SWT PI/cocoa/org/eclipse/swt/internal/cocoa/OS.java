@@ -962,6 +962,7 @@ public static final int /*long*/ sel_canShowMIMEType_ = sel_registerName("canSho
 public static final int /*long*/ sel_cancel = sel_registerName("cancel");
 public static final int /*long*/ sel_cancelAuthenticationChallenge_ = sel_registerName("cancelAuthenticationChallenge:");
 public static final int /*long*/ sel_cancelButtonCell = sel_registerName("cancelButtonCell");
+public static final int /*long*/ sel_cancelOperation_ = sel_registerName("cancelOperation:");
 public static final int /*long*/ sel_cancelTracking = sel_registerName("cancelTracking");
 public static final int /*long*/ sel_cascadeTopLeftFromPoint_ = sel_registerName("cascadeTopLeftFromPoint:");
 public static final int /*long*/ sel_cell = sel_registerName("cell");

@@ -259,6 +259,9 @@ boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 	return callSuperBoolean (id, sel);
 }
 
+void cancelOperation(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+}
+
 NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
 	NSSize result = new NSSize();
 	objc_super super_struct = new objc_super();

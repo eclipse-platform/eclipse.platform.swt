@@ -32,6 +32,10 @@ public boolean becomeFirstResponder() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_becomeFirstResponder);
 }
 
+public void cancelOperation(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_cancelOperation_, sender != null ? sender.id : 0);
+}
+
 public void cursorUpdate(NSEvent event) {
 	OS.objc_msgSend(this.id, OS.sel_cursorUpdate_, event != null ? event.id : 0);
 }
