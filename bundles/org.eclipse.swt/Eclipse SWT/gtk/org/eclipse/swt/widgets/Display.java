@@ -1646,25 +1646,6 @@ public Object getData () {
 	return data;
 }
 
-/**
- * Returns a point whose x coordinate is the horizontal
- * dots per inch of the display, and whose y coordinate
- * is the vertical dots per inch of the display.
- *
- * @return the horizontal and vertical DPI
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public Point getDPI () {
-	checkDevice ();
-	int widthMM = OS.gdk_screen_width_mm ();
-	int width = OS.gdk_screen_width ();
-	int dpi = Compatibility.round (254 * width, widthMM * 10);
-	return new Point (dpi, dpi);
-}
-
 int /*long*/ gtk_fixed_get_type () {
 	return fixed_type;
 }

@@ -79,6 +79,9 @@ public abstract class Device implements Drawable {
 	/* System Font */
 	Font systemFont;
 	
+	/* Device dpi */
+	Point dpi;
+	
 	int /*long*/ emptyTab;
 
 	boolean useXRender;
@@ -406,7 +409,7 @@ public int getDepth () {
  */
 public Point getDPI () {
 	checkDevice ();
-	return new Point (72, 72);
+	return getScreenDPI();
 }
 
 /**
@@ -471,6 +474,13 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	FontData[] result = new FontData[nFds];
 	System.arraycopy(fds, 0, result, 0, nFds);
 	return result;
+}
+
+Point getScreenDPI () {
+	int widthMM = OS.gdk_screen_width_mm ();
+	int width = OS.gdk_screen_width ();
+	int dpi = Compatibility.round (254 * width, widthMM * 10);
+	return new Point (dpi, dpi);
 }
 
 /**
@@ -568,6 +578,8 @@ public boolean getWarnings () {
  * @see #create
  */
 protected void init () {
+	this.dpi = getDPI();
+	
 	if (xDisplay != 0) {
 		int[] event_basep = new int[1], error_basep = new int [1];
 		if (OS.XRenderQueryExtension (xDisplay, event_basep, error_basep)) {

@@ -352,6 +352,9 @@ public Font getSystemFont () {
 	if (systemFont != null) return systemFont;
 	int /*long*/ style = OS.gtk_widget_get_default_style();	
 	int /*long*/ defaultFont = OS.pango_font_description_copy (OS.gtk_style_get_font_desc (style));
+	int size = OS.pango_font_description_get_size(defaultFont);
+	Point dpi = getDPI(), screenDPI = super.getDPI();
+	OS.pango_font_description_set_size(defaultFont, size * dpi.y / screenDPI.y);
 	return systemFont = Font.gtk_new (this, defaultFont);
 }
 
@@ -387,10 +390,15 @@ public int /*long*/ internal_new_GC(GCData data) {
 		data.background = getSystemColor (SWT.COLOR_WHITE).handle;
 		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
 		data.font = getSystemFont ();
-		//TODO: We are supposed to return this in pixels, but GTK_UNIT_PIXELS is currently not implemented (gtk bug 346245)
-		data.width = (int)OS.gtk_page_setup_get_paper_width (pageSetup, OS.GTK_UNIT_POINTS);
-		data.height = (int)OS.gtk_page_setup_get_paper_height (pageSetup, OS.GTK_UNIT_POINTS);
+		Point dpi = getDPI(), screenDPI = getIndependentDPI();
+		data.width = (int)(OS.gtk_page_setup_get_paper_width (pageSetup, OS.GTK_UNIT_POINTS) * dpi.x / screenDPI.x);
+		data.height = (int)(OS.gtk_page_setup_get_paper_height (pageSetup, OS.GTK_UNIT_POINTS) * dpi.y / screenDPI.y);
 		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		Cairo.cairo_identity_matrix(cairo);
+		double printX = OS.gtk_page_setup_get_left_margin(pageSetup, OS.GTK_UNIT_POINTS);
+		double printY = OS.gtk_page_setup_get_top_margin(pageSetup, OS.GTK_UNIT_POINTS);
+		Cairo.cairo_translate(cairo, printX, printY);
+		Cairo.cairo_scale(cairo, screenDPI.x / (float)dpi.x, screenDPI.y / (float)dpi.y);
 		data.cairo = cairo;
 		isGCCreated = true;
 	}
@@ -591,10 +599,9 @@ public Point getDPI() {
 	checkDevice();
 	int resolution = OS.gtk_print_settings_get_resolution(settings);
 	if (DEBUG) System.out.println("print_settings.resolution=" + resolution);
-	//TODO: Return 72 (1/72 inch = 1 point) until gtk bug 346245 is fixed
-	//TODO: Fix this: gtk_print_settings_get_resolution returns 0? (see gtk bug 346252)
-	/*if (resolution == 0)*/ return new Point(72, 72);
-//	return new Point(resolution, resolution);
+	//TODO: use new api for get x resolution and get y resolution
+	if (resolution == 0) return new Point(72, 72);
+	return new Point(resolution, resolution);
 }
 
 /**
@@ -614,9 +621,9 @@ public Point getDPI() {
  */
 public Rectangle getBounds() {
 	checkDevice();
-	//TODO: We are supposed to return this in pixels, but GTK_UNIT_PIXELS is currently not implemented (gtk bug 346245)
-	double width = OS.gtk_page_setup_get_paper_width (pageSetup, OS.GTK_UNIT_POINTS);
-	double height = OS.gtk_page_setup_get_paper_height (pageSetup, OS.GTK_UNIT_POINTS);
+	Point dpi = getDPI(), screenDPI = getIndependentDPI();
+	double width = OS.gtk_page_setup_get_paper_width (pageSetup, OS.GTK_UNIT_POINTS) * dpi.x / screenDPI.x;
+	double height = OS.gtk_page_setup_get_paper_height (pageSetup, OS.GTK_UNIT_POINTS) * dpi.y / screenDPI.y;
 	return new Rectangle(0, 0, (int) width, (int) height);
 }
 
@@ -639,10 +646,14 @@ public Rectangle getBounds() {
  */
 public Rectangle getClientArea() {
 	checkDevice();
-	//TODO: We are supposed to return this in pixels, but GTK_UNIT_PIXELS is currently not implemented (gtk bug 346245)
-	double width = OS.gtk_page_setup_get_page_width(pageSetup, OS.GTK_UNIT_POINTS);
-	double height = OS.gtk_page_setup_get_page_height(pageSetup, OS.GTK_UNIT_POINTS);
+	Point dpi = getDPI(), screenDPI = getIndependentDPI();
+	double width = OS.gtk_page_setup_get_page_width(pageSetup, OS.GTK_UNIT_POINTS) * dpi.x / screenDPI.x;
+	double height = OS.gtk_page_setup_get_page_height(pageSetup, OS.GTK_UNIT_POINTS) * dpi.y / screenDPI.y;
 	return new Rectangle(0, 0, (int) width, (int) height);
+}
+
+Point getIndependentDPI () {
+	return new Point(72, 72);
 }
 
 /**
@@ -682,13 +693,13 @@ public Rectangle getClientArea() {
  */
 public Rectangle computeTrim(int x, int y, int width, int height) {
 	checkDevice();
-	//TODO: We are supposed to return this in pixels, but GTK_UNIT_PIXELS is currently not implemented (gtk bug 346245)
-	double printWidth = OS.gtk_page_setup_get_page_width(pageSetup, OS.GTK_UNIT_POINTS);
-	double printHeight = OS.gtk_page_setup_get_page_height(pageSetup, OS.GTK_UNIT_POINTS);
-	double paperWidth = OS.gtk_page_setup_get_paper_width (pageSetup, OS.GTK_UNIT_POINTS);
-	double paperHeight = OS.gtk_page_setup_get_paper_height (pageSetup, OS.GTK_UNIT_POINTS);
-	double printX = -OS.gtk_page_setup_get_left_margin(pageSetup, OS.GTK_UNIT_POINTS);
-	double printY = -OS.gtk_page_setup_get_top_margin(pageSetup, OS.GTK_UNIT_POINTS);
+	Point dpi = getDPI(), screenDPI = getIndependentDPI();
+	double printWidth = OS.gtk_page_setup_get_page_width(pageSetup, OS.GTK_UNIT_POINTS) * dpi.x / screenDPI.x;
+	double printHeight = OS.gtk_page_setup_get_page_height(pageSetup, OS.GTK_UNIT_POINTS) * dpi.y / screenDPI.y;
+	double paperWidth = OS.gtk_page_setup_get_paper_width (pageSetup, OS.GTK_UNIT_POINTS) * dpi.x / screenDPI.x;
+	double paperHeight = OS.gtk_page_setup_get_paper_height (pageSetup, OS.GTK_UNIT_POINTS) * dpi.y / screenDPI.y;
+	double printX = -OS.gtk_page_setup_get_left_margin(pageSetup, OS.GTK_UNIT_POINTS) * dpi.x / screenDPI.x;
+	double printY = -OS.gtk_page_setup_get_top_margin(pageSetup, OS.GTK_UNIT_POINTS) * dpi.y / screenDPI.y;
 	double hTrim = paperWidth - printWidth;
 	double vTrim = paperHeight - printHeight;
 	return new Rectangle(x + (int)printX, y + (int)printY, width + (int)hTrim, height + (int)vTrim);
@@ -720,7 +731,6 @@ protected void create(DeviceData deviceData) {
  * @see #create
  */
 protected void init() {
-	super.init ();
 	settings = OS.gtk_print_settings_new();
 	pageSetup = OS.gtk_page_setup_new();
 	if (data.otherData != null) {
@@ -742,6 +752,7 @@ protected void init() {
 	int orientation = data.orientation == PrinterData.LANDSCAPE ? OS.GTK_PAGE_ORIENTATION_LANDSCAPE : OS.GTK_PAGE_ORIENTATION_PORTRAIT;
 	OS.gtk_page_setup_set_orientation(pageSetup, orientation);
 	OS.gtk_print_settings_set_orientation(settings, orientation);
+	super.init ();
 }
 
 /**
