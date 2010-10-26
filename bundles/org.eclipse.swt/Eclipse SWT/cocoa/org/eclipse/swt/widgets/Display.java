@@ -2183,7 +2183,8 @@ int /*long*/ createWindowSubclass(int /*long*/ baseClass, String newClass) {
 	int /*long*/ proc3 = windowCallback3.getAddress();
 	int /*long*/ proc2 = windowCallback2.getAddress();
 	int /*long*/ proc4 = windowCallback4.getAddress();
-	int /*long*/ view_stringForToolTip_point_userDataProc = OS.CALLBACK_view_stringForToolTip_point_userData_(proc4);
+	int /*long*/ proc6 = windowCallback6.getAddress();
+	int /*long*/ view_stringForToolTip_point_userDataProc = OS.CALLBACK_view_stringForToolTip_point_userData_(proc6);
 	int /*long*/ accessibilityHitTestProc = OS.CALLBACK_accessibilityHitTest_(proc3);
 
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
