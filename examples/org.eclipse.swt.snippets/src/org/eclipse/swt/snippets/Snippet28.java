@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Shell example snippet: open a shell maximized (full screen)
+ * Shell example snippet: open a shell maximized
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
