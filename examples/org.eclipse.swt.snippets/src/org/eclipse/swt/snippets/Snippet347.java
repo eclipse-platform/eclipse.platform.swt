@@ -35,7 +35,10 @@ public class Snippet347 {
 	
 		Menu appMenuBar = display.getAppMenuBar();
 		
-		if (appMenuBar == null) appMenuBar = new Menu(shell);
+		if (appMenuBar == null) {
+			appMenuBar = new Menu(shell, SWT.BAR);
+			shell.setMenuBar(appMenuBar);
+		}
 		
 		MenuItem item = new MenuItem(appMenuBar, SWT.PUSH);
 		item.setText("Sample");
