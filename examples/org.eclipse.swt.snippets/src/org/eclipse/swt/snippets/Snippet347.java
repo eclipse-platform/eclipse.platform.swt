@@ -35,18 +35,15 @@ public class Snippet347 {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout(1, false));
-	
 		Menu appMenuBar = display.getAppMenuBar();
-		
 		if (appMenuBar == null) {
 			appMenuBar = new Menu(shell, SWT.BAR);
 			shell.setMenuBar(appMenuBar);
 		}
-		
-		MenuItem item = new MenuItem(appMenuBar, SWT.CASCADE);
-		item.setText("File");
+		MenuItem file = new MenuItem(appMenuBar, SWT.CASCADE);
+		file.setText("File");
 		Menu dropdown = new Menu(appMenuBar);
-		item.setMenu(dropdown);
+		file.setMenu(dropdown);
 		MenuItem exit = new MenuItem(dropdown, SWT.PUSH);
 		exit.setText("Exit");
 		exit.addSelectionListener(new SelectionAdapter() {
@@ -54,7 +51,6 @@ public class Snippet347 {
 				display.dispose();
 			};
 		});
-	
 		Button b = new Button(shell, SWT.PUSH);
 		b.setText("Test");
 		shell.pack();
