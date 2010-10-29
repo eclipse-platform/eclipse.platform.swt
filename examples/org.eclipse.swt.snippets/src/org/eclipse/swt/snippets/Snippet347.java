@@ -10,9 +10,12 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 
+
 package org.eclipse.swt.snippets;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
@@ -21,7 +24,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
 /*
- * Display snippet: get the AppMenuBar on Cocoa or keep going on other platforms.
+ * Display snippet: use the AppMenuBar when available.
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -29,7 +32,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class Snippet347 {
 	public static void main(String[] args) {
-		Display display = new Display();
+		final Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout(1, false));
 	
@@ -40,8 +43,17 @@ public class Snippet347 {
 			shell.setMenuBar(appMenuBar);
 		}
 		
-		MenuItem item = new MenuItem(appMenuBar, SWT.PUSH);
-		item.setText("Sample");
+		MenuItem item = new MenuItem(appMenuBar, SWT.CASCADE);
+		item.setText("File");
+		Menu dropdown = new Menu(appMenuBar);
+		item.setMenu(dropdown);
+		MenuItem exit = new MenuItem(dropdown, SWT.PUSH);
+		exit.setText("Exit");
+		exit.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				display.dispose();
+			};
+		});
 	
 		Button b = new Button(shell, SWT.PUSH);
 		b.setText("Test");
