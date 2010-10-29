@@ -12,8 +12,12 @@
 
 package org.eclipse.swt.snippets;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
 /*
@@ -29,8 +33,15 @@ public class Snippet347 {
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout(1, false));
 	
+		Menu appMenuBar = display.getAppMenuBar();
 		
+		if (appMenuBar == null) appMenuBar = new Menu(shell);
+		
+		MenuItem item = new MenuItem(appMenuBar, SWT.PUSH);
+		item.setText("Sample");
 	
+		Button b = new Button(shell, SWT.PUSH);
+		b.setText("Test");
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {
