@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
  
+import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.OS;
 
 /**
@@ -58,11 +59,26 @@ public void javaToNative (Object object, TransferData transferData){
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	String string = (String)object;
-	int count = string.length();
-	char[] chars = new char[count];
-	string.getChars(0, count, chars, 0);
-	byte[] buffer = new byte[chars.length * 2];
-	OS.memmove(buffer, chars, buffer.length);
+	char[] chars = new char[string.length()];
+	string.getChars (0, chars.length, chars, 0);
+	transferData.result = -1;
+
+	int encoding = OS.CFStringGetSystemEncoding();
+	int cfstring = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
+	if (cfstring == 0) return;
+	byte[] buffer = null;
+	try {
+		CFRange range = new CFRange();
+		range.length = chars.length;
+		int[] size = new int[1];
+		int numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', false, null, 0, size);
+		if (numChars == 0) return;
+		buffer = new byte[size[0]];
+		numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', false, buffer, size [0], size);
+		if (numChars == 0) return;
+	} finally {
+		OS.CFRelease(cfstring);
+	}
 	transferData.data = new byte[1][];
 	transferData.data[0] = buffer;
 	transferData.result = OS.noErr;
@@ -82,9 +98,20 @@ public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
 	if (transferData.data.length == 0 || transferData.data[0].length == 0) return null;
 	byte[] buffer = transferData.data[0];
-	char[] chars = new char[(buffer.length + 1) / 2];
-	OS.memmove(chars, buffer, buffer.length);
-	return new String(chars);
+	int encoding = OS.CFStringGetSystemEncoding();
+	int cfstring = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, false);
+	if (cfstring == 0) return null;
+	try {
+		int length = OS.CFStringGetLength(cfstring);
+		if (length == 0) return null;
+		char[] chars = new char[length];
+		CFRange range = new CFRange();
+		range.length = length;
+		OS.CFStringGetCharacters(cfstring, range, chars);
+		return new String(chars);
+	} finally {
+		OS.CFRelease(cfstring);
+	}
 }
 
 protected int[] getTypeIds() {
