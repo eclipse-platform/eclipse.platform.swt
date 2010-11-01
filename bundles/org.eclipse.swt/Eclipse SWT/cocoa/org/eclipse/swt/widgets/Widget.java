@@ -1198,6 +1198,10 @@ int /*long*/ outlineView_selectionIndexesForProposedSelection (int /*long*/ id, 
 	return indexSet;
 }
 
+boolean outlineView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ item) {
+	return false;
+}
+
 void outlineView_willDisplayCell_forTableColumn_item(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ cell, int /*long*/ tableColumn, int /*long*/ item) {
 }
 
@@ -1907,7 +1911,7 @@ void tableView_setObjectValue_forTableColumn_row(int /*long*/ id, int /*long*/ s
 }
 
 boolean tableView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
-	return true;
+	return false;
 }
 
 void tableView_willDisplayCell_forTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aCell, int /*long*/ aTableColumn, int /*long*/ rowIndex) {

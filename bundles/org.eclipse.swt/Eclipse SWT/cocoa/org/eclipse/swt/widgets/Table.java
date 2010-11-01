@@ -3219,10 +3219,6 @@ void tableView_setObjectValue_forTableColumn_row (int /*long*/ id, int /*long*/ 
 	}
 }
 
-boolean tableView_shouldEditTableColumn_row (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
-	return false;
-}
-
 void tableView_willDisplayCell_forTableColumn_row (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ cell, int /*long*/ tableColumn, int /*long*/ rowIndex) {
 	if (checkColumn != null && tableColumn == checkColumn.id) return;
 	TableItem item = items [(int)/*64*/rowIndex];

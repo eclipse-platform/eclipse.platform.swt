@@ -288,6 +288,7 @@ public class Display extends Device {
 	static String APP_VERSION = ""; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
+	static final byte[] SWT_EMBED_FRAMES = {'S', 'W', 'T', '_', 'E', 'M', 'B', 'E', 'D', '_', 'F', 'R', 'A', 'M', 'E', 'S', '\0'};
 	static final byte[] SWT_IMAGE = {'S', 'W', 'T', '_', 'I', 'M', 'A', 'G', 'E', '\0'};
 	static final byte[] SWT_ROW = {'S', 'W', 'T', '_', 'R', 'O', 'W', '\0'};
 	static final byte[] SWT_COLUMN = {'S', 'W', 'T', '_', 'C', 'O', 'L', 'U', 'M', 'N', '\0'};
@@ -2188,6 +2189,7 @@ int /*long*/ createWindowSubclass(int /*long*/ baseClass, String newClass) {
 	int /*long*/ accessibilityHitTestProc = OS.CALLBACK_accessibilityHitTest_(proc3);
 
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addIvar(cls, SWT_EMBED_FRAMES, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_helpRequested_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_canBecomeKeyWindow, proc2, "@:");
@@ -2430,6 +2432,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_objectValueForTableColumn_byItem_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_willDisplayCell_forTableColumn_item_, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_setObjectValue_forTableColumn_byItem_, proc6, "@:@@@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_shouldEditTableColumn_item_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidResize_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineView_didClickTableColumn_, proc4, "@:@@");
@@ -2594,8 +2597,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_highlightSelectionInClipRect_, highlightSelectionInClipRectProc, "@:{NSRect}");
 	OS.class_addMethod(cls, OS.sel_sendDoubleSelection, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_tableView_objectValueForTableColumn_row_, proc5, "@:@:@:@");
-	OS.class_addMethod(cls, OS.sel_tableView_shouldEditTableColumn_row_, proc5, "@:@:@:@");
+	OS.class_addMethod(cls, OS.sel_tableView_objectValueForTableColumn_row_, proc5, "@:@@i");
+	OS.class_addMethod(cls, OS.sel_tableView_shouldEditTableColumn_row_, proc5, "@:@@i");
 	OS.class_addMethod(cls, OS.sel_tableViewSelectionIsChanging_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableViewSelectionDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_willDisplayCell_forTableColumn_row_, proc6, "@:@@@i");
@@ -5518,6 +5521,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		return widget.tableView_objectValueForTableColumn_row(id, sel, arg0, arg1, arg2);
 	} else if (sel == OS.sel_tableView_shouldEditTableColumn_row_) {
 		return widget.tableView_shouldEditTableColumn_row(id, sel, arg0, arg1, arg2) ? 1 : 0;
+	} else if (sel == OS.sel_outlineView_shouldEditTableColumn_item_) {
+		return widget.outlineView_shouldEditTableColumn_row(id, sel, arg0, arg1, arg2) ? 1 : 0;
 	} else if (sel == OS.sel_textView_clickedOnLink_atIndex_) {
 		 return widget.textView_clickOnLink_atIndex(id, sel, arg0, arg1, arg2) ? 1 : 0;
 	} else if (sel == OS.sel_outlineView_child_ofItem_) {

@@ -62,6 +62,10 @@ public int /*long*/ draggingSourceOperationMask() {
 	return OS.objc_msgSend(this.id, OS.sel_draggingSourceOperationMask);
 }
 
+public boolean outlineView(NSOutlineView outlineView, NSTableColumn tableColumn, id item) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_shouldEditTableColumn_item_, outlineView != null ? outlineView.id : 0, tableColumn != null ? tableColumn.id : 0, item != null ? item.id : 0);
+}
+
 public boolean readSelectionFromPasteboard(NSPasteboard pboard) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_readSelectionFromPasteboard_, pboard != null ? pboard.id : 0);
 }

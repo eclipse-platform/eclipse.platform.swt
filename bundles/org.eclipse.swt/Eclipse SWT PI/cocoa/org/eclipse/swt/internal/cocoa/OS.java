@@ -1480,6 +1480,7 @@ public static final int /*long*/ sel_outlineView_objectValueForTableColumn_byIte
 public static final int /*long*/ sel_outlineView_selectionIndexesForProposedSelection_ = sel_registerName("outlineView:selectionIndexesForProposedSelection:");
 public static final int /*long*/ sel_outlineView_setObjectValue_forTableColumn_byItem_ = sel_registerName("outlineView:setObjectValue:forTableColumn:byItem:");
 public static final int /*long*/ sel_outlineView_shouldCollapseItem_ = sel_registerName("outlineView:shouldCollapseItem:");
+public static final int /*long*/ sel_outlineView_shouldEditTableColumn_item_ = sel_registerName("outlineView:shouldEditTableColumn:item:");
 public static final int /*long*/ sel_outlineView_shouldExpandItem_ = sel_registerName("outlineView:shouldExpandItem:");
 public static final int /*long*/ sel_outlineView_validateDrop_proposedItem_proposedChildIndex_ = sel_registerName("outlineView:validateDrop:proposedItem:proposedChildIndex:");
 public static final int /*long*/ sel_outlineView_willDisplayCell_forTableColumn_item_ = sel_registerName("outlineView:willDisplayCell:forTableColumn:item:");

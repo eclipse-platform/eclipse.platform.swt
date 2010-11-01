@@ -1428,10 +1428,6 @@ void tableViewSelectionIsChanging (int /*long*/ id, int /*long*/ sel, int /*long
 	sendSelection();
 }
 
-boolean tableView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
-	return false;
-}
-
 int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
 	float /*double*/ [] fg = ((NSTableView)view).isRowSelected(rowIndex) ? null : foreground;
 	NSAttributedString attribStr = createString(items[(int)/*64*/rowIndex], null, fg, SWT.LEFT, false, getEnabled(), false);
