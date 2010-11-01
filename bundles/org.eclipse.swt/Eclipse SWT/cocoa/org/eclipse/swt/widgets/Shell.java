@@ -784,7 +784,7 @@ boolean fixResize () {
 	*/
 	if (window == null) return false;
 	if ((style & SWT.NO_TRIM) == 0) {
-		if ((style & SWT.RESIZE) != 0 && (style & (SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX)) == 0) {
+		if ((style & SWT.RESIZE) != 0 && (style & (SWT.SHEET | SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX)) == 0) {
 			return true;
 		}
 	}
