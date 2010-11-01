@@ -94,8 +94,18 @@ public String toString () {
 		+ " start=" + start   //$NON-NLS-1$
 		+ " end=" + end   //$NON-NLS-1$
 		+ " textStyle=" + textStyle   //$NON-NLS-1$
-		+ " attributes=" + attributes   //$NON-NLS-1$
+		+ " attributes=" + toAttributeString(attributes)   //$NON-NLS-1$
 		+ " result=" + result   //$NON-NLS-1$
 		+ "}";  //$NON-NLS-1$
+}
+
+String toAttributeString(String [] attributes) {
+	if (attributes == null || attributes.length == 0) return "" + attributes;   //$NON-NLS-1$
+	StringBuffer attributeString = new StringBuffer();
+	for (int i = 0; i < attributes.length; i++) {
+		attributeString.append(attributes[i]);
+		attributeString.append((i % 2 == 0) ? ":" : ";");   //$NON-NLS-1$   //$NON-NLS-2$
+	}
+	return attributeString.toString();
 }
 }
