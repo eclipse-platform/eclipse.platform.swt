@@ -117,6 +117,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Shell extends Decorations {
 	NSWindow window;
 	SWTWindowDelegate windowDelegate;
+	int /*long*/ currWindowClass;
 	int /*long*/ tooltipOwner, tooltipTag, tooltipUserData;
 	boolean opened, moved, resized, fullScreen, center, deferFlushing;
 	Control lastActive;
@@ -671,13 +672,18 @@ void createHandle () {
 
 	if (window == null) {
 		NSWindow hostWindow = view.window();
-		int /*long*/ windowClass = OS.object_getClass(hostWindow.id);
-		int /*long*/ sendEventImpl = OS.class_getMethodImplementation(windowClass, OS.sel_sendEvent_);
+		currWindowClass = OS.object_getClass(hostWindow.id);
+		int /*long*/ sendEventImpl = OS.class_getMethodImplementation(currWindowClass, OS.sel_sendEvent_);
 		if (sendEventImpl != Display.windowCallback3.getAddress()) {
-			int /*long*/ embeddedSubclass = display.createWindowSubclass(windowClass, "SWTAWTWindow");
+			int /*long*/ embeddedSubclass = display.createWindowSubclass(currWindowClass, "SWTAWTWindow");
 			OS.object_setClass(hostWindow.id, embeddedSubclass);
 		}
 
+		int /*long*/ [] embedCount = new int /*long*/ [1];
+		OS.object_getInstanceVariable(hostWindow.id, Display.SWT_EMBED_FRAMES, embedCount);
+		embedCount[0]++;
+		OS.object_setInstanceVariable(hostWindow.id, Display.SWT_EMBED_FRAMES, embedCount[0]);
+		
 		// Register for notifications. An embedded shell has no control over the host window,
 		// so it isn't correct to install a delegate.
 		NSNotificationCenter defaultCenter = NSNotificationCenter.defaultCenter();
@@ -1340,6 +1346,16 @@ void releaseHandle () {
 	NSNotificationCenter.defaultCenter().removeObserver(windowDelegate);
 	if (windowDelegate != null) windowDelegate.release();
 	windowDelegate = null;
+	
+	if (window == null && currWindowClass != 0) {
+		int /*long*/ [] embedCount = new int /*long*/ [1];
+		OS.object_getInstanceVariable(view.window().id, Display.SWT_EMBED_FRAMES, embedCount);
+		embedCount[0]--;
+		OS.object_setInstanceVariable(view.window().id, Display.SWT_EMBED_FRAMES, embedCount[0]);
+		
+		if (embedCount[0] <= 0) OS.object_setClass(view.window().id, currWindowClass);
+	}
+	
 	super.releaseHandle ();
 	window = null;
 }
