@@ -447,20 +447,7 @@ public void create(Composite parent, int style) {
 						}
 						if (doit) {
 							lastNavigateURL = url;
-							varResult = event.arguments[0];
-							IDispatch dispatch = varResult.getDispatch();
-							Variant variant = new Variant(auto);
-							IDispatch top = variant.getDispatch();
-							boolean isTop = top.getAddress() == dispatch.getAddress();
-							if (isTop) {
-								/* unhook DOM listeners and unref the last document(s) */
-								unhookDOMListeners(documents);
-								for (int i = 0; i < documents.length; i++) {
-									documents[i].dispose();
-								}
-								documents = new OleAutomation[0];
-							}
-							}
+						}
 						break;
 					}
 					case CommandStateChange: {
@@ -658,6 +645,13 @@ public void create(Composite parent, int style) {
 						IDispatch top = variant.getDispatch();
 						boolean isTop = top.getAddress() == dispatch.getAddress();
 						if (isTop) {
+							/* unhook DOM listeners and unref the last document(s) */
+							unhookDOMListeners(documents);
+							for (int i = 0; i < documents.length; i++) {
+								documents[i].dispose();
+							}
+							documents = new OleAutomation[0];
+
 							/* re-install registered functions */
 							Enumeration elements = functions.elements ();
 							while (elements.hasMoreElements ()) {
