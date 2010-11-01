@@ -773,14 +773,14 @@
 			failonerror="false"
 			trust="true"
 			outputproperty="m_linux_s390_output"
-			command="echo test machine > ${m_linux_s390}.txt; scp ${m_linux_s390}.txt ${m_linux_s390}:build/; rm ${m_linux_s390}.txt; hostname;"/>
+			command="echo test machine > ${m_linux_s390}.txt; if scp ${m_linux_s390}.txt ${m_linux_s390}:build/; then rm ${m_linux_s390}.txt; hostname; else rm ${m_linux_s390x}.txt; echo 'failed'; fi"/>
 		<sshexec host="${m_linux_x86}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			failonerror="false"
 			trust="true"
 			outputproperty="m_linux_s390x_output"
-			command="echo test machine > ${m_linux_s390x}.txt; scp ${m_linux_s390x}.txt ${m_linux_s390x}:build/; rm ${m_linux_s390x}.txt; hostname;"/>
+			command="echo test machine > ${m_linux_s390x}.txt; if scp ${m_linux_s390x}.txt ${m_linux_s390x}:build/; then rm ${m_linux_s390x}.txt; hostname; else rm ${m_linux_s390x}.txt; echo 'failed'; fi"/>
 		</parallel>
 		<property name="success_msg" value="Success"/>
 		<property name="fail_msg" value="*** Fail ***"/>
