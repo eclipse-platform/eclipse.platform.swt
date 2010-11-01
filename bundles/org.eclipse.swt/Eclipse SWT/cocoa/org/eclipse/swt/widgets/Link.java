@@ -45,6 +45,7 @@ public class Link extends Control {
 	int [] mnemonics;
 	NSColor linkColor;
 	int focusIndex;
+	boolean ignoreNextMouseUp;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -123,6 +124,7 @@ boolean textView_clickOnLink_atIndex(int /*long*/ id, int /*long*/ sel, int /*lo
 		}
 	}
 	redrawWidget(view, false);
+	ignoreNextMouseUp = true;
 	return true;
 }
 
@@ -341,11 +343,18 @@ public String getText () {
 	return text;
 }
 
-// This code prevents selection events from firing.
-//boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, int type) {
-//	super.mouseEvent (id, sel, theEvent, type);
-//	return new NSEvent (theEvent).type () != OS.NSLeftMouseDown;
-//}
+void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	/*
+	 * Feature in Cocoa: Link click notices are sent on mouseDown, but for some reason, Cocoa
+	 * re-sends the mouseUp that follows the click on a link. Fix is to ignore the next mouseUp
+	 * fired after a link selection.
+	 */
+	if (ignoreNextMouseUp) {
+		ignoreNextMouseUp = false;
+		return;
+	}
+	super.mouseUp(id, sel, theEvent);
+}
 
 boolean shouldDrawInsertionPoint(int /*long*/ id, int /*long*/ sel) {
 	return false;
