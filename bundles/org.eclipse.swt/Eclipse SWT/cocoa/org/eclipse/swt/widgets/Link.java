@@ -188,6 +188,7 @@ void createHandle () {
 	NSSize size = new NSSize ();
 	size.width = size.height = Float.MAX_VALUE;
 	widget.setMaxSize (size);
+	widget.setDisplaysLinkToolTips(false);
 	widget.setDrawsBackground(false);
 	widget.setDelegate(widget);
 	widget.setAutoresizingMask (OS.NSViewWidthSizable | OS.NSViewHeightSizable);
@@ -678,11 +679,6 @@ public void setText (String string) {
 		range.length = offsets[i].y - offsets[i].x + 1;
 		textStorage.addAttribute(OS.NSLinkAttributeName, NSString.stringWith(ids[i]), range);
 	}
-}
-
-public void setToolTipText(String string) {
-	((NSTextView)view).setDisplaysLinkToolTips(string == null);
-	super.setToolTipText(string);
 }
 
 void setZOrder () {
