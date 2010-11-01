@@ -46,6 +46,8 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class DateTime extends Composite {
+	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752
+	static final int MAX_YEAR = 9999;
 	boolean doubleClick, ignoreSelection;
 	SYSTEMTIME lastSystemTime;
 	SYSTEMTIME time = new SYSTEMTIME (); // only used in calendar mode
@@ -716,6 +718,7 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void setDate (int year, int month, int day) {
 	checkWidget ();
+	if (year < MIN_YEAR || year > MAX_YEAR) return;
 	SYSTEMTIME systime = new SYSTEMTIME ();
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
 	OS.SendMessage (handle, msg, 0, systime);
@@ -769,6 +772,7 @@ public void setDay (int day) {
  */
 public void setHours (int hours) {
 	checkWidget ();
+	if (hours < 0 || hours > 23) return;
 	SYSTEMTIME systime = new SYSTEMTIME ();
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
 	OS.SendMessage (handle, msg, 0, systime);
@@ -793,6 +797,7 @@ public void setHours (int hours) {
  */
 public void setMinutes (int minutes) {
 	checkWidget ();
+	if (minutes < 0 || minutes > 59) return;
 	SYSTEMTIME systime = new SYSTEMTIME ();
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
 	OS.SendMessage (handle, msg, 0, systime);
@@ -844,6 +849,7 @@ public void setMonth (int month) {
  */
 public void setSeconds (int seconds) {
 	checkWidget ();
+	if (seconds < 0 || seconds > 59) return;
 	SYSTEMTIME systime = new SYSTEMTIME ();
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
 	OS.SendMessage (handle, msg, 0, systime);
@@ -869,6 +875,7 @@ public void setSeconds (int seconds) {
  */
 public void setTime (int hours, int minutes, int seconds) {
 	checkWidget ();
+	if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59 || seconds < 0 || seconds > 59) return;
 	SYSTEMTIME systime = new SYSTEMTIME ();
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
 	OS.SendMessage (handle, msg, 0, systime);
@@ -905,6 +912,7 @@ public void setTime (int hours, int minutes, int seconds) {
  */
 public void setYear (int year) {
 	checkWidget ();
+	if (year < MIN_YEAR || year > MAX_YEAR) return;
 	SYSTEMTIME systime = new SYSTEMTIME ();
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
 	OS.SendMessage (handle, msg, 0, systime);
