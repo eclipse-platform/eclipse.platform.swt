@@ -419,15 +419,134 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleEditableTextListeners;
 			int length = listeners.size();
 			if (length > 0) {
+				Display display = accessible.control.getDisplay();
+				int /*long*/ fontDesc = OS.pango_font_description_new ();
+				boolean createFont = false;
+				TextStyle style = new TextStyle();
+				String [] attributes = new String [0];
+				int /*long*/ current = attrib_set;
+				int listLength = OS.g_slist_length (attrib_set);
+				for (int i = 0; i < listLength; i++) {
+					int /*long*/ attrPtr = OS.g_slist_data (current);
+					if (attrPtr != 0) {
+						AtkAttribute attr = new AtkAttribute();
+						ATK.memmove(attr, attrPtr, AtkAttribute.sizeof);
+						String name = getString(attr.name);
+						String value = getString(attr.value);
+						OS.g_free(attrPtr);
+						if (DEBUG) print("name=" + name + ", value=" + value);
+						String [] newAttributes = new String [attributes.length + 2];
+						System.arraycopy (attributes, 0, newAttributes, 0, attributes.length);
+						newAttributes[attributes.length] = name;
+						newAttributes[attributes.length + 1] = value;
+						attributes = newAttributes;
+						try {
+							if (name.equals(getString(ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_RISE)))) {
+								// number of pixels above baseline
+								style.rise = Integer.parseInt(value);
+							} else if (name.equals(getString(ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_UNDERLINE)))) {
+								// "none", "single", "double", "low", or "error" (also allow "squiggle")
+								if (value.equals("single") || value.equals("low")) {
+									style.underline = true;
+									style.underlineStyle = SWT.UNDERLINE_SINGLE;
+								} else if (value.equals("double")) {
+									style.underline = true;
+									style.underlineStyle = SWT.UNDERLINE_DOUBLE;
+								} else if (value.equals("error")) {
+									style.underline = true;
+									style.underlineStyle = SWT.UNDERLINE_ERROR;
+								} else if (value.equals("squiggle")) {
+									style.underline = true;
+									style.underlineStyle = SWT.UNDERLINE_SQUIGGLE;
+								}
+							} else if (name.equals(getString(ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STRIKETHROUGH)))) {
+								// "true" or "false" (also allow "1" and "single")
+								if (value.equals("true") || value.equals("1") || value.equals("single")) style.strikeout = true;
+							} else if (name.equals(getString(ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_FAMILY_NAME)))) {
+								// font family name
+								byte [] buffer = Converter.wcsToMbcs(null, value, true);
+								OS.pango_font_description_set_family(fontDesc, buffer);
+								createFont = true;
+							} else if (name.equals(getString(ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_SIZE)))) {
+								// size of characters in points (allow fractional points)
+								float size = Float.parseFloat(value);
+								OS.pango_font_description_set_size(fontDesc, (int)(size * OS.PANGO_SCALE));
+								createFont = true;
+							} else if (name.equals(getString(ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STYLE)))) {
+								// "normal", "italic" or "oblique"
+								int fontStyle = -1;
+								if (value.equals("normal")) fontStyle = OS.PANGO_STYLE_NORMAL;
+								else if (value.equals("italic")) fontStyle = OS.PANGO_STYLE_ITALIC;
+								else if (value.equals("oblique")) fontStyle = OS.PANGO_STYLE_OBLIQUE;
+								if (fontStyle != -1) {
+									OS.pango_font_description_set_style(fontDesc, fontStyle);
+									createFont = true;
+								}
+							} else if (name.equals(getString(ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_VARIANT)))) {
+								// "normal" or "small_caps"
+								int variant = -1;
+								if (value.equals("normal")) variant = OS.PANGO_VARIANT_NORMAL;
+								else if (value.equals("small_caps")) variant = OS.PANGO_VARIANT_SMALL_CAPS;
+								if (variant != -1) {
+									OS.pango_font_description_set_variant(fontDesc, variant);
+									createFont = true;
+								}
+							} else if (name.equals(getString(ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STRETCH)))) {
+								//"ultra_condensed", "extra_condensed", "condensed", "semi_condensed", "normal", "semi_expanded", "expanded", "extra_expanded" or "ultra_expanded" 
+								int stretch = -1;
+								if (value.equals("ultra_condensed")) stretch = OS.PANGO_STRETCH_ULTRA_CONDENSED;
+								else if (value.equals("extra_condensed")) stretch = OS.PANGO_STRETCH_EXTRA_CONDENSED;
+								else if (value.equals("condensed")) stretch = OS.PANGO_STRETCH_CONDENSED;
+								else if (value.equals("semi_condensed")) stretch = OS.PANGO_STRETCH_SEMI_CONDENSED;
+								else if (value.equals("normal")) stretch = OS.PANGO_STRETCH_NORMAL;
+								else if (value.equals("semi_expanded")) stretch = OS.PANGO_STRETCH_SEMI_EXPANDED;
+								else if (value.equals("expanded")) stretch = OS.PANGO_STRETCH_EXPANDED;
+								else if (value.equals("extra_expanded")) stretch = OS.PANGO_STRETCH_EXTRA_EXPANDED;
+								else if (value.equals("ultra_expanded")) stretch = OS.PANGO_STRETCH_ULTRA_EXPANDED;
+								if (stretch != -1) {
+									OS.pango_font_description_set_stretch(fontDesc, stretch);
+									createFont = true;
+								}
+							} else if (name.equals(getString(ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_WEIGHT)))) {
+								// weight of the characters
+								int weight = Integer.parseInt(value);
+								OS.pango_font_description_set_weight(fontDesc, weight);
+								createFont = true;
+							} else if (name.equals(getString(ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_FG_COLOR)))) {
+								// RGB value of the format "u,u,u"
+								style.foreground = colorFromString(display, value);
+							} else if (name.equals(getString(ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_BG_COLOR)))) {
+								// RGB value of the format "u,u,u"
+								style.background = colorFromString(display, value);
+							} else {
+								//TODO language and direction
+							}
+						} catch (NumberFormatException ex) {}
+					}
+					current = OS.g_slist_next (current);
+				}
+				if (createFont) {
+					style.font = Font.gtk_new(display, fontDesc);
+				}
+
 				AccessibleTextAttributeEvent event = new AccessibleTextAttributeEvent(accessible);
 				event.start = (int)/*64*/start_offset;
 				event.end = (int)/*64*/end_offset;
-				// TODO: get attrib_set and set event.textStyle and event.attributes (see atkText_get_run_attributes)
+				event.textStyle = style;
+				event.attributes = attributes;
 				for (int i = 0; i < length; i++) {
 					AccessibleEditableTextListener listener = (AccessibleEditableTextListener) listeners.elementAt(i);
 					listener.setTextAttributes(event);
 				}
-				// TODO: dispose event.textStyle font/foreground/background
+				if (style.font != null) {
+					style.font.dispose();
+				}
+				if (style.foreground != null) {
+					style.foreground.dispose();
+				}
+				if (style.background != null) {
+					style.background.dispose();
+				}
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
@@ -437,6 +556,23 @@ class AccessibleObject {
 			parentResult = ATK.call (iface.set_run_attributes, atkObject, attrib_set, start_offset, end_offset);
 		}
 		return parentResult;
+	}
+
+	/*
+	 * Return a Color given a string of the form "n,n,n".
+	 * @param display must be the display for the accessible's control
+	 * @param rgbString must not be null
+	 */
+	static Color colorFromString(Display display, String rgbString) {
+		try {
+			int comma1 = rgbString.indexOf(',');
+			int comma2 = rgbString.indexOf(',', comma1 + 1);
+			int r = Integer.parseInt(rgbString.substring(0, comma1));
+			int g = Integer.parseInt(rgbString.substring(comma1 + 1, comma2));
+			int b = Integer.parseInt(rgbString.substring(comma2 + 1, rgbString.length()));
+			return new Color(display, r, g, b);
+		} catch (NumberFormatException ex) {}
+		return null;
 	}
 
 //	void atk_editable_text_set_text_contents (AtkEditableText *text, const gchar *string);
@@ -462,8 +598,8 @@ class AccessibleObject {
 		}
 		int /*long*/ parentResult = 0;
 		AtkEditableTextIface iface = getEditableTextIface (atkObject);
-		if (iface != null && iface.set_run_attributes != 0) {
-			parentResult = ATK.call (iface.set_run_attributes, atkObject, string);
+		if (iface != null && iface.set_text_contents != 0) {
+			parentResult = ATK.call (iface.set_text_contents, atkObject, string);
 		}
 		return parentResult;
 	}
@@ -491,8 +627,8 @@ class AccessibleObject {
 		}
 		int /*long*/ parentResult = 0;
 		AtkEditableTextIface iface = getEditableTextIface (atkObject);
-		if (iface != null && iface.set_run_attributes != 0) {
-			parentResult = ATK.call (iface.set_run_attributes, atkObject, string, string_length, position);
+		if (iface != null && iface.insert_text != 0) {
+			parentResult = ATK.call (iface.insert_text, atkObject, string, string_length, position);
 		}
 		return parentResult;
 	}
@@ -518,8 +654,8 @@ class AccessibleObject {
 		}
 		int /*long*/ parentResult = 0;
 		AtkEditableTextIface iface = getEditableTextIface (atkObject);
-		if (iface != null && iface.set_run_attributes != 0) {
-			parentResult = ATK.call (iface.set_run_attributes, atkObject, start_pos, end_pos);
+		if (iface != null && iface.copy_text != 0) {
+			parentResult = ATK.call (iface.copy_text, atkObject, start_pos, end_pos);
 		}
 		return parentResult;
 	}
@@ -545,8 +681,8 @@ class AccessibleObject {
 		}
 		int /*long*/ parentResult = 0;
 		AtkEditableTextIface iface = getEditableTextIface (atkObject);
-		if (iface != null && iface.set_run_attributes != 0) {
-			parentResult = ATK.call (iface.set_run_attributes, atkObject, start_pos, end_pos);
+		if (iface != null && iface.cut_text != 0) {
+			parentResult = ATK.call (iface.cut_text, atkObject, start_pos, end_pos);
 		}
 		return parentResult;
 	}
@@ -573,8 +709,8 @@ class AccessibleObject {
 		}
 		int /*long*/ parentResult = 0;
 		AtkEditableTextIface iface = getEditableTextIface (atkObject);
-		if (iface != null && iface.set_run_attributes != 0) {
-			parentResult = ATK.call (iface.set_run_attributes, atkObject, start_pos, end_pos);
+		if (iface != null && iface.delete_text != 0) {
+			parentResult = ATK.call (iface.delete_text, atkObject, start_pos, end_pos);
 		}
 		return parentResult;
 	}
@@ -599,8 +735,8 @@ class AccessibleObject {
 		}
 		int /*long*/ parentResult = 0;
 		AtkEditableTextIface iface = getEditableTextIface (atkObject);
-		if (iface != null && iface.set_run_attributes != 0) {
-			parentResult = ATK.call (iface.set_run_attributes, atkObject, position);
+		if (iface != null && iface.paste_text != 0) {
+			parentResult = ATK.call (iface.paste_text, atkObject, position);
 		}
 		return parentResult;
 	}

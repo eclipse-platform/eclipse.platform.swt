@@ -408,7 +408,15 @@ public class OS extends C {
 	public static final int PANGO_DIRECTION_LTR = 0;
 	public static final int PANGO_DIRECTION_RTL = 1;	
 	public static final int PANGO_SCALE = 1024;
+	public static final int PANGO_STRETCH_ULTRA_CONDENSED = 0x0;
+	public static final int PANGO_STRETCH_EXTRA_CONDENSED = 0x1;
+	public static final int PANGO_STRETCH_CONDENSED = 0x2;
+	public static final int PANGO_STRETCH_SEMI_CONDENSED = 0x3;
 	public static final int PANGO_STRETCH_NORMAL = 0x4;
+	public static final int PANGO_STRETCH_SEMI_EXPANDED = 0x5;
+	public static final int PANGO_STRETCH_EXPANDED = 0x6;
+	public static final int PANGO_STRETCH_EXTRA_EXPANDED = 0x7;
+	public static final int PANGO_STRETCH_ULTRA_EXPANDED = 0x8;
 	public static final int PANGO_STYLE_ITALIC = 0x2;
 	public static final int PANGO_STYLE_NORMAL = 0x0;
 	public static final int PANGO_STYLE_OBLIQUE = 0x1;
@@ -418,6 +426,8 @@ public class OS extends C {
 	public static final int PANGO_UNDERLINE_DOUBLE = 2;
 	public static final int PANGO_UNDERLINE_LOW = 3;
 	public static final int PANGO_UNDERLINE_ERROR = 4;
+	public static final int PANGO_VARIANT_NORMAL = 0;
+	public static final int PANGO_VARIANT_SMALL_CAPS = 1;
 	public static final int PANGO_WEIGHT_BOLD = 0x2bc;
 	public static final int PANGO_WEIGHT_NORMAL = 0x190;
 	public static final int PANGO_WRAP_WORD = 0;
@@ -14442,6 +14452,19 @@ public static final void pango_font_description_set_weight(int /*long*/ desc, in
 	lock.lock();
 	try {
 		_pango_font_description_set_weight(desc, weight);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param desc cast=(PangoFontDescription *)
+ * @param variant cast=(PangoVariant)
+ */
+public static final native void _pango_font_description_set_variant(int /*long*/ desc, int variant);
+public static final void pango_font_description_set_variant(int /*long*/ desc, int variant) {
+	lock.lock();
+	try {
+		_pango_font_description_set_variant(desc, variant);
 	} finally {
 		lock.unlock();
 	}

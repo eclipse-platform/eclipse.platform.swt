@@ -17581,6 +17581,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1font_1description_1set_1style)
 }
 #endif
 
+#ifndef NO__1pango_1font_1description_1set_1variant
+JNIEXPORT void JNICALL OS_NATIVE(_1pango_1font_1description_1set_1variant)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1pango_1font_1description_1set_1variant_FUNC);
+	pango_font_description_set_variant((PangoFontDescription *)arg0, (PangoVariant)arg1);
+	OS_NATIVE_EXIT(env, that, _1pango_1font_1description_1set_1variant_FUNC);
+}
+#endif
+
 #ifndef NO__1pango_1font_1description_1set_1weight
 JNIEXPORT void JNICALL OS_NATIVE(_1pango_1font_1description_1set_1weight)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)

@@ -1426,6 +1426,7 @@ typedef enum {
 	_1pango_1font_1description_1set_1size_FUNC,
 	_1pango_1font_1description_1set_1stretch_FUNC,
 	_1pango_1font_1description_1set_1style_FUNC,
+	_1pango_1font_1description_1set_1variant_FUNC,
 	_1pango_1font_1description_1set_1weight_FUNC,
 	_1pango_1font_1description_1to_1string_FUNC,
 	_1pango_1font_1face_1describe_FUNC,
