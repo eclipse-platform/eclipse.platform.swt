@@ -119,7 +119,7 @@ public class Shell extends Decorations {
 	SWTWindowDelegate windowDelegate;
 	int /*long*/ currWindowClass;
 	int /*long*/ tooltipOwner, tooltipTag, tooltipUserData;
-	boolean opened, moved, resized, fullScreen, center, deferFlushing;
+	boolean opened, moved, resized, fullScreen, center, deferFlushing, isPopup;
 	Control lastActive;
 	Rectangle normalBounds;
 	boolean keyInputHappened;
@@ -503,6 +503,7 @@ void bringToTop (boolean force) {
 }
 
 boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
+	if (isPopup) return false;
 	// Only answer if SWT created the window.
 	if (window != null) if (window.styleMask () == OS.NSBorderlessWindowMask) return true;
 	return super.canBecomeKeyWindow (id, sel);

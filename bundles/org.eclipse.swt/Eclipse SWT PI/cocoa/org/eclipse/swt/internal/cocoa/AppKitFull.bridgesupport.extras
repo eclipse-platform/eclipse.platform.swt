@@ -1173,6 +1173,10 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setBordered:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setDatePickerElements:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -4604,6 +4608,7 @@
 	<enum name="NSLineBreakByTruncatingTail" swt_gen="true"></enum>
 	<enum name="NSLineBreakByWordWrapping" swt_gen="true"></enum>
 	<enum name="NSLineToBezierPathElement" swt_gen="true"></enum>
+	<enum name="NSMiniControlSize" swt_gen="true"></enum>
 	<enum name="NSMiniaturizableWindowMask" swt_gen="true"></enum>
 	<enum name="NSMiterLineJoinStyle" swt_gen="true"></enum>
 	<enum name="NSMixedState" swt_gen="true"></enum>
@@ -4650,6 +4655,7 @@
 	<enum name="NSRoundLineCapStyle" swt_gen="true"></enum>
 	<enum name="NSRoundLineJoinStyle" swt_gen="true"></enum>
 	<enum name="NSRoundedBezelStyle" swt_gen="true"></enum>
+	<enum name="NSRoundedDisclosureBezelStyle" swt_gen="true"></enum>
 	<enum name="NSScaleNone" swt_gen="true"></enum>
 	<enum name="NSScrollWheel" swt_gen="true"></enum>
 	<enum name="NSScrollerDecrementLine" swt_gen="true"></enum>
@@ -4677,6 +4683,7 @@
 	<enum name="NSTerminateCancel" swt_gen="true"></enum>
 	<enum name="NSTerminateNow" swt_gen="true"></enum>
 	<enum name="NSTextFieldAndStepperDatePickerStyle" swt_gen="true"></enum>
+	<enum name="NSTextFieldDatePickerStyle" swt_gen="true"></enum>
 	<enum name="NSTitledWindowMask" swt_gen="true"></enum>
 	<enum name="NSToolbarDisplayModeIconOnly" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleDouble" swt_gen="true"></enum>
