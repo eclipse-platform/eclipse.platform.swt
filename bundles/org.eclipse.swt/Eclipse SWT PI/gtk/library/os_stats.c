@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1367;
-int OS_nativeFunctionCallCount[1367];
+int OS_nativeFunctionCount = 1370;
+int OS_nativeFunctionCallCount[1370];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -120,6 +120,9 @@ char * OS_nativeFunctionNames[] = {
 	"PangoLayoutRun_1sizeof",
 	"PangoLogAttr_1sizeof",
 	"PangoRectangle_1sizeof",
+	"RTLD_1GLOBAL",
+	"RTLD_1LAZY",
+	"RTLD_1NOW",
 	"XAnyEvent_1sizeof",
 	"XClientMessageEvent_1sizeof",
 	"XCrossingEvent_1sizeof",

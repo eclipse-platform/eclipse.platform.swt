@@ -161,8 +161,17 @@ void checkCairo() {
 	if (CAIRO_LOADED) return;
 	try {
 		/* Check if cairo is available on the system */
-		byte[] buffer = Converter.wcsToMbcs(null, "libcairo.so.2", true);
-		int /*long*/ libcairo = OS.dlopen(buffer, OS.RTLD_LAZY);
+		byte[] buffer ;
+		int flags = OS.RTLD_LAZY;
+		if (OS.IsAIX) {
+			 buffer = Converter.wcsToMbcs(null, "libcairo.a(libcairo.so.2)", true);
+			 flags |= OS.RTLD_MEMBER;
+		} else  if (OS.IsHPUX) {
+			 buffer = Converter.wcsToMbcs(null, "libcairo.so", true);
+		} else {
+			buffer =  Converter.wcsToMbcs(null, "libcairo.so.2", true);
+		}
+		int /*long*/ libcairo = OS.dlopen(buffer, flags);
 		if (libcairo != 0) {
 			OS.dlclose(libcairo);
 		} else {
@@ -567,8 +576,10 @@ protected void init () {
 			useXRender = major_versionp[0] > 0 || (major_versionp[0] == 0 && minor_versionp[0] >= 8);
 		}
 	}
-
-	if (debug) {
+	//TODO: Remove; temporary code only
+	boolean fixAIX = OS.IsAIX && OS.PTR_SIZEOF == 8;
+	
+	if (debug || fixAIX) {
 		if (xDisplay != 0) {
 			/* Create the warning and error callbacks */
 			Class clazz = getClass ();
@@ -589,7 +600,7 @@ protected void init () {
 					XIOErrorProc = OS.XSetIOErrorHandler (XNullIOErrorProc);
 				}
 			}
-			OS.XSynchronize (xDisplay, true);
+			if (debug) OS.XSynchronize (xDisplay, true);
 		}
 	}
 	
@@ -883,7 +894,9 @@ static int /*long*/ XErrorProc (int /*long*/ xDisplay, int /*long*/ xErrorEvent)
 			if (DEBUG || device.debug) {
 				new SWTError ().printStackTrace ();
 			}
-			OS.Call (XErrorProc, xDisplay, xErrorEvent);
+			//TODO: Remove; temporary code only
+			boolean fixAIX = OS.IsAIX && OS.PTR_SIZEOF == 8;
+			if (!fixAIX) OS.Call (XErrorProc, xDisplay, xErrorEvent);
 		}
 	} else {
 		if (DEBUG) new SWTError ().printStackTrace ();

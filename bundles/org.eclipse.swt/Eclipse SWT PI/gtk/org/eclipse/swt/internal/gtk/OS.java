@@ -422,9 +422,10 @@ public class OS extends C {
 	public static final int PANGO_WEIGHT_NORMAL = 0x190;
 	public static final int PANGO_WRAP_WORD = 0;
 	public static final int PANGO_WRAP_WORD_CHAR = 2;
-	public static final int RTLD_GLOBAL = 0x100;
-	public static final int RTLD_LAZY = 1;
-	public static final int RTLD_NOW = 2;
+	public static final int RTLD_GLOBAL = OS.RTLD_GLOBAL();
+	public static final int RTLD_LAZY = OS.RTLD_LAZY();
+	public static final int RTLD_MEMBER = 0x00040000;
+	public static final int RTLD_NOW = OS.RTLD_NOW();
 	public static final int X_OK = 0x01;
 	public static final int XA_CARDINAL = 6;
 	public static final int XA_WINDOW = 33;
@@ -1285,6 +1286,13 @@ public static final native void memmove(XFocusChangeEvent dest, int /*long*/ src
  * @param size cast=(size_t)
  */
 public static final native void memmove(XVisibilityEvent dest, int /*long*/ src, int /*long*/ size);
+
+/** @method flags=const*/
+public static final native int RTLD_GLOBAL();
+/** @method flags=const */
+public static final native int RTLD_NOW();
+/** @method flags=const */
+public static final native int RTLD_LAZY();
 
 /** X render natives and constants */
 public static final int PictStandardARGB32 = 0;

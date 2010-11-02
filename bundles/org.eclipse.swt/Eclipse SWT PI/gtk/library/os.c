@@ -1107,6 +1107,42 @@ JNIEXPORT jint JNICALL OS_NATIVE(PangoRectangle_1sizeof)
 }
 #endif
 
+#ifndef NO_RTLD_1GLOBAL
+JNIEXPORT jint JNICALL OS_NATIVE(RTLD_1GLOBAL)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, RTLD_1GLOBAL_FUNC);
+	rc = (jint)RTLD_GLOBAL;
+	OS_NATIVE_EXIT(env, that, RTLD_1GLOBAL_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RTLD_1LAZY
+JNIEXPORT jint JNICALL OS_NATIVE(RTLD_1LAZY)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, RTLD_1LAZY_FUNC);
+	rc = (jint)RTLD_LAZY;
+	OS_NATIVE_EXIT(env, that, RTLD_1LAZY_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RTLD_1NOW
+JNIEXPORT jint JNICALL OS_NATIVE(RTLD_1NOW)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, RTLD_1NOW_FUNC);
+	rc = (jint)RTLD_NOW;
+	OS_NATIVE_EXIT(env, that, RTLD_1NOW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_XAnyEvent_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(XAnyEvent_1sizeof)
 	(JNIEnv *env, jclass that)

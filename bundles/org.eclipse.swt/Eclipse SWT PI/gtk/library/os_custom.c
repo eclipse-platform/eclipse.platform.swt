@@ -66,8 +66,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)
 	rc = (jintLong)gtk_file_chooser_dialog_new(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 */
 	{
-		static int initialized = 0;
-		static void *handle = NULL;
 		/*
 		* On AMD64, it is critical that functions which have a variable number of
 		* arguments, indicated by '...', include the '...' in their prototype.  This
@@ -76,17 +74,10 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)
 		* For some reason, we must also explicitly declare all of the arguments we
 		* are passing in, otherwise it crashes.
 		*/
-/*		typedef jintLong (*FPTR)(jbyte *, jintLong, jint, jintLong, ...); */
-		typedef jintLong (*FPTR)(jbyte *, jintLong, jint, jintLong, jint, jintLong, jint, jintLong, ...);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!handle) handle = dlopen(gtk_file_chooser_dialog_new_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_chooser_dialog_new");
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jintLong)(*fptr)(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+		typedef jintLong (CALLING_CONVENTION* FPTR)(jbyte *, jintLong, jint, jintLong, jint, jintLong, jint, jintLong, ...);
+		LOAD_FUNCTION(fp, gtk_file_chooser_dialog_new)
+		if (fp) {
+			rc = (jintLong)((FPTR) fp)(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 		}
 	}
 fail:
@@ -107,8 +98,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1set_1attributes)
 	gtk_cell_layout_set_attributes(arg0, arg1, lparg2, arg3, arg4);
 */
 	{
-		static int initialized = 0;
-		static void *handle = NULL;
 		/*
 		* On AMD64, it is critical that functions which have a variable number of
 		* arguments, indicated by '...', include the '...' in their prototype.  This
@@ -117,16 +106,10 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1set_1attributes)
 		* For some reason, we must also explicitly declare all of the arguments we
 		* are passing in, otherwise it crashes.
 		*/
-/*		typedef void (*FPTR)(jintLong, jintLong, ...); */
 		typedef void (*FPTR)(jintLong, jintLong, jbyte *, jint, jintLong, ...);
-		static FPTR fptr;
-		if (!initialized) {
-			if (!handle) handle = dlopen(gtk_cell_layout_set_attributes_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "gtk_cell_layout_set_attributes");
-			initialized = 1;
-		}
-		if (fptr) {
-			(*fptr)(arg0, arg1, lparg2, arg3, arg4);
+		LOAD_FUNCTION(fp, gtk_cell_layout_set_attributes)
+		if (fp) {
+			((FPTR)fp)(arg0, arg1, lparg2, arg3, arg4);
 		}
 	}
 fail:
