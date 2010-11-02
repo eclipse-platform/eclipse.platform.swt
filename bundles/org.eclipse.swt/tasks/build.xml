@@ -1284,7 +1284,7 @@
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="${thefragment}"/>
 			<param name="build_target" value="build_gtk_linux_s390"/>
-			<param name="pre_commands1" value="cp ~/build/fixed_tasks/* ~/build/${thefragment}/${tasks}; "/>
+			<param name="pre_commands1" value="cp ~/build/fixed_tasks/* ~/build/${thefragment}${TAG}/${tasks}; "/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=${ant_home}/bin:$PATH; "/>
 		</antcall>
 	</target>
@@ -1296,7 +1296,7 @@
 			<param name="cp" value="${cp_gtk}"/>
 			<param name="fragment" value="${thefragment}"/>
 			<param name="build_target" value="build_gtk_linux_s390x"/>
-			<param name="pre_commands1" value="cp ~/build/fixed_tasks/* ~/build/${thefragment}/${tasks}; "/>
+			<param name="pre_commands1" value="cp ~/build/fixed_tasks/* ~/build/${thefragment}${TAG}/${tasks}; "/>
 			<param name="pre_commands" value="export JAVA_HOME=~/build/JRE/x32/jdk1.6.0_14; export PATH=${ant_home}/bin:$PATH; "/>
 		</antcall>
 	</target>
