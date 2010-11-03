@@ -32,6 +32,8 @@ public class Snippet349 {
 public static void main(String [] args) {
 	final int COLUMN_COUNT = 3;
 	final int TEXT_MARGIN = 3;
+	final String KEY_WIDTHS = "widths";
+	final String KEY_IMAGES = "images";
 	Display display = new Display();
 	Image[] images = new Image[4];
 	images[0] = createImage(display, 16, 16);
@@ -41,18 +43,16 @@ public static void main(String [] args) {
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
 	Table table = new Table(shell, SWT.NONE);
-	table.setLinesVisible(true);			
 	for (int i = 0; i < COLUMN_COUNT; i++) {
 		new TableColumn(table, SWT.NONE);
 	}
 	for (int i = 0; i < 8; i++) {
 		TableItem item = new TableItem(table, SWT.NONE);
+		Image[] itemImages = new Image[COLUMN_COUNT];
+		item.setData(KEY_IMAGES, itemImages);
 		for (int j = 0; j < COLUMN_COUNT; j++) {
 			item.setText(j, "item " + i + " col " + j);
-			Image image = images[(i * COLUMN_COUNT + j) % images.length];
-			if (image != null) {
-				item.setImage(j, image);
-			}
+			itemImages[j] = images[(i * COLUMN_COUNT + j) % images.length];
 		}
 	}
 
@@ -61,21 +61,27 @@ public static void main(String [] args) {
 	 * Therefore, it is critical for performance that these methods be
 	 * as efficient as possible.
 	 */
+	final int itemHeight = table.getItemHeight();
+	GC gc = new GC (table);
+	FontMetrics metrics = gc.getFontMetrics();
+	final int fontHeight = metrics.getHeight();
+	gc.dispose();
 	Listener paintListener = new Listener() {
 		public void handleEvent(Event event) {		
 			switch (event.type) {
 				case SWT.MeasureItem: {
 					int column = event.index;
 					TableItem item = (TableItem)event.item;
-					Image image = item.getImage(column);
+					Image[] images = (Image[])item.getData(KEY_IMAGES);
+					Image image = images[column];
 					if (image == null) {
 						/* don't change the native-calculated event.width */
 						break;
 					}
-					int[] cachedWidths = (int[])item.getData();
+					int[] cachedWidths = (int[])item.getData(KEY_WIDTHS);
 					if (cachedWidths == null) {
 						cachedWidths = new int[COLUMN_COUNT];
-						item.setData(cachedWidths);
+						item.setData(KEY_WIDTHS, cachedWidths);
 					}
 					if (cachedWidths[column] == 0) {
 						int width = image.getBounds().width + 2 * TEXT_MARGIN;
@@ -90,7 +96,8 @@ public static void main(String [] args) {
 				case SWT.EraseItem: {
 					int column = event.index;
 					TableItem item = (TableItem)event.item;
-					Image image = item.getImage(column);
+					Image[] images = (Image[])item.getData(KEY_IMAGES);
+					Image image = images[column];
 					if (image == null) {
 						break;
 					}
@@ -101,16 +108,17 @@ public static void main(String [] args) {
 				case SWT.PaintItem: {
 					int column = event.index;
 					TableItem item = (TableItem)event.item;
-					Image image = item.getImage(column);
+					Image[] images = (Image[])item.getData(KEY_IMAGES);
+					Image image = images[column];
 					if (image == null) {
 						/* this item is drawn natively, don't touch it*/
 						break;
 					}
 
 					int x = event.x;
-					event.gc.drawImage(image, x, event.y);
+					event.gc.drawImage(image, x, event.y + (itemHeight - image.getBounds().height) / 2);
 					x += image.getBounds().width + TEXT_MARGIN;
-					event.gc.drawString(item.getText(column), x, event.y);
+					event.gc.drawString(item.getText(column), x, event.y + (itemHeight - fontHeight) / 2);
 					break;
 				}
 			}
@@ -123,7 +131,7 @@ public static void main(String [] args) {
 	for (int i = 0; i < COLUMN_COUNT; i++) {
 		table.getColumn(i).pack();
 	}
-	shell.setSize(500, 200);
+	shell.pack();
 	shell.open();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();
