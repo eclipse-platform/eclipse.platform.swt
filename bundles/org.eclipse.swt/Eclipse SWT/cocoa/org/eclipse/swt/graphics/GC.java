@@ -1147,6 +1147,10 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  */
 public void drawLine(int x1, int y1, int x2, int y2) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (x1 == x2 && y1 == y2 && data.lineWidth <= 1) {
+		drawPoint(x1, y1);
+		return;
+	}
 	NSAutoreleasePool pool = checkGC(DRAW);
 	try {
 		NSBezierPath path = data.path;
