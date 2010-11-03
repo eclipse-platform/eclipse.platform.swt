@@ -62,7 +62,7 @@ public static void main(String [] args) {
 	 * as efficient as possible.
 	 */
 	final int itemHeight = table.getItemHeight();
-	GC gc = new GC (table);
+	GC gc = new GC(table);
 	FontMetrics metrics = gc.getFontMetrics();
 	final int fontHeight = metrics.getHeight();
 	gc.dispose();
