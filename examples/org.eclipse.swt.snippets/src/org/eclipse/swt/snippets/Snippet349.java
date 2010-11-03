@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /* 
- * Table example snippet: Show a Table with images with various sizes
+ * Table example snippet: Show a Table with images of various sizes
  *
  * For more info on custom-drawing TableItem and TreeItem content see 
  * http://www.eclipse.org/articles/article.php?file=Article-CustomDrawingTableAndTreeItems/index.html
