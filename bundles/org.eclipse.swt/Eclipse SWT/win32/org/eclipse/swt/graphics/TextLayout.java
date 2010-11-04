@@ -828,7 +828,7 @@ RECT drawBorder(int /*long*/ hdc, int x, int y, int lineHeight, StyleItem[] line
 		OS.SetRect(drawRect, x + left, y, x + run.x + run.width, y + lineHeight);
 		if (drawClip != null) {
 			RECT lpDrawClip = new RECT();
-			OS.SetRect(lpDrawClip, drawClip.x - lineWidth, drawClip.y, drawClip.x + drawClip.width + lineWidth, drawClip.y + drawClip.height);
+			OS.SetRect(lpDrawClip, drawClip.x - lineWidth, y, drawClip.x + drawClip.width + lineWidth, y + lineHeight);
 			OS.IntersectRect(drawRect, lpDrawClip, drawRect);
 		}
 		OS.Rectangle(hdc, drawRect.left,drawRect.top, drawRect.right, drawRect.bottom);
