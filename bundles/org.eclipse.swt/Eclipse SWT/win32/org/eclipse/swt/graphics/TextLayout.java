@@ -812,24 +812,38 @@ RECT drawBorder(int /*long*/ hdc, int x, int y, int lineHeight, StyleItem[] line
 			}
 		}
 		int lineWidth = 1;
+		int pattern = 1;
 		int lineStyle = OS.PS_SOLID;
 		switch (style.borderStyle) {
 			case SWT.BORDER_SOLID: break;
-			case SWT.BORDER_DASH: lineStyle = OS.PS_DASH; break;
-			case SWT.BORDER_DOT: lineStyle = OS.PS_DOT; break;
+			case SWT.BORDER_DASH: {
+				lineStyle = OS.PS_DASH;
+				pattern = 4;
+				break;
+			}
+			case SWT.BORDER_DOT: {
+				lineStyle = OS.PS_DOT;
+				pattern = 2;
+				break;
+			}
 		}
 		int /*long*/ oldBrush = OS.SelectObject(hdc, OS.GetStockObject(OS.NULL_BRUSH));
 		LOGBRUSH logBrush = new LOGBRUSH();
 		logBrush.lbStyle = OS.BS_SOLID;
 		logBrush.lbColor = /*64*/(int)color;
-		int /*long*/ newPen = OS.ExtCreatePen(lineStyle | OS.PS_GEOMETRIC, Math.max(1, lineWidth), logBrush, 0, null);
+		int /*long*/ newPen = OS.ExtCreatePen(lineStyle | OS.PS_GEOMETRIC, lineWidth, logBrush, 0, null);
 		int /*long*/ oldPen = OS.SelectObject(hdc, newPen);
 		RECT drawRect = new RECT();
 		OS.SetRect(drawRect, x + left, y, x + run.x + run.width, y + lineHeight);
 		if (drawClip != null) {
-			RECT lpDrawClip = new RECT();
-			OS.SetRect(lpDrawClip, drawClip.x - lineWidth, y, drawClip.x + drawClip.width + lineWidth, y + lineHeight);
-			OS.IntersectRect(drawRect, lpDrawClip, drawRect);
+			if (drawRect.left < drawClip.x) {
+				int remainder = drawRect.left % pattern;
+				drawRect.left = drawClip.x / pattern * pattern + remainder - pattern;
+			}
+			if (drawRect.right > drawClip.x + drawClip.width) {
+				int remainder = drawRect.right % pattern;
+				drawRect.right = (drawClip.x + drawClip.width) / pattern * pattern + remainder + pattern;
+			}
 		}
 		OS.Rectangle(hdc, drawRect.left,drawRect.top, drawRect.right, drawRect.bottom);
 		OS.SelectObject(hdc, oldPen);
@@ -840,7 +854,7 @@ RECT drawBorder(int /*long*/ hdc, int x, int y, int lineHeight, StyleItem[] line
 			if (clipRect.right == -1) clipRect.right = 0x7ffff;
 			OS.IntersectClipRect(hdc, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
 			logBrush.lbColor = /*64*/(int)selectionColor;
-			int /*long*/ selPen = OS.ExtCreatePen (lineStyle | OS.PS_GEOMETRIC, Math.max(1, lineWidth), logBrush, 0, null);
+			int /*long*/ selPen = OS.ExtCreatePen (lineStyle | OS.PS_GEOMETRIC, lineWidth, logBrush, 0, null);
 			oldPen = OS.SelectObject(hdc, selPen);
 			OS.Rectangle(hdc, drawRect.left, drawRect.top, drawRect.right, drawRect.bottom);
 			OS.RestoreDC(hdc, state);
