@@ -375,10 +375,8 @@ void createHandle () {
 		NSButtonCell cell = (NSButtonCell)new SWTButtonCell ().alloc ().init ();
 		button.setCell (cell);
 		cell.release();
-		if (parent.nsToolbar != null) {
-			cell.setHighlightsBy(OS.NSContentsCellMask);
-			cell.setBackgroundStyle(OS.NSBackgroundStyleRaised);
-		}
+		cell.setHighlightsBy(OS.NSContentsCellMask);
+		cell.setBackgroundStyle(OS.NSBackgroundStyleRaised);
 		button.setBordered(false);
 		button.setAction(OS.sel_sendSelection);
 		button.setTarget(button);
@@ -447,7 +445,7 @@ void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ i
 }
 
 NSRect drawTitleWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ title, NSRect titleRect, int /*long*/ view) {
-    boolean hiliteShadow = new NSButtonCell(id).isHighlighted() && parent.nsToolbar != null && text.length() > 0 && image == null;
+    boolean hiliteShadow = new NSButtonCell(id).isHighlighted() && text.length() > 0 && image == null;
     
     // An unbordered cell doesn't draw any highlighting when pushed or selected, so we have to do it here.
     if (hiliteShadow) {
