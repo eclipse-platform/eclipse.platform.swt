@@ -248,7 +248,8 @@ public Image(Device device, Image srcImage, int flag) {
 		handle = (NSImage)new NSImage().alloc();
 		handle = handle.initWithSize(size);
 		NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-		rep = rep.initWithBitmapDataPlanes(0, width, height, srcRep.bitsPerSample(), srcRep.samplesPerPixel(), srcRep.hasAlpha(), srcRep.isPlanar(), OS.NSCalibratedRGBColorSpace, format, srcRep.bytesPerRow(), bpp);
+		NSString colorspace = (OS.VERSION < 0x1060) ? OS.NSCalibratedRGBColorSpace : OS.NSDeviceRGBColorSpace;
+		rep = rep.initWithBitmapDataPlanes(0, width, height, srcRep.bitsPerSample(), srcRep.samplesPerPixel(), srcRep.hasAlpha(), srcRep.isPlanar(), colorspace, format, srcRep.bytesPerRow(), bpp);
 		handle.addRepresentation(rep);
 		rep.release();
 		handle.setCacheMode(OS.NSImageCacheNever);
@@ -844,7 +845,8 @@ void init(int width, int height) {
 	size.height = height;
 	handle = handle.initWithSize(size);
 	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-	rep = rep.initWithBitmapDataPlanes(0, width, height, 8, 3, false, false, OS.NSCalibratedRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
+	NSString colorspace = (OS.VERSION < 0x1060) ? OS.NSCalibratedRGBColorSpace : OS.NSDeviceRGBColorSpace;
+	rep = rep.initWithBitmapDataPlanes(0, width, height, 8, 3, false, false, colorspace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
 	OS.memset(rep.bitmapData(), 0xFF, width * height * 4);
 	handle.addRepresentation(rep);
 	rep.release();
@@ -958,7 +960,8 @@ void init(ImageData image) {
 	size.height = height;
 	handle = handle.initWithSize(size);
 	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-	rep = rep.initWithBitmapDataPlanes(0, width, height, 8, hasAlpha ? 4 : 3, hasAlpha, false, OS.NSCalibratedRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
+	NSString colorspace = (OS.VERSION < 0x1060) ? OS.NSCalibratedRGBColorSpace : OS.NSDeviceRGBColorSpace;
+	rep = rep.initWithBitmapDataPlanes(0, width, height, 8, hasAlpha ? 4 : 3, hasAlpha, false, colorspace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
 	OS.memmove(rep.bitmapData(), buffer, dataSize);	
 	handle.addRepresentation(rep);
 	rep.release();
@@ -1000,7 +1003,8 @@ void initNative(String filename) {
 		size.height = height;
 		handle = handle.initWithSize(size);
 		NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-		rep = rep.initWithBitmapDataPlanes(0, width, height, 8, hasAlpha ? 4 : 3, hasAlpha, false, OS.NSCalibratedRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
+		NSString nscolorspace = (OS.VERSION < 0x1060) ? OS.NSCalibratedRGBColorSpace : OS.NSDeviceRGBColorSpace;
+		rep = rep.initWithBitmapDataPlanes(0, width, height, 8, hasAlpha ? 4 : 3, hasAlpha, false, nscolorspace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
 		handle.addRepresentation(rep);
 		rep.release();
 		handle.setCacheMode(OS.NSImageCacheNever);
