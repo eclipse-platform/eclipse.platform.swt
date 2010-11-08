@@ -408,7 +408,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	GCData data = gc.data;
 	int /*long*/ cairo = data.cairo;
-	if (flags != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
+	if ((flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
 		int /*long*/[] attrs = new int /*long*/[1];
 		int[] nAttrs = new int[1];
 		PangoLogAttr logAttr = new PangoLogAttr();

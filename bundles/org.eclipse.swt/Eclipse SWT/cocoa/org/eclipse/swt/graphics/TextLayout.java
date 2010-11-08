@@ -447,7 +447,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			layoutManager.drawBackgroundForGlyphRange(range, pt);
 		}
 		boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
-		if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
+		if (hasSelection || ((flags & SWT.LAST_LINE_SELECTION) != 0 && (flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0)) {
 			if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
 			NSColor selectionColor = NSColor.colorWithCalibratedRed(selectionBackground.handle[0], selectionBackground.handle[1], selectionBackground.handle[2], selectionBackground.handle[3]);
 			NSBezierPath path = NSBezierPath.bezierPath();
@@ -466,8 +466,8 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 					path.appendBezierPathWithRect(rect);
 				}
 			}
-			//TODO draw full selection for wrapped text
-			if ((flags & SWT.LAST_LINE_SELECTION) != 0) {
+			//TODO draw full selection for wrapped text and delimiter selection for hard breaks
+			if ((flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0 && (/*hasSelection ||*/ (flags & SWT.LAST_LINE_SELECTION) != 0)) {
 				NSRect bounds = lineBounds[lineBounds.length - 1];
 				rect.x = pt.x + bounds.x + bounds.width;
 				rect.y = y + bounds.y;
