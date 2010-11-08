@@ -637,7 +637,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	int /*long*/ gdipSelBackground = 0, gdipSelForeground = 0, gdipFont = 0, lastHFont = 0;
 	int /*long*/ selBackground = 0;
 	int selForeground = 0;
-	if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
+	if (hasSelection || ((flags & SWT.LAST_LINE_SELECTION) != 0 && (flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0)) {
 		int fgSel = selectionForeground != null ? selectionForeground.handle : OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT); 
 		int bgSel = selectionBackground != null ? selectionBackground.handle : OS.GetSysColor (OS.COLOR_HIGHLIGHT); 
 		if (gdip) {
@@ -661,7 +661,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		int lineHeight = lineY[line+1] - lineY[line] - lineSpacing;
 		
 		//Draw last line selection
-		if (flags != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
+		if ((flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
 			boolean extents = false;
 			if (line == runs.length - 1 && (flags & SWT.LAST_LINE_SELECTION) != 0) {
 				extents = true;
