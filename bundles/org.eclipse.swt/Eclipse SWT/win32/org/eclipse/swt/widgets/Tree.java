@@ -6882,6 +6882,28 @@ LRESULT WM_PRINTCLIENT (int /*long*/ wParam, int /*long*/ lParam) {
 	return new LRESULT (code);
 }
 
+LRESULT WM_SETCURSOR (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
+	if (result != null) return result;
+	
+	/*
+	* Feature in Windows. On Windows 7, the tree control show the
+	* hand cursor when the mouse is over an item.  This is the
+	* correct Windows 7 behavior but not correct for SWT. The fix
+	* is to always ensure a cursor is set. 
+	*/
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 1)) {
+		if (wParam == handle) {
+			int hitTest = (short) OS.LOWORD (lParam);
+			if (hitTest == OS.HTCLIENT) {
+				OS.SetCursor (OS.LoadCursor (0, OS.IDC_ARROW));
+				return LRESULT.ONE;
+			}
+		}
+	}
+	return null;
+}
+
 LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Bug in Windows.  When a tree item that has an image
