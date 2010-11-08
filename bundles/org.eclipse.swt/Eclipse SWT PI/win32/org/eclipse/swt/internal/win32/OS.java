@@ -573,6 +573,7 @@ public class OS extends C {
 	public static final int DT_WORDBREAK = 0x10;
 	public static final int DTM_FIRST = 0x1000;
 	public static final int DTM_GETSYSTEMTIME = DTM_FIRST + 1; 
+	public static final int DTM_GETIDEALSIZE = DTM_FIRST + 15;
 	public static final int DTM_SETFORMAT = IsUnicode ? DTM_FIRST + 50 : DTM_FIRST + 5;
 	public static final int DTM_SETSYSTEMTIME = DTM_FIRST + 2;
 	public static final int DTN_FIRST = 0xFFFFFD08;

@@ -256,139 +256,58 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width = rect.right;
 			height = rect.bottom;
 		} else {
-			TCHAR buffer = new TCHAR (getCodePage (), 128);
-			int /*long*/ newFont, oldFont = 0;
-			int /*long*/ hDC = OS.GetDC (handle);
-			newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-			if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-			RECT rect = new RECT ();
-			int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_NOPREFIX;
-			SYSTEMTIME systime = new SYSTEMTIME ();
-			if ((style & SWT.DATE) != 0) {
-				/* Determine the widest/tallest year string. */
-				systime.wMonth = 1;
-				systime.wDay = 1;
-				int widest = 0, secondWidest = 0, thirdWidest = 0;
-				for (int i = 0; i <= MAX_DIGIT; i++) {
-					systime.wYear = (short) (2000 + i); // year 2000 + i is guaranteed to exist
-					int size = OS.GetDateFormat(OS.LOCALE_USER_DEFAULT, OS.DATE_SHORTDATE, systime, null, buffer, buffer.length ());
-					if (size == 0) {
-						buffer = new TCHAR (getCodePage (), size);
-						OS.GetDateFormat(OS.LOCALE_USER_DEFAULT, OS.DATE_SHORTDATE, systime, null, buffer, buffer.length ());
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				/* Vista and later: use DTM_GETIDEALSIZE. */
+				SIZE size = new SIZE ();
+				OS.SendMessage(handle, OS.DTM_GETIDEALSIZE, 0, size);
+				width = size.cx;
+				height = size.cy;
+			} else {
+				int /*long*/ newFont, oldFont = 0;
+				int /*long*/ hDC = OS.GetDC (handle);
+				newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+				if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+				RECT rect = new RECT ();
+				if ((style & SWT.DATE) != 0) {
+					int dwFlags = 0;
+					TCHAR lpFormat = null;
+					if ((style & SWT.SHORT) != 0) {
+						lpFormat = new TCHAR (0, getCustomShortDateFormat(), true);
+					} else {
+						dwFlags = (style & SWT.MEDIUM) != 0 ? OS.DATE_SHORTDATE : OS.DATE_LONGDATE;
 					}
-					rect.left = rect.top = rect.right = rect.bottom = 0;
-					OS.DrawText (hDC, buffer, size, rect, flags);
-					if (rect.right - rect.left >= width) {
-						width = rect.right - rect.left;
-						thirdWidest = secondWidest;
-						secondWidest = widest;
-						widest = i;
+					int size = OS.GetDateFormat(OS.LOCALE_USER_DEFAULT, dwFlags, null, lpFormat, null, 0);
+					if (size > 0) {
+						TCHAR buffer = new TCHAR (getCodePage (), size);
+						OS.GetDateFormat(OS.LOCALE_USER_DEFAULT, dwFlags, null, lpFormat, buffer, buffer.length ());
+						OS.DrawText (hDC, buffer, size, rect, OS.DT_CALCRECT | OS.DT_EDITCONTROL);
 					}
-					height = Math.max(height, rect.bottom - rect.top);
+				} else if ((style & SWT.TIME) != 0) {
+					int dwFlags = 0;
+					TCHAR lpFormat = null;
+					if ((style & SWT.SHORT) != 0) {
+						dwFlags = OS.TIME_NOSECONDS;
+						lpFormat = new TCHAR (0, getCustomShortTimeFormat(), true);
+					}
+					int size = OS.GetTimeFormat(OS.LOCALE_USER_DEFAULT, dwFlags, null, lpFormat, null, 0);
+					if (size > 0) {
+						TCHAR buffer = new TCHAR (getCodePage (), size);
+						OS.GetTimeFormat(OS.LOCALE_USER_DEFAULT, dwFlags, null, lpFormat, buffer, buffer.length ());
+						OS.DrawText (hDC, buffer, size, rect, OS.DT_CALCRECT | OS.DT_EDITCONTROL);
+					}
 				}
-				if (widest > 1) widest = widest * 1000 + widest * 100 + widest * 10 + widest;
-				else if (secondWidest > 1) widest = secondWidest * 1000 + widest * 100 + widest * 10 + widest;
-				else widest = thirdWidest * 1000 + widest * 100 + widest * 10 + widest;
-				systime.wYear = (short) widest;
-
-				/* Determine the widest/tallest month name string. */
-				width = widest = 0;
-				for (short i = 0; i < MONTH_NAMES.length; i++) {
-					int name = MONTH_NAMES [i];
-					int size = OS.GetLocaleInfo (OS.LOCALE_USER_DEFAULT, name, buffer, buffer.length ());
-					if (size == 0) {
-						buffer = new TCHAR (getCodePage (), size);
-						OS.GetLocaleInfo (OS.LOCALE_USER_DEFAULT, name, buffer, buffer.length ());
-					}
-					rect.left = rect.top = rect.right = rect.bottom = 0;
-					OS.DrawText (hDC, buffer, size, rect, flags);
-					if (rect.right - rect.left > width) {
-						width = rect.right - rect.left;
-						widest = i;
-					}
-					height = Math.max(height, rect.bottom - rect.top);
-				}
-				systime.wMonth = (short) (widest + 1);
-
-				/* Determine the widest/tallest date string in the widest month of the widest year. */
-				int dwFlags = ((style & SWT.MEDIUM) != 0) ? OS.DATE_SHORTDATE : ((style & SWT.SHORT) != 0) ? OS.DATE_YEARMONTH : OS.DATE_LONGDATE;
-				width = 0;
-				for (short i = 1; i <= MAX_DAY; i++) {
-					systime.wDay = i;
-					int size = OS.GetDateFormat(OS.LOCALE_USER_DEFAULT, dwFlags, systime, null, buffer, buffer.length ());
-					if (size == 0) {
-						buffer = new TCHAR (getCodePage (), size);
-						OS.GetDateFormat(OS.LOCALE_USER_DEFAULT, dwFlags, systime, null, buffer, buffer.length ());
-					}
-					rect.left = rect.top = rect.right = rect.bottom = 0;
-					OS.DrawText (hDC, buffer, size, rect, flags);
-					width = Math.max(width, rect.right - rect.left);
-					height = Math.max(height, rect.bottom - rect.top);
-					if ((style & SWT.SHORT) != 0) break;
-				}
-			} else if ((style & SWT.TIME) != 0) {
-				/* Determine the widest/tallest hour string. This code allows for the possibility of ligatures. */
-				int dwFlags = ((style & SWT.SHORT) != 0) ? OS.TIME_NOSECONDS : 0;
-				short widest = 0;
-				int max = is24HourTime () ? MAX_24HOUR : MAX_12HOUR;
-				for (short i = 0; i < max; i++) {
-					systime.wHour = i;
-					int size = OS.GetTimeFormat(OS.LOCALE_USER_DEFAULT, dwFlags, systime, null, buffer, buffer.length ());
-					if (size == 0) {
-						buffer = new TCHAR (getCodePage (), size);
-						OS.GetTimeFormat(OS.LOCALE_USER_DEFAULT, dwFlags, systime, null, buffer, buffer.length ());
-					}
-					rect.left = rect.top = rect.right = rect.bottom = 0;
-					OS.DrawText (hDC, buffer, size, rect, flags);
-					if (rect.right - rect.left > width) {
-						width = rect.right - rect.left;
-						widest = i;
-					}
-					height = Math.max(height, rect.bottom - rect.top);
-				}
-				systime.wHour = widest;
-
-				/* Determine the widest/tallest minute and second string. */
-				width = widest = 0;
-				for (short i = 0; i < MAX_MINUTE; i++) {
-					systime.wMinute = i;
-					int size = OS.GetTimeFormat(OS.LOCALE_USER_DEFAULT, dwFlags, systime, null, buffer, buffer.length ());
-					if (size == 0) {
-						buffer = new TCHAR (getCodePage (), size);
-						OS.GetTimeFormat(OS.LOCALE_USER_DEFAULT, dwFlags, systime, null, buffer, buffer.length ());
-					}
-					rect.left = rect.top = rect.right = rect.bottom = 0;
-					OS.DrawText (hDC, buffer, size, rect, flags);
-					if (rect.right - rect.left > width) {
-						width = rect.right - rect.left;
-						widest = i;
-					}
-					height = Math.max(height, rect.bottom - rect.top);
-				}
-				systime.wMinute = widest;
-				systime.wSecond = widest;
-
-				/* Determine the widest/tallest time string for the widest hour, widest minute, and if applicable, widest second. */
-				int size = OS.GetTimeFormat(OS.LOCALE_USER_DEFAULT, dwFlags, systime, null, buffer, buffer.length ());
-				if (size == 0) {
-					buffer = new TCHAR (getCodePage (), size);
-					OS.GetTimeFormat(OS.LOCALE_USER_DEFAULT, dwFlags, systime, null, buffer, buffer.length ());
-				}
-				rect.left = rect.top = rect.right = rect.bottom = 0;
-				OS.DrawText (hDC, buffer, size, rect, flags);
 				width = rect.right - rect.left;
-				height = Math.max(height, rect.bottom - rect.top);
+				height = rect.bottom - rect.top;
+				if (newFont != 0) OS.SelectObject (hDC, oldFont);
+				OS.ReleaseDC (handle, hDC);
+				int upDownWidth = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
+				width += upDownWidth + MARGIN;
 			}
-			if (newFont != 0) OS.SelectObject (hDC, oldFont);
-			OS.ReleaseDC (handle, hDC);
-			int upDownWidth = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
 			int upDownHeight = OS.GetSystemMetrics (OS.SM_CYVSCROLL);
 			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				// TODO: On Vista, can send DTM_GETDATETIMEPICKERINFO to ask the Edit control what its margins are
+				// TODO: Can maybe use DTM_GETDATETIMEPICKERINFO for this
 				upDownHeight += 7;
-				if ((style & SWT.DROP_DOWN) != 0) upDownWidth += 16;
 			}
-			width += upDownWidth + MARGIN;
 			height = Math.max (height, upDownHeight);
 		}
 	}
@@ -417,57 +336,10 @@ int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
 }
 
-String getComputeSizeString () {
-	// TODO: Not currently used but might need for WinCE
-	if ((style & SWT.DATE) != 0) {
-		if ((style & SWT.SHORT) != 0) return getCustomShortDateFormat ();
-		if ((style & SWT.MEDIUM) != 0) return getShortDateFormat ();
-		if ((style & SWT.LONG) != 0) return getLongDateFormat ();
-	}
-	if ((style & SWT.TIME) != 0) {
-		if ((style & SWT.SHORT) != 0) return getCustomShortTimeFormat ();
-		return getTimeFormat ();
-	}
-	return "";
-}
-
 String getCustomShortDateFormat () {
 	TCHAR tchar = new TCHAR (getCodePage (), 80);
 	int size = OS.GetLocaleInfo (OS.LOCALE_USER_DEFAULT, OS.LOCALE_SYEARMONTH, tchar, 80);
 	return size != 0 ? tchar.toString (0, size - 1) : "M/yyyy"; //$NON-NLS-1$
-	
-	//TODO: Not currently used, but may need for WinCE (or if numeric short date is required)
-//	StringBuffer buffer = new StringBuffer (getShortDateFormat ());
-//	int length = buffer.length ();
-//	boolean inQuotes = false;
-//	int start = 0, end = 0;
-//	while (start < length) {
-//		char ch = buffer.charAt (start);
-//		if (ch == SINGLE_QUOTE) inQuotes = !inQuotes;
-//		else if (ch == DAY_FORMAT_CONSTANT && !inQuotes) {
-//			end = start + 1;
-//			while (end < length && buffer.charAt (end) == DAY_FORMAT_CONSTANT) end++;
-//			int ordering = getShortDateFormatOrdering ();
-//			switch (ordering) {
-//			case MONTH_DAY_YEAR:
-//				// skip the following separator
-//				while (end < length && buffer.charAt (end) != YEAR_FORMAT_CONSTANT) end++;
-//				break;
-//			case DAY_MONTH_YEAR:
-//				// skip the following separator
-//				while (end < length && buffer.charAt (end) != MONTH_FORMAT_CONSTANT) end++;
-//				break;
-//			case YEAR_MONTH_DAY:
-//				// skip the preceding separator
-//				while (start > 0 && buffer.charAt (start) != MONTH_FORMAT_CONSTANT) start--;
-//				break;
-//			}
-//			break;
-//		}
-//		start++;
-//	}
-//	if (start < end) buffer.delete (start, end);
-//	return buffer.toString ();
 }
 
 String getCustomShortTimeFormat () {
@@ -492,46 +364,10 @@ String getCustomShortTimeFormat () {
 	return buffer.toString ();
 }
 
-String getLongDateFormat () {
-	//TODO: Not currently used, but may need for WinCE
-	TCHAR tchar = new TCHAR (getCodePage (), 80);
-	int size = OS.GetLocaleInfo (OS.LOCALE_USER_DEFAULT, OS.LOCALE_SLONGDATE, tchar, 80);
-	return size > 0 ? tchar.toString (0, size - 1) : "dddd, MMMM dd, yyyy"; //$NON-NLS-1$
-}
-
-String getShortDateFormat () {
-	//TODO: Not currently used, but may need for WinCE
-	TCHAR tchar = new TCHAR (getCodePage (), 80);
-	//TODO: May need to OR with LOCALE_ICENTURY
-	int size = OS.GetLocaleInfo (OS.LOCALE_USER_DEFAULT, OS.LOCALE_SSHORTDATE, tchar, 80);
-	return size > 0 ? tchar.toString (0, size - 1) : "M/d/yyyy"; //$NON-NLS-1$
-}
-
-int getShortDateFormatOrdering () {
-	//TODO: Not currently used, but may need for WinCE
-	TCHAR tchar = new TCHAR (getCodePage (), 4);
-	int size = OS.GetLocaleInfo (OS.LOCALE_USER_DEFAULT, OS.LOCALE_IDATE, tchar, 4);
-	if (size > 0) {
-		String number = tchar.toString (0, size - 1);
-		return Integer.parseInt (number);
-	}
-	return 0;
-}
-
 String getTimeFormat () {
 	TCHAR tchar = new TCHAR (getCodePage (), 80);
 	int size = OS.GetLocaleInfo (OS.LOCALE_USER_DEFAULT, OS.LOCALE_STIMEFORMAT, tchar, 80);
 	return size > 0 ? tchar.toString (0, size - 1) : "h:mm:ss tt"; //$NON-NLS-1$
-}
-
-boolean is24HourTime () {
-	TCHAR tchar = new TCHAR (getCodePage (), 4);
-	int size = OS.GetLocaleInfo (OS.LOCALE_USER_DEFAULT, OS.LOCALE_ITIME, tchar, 4);
-	if (size > 0) {
-		String number = tchar.toString (0, size - 1);
-		return Integer.parseInt (number) != 0;
-	}
-	return true;
 }
 
 /**
