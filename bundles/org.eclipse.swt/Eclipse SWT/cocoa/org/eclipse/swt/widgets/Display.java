@@ -3011,8 +3011,9 @@ public boolean post(Event event) {
 				}
 				
 				if (vKey == -1) return false;
-				
-				return OS.CGPostKeyboardEvent((short)0, vKey, type == SWT.KeyDown) == 0;
+				int /*long*/ eventRef = OS.CGEventCreateKeyboardEvent(0, vKey, type == SWT.KeyDown);
+				OS.CGEventPost(0, eventRef);
+				return true;
 			}
 			case SWT.MouseDown:
 			case SWT.MouseMove: 
