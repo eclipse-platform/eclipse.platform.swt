@@ -137,7 +137,8 @@ public final class GridLayout extends Layout {
  	public int verticalSpacing = 5;
  
 /**
- * Constructs a new instance of this class.
+ * Constructs a new instance of this class
+ * with a single column.
  */
 public GridLayout () {}
 

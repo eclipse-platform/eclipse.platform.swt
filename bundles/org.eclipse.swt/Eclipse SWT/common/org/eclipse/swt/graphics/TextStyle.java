@@ -74,7 +74,7 @@ public class TextStyle {
 	 * <p> 
 	 * This value should be one of <code>SWT.UNDERLINE_SINGLE</code>,
 	 * <code>SWT.UNDERLINE_DOUBLE</code>, <code>SWT.UNDERLINE_ERROR</code>,
-	 * or <code>SWT.UNDERLINE_SQUIGGLE</code>.
+	 * <code>SWT.UNDERLINE_SQUIGGLE</code>, or <code>SWT.UNDERLINE_LINK</code>.
 	 * </p>
 	 * 
 	 * @see SWT#UNDERLINE_SINGLE
