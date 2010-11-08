@@ -848,6 +848,14 @@ public boolean open () {
 			display.removePool();
 		}
 	}
+	
+	/*
+	* Cleanup: If this tracker was resizing then the last cursor that it created
+	* needs to be destroyed.
+	*/
+	if (resizeCursor != null) resizeCursor.dispose();
+	resizeCursor = null;
+	
 	if (oldTrackingControl != null && !oldTrackingControl.isDisposed()) {
 		display.trackingControl = oldTrackingControl;
 	}
