@@ -4064,7 +4064,7 @@ public class Accessible {
 				// style.underlineColor is not currently part of the IA2 spec. If provided, it would be "text-underline-color:rgb(n,n,n);"
 			}
 			if (style.strikeout) {
-				textAttributes += "text-line-through-type:single";
+				textAttributes += "text-line-through-type:single;";
 				// style.strikeoutColor is not currently part of the IA2 spec. If provided, it would be "text-line-through-color:rgb(n,n,n);"
 			}
 			Font font = style.font;
