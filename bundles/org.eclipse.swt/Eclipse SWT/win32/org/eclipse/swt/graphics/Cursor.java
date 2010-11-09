@@ -375,7 +375,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		OS.GetObject(hBitmap, BITMAP.sizeof, dibBM);
 		byte[] srcData = img.data;
 		if (source.alpha != -1) {
-			for (int i = 3, ap=0; i < srcData.length; i+=4, ap++) {
+			for (int i = 3; i < srcData.length; i+=4) {
 				srcData[i] = (byte)source.alpha;
 			}
 		} else if (source.alphaData != null) {

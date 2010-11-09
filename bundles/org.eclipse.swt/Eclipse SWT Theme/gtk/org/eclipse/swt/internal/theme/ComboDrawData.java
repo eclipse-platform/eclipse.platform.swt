@@ -47,10 +47,10 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	int arrow_width = MIN_ARROW_SIZE;
 	int arrow_height = ARROW_HEIGHT;
 	int x_border = xthickness + focus_padding;
-	int y_border = ythickness + focus_padding;
+	//int y_border = ythickness + focus_padding;
 	if (interior_focus == 0) {
 		x_border += focus_line_width;
-		y_border += focus_line_width;
+		//y_border += focus_line_width;
 	}
 	int arrow_button_width = arrow_width + x_border * 2;		
 	int arrow_button_x = x + width - arrow_button_width;
@@ -109,13 +109,14 @@ int hit(Theme theme, Point position, Rectangle bounds) {
 	int ythickness = OS.gtk_style_get_xthickness(gtkStyle);
 	int arrow_width = MIN_ARROW_SIZE;
 	int x_border = xthickness + focus_padding;
-	int y_border = ythickness + focus_padding;
+	//int y_border = ythickness + focus_padding;
 	if (interior_focus == 0) {
 		x_border += focus_line_width;
-		y_border += focus_line_width;
+		//y_border += focus_line_width;
 	}
 	int arrow_button_width = arrow_width + x_border * 2;		
 	int arrow_button_x = bounds.x + bounds.width - arrow_button_width;
+
 	Rectangle arrowRect = new Rectangle(arrow_button_x, bounds.y, arrow_button_width, bounds.height);
 	if (arrowRect.contains(position)) return DrawData.COMBO_ARROW;
 	return DrawData.WIDGET_WHOLE;
