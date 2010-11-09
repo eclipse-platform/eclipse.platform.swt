@@ -994,7 +994,6 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rec
 		event.width = (int)cellRect.width;
 		event.height = (int)cellRect.height;
 		sendEvent (SWT.EraseItem, event);
-		gc.dispose ();
 		if (!event.doit) {
 			drawForeground = drawBackground = drawSelection = false; 
 		} else {
@@ -1003,8 +1002,9 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rec
 			drawSelection = drawSelection && (event.detail & SWT.SELECTED) != 0;			
 		}
 		if (!drawSelection && isSelected) {
-			userForeground = Color.cocoa_new(display, fg.handle);
+			userForeground = Color.cocoa_new(display, gc.getForeground().handle);
 		}
+		gc.dispose ();
 		context.restoreGraphicsState();
 
 		if (isDisposed ()) return;
