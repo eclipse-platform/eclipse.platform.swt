@@ -2315,6 +2315,16 @@ public static final int kCGBlendModeDifference = 10;
 public static final int kCGEventFilterMaskPermitLocalKeyboardEvents = 2;
 public static final int kCGEventFilterMaskPermitLocalMouseEvents = 1;
 public static final int kCGEventFilterMaskPermitSystemDefinedEvents = 4;
+public static final int kCGEventKeyDown = 10;
+public static final int kCGEventKeyUp = 11;
+public static final int kCGEventLeftMouseDown = 1;
+public static final int kCGEventLeftMouseUp = 2;
+public static final int kCGEventMouseMoved = 5;
+public static final int kCGEventOtherMouseDown = 25;
+public static final int kCGEventOtherMouseUp = 26;
+public static final int kCGEventRightMouseDown = 3;
+public static final int kCGEventRightMouseUp = 4;
+public static final int kCGEventSourceStateHIDSystemState = 1;
 public static final int kCGEventSuppressionStateRemoteMouseDrag = 1;
 public static final int kCGEventSuppressionStateSuppressionInterval = 0;
 public static final int kCGImageAlphaFirst = 4;
@@ -2335,6 +2345,8 @@ public static final int kCGPathElementAddQuadCurveToPoint = 2;
 public static final int kCGPathElementCloseSubpath = 4;
 public static final int kCGPathElementMoveToPoint = 0;
 public static final int kCGPathStroke = 2;
+public static final int kCGScrollEventUnitLine = 1;
+public static final int kCGScrollEventUnitPixel = 0;
 public static final int kCGSessionEventTap = 1;
 public static final int kCGTextFillStroke = 2;
 public static final int kCTParagraphStyleSpecifierBaseWritingDirection = 13;
@@ -3280,31 +3292,39 @@ public static final native int /*long*/ CGDisplayPixelsHigh(int display);
  */
 public static final native int /*long*/ CGDisplayPixelsWide(int display);
 /**
- * @param doCombineState cast=(boolean_t)
- */
-public static final native int CGEnableEventStateCombining(int doCombineState);
-/**
  * @param source cast=(CGEventSourceRef)
  * @param virtualKey cast=(CGKeyCode)
  * @param keyDown cast=(_Bool)
  */
 public static final native int /*long*/ CGEventCreateKeyboardEvent(int /*long*/ source, short virtualKey, boolean keyDown);
 /**
+ * @param source cast=(CGEventSourceRef)
+ * @param mouseType cast=(CGEventType)
+ * @param mouseCursorPosition flags=struct
+ * @param mouseButton cast=(CGMouseButton)
+ */
+public static final native int /*long*/ CGEventCreateMouseEvent(int /*long*/ source, int mouseType, CGPoint mouseCursorPosition, int mouseButton);
+/**
+ * @param source cast=(CGEventSourceRef)
+ * @param units cast=(CGScrollEventUnit)
+ * @param wheelCount cast=(uint32_t)
+ * @param wheel1 cast=(int32_t)
+ */
+public static final native int /*long*/ CGEventCreateScrollWheelEvent(int /*long*/ source, int units, int wheelCount, int wheel1);
+/**
  * @param event cast=(CGEventRef)
  * @param field cast=(CGEventField)
  */
 public static final native long CGEventGetIntegerValueField(int /*long*/ event, int field);
 /**
- * @param event cast=(CGEventRef)
- * @param stringLength cast=(UniCharCount)
- * @param unicodeString cast=(UniChar*)
- */
-public static final native void CGEventKeyboardSetUnicodeString(int /*long*/ event, int /*long*/ stringLength, char[] unicodeString);
-/**
  * @param tap cast=(CGEventTapLocation)
  * @param event cast=(CGEventRef)
  */
 public static final native void CGEventPost(int tap, int /*long*/ event);
+/**
+ * @param stateID cast=(CGEventSourceStateID)
+ */
+public static final native int /*long*/ CGEventSourceCreate(int stateID);
 /**
  * @param rect flags=struct
  * @param maxDisplays cast=(CGDisplayCount)
@@ -3388,24 +3408,6 @@ public static final native void CGPathMoveToPoint(int /*long*/ path, int /*long*
  * @param path cast=(CGPathRef)
  */
 public static final native void CGPathRelease(int /*long*/ path);
-/**
- * @param keyChar cast=(CGCharCode)
- * @param virtualKey cast=(CGKeyCode)
- * @param keyDown cast=(boolean_t)
- */
-public static final native int CGPostKeyboardEvent(short keyChar, short virtualKey, boolean keyDown);
-/**
- * @param mouseCursorPosition flags=struct
- * @param updateMouseCursorPosition cast=(boolean_t)
- * @param buttonCount cast=(CGButtonCount)
- * @param mouseButtonDown cast=(boolean_t)
- */
-public static final native int CGPostMouseEvent(CGPoint mouseCursorPosition, boolean updateMouseCursorPosition, int buttonCount, boolean mouseButtonDown, boolean varArg0, boolean varArg1, boolean varArg2, boolean varArg3);
-/**
- * @param wheelCount cast=(CGWheelCount)
- * @param wheel1 cast=(int32_t)
- */
-public static final native int CGPostScrollWheelEvent(int wheelCount, int wheel1);
 /**
  * @param filter cast=(CGEventFilterMask)
  * @param state cast=(CGEventSuppressionState)

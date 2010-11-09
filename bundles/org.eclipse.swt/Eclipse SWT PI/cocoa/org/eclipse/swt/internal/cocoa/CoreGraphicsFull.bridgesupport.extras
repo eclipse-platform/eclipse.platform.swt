@@ -5,6 +5,16 @@
 	<enum name="kCGEventFilterMaskPermitLocalKeyboardEvents" swt_gen="true"></enum>
 	<enum name="kCGEventFilterMaskPermitLocalMouseEvents" swt_gen="true"></enum>
 	<enum name="kCGEventFilterMaskPermitSystemDefinedEvents" swt_gen="true"></enum>
+	<enum name="kCGEventKeyDown" swt_gen="true"></enum>
+	<enum name="kCGEventKeyUp" swt_gen="true"></enum>
+	<enum name="kCGEventLeftMouseDown" swt_gen="true"></enum>
+	<enum name="kCGEventLeftMouseUp" swt_gen="true"></enum>
+	<enum name="kCGEventMouseMoved" swt_gen="true"></enum>
+	<enum name="kCGEventOtherMouseDown" swt_gen="true"></enum>
+	<enum name="kCGEventOtherMouseUp" swt_gen="true"></enum>
+	<enum name="kCGEventRightMouseDown" swt_gen="true"></enum>
+	<enum name="kCGEventRightMouseUp" swt_gen="true"></enum>
+	<enum name="kCGEventSourceStateHIDSystemState" swt_gen="true"></enum>
 	<enum name="kCGEventSuppressionStateRemoteMouseDrag" swt_gen="true"></enum>
 	<enum name="kCGEventSuppressionStateSuppressionInterval" swt_gen="true"></enum>
 	<enum name="kCGImageAlphaFirst" swt_gen="true"></enum>
@@ -25,6 +35,8 @@
 	<enum name="kCGPathElementCloseSubpath" swt_gen="true"></enum>
 	<enum name="kCGPathElementMoveToPoint" swt_gen="true"></enum>
 	<enum name="kCGPathStroke" swt_gen="true"></enum>
+	<enum name="kCGScrollEventUnitLine" swt_gen="true"></enum>
+	<enum name="kCGScrollEventUnitPixel" swt_gen="true"></enum>
 	<enum name="kCGSessionEventTap" swt_gen="true"></enum>
 	<enum name="kCGTextFillStroke" swt_gen="true"></enum>
 	<function name="CGBitmapContextCreate" swt_gen="true">
@@ -195,11 +207,21 @@
 		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
-	<function name="CGEnableEventStateCombining" swt_gen="true">
-		<arg swt_gen="true" swt_param_name="doCombineState"></arg>
+	<function name="CGEventCreateKeyboardEvent" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
-	<function name="CGEventCreateKeyboardEvent" swt_gen="true">
+	<function name="CGEventCreateMouseEvent" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
+	</function>
+	<function name="CGEventCreateScrollWheelEvent" swt_gen="true">
+		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
@@ -210,14 +232,13 @@
 		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
-	<function name="CGEventKeyboardSetUnicodeString" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true" swt_java_type="char[]"></arg>
-	</function>
 	<function name="CGEventPost" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+	</function>
+	<function name="CGEventSourceCreate" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CGGetDisplaysWithRect" swt_gen="true">
 		<arg swt_gen="true"></arg>
@@ -300,23 +321,12 @@
 	<function name="CGPathRelease" swt_gen="true">
 		<arg swt_gen="true"></arg>
 	</function>
-	<function name="CGPostKeyboardEvent" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true" swt_java_type="boolean" swt_java_type64="boolean"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="CGPostMouseEvent" swt_gen="true" swt_variadic_count="4" swt_variadic_java_types="boolean,*">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true" swt_java_type="boolean"></arg>
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true" swt_java_type="boolean"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="CGPostScrollWheelEvent" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
+	<function name="CGPostMouseEvent" swt_variadic_count="4" swt_variadic_java_types="boolean,*">
+		<arg></arg>
+		<arg swt_java_type="boolean"></arg>
+		<arg></arg>
+		<arg swt_java_type="boolean"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGSetLocalEventsFilterDuringSuppressionState" swt_gen="true">
 		<arg swt_gen="true"></arg>

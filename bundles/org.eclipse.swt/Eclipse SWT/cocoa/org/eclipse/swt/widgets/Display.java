@@ -107,7 +107,6 @@ public class Display extends Device {
 	/* Key event management */
 	int [] deadKeyState = new int[1];
 	int currentKeyboardUCHRdata;
-	boolean eventSourceDelaySet;
 	
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer;
@@ -2955,15 +2954,9 @@ public boolean post(Event event) {
 	synchronized (Device.class) {
 		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 		if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-
-		// TODO: Not sure if these calls have any effect on event posting.
-		if (!eventSourceDelaySet) {
-			OS.CGSetLocalEventsSuppressionInterval(0.0);
-	        OS.CGEnableEventStateCombining(1);
-	        OS.CGSetLocalEventsFilterDuringSuppressionState(OS.kCGEventFilterMaskPermitLocalKeyboardEvents | OS.kCGEventFilterMaskPermitLocalMouseEvents | OS.kCGEventFilterMaskPermitSystemDefinedEvents, OS.kCGEventSuppressionStateSuppressionInterval);
-	        OS.CGSetLocalEventsFilterDuringSuppressionState(OS.kCGEventFilterMaskPermitLocalKeyboardEvents | OS.kCGEventFilterMaskPermitLocalMouseEvents | OS.kCGEventFilterMaskPermitSystemDefinedEvents, OS.kCGEventSuppressionStateRemoteMouseDrag);
-			eventSourceDelaySet = true;
-		}
+		int /*long*/ eventRef = 0;
+		int /*long*/ eventSource = OS.CGEventSourceCreate(OS.kCGEventSourceStateHIDSystemState);
+		if (eventSource == 0) return false;
 
 		int type = event.type;
 		switch (type) {
@@ -3010,80 +3003,62 @@ public boolean post(Event event) {
 					vKey = 127;
 				}
 				
-				if (vKey == -1) return false;
-				int /*long*/ eventRef = OS.CGEventCreateKeyboardEvent(0, vKey, type == SWT.KeyDown);
-				OS.CGEventPost(0, eventRef);
-				return true;
+				if (vKey != -1) {
+					eventRef = OS.CGEventCreateKeyboardEvent(eventSource, vKey, type == SWT.KeyDown);
+				}
+				break;
 			}
 			case SWT.MouseDown:
 			case SWT.MouseMove: 
 			case SWT.MouseUp: {
 				CGPoint mouseCursorPosition = new CGPoint ();
-				int chord = OS.GetCurrentButtonState ();
 
 				if (type == SWT.MouseMove) {
 					mouseCursorPosition.x = event.x;
 					mouseCursorPosition.y = event.y;
-					return OS.CGPostMouseEvent (mouseCursorPosition, true, 5, (chord & 0x1) != 0, (chord & 0x2) != 0, (chord & 0x4) != 0, (chord & 0x8) != 0, (chord & 0x10) != 0) == 0;
+					eventRef = OS.CGEventCreateMouseEvent(eventSource, OS.kCGEventMouseMoved, mouseCursorPosition, 0);
 				} else {
-					int button = event.button;
-					if (button < 1 || button > 5) return false;
-					boolean button1 = false, button2 = false, button3 = false, button4 = false, button5 = false;
-	 				switch (button) {
-						case 1: {
-							button1 = type == SWT.MouseDown;
-							button2 = (chord & 0x4) != 0;
-							button3 = (chord & 0x2) != 0;
-							button4 = (chord & 0x8) != 0;
-							button5 = (chord & 0x10) != 0;
-							break;
-						}
-						case 2: {
-							button1 = (chord & 0x1) != 0;
-							button2 = type == SWT.MouseDown;
-							button3 = (chord & 0x2) != 0;
-							button4 = (chord & 0x8) != 0;
-							button5 = (chord & 0x10) != 0;
-							break;
-						}
-						case 3: {
-							button1 = (chord & 0x1) != 0;
-							button2 = (chord & 0x4) != 0;
-							button3 = type == SWT.MouseDown;
-							button4 = (chord & 0x8) != 0;
-							button5 = (chord & 0x10) != 0;
-							break;
-						}
-						case 4: {
-							button1 = (chord & 0x1) != 0;
-							button2 = (chord & 0x4) != 0;
-							button3 = (chord & 0x2) != 0;
-							button4 = type == SWT.MouseDown;
-							button5 = (chord & 0x10) != 0;
-							break;
-						}
-						case 5: {
-							button1 = (chord & 0x1) != 0;
-							button2 = (chord & 0x4) != 0;
-							button3 = (chord & 0x2) != 0;
-							button4 = (chord & 0x8) != 0;
-							button5 = type == SWT.MouseDown;
-							break;
-						}
-					}
-	 				
 	 				NSPoint nsCursorPosition = NSEvent.mouseLocation();
 	 				NSRect primaryFrame = getPrimaryFrame();
 	 				mouseCursorPosition.x = nsCursorPosition.x;
 	 				mouseCursorPosition.y = (int) (primaryFrame.height - nsCursorPosition.y);
-					return OS.CGPostMouseEvent (mouseCursorPosition, true, 5, button1, button3, button2, button4, button5) == 0;
+	 				int eventType = 0;
+	 				int button = event.button;
+	 				switch (button) {
+	 				case 1:
+	 					eventType = (event.type == SWT.MouseDown ? OS.kCGEventLeftMouseDown : OS.kCGEventLeftMouseUp);
+	 					break;
+	 				case 2:
+	 					eventType = (event.type == SWT.MouseDown ? OS.kCGEventRightMouseDown : OS.kCGEventRightMouseUp);
+	 					break;
+	 				default:
+	 					eventType = (event.type == SWT.MouseDown ? OS.kCGEventOtherMouseDown : OS.kCGEventOtherMouseUp);
+	 					break;
+	 				}
+
+	 				// SWT buttons are 1-based; CG buttons are 0 based.
+	 				button -= 1;
+					eventRef = OS.CGEventCreateMouseEvent(eventSource, eventType, mouseCursorPosition, button);
 				}
+				break;
 			}
 			case SWT.MouseWheel: {
-				return OS.CGPostScrollWheelEvent(1, event.count) == 0;
+				// CG does not support scrolling a page at a time. Technically that is a page up/down, but not a scroll-wheel event. 
+				eventRef = OS.CGEventCreateScrollWheelEvent(eventSource, OS.kCGScrollEventUnitLine, 1, event.count);
+				break;
 			}
 		} 
-		return false;
+		
+		boolean returnValue = false;
+		
+		if (eventRef != 0) {
+			OS.CGEventPost(0, eventRef);
+			OS.CFRelease(eventRef);
+			returnValue = true;
+		}
+		
+		if (eventSource != 0) OS.CFRelease(eventSource);		
+		return returnValue;
 	}
 }
 

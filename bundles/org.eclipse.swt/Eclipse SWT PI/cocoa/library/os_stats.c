@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 619;
-int OS_nativeFunctionCallCount[619];
+int OS_nativeFunctionCount = 617;
+int OS_nativeFunctionCallCount[617];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -119,11 +119,12 @@ char * OS_nativeFunctionNames[] = {
 	"CGDisplayBytesPerRow",
 	"CGDisplayPixelsHigh",
 	"CGDisplayPixelsWide",
-	"CGEnableEventStateCombining",
 	"CGEventCreateKeyboardEvent",
+	"CGEventCreateMouseEvent",
+	"CGEventCreateScrollWheelEvent",
 	"CGEventGetIntegerValueField",
-	"CGEventKeyboardSetUnicodeString",
 	"CGEventPost",
+	"CGEventSourceCreate",
 	"CGGetDisplaysWithRect",
 	"CGImageCreate",
 	"CGImageGetHeight",
@@ -140,9 +141,6 @@ char * OS_nativeFunctionNames[] = {
 	"CGPathMoveToPoint",
 	"CGPathRelease",
 	"CGPoint_1sizeof",
-	"CGPostKeyboardEvent",
-	"CGPostMouseEvent",
-	"CGPostScrollWheelEvent",
 	"CGRect_1sizeof",
 	"CGSetLocalEventsFilterDuringSuppressionState",
 	"CGSetLocalEventsSuppressionInterval",
