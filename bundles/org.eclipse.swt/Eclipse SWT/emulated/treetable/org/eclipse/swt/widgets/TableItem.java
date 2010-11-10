@@ -1261,7 +1261,7 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 				}
 				if (fillWidth > 0) {
 					gc.fillRectangle (
-						column.getX (),
+						startX, 
 						cellBounds.y + 1,
 						fillWidth,
 						cellBounds.height - 2);
