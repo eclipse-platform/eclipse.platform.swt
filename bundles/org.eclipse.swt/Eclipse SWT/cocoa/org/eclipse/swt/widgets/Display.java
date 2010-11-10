@@ -3052,7 +3052,7 @@ public boolean post(Event event) {
 		boolean returnValue = false;
 		
 		if (eventRef != 0) {
-			OS.CGEventPost(0, eventRef);
+			OS.CGEventPost(OS.kCGSessionEventTap, eventRef);
 			OS.CFRelease(eventRef);
 			returnValue = true;
 		}
