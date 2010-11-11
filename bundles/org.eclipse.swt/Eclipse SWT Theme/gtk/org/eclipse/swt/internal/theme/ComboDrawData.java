@@ -106,7 +106,7 @@ int hit(Theme theme, Point position, Rectangle bounds) {
 	int focus_line_width = theme.getWidgetProperty(buttonHandle, "focus-line-width");
 	int focus_padding = theme.getWidgetProperty(buttonHandle, "focus-padding");
 	int xthickness = OS.gtk_style_get_xthickness(gtkStyle);
-	int ythickness = OS.gtk_style_get_xthickness(gtkStyle);
+//	int ythickness = OS.gtk_style_get_xthickness(gtkStyle);
 	int arrow_width = MIN_ARROW_SIZE;
 	int x_border = xthickness + focus_padding;
 	//int y_border = ythickness + focus_padding;
