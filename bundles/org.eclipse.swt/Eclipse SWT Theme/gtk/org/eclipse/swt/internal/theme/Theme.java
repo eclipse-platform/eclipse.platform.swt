@@ -225,6 +225,14 @@ int getWidgetProperty(int /*long*/ handle, String name) {
 	return result[0];
 }
 
+
+int /*long*/ getBorderProperty(int /*long*/ handle, String name) {
+	byte[] propertyName = Converter.wcsToMbcs(null, name, true);
+	int /*long*/ [] result = new int /*long*/[1];
+	OS.gtk_widget_style_get(handle, propertyName, result, 0);
+	return result[0];
+}
+
 void transferClipping(GC gc, int /*long*/ style) {
 	GCData data = gc.getGCData();
 	int /*long*/ clipRgn = data.clipRgn;
