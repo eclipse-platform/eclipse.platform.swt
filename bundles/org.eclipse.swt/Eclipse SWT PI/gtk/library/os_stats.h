@@ -1030,6 +1030,7 @@ typedef enum {
 	_1gtk_1status_1icon_1get_1geometry_FUNC,
 	_1gtk_1status_1icon_1get_1visible_FUNC,
 	_1gtk_1status_1icon_1new_FUNC,
+	_1gtk_1status_1icon_1position_1menu_1func_FUNC,
 	_1gtk_1status_1icon_1set_1from_1pixbuf_FUNC,
 	_1gtk_1status_1icon_1set_1tooltip_FUNC,
 	_1gtk_1status_1icon_1set_1visible_FUNC,

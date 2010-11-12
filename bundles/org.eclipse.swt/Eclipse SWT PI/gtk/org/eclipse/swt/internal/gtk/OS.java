@@ -7524,6 +7524,15 @@ public static final int /*long*/ gtk_hseparator_new() {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gtk_status_icon_position_menu_func();
+public static final int /*long*/ gtk_status_icon_position_menu_func() {
+	lock.lock();
+	try {
+		return _gtk_status_icon_position_menu_func();
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @method flags=dynamic
  */

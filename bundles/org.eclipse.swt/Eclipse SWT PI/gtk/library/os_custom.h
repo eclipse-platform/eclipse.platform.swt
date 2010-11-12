@@ -145,6 +145,7 @@
 #define gtk_status_icon_set_from_pixbuf_LIB LIB_GTK
 #define gtk_status_icon_set_visible_LIB LIB_GTK
 #define gtk_status_icon_set_tooltip_LIB LIB_GTK
+#define gtk_status_icon_position_menu_LIB LIB_GTK
 #define gtk_window_get_group_LIB LIB_GTK
 #define gtk_window_get_opacity_LIB LIB_GTK
 #define gdk_window_restack_LIB LIB_GDK
@@ -342,4 +343,9 @@
 #define gtk_style_get_black_gc(arg0, arg1) *arg1 = (arg0)->black_gc
 #define gtk_style_get_white_gc(arg0, arg1) *arg1 = (arg0)->white_gc
 #define localeconv_decimal_point() localeconv()->decimal_point
+
+#define gtk_status_icon_position_menu_func() 0; \
+LOAD_FUNCTION(fp, gtk_status_icon_position_menu) \
+rc = (jintLong)fp;
+
 

@@ -13081,6 +13081,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1status_1icon_1new)
 }
 #endif
 
+#ifndef NO__1gtk_1status_1icon_1position_1menu_1func
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1status_1icon_1position_1menu_1func)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1status_1icon_1position_1menu_1func_FUNC);
+	rc = (jintLong)gtk_status_icon_position_menu_func();
+	OS_NATIVE_EXIT(env, that, _1gtk_1status_1icon_1position_1menu_1func_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1status_1icon_1set_1from_1pixbuf
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1status_1icon_1set_1from_1pixbuf)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
