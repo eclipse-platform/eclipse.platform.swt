@@ -210,13 +210,28 @@ void _setVisible (boolean visible) {
 				}
 			}
 			int /*long*/ address = hasLocation ? display.menuPositionProc: 0;
+			int /*long*/ data = 0;
+			if ((OS.GTK_VERSION >=  OS.VERSION (2, 10, 0))) {
+				/*
+				* Popup-menu to the status icon should be aligned to  
+				* Tray rather than to cursor position. There is a 
+				* possibility (unlikely) that TrayItem might have  
+				* been disposed in the listener, for which case  
+				* the menu should be shown in the cursor position. 
+				*/
+				TrayItem item = display.currentTrayItem;
+				if (item != null && !item.isDisposed()) {
+					 data = item.handle;
+					 address = OS.gtk_status_icon_position_menu_func ();
+				}
+			}
 			/*
 			* Bug in GTK.  The timestamp passed into gtk_menu_popup is used
 			* to perform an X pointer grab.  It cannot be zero, else the grab
 			* will fail.  The fix is to ensure that the timestamp of the last
 			* event processed is used.
 			*/
-			OS.gtk_menu_popup (handle, 0, 0, address, 0, 0, display.getLastEventTime ());
+			OS.gtk_menu_popup (handle, 0, 0, address, data, 0, display.getLastEventTime ());
 		} else {
 			sendEvent (SWT.Hide);
 		}

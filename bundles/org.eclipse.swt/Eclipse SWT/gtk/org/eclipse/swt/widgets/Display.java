@@ -167,6 +167,7 @@ public class Display extends Device {
 
 	/* System Tray */
 	Tray tray;
+	TrayItem currentTrayItem;
 	
 	/* Timers */
 	int [] timerIds;
