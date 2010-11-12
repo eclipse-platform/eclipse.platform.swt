@@ -2123,7 +2123,11 @@ void setText (char [] text) {
 		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 	}
 	sendEvent (SWT.Modify);
-	if ((style & SWT.ICON_CANCEL) != 0) OS.gtk_entry_set_icon_sensitive (handle, OS.GTK_ENTRY_ICON_SECONDARY, true);
+	if ((style & SWT.SEARCH) != 0) {
+		if ((style & SWT.ICON_CANCEL) != 0) {
+			OS.gtk_entry_set_icon_sensitive (handle, OS.GTK_ENTRY_ICON_SECONDARY, true);
+		}
+	}
 }
 
 /**
