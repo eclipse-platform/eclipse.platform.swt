@@ -132,7 +132,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		GtkBorder default_border = new GtkBorder();
 		int /*long*/ default_border_ptr = theme.getBorderProperty(buttonHandle, "default-border");
 		if (default_border_ptr != 0) {
-			OS.memmove(default_border, default_border_ptr, GdkRectangle.sizeof);
+			OS.memmove(default_border, default_border_ptr, GtkBorder.sizeof);
 			OS.gtk_border_free(default_border_ptr);
 		} else {
 			default_border.left = default_border.right = default_border.top = default_border.bottom = 1;
@@ -141,7 +141,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		GtkBorder default_outside_border = new GtkBorder();
 		int /*long*/ default_outside_border_ptr = theme.getBorderProperty(buttonHandle, "default-outside-border");
 		if (default_outside_border_ptr != 0) {
-			OS.memmove(default_outside_border, default_outside_border_ptr, GdkRectangle.sizeof);
+			OS.memmove(default_outside_border, default_outside_border_ptr, GtkBorder.sizeof);
 			OS.gtk_border_free(default_outside_border_ptr);
 		} else {
 			default_outside_border.left = default_outside_border.right = default_outside_border.top = default_outside_border.bottom = 0;
