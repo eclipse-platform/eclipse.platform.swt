@@ -3054,6 +3054,10 @@ public boolean post(Event event) {
 		boolean returnValue = false;
 		
 		if (eventRef != 0) {
+			try {
+				Thread.sleep(1);
+			} catch (Exception e) {
+			}
 			OS.CGEventPost(OS.kCGSessionEventTap, eventRef);
 			OS.CFRelease(eventRef);
 			returnValue = true;
