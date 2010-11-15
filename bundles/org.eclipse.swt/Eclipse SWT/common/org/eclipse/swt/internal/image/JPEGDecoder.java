@@ -2308,7 +2308,7 @@ static void jinit_d_coef_controller (jpeg_decompress_struct cinfo, boolean need_
 			//access_rows = compptr.v_samp_factor;
 //#ifdef BLOCK_SMOOTHING_SUPPORTED
 			/* If block smoothing could be used, need a bigger window */
-			if (cinfo.progressive_mode)
+			//if (cinfo.progressive_mode)
 				//access_rows *= 3;
 //#endif
 			coef.whole_image[ci] = 
