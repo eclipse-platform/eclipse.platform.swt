@@ -3038,7 +3038,9 @@ public boolean post(Event event) {
 
 	 				// SWT buttons are 1-based; CG buttons are 0 based.
 	 				button -= 1;
-					eventRef = OS.CGEventCreateMouseEvent(eventSource, eventType, mouseCursorPosition, button);
+	 				if (button >= 0) {
+	 					eventRef = OS.CGEventCreateMouseEvent(eventSource, eventType, mouseCursorPosition, button);
+	 				}
 				}
 				break;
 			}
