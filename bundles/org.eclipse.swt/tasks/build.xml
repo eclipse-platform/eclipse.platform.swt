@@ -373,7 +373,7 @@
 			<env key="MODEL" value="ia64_32"/>
 			<env key="JAVA_HOME" value="/opt/java1.5"/>
 			<env key="AWT_HOME" value="/opt/java1.5/jre/lib/IA64N/"/>
-			<env key="PATH" value="/opt/gtk2.6/bin:${env.PATH}"/>
+			<env key="PATH" value="/opt/hp-gcc/bin:/opt/gtk2.6/bin:/opt/${env.PATH}"/>
 			<env key="PKG_CONFIG_PATH" value="/opt/gtk2.6/lib/pkgconfig"/>
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
