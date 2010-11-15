@@ -44,7 +44,8 @@ GTKLIBS = `pkg-config --libs gtk+-2.0 gthread-2.0` $(XLIB64) -L/usr/X11R6/lib -l
 CDE_LIBS = -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lXt -lX11 -lDtSvc
 
 AWT_LFLAGS = -shared -s ${SWT_LFLAGS} 
-AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -lX11
+AWT_LIBS = -L$(AWT_LIB_PATH) -L$(AWT_LIB_PATH)/server -ljawt -lX11
+
 
 ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0`
 ATKLIBS = `pkg-config --libs atk gtk+-2.0`
