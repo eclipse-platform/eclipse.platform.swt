@@ -41,6 +41,17 @@ public final class Variant {
 	private IDispatch dispatchData;
 	private IUnknown unknownData;
 
+	/**
+	 * A shared Variant instance with type VT_NULL.
+	 * 
+	 * @since 3.7
+	 */
+	public static final Variant NULL;
+	static {
+		NULL = new Variant ();
+		NULL.type = COM.VT_NULL;
+	}
+
 /**	 
  * Invokes platform specific functionality to copy a variant
  * into operating system memory.
@@ -93,7 +104,7 @@ public static Variant win32_new (int /*long*/ pVariant) {
  * 
  * @since 2.0
  */	
-public Variant(){
+public Variant() {
 	type = COM.VT_EMPTY;
 }
 /**
@@ -105,7 +116,6 @@ public Variant(){
 public Variant(float val) {
 	type = COM.VT_R4;
 	floatData = val;
-	
 }
 /**
  * Create a Variant object which represents a Java double as a VT_R8.
@@ -899,7 +909,6 @@ public void setByRef(short val) {
 	}
 	COM.MoveMemory(byRefPtr, new short[]{val}, 2);
 }
-
 void setData(int /*long*/ pData){
 	if (pData == 0) OLE.error(OLE.ERROR_INVALID_ARGUMENT);
 
@@ -1017,7 +1026,6 @@ void setData(int /*long*/ pData){
 			break;
 	}
 }
-
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.

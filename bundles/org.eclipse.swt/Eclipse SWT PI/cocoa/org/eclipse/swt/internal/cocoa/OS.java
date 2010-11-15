@@ -112,6 +112,10 @@ public class OS extends C {
 	
 	public static final int /*long*/ sel_javaRunLoopMode = sel_registerName("javaRunLoopMode");
 
+	/* These are not generated in order to avoid attempting to create a java method called "null" */
+	public static final int /*long*/ class_NSNull = objc_getClass("NSNull");
+	public static final int /*long*/ sel_null = sel_registerName("null");
+
 	/* NSTextAttachmentCell */
 	/** @method callback_types=NSPoint;id;SEL;,callback_flags=struct;none;none; */
 	public static final native int /*long*/ CALLBACK_cellBaselineOffset(int /*long*/ func);

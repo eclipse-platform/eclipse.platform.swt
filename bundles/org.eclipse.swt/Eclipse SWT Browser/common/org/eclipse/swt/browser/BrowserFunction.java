@@ -119,12 +119,14 @@ void dispose (boolean remove) {
  * javascript boolean -> <code>java.lang.Boolean</code>
  * javascript array whose elements are all of supported types -> <code>java.lang.Object[]</code>
  *
- * If any of the Javascript arguments are of unsupported types then the
+ * If any of the javascript arguments are of unsupported types then the
  * function invocation will fail and this method will not be called.
  * 
- * This method must return a value with one of these supported types to
- * the javascript caller (note that any subclass of <code>java.lang.Number</code>
- * will be successfully converted to a javascript number).
+ * This method must return a value with one of these supported java types to
+ * the javascript caller.  Note that <code>null</code> values are converted
+ * to javascript's <code>null</code> value (not <code>undefined</code>), and
+ * instances of any <code>java.lang.Number</code> subclass will be converted
+ * to a javascript number.
  * 
  * @param arguments the javascript arguments converted to java equivalents 
  * @return the value to return to the javascript caller

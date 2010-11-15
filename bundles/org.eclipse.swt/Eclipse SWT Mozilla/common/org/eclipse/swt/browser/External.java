@@ -475,7 +475,7 @@ nsIVariant convertToJS (Object value, nsIComponentManager componentManager) {
 	result[0] = 0;
 
 	if (value == null) {
-		rc = variant.SetAsVoid ();
+		rc = variant.SetAsEmpty ();
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 		return variant;
 	}

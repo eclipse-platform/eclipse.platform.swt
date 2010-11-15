@@ -1728,7 +1728,8 @@ Object convertToJava (int /*long*/ value) {
 
 NSObject convertToJS (Object value) {
 	if (value == null) {
-		return WebUndefined.undefined ();
+		int /*long*/ result = OS.objc_msgSend (OS.class_NSNull, OS.sel_null);
+		return result != 0 ? new NSObject (result) : null;
 	}
 	if (value instanceof String) {
 		return NSString.stringWith ((String)value);

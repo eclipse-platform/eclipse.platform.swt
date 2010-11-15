@@ -764,18 +764,14 @@ int Invoke (int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*lo
 	variant.dispose ();
 
 	if (pVarResult != 0) {
-		if (returnValue == null) {
-			COM.MoveMemory (pVarResult, new int /*long*/[] {0}, C.PTR_SIZEOF);
-		} else {
-			try {
-				variant = convertToJS (returnValue);
-			} catch (SWTException e) {
-				/* invalid return value type */
-				variant = convertToJS (WebBrowser.CreateErrorString (e.getLocalizedMessage ()));
-			}
-			Variant.win32_copy (pVarResult, variant);
-			variant.dispose ();
+		try {
+			variant = convertToJS (returnValue);
+		} catch (SWTException e) {
+			/* invalid return value type */
+			variant = convertToJS (WebBrowser.CreateErrorString (e.getLocalizedMessage ()));
 		}
+		Variant.win32_copy (pVarResult, variant);
+		variant.dispose ();
 	}
 	return COM.S_OK;
 }
@@ -839,7 +835,7 @@ Object convertToJava (Variant variant) {
 
 Variant convertToJS (Object value) {
 	if (value == null) {
-		return new Variant ();
+		return Variant.NULL;
 	}
 	if (value instanceof String) {
 		return new Variant ((String)value);
