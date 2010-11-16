@@ -1194,8 +1194,12 @@ int /*long*/ outlineView_numberOfChildrenOfItem(int /*long*/ id, int /*long*/ se
 	return 0;
 }
 
-int /*long*/ outlineView_selectionIndexesForProposedSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ indexSet) {
-	return indexSet;
+boolean outlineView_shouldTrackCell_forTableColumn_item(int /*long*/ id, int /*long*/ sel, int /*long*/ table, int /*long*/ cell, /*long*/ int /*long*/ tableColumn, int /*long*/ item) {
+	return true;
+}
+
+boolean outlineView_shouldSelectItem(int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ index) {
+	return true;
 }
 
 boolean outlineView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ item) {
@@ -1905,6 +1909,14 @@ int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long
 
 int /*long*/ tableView_selectionIndexesForProposedSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ indexSet) {
 	return indexSet;
+}
+
+boolean tableView_shouldTrackCell_forTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ table, int /*long*/ cell, /*long*/ int /*long*/ tableColumn, int /*long*/ rowIndex) {
+	return true;
+}
+
+boolean tableView_shouldSelectRow(int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ index) {
+	return true;
 }
 
 void tableView_setObjectValue_forTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ anObject, int /*long*/ aTableColumn, int /*long*/ rowIndex) {	

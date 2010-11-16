@@ -119,6 +119,11 @@ public int /*long*/ numberOfSelectedRows() {
 	return OS.objc_msgSend(this.id, OS.sel_numberOfSelectedRows);
 }
 
+public NSCell preparedCellAtColumn(int /*long*/ column, int /*long*/ row) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_preparedCellAtColumn_row_, column, row);
+	return result != 0 ? new NSCell(result) : null;
+}
+
 public NSRect rectOfColumn(int /*long*/ column) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_rectOfColumn_, column);

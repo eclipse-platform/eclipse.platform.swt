@@ -2030,6 +2030,7 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 			}
 		}
 	}
+	display.trackedButtonRow = -1;
 	didSelect = false;
 	super.mouseDownSuper(id, sel, theEvent);
 	didSelect = false;
@@ -2043,7 +2044,8 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
  */
 int /*long*/ nextState (int /*long*/ id, int /*long*/ sel) {
 	NSOutlineView outlineView = (NSOutlineView)view;
-	int index = (int)/*64*/outlineView.selectedRow ();
+	int index = (int)/*64*/outlineView.clickedRow();
+	if (index == -1) index = (int)/*64*/outlineView.selectedRow ();
 	TreeItem item = (TreeItem)display.getWidget (outlineView.itemAtRow (index).id);
 	if (item.grayed) {
 		return item.checked ? OS.NSOffState : OS.NSMixedState;
@@ -2093,7 +2095,10 @@ int /*long*/ outlineView_numberOfChildrenOfItem (int /*long*/ id, int /*long*/ s
 	return ((TreeItem) display.getWidget (item)).itemCount;
 }
 
-int /*long*/ outlineView_selectionIndexesForProposedSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ indexSet) {
+boolean outlineView_shouldSelectItem(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ item) {
+	boolean result = true;
+	NSOutlineView tree = new NSOutlineView(aTableView);			
+
 	if ((style & SWT.SINGLE) != 0) {
 		/*
 		 * Feature in Cocoa.  Calling setAllowsEmptySelection will automatically select the first row of the list. 
@@ -2101,18 +2106,53 @@ int /*long*/ outlineView_selectionIndexesForProposedSelection (int /*long*/ id, 
 		 * This is normal platform behavior, but for compatibility with other platforms, if the SINGLE style is in use,
 		 * force a selection by seeing if the proposed selection set is empty, and if so, put back the currently selected row.  
 		 */
-		NSIndexSet indexes = new NSIndexSet(indexSet);
-		NSOutlineView table = new NSOutlineView(aTableView);			
-		if (indexes.count() != 1 && table.selectedRow() != -1) {
-			NSIndexSet newSelection = (NSIndexSet)new NSIndexSet().alloc();
-			newSelection = newSelection.initWithIndex(table.selectedRow());
-			newSelection.autorelease();
-			return newSelection.id;
+		NSIndexSet indexes = tree.selectedRowIndexes();
+		if (indexes.count() != 1 && tree.selectedRow() != -1) {
+			return false;
 		}
 	}
-	
-	return indexSet;
+
+	// If a checkbox is being tracked don't select the row.
+	if (display.trackedButtonRow != -1) return false;
+    int /*long*/ clickedCol = tree.clickedColumn();
+    int /*long*/ clickedRow = tree.clickedRow();
+    if (clickedRow >= 0 && clickedCol >= 0) {
+        NSCell cell = tree.preparedCellAtColumn(clickedCol, clickedRow);
+        if (cell.isKindOfClass(OS.class_NSButtonCell) && cell.isEnabled()) {
+            NSRect cellFrame = tree.frameOfCellAtColumn(clickedCol, clickedRow);
+            NSRect imageFrame = cell.imageRectForBounds(cellFrame);
+            NSPoint hitPoint = tree.convertPoint_fromView_(NSApplication.sharedApplication().currentEvent().locationInWindow(), null);
+            result = ! OS.NSPointInRect(hitPoint, imageFrame) || didSelect;
+        }            
+    }
+    return result;
 }
+
+boolean outlineView_shouldTrackCell_forTableColumn_item(int /*long*/ id, int /*long*/ sel,
+		int /*long*/ table, int /*long*/ cell, /*long*/ int /*long*/ tableColumn, int /*long*/ item) {
+	NSCell theCell = new NSCell(cell);
+	NSOutlineView tableView = (NSOutlineView)view;
+	int /*long*/ rowIndex = tableView.rowForItem(new id(item));
+	if (theCell.isKindOfClass(OS.class_NSButtonCell)) {
+		// Allow tracking of the checkbox area of the button, not the text itself.
+		int columnIndex = 0;
+		for (int i=0; i<columnCount; i++) {
+			if (columns [i].nsColumn.id == tableColumn) {
+				columnIndex = i;
+				break;
+			}
+		}
+		NSRect cellFrame = tableView.frameOfCellAtColumn(columnIndex, rowIndex);
+		NSRect imageFrame = theCell.imageRectForBounds(cellFrame);
+		NSPoint hitPoint = tableView.convertPoint_fromView_(NSApplication.sharedApplication().currentEvent().locationInWindow(), null);
+		boolean shouldTrack = OS.NSPointInRect(hitPoint, imageFrame) && (display.trackedButtonRow == -1 || display.trackedButtonRow == rowIndex) && !didSelect;
+		if (OS.NSPointInRect(hitPoint, imageFrame) && display.trackedButtonRow == -1 && !didSelect) display.trackedButtonRow = rowIndex;
+		return shouldTrack;
+	} else {
+		return tableView.isRowSelected(rowIndex);
+	}
+}
+
 
 void outlineView_willDisplayCell_forTableColumn_item (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ cell, int /*long*/ tableColumn, int /*long*/ itemID) {
 	if (checkColumn != null && tableColumn == checkColumn.id) return;
