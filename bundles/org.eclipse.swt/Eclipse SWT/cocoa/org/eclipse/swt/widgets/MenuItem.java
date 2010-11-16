@@ -688,7 +688,7 @@ public void setMenu (Menu menu) {
 	}
 
 	/* Update menu title with parent item title */
-	if (!parent.isDisposed()) updateText ();
+	updateText ();
 }
 
 boolean setRadioSelection (boolean value) {
@@ -766,6 +766,7 @@ public void setText (String string) {
 }
 	
 void updateText () {
+	if (isDisposed() || parent.isDisposed()) return;
 	char [] buffer = new char [text.length ()];
 	text.getChars (0, buffer.length, buffer, 0);
 	int i=0, j=0;
