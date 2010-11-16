@@ -3004,6 +3004,7 @@ public void showSelection () {
 void sendDoubleSelection() {
 	NSTableView tableView = (NSTableView)view;
 	int rowIndex = (int)/*64*/tableView.clickedRow (); 
+	if (rowIndex == -1) rowIndex = (int)/*64*/tableView.selectedRow(); 
 	if (rowIndex != -1) {
 		if ((style & SWT.CHECK) != 0) {
 			NSArray columns = tableView.tableColumns ();
@@ -3027,7 +3028,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	switch (keyCode) {
 		case 76: /* KP Enter */
 		case 36: { /* Return */
-			sendSelectionEvent (SWT.DefaultSelection);
+			sendDoubleSelection();
 			break;
 		}
 	}
