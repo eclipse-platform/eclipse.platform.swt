@@ -688,7 +688,7 @@ public void setMenu (Menu menu) {
 	}
 
 	/* Update menu title with parent item title */
-	updateText ();
+	if (!parent.isDisposed()) updateText ();
 }
 
 boolean setRadioSelection (boolean value) {
