@@ -3418,6 +3418,12 @@ public static final native void CGPathMoveToPoint(int /*long*/ path, int /*long*
  */
 public static final native void CGPathRelease(int /*long*/ path);
 /**
+ * @param keyChar cast=(CGCharCode)
+ * @param virtualKey cast=(CGKeyCode)
+ * @param keyDown cast=(boolean_t)
+ */
+public static final native int CGPostKeyboardEvent(short keyChar, short virtualKey, boolean keyDown);
+/**
  * @param filter cast=(CGEventFilterMask)
  * @param state cast=(CGEventSuppressionState)
  */

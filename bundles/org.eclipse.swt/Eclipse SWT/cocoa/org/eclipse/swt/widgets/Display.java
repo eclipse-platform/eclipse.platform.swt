@@ -2962,6 +2962,7 @@ public boolean post(Event event) {
 		int /*long*/ eventRef = 0;
 		int /*long*/ eventSource = OS.CGEventSourceCreate(OS.kCGEventSourceStateHIDSystemState);
 		if (eventSource == 0) return false;
+		boolean returnValue = false;
 
 		int type = event.type;
 		switch (type) {
@@ -3009,7 +3010,11 @@ public boolean post(Event event) {
 				}
 				
 				if (vKey != -1) {
-					eventRef = OS.CGEventCreateKeyboardEvent(eventSource, vKey, type == SWT.KeyDown);
+					if (OS.VERSION < 0x1060) {
+						returnValue = OS.CGPostKeyboardEvent((short)0, vKey, type == SWT.KeyDown) == OS.noErr;
+					} else {
+						eventRef = OS.CGEventCreateKeyboardEvent(eventSource, vKey, type == SWT.KeyDown);
+					}
 				}
 				break;
 			}
@@ -3056,16 +3061,17 @@ public boolean post(Event event) {
 			}
 		} 
 		
-		boolean returnValue = false;
-		
-		if (eventRef != 0) {
-			try {
-				Thread.sleep(1);
-			} catch (Exception e) {
+		// returnValue is true if we called CGPostKeyboardEvent (10.5 only).
+		if (returnValue == false) {
+			if (eventRef != 0) {
+				try {
+					Thread.sleep(1);
+				} catch (Exception e) {
+				}
+				OS.CGEventPost(OS.kCGSessionEventTap, eventRef);
+				OS.CFRelease(eventRef);
+				returnValue = true;
 			}
-			OS.CGEventPost(OS.kCGSessionEventTap, eventRef);
-			OS.CFRelease(eventRef);
-			returnValue = true;
 		}
 		
 		if (eventSource != 0) OS.CFRelease(eventSource);		

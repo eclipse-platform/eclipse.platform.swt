@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 618;
-int OS_nativeFunctionCallCount[618];
+int OS_nativeFunctionCount = 619;
+int OS_nativeFunctionCallCount[619];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -141,6 +141,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGPathMoveToPoint",
 	"CGPathRelease",
 	"CGPoint_1sizeof",
+	"CGPostKeyboardEvent",
 	"CGRect_1sizeof",
 	"CGSetLocalEventsFilterDuringSuppressionState",
 	"CGSetLocalEventsSuppressionInterval",

@@ -1941,6 +1941,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGPoint_1sizeof)
 }
 #endif
 
+#ifndef NO_CGPostKeyboardEvent
+JNIEXPORT jint JNICALL OS_NATIVE(CGPostKeyboardEvent)
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jboolean arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGPostKeyboardEvent_FUNC);
+	rc = (jint)CGPostKeyboardEvent((CGCharCode)arg0, (CGKeyCode)arg1, (boolean_t)arg2);
+	OS_NATIVE_EXIT(env, that, CGPostKeyboardEvent_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGRect_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(CGRect_1sizeof)
 	(JNIEnv *env, jclass that)
