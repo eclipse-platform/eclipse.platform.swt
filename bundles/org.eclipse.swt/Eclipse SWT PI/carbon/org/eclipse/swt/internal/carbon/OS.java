@@ -375,6 +375,7 @@ public class OS extends C {
 	public static final int kEventAppleEvent = 1;
 	public static final int kEventAppDeactivated = 2;
 	public static final int kEventAppAvailableWindowBoundsChanged = 110;
+	public static final int kEventAppFocusMenuBar = 8;
 	public static final int kEventAttributeUserEvent = 1 << 0;
 	public static final int kEventClassAppleEvent = ('e'<<24) + ('p'<<16) + ('p'<<8) + 'c';
 	public static final int kEventClassApplication = ('a'<<24) + ('p'<<16) + ('p'<<8) + 'l';

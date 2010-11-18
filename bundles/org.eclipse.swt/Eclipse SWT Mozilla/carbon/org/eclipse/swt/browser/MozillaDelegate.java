@@ -99,9 +99,32 @@ static int eventProc3 (int nextHandler, int theEvent, int userData) {
 				* DOM listener is handling the event, in case the Browser gets disposed in a
 				* callback.
 				*/
+				int result = OS.noErr;
 				int handle = browser.handle;
 				OS.CFRetain (handle);
-				int result = OS.CallNextEventHandler (nextHandler, theEvent);
+
+				/*
+				* Pressing the OSX shortcut to put focus into the menu bar does not work in
+				* embedded mozilla.  If this shortcut is not handled here then it falls through
+				* all of the key handlers for some reason.  The workaround is to detect this
+				* shortcut here and put focus into the menu bar.
+				*/
+				int [] modifiers = new int [1];
+				OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifiers.length * 4, null, modifiers);
+				int [] keyCode = new int [1];
+				OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+				if (keyCode [0] == 120 /* F2 */ && (modifiers[0] & (OS.controlKey | OS.cmdKey | OS.optionKey)) == OS.controlKey) {
+					int[] event = new int[1];
+					OS.CreateEvent (0, OS.kEventClassApplication, OS.kEventAppFocusMenuBar, 0.0, 0, event);
+					if (event [0] != 0) {
+						OS.SetEventParameter (event [0], OS.kEventParamKeyModifiers, OS.typeUInt32, 4, modifiers);
+						result = OS.SendEventToEventTarget (event [0], OS.GetApplicationEventTarget ());
+						OS.ReleaseEvent (event [0]);
+					}
+				} else {
+					result = OS.CallNextEventHandler (nextHandler, theEvent);
+				}
+
 				OS.CFRelease (handle);
 				return result;
 		}
