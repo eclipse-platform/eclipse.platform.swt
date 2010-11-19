@@ -1558,7 +1558,7 @@ int widgetStyle () {
 	bits &= ~OS.WS_BORDER;
 	if ((style & SWT.NO_TRIM) != 0) {
 		if (parent == null) {
-			bits |= OS.WS_SYSMENU;
+			bits |= OS.WS_SYSMENU | OS.WS_MINIMIZEBOX;
 		}
 		return bits;
 	}
