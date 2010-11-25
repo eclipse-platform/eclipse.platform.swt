@@ -230,7 +230,14 @@ public OleClientSite(Composite parent, int style, String progId) {
 	
 		// Create ole object with storage object
 		int /*long*/[] address = new int /*long*/[1];
-		int result = COM.OleCreate(appClsid, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, iOleClientSite.getAddress(), tempStorage.getAddress(), address);
+		/*
+		* Bug in ICA Client 2.7. The creation of the IOleObject fails if the client
+		* site is provided to OleCreate().  The fix is to detect that the program
+		* id is an ICA Client and do not pass a client site to OleCreate().
+		* IOleObject.SetClientSite() is called later on.  
+		*/
+		int /*long*/ clientSite = isICAClient() ? 0 : iOleClientSite.getAddress();
+		int result = COM.OleCreate(appClsid, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, clientSite, tempStorage.getAddress(), address);
 		if (result != COM.S_OK)
 			OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 
@@ -820,6 +827,9 @@ private int GetWindowContext(int /*long*/ ppFrame, int /*long*/ ppDoc, int /*lon
 	COM.MoveMemory(lpFrameInfo, frameInfo, OLEINPLACEFRAMEINFO.sizeof);
 	
 	return COM.S_OK;
+}
+boolean isICAClient() {
+	return getProgramID().startsWith("Citrix.ICAClient"); //$NON-NLS-1$ 
 }
 /**
  * Returns whether ole document is dirty by checking whether the content 
