@@ -2098,7 +2098,6 @@ void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 	if (isDisposed ()) return;
 	setActiveControl (null);
 	if (isDisposed ()) return;
-	saveFocus ();
 }
 
 void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {

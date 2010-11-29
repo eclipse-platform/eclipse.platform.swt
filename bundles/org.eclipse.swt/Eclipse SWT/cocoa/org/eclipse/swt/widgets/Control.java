@@ -655,6 +655,7 @@ public void addTraverseListener (TraverseListener listener) {
 
 boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	if ((state & DISABLED) != 0) return false;
+	if (id == eventView().id) getShell().setSavedFocus(this);
 	return super.becomeFirstResponder (id, sel);
 }
 
