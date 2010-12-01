@@ -655,7 +655,6 @@ public void addTraverseListener (TraverseListener listener) {
 
 boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	if ((state & DISABLED) != 0) return false;
-	if (id == eventView().id) getShell().setSavedFocus(this);
 	return super.becomeFirstResponder (id, sel);
 }
 
@@ -1261,7 +1260,10 @@ void fixFocus (Control focusControl) {
 	}
 	shell.setSavedFocus (focusControl);
 	NSWindow window = view.window();
-	window.becomeKeyWindow();
+	if (!window.makeFirstResponder(null)) {
+	    // Force first responder to resign.
+	    window.endEditingFor(null);
+	}
 }
 
 void flagsChanged (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {

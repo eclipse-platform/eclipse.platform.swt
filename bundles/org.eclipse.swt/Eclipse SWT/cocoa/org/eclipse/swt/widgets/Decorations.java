@@ -426,6 +426,13 @@ boolean restoreFocus () {
 	return savedFocus.forceFocus ();
 }
 
+void saveFocus () {
+	Control control = display._getFocusControl(view.window());
+	if (control != null && control != this && this == control.menuShell ()) {
+		setSavedFocus (control);
+	}
+}
+
 /**
  * If the argument is not null, sets the receiver's default
  * button to the argument, and if the argument is null, sets

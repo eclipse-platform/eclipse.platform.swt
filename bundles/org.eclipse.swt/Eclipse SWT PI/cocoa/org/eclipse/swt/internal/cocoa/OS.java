@@ -1386,6 +1386,7 @@ public static final int /*long*/ sel_mainFrame = sel_registerName("mainFrame");
 public static final int /*long*/ sel_mainMenu = sel_registerName("mainMenu");
 public static final int /*long*/ sel_mainRunLoop = sel_registerName("mainRunLoop");
 public static final int /*long*/ sel_mainScreen = sel_registerName("mainScreen");
+public static final int /*long*/ sel_mainWindow = sel_registerName("mainWindow");
 public static final int /*long*/ sel_makeCurrentContext = sel_registerName("makeCurrentContext");
 public static final int /*long*/ sel_makeFirstResponder_ = sel_registerName("makeFirstResponder:");
 public static final int /*long*/ sel_makeKeyAndOrderFront_ = sel_registerName("makeKeyAndOrderFront:");

@@ -1594,9 +1594,9 @@ public void setEnabled (boolean enabled) {
 	checkWidget();
 	if (((state & DISABLED) == 0) == enabled) return;
 	super.setEnabled (enabled);
-//	if (enabled && OS.IsWindowActive (shellHandle)) {
-//		if (!restoreFocus ()) traverseGroup (false);
-//	}
+	if (enabled && display.application.mainWindow().id == window.id) {
+		if (!restoreFocus ()) traverseGroup (false);
+	}
 }
 
 /**
@@ -2098,6 +2098,7 @@ void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 	if (isDisposed ()) return;
 	setActiveControl (null);
 	if (isDisposed ()) return;
+	saveFocus();
 }
 
 void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {

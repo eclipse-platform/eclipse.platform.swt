@@ -85,6 +85,11 @@ public NSMenu mainMenu() {
 	return result != 0 ? new NSMenu(result) : null;
 }
 
+public NSWindow mainWindow() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_mainWindow);
+	return result != 0 ? new NSWindow(result) : null;
+}
+
 public NSEvent nextEventMatchingMask(int /*long*/ mask, NSDate expiration, NSString mode, boolean deqFlag) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, mask, expiration != null ? expiration.id : 0, mode != null ? mode.id : 0, deqFlag);
 	return result != 0 ? new NSEvent(result) : null;
