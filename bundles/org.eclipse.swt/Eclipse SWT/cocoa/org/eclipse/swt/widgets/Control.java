@@ -1332,9 +1332,18 @@ public boolean forceFocus () {
 	if (!focusView.canBecomeKeyView()) return false;
 	boolean result = forceFocus(focusView);
 	if (isDisposed ()) return false;
+	shell.setSavedFocus (this);
+	/*
+	 * Feature in Cocoa. If the window is inactive when forceFocus is called bringToTop 
+	 * eventually calls makeKeyAndOrderFront. This activates the window immediately, but unlike other platforms, 
+	 * it also immediately fire notifications that the window was activated, as opposed to posting an event
+	 * to be handled on the next pass of readAndDispatch().
+	 * 
+	 * Shell#windowDidBecomeKey will call Decorations#restoreFocus, so the saved focus must be set
+	 * before the window is activated or the wrong control will get focus.
+	 */
 	shell.bringToTop (false);
 	if (isDisposed ()) return false;
-	shell.setSavedFocus (this);
 	return result;
 }
 
