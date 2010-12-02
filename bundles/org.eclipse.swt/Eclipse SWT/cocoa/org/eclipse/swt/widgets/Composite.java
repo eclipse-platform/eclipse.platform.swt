@@ -240,9 +240,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		}
 	} else {
 		size = minimumSize (wHint, hHint, changed);
+		if (size.x == 0) size.x = DEFAULT_WIDTH;
+		if (size.y == 0) size.y = DEFAULT_HEIGHT;
 	}
-	if (size.x == 0) size.x = DEFAULT_WIDTH;
-	if (size.y == 0) size.y = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) size.x = wHint;
 	if (hHint != SWT.DEFAULT) size.y = hHint;
 	Rectangle trim = computeTrim (0, 0, size.x, size.y);
