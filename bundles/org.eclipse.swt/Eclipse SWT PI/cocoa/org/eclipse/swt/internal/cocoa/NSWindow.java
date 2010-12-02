@@ -166,6 +166,10 @@ public boolean isKeyWindow() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isKeyWindow);
 }
 
+public boolean isMainWindow() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isMainWindow);
+}
+
 public boolean isMiniaturized() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isMiniaturized);
 }

@@ -4125,6 +4125,9 @@
 		<method selector="isKeyWindow" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="isMainWindow" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="isMiniaturized" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>

@@ -1339,6 +1339,7 @@ public static final int /*long*/ sel_isItemExpanded_ = sel_registerName("isItemE
 public static final int /*long*/ sel_isKeyWindow = sel_registerName("isKeyWindow");
 public static final int /*long*/ sel_isKindOfClass_ = sel_registerName("isKindOfClass:");
 public static final int /*long*/ sel_isMainThread = sel_registerName("isMainThread");
+public static final int /*long*/ sel_isMainWindow = sel_registerName("isMainWindow");
 public static final int /*long*/ sel_isMiniaturized = sel_registerName("isMiniaturized");
 public static final int /*long*/ sel_isOpaque = sel_registerName("isOpaque");
 public static final int /*long*/ sel_isPlanar = sel_registerName("isPlanar");
