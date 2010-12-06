@@ -218,6 +218,7 @@
 #define gtk_print_settings_foreach_LIB LIB_GTK
 #define gtk_print_settings_get_LIB LIB_GTK
 #define gtk_print_settings_get_collate_LIB LIB_GTK
+#define gtk_print_settings_get_duplex_LIB LIB_GTK
 #define gtk_print_settings_get_n_copies_LIB LIB_GTK
 #define gtk_print_settings_get_orientation_LIB LIB_GTK
 #define gtk_print_settings_get_page_ranges_LIB LIB_GTK
@@ -229,6 +230,7 @@
 #define gtk_print_settings_new_LIB LIB_GTK
 #define gtk_print_settings_set_LIB LIB_GTK
 #define gtk_print_settings_set_collate_LIB LIB_GTK
+#define gtk_print_settings_set_duplex_LIB LIB_GTK
 #define gtk_print_settings_set_n_copies_LIB LIB_GTK
 #define gtk_print_settings_set_orientation_LIB LIB_GTK
 #define gtk_print_settings_set_page_ranges_LIB LIB_GTK

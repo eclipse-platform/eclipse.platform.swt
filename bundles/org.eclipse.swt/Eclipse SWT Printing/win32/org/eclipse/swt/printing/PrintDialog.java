@@ -359,6 +359,14 @@ public PrinterData open() {
 			devmode.dmFields |= OS.DM_COLLATE;
 			devmode.dmCollate = OS.DMCOLLATE_TRUE;
 		}
+		if (printerData.duplex != SWT.DEFAULT) {
+			devmode.dmFields |= OS.DM_DUPLEX;
+			switch (printerData.duplex) {
+				case PrinterData.DUPLEX_SHORT_EDGE: devmode.dmDuplex = OS.DMDUP_HORIZONTAL; break;
+				case PrinterData.DUPLEX_LONG_EDGE: devmode.dmDuplex = OS.DMDUP_VERTICAL; break;
+				default: devmode.dmDuplex = OS.DMDUP_SIMPLEX;
+			}
+		}
 		OS.MoveMemory(ptr, devmode, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
 		OS.GlobalUnlock(hMem);
 	
@@ -460,6 +468,11 @@ public PrinterData open() {
 				int dmOrientation = devmode.dmOrientation;
 				data.orientation = dmOrientation == OS.DMORIENT_LANDSCAPE ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;
 			}
+			if ((devmode.dmFields & OS.DM_DUPLEX) != 0) {
+				short dmDuplex = devmode.dmDuplex;
+				data.duplex = dmDuplex == OS.DMDUP_SIMPLEX ? PrinterData.DUPLEX_NONE : dmDuplex == OS.DMDUP_HORIZONTAL ? PrinterData.DUPLEX_SHORT_EDGE : PrinterData.DUPLEX_LONG_EDGE;
+			}
+
 			OS.GlobalUnlock(hMem);
 			printerData = data;
 		}

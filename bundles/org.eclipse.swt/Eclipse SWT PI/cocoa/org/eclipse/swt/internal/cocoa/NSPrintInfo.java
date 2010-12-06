@@ -58,14 +58,15 @@ public NSString jobDisposition() {
 	return result != 0 ? new NSString(result) : null;
 }
 
-public int /*long*/ orientation() {
-	return OS.objc_msgSend(this.id, OS.sel_orientation);
-}
-
 public NSSize paperSize() {
 	NSSize result = new NSSize();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_paperSize);
 	return result;
+}
+
+public NSMutableDictionary printSettings() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_printSettings);
+	return result != 0 ? new NSMutableDictionary(result) : null;
 }
 
 public NSPrinter printer() {
@@ -75,10 +76,6 @@ public NSPrinter printer() {
 
 public void setJobDisposition(NSString disposition) {
 	OS.objc_msgSend(this.id, OS.sel_setJobDisposition_, disposition != null ? disposition.id : 0);
-}
-
-public void setOrientation(int /*long*/ orientation) {
-	OS.objc_msgSend(this.id, OS.sel_setOrientation_, orientation);
 }
 
 public void setPrinter(NSPrinter printer) {
@@ -92,6 +89,10 @@ public void setUpPrintOperationDefaultValues() {
 public static NSPrintInfo sharedPrintInfo() {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSPrintInfo, OS.sel_sharedPrintInfo);
 	return result != 0 ? new NSPrintInfo(result) : null;
+}
+
+public void updateFromPMPrintSettings() {
+	OS.objc_msgSend(this.id, OS.sel_updateFromPMPrintSettings);
 }
 
 }

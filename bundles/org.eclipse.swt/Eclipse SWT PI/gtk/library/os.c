@@ -11890,6 +11890,26 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1print_1settings_1get_1collate)
 }
 #endif
 
+#ifndef NO__1gtk_1print_1settings_1get_1duplex
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1settings_1get_1duplex)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1get_1duplex_FUNC);
+/*
+	rc = (jint)gtk_print_settings_get_duplex(arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_print_settings_get_duplex)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1get_1duplex_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1print_1settings_1get_1n_1copies
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1settings_1get_1n_1copies)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -12114,6 +12134,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1settings_1set_1collate)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1set_1collate_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1set_1duplex
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1settings_1set_1duplex)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1set_1duplex_FUNC);
+/*
+	gtk_print_settings_set_duplex(arg0, arg1);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_print_settings_set_duplex)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1set_1duplex_FUNC);
 }
 #endif
 

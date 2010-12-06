@@ -348,6 +348,19 @@ public PrinterData open() {
 		}
 		OS.gtk_print_settings_set_n_copies(settings, printerData.copyCount);
 		OS.gtk_print_settings_set_collate(settings, printerData.collate);
+		/* 
+		 * Bug in GTK.  The unix dialog gives priority to the value of the non-API
+		 * field cups-Duplex in the print_settings (which we preserve in otherData).
+		 * The fix is to manually clear cups-Duplex before setting the duplex field.
+		 */
+		byte [] keyBuffer = Converter.wcsToMbcs (null, "cups-Duplex", true);
+		OS.gtk_print_settings_set(settings, keyBuffer, (byte[]) null);
+		if (printerData.duplex != SWT.DEFAULT) {
+			int duplex = printerData.duplex == PrinterData.DUPLEX_LONG_EDGE ? OS.GTK_PRINT_DUPLEX_HORIZONTAL
+				: printerData.duplex == PrinterData.DUPLEX_SHORT_EDGE ? OS.GTK_PRINT_DUPLEX_VERTICAL
+				: OS.GTK_PRINT_DUPLEX_SIMPLEX;
+			OS.gtk_print_settings_set_duplex (settings, duplex);
+		}
 		int orientation = printerData.orientation == PrinterData.LANDSCAPE ? OS.GTK_PAGE_ORIENTATION_LANDSCAPE : OS.GTK_PAGE_ORIENTATION_PORTRAIT;
 		OS.gtk_print_settings_set_orientation(settings, orientation);
 		OS.gtk_page_setup_set_orientation(page_setup, orientation);
@@ -430,6 +443,10 @@ public PrinterData open() {
 
 				data.copyCount = OS.gtk_print_settings_get_n_copies(settings);
 				data.collate = OS.gtk_print_settings_get_collate(settings);
+				int duplex = OS.gtk_print_settings_get_duplex(settings);
+				data.duplex = duplex == OS.GTK_PRINT_DUPLEX_HORIZONTAL ? PrinterData.DUPLEX_LONG_EDGE
+						: duplex == OS.GTK_PRINT_DUPLEX_VERTICAL ? PrinterData.DUPLEX_SHORT_EDGE
+						: PrinterData.DUPLEX_NONE;
 				data.orientation = OS.gtk_page_setup_get_orientation(page_setup) == OS.GTK_PAGE_ORIENTATION_LANDSCAPE ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;
 
 				/* Save other print_settings data as key/value pairs in otherData. */

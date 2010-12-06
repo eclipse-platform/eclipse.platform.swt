@@ -60,3 +60,5 @@
 #define PMPrinterGetPrinterResolutionCount_LIB "com.apple.ApplicationServices"
 #define PMPrinterGetOutputResolution_LIB "com.apple.ApplicationServices"
 #define PMPrinterGetIndexedPrinterResolution_LIB "com.apple.ApplicationServices"
+#define PMGetDuplex_LIB "com.apple.ApplicationServices"
+#define PMSetDuplex_LIB "com.apple.ApplicationServices"

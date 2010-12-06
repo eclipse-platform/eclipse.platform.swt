@@ -251,6 +251,14 @@ protected void create(DeviceData deviceData) {
 		devmode.dmFields |= OS.DM_COLLATE;
 		devmode.dmCollate = OS.DMCOLLATE_TRUE;
 	}
+	if (data.duplex != SWT.DEFAULT) {
+		devmode.dmFields |= OS.DM_DUPLEX;
+		switch (data.duplex) {
+			case PrinterData.DUPLEX_SHORT_EDGE: devmode.dmDuplex = OS.DMDUP_HORIZONTAL; break;
+			case PrinterData.DUPLEX_LONG_EDGE: devmode.dmDuplex = OS.DMDUP_VERTICAL; break;
+			default: devmode.dmDuplex = OS.DMDUP_SIMPLEX;
+		}
+	}
 	OS.MoveMemory(lpInitData, devmode, DEVMODE.sizeof);
 
 	handle = OS.CreateDC(driver, device, 0, lpInitData);

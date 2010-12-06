@@ -749,6 +749,25 @@ protected void init() {
 	}
 	OS.gtk_print_settings_set_n_copies(settings, data.copyCount);
 	OS.gtk_print_settings_set_collate(settings, data.collate);
+	if (data.duplex != SWT.DEFAULT) {
+		int duplex = data.duplex == PrinterData.DUPLEX_LONG_EDGE ? OS.GTK_PRINT_DUPLEX_HORIZONTAL
+			: data.duplex == PrinterData.DUPLEX_SHORT_EDGE ? OS.GTK_PRINT_DUPLEX_VERTICAL
+			: OS.GTK_PRINT_DUPLEX_SIMPLEX;
+		OS.gtk_print_settings_set_duplex (settings, duplex);
+		/* 
+		 * Bug in GTK.  The cups backend only looks at the value
+		 * of the non-API field cups-Duplex in the print_settings.
+		 * The fix is to manually set cups-Duplex to Tumble or NoTumble.
+		 */
+		String cupsDuplexType = null;
+		if (duplex == OS.GTK_PRINT_DUPLEX_HORIZONTAL) cupsDuplexType = "DuplexNoTumble";
+		else if (duplex == OS.GTK_PRINT_DUPLEX_VERTICAL) cupsDuplexType = "DuplexTumble";
+		if (cupsDuplexType != null) {
+			byte [] keyBuffer = Converter.wcsToMbcs (null, "cups-Duplex", true);
+			byte [] valueBuffer = Converter.wcsToMbcs (null, cupsDuplexType, true);
+			OS.gtk_print_settings_set(settings, keyBuffer, valueBuffer);
+		}
+	}
 	int orientation = data.orientation == PrinterData.LANDSCAPE ? OS.GTK_PAGE_ORIENTATION_LANDSCAPE : OS.GTK_PAGE_ORIENTATION_PORTRAIT;
 	OS.gtk_page_setup_set_orientation(pageSetup, orientation);
 	OS.gtk_print_settings_set_orientation(settings, orientation);

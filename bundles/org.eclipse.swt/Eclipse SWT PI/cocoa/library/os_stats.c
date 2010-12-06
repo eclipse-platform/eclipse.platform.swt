@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 619;
-int OS_nativeFunctionCallCount[619];
+int OS_nativeFunctionCount = 622;
+int OS_nativeFunctionCallCount[622];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -369,6 +369,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSPrintJobDisposition",
 	"NSPrintLastPage",
 	"NSPrintMustCollate",
+	"NSPrintOrientation",
 	"NSPrintPreviewJob",
 	"NSPrintSaveJob",
 	"NSPrintSavePath",
@@ -414,11 +415,13 @@ char * OS_nativeFunctionNames[] = {
 	"NewRgn",
 	"OffsetRgn",
 	"OpenRgn",
+	"PMGetDuplex",
 	"PMPrinterGetIndexedPrinterResolution",
 	"PMPrinterGetOutputResolution",
 	"PMPrinterGetPrinterResolutionCount",
 	"PMSessionGetCurrentPrinter",
 	"PMSessionGetDestinationType",
+	"PMSetDuplex",
 	"PtInRgn",
 	"QDRegionToRects",
 	"RectInRgn",

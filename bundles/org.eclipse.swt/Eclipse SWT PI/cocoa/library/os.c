@@ -4837,6 +4837,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSPrintMustCollate)
 }
 #endif
 
+#ifndef NO_NSPrintOrientation
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSPrintOrientation)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSPrintOrientation_FUNC);
+	rc = (jintLong)NSPrintOrientation;
+	OS_NATIVE_EXIT(env, that, NSPrintOrientation_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSPrintPreviewJob
 JNIEXPORT jintLong JNICALL OS_NATIVE(NSPrintPreviewJob)
 	(JNIEnv *env, jclass that)
@@ -5401,6 +5413,30 @@ JNIEXPORT void JNICALL OS_NATIVE(OpenRgn)
 }
 #endif
 
+#ifndef NO_PMGetDuplex
+JNIEXPORT jintLong JNICALL OS_NATIVE(PMGetDuplex)
+	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, PMGetDuplex_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)PMGetDuplex((PMPrintSettings)arg0, (PMDuplexMode *)lparg1);
+*/
+	{
+		LOAD_FUNCTION(fp, PMGetDuplex)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrintSettings, PMDuplexMode *))fp)((PMPrintSettings)arg0, (PMDuplexMode *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, PMGetDuplex_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_PMPrinterGetIndexedPrinterResolution
 JNIEXPORT jintLong JNICALL OS_NATIVE(PMPrinterGetIndexedPrinterResolution)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
@@ -5506,17 +5542,37 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(PMSessionGetDestinationType)
 	OS_NATIVE_ENTER(env, that, PMSessionGetDestinationType_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL)) == NULL) goto fail;
 /*
-	rc = (jintLong)PMSessionGetDestinationType((PMPrintSession)arg0, arg1, lparg2);
+	rc = (jintLong)PMSessionGetDestinationType((PMPrintSession)arg0, (PMPrintSettings)arg1, lparg2);
 */
 	{
 		LOAD_FUNCTION(fp, PMSessionGetDestinationType)
 		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrintSession, jintLong, jshort *))fp)((PMPrintSession)arg0, arg1, lparg2);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrintSession, PMPrintSettings, jshort *))fp)((PMPrintSession)arg0, (PMPrintSettings)arg1, lparg2);
 		}
 	}
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, PMSessionGetDestinationType_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSetDuplex
+JNIEXPORT jintLong JNICALL OS_NATIVE(PMSetDuplex)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, PMSetDuplex_FUNC);
+/*
+	rc = (jintLong)PMSetDuplex((PMPrintSettings)arg0, (PMDuplexMode)arg1);
+*/
+	{
+		LOAD_FUNCTION(fp, PMSetDuplex)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrintSettings, PMDuplexMode))fp)((PMPrintSettings)arg0, (PMDuplexMode)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, PMSetDuplex_FUNC);
 	return rc;
 }
 #endif

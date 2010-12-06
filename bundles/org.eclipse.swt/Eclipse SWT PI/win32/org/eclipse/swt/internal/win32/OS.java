@@ -548,9 +548,13 @@ public class OS extends C {
 	public static final int DM_SETDEFID = 0x401;
 	public static final int DM_COLLATE = 0x00008000;
 	public static final int DM_COPIES = 0x00000100;
+	public static final int DM_DUPLEX = 0x00001000;
 	public static final int DM_ORIENTATION = 0x00000001;
 	public static final short DMORIENT_PORTRAIT = 1;
 	public static final short DMORIENT_LANDSCAPE = 2;
+	public static final short DMDUP_SIMPLEX = 1;
+	public static final short DMDUP_VERTICAL = 2;
+	public static final short DMDUP_HORIZONTAL = 3;
 	public static final int DSS_DISABLED = 0x20;
 	public static final int DSTINVERT = 0x550009;
 	public static final int DST_BITMAP = 0x4;

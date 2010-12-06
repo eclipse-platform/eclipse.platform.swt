@@ -311,6 +311,9 @@ public class OS extends C {
 	public static final int GTK_PRINT_PAGES_ALL = 0;
 	public static final int GTK_PRINT_PAGES_CURRENT = 1;
 	public static final int GTK_PRINT_PAGES_RANGES = 2;
+	public static final int GTK_PRINT_DUPLEX_SIMPLEX = 0;
+	public static final int GTK_PRINT_DUPLEX_HORIZONTAL = 1;
+	public static final int GTK_PRINT_DUPLEX_VERTICAL = 2;
 	public static final int GTK_PROGRESS_CONTINUOUS = 0x0;
 	public static final int GTK_PROGRESS_DISCRETE = 0x1;
 	public static final int GTK_PROGRESS_LEFT_TO_RIGHT = 0x0;
@@ -9360,6 +9363,26 @@ public static final void gtk_print_settings_set_collate(int /*long*/ settings, b
 	lock.lock();
 	try {
 		_gtk_print_settings_set_collate(settings, collate);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int _gtk_print_settings_get_duplex(int /*long*/ settings);
+public static final int gtk_print_settings_get_duplex(int /*long*/ settings) {
+	lock.lock();
+	try {
+		return _gtk_print_settings_get_duplex(settings);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_print_settings_set_duplex(int /*long*/ settings, int duplex);
+public static final void gtk_print_settings_set_duplex(int /*long*/ settings, int duplex) {
+	lock.lock();
+	try {
+		_gtk_print_settings_set_duplex(settings, duplex);
 	} finally {
 		lock.unlock();
 	}

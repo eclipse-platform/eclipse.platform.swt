@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1375;
-int OS_nativeFunctionCallCount[1375];
+int OS_nativeFunctionCount = 1377;
+int OS_nativeFunctionCallCount[1377];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -941,6 +941,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1print_1settings_1foreach",
 	"_1gtk_1print_1settings_1get",
 	"_1gtk_1print_1settings_1get_1collate",
+	"_1gtk_1print_1settings_1get_1duplex",
 	"_1gtk_1print_1settings_1get_1n_1copies",
 	"_1gtk_1print_1settings_1get_1orientation",
 	"_1gtk_1print_1settings_1get_1page_1ranges",
@@ -952,6 +953,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1print_1settings_1new",
 	"_1gtk_1print_1settings_1set",
 	"_1gtk_1print_1settings_1set_1collate",
+	"_1gtk_1print_1settings_1set_1duplex",
 	"_1gtk_1print_1settings_1set_1n_1copies",
 	"_1gtk_1print_1settings_1set_1orientation",
 	"_1gtk_1print_1settings_1set_1page_1ranges",

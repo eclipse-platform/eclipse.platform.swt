@@ -63,6 +63,9 @@ public class OS extends C {
 	public static final int kAXUnderlineStyleThick = 0x2; 
 	public static final int kAXUnderlineStyleDouble = 0x9;
 	public static final int kPMDestinationPrinter = 1;
+	public static final int kPMDuplexNone = 0x0001;
+	public static final int kPMDuplexNoTumble = 0x0002;
+	public static final int kPMDuplexTumble = 0x0003;
 
 
 	public static final int /*long*/ sel_sendSearchSelection = sel_registerName("sendSearchSelection");
@@ -298,9 +301,19 @@ public static final native void DeleteMenuItem(int /*long*/ mHandle, short index
 public static final native int /*long*/ PMSessionGetCurrentPrinter(int /*long*/ pmSessionInfo, int /*long*/[] outPMPrinter);
 /** @method flags=dynamic
  * @param pmSessionInfo cast=(PMPrintSession)
- * @param outPMPrinter cast=(PMPrintSettings)
+ * @param pmPrintSettings cast=(PMPrintSettings)
  */
 public static final native int /*long*/ PMSessionGetDestinationType(int /*long*/ pmSessionInfo, int /*long*/ pmPrintSettings, short[] outDestinationType);
+/** @method flags=dynamic
+ * @param printSettings cast=(PMPrintSettings)
+ * @param outDuplexSetting cast=(PMDuplexMode *)
+ */
+public static final native int /*long*/ PMGetDuplex(int /*long*/ printSettings, int[] outDuplexSetting);
+/** @method flags=dynamic
+ * @param printSettings cast=(PMPrintSettings)
+ * @param duplexSetting cast=(PMDuplexMode)
+ */
+public static final native int /*long*/ PMSetDuplex(int /*long*/ printSettings, int duplexSetting);
 /** @method flags=dynamic
  * @param pmPrinter cast=(PMPrinter)
  * @param pmPrintSettings cast=(PMPrintSettings)
@@ -1471,7 +1484,6 @@ public static final int /*long*/ sel_orderFrontStandardAboutPanel_ = sel_registe
 public static final int /*long*/ sel_orderOut_ = sel_registerName("orderOut:");
 public static final int /*long*/ sel_orderWindow_relativeTo_ = sel_registerName("orderWindow:relativeTo:");
 public static final int /*long*/ sel_orderedWindows = sel_registerName("orderedWindows");
-public static final int /*long*/ sel_orientation = sel_registerName("orientation");
 public static final int /*long*/ sel_otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_ = sel_registerName("otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:");
 public static final int /*long*/ sel_otherMouseDown_ = sel_registerName("otherMouseDown:");
 public static final int /*long*/ sel_otherMouseDragged_ = sel_registerName("otherMouseDragged:");
@@ -1536,6 +1548,7 @@ public static final int /*long*/ sel_printDocumentView = sel_registerName("print
 public static final int /*long*/ sel_printOperationWithPrintInfo_ = sel_registerName("printOperationWithPrintInfo:");
 public static final int /*long*/ sel_printOperationWithView_printInfo_ = sel_registerName("printOperationWithView:printInfo:");
 public static final int /*long*/ sel_printPanel = sel_registerName("printPanel");
+public static final int /*long*/ sel_printSettings = sel_registerName("printSettings");
 public static final int /*long*/ sel_printer = sel_registerName("printer");
 public static final int /*long*/ sel_printerNames = sel_registerName("printerNames");
 public static final int /*long*/ sel_printerWithName_ = sel_registerName("printerWithName:");
@@ -1843,7 +1856,6 @@ public static final int /*long*/ sel_setObjectValue_ = sel_registerName("setObje
 public static final int /*long*/ sel_setOnMouseEntered_ = sel_registerName("setOnMouseEntered:");
 public static final int /*long*/ sel_setOpaque_ = sel_registerName("setOpaque:");
 public static final int /*long*/ sel_setOptions_ = sel_registerName("setOptions:");
-public static final int /*long*/ sel_setOrientation_ = sel_registerName("setOrientation:");
 public static final int /*long*/ sel_setOutlineTableColumn_ = sel_registerName("setOutlineTableColumn:");
 public static final int /*long*/ sel_setPaletteLabel_ = sel_registerName("setPaletteLabel:");
 public static final int /*long*/ sel_setPanelFont_isMultiple_ = sel_registerName("setPanelFont:isMultiple:");
@@ -2048,6 +2060,7 @@ public static final int /*long*/ sel_unlockFocus = sel_registerName("unlockFocus
 public static final int /*long*/ sel_unmarkText = sel_registerName("unmarkText");
 public static final int /*long*/ sel_unregisterDraggedTypes = sel_registerName("unregisterDraggedTypes");
 public static final int /*long*/ sel_update = sel_registerName("update");
+public static final int /*long*/ sel_updateFromPMPrintSettings = sel_registerName("updateFromPMPrintSettings");
 public static final int /*long*/ sel_updateTrackingAreas = sel_registerName("updateTrackingAreas");
 public static final int /*long*/ sel_use = sel_registerName("use");
 public static final int /*long*/ sel_useCredential_forAuthenticationChallenge_ = sel_registerName("useCredential:forAuthenticationChallenge:");
@@ -2254,6 +2267,9 @@ public static final int NSOutlineViewDropOnItemIndex = -1;
 public static final int NSPageDownFunctionKey = 63277;
 public static final int NSPageUpFunctionKey = 63276;
 public static final int NSPortraitOrientation = 0;
+public static final int NSPrintPanelShowsCopies = 1;
+public static final int NSPrintPanelShowsOrientation = 8;
+public static final int NSPrintPanelShowsPageRange = 2;
 public static final int NSPrintPanelShowsPageSetupAccessory = 256;
 public static final int NSProgressIndicatorPreferredThickness = 14;
 public static final int NSPushOnPushOffButton = 1;
@@ -2845,6 +2861,9 @@ public static final NSString NSPrintLastPage = new NSString(NSPrintLastPage());
 /** @method flags=const */
 public static final native int /*long*/ NSPrintMustCollate();
 public static final NSString NSPrintMustCollate = new NSString(NSPrintMustCollate());
+/** @method flags=const */
+public static final native int /*long*/ NSPrintOrientation();
+public static final NSString NSPrintOrientation = new NSString(NSPrintOrientation());
 /** @method flags=const */
 public static final native int /*long*/ NSPrintPreviewJob();
 public static final NSString NSPrintPreviewJob = new NSString(NSPrintPreviewJob());

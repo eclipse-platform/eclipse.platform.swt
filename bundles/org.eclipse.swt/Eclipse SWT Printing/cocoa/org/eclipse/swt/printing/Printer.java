@@ -211,10 +211,19 @@ protected void create(DeviceData deviceData) {
 			printer.retain();
 			printInfo.setPrinter(printer);
 		}
-		printInfo.setOrientation(data.orientation == PrinterData.LANDSCAPE ? OS.NSLandscapeOrientation : OS.NSPortraitOrientation);
+		if (data.duplex != SWT.DEFAULT) {
+			int /*long*/ settings = printInfo.PMPrintSettings();
+			int duplex = data.duplex == PrinterData.DUPLEX_SHORT_EDGE ? OS.kPMDuplexTumble
+					: data.duplex == PrinterData.DUPLEX_LONG_EDGE ? OS.kPMDuplexNoTumble
+					: OS.kPMDuplexNone;
+			OS.PMSetDuplex(settings, duplex);
+		}
+		/* Updating printInfo from PMPrintSettings overrides values in the printInfo dictionary. */
+		printInfo.updateFromPMPrintSettings();
 		NSMutableDictionary dict = printInfo.dictionary();	
 		if (data.collate != false) dict.setValue(NSNumber.numberWithBool(data.collate), OS.NSPrintMustCollate);
 		if (data.copyCount != 1) dict.setValue(NSNumber.numberWithInt(data.copyCount), OS.NSPrintCopies);
+		dict.setValue(NSNumber.numberWithInt(data.orientation == PrinterData.LANDSCAPE ? OS.NSLandscapeOrientation : OS.NSPortraitOrientation), OS.NSPrintOrientation);
 		if (data.printToFile) {
 			dict.setValue(OS.NSPrintSaveJob, OS.NSPrintJobDisposition);
 			if (data.fileName != null) dict.setValue(NSString.stringWith(data.fileName), OS.NSPrintSavePath);

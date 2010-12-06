@@ -155,10 +155,19 @@ public PrinterData open() {
 	PrinterData data = null;
 	NSPrintPanel panel = NSPrintPanel.printPanel();
 	NSPrintInfo printInfo = new NSPrintInfo(NSPrintInfo.sharedPrintInfo().copy());
-	printInfo.setOrientation(printerData.orientation == PrinterData.LANDSCAPE ? OS.NSLandscapeOrientation : OS.NSPortraitOrientation);
-	NSMutableDictionary dict = printInfo.dictionary();	
+	if (printerData.duplex != SWT.DEFAULT) {
+		int /*long*/ settings = printInfo.PMPrintSettings();
+		int duplex = printerData.duplex == PrinterData.DUPLEX_SHORT_EDGE ? OS.kPMDuplexTumble
+				: printerData.duplex == PrinterData.DUPLEX_LONG_EDGE ? OS.kPMDuplexNoTumble
+				: OS.kPMDuplexNone;
+		OS.PMSetDuplex(settings, duplex);
+	}
+	/* Updating printInfo from PMPrintSettings overrides values in the printInfo dictionary. */
+	printInfo.updateFromPMPrintSettings();
+	NSMutableDictionary dict = printInfo.dictionary();
 	dict.setValue(NSNumber.numberWithBool(printerData.collate), OS.NSPrintMustCollate);
 	dict.setValue(NSNumber.numberWithInt(printerData.copyCount), OS.NSPrintCopies);
+	dict.setValue(NSNumber.numberWithInt(printerData.orientation == PrinterData.LANDSCAPE ? OS.NSLandscapeOrientation : OS.NSPortraitOrientation), OS.NSPrintOrientation);
 	if (printerData.printToFile) {
 		dict.setValue(OS.NSPrintSaveJob, OS.NSPrintJobDisposition);
 	}
@@ -211,7 +220,13 @@ public PrinterData open() {
 		data.collate = false; //TODO: Only set to false if the printer does the collate internally (most printers do)
 		data.copyCount = new NSNumber(dict.objectForKey(OS.NSPrintCopies)).intValue();
 		data.copyCount = 1; //TODO: Only set to 1 if the printer does the copy internally (most printers do)
-		data.orientation = printInfo.orientation() == OS.NSLandscapeOrientation ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;
+		data.orientation = new NSNumber(dict.objectForKey(OS.NSPrintOrientation)).intValue() == OS.NSLandscapeOrientation ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;
+		int /*long*/ settings = printInfo.PMPrintSettings();
+		int outDuplexSetting[] = new int[1];
+		OS.PMGetDuplex(settings, outDuplexSetting);
+		data.duplex = outDuplexSetting[0] == OS.kPMDuplexTumble ? PrinterData.DUPLEX_SHORT_EDGE
+				: outDuplexSetting[0] == OS.kPMDuplexNoTumble ? PrinterData.DUPLEX_LONG_EDGE
+				: PrinterData.DUPLEX_NONE;
 		NSData nsData = NSKeyedArchiver.archivedDataWithRootObject(printInfo);
 		data.otherData = new byte[(int)/*64*/nsData.length()];
 		OS.memmove(data.otherData, nsData.bytes(), data.otherData.length);
