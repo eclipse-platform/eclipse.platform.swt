@@ -1911,6 +1911,7 @@ public void setOrientation(int orientation) {
 	if ((orientation & SWT.LEFT_TO_RIGHT) != 0) orientation = SWT.LEFT_TO_RIGHT;
 	int baseDir = orientation == SWT.RIGHT_TO_LEFT ? OS.PANGO_DIRECTION_RTL : OS.PANGO_DIRECTION_LTR;
 	if (OS.pango_context_get_base_dir(context) == baseDir) return;
+	freeRuns();
 	OS.pango_context_set_base_dir(context, baseDir);
 	OS.pango_layout_context_changed(layout);
 	int align = OS.pango_layout_get_alignment(layout);
