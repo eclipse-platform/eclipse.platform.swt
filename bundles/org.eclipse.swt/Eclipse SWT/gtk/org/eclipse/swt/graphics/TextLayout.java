@@ -166,7 +166,7 @@ void computeRuns () {
 		int segmentCount = 0;
 		for (int i = 0; i < chars.length; i++) {
 			char c = chars[i];
-			if (c == ZWS && lineOffsets != null && i == lineOffsets[lineIndex]) {
+			if (c == ZWS && lineOffsets != null && lineIndex < lineOffsets.length && i == lineOffsets[lineIndex]) {
 				invalidOffsets[offsetCount++] = i;		//ZWS
 				invalidOffsets[offsetCount++] = ++i;	//ZWNBS
 				lineIndex++;
