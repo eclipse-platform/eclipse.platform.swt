@@ -4597,6 +4597,7 @@
 	<enum name="NSCurveToBezierPathElement" swt_gen="true"></enum>
 	<enum name="NSDeleteCharacter" swt_gen="true"></enum>
 	<enum name="NSDeviceIndependentModifierFlagsMask" swt_gen="true"></enum>
+	<enum name="NSDocModalWindowMask" swt_gen="true"></enum>
 	<enum name="NSDragOperationCopy" swt_gen="true"></enum>
 	<enum name="NSDragOperationDelete" swt_gen="true"></enum>
 	<enum name="NSDragOperationEvery" swt_gen="true"></enum>

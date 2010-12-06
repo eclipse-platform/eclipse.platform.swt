@@ -587,9 +587,13 @@ void createHandle () {
 	state |= HIDDEN;
 	if (window == null && view == null) {
 		int styleMask = OS.NSBorderlessWindowMask;
-		if ((style & SWT.TOOL) != 0) {
+		if ((style & (SWT.TOOL | SWT.SHEET)) != 0) {
 			window = (NSWindow) new SWTPanel().alloc();
-			styleMask |= OS.NSUtilityWindowMask | OS.NSNonactivatingPanelMask;
+			if ((style & SWT.SHEET) != 0) {
+				styleMask |= OS.NSDocModalWindowMask;
+			} else {
+				styleMask |= OS.NSUtilityWindowMask | OS.NSNonactivatingPanelMask;
+			}
  		} else {
  			window = (NSWindow) new SWTWindow().alloc ();
  		}

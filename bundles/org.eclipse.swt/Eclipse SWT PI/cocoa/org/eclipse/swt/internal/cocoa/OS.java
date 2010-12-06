@@ -2174,6 +2174,7 @@ public static final int NSCriticalAlertStyle = 2;
 public static final int NSCurveToBezierPathElement = 2;
 public static final int NSDeleteCharacter = 127;
 public static final int NSDeviceIndependentModifierFlagsMask = -65536;
+public static final int NSDocModalWindowMask = 64;
 public static final int NSDragOperationCopy = 1;
 public static final int NSDragOperationDelete = 32;
 public static final int NSDragOperationEvery = -1;
