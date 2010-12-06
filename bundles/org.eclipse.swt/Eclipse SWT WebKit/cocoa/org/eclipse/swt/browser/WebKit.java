@@ -1574,10 +1574,13 @@ void handleEvent(int /*long*/ evtId) {
 			if (eventType == SWT.KeyDown && stateMask == SWT.COMMAND) {
 				if (translatedKey == 'v') {
 					webView.paste (webView);
+					event.preventDefault();
 				} else if (translatedKey == 'c') {
 					webView.copy (webView);
+					event.preventDefault();
 				} else if (translatedKey == 'x') {
 					webView.cut (webView);
+					event.preventDefault();
 				}
 			}
 		}
