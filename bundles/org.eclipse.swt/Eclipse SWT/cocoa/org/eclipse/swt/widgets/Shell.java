@@ -505,7 +505,10 @@ void bringToTop (boolean force) {
 boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 	if (isPopup) return false;
 	// Only answer if SWT created the window.
-	if (window != null) if (window.styleMask () == OS.NSBorderlessWindowMask) return true;
+	if (window != null) {
+		int /*long*/ styleMask = window.styleMask();
+		if (styleMask == OS.NSBorderlessWindowMask || (styleMask & OS.NSNonactivatingPanelMask) != 0) return true;
+	}
 	return super.canBecomeKeyWindow (id, sel);
 }
 
