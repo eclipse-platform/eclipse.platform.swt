@@ -1717,7 +1717,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGEventCreateScrollWheelEvent)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, CGEventCreateScrollWheelEvent_FUNC);
-	rc = (jintLong)CGEventCreateScrollWheelEvent((CGEventSourceRef)arg0, (CGScrollEventUnit)arg1, (uint32_t)arg2, (int32_t)arg3);
+	rc = (jintLong)CGEventCreateScrollWheelEvent((CGEventSourceRef)arg0, (CGScrollEventUnit)arg1, (CGWheelCount)arg2, (int32_t)arg3);
 	OS_NATIVE_EXIT(env, that, CGEventCreateScrollWheelEvent_FUNC);
 	return rc;
 }

@@ -3338,7 +3338,7 @@ public static final native int /*long*/ CGEventCreateMouseEvent(int /*long*/ sou
 /**
  * @param source cast=(CGEventSourceRef)
  * @param units cast=(CGScrollEventUnit)
- * @param wheelCount cast=(uint32_t)
+ * @param wheelCount cast=(CGWheelCount)
  * @param wheel1 cast=(int32_t)
  */
 public static final native int /*long*/ CGEventCreateScrollWheelEvent(int /*long*/ source, int units, int wheelCount, int wheel1);
@@ -3353,9 +3353,9 @@ public static final native long CGEventGetIntegerValueField(int /*long*/ event, 
  */
 public static final native void CGEventPost(int tap, int /*long*/ event);
 /**
- * @param stateID cast=(CGEventSourceStateID)
+ * @param sourceState cast=(CGEventSourceStateID)
  */
-public static final native int /*long*/ CGEventSourceCreate(int stateID);
+public static final native int /*long*/ CGEventSourceCreate(int sourceState);
 /**
  * @param rect flags=struct
  * @param maxDisplays cast=(CGDisplayCount)
