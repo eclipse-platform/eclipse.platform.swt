@@ -52,9 +52,10 @@ public class DateTime extends Composite {
 	NSButton buttonView;
 	Shell popupShell;
 	DateTime popupCalendar;
-	boolean popupWasShowing;
 	int savedYear, savedMonth, savedDay;
 
+	Listener clickListener;
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -214,6 +215,19 @@ void createPopupShell(int year, int month, int day) {
 	popupCalendar = new DateTime (popupShell, SWT.CALENDAR);
 	if (font != null) popupCalendar.setFont (font);
 
+	if (clickListener == null) {
+		clickListener = new Listener() {
+			public void handleEvent(Event event) {
+				if (event.widget instanceof Control) {
+					Control c = (Control)event.widget;
+					if (c.getShell() != popupShell) {
+						hideCalendar();
+					}
+				}
+			}
+		};
+	}
+
 	popupCalendar.addListener (SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {
 			int year = popupCalendar.getYear ();
@@ -236,16 +250,10 @@ void createPopupShell(int year, int month, int day) {
 	});
 	addListener(SWT.FocusOut, new Listener() {
 		public void handleEvent(Event event) {
-			popupWasShowing = (popupShell != null && popupShell.isVisible());
 			hideCalendar();
+			display.removeFilter(SWT.MouseDown, clickListener); 
 		}
 	});
-	addListener(SWT.FocusIn, new Listener() {
-		public void handleEvent(Event event) {
-			if (popupWasShowing) showCalendar();
-		}
-	});
-	
 	if (year != -1) popupCalendar.setDate(year, month, day);
 }
 
@@ -297,6 +305,7 @@ void showCalendar() {
 	popupShell.setBounds (x, y, width, height);
 	popupShell.setVisible (true);
 	if (isFocusControl()) popupCalendar.setFocus ();
+	display.addFilter(SWT.MouseDown, clickListener); 
 }
 
 void hideCalendar() {
@@ -305,6 +314,7 @@ void hideCalendar() {
 	if (!isDisposed () && isFocusControl()) {
 		setFocus();
 	}
+	display.removeFilter(SWT.MouseDown, clickListener); 
 }
 
 int getBezelInset() {
@@ -567,6 +577,7 @@ void sendSelection () {
 
 /* Drop-down arrow button has been pressed. */
 void sendVerticalSelection () {
+	setFocus();
 	if (isDropped ()) {
 		hideCalendar();
 	} else {
