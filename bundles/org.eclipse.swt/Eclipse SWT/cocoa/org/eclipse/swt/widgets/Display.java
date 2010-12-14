@@ -4135,9 +4135,11 @@ void setCursor (Control control) {
  */
 public void setCursorLocation (int x, int y) {
 	checkDevice ();
-	CGPoint pt = new CGPoint ();
-	pt.x = x;  pt.y = y;
-	OS.CGWarpMouseCursorPosition (pt);
+	Event e = new Event();
+	e.type = SWT.MouseMove;
+	e.x = x;
+	e.y = y;
+	post(e);
 }
 
 /**
