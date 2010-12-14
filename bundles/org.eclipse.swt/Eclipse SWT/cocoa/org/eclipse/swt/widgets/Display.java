@@ -4056,7 +4056,7 @@ public static void setAppVersion (String version) {
 Runnable hoverTimer = new Runnable () {
 	public void run () {
 		if (currentControl != null && !currentControl.isDisposed()) {
-			currentControl.sendMouseEvent (NSApplication.sharedApplication().currentEvent(), SWT.MouseHover, trackingControl != null && !trackingControl.isDisposed());
+			currentControl.sendMouseEvent (null, SWT.MouseHover, trackingControl != null && !trackingControl.isDisposed());
 		}
 	}
 };
