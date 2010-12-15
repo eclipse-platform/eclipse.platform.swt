@@ -1830,7 +1830,7 @@ void setText (String string, boolean notify) {
 		lastText = string;
 		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
 		OS.CFRelease (ptr);
-		selection = null;
+		setSelection(new Point(0, 0));
 		if (notify) sendEvent (SWT.Modify);
 	}
 }
