@@ -1298,6 +1298,7 @@ public class OS extends C {
 	public static final int PD_ALLPAGES = 0x0;
 	public static final int PD_COLLATE = 0x10;
 	public static final int PD_PAGENUMS = 0x2;
+	public static final int PD_PRINTSETUP = 0x00000040;
 	public static final int PD_PRINTTOFILE = 0x20;
 	public static final int PD_RETURNDC = 0x100;
 	public static final int PD_RETURNDEFAULT = 0x00000400;
@@ -3479,6 +3480,7 @@ public static final native int BufferedPaintInit ();
 public static final native int BufferedPaintSetAlpha (int /*long*/ hBufferedPaint, RECT prc, byte alpha);
 /** @method flags=dynamic */
 public static final native int BufferedPaintUnInit ();
+public static final native int Call (int /*long*/ address);
 /** @param address cast=(DLLGETVERSIONPROC) */
 public static final native int Call (int /*long*/ address, DLLVERSIONINFO arg0);
 /**
@@ -5000,6 +5002,11 @@ public static final native void MoveMemory (long [] Destination, int /*long*/ So
  * @param SourcePtr cast=(CONST VOID *)
  */
 public static final native void MoveMemory (double[] Destination, int /*long*/ SourcePtr, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in critical
+ * @param SourcePtr cast=(CONST VOID *)
+ */
+public static final native void MoveMemory (double[] Destination, int /*long*/[] SourcePtr, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in critical
  * @param SourcePtr cast=(CONST VOID *)
@@ -6626,6 +6633,7 @@ public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int 
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, long arg0);
 
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int[] arg3);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, int arg2, int[] arg3);
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, int arg2, long[] arg3);
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int arg0, long arg1, int arg2, long[] arg3);
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, int arg2, long[] arg3);
@@ -6635,7 +6643,7 @@ public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, shor
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int[] arg0);
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, long[] arg0);
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, byte[] arg0, int /*long*/[] arg1);
-public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int arg0, int /*long*/[] arg1, int[] arg2);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, long arg0, int /*long*/[] arg1, int /*long*/[] arg2);
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, TF_DISPLAYATTRIBUTE arg0);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, long arg1, long arg2);

@@ -8,20 +8,9 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.browser;
 
-import org.eclipse.swt.SWT;
+/* Libraries for dynamic loaded functions */
+#define WebKitCreateInstance_LIB "webkit.dll"
 
-class BrowserFactory {
 
-WebBrowser createWebBrowser (int style) {
-	if ((style & SWT.MOZILLA) != 0) {
-		return new Mozilla ();
-	}
-	if ((style & SWT.WEBKIT) != 0) {
-		return new WebKit ();
-	}
-	return new IE ();
-}
 
-}

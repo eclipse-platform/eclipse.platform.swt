@@ -4,24 +4,23 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.browser;
 
-import org.eclipse.swt.SWT;
+#ifndef INC_webkit_win32_H
+#define INC_webkit_win32_H
 
-class BrowserFactory {
+#include <ole2.h>
+#include <JavaScriptCore/JSContextRef.h>
+#include <JavaScriptCore/JSObjectRef.h>
+#include <JavaScriptCore/JSStringRef.h>
+#include <CFNetwork/CFHTTPCookiesPriv.h>
+#include <CFNetwork/CFURLRequestPriv.h>
+#include <CoreFoundation/CoreFoundation.h>
+#include <WebKitCOMAPI.h>
+#include "webkit_win32_custom.h"
 
-WebBrowser createWebBrowser (int style) {
-	if ((style & SWT.MOZILLA) != 0) {
-		return new Mozilla ();
-	}
-	if ((style & SWT.WEBKIT) != 0) {
-		return new WebKit ();
-	}
-	return new IE ();
-}
+#endif /* INC_webkit_win32_H */
 
-}

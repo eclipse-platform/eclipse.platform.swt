@@ -37,6 +37,13 @@ AWT_LIB    = $(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 AWT_LIBS   = "$(JAVA_HOME)\jre\bin\jawt.lib"
 AWT_OBJS   = swt_awt.obj
 
+WEBKIT_DIR 	  = C:\WebKit-r68077\WebKit-r68077
+WEBKIT_SUPPORT_DIR = C:\WebKit-r68077\WebKit-r68077\WebKitSupportLibrary\WebKitSupportLibrary
+WEBKIT_PREFIX = swt-webkit
+WEBKIT_LIB    = $(WEBKIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
+WEBKIT_LIBS   = $(WEBKIT_DIR)\lib\webkit.lib $(WEBKIT_SUPPORT_DIR)\win\lib\CFNetwork.lib $(WEBKIT_SUPPORT_DIR)\win\lib\CoreFoundation.lib
+WEBKIT_OBJS   = webkit_win32.obj webkit_win32_stats.obj webkit_win32_custom.obj webkit_win32_structs.obj
+
 WGL_PREFIX = swt-wgl
 WGL_LIB    = $(WGL_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 WGL_LIBS   = opengl32.lib
@@ -62,6 +69,14 @@ MOZILLACFLAGS = -c \
 	-I"$(JAVA_HOME)/include/win32" \
 	-I"$(XULRUNNER_SDK)\include\mozilla-config.h" -I"$(XULRUNNER_SDK)\include"
 
+WEBKITCFLAGS = -c -O1\
+	-DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) \
+	-I"$(JAVA_HOME)\include" -I"$(JAVA_HOME)\include\win32" \
+	-I"$(WEBKIT_DIR)" \
+	-I"$(WEBKIT_DIR)\WebKit\win" \
+	-I"$(WEBKIT_DIR)\JavaScriptCore\ForwardingHeaders" \
+	-I"$(WEBKIT_SUPPORT_DIR)\win\include"
+
 #CFLAGS = $(cdebug) $(cflags) $(cvarsmt) $(CFLAGS) \
 CFLAGS = -O1 -DNDEBUG $(cflags) $(cvarsmt) $(CFLAGS) \
 	-DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -DUSE_ASSEMBLER \
@@ -70,6 +85,15 @@ RCFLAGS = $(rcflags) $(rcvars) $(RCFLAGS) -DSWT_FILE_VERSION=\"$(maj_ver).$(min_
 
 all: make_swt make_awt make_gdip make_wgl
 
+webkit_win32_custom.obj: webkit_win32_custom.cpp
+	cl $(WEBKITCFLAGS) webkit_win32_custom.cpp
+webkit_win32_stats.obj: webkit_win32_stats.cpp
+	cl $(WEBKITCFLAGS) webkit_win32_stats.cpp
+webkit_win32_structs.obj: webkit_win32_structs.cpp
+	cl $(WEBKITCFLAGS) webkit_win32_structs.cpp
+webkit_win32.obj: webkit_win32.cpp
+	cl $(WEBKITCFLAGS) webkit_win32.cpp
+	
 xpcom_custom.obj: xpcom_custom.cpp
 	cl $(MOZILLACFLAGS) xpcom_custom.cpp
 xpcom_stats.obj: xpcom_stats.cpp
@@ -118,6 +142,15 @@ make_awt: $(AWT_OBJS) swt_awt.res
 	link @templrf
 	del templrf
 
+make_webkit: $(WEBKIT_OBJS) swt_webkit.res
+	echo $(ldebug) $(dlllflags) >templrf
+	echo $(WEBKIT_LIBS) >>templrf
+	echo $(WEBKIT_OBJS) >>templrf
+	echo swt_webkit.res >>templrf
+	echo -out:$(WEBKIT_LIB) >>templrf
+	link @templrf
+	del templrf
+
 make_wgl: $(WGL_OBJS) swt_wgl.res
 	echo $(ldebug) $(dlllflags) $(guilibsmt) >templrf
 	echo $(WGL_LIBS) >>templrf
@@ -144,6 +177,9 @@ swt_gdip.res:
 
 swt_awt.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(AWT_LIB)\" -r -fo swt_awt.res swt_awt.rc
+
+swt_webkit.res:
+	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(WEBKIT_LIB)\" -r -fo swt_webkit.res swt_webkit.rc
 
 swt_wgl.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(WGL_LIB)\" -r -fo swt_wgl.res swt_wgl.rc

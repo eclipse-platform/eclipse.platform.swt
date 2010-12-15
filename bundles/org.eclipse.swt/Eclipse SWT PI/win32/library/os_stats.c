@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1009;
-int OS_nativeFunctionCallCount[1009];
+int OS_nativeFunctionCount = 1012;
+int OS_nativeFunctionCallCount[1012];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -53,7 +53,16 @@ char * OS_nativeFunctionNames[] = {
 	"COMBOBOXINFO_1sizeof",
 	"COMPOSITIONFORM_1sizeof",
 	"CREATESTRUCT_1sizeof",
-	"Call",
+#ifndef JNI64
+	"Call__I",
+#else
+	"Call__J",
+#endif
+#ifndef JNI64
+	"Call__ILorg_eclipse_swt_internal_win32_DLLVERSIONINFO_2",
+#else
+	"Call__JLorg_eclipse_swt_internal_win32_DLLVERSIONINFO_2",
+#endif
 	"CallNextHookEx",
 	"CallWindowProcA",
 	"CallWindowProcW",
@@ -1093,6 +1102,11 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory___3DJI",
 #endif
 #ifndef JNI64
+	"MoveMemory___3D_3II",
+#else
+	"MoveMemory___3D_3JI",
+#endif
+#ifndef JNI64
 	"MoveMemory___3FII",
 #else
 	"MoveMemory___3FJI",
@@ -1802,11 +1816,6 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__IJI_3I",
 #endif
 #ifndef JNI64
-	"VtblCall__III_3I_3I",
-#else
-	"VtblCall__IJI_3J_3I",
-#endif
-#ifndef JNI64
 	"VtblCall__III_3J",
 #else
 	"VtblCall__IJI_3J",
@@ -1822,6 +1831,11 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__IJJI",
 #endif
 #ifndef JNI64
+	"VtblCall__IIJII_3I",
+#else
+	"VtblCall__IJJII_3I",
+#endif
+#ifndef JNI64
 	"VtblCall__IIJII_3J",
 #else
 	"VtblCall__IJJII_3J",
@@ -1835,6 +1849,11 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__IIJJJ",
 #else
 	"VtblCall__IJJJJ",
+#endif
+#ifndef JNI64
+	"VtblCall__IIJ_3I_3I",
+#else
+	"VtblCall__IJJ_3J_3J",
 #endif
 #ifndef JNI64
 	"VtblCall__IILorg_eclipse_swt_internal_win32_PROPERTYKEY_2I",

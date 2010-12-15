@@ -645,6 +645,8 @@ public static final native int /*long*/ SysAllocString(char [] sz);
 public static final native void SysFreeString(int /*long*/ bstr);
 /** @param bstr cast=(BSTR) */
 public static final native int SysStringByteLen(int /*long*/ bstr);
+/** @param bstr cast=(BSTR) */
+public static final native int SysStringLen(int /*long*/ bstr);
 /**
  * @param pvargDest cast=(VARIANTARG FAR* )
  * @param pvarSrc cast=(VARIANTARG FAR* )
@@ -680,6 +682,7 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int a
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int[] arg2);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, long[] arg2);
+public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, long[] arg2);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, long[] arg2);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, long arg1, int[] arg2);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, int[] arg2);
@@ -716,6 +719,7 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int a
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, boolean arg1);
 
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, boolean arg0);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, boolean arg0, int /*long*/ arg1);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, CAUUID arg0);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, CONTROLINFO arg0);
@@ -733,6 +737,8 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, int arg1, int arg2, int arg3, int[] arg4);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, long arg1, int arg2, int arg3, int[] arg4);
 
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1);
+
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, int arg1, int arg2, int arg3, int arg4);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, int arg1, int arg2, long arg3, long arg4);
 
@@ -742,6 +748,9 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, LICIN
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0, int arg1, boolean arg2);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0, long arg1, boolean arg2);
+
+public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0, int arg1, int arg2);
+public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0, long arg1, long arg2);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0, RECT arg1);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0);
@@ -754,6 +763,11 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int a
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, DISPPARAMS arg3, int arg4, EXCEPINFO arg5, int arg6);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, DISPPARAMS arg3, long arg4, EXCEPINFO arg5, long arg6);
+
+public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] pszPropName, int[] pVar, int[] pErrorLog);
+public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] pszPropName, int pVar, int[] pErrorLog);
+
+public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ type, int /*long*/ listener, boolean useCapture);
 
 /** @param pStg cast=(IStorage *) */
 public static final native int WriteClassStg(int /*long*/ pStg, GUID rclsid);

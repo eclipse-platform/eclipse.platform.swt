@@ -1,0 +1,45 @@
+/*******************************************************************************
+ * Copyright (c) 2010 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+ 
+#include "windows.h"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION SWT_COMMA_VERSION
+ PRODUCTVERSION 0,0,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40000L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "Eclipse Foundation\0"
+            VALUE "FileDescription", "SWT for Windows native library\0"
+            VALUE "FileVersion", SWT_FILE_VERSION
+            VALUE "InternalName", "SWT\0"
+            VALUE "LegalCopyright", "Copyright (c) 2010 IBM Corp.  All Rights Reserved.\0"
+            VALUE "OriginalFilename", SWT_ORG_FILENAME
+            VALUE "ProductName", "Standard Widget Toolkit\0"
+            VALUE "ProductVersion", "0,0,0,0\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END

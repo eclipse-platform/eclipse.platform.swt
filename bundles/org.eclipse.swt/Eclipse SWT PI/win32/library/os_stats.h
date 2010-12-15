@@ -61,7 +61,16 @@ typedef enum {
 	COMBOBOXINFO_1sizeof_FUNC,
 	COMPOSITIONFORM_1sizeof_FUNC,
 	CREATESTRUCT_1sizeof_FUNC,
-	Call_FUNC,
+#ifndef JNI64
+	Call__I_FUNC,
+#else
+	Call__J_FUNC,
+#endif
+#ifndef JNI64
+	Call__ILorg_eclipse_swt_internal_win32_DLLVERSIONINFO_2_FUNC,
+#else
+	Call__JLorg_eclipse_swt_internal_win32_DLLVERSIONINFO_2_FUNC,
+#endif
 	CallNextHookEx_FUNC,
 	CallWindowProcA_FUNC,
 	CallWindowProcW_FUNC,
@@ -1101,6 +1110,11 @@ typedef enum {
 	MoveMemory___3DJI_FUNC,
 #endif
 #ifndef JNI64
+	MoveMemory___3D_3II_FUNC,
+#else
+	MoveMemory___3D_3JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory___3FII_FUNC,
 #else
 	MoveMemory___3FJI_FUNC,
@@ -1810,11 +1824,6 @@ typedef enum {
 	VtblCall__IJI_3I_FUNC,
 #endif
 #ifndef JNI64
-	VtblCall__III_3I_3I_FUNC,
-#else
-	VtblCall__IJI_3J_3I_FUNC,
-#endif
-#ifndef JNI64
 	VtblCall__III_3J_FUNC,
 #else
 	VtblCall__IJI_3J_FUNC,
@@ -1830,6 +1839,11 @@ typedef enum {
 	VtblCall__IJJI_FUNC,
 #endif
 #ifndef JNI64
+	VtblCall__IIJII_3I_FUNC,
+#else
+	VtblCall__IJJII_3I_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IIJII_3J_FUNC,
 #else
 	VtblCall__IJJII_3J_FUNC,
@@ -1843,6 +1857,11 @@ typedef enum {
 	VtblCall__IIJJJ_FUNC,
 #else
 	VtblCall__IJJJJ_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIJ_3I_3I_FUNC,
+#else
+	VtblCall__IJJ_3J_3J_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IILorg_eclipse_swt_internal_win32_PROPERTYKEY_2I_FUNC,

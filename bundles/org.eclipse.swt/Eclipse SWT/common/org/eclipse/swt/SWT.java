@@ -1947,6 +1947,8 @@ public class SWT {
 	 */
 	public static final int MOZILLA = 1 << 15;
 
+	public static final int WEBKIT = 1 << 16;
+
 	/**
 	 * Style constant for balloon behavior (value is 1&lt;&lt;12).
 	 * <p><b>Used By:</b><ul>

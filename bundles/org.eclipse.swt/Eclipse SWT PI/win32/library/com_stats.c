@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int COM_nativeFunctionCount = 175;
-int COM_nativeFunctionCallCount[175];
+int COM_nativeFunctionCount = 184;
+int COM_nativeFunctionCallCount[184];
 char * COM_nativeFunctionNames[] = {
 	"AccessibleChildren",
 	"AccessibleObjectFromWindow",
@@ -149,6 +149,7 @@ char * COM_nativeFunctionNames[] = {
 	"SysAllocString",
 	"SysFreeString",
 	"SysStringByteLen",
+	"SysStringLen",
 	"TYPEATTR_1sizeof",
 	"TYPEDESC_1sizeof",
 	"VARDESC_1sizeof",
@@ -205,6 +206,11 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IIIILorg_eclipse_swt_internal_win32_POINT_2I",
 #else
 	"VtblCall__IJIILorg_eclipse_swt_internal_win32_POINT_2I",
+#endif
+#ifndef JNI64
+	"VtblCall__IIIIZ",
+#else
+	"VtblCall__IJJJZ",
 #endif
 #ifndef JNI64
 	"VtblCall__IIII_3I",
@@ -317,6 +323,11 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IJJI_3J",
 #endif
 #ifndef JNI64
+	"VtblCall__IIJJ",
+#else
+	"VtblCall__IJJJ",
+#endif
+#ifndef JNI64
 	"VtblCall__IIJJLorg_eclipse_swt_internal_ole_win32_GUID_2J_3J",
 #else
 	"VtblCall__IJJJLorg_eclipse_swt_internal_ole_win32_GUID_2J_3J",
@@ -325,6 +336,11 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IIJJLorg_eclipse_swt_internal_win32_POINT_2I",
 #else
 	"VtblCall__IJJJLorg_eclipse_swt_internal_win32_POINT_2I",
+#endif
+#ifndef JNI64
+	"VtblCall__IIJJ_3J",
+#else
+	"VtblCall__IJJJ_3J",
 #endif
 #ifndef JNI64
 	"VtblCall__IIJLorg_eclipse_swt_internal_ole_win32_FORMATETC_2_3J",
@@ -452,9 +468,19 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IJLorg_eclipse_swt_internal_win32_RECT_2",
 #endif
 #ifndef JNI64
+	"VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2II",
+#else
+	"VtblCall__IJLorg_eclipse_swt_internal_win32_RECT_2II",
+#endif
+#ifndef JNI64
 	"VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2IZ",
 #else
 	"VtblCall__IJLorg_eclipse_swt_internal_win32_RECT_2IZ",
+#endif
+#ifndef JNI64
+	"VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2JJ",
+#else
+	"VtblCall__IJLorg_eclipse_swt_internal_win32_RECT_2JJ",
 #endif
 #ifndef JNI64
 	"VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2JZ",
@@ -482,6 +508,11 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IJZ",
 #endif
 #ifndef JNI64
+	"VtblCall__IIZI",
+#else
+	"VtblCall__IJZJ",
+#endif
+#ifndef JNI64
 	"VtblCall__II_3CIIII_3I",
 #else
 	"VtblCall__IJ_3CIIII_3I",
@@ -497,6 +528,11 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IJ_3CIII_3J",
 #endif
 #ifndef JNI64
+	"VtblCall__II_3CI_3I",
+#else
+	"VtblCall__IJ_3CI_3I",
+#endif
+#ifndef JNI64
 	"VtblCall__II_3CJIII_3J",
 #else
 	"VtblCall__IJ_3CJIII_3J",
@@ -510,6 +546,11 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__II_3C_3C",
 #else
 	"VtblCall__IJ_3C_3C",
+#endif
+#ifndef JNI64
+	"VtblCall__II_3C_3I_3I",
+#else
+	"VtblCall__IJ_3C_3I_3I",
 #endif
 	"VtblCall__IJIIIIJ",
 #ifndef JNI64
