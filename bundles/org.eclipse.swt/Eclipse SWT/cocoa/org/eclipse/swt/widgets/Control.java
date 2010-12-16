@@ -2267,6 +2267,10 @@ boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, in
 			return true;
 		}
 	}
+
+	boolean runEnterExit = false;
+	Control runEnterExitControl = null;
+	
 	switch (nsType) {
 		case OS.NSLeftMouseDown:
 			if (nsEvent.clickCount() == 1 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
@@ -2281,7 +2285,8 @@ boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, in
 		case OS.NSLeftMouseDragged:
 		case OS.NSRightMouseDragged:
 		case OS.NSOtherMouseDragged:
-			display.checkEnterExit (this, nsEvent, false);
+			runEnterExit = true;
+			runEnterExitControl = this;
 			break;
 		case OS.NSLeftMouseUp:
 		case OS.NSRightMouseUp:
@@ -2289,11 +2294,13 @@ boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, in
 			if (display.clickCount == 2) {
 				sendMouseEvent (nsEvent, SWT.MouseDoubleClick, false);
 			}
-			display.checkEnterExit (display.findControl(true), nsEvent, false);
+			runEnterExit = true;
+			runEnterExitControl = display.findControl(true);
 			break;
 	}
 	sendMouseEvent (nsEvent, type, false);
 	if (dragging) sendMouseEvent(nsEvent, SWT.DragDetect, false);
+	if (runEnterExit) display.checkEnterExit (runEnterExitControl, nsEvent, false);
 	if (consume != null && consume[0]) return false;
 	return true;
 }

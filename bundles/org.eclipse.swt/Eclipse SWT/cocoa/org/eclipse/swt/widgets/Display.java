@@ -4711,6 +4711,8 @@ int /*long*/ applicationNextEventMatchingMask (int /*long*/ id, int /*long*/ sel
 
 void applicationSendTrackingEvent (NSEvent nsEvent, Control trackingControl) {
 	int type = (int)/*64*/nsEvent.type();
+	boolean runEnterExit = false;
+	Control runEnterExitControl = null;
 	switch (type) {
 		case OS.NSLeftMouseDown:
 		case OS.NSRightMouseDown:
@@ -4722,24 +4724,27 @@ void applicationSendTrackingEvent (NSEvent nsEvent, Control trackingControl) {
 		case OS.NSLeftMouseUp:
 		case OS.NSRightMouseUp:
 		case OS.NSOtherMouseUp:
-			checkEnterExit (findControl (true), nsEvent, true);
-			if (trackingControl.isDisposed()) return;
+			runEnterExit = true;
+			runEnterExitControl = findControl(true);
 			Control control = trackingControl;
 			this.trackingControl = null;
 			if (clickCount == 2) {
 				control.sendMouseEvent (nsEvent, SWT.MouseDoubleClick, false);
 			}
-			control.sendMouseEvent (nsEvent, SWT.MouseUp, false);
+			if (!control.isDisposed()) control.sendMouseEvent (nsEvent, SWT.MouseUp, false);
 			break;
 		case OS.NSLeftMouseDragged:
 		case OS.NSRightMouseDragged:
 		case OS.NSOtherMouseDragged:
-			checkEnterExit (trackingControl, nsEvent, true);
-			if (trackingControl.isDisposed()) return;
+			runEnterExit = true;
+			runEnterExitControl = trackingControl;
 			//FALL THROUGH
 		case OS.NSMouseMoved:
 			trackingControl.sendMouseEvent (nsEvent, SWT.MouseMove, true);
 			break;
+	}
+	if (runEnterExit) {
+		if (runEnterExitControl == null || !runEnterExitControl.isDisposed()) checkEnterExit (runEnterExitControl, nsEvent, false);
 	}
 }
 
