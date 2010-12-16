@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.webkit;
 
-
 import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebPreferences extends IUnknown {
@@ -35,21 +34,28 @@ public int setCookieStorageAcceptPolicy (int acceptPolicy) {
 	return COM.VtblCall (67, getAddress (), acceptPolicy);
 }
 
-public int setJavaScriptCanOpenWindowsAutomatically (boolean enabled) {
-	return COM.VtblCall (37, getAddress (), enabled);
-}
-
 public int setJavaEnabled (boolean enabled) {
 	return COM.VtblCall (33, getAddress (), enabled);
+}
+
+public int setJavaScriptCanOpenWindowsAutomatically (boolean enabled) {
+	return COM.VtblCall (37, getAddress (), enabled);
 }
 
 public int setJavaScriptEnabled (boolean enabled) {
 	return COM.VtblCall (35, getAddress (), enabled);
 }
 
+public int setFontSmoothing (int smoothingType) {
+	return COM.VtblCall (63, getAddress (), smoothingType);
+}
+
+public int setTabsToLinks (boolean enabled) {
+	return COM.VtblCall (52, getAddress (), enabled);
+}
+
 public int standardPreferences (int /*long*/[] preferences) {
 	return COM.VtblCall (3, getAddress (), preferences);
 }
-
 
 }

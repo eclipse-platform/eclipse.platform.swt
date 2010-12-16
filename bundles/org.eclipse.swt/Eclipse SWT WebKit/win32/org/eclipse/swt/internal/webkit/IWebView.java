@@ -10,9 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.webkit;
 
-
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.internal.win32.RECT;
+import org.eclipse.swt.internal.win32.*;
 
 public class IWebView extends IUnknown {
 

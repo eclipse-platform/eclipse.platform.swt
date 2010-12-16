@@ -1,31 +1,26 @@
+/*******************************************************************************
+ * Copyright (c) 2010 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.io.File;
+import java.io.*;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.C;
-import org.eclipse.swt.internal.Compatibility;
-import org.eclipse.swt.internal.ole.win32.COM;
-import org.eclipse.swt.internal.ole.win32.COMObject;
-import org.eclipse.swt.internal.ole.win32.GUID;
-import org.eclipse.swt.internal.ole.win32.IUnknown;
-import org.eclipse.swt.internal.webkit.IWebDownload;
-import org.eclipse.swt.internal.webkit.IWebMutableURLRequest;
-import org.eclipse.swt.internal.webkit.IWebURLResponse;
-import org.eclipse.swt.internal.webkit.WebKit_win32;
-import org.eclipse.swt.internal.win32.OS;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Monitor;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.webkit.*;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
-public class WebDownloadDelegate {
+class WebDownloadDelegate {
 	COMObject iWebDownloadDelegate;
 	int refCount = 0;
 	

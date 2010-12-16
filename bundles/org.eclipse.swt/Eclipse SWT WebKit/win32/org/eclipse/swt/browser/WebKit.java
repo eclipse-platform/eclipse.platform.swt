@@ -10,41 +10,19 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Enumeration;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
-import org.eclipse.swt.graphics.Device;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.C;
-import org.eclipse.swt.internal.Callback;
-import org.eclipse.swt.internal.Library;
-import org.eclipse.swt.internal.ole.win32.COM;
-import org.eclipse.swt.internal.webkit.IWebCookieManager;
-import org.eclipse.swt.internal.webkit.IWebDataSource;
-import org.eclipse.swt.internal.webkit.IWebDocumentRepresentation;
-import org.eclipse.swt.internal.webkit.IWebFrame;
-import org.eclipse.swt.internal.webkit.IWebIBActions;
-import org.eclipse.swt.internal.webkit.IWebMutableURLRequest;
-import org.eclipse.swt.internal.webkit.IWebPreferences;
-import org.eclipse.swt.internal.webkit.IWebView;
-import org.eclipse.swt.internal.webkit.IWebViewPrivate;
-import org.eclipse.swt.internal.webkit.JSClassDefinition;
-import org.eclipse.swt.internal.webkit.WebKit_win32;
-import org.eclipse.swt.internal.win32.OS;
-import org.eclipse.swt.internal.win32.RECT;
-import org.eclipse.swt.internal.win32.TCHAR;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Widget;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.webkit.*;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
-public class WebKit extends WebBrowser {
+class WebKit extends WebBrowser {
 	IWebView webView;
 	int /*long*/ webViewWindowHandle, webViewData;
 
@@ -591,6 +569,8 @@ public void create (Composite parent, int style) {
 		IWebPreferences preferences = new IWebPreferences(result[0]);
 		preferences.setJavaScriptCanOpenWindowsAutomatically(true);
 		preferences.setJavaEnabled(false);	//disable applets
+		preferences.setTabsToLinks(true);
+		preferences.setFontSmoothing(WebKit_win32.FontSmoothingTypeWindows);
 		preferences.Release();
 	}
 	

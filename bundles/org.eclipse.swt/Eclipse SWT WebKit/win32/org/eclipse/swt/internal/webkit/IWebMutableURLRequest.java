@@ -10,8 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.webkit;
 
-
-import org.eclipse.swt.internal.ole.win32.COM;
+import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebMutableURLRequest extends IWebURLRequest {
 

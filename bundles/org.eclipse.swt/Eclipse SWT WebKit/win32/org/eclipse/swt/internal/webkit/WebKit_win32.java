@@ -10,10 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.webkit;
 
-import org.eclipse.swt.internal.C;
-import org.eclipse.swt.internal.ole.win32.COM;
-import org.eclipse.swt.internal.ole.win32.GUID;
-import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.*;
 
 /** @jniclass flags=cpp */
 public class WebKit_win32 extends C {
@@ -42,6 +41,7 @@ public class WebKit_win32 extends C {
 	public static final GUID IID_IWebURLCredential = IIDFromString("{A1E9D765-FACE-4189-BBE3-AED7EBF65EBD}"); //$NON-NLS-1$
 	
 	public static final int CFHTTPCookieSessionOnlyFlag   = 1 << 1;
+	public static final int FontSmoothingTypeWindows = 4;
 	public static final int kCFStringEncodingUTF8 = 0x08000100;
 	
 	public static final int kJSTypeUndefined = 0;
