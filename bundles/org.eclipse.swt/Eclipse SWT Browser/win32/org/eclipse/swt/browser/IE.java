@@ -1034,7 +1034,7 @@ static Variant createSafeArray(String string) {
 	int /*long*/ pSafeArray = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, SAFEARRAY.sizeof);
 	SAFEARRAY safeArray = new SAFEARRAY();
 	safeArray.cDims = 1;
-	safeArray.fFeatures = OS.FADF_FIXEDSIZE | OS.FADF_HAVEVARTYPE;
+	safeArray.fFeatures = OS.FADF_FIXEDSIZE;
 	safeArray.cbElements = 1;
 	safeArray.pvData = pvData;
 	SAFEARRAYBOUND safeArrayBound = new SAFEARRAYBOUND(); 
