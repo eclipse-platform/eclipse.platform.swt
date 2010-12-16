@@ -825,7 +825,6 @@ boolean handleEvent (Object[] arguments) {
 	}
 
 	if (type.equals (DOMEVENT_KEYPRESS)) {
-		System.out.println("keypress");
 		/*
 		* if keydown could not determine a keycode for this key then it's a
 		* key for which key events are not sent (eg.- the Windows key)

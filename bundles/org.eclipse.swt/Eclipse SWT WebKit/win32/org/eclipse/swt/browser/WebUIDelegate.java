@@ -184,7 +184,6 @@ int createWebViewWithRequest(int /*long*/ sender, int /*long*/ request, int /*lo
 }
 
 protected void disposeCOMInterfaces () {
-	System.out.println ("======== disposing iWebUIDelegate");
 	if (iWebUIDelegate != null) {
 		iWebUIDelegate.dispose ();
 		iWebUIDelegate = null;

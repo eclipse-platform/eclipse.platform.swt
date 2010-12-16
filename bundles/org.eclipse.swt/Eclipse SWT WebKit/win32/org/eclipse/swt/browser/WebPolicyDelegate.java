@@ -139,7 +139,6 @@ int decidePolicyForNewWindowAction(int /*long*/ webView, int /*long*/ actionInfo
 }
 
 protected void disposeCOMInterfaces () {
-	System.out.println ("======== disposing iWebPolicyDelegate");
 	if (iWebPolicyDelegate != null) {
 		iWebPolicyDelegate.dispose ();
 		iWebPolicyDelegate = null;

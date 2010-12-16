@@ -140,7 +140,6 @@ int didReceiveResponse(int /*long*/ download, int /*long*/ response) {
 }
 
 void disposeCOMInterfaces () {
-	System.out.println ("======== disposing iWebDownloadDelegate");
 	if (iWebDownloadDelegate != null) {
 		iWebDownloadDelegate.dispose ();
 		iWebDownloadDelegate = null;

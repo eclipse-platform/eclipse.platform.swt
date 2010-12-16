@@ -136,7 +136,6 @@ int didReceiveAuthenticationChallenge(int /*long*/ webView, int /*long*/ identif
 	String host = null, realm = null;
 	result[0] = 0;
 	hr = space.isProxy(result);
-	System.out.println("result"+ result[0]);
 	hr = space.host (result);
 	if (hr == COM.S_OK && result[0] != 0) {
 		host = WebKit.extractBSTR(result[0]);
@@ -182,7 +181,6 @@ int didReceiveAuthenticationChallenge(int /*long*/ webView, int /*long*/ identif
 }
 
 void disposeCOMInterfaces () {
-	System.out.println ("======== disposing iWebResourceLoadDelegate");
 	if (iWebResourceLoadDelegate != null) {
 		iWebResourceLoadDelegate.dispose ();
 		iWebResourceLoadDelegate = null;

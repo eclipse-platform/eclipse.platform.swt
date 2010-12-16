@@ -485,7 +485,6 @@ int didStartProvisionalLoadForFrame(int /*long*/ webView, int /*long*/ frame) {
 }
 
 void disposeCOMInterfaces () {
-	System.out.println ("======== disposing iWebResourceLoadDelegate");
 	if (iWebFrameLoadDelegate != null) {
 		iWebFrameLoadDelegate.dispose ();
 		iWebFrameLoadDelegate = null;
