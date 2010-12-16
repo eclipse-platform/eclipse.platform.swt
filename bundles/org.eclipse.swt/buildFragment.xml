@@ -336,7 +336,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Browser/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Mozilla/win32/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Mozilla/win32/"/>			<fileset dir="${plugindir}/Eclipse SWT WebKit/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/win32/"/>
