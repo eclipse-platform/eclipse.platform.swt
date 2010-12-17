@@ -2216,13 +2216,24 @@ void updateModal () {
 		} else {
 			shell = modal;
 		}
+		Composite topModalShell = shell;
 		while (shell != null) {
 			if ((shell.style & mask) == 0) {
 				group = shell.getShell ().group;
 				break;
 			}
+			topModalShell = shell;
 			shell = shell.parent;
 		}
+		/*
+		* If a modal shell doesn't have any parent (or modal shell as it's parent), 
+		* then we incorrectly add the modal shell to the default group, due to which 
+		* children of that modal shell are not interactive. The fix is to ensure 
+		* that whenever there is a modal shell in the hierarchy, then we always
+		* add the modal shell's group to that modal shell and it's modelless children
+		* in a different group.
+		*/
+		if (group == 0 && topModalShell != null) group = topModalShell.getShell ().group;
 	}
 	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0) && group == 0) { 
 		/*
