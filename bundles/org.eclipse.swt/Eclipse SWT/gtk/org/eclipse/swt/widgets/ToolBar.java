@@ -532,6 +532,14 @@ void setForegroundColor (GdkColor color) {
 	}
 }
 
+void setOrientation (boolean create) {
+	super.setOrientation (create);
+	ToolItem [] items = _getItems ();
+	for (int i = 0; i < items.length; i++) {
+		items[i].setOrientation (create);
+	}
+}
+
 /*public*/ void setTabItemList (ToolItem [] tabList) {
 	checkWidget ();
 	if (tabList != null) {

@@ -956,15 +956,16 @@ public void setImage (Image image) {
 	parent.relayout ();
 }
 
-void setOrientation () {
-	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0) {
-		if (handle != 0) OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
-		if (labelHandle != 0) OS.gtk_widget_set_direction (labelHandle, OS.GTK_TEXT_DIR_RTL);
-		if (imageHandle != 0) OS.gtk_widget_set_direction (imageHandle, OS.GTK_TEXT_DIR_RTL);
-		if (separatorHandle != 0) OS.gtk_widget_set_direction (separatorHandle, OS.GTK_TEXT_DIR_RTL);
-		if (arrowHandle != 0) OS.gtk_widget_set_direction (arrowHandle, OS.GTK_TEXT_DIR_RTL);
-		if (boxHandle != 0) OS.gtk_widget_set_direction (boxHandle, OS.GTK_TEXT_DIR_RTL);
-		if (arrowBoxHandle != 0) OS.gtk_widget_set_direction (arrowBoxHandle, OS.GTK_TEXT_DIR_RTL);
+void setOrientation (boolean create) {
+	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
+		int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
+		if (handle != 0) OS.gtk_widget_set_direction (handle, dir);
+		if (labelHandle != 0) OS.gtk_widget_set_direction (labelHandle, dir);
+		if (imageHandle != 0) OS.gtk_widget_set_direction (imageHandle, dir);
+		if (separatorHandle != 0) OS.gtk_widget_set_direction (separatorHandle, dir);
+		if (arrowHandle != 0) OS.gtk_widget_set_direction (arrowHandle, dir);
+		if (boxHandle != 0) OS.gtk_widget_set_direction (boxHandle, dir);
+		if (arrowBoxHandle != 0) OS.gtk_widget_set_direction (arrowBoxHandle, dir);
 	}
 }
 

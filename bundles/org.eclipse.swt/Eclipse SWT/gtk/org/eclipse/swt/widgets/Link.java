@@ -148,7 +148,6 @@ void createHandle(int index) {
 	OS.gtk_fixed_set_has_window (handle, true);
 	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
 	layout = new TextLayout (display);
-	layout.setOrientation((style & SWT.RIGHT_TO_LEFT) != 0? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT);
 	linkColor = new Color (display, LINK_FOREGROUND);
 	disabledColor = new Color (display, LINK_DISABLED_FOREGROUND);
 	offsets = new Point [0];
@@ -697,6 +696,12 @@ int setBounds(int x, int y, int width, int height, boolean move, boolean resize)
 void setFontDescription (int /*long*/ font) {
 	super.setFontDescription (font);
 	layout.setFont (Font.gtk_new (display, font));
+}
+
+void setOrientation (boolean create) {
+    super.setOrientation (create);
+    layout.setOrientation (style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT));
+    if (!create) redraw (true);
 }
 
 /**

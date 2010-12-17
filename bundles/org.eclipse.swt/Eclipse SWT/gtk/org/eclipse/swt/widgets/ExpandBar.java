@@ -651,6 +651,15 @@ void setForegroundColor (GdkColor color) {
 	}
 }
 
+void setOrientation (boolean create) {
+	super.setOrientation (create);
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			if (items[i] != null) items[i].setOrientation (create);
+		}
+	}
+}
+
 void setScrollbar () {
 	if (itemCount == 0) return;
 	if ((style & SWT.V_SCROLL) == 0) return;

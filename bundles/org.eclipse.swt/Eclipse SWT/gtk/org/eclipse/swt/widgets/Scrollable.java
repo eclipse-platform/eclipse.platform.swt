@@ -142,7 +142,7 @@ ScrollBar createScrollBar (int style) {
 		bar.handle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (scrolledHandle);
 		bar.adjustmentHandle = OS.gtk_scrolled_window_get_vadjustment (scrolledHandle);
 	}
-	bar.setOrientation();
+	bar.setOrientation (true);
 	bar.hookEvents ();
 	bar.register ();
 	return bar;
@@ -286,13 +286,16 @@ boolean sendLeaveNotify () {
 	return scrolledHandle != 0;
 }
 
-void setOrientation () {
-	super.setOrientation ();
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+void setOrientation (boolean create) {
+	super.setOrientation (create);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
+		int dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
 		if (scrolledHandle != 0) {
-			OS.gtk_widget_set_direction (scrolledHandle, OS.GTK_TEXT_DIR_RTL);
+			OS.gtk_widget_set_direction (scrolledHandle, dir);
 		}
 	}
+	if (horizontalBar != null) horizontalBar.setOrientation (create);
+	if (verticalBar != null) verticalBar.setOrientation (create);	
 }
 
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {

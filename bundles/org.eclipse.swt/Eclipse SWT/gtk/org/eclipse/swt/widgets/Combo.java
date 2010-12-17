@@ -966,8 +966,7 @@ String getNameText () {
  * @since 2.1.2
  */
 public int getOrientation () {
-	checkWidget();
-	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+	return super.getOrientation ();
 }
 
 /**
@@ -2050,12 +2049,28 @@ public void setListVisible (boolean visible) {
 	}
 }
 
-void setOrientation() {
-	super.setOrientation();
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		if (listHandle != 0) OS.gtk_widget_set_direction (listHandle, OS.GTK_TEXT_DIR_RTL);
-		if (entryHandle != 0) OS.gtk_widget_set_direction (entryHandle, OS.GTK_TEXT_DIR_RTL);
-		if (cellHandle != 0) OS.gtk_widget_set_direction (cellHandle, OS.GTK_TEXT_DIR_RTL);
+void setOrientation (boolean create) {
+	super.setOrientation (create);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
+		int dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
+		if (listHandle != 0) OS.gtk_widget_set_direction (listHandle, dir);
+		if (entryHandle != 0) OS.gtk_widget_set_direction (entryHandle, dir);
+		if (cellHandle != 0) OS.gtk_widget_set_direction (cellHandle, dir);
+		if (!create) {
+			if (listHandle != 0) {
+				OS.gtk_widget_set_direction (listHandle, dir);
+				int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
+				if (itemsList != 0) {
+					int count = OS.g_list_length (itemsList);
+					for (int i=count - 1; i>=0; i--) {
+						int /*long*/ widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
+						OS.gtk_widget_set_direction (widget, dir);
+					}
+					OS.g_list_free (itemsList);
+				}
+			}
+			if (popupHandle != 0) OS.gtk_container_forall (popupHandle, display.setDirectionProc, dir);
+		}
 	}
 }
 
@@ -2074,31 +2089,7 @@ void setOrientation() {
  * @since 2.1.2
  */
 public void setOrientation (int orientation) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		checkWidget();
-		int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
-		if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
-		style &= ~flags;
-		style |= orientation & flags;
-		int dir = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
-		OS.gtk_widget_set_direction (fixedHandle, dir);
-		OS.gtk_widget_set_direction (handle, dir);
-		if (entryHandle != 0) OS.gtk_widget_set_direction (entryHandle, dir);
-		if (listHandle != 0) {
-			OS.gtk_widget_set_direction (listHandle, dir);
-			int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
-			if (itemsList != 0) {
-				int count = OS.g_list_length (itemsList);
-				for (int i=count - 1; i>=0; i--) {
-					int /*long*/ widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
-					OS.gtk_widget_set_direction (widget, dir);
-				}
-				OS.g_list_free (itemsList);
-			}
-		}
-		if (cellHandle != 0) OS.gtk_widget_set_direction (cellHandle, dir);
-		if (popupHandle != 0) OS.gtk_container_forall (popupHandle, display.setDirectionProc, dir);
-	}
+	super.setOrientation (orientation);
 }
 
 /**

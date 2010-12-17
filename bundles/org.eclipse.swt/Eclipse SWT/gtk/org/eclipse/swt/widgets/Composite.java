@@ -1197,7 +1197,7 @@ void moveChildren(int oldWidth) {
 		int x = OS.GTK_WIDGET_X (topHandle);
 		int y = OS.GTK_WIDGET_Y (topHandle);
 		int controlWidth = (child.state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
-		x = oldWidth - controlWidth - x; 
+		if (oldWidth > 0) x = oldWidth - controlWidth - x; 
 		int clientWidth = getClientWidth ();
 		x = clientWidth - controlWidth - x;
 		if (child.enableWindow != 0) {
@@ -1420,6 +1420,21 @@ public void setLayoutDeferred (boolean defer) {
 		}
 	} else {
 		layoutCount++;
+	}
+}
+
+void setOrientation (boolean create) {
+	super.setOrientation (create);
+	if (!create) {
+		int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
+		int orientation = style & flags;	
+		Control [] children = _getChildren ();
+		for (int i=0; i<children.length; i++) {
+			children[i].setOrientation (orientation);
+		}
+		if (((style & SWT.RIGHT_TO_LEFT) != 0) != ((style & SWT.MIRRORED) != 0)) {
+			moveChildren (-1);
+		}
 	}
 }
 

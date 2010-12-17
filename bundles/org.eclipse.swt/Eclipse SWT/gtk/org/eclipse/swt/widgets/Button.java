@@ -868,16 +868,18 @@ public void setImage (Image image) {
 	_setAlignment (style);
 }
 
-void setOrientation () {
-	super.setOrientation ();
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		if (boxHandle != 0) OS.gtk_widget_set_direction (boxHandle, OS.GTK_TEXT_DIR_RTL);
-		if (labelHandle != 0) OS.gtk_widget_set_direction (labelHandle, OS.GTK_TEXT_DIR_RTL);
-		if (imageHandle != 0) OS.gtk_widget_set_direction (imageHandle, OS.GTK_TEXT_DIR_RTL);
+void setOrientation (boolean create) {
+	super.setOrientation (create);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
+		int dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
+		if (boxHandle != 0) OS.gtk_widget_set_direction (boxHandle, dir);
+		if (labelHandle != 0) OS.gtk_widget_set_direction (labelHandle, dir);
+		if (imageHandle != 0) OS.gtk_widget_set_direction (imageHandle, dir);
 		if (arrowHandle != 0) {
+			dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_ARROW_RIGHT : OS.GTK_ARROW_LEFT;
 			switch (style & (SWT.LEFT | SWT.RIGHT)) {
-				case SWT.LEFT: OS.gtk_arrow_set (arrowHandle, OS.GTK_ARROW_RIGHT, OS.GTK_SHADOW_OUT); break;
-				case SWT.RIGHT: OS.gtk_arrow_set (arrowHandle, OS.GTK_ARROW_LEFT, OS.GTK_SHADOW_OUT); break;
+				case SWT.LEFT: OS.gtk_arrow_set (arrowHandle, dir, OS.GTK_SHADOW_OUT); break;
+				case SWT.RIGHT: OS.gtk_arrow_set (arrowHandle, dir, OS.GTK_SHADOW_OUT); break;
 			}
 		}
 	}

@@ -524,6 +524,11 @@ String getNameText () {
 	return result;
 }
 
+/*public*/ int getOrientation () {
+	checkWidget();
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
 /**
  * Returns the receiver's parent, which must be a <code>Decorations</code>.
  *
@@ -979,10 +984,30 @@ public void setLocation (Point location) {
 	setLocation (location.x, location.y);
 }
 
-void setOrientation() {
-	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0) {
-		if (handle != 0) OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
-	}
+/*public*/ void setOrientation (int orientation) {
+    checkWidget ();    
+    if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
+    _setOrientation (orientation);
+}
+
+void _setOrientation (int orientation) {
+    if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) return;
+    int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
+    if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
+    style &= ~flags;
+    style |= orientation & flags;
+    setOrientation (false);
+}
+
+void setOrientation (boolean create) {
+    if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
+    	int dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
+        if (handle != 0) OS.gtk_widget_set_direction (handle, dir);
+        MenuItem [] items = getItems ();
+        for (int i = 0; i < items.length; i++) {
+            items [i].setOrientation (create);
+        }
+    }
 }
 
 /**

@@ -637,6 +637,15 @@ void setForegroundColor (GdkColor color) {
 	}
 }
 
+void setOrientation (boolean create) {
+	super.setOrientation (create);
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			if (items[i] != null) items[i].setOrientation (create);
+		}
+	}
+}
+
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains selected.

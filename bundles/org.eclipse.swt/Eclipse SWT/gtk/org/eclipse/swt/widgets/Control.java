@@ -202,6 +202,11 @@ int /*long*/ fontHandle () {
 	return handle;
 }
 
+/*public*/ int getOrientation () {
+	checkWidget();
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
 boolean hasFocus () {
 	return this == display.getFocusControl();
 }
@@ -3908,11 +3913,24 @@ public void setMenu (Menu menu) {
 	this.menu = menu;
 }
 
-void setOrientation () {
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		if (handle != 0) OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
-		if (fixedHandle != 0) OS.gtk_widget_set_direction (fixedHandle, OS.GTK_TEXT_DIR_RTL);
+void setOrientation (boolean create) {
+	if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
+		int dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
+		if (handle != 0) OS.gtk_widget_set_direction (handle, dir);
+		if (fixedHandle != 0) OS.gtk_widget_set_direction (fixedHandle, dir);
 	}
+}
+
+/*public*/ void setOrientation (int orientation) {
+	checkWidget ();
+	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) return;
+	int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
+	if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
+	style &= ~flags;
+	style |= orientation & flags;
+	setOrientation (false);
+	style &= ~SWT.MIRRORED;
+	checkMirrored ();
 }
 
 /**

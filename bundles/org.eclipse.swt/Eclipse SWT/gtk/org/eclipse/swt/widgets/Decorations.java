@@ -694,6 +694,13 @@ public void setMinimized (boolean minimized) {
 	this.minimized = minimized;
 }
 
+void setOrientation (boolean create) {
+    super.setOrientation (create);
+    if (!create) {
+        if (menuBar != null) menuBar._setOrientation (style & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT));
+    }
+}
+
 void setSavedFocus (Control control) {
 	if (this == control) return;
 	savedFocus = control;

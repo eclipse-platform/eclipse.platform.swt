@@ -3069,6 +3069,20 @@ public void setLinesVisible (boolean show) {
 	}
 }
 
+void setOrientation (boolean create) {
+	super.setOrientation (create);
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			if (items[i] != null) items[i].setOrientation (create);
+		}
+	}
+	if (columns != null) {
+		for (int i=0; i<columns.length; i++) {
+			if (columns[i] != null) columns[i].setOrientation (create);
+		}
+	}
+}
+
 void setParentBackground () {
 	ownerDraw = true;
 	recreateRenderers ();

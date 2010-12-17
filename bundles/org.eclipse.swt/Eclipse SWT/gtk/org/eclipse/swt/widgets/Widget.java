@@ -410,7 +410,7 @@ void createHandle (int index) {
 
 void createWidget (int index) {
 	createHandle (index);
-	setOrientation ();
+	setOrientation (true);
 	hookEvents ();
 	register ();
 }
@@ -1633,7 +1633,7 @@ void setLocationState (Event event, GdkEventKey keyEvent) {
 	}
 }
 
-void setOrientation () {
+void setOrientation (boolean create) {
 }
 
 boolean setTabGroupFocus (boolean next) {

@@ -714,12 +714,12 @@ public void setMinimum (int value) {
 	OS.g_signal_handlers_unblock_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
-void setOrientation () {
-	super.setOrientation ();
-	if ((parent.style & SWT.MIRRORED) != 0) {
+void setOrientation (boolean create) {
+	super.setOrientation (create);
+	if ((parent.style & SWT.MIRRORED) != 0 || !create) {
 		if ((parent.state & CANVAS) != 0) {
 			if ((style & SWT.HORIZONTAL) != 0) {
-				OS.gtk_range_set_inverted (handle, true);
+				OS.gtk_range_set_inverted (handle, (parent.style & SWT.RIGHT_TO_LEFT) != 0);
 			}
 		}
 	}

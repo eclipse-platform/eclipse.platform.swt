@@ -849,8 +849,7 @@ public String getMessage () {
  * @since 2.1.2
  */
 public int getOrientation () {
-	checkWidget();
-	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+	return super.getOrientation ();
 }
 
 /*public*/ int getPosition (Point point) {
