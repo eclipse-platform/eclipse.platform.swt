@@ -2340,6 +2340,7 @@ public static final int NSYearMonthDayDatePickerElementFlag = 224;
 public static final int kCFRunLoopBeforeWaiting = 32;
 public static final int kCFStringEncodingUTF8 = 134217984;
 public static final int kCGBlendModeDifference = 10;
+public static final int kCGBlendModeNormal = 0;
 public static final int kCGEventFilterMaskPermitLocalKeyboardEvents = 2;
 public static final int kCGEventFilterMaskPermitLocalMouseEvents = 1;
 public static final int kCGEventFilterMaskPermitSystemDefinedEvents = 4;

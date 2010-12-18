@@ -276,6 +276,8 @@ NSAutoreleasePool checkGC (int mask) {
 		}
 	}
 
+	OS.CGContextSetBlendMode(handle.graphicsPort(), data.xorMode ? OS.kCGBlendModeDifference : OS.kCGBlendModeNormal);
+
 	int state = data.state;
 	if ((state & mask) == mask) return pool;
 	state = (state ^ mask) & mask;	

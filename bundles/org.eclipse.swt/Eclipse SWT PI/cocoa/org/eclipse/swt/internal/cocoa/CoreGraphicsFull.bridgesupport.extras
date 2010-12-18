@@ -2,6 +2,7 @@
 <signatures swt_gen="mixed">
 	<cftype name="CGMutablePathRef" swt_gen="true"></cftype>
 	<enum name="kCGBlendModeDifference" swt_gen="true"></enum>
+	<enum name="kCGBlendModeNormal" swt_gen="true"></enum>
 	<enum name="kCGEventFilterMaskPermitLocalKeyboardEvents" swt_gen="true"></enum>
 	<enum name="kCGEventFilterMaskPermitLocalMouseEvents" swt_gen="true"></enum>
 	<enum name="kCGEventFilterMaskPermitSystemDefinedEvents" swt_gen="true"></enum>
