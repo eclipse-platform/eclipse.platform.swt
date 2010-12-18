@@ -4307,6 +4307,14 @@
 		<method selector="windowNumber" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method class_method="true" selector="windowNumberAtPoint:belowWindowWithWindowNumber:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="windowRef" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="zoom:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>

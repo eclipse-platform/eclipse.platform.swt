@@ -62,3 +62,5 @@
 #define PMPrinterGetIndexedPrinterResolution_LIB "com.apple.ApplicationServices"
 #define PMGetDuplex_LIB "com.apple.ApplicationServices"
 #define PMSetDuplex_LIB "com.apple.ApplicationServices"
+#define HIWindowFindAtLocation_LIB "com.apple.Carbon"
+#define HIWindowGetCGWindowID_LIB "com.apple.Carbon"

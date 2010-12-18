@@ -402,6 +402,24 @@ public static final int kQDParseRegionFromRight = (1 << 3);
 public static final int kQDParseRegionFromTopLeft = kQDParseRegionFromTop | kQDParseRegionFromLeft;
 public static final int kQDRegionToRectsMsgParse = 2;
 
+/**
+ * @method flags=dynamic
+ * @param cgLocation cast=(HIPoint *)
+ * @param inSpace cast=(HICoordinateSpace)
+ * @param inStartWindow cast=(WindowRef)
+ * @param inOptions cast=(OptionBits)
+ * @param outWindow cast=(WindowRef *)
+ * @param outWindowPart cast=(WindowPartCode *)
+ * @param outWindowLocation cast=(HIPoint *)
+ */
+public static final native int HIWindowFindAtLocation(int /*long*/ cgLocation, int inSpace, int inStartWindow, int inOptions, int /*long*/[] outWindow, int /*long*/ [] outWindowPart, int /*long*/ outWindowLocation);
+
+/**
+ * @method flags=dynamic
+ * @param inWindow cast=(WindowRef)
+ */
+public static final native int HIWindowGetCGWindowID(int /*long*/ inWindow);
+
 /** JavaScriptCore calls */
 
 /**
@@ -2137,6 +2155,8 @@ public static final int /*long*/ sel_windowDidResize_ = sel_registerName("window
 public static final int /*long*/ sel_windowFrameColor = sel_registerName("windowFrameColor");
 public static final int /*long*/ sel_windowFrameTextColor = sel_registerName("windowFrameTextColor");
 public static final int /*long*/ sel_windowNumber = sel_registerName("windowNumber");
+public static final int /*long*/ sel_windowNumberAtPoint_belowWindowWithWindowNumber_ = sel_registerName("windowNumberAtPoint:belowWindowWithWindowNumber:");
+public static final int /*long*/ sel_windowRef = sel_registerName("windowRef");
 public static final int /*long*/ sel_windowShouldClose_ = sel_registerName("windowShouldClose:");
 public static final int /*long*/ sel_windowWillClose_ = sel_registerName("windowWillClose:");
 public static final int /*long*/ sel_windowWithWindowNumber_ = sel_registerName("windowWithWindowNumber:");
@@ -3717,6 +3737,11 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
  * @param arg0 flags=struct
  */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSPoint arg0, float /*double*/ arg1, float /*double*/ arg2, float /*double*/ arg3, boolean arg4);
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, NSPoint arg0, int /*long*/ arg1);
 /**
  * @method flags=cast
  * @param arg0 flags=struct

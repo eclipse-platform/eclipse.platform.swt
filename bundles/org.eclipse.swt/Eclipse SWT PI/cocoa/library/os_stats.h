@@ -186,6 +186,8 @@ typedef enum {
 	GetSystemUIMode_FUNC,
 	GetThemeMetric_FUNC,
 	HIThemeDrawFocusRect_FUNC,
+	HIWindowFindAtLocation_FUNC,
+	HIWindowGetCGWindowID_FUNC,
 	JNIGetObject_FUNC,
 	JSEvaluateScript_FUNC,
 	JSStringCreateWithUTF8CString_FUNC,
@@ -762,6 +764,11 @@ typedef enum {
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2FFFZ_FUNC,
 #else
 	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2DDDZ_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2I_FUNC,
+#else
+	objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2J_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2I_3F_FUNC,

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 622;
-int OS_nativeFunctionCallCount[622];
+int OS_nativeFunctionCount = 625;
+int OS_nativeFunctionCallCount[625];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -178,6 +178,8 @@ char * OS_nativeFunctionNames[] = {
 	"GetSystemUIMode",
 	"GetThemeMetric",
 	"HIThemeDrawFocusRect",
+	"HIWindowFindAtLocation",
+	"HIWindowGetCGWindowID",
 	"JNIGetObject",
 	"JSEvaluateScript",
 	"JSStringCreateWithUTF8CString",
@@ -754,6 +756,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2FFFZ",
 #else
 	"objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2DDDZ",
+#endif
+#ifndef JNI64
+	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2I",
+#else
+	"objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2J",
 #endif
 #ifndef JNI64
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2I_3F",

@@ -366,6 +366,14 @@ public int /*long*/ windowNumber() {
 	return OS.objc_msgSend(this.id, OS.sel_windowNumber);
 }
 
+public static int /*long*/ windowNumberAtPoint(NSPoint point, int /*long*/ windowNumber) {
+	return OS.objc_msgSend(OS.class_NSWindow, OS.sel_windowNumberAtPoint_belowWindowWithWindowNumber_, point, windowNumber);
+}
+
+public int /*long*/ windowRef() {
+	return OS.objc_msgSend(this.id, OS.sel_windowRef);
+}
+
 public void zoom(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_zoom_, sender != null ? sender.id : 0);
 }

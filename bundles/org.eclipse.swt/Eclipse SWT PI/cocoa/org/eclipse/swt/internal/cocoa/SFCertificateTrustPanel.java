@@ -37,4 +37,8 @@ public static float /*double*/ minFrameWidthWithTitle(NSString aTitle, int /*lon
 	return (float)OS.objc_msgSend_fpret(OS.class_SFCertificateTrustPanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
 }
 
+public static int /*long*/ windowNumberAtPoint(NSPoint point, int /*long*/ windowNumber) {
+	return OS.objc_msgSend(OS.class_SFCertificateTrustPanel, OS.sel_windowNumberAtPoint_belowWindowWithWindowNumber_, point, windowNumber);
+}
+
 }

@@ -707,6 +707,12 @@ void createHandle () {
 		window.setAcceptsMouseMovedEvents(true);
 		window.setDelegate(windowDelegate);
 	}
+
+	if (OS.VERSION < 0x1060) {
+		// Force a WindowRef to be created for this window so we can use
+		// HIWindowFindAtLocation (see Display.findControl())
+		window.windowRef();
+	}
 	
 	NSWindow fieldEditorWindow = window;
 	if (fieldEditorWindow == null) fieldEditorWindow = view.window();

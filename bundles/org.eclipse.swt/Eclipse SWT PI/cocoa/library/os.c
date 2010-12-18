@@ -2562,6 +2562,53 @@ fail:
 }
 #endif
 
+#ifndef NO_HIWindowFindAtLocation
+JNIEXPORT jint JNICALL OS_NATIVE(HIWindowFindAtLocation)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jintLongArray arg4, jintLongArray arg5, jintLong arg6)
+{
+	jintLong *lparg4=NULL;
+	jintLong *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIWindowFindAtLocation_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetIntLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)HIWindowFindAtLocation((HIPoint *)arg0, (HICoordinateSpace)arg1, (WindowRef)arg2, (OptionBits)arg3, (WindowRef *)lparg4, (WindowPartCode *)lparg5, (HIPoint *)arg6);
+*/
+	{
+		LOAD_FUNCTION(fp, HIWindowFindAtLocation)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(HIPoint *, HICoordinateSpace, WindowRef, OptionBits, WindowRef *, WindowPartCode *, HIPoint *))fp)((HIPoint *)arg0, (HICoordinateSpace)arg1, (WindowRef)arg2, (OptionBits)arg3, (WindowRef *)lparg4, (WindowPartCode *)lparg5, (HIPoint *)arg6);
+		}
+	}
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntLongArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseIntLongArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, HIWindowFindAtLocation_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIWindowGetCGWindowID
+JNIEXPORT jint JNICALL OS_NATIVE(HIWindowGetCGWindowID)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIWindowGetCGWindowID_FUNC);
+/*
+	rc = (jint)HIWindowGetCGWindowID((WindowRef)arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, HIWindowGetCGWindowID)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(WindowRef))fp)((WindowRef)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, HIWindowGetCGWindowID_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_JSEvaluateScript
 JNIEXPORT jintLong JNICALL OS_NATIVE(JSEvaluateScript)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jint arg4, jintLongArray arg5)
@@ -7693,6 +7740,33 @@ fail:
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2FFFZ_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2DDDZ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2I) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2J) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2, jintLong arg3)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2J)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2, jintLong arg3)
+#endif
+{
+	NSPoint _arg2, *lparg2=NULL;
+	jintLong rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2I_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2J_FUNC);
+#endif
+	if (arg2) if ((lparg2 = getNSPointFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jintLong)((jintLong (*)(jintLong, jintLong, NSPoint, jintLong))objc_msgSend)(arg0, arg1, *lparg2, arg3);
+fail:
+	if (arg2 && lparg2) setNSPointFields(env, arg2, lparg2);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2I_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2J_FUNC);
 #endif
 	return rc;
 }
