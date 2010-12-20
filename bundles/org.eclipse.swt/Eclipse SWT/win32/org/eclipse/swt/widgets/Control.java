@@ -44,6 +44,8 @@ import org.eclipse.swt.accessibility.*;
  */
 
 public abstract class Control extends Widget implements Drawable {
+	static final int GESTURE_COUNT = 5;
+	
 	/**
 	 * the handle to the OS resource 
 	 * (Warning: This field is platform dependent)
@@ -190,6 +192,32 @@ public void addFocusListener (FocusListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.FocusIn,typedListener);
 	addListener (SWT.FocusOut,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when gesture events are generated for the control,
+ * by sending it one of the messages defined in the
+ * <code>GestureListener</code> interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see GestureListener
+ * @see #removeGestureListener
+ */
+public void addGestureListener (GestureListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Gesture, typedListener);
 }
 
 /**
@@ -640,6 +668,31 @@ void createHandle () {
 		OS.ImmAssociateContext (handle, hIMC);
 		OS.ImmReleaseContext (hwndParent, hIMC);
 	}
+	
+}
+
+void checkGesture() {
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 1)) {
+		int value = OS.GetSystemMetrics(OS.SM_DIGITIZER);
+
+		if ((value & (OS.NID_READY | OS.NID_MULTI_INPUT)) != 0) {
+			int /*long*/ hHeap = OS.GetProcessHeap();
+			int /*long*/ pConfigs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY,  GESTURE_COUNT * GESTURECONFIG.sizeof);
+
+			if (pConfigs != 0) {
+				GESTURECONFIG config = new GESTURECONFIG();
+				for (int i = 0; i < GESTURE_COUNT; i++) {
+					config.dwID = i + OS.GID_ZOOM;
+					config.dwWant = 1;
+					config.dwBlock = 0;
+					OS.MoveMemory(pConfigs + i * GESTURECONFIG.sizeof, config, GESTURECONFIG.sizeof);
+				}
+
+				OS.SetGestureConfig(handle, 0, GESTURE_COUNT, pConfigs, GESTURECONFIG.sizeof);
+				OS.HeapFree(hHeap, 0, pConfigs);
+			}		
+		}
+	}
 }
 
 void createWidget () {
@@ -655,6 +708,7 @@ void createWidget () {
 	setDefaultFont ();
 	checkMirrored ();
 	checkBorder ();
+	checkGesture();
 	if ((state & PARENT_BACKGROUND) != 0) {
 		setBackground ();
 	}
@@ -2375,6 +2429,30 @@ public void removeFocusListener(FocusListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.FocusIn, listener);
 	eventTable.unhook (SWT.FocusOut, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when gesture events are generated for the control.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see GestureListener
+ * @see #addGestureListener
+ */
+public void removeGestureListener (GestureListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook(SWT.Gesture, listener);
 }
 
 /**
@@ -4180,6 +4258,7 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 		case OS.WM_ENDSESSION:			result = WM_ENDSESSION (wParam, lParam); break;
 		case OS.WM_ENTERIDLE:			result = WM_ENTERIDLE (wParam, lParam); break;
 		case OS.WM_ERASEBKGND:			result = WM_ERASEBKGND (wParam, lParam); break;
+		case OS.WM_GESTURE:				result = WM_GESTURE (wParam, lParam); break;
 		case OS.WM_GETDLGCODE:			result = WM_GETDLGCODE (wParam, lParam); break;
 		case OS.WM_GETFONT:				result = WM_GETFONT (wParam, lParam); break;
 		case OS.WM_GETOBJECT:			result = WM_GETOBJECT (wParam, lParam); break;
@@ -4242,6 +4321,7 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 		case OS.WM_SYSCOMMAND:			result = WM_SYSCOMMAND (wParam, lParam); break;
 		case OS.WM_SYSKEYDOWN:			result = WM_SYSKEYDOWN (wParam, lParam); break;
 		case OS.WM_SYSKEYUP:			result = WM_SYSKEYUP (wParam, lParam); break;
+		case OS.WM_TABLET_FLICK:		result = WM_TABLET_FLICK (wParam, lParam); break;
 		case OS.WM_TIMER:				result = WM_TIMER (wParam, lParam); break;
 		case OS.WM_UNDO:				result = WM_UNDO (wParam, lParam); break;
 		case OS.WM_UPDATEUISTATE:		result = WM_UPDATEUISTATE (wParam, lParam); break;
@@ -4356,6 +4436,10 @@ LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 		}
 	}
 	return null;
+}
+
+LRESULT WM_GESTURE (int /*long*/ wParam, int /*long*/ lParam) {
+	return wmGesture(handle, wParam, lParam);
 }
 
 LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
@@ -4949,6 +5033,10 @@ LRESULT WM_SYSKEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT WM_SYSKEYUP (int /*long*/ wParam, int /*long*/ lParam) {
 	return wmSysKeyUp (handle, wParam, lParam);
+}
+
+LRESULT WM_TABLET_FLICK (int /*long*/ wParam, int /*long*/ lParam) {
+	return wmTabletFlick (handle, wParam, lParam);
 }
 
 LRESULT WM_TIMER (int /*long*/ wParam, int /*long*/ lParam) {

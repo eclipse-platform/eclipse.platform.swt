@@ -715,6 +715,39 @@ public class SWT {
 	 */
 	public static final int OpenDocument = 46;
 	
+	/**
+	 * The touch event type (value is 46).
+	 * 
+	 * <p>
+	 * This event is sent when SWT receives notification that a document 
+	 * should be opened.
+	 * </p>
+	 *  
+     * @see org.eclipse.swt.widgets.Display#addListener
+     * @see org.eclipse.swt.widgets.Event
+     * 
+     * @since 3.7
+	 */
+	public static final int Touch = 47;
+
+	/**
+	 * The gesture event type (value is 48).
+	 * 
+	 * <p>
+	 * This event is sent when a gesture has been performed.
+	 * </p>
+	 *  
+     * @see org.eclipse.swt.widgets.Display#addListener
+     * @see org.eclipse.swt.widgets.Event
+     * @see org.eclipse.swt.widgets.SWT#GESTURE_MAGNIFY
+     * @see org.eclipse.swt.widgets.SWT#GESTURE_PAN
+     * @see org.eclipse.swt.widgets.SWT#GESTURE_ROTATE
+     * @see org.eclipse.swt.widgets.SWT#GESTURE_SWIPE
+     * 
+     * @since 3.7
+	 */
+	public static final int Gesture = 48;
+
 	/* Event Details */
 	
 	/**
@@ -897,6 +930,58 @@ public class SWT {
 	 * (value is 1&lt;&lt;9).
 	 */
 	public static final int TRAVERSE_PAGE_NEXT = 1 << 9;
+
+	/**
+	 * Gesture event detail field value indicating that a continuous
+	 * gesture is about to begin.
+	 * 
+	 * @since 3.7
+	 */
+	public static final int GESTURE_BEGIN = 1 << 1;
+
+	/**
+	 * Gesture event detail field value indicating that a continuous 
+	 * gesture has ended.
+	 * 
+	 * @since 3.7
+	 */
+	public static final int GESTURE_END = 1 << 2;
+
+	/**
+	 * Gesture event detail field value indicating that a 
+	 * rotation gesture has happened. Only the rotation field
+	 * of the event is valid.
+	 * 
+	 * @since 3.7
+	 */
+	public static final int GESTURE_ROTATE = 1 << 3;
+	
+	/**
+	 * Gesture event detail field value indicating that a 
+	 * swipe gesture has happened. Only the xDirection
+	 * and yDirection fields of the event are valid.
+	 * 
+	 * @since 3.7
+	 */
+	public static final int GESTURE_SWIPE = 1 << 4;
+	
+	/**
+	 * Gesture event detail field value indicating that a 
+	 * magnification gesture has happened. Only the magnification
+	 * field of the event is valid.
+	 * 
+	 * @since 3.7
+	 */
+	public static final int GESTURE_MAGNIFY = 1 << 5;
+	
+	/**
+	 * Gesture event detail field value indicating that a 
+	 * panning (two-finger scroll) gesture has happened. Only the
+	 * xDirection and yDirection fields of the event are valid.
+	 * 
+	 * @since 3.7
+	 */
+	public static final int GESTURE_PAN = 1 << 6;
 	
 	/**
 	 * A constant indicating that widgets have changed.

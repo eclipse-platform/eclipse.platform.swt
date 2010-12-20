@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1012;
-int OS_nativeFunctionCallCount[1012];
+int OS_nativeFunctionCount = 1031;
+int OS_nativeFunctionCallCount[1031];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -78,8 +78,10 @@ char * OS_nativeFunctionNames[] = {
 	"ClientToScreen",
 	"CloseClipboard",
 	"CloseEnhMetaFile",
+	"CloseGestureInfoHandle",
 	"CloseHandle",
 	"CloseThemeData",
+	"CloseTouchInputHandle",
 	"CoCreateInstance",
 	"CoInternetIsFeatureEnabled",
 	"CoInternetSetFeatureEnabled",
@@ -231,6 +233,8 @@ char * OS_nativeFunctionNames[] = {
 	"ExtractIconExA",
 	"ExtractIconExW",
 	"FILETIME_1sizeof",
+	"FLICK_1DATA_1sizeof",
+	"FLICK_1POINT_1sizeof",
 	"FillPath",
 	"FillRect",
 	"FindWindowA",
@@ -239,9 +243,12 @@ char * OS_nativeFunctionNames[] = {
 	"FormatMessageW",
 	"FreeLibrary",
 	"GCP_1RESULTS_1sizeof",
+	"GESTURECONFIG_1sizeof",
+	"GESTUREINFO_1sizeof",
 	"GET_1WHEEL_1DELTA_1WPARAM",
 	"GET_1X_1LPARAM",
 	"GET_1Y_1LPARAM",
+	"GID_1ROTATE_1ANGLE_1FROM_1ARGUMENT",
 	"GRADIENT_1RECT_1sizeof",
 	"GUITHREADINFO_1sizeof",
 	"GdiSetBatchLimit",
@@ -289,6 +296,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetFontLanguageInfo",
 	"GetForegroundWindow",
 	"GetGUIThreadInfo",
+	"GetGestureInfo",
 	"GetGlyphIndicesW",
 	"GetGraphicsMode",
 	"GetIconInfo",
@@ -448,6 +456,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetTickCount",
 	"GetTimeFormatA",
 	"GetTimeFormatW",
+	"GetTouchInputInfo",
 	"GetUpdateRect",
 	"GetUpdateRgn",
 	"GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOA_2",
@@ -586,6 +595,7 @@ char * OS_nativeFunctionNames[] = {
 	"KEYBDINPUT_1sizeof",
 	"KillTimer",
 	"LITEM_1sizeof",
+	"LODWORD",
 	"LOGBRUSH_1sizeof",
 	"LOGFONTA_1sizeof",
 	"LOGFONTW_1sizeof",
@@ -686,6 +696,11 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I",
 #else
 	"MoveMemory__JLorg_eclipse_swt_internal_win32_DROPFILES_2I",
+#endif
+#ifndef JNI64
+	"MoveMemory__ILorg_eclipse_swt_internal_win32_GESTURECONFIG_2I",
+#else
+	"MoveMemory__JLorg_eclipse_swt_internal_win32_GESTURECONFIG_2I",
 #endif
 #ifndef JNI64
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I",
@@ -872,6 +887,16 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2II",
 #else
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2JI",
+#endif
+#ifndef JNI64
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1DATA_2_3II",
+#else
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1DATA_2_3JI",
+#endif
+#ifndef JNI64
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1POINT_2_3II",
+#else
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1POINT_2_3JI",
 #endif
 #ifndef JNI64
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2II",
@@ -1070,6 +1095,11 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICW_2JI",
 #endif
 #ifndef JNI64
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_TOUCHINPUT_2II",
+#else
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_TOUCHINPUT_2JI",
+#endif
+#ifndef JNI64
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II",
 #else
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2JI",
@@ -1239,6 +1269,7 @@ char * OS_nativeFunctionNames[] = {
 	"RegisterClassW",
 	"RegisterClipboardFormatA",
 	"RegisterClipboardFormatW",
+	"RegisterTouchWindow",
 	"RegisterWindowMessageA",
 	"RegisterWindowMessageW",
 	"ReleaseCapture",
@@ -1666,6 +1697,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetErrorMode",
 	"SetFocus",
 	"SetForegroundWindow",
+	"SetGestureConfig",
 	"SetGraphicsMode",
 	"SetLayeredWindowAttributes",
 	"SetLayout",
@@ -1741,6 +1773,8 @@ char * OS_nativeFunctionNames[] = {
 	"TF_1DA_1COLOR_1sizeof",
 	"TF_1DISPLAYATTRIBUTE_1sizeof",
 	"TOOLINFO_1sizeof",
+	"TOUCHINPUT_1sizeof",
+	"TOUCH_1COORD_1TO_1PIXEL",
 	"TRACKMOUSEEVENT_1sizeof",
 	"TRIVERTEX_1sizeof",
 	"TVHITTESTINFO_1sizeof",
@@ -1765,6 +1799,7 @@ char * OS_nativeFunctionNames[] = {
 	"UnmapViewOfFile",
 	"UnregisterClassA",
 	"UnregisterClassW",
+	"UnregisterTouchWindow",
 	"UpdateLayeredWindow",
 	"UpdateWindow",
 	"ValidateRect",

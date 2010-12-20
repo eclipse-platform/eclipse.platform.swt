@@ -143,6 +143,10 @@ public void handleEvent (Event e) {
 			((FocusListener) eventListener).focusLost(new FocusEvent(e));
 			break;
 		}
+		case SWT.Gesture: {
+			((GestureListener)eventListener).gesture(new GestureEvent(e));
+			break;
+		}
 		case SWT.Help: {
 			((HelpListener) eventListener).helpRequested (new HelpEvent (e));
 			break;

@@ -1721,6 +1721,98 @@ void setFILETIMEFields(JNIEnv *env, jobject lpObject, FILETIME *lpStruct)
 }
 #endif
 
+#ifndef NO_FLICK_DATA
+typedef struct FLICK_DATA_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID iFlickActionCommandCode, iFlickDirection, fControlModifier, fMenuModifier, fAltGRModifier, fWinModifier, fShiftModifier, iReserved, fOnInkingSurface, iActionArgument;
+} FLICK_DATA_FID_CACHE;
+
+FLICK_DATA_FID_CACHE FLICK_DATAFc;
+
+void cacheFLICK_DATAFields(JNIEnv *env, jobject lpObject)
+{
+	if (FLICK_DATAFc.cached) return;
+	FLICK_DATAFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	FLICK_DATAFc.iFlickActionCommandCode = (*env)->GetFieldID(env, FLICK_DATAFc.clazz, "iFlickActionCommandCode", "I");
+	FLICK_DATAFc.iFlickDirection = (*env)->GetFieldID(env, FLICK_DATAFc.clazz, "iFlickDirection", "I");
+	FLICK_DATAFc.fControlModifier = (*env)->GetFieldID(env, FLICK_DATAFc.clazz, "fControlModifier", "Z");
+	FLICK_DATAFc.fMenuModifier = (*env)->GetFieldID(env, FLICK_DATAFc.clazz, "fMenuModifier", "Z");
+	FLICK_DATAFc.fAltGRModifier = (*env)->GetFieldID(env, FLICK_DATAFc.clazz, "fAltGRModifier", "Z");
+	FLICK_DATAFc.fWinModifier = (*env)->GetFieldID(env, FLICK_DATAFc.clazz, "fWinModifier", "Z");
+	FLICK_DATAFc.fShiftModifier = (*env)->GetFieldID(env, FLICK_DATAFc.clazz, "fShiftModifier", "Z");
+	FLICK_DATAFc.iReserved = (*env)->GetFieldID(env, FLICK_DATAFc.clazz, "iReserved", "I");
+	FLICK_DATAFc.fOnInkingSurface = (*env)->GetFieldID(env, FLICK_DATAFc.clazz, "fOnInkingSurface", "Z");
+	FLICK_DATAFc.iActionArgument = (*env)->GetFieldID(env, FLICK_DATAFc.clazz, "iActionArgument", "I");
+	FLICK_DATAFc.cached = 1;
+}
+
+FLICK_DATA *getFLICK_DATAFields(JNIEnv *env, jobject lpObject, FLICK_DATA *lpStruct)
+{
+	if (!FLICK_DATAFc.cached) cacheFLICK_DATAFields(env, lpObject);
+	lpStruct->iFlickActionCommandCode = (*env)->GetIntField(env, lpObject, FLICK_DATAFc.iFlickActionCommandCode);
+	lpStruct->iFlickDirection = (*env)->GetIntField(env, lpObject, FLICK_DATAFc.iFlickDirection);
+	lpStruct->fControlModifier = (*env)->GetBooleanField(env, lpObject, FLICK_DATAFc.fControlModifier);
+	lpStruct->fMenuModifier = (*env)->GetBooleanField(env, lpObject, FLICK_DATAFc.fMenuModifier);
+	lpStruct->fAltGRModifier = (*env)->GetBooleanField(env, lpObject, FLICK_DATAFc.fAltGRModifier);
+	lpStruct->fWinModifier = (*env)->GetBooleanField(env, lpObject, FLICK_DATAFc.fWinModifier);
+	lpStruct->fShiftModifier = (*env)->GetBooleanField(env, lpObject, FLICK_DATAFc.fShiftModifier);
+	lpStruct->iReserved = (*env)->GetIntField(env, lpObject, FLICK_DATAFc.iReserved);
+	lpStruct->fOnInkingSurface = (*env)->GetBooleanField(env, lpObject, FLICK_DATAFc.fOnInkingSurface);
+	lpStruct->iActionArgument = (*env)->GetIntField(env, lpObject, FLICK_DATAFc.iActionArgument);
+	return lpStruct;
+}
+
+void setFLICK_DATAFields(JNIEnv *env, jobject lpObject, FLICK_DATA *lpStruct)
+{
+	if (!FLICK_DATAFc.cached) cacheFLICK_DATAFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, FLICK_DATAFc.iFlickActionCommandCode, (jint)lpStruct->iFlickActionCommandCode);
+	(*env)->SetIntField(env, lpObject, FLICK_DATAFc.iFlickDirection, (jint)lpStruct->iFlickDirection);
+	(*env)->SetBooleanField(env, lpObject, FLICK_DATAFc.fControlModifier, (jboolean)lpStruct->fControlModifier);
+	(*env)->SetBooleanField(env, lpObject, FLICK_DATAFc.fMenuModifier, (jboolean)lpStruct->fMenuModifier);
+	(*env)->SetBooleanField(env, lpObject, FLICK_DATAFc.fAltGRModifier, (jboolean)lpStruct->fAltGRModifier);
+	(*env)->SetBooleanField(env, lpObject, FLICK_DATAFc.fWinModifier, (jboolean)lpStruct->fWinModifier);
+	(*env)->SetBooleanField(env, lpObject, FLICK_DATAFc.fShiftModifier, (jboolean)lpStruct->fShiftModifier);
+	(*env)->SetIntField(env, lpObject, FLICK_DATAFc.iReserved, (jint)lpStruct->iReserved);
+	(*env)->SetBooleanField(env, lpObject, FLICK_DATAFc.fOnInkingSurface, (jboolean)lpStruct->fOnInkingSurface);
+	(*env)->SetIntField(env, lpObject, FLICK_DATAFc.iActionArgument, (jint)lpStruct->iActionArgument);
+}
+#endif
+
+#ifndef NO_FLICK_POINT
+typedef struct FLICK_POINT_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y;
+} FLICK_POINT_FID_CACHE;
+
+FLICK_POINT_FID_CACHE FLICK_POINTFc;
+
+void cacheFLICK_POINTFields(JNIEnv *env, jobject lpObject)
+{
+	if (FLICK_POINTFc.cached) return;
+	FLICK_POINTFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	FLICK_POINTFc.x = (*env)->GetFieldID(env, FLICK_POINTFc.clazz, "x", "I");
+	FLICK_POINTFc.y = (*env)->GetFieldID(env, FLICK_POINTFc.clazz, "y", "I");
+	FLICK_POINTFc.cached = 1;
+}
+
+FLICK_POINT *getFLICK_POINTFields(JNIEnv *env, jobject lpObject, FLICK_POINT *lpStruct)
+{
+	if (!FLICK_POINTFc.cached) cacheFLICK_POINTFields(env, lpObject);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, FLICK_POINTFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, FLICK_POINTFc.y);
+	return lpStruct;
+}
+
+void setFLICK_POINTFields(JNIEnv *env, jobject lpObject, FLICK_POINT *lpStruct)
+{
+	if (!FLICK_POINTFc.cached) cacheFLICK_POINTFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, FLICK_POINTFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, FLICK_POINTFc.y, (jint)lpStruct->y);
+}
+#endif
+
 #ifndef NO_GCP_RESULTS
 typedef struct GCP_RESULTS_FID_CACHE {
 	int cached;
@@ -1773,6 +1865,101 @@ void setGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct)
 	(*env)->SetIntLongField(env, lpObject, GCP_RESULTSFc.lpGlyphs, (jintLong)lpStruct->lpGlyphs);
 	(*env)->SetIntField(env, lpObject, GCP_RESULTSFc.nGlyphs, (jint)lpStruct->nGlyphs);
 	(*env)->SetIntField(env, lpObject, GCP_RESULTSFc.nMaxFit, (jint)lpStruct->nMaxFit);
+}
+#endif
+
+#ifndef NO_GESTURECONFIG
+typedef struct GESTURECONFIG_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID dwID, dwWant, dwBlock;
+} GESTURECONFIG_FID_CACHE;
+
+GESTURECONFIG_FID_CACHE GESTURECONFIGFc;
+
+void cacheGESTURECONFIGFields(JNIEnv *env, jobject lpObject)
+{
+	if (GESTURECONFIGFc.cached) return;
+	GESTURECONFIGFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GESTURECONFIGFc.dwID = (*env)->GetFieldID(env, GESTURECONFIGFc.clazz, "dwID", "I");
+	GESTURECONFIGFc.dwWant = (*env)->GetFieldID(env, GESTURECONFIGFc.clazz, "dwWant", "I");
+	GESTURECONFIGFc.dwBlock = (*env)->GetFieldID(env, GESTURECONFIGFc.clazz, "dwBlock", "I");
+	GESTURECONFIGFc.cached = 1;
+}
+
+GESTURECONFIG *getGESTURECONFIGFields(JNIEnv *env, jobject lpObject, GESTURECONFIG *lpStruct)
+{
+	if (!GESTURECONFIGFc.cached) cacheGESTURECONFIGFields(env, lpObject);
+	lpStruct->dwID = (*env)->GetIntField(env, lpObject, GESTURECONFIGFc.dwID);
+	lpStruct->dwWant = (*env)->GetIntField(env, lpObject, GESTURECONFIGFc.dwWant);
+	lpStruct->dwBlock = (*env)->GetIntField(env, lpObject, GESTURECONFIGFc.dwBlock);
+	return lpStruct;
+}
+
+void setGESTURECONFIGFields(JNIEnv *env, jobject lpObject, GESTURECONFIG *lpStruct)
+{
+	if (!GESTURECONFIGFc.cached) cacheGESTURECONFIGFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, GESTURECONFIGFc.dwID, (jint)lpStruct->dwID);
+	(*env)->SetIntField(env, lpObject, GESTURECONFIGFc.dwWant, (jint)lpStruct->dwWant);
+	(*env)->SetIntField(env, lpObject, GESTURECONFIGFc.dwBlock, (jint)lpStruct->dwBlock);
+}
+#endif
+
+#ifndef NO_GESTUREINFO
+typedef struct GESTUREINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbSize, dwFlags, dwID, hwndTarget, x, y, dwInstanceID, dwSequenceID, ullArguments, cbExtraArgs;
+} GESTUREINFO_FID_CACHE;
+
+GESTUREINFO_FID_CACHE GESTUREINFOFc;
+
+void cacheGESTUREINFOFields(JNIEnv *env, jobject lpObject)
+{
+	if (GESTUREINFOFc.cached) return;
+	GESTUREINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GESTUREINFOFc.cbSize = (*env)->GetFieldID(env, GESTUREINFOFc.clazz, "cbSize", "I");
+	GESTUREINFOFc.dwFlags = (*env)->GetFieldID(env, GESTUREINFOFc.clazz, "dwFlags", "I");
+	GESTUREINFOFc.dwID = (*env)->GetFieldID(env, GESTUREINFOFc.clazz, "dwID", "I");
+	GESTUREINFOFc.hwndTarget = (*env)->GetFieldID(env, GESTUREINFOFc.clazz, "hwndTarget", I_J);
+	GESTUREINFOFc.x = (*env)->GetFieldID(env, GESTUREINFOFc.clazz, "x", "S");
+	GESTUREINFOFc.y = (*env)->GetFieldID(env, GESTUREINFOFc.clazz, "y", "S");
+	GESTUREINFOFc.dwInstanceID = (*env)->GetFieldID(env, GESTUREINFOFc.clazz, "dwInstanceID", "I");
+	GESTUREINFOFc.dwSequenceID = (*env)->GetFieldID(env, GESTUREINFOFc.clazz, "dwSequenceID", "I");
+	GESTUREINFOFc.ullArguments = (*env)->GetFieldID(env, GESTUREINFOFc.clazz, "ullArguments", "J");
+	GESTUREINFOFc.cbExtraArgs = (*env)->GetFieldID(env, GESTUREINFOFc.clazz, "cbExtraArgs", "I");
+	GESTUREINFOFc.cached = 1;
+}
+
+GESTUREINFO *getGESTUREINFOFields(JNIEnv *env, jobject lpObject, GESTUREINFO *lpStruct)
+{
+	if (!GESTUREINFOFc.cached) cacheGESTUREINFOFields(env, lpObject);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, GESTUREINFOFc.cbSize);
+	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, GESTUREINFOFc.dwFlags);
+	lpStruct->dwID = (*env)->GetIntField(env, lpObject, GESTUREINFOFc.dwID);
+	lpStruct->hwndTarget = (HWND)(*env)->GetIntLongField(env, lpObject, GESTUREINFOFc.hwndTarget);
+	lpStruct->ptsLocation.x = (*env)->GetShortField(env, lpObject, GESTUREINFOFc.x);
+	lpStruct->ptsLocation.y = (*env)->GetShortField(env, lpObject, GESTUREINFOFc.y);
+	lpStruct->dwInstanceID = (*env)->GetIntField(env, lpObject, GESTUREINFOFc.dwInstanceID);
+	lpStruct->dwSequenceID = (*env)->GetIntField(env, lpObject, GESTUREINFOFc.dwSequenceID);
+	lpStruct->ullArguments = (*env)->GetLongField(env, lpObject, GESTUREINFOFc.ullArguments);
+	lpStruct->cbExtraArgs = (*env)->GetIntField(env, lpObject, GESTUREINFOFc.cbExtraArgs);
+	return lpStruct;
+}
+
+void setGESTUREINFOFields(JNIEnv *env, jobject lpObject, GESTUREINFO *lpStruct)
+{
+	if (!GESTUREINFOFc.cached) cacheGESTUREINFOFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, GESTUREINFOFc.cbSize, (jint)lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, GESTUREINFOFc.dwFlags, (jint)lpStruct->dwFlags);
+	(*env)->SetIntField(env, lpObject, GESTUREINFOFc.dwID, (jint)lpStruct->dwID);
+	(*env)->SetIntLongField(env, lpObject, GESTUREINFOFc.hwndTarget, (jintLong)lpStruct->hwndTarget);
+	(*env)->SetShortField(env, lpObject, GESTUREINFOFc.x, (jshort)lpStruct->ptsLocation.x);
+	(*env)->SetShortField(env, lpObject, GESTUREINFOFc.y, (jshort)lpStruct->ptsLocation.y);
+	(*env)->SetIntField(env, lpObject, GESTUREINFOFc.dwInstanceID, (jint)lpStruct->dwInstanceID);
+	(*env)->SetIntField(env, lpObject, GESTUREINFOFc.dwSequenceID, (jint)lpStruct->dwSequenceID);
+	(*env)->SetLongField(env, lpObject, GESTUREINFOFc.ullArguments, (jlong)lpStruct->ullArguments);
+	(*env)->SetIntField(env, lpObject, GESTUREINFOFc.cbExtraArgs, (jint)lpStruct->cbExtraArgs);
 }
 #endif
 
@@ -8279,6 +8466,64 @@ void setTOOLINFOFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpStruct)
 	(*env)->SetIntLongField(env, lpObject, TOOLINFOFc.lpszText, (jintLong)lpStruct->lpszText);
 	(*env)->SetIntLongField(env, lpObject, TOOLINFOFc.lParam, (jintLong)lpStruct->lParam);
 	(*env)->SetIntLongField(env, lpObject, TOOLINFOFc.lpReserved, (jintLong)lpStruct->lpReserved);
+}
+#endif
+
+#ifndef NO_TOUCHINPUT
+typedef struct TOUCHINPUT_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y, hSource, dwID, dwFlags, dwMask, dwTime, dwExtraInfo, cxContact, cyContact;
+} TOUCHINPUT_FID_CACHE;
+
+TOUCHINPUT_FID_CACHE TOUCHINPUTFc;
+
+void cacheTOUCHINPUTFields(JNIEnv *env, jobject lpObject)
+{
+	if (TOUCHINPUTFc.cached) return;
+	TOUCHINPUTFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	TOUCHINPUTFc.x = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "x", I_J);
+	TOUCHINPUTFc.y = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "y", I_J);
+	TOUCHINPUTFc.hSource = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "hSource", I_J);
+	TOUCHINPUTFc.dwID = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "dwID", "I");
+	TOUCHINPUTFc.dwFlags = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "dwFlags", "I");
+	TOUCHINPUTFc.dwMask = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "dwMask", "I");
+	TOUCHINPUTFc.dwTime = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "dwTime", "I");
+	TOUCHINPUTFc.dwExtraInfo = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "dwExtraInfo", I_J);
+	TOUCHINPUTFc.cxContact = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "cxContact", "I");
+	TOUCHINPUTFc.cyContact = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "cyContact", "I");
+	TOUCHINPUTFc.cached = 1;
+}
+
+TOUCHINPUT *getTOUCHINPUTFields(JNIEnv *env, jobject lpObject, TOUCHINPUT *lpStruct)
+{
+	if (!TOUCHINPUTFc.cached) cacheTOUCHINPUTFields(env, lpObject);
+	lpStruct->x = (*env)->GetIntLongField(env, lpObject, TOUCHINPUTFc.x);
+	lpStruct->y = (*env)->GetIntLongField(env, lpObject, TOUCHINPUTFc.y);
+	lpStruct->hSource = (HWND)(*env)->GetIntLongField(env, lpObject, TOUCHINPUTFc.hSource);
+	lpStruct->dwID = (*env)->GetIntField(env, lpObject, TOUCHINPUTFc.dwID);
+	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, TOUCHINPUTFc.dwFlags);
+	lpStruct->dwMask = (*env)->GetIntField(env, lpObject, TOUCHINPUTFc.dwMask);
+	lpStruct->dwTime = (*env)->GetIntField(env, lpObject, TOUCHINPUTFc.dwTime);
+	lpStruct->dwExtraInfo = (*env)->GetIntLongField(env, lpObject, TOUCHINPUTFc.dwExtraInfo);
+	lpStruct->cxContact = (*env)->GetIntField(env, lpObject, TOUCHINPUTFc.cxContact);
+	lpStruct->cyContact = (*env)->GetIntField(env, lpObject, TOUCHINPUTFc.cyContact);
+	return lpStruct;
+}
+
+void setTOUCHINPUTFields(JNIEnv *env, jobject lpObject, TOUCHINPUT *lpStruct)
+{
+	if (!TOUCHINPUTFc.cached) cacheTOUCHINPUTFields(env, lpObject);
+	(*env)->SetIntLongField(env, lpObject, TOUCHINPUTFc.x, (jintLong)lpStruct->x);
+	(*env)->SetIntLongField(env, lpObject, TOUCHINPUTFc.y, (jintLong)lpStruct->y);
+	(*env)->SetIntLongField(env, lpObject, TOUCHINPUTFc.hSource, (jintLong)lpStruct->hSource);
+	(*env)->SetIntField(env, lpObject, TOUCHINPUTFc.dwID, (jint)lpStruct->dwID);
+	(*env)->SetIntField(env, lpObject, TOUCHINPUTFc.dwFlags, (jint)lpStruct->dwFlags);
+	(*env)->SetIntField(env, lpObject, TOUCHINPUTFc.dwMask, (jint)lpStruct->dwMask);
+	(*env)->SetIntField(env, lpObject, TOUCHINPUTFc.dwTime, (jint)lpStruct->dwTime);
+	(*env)->SetIntLongField(env, lpObject, TOUCHINPUTFc.dwExtraInfo, (jintLong)lpStruct->dwExtraInfo);
+	(*env)->SetIntField(env, lpObject, TOUCHINPUTFc.cxContact, (jint)lpStruct->cxContact);
+	(*env)->SetIntField(env, lpObject, TOUCHINPUTFc.cyContact, (jint)lpStruct->cyContact);
 }
 #endif
 

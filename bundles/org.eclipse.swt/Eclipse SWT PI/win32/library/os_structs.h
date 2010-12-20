@@ -359,6 +359,30 @@ void setFILETIMEFields(JNIEnv *env, jobject lpObject, FILETIME *lpStruct);
 #define FILETIME_sizeof() 0
 #endif
 
+#ifndef NO_FLICK_DATA
+void cacheFLICK_DATAFields(JNIEnv *env, jobject lpObject);
+FLICK_DATA *getFLICK_DATAFields(JNIEnv *env, jobject lpObject, FLICK_DATA *lpStruct);
+void setFLICK_DATAFields(JNIEnv *env, jobject lpObject, FLICK_DATA *lpStruct);
+#define FLICK_DATA_sizeof() sizeof(FLICK_DATA)
+#else
+#define cacheFLICK_DATAFields(a,b)
+#define getFLICK_DATAFields(a,b,c) NULL
+#define setFLICK_DATAFields(a,b,c)
+#define FLICK_DATA_sizeof() 0
+#endif
+
+#ifndef NO_FLICK_POINT
+void cacheFLICK_POINTFields(JNIEnv *env, jobject lpObject);
+FLICK_POINT *getFLICK_POINTFields(JNIEnv *env, jobject lpObject, FLICK_POINT *lpStruct);
+void setFLICK_POINTFields(JNIEnv *env, jobject lpObject, FLICK_POINT *lpStruct);
+#define FLICK_POINT_sizeof() sizeof(FLICK_POINT)
+#else
+#define cacheFLICK_POINTFields(a,b)
+#define getFLICK_POINTFields(a,b,c) NULL
+#define setFLICK_POINTFields(a,b,c)
+#define FLICK_POINT_sizeof() 0
+#endif
+
 #ifndef NO_GCP_RESULTS
 void cacheGCP_RESULTSFields(JNIEnv *env, jobject lpObject);
 GCP_RESULTS *getGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct);
@@ -369,6 +393,30 @@ void setGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct);
 #define getGCP_RESULTSFields(a,b,c) NULL
 #define setGCP_RESULTSFields(a,b,c)
 #define GCP_RESULTS_sizeof() 0
+#endif
+
+#ifndef NO_GESTURECONFIG
+void cacheGESTURECONFIGFields(JNIEnv *env, jobject lpObject);
+GESTURECONFIG *getGESTURECONFIGFields(JNIEnv *env, jobject lpObject, GESTURECONFIG *lpStruct);
+void setGESTURECONFIGFields(JNIEnv *env, jobject lpObject, GESTURECONFIG *lpStruct);
+#define GESTURECONFIG_sizeof() sizeof(GESTURECONFIG)
+#else
+#define cacheGESTURECONFIGFields(a,b)
+#define getGESTURECONFIGFields(a,b,c) NULL
+#define setGESTURECONFIGFields(a,b,c)
+#define GESTURECONFIG_sizeof() 0
+#endif
+
+#ifndef NO_GESTUREINFO
+void cacheGESTUREINFOFields(JNIEnv *env, jobject lpObject);
+GESTUREINFO *getGESTUREINFOFields(JNIEnv *env, jobject lpObject, GESTUREINFO *lpStruct);
+void setGESTUREINFOFields(JNIEnv *env, jobject lpObject, GESTUREINFO *lpStruct);
+#define GESTUREINFO_sizeof() sizeof(GESTUREINFO)
+#else
+#define cacheGESTUREINFOFields(a,b)
+#define getGESTUREINFOFields(a,b,c) NULL
+#define setGESTUREINFOFields(a,b,c)
+#define GESTUREINFO_sizeof() 0
 #endif
 
 #ifndef NO_GRADIENT_RECT
@@ -1725,6 +1773,18 @@ void setTOOLINFOFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpStruct);
 #define getTOOLINFOFields(a,b,c) NULL
 #define setTOOLINFOFields(a,b,c)
 #define TOOLINFO_sizeof() 0
+#endif
+
+#ifndef NO_TOUCHINPUT
+void cacheTOUCHINPUTFields(JNIEnv *env, jobject lpObject);
+TOUCHINPUT *getTOUCHINPUTFields(JNIEnv *env, jobject lpObject, TOUCHINPUT *lpStruct);
+void setTOUCHINPUTFields(JNIEnv *env, jobject lpObject, TOUCHINPUT *lpStruct);
+#define TOUCHINPUT_sizeof() sizeof(TOUCHINPUT)
+#else
+#define cacheTOUCHINPUTFields(a,b)
+#define getTOUCHINPUTFields(a,b,c) NULL
+#define setTOUCHINPUTFields(a,b,c)
+#define TOUCHINPUT_sizeof() 0
 #endif
 
 #ifndef NO_TRACKMOUSEEVENT

@@ -857,6 +857,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CloseEnhMetaFile)
 }
 #endif
 
+#ifndef NO_CloseGestureInfoHandle
+JNIEXPORT jintLong JNICALL OS_NATIVE(CloseGestureInfoHandle)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CloseGestureInfoHandle_FUNC);
+/*
+	rc = (jintLong)CloseGestureInfoHandle((HGESTUREINFO)arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, CloseGestureInfoHandle)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(HGESTUREINFO))fp)((HGESTUREINFO)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, CloseGestureInfoHandle_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CloseHandle
 JNIEXPORT jboolean JNICALL OS_NATIVE(CloseHandle)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -885,6 +905,26 @@ JNIEXPORT jint JNICALL OS_NATIVE(CloseThemeData)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, CloseThemeData_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CloseTouchInputHandle
+JNIEXPORT jboolean JNICALL OS_NATIVE(CloseTouchInputHandle)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, CloseTouchInputHandle_FUNC);
+/*
+	rc = (jboolean)CloseTouchInputHandle((HTOUCHINPUT)arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, CloseTouchInputHandle)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HTOUCHINPUT))fp)((HTOUCHINPUT)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, CloseTouchInputHandle_FUNC);
 	return rc;
 }
 #endif
@@ -3133,6 +3173,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(FILETIME_1sizeof)
 }
 #endif
 
+#ifndef NO_FLICK_1DATA_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(FLICK_1DATA_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FLICK_1DATA_1sizeof_FUNC);
+	rc = (jint)FLICK_DATA_sizeof();
+	OS_NATIVE_EXIT(env, that, FLICK_1DATA_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FLICK_1POINT_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(FLICK_1POINT_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FLICK_1POINT_1sizeof_FUNC);
+	rc = (jint)FLICK_POINT_sizeof();
+	OS_NATIVE_EXIT(env, that, FLICK_1POINT_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_FillPath
 JNIEXPORT jboolean JNICALL OS_NATIVE(FillPath)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -3254,6 +3318,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(GCP_1RESULTS_1sizeof)
 }
 #endif
 
+#ifndef NO_GESTURECONFIG_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GESTURECONFIG_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GESTURECONFIG_1sizeof_FUNC);
+	rc = (jint)GESTURECONFIG_sizeof();
+	OS_NATIVE_EXIT(env, that, GESTURECONFIG_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GESTUREINFO_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GESTUREINFO_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GESTUREINFO_1sizeof_FUNC);
+	rc = (jint)GESTUREINFO_sizeof();
+	OS_NATIVE_EXIT(env, that, GESTUREINFO_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GET_1WHEEL_1DELTA_1WPARAM
 JNIEXPORT jint JNICALL OS_NATIVE(GET_1WHEEL_1DELTA_1WPARAM)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -3286,6 +3374,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GET_1Y_1LPARAM)
 	OS_NATIVE_ENTER(env, that, GET_1Y_1LPARAM_FUNC);
 	rc = (jint)GET_Y_LPARAM(arg0);
 	OS_NATIVE_EXIT(env, that, GET_1Y_1LPARAM_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GID_1ROTATE_1ANGLE_1FROM_1ARGUMENT
+JNIEXPORT jdouble JNICALL OS_NATIVE(GID_1ROTATE_1ANGLE_1FROM_1ARGUMENT)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, GID_1ROTATE_1ANGLE_1FROM_1ARGUMENT_FUNC);
+	rc = (jdouble)GID_ROTATE_ANGLE_FROM_ARGUMENT(arg0);
+	OS_NATIVE_EXIT(env, that, GID_1ROTATE_1ANGLE_1FROM_1ARGUMENT_FUNC);
 	return rc;
 }
 #endif
@@ -4082,6 +4182,30 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetGUIThreadInfo)
 fail:
 	if (arg1 && lparg1) setGUITHREADINFOFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, GetGUIThreadInfo_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetGestureInfo
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetGestureInfo)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	GESTUREINFO _arg1, *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, GetGestureInfo_FUNC);
+	if (arg1) if ((lparg1 = getGESTUREINFOFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	rc = (jboolean)GetGestureInfo((HGESTUREINFO)arg0, (PGESTUREINFO)lparg1);
+*/
+	{
+		LOAD_FUNCTION(fp, GetGestureInfo)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HGESTUREINFO, PGESTUREINFO))fp)((HGESTUREINFO)arg0, (PGESTUREINFO)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setGESTUREINFOFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, GetGestureInfo_FUNC);
 	return rc;
 }
 #endif
@@ -6003,6 +6127,26 @@ fail:
 }
 #endif
 
+#ifndef NO_GetTouchInputInfo
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetTouchInputInfo)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jint arg3)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, GetTouchInputInfo_FUNC);
+/*
+	rc = (jboolean)GetTouchInputInfo((HTOUCHINPUT)arg0, (UINT)arg1, (PTOUCHINPUT)arg2, arg3);
+*/
+	{
+		LOAD_FUNCTION(fp, GetTouchInputInfo)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HTOUCHINPUT, UINT, PTOUCHINPUT, jint))fp)((HTOUCHINPUT)arg0, (UINT)arg1, (PTOUCHINPUT)arg2, arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, GetTouchInputInfo_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetUpdateRect
 JNIEXPORT jboolean JNICALL OS_NATIVE(GetUpdateRect)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jboolean arg2)
@@ -7710,6 +7854,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(LITEM_1sizeof)
 }
 #endif
 
+#ifndef NO_LODWORD
+JNIEXPORT jint JNICALL OS_NATIVE(LODWORD)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, LODWORD_FUNC);
+	rc = (jint)LODWORD(arg0);
+	OS_NATIVE_EXIT(env, that, LODWORD_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_LOGBRUSH_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(LOGBRUSH_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -8583,6 +8739,30 @@ fail:
 	OS_NATIVE_EXIT(env, that, MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_DROPFILES_2I_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO_MoveMemory__ILorg_eclipse_swt_internal_win32_GESTURECONFIG_2I) && !defined(JNI64)) || (!defined(NO_MoveMemory__JLorg_eclipse_swt_internal_win32_GESTURECONFIG_2I) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_GESTURECONFIG_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jint arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__JLorg_eclipse_swt_internal_win32_GESTURECONFIG_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jint arg2)
+#endif
+{
+	GESTURECONFIG _arg1, *lparg1=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, MoveMemory__ILorg_eclipse_swt_internal_win32_GESTURECONFIG_2I_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_GESTURECONFIG_2I_FUNC);
+#endif
+	if (arg1) if ((lparg1 = getGESTURECONFIGFields(env, arg1, &_arg1)) == NULL) goto fail;
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+fail:
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, MoveMemory__ILorg_eclipse_swt_internal_win32_GESTURECONFIG_2I_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_GESTURECONFIG_2I_FUNC);
 #endif
 }
 #endif
@@ -9620,6 +9800,62 @@ fail:
 }
 #endif
 
+#if (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1DATA_2_3II) && !defined(JNI64)) || (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1DATA_2_3JI) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1DATA_2_3II)(JNIEnv *env, jclass that, jobject arg0, jintLongArray arg1, jint arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1DATA_2_3JI)(JNIEnv *env, jclass that, jobject arg0, jintLongArray arg1, jint arg2)
+#endif
+{
+	FLICK_DATA _arg0, *lparg0=NULL;
+	jintLong *lparg1=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1DATA_2_3II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1DATA_2_3JI_FUNC);
+#endif
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)lparg1, arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg0 && lparg0) setFLICK_DATAFields(env, arg0, lparg0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1DATA_2_3II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1DATA_2_3JI_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1POINT_2_3II) && !defined(JNI64)) || (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1POINT_2_3JI) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1POINT_2_3II)(JNIEnv *env, jclass that, jobject arg0, jintLongArray arg1, jint arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1POINT_2_3JI)(JNIEnv *env, jclass that, jobject arg0, jintLongArray arg1, jint arg2)
+#endif
+{
+	FLICK_POINT _arg0, *lparg0=NULL;
+	jintLong *lparg1=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1POINT_2_3II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1POINT_2_3JI_FUNC);
+#endif
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)lparg1, arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, JNI_ABORT);
+	if (arg0 && lparg0) setFLICK_POINTFields(env, arg0, lparg0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1POINT_2_3II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1POINT_2_3JI_FUNC);
+#endif
+}
+#endif
+
 #if (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2II) && !defined(JNI64)) || (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2JI) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jint arg2)
@@ -10625,6 +10861,31 @@ fail:
 	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICW_2II_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICW_2JI_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_TOUCHINPUT_2II) && !defined(JNI64)) || (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_TOUCHINPUT_2JI) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_TOUCHINPUT_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jint arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_TOUCHINPUT_2JI)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jint arg2)
+#endif
+{
+	TOUCHINPUT _arg0, *lparg0=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_TOUCHINPUT_2II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_TOUCHINPUT_2JI_FUNC);
+#endif
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setTOUCHINPUTFields(env, arg0, lparg0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_TOUCHINPUT_2II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_TOUCHINPUT_2JI_FUNC);
 #endif
 }
 #endif
@@ -12566,6 +12827,26 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegisterClipboardFormatW)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, RegisterClipboardFormatW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RegisterTouchWindow
+JNIEXPORT jboolean JNICALL OS_NATIVE(RegisterTouchWindow)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, RegisterTouchWindow_FUNC);
+/*
+	rc = (jboolean)RegisterTouchWindow((HWND)arg0, (ULONG)arg1);
+*/
+	{
+		LOAD_FUNCTION(fp, RegisterTouchWindow)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HWND, ULONG))fp)((HWND)arg0, (ULONG)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, RegisterTouchWindow_FUNC);
 	return rc;
 }
 #endif
@@ -15726,6 +16007,26 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetForegroundWindow)
 }
 #endif
 
+#ifndef NO_SetGestureConfig
+JNIEXPORT jboolean JNICALL OS_NATIVE(SetGestureConfig)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jintLong arg3, jint arg4)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, SetGestureConfig_FUNC);
+/*
+	rc = (jboolean)SetGestureConfig((HWND)arg0, arg1, arg2, (PGESTURECONFIG)arg3, arg4);
+*/
+	{
+		LOAD_FUNCTION(fp, SetGestureConfig)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HWND, jint, jint, PGESTURECONFIG, jint))fp)((HWND)arg0, arg1, arg2, (PGESTURECONFIG)arg3, arg4);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, SetGestureConfig_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetGraphicsMode
 JNIEXPORT jint JNICALL OS_NATIVE(SetGraphicsMode)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
@@ -16803,6 +17104,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(TOOLINFO_1sizeof)
 }
 #endif
 
+#ifndef NO_TOUCHINPUT_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(TOUCHINPUT_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, TOUCHINPUT_1sizeof_FUNC);
+	rc = (jint)TOUCHINPUT_sizeof();
+	OS_NATIVE_EXIT(env, that, TOUCHINPUT_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_TOUCH_1COORD_1TO_1PIXEL
+JNIEXPORT jlong JNICALL OS_NATIVE(TOUCH_1COORD_1TO_1PIXEL)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, TOUCH_1COORD_1TO_1PIXEL_FUNC);
+	rc = (jlong)TOUCH_COORD_TO_PIXEL(arg0);
+	OS_NATIVE_EXIT(env, that, TOUCH_1COORD_1TO_1PIXEL_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_TRACKMOUSEEVENT_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(TRACKMOUSEEVENT_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -17149,6 +17474,26 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(UnregisterClassW)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, UnregisterClassW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_UnregisterTouchWindow
+JNIEXPORT jboolean JNICALL OS_NATIVE(UnregisterTouchWindow)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, UnregisterTouchWindow_FUNC);
+/*
+	rc = (jboolean)UnregisterTouchWindow(arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, UnregisterTouchWindow)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, UnregisterTouchWindow_FUNC);
 	return rc;
 }
 #endif

@@ -86,8 +86,10 @@ typedef enum {
 	ClientToScreen_FUNC,
 	CloseClipboard_FUNC,
 	CloseEnhMetaFile_FUNC,
+	CloseGestureInfoHandle_FUNC,
 	CloseHandle_FUNC,
 	CloseThemeData_FUNC,
+	CloseTouchInputHandle_FUNC,
 	CoCreateInstance_FUNC,
 	CoInternetIsFeatureEnabled_FUNC,
 	CoInternetSetFeatureEnabled_FUNC,
@@ -239,6 +241,8 @@ typedef enum {
 	ExtractIconExA_FUNC,
 	ExtractIconExW_FUNC,
 	FILETIME_1sizeof_FUNC,
+	FLICK_1DATA_1sizeof_FUNC,
+	FLICK_1POINT_1sizeof_FUNC,
 	FillPath_FUNC,
 	FillRect_FUNC,
 	FindWindowA_FUNC,
@@ -247,9 +251,12 @@ typedef enum {
 	FormatMessageW_FUNC,
 	FreeLibrary_FUNC,
 	GCP_1RESULTS_1sizeof_FUNC,
+	GESTURECONFIG_1sizeof_FUNC,
+	GESTUREINFO_1sizeof_FUNC,
 	GET_1WHEEL_1DELTA_1WPARAM_FUNC,
 	GET_1X_1LPARAM_FUNC,
 	GET_1Y_1LPARAM_FUNC,
+	GID_1ROTATE_1ANGLE_1FROM_1ARGUMENT_FUNC,
 	GRADIENT_1RECT_1sizeof_FUNC,
 	GUITHREADINFO_1sizeof_FUNC,
 	GdiSetBatchLimit_FUNC,
@@ -297,6 +304,7 @@ typedef enum {
 	GetFontLanguageInfo_FUNC,
 	GetForegroundWindow_FUNC,
 	GetGUIThreadInfo_FUNC,
+	GetGestureInfo_FUNC,
 	GetGlyphIndicesW_FUNC,
 	GetGraphicsMode_FUNC,
 	GetIconInfo_FUNC,
@@ -456,6 +464,7 @@ typedef enum {
 	GetTickCount_FUNC,
 	GetTimeFormatA_FUNC,
 	GetTimeFormatW_FUNC,
+	GetTouchInputInfo_FUNC,
 	GetUpdateRect_FUNC,
 	GetUpdateRgn_FUNC,
 	GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOA_2_FUNC,
@@ -594,6 +603,7 @@ typedef enum {
 	KEYBDINPUT_1sizeof_FUNC,
 	KillTimer_FUNC,
 	LITEM_1sizeof_FUNC,
+	LODWORD_FUNC,
 	LOGBRUSH_1sizeof_FUNC,
 	LOGFONTA_1sizeof_FUNC,
 	LOGFONTW_1sizeof_FUNC,
@@ -694,6 +704,11 @@ typedef enum {
 	MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I_FUNC,
 #else
 	MoveMemory__JLorg_eclipse_swt_internal_win32_DROPFILES_2I_FUNC,
+#endif
+#ifndef JNI64
+	MoveMemory__ILorg_eclipse_swt_internal_win32_GESTURECONFIG_2I_FUNC,
+#else
+	MoveMemory__JLorg_eclipse_swt_internal_win32_GESTURECONFIG_2I_FUNC,
 #endif
 #ifndef JNI64
 	MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I_FUNC,
@@ -880,6 +895,16 @@ typedef enum {
 	MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2II_FUNC,
 #else
 	MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2JI_FUNC,
+#endif
+#ifndef JNI64
+	MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1DATA_2_3II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1DATA_2_3JI_FUNC,
+#endif
+#ifndef JNI64
+	MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1POINT_2_3II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1POINT_2_3JI_FUNC,
 #endif
 #ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2II_FUNC,
@@ -1078,6 +1103,11 @@ typedef enum {
 	MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICW_2JI_FUNC,
 #endif
 #ifndef JNI64
+	MoveMemory__Lorg_eclipse_swt_internal_win32_TOUCHINPUT_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_TOUCHINPUT_2JI_FUNC,
+#endif
+#ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II_FUNC,
 #else
 	MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2JI_FUNC,
@@ -1247,6 +1277,7 @@ typedef enum {
 	RegisterClassW_FUNC,
 	RegisterClipboardFormatA_FUNC,
 	RegisterClipboardFormatW_FUNC,
+	RegisterTouchWindow_FUNC,
 	RegisterWindowMessageA_FUNC,
 	RegisterWindowMessageW_FUNC,
 	ReleaseCapture_FUNC,
@@ -1674,6 +1705,7 @@ typedef enum {
 	SetErrorMode_FUNC,
 	SetFocus_FUNC,
 	SetForegroundWindow_FUNC,
+	SetGestureConfig_FUNC,
 	SetGraphicsMode_FUNC,
 	SetLayeredWindowAttributes_FUNC,
 	SetLayout_FUNC,
@@ -1749,6 +1781,8 @@ typedef enum {
 	TF_1DA_1COLOR_1sizeof_FUNC,
 	TF_1DISPLAYATTRIBUTE_1sizeof_FUNC,
 	TOOLINFO_1sizeof_FUNC,
+	TOUCHINPUT_1sizeof_FUNC,
+	TOUCH_1COORD_1TO_1PIXEL_FUNC,
 	TRACKMOUSEEVENT_1sizeof_FUNC,
 	TRIVERTEX_1sizeof_FUNC,
 	TVHITTESTINFO_1sizeof_FUNC,
@@ -1773,6 +1807,7 @@ typedef enum {
 	UnmapViewOfFile_FUNC,
 	UnregisterClassA_FUNC,
 	UnregisterClassW_FUNC,
+	UnregisterTouchWindow_FUNC,
 	UpdateLayeredWindow_FUNC,
 	UpdateWindow_FUNC,
 	ValidateRect_FUNC,

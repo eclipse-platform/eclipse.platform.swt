@@ -1080,6 +1080,81 @@ void sendEvent (int eventType, Event event, boolean send) {
 	}
 }
 
+boolean sendGestureEvent (GESTUREINFO gi) {
+	Event event = new Event ();
+	int type = 0;
+	POINT screenLoc = new POINT();
+	screenLoc.x = gi.x;
+	screenLoc.y = gi.y;
+	OS.MapWindowPoints (0, gi.hwndTarget, screenLoc, 1);
+	event.x = screenLoc.x;
+	event.y = screenLoc.y;
+	
+	switch (gi.dwID){
+		case OS.GID_ZOOM:
+			type = SWT.Gesture;
+			event.detail = SWT.GESTURE_MAGNIFY;
+			int fingerDistance = OS.LODWORD(gi.ullArguments);
+			if ((gi.dwFlags & OS.GF_BEGIN) != 0) {
+				event.detail = SWT.GESTURE_BEGIN;
+				display.magStartDistance = display.lastDistance = fingerDistance;
+			} else if ((gi.dwFlags & OS.GF_END) != 0) {
+				event.detail = SWT.GESTURE_END;
+			}
+
+			// gi.ullArguments is the distance between the fingers. Scale factor is relative
+			// to that original value.
+			if (fingerDistance == display.lastDistance && event.detail == SWT.GESTURE_MAGNIFY) return false;			
+			if (fingerDistance != 0) event.magnification = fingerDistance / display.magStartDistance;
+			display.lastDistance = fingerDistance;
+			break;
+		case OS.GID_PAN:
+			type = SWT.Gesture;
+			event.detail = SWT.GESTURE_PAN;
+			if ((gi.dwFlags & OS.GF_BEGIN) != 0) {
+				event.detail = SWT.GESTURE_BEGIN;
+				display.lastX = screenLoc.x;
+				display.lastY = screenLoc.y;
+			} else if ((gi.dwFlags & OS.GF_END) != 0) {
+				event.detail = SWT.GESTURE_END;
+			}
+
+			if (display.lastX == screenLoc.x && display.lastY == screenLoc.y && event.detail == SWT.GESTURE_PAN) return false;
+			
+			event.xDirection = screenLoc.x - display.lastX;
+			event.yDirection = screenLoc.y - display.lastY;
+
+			display.lastX = screenLoc.x;
+			display.lastY = screenLoc.y;			
+			break;
+		case OS.GID_ROTATE:
+			type = SWT.Gesture;			
+			event.detail = SWT.GESTURE_ROTATE;
+			double rotationInRadians = OS.GID_ROTATE_ANGLE_FROM_ARGUMENT(OS.LODWORD(gi.ullArguments));
+			if ((gi.dwFlags & OS.GF_BEGIN) != 0) {
+				event.detail = SWT.GESTURE_BEGIN;
+				display.rotationAngle = rotationInRadians;
+			} else if ((gi.dwFlags & OS.GF_END) != 0) {
+				event.detail = SWT.GESTURE_END;
+			}
+
+			// Feature in Win32: Rotation events are sent even when the fingers are at rest.
+			// If the current rotation is the same as the last one received don't send the event.
+			if (display.rotationAngle == rotationInRadians && event.detail == SWT.GESTURE_ROTATE) return false;
+			event.rotation = rotationInRadians * 180.0 / Compatibility.PI;
+			display.rotationAngle = rotationInRadians;
+			break;
+		default:
+			// Unknown gesture -- ignore.
+			break;
+	}
+
+    if (type == 0) return false;
+	setInputState (event, type);
+	sendEvent (type, event);	
+	return event.doit;
+}
+
 void sendSelectionEvent (int type) {
 	sendSelectionEvent (type, null, false);
 }
@@ -1557,6 +1632,17 @@ LRESULT wmContextMenu (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lPar
 
 	/* Show the menu */
 	return showMenu (x, y) ? LRESULT.ZERO : null;
+}
+
+LRESULT wmGesture (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+	boolean handled = false;
+	GESTUREINFO gi = new GESTUREINFO();
+	gi.cbSize = GESTUREINFO.sizeof;
+	if (OS.GetGestureInfo(lParam, gi)) {
+		handled = sendGestureEvent(gi);
+    }
+    OS.CloseGestureInfoHandle(lParam);
+	return (handled ? LRESULT.ZERO : null);
 }
 
 LRESULT wmIMEChar (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
@@ -2563,6 +2649,69 @@ LRESULT wmSysKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lPara
 
 LRESULT wmSysKeyUp (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	return wmKeyUp (hwnd, wParam, lParam);
+}
+
+LRESULT wmTabletFlick (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+	Event event = new Event ();
+	FLICK_DATA fData = new FLICK_DATA();
+	int /*long*/ [] source = new int /*long*/ [1];
+	source[0] = wParam;
+	OS.MoveMemory(fData, source, OS.FLICK_DATA_sizeof());
+
+	FLICK_POINT fPoint = new FLICK_POINT();
+	source[0] = lParam;
+	OS.MoveMemory(fPoint, source, OS.FLICK_POINT_sizeof());
+	
+	/*
+	 * Feature in Win32: iFlickDirection is defined as a 3-bit field in a packed structure.
+	 * Unpacking into a Java int (or long) maintains the sign.  Mask off all but the last 3 bits
+	 * to get the FLICK_DIRECTION enum value.
+	 */
+	fData.iFlickDirection &= 0x7;
+	
+	switch (fData.iFlickDirection) {
+		case OS.FLICKDIRECTION_RIGHT:
+			event.xDirection = 1;
+			event.yDirection = 0;
+			break;
+		case OS.FLICKDIRECTION_UPRIGHT:
+			event.xDirection = 1;
+			event.yDirection = -1;
+			break;
+		case OS.FLICKDIRECTION_UP:
+			event.xDirection = 0;
+			event.yDirection = -1;
+			break;
+		case OS.FLICKDIRECTION_UPLEFT:
+			event.xDirection = -1;
+			event.yDirection = -1;
+			break;
+		case OS.FLICKDIRECTION_LEFT:
+			event.xDirection = -1;
+			event.yDirection = 0;
+			break;
+		case OS.FLICKDIRECTION_DOWNLEFT:
+			event.xDirection = -1;
+			event.yDirection = 1;
+			break;
+		case OS.FLICKDIRECTION_DOWN:
+			event.xDirection = 0;
+			event.yDirection = 1;
+			break;
+		case OS.FLICKDIRECTION_DOWNRIGHT:
+			event.xDirection = 1;
+			event.yDirection = 1;
+			break;
+	}
+	
+	event.x = fPoint.x;
+	event.y = fPoint.y;
+	event.doit = true;
+	event.type = SWT.Gesture;
+	event.detail = SWT.GESTURE_SWIPE;
+	setInputState (event, SWT.Gesture);
+	sendEvent (SWT.Gesture, event);
+	return (event.doit == false ? LRESULT.ONE : null);
 }
 
 LRESULT wmXButtonDblClk (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {

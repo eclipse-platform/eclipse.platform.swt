@@ -246,6 +246,11 @@ public class Display extends Device {
 	boolean accelKeyHit, mnemonicKeyHit;
 	boolean lockActiveWindow, captureChanged, xMouse;
 	
+	/* Gesture state */
+	double magStartDistance, lastDistance;
+	double rotationAngle;
+	int lastX, lastY;
+	
 	/* Tool Tips */
 	int nextToolTipId;
 	

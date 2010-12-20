@@ -68,6 +68,11 @@
 #define NO_EMREXTCREATEFONTINDIRECTW
 #define NO_EXTLOGFONTW
 #define NO_EXTLOGPEN
+#define NO_FLICK_DATA
+#define NO_FLICK_POINT
+#define NO_GESTURECONFIG
+#define NO_GESTUREINFO
+#define NO_GESTURENOTIFYSTRUCT
 #define NO_GCP_RESULTS
 #define NO_GRADIENT_RECT
 #define NO_GUITHREADINFO
@@ -113,6 +118,7 @@
 #define NO_TF_DA_COLOR
 #define NO_TF_DISPLAYATTRIBUTE
 #define NO_TOOLINFO
+#define NO_TOUCHINPUT
 #define NO_TRACKMOUSEEVENT
 #define NO_TRIVERTEX
 #define NO_TVITEMEX
@@ -179,7 +185,9 @@
 #define NO_ChooseFontA
 #define NO_ChooseFontW
 #define NO_CloseEnhMetaFile
+#define NO_CloseGestureInfoHandle
 #define NO_CloseThemeData
+#define NO_CloseTouchInputHandle
 #define NO_CoCreateInstance
 #define NO_CoInternetIsFeatureEnabled
 #define NO_CoInternetSetFeatureEnabled
@@ -245,8 +253,13 @@
 #define NO_ExtractIconExA
 #define NO_FillPath
 #define NO_FindWindowA
+#define NO_FLICK_1DATA_1sizeof
+#define NO_FLICK_1POINT_1sizeof
 #define NO_FormatMessageA
 #define NO_GdiSetBatchLimit
+#define NO_GESTURECONFIG_1sizeof
+#define NO_GESTUREINFO_1sizeof
+#define NO_GID_1ROTATE_1ANGLE_1FROM_1ARGUMENT
 #define NO_GetCharABCWidthsA
 #define NO_GetCharABCWidthsW
 #define NO_GetCharWidthA
@@ -261,6 +274,7 @@
 #define NO_GetDIBColorTable
 #define NO_GetDIBits
 #define NO_GetFontLanguageInfo
+#define NO_GetGestureInfo
 #define NO_GetGlyphIndicesW
 #define NO_GetGraphicsMode
 #define NO_GetGUIThreadInfo
@@ -328,6 +342,7 @@
 #define NO_GetThemeRect
 #define NO_GetThemeSysSize
 #define NO_GetTimeFormatA
+#define NO_GetTouchInputInfo
 #define NO_GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOA_2
 #define NO_GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXA_2
 #define NO_GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXW_2
@@ -374,6 +389,7 @@
 #define NO_LoadLibraryA
 #define NO_LoadStringA
 #define NO_LockWindowUpdate
+#define NO_LODWORD
 #define NO_LPtoDP
 #define NO_MapVirtualKeyA
 #define NO_MCIWndRegisterClass
@@ -386,10 +402,14 @@
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_EMREXTCREATEFONTINDIRECTW_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_EMR_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2II
+#define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1POINT_2_3II
+#define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_FLICK_1DATA_2_3II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHILDSIZE_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2II
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I
+#define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_GESTURECONFIG_2I
+#define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_GESTURECONFIG_2I
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMLINK_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBHOTITEM_2II
@@ -408,6 +428,7 @@
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SHDRAGIMAGE_2II
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_MINMAXINFO_2I
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_MINMAXINFO_2II
+#define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_TOUCHINPUT_2II
 #define NO_MoveToEx
 #define NO_NotifyWinEvent
 #define NO_OleInitialize
@@ -432,12 +453,14 @@
 #define NO_RegQueryValueExA__I_3BI_3I_3I_3I
 #define NO_RegisterClassA
 #define NO_RegisterClipboardFormatA
+#define NO_RegisterTouchWindow
 #define NO_RegisterWindowMessageA
 #define NO_RemoveFontResourceExW
 #define NO_RemovePropA
 #define NO_RemovePropW
 #define NO_ReplyMessage
 #define NO_SetCurrentProcessExplicitAppUserModelID
+#define NO_SetGestureConfig
 #define NO_SetLayeredWindowAttributes
 #define NO_SetLayout
 #define NO_SetProcessDPIAware
@@ -553,6 +576,8 @@
 #define NO_ScriptXtoCP
 #define NO_StrokePath
 #define NO_ToAscii
+#define NO_TOUCHINPUT_1sizeof
+#define NO_TOUCH_1COORD_1TO_1PIXEL
 #define NO_ToUnicode
 #define NO_TrackMouseEvent
 #define NO_TranslateAcceleratorA
@@ -560,6 +585,7 @@
 #define NO_TransparentBlt
 #define NO_UnhookWindowsHookEx
 #define NO_UnregisterClassA
+#define NO_UnregisterTouchWindow
 #define NO_UpdateLayeredWindow
 #define NO_VkKeyScanA
 #define NO_VkKeyScanW
@@ -673,8 +699,125 @@ typedef struct tagTVITEMCHANGE {
 #endif /* _WIN32_IE <= 0x0600 */
 #endif /* _WIN32_WCE */
 
+#if (WINVER < 0x0601)
+typedef enum FLICKDIRECTION
+{
+    FLICKDIRECTION_MIN = 0,
+    FLICKDIRECTION_RIGHT = 0,
+    FLICKDIRECTION_UPRIGHT = 1,
+    FLICKDIRECTION_UP = 2,
+    FLICKDIRECTION_UPLEFT = 3,
+    FLICKDIRECTION_LEFT = 4,
+    FLICKDIRECTION_DOWNLEFT = 5,
+    FLICKDIRECTION_DOWN = 6,
+    FLICKDIRECTION_DOWNRIGHT = 7,
+    FLICKDIRECTION_INVALID = 8,
+}FLICKDIRECTION;
+
+typedef struct FLICK_POINT
+{
+    INT x:16;
+    INT y:16;
+}FLICK_POINT;
+
+typedef enum FLICKACTION_COMMANDCODE
+{
+    FLICKACTION_COMMANDCODE_NULL = 0,
+    FLICKACTION_COMMANDCODE_SCROLL = 1,
+    FLICKACTION_COMMANDCODE_APPCOMMAND = 2,
+    FLICKACTION_COMMANDCODE_CUSTOMKEY = 3,
+    FLICKACTION_COMMANDCODE_KEYMODIFIER = 4,
+}FLICKACTION_COMMANDCODE;
+
+typedef struct FLICK_DATA
+{
+    FLICKACTION_COMMANDCODE iFlickActionCommandCode:5;
+    FLICKDIRECTION iFlickDirection:3;
+    BOOL fControlModifier:1;
+    BOOL fMenuModifier:1;
+    BOOL fAltGRModifier:1;
+    BOOL fWinModifier:1;
+    BOOL fShiftModifier:1;
+    INT  iReserved:2;
+    BOOL fOnInkingSurface:1;
+    INT  iActionArgument:16;
+}FLICK_DATA;
+
+/*
+ * Touch input handle
+ */
+DECLARE_HANDLE(HTOUCHINPUT);
+
+typedef struct tagTOUCHINPUT {
+    LONG x;
+    LONG y;
+    HANDLE hSource;
+    DWORD dwID;
+    DWORD dwFlags;
+    DWORD dwMask;
+    DWORD dwTime;
+    ULONG_PTR dwExtraInfo;
+    DWORD cxContact;
+    DWORD cyContact;
+} TOUCHINPUT, *PTOUCHINPUT;
+typedef TOUCHINPUT const * PCTOUCHINPUT;
+
+/*
+ * Conversion of touch input coordinates to pixels
+ */
+#define TOUCH_COORD_TO_PIXEL(l)         ((l) / 100)
+
+/*
+ * Gesture information handle
+ */
+DECLARE_HANDLE(HGESTUREINFO);
+
+typedef struct tagGESTUREINFO {
+    UINT cbSize;                    // size, in bytes, of this structure (including variable length Args field)
+    DWORD dwFlags;                  // see GF_* flags
+    DWORD dwID;                     // gesture ID, see GID_* defines
+    HWND hwndTarget;                // handle to window targeted by this gesture
+    POINTS ptsLocation;             // current location of this gesture
+    DWORD dwInstanceID;             // internally used
+    DWORD dwSequenceID;             // internally used
+    ULONGLONG ullArguments;         // arguments for gestures whose arguments fit in 8 BYTES
+    UINT cbExtraArgs;               // size, in bytes, of extra arguments, if any, that accompany this gesture
+} GESTUREINFO, *PGESTUREINFO;
+typedef GESTUREINFO const * PCGESTUREINFO;
+
+typedef struct tagGESTURENOTIFYSTRUCT {
+    UINT cbSize;                    // size, in bytes, of this structure
+    DWORD dwFlags;                  // unused
+    HWND hwndTarget;                // handle to window targeted by the gesture
+    POINTS ptsLocation;             // starting location
+    DWORD dwInstanceID;             // internally used
+} GESTURENOTIFYSTRUCT, *PGESTURENOTIFYSTRUCT;
+
+/*
+ * Gesture argument helpers
+ *   - Angle should be a double in the range of -2pi to +2pi
+ *   - Argument should be an unsigned 16-bit value
+ */
+#define GID_ROTATE_ANGLE_TO_ARGUMENT(_arg_)     ((USHORT)((((_arg_) + 2.0 * 3.14159265) / (4.0 * 3.14159265)) * 65535.0))
+#define GID_ROTATE_ANGLE_FROM_ARGUMENT(_arg_)   ((((double)(_arg_) / 65535.0) * 4.0 * 3.14159265) - 2.0 * 3.14159265)
+
+typedef struct tagGESTURECONFIG {
+    DWORD dwID;                     // gesture ID
+    DWORD dwWant;                   // settings related to gesture ID that are to be turned on
+    DWORD dwBlock;                  // settings related to gesture ID that are to be turned off
+} GESTURECONFIG, *PGESTURECONFIG;
+#endif /* WINVER >= 0x0601 */
+
 #ifndef GET_WHEEL_DELTA_WPARAM
 #define GET_WHEEL_DELTA_WPARAM(wParam)  ((short)HIWORD(wParam))
+#endif
+
+#ifndef LODWORD
+#define LODWORD(l) ((DWORD)((DWORDLONG)(l)))
+#endif
+
+#ifndef HIDWORD
+#define HIDWORD(l) ((DWORD)(((DWORDLONG)(l)>>32)&0xFFFFFFFF))
 #endif
 
 #include "os_custom.h"

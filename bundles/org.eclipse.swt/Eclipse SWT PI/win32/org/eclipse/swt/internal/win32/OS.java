@@ -679,6 +679,15 @@ public class OS extends C {
 	public static final int FILE_ATTRIBUTE_DIRECTORY = 0x00000010;
 	public static final int FILE_ATTRIBUTE_NORMAL = 0x00000080;
 	public static final int FILE_MAP_READ = 4;
+	public static final int FLICKDIRECTION_RIGHT = 0;
+	public static final int FLICKDIRECTION_UPRIGHT = 1;
+	public static final int FLICKDIRECTION_UP = 2;
+	public static final int FLICKDIRECTION_UPLEFT = 3;
+	public static final int FLICKDIRECTION_LEFT = 4;
+	public static final int FLICKDIRECTION_DOWNLEFT = 5;
+	public static final int FLICKDIRECTION_DOWN = 6;
+	public static final int FLICKDIRECTION_DOWNRIGHT = 7;
+	public static final int FLICKDIRECTION_INVALID = 8;
 	public static final int FNERR_INVALIDFILENAME = 0x3002;
 	public static final int FNERR_BUFFERTOOSMALL = 0x3003;
 	public static final int FOF_SILENT = 0x0004;
@@ -705,7 +714,17 @@ public class OS extends C {
 	public static final int GCS_CURSORPOS = 0x0080;
 	public static final int GDT_VALID = 0;
 	public static final int GET_FEATURE_FROM_PROCESS = 0x2;
+	public static final int GF_BEGIN = 1;
+	public static final int GF_INERTIA = 2;
+	public static final int GF_END = 4;
 	public static final int GGI_MARK_NONEXISTING_GLYPHS = 1;
+	public static final int GID_BEGIN = 1;
+	public static final int GID_END = 2;
+	public static final int GID_ZOOM = 3;
+	public static final int GID_PAN = 4;
+	public static final int GID_ROTATE = 5;
+	public static final int GID_TWOFINGERTAP = 6;
+	public static final int GID_PRESSANDTAP = 7;
 	public static final int GLPS_CLOSED = 1;
 	public static final int GLPS_OPENED = 2;
 	public static final int GM_ADVANCED = 2;
@@ -1204,6 +1223,8 @@ public class OS extends C {
 	public static final int MWMO_INPUTAVAILABLE = 0x4;
 	public static final int MWT_LEFTMULTIPLY = 2;
 	public static final int NI_COMPOSITIONSTR = 0x15;
+	public static final int NID_READY = 0x80;
+	public static final int NID_MULTI_INPUT = 0x40;	
 	public static final int NIF_ICON = 0x00000002;
 	public static final int NIF_INFO = 0x00000010;
 	public static final int NIF_MESSAGE = 0x00000001;
@@ -1519,6 +1540,8 @@ public class OS extends C {
 	public static final int SM_CMOUSEBUTTONS = 43;
 	public static final int SM_CYSCREEN = 0x1;
 	public static final int SM_CYVSCROLL = 0x14;
+	public static final int SM_DIGITIZER = 94;
+	public static final int SM_MAXIMUMTOUCHES= 95;	
 //	public static final int SM_DBCSENABLED = 0x2A;
 //	public static final int SM_IMMENABLED = 0x52;
 	public static final int SPI_GETFONTSMOOTHINGTYPE = 0x200A;
@@ -1739,6 +1762,13 @@ public class OS extends C {
 	public static final int TME_QUERY = 0x40000000;
 	public static final int TMPF_VECTOR = 0x2;
 	public static final int TMT_CONTENTMARGINS = 3602;
+	public static final int TOUCHEVENTF_MOVE = 0x0001;
+	public static final int TOUCHEVENTF_DOWN = 0x0002;
+	public static final int TOUCHEVENTF_UP = 0x0004;
+	public static final int TOUCHEVENTF_INRANGE = 0x0008;
+	public static final int TOUCHEVENTF_PRIMARY = 0x0010;
+	public static final int TOUCHEVENTF_NOCOALESCE = 0x0020;
+	public static final int TOUCHEVENTF_PALM = 0x0080;	
 	public static final String TOOLBARCLASSNAME = "ToolbarWindow32"; //$NON-NLS-1$
 	public static final String TOOLTIPS_CLASS = "tooltips_class32"; //$NON-NLS-1$
 	public static final int TP_BUTTON = 1;
@@ -2067,6 +2097,7 @@ public class OS extends C {
 	public static final int WM_ENDSESSION = 0x16;
 	public static final int WM_ENTERIDLE = 0x121;
 	public static final int WM_ERASEBKGND = 0x14;
+	public static final int WM_GESTURE = 0x0119;
 	public static final int WM_GETDLGCODE = 0x87;
 	public static final int WM_GETFONT = 0x31;
 //	public static final int WM_GETICON = 0x7f;
@@ -2139,8 +2170,10 @@ public class OS extends C {
 	public static final int WM_SYSCOMMAND = 0x112;
 	public static final int WM_SYSKEYDOWN = 0x104;
 	public static final int WM_SYSKEYUP = 0x105;
+	public static final int WM_TABLET_FLICK = 0x02C0 + 11;	
 	public static final int WM_TIMER = 0x113;
 	public static final int WM_THEMECHANGED = 0x031a;
+	public static final int WM_TOUCH = 0x240;
 	public static final int WM_UNDO = 0x304;
 	public static final int WM_UPDATEUISTATE = 0x0128;
 	public static final int WM_USER = 0x400;
@@ -2220,7 +2253,11 @@ public static final native int EMREXTCREATEFONTINDIRECTW_sizeof ();
 public static final native int EXTLOGFONTW_sizeof ();
 public static final native int EXTLOGPEN_sizeof ();
 public static final native int FILETIME_sizeof ();
+public static final native int FLICK_DATA_sizeof ();
+public static final native int FLICK_POINT_sizeof ();
 public static final native int GCP_RESULTS_sizeof ();
+public static final native int GESTURECONFIG_sizeof ();
+public static final native int GESTUREINFO_sizeof ();
 public static final native int GRADIENT_RECT_sizeof ();
 public static final native int GUITHREADINFO_sizeof ();
 public static final native int HDITEM_sizeof ();
@@ -2329,6 +2366,7 @@ public static final native int TEXTMETRICW_sizeof ();
 public static final native int TF_DA_COLOR_sizeof ();
 public static final native int TF_DISPLAYATTRIBUTE_sizeof ();
 public static final native int TOOLINFO_sizeof ();
+public static final native int TOUCHINPUT_sizeof();
 public static final native int TRACKMOUSEEVENT_sizeof ();
 public static final native int TRIVERTEX_sizeof ();
 public static final native int TVHITTESTINFO_sizeof ();
@@ -3524,6 +3562,11 @@ public static final native boolean ClientToScreen (int /*long*/ hWnd, POINT lpPo
 public static final native boolean CloseClipboard ();
 /** @param hdc cast=(HDC) */
 public static final native int /*long*/ CloseEnhMetaFile (int /*long*/ hdc);
+/** 
+ * @method flags=dynamic
+ * @param hGesture cast=(HGESTUREINFO) 
+ */
+public static final native int /*long*/ CloseGestureInfoHandle (int /*long*/ hGesture);
 /** @param hObject cast=(HANDLE) */
 public static final native boolean CloseHandle (int /*long*/ hObject);
 /**
@@ -3531,6 +3574,11 @@ public static final native boolean CloseHandle (int /*long*/ hObject);
  * @param hTheme cast=(HTHEME)
  */
 public static final native int CloseThemeData (int /*long*/ hTheme);
+/**
+ * @method flags=dynamic
+ * @param hTouchInput cast=(HTOUCHINPUT)
+ */
+public static final native boolean CloseTouchInputHandle(int /*long*/ hTouchInput);
 /**
  * @param rclsid cast=(REFCLSID)
  * @param pUnkOuter cast=(LPUNKNOWN)
@@ -4165,6 +4213,12 @@ public static final native int /*long*/ GetFocus ();
 /** @param hdc cast=(HDC) */
 public static final native int GetFontLanguageInfo (int /*long*/ hdc);
 public static final native int /*long*/ GetForegroundWindow ();
+/** 
+ * @method flags=dynamic
+ * @param hGestureInfo cast=(HGESTUREINFO)
+ * @param pGestureInfo cast=(PGESTUREINFO)
+ */
+public static final native boolean GetGestureInfo(int /*long*/ hGestureInfo, GESTUREINFO pGestureInfo);
 /** @param hdc cast=(HDC) */
 public static final native int GetGraphicsMode (int /*long*/ hdc);
 /**
@@ -4515,6 +4569,13 @@ public static final native int GetTimeFormatW(int Locale, int dwFlags, SYSTEMTIM
  */
 public static final native int GetTimeFormatA(int Locale, int dwFlags, SYSTEMTIME lpTime, byte [] lpFormat, byte [] lpTimeStr, int cchTime);
 /**
+ * @method flags=dynamic
+ * @param hTouchInput cast=(HTOUCHINPUT)
+ * @param cInputs cast=(UINT)
+ * @param pTouchInputs cast=(PTOUCHINPUT)
+ */
+public static final native boolean GetTouchInputInfo(int /*long*/ hTouchInput, int cInputs, int /*long*/ pTouchInputs, int cbSize);
+/**
  * @param hWnd cast=(HWND)
  * @param lpRect cast=(LPRECT)
  * @param bErase cast=(BOOL)
@@ -4583,6 +4644,7 @@ public static final native int GetWindowThreadProcessId (int /*long*/ hWnd, int 
  * @param lpXform cast=(LPXFORM)
  */
 public static final native boolean GetWorldTransform (int /*long*/ hdc, float[] lpXform);
+public static final native double GID_ROTATE_ANGLE_FROM_ARGUMENT(long dwArgument); 
 /** @param lpString cast=(LPCWSTR) */
 public static final native int GlobalAddAtomW (char [] lpString);
 /** @param lpString cast=(LPCTSTR) */
@@ -4924,6 +4986,7 @@ public static final native int /*long*/ LoadLibraryA (byte [] lpLibFileName);
 public static final native int /*long*/ LocalFree (int /*long*/ hMem);
 /** @param hWndLock cast=(HWND) */
 public static final native boolean LockWindowUpdate (int /*long*/ hWndLock);
+public static final native int LODWORD (long l);
 public static final native int LOWORD (int /*long*/ l);
 /** @param hdc cast=(HDC) */
 public static final native boolean LPtoDP (int /*long*/ hdc, POINT lpPoints, int nCount);
@@ -5159,6 +5222,16 @@ public static final native void MoveMemory (DRAWITEMSTRUCT Destination, int /*lo
 public static final native void MoveMemory (EXTLOGPEN Destination, int /*long*/ Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
+public static final native void MoveMemory (FLICK_DATA Destination, int /*long*/ [] Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
+public static final native void MoveMemory (FLICK_POINT Destination, int /*long*/ [] Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
 public static final native void MoveMemory (HDITEM Destination, int /*long*/ Source, int Length);
@@ -5377,6 +5450,11 @@ public static final native void MoveMemory (TEXTMETRICA Destination, int /*long*
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
+public static final native void MoveMemory (TOUCHINPUT Destination, int /*long*/ Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
 public static final native void MoveMemory (TVITEM Destination, int /*long*/ Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
@@ -5443,6 +5521,11 @@ public static final native void MoveMemory (int /*long*/ Destination, KEYBDINPUT
  * @param Source cast=(CONST VOID *),flags=no_out
  */
 public static final native void MoveMemory (int /*long*/ Destination, MOUSEINPUT Source, int Length);
+/**
+ * @param Destination cast=(PVOID)
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
+public static final native void MoveMemory (int /*long*/ Destination, GESTURECONFIG Source, int Length);
 /**
  * @param hdc cast=(HDC)
  * @param lPoint cast=(LPPOINT)
@@ -5588,6 +5671,12 @@ public static final native int RegEnumKeyExA (int /*long*/ hKey, int dwIndex, by
 /** @param lpWndClass cast=(LPWNDCLASSW) */
 public static final native int RegisterClassW (WNDCLASS lpWndClass);
 public static final native int RegisterClassA (WNDCLASS lpWndClass);
+/**
+ * @method flags=dynamic
+ * @param hWnd cast=(HWND)
+ * @param ulFlags cast=(ULONG)
+ */
+public static final native boolean RegisterTouchWindow(int /*long*/ hWnd, int ulFlags);
 /** @param lpString cast=(LPWSTR) */
 public static final native int RegisterWindowMessageW (char [] lpString);
 /** @param lpString cast=(LPTSTR) */
@@ -6298,6 +6387,12 @@ public static final native int SetErrorMode (int uMode);
 public static final native int /*long*/ SetFocus (int /*long*/ hWnd);
 /** @param hWnd cast=(HWND) */
 public static final native boolean SetForegroundWindow (int /*long*/ hWnd);
+/** 
+ * @method flags=dynamic
+ * @param hwnd cast=(HWND)
+ * @param pGestureConfig cast=(PGESTURECONFIG)
+ */
+public static final native boolean SetGestureConfig(int /*long*/ hwnd, int dwReserved, int cIDs, int /*long*/ pGestureConfig, int cbSize);
 /** @param hdc cast=(HDC) */
 public static final native int SetGraphicsMode (int /*long*/ hdc, int iMode);
 /**
@@ -6558,6 +6653,7 @@ public static final native int ToAscii (int uVirtKey, int uScanCode, byte [] lpK
  * @param pwszBuff cast=(LPWSTR)
  */
 public static final native int ToUnicode (int wVirtKey, int wScanCode, byte [] lpKeyState, char [] pwszBuff, int cchBuff, int wFlags);
+public static final native long TOUCH_COORD_TO_PIXEL(long touchCoord);
 /**
  * @param hwndTV cast=(HWND)
  * @param hitem cast=(HTREEITEM)
@@ -6618,6 +6714,11 @@ public static final native boolean UnregisterClassA (byte [] lpClassName, int /*
  * @param crKey cast=(COLORREF)
  */
 public static final native boolean UpdateLayeredWindow (int /*long*/ hwnd, int /*long*/ hdcDst, POINT pptDst, SIZE psize, int /*long*/ hdcSrc, POINT pptSrc, int crKey, BLENDFUNCTION pblend, int dwFlags);
+/**
+ * @method flags=dynamic
+ * @param hWnd cast=(HWND)
+ */
+public static final native boolean UnregisterTouchWindow (int /*long*/ hwnd);
 /** @param hWnd cast=(HWND) */
 public static final native boolean UpdateWindow (int /*long*/ hWnd);
 /** @param hWnd cast=(HWND) */
