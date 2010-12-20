@@ -239,6 +239,10 @@ public boolean scrollRectToVisible(NSRect aRect) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_scrollRectToVisible_, aRect);
 }
 
+public void setAcceptsTouchEvents(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setAcceptsTouchEvents_, flag);
+}
+
 public void setAutoresizesSubviews(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setAutoresizesSubviews_, flag);
 }
@@ -281,6 +285,10 @@ public void setNeedsDisplayInRect(NSRect invalidRect) {
 
 public void setToolTip(NSString string) {
 	OS.objc_msgSend(this.id, OS.sel_setToolTip_, string != null ? string.id : 0);
+}
+
+public void setWantsRestingTouches(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setWantsRestingTouches_, flag);
 }
 
 public boolean shouldDelayWindowOrderingForEvent(NSEvent theEvent) {

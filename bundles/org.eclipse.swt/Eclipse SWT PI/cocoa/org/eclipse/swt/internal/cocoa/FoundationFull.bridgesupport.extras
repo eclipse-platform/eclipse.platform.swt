@@ -767,6 +767,9 @@
 	<class name="NSScriptClassDescription" swt_superclass="NSClassDescription">
 	</class>
 	<class name="NSSet" swt_gen="mixed">
+		<method selector="allObjects" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="count" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>

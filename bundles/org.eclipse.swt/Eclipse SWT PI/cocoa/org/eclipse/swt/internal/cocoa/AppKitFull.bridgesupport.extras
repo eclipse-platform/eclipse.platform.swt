@@ -1258,6 +1258,9 @@
 		<method selector="locationInWindow" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="magnification" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="modifierFlags" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -1276,7 +1279,15 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="rotation" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="timestamp" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="touchesMatchingPhase:inView:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="type" swt_gen="true">
@@ -2510,6 +2521,10 @@
 		<method selector="becomeFirstResponder" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="beginGestureWithEvent:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="cancelOperation:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -2519,6 +2534,10 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="doCommandBySelector:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="endGestureWithEvent:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -2543,6 +2562,10 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="keyUp:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="magnifyWithEvent:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -2625,7 +2648,31 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="rotateWithEvent:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="scrollWheel:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="swipeWithEvent:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="touchesBeganWithEvent:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="touchesCancelledWithEvent:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="touchesEndedWithEvent:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="touchesMovedWithEvent:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3707,6 +3754,23 @@
 	</class>
 	<class name="NSToolbarItemGroup" swt_superclass="NSToolbarItem">
 	</class>
+	<class name="NSTouch" swt_gen="true">
+		<method selector="device" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="deviceSize" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="isResting" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="normalizedPosition" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="phase" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
 	<class name="NSTrackingArea" swt_gen="mixed">
 		<method selector="initWithRect:options:owner:userInfo:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -3931,6 +3995,10 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="setAcceptsTouchEvents:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="setAutoresizesSubviews:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -3972,6 +4040,10 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setToolTip:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setWantsRestingTouches:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4614,6 +4686,12 @@
 	<enum name="NSDragOperationNone" swt_gen="true"></enum>
 	<enum name="NSEnterCharacter" swt_gen="true"></enum>
 	<enum name="NSEvenOddWindingRule" swt_gen="true"></enum>
+	<enum name="NSEventTypeBeginGesture" swt_gen="true"></enum>
+	<enum name="NSEventTypeEndGesture" swt_gen="true"></enum>
+	<enum name="NSEventTypeGesture" swt_gen="true"></enum>
+	<enum name="NSEventTypeMagnify" swt_gen="true"></enum>
+	<enum name="NSEventTypeRotate" swt_gen="true"></enum>
+	<enum name="NSEventTypeSwipe" swt_gen="true"></enum>
 	<enum name="NSFileHandlingPanelOKButton" swt_gen="true"></enum>
 	<enum name="NSFlagsChanged" swt_gen="true"></enum>
 	<enum name="NSFocusRingTypeNone" swt_gen="true"></enum>
@@ -4733,6 +4811,14 @@
 	<enum name="NSTextFieldDatePickerStyle" swt_gen="true"></enum>
 	<enum name="NSTitledWindowMask" swt_gen="true"></enum>
 	<enum name="NSToolbarDisplayModeIconOnly" swt_gen="true"></enum>
+	<enum name="NSTouchEventSubtype" swt_gen="true"></enum>
+	<enum name="NSTouchPhaseAny" swt_gen="true"></enum>
+	<enum name="NSTouchPhaseBegan" swt_gen="true"></enum>
+	<enum name="NSTouchPhaseCancelled" swt_gen="true"></enum>
+	<enum name="NSTouchPhaseEnded" swt_gen="true"></enum>
+	<enum name="NSTouchPhaseMoved" swt_gen="true"></enum>
+	<enum name="NSTouchPhaseStationary" swt_gen="true"></enum>
+	<enum name="NSTouchPhaseTouching" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleDouble" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleNone" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleSingle" swt_gen="true"></enum>

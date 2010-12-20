@@ -69,6 +69,10 @@ public NSPoint locationInWindow() {
 	return result;
 }
 
+public float /*double*/ magnification() {
+	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_magnification);
+}
+
 public int /*long*/ modifierFlags() {
 	return OS.objc_msgSend(this.id, OS.sel_modifierFlags);
 }
@@ -84,8 +88,17 @@ public static NSEvent otherEventWithType(int /*long*/ type, NSPoint location, in
 	return result != 0 ? new NSEvent(result) : null;
 }
 
+public float rotation() {
+	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_rotation);
+}
+
 public double timestamp() {
 	return OS.objc_msgSend_fpret(this.id, OS.sel_timestamp);
+}
+
+public NSSet touchesMatchingPhase(int /*long*/ phase, NSView view) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_touchesMatchingPhase_inView_, phase, view != null ? view.id : 0);
+	return result != 0 ? new NSSet(result) : null;
 }
 
 public int /*long*/ type() {

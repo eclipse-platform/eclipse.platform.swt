@@ -1666,6 +1666,7 @@ boolean setInputState (Event event, NSEvent nsEvent, int type) {
 		case OS.NSScrollWheel:
 		case OS.NSKeyDown:
 		case OS.NSKeyUp:
+		case OS.NSEventTypeGesture:
 			int state = OS.GetCurrentButtonState ();
 			if ((state & 0x1) != 0) event.stateMask |= SWT.BUTTON1;
 			if ((state & 0x2) != 0) event.stateMask |= SWT.BUTTON3;
@@ -1698,6 +1699,7 @@ boolean setInputState (Event event, NSEvent nsEvent, int type) {
 			if (event.keyCode == SWT.COMMAND) event.stateMask &= ~SWT.COMMAND;
 			break;
 		case SWT.KeyUp:
+		case SWT.Gesture:
 			if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
 			if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
 			if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
@@ -1985,6 +1987,42 @@ public String toString () {
 		if (isValidThread ()) string = getNameText ();
 	}
 	return getName () + " {" + string + "}";
+}
+
+void touchesBeganWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	callSuper(id, sel, event);	
+}
+
+void touchesCancelledWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	callSuper(id, sel, event);	
+}
+
+void touchesEndedWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	callSuper(id, sel, event);	
+}
+
+void touchesMovedWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	callSuper(id, sel, event);	
+}
+
+void beginGestureWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	callSuper(id, sel, event);	
+}
+
+void endGestureWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	callSuper(id, sel, event);	
+}
+
+void magnifyWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	callSuper(id, sel, event);	
+}
+
+void rotateWithEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	callSuper(id, sel, event);	
+}
+
+void swipeWithEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	callSuper(id, sel, event);	
 }
 
 void resetCursorRects (int /*long*/ id, int /*long*/ sel) {

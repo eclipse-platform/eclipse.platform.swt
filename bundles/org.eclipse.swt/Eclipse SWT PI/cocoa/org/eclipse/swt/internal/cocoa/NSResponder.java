@@ -32,6 +32,10 @@ public boolean becomeFirstResponder() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_becomeFirstResponder);
 }
 
+public void beginGestureWithEvent(NSEvent event) {
+	OS.objc_msgSend(this.id, OS.sel_beginGestureWithEvent_, event != null ? event.id : 0);
+}
+
 public void cancelOperation(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_cancelOperation_, sender != null ? sender.id : 0);
 }
@@ -42,6 +46,10 @@ public void cursorUpdate(NSEvent event) {
 
 public void doCommandBySelector(int /*long*/ aSelector) {
 	OS.objc_msgSend(this.id, OS.sel_doCommandBySelector_, aSelector);
+}
+
+public void endGestureWithEvent(NSEvent event) {
+	OS.objc_msgSend(this.id, OS.sel_endGestureWithEvent_, event != null ? event.id : 0);
 }
 
 public void flagsChanged(NSEvent theEvent) {
@@ -66,6 +74,10 @@ public void keyDown(NSEvent theEvent) {
 
 public void keyUp(NSEvent theEvent) {
 	OS.objc_msgSend(this.id, OS.sel_keyUp_, theEvent != null ? theEvent.id : 0);
+}
+
+public void magnifyWithEvent(NSEvent event) {
+	OS.objc_msgSend(this.id, OS.sel_magnifyWithEvent_, event != null ? event.id : 0);
 }
 
 public void mouseDown(NSEvent theEvent) {
@@ -148,8 +160,32 @@ public void rightMouseUp(NSEvent theEvent) {
 	OS.objc_msgSend(this.id, OS.sel_rightMouseUp_, theEvent != null ? theEvent.id : 0);
 }
 
+public void rotateWithEvent(NSEvent event) {
+	OS.objc_msgSend(this.id, OS.sel_rotateWithEvent_, event != null ? event.id : 0);
+}
+
 public void scrollWheel(NSEvent theEvent) {
 	OS.objc_msgSend(this.id, OS.sel_scrollWheel_, theEvent != null ? theEvent.id : 0);
+}
+
+public void swipeWithEvent(NSEvent event) {
+	OS.objc_msgSend(this.id, OS.sel_swipeWithEvent_, event != null ? event.id : 0);
+}
+
+public void touchesBeganWithEvent(NSEvent event) {
+	OS.objc_msgSend(this.id, OS.sel_touchesBeganWithEvent_, event != null ? event.id : 0);
+}
+
+public void touchesCancelledWithEvent(NSEvent event) {
+	OS.objc_msgSend(this.id, OS.sel_touchesCancelledWithEvent_, event != null ? event.id : 0);
+}
+
+public void touchesEndedWithEvent(NSEvent event) {
+	OS.objc_msgSend(this.id, OS.sel_touchesEndedWithEvent_, event != null ? event.id : 0);
+}
+
+public void touchesMovedWithEvent(NSEvent event) {
+	OS.objc_msgSend(this.id, OS.sel_touchesMovedWithEvent_, event != null ? event.id : 0);
 }
 
 public id validRequestorForSendType(NSString sendType, NSString returnType) {

@@ -385,6 +385,30 @@ public void addFocusListener(FocusListener listener) {
 }
 
 /**
+ * Removes the listener from the collection of listeners who will
+ * be notified when gesture events are generated for the control.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see GestureListener
+ * @see #addGestureListener
+ */
+public void addGestureListener (GestureListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Gesture, typedListener);
+}
+
+/**
  * Adds the listener to the collection of listeners who will
  * be notified when help events are generated for the control,
  * by sending it one of the messages defined in the
@@ -656,6 +680,16 @@ public void addTraverseListener (TraverseListener listener) {
 boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	if ((state & DISABLED) != 0) return false;
 	return super.becomeFirstResponder (id, sel);
+}
+
+void beginGestureWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	if (!gestureEvent(id, sel, event, SWT.GESTURE_BEGIN)) return;
+	super.beginGestureWithEvent(id, sel, event);
+}
+
+void endGestureWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	if (!gestureEvent(id, sel, event, SWT.GESTURE_END)) return;
+	super.endGestureWithEvent(id, sel, event);
 }
 
 void calculateVisibleRegion (NSView view, int /*long*/ visibleRgn, boolean clipChildren) {
@@ -1349,6 +1383,17 @@ public boolean forceFocus () {
 
 boolean forceFocus (NSView focusView) {
 	return view.window ().makeFirstResponder (focusView);
+}
+
+boolean gestureEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ event, int detail) {
+	// For cross-platform compatibility, touch events and gestures are mutually exclusive.
+	// Don't send a gesture if touch events are enabled for this control.
+//	if (touchEnabled) return true;
+	if (!display.sendEvent) return true;
+	display.sendEvent = false;
+	if (!isEventView (id)) return true;
+	NSEvent nsEvent = new NSEvent(event);
+	return sendGestureEvent (nsEvent, detail, true);	
 }
 
 /**
@@ -2193,6 +2238,11 @@ void keyUp (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	super.keyUp (id, sel, theEvent);
 }
 
+void magnifyWithEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	if (!gestureEvent(id, sel, event, SWT.GESTURE_MAGNIFY)) return;
+	super.magnifyWithEvent(id, sel, event);	
+}
+
 void markLayout (boolean changed, boolean all) {
 	/* Do nothing */
 }
@@ -2229,8 +2279,13 @@ Decorations menuShell () {
 void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	boolean handled = false;
 	if (id == view.id) {
+		NSEvent nsEvent = new NSEvent(theEvent);
+		if (display.gestureStarted && hooks(SWT.Gesture)) {
+			if (!sendGestureEvent(nsEvent, SWT.GESTURE_PAN, true)) {
+				handled = true;						
+			}
+		}
 		if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
-			NSEvent nsEvent = new NSEvent(theEvent);
 			if (nsEvent.deltaY() != 0) {
 				if (!sendMouseEvent(nsEvent, SWT.MouseWheel, true)) {
 					handled = true;
@@ -2238,7 +2293,6 @@ void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 			}
 		}
 		if (hooks (SWT.MouseHorizontalWheel) || filters (SWT.MouseHorizontalWheel)) {
-			NSEvent nsEvent = new NSEvent(theEvent);
 			if (nsEvent.deltaX() != 0) {
 				if (!sendMouseEvent(nsEvent, SWT.MouseHorizontalWheel, true)) {
 					handled = true;
@@ -2728,6 +2782,31 @@ public void removeFocusListener(FocusListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
+ * be notified when a gesture is performed on the control
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see GestureListener
+ * @see #addGestureListener
+ * @since 3.7
+ */
+public void removeGestureListener (GestureListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook(SWT.Gesture, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
  * be notified when the help events are generated for the control.
  *
  * @param listener the listener which should no longer be notified
@@ -2994,6 +3073,11 @@ void resized () {
 	sendEvent (SWT.Resize);
 }
 
+void rotateWithEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	if (!gestureEvent(id, sel, event, SWT.GESTURE_ROTATE)) return;
+	super.rotateWithEvent(id, sel, event);	
+}
+
 boolean sendDragEvent (int button, int stateMask, int x, int y) {
 	Event event = new Event ();
 	event.button = button;
@@ -3033,6 +3117,56 @@ void sendFocusEvent (int type) {
 				break;
 		}
 	}
+}
+
+boolean sendGestureEvent (NSEvent nsEvent, int detail, boolean send) {
+	Event event = new Event ();
+	NSPoint windowPoint;
+	NSView view = eventView ();
+	windowPoint = nsEvent.locationInWindow();
+	NSPoint point = view.convertPoint_fromView_(windowPoint, null);
+	if (!view.isFlipped ()) {
+		point.y = view.bounds().height - point.y;
+	}
+	event.x = (int) point.x;
+	event.y = (int) point.y;
+	setInputState (event, nsEvent, SWT.Gesture);
+	event.detail = detail;
+
+	if (detail == SWT.GESTURE_BEGIN) {
+		display.gestureStarted = true;
+		display.rotation = 0.0;
+		display.magnification = 1.0;
+	} else if (detail == SWT.GESTURE_END) {
+		display.gestureStarted = false;
+	}
+	
+	switch (detail) {	
+	case SWT.GESTURE_SWIPE:
+		event.xDirection = (int) -nsEvent.deltaX();
+		event.yDirection = (int) -nsEvent.deltaY();
+		break;
+	case SWT.GESTURE_ROTATE: {	
+		display.rotation += nsEvent.rotation();
+		event.rotation = display.rotation;
+		break;
+	}
+	case SWT.GESTURE_MAGNIFY:
+		display.magnification += nsEvent.magnification();
+		event.magnification = display.magnification;
+		break;
+	case SWT.GESTURE_PAN:
+		// Panning increment is expressed in terms of the direction of movement,
+		// not in terms of scrolling increment.
+		event.xDirection = (int) -nsEvent.deltaX();
+		event.yDirection = (int) -nsEvent.deltaY();
+		break;
+	}
+
+	event.doit = true;
+	sendEvent (SWT.Gesture, event);
+	if (isDisposed ()) return false;
+	return event.doit;
 }
 
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
@@ -3942,6 +4076,11 @@ void sort (int [] items) {
 	    	}
 	    }
 	}
+}
+
+void swipeWithEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	if (!gestureEvent(id, sel, event, SWT.GESTURE_SWIPE)) return;
+	super.swipeWithEvent(id, sel, event);
 }
 
 NSSize textExtent (String string) {

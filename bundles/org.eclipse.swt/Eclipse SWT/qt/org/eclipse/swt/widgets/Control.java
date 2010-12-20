@@ -56,19 +56,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.accessibility.Accessible;
 import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.events.DragDetectListener;
-import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.HelpListener;
-import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.MenuDetectListener;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.MouseTrackListener;
-import org.eclipse.swt.events.MouseWheelListener;
-import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Drawable;
@@ -82,6 +70,7 @@ import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.internal.qt.DragNDropListener;
 import org.eclipse.swt.internal.qt.KeyUtil;
 import org.eclipse.swt.internal.qt.QtSWTConverter;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -442,6 +431,30 @@ public abstract class Control extends Widget implements Drawable {
 		TypedListener typedListener = new TypedListener(listener);
 		addListener(SWT.FocusIn, typedListener);
 		addListener(SWT.FocusOut, typedListener);
+	}
+
+	/**
+	 * Removes the listener from the collection of listeners who will
+	 * be notified when gesture events are generated for the control.
+	 *
+	 * @param listener the listener which should no longer be notified
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+	 * </ul>
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+	 * </ul>
+	 *
+	 * @see GestureListener
+	 * @see #addGestureListener
+	 */
+	public void addGestureListener (GestureListener listener) {
+		checkWidget();
+		if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+		TypedListener typedListener = new TypedListener (listener);
+		addListener (SWT.Gesture, typedListener);
 	}
 
 	/**
@@ -2333,6 +2346,31 @@ public abstract class Control extends Widget implements Drawable {
 		}
 		eventTable.unhook(SWT.FocusIn, listener);
 		eventTable.unhook(SWT.FocusOut, listener);
+	}
+
+	/**
+	 * Removes the listener from the collection of listeners who will
+	 * be notified when a gesture is performed on the control
+	 *
+	 * @param listener the listener which should no longer be notified
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+	 * </ul>
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+	 * </ul>
+	 *
+	 * @see GestureListener
+	 * @see #addGestureListener
+	 * @since 3.7
+	 */
+	public void removeGestureListener (GestureListener listener) {
+		checkWidget();
+		if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+		if (eventTable == null) return;
+		eventTable.unhook(SWT.Gesture, listener);
 	}
 
 	/**

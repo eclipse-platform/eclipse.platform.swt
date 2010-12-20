@@ -941,6 +941,9 @@ void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 			NSEvent nsEvent = new NSEvent(theEvent);
 			boolean handled = false;
 			float /*double*/ delta = nsEvent.deltaY();
+			if (display.gestureStarted) {
+				if (!sendGestureEvent(nsEvent, SWT.GESTURE_PAN, true)) handled = true;						
+			}
 			if (delta != 0) {
 				boolean doit = true;
 				if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {

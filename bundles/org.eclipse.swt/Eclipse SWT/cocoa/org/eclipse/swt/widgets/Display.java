@@ -104,6 +104,11 @@ public class Display extends Device {
 	boolean disposing;
 	int sendEventCount;
 
+	/* gesture event state */
+	double rotation;
+	double magnification;
+	boolean gestureStarted;
+
 	/* Key event management */
 	int [] deadKeyState = new int[1];
 	int currentKeyboardUCHRdata;
@@ -2130,6 +2135,16 @@ void addEventMethods (int /*long*/ cls, int /*long*/ proc2, int /*long*/ proc3, 
 		OS.class_addMethod(cls, OS.sel_acceptsFirstMouse_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_changeColor_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_cancelOperation_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_touchesBeganWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_touchesMovedWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_touchesEndedWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_touchesCancelledWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_beginGestureWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_endGestureWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_swipeWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_rotateWithEvent_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_magnifyWithEvent_, proc3, "@:@");
+		
 	}
 	if (proc2 != 0) {
 		OS.class_addMethod(cls, OS.sel_resignFirstResponder, proc2, "@:");
@@ -4774,6 +4789,7 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 		case OS.NSKeyDown:
 		case OS.NSKeyUp:
 		case OS.NSScrollWheel:
+		// TODO:  Add touch detection here...
 			if (window != null) {
 				Shell shell = (Shell) getWidget (window.id);
 				if (shell != null) {
@@ -5436,6 +5452,24 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		widget.windowDidMiniturize(id, sel, arg0);
 	} else if (sel == OS.sel_windowDidDeminiaturize_) {
 		widget.windowDidDeminiturize(id, sel, arg0);
+	} else if (sel == OS.sel_touchesBeganWithEvent_) {
+		widget.touchesBeganWithEvent(id, sel, arg0);
+	} else if (sel == OS.sel_touchesMovedWithEvent_) {
+		widget.touchesMovedWithEvent(id, sel, arg0);
+	} else if (sel == OS.sel_touchesEndedWithEvent_) {
+		widget.touchesEndedWithEvent(id, sel, arg0);
+	} else if (sel == OS.sel_touchesCancelledWithEvent_) {
+		widget.touchesCancelledWithEvent(id, sel, arg0);
+	} else if (sel == OS.sel_beginGestureWithEvent_) {
+		widget.beginGestureWithEvent(id, sel, arg0);
+	} else if (sel == OS.sel_endGestureWithEvent_) {
+		widget.endGestureWithEvent(id, sel, arg0);
+	} else if (sel == OS.sel_swipeWithEvent_) {
+		widget.swipeWithEvent(id, sel, arg0);
+	} else if (sel == OS.sel_magnifyWithEvent_) {
+		widget.magnifyWithEvent(id, sel, arg0);
+	} else if (sel == OS.sel_rotateWithEvent_) {
+		widget.rotateWithEvent(id, sel, arg0);
 	} else if (sel == OS.sel_toolbarAllowedItemIdentifiers_) {
 		return widget.toolbarAllowedItemIdentifiers(id, sel, arg0);
 	} else if (sel == OS.sel_toolbarDefaultItemIdentifiers_) {
