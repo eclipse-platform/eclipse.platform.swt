@@ -17,6 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet40 {
@@ -24,10 +25,11 @@ public class Snippet40 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setLayout(new GridLayout(2, false));
 	Composite c1 = new Composite (shell, SWT.BORDER);
-	c1.setSize (100, 100);
+	c1.setLayoutData(new GridData(100, 100));
 	Composite c2 = new Composite (shell, SWT.BORDER);
-	c2.setBounds (100, 0, 100, 100);
+	c2.setLayoutData(new GridData(100, 100));
 	Menu menu = new Menu (shell, SWT.POP_UP);
 	MenuItem item = new MenuItem (menu, SWT.PUSH);
 	item.setText ("Popup");
