@@ -77,7 +77,7 @@ class Mozilla extends WebBrowser {
 
 	static final int MAX_PORT = 65535;
 	static final String DEFAULTVALUE_STRING = "default"; //$NON-NLS-1$
-	static final String SEPARATOR_OS = System.getProperty ("file.separator"); //$NON-NLS-1$
+	static final char SEPARATOR_OS = System.getProperty ("file.separator").charAt (0); //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String DISPOSE_LISTENER_HOOKED = "org.eclipse.swt.browser.Mozilla.disposeListenerHooked"; //$NON-NLS-1$
 	static final String HEADER_CONTENTTYPE = "Content-Type"; //$NON-NLS-1
@@ -579,6 +579,13 @@ public void create (Composite parent, int style) {
 				*/
 			}
 		} else {
+			/* ensure that client-supplied path is using correct separators */
+			if (SEPARATOR_OS == '/') {
+				mozillaPath = mozillaPath.replace ('\\', SEPARATOR_OS);
+			} else {
+				mozillaPath = mozillaPath.replace ('/', SEPARATOR_OS);
+			}
+
 			mozillaPath += SEPARATOR_OS + MozillaDelegate.getLibraryName ();
 			isXULRunner = true;
 		}
@@ -622,7 +629,14 @@ public void create (Composite parent, int style) {
 							mozillaPath += SEPARATOR_OS + MozillaDelegate.getLibraryName ();
 							path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
 							rc = XPCOMInit.XPCOMGlueStartup (path);
-							if (rc != XPCOM.NS_OK) {
+							if (rc == XPCOM.NS_OK) {
+								/* ensure that client-supplied path is using correct separators */
+								if (SEPARATOR_OS == '/') {
+									mozillaPath = mozillaPath.replace ('\\', SEPARATOR_OS);
+								} else {
+									mozillaPath = mozillaPath.replace ('/', SEPARATOR_OS);
+								}
+							} else {
 								isXULRunner = false;
 								mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
 								if (Device.DEBUG) System.out.println ("failed to start as XULRunner: " + mozillaPath); //$NON-NLS-1$
@@ -1731,6 +1745,13 @@ String initMozilla (String mozillaPath) {
 		byte[] buffer = new byte[length];
 		C.memmove (buffer, ptr, length);
 		mozillaPath = new String (MozillaDelegate.mbcsToWcs (null, buffer));
+
+		/* ensure that client-supplied path is using correct separators */
+		if (SEPARATOR_OS == '/') {
+			mozillaPath = mozillaPath.replace ('\\', SEPARATOR_OS);
+		} else {
+			mozillaPath = mozillaPath.replace ('/', SEPARATOR_OS);
+		}
 	} else {
 		browser.dispose ();
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [Unknown Mozilla path (MOZILLA_FIVE_HOME not set)]"); //$NON-NLS-1$
@@ -2381,6 +2402,7 @@ String initXULRunner (String mozillaPath) {
 	 */ 
 	return mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
 }
+
 public boolean isBackEnabled () {
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
