@@ -1634,17 +1634,6 @@ LRESULT wmContextMenu (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lPar
 	return showMenu (x, y) ? LRESULT.ZERO : null;
 }
 
-LRESULT wmGesture (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
-	boolean handled = false;
-	GESTUREINFO gi = new GESTUREINFO();
-	gi.cbSize = GESTUREINFO.sizeof;
-	if (OS.GetGestureInfo(lParam, gi)) {
-		handled = sendGestureEvent(gi);
-    }
-    OS.CloseGestureInfoHandle(lParam);
-	return (handled ? LRESULT.ZERO : null);
-}
-
 LRESULT wmIMEChar (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	Display display = this.display;
 	display.lastKey = 0;

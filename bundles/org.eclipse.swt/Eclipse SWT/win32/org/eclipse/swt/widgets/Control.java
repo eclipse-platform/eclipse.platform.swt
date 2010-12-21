@@ -4442,7 +4442,14 @@ LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT WM_GESTURE (int /*long*/ wParam, int /*long*/ lParam) {
-	return wmGesture (handle, wParam, lParam);
+	boolean handled = false;
+	GESTUREINFO gi = new GESTUREINFO();
+	gi.cbSize = GESTUREINFO.sizeof;
+	if (OS.GetGestureInfo(lParam, gi)) {
+		handled = sendGestureEvent(gi);
+    }
+    OS.CloseGestureInfoHandle(lParam);
+	return (handled ? LRESULT.ZERO : null);
 }
 
 LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
