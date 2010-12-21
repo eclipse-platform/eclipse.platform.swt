@@ -11,8 +11,8 @@
 package org.eclipse.swt.internal.win32;
 
 public class TOUCHINPUT {
-	public int /*long*/ x;
-	public int /*long*/ y;
+	public int x;
+	public int y;
 	/** @field cast=(HWND) */
 	public int /*long*/    hSource;
 	public int dwID;
