@@ -183,10 +183,12 @@ public void addFocusListener (FocusListener listener) {
 }
 
 /**
- * Removes the listener from the collection of listeners who will
- * be notified when gesture events are generated for the control.
+ * Adds the listener to the collection of listeners who will
+ * be notified when gesture events are generated for the control,
+ * by sending it one of the messages defined in the 
+ * <code>GestureListener</code> interface.
  *
- * @param listener the listener which should no longer be notified
+ * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -197,7 +199,9 @@ public void addFocusListener (FocusListener listener) {
  * </ul>
  *
  * @see GestureListener
- * @see #addGestureListener
+ * @see #removeGestureListener
+ * 
+ * @since 3.7
  */
 public void addGestureListener (GestureListener listener) {
 	checkWidget();
