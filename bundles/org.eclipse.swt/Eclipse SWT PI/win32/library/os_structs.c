@@ -8482,8 +8482,8 @@ void cacheTOUCHINPUTFields(JNIEnv *env, jobject lpObject)
 {
 	if (TOUCHINPUTFc.cached) return;
 	TOUCHINPUTFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	TOUCHINPUTFc.x = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "x", I_J);
-	TOUCHINPUTFc.y = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "y", I_J);
+	TOUCHINPUTFc.x = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "x", "I");
+	TOUCHINPUTFc.y = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "y", "I");
 	TOUCHINPUTFc.hSource = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "hSource", I_J);
 	TOUCHINPUTFc.dwID = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "dwID", "I");
 	TOUCHINPUTFc.dwFlags = (*env)->GetFieldID(env, TOUCHINPUTFc.clazz, "dwFlags", "I");
@@ -8498,8 +8498,8 @@ void cacheTOUCHINPUTFields(JNIEnv *env, jobject lpObject)
 TOUCHINPUT *getTOUCHINPUTFields(JNIEnv *env, jobject lpObject, TOUCHINPUT *lpStruct)
 {
 	if (!TOUCHINPUTFc.cached) cacheTOUCHINPUTFields(env, lpObject);
-	lpStruct->x = (*env)->GetIntLongField(env, lpObject, TOUCHINPUTFc.x);
-	lpStruct->y = (*env)->GetIntLongField(env, lpObject, TOUCHINPUTFc.y);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, TOUCHINPUTFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, TOUCHINPUTFc.y);
 	lpStruct->hSource = (HWND)(*env)->GetIntLongField(env, lpObject, TOUCHINPUTFc.hSource);
 	lpStruct->dwID = (*env)->GetIntField(env, lpObject, TOUCHINPUTFc.dwID);
 	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, TOUCHINPUTFc.dwFlags);
@@ -8514,8 +8514,8 @@ TOUCHINPUT *getTOUCHINPUTFields(JNIEnv *env, jobject lpObject, TOUCHINPUT *lpStr
 void setTOUCHINPUTFields(JNIEnv *env, jobject lpObject, TOUCHINPUT *lpStruct)
 {
 	if (!TOUCHINPUTFc.cached) cacheTOUCHINPUTFields(env, lpObject);
-	(*env)->SetIntLongField(env, lpObject, TOUCHINPUTFc.x, (jintLong)lpStruct->x);
-	(*env)->SetIntLongField(env, lpObject, TOUCHINPUTFc.y, (jintLong)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, TOUCHINPUTFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, TOUCHINPUTFc.y, (jint)lpStruct->y);
 	(*env)->SetIntLongField(env, lpObject, TOUCHINPUTFc.hSource, (jintLong)lpStruct->hSource);
 	(*env)->SetIntField(env, lpObject, TOUCHINPUTFc.dwID, (jint)lpStruct->dwID);
 	(*env)->SetIntField(env, lpObject, TOUCHINPUTFc.dwFlags, (jint)lpStruct->dwFlags);
