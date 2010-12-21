@@ -2640,61 +2640,6 @@ LRESULT wmSysKeyUp (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam)
 	return wmKeyUp (hwnd, wParam, lParam);
 }
 
-LRESULT wmTabletFlick (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
-	Event event = new Event ();
-	FLICK_DATA fData = new FLICK_DATA ();
-	int /*long*/ [] source = new int /*long*/ [1];
-	source[0] = wParam;
-	OS.MoveMemory (fData, source, OS.FLICK_DATA_sizeof ());
-	FLICK_POINT fPoint = new FLICK_POINT ();
-	source [0] = lParam;
-	OS.MoveMemory (fPoint, source, OS.FLICK_POINT_sizeof ());
-	
-	/* The iFlickDirection field is defined as a 3-bit value in FLICK_DATA structure */
-	switch (fData.iFlickDirection & 0x7) {
-		case OS.FLICKDIRECTION_RIGHT:
-			event.xDirection = 1;
-			event.yDirection = 0;
-			break;
-		case OS.FLICKDIRECTION_UPRIGHT:
-			event.xDirection = 1;
-			event.yDirection = -1;
-			break;
-		case OS.FLICKDIRECTION_UP:
-			event.xDirection = 0;
-			event.yDirection = -1;
-			break;
-		case OS.FLICKDIRECTION_UPLEFT:
-			event.xDirection = -1;
-			event.yDirection = -1;
-			break;
-		case OS.FLICKDIRECTION_LEFT:
-			event.xDirection = -1;
-			event.yDirection = 0;
-			break;
-		case OS.FLICKDIRECTION_DOWNLEFT:
-			event.xDirection = -1;
-			event.yDirection = 1;
-			break;
-		case OS.FLICKDIRECTION_DOWN:
-			event.xDirection = 0;
-			event.yDirection = 1;
-			break;
-		case OS.FLICKDIRECTION_DOWNRIGHT:
-			event.xDirection = 1;
-			event.yDirection = 1;
-			break;
-	}
-	
-	event.x = fPoint.x;
-	event.y = fPoint.y;
-	event.type = SWT.Gesture;
-	event.detail = SWT.GESTURE_SWIPE;
-	setInputState (event, SWT.Gesture);
-	sendEvent (SWT.Gesture, event);
-	return event.doit ? null : LRESULT.ONE;
-}
-
 LRESULT wmXButtonDblClk (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	/*
 	* Feature in Windows. Windows sends the following
