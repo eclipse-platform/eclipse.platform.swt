@@ -766,7 +766,7 @@ public void setImage (Image image) {
 	if (parent.foreground != -1) {
 		info.hbmpItem = OS.HBMMENU_CALLBACK;
 	} else {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0) && OS.IsAppThemed ()) {
 			if (hBitmap != 0) OS.DeleteObject (hBitmap);
 			info.hbmpItem = hBitmap = image != null ? Display.create32bitDIB (image) : 0;
 		} else {
