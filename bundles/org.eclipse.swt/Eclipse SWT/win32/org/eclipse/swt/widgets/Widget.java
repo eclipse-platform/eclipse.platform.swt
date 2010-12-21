@@ -2642,23 +2642,16 @@ LRESULT wmSysKeyUp (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam)
 
 LRESULT wmTabletFlick (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
 	Event event = new Event ();
-	FLICK_DATA fData = new FLICK_DATA();
+	FLICK_DATA fData = new FLICK_DATA ();
 	int /*long*/ [] source = new int /*long*/ [1];
 	source[0] = wParam;
-	OS.MoveMemory(fData, source, OS.FLICK_DATA_sizeof());
-
-	FLICK_POINT fPoint = new FLICK_POINT();
-	source[0] = lParam;
-	OS.MoveMemory(fPoint, source, OS.FLICK_POINT_sizeof());
+	OS.MoveMemory (fData, source, OS.FLICK_DATA_sizeof ());
+	FLICK_POINT fPoint = new FLICK_POINT ();
+	source [0] = lParam;
+	OS.MoveMemory (fPoint, source, OS.FLICK_POINT_sizeof ());
 	
-	/*
-	 * Feature in Win32: iFlickDirection is defined as a 3-bit field in a packed structure.
-	 * Unpacking into a Java int (or long) maintains the sign.  Mask off all but the last 3 bits
-	 * to get the FLICK_DIRECTION enum value.
-	 */
-	fData.iFlickDirection &= 0x7;
-	
-	switch (fData.iFlickDirection) {
+	/* The iFlickDirection field is defined as a 3-bit value in FLICK_DATA structure */
+	switch (fData.iFlickDirection & 0x7) {
 		case OS.FLICKDIRECTION_RIGHT:
 			event.xDirection = 1;
 			event.yDirection = 0;
@@ -2695,12 +2688,11 @@ LRESULT wmTabletFlick (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lPar
 	
 	event.x = fPoint.x;
 	event.y = fPoint.y;
-	event.doit = true;
 	event.type = SWT.Gesture;
 	event.detail = SWT.GESTURE_SWIPE;
 	setInputState (event, SWT.Gesture);
 	sendEvent (SWT.Gesture, event);
-	return (event.doit == false ? LRESULT.ONE : null);
+	return event.doit ? null : LRESULT.ONE;
 }
 
 LRESULT wmXButtonDblClk (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
