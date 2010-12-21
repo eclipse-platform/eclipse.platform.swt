@@ -400,6 +400,7 @@ public void addFocusListener(FocusListener listener) {
  *
  * @see GestureListener
  * @see #addGestureListener
+ * @since 3.7
  */
 public void addGestureListener (GestureListener listener) {
 	checkWidget();
