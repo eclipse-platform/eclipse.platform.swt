@@ -958,8 +958,7 @@ public class SWT {
 	
 	/**
 	 * Gesture event detail field value indicating that a 
-	 * swipe gesture has happened. Only the xDirection
-	 * and yDirection fields of the event are valid.
+	 * swipe gesture has happened.
 	 * 
 	 * @since 3.7
 	 */
@@ -967,8 +966,7 @@ public class SWT {
 	
 	/**
 	 * Gesture event detail field value indicating that a 
-	 * magnification gesture has happened. Only the magnification
-	 * field of the event is valid.
+	 * magnification gesture has happened.
 	 * 
 	 * @since 3.7
 	 */
@@ -976,8 +974,7 @@ public class SWT {
 	
 	/**
 	 * Gesture event detail field value indicating that a 
-	 * panning (two-finger scroll) gesture has happened. Only the
-	 * xDirection and yDirection fields of the event are valid.
+	 * panning (two-finger scroll) gesture has happened.
 	 * 
 	 * @since 3.7
 	 */
