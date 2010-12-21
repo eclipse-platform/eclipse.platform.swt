@@ -3644,8 +3644,10 @@ boolean translateMnemonic (MSG msg) {
 boolean translateTraversal (MSG msg) {
 	int /*long*/ hwnd = msg.hwnd;
 	int key = (int)/*64*/msg.wParam;
-	if (key == OS.VK_MENU && ((msg.lParam & 0x40000000) == 0)) {
-		OS.SendMessage (hwnd, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+	if (key == OS.VK_MENU) {
+		if ((msg.lParam & 0x40000000) == 0) {
+			OS.SendMessage (hwnd, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+		}
 		return false;
 	}
 	int detail = SWT.TRAVERSE_NONE;
