@@ -44,8 +44,7 @@ import org.eclipse.swt.accessibility.*;
  */
 
 public abstract class Control extends Widget implements Drawable {
-	static final int GESTURE_COUNT = 5;
-	
+
 	/**
 	 * the handle to the OS resource 
 	 * (Warning: This field is platform dependent)
@@ -677,17 +676,19 @@ void checkGesture () {
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 1)) {
 		int value = OS.GetSystemMetrics (OS.SM_DIGITIZER);
 		if ((value & (OS.NID_READY | OS.NID_MULTI_INPUT)) != 0) {
+			/*
+			 * Feature in Windows 7: All gestures are enabled by default except GID_ROTATE.
+			 * Enable it explicitly by calling SetGestureConfig.
+			 */
 			int /*long*/ hHeap = OS.GetProcessHeap ();
-			int /*long*/ pConfigs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY,  GESTURE_COUNT * GESTURECONFIG.sizeof);
+			int /*long*/ pConfigs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY,  GESTURECONFIG.sizeof);
 			if (pConfigs != 0) {
 				GESTURECONFIG config = new GESTURECONFIG();
-				for (int i = 0; i < GESTURE_COUNT; i++) {
-					config.dwID = i + OS.GID_ZOOM;
-					config.dwWant = 1;
-					config.dwBlock = 0;
-					OS.MoveMemory (pConfigs + i * GESTURECONFIG.sizeof, config, GESTURECONFIG.sizeof);
-				}
-				OS.SetGestureConfig (handle, 0, GESTURE_COUNT, pConfigs, GESTURECONFIG.sizeof);
+				config.dwID = OS.GID_ROTATE;
+				config.dwWant = 1;
+				config.dwBlock = 0;
+				OS.MoveMemory (pConfigs, config, GESTURECONFIG.sizeof);
+				OS.SetGestureConfig (handle, 0, 1, pConfigs, GESTURECONFIG.sizeof);
 				OS.HeapFree (hHeap, 0, pConfigs);
 			}		
 		}
@@ -4443,12 +4444,16 @@ LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT WM_GESTURE (int /*long*/ wParam, int /*long*/ lParam) {
 	boolean handled = false;
-	GESTUREINFO gi = new GESTUREINFO();
-	gi.cbSize = GESTUREINFO.sizeof;
-	if (OS.GetGestureInfo(lParam, gi)) {
-		handled = sendGestureEvent(gi);
-    }
-    OS.CloseGestureInfoHandle(lParam);
+	
+	if (hooks (SWT.Gesture)) {
+		GESTUREINFO gi = new GESTUREINFO ();
+		gi.cbSize = GESTUREINFO.sizeof;
+		if (OS.GetGestureInfo (lParam, gi)) {
+			handled = sendGestureEvent (gi);
+		}
+		OS.CloseGestureInfoHandle (lParam);
+	}
+	
 	return (handled ? LRESULT.ZERO : null);
 }
 

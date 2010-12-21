@@ -1751,7 +1751,7 @@ FLICK_DATA *getFLICK_DATAFields(JNIEnv *env, jobject lpObject, FLICK_DATA *lpStr
 {
 	if (!FLICK_DATAFc.cached) cacheFLICK_DATAFields(env, lpObject);
 	lpStruct->iFlickActionCommandCode = (*env)->GetIntField(env, lpObject, FLICK_DATAFc.iFlickActionCommandCode);
-	lpStruct->iFlickDirection = (*env)->GetIntField(env, lpObject, FLICK_DATAFc.iFlickDirection);
+	lpStruct->iFlickDirection = (unsigned int)(*env)->GetIntField(env, lpObject, FLICK_DATAFc.iFlickDirection);
 	lpStruct->fControlModifier = (*env)->GetBooleanField(env, lpObject, FLICK_DATAFc.fControlModifier);
 	lpStruct->fMenuModifier = (*env)->GetBooleanField(env, lpObject, FLICK_DATAFc.fMenuModifier);
 	lpStruct->fAltGRModifier = (*env)->GetBooleanField(env, lpObject, FLICK_DATAFc.fAltGRModifier);
