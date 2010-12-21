@@ -3,8 +3,7 @@ package org.eclipse.swt.internal.win32;
 
 public class FLICK_DATA {
 	public int iFlickActionCommandCode;
-	/** @field cast=(unsigned int) */
-	public int iFlickDirection;
+	public byte iFlickDirection;
 	public boolean fControlModifier;
 	public boolean fMenuModifier;
 	public boolean fAltGRModifier;

@@ -1735,7 +1735,7 @@ void cacheFLICK_DATAFields(JNIEnv *env, jobject lpObject)
 	if (FLICK_DATAFc.cached) return;
 	FLICK_DATAFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	FLICK_DATAFc.iFlickActionCommandCode = (*env)->GetFieldID(env, FLICK_DATAFc.clazz, "iFlickActionCommandCode", "I");
-	FLICK_DATAFc.iFlickDirection = (*env)->GetFieldID(env, FLICK_DATAFc.clazz, "iFlickDirection", "I");
+	FLICK_DATAFc.iFlickDirection = (*env)->GetFieldID(env, FLICK_DATAFc.clazz, "iFlickDirection", "B");
 	FLICK_DATAFc.fControlModifier = (*env)->GetFieldID(env, FLICK_DATAFc.clazz, "fControlModifier", "Z");
 	FLICK_DATAFc.fMenuModifier = (*env)->GetFieldID(env, FLICK_DATAFc.clazz, "fMenuModifier", "Z");
 	FLICK_DATAFc.fAltGRModifier = (*env)->GetFieldID(env, FLICK_DATAFc.clazz, "fAltGRModifier", "Z");
@@ -1751,7 +1751,7 @@ FLICK_DATA *getFLICK_DATAFields(JNIEnv *env, jobject lpObject, FLICK_DATA *lpStr
 {
 	if (!FLICK_DATAFc.cached) cacheFLICK_DATAFields(env, lpObject);
 	lpStruct->iFlickActionCommandCode = (*env)->GetIntField(env, lpObject, FLICK_DATAFc.iFlickActionCommandCode);
-	lpStruct->iFlickDirection = (unsigned int)(*env)->GetIntField(env, lpObject, FLICK_DATAFc.iFlickDirection);
+	lpStruct->iFlickDirection = (*env)->GetByteField(env, lpObject, FLICK_DATAFc.iFlickDirection);
 	lpStruct->fControlModifier = (*env)->GetBooleanField(env, lpObject, FLICK_DATAFc.fControlModifier);
 	lpStruct->fMenuModifier = (*env)->GetBooleanField(env, lpObject, FLICK_DATAFc.fMenuModifier);
 	lpStruct->fAltGRModifier = (*env)->GetBooleanField(env, lpObject, FLICK_DATAFc.fAltGRModifier);
@@ -1767,7 +1767,7 @@ void setFLICK_DATAFields(JNIEnv *env, jobject lpObject, FLICK_DATA *lpStruct)
 {
 	if (!FLICK_DATAFc.cached) cacheFLICK_DATAFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, FLICK_DATAFc.iFlickActionCommandCode, (jint)lpStruct->iFlickActionCommandCode);
-	(*env)->SetIntField(env, lpObject, FLICK_DATAFc.iFlickDirection, (jint)lpStruct->iFlickDirection);
+	(*env)->SetByteField(env, lpObject, FLICK_DATAFc.iFlickDirection, (jbyte)lpStruct->iFlickDirection);
 	(*env)->SetBooleanField(env, lpObject, FLICK_DATAFc.fControlModifier, (jboolean)lpStruct->fControlModifier);
 	(*env)->SetBooleanField(env, lpObject, FLICK_DATAFc.fMenuModifier, (jboolean)lpStruct->fMenuModifier);
 	(*env)->SetBooleanField(env, lpObject, FLICK_DATAFc.fAltGRModifier, (jboolean)lpStruct->fAltGRModifier);

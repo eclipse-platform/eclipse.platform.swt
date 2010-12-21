@@ -714,7 +714,7 @@ typedef struct FLICK_DATA
     FLICKDIRECTION iFlickDirection:3;
 */
     INT iFlickActionCommandCode:5;
-    INT iFlickDirection:3;
+    UINT iFlickDirection:3;
     BOOL fControlModifier:1;
     BOOL fMenuModifier:1;
     BOOL fAltGRModifier:1;

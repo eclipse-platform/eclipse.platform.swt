@@ -5058,9 +5058,8 @@ LRESULT WM_TABLET_FLICK (int /*long*/ wParam, int /*long*/ lParam) {
 	FLICK_POINT fPoint = new FLICK_POINT ();
 	source [0] = lParam;
 	OS.MoveMemory (fPoint, source, OS.FLICK_POINT_sizeof ());
-	
-	/* The iFlickDirection field is defined as a 3-bit value in the FLICK_DATA structure */
-	switch (fData.iFlickDirection & 0x7) {
+
+	switch (fData.iFlickDirection) {
 		case OS.FLICKDIRECTION_RIGHT:
 			event.xDirection = 1;
 			event.yDirection = 0;
