@@ -1083,18 +1083,17 @@ void sendEvent (int eventType, Event event, boolean send) {
 boolean sendGestureEvent (GESTUREINFO gi) {
 	Event event = new Event ();
 	int type = 0;
-	POINT screenLoc = new POINT();
-	screenLoc.x = gi.x;
-	screenLoc.y = gi.y;
-	OS.MapWindowPoints (0, gi.hwndTarget, screenLoc, 1);
-	event.x = screenLoc.x;
-	event.y = screenLoc.y;
-	
-	switch (gi.dwID){
+	POINT point = new POINT ();
+	point.x = gi.x;
+	point.y = gi.y;
+	OS.MapWindowPoints (0, gi.hwndTarget, point, 1);
+	event.x = point.x;
+	event.y = point.y;
+	switch (gi.dwID) {
 		case OS.GID_ZOOM:
 			type = SWT.Gesture;
 			event.detail = SWT.GESTURE_MAGNIFY;
-			int fingerDistance = OS.LODWORD(gi.ullArguments);
+			int fingerDistance = OS.LODWORD (gi.ullArguments);
 			if ((gi.dwFlags & OS.GF_BEGIN) != 0) {
 				event.detail = SWT.GESTURE_BEGIN;
 				display.magStartDistance = display.lastDistance = fingerDistance;
@@ -1102,8 +1101,10 @@ boolean sendGestureEvent (GESTUREINFO gi) {
 				event.detail = SWT.GESTURE_END;
 			}
 
-			// gi.ullArguments is the distance between the fingers. Scale factor is relative
-			// to that original value.
+			/*
+			* The gi.ullArguments is the distance between the fingers. 
+			* Scale factor is relative to that original value.
+			*/
 			if (fingerDistance == display.lastDistance && event.detail == SWT.GESTURE_MAGNIFY) return false;			
 			if (fingerDistance != 0) event.magnification = fingerDistance / display.magStartDistance;
 			display.lastDistance = fingerDistance;
@@ -1113,24 +1114,21 @@ boolean sendGestureEvent (GESTUREINFO gi) {
 			event.detail = SWT.GESTURE_PAN;
 			if ((gi.dwFlags & OS.GF_BEGIN) != 0) {
 				event.detail = SWT.GESTURE_BEGIN;
-				display.lastX = screenLoc.x;
-				display.lastY = screenLoc.y;
+				display.lastX = point.x;
+				display.lastY = point.y;
 			} else if ((gi.dwFlags & OS.GF_END) != 0) {
 				event.detail = SWT.GESTURE_END;
 			}
-
-			if (display.lastX == screenLoc.x && display.lastY == screenLoc.y && event.detail == SWT.GESTURE_PAN) return false;
-			
-			event.xDirection = screenLoc.x - display.lastX;
-			event.yDirection = screenLoc.y - display.lastY;
-
-			display.lastX = screenLoc.x;
-			display.lastY = screenLoc.y;			
+			if (display.lastX == point.x && display.lastY == point.y && event.detail == SWT.GESTURE_PAN) return false;
+			event.xDirection = point.x - display.lastX;
+			event.yDirection = point.y - display.lastY;
+			display.lastX = point.x;
+			display.lastY = point.y;			
 			break;
 		case OS.GID_ROTATE:
 			type = SWT.Gesture;			
 			event.detail = SWT.GESTURE_ROTATE;
-			double rotationInRadians = OS.GID_ROTATE_ANGLE_FROM_ARGUMENT(OS.LODWORD(gi.ullArguments));
+			double rotationInRadians = OS.GID_ROTATE_ANGLE_FROM_ARGUMENT (OS.LODWORD (gi.ullArguments));
 			if ((gi.dwFlags & OS.GF_BEGIN) != 0) {
 				event.detail = SWT.GESTURE_BEGIN;
 				display.rotationAngle = rotationInRadians;
@@ -1138,8 +1136,10 @@ boolean sendGestureEvent (GESTUREINFO gi) {
 				event.detail = SWT.GESTURE_END;
 			}
 
-			// Feature in Win32: Rotation events are sent even when the fingers are at rest.
-			// If the current rotation is the same as the last one received don't send the event.
+			/*
+			* Feature in Win32. Rotation events are sent even when the fingers are at rest.
+			* If the current rotation is the same as the last one received don't send the event.
+			*/
 			if (display.rotationAngle == rotationInRadians && event.detail == SWT.GESTURE_ROTATE) return false;
 			event.rotation = rotationInRadians * 180.0 / Compatibility.PI;
 			display.rotationAngle = rotationInRadians;

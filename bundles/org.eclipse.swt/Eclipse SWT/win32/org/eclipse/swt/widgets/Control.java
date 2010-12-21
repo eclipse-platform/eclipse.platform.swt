@@ -4443,18 +4443,16 @@ LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 }
 
 LRESULT WM_GESTURE (int /*long*/ wParam, int /*long*/ lParam) {
-	boolean handled = false;
-	
-	if (hooks (SWT.Gesture)) {
+	if (hooks (SWT.Gesture) || filters (SWT.Gesture)) {
 		GESTUREINFO gi = new GESTUREINFO ();
 		gi.cbSize = GESTUREINFO.sizeof;
 		if (OS.GetGestureInfo (lParam, gi)) {
-			handled = sendGestureEvent (gi);
+			boolean result = sendGestureEvent (gi);
+			OS.CloseGestureInfoHandle (lParam);
+			if (result) return LRESULT.ZERO; 
 		}
-		OS.CloseGestureInfoHandle (lParam);
 	}
-	
-	return (handled ? LRESULT.ZERO : null);
+	return null;
 }
 
 LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
