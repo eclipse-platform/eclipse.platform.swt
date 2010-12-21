@@ -700,39 +700,21 @@ typedef struct tagTVITEMCHANGE {
 #endif /* _WIN32_WCE */
 
 #if (WINVER < 0x0601)
-typedef enum FLICKDIRECTION
-{
-    FLICKDIRECTION_MIN = 0,
-    FLICKDIRECTION_RIGHT = 0,
-    FLICKDIRECTION_UPRIGHT = 1,
-    FLICKDIRECTION_UP = 2,
-    FLICKDIRECTION_UPLEFT = 3,
-    FLICKDIRECTION_LEFT = 4,
-    FLICKDIRECTION_DOWNLEFT = 5,
-    FLICKDIRECTION_DOWN = 6,
-    FLICKDIRECTION_DOWNRIGHT = 7,
-    FLICKDIRECTION_INVALID = 8,
-}FLICKDIRECTION;
-
 typedef struct FLICK_POINT
 {
     INT x:16;
     INT y:16;
 }FLICK_POINT;
 
-typedef enum FLICKACTION_COMMANDCODE
-{
-    FLICKACTION_COMMANDCODE_NULL = 0,
-    FLICKACTION_COMMANDCODE_SCROLL = 1,
-    FLICKACTION_COMMANDCODE_APPCOMMAND = 2,
-    FLICKACTION_COMMANDCODE_CUSTOMKEY = 3,
-    FLICKACTION_COMMANDCODE_KEYMODIFIER = 4,
-}FLICKACTION_COMMANDCODE;
-
 typedef struct FLICK_DATA
 {
+/*
+	Avoid warnings in Windows 64 bit.
     FLICKACTION_COMMANDCODE iFlickActionCommandCode:5;
     FLICKDIRECTION iFlickDirection:3;
+*/
+    INT iFlickActionCommandCode:5;
+    INT iFlickDirection:3;
     BOOL fControlModifier:1;
     BOOL fMenuModifier:1;
     BOOL fAltGRModifier:1;
@@ -814,10 +796,6 @@ typedef struct tagGESTURECONFIG {
 
 #ifndef LODWORD
 #define LODWORD(l) ((DWORD)((DWORDLONG)(l)))
-#endif
-
-#ifndef HIDWORD
-#define HIDWORD(l) ((DWORD)(((DWORDLONG)(l)>>32)&0xFFFFFFFF))
 #endif
 
 #include "os_custom.h"
