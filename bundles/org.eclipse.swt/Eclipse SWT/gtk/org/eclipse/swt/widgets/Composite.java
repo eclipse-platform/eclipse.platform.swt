@@ -1226,11 +1226,12 @@ void moveChildren(int oldWidth) {
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
 	Control [] children = _getChildren ();
+	Rectangle clientArea = getClientArea ();
 	int width = 0, height = 0;
 	for (int i=0; i<children.length; i++) {
 		Rectangle rect = children [i].getBounds ();
-		width = Math.max (width, rect.x + rect.width);
-		height = Math.max (height, rect.y + rect.height);
+		width = Math.max (width, rect.x - clientArea.x + rect.width);
+		height = Math.max (height, rect.y - clientArea.y + rect.height);
 	}
 	return new Point (width, height);
 }
