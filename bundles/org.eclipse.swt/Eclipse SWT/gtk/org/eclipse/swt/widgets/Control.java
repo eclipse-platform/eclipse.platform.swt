@@ -202,7 +202,7 @@ int /*long*/ fontHandle () {
 	return handle;
 }
 
-/*public*/ int getOrientation () {
+/*public*/ int _getOrientation () {
 	checkWidget();
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
@@ -3973,7 +3973,7 @@ void setOrientation (boolean create) {
 	}
 }
 
-/*public*/ void setOrientation (int orientation) {
+/*public*/ void _setOrientation (int orientation) {
 	checkWidget ();
 	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) return;
 	int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;

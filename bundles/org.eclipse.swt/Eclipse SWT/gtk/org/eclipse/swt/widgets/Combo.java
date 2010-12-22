@@ -966,7 +966,7 @@ String getNameText () {
  * @since 2.1.2
  */
 public int getOrientation () {
-	return super.getOrientation ();
+	return super._getOrientation ();
 }
 
 /**
@@ -2089,7 +2089,7 @@ void setOrientation (boolean create) {
  * @since 2.1.2
  */
 public void setOrientation (int orientation) {
-	super.setOrientation (orientation);
+	super._setOrientation (orientation);
 }
 
 /**
