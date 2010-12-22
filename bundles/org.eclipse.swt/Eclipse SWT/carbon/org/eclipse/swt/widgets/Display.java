@@ -1462,6 +1462,10 @@ public Control getCursorControl () {
 	checkDevice ();
 	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetGlobalMouse (where);
+	return getCursorControl (where);
+}
+
+Control getCursorControl(org.eclipse.swt.internal.carbon.Point where) {
 	int [] theWindow = new int [1];
 	if (OS.FindWindow (where, theWindow) != OS.inContent) return null;
 	if (theWindow [0] == 0) return null;

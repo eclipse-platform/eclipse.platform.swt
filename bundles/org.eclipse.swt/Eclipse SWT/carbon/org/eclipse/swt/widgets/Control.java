@@ -1485,6 +1485,17 @@ boolean hasFocus () {
 int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
     switch (inRequest) {
 		case OS.kHMSupplyContent: {
+			org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+			OS.memmove(pt, new int[] {inGlobalMouse}, 4);
+			/*
+			* If a control doesn't have a tooltip text, then helpProc gets
+			* called on the controls in its parent hierarchy and their
+			* tooltip text is used. Note that returning OS.eventNotHandledErr
+			* prevents the window help content callback from being called. The
+			* is to only handle the message when the cursor is directly over this
+			* control.
+			*/
+			if (display.getCursorControl (pt) != this) break;
 			short [] contentProvided = {OS.kHMContentNotProvidedDontPropagate};
 			if (toolTipText != null && toolTipText.length () != 0) {
 				char [] buffer = new char [toolTipText.length ()];
@@ -1509,8 +1520,6 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				*/
 				int cursorHeight = 16;
 				helpContent.tagSide = (short) OS.kHMAbsoluteCenterAligned;
-				org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-				OS.memmove(pt, new int[] {inGlobalMouse}, 4);
 				int x = pt.h;
 				int y = pt.v;
 				if (display.helpWidget != this) {
@@ -1536,19 +1545,11 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				helpContent.content1_tagCFString = display.helpString;
 				OS.memmove (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
 				contentProvided [0] = OS.kHMContentProvided;
-				OS.memmove (outContentProvided, contentProvided, 2);
-				break;
 			} else {
 				OS.HMHideTag();
-				OS.memmove (outContentProvided, contentProvided, 2);
-				/*
-				 * If a control doesn't have a tooltiptext, then helpProc gets
-				 * called on the controls in its parent hierarchy and their
-				 * tooltiptext is used. Return OS.eventNotHandledErr to prevent
-				 * the calls on the parent control.
-				 */
-				return OS.eventNotHandledErr;
 			}
+			OS.memmove (outContentProvided, contentProvided, 2);
+			break;
 		}
 		case OS.kHMDisposeContent: {
 			if (display.helpString != 0) OS.CFRelease (display.helpString);
