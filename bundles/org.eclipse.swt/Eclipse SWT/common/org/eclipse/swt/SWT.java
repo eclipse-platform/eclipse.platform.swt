@@ -739,10 +739,10 @@ public class SWT {
 	 *  
      * @see org.eclipse.swt.widgets.Display#addListener
      * @see org.eclipse.swt.widgets.Event
-     * @see org.eclipse.swt.widgets.SWT#GESTURE_MAGNIFY
-     * @see org.eclipse.swt.widgets.SWT#GESTURE_PAN
-     * @see org.eclipse.swt.widgets.SWT#GESTURE_ROTATE
-     * @see org.eclipse.swt.widgets.SWT#GESTURE_SWIPE
+     * @see SWT#GESTURE_MAGNIFY
+     * @see SWT#GESTURE_PAN
+     * @see SWT#GESTURE_ROTATE
+     * @see SWT#GESTURE_SWIPE
      * 
      * @since 3.7
 	 */

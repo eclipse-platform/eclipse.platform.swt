@@ -38,7 +38,8 @@ public class GestureEvent extends TypedEvent {
 	/**
 	 * The gesture type.
 	 * <p><ul>
-	 * <li>{@link org.eclipse.swt.SWT#GESTURE_NONE}</li>
+	 * <li>{@link org.eclipse.swt.SWT#GESTURE_BEGIN}</li>
+	 * <li>{@link org.eclipse.swt.SWT#GESTURE_END}</li>
 	 * <li>{@link org.eclipse.swt.SWT#GESTURE_MAGNIFY}</li>
 	 * <li>{@link org.eclipse.swt.SWT#GESTURE_PAN}</li>
 	 * <li>{@link org.eclipse.swt.SWT#GESTURE_ROTATE}</li>
