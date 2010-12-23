@@ -2080,6 +2080,10 @@ public static final native int CGGetDisplaysWithRect (CGRect rect, int maxDispla
 public static final native int CGImageCreate (int width, int height, int bitsPerComponent, int bitsPerPixel, int bytesPerRow, int colorspace, int alphaInfo, int provider, float[] decode, boolean shouldInterpolate, int intent);
 /**
  * @method flags=dynamic
+ */
+public static final native int CGImageCreateCopy (int image);
+/**
+ * @method flags=dynamic
  * @param rect flags=struct
  */
 public static final native int CGImageCreateWithImageInRect(int image, CGRect rect);

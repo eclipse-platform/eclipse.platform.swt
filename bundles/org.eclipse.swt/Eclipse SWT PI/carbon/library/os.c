@@ -2880,6 +2880,26 @@ fail:
 }
 #endif
 
+#ifndef NO_CGImageCreateCopy
+JNIEXPORT jint JNICALL OS_NATIVE(CGImageCreateCopy)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGImageCreateCopy_FUNC);
+/*
+	rc = (jint)CGImageCreateCopy(arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, CGImageCreateCopy)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, CGImageCreateCopy_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGImageCreateWithImageInRect
 JNIEXPORT jint JNICALL OS_NATIVE(CGImageCreateWithImageInRect)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
