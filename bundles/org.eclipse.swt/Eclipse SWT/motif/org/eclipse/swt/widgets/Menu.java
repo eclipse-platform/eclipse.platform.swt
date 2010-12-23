@@ -513,6 +513,12 @@ String getNameText () {
 	}
 	return result;
 }
+
+public int getOrientation () {
+	checkWidget ();
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
 /**
  * Returns the receiver's parent, which must be a <code>Decorations</code>.
  *
@@ -870,6 +876,11 @@ public void setLocation (Point location) {
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
 }
+
+public void setOrientation (int orientation) {
+    checkWidget ();
+}
+
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 

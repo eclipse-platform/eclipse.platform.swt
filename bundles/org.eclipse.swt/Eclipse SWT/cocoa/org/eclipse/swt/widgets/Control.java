@@ -1700,6 +1700,11 @@ public Monitor getMonitor () {
 	return monitors [index];
 }
 
+public int getOrientation () {
+	checkWidget ();
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
 /**
  * Returns the receiver's parent, which must be a <code>Composite</code>
  * or null when the receiver is a shell that was created with null or
@@ -3709,6 +3714,10 @@ public void setMenu (Menu menu) {
 		}
 	}
 	this.menu = menu;
+}
+
+public void setOrientation (int orientation) {
+	checkWidget ();
 }
 
 /**

@@ -1241,6 +1241,12 @@ int getNavigationType () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
 }
+
+public int getOrientation () {
+	checkWidget ();
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
 /**
  * Returns the receiver's parent, which must be a <code>Composite</code>
  * or null when the receiver is a shell that was created with null or
@@ -2823,6 +2829,11 @@ public void setMenu (Menu menu) {
 	}
 	this.menu = menu;
 }
+
+public void setOrientation (int orientation) {
+	checkWidget ();
+}
+
 /**
  * Changes the parent of the widget to be the one provided if
  * the underlying operating system supports this feature.

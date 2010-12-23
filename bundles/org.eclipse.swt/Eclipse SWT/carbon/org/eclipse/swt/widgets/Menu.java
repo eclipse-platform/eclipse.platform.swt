@@ -509,6 +509,11 @@ String getNameText () {
 	return result;
 }
 
+public int getOrientation () {
+	checkWidget ();
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
 /**
  * Returns the receiver's parent, which must be a <code>Decorations</code>.
  *
@@ -1160,6 +1165,10 @@ public void setLocation (Point location) {
 	checkWidget ();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
+}
+
+public void setOrientation (int orientation) {
+    checkWidget (); 
 }
 
 /**
