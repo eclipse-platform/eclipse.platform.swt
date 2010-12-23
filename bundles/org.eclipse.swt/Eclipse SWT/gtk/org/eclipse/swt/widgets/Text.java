@@ -849,7 +849,7 @@ public String getMessage () {
  * @since 2.1.2
  */
 public int getOrientation () {
-	return super._getOrientation ();
+	return super.getOrientation ();
 }
 
 /*public*/ int getPosition (Point point) {

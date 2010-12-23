@@ -1431,7 +1431,7 @@ void setOrientation (boolean create) {
 		int orientation = style & flags;	
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {
-			children[i]._setOrientation (orientation);
+			children[i].setOrientation (orientation);
 		}
 		if (((style & SWT.RIGHT_TO_LEFT) != 0) != ((style & SWT.MIRRORED) != 0)) {
 			moveChildren (-1);

@@ -524,7 +524,7 @@ String getNameText () {
 	return result;
 }
 
-/*public*/ int getOrientation () {
+public int getOrientation () {
 	checkWidget();
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
@@ -984,7 +984,7 @@ public void setLocation (Point location) {
 	setLocation (location.x, location.y);
 }
 
-/*public*/ void setOrientation (int orientation) {
+public void setOrientation (int orientation) {
     checkWidget ();    
     if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
     _setOrientation (orientation);
