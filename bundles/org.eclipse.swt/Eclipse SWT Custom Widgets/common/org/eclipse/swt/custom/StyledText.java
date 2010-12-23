@@ -149,7 +149,6 @@ public class StyledText extends Canvas {
 	int lastTextChangeReplaceCharCount;
 	int lastCharCount = 0;
 	int lastLineBottom;					// the bottom pixel of the last line been replaced
-	boolean isMirrored;
 	boolean bidiColoring = false;		// apply the BIDI algorithm on text segments of the same color
 	Image leftCaretBitmap = null;
 	Image rightCaretBitmap = null;
@@ -1238,7 +1237,6 @@ public StyledText(Composite parent, int style) {
 	super.setForeground(getForeground());
 	super.setDragDetect(false);
 	Display display = getDisplay();
-	isMirrored = (super.getStyle() & SWT.MIRRORED) != 0;
 	fixedLineHeight = true;
 	if ((style & SWT.READ_ONLY) != 0) {
 		setEditable(false);
@@ -4470,12 +4468,7 @@ int getOffsetAtPoint(int x, int y, int[] trailing, boolean inTextOnly) {
  * @since 2.1.2
  */
 public int getOrientation () {
-	checkWidget();
-	if (IS_MAC) {
-		int style = super.getStyle();
-		return style & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT);
-	}
-	return isMirrored() ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
+	return super.getOrientation ();
 }
 /** 
  * Returns the index of the last partially visible line.
@@ -4769,14 +4762,6 @@ public String getSelectionText() {
 	}
 	return content.getTextRange(selection.x, selection.y - selection.x);
 }
-public int getStyle() {
-	int style = super.getStyle();
-	style &= ~(SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.MIRRORED);
-	style |= getOrientation();
-	if (isMirrored()) style |= SWT.MIRRORED;
-	return style;
-}
-
 StyledTextEvent getBidiSegments(int lineOffset, String line) {
 	if (!isBidi()) return null;
 	if (!isListening(LineGetSegments)) {
@@ -7078,7 +7063,7 @@ boolean invokeBlockAction(int action) {
  * Temporary until SWT provides this
  */
 boolean isBidi() {
-	return IS_GTK || IS_MAC || BidiUtil.isBidiPlatform() || isMirrored;
+	return IS_GTK || IS_MAC || BidiUtil.isBidiPlatform() || isMirrored();
 }
 boolean isBidiCaret() {
 	return BidiUtil.isBidiPlatform();
@@ -7111,7 +7096,7 @@ boolean isLineDelimiter(int offset) {
  * 	is left oriented
  */
 boolean isMirrored() {
-	return isMirrored;
+	return (getStyle() & SWT.MIRRORED) != 0;
 }
 /**
  * Returns whether the widget can have only one line.
@@ -9236,28 +9221,17 @@ void setMouseWordSelectionAnchor() {
  * @since 2.1.2
  */
 public void setOrientation(int orientation) {
-	if ((orientation & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT)) == 0) { 
-		return;
+	int oldOrientation = getOrientation();
+	super.setOrientation(orientation);
+	int newOrientation = getOrientation();
+	if (oldOrientation != newOrientation) {
+		caretDirection = SWT.NULL;
+		resetCache(0, content.getLineCount());
+		setCaretLocation();
+		keyActionMap.clear();
+		createKeyBindings();
+		super.redraw();
 	}
-	if ((orientation & SWT.RIGHT_TO_LEFT) != 0 && (orientation & SWT.LEFT_TO_RIGHT) != 0) {
-		return;	
-	}
-	if ((orientation & SWT.RIGHT_TO_LEFT) != 0 && isMirrored()) {
-		return;	
-	} 
-	if ((orientation & SWT.LEFT_TO_RIGHT) != 0 && !isMirrored()) {
-		return;
-	}
-	if (!BidiUtil.setOrientation(this, orientation)) {
-		return;
-	}
-	isMirrored = (orientation & SWT.RIGHT_TO_LEFT) != 0;
-	caretDirection = SWT.NULL;
-	resetCache(0, content.getLineCount());
-	setCaretLocation();
-	keyActionMap.clear();
-	createKeyBindings();
-	super.redraw();
 }
 /** 
  * Sets the right margin.
