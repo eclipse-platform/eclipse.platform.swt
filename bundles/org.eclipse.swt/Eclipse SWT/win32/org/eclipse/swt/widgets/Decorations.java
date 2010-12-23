@@ -1189,6 +1189,18 @@ public void setMinimized (boolean minimized) {
 	_setMinimized (minimized);
 }
 
+public void setOrientation (int orientation) {
+    super.setOrientation (orientation);
+    if (menus != null) {
+        for (int i=0; i<menus.length; i++) {
+            Menu menu = menus [i];
+            if (menu != null && !menu.isDisposed () && (menu.getStyle () & SWT.POP_UP) != 0) {
+                menu._setOrientation (menu.getOrientation ());
+            }
+        }
+    }
+}
+
 void setParent () {
 	/*
 	* In order for an MDI child window to support

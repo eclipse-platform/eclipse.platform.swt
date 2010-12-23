@@ -802,8 +802,7 @@ public void setListVisible (boolean visible) {
  * @since 2.1.2
  */
 public int getOrientation () {
-	checkWidget();
-	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+	return super.getOrientation ();
 }
 
 /**
@@ -1600,69 +1599,7 @@ public void setItems (String [] items) {
  * @since 2.1.2
  */
 public void setOrientation (int orientation) {
-	checkWidget();
-	if (OS.IsWinCE) return;
-	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return;
-	int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
-	if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
-	style &= ~flags;
-	style |= orientation & flags;
-	int bits  = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		style |= SWT.MIRRORED;
-		bits |= OS.WS_EX_LAYOUTRTL;
-	} else {
-		style &= ~SWT.MIRRORED;
-		bits &= ~OS.WS_EX_LAYOUTRTL;
-	}
-	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
-	int /*long*/ hwndText = 0, hwndList = 0;
-	COMBOBOXINFO pcbi = new COMBOBOXINFO ();
-	pcbi.cbSize = COMBOBOXINFO.sizeof;
-	if (OS.GetComboBoxInfo (handle, pcbi)) {
-		hwndText = pcbi.hwndItem;
-		hwndList = pcbi.hwndList;
-	}
-	if (hwndText != 0) {
-		int bits1 = OS.GetWindowLong (hwndText, OS.GWL_EXSTYLE);
-		int bits2 = OS.GetWindowLong (hwndText, OS.GWL_STYLE);
-		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-			bits1 |= OS.WS_EX_RIGHT | OS.WS_EX_RTLREADING;
-			bits2 |= OS.ES_RIGHT;
-		} else {
-			bits1 &= ~(OS.WS_EX_RIGHT | OS.WS_EX_RTLREADING);
-			bits2 &= ~OS.ES_RIGHT;
-		}
-		OS.SetWindowLong (hwndText, OS.GWL_EXSTYLE, bits1);
-		OS.SetWindowLong (hwndText, OS.GWL_STYLE, bits2);
-		
-		/*
-		* Bug in Windows.  For some reason, the single line text field
-		* portion of the combo box does not redraw to reflect the new
-		* style bits.  The fix is to force the widget to be resized by
-		* temporarily shrinking and then growing the width and height.
-		*/
-		RECT rect = new RECT ();
-		OS.GetWindowRect (hwndText, rect);
-		int width = rect.right - rect.left, height = rect.bottom - rect.top;
-		OS.GetWindowRect (handle, rect);
-		int widthCombo = rect.right - rect.left, heightCombo = rect.bottom - rect.top;
-		int uFlags = OS.SWP_NOMOVE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
-		SetWindowPos (hwndText, 0, 0, 0, width - 1, height - 1, uFlags);
-		SetWindowPos (handle, 0, 0, 0, widthCombo - 1, heightCombo - 1, uFlags);
-		SetWindowPos (hwndText, 0, 0, 0, width, height, uFlags);
-		SetWindowPos (handle, 0, 0, 0, widthCombo, heightCombo, uFlags);
-		OS.InvalidateRect (handle, null, true);
-	}	
-	if (hwndList != 0) {
-		int bits1 = OS.GetWindowLong (hwndList, OS.GWL_EXSTYLE);		
-		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-			bits1 |= OS.WS_EX_LAYOUTRTL;
-		} else {
-			bits1 &= ~OS.WS_EX_LAYOUTRTL;
-		}
-		OS.SetWindowLong (hwndList, OS.GWL_EXSTYLE, bits1);
-	}
+	super.setOrientation (orientation);
 }
 
 void setScrollWidth () {
@@ -1972,6 +1909,63 @@ void updateDropDownHeight () {
 			int flags = OS.SWP_NOMOVE | OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
 			SetWindowPos (handle, 0, 0, 0, rect.right - rect.left, height, flags);
 		}
+	}
+}
+
+void updateOrientation () {
+	int bits  = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		bits |= OS.WS_EX_LAYOUTRTL;
+	} else {
+		bits &= ~OS.WS_EX_LAYOUTRTL;
+	}
+	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
+	int /*long*/ hwndText = 0, hwndList = 0;
+	COMBOBOXINFO pcbi = new COMBOBOXINFO ();
+	pcbi.cbSize = COMBOBOXINFO.sizeof;
+	if (OS.GetComboBoxInfo (handle, pcbi)) {
+		hwndText = pcbi.hwndItem;
+		hwndList = pcbi.hwndList;
+	}
+	if (hwndText != 0) {
+		int bits1 = OS.GetWindowLong (hwndText, OS.GWL_EXSTYLE);
+		int bits2 = OS.GetWindowLong (hwndText, OS.GWL_STYLE);
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+			bits1 |= OS.WS_EX_RIGHT | OS.WS_EX_RTLREADING;
+			bits2 |= OS.ES_RIGHT;
+		} else {
+			bits1 &= ~(OS.WS_EX_RIGHT | OS.WS_EX_RTLREADING);
+			bits2 &= ~OS.ES_RIGHT;
+		}
+		OS.SetWindowLong (hwndText, OS.GWL_EXSTYLE, bits1);
+		OS.SetWindowLong (hwndText, OS.GWL_STYLE, bits2);
+		
+		/*
+		* Bug in Windows.  For some reason, the single line text field
+		* portion of the combo box does not redraw to reflect the new
+		* style bits.  The fix is to force the widget to be resized by
+		* temporarily shrinking and then growing the width and height.
+		*/
+		RECT rect = new RECT ();
+		OS.GetWindowRect (hwndText, rect);
+		int width = rect.right - rect.left, height = rect.bottom - rect.top;
+		OS.GetWindowRect (handle, rect);
+		int widthCombo = rect.right - rect.left, heightCombo = rect.bottom - rect.top;
+		int uFlags = OS.SWP_NOMOVE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
+		SetWindowPos (hwndText, 0, 0, 0, width - 1, height - 1, uFlags);
+		SetWindowPos (handle, 0, 0, 0, widthCombo - 1, heightCombo - 1, uFlags);
+		SetWindowPos (hwndText, 0, 0, 0, width, height, uFlags);
+		SetWindowPos (handle, 0, 0, 0, widthCombo, heightCombo, uFlags);
+		OS.InvalidateRect (handle, null, true);
+	}	
+	if (hwndList != 0) {
+		int bits1 = OS.GetWindowLong (hwndList, OS.GWL_EXSTYLE);		
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+			bits1 |= OS.WS_EX_LAYOUTRTL;
+		} else {
+			bits1 &= ~OS.WS_EX_LAYOUTRTL;
+		}
+		OS.SetWindowLong (hwndList, OS.GWL_EXSTYLE, bits1);
 	}
 }
 

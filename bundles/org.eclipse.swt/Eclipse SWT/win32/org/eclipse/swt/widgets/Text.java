@@ -947,8 +947,7 @@ public int getLineHeight () {
  * @since 2.1.2
  */
 public int getOrientation () {
-	checkWidget();
-	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+	return super.getOrientation ();
 }
 
 /**
@@ -1787,21 +1786,7 @@ public void setMessage (String message) {
  * @since 2.1.2
  */
 public void setOrientation (int orientation) {
-	checkWidget();
-	if (OS.IsWinCE) return;
-	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return;
-	int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
-	if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
-	style &= ~flags;
-	style |= orientation & flags;
-	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		bits |= OS.WS_EX_RTLREADING | OS.WS_EX_LEFTSCROLLBAR;
-	} else {
-		bits &= ~(OS.WS_EX_RTLREADING | OS.WS_EX_LEFTSCROLLBAR);
-	}
-	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
-	fixAlignment ();
+	super.setOrientation (orientation);
 }
 
 /**
@@ -2117,6 +2102,17 @@ public void setTopIndex (int index) {
 public void showSelection () {
 	checkWidget ();
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
+}
+
+void updateOrientation (){
+	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		bits |= OS.WS_EX_RTLREADING | OS.WS_EX_LEFTSCROLLBAR;
+	} else {
+		bits &= ~(OS.WS_EX_RTLREADING | OS.WS_EX_LEFTSCROLLBAR);
+	}
+	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
+	fixAlignment ();
 }
 
 String verifyText (String string, int start, int end, Event keyEvent) {

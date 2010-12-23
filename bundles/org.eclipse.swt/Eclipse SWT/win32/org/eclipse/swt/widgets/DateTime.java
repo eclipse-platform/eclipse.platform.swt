@@ -670,6 +670,10 @@ public void setMonth (int month) {
 	lastSystemTime = null;
 }
 
+public void setOrientation (int orientation) {
+	/* Currently supported only for CALENDAR style. */
+	if ((style & SWT.CALENDAR) != 0) super.setOrientation (orientation);
+}
 /**
  * Sets the receiver's seconds.
  * <p>

@@ -52,6 +52,7 @@ public class TabFolder extends Composite {
 	ImageList imageList;
 	static final int /*long*/ TabFolderProc;
 	static final TCHAR TabFolderClass = new TCHAR (0, OS.WC_TABCONTROL, true);
+	boolean createdAsRTL;
 	
 	/*
 	* These are the undocumented control id's for the children of
@@ -270,6 +271,8 @@ void createHandle () {
 	*/
 	int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
 	OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);	
+	
+	createdAsRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 }
 
 void createWidget () {
@@ -462,7 +465,7 @@ int imageIndex (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
 		Rectangle bounds = image.getBounds ();
-		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
+		imageList = display.getImageList (SWT.NONE, bounds.width, bounds.height);
 		int index = imageList.add (image);
 		int /*long*/ hImageList = imageList.getHandle ();
 		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, hImageList);
@@ -788,6 +791,33 @@ boolean traversePage (boolean next) {
 	return false;
 }
 
+void updateOrientation () {
+	super.updateOrientation ();
+	int /*long*/ hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
+	while (hwndChild != 0) {
+		TCHAR buffer = new TCHAR (0, 128);
+		OS.GetClassName (hwndChild, buffer, buffer.length ());
+		String className = buffer.toString (0, buffer.strlen ());
+		if (className.equals ("msctls_updown32")) { //$NON-NLS-1$
+			int bits = OS.GetWindowLong (hwndChild, OS.GWL_EXSTYLE);
+			if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+				bits |= OS.WS_EX_LAYOUTRTL;
+			} else {
+				bits &= ~OS.WS_EX_LAYOUTRTL;
+			}
+			OS.SetWindowLong (hwndChild, OS.GWL_EXSTYLE, bits);
+			OS.InvalidateRect (hwndChild, null, true);
+			break;
+		}
+		hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
+	}
+	RECT rect = new RECT ();
+	OS.GetWindowRect (handle, rect);
+	int width = rect.right - rect.left, height = rect.bottom - rect.top;
+	OS.SetWindowPos (handle, 0, 0, 0, width - 1, height - 1, OS.SWP_NOMOVE | OS.SWP_NOZORDER);
+	OS.SetWindowPos (handle, 0, 0, 0, width, height, OS.SWP_NOMOVE | OS.SWP_NOZORDER);
+}
+
 int widgetStyle () {
 	/*
 	* Bug in Windows.  Under certain circumstances,
@@ -819,6 +849,29 @@ LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
 	*/
 	if (result != null) return result;
 	return new LRESULT (OS.DLGC_BUTTON | OS.DLGC_WANTARROWS);
+}
+
+LRESULT WM_KEYDOWN (int wParam, int lParam) {
+	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
+	if (result != null) return result;
+	switch (wParam) {
+		case OS.VK_LEFT:
+		case OS.VK_RIGHT:
+			/* 
+			* Bug in Windows. The behavior for the left and right keys is not
+			* changed if the orientation changes after the control was created.
+			* The fix is to replace VK_LEFT by VK_RIGHT and VK_RIGHT by VK_LEFT
+			* when the current orientation differs from the orientation used to 
+			* create the control.
+		    */
+			boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
+			if (isRTL != createdAsRTL) {
+				int code = callWindowProc (handle, OS.WM_KEYDOWN, wParam == OS.VK_RIGHT ? OS.VK_LEFT : OS.VK_RIGHT, lParam);
+				return new LRESULT (code);
+			}
+			break;
+	}
+	return result;
 }
 
 LRESULT WM_MOUSELEAVE (int /*long*/ wParam, int /*long*/ lParam) {

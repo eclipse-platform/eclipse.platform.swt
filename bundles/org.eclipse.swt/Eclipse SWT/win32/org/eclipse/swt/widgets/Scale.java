@@ -44,6 +44,7 @@ public class Scale extends Control {
 	boolean ignoreResize, ignoreSelection;
 	static final int /*long*/ TrackBarProc;
 	static final TCHAR TrackBarClass = new TCHAR (0, OS.TRACKBAR_CLASS, true);
+	boolean createdAsRTL;
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, TrackBarClass, lpWndClass);
@@ -177,6 +178,7 @@ void createHandle () {
 	OS.SendMessage (handle, OS.TBM_SETRANGEMAX, 0, 100);
 	OS.SendMessage (handle, OS.TBM_SETPAGESIZE, 0, 10);
 	OS.SendMessage (handle, OS.TBM_SETTICFREQ, 10, 0);
+	createdAsRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 }
 
 int defaultForeground () {
@@ -455,6 +457,29 @@ TCHAR windowClass () {
 
 int /*long*/ windowProc () {
 	return TrackBarProc;
+}
+
+LRESULT WM_KEYDOWN (int wParam, int lParam) {
+	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
+	if (result != null) return result;
+	switch (wParam) {
+		case OS.VK_LEFT:
+		case OS.VK_RIGHT:
+			/* 
+			* Bug in Windows. The behavior for the left and right keys is not
+			* changed if the orientation changes after the control was created.
+			* The fix is to replace VK_LEFT by VK_RIGHT and VK_RIGHT by VK_LEFT
+			* when the current orientation differs from the orientation used to 
+			* create the control.
+		    */
+			boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
+			if (isRTL != createdAsRTL) {
+				int code = callWindowProc (handle, OS.WM_KEYDOWN, wParam == OS.VK_RIGHT ? OS.VK_LEFT : OS.VK_RIGHT, lParam);
+				return new LRESULT (code);
+			}
+			break;
+	}
+	return result;
 }
 
 LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {

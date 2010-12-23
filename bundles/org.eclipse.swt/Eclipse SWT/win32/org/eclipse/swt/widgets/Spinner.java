@@ -1113,6 +1113,27 @@ void unsubclass () {
 	OS.SetWindowLongPtr (hwndUpDown, OS.GWLP_WNDPROC, UpDownProc);
 }
 
+void updateOrientation () {
+	super.updateOrientation ();
+	int bits  = OS.GetWindowLong (hwndText, OS.GWL_EXSTYLE);
+	int bits1  = OS.GetWindowLong (hwndText, OS.GWL_STYLE);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0){
+		bits |= OS.WS_EX_RIGHT;
+		bits1 |= OS.ES_RIGHT;
+	}
+	else{
+		bits &= ~OS.WS_EX_RIGHT;
+		bits1 &= ~OS.ES_RIGHT;
+	}
+	OS.SetWindowLong (hwndText, OS.GWL_STYLE, bits1);
+	OS.SetWindowLong (hwndText, OS.GWL_EXSTYLE, bits);
+	RECT rect = new RECT ();
+	OS.GetWindowRect (handle, rect);
+	int width = rect.right - rect.left, height = rect.bottom - rect.top;
+	OS.SetWindowPos (handle, 0, 0, 0, width - 1, height - 1, OS.SWP_NOMOVE | OS.SWP_NOZORDER);
+	OS.SetWindowPos (handle, 0, 0, 0, width, height, OS.SWP_NOMOVE | OS.SWP_NOZORDER);
+}
+
 String verifyText (String string, int start, int end, Event keyEvent) {
 	Event event = new Event ();
 	event.text = string;

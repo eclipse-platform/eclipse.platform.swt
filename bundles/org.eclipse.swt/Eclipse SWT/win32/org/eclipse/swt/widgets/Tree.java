@@ -92,6 +92,7 @@ public class Tree extends Composite {
 	boolean linesVisible, customDraw, printClient, painted, ignoreItemHeight;
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus;
 	boolean ignoreDrawSelection, ignoreDrawHot, ignoreFullSelection, explorerTheme;
+	boolean createdAsRTL;
 	int scrollWidth, selectionForeground;
 	int /*long*/ headerToolTipHandle, itemToolTipHandle;
 	int /*long*/ lastTimerID = -1;
@@ -1893,6 +1894,8 @@ void createHandle () {
 	*/
 	int /*long*/ hFont = OS.GetStockObject (OS.SYSTEM_FONT);
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
+	
+	createdAsRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 }
 
 void createHeaderToolTips () {
@@ -3634,7 +3637,7 @@ int imageIndex (Image image, int index) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
 		Rectangle bounds = image.getBounds ();
-		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
+		imageList = display.getImageList (SWT.NONE, bounds.width, bounds.height);
 	}
 	int imageIndex = imageList.indexOf (image);
 	if (imageIndex == -1) imageIndex = imageList.add (image);
@@ -3658,7 +3661,7 @@ int imageIndexHeader (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (headerImageList == null) {
 		Rectangle bounds = image.getBounds ();
-		headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
+		headerImageList = display.getImageList (SWT.NONE, bounds.width, bounds.height);
 		int index = headerImageList.indexOf (image);
 		if (index == -1) index = headerImageList.add (image);
 		int /*long*/ hImageList = headerImageList.getHandle ();
@@ -5525,6 +5528,40 @@ void updateImages () {
 	}
 }
 
+void updateOrientation () {
+	super.updateOrientation ();
+	RECT rect = new RECT ();
+	OS.GetWindowRect (handle, rect);
+	int width = rect.right - rect.left, height = rect.bottom - rect.top;
+	OS.SetWindowPos (handle, 0, 0, 0, width - 1, height - 1, OS.SWP_NOMOVE | OS.SWP_NOZORDER);
+	OS.SetWindowPos (handle, 0, 0, 0, width, height, OS.SWP_NOMOVE | OS.SWP_NOZORDER);
+	if (hwndParent != 0) {
+		int bits = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+			bits |= OS.WS_EX_LAYOUTRTL;
+		} else {
+			bits &= ~OS.WS_EX_LAYOUTRTL;
+		}
+		OS.SetWindowLong (hwndParent, OS.GWL_EXSTYLE, bits);
+		rect = new RECT ();
+		OS.GetWindowRect (hwndParent, rect);
+		width = rect.right - rect.left; height = rect.bottom - rect.top;
+		OS.SetWindowPos (hwndParent, 0, 0, 0, width - 1, height - 1, OS.SWP_NOMOVE | OS.SWP_NOZORDER);
+		OS.SetWindowPos (hwndParent, 0, 0, 0, width, height, OS.SWP_NOMOVE | OS.SWP_NOZORDER);
+	}
+	if (hwndHeader != 0) {
+		int bits = OS.GetWindowLong (hwndHeader, OS.GWL_EXSTYLE);
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+			bits |= OS.WS_EX_LAYOUTRTL;
+		} else {
+			bits &= ~OS.WS_EX_LAYOUTRTL;
+		}
+		OS.SetWindowLong (hwndHeader, OS.GWL_EXSTYLE, bits);
+		OS.InvalidateRect (hwndHeader, null, true);
+	}
+	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
+}
+
 void updateScrollBar () {
 	if (hwndParent != 0) {
 		if (columnCount != 0 || scrollWidth != 0) {
@@ -5981,6 +6018,21 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
 	switch ((int)/*64*/wParam) {
+		case OS.VK_LEFT:
+		case OS.VK_RIGHT:
+			/* 
+			* Bug in Windows. The behavior for the left and right keys is not
+			* changed if the orientation changes after the control was created.
+			* The fix is to replace VK_LEFT by VK_RIGHT and VK_RIGHT by VK_LEFT
+			* when the current orientation differs from the orientation used to 
+			* create the control.
+		    */
+		    boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
+		    if (isRTL != createdAsRTL) {
+			   int code = callWindowProc (handle, OS.WM_KEYDOWN, wParam == OS.VK_RIGHT ? OS.VK_LEFT : OS.VK_RIGHT, lParam);
+			   return new LRESULT (code);
+		    }
+		    break;
 		case OS.VK_SPACE:
 			/*
 			* Ensure that the window proc does not process VK_SPACE

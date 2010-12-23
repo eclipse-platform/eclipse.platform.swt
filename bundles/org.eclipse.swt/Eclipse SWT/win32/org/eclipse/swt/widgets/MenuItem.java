@@ -932,6 +932,16 @@ boolean setRadioSelection (boolean value) {
 	return true;
 }
 
+void setOrientation (int orientation) {
+    int hMenu = parent.handle;
+    MENUITEMINFO info = new MENUITEMINFO ();
+    info.cbSize = MENUITEMINFO.sizeof;
+    info.fMask = OS.MIIM_FTYPE;
+    info.fType = widgetStyle ();
+    OS.SetMenuItemInfo (hMenu, id, false, info);
+    if (menu != null) menu._setOrientation (orientation);
+}
+
 /**
  * Sets the selection state of the receiver.
  * <p>

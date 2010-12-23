@@ -1272,6 +1272,27 @@ void updateLayout (boolean resize, boolean all) {
 	}
 }
 
+void updateOrientation () {
+	Control [] controls = _getChildren ();
+	RECT [] rects = new RECT [controls.length]; 
+	for (int i=0; i<controls.length; i++) {
+		Control control = controls [i];
+		RECT rect = rects [i] = new RECT();
+		control.forceResize ();
+		OS.GetWindowRect (control.topHandle (), rect);
+		OS.MapWindowPoints (0, handle, rect, 2);
+	}
+	int orientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+	super.updateOrientation ();
+	for (int i=0; i<controls.length; i++) {
+		Control control = controls [i];
+		RECT rect = rects [i];
+		control.setOrientation (orientation);
+		int flags = OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
+		SetWindowPos (control.topHandle (), 0, rect.left, rect.top, 0, 0, flags);
+	}
+}
+
 void updateUIState () {
 	int /*long*/ hwndShell = getShell ().handle;
 	int uiState = /*64*/(int)OS.SendMessage (hwndShell, OS.WM_QUERYUISTATE, 0, 0);
