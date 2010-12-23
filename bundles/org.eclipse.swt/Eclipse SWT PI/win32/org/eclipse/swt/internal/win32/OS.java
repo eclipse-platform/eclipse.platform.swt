@@ -1174,6 +1174,7 @@ public class OS extends C {
 	public static final int MF_UNCHECKED = 0x0;
 	public static final int MIIM_BITMAP = 0x80;
 	public static final int MIIM_DATA = 0x20;
+	public static final int MIIM_FTYPE = 0x100;
 	public static final int MIIM_ID = 0x2;
 	public static final int MIIM_STATE = 0x1;
 	public static final int MIIM_STRING = 0x40;
