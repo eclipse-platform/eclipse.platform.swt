@@ -6029,7 +6029,7 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 		    */
 		    boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 		    if (isRTL != createdAsRTL) {
-			   int code = callWindowProc (handle, OS.WM_KEYDOWN, wParam == OS.VK_RIGHT ? OS.VK_LEFT : OS.VK_RIGHT, lParam);
+			   int /*long*/ code = callWindowProc (handle, OS.WM_KEYDOWN, wParam == OS.VK_RIGHT ? OS.VK_LEFT : OS.VK_RIGHT, lParam);
 			   return new LRESULT (code);
 		    }
 		    break;

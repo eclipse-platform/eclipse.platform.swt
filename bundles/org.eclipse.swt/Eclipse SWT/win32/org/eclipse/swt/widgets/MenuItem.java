@@ -933,7 +933,7 @@ boolean setRadioSelection (boolean value) {
 }
 
 void setOrientation (int orientation) {
-    int hMenu = parent.handle;
+    int /*long*/ hMenu = parent.handle;
     MENUITEMINFO info = new MENUITEMINFO ();
     info.cbSize = MENUITEMINFO.sizeof;
     info.fMask = OS.MIIM_FTYPE;

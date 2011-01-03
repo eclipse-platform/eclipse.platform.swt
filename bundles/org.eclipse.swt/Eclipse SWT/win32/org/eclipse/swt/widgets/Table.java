@@ -5621,7 +5621,7 @@ void updateMoveable () {
 
 void updateOrientation () {
 	super.updateOrientation ();
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int /*long*/ hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	if (hwndHeader != 0) {
 		int bits = OS.GetWindowLong (hwndHeader, OS.GWL_EXSTYLE);
 		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
