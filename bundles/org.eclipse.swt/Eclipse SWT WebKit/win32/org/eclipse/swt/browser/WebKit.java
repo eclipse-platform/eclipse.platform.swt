@@ -324,7 +324,7 @@ static String stringFromJSString (int /*long*/ jsString) {
 }
 
 public boolean back () {
-	int /*long*/[] result = new int /*long*/[1];
+	int [] result = new int [1];
 	webView.goBack (result);
 	return result[0] == 0 ? false : true;
 }
@@ -680,7 +680,7 @@ public boolean execute (String script) {
 }
 
 public boolean forward () {
-	int /*long*/[] result = new int /*long*/[1];
+	int [] result = new int [1];
 	webView.goForward (result);
 	return result[0] != 0;
 }
@@ -964,12 +964,13 @@ boolean handleEvent (Object[] arguments) {
 }
 
 public boolean isBackEnabled () {
-	int /*long*/[] result = new int /*long*/[1];
-	int hr = webView.QueryInterface (WebKit_win32.IID_IWebIBActions, result);
-	if (hr != COM.S_OK || result[0] == 0) {
+	int /*long*/[] address = new int /*long*/[1];
+	int hr = webView.QueryInterface (WebKit_win32.IID_IWebIBActions, address);
+	if (hr != COM.S_OK || address[0] == 0) {
 		return false;
 	}
-	IWebIBActions webIBActions = new IWebIBActions (result[0]);
+	IWebIBActions webIBActions = new IWebIBActions (address[0]);
+	int [] result = new int [1];
 	webIBActions.canGoBack (webView.getAddress (), result);
 	webIBActions.Release ();
 	return result[0] != 0;
@@ -982,12 +983,13 @@ public boolean isFocusControl () {
 }
 
 public boolean isForwardEnabled () {
-	int /*long*/[] result = new int /*long*/[1];
-	int hr = webView.QueryInterface (WebKit_win32.IID_IWebIBActions, result);
-	if (hr != COM.S_OK || result[0] == 0) {
+	int /*long*/[] address = new int /*long*/[1];
+	int hr = webView.QueryInterface (WebKit_win32.IID_IWebIBActions, address);
+	if (hr != COM.S_OK || address[0] == 0) {
 		return false;
 	}
-	IWebIBActions webIBActions = new IWebIBActions (result[0]);
+	IWebIBActions webIBActions = new IWebIBActions (address[0]);
+	int [] result = new int [1];
 	webIBActions.canGoForward (webView.getAddress (), result);
 	webIBActions.Release ();
 	return result[0] != 0;
@@ -1223,13 +1225,13 @@ public boolean setUrl (String url, String postData, String[] headers) {
 boolean shouldClose () {
 	if (!jsEnabled) return true;
 	
-	int /*long*/[] result = new int /*long*/[1];
-	int hr = webView.QueryInterface (WebKit_win32.IID_IWebViewPrivate, result);
-	if (hr != COM.S_OK || result[0] == 0) {
+	int /*long*/[] address = new int /*long*/[1];
+	int hr = webView.QueryInterface (WebKit_win32.IID_IWebViewPrivate, address);
+	if (hr != COM.S_OK || address[0] == 0) {
 		return false;
 	}
-	IWebViewPrivate webViewPrivate = new IWebViewPrivate (result[0]);
-	result[0] = 0;
+	IWebViewPrivate webViewPrivate = new IWebViewPrivate (address[0]);
+	int [] result = new int [1];
 	//This function will fire the before unload handler for a page
 	webViewPrivate.shouldClose (result);
 	webViewPrivate.Release ();

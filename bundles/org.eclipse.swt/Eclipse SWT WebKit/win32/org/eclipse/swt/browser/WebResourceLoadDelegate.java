@@ -58,19 +58,19 @@ int didReceiveAuthenticationChallenge (int /*long*/ webView, int /*long*/ identi
 	 * times because a listener is likely giving incorrect credentials repeatedly
 	 * and will do so indefinitely.
 	 */
-	int /*long*/ [] result = new int /*long*/ [1];
-	int hr = iweburlChallenge.previousFailureCount (result);
+	int [] count = new int [1];
+	int hr = iweburlChallenge.previousFailureCount (count);
 	if (hr != COM.S_OK) {
 		return COM.S_OK;
 	}
-	if (result[0] < 3) {
+	int /*long*/ [] result = new int /*long*/ [1];
+	if (count[0] < 3) {
 		AuthenticationListener[] authenticationListeners = browser.webBrowser.authenticationListeners;
 		for (int i = 0; i < authenticationListeners.length; i++) {
 			AuthenticationEvent event = new AuthenticationEvent (browser);
 			event.location = ((WebKit)browser.webBrowser).lastNavigateURL;
 			authenticationListeners[i].authenticate (event);
 			if (!event.doit) {
-				result[0] = 0;
 				hr = iweburlChallenge.sender (result);
 				if (hr != COM.S_OK || result[0] == 0) {
 					return COM.S_OK;
@@ -81,7 +81,6 @@ int didReceiveAuthenticationChallenge (int /*long*/ webView, int /*long*/ identi
 				return COM.S_OK;
 			}
 			if (event.user != null && event.password != null) {
-				result[0] = 0;
 				hr = iweburlChallenge.sender (result);
 				if (hr != COM.S_OK || result[0] == 0) {
 					return COM.S_OK;
@@ -114,9 +113,9 @@ int didReceiveAuthenticationChallenge (int /*long*/ webView, int /*long*/ identi
 		if (hr == COM.S_OK && result[0] != 0) {
 			userReturn[0] = WebKit.extractBSTR (result[0]);
 			COM.SysFreeString (result[0]);
-			result[0] = 0;
-			hr = proposedCredential.hasPassword (result);
-			if (hr == COM.S_OK && result[0] != 0) {
+			int [] value = new int [1];
+			hr = proposedCredential.hasPassword (value);
+			if (hr == COM.S_OK && value[0] != 0) {
 				result[0] = 0;
 				hr = proposedCredential.password (result);
 				if (hr == COM.S_OK && result[0] != 0) {
@@ -135,15 +134,14 @@ int didReceiveAuthenticationChallenge (int /*long*/ webView, int /*long*/ identi
 	IWebURLProtectionSpace space = new IWebURLProtectionSpace (result[0]);
 	String host = null, realm = null;
 	result[0] = 0;
-	hr = space.isProxy (result);
 	hr = space.host (result);
 	if (hr == COM.S_OK && result[0] != 0) {
 		host = WebKit.extractBSTR (result[0]);
 		COM.SysFreeString (result[0]);
-		result[0] = 0;
-		hr = space.port (result);
+		int [] port = new int [1];
+		hr = space.port (port);
 		if (hr == COM.S_OK) {
-			host += ":" + result[0];
+			host += ":" + port[0];
 			result[0] = 0;
 			hr = space.realm (result);
 			space.Release ();
@@ -153,7 +151,6 @@ int didReceiveAuthenticationChallenge (int /*long*/ webView, int /*long*/ identi
 		    }
 		}
 	}
-	host = realm = null;
 	boolean response = showAuthenticationDialog (userReturn, passwordReturn, host, realm);
 	result[0] = 0;
 	hr = iweburlChallenge.sender (result);

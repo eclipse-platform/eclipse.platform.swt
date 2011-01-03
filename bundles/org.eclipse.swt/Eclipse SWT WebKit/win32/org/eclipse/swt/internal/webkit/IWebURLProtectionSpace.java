@@ -23,10 +23,6 @@ public int host (int /*long*/[] result) {
 	return COM.VtblCall (4, getAddress (), result);
 }
 
-public int isProxy (int[] result) {
-	return COM.VtblCall (7, getAddress (), result);
-}
-
 public int port (int[] result) {
 	return COM.VtblCall (8, getAddress (), result);
 }

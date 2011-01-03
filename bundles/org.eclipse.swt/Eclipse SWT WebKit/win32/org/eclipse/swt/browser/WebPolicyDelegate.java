@@ -47,7 +47,7 @@ void createCOMInterfaces () {
 int decidePolicyForMIMEType (int /*long*/ webView, int /*long*/ type, int /*long*/ request, int /*long*/ frame,
 		int /*long*/ listener) {
 	IWebView iwebView = new IWebView (webView);
-	int /*long*/[] canShow = new int /*long*/[1];
+	int [] canShow = new int [1];
 	iwebView.canShowMIMEType (type, canShow);
 	IWebPolicyDecisionListener pdListener = new IWebPolicyDecisionListener (listener);
 	if (canShow[0] != 0) {
