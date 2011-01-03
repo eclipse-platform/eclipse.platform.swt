@@ -10,12 +10,13 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.webkit;
 
+
 import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebCookieManager extends IUnknown {
 
-public IWebCookieManager(int /*long*/ address) {
-	super(address);
+public IWebCookieManager (int /*long*/ address) {
+	super (address);
 }
 
 public int cookieStorage (int /*long*/[] storage) {

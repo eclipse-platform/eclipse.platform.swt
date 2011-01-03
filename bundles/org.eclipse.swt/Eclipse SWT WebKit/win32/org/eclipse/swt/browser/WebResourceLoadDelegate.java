@@ -25,11 +25,11 @@ class WebResourceLoadDelegate {
 	Browser browser;
 	String postData;
 	
-WebResourceLoadDelegate() {
-	createCOMInterfaces();
+WebResourceLoadDelegate () {
+	createCOMInterfaces ();
 }
 
-int AddRef() {
+int AddRef () {
 	refCount++;
 	return refCount;
 }
@@ -51,8 +51,8 @@ void createCOMInterfaces () {
 	};
 }
 
-int didReceiveAuthenticationChallenge(int /*long*/ webView, int /*long*/ identifier, int /*long*/ challenge, int /*long*/ dataSource) {
-	IWebURLAuthenticationChallenge iweburlChallenge = new IWebURLAuthenticationChallenge(challenge);
+int didReceiveAuthenticationChallenge (int /*long*/ webView, int /*long*/ identifier, int /*long*/ challenge, int /*long*/ dataSource) {
+	IWebURLAuthenticationChallenge iweburlChallenge = new IWebURLAuthenticationChallenge (challenge);
 	/*
 	 * Do not invoke the listeners if this challenge has been failed too many
 	 * times because a listener is likely giving incorrect credentials repeatedly
@@ -61,8 +61,8 @@ int didReceiveAuthenticationChallenge(int /*long*/ webView, int /*long*/ identif
 	int /*long*/ [] result = new int /*long*/ [1];
 	int hr = iweburlChallenge.previousFailureCount (result);
 	if (hr != COM.S_OK) {
-    	return COM.S_OK;
-    }
+		return COM.S_OK;
+	}
 	if (result[0] < 3) {
 		AuthenticationListener[] authenticationListeners = browser.webBrowser.authenticationListeners;
 		for (int i = 0; i < authenticationListeners.length; i++) {
@@ -74,10 +74,10 @@ int didReceiveAuthenticationChallenge(int /*long*/ webView, int /*long*/ identif
 				hr = iweburlChallenge.sender (result);
 				if (hr != COM.S_OK || result[0] == 0) {
 					return COM.S_OK;
-			    }
-				IWebURLAuthenticationChallengeSender challengeSender = new IWebURLAuthenticationChallengeSender(result[0]);
-				challengeSender.cancelAuthenticationChallenge(challenge);
-				challengeSender.Release();
+				}
+				IWebURLAuthenticationChallengeSender challengeSender = new IWebURLAuthenticationChallengeSender (result[0]);
+				challengeSender.cancelAuthenticationChallenge (challenge);
+				challengeSender.Release ();
 				return COM.S_OK;
 			}
 			if (event.user != null && event.password != null) {
@@ -85,19 +85,19 @@ int didReceiveAuthenticationChallenge(int /*long*/ webView, int /*long*/ identif
 				hr = iweburlChallenge.sender (result);
 				if (hr != COM.S_OK || result[0] == 0) {
 					return COM.S_OK;
-			    }
-				IWebURLAuthenticationChallengeSender challengeSender = new IWebURLAuthenticationChallengeSender(result[0]);
+				}
+				IWebURLAuthenticationChallengeSender challengeSender = new IWebURLAuthenticationChallengeSender (result[0]);
 				result[0] = 0;
-				hr = WebKit_win32.WebKitCreateInstance(WebKit_win32.CLSID_IWebURLCredential, 0, WebKit_win32.IID_IWebURLCredential, result);
+				hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebURLCredential, 0, WebKit_win32.IID_IWebURLCredential, result);
 				if (hr == COM.S_OK && result[0] != 0) {
-					IWebURLCredential credential = new IWebURLCredential(result[0]);
-					int /*long*/ user = WebKit.createBSTR(event.user);
-					int /*long*/ password = WebKit.createBSTR(event.password);
-					credential.initWithUser(user, password, WebKit_win32.WebURLCredentialPersistenceForSession);
-					challengeSender.useCredential(result[0], challenge);
-					credential.Release();
-			    }
-				challengeSender.Release();
+					IWebURLCredential credential = new IWebURLCredential (result[0]);
+					int /*long*/ user = WebKit.createBSTR (event.user);
+					int /*long*/ password = WebKit.createBSTR (event.password);
+					credential.initWithUser (user, password, WebKit_win32.WebURLCredentialPersistenceForSession);
+					challengeSender.useCredential (result[0], challenge);
+					credential.Release ();
+				}
+				challengeSender.Release ();
 				return COM.S_OK;
 			}
 		}
@@ -112,44 +112,44 @@ int didReceiveAuthenticationChallenge(int /*long*/ webView, int /*long*/ identif
 		result[0] = 0;
 		hr = proposedCredential.user (result);
 		if (hr == COM.S_OK && result[0] != 0) {
-			userReturn[0] = WebKit.extractBSTR(result[0]);
-			COM.SysFreeString(result[0]);
+			userReturn[0] = WebKit.extractBSTR (result[0]);
+			COM.SysFreeString (result[0]);
 			result[0] = 0;
 			hr = proposedCredential.hasPassword (result);
 			if (hr == COM.S_OK && result[0] != 0) {
 				result[0] = 0;
 				hr = proposedCredential.password (result);
 				if (hr == COM.S_OK && result[0] != 0) {
-					passwordReturn[0] = WebKit.extractBSTR(result[0]);
-					COM.SysFreeString(result[0]);
+					passwordReturn[0] = WebKit.extractBSTR (result[0]);
+					COM.SysFreeString (result[0]);
 				}
 			}
 		}
-		proposedCredential.Release();
+		proposedCredential.Release ();
 	}
 	result[0] = 0;
 	hr = iweburlChallenge.protectionSpace (result);
 	if (hr != COM.S_OK || result[0] == 0) {
 		return COM.S_OK;
     }
-	IWebURLProtectionSpace space = new IWebURLProtectionSpace(result[0]);
+	IWebURLProtectionSpace space = new IWebURLProtectionSpace (result[0]);
 	String host = null, realm = null;
 	result[0] = 0;
-	hr = space.isProxy(result);
+	hr = space.isProxy (result);
 	hr = space.host (result);
 	if (hr == COM.S_OK && result[0] != 0) {
-		host = WebKit.extractBSTR(result[0]);
-		COM.SysFreeString(result[0]);
+		host = WebKit.extractBSTR (result[0]);
+		COM.SysFreeString (result[0]);
 		result[0] = 0;
 		hr = space.port (result);
 		if (hr == COM.S_OK) {
 			host += ":" + result[0];
 			result[0] = 0;
 			hr = space.realm (result);
-			space.Release();
+			space.Release ();
 			if (hr == COM.S_OK && result[0] != 0) {
-				realm = WebKit.extractBSTR(result[0]);
-				COM.SysFreeString(result[0]);
+				realm = WebKit.extractBSTR (result[0]);
+				COM.SysFreeString (result[0]);
 		    }
 		}
 	}
@@ -160,23 +160,23 @@ int didReceiveAuthenticationChallenge(int /*long*/ webView, int /*long*/ identif
 	if (hr != COM.S_OK || result[0] == 0) {
     	return COM.S_OK;
     }
-	IWebURLAuthenticationChallengeSender challengeSender = new IWebURLAuthenticationChallengeSender(result[0]);
+	IWebURLAuthenticationChallengeSender challengeSender = new IWebURLAuthenticationChallengeSender (result[0]);
 	if (!response) {
-		challengeSender.cancelAuthenticationChallenge(challenge);
-		challengeSender.Release();
+		challengeSender.cancelAuthenticationChallenge (challenge);
+		challengeSender.Release ();
 		return COM.S_OK;
 	}
 	result[0] = 0;
-	hr = WebKit_win32.WebKitCreateInstance(WebKit_win32.CLSID_IWebURLCredential, 0, WebKit_win32.IID_IWebURLCredential, result);
+	hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebURLCredential, 0, WebKit_win32.IID_IWebURLCredential, result);
 	if (hr == COM.S_OK && result[0] != 0) {
-		IWebURLCredential credential = new IWebURLCredential(result[0]);
-		int /*long*/ user = WebKit.createBSTR(userReturn[0]);
-		int /*long*/ password = WebKit.createBSTR(passwordReturn[0]);
-		credential.initWithUser(user, password, WebKit_win32.WebURLCredentialPersistenceForSession);
-		challengeSender.useCredential(result[0], challenge);
-		credential.Release();
+		IWebURLCredential credential = new IWebURLCredential (result[0]);
+		int /*long*/ user = WebKit.createBSTR (userReturn[0]);
+		int /*long*/ password = WebKit.createBSTR (passwordReturn[0]);
+		credential.initWithUser (user, password, WebKit_win32.WebURLCredentialPersistenceForSession);
+		challengeSender.useCredential (result[0], challenge);
+		credential.Release ();
 	}
-	challengeSender.Release();
+	challengeSender.Release ();
 	return COM.S_OK;
 }
 
@@ -191,39 +191,39 @@ int /*long*/ getAddress () {
 	return iWebResourceLoadDelegate.getAddress ();
 }
 
-int identifierForInitialRequest(int /*long*/ webView, int /*long*/ request, int /*long*/ dataSource, int /*long*/ identifier) {
-	if (browser.isDisposed()) return COM.S_OK;
+int identifierForInitialRequest (int /*long*/ webView, int /*long*/ request, int /*long*/ dataSource, int /*long*/ identifier) {
+	if (browser.isDisposed ()) return COM.S_OK;
 	
-	IWebDataSource source = new IWebDataSource(dataSource);
+	IWebDataSource source = new IWebDataSource (dataSource);
 	int /*long*/[] frame = new int /*long*/[1];
-	int hr = source.webFrame(frame);
+	int hr = source.webFrame (frame);
 	if (hr != COM.S_OK || frame[0] == 0) {
     	return COM.S_OK;
     }
-	new IWebFrame(frame[0]).Release();
+	new IWebFrame (frame[0]).Release ();
 	int /*long*/[] mainFrame = new int /*long*/[1];
-	IWebView iWebView = new IWebView(webView);
-	hr = iWebView.mainFrame(mainFrame);
+	IWebView iWebView = new IWebView (webView);
+	hr = iWebView.mainFrame (mainFrame);
 	if (hr != COM.S_OK || mainFrame[0] == 0) {
     	return COM.S_OK;
     }
-	new IWebFrame(mainFrame[0]).Release();
+	new IWebFrame (mainFrame[0]).Release ();
 	if (frame[0] == mainFrame[0]) {
-		int /*long*/ progress = OS.malloc(C.PTR_SIZEOF);
-		iWebView.estimatedProgress(progress);
+		int /*long*/ progress = OS.malloc (8);
+		iWebView.estimatedProgress (progress);
 		double [] estimate = new double[1];
-		OS.MoveMemory(estimate, progress, 8);
-		OS.free(progress);
+		OS.MoveMemory (estimate, progress, 8);
+		OS.free (progress);
 		progress = (int) (estimate[0] * 100);
 		
-		ProgressEvent progressEvent = new ProgressEvent(browser);
-		progressEvent.display = browser.getDisplay();
+		ProgressEvent progressEvent = new ProgressEvent (browser);
+		progressEvent.display = browser.getDisplay ();
 		progressEvent.widget = browser;
 		progressEvent.current = (int)(progress);
-		progressEvent.total = Math.max((int)progress, WebKit.MAX_PROGRESS);
+		progressEvent.total = Math.max ((int)progress, WebKit.MAX_PROGRESS);
 		ProgressListener[] progressListeners = browser.webBrowser.progressListeners;
 		for (int i = 0; i < progressListeners.length; i++) {
-			progressListeners[i].changed(progressEvent);
+			progressListeners[i].changed (progressEvent);
 		}
 	}
 	return COM.S_OK;
@@ -301,12 +301,12 @@ boolean showAuthenticationDialog (final String[] user, final String[] password, 
 
 	final boolean[] result = new boolean[1];
 	final Button[] buttons = new Button[2];
-	Listener listener = new Listener() {
-		public void handleEvent(Event event) {
-			user[0] = userText.getText();
-			password[0] = passwordText.getText();
+	Listener listener = new Listener () {
+		public void handleEvent (Event event) {
+			user[0] = userText.getText ();
+			password[0] = passwordText.getText ();
 			result[0] = event.widget == buttons[1];
-			shell.close();
+			shell.close ();
 		}	
 	};
 
@@ -326,12 +326,12 @@ boolean showAuthenticationDialog (final String[] user, final String[] password, 
 
 	shell.setDefaultButton (buttons[1]);
 	shell.pack ();
-	Rectangle parentSize = parent.getBounds();
-	Rectangle shellSize = shell.getBounds();
+	Rectangle parentSize = parent.getBounds ();
+	Rectangle shellSize = shell.getBounds ();
 	int x, y;
 	x = parent.getLocation().x + (parentSize.width - shellSize.width)/2;
 	y = parent.getLocation().y + (parentSize.height - shellSize.height)/2;
-	shell.setLocation(x, y);
+	shell.setLocation (x, y);
 	shell.open ();
 	Display display = browser.getDisplay ();
 	while (!shell.isDisposed ()) {
@@ -341,34 +341,35 @@ boolean showAuthenticationDialog (final String[] user, final String[] password, 
 	return result[0];
 }
 
-int willSendRequest(int /*long*/ webView, int /*long*/ identifier, int /*long*/ request, int /*long*/ redirectResponse, int /*long*/ dataSource, int /*long*/ newRequest) {
-	IWebURLRequest req = new IWebURLRequest(request);
+int willSendRequest (int /*long*/ webView, int /*long*/ identifier, int /*long*/ request, int /*long*/ redirectResponse, int /*long*/ dataSource, int /*long*/ newRequest) {
+	IWebURLRequest req = new IWebURLRequest (request);
 	int /*long*/[] result = new int /*long*/ [1];
-	int hr = req.URL(result);
+	int hr = req.URL (result);
 	if (hr == COM.S_OK && result[0] != 0) {
-		String url = WebKit.extractBSTR(result[0]);
-		COM.SysFreeString(result[0]);
+		String url = WebKit.extractBSTR (result[0]);
+		COM.SysFreeString (result[0]);
 		/*
 		 * file://c|/ doesn't work on Webkit but works on other browsers. 
 		 * So change file:// to file:/// to be consistent
 		 */
-		if (url.startsWith(WebKit.PROTOCOL_FILE) && !url.startsWith(WebKit.URI_FILEROOT)) {
+		if (url.startsWith (WebKit.PROTOCOL_FILE) && !url.startsWith (WebKit.URI_FILEROOT)) {
 			int length = WebKit.PROTOCOL_FILE.length ();
-			url = WebKit.URI_FILEROOT + url.substring(length);
+			url = WebKit.URI_FILEROOT + url.substring (length);
 			result[0] = 0;
 			
-			hr = req.mutableCopy(result);
+			hr = req.mutableCopy (result);
 			if (hr == COM.S_OK && result[0] != 0) {
-				IWebMutableURLRequest mReq = new IWebMutableURLRequest(result[0]);
+				IWebMutableURLRequest mReq = new IWebMutableURLRequest (result[0]);
 				int /*long*/ urlString = WebKit.createBSTR (url);
-				mReq.setURL(urlString);
-				OS.MoveMemory (newRequest, new int /*long*/[] {mReq.getAddress()}, C.PTR_SIZEOF);
+				mReq.setURL (urlString);
+				OS.MoveMemory (newRequest, new int /*long*/[] {mReq.getAddress ()}, C.PTR_SIZEOF);
 				return COM.S_OK;
 			}
 		}
-    }
+	}
 	req.AddRef ();
 	OS.MoveMemory (newRequest, new int /*long*/[] {request}, C.PTR_SIZEOF);
 	return COM.S_OK;
 }
+
 }

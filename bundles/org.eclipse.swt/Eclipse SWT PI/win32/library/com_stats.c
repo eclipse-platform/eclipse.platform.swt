@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int COM_nativeFunctionCount = 184;
-int COM_nativeFunctionCallCount[184];
+int COM_nativeFunctionCount = 183;
+int COM_nativeFunctionCallCount[183];
 char * COM_nativeFunctionNames[] = {
 	"AccessibleChildren",
 	"AccessibleObjectFromWindow",
@@ -210,7 +210,7 @@ char * COM_nativeFunctionNames[] = {
 #ifndef JNI64
 	"VtblCall__IIIIZ",
 #else
-	"VtblCall__IJJJZ",
+	"VtblCall__IJIIZ",
 #endif
 #ifndef JNI64
 	"VtblCall__IIII_3I",
@@ -221,11 +221,6 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IIII_3J",
 #else
 	"VtblCall__IJII_3J",
-#endif
-#ifndef JNI64
-	"VtblCall__IIIJ",
-#else
-	"VtblCall__IJIJ",
 #endif
 #ifndef JNI64
 	"VtblCall__IIIJ_3I",
@@ -323,11 +318,6 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IJJI_3J",
 #endif
 #ifndef JNI64
-	"VtblCall__IIJJ",
-#else
-	"VtblCall__IJJJ",
-#endif
-#ifndef JNI64
 	"VtblCall__IIJJLorg_eclipse_swt_internal_ole_win32_GUID_2J_3J",
 #else
 	"VtblCall__IJJJLorg_eclipse_swt_internal_ole_win32_GUID_2J_3J",
@@ -336,6 +326,11 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IIJJLorg_eclipse_swt_internal_win32_POINT_2I",
 #else
 	"VtblCall__IJJJLorg_eclipse_swt_internal_win32_POINT_2I",
+#endif
+#ifndef JNI64
+	"VtblCall__IIJJZ",
+#else
+	"VtblCall__IJJJZ",
 #endif
 #ifndef JNI64
 	"VtblCall__IIJJ_3J",
@@ -361,11 +356,6 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IIJZ",
 #else
 	"VtblCall__IJJZ",
-#endif
-#ifndef JNI64
-	"VtblCall__IIJ_3I",
-#else
-	"VtblCall__IJJ_3I",
 #endif
 #ifndef JNI64
 	"VtblCall__IIJ_3J",
@@ -509,6 +499,11 @@ char * COM_nativeFunctionNames[] = {
 #endif
 #ifndef JNI64
 	"VtblCall__IIZI",
+#else
+	"VtblCall__IJZI",
+#endif
+#ifndef JNI64
+	"VtblCall__IIZJ",
 #else
 	"VtblCall__IJZJ",
 #endif

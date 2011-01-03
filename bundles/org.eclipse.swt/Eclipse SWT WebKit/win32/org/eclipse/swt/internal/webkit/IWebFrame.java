@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.webkit;
 
+
 import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebFrame extends IUnknown {
@@ -18,28 +19,20 @@ public IWebFrame (int /*long*/ address) {
 	super (address);
 }
 
-public int dataSource (int /*long*/[] source) {
-	return COM.VtblCall (13, getAddress (), source);
-}
-
-public int DOMDocument (int /*long*/[] document) {
-	return COM.VtblCall (6, getAddress (), document);
-}
-
-public int /*long*/ globalContext () {
-	return COM.VtblCall (23, getAddress ());
+public int loadRequest (int /*long*/ request) {
+	return COM.VtblCall (8, getAddress (), request);
 }
 
 public int loadHTMLString (int /*long*/ string, int /*long*/ baseURL) {
 	return COM.VtblCall (10, getAddress (), string, baseURL);
 }
 
-public int loadRequest (int /*long*/ request) {
-	return COM.VtblCall (8, getAddress (), request);
+public int dataSource (int /*long*/[] source) {
+	return COM.VtblCall (13, getAddress (), source);
 }
 
-public int name (int /*long*/[] frameName) {
-	return COM.VtblCall (3, getAddress (), frameName);
+public int /*long*/ globalContext () {
+	return COM.VtblCall (23, getAddress ());
 }
 
 }

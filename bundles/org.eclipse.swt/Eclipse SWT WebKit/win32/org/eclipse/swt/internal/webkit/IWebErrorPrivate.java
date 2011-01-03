@@ -10,11 +10,17 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.webkit;
 
+
 import org.eclipse.swt.internal.ole.win32.*;
 
-public class IDOMEventListener extends IUnknown {
+public class IWebErrorPrivate extends IUnknown {
+	
+public IWebErrorPrivate (int /*long*/ address) {
+	super (address);
+}
 
-	public IDOMEventListener(int address) {
-		super(address);
-	}
+public int sslPeerCertificate (int /*long*/[] result) {
+	return COM.VtblCall (3, getAddress (), result);
+}
+
 }

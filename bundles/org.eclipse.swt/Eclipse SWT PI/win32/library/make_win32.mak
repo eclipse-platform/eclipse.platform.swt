@@ -37,8 +37,8 @@ AWT_LIB    = $(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 AWT_LIBS   = "$(JAVA_HOME)\jre\bin\jawt.lib"
 AWT_OBJS   = swt_awt.obj
 
-WEBKIT_DIR 	  = C:\WebKit-r68077\WebKit-r68077
-WEBKIT_SUPPORT_DIR = C:\WebKit-r68077\WebKit-r68077\WebKitSupportLibrary\WebKitSupportLibrary
+WEBKIT_DIR 	  = S:\swt-builddir\webkit\WebKit-r72896
+WEBKIT_SUPPORT_DIR = S:\swt-builddir\webkit\WebKitSupportLibrary
 WEBKIT_PREFIX = swt-webkit
 WEBKIT_LIB    = $(WEBKIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 WEBKIT_LIBS   = $(WEBKIT_DIR)\lib\webkit.lib $(WEBKIT_SUPPORT_DIR)\win\lib\CFNetwork.lib $(WEBKIT_SUPPORT_DIR)\win\lib\CoreFoundation.lib
@@ -70,7 +70,8 @@ MOZILLACFLAGS = -c \
 	-I"$(XULRUNNER_SDK)\include\mozilla-config.h" -I"$(XULRUNNER_SDK)\include"
 
 WEBKITCFLAGS = -c -O1\
-	-DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) \
+	-DSWT_VERSION=$(SWT_VERSION) \
+	$(NATIVE_STATS) \
 	-I"$(JAVA_HOME)\include" -I"$(JAVA_HOME)\include\win32" \
 	-I"$(WEBKIT_DIR)" \
 	-I"$(WEBKIT_DIR)\WebKit\win" \

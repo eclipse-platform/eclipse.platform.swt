@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int WebKit_win32_nativeFunctionCount = 64;
-int WebKit_win32_nativeFunctionCallCount[64];
+int WebKit_win32_nativeFunctionCount = 61;
+int WebKit_win32_nativeFunctionCallCount[61];
 char * WebKit_win32_nativeFunctionNames[] = {
 	"CFArrayGetCount",
 	"CFArrayGetValueAtIndex",
@@ -27,7 +27,6 @@ char * WebKit_win32_nativeFunctionNames[] = {
 	"CFDataGetBytePtr",
 	"CFDataGetLength",
 	"CFDictionaryCreate",
-	"CFDictionaryGetCount",
 	"CFHTTPCookieCreateWithResponseHeaderFields",
 	"CFHTTPCookieGetFlags",
 	"CFHTTPCookieGetName",
@@ -37,20 +36,20 @@ char * WebKit_win32_nativeFunctionNames[] = {
 	"CFHTTPCookieStorageDeleteCookie",
 	"CFHTTPCookieStorageSetCookie",
 	"CFRelease",
-	"CFRetain",
 	"CFStringCreateWithCharacters",
 	"CFStringGetCharacterAtIndex",
 	"CFStringGetCharactersPtr",
 	"CFStringGetLength",
 	"CFURLCreateWithString",
 	"CFURLRequestCopyHTTPRequestBody",
+	"CFURLRequestCreateMutableCopy",
 	"CFURLRequestSetHTTPRequestBody",
+	"CFURLRequestSetURL",
 	"JSClassCreate",
 	"JSClassDefinition_1sizeof",
 	"JSClassRetain",
 	"JSContextGetGlobalObject",
 	"JSEvaluateScript",
-	"JSGlobalContextCreate",
 	"JSGlobalContextRetain",
 	"JSObjectCallAsFunctionProc_1CALLBACK",
 	"JSObjectGetPrivate",
@@ -58,7 +57,6 @@ char * WebKit_win32_nativeFunctionNames[] = {
 	"JSObjectGetPropertyAtIndex",
 	"JSObjectGetPropertyProc_1CALLBACK",
 	"JSObjectHasPropertyProc_1CALLBACK",
-	"JSObjectIsFunction",
 	"JSObjectMake",
 	"JSObjectMakeArray",
 	"JSObjectMakeFunctionWithCallback",
@@ -76,7 +74,6 @@ char * WebKit_win32_nativeFunctionNames[] = {
 	"JSValueMakeNumber",
 	"JSValueMakeString",
 	"JSValueMakeUndefined",
-	"JSValueProtect",
 	"JSValueToBoolean",
 	"JSValueToNumber",
 	"JSValueToStringCopy",

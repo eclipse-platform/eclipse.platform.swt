@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.webkit;
 
+
 import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebError extends IUnknown {
@@ -22,28 +23,24 @@ public int code (int[] result) {
 	return COM.VtblCall (4, getAddress (), result);
 }
 
-public int domain (int[] result) {
-	return COM.VtblCall (5, getAddress (), result);
-}
-
-public int failingURL (int /*long*/[] result) {
-	return COM.VtblCall (12, getAddress (), result);
-}
+//public int domain (int /*long*/[] result) {
+//	return COM.VtblCall (5, getAddress (), result);
+//}
 
 public int localizedDescription (int /*long*/[] result) {
 	return COM.VtblCall (6, getAddress (), result);
 }
 
-public int localizedFailureReason (int /*long*/[] result) {
-	return COM.VtblCall (7, getAddress (), result);
-}
+//public int localizedFailureReason (int /*long*/[] result) {
+//	return COM.VtblCall (7, getAddress (), result);
+//}
 
-public int sslPeerCertificate (int /*long*/[] result) {
+//public int userInfo (int /*long*/[] result) {
+//return COM.VtblCall (11, getAddress (), result);
+//}
+
+public int failingURL (int /*long*/[] result) {
 	return COM.VtblCall (12, getAddress (), result);
-}
-
-public int userInfo (int /*long*/[] result) {
-	return COM.VtblCall (11, getAddress (), result);
 }
 
 }

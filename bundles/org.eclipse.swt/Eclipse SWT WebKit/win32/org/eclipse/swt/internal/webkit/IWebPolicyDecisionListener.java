@@ -10,12 +10,17 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.webkit;
 
+
 import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebPolicyDecisionListener extends IUnknown{
 
-public IWebPolicyDecisionListener(int /*long*/ address) {
-	super(address);
+public IWebPolicyDecisionListener (int /*long*/ address) {
+	super (address);
+}
+
+public int use () {
+	return COM.VtblCall (3, getAddress ());
 }
 
 public int download () {
@@ -24,10 +29,6 @@ public int download () {
 
 public int ignore () {
 	return COM.VtblCall (5, getAddress ());
-}
-
-public int use () {
-	return COM.VtblCall (3, getAddress ());
 }
 
 }

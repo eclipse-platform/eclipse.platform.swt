@@ -675,10 +675,7 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, int arg1, int arg2, int arg3, int arg4, int [] arg5);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, long arg1, int arg2, int arg3, int arg4, long[] arg5);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int[] arg1);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long[] arg1);
-
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, long arg1);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int[] arg2);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, long[] arg2);
@@ -719,7 +716,8 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int a
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, boolean arg1);
 
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, boolean arg0);
-public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, boolean arg0, int /*long*/ arg1);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, boolean arg0, int arg1);
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, boolean arg0, long arg1);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, CAUUID arg0);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, CONTROLINFO arg0);
@@ -736,8 +734,6 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID 
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, int arg1, int arg2, int arg3, int[] arg4);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, long arg1, int arg2, int arg3, int[] arg4);
-
-public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, int arg1, int arg2, int arg3, int arg4);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, int arg1, int arg2, long arg3, long arg4);
@@ -767,7 +763,8 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int a
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] pszPropName, int[] pVar, int[] pErrorLog);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] pszPropName, int pVar, int[] pErrorLog);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ type, int /*long*/ listener, boolean useCapture);
+public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int type, int listener, boolean useCapture);
+public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long type, long listener, boolean useCapture);
 
 /** @param pStg cast=(IStorage *) */
 public static final native int WriteClassStg(int /*long*/ pStg, GUID rclsid);

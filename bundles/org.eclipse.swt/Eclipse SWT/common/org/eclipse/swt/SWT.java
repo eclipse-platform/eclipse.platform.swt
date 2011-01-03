@@ -2029,6 +2029,16 @@ public class SWT {
 	 */
 	public static final int MOZILLA = 1 << 15;
 
+	/**
+	 * Style constant specifying that a Browser should use WebKit
+	 * for rendering its content (value is 1&lt;&lt;16).
+	 * <p>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Browser</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.7
+	 */
 	public static final int WEBKIT = 1 << 16;
 
 	/**

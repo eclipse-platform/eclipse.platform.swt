@@ -39,66 +39,66 @@ int AddRef () {
 	return refCount;
 }
 
-int canTakeFocus(int /*long*/ sender, int /*long*/ forward, int /*long*/ result) {
+int canTakeFocus (int /*long*/ sender, int /*long*/ forward, int /*long*/ result) {
 	int [] response = new int[1];
 	response[0] = 1;
-	OS.MoveMemory(result, response, C.PTR_SIZEOF);
+	OS.MoveMemory (result, response, C.PTR_SIZEOF);
 	return COM.S_OK;
 }
 
-int contextMenuItemsForElement(int /*long*/ sender, int /*long*/ element, int /*long*/ defaultItemsHMenu, int /*long*/ resultHMenu) {
-	Point pt = browser.getDisplay().getCursorLocation();
-	Event event = new Event();
+int contextMenuItemsForElement (int /*long*/ sender, int /*long*/ element, int /*long*/ defaultItemsHMenu, int /*long*/ resultHMenu) {
+	Point pt = browser.getDisplay ().getCursorLocation ();
+	Event event = new Event ();
 	event.x = pt.x;
 	event.y = pt.y;
-	browser.notifyListeners(SWT.MenuDetect, event);
-	Menu menu = browser.getMenu();
+	browser.notifyListeners (SWT.MenuDetect, event);
+	Menu menu = browser.getMenu ();
 	if (event.doit) {
-		if (menu != null && !menu.isDisposed()) {
+		if (menu != null && !menu.isDisposed ()) {
 			if (event.x != pt.x || event.y != pt.y) {
-				menu.setLocation(event.x, event.y);
+				menu.setLocation (event.x, event.y);
 			}
-			menu.setVisible(true);
+			menu.setVisible (true);
 		} else {
-			OS.MoveMemory(resultHMenu, new long[] {defaultItemsHMenu}, C.PTR_SIZEOF);
+			OS.MoveMemory (resultHMenu, new long[] {defaultItemsHMenu}, C.PTR_SIZEOF);
 			return COM.S_OK;
 		}
 	}
-	OS.MoveMemory(resultHMenu, new /*long*/ int []{0}, C.PTR_SIZEOF);
+	OS.MoveMemory (resultHMenu, new /*long*/ int []{0}, C.PTR_SIZEOF);
 	return COM.S_OK;
 }
 
 void createCOMInterfaces () {
 	iWebUIDelegate = new COMObject (new int[] {2, 0, 0, 3, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 4, 4, 2, 3, 4, 4, 3, 3, 3, 3, 5, 3, 1, 3, 2, 2, 2, 2, 3, 2, 3, 1, 1, 0, 0, 1, 1, 2, 2, 2, 2, 3, 5, 2, 2, 3, 1, 2, 2, 4, 10, 3}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef();}
-		public int /*long*/ method2 (int /*long*/[] args)  {return Release();}
+		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
+		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
+		public int /*long*/ method2 (int /*long*/[] args)  {return Release ();}
 		public int /*long*/ method3 (int /*long*/[] args)  {return createWebViewWithRequest (args[0], args[1], args[2]);}
-		public int /*long*/ method4 (int /*long*/[] args)  {return webViewShow(args[0]);}
+		public int /*long*/ method4 (int /*long*/[] args)  {return webViewShow (args[0]);}
 		public int /*long*/ method5 (int /*long*/[] args)  {return webViewClose (args[0]);}
 		public int /*long*/ method6 (int /*long*/[] args)  {return COM.E_NOTIMPL;}
 		public int /*long*/ method7 (int /*long*/[] args)  {return COM.E_NOTIMPL;}
 		public int /*long*/ method8 (int /*long*/[] args)  {return COM.E_NOTIMPL;}
 		public int /*long*/ method9 (int /*long*/[] args)  {return COM.E_NOTIMPL;}
-		public int /*long*/ method10 (int /*long*/[] args) {return setStatusText(args[0], args[1]);}
+		public int /*long*/ method10 (int /*long*/[] args) {return setStatusText (args[0], args[1]);}
 		public int /*long*/ method11 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method12 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method13 (int /*long*/[] args) {return setToolbarsVisible(args[0], args[1]);}
+		public int /*long*/ method13 (int /*long*/[] args) {return setToolbarsVisible (args[0], args[1]);}
 		public int /*long*/ method14 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method15 (int /*long*/[] args) {return setStatusBarVisible(args[0], args[1]);}
+		public int /*long*/ method15 (int /*long*/[] args) {return setStatusBarVisible (args[0], args[1]);}
 		public int /*long*/ method16 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method17 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method18 (int /*long*/[] args) {return setFrame(args[0], args[1]);}
+		public int /*long*/ method18 (int /*long*/[] args) {return setFrame (args[0], args[1]);}
 		public int /*long*/ method19 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method20 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method21 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method22 (int /*long*/[] args) {return runJavaScriptAlertPanelWithMessage (args[0], args[1]);}
-		public int /*long*/ method23 (int /*long*/[] args) {return runJavaScriptConfirmPanelWithMessage(args[0], args[1], args[2]);}
-		public int /*long*/ method24 (int /*long*/[] args) {return runJavaScriptTextInputPanelWithPrompt(args[0], args[1], args[2], args[3]);}
-		public int /*long*/ method25 (int /*long*/[] args) {return runBeforeUnloadConfirmPanelWithMessage(args[0], args[1], args[2], args[3]);}
-		public int /*long*/ method26 (int /*long*/[] args) {return runOpenPanelForFileButtonWithResultListener(args[0], args[1]);}
-		public int /*long*/ method27 (int /*long*/[] args) {return mouseDidMoveOverElement(args[0], args[1], args[2]);}
-		public int /*long*/ method28 (int /*long*/[] args) {return contextMenuItemsForElement(args[0], args[1], args[2], args[3]);}
+		public int /*long*/ method23 (int /*long*/[] args) {return runJavaScriptConfirmPanelWithMessage (args[0], args[1], args[2]);}
+		public int /*long*/ method24 (int /*long*/[] args) {return runJavaScriptTextInputPanelWithPrompt (args[0], args[1], args[2], args[3]);}
+		public int /*long*/ method25 (int /*long*/[] args) {return runBeforeUnloadConfirmPanelWithMessage (args[0], args[1], args[2], args[3]);}
+		public int /*long*/ method26 (int /*long*/[] args) {return runOpenPanelForFileButtonWithResultListener (args[0], args[1]);}
+		public int /*long*/ method27 (int /*long*/[] args) {return mouseDidMoveOverElement (args[0], args[1], args[2]);}
+		public int /*long*/ method28 (int /*long*/[] args) {return contextMenuItemsForElement (args[0], args[1], args[2], args[3]);}
 		public int /*long*/ method29 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method30 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method31 (int /*long*/[] args) {return COM.E_NOTIMPL;}
@@ -112,8 +112,8 @@ void createCOMInterfaces () {
 		public int /*long*/ method39 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method40 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method41 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method42 (int /*long*/[] args) {return canTakeFocus(args[0], args[1], args[2]);}
-		public int /*long*/ method43 (int /*long*/[] args) {return takeFocus(args[0], args[1]);}
+		public int /*long*/ method42 (int /*long*/[] args) {return canTakeFocus (args[0], args[1], args[2]);}
+		public int /*long*/ method43 (int /*long*/[] args) {return takeFocus (args[0], args[1]);}
 		public int /*long*/ method44 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method45 (int /*long*/[] args) {return COM.S_OK;}
 		public int /*long*/ method46 (int /*long*/[] args) {return COM.E_NOTIMPL;}
@@ -139,15 +139,15 @@ void createCOMInterfaces () {
 	};
 }
 
-int createWebViewWithRequest(int /*long*/ sender, int /*long*/ request, int /*long*/ webView) {
-	WindowEvent newEvent = new WindowEvent(browser);
-	newEvent.display = browser.getDisplay();
+int createWebViewWithRequest (int /*long*/ sender, int /*long*/ request, int /*long*/ webView) {
+	WindowEvent newEvent = new WindowEvent (browser);
+	newEvent.display = browser.getDisplay ();
 	newEvent.widget = browser;
 	newEvent.required = true;
 	OpenWindowListener[] openWindowListeners = browser.webBrowser.openWindowListeners;
 	if (openWindowListeners != null) {
 		for (int i = 0; i < openWindowListeners.length; i++) {
-			openWindowListeners[i].open(newEvent);
+			openWindowListeners[i].open (newEvent);
 		}
 	}
 	IWebView iwebview = null;
@@ -155,27 +155,27 @@ int createWebViewWithRequest(int /*long*/ sender, int /*long*/ request, int /*lo
 	if (newEvent.browser != null && newEvent.browser.webBrowser instanceof WebKit) {
 		browser = newEvent.browser;
 	}
-	if (browser != null && !browser.isDisposed()) {
+	if (browser != null && !browser.isDisposed ()) {
 		iwebview = ((WebKit)browser.webBrowser).webView;
-		OS.MoveMemory(webView, new int /*long*/[] {iwebview.getAddress ()}, OS.PTR_SIZEOF);
+		OS.MoveMemory (webView, new int /*long*/[] {iwebview.getAddress ()}, OS.PTR_SIZEOF);
 		if (request != 0) {
-			IWebURLRequest req = new IWebURLRequest(request);
+			IWebURLRequest req = new IWebURLRequest (request);
 			int /*long*/[] result = new int /*long*/[1];
-			int hr = req.URL(result);
+			int hr = req.URL (result);
 			if (hr != COM.S_OK || result[0] == 0) {
-		    	return COM.S_OK;
-		    }
-			String sUrl = WebKit.extractBSTR(result[0]);
-			COM.SysFreeString(result[0]);
-			if (sUrl.length() != 0) {
+				return COM.S_OK;
+			}
+			String sUrl = WebKit.extractBSTR (result[0]);
+			COM.SysFreeString (result[0]);
+			if (sUrl.length () != 0) {
 				result[0] = 0;
-				hr = iwebview.mainFrame(result);
+				hr = iwebview.mainFrame (result);
 				if (hr != COM.S_OK || result[0] == 0) {
-			    	return COM.S_OK;
-			    }
-				IWebFrame mainFrame = new IWebFrame(result[0]);
-				mainFrame.loadRequest(req.getAddress());
-				mainFrame.Release();
+					return COM.S_OK;
+				}
+				IWebFrame mainFrame = new IWebFrame (result[0]);
+				mainFrame.loadRequest (req.getAddress ());
+				mainFrame.Release ();
 			}
 		}
 		return COM.S_OK;
@@ -194,108 +194,108 @@ int /*long*/ getAddress () {
 	return iWebUIDelegate.getAddress ();
 }
 
-int mouseDidMoveOverElement(int /*long*/ sender, int /*long*/ elementInformation, int /*long*/ modifierFlags) {
+int mouseDidMoveOverElement (int /*long*/ sender, int /*long*/ elementInformation, int /*long*/ modifierFlags) {
 	if (elementInformation == 0) return COM.S_OK;
 
-	IPropertyBag info = new IPropertyBag(elementInformation);
-	int /*long*/ key = WebKit.createBSTR("WebElementLinkURLKey"); //$NON-NLS-N$
-	int /*long*/ hHeap = OS.GetProcessHeap();
-	int /*long*/ resultPtr = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, VARIANT.sizeof);
-	int hr = info.Read(key, resultPtr, null);
+	IPropertyBag info = new IPropertyBag (elementInformation);
+	int /*long*/ key = WebKit.createBSTR ("WebElementLinkURLKey"); //$NON-NLS-N$
+	int /*long*/ hHeap = OS.GetProcessHeap ();
+	int /*long*/ resultPtr = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, VARIANT.sizeof);
+	int hr = info.Read (key, resultPtr, null);
 	if (hr != COM.S_OK || resultPtr == 0) {
 		return COM.S_OK;
 	}
 	String value = null;
-	VARIANT v = new VARIANT();
-	COM.MoveMemory(v, resultPtr, VARIANT.sizeof);
-	if (v.vt == COM.VT_BSTR) value = WebKit.extractBSTR(v.lVal);
-	OS.HeapFree(hHeap, 0, resultPtr);
+	VARIANT v = new VARIANT ();
+	COM.MoveMemory (v, resultPtr, VARIANT.sizeof);
+	if (v.vt == COM.VT_BSTR) value = WebKit.extractBSTR (v.lVal);
+	OS.HeapFree (hHeap, 0, resultPtr);
 	StatusTextListener[] statusTextListeners = browser.webBrowser.statusTextListeners;
-	if (value == null || value.length() == 0) {
+	if (value == null || value.length () == 0) {
 		/* not currently over a link */
 		if (lastHoveredLinkURL == null) return COM.S_OK;
 		lastHoveredLinkURL = null;
-		StatusTextEvent statusText = new StatusTextEvent(browser);
-		statusText.display = browser.getDisplay();
+		StatusTextEvent statusText = new StatusTextEvent (browser);
+		statusText.display = browser.getDisplay ();
 		statusText.widget = browser;
 		statusText.text = "";	//$NON-NLS-1$
 		for (int i = 0; i < statusTextListeners.length; i++) {
-			statusTextListeners[i].changed(statusText);
+			statusTextListeners[i].changed (statusText);
 		}
 		return COM.S_OK;
 	}
-	if (value.equals(lastHoveredLinkURL)) return COM.S_OK;
+	if (value.equals (lastHoveredLinkURL)) return COM.S_OK;
 	lastHoveredLinkURL = value;
-	StatusTextEvent statusText = new StatusTextEvent(browser);
-	statusText.display = browser.getDisplay();
+	StatusTextEvent statusText = new StatusTextEvent (browser);
+	statusText.display = browser.getDisplay ();
 	statusText.widget = browser;
 	statusText.text = value;
 	for (int i = 0; i < statusTextListeners.length; i++) {
-		statusTextListeners[i].changed(statusText);
+		statusTextListeners[i].changed (statusText);
 	}
 	return COM.S_OK;
 }
 
 int printFrame (int /*long*/ webView, int /*long*/ frame) {
-	IWebFrame iwebFrame = new IWebFrame(frame);
-	PRINTDLG pd = new PRINTDLG();
+	IWebFrame iwebFrame = new IWebFrame (frame);
+	PRINTDLG pd = new PRINTDLG ();
 	pd.lStructSize = PRINTDLG.sizeof;
 	pd.Flags = OS.PD_RETURNDC;
-	OS.PrintDlg(pd);
+	OS.PrintDlg (pd);
 	int /*long*/ printDC = pd.hDC;
 	
 	int /*long*/[] result = new int /*long*/[1];
-	int hr = iwebFrame.QueryInterface(WebKit_win32.IID_IWebFramePrivate, result);
+	int hr = iwebFrame.QueryInterface (WebKit_win32.IID_IWebFramePrivate, result);
 	if (hr != COM.S_OK || result[0] == 0) {
 		return COM.S_OK;
 	}
-	IWebFramePrivate privateFrame = new IWebFramePrivate(result[0]);
-	privateFrame.setInPrintingMode(true, printDC);
+	IWebFramePrivate privateFrame = new IWebFramePrivate (result[0]);
+	privateFrame.setInPrintingMode (1, printDC);
 	int [] count = new int [1];
-	hr = privateFrame.getPrintedPageCount(printDC, count);
+	hr = privateFrame.getPrintedPageCount (printDC, count);
 	if (hr != COM.S_OK || count[0] == 0) {
-		privateFrame.Release();
+		privateFrame.Release ();
     	return COM.S_OK;
     }
 	int pageCount = count[0];
 	String jobName = null;
 	result[0] = 0;
-	hr = iwebFrame.dataSource(result);
+	hr = iwebFrame.dataSource (result);
 	if (hr == COM.S_OK && result[0] != 0) {
-		IWebDataSource dataSource = new IWebDataSource(result[0]);
+		IWebDataSource dataSource = new IWebDataSource (result[0]);
 		result[0] = 0;
-		hr = dataSource.pageTitle(result);
-		dataSource.Release();
+		hr = dataSource.pageTitle (result);
+		dataSource.Release ();
 		if (hr == COM.S_OK && result[0] != 0) {
-			jobName = WebKit.extractBSTR(result[0]);
-			COM.SysFreeString(result[0]);
+			jobName = WebKit.extractBSTR (result[0]);
+			COM.SysFreeString (result[0]);
 		}
 		
 	}
-	DOCINFO di = new DOCINFO();
+	DOCINFO di = new DOCINFO ();
 	di.cbSize = DOCINFO.sizeof;
-	int /*long*/ hHeap = OS.GetProcessHeap();
+	int /*long*/ hHeap = OS.GetProcessHeap ();
 	int /*long*/ lpszDocName = 0;
-	if (jobName != null && jobName.length() != 0) {
+	if (jobName != null && jobName.length () != 0) {
 		/* Use the character encoding for the default locale */
-		TCHAR buffer = new TCHAR(0, jobName, true);
-		int byteCount = buffer.length() * TCHAR.sizeof;
-		lpszDocName = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-		OS.MoveMemory(lpszDocName, buffer, byteCount);
+		TCHAR buffer = new TCHAR (0, jobName, true);
+		int byteCount = buffer.length () * TCHAR.sizeof;
+		lpszDocName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (lpszDocName, buffer, byteCount);
 		di.lpszDocName = lpszDocName;
 	}
-	int rc = OS.StartDoc(printDC, di);
+	int rc = OS.StartDoc (printDC, di);
 	if (lpszDocName != 0) OS.HeapFree(hHeap, 0, lpszDocName);
 	if (rc >= 0) {
 		for (int i = 0; i < pageCount; i++) {
-			OS.StartPage(printDC);
-			privateFrame.spoolPages(printDC, i, i, null);
-			OS.EndPage(printDC);
+			OS.StartPage (printDC);
+			privateFrame.spoolPages (printDC, i, i, null);
+			OS.EndPage (printDC);
 		}
-		privateFrame.setInPrintingMode(false, printDC);
-		OS.EndDoc(printDC);
+		privateFrame.setInPrintingMode (0, printDC);
+		OS.EndDoc (printDC);
 	}
-	privateFrame.Release();
+	privateFrame.Release ();
 	return COM.S_OK;
 }
 
@@ -330,153 +330,153 @@ int Release () {
 int runBeforeUnloadConfirmPanelWithMessage (int /*long*/ sender, int /*long*/ message, int /*long*/ initiatedByFrame, int /*long*/ result) {
 	if (!prompt) return COM.S_OK;
 	
-	Shell parent = browser.getShell();
+	Shell parent = browser.getShell ();
 	String string = WebKit.extractBSTR (message);
-	StringBuffer text = new StringBuffer(Compatibility.getMessage("SWT_OnBeforeUnload_Message1")); //$NON-NLS-1$
-	text.append("\n\n"); //$NON-NLS-1$
-	text.append(string);
-	text.append("\n\n"); //$NON-NLS-1$
-	text.append(Compatibility.getMessage("SWT_OnBeforeUnload_Message2")); //$NON-NLS-1$
-	MessageBox box = new MessageBox(parent, SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
-	box.setMessage (text.toString());
+	StringBuffer text = new StringBuffer (Compatibility.getMessage ("SWT_OnBeforeUnload_Message1")); //$NON-NLS-1$
+	text.append ("\n\n"); //$NON-NLS-1$
+	text.append (string);
+	text.append ("\n\n"); //$NON-NLS-1$
+	text.append (Compatibility.getMessage ("SWT_OnBeforeUnload_Message2")); //$NON-NLS-1$
+	MessageBox box = new MessageBox (parent, SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
+	box.setMessage (text.toString ());
 	int [] response = new int[1];
 	response[0] = box.open () == SWT.OK ? 1 : 0;
-	OS.MoveMemory(result, response, C.PTR_SIZEOF);
+	OS.MoveMemory (result, response, C.PTR_SIZEOF);
 	return COM.S_OK;
 }
 
 int runJavaScriptAlertPanelWithMessage (int /*long*/ sender, int /*long*/ message) {
-	Shell parent = browser.getShell();
+	Shell parent = browser.getShell ();
 	String string = WebKit.extractBSTR (message);
-	MessageBox box = new MessageBox(parent, SWT.OK | SWT.ICON_WARNING);
-	box.setText("Javascript");	//$NON-NLS-1$
+	MessageBox box = new MessageBox (parent, SWT.OK | SWT.ICON_WARNING);
+	box.setText ("Javascript");	//$NON-NLS-1$
 	box.setMessage (string);
 	box.open ();
 	return COM.S_OK;
 }
 
 int runJavaScriptConfirmPanelWithMessage (int /*long*/ sender, int /*long*/ message, int /*long*/ result) {
-	Shell parent = browser.getShell();
+	Shell parent = browser.getShell ();
 	String string = WebKit.extractBSTR (message);
-	MessageBox box = new MessageBox(parent, SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
-	box.setText("Javascript");	//$NON-NLS-1$
+	MessageBox box = new MessageBox (parent, SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
+	box.setText ("Javascript");	//$NON-NLS-1$
 	box.setMessage (string);
 	int [] response = new int[1];
 	response[0] = box.open () == SWT.OK ? 1 : 0;
-	OS.MoveMemory(result, response, C.PTR_SIZEOF);
+	OS.MoveMemory (result, response, C.PTR_SIZEOF);
 	return COM.S_OK;
 }
 
-int runJavaScriptTextInputPanelWithPrompt(int /*long*/ sender, int /*long*/ message, int /*long*/ defaultText, int /*long*/ result) {
-	Shell parent = browser.getShell();
+int runJavaScriptTextInputPanelWithPrompt (int /*long*/ sender, int /*long*/ message, int /*long*/ defaultText, int /*long*/ result) {
+	Shell parent = browser.getShell ();
 	String string = WebKit.extractBSTR (message);
-	TextPrompter prompt = new TextPrompter(parent, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
-	prompt.setText("Javascript");	//$NON-NLS-1$
+	TextPrompter prompt = new TextPrompter (parent, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
+	prompt.setText ("Javascript");	//$NON-NLS-1$
 	prompt.setMessage (string);
 	string = WebKit.extractBSTR (defaultText);
-	prompt.setDefaultText(string);
+	prompt.setDefaultText (string);
 	string = prompt.open ();
 	int /*long*/ [] response = new int /*long*/ [1];
 	if (string != null) {
-		response[0] = WebKit.createBSTR(string);
+		response[0] = WebKit.createBSTR (string);
 	}
-	OS.MoveMemory(result, response, C.PTR_SIZEOF);
+	OS.MoveMemory (result, response, C.PTR_SIZEOF);
 	return COM.S_OK;
 }
 
 int runOpenPanelForFileButtonWithResultListener (int /*long*/ sender, int /*long*/ resultListener) {
-	Shell parent = browser.getShell();
-	FileDialog dialog = new FileDialog(parent, SWT.NONE);
-	String result = dialog.open();
-	IWebOpenPanelResultListener listener = new IWebOpenPanelResultListener(resultListener);
+	Shell parent = browser.getShell ();
+	FileDialog dialog = new FileDialog (parent, SWT.NONE);
+	String result = dialog.open ();
+	IWebOpenPanelResultListener listener = new IWebOpenPanelResultListener (resultListener);
 	if (result == null) {
-		listener.cancel();
+		listener.cancel ();
 	} else {
-		listener.chooseFilename(WebKit.createBSTR(result));
+		listener.chooseFilename (WebKit.createBSTR (result));
 	}
 	return COM.S_OK;
 }
 
-void setBrowser(Browser browser) {
+void setBrowser (Browser browser) {
 	this.browser = browser;
 }
 
-int setFrame(int /*long*/ sender, int /*long*/ frame) {
-	RECT rect = new RECT();
-	COM.MoveMemory(rect, frame, RECT.sizeof);
+int setFrame (int /*long*/ sender, int /*long*/ frame) {
+	RECT rect = new RECT ();
+	COM.MoveMemory (rect, frame, RECT.sizeof);
 	/* convert to SWT system coordinates */
-	location = browser.getDisplay().map(browser, null, (int)rect.left, (int)rect.top);
+	location = browser.getDisplay ().map (browser, null, (int)rect.left, (int)rect.top);
 	int x = (int)(rect.right - rect.left);
 	int y = (int)(rect.bottom - rect.top);
 	if (y < 0 || x < 0 || (x == 0 && y == 0)) return COM.S_OK;
-	size = new Point(x, y);
+	size = new Point (x, y);
 	return COM.S_OK;
 }
 
-int setMenuBarVisible(int /*long*/ sender, int /*long*/ visible) {
+int setMenuBarVisible (int /*long*/ sender, int /*long*/ visible) {
 	/* Note.  Webkit only emits the notification when the status bar should be hidden. */
 	menuBar = visible == 1;
 	return COM.S_OK;
 }
 
-int setStatusBarVisible(int /*long*/ sender, int /*long*/ visible) {
+int setStatusBarVisible (int /*long*/ sender, int /*long*/ visible) {
 	/* Note.  Webkit only emits the notification when the status bar should be hidden. */
 	statusBar = visible == 1;
 	return COM.S_OK;
 }
 
-int setStatusText(int /*long*/ sender, int /*long*/ text) {
-	String statusText = WebKit.extractBSTR(text);
-	if (statusText.length() == 0) return COM.S_OK;
-	StatusTextEvent statusTextEvent = new StatusTextEvent(browser);
-	statusTextEvent.display = browser.getDisplay();
+int setStatusText (int /*long*/ sender, int /*long*/ text) {
+	String statusText = WebKit.extractBSTR (text);
+	if (statusText.length () == 0) return COM.S_OK;
+	StatusTextEvent statusTextEvent = new StatusTextEvent (browser);
+	statusTextEvent.display = browser.getDisplay ();
 	statusTextEvent.widget = browser;
 	statusTextEvent.text = statusText;
 	StatusTextListener[] statusTextListeners = browser.webBrowser.statusTextListeners;
 	for (int i = 0; i < statusTextListeners.length; i++) {
-		statusTextListeners[i].changed(statusTextEvent);
+		statusTextListeners[i].changed (statusTextEvent);
 	}
 	return COM.S_OK;
 }
 
-int setToolbarsVisible(int /*long*/ sender, int /*long*/ visible) {
+int setToolbarsVisible (int /*long*/ sender, int /*long*/ visible) {
 	/* Note.  Webkit only emits the notification when the status bar should be hidden. */
 	toolBar = visible == 1;
 	return COM.S_OK;
 }
 
-int takeFocus(int /*long*/ sender, int /*long*/ forward) {
+int takeFocus (int /*long*/ sender, int /*long*/ forward) {
 	int traveralCode = forward == 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
 	((WebKit)browser.webBrowser).traverseOut = true;
-	browser.traverse(traveralCode);
+	browser.traverse (traveralCode);
 	return COM.S_OK;
 }
 
-int webViewClose(int /*long*/ sender) {
-	WindowEvent newEvent = new WindowEvent(browser);
-	newEvent.display = browser.getDisplay();
+int webViewClose (int /*long*/ sender) {
+	WindowEvent newEvent = new WindowEvent (browser);
+	newEvent.display = browser.getDisplay ();
 	newEvent.widget = browser;
 	CloseWindowListener[] closeWindowListeners = browser.webBrowser.closeWindowListeners;
 	for (int i = 0; i < closeWindowListeners.length; i++) {
-		closeWindowListeners[i].close(newEvent);
+		closeWindowListeners[i].close (newEvent);
 	}
-	browser.dispose();
+	browser.dispose ();
 	return COM.S_OK;
 }
 
-int webViewFrame(int /*long*/ sender, int /*long*/ frame) {
-	RECT rect = new RECT();
-	OS.MoveMemory(frame, rect, RECT.sizeof);
+int webViewFrame (int /*long*/ sender, int /*long*/ frame) {
+	RECT rect = new RECT ();
+	OS.MoveMemory (frame, rect, RECT.sizeof);
 	return COM.S_OK;
 }
 
-int webViewShow(int /*long*/ sender) {
-	Shell parent = browser.getShell();
-	Point pt = parent.getSize();
-	parent.setSize(pt.x+1, pt.y);
-	parent.setSize(pt.x, pt.y);
-	WindowEvent newEvent = new WindowEvent(browser);
-	newEvent.display = browser.getDisplay();
+int webViewShow (int /*long*/ sender) {
+	Shell parent = browser.getShell ();
+	Point pt = parent.getSize ();
+	parent.setSize (pt.x+1, pt.y);
+	parent.setSize (pt.x, pt.y);
+	WindowEvent newEvent = new WindowEvent (browser);
+	newEvent.display = browser.getDisplay ();
 	newEvent.widget = browser;
 	if (location != null) newEvent.location = location;
 	if (size != null) newEvent.size = size;
@@ -492,7 +492,7 @@ int webViewShow(int /*long*/ sender) {
 	newEvent.toolBar = toolBar;
 	VisibilityWindowListener[] visibilityWindowListeners = browser.webBrowser.visibilityWindowListeners;
 	for (int i = 0; i < visibilityWindowListeners.length; i++) {
-		visibilityWindowListeners[i].show(newEvent);
+		visibilityWindowListeners[i].show (newEvent);
 	}
 	location = null;
 	size = null;
@@ -513,57 +513,58 @@ class TextPrompter extends Dialog {
 		return message;
 	}
 	public String open () {
-		final Shell dialog = new Shell(getParent(), getStyle());
-		dialog.setText(getText());
-		dialog.setLayout(new GridLayout());
-		Label label = new Label(dialog, SWT.NONE);
-		label.setText(message);
-		label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		final Text textBox = new Text(dialog, SWT.SINGLE | SWT.BORDER);
-		GridData data = new GridData(GridData.FILL_HORIZONTAL);
+		final Shell dialog = new Shell (getParent (), getStyle ());
+		dialog.setText (getText ());
+		dialog.setLayout (new GridLayout ());
+		Label label = new Label (dialog, SWT.NONE);
+		label.setText (message);
+		label.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
+		final Text textBox = new Text (dialog, SWT.SINGLE | SWT.BORDER);
+		GridData data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 300;
-		textBox.setLayoutData(data);
-		textBox.setText(text);
-		Composite buttons = new Composite(dialog, SWT.NONE);
-		GridLayout grid = new GridLayout();
+		textBox.setLayoutData (data);
+		textBox.setText (text);
+		Composite buttons = new Composite (dialog, SWT.NONE);
+		GridLayout grid = new GridLayout ();
 		grid.numColumns = 2;
-		buttons.setLayout(grid);
-		buttons.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-		Button ok = new Button(buttons, SWT.PUSH);
-		ok.setText(SWT.getMessage("SWT_OK"));
-		data = new GridData();
+		buttons.setLayout (grid);
+		buttons.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_END));
+		Button ok = new Button (buttons, SWT.PUSH);
+		ok.setText (SWT.getMessage ("SWT_OK"));
+		data = new GridData ();
 		data.widthHint = 75;
-		ok.setLayoutData(data);
-		ok.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				result = textBox.getText();
-				dialog.dispose();
+		ok.setLayoutData (data);
+		ok.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent e) {
+				result = textBox.getText ();
+				dialog.dispose ();
 			}
 		});
-		Button cancel = new Button(buttons, SWT.PUSH);
-		cancel.setText(SWT.getMessage("SWT_Cancel"));
-		data = new GridData();
+		Button cancel = new Button (buttons, SWT.PUSH);
+		cancel.setText (SWT.getMessage ("SWT_Cancel"));
+		data = new GridData ();
 		data.widthHint = 75;
-		cancel.setLayoutData(data);
-		cancel.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				dialog.dispose();
+		cancel.setLayoutData (data);
+		cancel.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent e) {
+				dialog.dispose ();
 			}
 		});
-		dialog.setDefaultButton(ok);
-		dialog.pack();
-		dialog.open();
-		Display display = getParent().getDisplay();
-		while (!dialog.isDisposed()) {
-			if (!display.readAndDispatch()) display.sleep();
+		dialog.setDefaultButton (ok);
+		dialog.pack ();
+		dialog.open ();
+		Display display = getParent ().getDisplay ();
+		while (!dialog.isDisposed ()) {
+			if (!display.readAndDispatch ()) display.sleep ();
 		}
 		return result;
 	}
-	public void setDefaultText(String text) {
+	public void setDefaultText (String text) {
 		this.text = text;
 	}
 	public void setMessage (String string) {
 		message = string;
 	}
 }
+
 }

@@ -10,12 +10,13 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.webkit;
 
+
 import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebURLAuthenticationChallengeSender extends IUnknown {
 
-public IWebURLAuthenticationChallengeSender(int /*long*/ address) {
-	super(address);
+public IWebURLAuthenticationChallengeSender (int /*long*/ address) {
+	super (address);
 }
 
 public int cancelAuthenticationChallenge (int /*long*/ challenge) {

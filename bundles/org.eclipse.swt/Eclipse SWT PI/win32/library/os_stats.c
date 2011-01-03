@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1031;
-int OS_nativeFunctionCallCount[1031];
+int OS_nativeFunctionCount = 1036;
+int OS_nativeFunctionCallCount[1036];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -1132,11 +1132,6 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory___3DJI",
 #endif
 #ifndef JNI64
-	"MoveMemory___3D_3II",
-#else
-	"MoveMemory___3D_3JI",
-#endif
-#ifndef JNI64
 	"MoveMemory___3FII",
 #else
 	"MoveMemory___3FJI",
@@ -1833,7 +1828,12 @@ char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"VtblCall__IIII_3C_3CI",
 #else
-	"VtblCall__IJJI_3C_3CJ",
+	"VtblCall__IJII_3C_3CI",
+#endif
+#ifndef JNI64
+	"VtblCall__IIIJ",
+#else
+	"VtblCall__IJIJ",
 #endif
 #ifndef JNI64
 	"VtblCall__IIIJI_3J",
@@ -1876,6 +1876,16 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__IJJII_3J",
 #endif
 #ifndef JNI64
+	"VtblCall__IIJI_3C_3CJ",
+#else
+	"VtblCall__IJJI_3C_3CJ",
+#endif
+#ifndef JNI64
+	"VtblCall__IIJJ",
+#else
+	"VtblCall__IJJJ",
+#endif
+#ifndef JNI64
 	"VtblCall__IIJJI_3J",
 #else
 	"VtblCall__IJJJI_3J",
@@ -1886,7 +1896,17 @@ char * OS_nativeFunctionNames[] = {
 	"VtblCall__IJJJJ",
 #endif
 #ifndef JNI64
+	"VtblCall__IIJ_3I",
+#else
+	"VtblCall__IJJ_3I",
+#endif
+#ifndef JNI64
 	"VtblCall__IIJ_3I_3I",
+#else
+	"VtblCall__IJJ_3I_3I",
+#endif
+#ifndef JNI64
+	"VtblCall__IIJ_3J_3J",
 #else
 	"VtblCall__IJJ_3J_3J",
 #endif
@@ -1912,6 +1932,11 @@ char * OS_nativeFunctionNames[] = {
 #endif
 #ifndef JNI64
 	"VtblCall__II_3B_3I",
+#else
+	"VtblCall__IJ_3B_3I",
+#endif
+#ifndef JNI64
+	"VtblCall__II_3B_3J",
 #else
 	"VtblCall__IJ_3B_3J",
 #endif

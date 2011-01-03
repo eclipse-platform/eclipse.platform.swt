@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.webkit;
 
+
 import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebViewPrivate extends IUnknown {
@@ -18,28 +19,16 @@ public IWebViewPrivate (int /*long*/ address) {
 	super (address);
 }
 
-public int clearFocusNode () {
-	return COM.VtblCall (27, getAddress ());
+public int viewWindow (int /*long*/[] window) {
+	return COM.VtblCall (5, getAddress (), window);
 }
 
-public int setInitialFocus(boolean forwardEnabled) {
+public int setInitialFocus (int forwardEnabled) {
 	return COM.VtblCall (28, getAddress (), forwardEnabled);
 }
 
-public int setTabKeyCyclesThroughElements(boolean cycles) {
-	return COM.VtblCall (21, getAddress (), cycles);
-}
-
-public int shouldClose (int /*long*/[] result) {
+public int shouldClose (int[] result) {
 	return COM.VtblCall (33, getAddress (), result);
-}
-
-public int tabKeyCyclesThroughElements (int /*long*/[] result) {
-	return COM.VtblCall (22, getAddress (), result);
-}
-
-public int viewWindow (int /*long*/[] window) {
-	return COM.VtblCall (5, getAddress (), window);
 }
 
 }

@@ -33,8 +33,8 @@ class WebFrameLoadDelegate {
 	
 	static final String OBJECTNAME_EXTERNAL = "external"; //$NON-NLS-1$
 	
-WebFrameLoadDelegate() {
-	createCOMInterfaces();
+WebFrameLoadDelegate () {
+	createCOMInterfaces ();
 }
 
 void addEventHandlers (boolean top) {
@@ -74,7 +74,7 @@ void addEventHandlers (boolean top) {
 	}
 }
 
-int AddRef() {
+int AddRef () {
 	refCount++;
 	return refCount;
 }
@@ -97,7 +97,7 @@ void createCOMInterfaces () {
 		public int /*long*/ method13 (int /*long*/[] args){return COM.E_NOTIMPL;}
 		public int /*long*/ method14 (int /*long*/[] args){return COM.S_OK;}
 		public int /*long*/ method15 (int /*long*/[] args){return COM.S_OK;}
-		public int /*long*/ method16 (int /*long*/[] args){return didClearWindowObject(args[0], args[1], args[2], args[3]);}
+		public int /*long*/ method16 (int /*long*/[] args){return didClearWindowObject (args[0], args[1], args[2], args[3]);}
 	};
 	
 	/* Callbacks that take double parameters require custom callbacks that instead pass pointers to the doubles. */
@@ -110,29 +110,29 @@ void createCOMInterfaces () {
 	COM.MoveMemory (pVtable[0], funcs, OS.PTR_SIZEOF * funcs.length);
 }
 
-int didChangeLocationWithinPageForFrame(int /*long*/ webView, int /*long*/ frame) {
-	IWebFrame iwebframe = new IWebFrame(frame);
+int didChangeLocationWithinPageForFrame (int /*long*/ webView, int /*long*/ frame) {
+	IWebFrame iwebframe = new IWebFrame (frame);
 	int /*long*/[] result = new int /*long*/[1];
-	int hr = iwebframe.dataSource(result);
+	int hr = iwebframe.dataSource (result);
 	if (hr != COM.S_OK || result[0] == 0) {
-    	return COM.S_OK;
-    }
-	IWebDataSource dataSource = new IWebDataSource(result[0]);
+		return COM.S_OK;
+	}
+	IWebDataSource dataSource = new IWebDataSource (result[0]);
 	result[0] = 0;
-	hr = dataSource.request(result);
-	dataSource.Release();
+	hr = dataSource.request (result);
+	dataSource.Release ();
 	if (hr != COM.S_OK || result[0] == 0) {
-    	return COM.S_OK;
-    }
-	IWebURLRequest request = new IWebURLRequest(result[0]);
+		return COM.S_OK;
+	}
+	IWebURLRequest request = new IWebURLRequest (result[0]);
 	result[0] = 0;
-	hr = request.URL(result);
-	request.Release();
+	hr = request.URL (result);
+	request.Release ();
 	if (hr != COM.S_OK || result[0] == 0) {
-    	return COM.S_OK;
-    }
-	String url2 = WebKit.extractBSTR(result[0]);
-	COM.SysFreeString(result[0]);
+		return COM.S_OK;
+	}
+	String url2 = WebKit.extractBSTR (result[0]);
+	COM.SysFreeString (result[0]);
 	if (url2.length() == 0) return COM.S_OK;
 	/*
 	 * If the URI indicates that the page is being rendered from memory
@@ -146,40 +146,40 @@ int didChangeLocationWithinPageForFrame(int /*long*/ webView, int /*long*/ frame
 			url2 = WebKit.ABOUT_BLANK + url2.substring (length);
 		}
 	}
-	final Display display = browser.getDisplay();
+	final Display display = browser.getDisplay ();
 	result[0] = 0;
-	IWebView iWebView = new IWebView(webView);
-	hr = iWebView.mainFrame(result);
+	IWebView iWebView = new IWebView (webView);
+	hr = iWebView.mainFrame (result);
 	boolean top = false;
 	if (hr == COM.S_OK && result[0] != 0) {
 		top = frame == result[0];
-		new IWebFrame(result[0]).Release();
-    }
+		new IWebFrame (result[0]).Release ();
+	}
 	if (top) {
-		StatusTextEvent statusText = new StatusTextEvent(browser);
+		StatusTextEvent statusText = new StatusTextEvent (browser);
 		statusText.display = display;
 		statusText.widget = browser;
 		statusText.text = url2;
 		StatusTextListener[] statusTextListeners = browser.webBrowser.statusTextListeners;
 		for (int i = 0; i < statusTextListeners.length; i++) {
-			statusTextListeners[i].changed(statusText);
+			statusTextListeners[i].changed (statusText);
 		}
 	}
 
-	LocationEvent location = new LocationEvent(browser);
+	LocationEvent location = new LocationEvent (browser);
 	location.display = display;
 	location.widget = browser;
 	location.location = url2;
 	location.top = top;
 	LocationListener[] locationListeners = browser.webBrowser.locationListeners;
 	for (int i = 0; i < locationListeners.length; i++) {
-		locationListeners[i].changed(location);
+		locationListeners[i].changed (location);
 	}
 	return COM.S_OK;
 }
 
-int didClearWindowObject(int /*long*/ webView, int /*long*/ context, int /*long*/ windowScriptObject, int /*long*/ frame) {
-	WebKit_win32.JSGlobalContextRetain(context);
+int didClearWindowObject (int /*long*/ webView, int /*long*/ context, int /*long*/ windowScriptObject, int /*long*/ frame) {
+	WebKit_win32.JSGlobalContextRetain (context);
 	int /*long*/ globalObject = WebKit_win32.JSContextGetGlobalObject (context);
 	int /*long*/ privateData = ((WebKit)browser.webBrowser).webViewData;
 	int /*long*/ externalObject = WebKit_win32.JSObjectMake (context, WebKit.ExternalClass, privateData);
@@ -199,38 +199,38 @@ int didClearWindowObject(int /*long*/ webView, int /*long*/ context, int /*long*
 		browser.execute (current.functionString);
 	}
 	
-	IWebView iwebView = new IWebView(webView);
+	IWebView iwebView = new IWebView (webView);
 	int /*long*/[] mainFrame = new int /*long*/[1];
-	iwebView.mainFrame(mainFrame);
+	iwebView.mainFrame (mainFrame);
 	boolean top = mainFrame[0] == frame;
 	addEventHandlers (top);
 	return COM.S_OK;
 }
 
-int didCommitLoadForFrame(int /*long*/ webview, int /*long*/ frame) {
-	IWebFrame iWebFrame = new IWebFrame(frame);
+int didCommitLoadForFrame (int /*long*/ webview, int /*long*/ frame) {
+	IWebFrame iWebFrame = new IWebFrame (frame);
 	int /*long*/[] result = new int /*long*/[1];
-	int hr = iWebFrame.dataSource(result);
+	int hr = iWebFrame.dataSource (result);
 	if (hr != COM.S_OK || result[0] == 0) {
 		return COM.S_OK;
     }
-	IWebDataSource dataSource = new IWebDataSource(result[0]);
+	IWebDataSource dataSource = new IWebDataSource (result[0]);
 	result[0] = 0;
-	hr = dataSource.request(result);
-	dataSource.Release();
+	hr = dataSource.request (result);
+	dataSource.Release ();
 	if (hr != COM.S_OK || result[0] == 0) {
 		return COM.S_OK;
-    }
-	IWebMutableURLRequest request = new IWebMutableURLRequest(result[0]);
+	}
+	IWebMutableURLRequest request = new IWebMutableURLRequest (result[0]);
 	result[0] = 0;
-	hr = request.URL(result);
-	request.Release();
+	hr = request.URL (result);
+	request.Release ();
 	if (hr != COM.S_OK || result[0] == 0) {
 		return COM.S_OK;
-    }
-	String url2 = WebKit.extractBSTR(result[0]);
-	COM.SysFreeString(result[0]);
-	if (url2.length() == 0) return COM.S_OK;
+	}
+	String url2 = WebKit.extractBSTR (result[0]);
+	COM.SysFreeString (result[0]);
+	if (url2.length () == 0) return COM.S_OK;
 	/*
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
@@ -243,15 +243,15 @@ int didCommitLoadForFrame(int /*long*/ webview, int /*long*/ frame) {
 			url2 = WebKit.ABOUT_BLANK + url2.substring (length);
 		}
 	}
-	Display display = browser.getDisplay();
+	Display display = browser.getDisplay ();
 	result[0] = 0;
-	IWebView iwebView = new IWebView(webview);
-	hr = iwebView.mainFrame(result);
+	IWebView iwebView = new IWebView (webview);
+	hr = iwebView.mainFrame (result);
 	boolean top = false;
 	if (hr == COM.S_OK && result[0] != 0) {
 		top = frame == result[0];
-		new IWebFrame(result[0]).Release();
-    }
+		new IWebFrame (result[0]).Release ();
+	}
 	if (top) {
 		/* reset resource status variables */
 		this.url = url2;
@@ -263,7 +263,7 @@ int didCommitLoadForFrame(int /*long*/ webview, int /*long*/ frame) {
 		* first webView_didCommitLoadForFrame callback received for a setText() invocation
 		* then do not send any events or re-install registered BrowserFunctions. 
 		*/
-		if (url2.startsWith(WebKit.ABOUT_BLANK) && html != null) return COM.S_OK;
+		if (url2.startsWith (WebKit.ABOUT_BLANK) && html != null) return COM.S_OK;
 
 		/* re-install registered functions */
 		Enumeration elements = browser.webBrowser.functions.elements ();
@@ -272,78 +272,88 @@ int didCommitLoadForFrame(int /*long*/ webview, int /*long*/ frame) {
 			browser.webBrowser.execute (function.functionString);
 		}
 
-		ProgressEvent progress = new ProgressEvent(browser);
+		ProgressEvent progress = new ProgressEvent (browser);
 		progress.display = display;
 		progress.widget = browser;
 		progress.current = 1;
 		progress.total = WebKit.MAX_PROGRESS;
 		ProgressListener[] progressListeners = browser.webBrowser.progressListeners;
 		for (int i = 0; i < progressListeners.length; i++) {
-			progressListeners[i].changed(progress);
+			progressListeners[i].changed (progress);
 		}
-		if (browser.isDisposed()) return COM.S_OK;
+		if (browser.isDisposed ()) return COM.S_OK;
 
-		StatusTextEvent statusText = new StatusTextEvent(browser);
+		StatusTextEvent statusText = new StatusTextEvent (browser);
 		statusText.display = display;
 		statusText.widget = browser;
 		statusText.text = url2;
 		StatusTextListener[] statusTextListeners = browser.webBrowser.statusTextListeners;
 		for (int i = 0; i < statusTextListeners.length; i++) {
-			statusTextListeners[i].changed(statusText);
+			statusTextListeners[i].changed (statusText);
 		}
-		if (browser.isDisposed()) return COM.S_OK;
+		if (browser.isDisposed ()) return COM.S_OK;
 	}
-	LocationEvent location = new LocationEvent(browser);
+	LocationEvent location = new LocationEvent (browser);
 	location.display = display;
 	location.widget = browser;
 	location.location = url2;
 	location.top = top;
 	LocationListener[] locationListeners = browser.webBrowser.locationListeners;
 	for (int i = 0; i < locationListeners.length; i++) {
-		locationListeners[i].changed(location);
+		locationListeners[i].changed (location);
 	}
 	return COM.S_OK;
 }
 
-int didFailProvisionalLoadWithError(int /*long*/ webView, int /*long*/ error, int /*long*/ frame) {
-	IWebError iweberror = new IWebError(error);
+int didFailProvisionalLoadWithError (int /*long*/ webView, int /*long*/ error, int /*long*/ frame) {
+	IWebError iweberror = new IWebError (error);
 	int [] errorCode = new int [1];
-	int hr = iweberror.code(errorCode);
+	int hr = iweberror.code (errorCode);
 	if (WebKit_win32.WebURLErrorBadURL < errorCode[0]) return COM.S_OK;;
 	
 	String failingURLString = null;
 	int /*long*/[] failingURL = new int /*long*/[1];
 	hr = iweberror.failingURL (failingURL);
 	if (hr == COM.S_OK && failingURL[0] != 0) {
-		failingURLString = WebKit.extractBSTR(failingURL[0]);
-		COM.SysFreeString(failingURL[0]);
+		failingURLString = WebKit.extractBSTR (failingURL[0]);
+		COM.SysFreeString (failingURL[0]);
 	}
 	if (failingURLString != null && WebKit_win32.WebURLErrorServerCertificateNotYetValid <= errorCode[0] && errorCode[0] <= WebKit_win32.WebURLErrorSecureConnectionFailed) {
 		/* handle invalid certificate error */
 		int /*long*/[] result = new int /*long*/[1];
-		hr = iweberror.localizedDescription(result);
+		hr = iweberror.localizedDescription (result);
 		if (hr != COM.S_OK || result[0] == 0) {
 			return COM.S_OK;
 		}
-		String description = WebKit.extractBSTR(result[0]);
-		COM.SysFreeString(result[0]);
+		String description = WebKit.extractBSTR (result[0]);
+		COM.SysFreeString (result[0]);
+
+		result[0] = 0;
+		hr = iweberror.QueryInterface (WebKit_win32.IID_IWebErrorPrivate, result);
+		if (hr != COM.S_OK || result[0] == 0) {
+			return COM.S_OK;
+		}
+
+		IWebErrorPrivate webErrorPrivate = new IWebErrorPrivate (result[0]);
+		result[0] = 0;
 		int /*long*/[] certificate = new int /*long*/[1];
-		hr = iweberror.sslPeerCertificate(certificate);
+		hr = webErrorPrivate.sslPeerCertificate (certificate);
+		webErrorPrivate.Release ();
 		if (hr != COM.S_OK || certificate[0] == 0) {
 			return COM.S_OK;
 		}
-		if (showCertificateDialog(webView, failingURLString, description, certificate[0])){
-			IWebFrame iWebFrame = new IWebFrame(frame);
+		if (showCertificateDialog (webView, failingURLString, description, certificate[0])){
+			IWebFrame iWebFrame = new IWebFrame (frame);
 			hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebMutableURLRequest, 0, WebKit_win32.IID_IWebMutableURLRequest, result);
 		    if (hr != COM.S_OK || result[0] == 0) {
 		    	certificate[0] = 0;
 		    	return COM.S_OK;
 		    }
 		    IWebMutableURLRequest request = new IWebMutableURLRequest (result[0]);
-			request.setURL(failingURL[0]);
-			request.setAllowsAnyHTTPSCertificate();
-			iWebFrame.loadRequest(request.getAddress());
-			request.Release();
+			request.setURL (failingURL[0]);
+			request.setAllowsAnyHTTPSCertificate ();
+			iWebFrame.loadRequest (request.getAddress ());
+			request.Release ();
 		}
 		certificate[0] = 0;
 		return COM.S_OK;
@@ -351,48 +361,48 @@ int didFailProvisionalLoadWithError(int /*long*/ webView, int /*long*/ error, in
 
 	/* handle other types of errors */
 	int /*long*/[] result = new int /*long*/[1];
-	hr = iweberror.localizedDescription(result);
+	hr = iweberror.localizedDescription (result);
 	if (hr != COM.S_OK || result[0] == 0) {
 		return COM.S_OK;
 	}
-	String description = WebKit.extractBSTR(result[0]);
-	COM.SysFreeString(result[0]);
-	if (!browser.isDisposed()) {
+	String description = WebKit.extractBSTR (result[0]);
+	COM.SysFreeString (result[0]);
+	if (!browser.isDisposed ()) {
 		String message = failingURLString != null ? failingURLString + "\n\n" : ""; //$NON-NLS-1$ //$NON-NLS-2$
 		message += Compatibility.getMessage ("SWT_Page_Load_Failed", new Object[] {description}); //$NON-NLS-1$
-		MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.ICON_ERROR);
-		messageBox.setMessage(message);
-		messageBox.open();
+		MessageBox messageBox = new MessageBox (browser.getShell (), SWT.OK | SWT.ICON_ERROR);
+		messageBox.setMessage (message);
+		messageBox.open ();
 	}
 	return COM.S_OK;
 }
 
-int didFinishLoadForFrame(int /*long*/ webview, int /*long*/ frame) {
-	IWebView iWebView = new IWebView(webview);
+int didFinishLoadForFrame (int /*long*/ webview, int /*long*/ frame) {
+	IWebView iWebView = new IWebView (webview);
 	int /*long*/[] iWebFrame = new int /*long*/[1];
-	int hr = iWebView.mainFrame(iWebFrame);
+	int hr = iWebView.mainFrame (iWebFrame);
 	if (hr != COM.S_OK || iWebFrame[0] == 0) {
 		return COM.S_OK;
-    }
+	}
 	boolean top = frame == iWebFrame[0];
-	new IWebFrame(iWebFrame[0]).Release();
+	new IWebFrame (iWebFrame[0]).Release();
 	if (top) {
 		/*
 		 * If html is not null then there is html from a previous setText() call
 		 * waiting to be set into the about:blank page once it has completed loading. 
 		 */
 		if (html != null) {
-			if (getUrl().startsWith(WebKit.ABOUT_BLANK)) {
+			if (getUrl ().startsWith (WebKit.ABOUT_BLANK)) {
 				((WebKit)browser.webBrowser).loadingText = true;
-				int /*long*/ string = WebKit.createBSTR(html);
+				int /*long*/ string = WebKit.createBSTR (html);
 				int /*long*/ URLString;
 				if (((WebKit)browser.webBrowser).untrustedText) {
-					URLString = WebKit.createBSTR(WebKit.ABOUT_BLANK);
+					URLString = WebKit.createBSTR (WebKit.ABOUT_BLANK);
 				} else {
-					URLString = WebKit.createBSTR(WebKit.URI_FILEROOT);
+					URLString = WebKit.createBSTR (WebKit.URI_FILEROOT);
 				}
-				IWebFrame mainFrame = new IWebFrame(frame);
-				mainFrame.loadHTMLString(string, URLString);
+				IWebFrame mainFrame = new IWebFrame (frame);
+				mainFrame.loadHTMLString (string, URLString);
 				html = null;
 			}
 		}
@@ -403,7 +413,7 @@ int didFinishLoadForFrame(int /*long*/ webview, int /*long*/ frame) {
 		* second callback to come before sending the title or completed events.
 		*/
 		if (!((WebKit)browser.webBrowser).loadingText) {
-			if (browser.isDisposed()) return COM.S_OK;
+			if (browser.isDisposed ()) return COM.S_OK;
 			/*
 			* To be consistent with other platforms a title event should be fired when a
 			* page has completed loading.  A page with a <title> tag will do this
@@ -411,76 +421,76 @@ int didFinishLoadForFrame(int /*long*/ webview, int /*long*/ frame) {
 			* without a <title> tag will not do this by default, so fire the event
 			* here with the page's url as the title.
 			*/
-			Display display = browser.getDisplay();
-			IWebFrame mainFrame = new IWebFrame(frame);
+			Display display = browser.getDisplay ();
+			IWebFrame mainFrame = new IWebFrame (frame);
 			int /*long*/[] result = new int /*long*/[1];
-			hr = mainFrame.dataSource(result);
+			hr = mainFrame.dataSource (result);
 			if (hr != COM.S_OK || result[0] == 0) {
 				return COM.S_OK;
 		    }
-			IWebDataSource dataSource = new IWebDataSource(result[0]);
+			IWebDataSource dataSource = new IWebDataSource (result[0]);
 			result[0] = 0;
-			hr = dataSource.pageTitle(result);
-			dataSource.Release();
+			hr = dataSource.pageTitle (result);
+			dataSource.Release ();
 			if (hr != COM.S_OK) {
 				return COM.S_OK;
 		    }
 			String title = null;
 			if (result[0] != 0) {
-				title = WebKit.extractBSTR(result[0]);
-				COM.SysFreeString(result[0]);
+				title = WebKit.extractBSTR (result[0]);
+				COM.SysFreeString (result[0]);
 			}
-			if (title == null || title.length() == 0) {	/* page has no title */
-				TitleEvent newEvent = new TitleEvent(browser);
+			if (title == null || title.length () == 0) {	/* page has no title */
+				TitleEvent newEvent = new TitleEvent (browser);
 				newEvent.display = display;
 				newEvent.widget = browser;
-				newEvent.title = getUrl();
+				newEvent.title = getUrl ();
 				TitleListener[] titleListeners = browser.webBrowser.titleListeners;
 				for (int i = 0; i < titleListeners.length; i++) {
-					titleListeners[i].changed(newEvent);
+					titleListeners[i].changed (newEvent);
 				}
-				if (browser.isDisposed()) return COM.S_OK;
+				if (browser.isDisposed ()) return COM.S_OK;
 			}
 
-			ProgressEvent progress = new ProgressEvent(browser);
+			ProgressEvent progress = new ProgressEvent (browser);
 			progress.display = display;
 			progress.widget = browser;
 			progress.current = WebKit.MAX_PROGRESS;
 			progress.total = WebKit.MAX_PROGRESS;
 			ProgressListener[] progressListeners = browser.webBrowser.progressListeners;
 			for (int i = 0; i < progressListeners.length; i++) {
-				progressListeners[i].completed(progress);
+				progressListeners[i].completed (progress);
 			}
 		}
 		((WebKit)browser.webBrowser).loadingText = false;
-		if (browser.isDisposed()) return COM.S_OK;
+		if (browser.isDisposed ()) return COM.S_OK;
 	}
 	return COM.S_OK;
 }
 
-int didReceiveTitle(int /*long*/ webView, int /*long*/ title, int /*long*/ frame) {
+int didReceiveTitle (int /*long*/ webView, int /*long*/ title, int /*long*/ frame) {
 	int /*long*/[] mainFrame = new int /*long*/[1];
-	IWebView iWebView = new IWebView(webView);
-	int hr = iWebView.mainFrame(mainFrame);
+	IWebView iWebView = new IWebView (webView);
+	int hr = iWebView.mainFrame (mainFrame);
 	if (hr != COM.S_OK || frame == 0) {
 		return COM.S_OK;
 	}
 	if (frame == mainFrame[0]) {
-		String newTitle = WebKit.extractBSTR(title);
-		TitleEvent newEvent = new TitleEvent(browser);
-		newEvent.display = browser.getDisplay();
+		String newTitle = WebKit.extractBSTR (title);
+		TitleEvent newEvent = new TitleEvent (browser);
+		newEvent.display = browser.getDisplay ();
 		newEvent.widget = browser;
 		newEvent.title = newTitle;
 		TitleListener[] titleListeners = browser.webBrowser.titleListeners;
 		for (int i = 0; i < titleListeners.length; i++) {
-			titleListeners[i].changed(newEvent);
+			titleListeners[i].changed (newEvent);
 		}
 	}
-	new IWebFrame(mainFrame[0]).Release();
+	new IWebFrame (mainFrame[0]).Release ();
 	return COM.S_OK;
 }
 
-int didStartProvisionalLoadForFrame(int /*long*/ webView, int /*long*/ frame) {
+int didStartProvisionalLoadForFrame (int /*long*/ webView, int /*long*/ frame) {
 	return COM.S_OK;
 }
 
@@ -497,7 +507,7 @@ int /*long*/ getAddress () {
 	
 String getUrl () {
 	/* WebKit auto-navigates to about:blank at startup */
-	if (url == null || url.length() == 0) return WebKit.ABOUT_BLANK;
+	if (url == null || url.length () == 0) return WebKit.ABOUT_BLANK;
 	return url;
 }
 	
@@ -535,8 +545,8 @@ void setBrowser (Browser browser) {
 
 boolean showCertificateDialog (int /*long*/ webView, final String failingUrlString, final String description, int /*long*/ certificate) {
 	Shell parent = browser.getShell ();
-	final Shell shell = new Shell(parent, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
-	shell.setText(Compatibility.getMessage("SWT_InvalidCert_Title")); //$NON-NLS-1$
+	final Shell shell = new Shell (parent, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
+	shell.setText (Compatibility.getMessage("SWT_InvalidCert_Title")); //$NON-NLS-1$
 	shell.setLayout (new GridLayout ());
 	Label label = new Label (shell, SWT.WRAP);
 	//if unable to get host, show the url
@@ -565,7 +575,7 @@ boolean showCertificateDialog (int /*long*/ webView, final String failingUrlStri
 	final boolean[] result = new boolean[1];
 	final Button[] buttons = new Button[3];
 	Listener listener = new Listener() {
-		public void handleEvent(Event event) {
+		public void handleEvent (Event event) {
 			if (event.widget == buttons[2]) {
 				//showCertificate() //:TODO Not sure how to show the certificate
 			} else {
@@ -596,12 +606,12 @@ boolean showCertificateDialog (int /*long*/ webView, final String failingUrlStri
 	shell.setDefaultButton (buttons[0]);
 	shell.pack ();
 	
-	Rectangle parentSize = parent.getBounds();
-	Rectangle shellSize = shell.getBounds();
+	Rectangle parentSize = parent.getBounds ();
+	Rectangle shellSize = shell.getBounds ();
 	int x, y;
-	x = parent.getLocation().x + (parentSize.width - shellSize.width)/2;
-	y = parent.getLocation().y + (parentSize.height - shellSize.height)/2;
-	shell.setLocation(x, y);
+	x = parent.getLocation ().x + (parentSize.width - shellSize.width)/2;
+	y = parent.getLocation ().y + (parentSize.height - shellSize.height)/2;
+	shell.setLocation (x, y);
 	shell.open ();
 	Display display = browser.getDisplay ();
 	while (!shell.isDisposed ()) {
@@ -609,5 +619,5 @@ boolean showCertificateDialog (int /*long*/ webView, final String failingUrlStri
 	}
 	return result[0];
 }
-}
 
+}

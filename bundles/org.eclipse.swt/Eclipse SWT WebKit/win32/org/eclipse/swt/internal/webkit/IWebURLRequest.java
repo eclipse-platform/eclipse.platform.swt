@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.webkit;
 
+
 import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebURLRequest extends IUnknown {
@@ -18,20 +19,20 @@ public IWebURLRequest (int /*long*/ address) {
 	super (address);
 }
 
-public int HTTPBody (int /*long*/ []result) {
-	return COM.VtblCall (6, getAddress (), result);
-}
+//public int HTTPBody (int /*long*/[] result) {
+//	return COM.VtblCall (6, getAddress (), result);
+//}
 
-public int HTTPMethod (int /*long*/ []result) {
+public int HTTPMethod (int /*long*/[] result) {
 	return COM.VtblCall (8, getAddress (), result);
 }
 
-public int mutableCopy (int /*long*/ []result) {
-	return COM.VtblCall (16, getAddress (), result);
+public int URL (int /*long*/[] result) {
+	return COM.VtblCall (13, getAddress (), result);
 }
 
-public int URL (int /*long*/ []result) {
-	return COM.VtblCall (13, getAddress (), result);
+public int mutableCopy (int /*long*/[] result) {
+	return COM.VtblCall (16, getAddress (), result);
 }
 
 }

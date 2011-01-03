@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.webkit;
 
+
 import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebMutableURLRequest extends IWebURLRequest {
@@ -18,17 +19,13 @@ public IWebMutableURLRequest (int /*long*/ address) {
 	super (address);
 }
 
-public int setAllowsAnyHTTPSCertificate () {
-	return COM.VtblCall (29, getAddress ());
-}
+//public int setHTTPBody (int /*long*/ data) {
+//	return COM.VtblCall (21, getAddress (), data);
+//}
 
-public int setHTTPBody (int /*long*/ data) {
-	return COM.VtblCall (21, getAddress (), data);
-}
-
-public int setHTTPBodyStream (int /*long*/ data) {
-	return COM.VtblCall (22, getAddress (), data);
-}
+//public int setHTTPBodyStream (int /*long*/ data) {
+//	return COM.VtblCall (22, getAddress (), data);
+//}
 
 public int setHTTPMethod (int post) {
 	return COM.VtblCall (23, getAddress (), post);
@@ -42,5 +39,8 @@ public int setValue (int /*long*/ value, int /*long*/ field) {
 	return COM.VtblCall (28, getAddress (), value, field);
 }
 
+public int setAllowsAnyHTTPSCertificate () {
+	return COM.VtblCall (29, getAddress ());
+}
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1140,11 +1140,6 @@ typedef enum {
 	MoveMemory___3DJI_FUNC,
 #endif
 #ifndef JNI64
-	MoveMemory___3D_3II_FUNC,
-#else
-	MoveMemory___3D_3JI_FUNC,
-#endif
-#ifndef JNI64
 	MoveMemory___3FII_FUNC,
 #else
 	MoveMemory___3FJI_FUNC,
@@ -1841,7 +1836,12 @@ typedef enum {
 #ifndef JNI64
 	VtblCall__IIII_3C_3CI_FUNC,
 #else
-	VtblCall__IJJI_3C_3CJ_FUNC,
+	VtblCall__IJII_3C_3CI_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIIJ_FUNC,
+#else
+	VtblCall__IJIJ_FUNC,
 #endif
 #ifndef JNI64
 	VtblCall__IIIJI_3J_FUNC,
@@ -1884,6 +1884,16 @@ typedef enum {
 	VtblCall__IJJII_3J_FUNC,
 #endif
 #ifndef JNI64
+	VtblCall__IIJI_3C_3CJ_FUNC,
+#else
+	VtblCall__IJJI_3C_3CJ_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIJJ_FUNC,
+#else
+	VtblCall__IJJJ_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IIJJI_3J_FUNC,
 #else
 	VtblCall__IJJJI_3J_FUNC,
@@ -1894,7 +1904,17 @@ typedef enum {
 	VtblCall__IJJJJ_FUNC,
 #endif
 #ifndef JNI64
+	VtblCall__IIJ_3I_FUNC,
+#else
+	VtblCall__IJJ_3I_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__IIJ_3I_3I_FUNC,
+#else
+	VtblCall__IJJ_3I_3I_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__IIJ_3J_3J_FUNC,
 #else
 	VtblCall__IJJ_3J_3J_FUNC,
 #endif
@@ -1920,6 +1940,11 @@ typedef enum {
 #endif
 #ifndef JNI64
 	VtblCall__II_3B_3I_FUNC,
+#else
+	VtblCall__IJ_3B_3I_FUNC,
+#endif
+#ifndef JNI64
+	VtblCall__II_3B_3J_FUNC,
 #else
 	VtblCall__IJ_3B_3J_FUNC,
 #endif

@@ -10,15 +10,16 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.webkit;
 
+
 import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebURLAuthenticationChallenge extends IUnknown {
 
-public IWebURLAuthenticationChallenge(int /*long*/ address) {
-	super(address);
+public IWebURLAuthenticationChallenge (int /*long*/ address) {
+	super (address);
 }
 
-public int previousFailureCount (int /*long*/[] result) {
+public int previousFailureCount (int[] result) {
 	return COM.VtblCall (7, getAddress (), result);
 }
 
