@@ -220,7 +220,10 @@ static int /*long*/ getMsgProc(int /*long*/ code, int /*long*/ wParam, int /*lon
 						frame.setData(CONSUME_KEY, null);
 						display.setData(ACCEL_KEY_HIT, Boolean.TRUE);
 						consumed = frame.translateOleAccelerator(msg);
+						/* translateOleAccelerator() may send client events, ensure that the frame and display are still valid */
+						if (display.isDisposed()) return 0;
 						display.setData(ACCEL_KEY_HIT, Boolean.FALSE);
+						if (frame.isDisposed()) return 0;
 						String value = (String)frame.getData(CONSUME_KEY); 
 						if (value != null) consumed = value.equals("true"); //$NON-NLS-1$
 						frame.setData(CONSUME_KEY, null);
