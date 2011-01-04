@@ -1126,12 +1126,14 @@ public void remove (String string) {
  */
 public void removeAll () {
 	checkWidget ();
+	ignoreSelection = true;
 	if ((style & SWT.READ_ONLY) != 0) {
 		((NSPopUpButton)view).removeAllItems();
 	} else {
 		setText ("", true);
 		((NSComboBox)view).removeAllItems();
 	}
+	ignoreSelection = false;
 }
 
 /**
@@ -1350,6 +1352,7 @@ public void setItem (int index, String string) {
 	if (0 > index || index >= count) error (SWT.ERROR_INVALID_RANGE);
 	int selection = getSelectionIndex();
 	NSAttributedString str = createString(string);
+	ignoreSelection = true;
 	if ((style & SWT.READ_ONLY) != 0) {
 		NSMenuItem nsItem = ((NSPopUpButton)view).itemAtIndex(index);
 		nsItem.setAttributedTitle(str);
@@ -1366,6 +1369,7 @@ public void setItem (int index, String string) {
 		widget.removeItemAtIndex(index + 1);
 	}
 	if (selection != -1) select (selection);
+	ignoreSelection = false;
 }
 
 /**
@@ -1390,6 +1394,7 @@ public void setItems (String [] items) {
 	}
 	removeAll();
 	if (items.length == 0) return;
+	ignoreSelection = true;
 	for (int i= 0; i < items.length; i++) {
 		NSAttributedString str = createString(items[i]);
 		if ((style & SWT.READ_ONLY) != 0) {
@@ -1406,6 +1411,7 @@ public void setItems (String [] items) {
 			((NSComboBox)view).addItemWithObjectValue(str);
 		}
 	}
+	ignoreSelection = false;
 }
 
 /**
