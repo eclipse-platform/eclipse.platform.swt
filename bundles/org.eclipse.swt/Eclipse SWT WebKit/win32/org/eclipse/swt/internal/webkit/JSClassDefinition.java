@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.webkit;
 
+
 /** @jniclass flags=cpp */
 public class JSClassDefinition {
     public int version;
