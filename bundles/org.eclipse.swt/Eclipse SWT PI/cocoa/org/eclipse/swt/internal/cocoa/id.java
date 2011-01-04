@@ -28,6 +28,14 @@ public id(id id) {
 	this.id = id != null ? id.id : 0;
 }
 
+public int hashCode() {
+	return (int) this.id;
+}
+
+public boolean equals(Object other) {
+	return (this.id == ((id)other).id);
+}
+
 public int /*long*/ objc_getClass() {
 	String name = getClass().getName();
 	int index = name.lastIndexOf('.');

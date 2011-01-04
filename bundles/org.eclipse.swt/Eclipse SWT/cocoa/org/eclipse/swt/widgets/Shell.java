@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -126,6 +128,7 @@ public class Shell extends Decorations {
 	NSRect currentFrame;
 	NSRect fullScreenFrame;
 	ToolBar toolBar;
+	Map windowEmbedCounts;
 	
 	static int DEFAULT_CLIENT_WIDTH = -1;
 	static int DEFAULT_CLIENT_HEIGHT = -1;
@@ -683,14 +686,15 @@ void createHandle () {
 		currWindowClass = OS.object_getClass(hostWindow.id);
 		int /*long*/ sendEventImpl = OS.class_getMethodImplementation(currWindowClass, OS.sel_sendEvent_);
 		if (sendEventImpl != Display.windowCallback3.getAddress()) {
-			int /*long*/ embeddedSubclass = display.createWindowSubclass(currWindowClass, "SWTAWTWindow");
+			int /*long*/ embeddedSubclass = display.createWindowSubclass(currWindowClass, "SWTAWTWindow", true);
 			OS.object_setClass(hostWindow.id, embeddedSubclass);
 		}
 
-		int /*long*/ [] embedCount = new int /*long*/ [1];
-		OS.object_getInstanceVariable(hostWindow.id, Display.SWT_EMBED_FRAMES, embedCount);
-		embedCount[0]++;
-		OS.object_setInstanceVariable(hostWindow.id, Display.SWT_EMBED_FRAMES, embedCount[0]);
+		if (windowEmbedCounts == null) windowEmbedCounts = new HashMap();
+		Integer embedCount = (Integer) windowEmbedCounts.get(hostWindow);
+		if (embedCount == null) embedCount = new Integer(0);
+		embedCount = new Integer(embedCount.intValue() + 1);
+		windowEmbedCounts.put(hostWindow, embedCount);
 		
 		// Register for notifications. An embedded shell has no control over the host window,
 		// so it isn't correct to install a delegate.
@@ -1362,12 +1366,15 @@ void releaseHandle () {
 	windowDelegate = null;
 	
 	if (window == null && currWindowClass != 0) {
-		int /*long*/ [] embedCount = new int /*long*/ [1];
-		OS.object_getInstanceVariable(view.window().id, Display.SWT_EMBED_FRAMES, embedCount);
-		embedCount[0]--;
-		OS.object_setInstanceVariable(view.window().id, Display.SWT_EMBED_FRAMES, embedCount[0]);
+		Integer embedCount = (Integer) windowEmbedCounts.get(view.window());
+		if (embedCount == null) embedCount = new Integer(0);
+		embedCount = new Integer(embedCount.intValue() - 1);
+		windowEmbedCounts.put(view.window(), embedCount);
 		
-		if (embedCount[0] <= 0) OS.object_setClass(view.window().id, currWindowClass);
+		if (embedCount.intValue() <= 0) {
+			windowEmbedCounts.remove(view.window());
+			OS.object_setClass(view.window().id, currWindowClass);
+		}
 	}
 	
 	super.releaseHandle ();

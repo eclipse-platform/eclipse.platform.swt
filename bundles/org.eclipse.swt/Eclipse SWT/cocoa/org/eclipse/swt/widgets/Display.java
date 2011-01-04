@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -331,6 +333,7 @@ public class Display extends Device {
 	Object data;
 	String [] keys;
 	Object [] values;
+	static Map/*<NSObject, Long>*/ dynamicObjectMap;
 	
 	/*
 	* TEMPORARY CODE.  Install the runnable that
@@ -541,7 +544,15 @@ void addSkinnableWidget (Widget widget) {
 
 void addWidget (NSObject view, Widget widget) {
 	if (view == null) return;
-	OS.object_setInstanceVariable (view.id, SWT_OBJECT, widget.jniRef);
+	int /*long*/ ivar = OS.object_setInstanceVariable (view.id, SWT_OBJECT, widget.jniRef);
+	
+	if (ivar == 0) {
+		if (dynamicObjectMap == null) {
+			dynamicObjectMap = new HashMap();
+		}
+		Long JNIRef = new Long(widget.jniRef);
+		dynamicObjectMap.put(view, JNIRef);
+	}
 }
 
 /**
@@ -1987,7 +1998,15 @@ Widget getWidget (int /*long*/ id) {
 static Widget GetWidget (int /*long*/ id) {
 	if (id == 0) return null;
 	int /*long*/ [] jniRef = new int /*long*/ [1];
-	OS.object_getInstanceVariable(id, SWT_OBJECT, jniRef);
+	int /*long*/ iVar = OS.object_getInstanceVariable(id, SWT_OBJECT, jniRef);
+	if (iVar == 0) {
+		if (dynamicObjectMap != null) {
+			NSObject key = new NSObject(id);
+			Long dynJNIRef = (Long) dynamicObjectMap.get(key);
+			if (dynJNIRef != null) jniRef[0] = (int/*64*/) dynJNIRef.longValue();
+		}
+	}
+
 	if (jniRef[0] == 0) return null;
 	return (Widget)OS.JNIGetObject(jniRef[0]);
 }
@@ -2194,7 +2213,7 @@ int /*long*/ registerCellSubclass(int /*long*/ cellClass, int size, int align, b
 	return cls;
 }
 
-int /*long*/ createWindowSubclass(int /*long*/ baseClass, String newClass) {
+int /*long*/ createWindowSubclass(int /*long*/ baseClass, String newClass, boolean isDynamic) {
 	int /*long*/ cls = OS.objc_lookUpClass(newClass);
 	if (cls != 0) return cls;
 	cls = OS.objc_allocateClassPair(baseClass, newClass, 0);
@@ -2205,8 +2224,7 @@ int /*long*/ createWindowSubclass(int /*long*/ baseClass, String newClass) {
 	int /*long*/ view_stringForToolTip_point_userDataProc = OS.CALLBACK_view_stringForToolTip_point_userData_(proc6);
 	int /*long*/ accessibilityHitTestProc = OS.CALLBACK_accessibilityHitTest_(proc3);
 
-	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	OS.class_addIvar(cls, SWT_EMBED_FRAMES, size, (byte)align, types);
+	if (!isDynamic) OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sendEvent_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_helpRequested_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_canBecomeKeyWindow, proc2, "@:");
@@ -2705,7 +2723,7 @@ void initClasses () {
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTWindow";
-	createWindowSubclass(OS.class_NSWindow, className);
+	createWindowSubclass(OS.class_NSWindow, className, false);
 	
 	className = "SWTPanel";
 	cls = OS.objc_allocateClassPair(OS.class_NSPanel, className, 0);
@@ -2727,14 +2745,14 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_toolbarAllowedItemIdentifiers_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_toolbarDefaultItemIdentifiers_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_toolbarSelectableItemIdentifiers_, proc3, "@:@");
-	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
-	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 	
 	className = "SWTToolbarView";
 	cls = OS.objc_allocateClassPair(OS.class_NSToolbarView, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	/**
+	 * Note no SWT_OBJECT field is added. SWTToolbarView is always used dynamically so no ivars can be added to the class.
+	 */
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	OS.objc_registerClassPair(cls);
@@ -3644,6 +3662,11 @@ void releaseDisplay () {
 		}
 	}
 	
+	if (dynamicObjectMap != null) {
+		dynamicObjectMap.clear();
+		dynamicObjectMap = null;
+	}
+	
 	// The autorelease pool is cleaned up when we call NSApplication.terminate().
 
 	if (application != null && applicationClass != 0) {
@@ -3739,7 +3762,16 @@ public void removeListener (int eventType, Listener listener) {
 Widget removeWidget (NSObject view) {
 	if (view == null) return null;
 	int /*long*/ [] jniRef = new int /*long*/ [1];
-	OS.object_getInstanceVariable(view.id, SWT_OBJECT, jniRef);
+	int /*long*/ iVar = OS.object_getInstanceVariable(view.id, SWT_OBJECT, jniRef);
+	
+	if (iVar == 0) {
+		if (dynamicObjectMap != null) {
+			Long dynJNIRef = (Long) dynamicObjectMap.get(view);
+			if (dynJNIRef != null) jniRef[0] = (int/*64*/) dynJNIRef.longValue();
+			dynamicObjectMap.remove(view);
+		}
+	}
+
 	if (jniRef[0] == 0) return null;
 	Widget widget = (Widget)OS.JNIGetObject(jniRef[0]);
 	OS.object_setInstanceVariable(view.id, SWT_OBJECT, 0);
