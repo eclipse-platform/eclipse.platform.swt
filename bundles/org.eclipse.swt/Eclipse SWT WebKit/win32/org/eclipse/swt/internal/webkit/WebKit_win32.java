@@ -39,23 +39,23 @@ public class WebKit_win32 extends C {
 	public static final GUID IID_IWebURLCredential = IIDFromString("{A1E9D765-FACE-4189-BBE3-AED7EBF65EBD}"); //$NON-NLS-1$
 	public static final GUID IID_IWebView = IIDFromString("{174BBEFD-058E-49C7-91DF-6F110AA4AC28}"); //$NON-NLS-1$
 	public static final GUID IID_IWebViewPrivate = IIDFromString("{44914369-DEB5-4fcf-A6A3-30C02E73154F}"); //$NON-NLS-1$
-	
+
 	public static final int CFHTTPCookieSessionOnlyFlag   = 1 << 1;
 	public static final int FontSmoothingTypeWindows = 4;
 	public static final int kCFStringEncodingUTF8 = 0x08000100;
-	
+
 	public static final int kJSTypeUndefined = 0;
 	public static final int kJSTypeNull = 1;
 	public static final int kJSTypeBoolean = 2;
 	public static final int kJSTypeNumber = 3;
 	public static final int kJSTypeString = 4;
 	public static final int kJSTypeObject = 5;
-	
+
 	public static final int WebURLCredentialPersistenceForSession = 1;
 	public static final int WebURLErrorBadURL = -1000;
 	public static final int WebURLErrorServerCertificateNotYetValid = -1204;
 	public static final int WebURLErrorSecureConnectionFailed = -1200;
-	
+
 static GUID IIDFromString (String lpsz) {
 	int length = lpsz.length ();
 	char[] buffer = new char[length + 1];

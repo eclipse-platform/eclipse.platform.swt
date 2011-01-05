@@ -26,5 +26,5 @@ public int expectedContentLength (long[] result) {
 public int URL (int /*long*/[] result) {
 	return COM.VtblCall (8, getAddress (), result);
 }
-	
+
 }

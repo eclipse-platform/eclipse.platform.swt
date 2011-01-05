@@ -14,7 +14,7 @@ package org.eclipse.swt.internal.webkit;
 import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebErrorPrivate extends IUnknown {
-	
+
 public IWebErrorPrivate (int /*long*/ address) {
 	super (address);
 }

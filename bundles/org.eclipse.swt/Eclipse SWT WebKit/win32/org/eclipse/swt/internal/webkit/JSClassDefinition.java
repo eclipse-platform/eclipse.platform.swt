@@ -46,6 +46,6 @@ public class JSClassDefinition {
     public int /*long*/ hasInstance;
     /** @field cast=(JSObjectConvertToTypeCallback) */
     public int /*long*/ convertToType;
-    
+
     public static final int sizeof = WebKit_win32.JSClassDefinition_sizeof();
 }
