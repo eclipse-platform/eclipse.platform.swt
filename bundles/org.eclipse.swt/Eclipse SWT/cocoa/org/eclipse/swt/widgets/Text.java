@@ -647,6 +647,14 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 	return false;
 }
 
+void enableWidget(boolean enabled) {
+	super.enableWidget(enabled);
+	
+	if ((style & SWT.MULTI) != 0) {
+		setForeground(this.foreground);
+	}
+}
+
 /**
  * Returns the line number of the caret.
  * <p>
@@ -1676,8 +1684,11 @@ void setForeground (float /*double*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
 		nsColor = NSColor.textColor ();
+		if ((style & SWT.MULTI) != 0 && !isEnabled()) nsColor = NSColor.disabledControlTextColor();
 	} else {
-		nsColor = NSColor.colorWithCalibratedRed (color [0], color [1], color [2], 1);
+		float /*double*/ alpha = 1;
+		if ((style & SWT.MULTI) != 0 && !isEnabled()) alpha = 0.5f;
+		nsColor = NSColor.colorWithCalibratedRed (color [0], color [1], color [2], alpha);
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		((NSTextField) view).setTextColor (nsColor);
