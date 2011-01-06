@@ -566,7 +566,7 @@ public void create (Composite parent, int style) {
 		IWebPreferences preferences = new IWebPreferences (result[0]);
 		preferences.setJavaScriptCanOpenWindowsAutomatically (1);
 		preferences.setJavaEnabled (0);	//disable applets
-		preferences.setTabsToLinks (0);
+		preferences.setTabsToLinks (1);
 		preferences.setFontSmoothing (WebKit_win32.FontSmoothingTypeWindows);
 		preferences.Release ();
 	}
