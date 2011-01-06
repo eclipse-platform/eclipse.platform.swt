@@ -1005,21 +1005,25 @@ void onDispose () {
 			webUIDelegate.prompt = true;
 		}
 	}
-	
-	C.free (webViewData);
-	webViewWindowHandle = 0;
-	webFrameLoadDelegate.html = null;
-	webUIDelegate.lastHoveredLinkURL = lastNavigateURL = null;
-	
-	webView.close ();
-	webView.Release ();
-	webView = null;
 
 	Enumeration elements = functions.elements ();
 	while (elements.hasMoreElements ()) {
 		((BrowserFunction)elements.nextElement ()).dispose (false);
 	}
 	functions = null;
+
+	C.free (webViewData);
+	webView.setHostWindow(0);
+	webView.setFrameLoadDelegate(0);
+	webView.setResourceLoadDelegate(0);
+	webView.setUIDelegate(0);
+	webView.setPolicyDelegate(0);
+	webView.setDownloadDelegate(0);
+	webView.Release();
+	webView = null;
+	webViewWindowHandle = 0;
+	webFrameLoadDelegate.html = null;
+	webUIDelegate.lastHoveredLinkURL = lastNavigateURL = null;
 }
 
 void onFocus () {

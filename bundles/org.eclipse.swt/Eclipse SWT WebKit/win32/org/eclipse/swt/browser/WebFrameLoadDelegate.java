@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -17,6 +18,7 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.mozilla.nsISupports;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.webkit.*;
 import org.eclipse.swt.internal.win32.*;
@@ -26,13 +28,13 @@ import org.eclipse.swt.widgets.*;
 class WebFrameLoadDelegate {
 	COMObject iWebFrameLoadDelegate;
 	int refCount = 0;
-	
+
 	Browser browser;
 	String html;
 	String url;
-	
+
 	static final String OBJECTNAME_EXTERNAL = "external"; //$NON-NLS-1$
-	
+
 WebFrameLoadDelegate () {
 	createCOMInterfaces ();
 }
@@ -99,7 +101,7 @@ void createCOMInterfaces () {
 		public int /*long*/ method15 (int /*long*/[] args){return COM.S_OK;}
 		public int /*long*/ method16 (int /*long*/[] args){return didClearWindowObject (args[0], args[1], args[2], args[3]);}
 	};
-	
+
 	/* Callbacks that take double parameters require custom callbacks that instead pass pointers to the doubles. */
 	int /*long*/ ppVtable = iWebFrameLoadDelegate.ppVtable;
 	int /*long*/[] pVtable = new int /*long*/[1];
@@ -192,13 +194,13 @@ int didClearWindowObject (int /*long*/ webView, int /*long*/ context, int /*long
 	int /*long*/ name = WebKit_win32.JSStringCreateWithUTF8CString (bytes);
 	WebKit_win32.JSObjectSetProperty (context, globalObject, name, externalObject, 0, null);
 	WebKit_win32.JSStringRelease (name);
-	
+
 	Enumeration elements = browser.webBrowser.functions.elements ();
 	while (elements.hasMoreElements ()) {
 		BrowserFunction current = (BrowserFunction)elements.nextElement ();
 		browser.execute (current.functionString);
 	}
-	
+
 	IWebView iwebView = new IWebView (webView);
 	int /*long*/[] mainFrame = new int /*long*/[1];
 	iwebView.mainFrame (mainFrame);
@@ -307,10 +309,10 @@ int didCommitLoadForFrame (int /*long*/ webview, int /*long*/ frame) {
 
 int didFailProvisionalLoadWithError (int /*long*/ webView, int /*long*/ error, int /*long*/ frame) {
 	IWebError iweberror = new IWebError (error);
-	int [] errorCode = new int [1];
+	int[] errorCode = new int[1];
 	int hr = iweberror.code (errorCode);
-	if (WebKit_win32.WebURLErrorBadURL < errorCode[0]) return COM.S_OK;;
-	
+	if (WebKit_win32.WebURLErrorBadURL < errorCode[0]) return COM.S_OK;
+
 	String failingURLString = null;
 	int /*long*/[] failingURL = new int /*long*/[1];
 	hr = iweberror.failingURL (failingURL);
@@ -342,20 +344,20 @@ int didFailProvisionalLoadWithError (int /*long*/ webView, int /*long*/ error, i
 		if (hr != COM.S_OK || certificate[0] == 0) {
 			return COM.S_OK;
 		}
-		if (showCertificateDialog (webView, failingURLString, description, certificate[0])){
+		if (showCertificateDialog (webView, failingURLString, description, certificate[0])) {
 			IWebFrame iWebFrame = new IWebFrame (frame);
 			hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebMutableURLRequest, 0, WebKit_win32.IID_IWebMutableURLRequest, result);
-		    if (hr != COM.S_OK || result[0] == 0) {
-		    	certificate[0] = 0;
-		    	return COM.S_OK;
-		    }
-		    IWebMutableURLRequest request = new IWebMutableURLRequest (result[0]);
+			if (hr != COM.S_OK || result[0] == 0) {
+				new nsISupports (certificate[0]).Release();
+				return COM.S_OK;
+			}
+			IWebMutableURLRequest request = new IWebMutableURLRequest (result[0]);
 			request.setURL (failingURL[0]);
 			request.setAllowsAnyHTTPSCertificate ();
 			iWebFrame.loadRequest (request.getAddress ());
 			request.Release ();
 		}
-		certificate[0] = 0;
+		new nsISupports (certificate[0]).Release();
 		return COM.S_OK;
 	}
 
@@ -386,85 +388,85 @@ int didFinishLoadForFrame (int /*long*/ webview, int /*long*/ frame) {
 	}
 	boolean top = frame == iWebFrame[0];
 	new IWebFrame (iWebFrame[0]).Release();
-	if (top) {
-		/*
-		 * If html is not null then there is html from a previous setText() call
-		 * waiting to be set into the about:blank page once it has completed loading. 
-		 */
-		if (html != null) {
-			if (getUrl ().startsWith (WebKit.ABOUT_BLANK)) {
-				((WebKit)browser.webBrowser).loadingText = true;
-				int /*long*/ string = WebKit.createBSTR (html);
-				int /*long*/ URLString;
-				if (((WebKit)browser.webBrowser).untrustedText) {
-					URLString = WebKit.createBSTR (WebKit.ABOUT_BLANK);
-				} else {
-					URLString = WebKit.createBSTR (WebKit.URI_FILEROOT);
-				}
-				IWebFrame mainFrame = new IWebFrame (frame);
-				mainFrame.loadHTMLString (string, URLString);
-				html = null;
-			}
-		}
+	if (!top) return COM.S_OK;
 
-		/*
-		* The loadHTMLString() invocation above will trigger a second webView_didFinishLoadForFrame
-		* callback when it is completed.  If text was just set into the browser then wait for this
-		* second callback to come before sending the title or completed events.
-		*/
-		if (!((WebKit)browser.webBrowser).loadingText) {
-			if (browser.isDisposed ()) return COM.S_OK;
-			/*
-			* To be consistent with other platforms a title event should be fired when a
-			* page has completed loading.  A page with a <title> tag will do this
-			* automatically when the didReceiveTitle callback is received.  However a page
-			* without a <title> tag will not do this by default, so fire the event
-			* here with the page's url as the title.
-			*/
-			Display display = browser.getDisplay ();
+	/*
+	 * If html is not null then there is html from a previous setText() call
+	 * waiting to be set into the about:blank page once it has completed loading. 
+	 */
+	if (html != null) {
+		if (getUrl ().startsWith (WebKit.ABOUT_BLANK)) {
+			((WebKit)browser.webBrowser).loadingText = true;
+			int /*long*/ string = WebKit.createBSTR (html);
+			int /*long*/ URLString;
+			if (((WebKit)browser.webBrowser).untrustedText) {
+				URLString = WebKit.createBSTR (WebKit.ABOUT_BLANK);
+			} else {
+				URLString = WebKit.createBSTR (WebKit.URI_FILEROOT);
+			}
 			IWebFrame mainFrame = new IWebFrame (frame);
-			int /*long*/[] result = new int /*long*/[1];
-			hr = mainFrame.dataSource (result);
-			if (hr != COM.S_OK || result[0] == 0) {
-				return COM.S_OK;
-		    }
-			IWebDataSource dataSource = new IWebDataSource (result[0]);
-			result[0] = 0;
-			hr = dataSource.pageTitle (result);
-			dataSource.Release ();
-			if (hr != COM.S_OK) {
-				return COM.S_OK;
-		    }
-			String title = null;
-			if (result[0] != 0) {
-				title = WebKit.extractBSTR (result[0]);
-				COM.SysFreeString (result[0]);
-			}
-			if (title == null || title.length () == 0) {	/* page has no title */
-				TitleEvent newEvent = new TitleEvent (browser);
-				newEvent.display = display;
-				newEvent.widget = browser;
-				newEvent.title = getUrl ();
-				TitleListener[] titleListeners = browser.webBrowser.titleListeners;
-				for (int i = 0; i < titleListeners.length; i++) {
-					titleListeners[i].changed (newEvent);
-				}
-				if (browser.isDisposed ()) return COM.S_OK;
-			}
-
-			ProgressEvent progress = new ProgressEvent (browser);
-			progress.display = display;
-			progress.widget = browser;
-			progress.current = WebKit.MAX_PROGRESS;
-			progress.total = WebKit.MAX_PROGRESS;
-			ProgressListener[] progressListeners = browser.webBrowser.progressListeners;
-			for (int i = 0; i < progressListeners.length; i++) {
-				progressListeners[i].completed (progress);
-			}
+			mainFrame.loadHTMLString (string, URLString);
+			html = null;
 		}
-		((WebKit)browser.webBrowser).loadingText = false;
+	}
+
+	/*
+	* The loadHTMLString() invocation above will trigger a second didFinishLoadForFrame
+	* callback when it is completed.  If text was just set into the browser then wait for this
+	* second callback to come before sending the title or completed events.
+	*/
+	if (!((WebKit)browser.webBrowser).loadingText) {
+		if (browser.isDisposed ()) return COM.S_OK;
+		/*
+		* To be consistent with other platforms a title event should be fired when a
+		* page has completed loading.  A page with a <title> tag will do this
+		* automatically when the didReceiveTitle callback is received.  However a page
+		* without a <title> tag will not do this by default, so fire the event
+		* here with the page's url as the title.
+		*/
+		Display display = browser.getDisplay ();
+		IWebFrame mainFrame = new IWebFrame (frame);
+		int /*long*/[] result = new int /*long*/[1];
+		hr = mainFrame.dataSource (result);
+		if (hr != COM.S_OK || result[0] == 0) {
+			return COM.S_OK;
+		}
+		IWebDataSource dataSource = new IWebDataSource (result[0]);
+		result[0] = 0;
+		hr = dataSource.pageTitle (result);
+		dataSource.Release ();
+		if (hr != COM.S_OK) {
+			return COM.S_OK;
+		}
+		String title = null;
+		if (result[0] != 0) {
+			title = WebKit.extractBSTR (result[0]);
+			COM.SysFreeString (result[0]);
+		}
+		if (title == null || title.length () == 0) {	/* page has no title */
+			TitleEvent newEvent = new TitleEvent (browser);
+			newEvent.display = display;
+			newEvent.widget = browser;
+			newEvent.title = getUrl ();
+			TitleListener[] titleListeners = browser.webBrowser.titleListeners;
+			for (int i = 0; i < titleListeners.length; i++) {
+				titleListeners[i].changed (newEvent);
+			}
+			if (browser.isDisposed ()) return COM.S_OK;
+		}
+
+		ProgressEvent progress = new ProgressEvent (browser);
+		progress.display = display;
+		progress.widget = browser;
+		progress.current = WebKit.MAX_PROGRESS;
+		progress.total = WebKit.MAX_PROGRESS;
+		ProgressListener[] progressListeners = browser.webBrowser.progressListeners;
+		for (int i = 0; i < progressListeners.length; i++) {
+			progressListeners[i].completed (progress);
+		}
 		if (browser.isDisposed ()) return COM.S_OK;
 	}
+	((WebKit)browser.webBrowser).loadingText = false;
 	return COM.S_OK;
 }
 
@@ -504,13 +506,13 @@ void disposeCOMInterfaces () {
 int /*long*/ getAddress () {
 	return iWebFrameLoadDelegate.getAddress ();
 }
-	
+
 String getUrl () {
 	/* WebKit auto-navigates to about:blank at startup */
 	if (url == null || url.length () == 0) return WebKit.ABOUT_BLANK;
 	return url;
 }
-	
+
 int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return COM.E_INVALIDARG;
 	GUID guid = new GUID ();
@@ -526,7 +528,7 @@ int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 		new IUnknown (iWebFrameLoadDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
-	
+
 	COM.MoveMemory (ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
@@ -546,26 +548,28 @@ void setBrowser (Browser browser) {
 boolean showCertificateDialog (int /*long*/ webView, final String failingUrlString, final String description, int /*long*/ certificate) {
 	Shell parent = browser.getShell ();
 	final Shell shell = new Shell (parent, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
-	shell.setText (Compatibility.getMessage("SWT_InvalidCert_Title")); //$NON-NLS-1$
+	shell.setText (Compatibility.getMessage ("SWT_InvalidCert_Title")); //$NON-NLS-1$
 	shell.setLayout (new GridLayout ());
 	Label label = new Label (shell, SWT.WRAP);
-	//if unable to get host, show the url
-	String host = failingUrlString;
+	String host = null;
 	try {
-		host = new URL(failingUrlString).getHost();
+		host = new URL (failingUrlString).getHost ();
 	} catch (MalformedURLException e) {
-		
+		/* show the url instead */
+		host = failingUrlString;
 	}
-	String message = "\n";
-	message += Compatibility.getMessage ("SWT_InvalidCert_Message", new String[] {host}); //$NON-NLS-1$
-	message += "\n\n" + Compatibility.getMessage (description);
-	message += "\n" + Compatibility.getMessage("SWT_InvalidCert_Connect"); //$NON-NLS-1$
-	message += "\n";
-	label.setText(message);
-	
+	StringBuffer message = new StringBuffer ("\n"); //$NON-NLS-1$
+	message.append (Compatibility.getMessage ("SWT_InvalidCert_Message", new String[] {host})); //$NON-NLS-1$
+	message.append ("\n\n"); //$NON-NLS-1$
+	message.append (Compatibility.getMessage (description));
+	message.append ("\n"); //$NON-NLS-1$
+	message.append (Compatibility.getMessage ("SWT_InvalidCert_Connect")); //$NON-NLS-1$
+	message.append ("\n"); //$NON-NLS-1$
+	label.setText(message.toString ());
+
 	GridData data = new GridData ();
 	Monitor monitor = browser.getMonitor ();
-	int maxWidth = monitor.getBounds ().width * 1 / 3;
+	int maxWidth = monitor.getBounds ().width * 2 / 3;
 	int width = label.computeSize (SWT.DEFAULT, SWT.DEFAULT).x;
 	data.widthHint = Math.min (width, maxWidth);
 	data.horizontalAlignment = GridData.FILL;
@@ -577,7 +581,7 @@ boolean showCertificateDialog (int /*long*/ webView, final String failingUrlStri
 	Listener listener = new Listener() {
 		public void handleEvent (Event event) {
 			if (event.widget == buttons[2]) {
-				//showCertificate() //:TODO Not sure how to show the certificate
+				//showCertificate() //TODO Not sure how to show the certificate
 			} else {
 				result[0] = event.widget == buttons[0];
 				shell.close();
@@ -602,15 +606,15 @@ boolean showCertificateDialog (int /*long*/ webView, final String failingUrlStri
 	buttons[2].setText (SWT.getMessage("SWT_ViewCertificate")); //$NON-NLS-1$
 	buttons[2].setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 	buttons[2].addListener (SWT.Selection, listener);
+	buttons[2].setEnabled (false);
 
 	shell.setDefaultButton (buttons[0]);
 	shell.pack ();
-	
+
 	Rectangle parentSize = parent.getBounds ();
 	Rectangle shellSize = shell.getBounds ();
-	int x, y;
-	x = parent.getLocation ().x + (parentSize.width - shellSize.width)/2;
-	y = parent.getLocation ().y + (parentSize.height - shellSize.height)/2;
+	int x = parent.getLocation ().x + (parentSize.width - shellSize.width) / 2;
+	int y = parent.getLocation ().y + (parentSize.height - shellSize.height) / 2;
 	shell.setLocation (x, y);
 	shell.open ();
 	Display display = browser.getDisplay ();

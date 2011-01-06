@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -23,13 +24,14 @@ import org.eclipse.swt.widgets.*;
 class WebUIDelegate {
 	COMObject iWebUIDelegate;
 	int refCount = 0;
+
 	String lastHoveredLinkURL;
 	Browser browser;
 	Point size;
 	Point location;
 	boolean menuBar = true, toolBar = true, statusBar = true;
 	boolean prompt = true;
-	
+
 WebUIDelegate () {
 	createCOMInterfaces ();
 }
@@ -39,10 +41,8 @@ int AddRef () {
 	return refCount;
 }
 
-int canTakeFocus (int /*long*/ sender, int /*long*/ forward, int /*long*/ result) {
-	int [] response = new int[1];
-	response[0] = 1;
-	OS.MoveMemory (result, response, C.PTR_SIZEOF);
+int canTakeFocus (int /*long*/ sender, int forward, int /*long*/ result) {
+	OS.MoveMemory (result, new int[] {1}, 4); /* BOOL */
 	return COM.S_OK;
 }
 
@@ -52,19 +52,19 @@ int contextMenuItemsForElement (int /*long*/ sender, int /*long*/ element, int /
 	event.x = pt.x;
 	event.y = pt.y;
 	browser.notifyListeners (SWT.MenuDetect, event);
-	Menu menu = browser.getMenu ();
 	if (event.doit) {
+		Menu menu = browser.getMenu ();
 		if (menu != null && !menu.isDisposed ()) {
 			if (event.x != pt.x || event.y != pt.y) {
 				menu.setLocation (event.x, event.y);
 			}
 			menu.setVisible (true);
 		} else {
-			OS.MoveMemory (resultHMenu, new long[] {defaultItemsHMenu}, C.PTR_SIZEOF);
+			OS.MoveMemory (resultHMenu, new int /*long*/[] {defaultItemsHMenu}, C.PTR_SIZEOF);
 			return COM.S_OK;
 		}
 	}
-	OS.MoveMemory (resultHMenu, new /*long*/ int []{0}, C.PTR_SIZEOF);
+	OS.MoveMemory (resultHMenu, new int /*long*/[] {0}, C.PTR_SIZEOF);
 	return COM.S_OK;
 }
 
@@ -83,9 +83,9 @@ void createCOMInterfaces () {
 		public int /*long*/ method10 (int /*long*/[] args) {return setStatusText (args[0], args[1]);}
 		public int /*long*/ method11 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method12 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method13 (int /*long*/[] args) {return setToolbarsVisible (args[0], args[1]);}
+		public int /*long*/ method13 (int /*long*/[] args) {return setToolbarsVisible (args[0], (int)/*64*/args[1]);}
 		public int /*long*/ method14 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method15 (int /*long*/[] args) {return setStatusBarVisible (args[0], args[1]);}
+		public int /*long*/ method15 (int /*long*/[] args) {return setStatusBarVisible (args[0], (int)/*64*/args[1]);}
 		public int /*long*/ method16 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method17 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method18 (int /*long*/[] args) {return setFrame (args[0], args[1]);}
@@ -97,7 +97,7 @@ void createCOMInterfaces () {
 		public int /*long*/ method24 (int /*long*/[] args) {return runJavaScriptTextInputPanelWithPrompt (args[0], args[1], args[2], args[3]);}
 		public int /*long*/ method25 (int /*long*/[] args) {return runBeforeUnloadConfirmPanelWithMessage (args[0], args[1], args[2], args[3]);}
 		public int /*long*/ method26 (int /*long*/[] args) {return runOpenPanelForFileButtonWithResultListener (args[0], args[1]);}
-		public int /*long*/ method27 (int /*long*/[] args) {return mouseDidMoveOverElement (args[0], args[1], args[2]);}
+		public int /*long*/ method27 (int /*long*/[] args) {return mouseDidMoveOverElement (args[0], args[1], (int)/*64*/args[2]);}
 		public int /*long*/ method28 (int /*long*/[] args) {return contextMenuItemsForElement (args[0], args[1], args[2], args[3]);}
 		public int /*long*/ method29 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method30 (int /*long*/[] args) {return COM.E_NOTIMPL;}
@@ -112,8 +112,8 @@ void createCOMInterfaces () {
 		public int /*long*/ method39 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method40 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method41 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method42 (int /*long*/[] args) {return canTakeFocus (args[0], args[1], args[2]);}
-		public int /*long*/ method43 (int /*long*/[] args) {return takeFocus (args[0], args[1]);}
+		public int /*long*/ method42 (int /*long*/[] args) {return canTakeFocus (args[0], (int)/*64*/args[1], args[2]);}
+		public int /*long*/ method43 (int /*long*/[] args) {return takeFocus (args[0], (int)/*64*/args[1]);}
 		public int /*long*/ method44 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method45 (int /*long*/[] args) {return COM.S_OK;}
 		public int /*long*/ method46 (int /*long*/[] args) {return COM.E_NOTIMPL;}
@@ -132,7 +132,7 @@ void createCOMInterfaces () {
 		public int /*long*/ method59 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method60 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method61 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method62 (int /*long*/[] args) {return setMenuBarVisible (args[0], args[1]);}
+		public int /*long*/ method62 (int /*long*/[] args) {return setMenuBarVisible (args[0], (int)/*64*/args[1]);}
 		public int /*long*/ method63 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method64 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method65 (int /*long*/[] args) {return COM.E_NOTIMPL;}
@@ -145,10 +145,8 @@ int createWebViewWithRequest (int /*long*/ sender, int /*long*/ request, int /*l
 	newEvent.widget = browser;
 	newEvent.required = true;
 	OpenWindowListener[] openWindowListeners = browser.webBrowser.openWindowListeners;
-	if (openWindowListeners != null) {
-		for (int i = 0; i < openWindowListeners.length; i++) {
-			openWindowListeners[i].open (newEvent);
-		}
+	for (int i = 0; i < openWindowListeners.length; i++) {
+		openWindowListeners[i].open (newEvent);
 	}
 	IWebView iwebview = null;
 	Browser browser = null;
@@ -194,7 +192,7 @@ int /*long*/ getAddress () {
 	return iWebUIDelegate.getAddress ();
 }
 
-int mouseDidMoveOverElement (int /*long*/ sender, int /*long*/ elementInformation, int /*long*/ modifierFlags) {
+int mouseDidMoveOverElement (int /*long*/ sender, int /*long*/ elementInformation, int modifierFlags) {
 	if (elementInformation == 0) return COM.S_OK;
 
 	IPropertyBag info = new IPropertyBag (elementInformation);
@@ -243,7 +241,7 @@ int printFrame (int /*long*/ webView, int /*long*/ frame) {
 	pd.Flags = OS.PD_RETURNDC;
 	OS.PrintDlg (pd);
 	int /*long*/ printDC = pd.hDC;
-	
+
 	int /*long*/[] result = new int /*long*/[1];
 	int hr = iwebFrame.QueryInterface (WebKit_win32.IID_IWebFramePrivate, result);
 	if (hr != COM.S_OK || result[0] == 0) {
@@ -251,12 +249,12 @@ int printFrame (int /*long*/ webView, int /*long*/ frame) {
 	}
 	IWebFramePrivate privateFrame = new IWebFramePrivate (result[0]);
 	privateFrame.setInPrintingMode (1, printDC);
-	int [] count = new int [1];
+	int[] count = new int[1];
 	hr = privateFrame.getPrintedPageCount (printDC, count);
 	if (hr != COM.S_OK || count[0] == 0) {
 		privateFrame.Release ();
-    	return COM.S_OK;
-    }
+	return COM.S_OK;
+	}
 	int pageCount = count[0];
 	String jobName = null;
 	result[0] = 0;
@@ -270,7 +268,6 @@ int printFrame (int /*long*/ webView, int /*long*/ frame) {
 			jobName = WebKit.extractBSTR (result[0]);
 			COM.SysFreeString (result[0]);
 		}
-		
 	}
 	DOCINFO di = new DOCINFO ();
 	di.cbSize = DOCINFO.sizeof;
@@ -285,7 +282,7 @@ int printFrame (int /*long*/ webView, int /*long*/ frame) {
 		di.lpszDocName = lpszDocName;
 	}
 	int rc = OS.StartDoc (printDC, di);
-	if (lpszDocName != 0) OS.HeapFree(hHeap, 0, lpszDocName);
+	if (lpszDocName != 0) OS.HeapFree (hHeap, 0, lpszDocName);
 	if (rc >= 0) {
 		for (int i = 0; i < pageCount; i++) {
 			OS.StartPage (printDC);
@@ -314,7 +311,7 @@ int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 		new IUnknown (iWebUIDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
-	
+
 	COM.MoveMemory (ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
@@ -329,7 +326,7 @@ int Release () {
 
 int runBeforeUnloadConfirmPanelWithMessage (int /*long*/ sender, int /*long*/ message, int /*long*/ initiatedByFrame, int /*long*/ result) {
 	if (!prompt) return COM.S_OK;
-	
+
 	Shell parent = browser.getShell ();
 	String string = WebKit.extractBSTR (message);
 	StringBuffer text = new StringBuffer (Compatibility.getMessage ("SWT_OnBeforeUnload_Message1")); //$NON-NLS-1$
@@ -339,46 +336,33 @@ int runBeforeUnloadConfirmPanelWithMessage (int /*long*/ sender, int /*long*/ me
 	text.append (Compatibility.getMessage ("SWT_OnBeforeUnload_Message2")); //$NON-NLS-1$
 	MessageBox box = new MessageBox (parent, SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
 	box.setMessage (text.toString ());
-	int [] response = new int[1];
+	int[] response = new int[1];
 	response[0] = box.open () == SWT.OK ? 1 : 0;
-	OS.MoveMemory (result, response, C.PTR_SIZEOF);
+	OS.MoveMemory (result, response, 4); /* BOOL */
 	return COM.S_OK;
 }
 
 int runJavaScriptAlertPanelWithMessage (int /*long*/ sender, int /*long*/ message) {
-	Shell parent = browser.getShell ();
-	String string = WebKit.extractBSTR (message);
-	MessageBox box = new MessageBox (parent, SWT.OK | SWT.ICON_WARNING);
-	box.setText ("Javascript");	//$NON-NLS-1$
-	box.setMessage (string);
-	box.open ();
+	String messageString = WebKit.extractBSTR (message);
+	showAlertMessage ("Javascript", messageString);	//$NON-NLS-1$
 	return COM.S_OK;
 }
 
 int runJavaScriptConfirmPanelWithMessage (int /*long*/ sender, int /*long*/ message, int /*long*/ result) {
-	Shell parent = browser.getShell ();
-	String string = WebKit.extractBSTR (message);
-	MessageBox box = new MessageBox (parent, SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
-	box.setText ("Javascript");	//$NON-NLS-1$
-	box.setMessage (string);
-	int [] response = new int[1];
-	response[0] = box.open () == SWT.OK ? 1 : 0;
-	OS.MoveMemory (result, response, C.PTR_SIZEOF);
+	String messageString = WebKit.extractBSTR (message);
+	int[] response = new int[1];
+	response[0] = showConfirmPanel ("Javascript", messageString) == SWT.OK ? 1 : 0;	//$NON-NLS-1$
+	OS.MoveMemory (result, response, 4); /* BOOL */
 	return COM.S_OK;
 }
 
 int runJavaScriptTextInputPanelWithPrompt (int /*long*/ sender, int /*long*/ message, int /*long*/ defaultText, int /*long*/ result) {
-	Shell parent = browser.getShell ();
-	String string = WebKit.extractBSTR (message);
-	TextPrompter prompt = new TextPrompter (parent, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
-	prompt.setText ("Javascript");	//$NON-NLS-1$
-	prompt.setMessage (string);
-	string = WebKit.extractBSTR (defaultText);
-	prompt.setDefaultText (string);
-	string = prompt.open ();
-	int /*long*/ [] response = new int /*long*/ [1];
-	if (string != null) {
-		response[0] = WebKit.createBSTR (string);
+	String messageString = WebKit.extractBSTR (message);
+	String defaultTextString = WebKit.extractBSTR (defaultText);
+	String resultString = showTextPrompter ("Javascript", messageString, defaultTextString); //$NON-NLS-1$
+	int /*long*/[] response = new int /*long*/[1];
+	if (resultString != null) {
+		response[0] = WebKit.createBSTR (resultString);
 	}
 	OS.MoveMemory (result, response, C.PTR_SIZEOF);
 	return COM.S_OK;
@@ -405,21 +389,21 @@ int setFrame (int /*long*/ sender, int /*long*/ frame) {
 	RECT rect = new RECT ();
 	COM.MoveMemory (rect, frame, RECT.sizeof);
 	/* convert to SWT system coordinates */
-	location = browser.getDisplay ().map (browser, null, (int)rect.left, (int)rect.top);
-	int x = (int)(rect.right - rect.left);
-	int y = (int)(rect.bottom - rect.top);
+	location = browser.getDisplay ().map (browser, null, rect.left, rect.top);
+	int x = rect.right - rect.left;
+	int y = rect.bottom - rect.top;
 	if (y < 0 || x < 0 || (x == 0 && y == 0)) return COM.S_OK;
 	size = new Point (x, y);
 	return COM.S_OK;
 }
 
-int setMenuBarVisible (int /*long*/ sender, int /*long*/ visible) {
+int setMenuBarVisible (int /*long*/ sender, int visible) {
 	/* Note.  Webkit only emits the notification when the status bar should be hidden. */
 	menuBar = visible == 1;
 	return COM.S_OK;
 }
 
-int setStatusBarVisible (int /*long*/ sender, int /*long*/ visible) {
+int setStatusBarVisible (int /*long*/ sender, int visible) {
 	/* Note.  Webkit only emits the notification when the status bar should be hidden. */
 	statusBar = visible == 1;
 	return COM.S_OK;
@@ -439,13 +423,191 @@ int setStatusText (int /*long*/ sender, int /*long*/ text) {
 	return COM.S_OK;
 }
 
-int setToolbarsVisible (int /*long*/ sender, int /*long*/ visible) {
+int setToolbarsVisible (int /*long*/ sender, int visible) {
 	/* Note.  Webkit only emits the notification when the status bar should be hidden. */
 	toolBar = visible == 1;
 	return COM.S_OK;
 }
 
-int takeFocus (int /*long*/ sender, int /*long*/ forward) {
+void showAlertMessage (String title, String message) {
+	Shell parent = browser.getShell ();
+	final Shell dialog = new Shell (parent, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
+	GridLayout layout = new GridLayout (2, false);
+	layout.horizontalSpacing = 10;
+	layout.verticalSpacing = 20;
+	layout.marginWidth = layout.marginHeight = 10;
+	dialog.setLayout (layout);
+	dialog.setText (title);
+
+	Label label = new Label (dialog, SWT.NONE);
+	Image image = dialog.getDisplay ().getSystemImage(SWT.ICON_WARNING);
+	label.setImage (image);
+
+	label = new Label (dialog, SWT.WRAP);
+	label.setText (message);
+	Monitor monitor = parent.getMonitor();
+	int maxWidth = monitor.getBounds().width * 2 / 3;
+	int width = label.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+	GridData data = new GridData (SWT.FILL, SWT.CENTER, true, false);
+	data.widthHint = Math.min(width, maxWidth);
+	label.setLayoutData (data);
+
+	Button ok = new Button (dialog, SWT.PUSH);
+	ok.setText (SWT.getMessage ("SWT_OK")); //$NON-NLS-1$
+	width = ok.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+	GridData layoutData = new GridData ();
+	layoutData.horizontalAlignment = SWT.CENTER;
+	layoutData.verticalAlignment = SWT.CENTER;
+	layoutData.horizontalSpan = 2;
+	layoutData.widthHint = Math.max (width, 75);
+	ok.setLayoutData (layoutData);
+
+	ok.addSelectionListener (new SelectionAdapter () {
+		public void widgetSelected (SelectionEvent e) {
+			dialog.dispose ();
+		}
+	});
+	
+	dialog.setDefaultButton (ok);
+	dialog.pack ();
+	Rectangle parentSize = parent.getBounds ();
+	Rectangle dialogSize = dialog.getBounds ();
+	int x = parent.getLocation ().x + (parentSize.width - dialogSize.width) / 2;
+	int y = parent.getLocation ().y + (parentSize.height - dialogSize.height) / 2;
+	dialog.setLocation (x, y);
+	dialog.open ();
+	Display display = browser.getDisplay ();
+	while (!dialog.isDisposed ()) {
+		if (!display.readAndDispatch ()) display.sleep ();
+	}
+}
+
+int showConfirmPanel (String title, String message) {
+	Shell parent = browser.getShell ();
+	final Shell dialog = new Shell (parent, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
+	GridLayout layout = new GridLayout (2, false);
+	layout.horizontalSpacing = 10;
+	layout.verticalSpacing = 20;
+	layout.marginWidth = layout.marginHeight = 10;
+	dialog.setLayout (layout);
+	dialog.setText (title);
+
+	Label label = new Label (dialog, SWT.NONE);
+	Image image = dialog.getDisplay ().getSystemImage(SWT.ICON_QUESTION);
+	label.setImage (image);
+	label.setLayoutData (new GridData ());
+
+	label = new Label (dialog, SWT.WRAP);
+	label.setText (message);
+	Monitor monitor = parent.getMonitor();
+	int maxWidth = monitor.getBounds().width * 2 / 3;
+	int width = label.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+	GridData data = new GridData (SWT.FILL, SWT.CENTER, true, false);
+	data.widthHint = Math.min(width, maxWidth);
+	label.setLayoutData (data);
+
+	Composite buttons = new Composite (dialog, SWT.NONE);
+	data = new GridData (SWT.CENTER, SWT.CENTER, true, true, 2, 1);
+	buttons.setLayoutData (data);
+	buttons.setLayout (new GridLayout (2, true));
+
+	Button ok = new Button (buttons, SWT.PUSH);
+	ok.setText (SWT.getMessage ("SWT_OK")); //$NON-NLS-1$
+	GridData layoutData = new GridData ();
+	layoutData.horizontalAlignment = SWT.CENTER;
+	layoutData.verticalAlignment = SWT.CENTER;
+	ok.setLayoutData (layoutData);
+
+	Button cancel = new Button (buttons, SWT.PUSH);
+	cancel.setText (SWT.getMessage ("SWT_Cancel")); //$NON-NLS-1$
+	cancel.setLayoutData (layoutData);
+	width = cancel.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+	layoutData.widthHint = Math.max (width, 75);
+
+	final int[] result = new int[1];
+	ok.addSelectionListener (new SelectionAdapter () {
+		public void widgetSelected (SelectionEvent e) {
+			result[0] = SWT.OK;
+			dialog.dispose ();
+		}
+	});
+	cancel.addSelectionListener (new SelectionAdapter () {
+		public void widgetSelected (SelectionEvent e) {
+			result[0] = SWT.CANCEL;
+			dialog.dispose ();
+		}
+	});
+
+	dialog.setDefaultButton (ok);
+	dialog.pack ();
+	Rectangle parentSize = parent.getBounds ();
+	Rectangle dialogSize = dialog.getBounds ();
+	int x = parent.getLocation ().x + (parentSize.width - dialogSize.width) / 2;
+	int y = parent.getLocation ().y + (parentSize.height - dialogSize.height) / 2;
+	dialog.setLocation (x, y);
+	dialog.open ();
+	Display display = browser.getDisplay ();
+	while (!dialog.isDisposed ()) {
+		if (!display.readAndDispatch ()) display.sleep ();
+	}
+	return result[0];
+}
+
+String showTextPrompter (String title, String message, String defaultText) {
+	Shell parent = browser.getShell ();
+	final Shell dialog = new Shell (parent, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
+	dialog.setLayout (new GridLayout ());
+	dialog.setText (title);
+
+	Label label = new Label (dialog, SWT.NONE);
+	label.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
+	label.setText (message);
+
+	final Text textBox = new Text (dialog, SWT.SINGLE | SWT.BORDER);
+	GridData data = new GridData (GridData.FILL_HORIZONTAL);
+	data.widthHint = 300;
+	textBox.setLayoutData (data);
+	textBox.setText (defaultText);
+
+	Composite buttons = new Composite (dialog, SWT.NONE);
+	buttons.setLayout (new GridLayout (2, true));
+	buttons.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_CENTER));
+	Button ok = new Button (buttons, SWT.PUSH);
+	ok.setText (SWT.getMessage ("SWT_OK")); //$NON-NLS-1$
+	ok.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
+
+	final String[] result = new String[1];
+	ok.addSelectionListener (new SelectionAdapter () {
+		public void widgetSelected (SelectionEvent e) {
+			result[0] = textBox.getText ();
+			dialog.dispose ();
+		}
+	});
+	Button cancel = new Button (buttons, SWT.PUSH);
+	cancel.setText (SWT.getMessage ("SWT_Cancel")); //$NON-NLS-1$
+	cancel.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
+	cancel.addSelectionListener (new SelectionAdapter () {
+		public void widgetSelected (SelectionEvent e) {
+			dialog.dispose ();
+		}
+	});
+
+	dialog.setDefaultButton (ok);
+	dialog.pack ();
+	Rectangle parentSize = parent.getBounds ();
+	Rectangle dialogSize = dialog.getBounds ();
+	int x = parent.getLocation ().x + (parentSize.width - dialogSize.width) / 2;
+	int y = parent.getLocation ().y + (parentSize.height - dialogSize.height) / 2;
+	dialog.setLocation (x, y);
+	dialog.open ();
+	Display display = browser.getDisplay ();
+	while (!dialog.isDisposed ()) {
+		if (!display.readAndDispatch ()) display.sleep ();
+	}
+	return result[0];
+}
+
+int takeFocus (int /*long*/ sender, int forward) {
 	int traveralCode = forward == 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
 	((WebKit)browser.webBrowser).traverseOut = true;
 	browser.traverse (traveralCode);
@@ -471,10 +633,6 @@ int webViewFrame (int /*long*/ sender, int /*long*/ frame) {
 }
 
 int webViewShow (int /*long*/ sender) {
-	Shell parent = browser.getShell ();
-	Point pt = parent.getSize ();
-	parent.setSize (pt.x+1, pt.y);
-	parent.setSize (pt.x, pt.y);
 	WindowEvent newEvent = new WindowEvent (browser);
 	newEvent.display = browser.getDisplay ();
 	newEvent.widget = browser;
@@ -497,74 +655,6 @@ int webViewShow (int /*long*/ sender) {
 	location = null;
 	size = null;
 	return COM.S_OK;
-}
-
-class TextPrompter extends Dialog {
-	String message = "";
-	String result = null;
-	String text;
-	public TextPrompter (Shell parent) {
-		this (parent, SWT.APPLICATION_MODAL);
-	}
-	public TextPrompter (Shell parent, int style) {
-		super (parent, style);
-	}
-	public String getMessage () {
-		return message;
-	}
-	public String open () {
-		final Shell dialog = new Shell (getParent (), getStyle ());
-		dialog.setText (getText ());
-		dialog.setLayout (new GridLayout ());
-		Label label = new Label (dialog, SWT.NONE);
-		label.setText (message);
-		label.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
-		final Text textBox = new Text (dialog, SWT.SINGLE | SWT.BORDER);
-		GridData data = new GridData (GridData.FILL_HORIZONTAL);
-		data.widthHint = 300;
-		textBox.setLayoutData (data);
-		textBox.setText (text);
-		Composite buttons = new Composite (dialog, SWT.NONE);
-		GridLayout grid = new GridLayout ();
-		grid.numColumns = 2;
-		buttons.setLayout (grid);
-		buttons.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_END));
-		Button ok = new Button (buttons, SWT.PUSH);
-		ok.setText (SWT.getMessage ("SWT_OK"));
-		data = new GridData ();
-		data.widthHint = 75;
-		ok.setLayoutData (data);
-		ok.addSelectionListener (new SelectionAdapter () {
-			public void widgetSelected (SelectionEvent e) {
-				result = textBox.getText ();
-				dialog.dispose ();
-			}
-		});
-		Button cancel = new Button (buttons, SWT.PUSH);
-		cancel.setText (SWT.getMessage ("SWT_Cancel"));
-		data = new GridData ();
-		data.widthHint = 75;
-		cancel.setLayoutData (data);
-		cancel.addSelectionListener (new SelectionAdapter () {
-			public void widgetSelected (SelectionEvent e) {
-				dialog.dispose ();
-			}
-		});
-		dialog.setDefaultButton (ok);
-		dialog.pack ();
-		dialog.open ();
-		Display display = getParent ().getDisplay ();
-		while (!dialog.isDisposed ()) {
-			if (!display.readAndDispatch ()) display.sleep ();
-		}
-		return result;
-	}
-	public void setDefaultText (String text) {
-		this.text = text;
-	}
-	public void setMessage (String string) {
-		message = string;
-	}
 }
 
 }

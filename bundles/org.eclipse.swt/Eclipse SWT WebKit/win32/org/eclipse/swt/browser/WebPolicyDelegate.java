@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
@@ -20,9 +21,9 @@ import org.eclipse.swt.widgets.*;
 class WebPolicyDelegate {
 	COMObject iWebPolicyDelegate;
 	int refCount = 0;
-	
+
 	Browser browser;
-	
+
 WebPolicyDelegate () {
 	createCOMInterfaces ();
 }
@@ -44,10 +45,9 @@ void createCOMInterfaces () {
 	};
 }
 
-int decidePolicyForMIMEType (int /*long*/ webView, int /*long*/ type, int /*long*/ request, int /*long*/ frame,
-		int /*long*/ listener) {
+int decidePolicyForMIMEType (int /*long*/ webView, int /*long*/ type, int /*long*/ request, int /*long*/ frame, int /*long*/ listener) {
 	IWebView iwebView = new IWebView (webView);
-	int [] canShow = new int [1];
+	int[] canShow = new int[1];
 	iwebView.canShowMIMEType (type, canShow);
 	IWebPolicyDecisionListener pdListener = new IWebPolicyDecisionListener (listener);
 	if (canShow[0] != 0) {
@@ -58,10 +58,9 @@ int decidePolicyForMIMEType (int /*long*/ webView, int /*long*/ type, int /*long
 	return COM.S_OK;
 }
 
-int decidePolicyForNavigationAction (int /*long*/ webView, int /*long*/ actionInformation, int /*long*/ request, int /*long*/ frame,
-		int /*long*/ listener) {
+int decidePolicyForNavigationAction (int /*long*/ webView, int /*long*/ actionInformation, int /*long*/ request, int /*long*/ frame, int /*long*/ listener) {
 	IWebURLRequest iwebUrlRequest = new IWebURLRequest (request);
-	int /*long*/[] result = new int /*long*/ [1];
+	int /*long*/[] result = new int /*long*/[1];
 	int hr = iwebUrlRequest.URL (result);
 	if (hr != COM.S_OK || result[0] == 0) {
 		return COM.S_OK;
@@ -69,7 +68,8 @@ int decidePolicyForNavigationAction (int /*long*/ webView, int /*long*/ actionIn
 	String url = WebKit.extractBSTR (result[0]);
 	COM.SysFreeString (result[0]);
 	IWebPolicyDecisionListener pdListener = new IWebPolicyDecisionListener (listener);
-	if (((WebKit)browser.webBrowser).loadingText) {
+	WebKit webKit = (WebKit)browser.webBrowser;
+	if (webKit.loadingText) {
 		/* 
 		 * WebKit is auto-navigating to about:blank in response to a loadHTMLString()
 		 * invocation.  This navigate should always proceed without sending an event
@@ -82,7 +82,7 @@ int decidePolicyForNavigationAction (int /*long*/ webView, int /*long*/ actionIn
 		pdListener.ignore ();
 		return COM.S_OK;
 	}
-	if (url.startsWith ("file://") && browser.webBrowser.getUrl ().startsWith (WebKit.ABOUT_BLANK) && ((WebKit)browser.webBrowser).untrustedText) {
+	if (url.startsWith (WebKit.PROTOCOL_FILE) && webKit.getUrl ().startsWith (WebKit.ABOUT_BLANK) && webKit.untrustedText) {
 		/* indicates an attempt to access the local file system from untrusted content */
 		pdListener.ignore ();
 		return COM.S_OK;
@@ -104,35 +104,34 @@ int decidePolicyForNavigationAction (int /*long*/ webView, int /*long*/ actionIn
 	newEvent.widget = browser;
 	newEvent.location = url;
 	newEvent.doit = true;
-	LocationListener[] locationListeners = browser.webBrowser.locationListeners;
+	LocationListener[] locationListeners = webKit.locationListeners;
 	if (locationListeners != null) {
 		for (int i = 0; i < locationListeners.length; i++) {
 			locationListeners[i].changing (newEvent);
 		}
 	}
 	if (newEvent.doit) {
-		if (browser.webBrowser.jsEnabledChanged) {
-			browser.webBrowser.jsEnabledChanged = false;
+		if (webKit.jsEnabledChanged) {
+			webKit.jsEnabledChanged = false;
 			IWebView view = new IWebView (webView);
 			result[0] = 0;
 			hr = view.preferences (result);
 			if (hr == COM.S_OK && result[0] != 0) {
 				IWebPreferences preferences = new IWebPreferences (result[0]);
-				hr = preferences.setJavaScriptEnabled (browser.webBrowser.jsEnabled ? 1 : 0);
+				hr = preferences.setJavaScriptEnabled (webKit.jsEnabled ? 1 : 0);
 				view.setPreferences (preferences.getAddress());
 				preferences.Release ();
 			}
 		}
 		pdListener.use ();
-		((WebKit)browser.webBrowser).lastNavigateURL = url;
+		webKit.lastNavigateURL = url;
 	} else {
 		pdListener.ignore ();
 	}
 	return COM.S_OK;
 }
 
-int decidePolicyForNewWindowAction (int /*long*/ webView, int /*long*/ actionInformation, int /*long*/ request, int /*long*/ frameName,
-		int /*long*/ listener) {
+int decidePolicyForNewWindowAction (int /*long*/ webView, int /*long*/ actionInformation, int /*long*/ request, int /*long*/ frameName, int /*long*/ listener) {
 	IWebPolicyDecisionListener pdListener = new IWebPolicyDecisionListener (listener);
 	pdListener.use();
 	return COM.S_OK;
@@ -164,7 +163,7 @@ int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 		new IUnknown (iWebPolicyDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
-	
+
 	COM.MoveMemory (ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
@@ -182,6 +181,8 @@ void setBrowser (Browser browser) {
 }
 
 int unableToImplementPolicyWithError (int /*long*/ webView, int /*long*/ error, int /*long*/ frame) {
+	if (browser.isDisposed ()) return COM.S_OK;
+
 	IWebError iweberror = new IWebError (error);
 	String failingURL = null;
 	int /*long*/[] result = new int /*long*/[1];
@@ -197,13 +198,13 @@ int unableToImplementPolicyWithError (int /*long*/ webView, int /*long*/ error, 
     }
 	String description = WebKit.extractBSTR (result[0]);
 	COM.SysFreeString (result[0]);
-	if (!browser.isDisposed () && description != null) {
-		String message = failingURL != null ? failingURL + "\n\n" : ""; //$NON-NLS-1$ //$NON-NLS-2$
-		message += Compatibility.getMessage ("SWT_Page_Load_Failed", new Object[] {description}); //$NON-NLS-1$
-		MessageBox messageBox = new MessageBox (browser.getShell (), SWT.OK | SWT.ICON_ERROR);
-		messageBox.setMessage (message);
-		messageBox.open ();
-	}
+
+	String message = failingURL != null ? failingURL + "\n\n" : ""; //$NON-NLS-1$ //$NON-NLS-2$
+	message += Compatibility.getMessage ("SWT_Page_Load_Failed", new Object[] {description}); //$NON-NLS-1$
+	MessageBox messageBox = new MessageBox (browser.getShell (), SWT.OK | SWT.ICON_ERROR);
+	messageBox.setMessage (message);
+	messageBox.open ();
 	return COM.S_OK;
 }
+
 }

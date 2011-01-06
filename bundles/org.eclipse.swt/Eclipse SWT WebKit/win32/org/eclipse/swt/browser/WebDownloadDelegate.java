@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+
 import java.io.*;
 
 import org.eclipse.swt.*;
@@ -22,18 +23,17 @@ import org.eclipse.swt.widgets.*;
 
 class WebDownloadDelegate {
 	COMObject iWebDownloadDelegate;
-	
+
 	Browser browser;
 	int refCount = 0;
 	int status = -1;
-	int size;
-	long totalSize;
+	long size, totalSize;
 	String url;
-	
+
 	static final int DOWNLOAD_FINISHED = 0;
 	static final int DOWNLOAD_CANCELLED = 1;
 	static final int DOWNLOAD_ERROR = 3;
-	
+
 WebDownloadDelegate () {
 	createCOMInterfaces ();
 }
@@ -50,16 +50,16 @@ void createCOMInterfaces () {
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
 		public int /*long*/ method3 (int /*long*/[] args) {return decideDestinationWithSuggestedFilename (args[0], args[1]);}
 		public int /*long*/ method4 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method5 (int /*long*/[] args) {return didCreateDestination (args[0], args[1]);}
+		public int /*long*/ method5 (int /*long*/[] args) {return COM.E_NOTIMPL;}
 		public int /*long*/ method6 (int /*long*/[] args) {return didFailWithError (args[0], args[1]);}
 		public int /*long*/ method7 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method8 (int /*long*/[] args) {return didReceiveDataOfLength (args[0], args[1]);}
+		public int /*long*/ method8 (int /*long*/[] args) {return didReceiveDataOfLength (args[0], (int)/*64*/args[1]);}
 		public int /*long*/ method9 (int /*long*/[] args) {return didReceiveResponse (args[0], args[1]);}
-		public int /*long*/ method10 (int /*long*/[] args){return COM.E_NOTIMPL;}
-		public int /*long*/ method11 (int /*long*/[] args){return COM.E_NOTIMPL;}
-		public int /*long*/ method12 (int /*long*/[] args){return willSendRequest (args[0], args[1], args[2], args[3]);}
-		public int /*long*/ method13 (int /*long*/[] args){return didBegin (args[0]);}
-		public int /*long*/ method14 (int /*long*/[] args){return didFinish (args[0]);}
+		public int /*long*/ method10 (int /*long*/[] args) {return COM.E_NOTIMPL;}
+		public int /*long*/ method11 (int /*long*/[] args) {return COM.E_NOTIMPL;}
+		public int /*long*/ method12 (int /*long*/[] args) {return willSendRequest (args[0], args[1], args[2], args[3]);}
+		public int /*long*/ method13 (int /*long*/[] args) {return didBegin (args[0]);}
+		public int /*long*/ method14 (int /*long*/[] args) {return didFinish (args[0]);}
 	};
 }
 
@@ -73,16 +73,18 @@ int decideDestinationWithSuggestedFilename (int /*long*/ download, int /*long*/ 
 	IWebDownload iwebdownload = new IWebDownload (download);
 	iwebdownload.setDeletesFileUponFailure (0);
 	if (path == null) {
-		/* cancel pressed */
-		// cancelling the download here causes crash, so set the cancelled status and call cancel in didCreateDestination
-		// iwebdownload.cancel();
-		status = DOWNLOAD_CANCELLED;
+		/*
+		* Bug in WebKit.  Failure to set a non-null destination on the IWebDownload results in
+		* a crash, even when the download is being cancelled.
+		*/
 		iwebdownload.setDestination (WebKit.createBSTR (""), 1); //$NON-NLS-1$
+		iwebdownload.cancel();
+		iwebdownload.Release();
 	} else {
 		File file = new File (path);
 		if (file.exists ()) file.delete ();
 		iwebdownload.setDestination (WebKit.createBSTR (path), 1);
-		openDownloadWindow (download, path);
+		openDownloadWindow (iwebdownload, path);
 	}
 	return COM.S_OK;
 }
@@ -93,16 +95,6 @@ int didBegin (int /*long*/ download) {
 	size = 0;
 	totalSize = 0;
 	url = null;
-	return COM.S_OK;
-}
-
-int didCreateDestination (int /*long*/ download, int /*long*/ destination) {
-	if (status == DOWNLOAD_CANCELLED) {
-		/* user cancelled download in the file dialog */
-		IWebDownload iwebdownload = new IWebDownload (download);
-		iwebdownload.cancel ();
-		new IWebDownload (download).Release ();
-	}
 	return COM.S_OK;
 }
 
@@ -118,20 +110,20 @@ int didFinish (int /*long*/ download) {
 	return COM.S_OK;
 }
 
-int didReceiveDataOfLength (int /*long*/ download, int /*long*/ length) {
+int didReceiveDataOfLength (int /*long*/ download, int length) {
 	 size += length;
 	 return COM.S_OK;
- }
+}
 
 int didReceiveResponse (int /*long*/ download, int /*long*/ response) {
 	if (response != 0) {
 		IWebURLResponse urlResponse = new IWebURLResponse (response);
-		long [] size = new long [1];
+		long[] size = new long[1];
 		int hr = urlResponse.expectedContentLength (size);
 		if (hr == COM.S_OK) totalSize = size[0];
-		int /*long*/[] result = new int /*long*/ [1];
+		int /*long*/[] result = new int /*long*/[1];
 		hr = urlResponse.URL (result);
-		if (hr == COM.S_OK && result[0] !=0) {
+		if (hr == COM.S_OK && result[0] != 0) {
 			url = WebKit.extractBSTR (result[0]);
 			COM.SysFreeString (result[0]);
 		}
@@ -150,7 +142,7 @@ int /*long*/ getAddress () {
 	return iWebDownloadDelegate.getAddress ();
 }
 
-void openDownloadWindow (final int /*long*/ webkitDownload, String name) {
+void openDownloadWindow (final IWebDownload download, String name) {
 	final Shell shell = new Shell ();
 	shell.setText (Compatibility.getMessage ("SWT_FileDownload"));	//$NON-NLS-1$
 	GridLayout gridLayout = new GridLayout ();
@@ -182,26 +174,23 @@ void openDownloadWindow (final int /*long*/ webkitDownload, String name) {
 	cancel.setLayoutData (data);
 	final Listener cancelListener = new Listener () {
 		public void handleEvent (Event event) {
-			IWebDownload iwebdownload = new IWebDownload (webkitDownload);
-			iwebdownload.cancel ();
+			download.cancel ();
 			status = DOWNLOAD_CANCELLED;
-			iwebdownload.Release ();
+			download.Release ();
 		}
 	};
 	cancel.addListener (SWT.Selection, cancelListener);
-	
+
 	final Display display = browser.getDisplay ();
 	final int INTERVAL = 500;
 	display.timerExec (INTERVAL, new Runnable () {
 		public void run () {
 			if (shell.isDisposed () || status == DOWNLOAD_FINISHED || status == DOWNLOAD_CANCELLED) {
 				shell.dispose ();
-				display.timerExec (-1, this);
 				return;
 			}
 			if (status == DOWNLOAD_ERROR) {
 				statusLabel.setText (Compatibility.getMessage ("SWT_Download_Error")); //$NON-NLS-1$
-				display.timerExec (-1, this);
 				cancel.removeListener (SWT.Selection, cancelListener);
 				cancel.addListener (SWT.Selection, new Listener () {
 					public void handleEvent (Event event) {
@@ -236,7 +225,7 @@ int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 		new IUnknown (iWebDownloadDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
-	
+
 	COM.MoveMemory (ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }

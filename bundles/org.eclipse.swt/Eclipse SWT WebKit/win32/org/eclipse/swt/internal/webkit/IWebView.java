@@ -84,8 +84,4 @@ public int estimatedProgress (int /*long*/ estimatedProgress) {
 	return COM.VtblCall (51, getAddress (), estimatedProgress);
 }
 
-public int close () {
-	return COM.VtblCall(70, getAddress());
-}
-
 }
