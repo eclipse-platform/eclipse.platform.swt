@@ -2008,7 +2008,7 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
 	int row = (int)/*64*/widget.rowAtPoint(pt);
-	if (row != -1 && (nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == 0) {
+	if (row != -1 && (nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == 0 && nsEvent.clickCount() == 1) {
 		if (widget.isRowSelected(row)) {
 			NSRect rect = widget.frameOfOutlineCellAtRow(row);
 			if (!OS.NSPointInRect(pt, rect)) {
@@ -2307,7 +2307,6 @@ void outlineViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*lon
 
 void outlineViewSelectionIsChanging (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	didSelect = true;
-	sendSelection ();
 }
 
 void outlineView_setObjectValue_forTableColumn_byItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ object, int /*long*/ tableColumn, int /*long*/ itemID) {
@@ -2615,6 +2614,13 @@ void sendMeasureItem (TreeItem item, boolean selected, int columnIndex, NSSize s
 			}
 		}
 	}
+}
+
+boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
+	if (nsEvent != null && nsEvent.type() == OS.NSLeftMouseUp) {
+		if (didSelect) sendSelection();
+	}
+	return super.sendMouseEvent(nsEvent, type, send);
 }
 
 void selectItems (TreeItem[] items, boolean ignoreDisposed) {

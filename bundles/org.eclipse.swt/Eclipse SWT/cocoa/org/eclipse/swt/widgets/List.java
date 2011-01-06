@@ -754,7 +754,7 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
 	int row = (int)/*64*/widget.rowAtPoint(pt);
-	if (row != -1 && (nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == 0) {
+	if (row != -1 && (nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == 0 && nsEvent.clickCount() == 1) {
 		if (widget.isRowSelected(row) && widget.selectedRowIndexes().count() == 1) {
 			if (0 <= row && row < itemCount) {
 				sendSelection();
@@ -1103,6 +1103,13 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	return result;
 }
 
+boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
+	if (nsEvent != null && nsEvent.type() == OS.NSLeftMouseUp) {
+		if (didSelect) sendSelection();
+	}
+	return super.sendMouseEvent(nsEvent, type, send);
+}
+
 void sendSelection () {
 	if (ignoreSelect) return;
 	sendSelectionEvent(SWT.Selection);
@@ -1425,7 +1432,6 @@ void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*
 
 void tableViewSelectionIsChanging (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	didSelect = true;
-	sendSelection();
 }
 
 int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
