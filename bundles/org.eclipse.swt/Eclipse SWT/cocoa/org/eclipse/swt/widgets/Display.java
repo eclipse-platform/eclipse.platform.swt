@@ -333,7 +333,7 @@ public class Display extends Device {
 	Object data;
 	String [] keys;
 	Object [] values;
-	static Map/*<NSObject, Long>*/ dynamicObjectMap;
+	static Map/*<NSObject, LONG>*/ dynamicObjectMap;
 	
 	/*
 	* TEMPORARY CODE.  Install the runnable that
@@ -550,7 +550,7 @@ void addWidget (NSObject view, Widget widget) {
 		if (dynamicObjectMap == null) {
 			dynamicObjectMap = new HashMap();
 		}
-		Long JNIRef = new Long(widget.jniRef);
+		LONG JNIRef = new LONG(widget.jniRef);
 		dynamicObjectMap.put(view, JNIRef);
 	}
 }
@@ -2002,8 +2002,8 @@ static Widget GetWidget (int /*long*/ id) {
 	if (iVar == 0) {
 		if (dynamicObjectMap != null) {
 			NSObject key = new NSObject(id);
-			Long dynJNIRef = (Long) dynamicObjectMap.get(key);
-			if (dynJNIRef != null) jniRef[0] = (int/*64*/) dynJNIRef.longValue();
+			LONG dynJNIRef = (LONG) dynamicObjectMap.get(key);
+			if (dynJNIRef != null) jniRef[0] = dynJNIRef.value;
 		}
 	}
 
@@ -3766,8 +3766,8 @@ Widget removeWidget (NSObject view) {
 	
 	if (iVar == 0) {
 		if (dynamicObjectMap != null) {
-			Long dynJNIRef = (Long) dynamicObjectMap.get(view);
-			if (dynJNIRef != null) jniRef[0] = (int/*64*/) dynJNIRef.longValue();
+			LONG dynJNIRef = (LONG) dynamicObjectMap.get(view);
+			if (dynJNIRef != null) jniRef[0] = dynJNIRef.value;
 			dynamicObjectMap.remove(view);
 		}
 	}
