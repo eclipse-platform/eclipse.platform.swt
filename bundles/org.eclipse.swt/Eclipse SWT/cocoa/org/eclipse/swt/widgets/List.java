@@ -42,7 +42,7 @@ public class List extends Scrollable {
 	NSTableColumn column;
 	String [] items;
 	int itemCount;
-	boolean ignoreSelect, didSelect;
+	boolean ignoreSelect, didSelect, rowsChanged;
 
 	static int NEXT_ID;
 
@@ -1105,7 +1105,10 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	if (nsEvent != null && nsEvent.type() == OS.NSLeftMouseUp) {
-		if (didSelect) sendSelection();
+		if (rowsChanged) {
+			rowsChanged = false;
+			((NSTableView)view).noteNumberOfRowsChanged();
+		}
 	}
 	return super.sendMouseEvent(nsEvent, type, send);
 }
@@ -1432,6 +1435,7 @@ void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*
 
 void tableViewSelectionIsChanging (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	didSelect = true;
+	sendSelection();
 }
 
 int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
@@ -1462,18 +1466,24 @@ int /*long*/ tableView_selectionIndexesForProposedSelection (int /*long*/ id, in
 	return indexSet;
 }
 
-void updateRowCount() {
-	NSTableView widget = (NSTableView)view;
-	setRedraw(false);
-	ignoreSelect = true;
-	widget.noteNumberOfRowsChanged ();
-	ignoreSelect = false;
-	widget.tile();
-	setRedraw(true);
-}
-
-boolean wantsDoubleClickAtMouseDown() {
-	return false;
+void updateRowCount() {	
+	/*
+	 * Feature in Cocoa. Changing the row count while the mouse is tracking will confuse the code that calculates the 
+	 * current selection.  Fix is to not call noteNumberOfRowsChanged if the mouse is down.
+	 */
+	NSEvent currEvent = display.application.currentEvent();
+	
+	if (currEvent != null && (currEvent.type() != OS.NSLeftMouseDown && currEvent.type() != OS.NSLeftMouseDragged))  {
+		NSTableView widget = (NSTableView)view;
+		setRedraw(false);
+		ignoreSelect = true;
+		widget.noteNumberOfRowsChanged ();
+		ignoreSelect = false;
+		widget.tile();
+		setRedraw(true);
+	} else {
+		rowsChanged = true;
+	}
 }
 
 }

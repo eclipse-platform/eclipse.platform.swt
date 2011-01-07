@@ -75,7 +75,7 @@ public class Table extends Composite {
 	NSTextFieldCell dataCell;
 	NSButtonCell buttonCell;
 	int columnCount, itemCount, lastIndexOf, sortDirection;
-	boolean ignoreSelect, fixScrollWidth, drawExpansion, didSelect;
+	boolean ignoreSelect, fixScrollWidth, drawExpansion, didSelect, rowsChanged;
 	Rectangle imageBounds;
 
 	static int NEXT_ID;
@@ -3072,7 +3072,10 @@ void sendMeasureItem (TableItem item, int columnIndex, NSSize size, boolean isSe
 
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	if (nsEvent != null && nsEvent.type() == OS.NSLeftMouseUp) {
-		if (didSelect) sendSelection();
+		if (rowsChanged) {
+			rowsChanged = false;
+			((NSTableView)view).noteNumberOfRowsChanged();
+		}
 	}
 	return super.sendMouseEvent(nsEvent, type, send);
 }
@@ -3164,6 +3167,7 @@ void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*
 
 void tableViewSelectionIsChanging (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	didSelect = true;
+	sendSelection();
 }
 
 void tableView_didClickTableColumn (int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ tableColumn) {
@@ -3371,14 +3375,24 @@ void updateCursorRects (boolean enabled) {
 	updateCursorRects (enabled, headerView);
 }
 
-void updateRowCount() {
-	NSTableView table = (NSTableView)view;
-	setRedraw(false);
-	ignoreSelect = true;
-	table.noteNumberOfRowsChanged();
-	ignoreSelect = false;
-	table.tile();
-	setRedraw(true);
+void updateRowCount() {	
+	/*
+	 * Feature in Cocoa. Changing the row count while the mouse is tracking will confuse the code that calculates the 
+	 * current selection.  Fix is to not call noteNumberOfRowsChanged if the mouse is down.
+	 */
+	NSEvent currEvent = display.application.currentEvent();
+	
+	if (currEvent != null && (currEvent.type() != OS.NSLeftMouseDown && currEvent.type() != OS.NSLeftMouseDragged))  {
+		NSTableView widget = (NSTableView)view;
+		setRedraw(false);
+		ignoreSelect = true;
+		widget.noteNumberOfRowsChanged ();
+		ignoreSelect = false;
+		widget.tile();
+		setRedraw(true);
+	} else {
+		rowsChanged = true;
+	}
 }
 
 }

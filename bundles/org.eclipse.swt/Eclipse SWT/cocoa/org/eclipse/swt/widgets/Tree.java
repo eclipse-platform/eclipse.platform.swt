@@ -2307,6 +2307,7 @@ void outlineViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*lon
 
 void outlineViewSelectionIsChanging (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	didSelect = true;
+	sendSelection ();
 }
 
 void outlineView_setObjectValue_forTableColumn_byItem (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ object, int /*long*/ tableColumn, int /*long*/ itemID) {
@@ -2614,13 +2615,6 @@ void sendMeasureItem (TreeItem item, boolean selected, int columnIndex, NSSize s
 			}
 		}
 	}
-}
-
-boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
-	if (nsEvent != null && nsEvent.type() == OS.NSLeftMouseUp) {
-		if (didSelect) sendSelection();
-	}
-	return super.sendMouseEvent(nsEvent, type, send);
 }
 
 void selectItems (TreeItem[] items, boolean ignoreDisposed) {
