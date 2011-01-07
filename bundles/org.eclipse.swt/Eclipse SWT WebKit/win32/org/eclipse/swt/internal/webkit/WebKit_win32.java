@@ -118,7 +118,7 @@ public static final native int /*long*/ CFHTTPCookieGetValue (int /*long*/ inCoo
 /**
  * @param inCookieStorage cast=(CFHTTPCookieStorageRef)
  */
-public static final native int /*long*/  CFHTTPCookieStorageCopyCookies (int /*long*/ inCookieStorage);
+public static final native int /*long*/ CFHTTPCookieStorageCopyCookies (int /*long*/ inCookieStorage);
 /**
  * @param inCookieStorage cast=(CFHTTPCookieStorageRef)
  * @param inURL cast=(CFURLRef)

@@ -27,8 +27,9 @@ class WebResourceLoadDelegate {
 	Browser browser;
 	String postData;
 
-WebResourceLoadDelegate () {
+WebResourceLoadDelegate (Browser browser) {
 	createCOMInterfaces ();
+	this.browser = browser;
 }
 
 int AddRef () {
@@ -253,10 +254,6 @@ int Release () {
 		disposeCOMInterfaces ();
 	}
 	return refCount;
-}
-
-void setBrowser (Browser browser) {
-	this.browser = browser;
 }
 
 boolean showAuthenticationDialog (final String[] user, final String[] password, String host, String realm) {

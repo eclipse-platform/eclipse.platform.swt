@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -33,7 +34,7 @@ class WebKit extends WebBrowser {
 	WebPolicyDelegate webPolicyDelegate;
 	WebResourceLoadDelegate webResourceLoadDelegate;
 	WebUIDelegate webUIDelegate;
-	
+
 	boolean ignoreDispose;
 	boolean loadingText = false;
 	boolean traverseNext = true;
@@ -41,9 +42,10 @@ class WebKit extends WebBrowser {
 	boolean untrustedText;
 	String lastNavigateURL;
 	BrowserFunction eventFunction;
-	
+
 	static int /*long*/ ExternalClass;
-	static boolean webkitRegistered = false;
+	static boolean LibraryLoaded = false;
+	static String LibraryLoadError;
 	static Callback JSObjectHasPropertyProc;
 	static Callback JSObjectGetPropertyProc;
 	static Callback JSObjectCallAsFunctionProc;
@@ -61,7 +63,7 @@ class WebKit extends WebBrowser {
 	static final String PROTOCOL_HTTP = "http://"; //$NON-NLS-1$
 	static final String USER_AGENT = "user-agent"; //$NON-NLS-1$
 	static final String URI_FILEROOT = "file:///"; //$NON-NLS-1$
-	
+
 	/* event strings */
 	static final String DOMEVENT_DRAGSTART = "dragstart"; //$NON-NLS-1$
 	static final String DOMEVENT_KEYDOWN = "keydown"; //$NON-NLS-1$
@@ -73,170 +75,213 @@ class WebKit extends WebBrowser {
 	static final String DOMEVENT_MOUSEOUT = "mouseout"; //$NON-NLS-1$
 	static final String DOMEVENT_MOUSEOVER = "mouseover"; //$NON-NLS-1$
 	static final String DOMEVENT_MOUSEWHEEL = "mousewheel"; //$NON-NLS-1$
-	
+
 static {
-	/* ensure that webkit's COM objects are registered */
-	TCHAR lpLibFileName = new TCHAR (0, "WebKit.dll", true); //$NON-NLS-1$
-	int /*long*/ hModule = OS.LoadLibrary (lpLibFileName);
-	if (hModule != 0) {
-		String name = "DllRegisterServer\0"; //$NON-NLS-1$
-		byte [] lpProcName = new byte[name.length ()];
-		for (int i = 0; i < lpProcName.length; i++) {
-			lpProcName[i] = (byte)name.charAt (i);
-		}
-		int /*long*/ DllRegisterServer = OS.GetProcAddress (hModule, lpProcName);
-		if (DllRegisterServer != 0) {
-			OS.Call (DllRegisterServer);
-			webkitRegistered = true;
-		}
-		OS.FreeLibrary (hModule);
-		Library.loadLibrary ("swt-webkit"); //$NON-NLS-1$
+	/*
+	* Attempt to load the swt-webkit library.  This will only succeed if the Apple
+	* Application Support package is on the user's Windows Path environment variable. 
+	*/
+	try {
+		Library.loadLibrary ("swt-webkit"); // $NON-NLS-1$
+		LibraryLoaded = true;
+	} catch (Throwable e) {
 	}
 	
-	JSObjectHasPropertyProc = new Callback (WebKit.class, "JSObjectHasPropertyProc", 3); //$NON-NLS-1$
-	if (JSObjectHasPropertyProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	JSObjectGetPropertyProc = new Callback (WebKit.class, "JSObjectGetPropertyProc", 4); //$NON-NLS-1$
-	if (JSObjectGetPropertyProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	JSObjectCallAsFunctionProc = new Callback (WebKit.class, "JSObjectCallAsFunctionProc", 6); //$NON-NLS-1$
-	if (JSObjectCallAsFunctionProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
-	NativeClearSessions = new Runnable () {
-		public void run () {
-			int /*long*/[] result = new int /*long*/[1];
-			int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebCookieManager, 0, WebKit_win32.IID_IWebCookieManager, result);
-			if (hr != COM.S_OK || result[0] == 0) {
-				return;
-			}
-			IWebCookieManager cookieManager = new IWebCookieManager (result[0]);
-			int /*long*/[] storage = new int /*long*/[1];
-			hr = cookieManager.cookieStorage (storage);
-			cookieManager.Release ();
-			if (hr != COM.S_OK || storage[0] == 0) {
-				return;
-			}
-			int /*long*/ cookies = WebKit_win32.CFHTTPCookieStorageCopyCookies (storage[0]);
-			if (cookies != 0) {
-				int count = WebKit_win32.CFArrayGetCount (cookies);
-				for (int i = 0; i < count; i++) {
-					int /*long*/ cookie = WebKit_win32.CFArrayGetValueAtIndex (cookies, i);
-					int /*long*/ flags = WebKit_win32.CFHTTPCookieGetFlags (cookie);
-					if ((flags & WebKit_win32.CFHTTPCookieSessionOnlyFlag) != 0) {
-						WebKit_win32.CFHTTPCookieStorageDeleteCookie (storage[0], cookie);
+	/*
+	* If needed, add the Apple Application Support package's directory to the library
+	* lookup path and try to load the swt-webkit library again.
+	*/
+	if (!LibraryLoaded) {
+		/*
+		* Registry entry HKEY_LOCAL_MACHINE\SOFTWARE\Apple Inc.\Apple Application Support\InstallDir
+		* indicates where the required Apple Application Support package is installed.  Check this
+		* value to ensure that it is installed, and to update the library lookup path.
+		*/
+		boolean AASDetected = false;
+		TCHAR key = new TCHAR (0, "SOFTWARE\\Apple Inc.\\Apple Application Support", true);	//$NON-NLS-1$
+		int /*long*/[] phkResult = new int /*long*/[1];
+		if (OS.RegOpenKeyEx (OS.HKEY_LOCAL_MACHINE, key, 0, OS.KEY_READ, phkResult) == 0) {
+			int[] lpcbData = new int[1];
+			TCHAR buffer = new TCHAR (0, "InstallDir", true); //$NON-NLS-1$
+			int result = OS.RegQueryValueEx (phkResult[0], buffer, 0, null, (TCHAR)null, lpcbData);
+			if (result == 0) {
+				TCHAR lpData = new TCHAR (0, lpcbData[0] / TCHAR.sizeof);
+				result = OS.RegQueryValueEx (phkResult[0], buffer, 0, null, lpData, lpcbData);
+				if (result == 0) {
+					AASDetected = true;
+					String AASDirectory = lpData.toString (0, lpData.strlen ());
+					buffer = new TCHAR (0, AASDirectory, true);
+					boolean success = OS.SetDllDirectory (buffer); /* should succeed on XP+SP1 and newer */
+					if (success) {
+						try {
+							Library.loadLibrary ("swt-webkit"); //$NON-NLS-1$
+							LibraryLoaded = true;
+						} catch (Throwable e) {
+							LibraryLoadError = "Failed to load the swt-webkit library"; //$NON-NLS-1$
+						}
+					} else {
+						LibraryLoadError = "Failed to add the Apple Application Support package to the library lookup path.  "; //$NON-NLS-1$
+						LibraryLoadError += "To use a SWT.WEBKIT-style Browser prepend " + AASDirectory + " to your Windows 'Path' environment variable and restart."; //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
-				WebKit_win32.CFRelease (cookies);
 			}
-//			WebKit_win32.CFRelease (storage[0]);	//intentionally commented, causes crash
+			OS.RegCloseKey (phkResult[0]);
 		}
-	};
-	
-	NativeGetCookie = new Runnable () {
-		public void run () {
-			int /*long*/[] result = new int /*long*/[1];
-			int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebCookieManager, 0, WebKit_win32.IID_IWebCookieManager, result);
-			if (hr != COM.S_OK || result[0] == 0) {
-				return;
+		if (!AASDetected) {
+			LibraryLoadError = "Safari must be installed to use a SWT.WEBKIT-style Browser"; //$NON-NLS-1$
+		}
+	}
+
+	if (LibraryLoaded) {
+		JSObjectHasPropertyProc = new Callback (WebKit.class, "JSObjectHasPropertyProc", 3); //$NON-NLS-1$
+		if (JSObjectHasPropertyProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		JSObjectGetPropertyProc = new Callback (WebKit.class, "JSObjectGetPropertyProc", 4); //$NON-NLS-1$
+		if (JSObjectGetPropertyProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		JSObjectCallAsFunctionProc = new Callback (WebKit.class, "JSObjectCallAsFunctionProc", 6); //$NON-NLS-1$
+		if (JSObjectCallAsFunctionProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+		NativeClearSessions = new Runnable () {
+			public void run () {
+				int /*long*/[] result = new int /*long*/[1];
+				int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebCookieManager, 0, WebKit_win32.IID_IWebCookieManager, result);
+				if (hr != COM.S_OK || result[0] == 0) {
+					return;
+				}
+				IWebCookieManager cookieManager = new IWebCookieManager (result[0]);
+				int /*long*/[] storage = new int /*long*/[1];
+				hr = cookieManager.cookieStorage (storage);
+				cookieManager.Release ();
+				if (hr != COM.S_OK || storage[0] == 0) {
+					return;
+				}
+				int /*long*/ cookies = WebKit_win32.CFHTTPCookieStorageCopyCookies (storage[0]);
+				if (cookies != 0) {
+					int count = WebKit_win32.CFArrayGetCount (cookies);
+					for (int i = 0; i < count; i++) {
+						int /*long*/ cookie = WebKit_win32.CFArrayGetValueAtIndex (cookies, i);
+						int /*long*/ flags = WebKit_win32.CFHTTPCookieGetFlags (cookie);
+						if ((flags & WebKit_win32.CFHTTPCookieSessionOnlyFlag) != 0) {
+							WebKit_win32.CFHTTPCookieStorageDeleteCookie (storage[0], cookie);
+						}
+					}
+					WebKit_win32.CFRelease (cookies);
+				}
+				// WebKit_win32.CFRelease (storage[0]);	//intentionally commented, causes crash
 			}
-			IWebCookieManager cookieManager = new IWebCookieManager (result[0]);
-			int /*long*/[] storage = new int /*long*/[1];
-			hr = cookieManager.cookieStorage (storage);
-			cookieManager.Release ();
-			if (hr != COM.S_OK || storage[0] == 0) {
-				return;
-			}
-			char [] array = CookieUrl.toCharArray ();
-			int /*long*/ string = WebKit_win32.CFStringCreateWithCharacters (0, array, array.length);
-			if (string != 0) {
-				int /*long*/ cfUrl = WebKit_win32.CFURLCreateWithString (0, string, 0);
-				if (cfUrl != 0) {
-					boolean secure = CookieUrl.startsWith (PROTOCOL_HTTPS);
-					int /*long*/ cookiesArray = WebKit_win32.CFHTTPCookieStorageCopyCookiesForURL (storage[0], cfUrl, secure);
-					if (cookiesArray != 0) {
-						int count = WebKit_win32.CFArrayGetCount (cookiesArray);
-						for (int i = 0; i < count; i++) {
-							int /*long*/ cookie = WebKit_win32.CFArrayGetValueAtIndex (cookiesArray, i);
-							if (cookie != 0) {
-								int /*long*/ cookieName = WebKit_win32.CFHTTPCookieGetName (cookie);
-								if (cookieName != 0) {
-									char[] name = stringFromCFString (cookieName);
-									if (CookieName.equals (new String (name))) {
-										int /*long*/ value = WebKit_win32.CFHTTPCookieGetValue (cookie);
-										if (value != 0) CookieValue = new String (stringFromCFString (value));
-										break;
+		};
+
+		NativeGetCookie = new Runnable () {
+			public void run () {
+				int /*long*/[] result = new int /*long*/[1];
+				int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebCookieManager, 0, WebKit_win32.IID_IWebCookieManager, result);
+				if (hr != COM.S_OK || result[0] == 0) {
+					return;
+				}
+				IWebCookieManager cookieManager = new IWebCookieManager (result[0]);
+				int /*long*/[] storage = new int /*long*/[1];
+				hr = cookieManager.cookieStorage (storage);
+				cookieManager.Release ();
+				if (hr != COM.S_OK || storage[0] == 0) {
+					return;
+				}
+				char[] chars = CookieUrl.toCharArray ();
+				int /*long*/ string = WebKit_win32.CFStringCreateWithCharacters (0, chars, chars.length);
+				if (string != 0) {
+					int /*long*/ cfUrl = WebKit_win32.CFURLCreateWithString (0, string, 0);
+					if (cfUrl != 0) {
+						boolean secure = CookieUrl.startsWith (PROTOCOL_HTTPS);
+						int /*long*/ cookiesArray = WebKit_win32.CFHTTPCookieStorageCopyCookiesForURL (storage[0], cfUrl, secure);
+						if (cookiesArray != 0) {
+							int count = WebKit_win32.CFArrayGetCount (cookiesArray);
+							for (int i = 0; i < count; i++) {
+								int /*long*/ cookie = WebKit_win32.CFArrayGetValueAtIndex (cookiesArray, i);
+								if (cookie != 0) {
+									int /*long*/ cookieName = WebKit_win32.CFHTTPCookieGetName (cookie);
+									if (cookieName != 0) {
+										String name = stringFromCFString (cookieName);
+										if (CookieName.equals (name)) {
+											int /*long*/ value = WebKit_win32.CFHTTPCookieGetValue (cookie);
+											if (value != 0) CookieValue = stringFromCFString (value);
+											break;
+										}
 									}
 								}
 							}
+							WebKit_win32.CFRelease (cookiesArray);
 						}
-						WebKit_win32.CFRelease (cookiesArray);
+						WebKit_win32.CFRelease (cfUrl);
 					}
-					WebKit_win32.CFRelease (cfUrl);
+					WebKit_win32.CFRelease (string);
 				}
-				WebKit_win32.CFRelease (string);
+				// WebKit_win32.CFRelease (storage[0]);	//intentionally commented, causes crash
 			}
-//			WebKit_win32.CFRelease (storage[0]);	//intentionally commented, causes crash
-		}
-	};
+		};
 
-	NativeSetCookie = new Runnable () {
-		public void run () {
-			int /*long*/[] result = new int /*long*/[1];
-			int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebCookieManager, 0, WebKit_win32.IID_IWebCookieManager, result);
-			if (hr != COM.S_OK || result[0] == 0) {
-				return;
-			}
-			IWebCookieManager cookieManager = new IWebCookieManager (result[0]);
-			int /*long*/[] storage = new int /*long*/[1];
-			hr = cookieManager.cookieStorage (storage);
-			cookieManager.Release ();
-			if (hr != COM.S_OK || storage[0] == 0) {
-				return;
-			}
-			
-			char [] array = CookieUrl.toCharArray ();
-			int /*long*/ string = WebKit_win32.CFStringCreateWithCharacters (0, array, array.length);
-			if (string != 0) {
-				int /*long*/ cfUrl = WebKit_win32.CFURLCreateWithString (0, string, 0);
-				if (cfUrl != 0) {
-					array = CookieValue.toCharArray ();
-					int /*long*/ value = WebKit_win32.CFStringCreateWithCharacters (0, array, array.length);
-					if (value != 0) {
-						array = HEADER_SETCOOKIE.toCharArray ();
-						int /*long*/ key = WebKit_win32.CFStringCreateWithCharacters (0, array, array.length);
-						if (key != 0) {
-							int /*long*/ headers = WebKit_win32.CFDictionaryCreate (0, new int /*long*/ []{key}, new int /*long*/ []{value}, 1, WebKit_win32.kCFCopyStringDictionaryKeyCallBacks (), WebKit_win32.kCFTypeDictionaryValueCallBacks ());
-							if (headers != 0) {
-								int /*long*/ cookies = WebKit_win32.CFHTTPCookieCreateWithResponseHeaderFields (0, headers, cfUrl);
-								if (cookies != 0) {
-									int /*long*/ cookie = WebKit_win32.CFArrayGetValueAtIndex (cookies, 0);
-									if (cookie != 0) {
-										WebKit_win32.CFHTTPCookieStorageSetCookie (storage[0], cookie);
-										CookieResult = true;
+		NativeSetCookie = new Runnable () {
+			public void run () {
+				int /*long*/[] result = new int /*long*/[1];
+				int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebCookieManager, 0, WebKit_win32.IID_IWebCookieManager, result);
+				if (hr != COM.S_OK || result[0] == 0) {
+					return;
+				}
+				IWebCookieManager cookieManager = new IWebCookieManager (result[0]);
+				int /*long*/[] storage = new int /*long*/[1];
+				hr = cookieManager.cookieStorage (storage);
+				cookieManager.Release ();
+				if (hr != COM.S_OK || storage[0] == 0) {
+					return;
+				}
+
+				char[] chars = CookieUrl.toCharArray ();
+				int /*long*/ string = WebKit_win32.CFStringCreateWithCharacters (0, chars, chars.length);
+				if (string != 0) {
+					int /*long*/ cfUrl = WebKit_win32.CFURLCreateWithString (0, string, 0);
+					if (cfUrl != 0) {
+						chars = CookieValue.toCharArray ();
+						int /*long*/ value = WebKit_win32.CFStringCreateWithCharacters (0, chars, chars.length);
+						if (value != 0) {
+							chars = HEADER_SETCOOKIE.toCharArray ();
+							int /*long*/ key = WebKit_win32.CFStringCreateWithCharacters (0, chars, chars.length);
+							if (key != 0) {
+								int /*long*/ headers = WebKit_win32.CFDictionaryCreate (0, new int /*long*/[] {key}, new int /*long*/[] {value}, 1, WebKit_win32.kCFCopyStringDictionaryKeyCallBacks (), WebKit_win32.kCFTypeDictionaryValueCallBacks ());
+								if (headers != 0) {
+									int /*long*/ cookies = WebKit_win32.CFHTTPCookieCreateWithResponseHeaderFields (0, headers, cfUrl);
+									if (cookies != 0) {
+										int /*long*/ cookie = WebKit_win32.CFArrayGetValueAtIndex (cookies, 0);
+										if (cookie != 0) {
+											WebKit_win32.CFHTTPCookieStorageSetCookie (storage[0], cookie);
+											CookieResult = true;
+										}
+										WebKit_win32.CFRelease (cookies);
 									}
-									WebKit_win32.CFRelease (cookies);
+									WebKit_win32.CFRelease (headers);
 								}
-								WebKit_win32.CFRelease (headers);
+								WebKit_win32.CFRelease (key);
 							}
-							WebKit_win32.CFRelease (key);
+							WebKit_win32.CFRelease (value);
 						}
-						WebKit_win32.CFRelease (value);
+						WebKit_win32.CFRelease (cfUrl);
 					}
-					WebKit_win32.CFRelease (cfUrl);
+					WebKit_win32.CFRelease (string);
 				}
-				WebKit_win32.CFRelease (string);
+				// WebKit_win32.CFRelease (storage[0]);	//intentionally commented, causes crash
 			}
-//			WebKit_win32.CFRelease (storage[0]);	//intentionally commented, causes crash
-		}
-	};
+		};
 
-	if (NativePendingCookies != null) {
-		SetPendingCookies (NativePendingCookies);
+		if (NativePendingCookies != null) {
+			SetPendingCookies (NativePendingCookies);
+		}
+		NativePendingCookies = null;
 	}
-	NativePendingCookies = null;
 }
 
 static int /*long*/ createBSTR (String string) {
 	char[] data = (string + '\0').toCharArray ();
 	return COM.SysAllocString (data);
+}
+
+static String error (int code) {
+	throw new SWTError ("WebKit error " + code); //$NON-NLS-1$
 }
 
 static String extractBSTR (int /*long*/ bstrString) {
@@ -270,19 +315,18 @@ static int /*long*/ JSObjectCallAsFunctionProc (int /*long*/ ctx, int /*long*/ f
 	Browser browser = findBrowser (handle[0]);
 	if (browser == null) return WebKit_win32.JSValueMakeUndefined (ctx);
 	WebKit webkit = (WebKit)browser.webBrowser;
-	int /*long*/ result = webkit.callJava (ctx, function, thisObject, argumentCount, arguments, exception);
-	return result;
+	return webkit.callJava (ctx, function, thisObject, argumentCount, arguments, exception);
 }
 
 static int /*long*/ JSObjectGetPropertyProc (int /*long*/ ctx, int /*long*/ object, int /*long*/ propertyName, int /*long*/ exception) {
 	byte[] bytes = null;
 	try {
-		bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (CHARSET_UTF8); //$NON-NLS-1$
+		bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (CHARSET_UTF8);
 	} catch (UnsupportedEncodingException e) {
 		bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes ();
 	} 
 	int /*long*/ name = WebKit_win32.JSStringCreateWithUTF8CString (bytes);
-	int /*long*/ addr = WebKit_win32.JSObjectCallAsFunctionProc_CALLBACK(WebKit.JSObjectCallAsFunctionProc.getAddress ());
+	int /*long*/ addr = WebKit_win32.JSObjectCallAsFunctionProc_CALLBACK (WebKit.JSObjectCallAsFunctionProc.getAddress ());
 	int /*long*/ function = WebKit_win32.JSObjectMakeFunctionWithCallback (ctx, name, addr);
 	WebKit_win32.JSStringRelease (name);
 	return function;
@@ -291,42 +335,40 @@ static int /*long*/ JSObjectGetPropertyProc (int /*long*/ ctx, int /*long*/ obje
 static int /*long*/ JSObjectHasPropertyProc (int /*long*/ ctx, int /*long*/ object, int /*long*/ propertyName) {
 	byte[] bytes = null;
 	try {
-		bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (CHARSET_UTF8); //$NON-NLS-1$
+		bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (CHARSET_UTF8);
 	} catch (UnsupportedEncodingException e) {
 		bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes ();
 	}
-	int result = WebKit_win32.JSStringIsEqualToUTF8CString (propertyName, bytes);
-	return result;
+	return WebKit_win32.JSStringIsEqualToUTF8CString (propertyName, bytes);
 }
 
-static char[] stringFromCFString (int /*long*/ cfString) {
+static String stringFromCFString (int /*long*/ cfString) {
 	if (cfString == 0) return null;
-	
 	int length = WebKit_win32.CFStringGetLength (cfString);
 	int /*long*/ ptr = WebKit_win32.CFStringGetCharactersPtr (cfString);
-	char [] string = new char[length];
+	char[] chars = new char[length];
 	if (ptr != 0) {
-		OS.MoveMemory (string, ptr, C.PTR_SIZEOF);
+		OS.MoveMemory (chars, ptr, length);
 	} else {
 		for (int j = 0; j < length; j++) {
-			string[j] = WebKit_win32.CFStringGetCharacterAtIndex (cfString, j);
+			chars[j] = WebKit_win32.CFStringGetCharacterAtIndex (cfString, j);
 		}
 	}
-	return string;
+	return new String (chars);
 }
 
 static String stringFromJSString (int /*long*/ jsString) {
 	if (jsString == 0) return null;
 	int length = WebKit_win32.JSStringGetLength (jsString);
-	byte [] string = new byte[length + 1];
-	WebKit_win32.JSStringGetUTF8CString (jsString, string, length + 1);
-	return new String (string);
+	byte[] bytes = new byte[length + 1];
+	WebKit_win32.JSStringGetUTF8CString (jsString, bytes, length + 1);
+	return new String (bytes);
 }
 
 public boolean back () {
-	int [] result = new int [1];
+	int[] result = new int[1];
 	webView.goBack (result);
-	return result[0] == 0 ? false : true;
+	return result[0] != 0;
 }
 
 int /*long*/ callJava (int /*long*/ ctx, int /*long*/ func, int /*long*/ thisObject, int /*long*/ argumentCount, int /*long*/ arguments, int /*long*/ exception) {
@@ -428,6 +470,7 @@ Object convertToJava (int /*long*/ ctx, int /*long*/ value) {
 	SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	return null;
 }
+
 int /*long*/ convertToJS (int /*long*/ ctx, Object value) {
 	if (value == null) {
 		return WebKit_win32.JSValueMakeNull (ctx);
@@ -466,28 +509,23 @@ int /*long*/ convertToJS (int /*long*/ ctx, Object value) {
 }
 
 public void create (Composite parent, int style) {
-	if (!webkitRegistered) {
+	if (!LibraryLoaded) {
 		browser.dispose ();
-		String errorString = " [WebKit.dll could not be found/registered]"; //$NON-NLS-1$				
-		SWT.error (SWT.ERROR_NO_HANDLES, null, errorString);
-		return;
+		SWT.error (SWT.ERROR_NO_HANDLES, null, LibraryLoadError == null ? null : " [" + LibraryLoadError + ']'); //$NON-NLS-1$
 	}
-	if (Device.DEBUG) {
-		System.out.println ("WebKit...");
-	}
-	
+
 	if (ExternalClass == 0) {
 		JSClassDefinition jsClassDefinition = new JSClassDefinition ();
 		byte[] bytes = (CLASSNAME_EXTERNAL + '\0').getBytes ();
 		jsClassDefinition.className = C.malloc (bytes.length);
 		OS.memmove (jsClassDefinition.className, bytes, bytes.length);
-		
-		//custom callbacks for hasProperty, getProperty and callAsFunction
+
+		/* custom callbacks for hasProperty, getProperty and callAsFunction */
 		int /*long*/ addr = WebKit_win32.JSObjectHasPropertyProc_CALLBACK (JSObjectHasPropertyProc.getAddress ());
 		jsClassDefinition.hasProperty = addr;
 		addr = WebKit_win32.JSObjectGetPropertyProc_CALLBACK (JSObjectGetPropertyProc.getAddress ());
 		jsClassDefinition.getProperty = addr;
-		
+
 		int /*long*/ classDefinitionPtr = C.malloc (JSClassDefinition.sizeof);
 		WebKit_win32.memmove (classDefinitionPtr, jsClassDefinition, JSClassDefinition.sizeof);
 		ExternalClass = WebKit_win32.JSClassCreate (classDefinitionPtr);
@@ -497,80 +535,83 @@ public void create (Composite parent, int style) {
 	int /*long*/[] result = new int /*long*/[1];
 	int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebView, 0, WebKit_win32.IID_IWebView, result);
 	if (hr != COM.S_OK || result[0] == 0) {
-		return;
+		browser.dispose ();
+		error (hr);
 	}
 	webView = new IWebView (result[0]);
 	webViewData = C.malloc (C.PTR_SIZEOF);
-	C.memmove (webViewData, new int /*long*/[] {webView.getAddress()}, C.PTR_SIZEOF);
+	C.memmove (webViewData, new int /*long*/[] {webView.getAddress ()}, C.PTR_SIZEOF);
 	hr = webView.setHostWindow (browser.handle);
 	if (hr != COM.S_OK) {
-		return;
+		browser.dispose ();
+		error (hr);
 	}
-	hr = webView.initWithFrame (new RECT (), 100, 100);
+	hr = webView.initWithFrame (new RECT (), 0, 0);
 	if (hr != COM.S_OK) {
-		return;
+		browser.dispose ();
+		error (hr);
 	}
 	result[0] = 0;
 	hr = webView.QueryInterface (WebKit_win32.IID_IWebViewPrivate, result);
 	if (hr != COM.S_OK || result[0] == 0) {
-		return;
+		browser.dispose ();
+		error (hr);
 	}
 	IWebViewPrivate webViewPrivate = new IWebViewPrivate (result[0]);
 	result[0] = 0;
 	hr = webViewPrivate.viewWindow (result);
 	if (hr != COM.S_OK || result[0] == 0) {
-		return;
+		browser.dispose ();
+		error (hr);
 	}
 	webViewPrivate.Release ();
 	webViewWindowHandle = result[0];
-	
-	result[0] = 0;
-	webFrameLoadDelegate = new WebFrameLoadDelegate ();
+
+	webFrameLoadDelegate = new WebFrameLoadDelegate (browser);
 	hr = webView.setFrameLoadDelegate (webFrameLoadDelegate.getAddress ());
 	if (hr != COM.S_OK) {
-		return;
+		browser.dispose ();
+		error (hr);
 	}
-	webFrameLoadDelegate.setBrowser (browser);
-	
-	webUIDelegate = new WebUIDelegate ();
+	webUIDelegate = new WebUIDelegate (browser);
 	hr = webView.setUIDelegate (webUIDelegate.getAddress ());
 	if (hr != COM.S_OK) {
-		return;
+		browser.dispose ();
+		error (hr);
 	}
-	webUIDelegate.setBrowser (browser);
 
-	webResourceLoadDelegate = new WebResourceLoadDelegate ();
+	webResourceLoadDelegate = new WebResourceLoadDelegate (browser);
 	hr = webView.setResourceLoadDelegate (webResourceLoadDelegate.getAddress ());
 	if (hr != COM.S_OK) {
-		return;
+		browser.dispose ();
+		error (hr);
 	}
-	webResourceLoadDelegate.setBrowser (browser);
-	
-	webDownloadDelegate = new WebDownloadDelegate ();
+
+	webDownloadDelegate = new WebDownloadDelegate (browser);
 	hr = webView.setDownloadDelegate (webDownloadDelegate.getAddress ());
 	if (hr != COM.S_OK) {
-		return;
+		browser.dispose ();
+		error (hr);
 	}
-	webDownloadDelegate.setBrowser (browser);
-	
-	webPolicyDelegate = new WebPolicyDelegate ();
+
+	webPolicyDelegate = new WebPolicyDelegate (browser);
 	hr = webView.setPolicyDelegate (webPolicyDelegate.getAddress ());
 	if (hr != COM.S_OK) {
-		return;
+		browser.dispose ();
+		error (hr);
 	}
-	webPolicyDelegate.setBrowser (browser);
-	
+
 	result[0] = 0;
-	webView.preferences (result);
+	hr = webView.preferences (result);
 	if (hr == COM.S_OK && result[0] != 0) {
 		IWebPreferences preferences = new IWebPreferences (result[0]);
 		preferences.setJavaScriptCanOpenWindowsAutomatically (1);
-		preferences.setJavaEnabled (0);	//disable applets
+		preferences.setJavaEnabled (0);	/* disable applets */
 		preferences.setTabsToLinks (1);
 		preferences.setFontSmoothing (WebKit_win32.FontSmoothingTypeWindows);
 		preferences.Release ();
 	}
-	
+
 	final Listener filter = new Listener () {
 		public void handleEvent (Event event) {
 			switch (event.type) {
@@ -613,8 +654,6 @@ public void create (Composite parent, int style) {
 				case SWT.Resize: {
 					Rectangle bounds = browser.getClientArea ();
 					OS.SetWindowPos (webViewWindowHandle, 0, bounds.x, bounds.y, bounds.width, bounds.height, OS.SWP_DRAWFRAME);
-					//not required, browser.setVisible() takes care of this
-					//OS.ShowWindow (webViewWindowHandle, browser.getVisible () ? OS.SW_SHOW : OS.SW_HIDE); 
 					break;
 				}
 				case SWT.Traverse: {
@@ -639,7 +678,7 @@ public void create (Composite parent, int style) {
 	if (!browser.isFocusControl ()) {
 		browser.getDisplay ().addFilter (SWT.Traverse, filter);
 	}
-	
+
 	eventFunction = new BrowserFunction (browser, "HandleWebKitEvent") { //$NON-NLS-1$
 		public Object function (Object[] arguments) {
 			return handleEvent (arguments) ? Boolean.TRUE : Boolean.FALSE;
@@ -655,6 +694,7 @@ public boolean execute (String script) {
 	}
 	IWebFrame frame = new IWebFrame (result[0]);
 	int /*long*/ context = frame.globalContext ();
+	frame.Release ();
 	if (context == 0) {
 		return false;
 	}
@@ -672,15 +712,18 @@ public boolean execute (String script) {
 		bytes = (getUrl () + '\0').getBytes ();
 	}
 	int /*long*/ urlString = WebKit_win32.JSStringCreateWithUTF8CString (bytes);
-	if (urlString == 0) return false;
-	WebKit_win32.JSEvaluateScript (context, scriptString, 0, urlString, 0, null);
+	if (urlString == 0) {
+		WebKit_win32.JSStringRelease (scriptString);
+		return false;
+	}
+	int /*long*/ evalResult = WebKit_win32.JSEvaluateScript (context, scriptString, 0, urlString, 0, null);
 	WebKit_win32.JSStringRelease (urlString);
 	WebKit_win32.JSStringRelease (scriptString);
-	return hr != COM.S_OK;
+	return evalResult != 0;
 }
 
 public boolean forward () {
-	int [] result = new int [1];
+	int[] result = new int[1];
 	webView.goForward (result);
 	return result[0] != 0;
 }
@@ -847,7 +890,7 @@ boolean handleEvent (Object[] arguments) {
 		return sendKeyEvent (keyEvent) && !browser.isDisposed ();
 	}
 
-	if (type.equals(DOMEVENT_KEYUP)) {
+	if (type.equals (DOMEVENT_KEYUP)) {
 		int keyCode = translateKey (((Double)arguments[1]).intValue ());
 		if (keyCode == 0) {
 			/* indicates a key for which key events are not sent */
@@ -970,7 +1013,7 @@ public boolean isBackEnabled () {
 		return false;
 	}
 	IWebIBActions webIBActions = new IWebIBActions (address[0]);
-	int [] result = new int [1];
+	int[] result = new int[1];
 	webIBActions.canGoBack (webView.getAddress (), result);
 	webIBActions.Release ();
 	return result[0] != 0;
@@ -978,8 +1021,7 @@ public boolean isBackEnabled () {
 
 public boolean isFocusControl () {
 	int /*long*/ hwndFocus = OS.GetFocus ();
-	if (hwndFocus != 0 && hwndFocus == webViewWindowHandle) return true;
-	return false;
+	return hwndFocus != 0 && hwndFocus == webViewWindowHandle;
 }
 
 public boolean isForwardEnabled () {
@@ -989,7 +1031,7 @@ public boolean isForwardEnabled () {
 		return false;
 	}
 	IWebIBActions webIBActions = new IWebIBActions (address[0]);
-	int [] result = new int [1];
+	int[] result = new int[1];
 	webIBActions.canGoForward (webView.getAddress (), result);
 	webIBActions.Release ();
 	return result[0] != 0;
@@ -998,7 +1040,7 @@ public boolean isForwardEnabled () {
 void onDispose () {
 	/* Browser could have been disposed by one of the Dispose listeners */
 	if (!browser.isDisposed ()) {
-		/* invoke onbeforeunload handlers but don't prompt with message box*/
+		/* invoke onbeforeunload handlers but don't prompt with message box */
 		if (!browser.isClosing) {
 			webUIDelegate.prompt = false;
 			shouldClose ();
@@ -1012,22 +1054,27 @@ void onDispose () {
 	}
 	functions = null;
 
+	eventFunction.dispose();
+	eventFunction = null;
 	C.free (webViewData);
-	webView.setHostWindow(0);
-	webView.setFrameLoadDelegate(0);
-	webView.setResourceLoadDelegate(0);
-	webView.setUIDelegate(0);
-	webView.setPolicyDelegate(0);
-	webView.setDownloadDelegate(0);
+
+	webView.setHostWindow (0);
+	webView.setFrameLoadDelegate (0);
+	webView.setResourceLoadDelegate (0);
+	webView.setUIDelegate (0);
+	webView.setPolicyDelegate (0);
+	webView.setDownloadDelegate (0);
 	webView.Release();
 	webView = null;
-	webViewWindowHandle = 0;
-	webFrameLoadDelegate.html = null;
-	webUIDelegate.lastHoveredLinkURL = lastNavigateURL = null;
+	webDownloadDelegate = null;
+	webFrameLoadDelegate = null;
+	webPolicyDelegate = null;
+	webResourceLoadDelegate = null;
+	webUIDelegate = null;
+	lastNavigateURL = null;
 }
 
 void onFocus () {
-	if (webViewWindowHandle == 0) return;
 	OS.SetFocus (webViewWindowHandle);
 	int /*long*/[] result = new int /*long*/[1];
 	int hr = webView.QueryInterface (WebKit_win32.IID_IWebViewPrivate, result);
@@ -1101,7 +1148,7 @@ public boolean setText (String html, boolean trusted) {
 		return false;
 	}
 	IWebFrame frame = new IWebFrame (result[0]);
-	
+
 	result[0] = 0;
 	hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebMutableURLRequest, 0, WebKit_win32.IID_IWebMutableURLRequest, result);
 	if (hr != COM.S_OK || result[0] == 0) {
@@ -1109,11 +1156,11 @@ public boolean setText (String html, boolean trusted) {
 		return false;
 	}
 	IWebMutableURLRequest request = new IWebMutableURLRequest (result[0]);
-	
+
 	int /*long*/ urlString = createBSTR (ABOUT_BLANK);
 	hr = request.setURL (urlString);
 	COM.SysFreeString (urlString);
-	
+
 	if (hr == COM.S_OK) {
 		hr = frame.loadRequest (request.getAddress ());
 	}
@@ -1154,7 +1201,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 		return false;
 	}
 	IWebFrame frame = new IWebFrame (result[0]);
-	
+
 	result[0] = 0;
 	hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebMutableURLRequest, 0, WebKit_win32.IID_IWebMutableURLRequest, result);
 	if (hr != COM.S_OK || result[0] == 0) {
@@ -1162,7 +1209,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 		return false;
 	}
 	IWebMutableURLRequest request = new IWebMutableURLRequest (result[0]);
-	
+
 	if (postData != null) { //TODO: POST
 //    	webResourceLoadDelegate.postData = postData;
 //    	int /*long*/ postString = createBSTR (POST);
@@ -1228,15 +1275,15 @@ public boolean setUrl (String url, String postData, String[] headers) {
 
 boolean shouldClose () {
 	if (!jsEnabled) return true;
-	
+
 	int /*long*/[] address = new int /*long*/[1];
 	int hr = webView.QueryInterface (WebKit_win32.IID_IWebViewPrivate, address);
 	if (hr != COM.S_OK || address[0] == 0) {
 		return false;
 	}
 	IWebViewPrivate webViewPrivate = new IWebViewPrivate (address[0]);
-	int [] result = new int [1];
-	//This function will fire the before unload handler for a page
+	int[] result = new int[1];
+	/* This function will fire the before unload handler for a page */
 	webViewPrivate.shouldClose (result);
 	webViewPrivate.Release ();
 	return result[0] != 0;
@@ -1253,4 +1300,5 @@ public void stop () {
 	webIBActions.stopLoading (webView.getAddress ());
 	webIBActions.Release ();
 }
+
 }

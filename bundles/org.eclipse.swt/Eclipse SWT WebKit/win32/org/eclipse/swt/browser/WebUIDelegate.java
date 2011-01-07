@@ -32,8 +32,9 @@ class WebUIDelegate {
 	boolean menuBar = true, toolBar = true, statusBar = true;
 	boolean prompt = true;
 
-WebUIDelegate () {
+WebUIDelegate (Browser browser) {
 	createCOMInterfaces ();
+	this.browser = browser;
 }
 
 int AddRef () {
@@ -381,10 +382,6 @@ int runOpenPanelForFileButtonWithResultListener (int /*long*/ sender, int /*long
 	return COM.S_OK;
 }
 
-void setBrowser (Browser browser) {
-	this.browser = browser;
-}
-
 int setFrame (int /*long*/ sender, int /*long*/ frame) {
 	RECT rect = new RECT ();
 	COM.MoveMemory (rect, frame, RECT.sizeof);
@@ -440,21 +437,21 @@ void showAlertMessage (String title, String message) {
 	dialog.setText (title);
 
 	Label label = new Label (dialog, SWT.NONE);
-	Image image = dialog.getDisplay ().getSystemImage(SWT.ICON_WARNING);
+	Image image = dialog.getDisplay ().getSystemImage (SWT.ICON_WARNING);
 	label.setImage (image);
 
 	label = new Label (dialog, SWT.WRAP);
 	label.setText (message);
-	Monitor monitor = parent.getMonitor();
+	Monitor monitor = parent.getMonitor ();
 	int maxWidth = monitor.getBounds().width * 2 / 3;
-	int width = label.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+	int width = label.computeSize (SWT.DEFAULT, SWT.DEFAULT).x;
 	GridData data = new GridData (SWT.FILL, SWT.CENTER, true, false);
-	data.widthHint = Math.min(width, maxWidth);
+	data.widthHint = Math.min (width, maxWidth);
 	label.setLayoutData (data);
 
 	Button ok = new Button (dialog, SWT.PUSH);
 	ok.setText (SWT.getMessage ("SWT_OK")); //$NON-NLS-1$
-	width = ok.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+	width = ok.computeSize (SWT.DEFAULT, SWT.DEFAULT).x;
 	GridData layoutData = new GridData ();
 	layoutData.horizontalAlignment = SWT.CENTER;
 	layoutData.verticalAlignment = SWT.CENTER;
@@ -493,17 +490,17 @@ int showConfirmPanel (String title, String message) {
 	dialog.setText (title);
 
 	Label label = new Label (dialog, SWT.NONE);
-	Image image = dialog.getDisplay ().getSystemImage(SWT.ICON_QUESTION);
+	Image image = dialog.getDisplay ().getSystemImage (SWT.ICON_QUESTION);
 	label.setImage (image);
 	label.setLayoutData (new GridData ());
 
 	label = new Label (dialog, SWT.WRAP);
 	label.setText (message);
-	Monitor monitor = parent.getMonitor();
-	int maxWidth = monitor.getBounds().width * 2 / 3;
-	int width = label.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+	Monitor monitor = parent.getMonitor ();
+	int maxWidth = monitor.getBounds ().width * 2 / 3;
+	int width = label.computeSize (SWT.DEFAULT, SWT.DEFAULT).x;
 	GridData data = new GridData (SWT.FILL, SWT.CENTER, true, false);
-	data.widthHint = Math.min(width, maxWidth);
+	data.widthHint = Math.min (width, maxWidth);
 	label.setLayoutData (data);
 
 	Composite buttons = new Composite (dialog, SWT.NONE);
@@ -521,7 +518,7 @@ int showConfirmPanel (String title, String message) {
 	Button cancel = new Button (buttons, SWT.PUSH);
 	cancel.setText (SWT.getMessage ("SWT_Cancel")); //$NON-NLS-1$
 	cancel.setLayoutData (layoutData);
-	width = cancel.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+	width = cancel.computeSize (SWT.DEFAULT, SWT.DEFAULT).x;
 	layoutData.widthHint = Math.max (width, 75);
 
 	final int[] result = new int[1];

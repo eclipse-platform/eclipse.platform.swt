@@ -15929,6 +15929,54 @@ fail:
 }
 #endif
 
+#ifndef NO_SetDllDirectoryA
+JNIEXPORT jboolean JNICALL OS_NATIVE(SetDllDirectoryA)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, SetDllDirectoryA_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)SetDllDirectoryA((LPSTR)lparg0);
+*/
+	{
+		LOAD_FUNCTION(fp, SetDllDirectoryA)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(LPSTR))fp)((LPSTR)lparg0);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, SetDllDirectoryA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetDllDirectoryW
+JNIEXPORT jboolean JNICALL OS_NATIVE(SetDllDirectoryW)
+	(JNIEnv *env, jclass that, jcharArray arg0)
+{
+	jchar *lparg0=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, SetDllDirectoryW_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)SetDllDirectoryW((LPWSTR)lparg0);
+*/
+	{
+		LOAD_FUNCTION(fp, SetDllDirectoryW)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(LPWSTR))fp)((LPWSTR)lparg0);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, SetDllDirectoryW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetErrorMode
 JNIEXPORT jint JNICALL OS_NATIVE(SetErrorMode)
 	(JNIEnv *env, jclass that, jint arg0)

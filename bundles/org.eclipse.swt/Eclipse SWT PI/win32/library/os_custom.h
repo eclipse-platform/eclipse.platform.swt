@@ -78,6 +78,8 @@
 #define PSPropertyKeyFromString_LIB "propsys.dll"
 #define RegisterTouchWindow_LIB "user32.dll"
 #define SetCurrentProcessExplicitAppUserModelID_LIB "shell32.dll"
+#define SetDllDirectoryA_LIB "Kernel32.dll"
+#define SetDllDirectoryW_LIB "Kernel32.dll"
 #define SetGestureConfig_LIB "user32.dll"
 #define SetLayeredWindowAttributes_LIB "user32.dll"
 #define SetLayout_LIB "gdi32.dll"

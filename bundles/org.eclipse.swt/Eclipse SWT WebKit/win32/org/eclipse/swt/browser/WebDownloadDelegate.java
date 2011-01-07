@@ -34,8 +34,9 @@ class WebDownloadDelegate {
 	static final int DOWNLOAD_CANCELLED = 1;
 	static final int DOWNLOAD_ERROR = 3;
 
-WebDownloadDelegate () {
+WebDownloadDelegate (Browser browser) {
 	createCOMInterfaces ();
+	this.browser = browser;
 }
 
 int AddRef () {
@@ -236,10 +237,6 @@ int Release () {
 		disposeCOMInterfaces ();
 	}
 	return refCount;
-}
-
-void setBrowser (Browser browser) {
-	this.browser = browser;
 }
 
 int willSendRequest (int /*long*/ download, int /*long*/ request, int /*long*/ redirectResponse, int /*long*/ finalRequest) {

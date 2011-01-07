@@ -26,7 +26,6 @@
 #include <shellapi.h>
 #include <wininet.h>
 #include <mshtmhst.h>
-#include <WinCrypt.h>
 
 #ifndef _WIN32_WCE
 #include <initguid.h>

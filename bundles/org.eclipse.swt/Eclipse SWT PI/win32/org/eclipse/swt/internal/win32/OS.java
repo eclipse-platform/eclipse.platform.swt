@@ -3337,6 +3337,15 @@ public static final boolean SetMenuItemInfo (int /*long*/ hMenu, int uItem, bool
 	return SetMenuItemInfoA (hMenu, uItem, fByPosition, lpmii);
 }
 
+public static final boolean SetDllDirectory (TCHAR lpPathName) {
+	if (IsUnicode) {
+		char [] lpPathName1 = lpPathName == null ? null : lpPathName.chars;
+		return SetDllDirectoryW (lpPathName1);
+	}
+	byte [] lpPathName1 = lpPathName == null ? null : lpPathName.bytes;
+	return SetDllDirectoryA (lpPathName1);
+}
+
 public static boolean SetProp (int /*long*/ hWnd, int /*long*/ lpString, int /*long*/ hData) {
 	if (IsUnicode) return SetPropW (hWnd, lpString, hData);
 	return SetPropA (hWnd, lpString, hData);
@@ -6377,6 +6386,16 @@ public static final native boolean SetCursorPos (int X, int Y);
  * @param pColors cast=(RGBQUAD *),flags=no_out critical
  */
 public static final native int SetDIBColorTable (int /*long*/ hdc, int uStartIndex, int cEntries, byte[] pColors);
+/**
+ * @method flags=dynamic
+ * @param lpString cast=(LPSTR)
+ */
+public static final native boolean SetDllDirectoryA (byte [] lpString);
+/**
+ * @method flags=dynamic
+ * @param lpString cast=(LPWSTR)
+ */
+public static final native boolean SetDllDirectoryW (char [] lpString);
 public static final native int SetErrorMode (int uMode);
 /** @param hWnd cast=(HWND) */
 public static final native int /*long*/ SetFocus (int /*long*/ hWnd);

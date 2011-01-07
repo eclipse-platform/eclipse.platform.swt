@@ -24,8 +24,9 @@ class WebPolicyDelegate {
 
 	Browser browser;
 
-WebPolicyDelegate () {
+WebPolicyDelegate (Browser browser) {
 	createCOMInterfaces ();
+	this.browser = browser;
 }
 
 int AddRef () {
@@ -174,10 +175,6 @@ int Release () {
 		disposeCOMInterfaces ();
 	}
 	return refCount;
-}
-
-void setBrowser (Browser browser) {
-	this.browser = browser;
 }
 
 int unableToImplementPolicyWithError (int /*long*/ webView, int /*long*/ error, int /*long*/ frame) {

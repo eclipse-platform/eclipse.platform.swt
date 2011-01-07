@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1036;
-int OS_nativeFunctionCallCount[1036];
+int OS_nativeFunctionCount = 1038;
+int OS_nativeFunctionCallCount[1038];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -1689,6 +1689,8 @@ char * OS_nativeFunctionNames[] = {
 	"SetCursor",
 	"SetCursorPos",
 	"SetDIBColorTable",
+	"SetDllDirectoryA",
+	"SetDllDirectoryW",
 	"SetErrorMode",
 	"SetFocus",
 	"SetForegroundWindow",

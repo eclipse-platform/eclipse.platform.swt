@@ -18,7 +18,6 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.mozilla.nsISupports;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.webkit.*;
 import org.eclipse.swt.internal.win32.*;
@@ -35,8 +34,9 @@ class WebFrameLoadDelegate {
 
 	static final String OBJECTNAME_EXTERNAL = "external"; //$NON-NLS-1$
 
-WebFrameLoadDelegate () {
+WebFrameLoadDelegate (Browser browser) {
 	createCOMInterfaces ();
+	this.browser = browser;
 }
 
 void addEventHandlers (boolean top) {
@@ -205,6 +205,7 @@ int didClearWindowObject (int /*long*/ webView, int /*long*/ context, int /*long
 	int /*long*/[] mainFrame = new int /*long*/[1];
 	iwebView.mainFrame (mainFrame);
 	boolean top = mainFrame[0] == frame;
+	new IWebFrame (mainFrame[0]).Release ();
 	addEventHandlers (top);
 	return COM.S_OK;
 }
@@ -348,7 +349,7 @@ int didFailProvisionalLoadWithError (int /*long*/ webView, int /*long*/ error, i
 			IWebFrame iWebFrame = new IWebFrame (frame);
 			hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebMutableURLRequest, 0, WebKit_win32.IID_IWebMutableURLRequest, result);
 			if (hr != COM.S_OK || result[0] == 0) {
-				new nsISupports (certificate[0]).Release();
+				certificate[0] = 0;
 				return COM.S_OK;
 			}
 			IWebMutableURLRequest request = new IWebMutableURLRequest (result[0]);
@@ -357,7 +358,7 @@ int didFailProvisionalLoadWithError (int /*long*/ webView, int /*long*/ error, i
 			iWebFrame.loadRequest (request.getAddress ());
 			request.Release ();
 		}
-		new nsISupports (certificate[0]).Release();
+		certificate[0] = 0;
 		return COM.S_OK;
 	}
 
@@ -539,10 +540,6 @@ int Release () {
 		disposeCOMInterfaces ();
 	}
 	return refCount;
-}
-
-void setBrowser (Browser browser) {
-	this.browser = browser;
 }
 
 boolean showCertificateDialog (int /*long*/ webView, final String failingUrlString, final String description, int /*long*/ certificate) {

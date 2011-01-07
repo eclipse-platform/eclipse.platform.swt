@@ -1697,6 +1697,8 @@ typedef enum {
 	SetCursor_FUNC,
 	SetCursorPos_FUNC,
 	SetDIBColorTable_FUNC,
+	SetDllDirectoryA_FUNC,
+	SetDllDirectoryW_FUNC,
 	SetErrorMode_FUNC,
 	SetFocus_FUNC,
 	SetForegroundWindow_FUNC,
