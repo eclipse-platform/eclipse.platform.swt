@@ -42,14 +42,33 @@ public class Library {
 	/* 64-bit support */
 	static final boolean IS_64 = longConst() == (int /*long*/)longConst();
 	static final String SUFFIX_64 = "-64";	//$NON-NLS-1$
-	static final String SWTDIR_32 = "swtlib-32";	//$NON-NLS-1$
-	static final String SWTDIR_64 = "swtlib-64";	//$NON-NLS-1$
+	static final String SWT_LIB_DIR;
 
 static {
 	DELIMITER = System.getProperty("line.separator"); //$NON-NLS-1$
 	SEPARATOR = System.getProperty("file.separator"); //$NON-NLS-1$
+	SWT_LIB_DIR = ".swt" + SEPARATOR + "lib" + SEPARATOR + os() + SEPARATOR + arch(); //$NON-NLS-1$ $NON-NLS-2$
 	JAVA_VERSION = parseVersion(System.getProperty("java.version")); //$NON-NLS-1$
 	SWT_VERSION = SWT_VERSION(MAJOR_VERSION, MINOR_VERSION);
+}
+
+static String arch() {
+	String osArch = System.getProperty("os.arch"); //$NON-NLS-1$
+	if (osArch.equals ("i386") || osArch.equals ("i686")) return "x86"; //$NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$
+	if (osArch.equals ("IA64N")) return "ia64_32"; //$NON-NLS-1$ $NON-NLS-2$
+	if (osArch.equals ("IA64W")) return "ia64"; //$NON-NLS-1$ $NON-NLS-2$
+	return osArch;
+}
+
+static String os() {
+	String osName = System.getProperty("os.name"); //$NON-NLS-1$
+	if (osName.equals ("Linux")) return "linux"; //$NON-NLS-1$ $NON-NLS-2$
+	if (osName.equals ("AIX")) return "aix"; //$NON-NLS-1$ $NON-NLS-2$
+	if (osName.equals ("Solaris") || osName.equals ("SunOS")) return "solaris"; //$NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$
+	if (osName.equals ("HP-UX")) return "hpux"; //$NON-NLS-1$ $NON-NLS-2$
+	if (osName.equals ("Mac OS X")) return "macosx"; //$NON-NLS-1$ $NON-NLS-2$
+	if (osName.startsWith ("Win")) return "win32"; //$NON-NLS-1$ $NON-NLS-2$
+	return osName;
 }
 
 static void chmod(String permision, String path) {
@@ -240,14 +259,12 @@ public static void loadLibrary (String name, boolean mapName) {
 	String fileName1 = mappedName1;
 	String fileName2 = mappedName2;
 	if (path == null) {
-		path = System.getProperty ("java.io.tmpdir"); //$NON-NLS-1$
-		File dir = new File (path, IS_64 ? SWTDIR_64 : SWTDIR_32);
-		boolean make = false;
-		if ((dir.exists () && dir.isDirectory ()) || (make = dir.mkdir ())) {
+		path = System.getProperty ("user.home"); //$NON-NLS-1$
+		File dir = new File (path, SWT_LIB_DIR);
+		if ((dir.exists () && dir.isDirectory ()) || dir.mkdirs ()) {
 			path = dir.getAbsolutePath ();
-			if (make) chmod ("777", path); //$NON-NLS-1$
 		} else {
-			/* fall back to using the tmp directory */
+			/* fall back to using the home dir directory */
 			if (IS_64) {
 				fileName1 = mapLibraryName (libName1 + SUFFIX_64);
 				fileName2 = mapLibraryName (libName2 + SUFFIX_64);
