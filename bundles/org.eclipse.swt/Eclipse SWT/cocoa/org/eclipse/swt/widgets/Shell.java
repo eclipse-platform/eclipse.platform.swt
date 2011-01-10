@@ -510,7 +510,7 @@ boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 	// Only answer if SWT created the window.
 	if (window != null) {
 		int /*long*/ styleMask = window.styleMask();
-		if (styleMask == OS.NSBorderlessWindowMask || (styleMask & OS.NSNonactivatingPanelMask) != 0) return true;
+		if (styleMask == OS.NSBorderlessWindowMask || (styleMask & (OS.NSNonactivatingPanelMask | OS.NSDocModalWindowMask)) != 0) return true;
 	}
 	return super.canBecomeKeyWindow (id, sel);
 }
