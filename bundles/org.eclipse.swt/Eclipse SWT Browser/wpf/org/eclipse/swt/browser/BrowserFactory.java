@@ -15,7 +15,7 @@ import org.eclipse.swt.SWT;
 class BrowserFactory {
 
 WebBrowser createWebBrowser (int style) {
-	if ((style & SWT.MOZILLA) != 0) return null;
+	if ((style & (SWT.MOZILLA | SWT.WEBKIT)) != 0) return null;
 	return new IE ();
 }
 
