@@ -628,33 +628,33 @@ void showCertificate (Shell parent, int /*long*/ certificate) {
 	OS.MoveMemory (info, context.pCertInfo, CERT_INFO.sizeof);
 
 	int length = OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Issuer, OS.CERT_SIMPLE_NAME_STR, null, 0);
-	TCHAR tchar = new TCHAR(0, length);
+	TCHAR tchar = new TCHAR (0, length);
 	OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Issuer, OS.CERT_SIMPLE_NAME_STR, tchar, length);
-	String issuer = tchar.toString(0, tchar.strlen());
+	String issuer = tchar.toString (0, tchar.strlen ());
 
 	length = OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Subject, OS.CERT_SIMPLE_NAME_STR, null, 0);
-	tchar = new TCHAR(0, length);
+	tchar = new TCHAR (0, length);
 	OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Subject, OS.CERT_SIMPLE_NAME_STR, tchar, length);
-	String subject = tchar.toString(0, tchar.strlen());
+	String subject = tchar.toString (0, tchar.strlen ());
 
-	String dateSeparator = "/"; //$NON-NLS-1$
-	String timeSeparator = ":"; //$NON-NLS-1$
+	final String SEPARATOR_DATE = "/"; //$NON-NLS-1$
+	final String SEPARATOR_TIME = ":"; //$NON-NLS-1$
 	SYSTEMTIME systemTime = new SYSTEMTIME ();
 	OS.FileTimeToSystemTime (info.NotBefore, systemTime);
-	String validFrom = systemTime.wDay + dateSeparator + systemTime.wMonth + dateSeparator + systemTime.wYear;
-	String validFromTime = systemTime.wHour + timeSeparator + systemTime.wMinute + timeSeparator + systemTime.wSecond;
+	String validFrom = systemTime.wDay + SEPARATOR_DATE + systemTime.wMonth + SEPARATOR_DATE + systemTime.wYear;
+	String validFromTime = systemTime.wHour + SEPARATOR_TIME + systemTime.wMinute + SEPARATOR_TIME + systemTime.wSecond;
 
 	systemTime = new SYSTEMTIME ();
 	OS.FileTimeToSystemTime (info.NotAfter, systemTime);
-	String validTo = systemTime.wDay + dateSeparator + systemTime.wMonth + dateSeparator + systemTime.wYear;
-	String validToTime = systemTime.wHour + timeSeparator + systemTime.wMinute + timeSeparator + systemTime.wSecond;
+	String validTo = systemTime.wDay + SEPARATOR_DATE + systemTime.wMonth + SEPARATOR_DATE + systemTime.wYear;
+	String validToTime = systemTime.wHour + SEPARATOR_TIME + systemTime.wMinute + SEPARATOR_TIME + systemTime.wSecond;
 
 	length = info.SerialNumber.cbData;
 	byte[] serialNumber = new byte[length];
 	OS.MoveMemory (serialNumber, info.SerialNumber.pbData, length);
-	String hexSerialNumber = new String();
+	String hexSerialNumber = new String ();
 	for (int i = length - 1; i >= 0; i--) {
-		int number = (0xFF & serialNumber[i]);
+		int number = 0xFF & serialNumber[i];
 		String hex = Integer.toHexString (number);
 		if (hex.length () == 1) hexSerialNumber += "0"; //$NON-NLS-1$
 		hexSerialNumber += hex + " "; //$NON-NLS-1$
