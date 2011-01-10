@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1038;
-int OS_nativeFunctionCallCount[1038];
+int OS_nativeFunctionCount = 1051;
+int OS_nativeFunctionCallCount[1051];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -48,11 +48,19 @@ char * OS_nativeFunctionNames[] = {
 	"BufferedPaintSetAlpha",
 	"BufferedPaintUnInit",
 	"CANDIDATEFORM_1sizeof",
+	"CERT_1CONTEXT_1sizeof",
+	"CERT_1INFO_1sizeof",
+	"CERT_1NAME_1BLOB_1sizeof",
+	"CERT_1PUBLIC_1KEY_1INFO_1sizeof",
 	"CHOOSECOLOR_1sizeof",
 	"CHOOSEFONT_1sizeof",
 	"COMBOBOXINFO_1sizeof",
 	"COMPOSITIONFORM_1sizeof",
 	"CREATESTRUCT_1sizeof",
+	"CRYPT_1ALGORITHM_1IDENTIFIER_1sizeof",
+	"CRYPT_1BIT_1BLOB_1sizeof",
+	"CRYPT_1INTEGER_1BLOB_1sizeof",
+	"CRYPT_1OBJID_1BLOB_1sizeof",
 #ifndef JNI64
 	"Call__I",
 #else
@@ -66,6 +74,8 @@ char * OS_nativeFunctionNames[] = {
 	"CallNextHookEx",
 	"CallWindowProcA",
 	"CallWindowProcW",
+	"CertNameToStrA",
+	"CertNameToStrW",
 	"CharLowerA",
 	"CharLowerW",
 	"CharUpperA",
@@ -235,6 +245,7 @@ char * OS_nativeFunctionNames[] = {
 	"FILETIME_1sizeof",
 	"FLICK_1DATA_1sizeof",
 	"FLICK_1POINT_1sizeof",
+	"FileTimeToSystemTime",
 	"FillPath",
 	"FillRect",
 	"FindWindowA",
@@ -853,6 +864,16 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2JI",
 #endif
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI",
+#ifndef JNI64
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1CONTEXT_2II",
+#else
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1CONTEXT_2JI",
+#endif
+#ifndef JNI64
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1INFO_2II",
+#else
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1INFO_2JI",
+#endif
 #ifndef JNI64
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_DEVMODEA_2II",
 #else

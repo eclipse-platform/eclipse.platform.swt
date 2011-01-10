@@ -547,6 +547,54 @@ JNIEXPORT jint JNICALL OS_NATIVE(CANDIDATEFORM_1sizeof)
 }
 #endif
 
+#ifndef NO_CERT_1CONTEXT_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(CERT_1CONTEXT_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CERT_1CONTEXT_1sizeof_FUNC);
+	rc = (jint)CERT_CONTEXT_sizeof();
+	OS_NATIVE_EXIT(env, that, CERT_1CONTEXT_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CERT_1INFO_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(CERT_1INFO_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CERT_1INFO_1sizeof_FUNC);
+	rc = (jint)CERT_INFO_sizeof();
+	OS_NATIVE_EXIT(env, that, CERT_1INFO_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CERT_1NAME_1BLOB_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(CERT_1NAME_1BLOB_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CERT_1NAME_1BLOB_1sizeof_FUNC);
+	rc = (jint)CERT_NAME_BLOB_sizeof();
+	OS_NATIVE_EXIT(env, that, CERT_1NAME_1BLOB_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CERT_1PUBLIC_1KEY_1INFO_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(CERT_1PUBLIC_1KEY_1INFO_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CERT_1PUBLIC_1KEY_1INFO_1sizeof_FUNC);
+	rc = (jint)CERT_PUBLIC_KEY_INFO_sizeof();
+	OS_NATIVE_EXIT(env, that, CERT_1PUBLIC_1KEY_1INFO_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CHOOSECOLOR_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(CHOOSECOLOR_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -603,6 +651,54 @@ JNIEXPORT jint JNICALL OS_NATIVE(CREATESTRUCT_1sizeof)
 	OS_NATIVE_ENTER(env, that, CREATESTRUCT_1sizeof_FUNC);
 	rc = (jint)CREATESTRUCT_sizeof();
 	OS_NATIVE_EXIT(env, that, CREATESTRUCT_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CRYPT_1ALGORITHM_1IDENTIFIER_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(CRYPT_1ALGORITHM_1IDENTIFIER_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CRYPT_1ALGORITHM_1IDENTIFIER_1sizeof_FUNC);
+	rc = (jint)CRYPT_ALGORITHM_IDENTIFIER_sizeof();
+	OS_NATIVE_EXIT(env, that, CRYPT_1ALGORITHM_1IDENTIFIER_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CRYPT_1BIT_1BLOB_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(CRYPT_1BIT_1BLOB_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CRYPT_1BIT_1BLOB_1sizeof_FUNC);
+	rc = (jint)CRYPT_BIT_BLOB_sizeof();
+	OS_NATIVE_EXIT(env, that, CRYPT_1BIT_1BLOB_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CRYPT_1INTEGER_1BLOB_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(CRYPT_1INTEGER_1BLOB_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CRYPT_1INTEGER_1BLOB_1sizeof_FUNC);
+	rc = (jint)CRYPT_INTEGER_BLOB_sizeof();
+	OS_NATIVE_EXIT(env, that, CRYPT_1INTEGER_1BLOB_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CRYPT_1OBJID_1BLOB_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(CRYPT_1OBJID_1BLOB_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CRYPT_1OBJID_1BLOB_1sizeof_FUNC);
+	rc = (jint)CRYPT_OBJID_BLOB_sizeof();
+	OS_NATIVE_EXIT(env, that, CRYPT_1OBJID_1BLOB_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -689,6 +785,44 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CallWindowProcW)
 	OS_NATIVE_ENTER(env, that, CallWindowProcW_FUNC);
 	rc = (jintLong)CallWindowProcW((WNDPROC)arg0, (HWND)arg1, arg2, arg3, arg4);
 	OS_NATIVE_EXIT(env, that, CallWindowProcW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CertNameToStrA
+JNIEXPORT jint JNICALL OS_NATIVE(CertNameToStrA)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jbyteArray arg3, jint arg4)
+{
+	CERT_NAME_BLOB _arg1, *lparg1=NULL;
+	jbyte *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CertNameToStrA_FUNC);
+	if (arg1) if ((lparg1 = getCERT_NAME_BLOBFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jint)CertNameToStrA(arg0, (PCERT_NAME_BLOB)lparg1, arg2, (LPSTR)lparg3, arg4);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg1 && lparg1) setCERT_NAME_BLOBFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CertNameToStrA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CertNameToStrW
+JNIEXPORT jint JNICALL OS_NATIVE(CertNameToStrW)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jcharArray arg3, jint arg4)
+{
+	CERT_NAME_BLOB _arg1, *lparg1=NULL;
+	jchar *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CertNameToStrW_FUNC);
+	if (arg1) if ((lparg1 = getCERT_NAME_BLOBFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jint)CertNameToStrW(arg0, (PCERT_NAME_BLOB)lparg1, arg2, (LPWSTR)lparg3, arg4);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
+	if (arg1 && lparg1) setCERT_NAME_BLOBFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CertNameToStrW_FUNC);
 	return rc;
 }
 #endif
@@ -3193,6 +3327,25 @@ JNIEXPORT jint JNICALL OS_NATIVE(FLICK_1POINT_1sizeof)
 	OS_NATIVE_ENTER(env, that, FLICK_1POINT_1sizeof_FUNC);
 	rc = (jint)FLICK_POINT_sizeof();
 	OS_NATIVE_EXIT(env, that, FLICK_1POINT_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FileTimeToSystemTime
+JNIEXPORT jboolean JNICALL OS_NATIVE(FileTimeToSystemTime)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1)
+{
+	FILETIME _arg0, *lparg0=NULL;
+	SYSTEMTIME _arg1, *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, FileTimeToSystemTime_FUNC);
+	if (arg0) if ((lparg0 = getFILETIMEFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getSYSTEMTIMEFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jboolean)FileTimeToSystemTime(lparg0, lparg1);
+fail:
+	if (arg1 && lparg1) setSYSTEMTIMEFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setFILETIMEFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, FileTimeToSystemTime_FUNC);
 	return rc;
 }
 #endif
@@ -9622,6 +9775,56 @@ fail:
 	}
 	if (arg0 && lparg0) setBITMAPINFOHEADERFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI_FUNC);
+}
+#endif
+
+#if (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1CONTEXT_2II) && !defined(JNI64)) || (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1CONTEXT_2JI) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1CONTEXT_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jint arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1CONTEXT_2JI)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jint arg2)
+#endif
+{
+	CERT_CONTEXT _arg0, *lparg0=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1CONTEXT_2II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1CONTEXT_2JI_FUNC);
+#endif
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setCERT_CONTEXTFields(env, arg0, lparg0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1CONTEXT_2II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1CONTEXT_2JI_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1INFO_2II) && !defined(JNI64)) || (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1INFO_2JI) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1INFO_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jint arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1INFO_2JI)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jint arg2)
+#endif
+{
+	CERT_INFO _arg0, *lparg0=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1INFO_2II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1INFO_2JI_FUNC);
+#endif
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setCERT_INFOFields(env, arg0, lparg0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1INFO_2II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1INFO_2JI_FUNC);
+#endif
 }
 #endif
 

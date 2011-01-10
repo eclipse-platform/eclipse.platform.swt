@@ -56,11 +56,19 @@ typedef enum {
 	BufferedPaintSetAlpha_FUNC,
 	BufferedPaintUnInit_FUNC,
 	CANDIDATEFORM_1sizeof_FUNC,
+	CERT_1CONTEXT_1sizeof_FUNC,
+	CERT_1INFO_1sizeof_FUNC,
+	CERT_1NAME_1BLOB_1sizeof_FUNC,
+	CERT_1PUBLIC_1KEY_1INFO_1sizeof_FUNC,
 	CHOOSECOLOR_1sizeof_FUNC,
 	CHOOSEFONT_1sizeof_FUNC,
 	COMBOBOXINFO_1sizeof_FUNC,
 	COMPOSITIONFORM_1sizeof_FUNC,
 	CREATESTRUCT_1sizeof_FUNC,
+	CRYPT_1ALGORITHM_1IDENTIFIER_1sizeof_FUNC,
+	CRYPT_1BIT_1BLOB_1sizeof_FUNC,
+	CRYPT_1INTEGER_1BLOB_1sizeof_FUNC,
+	CRYPT_1OBJID_1BLOB_1sizeof_FUNC,
 #ifndef JNI64
 	Call__I_FUNC,
 #else
@@ -74,6 +82,8 @@ typedef enum {
 	CallNextHookEx_FUNC,
 	CallWindowProcA_FUNC,
 	CallWindowProcW_FUNC,
+	CertNameToStrA_FUNC,
+	CertNameToStrW_FUNC,
 	CharLowerA_FUNC,
 	CharLowerW_FUNC,
 	CharUpperA_FUNC,
@@ -243,6 +253,7 @@ typedef enum {
 	FILETIME_1sizeof_FUNC,
 	FLICK_1DATA_1sizeof_FUNC,
 	FLICK_1POINT_1sizeof_FUNC,
+	FileTimeToSystemTime_FUNC,
 	FillPath_FUNC,
 	FillRect_FUNC,
 	FindWindowA_FUNC,
@@ -861,6 +872,16 @@ typedef enum {
 	MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2JI_FUNC,
 #endif
 	MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI_FUNC,
+#ifndef JNI64
+	MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1CONTEXT_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1CONTEXT_2JI_FUNC,
+#endif
+#ifndef JNI64
+	MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1INFO_2II_FUNC,
+#else
+	MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1INFO_2JI_FUNC,
+#endif
 #ifndef JNI64
 	MoveMemory__Lorg_eclipse_swt_internal_win32_DEVMODEA_2II_FUNC,
 #else

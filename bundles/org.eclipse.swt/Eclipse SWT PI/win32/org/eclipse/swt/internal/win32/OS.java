@@ -438,6 +438,7 @@ public class OS extends C {
 	public static final int CDRF_NOTIFYSUBITEMDRAW = 0x00000020;
 	public static final int CDRF_SKIPDEFAULT = 0x04;
 	public static final int CDRF_SKIPPOSTPAINT = 0x00000100;
+	public static final int CERT_SIMPLE_NAME_STR = 1;
 	public static final int CFE_AUTOCOLOR = 0x40000000;
 	public static final int CFE_ITALIC = 0x2;
 	public static final int CFE_STRIKEOUT = 0x8;
@@ -2219,6 +2220,7 @@ public class OS extends C {
 	public static final int WM_XBUTTONDBLCLK = 0x020D;
 	public static final int XBUTTON1 = 0x1;
 	public static final int XBUTTON2 = 0x2;
+	public static final int X509_ASN_ENCODING = 1;
 	
 public static int VERSION (int major, int minor) {
 	return major << 16 | minor;
@@ -2234,11 +2236,19 @@ public static final native int BP_PAINTPARAMS_sizeof ();
 public static final native int BROWSEINFO_sizeof ();
 public static final native int BUTTON_IMAGELIST_sizeof ();
 public static final native int CANDIDATEFORM_sizeof ();
+public static final native int CERT_CONTEXT_sizeof ();
+public static final native int CERT_INFO_sizeof ();
+public static final native int CERT_NAME_BLOB_sizeof ();
+public static final native int CERT_PUBLIC_KEY_INFO_sizeof ();
 public static final native int CHOOSECOLOR_sizeof ();
 public static final native int CHOOSEFONT_sizeof ();
 public static final native int COMBOBOXINFO_sizeof ();
 public static final native int COMPOSITIONFORM_sizeof ();
 public static final native int CREATESTRUCT_sizeof ();
+public static final native int CRYPT_ALGORITHM_IDENTIFIER_sizeof ();
+public static final native int CRYPT_BIT_BLOB_sizeof ();
+public static final native int CRYPT_INTEGER_BLOB_sizeof ();
+public static final native int CRYPT_OBJID_BLOB_sizeof ();
 public static final native int DEVMODEA_sizeof ();
 public static final native int DEVMODEW_sizeof ();
 public static final native int DIBSECTION_sizeof ();
@@ -2406,6 +2416,15 @@ public static final int AssocQueryString(int flags, int str, TCHAR pszAssoc, TCH
 public static final int /*long*/ CallWindowProc (int /*long*/ lpPrevWndFunc, int /*long*/ hWnd, int Msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (IsUnicode) return CallWindowProcW (lpPrevWndFunc, hWnd, Msg, wParam, lParam);
 	return CallWindowProcA (lpPrevWndFunc, hWnd, Msg, wParam, lParam);
+}
+
+public static final int CertNameToStr (int dwCertEncodingType, CERT_NAME_BLOB pName, int dwStrType, TCHAR psz, int csz) {
+	if (IsUnicode) {
+		char [] psz1 = psz == null ? null : psz.chars;
+		return CertNameToStrW (dwCertEncodingType, pName, dwStrType, psz1, csz);
+	}
+	byte [] psz1 = psz == null ? null : psz.bytes;
+	return CertNameToStrA (dwCertEncodingType, pName, dwStrType, psz1, csz);
 }
 
 public static final int /*long*/ CharUpper (int /*long*/ ch) {
@@ -3546,6 +3565,16 @@ public static final native int /*long*/ CallWindowProcW (int /*long*/ lpPrevWndF
  * @param hWnd cast=(HWND)
  */
 public static final native int /*long*/ CallWindowProcA (int /*long*/ lpPrevWndFunc, int /*long*/ hWnd, int Msg, int /*long*/ wParam, int /*long*/ lParam);
+/**
+ * @param pName cast=(PCERT_NAME_BLOB)
+ * @param psz cast=(LPWSTR)
+ */
+public static final native int CertNameToStrW(int dwCertEncodingType, CERT_NAME_BLOB pName, int dwStrType, char[] psz, int csz);
+/**
+ * @param pName cast=(PCERT_NAME_BLOB)
+ * @param psz cast=(LPSTR)
+ */
+public static final native int CertNameToStrA(int dwCertEncodingType, CERT_NAME_BLOB pName, int dwStrType, byte[] psz, int csz);
 /** @param ch cast=(LPWSTR) */
 public static final native int /*long*/ CharLowerW (int /*long*/ ch);
 /** @param ch cast=(LPSTR) */
@@ -4064,6 +4093,7 @@ public static final native int ExtractIconExW (char [] lpszFile, int nIconIndex,
  * @param phiconSmall cast=(HICON FAR *)
  */
 public static final native int ExtractIconExA (byte [] lpszFile, int nIconIndex, int /*long*/ [] phiconLarge, int /*long*/ [] phiconSmall, int nIcons);
+public static final native boolean FileTimeToSystemTime (FILETIME lpFileTime, SYSTEMTIME lpSystemTime);
 /**
  * @param hDC cast=(HDC)
  * @param lprc flags=no_out
@@ -5199,6 +5229,16 @@ public static final native void MoveMemory (BITMAPINFOHEADER Destination, byte [
  * @param Source cast=(CONST VOID *),flags=no_out critical
  */
 public static final native void MoveMemory (BITMAPINFOHEADER Destination, int /*long*/ Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
+public static final native void MoveMemory (CERT_CONTEXT Destination, int /*long*/ Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
+public static final native void MoveMemory (CERT_INFO Destination, int /*long*/ Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)

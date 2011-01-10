@@ -444,6 +444,247 @@ void setCANDIDATEFORMFields(JNIEnv *env, jobject lpObject, CANDIDATEFORM *lpStru
 }
 #endif
 
+#ifndef NO_CERT_CONTEXT
+typedef struct CERT_CONTEXT_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID dwCertEncodingType, pbCertEncoded, cbCertEncoded, pCertInfo, hCertStore;
+} CERT_CONTEXT_FID_CACHE;
+
+CERT_CONTEXT_FID_CACHE CERT_CONTEXTFc;
+
+void cacheCERT_CONTEXTFields(JNIEnv *env, jobject lpObject)
+{
+	if (CERT_CONTEXTFc.cached) return;
+	CERT_CONTEXTFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CERT_CONTEXTFc.dwCertEncodingType = (*env)->GetFieldID(env, CERT_CONTEXTFc.clazz, "dwCertEncodingType", "I");
+	CERT_CONTEXTFc.pbCertEncoded = (*env)->GetFieldID(env, CERT_CONTEXTFc.clazz, "pbCertEncoded", I_J);
+	CERT_CONTEXTFc.cbCertEncoded = (*env)->GetFieldID(env, CERT_CONTEXTFc.clazz, "cbCertEncoded", "I");
+	CERT_CONTEXTFc.pCertInfo = (*env)->GetFieldID(env, CERT_CONTEXTFc.clazz, "pCertInfo", I_J);
+	CERT_CONTEXTFc.hCertStore = (*env)->GetFieldID(env, CERT_CONTEXTFc.clazz, "hCertStore", I_J);
+	CERT_CONTEXTFc.cached = 1;
+}
+
+CERT_CONTEXT *getCERT_CONTEXTFields(JNIEnv *env, jobject lpObject, CERT_CONTEXT *lpStruct)
+{
+	if (!CERT_CONTEXTFc.cached) cacheCERT_CONTEXTFields(env, lpObject);
+	lpStruct->dwCertEncodingType = (*env)->GetIntField(env, lpObject, CERT_CONTEXTFc.dwCertEncodingType);
+	lpStruct->pbCertEncoded = (BYTE *)(*env)->GetIntLongField(env, lpObject, CERT_CONTEXTFc.pbCertEncoded);
+	lpStruct->cbCertEncoded = (*env)->GetIntField(env, lpObject, CERT_CONTEXTFc.cbCertEncoded);
+	lpStruct->pCertInfo = (PCERT_INFO)(*env)->GetIntLongField(env, lpObject, CERT_CONTEXTFc.pCertInfo);
+	lpStruct->hCertStore = (HCERTSTORE)(*env)->GetIntLongField(env, lpObject, CERT_CONTEXTFc.hCertStore);
+	return lpStruct;
+}
+
+void setCERT_CONTEXTFields(JNIEnv *env, jobject lpObject, CERT_CONTEXT *lpStruct)
+{
+	if (!CERT_CONTEXTFc.cached) cacheCERT_CONTEXTFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, CERT_CONTEXTFc.dwCertEncodingType, (jint)lpStruct->dwCertEncodingType);
+	(*env)->SetIntLongField(env, lpObject, CERT_CONTEXTFc.pbCertEncoded, (jintLong)lpStruct->pbCertEncoded);
+	(*env)->SetIntField(env, lpObject, CERT_CONTEXTFc.cbCertEncoded, (jint)lpStruct->cbCertEncoded);
+	(*env)->SetIntLongField(env, lpObject, CERT_CONTEXTFc.pCertInfo, (jintLong)lpStruct->pCertInfo);
+	(*env)->SetIntLongField(env, lpObject, CERT_CONTEXTFc.hCertStore, (jintLong)lpStruct->hCertStore);
+}
+#endif
+
+#ifndef NO_CERT_INFO
+typedef struct CERT_INFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID dwVersion, SerialNumber, SignatureAlgorithm, Issuer, NotBefore, NotAfter, Subject, SubjectPublicKeyInfo, IssuerUniqueId, SubjectUniqueId, cExtension, rgExtension;
+} CERT_INFO_FID_CACHE;
+
+CERT_INFO_FID_CACHE CERT_INFOFc;
+
+void cacheCERT_INFOFields(JNIEnv *env, jobject lpObject)
+{
+	if (CERT_INFOFc.cached) return;
+	CERT_INFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CERT_INFOFc.dwVersion = (*env)->GetFieldID(env, CERT_INFOFc.clazz, "dwVersion", "I");
+	CERT_INFOFc.SerialNumber = (*env)->GetFieldID(env, CERT_INFOFc.clazz, "SerialNumber", "Lorg/eclipse/swt/internal/win32/CRYPT_INTEGER_BLOB;");
+	CERT_INFOFc.SignatureAlgorithm = (*env)->GetFieldID(env, CERT_INFOFc.clazz, "SignatureAlgorithm", "Lorg/eclipse/swt/internal/win32/CRYPT_ALGORITHM_IDENTIFIER;");
+	CERT_INFOFc.Issuer = (*env)->GetFieldID(env, CERT_INFOFc.clazz, "Issuer", "Lorg/eclipse/swt/internal/win32/CERT_NAME_BLOB;");
+	CERT_INFOFc.NotBefore = (*env)->GetFieldID(env, CERT_INFOFc.clazz, "NotBefore", "Lorg/eclipse/swt/internal/win32/FILETIME;");
+	CERT_INFOFc.NotAfter = (*env)->GetFieldID(env, CERT_INFOFc.clazz, "NotAfter", "Lorg/eclipse/swt/internal/win32/FILETIME;");
+	CERT_INFOFc.Subject = (*env)->GetFieldID(env, CERT_INFOFc.clazz, "Subject", "Lorg/eclipse/swt/internal/win32/CERT_NAME_BLOB;");
+	CERT_INFOFc.SubjectPublicKeyInfo = (*env)->GetFieldID(env, CERT_INFOFc.clazz, "SubjectPublicKeyInfo", "Lorg/eclipse/swt/internal/win32/CERT_PUBLIC_KEY_INFO;");
+	CERT_INFOFc.IssuerUniqueId = (*env)->GetFieldID(env, CERT_INFOFc.clazz, "IssuerUniqueId", "Lorg/eclipse/swt/internal/win32/CRYPT_BIT_BLOB;");
+	CERT_INFOFc.SubjectUniqueId = (*env)->GetFieldID(env, CERT_INFOFc.clazz, "SubjectUniqueId", "Lorg/eclipse/swt/internal/win32/CRYPT_BIT_BLOB;");
+	CERT_INFOFc.cExtension = (*env)->GetFieldID(env, CERT_INFOFc.clazz, "cExtension", "I");
+	CERT_INFOFc.rgExtension = (*env)->GetFieldID(env, CERT_INFOFc.clazz, "rgExtension", I_J);
+	CERT_INFOFc.cached = 1;
+}
+
+CERT_INFO *getCERT_INFOFields(JNIEnv *env, jobject lpObject, CERT_INFO *lpStruct)
+{
+	if (!CERT_INFOFc.cached) cacheCERT_INFOFields(env, lpObject);
+	lpStruct->dwVersion = (*env)->GetIntField(env, lpObject, CERT_INFOFc.dwVersion);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.SerialNumber);
+	if (lpObject1 != NULL) getCRYPT_INTEGER_BLOBFields(env, lpObject1, &lpStruct->SerialNumber);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.SignatureAlgorithm);
+	if (lpObject1 != NULL) getCRYPT_ALGORITHM_IDENTIFIERFields(env, lpObject1, &lpStruct->SignatureAlgorithm);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.Issuer);
+	if (lpObject1 != NULL) getCERT_NAME_BLOBFields(env, lpObject1, &lpStruct->Issuer);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.NotBefore);
+	if (lpObject1 != NULL) getFILETIMEFields(env, lpObject1, &lpStruct->NotBefore);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.NotAfter);
+	if (lpObject1 != NULL) getFILETIMEFields(env, lpObject1, &lpStruct->NotAfter);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.Subject);
+	if (lpObject1 != NULL) getCERT_NAME_BLOBFields(env, lpObject1, &lpStruct->Subject);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.SubjectPublicKeyInfo);
+	if (lpObject1 != NULL) getCERT_PUBLIC_KEY_INFOFields(env, lpObject1, &lpStruct->SubjectPublicKeyInfo);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.IssuerUniqueId);
+	if (lpObject1 != NULL) getCRYPT_BIT_BLOBFields(env, lpObject1, &lpStruct->IssuerUniqueId);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.SubjectUniqueId);
+	if (lpObject1 != NULL) getCRYPT_BIT_BLOBFields(env, lpObject1, &lpStruct->SubjectUniqueId);
+	}
+	lpStruct->cExtension = (*env)->GetIntField(env, lpObject, CERT_INFOFc.cExtension);
+	lpStruct->rgExtension = (PCERT_EXTENSION)(*env)->GetIntLongField(env, lpObject, CERT_INFOFc.rgExtension);
+	return lpStruct;
+}
+
+void setCERT_INFOFields(JNIEnv *env, jobject lpObject, CERT_INFO *lpStruct)
+{
+	if (!CERT_INFOFc.cached) cacheCERT_INFOFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, CERT_INFOFc.dwVersion, (jint)lpStruct->dwVersion);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.SerialNumber);
+	if (lpObject1 != NULL) setCRYPT_INTEGER_BLOBFields(env, lpObject1, &lpStruct->SerialNumber);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.SignatureAlgorithm);
+	if (lpObject1 != NULL) setCRYPT_ALGORITHM_IDENTIFIERFields(env, lpObject1, &lpStruct->SignatureAlgorithm);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.Issuer);
+	if (lpObject1 != NULL) setCERT_NAME_BLOBFields(env, lpObject1, &lpStruct->Issuer);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.NotBefore);
+	if (lpObject1 != NULL) setFILETIMEFields(env, lpObject1, &lpStruct->NotBefore);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.NotAfter);
+	if (lpObject1 != NULL) setFILETIMEFields(env, lpObject1, &lpStruct->NotAfter);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.Subject);
+	if (lpObject1 != NULL) setCERT_NAME_BLOBFields(env, lpObject1, &lpStruct->Subject);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.SubjectPublicKeyInfo);
+	if (lpObject1 != NULL) setCERT_PUBLIC_KEY_INFOFields(env, lpObject1, &lpStruct->SubjectPublicKeyInfo);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.IssuerUniqueId);
+	if (lpObject1 != NULL) setCRYPT_BIT_BLOBFields(env, lpObject1, &lpStruct->IssuerUniqueId);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_INFOFc.SubjectUniqueId);
+	if (lpObject1 != NULL) setCRYPT_BIT_BLOBFields(env, lpObject1, &lpStruct->SubjectUniqueId);
+	}
+	(*env)->SetIntField(env, lpObject, CERT_INFOFc.cExtension, (jint)lpStruct->cExtension);
+	(*env)->SetIntLongField(env, lpObject, CERT_INFOFc.rgExtension, (jintLong)lpStruct->rgExtension);
+}
+#endif
+
+#ifndef NO_CERT_NAME_BLOB
+typedef struct CERT_NAME_BLOB_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbData, pbData;
+} CERT_NAME_BLOB_FID_CACHE;
+
+CERT_NAME_BLOB_FID_CACHE CERT_NAME_BLOBFc;
+
+void cacheCERT_NAME_BLOBFields(JNIEnv *env, jobject lpObject)
+{
+	if (CERT_NAME_BLOBFc.cached) return;
+	CERT_NAME_BLOBFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CERT_NAME_BLOBFc.cbData = (*env)->GetFieldID(env, CERT_NAME_BLOBFc.clazz, "cbData", "I");
+	CERT_NAME_BLOBFc.pbData = (*env)->GetFieldID(env, CERT_NAME_BLOBFc.clazz, "pbData", I_J);
+	CERT_NAME_BLOBFc.cached = 1;
+}
+
+CERT_NAME_BLOB *getCERT_NAME_BLOBFields(JNIEnv *env, jobject lpObject, CERT_NAME_BLOB *lpStruct)
+{
+	if (!CERT_NAME_BLOBFc.cached) cacheCERT_NAME_BLOBFields(env, lpObject);
+	lpStruct->cbData = (*env)->GetIntField(env, lpObject, CERT_NAME_BLOBFc.cbData);
+	lpStruct->pbData = (BYTE *)(*env)->GetIntLongField(env, lpObject, CERT_NAME_BLOBFc.pbData);
+	return lpStruct;
+}
+
+void setCERT_NAME_BLOBFields(JNIEnv *env, jobject lpObject, CERT_NAME_BLOB *lpStruct)
+{
+	if (!CERT_NAME_BLOBFc.cached) cacheCERT_NAME_BLOBFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, CERT_NAME_BLOBFc.cbData, (jint)lpStruct->cbData);
+	(*env)->SetIntLongField(env, lpObject, CERT_NAME_BLOBFc.pbData, (jintLong)lpStruct->pbData);
+}
+#endif
+
+#ifndef NO_CERT_PUBLIC_KEY_INFO
+typedef struct CERT_PUBLIC_KEY_INFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID Algorithm, PublicKey;
+} CERT_PUBLIC_KEY_INFO_FID_CACHE;
+
+CERT_PUBLIC_KEY_INFO_FID_CACHE CERT_PUBLIC_KEY_INFOFc;
+
+void cacheCERT_PUBLIC_KEY_INFOFields(JNIEnv *env, jobject lpObject)
+{
+	if (CERT_PUBLIC_KEY_INFOFc.cached) return;
+	CERT_PUBLIC_KEY_INFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CERT_PUBLIC_KEY_INFOFc.Algorithm = (*env)->GetFieldID(env, CERT_PUBLIC_KEY_INFOFc.clazz, "Algorithm", "Lorg/eclipse/swt/internal/win32/CRYPT_ALGORITHM_IDENTIFIER;");
+	CERT_PUBLIC_KEY_INFOFc.PublicKey = (*env)->GetFieldID(env, CERT_PUBLIC_KEY_INFOFc.clazz, "PublicKey", "Lorg/eclipse/swt/internal/win32/CRYPT_BIT_BLOB;");
+	CERT_PUBLIC_KEY_INFOFc.cached = 1;
+}
+
+CERT_PUBLIC_KEY_INFO *getCERT_PUBLIC_KEY_INFOFields(JNIEnv *env, jobject lpObject, CERT_PUBLIC_KEY_INFO *lpStruct)
+{
+	if (!CERT_PUBLIC_KEY_INFOFc.cached) cacheCERT_PUBLIC_KEY_INFOFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_PUBLIC_KEY_INFOFc.Algorithm);
+	if (lpObject1 != NULL) getCRYPT_ALGORITHM_IDENTIFIERFields(env, lpObject1, &lpStruct->Algorithm);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_PUBLIC_KEY_INFOFc.PublicKey);
+	if (lpObject1 != NULL) getCRYPT_BIT_BLOBFields(env, lpObject1, &lpStruct->PublicKey);
+	}
+	return lpStruct;
+}
+
+void setCERT_PUBLIC_KEY_INFOFields(JNIEnv *env, jobject lpObject, CERT_PUBLIC_KEY_INFO *lpStruct)
+{
+	if (!CERT_PUBLIC_KEY_INFOFc.cached) cacheCERT_PUBLIC_KEY_INFOFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_PUBLIC_KEY_INFOFc.Algorithm);
+	if (lpObject1 != NULL) setCRYPT_ALGORITHM_IDENTIFIERFields(env, lpObject1, &lpStruct->Algorithm);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CERT_PUBLIC_KEY_INFOFc.PublicKey);
+	if (lpObject1 != NULL) setCRYPT_BIT_BLOBFields(env, lpObject1, &lpStruct->PublicKey);
+	}
+}
+#endif
+
 #ifndef NO_CHOOSECOLOR
 typedef struct CHOOSECOLOR_FID_CACHE {
 	int cached;
@@ -749,6 +990,151 @@ void setCREATESTRUCTFields(JNIEnv *env, jobject lpObject, CREATESTRUCT *lpStruct
 	(*env)->SetIntLongField(env, lpObject, CREATESTRUCTFc.lpszName, (jintLong)lpStruct->lpszName);
 	(*env)->SetIntLongField(env, lpObject, CREATESTRUCTFc.lpszClass, (jintLong)lpStruct->lpszClass);
 	(*env)->SetIntField(env, lpObject, CREATESTRUCTFc.dwExStyle, (jint)lpStruct->dwExStyle);
+}
+#endif
+
+#ifndef NO_CRYPT_ALGORITHM_IDENTIFIER
+typedef struct CRYPT_ALGORITHM_IDENTIFIER_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID pszObjId, Parameters;
+} CRYPT_ALGORITHM_IDENTIFIER_FID_CACHE;
+
+CRYPT_ALGORITHM_IDENTIFIER_FID_CACHE CRYPT_ALGORITHM_IDENTIFIERFc;
+
+void cacheCRYPT_ALGORITHM_IDENTIFIERFields(JNIEnv *env, jobject lpObject)
+{
+	if (CRYPT_ALGORITHM_IDENTIFIERFc.cached) return;
+	CRYPT_ALGORITHM_IDENTIFIERFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CRYPT_ALGORITHM_IDENTIFIERFc.pszObjId = (*env)->GetFieldID(env, CRYPT_ALGORITHM_IDENTIFIERFc.clazz, "pszObjId", I_J);
+	CRYPT_ALGORITHM_IDENTIFIERFc.Parameters = (*env)->GetFieldID(env, CRYPT_ALGORITHM_IDENTIFIERFc.clazz, "Parameters", "Lorg/eclipse/swt/internal/win32/CRYPT_OBJID_BLOB;");
+	CRYPT_ALGORITHM_IDENTIFIERFc.cached = 1;
+}
+
+CRYPT_ALGORITHM_IDENTIFIER *getCRYPT_ALGORITHM_IDENTIFIERFields(JNIEnv *env, jobject lpObject, CRYPT_ALGORITHM_IDENTIFIER *lpStruct)
+{
+	if (!CRYPT_ALGORITHM_IDENTIFIERFc.cached) cacheCRYPT_ALGORITHM_IDENTIFIERFields(env, lpObject);
+	lpStruct->pszObjId = (LPSTR)(*env)->GetIntLongField(env, lpObject, CRYPT_ALGORITHM_IDENTIFIERFc.pszObjId);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CRYPT_ALGORITHM_IDENTIFIERFc.Parameters);
+	if (lpObject1 != NULL) getCRYPT_OBJID_BLOBFields(env, lpObject1, &lpStruct->Parameters);
+	}
+	return lpStruct;
+}
+
+void setCRYPT_ALGORITHM_IDENTIFIERFields(JNIEnv *env, jobject lpObject, CRYPT_ALGORITHM_IDENTIFIER *lpStruct)
+{
+	if (!CRYPT_ALGORITHM_IDENTIFIERFc.cached) cacheCRYPT_ALGORITHM_IDENTIFIERFields(env, lpObject);
+	(*env)->SetIntLongField(env, lpObject, CRYPT_ALGORITHM_IDENTIFIERFc.pszObjId, (jintLong)lpStruct->pszObjId);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, CRYPT_ALGORITHM_IDENTIFIERFc.Parameters);
+	if (lpObject1 != NULL) setCRYPT_OBJID_BLOBFields(env, lpObject1, &lpStruct->Parameters);
+	}
+}
+#endif
+
+#ifndef NO_CRYPT_BIT_BLOB
+typedef struct CRYPT_BIT_BLOB_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbData, pbData, cUnusedBits;
+} CRYPT_BIT_BLOB_FID_CACHE;
+
+CRYPT_BIT_BLOB_FID_CACHE CRYPT_BIT_BLOBFc;
+
+void cacheCRYPT_BIT_BLOBFields(JNIEnv *env, jobject lpObject)
+{
+	if (CRYPT_BIT_BLOBFc.cached) return;
+	CRYPT_BIT_BLOBFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CRYPT_BIT_BLOBFc.cbData = (*env)->GetFieldID(env, CRYPT_BIT_BLOBFc.clazz, "cbData", "I");
+	CRYPT_BIT_BLOBFc.pbData = (*env)->GetFieldID(env, CRYPT_BIT_BLOBFc.clazz, "pbData", I_J);
+	CRYPT_BIT_BLOBFc.cUnusedBits = (*env)->GetFieldID(env, CRYPT_BIT_BLOBFc.clazz, "cUnusedBits", "I");
+	CRYPT_BIT_BLOBFc.cached = 1;
+}
+
+CRYPT_BIT_BLOB *getCRYPT_BIT_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_BIT_BLOB *lpStruct)
+{
+	if (!CRYPT_BIT_BLOBFc.cached) cacheCRYPT_BIT_BLOBFields(env, lpObject);
+	lpStruct->cbData = (*env)->GetIntField(env, lpObject, CRYPT_BIT_BLOBFc.cbData);
+	lpStruct->pbData = (BYTE *)(*env)->GetIntLongField(env, lpObject, CRYPT_BIT_BLOBFc.pbData);
+	lpStruct->cUnusedBits = (*env)->GetIntField(env, lpObject, CRYPT_BIT_BLOBFc.cUnusedBits);
+	return lpStruct;
+}
+
+void setCRYPT_BIT_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_BIT_BLOB *lpStruct)
+{
+	if (!CRYPT_BIT_BLOBFc.cached) cacheCRYPT_BIT_BLOBFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, CRYPT_BIT_BLOBFc.cbData, (jint)lpStruct->cbData);
+	(*env)->SetIntLongField(env, lpObject, CRYPT_BIT_BLOBFc.pbData, (jintLong)lpStruct->pbData);
+	(*env)->SetIntField(env, lpObject, CRYPT_BIT_BLOBFc.cUnusedBits, (jint)lpStruct->cUnusedBits);
+}
+#endif
+
+#ifndef NO_CRYPT_INTEGER_BLOB
+typedef struct CRYPT_INTEGER_BLOB_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbData, pbData;
+} CRYPT_INTEGER_BLOB_FID_CACHE;
+
+CRYPT_INTEGER_BLOB_FID_CACHE CRYPT_INTEGER_BLOBFc;
+
+void cacheCRYPT_INTEGER_BLOBFields(JNIEnv *env, jobject lpObject)
+{
+	if (CRYPT_INTEGER_BLOBFc.cached) return;
+	CRYPT_INTEGER_BLOBFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CRYPT_INTEGER_BLOBFc.cbData = (*env)->GetFieldID(env, CRYPT_INTEGER_BLOBFc.clazz, "cbData", "I");
+	CRYPT_INTEGER_BLOBFc.pbData = (*env)->GetFieldID(env, CRYPT_INTEGER_BLOBFc.clazz, "pbData", I_J);
+	CRYPT_INTEGER_BLOBFc.cached = 1;
+}
+
+CRYPT_INTEGER_BLOB *getCRYPT_INTEGER_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_INTEGER_BLOB *lpStruct)
+{
+	if (!CRYPT_INTEGER_BLOBFc.cached) cacheCRYPT_INTEGER_BLOBFields(env, lpObject);
+	lpStruct->cbData = (*env)->GetIntField(env, lpObject, CRYPT_INTEGER_BLOBFc.cbData);
+	lpStruct->pbData = (BYTE *)(*env)->GetIntLongField(env, lpObject, CRYPT_INTEGER_BLOBFc.pbData);
+	return lpStruct;
+}
+
+void setCRYPT_INTEGER_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_INTEGER_BLOB *lpStruct)
+{
+	if (!CRYPT_INTEGER_BLOBFc.cached) cacheCRYPT_INTEGER_BLOBFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, CRYPT_INTEGER_BLOBFc.cbData, (jint)lpStruct->cbData);
+	(*env)->SetIntLongField(env, lpObject, CRYPT_INTEGER_BLOBFc.pbData, (jintLong)lpStruct->pbData);
+}
+#endif
+
+#ifndef NO_CRYPT_OBJID_BLOB
+typedef struct CRYPT_OBJID_BLOB_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbData, pbData;
+} CRYPT_OBJID_BLOB_FID_CACHE;
+
+CRYPT_OBJID_BLOB_FID_CACHE CRYPT_OBJID_BLOBFc;
+
+void cacheCRYPT_OBJID_BLOBFields(JNIEnv *env, jobject lpObject)
+{
+	if (CRYPT_OBJID_BLOBFc.cached) return;
+	CRYPT_OBJID_BLOBFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CRYPT_OBJID_BLOBFc.cbData = (*env)->GetFieldID(env, CRYPT_OBJID_BLOBFc.clazz, "cbData", "I");
+	CRYPT_OBJID_BLOBFc.pbData = (*env)->GetFieldID(env, CRYPT_OBJID_BLOBFc.clazz, "pbData", I_J);
+	CRYPT_OBJID_BLOBFc.cached = 1;
+}
+
+CRYPT_OBJID_BLOB *getCRYPT_OBJID_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_OBJID_BLOB *lpStruct)
+{
+	if (!CRYPT_OBJID_BLOBFc.cached) cacheCRYPT_OBJID_BLOBFields(env, lpObject);
+	lpStruct->cbData = (*env)->GetIntField(env, lpObject, CRYPT_OBJID_BLOBFc.cbData);
+	lpStruct->pbData = (BYTE *)(*env)->GetIntLongField(env, lpObject, CRYPT_OBJID_BLOBFc.pbData);
+	return lpStruct;
+}
+
+void setCRYPT_OBJID_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_OBJID_BLOB *lpStruct)
+{
+	if (!CRYPT_OBJID_BLOBFc.cached) cacheCRYPT_OBJID_BLOBFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, CRYPT_OBJID_BLOBFc.cbData, (jint)lpStruct->cbData);
+	(*env)->SetIntLongField(env, lpObject, CRYPT_OBJID_BLOBFc.pbData, (jintLong)lpStruct->pbData);
 }
 #endif
 

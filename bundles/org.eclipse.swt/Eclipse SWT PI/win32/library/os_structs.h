@@ -119,6 +119,54 @@ void setCANDIDATEFORMFields(JNIEnv *env, jobject lpObject, CANDIDATEFORM *lpStru
 #define CANDIDATEFORM_sizeof() 0
 #endif
 
+#ifndef NO_CERT_CONTEXT
+void cacheCERT_CONTEXTFields(JNIEnv *env, jobject lpObject);
+CERT_CONTEXT *getCERT_CONTEXTFields(JNIEnv *env, jobject lpObject, CERT_CONTEXT *lpStruct);
+void setCERT_CONTEXTFields(JNIEnv *env, jobject lpObject, CERT_CONTEXT *lpStruct);
+#define CERT_CONTEXT_sizeof() sizeof(CERT_CONTEXT)
+#else
+#define cacheCERT_CONTEXTFields(a,b)
+#define getCERT_CONTEXTFields(a,b,c) NULL
+#define setCERT_CONTEXTFields(a,b,c)
+#define CERT_CONTEXT_sizeof() 0
+#endif
+
+#ifndef NO_CERT_INFO
+void cacheCERT_INFOFields(JNIEnv *env, jobject lpObject);
+CERT_INFO *getCERT_INFOFields(JNIEnv *env, jobject lpObject, CERT_INFO *lpStruct);
+void setCERT_INFOFields(JNIEnv *env, jobject lpObject, CERT_INFO *lpStruct);
+#define CERT_INFO_sizeof() sizeof(CERT_INFO)
+#else
+#define cacheCERT_INFOFields(a,b)
+#define getCERT_INFOFields(a,b,c) NULL
+#define setCERT_INFOFields(a,b,c)
+#define CERT_INFO_sizeof() 0
+#endif
+
+#ifndef NO_CERT_NAME_BLOB
+void cacheCERT_NAME_BLOBFields(JNIEnv *env, jobject lpObject);
+CERT_NAME_BLOB *getCERT_NAME_BLOBFields(JNIEnv *env, jobject lpObject, CERT_NAME_BLOB *lpStruct);
+void setCERT_NAME_BLOBFields(JNIEnv *env, jobject lpObject, CERT_NAME_BLOB *lpStruct);
+#define CERT_NAME_BLOB_sizeof() sizeof(CERT_NAME_BLOB)
+#else
+#define cacheCERT_NAME_BLOBFields(a,b)
+#define getCERT_NAME_BLOBFields(a,b,c) NULL
+#define setCERT_NAME_BLOBFields(a,b,c)
+#define CERT_NAME_BLOB_sizeof() 0
+#endif
+
+#ifndef NO_CERT_PUBLIC_KEY_INFO
+void cacheCERT_PUBLIC_KEY_INFOFields(JNIEnv *env, jobject lpObject);
+CERT_PUBLIC_KEY_INFO *getCERT_PUBLIC_KEY_INFOFields(JNIEnv *env, jobject lpObject, CERT_PUBLIC_KEY_INFO *lpStruct);
+void setCERT_PUBLIC_KEY_INFOFields(JNIEnv *env, jobject lpObject, CERT_PUBLIC_KEY_INFO *lpStruct);
+#define CERT_PUBLIC_KEY_INFO_sizeof() sizeof(CERT_PUBLIC_KEY_INFO)
+#else
+#define cacheCERT_PUBLIC_KEY_INFOFields(a,b)
+#define getCERT_PUBLIC_KEY_INFOFields(a,b,c) NULL
+#define setCERT_PUBLIC_KEY_INFOFields(a,b,c)
+#define CERT_PUBLIC_KEY_INFO_sizeof() 0
+#endif
+
 #ifndef NO_CHOOSECOLOR
 void cacheCHOOSECOLORFields(JNIEnv *env, jobject lpObject);
 CHOOSECOLOR *getCHOOSECOLORFields(JNIEnv *env, jobject lpObject, CHOOSECOLOR *lpStruct);
@@ -177,6 +225,54 @@ void setCREATESTRUCTFields(JNIEnv *env, jobject lpObject, CREATESTRUCT *lpStruct
 #define getCREATESTRUCTFields(a,b,c) NULL
 #define setCREATESTRUCTFields(a,b,c)
 #define CREATESTRUCT_sizeof() 0
+#endif
+
+#ifndef NO_CRYPT_ALGORITHM_IDENTIFIER
+void cacheCRYPT_ALGORITHM_IDENTIFIERFields(JNIEnv *env, jobject lpObject);
+CRYPT_ALGORITHM_IDENTIFIER *getCRYPT_ALGORITHM_IDENTIFIERFields(JNIEnv *env, jobject lpObject, CRYPT_ALGORITHM_IDENTIFIER *lpStruct);
+void setCRYPT_ALGORITHM_IDENTIFIERFields(JNIEnv *env, jobject lpObject, CRYPT_ALGORITHM_IDENTIFIER *lpStruct);
+#define CRYPT_ALGORITHM_IDENTIFIER_sizeof() sizeof(CRYPT_ALGORITHM_IDENTIFIER)
+#else
+#define cacheCRYPT_ALGORITHM_IDENTIFIERFields(a,b)
+#define getCRYPT_ALGORITHM_IDENTIFIERFields(a,b,c) NULL
+#define setCRYPT_ALGORITHM_IDENTIFIERFields(a,b,c)
+#define CRYPT_ALGORITHM_IDENTIFIER_sizeof() 0
+#endif
+
+#ifndef NO_CRYPT_BIT_BLOB
+void cacheCRYPT_BIT_BLOBFields(JNIEnv *env, jobject lpObject);
+CRYPT_BIT_BLOB *getCRYPT_BIT_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_BIT_BLOB *lpStruct);
+void setCRYPT_BIT_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_BIT_BLOB *lpStruct);
+#define CRYPT_BIT_BLOB_sizeof() sizeof(CRYPT_BIT_BLOB)
+#else
+#define cacheCRYPT_BIT_BLOBFields(a,b)
+#define getCRYPT_BIT_BLOBFields(a,b,c) NULL
+#define setCRYPT_BIT_BLOBFields(a,b,c)
+#define CRYPT_BIT_BLOB_sizeof() 0
+#endif
+
+#ifndef NO_CRYPT_INTEGER_BLOB
+void cacheCRYPT_INTEGER_BLOBFields(JNIEnv *env, jobject lpObject);
+CRYPT_INTEGER_BLOB *getCRYPT_INTEGER_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_INTEGER_BLOB *lpStruct);
+void setCRYPT_INTEGER_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_INTEGER_BLOB *lpStruct);
+#define CRYPT_INTEGER_BLOB_sizeof() sizeof(CRYPT_INTEGER_BLOB)
+#else
+#define cacheCRYPT_INTEGER_BLOBFields(a,b)
+#define getCRYPT_INTEGER_BLOBFields(a,b,c) NULL
+#define setCRYPT_INTEGER_BLOBFields(a,b,c)
+#define CRYPT_INTEGER_BLOB_sizeof() 0
+#endif
+
+#ifndef NO_CRYPT_OBJID_BLOB
+void cacheCRYPT_OBJID_BLOBFields(JNIEnv *env, jobject lpObject);
+CRYPT_OBJID_BLOB *getCRYPT_OBJID_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_OBJID_BLOB *lpStruct);
+void setCRYPT_OBJID_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_OBJID_BLOB *lpStruct);
+#define CRYPT_OBJID_BLOB_sizeof() sizeof(CRYPT_OBJID_BLOB)
+#else
+#define cacheCRYPT_OBJID_BLOBFields(a,b)
+#define getCRYPT_OBJID_BLOBFields(a,b,c) NULL
+#define setCRYPT_OBJID_BLOBFields(a,b,c)
+#define CRYPT_OBJID_BLOB_sizeof() 0
 #endif
 
 #ifndef NO_DEVMODE

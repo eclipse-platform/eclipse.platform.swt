@@ -16,6 +16,7 @@ import java.net.*;
 import java.util.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
@@ -542,7 +543,7 @@ int Release () {
 	return refCount;
 }
 
-boolean showCertificateDialog (int /*long*/ webView, final String failingUrlString, final String description, int /*long*/ certificate) {
+boolean showCertificateDialog (int /*long*/ webView, final String failingUrlString, final String description, final int /*long*/ certificate) {
 	Shell parent = browser.getShell ();
 	final Shell shell = new Shell (parent, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
 	shell.setText (Compatibility.getMessage ("SWT_InvalidCert_Title")); //$NON-NLS-1$
@@ -578,7 +579,7 @@ boolean showCertificateDialog (int /*long*/ webView, final String failingUrlStri
 	Listener listener = new Listener() {
 		public void handleEvent (Event event) {
 			if (event.widget == buttons[2]) {
-				//showCertificate() //TODO Not sure how to show the certificate
+				showCertificate (shell, certificate);
 			} else {
 				result[0] = event.widget == buttons[0];
 				shell.close();
@@ -603,7 +604,6 @@ boolean showCertificateDialog (int /*long*/ webView, final String failingUrlStri
 	buttons[2].setText (SWT.getMessage("SWT_ViewCertificate")); //$NON-NLS-1$
 	buttons[2].setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 	buttons[2].addListener (SWT.Selection, listener);
-	buttons[2].setEnabled (false);
 
 	shell.setDefaultButton (buttons[0]);
 	shell.pack ();
@@ -619,6 +619,133 @@ boolean showCertificateDialog (int /*long*/ webView, final String failingUrlStri
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	return result[0];
+}
+
+void showCertificate (Shell parent, int /*long*/ certificate) {
+	CERT_CONTEXT context = new CERT_CONTEXT ();
+	OS.MoveMemory (context, certificate, CERT_CONTEXT.sizeof);
+	CERT_INFO info = new CERT_INFO ();
+	OS.MoveMemory (info, context.pCertInfo, CERT_INFO.sizeof);
+
+	int length = OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Issuer, OS.CERT_SIMPLE_NAME_STR, null, 0);
+	TCHAR tchar = new TCHAR(0, length);
+	OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Issuer, OS.CERT_SIMPLE_NAME_STR, tchar, length);
+	String issuer = tchar.toString(0, tchar.strlen());
+
+	length = OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Subject, OS.CERT_SIMPLE_NAME_STR, null, 0);
+	tchar = new TCHAR(0, length);
+	OS.CertNameToStr (OS.X509_ASN_ENCODING, info.Subject, OS.CERT_SIMPLE_NAME_STR, tchar, length);
+	String subject = tchar.toString(0, tchar.strlen());
+
+	String dateSeparator = "/"; //$NON-NLS-1$
+	String timeSeparator = ":"; //$NON-NLS-1$
+	SYSTEMTIME systemTime = new SYSTEMTIME ();
+	OS.FileTimeToSystemTime (info.NotBefore, systemTime);
+	String validFrom = systemTime.wDay + dateSeparator + systemTime.wMonth + dateSeparator + systemTime.wYear;
+	String validFromTime = systemTime.wHour + timeSeparator + systemTime.wMinute + timeSeparator + systemTime.wSecond;
+
+	systemTime = new SYSTEMTIME ();
+	OS.FileTimeToSystemTime (info.NotAfter, systemTime);
+	String validTo = systemTime.wDay + dateSeparator + systemTime.wMonth + dateSeparator + systemTime.wYear;
+	String validToTime = systemTime.wHour + timeSeparator + systemTime.wMinute + timeSeparator + systemTime.wSecond;
+
+	length = info.SerialNumber.cbData;
+	byte[] serialNumber = new byte[length];
+	OS.MoveMemory (serialNumber, info.SerialNumber.pbData, length);
+	String hexSerialNumber = new String();
+	for (int i = length - 1; i >= 0; i--) {
+		int number = (0xFF & serialNumber[i]);
+		String hex = Integer.toHexString (number);
+		if (hex.length () == 1) hexSerialNumber += "0"; //$NON-NLS-1$
+		hexSerialNumber += hex + " "; //$NON-NLS-1$
+	}
+
+	final Shell dialog = new Shell (parent, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
+	dialog.setText (SWT.getMessage ("SWT_Certificate")); //$NON-NLS-1$
+	dialog.setLayout (new GridLayout (1, false));
+
+	TabFolder tabFolder = new TabFolder (dialog, SWT.NONE);
+	tabFolder.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true, 1, 1));
+	tabFolder.setLayout (new FillLayout ());
+
+	TabItem general = new TabItem (tabFolder, SWT.NONE);
+	general.setText (SWT.getMessage ("SWT_General")); //$NON-NLS-1$
+	Composite composite = new Composite (tabFolder, SWT.BORDER);
+	composite.setLayout (new GridLayout (1, false));
+	Label issuedTo = new Label (composite, SWT.NONE);
+	issuedTo.setLayoutData (new GridData (SWT.BEGINNING, SWT.CENTER, false, false));
+	issuedTo.setText (Compatibility.getMessage ("SWT_IssuedTo", new Object[] {subject})); //$NON-NLS-1$
+	Label issuedBy = new Label (composite, SWT.NONE);
+	issuedBy.setLayoutData (new GridData (SWT.BEGINNING, SWT.CENTER, false, false));
+	issuedBy.setText (Compatibility.getMessage ("SWT_IssuedFrom", new Object[] {issuer}));  //$NON-NLS-1$
+	Label valid = new Label (composite, SWT.NONE);
+	valid.setLayoutData (new GridData (SWT.BEGINNING, SWT.CENTER, false, false));
+	valid.setText (Compatibility.getMessage ("SWT_ValidFromTo", new Object[] {validFrom, validTo})); //$NON-NLS-1$
+	general.setControl (composite);
+
+	TabItem details = new TabItem (tabFolder, SWT.NONE);
+	details.setText (SWT.getMessage ("SWT_Details")); //$NON-NLS-1$
+	Table table = new Table (tabFolder, SWT.SINGLE | SWT.BORDER| SWT.FULL_SELECTION);
+	table.setHeaderVisible (true);
+	TableColumn tableColumn = new TableColumn (table, SWT.LEAD);
+	tableColumn.setText (SWT.getMessage ("SWT_Field")); //$NON-NLS-1$
+	tableColumn = new TableColumn (table, SWT.NONE);
+	tableColumn.setText (SWT.getMessage ("SWT_Value")); //$NON-NLS-1$
+	TableItem tableItem = new TableItem(table, SWT.NONE);
+	String version = "V" + String.valueOf (info.dwVersion + 1); //$NON-NLS-1$
+	tableItem.setText (new String[]{SWT.getMessage ("SWT_Version"), version}); //$NON-NLS-1$
+	tableItem = new TableItem (table, SWT.NONE);
+	tableItem.setText (new String[] {SWT.getMessage ("SWT_SerialNumber"), hexSerialNumber}); //$NON-NLS-1$
+	tableItem = new TableItem (table, SWT.NONE);
+	tableItem.setText (new String[] {SWT.getMessage ("SWT_Issuer"), issuer}); //$NON-NLS-1$
+
+	tableItem = new TableItem (table, SWT.NONE);
+	StringBuffer stringBuffer2 = new StringBuffer ();
+	stringBuffer2.append (validFrom);
+	stringBuffer2.append (", "); //$NON-NLS-1$
+	stringBuffer2.append (validFromTime);
+	stringBuffer2.append (" GMT"); //$NON-NLS-1$
+	tableItem.setText (new String[] {SWT.getMessage ("SWT_ValidFrom"), stringBuffer2.toString ()}); //$NON-NLS-1$
+
+	tableItem = new TableItem (table, SWT.NONE);
+	StringBuffer stringBuffer = new StringBuffer ();
+	stringBuffer.append (validTo);
+	stringBuffer.append (", "); //$NON-NLS-1$
+	stringBuffer.append (validToTime);
+	stringBuffer.append (" GMT"); //$NON-NLS-1$
+	tableItem.setText (new String[] {SWT.getMessage ("SWT_ValidTo"), stringBuffer.toString ()}); //$NON-NLS-1$
+
+	tableItem = new TableItem (table, SWT.NONE);
+	tableItem.setText (new String[] {SWT.getMessage ("SWT_Subject"), subject}); //$NON-NLS-1$
+	for (int i = 0; i < table.getColumnCount (); i++) {
+		table.getColumn (i).pack ();
+	}
+	details.setControl (table);
+
+	Button ok = new Button (dialog, SWT.PUSH);
+	GridData layoutData = new GridData (SWT.END, SWT.CENTER, false, false);
+	layoutData.widthHint = 75;
+	ok.setLayoutData (layoutData);
+	ok.setText (SWT.getMessage ("SWT_OK")); //$NON-NLS-1$
+	ok.addSelectionListener (new SelectionAdapter() {
+		public void widgetSelected (SelectionEvent e) {
+			dialog.dispose ();
+		}
+	});
+
+	dialog.setDefaultButton (ok);
+	dialog.pack ();
+	Rectangle parentSize = parent.getBounds ();
+	Rectangle dialogSize = dialog.getBounds ();
+	int x = parent.getLocation ().x + (parentSize.width - dialogSize.width) / 2;
+	int y = parent.getLocation ().y + (parentSize.height - dialogSize.height) / 2;
+	dialog.setLocation (x, y);
+	dialog.open ();
+	Display display = browser.getDisplay ();
+	while (!dialog.isDisposed ()) {
+		if (!display.readAndDispatch ()) display.sleep ();
+	}
+
 }
 
 }
