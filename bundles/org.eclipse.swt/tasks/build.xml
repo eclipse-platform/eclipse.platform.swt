@@ -763,11 +763,13 @@
 		<echo>${m_linux_x86_64} - ${m_linux_x86_64_test}</echo>
 		<!--echo>${m_linux_rh3_x86} ${m_linux_rh3_x86_test}</echo>
 		<echo>${m_linux_rh3_x86_64} ${m_linux_rh3_x86_64_test}</echo-->
-		<echo>${m_linux_ppc} - ${m_linux_ppc_test}</echo>
-		<echo>${m_linux_ppc64} - ${m_linux_ppc64_test}</echo>
+		<!-- TEMPORARY: AIX machine is being repaired. -->
+		<!--echo>${m_linux_ppc} - ${m_linux_ppc_test}</echo>
+		<echo>${m_linux_ppc64} - ${m_linux_ppc64_test}</echo-->
 		<echo>${m_solaris_sparc} - ${m_solaris_sparc_test}</echo>
 		<echo>${m_solaris_x86} - ${m_solaris_x86_test}</echo>
-		<echo>${m_aix} - ${m_aix_test}</echo>
+		<!-- TEMPORARY: AIX machine is being repaired. -->
+		<!--echo>${m_aix} - ${m_aix_test}</echo-->
 		<echo>${m_hpux} - ${m_hpux_test}</echo>
 		<echo>${m_mac} - ${m_mac_test}</echo>
 		<echo>-------------------------</echo>
