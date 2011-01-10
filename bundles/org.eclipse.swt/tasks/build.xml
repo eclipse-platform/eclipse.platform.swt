@@ -733,21 +733,23 @@
 		<condition property="m_linux_rh3_x86_64_test" value="${success_msg}" else="${fail_msg}">
 			<matches pattern="${m_linux_rh3_x86_64}*" string="${m_linux_rh3_x86_64_output}"/>
 		</condition-->
-		<condition property="m_linux_ppc_test" value="${success_msg}" else="${fail_msg}">
+		<!-- TEMPORARY: AIX machine is being repaired. -->
+		<!--condition property="m_linux_ppc_test" value="${success_msg}" else="${fail_msg}">
 			<matches pattern="${m_linux_ppc}*" string="${m_linux_ppc_output}"/>
 		</condition>
 		<condition property="m_linux_ppc64_test" value="${success_msg}" else="${fail_msg}">
 			<matches pattern="${m_linux_ppc64}*" string="${m_linux_ppc64_output}"/>
-		</condition>
+		</condition-->
 		<condition property="m_solaris_sparc_test" value="${success_msg}" else="${fail_msg}">
 			<matches pattern="${m_solaris_sparc}*" string="${m_solaris_sparc_output}"/>
 		</condition>
 		<condition property="m_solaris_x86_test" value="${success_msg}" else="${fail_msg}">
 			<matches pattern="${m_solaris_x86}*" string="${m_solaris_x86_output}"/>
 		</condition>
-		<condition property="m_aix_test" value="${success_msg}" else="${fail_msg}">
+		<!-- TEMPORARY: AIX machine is being repaired. -->
+		<!--condition property="m_aix_test" value="${success_msg}" else="${fail_msg}">
 			<matches pattern="${m_aix}*" string="${m_aix_output}"/>
-		</condition>
+		</condition-->
 		<condition property="m_hpux_test" value="${success_msg}" else="${fail_msg}">
 			<matches pattern="${m_hpux}*" string="${m_hpux_output}"/>
 		</condition>
