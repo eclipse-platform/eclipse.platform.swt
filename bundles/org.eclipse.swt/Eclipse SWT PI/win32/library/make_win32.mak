@@ -84,7 +84,7 @@ CFLAGS = -O1 -DNDEBUG $(cflags) $(cvarsmt) $(CFLAGS) \
 	/I"$(JAVA_HOME)\include" /I"$(JAVA_HOME)\include\win32" /I.
 RCFLAGS = $(rcflags) $(rcvars) $(RCFLAGS) -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
 
-all: make_swt make_awt make_gdip make_wgl make_webkit
+all: make_swt make_awt make_gdip make_wgl #make_webkit
 
 webkit_win32_custom.obj: webkit_win32_custom.cpp
 	cl $(WEBKITCFLAGS) webkit_win32_custom.cpp
