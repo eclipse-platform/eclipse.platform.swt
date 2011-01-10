@@ -23,10 +23,13 @@ import org.eclipse.swt.widgets.*;
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>MOZILLA</dd>
+ * <dd>MOZILLA, WEBKIT</dd>
  * <dt><b>Events:</b></dt>
  * <dd>CloseWindowListener, LocationListener, OpenWindowListener, ProgressListener, StatusTextListener, TitleListener, VisibilityWindowListener</dd>
  * </dl>
+ * <p>
+ * Note: At most one of the styles MOZILLA and WEBKIT may be specified.
+ * </p>
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
@@ -119,6 +122,9 @@ static Composite checkParent (Composite parent) {
 }
 
 static int checkStyle(int style) {
+	if ((style & (SWT.MOZILLA | SWT.WEBKIT)) == (SWT.MOZILLA | SWT.WEBKIT)) {
+		style &= ~SWT.WEBKIT;
+	}
 	String platform = SWT.getPlatform ();
 	if ((style & SWT.MOZILLA) != 0) {
 		if ("carbon".equals (platform)) return style | SWT.EMBEDDED; //$NON-NLS-1$
