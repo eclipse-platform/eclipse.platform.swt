@@ -42,7 +42,7 @@ public class List extends Scrollable {
 	NSTableColumn column;
 	String [] items;
 	int itemCount;
-	boolean ignoreSelect, didSelect, rowsChanged;
+	boolean ignoreSelect, didSelect, rowsChanged, mouseIsDown;
 
 	static int NEXT_ID;
 
@@ -1104,7 +1104,12 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 }
 
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
-	if (nsEvent != null && nsEvent.type() == OS.NSLeftMouseUp) {
+	if (type == SWT.MouseDown) {
+		mouseIsDown = true;
+	}
+	if (type == SWT.MouseUp) {
+		mouseIsDown = false;
+		
 		if (rowsChanged) {
 			rowsChanged = false;
 			((NSTableView)view).noteNumberOfRowsChanged();
@@ -1471,9 +1476,9 @@ void updateRowCount() {
 	 * Feature in Cocoa. Changing the row count while the mouse is tracking will confuse the code that calculates the 
 	 * current selection.  Fix is to not call noteNumberOfRowsChanged if the mouse is down.
 	 */
-	NSEvent currEvent = display.application.currentEvent();
-	
-	if (currEvent != null && (currEvent.type() != OS.NSLeftMouseDown && currEvent.type() != OS.NSLeftMouseDragged))  {
+	if (mouseIsDown) {
+		rowsChanged = true;
+	} else {
 		NSTableView widget = (NSTableView)view;
 		setRedraw(false);
 		ignoreSelect = true;
@@ -1481,8 +1486,6 @@ void updateRowCount() {
 		ignoreSelect = false;
 		widget.tile();
 		setRedraw(true);
-	} else {
-		rowsChanged = true;
 	}
 }
 
