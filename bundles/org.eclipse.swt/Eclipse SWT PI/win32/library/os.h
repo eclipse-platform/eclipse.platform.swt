@@ -57,6 +57,14 @@
 #define NO_BP_PAINTPARAMS
 #define NO_BROWSEINFO
 #define NO_BUTTON_IMAGELIST
+#define NO_CERT_CONTEXT
+#define NO_CERT_INFO
+#define NO_CERT_NAME_BLOB
+#define NO_CERT_PUBLIC_KEY_INFO
+#define NO_CRYPT_ALGORITHM_IDENTIFIER
+#define NO_CRYPT_BIT_BLOB
+#define NO_CRYPT_INTEGER_BLOB
+#define NO_CRYPT_OBJID_BLOB
 #define NO_CHOOSEFONT
 #define NO_COMBOBOXINFO
 #define NO_DEVMODE
@@ -179,6 +187,8 @@
 #define NO_BufferedPaintUnInit
 #define NO_CallNextHookEx
 #define NO_CallWindowProcA
+#define NO_CertNameToStrA
+#define NO_CertNameToStrW
 #define NO_CharLowerA
 #define NO_CharUpperA
 #define NO_ChooseColorA
@@ -396,6 +406,8 @@
 #define NO_MessageBoxA
 #define NO_ModifyWorldTransform
 #define NO_MonitorFromWindow
+#define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1CONTEXT_2II
+#define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1INFO_2II
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_DEVMODEA_2I
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_DEVMODEW_2I
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I
@@ -515,6 +527,8 @@
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_LVINSERTMARK_2
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2
 #define NO_SetDIBColorTable
+#define NO_SetDllDirectoryA
+#define NO_SetDllDirectoryW
 #define NO_SetErrorMode
 #define NO_SetGraphicsMode
 #define NO_SetMapMode
