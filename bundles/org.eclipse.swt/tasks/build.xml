@@ -45,7 +45,7 @@
 	<property name="ant_home" value="~/build/apache-ant-1.8.1"/>
 
 	<property name="cp_common" value="'org.eclipse.swt/Eclipse SWT/common/library' 'org.eclipse.swt/Eclipse SWT Mozilla/common/library' 'org.eclipse.swt/Eclipse SWT PI/common/library'"/>
-	<property name="cp_win32" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/win32/library' 'org.eclipse.swt/Eclipse SWT AWT/win32/library' 'org.eclipse.swt/Eclipse SWT OpenGL/win32/library'"/>
+	<property name="cp_win32" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/win32/library' 'org.eclipse.swt/Eclipse SWT AWT/win32/library' 'org.eclipse.swt/Eclipse SWT OpenGL/win32/library' 'org.eclipse.swt/Eclipse SWT WebKit/win32/library'"/>
 	<!--property name="cp_wpf" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/wpf/library' 'org.eclipse.swt/Eclipse SWT PI/wpf_win32/library'"/-->
 	<property name="cp_gtk" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/gtk/library' 'org.eclipse.swt/Eclipse SWT AWT/gtk/library' 'org.eclipse.swt/Eclipse SWT OpenGL/glx/library' 'org.eclipse.swt/Eclipse SWT PI/cairo/library' 'org.eclipse.swt/Eclipse SWT Program/gnome/library' 'org.eclipse.swt/Eclipse SWT Program/cde/library'"/>
 	<property name="cp_motif" value="${cp_common} 'org.eclipse.swt/Eclipse SWT PI/motif/library' 'org.eclipse.swt/Eclipse SWT PI/motif_gtk/library'  'org.eclipse.swt/Eclipse SWT AWT/motif/library' 'org.eclipse.swt/Eclipse SWT OpenGL/glx/library' 'org.eclipse.swt/Eclipse SWT PI/cairo/library' 'org.eclipse.swt/Eclipse SWT Program/gnome/library' 'org.eclipse.swt/Eclipse SWT Program/cde/library'"/>
