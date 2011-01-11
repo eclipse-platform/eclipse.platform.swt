@@ -10,11 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.win32.OS;
 
 class BrowserFactory {
 
 WebBrowser createWebBrowser (int style) {
+	if (OS.IsWinCE && (style & (SWT.MOZILLA | SWT.WEBKIT)) != 0) {
+		throw new SWTError ("Unsupported Browser type"); //$NON-NLS-1$
+	}
 	if ((style & SWT.MOZILLA) != 0) {
 		return new Mozilla ();
 	}
