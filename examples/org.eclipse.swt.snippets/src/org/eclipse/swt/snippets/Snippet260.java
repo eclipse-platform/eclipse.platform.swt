@@ -13,6 +13,9 @@ package org.eclipse.swt.snippets;
 /*
  * Mozilla in a Browser
  *
+ * The requirements for using Mozilla-based Browsers are described
+ * at http://www.eclipse.org/swt/faq.php#howusemozilla
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  * 
