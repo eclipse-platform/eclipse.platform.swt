@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -4717,6 +4717,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSLinkAttributeName)
 	OS_NATIVE_ENTER(env, that, NSLinkAttributeName_FUNC);
 	rc = (jintLong)NSLinkAttributeName;
 	OS_NATIVE_EXIT(env, that, NSLinkAttributeName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSLocaleLanguageCode
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSLocaleLanguageCode)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSLocaleLanguageCode_FUNC);
+	rc = (jintLong)NSLocaleLanguageCode;
+	OS_NATIVE_EXIT(env, that, NSLocaleLanguageCode_FUNC);
 	return rc;
 }
 #endif

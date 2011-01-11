@@ -101,6 +101,13 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="pathForResource:ofType:inDirectory:forLocalization:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="resourcePath" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -375,6 +382,17 @@
 	</class>
 	<class name="NSKeyedUnarchiver" swt_gen="mixed" swt_superclass="NSCoder">
 		<method class_method="true" selector="unarchiveObjectWithData:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
+	<class name="NSLocale" swt_gen="mixed">
+		<method selector="displayNameForKey:value:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="initWithLocaleIdentifier:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -1049,6 +1067,7 @@
 	</class>
 	<constant name="NSDefaultRunLoopMode" swt_gen="true"></constant>
 	<constant name="NSErrorFailingURLStringKey" swt_gen="true"></constant>
+	<constant name="NSLocaleLanguageCode" swt_gen="true"></constant>
 	<enum name="NSAllApplicationsDirectory" swt_gen="true"></enum>
 	<enum name="NSAllDomainsMask" swt_gen="true"></enum>
 	<enum name="NSNotFound" swt_gen="true"></enum>

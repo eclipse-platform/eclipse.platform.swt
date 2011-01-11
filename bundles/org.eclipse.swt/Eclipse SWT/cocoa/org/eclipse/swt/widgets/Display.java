@@ -4893,9 +4893,28 @@ void applicationWillFinishLaunching (int /*long*/ id, int /*long*/ sel, int /*lo
 		if (status == 0) OS.DeleteMenuItem(outMenu[0], outIndex[0]);
 	}
 
+	/*
+	 * Get the default locale's language, and then the display name of the language. Some Mac OS X localizations use the 
+	 * display name of the language, but many use the ISO two-char abbreviation instead.
+	 */
+	Locale loc = Locale.getDefault();
+	String languageISOValue = loc.getLanguage();
+	NSLocale englishLocale = (NSLocale) new NSLocale().alloc();
+	englishLocale = new NSLocale(englishLocale.initWithLocaleIdentifier(NSString.stringWith("en_US")));
+	NSString languageDisplayName = englishLocale.displayNameForKey(OS.NSLocaleLanguageCode, NSString.stringWith(languageISOValue));
+	if (englishLocale != null) englishLocale.release();
+	
+	/* To find the nib look for each of these paths, in order, until one is found:
+	 * 		/System/Library/..../Resources/<display name>.lproj/DefaultApp.nib
+	 * 		/System/Library/..../Resources/<language>.lproj/DefaultApp.nib
+	 * 		/System/Library/..../Resources/<user's default language>.lproj/DefaultApp.nib
+	 * 		/System/Library/..../Resources/English.lproj/DefaultApp.nib.
+	 */
 	NSBundle bundle = NSBundle.bundleWithIdentifier(NSString.stringWith("com.apple.JavaVM"));
 	NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
-	NSString path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
+	NSString path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"), null, languageDisplayName);
+	if (path == null) path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"), null, NSString.stringWith(languageISOValue));
+	if (path == null) path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
 	if (!loaded) loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
 	if (!loaded) {
 		NSString resourcePath = bundle.resourcePath();
@@ -4909,6 +4928,7 @@ void applicationWillFinishLaunching (int /*long*/ id, int /*long*/ sel, int /*lo
 	if (!loaded) {
 		createMainMenu();
 	}
+	
 	//replace %@ with application name
 	NSMenu mainmenu = application.mainMenu();
 	NSMenuItem appitem = mainmenu.itemAtIndex(0);

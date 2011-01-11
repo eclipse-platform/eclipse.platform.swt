@@ -724,6 +724,7 @@ public static final int /*long*/ class_NSInputManager = objc_getClass("NSInputMa
 public static final int /*long*/ class_NSKeyedArchiver = objc_getClass("NSKeyedArchiver");
 public static final int /*long*/ class_NSKeyedUnarchiver = objc_getClass("NSKeyedUnarchiver");
 public static final int /*long*/ class_NSLayoutManager = objc_getClass("NSLayoutManager");
+public static final int /*long*/ class_NSLocale = objc_getClass("NSLocale");
 public static final int /*long*/ class_NSMenu = objc_getClass("NSMenu");
 public static final int /*long*/ class_NSMenuItem = objc_getClass("NSMenuItem");
 public static final int /*long*/ class_NSMutableArray = objc_getClass("NSMutableArray");
@@ -1153,6 +1154,7 @@ public static final int /*long*/ sel_discardCursorRects = sel_registerName("disc
 public static final int /*long*/ sel_display = sel_registerName("display");
 public static final int /*long*/ sel_displayIfNeeded = sel_registerName("displayIfNeeded");
 public static final int /*long*/ sel_displayName = sel_registerName("displayName");
+public static final int /*long*/ sel_displayNameForKey_value_ = sel_registerName("displayNameForKey:value:");
 public static final int /*long*/ sel_displayRectIgnoringOpacity_inContext_ = sel_registerName("displayRectIgnoringOpacity:inContext:");
 public static final int /*long*/ sel_distantFuture = sel_registerName("distantFuture");
 public static final int /*long*/ sel_doCommandBySelector_ = sel_registerName("doCommandBySelector:");
@@ -1334,6 +1336,7 @@ public static final int /*long*/ sel_initWithImage_hotSpot_ = sel_registerName("
 public static final int /*long*/ sel_initWithIndex_ = sel_registerName("initWithIndex:");
 public static final int /*long*/ sel_initWithIndexesInRange_ = sel_registerName("initWithIndexesInRange:");
 public static final int /*long*/ sel_initWithItemIdentifier_ = sel_registerName("initWithItemIdentifier:");
+public static final int /*long*/ sel_initWithLocaleIdentifier_ = sel_registerName("initWithLocaleIdentifier:");
 public static final int /*long*/ sel_initWithRect_options_owner_userInfo_ = sel_registerName("initWithRect:options:owner:userInfo:");
 public static final int /*long*/ sel_initWithSize_ = sel_registerName("initWithSize:");
 public static final int /*long*/ sel_initWithStartingColor_endingColor_ = sel_registerName("initWithStartingColor:endingColor:");
@@ -1554,6 +1557,7 @@ public static final int /*long*/ sel_pasteboardWithName_ = sel_registerName("pas
 public static final int /*long*/ sel_path = sel_registerName("path");
 public static final int /*long*/ sel_pathExtension = sel_registerName("pathExtension");
 public static final int /*long*/ sel_pathForResource_ofType_ = sel_registerName("pathForResource:ofType:");
+public static final int /*long*/ sel_pathForResource_ofType_inDirectory_forLocalization_ = sel_registerName("pathForResource:ofType:inDirectory:forLocalization:");
 public static final int /*long*/ sel_performDragOperation_ = sel_registerName("performDragOperation:");
 public static final int /*long*/ sel_performKeyEquivalent_ = sel_registerName("performKeyEquivalent:");
 public static final int /*long*/ sel_performSelector_withObject_afterDelay_inModes_ = sel_registerName("performSelector:withObject:afterDelay:inModes:");
@@ -3038,6 +3042,9 @@ public static final NSString NSDefaultRunLoopMode = new NSString(NSDefaultRunLoo
 /** @method flags=const */
 public static final native int /*long*/ NSErrorFailingURLStringKey();
 public static final NSString NSErrorFailingURLStringKey = new NSString(NSErrorFailingURLStringKey());
+/** @method flags=const */
+public static final native int /*long*/ NSLocaleLanguageCode();
+public static final NSString NSLocaleLanguageCode = new NSString(NSLocaleLanguageCode());
 
 /** Functions */
 
