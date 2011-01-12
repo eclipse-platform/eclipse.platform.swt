@@ -813,7 +813,7 @@ boolean handleEvent (Object[] arguments) {
 			case SWT.SCROLL_LOCK:
 			case SWT.COMMAND:
 //			case SWT.ESC:
-//			case SWT.TAB:
+			case SWT.TAB:
 			case SWT.PAUSE:
 //			case SWT.BS:
 			case SWT.INSERT:
@@ -953,8 +953,7 @@ boolean handleEvent (Object[] arguments) {
 	int mask =
 		(((Boolean)arguments[5]).booleanValue () ? SWT.ALT : 0) |
 		(((Boolean)arguments[6]).booleanValue () ? SWT.CTRL : 0) |
-		(((Boolean)arguments[7]).booleanValue () ? SWT.SHIFT : 0) |
-		(((Boolean)arguments[8]).booleanValue () ? SWT.COMMAND : 0);
+		(((Boolean)arguments[7]).booleanValue () ? SWT.SHIFT : 0);
 	mouseEvent.stateMask = mask;
 
 	if (type.equals (DOMEVENT_MOUSEDOWN)) {
@@ -981,6 +980,13 @@ boolean handleEvent (Object[] arguments) {
 		mouseEvent.type = SWT.MouseUp;
 		mouseEvent.count = ((Double)arguments[3]).intValue ();
 		mouseEvent.button = ((Double)arguments[4]).intValue ();
+		switch (mouseEvent.button) {
+			case 1: mouseEvent.stateMask |= SWT.BUTTON1; break;
+			case 2: mouseEvent.stateMask |= SWT.BUTTON2; break;
+			case 3: mouseEvent.stateMask |= SWT.BUTTON3; break;
+			case 4: mouseEvent.stateMask |= SWT.BUTTON4; break;
+			case 5: mouseEvent.stateMask |= SWT.BUTTON5; break;
+		}
 	} else if (type.equals (DOMEVENT_MOUSEMOVE)) {
 		mouseEvent.type = SWT.MouseMove;
 	} else if (type.equals (DOMEVENT_MOUSEWHEEL)) {
@@ -990,6 +996,8 @@ boolean handleEvent (Object[] arguments) {
 		mouseEvent.type = SWT.MouseEnter;
 	} else if (type.equals (DOMEVENT_MOUSEOUT)) {
 		mouseEvent.type = SWT.MouseExit;
+		if (mouseEvent.x < 0) mouseEvent.x = -1;
+		if (mouseEvent.y < 0) mouseEvent.y = -1;
 	} else if (type.equals (DOMEVENT_DRAGSTART)) {
 		mouseEvent.type = SWT.DragDetect;
 		mouseEvent.button = ((Double)arguments[4]).intValue () + 1;
@@ -1099,6 +1107,12 @@ public void refresh () {
 }
 
 boolean sendKeyEvent (Event event) {
+	/*
+	 * browser.traverse() is called through dislay.translateTraversal() for all
+	 * traversal types except SWT.TRAVERSE_MNEMONIC. So, override
+	 * WebBrowser.sendKeyEvent() so that when it is called from handleEvent(),
+	 * browser.traverse() is not called again.
+	 */
 	boolean doit = true;
 	switch (event.keyCode) {
 		case SWT.ESC:
@@ -1110,7 +1124,6 @@ boolean sendKeyEvent (Event event) {
 		case SWT.TAB:
 		case SWT.PAGE_DOWN:
 		case SWT.PAGE_UP:
-			doit = false;
 			break;
 		default: {
 			if (translateMnemonics ()) {
