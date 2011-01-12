@@ -691,6 +691,13 @@ void onFocusOut(Event e) {
 		super.onFocusOut(e);
 		return;
 	}
+
+	/*
+	* FocusOut is received when focus is reassigned between handles within
+	* our site.  In such cases the site should not be UIDeactivated.
+	*/
+	if (isFocusControl()) return;
+
 	/*
 	* Bug in Windows.  When IE7 loses focus and UIDeactivate()
 	* is called, IE destroys the caret even though it is
