@@ -106,10 +106,12 @@ class Mozilla extends WebBrowser {
 	static final String SHUTDOWN_PERSIST = "shutdown-persist"; //$NON-NLS-1$
 	static final String STARTUP = "startup"; //$NON-NLS-1$
 	static final String TOKENIZER_LOCALE = ","; //$NON-NLS-1$
+	static final String TRUE = "true"; //$NON-NLS-1$
 	static final String URI_FILEROOT = "file:///"; //$NON-NLS-1$
 	static final String XULRUNNER_PATH = "org.eclipse.swt.browser.XULRunnerPath"; //$NON-NLS-1$
 
 	// TEMPORARY CODE
+	static final String FACTORIES_REGISTERED = "org.eclipse.swt.browser.MozillaFactoriesRegistered"; //$NON-NLS-1$
 	static final String GRE_INITIALIZED = "org.eclipse.swt.browser.XULRunnerInitialized"; //$NON-NLS-1$
 
 	static {
@@ -207,7 +209,7 @@ class Mozilla extends WebBrowser {
 					XPCOMInit.XPCOMGlueShutdown ();
 					XPCOMInitWasGlued = false;
 				}
-				Initialized = false;
+				Initialized = PerformedVersionCheck = false;
 			}
 
 			void revertProxySettings (nsIPrefService prefService) {
@@ -537,8 +539,8 @@ public void create (Composite parent, int style) {
 		boolean initLoaded = false;
 		boolean isXULRunner = false;
 
-		String greInitialized = System.getProperty (GRE_INITIALIZED); 
-		if ("true".equals (greInitialized)) { //$NON-NLS-1$
+		String greInitialized = System.getProperty (GRE_INITIALIZED);
+		if (TRUE.equals (greInitialized)) {
 			/* 
 			 * Another browser has already initialized xulrunner in this process,
 			 * so just bind to it instead of trying to initialize a new one.
@@ -714,8 +716,20 @@ public void create (Composite parent, int style) {
 		/* init the event handler if needed */
 		initSpinup (componentManager);
 
+		/*
+		 * Check for the property indicating that factories have already been registered,
+		 * in which case this browser should not overwrite them with its own.
+		 */
+		boolean factoriesRegistered = false;
+		String propertyString = System.getProperty (FACTORIES_REGISTERED);
+		if (TRUE.equals (propertyString)) {
+			factoriesRegistered = true;
+		}
+
 		/* init our WindowCreator, which mozilla uses for the creation of child browsers in external Shells */
-		initWindowCreator (serviceManager);
+		if (!factoriesRegistered) {
+			initWindowCreator (serviceManager);
+		}
 
 		/* notify mozilla that the profile directory has been changed from its default value */
 		initProfile (serviceManager, isXULRunner);
@@ -723,8 +737,10 @@ public void create (Composite parent, int style) {
 		/* init preference values that give desired mozilla behaviours */ 
 		initPreferences (serviceManager, componentManager);
 
-		/* init our various factories that mozilla can invoke as needed */ 
-		initFactories (serviceManager, componentManager, isXULRunner);
+		/* init our various factories that mozilla can invoke as needed */
+		if (!factoriesRegistered) {
+			initFactories (serviceManager, componentManager, isXULRunner);
+		}
 
 		serviceManager.Release ();
 		componentManager.Release ();
@@ -794,16 +810,28 @@ public void create (Composite parent, int style) {
 		nsIComponentRegistrar componentRegistrar = new nsIComponentRegistrar (result[0]);
 		result[0] = 0;
 
-		HelperAppLauncherDialogFactory dialogFactory = new HelperAppLauncherDialogFactory ();
-		dialogFactory.AddRef ();
-		byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID, true);
-		byte[] aClassName = MozillaDelegate.wcsToMbcs (null, "swtHelperAppLauncherDialog", true); //$NON-NLS-1$
-		rc = componentRegistrar.RegisterFactory (XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CID, aClassName, aContractID, dialogFactory.getAddress ());
-		if (rc != XPCOM.NS_OK) {
-			browser.dispose ();
-			error (rc);
+		/*
+		 * Check for the property indicating that factories have already been registered,
+		 * in which case this browser should not overwrite them with its own.
+		 */
+		boolean factoriesRegistered = false;
+		String propertyString = System.getProperty (FACTORIES_REGISTERED);
+		if (TRUE.equals (propertyString)) {
+			factoriesRegistered = true;
 		}
-		dialogFactory.Release ();
+
+		if (!factoriesRegistered) {
+			HelperAppLauncherDialogFactory dialogFactory = new HelperAppLauncherDialogFactory ();
+			dialogFactory.AddRef ();
+			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID, true);
+			byte[] aClassName = MozillaDelegate.wcsToMbcs (null, "swtHelperAppLauncherDialog", true); //$NON-NLS-1$
+			rc = componentRegistrar.RegisterFactory (XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CID, aClassName, aContractID, dialogFactory.getAddress ());
+			if (rc != XPCOM.NS_OK) {
+				browser.dispose ();
+				error (rc);
+			}
+			dialogFactory.Release ();
+		}
 
 		/*
 		* Check for the availability of the pre-1.8 implementation of nsIDocShell
@@ -844,16 +872,18 @@ public void create (Composite parent, int style) {
 				new nsISupports (result[0]).Release ();
 				result[0] = 0;
 
-				DownloadFactory_1_8 downloadFactory_1_8 = new DownloadFactory_1_8 ();
-				downloadFactory_1_8.AddRef ();
-				aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_TRANSFER_CONTRACTID, true);
-				aClassName = MozillaDelegate.wcsToMbcs (null, "swtTransfer", true); //$NON-NLS-1$
-				rc = componentRegistrar.RegisterFactory (XPCOM.NS_DOWNLOAD_CID, aClassName, aContractID, downloadFactory_1_8.getAddress ());
-				if (rc != XPCOM.NS_OK) {
-					browser.dispose ();
-					error (rc);
+				if (!factoriesRegistered) {
+					DownloadFactory_1_8 downloadFactory_1_8 = new DownloadFactory_1_8 ();
+					downloadFactory_1_8.AddRef ();
+					byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_TRANSFER_CONTRACTID, true);
+					byte[] aClassName = MozillaDelegate.wcsToMbcs (null, "swtTransfer", true); //$NON-NLS-1$
+					rc = componentRegistrar.RegisterFactory (XPCOM.NS_DOWNLOAD_CID, aClassName, aContractID, downloadFactory_1_8.getAddress ());
+					if (rc != XPCOM.NS_OK) {
+						browser.dispose ();
+						error (rc);
+					}
+					downloadFactory_1_8.Release ();
 				}
-				downloadFactory_1_8.Release ();
 			} else { /* >= 1.9 */
 				IsPre_1_9 = false;
 			}
@@ -861,6 +891,8 @@ public void create (Composite parent, int style) {
 		result[0] = 0;
 		interfaceRequestor.Release ();
 		componentRegistrar.Release ();
+
+		System.setProperty (FACTORIES_REGISTERED, TRUE);
 	}
 	componentManager.Release ();
 
@@ -1844,7 +1876,7 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 		browser.dispose ();
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [MOZILLA_FIVE_HOME may not point at an embeddable GRE] [NS_InitEmbedding " + mozillaPath + " error " + rc + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
-	System.setProperty (GRE_INITIALIZED, "true"); //$NON-NLS-1$
+	System.setProperty (GRE_INITIALIZED, TRUE);
 }
 
 void initPreferences (nsIServiceManager serviceManager, nsIComponentManager componentManager) {
