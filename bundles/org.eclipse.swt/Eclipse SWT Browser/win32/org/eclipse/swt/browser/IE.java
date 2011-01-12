@@ -29,7 +29,7 @@ class IE extends WebBrowser {
 	OleAutomation[] documents = new OleAutomation[0];
 
 	boolean back, forward, delaySetText, ignoreDispose, ignoreTraverse, performingInitialNavigate;
-	boolean installFunctionsOnDocumentComplete, untrustedText, isRefresh;
+	boolean installFunctionsOnDocumentComplete, untrustedText, isRefresh, isAboutBlank;
 	Point location;
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
@@ -599,6 +599,7 @@ public void create(Composite parent, int style) {
 					case NavigateComplete2: {
 						Variant varResult = event.arguments[1];
 						String url = varResult.getString();
+						isAboutBlank = url.startsWith(ABOUT_BLANK);
 
 						/*
 						* Bug in Acrobat Reader.  Opening > MAX_PDF PDF files causes Acrobat to not
