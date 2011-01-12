@@ -1097,6 +1097,8 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>ToolItem.setWidth()</code></li>
 	 * </ul></p>
+	 *
+	 * @since 3.7
      */
     public static final int SEPARATOR_FILL = -2;
 
