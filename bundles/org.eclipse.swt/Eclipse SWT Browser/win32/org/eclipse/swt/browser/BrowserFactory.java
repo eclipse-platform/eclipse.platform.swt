@@ -17,7 +17,7 @@ class BrowserFactory {
 
 WebBrowser createWebBrowser (int style) {
 	if (OS.IsWinCE && (style & (SWT.MOZILLA | SWT.WEBKIT)) != 0) {
-		throw new SWTError ("Unsupported Browser type"); //$NON-NLS-1$
+		throw new SWTError (SWT.ERROR_NO_HANDLES, "Unsupported Browser type"); //$NON-NLS-1$
 	}
 	if ((style & SWT.MOZILLA) != 0) {
 		return new Mozilla ();
