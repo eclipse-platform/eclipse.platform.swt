@@ -126,7 +126,7 @@ static int checkStyle(int style) {
 		style &= ~SWT.WEBKIT;
 	}
 	String platform = SWT.getPlatform ();
-	if ((style & SWT.MOZILLA) != 0) {
+	if ((style & SWT.MOZILLA) != 0 || (style & SWT.WEBKIT) != 0) {
 		if ("carbon".equals (platform)) return style | SWT.EMBEDDED; //$NON-NLS-1$
 		if ("motif".equals (platform)) return style | SWT.EMBEDDED; //$NON-NLS-1$
 		return style;
