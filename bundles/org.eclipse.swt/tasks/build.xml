@@ -695,14 +695,13 @@
 			outputproperty="m_solaris_x86_output"
 			command="hostname"/>
 			
-		<!-- TEMPORARY: AIX machine is being repaired. -->
-		<!--sshexec host="${m_aix}" 
+		<sshexec host="${m_aix}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			failonerror="false"
 			trust="true"
 			outputproperty="m_aix_output"
-			command="hostname"/-->
+			command="hostname"/>
 			
 		<sshexec host="${m_hpux}" 
 			username="swtbuild" 
@@ -746,10 +745,9 @@
 		<condition property="m_solaris_x86_test" value="${success_msg}" else="${fail_msg}">
 			<matches pattern="${m_solaris_x86}*" string="${m_solaris_x86_output}"/>
 		</condition>
-		<!-- TEMPORARY: AIX machine is being repaired. -->
-		<!--condition property="m_aix_test" value="${success_msg}" else="${fail_msg}">
+		<condition property="m_aix_test" value="${success_msg}" else="${fail_msg}">
 			<matches pattern="${m_aix}*" string="${m_aix_output}"/>
-		</condition-->
+		</condition>
 		<condition property="m_hpux_test" value="${success_msg}" else="${fail_msg}">
 			<matches pattern="${m_hpux}*" string="${m_hpux_output}"/>
 		</condition>
@@ -768,8 +766,7 @@
 		<echo>${m_linux_ppc64} - ${m_linux_ppc64_test}</echo-->
 		<echo>${m_solaris_sparc} - ${m_solaris_sparc_test}</echo>
 		<echo>${m_solaris_x86} - ${m_solaris_x86_test}</echo>
-		<!-- TEMPORARY: AIX machine is being repaired. -->
-		<!--echo>${m_aix} - ${m_aix_test}</echo-->
+		<echo>${m_aix} - ${m_aix_test}</echo>
 		<echo>${m_hpux} - ${m_hpux_test}</echo>
 		<echo>${m_mac} - ${m_mac_test}</echo>
 		<echo>-------------------------</echo>
