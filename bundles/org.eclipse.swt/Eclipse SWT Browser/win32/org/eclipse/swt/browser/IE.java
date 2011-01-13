@@ -105,6 +105,7 @@ class IE extends WebBrowser {
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String CLSID_SHELLEXPLORER1 = "{EAB22AC3-30C1-11CF-A7EB-0000C05BAE0B}"; //$NON-NLS-1$
 	static final String EXTENSION_PDF = ".pdf";	//$NON-NLS-1$
+	static final String HTML_DOCUMENT = "HTML Document";	//$NON-NLS-1$
 	static final int MAX_PDF = 20;
 
 	static final String EVENT_DOUBLECLICK = "dblclick"; //$NON-NLS-1$
@@ -1827,9 +1828,28 @@ void handleDOMEvent (OleEvent e) {
 }
 
 void hookDOMListeners(OleAutomation webBrowser, final boolean isTop) {
-	int[] rgdispid = webBrowser.getIDsOfNames(new String[] { PROPERTY_DOCUMENT });
+	/*
+	* DOM listeners are only applicable when HTML content is shown.
+	* HTML documents always answer the Type property, so failure to get
+	* this value indicates that some other content type is being shown.
+	*/
+	int[] rgdispid = webBrowser.getIDsOfNames(new String[] { PROPERTY_TYPE });
+	if (rgdispid == null) {
+		return;
+	}
 	int dispIdMember = rgdispid[0];
 	Variant	pVarResult = webBrowser.getProperty(dispIdMember);
+	if (pVarResult == null || pVarResult.getType() != COM.VT_BSTR) {
+		if (pVarResult != null) pVarResult.dispose ();
+		return;
+	}
+	String type = pVarResult.getString();
+	pVarResult.dispose();
+	if (!type.equals(HTML_DOCUMENT)) return;
+
+	rgdispid = webBrowser.getIDsOfNames(new String[] { PROPERTY_DOCUMENT });
+	dispIdMember = rgdispid[0];
+	pVarResult = webBrowser.getProperty(dispIdMember);
 	if (pVarResult == null) return;
 	if (pVarResult.getType() == COM.VT_EMPTY) {
 		pVarResult.dispose();
