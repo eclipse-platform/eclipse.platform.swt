@@ -1949,6 +1949,30 @@
 		<method selector="draggingSourceOperationMask" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="outlineView:shouldSelectItem:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="outlineView:shouldTrackCell:forTableColumn:item:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="tableView:shouldSelectRow:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="tableView:shouldTrackCell:forTableColumn:row:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 	</class>
 	<class name="NSObjectController" swt_superclass="NSController">
 	</class>
@@ -3012,10 +3036,6 @@
 		<method selector="clickedRow" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="columnAtPoint:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="columnIndexesInRect:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -3077,6 +3097,11 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="numberOfSelectedRows" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="preparedCellAtColumn:row:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="rectOfColumn:" swt_gen="true">

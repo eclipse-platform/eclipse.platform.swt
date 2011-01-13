@@ -147,6 +147,9 @@ public class Display extends Device {
 	Control focusControl, currentFocusControl;
 	int focusEvent;
 	
+	/* Table/Tree click tracking */
+	int /*long*/ trackedButtonRow = -1;
+
 	NSWindow screenWindow, keyWindow;
 
 	NSAutoreleasePool[] pools;
@@ -2312,6 +2315,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_numberOfChildrenOfItem_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_objectValueForTableColumn_byItem_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_willDisplayCell_forTableColumn_item_, proc6, "@:@@@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_shouldSelectItem_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_shouldTrackCell_forTableColumn_item_, proc6, "@:@@@i");
 	OS.class_addMethod(cls, OS.sel_outlineView_setObjectValue_forTableColumn_byItem_, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidResize_, proc3, "@:@");
@@ -2480,6 +2485,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableViewSelectionIsChanging_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableViewSelectionDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_willDisplayCell_forTableColumn_row_, proc6, "@:@@@i");
+	OS.class_addMethod(cls, OS.sel_tableView_shouldSelectRow_, proc4, "@:@i");
+	OS.class_addMethod(cls, OS.sel_tableView_shouldTrackCell_forTableColumn_row_, proc6, "@:@@@i");
 	OS.class_addMethod(cls, OS.sel_tableView_setObjectValue_forTableColumn_row_, proc6, "@:@@@i");
 	OS.class_addMethod(cls, OS.sel_tableViewColumnDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableViewColumnDidResize_, proc3, "@:@");
@@ -5173,8 +5180,12 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		return widget.accessibilityAttributeValue_forParameter(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_tableView_didClickTableColumn_) {
 		widget.tableView_didClickTableColumn (id, sel, arg0, arg1);
+	} else if (sel == OS.sel_tableView_shouldSelectRow_) {
+		return (widget.tableView_shouldSelectRow(id, sel, arg0, arg1) ? 1 : 0);
 	} else if (sel == OS.sel_outlineView_didClickTableColumn_) {
 		widget.outlineView_didClickTableColumn (id, sel, arg0, arg1);
+	} else if (sel == OS.sel_outlineView_shouldSelectItem_) {
+		return (widget.outlineView_shouldSelectItem(id, sel, arg0, arg1) ? 1 : 0);
 	} else if (sel == OS.sel_shouldChangeTextInRange_replacementString_) {
 		return widget.shouldChangeTextInRange_replacementString(id, sel, arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_canDragRowsWithIndexes_atPoint_) {
@@ -5257,6 +5268,10 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		widget.tableView_setObjectValue_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3);
 	} else if (sel == OS.sel_view_stringForToolTip_point_userData_) {
 		return widget.view_stringForToolTip_point_userData(id, sel, arg0, arg1, arg2, arg3);
+	} else if (sel == OS.sel_tableView_shouldTrackCell_forTableColumn_row_) {
+		return (widget.tableView_shouldTrackCell_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3) ? 1 : 0);
+	} else if (sel == OS.sel_outlineView_shouldTrackCell_forTableColumn_item_) {
+		return (widget.outlineView_shouldTrackCell_forTableColumn_item(id, sel, arg0, arg1, arg2, arg3) ? 1 : 0);
 	}
 	return 0;
 }

@@ -1156,6 +1156,14 @@ void outlineViewSelectionIsChanging(int /*long*/ id, int /*long*/ sel, int /*lon
 void outlineView_setObjectValue_forTableColumn_byItem(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ object, int /*long*/ tableColumn, int /*long*/ item) {
 }
 
+boolean outlineView_shouldTrackCell_forTableColumn_item(int /*long*/ id, int /*long*/ sel, int /*long*/ table, int /*long*/ cell, /*long*/ int /*long*/ tableColumn, int /*long*/ item) {
+	return true;
+}
+
+boolean outlineView_shouldSelectItem(int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ index) {
+	return true;
+}
+
 boolean outlineView_writeItems_toPasteboard(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
 	return false;
 }
@@ -1837,6 +1845,14 @@ void tableView_didClickTableColumn(int /*long*/ id, int /*long*/ sel, int /*long
 
 int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
 	return 0;
+}
+
+boolean tableView_shouldTrackCell_forTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ table, int /*long*/ cell, /*long*/ int /*long*/ tableColumn, int /*long*/ rowIndex) {
+	return true;
+}
+
+boolean tableView_shouldSelectRow(int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ index) {
+	return true;
 }
 
 void tableView_setObjectValue_forTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ anObject, int /*long*/ aTableColumn, int /*long*/ rowIndex) {	

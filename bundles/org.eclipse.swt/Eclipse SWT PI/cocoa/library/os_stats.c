@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 587;
-int OS_nativeFunctionCallCount[587];
+int OS_nativeFunctionCount = 588;
+int OS_nativeFunctionCallCount[588];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -1026,6 +1026,11 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend_1bool__IIIII",
 #else
 	"objc_1msgSend_1bool__JJJJJ",
+#endif
+#ifndef JNI64
+	"objc_1msgSend_1bool__IIIIII",
+#else
+	"objc_1msgSend_1bool__JJJJJJ",
 #endif
 #ifndef JNI64
 	"objc_1msgSend_1bool__IIIIIII",

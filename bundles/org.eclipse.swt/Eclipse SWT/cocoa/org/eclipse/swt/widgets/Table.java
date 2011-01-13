@@ -1932,6 +1932,7 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 			}
 		}
 	}
+	display.trackedButtonRow = -1;
 	didSelect = false;
 	super.mouseDownSuper(id, sel, theEvent);
 	didSelect = false;
@@ -1945,7 +1946,8 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
  */
 int /*long*/ nextState (int /*long*/ id, int /*long*/ sel) {
 	NSTableView tableView = (NSTableView)view;
-	int index = (int)/*64*/tableView.selectedRow ();
+	int index = (int)/*64*/tableView.clickedRow();
+	if (index == -1) index = (int)/*64*/tableView.selectedRow ();
 	TableItem item = items[index];
 	if (item.grayed) {
 		return item.checked ? OS.NSOffState : OS.NSMixedState;
@@ -3130,6 +3132,64 @@ int /*long*/ tableView_objectValueForTableColumn_row (int /*long*/ id, int /*lon
 		}
 	}
 	return item.createString (0).id;
+}
+
+boolean tableView_shouldSelectRow(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ rowIndex) {
+	boolean result = true;
+
+	if ((style & SWT.SINGLE) != 0) {
+		/*
+		 * Feature in Cocoa.  Calling setAllowsEmptySelection will automatically select the first row of the list. 
+		 * And, single-selection NSTable/OutlineViews allow the user to de-select the selected item via command-click.
+		 * This is normal platform behavior, but for compatibility with other platforms, if the SINGLE style is in use,
+		 * force a selection by seeing if the proposed selection set is empty, and if so, put back the currently selected row.  
+		 */
+		NSTableView table = new NSTableView(aTableView);			
+		NSIndexSet indexes = table.selectedRowIndexes();
+		if (indexes.count() != 1 && table.selectedRow() != -1) {
+			return false;
+		}
+	}
+
+	// If a checkbox is being tracked don't select the row.
+	if (display.trackedButtonRow != -1) return false;
+	NSTableView tableView = (NSTableView)view;
+    int /*long*/ clickedCol = tableView.clickedColumn();
+    int /*long*/ clickedRow = tableView.clickedRow();
+    if (clickedRow >= 0 && clickedCol >= 0) {
+        NSCell cell = tableView.preparedCellAtColumn(clickedCol, clickedRow);
+        if (cell.isKindOfClass(OS.class_NSButtonCell) && cell.isEnabled()) {
+            NSRect cellFrame = tableView.frameOfCellAtColumn(clickedCol, clickedRow);
+            NSRect imageFrame = cell.imageRectForBounds(cellFrame);
+            NSPoint hitPoint = tableView.convertPoint_fromView_(NSApplication.sharedApplication().currentEvent().locationInWindow(), null);
+            result = ! OS.NSPointInRect(hitPoint, imageFrame) || didSelect;
+        }            
+    }
+    return result;
+}
+
+boolean tableView_shouldTrackCell_forTableColumn_row(int /*long*/ id, int /*long*/ sel,
+		int /*long*/ table, int /*long*/ cell, /*long*/ int /*long*/ tableColumn, int /*long*/ rowIndex) {
+	NSCell theCell = new NSCell(cell);
+	NSTableView tableView = (NSTableView)view;
+	if (theCell.isKindOfClass(OS.class_NSButtonCell)) {
+		// Allow tracking of the checkbox area of the button, not the text itself.
+		int columnIndex = 0;
+		for (int i=0; i<columnCount; i++) {
+			if (columns [i].nsColumn.id == tableColumn) {
+				columnIndex = i;
+				break;
+			}
+		}
+		NSRect cellFrame = tableView.frameOfCellAtColumn(columnIndex, rowIndex);
+		NSRect imageFrame = theCell.imageRectForBounds(cellFrame);
+		NSPoint hitPoint = tableView.convertPoint_fromView_(NSApplication.sharedApplication().currentEvent().locationInWindow(), null);
+		boolean shouldTrack = OS.NSPointInRect(hitPoint, imageFrame) && (display.trackedButtonRow == -1 || display.trackedButtonRow == rowIndex) && !didSelect;
+		if (OS.NSPointInRect(hitPoint, imageFrame) && display.trackedButtonRow == -1 && !didSelect) display.trackedButtonRow = rowIndex;
+		return shouldTrack;
+	} else {
+		return tableView.isRowSelected(rowIndex);
+	}
 }
 
 void tableView_setObjectValue_forTableColumn_row (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ anObject, int /*long*/ aTableColumn, int /*long*/ rowIndex) {

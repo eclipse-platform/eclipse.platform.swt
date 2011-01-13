@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8922,6 +8922,29 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJJJJ)(JNIEnv *env, jc
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__IIIII_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJJJJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO_objc_1msgSend_1bool__IIIIII) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1bool__JJJJJJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__IIIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5)
+#else
+JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJJJJJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5)
+#endif
+{
+	jboolean rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__IIIIII_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__JJJJJJ_FUNC);
+#endif
+	rc = (jboolean)((BOOL (*)(jintLong, jintLong, jintLong, jintLong, jintLong, jintLong))objc_msgSend_bool)(arg0, arg1, arg2, arg3, arg4, arg5);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__IIIIII_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJJJJJ_FUNC);
 #endif
 	return rc;
 }
