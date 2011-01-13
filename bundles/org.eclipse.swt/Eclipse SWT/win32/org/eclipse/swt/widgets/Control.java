@@ -3562,7 +3562,9 @@ boolean translateTraversal (MSG msg) {
 	int /*long*/ hwnd = msg.hwnd;
 	int key = (int)/*64*/msg.wParam;
 	if (key == OS.VK_MENU) {
-		OS.SendMessage (hwnd, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+		if ((msg.lParam & 0x40000000) == 0) {
+			OS.SendMessage (hwnd, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+		}
 		return false;
 	}
 	int detail = SWT.TRAVERSE_NONE;
