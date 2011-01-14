@@ -75,7 +75,7 @@ public class Table extends Composite {
 	NSTextFieldCell dataCell;
 	NSButtonCell buttonCell;
 	int columnCount, itemCount, lastIndexOf, sortDirection;
-	boolean ignoreSelect, fixScrollWidth, drawExpansion, didSelect, rowsChanged, mouseIsDown;
+	boolean ignoreSelect, fixScrollWidth, drawExpansion, didSelect;
 	Rectangle imageBounds;
 
 	static int NEXT_ID;
@@ -3070,21 +3070,6 @@ void sendMeasureItem (TableItem item, int columnIndex, NSSize size, boolean isSe
 	}
 }
 
-boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
-	if (type == SWT.MouseDown) {
-		mouseIsDown = true;
-	}
-	if (type == SWT.MouseUp) {
-		mouseIsDown = false;
-		
-		if (rowsChanged) {
-			rowsChanged = false;
-			((NSTableView)view).noteNumberOfRowsChanged();
-		}
-	}
-	return super.sendMouseEvent(nsEvent, type, send);
-}
-
 void tableViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
 	NSNotification notification = new NSNotification (aNotification);
 	NSDictionary userInfo = notification.userInfo ();
@@ -3381,21 +3366,13 @@ void updateCursorRects (boolean enabled) {
 }
 
 void updateRowCount() {	
-	/*
-	 * Feature in Cocoa. Changing the row count while the mouse is tracking will confuse the code that calculates the 
-	 * current selection.  Fix is to not call noteNumberOfRowsChanged if the mouse is down.
-	 */
-	if (mouseIsDown) {
-		rowsChanged = true;
-	} else {
-		NSTableView widget = (NSTableView)view;
-		setRedraw(false);
-		ignoreSelect = true;
-		widget.noteNumberOfRowsChanged ();
-		ignoreSelect = false;
-		widget.tile();
-		setRedraw(true);
-	}
+	NSTableView widget = (NSTableView)view;
+	setRedraw(false);
+	ignoreSelect = true;
+	widget.noteNumberOfRowsChanged ();
+	ignoreSelect = false;
+	widget.tile();
+	setRedraw(true);
 }
 
 }
