@@ -2255,7 +2255,8 @@ boolean isTabItem () {
  * Returns <code>true</code> if this control is receiving OS-level touch events,
  * otherwise <code>false</code>
  * <p>
- * Note that this method will return false if the current platform does not support touch-based input. 
+ * Note that this method will return false if the current platform does not support touch-based input.
+ * If this method does return true, gesture events will not be sent to the control.
  *
  * @return <code>true</code> if the widget is currently receiving touch events; <code>false</code> otherwise.
  *

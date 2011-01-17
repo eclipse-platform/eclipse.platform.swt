@@ -1863,6 +1863,27 @@ public abstract class Control extends Widget implements Drawable {
 	}
 
 	/**
+	 * Returns <code>true</code> if this control is receiving OS-level touch events,
+	 * otherwise <code>false</code>
+	 * <p>
+	 * Note that this method will return false if the current platform does not support touch-based input.
+	 * If this method does return true, gesture events will not be sent to the control.
+	 *
+	 * @return <code>true</code> if the widget is currently receiving touch events; <code>false</code> otherwise.
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+	 * </ul>
+	 * 
+	 * @since 3.7
+	 */
+	public boolean isTouchEnabled() {
+		checkWidget();
+		return false;
+	}
+
+	/**
 	 * Returns <code>true</code> if the receiver is visible and all ancestors up
 	 * to and including the receiver's nearest ancestor shell are visible.
 	 * Otherwise, <code>false</code> is returned.
