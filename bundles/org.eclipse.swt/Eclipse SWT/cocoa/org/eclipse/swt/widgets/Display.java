@@ -109,7 +109,13 @@ public class Display extends Device {
 	/* gesture event state */
 	double rotation;
 	double magnification;
-	boolean gestureStarted;
+	boolean gestureActive;
+
+	/* touch event state */
+	int touchCounter;
+	long primaryIdentifier;
+	NSMutableArray currentTouches;
+	Map touchSourceMap;
 
 	/* Key event management */
 	int [] deadKeyState = new int[1];
@@ -985,6 +991,16 @@ void createMainMenu () {
 	mainMenu.release();
 }
 
+NSMutableArray currentTouches() {
+	synchronized (Device.class) {
+		if (currentTouches == null) {
+			currentTouches = (NSMutableArray) new NSMutableArray().alloc();
+			currentTouches = currentTouches.initWithCapacity(5);
+		}
+	}
+	return currentTouches;
+}
+
 int /*long*/ cursorSetProc (int /*long*/ id, int /*long*/ sel) {
 	if (lockCursor) {
 		if (currentControl != null) {
@@ -1162,6 +1178,23 @@ public static Display findDisplay (Thread thread) {
 		}
 		return null;
 	}
+}
+
+TouchSource findTouchSource(NSTouch touch) {
+	if (touchSourceMap == null) {
+		touchSourceMap = new HashMap();
+	}
+	id touchDevice = touch.device();
+	Long touchDeviceObj = new Long(touchDevice.id);
+	TouchSource returnVal = (TouchSource) touchSourceMap.get(touchDeviceObj);
+	
+	if (returnVal == null) {
+		Rectangle bounds = new Rectangle(0, 0, (int)Math.ceil(touch.deviceSize().width), (int)Math.ceil(touch.deviceSize().height));
+		returnVal = new TouchSource(false, bounds);;
+		touchSourceMap.put(touchDeviceObj, returnVal);
+	}
+
+	return returnVal;
 }
 
 /**
@@ -2916,6 +2949,17 @@ boolean isBundled () {
 		}
 	}
 	return false;
+}
+
+/**	 
+ * Returns true if a touch-aware input device is attached to the system,
+ * enabled, and ready for use.
+ * 
+ * @since 3.7
+ */
+public boolean isTouchEnabled() {
+	// Gestures are available on OS X 10.5.3 and later. Touch events are only available on 10.6 and later.
+	return (OS.VERSION > 0x1053);
 }
 
 static boolean isValidClass (Class clazz) {

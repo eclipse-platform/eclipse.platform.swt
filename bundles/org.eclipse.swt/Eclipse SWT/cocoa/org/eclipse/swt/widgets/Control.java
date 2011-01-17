@@ -68,7 +68,8 @@ public abstract class Control extends Widget implements Drawable {
 	NSBezierPath regionPath;
 	int /*long*/ visibleRgn;
 	Accessible accessible;
-
+	boolean touchEnabled;
+	
 	final static int CLIPPING = 1 << 10;
 	final static int VISIBLE_REGION = 1 << 12;
 	
@@ -657,6 +658,35 @@ void addTraits(NSMutableDictionary dict, Font font) {
 
 /**
  * Adds the listener to the collection of listeners who will
+ * be notified when touch events occur, by sending it
+ * one of the messages defined in the <code>TouchListener</code>
+ * interface.
+ * <p>
+ * NOTE: You must also call <code>setTouchEventsEnabled</code> to notify the 
+ * windowing toolkit that you want touch events to be generated.
+ * </p>
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see TouchListener
+ * @see #removeTouchListener
+ * @since 3.7
+ */
+public void addTouchListener (TouchListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Touch,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
  * be notified when traversal events occur, by sending it
  * one of the messages defined in the <code>TraverseListener</code>
  * interface.
@@ -687,12 +717,12 @@ boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
 }
 
 void beginGestureWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
-	if (!gestureEvent(id, sel, event, SWT.GESTURE_BEGIN)) return;
+	if (!gestureEvent(id, event, SWT.GESTURE_BEGIN)) return;
 	super.beginGestureWithEvent(id, sel, event);
 }
 
 void endGestureWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
-	if (!gestureEvent(id, sel, event, SWT.GESTURE_END)) return;
+	if (!gestureEvent(id, event, SWT.GESTURE_END)) return;
 	super.endGestureWithEvent(id, sel, event);
 }
 
@@ -1389,15 +1419,63 @@ boolean forceFocus (NSView focusView) {
 	return view.window ().makeFirstResponder (focusView);
 }
 
-boolean gestureEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ event, int detail) {
-	// For cross-platform compatibility, touch events and gestures are mutually exclusive.
-	// Don't send a gesture if touch events are enabled for this control.
-//	if (touchEnabled) return true;
+boolean gestureEvent(int /*long*/ id, int /*long*/ eventPtr, int detail) {
 	if (!display.sendEvent) return true;
 	display.sendEvent = false;
+	// For cross-platform compatibility, touch events and gestures are mutually exclusive.
+	// Don't send a gesture if touch events are enabled for this control.
+	if (touchEnabled) return true;
 	if (!isEventView (id)) return true;
-	NSEvent nsEvent = new NSEvent(event);
-	return sendGestureEvent (nsEvent, detail, true);	
+	if (!hooks(SWT.Gesture) && !filters(SWT.Gesture)) return true;
+	NSEvent nsEvent = new NSEvent(eventPtr);
+	Event event = new Event();
+	NSPoint windowPoint;
+	NSView view = eventView ();
+	windowPoint = nsEvent.locationInWindow();
+	NSPoint point = view.convertPoint_fromView_(windowPoint, null);
+	if (!view.isFlipped ()) {
+		point.y = view.bounds().height - point.y;
+	}
+	event.x = (int) point.x;
+	event.y = (int) point.y;
+	setInputState (event, nsEvent, SWT.Gesture);
+	event.detail = detail;
+
+	if (detail == SWT.GESTURE_BEGIN) {
+		display.rotation = 0.0;
+		display.magnification = 1.0;
+		display.gestureActive = true;
+	} else {
+		display.gestureActive = false;
+	}
+	
+	switch (detail) {	
+	case SWT.GESTURE_SWIPE:
+		event.xDirection = (int) -nsEvent.deltaX();
+		event.yDirection = (int) -nsEvent.deltaY();
+		break;
+	case SWT.GESTURE_ROTATE: {	
+		display.rotation += nsEvent.rotation();
+		event.rotation = display.rotation;
+		break;
+	}
+	case SWT.GESTURE_MAGNIFY:
+		display.magnification += nsEvent.magnification();
+		event.magnification = display.magnification;
+		break;
+	case SWT.GESTURE_PAN:
+		// Panning increment is expressed in terms of the direction of movement,
+		// not in terms of scrolling increment.
+		if (display.gestureActive) {
+			event.xDirection = (int) -nsEvent.deltaX();
+			event.yDirection = (int) -nsEvent.deltaY();
+			if (event.xDirection == 0 && event.yDirection == 0) return true;
+		}
+		break;
+	}
+
+	sendEvent (SWT.Gesture, event);
+	return event.doit;
 }
 
 /**
@@ -2173,6 +2251,26 @@ boolean isTabItem () {
 	return (code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0;
 }
 
+/**
+ * Returns <code>true</code> if this control is receiving OS-level touch events,
+ * otherwise <code>false</code>
+ * <p>
+ * Note that this method will return false if the current platform does not support touch-based input. 
+ *
+ * @return <code>true</code> if the widget is currently receiving touch events; <code>false</code> otherwise.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.7
+ */
+public boolean isTouchEnabled() {
+	checkWidget();
+	return display.isTouchEnabled() && touchEnabled;
+}
+
 boolean isTransparent() {
 	if (background != null) return false;
 	return parent.isTransparent();
@@ -2248,8 +2346,8 @@ void keyUp (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 }
 
 void magnifyWithEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
-	if (!gestureEvent(id, sel, event, SWT.GESTURE_MAGNIFY)) return;
-	super.magnifyWithEvent(id, sel, event);	
+	if (!gestureEvent(id, event, SWT.GESTURE_MAGNIFY)) return;
+	super.magnifyWithEvent(id, sel, event);
 }
 
 void markLayout (boolean changed, boolean all) {
@@ -2289,22 +2387,26 @@ void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	boolean handled = false;
 	if (id == view.id) {
 		NSEvent nsEvent = new NSEvent(theEvent);
-		if (display.gestureStarted && hooks(SWT.Gesture)) {
-			if (!sendGestureEvent(nsEvent, SWT.GESTURE_PAN, true)) {
-				handled = true;						
-			}
-		}
-		if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
-			if (nsEvent.deltaY() != 0) {
-				if (!sendMouseEvent(nsEvent, SWT.MouseWheel, true)) {
-					handled = true;
+		if ((hooks(SWT.Gesture) || filters(SWT.Gesture))) {
+			if (nsEvent.deltaY() != 0 || nsEvent.deltaX() != 0) {
+				if (!gestureEvent(id, theEvent, SWT.GESTURE_PAN)) {
+					handled = true;						
 				}
 			}
 		}
-		if (hooks (SWT.MouseHorizontalWheel) || filters (SWT.MouseHorizontalWheel)) {
-			if (nsEvent.deltaX() != 0) {
-				if (!sendMouseEvent(nsEvent, SWT.MouseHorizontalWheel, true)) {
-					handled = true;
+		if (!handled) {
+			if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
+				if (nsEvent.deltaY() != 0) {
+					if (!sendMouseEvent(nsEvent, SWT.MouseWheel, true)) {
+						handled = true;
+					}
+				}
+			}
+			if (hooks (SWT.MouseHorizontalWheel) || filters (SWT.MouseHorizontalWheel)) {
+				if (nsEvent.deltaX() != 0) {
+					if (!sendMouseEvent(nsEvent, SWT.MouseHorizontalWheel, true)) {
+						handled = true;
+					}
 				}
 			}
 		}
@@ -3034,6 +3136,31 @@ void removeRelation () {
 
 /**
  * Removes the listener from the collection of listeners who will
+ * be notified when touch events occur.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see TouchListener
+ * @see #addTouchListener
+ * @since 3.7
+ */
+public void removeTouchListener(TouchListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Touch, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
  * be notified when traversal events occur.
  *
  * @param listener the listener which should no longer be notified
@@ -3083,8 +3210,8 @@ void resized () {
 }
 
 void rotateWithEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
-	if (!gestureEvent(id, sel, event, SWT.GESTURE_ROTATE)) return;
-	super.rotateWithEvent(id, sel, event);	
+	if (!gestureEvent(id, event, SWT.GESTURE_ROTATE)) return;
+	super.rotateWithEvent(id, sel, event);
 }
 
 boolean sendDragEvent (int button, int stateMask, int x, int y) {
@@ -3126,56 +3253,6 @@ void sendFocusEvent (int type) {
 				break;
 		}
 	}
-}
-
-boolean sendGestureEvent (NSEvent nsEvent, int detail, boolean send) {
-	Event event = new Event ();
-	NSPoint windowPoint;
-	NSView view = eventView ();
-	windowPoint = nsEvent.locationInWindow();
-	NSPoint point = view.convertPoint_fromView_(windowPoint, null);
-	if (!view.isFlipped ()) {
-		point.y = view.bounds().height - point.y;
-	}
-	event.x = (int) point.x;
-	event.y = (int) point.y;
-	setInputState (event, nsEvent, SWT.Gesture);
-	event.detail = detail;
-
-	if (detail == SWT.GESTURE_BEGIN) {
-		display.gestureStarted = true;
-		display.rotation = 0.0;
-		display.magnification = 1.0;
-	} else if (detail == SWT.GESTURE_END) {
-		display.gestureStarted = false;
-	}
-	
-	switch (detail) {	
-	case SWT.GESTURE_SWIPE:
-		event.xDirection = (int) -nsEvent.deltaX();
-		event.yDirection = (int) -nsEvent.deltaY();
-		break;
-	case SWT.GESTURE_ROTATE: {	
-		display.rotation += nsEvent.rotation();
-		event.rotation = display.rotation;
-		break;
-	}
-	case SWT.GESTURE_MAGNIFY:
-		display.magnification += nsEvent.magnification();
-		event.magnification = display.magnification;
-		break;
-	case SWT.GESTURE_PAN:
-		// Panning increment is expressed in terms of the direction of movement,
-		// not in terms of scrolling increment.
-		event.xDirection = (int) -nsEvent.deltaX();
-		event.yDirection = (int) -nsEvent.deltaY();
-		break;
-	}
-
-	event.doit = true;
-	sendEvent (SWT.Gesture, event);
-	if (isDisposed ()) return false;
-	return event.doit;
 }
 
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
@@ -3233,6 +3310,49 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	}
 	if (shell != null) shell.setActiveControl(this);
 	return event.doit;
+}
+
+Touch touchStateFromNSTouch(NSTouch touch) {
+	TouchSource source = display.findTouchSource(touch);	
+	int /*long*/ osPhase = touch.phase();
+	long identity = OS.objc_msgSend(touch.id, OS.sel_identity);
+	int state = 0;
+	
+	switch ((int)osPhase) {
+	case OS.NSTouchPhaseBegan:
+		state = SWT.TOUCHSTATE_DOWN;
+		break;
+	case OS.NSTouchPhaseMoved:
+		state = SWT.TOUCHSTATE_MOVE;
+		break;
+	case OS.NSTouchPhaseEnded:
+	case OS.NSTouchPhaseCancelled:
+		state = SWT.TOUCHSTATE_UP;
+		break;
+	}
+
+	display.touchCounter++;	
+	boolean primary = false;
+	NSPoint normalizedPos = touch.normalizedPosition();
+    double normalizedX = normalizedPos.x;
+    double normalizedY = 1 - normalizedPos.y;
+    if (display.currentTouches().count() == 1) display.primaryIdentifier = identity;
+    if (display.primaryIdentifier == identity) primary = true;    
+	NSSize deviceSize = touch.deviceSize();
+	int deviceX = (int) (normalizedX * deviceSize.width);
+	int deviceY = (int) (normalizedY * deviceSize.height);
+	Touch newTS = new Touch(identity, source, state, primary, deviceX, deviceY);
+	return newTS;
+}
+
+NSTouch findTouchWithId(NSArray touches, NSObject identity) {
+	int /*long*/ count = touches.count();
+	for (int /*long*/ i = 0; i < count; i++) {
+		NSTouch aTouch = new NSTouch(touches.objectAtIndex(i).id);
+		NSObject currIdentity = new NSObject(OS.objc_msgSend(aTouch.id, OS.sel_identity));
+		if (currIdentity.isEqual(identity)) return aTouch;
+	}
+	return null;
 }
 
 void setBackground () {
@@ -3928,6 +4048,27 @@ public void setToolTipText (String string) {
 }
 
 /**
+ * Sets the receiver to receive touch events from the OS.  By default, touch
+ * events are not delivered to a control unless specifically requested for that control.
+ * This is independent of whether or not there are any <code>TouchListener</code> instances 
+ * registered for the control.
+ *
+ * @param enabled the new touch-enabled state.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.7
+ */
+public void setTouchEventsEnabled(boolean enabled) {
+	checkWidget();
+	eventView().setAcceptsTouchEvents(enabled);
+	touchEnabled = enabled;
+}
+
+/**
  * Marks the receiver as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
  * <p>
@@ -4092,7 +4233,7 @@ void sort (int [] items) {
 }
 
 void swipeWithEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
-	if (!gestureEvent(id, sel, event, SWT.GESTURE_SWIPE)) return;
+	if (!gestureEvent(id, event, SWT.GESTURE_SWIPE)) return;
 	super.swipeWithEvent(id, sel, event);
 }
 
@@ -4195,6 +4336,102 @@ public Point toDisplay (Point point) {
 
 NSView topView () {
 	return view;
+}
+
+boolean touchEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ eventPtr) {
+	if (!display.sendEvent) return true;
+	display.sendEvent = false;
+	if (!(hooks(SWT.Touch) || filters(SWT.Touch))) return true;
+	if (!isEventView (id)) return true;
+	if (!touchEnabled) return true;
+	NSEvent nsEvent = new NSEvent(eventPtr);
+	NSMutableArray currentTouches = display.currentTouches();
+	Event event = new Event ();
+	NSPoint location = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
+	if (!view.isFlipped ()) {
+		location.y = view.bounds().height - location.y;
+	}
+	event.x = (int) location.x;
+	event.y = (int) location.y;
+	setInputState (event, nsEvent, SWT.Touch);
+	NSSet allTouchesSet = nsEvent.touchesMatchingPhase(OS.NSTouchPhaseAny, null);
+	int /*long*/ touchCount = allTouchesSet.count();
+	Touch touches[] = new Touch[(int)/*64*/touchCount];
+	int currTouchIndex = 0;
+	
+	// Process removed/cancelled touches first.
+	NSArray endedTouches = nsEvent.touchesMatchingPhase(OS.NSTouchPhaseEnded | OS.NSTouchPhaseCancelled, null).allObjects();
+		
+	for (int i = 0; i < endedTouches.count(); i++) {
+		NSTouch touch = new NSTouch(endedTouches.objectAtIndex(i).id);
+		NSObject identity = new NSObject(OS.objc_msgSend(touch.id, OS.sel_identity));
+		NSTouch endedTouch = findTouchWithId(currentTouches, identity);
+		if (endedTouch != null) currentTouches.removeObject(endedTouch);
+		touches[currTouchIndex++] = touchStateFromNSTouch(touch);
+	}
+	
+	if (currentTouches.count() == 0) display.touchCounter = 0;
+
+	// Process touches in progress or starting. 
+	NSArray activeTouches = nsEvent.touchesMatchingPhase(OS.NSTouchPhaseBegan | OS.NSTouchPhaseMoved | OS.NSTouchPhaseStationary, null).allObjects();
+	
+	for (int i = 0; i < activeTouches.count(); i++) {
+		NSTouch touch = new NSTouch(activeTouches.objectAtIndex(i).id);
+		NSObject identity = new NSObject(OS.objc_msgSend(touch.id, OS.sel_identity));
+		NSTouch activeTouch = findTouchWithId(currentTouches, identity);
+		if (activeTouch == null) currentTouches.addObject(touch);
+		touches[currTouchIndex++] = touchStateFromNSTouch(touch);
+	}	
+
+//	if (activeTouches.count() != currentTouches.count()) {
+//		/**
+//		 * Bug in Cocoa. Under some situations we don't get the NSTouchPhaseEnded/Cancelled notification. Most commonly this happens
+//		 * if a 4-finger gesture occurs and the application switcher appears. Workaround is to generate a TOUCHSTATE_UP for the 
+//		 * orphaned touch.
+//		 */
+//		for (int /*long*/ j = currentTouches.count() - 1; j >= 0 ; j--) {
+//			NSTouch touch = new NSTouch(currentTouches.objectAtIndex(j).id);
+//			NSObject identity = new NSObject(OS.objc_msgSend(touch.id, OS.sel_identity));
+//			NSTouch activeTouch = findTouchWithId(activeTouches, identity);
+//			if (activeTouch == null) {
+//				Touch fakeTouchUp = touchStateFromNSTouch(touch);
+//				fakeTouchUp.phase = Touch.TOUCHSTATE_UP;
+//
+//				if (currTouchIndex == touches.length) {
+//					Touch newTouchStates[] = new Touch[touches.length + 1];
+//					System.arraycopy(touches, 0, newTouchStates, 0, touches.length);
+//					touches = newTouchStates;
+//				}
+//
+//				touches[currTouchIndex++] = fakeTouchUp;
+//				currentTouches.removeObject(activeTouch);
+//			}
+//		}
+//	}
+	
+	event.touches = touches;
+	postEvent (SWT.Touch, event);
+	return event.doit;
+}
+
+void touchesBeganWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	if (!touchEvent(id, sel, event)) return;
+	super.touchesBeganWithEvent(id, sel, event);
+}
+
+void touchesCancelledWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	if (!touchEvent(id, sel, event)) return;
+	super.touchesCancelledWithEvent(id, sel, event);
+}
+
+void touchesEndedWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	if (!touchEvent(id, sel, event)) return;
+	super.touchesEndedWithEvent(id, sel, event);
+}
+
+void touchesMovedWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+	if (!touchEvent(id, sel, event)) return;
+	super.touchesMovedWithEvent(id, sel, event);
 }
 
 boolean translateTraversal (int key, NSEvent theEvent, boolean [] consume) {

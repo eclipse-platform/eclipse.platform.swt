@@ -941,48 +941,54 @@ void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 			getShell().deferFlushing();
 			NSEvent nsEvent = new NSEvent(theEvent);
 			boolean handled = false;
-			float /*double*/ delta = nsEvent.deltaY();
-			if (display.gestureStarted) {
-				if (!sendGestureEvent(nsEvent, SWT.GESTURE_PAN, true)) handled = true;						
+			float /*double*/ deltaY = nsEvent.deltaY();
+			float /*double*/ deltaX = nsEvent.deltaX ();
+			if ((hooks(SWT.Gesture) || filters (SWT.Gesture))) {
+				if (deltaX != 0 || deltaY != 0) {
+					if (!gestureEvent(id, theEvent, SWT.GESTURE_PAN)) {
+						handled = true;						
+					}
+				}
 			}
-			if (delta != 0) {
-				boolean doit = true;
-				if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
-					doit = sendMouseEvent(nsEvent, SWT.MouseWheel, true);
+			if (!handled) {
+				if (deltaY != 0) {
+					boolean doit = true;
+					if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
+						doit = sendMouseEvent(nsEvent, SWT.MouseWheel, true);
+					}
+					ScrollBar bar = verticalBar;
+					if (doit && bar != null && bar.getEnabled ()) {
+						if (-1 < deltaY && deltaY < 0) deltaY = -1;
+						if (0 < deltaY && deltaY < 1) deltaY = 1;
+						int selection = Math.max (0, (int)(0.5f + bar.getSelection () - bar.getIncrement () * deltaY));
+						bar.setSelection (selection);
+						Event event = new Event ();
+						event.detail = deltaY > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
+						bar.sendSelectionEvent (SWT.Selection, event, true);
+						handled = true;
+					}
+					if (!doit) handled = true;
 				}
-				ScrollBar bar = verticalBar;
-				if (doit && bar != null && bar.getEnabled ()) {
-					if (-1 < delta && delta < 0) delta = -1;
-					if (0 < delta && delta < 1) delta = 1;
-					int selection = Math.max (0, (int)(0.5f + bar.getSelection () - bar.getIncrement () * delta));
-					bar.setSelection (selection);
-					Event event = new Event ();
-					event.detail = delta > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
-					bar.sendSelectionEvent (SWT.Selection, event, true);
-					handled = true;
+				if (deltaX != 0) {
+					boolean doit = true;
+					if (hooks (SWT.MouseHorizontalWheel) || filters (SWT.MouseHorizontalWheel)) {
+						doit = sendMouseEvent(nsEvent, SWT.MouseHorizontalWheel, true);
+					}
+					ScrollBar bar = horizontalBar;
+					if (doit && bar != null && bar.getEnabled ()) {
+						if (-1 < deltaX && deltaX < 0) deltaX = -1;
+						if (0 < deltaX && deltaX < 1) deltaX = 1;
+						int selection = Math.max (0, (int)(0.5f + bar.getSelection () - bar.getIncrement () * deltaX));
+						bar.setSelection (selection);
+						Event event = new Event ();
+						event.detail = deltaX > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
+						bar.sendSelectionEvent (SWT.Selection, event, true);
+						handled = true;
+					}
+					if (!doit) handled = true;
 				}
-				if (!doit) handled = true;
+				if (!handled) view.superview().scrollWheel(nsEvent);
 			}
-			delta = nsEvent.deltaX ();
-			if (delta != 0) {
-				boolean doit = true;
-				if (hooks (SWT.MouseHorizontalWheel) || filters (SWT.MouseHorizontalWheel)) {
-					doit = sendMouseEvent(nsEvent, SWT.MouseHorizontalWheel, true);
-				}
-				ScrollBar bar = horizontalBar;
-				if (doit && bar != null && bar.getEnabled ()) {
-					if (-1 < delta && delta < 0) delta = -1;
-					if (0 < delta && delta < 1) delta = 1;
-					int selection = Math.max (0, (int)(0.5f + bar.getSelection () - bar.getIncrement () * delta));
-					bar.setSelection (selection);
-					Event event = new Event ();
-					event.detail = delta > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
-					bar.sendSelectionEvent (SWT.Selection, event, true);
-					handled = true;
-				}
-				if (!doit) handled = true;
-			}
-			if (!handled) view.superview().scrollWheel(nsEvent);
 			return;
 		}
 		callSuper(id, sel, theEvent);
