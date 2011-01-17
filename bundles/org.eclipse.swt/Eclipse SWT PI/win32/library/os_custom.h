@@ -70,6 +70,7 @@
 #define ImmDisableTextFrameService_LIB "imm32.dll"
 #define IsAppThemed_LIB "uxtheme.dll"
 #define IsHungAppWindow_LIB "user32.dll"
+#define IsTouchWindow_LIB "user32.dll"
 #define MCIWndRegisterClass_LIB "msvfw32.dll"
 #define MonitorFromWindow_LIB "user32.dll"
 #define NotifyWinEvent_LIB "user32.dll"

@@ -144,7 +144,9 @@ public void handleEvent (Event e) {
 			break;
 		}
 		case SWT.Gesture: {
-			((GestureListener)eventListener).gesture(new GestureEvent(e));
+			GestureEvent event = new GestureEvent(e);
+			((GestureListener)eventListener).gesture(event);
+			e.doit = event.doit;
 			break;
 		}
 		case SWT.Help: {
@@ -243,6 +245,10 @@ public void handleEvent (Event e) {
 		}
 		case SWT.Show: {
 			((MenuListener) eventListener).menuShown(new MenuEvent(e));
+			break;
+		}
+		case SWT.Touch: {
+			((TouchListener)eventListener).touch(new TouchEvent(e));
 			break;
 		}
 		case SWT.Traverse: {

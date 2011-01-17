@@ -4947,6 +4947,12 @@ public static final native boolean IsIconic (int /*long*/ hWnd);
 public static final native boolean IsPPC ();
 /** @method flags=no_gen */
 public static final native boolean IsSP ();
+/**
+ * @method flags=dynamic
+ * @param hWnd cast=(HWND) 
+ * @param outFlags cast=(PULONG)
+ */
+public static final native boolean IsTouchWindow (int /*long*/ hWnd, long[] outFlags);
 /** @param hWnd cast=(HWND) */
 public static final native boolean IsWindowEnabled (int /*long*/ hWnd);
 /** @param hWnd cast=(HWND) */

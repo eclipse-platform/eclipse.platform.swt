@@ -389,6 +389,7 @@
 #define NO_IsAppThemed
 #define NO_IsHungAppWindow
 #define NO_IsIconic
+#define NO_IsTouchWindow
 #define NO_IsZoomed
 #define NO_LineTo
 #define NO_LoadBitmapA

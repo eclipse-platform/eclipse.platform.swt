@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-
+import java.util.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
@@ -250,6 +250,9 @@ public class Display extends Device {
 	double magStartDistance, lastDistance;
 	double rotationAngle;
 	int lastX, lastY;
+	
+	/* Touch state */
+	Hashtable touchSourceMap;
 	
 	/* Tool Tips */
 	int nextToolTipId;
@@ -1425,6 +1428,21 @@ public static Display findDisplay (Thread thread) {
 		}
 		return null;
 	}
+}
+
+TouchSource findTouchSource(int /*long*/ touchDevice, Monitor sourceMonitor) {
+	if (touchSourceMap == null) {
+		touchSourceMap = new Hashtable();
+	}
+	LONG touchDeviceObj = new LONG(touchDevice);
+	TouchSource returnVal = (TouchSource) touchSourceMap.get(touchDeviceObj);
+	
+	if (returnVal == null) {
+		returnVal = new TouchSource(true, sourceMonitor.getBounds());
+		touchSourceMap.put(touchDeviceObj, returnVal);
+	}
+
+	return returnVal;
 }
 
 /**
@@ -2786,6 +2804,20 @@ protected void init () {
  */
 public void internal_dispose_GC (int /*long*/ hDC, GCData data) {
 	OS.ReleaseDC (0, hDC);
+}
+
+/**	 
+ * Returns true if a touch-aware input device is attached to the system,
+ * enabled, and ready for use.
+ * 
+ * @since 3.7
+ */
+public boolean isTouchEnabled() {
+	int value = OS.GetSystemMetrics(OS.SM_DIGITIZER);
+	if ((value & (OS.NID_READY | OS.NID_MULTI_INPUT)) != 0) {
+	    return true;
+	}
+	return false;
 }
 
 boolean isXMouseActive () {

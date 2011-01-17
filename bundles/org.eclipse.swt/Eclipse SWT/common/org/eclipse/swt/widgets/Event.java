@@ -219,7 +219,7 @@ public class Event {
 	 * An array of the touch states for the current touch event.
 	 * @since 3.7
 	 */
-	//public Touch[] touches;
+	public Touch[] touches;
 	
 	/**
 	 * If nonzero, a positive value indicates a swipe to the right,

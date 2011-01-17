@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1051;
-int OS_nativeFunctionCallCount[1051];
+int OS_nativeFunctionCount = 1052;
+int OS_nativeFunctionCallCount[1052];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -600,6 +600,7 @@ char * OS_nativeFunctionNames[] = {
 	"IsIconic",
 	"IsPPC",
 	"IsSP",
+	"IsTouchWindow",
 	"IsWindowEnabled",
 	"IsWindowVisible",
 	"IsZoomed",

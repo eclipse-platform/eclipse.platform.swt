@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.graphics.*;
@@ -447,6 +448,34 @@ public void addPaintListener (PaintListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Paint,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when touch events occur, by sending it
+ * one of the messages defined in the <code>TouchListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.7
+ * 
+ * @see TouchListener
+ * @see #removeTouchListener
+ */
+public void addTouchListener (TouchListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Touch,typedListener);
 }
 
 /**
@@ -1842,6 +1871,27 @@ boolean isTabItem () {
 }
 
 /**
+ * Returns <code>true</code> if this control is receiving OS-level touch events,
+ * otherwise <code>false</code>
+ * <p>
+ * Note that this method will return false if the current platform does not support touch-based input.
+ * If this method does return true, gesture events will not be sent to the control.
+ *
+ * @return <code>true</code> if the widget is currently receiving touch events; <code>false</code> otherwise.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.7
+ */
+public boolean isTouchEnabled() {
+	checkWidget();
+	return OS.IsTouchWindow(handle, null);
+}
+
+/**
  * Returns <code>true</code> if the receiver is visible and all
  * ancestors up to and including the receiver's nearest ancestor
  * shell are visible. Otherwise, <code>false</code> is returned.
@@ -2679,6 +2729,32 @@ public void removePaintListener(PaintListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
+ * be notified when touch events occur.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.7
+ * 
+ * @see TouchListener
+ * @see #addTouchListener
+*/
+public void removeTouchListener(TouchListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Touch, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
  * be notified when traversal events occur.
  *
  * @param listener the listener which should no longer be notified
@@ -2749,12 +2825,119 @@ boolean sendFocusEvent (int type) {
 	return true;
 }
 
+boolean sendGestureEvent (GESTUREINFO gi) {
+	/**
+	 * Feature in Windows 7.  GID_BEGIN and GID_END events bubble up through the window
+	 * hierarchy for legacy support.  Ignore events not targeted for this control.
+	 */
+	if (gi.hwndTarget != handle) return true;
+	Event event = new Event ();
+	int type = 0;
+	Point globalPt = new Point(gi.x, gi.y);
+	Point point = toControl(globalPt);
+	event.x = point.x;
+	event.y = point.y;
+	switch (gi.dwID) {
+		case OS.GID_ZOOM:
+			type = SWT.Gesture;
+			event.detail = SWT.GESTURE_MAGNIFY;
+			int fingerDistance = OS.LODWORD (gi.ullArguments);
+			if ((gi.dwFlags & OS.GF_BEGIN) != 0) {
+				event.detail = SWT.GESTURE_BEGIN;
+				display.magStartDistance = display.lastDistance = fingerDistance;
+			} else if ((gi.dwFlags & OS.GF_END) != 0) {
+				event.detail = SWT.GESTURE_END;
+			}
+
+			/*
+			* The gi.ullArguments is the distance between the fingers. 
+			* Scale factor is relative to that original value.
+			*/
+			if (fingerDistance == display.lastDistance && event.detail == SWT.GESTURE_MAGNIFY) return true;			
+			if (fingerDistance != 0) event.magnification = fingerDistance / display.magStartDistance;
+			display.lastDistance = fingerDistance;
+			break;
+		case OS.GID_PAN:
+			type = SWT.Gesture;
+			event.detail = SWT.GESTURE_PAN;
+			if ((gi.dwFlags & OS.GF_BEGIN) != 0) {
+				event.detail = SWT.GESTURE_BEGIN;
+				display.lastX = point.x;
+				display.lastY = point.y;
+			} else if ((gi.dwFlags & OS.GF_END) != 0) {
+				event.detail = SWT.GESTURE_END;
+			}
+			if (display.lastX == point.x && display.lastY == point.y && event.detail == SWT.GESTURE_PAN) return true;
+			event.xDirection = point.x - display.lastX;
+			event.yDirection = point.y - display.lastY;
+			display.lastX = point.x;
+			display.lastY = point.y;			
+			break;
+		case OS.GID_ROTATE:
+			type = SWT.Gesture;			
+			event.detail = SWT.GESTURE_ROTATE;
+			double rotationInRadians = OS.GID_ROTATE_ANGLE_FROM_ARGUMENT (OS.LODWORD (gi.ullArguments));
+			if ((gi.dwFlags & OS.GF_BEGIN) != 0) {
+				event.detail = SWT.GESTURE_BEGIN;
+				display.rotationAngle = rotationInRadians;
+			} else if ((gi.dwFlags & OS.GF_END) != 0) {
+				event.detail = SWT.GESTURE_END;
+			}
+
+			/*
+			* Feature in Win32. Rotation events are sent even when the fingers are at rest.
+			* If the current rotation is the same as the last one received don't send the event.
+			*/
+			if (display.rotationAngle == rotationInRadians && event.detail == SWT.GESTURE_ROTATE) return true;
+			event.rotation = rotationInRadians * 180.0 / Compatibility.PI;
+			display.rotationAngle = rotationInRadians;
+			break;
+		default:
+			// Unknown gesture -- ignore.
+			break;
+	}
+
+    if (type == 0) return true;
+	setInputState (event, type);
+	sendEvent (type, event);	
+	return true;// event.doit;
+}
+
 void sendMove () {
 	sendEvent (SWT.Move);
 }
 
 void sendResize () {
 	sendEvent (SWT.Resize);
+}
+
+boolean sendTouchEvent (int /*long*/ hWnd, TOUCHINPUT touchInput[]) {
+	Event event = new Event ();
+	Point cursorLoc = display.getCursorLocation();
+	cursorLoc = toControl(cursorLoc);
+	event.x = cursorLoc.x;
+	event.y = cursorLoc.y;
+	
+	Touch[] touches = new Touch[touchInput.length];
+
+	for (int i = 0; i < touchInput.length; i++) {
+		TOUCHINPUT touch = touchInput[i];
+		int identity = touch.dwID;
+		int /*long*/ source = touch.hSource;
+		TouchSource inputSource = display.findTouchSource(source, getMonitor());
+		int state = 0;
+		boolean primary = false;
+		if ((touch.dwFlags & OS.TOUCHEVENTF_DOWN) != 0) state = SWT.TOUCHSTATE_DOWN;
+		if ((touch.dwFlags & OS.TOUCHEVENTF_UP) != 0) state = SWT.TOUCHSTATE_UP;
+		if ((touch.dwFlags & OS.TOUCHEVENTF_MOVE) != 0) state = SWT.TOUCHSTATE_MOVE;
+		if ((touch.dwFlags & OS.TOUCHEVENTF_PRIMARY) != 0) primary = true;
+		touches[i] = new Touch(identity, inputSource, state, primary, (int)OS.TOUCH_COORD_TO_PIXEL(touch.x), (int)OS.TOUCH_COORD_TO_PIXEL(touch.y));
+	}
+
+	event.touches = touches;
+	setInputState (event, SWT.Touch);
+	postEvent (SWT.Touch, event);
+	return event.doit;
 }
 
 void setBackground () {
@@ -3478,6 +3661,27 @@ public void setToolTipText (String string) {
 
 void setToolTipText (Shell shell, String string) {
 	shell.setToolTipText (handle, string);
+}
+
+/**
+ * Sets whether the receiver should accept touch events. By default, a Control does not accept touch
+ * events. No error or exception is thrown if the underlying hardware does not support touch input.
+ * 
+ * @param enabled the new touch-enabled state
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    
+ * @since 3.7
+ */
+public void setTouchEventsEnabled(boolean enabled) {
+	checkWidget();
+	if (enabled) {
+		OS.RegisterTouchWindow(handle, 0);
+	} else {
+		OS.UnregisterTouchWindow(handle);
+	}
 }
 
 /**
@@ -4383,6 +4587,7 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 		case OS.WM_SYSKEYUP:			result = WM_SYSKEYUP (wParam, lParam); break;
 		case OS.WM_TABLET_FLICK:		result = WM_TABLET_FLICK (wParam, lParam); break;
 		case OS.WM_TIMER:				result = WM_TIMER (wParam, lParam); break;
+		case OS.WM_TOUCH:				result = WM_TOUCH (wParam, lParam); break;
 		case OS.WM_UNDO:				result = WM_UNDO (wParam, lParam); break;
 		case OS.WM_UPDATEUISTATE:		result = WM_UPDATEUISTATE (wParam, lParam); break;
 		case OS.WM_VSCROLL:				result = WM_VSCROLL (wParam, lParam); break;
@@ -4503,9 +4708,10 @@ LRESULT WM_GESTURE (int /*long*/ wParam, int /*long*/ lParam) {
 		GESTUREINFO gi = new GESTUREINFO ();
 		gi.cbSize = GESTUREINFO.sizeof;
 		if (OS.GetGestureInfo (lParam, gi)) {
-			boolean result = sendGestureEvent (gi);
-			OS.CloseGestureInfoHandle (lParam);
-			if (result) return LRESULT.ZERO; 
+			if (!sendGestureEvent (gi)) {
+				OS.CloseGestureInfoHandle (lParam);
+				return LRESULT.ZERO; 
+			}
 		}
 	}
 	return null;
@@ -5157,6 +5363,30 @@ LRESULT WM_TABLET_FLICK (int /*long*/ wParam, int /*long*/ lParam) {
 	setInputState (event, SWT.Gesture);
 	sendEvent (SWT.Gesture, event);
 	return event.doit ? null : LRESULT.ONE;
+}
+
+LRESULT WM_TOUCH (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = null;
+	
+	if (hooks(SWT.Touch) || filters(SWT.Touch)) {
+		int cInputs = OS.LOWORD(wParam);
+		int /*long*/ hHeap = OS.GetProcessHeap ();
+		int /*long*/ pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY,  cInputs * TOUCHINPUT.sizeof);
+
+		if (pInputs != 0){
+			if (OS.GetTouchInputInfo(lParam, cInputs, pInputs, OS.TOUCHINPUT_sizeof())) {
+				TOUCHINPUT ti[] = new TOUCHINPUT[cInputs];
+				for (int i = 0; i < cInputs; i++){
+					ti[i] = new TOUCHINPUT();
+					OS.MoveMemory(ti[i], pInputs + i * OS.TOUCHINPUT_sizeof(), OS.TOUCHINPUT_sizeof());
+				}            
+				if (!sendTouchEvent(handle, ti))
+				OS.HeapFree(hHeap, 0, pInputs);
+				result = LRESULT.ZERO;					
+			}
+		}
+	}
+	return result;
 }
 
 LRESULT WM_TIMER (int /*long*/ wParam, int /*long*/ lParam) {

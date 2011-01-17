@@ -608,6 +608,7 @@ typedef enum {
 	IsIconic_FUNC,
 	IsPPC_FUNC,
 	IsSP_FUNC,
+	IsTouchWindow_FUNC,
 	IsWindowEnabled_FUNC,
 	IsWindowVisible_FUNC,
 	IsZoomed_FUNC,

@@ -7935,6 +7935,30 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsIconic)
 }
 #endif
 
+#ifndef NO_IsTouchWindow
+JNIEXPORT jboolean JNICALL OS_NATIVE(IsTouchWindow)
+	(JNIEnv *env, jclass that, jintLong arg0, jlongArray arg1)
+{
+	jlong *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, IsTouchWindow_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)IsTouchWindow((HWND)arg0, (PULONG)lparg1);
+*/
+	{
+		LOAD_FUNCTION(fp, IsTouchWindow)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HWND, PULONG))fp)((HWND)arg0, (PULONG)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseLongArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, IsTouchWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_IsWindowEnabled
 JNIEXPORT jboolean JNICALL OS_NATIVE(IsWindowEnabled)
 	(JNIEnv *env, jclass that, jintLong arg0)
