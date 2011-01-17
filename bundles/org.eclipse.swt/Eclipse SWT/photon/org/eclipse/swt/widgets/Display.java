@@ -1764,6 +1764,16 @@ public void internal_dispose_GC (int phGC, GCData data) {
 	OS.PgDestroyGC(phGC);
 }
 
+/**	 
+ * Returns true if a touch-aware input device is attached to the system,
+ * enabled, and ready for use.
+ * 
+ * @since 3.7
+ */
+public boolean isTouchEnabled() {
+	return false;
+}
+
 boolean isValidThread () {
 	return thread == Thread.currentThread ();
 }

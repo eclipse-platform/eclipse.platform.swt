@@ -1649,6 +1649,35 @@ void addRelation (Control control) {
 
 /**
  * Adds the listener to the collection of listeners who will
+ * be notified when touch events occur, by sending it
+ * one of the messages defined in the <code>TouchListener</code>
+ * interface.
+ * <p>
+ * NOTE: You must also call <code>setTouchEventsEnabled</code> to notify the 
+ * windowing toolkit that you want touch events to be generated.
+ * </p>
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see TouchListener
+ * @see #removeTouchListener
+ * @since 3.7
+ */
+public void addTouchListener (TouchListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Touch,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
  * be notified when traversal events occur, by sending it
  * one of the messages defined in the <code>TraverseListener</code>
  * interface.
@@ -1979,6 +2008,31 @@ void removeRelation () {
 		_getAccessible().removeRelation (ACC.RELATION_LABELLED_BY, labelRelation._getAccessible());
 		labelRelation = null;
 	}
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when touch events occur.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see TouchListener
+ * @see #addTouchListener
+ * @since 3.7
+ */
+public void removeTouchListener(TouchListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Touch, listener);
 }
 
 /**
@@ -4173,6 +4227,25 @@ void setToolTipText (Shell shell, String newString) {
 	} else {
 		shell.setToolTipText (eventHandle (), newString);
 	}
+}
+
+/**
+ * Sets the receiver to receive touch events from the OS.  By default, touch
+ * events are not delivered to a control unless specifically requested for that control.
+ * This is independent of whether or not there are any <code>TouchListener</code> instances 
+ * registered for the control.
+ *
+ * @param enabled the new touch-enabled state.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.7
+ */
+public void setTouchEventsEnabled(boolean enabled) {
+	checkWidget();
 }
 
 /**

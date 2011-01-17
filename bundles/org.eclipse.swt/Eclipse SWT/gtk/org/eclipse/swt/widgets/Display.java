@@ -2706,6 +2706,16 @@ public int /*long*/ internal_new_GC (GCData data) {
 	return gdkGC;
 }
 
+/**	 
+ * Returns true if a touch-aware input device is attached to the system,
+ * enabled, and ready for use.
+ * 
+ * @since 3.7
+ */
+public boolean isTouchEnabled() {
+	return false;
+}
+
 boolean isValidThread () {
 	return thread == Thread.currentThread ();
 }

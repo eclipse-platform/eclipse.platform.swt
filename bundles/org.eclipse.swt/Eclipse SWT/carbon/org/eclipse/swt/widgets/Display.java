@@ -2539,6 +2539,16 @@ boolean isBundled () {
 	return false;
 }
 
+/**	 
+ * Returns true if a touch-aware input device is attached to the system,
+ * enabled, and ready for use.
+ * 
+ * @since 3.7
+ */
+public boolean isTouchEnabled() {
+	return false;
+}
+
 static boolean isValidClass (Class clazz) {
 	String name = clazz.getName ();
 	int index = name.lastIndexOf ('.');
