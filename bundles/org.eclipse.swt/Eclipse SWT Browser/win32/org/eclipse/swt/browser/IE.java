@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.net.*;
 import java.util.*;
 
 import org.eclipse.swt.*;
@@ -610,13 +611,22 @@ public void create(Composite parent, int style) {
 						* workaround is to not unload the Acrobat libraries if > MAX_PDF PDF
 						* files have been opened.
 						*/
-						int extensionIndex = url.lastIndexOf('.');
-						if (extensionIndex != -1) {
-							String extension = url.substring(extensionIndex);
-							if (extension.equalsIgnoreCase(EXTENSION_PDF)) {
-								PDFCount++;
-								if (PDFCount > MAX_PDF) {
-									COM.FreeUnusedLibraries = false;
+						boolean isPDF = false;
+						String path = null;
+						try {
+							path = new URL(url).getPath();
+						} catch (MalformedURLException e) {
+						}
+						if (path != null) {
+							int extensionIndex = path.lastIndexOf('.');
+							if (extensionIndex != -1) {
+								String extension = path.substring(extensionIndex);
+								if (extension.equalsIgnoreCase(EXTENSION_PDF)) {
+									isPDF = true;
+									PDFCount++;
+									if (PDFCount > MAX_PDF) {
+										COM.FreeUnusedLibraries = false;
+									}
 								}
 							}
 						}
@@ -661,7 +671,9 @@ public void create(Composite parent, int style) {
 								execute (function.functionString);
 							}
 						}
-						hookDOMListeners(webBrowser, isTop);
+						if (!isPDF) {
+							hookDOMListeners(webBrowser, isTop);
+						}
 						webBrowser.dispose();
 						break;
 					}
@@ -1828,28 +1840,9 @@ void handleDOMEvent (OleEvent e) {
 }
 
 void hookDOMListeners(OleAutomation webBrowser, final boolean isTop) {
-	/*
-	* DOM listeners are only applicable when HTML content is shown.
-	* HTML documents always answer the Type property, so failure to get
-	* this value indicates that some other content type is being shown.
-	*/
-	int[] rgdispid = webBrowser.getIDsOfNames(new String[] { PROPERTY_TYPE });
-	if (rgdispid == null) {
-		return;
-	}
+	int[] rgdispid = webBrowser.getIDsOfNames(new String[] { PROPERTY_DOCUMENT });
 	int dispIdMember = rgdispid[0];
-	Variant	pVarResult = webBrowser.getProperty(dispIdMember);
-	if (pVarResult == null || pVarResult.getType() != COM.VT_BSTR) {
-		if (pVarResult != null) pVarResult.dispose ();
-		return;
-	}
-	String type = pVarResult.getString();
-	pVarResult.dispose();
-	if (!type.equals(HTML_DOCUMENT)) return;
-
-	rgdispid = webBrowser.getIDsOfNames(new String[] { PROPERTY_DOCUMENT });
-	dispIdMember = rgdispid[0];
-	pVarResult = webBrowser.getProperty(dispIdMember);
+	Variant pVarResult = webBrowser.getProperty(dispIdMember);
 	if (pVarResult == null) return;
 	if (pVarResult.getType() == COM.VT_EMPTY) {
 		pVarResult.dispose();
