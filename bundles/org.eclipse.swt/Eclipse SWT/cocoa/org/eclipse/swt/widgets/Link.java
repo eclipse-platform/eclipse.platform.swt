@@ -128,6 +128,15 @@ boolean textView_clickOnLink_atIndex(int /*long*/ id, int /*long*/ sel, int /*lo
 	return true;
 }
 
+boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
+	if (type == SWT.MouseMove) {
+		if (view.window().firstResponder().id != view.id) {
+			mouseMoved(view.id, OS.sel_mouseMoved_, nsEvent.id);
+		}
+	}
+	return super.sendMouseEvent(nsEvent, type, send);
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
