@@ -265,6 +265,10 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 	return dragging;
 }
 
+boolean drawsBackground() {
+	return background != null || backgroundImage != null;
+}
+
 void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ image, NSRect rect, int /*long*/ view) {
 	/*
 	* Feature in Cocoa.  Images touch the edge of rounded buttons
