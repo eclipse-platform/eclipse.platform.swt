@@ -1205,7 +1205,6 @@ TouchSource findTouchSource(NSTouch touch) {
 
 	Rectangle bounds = new Rectangle(0, 0, (int)Math.ceil(touch.deviceSize().width), (int)Math.ceil(touch.deviceSize().height));
 	source = new TouchSource(touchDevice.id, false, bounds);
-	System.out.println("New source " + source);
 	touchSources [index] = source;
 	return source;
 }
