@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.net.*;
 import java.util.*;
 
 import org.eclipse.swt.*;
@@ -621,13 +622,22 @@ public boolean create(Composite parent, int style) {
 						* workaround is to not unload the Acrobat libraries if > MAX_PDF PDF
 						* files have been opened.
 						*/
-						int extensionIndex = url.lastIndexOf('.');
-						if (extensionIndex != -1) {
-							String extension = url.substring(extensionIndex);
-							if (extension.equalsIgnoreCase(EXTENSION_PDF)) {
-								PDFCount++;
-								if (PDFCount > MAX_PDF) {
-									COM.FreeUnusedLibraries = false;
+						boolean isPDF = false;
+						String path = null;
+						try {
+							path = new URL(url).getPath();
+						} catch (MalformedURLException e) {
+						}
+						if (path != null) {
+							int extensionIndex = path.lastIndexOf('.');
+							if (extensionIndex != -1) {
+								String extension = path.substring(extensionIndex);
+								if (extension.equalsIgnoreCase(EXTENSION_PDF)) {
+									isPDF = true;
+									PDFCount++;
+									if (PDFCount > MAX_PDF) {
+										COM.FreeUnusedLibraries = false;
+									}
 								}
 							}
 						}
@@ -665,7 +675,9 @@ public boolean create(Composite parent, int style) {
 								execute (function.functionString);
 							}
 						}
-						hookDOMListeners(webBrowser, isTop);
+						if (!isPDF) {
+							hookDOMListeners(webBrowser, isTop);
+						}
 						webBrowser.dispose();
 						break;
 					}
