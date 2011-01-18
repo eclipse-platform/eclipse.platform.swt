@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import java.util.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
@@ -252,7 +251,7 @@ public class Display extends Device {
 	int lastX, lastY;
 	
 	/* Touch state */
-	Hashtable touchSourceMap;
+	TouchSource[] touchSources;
 	
 	/* Tool Tips */
 	int nextToolTipId;
@@ -1431,18 +1430,30 @@ public static Display findDisplay (Thread thread) {
 }
 
 TouchSource findTouchSource(int /*long*/ touchDevice, Monitor sourceMonitor) {
-	if (touchSourceMap == null) {
-		touchSourceMap = new Hashtable();
-	}
-	LONG touchDeviceObj = new LONG(touchDevice);
-	TouchSource returnVal = (TouchSource) touchSourceMap.get(touchDeviceObj);
-	
-	if (returnVal == null) {
-		returnVal = new TouchSource(true, sourceMonitor.getBounds());
-		touchSourceMap.put(touchDeviceObj, returnVal);
+	if (touchSources == null) touchSources = new TouchSource [4];
+	int index = 0;
+	int length = touchSources.length;
+	TouchSource source = null;
+
+	while (index < length) {
+		if (touchSources[index] != null && touchSources[index].handle == touchDevice) {
+			source = touchSources[index];
+			break;
+		}
+		index++;
 	}
 
-	return returnVal;
+	if (source != null) return source;
+
+	if (index == length) {
+		TouchSource [] newList = new TouchSource [length + 4];
+		System.arraycopy(touchSources, 0, newList, 0, length);
+		touchSources = newList;
+	}
+
+	source = new TouchSource(touchDevice, true, sourceMonitor.getBounds());
+	touchSources [index] = source;
+	return source;
 }
 
 /**

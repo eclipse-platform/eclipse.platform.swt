@@ -115,7 +115,7 @@ public class Display extends Device {
 	int touchCounter;
 	long primaryIdentifier;
 	NSMutableArray currentTouches;
-	Map touchSourceMap;
+	TouchSource[] touchSources;
 
 	/* Key event management */
 	int [] deadKeyState = new int[1];
@@ -1181,20 +1181,33 @@ public static Display findDisplay (Thread thread) {
 }
 
 TouchSource findTouchSource(NSTouch touch) {
-	if (touchSourceMap == null) {
-		touchSourceMap = new HashMap();
-	}
+	if (touchSources == null) touchSources = new TouchSource [4];
+	int index = 0;
+	int length = touchSources.length;
 	id touchDevice = touch.device();
-	Long touchDeviceObj = new Long(touchDevice.id);
-	TouchSource returnVal = (TouchSource) touchSourceMap.get(touchDeviceObj);
+	TouchSource source = null;
+
+	while (index < length) {
+		if (touchSources[index] != null && touchSources[index].handle == touchDevice.id) {
+			source = touchSources[index];
+			break;
+		}
+		index++;
+	}
 	
-	if (returnVal == null) {
-		Rectangle bounds = new Rectangle(0, 0, (int)Math.ceil(touch.deviceSize().width), (int)Math.ceil(touch.deviceSize().height));
-		returnVal = new TouchSource(false, bounds);;
-		touchSourceMap.put(touchDeviceObj, returnVal);
+	if (source != null) return source;
+	
+	if (index == length) {
+		TouchSource [] newList = new TouchSource [length + 4];
+		System.arraycopy(touchSources, 0, newList, 0, length);
+		touchSources = newList;
 	}
 
-	return returnVal;
+	Rectangle bounds = new Rectangle(0, 0, (int)Math.ceil(touch.deviceSize().width), (int)Math.ceil(touch.deviceSize().height));
+	source = new TouchSource(touchDevice.id, false, bounds);
+	System.out.println("New source " + source);
+	touchSources [index] = source;
+	return source;
 }
 
 /**
