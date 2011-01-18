@@ -292,7 +292,7 @@ int /*long*/ imageView() {
 };
 
 boolean drawsBackground() {
-    return background != null;
+	return background != null || backgroundImage != null;
 }
 
 NSView eventView () {

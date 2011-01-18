@@ -378,7 +378,7 @@ NSRect drawTitleWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/
 }
 
 boolean drawsBackground() {
-	return background != null;
+	return background != null || backgroundImage != null;
 }
 
 void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
