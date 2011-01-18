@@ -36,7 +36,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawLines)
 	}
 	rc = (jint)((Graphics *)arg0)->DrawLines((Pen *)arg1, points, (INT)arg3);
 fail:
-	if (lparg2 && points) delete points;
+	if (lparg2 && points) delete[] points;
 	if (arg2 && lparg2) env->ReleaseIntArrayElements(arg2, lparg2, JNI_ABORT);
 	Gdip_NATIVE_EXIT(env, that, Graphics_1DrawLines_FUNC);
 	return rc;
@@ -62,7 +62,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawPolygon)
 	}
 	rc = (jint)((Graphics *)arg0)->DrawPolygon((Pen *)arg1, points, (INT)arg3);
 fail:
-	if (lparg2 && points) delete points;
+	if (lparg2 && points) delete[] points;
 	if (arg2 && lparg2) env->ReleaseIntArrayElements(arg2, lparg2, JNI_ABORT);
 	Gdip_NATIVE_EXIT(env, that, Graphics_1DrawPolygon_FUNC);
 	return rc;
@@ -88,7 +88,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1FillPolygon)
 	}
 	rc = (jint)((Graphics *)arg0)->FillPolygon((Brush *)arg1, points, (INT)arg3, (FillMode)arg4);
 fail:
-	if (lparg2 && points) delete points;
+	if (lparg2 && points) delete[] points;
 	if (arg2 && lparg2) env->ReleaseIntArrayElements(arg2, lparg2, JNI_ABORT);
 	Gdip_NATIVE_EXIT(env, that, Graphics_1FillPolygon_FUNC);
 	return rc;
@@ -114,7 +114,7 @@ fail:
 			lparg1[j] = points[i].X;
 			lparg1[j + 1] = points[i].Y;
 		}
-		delete points;
+		delete[] points;
 	}
 	if (arg1 && lparg1) env->ReleaseFloatArrayElements(arg1, lparg1, 0);
 	Gdip_NATIVE_EXIT(env, that, GraphicsPath_1GetPathPoints_FUNC);
@@ -151,7 +151,7 @@ fail:
 			lparg1[j] = points[i].X;
 			lparg1[j + 1] = points[i].Y;
 		}
-		delete points;
+		delete[] points;
 	}
 	if (arg1 && lparg1) env->ReleaseFloatArrayElements(arg1, lparg1, 0);
 	Gdip_NATIVE_EXIT(env, that, Matrix_1TransformPoints__I_3FI_FUNC);
@@ -179,7 +179,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1SetInterpolationColors)
 	rc = (jint)((LinearGradientBrush *)arg0)->SetInterpolationColors(colors, (const REAL *)lparg2, arg3);
 fail:
 	if (lparg1 && colors) {
-		delete colors;
+		delete[] colors;
 	}
 	if (arg2 && lparg2) env->ReleaseFloatArrayElements(arg2, lparg2, 0);
 	if (arg1 && lparg1) env->ReleaseIntLongArrayElements(arg1, lparg1, 0);
@@ -208,7 +208,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetInterpolationColors)
 	rc = (jint)((PathGradientBrush *)arg0)->SetInterpolationColors(colors, (const REAL *)lparg2, arg3);
 fail:
 	if (lparg1 && colors) {
-		delete colors;
+		delete[] colors;
 	}
 	if (arg2 && lparg2) env->ReleaseFloatArrayElements(arg2, lparg2, 0);
 	if (arg1 && lparg1) env->ReleaseIntLongArrayElements(arg1, lparg1, 0);
@@ -237,7 +237,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetSurroundColors)
 	rc = (jint)((PathGradientBrush *)arg0)->SetSurroundColors((Color *)colors, (INT *)lparg2);
 fail:
 	if (lparg1 && lparg2 && colors) {
-		delete colors;
+		delete[] colors;
 	}	
 	if (arg2 && lparg2) env->ReleaseIntArrayElements(arg2, lparg2, 0);
 	if (arg1 && lparg1) env->ReleaseIntLongArrayElements(arg1, lparg1, 0);
@@ -268,7 +268,7 @@ JNIEXPORT jintLong JNICALL Gdip_NATIVE(GraphicsPath_1new___3I_3BII)
 	rc = (jintLong)new GraphicsPath(points, (BYTE *)lparg1, arg2, (FillMode)arg3);
 fail:
 	if (arg1 && lparg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
-	if (lparg0 && points) delete points;
+	if (lparg0 && points) delete[] points;
 	if (arg0 && lparg0) env->ReleaseIntArrayElements(arg0, lparg0, 0);
 	Gdip_NATIVE_EXIT(env, that, GraphicsPath_1new___3I_3BII_FUNC);
 	return rc;
@@ -305,7 +305,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawDriverString__IIIII_3FII)(JNIEn
 	rc = (jint)((Graphics *)arg0)->DrawDriverString((const UINT16 *)arg1, arg2, (const Font *)arg3, (const Brush *)arg4, points, arg6, (const Matrix *)arg7);
 fail:
 	if (arg5 && lparg5) env->ReleaseFloatArrayElements(arg5, lparg5, 0);
-	if (lparg5 && points) delete points;
+	if (lparg5 && points) delete[] points;
 #ifdef JNI64
 	Gdip_NATIVE_EXIT(env, that, Graphics_1DrawDriverString__JJIJJ_3FIJ_FUNC);
 #else
@@ -339,7 +339,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1MeasureDriverString)
 fail:
 	if (arg7 && lparg7) setRectFFields(env, arg7, lparg7);
 	if (arg4 && lparg4) env->ReleaseFloatArrayElements(arg4, lparg4, 0);
-	if (lparg4 && points) delete points;
+	if (lparg4 && points) delete[] points;
 	Gdip_NATIVE_EXIT(env, that, Graphics_1MeasureDriverString_FUNC);
 	return rc;
 }
