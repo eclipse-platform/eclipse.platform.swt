@@ -1942,7 +1942,7 @@ void setWindowVisible (boolean visible, boolean key) {
 			} 
 			window.orderOut (null);
 		}
-
+		if (isDisposed()) return;
 		topView ().setHidden (true);
 		invalidateVisibleRegion();
 		sendEvent (SWT.Hide);
