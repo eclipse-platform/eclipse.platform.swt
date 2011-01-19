@@ -1778,6 +1778,9 @@ public Monitor getMonitor () {
 	return monitors [index];
 }
 
+/**
+ * @since 3.7
+ */
 public int getOrientation () {
 	checkWidget ();
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
@@ -2064,6 +2067,8 @@ public int /*long*/ internal_new_GC (GCData data) {
 		data.device = display;
 		data.thread = display.thread;
 		data.view = view;
+		data.view.retain();
+		data.view.window().retain();
 		data.foreground = getForegroundColor ().handle;
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
@@ -2096,6 +2101,11 @@ public void internal_dispose_GC (int /*long*/ context, GCData data) {
 		if (data.paintRect == null) graphicsContext.flushGraphics ();
 		if (data.visibleRgn != 0) OS.DisposeRgn(data.visibleRgn);
 		data.visibleRgn = 0;
+		if (data.view != null) {
+			data.view.window().release();
+			data.view.release();
+			data.view = null;
+		}
 	}
 }
 
@@ -2739,7 +2749,7 @@ int /*long*/ regionToRects(int /*long*/ message, int /*long*/ rgn, int /*long*/ 
 	NSPoint pt = new NSPoint();
 	short[] rect = new short[4];
 	if (message == OS.kQDRegionToRectsMsgParse) {
-		OS.memmove(rect, r, rect.length * 2);
+		C.memmove(rect, r, rect.length * 2);
 		pt.x = rect[1];
 		pt.y = rect[0];
 		OS.objc_msgSend(path, OS.sel_moveToPoint_, pt);
@@ -3822,6 +3832,7 @@ public void setLocation (Point location) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * @since 3.7
  */
 public void setMenu (Menu menu) {
 	checkWidget();
@@ -3837,6 +3848,10 @@ public void setMenu (Menu menu) {
 	this.menu = menu;
 }
 
+/**
+ * @param orientation
+ * @since 3.7
+ */
 public void setOrientation (int orientation) {
 	checkWidget ();
 }
