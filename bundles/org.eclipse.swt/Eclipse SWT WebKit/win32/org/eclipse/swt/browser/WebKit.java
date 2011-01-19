@@ -612,30 +612,10 @@ public void create (Composite parent, int style) {
 		preferences.Release ();
 	}
 
-	final Listener filter = new Listener () {
-		public void handleEvent (Event event) {
-			switch (event.type) {
-				case SWT.Traverse: {
-					traverseNext = event.detail != SWT.TRAVERSE_TAB_PREVIOUS;
-					break;
-				}
-			}
-		}
-	};
 	Listener listener = new Listener () {
 		public void handleEvent (Event e) {
 			switch (e.type) {
-				case SWT.Activate: {
-					browser.getDisplay ().removeFilter (SWT.Traverse, filter);
-					break;
-				}
-				case SWT.Deactivate: {
-					browser.getDisplay ().removeFilter (SWT.Traverse, filter);
-					browser.getDisplay ().addFilter (SWT.Traverse, filter);
-					break;
-				}
 				case SWT.Dispose: {
-					browser.getDisplay ().removeFilter (SWT.Traverse, filter);
 					/* make this handler run after other dispose listeners */
 					if (ignoreDispose) {
 						ignoreDispose = false;
@@ -648,7 +628,7 @@ public void create (Composite parent, int style) {
 					break;
 				}
 				case SWT.FocusIn: {
-					onFocus ();
+					OS.SetFocus (webViewWindowHandle);
 					break;
 				}
 				case SWT.Resize: {
@@ -673,11 +653,6 @@ public void create (Composite parent, int style) {
 	browser.addListener (SWT.FocusIn, listener);
 	browser.addListener (SWT.Resize, listener);
 	browser.addListener (SWT.Traverse, listener);
-	browser.addListener (SWT.Activate, listener);
-	browser.addListener (SWT.Deactivate, listener);
-	if (!browser.isFocusControl ()) {
-		browser.getDisplay ().addFilter (SWT.Traverse, filter);
-	}
 
 	eventFunction = new BrowserFunction (browser, "HandleWebKitEvent") { //$NON-NLS-1$
 		public Object function (Object[] arguments) {
@@ -1080,18 +1055,6 @@ void onDispose () {
 	webResourceLoadDelegate = null;
 	webUIDelegate = null;
 	lastNavigateURL = null;
-}
-
-void onFocus () {
-	OS.SetFocus (webViewWindowHandle);
-	int /*long*/[] result = new int /*long*/[1];
-	int hr = webView.QueryInterface (WebKit_win32.IID_IWebViewPrivate, result);
-	if (hr != COM.S_OK || result[0] == 0) {
-		return;
-	}
-	IWebViewPrivate webViewPrivate = new IWebViewPrivate (result[0]);
-	webViewPrivate.setInitialFocus (traverseNext ? 1 : 0);
-	webViewPrivate.Release ();
 }
 
 public void refresh () {
