@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.events.*;
 
+import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class are created as a result of
@@ -23,6 +23,7 @@ import org.eclipse.swt.events.*;
  * @see TouchEvent
  * @see Event
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * 
  * @since 3.7
  */
 
@@ -102,4 +103,5 @@ public String toString() {
 	+ " y=" + y
 	+ "}";
 }
+
 }

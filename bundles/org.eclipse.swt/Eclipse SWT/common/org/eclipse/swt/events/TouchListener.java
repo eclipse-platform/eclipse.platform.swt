@@ -27,6 +27,7 @@ import org.eclipse.swt.internal.*;
  * </p>
  *
  * @see TouchEvent
+ * 
  * @since 3.7
  */
 public interface TouchListener extends SWTEventListener {

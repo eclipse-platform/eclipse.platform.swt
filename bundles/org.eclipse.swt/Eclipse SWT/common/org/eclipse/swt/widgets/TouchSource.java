@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.graphics.*;
 
+import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class represent a source of touch input. It is used to identify which input source
@@ -30,9 +30,6 @@ import org.eclipse.swt.graphics.*;
  * doing.
  * </li>
  * </ul>
- * <p> 
- * IMPORTANT: This class is not intended to be subclassed.
- * </p>
  *
  * @see Touch
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
@@ -41,7 +38,6 @@ import org.eclipse.swt.graphics.*;
  */
 
 public final class TouchSource {
-
 	int /*long*/ handle;
 	boolean direct;	
 	Rectangle bounds;
@@ -53,7 +49,7 @@ public final class TouchSource {
  * @param height height of the source in pixels.
  * @param width width of the source in pixels.
  */
-TouchSource(int /*long*/ handle, boolean direct, Rectangle bounds) {
+TouchSource (int /*long*/ handle, boolean direct, Rectangle bounds) {
 	this.handle = handle;
 	this.direct = direct;
 	this.bounds = bounds;
@@ -63,7 +59,7 @@ TouchSource(int /*long*/ handle, boolean direct, Rectangle bounds) {
  * Returns the type of touch input this source generates; true for direct, false for indirect.
  * @return boolean If true, the input source is direct. If false, the input source is indirect.
  */
-public boolean isDirect() {
+public boolean isDirect () {
 	return direct;
 }
 
@@ -74,8 +70,8 @@ public boolean isDirect() {
  * Note that the x and y values may not necessarily be zero if the TouchSource is a direct source.
  * @return Rectangle The bounding rectangle of the input source.
  */
-public Rectangle getBounds() {
-	return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+public Rectangle getBounds () {
+	return new Rectangle (bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
 /**
@@ -84,7 +80,7 @@ public Rectangle getBounds() {
  *
  * @return a string representation of the event
  */
-public String toString() {
+public String toString () {
 	return "{handle=" + handle
 	+ " direct=" + direct
 	+ " bounds=" + bounds;

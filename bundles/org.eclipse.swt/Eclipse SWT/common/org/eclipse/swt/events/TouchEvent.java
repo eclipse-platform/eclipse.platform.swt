@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.events;
 
-import org.eclipse.swt.widgets.*;
 
+import org.eclipse.swt.widgets.*;
 /**
  * Instances of this class are sent as a result of
  * a touch-based input source being touched.
@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.*;
  *
  * @see TouchListener
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * 
  * @since 3.7
  */
 
