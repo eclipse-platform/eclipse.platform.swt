@@ -664,8 +664,7 @@
 			outputproperty="m_linux_rh3_x86_64_output"
 			command="hostname"/-->
 			
-		<!-- TEMPORARY: AIX machine is being repaired. -->
-		<!--sshexec host="${m_linux_ppc}" 
+		<sshexec host="${m_linux_ppc}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			failonerror="false"
@@ -678,7 +677,7 @@
 			failonerror="false"
 			trust="true"
 			outputproperty="m_linux_ppc64_output"
-			command="hostname"/-->
+			command="hostname"/>
 			
 		<sshexec host="${m_solaris_sparc}" 
 			username="swtbuild" 
@@ -732,13 +731,13 @@
 		<condition property="m_linux_rh3_x86_64_test" value="${success_msg}" else="${fail_msg}">
 			<matches pattern="${m_linux_rh3_x86_64}*" string="${m_linux_rh3_x86_64_output}"/>
 		</condition-->
-		<!-- TEMPORARY: AIX machine is being repaired. -->
-		<!--condition property="m_linux_ppc_test" value="${success_msg}" else="${fail_msg}">
+		
+		<condition property="m_linux_ppc_test" value="${success_msg}" else="${fail_msg}">
 			<matches pattern="${m_linux_ppc}*" string="${m_linux_ppc_output}"/>
 		</condition>
 		<condition property="m_linux_ppc64_test" value="${success_msg}" else="${fail_msg}">
 			<matches pattern="${m_linux_ppc64}*" string="${m_linux_ppc64_output}"/>
-		</condition-->
+		</condition>
 		<condition property="m_solaris_sparc_test" value="${success_msg}" else="${fail_msg}">
 			<matches pattern="${m_solaris_sparc}*" string="${m_solaris_sparc_output}"/>
 		</condition>
@@ -761,9 +760,8 @@
 		<echo>${m_linux_x86_64} - ${m_linux_x86_64_test}</echo>
 		<!--echo>${m_linux_rh3_x86} ${m_linux_rh3_x86_test}</echo>
 		<echo>${m_linux_rh3_x86_64} ${m_linux_rh3_x86_64_test}</echo-->
-		<!-- TEMPORARY: AIX machine is being repaired. -->
-		<!--echo>${m_linux_ppc} - ${m_linux_ppc_test}</echo>
-		<echo>${m_linux_ppc64} - ${m_linux_ppc64_test}</echo-->
+		<echo>${m_linux_ppc} - ${m_linux_ppc_test}</echo>
+		<echo>${m_linux_ppc64} - ${m_linux_ppc64_test}</echo>
 		<echo>${m_solaris_sparc} - ${m_solaris_sparc_test}</echo>
 		<echo>${m_solaris_x86} - ${m_solaris_x86_test}</echo>
 		<echo>${m_aix} - ${m_aix_test}</echo>
