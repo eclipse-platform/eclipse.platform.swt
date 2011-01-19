@@ -26,7 +26,6 @@ import org.eclipse.swt.events.*;
  * 
  * @since 3.7
  */
-
 public final class Touch {
 	
 	/**
@@ -79,7 +78,7 @@ public final class Touch {
  * @param x X location of the touch in screen coordinates
  * @param y Y location of the touch in screen coordinates
  */
-public Touch(long identity, TouchSource source, int state, boolean primary, int x, int y) {
+public Touch (long identity, TouchSource source, int state, boolean primary, int x, int y) {
 	this.id = identity;
 	this.source = source;
 	this.state = state;
@@ -95,7 +94,7 @@ public Touch(long identity, TouchSource source, int state, boolean primary, int 
  * @return a string representation of the event
  */
 public String toString() {
-	return "{id=" + id
+	return "Touch {id=" + id
 	+ " source=" + source
 	+ " state=" + state
 	+ " primary=" + primary

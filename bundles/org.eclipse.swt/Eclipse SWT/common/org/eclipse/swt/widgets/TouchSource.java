@@ -36,7 +36,6 @@ import org.eclipse.swt.graphics.*;
  * 
  * @since 3.7
  */
-
 public final class TouchSource {
 	int /*long*/ handle;
 	boolean direct;	
@@ -81,8 +80,7 @@ public Rectangle getBounds () {
  * @return a string representation of the event
  */
 public String toString () {
-	return "{handle=" + handle
-	+ " direct=" + direct
-	+ " bounds=" + bounds;
+	return "TouchSource {handle=" + handle + " direct=" + direct + " bounds=" + bounds + "}";
 }
+
 }
