@@ -26,7 +26,6 @@ import org.eclipse.swt.internal.*;
  * gesture is invoked, the appropriate method will be invoked.
  * </p>
  *
- * @see GestureAdapter
  * @see GestureEvent
  * @since 3.7
  */

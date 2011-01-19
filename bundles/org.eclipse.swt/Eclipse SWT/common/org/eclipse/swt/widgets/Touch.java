@@ -46,7 +46,7 @@ public final class Touch {
 	 * since the last TouchEvent was generated.
 	 * 
 	 * @see org.eclipse.swt.SWT#TOUCHSTATE_DOWN
-	 * @see org.eclipse.swt.SWT#TOUCHSTATE_MOVED
+	 * @see org.eclipse.swt.SWT#TOUCHSTATE_MOVE
 	 * @see org.eclipse.swt.SWT#TOUCHSTATE_UP
 	 */
 	public int state;
@@ -74,6 +74,7 @@ public final class Touch {
  * @param identity Identity of the touch. 
  * @param source Object representing the device that generated the touch. 
  * @param state One of the state constants representing the state of this touch.
+ * @param primary Is this touch the primary touch in a collection of touches?
  * @param x X location of the touch in screen coordinates
  * @param y Y location of the touch in screen coordinates
  */

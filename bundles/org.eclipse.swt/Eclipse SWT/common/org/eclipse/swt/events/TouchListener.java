@@ -26,7 +26,6 @@ import org.eclipse.swt.internal.*;
  * will be invoked.
  * </p>
  *
- * @see TouchAdapter
  * @see TouchEvent
  * @since 3.7
  */

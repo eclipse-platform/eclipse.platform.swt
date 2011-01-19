@@ -983,7 +983,7 @@ public class SWT {
 	/**
 	 * A constant indicating that a finger touched the device.  
 	 * 
-	 * @see org.eclipse.swt.widgets.Touch.state
+	 * @see org.eclipse.swt.widgets.Touch#state
 	 * @since 3.7
 	 */
 	public static final int TOUCHSTATE_DOWN = 1 << 0;
@@ -991,7 +991,7 @@ public class SWT {
 	/**
 	 * A constant indicating that a finger moved on the device.
 	 * 
-	 * @see org.eclipse.swt.widgets.Touch.state
+	 * @see org.eclipse.swt.widgets.Touch#state
 	 * @since 3.7
 	 */
 	public static final int TOUCHSTATE_MOVE = 1 << 1;
@@ -999,7 +999,7 @@ public class SWT {
 	/**
 	 * A constant indicating that a finger was lifted from the device. 
 	 * 
-	 * @see org.eclipse.swt.widgets.Touch.state
+	 * @see org.eclipse.swt.widgets.Touch#state
 	 * @since 3.7
 	 */
 	public static final int TOUCHSTATE_UP = 1 << 2;

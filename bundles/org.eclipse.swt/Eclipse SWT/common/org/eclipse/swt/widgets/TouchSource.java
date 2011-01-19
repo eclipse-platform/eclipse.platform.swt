@@ -61,6 +61,7 @@ TouchSource(int /*long*/ handle, boolean direct, Rectangle bounds) {
 
 /**
  * Returns the type of touch input this source generates; true for direct, false for indirect.
+ * @return boolean If true, the input source is direct. If false, the input source is indirect.
  */
 public boolean isDirect() {
 	return direct;
@@ -71,6 +72,7 @@ public boolean isDirect() {
  * device in pixels. For an indirect source, this contains the size of the device in pixels.
  * <p>
  * Note that the x and y values may not necessarily be zero if the TouchSource is a direct source.
+ * @return Rectangle The bounding rectangle of the input source.
  */
 public Rectangle getBounds() {
 	return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
