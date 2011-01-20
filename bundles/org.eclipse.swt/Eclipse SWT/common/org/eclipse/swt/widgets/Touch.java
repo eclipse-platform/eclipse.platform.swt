@@ -78,7 +78,7 @@ public final class Touch {
  * @param x X location of the touch in screen coordinates
  * @param y Y location of the touch in screen coordinates
  */
-public Touch (long identity, TouchSource source, int state, boolean primary, int x, int y) {
+Touch (long identity, TouchSource source, int state, boolean primary, int x, int y) {
 	this.id = identity;
 	this.source = source;
 	this.state = state;
