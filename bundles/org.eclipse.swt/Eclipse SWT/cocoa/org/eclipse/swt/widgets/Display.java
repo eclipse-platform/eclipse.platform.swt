@@ -117,10 +117,6 @@ public class Display extends Device {
 	NSMutableArray currentTouches;
 	TouchSource[] touchSources;
 
-	/* Key event management */
-	int [] deadKeyState = new int[1];
-	int currentKeyboardUCHRdata;
-	
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer;
 	Thread thread;
@@ -3052,7 +3048,7 @@ public boolean post(Event event) {
 		int /*long*/ eventSource = OS.CGEventSourceCreate(OS.kCGEventSourceStateHIDSystemState);
 		if (eventSource == 0) return false;
 		boolean returnValue = false;
-
+		int deadKeyState[] = new int[1];
 		int type = event.type;
 		switch (type) {
 			case SWT.KeyDown:
@@ -3072,6 +3068,7 @@ public boolean post(Event event) {
 					char [] output = new char [maxStringLength];
 					int [] actualStringLength = new int [1];
 					for (short i = 0 ; i <= 0x7F ; i++) {
+						deadKeyState[0] = 0;
 						OS.UCKeyTranslate (uchrPtr, i, (short)(type == SWT.KeyDown ? OS.kUCKeyActionDown : OS.kUCKeyActionUp), 0, OS.LMGetKbdType(), 0, deadKeyState, maxStringLength, actualStringLength, output);
 						if (output[0] == event.character) {
 							vKey = i;
@@ -3080,6 +3077,7 @@ public boolean post(Event event) {
 					}
 					if (vKey == -1) {
 						for (short i = 0 ; i <= 0x7F ; i++) {
+							deadKeyState[0] = 0;
 							OS.UCKeyTranslate (uchrPtr, i, (short)(type == SWT.KeyDown ? OS.kUCKeyActionDown : OS.kUCKeyActionUp), OS.shiftKey, OS.LMGetKbdType(), 0, deadKeyState, maxStringLength, actualStringLength, output);
 							if (output[0] == event.character) {
 								vKey = i;
@@ -3698,8 +3696,6 @@ void releaseDisplay () {
 	}
 	if (cursorSetCallback != null) cursorSetCallback.dispose();
 	cursorSetCallback = null;
-
-	deadKeyState = null;
 
 	if (settingsDelegate != null) {
 		NSNotificationCenter.defaultCenter().removeObserver(settingsDelegate);

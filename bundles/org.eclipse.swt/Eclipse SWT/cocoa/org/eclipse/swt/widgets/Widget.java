@@ -1699,7 +1699,6 @@ boolean setInputState (Event event, NSEvent nsEvent, int type) {
 			if (event.keyCode == SWT.COMMAND) event.stateMask &= ~SWT.COMMAND;
 			break;
 		case SWT.KeyUp:
-		case SWT.Gesture:
 			if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
 			if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
 			if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
@@ -1741,8 +1740,6 @@ boolean setKeyState (Event event, int type, NSEvent nsEvent) {
 				int /*long*/ uchrCFData = OS.TISGetInputSourceProperty(currentKbd, OS.kTISPropertyUnicodeKeyLayoutData());
 				
 				if (uchrCFData != 0) {
-					// If the keyboard changed since the last keystroke clear the dead key state.
-					if (uchrCFData != display.currentKeyboardUCHRdata) display.deadKeyState[0] = 0;
 					uchrPtr = OS.CFDataGetBytePtr(uchrCFData);
 					
 					if (uchrPtr != 0 && OS.CFDataGetLength(uchrCFData) > 0) {
@@ -1752,7 +1749,8 @@ boolean setKeyState (Event event, int type, NSEvent nsEvent) {
 						int maxStringLength = 256;
 						char [] output = new char [maxStringLength];
 						int [] actualStringLength = new int [1];
-						OS.UCKeyTranslate (uchrPtr, (short)keyCode, (short)OS.kUCKeyActionDown, 0, (int)keyboardType, 0, display.deadKeyState, maxStringLength, actualStringLength, output);
+						int [] deadKeyState = new int[1];
+						OS.UCKeyTranslate (uchrPtr, (short)keyCode, (short)(event.type == SWT.KeyDown ? OS.kUCKeyActionDown : OS.kUCKeyActionUp), 0, (int)keyboardType, 0, deadKeyState, maxStringLength, actualStringLength, output);
 						if (actualStringLength[0] < 1) {
 							// part of a multi-key key
 							event.keyCode = 0;
