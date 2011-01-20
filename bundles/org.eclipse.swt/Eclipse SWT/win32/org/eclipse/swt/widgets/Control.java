@@ -1886,9 +1886,9 @@ boolean isTabItem () {
  * 
  * @since 3.7
  */
-public boolean isTouchEnabled() {
-	checkWidget();
-	return OS.IsTouchWindow(handle, null);
+public boolean isTouchEnabled () {
+	checkWidget ();
+	return OS.IsTouchWindow (handle, null);
 }
 
 /**
@@ -2911,33 +2911,31 @@ void sendResize () {
 	sendEvent (SWT.Resize);
 }
 
-boolean sendTouchEvent (int /*long*/ hWnd, TOUCHINPUT touchInput[]) {
+boolean sendTouchEvent (TOUCHINPUT touchInput []) {
 	Event event = new Event ();
-	Point cursorLoc = display.getCursorLocation();
-	cursorLoc = toControl(cursorLoc);
-	event.x = cursorLoc.x;
-	event.y = cursorLoc.y;
-	
-	Touch[] touches = new Touch[touchInput.length];
-
+	POINT pt = new POINT ();
+	OS.GetCursorPos (pt);
+	OS.ScreenToClient (handle, pt);
+	event.x = pt.x;
+	event.y = pt.y;
+	Touch [] touches = new Touch [touchInput.length];
+	Monitor monitor = getMonitor ();
 	for (int i = 0; i < touchInput.length; i++) {
-		TOUCHINPUT touch = touchInput[i];
-		int identity = touch.dwID;
-		int /*long*/ source = touch.hSource;
-		TouchSource inputSource = display.findTouchSource(source, getMonitor());
+		TOUCHINPUT ti = touchInput [i];
+		TouchSource inputSource = display.findTouchSource (ti.hSource, monitor);
 		int state = 0;
-		boolean primary = false;
-		if ((touch.dwFlags & OS.TOUCHEVENTF_DOWN) != 0) state = SWT.TOUCHSTATE_DOWN;
-		if ((touch.dwFlags & OS.TOUCHEVENTF_UP) != 0) state = SWT.TOUCHSTATE_UP;
-		if ((touch.dwFlags & OS.TOUCHEVENTF_MOVE) != 0) state = SWT.TOUCHSTATE_MOVE;
-		if ((touch.dwFlags & OS.TOUCHEVENTF_PRIMARY) != 0) primary = true;
-		touches[i] = new Touch(identity, inputSource, state, primary, (int)OS.TOUCH_COORD_TO_PIXEL(touch.x), (int)OS.TOUCH_COORD_TO_PIXEL(touch.y));
+		if ((ti.dwFlags & OS.TOUCHEVENTF_DOWN) != 0) state = SWT.TOUCHSTATE_DOWN;
+		if ((ti.dwFlags & OS.TOUCHEVENTF_UP) != 0) state = SWT.TOUCHSTATE_UP;
+		if ((ti.dwFlags & OS.TOUCHEVENTF_MOVE) != 0) state = SWT.TOUCHSTATE_MOVE;
+		boolean primary = (ti.dwFlags & OS.TOUCHEVENTF_PRIMARY) != 0;
+		int x = (int)OS.TOUCH_COORD_TO_PIXEL (ti.x);
+		int y = (int)OS.TOUCH_COORD_TO_PIXEL (ti.y);
+		touches [i] = new Touch (ti.dwID, inputSource, state, primary, x, y);
 	}
-
 	event.touches = touches;
 	setInputState (event, SWT.Touch);
 	postEvent (SWT.Touch, event);
-	return event.doit;
+	return true;
 }
 
 void setBackground () {
@@ -5367,23 +5365,23 @@ LRESULT WM_TABLET_FLICK (int /*long*/ wParam, int /*long*/ lParam) {
 
 LRESULT WM_TOUCH (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = null;
-	
-	if (hooks(SWT.Touch) || filters(SWT.Touch)) {
-		int cInputs = OS.LOWORD(wParam);
+	if (hooks (SWT.Touch) || filters (SWT.Touch)) {
+		int cInputs = OS.LOWORD (wParam);
 		int /*long*/ hHeap = OS.GetProcessHeap ();
 		int /*long*/ pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY,  cInputs * TOUCHINPUT.sizeof);
-
-		if (pInputs != 0){
-			if (OS.GetTouchInputInfo(lParam, cInputs, pInputs, OS.TOUCHINPUT_sizeof())) {
-				TOUCHINPUT ti[] = new TOUCHINPUT[cInputs];
+		if (pInputs != 0) {
+			if (OS.GetTouchInputInfo (lParam, cInputs, pInputs, TOUCHINPUT.sizeof)) {
+				TOUCHINPUT ti [] = new TOUCHINPUT [cInputs];
 				for (int i = 0; i < cInputs; i++){
-					ti[i] = new TOUCHINPUT();
-					OS.MoveMemory(ti[i], pInputs + i * OS.TOUCHINPUT_sizeof(), OS.TOUCHINPUT_sizeof());
-				}            
-				if (!sendTouchEvent(handle, ti))
-				OS.HeapFree(hHeap, 0, pInputs);
-				result = LRESULT.ZERO;					
+					ti [i] = new TOUCHINPUT ();
+					OS.MoveMemory (ti [i], pInputs + i * TOUCHINPUT.sizeof, TOUCHINPUT.sizeof);
+				}
+				if (!sendTouchEvent (ti)) {
+					OS.CloseTouchInputHandle (lParam); 
+					result = LRESULT.ZERO;
+				}
 			}
+			OS.HeapFree (hHeap, 0, pInputs);
 		}
 	}
 	return result;
