@@ -19,6 +19,10 @@ public IWebPreferences (int /*long*/ address) {
 	super (address);
 }
 
+public int initWithIdentifier (int /*long*/ identifier, int /*long*/[] preferences) {
+	return COM.VtblCall (4, getAddress (), identifier, preferences);
+}
+
 public int setJavaEnabled (int enabled) {
 	return COM.VtblCall (33, getAddress (), enabled);
 }

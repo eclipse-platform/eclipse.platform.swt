@@ -43,6 +43,7 @@ class WebKit extends WebBrowser {
 	String lastNavigateURL;
 	BrowserFunction eventFunction;
 
+	static int prefsIdentifier;
 	static int /*long*/ ExternalClass;
 	static boolean LibraryLoaded = false;
 	static String LibraryLoadError;
@@ -601,16 +602,7 @@ public void create (Composite parent, int style) {
 		error (hr);
 	}
 
-	result[0] = 0;
-	hr = webView.preferences (result);
-	if (hr == COM.S_OK && result[0] != 0) {
-		IWebPreferences preferences = new IWebPreferences (result[0]);
-		preferences.setJavaScriptCanOpenWindowsAutomatically (1);
-		preferences.setJavaEnabled (0);	/* disable applets */
-		preferences.setTabsToLinks (1);
-		preferences.setFontSmoothing (WebKit_win32.FontSmoothingTypeWindows);
-		preferences.Release ();
-	}
+	initializeWebViewPreferences ();
 
 	Listener listener = new Listener () {
 		public void handleEvent (Event e) {
@@ -1041,6 +1033,7 @@ void onDispose () {
 	eventFunction = null;
 	C.free (webViewData);
 
+	webView.setPreferences (0);
 	webView.setHostWindow (0);
 	webView.setFrameLoadDelegate (0);
 	webView.setResourceLoadDelegate (0);
@@ -1275,6 +1268,38 @@ public void stop () {
 	IWebIBActions webIBActions = new IWebIBActions (result[0]);
 	webIBActions.stopLoading (webView.getAddress ());
 	webIBActions.Release ();
+}
+
+void initializeWebViewPreferences () {
+	/* 
+	 * Try to create separate preferences for each webview using different identifier for each webview. 
+	 * Otherwise all the webviews use the shared preferences.
+	 */
+	int /*long*/[] result = new int /*long*/[1];
+	int hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebPreferences, 0, WebKit_win32.IID_IWebPreferences, result);
+	if (hr == COM.S_OK && result[0] != 0) {
+		IWebPreferences preferences = new IWebPreferences (result[0]);
+		result[0] = 0;
+		hr = preferences.initWithIdentifier (createBSTR (String.valueOf (prefsIdentifier++)), result);
+		preferences.Release ();
+		if (hr == COM.S_OK && result[0] != 0) {
+			preferences = new IWebPreferences (result[0]);
+			webView.setPreferences (preferences.getAddress());
+			preferences.Release ();
+		}
+	}
+	
+	result[0] = 0;
+	hr = webView.preferences (result);
+	if (hr == COM.S_OK && result[0] != 0) {
+		IWebPreferences preferences = new IWebPreferences (result[0]);
+		preferences.setJavaScriptEnabled (1);
+		preferences.setJavaScriptCanOpenWindowsAutomatically (1);
+		preferences.setJavaEnabled (0);	/* disable applets */
+		preferences.setTabsToLinks (1);
+		preferences.setFontSmoothing (WebKit_win32.FontSmoothingTypeWindows);
+		preferences.Release ();
+	}
 }
 
 }
