@@ -2241,7 +2241,10 @@ void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
 				OS.SetWindowLong (hwnd, OS.GWL_STYLE, (bits1 & ~OS.WS_CHILD) | OS.WS_POPUP);
 				OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE, bits2 | OS.WS_EX_TOOLWINDOW);
 			}
+			Shell shell = getShell ();
+			Control savedFocus = shell.savedFocus;
 			OS.SetParent (hwnd, 0);
+			shell.setSavedFocus (savedFocus);
 			if ((bits1 & OS.WS_VISIBLE) != 0) {
 				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 1, 0);
 			}
