@@ -1183,8 +1183,8 @@ TouchSource findTouchSource(NSTouch touch) {
 	id touchDevice = touch.device();
 	TouchSource source = null;
 
-	while (index < length) {
-		if (touchSources[index] != null && touchSources[index].handle == touchDevice.id) {
+	while (index < length && touchSources[index] != null) {
+		if (touchSources[index].handle == touchDevice.id) {
 			source = touchSources[index];
 			break;
 		}
