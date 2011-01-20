@@ -2903,7 +2903,7 @@ boolean sendGestureEvent (GESTUREINFO gi) {
     if (type == 0) return true;
 	setInputState (event, type);
 	sendEvent (type, event);	
-	return true;// event.doit;
+	return event.doit;
 }
 
 void sendMove () {
@@ -2914,7 +2914,7 @@ void sendResize () {
 	sendEvent (SWT.Resize);
 }
 
-boolean sendTouchEvent (TOUCHINPUT touchInput []) {
+void sendTouchEvent (TOUCHINPUT touchInput []) {
 	Event event = new Event ();
 	POINT pt = new POINT ();
 	OS.GetCursorPos (pt);
@@ -2938,7 +2938,6 @@ boolean sendTouchEvent (TOUCHINPUT touchInput []) {
 	event.touches = touches;
 	setInputState (event, SWT.Touch);
 	postEvent (SWT.Touch, event);
-	return true;
 }
 
 void setBackground () {
@@ -5379,10 +5378,9 @@ LRESULT WM_TOUCH (int /*long*/ wParam, int /*long*/ lParam) {
 					ti [i] = new TOUCHINPUT ();
 					OS.MoveMemory (ti [i], pInputs + i * TOUCHINPUT.sizeof, TOUCHINPUT.sizeof);
 				}
-				if (!sendTouchEvent (ti)) {
-					OS.CloseTouchInputHandle (lParam); 
-					result = LRESULT.ZERO;
-				}
+				sendTouchEvent (ti);
+				OS.CloseTouchInputHandle (lParam); 
+				result = LRESULT.ZERO;
 			}
 			OS.HeapFree (hHeap, 0, pInputs);
 		}
