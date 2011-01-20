@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
@@ -251,7 +252,7 @@ public class Display extends Device {
 	int lastX, lastY;
 	
 	/* Touch state */
-	TouchSource[] touchSources;
+	TouchSource [] touchSources;
 	
 	/* Tool Tips */
 	int nextToolTipId;
@@ -1429,31 +1430,25 @@ public static Display findDisplay (Thread thread) {
 	}
 }
 
-TouchSource findTouchSource(int /*long*/ touchDevice, Monitor sourceMonitor) {
+TouchSource findTouchSource (int /*long*/ touchDevice, Monitor monitor) {
 	if (touchSources == null) touchSources = new TouchSource [4];
-	int index = 0;
 	int length = touchSources.length;
-	TouchSource source = null;
-
-	while (index < length) {
-		if (touchSources[index] != null && touchSources[index].handle == touchDevice) {
-			source = touchSources[index];
-			break;
+	for (int i=0; i<length; i++) {
+		if (touchSources [i] != null && touchSources [i].handle == touchDevice) {
+			return touchSources [i];
 		}
+	}
+	int index = 0;
+	while (index < length) {
+		if (touchSources [index] == null) break;
 		index++;
 	}
-
-	if (source != null) return source;
-
 	if (index == length) {
-		TouchSource [] newList = new TouchSource [length + 4];
-		System.arraycopy(touchSources, 0, newList, 0, length);
-		touchSources = newList;
+		TouchSource [] newTouchSources = new TouchSource [length + 4];
+		System.arraycopy (touchSources, 0, newTouchSources, 0, length);
+		touchSources = newTouchSources;
 	}
-
-	source = new TouchSource(touchDevice, true, sourceMonitor.getBounds());
-	touchSources [index] = source;
-	return source;
+	return touchSources [index] = new TouchSource (touchDevice, true, monitor.getBounds ()); 
 }
 
 /**
@@ -2823,12 +2818,9 @@ public void internal_dispose_GC (int /*long*/ hDC, GCData data) {
  * 
  * @since 3.7
  */
-public boolean isTouchEnabled() {
-	int value = OS.GetSystemMetrics(OS.SM_DIGITIZER);
-	if ((value & (OS.NID_READY | OS.NID_MULTI_INPUT)) != 0) {
-	    return true;
-	}
-	return false;
+public boolean isTouchEnabled () {
+	int value = OS.GetSystemMetrics (OS.SM_DIGITIZER);
+	return (value & (OS.NID_READY | OS.NID_MULTI_INPUT)) != 0;
 }
 
 boolean isXMouseActive () {
@@ -3917,6 +3909,8 @@ void releaseDisplay () {
 	clickRect = null;
 	hdr = null;
 	plvfi = null;
+	monitors = null;
+	touchSources = null;
 	
 	/* Release handles */
 	threadId = 0;
