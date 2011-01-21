@@ -4426,7 +4426,7 @@ boolean touchEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ eventPtr) {
 	
 	event.touches = touches;
 	postEvent (SWT.Touch, event);
-	return event.doit;
+	return true;
 }
 
 void touchesBeganWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
