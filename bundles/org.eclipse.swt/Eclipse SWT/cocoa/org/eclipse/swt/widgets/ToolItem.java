@@ -985,7 +985,7 @@ public void setEnabled (boolean enabled) {
 	} else {
 		state |= DISABLED;
 	}
-	enableWidget(enabled && parent.isEnabled());
+	enableWidget(enabled);
 }
 
 /**
