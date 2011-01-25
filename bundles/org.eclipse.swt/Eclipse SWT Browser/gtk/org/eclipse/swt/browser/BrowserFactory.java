@@ -15,9 +15,11 @@ import org.eclipse.swt.SWT;
 class BrowserFactory {
 
 WebBrowser createWebBrowser (int style) {
-	if ((style & SWT.MOZILLA) != 0 || (!WebKit.isInstalled () && (style & SWT.WEBKIT) == 0)) {
+	boolean webkitInstalled = WebKit.isInstalled ();
+	if ((style & SWT.MOZILLA) != 0 || (!webkitInstalled && (style & SWT.WEBKIT) == 0)) {
 		return new Mozilla ();
 	}
+	if (!webkitInstalled) return null;
 	return new WebKit ();
 }
 
