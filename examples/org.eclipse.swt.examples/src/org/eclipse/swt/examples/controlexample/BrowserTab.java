@@ -29,7 +29,7 @@ class BrowserTab extends Tab {
 	Group browserGroup;
 	
 	/* Style widgets added to the "Style" group */
-	Button mozillaButton;
+	Button mozillaButton, webKitButton;
 	
 	String errorMessage, lastText, lastUrl;
 	
@@ -70,19 +70,21 @@ class BrowserTab extends Tab {
 		int style = getDefaultStyle();
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
 		if (mozillaButton.getSelection ()) style |= SWT.MOZILLA;
+		if (webKitButton.getSelection ()) style |= SWT.WEBKIT;
 		
 		/* Create the example widgets */
 		try {
 			browser = new Browser (browserGroup, style);
-		} catch (SWTError e) { //XPCOM error
+		} catch (SWTError e) { // Probably missing browser
 			try {
-				browser = new Browser (browserGroup, style &~ SWT.MOZILLA);
+				browser = new Browser (browserGroup, style & ~(SWT.MOZILLA | SWT.WEBKIT));
 			} catch (SWTError e2) { // Unsupported platform
 				errorMessage = e.getMessage();
 				return;
 			}
 			MessageBox dialog = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-			dialog.setMessage(ControlExample.getResourceString("MozillaNotFound", new String [] {e.getMessage()}));
+			String resourceString = (style & SWT.MOZILLA) != 0 ? "MozillaNotFound" : "WebKitNotFound";
+			dialog.setMessage(ControlExample.getResourceString(resourceString, new String [] {e.getMessage()}));
 			dialog.open();
 		}
 
@@ -144,6 +146,18 @@ class BrowserTab extends Tab {
 		/* Create the extra widgets */
 		mozillaButton = new Button (styleGroup, SWT.CHECK);
 		mozillaButton.setText ("SWT.MOZILLA");
+		mozillaButton.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				webKitButton.setSelection(false);
+			}
+		});
+		webKitButton = new Button (styleGroup, SWT.CHECK);
+		webKitButton.setText ("SWT.WEBKIT");
+		webKitButton.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				mozillaButton.setSelection(false);
+			}
+		});
 		borderButton = new Button (styleGroup, SWT.CHECK);
 		borderButton.setText ("SWT.BORDER");
 	}
@@ -327,6 +341,7 @@ class BrowserTab extends Tab {
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		mozillaButton.setSelection (browser == null ? false : (browser.getStyle () & SWT.MOZILLA) != 0);
+		webKitButton.setSelection (browser == null ? false : (browser.getStyle () & SWT.WEBKIT) != 0);
 		borderButton.setSelection (browser == null ? false : (browser.getStyle () & SWT.BORDER) != 0);
 	}
 }
