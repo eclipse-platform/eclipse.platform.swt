@@ -213,7 +213,7 @@
 			<env key="XULRUNNER_SDK" value="/bluebird/teamswt/swt-builddir/xulrunner/1.8.1.1/ppc64/mozilla/dist/sdk/"/>
 			<env key="XULRUNNER_INCLUDES" value="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"/>
 			<env key="XULRUNNER_LIBS" value="-m64 -L${XULRUNNER_SDK}/lib -lxpcomglue"/>
-			<env key="PKG_CONFIG_PATH" value="/usr/lib64/pkgconfig/:/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_ppc64/lib/pkgconfig/:/usr/local/GNOME/lib/pkgconfig"/>
+			<env key="PKG_CONFIG_PATH" value="/usr/lib64/pkgconfig/:/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_ppc64/lib/pkgconfig/:/usr/local/GNOME/lib/pkgconfig:/usr/local/gtk2.4/lib/pkgconfig/"/>
 			<env key="MODEL" value="ppc64"/>
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
