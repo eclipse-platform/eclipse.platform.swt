@@ -716,13 +716,8 @@ public class SWT {
 	public static final int OpenDocument = 46;
 	
 	/**
-	 * The touch event type (value is 46).
+	 * The touch event type (value is 47).
 	 * 
-	 * <p>
-	 * This event is sent when SWT receives notification that a document 
-	 * should be opened.
-	 * </p>
-	 *  
      * @see org.eclipse.swt.widgets.Display#addListener
      * @see org.eclipse.swt.widgets.Event
      * 
