@@ -1445,7 +1445,7 @@ boolean gestureEvent(int /*long*/ id, int /*long*/ eventPtr, int detail) {
 		display.rotation = 0.0;
 		display.magnification = 1.0;
 		display.gestureActive = true;
-	} else {
+	} else if (detail == SWT.GESTURE_END) {
 		display.gestureActive = false;
 	}
 	
@@ -4398,31 +4398,31 @@ boolean touchEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ eventPtr) {
 		touches[currTouchIndex++] = touchStateFromNSTouch(touch);
 	}	
 
-//	if (activeTouches.count() != currentTouches.count()) {
-//		/**
-//		 * Bug in Cocoa. Under some situations we don't get the NSTouchPhaseEnded/Cancelled notification. Most commonly this happens
-//		 * if a 4-finger gesture occurs and the application switcher appears. Workaround is to generate a TOUCHSTATE_UP for the 
-//		 * orphaned touch.
-//		 */
-//		for (int /*long*/ j = currentTouches.count() - 1; j >= 0 ; j--) {
-//			NSTouch touch = new NSTouch(currentTouches.objectAtIndex(j).id);
-//			NSObject identity = new NSObject(OS.objc_msgSend(touch.id, OS.sel_identity));
-//			NSTouch activeTouch = findTouchWithId(activeTouches, identity);
-//			if (activeTouch == null) {
-//				Touch fakeTouchUp = touchStateFromNSTouch(touch);
-//				fakeTouchUp.phase = Touch.TOUCHSTATE_UP;
-//
-//				if (currTouchIndex == touches.length) {
-//					Touch newTouchStates[] = new Touch[touches.length + 1];
-//					System.arraycopy(touches, 0, newTouchStates, 0, touches.length);
-//					touches = newTouchStates;
-//				}
-//
-//				touches[currTouchIndex++] = fakeTouchUp;
-//				currentTouches.removeObject(activeTouch);
-//			}
-//		}
-//	}
+	if (activeTouches.count() != currentTouches.count()) {
+		/**
+		 * Bug in Cocoa. Under some situations we don't get the NSTouchPhaseEnded/Cancelled notification. Most commonly this happens
+		 * if a 4-finger gesture occurs and the application switcher appears. Workaround is to generate a TOUCHSTATE_UP for the 
+		 * orphaned touch.
+		 */
+		for (int /*long*/ j = currentTouches.count() - 1; j >= 0 ; j--) {
+			NSTouch touch = new NSTouch(currentTouches.objectAtIndex(j).id);
+			NSObject identity = new NSObject(OS.objc_msgSend(touch.id, OS.sel_identity));
+			NSTouch activeTouch = findTouchWithId(activeTouches, identity);
+			if (activeTouch == null) {
+				Touch fakeTouchUp = touchStateFromNSTouch(touch);
+				fakeTouchUp.state = SWT.TOUCHSTATE_UP;
+
+				if (currTouchIndex == touches.length) {
+					Touch newTouchStates[] = new Touch[touches.length + 1];
+					System.arraycopy(touches, 0, newTouchStates, 0, touches.length);
+					touches = newTouchStates;
+				}
+
+				touches[currTouchIndex++] = fakeTouchUp;
+				currentTouches.removeObject(activeTouch);
+			}
+		}
+	}
 	
 	event.touches = touches;
 	postEvent (SWT.Touch, event);
