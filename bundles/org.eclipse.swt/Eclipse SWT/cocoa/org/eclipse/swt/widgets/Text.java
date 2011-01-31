@@ -439,6 +439,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
  */
 public void copy () {
 	checkWidget ();
+	if ((style & SWT.PASSWORD) != 0 || echoCharacter != '\0') return;
 	if ((style & SWT.SINGLE) != 0) {
 		Point selection = getSelection ();
 		if (selection.x == selection.y) return;
@@ -553,6 +554,7 @@ void createWidget () {
 public void cut () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
+	if ((style & SWT.PASSWORD) != 0 || echoCharacter != '\0') return;
 	boolean cut = true;
 	char [] oldText = null;
 	Point oldSelection = getSelection ();
