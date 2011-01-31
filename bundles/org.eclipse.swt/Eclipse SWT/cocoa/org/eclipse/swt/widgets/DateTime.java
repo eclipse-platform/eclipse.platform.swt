@@ -218,7 +218,7 @@ void createPopupShell(int year, int month, int day) {
 	if (clickListener == null) {
 		clickListener = new Listener() {
 			public void handleEvent(Event event) {
-				if (event.widget instanceof Control) {
+				if (event.widget instanceof Control && event.widget != DateTime.this) {
 					Control c = (Control)event.widget;
 					if (c.getShell() != popupShell) {
 						hideCalendar();
