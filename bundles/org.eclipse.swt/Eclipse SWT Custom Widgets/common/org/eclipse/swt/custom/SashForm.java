@@ -107,6 +107,11 @@ Sash createSash() {
  * Returns SWT.HORIZONTAL if the controls in the SashForm are laid out side by side
  * or SWT.VERTICAL   if the controls in the SashForm are laid out top to bottom.
  * 
+ * <p>
+ * To retrieve the bidi orientation of the SashForm use <code>{@link #getStyle()}</code>
+ * and test if the SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT bits are set.
+ * </p>
+ * 
  * @return SWT.HORIZONTAL or SWT.VERTICAL
  */
 public int getOrientation() {
@@ -286,16 +291,27 @@ void onDragSash(Event event) {
  * out side by side.  If orientation is SWT.VERTICAL, lay the 
  * controls in the SashForm out top to bottom.
  * 
- * @param orientation SWT.HORIZONTAL or SWT.VERTICAL
+ * <p>
+ * Since 3.7, this method can also be called with SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT 
+ * to change the bidi orientation of the SashForm.
+ * </p>
+ * 
+ * @param orientation SWT.HORIZONTAL or SWT.VERTICAL, SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT
+ * 
+ * @see Control#setOrientation(int)
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the value of orientation is not SWT.HORIZONTAL or SWT.VERTICAL
+ *    <li>ERROR_INVALID_ARGUMENT - if the value of orientation is not SWT.HORIZONTAL or SWT.VERTICAL, SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT
  * </ul>
  */
 public void setOrientation(int orientation) {
 	checkWidget();
+	if (orientation == SWT.RIGHT_TO_LEFT || orientation == SWT.LEFT_TO_RIGHT) {
+		super.setOrientation(orientation);
+		return;
+	}
 	if (getOrientation() == orientation) return;
 	if (orientation != SWT.HORIZONTAL && orientation != SWT.VERTICAL) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
