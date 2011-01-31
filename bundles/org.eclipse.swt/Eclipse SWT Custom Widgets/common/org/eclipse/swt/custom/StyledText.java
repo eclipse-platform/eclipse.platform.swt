@@ -6670,6 +6670,35 @@ void initializeAccessible() {
 			e.result = ACC.OK;
 		}
 	});
+	accessible.addAccessibleEditableTextListener(new AccessibleEditableTextListener() {
+		public void setTextAttributes(AccessibleTextAttributeEvent e) {
+			// This method must be implemented by the application
+			e.result = ACC.OK;
+		}
+		public void replaceText(AccessibleEditableTextEvent e) {
+			StyledText st = StyledText.this;
+			st.replaceTextRange(e.start, e.end - e.start, e.string);
+            e.result = ACC.OK;
+		}
+		public void pasteText(AccessibleEditableTextEvent e) {
+			StyledText st = StyledText.this;
+			st.setSelection(e.start);
+            st.paste();
+            e.result = ACC.OK;
+		}
+		public void cutText(AccessibleEditableTextEvent e) {
+			StyledText st = StyledText.this;
+			st.setSelection(e.start, e.end);
+            st.cut();
+            e.result = ACC.OK;
+		}
+		public void copyText(AccessibleEditableTextEvent e) {
+			StyledText st = StyledText.this;
+			st.setSelection(e.start, e.end);
+            st.copy();
+            e.result = ACC.OK;
+		}
+	});
 	accessible.addAccessibleAttributeListener(new AccessibleAttributeAdapter() {
 		public void getAttributes(AccessibleAttributeEvent e) {
 			StyledText st = StyledText.this;
