@@ -30,7 +30,7 @@ class ButtonTab extends AlignableTab {
 	Button upButton, downButton;
 
 	/* Style widgets added to the "Style" group */
-	Button pushButton, checkButton, radioButton, toggleButton, arrowButton, flatButton;
+	Button pushButton, checkButton, radioButton, toggleButton, arrowButton, flatButton, wrapButton;
 	
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -105,6 +105,7 @@ class ButtonTab extends AlignableTab {
 		if (radioButton.getSelection()) style |= SWT.RADIO;
 		if (toggleButton.getSelection()) style |= SWT.TOGGLE;
 		if (flatButton.getSelection()) style |= SWT.FLAT;
+		if (wrapButton.getSelection()) style |= SWT.WRAP;
 		if (borderButton.getSelection()) style |= SWT.BORDER;
 		if (leftButton.getSelection()) style |= SWT.LEFT;
 		if (rightButton.getSelection()) style |= SWT.RIGHT;
@@ -122,7 +123,11 @@ class ButtonTab extends AlignableTab {
 		button2 = new Button(textButtonGroup, style);
 		button2.setText(ControlExample.getResourceString("Two"));
 		button3 = new Button(textButtonGroup, style);
-		button3.setText(ControlExample.getResourceString("Three"));
+		if (wrapButton.getSelection ()) {
+			button3.setText (ControlExample.getResourceString("Wrap_Text"));
+		} else {
+			button3.setText (ControlExample.getResourceString("Three"));
+		}
 		button4 = new Button(imageButtonGroup, style);
 		button4.setImage(instance.images[ControlExample.ciClosedFolder]);
 		button5 = new Button(imageButtonGroup, style);
@@ -136,7 +141,11 @@ class ButtonTab extends AlignableTab {
 		button8.setText(ControlExample.getResourceString("Two"));
 		button8.setImage(instance.images[ControlExample.ciOpenFolder]);
 		button9 = new Button(imagetextButtonGroup, style);
-		button9.setText(ControlExample.getResourceString("Three"));
+		if (wrapButton.getSelection ()) {
+			button9.setText (ControlExample.getResourceString("Wrap_Text"));
+		} else {
+			button9.setText (ControlExample.getResourceString("Three"));
+		}
 		button9.setImage(instance.images[ControlExample.ciTarget]);
 	}
 	
@@ -159,6 +168,8 @@ class ButtonTab extends AlignableTab {
 		arrowButton.setText ("SWT.ARROW");
 		flatButton = new Button (styleGroup, SWT.CHECK);
 		flatButton.setText ("SWT.FLAT");
+		wrapButton = new Button (styleGroup, SWT.CHECK);
+		wrapButton.setText ("SWT.WRAP");
 		borderButton = new Button (styleGroup, SWT.CHECK);
 		borderButton.setText ("SWT.BORDER");
 	}
@@ -228,6 +239,7 @@ class ButtonTab extends AlignableTab {
 		toggleButton.setSelection ((button1.getStyle () & SWT.TOGGLE) != 0);
 		arrowButton.setSelection ((button1.getStyle () & SWT.ARROW) != 0);
 		flatButton.setSelection ((button1.getStyle () & SWT.FLAT) != 0);
+		wrapButton.setSelection ((button1.getStyle () & SWT.WRAP) != 0);
 		borderButton.setSelection ((button1.getStyle () & SWT.BORDER) != 0);
 	}
 }
