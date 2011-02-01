@@ -960,18 +960,26 @@ boolean tableView_acceptDrop_row_dropOperation(int /*long*/ id, int /*long*/ sel
 int tableView_validateDrop_proposedRow_proposedDropOperation(int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ info, int /*long*/ row, int /*long*/ operation) {
 	//TODO stop scrolling and expansion when app does not set FEEDBACK_SCROLL and/or FEEDBACK_EXPAND
 	NSTableView widget = new NSTableView(tableView);
-	if (0 <= row && row < widget.numberOfRows()) {
+	NSObject sender = new NSObject(info);
+	NSPoint pt = sender.draggingLocation();
+	pt = widget.convertPoint_fromView_(pt, null);
+	Table table = (Table)getControl();
+	TableItem childItem = table.getItem(new Point((int)pt.x, (int)pt.y));
+	int rowUnderMouse = -1;
+	if (childItem != null) rowUnderMouse = table.indexOf(childItem);
+	
+	if (0 <= rowUnderMouse && rowUnderMouse < widget.numberOfRows()) {
 		if (feedback == 0) {
 			widget.setDropRow(-1, OS.NSTableViewDropOn);		
 		} else {
 			if ((feedback & DND.FEEDBACK_SELECT) != 0) {
-				widget.setDropRow(row, OS.NSTableViewDropOn);
+				widget.setDropRow(rowUnderMouse, OS.NSTableViewDropOn);
 			} else {
 				if ((feedback & DND.FEEDBACK_INSERT_AFTER) != 0) {
-					widget.setDropRow(row + 1, OS.NSTableViewDropAbove);
+					widget.setDropRow(rowUnderMouse + 1, OS.NSTableViewDropAbove);
 				}
 				if ((feedback & DND.FEEDBACK_INSERT_BEFORE) != 0) {
-					widget.setDropRow(row, OS.NSTableViewDropAbove);
+					widget.setDropRow(rowUnderMouse, OS.NSTableViewDropAbove);
 				}
 			}
 		}
