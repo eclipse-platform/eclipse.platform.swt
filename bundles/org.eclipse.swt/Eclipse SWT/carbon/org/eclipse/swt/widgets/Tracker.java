@@ -795,6 +795,10 @@ public boolean open () {
 	if (!isDisposed()) {
 		drawRectangles (window, rectangles, true);
 	}
+
+	if (resizeCursor != null) resizeCursor.dispose();
+	resizeCursor = null;
+	
 	OS.DisposeWindow (window);
 	tracking = false;
 	window = 0;
