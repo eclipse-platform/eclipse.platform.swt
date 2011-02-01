@@ -460,7 +460,7 @@ public static boolean isBidiPlatform() {
 		OS.EnumSystemLanguageGroups(lpEnumSystemLanguageGroupsProc, OS.LGRPID_INSTALLED, 0);
 		callback.dispose ();
 	} catch (ClassNotFoundException e) {
-		if (callback != null) callback.dispose();
+		//callback can only be null at this point
 	}
 	if (isBidiPlatform == 1) return true;
 	// need to look at system code page for NT & 98 platforms since EnumSystemLanguageGroups is
