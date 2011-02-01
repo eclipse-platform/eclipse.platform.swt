@@ -731,6 +731,7 @@ public class OS extends C {
 	public static final int GM_ADVANCED = 2;
 	public static final int GMDI_USEDISABLED = 0x1;
 	public static final int GMEM_FIXED = 0x0;
+	public static final int GMEM_MOVEABLE = 0x2;
 	public static final int GMEM_ZEROINIT = 0x40;
 	public static final int GN_CONTEXTMENU = 1000;
 	public static final int GPTR = 0x40;

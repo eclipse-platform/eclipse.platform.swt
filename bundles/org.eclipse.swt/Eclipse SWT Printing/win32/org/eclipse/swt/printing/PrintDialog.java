@@ -292,9 +292,9 @@ public PrinterData open() {
 	int /*long*/ hwndParent = parent.handle;
 
 	/*
-	* Feature in Windows.  There is no API to set the orientation of a
-	* file dialog.  It is always inherited from the parent.  The fix is
-	* to create a hidden parent and set the orientation in the hidden
+	* Feature in Windows.  There is no API to set the BIDI orientation
+	* of a print dialog.  It is always inherited from the parent.  The fix
+	* is to create a hidden parent and set the orientation in the hidden
 	* parent for the dialog to inherit.
 	*/
 	boolean enabled = false;
@@ -324,31 +324,69 @@ public PrinterData open() {
 	pd.lStructSize = PRINTDLG.sizeof;
 	pd.hwndOwner = hwndOwner;
 	
-	/* Initialize PRINTDLG fields, including DEVMODE. */
-	pd.Flags = OS.PD_RETURNDEFAULT;
-	if (OS.PrintDlg(pd)) {
-		if (pd.hDevNames != 0) {
-			OS.GlobalFree(pd.hDevNames);
-			pd.hDevNames = 0;
+	boolean success = true;
+	if (printerData.name != null) {
+		/* Initialize PRINTDLG DEVNAMES for the specified printer. */
+		TCHAR buffer = new TCHAR(0, printerData.name, true);
+		int size = buffer.length() * TCHAR.sizeof;
+		short[] offsets = new short[4]; // DEVNAMES (4 offsets)
+		int offsetsSize = offsets.length * 2; // 2 bytes each
+		offsets[1] = (short) offsets.length; // offset 1 points to wDeviceOffset
+		int /*long*/ hMem = OS.GlobalAlloc(OS.GMEM_MOVEABLE | OS.GMEM_ZEROINIT, offsetsSize + size);
+		int /*long*/ ptr = OS.GlobalLock(hMem);
+		OS.MoveMemory(ptr, offsets, offsetsSize);
+		OS.MoveMemory(ptr + offsetsSize, buffer, size);
+		OS.GlobalUnlock(hMem);
+		pd.hDevNames = hMem;
+	} else {
+		/* Initialize PRINTDLG fields, including DEVMODE, for the default printer. */
+		pd.Flags = OS.PD_RETURNDEFAULT;
+		if (success = OS.PrintDlg(pd)) {
+			if (pd.hDevNames != 0) {
+				OS.GlobalFree(pd.hDevNames);
+				pd.hDevNames = 0;
+			}
 		}
+	}
 
+	if (success) {
 		/*
 		 * If user setup info from a previous print dialog was specified,
 		 * then restore the previous DEVMODE struct.
 		 */
 		byte devmodeData [] = printerData.otherData;
 		if (devmodeData != null && devmodeData.length != 0) {
-			int /*long*/ lpInitData = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, devmodeData.length);
-			OS.MoveMemory(lpInitData, devmodeData, devmodeData.length);
+			int /*long*/ hMem = OS.GlobalAlloc(OS.GMEM_MOVEABLE | OS.GMEM_ZEROINIT, devmodeData.length);
+			int /*long*/ ptr = OS.GlobalLock(hMem);
+			OS.MoveMemory(ptr, devmodeData, devmodeData.length);
+			OS.GlobalUnlock(hMem);
 			if (pd.hDevMode != 0) OS.GlobalFree(pd.hDevMode);
-			pd.hDevMode = lpInitData;
+			pd.hDevMode = hMem;
 		}
 		
 		/* Initialize the DEVMODE struct's fields from the printerData. */
 		int /*long*/ hMem = pd.hDevMode;
+		if (hMem == 0) {
+			hMem = OS.GlobalAlloc(OS.GMEM_MOVEABLE | OS.GMEM_ZEROINIT, DEVMODE.sizeof);
+			pd.hDevMode = hMem;
+		}
 		int /*long*/ ptr = OS.GlobalLock(hMem);
 		DEVMODE devmode = OS.IsUnicode ? (DEVMODE)new DEVMODEW () : new DEVMODEA ();
 		OS.MoveMemory(devmode, ptr, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
+		if (printerData.name != null) {
+			/* Copy PRINTDLG DEVNAMES into DEVMODE dmDeviceName (truncate if necessary). */
+			int max = Math.min(printerData.name.length(), OS.CCHDEVICENAME - 1);
+			if (OS.IsUnicode) {
+				for (int i = 0; i < max; i++) {
+					((DEVMODEW) devmode).dmDeviceName[i] = printerData.name.charAt(i);
+				}
+			} else {
+				byte[] bytes = printerData.name.getBytes();
+				for (int i = 0; i < max; i++) {
+					((DEVMODEA) devmode).dmDeviceName[i] = bytes[i];
+				}
+			}
+		}
 		devmode.dmFields |= OS.DM_ORIENTATION;
 		devmode.dmOrientation = printerData.orientation == PrinterData.PORTRAIT ? OS.DMORIENT_PORTRAIT : OS.DMORIENT_LANDSCAPE;
 		if (printerData.copyCount != 1) {
@@ -396,7 +434,7 @@ public PrinterData open() {
 		String key = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
 		Object oldValue = display.getData(key);
 		display.setData(key, new Boolean(true));
-		boolean success = OS.PrintDlg(pd);
+		success = OS.PrintDlg(pd);
 		display.setData(key, oldValue);
 		if ((getStyle() & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 			for (int i=0; i<shells.length; i++) {
@@ -433,15 +471,7 @@ public PrinterData open() {
 				i++;
 			}
 			String device = buffer.toString(deviceOffset, i);	
-	
-			int outputOffset = offsets[2];
-			i = 0;
-			while (outputOffset + i < size) {
-				if (buffer.tcharAt(outputOffset + i) == 0) break;
-				i++;
-			}
-			String output = buffer.toString(outputOffset, i);
-			
+
 			/* Create PrinterData object and set fields from PRINTDLG */
 			data = new PrinterData(driver, device);
 			if ((pd.Flags & OS.PD_PAGENUMS) != 0) {
@@ -452,7 +482,7 @@ public PrinterData open() {
 				data.scope = PrinterData.SELECTION;
 			}
 			data.printToFile = (pd.Flags & OS.PD_PRINTTOFILE) != 0;
-			if (data.printToFile) data.fileName = output;
+			if (data.printToFile) data.fileName = printerData.fileName;
 			data.copyCount = pd.nCopies;
 			data.collate = (pd.Flags & OS.PD_COLLATE) != 0;
 	
@@ -462,6 +492,8 @@ public PrinterData open() {
 			ptr = OS.GlobalLock(hMem);
 			data.otherData = new byte[size];
 			OS.MoveMemory(data.otherData, ptr, size);
+			
+			/* Set PrinterData fields from DEVMODE */
 			devmode = OS.IsUnicode ? (DEVMODE)new DEVMODEW () : new DEVMODEA ();
 			OS.MoveMemory(devmode, ptr, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
 			if ((devmode.dmFields & OS.DM_ORIENTATION) != 0) {

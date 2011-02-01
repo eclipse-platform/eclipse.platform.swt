@@ -353,7 +353,11 @@ public boolean startJob(String jobName) {
 		di.lpszDocName = lpszDocName;
 	}
 	int /*long*/ lpszOutput = 0;
-	if (data.printToFile && data.fileName != null) {
+	if (data.printToFile) {
+		if (data.fileName == null) {
+			/* Prompt the user for a file name. */
+			data.fileName = "FILE:"; //$NON-NLS-1$
+		}
 		/* Use the character encoding for the default locale */
 		TCHAR buffer = new TCHAR(0, data.fileName, true);
 		int byteCount = buffer.length() * TCHAR.sizeof;
