@@ -1237,6 +1237,7 @@ public class SWT {
 
 	/**
 	 * Style constant for simple (not drop down) behavior (value is 1&lt;&lt;6).
+	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Combo</code></li>
 	 * </ul></p>
