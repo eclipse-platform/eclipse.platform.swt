@@ -164,6 +164,13 @@ public PrinterData open() {
 	}
 	/* Updating printInfo from PMPrintSettings overrides values in the printInfo dictionary. */
 	printInfo.updateFromPMPrintSettings();
+	if (printerData.name != null) {
+		NSPrinter printer = NSPrinter.printerWithName(NSString.stringWith(printerData.name));
+		if (printer != null) {
+			printer.retain();
+			printInfo.setPrinter(printer);
+		}
+	}
 	NSMutableDictionary dict = printInfo.dictionary();
 	dict.setValue(NSNumber.numberWithBool(printerData.collate), OS.NSPrintMustCollate);
 	dict.setValue(NSNumber.numberWithInt(printerData.copyCount), OS.NSPrintCopies);
