@@ -122,7 +122,7 @@ import org.eclipse.swt.graphics.*;
 public class Shell extends Decorations {
 	int shellHandle, windowGroup;
 	boolean resized, moved, drawing, reshape, update, deferDispose, active, disposed, opened, fullScreen, center;
-	boolean showWithParent, ignoreBounds;
+	boolean showWithParent, ignoreBounds, isActivating;
 	int invalRgn;
 	Control lastActive;
 	Rect rgnRect;
@@ -1080,6 +1080,7 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 		deferDispose = true;
 		Display display = this.display;
 		display.activeShell = this;
+		isActivating = true;
 		display.setMenuBar (menuBar);
 		if (menuBar != null) OS.DrawMenuBar ();
 		sendEvent (SWT.Activate);
@@ -1087,6 +1088,7 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 		if (isDisposed ()) return result;
 		display.activeShell = null;
+		isActivating = false;
 		Shell parentShell = this;
 		while (parentShell.parent != null) {
 			parentShell = (Shell) parentShell.parent;
@@ -1166,7 +1168,14 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 }
 
 void kEventWindowDeactivated () {
-	if (active) {
+	/*
+	 * Bug in Mac OS X. When calling SelectWindow on a window with kWindowModalityWindowModal during
+	 * kEventWindowGetClickModality, multiple activation events are sent to the window even though the
+	 * window is already active. This will cause flicker as windows activate and deactivate. 
+	 * a deactivate is sent during activation. Fix is to watch for a deactivation event  
+	 * are sent to the window. 
+	 */
+	if (active && !isActivating) {
 		active = false;
 		deferDispose = true;
 		Display display = this.display;
