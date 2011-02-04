@@ -312,7 +312,13 @@ public PrinterData open() {
 		if (printerData.otherData != null) {
 			Printer.restore(printerData.otherData, settings, page_setup);
 		}
+		
 		/* Set values of print_settings and page_setup from PrinterData. */
+		if (printerData.name != null) {
+			byte [] nameBytes = Converter.wcsToMbcs (null, printerData.name, true);
+			OS.gtk_print_settings_set_printer(settings, nameBytes);
+		}
+		
 		switch (printerData.scope) {
 			case PrinterData.ALL_PAGES:
 				OS.gtk_print_settings_set_print_pages(settings, OS.GTK_PRINT_PAGES_ALL);
