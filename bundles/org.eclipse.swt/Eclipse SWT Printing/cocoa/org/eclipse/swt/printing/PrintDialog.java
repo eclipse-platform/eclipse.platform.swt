@@ -167,7 +167,6 @@ public PrinterData open() {
 	if (printerData.name != null) {
 		NSPrinter printer = NSPrinter.printerWithName(NSString.stringWith(printerData.name));
 		if (printer != null) {
-			printer.retain();
 			printInfo.setPrinter(printer);
 		}
 	}
