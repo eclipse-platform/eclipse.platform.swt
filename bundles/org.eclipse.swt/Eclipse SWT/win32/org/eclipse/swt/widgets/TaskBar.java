@@ -42,6 +42,10 @@ public class TaskBar extends Widget {
 	static final char [] ICO_DIR = {'i','c','o','_','d','i','r','\0'};
 	static final PROPERTYKEY PKEY_Title = new PROPERTYKEY ();
 	static final PROPERTYKEY PKEY_AppUserModel_IsDestListSeparator = new PROPERTYKEY ();
+	static final String EXE_PATH_KEY = "org.eclipse.swt.win32.taskbar.executable";  //$NON-NLS-1$
+	static final String EXE_ARGS_KEY = "org.eclipse.swt.win32.taskbar.arguments";  //$NON-NLS-1$
+	static final String ICON_KEY = "org.eclipse.swt.win32.taskbar.icon";  //$NON-NLS-1$
+	static final String ICON_INDEX_KEY = "org.eclipse.swt.win32.taskbar.icon.index";  //$NON-NLS-1$
 	static final byte [] CLSID_TaskbarList = new byte [16]; 
 	static final byte [] CLSID_DestinationList = new byte[16]; 
 	static final byte [] CLSID_EnumerableObjectCollection = new byte[16]; 
@@ -148,10 +152,19 @@ int /*long*/ createShellLink (MenuItem item, String directory) {
 		key = PKEY_Title;
 		
 		/*IShellLink::SetPath*/
-		hr = OS.VtblCall (20, pLink, EXE_PATH);
+		String exePath = (String)item.getData (EXE_PATH_KEY);
+		if (exePath != null) {
+			length = exePath.length ();
+			buffer = new char [length + 1];
+			exePath.getChars (0, length, buffer, 0);
+		} else {
+			buffer = EXE_PATH;
+		}
+		hr = OS.VtblCall (20, pLink, buffer);
 		if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
 		
-		text = Display.LAUNCHER_PREFIX + Display.TASKBAR_EVENT + item.id;
+		text =  (String)item.getData (EXE_ARGS_KEY);
+		if (text == null) text = Display.LAUNCHER_PREFIX + Display.TASKBAR_EVENT + item.id;
 		length = text.length ();
 		buffer = new char [length + 1];
 		text.getChars (0, length, buffer, 0);
@@ -170,24 +183,33 @@ int /*long*/ createShellLink (MenuItem item, String directory) {
 //			if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
 //		}
 		
-		Image image = item.getImage ();
-		if (image != null && directory != null) {
-			String imageFilename = directory + "\\menu" + item.id + ".ico" ;
-			ImageData data;
-			if (item.hBitmap != 0) {
-				Image image2 = Image.win32_new (display, SWT.BITMAP, item.hBitmap);
-				data = image2.getImageData ();
-			} else {
-				data = image.getImageData ();
+		String icon = (String)item.getData (ICON_KEY);
+		int index = 0;
+		if (icon != null) {
+			text = (String)item.getData (ICON_INDEX_KEY);
+			if (text != null) index = Integer.parseInt (text);
+		} else {
+			Image image = item.getImage ();
+			if (image != null && directory != null) {
+				icon = directory + "\\menu" + item.id + ".ico" ;
+				ImageData data;
+				if (item.hBitmap != 0) {
+					Image image2 = Image.win32_new (display, SWT.BITMAP, item.hBitmap);
+					data = image2.getImageData ();
+				} else {
+					data = image.getImageData ();
+				}
+				ImageLoader loader = new ImageLoader ();
+				loader.data = new ImageData [] {data};
+				loader.save (icon, SWT.IMAGE_ICO);
 			}
-			ImageLoader loader = new ImageLoader ();
-			loader.data = new ImageData [] {data};
-			loader.save (imageFilename, SWT.IMAGE_ICO);
-			length = imageFilename.length ();
+		}
+		if (icon != null) {
+			length = icon.length ();
 			buffer = new char [length + 1];
-			imageFilename.getChars (0, length, buffer, 0);
+			icon.getChars (0, length, buffer, 0);
 			/*IShellLink::SetIconLocation*/
-			hr = OS.VtblCall (17, pLink, buffer, 0);
+			hr = OS.VtblCall (17, pLink, buffer, index);
 			if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
 		}
 	}
@@ -489,7 +511,14 @@ void setMenu (Menu menu) {
 	
 	MenuItem [] items = null; 
 	if (menu != null && (items = menu.getItems ()).length != 0) {
-		String directory = getDirectory (buffer);
+		String directory = null;
+		for (int i = 0; i < items.length; i++) {
+			MenuItem item = items [i];
+			if (item.getImage () != null && item.getData (ICON_KEY) == null) {
+				directory = getDirectory (buffer);
+				break;
+			}
+		}
 		int /*long*/ poa = createShellLinkArray (items, directory);
 		if (poa != 0) {
 			
@@ -517,17 +546,27 @@ void setMenu (Menu menu) {
 				if ((item.getStyle () & SWT.CASCADE) != 0) {
 					Menu subMenu = item.getMenu ();
 					if (subMenu != null) {
-						int /*long*/ poa2 = createShellLinkArray (subMenu.getItems (), directory);
+						MenuItem [] subItems = subMenu.getItems ();
+						if (directory == null) {
+							for (int j = 0; j < subItems.length; j++) {
+								MenuItem subItem = subItems [j];
+								if (subItem.getImage () != null && subItem.getData (ICON_KEY) == null) {
+									directory = getDirectory (buffer);
+									break;
+								}
+							}
+						}
+						int /*long*/ poa2 = createShellLinkArray (subItems, directory);
 						if (poa2 != 0) {
 							/*IObjectArray::GetCount*/
 							OS.VtblCall (3, poa2, count);
 							if (count [0] != 0) {
 								String text = item.getText ();
 								int length = text.length ();
-								buffer = new char [length + 1];
-								text.getChars (0, length, buffer, 0);
+								char [] buffer2 = new char [length + 1];
+								text.getChars (0, length, buffer2, 0);
 								/*ICustomDestinationList::AppendCategory*/
-								hr = OS.VtblCall (5, pDestList, buffer, poa2);
+								hr = OS.VtblCall (5, pDestList, buffer2, poa2);
 								if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
 							}
 							/*IUnknown::Release*/
