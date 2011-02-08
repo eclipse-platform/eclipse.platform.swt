@@ -172,7 +172,7 @@ public static final native int CPSSetProcessName(int[] psn, int /*long*/ name);
 /** @method flags=dynamic */
 public static final native int SetThemeCursor(int themeCursor);
 /** @method flags=dynamic */
-public static final native int GetCurrentButtonState();
+public static final native int GetCurrentEventButtonState();
 /** @method flags=dynamic */
 public static final native int GetDblTime();
 /** @method flags=dynamic
@@ -1409,6 +1409,7 @@ public static final int /*long*/ sel_lastPathComponent = sel_registerName("lastP
 public static final int /*long*/ sel_layoutManager = sel_registerName("layoutManager");
 public static final int /*long*/ sel_leading = sel_registerName("leading");
 public static final int /*long*/ sel_length = sel_registerName("length");
+public static final int /*long*/ sel_level = sel_registerName("level");
 public static final int /*long*/ sel_levelForItem_ = sel_registerName("levelForItem:");
 public static final int /*long*/ sel_lineFragmentUsedRectForGlyphAtIndex_effectiveRange_ = sel_registerName("lineFragmentUsedRectForGlyphAtIndex:effectiveRange:");
 public static final int /*long*/ sel_lineFragmentUsedRectForGlyphAtIndex_effectiveRange_withoutAdditionalLayout_ = sel_registerName("lineFragmentUsedRectForGlyphAtIndex:effectiveRange:withoutAdditionalLayout:");
@@ -2125,6 +2126,7 @@ public static final int /*long*/ sel_valueWithSize_ = sel_registerName("valueWit
 public static final int /*long*/ sel_view = sel_registerName("view");
 public static final int /*long*/ sel_view_stringForToolTip_point_userData_ = sel_registerName("view:stringForToolTip:point:userData:");
 public static final int /*long*/ sel_viewDidMoveToWindow = sel_registerName("viewDidMoveToWindow");
+public static final int /*long*/ sel_viewWillMoveToWindow_ = sel_registerName("viewWillMoveToWindow:");
 public static final int /*long*/ sel_visibleFrame = sel_registerName("visibleFrame");
 public static final int /*long*/ sel_visibleRect = sel_registerName("visibleRect");
 public static final int /*long*/ sel_wantsPeriodicDraggingUpdates = sel_registerName("wantsPeriodicDraggingUpdates");
@@ -2289,6 +2291,7 @@ public static final int NSMiniControlSize = 2;
 public static final int NSMiniaturizableWindowMask = 4;
 public static final int NSMiterLineJoinStyle = 0;
 public static final int NSMixedState = -1;
+public static final int NSModalPanelWindowLevel = 8;
 public static final int NSMomentaryLightButton = 0;
 public static final int NSMouseEntered = 8;
 public static final int NSMouseExited = 9;
@@ -2300,6 +2303,7 @@ public static final int NSNoImage = 0;
 public static final int NSNoTitle = 0;
 public static final int NSNonZeroWindingRule = 0;
 public static final int NSNonactivatingPanelMask = 128;
+public static final int NSNormalWindowLevel = 0;
 public static final int NSOffState = 0;
 public static final int NSOnState = 1;
 public static final int NSOpenGLPFAAccumSize = 14;
@@ -2350,6 +2354,7 @@ public static final int NSSmallControlSize = 1;
 public static final int NSSquareLineCapStyle = 2;
 public static final int NSStatusWindowLevel = 25;
 public static final int NSStringDrawingUsesLineFragmentOrigin = 1;
+public static final int NSSubmenuWindowLevel = 3;
 public static final int NSSwitchButton = 3;
 public static final int NSSystemDefined = 14;
 public static final int NSTabCharacter = 9;

@@ -169,7 +169,7 @@ char * OS_nativeFunctionNames[] = {
 	"EmptyRgn",
 	"FSPathMakeRef",
 	"Gestalt",
-	"GetCurrentButtonState",
+	"GetCurrentEventButtonState",
 	"GetCurrentProcess",
 	"GetDblTime",
 	"GetIconRefFromTypeInfo",

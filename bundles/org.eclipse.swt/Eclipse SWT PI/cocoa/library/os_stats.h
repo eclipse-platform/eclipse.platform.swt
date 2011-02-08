@@ -177,7 +177,7 @@ typedef enum {
 	EmptyRgn_FUNC,
 	FSPathMakeRef_FUNC,
 	Gestalt_FUNC,
-	GetCurrentButtonState_FUNC,
+	GetCurrentEventButtonState_FUNC,
 	GetCurrentProcess_FUNC,
 	GetDblTime_FUNC,
 	GetIconRefFromTypeInfo_FUNC,

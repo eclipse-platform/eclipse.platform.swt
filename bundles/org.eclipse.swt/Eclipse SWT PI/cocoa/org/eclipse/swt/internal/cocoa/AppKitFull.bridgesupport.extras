@@ -4072,6 +4072,10 @@
 		<method selector="viewDidMoveToWindow" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="viewWillMoveToWindow:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="visibleRect" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4209,6 +4213,9 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="isZoomed" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="level" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="makeFirstResponder:" swt_gen="true">
@@ -4734,6 +4741,7 @@
 	<enum name="NSMiniaturizableWindowMask" swt_gen="true"></enum>
 	<enum name="NSMiterLineJoinStyle" swt_gen="true"></enum>
 	<enum name="NSMixedState" swt_gen="true"></enum>
+	<enum name="NSModalPanelWindowLevel" swt_gen="true"></enum>
 	<enum name="NSMomentaryLightButton" swt_gen="true"></enum>
 	<enum name="NSMouseEntered" swt_gen="true"></enum>
 	<enum name="NSMouseExited" swt_gen="true"></enum>
@@ -4745,6 +4753,7 @@
 	<enum name="NSNoTitle" swt_gen="true"></enum>
 	<enum name="NSNonZeroWindingRule" swt_gen="true"></enum>
 	<enum name="NSNonactivatingPanelMask" swt_gen="true"></enum>
+	<enum name="NSNormalWindowLevel" swt_gen="true"></enum>
 	<enum name="NSOffState" swt_gen="true"></enum>
 	<enum name="NSOnState" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFAAccumSize" swt_gen="true"></enum>
@@ -4795,6 +4804,7 @@
 	<enum name="NSSquareLineCapStyle" swt_gen="true"></enum>
 	<enum name="NSStatusWindowLevel" swt_gen="true"></enum>
 	<enum name="NSStringDrawingUsesLineFragmentOrigin" swt_gen="true"></enum>
+	<enum name="NSSubmenuWindowLevel" swt_gen="true"></enum>
 	<enum name="NSSwitchButton" swt_gen="true"></enum>
 	<enum name="NSSystemDefined" swt_gen="true"></enum>
 	<enum name="NSTabCharacter" swt_gen="true"></enum>

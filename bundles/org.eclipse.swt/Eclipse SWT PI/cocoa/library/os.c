@@ -2360,22 +2360,22 @@ fail:
 }
 #endif
 
-#ifndef NO_GetCurrentButtonState
-JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentButtonState)
+#ifndef NO_GetCurrentEventButtonState
+JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentEventButtonState)
 	(JNIEnv *env, jclass that)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GetCurrentButtonState_FUNC);
+	OS_NATIVE_ENTER(env, that, GetCurrentEventButtonState_FUNC);
 /*
-	rc = (jint)GetCurrentButtonState();
+	rc = (jint)GetCurrentEventButtonState();
 */
 	{
-		LOAD_FUNCTION(fp, GetCurrentButtonState)
+		LOAD_FUNCTION(fp, GetCurrentEventButtonState)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
 		}
 	}
-	OS_NATIVE_EXIT(env, that, GetCurrentButtonState_FUNC);
+	OS_NATIVE_EXIT(env, that, GetCurrentEventButtonState_FUNC);
 	return rc;
 }
 #endif

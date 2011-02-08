@@ -30,7 +30,7 @@
 #define CloseRgn_LIB "com.apple.Carbon"
 #define instrumentObjcMessageSends_LIB "com.apple.Foundation"
 #define SetThemeCursor_LIB "com.apple.Carbon"
-#define GetCurrentButtonState_LIB "com.apple.Carbon"
+#define GetCurrentEventButtonState_LIB "com.apple.Carbon"
 #define GetDblTime_LIB "com.apple.Carbon"
 #define CGContextCopyPath_LIB "com.apple.Cocoa"
 #define TISCopyCurrentKeyboardInputSource_LIB "com.apple.Carbon"
