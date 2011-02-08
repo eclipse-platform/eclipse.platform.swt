@@ -28,6 +28,7 @@
 #define DiffRgn_LIB "com.apple.Carbon"
 #define CopyRgn_LIB "com.apple.Carbon"
 #define CloseRgn_LIB "com.apple.Carbon"
+#define FindWindow_LIB "com.apple.Carbon"
 #define instrumentObjcMessageSends_LIB "com.apple.Foundation"
 #define SetThemeCursor_LIB "com.apple.Carbon"
 #define GetCurrentEventButtonState_LIB "com.apple.Carbon"

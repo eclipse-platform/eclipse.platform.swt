@@ -36,6 +36,33 @@ JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)
 }
 #endif
 
+#ifndef NO_FindWindow
+JNIEXPORT jintLong JNICALL OS_NATIVE(FindWindow)
+(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2)
+{
+	jintLong *lparg2=NULL;
+	jintLong rc = 0;
+	Point p;
+	p.h = (short)arg0;
+	p.v = (short)arg1;
+	OS_NATIVE_ENTER(env, that, FindWindow_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	/*
+	 rc = (jintLong)FindWindow(arg0, arg1, (WindowRef *)lparg2);
+	 */
+	{
+		LOAD_FUNCTION(fp, FindWindow)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(Point, WindowRef *))fp)(p, (WindowRef *)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
+		OS_NATIVE_EXIT(env, that, FindWindow_FUNC);
+		return rc;
+}
+#endif
+
 #ifndef NO_NSIntersectionRect
 JNIEXPORT void JNICALL OS_NATIVE(NSIntersectionRect)
 	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jobject arg2)

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 626;
-int OS_nativeFunctionCallCount[626];
+int OS_nativeFunctionCount = 627;
+int OS_nativeFunctionCallCount[627];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -168,6 +168,7 @@ char * OS_nativeFunctionNames[] = {
 	"DisposeRgn",
 	"EmptyRgn",
 	"FSPathMakeRef",
+	"FindWindow",
 	"Gestalt",
 	"GetCurrentEventButtonState",
 	"GetCurrentProcess",

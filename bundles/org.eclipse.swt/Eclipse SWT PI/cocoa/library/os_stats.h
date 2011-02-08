@@ -176,6 +176,7 @@ typedef enum {
 	DisposeRgn_FUNC,
 	EmptyRgn_FUNC,
 	FSPathMakeRef_FUNC,
+	FindWindow_FUNC,
 	Gestalt_FUNC,
 	GetCurrentEventButtonState_FUNC,
 	GetCurrentProcess_FUNC,

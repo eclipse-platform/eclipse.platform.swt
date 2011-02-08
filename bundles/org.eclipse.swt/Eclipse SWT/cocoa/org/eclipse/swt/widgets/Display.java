@@ -4727,47 +4727,28 @@ Control findControl (boolean checkTrim) {
 Control findControl (boolean checkTrim, NSView[] hitView) {
 	NSView view = null;
 	NSPoint screenLocation = NSEvent.mouseLocation();
+	int /*long*/ hitWindowNumber = 0;
 	if (OS.VERSION >= 0x1060) {
-		int /*long*/ hitWindowNumber = NSWindow.windowNumberAtPoint(screenLocation, 0);
-		NSWindow window = application.windowWithWindowNumber(hitWindowNumber);
-		if (window != null) {
-			NSView contentView = window.contentView();
-			if (contentView != null) contentView = contentView.superview();
-			if (contentView != null) {
-				NSPoint location = window.convertScreenToBase(screenLocation);
-				view = contentView.hitTest (location);
-				if (view == null && !checkTrim) {
-					view = contentView;
-				}
-			}
-		}
+		hitWindowNumber = NSWindow.windowNumberAtPoint(screenLocation, 0);
 	} else {
-		// Use NSWindowList instead of [NSApplication orderedWindows] because orderedWindows
-		// skips NSPanels. See bug 321614.
-		int /*long*/ outCount[] = new int /*long*/ [1];
-		OS.NSCountWindows(outCount);
-		int /*long*/ windowIDs[] = new int /*long*/ [(int)outCount[0]];
-		OS.NSWindowList(outCount[0], windowIDs);
+		int /*long*/ outWindow[] = new int /*long*/ [1];
+		OS.FindWindow ((int /*long*/)screenLocation.x, (int /*long*/)(getPrimaryFrame().height - screenLocation.y), outWindow);
 
-		for (int i = 0, count = windowIDs.length; i < count && view == null; i++) {
-			NSWindow window = application.windowWithWindowNumber(windowIDs[i]);
-			// NSWindowList returns all window numbers for all processes. If the window 
-			// number passed to windowWithWindowNumber returns nil the window doesn't belong to
-			// this process.
-			if (window != null) {
-				NSView contentView = window.contentView();
-				if (contentView != null) contentView = contentView.superview();
-				// TODO: This line is technically wrong -- NSPointInRect doesn't account for transparent parts of the window's
-				// structure region.
-				if (contentView != null && OS.NSPointInRect(screenLocation, window.frame())) {
-					NSPoint location = window.convertScreenToBase(screenLocation);
-					view = contentView.hitTest (location);
-					if (view == null && !checkTrim) {
-						view = contentView;
-					}
-					break;
-				}
- 			}
+		if (outWindow[0] != 0) {
+			hitWindowNumber = OS.HIWindowGetCGWindowID(outWindow[0]);
+		}
+	}
+	
+	NSWindow window = application.windowWithWindowNumber(hitWindowNumber);
+	if (window != null) {
+		NSView contentView = window.contentView();
+		if (contentView != null) contentView = contentView.superview();
+		if (contentView != null) {
+			NSPoint location = window.convertScreenToBase(screenLocation);
+			view = contentView.hitTest (location);
+			if (view == null && !checkTrim) {
+				view = contentView;
+			}
 		}
 	}
 

@@ -331,6 +331,13 @@ public static final native int /*long*/ PMPrinterGetOutputResolution(int /*long*
  */
 public static final native int /*long*/ PMPrinterGetIndexedPrinterResolution(int /*long*/ pmPrinter, int index, PMResolution outResolution);
 
+// Custom FindWindow implementation to avoid namespace collisions with Point.
+/**
+ * @method flags=no_gen
+ * @param wHandle cast=(WindowRef *)
+ */
+public static final native int /*long*/ FindWindow (int /*long*/ h, int /*long*/ v, int /*long*/ [] wHandle);
+
 /** C calls */
 
 public static final native int getpid();
