@@ -17,6 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet59 {
@@ -26,7 +27,8 @@ public static void main (String [] args) {
 	Shell shell = new Shell (display);
 	final List list = new List (shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 	for (int i=0; i<128; i++) list.add ("Item " + i);
-	list.setBounds (0, 0, 100, 100);
+	Rectangle clientArea = shell.getClientArea ();
+	list.setBounds (clientArea.x, clientArea.y, 100, 100);
 	list.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event e) {
 			String string = "";

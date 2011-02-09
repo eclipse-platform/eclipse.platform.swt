@@ -17,6 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet73 {
@@ -48,7 +49,8 @@ public static void main (String [] args) {
 			}
 		}
 	});
-	tree.setSize (200, 200);
+	Rectangle clientArea = shell.getClientArea ();
+	tree.setBounds (clientArea.x, clientArea.y, 200, 200);
 	shell.setSize (300, 300);
 	shell.open ();
 	while (!shell.isDisposed ()) {

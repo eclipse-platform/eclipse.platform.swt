@@ -34,6 +34,8 @@ public static void main (String [] args) {
 		item.setPreferredSize (item.computeSize (size.x, size.y));
 		item.setControl (button);
 	}
+	Rectangle clientArea = shell.getClientArea ();
+	bar.setLocation (clientArea.x, clientArea.y);
 	bar.pack ();
 	shell.open ();
 	while (!shell.isDisposed ()) {

@@ -32,6 +32,8 @@ public static void main (String[] args) {
 	gc.dispose ();
 	Shell shell = new Shell (display);
 	Label label = new Label (shell, SWT.BORDER);
+	Rectangle clientArea = shell.getClientArea ();
+	label.setLocation (clientArea.x, clientArea.y);
 	label.setImage (image);
 	label.pack ();
 	shell.pack ();

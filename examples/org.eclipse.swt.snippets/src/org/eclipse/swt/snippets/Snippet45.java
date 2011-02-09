@@ -17,6 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet45 {
@@ -25,7 +26,8 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	Scale scale = new Scale (shell, SWT.BORDER);
-	scale.setSize (200, 64);
+	Rectangle clientArea = shell.getClientArea ();
+	scale.setBounds (clientArea.x, clientArea.y, 200, 64);
 	scale.setMaximum (40);
 	scale.setPageIncrement (5);
 	shell.open ();

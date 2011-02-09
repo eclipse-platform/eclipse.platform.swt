@@ -17,6 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet76 {
@@ -25,6 +26,8 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
 	final TabFolder tabFolder = new TabFolder (shell, SWT.BORDER);
+	Rectangle clientArea = shell.getClientArea ();
+	tabFolder.setLocation (clientArea.x, clientArea.y);
 	for (int i=0; i<6; i++) {
 		TabItem item = new TabItem (tabFolder, SWT.NONE);
 		item.setText ("TabItem " + i);

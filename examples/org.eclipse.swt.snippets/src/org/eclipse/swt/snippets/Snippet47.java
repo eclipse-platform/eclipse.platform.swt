@@ -48,7 +48,8 @@ public static void main (String [] args) {
 	gc.dispose ();
 	
 	ToolBar bar = new ToolBar (shell, SWT.BORDER | SWT.FLAT);
-	bar.setSize (200, 32);
+	Rectangle clientArea = shell.getClientArea ();
+	bar.setBounds (clientArea.x, clientArea.y, 200, 32);
 	for (int i=0; i<12; i++) {
 		ToolItem item = new ToolItem (bar, 0);
 		item.setImage (image);

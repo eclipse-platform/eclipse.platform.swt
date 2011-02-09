@@ -18,6 +18,7 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet4 {
@@ -28,7 +29,8 @@ public class Snippet4 {
 		Button b = new Button(shell, SWT.PUSH);
 		b.setText("Open Dialog ...");
 		b.pack();
-		b.setLocation(10, 10);
+		Rectangle clientArea = shell.getClientArea();
+		b.setLocation(clientArea.x + 10, clientArea.y + 10);
 		b.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent se) {
 				Shell dialog = new Shell(shell, SWT.DIALOG_TRIM);

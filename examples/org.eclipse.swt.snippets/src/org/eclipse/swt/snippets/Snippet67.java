@@ -26,6 +26,8 @@ public static void main (String [] args) {
 	final Display display = new Display ();
 	final Shell shell = new Shell (display);
 	final ToolBar toolBar = new ToolBar (shell, SWT.NONE);
+	Rectangle clientArea = shell.getClientArea ();
+	toolBar.setLocation(clientArea.x, clientArea.y);
 	final Menu menu = new Menu (shell, SWT.POP_UP);
 	for (int i=0; i<8; i++) {
 		MenuItem item = new MenuItem (menu, SWT.PUSH);

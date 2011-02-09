@@ -32,6 +32,8 @@ public static void main (String [] args) {
 	gc.dispose ();
 	Shell shell = new Shell (display);
 	ToolBar toolBar = new ToolBar (shell, SWT.FLAT | SWT.BORDER);
+	Rectangle clientArea = shell.getClientArea ();
+	toolBar.setLocation (clientArea.x, clientArea.y);
 	for (int i=0; i<12; i++) {
 		int style = i % 3 == 2 ? SWT.DROP_DOWN : SWT.PUSH;
 		ToolItem item = new ToolItem (toolBar, style);

@@ -17,6 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet54 {
@@ -26,7 +27,8 @@ public static void main (String [] args) {
 	Shell shell = new Shell (display);
 	shell.setSize(400, 300);
 	final Sash sash = new Sash (shell, SWT.BORDER | SWT.VERTICAL);
-	sash.setBounds (180, 10, 32, 240);
+	Rectangle clientArea = shell.getClientArea ();
+	sash.setBounds (180, clientArea.y, 32, clientArea.height);
 	sash.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event e) {
 			sash.setBounds (e.x, e.y, e.width, e.height);

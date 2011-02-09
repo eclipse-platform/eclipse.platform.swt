@@ -37,6 +37,8 @@ public static void main (String [] args) {
 			toolBar.setSize (size);
 		}
 	});
+	Rectangle clientArea = shell.getClientArea ();
+	toolBar.setLocation (clientArea.x, clientArea.y);
 	toolBar.pack ();
 	shell.pack ();
 	shell.open ();

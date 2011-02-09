@@ -28,7 +28,8 @@ public static void main (String [] args) {
 	final Color blue = display.getSystemColor (SWT.COLOR_BLUE);
 	Shell shell = new Shell (display);
 	Button b = new Button (shell, SWT.PUSH);
-	b.setBounds (10, 10, 100, 32);
+	Rectangle clientArea = shell.getClientArea ();
+	b.setBounds (clientArea.x + 10, clientArea.y + 10, 100, 32);
 	b.setText ("Button");
 	shell.setDefaultButton (b);
 	final Canvas c = new Canvas (shell, SWT.BORDER);

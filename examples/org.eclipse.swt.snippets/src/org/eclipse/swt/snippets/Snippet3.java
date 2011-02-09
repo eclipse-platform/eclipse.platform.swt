@@ -43,6 +43,8 @@ public static void main(String[] args) {
 	for (int i = 0; i < columnCount; i++) {
 		table.getColumn(i).pack();
 	}
+	Rectangle clientArea = shell.getClientArea();
+	table.setLocation(clientArea.x, clientArea.y);
 	Point size = table.computeSize(SWT.DEFAULT, 200);
 	table.setSize(size);
 	shell.pack();

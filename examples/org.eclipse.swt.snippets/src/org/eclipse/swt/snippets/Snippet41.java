@@ -17,6 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet41 {
@@ -26,12 +27,13 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	TabFolder folder = new TabFolder (shell, SWT.BORDER);
-	folder.setSize (200, 200);
+	Rectangle clientArea = shell.getClientArea ();
+	folder.setBounds (clientArea.x, clientArea.y, 200, 200);
 	TabItem item0 = new TabItem (folder, 0);
 	item0.setText ("tab item");
 	item0.setToolTipText ("TabItem toolTip: " + string);
 	ToolBar bar = new ToolBar (shell, SWT.BORDER);
-	bar.setBounds (0, 200, 200, 40);
+	bar.setBounds (clientArea.x, clientArea.y + 200, 200, 40);
 	ToolItem item1 = new ToolItem (bar, SWT.PUSH);
 	item1.setText ("tool item");
 	item1.setToolTipText ("ToolItem toolTip: " + string);

@@ -26,6 +26,8 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	Text text = new Text (shell, SWT.BORDER);
+	Rectangle clientArea = shell.getClientArea ();
+	text.setLocation (clientArea.x, clientArea.y);
 	int columns = 10;
 	GC gc = new GC (text);
 	FontMetrics fm = gc.getFontMetrics ();

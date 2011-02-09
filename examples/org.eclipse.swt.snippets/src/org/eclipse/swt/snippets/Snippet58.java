@@ -17,6 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet58 {
@@ -25,6 +26,8 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	ToolBar bar = new ToolBar (shell, SWT.BORDER);
+	Rectangle clientArea = shell.getClientArea ();
+	bar.setLocation (clientArea.x, clientArea.y);
 	for (int i=0; i<4; i++) {
 		ToolItem item = new ToolItem (bar, 0);
 		item.setText ("Item " + i);
