@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -66,6 +66,10 @@ public boolean outlineView(NSOutlineView outlineView, NSTableColumn tableColumn,
 	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_shouldEditTableColumn_item_, outlineView != null ? outlineView.id : 0, tableColumn != null ? tableColumn.id : 0, item != null ? item.id : 0);
 }
 
+public boolean outlineView(NSOutlineView outlineView, int /*long*/ columnIndex, int /*long*/ newColumnIndex) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_shouldReorderColumn_toColumn_, outlineView != null ? outlineView.id : 0, columnIndex, newColumnIndex);
+}
+
 public boolean outlineView(NSOutlineView outlineView, id item) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_shouldSelectItem_, outlineView != null ? outlineView.id : 0, item != null ? item.id : 0);
 }
@@ -76,6 +80,10 @@ public boolean outlineView(NSOutlineView outlineView, NSCell cell, NSTableColumn
 
 public boolean readSelectionFromPasteboard(NSPasteboard pboard) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_readSelectionFromPasteboard_, pboard != null ? pboard.id : 0);
+}
+
+public boolean tableView(NSTableView tableView, int /*long*/ columnIndex, int /*long*/ newColumnIndex) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_tableView_shouldReorderColumn_toColumn_, tableView != null ? tableView.id : 0, columnIndex, newColumnIndex);
 }
 
 public boolean tableView(NSTableView tableView, int /*long*/ row) {

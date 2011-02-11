@@ -525,7 +525,6 @@ void createHandle () {
 	NSTableView widget = (NSTableView)new SWTTableView().alloc();
 	widget.init();
 	widget.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
-	widget.setAllowsColumnReordering (false);
 	widget.setDataSource(widget);
 	widget.setDelegate(widget);
 	widget.setColumnAutoresizingStyle (OS.NSTableViewNoColumnAutoresizing);
@@ -1938,22 +1937,7 @@ int /*long*/ menuForEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ theEve
 }
 
 void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	if (headerView != null && id == headerView.id) {
-		NSTableView widget = (NSTableView)view;
-		widget.setAllowsColumnReordering(false);
-		NSPoint pt = headerView.convertPoint_fromView_(new NSEvent(theEvent).locationInWindow(), null);
-		int /*long*/ nsIndex = headerView.columnAtPoint(pt);
-		if (nsIndex != -1) {
-			id nsColumn = widget.tableColumns().objectAtIndex(nsIndex);
-			for (int i = 0; i < columnCount; i++) {
-				if (columns[i].nsColumn.id == nsColumn.id) {
-					widget.setAllowsColumnReordering(columns[i].movable);
-					break;
-				}
-			}
-		}
-	}
-	else if (id == view.id) {
+	if (id == view.id) {
 		// Bug/feature in Cocoa:  If the table has a context menu we just set it visible instead of returning
 		// it from menuForEvent:.  This has the side effect, however, of sending control-click to the NSTableView,
 		// which is interpreted as a single click that clears the selection.  Fix is to ignore control-click if the 
@@ -3084,14 +3068,6 @@ void tableViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ aNo
 	int oldIndex = new NSNumber (nsOldIndex).intValue ();
 	int newIndex = new NSNumber (nsNewIndex).intValue ();
 	NSTableView tableView = (NSTableView)view;
-	if (checkColumn != null && newIndex == 0) {
-		newIndex = 1;
-		NSNotificationCenter defaultCenter = NSNotificationCenter.defaultCenter();
-		defaultCenter.removeObserver(view, OS.NSTableViewColumnDidMoveNotification, null);
-		tableView.moveColumn(0, newIndex);
-		defaultCenter.addObserver(view,  OS.sel_tableViewColumnDidMove_, OS.NSTableViewColumnDidMoveNotification, null);
-		if (oldIndex == newIndex) return;
-	}
 	int startIndex = Math.min (oldIndex, newIndex);
 	int endIndex = Math.max (oldIndex, newIndex);
 	NSArray nsColumns = tableView.tableColumns ();
@@ -3207,6 +3183,24 @@ int /*long*/ tableView_selectionIndexesForProposedSelection (int /*long*/ id, in
 	}
 	
 	return indexSet;
+}
+
+boolean tableView_shouldReorderColumn_toColumn(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ currentColIndex, int /*long*/ newColIndex) {
+	// Check column should never move and no column can be dragged to the left of it, if present.
+	if ((style & SWT.CHECK) != 0) {
+		if (currentColIndex == 0) return false;
+		if (newColIndex == 0) return false;
+	}
+	
+	NSTableView widget = new NSTableView(aTableView);
+	id nsColumn = widget.tableColumns().objectAtIndex(currentColIndex);
+	for (int i = 0; i < columnCount; i++) {
+		if (columns[i].nsColumn.id == nsColumn.id) {
+			return columns[i].movable;
+		}
+	}
+	
+	return true;
 }
 
 boolean tableView_shouldSelectRow(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ rowIndex) {

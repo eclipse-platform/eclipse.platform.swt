@@ -2024,6 +2024,12 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="outlineView:shouldReorderColumn:toColumn:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="outlineView:shouldSelectItem:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -2037,6 +2043,12 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="readSelectionFromPasteboard:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="tableView:shouldReorderColumn:toColumn:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3589,6 +3601,9 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="defaultParagraphStyle" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="didChangeText" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="dragSelectionWithEvent:offset:slideBack:" swt_gen="true" swt_gen_custom_callback="true">

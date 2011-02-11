@@ -2507,6 +2507,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_numberOfChildrenOfItem_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_objectValueForTableColumn_byItem_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_willDisplayCell_forTableColumn_item_, proc6, "@:@@@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_shouldReorderColumn_toColumn_, proc5, "@:@ii");
 	OS.class_addMethod(cls, OS.sel_outlineView_setObjectValue_forTableColumn_byItem_, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_shouldEditTableColumn_item_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_shouldSelectItem_, proc4, "@:@@");
@@ -2677,6 +2678,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_numberOfRowsInTableView_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_objectValueForTableColumn_row_, proc5, "@:@@i");
 	OS.class_addMethod(cls, OS.sel_tableView_shouldEditTableColumn_row_, proc5, "@:@@i");
+	OS.class_addMethod(cls, OS.sel_tableView_shouldReorderColumn_toColumn_, proc5, "@:@ii");
 	OS.class_addMethod(cls, OS.sel_tableView_shouldSelectRow_, proc4, "@:@i");
 	OS.class_addMethod(cls, OS.sel_tableView_shouldTrackCell_forTableColumn_row_, proc6, "@:@@@i");
 	OS.class_addMethod(cls, OS.sel_tableViewSelectionIsChanging_, proc3, "@:@");
@@ -5657,8 +5659,12 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 	if (widget == null) return 0;
 	if (sel == OS.sel_tableView_objectValueForTableColumn_row_) {
 		return widget.tableView_objectValueForTableColumn_row(id, sel, arg0, arg1, arg2);
+	} else if (sel == OS.sel_tableView_shouldReorderColumn_toColumn_) {
+		return widget.tableView_shouldReorderColumn_toColumn(id, sel, arg0, arg1, arg2) ? 1 : 0;
 	} else if (sel == OS.sel_tableView_shouldEditTableColumn_row_) {
 		return widget.tableView_shouldEditTableColumn_row(id, sel, arg0, arg1, arg2) ? 1 : 0;
+	} else if (sel == OS.sel_outlineView_shouldReorderColumn_toColumn_) {
+		return widget.outlineView_shouldReorderColumn_toColumn(id, sel, arg0, arg1, arg2) ? 1 : 0;
 	} else if (sel == OS.sel_outlineView_shouldEditTableColumn_item_) {
 		return widget.outlineView_shouldEditTableColumn_row(id, sel, arg0, arg1, arg2) ? 1 : 0;
 	} else if (sel == OS.sel_textView_clickedOnLink_atIndex_) {
