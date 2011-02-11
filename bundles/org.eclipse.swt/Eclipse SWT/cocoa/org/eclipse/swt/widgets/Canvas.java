@@ -354,6 +354,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	Rectangle clientRect = getClientArea ();
 	Rectangle sourceRect = new Rectangle (x, y, width, height);
 	if (sourceRect.intersects (clientRect)) {
+		getShell().setScrolling();
 		update (all);
 	}
 	Control control = findBackgroundControl ();

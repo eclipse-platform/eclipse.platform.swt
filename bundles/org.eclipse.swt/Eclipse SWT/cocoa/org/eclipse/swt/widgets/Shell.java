@@ -121,7 +121,7 @@ public class Shell extends Decorations {
 	SWTWindowDelegate windowDelegate;
 	int /*long*/ currWindowClass;
 	int /*long*/ tooltipOwner, tooltipTag, tooltipUserData;
-	boolean opened, moved, resized, fullScreen, center, deferFlushing, isPopup;
+	boolean opened, moved, resized, fullScreen, center, deferFlushing, scrolling, isPopup;
 	Control lastActive;
 	Rectangle normalBounds;
 	boolean keyInputHappened;
@@ -541,6 +541,7 @@ void center () {
 
 void clearDeferFlushing (int /*long*/ id, int /*long*/ sel) {
 	deferFlushing = false;
+	scrolling = false;
 	if (window != null) window.flushWindowIfNeeded();
 }
 
@@ -1839,6 +1840,11 @@ public void setRegion (Region region) {
 		window.display();
 		window.invalidateShadow();
 	}
+}
+
+void setScrolling () {
+	scrolling = true;
+	view.performSelector(OS.sel_clearDeferFlushing, null, 0.0, display.runLoopModes());
 }
 
 public void setText (String string) {

@@ -4828,7 +4828,7 @@ void update (boolean all) {
 //	checkWidget();
 	if (display.isPainting.containsObject(view)) return;
 	Shell shell = getShell();
-	NSWindow window = shell.deferFlushing ? view.window() : null;
+	NSWindow window = shell.deferFlushing && shell.scrolling ? view.window() : null;
 	try {
 		if (window != null) {
 			window.retain();
