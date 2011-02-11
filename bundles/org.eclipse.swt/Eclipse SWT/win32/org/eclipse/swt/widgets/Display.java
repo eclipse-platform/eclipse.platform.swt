@@ -1809,7 +1809,7 @@ public int getDoubleClickTime () {
  * any of the controls built by the currently running
  * application.
  *
- * @return the control under the cursor
+ * @return the control under the cursor or <code>null</code>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
