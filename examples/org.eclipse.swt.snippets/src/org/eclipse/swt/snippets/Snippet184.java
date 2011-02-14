@@ -19,6 +19,7 @@ package org.eclipse.swt.snippets;
  * @since 3.1
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet184 {
@@ -32,6 +33,8 @@ public class Snippet184 {
 		spinner.setSelection(500);
 		spinner.setIncrement(1);
 		spinner.setPageIncrement(100);
+		Rectangle clientArea = shell.getClientArea();
+		spinner.setLocation(clientArea.x, clientArea.y);
 		spinner.pack();
 		shell.pack();
 		shell.open();

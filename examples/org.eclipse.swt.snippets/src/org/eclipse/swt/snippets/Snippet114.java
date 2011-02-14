@@ -17,6 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet114 {
@@ -29,7 +30,8 @@ public static void main (String [] args) {
 		TreeItem item = new TreeItem (tree, SWT.NONE);
 		item.setText ("Item " + i);
 	}
-	tree.setSize (100, 100);
+	Rectangle clientArea = shell.getClientArea ();
+	tree.setBounds (clientArea.x, clientArea.y, 100, 100);
 	tree.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event event) {
 			String string = event.detail == SWT.CHECK ? "Checked" : "Selected";

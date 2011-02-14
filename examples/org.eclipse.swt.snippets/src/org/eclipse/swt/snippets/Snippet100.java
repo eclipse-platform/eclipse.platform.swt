@@ -27,7 +27,8 @@ public static void main(String[] args) {
 	Shell shell = new Shell(display);
 	shell.setBounds(10, 10, 200, 200);
 	Text text = new Text(shell, SWT.MULTI);
-	text.setBounds(10, 10, 150, 150);
+	Rectangle clientArea = shell.getClientArea();
+	text.setBounds(clientArea.x + 10, clientArea.y + 10, 150, 150);
 	Font initialFont = text.getFont();
 	FontData[] fontData = initialFont.getFontData();
 	for (int i = 0; i < fontData.length; i++) {

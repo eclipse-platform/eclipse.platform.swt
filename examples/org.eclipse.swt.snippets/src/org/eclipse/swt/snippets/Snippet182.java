@@ -19,6 +19,7 @@ package org.eclipse.swt.snippets;
  * @since 3.1
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet182 {
@@ -28,7 +29,8 @@ public class Snippet182 {
 		Shell shell = new Shell(display);
 		Link link = new Link(shell, SWT.BORDER);
 		link.setText("This a very simple <A>link</A> widget.");
-		link.setSize(140, 40);
+		Rectangle clientArea = shell.getClientArea();
+		link.setBounds(clientArea.x, clientArea.y, 140, 40);
 		shell.pack ();
 		shell.open();
 		while (!shell.isDisposed()) {

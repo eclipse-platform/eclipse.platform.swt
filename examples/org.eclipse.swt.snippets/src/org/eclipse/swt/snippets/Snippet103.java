@@ -17,6 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet103 {
@@ -27,7 +28,8 @@ public static void main(String[] args) {
 	Shell shell = new Shell(display);
 	shell.setBounds(10, 10, 200, 240);
 	Table table = new Table(shell, SWT.NONE);
-	table.setBounds(10, 10, 160, 160);
+	Rectangle clientArea = shell.getClientArea ();
+	table.setBounds (clientArea.x + 10, clientArea.y + 10, 160, 160);
 
 	final TableItem[] items = new TableItem[4];
 	for (int i = 0; i < 4; i++) {
