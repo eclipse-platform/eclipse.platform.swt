@@ -2466,7 +2466,7 @@ void doContentEnd() {
 		doLineEnd();
 	} else {
 		int length = content.getCharCount();		
-		if (caretOffset < length) {
+		if (caretOffset <= length) {
 			setCaretOffset(length, SWT.DEFAULT);
 			showCaret();
 		}
