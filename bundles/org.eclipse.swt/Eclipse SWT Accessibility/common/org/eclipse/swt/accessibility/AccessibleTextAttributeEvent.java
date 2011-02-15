@@ -60,8 +60,6 @@ public class AccessibleTextAttributeEvent extends SWTEventObject {
 	public String [] attributes;
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
-	 * 
 	 * [out] Set this field to {@link ACC#OK} if the operation
 	 * was completed successfully, and null otherwise.
 	 * 

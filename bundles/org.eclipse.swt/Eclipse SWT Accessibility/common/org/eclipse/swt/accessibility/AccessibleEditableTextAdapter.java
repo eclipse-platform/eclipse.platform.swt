@@ -11,8 +11,6 @@
 package org.eclipse.swt.accessibility;
 
 /**
- * WARNING: API UNDER COSTRUCTION
- * 
  * This adapter class provides default implementations for the
  * methods in the <code>AccessibleEditableTextListener</code> interface.
  * <p>

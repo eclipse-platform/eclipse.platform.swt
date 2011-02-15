@@ -13,8 +13,6 @@ package org.eclipse.swt.accessibility;
 import org.eclipse.swt.internal.*;
 
 /**
- * WARNING: API UNDER COSTRUCTION
- * 
  * Instances of this class are sent as a result of accessibility clients
  * sending AccessibleEditableText messages to an accessible object.
  *

@@ -235,8 +235,6 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
-	 * 
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleEditableText</code> interface.
@@ -642,8 +640,6 @@ public class Accessible {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
-	 * 
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
 	 * defined in the <code>AccessibleEditableText</code> interface.
