@@ -2097,25 +2097,15 @@ boolean outlineView_shouldReorderColumn_toColumn(int /*long*/ id, int /*long*/ s
 	return true;
 }
 
-boolean outlineView_shouldSelectItem(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ item) {
-	boolean result = true;
+int /*long*/ outlineView_selectionIndexesForProposedSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ indexSet) {
 	NSOutlineView tree = new NSOutlineView(aTableView);			
 
-	if ((style & SWT.SINGLE) != 0) {
-		/*
-		 * Feature in Cocoa.  Calling setAllowsEmptySelection will automatically select the first row of the list. 
-		 * And, single-selection NSTable/OutlineViews allow the user to de-select the selected item via command-click.
-		 * This is normal platform behavior, but for compatibility with other platforms, if the SINGLE style is in use,
-		 * force a selection by seeing if the proposed selection set is empty, and if so, put back the currently selected row.  
-		 */
-		NSIndexSet indexes = tree.selectedRowIndexes();
-		if (indexes.count() != 1 && tree.selectedRow() != -1) {
-			return false;
-		}
-	}
-
 	// If a checkbox is being tracked don't select the row.
-	if (display.trackedButtonRow != -1) return false;
+	if (display.trackedButtonRow != -1) return tree.selectedRowIndexes().id;
+	
+	// If the click was in a checkbox, remove that row from the proposed selection.
+	NSMutableIndexSet mutableSelection = (NSMutableIndexSet) new NSMutableIndexSet().alloc();
+	mutableSelection = new NSMutableIndexSet(mutableSelection.initWithIndexSet(new NSIndexSet(indexSet)));
     int /*long*/ clickedCol = tree.clickedColumn();
     int /*long*/ clickedRow = tree.clickedRow();
     if (clickedRow >= 0 && clickedCol >= 0) {
@@ -2124,10 +2114,25 @@ boolean outlineView_shouldSelectItem(int /*long*/ id, int /*long*/ sel, int /*lo
             NSRect cellFrame = tree.frameOfCellAtColumn(clickedCol, clickedRow);
             NSRect imageFrame = cell.imageRectForBounds(cellFrame);
             NSPoint hitPoint = tree.convertPoint_fromView_(NSApplication.sharedApplication().currentEvent().locationInWindow(), null);
-            result = ! OS.NSPointInRect(hitPoint, imageFrame) || didSelect;
+            if (OS.NSPointInRect(hitPoint, imageFrame)) {
+    			mutableSelection.removeIndex(clickedRow);
+            }
         }            
     }
-    return result;
+
+	if ((style & SWT.SINGLE) != 0) {
+		/*
+		 * Feature in Cocoa.  Calling setAllowsEmptySelection will automatically select the first row of the list. 
+		 * And, single-selection NSTable/OutlineViews allow the user to de-select the selected item via command-click.
+		 * This is normal platform behavior, but for compatibility with other platforms, if the SINGLE style is in use,
+		 * force a selection by seeing if the proposed selection set is empty, and if so, put back the currently selected row.  
+		 */
+		if (mutableSelection.count() != 1 && tree.selectedRow() != -1) {
+			return tree.selectedRowIndexes().id;
+		}
+	}
+	
+	return mutableSelection.id;
 }
 
 boolean outlineView_shouldTrackCell_forTableColumn_item(int /*long*/ id, int /*long*/ sel,

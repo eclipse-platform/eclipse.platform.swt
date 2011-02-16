@@ -359,9 +359,17 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method class_method="true" selector="indexSetWithIndex:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="initWithIndex:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSIndexSet"></retval>
+		</method>
+		<method selector="initWithIndexSet:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initWithIndexesInRange:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -497,6 +505,10 @@
 	</class>
 	<class name="NSMutableIndexSet" swt_gen="mixed" swt_superclass="NSIndexSet">
 		<method selector="addIndex:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="removeIndex:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>

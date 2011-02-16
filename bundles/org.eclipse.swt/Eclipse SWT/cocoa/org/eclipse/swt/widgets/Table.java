@@ -3164,6 +3164,27 @@ int /*long*/ tableView_objectValueForTableColumn_row (int /*long*/ id, int /*lon
 }
 
 int /*long*/ tableView_selectionIndexesForProposedSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ indexSet) {
+	NSTableView tableView = new NSTableView(aTableView);
+
+	// If a checkbox is being tracked don't select the row.
+	if (display.trackedButtonRow != -1) return tableView.selectedRowIndexes().id;
+	
+	// If the click was in a checkbox, remove that row from the proposed selection.
+	NSMutableIndexSet mutableSelection = (NSMutableIndexSet) new NSMutableIndexSet().alloc();
+	mutableSelection = new NSMutableIndexSet(mutableSelection.initWithIndexSet(new NSIndexSet(indexSet)));
+    int /*long*/ clickedCol = tableView.clickedColumn();
+    int /*long*/ clickedRow = tableView.clickedRow();
+    if (clickedRow >= 0 && clickedCol >= 0) {
+        NSCell cell = tableView.preparedCellAtColumn(clickedCol, clickedRow);
+        if (cell.isKindOfClass(OS.class_NSButtonCell) && cell.isEnabled()) {
+            NSRect cellFrame = tableView.frameOfCellAtColumn(clickedCol, clickedRow);
+            NSRect imageFrame = cell.imageRectForBounds(cellFrame);
+            NSPoint hitPoint = tableView.convertPoint_fromView_(NSApplication.sharedApplication().currentEvent().locationInWindow(), null);
+            if (OS.NSPointInRect(hitPoint, imageFrame)) {
+    			mutableSelection.removeIndex(clickedRow);
+            }
+        }            
+    }
 
 	if ((style & SWT.SINGLE) != 0) {
 		/*
@@ -3172,17 +3193,12 @@ int /*long*/ tableView_selectionIndexesForProposedSelection (int /*long*/ id, in
 		 * This is normal platform behavior, but for compatibility with other platforms, if the SINGLE style is in use,
 		 * force a selection by seeing if the proposed selection set is empty, and if so, put back the currently selected row.  
 		 */
-		NSIndexSet indexes = new NSIndexSet(indexSet);
-		NSTableView table = new NSTableView(aTableView);			
-		if (indexes.count() != 1 && table.selectedRow() != -1) {
-			NSIndexSet newSelection = (NSIndexSet)new NSIndexSet().alloc();
-			newSelection = newSelection.initWithIndex(table.selectedRow());
-			newSelection.autorelease();
-			return newSelection.id;
+		if (mutableSelection.count() != 1 && tableView.selectedRow() != -1) {
+			return tableView.selectedRowIndexes().id;
 		}
 	}
 	
-	return indexSet;
+	return mutableSelection.id;
 }
 
 boolean tableView_shouldReorderColumn_toColumn(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ currentColIndex, int /*long*/ newColIndex) {
@@ -3203,54 +3219,13 @@ boolean tableView_shouldReorderColumn_toColumn(int /*long*/ id, int /*long*/ sel
 	return true;
 }
 
-boolean tableView_shouldSelectRow(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ rowIndex) {
-	boolean result = true;
-
-	if ((style & SWT.SINGLE) != 0) {
-		/*
-		 * Feature in Cocoa.  Calling setAllowsEmptySelection will automatically select the first row of the list. 
-		 * And, single-selection NSTable/OutlineViews allow the user to de-select the selected item via command-click.
-		 * This is normal platform behavior, but for compatibility with other platforms, if the SINGLE style is in use,
-		 * force a selection by seeing if the proposed selection set is empty, and if so, put back the currently selected row.  
-		 */
-		NSTableView table = new NSTableView(aTableView);			
-		NSIndexSet indexes = table.selectedRowIndexes();
-		if (indexes.count() != 1 && table.selectedRow() != -1) {
-			return false;
-		}
-	}
-
-	// If a checkbox is being tracked don't select the row.
-	if (display.trackedButtonRow != -1) return false;
-	NSTableView tableView = (NSTableView)view;
-    int /*long*/ clickedCol = tableView.clickedColumn();
-    int /*long*/ clickedRow = tableView.clickedRow();
-    if (clickedRow >= 0 && clickedCol >= 0) {
-        NSCell cell = tableView.preparedCellAtColumn(clickedCol, clickedRow);
-        if (cell.isKindOfClass(OS.class_NSButtonCell) && cell.isEnabled()) {
-            NSRect cellFrame = tableView.frameOfCellAtColumn(clickedCol, clickedRow);
-            NSRect imageFrame = cell.imageRectForBounds(cellFrame);
-            NSPoint hitPoint = tableView.convertPoint_fromView_(NSApplication.sharedApplication().currentEvent().locationInWindow(), null);
-            result = ! OS.NSPointInRect(hitPoint, imageFrame) || didSelect;
-        }            
-    }
-    return result;
-}
-
 boolean tableView_shouldTrackCell_forTableColumn_row(int /*long*/ id, int /*long*/ sel,
 		int /*long*/ table, int /*long*/ cell, /*long*/ int /*long*/ tableColumn, int /*long*/ rowIndex) {
 	NSCell theCell = new NSCell(cell);
 	NSTableView tableView = (NSTableView)view;
 	if (theCell.isKindOfClass(OS.class_NSButtonCell)) {
 		// Allow tracking of the checkbox area of the button, not the text itself.
-		int columnIndex = 0;
-		for (int i=0; i<columnCount; i++) {
-			if (columns [i].nsColumn.id == tableColumn) {
-				columnIndex = i;
-				break;
-			}
-		}
-		NSRect cellFrame = tableView.frameOfCellAtColumn(columnIndex, rowIndex);
+		NSRect cellFrame = tableView.frameOfCellAtColumn(0, rowIndex);
 		NSRect imageFrame = theCell.imageRectForBounds(cellFrame);
 		NSPoint hitPoint = tableView.convertPoint_fromView_(NSApplication.sharedApplication().currentEvent().locationInWindow(), null);
 		boolean shouldTrack = OS.NSPointInRect(hitPoint, imageFrame) && (display.trackedButtonRow == -1 || display.trackedButtonRow == rowIndex) && !didSelect;

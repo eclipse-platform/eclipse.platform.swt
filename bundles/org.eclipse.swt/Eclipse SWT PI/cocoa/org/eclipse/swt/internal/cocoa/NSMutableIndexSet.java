@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,6 +26,15 @@ public NSMutableIndexSet(id id) {
 
 public void addIndex(int /*long*/ value) {
 	OS.objc_msgSend(this.id, OS.sel_addIndex_, value);
+}
+
+public void removeIndex(int /*long*/ value) {
+	OS.objc_msgSend(this.id, OS.sel_removeIndex_, value);
+}
+
+public static id indexSetWithIndex(int /*long*/ value) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableIndexSet, OS.sel_indexSetWithIndex_, value);
+	return result != 0 ? new id(result) : null;
 }
 
 }

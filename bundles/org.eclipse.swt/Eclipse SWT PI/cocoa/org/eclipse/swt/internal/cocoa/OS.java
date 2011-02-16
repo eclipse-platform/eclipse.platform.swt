@@ -763,7 +763,6 @@ public static final int /*long*/ class_NSProgressIndicator = objc_getClass("NSPr
 public static final int /*long*/ class_NSResponder = objc_getClass("NSResponder");
 public static final int /*long*/ class_NSRunLoop = objc_getClass("NSRunLoop");
 public static final int /*long*/ class_NSSavePanel = objc_getClass("NSSavePanel");
-public static final int /*long*/ class_NSScanner = objc_getClass("NSScanner");
 public static final int /*long*/ class_NSScreen = objc_getClass("NSScreen");
 public static final int /*long*/ class_NSScrollView = objc_getClass("NSScrollView");
 public static final int /*long*/ class_NSScroller = objc_getClass("NSScroller");
@@ -1267,7 +1266,6 @@ public static final int /*long*/ sel_getGlyphs_range_ = sel_registerName("getGly
 public static final int /*long*/ sel_getGlyphsInRange_glyphs_characterIndexes_glyphInscriptions_elasticBits_bidiLevels_ = sel_registerName("getGlyphsInRange:glyphs:characterIndexes:glyphInscriptions:elasticBits:bidiLevels:");
 public static final int /*long*/ sel_getIndexes_maxCount_inIndexRange_ = sel_registerName("getIndexes:maxCount:inIndexRange:");
 public static final int /*long*/ sel_getInfoForFile_application_type_ = sel_registerName("getInfoForFile:application:type:");
-public static final int /*long*/ sel_getObjectValue_forString_errorDescription_ = sel_registerName("getObjectValue:forString:errorDescription:");
 public static final int /*long*/ sel_getValues_forAttribute_forVirtualScreen_ = sel_registerName("getValues:forAttribute:forVirtualScreen:");
 public static final int /*long*/ sel_globalContext = sel_registerName("globalContext");
 public static final int /*long*/ sel_glyphIndexForCharacterAtIndex_ = sel_registerName("glyphIndexForCharacterAtIndex:");
@@ -1319,6 +1317,7 @@ public static final int /*long*/ sel_indentationPerLevel = sel_registerName("ind
 public static final int /*long*/ sel_indexOfItemWithTarget_andAction_ = sel_registerName("indexOfItemWithTarget:andAction:");
 public static final int /*long*/ sel_indexOfObjectIdenticalTo_ = sel_registerName("indexOfObjectIdenticalTo:");
 public static final int /*long*/ sel_indexOfSelectedItem = sel_registerName("indexOfSelectedItem");
+public static final int /*long*/ sel_indexSetWithIndex_ = sel_registerName("indexSetWithIndex:");
 public static final int /*long*/ sel_infoDictionary = sel_registerName("infoDictionary");
 public static final int /*long*/ sel_init = sel_registerName("init");
 public static final int /*long*/ sel_initByReferencingFile_ = sel_registerName("initByReferencingFile:");
@@ -1344,6 +1343,7 @@ public static final int /*long*/ sel_initWithIconRef_ = sel_registerName("initWi
 public static final int /*long*/ sel_initWithIdentifier_ = sel_registerName("initWithIdentifier:");
 public static final int /*long*/ sel_initWithImage_hotSpot_ = sel_registerName("initWithImage:hotSpot:");
 public static final int /*long*/ sel_initWithIndex_ = sel_registerName("initWithIndex:");
+public static final int /*long*/ sel_initWithIndexSet_ = sel_registerName("initWithIndexSet:");
 public static final int /*long*/ sel_initWithIndexesInRange_ = sel_registerName("initWithIndexesInRange:");
 public static final int /*long*/ sel_initWithItemIdentifier_ = sel_registerName("initWithItemIdentifier:");
 public static final int /*long*/ sel_initWithLocaleIdentifier_ = sel_registerName("initWithLocaleIdentifier:");
@@ -1370,7 +1370,6 @@ public static final int /*long*/ sel_invalidate = sel_registerName("invalidate")
 public static final int /*long*/ sel_invalidateShadow = sel_registerName("invalidateShadow");
 public static final int /*long*/ sel_invert = sel_registerName("invert");
 public static final int /*long*/ sel_isActive = sel_registerName("isActive");
-public static final int /*long*/ sel_isAtEnd = sel_registerName("isAtEnd");
 public static final int /*long*/ sel_isDocumentEdited = sel_registerName("isDocumentEdited");
 public static final int /*long*/ sel_isDrawingToScreen = sel_registerName("isDrawingToScreen");
 public static final int /*long*/ sel_isEmpty = sel_registerName("isEmpty");
@@ -1393,7 +1392,6 @@ public static final int /*long*/ sel_isMainThread = sel_registerName("isMainThre
 public static final int /*long*/ sel_isMainWindow = sel_registerName("isMainWindow");
 public static final int /*long*/ sel_isMiniaturized = sel_registerName("isMiniaturized");
 public static final int /*long*/ sel_isOpaque = sel_registerName("isOpaque");
-public static final int /*long*/ sel_isPartialStringValid_proposedSelectedRange_originalString_originalSelectedRange_errorDescription_ = sel_registerName("isPartialStringValid:proposedSelectedRange:originalString:originalSelectedRange:errorDescription:");
 public static final int /*long*/ sel_isPlanar = sel_registerName("isPlanar");
 public static final int /*long*/ sel_isResting = sel_registerName("isResting");
 public static final int /*long*/ sel_isRowSelected_ = sel_registerName("isRowSelected:");
@@ -1489,7 +1487,6 @@ public static final int /*long*/ sel_moveUp_ = sel_registerName("moveUp:");
 public static final int /*long*/ sel_mutableCopy = sel_registerName("mutableCopy");
 public static final int /*long*/ sel_mutableString = sel_registerName("mutableString");
 public static final int /*long*/ sel_name = sel_registerName("name");
-public static final int /*long*/ sel_newlineCharacterSet = sel_registerName("newlineCharacterSet");
 public static final int /*long*/ sel_nextEventMatchingMask_untilDate_inMode_dequeue_ = sel_registerName("nextEventMatchingMask:untilDate:inMode:dequeue:");
 public static final int /*long*/ sel_nextObject = sel_registerName("nextObject");
 public static final int /*long*/ sel_nextState = sel_registerName("nextState");
@@ -1604,7 +1601,6 @@ public static final int /*long*/ sel_propertyListForType_ = sel_registerName("pr
 public static final int /*long*/ sel_proposedCredential = sel_registerName("proposedCredential");
 public static final int /*long*/ sel_protectionSpace = sel_registerName("protectionSpace");
 public static final int /*long*/ sel_push = sel_registerName("push");
-public static final int /*long*/ sel_rangeOfCharacterFromSet_ = sel_registerName("rangeOfCharacterFromSet:");
 public static final int /*long*/ sel_rangeValue = sel_registerName("rangeValue");
 public static final int /*long*/ sel_readSelectionFromPasteboard_ = sel_registerName("readSelectionFromPasteboard:");
 public static final int /*long*/ sel_realm = sel_registerName("realm");
@@ -1627,6 +1623,7 @@ public static final int /*long*/ sel_removeAllPoints = sel_registerName("removeA
 public static final int /*long*/ sel_removeAttribute_range_ = sel_registerName("removeAttribute:range:");
 public static final int /*long*/ sel_removeChildWindow_ = sel_registerName("removeChildWindow:");
 public static final int /*long*/ sel_removeFromSuperview = sel_registerName("removeFromSuperview");
+public static final int /*long*/ sel_removeIndex_ = sel_registerName("removeIndex:");
 public static final int /*long*/ sel_removeItem_ = sel_registerName("removeItem:");
 public static final int /*long*/ sel_removeItemAtIndex_ = sel_registerName("removeItemAtIndex:");
 public static final int /*long*/ sel_removeItemAtPath_error_ = sel_registerName("removeItemAtPath:error:");
@@ -1684,10 +1681,6 @@ public static final int /*long*/ sel_samplesPerPixel = sel_registerName("samples
 public static final int /*long*/ sel_saveGraphicsState = sel_registerName("saveGraphicsState");
 public static final int /*long*/ sel_savePanel = sel_registerName("savePanel");
 public static final int /*long*/ sel_scaleXBy_yBy_ = sel_registerName("scaleXBy:yBy:");
-public static final int /*long*/ sel_scanCharactersFromSet_intoString_ = sel_registerName("scanCharactersFromSet:intoString:");
-public static final int /*long*/ sel_scanLocation = sel_registerName("scanLocation");
-public static final int /*long*/ sel_scanUpToCharactersFromSet_intoString_ = sel_registerName("scanUpToCharactersFromSet:intoString:");
-public static final int /*long*/ sel_scannerWithString_ = sel_registerName("scannerWithString:");
 public static final int /*long*/ sel_scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_ = sel_registerName("scheduledTimerWithTimeInterval:target:selector:userInfo:repeats:");
 public static final int /*long*/ sel_screen = sel_registerName("screen");
 public static final int /*long*/ sel_screenX = sel_registerName("screenX");
@@ -1776,7 +1769,6 @@ public static final int /*long*/ sel_setCanCreateDirectories_ = sel_registerName
 public static final int /*long*/ sel_setCancelButtonCell_ = sel_registerName("setCancelButtonCell:");
 public static final int /*long*/ sel_setCell_ = sel_registerName("setCell:");
 public static final int /*long*/ sel_setCellClass_ = sel_registerName("setCellClass:");
-public static final int /*long*/ sel_setCharactersToBeSkipped_ = sel_registerName("setCharactersToBeSkipped:");
 public static final int /*long*/ sel_setClip = sel_registerName("setClip");
 public static final int /*long*/ sel_setCollectionBehavior_ = sel_registerName("setCollectionBehavior:");
 public static final int /*long*/ sel_setColor_ = sel_registerName("setColor:");
@@ -3752,19 +3744,10 @@ public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
 /** @method flags=cast */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2);
-/**
- * @method flags=cast
- * @param arg3 flags=struct
- */
-public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, NSRange arg3, int /*long*/ arg4);
 /** @method flags=cast */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3);
 /** @method flags=cast */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4);
-/** @method flags=cast */
-public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int[] arg2);
-/** @method flags=cast */
-public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int[] /*long[]*/ arg1);
 /** @method flags=cast */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, short arg0);
 /** @method flags=cast */

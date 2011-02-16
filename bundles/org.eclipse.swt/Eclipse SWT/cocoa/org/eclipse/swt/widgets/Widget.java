@@ -1202,8 +1202,8 @@ boolean outlineView_shouldTrackCell_forTableColumn_item(int /*long*/ id, int /*l
 	return true;
 }
 
-boolean outlineView_shouldSelectItem(int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ index) {
-	return true;
+int /*long*/ outlineView_selectionIndexesForProposedSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ indexSet) {
+	return indexSet;
 }
 
 boolean outlineView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ item) {
