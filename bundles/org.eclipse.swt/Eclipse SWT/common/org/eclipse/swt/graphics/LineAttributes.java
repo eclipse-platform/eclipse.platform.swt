@@ -119,4 +119,61 @@ public LineAttributes(float width, int cap, int join, int style, float[] dash, f
 	this.dashOffset = dashOffset;
 	this.miterLimit = miterLimit;
 }
+
+/**
+ * Compares the argument to the receiver, and returns true
+ * if they represent the <em>same</em> object using a class
+ * specific comparison.
+ *
+ * @param object the object to compare with this object
+ * @return <code>true</code> if the object is the same as this object and <code>false</code> otherwise
+ *
+ * @see #hashCode()
+ */
+public boolean equals (Object object) {
+	if (object == this) return true;
+	if (!(object instanceof LineAttributes)) return false;
+	LineAttributes p = (LineAttributes)object;
+	if (p.width != width) return false;
+	if (p.cap != cap) return false;
+	if (p.join != join) return false;
+	if (p.style != style) return false;
+	if (p.dashOffset != dashOffset) return false;
+	if (p.miterLimit != miterLimit) return false;
+	if (p.dash != null && dash != null) {
+		if (p.dash.length != dash.length) return false;
+		for (int i = 0; i < dash.length; i++) {
+			if (p.dash[i] != dash[i]) return false;
+		}
+	} else {
+		if (p.dash != null || dash != null) return false;
+	}
+	return true;
+}
+
+/**
+ * Returns an integer hash code for the receiver. Any two 
+ * objects that return <code>true</code> when passed to 
+ * <code>equals</code> must return the same value for this
+ * method.
+ *
+ * @return the receiver's hash
+ *
+ * @see #equals(Object)
+ */
+public int hashCode () {
+	int hashCode = Float.floatToIntBits(width);
+	hashCode = 31 * hashCode + cap;
+	hashCode = 31 * hashCode + join;
+	hashCode = 31 * hashCode + style;
+	hashCode = 31 * hashCode + Float.floatToIntBits(dashOffset);
+	hashCode = 31 * hashCode + Float.floatToIntBits(miterLimit);
+	if (dash != null) {
+		for (int i = 0; i < dash.length; i++) {
+			hashCode = 31 * hashCode + Float.floatToIntBits(dash[i]);
+		}
+	}
+	return hashCode;
+}
+
 }
