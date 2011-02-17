@@ -2405,6 +2405,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_validRequestorForSendType_returnType_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_readSelectionFromPasteboard_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_writeSelectionToPasteboard_types_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_viewWillMoveToWindow_, proc3, "@:@");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
@@ -5581,6 +5582,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		return (widget.validateMenuItem(id, sel, arg0) ? 1 : 0);
 	} else if (sel == OS.sel_readSelectionFromPasteboard_) {
 		return (widget.readSelectionFromPasteboard(id, sel, arg0) ? 1 : 0);
+	} else if (sel == OS.sel_viewWillMoveToWindow_) {
+		widget.viewWillMoveToWindow(id, sel, arg0);
 	} else if (sel == OS.sel_cancelOperation_) {
 		widget.cancelOperation(id, sel, arg0);
 	}

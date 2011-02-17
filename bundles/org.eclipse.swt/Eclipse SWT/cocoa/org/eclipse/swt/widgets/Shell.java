@@ -119,7 +119,8 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Shell extends Decorations {
 	NSWindow window;
 	SWTWindowDelegate windowDelegate;
-	int /*long*/ currWindowClass;
+	int /*long*/ hostWindowClass;
+	NSWindow hostWindow;
 	int /*long*/ tooltipOwner, tooltipTag, tooltipUserData;
 	boolean opened, moved, resized, fullScreen, center, deferFlushing, scrolling, isPopup;
 	Control lastActive;
@@ -488,6 +489,37 @@ public void addShellListener(ShellListener listener) {
 	addListener(SWT.Deiconify,typedListener);
 }
 
+void attachObserversToWindow(NSWindow newWindow) {
+	if (newWindow == null || newWindow.id == 0) return;
+	hostWindow = newWindow;
+	hostWindow.retain();
+	int /*long*/ newHostWindowClass = OS.object_getClass(newWindow.id);
+	int /*long*/ embeddedSubclass = display.createWindowSubclass(newHostWindowClass, "SWTAWTWindow", true);
+	if (newHostWindowClass != embeddedSubclass) {
+		OS.object_setClass(hostWindow.id, embeddedSubclass);
+		hostWindowClass = newHostWindowClass;
+	}
+	
+	if (windowEmbedCounts == null) windowEmbedCounts = new HashMap();
+	Integer embedCount = (Integer) windowEmbedCounts.get(hostWindow);
+	if (embedCount == null) {
+		embedCount = new Integer(0);
+	}
+	embedCount = new Integer(embedCount.intValue() + 1);
+	windowEmbedCounts.put(hostWindow, embedCount);
+	
+	// Register for notifications. An embedded shell has no control over the host window,
+	// so it isn't correct to install a delegate.
+	NSNotificationCenter defaultCenter = NSNotificationCenter.defaultCenter();
+	defaultCenter.addObserver(windowDelegate, OS.sel_windowDidBecomeKey_, OS.NSWindowDidBecomeKeyNotification, hostWindow);
+	defaultCenter.addObserver(windowDelegate, OS.sel_windowDidDeminiaturize_, OS.NSWindowDidDeminiaturizeNotification, hostWindow);
+	defaultCenter.addObserver(windowDelegate, OS.sel_windowDidMiniaturize_, OS.NSWindowDidMiniaturizeNotification, hostWindow);
+	defaultCenter.addObserver(windowDelegate, OS.sel_windowDidMove_, OS.NSWindowDidMoveNotification, hostWindow);
+	defaultCenter.addObserver(windowDelegate, OS.sel_windowDidResize_, OS.NSWindowDidResizeNotification, hostWindow);
+	defaultCenter.addObserver(windowDelegate, OS.sel_windowDidResignKey_, OS.NSWindowDidResignKeyNotification, hostWindow);
+	defaultCenter.addObserver(windowDelegate, OS.sel_windowWillClose_, OS.NSWindowWillCloseNotification, hostWindow);
+}
+
 void becomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 	Display display = this.display;
 	display.keyWindow = view.window();
@@ -684,29 +716,7 @@ void createHandle () {
 
 	if (window == null) {
 		NSWindow hostWindow = view.window();
-		currWindowClass = OS.object_getClass(hostWindow.id);
-		int /*long*/ sendEventImpl = OS.class_getMethodImplementation(currWindowClass, OS.sel_sendEvent_);
-		if (sendEventImpl != Display.windowCallback3.getAddress()) {
-			int /*long*/ embeddedSubclass = display.createWindowSubclass(currWindowClass, "SWTAWTWindow", true);
-			OS.object_setClass(hostWindow.id, embeddedSubclass);
-		}
-
-		if (windowEmbedCounts == null) windowEmbedCounts = new HashMap();
-		Integer embedCount = (Integer) windowEmbedCounts.get(hostWindow);
-		if (embedCount == null) embedCount = new Integer(0);
-		embedCount = new Integer(embedCount.intValue() + 1);
-		windowEmbedCounts.put(hostWindow, embedCount);
-		
-		// Register for notifications. An embedded shell has no control over the host window,
-		// so it isn't correct to install a delegate.
-		NSNotificationCenter defaultCenter = NSNotificationCenter.defaultCenter();
-		defaultCenter.addObserver(windowDelegate, OS.sel_windowDidBecomeKey_, OS.NSWindowDidBecomeKeyNotification, hostWindow);
-		defaultCenter.addObserver(windowDelegate, OS.sel_windowDidDeminiaturize_, OS.NSWindowDidDeminiaturizeNotification, hostWindow);
-		defaultCenter.addObserver(windowDelegate, OS.sel_windowDidMiniaturize_, OS.NSWindowDidMiniaturizeNotification, hostWindow);
-		defaultCenter.addObserver(windowDelegate, OS.sel_windowDidMove_, OS.NSWindowDidMoveNotification, hostWindow);
-		defaultCenter.addObserver(windowDelegate, OS.sel_windowDidResize_, OS.NSWindowDidResizeNotification, hostWindow);
-		defaultCenter.addObserver(windowDelegate, OS.sel_windowDidResignKey_, OS.NSWindowDidResignKeyNotification, hostWindow);
-		defaultCenter.addObserver(windowDelegate, OS.sel_windowWillClose_, OS.NSWindowWillCloseNotification, hostWindow);
+		attachObserversToWindow(hostWindow);
 	} else {
 		if (parent != null) window.setCollectionBehavior(OS.NSWindowCollectionBehaviorMoveToActiveSpace);
 		window.setAcceptsMouseMovedEvents(true);
@@ -735,18 +745,17 @@ void deferFlushing () {
 
 void deregister () {
 	super.deregister ();
-	if (window != null) {
-		display.removeWidget (window);
-	} else {
-		display.removeWidget (view.window());
-	}
+	if (window != null) display.removeWidget (window);
+	if (hostWindow != null)	display.removeWidget (hostWindow);
 	if (windowDelegate != null) display.removeWidget (windowDelegate);
 }
 
 void destroyWidget () {
 	NSWindow window = this.window;
+	if (window != null) window.retain();
 	Display display = this.display;
 	NSView view = topView();
+	if (view != null) view.retain();
 	
 	boolean sheet = (style & (SWT.SHEET)) != 0;
 	releaseHandle ();
@@ -758,6 +767,7 @@ void destroyWidget () {
 		window.close();
 	} else if (view != null) {
 		view.removeFromSuperview();
+		view.release();
 	}
 	
 	// If another shell is not going to become active, clear the menu bar.
@@ -766,6 +776,7 @@ void destroyWidget () {
 		if (!display.isDisposed () && display.getShells ().length == 0) {
 			display.setMenuBar (null);
 		}
+		window.release();
 	}
 }
 
@@ -1341,11 +1352,8 @@ void register () {
 	 * all of the NSWindow overrides operate on the entire window. 
 	 */
 	super.register ();
-	if (window != null) {
-		display.addWidget (window, this);
-	} else  {
-		display.addWidget (view.window(), this);
-	}
+	if (window != null) display.addWidget (window, this);
+	if (hostWindow != null)	display.addWidget (hostWindow, this);
 	if (windowDelegate != null) display.addWidget (windowDelegate, this);
 }
 
@@ -1362,22 +1370,10 @@ void releaseChildren (boolean destroy) {
 
 void releaseHandle () {
 	if (window != null) window.setDelegate(null);
-	NSNotificationCenter.defaultCenter().removeObserver(windowDelegate);
+	removeObserversFromWindow();
 	if (windowDelegate != null) windowDelegate.release();
 	windowDelegate = null;
-	
-	if (window == null && currWindowClass != 0) {
-		Integer embedCount = (Integer) windowEmbedCounts.get(view.window());
-		if (embedCount == null) embedCount = new Integer(0);
-		embedCount = new Integer(embedCount.intValue() - 1);
-		windowEmbedCounts.put(view.window(), embedCount);
-		
-		if (embedCount.intValue() <= 0) {
-			windowEmbedCounts.remove(view.window());
-			OS.object_setClass(view.window().id, currWindowClass);
-		}
-	}
-	
+
 	super.releaseHandle ();
 	window = null;
 }
@@ -1393,6 +1389,29 @@ void releaseWidget () {
 	display.updateQuitMenu();
 	lastActive = null;
 }
+
+void removeObserversFromWindow () {
+	NSNotificationCenter.defaultCenter().removeObserver(windowDelegate);		
+
+	if (hostWindow != null) {
+		Integer embedCount = (Integer) windowEmbedCounts.get(hostWindow);
+		if (embedCount == null) {
+			embedCount = new Integer(0);
+		}
+		embedCount = new Integer(embedCount.intValue() - 1);
+		windowEmbedCounts.put(hostWindow, embedCount);
+
+		if (embedCount.intValue() <= 0) {
+			windowEmbedCounts.remove(hostWindow);
+			OS.object_setClass(hostWindow.id, hostWindowClass);
+			display.removeWidget(hostWindow);
+			hostWindow.release();
+			hostWindow = null;
+			hostWindowClass = 0;
+		}
+	}
+}
+
 
 /**
  * Removes the listener from the collection of listeners who will
@@ -2053,6 +2072,20 @@ int /*long*/ view_stringForToolTip_point_userData (int /*long*/ id, int /*long*/
 	string.getChars (0, chars.length, chars, 0);
 	int length = fixMnemonic (chars);
 	return NSString.stringWithCharacters (chars, length).id;
+}
+
+void viewWillMoveToWindow(int /*long*/ id, int /*long*/ sel, int /*long*/ newWindow) {
+	if (window == null) {
+		int /*long*/ currentWindow = hostWindow != null ? hostWindow.id : 0;
+		if (currentWindow != 0) {
+			removeObserversFromWindow();
+			display.removeWidget(hostWindow);
+		}
+		if (newWindow != 0) {
+			attachObserversToWindow(new NSWindow(newWindow));
+			display.addWidget(hostWindow, this);
+		}
+	}
 }
 
 void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {

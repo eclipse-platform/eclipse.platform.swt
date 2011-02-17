@@ -1416,7 +1416,9 @@ public boolean forceFocus () {
 }
 
 boolean forceFocus (NSView focusView) {
-	return view.window ().makeFirstResponder (focusView);
+	NSWindow window = view.window ();
+	if(window == null) { return false; }
+	return window.makeFirstResponder (focusView);
 }
 
 boolean gestureEvent(int /*long*/ id, int /*long*/ eventPtr, int detail) {

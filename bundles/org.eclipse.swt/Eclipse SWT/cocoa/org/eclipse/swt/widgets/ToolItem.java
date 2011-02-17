@@ -1016,7 +1016,11 @@ public void setDisabledImage (Image image) {
 boolean setFocus () {
 	if (button == null) return false;
 	if (!isEnabled ()) return false;
-	return view.window ().makeFirstResponder (button);
+	NSWindow window = view.window ();
+	if(window == null) { 
+		return false;
+	}
+	return window.makeFirstResponder (button);
 }
 
 /**
