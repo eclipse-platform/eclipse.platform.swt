@@ -360,7 +360,7 @@ public Rectangle getThumbTrackBounds () {
  */
 public boolean getVisible () {
 	checkWidget();
-	return (state & HIDDEN) == 0;
+	return (state & HIDDEN) == 0 && !view.isHidden();
 }
 
 /**
