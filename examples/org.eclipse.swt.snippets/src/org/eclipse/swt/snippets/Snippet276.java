@@ -36,6 +36,8 @@ public static void main (String[] args) {
 	};
 	shell.addListener (SWT.MouseDown, listener);
 	label.addListener (SWT.MouseDown, listener);
+	Rectangle clientArea = shell.getClientArea();
+	label.setLocation(clientArea.x, clientArea.y);
 	label.pack ();
 	shell.open ();
 	while (!shell.isDisposed ()){

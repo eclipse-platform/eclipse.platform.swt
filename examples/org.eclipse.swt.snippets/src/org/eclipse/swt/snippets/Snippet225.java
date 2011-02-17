@@ -48,6 +48,8 @@ public static void main(String[] args) {
 			tip.setVisible(true);
 		}
 	});
+	Rectangle clientArea = shell.getClientArea();
+	button.setLocation(clientArea.x, clientArea.y);
 	button.pack();
 	shell.setBounds(50, 50, 300, 200);
 	shell.open();

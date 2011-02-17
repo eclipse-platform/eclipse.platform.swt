@@ -19,6 +19,7 @@ package org.eclipse.swt.snippets;
  * @since 3.3
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet274 {
@@ -79,7 +80,8 @@ public class Snippet274 {
 	            }
 	        }
 	    }
-	    tree.setSize(200, 200);
+		Rectangle clientArea = shell.getClientArea();
+	    tree.setBounds(clientArea.x, clientArea.y, 200, 200);
 	    shell.pack();
 	    shell.open();
 	    while (!shell.isDisposed()) {

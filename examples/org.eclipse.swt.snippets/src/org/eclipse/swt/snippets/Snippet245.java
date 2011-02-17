@@ -32,7 +32,8 @@ public static void main(String [] args) {
 			event.gc.drawOval(0, 0, rect.width - 1, rect.height - 1);
 		}
 	});
-	shell.setBounds(10, 10, 200, 200);
+	Rectangle clientArea = shell.getClientArea();
+	shell.setBounds(clientArea.x + 10, clientArea.y + 10, 200, 200);
 	shell.open ();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();

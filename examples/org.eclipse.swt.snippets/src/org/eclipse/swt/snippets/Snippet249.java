@@ -18,6 +18,7 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -28,10 +29,11 @@ public class Snippet249 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
-	shell.setBounds (10, 10, 300, 200);
+	Rectangle clientArea = shell.getClientArea();
+	shell.setBounds (clientArea.x + 10, clientArea.y + 10, 300, 200);
 	// create the composite that the pages will share
 	final Composite contentPanel = new Composite (shell, SWT.BORDER);
-	contentPanel.setBounds (100, 10, 190, 90);
+	contentPanel.setBounds (clientArea.x + 100, clientArea.y + 10, 190, 90);
 	final StackLayout layout = new StackLayout ();
 	contentPanel.setLayout (layout);
 
@@ -52,7 +54,7 @@ public static void main (String [] args) {
 	// create the button that will switch between the pages
 	Button pageButton = new Button (shell, SWT.PUSH);
 	pageButton.setText ("Push");
-	pageButton.setBounds (10, 10, 80, 25);
+	pageButton.setBounds (clientArea.x + 10, clientArea.y + 10, 80, 25);
 	pageButton.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event event) {
 			pageNum = ++pageNum % 2;

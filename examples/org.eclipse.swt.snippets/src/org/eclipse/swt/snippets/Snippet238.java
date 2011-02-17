@@ -17,6 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet238 {
@@ -25,7 +26,8 @@ public static void main(String[] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	Composite composite = new Composite (shell, SWT.BORDER);
-	composite.setSize (100, 100);
+	Rectangle clientArea = shell.getClientArea();
+	composite.setBounds (clientArea.x, clientArea.y, 100, 100);
 	Menu menu = new Menu (shell, SWT.POP_UP);
 	MenuItem item1 = new MenuItem (menu, SWT.PUSH);
 	item1.setText ("Push Item");

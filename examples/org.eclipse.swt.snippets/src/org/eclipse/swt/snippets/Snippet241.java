@@ -19,6 +19,7 @@ package org.eclipse.swt.snippets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet241 {
@@ -28,7 +29,8 @@ public static void main(String [] args) {
 	Shell shell = new Shell(display);
 	shell.setBounds(10,10,200,200);
 	Text text1 = new Text(shell, SWT.MULTI | SWT.WRAP);
-	text1.setBounds(10,10,150,50);
+	Rectangle clientArea = shell.getClientArea();
+	text1.setBounds(clientArea.x+10,clientArea.y+10,150,50);
 	text1.setText("Tab will traverse out from here.");
 	text1.addTraverseListener(new TraverseListener() {
 		public void keyTraversed(TraverseEvent e) {
