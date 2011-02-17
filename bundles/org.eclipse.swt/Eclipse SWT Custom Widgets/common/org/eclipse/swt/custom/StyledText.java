@@ -2466,20 +2466,16 @@ void doContentEnd() {
 		doLineEnd();
 	} else {
 		int length = content.getCharCount();		
-		if (caretOffset <= length) {
-			setCaretOffset(length, SWT.DEFAULT);
-			showCaret();
-		}
+		setCaretOffset(length, SWT.DEFAULT);
+		showCaret();
 	}
 }
 /**
  * Moves the caret in front of the first character of the widget content.
  */
 void doContentStart() {
-	if (caretOffset >= 0) {
-		setCaretOffset(0, SWT.DEFAULT);
-		showCaret();
-	}
+	setCaretOffset(0, SWT.DEFAULT);
+	showCaret();
 }
 /**
  * Moves the caret to the start of the selection if a selection exists.
@@ -2633,10 +2629,8 @@ void doLineEnd() {
 		int lineLength = content.getLine(caretLine).length();
 		lineEndOffset = lineOffset + lineLength;
 	}
-	if (caretOffset <= lineEndOffset) {
-		setCaretOffset(lineEndOffset, PREVIOUS_OFFSET_TRAILING);
-		showCaret();
-	}
+	setCaretOffset(lineEndOffset, PREVIOUS_OFFSET_TRAILING);
+	showCaret();
 }
 /**
  * Moves the caret to the beginning of the line.
@@ -2652,10 +2646,8 @@ void doLineStart() {
 		lineOffset += offsets[lineIndex];
 		renderer.disposeTextLayout(layout);
 	}
-	if (caretOffset >= lineOffset) {
-		setCaretOffset(lineOffset, OFFSET_LEADING);
-		showCaret();
-	}
+	setCaretOffset(lineOffset, OFFSET_LEADING);
+	showCaret();
 }
 /**
  * Moves the caret one line up and to the same character offset relative 
