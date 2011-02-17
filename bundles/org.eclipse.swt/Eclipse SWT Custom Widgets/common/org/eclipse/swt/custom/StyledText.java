@@ -2476,7 +2476,7 @@ void doContentEnd() {
  * Moves the caret in front of the first character of the widget content.
  */
 void doContentStart() {
-	if (caretOffset > 0) {
+	if (caretOffset >= 0) {
 		setCaretOffset(0, SWT.DEFAULT);
 		showCaret();
 	}
@@ -2633,7 +2633,7 @@ void doLineEnd() {
 		int lineLength = content.getLine(caretLine).length();
 		lineEndOffset = lineOffset + lineLength;
 	}
-	if (caretOffset < lineEndOffset) {
+	if (caretOffset <= lineEndOffset) {
 		setCaretOffset(lineEndOffset, PREVIOUS_OFFSET_TRAILING);
 		showCaret();
 	}
@@ -2652,7 +2652,7 @@ void doLineStart() {
 		lineOffset += offsets[lineIndex];
 		renderer.disposeTextLayout(layout);
 	}
-	if (caretOffset > lineOffset) {
+	if (caretOffset >= lineOffset) {
 		setCaretOffset(lineOffset, OFFSET_LEADING);
 		showCaret();
 	}
