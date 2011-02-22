@@ -23,7 +23,7 @@ import org.eclipse.swt.internal.webkit.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-public class WebKit extends WebBrowser {
+class WebKit extends WebBrowser {
 	int /*long*/ webView, webViewData, scrolledWindow;
 	int failureCount, lastKeyCode, lastCharCode;
 	String postData;
