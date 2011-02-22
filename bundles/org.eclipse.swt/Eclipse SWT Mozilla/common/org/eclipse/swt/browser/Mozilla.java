@@ -3098,7 +3098,9 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 		Enumeration elements = functions.elements ();
 		while (elements.hasMoreElements ()) {
 			BrowserFunction function = (BrowserFunction)elements.nextElement ();
-			execute (function.functionString);
+			if (!function.isEvaluate) {
+				execute (function.functionString);
+			}
 		}
 	}
 
@@ -3292,7 +3294,9 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 				Enumeration elements = functions.elements ();
 				while (elements.hasMoreElements ()) {
 					BrowserFunction function = (BrowserFunction)elements.nextElement ();
-					execute (function.functionString);
+					if (!function.isEvaluate) {
+						execute (function.functionString);
+					}
 				}
 				/* 
 				* For Mozilla >= 1.9.2, when content is being set via nsIWebBrowserStream,
