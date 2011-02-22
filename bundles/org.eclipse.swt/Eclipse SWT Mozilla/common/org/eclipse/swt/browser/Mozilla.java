@@ -3397,27 +3397,27 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 			nsIRequest request = new nsIRequest (aRequest);
 
 			int rc = request.QueryInterface (nsIChannel.NS_ICHANNEL_IID, result);
-			if (rc != XPCOM.NS_OK) error (rc);
-			if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-			nsIChannel channel = new nsIChannel (result[0]);
-			result[0] = 0;
-			rc = channel.GetURI (result);
-			if (rc != XPCOM.NS_OK) error (rc);
-			if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
-			channel.Release ();
+			if (rc == XPCOM.NS_OK && result[0] != 0) {
+				nsIChannel channel = new nsIChannel (result[0]);
+				result[0] = 0;
+				rc = channel.GetURI (result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
+				channel.Release ();
 
-			nsIURI uri = new nsIURI (result[0]);
-			result[0] = 0;
-			int /*long*/ aSpec = XPCOM.nsEmbedCString_new ();
-			rc = uri.GetSpec (aSpec);
-			if (rc != XPCOM.NS_OK) error (rc);
-			int length = XPCOM.nsEmbedCString_Length (aSpec);
-			int /*long*/ buffer = XPCOM.nsEmbedCString_get (aSpec);
-			byte[] bytes = new byte[length];
-			XPCOM.memmove (bytes, buffer, length);
-			lastNavigateURL = new String (bytes);
-			XPCOM.nsEmbedCString_delete (aSpec);
-			uri.Release ();
+				nsIURI uri = new nsIURI (result[0]);
+				result[0] = 0;
+				int /*long*/ aSpec = XPCOM.nsEmbedCString_new ();
+				rc = uri.GetSpec (aSpec);
+				if (rc != XPCOM.NS_OK) error (rc);
+				int length = XPCOM.nsEmbedCString_Length (aSpec);
+				int /*long*/ buffer = XPCOM.nsEmbedCString_get (aSpec);
+				byte[] bytes = new byte[length];
+				XPCOM.memmove (bytes, buffer, length);
+				lastNavigateURL = new String (bytes);
+				XPCOM.nsEmbedCString_delete (aSpec);
+				uri.Release ();
+			}
 		}
 
 		/*
