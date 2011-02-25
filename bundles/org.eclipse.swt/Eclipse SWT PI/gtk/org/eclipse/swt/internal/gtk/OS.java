@@ -9501,6 +9501,16 @@ public static final int /*long*/ gtk_print_unix_dialog_new(byte[] title, int /*l
 	}
 }
 /** @method flags=dynamic */
+public static final native void _gtk_print_unix_dialog_set_embed_page_setup(int /*long*/ dialog, boolean embed);
+public static final void gtk_print_unix_dialog_set_embed_page_setup(int /*long*/ dialog, boolean embed) {
+	lock.lock();
+	try {
+		_gtk_print_unix_dialog_set_embed_page_setup(dialog, embed);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
 public static final native void _gtk_print_unix_dialog_set_page_setup(int /*long*/ dialog, int /*long*/ page_setup);
 public static final void gtk_print_unix_dialog_set_page_setup(int /*long*/ dialog, int /*long*/ page_setup) {
 	lock.lock();

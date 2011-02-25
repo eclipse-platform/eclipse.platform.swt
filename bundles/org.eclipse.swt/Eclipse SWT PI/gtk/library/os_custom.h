@@ -243,6 +243,7 @@
 #define gtk_print_unix_dialog_new_LIB LIB_GTK
 #define gtk_print_unix_dialog_set_current_page_LIB LIB_GTK
 #define gtk_print_unix_dialog_set_manual_capabilities_LIB LIB_GTK
+#define gtk_print_unix_dialog_set_embed_page_setup_LIB LIB_GTK
 #define gtk_print_unix_dialog_set_page_setup_LIB LIB_GTK
 #define gtk_print_unix_dialog_set_settings_LIB LIB_GTK
 #define gtk_printer_get_backend_LIB LIB_GTK

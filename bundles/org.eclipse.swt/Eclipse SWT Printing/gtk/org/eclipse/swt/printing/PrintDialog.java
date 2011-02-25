@@ -373,6 +373,9 @@ public PrinterData open() {
 		
 		OS.gtk_print_unix_dialog_set_settings(handle, settings);
 		OS.gtk_print_unix_dialog_set_page_setup(handle, page_setup);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+			OS.gtk_print_unix_dialog_set_embed_page_setup(handle, true);
+		}
 		OS.g_object_unref(settings);
 		OS.g_object_unref(page_setup);
 		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
