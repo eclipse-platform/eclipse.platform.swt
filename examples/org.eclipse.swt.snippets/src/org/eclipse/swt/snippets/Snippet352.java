@@ -43,7 +43,7 @@ public class Snippet352 {
 	static Map<Long, CircleInfo> touchLocations = new HashMap<Long, CircleInfo>();
 	static int colorIndex = 0;
 	static final int PAINTABLE_COLORS = 15;
-	static final int CIRCLE_RADIUS = 20;
+	static final int CIRCLE_RADIUS = 40;
 	
 	public static void main (String [] args) {
 		final Display display = new Display ();
@@ -93,7 +93,7 @@ public class Snippet352 {
 		};
 		
 		Canvas c = new Canvas(shell, SWT.NONE);
-		c.setTouchEventsEnabled(true);
+		c.setTouchEnabled(true);
 		c.setSize(800, 800);
 		c.addTouchListener(tl);
 		c.addPaintListener(pl);
