@@ -2597,7 +2597,7 @@ public Thread getThread () {
 public boolean getTouchEnabled () {
 	checkDevice();
 	int value = OS.GetSystemMetrics (OS.SM_DIGITIZER);
-	return (value & (OS.NID_READY | OS.NID_MULTI_INPUT)) != 0;
+	return (value & (OS.NID_READY | OS.NID_MULTI_INPUT)) == (OS.NID_READY | OS.NID_MULTI_INPUT);
 }
 
 int /*long*/ hButtonTheme () {
