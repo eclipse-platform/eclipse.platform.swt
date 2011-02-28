@@ -2026,6 +2026,18 @@ public Thread getThread () {
 	}
 }
 
+/**	 
+ * Returns true if a touch-aware input device is attached to the system,
+ * enabled, and ready for use.
+ * 
+ * @since 3.7
+ */
+public boolean getTouchEnabled() {
+	checkDevice();
+	// Gestures are available on OS X 10.5.3 and later. Touch events are only available on 10.6 and later.
+	return (OS.VERSION > 0x1053);
+}
+
 int getToolTipTime () {
 	checkDevice ();
 	//TODO get OS value (NSTooltipManager?)
@@ -2960,17 +2972,6 @@ boolean isBundled () {
 		}
 	}
 	return false;
-}
-
-/**	 
- * Returns true if a touch-aware input device is attached to the system,
- * enabled, and ready for use.
- * 
- * @since 3.7
- */
-public boolean isTouchEnabled() {
-	// Gestures are available on OS X 10.5.3 and later. Touch events are only available on 10.6 and later.
-	return (OS.VERSION > 0x1053);
 }
 
 static boolean isValidClass (Class clazz) {

@@ -2583,6 +2583,23 @@ public Thread getThread () {
 	}
 }
 
+/**	 
+ * Returns true if a touch-aware input device is attached to the system,
+ * enabled, and ready for use.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.7
+ */
+public boolean getTouchEnabled () {
+	checkDevice();
+	int value = OS.GetSystemMetrics (OS.SM_DIGITIZER);
+	return (value & (OS.NID_READY | OS.NID_MULTI_INPUT)) != 0;
+}
+
 int /*long*/ hButtonTheme () {
 	if (hButtonTheme != 0) return hButtonTheme;
 	return hButtonTheme = OS.OpenThemeData (hwndMessage, BUTTON);
@@ -2810,17 +2827,6 @@ protected void init () {
  */
 public void internal_dispose_GC (int /*long*/ hDC, GCData data) {
 	OS.ReleaseDC (0, hDC);
-}
-
-/**	 
- * Returns true if a touch-aware input device is attached to the system,
- * enabled, and ready for use.
- * 
- * @since 3.7
- */
-public boolean isTouchEnabled () {
-	int value = OS.GetSystemMetrics (OS.SM_DIGITIZER);
-	return (value & (OS.NID_READY | OS.NID_MULTI_INPUT)) != 0;
 }
 
 boolean isXMouseActive () {

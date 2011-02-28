@@ -455,7 +455,11 @@ public void addPaintListener (PaintListener listener) {
  * be notified when touch events occur, by sending it
  * one of the messages defined in the <code>TouchListener</code>
  * interface.
- *
+ * <p>
+ * NOTE: You must also call <code>setTouchEnabled</code> to notify the 
+ * windowing toolkit that you want touch events to be generated.
+ * </p>
+ * 
  * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
@@ -466,10 +470,10 @@ public void addPaintListener (PaintListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @since 3.7
- * 
  * @see TouchListener
  * @see #removeTouchListener
+ * 
+ * @since 3.7
  */
 public void addTouchListener (TouchListener listener) {
 	checkWidget();
@@ -1584,6 +1588,27 @@ public String getToolTipText () {
 }
 
 /**
+ * Returns <code>true</code> if this control is receiving OS-level touch events,
+ * otherwise <code>false</code>
+ * <p>
+ * Note that this method will return false if the current platform does not support touch-based input.
+ * If this method does return true, gesture events will not be sent to the control.
+ *
+ * @return <code>true</code> if the widget is currently receiving touch events; <code>false</code> otherwise.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.7
+ */
+public boolean getTouchEnabled () {
+	checkWidget ();
+	return OS.IsTouchWindow (handle, null);
+}
+
+/**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
  * <p>
@@ -1868,27 +1893,6 @@ boolean isTabItem () {
 	if ((code & OS.DLGC_WANTARROWS) != 0) return false;
 	if ((code & OS.DLGC_WANTTAB) != 0) return false;
 	return true;
-}
-
-/**
- * Returns <code>true</code> if this control is receiving OS-level touch events,
- * otherwise <code>false</code>
- * <p>
- * Note that this method will return false if the current platform does not support touch-based input.
- * If this method does return true, gesture events will not be sent to the control.
- *
- * @return <code>true</code> if the widget is currently receiving touch events; <code>false</code> otherwise.
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 3.7
- */
-public boolean isTouchEnabled () {
-	checkWidget ();
-	return OS.IsTouchWindow (handle, null);
 }
 
 /**
@@ -2744,11 +2748,11 @@ public void removePaintListener(PaintListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @since 3.7
- * 
  * @see TouchListener
  * @see #addTouchListener
-*/
+ * 
+ * @since 3.7
+ */
 public void removeTouchListener(TouchListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -3675,7 +3679,7 @@ void setToolTipText (Shell shell, String string) {
  *    
  * @since 3.7
  */
-public void setTouchEventsEnabled(boolean enabled) {
+public void setTouchEnabled(boolean enabled) {
 	checkWidget();
 	if (enabled) {
 		OS.RegisterTouchWindow(handle, 0);

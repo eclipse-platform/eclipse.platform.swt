@@ -444,7 +444,7 @@ public void addPaintListener (PaintListener listener) {
  * one of the messages defined in the <code>TouchListener</code>
  * interface.
  * <p>
- * NOTE: You must also call <code>setTouchEventsEnabled</code> to notify the 
+ * NOTE: You must also call <code>setTouchEnabled</code> to notify the 
  * windowing toolkit that you want touch events to be generated.
  * </p>
  * 
@@ -1303,6 +1303,27 @@ public String getToolTipText () {
 }
 
 /**
+ * Returns <code>true</code> if this control is receiving OS-level touch events,
+ * otherwise <code>false</code>
+ * <p>
+ * Note that this method will return false if the current platform does not support touch-based input.
+ * If this method does return true, gesture events will not be sent to the control.
+ *
+ * @return <code>true</code> if the widget is currently receiving touch events; <code>false</code> otherwise.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.7
+ */
+public boolean getTouchEnabled() {
+	checkWidget();
+	return false;
+}
+
+/**
  * WARNING: THIS API IS UNDER CONSTRUCTION AND SHOULD NOT BE USED
  */
 public Transform getTransform () {
@@ -1820,27 +1841,6 @@ boolean isTabItem () {
 	}
 	int code = traversalCode (0, 0);
 	return (code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0;
-}
-
-/**
- * Returns <code>true</code> if this control is receiving OS-level touch events,
- * otherwise <code>false</code>
- * <p>
- * Note that this method will return false if the current platform does not support touch-based input.
- * If this method does return true, gesture events will not be sent to the control.
- *
- * @return <code>true</code> if the widget is currently receiving touch events; <code>false</code> otherwise.
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 3.7
- */
-public boolean isTouchEnabled() {
-	checkWidget();
-	return false;
 }
 
 /**
@@ -3290,7 +3290,7 @@ public void setTransform (Transform t) {
  * 
  * @since 3.7
  */
-public void setTouchEventsEnabled(boolean enabled) {
+public void setTouchEnabled(boolean enabled) {
 	checkWidget();
 }
 

@@ -2354,6 +2354,17 @@ public Thread getThread () {
 	}
 }
 
+/**	 
+ * Returns true if a touch-aware input device is attached to the system,
+ * enabled, and ready for use.
+ * 
+ * @since 3.7
+ */
+public boolean getTouchEnabled() {
+	checkDevice();
+	return false;
+}
+
 Widget getWidget (int /*long*/ handle) {
 	if (handle == 0) return null;
 	if (lastWidget != null && lastHandle == handle) return lastWidget;
@@ -2704,16 +2715,6 @@ public int /*long*/ internal_new_GC (GCData data) {
 		data.font = getSystemFont ();
 	}
 	return gdkGC;
-}
-
-/**	 
- * Returns true if a touch-aware input device is attached to the system,
- * enabled, and ready for use.
- * 
- * @since 3.7
- */
-public boolean isTouchEnabled() {
-	return false;
 }
 
 boolean isValidThread () {

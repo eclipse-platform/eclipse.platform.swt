@@ -1129,16 +1129,6 @@ public static Display getDefault () {
 	}
 }
 
-/**	 
- * Returns true if a touch-aware input device is attached to the system,
- * enabled, and ready for use.
- * 
- * @since 3.7
- */
-public boolean isTouchEnabled() {
-	return false;
-}
-
 static boolean isValidClass (Class clazz) {
 	String name = clazz.getName ();
 	int index = name.lastIndexOf ('.');
@@ -1720,6 +1710,17 @@ public Thread getThread () {
 		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 		return thread;
 	}
+}
+
+/**	 
+ * Returns true if a touch-aware input device is attached to the system,
+ * enabled, and ready for use.
+ * 
+ * @since 3.7
+ */
+public boolean getTouchEnabled() {
+	checkDevice();
+	return false;
 }
 
 /**	 

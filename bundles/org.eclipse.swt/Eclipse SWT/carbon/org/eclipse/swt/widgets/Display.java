@@ -2175,6 +2175,17 @@ public Thread getThread () {
 	}
 }
 
+/**	 
+ * Returns true if a touch-aware input device is attached to the system,
+ * enabled, and ready for use.
+ * 
+ * @since 3.7
+ */
+public boolean getTouchEnabled() {
+	checkDevice();
+	return false;
+}
+
 Widget getWidget (int handle) {
 	if (handle == 0) return null;
 	property [0] = 0;
@@ -2536,16 +2547,6 @@ boolean isBundled () {
 		OS.CFBundleGetPackageInfo (mainBundle, packageType, packageCreator);
 		if (packageType[0] == OS.APPL) return true;
 	}
-	return false;
-}
-
-/**	 
- * Returns true if a touch-aware input device is attached to the system,
- * enabled, and ready for use.
- * 
- * @since 3.7
- */
-public boolean isTouchEnabled() {
 	return false;
 }
 
