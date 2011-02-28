@@ -141,6 +141,7 @@ public static PrinterData getDefaultPrinterData() {
 	if (commaIndex < length) {
 		deviceName = buf.toString(0, commaIndex);		
 	}
+	if (deviceName == null) return null;
 	String driver = ""; //$NON-NLS-1$
 	if (OS.GetProfileString(profile, new TCHAR(0, deviceName, true), nullBuf, buf, length) > 0) {
 		commaIndex = 0;
