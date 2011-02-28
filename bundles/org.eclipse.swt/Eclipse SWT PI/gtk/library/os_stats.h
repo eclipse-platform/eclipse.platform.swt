@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2011 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -973,6 +973,7 @@ typedef enum {
 	_1gtk_1print_1unix_1dialog_1get_1settings_FUNC,
 	_1gtk_1print_1unix_1dialog_1new_FUNC,
 	_1gtk_1print_1unix_1dialog_1set_1current_1page_FUNC,
+	_1gtk_1print_1unix_1dialog_1set_1embed_1page_1setup_FUNC,
 	_1gtk_1print_1unix_1dialog_1set_1manual_1capabilities_FUNC,
 	_1gtk_1print_1unix_1dialog_1set_1page_1setup_FUNC,
 	_1gtk_1print_1unix_1dialog_1set_1settings_FUNC,
