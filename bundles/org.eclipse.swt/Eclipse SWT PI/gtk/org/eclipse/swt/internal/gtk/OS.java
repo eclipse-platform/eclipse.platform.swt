@@ -2441,6 +2441,18 @@ public static final void g_list_free_1(int /*long*/ list) {
 		lock.unlock();
 	}
 }
+/**
+ * @param list cast=(GList *)
+ */
+public static final native int /*long*/ _g_list_last(int /*long*/ list);
+public static final int /*long*/ g_list_last(int /*long*/ list) {
+	lock.lock();
+	try {
+		return _g_list_last(list);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param list cast=(GList *) */
 public static final native int _g_list_length(int /*long*/ list);
 public static final int g_list_length(int /*long*/ list) {
