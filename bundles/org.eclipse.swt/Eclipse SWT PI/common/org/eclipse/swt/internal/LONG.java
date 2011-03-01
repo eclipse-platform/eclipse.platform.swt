@@ -26,6 +26,6 @@ public class LONG {
 	}
 
 	public int hashCode () {
-		return (int)/*64*/value;
+		return (int)/*64*/(value ^ (value >>> 32));
 	}
 }
