@@ -571,10 +571,10 @@ boolean filterKey (int keyval, int /*long*/ event) {
 }
 
 int /*long*/ findPopupHandle (int /*long*/ oldList) {
-	int /*long*/ hdl = 0;
+	int /*long*/ result = 0;
 	int /*long*/ currentList = OS.gtk_window_list_toplevels();
 	int /*long*/ oldFromList = oldList;
-	int /*long*/ newFromList = currentList;
+	int /*long*/ newFromList = OS.g_list_last(currentList);
 	boolean isFound;
 	while (newFromList != 0) {
 		int /*long*/ newToplevel = OS.g_list_data(newFromList);
@@ -589,14 +589,14 @@ int /*long*/ findPopupHandle (int /*long*/ oldList) {
 			oldFromList = OS.g_list_next(oldFromList);
 		}
 		if (!isFound) {
-			hdl = newToplevel;
+			result = newToplevel;
 			break;
 		}
-		newFromList = OS.g_list_next(newFromList);
+		newFromList = OS.g_list_previous(newFromList);
 	}
 	OS.g_list_free(oldList);
 	OS.g_list_free(currentList);
-	return hdl;
+	return result;
 }
 
 
