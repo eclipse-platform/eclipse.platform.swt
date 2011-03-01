@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1378;
-int OS_nativeFunctionCallCount[1378];
+int OS_nativeFunctionCount = 1379;
+int OS_nativeFunctionCallCount[1379];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -265,6 +265,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1list_1data",
 	"_1g_1list_1free",
 	"_1g_1list_1free_11",
+	"_1g_1list_1last",
 	"_1g_1list_1length",
 	"_1g_1list_1next",
 	"_1g_1list_1nth",

@@ -3343,6 +3343,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1list_1free_11)
 }
 #endif
 
+#ifndef NO__1g_1list_1last
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1list_1last)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1list_1last_FUNC);
+	rc = (jintLong)g_list_last((GList *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1list_1last_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1g_1list_1length
 JNIEXPORT jint JNICALL OS_NATIVE(_1g_1list_1length)
 	(JNIEnv *env, jclass that, jintLong arg0)

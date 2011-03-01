@@ -273,6 +273,7 @@ typedef enum {
 	_1g_1list_1data_FUNC,
 	_1g_1list_1free_FUNC,
 	_1g_1list_1free_11_FUNC,
+	_1g_1list_1last_FUNC,
 	_1g_1list_1length_FUNC,
 	_1g_1list_1next_FUNC,
 	_1g_1list_1nth_FUNC,
