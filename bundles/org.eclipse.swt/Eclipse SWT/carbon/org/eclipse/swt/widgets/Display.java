@@ -121,6 +121,7 @@ public class Display extends Device {
 	int mouseProc, trackingProc, windowProc, colorProc, textInputProc, releaseProc, coreEventProc, pollingProc;
 	EventTable eventTable, filterTable;
 	int queue, runLoop, runLoopSource, runLoopObserver, lastModifiers, lastState, lastX, lastY;
+	int commandHandler, appleEventHandler, mouseHandler, keyboardHandler, textInputHandler, launcherHandler;
 	boolean disposing;
 	
 	boolean inPaint, needsPaint;
@@ -2325,7 +2326,9 @@ void initializeCallbacks () {
 		OS.kEventClassCommand, OS.kEventProcessCommand,
 	};
 	int appTarget = OS.GetApplicationEventTarget ();
-	OS.InstallEventHandler (appTarget, commandProc, mask1.length / 2, mask1, 0, null);
+	int [] handler = new int [1];
+	OS.InstallEventHandler (appTarget, commandProc, mask1.length / 2, mask1, 0, handler);
+	commandHandler = handler [0];
 	int[] mask2 = new int[] {
 		OS.kEventClassMouse, OS.kEventMouseDown,
 		OS.kEventClassMouse, OS.kEventMouseDragged,
@@ -2335,13 +2338,17 @@ void initializeCallbacks () {
 		OS.kEventClassMouse, OS.kEventMouseUp,
 		OS.kEventClassMouse, OS.kEventMouseWheelMoved,
 	};
-	OS.InstallEventHandler (appTarget, mouseProc, mask2.length / 2, mask2, 0, null);
+	handler [0] = 0;
+	OS.InstallEventHandler (appTarget, mouseProc, mask2.length / 2, mask2, 0, handler);
+	mouseHandler = handler [0];
 	int [] mask3 = new int[] {
 		OS.kEventClassApplication, OS.kEventAppDeactivated,
 		OS.kEventClassApplication, OS.kEventAppAvailableWindowBoundsChanged,
 		OS.kEventClassAppleEvent, OS.kEventAppleEvent,
 	};
-	OS.InstallEventHandler (appTarget, appleEventProc, mask3.length / 2, mask3, 0, null);
+	handler [0] = 0;
+	OS.InstallEventHandler (appTarget, appleEventProc, mask3.length / 2, mask3, 0, handler);
+	appleEventHandler = handler [0];
 	OS.AEInstallEventHandler(OS.kCoreEventClass, OS.kAEQuitApplication, coreEventProc, OS.kAEQuitApplication, false);
 
 	int [] mask4 = new int[] {
@@ -2351,7 +2358,9 @@ void initializeCallbacks () {
 		OS.kEventClassKeyboard, OS.kEventRawKeyUp,
 	};
 	int focusTarget = OS.GetUserFocusEventTarget ();
-	OS.InstallEventHandler (focusTarget, keyboardProc, mask4.length / 2, mask4, 0, null);
+	handler [0] = 0;
+	OS.InstallEventHandler (focusTarget, keyboardProc, mask4.length / 2, mask4, 0, handler);
+	keyboardHandler = handler [0];
 	int [] mask5 = new int[] {
 		OS.kEventClassTextInput, OS.kEventTextInputUnicodeForKeyEvent,
 		OS.kEventClassTextInput, OS.kEventTextInputUpdateActiveInputArea,
@@ -2359,7 +2368,9 @@ void initializeCallbacks () {
 		OS.kEventClassTextInput, OS.kEventTextInputPosToOffset,
 		OS.kEventClassTextInput, OS.kEventTextInputGetSelectedText,
 	};
-	OS.InstallEventHandler (focusTarget, textInputProc, mask5.length / 2, mask5, 0, null);
+	handler [0] = 0;
+	OS.InstallEventHandler (focusTarget, textInputProc, mask5.length / 2, mask5, 0, handler);
+	textInputHandler = handler [0];
 	OS.AEInstallEventHandler (OS.kAppearanceEventClass, OS.kAEAppearanceChanged, appearanceProc, 0, false);
 	OS.AEInstallEventHandler (OS.kAppearanceEventClass, OS.kAESmallSystemFontChanged, appearanceProc, 0, false);
 	OS.AEInstallEventHandler (OS.kAppearanceEventClass, OS.kAESystemFontChanged, appearanceProc, 0, false);
@@ -2367,8 +2378,10 @@ void initializeCallbacks () {
 	
 	int[] mask6 = new int[] {
 			SWT_CLASS, SWT_OPEN_FILE_KIND,
-		};
-	OS.InstallEventHandler (appTarget, launcherProc, mask6.length / 2, mask6, 0, null);
+	};
+	handler [0] = 0;
+	OS.InstallEventHandler (appTarget, launcherProc, mask6.length / 2, mask6, 0, handler);
+	launcherHandler = handler [0];
 	OS.AEInstallEventHandler(OS.kCoreEventClass, OS.kAEOpenDocuments, coreEventProc, OS.kAEOpenDocuments, false);
 	
 	int mode = OS.kCFRunLoopCommonModes ();
@@ -3338,7 +3351,22 @@ void releaseDisplay () {
 
 	if (gcWindow != 0) OS.DisposeWindow (gcWindow);
 	gcWindow = 0;
-
+	
+	/* Release event handlers */
+	if (appleEventHandler != 0) OS.RemoveEventHandler (appleEventHandler);
+	if (commandHandler != 0) OS.RemoveEventHandler (commandHandler);
+	if (mouseHandler != 0) OS.RemoveEventHandler (mouseHandler);
+	if (keyboardHandler != 0) OS.RemoveEventHandler (keyboardHandler);
+	if (textInputHandler != 0) OS.RemoveEventHandler (textInputHandler);
+	if (launcherHandler != 0) OS.RemoveEventHandler (launcherHandler);
+	appleEventHandler = commandHandler = mouseHandler = keyboardHandler = textInputHandler = launcherHandler = 0;
+	System.out.println(OS.AERemoveEventHandler (OS.kCoreEventClass, OS.kAEOpenDocuments, coreEventProc, false));
+	System.out.println(OS.AERemoveEventHandler (OS.kCoreEventClass, OS.kAEQuitApplication, coreEventProc, false));
+	System.out.println(OS.AERemoveEventHandler (OS.kAppearanceEventClass, OS.kAEAppearanceChanged, appearanceProc, false));
+	System.out.println(OS.AERemoveEventHandler (OS.kAppearanceEventClass, OS.kAESmallSystemFontChanged, appearanceProc, false));
+	System.out.println(OS.AERemoveEventHandler (OS.kAppearanceEventClass, OS.kAESystemFontChanged, appearanceProc, false));
+	System.out.println(OS.AERemoveEventHandler (OS.kAppearanceEventClass, OS.kAEViewsFontChanged, appearanceProc, false));
+	
 	/* Release Timers */
 	if (caretID != 0) OS.RemoveEventLoopTimer (caretID);
 	if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);

@@ -1155,6 +1155,12 @@ public static final native int AEGetParamDesc (int theAppleEvent, int theAEKeywo
  * @param handlerRefcon cast=(long)
  */
 public static final native int AEInstallEventHandler(int theAEEventClass, int theAEEventID, int handler, int handlerRefcon, boolean isSysHandler);  
+/**
+ * @param theAEEventClass cast=(AEEventClass)
+ * @param theAEEventID cast=(AEEventID)
+ * @param handler cast=(AEEventHandlerUPP)
+ */
+public static final native int AERemoveEventHandler (int theAEEventClass, int theAEEventID, int handler, boolean isSysHandler);
 /** @param theEventRecord cast=(const EventRecord *) */
 public static final native int AEProcessAppleEvent(EventRecord theEventRecord);
 /**
