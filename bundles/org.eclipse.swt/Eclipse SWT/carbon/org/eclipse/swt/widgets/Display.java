@@ -3360,12 +3360,12 @@ void releaseDisplay () {
 	if (textInputHandler != 0) OS.RemoveEventHandler (textInputHandler);
 	if (launcherHandler != 0) OS.RemoveEventHandler (launcherHandler);
 	appleEventHandler = commandHandler = mouseHandler = keyboardHandler = textInputHandler = launcherHandler = 0;
-	System.out.println(OS.AERemoveEventHandler (OS.kCoreEventClass, OS.kAEOpenDocuments, coreEventProc, false));
-	System.out.println(OS.AERemoveEventHandler (OS.kCoreEventClass, OS.kAEQuitApplication, coreEventProc, false));
-	System.out.println(OS.AERemoveEventHandler (OS.kAppearanceEventClass, OS.kAEAppearanceChanged, appearanceProc, false));
-	System.out.println(OS.AERemoveEventHandler (OS.kAppearanceEventClass, OS.kAESmallSystemFontChanged, appearanceProc, false));
-	System.out.println(OS.AERemoveEventHandler (OS.kAppearanceEventClass, OS.kAESystemFontChanged, appearanceProc, false));
-	System.out.println(OS.AERemoveEventHandler (OS.kAppearanceEventClass, OS.kAEViewsFontChanged, appearanceProc, false));
+	OS.AERemoveEventHandler (OS.kCoreEventClass, OS.kAEOpenDocuments, coreEventProc, false);
+	OS.AERemoveEventHandler (OS.kCoreEventClass, OS.kAEQuitApplication, coreEventProc, false);
+	OS.AERemoveEventHandler (OS.kAppearanceEventClass, OS.kAEAppearanceChanged, appearanceProc, false);
+	OS.AERemoveEventHandler (OS.kAppearanceEventClass, OS.kAESmallSystemFontChanged, appearanceProc, false);
+	OS.AERemoveEventHandler (OS.kAppearanceEventClass, OS.kAESystemFontChanged, appearanceProc, false);
+	OS.AERemoveEventHandler (OS.kAppearanceEventClass, OS.kAEViewsFontChanged, appearanceProc, false);
 	
 	/* Release Timers */
 	if (caretID != 0) OS.RemoveEventLoopTimer (caretID);
