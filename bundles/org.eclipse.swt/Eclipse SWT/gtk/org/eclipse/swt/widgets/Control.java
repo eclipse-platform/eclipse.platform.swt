@@ -2167,7 +2167,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 				try {Thread.sleep(50);} catch (Exception ex) {}
 			}
 		}
-		if (eventPtr == 0) return false;
+		if (eventPtr == 0) return true;
 		switch (OS.GDK_EVENT_TYPE (eventPtr)) {
 			case OS.GDK_MOTION_NOTIFY: {
 				GdkEventMotion gdkMotionEvent = new GdkEventMotion ();
