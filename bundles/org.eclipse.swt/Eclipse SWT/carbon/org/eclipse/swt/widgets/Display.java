@@ -1805,7 +1805,7 @@ Menu getMenu (int id) {
 	return null;
 }
 
-Menu getMenuBar () {
+Menu _getMenuBar () {
 	return menuBar;
 }
 

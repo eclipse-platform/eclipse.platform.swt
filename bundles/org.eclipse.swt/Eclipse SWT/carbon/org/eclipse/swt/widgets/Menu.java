@@ -372,7 +372,7 @@ void fixMenus (Decorations newParent) {
 /*public*/ Rectangle getBounds () {
 	checkWidget ();
 	if ((style & SWT.BAR) != 0) {
-		Menu menu = display.getMenuBar ();
+		Menu menu = display._getMenuBar ();
 		if (this != menu) return new Rectangle (0, 0, 0, 0);
 		int height = OS.GetMBarHeight ();
 		int gdevice = OS.GetMainDevice ();

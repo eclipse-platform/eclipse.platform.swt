@@ -267,7 +267,7 @@ public int getAccelerator () {
 	if ((parent.style & SWT.BAR) != 0) {
 		int index = parent.indexOf (this);
 		if (index == -1) return new Rectangle (0 ,0, 0, 0);
-		Menu menu = display.getMenuBar ();
+		Menu menu = display._getMenuBar ();
 		if (parent != menu) return new Rectangle (0 ,0, 0, 0);
 		int outMenuRef [] = new int [1];
 		if (OS.GetMenuItemHierarchicalMenu (menu.handle, (short)(index + 1), outMenuRef) != OS.noErr) {
