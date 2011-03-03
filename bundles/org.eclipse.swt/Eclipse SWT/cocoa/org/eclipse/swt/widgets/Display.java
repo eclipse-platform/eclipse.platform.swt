@@ -1961,7 +1961,7 @@ public Image getSystemImage (int id) {
  *
  * @since 3.7
  */
-public Menu getAppMenuBar () {
+public Menu getMenuBar () {
 	checkDevice ();
 	if (appMenuBar != null) return appMenuBar;
 	appMenuBar = new Menu (this);

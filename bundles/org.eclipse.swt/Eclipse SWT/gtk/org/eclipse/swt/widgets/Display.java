@@ -1695,7 +1695,7 @@ static boolean isValidClass (Class clazz) {
  *
  * @since 3.7
  */
-public Menu getAppMenuBar () {
+public Menu getMenuBar () {
 	checkDevice ();
 	return null;
 }

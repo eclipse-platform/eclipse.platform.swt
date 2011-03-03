@@ -35,7 +35,7 @@ public class Snippet347 {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout(1, false));
-		Menu appMenuBar = display.getAppMenuBar();
+		Menu appMenuBar = display.getMenuBar();
 		if (appMenuBar == null) {
 			appMenuBar = new Menu(shell, SWT.BAR);
 			shell.setMenuBar(appMenuBar);

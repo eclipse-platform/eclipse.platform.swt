@@ -11,8 +11,8 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Display snippet: slightly more complex example for getAppMenuBar() (compared to Snippet347)
- * Shows how to write a more cross-platform multi-window application using getAppMenuBar().
+ * Display snippet: slightly more complex example for Display.getMenuBar() (compared to Snippet347)
+ * Shows how to write a more cross-platform multi-window application using Display.getMenuBar().
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -28,7 +28,7 @@ public class Snippet348 {
 	static boolean createdScreenBar = false;
 	
 	static void createMenuBar(Shell s) {
-		Menu bar = Display.getCurrent().getAppMenuBar();
+		Menu bar = Display.getCurrent().getMenuBar();
 		boolean hasAppMenuBar = (bar != null);
 		if (bar == null) {
 			bar = new Menu(s, SWT.BAR);
@@ -86,7 +86,7 @@ public class Snippet348 {
 		shell.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
 				Display d = Display.getCurrent();
-				Menu bar = d.getAppMenuBar();
+				Menu bar = d.getMenuBar();
 				boolean hasAppMenuBar = (bar != null);
 				if (!hasAppMenuBar) {
 					shell.getMenuBar().dispose();
