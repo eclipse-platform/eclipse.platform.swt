@@ -212,6 +212,14 @@ Menu (Display display) {
 	createWidget();
 }
 
+Menu (Display display, NSMenu nativeMenu) {
+	this.display = display;
+	this.style = SWT.DROP_DOWN;
+	this.nsMenu = nativeMenu;
+	reskinWidget();
+	createWidget();
+}
+
 static Control checkNull (Control control) {
 	if (control == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return control;
@@ -328,30 +336,79 @@ public void addMenuListener (MenuListener listener) {
 
 void createHandle () {
 	display.addMenu (this);
-	NSMenu widget = (NSMenu)new SWTMenu().alloc();
-	widget = widget.initWithTitle(NSString.string());
-	widget.setAutoenablesItems(false);
-	widget.setDelegate(widget);	
-	nsMenu = widget;	
+	if (nsMenu == null) {
+		NSMenu widget = (NSMenu)new SWTMenu().alloc();
+		widget = widget.initWithTitle(NSString.string());
+		widget.setAutoenablesItems(false);
+		widget.setDelegate(widget);	
+		nsMenu = widget;	
+	} else {
+		nsMenu.retain();
+		int /*long*/ cls = OS.object_getClass(nsMenu.id);
+		int /*long*/ dynNSMenu_class = display.createMenuSubclass(cls, "SWTSystemMenu", true);
+		if (cls != dynNSMenu_class) {
+			OS.object_setClass(nsMenu.id, dynNSMenu_class);
+		}
+		nsMenu.setDelegate(nsMenu);	
+	}
 }
 
 void createItem (MenuItem item, int index) {
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
-	NSMenuItem nsItem = null;
-	if ((item.style & SWT.SEPARATOR) != 0) {
-		nsItem = NSMenuItem.separatorItem();
-		nsItem.retain();
+	boolean add = true;
+	NSMenuItem nsItem = item.nsItem;
+	if (nsItem == null) {
+		if ((item.style & SWT.SEPARATOR) != 0) {
+			nsItem = NSMenuItem.separatorItem();
+			nsItem.retain();
+		} else {
+			nsItem = (NSMenuItem)new SWTMenuItem().alloc();
+			NSString empty = NSString.string();
+			nsItem.initWithTitle(empty, 0, empty);
+			nsItem.setTarget(nsItem);
+			nsItem.setAction(OS.sel_sendSelection);
+		}
+		item.nsItem = nsItem;
 	} else {
-		nsItem = (NSMenuItem)new SWTMenuItem().alloc();
-		NSString empty = NSString.string();
-		nsItem.initWithTitle(empty, 0, empty);
+		int /*long*/ cls = OS.object_getClass(nsItem.id);
+		int /*long*/ dynNSMenuItem_class = display.createMenuItemSubclass(cls, "SWTSystemMenuItem", true);
+		if (cls != dynNSMenuItem_class) {
+			OS.object_setClass(nsItem.id, dynNSMenuItem_class);
+		}
+		nsItem.retain();
+		item.nsItemAction = nsItem.action();
+		item.nsItemTarget = nsItem.target();
 		nsItem.setTarget(nsItem);
 		nsItem.setAction(OS.sel_sendSelection);
+
+		// Sync native item type to Item's style.
+		int type = SWT.PUSH;
+		if (nsItem.isSeparatorItem()) type = SWT.SEPARATOR;
+		if (nsItem.submenu() != null) type = SWT.CASCADE;
+		item.style |= type;
+		
+		// Sync native item text to Item's text.
+		item.text = nsItem.title().getString();
+		
+		// Sync native key equivalent to MenuItem's accelerator.
+		// The system menu on OS X only uses command and option, so it's
+		// safe to just check for those two key masks.
+		int /*long*/ keyMask = nsItem.keyEquivalentModifierMask();
+		NSString keyEquivString = nsItem.keyEquivalent();
+		int /*long*/ keyEquiv = 0;
+		if (keyEquivString != null) {
+			keyEquiv = keyEquivString.characterAtIndex(0);
+			if ((keyMask & OS.NSCommandKeyMask) != 0) keyEquiv |= SWT.COMMAND;
+			if ((keyMask & OS.NSAlternateKeyMask) != 0) keyEquiv |= SWT.ALT;
+			item.accelerator = (int) keyEquiv;
+		}
+		add = false;
 	}
-	item.nsItem = nsItem;
 	item.createJNIRef();
 	item.register();
-	nsMenu.insertItem(nsItem, index);
+	if (add) {
+		nsMenu.insertItem(nsItem, index);
+	}
 	if (itemCount == items.length) {
 		MenuItem [] newItems = new MenuItem [items.length + 4];
 		System.arraycopy (items, 0, newItems, 0, items.length);
@@ -359,17 +416,19 @@ void createItem (MenuItem item, int index) {
 	}
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
-	NSMenu emptyMenu = item.createEmptyMenu ();
-	if (emptyMenu != null) {
-		nsItem.setSubmenu (emptyMenu);
-		emptyMenu.release();
-	}
-	if (display.menuBar == this) {
-		NSApplication application = display.application;
-		NSMenu menubar = application.mainMenu();
-		if (menubar != null) {
-			nsItem.setMenu(null);
-			menubar.insertItem(nsItem, index + 1);
+	if (add) {
+		NSMenu emptyMenu = item.createEmptyMenu ();
+		if (emptyMenu != null) {
+			nsItem.setSubmenu (emptyMenu);
+			emptyMenu.release();
+		}
+		if (display.menuBar == this) {
+			NSApplication application = display.application;
+			NSMenu menubar = application.mainMenu();
+			if (menubar != null) {
+				nsItem.setMenu(null);
+				menubar.insertItem(nsItem, index + 1);
+			}
 		}
 	}
 	//TODO - find a way to disable the menu instead of each item

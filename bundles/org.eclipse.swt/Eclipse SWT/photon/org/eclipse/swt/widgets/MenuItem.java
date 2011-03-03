@@ -38,7 +38,7 @@ import org.eclipse.swt.events.*;
  */
 public class MenuItem extends Item {
 	Menu parent, menu;
-	int accelerator;
+	int accelerator, userId;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -316,6 +316,21 @@ public boolean getEnabled () {
 //	int topHandle = topHandle ();
 //	return (OS.PtWidgetFlags (topHandle) & OS.Pt_BLOCKED) == 0;
 	return (state & DISABLED) == 0;
+}
+
+/**
+ * Gets the identifier associated with the receiver.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.7
+ */
+public int getID () {
+	checkWidget();
+	return userId;
 }
 
 /**
@@ -643,6 +658,25 @@ public void setEnabled (boolean enabled) {
 	int topHandle = topHandle ();
 	int flags = (state & DISABLED) != 0 ? OS.Pt_BLOCKED | OS.Pt_GHOST : 0;
 	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
+}
+
+/**
+ * Sets the identifier associated with the receiver to the argument.
+ *
+ * @param id the new identifier. This must be a non-negative value. System-defined identifiers are negative values.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if called with an negative-valued argument.</li>
+ * </ul>
+ * 
+ * @since 3.7
+ */
+public void setID (int id) {
+	checkWidget();
+	if (id < 0) error(SWT.ERROR_INVALID_ARGUMENT);
+	userId = id;
 }
 
 /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,6 +24,10 @@ public NSMenuItem(id id) {
 	super(id);
 }
 
+public int /*long*/ action() {
+	return OS.objc_msgSend(this.id, OS.sel_action);
+}
+
 public NSAttributedString attributedTitle() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_attributedTitle);
 	return result != 0 ? new NSAttributedString(result) : null;
@@ -41,6 +45,10 @@ public NSMenuItem initWithTitle(NSString aString, int /*long*/ aSelector, NSStri
 
 public boolean isHidden() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isHidden);
+}
+
+public boolean isSeparatorItem() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_isSeparatorItem);
 }
 
 public NSString keyEquivalent() {
@@ -116,6 +124,15 @@ public int /*long*/ state() {
 public NSMenu submenu() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_submenu);
 	return result != 0 ? new NSMenu(result) : null;
+}
+
+public int /*long*/ tag() {
+	return OS.objc_msgSend(this.id, OS.sel_tag);
+}
+
+public id target() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_target);
+	return result != 0 ? new id(result) : null;
 }
 
 public NSString title() {

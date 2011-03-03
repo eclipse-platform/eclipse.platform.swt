@@ -197,7 +197,7 @@ public class Display extends Device {
 	Menu trayItemMenu;
 	
 	/* Main menu bar and application menu */
-	Menu appMenuBar;
+	Menu appMenuBar, appMenu;
 
 	/* TaskBar */
 	TaskBar taskBar;
@@ -1974,6 +1974,36 @@ public Menu getAppMenuBar () {
 }
 
 /**
+ * Returns the single instance of the system-provided menu for the application.
+ * On platforms where no menu is provided for the application this method returns null.
+ *
+ * @return the system menu or <code>null</code>
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.7
+ */
+public Menu getSystemMenu () {
+	checkDevice();
+	if (appMenu == null) {
+		NSMenu mainMenu = NSApplication.sharedApplication().mainMenu();
+		NSMenu nsAppMenu = mainMenu.itemAtIndex(0).submenu();
+		appMenu = new Menu(this, nsAppMenu);
+
+		// Create menu items that correspond to the NSMenuItems.
+		int /*long*/ nsCount = nsAppMenu.numberOfItems();
+		for (int j = 0; j < nsCount; j++) {
+			NSMenuItem currMenuItem = nsAppMenu.itemAtIndex(j);
+			new MenuItem(appMenu, currMenuItem);
+		}
+	}
+	return appMenu;
+}
+
+/**
  * Returns the single instance of the system tray or null
  * when there is no system tray available for the platform.
  *
@@ -2136,11 +2166,17 @@ protected void init () {
 	}
 	
 	/*
-	 * Call init to force the AWT delegate to re-attach itself to the application menu. 
+	 * Call init to force the AWT delegate to re-attach itself to the application menu.
+	 * The Preferences item must have a tag of 42 or the AWT delegate won't be able to find it. 
+	 * Reset it to what we want it to be after the delegate is set up.
 	 */
+	NSMenu appleMenu = application.mainMenu().itemAtIndex(0).submenu();
+	NSMenuItem prefsItem = appleMenu.itemWithTag(SWT.ID_PREFERENCES);
+	prefsItem.setTag(42);
 	if (currAppDelegate != null) {
 		currAppDelegate.init();
 	} 
+	prefsItem.setTag(SWT.ID_PREFERENCES);
 	
 	observerCallback = new Callback (this, "observerProc", 3); //$NON-NLS-1$
 	int /*long*/ observerProc = observerCallback.getAddress ();
@@ -2286,6 +2322,32 @@ int /*long*/ createWindowSubclass(int /*long*/ baseClass, String newClass, boole
 	OS.class_addMethod(cls, OS.sel_noResponderFor_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_view_stringForToolTip_point_userData_, view_stringForToolTip_point_userDataProc, "@:@i{NSPoint}@");
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
+	OS.objc_registerClassPair(cls);
+	return cls;	
+}
+
+int /*long*/ createMenuSubclass(int /*long*/ baseClass, String newClass, boolean isDynamic) {
+	int /*long*/ cls = OS.objc_lookUpClass(newClass);
+	if (cls != 0) return cls;
+	cls = OS.objc_allocateClassPair(baseClass, newClass, 0);
+	int /*long*/ proc3 = windowCallback3.getAddress();
+	int /*long*/ proc4 = windowCallback4.getAddress();
+	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_menuWillOpen_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_menuDidClose_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_menu_willHighlightItem_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_menuNeedsUpdate_, proc3, "@:@");
+	OS.objc_registerClassPair(cls);
+	return cls;	
+}
+
+int /*long*/ createMenuItemSubclass(int /*long*/ baseClass, String newClass, boolean isDynamic) {
+	int /*long*/ cls = OS.objc_lookUpClass(newClass);
+	if (cls != 0) return cls;
+	cls = OS.objc_allocateClassPair(baseClass, newClass, 0);
+	int /*long*/ proc2 = windowCallback2.getAddress();
+	if (!isDynamic) OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 	return cls;	
 }
@@ -2493,20 +2555,8 @@ void initClasses () {
 	OS.class_addMethod (cls, OS.sel_expansionFrameWithFrame_inView_, expansionFrameWithFrameProc, "@:{NSRect}@");
 	OS.objc_registerClassPair (cls);
 
-	className = "SWTMenu";
-	cls = OS.objc_allocateClassPair(OS.class_NSMenu, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	OS.class_addMethod(cls, OS.sel_menuWillOpen_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_menuDidClose_, proc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_menu_willHighlightItem_, proc4, "@:@@");
-	OS.class_addMethod(cls, OS.sel_menuNeedsUpdate_, proc3, "@:@");
-	OS.objc_registerClassPair(cls);
-	
-	className = "SWTMenuItem";
-	cls = OS.objc_allocateClassPair(OS.class_NSMenuItem, className, 0);
-	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
-	OS.class_addMethod(cls, OS.sel_sendSelection, proc2, "@:");
-	OS.objc_registerClassPair(cls);
+	createMenuSubclass(OS.class_NSMenu, "SWTMenu", false);
+	createMenuItemSubclass(OS.class_NSMenuItem, "SWTMenuItem", false);
 
 	className = "SWTOutlineView";
 	cls = OS.objc_allocateClassPair(OS.class_NSOutlineView, className, 0);
@@ -3614,6 +3664,8 @@ protected void release () {
 	disposeList = null;
 	synchronizer.releaseSynchronizer ();
 	synchronizer = null;
+	if (appMenu != null) appMenu.dispose();
+	appMenu = null;
 	if (appMenuBar != null) appMenuBar.dispose();
 	appMenuBar = null;
 	releaseDisplay ();
@@ -4993,6 +5045,28 @@ void applicationWillFinishLaunching (int /*long*/ id, int /*long*/ sel, int /*lo
 			NSMenuItem ni = new NSMenuItem(ia.objectAtIndex(i));
 			NSString title = ni.title().stringByReplacingOccurrencesOfString(match, name);
 			ni.setTitle(title);
+			int /*long*/ newTag = 0;
+			switch(i) {
+				case 0:
+					newTag = SWT.ID_ABOUT;
+					break;
+				case 2:
+					newTag = SWT.ID_PREFERENCES;
+					break;
+				case 6:
+					newTag = SWT.ID_HIDE;
+					break;
+				case 7:
+					newTag = SWT.ID_HIDE_OTHERS;
+					break;
+				case 8:
+					newTag = SWT.ID_SHOW_ALL;
+					break;
+				case 10:
+					newTag = SWT.ID_QUIT;
+					break;
+			}
+			if (newTag != 0) ni.setTag(newTag);
 		}
 
 		int /*long*/ quitIndex = sm.indexOfItemWithTarget(applicationDelegate, OS.sel_terminate_);

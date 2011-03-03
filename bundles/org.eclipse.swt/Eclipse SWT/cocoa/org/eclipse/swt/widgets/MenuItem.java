@@ -40,6 +40,8 @@ public class MenuItem extends Item {
 	NSMenuItem nsItem;
 	Menu parent, menu;
 	int accelerator;
+	int /*long*/ nsItemAction;
+	id nsItemTarget;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -121,6 +123,13 @@ public MenuItem (Menu parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	parent.createItem (this, index);
+}
+
+MenuItem (Menu parent, NSMenuItem nsMenuItem) {
+	super(parent, 0);
+	this.parent = parent;
+	this.nsItem = nsMenuItem;	
+	parent.createItem(this, parent.getItemCount ());
 }
 
 /**
@@ -276,6 +285,21 @@ public int getAccelerator () {
 public boolean getEnabled () {
 	checkWidget();
 	return (state & DISABLED) == 0;
+}
+
+/**
+ * Gets the identifier associated with the receiver.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.7
+ */
+public int getID () {
+	checkWidget();
+	return (int)nsItem.tag();
 }
 
 /**
@@ -535,7 +559,15 @@ void sendSelection () {
 			}
 		}
 	}
-	sendSelectionEvent (SWT.Selection);
+
+	Event event = new Event ();
+	sendSelectionEvent (SWT.Selection, event, nsItemAction != 0);
+	if (nsItemAction != 0) {
+		if (event.doit) {
+			NSApplication app = NSApplication.sharedApplication();
+			app.sendAction(nsItemAction, nsItemTarget, app);
+		}
+	}
 }
 
 /**
@@ -594,6 +626,25 @@ public void setEnabled (boolean enabled) {
 		state |= DISABLED;
 	}
 	nsItem.setEnabled(enabled);
+}
+
+/**
+ * Sets the identifier associated with the receiver to the argument.
+ *
+ * @param id the new identifier. This must be a non-negative value. System-defined identifiers are negative values.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if called with an negative-valued argument.</li>
+ * </ul>
+ * 
+ * @since 3.7
+ */
+public void setID (int id) {
+	checkWidget();
+	if (id < 0) error(SWT.ERROR_INVALID_ARGUMENT);
+	nsItem.setTag(id);
 }
 
 /**

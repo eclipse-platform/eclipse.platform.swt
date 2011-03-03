@@ -38,6 +38,7 @@ import org.eclipse.swt.events.*;
 
 public class MenuItem extends Item {
 	Menu parent, menu;
+	int userId;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -314,6 +315,21 @@ public boolean getEnabled () {
 }
 
 /**
+ * Gets the identifier associated with the receiver.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.7
+ */
+public int getID () {
+	checkWidget();
+	return userId;
+}
+
+/**
  * Returns the receiver's cascade menu if it has one or null
  * if it does not. Only <code>CASCADE</code> menu items can have
  * a pull down menu. The sequence of key strokes, button presses 
@@ -584,6 +600,25 @@ public void setAccelerator (int accelerator) {
 public void setEnabled (boolean enabled) {
 	checkWidget ();
 	OS.UIElement_IsEnabled (handle, enabled);
+}
+
+/**
+ * Sets the identifier associated with the receiver to the argument.
+ *
+ * @param id the new identifier. This must be a non-negative value. System-defined identifiers are negative values.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if called with an negative-valued argument.</li>
+ * </ul>
+ * 
+ * @since 3.7
+ */
+public void setID (int id) {
+	checkWidget();
+	if (id < 0) error(SWT.ERROR_INVALID_ARGUMENT);
+	userId = id;
 }
 
 /**

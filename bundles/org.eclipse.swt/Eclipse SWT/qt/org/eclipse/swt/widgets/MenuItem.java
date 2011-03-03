@@ -55,7 +55,7 @@ import org.eclipse.swt.internal.qt.QtSWTConverter;
 public class MenuItem extends Item {
 	private QAction action;
 	Menu parent, menu;
-	int id, accelerator;
+	int id, accelerator, userId;
 
 	private HashMap<Integer, Integer> modifiers = new HashMap<Integer, Integer>();
 	private HashMap<Integer, Integer> accelerators = new HashMap<Integer, Integer>();
@@ -444,6 +444,21 @@ public class MenuItem extends Item {
 	}
 
 	/**
+	 * Gets the identifier associated with the receiver.
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+	 * </ul>
+	 * 
+	 * @since 3.7
+	 */
+	public int getID () {
+			checkWidget();
+			return userId;
+	 }
+
+	/**
 	 * Returns the receiver's cascade menu if it has one or null if it does not.
 	 * Only <code>CASCADE</code> menu items can have a pull down menu. The
 	 * sequence of key strokes, button presses and/or button releases that are
@@ -804,6 +819,25 @@ public class MenuItem extends Item {
 	}
 
 	/**
+	 * Sets the identifier associated with the receiver to the argument.
+	 *
+	 * @param id the new identifier. This must be a non-negative value. System-defined identifiers are negative values.
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+	 *    <li>ERROR_INVALID_ARGUMENT - if called with an negative-valued argument.</li>
+	 * </ul>
+	 * 
+	 * @since 3.7
+	 */
+	public void setID (int id) {
+		checkWidget();
+		if (id < 0) error(SWT.ERROR_INVALID_ARGUMENT);
+		userId = id;
+	 }
+
+	 /**
 	 * Sets the image the receiver will display to the argument.
 	 * <p>
 	 * Note: This operation is a hint and is not supported on platforms that do

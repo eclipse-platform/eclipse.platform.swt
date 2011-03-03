@@ -1806,6 +1806,10 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="itemWithTag:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="numberOfItems" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -1842,6 +1846,9 @@
 		</method>
 	</class>
 	<class name="NSMenuItem" swt_gen="mixed">
+		<method selector="action" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="attributedTitle" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -1855,6 +1862,9 @@
 			<retval swt_gen="true" swt_java_type="NSMenuItem"></retval>
 		</method>
 		<method selector="isHidden" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="isSeparatorItem" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="keyEquivalent" swt_gen="true">
@@ -1922,6 +1932,12 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="submenu" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="tag" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="target" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="title" swt_gen="true">
@@ -3601,9 +3617,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="defaultParagraphStyle" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="didChangeText" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="dragSelectionWithEvent:offset:slideBack:" swt_gen="true" swt_gen_custom_callback="true">

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -57,6 +57,11 @@ public NSArray itemArray() {
 
 public NSMenuItem itemAtIndex(int /*long*/ index) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_itemAtIndex_, index);
+	return result != 0 ? new NSMenuItem(result) : null;
+}
+
+public NSMenuItem itemWithTag(int /*long*/ tag) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_itemWithTag_, tag);
 	return result != 0 ? new NSMenuItem(result) : null;
 }
 

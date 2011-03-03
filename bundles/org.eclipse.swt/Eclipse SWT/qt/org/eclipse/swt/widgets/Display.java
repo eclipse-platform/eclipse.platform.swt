@@ -1559,6 +1559,24 @@ public class Display extends Device {
 	}
 
 	/**
+	 * Returns the single instance of the system-provided menu for the application.
+	 * On platforms where no menu is provided for the application this method returns null.
+	 *
+	 * @return the system menu or <code>null</code>
+	 * 
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+	 *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+	 * </ul>
+	 *
+	 * @since 3.7
+	 */
+	public Menu getSystemMenu() {
+		checkDevice();
+		return null;
+	}
+
+	/**
 	 * Returns the single instance of the system tray or null when there is no
 	 * system tray available for the platform.
 	 * 
