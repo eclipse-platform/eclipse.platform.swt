@@ -7528,6 +7528,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1button_1set_1relief)
 }
 #endif
 
+#ifndef NO__1gtk_1calendar_1clear_1marks
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1calendar_1clear_1marks)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1calendar_1clear_1marks_FUNC);
+/*
+	gtk_calendar_clear_marks((GtkCalendar *)arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_calendar_clear_marks)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCalendar *))fp)((GtkCalendar *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1calendar_1clear_1marks_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1calendar_1display_1options
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1calendar_1display_1options)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
@@ -7571,6 +7589,24 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1calendar_1get_1date_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1calendar_1mark_1day
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1calendar_1mark_1day)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1calendar_1mark_1day_FUNC);
+/*
+	gtk_calendar_mark_day((GtkCalendar *)arg0, (guint)arg1);
+*/
+	{
+		LOAD_FUNCTION(fp, gtk_calendar_mark_day)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCalendar *, guint))fp)((GtkCalendar *)arg0, (guint)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1calendar_1mark_1day_FUNC);
 }
 #endif
 
