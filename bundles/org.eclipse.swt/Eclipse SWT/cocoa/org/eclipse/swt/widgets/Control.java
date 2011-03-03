@@ -1162,7 +1162,10 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 		NSEvent event = application.nextEventMatchingMask((OS.NSLeftMouseUpMask | OS.NSLeftMouseDraggedMask),
 				timeout, OS.NSEventTrackingRunLoopMode, true);
 		// No event means nextEventMatchingMask timed out, so no drag.
-		if (event == null) break;
+		if (event == null) {
+			dragging = true;
+			break;
+		}
 		eventType = event.type();
 		
 		if (eventType == OS.NSLeftMouseDragged) {
