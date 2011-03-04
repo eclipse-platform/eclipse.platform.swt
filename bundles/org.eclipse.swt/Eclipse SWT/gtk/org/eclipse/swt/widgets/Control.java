@@ -3663,11 +3663,11 @@ void setBackgroundColor (int /*long*/ handle, GdkColor color) {
 	int flags = OS.gtk_rc_style_get_color_flags (style, index);
 	if (color != null) {
 		flags |= OS.GTK_RC_BG;
-		pixmapName = "<none>";
+		pixmapName = "<none>"; //$NON-NLS-1$
 	} else {
 		flags &= ~OS.GTK_RC_BG;
 		if (backgroundImage == null && (state & PARENT_BACKGROUND) != 0) {
-			pixmapName = "<parent>";
+			pixmapName = "<parent>"; //$NON-NLS-1$
 		}
 	}
 	if (pixmapName != null) {
