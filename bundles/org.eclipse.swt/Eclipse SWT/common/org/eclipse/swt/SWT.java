@@ -3979,8 +3979,8 @@ public class SWT {
 	/**
 	 * ID for the About menu item
 	 * 
-	 * @see org.eclipse.swt.widgets.MenuItem#setId(int)
-	 * @see org.eclipse.swt.widgets.MenuItem#getId()
+	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
+	 * @see org.eclipse.swt.widgets.MenuItem#getID()
 	 * 
 	 * @since 3.7
 	 */
@@ -3989,8 +3989,8 @@ public class SWT {
 	/**
 	 * ID for the Preferences menu item
 	 * 
-	 * @see org.eclipse.swt.widgets.MenuItem#setId(int)
-	 * @see org.eclipse.swt.widgets.MenuItem#getId()
+	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
+	 * @see org.eclipse.swt.widgets.MenuItem#getID()
 	 * 
 	 * @since 3.7
 	 */
@@ -3999,8 +3999,8 @@ public class SWT {
 	/**
 	 * ID for the Hide menu item
 	 * 
-	 * @see org.eclipse.swt.widgets.MenuItem#setId(int)
-	 * @see org.eclipse.swt.widgets.MenuItem#getId()
+	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
+	 * @see org.eclipse.swt.widgets.MenuItem#getID()
 	 * 
 	 * @since 3.7
 	 */
@@ -4009,8 +4009,8 @@ public class SWT {
 	/**
 	 * ID for the Hide Others menu item
 	 * 
-	 * @see org.eclipse.swt.widgets.MenuItem#setId(int)
-	 * @see org.eclipse.swt.widgets.MenuItem#getId()
+	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
+	 * @see org.eclipse.swt.widgets.MenuItem#getID()
 	 * 
 	 * @since 3.7
 	 */
@@ -4019,8 +4019,8 @@ public class SWT {
 	/**
 	 * ID for the Show All menu item
 	 * 
-	 * @see org.eclipse.swt.widgets.MenuItem#setId(int)
-	 * @see org.eclipse.swt.widgets.MenuItem#getId()
+	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
+	 * @see org.eclipse.swt.widgets.MenuItem#getID()
 	 * 
 	 * @since 3.7
 	 */
@@ -4029,8 +4029,8 @@ public class SWT {
 	/**
 	 * ID for the Quit menu item
 	 * 
-	 * @see org.eclipse.swt.widgets.MenuItem#setId(int)
-	 * @see org.eclipse.swt.widgets.MenuItem#getId()
+	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
+	 * @see org.eclipse.swt.widgets.MenuItem#getID()
 	 * 
 	 * @since 3.7
 	 */
