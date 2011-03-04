@@ -456,6 +456,7 @@ public void setVisible (boolean visible) {
 void displayMenu () {
 	if (highlight) {
 		Cocoa.objc_msgSend(view, Cocoa.S_display);
+		Display display = this.display;
 		display.trayItemMenu = null;
 		showMenu();
 		if (display.trayItemMenu != null) {
