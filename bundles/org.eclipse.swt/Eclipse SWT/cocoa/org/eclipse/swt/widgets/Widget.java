@@ -1850,10 +1850,10 @@ void setObjectValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	callSuper(id, sel, arg0);
 }
 
-void setShouldExpandItem(int  /*long*/ id, int  /*long*/ sel, boolean shouldExpand) {
+void setShouldExpandItem(int /*long*/ id, int /*long*/ sel, boolean shouldExpand) {
 }
 
-void setShouldScrollClipView(int  /*long*/ id, int  /*long*/ sel, boolean shouldScroll) {
+void setShouldScrollClipView(int /*long*/ id, int /*long*/ sel, boolean shouldScroll) {
 }
 
 boolean setTabGroupFocus () {

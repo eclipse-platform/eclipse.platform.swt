@@ -2820,7 +2820,7 @@ public void setSelection (TableItem [] items) {
 	}
 }
 
-void setShouldScrollClipView(int  /*long*/ id, int  /*long*/ sel, boolean shouldScroll) {
+void setShouldScrollClipView(int /*long*/ id, int /*long*/ sel, boolean shouldScroll) {
 	this.shouldScroll = shouldScroll;
 }
 
