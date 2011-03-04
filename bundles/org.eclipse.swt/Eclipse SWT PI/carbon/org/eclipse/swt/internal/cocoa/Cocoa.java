@@ -242,6 +242,8 @@ public static final int S_setHTTPMethod = Cocoa.sel_registerName("setHTTPMethod:
 public static final int S_setCustomUserAgent = Cocoa.sel_registerName("setCustomUserAgent:"); //$NON-NLS-1$
 public static final int S_setValueForHTTPHeaderField = Cocoa.sel_registerName("setValue:forHTTPHeaderField:"); //$NON-NLS-1$
 public static final int S_locationInWindow = sel_registerName("locationInWindow");
+public static final int S_setUserData = Cocoa.sel_registerName("setUserData:"); //$NON-NLS-1$
+public static final int S_setProc = Cocoa.sel_registerName("setProc:"); //$NON-NLS-1$
 
 public static final int NSAlphaFirstBitmapFormat = 1 << 0;
 public static final int NSAlphaNonpremultipliedBitmapFormat = 1 << 1;

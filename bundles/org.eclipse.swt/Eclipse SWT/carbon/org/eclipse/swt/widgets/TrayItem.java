@@ -275,7 +275,11 @@ void releaseWidget () {
 	Cocoa.objc_msgSend (statusBar, Cocoa.S_removeStatusItem, handle);
 	Cocoa.objc_msgSend (handle, Cocoa.S_release);
 	if (nsImage != 0) Cocoa.objc_msgSend (nsImage, Cocoa.S_release);
-	if (view != 0) Cocoa.objc_msgSend (view, Cocoa.S_release);
+	if (view != 0) {
+		Cocoa.objc_msgSend(view, Cocoa.S_setUserData, 0);
+		Cocoa.objc_msgSend(view, Cocoa.S_setProc, 0);
+		Cocoa.objc_msgSend (view, Cocoa.S_release);
+	}
 	if (jniRef != 0) OS.DeleteGlobalRef (jniRef);
 	handle = nsImage = view = jniRef = 0;
 }

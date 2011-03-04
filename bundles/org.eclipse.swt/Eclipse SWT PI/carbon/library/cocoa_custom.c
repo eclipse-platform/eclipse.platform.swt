@@ -66,40 +66,48 @@ fail:
     return self;
 }
 
+- (void)setUserData:(int)data {
+    user_data = data;
+}
+
+- (void)setProc:(id)prc {
+    proc= (void *) prc;
+}
+
 - (void)mouseDown:(NSEvent *)event
 {
-	proc((int)self, user_data, 0, event);
+	if (proc) proc((int)self, user_data, 0, event);
 }
 
 - (void)mouseUp:(NSEvent *)event
 {
-	proc((int)self, user_data, 1, event);
+	if (proc) proc((int)self, user_data, 1, event);
 }
 
 - (void)rightMouseDown:(NSEvent *)event
 {
-	proc((int)self, user_data, 2, event);
+	if (proc) proc((int)self, user_data, 2, event);
 }
 
 - (void)drawRect:(NSRect) rect
 {
-	proc((int)self, user_data, 3, &rect);
+	if (proc) proc((int)self, user_data, 3, &rect);
 	[super drawRect: rect];
 }
 
 - (void)rightMouseUp:(NSEvent *)event
 {
-	proc((int)self, user_data, 4, event);
+	if (proc) proc((int)self, user_data, 4, event);
 }
 
 - (void)mouseDragged:(NSEvent *)event
 {
-	proc((int)self, user_data, 5, event);
+	if (proc) proc((int)self, user_data, 5, event);
 }
 
 - (void)rightMouseDragged:(NSEvent *)event
 {
-	proc((int)self, user_data, 6, event);
+	if (proc) proc((int)self, user_data, 6, event);
 }
 @end
 
