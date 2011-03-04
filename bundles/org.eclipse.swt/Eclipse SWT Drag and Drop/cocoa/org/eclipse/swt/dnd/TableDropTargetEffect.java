@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -43,7 +44,8 @@ import org.eclipse.swt.widgets.*;
  * @since 3.3
  */
 public class TableDropTargetEffect extends DropTargetEffect {
-	
+	boolean shouldEnableScrolling;
+
 	/**
 	 * Creates a new <code>TableDropTargetEffect</code> to handle the drag under effect on the specified 
 	 * <code>Table</code>.
@@ -93,6 +95,11 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	 * @see DropTargetEvent
 	 */
 	public void dragLeave(DropTargetEvent event) {
+		if (shouldEnableScrolling) {
+			shouldEnableScrolling = false;
+			OS.objc_msgSend(control.view.id, OS.sel_setShouldScrollClipView_, 1);
+			control.redraw();
+		}
 	}
 
 	/**
@@ -115,5 +122,11 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	public void dragOver(DropTargetEvent event) {
 		int effect = checkEffect(event.feedback);
 		((DropTarget)event.widget).feedback = effect;
+		if ((effect & DND.FEEDBACK_SCROLL) == 0) {
+			shouldEnableScrolling = true;
+			OS.objc_msgSend(control.view.id, OS.sel_setShouldScrollClipView_, 0);
+		} else {
+			OS.objc_msgSend(control.view.id, OS.sel_setShouldScrollClipView_, 1);
+		}
 	}
 }

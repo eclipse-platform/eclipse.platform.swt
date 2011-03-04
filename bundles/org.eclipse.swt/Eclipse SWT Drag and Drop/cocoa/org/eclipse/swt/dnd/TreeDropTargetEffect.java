@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -46,6 +47,7 @@ import org.eclipse.swt.widgets.*;
  * @since 3.3
  */
 public class TreeDropTargetEffect extends DropTargetEffect {
+	boolean shouldEnableScrolling;
 
 	/**
 	 * Creates a new <code>TreeDropTargetEffect</code> to handle the drag under effect on the specified 
@@ -96,6 +98,12 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	 * @see DropTargetEvent
 	 */
 	public void dragLeave(DropTargetEvent event) {
+		OS.objc_msgSend(control.view.id, OS.sel_setShouldExpandItem_, 1);
+		if (shouldEnableScrolling) {
+			shouldEnableScrolling = false;
+			OS.objc_msgSend(control.view.id, OS.sel_setShouldScrollClipView_, 1);
+			control.redraw();
+		}
 	}
 
 	/**
@@ -119,5 +127,12 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	public void dragOver(DropTargetEvent event) {
 		int effect = checkEffect(event.feedback);		
 		((DropTarget)event.widget).feedback = effect;
+		OS.objc_msgSend(control.view.id, OS.sel_setShouldExpandItem_, (effect & DND.FEEDBACK_EXPAND) == 0 ? 0 : 1);
+		if ((effect & DND.FEEDBACK_SCROLL) == 0) {
+			shouldEnableScrolling = true;
+			OS.objc_msgSend(control.view.id, OS.sel_setShouldScrollClipView_, 0);
+		} else {
+			OS.objc_msgSend(control.view.id, OS.sel_setShouldScrollClipView_, 1);
+		}
 	}
 }

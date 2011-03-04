@@ -1194,6 +1194,10 @@ int /*long*/ outlineView_numberOfChildrenOfItem(int /*long*/ id, int /*long*/ se
 	return 0;
 }
 
+boolean outlineView_shouldExpandItem_item(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ item) {
+	return true;
+}
+
 boolean outlineView_shouldReorderColumn_toColumn(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ columnIndex, int /*long*/ newColumnIndex) {
 	return true;
 }
@@ -1844,6 +1848,12 @@ void setNeedsDisplayInRect (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0
 
 void setObjectValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	callSuper(id, sel, arg0);
+}
+
+void setShouldExpandItem(int  /*long*/ id, int  /*long*/ sel, boolean shouldExpand) {
+}
+
+void setShouldScrollClipView(int  /*long*/ id, int  /*long*/ sel, boolean shouldScroll) {
 }
 
 boolean setTabGroupFocus () {

@@ -77,6 +77,9 @@ public class Table extends Composite {
 	int columnCount, itemCount, lastIndexOf, sortDirection;
 	boolean ignoreSelect, fixScrollWidth, drawExpansion, didSelect;
 	Rectangle imageBounds;
+	
+	/* Used to control drop feedback when FEEDBACK_SCROLL is set/not set */
+	boolean shouldScroll = true;
 
 	static int NEXT_ID;
 
@@ -2240,6 +2243,10 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
+void scrollClipViewToPoint(int /*long*/ id, int  /*long*/ sel, int  /*long*/ clipView, NSPoint point) {
+	if (shouldScroll) super.scrollClipViewToPoint(id, sel, clipView, point);
+}
+
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains
@@ -2811,6 +2818,10 @@ public void setSelection (TableItem [] items) {
 		select (indices);
 		showIndex (indices [0]);
 	}
+}
+
+void setShouldScrollClipView(int  /*long*/ id, int  /*long*/ sel, boolean shouldScroll) {
+	this.shouldScroll = shouldScroll;
 }
 
 /**

@@ -87,6 +87,9 @@ public class Tree extends Composite {
 	Rectangle imageBounds;
 	TreeItem insertItem;
 	boolean insertBefore;
+	
+	/* Used to control drop feedback when DND.FEEDBACK_EXPAND and DND.FEEDBACK_SCROLL is set/not set */
+	boolean shouldExpand = true, shouldScroll = true;
 
 	static int NEXT_ID;
 
@@ -2079,6 +2082,10 @@ int /*long*/ outlineView_numberOfChildrenOfItem (int /*long*/ id, int /*long*/ s
 	return ((TreeItem) display.getWidget (item)).itemCount;
 }
 
+boolean outlineView_shouldExpandItem_item (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int arg1) {
+	return shouldExpand;
+}
+
 boolean outlineView_shouldReorderColumn_toColumn(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ currentColIndex, int /*long*/ newColIndex) {
 	// Check column should never move and no column can be dragged to the left of it, if present.
 	if ((style & SWT.CHECK) != 0) {
@@ -2281,6 +2288,10 @@ void outlineViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/
 			if (isDisposed ()) return;
 		}
 	}
+}
+
+void scrollClipViewToPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ clipView, NSPoint point) {
+	if (shouldScroll) super.scrollClipViewToPoint(id, sel, clipView, point);
 }
 
 void sendSelection () {
@@ -2935,6 +2946,14 @@ boolean setScrollWidth (TreeItem item) {
 		return true;
 	}
 	return false;
+}
+
+void setShouldExpandItem (int /*long*/ id, int /*long*/ sel, boolean shouldExpand) {
+	this.shouldExpand = shouldExpand;
+}
+
+void setShouldScrollClipView (int /*long*/ id, int /*long*/ sel, boolean shouldScroll) {
+	this.shouldScroll = shouldScroll;
 }
 
 /**

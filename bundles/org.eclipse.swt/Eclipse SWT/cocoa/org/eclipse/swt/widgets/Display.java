@@ -2575,6 +2575,9 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_setObjectValue_forTableColumn_byItem_, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_shouldEditTableColumn_item_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_shouldTrackCell_forTableColumn_item_, proc6, "@:@@@i");
+	OS.class_addMethod(cls, OS.sel_outlineView_shouldExpandItem_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_setShouldExpandItem_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_setShouldScrollClipView_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineViewColumnDidResize_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineView_didClickTableColumn_, proc4, "@:@@");
@@ -2749,6 +2752,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableView_setObjectValue_forTableColumn_row_, proc6, "@:@@@i");
 	OS.class_addMethod(cls, OS.sel_tableViewColumnDidMove_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableViewColumnDidResize_, proc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_setShouldScrollClipView_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_didClickTableColumn_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_tableView_selectionIndexesForProposedSelection_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_canDragRowsWithIndexes_atPoint_, canDragRowsWithIndexes_atPoint_Proc, "@:@{NSPoint=ff}");
@@ -5661,6 +5665,10 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		widget.viewWillMoveToWindow(id, sel, arg0);
 	} else if (sel == OS.sel_cancelOperation_) {
 		widget.cancelOperation(id, sel, arg0);
+	} else if (sel == OS.sel_setShouldExpandItem_) {
+		widget.setShouldExpandItem(id, sel, arg0 != 0);
+	} else if (sel == OS.sel_setShouldScrollClipView_) {
+		widget.setShouldScrollClipView(id, sel, arg0 != 0);
 	}
 	return 0;
 }
@@ -5728,6 +5736,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		return widget.validRequestorForSendType(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_writeSelectionToPasteboard_types_) {
 		return (widget.writeSelectionToPasteboard(id, sel, arg0, arg1) ? 1 : 0);
+	} else if (sel == OS.sel_outlineView_shouldExpandItem_) {
+		return (widget.outlineView_shouldExpandItem_item(id, sel, arg0, arg1) ? 1 : 0);
 	}
 	return 0;
 }

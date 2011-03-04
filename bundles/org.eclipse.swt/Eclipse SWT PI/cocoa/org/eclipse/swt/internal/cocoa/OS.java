@@ -107,6 +107,9 @@ public class OS extends C {
 
 	public static final int /*long*/ sel_clearDeferFlushing = sel_registerName("clearDeferFlushing");
 	
+	public static final int /*long*/ sel_setShouldExpandItem_ = sel_registerName("setShouldExpandItem:");
+	public static final int /*long*/ sel_setShouldScrollClipView_ = sel_registerName("setShouldScroll:");
+	
 	/* These are not generated in order to avoid creating static methods on all classes */
 	public static final int /*long*/ sel_isSelectorExcludedFromWebScript_ = sel_registerName("isSelectorExcludedFromWebScript:");
 	public static final int /*long*/ sel_webScriptNameForSelector_ = sel_registerName("webScriptNameForSelector:");
