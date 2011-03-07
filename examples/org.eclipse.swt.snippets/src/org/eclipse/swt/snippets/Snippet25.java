@@ -41,7 +41,6 @@ static String character (char character) {
 		case SWT.ESC:	return "ESC";
 		case SWT.LF:	return "'\\n'";
 		case SWT.TAB:	return "'\\t'";
-		case SWT.SPACE:	return "SPACE";
 	}
 	return "'" + character +"'";
 }
