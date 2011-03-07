@@ -2085,11 +2085,7 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 	} else {
 		if (text != newText) {
 			NSTextView widget = (NSTextView) view;
-			NSRange selRange = new NSRange();
-			Point selection = getSelection();
-			selRange.location = selection.x;
-			selRange.length = selection.x + selection.y;
-			widget.textStorage ().replaceCharactersInRange (selRange, NSString.stringWith(newText));
+			widget.textStorage ().replaceCharactersInRange (widget.selectedRange(), NSString.stringWith(newText));
 			result = false;
 		}
 	}
