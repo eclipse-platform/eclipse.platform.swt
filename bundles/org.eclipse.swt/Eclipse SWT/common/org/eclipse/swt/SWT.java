@@ -2161,6 +2161,14 @@ public class SWT {
 	public static final char TAB = '\t';
 						
 	/**
+	 * ASCII character convenience constant for the space character
+	 * (value is the <code>char</code> ' ').
+	 * 
+	 * @since 3.7
+	 */
+	public static final char SPACE = ' ';
+						
+	/**
 	 * keyboard and/or mouse event mask indicating that the ALT key
 	 * was pushed on the keyboard when the event was generated
 	 * (value is 1&lt;&lt;16).
