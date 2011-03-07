@@ -4593,6 +4593,7 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 		case OS.WM_TIMER:				result = WM_TIMER (wParam, lParam); break;
 		case OS.WM_TOUCH:				result = WM_TOUCH (wParam, lParam); break;
 		case OS.WM_UNDO:				result = WM_UNDO (wParam, lParam); break;
+		case OS.WM_UNINITMENUPOPUP:		result = WM_UNINITMENUPOPUP (wParam, lParam); break;
 		case OS.WM_UPDATEUISTATE:		result = WM_UPDATEUISTATE (wParam, lParam); break;
 		case OS.WM_VSCROLL:				result = WM_VSCROLL (wParam, lParam); break;
 		case OS.WM_WINDOWPOSCHANGED:	result = WM_WINDOWPOSCHANGED (wParam, lParam); break;
@@ -4799,6 +4800,16 @@ LRESULT WM_IME_ENDCOMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
+LRESULT WM_UNINITMENUPOPUP (int /*long*/ wParam, int /*long*/ lParam) {
+	Menu hiddenMenu = menuShell ().findMenu (wParam);
+	if (hiddenMenu != null) {
+		Shell shell = getShell ();
+		hiddenMenu.sendEvent (SWT.Hide);
+		if (hiddenMenu == shell.activeMenu) shell.activeMenu = null;
+	}
+	return null;
+}
+
 LRESULT WM_INITMENUPOPUP (int /*long*/ wParam, int /*long*/ lParam) {
 	
 	/* Ignore WM_INITMENUPOPUP for an accelerator */
@@ -4980,42 +4991,6 @@ LRESULT WM_MENUSELECT (int /*long*/ wParam, int /*long*/ lParam) {
 			if (newMenu != null) {
 				int id = OS.LOWORD (wParam);
 				item = display.getMenuItem (id);
-			}
-			Menu oldMenu = shell.activeMenu;
-			if (oldMenu != null) {
-				Menu ancestor = oldMenu;
-				while (ancestor != null && ancestor != newMenu) {
-					ancestor = ancestor.getParentMenu ();
-				}
-				if (ancestor == newMenu) {
-					ancestor = oldMenu;
-					while (ancestor != newMenu) {
-						/*
-						* It is possible (but unlikely), that application
-						* code could have disposed the widget in the hide
-						* event or the item about to be armed.  If this
-						* happens, stop searching up the ancestor list
-						* because there is no longer a link to follow.
-						*/
-						ancestor.sendEvent (SWT.Hide);
-						if (ancestor.isDisposed ()) break;
-						ancestor = ancestor.getParentMenu ();
-						if (ancestor == null) break;
-					}
-					/*
-					* The shell and/or the item could be disposed when
-					* processing hide events from above.  If this happens,
-					* ensure that the shell is not accessed and that no
-					* arm event is sent to the item.
-					*/
-					if (!shell.isDisposed ()) {
-						if (newMenu != null && newMenu.isDisposed ()) {
-							newMenu = null;
-						}
-						shell.activeMenu = newMenu;
-					}
-					if (item != null && item.isDisposed ()) item = null;
-				}
 			}
 		}
 		if (item != null) item.sendEvent (SWT.Arm);

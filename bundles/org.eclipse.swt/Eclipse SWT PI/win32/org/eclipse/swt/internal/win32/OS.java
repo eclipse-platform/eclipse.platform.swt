@@ -2177,6 +2177,7 @@ public class OS extends C {
 	public static final int WM_THEMECHANGED = 0x031a;
 	public static final int WM_TOUCH = 0x240;
 	public static final int WM_UNDO = 0x304;
+	public static final int WM_UNINITMENUPOPUP = 0x0125;
 	public static final int WM_UPDATEUISTATE = 0x0128;
 	public static final int WM_USER = 0x400;
 	public static final int WM_VSCROLL = 0x115;
