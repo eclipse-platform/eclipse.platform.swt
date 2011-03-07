@@ -41,6 +41,7 @@ static String character (char character) {
 		case SWT.ESC:	return "ESC";
 		case SWT.LF:	return "'\\n'";
 		case SWT.TAB:	return "'\\t'";
+		case SWT.SPACE:	return "SPACE";
 	}
 	return "'" + character +"'";
 }
@@ -72,6 +73,7 @@ static String keyCode (int keyCode) {
 		case SWT.ESC:	return "ESC";
 		case SWT.LF:	return "LF";
 		case SWT.TAB:	return "TAB";
+		case SWT.SPACE:	return "SPACE";
 	
 		/* Functions Keys */
 		case SWT.F1:	return "F1";
