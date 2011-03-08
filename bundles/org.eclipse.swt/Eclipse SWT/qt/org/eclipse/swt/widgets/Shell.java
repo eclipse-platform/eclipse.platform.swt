@@ -928,9 +928,6 @@ public class Shell extends Decorations {
 	}
 
 	/**
-	 * WARNING: API UNDER COSTRUCTION
-	 * This API should be considered experimental and subject to change before the final release.
-	 *
 	 * Returns the instance of the ToolBar object representing the tool bar that can appear on the
 	 * trim of the shell. This will return <code>null</code> if the platform does not support tool bars that
 	 * not part of the content area of the shell, or if the style of the shell does not support a 
