@@ -3984,7 +3984,7 @@ public class SWT {
 	public static final int ALL = 1 << 0;
 	
 	/**
-	 * ID for the About menu item
+	 * ID for the About menu item (value is -1).
 	 * 
 	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
 	 * @see org.eclipse.swt.widgets.MenuItem#getID()
@@ -3994,7 +3994,7 @@ public class SWT {
 	public static final int ID_ABOUT = -1;
 
 	/**
-	 * ID for the Preferences menu item
+	 * ID for the Preferences menu item (value is -2).
 	 * 
 	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
 	 * @see org.eclipse.swt.widgets.MenuItem#getID()
@@ -4004,7 +4004,7 @@ public class SWT {
 	public static final int ID_PREFERENCES = -2;
 
 	/**
-	 * ID for the Hide menu item
+	 * ID for the Hide menu item (value is -3).
 	 * 
 	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
 	 * @see org.eclipse.swt.widgets.MenuItem#getID()
@@ -4014,7 +4014,7 @@ public class SWT {
 	public static final int ID_HIDE = -3;
 
 	/**
-	 * ID for the Hide Others menu item
+	 * ID for the Hide Others menu item (value is -4).
 	 * 
 	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
 	 * @see org.eclipse.swt.widgets.MenuItem#getID()
@@ -4024,17 +4024,17 @@ public class SWT {
 	public static final int ID_HIDE_OTHERS = -4;
 	
 	/**
-	 * ID for the Show All menu item
+	 * ID for the Show All menu item (value is -5).
 	 * 
 	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
 	 * @see org.eclipse.swt.widgets.MenuItem#getID()
 	 * 
 	 * @since 3.7
 	 */
-	public static final int ID_SHOW_ALL= -5;
+	public static final int ID_SHOW_ALL = -5;
 	
 	/**
-	 * ID for the Quit menu item
+	 * ID for the Quit menu item (value is -6).
 	 * 
 	 * @see org.eclipse.swt.widgets.MenuItem#setID(int)
 	 * @see org.eclipse.swt.widgets.MenuItem#getID()
