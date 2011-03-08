@@ -1085,7 +1085,6 @@ public class SWT {
 
 	/**
 	 * Style constant for drop down menu/list behavior (value is 1&lt;&lt;2).
-	 * <br>Note that for <code>DateTime</code> this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Menu</code></li>
 	 * <li><code>ToolItem</code></li>
