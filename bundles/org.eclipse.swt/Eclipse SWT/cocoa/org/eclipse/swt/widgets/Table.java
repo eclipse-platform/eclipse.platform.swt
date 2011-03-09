@@ -2243,7 +2243,7 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
-void scrollClipViewToPoint(int /*long*/ id, int  /*long*/ sel, int  /*long*/ clipView, NSPoint point) {
+void scrollClipViewToPoint(int /*long*/ id, int /*long*/ sel, int /*long*/ clipView, NSPoint point) {
 	if (shouldScroll) super.scrollClipViewToPoint(id, sel, clipView, point);
 }
 

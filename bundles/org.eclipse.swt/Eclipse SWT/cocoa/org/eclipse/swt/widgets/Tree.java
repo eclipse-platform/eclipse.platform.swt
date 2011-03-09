@@ -2082,7 +2082,7 @@ int /*long*/ outlineView_numberOfChildrenOfItem (int /*long*/ id, int /*long*/ s
 	return ((TreeItem) display.getWidget (item)).itemCount;
 }
 
-boolean outlineView_shouldExpandItem_item (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int arg1) {
+boolean outlineView_shouldExpandItem_item (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
 	return shouldExpand;
 }
 
