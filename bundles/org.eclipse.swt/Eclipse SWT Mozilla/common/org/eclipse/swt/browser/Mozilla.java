@@ -4360,6 +4360,7 @@ int HandleEvent (int /*long*/ event) {
 		rc = domMouseEvent.GetRelatedTarget (result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] != 0) {
+			new nsISupports (result[0]).Release ();
 			domMouseEvent.Release ();
 			return XPCOM.NS_OK;
 		}
