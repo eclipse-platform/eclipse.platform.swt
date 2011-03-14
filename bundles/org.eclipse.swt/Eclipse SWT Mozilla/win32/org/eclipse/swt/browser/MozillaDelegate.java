@@ -35,6 +35,9 @@ static String getLibraryName () {
 	return "xpcom.dll"; //$NON-NLS-1$
 }
 
+static void lock (boolean lock) {
+}
+
 static char[] mbcsToWcs (String codePage, byte[] buffer) {
 	char[] chars = new char[buffer.length];
 	int charCount = OS.MultiByteToWideChar (OS.CP_ACP, OS.MB_PRECOMPOSED, buffer, buffer.length, chars, chars.length);

@@ -36,6 +36,9 @@ static String getLibraryName () {
 	return "libxpcom.dylib"; //$NON-NLS-1$
 }
 
+static void lock (boolean lock) {
+}
+
 static char[] mbcsToWcs (String codePage, byte [] buffer) {
 //	int encoding = OS.CFStringGetSystemEncoding ();
 //	int cfstring = OS.CFStringCreateWithBytes (OS.kCFAllocatorDefault, buffer, buffer.length, encoding, false);

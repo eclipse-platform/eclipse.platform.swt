@@ -72,6 +72,14 @@ static String getLibraryName () {
 	return "libxpcom.so"; //$NON-NLS-1$
 }
 
+static void lock (boolean lock) {
+	if (lock) {
+		OS.gdk_threads_enter();
+	} else {
+		OS.gdk_threads_leave();
+	}
+}
+
 static char[] mbcsToWcs (String codePage, byte [] buffer) {
 	return Converter.mbcsToWcs (codePage, buffer);
 }

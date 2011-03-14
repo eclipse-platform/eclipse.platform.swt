@@ -137,7 +137,16 @@ class Mozilla extends WebBrowser {
 				int length = SHUTDOWN_PERSIST.length ();
 				char[] chars = new char [length + 1];
 				SHUTDOWN_PERSIST.getChars (0, length, chars, 0);
-				rc = observerService.NotifyObservers (0, buffer, chars);
+				/*
+				* NotifyObservers is calling g_main_context_iteration() during shutdown. Need
+				* to leave GDK mutex since it is not reentrant.
+				*/
+				try {
+					MozillaDelegate.lock(false);
+					rc = observerService.NotifyObservers (0, buffer, chars);
+				} finally {
+					MozillaDelegate.lock(true);
+				}
 				if (rc != XPCOM.NS_OK) error (rc);
 				observerService.Release ();
 
