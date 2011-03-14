@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
 Bundle-SymbolicName: org.eclipse.swt; singleton:=true
-Bundle-Version: 3.6.2.qualifier
+Bundle-Version: 3.6.3.qualifier
 Bundle-ManifestVersion: 2
 Bundle-Localization: plugin
 DynamicImport-Package: org.eclipse.swt.accessibility2, org.mozilla.xpcom
