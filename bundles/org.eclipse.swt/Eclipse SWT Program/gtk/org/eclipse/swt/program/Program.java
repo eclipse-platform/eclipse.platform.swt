@@ -94,34 +94,21 @@ static int getDesktop(final Display display) {
 	 * The workaround is to simply check that the window manager is a 
 	 * compliant one (property _NET_SUPPORTING_WM_CHECK) and to attempt to load 
 	 * our native library that depends on gnome-vfs.
+	 * 
+	 * Note: GIO is used when available instead of gnome-vfs.
 	 */
 	if (desktop == DESKTOP_UNKNOWN) {
 		byte[] gnomeName = Converter.wcsToMbcs(null, "_NET_SUPPORTING_WM_CHECK", true);
 		int /*long*/ gnome = OS.XInternAtom(xDisplay, gnomeName, true);
-		if (gnome != OS.None && (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) && gnome_init()) {
-			desktop = DESKTOP_GNOME;
-			int /*long*/ icon_theme = GNOME.gnome_icon_theme_new();
-			display.setData(ICON_THEME_DATA, new LONG(icon_theme));
-			display.addListener(SWT.Dispose, new Listener() {
-				public void handleEvent(Event event) {
-					LONG gnomeIconTheme = (LONG)display.getData(ICON_THEME_DATA);
-					if (gnomeIconTheme == null) return;
-					display.setData(ICON_THEME_DATA, null);
-					/* 
-					 * Note.  gnome_icon_theme_new uses g_object_new to allocate the
-					 * data it returns. Use g_object_unref to free the pointer it returns.
-					 */
-					if (gnomeIconTheme.value != 0) OS.g_object_unref(gnomeIconTheme.value);
-				}
-			});
-			/* Check for the existence of libgio libraries */
-			byte[] buffer ;
+		if (gnome != OS.None) {
+			/* Check for the existence of libgio libraries first */
+			byte[] buffer;
 			int flags = OS.RTLD_LAZY;
 			if (OS.IsAIX) {
-				 buffer = Converter.wcsToMbcs(null, "libgio-2.0.a(libgio-2.0.so.0)", true);
-				 flags |= OS.RTLD_MEMBER;
+				buffer = Converter.wcsToMbcs(null, "libgio-2.0.a(libgio-2.0.so.0)", true);
+				flags |= OS.RTLD_MEMBER;
 			} else  if (OS.IsHPUX) {
-				 buffer = Converter.wcsToMbcs(null, "libgio-2.0.so", true);
+				buffer = Converter.wcsToMbcs(null, "libgio-2.0.so", true);
 			} else {
 				buffer =  Converter.wcsToMbcs(null, "libgio-2.0.so.0", true);
 			}
@@ -133,7 +120,24 @@ static int getDesktop(final Display display) {
 					desktop = DESKTOP_GIO;
 				}
 				OS.dlclose(libgio);
-			} else {
+			}
+			
+			if (desktop == DESKTOP_UNKNOWN && (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) && gnome_init()) {
+				desktop = DESKTOP_GNOME;
+				int /*long*/ icon_theme = GNOME.gnome_icon_theme_new();
+				display.setData(ICON_THEME_DATA, new LONG(icon_theme));
+				display.addListener(SWT.Dispose, new Listener() {
+					public void handleEvent(Event event) {
+						LONG gnomeIconTheme = (LONG)display.getData(ICON_THEME_DATA);
+						if (gnomeIconTheme == null) return;
+						display.setData(ICON_THEME_DATA, null);
+						/* 
+						 * Note.  gnome_icon_theme_new uses g_object_new to allocate the
+						 * data it returns. Use g_object_unref to free the pointer it returns.
+						 */
+						if (gnomeIconTheme.value != 0) OS.g_object_unref(gnomeIconTheme.value);
+					}
+				});
 				/* Check for libgnomevfs-2 version 2.4 */
 				buffer = Converter.wcsToMbcs(null, "libgnomevfs-2.so.0", true);
 				int /*long*/ libgnomevfs = OS.dlopen(buffer, OS.RTLD_LAZY);
