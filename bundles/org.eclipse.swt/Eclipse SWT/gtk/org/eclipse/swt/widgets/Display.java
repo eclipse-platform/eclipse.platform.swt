@@ -897,7 +897,10 @@ void createDisplay (DeviceData data) {
 	/* Required for g_main_context_wakeup */
 	if (!OS.g_thread_supported ()) {
 		OS.g_thread_init (0);
+		OS.gdk_threads_init();
 	}
+	OS.gdk_threads_enter ();
+	Lock.uiThread = Thread.currentThread();
 	OS.gtk_set_locale();
 	if (!OS.gtk_init_check (new int /*long*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
@@ -1133,6 +1136,8 @@ protected void destroy () {
 }
 
 void destroyDisplay () {
+	Lock.uiThread = null;
+	OS.gdk_threads_leave ();
 }
 
 int /*long*/ emissionProc (int /*long*/ ihint, int /*long*/ n_param_values, int /*long*/ param_values, int /*long*/ data) {
@@ -2395,13 +2400,18 @@ Widget getWidget (int /*long*/ handle) {
 }
 
 int /*long*/ idleProc (int /*long*/ data) {
-	boolean result = runAsyncMessages (false);
-	if (!result) {
-		synchronized (idleLock) {
-			idleHandle = 0;
+	try {
+		OS.gdk_threads_enter();
+		boolean result = runAsyncMessages (false);
+		if (!result) {
+			synchronized (idleLock) {
+				idleHandle = 0;
+			}
 		}
+		return result ? 1 : 0;
+	} finally {
+		OS.gdk_threads_leave();
 	}
-	return result ? 1 : 0;
 }
 
 /**
@@ -2973,9 +2983,14 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 }
 
 int /*long*/ mouseHoverProc (int /*long*/ handle) {
-	Widget widget = getWidget (handle);
-	if (widget == null) return 0;
-	return widget.hoverProc (handle);
+	try {
+		OS.gdk_threads_enter();
+		Widget widget = getWidget (handle);
+		if (widget == null) return 0;
+		return widget.hoverProc (handle);
+	} finally {
+		OS.gdk_threads_leave();
+	}
 }
 
 /**
@@ -3184,7 +3199,12 @@ public boolean readAndDispatch () {
 	boolean events = false;
 	events |= runSettings ();
 	events |= runPopups ();
-	events |= OS.g_main_context_iteration (0, false);
+	try {
+		OS.gdk_threads_leave();
+		events |= OS.g_main_context_iteration (0, false);
+	} finally {
+		OS.gdk_threads_enter();
+	}
 	if (events) {
 		runDeferredEvents ();
 		return true;
@@ -4022,6 +4042,7 @@ public boolean sleep () {
 	int /*long*/ context = OS.g_main_context_default ();
 	boolean result = false;
 	do {
+		OS.gdk_threads_leave();
 		if (OS.g_main_context_acquire (context)) {
 			result = OS.g_main_context_prepare (context, max_priority);
 			int nfds;
@@ -4040,22 +4061,14 @@ public boolean sleep () {
 					*/
 					if (timeout [0] < 0) timeout [0] = 50;
 					
-					/* Exit the OS lock to allow other threads to enter GTK */
-					Lock lock = OS.lock;
-					int count = lock.lock ();
-					for (int i = 0; i < count; i++) lock.unlock ();
-					try {
-						wake = false;
-						OS.Call (poll, fds, nfds, timeout [0]);
-					} finally {
-						for (int i = 0; i < count; i++) lock.lock ();
-						lock.unlock ();
-					}
+					wake = false;
+					OS.Call (poll, fds, nfds, timeout [0]);
 				}
 			}
 			OS.g_main_context_check (context, max_priority [0], fds, nfds);
 			OS.g_main_context_release (context);
 		}
+		OS.gdk_threads_enter();
 	} while (!result && getMessageCount () == 0 && !wake);
 	wake = false;
 	return true;
@@ -4125,30 +4138,40 @@ public void timerExec (int milliseconds, Runnable runnable) {
 }
 
 int /*long*/ timerProc (int /*long*/ i) {
-	if (timerList == null) return 0;
-	int index = (int)/*64*/i;
-	if (0 <= index && index < timerList.length) {
-		Runnable runnable = timerList [index];
-		timerList [index] = null;
-		timerIds [index] = 0;
-		if (runnable != null) runnable.run ();
+	try {
+		OS.gdk_threads_enter();
+		if (timerList == null) return 0;
+		int index = (int)/*64*/i;
+		if (0 <= index && index < timerList.length) {
+			Runnable runnable = timerList [index];
+			timerList [index] = null;
+			timerIds [index] = 0;
+			if (runnable != null) runnable.run ();
+		}
+		return 0;
+	} finally {
+		OS.gdk_threads_leave();
 	}
-	return 0;
 }
 
 int /*long*/ caretProc (int /*long*/ clientData) {
-	caretId = 0;
-	if (currentCaret == null) {
+	try {
+		OS.gdk_threads_enter();
+		caretId = 0;
+		if (currentCaret == null) {
+			return 0;
+		}
+		if (currentCaret.blinkCaret()) {
+			int blinkRate = currentCaret.blinkRate;
+			if (blinkRate == 0) return 0;
+			caretId = OS.gtk_timeout_add (blinkRate, caretProc, 0);
+		} else {
+			currentCaret = null;
+		}
 		return 0;
+	} finally {
+		OS.gdk_threads_leave();
 	}
-	if (currentCaret.blinkCaret()) {
-		int blinkRate = currentCaret.blinkRate;
-		if (blinkRate == 0) return 0;
-		caretId = OS.gtk_timeout_add (blinkRate, caretProc, 0);
-	} else {
-		currentCaret = null;
-	}
-	return 0;
 }
 
 int /*long*/ sizeAllocateProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
@@ -4401,9 +4424,14 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ ar
 }
 
 int /*long*/ windowTimerProc (int /*long*/ handle) {
-	Widget widget = getWidget (handle);
-	if (widget == null) return 0;
-	return widget.timerProc (handle);
+	try {
+		OS.gdk_threads_enter();
+		Widget widget = getWidget (handle);
+		if (widget == null) return 0;
+		return widget.timerProc (handle);
+	} finally {
+		OS.gdk_threads_leave();
+	}
 }
 
 }
