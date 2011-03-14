@@ -978,14 +978,17 @@ boolean gio_execute(String fileName) {
 	if (application != 0) {
 		byte[] fileNameBuffer = Converter.wcsToMbcs (null, fileName, true);
 		int /*long*/ file = 0;
-		if (OS.g_app_info_supports_uris (application)) {
-			file = OS.g_file_new_for_uri (fileNameBuffer);
-		} else {
-			file = OS.g_file_new_for_path (fileNameBuffer);
+		if (fileName.length() > 0) {
+			if (OS.g_app_info_supports_uris (application)) {
+				file = OS.g_file_new_for_uri (fileNameBuffer);
+			} else {
+				file = OS.g_file_new_for_path (fileNameBuffer);
+			}
 		}
-		if (file != 0) {
-			int /*long*/ list = OS.g_list_append (0, file);
-			result = OS.g_app_info_launch (application, list, 0, 0);
+		int /*long*/ list = 0;
+		if (file != 0) list = OS.g_list_append (0, file);
+		result = OS.g_app_info_launch (application, list, 0, 0);
+		if (list != 0) {
 			OS.g_list_free (list);
 			OS.g_object_unref (file);
 		}
