@@ -31,6 +31,7 @@ import java.util.Vector;
 public final class Program {
 	String name, fullPath, identifier;
 
+	static final String PREFIX_FILE = "file:/"; //$NON-NLS-1$
 	static final String PREFIX_HTTP = "http://"; //$NON-NLS-1$
 	static final String PREFIX_HTTPS = "https://"; //$NON-NLS-1$
 
@@ -210,7 +211,7 @@ public static Program [] getPrograms () {
 static NSURL getURL (String fileName) {
 	NSString unescapedStr;
 	String lowercaseName = fileName.toLowerCase ();
-	if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
+	if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS) || lowercaseName.startsWith (PREFIX_FILE)) {
 		unescapedStr = NSString.stringWith("%#"); //$NON-NLS-1$
 	} else {
 		unescapedStr = NSString.stringWith("%"); //$NON-NLS-1$
