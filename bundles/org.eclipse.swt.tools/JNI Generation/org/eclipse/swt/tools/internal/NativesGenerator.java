@@ -415,6 +415,7 @@ void generateSetParameter(JNIParameter param, boolean critical) {
 
 void generateEnterExitMacro(JNIMethod method, String function, String function64, boolean enter) {
 	if (!enterExitMacro) return;
+	boolean tryCatch = method.getFlag(FLAG_TRYCATCH);
 	if (!function.equals(function64)) {
 		output("#ifndef ");
 		output(JNI64);
@@ -424,6 +425,7 @@ void generateEnterExitMacro(JNIMethod method, String function, String function64
 	output(method.getDeclaringClass().getSimpleName());
 	output("_NATIVE_");
 	output(enter ? "ENTER" : "EXIT");
+	if (tryCatch) output(enter ? "_TRY" : "_CATCH");
 	output("(env, that, ");
 	output(function);
 	outputln("_FUNC);");
@@ -433,6 +435,7 @@ void generateEnterExitMacro(JNIMethod method, String function, String function64
 		output(method.getDeclaringClass().getSimpleName());
 		output("_NATIVE_");
 		output(enter ? "ENTER" : "EXIT");
+		if (tryCatch) output(enter ? "_TRY" : "_CATCH");
 		output("(env, that, ");
 		output(function64);
 		outputln("_FUNC);");
