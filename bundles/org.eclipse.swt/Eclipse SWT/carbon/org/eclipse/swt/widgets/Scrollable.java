@@ -325,6 +325,29 @@ void redrawBackgroundImage () {
 	}
 }
 
+void redrawObscured () {
+	int visibleRgn = getVisibleRegion (handle, false), boundsRgn = OS.NewRgn();
+	OS.GetControlRegion (handle, (short) OS.kControlStructureMetaPart, boundsRgn);
+	int [] root = new int [1];
+	int window = OS.GetControlOwner (handle);
+	OS.GetRootControl (window, root);
+	OS.HIViewConvertRegion (boundsRgn, handle, root[0]);
+	OS.DiffRgn(boundsRgn, visibleRgn, boundsRgn);
+	boolean obscured = !OS.EmptyRgn (boundsRgn);
+	if (obscured) {
+		Rect rect = new Rect ();
+		OS.GetControlBounds (handle, rect);
+		rect.right += rect.left;
+		rect.bottom += rect.top;
+		rect.top = rect.left = 0;
+		OS.RectRgn (boundsRgn, rect);
+		OS.HIViewConvertRegion (boundsRgn, handle, 0);
+		redrawChildren (OS.HIViewGetRoot (window), boundsRgn);
+	}
+	OS.DisposeRgn(boundsRgn);
+	OS.DisposeRgn(visibleRgn);
+}
+
 void register () {
 	super.register ();
 	if (scrolledHandle != 0) display.addWidget (scrolledHandle, this);

@@ -2686,6 +2686,19 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+void redrawBackgroundImage () {
+	super.redrawBackgroundImage();
+	/*
+	* Bug in Carbon.  The data browser copies bits from the window buffer when
+	* scrolling.  If the control is obscured be a sibling control, the bits of the
+	* sibling are copied causing pixel corruption.  The fix is to detect that the
+	* data browser is obscured and redraw any control that overlaps with the data
+	* browser bounds.
+	*/
+	if (isDisposed()) return;
+	redrawObscured ();
+}
+
 void releaseItem (TreeItem item, boolean release) {
 	int id = item.id;
 	if (release) item.release (false);
