@@ -815,7 +815,7 @@ typedef struct tagGESTURECONFIG {
 
 #include "os_custom.h"
 
-#ifdef _WIN32_WCE
+#if defined (_WIN64) || defined (_WIN32_WCE)
 #define PRINT_CODE(buf, size, format, code) sprintf(buf, format, code);
 #else
 #define PRINT_CODE(buf, size, format, code) sprintf_s(buf, size, format, code);
