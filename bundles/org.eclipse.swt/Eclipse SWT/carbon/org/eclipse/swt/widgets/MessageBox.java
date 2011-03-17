@@ -234,10 +234,30 @@ public int open () {
 			OS.SetFrontProcessWithOptions (new int [] {0, OS.kCurrentProcess}, OS.kSetFrontProcessFrontWindowOnly);
 		}
 		Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
+		/*
+		* Bug in carbon. For some reason, RunStandardAlert() hangs when there are
+		* windows opened with kUtilityWindowClass group.  The fix is to temporarily
+		* put those windows in the kFloatingWindowClass group.
+		*/
+		Shell [] shells = display.getShells ();
+		for (int i = 0; i < shells.length; i++) {
+			Shell shell = shells[i];
+			if ((shell.style & SWT.ON_TOP) != 0 && !shell.isDisposed () && shell.isVisible ()) {
+				OS.SetWindowGroup (shell.shellHandle, OS.GetWindowGroupOfClass (OS.kFloatingWindowClass));
+			} else {
+				shells[i] = null;
+			}
+		}
 		display.setModalDialog(this);
 		short [] outItemHit = new short [1];
 		OS.RunStandardAlert(dialogRef[0], 0, outItemHit);
 		display.setModalDialog(null);
+		for (int i = 0; i < shells.length; i++) {
+			Shell shell = shells[i];
+			if (shell != null && !shell.isDisposed ()) {
+				OS.SetWindowGroup (shell.shellHandle, shell.getParentGroup ());
+			}
+		}
 		if (outItemHit [0] != 0) {
 			switch (bits) {
 				case SWT.OK:
