@@ -17825,15 +17825,15 @@ JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__IJ)(JNIEnv *env, jclass that, jint ar
 {
 	jint rc = 0;
 #ifndef JNI64
-	OS_NATIVE_ENTER(env, that, VtblCall__II_FUNC);
+	OS_NATIVE_ENTER_TRY(env, that, VtblCall__II_FUNC);
 #else
-	OS_NATIVE_ENTER(env, that, VtblCall__IJ_FUNC);
+	OS_NATIVE_ENTER_TRY(env, that, VtblCall__IJ_FUNC);
 #endif
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong))(*(jintLong **)arg1)[arg0])(arg1);
 #ifndef JNI64
-	OS_NATIVE_EXIT(env, that, VtblCall__II_FUNC);
+	OS_NATIVE_EXIT_CATCH(env, that, VtblCall__II_FUNC);
 #else
-	OS_NATIVE_EXIT(env, that, VtblCall__IJ_FUNC);
+	OS_NATIVE_EXIT_CATCH(env, that, VtblCall__IJ_FUNC);
 #endif
 	return rc;
 }

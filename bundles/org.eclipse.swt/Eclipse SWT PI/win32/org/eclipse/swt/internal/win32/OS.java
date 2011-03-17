@@ -6789,7 +6789,7 @@ public static final native boolean ValidateRect (int /*long*/ hWnd, RECT lpRect)
 public static final native short VkKeyScanW (short ch);
 /** @param ch cast=(TCHAR) */
 public static final native short VkKeyScanA (short ch);
-
+/** @method flags=trycatch */
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl);
 
 public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, int arg0);

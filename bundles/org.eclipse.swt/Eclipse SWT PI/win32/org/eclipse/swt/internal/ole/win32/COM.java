@@ -595,6 +595,7 @@ public static final native int OleSetClipboard(int /*long*/ pDataObject);
 /** @param pUnk cast=(LPUNKNOWN) */
 public static final native int OleSetContainedObject(int /*long*/ pUnk, boolean fContained);
 /**
+ * @method flags=trycatch
  * @param holemenu cast=(HOLEMENU)
  * @param hwndFrame cast=(HWND)
  * @param hwndActiveObject cast=(HWND)

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1028,9 +1028,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(OleSetMenuDescriptor)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4)
 {
 	jint rc = 0;
-	COM_NATIVE_ENTER(env, that, OleSetMenuDescriptor_FUNC);
+	COM_NATIVE_ENTER_TRY(env, that, OleSetMenuDescriptor_FUNC);
 	rc = (jint)OleSetMenuDescriptor((HOLEMENU)arg0, (HWND)arg1, (HWND)arg2, (LPOLEINPLACEFRAME)arg3, (LPOLEINPLACEACTIVEOBJECT)arg4);
-	COM_NATIVE_EXIT(env, that, OleSetMenuDescriptor_FUNC);
+	COM_NATIVE_EXIT_CATCH(env, that, OleSetMenuDescriptor_FUNC);
 	return rc;
 }
 #endif

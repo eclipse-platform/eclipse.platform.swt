@@ -815,4 +815,28 @@ typedef struct tagGESTURECONFIG {
 
 #include "os_custom.h"
 
+#ifdef _WIN32_WCE
+#define PRINT_CODE(buf, size, format, code) sprintf(buf, format, code);
+#else
+#define PRINT_CODE(buf, size, format, code) sprintf_s(buf, size, format, code);
+#endif
+#define NATIVE_TRY(env, that, func) \
+	__try {
+#define NATIVE_CATCH(env, that, func) \
+	} __except(EXCEPTION_EXECUTE_HANDLER) { \
+		jclass expClass = (*env)->FindClass(env, "org/eclipse/swt/SWTError");  \
+		if (expClass) { \
+			char buffer[256]; \
+			PRINT_CODE(buffer, 256, "cought native exception: 0x%x", GetExceptionCode()) \
+			(*env)->ThrowNew(env, expClass, buffer); \
+		} \
+	}
+
+#define OS_NATIVE_ENTER_TRY(env, that, func) \
+	OS_NATIVE_ENTER(env, that, func); \
+	NATIVE_TRY(env, that, func);
+#define OS_NATIVE_EXIT_CATCH(env, that, func) \
+	NATIVE_CATCH(env, that, func); \
+	OS_NATIVE_EXIT(env, that, func);
+
 #endif /* INC_os_H */
