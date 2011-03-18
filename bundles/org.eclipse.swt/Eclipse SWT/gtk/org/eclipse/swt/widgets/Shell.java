@@ -787,6 +787,7 @@ Composite findDeferredControl () {
  * @since 3.7
  */
 public ToolBar getToolBar() {
+	checkWidget ();
 	return null;
 }
 
