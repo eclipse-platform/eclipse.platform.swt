@@ -643,13 +643,15 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 }
 
 void fixRect(NSRect rect) {
+	float /*double*/ right = -1;
 	for (int j = 0; j < lineBounds.length; j++) {
 		NSRect line = lineBounds[j];
-		if (line.y <= rect.y && rect.y < line.y + line.height) {
-			if (rect.x + rect.width > line.x + line.width) {
-				rect.width = line.x + line.width - rect.x;
-			}
+		if (rect.y <= line.y && line.y <= rect.y + rect.height) {
+			right = Math.max(right, line.x + line.width);
 		}
+	}
+	if (right != -1 && rect.x + rect.width > right) {
+		rect.width = right - rect.x;
 	}
 }
 
