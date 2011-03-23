@@ -1265,7 +1265,7 @@ public int getOffset(int x, int y, int[] trailing) {
 		offset = Math.min(untranslateOffset(offset), length - 1);
 		if (trailing != null) {
 			trailing[0] = Math.round((float)/*64*/partialFraction[0]);
-			if (partialFraction[0] > 0.5) {
+			if (partialFraction[0] >= 0.5) {
 				char ch = text.charAt(offset);
 				if (0xD800 <= ch && ch <= 0xDBFF) {
 					if (offset + 1 < length) {
