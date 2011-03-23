@@ -2066,9 +2066,16 @@ int _getOffset(int offset, int movement, boolean forward) {
 				}
 				switch (movement) {
 					case SWT.MOVEMENT_CLUSTER: {
-						if (properties.fNeedsCaretInfo) {
-							if (!logAttr.fInvalid && logAttr.fCharStop) return untranslateOffset(offset);
-						} else {
+						if (!properties.fNeedsCaretInfo || (!logAttr.fInvalid && logAttr.fCharStop)) {
+							char ch = segmentsText.charAt(offset);
+							if (0xDC00 <= ch && ch <= 0xDFFF) {
+								if (offset > 0) {
+									ch = segmentsText.charAt(offset - 1);
+									if (0xD800 <= ch && ch <= 0xDBFF) {
+										offset += step;
+									}
+								}
+							}
 							return untranslateOffset(offset);
 						}
 						break;
