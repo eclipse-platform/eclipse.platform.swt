@@ -2257,8 +2257,28 @@ public int getOffset (int x, int y, int[] trailing) {
 			}
 			int /*long*/ advances = run.justify != 0 ? run.justify : run.advances;
 			OS.ScriptXtoCP(xRun, cChars, cGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piCP, piTrailing);
-			if (trailing != null) trailing[0] = piTrailing[0];
-			return untranslateOffset(run.start + piCP[0]);
+			int offset = run.start + piCP[0];
+			char ch = segmentsText.charAt(offset);
+			int length = segmentsText.length();
+			if (0xD800 <= ch && ch <= 0xDBFF) {
+				if (offset + 1 < length) {
+					ch = segmentsText.charAt(offset + 1);
+					if (0xDC00 <= ch && ch <= 0xDFFF) {
+						if (trailing != null) trailing[0] = 0;
+					}
+				}
+			} else if (0xDC00 <= ch && ch <= 0xDFFF) {
+				if (offset - 1 >= 0) {
+					ch = segmentsText.charAt(offset - 1);
+					if (0xD800 <= ch && ch <= 0xDBFF) {
+						offset--;
+						if (trailing != null) trailing[0] = 2;
+					}
+				}
+			} else {
+				if (trailing != null) trailing[0] = piTrailing[0];
+			}
+			return untranslateOffset(offset);
 		}
 	}
 	if (trailing != null) trailing[0] = 0;
