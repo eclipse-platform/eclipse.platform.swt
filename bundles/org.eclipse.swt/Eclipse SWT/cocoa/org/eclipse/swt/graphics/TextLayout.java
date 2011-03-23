@@ -1063,30 +1063,35 @@ public Point getLocation(int offset, boolean trailing) {
 		int length = text.length();
 		if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 		if (length == 0) return new Point(0, 0);
-		offset = translateOffset(offset);
-		int /*long*/ glyphIndex = layoutManager.glyphIndexForCharacterAtIndex(offset);
-		NSRect rect = layoutManager.lineFragmentUsedRectForGlyphAtIndex(glyphIndex, 0);
-		NSPoint point = layoutManager.locationForGlyphAtIndex(glyphIndex);
-		boolean rtl = false;
-		NSRange range  = new NSRange();
-		range.location = glyphIndex;
-		range.length = 1;
-		byte[] bidiLevels = new byte[1];
-		int /*long*/ result = layoutManager.getGlyphsInRange(range, 0, 0, 0, 0, bidiLevels);
-		if (result > 0) {
-			rtl = (bidiLevels[0] & 1) != 0;
-		}
-		if (trailing != rtl) {
-			int /*long*/ [] rectCount = new int /*long*/ [1];
-			int /*long*/ pArray = layoutManager.rectArrayForGlyphRange(range, range, textContainer, rectCount);
-			if (rectCount[0] > 0) {
-				NSRect bounds = new NSRect();
-				OS.memmove(bounds, pArray, NSRect.sizeof);
-				fixRect(bounds);
-				point.x += bounds.width;
+		if (offset == length) {
+			NSRect rect = lineBounds[lineBounds.length - 1];
+			return new Point((int)(rect.x + rect.width), (int)rect.y);
+		} else {
+			offset = translateOffset(offset);
+			int /*long*/ glyphIndex = layoutManager.glyphIndexForCharacterAtIndex(offset);
+			NSRect rect = layoutManager.lineFragmentUsedRectForGlyphAtIndex(glyphIndex, 0);
+			NSPoint point = layoutManager.locationForGlyphAtIndex(glyphIndex);
+			boolean rtl = false;
+			NSRange range  = new NSRange();
+			range.location = glyphIndex;
+			range.length = 1;
+			byte[] bidiLevels = new byte[1];
+			int /*long*/ result = layoutManager.getGlyphsInRange(range, 0, 0, 0, 0, bidiLevels);
+			if (result > 0) {
+				rtl = (bidiLevels[0] & 1) != 0;
 			}
+			if (trailing != rtl) {
+				int /*long*/ [] rectCount = new int /*long*/ [1];
+				int /*long*/ pArray = layoutManager.rectArrayForGlyphRange(range, range, textContainer, rectCount);
+				if (rectCount[0] > 0) {
+					NSRect bounds = new NSRect();
+					OS.memmove(bounds, pArray, NSRect.sizeof);
+					fixRect(bounds);
+					point.x += bounds.width;
+				}
+			}
+			return new Point((int)point.x, (int)rect.y);
 		}
-		return new Point((int)point.x, (int)rect.y);
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -1126,17 +1131,26 @@ int _getOffset (int offset, int movement, boolean forward) {
 	computeRuns();
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	if (length == 0) return 0;
+	if (forward && offset == length) return length;
+	if (!forward && offset == 0) return 0;
+	int step = forward ? 1 : -1;
+	if ((movement & SWT.MOVEMENT_CHAR) != 0) return offset + step;
 	switch (movement) {
-		case SWT.MOVEMENT_CLUSTER://TODO cluster
-		case SWT.MOVEMENT_CHAR: {
-				if (forward) {
-					if (offset < length) offset++;
-				} else {
-					if (offset > 0) offset--;
+		case SWT.MOVEMENT_CLUSTER:
+			//TODO cluster
+			offset += step;
+			if (0 <= offset && offset < length) {
+				char ch = text.charAt(offset);
+				if (0xDC00 <= ch && ch <= 0xDFFF) {
+					if (offset > 0) {
+						ch = text.charAt(offset - 1);
+						if (0xD800 <= ch && ch <= 0xDBFF) {
+							offset += step;
+						}
+					}
 				}
-				return offset;
-		}
+			}
+			break;
 		case SWT.MOVEMENT_WORD: {
 			offset = translateOffset(offset);
 			offset = (int)/*64*/textStorage.nextWordFromIndex(offset, forward);
@@ -1245,11 +1259,25 @@ public int getOffset(int x, int y, int[] trailing) {
 		NSPoint pt = new NSPoint();
 		pt.x = x;
 		pt.y = y;
-		float /*double*/[] partialFration = new float /*double*/[1];
-		int /*long*/ glyphIndex = layoutManager.glyphIndexForPoint(pt, textContainer, partialFration);
-		int /*long*/ offset = layoutManager.characterIndexForGlyphAtIndex(glyphIndex);
-		if (trailing != null) trailing[0] = Math.round((float)/*64*/partialFration[0]);
-		return Math.min(untranslateOffset((int)/*64*/offset), length - 1);
+		float /*double*/[] partialFraction = new float /*double*/[1];
+		int /*long*/ glyphIndex = layoutManager.glyphIndexForPoint(pt, textContainer, partialFraction);
+		int offset = (int)/*64*/layoutManager.characterIndexForGlyphAtIndex(glyphIndex);
+		offset = Math.min(untranslateOffset(offset), length - 1);
+		if (trailing != null) {
+			trailing[0] = Math.round((float)/*64*/partialFraction[0]);
+			if (partialFraction[0] > 0.5) {
+				char ch = text.charAt(offset);
+				if (0xD800 <= ch && ch <= 0xDBFF) {
+					if (offset + 1 < length) {
+						ch = text.charAt(offset + 1);
+						if (0xDC00 <= ch && ch <= 0xDFFF) {
+							trailing[0]++;
+						}
+					}
+				}
+			}
+		}
+		return offset;
 	} finally {
 		if (pool != null) pool.release();
 	}

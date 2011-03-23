@@ -1472,7 +1472,12 @@ public int getOffset(int x, int y, int[] trailing) {
 	OS.pango_layout_xy_to_index(layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, piTrailing);
 	int /*long*/ ptr = OS.pango_layout_get_text(layout);
 	int offset = (int)/*64*/OS.g_utf16_pointer_to_offset(ptr, ptr + index[0]);
-	if (trailing != null) trailing[0] = piTrailing[0];
+	if (trailing != null) {
+		trailing[0] = piTrailing[0];
+		if (piTrailing[0] != 0) {
+			trailing[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset(ptr, OS.g_utf8_pointer_to_offset(ptr, ptr + index[0]) + piTrailing[0]) - offset;
+		}
+	}
 	return untranslateOffset(offset);
 }
 
