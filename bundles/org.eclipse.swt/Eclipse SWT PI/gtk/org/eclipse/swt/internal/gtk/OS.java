@@ -3325,6 +3325,59 @@ public static final int /*long*/ g_utf8_pointer_to_offset(int /*long*/ str, int 
 	}
 }
 /** @param str cast=(const gchar *) */
+public static final native int /*long*/ _g_utf16_offset_to_pointer(int /*long*/ str, int /*long*/ offset);
+public static final int /*long*/ g_utf16_offset_to_pointer(int /*long*/ str, int /*long*/ offset) {
+	lock.lock();
+	try {
+		return _g_utf16_offset_to_pointer(str, offset);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param str cast=(const gchar *)
+ * @param pos cast=(const gchar *)
+ */
+public static final native int /*long*/ _g_utf16_pointer_to_offset(int /*long*/ str, int /*long*/ pos);
+public static final int /*long*/ g_utf16_pointer_to_offset(int /*long*/ str, int /*long*/ pos) {
+	lock.lock();
+	try {
+		return _g_utf16_pointer_to_offset(str, pos);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param str cast=(const gchar *) */
+public static final native int /*long*/ _g_utf16_strlen(int /*long*/ str, int /*long*/ max);
+public static final int /*long*/ g_utf16_strlen(int /*long*/ str, int /*long*/ max) {
+	lock.lock();
+	try {
+		return _g_utf16_strlen(str, max);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param str cast=(const gchar *) */
+public static final native int /*long*/ _g_utf8_offset_to_utf16_offset(int /*long*/ str, int /*long*/ offset);
+public static final int /*long*/ g_utf8_offset_to_utf16_offset(int /*long*/ str, int /*long*/ offset) {
+	lock.lock();
+	try {
+		return _g_utf8_offset_to_utf16_offset(str, offset);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param str cast=(const gchar *) */
+public static final native int /*long*/ _g_utf16_offset_to_utf8_offset(int /*long*/ str, int /*long*/ offset);
+public static final int /*long*/ g_utf16_offset_to_utf8_offset(int /*long*/ str, int /*long*/ offset) {
+	lock.lock();
+	try {
+		return _g_utf16_offset_to_utf8_offset(str, offset);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param str cast=(const gchar *) */
 public static final native int /*long*/ _g_utf8_strlen(int /*long*/ str, int /*long*/ max);
 public static final int /*long*/ g_utf8_strlen(int /*long*/ str, int /*long*/ max) {
 	lock.lock();

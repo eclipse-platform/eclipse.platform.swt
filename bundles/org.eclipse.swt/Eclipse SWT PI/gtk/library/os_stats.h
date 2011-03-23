@@ -398,8 +398,13 @@ typedef enum {
 	_1g_1type_1parent_FUNC,
 	_1g_1type_1query_FUNC,
 	_1g_1type_1register_1static_FUNC,
+	_1g_1utf16_1offset_1to_1pointer_FUNC,
+	_1g_1utf16_1offset_1to_1utf8_1offset_FUNC,
+	_1g_1utf16_1pointer_1to_1offset_FUNC,
+	_1g_1utf16_1strlen_FUNC,
 	_1g_1utf16_1to_1utf8_FUNC,
 	_1g_1utf8_1offset_1to_1pointer_FUNC,
+	_1g_1utf8_1offset_1to_1utf16_1offset_FUNC,
 	_1g_1utf8_1pointer_1to_1offset_FUNC,
 	_1g_1utf8_1strlen_FUNC,
 #ifndef JNI64

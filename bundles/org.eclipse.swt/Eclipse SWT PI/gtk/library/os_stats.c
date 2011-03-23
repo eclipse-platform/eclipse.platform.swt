@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1384;
-int OS_nativeFunctionCallCount[1384];
+int OS_nativeFunctionCount = 1389;
+int OS_nativeFunctionCallCount[1389];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -390,8 +390,13 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1type_1parent",
 	"_1g_1type_1query",
 	"_1g_1type_1register_1static",
+	"_1g_1utf16_1offset_1to_1pointer",
+	"_1g_1utf16_1offset_1to_1utf8_1offset",
+	"_1g_1utf16_1pointer_1to_1offset",
+	"_1g_1utf16_1strlen",
 	"_1g_1utf16_1to_1utf8",
 	"_1g_1utf8_1offset_1to_1pointer",
+	"_1g_1utf8_1offset_1to_1utf16_1offset",
 	"_1g_1utf8_1pointer_1to_1offset",
 	"_1g_1utf8_1strlen",
 #ifndef JNI64

@@ -816,8 +816,10 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 		OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
 		int /*long*/ ptr = OS.pango_layout_get_text (layout);
 		int position = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
-		Point selection = getSelection ();
-		if (selection.x <= position && position < selection.y) {
+		int [] start = new int [1];
+		int [] end = new int [1];
+		OS.gtk_editable_get_selection_bounds (entryHandle, start, end);
+		if (start [0] <= position && position < end [0]) {
 			if (super.dragDetect (x, y, filter, consume)) {
 				if (consume != null) consume [0] = true;
 				return true;
@@ -997,7 +999,7 @@ public Point getSelection () {
 			if (index != -1) length = getItem (index).length ();
 		} else {
 			int /*long*/ str = OS.gtk_entry_get_text (entryHandle);
-			if (str != 0) length = (int)/*64*/OS.g_utf8_strlen (str, -1);
+			if (str != 0) length = (int)/*64*/OS.g_utf16_strlen (str, -1);
 		}
 		return new Point (0, length);
 	}
@@ -1005,6 +1007,9 @@ public Point getSelection () {
 	int [] end = new int [1];
 	if (entryHandle != 0) {
 		OS.gtk_editable_get_selection_bounds (entryHandle, start, end);
+		int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
+		start[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start[0]);
+		end[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end[0]);
 	}
 	return new Point(start [0], end [0]);
 }
@@ -1268,8 +1273,11 @@ int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /
 		return 0;
 	}
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
-	if (end_pos == -1) end_pos = OS.g_utf8_strlen (OS.gtk_entry_get_text (entryHandle), -1);
-	String newText = verifyText ("", (int)/*64*/start_pos, (int)/*64*/end_pos);
+	int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
+	if (end_pos == -1) end_pos = OS.g_utf8_strlen (ptr, -1);
+	int start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start_pos);
+	int end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end_pos);
+	String newText = verifyText ("", start, end);
 	if (newText == null) {
 		OS.g_signal_stop_emission_by_name (entryHandle, OS.delete_text);
 	} else {
@@ -1371,11 +1379,10 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 	String oldText = new String (Converter.mbcsToWcs (null, buffer));
 	int [] pos = new int [1];
 	OS.memmove (pos, position, 4);
-	if (pos [0] == -1) {
-		int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
-		pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
-	}
-	String newText = verifyText (oldText, pos [0], pos [0]);
+	int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
+	if (pos [0] == -1) pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
+	int start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, pos [0]);
+	String newText = verifyText (oldText, start, start);
 	if (newText != oldText) {
 		int [] newStart = new int [1], newEnd = new int [1];
 		OS.gtk_editable_get_selection_bounds (entryHandle, newStart, newEnd);
@@ -2113,8 +2120,11 @@ public void setSelection (Point selection) {
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.READ_ONLY) != 0) return;
 	if (entryHandle != 0) {
-		OS.gtk_editable_set_position (entryHandle, selection.x);
-		OS.gtk_editable_select_region (entryHandle, selection.x, selection.y);
+		int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
+		int start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, selection.x);
+		int end = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, selection.y);
+		OS.gtk_editable_set_position (entryHandle, start);
+		OS.gtk_editable_select_region (entryHandle, start, end);
 	}
 }
 
@@ -2169,7 +2179,7 @@ public void setText (String string) {
 	*/
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
-		string = verifyText (string, 0, (int)/*64*/OS.g_utf8_strlen (ptr, -1));
+		string = verifyText (string, 0, (int)/*64*/OS.g_utf16_strlen (ptr, -1));
 		if (string == null) return;
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);

@@ -353,4 +353,8 @@
 LOAD_FUNCTION(fp, gtk_status_icon_position_menu) \
 rc = (jintLong)fp;
 
-
+glong g_utf16_pointer_to_offset(const gchar*, const gchar*);
+gchar* g_utf16_offset_to_pointer(const gchar*, glong);
+glong g_utf16_strlen(const gchar*, glong max);
+glong g_utf16_offset_to_utf8_offset(const gchar*, glong);
+glong g_utf8_offset_to_utf16_offset(const gchar*, glong);

@@ -309,8 +309,8 @@ int /*long*/ gtk_preedit_changed (int /*long*/ imcontext) {
 			int [] end = new int [1];
 			for (int i = 0; i < count; i++) {
 				OS.pango_attr_iterator_range (iterator, start, end);
-				ranges [i * 2] = (int)/*64*/OS.g_utf8_pointer_to_offset (preeditString [0], preeditString [0] + start [0]);
-				ranges [i * 2 + 1] = (int)/*64*/OS.g_utf8_pointer_to_offset (preeditString [0], preeditString [0] + end [0]) - 1;
+				ranges [i * 2] = (int)/*64*/OS.g_utf16_pointer_to_offset (preeditString [0], preeditString [0] + start [0]);
+				ranges [i * 2 + 1] = (int)/*64*/OS.g_utf16_pointer_to_offset (preeditString [0], preeditString [0] + end [0]) - 1;
 				styles [i] = new TextStyle (null, null, null);
 				int /*long*/ attr = OS.pango_attr_iterator_get (iterator, OS.PANGO_ATTR_FOREGROUND);
 				if (attr != 0) {

@@ -670,12 +670,18 @@ public Point getCaretLocation () {
 public int getCaretPosition () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0)  {
-		return OS.gtk_editable_get_position (handle);
+		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+		return (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, OS.gtk_editable_get_position (handle));
 	}
 	byte [] position = new byte [ITER_SIZEOF];
 	int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 	OS.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, mark);
-	return OS.gtk_text_iter_get_offset (position);
+	byte [] zero = new byte [ITER_SIZEOF];
+	OS.gtk_text_buffer_get_iter_at_offset(bufferHandle, zero, 0);
+	int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, zero, position, true);
+	int result = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, OS.gtk_text_iter_get_offset (position));
+	OS.g_free (ptr);
+	return result;
 }
 
 /**
@@ -692,9 +698,15 @@ public int getCharCount () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
 		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
-		return (int)/*64*/OS.g_utf8_strlen (ptr, -1);
+		return (int)/*64*/OS.g_utf16_strlen (ptr, -1);
 	}
-	return OS.gtk_text_buffer_get_char_count (bufferHandle);
+	byte [] startIter =  new byte [ITER_SIZEOF];
+	byte [] endIter =  new byte [ITER_SIZEOF];
+	OS.gtk_text_buffer_get_bounds (bufferHandle, startIter, endIter);
+	int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
+	int result = (int)/*64*/OS.g_utf16_strlen(ptr, -1);
+	OS.g_free (ptr);
+	return result;
 }
 
 /**
@@ -862,11 +874,15 @@ public int getOrientation () {
 		int /*long*/ layout = OS.gtk_entry_get_layout (handle);
 		OS.pango_layout_xy_to_index (layout, point.x * OS.PANGO_SCALE, point.y * OS.PANGO_SCALE, index, trailing);
 		int /*long*/ ptr = OS.pango_layout_get_text (layout);
-		position = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
+		position = (int)/*64*/OS.g_utf16_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
 	} else {
 		byte [] p = new byte [ITER_SIZEOF];
 		OS.gtk_text_view_get_iter_at_location (handle, p, point.x, point.y);
-		position = OS.gtk_text_iter_get_offset (p);
+		byte [] zero = new byte [ITER_SIZEOF];
+		OS.gtk_text_buffer_get_iter_at_offset(bufferHandle, zero, 0);
+		int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, zero, p, true);
+		position = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, OS.gtk_text_iter_get_offset (p));
+		OS.g_free (ptr);
 	}
 	return position;
 }
@@ -895,12 +911,21 @@ public Point getSelection () {
 		int [] start = new int [1];
 		int [] end = new int [1];
 		OS.gtk_editable_get_selection_bounds (handle, start, end);
+		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+		start[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start[0]);
+		end[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end[0]);
 		return new Point (start [0], end [0]);
 	}
-	byte [] start =  new byte [ITER_SIZEOF];
-	byte [] end =  new byte [ITER_SIZEOF];
-	OS.gtk_text_buffer_get_selection_bounds (bufferHandle, start, end);
-	return new Point (OS.gtk_text_iter_get_offset (start), OS.gtk_text_iter_get_offset (end));
+	byte [] startIter =  new byte [ITER_SIZEOF];
+	byte [] endIter =  new byte [ITER_SIZEOF];
+	OS.gtk_text_buffer_get_selection_bounds (bufferHandle, startIter, endIter);
+	byte [] zero = new byte [ITER_SIZEOF];
+	OS.gtk_text_buffer_get_iter_at_offset(bufferHandle, zero, 0);
+	int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, zero, endIter, true);
+	int start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, OS.gtk_text_iter_get_offset (startIter));
+	int end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, OS.gtk_text_iter_get_offset (endIter));
+	OS.g_free (ptr);
+	return new Point (start, end);
 }
 
 /**
@@ -1004,27 +1029,17 @@ public String getText () {
 public String getText (int start, int end) {
 	checkWidget ();
 	if (!(start <= end && 0 <= end)) return "";
-	int /*long*/ address;
-	if ((style & SWT.SINGLE) != 0) {
-		start = Math.max (0, start);
-		address = OS.gtk_editable_get_chars (handle, start, end + 1);
-	} else {
-		int length = OS.gtk_text_buffer_get_char_count (bufferHandle);
-		end = Math.min (end, length - 1);
-		if (start > end) return "";
-		start = Math.max (0, start);
-		byte [] startIter =  new byte [ITER_SIZEOF];
-		byte [] endIter =  new byte [ITER_SIZEOF];
-		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, startIter, start);
-		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, endIter, end + 1);
-		address = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
-	}
-	if (address == 0) error (SWT.ERROR_CANNOT_GET_TEXT);
-	int length = OS.strlen (address);
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, address, length);
-	OS.g_free (address);
-	return new String (Converter.mbcsToWcs (null, buffer));
+	String str = getText ();
+	int length = str.length ();
+	end = Math.min (end, length - 1);
+	if (start > end) return "";
+	start = Math.max (0, start);
+	/*
+	* NOTE: The current implementation uses substring ()
+	* which can reference a potentially large character
+	* array.
+	*/
+	return str.substring (start, end + 1);
 }
 
 /**
@@ -1188,7 +1203,7 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 	if ((style & SWT.SEARCH) != 0) {
 		if ((style & SWT.ICON_CANCEL) != 0) {
 			int /*long*/ ptr = OS.gtk_entry_get_text (handle);
-			OS.gtk_entry_set_icon_sensitive (handle, OS.GTK_ENTRY_ICON_SECONDARY, OS.g_utf8_strlen (ptr, -1) > 0);
+			OS.gtk_entry_set_icon_sensitive (handle, OS.GTK_ENTRY_ICON_SECONDARY, OS.g_utf16_strlen (ptr, -1) > 0);
 		}
 	}
 	return 0;
@@ -1244,6 +1259,12 @@ int /*long*/ gtk_delete_range (int /*long*/ widget, int /*long*/ iter1, int /*lo
 	OS.memmove (endIter, iter2, endIter.length);
 	int start = OS.gtk_text_iter_get_offset (startIter);
 	int end = OS.gtk_text_iter_get_offset (endIter);
+	byte [] zero = new byte [ITER_SIZEOF];
+	OS.gtk_text_buffer_get_iter_at_offset(bufferHandle, zero, 0);
+	int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, zero, endIter, true);
+	start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start);
+	end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end);
+	OS.g_free (ptr);
 	String newText = verifyText ("", start, end);
 	if (newText == null) {
 		/* Remember the selection when the text was deleted */
@@ -1274,8 +1295,11 @@ int /*long*/ gtk_delete_range (int /*long*/ widget, int /*long*/ iter1, int /*lo
 
 int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /*long*/ end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
-	if (end_pos == -1) end_pos = OS.g_utf8_strlen (OS.gtk_entry_get_text (handle), -1);
-	String newText = verifyText ("", (int)/*64*/start_pos, (int)/*64*/end_pos);
+	int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+	if (end_pos == -1) end_pos = OS.g_utf8_strlen (ptr, -1);
+	int start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start_pos);
+	int end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end_pos);
+	String newText = verifyText ("", start, end);
 	if (newText == null) {
 		/* Remember the selection when the text was deleted */
 		int [] newStart = new int [1], newEnd = new int [1];
@@ -1426,10 +1450,8 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 	String oldText = new String (Converter.mbcsToWcs (null, buffer));
 	int [] pos = new int [1];
 	OS.memmove (pos, position, 4);
-	if (pos [0] == -1) {
-		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
-		pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
-	}
+	int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+	if (pos [0] == -1) pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
 	/* Use the selection when the text was deleted */
 	int start = pos [0], end = pos [0];
 	if (fixStart != -1 && fixEnd != -1) {
@@ -1437,6 +1459,8 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 		end = fixEnd;
 		fixStart = fixEnd = -1;
 	}
+	start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start);
+	end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end);
 	String newText = verifyText (oldText, start, end);
 	if (newText != oldText) {
 		int [] newStart = new int [1], newEnd = new int [1];
@@ -1493,6 +1517,12 @@ int /*long*/ gtk_text_buffer_insert_text (int /*long*/ widget, int /*long*/ iter
 		end = fixEnd;
 		fixStart = fixEnd = -1;
 	}
+	byte [] zero = new byte [ITER_SIZEOF];
+	OS.gtk_text_buffer_get_iter_at_offset(bufferHandle, zero, 0);
+	int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, zero, position, true);
+	start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start);
+	end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end);
+	OS.g_free(ptr);
 	byte [] buffer = new byte [(int)/*64*/length];
 	OS.memmove (buffer, text, buffer.length);
 	String oldText = new String (Converter.mbcsToWcs (null, buffer));
@@ -1913,11 +1943,18 @@ public void setOrientation (int orientation) {
 public void setSelection (int start) {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
+		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+		start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, start);
 		OS.gtk_editable_set_position (handle, start);
 	} else {
-		byte [] position =  new byte [ITER_SIZEOF];
-		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, position, start);
-		OS.gtk_text_buffer_place_cursor (bufferHandle, position);
+		byte [] startIter =  new byte [ITER_SIZEOF];
+		byte [] endIter =  new byte [ITER_SIZEOF];
+		OS.gtk_text_buffer_get_bounds (bufferHandle, startIter, endIter);
+		int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
+		start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, start);
+		OS.g_free (ptr);
+		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, startIter, start);
+		OS.gtk_text_buffer_place_cursor (bufferHandle, startIter);
 		int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 	}
@@ -1950,12 +1987,20 @@ public void setSelection (int start) {
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
-	if ((style & SWT.SINGLE) != 0) { 
+	if ((style & SWT.SINGLE) != 0) {
+		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+		start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, start);
+		end = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, end);
 		OS.gtk_editable_set_position (handle, start);
 		OS.gtk_editable_select_region (handle, start, end);
 	} else {
 		byte [] startIter =  new byte [ITER_SIZEOF];
 		byte [] endIter =  new byte [ITER_SIZEOF];
+		OS.gtk_text_buffer_get_bounds (bufferHandle, startIter, endIter);
+		int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
+		start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, start);
+		end = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, end);
+		OS.g_free (ptr);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, startIter, start);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, endIter, end);
 		int /*long*/ insertMark = OS.gtk_text_buffer_get_insert (bufferHandle);

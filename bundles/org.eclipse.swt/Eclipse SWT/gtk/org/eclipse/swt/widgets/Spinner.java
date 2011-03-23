@@ -647,8 +647,11 @@ int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
 
 int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /*long*/ end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
-	if (end_pos == -1) end_pos = OS.g_utf8_strlen (OS.gtk_entry_get_text (handle), -1);
-	String newText = verifyText ("", (int)/*64*/start_pos, (int)/*64*/end_pos);
+	int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+	if (end_pos == -1) end_pos = OS.g_utf8_strlen (ptr, -1);
+	int start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start_pos);
+	int end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end_pos);
+	String newText = verifyText ("", start, end);
 	if (newText == null) {
 		OS.g_signal_stop_emission_by_name (handle, OS.delete_text);
 	} else {
@@ -685,11 +688,10 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 	String oldText = new String (Converter.mbcsToWcs (null, buffer));
 	int [] pos = new int [1];
 	OS.memmove (pos, position, 4);
-	if (pos [0] == -1) {
-		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
-		pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
-	}
-	String newText = verifyText (oldText, pos [0], pos [0]);
+	int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+	if (pos [0] == -1) pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
+	int start = (int)/*64*/OS.g_utf16_pointer_to_offset (ptr, pos [0]);
+	String newText = verifyText (oldText, start, start);
 	if (newText != oldText) {
 		int [] newStart = new int [1], newEnd = new int [1];
 		OS.gtk_editable_get_selection_bounds (handle, newStart, newEnd);

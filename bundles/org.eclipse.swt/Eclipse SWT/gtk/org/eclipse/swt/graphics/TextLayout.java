@@ -142,7 +142,7 @@ void computeRuns () {
 			attribute.end_index = bytePos + offset + 6;
 			OS.memmove (attr, attribute, PangoAttribute.sizeof);
 			OS.pango_attr_list_insert(attrList, attr);			
-			int pos = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + bytePos);
+			int pos = (int)/*64*/OS.g_utf16_pointer_to_offset(ptr, ptr + bytePos);
 			chars[pos + lineIndex * 2] = ZWS;
 			chars[pos + lineIndex * 2 + 1] = ZWNBS;
 			segmentsText.getChars(oldPos, pos, chars,  oldPos + lineIndex * 2);
@@ -184,8 +184,8 @@ void computeRuns () {
 		if (style == null) continue;
 		int start = translateOffset(styleItem.start);
 		int end = translateOffset(styles[i+1].start - 1);
-		int byteStart = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, start) - ptr);
-		int byteEnd = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, end + 1) - ptr);
+		int byteStart = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, start) - ptr);
+		int byteEnd = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, end + 1) - ptr);
 		byteStart = Math.min(byteStart, strlen);
 		byteEnd = Math.min(byteEnd, strlen);
 		Font font = style.font;
@@ -430,9 +430,9 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			OS.pango_layout_iter_get_line_extents(iter, null, rect);
 			if (OS.pango_layout_iter_next_line(iter)) {
 				int bytePos = OS.pango_layout_iter_get_index(iter);
-				lineEnd = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + bytePos);
+				lineEnd = (int)/*64*/OS.g_utf16_pointer_to_offset(ptr, ptr + bytePos);
 			} else {
-				lineEnd = (int)/*64*/OS.g_utf8_strlen(ptr, -1);
+				lineEnd = (int)/*64*/OS.g_utf16_strlen(ptr, -1);
 			}
 			boolean extent = false;
 			if (lineIndex == lineCount - 1 && (flags & SWT.LAST_LINE_SELECTION) != 0) {
@@ -494,7 +494,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	} else {
 		selectionStart = Math.min(Math.max(0, selectionStart), length - 1);
 		selectionEnd = Math.min(Math.max(0, selectionEnd), length - 1);
-		length = (int)/*64*/OS.g_utf8_strlen(OS.pango_layout_get_text(layout), -1);
+		length = (int)/*64*/OS.g_utf16_strlen(OS.pango_layout_get_text(layout), -1);
 		selectionStart = translateOffset(selectionStart);
 		selectionEnd = translateOffset(selectionEnd);
 		if (selectionForeground == null) selectionForeground = device.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
@@ -518,8 +518,8 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			}
 		} else {
 			int /*long*/ ptr = OS.pango_layout_get_text(layout);
-			int byteSelStart = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, selectionStart) - ptr);
-			int byteSelEnd = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, selectionEnd + 1) - ptr);
+			int byteSelStart = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, selectionStart) - ptr);
+			int byteSelEnd = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, selectionEnd + 1) - ptr);
 			int strlen = OS.strlen(ptr);
 			byteSelStart = Math.min(byteSelStart, strlen);
 			byteSelEnd = Math.min(byteSelEnd, strlen);
@@ -599,8 +599,8 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 			}
 			start = translateOffset(start);
 			int end = translateOffset(styles[i+1].start - 1);
-			int byteStart = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, start) - ptr);
-			int byteEnd = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, end + 1) - ptr);
+			int byteStart = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, start) - ptr);
+			int byteEnd = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, end + 1) - ptr);
 			int[] ranges = new int[]{byteStart, byteEnd};
 			int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
 			if (rgn != 0) {
@@ -677,8 +677,8 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 			}
 			start = translateOffset(start);
 			int end = translateOffset(styles[i+1].start - 1);
-			int byteStart = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, start) - ptr);
-			int byteEnd = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, end + 1) - ptr);
+			int byteStart = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, start) - ptr);
+			int byteEnd = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, end + 1) - ptr);
 			int[] ranges = new int[]{byteStart, byteEnd};
 			int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
 			if (rgn != 0) {
@@ -776,8 +776,8 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 			}
 			start = translateOffset(start);
 			int end = translateOffset(styles[i+1].start - 1);
-			int byteStart = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, start) - ptr);
-			int byteEnd = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, end + 1) - ptr);
+			int byteStart = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, start) - ptr);
+			int byteEnd = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, end + 1) - ptr);
 			int[] ranges = new int[]{byteStart, byteEnd};
 			int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
 			if (rgn != 0) {
@@ -946,8 +946,8 @@ public Rectangle getBounds(int start, int end) {
 	start = translateOffset(start);
 	end = translateOffset(end);
 	int /*long*/ ptr = OS.pango_layout_get_text(layout);
-	int byteStart = (int)/*64*/(OS.g_utf8_offset_to_pointer (ptr, start) - ptr);
-	int byteEnd = (int)/*64*/(OS.g_utf8_offset_to_pointer (ptr, end + 1) - ptr);
+	int byteStart = (int)/*64*/(OS.g_utf16_offset_to_pointer (ptr, start) - ptr);
+	int byteEnd = (int)/*64*/(OS.g_utf16_offset_to_pointer (ptr, end + 1) - ptr);
 	int strlen = OS.strlen(ptr);
 	byteStart = Math.min(byteStart, strlen);
 	byteEnd = Math.min(byteEnd, strlen);
@@ -1086,7 +1086,7 @@ public int getLevel(int offset) {
 	PangoItem item = new PangoItem();
 	PangoLayoutRun run = new PangoLayoutRun();
 	int /*long*/ ptr = OS.pango_layout_get_text(layout);
-	int /*long*/ byteOffset = OS.g_utf8_offset_to_pointer(ptr, offset) - ptr;
+	int /*long*/ byteOffset = OS.g_utf16_offset_to_pointer(ptr, offset) - ptr;
 	int strlen = OS.strlen(ptr);
 	byteOffset = Math.min(byteOffset, strlen);
 	do {
@@ -1180,7 +1180,7 @@ public int getLineIndex(int offset) {
 	offset = translateOffset(offset);
 	int line = 0;
 	int /*long*/ ptr = OS.pango_layout_get_text(layout);
-	int /*long*/ byteOffset = OS.g_utf8_offset_to_pointer(ptr,offset) - ptr;
+	int /*long*/ byteOffset = OS.g_utf16_offset_to_pointer(ptr,offset) - ptr;
 	int strlen = OS.strlen(ptr);
 	byteOffset = Math.min(byteOffset, strlen);
 	int /*long*/ iter = OS.pango_layout_get_iter(layout);
@@ -1253,7 +1253,7 @@ public int[] getLineOffsets() {
 	for (int i = 0; i < lineCount; i++) {
 		int /*long*/ linePtr = OS.pango_layout_get_line(layout, i);
 		OS.memmove(line, linePtr, PangoLayoutLine.sizeof);
-		int pos = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + line.start_index);
+		int pos = (int)/*64*/OS.g_utf16_pointer_to_offset(ptr, ptr + line.start_index);
 		offsets[i] = untranslateOffset(pos);
 	}
 	offsets[lineCount] = text.length();
@@ -1283,7 +1283,7 @@ public Point getLocation(int offset, boolean trailing) {
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	offset = translateOffset(offset);
 	int /*long*/ ptr = OS.pango_layout_get_text(layout);
-	int byteOffset = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, offset) - ptr);
+	int byteOffset = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, offset) - ptr);
 	int strlen = OS.strlen(ptr);
 	byteOffset = Math.min(byteOffset, strlen);
 	PangoRectangle pos = new PangoRectangle();
@@ -1337,32 +1337,49 @@ int _getOffset (int offset, int movement, boolean forward) {
 	int[] nAttrs = new int[1];
 	OS.pango_layout_get_log_attrs(layout, attrs, nAttrs);
 	if (attrs[0] == 0) return offset + step;
-	length = (int)/*64*/OS.g_utf8_strlen(OS.pango_layout_get_text(layout), -1);
-	offset += step;
-	int internalOffset = translateOffset(offset);
+	
+	int /*long*/ ptr = OS.pango_layout_get_text(layout);
+	int utf8Offset = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, translateOffset(offset));
+	int utf8Length = (int)/*64*/OS.g_utf8_strlen(ptr, -1);
+	utf8Offset += step;
 	PangoLogAttr logAttr = new PangoLogAttr();
-	while (0 < internalOffset && internalOffset < length) {
-		OS.memmove(logAttr, attrs[0] + internalOffset * PangoLogAttr.sizeof, PangoLogAttr.sizeof);
-		if (((movement & SWT.MOVEMENT_CLUSTER) != 0) && logAttr.is_cursor_position) break; 
+	while (0 <= utf8Offset && utf8Offset <= utf8Length) {
+		OS.memmove(logAttr, attrs[0] + utf8Offset * PangoLogAttr.sizeof, PangoLogAttr.sizeof);
+		boolean found = false;
+		if (((movement & SWT.MOVEMENT_CLUSTER) != 0) && logAttr.is_cursor_position) found = true; 
 		if ((movement & SWT.MOVEMENT_WORD) != 0) {
 			if (forward) {
-				if (logAttr.is_word_end) break;
+				if (logAttr.is_word_end) found = true;
 			} else {
-				if (logAttr.is_word_start) break;
+				if (logAttr.is_word_start) found = true;
 			}
 		}
 		if ((movement & SWT.MOVEMENT_WORD_START) != 0) {
-			if (logAttr.is_word_start) break;
-			if (logAttr.is_sentence_end) break;
+			if (logAttr.is_word_start) found = true;
+			if (logAttr.is_sentence_end) found = true;
 		}
 		if ((movement & SWT.MOVEMENT_WORD_END) != 0) {
-			if (logAttr.is_word_end) break;
+			if (logAttr.is_word_end) found = true;
 		}
-		offset += step;
-		internalOffset = translateOffset(offset);
+		if (found) {
+			int testOffset = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, utf8Offset); 
+			if (invalidOffsets != null) {
+				for (int i = 0; i < invalidOffsets.length; i++) {
+					if (testOffset == invalidOffsets[i]) {
+						found = false;
+						break;
+					}
+				}
+			}
+			if (found) {
+				offset = untranslateOffset(testOffset);
+				break;
+			}
+		}
+		utf8Offset += step;
 	}
 	OS.g_free(attrs[0]);
-	return Math.min(Math.max(0, offset), text.length());
+	return Math.min(Math.max(0, offset), length);
 }
 
 /**
@@ -1454,7 +1471,7 @@ public int getOffset(int x, int y, int[] trailing) {
 	int[] piTrailing = new int[1];
 	OS.pango_layout_xy_to_index(layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, piTrailing);
 	int /*long*/ ptr = OS.pango_layout_get_text(layout);
-	int offset = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + index[0]);
+	int offset = (int)/*64*/OS.g_utf16_pointer_to_offset(ptr, ptr + index[0]);
 	if (trailing != null) trailing[0] = piTrailing[0];
 	return untranslateOffset(offset);
 }

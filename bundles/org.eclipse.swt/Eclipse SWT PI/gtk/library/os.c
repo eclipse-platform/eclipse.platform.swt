@@ -4444,6 +4444,54 @@ fail:
 }
 #endif
 
+#ifndef NO__1g_1utf16_1offset_1to_1pointer
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1utf16_1offset_1to_1pointer)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1utf16_1offset_1to_1pointer_FUNC);
+	rc = (jintLong)g_utf16_offset_to_pointer((const gchar *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1g_1utf16_1offset_1to_1pointer_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1utf16_1offset_1to_1utf8_1offset
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1utf16_1offset_1to_1utf8_1offset)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1utf16_1offset_1to_1utf8_1offset_FUNC);
+	rc = (jintLong)g_utf16_offset_to_utf8_offset((const gchar *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1g_1utf16_1offset_1to_1utf8_1offset_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1utf16_1pointer_1to_1offset
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1utf16_1pointer_1to_1offset)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1utf16_1pointer_1to_1offset_FUNC);
+	rc = (jintLong)g_utf16_pointer_to_offset((const gchar *)arg0, (const gchar *)arg1);
+	OS_NATIVE_EXIT(env, that, _1g_1utf16_1pointer_1to_1offset_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1utf16_1strlen
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1utf16_1strlen)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1utf16_1strlen_FUNC);
+	rc = (jintLong)g_utf16_strlen((const gchar *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1g_1utf16_1strlen_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1g_1utf16_1to_1utf8
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1utf16_1to_1utf8)
 	(JNIEnv *env, jclass that, jcharArray arg0, jintLong arg1, jintLongArray arg2, jintLongArray arg3, jintLongArray arg4)
@@ -4497,6 +4545,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1utf8_1offset_1to_1pointer)
 	OS_NATIVE_ENTER(env, that, _1g_1utf8_1offset_1to_1pointer_FUNC);
 	rc = (jintLong)g_utf8_offset_to_pointer((const gchar *)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, _1g_1utf8_1offset_1to_1pointer_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1utf8_1offset_1to_1utf16_1offset
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1utf8_1offset_1to_1utf16_1offset)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1utf8_1offset_1to_1utf16_1offset_FUNC);
+	rc = (jintLong)g_utf8_offset_to_utf16_offset((const gchar *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1g_1utf8_1offset_1to_1utf16_1offset_FUNC);
 	return rc;
 }
 #endif

@@ -5419,7 +5419,8 @@ Point getPointAtOffset(int offset) {
 	TextLayout layout = renderer.getTextLayout(lineIndex);
 	if (lineLength != 0  && offsetInLine <= lineLength) {
 		if (offsetInLine == lineLength) {
-			point = layout.getLocation(offsetInLine - 1, true);
+			offsetInLine = layout.getPreviousOffset(offsetInLine, SWT.MOVEMENT_CLUSTER); 
+			point = layout.getLocation(offsetInLine, true);
 		} else {
 			switch (caretAlignment) {
 				case OFFSET_LEADING:
@@ -5430,7 +5431,8 @@ Point getPointAtOffset(int offset) {
 					if (offsetInLine == 0) {
 						point = layout.getLocation(offsetInLine, false);
 					} else {
-						point = layout.getLocation(offsetInLine - 1, true);
+						offsetInLine = layout.getPreviousOffset(offsetInLine, SWT.MOVEMENT_CLUSTER); 
+						point = layout.getLocation(offsetInLine, true);
 					}
 					break;
 			}
