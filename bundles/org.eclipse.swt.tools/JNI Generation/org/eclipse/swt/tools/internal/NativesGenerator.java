@@ -690,7 +690,7 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 			if (i != 1) output(", ");
 			JNIParameter param = params[i];
 			JNIType paramType = param.getType(), paramType64 = param.getType64();
-			output(paramType.getTypeSignature4(!paramType.equals(paramType64), false));
+			output(paramType.getTypeSignature4(!paramType.equals(paramType64), param.getFlag(FLAG_STRUCT)));
 		}
 		output("))(*(");
 		JNIType paramType = params[1].getType(), paramType64 = params[1].getType64();
