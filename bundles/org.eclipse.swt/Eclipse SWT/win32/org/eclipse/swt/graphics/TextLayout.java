@@ -1625,6 +1625,26 @@ public Rectangle getBounds (int start, int end) {
 	end = Math.min(Math.max(0, end), length - 1);
 	start = translateOffset(start);
 	end = translateOffset(end);
+	/* use the high surrogate for the start offset and the low surrogate for the end offset */
+	length = segmentsText.length();
+	char ch = segmentsText.charAt(start);
+	if (0xDC00 <= ch && ch <= 0xDFFF) {
+		if (start - 1 >= 0) {
+			ch = segmentsText.charAt(start - 1);
+			if (0xD800 <= ch && ch <= 0xDBFF) {
+				start--;
+			}
+		}
+	}
+	ch = segmentsText.charAt(end);
+	if (0xD800 <= ch && ch <= 0xDBFF) {
+		if (end + 1 < length) {
+			ch = segmentsText.charAt(end + 1);
+			if (0xDC00 <= ch && ch <= 0xDFFF) {
+				end++;
+			}
+		}
+	}
 	int left = 0x7fffffff, right = 0;
 	int top = 0x7fffffff, bottom = 0;
 	boolean isRTL = (orientation & SWT.RIGHT_TO_LEFT) != 0;
