@@ -1983,6 +1983,27 @@ public Point getLocation (int offset, boolean trailing) {
 	if (offset == length) {
 		return new Point(getLineIndent(line) + lineWidth[line], lineY[line]);
 	}
+	/* For trailing use the low surrogate and for lead use the high surrogate */
+	char ch = segmentsText.charAt(offset);
+	if (trailing) {
+		if (0xD800 <= ch && ch <= 0xDBFF) {
+			if (offset + 1 < length) {
+				ch = segmentsText.charAt(offset + 1);
+				if (0xDC00 <= ch && ch <= 0xDFFF) {
+					offset++;
+				}
+			}
+		}
+	} else {
+		if (0xDC00 <= ch && ch <= 0xDFFF) {
+			if (offset - 1 >= 0) {
+				ch = segmentsText.charAt(offset - 1);
+				if (0xD800 <= ch && ch <= 0xDBFF) {
+					offset--;
+				}
+			}
+		}
+	}
 	int low = -1;
 	int high = allRuns.length;
 	while (high - low > 1) {
