@@ -344,7 +344,7 @@ public static final native int JSClassDefinition_sizeof ();
  * @param size cast=(size_t)
  */
 public static final native void memmove (int /*long*/ dest, JSClassDefinition src, int /*long*/ size);
-/** @method flags=dynamic*/
+/** @method flags=no_gen */
 public static final native int WebKitCreateInstance (byte[] rclsid, int /*long*/ pUnkOuter, byte[] refiid, int /*long*/[] ppvObject);
 public static final int WebKitCreateInstance (GUID clsid, int /*long*/ pUnkOuter, GUID iid, int /*long*/[] ppvObject) {
 	byte[] rclsid = new byte[GUID.sizeof];

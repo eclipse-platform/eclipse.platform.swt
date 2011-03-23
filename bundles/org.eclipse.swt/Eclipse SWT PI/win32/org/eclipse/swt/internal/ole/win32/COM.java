@@ -746,7 +746,13 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, LICIN
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0, int arg1, boolean arg2);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0, long arg1, boolean arg2);
 
+/**
+ * @param arg0 flags=struct
+ */
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0, int arg1, int arg2);
+/**
+ * @param arg0 flags=struct
+ */
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0, long arg1, long arg2);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0, RECT arg1);

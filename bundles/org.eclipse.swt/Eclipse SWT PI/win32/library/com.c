@@ -3059,7 +3059,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_win32_RE
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_RECT_2II_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, RECT *, jint, jint))(*(jintLong **)arg1)[arg0])(arg1, lparg2, arg3, arg4);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, RECT, jint, jint))(*(jintLong **)arg1)[arg0])(arg1, *lparg2, arg3, arg4);
 fail:
 	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
 #ifndef JNI64
@@ -3113,7 +3113,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_win32_RE
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_RECT_2JJ_FUNC);
 #endif
 	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, RECT *, jlong, jlong))(*(jintLong **)arg1)[arg0])(arg1, lparg2, arg3, arg4);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, RECT, jlong, jlong))(*(jintLong **)arg1)[arg0])(arg1, *lparg2, arg3, arg4);
 fail:
 	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
 #ifndef JNI64

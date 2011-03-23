@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2010 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2011 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -748,37 +748,6 @@ JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSValueToStringCopy)
 fail:
 	if (arg2 && lparg2) env->ReleaseIntLongArrayElements(arg2, lparg2, 0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSValueToStringCopy_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_WebKitCreateInstance
-extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(WebKitCreateInstance)(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1, jbyteArray arg2, jintLongArray arg3);
-JNIEXPORT jint JNICALL WebKit_win32_NATIVE(WebKitCreateInstance)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1, jbyteArray arg2, jintLongArray arg3)
-{
-	jbyte *lparg0=NULL;
-	jbyte *lparg2=NULL;
-	jintLong *lparg3=NULL;
-	jint rc = 0;
-	WebKit_win32_NATIVE_ENTER(env, that, WebKitCreateInstance_FUNC);
-	if (arg0) if ((lparg0 = env->GetByteArrayElements(arg0, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = env->GetIntLongArrayElements(arg3, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)WebKitCreateInstance(lparg0, arg1, lparg2, lparg3);
-*/
-	{
-		LOAD_FUNCTION(fp, WebKitCreateInstance)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(jbyte *, jintLong, jbyte *, jintLong *))fp)(lparg0, arg1, lparg2, lparg3);
-		}
-	}
-fail:
-	if (arg3 && lparg3) env->ReleaseIntLongArrayElements(arg3, lparg3, 0);
-	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
-	if (arg0 && lparg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
-	WebKit_win32_NATIVE_EXIT(env, that, WebKitCreateInstance_FUNC);
 	return rc;
 }
 #endif
