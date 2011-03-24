@@ -1020,12 +1020,12 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 			if (clrTextBk != -1) event.detail |= SWT.BACKGROUND;
 			if (hot) event.detail |= SWT.HOT;
 			if (selected) event.detail |= SWT.SELECTED;
-			if (!explorerTheme) {
-				//if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
-				if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == nmcd.dwItemSpec) {
-					if (handle == OS.GetFocus ()) {
-						int uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-						if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
+			//if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+			if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == nmcd.dwItemSpec) {
+				if (handle == OS.GetFocus ()) {
+					int uiState = (int)/*64*/OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+					if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
+						if (!explorerTheme || !selected) {
 							focused = true;
 							event.detail |= SWT.FOCUSED;
 						}
