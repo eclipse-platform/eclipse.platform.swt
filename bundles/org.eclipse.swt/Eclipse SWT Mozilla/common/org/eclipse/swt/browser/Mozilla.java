@@ -3637,7 +3637,7 @@ int DestroyBrowserWindow () {
 	browser.dispose ();
 	return XPCOM.NS_OK;
 }
-   	
+
 int SizeBrowserTo (int aCX, int aCY) {
 	size = new Point (aCX, aCY);
 	boolean isChrome = (chromeFlags & nsIWebBrowserChrome.CHROME_OPENAS_CHROME) != 0;
@@ -3689,18 +3689,26 @@ int ExitModalEventLoop (int aStatus) {
 	return XPCOM.NS_OK;
 }
 
-/* nsIEmbeddingSiteWindow */ 
+/* nsIEmbeddingSiteWindow */
 
 int SetDimensions (int flags, int x, int y, int cx, int cy) {
+	boolean isChrome = (chromeFlags & nsIWebBrowserChrome.CHROME_OPENAS_CHROME) != 0;
 	if ((flags & nsIEmbeddingSiteWindow.DIM_FLAGS_POSITION) != 0) {
 		location = new Point (x, y);
-		browser.getShell ().setLocation (x, y);
+		if (isChrome) {
+			browser.getShell ().setLocation (x, y);
+		}
 	}
 	if ((flags & nsIEmbeddingSiteWindow.DIM_FLAGS_SIZE_INNER) != 0) {
-		browser.setSize (cx, cy);
+		size = new Point (cx, cy);
+		if (isChrome) {
+			browser.setSize (cx, cy);
+		}
 	}
 	if ((flags & nsIEmbeddingSiteWindow.DIM_FLAGS_SIZE_OUTER) != 0) {
-		browser.getShell ().setSize (cx, cy);
+		if (isChrome) {
+			browser.getShell ().setSize (cx, cy);
+		}
 	}
 	return XPCOM.NS_OK;
 }
