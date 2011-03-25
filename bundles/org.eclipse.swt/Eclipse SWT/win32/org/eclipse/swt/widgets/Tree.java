@@ -5114,9 +5114,24 @@ public void setTopItem (TreeItem item) {
 		redraw = getDrawing () && OS.IsWindowVisible (handle);
 		if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	}
-	OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
+	SCROLLINFO hInfo = null;
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	int /*long*/ hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
-	if (hParent == 0) OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
+	if (hParent != 0 && (bits & (OS.TVS_NOHSCROLL | OS.TVS_NOSCROLL)) == 0) {
+		hInfo = new SCROLLINFO ();
+		hInfo.cbSize = SCROLLINFO.sizeof;
+		hInfo.fMask = OS.SIF_ALL;
+		OS.GetScrollInfo (handle, OS.SB_HORZ, hInfo);
+	}
+	OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
+	if (hParent != 0) {
+		if (hInfo != null) {
+			int /*long*/ hThumb = OS.MAKELPARAM (OS.SB_THUMBPOSITION, hInfo.nPos);
+			OS.SendMessage (handle, OS.WM_HSCROLL, hThumb, 0);
+		}
+	} else {
+		OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
+	}
 	if (fixScroll) {
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
