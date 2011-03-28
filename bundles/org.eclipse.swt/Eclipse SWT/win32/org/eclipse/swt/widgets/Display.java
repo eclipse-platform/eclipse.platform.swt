@@ -2701,6 +2701,16 @@ protected void init () {
 			char [] buffer = new char [length + 1];
 			APP_NAME.getChars (0, length, buffer, 0);
 			OS.SetCurrentProcessExplicitAppUserModelID (buffer);
+			
+			/* Delete any old jump list set for the ID */
+			int /*long*/ [] ppv = new int /*long*/ [1];
+			int hr = OS.CoCreateInstance (TaskBar.CLSID_DestinationList, 0, OS.CLSCTX_INPROC_SERVER, TaskBar.IID_ICustomDestinationList, ppv);
+			if (hr == OS.S_OK) {
+				/*ICustomDestinationList::DeleteList*/
+				OS.VtblCall (10, ppv [0], buffer);
+				/*IUnknown::Release*/
+				OS.VtblCall (2, ppv [0]);
+			}
 		}
 	}
 	
