@@ -1967,13 +1967,12 @@ public void setBackground(Color[] colors, int[] percents) {
  * </pre>
  *
  * @param colors an array of Color that specifies the colors to appear in the gradient 
- *               in order of appearance left to right.  The value <code>null</code> clears the
- *               background gradient. The value <code>null</code> can be used inside the array of 
- *               Color to specify the background color.
+ *               in order of appearance from top to bottom or left to right.  The value
+ *               <code>null</code> clears the background gradient. The value <code>null</code>
+ *               can be used inside the array of Color to specify the background color.
  * @param percents an array of integers between 0 and 100 specifying the percent of the width 
  *                 of the widget at which the color should change.  The size of the <code>percents</code>
  *                 array must be one less than the size of the <code>colors</code> array.
- * 
  * @param vertical indicate the direction of the gradient. <code>True</code> is vertical and <code>false</code> is horizontal. 
  * 
  * @exception SWTException <ul>
@@ -2765,8 +2764,8 @@ void setSelection(int index, boolean notify) {
  */
 public void setSelectionBackground (Color color) {
 	checkWidget();
+	if (selectionBackground.equals(color)) return;
 	setSelectionHighlightGradientColor(null);
-	if (selectionBackground == color) return;
 	if (color == null) color = getDisplay().getSystemColor(SELECTION_BACKGROUND);
 	selectionBackground = color;
 	renderer.createAntialiasColors(); //TODO:  need better caching strategy
@@ -2801,11 +2800,11 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
 	setSelectionBackground(colors, percents, false);
 }
 /**
- * Specify a gradient of colours to be draw in the background of the selected tab.
+ * Specify a gradient of colours to be drawn in the background of the selected tab.
  * For example to draw a vertical gradient that varies from dark blue to blue and then to
- * white, use the following call to setBackground:
+ * white, use the following call to setSelectionBackground:
  * <pre>
- *	cfolder.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE), 
+ *	cfolder.setSelectionBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE), 
  *		                           display.getSystemColor(SWT.COLOR_BLUE),
  *		                           display.getSystemColor(SWT.COLOR_WHITE), 
  *		                           display.getSystemColor(SWT.COLOR_WHITE)},
@@ -2813,13 +2812,14 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
  * </pre>
  *
  * @param colors an array of Color that specifies the colors to appear in the gradient 
- *               in order of appearance left to right.  The value <code>null</code> clears the
+ *               in order of appearance from top to bottom.  The value <code>null</code> clears the
  *               background gradient. The value <code>null</code> can be used inside the array of 
- *               Color to specify the background color.
- * @param percents an array of integers between 0 and 100 specifying the percent of the width 
+ *               Color to specify the background color. For vertical gradients, the colors array
+ *               can optionally have an extra entry at the end to specify a highlight top color.
+ * @param percents an array of increasing integers between 0 and 100 specifying the percent of the width 
  *                 of the widget at which the color should change.  The size of the percents array must be one 
- *                 less than the size of the colors array.
- * 
+ *                 less than the size of the colors array, unless there is a highlight top color, in which
+ *                 case it must be exactly two less than the size of the colors array.
  * @param vertical indicate the direction of the gradient.  True is vertical and false is horizontal. 
  * 
  * @exception SWTException <ul>
@@ -2937,8 +2937,8 @@ void setSelectionHighlightGradientColor(Color start) {
  */
 public void setSelectionBackground(Image image) {
 	checkWidget();
-	setSelectionHighlightGradientColor(null);
 	if (image == selectionBgImage) return;
+	setSelectionHighlightGradientColor(null);
 	if (image != null) {
 		selectionGradientColors = null;
 		selectionGradientPercents = null;
@@ -2960,7 +2960,7 @@ public void setSelectionBackground(Image image) {
  */
 public void setSelectionForeground (Color color) {
 	checkWidget();
-	if (selectionForeground == color) return;
+	if (selectionForeground.equals(color)) return;
 	if (color == null) color = getDisplay().getSystemColor(SELECTION_FOREGROUND);
 	selectionForeground = color;
 	if (selectedIndex > -1) redraw();
