@@ -3778,8 +3778,14 @@ int SetVisibility (int aVisibility) {
 				event.menuBar = isOSX || (chromeFlags & nsIWebBrowserChrome.CHROME_MENUBAR) != 0;
 				event.statusBar = (chromeFlags & nsIWebBrowserChrome.CHROME_STATUSBAR) != 0;
 				event.toolBar = (chromeFlags & nsIWebBrowserChrome.CHROME_TOOLBAR) != 0;
-				for (int i = 0; i < visibilityWindowListeners.length; i++) {
-					visibilityWindowListeners[i].show (event);
+				/* TEMPORARY CODE */
+				MozillaDelegate.lock (true);
+				try {
+					for (int i = 0; i < visibilityWindowListeners.length; i++) {
+						visibilityWindowListeners[i].show (event);
+					}
+				} finally {
+					MozillaDelegate.lock (false);
 				}
 				location = null;
 				size = null;

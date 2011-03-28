@@ -1662,44 +1662,50 @@ int /*long*/ webkit_status_bar_text_changed (int /*long*/ web_view, int /*long*/
 }
 
 int /*long*/ webkit_web_view_ready (int /*long*/ web_view) {
-	WindowEvent newEvent = new WindowEvent (browser);
-	newEvent.display = browser.getDisplay ();
-	newEvent.widget = browser;
-
-	int /*long*/ settings = WebKitGTK.webkit_web_view_get_window_features (webView);
-	int[] result = new int[1];
-	OS.g_object_get (settings, WebKitGTK.locationbar_visible, result, 0);
-	newEvent.addressBar = result[0] != 0;
-	result[0] = 0;
-	OS.g_object_get (settings, WebKitGTK.menubar_visible, result, 0);
-	newEvent.menuBar = result[0] != 0;
-	result[0] = 0;
-	OS.g_object_get (settings, WebKitGTK.statusbar_visible, result, 0);
-	newEvent.statusBar = result[0] != 0;
-	result[0] = 0;
-	OS.g_object_get (settings, WebKitGTK.toolbar_visible, result, 0);
-	newEvent.toolBar = result[0] != 0;
-	result[0] = 0;
-	OS.g_object_get (settings, WebKitGTK.x, result, 0);
-	int x = result[0];
-	result[0] = 0;
-	OS.g_object_get (settings, WebKitGTK.y, result, 0);
-	int y = result[0];
-	result[0] = 0;
-	OS.g_object_get (settings, WebKitGTK.width, result, 0);
-	int width = result[0];
-	result[0] = 0;
-	OS.g_object_get (settings, WebKitGTK.height, result, 0);
-	int height = result[0];
-	result[0] = 0;
-	if (x != -1 && y != -1) {
-		newEvent.location = new Point (x,y);
-	}
-	if (width != -1 && height != -1) {
-		newEvent.size = new Point (width,height);
-	}
-	for (int i = 0; i < visibilityWindowListeners.length; i++) {
-		visibilityWindowListeners[i].show (newEvent);
+	/* TEMPORARY CODE */
+	OS.gdk_threads_enter();
+	try {
+		WindowEvent newEvent = new WindowEvent (browser);
+		newEvent.display = browser.getDisplay ();
+		newEvent.widget = browser;
+	
+		int /*long*/ settings = WebKitGTK.webkit_web_view_get_window_features (webView);
+		int[] result = new int[1];
+		OS.g_object_get (settings, WebKitGTK.locationbar_visible, result, 0);
+		newEvent.addressBar = result[0] != 0;
+		result[0] = 0;
+		OS.g_object_get (settings, WebKitGTK.menubar_visible, result, 0);
+		newEvent.menuBar = result[0] != 0;
+		result[0] = 0;
+		OS.g_object_get (settings, WebKitGTK.statusbar_visible, result, 0);
+		newEvent.statusBar = result[0] != 0;
+		result[0] = 0;
+		OS.g_object_get (settings, WebKitGTK.toolbar_visible, result, 0);
+		newEvent.toolBar = result[0] != 0;
+		result[0] = 0;
+		OS.g_object_get (settings, WebKitGTK.x, result, 0);
+		int x = result[0];
+		result[0] = 0;
+		OS.g_object_get (settings, WebKitGTK.y, result, 0);
+		int y = result[0];
+		result[0] = 0;
+		OS.g_object_get (settings, WebKitGTK.width, result, 0);
+		int width = result[0];
+		result[0] = 0;
+		OS.g_object_get (settings, WebKitGTK.height, result, 0);
+		int height = result[0];
+		result[0] = 0;
+		if (x != -1 && y != -1) {
+			newEvent.location = new Point (x,y);
+		}
+		if (width != -1 && height != -1) {
+			newEvent.size = new Point (width,height);
+		}
+		for (int i = 0; i < visibilityWindowListeners.length; i++) {
+			visibilityWindowListeners[i].show (newEvent);
+		}
+	} finally {
+		OS.gdk_threads_leave();
 	}
 	return 0;
 }
