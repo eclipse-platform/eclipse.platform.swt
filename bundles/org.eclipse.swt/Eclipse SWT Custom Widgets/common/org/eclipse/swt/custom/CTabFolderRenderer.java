@@ -53,7 +53,7 @@ public class CTabFolderRenderer {
 	 * We have to recompute the colors if the border color changes
 	 */
 	Color lastBorderColor = null;
-	static Hashtable ColorCache = new Hashtable ();
+	static final String COLOR_CACHE = "org.eclipse.swt.custom.CTabFolderRenderer.ColorCache"; //$NON-NLS-1$
 	
 	//TOP_LEFT_CORNER_HILITE is laid out in reverse (ie. top to bottom)
 	//so can fade in same direction as right swoop curve
@@ -128,6 +128,11 @@ public class CTabFolderRenderer {
 	
 	static Color getColor(Display display, RGB rgb) {
 		Color color;
+		Hashtable ColorCache = (Hashtable) display.getData(COLOR_CACHE);
+		if (ColorCache == null) {
+			ColorCache = new Hashtable();
+			display.setData(COLOR_CACHE, ColorCache);
+		}
 		Object [] colorData = (Object []) ColorCache.get(rgb);
 		if (colorData != null) {
 			color = (Color) colorData[0];
@@ -140,8 +145,13 @@ public class CTabFolderRenderer {
 		return color;
 	}
 	
-	static void releaseColor(Color color) {
+	static void releaseColor(Display display, Color color) {
 		RGB rgb = color.getRGB();
+		Hashtable ColorCache = (Hashtable) display.getData(COLOR_CACHE);
+		if (ColorCache == null) {
+			ColorCache = new Hashtable();
+			display.setData(COLOR_CACHE, ColorCache);
+		}
 		Object [] colorData = (Object []) ColorCache.get(rgb);
 		if (colorData != null) {
 			int refcount = ((Integer) colorData[1]).intValue();
@@ -490,23 +500,25 @@ public class CTabFolderRenderer {
 		disposeAntialiasColors();
 		disposeSelectionHighlightGradientColors();
 		if (fillColor != null) {
-			releaseColor(fillColor);
+			releaseColor(parent.getDisplay(), fillColor);
 		    fillColor = null;
 		}
 	}
 	
 	void disposeAntialiasColors() {
-	    if (tabAreaColor != null) releaseColor(tabAreaColor);
-	    if (selectedInnerColor != null) releaseColor(selectedInnerColor);
-	    if (selectedOuterColor != null) releaseColor(selectedOuterColor);
+		Display display = parent.getDisplay();
+	    if (tabAreaColor != null) releaseColor(display, tabAreaColor);
+	    if (selectedInnerColor != null) releaseColor(display, selectedInnerColor);
+	    if (selectedOuterColor != null) releaseColor(display, selectedOuterColor);
 	    tabAreaColor = selectedInnerColor = selectedOuterColor = null;
 	}
 
 	void disposeSelectionHighlightGradientColors() {
 		if(selectionHighlightGradientColorsCache == null)
 			return;
+		Display display = parent.getDisplay();
 		for (int i = 0; i < selectionHighlightGradientColorsCache.length; i++) {
-			releaseColor(selectionHighlightGradientColorsCache[i]);
+			releaseColor(display, selectionHighlightGradientColorsCache[i]);
 		}
 		selectionHighlightGradientColorsCache = null;
 	}
