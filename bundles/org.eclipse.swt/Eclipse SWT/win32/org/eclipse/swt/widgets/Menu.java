@@ -1034,7 +1034,7 @@ int imageIndex (Image image) {
 	if (hwndCB == 0 || image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
 		Rectangle bounds = image.getBounds ();
-		imageList = display.getImageList (SWT.NONE, bounds.width, bounds.height);
+		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
 		int index = imageList.add (image);
 		int /*long*/ hImageList = imageList.getHandle ();
 		OS.SendMessage (hwndCB, OS.TB_SETIMAGELIST, 0, hImageList);

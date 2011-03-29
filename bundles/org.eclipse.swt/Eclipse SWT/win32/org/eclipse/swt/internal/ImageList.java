@@ -44,13 +44,7 @@ public ImageList (int style) {
 			}
 		}
 	}
-	/* 
-	* Feature in Windows. The ILC_MIRROR flag only mirrors the images in the ImageList
-	* when they are about to be drawn, and only if the layout of the graphic context is
-	* mirrored.  For that reason ILC_MIRROR always can be set. This also allows changing
-	* the orientation of widgets without recreating its image lists.  
-	*/	
-	flags |= OS.ILC_MIRROR;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
 	handle = OS.ImageList_Create (32, 32, flags, 16, 16);
 	images = new Image [4];
 }

@@ -3637,7 +3637,7 @@ int imageIndex (Image image, int index) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
 		Rectangle bounds = image.getBounds ();
-		imageList = display.getImageList (SWT.NONE, bounds.width, bounds.height);
+		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
 	}
 	int imageIndex = imageList.indexOf (image);
 	if (imageIndex == -1) imageIndex = imageList.add (image);
@@ -3661,7 +3661,7 @@ int imageIndexHeader (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (headerImageList == null) {
 		Rectangle bounds = image.getBounds ();
-		headerImageList = display.getImageList (SWT.NONE, bounds.width, bounds.height);
+		headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
 		int index = headerImageList.indexOf (image);
 		if (index == -1) index = headerImageList.add (image);
 		int /*long*/ hImageList = headerImageList.getHandle ();

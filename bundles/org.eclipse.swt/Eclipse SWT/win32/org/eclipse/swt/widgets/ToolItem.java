@@ -909,14 +909,15 @@ void updateImages (boolean enabled) {
 	ImageList disabledImageList = parent.getDisabledImageList();
 	if (info.iImage == OS.I_IMAGENONE) {
 		Rectangle bounds = image.getBounds ();
+		int listStyle = parent.style & SWT.RIGHT_TO_LEFT;
 		if (imageList == null) {
-			imageList = display.getImageListToolBar (SWT.NONE, bounds.width, bounds.height);
+			imageList = display.getImageListToolBar (listStyle, bounds.width, bounds.height);
 		}
 		if (disabledImageList == null) {
-			disabledImageList = display.getImageListToolBarDisabled (SWT.NONE, bounds.width, bounds.height);
+			disabledImageList = display.getImageListToolBarDisabled (listStyle, bounds.width, bounds.height);
 		}
 		if (hotImageList == null) {
-			hotImageList = display.getImageListToolBarHot (SWT.NONE, bounds.width, bounds.height);
+			hotImageList = display.getImageListToolBarHot (listStyle, bounds.width, bounds.height);
 		}
 		Image disabled = disabledImage;
 		if (disabledImage == null) {
