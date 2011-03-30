@@ -1026,7 +1026,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rec
 	if (drawBackground && !drawSelection) {
 		context.saveGraphicsState ();
 		float /*double*/ [] colorRGB = background.handle;
-		NSColor color = NSColor.colorWithCalibratedRed (colorRGB[0], colorRGB[1], colorRGB[2], 1f);
+		NSColor color = NSColor.colorWithDeviceRed (colorRGB[0], colorRGB[1], colorRGB[2], 1f);
 		color.setFill ();
 		NSBezierPath.fillRect (cellRect);
 		context.restoreGraphicsState ();
@@ -1086,7 +1086,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rec
 				newStr.drawInRect(newRect);
 				newStr.release();
 			} else {
-				NSColor nsColor = NSColor.colorWithCalibratedRed(color[0], color[1], color[2], color[3]);
+				NSColor nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]);
 				cell.setTextColor(nsColor);
 				callSuper = true;
 			}			
@@ -3283,7 +3283,7 @@ void tableView_willDisplayCell_forTableColumn_row (int /*long*/ id, int /*long*/
 			Color foreground = item.cellForeground != null ? item.cellForeground [index] : null;
 			if (foreground == null) foreground = item.foreground;
 			if (foreground == null) foreground = getForegroundColor();
-			color = NSColor.colorWithCalibratedRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
+			color = NSColor.colorWithDeviceRed (foreground.handle [0], foreground.handle [1], foreground.handle [2], 1);
 		}
 	} else {
 		color = NSColor.disabledControlTextColor();

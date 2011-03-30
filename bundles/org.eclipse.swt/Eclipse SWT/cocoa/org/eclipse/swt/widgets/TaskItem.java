@@ -415,7 +415,7 @@ void updateImage () {
 	NSImage newImage = (NSImage)new NSImage().alloc ();
 	newImage = newImage.initWithSize (size);
 	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep ().alloc ();
-	rep = rep.initWithBitmapDataPlanes (0, (int)size.width, (int)size.height, 8, 4, true, false, OS.NSCalibratedRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, (int)size.width * 4, 32);
+	rep = rep.initWithBitmapDataPlanes (0, (int)size.width, (int)size.height, 8, 4, true, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, (int)size.width * 4, 32);
 	newImage.addRepresentation (rep);
 	rep.release ();
 	
@@ -439,13 +439,13 @@ void updateImage () {
 	if (drawIntermidiate || drawProgress) {
 		switch (progressState) {
 			case SWT.ERROR:
-				NSColor.colorWithCalibratedRed (1, 0, 0, 0.6f).setFill ();
+				NSColor.colorWithDeviceRed (1, 0, 0, 0.6f).setFill ();
 				break;
 			case SWT.PAUSED:
-				NSColor.colorWithCalibratedRed (1, 1, 0, 0.6f).setFill ();
+				NSColor.colorWithDeviceRed (1, 1, 0, 0.6f).setFill ();
 				break;
 			default:
-				NSColor.colorWithCalibratedRed (1, 1, 1, 0.6f).setFill ();
+				NSColor.colorWithDeviceRed (1, 1, 1, 0.6f).setFill ();
 		}
 		rect.width = size.width / (PROGRESS_BARS * 2 - 1);
 		rect.height = size.height / 3;

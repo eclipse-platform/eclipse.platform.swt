@@ -861,6 +861,9 @@
 		<method class_method="true" selector="clearColor" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="colorSpace" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="colorUsingColorSpaceName:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -970,6 +973,9 @@
 		</method>
 	</class>
 	<class name="NSColorSpace" swt_gen="mixed">
+		<method selector="colorSpaceModel" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method class_method="true" selector="genericRGBColorSpace" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4806,6 +4812,7 @@
 	<enum name="NSPrintPanelShowsPageSetupAccessory" swt_gen="true"></enum>
 	<enum name="NSProgressIndicatorPreferredThickness" swt_gen="true"></enum>
 	<enum name="NSPushOnPushOffButton" swt_gen="true"></enum>
+	<enum name="NSRGBColorSpaceModel" swt_gen="true"></enum>
 	<enum name="NSRadioButton" swt_gen="true"></enum>
 	<enum name="NSRegularControlSize" swt_gen="true"></enum>
 	<enum name="NSRegularSquareBezelStyle" swt_gen="true"></enum>

@@ -657,7 +657,7 @@ void setForeground (float /*double*/ [] color) {
 			nsColor = NSColor.textColor ();
 		}
 	} else {
-		nsColor = NSColor.colorWithCalibratedRed(color[0], color[1], color[2], 1);
+		nsColor = NSColor.colorWithDeviceRed(color[0], color[1], color[2], 1);
 	}
 	((NSDatePicker)view).setTextColor(nsColor);
 }

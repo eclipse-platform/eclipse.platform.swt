@@ -290,7 +290,7 @@ NSAutoreleasePool checkGC (int mask) {
 		} else {
 			float /*double*/ [] color = data.foreground;
 			if (data.fg != null) data.fg.release();
-			NSColor fg = data.fg = NSColor.colorWithCalibratedRed(color[0], color[1], color[2], data.alpha / 255f);
+			NSColor fg = data.fg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
 			fg.retain();
 			fg.setStroke();
 		}
@@ -302,7 +302,7 @@ NSAutoreleasePool checkGC (int mask) {
 		} else {
 			float /*double*/ [] color = data.foreground;
 			if (data.fg != null) data.fg.release();
-			NSColor fg = data.fg = NSColor.colorWithCalibratedRed(color[0], color[1], color[2], data.alpha / 255f);
+			NSColor fg = data.fg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
 			fg.retain();
 			fg.setFill();
 		}
@@ -315,11 +315,7 @@ NSAutoreleasePool checkGC (int mask) {
 		} else {
 			float /*double*/ [] color = data.background;
 			if (data.bg != null) data.bg.release();
-			NSColor bg;
-			if (OS.VERSION < 0x1060)
-				bg = data.bg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
-			else
-				bg = data.bg = NSColor.colorWithCalibratedRed(color[0], color[1], color[2], data.alpha / 255f);
+			NSColor bg = data.bg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
 			bg.retain();
 			bg.setFill();
 		}
@@ -778,7 +774,7 @@ NSAttributedString createString(String string, int flags, boolean draw) {
 			NSColor fg = data.fg;
 			if (fg == null) {
 				float /*double*/ [] color = data.foreground;
-				fg = data.fg = NSColor.colorWithCalibratedRed(color[0], color[1], color[2], data.alpha / 255f);
+				fg = data.fg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
 				fg.retain();
 			}
 			dict.setObject(fg, OS.NSForegroundColorAttributeName);
@@ -1686,7 +1682,7 @@ public void drawText (String string, int x, int y, int flags) {
 			NSColor bg = data.bg;
 			if (bg == null) {
 				float /*double*/ [] color = data.background;
-				bg = data.bg = NSColor.colorWithCalibratedRed(color[0], color[1], color[2], data.alpha / 255f);
+				bg = data.bg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
 				bg.retain();
 			}
 			bg.setFill();
@@ -1836,8 +1832,8 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		if (fromRGB.equals(toRGB)) {
 			fillRectangle(x, y, width, height);
 		} else {
-			NSColor startingColor = NSColor.colorWithCalibratedRed(fromRGB.red / 255f, fromRGB.green / 255f, fromRGB.blue / 255f, data.alpha / 255f);
-			NSColor endingColor = NSColor.colorWithCalibratedRed(toRGB.red / 255f, toRGB.green / 255f, toRGB.blue / 255f, data.alpha / 255f);
+			NSColor startingColor = NSColor.colorWithDeviceRed(fromRGB.red / 255f, fromRGB.green / 255f, fromRGB.blue / 255f, data.alpha / 255f);
+			NSColor endingColor = NSColor.colorWithDeviceRed(toRGB.red / 255f, toRGB.green / 255f, toRGB.blue / 255f, data.alpha / 255f);
 			NSGradient gradient = ((NSGradient)new NSGradient().alloc()).initWithStartingColor(startingColor, endingColor);
 			NSRect rect = new NSRect();
 			rect.x = x;
@@ -1913,7 +1909,7 @@ void fillPattern(NSBezierPath path, Pattern pattern) {
 	float /*double*/ dify = end.y - start.y;
 	if (difx == 0 && dify == 0) {
 		float /*double*/ [] color = pattern.color1;		
-		NSColor.colorWithCalibratedRed(color[0], color[1], color[2], data.alpha / 255f).setFill();		
+		NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f).setFill();		
 		path.fill();
 		handle.restoreGraphicsState();
 		return;

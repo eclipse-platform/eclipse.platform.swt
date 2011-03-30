@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -50,6 +50,11 @@ public float /*double*/ blueComponent() {
 public static NSColor clearColor() {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSColor, OS.sel_clearColor);
 	return result != 0 ? new NSColor(result) : null;
+}
+
+public NSColorSpace colorSpace() {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_colorSpace);
+	return result != 0 ? new NSColorSpace(result) : null;
 }
 
 public NSColor colorUsingColorSpaceName(NSString colorSpace) {

@@ -177,8 +177,9 @@ void setColor_forAttribute(int /*long*/ id, int /*long*/ sel, int /*long*/ color
 	if (attribute != 0 && NSString.stringWith("NSColor").isEqualToString(new NSString(attribute))) { //$NON-NLS-1$
 		if (colorArg != 0) {
 			NSColor color = new NSColor(colorArg);
-			color = color.colorUsingColorSpaceName(OS.NSCalibratedRGBColorSpace);
-			rgb = new RGB((int)(color.redComponent() * 255), (int)(color.greenComponent() * 255), (int)(color.blueComponent() * 255));
+			Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
+			float /*double*/ [] handle = display.getNSColorRGB(color);
+			rgb = new RGB((int)(handle[0] * 255), (int)(handle[1] * 255), (int)(handle[2] * 255));
 		} else {
 			rgb = null;
 		}

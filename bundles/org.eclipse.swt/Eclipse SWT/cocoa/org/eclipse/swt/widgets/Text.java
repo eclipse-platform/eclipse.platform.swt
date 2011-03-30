@@ -1690,7 +1690,7 @@ void setForeground (float /*double*/ [] color) {
 	} else {
 		float /*double*/ alpha = 1;
 		if ((style & SWT.MULTI) != 0 && !isEnabled()) alpha = 0.5f;
-		nsColor = NSColor.colorWithCalibratedRed (color [0], color [1], color [2], alpha);
+		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], alpha);
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		((NSTextField) view).setTextColor (nsColor);

@@ -261,17 +261,14 @@ TextStyle getStyle (NSDictionary attribs) {
 	for (int j = 0; j < count; j++) {
 		NSString key = new NSString (keys.objectAtIndex (j));
 		if (key.isEqualTo (OS.NSBackgroundColorAttributeName)) {
-			NSColor color = new NSColor (attribs.objectForKey (key)).colorUsingColorSpaceName (OS.NSCalibratedRGBColorSpace);
-			float /*double*/ [] rgbColor = new float /*double*/ []{color.redComponent(), color.greenComponent(), color.blueComponent(), color.alphaComponent()};
-			style.background = Color.cocoa_new (display, rgbColor);
+			NSColor color = new NSColor (attribs.objectForKey (key));
+			style.background = Color.cocoa_new (display, display.getNSColorRGB(color));
 		} else if (key.isEqualTo (OS.NSForegroundColorAttributeName)) {
-			NSColor color = new NSColor (attribs.objectForKey (key)).colorUsingColorSpaceName (OS.NSCalibratedRGBColorSpace);
-			float /*double*/ [] rgbColor = new float /*double*/ []{color.redComponent(), color.greenComponent(), color.blueComponent(), color.alphaComponent()};
-			style.foreground = Color.cocoa_new (display, rgbColor);
+			NSColor color = new NSColor (attribs.objectForKey (key));
+			style.foreground = Color.cocoa_new (display, display.getNSColorRGB(color));
 		} else if (key.isEqualTo (OS.NSUnderlineColorAttributeName)) {
-			NSColor color = new NSColor (attribs.objectForKey (key)).colorUsingColorSpaceName (OS.NSCalibratedRGBColorSpace);
-			float /*double*/ [] rgbColor = new float /*double*/ []{color.redComponent(), color.greenComponent(), color.blueComponent(), color.alphaComponent()};
-			style.underlineColor = Color.cocoa_new (display, rgbColor);
+			NSColor color = new NSColor (attribs.objectForKey (key));
+			style.underlineColor = Color.cocoa_new (display, display.getNSColorRGB(color));
 		} else if (key.isEqualTo (OS.NSUnderlineStyleAttributeName)) {
 			NSNumber value = new NSNumber (attribs.objectForKey (key));
 			switch (value.intValue ()) {
@@ -281,9 +278,8 @@ TextStyle getStyle (NSDictionary attribs) {
 			}
 			style.underline = value.intValue () != OS.NSUnderlineStyleNone;
 		} else if (key.isEqualTo (OS.NSStrikethroughColorAttributeName)) {
-			NSColor color = new NSColor (attribs.objectForKey (key)).colorUsingColorSpaceName (OS.NSCalibratedRGBColorSpace);
-			float /*double*/ [] rgbColor = new float /*double*/ []{color.redComponent(), color.greenComponent(), color.blueComponent(), color.alphaComponent()};
-			style.strikeoutColor = Color.cocoa_new (display, rgbColor);
+			NSColor color = new NSColor (attribs.objectForKey (key));
+			style.strikeoutColor = Color.cocoa_new (display, display.getNSColorRGB(color));
 		} else if (key.isEqualTo (OS.NSStrikethroughStyleAttributeName)) {
 			NSNumber value = new NSNumber (attribs.objectForKey (key));
 			style.strikeout = value.intValue () != OS.NSUnderlineStyleNone;

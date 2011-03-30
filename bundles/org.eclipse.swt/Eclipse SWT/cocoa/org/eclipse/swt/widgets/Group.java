@@ -214,7 +214,7 @@ void setForeground (float /*double*/ [] color) {
 	if (color == null) {
 		nsColor = NSColor.textColor ();
 	} else {
-		nsColor = NSColor.colorWithCalibratedRed (color[0], color[1], color[2], 1);
+		nsColor = NSColor.colorWithDeviceRed (color[0], color[1], color[2], 1);
 	}
 	NSTextFieldCell cell = new NSTextFieldCell (((NSBox)view).titleCell ().id);
 	cell.setTextColor (nsColor);

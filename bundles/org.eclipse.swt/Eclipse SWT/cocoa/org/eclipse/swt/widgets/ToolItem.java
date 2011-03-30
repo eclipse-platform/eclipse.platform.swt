@@ -437,7 +437,7 @@ void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ i
 	super.drawImageWithFrameInView(id, sel, image, rect, view);
 
 	if (drawSelected) {
-		NSColor.colorWithCalibratedRed(0,0,0,.3f).setFill();
+		NSColor.colorWithDeviceRed(0,0,0,.3f).setFill();
 		OS.NSRectFillUsingOperation(rect, OS.NSCompositeSourceAtop);
 		OS.CGContextEndTransparencyLayer(cgContext);
 		NSGraphicsContext.currentContext().restoreGraphicsState();
@@ -449,7 +449,7 @@ NSRect drawTitleWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/
     
     // An unbordered cell doesn't draw any highlighting when pushed or selected, so we have to do it here.
     if (hiliteShadow) {
-    	NSColor transWhiteColor = NSColor.colorWithCalibratedRed(1.0f, 1.0f, 1.0f, .8f);
+    	NSColor transWhiteColor = NSColor.colorWithDeviceRed(1.0f, 1.0f, 1.0f, .8f);
 		NSAttributedString attribStr = new NSAttributedString(title);
 		NSMutableAttributedString tmpString = new NSMutableAttributedString(attribStr.mutableCopy());
 		NSRange range = new NSRange();
@@ -468,8 +468,8 @@ void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 		if (drawSelected) {
 			NSRect bounds = view.bounds();
 			context.saveGraphicsState();
-			NSColor.colorWithCalibratedRed(0.1f, 0.1f, 0.1f, 0.1f).setFill();
-			NSColor.colorWithCalibratedRed(0.2f, 0.2f, 0.2f, 0.2f).setStroke();
+			NSColor.colorWithDeviceRed(0.1f, 0.1f, 0.1f, 0.1f).setFill();
+			NSColor.colorWithDeviceRed(0.2f, 0.2f, 0.2f, 0.2f).setStroke();
 			NSBezierPath.fillRect(bounds);
 			bounds.x += 0.5f;
 			bounds.y += 0.5f;

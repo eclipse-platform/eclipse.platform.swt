@@ -1820,12 +1820,15 @@ float /*double*/ [] getWidgetColorRGB (int id) {
 		case SWT.COLOR_LIST_SELECTION_TEXT: color = NSColor.selectedTextColor(); break;
 		case SWT.COLOR_LIST_SELECTION: color = NSColor.selectedTextBackgroundColor(); break;
 	}
-	return getWidgetColorRGB (color);
+	return getNSColorRGB (color);
 }
 
-float /*double*/ [] getWidgetColorRGB (NSColor color) {
+float /*double*/ [] getNSColorRGB (NSColor color) {
 	if (color == null) return null;
-	color = color.colorUsingColorSpaceName(OS.NSCalibratedRGBColorSpace);
+	NSColorSpace colorSpace = color.colorSpace();
+	if (colorSpace == null || colorSpace.colorSpaceModel() != OS.NSRGBColorSpaceModel) {
+		color = color.colorUsingColorSpaceName(OS.NSDeviceRGBColorSpace);
+	}
 	if (color == null) return null;
 	float /*double*/[] components = new float /*double*/[(int)/*64*/color.numberOfComponents()];
 	color.getComponents(components);	
@@ -2922,10 +2925,10 @@ void initColors () {
 	colors[SWT.COLOR_LIST_SELECTION_TEXT] = getWidgetColorRGB(SWT.COLOR_LIST_SELECTION_TEXT);
 	colors[SWT.COLOR_LIST_SELECTION] = getWidgetColorRGB(SWT.COLOR_LIST_SELECTION);
 
-	alternateSelectedControlColor = getWidgetColorRGB(NSColor.alternateSelectedControlColor());
-	alternateSelectedControlTextColor = getWidgetColorRGB(NSColor.alternateSelectedControlTextColor());
-	secondarySelectedControlColor = getWidgetColorRGB(NSColor.secondarySelectedControlColor());
-	selectedControlTextColor = getWidgetColorRGB(NSColor.selectedControlTextColor());
+	alternateSelectedControlColor = getNSColorRGB(NSColor.alternateSelectedControlColor());
+	alternateSelectedControlTextColor = getNSColorRGB(NSColor.alternateSelectedControlTextColor());
+	secondarySelectedControlColor = getNSColorRGB(NSColor.secondarySelectedControlColor());
+	selectedControlTextColor = getNSColorRGB(NSColor.selectedControlTextColor());
 }
 
 void initFonts () {
