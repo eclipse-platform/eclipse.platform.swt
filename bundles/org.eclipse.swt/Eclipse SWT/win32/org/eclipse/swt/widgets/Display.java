@@ -1957,7 +1957,7 @@ ImageList getImageList (int style, int width, int height) {
 		imageList = newList;
 	}
 	
-	ImageList list = new ImageList (style);
+	ImageList list = new ImageList (style, width, height);
 	imageList [i] = list;
 	list.addRef();
 	return list;
@@ -1987,7 +1987,7 @@ ImageList getImageListToolBar (int style, int width, int height) {
 		toolImageList = newList;
 	}
 	
-	ImageList list = new ImageList (style);
+	ImageList list = new ImageList (style, width, height);
 	toolImageList [i] = list;
 	list.addRef();
 	return list;
@@ -2017,7 +2017,7 @@ ImageList getImageListToolBarDisabled (int style, int width, int height) {
 		toolDisabledImageList = newList;
 	}
 	
-	ImageList list = new ImageList (style);
+	ImageList list = new ImageList (style, width, height);
 	toolDisabledImageList [i] = list;
 	list.addRef();
 	return list;
@@ -2047,7 +2047,7 @@ ImageList getImageListToolBarHot (int style, int width, int height) {
 		toolHotImageList = newList;
 	}
 	
-	ImageList list = new ImageList (style);
+	ImageList list = new ImageList (style, width, height);
 	toolHotImageList [i] = list;
 	list.addRef();
 	return list;

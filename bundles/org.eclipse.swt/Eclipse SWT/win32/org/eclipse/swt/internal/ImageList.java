@@ -21,6 +21,10 @@ public class ImageList {
 	Image [] images;
 
 public ImageList (int style) {
+	this (style, 32, 32);
+}
+
+public ImageList (int style, int width, int height) {
 	this.style = style;
 	int flags = OS.ILC_MASK;
 	if (OS.IsWinCE) {
@@ -45,7 +49,7 @@ public ImageList (int style) {
 		}
 	}
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
-	handle = OS.ImageList_Create (32, 32, flags, 16, 16);
+	handle = OS.ImageList_Create (width, height, flags, 16, 16);
 	images = new Image [4];
 }
 

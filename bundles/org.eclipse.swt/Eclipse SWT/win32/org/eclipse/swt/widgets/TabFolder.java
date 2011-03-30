@@ -816,6 +816,24 @@ void updateOrientation () {
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
 	OS.SetWindowPos (handle, 0, 0, 0, width - 1, height - 1, OS.SWP_NOMOVE | OS.SWP_NOZORDER);
 	OS.SetWindowPos (handle, 0, 0, 0, width, height, OS.SWP_NOMOVE | OS.SWP_NOZORDER);
+	if (imageList != null) {
+		Point size = imageList.getImageSize ();
+		display.releaseImageList (imageList);
+		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y);
+		int /*long*/ hImageList = imageList.getHandle ();
+		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, hImageList);
+		TCITEM tcItem = new TCITEM ();
+		tcItem.mask = OS.TCIF_IMAGE;
+		for (int i = 0; i < items.length; i++) {
+			TabItem item = items[0];
+			if (item == null) break;
+			Image image = item.image;
+			if (image != null) {
+				tcItem.iImage = imageIndex (image);
+				OS.SendMessage (handle, OS.TCM_SETITEM, i, tcItem);
+			}
+		}
+	}
 }
 
 int widgetStyle () {
