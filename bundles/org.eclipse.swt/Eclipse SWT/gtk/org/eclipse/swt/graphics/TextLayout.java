@@ -1360,6 +1360,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 		}
 		if ((movement & SWT.MOVEMENT_WORD_END) != 0) {
 			if (logAttr.is_word_end) found = true;
+			if (logAttr.is_sentence_start) found = true;
 		}
 		if (found) {
 			int testOffset = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, utf8Offset); 
