@@ -1221,11 +1221,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int /*long*/ wParam, int /*long*
 						if ((style & SWT.FULL_SELECTION) != 0) {
 							if (!selected) fillBackground (hDC, clrTextBk, rect);
 						} else {
-							if (explorerTheme) {
-								if (!selected && !hot) fillBackground (hDC, clrTextBk, rect);
-							} else {
-								fillBackground (hDC, clrTextBk, rect);
-							}
+							fillBackground (hDC, clrTextBk, rect);
 						}
 					} else {
 						if ((style & SWT.FULL_SELECTION) != 0) {
