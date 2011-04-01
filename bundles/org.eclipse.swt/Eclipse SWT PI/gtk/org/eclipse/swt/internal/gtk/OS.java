@@ -5136,6 +5136,9 @@ public static final int gdk_text_property_to_utf8_list  (int /*long*/ encoding, 
 public static final native void gdk_threads_init ();
 public static final native void gdk_threads_enter ();
 public static final native void gdk_threads_leave ();
+/**
+ * @method flags=dynamic
+ */
 public static final native void gdk_threads_set_lock_functions(int /*long*/ enter_fn, int /*long*/ leave_fn);
 /**
  * @method flags=dynamic
