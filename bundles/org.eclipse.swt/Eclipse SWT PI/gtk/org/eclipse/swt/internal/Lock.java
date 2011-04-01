@@ -10,14 +10,13 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
-import org.eclipse.swt.internal.gtk.OS;
-
 /**
  * Instances of this represent a recursive monitor.
  */
 public class Lock {
-    public static Thread uiThread;
-    
+	int count, waitCount;
+	Thread owner;
+
 /**
  * Locks the monitor and returns the lock count. If
  * the lock is owned by another thread, wait until
@@ -26,8 +25,22 @@ public class Lock {
  * @return the lock count
  */
 public int lock() {
-	if (Thread.currentThread() != uiThread) OS.gdk_threads_enter();
-	return 1;
+	synchronized (this) {
+		Thread current = Thread.currentThread();
+		if (owner != current) {
+			waitCount++;
+			while (count > 0) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					/* Wait forever, just like synchronized blocks */
+				}
+			}
+			--waitCount;
+			owner = current;
+		}
+		return ++count;
+	}
 }
 
 /**
@@ -35,6 +48,14 @@ public int lock() {
  * the monitor owner, do nothing.
  */
 public void unlock() {
-	if (Thread.currentThread() != uiThread) OS.gdk_threads_leave();
+	synchronized (this) {
+		Thread current = Thread.currentThread();
+		if (owner == current) {
+			if (--count == 0) {
+				owner = null;
+				if (waitCount > 0) notifyAll();
+			}
+		}
+	}
 }
 }

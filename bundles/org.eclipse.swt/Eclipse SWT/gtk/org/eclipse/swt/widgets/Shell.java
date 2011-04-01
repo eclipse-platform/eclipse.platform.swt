@@ -2039,12 +2039,7 @@ public void setVisible (boolean visible) {
 			boolean iconic = false;
 			Shell shell = parent != null ? parent.getShell() : null;
 			do {
-				try {
-					OS.gdk_threads_leave();
-					OS.g_main_context_iteration (0, false);
-				} finally {
-					OS.gdk_threads_enter();
-				}
+				OS.g_main_context_iteration (0, false);
 				if (isDisposed ()) break;
 				iconic = minimized || (shell != null && shell.minimized);
 			} while (!mapped && !iconic);

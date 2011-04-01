@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1389;
-int OS_nativeFunctionCallCount[1389];
+int OS_nativeFunctionCount = 1390;
+int OS_nativeFunctionCallCount[1390];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -281,6 +281,15 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1log_1default_1handler",
 	"_1g_1log_1remove_1handler",
 	"_1g_1log_1set_1handler",
+	"_1g_1main_1context_1acquire",
+	"_1g_1main_1context_1check",
+	"_1g_1main_1context_1default",
+	"_1g_1main_1context_1get_1poll_1func",
+	"_1g_1main_1context_1iteration",
+	"_1g_1main_1context_1pending",
+	"_1g_1main_1context_1prepare",
+	"_1g_1main_1context_1query",
+	"_1g_1main_1context_1release",
 	"_1g_1malloc",
 #ifndef JNI64
 	"_1g_1object_1get__I_3B_3II",
@@ -1480,15 +1489,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1pango_1tab_1array_1get_1tabs",
 	"_1pango_1tab_1array_1new",
 	"_1pango_1tab_1array_1set_1tab",
-	"g_1main_1context_1acquire",
-	"g_1main_1context_1check",
-	"g_1main_1context_1default",
-	"g_1main_1context_1get_1poll_1func",
-	"g_1main_1context_1iteration",
-	"g_1main_1context_1pending",
-	"g_1main_1context_1prepare",
-	"g_1main_1context_1query",
-	"g_1main_1context_1release",
 	"g_1main_1context_1wakeup",
 	"g_1value_1get_1double",
 	"g_1value_1get_1float",
@@ -1503,6 +1503,7 @@ char * OS_nativeFunctionNames[] = {
 	"gdk_1threads_1enter",
 	"gdk_1threads_1init",
 	"gdk_1threads_1leave",
+	"gdk_1threads_1set_1lock_1functions",
 	"localeconv_1decimal_1point",
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I",

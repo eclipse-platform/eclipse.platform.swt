@@ -89,6 +89,13 @@ public static PrinterData[] getPrinterList() {
 	int /*long*/ GtkPrinterFunc_List = printerCallback.getAddress();
 	if (GtkPrinterFunc_List == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.gtk_enumerate_printers(GtkPrinterFunc_List, 0, 0, true);
+	/*
+	* This call to gdk_threads_leave() is a temporary work around
+	* to avoid deadlocks when gdk_threads_init() is called by native
+	* code outside of SWT (i.e AWT, etc). It ensures that the current
+	* thread leaves the GTK lock acquired by the function above. 
+	*/
+	OS.gdk_threads_leave();
 	printerCallback.dispose ();
 	return printerList;
 }
@@ -136,6 +143,13 @@ public static PrinterData getDefaultPrinterData() {
 	int /*long*/ GtkPrinterFunc_Default = printerCallback.getAddress();
 	if (GtkPrinterFunc_Default == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.gtk_enumerate_printers(GtkPrinterFunc_Default, 0, 0, true);
+	/*
+	* This call to gdk_threads_leave() is a temporary work around
+	* to avoid deadlocks when gdk_threads_init() is called by native
+	* code outside of SWT (i.e AWT, etc). It ensures that the current
+	* thread leaves the GTK lock acquired by the function above. 
+	*/
+	OS.gdk_threads_leave();
 	printerCallback.dispose ();
 	return printerList[0];
 }
@@ -156,6 +170,13 @@ int /*long*/ gtkPrinterFromPrinterData() {
 	if (GtkPrinterFunc_FindNamedPrinter == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	printer = 0;
 	OS.gtk_enumerate_printers(GtkPrinterFunc_FindNamedPrinter, 0, 0, true);
+	/*
+	* This call to gdk_threads_leave() is a temporary work around
+	* to avoid deadlocks when gdk_threads_init() is called by native
+	* code outside of SWT (i.e AWT, etc). It ensures that the current
+	* thread leaves the GTK lock acquired by the function above. 
+	*/
+	OS.gdk_threads_leave();
 	printerCallback.dispose ();
 	return printer;
 }

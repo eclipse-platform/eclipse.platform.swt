@@ -2219,28 +2219,100 @@ public static final void g_closure_unref(int /*long*/ closure) {
 	}
 }
 /** @param context cast=(GMainContext *) */
-public static final native boolean g_main_context_acquire(int /*long*/ context);
+public static final native boolean _g_main_context_acquire(int /*long*/ context);
+public static final boolean g_main_context_acquire(int /*long*/ context) {
+	lock.lock();
+	try {
+		return _g_main_context_acquire(context);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @param context cast=(GMainContext *)
  * @param fds cast=(GPollFD *)
  */
-public static final native int g_main_context_check(int /*long*/ context, int max_priority, int /*long*/ fds, int n_fds);
-public static final native int /*long*/ g_main_context_default();
+public static final native int _g_main_context_check(int /*long*/ context, int max_priority, int /*long*/ fds, int n_fds);
+public static final int g_main_context_check(int /*long*/ context, int max_priority, int /*long*/ fds, int n_fds) {
+	lock.lock();
+	try {
+		return _g_main_context_check(context, max_priority, fds, n_fds);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _g_main_context_default();
+public static final int /*long*/ g_main_context_default() {
+	lock.lock();
+	try {
+		return _g_main_context_default();
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param context cast=(GMainContext *) */
-public static final native boolean g_main_context_iteration(int /*long*/ context, boolean may_block);
+public static final native boolean _g_main_context_iteration(int /*long*/ context, boolean may_block);
+public static final boolean g_main_context_iteration(int /*long*/ context, boolean may_block) {
+	lock.lock();
+	try {
+		return _g_main_context_iteration(context, may_block);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param context cast=(GMainContext *) */
-public static final native boolean g_main_context_pending(int /*long*/ context);
+public static final native boolean _g_main_context_pending(int /*long*/ context);
+public static final boolean g_main_context_pending(int /*long*/ context) {
+	lock.lock();
+	try {
+		return _g_main_context_pending(context);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param context cast=(GMainContext *) */
-public static final native int /*long*/ g_main_context_get_poll_func(int /*long*/ context);
+public static final native int /*long*/ _g_main_context_get_poll_func(int /*long*/ context);
+public static final int /*long*/ g_main_context_get_poll_func(int /*long*/ context) {
+	lock.lock();
+	try {
+		return _g_main_context_get_poll_func(context);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param context cast=(GMainContext *) */
-public static final native boolean g_main_context_prepare(int /*long*/ context, int[] priority);
+public static final native boolean _g_main_context_prepare(int /*long*/ context, int[] priority);
+public static final boolean g_main_context_prepare(int /*long*/ context, int[] priority) {
+	lock.lock();
+	try {
+		return _g_main_context_prepare(context, priority);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @param context cast=(GMainContext *)
  * @param fds cast=(GPollFD *)
  */
-public static final native int g_main_context_query(int /*long*/ context, int max_priority, int[] timeout_, int /*long*/ fds, int n_fds);
+public static final native int _g_main_context_query(int /*long*/ context, int max_priority, int[] timeout_, int /*long*/ fds, int n_fds);
+public static final int g_main_context_query(int /*long*/ context, int max_priority, int[] timeout_, int /*long*/ fds, int n_fds) {
+	lock.lock();
+	try {
+		return _g_main_context_query(context, max_priority, timeout_, fds, n_fds);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param context cast=(GMainContext *) */
-public static final native void g_main_context_release(int /*long*/ context);
+public static final native void _g_main_context_release(int /*long*/ context);
+public static final void g_main_context_release(int /*long*/ context) {
+	lock.lock();
+	try {
+		_g_main_context_release(context);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param context cast=(GMainContext *) */
 public static final native void g_main_context_wakeup(int /*long*/ context);
 /**
@@ -5064,6 +5136,7 @@ public static final int gdk_text_property_to_utf8_list  (int /*long*/ encoding, 
 public static final native void gdk_threads_init ();
 public static final native void gdk_threads_enter ();
 public static final native void gdk_threads_leave ();
+public static final native void gdk_threads_set_lock_functions(int /*long*/ enter_fn, int /*long*/ leave_fn);
 /**
  * @method flags=dynamic
  * @param display cast=(GdkDisplay*)

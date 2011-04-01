@@ -3555,6 +3555,120 @@ fail:
 }
 #endif
 
+#ifndef NO__1g_1main_1context_1acquire
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1main_1context_1acquire)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1main_1context_1acquire_FUNC);
+	rc = (jboolean)g_main_context_acquire((GMainContext *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1main_1context_1acquire_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1main_1context_1check
+JNIEXPORT jint JNICALL OS_NATIVE(_1g_1main_1context_1check)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jint arg3)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1main_1context_1check_FUNC);
+	rc = (jint)g_main_context_check((GMainContext *)arg0, arg1, (GPollFD *)arg2, arg3);
+	OS_NATIVE_EXIT(env, that, _1g_1main_1context_1check_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1main_1context_1default
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1main_1context_1default)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1main_1context_1default_FUNC);
+	rc = (jintLong)g_main_context_default();
+	OS_NATIVE_EXIT(env, that, _1g_1main_1context_1default_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1main_1context_1get_1poll_1func
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1main_1context_1get_1poll_1func)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1main_1context_1get_1poll_1func_FUNC);
+	rc = (jintLong)g_main_context_get_poll_func((GMainContext *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1main_1context_1get_1poll_1func_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1main_1context_1iteration
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1main_1context_1iteration)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1main_1context_1iteration_FUNC);
+	rc = (jboolean)g_main_context_iteration((GMainContext *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1g_1main_1context_1iteration_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1main_1context_1pending
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1main_1context_1pending)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1main_1context_1pending_FUNC);
+	rc = (jboolean)g_main_context_pending((GMainContext *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1main_1context_1pending_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1main_1context_1prepare
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1main_1context_1prepare)
+	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1main_1context_1prepare_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jboolean)g_main_context_prepare((GMainContext *)arg0, lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1main_1context_1prepare_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1main_1context_1query
+JNIEXPORT jint JNICALL OS_NATIVE(_1g_1main_1context_1query)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintArray arg2, jintLong arg3, jint arg4)
+{
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1main_1context_1query_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)g_main_context_query((GMainContext *)arg0, arg1, lparg2, (GPollFD *)arg3, arg4);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1main_1context_1query_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1main_1context_1release
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1main_1context_1release)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1g_1main_1context_1release_FUNC);
+	g_main_context_release((GMainContext *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1main_1context_1release_FUNC);
+}
+#endif
+
 #ifndef NO__1g_1malloc
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1malloc)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -18421,120 +18535,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1tab_1array_1set_1tab)
 }
 #endif
 
-#ifndef NO_g_1main_1context_1acquire
-JNIEXPORT jboolean JNICALL OS_NATIVE(g_1main_1context_1acquire)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, g_1main_1context_1acquire_FUNC);
-	rc = (jboolean)g_main_context_acquire((GMainContext *)arg0);
-	OS_NATIVE_EXIT(env, that, g_1main_1context_1acquire_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_g_1main_1context_1check
-JNIEXPORT jint JNICALL OS_NATIVE(g_1main_1context_1check)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jint arg3)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, g_1main_1context_1check_FUNC);
-	rc = (jint)g_main_context_check((GMainContext *)arg0, arg1, (GPollFD *)arg2, arg3);
-	OS_NATIVE_EXIT(env, that, g_1main_1context_1check_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_g_1main_1context_1default
-JNIEXPORT jintLong JNICALL OS_NATIVE(g_1main_1context_1default)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, g_1main_1context_1default_FUNC);
-	rc = (jintLong)g_main_context_default();
-	OS_NATIVE_EXIT(env, that, g_1main_1context_1default_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_g_1main_1context_1get_1poll_1func
-JNIEXPORT jintLong JNICALL OS_NATIVE(g_1main_1context_1get_1poll_1func)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, g_1main_1context_1get_1poll_1func_FUNC);
-	rc = (jintLong)g_main_context_get_poll_func((GMainContext *)arg0);
-	OS_NATIVE_EXIT(env, that, g_1main_1context_1get_1poll_1func_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_g_1main_1context_1iteration
-JNIEXPORT jboolean JNICALL OS_NATIVE(g_1main_1context_1iteration)
-	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, g_1main_1context_1iteration_FUNC);
-	rc = (jboolean)g_main_context_iteration((GMainContext *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, g_1main_1context_1iteration_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_g_1main_1context_1pending
-JNIEXPORT jboolean JNICALL OS_NATIVE(g_1main_1context_1pending)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, g_1main_1context_1pending_FUNC);
-	rc = (jboolean)g_main_context_pending((GMainContext *)arg0);
-	OS_NATIVE_EXIT(env, that, g_1main_1context_1pending_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_g_1main_1context_1prepare
-JNIEXPORT jboolean JNICALL OS_NATIVE(g_1main_1context_1prepare)
-	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1)
-{
-	jint *lparg1=NULL;
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, g_1main_1context_1prepare_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jboolean)g_main_context_prepare((GMainContext *)arg0, lparg1);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, g_1main_1context_1prepare_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_g_1main_1context_1query
-JNIEXPORT jint JNICALL OS_NATIVE(g_1main_1context_1query)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintArray arg2, jintLong arg3, jint arg4)
-{
-	jint *lparg2=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, g_1main_1context_1query_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jint)g_main_context_query((GMainContext *)arg0, arg1, lparg2, (GPollFD *)arg3, arg4);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, g_1main_1context_1query_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_g_1main_1context_1release
-JNIEXPORT void JNICALL OS_NATIVE(g_1main_1context_1release)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	OS_NATIVE_ENTER(env, that, g_1main_1context_1release_FUNC);
-	g_main_context_release((GMainContext *)arg0);
-	OS_NATIVE_EXIT(env, that, g_1main_1context_1release_FUNC);
-}
-#endif
-
 #ifndef NO_g_1main_1context_1wakeup
 JNIEXPORT void JNICALL OS_NATIVE(g_1main_1context_1wakeup)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -18682,6 +18682,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1threads_1leave)
 	OS_NATIVE_ENTER(env, that, gdk_1threads_1leave_FUNC);
 	gdk_threads_leave();
 	OS_NATIVE_EXIT(env, that, gdk_1threads_1leave_FUNC);
+}
+#endif
+
+#ifndef NO_gdk_1threads_1set_1lock_1functions
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1threads_1set_1lock_1functions)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, gdk_1threads_1set_1lock_1functions_FUNC);
+	gdk_threads_set_lock_functions(arg0, arg1);
+	OS_NATIVE_EXIT(env, that, gdk_1threads_1set_1lock_1functions_FUNC);
 }
 #endif
 

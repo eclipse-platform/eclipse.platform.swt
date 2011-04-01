@@ -137,16 +137,7 @@ class Mozilla extends WebBrowser {
 				int length = SHUTDOWN_PERSIST.length ();
 				char[] chars = new char [length + 1];
 				SHUTDOWN_PERSIST.getChars (0, length, chars, 0);
-				/*
-				* NotifyObservers is calling g_main_context_iteration() during shutdown. Need
-				* to leave GDK mutex since it is not reentrant.
-				*/
-				try {
-					MozillaDelegate.lock(false);
-					rc = observerService.NotifyObservers (0, buffer, chars);
-				} finally {
-					MozillaDelegate.lock(true);
-				}
+				rc = observerService.NotifyObservers (0, buffer, chars);
 				if (rc != XPCOM.NS_OK) error (rc);
 				observerService.Release ();
 
@@ -3778,14 +3769,8 @@ int SetVisibility (int aVisibility) {
 				event.menuBar = isOSX || (chromeFlags & nsIWebBrowserChrome.CHROME_MENUBAR) != 0;
 				event.statusBar = (chromeFlags & nsIWebBrowserChrome.CHROME_STATUSBAR) != 0;
 				event.toolBar = (chromeFlags & nsIWebBrowserChrome.CHROME_TOOLBAR) != 0;
-				/* TEMPORARY CODE */
-				MozillaDelegate.lock (true);
-				try {
-					for (int i = 0; i < visibilityWindowListeners.length; i++) {
-						visibilityWindowListeners[i].show (event);
-					}
-				} finally {
-					MozillaDelegate.lock (false);
+				for (int i = 0; i < visibilityWindowListeners.length; i++) {
+					visibilityWindowListeners[i].show (event);
 				}
 				location = null;
 				size = null;

@@ -176,6 +176,13 @@ public FontData open () {
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
 	}	
 	int response = OS.gtk_dialog_run (handle);
+	/*
+	* This call to gdk_threads_leave() is a temporary work around
+	* to avoid deadlocks when gdk_threads_init() is called by native
+	* code outside of SWT (i.e AWT, etc). It ensures that the current
+	* thread leaves the GTK lock acquired by the function above. 
+	*/
+	OS.gdk_threads_leave();
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.g_signal_remove_emission_hook (signalId, hookId);
 	}
