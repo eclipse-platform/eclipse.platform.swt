@@ -4208,8 +4208,12 @@ void select (int /*long*/ hItem, TVITEM tvItem) {
 	while (hItem != 0) {
 		tvItem.hItem = hItem;
 		OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-		int /*long*/ hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
-		select (hFirstItem, tvItem);
+		int state = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_EXPANDED);
+		if ((state & OS.TVIS_EXPANDED) != 0) {
+			int /*long*/ hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+			select (hFirstItem, tvItem);
+		}
+
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 	}
 }
@@ -4334,18 +4338,8 @@ public void selectAll () {
 	tvItem.stateMask = OS.TVIS_SELECTED;
 	int /*long*/ oldProc = OS.GetWindowLongPtr (handle, OS.GWLP_WNDPROC);
 	OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, TreeProc);
-	if ((style & SWT.VIRTUAL) != 0) {
-		int /*long*/ hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-		select (hItem, tvItem);
-	} else {
-		for (int i=0; i<items.length; i++) {
-			TreeItem item = items [i];
-			if (item != null) {
-				tvItem.hItem = item.handle;
-				OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-			}
-		}
-	}
+	int /*long*/ hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+	select (hItem, tvItem);
 	OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, oldProc);
 }
 
