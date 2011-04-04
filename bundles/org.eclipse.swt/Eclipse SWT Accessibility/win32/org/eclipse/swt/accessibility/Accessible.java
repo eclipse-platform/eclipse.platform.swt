@@ -1214,6 +1214,7 @@ public class Accessible {
 	 *
 	 * @param event an <code>ACC</code> constant beginning with EVENT_* indicating the message to send
 	 * @param eventData an object containing event-specific data, or null if there is no event-specific data
+	 * (eventData is specified in the documentation for individual ACC.EVENT_* constants)
 	 * 
 	 * @exception SWTException <ul>
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
