@@ -788,10 +788,10 @@ public class Accessible {
 	/**
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleAttribute</code> interface.
+	 * defined in the <code>AccessibleAttributeListener</code> interface.
 	 *
 	 * @param listener the listener that should be notified when the receiver
-	 * is asked for <code>AccessibleAttribute</code> interface properties
+	 * is asked for <code>AccessibleAttributeListener</code> interface properties
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
