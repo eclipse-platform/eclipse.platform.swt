@@ -1933,6 +1933,25 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 	return 0;
 }
 
+int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
+	switch (OS.GDK_EVENT_TYPE (gdkEvent)) {
+		case OS.GDK_EXPOSE: {
+			/*
+			* Bug in GTK. SWT connects the expose-event 'after' the default 
+			* handler of the signal. If the tree has no children, then GTK 
+			* sends expose signal only 'before' the default signal handler.
+			* The fix is to detect this case in 'event_after' and send the
+			* expose event.
+			*/
+			if (OS.gtk_tree_model_iter_n_children (modelHandle, 0) == 0) {
+				gtk_expose_event (widget, gdkEvent);
+			}
+			break;
+		}
+	}
+	return super.gtk_event_after (widget, gdkEvent);
+}
+
 int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	if ((state & OBSCURED) != 0) return 0;
 	if ((state & PARENT_BACKGROUND) != 0 || backgroundImage != null) {
