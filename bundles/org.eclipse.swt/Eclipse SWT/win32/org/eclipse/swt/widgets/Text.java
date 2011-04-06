@@ -56,7 +56,7 @@ import org.eclipse.swt.events.*;
  */
 public class Text extends Scrollable {
 	int tabs, oldStart, oldEnd;
-	boolean doubleClick, ignoreModify, ignoreVerify, ignoreCharacter;
+	boolean doubleClick, ignoreModify, ignoreVerify, ignoreCharacter, allowPasswordChar;
 	String message;
 	
 	/**
@@ -1683,7 +1683,9 @@ public void setEchoChar (char echo) {
 	if (echo != 0) {
 		if ((echo = (char) Display.wcsToMbcs (echo, getCodePage ())) == 0) echo = '*';
 	}
+	allowPasswordChar = true;
 	OS.SendMessage (handle, OS.EM_SETPASSWORDCHAR, echo, 0);
+	allowPasswordChar = false;
 	/*
 	* Bug in Windows.  When the password character is changed,
 	* Windows does not redraw to show the new password character.
@@ -2233,6 +2235,11 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 			LRESULT result = wmClipboard (OS.EM_UNDO, wParam, lParam);
 			if (result != null) return result.value;
 			return callWindowProc (hwnd, OS.EM_UNDO, wParam, lParam);
+		}
+	}
+	if (msg == OS.EM_SETPASSWORDCHAR) {
+		if (!allowPasswordChar) {
+			return 1;
 		}
 	}
 	if (msg == Display.SWT_RESTORECARET) {
