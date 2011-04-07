@@ -2039,6 +2039,13 @@ public void setVisible (boolean visible) {
 			boolean iconic = false;
 			Shell shell = parent != null ? parent.getShell() : null;
 			do {
+				/*
+				* This call to gdk_threads_leave() is a temporary work around
+				* to avoid deadlocks when gdk_threads_init() is called by native
+				* code outside of SWT (i.e AWT, etc). It ensures that the current
+				* thread leaves the GTK lock before calling the function below. 
+				*/
+				OS.gdk_threads_leave();
 				OS.g_main_context_iteration (0, false);
 				if (isDisposed ()) break;
 				iconic = minimized || (shell != null && shell.minimized);

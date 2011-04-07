@@ -3184,6 +3184,13 @@ public boolean readAndDispatch () {
 	boolean events = false;
 	events |= runSettings ();
 	events |= runPopups ();
+	/*
+	* This call to gdk_threads_leave() is a temporary work around
+	* to avoid deadlocks when gdk_threads_init() is called by native
+	* code outside of SWT (i.e AWT, etc). It ensures that the current
+	* thread leaves the GTK lock before calling the function below. 
+	*/
+	OS.gdk_threads_leave();
 	events |= OS.g_main_context_iteration (0, false);
 	if (events) {
 		runDeferredEvents ();
