@@ -32,7 +32,7 @@ public class Snippet345 {
 		final Display  display = new Display ();
 		final Shell shell = new Shell ();
 		shell.setLayout(new FillLayout(SWT.VERTICAL));
-		String string = "The quick brown fox jumped over the lazy brown dog";
+		String string = "The quick brown fox jumps over the lazy dog";
 		Button button;
 		button = new Button(shell, SWT.PUSH | SWT.WRAP);
 		button.setText(string);
