@@ -11,8 +11,6 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.events.*;
-
 /**
  * Instances of this class are created as a result of
  * a touch-based input device being touched. They are found
