@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import org.eclipse.swt.events.TouchEvent;
 
 /**
  * Instances of this class are created as a result of
