@@ -603,29 +603,7 @@ void enableWidget (boolean enabled) {
 	* image.  The fix is to set the complete image list only
 	* when the button is disabled.
 	*/
-	if (OS.COMCTL32_MAJOR >= 6) {
-		if (imageList != null) {
-			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-			OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, buttonImageList);
-			if (imageList != null) imageList.dispose ();
-			imageList = new ImageList (style & SWT.RIGHT_TO_LEFT);
-			if (OS.IsWindowEnabled (handle)) {
-				imageList.add (image);
-			} else {
-				if (disabledImage != null) disabledImage.dispose ();
-				disabledImage = new Image (display, image, SWT.IMAGE_DISABLE);
-				imageList.add (disabledImage);
-			}
-			buttonImageList.himl = imageList.getHandle ();
-			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
-			/*
-			* Bug in Windows.  Under certain cirumstances yet to be
-			* isolated, BCM_SETIMAGELIST does not redraw the control
-			* when an image is set.  The fix is to force a redraw.
-			*/
-			OS.InvalidateRect (handle, null, true);
-		}
-	}
+	updateImageList ();
 }
 
 /**
@@ -1120,6 +1098,37 @@ public void setText (String string) {
 //		}
 //	}
 	_setText (string);
+}
+
+void updateImageList () {
+	if (OS.COMCTL32_MAJOR >= 6) {
+		if (imageList != null) {
+			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
+			OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, buttonImageList);
+			if (imageList != null) imageList.dispose ();
+			imageList = new ImageList (style & SWT.RIGHT_TO_LEFT);
+			if (OS.IsWindowEnabled (handle)) {
+				imageList.add (image);
+			} else {
+				if (disabledImage != null) disabledImage.dispose ();
+				disabledImage = new Image (display, image, SWT.IMAGE_DISABLE);
+				imageList.add (disabledImage);
+			}
+			buttonImageList.himl = imageList.getHandle ();
+			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
+			/*
+			* Bug in Windows.  Under certain cirumstances yet to be
+			* isolated, BCM_SETIMAGELIST does not redraw the control
+			* when an image is set.  The fix is to force a redraw.
+			*/
+			OS.InvalidateRect (handle, null, true);
+		}
+	}	
+}
+
+void updateOrientation () {
+	super.updateOrientation ();
+	updateImageList ();
 }
 
 void updateSelection (int flags) {
