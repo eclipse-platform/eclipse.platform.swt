@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.events.TouchEvent;
-
 /**
  * Instances of this class are created as a result of
  * a touch-based input device being touched. They are found
@@ -19,7 +17,7 @@ import org.eclipse.swt.events.TouchEvent;
  * <p>
  * </p>
  *
- * @see TouchEvent
+ * @see org.eclipse.swt.events.TouchEvent
  * @see Event
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * 
@@ -70,10 +68,10 @@ public final class Touch {
 /**
  * Constructs a new touch state from the given inputs.
  * 
- * @param identity Identity of the touch. 
- * @param source Object representing the device that generated the touch. 
- * @param state One of the state constants representing the state of this touch.
- * @param primary Is this touch the primary touch in a collection of touches?
+ * @param identity Identity of the touch
+ * @param source Object representing the device that generated the touch 
+ * @param state One of the state constants representing the state of this touch
+ * @param primary Whether or not the touch is the primary touch
  * @param x X location of the touch in screen coordinates
  * @param y Y location of the touch in screen coordinates
  */
