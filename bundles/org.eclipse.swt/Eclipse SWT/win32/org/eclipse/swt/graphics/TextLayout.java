@@ -3340,17 +3340,18 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 			/*
 			* The run is composed only by white spaces, this happens when a run is split
 			* by a visual style. The font fallback for the script can not be determined
-			* using only white spaces. The solution is to use the font fallback of the 
-			* previous or next run of the same script.    
+			* using only white spaces. The solution is to use the font of the previous  
+			* or next run of the same script.    
 			*/
 			int index = 0;
 			while (index < allRuns.length - 1) {
 				if (allRuns[index] == run) {
 					if (index > 0) {
 						StyleItem pRun = allRuns[index - 1];
-						if (pRun.fallbackFont != 0 && pRun.analysis.eScript == run.analysis.eScript) {
+						if (pRun.analysis.eScript == run.analysis.eScript) {
+							int /*long*/ pFont = getItemFont(pRun);
 							LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
-							OS.GetObject(pRun.fallbackFont, LOGFONT.sizeof, logFont);
+							OS.GetObject(pFont, LOGFONT.sizeof, logFont);
 							newFont = OS.CreateFontIndirect(logFont);
 						}
 					}
@@ -3358,12 +3359,12 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 						if (index + 1 < allRuns.length - 1) {
 							StyleItem nRun = allRuns[index + 1];
 							if (nRun.analysis.eScript == run.analysis.eScript) {
+								OS.SelectObject(hdc, getItemFont(nRun));
 								shape(hdc, nRun);
-								if (nRun.fallbackFont != 0) {
-									LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
-									OS.GetObject(nRun.fallbackFont, LOGFONT.sizeof, logFont);
-									newFont = OS.CreateFontIndirect(logFont);
-								}
+								int /*long*/ nFont = getItemFont(nRun);
+								LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
+								OS.GetObject(nFont, LOGFONT.sizeof, logFont);
+								newFont = OS.CreateFontIndirect(logFont);
 							}
 						}
 					}
