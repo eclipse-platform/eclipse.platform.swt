@@ -1761,6 +1761,7 @@ public static final int /*long*/ sel_setBaseWritingDirection_ = sel_registerName
 public static final int /*long*/ sel_setBaseWritingDirection_range_ = sel_registerName("setBaseWritingDirection:range:");
 public static final int /*long*/ sel_setBecomesKeyOnlyIfNeeded_ = sel_registerName("setBecomesKeyOnlyIfNeeded:");
 public static final int /*long*/ sel_setBezelStyle_ = sel_registerName("setBezelStyle:");
+public static final int /*long*/ sel_setBezeled_ = sel_registerName("setBezeled:");
 public static final int /*long*/ sel_setBorderType_ = sel_registerName("setBorderType:");
 public static final int /*long*/ sel_setBorderWidth_ = sel_registerName("setBorderWidth:");
 public static final int /*long*/ sel_setBordered_ = sel_registerName("setBordered:");

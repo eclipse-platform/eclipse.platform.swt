@@ -181,7 +181,10 @@ void createHandle () {
 			elementFlags = (style & SWT.SHORT) != 0 ? OS.NSYearMonthDatePickerElementFlag : OS.NSYearMonthDayDatePickerElementFlag;
 		}
 	}
-	widget.setBordered((style & SWT.BORDER) != 0);
+	widget.setBezeled((style & SWT.BORDER) != 0);
+	if ((style & SWT.BORDER) == 0) {
+		widget.setFocusRingType(OS.NSFocusRingTypeNone);
+	}
 	widget.setDrawsBackground(true);
 	widget.setDatePickerStyle(pickerStyle);
 	widget.setDatePickerElements(elementFlags);
