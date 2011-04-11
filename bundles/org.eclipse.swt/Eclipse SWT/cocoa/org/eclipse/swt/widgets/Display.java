@@ -2175,11 +2175,11 @@ protected void init () {
 	 */
 	NSMenu appleMenu = application.mainMenu().itemAtIndex(0).submenu();
 	NSMenuItem prefsItem = appleMenu.itemWithTag(SWT.ID_PREFERENCES);
-	prefsItem.setTag(42);
+	if (prefsItem != null) prefsItem.setTag(42);
 	if (currAppDelegate != null) {
 		currAppDelegate.init();
 	} 
-	prefsItem.setTag(SWT.ID_PREFERENCES);
+	if (prefsItem != null) prefsItem.setTag(SWT.ID_PREFERENCES);
 	
 	observerCallback = new Callback (this, "observerProc", 3); //$NON-NLS-1$
 	int /*long*/ observerProc = observerCallback.getAddress ();
