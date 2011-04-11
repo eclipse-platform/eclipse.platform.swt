@@ -324,21 +324,34 @@ public PrinterData open() {
 	pd.lStructSize = PRINTDLG.sizeof;
 	pd.hwndOwner = hwndOwner;
 	
-	boolean success = true;
+	boolean success = false;
 	if (printerData.name != null) {
-		/* Initialize PRINTDLG DEVNAMES for the specified printer. */
-		TCHAR buffer = new TCHAR(0, printerData.name, true);
-		int size = buffer.length() * TCHAR.sizeof;
-		short[] offsets = new short[4]; // DEVNAMES (4 offsets)
-		int offsetsSize = offsets.length * 2; // 2 bytes each
-		offsets[1] = (short) offsets.length; // offset 1 points to wDeviceOffset
-		int /*long*/ hMem = OS.GlobalAlloc(OS.GMEM_MOVEABLE | OS.GMEM_ZEROINIT, offsetsSize + size);
-		int /*long*/ ptr = OS.GlobalLock(hMem);
-		OS.MoveMemory(ptr, offsets, offsetsSize);
-		OS.MoveMemory(ptr + offsetsSize, buffer, size);
-		OS.GlobalUnlock(hMem);
-		pd.hDevNames = hMem;
-	} else {
+		/* Ensure that the printer name is in the current list of printers. */
+		PrinterData printerList[] = Printer.getPrinterList();
+		if (printerList.length > 0) {
+			for (int p = 0; p < printerList.length; p++) {
+				if (printerList[p].name.equals(printerData.name)) {
+					success = true;
+					break;
+				}
+			}
+		}
+		if (success) {
+			/* Initialize PRINTDLG DEVNAMES for the specified printer. */
+			TCHAR buffer = new TCHAR(0, printerData.name, true);
+			int size = buffer.length() * TCHAR.sizeof;
+			short[] offsets = new short[4]; // DEVNAMES (4 offsets)
+			int offsetsSize = offsets.length * 2; // 2 bytes each
+			offsets[1] = (short) offsets.length; // offset 1 points to wDeviceOffset
+			int /*long*/ hMem = OS.GlobalAlloc(OS.GMEM_MOVEABLE | OS.GMEM_ZEROINIT, offsetsSize + size);
+			int /*long*/ ptr = OS.GlobalLock(hMem);
+			OS.MoveMemory(ptr, offsets, offsetsSize);
+			OS.MoveMemory(ptr + offsetsSize, buffer, size);
+			OS.GlobalUnlock(hMem);
+			pd.hDevNames = hMem;
+		}
+	}
+	if (!success) {
 		/* Initialize PRINTDLG fields, including DEVMODE, for the default printer. */
 		pd.Flags = OS.PD_RETURNDEFAULT;
 		if (success = OS.PrintDlg(pd)) {
