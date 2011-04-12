@@ -184,7 +184,7 @@ TF_DISPLAYATTRIBUTE getDisplayAttribute (short langid, int attInfo) {
 					int /*long*/ [] pDispInfo = new int /*long*/ [1];
 					TF_DISPLAYATTRIBUTE tempPda = new TF_DISPLAYATTRIBUTE ();
 					/* pEnum.Next () */
-					while ((hr = OS.VtblCall (4, pEnum [0], 1, pDispInfo, null)) == OS.S_OK) {
+					while ((hr = OS.VtblCall (4, pEnum [0], 1, pDispInfo, (int[])null)) == OS.S_OK) {
 						/* pDispInfo.GetAttributeInfo(); */
 						OS.VtblCall (5, pDispInfo [0], tempPda);
 						/* pDispInfo.Release () */
