@@ -1883,6 +1883,11 @@ typedef enum {
 	VtblCall__IJI_3I_FUNC,
 #endif
 #ifndef JNI64
+	VtblCall__III_3I_3I_FUNC,
+#else
+	VtblCall__IJI_3J_3I_FUNC,
+#endif
+#ifndef JNI64
 	VtblCall__III_3J_FUNC,
 #else
 	VtblCall__IJI_3J_FUNC,
