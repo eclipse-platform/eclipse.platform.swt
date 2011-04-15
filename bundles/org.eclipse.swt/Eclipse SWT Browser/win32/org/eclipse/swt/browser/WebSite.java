@@ -307,8 +307,8 @@ int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCm
 	* answering COM.S_OK.
 	* 
 	* - F5 causes a refresh, which is not appropriate when rendering HTML from memory
-	* - CTRL+L opens an Open Location dialog in IE8, which is undesirable and can
-	* crash in some contexts
+	* - CTRL+L and CTRL+O show an Open Location dialog in IE8, which is undesirable and
+	* can crash in some contexts
 	* - CTRL+N opens a standalone IE, which is undesirable and can crash in some contexts
 	*/
 	int result = COM.S_FALSE;
