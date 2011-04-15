@@ -2016,6 +2016,7 @@ public class OS extends C {
 	public static final int VK_MENU = 0x12;
 	public static final int VK_MULTIPLY = 0x6A;
 	public static final int VK_N = 0x4e;
+	public static final int VK_O = 0x4f;
 	public static final int VK_NEXT = 0x22;
 	public static final int VK_NUMLOCK = 0x90;
 	public static final int VK_NUMPAD0 = 0x60;

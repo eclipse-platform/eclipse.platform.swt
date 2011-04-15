@@ -346,6 +346,7 @@ int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCm
 				break;
 			case OS.VK_L:
 			case OS.VK_N:
+			case OS.VK_O:
 				if (OS.GetKeyState (OS.VK_CONTROL) < 0 && OS.GetKeyState (OS.VK_MENU) >= 0 && OS.GetKeyState (OS.VK_SHIFT) >= 0) {
 					if (msg.wParam == OS.VK_N || IE.IEVersion >= 8) {
 						frame.setData(CONSUME_KEY, "false"); //$NON-NLS-1$
