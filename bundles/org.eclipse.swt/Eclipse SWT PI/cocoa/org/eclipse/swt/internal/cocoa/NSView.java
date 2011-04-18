@@ -219,6 +219,10 @@ public void removeFromSuperview() {
 	OS.objc_msgSend(this.id, OS.sel_removeFromSuperview);
 }
 
+public void removeToolTip(int /*long*/ tag) {
+	OS.objc_msgSend(this.id, OS.sel_removeToolTip_, tag);
+}
+
 public void removeTrackingArea(NSTrackingArea trackingArea) {
 	OS.objc_msgSend(this.id, OS.sel_removeTrackingArea_, trackingArea != null ? trackingArea.id : 0);
 }

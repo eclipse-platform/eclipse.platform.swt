@@ -1381,6 +1381,10 @@ void releaseParent () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (tooltipTag != 0) {
+		view.window().contentView().removeToolTip(tooltipTag);
+		tooltipTag = 0;
+	}
 	display.clearModal (this);
 	updateParent (false);
 	display.updateQuitMenu();

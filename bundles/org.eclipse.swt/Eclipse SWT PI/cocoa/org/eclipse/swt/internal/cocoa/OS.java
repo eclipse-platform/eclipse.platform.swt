@@ -1645,6 +1645,7 @@ public static final int /*long*/ sel_removeStatusItem_ = sel_registerName("remov
 public static final int /*long*/ sel_removeTabViewItem_ = sel_registerName("removeTabViewItem:");
 public static final int /*long*/ sel_removeTableColumn_ = sel_registerName("removeTableColumn:");
 public static final int /*long*/ sel_removeTemporaryAttribute_forCharacterRange_ = sel_registerName("removeTemporaryAttribute:forCharacterRange:");
+public static final int /*long*/ sel_removeToolTip_ = sel_registerName("removeToolTip:");
 public static final int /*long*/ sel_removeTrackingArea_ = sel_registerName("removeTrackingArea:");
 public static final int /*long*/ sel_replaceCharactersInRange_withString_ = sel_registerName("replaceCharactersInRange:withString:");
 public static final int /*long*/ sel_replyToOpenOrPrint_ = sel_registerName("replyToOpenOrPrint:");
