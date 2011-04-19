@@ -5667,13 +5667,13 @@ void updateOrientation () {
 					if (column != null) {
 						Image image = column.image;
 						if (image != null) {
-							int index = headerImageList.indexOf (image);
-							if (index == -1) headerImageList.add (image);	
 							if (OS.COMCTL32_MAJOR < 6) {
 								HDITEM hdItem = new HDITEM ();
 								hdItem.mask = OS.HDI_FORMAT;
 								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
 								if ((hdItem.fmt & OS.HDF_IMAGE) != 0) {
+									int index = headerImageList.indexOf (image);
+									if (index == -1) headerImageList.add (image);	
 									hdItem.mask = OS.HDI_IMAGE;
 									hdItem.iImage = index;
 									OS.SendMessage (hwndHeader, OS.HDM_SETITEM, i, hdItem);
@@ -5683,6 +5683,8 @@ void updateOrientation () {
 								lvColumn.mask = OS.LVCF_FMT;
 								OS.SendMessage (hwndHeader, OS.LVM_GETCOLUMN, i, lvColumn);
 								if ((lvColumn.fmt & OS.LVCFMT_IMAGE) != 0) {
+									int index = headerImageList.indexOf (image);
+									if (index == -1) headerImageList.add (image);	
 									lvColumn.iImage = index;
 									lvColumn.mask = OS.LVCF_IMAGE;
 									OS.SendMessage (hwndHeader, OS.LVM_SETCOLUMN, i, lvColumn);

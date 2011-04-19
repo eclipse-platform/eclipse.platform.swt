@@ -5565,6 +5565,52 @@ void updateOrientation () {
 		OS.InvalidateRect (hwndHeader, null, true);
 	}
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
+	if (imageList != null) {
+		Point size = imageList.getImageSize ();
+		display.releaseImageList (imageList);
+		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y);
+		for (int i = 0; i < items.length; i++) {
+			TreeItem item = items[i];
+			if (item != null) {
+				Image image = item.image;
+				if (image != null) {
+					int index = imageList.indexOf (image);
+					if (index == -1) imageList.add (image);	
+				}
+			}
+		}
+		int /*long*/ hImageList = imageList.getHandle ();
+		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
+	}
+	if (hwndHeader != 0) {
+		if (headerImageList != null) {
+			Point size = headerImageList.getImageSize ();
+			display.releaseImageList (headerImageList);
+			headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y);	
+			if (columns != null) {
+				for (int i = 0; i < columns.length; i++) {
+					TreeColumn column = columns[i];
+					if (column != null) {
+						Image image = column.image;
+						if (image != null) {
+							HDITEM hdItem = new HDITEM ();
+							hdItem.mask = OS.HDI_FORMAT;
+							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
+							if ((hdItem.fmt & OS.HDF_IMAGE)!= 0) {      
+								int index = headerImageList.indexOf (image);
+								if (index == -1) index = headerImageList.add (image);	
+								hdItem.mask = OS.HDI_IMAGE;
+								hdItem.iImage = index;
+								OS.SendMessage (hwndHeader, OS.HDM_SETITEM, i, hdItem);
+							}
+						}
+					}	
+				}
+			}
+			int /*long*/ hImageListHeader = headerImageList.getHandle ();
+			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hImageListHeader);
+		}	
+	}
 }
 
 void updateScrollBar () {
