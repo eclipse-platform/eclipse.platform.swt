@@ -1149,11 +1149,13 @@
 		<echo>Natives changed: ${natives_changed} since ${swt_tag}</echo>
 	</target>
 
-	<target name="remove_old_version" if="has_old_version">
+	<target name="new_version" if="is_new_version">
 		<echo>Removing ${removed_files}</echo>
 		<cvs dest="${fragment}" command="remove -f ${removed_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 		<echo>Commiting ${removed_files}</echo>
 		<cvs dest="${fragment}" command="commit -m 'remove old libs v${swt_version}' ${removed_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
+		<echo>Adding ${added_files}</echo>
+		<cvs dest="${fragment}" command="add -kb ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
 
 	<!-- Params: cvsRsh, tmpdir, and swt_new_tag -->
@@ -1237,15 +1239,13 @@
 			<fileset dir="${fragment}" includes="*${swt_version}*"/>
 		</chmod>
 
-		<condition property="has_old_version">
+		<condition property="is_new_version">
 			<not>
 				<equals arg1="" arg2="${removed_files}"/>
 			</not>
 		</condition>
-		<antcall target="remove_old_version"/>
+		<antcall target="new_version"/>
 
-		<echo>Adding ${added_files}</echo>
-		<cvs dest="${fragment}" command="add -kb ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 		<echo>"Commiting ${added_files}</echo>
 		<cvs dest="${fragment}" command="commit -m 'v${swt_version}' ${added_files}" cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true"/>
 	</target>
