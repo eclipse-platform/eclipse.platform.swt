@@ -1144,6 +1144,69 @@ String toolTipText (NMTTDISPINFO hdr) {
 	return super.toolTipText (hdr);
 }
 
+void updateOrientation () {
+	super.updateOrientation ();
+	if (imageList != null) {
+		Point size = imageList.getImageSize ();
+		display.releaseToolImageList (imageList);
+		imageList = display.getImageListToolBar (style & SWT.RIGHT_TO_LEFT, size.x, size.y);
+		int /*long*/ hImageList = imageList.getHandle ();
+		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, hImageList);
+	}	
+	if (hotImageList != null) {
+		Point size = hotImageList.getImageSize ();
+		display.releaseToolHotImageList (hotImageList);
+		hotImageList = display.getImageListToolBarHot (style & SWT.RIGHT_TO_LEFT, size.x, size.y);
+		int /*long*/ hHotImageList  = hotImageList.getHandle ();
+		OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, hHotImageList);
+	}	
+	if (disabledImageList != null) {
+		Point size = disabledImageList.getImageSize ();
+		display.releaseToolDisabledImageList (disabledImageList);
+		disabledImageList = display.getImageListToolBarDisabled (style & SWT.RIGHT_TO_LEFT, size.x, size.y);	
+		int /*long*/ hDisImageList  = disabledImageList.getHandle ();
+		OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, hDisImageList);
+	}
+	if (imageList != null) {
+		for (int i = 0; i < items.length; i++) {
+			ToolItem item = items[i];
+			if (item != null) {
+				Image image = item.image;
+				if (image != null) {
+					TBBUTTONINFO info = new TBBUTTONINFO ();
+					info.cbSize = TBBUTTONINFO.sizeof;
+					info.dwMask = OS.TBIF_IMAGE;
+					boolean enabled = getEnabled () && item.getEnabled ();
+					Image disabled = item.disabledImage;
+					if (item.disabledImage == null) {
+						if (item.disabledImage2 != null) item.disabledImage2.dispose ();
+						item.disabledImage2 = null;
+						disabled = image;
+						if (!enabled) {
+							disabled = item.disabledImage2 = new Image (display, image, SWT.IMAGE_DISABLE);
+						}
+					}
+					/*
+					* Bug in Windows.  When a tool item with the style
+					* BTNS_CHECK or BTNS_CHECKGROUP is selected and then
+					* disabled, the item does not draw using the disabled
+					* image.  The fix is to assign the disabled image in
+					* all image lists.
+					*/
+					Image image2 = image, hot = item.hotImage;
+					if ((item.style & (SWT.CHECK | SWT.RADIO)) != 0) {
+						if (!enabled) image2 = hot = disabled;
+					}
+					info.iImage = imageList.add (image2);
+					disabledImageList.add (disabled);
+					hotImageList.add (hot != null ? hot : image2);
+					OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, info);
+				}
+			}
+		}
+	}
+ }
+
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.CCS_NORESIZE | OS.TBSTYLE_TOOLTIPS | OS.TBSTYLE_CUSTOMERASE;
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) bits |= OS.TBSTYLE_TRANSPARENT;
