@@ -5638,6 +5638,64 @@ void updateOrientation () {
 		OS.SetWindowPos (handle, 0, 0, 0, width, height, OS.SWP_NOMOVE | OS.SWP_NOZORDER);
 	}
 	if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (false);
+	if (imageList != null) {
+		Point size = imageList.getImageSize ();
+		display.releaseImageList (imageList);
+		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y);
+		int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+		for (int i = 0; i < count; i++) {
+		    TableItem item = _getItem (i, false);
+			if (item != null) {
+				Image image = item.image;
+				if (image != null) {
+					int index = imageList.indexOf (image);
+					if (index == -1) imageList.add (image);	
+				}
+			}
+		}
+		int /*long*/ hImageList = imageList.getHandle ();
+		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
+	}	
+	if (hwndHeader != 0) {
+		if (headerImageList != null) {
+			Point size = headerImageList.getImageSize ();
+			display.releaseImageList (headerImageList);
+			headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y);	
+			if (columns != null) {
+				for (int i = 0; i < columns.length; i++) {
+					TableColumn column = columns [i];
+					if (column != null) {
+						Image image = column.image;
+						if (image != null) {
+							int index = headerImageList.indexOf (image);
+							if (index == -1) headerImageList.add (image);	
+							if (OS.COMCTL32_MAJOR < 6) {
+								HDITEM hdItem = new HDITEM ();
+								hdItem.mask = OS.HDI_FORMAT;
+								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
+								if ((hdItem.fmt & OS.HDF_IMAGE) != 0) {
+									hdItem.mask = OS.HDI_IMAGE;
+									hdItem.iImage = index;
+									OS.SendMessage (hwndHeader, OS.HDM_SETITEM, i, hdItem);
+								}
+							} else {
+								LVCOLUMN lvColumn = new LVCOLUMN ();
+								lvColumn.mask = OS.LVCF_FMT;
+								OS.SendMessage (hwndHeader, OS.LVM_GETCOLUMN, i, lvColumn);
+								if ((lvColumn.fmt & OS.LVCFMT_IMAGE) != 0) {
+									lvColumn.iImage = index;
+									lvColumn.mask = OS.LVCF_IMAGE;
+									OS.SendMessage (hwndHeader, OS.LVM_SETCOLUMN, i, lvColumn);
+								}
+							}
+						}
+					}
+				}
+			}
+			int /*long*/ hHeaderImageList = headerImageList.getHandle ();
+			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
+		}
+	}
 }
 
 int widgetStyle () {
