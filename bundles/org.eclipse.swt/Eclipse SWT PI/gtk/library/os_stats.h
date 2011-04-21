@@ -579,6 +579,7 @@ typedef enum {
 	_1gdk_1window_1hide_FUNC,
 	_1gdk_1window_1invalidate_1rect_FUNC,
 	_1gdk_1window_1invalidate_1region_FUNC,
+	_1gdk_1window_1is_1viewable_FUNC,
 	_1gdk_1window_1is_1visible_FUNC,
 	_1gdk_1window_1lookup_FUNC,
 	_1gdk_1window_1lower_FUNC,

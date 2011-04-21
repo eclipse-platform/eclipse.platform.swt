@@ -4154,18 +4154,19 @@ public void setRedraw (boolean redraw) {
 		if (--drawCount == 0) {
 			if (redrawWindow != 0) {
 				int /*long*/ window = paintWindow ();
-				/*
-				* Bug in GTK. For some reason, the window does not
-				* redraw in versions of GTK greater than 2.18. The fix
-				* is to hide and show it (without changing the z order).
-			    */
-				boolean fixRedraw = OS.GTK_VERSION >= OS.VERSION (2, 17, 0) && OS.gdk_window_is_visible(window);
-				if (fixRedraw) OS.gdk_window_hide(window);
 				/* Explicitly hiding the window avoids flicker on GTK+ >= 2.6 */
 				OS.gdk_window_hide (redrawWindow);
 				OS.gdk_window_destroy (redrawWindow);
 				OS.gdk_window_set_events (window, OS.gtk_widget_get_events (paintHandle ()));
-				if (fixRedraw) OS.gdk_window_show_unraised(window);
+				/*
+				* Bug in GTK. GDK does not always send the visibility notify event
+				* even though the widget is not obscured after the redraw window is
+				* destroyed.  This leaves the OBSCURED state bit out of date.  The
+				* fix is to check if the window is viewable and clear the bit. 
+				*/
+				if (OS.GTK_VERSION >= OS.VERSION (2, 17, 0) && OS.gdk_window_is_viewable (window)) {
+					state &= ~OBSCURED;
+				}
 				redrawWindow = 0;
 			}
 		}
@@ -4188,9 +4189,6 @@ public void setRedraw (boolean redraw) {
 						OS.GDK_BUTTON2_MOTION_MASK | OS.GDK_BUTTON3_MOTION_MASK;
 					OS.gdk_window_set_events (window, OS.gdk_window_get_events (window) & ~mouseMask);
 					OS.gdk_window_set_back_pixmap (redrawWindow, 0, false);
-					//System.out.println("Redraw " + redrawWindow + " WIndow " + window);
-//					OS.gdk_x11_drawable_get_xid(redrawWindow);
-//					OS.gdk_x11_drawable_get_xid(window);
 					OS.gdk_window_show (redrawWindow);
 				}
 			}

@@ -6962,6 +6962,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1invalidate_1region)
 }
 #endif
 
+#ifndef NO__1gdk_1window_1is_1viewable
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1window_1is_1viewable)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1window_1is_1viewable_FUNC);
+	rc = (jboolean)gdk_window_is_viewable((GdkWindow *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1window_1is_1viewable_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1window_1is_1visible
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1window_1is_1visible)
 	(JNIEnv *env, jclass that, jintLong arg0)
