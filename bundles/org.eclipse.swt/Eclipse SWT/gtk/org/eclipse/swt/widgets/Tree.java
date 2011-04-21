@@ -1499,8 +1499,11 @@ public TreeItem getItem (Point point) {
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int /*long*/ [] path = new int /*long*/ [1];
 	OS.gtk_widget_realize (handle);
+	int x = point.x;
+	int y = point.y;
+	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
 	int /*long*/ [] columnHandle = new int /*long*/ [1];
-	if (!OS.gtk_tree_view_get_path_at_pos (handle, point.x, point.y, path, columnHandle, null, null)) return null;
+	if (!OS.gtk_tree_view_get_path_at_pos (handle, x, y, path, columnHandle, null, null)) return null;
 	if (path [0] == 0) return null;
 	TreeItem item = null;
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
@@ -1513,9 +1516,12 @@ public TreeItem getItem (Point point) {
 			if (OS.GTK_VERSION < OS.VERSION (2, 8, 18)) {
 				OS.gtk_widget_style_get (handle, OS.expander_size, buffer, 0);
 				int expanderSize = buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-				overExpander = point.x < rect.x + expanderSize;
+				rect.x += expanderSize;
+			}
+			if ((style & SWT.MIRRORED) != 0) {
+				overExpander = x > rect.x + rect.width;
 			} else {
-				overExpander = point.x < rect.x;
+				overExpander = x < rect.x;
 			}
 		}
 		if (!overExpander) {
