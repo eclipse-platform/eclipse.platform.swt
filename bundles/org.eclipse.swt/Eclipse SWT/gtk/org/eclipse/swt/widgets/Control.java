@@ -266,7 +266,14 @@ void hookEvents () {
 	int paintMask = OS.GDK_EXPOSURE_MASK | OS.GDK_VISIBILITY_NOTIFY_MASK;
 	OS.gtk_widget_add_events (paintHandle, paintMask);
 	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT_INVERSE], false);
-	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [VISIBILITY_NOTIFY_EVENT], 0, display.closures [VISIBILITY_NOTIFY_EVENT], false);
+	/*
+	* As of GTK 2.17.11, obscured controls no longer send expose 
+	* events. It is no longer necessary to track visiblity notify
+	* events.
+	*/
+	if (OS.GTK_VERSION < OS.VERSION (2, 17, 11)) {
+		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [VISIBILITY_NOTIFY_EVENT], 0, display.closures [VISIBILITY_NOTIFY_EVENT], false);
+	}
 	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT], true);
 
 	/* Connect the Input Method signals */
@@ -3102,6 +3109,12 @@ int /*long*/ gtk_unrealize (int /*long*/ widget) {
 }
 
 int /*long*/ gtk_visibility_notify_event (int /*long*/ widget, int /*long*/ event) {
+	/*
+	* As of GTK 2.17.11, obscured controls no longer send expose 
+	* events. It is no longer necessary to track visiblity notify
+	* events.
+	*/
+	if (OS.GTK_VERSION >= OS.VERSION (2, 17, 11)) return 0;
 	GdkEventVisibility gdkEvent = new GdkEventVisibility ();
 	OS.memmove (gdkEvent, event, GdkEventVisibility.sizeof);
 	int /*long*/ paintWindow = paintWindow();
@@ -4158,15 +4171,6 @@ public void setRedraw (boolean redraw) {
 				OS.gdk_window_hide (redrawWindow);
 				OS.gdk_window_destroy (redrawWindow);
 				OS.gdk_window_set_events (window, OS.gtk_widget_get_events (paintHandle ()));
-				/*
-				* Bug in GTK. GDK does not always send the visibility notify event
-				* even though the widget is not obscured after the redraw window is
-				* destroyed.  This leaves the OBSCURED state bit out of date.  The
-				* fix is to check if the window is viewable and clear the bit. 
-				*/
-				if (OS.GTK_VERSION >= OS.VERSION (2, 17, 0) && OS.gdk_window_is_viewable (window)) {
-					state &= ~OBSCURED;
-				}
 				redrawWindow = 0;
 			}
 		}

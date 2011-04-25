@@ -768,6 +768,12 @@ int /*long*/ checkIfEventProc (int /*long*/ display, int /*long*/ xEvent, int /*
 	int type = OS.X_EVENT_TYPE (xEvent);
 	switch (type) {
 		case OS.VisibilityNotify:
+			/*
+			* As of GTK 2.17.11, obscured controls no longer send expose 
+			* events. It is no longer necessary to track visiblity notify
+			* events.
+			*/
+			if (OS.GTK_VERSION >= OS.VERSION (2, 17, 11)) return 0;
 		case OS.Expose:
 		case OS.GraphicsExpose:
 			break;
