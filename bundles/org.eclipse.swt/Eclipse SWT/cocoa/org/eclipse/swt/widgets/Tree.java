@@ -2291,7 +2291,18 @@ void outlineViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/
 }
 
 void scrollClipViewToPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ clipView, NSPoint point) {
-	if (shouldScroll) super.scrollClipViewToPoint(id, sel, clipView, point);
+	if (shouldScroll) {
+		super.scrollClipViewToPoint(id, sel, clipView, point);
+		if ((style & SWT.CHECK) != 0 && columnCount > 0 && ((NSOutlineView) view).headerView () != null) {
+			if (point.x <= getCheckColumnWidth()) {
+				/* 
+				 * Header of first column is extended as header of the checkbox column.
+				 * So, redraw header of first column when check column is scrolled to be visible.
+				 */
+				headerView.setNeedsDisplayInRect(headerView.headerRectOfColumn(1));
+			}
+		}
+	}
 }
 
 void sendSelection () {
