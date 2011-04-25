@@ -502,8 +502,8 @@ void setMenu (Menu menu) {
 	if (hr != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
 	int /*long*/ pDestList = ppv[0];
 	String appName = Display.APP_NAME;
-	char [] buffer = null;
-	if (appName != null) {
+	char [] buffer = {'S', 'W', 'T', '\0'};
+	if (appName != null && appName.length () > 0) {
 		int length = appName.length ();
 		buffer = new char [length + 1];
 		appName.getChars (0, length, buffer, 0);
