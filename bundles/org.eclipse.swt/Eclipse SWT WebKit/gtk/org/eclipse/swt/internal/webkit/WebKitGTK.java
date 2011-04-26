@@ -52,7 +52,6 @@ public class WebKitGTK extends C {
 	public static final byte[] window_object_cleared = ascii ("window-object-cleared"); // $NON-NLS-1$
 
 	/** Properties */
-	public static final byte[] default_encoding = ascii ("default-encoding"); // $NON-NLS-1$
 	public static final byte[] enable_scripts = ascii ("enable-scripts"); // $NON-NLS-1$
 	public static final byte[] enable_universal_access_from_file_uris = ascii ("enable-universal-access-from-file-uris"); // $NON-NLS-1$
 	public static final byte[] height = ascii ("height"); // $NON-NLS-1$

@@ -475,9 +475,6 @@ public void create (Composite parent, int style) {
     int /*long*/ settings = WebKitGTK.webkit_web_view_get_settings (webView);
     OS.g_object_set (settings, WebKitGTK.javascript_can_open_windows_automatically, 1, 0);
     OS.g_object_set (settings, WebKitGTK.enable_universal_access_from_file_uris, 1, 0);
-    String encoding = System.getProperty ("file.encoding");	// $NON-NLS-1$
-    byte[] bytes = Converter.wcsToMbcs (null, encoding, true);
-    OS.g_object_set (settings, WebKitGTK.default_encoding, bytes, 0);
 
     Listener listener = new Listener () {
 		public void handleEvent (Event event) {
@@ -541,7 +538,7 @@ public void create (Composite parent, int style) {
 			proxyHost = PROTOCOL_HTTP + proxyHost;
 		}
 		proxyHost += ":" + port; //$NON-NLS-1$
-		bytes = Converter.wcsToMbcs (null, proxyHost, true);
+		byte[] bytes = Converter.wcsToMbcs (null, proxyHost, true);
 		int /*long*/ uri = WebKitGTK.soup_uri_new (bytes);
 		if (uri != 0) {
 			OS.g_object_set (session, WebKitGTK.SOUP_SESSION_PROXY_URI, uri, 0);
