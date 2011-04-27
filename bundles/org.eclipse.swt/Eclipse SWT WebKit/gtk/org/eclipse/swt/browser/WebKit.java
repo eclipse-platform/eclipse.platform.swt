@@ -697,9 +697,9 @@ public String getText () {
 	OS.memmove (bytes, encoding, length);
 	String encodingString = new String (Converter.mbcsToWcs (null, bytes));
 
-	int /*long*/ string = OS.GString_str (data);
-	length = OS.GString_len (string);
+	length = OS.GString_len (data);
 	bytes = new byte[length];
+	int /*long*/ string = OS.GString_str (data);
 	C.memmove (bytes, string, length);
 
 	try {
