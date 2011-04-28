@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.*;
 public class Snippet355 {
 	public static void main (String [] args) {
 		Display display = new Display ();
-		Shell shell = new Shell (display, SWT.SHELL_TRIM);
+		Shell shell = new Shell (display, SWT.SHELL_TRIM | SWT.DOUBLE_BUFFERED);
 		final Image image = display.getSystemImage (SWT.ICON_QUESTION);
 		shell.addListener (SWT.Paint, new Listener () {
 			public void handleEvent (Event e) {
