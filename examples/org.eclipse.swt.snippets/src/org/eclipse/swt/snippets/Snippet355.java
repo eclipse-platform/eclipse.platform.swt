@@ -35,7 +35,7 @@ public class Snippet355 {
 				GC gc = e.gc;
 				int x = 10, y = 10;
 				gc.drawImage (image, 0, 0, width, height, x, y, width, height);
-				gc.drawImage (image, 0, 0, width, height, x + width, y, (int)Math.round(width * 0.5), (int)Math.round(height * 0.5));
+				gc.drawImage (image, 0, 0, width, height, x+width, y, (int)Math.round(width * 0.5), (int)Math.round(height * 0.5));
 				gc.drawImage (image, 0, 0, width, height, x+width+(int)Math.round(width * 0.5), y, width * 2, height * 2);
 			}
 		});
