@@ -1,4 +1,3 @@
-package org.eclipse.swt.snippets;
 /*******************************************************************************
  * Copyright (c) 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
@@ -9,12 +8,7 @@ package org.eclipse.swt.snippets;
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-//package org.eclipse.swt.snippets;
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.accessibility.*;
+package org.eclipse.swt.snippets;
 
 /*
  * Accessibility example snippet: use accessible relations to provide
@@ -25,6 +19,11 @@ import org.eclipse.swt.accessibility.*;
  * 
  * @since 3.6
  */
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.accessibility.*;
+
 public class Snippet350 {
 	public static void main(String[] args) {
 		Display display = new Display();

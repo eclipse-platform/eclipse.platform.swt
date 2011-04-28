@@ -21,7 +21,6 @@ package org.eclipse.swt.snippets;
  * 
  * @since 3.2
  */
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
