@@ -46,4 +46,3 @@ public class Snippet355 {
 		display.dispose ();
 	}
 }
-
