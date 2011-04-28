@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * draw an image and scale it to half size and double size
+ * draw an image scaled to half size and double size
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
