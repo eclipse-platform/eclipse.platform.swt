@@ -275,11 +275,16 @@ public void append (String string) {
 		string = verifyText (string, charCount, charCount, null);
 		if (string == null) return;
 	}
-	NSString str = NSString.stringWith (string);
 	if ((style & SWT.SINGLE) != 0) {
 		setSelection (getCharCount ());
 		insertEditText (string);
 	} else {
+		NSString str;
+		if (textLimit != LIMIT) {
+			str = getInsertString (string, null);
+		} else {
+			str = NSString.stringWith (string);
+		}
 		NSTextView widget = (NSTextView) view;
 		NSTextStorage storage = widget.textStorage ();
 		NSRange range = new NSRange();
@@ -856,6 +861,21 @@ char [] getEditText (int start, int end) {
 	return buffer;
 }
 
+NSString getInsertString (String string, NSRange range) {
+	NSString str;
+	int charCount = getCharCount ();
+	int length = string.length ();
+	int selectionLength = range != null ? (int)/*64*/(range.length) : 0;
+	if (charCount - selectionLength + length > textLimit) {
+		length = textLimit - charCount + selectionLength;
+		length = Math.max (0, length);
+	}
+	char [] buffer = new char [length];
+	string.getChars (0, buffer.length, buffer, 0);
+	str = NSString.stringWithCharacters (buffer, buffer.length);
+	return str;
+}
+
 /**
  * Returns the number of lines.
  *
@@ -1261,9 +1281,14 @@ public void insert (String string) {
 	if ((style & SWT.SINGLE) != 0) {
 		insertEditText (string);
 	} else {
-		NSString str = NSString.stringWith (string);
 		NSTextView widget = (NSTextView) view;
 		NSRange range = widget.selectedRange ();
+		NSString str;
+		if (textLimit != LIMIT) {
+			str = getInsertString (string, range);
+		} else {
+			str = NSString.stringWith (string);
+		}
 		widget.textStorage ().replaceCharactersInRange (range, str);
 	}
 	if (string.length () != 0) sendEvent (SWT.Modify);
@@ -1347,7 +1372,14 @@ public void paste () {
 					insertEditText (newText);
 				} else {
 					NSTextView textView = (NSTextView) view;
-					textView.replaceCharactersInRange (textView.selectedRange (), NSString.stringWith (newText));
+					NSRange range = textView.selectedRange ();
+					NSString str;
+					if (textLimit != LIMIT) {
+						str = getInsertString (newText, range);
+					} else {
+						str = NSString.stringWith (newText);
+					}
+					textView.replaceCharactersInRange (range, str);
 				}
 				paste = false;
 			}
@@ -1359,8 +1391,16 @@ public void paste () {
 			if (oldText == null) return;
 			insertEditText (oldText);
 		} else {
-			//TODO check text limit
-			((NSTextView) view).paste (null);
+			if (textLimit != LIMIT) {
+				if (oldText == null) oldText = getClipboardText ();
+				if (oldText == null) return;
+				NSTextView textView = (NSTextView) view;
+				NSRange range = textView.selectedRange ();
+				NSString str = getInsertString (oldText, range);
+				textView.replaceCharactersInRange (range, str);
+			} else {
+				((NSTextView) view).paste (null);
+			}
 		}
 	}
 	sendEvent (SWT.Modify);
