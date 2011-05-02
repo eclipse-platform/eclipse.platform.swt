@@ -1993,6 +1993,7 @@ void setZOrder () {
 
 void setZOrder (Control control, boolean above) {
 	if (window == null) return;
+	if (!getVisible ()) return;
 	if (control == null) {
 		if (above) {
 			window.orderFront(null);
