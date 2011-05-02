@@ -1106,8 +1106,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	if (type == SWT.MouseDown) {
 		mouseIsDown = true;
-	}
-	if (type == SWT.MouseUp) {
+	} else if (type == SWT.MouseUp || type == SWT.DragDetect) {
 		mouseIsDown = false;
 		
 		if (rowsChanged) {
