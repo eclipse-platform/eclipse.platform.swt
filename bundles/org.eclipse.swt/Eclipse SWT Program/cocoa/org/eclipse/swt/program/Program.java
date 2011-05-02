@@ -160,12 +160,13 @@ static Program getProgram(NSBundle bundle) {
         bundleName = bundle.objectForInfoDictionaryKey(CFBundleName);
     }
     if (bundleName == null) {
-        bundleName = fullPath.lastPathComponent().stringByDeletingPathExtension();
+       if (fullPath == null) return null;
+       bundleName = fullPath.lastPathComponent().stringByDeletingPathExtension();
     }
     NSString name = new NSString(bundleName.id);
     Program program = new Program();
     program.name = name.getString();
-    program.fullPath = fullPath.getString();
+    if (fullPath != null) program.fullPath = fullPath.getString();
     program.identifier = identifier != null ? identifier.getString() : "";
     return program;
 }
@@ -195,7 +196,10 @@ public static Program [] getPrograms () {
 					NSString fullPath = path.stringByAppendingPathComponent(new NSString(id.id));
 					if (workspace.isFilePackageAtPath(fullPath)) {
 						NSBundle bundle = NSBundle.bundleWithPath(fullPath);
-						if (bundle != null) vector.addElement(getProgram(bundle));
+						if (bundle != null) {
+							Program program = getProgram(bundle);
+							if (program != null) vector.addElement(program);
+						}
 					}
 				}
 			}
