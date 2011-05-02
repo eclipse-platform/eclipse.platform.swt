@@ -2352,7 +2352,7 @@ public class Accessible {
 			AccessibleTextExtendedListener listener = (AccessibleTextExtendedListener) accessibleTextExtendedListeners.elementAt(i);
 			listener.getCharacterCount(event);
 		}
-		if (event.count == -1) {
+		if (event.count != -1) {
 			AccessibleControlEvent e = new AccessibleControlEvent(this);
 			e.childID = ACC.CHILDID_SELF;
 			for (int i = 0; i < accessibleControlListeners.size(); i++) {
