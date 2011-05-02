@@ -259,6 +259,18 @@ void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rectangl
 	}
 }
 
+Cursor findCursor () {
+	Cursor cursor = super.findCursor();
+	if (cursor != null) return cursor;
+	NSWindow window = view.window();
+	NSTextView widget = (NSTextView) view;
+	NSPoint point = view.convertPoint_fromView_(window.convertScreenToBase(NSEvent.mouseLocation()), null);
+	if (widget.characterIndexForInsertionAtPoint(point) == widget.textStorage ().length ()) {
+		return display.getSystemCursor (SWT.CURSOR_ARROW);
+	}
+	return null;
+}
+
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	NSColor nsColor = null; 
@@ -730,7 +742,7 @@ void updateCursorRects (boolean enabled) {
 	updateCursorRects (enabled, scrollView);	
 	NSClipView contentView = scrollView.contentView ();
 	updateCursorRects (enabled, contentView);
-	contentView.setDocumentCursor (enabled ? NSCursor.IBeamCursor () : null);
+	contentView.setDocumentCursor (enabled ? NSCursor.arrowCursor () : null);
 }
 
 }
