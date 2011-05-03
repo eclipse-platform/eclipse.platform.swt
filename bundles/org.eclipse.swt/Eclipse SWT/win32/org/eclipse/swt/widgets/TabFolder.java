@@ -825,7 +825,7 @@ void updateOrientation () {
 		TCITEM tcItem = new TCITEM ();
 		tcItem.mask = OS.TCIF_IMAGE;
 		for (int i = 0; i < items.length; i++) {
-			TabItem item = items[0];
+			TabItem item = items [i];
 			if (item == null) break;
 			Image image = item.image;
 			if (image != null) {
