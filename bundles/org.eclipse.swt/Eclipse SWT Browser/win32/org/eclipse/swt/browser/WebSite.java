@@ -779,6 +779,7 @@ int Invoke (int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*lo
 
 Object convertToJava (Variant variant) {
 	switch (variant.getType ()) {
+		case OLE.VT_EMPTY:
 		case OLE.VT_NULL: return null;
 		case OLE.VT_BSTR: return variant.getString ();
 		case OLE.VT_BOOL: return new Boolean (variant.getBoolean ());
