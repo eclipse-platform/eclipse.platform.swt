@@ -887,11 +887,11 @@ Variant convertToJS (Object value) {
 		Variant arrayType = ihtmlWindow2.getProperty (rgdispid[0]);
 		ihtmlWindow2.dispose ();
 		IDispatch arrayTypeDispatch = arrayType.getDispatch ();
-		arrayType.dispose ();
-
 		int /*long*/[] result = new int /*long*/[1];
 		int rc = arrayTypeDispatch.QueryInterface (COM.IIDIDispatchEx, result);
+		arrayType.dispose ();
 		if (rc != COM.S_OK) return new Variant ();
+
 		IDispatchEx arrayTypeDispatchEx = new IDispatchEx (result[0]);
 		result[0] = 0;
 		int /*long*/ resultPtr = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
