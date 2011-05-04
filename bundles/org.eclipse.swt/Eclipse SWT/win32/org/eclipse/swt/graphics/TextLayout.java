@@ -1214,7 +1214,7 @@ RECT drawStrikeoutGDIP(int /*long*/ graphics, int x, int baseline, StyleItem[] l
 			clipRect = null;
 		} else {
 			if (fullSelection) {
-				color = selectionColor;
+				brush = selectionColor;
 				clipRect = null;
 			} else {
 				if (style.foreground != null) {
