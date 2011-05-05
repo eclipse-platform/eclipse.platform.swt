@@ -74,10 +74,6 @@ public boolean outlineView(NSOutlineView outlineView, id item) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_shouldSelectItem_, outlineView != null ? outlineView.id : 0, item != null ? item.id : 0);
 }
 
-public boolean outlineView(NSOutlineView outlineView, NSCell cell, NSTableColumn tableColumn, id item) {
-	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_shouldTrackCell_forTableColumn_item_, outlineView != null ? outlineView.id : 0, cell != null ? cell.id : 0, tableColumn != null ? tableColumn.id : 0, item != null ? item.id : 0);
-}
-
 public boolean readSelectionFromPasteboard(NSPasteboard pboard) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_readSelectionFromPasteboard_, pboard != null ? pboard.id : 0);
 }
@@ -88,10 +84,6 @@ public boolean tableView(NSTableView tableView, int /*long*/ columnIndex, int /*
 
 public boolean tableView(NSTableView tableView, int /*long*/ row) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_tableView_shouldSelectRow_, tableView != null ? tableView.id : 0, row);
-}
-
-public boolean tableView(NSTableView tableView, NSCell cell, NSTableColumn tableColumn, int /*long*/ row) {
-	return OS.objc_msgSend_bool(this.id, OS.sel_tableView_shouldTrackCell_forTableColumn_row_, tableView != null ? tableView.id : 0, cell != null ? cell.id : 0, tableColumn != null ? tableColumn.id : 0, row);
 }
 
 public boolean writeSelectionToPasteboard(NSPasteboard pboard, NSArray types) {

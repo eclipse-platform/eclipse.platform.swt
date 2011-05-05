@@ -1031,7 +1031,16 @@ typedef enum {
 #else
 	objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JZLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC,
 #endif
-	objc_1msgSendSuper_1bool_FUNC,
+#ifndef JNI64
+	objc_1msgSendSuper_1bool__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#else
+	objc_1msgSendSuper_1bool__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJLorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSendSuper_1bool__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRange_2I_FUNC,
+#else
+	objc_1msgSendSuper_1bool__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSRange_2J_FUNC,
+#endif
 #ifndef JNI64
 	objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2II_FUNC,
 #else
@@ -1086,11 +1095,6 @@ typedef enum {
 	objc_1msgSend_1bool__IIIII_FUNC,
 #else
 	objc_1msgSend_1bool__JJJJJ_FUNC,
-#endif
-#ifndef JNI64
-	objc_1msgSend_1bool__IIIIII_FUNC,
-#else
-	objc_1msgSend_1bool__JJJJJJ_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSend_1bool__IIIIIII_FUNC,

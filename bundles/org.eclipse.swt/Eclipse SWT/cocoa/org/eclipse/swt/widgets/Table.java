@@ -75,7 +75,7 @@ public class Table extends Composite {
 	NSTextFieldCell dataCell;
 	NSButtonCell buttonCell;
 	int columnCount, itemCount, lastIndexOf, sortDirection;
-	boolean ignoreSelect, fixScrollWidth, drawExpansion, didSelect;
+	boolean ignoreSelect, fixScrollWidth, drawExpansion, didSelect, preventSelect;
 	Rectangle imageBounds;
 	
 	/* Used to control drop feedback when FEEDBACK_SCROLL is set/not set */
@@ -233,27 +233,26 @@ NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
 	return size;
 }
 
-boolean canDragRowsWithIndexes_atPoint(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
-	NSPoint clickPoint = new NSPoint();
-	OS.memmove(clickPoint, arg1, NSPoint.sizeof);
-	NSTableView table = (NSTableView)view;
+boolean canDragRowsWithIndexes_atPoint(int /*long*/ id, int /*long*/ sel, int /*long*/ rowIndexes, NSPoint mouseDownPoint) {
+	if (!super.canDragRowsWithIndexes_atPoint(id, sel, rowIndexes, mouseDownPoint)) return false;
 	
 	// If the current row is not selected and the user is not attempting to modify the selection, select the row first.
-	int /*long*/ row = table.rowAtPoint(clickPoint);
+	NSTableView widget = (NSTableView)view;
+	int /*long*/ row = widget.rowAtPoint(mouseDownPoint);
 	int /*long*/ modifiers = NSApplication.sharedApplication().currentEvent().modifierFlags();
 	
 	boolean drag = (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect);
 	if (drag) {
-		if (!table.isRowSelected(row) && (modifiers & (OS.NSCommandKeyMask | OS.NSShiftKeyMask | OS.NSAlternateKeyMask)) == 0) {
+		if (!widget.isRowSelected(row) && (modifiers & (OS.NSCommandKeyMask | OS.NSShiftKeyMask | OS.NSAlternateKeyMask)) == 0) {
 			NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
 			set = set.initWithIndex(row);
-			table.selectRowIndexes (set, false);
+			widget.selectRowIndexes (set, false);
 			set.release();
 		}
 	}
 	
 	// The clicked row must be selected to initiate a drag.
-	return (table.isRowSelected(row) && drag);
+	return (widget.isRowSelected(row) && drag);
 }
 
 boolean checkData (TableItem item) {
@@ -670,6 +669,22 @@ void deregister () {
 	display.removeWidget (headerView);
 	display.removeWidget (dataCell);
 	if (buttonCell != null) display.removeWidget (buttonCell);
+}
+
+void deselectAll(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
+	if (preventSelect && !ignoreSelect) return;
+	if ((style & SWT.SINGLE) != 0 && !ignoreSelect) {
+		if ( ((NSTableView)view).selectedRow() != -1) return;
+	}
+	super.deselectAll (id, sel, sender);
+}
+
+void deselectRow (int /*long*/ id, int /*long*/ sel, int /*long*/ index) {
+	if (preventSelect && !ignoreSelect) return;
+	if ((style & SWT.SINGLE) != 0 && !ignoreSelect) {
+		if ( ((NSTableView)view).selectedRow() == index) return;
+	}
+	super.deselectRow (id, sel, index);
 }
 
 /**
@@ -1901,7 +1916,7 @@ boolean isTransparent() {
 }
 
 void keyDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	ignoreSelect = false;
+	ignoreSelect = preventSelect = false;
 	super.keyDown(id, sel, theEvent);
 }
 
@@ -1952,12 +1967,23 @@ void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 }
 
 void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	ignoreSelect = false;
-	NSTableView widget = (NSTableView)view;
+	ignoreSelect = preventSelect = false;
+	boolean check = false;
 	NSEvent nsEvent = new NSEvent(theEvent);
+	NSTableView widget = (NSTableView)view;
 	NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
 	int row = (int)/*64*/widget.rowAtPoint(pt);
-	if (row != -1 && (nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == 0 && nsEvent.clickCount() == 1) {
+	if (row != -1 && (style & SWT.CHECK) != 0) {
+		int column = (int)/*64*/widget.columnAtPoint(pt);
+		NSCell cell = widget.preparedCellAtColumn(column, row);
+		if (cell != null && cell.isKindOfClass(OS.class_NSButtonCell) && cell.isEnabled()) {
+			NSRect checkRect = cell.imageRectForBounds(widget.frameOfCellAtColumn(column, row));
+			if (OS.NSPointInRect(pt, checkRect)) {
+				check = preventSelect = true;
+		    }
+		}
+	}
+	if (!check && row != -1 && (nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == 0 && nsEvent.clickCount() == 1) {
 		if (widget.isRowSelected(row)) {
 			if (0 <= row && row < itemCount) {
 				Event event = new Event ();
@@ -1974,7 +2000,6 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 			}
 		}
 	}
-	display.trackedButtonRow = -1;
 	didSelect = false;
 	super.mouseDownSuper(id, sel, theEvent);
 	didSelect = false;
@@ -3007,6 +3032,15 @@ public void showSelection () {
 	}
 }
 
+void selectRowIndexes_byExtendingSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ indexes, boolean extend) {
+	if (preventSelect && !ignoreSelect) return;
+	if ((style & SWT.SINGLE) != 0 && !ignoreSelect) {
+		NSIndexSet set = new NSIndexSet(indexes);
+		if (set.count() == 0) return;
+	}
+	super.selectRowIndexes_byExtendingSelection (id, sel, indexes, extend);
+}
+
 void sendDoubleSelection() {
 	NSTableView tableView = (NSTableView)view;
 	int rowIndex = (int)/*64*/tableView.clickedRow (); 
@@ -3185,44 +3219,6 @@ int /*long*/ tableView_objectValueForTableColumn_row (int /*long*/ id, int /*lon
 	return item.createString (0).id;
 }
 
-int /*long*/ tableView_selectionIndexesForProposedSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ indexSet) {
-	NSTableView tableView = new NSTableView(aTableView);
-
-	// If a checkbox is being tracked don't select the row.
-	if (display.trackedButtonRow != -1) return tableView.selectedRowIndexes().id;
-	
-	// If the click was in a checkbox, remove that row from the proposed selection.
-	NSMutableIndexSet mutableSelection = (NSMutableIndexSet) new NSMutableIndexSet().alloc();
-	mutableSelection = new NSMutableIndexSet(mutableSelection.initWithIndexSet(new NSIndexSet(indexSet)));
-    int /*long*/ clickedCol = tableView.clickedColumn();
-    int /*long*/ clickedRow = tableView.clickedRow();
-    if (clickedRow >= 0 && clickedCol >= 0) {
-        NSCell cell = tableView.preparedCellAtColumn(clickedCol, clickedRow);
-        if (cell.isKindOfClass(OS.class_NSButtonCell) && cell.isEnabled()) {
-            NSRect cellFrame = tableView.frameOfCellAtColumn(clickedCol, clickedRow);
-            NSRect imageFrame = cell.imageRectForBounds(cellFrame);
-            NSPoint hitPoint = tableView.convertPoint_fromView_(NSApplication.sharedApplication().currentEvent().locationInWindow(), null);
-            if (OS.NSPointInRect(hitPoint, imageFrame)) {
-    			mutableSelection.removeIndex(clickedRow);
-            }
-        }            
-    }
-
-	if ((style & SWT.SINGLE) != 0) {
-		/*
-		 * Feature in Cocoa.  Calling setAllowsEmptySelection will automatically select the first row of the list. 
-		 * And, single-selection NSTable/OutlineViews allow the user to de-select the selected item via command-click.
-		 * This is normal platform behavior, but for compatibility with other platforms, if the SINGLE style is in use,
-		 * force a selection by seeing if the proposed selection set is empty, and if so, put back the currently selected row.  
-		 */
-		if (mutableSelection.count() != 1 && tableView.selectedRow() != -1) {
-			return tableView.selectedRowIndexes().id;
-		}
-	}
-	
-	return mutableSelection.id;
-}
-
 boolean tableView_shouldReorderColumn_toColumn(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ currentColIndex, int /*long*/ newColIndex) {
 	// Check column should never move and no column can be dragged to the left of it, if present.
 	if ((style & SWT.CHECK) != 0) {
@@ -3239,23 +3235,6 @@ boolean tableView_shouldReorderColumn_toColumn(int /*long*/ id, int /*long*/ sel
 	}
 	
 	return true;
-}
-
-boolean tableView_shouldTrackCell_forTableColumn_row(int /*long*/ id, int /*long*/ sel,
-		int /*long*/ table, int /*long*/ cell, /*long*/ int /*long*/ tableColumn, int /*long*/ rowIndex) {
-	NSCell theCell = new NSCell(cell);
-	NSTableView tableView = (NSTableView)view;
-	if (theCell.isKindOfClass(OS.class_NSButtonCell)) {
-		// Allow tracking of the checkbox area of the button, not the text itself.
-		NSRect cellFrame = tableView.frameOfCellAtColumn(0, rowIndex);
-		NSRect imageFrame = theCell.imageRectForBounds(cellFrame);
-		NSPoint hitPoint = tableView.convertPoint_fromView_(NSApplication.sharedApplication().currentEvent().locationInWindow(), null);
-		boolean shouldTrack = OS.NSPointInRect(hitPoint, imageFrame) && (display.trackedButtonRow == -1 || display.trackedButtonRow == rowIndex) && !didSelect;
-		if (OS.NSPointInRect(hitPoint, imageFrame) && display.trackedButtonRow == -1 && !didSelect) display.trackedButtonRow = rowIndex;
-		return shouldTrack;
-	} else {
-		return tableView.isRowSelected(rowIndex);
-	}
 }
 
 void tableView_setObjectValue_forTableColumn_row (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ anObject, int /*long*/ aTableColumn, int /*long*/ rowIndex) {

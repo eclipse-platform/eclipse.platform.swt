@@ -2061,13 +2061,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="outlineView:shouldTrackCell:forTableColumn:item:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="readSelectionFromPasteboard:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -2079,13 +2072,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="tableView:shouldSelectRow:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="tableView:shouldTrackCell:forTableColumn:row:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -3212,7 +3198,7 @@
 		<method selector="allowsColumnReordering" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="canDragRowsWithIndexes:atPoint:" swt_gen="true" swt_gen_custom_callback="true">
+		<method selector="canDragRowsWithIndexes:atPoint:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -3235,11 +3221,11 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="deselectAll:" swt_gen="true">
+		<method selector="deselectAll:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="deselectRow:" swt_gen="true">
+		<method selector="deselectRow:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3333,7 +3319,7 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="selectRowIndexes:byExtendingSelection:" swt_gen="true">
+		<method selector="selectRowIndexes:byExtendingSelection:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -5043,16 +5029,6 @@
 			<arg swt_gen="true"></arg>
 		</method>
 		<method selector="comboBoxWillPopUp:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-		</method>
-	</informal_protocol>
-	<informal_protocol name="NSControlTextEditingDelegate" swt_gen="mixed">
-		<method selector="outlineView:selectionIndexesForProposedSelection:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-		</method>
-		<method selector="tableView:selectionIndexesForProposedSelection:" swt_gen="true">
-			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 		</method>
 	</informal_protocol>

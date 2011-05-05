@@ -828,7 +828,6 @@ public static final int /*long*/ protocol_NSApplicationDelegate = objc_getProtoc
 public static final int /*long*/ protocol_NSApplicationNotifications = objc_getProtocol("NSApplicationNotifications");
 public static final int /*long*/ protocol_NSColorPanelResponderMethod = objc_getProtocol("NSColorPanelResponderMethod");
 public static final int /*long*/ protocol_NSComboBoxNotifications = objc_getProtocol("NSComboBoxNotifications");
-public static final int /*long*/ protocol_NSControlTextEditingDelegate = objc_getProtocol("NSControlTextEditingDelegate");
 public static final int /*long*/ protocol_NSDraggingDestination = objc_getProtocol("NSDraggingDestination");
 public static final int /*long*/ protocol_NSDraggingSource = objc_getProtocol("NSDraggingSource");
 public static final int /*long*/ protocol_NSFontManagerResponderMethod = objc_getProtocol("NSFontManagerResponderMethod");
@@ -1543,14 +1542,12 @@ public static final int /*long*/ sel_outlineView_didClickTableColumn_ = sel_regi
 public static final int /*long*/ sel_outlineView_isItemExpandable_ = sel_registerName("outlineView:isItemExpandable:");
 public static final int /*long*/ sel_outlineView_numberOfChildrenOfItem_ = sel_registerName("outlineView:numberOfChildrenOfItem:");
 public static final int /*long*/ sel_outlineView_objectValueForTableColumn_byItem_ = sel_registerName("outlineView:objectValueForTableColumn:byItem:");
-public static final int /*long*/ sel_outlineView_selectionIndexesForProposedSelection_ = sel_registerName("outlineView:selectionIndexesForProposedSelection:");
 public static final int /*long*/ sel_outlineView_setObjectValue_forTableColumn_byItem_ = sel_registerName("outlineView:setObjectValue:forTableColumn:byItem:");
 public static final int /*long*/ sel_outlineView_shouldCollapseItem_ = sel_registerName("outlineView:shouldCollapseItem:");
 public static final int /*long*/ sel_outlineView_shouldEditTableColumn_item_ = sel_registerName("outlineView:shouldEditTableColumn:item:");
 public static final int /*long*/ sel_outlineView_shouldExpandItem_ = sel_registerName("outlineView:shouldExpandItem:");
 public static final int /*long*/ sel_outlineView_shouldReorderColumn_toColumn_ = sel_registerName("outlineView:shouldReorderColumn:toColumn:");
 public static final int /*long*/ sel_outlineView_shouldSelectItem_ = sel_registerName("outlineView:shouldSelectItem:");
-public static final int /*long*/ sel_outlineView_shouldTrackCell_forTableColumn_item_ = sel_registerName("outlineView:shouldTrackCell:forTableColumn:item:");
 public static final int /*long*/ sel_outlineView_validateDrop_proposedItem_proposedChildIndex_ = sel_registerName("outlineView:validateDrop:proposedItem:proposedChildIndex:");
 public static final int /*long*/ sel_outlineView_willDisplayCell_forTableColumn_item_ = sel_registerName("outlineView:willDisplayCell:forTableColumn:item:");
 public static final int /*long*/ sel_outlineView_writeItems_toPasteboard_ = sel_registerName("outlineView:writeItems:toPasteboard:");
@@ -2057,12 +2054,10 @@ public static final int /*long*/ sel_tableColumns = sel_registerName("tableColum
 public static final int /*long*/ sel_tableView_acceptDrop_row_dropOperation_ = sel_registerName("tableView:acceptDrop:row:dropOperation:");
 public static final int /*long*/ sel_tableView_didClickTableColumn_ = sel_registerName("tableView:didClickTableColumn:");
 public static final int /*long*/ sel_tableView_objectValueForTableColumn_row_ = sel_registerName("tableView:objectValueForTableColumn:row:");
-public static final int /*long*/ sel_tableView_selectionIndexesForProposedSelection_ = sel_registerName("tableView:selectionIndexesForProposedSelection:");
 public static final int /*long*/ sel_tableView_setObjectValue_forTableColumn_row_ = sel_registerName("tableView:setObjectValue:forTableColumn:row:");
 public static final int /*long*/ sel_tableView_shouldEditTableColumn_row_ = sel_registerName("tableView:shouldEditTableColumn:row:");
 public static final int /*long*/ sel_tableView_shouldReorderColumn_toColumn_ = sel_registerName("tableView:shouldReorderColumn:toColumn:");
 public static final int /*long*/ sel_tableView_shouldSelectRow_ = sel_registerName("tableView:shouldSelectRow:");
-public static final int /*long*/ sel_tableView_shouldTrackCell_forTableColumn_row_ = sel_registerName("tableView:shouldTrackCell:forTableColumn:row:");
 public static final int /*long*/ sel_tableView_validateDrop_proposedRow_proposedDropOperation_ = sel_registerName("tableView:validateDrop:proposedRow:proposedDropOperation:");
 public static final int /*long*/ sel_tableView_willDisplayCell_forTableColumn_row_ = sel_registerName("tableView:willDisplayCell:forTableColumn:row:");
 public static final int /*long*/ sel_tableView_writeRowsWithIndexes_toPasteboard_ = sel_registerName("tableView:writeRowsWithIndexes:toPasteboard:");
@@ -3632,6 +3627,11 @@ public static final native int /*long*/ NSTemporaryDirectory();
  * @param arg0 flags=struct
  */
 public static final native boolean objc_msgSendSuper_bool(objc_super superId, int /*long*/ sel, NSRange arg0, int /*long*/ arg1);
+/**
+ * @method flags=cast
+ * @param arg1 flags=struct
+ */
+public static final native boolean objc_msgSendSuper_bool(objc_super superId, int /*long*/ sel, int /*long*/ arg0, NSPoint arg1);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSendSuper(objc_super superId, int /*long*/ sel);
 /**
@@ -3754,8 +3754,6 @@ public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
 /** @method flags=cast */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2);
-/** @method flags=cast */
-public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3);
 /** @method flags=cast */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4);
 /** @method flags=cast */

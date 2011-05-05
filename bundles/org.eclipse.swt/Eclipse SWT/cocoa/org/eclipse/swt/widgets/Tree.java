@@ -83,7 +83,7 @@ public class Tree extends Composite {
 	TreeColumn sortColumn;
 	int columnCount;
 	int sortDirection;
-	boolean ignoreExpand, ignoreSelect, ignoreRedraw, reloadPending, drawExpansion, didSelect;
+	boolean ignoreExpand, ignoreSelect, ignoreRedraw, reloadPending, drawExpansion, didSelect, preventSelect;
 	Rectangle imageBounds;
 	TreeItem insertItem;
 	boolean insertBefore;
@@ -285,27 +285,26 @@ NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
 	return size;
 }
 
-boolean canDragRowsWithIndexes_atPoint(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
-	NSPoint clickPoint = new NSPoint();
-	OS.memmove(clickPoint, arg1, NSPoint.sizeof);
-	NSOutlineView tree = (NSOutlineView)view;
+boolean canDragRowsWithIndexes_atPoint(int /*long*/ id, int /*long*/ sel, int /*long*/ rowIndexes, NSPoint mouseDownPoint) {
+	if (!super.canDragRowsWithIndexes_atPoint(id, sel, rowIndexes, mouseDownPoint)) return false;
 	
 	// If the current row is not selected and the user is not attempting to modify the selection, select the row first.
-	int /*long*/ row = tree.rowAtPoint(clickPoint);
+	NSTableView widget = (NSTableView)view;
+	int /*long*/ row = widget.rowAtPoint(mouseDownPoint);
 	int /*long*/ modifiers = NSApplication.sharedApplication().currentEvent().modifierFlags();
 	
 	boolean drag = (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect);
 	if (drag) {
-		if (!tree.isRowSelected(row) && (modifiers & (OS.NSCommandKeyMask | OS.NSShiftKeyMask | OS.NSAlternateKeyMask | OS.NSControlKeyMask)) == 0) {
+		if (!widget.isRowSelected(row) && (modifiers & (OS.NSCommandKeyMask | OS.NSShiftKeyMask | OS.NSAlternateKeyMask | OS.NSControlKeyMask)) == 0) {
 			NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
 			set = set.initWithIndex(row);
-			tree.selectRowIndexes (set, false);
+			widget.selectRowIndexes (set, false);
 			set.release();
 		}
 	}
 	
 	// The clicked row must be selected to initiate a drag.
-	return (tree.isRowSelected(row) && drag);
+	return (widget.isRowSelected(row) && drag);
 }
 
 boolean checkData (TreeItem item) {
@@ -746,6 +745,22 @@ NSFont defaultNSFont () {
 
 Color defaultForeground () {
 	return display.getWidgetColor (SWT.COLOR_LIST_FOREGROUND);
+}
+
+void deselectAll(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
+	if (preventSelect && !ignoreSelect) return;
+	if ((style & SWT.SINGLE) != 0 && !ignoreSelect) {
+		if ( ((NSTableView)view).selectedRow() != -1) return;
+	}
+	super.deselectAll (id, sel, sender);
+}
+
+void deselectRow (int /*long*/ id, int /*long*/ sel, int /*long*/ index) {
+	if (preventSelect && !ignoreSelect) return;
+	if ((style & SWT.SINGLE) != 0 && !ignoreSelect) {
+		if ( ((NSTableView)view).selectedRow() == index) return;
+	}
+	super.deselectRow (id, sel, index);
 }
 
 /**
@@ -1944,7 +1959,7 @@ boolean isTrim (NSView view) {
 }
 
 void keyDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	ignoreSelect = false;
+	ignoreSelect = preventSelect = false;
 	super.keyDown(id, sel, theEvent);
 }
 
@@ -1990,12 +2005,23 @@ void mouseDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 }
 
 void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
-	ignoreSelect = false;
-	NSOutlineView widget = (NSOutlineView)view;
+	ignoreSelect = preventSelect = false;
+	boolean check = false;
 	NSEvent nsEvent = new NSEvent(theEvent);
+	NSOutlineView widget = (NSOutlineView)view;
 	NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
 	int row = (int)/*64*/widget.rowAtPoint(pt);
-	if (row != -1 && (nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == 0 && nsEvent.clickCount() == 1) {
+	if (row != -1 && (style & SWT.CHECK) != 0) {
+		int column = (int)/*64*/widget.columnAtPoint(pt);
+		NSCell cell = widget.preparedCellAtColumn(column, row);
+		if (cell != null && cell.isKindOfClass(OS.class_NSButtonCell) && cell.isEnabled()) {
+			NSRect checkRect = cell.imageRectForBounds(widget.frameOfCellAtColumn(column, row));
+			if (OS.NSPointInRect(pt, checkRect)) {
+				check = preventSelect = true;
+		    }
+		}
+	}
+	if (!check && row != -1 && (nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == 0 && nsEvent.clickCount() == 1) {
 		if (widget.isRowSelected(row)) {
 			NSRect rect = widget.frameOfOutlineCellAtRow(row);
 			if (!OS.NSPointInRect(pt, rect)) {
@@ -2017,7 +2043,6 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 			}
 		}
 	}
-	display.trackedButtonRow = -1;
 	didSelect = false;
 	super.mouseDownSuper(id, sel, theEvent);
 	didSelect = false;
@@ -2103,70 +2128,6 @@ boolean outlineView_shouldReorderColumn_toColumn(int /*long*/ id, int /*long*/ s
 	
 	return true;
 }
-
-int /*long*/ outlineView_selectionIndexesForProposedSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ indexSet) {
-	NSOutlineView tree = new NSOutlineView(aTableView);			
-
-	// If a checkbox is being tracked don't select the row.
-	if (display.trackedButtonRow != -1) return tree.selectedRowIndexes().id;
-	
-	// If the click was in a checkbox, remove that row from the proposed selection.
-	NSMutableIndexSet mutableSelection = (NSMutableIndexSet) new NSMutableIndexSet().alloc();
-	mutableSelection = new NSMutableIndexSet(mutableSelection.initWithIndexSet(new NSIndexSet(indexSet)));
-    int /*long*/ clickedCol = tree.clickedColumn();
-    int /*long*/ clickedRow = tree.clickedRow();
-    if (clickedRow >= 0 && clickedCol >= 0) {
-        NSCell cell = tree.preparedCellAtColumn(clickedCol, clickedRow);
-        if (cell.isKindOfClass(OS.class_NSButtonCell) && cell.isEnabled()) {
-            NSRect cellFrame = tree.frameOfCellAtColumn(clickedCol, clickedRow);
-            NSRect imageFrame = cell.imageRectForBounds(cellFrame);
-            NSPoint hitPoint = tree.convertPoint_fromView_(NSApplication.sharedApplication().currentEvent().locationInWindow(), null);
-            if (OS.NSPointInRect(hitPoint, imageFrame)) {
-    			mutableSelection.removeIndex(clickedRow);
-            }
-        }            
-    }
-
-	if ((style & SWT.SINGLE) != 0) {
-		/*
-		 * Feature in Cocoa.  Calling setAllowsEmptySelection will automatically select the first row of the list. 
-		 * And, single-selection NSTable/OutlineViews allow the user to de-select the selected item via command-click.
-		 * This is normal platform behavior, but for compatibility with other platforms, if the SINGLE style is in use,
-		 * force a selection by seeing if the proposed selection set is empty, and if so, put back the currently selected row.  
-		 */
-		if (mutableSelection.count() != 1 && tree.selectedRow() != -1) {
-			return tree.selectedRowIndexes().id;
-		}
-	}
-	
-	return mutableSelection.id;
-}
-
-boolean outlineView_shouldTrackCell_forTableColumn_item(int /*long*/ id, int /*long*/ sel,
-		int /*long*/ table, int /*long*/ cell, /*long*/ int /*long*/ tableColumn, int /*long*/ item) {
-	NSCell theCell = new NSCell(cell);
-	NSOutlineView tableView = (NSOutlineView)view;
-	int /*long*/ rowIndex = tableView.rowForItem(new id(item));
-	if (theCell.isKindOfClass(OS.class_NSButtonCell)) {
-		// Allow tracking of the checkbox area of the button, not the text itself.
-		int columnIndex = 0;
-		for (int i=0; i<columnCount; i++) {
-			if (columns [i].nsColumn.id == tableColumn) {
-				columnIndex = i;
-				break;
-			}
-		}
-		NSRect cellFrame = tableView.frameOfCellAtColumn(columnIndex, rowIndex);
-		NSRect imageFrame = theCell.imageRectForBounds(cellFrame);
-		NSPoint hitPoint = tableView.convertPoint_fromView_(NSApplication.sharedApplication().currentEvent().locationInWindow(), null);
-		boolean shouldTrack = OS.NSPointInRect(hitPoint, imageFrame) && (display.trackedButtonRow == -1 || display.trackedButtonRow == rowIndex) && !didSelect;
-		if (OS.NSPointInRect(hitPoint, imageFrame) && display.trackedButtonRow == -1 && !didSelect) display.trackedButtonRow = rowIndex;
-		return shouldTrack;
-	} else {
-		return tableView.isRowSelected(rowIndex);
-	}
-}
-
 
 void outlineView_willDisplayCell_forTableColumn_item (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ cell, int /*long*/ tableColumn, int /*long*/ itemID) {
 	if (checkColumn != null && tableColumn == checkColumn.id) return;
@@ -2565,6 +2526,15 @@ public void select (TreeItem item) {
 	outlineView.selectRowIndexes (set, (style & SWT.MULTI) != 0);
 	ignoreSelect = false;
 	set.release();
+}
+
+void selectRowIndexes_byExtendingSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ indexes, boolean extend) {
+	if (preventSelect && !ignoreSelect) return;
+	if ((style & SWT.SINGLE) != 0 && !ignoreSelect) {
+		NSIndexSet set = new NSIndexSet(indexes);
+		if (set.count() == 0) return;
+	}
+	super.selectRowIndexes_byExtendingSelection (id, sel, indexes, extend);
 }
 
 void sendDoubleSelection() {

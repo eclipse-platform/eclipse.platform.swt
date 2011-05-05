@@ -1023,7 +1023,16 @@ char * OS_nativeFunctionNames[] = {
 #else
 	"objc_1msgSendSuper__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JZLorg_eclipse_swt_internal_cocoa_NSRect_2",
 #endif
-	"objc_1msgSendSuper_1bool",
+#ifndef JNI64
+	"objc_1msgSendSuper_1bool__Lorg_eclipse_swt_internal_cocoa_objc_1super_2IILorg_eclipse_swt_internal_cocoa_NSPoint_2",
+#else
+	"objc_1msgSendSuper_1bool__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JJLorg_eclipse_swt_internal_cocoa_NSPoint_2",
+#endif
+#ifndef JNI64
+	"objc_1msgSendSuper_1bool__Lorg_eclipse_swt_internal_cocoa_objc_1super_2ILorg_eclipse_swt_internal_cocoa_NSRange_2I",
+#else
+	"objc_1msgSendSuper_1bool__Lorg_eclipse_swt_internal_cocoa_objc_1super_2JLorg_eclipse_swt_internal_cocoa_NSRange_2J",
+#endif
 #ifndef JNI64
 	"objc_1msgSendSuper_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_objc_1super_2II",
 #else
@@ -1078,11 +1087,6 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend_1bool__IIIII",
 #else
 	"objc_1msgSend_1bool__JJJJJ",
-#endif
-#ifndef JNI64
-	"objc_1msgSend_1bool__IIIIII",
-#else
-	"objc_1msgSend_1bool__JJJJJJ",
 #endif
 #ifndef JNI64
 	"objc_1msgSend_1bool__IIIIIII",

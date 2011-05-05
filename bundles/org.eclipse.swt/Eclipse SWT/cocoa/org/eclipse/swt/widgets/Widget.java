@@ -323,9 +323,12 @@ NSRect callSuperRect(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	OS.objc_msgSendSuper_stret(result, super_struct, sel, arg0);
 	return result;
 }
-boolean canDragRowsWithIndexes_atPoint(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
-	// Trees/tables are not draggable unless explicitly told they are.
-	return false;
+
+boolean canDragRowsWithIndexes_atPoint(int /*long*/ id, int /*long*/ sel, int /*long*/ rowIndexes, NSPoint mouseDownPoint) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	return OS.objc_msgSendSuper_bool(super_struct, sel, rowIndexes, mouseDownPoint);
 }
 
 int /*long*/ characterIndexForPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ point) {
@@ -657,6 +660,14 @@ public void dispose () {
 	if (isDisposed ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	release (true);
+}
+
+void deselectAll(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
+	callSuper(id, sel, sender);
+}
+
+void deselectRow(int /*long*/ id, int /*long*/ sel, int /*long*/ index) {
+	callSuper(id, sel, index);
 }
 
 void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ aSelector) {
@@ -1202,14 +1213,6 @@ boolean outlineView_shouldReorderColumn_toColumn(int /*long*/ id, int /*long*/ s
 	return true;
 }
 
-boolean outlineView_shouldTrackCell_forTableColumn_item(int /*long*/ id, int /*long*/ sel, int /*long*/ table, int /*long*/ cell, /*long*/ int /*long*/ tableColumn, int /*long*/ item) {
-	return true;
-}
-
-int /*long*/ outlineView_selectionIndexesForProposedSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ indexSet) {
-	return indexSet;
-}
-
 boolean outlineView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ item) {
 	return false;
 }
@@ -1418,6 +1421,13 @@ void scrollClipViewToPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ clip
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, clipView, point);
+}
+
+void selectRowIndexes_byExtendingSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ indexes, boolean extend) {
+	objc_super super_struct = new objc_super();
+	super_struct.receiver = id;
+	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
+	OS.objc_msgSendSuper(super_struct, sel, indexes, extend);
 }
 
 void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
@@ -1902,14 +1912,6 @@ void tableView_didClickTableColumn(int /*long*/ id, int /*long*/ sel, int /*long
 
 int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
 	return 0;
-}
-
-int /*long*/ tableView_selectionIndexesForProposedSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ indexSet) {
-	return indexSet;
-}
-
-boolean tableView_shouldTrackCell_forTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ table, int /*long*/ cell, /*long*/ int /*long*/ tableColumn, int /*long*/ rowIndex) {
-	return true;
 }
 
 boolean tableView_shouldSelectRow(int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ index) {

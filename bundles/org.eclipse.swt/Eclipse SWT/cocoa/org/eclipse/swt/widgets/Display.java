@@ -160,9 +160,6 @@ public class Display extends Device {
 	Control focusControl, currentFocusControl;
 	int focusEvent;
 	
-	/* Table/Tree click tracking */
-	int /*long*/ trackedButtonRow = -1;
-
 	NSWindow screenWindow, keyWindow;
 
 	NSAutoreleasePool[] pools;
@@ -2571,13 +2568,14 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_child_ofItem_, proc5, "@:@i@");
 	OS.class_addMethod(cls, OS.sel_outlineView_isItemExpandable_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_numberOfChildrenOfItem_, proc4, "@:@@");
-	OS.class_addMethod(cls, OS.sel_outlineView_selectionIndexesForProposedSelection_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_selectRowIndexes_byExtendingSelection_, proc4, "@:@Z");
+	OS.class_addMethod(cls, OS.sel_deselectRow_, proc3, "@:i");
+	OS.class_addMethod(cls, OS.sel_deselectAll_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineView_objectValueForTableColumn_byItem_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_willDisplayCell_forTableColumn_item_, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_shouldReorderColumn_toColumn_, proc5, "@:@ii");
 	OS.class_addMethod(cls, OS.sel_outlineView_setObjectValue_forTableColumn_byItem_, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_shouldEditTableColumn_item_, proc5, "@:@@@");
-	OS.class_addMethod(cls, OS.sel_outlineView_shouldTrackCell_forTableColumn_item_, proc6, "@:@@@i");
 	OS.class_addMethod(cls, OS.sel_outlineView_shouldExpandItem_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_setShouldExpandItem_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_setShouldScrollClipView_, proc3, "@:@");
@@ -2748,7 +2746,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableView_objectValueForTableColumn_row_, proc5, "@:@@i");
 	OS.class_addMethod(cls, OS.sel_tableView_shouldEditTableColumn_row_, proc5, "@:@@i");
 	OS.class_addMethod(cls, OS.sel_tableView_shouldReorderColumn_toColumn_, proc5, "@:@ii");
-	OS.class_addMethod(cls, OS.sel_tableView_shouldTrackCell_forTableColumn_row_, proc6, "@:@@@i");
 	OS.class_addMethod(cls, OS.sel_tableViewSelectionIsChanging_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableViewSelectionDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_willDisplayCell_forTableColumn_row_, proc6, "@:@@@i");
@@ -2757,8 +2754,10 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableViewColumnDidResize_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_setShouldScrollClipView_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_didClickTableColumn_, proc4, "@:@@");
-	OS.class_addMethod(cls, OS.sel_tableView_selectionIndexesForProposedSelection_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_canDragRowsWithIndexes_atPoint_, canDragRowsWithIndexes_atPoint_Proc, "@:@{NSPoint=ff}");
+	OS.class_addMethod(cls, OS.sel_selectRowIndexes_byExtendingSelection_, proc4, "@:@Z");
+	OS.class_addMethod(cls, OS.sel_deselectRow_, proc3, "@:i");
+	OS.class_addMethod(cls, OS.sel_deselectAll_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_writeRowsWithIndexes_toPasteboard_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_drawBackgroundInClipRect_, drawBackgroundInClipRectProc, "@:{NSRect}");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
@@ -5672,6 +5671,10 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		widget.setShouldExpandItem(id, sel, arg0 != 0);
 	} else if (sel == OS.sel_setShouldScrollClipView_) {
 		widget.setShouldScrollClipView(id, sel, arg0 != 0);
+	} else if (sel == OS.sel_deselectRow_) {
+		widget.deselectRow(id, sel, arg0);
+	} else if (sel == OS.sel_deselectAll_) {
+		widget.deselectAll(id, sel, arg0);
 	}
 	return 0;
 }
@@ -5703,16 +5706,14 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		return widget.accessibilityAttributeValue_forParameter(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_tableView_didClickTableColumn_) {
 		widget.tableView_didClickTableColumn (id, sel, arg0, arg1);
-	} else if (sel == OS.sel_tableView_selectionIndexesForProposedSelection_) {
-		return widget.tableView_selectionIndexesForProposedSelection(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_outlineView_didClickTableColumn_) {
 		widget.outlineView_didClickTableColumn (id, sel, arg0, arg1);
-	} else if (sel == OS.sel_outlineView_selectionIndexesForProposedSelection_) {
-		return widget.outlineView_selectionIndexesForProposedSelection(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_shouldChangeTextInRange_replacementString_) {
 		return widget.shouldChangeTextInRange_replacementString(id, sel, arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_canDragRowsWithIndexes_atPoint_) {
-		return widget.canDragRowsWithIndexes_atPoint(id, sel, arg0, arg1) ? 1 : 0;
+		NSPoint clickPoint = new NSPoint();
+		OS.memmove(clickPoint, arg1, NSPoint.sizeof);
+		return widget.canDragRowsWithIndexes_atPoint(id, sel, arg0, clickPoint) ? 1 : 0;
 	} else if (sel == OS.sel_expandItem_expandChildren_) {
 		widget.expandItem_expandChildren(id, sel, arg0, arg1 != 0);
 	} else if (sel == OS.sel_collapseItem_collapseChildren_) {
@@ -5741,6 +5742,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		return (widget.writeSelectionToPasteboard(id, sel, arg0, arg1) ? 1 : 0);
 	} else if (sel == OS.sel_outlineView_shouldExpandItem_) {
 		return (widget.outlineView_shouldExpandItem_item(id, sel, arg0, arg1) ? 1 : 0);
+	} else if (sel == OS.sel_selectRowIndexes_byExtendingSelection_) {
+		widget.selectRowIndexes_byExtendingSelection(id, sel, arg0, arg1 != 0);
 	}
 	return 0;
 }
@@ -5813,10 +5816,6 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		widget.tableView_setObjectValue_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3);
 	} else if (sel == OS.sel_view_stringForToolTip_point_userData_) {
 		return widget.view_stringForToolTip_point_userData(id, sel, arg0, arg1, arg2, arg3);
-	} else if (sel == OS.sel_tableView_shouldTrackCell_forTableColumn_row_) {
-		return (widget.tableView_shouldTrackCell_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3) ? 1 : 0);
-	} else if (sel == OS.sel_outlineView_shouldTrackCell_forTableColumn_item_) {
-		return (widget.outlineView_shouldTrackCell_forTableColumn_item(id, sel, arg0, arg1, arg2, arg3) ? 1 : 0);
 	}
 	return 0;
 }
