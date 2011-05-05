@@ -171,7 +171,7 @@ static DeviceData checkNull (PrinterData data) {
  * </p>
  *
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES - if there are no valid printers
+ *    <li>ERROR_NO_HANDLES - if there is no valid default printer
  * </ul>
  *
  * @see Device#dispose
@@ -226,7 +226,7 @@ protected void create(DeviceData deviceData) {
 		PRINTDLG pd = new PRINTDLG();
 		pd.lStructSize = PRINTDLG.sizeof;
 		pd.Flags = OS.PD_RETURNDEFAULT;
-		OS.PrintDlg(pd);
+		if (!OS.PrintDlg(pd)) SWT.error(SWT.ERROR_NO_HANDLES);
 		if (pd.hDevMode != 0) {
 			int /*long*/ hGlobal = pd.hDevMode;
 			int /*long*/ ptr = OS.GlobalLock(hGlobal);
