@@ -321,8 +321,15 @@ void computeRuns (GC gc) {
 				run = allRuns[--i];
 				start = run.length - 1;
 			}
-			if (start == 0 && i != lineStart && !run.tab) {
+			boolean wrapEntireRun = start == 0 && i != lineStart && !run.tab;
+			if (wrapEntireRun) {
+				breakRun(run);
+				OS.MoveMemory(logAttr, run.psla + (start * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
+				wrapEntireRun = !logAttr.fWhiteSpace;
+			}
+			if (wrapEntireRun) {
 				run = allRuns[--i];
+				start = run.length;
 			} else 	if (start <= 0 && i == lineStart) {
 				if (lineWidth == wrapWidth && firstIndice > 0) {
 					i = firstIndice - 1;
