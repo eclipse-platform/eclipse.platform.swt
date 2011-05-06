@@ -1084,7 +1084,7 @@ void destroyItem (TableItem item) {
 	if (itemCount == 0) resetCustomDraw ();
 }
 
-boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
+boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
 	boolean selected = false;
 	if (filter) {
 		int /*long*/ [] path = new int /*long*/ [1];
@@ -1098,7 +1098,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 			return false;
 		}
 	}
-	boolean dragDetect = super.dragDetect (x, y, filter, consume);
+	boolean dragDetect = super.dragDetect (x, y, filter, false, consume);
 	if (dragDetect && selected && consume != null) consume [0] = true;
 	return dragDetect;
 }

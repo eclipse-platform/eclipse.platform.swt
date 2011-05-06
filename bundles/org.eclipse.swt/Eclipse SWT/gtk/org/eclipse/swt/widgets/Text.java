@@ -495,7 +495,7 @@ void deregister () {
 	if (imContext != 0) display.removeWidget (imContext);
 }
 
-boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
+boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
 	if (filter) {
 		int start = 0, end = 0;
 		if ((style & SWT.SINGLE) != 0) {
@@ -529,7 +529,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 				position = OS.gtk_text_iter_get_offset (p);
 			}
 			if (start <= position && position < end) {
-				if (super.dragDetect (x, y, filter, consume)) {
+				if (super.dragDetect (x, y, filter, dragOnTimeout, consume)) {
 					if (consume != null) consume [0] = true;
 					return true;
 				}
@@ -537,7 +537,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 		}
 		return false;
 	}
-	return super.dragDetect (x, y, filter, consume);
+	return super.dragDetect (x, y, filter, dragOnTimeout, consume);
 }
 
 int /*long*/ eventWindow () {

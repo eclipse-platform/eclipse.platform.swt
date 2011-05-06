@@ -2152,11 +2152,11 @@ public boolean dragDetect (MouseEvent event) {
 
 boolean dragDetect (int button, int count, int stateMask, int x, int y) {
 	if (button != 1 || count != 1) return false;
-	if (!dragDetect (x, y, false, null)) return false;
+	if (!dragDetect (x, y, false, true, null)) return false;
 	return sendDragEvent (button, stateMask, x, y, true);
 }
 
-boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
+boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
 	boolean quit = false, dragging = false;
 	while (!quit) {
 		int /*long*/ eventPtr = 0;
@@ -2174,7 +2174,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 				try {Thread.sleep(50);} catch (Exception ex) {}
 			}
 		}
-		if (eventPtr == 0) return true;
+		if (eventPtr == 0) return dragOnTimeout;
 		switch (OS.GDK_EVENT_TYPE (eventPtr)) {
 			case OS.GDK_MOTION_NOTIFY: {
 				GdkEventMotion gdkMotionEvent = new GdkEventMotion ();
@@ -2754,7 +2754,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event, bo
 		if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 			if (gdkEvent.button == 1) {
 				boolean [] consume = new boolean [1];
-				if (dragDetect ((int) gdkEvent.x, (int) gdkEvent.y, true, consume)) {
+				if (dragDetect ((int) gdkEvent.x, (int) gdkEvent.y, true, true, consume)) {
 					dragging = true;
 					if (consume [0]) result = 1;
 				}

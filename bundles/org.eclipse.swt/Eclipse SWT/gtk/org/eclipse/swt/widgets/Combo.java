@@ -808,7 +808,7 @@ public void deselectAll () {
 	}
 }
 
-boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
+boolean dragDetect(int x, int y, boolean filter, boolean dragOnTimeout, boolean[] consume) {
 	if (filter && entryHandle != 0) {
 		int [] index = new int [1];
 		int [] trailing = new int [1];
@@ -820,14 +820,14 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 		int [] end = new int [1];
 		OS.gtk_editable_get_selection_bounds (entryHandle, start, end);
 		if (start [0] <= position && position < end [0]) {
-			if (super.dragDetect (x, y, filter, consume)) {
+			if (super.dragDetect (x, y, filter, dragOnTimeout, consume)) {
 				if (consume != null) consume [0] = true;
 				return true;
 			}
 		}
 		return false;
 	}
-	return super.dragDetect (x, y, filter, consume);
+	return super.dragDetect (x, y, filter, dragOnTimeout, consume);
 }
 
 int /*long*/ enterExitHandle () {
