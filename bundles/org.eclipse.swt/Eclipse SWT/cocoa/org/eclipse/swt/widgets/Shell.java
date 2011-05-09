@@ -521,6 +521,11 @@ void attachObserversToWindow(NSWindow newWindow) {
 }
 
 void becomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
+	Shell modal = getModalShell();
+	if (modal != null && modal.window != null) {
+		modal.window.becomeKeyWindow();
+		return;
+	}
 	Display display = this.display;
 	display.keyWindow = view.window();
 	super.becomeKeyWindow(id, sel);
@@ -537,6 +542,11 @@ void bringToTop (boolean force) {
 	}
 }
 
+//boolean canBecomeKeyWindow7 (int /*long*/ id, int /*long*/ sel) {
+//	boolean r = canBecomeKeyWindow1(id, sel);
+////	System.out.println(this + "  can=" + r);
+//	return r;
+//}
 boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 	if (isPopup) return false;
 	// Only answer if SWT created the window.
