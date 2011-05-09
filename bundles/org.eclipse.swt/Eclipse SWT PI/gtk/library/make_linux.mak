@@ -91,7 +91,7 @@ MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
 	-DNO_nsDynamicFunctionLoad
 XULRUNNEREXCLUDES = -DNO__1NS_1InitXPCOM2
 
-WEBKITCFLAGS = `pkg-config --cflags gtk+-2.0` -I/usr/include/webkit-1.0 -I/usr/include/libsoup-2.4
+WEBKITCFLAGS = `pkg-config --cflags webkit-1.0`
 WEBKITLIBS = `pkg-config --libs webkit-1.0`
 
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o

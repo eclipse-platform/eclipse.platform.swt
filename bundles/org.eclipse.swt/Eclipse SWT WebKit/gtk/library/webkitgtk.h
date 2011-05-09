@@ -31,4 +31,9 @@
 #include <webkit/webkitwebpolicydecision.h>
 #include <webkit/webkitwebsettings.h>
 #include <webkit/webkitwebview.h>
+
+#if WEBKIT_CHECK_VERSION(1,4,0)
+#include <webkit/webkitglobals.h>
+#endif
+
 #endif /* INC_webkitgtk_H */

@@ -89,10 +89,20 @@ class WebKit extends WebBrowser {
 	static Callback JSObjectHasPropertyProc, JSObjectGetPropertyProc, JSObjectCallAsFunctionProc;
 
 	static {
+
+		/*
+		* WebKitGTK is binary-incompatible between its 1.2 and 1.4 releases,
+		* so swt has separate libraries compiled against each.
+		*/
 		try {
-			Library.loadLibrary ("swt-webkit"); // $NON-NLS-1$
+			Library.loadLibrary ("swt-webkit12"); // $NON-NLS-1$
 			LibraryLoaded = true;
 		} catch (Throwable e) {
+			try {
+				Library.loadLibrary ("swt-webkit"); // $NON-NLS-1$
+				LibraryLoaded = true;
+			} catch (Throwable e2) {
+			}
 		}
 
 		if (LibraryLoaded) {
