@@ -94,6 +94,7 @@ public class Accessible {
 	 *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
 	 * </ul>
 	 * 
+	 * @see #dispose
 	 * @see Control#getAccessible
 	 * 
 	 * @since 3.6
@@ -234,10 +235,10 @@ public class Accessible {
 	/**
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleAction</code> interface.
+	 * defined in the <code>AccessibleActionListener</code> interface.
 	 *
 	 * @param listener the listener that should be notified when the receiver
-	 * is asked for <code>AccessibleAction</code> interface properties
+	 * is asked for <code>AccessibleActionListener</code> interface properties
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -261,10 +262,10 @@ public class Accessible {
 	/**
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleEditableText</code> interface.
+	 * defined in the <code>AccessibleEditableTextListener</code> interface.
 	 *
 	 * @param listener the listener that should be notified when the receiver
-	 * is asked for <code>AccessibleEditableText</code> interface properties
+	 * is asked for <code>AccessibleEditableTextListener</code> interface properties
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -288,10 +289,10 @@ public class Accessible {
 	/**
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleHyperlink</code> interface.
+	 * defined in the <code>AccessibleHyperlinkListener</code> interface.
 	 *
 	 * @param listener the listener that should be notified when the receiver
-	 * is asked for <code>AccessibleHyperlink</code> interface properties
+	 * is asked for <code>AccessibleHyperlinkListener</code> interface properties
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -315,10 +316,10 @@ public class Accessible {
 	/**
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleTable</code> interface.
+	 * defined in the <code>AccessibleTableListener</code> interface.
 	 *
 	 * @param listener the listener that should be notified when the receiver
-	 * is asked for <code>AccessibleTable</code> interface properties
+	 * is asked for <code>AccessibleTableListener</code> interface properties
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -342,10 +343,10 @@ public class Accessible {
 	/**
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleTableCell</code> interface.
+	 * defined in the <code>AccessibleTableCellListener</code> interface.
 	 *
 	 * @param listener the listener that should be notified when the receiver
-	 * is asked for <code>AccessibleTableCell</code> interface properties
+	 * is asked for <code>AccessibleTableCellListener</code> interface properties
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -369,10 +370,10 @@ public class Accessible {
 	/**
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleValue</code> interface.
+	 * defined in the <code>AccessibleValueListener</code> interface.
 	 *
 	 * @param listener the listener that should be notified when the receiver
-	 * is asked for <code>AccessibleValue</code> interface properties
+	 * is asked for <code>AccessibleValueListener</code> interface properties
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -396,10 +397,10 @@ public class Accessible {
 	/**
 	 * Adds the listener to the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleAttribute</code> interface.
+	 * defined in the <code>AccessibleAttributeListener</code> interface.
 	 *
 	 * @param listener the listener that should be notified when the receiver
-	 * is asked for <code>AccessibleAttribute</code> interface properties
+	 * is asked for <code>AccessibleAttributeListener</code> interface properties
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1407,10 +1408,10 @@ public class Accessible {
 	/**
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleAction</code> interface.
+	 * defined in the <code>AccessibleActionListener</code> interface.
 	 *
 	 * @param listener the listener that should no longer be notified when the receiver
-	 * is asked for <code>AccessibleAction</code> interface properties
+	 * is asked for <code>AccessibleActionListener</code> interface properties
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1434,10 +1435,10 @@ public class Accessible {
 	/**
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleEditableText</code> interface.
+	 * defined in the <code>AccessibleEditableTextListener</code> interface.
 	 *
 	 * @param listener the listener that should no longer be notified when the receiver
-	 * is asked for <code>AccessibleEditableText</code> interface properties
+	 * is asked for <code>AccessibleEditableTextListener</code> interface properties
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1461,10 +1462,10 @@ public class Accessible {
 	/**
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleHyperlink</code> interface.
+	 * defined in the <code>AccessibleHyperlinkListener</code> interface.
 	 *
 	 * @param listener the listener that should no longer be notified when the receiver
-	 * is asked for <code>AccessibleHyperlink</code> interface properties
+	 * is asked for <code>AccessibleHyperlinkListener</code> interface properties
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1488,10 +1489,10 @@ public class Accessible {
 	/**
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleTable</code> interface.
+	 * defined in the <code>AccessibleTableListener</code> interface.
 	 *
 	 * @param listener the listener that should no longer be notified when the receiver
-	 * is asked for <code>AccessibleTable</code> interface properties
+	 * is asked for <code>AccessibleTableListener</code> interface properties
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1515,10 +1516,10 @@ public class Accessible {
 	/**
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleTableCell</code> interface.
+	 * defined in the <code>AccessibleTableCellListener</code> interface.
 	 *
 	 * @param listener the listener that should no longer be notified when the receiver
-	 * is asked for <code>AccessibleTableCell</code> interface properties
+	 * is asked for <code>AccessibleTableCellListener</code> interface properties
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1542,10 +1543,10 @@ public class Accessible {
 	/**
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleValue</code> interface.
+	 * defined in the <code>AccessibleValueListener</code> interface.
 	 *
 	 * @param listener the listener that should no longer be notified when the receiver
-	 * is asked for <code>AccessibleValue</code> interface properties
+	 * is asked for <code>AccessibleValueListener</code> interface properties
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1569,10 +1570,10 @@ public class Accessible {
 	/**
 	 * Removes the listener from the collection of listeners that will be
 	 * notified when an accessible client asks for any of the properties
-	 * defined in the <code>AccessibleAttribute</code> interface.
+	 * defined in the <code>AccessibleAttributeListener</code> interface.
 	 *
 	 * @param listener the listener that should no longer be notified when the receiver
-	 * is asked for <code>AccessibleAttribute</code> interface properties
+	 * is asked for <code>AccessibleAttributeListener</code> interface properties
 	 *
 	 * @exception IllegalArgumentException <ul>
 	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1613,6 +1614,7 @@ public class Accessible {
 	 *
 	 * @param event an <code>ACC</code> constant beginning with EVENT_* indicating the message to send
 	 * @param eventData an object containing event-specific data, or null if there is no event-specific data
+	 * (eventData is specified in the documentation for individual ACC.EVENT_* constants)
 	 * 
 	 * @exception SWTException <ul>
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>

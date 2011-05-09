@@ -356,6 +356,40 @@ int defaultBackground () {
 	return 0;
 }
 
+/** 
+ * Fills the interior of the rectangle specified by the arguments,
+ * with the receiver's background. 
+ *
+ * <p>The <code>offsetX</code> and <code>offsetY</code> are used to map from
+ * the <code>gc</code> origin to the origin of the parent image background. This is useful
+ * to ensure proper alignment of the image background.</p>
+ * 
+ * @param gc the gc where the rectangle is to be filled
+ * @param x the x coordinate of the rectangle to be filled
+ * @param y the y coordinate of the rectangle to be filled
+ * @param width the width of the rectangle to be filled
+ * @param height the height of the rectangle to be filled
+ * @param offsetX the image background x offset 
+ * @param offsetY the image background y offset
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the gc has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.6
+ */
+public void drawBackground (GC gc, int x, int y, int width, int height, int offsetX, int offsetY) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	//gc.fillRectangle (x, y, width, height);
+}
+
 void enableWidget (boolean enabled) {
 	if ((state & CANVAS) != 0) {
 		OS.UIElement_IsHitTestVisible (topHandle (), enabled);

@@ -413,6 +413,24 @@ String getNameText () {
 }
 
 /**
+ * Returns the orientation of the receiver, which will be one of the
+ * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
+ *
+ * @return the orientation style
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.7
+ */
+public int getOrientation () {
+	checkWidget ();
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
+/**
  * Returns the receiver's parent, which must be a <code>Decorations</code>.
  *
  * @return the receiver's parent
@@ -801,6 +819,24 @@ public void setLocation (Point location) {
 	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
+}
+
+/**
+ * Sets the orientation of the receiver, which must be one
+ * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
+ * <p>
+ *
+ * @param orientation new orientation style
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.7  
+ */
+public void setOrientation (int orientation) {
+    checkWidget ();
 }
 
 /**

@@ -164,6 +164,9 @@ public class Display extends Device {
 	
 	Shell [] shells;
 
+	static String APP_NAME = "SWT";
+	static String APP_VERSION = ""; //$NON-NLS-1$
+
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
 		
@@ -1039,7 +1042,7 @@ Widget getWidget (int handle) {
  * over top of, or null if it is not currently over one of the
  * controls built by the currently running application.
  *
- * @return the control under the cursor
+ * @return the control under the cursor or <code>null</code>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1248,7 +1251,7 @@ public int getDoubleClickTime () {
  * any of the controls built by the currently running
  * application.
  *
- * @return the control under the cursor
+ * @return the focus control or <code>null</code>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1733,6 +1736,11 @@ public Thread getThread () {
 /**	 
  * Returns true if a touch-aware input device is attached to the system,
  * enabled, and ready for use.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  * 
  * @since 3.7
  */
@@ -2880,6 +2888,32 @@ public void setData (Object data) {
 }
 
 /**
+ * Returns the application name.
+ *
+ * @return the application name
+ * 
+ * @see #setAppName(String)
+ * 
+ * @since 3.6
+ */
+public static String getAppName () {
+	return APP_NAME;
+}
+
+/**
+ * Returns the application version.
+ *
+ * @return the application version
+ * 
+ * @see #setAppVersion(String)
+ * 
+ * @since 3.6
+ */
+public static String getAppVersion () {
+	return APP_VERSION;
+}
+
+/**
  * Sets the application name to the argument.
  * <p>
  * The application name can be used in several ways,
@@ -2894,7 +2928,18 @@ public void setData (Object data) {
  * @param name the new app name or <code>null</code>
  */
 public static void setAppName (String name) {
-	/* Do nothing */
+	APP_NAME = name;
+}
+
+/**
+ * Sets the application version to the argument.
+ *
+ * @param version the new app version
+ * 
+ * @since 3.6
+ */
+public static void setAppVersion (String version) {
+	APP_VERSION = version;
 }
 
 //void setModalDialogShell (Shell modalDailog) {

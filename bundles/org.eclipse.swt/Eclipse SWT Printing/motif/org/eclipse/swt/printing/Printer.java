@@ -243,7 +243,7 @@ static String[] getXPServerList() {
  * </p>
  *
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES - if there are no valid printers
+ *    <li>ERROR_NO_HANDLES - if there is no valid default printer
  * </ul>
  *
  * @see Device#dispose

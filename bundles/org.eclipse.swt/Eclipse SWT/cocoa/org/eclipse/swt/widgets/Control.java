@@ -388,7 +388,7 @@ public void addFocusListener(FocusListener listener) {
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when gesture events are generated for the control,
- * by sending it one of the messages defined in the 
+ * by sending it one of the messages defined in the
  * <code>GestureListener</code> interface.
  *
  * @param listener the listener which should be notified
@@ -666,6 +666,8 @@ void addTraits(NSMutableDictionary dict, Font font) {
  * windowing toolkit that you want touch events to be generated.
  * </p>
  * 
+ * @param listener the listener which should be notified
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
@@ -676,6 +678,7 @@ void addTraits(NSMutableDictionary dict, Font font) {
  *
  * @see TouchListener
  * @see #removeTouchListener
+ * 
  * @since 3.7
  */
 public void addTouchListener (TouchListener listener) {
@@ -1485,8 +1488,11 @@ boolean gestureEvent(int /*long*/ id, int /*long*/ eventPtr, int detail) {
 
 /**
  * Returns the accessible object for the receiver.
+ * <p>
  * If this is the first time this object is requested,
- * then the object is created and returned.
+ * then the object is created and returned. The object
+ * returned by getAccessible() does not need to be disposed.
+ * </p>
  *
  * @return the accessible object
  *
@@ -1784,6 +1790,16 @@ public Monitor getMonitor () {
 }
 
 /**
+ * Returns the orientation of the receiver, which will be one of the
+ * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
+ *
+ * @return the orientation style
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
  * @since 3.7
  */
 public int getOrientation () {
@@ -2905,7 +2921,7 @@ public void removeFocusListener(FocusListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when a gesture is performed on the control
+ * be notified when gesture events are generated for the control.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -2919,6 +2935,7 @@ public void removeFocusListener(FocusListener listener) {
  *
  * @see GestureListener
  * @see #addGestureListener
+ * 
  * @since 3.7
  */
 public void removeGestureListener (GestureListener listener) {
@@ -3162,6 +3179,7 @@ void removeRelation () {
  *
  * @see TouchListener
  * @see #addTouchListener
+ * 
  * @since 3.7
  */
 public void removeTouchListener(TouchListener listener) {
@@ -3849,7 +3867,17 @@ public void setMenu (Menu menu) {
 }
 
 /**
- * @param orientation
+ * Sets the orientation of the receiver, which must be one
+ * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
+ * <p>
+ *
+ * @param orientation new orientation style
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
  * @since 3.7
  */
 public void setOrientation (int orientation) {
@@ -4064,18 +4092,15 @@ public void setToolTipText (String string) {
 }
 
 /**
- * Sets the receiver to receive touch events from the OS.  By default, touch
- * events are not delivered to a control unless specifically requested for that control.
- * This is independent of whether or not there are any <code>TouchListener</code> instances 
- * registered for the control.
- *
- * @param enabled the new touch-enabled state.
- *
+ * Sets whether the receiver should accept touch events. By default, a Control does not accept touch
+ * events. No error or exception is thrown if the underlying hardware does not support touch input.
+ * 
+ * @param enabled the new touch-enabled state
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
+ *    
  * @since 3.7
  */
 public void setTouchEnabled(boolean enabled) {

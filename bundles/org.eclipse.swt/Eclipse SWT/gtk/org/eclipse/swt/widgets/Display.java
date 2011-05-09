@@ -1450,7 +1450,7 @@ int getCaretBlinkTime () {
  * over top of, or null if it is not currently over one of the
  * controls built by the currently running application.
  *
- * @return the control under the cursor
+ * @return the control under the cursor or <code>null</code>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1759,7 +1759,7 @@ public int getDoubleClickTime () {
  * any of the controls built by the currently running
  * application.
  *
- * @return the control under the cursor
+ * @return the focus control or <code>null</code>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2381,6 +2381,11 @@ public Thread getThread () {
 /**	 
  * Returns true if a touch-aware input device is attached to the system,
  * enabled, and ready for use.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  * 
  * @since 3.7
  */

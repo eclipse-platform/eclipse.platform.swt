@@ -1324,7 +1324,14 @@ void setVisible (boolean visible) {
 /**
  * Sets the width of the receiver, for <code>SEPARATOR</code> ToolItems.
  *
- * @param width the new width
+ * @param width the new width. If the new value is <code>SWT.DEFAULT</code>,
+ * the width is a fixed-width area whose amount is determined by the platform.
+ * If the new value is 0 a vertical or horizontal line will be drawn, depending
+ * on the setting of the corresponding style bit (<code>SWT.VERTICAL</code> or 
+ * <code>SWT.HORIZONTAL</code>). If the new value is <code>SWT.SEPARATOR_FILL</code>
+ * a variable-width space is inserted that acts as a spring between the two adjoining
+ * items which will push them out to the extent of the containing ToolBar.
+ * 
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

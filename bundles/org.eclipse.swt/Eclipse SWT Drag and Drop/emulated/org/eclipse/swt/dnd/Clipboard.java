@@ -123,6 +123,54 @@ protected void checkWidget () {
 }
 
 /**
+ * If this clipboard is currently the owner of the data on the system clipboard,
+ * clear the contents.  If this clipboard is not the owner, then nothing is done.
+ * Note that there are clipboard assistant applications that take ownership of 
+ * data or make copies of data when it is placed on the clipboard.  In these 
+ * cases, it may not be possible to clear the clipboard.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public void clearContents() {
+	clearContents(DND.CLIPBOARD);
+}
+
+/**
+ * If this clipboard is currently the owner of the data on the specified 
+ * clipboard, clear the contents.  If this clipboard is not the owner, then 
+ * nothing is done.
+ * 
+ * <p>Note that there are clipboard assistant applications that take ownership
+ * of data or make copies of data when it is placed on the clipboard.  In these 
+ * cases, it may not be possible to clear the clipboard.</p>
+ * 
+ * <p>The clipboards value is either one of the clipboard constants defined in
+ * class <code>DND</code>, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>DND</code> clipboard constants.</p>
+ * 
+ * @param clipboards to be cleared
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see DND#CLIPBOARD
+ * @see DND#SELECTION_CLIPBOARD
+ * 
+ * @since 3.1
+ */
+public void clearContents(int clipboards) {
+	checkWidget();
+}
+
+/**
  * Disposes of the operating system resources associated with the clipboard. 
  * The data will still be available on the system clipboard after the dispose 
  * method is called.  
@@ -383,6 +431,34 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
  * @since 3.0
  */
 public TransferData[] getAvailableTypes() {
+	checkWidget();
+	return new TransferData[0];
+}
+
+/**
+ * Returns an array of the data types currently available on the specified 
+ * clipboard. Use with Transfer.isSupportedType.
+ * 
+ * <p>The clipboards value is either one of the clipboard constants defined in
+ * class <code>DND</code>, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>DND</code> clipboard constants.</p>
+ * 
+ * @param clipboards from which to get the data types
+ * @return array of data types currently available on the specified clipboard
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Transfer#isSupportedType
+ * @see DND#CLIPBOARD
+ * @see DND#SELECTION_CLIPBOARD
+ * 
+ * @since 3.1
+ */
+public TransferData[] getAvailableTypes(int clipboards) {
 	checkWidget();
 	return new TransferData[0];
 }
