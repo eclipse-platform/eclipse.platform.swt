@@ -1741,19 +1741,22 @@ int /*long*/ webkit_window_object_cleared (int /*long*/ web_view, int /*long*/ f
 
 int /*long*/ callJava (int /*long*/ ctx, int /*long*/ func, int /*long*/ thisObject, int /*long*/ argumentCount, int /*long*/ arguments, int /*long*/ exception) {
 	Object returnValue = null;
-	if (argumentCount == 2) {
+	if (argumentCount == 3) {
 		int /*long*/[] result = new int /*long*/[1];
 		C.memmove (result, arguments, C.PTR_SIZEOF);
 		int type = WebKitGTK.JSValueGetType (ctx, result[0]);
 		if (type == WebKitGTK.kJSTypeNumber) {
 			int index = ((Double)convertToJava (ctx, result[0])).intValue ();
 			result[0] = 0;
-			if (index > 0) {
-				Object key = new Integer (index);
+			Object key = new Integer (index);
+			C.memmove (result, arguments + C.PTR_SIZEOF, C.PTR_SIZEOF);
+			type = WebKitGTK.JSValueGetType (ctx, result[0]);
+			if (type == WebKitGTK.kJSTypeNumber) {
+				int token = ((Double)convertToJava (ctx, result[0])).intValue ();
 				BrowserFunction function = (BrowserFunction)functions.get (key);
-				if (function != null) {
+				if (function != null && token == function.token) {
 					try {
-						C.memmove (result, arguments + C.PTR_SIZEOF, C.PTR_SIZEOF);
+						C.memmove (result, arguments + 2 * C.PTR_SIZEOF, C.PTR_SIZEOF);
 						Object temp = convertToJava (ctx, result[0]);
 						if (temp instanceof Object[]) {
 							Object[] args = (Object[])temp;

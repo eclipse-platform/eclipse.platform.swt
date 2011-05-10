@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.util.Random;
+
 import org.eclipse.swt.*;
 
 /**
@@ -46,6 +48,7 @@ public class BrowserFunction {
 	String functionString;
 	int index;
 	boolean isEvaluate;
+	long token;
 
 /**
  * Constructs a new instance of this class, which will be invokable
@@ -83,6 +86,10 @@ BrowserFunction (Browser browser, String name, boolean create) {
 	browser.checkWidget ();
 	this.browser = browser;
 	this.name = name;
+
+	Random random = new Random ();
+	long value = random.nextLong ();
+	token = ((value & 0xFFE0000000000000L) >>> 11) ^ (value & 0x1FFFFFFFFFFFFFL);
 	if (create) browser.webBrowser.createFunction (this);
 }
 

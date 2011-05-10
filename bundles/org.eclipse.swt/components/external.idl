@@ -1,4 +1,15 @@
-// to compile: xpidl -m typelib -I J:\teamswt\swt-builddir\gecko-sdk\idl\ -e External.xpt External.idl
+/*******************************************************************************
+ * Copyright (c) 2008, 2011 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
+
+// to compile: xpidl -m typelib -I S:\swt-builddir\gecko-sdk\idl\ -e external.xpt external.idl
 
 #include "nsISupports.idl"
 #include "nsIVariant.idl"
@@ -6,5 +17,5 @@
 [scriptable, uuid(ded01d20-ba6f-11dd-ad8b-0800200c9a66)]
 
 interface External : nsISupports {
-    nsIVariant callJava (in unsigned long index, in nsIVariant args);
+    nsIVariant callJava (in unsigned long index, in nsIVariant token, in nsIVariant args);
 };

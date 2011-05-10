@@ -77,7 +77,7 @@ public class OS extends C {
 	public static final int /*long*/ sel_sendHorizontalSelection = sel_registerName("sendHorizontalSelection");
 	public static final int /*long*/ sel_timerProc_ = sel_registerName("timerProc:");
 	public static final int /*long*/ sel_handleNotification_ = sel_registerName("handleNotification:");
-	public static final int /*long*/ sel_callJava = sel_registerName("callJava:index:arg:");
+	public static final int /*long*/ sel_callJava = sel_registerName("callJava:index:token:arg:");
 	public static final int /*long*/ sel_callRunBeforeUnloadConfirmPanelWithMessage = sel_registerName("callRunBeforeUnloadConfirmPanelWithMessage:arg:");
 	public static final int /*long*/ sel_createPanelDidEnd = sel_registerName("createPanelDidEnd:returnCode:contextInfo:");
 	public static final int /*long*/ sel_systemSettingsChanged_ = sel_registerName("systemSettingsChanged:");

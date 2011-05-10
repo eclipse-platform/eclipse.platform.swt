@@ -374,7 +374,7 @@ public boolean back () {
 
 int /*long*/ callJava (int /*long*/ ctx, int /*long*/ func, int /*long*/ thisObject, int /*long*/ argumentCount, int /*long*/ arguments, int /*long*/ exception) {
 	Object returnValue = null;
-	if (argumentCount == 2) {
+	if (argumentCount == 3) {
 		int /*long*/[] result = new int /*long*/[1];
 		C.memmove (result, arguments, C.PTR_SIZEOF);
 		int type = WebKit_win32.JSValueGetType (ctx, result[0]);
@@ -383,27 +383,32 @@ int /*long*/ callJava (int /*long*/ ctx, int /*long*/ func, int /*long*/ thisObj
 			result[0] = 0;
 			if (index > 0) {
 				Object key = new Integer (index);
-				BrowserFunction function = (BrowserFunction)functions.get (key);
-				if (function != null) {
-					try {
-						C.memmove (result, arguments + C.PTR_SIZEOF, C.PTR_SIZEOF);
-						Object temp = convertToJava (ctx, result[0]);
-						if (temp instanceof Object[]) {
-							Object[] args = (Object[])temp;
-							try {
-								returnValue = function.function (args);
-							} catch (Exception e) {
-								/* exception during function invocation */
-								returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
+				C.memmove (result, arguments + C.PTR_SIZEOF, C.PTR_SIZEOF);
+				type = WebKit_win32.JSValueGetType (ctx, result[0]);
+				if (type == WebKit_win32.kJSTypeNumber) {
+					long token = ((Double)convertToJava (ctx, result[0])).longValue ();
+					BrowserFunction function = (BrowserFunction)functions.get (key);
+					if (function != null && token == function.token) {
+						try {
+							C.memmove (result, arguments + 2 * C.PTR_SIZEOF, C.PTR_SIZEOF);
+							Object temp = convertToJava (ctx, result[0]);
+							if (temp instanceof Object[]) {
+								Object[] args = (Object[])temp;
+								try {
+									returnValue = function.function (args);
+								} catch (Exception e) {
+									/* exception during function invocation */
+									returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
+								}
 							}
+						} catch (IllegalArgumentException e) {
+							/* invalid argument value type */
+							if (function.isEvaluate) {
+								/* notify the function so that a java exception can be thrown */
+								function.function (new String[] {WebBrowser.CreateErrorString (new SWTException (SWT.ERROR_INVALID_RETURN_VALUE).getLocalizedMessage ())});
+							}
+							returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 						}
-					} catch (IllegalArgumentException e) {
-						/* invalid argument value type */
-						if (function.isEvaluate) {
-							/* notify the function so that a java exception can be thrown */
-							function.function (new String[] {WebBrowser.CreateErrorString (new SWTException (SWT.ERROR_INVALID_RETURN_VALUE).getLocalizedMessage ())});
-						}
-						returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 					}
 				}
 			}

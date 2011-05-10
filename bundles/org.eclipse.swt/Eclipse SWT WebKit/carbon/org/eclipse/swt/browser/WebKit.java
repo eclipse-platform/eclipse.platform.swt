@@ -766,7 +766,7 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 31: didChangeLocationWithinPageForFrame(arg0); break;
 		case 32: handleEvent(arg0); break;
 		case 33: windowScriptObjectAvailable(arg0); break;
-		case 34: ret = callJava(arg0, arg1, arg2); break;
+		case 34: ret = callJava(arg0, arg1, arg2, arg3); break;
 		case 35: didReceiveAuthenticationChallengefromDataSource(arg0, arg1, arg2); break;
 		case 36: ret = runBeforeUnloadConfirmPanelWithMessage(arg0, arg1); break;
 		case 37: ret = callRunBeforeUnloadConfirmPanelWithMessage(arg0, arg1); break;
@@ -2165,31 +2165,34 @@ int convertToJS (Object value) {
 	return 0;
 }
 
-int /*long*/ callJava (int /*long*/ index, int /*long*/ args, int /*long*/ arg1) {
+int /*long*/ callJava (int /*long*/ index, int /*long*/ token, int /*long*/ args, int /*long*/ arg1) {
 	Object returnValue = null;
 	if (Cocoa.objc_msgSend (index, Cocoa.S_isKindOfClass, Cocoa.C_NSNumber) != 0) {
 		int functionIndex = Cocoa.objc_msgSend (index, Cocoa.S_intValue);
-		Object key = new Integer (functionIndex);
-		BrowserFunction function = (BrowserFunction)functions.get (key);
-		if (function != null) {
-			try {
-				Object temp = convertToJava (args);
-				if (temp instanceof Object[]) {
-					Object[] arguments = (Object[])temp;
-					try {
-						returnValue = function.function (arguments);
-					} catch (Exception e) {
-						/* exception during function invocation */
-						returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
+		if (Cocoa.objc_msgSend (token, Cocoa.S_isKindOfClass, Cocoa.C_NSNumber) != 0) {
+			long tokenValue = (long)Cocoa.objc_msgSend_fpret (token, Cocoa.S_doubleValue);
+			Object key = new Integer (functionIndex);
+			BrowserFunction function = (BrowserFunction)functions.get (key);
+			if (function != null && tokenValue == function.token) {
+				try {
+					Object temp = convertToJava (args);
+					if (temp instanceof Object[]) {
+						Object[] arguments = (Object[])temp;
+						try {
+							returnValue = function.function (arguments);
+						} catch (Exception e) {
+							/* exception during function invocation */
+							returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
+						}
 					}
+				} catch (IllegalArgumentException e) {
+					/* invalid argument value type */
+					if (function.isEvaluate) {
+						/* notify the evaluate function so that a java exception can be thrown */
+						function.function (new String[] {WebBrowser.CreateErrorString (new SWTException (SWT.ERROR_INVALID_RETURN_VALUE).getLocalizedMessage ())});
+					}
+					returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 				}
-			} catch (IllegalArgumentException e) {
-				/* invalid argument value type */
-				if (function.isEvaluate) {
-					/* notify the evaluate function so that a java exception can be thrown */
-					function.function (new String[] {WebBrowser.CreateErrorString (new SWTException (SWT.ERROR_INVALID_RETURN_VALUE).getLocalizedMessage ())});
-				}
-				returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 			}
 		}
 	}

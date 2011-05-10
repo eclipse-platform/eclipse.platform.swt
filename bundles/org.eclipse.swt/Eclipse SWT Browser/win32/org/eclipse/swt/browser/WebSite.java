@@ -712,14 +712,14 @@ int Invoke (int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*lo
 
 	DISPPARAMS dispParams = new DISPPARAMS ();
 	COM.MoveMemory (dispParams, pDispParams, DISPPARAMS.sizeof);
-	if (dispParams.cArgs != 2) {
+	if (dispParams.cArgs != 3) {
 		if (pVarResult != 0) {
 			COM.MoveMemory (pVarResult, new int /*long*/[] {0}, C.PTR_SIZEOF);
 		}
 		return COM.S_OK;
 	}
 
-	int /*long*/ ptr = dispParams.rgvarg + Variant.sizeof;
+	int /*long*/ ptr = dispParams.rgvarg + 2 * Variant.sizeof;
 	Variant variant = Variant.win32_new (ptr);
 	if (variant.getType () != COM.VT_I4) {
 		variant.dispose ();
@@ -737,11 +737,24 @@ int Invoke (int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*lo
 		return COM.S_OK;
 	}
 
+	ptr = dispParams.rgvarg + Variant.sizeof;
+	variant = Variant.win32_new (ptr);
+	int type = variant.getType ();
+	if (type != COM.VT_I4 && type != COM.VT_R8) {
+		variant.dispose ();
+		if (pVarResult != 0) {
+			COM.MoveMemory (pVarResult, new int /*long*/[] {0}, C.PTR_SIZEOF);
+		}
+		return COM.S_OK;
+	}
+	long token = variant.getLong ();
+	variant.dispose ();
+
 	variant = Variant.win32_new (dispParams.rgvarg);
 	Object key = new Integer (index);
 	BrowserFunction function = (BrowserFunction)functions.get (key);
 	Object returnValue = null;
-	if (function != null) {
+	if (function != null && token == function.token) {
 		try {
 			Object temp = convertToJava (variant);
 			if (temp instanceof Object[]) {

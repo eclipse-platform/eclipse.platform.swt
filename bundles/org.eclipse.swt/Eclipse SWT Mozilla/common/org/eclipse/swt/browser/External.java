@@ -68,11 +68,11 @@ void createCOMInterfaces () {
 		public int /*long*/ method6 (int /*long*/[] args) {return canSetProperty (args[0], args[1], args[2]);}
 	};
 
-	external = new XPCOMObject (new int[] {2, 0, 0, 3}) {
+	external = new XPCOMObject (new int[] {2, 0, 0, 4}) {
 		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
 		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return callJava ((int)/*64*/args[0], args[1], args[2]);}
+		public int /*long*/ method3 (int /*long*/[] args) {return callJava ((int)/*64*/args[0], args[1], args[2], args[3]);}
 	};
 	
 }
@@ -541,25 +541,35 @@ nsIVariant convertToJS (Object value, nsIComponentManager componentManager) {
 	return null;
 }
 
-int callJava (int functionId, int /*long*/ args, int /*long*/ returnPtr) {
+int callJava (int functionId, int /*long*/ tokenVariant, int /*long*/ args, int /*long*/ returnPtr) {
 	Object key = new Integer (functionId);
 	BrowserFunction function = (BrowserFunction)Mozilla.AllFunctions.get (key);
 	Object returnValue = null;
 
 	if (function != null) {
-		short[] type = new short[1]; /* PRUint16 */
-		nsIVariant variant = new nsIVariant (args);
-		int rc = variant.GetDataType (type);
-		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 		try {
-			Object temp = (Object[])convertToJava (variant, type[0]);
-			if (temp instanceof Object[]) {
-				Object[] arguments = (Object[])temp;
-				try {
-					returnValue = function.function (arguments);
-				} catch (Exception e) {
-					/* exception during function invocation */
-					returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
+			short[] type = new short[1]; /* PRUint16 */
+			nsIVariant variant = new nsIVariant (tokenVariant);
+			int rc = variant.GetDataType (type);
+			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+			Object temp = convertToJava (variant, type[0]);
+			type[0] = 0;
+			if (temp instanceof Number) {
+				long token = ((Number)temp).longValue ();
+				if (token == function.token) {
+					variant = new nsIVariant (args);
+					rc = variant.GetDataType (type);
+					if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+					temp = convertToJava (variant, type[0]);
+					if (temp instanceof Object[]) {
+						Object[] arguments = (Object[])temp;
+						try {
+							returnValue = function.function (arguments);
+						} catch (Exception e) {
+							/* exception during function invocation */
+							returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
+						}
+					}
 				}
 			}
 		} catch (IllegalArgumentException e) {

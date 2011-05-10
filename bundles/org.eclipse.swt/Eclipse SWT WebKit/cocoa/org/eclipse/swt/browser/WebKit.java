@@ -183,7 +183,7 @@ public void create (Composite parent, int style) {
 		OS.class_addMethod(delegateClass, OS.sel_handleEvent_, proc3, "@:@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_setFrame_, setFrameProc, "@:@{NSRect}"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_webView_windowScriptObjectAvailable_, proc4, "@:@@"); //$NON-NLS-1$
-		OS.class_addMethod(delegateClass, OS.sel_callJava, proc5, "@:@@@"); //$NON-NLS-1$
+		OS.class_addMethod(delegateClass, OS.sel_callJava, proc6, "@:@@@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_callRunBeforeUnloadConfirmPanelWithMessage, proc4, "@:@@"); //$NON-NLS-1$
 		OS.class_addMethod(delegateClass, OS.sel_createPanelDidEnd, proc5, "@:@@@"); //$NON-NLS-1$
 		OS.objc_registerClassPair(delegateClass);
@@ -386,9 +386,6 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 		webKit.webView_runJavaScriptAlertPanelWithMessage(arg0, arg1);
 	} else if (sel == OS.sel_webView_runJavaScriptConfirmPanelWithMessage_initiatedByFrame_) {
 		return webKit.webView_runJavaScriptConfirmPanelWithMessage(arg0, arg1);
-	} else if (sel == OS.sel_callJava) {
-		id result = webKit.callJava(arg0, arg1, arg2);
-		return result == null ? 0 : result.id;
 	} else if (sel == OS.sel_createPanelDidEnd) {
 		webKit.createPanelDidEnd(arg0, arg1, arg2);
 	}
@@ -405,6 +402,9 @@ static int /*long*/ browserProc(int /*long*/ id, int /*long*/ sel, int /*long*/ 
 		webKit.webView_resource_didFailLoadingWithError_fromDataSource(arg0, arg1, arg2, arg3);
 	} else if (sel == OS.sel_webView_resource_didReceiveAuthenticationChallenge_fromDataSource_) {
 		webKit.webView_resource_didReceiveAuthenticationChallenge_fromDataSource(arg0, arg1, arg2, arg3);
+	} else if (sel == OS.sel_callJava) {
+		id result = webKit.callJava(arg0, arg1, arg2, arg3);
+		return result == null ? 0 : result.id;
 	}
 	return 0;
 }
@@ -1757,33 +1757,38 @@ NSObject convertToJS (Object value) {
 	return null;
 }
 
-NSObject callJava (int /*long*/ index, int /*long*/ args, int /*long*/ arg1) {
+NSObject callJava (int /*long*/ index, int /*long*/ token, int /*long*/ args, int /*long*/ arg1) {
 	Object returnValue = null;
 	NSObject object = new NSObject (index);
 	int /*long*/ clazz = OS.objc_lookUpClass ("NSNumber"); //$NON-NLS-1$
 	if (object.isKindOfClass (clazz)) {
 		NSNumber number = new NSNumber (index);
 		Object key = new Integer (number.intValue ());
-		BrowserFunction function = (BrowserFunction)functions.get (key);
-		if (function != null) {
-			try {
-				Object temp = convertToJava (args);
-				if (temp instanceof Object[]) {
-					Object[] arguments = (Object[])temp;
-					try {
-						returnValue = function.function (arguments);
-					} catch (Exception e) {
-						/* exception during function invocation */
-						returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
+		object = new NSObject (token);
+		if (object.isKindOfClass (clazz)) {
+			number = new NSNumber (token);
+			long tokenValue = (long)number.doubleValue ();
+			BrowserFunction function = (BrowserFunction)functions.get (key);
+			if (function != null && tokenValue == function.token) {
+				try {
+					Object temp = convertToJava (args);
+					if (temp instanceof Object[]) {
+						Object[] arguments = (Object[])temp;
+						try {
+							returnValue = function.function (arguments);
+						} catch (Exception e) {
+							/* exception during function invocation */
+							returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
+						}
 					}
+				} catch (IllegalArgumentException e) {
+					/* invalid argument value type */
+					if (function.isEvaluate) {
+						/* notify the evaluate function so that a java exception can be thrown */
+						function.function (new String[] {WebBrowser.CreateErrorString (new SWTException (SWT.ERROR_INVALID_RETURN_VALUE).getLocalizedMessage ())});
+					}
+					returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 				}
-			} catch (IllegalArgumentException e) {
-				/* invalid argument value type */
-				if (function.isEvaluate) {
-					/* notify the evaluate function so that a java exception can be thrown */
-					function.function (new String[] {WebBrowser.CreateErrorString (new SWTException (SWT.ERROR_INVALID_RETURN_VALUE).getLocalizedMessage ())});
-				}
-				returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 			}
 		}
 	}
