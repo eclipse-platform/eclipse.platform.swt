@@ -542,11 +542,6 @@ void bringToTop (boolean force) {
 	}
 }
 
-//boolean canBecomeKeyWindow7 (int /*long*/ id, int /*long*/ sel) {
-//	boolean r = canBecomeKeyWindow1(id, sel);
-////	System.out.println(this + "  can=" + r);
-//	return r;
-//}
 boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 	if (isPopup) return false;
 	// Only answer if SWT created the window.
