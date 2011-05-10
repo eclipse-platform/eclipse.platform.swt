@@ -6227,6 +6227,34 @@ public static final boolean gtk_clipboard_set_with_owner(int /*long*/ clipboard,
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param clipboard cast=(GtkClipboard *)
+ * @param targets cast=(const GtkTargetEntry *)
+ * @param n_targets cast=(gint)
+ */
+public static final native void _gtk_clipboard_set_can_store(int /*long*/ clipboard, int /*long*/ targets, int n_targets);
+public static final void gtk_clipboard_set_can_store(int /*long*/ clipboard, int /*long*/ targets, int n_targets) {
+	lock.lock();
+	try {
+		_gtk_clipboard_set_can_store(clipboard, targets, n_targets);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param clipboard cast=(GtkClipboard *)
+ */
+public static final native void _gtk_clipboard_store(int /*long*/ clipboard);
+public static final void gtk_clipboard_store(int /*long*/ clipboard) {
+	lock.lock();
+	try {
+		_gtk_clipboard_store(clipboard);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param clipboard cast=(GtkClipboard *)
  * @param target cast=(GdkAtom)
  */

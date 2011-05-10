@@ -88,8 +88,20 @@ int /*long*/ clearFunc(int /*long*/ clipboard,int /*long*/ user_data_or_owner){
 
 void dispose () {
 	if (display == null) return;
-	if (activeClipboard != null) OS.gtk_clipboard_clear(Clipboard.GTKCLIPBOARD);
-	if (activePrimaryClipboard != null) OS.gtk_clipboard_clear(Clipboard.GTKPRIMARYCLIPBOARD);
+	if (activeClipboard != null) {
+		if (OS.GTK_VERSION >= OS.VERSION(2, 6, 0)) {
+			OS.gtk_clipboard_store(Clipboard.GTKCLIPBOARD);
+		} else {
+			OS.gtk_clipboard_clear(Clipboard.GTKCLIPBOARD);
+		}
+	}
+	if (activePrimaryClipboard != null) {
+		if (OS.GTK_VERSION >= OS.VERSION(2, 6, 0)) {
+			OS.gtk_clipboard_store(Clipboard.GTKPRIMARYCLIPBOARD);
+		} else {
+			OS.gtk_clipboard_clear(Clipboard.GTKPRIMARYCLIPBOARD);
+		}
+	}
 	display = null;
 	if (getFunc != null ) getFunc.dispose();
 	getFunc = null;
@@ -178,6 +190,9 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 			if (!OS.gtk_clipboard_set_with_owner (Clipboard.GTKCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, clipboardOwner)) {
 				return false;
 			}
+			if (OS.GTK_VERSION >= OS.VERSION(2, 6, 0)) {
+				OS.gtk_clipboard_set_can_store(Clipboard.GTKCLIPBOARD, 0, 0);
+			}
 			activeClipboard = owner;
 		}
 		if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
@@ -187,6 +202,9 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 			int /*long*/ clearFuncProc = clearFunc.getAddress();
 			if (!OS.gtk_clipboard_set_with_owner (Clipboard.GTKPRIMARYCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, clipboardOwner)) {
 				return false;
+			}
+			if (OS.GTK_VERSION >= OS.VERSION(2, 6, 0)) {
+				OS.gtk_clipboard_set_can_store(Clipboard.GTKPRIMARYCLIPBOARD, 0, 0);
 			}
 			activePrimaryClipboard = owner;
 		}

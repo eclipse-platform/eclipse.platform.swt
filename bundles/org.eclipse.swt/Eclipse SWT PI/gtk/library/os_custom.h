@@ -72,6 +72,8 @@
 #define gtk_calendar_clear_marks_LIB LIB_GTK
 #define gtk_calendar_select_month_LIB LIB_GTK
 #define gtk_calendar_set_display_options_LIB LIB_GTK
+#define gtk_clipboard_store_LIB LIB_GTK
+#define gtk_clipboard_set_can_store_LIB LIB_GTK
 #define gtk_cell_layout_set_attributes_LIB LIB_GTK
 #define gtk_cell_layout_clear_LIB LIB_GTK
 #define gtk_cell_layout_pack_start_LIB LIB_GTK

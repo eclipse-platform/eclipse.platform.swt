@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1391;
-int OS_nativeFunctionCallCount[1391];
+int OS_nativeFunctionCount = 1393;
+int OS_nativeFunctionCallCount[1393];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -648,8 +648,10 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1check_1version",
 	"_1gtk_1clipboard_1clear",
 	"_1gtk_1clipboard_1get",
+	"_1gtk_1clipboard_1set_1can_1store",
 	"_1gtk_1clipboard_1set_1with_1data",
 	"_1gtk_1clipboard_1set_1with_1owner",
+	"_1gtk_1clipboard_1store",
 	"_1gtk_1clipboard_1wait_1for_1contents",
 	"_1gtk_1color_1selection_1dialog_1new",
 	"_1gtk_1color_1selection_1get_1current_1color",
