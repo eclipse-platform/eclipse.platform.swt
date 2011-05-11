@@ -240,7 +240,7 @@ int printFrame (int /*long*/ webView, int /*long*/ frame) {
 	PRINTDLG pd = new PRINTDLG ();
 	pd.lStructSize = PRINTDLG.sizeof;
 	pd.Flags = OS.PD_RETURNDC;
-	OS.PrintDlg (pd);
+	if (!OS.PrintDlg (pd)) return COM.S_OK;
 	int /*long*/ printDC = pd.hDC;
 
 	int /*long*/[] result = new int /*long*/[1];
@@ -254,7 +254,7 @@ int printFrame (int /*long*/ webView, int /*long*/ frame) {
 	hr = privateFrame.getPrintedPageCount (printDC, count);
 	if (hr != COM.S_OK || count[0] == 0) {
 		privateFrame.Release ();
-	return COM.S_OK;
+		return COM.S_OK;
 	}
 	int pageCount = count[0];
 	String jobName = null;
