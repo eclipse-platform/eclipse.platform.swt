@@ -4851,6 +4851,10 @@ void finishLaunching (int /*long*/ id, int /*long*/ sel) {
 }
 
 void applicationDidBecomeActive (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	NSWindow keyWindow = application.keyWindow();
+	if (keyWindow != null) {
+		keyWindow.orderFrontRegardless();
+	}
 	checkFocus();
 	checkEnterExit(findControl(true), null, false);
 }
