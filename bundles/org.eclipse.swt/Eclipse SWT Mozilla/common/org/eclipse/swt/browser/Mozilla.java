@@ -62,7 +62,8 @@ class Mozilla extends WebBrowser {
 	static int BrowserCount, NextJSFunctionIndex = 1;
 	static Hashtable AllFunctions = new Hashtable ();
 	static Listener DisplayListener;
-	static boolean Initialized, IsPre_1_8, IsPre_1_9, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
+	static boolean Initialized, IsPre_1_8, IsPre_1_9, IsXULRunner, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
+	static String MozillaPath;
 	static String oldProxyHostFTP, oldProxyHostHTTP, oldProxyHostSSL;
 	static int oldProxyPortFTP = -1, oldProxyPortHTTP = -1, oldProxyPortSSL = -1, oldProxyType = -1;
 	static byte[] pathBytes_JSEvaluateUCScriptForPrincipals;
@@ -530,131 +531,134 @@ class Mozilla extends WebBrowser {
 		};
 	}
 
+static void LoadLibraries () {
+	boolean initLoaded = false;
+
+	String greInitialized = System.getProperty (GRE_INITIALIZED);
+	if (TRUE.equals (greInitialized)) {
+		/* 
+		 * Another browser has already initialized xulrunner in this process,
+		 * so just bind to it instead of trying to initialize a new one.
+		 */
+		Initialized = true;
+	}
+
+	MozillaPath = System.getProperty (XULRUNNER_PATH);
+	/*
+	* Browser clients that ship XULRunner in a plug-in must have an opportunity 
+	* to set the org.eclipse.swt.browser.XULRunnerPath system property to point
+	* at their XULRunner before the first Mozilla-based Browser is created.  To
+	* facilitate this, reflection is used to reference non-existent class
+	* org.eclipse.swt.browser.XULRunnerInitializer the first time a Mozilla-
+	* based Browser is created.   A client wishing to use this hook can do so
+	* by creating a fragment of org.eclipse.swt that implements this class and
+	* sets the system property in its static initializer.
+	*/
+	if (MozillaPath == null) {
+		try {
+			Class.forName ("org.eclipse.swt.browser.XULRunnerInitializer"); //$NON-NLS-1$
+			MozillaPath = System.getProperty (XULRUNNER_PATH);
+		} catch (ClassNotFoundException e) {
+			/* no fragment is providing this class, which is the typical case */
+		}
+	}
+
+	if (MozillaPath == null) {
+		try {
+			String libName = MozillaDelegate.GetSWTInitLibraryName ();
+			Library.loadLibrary (libName);
+			initLoaded = true;
+		} catch (UnsatisfiedLinkError e) {
+			/* 
+			* If this library failed to load then do not attempt to detect a
+			* xulrunner to use.  The Browser may still be usable if MOZILLA_FIVE_HOME
+			* points at a GRE. 
+			*/
+		}
+	} else {
+		/* ensure that client-supplied path is using correct separators */
+		if (SEPARATOR_OS == '/') {
+			MozillaPath = MozillaPath.replace ('\\', SEPARATOR_OS);
+		} else {
+			MozillaPath = MozillaPath.replace ('/', SEPARATOR_OS);
+		}
+
+		MozillaPath += SEPARATOR_OS + MozillaDelegate.getLibraryName ();
+		IsXULRunner = true;
+	}
+
+	if (initLoaded) {
+		/* attempt to discover a XULRunner to use as the GRE */
+		MozillaPath = InitDiscoverXULRunner ();
+		IsXULRunner = MozillaPath.length () > 0;
+
+		/*
+		 * Test whether the detected XULRunner can be used as the GRE before loading swt's
+		 * XULRunner library.  If it cannot be used then fall back to attempting to use
+		 * the GRE pointed to by MOZILLA_FIVE_HOME.
+		 * 
+		 * One case where this will fail is attempting to use a 64-bit xulrunner while swt
+		 * is running in 32-bit mode, or vice versa.
+		 */
+		if (IsXULRunner) {
+			byte[] bytes = MozillaDelegate.wcsToMbcs (null, MozillaPath, true);
+			int rc = XPCOMInit.XPCOMGlueStartup (bytes);
+			if (rc != XPCOM.NS_OK) {
+				MozillaPath = MozillaPath.substring (0, MozillaPath.lastIndexOf (SEPARATOR_OS));
+				if (Device.DEBUG) System.out.println ("cannot use detected XULRunner: " + MozillaPath); //$NON-NLS-1$
+
+				/* attempt to XPCOMGlueStartup the GRE pointed at by MOZILLA_FIVE_HOME */
+				int /*long*/ ptr = C.getenv (MozillaDelegate.wcsToMbcs (null, XPCOM.MOZILLA_FIVE_HOME, true));
+				if (ptr == 0) {
+					IsXULRunner = false;
+				} else {
+					int length = C.strlen (ptr);
+					bytes = new byte[length];
+					C.memmove (bytes, ptr, length);
+					MozillaPath = new String (MozillaDelegate.mbcsToWcs (null, bytes));
+					/*
+					 * Attempting to XPCOMGlueStartup a mozilla-based GRE != xulrunner can
+					 * crash, so don't attempt unless the GRE appears to be xulrunner.
+					 */
+					if (MozillaPath.indexOf ("xulrunner") == -1) { //$NON-NLS-1$
+						IsXULRunner = false;	
+					} else {
+						MozillaPath += SEPARATOR_OS + MozillaDelegate.getLibraryName ();
+						bytes = MozillaDelegate.wcsToMbcs (null, MozillaPath, true);
+						rc = XPCOMInit.XPCOMGlueStartup (bytes);
+						if (rc == XPCOM.NS_OK) {
+							/* ensure that client-supplied path is using correct separators */
+							if (SEPARATOR_OS == '/') {
+								MozillaPath = MozillaPath.replace ('\\', SEPARATOR_OS);
+							} else {
+								MozillaPath = MozillaPath.replace ('/', SEPARATOR_OS);
+							}
+						} else {
+							IsXULRunner = false;
+							MozillaPath = MozillaPath.substring (0, MozillaPath.lastIndexOf (SEPARATOR_OS));
+							if (Device.DEBUG) System.out.println ("failed to start as XULRunner: " + MozillaPath); //$NON-NLS-1$
+						}
+					}
+				} 
+			}
+			if (IsXULRunner) {
+				XPCOMInitWasGlued = true;
+			}
+		}
+	}
+}
+
 public void create (Composite parent, int style) {
 	delegate = new MozillaDelegate (browser);
 	final Display display = parent.getDisplay ();
 
 	int /*long*/[] result = new int /*long*/[1];
 	if (!Initialized) {
-		boolean initLoaded = false;
-		boolean isXULRunner = false;
+		LoadLibraries ();
 
-		String greInitialized = System.getProperty (GRE_INITIALIZED);
-		if (TRUE.equals (greInitialized)) {
-			/* 
-			 * Another browser has already initialized xulrunner in this process,
-			 * so just bind to it instead of trying to initialize a new one.
-			 */
-			Initialized = true;
-		}
-
-		String mozillaPath = System.getProperty (XULRUNNER_PATH);
-		/*
-		* Browser clients that ship XULRunner in a plug-in must have an opportunity 
-		* to set the org.eclipse.swt.browser.XULRunnerPath system property to point
-		* at their XULRunner before the first Mozilla-based Browser is created.  To
-		* facilitate this, reflection is used to reference non-existent class
-		* org.eclipse.swt.browser.XULRunnerInitializer the first time a Mozilla-
-		* based Browser is created.   A client wishing to use this hook can do so
-		* by creating a fragment of org.eclipse.swt that implements this class and
-		* sets the system property in its static initializer.
-		*/
-		if (mozillaPath == null) {
-			try {
-				Class.forName ("org.eclipse.swt.browser.XULRunnerInitializer"); //$NON-NLS-1$
-				mozillaPath = System.getProperty (XULRUNNER_PATH);
-			} catch (ClassNotFoundException e) {
-				/* no fragment is providing this class, which is the typical case */
-			}
-		}
-
-		if (mozillaPath == null) {
-			try {
-				String libName = delegate.getSWTInitLibraryName ();
-				Library.loadLibrary (libName);
-				initLoaded = true;
-			} catch (UnsatisfiedLinkError e) {
-				/* 
-				* If this library failed to load then do not attempt to detect a
-				* xulrunner to use.  The Browser may still be usable if MOZILLA_FIVE_HOME
-				* points at a GRE. 
-				*/
-			}
-		} else {
-			/* ensure that client-supplied path is using correct separators */
-			if (SEPARATOR_OS == '/') {
-				mozillaPath = mozillaPath.replace ('\\', SEPARATOR_OS);
-			} else {
-				mozillaPath = mozillaPath.replace ('/', SEPARATOR_OS);
-			}
-
-			mozillaPath += SEPARATOR_OS + MozillaDelegate.getLibraryName ();
-			isXULRunner = true;
-		}
-
-		if (initLoaded) {
-			/* attempt to discover a XULRunner to use as the GRE */
-			mozillaPath = initDiscoverXULRunner ();
-			isXULRunner = mozillaPath.length () > 0;
-
-			/*
-			 * Test whether the detected XULRunner can be used as the GRE before loading swt's
-			 * XULRunner library.  If it cannot be used then fall back to attempting to use
-			 * the GRE pointed to by MOZILLA_FIVE_HOME.
-			 * 
-			 * One case where this will fail is attempting to use a 64-bit xulrunner while swt
-			 * is running in 32-bit mode, or vice versa.
-			 */
-			if (isXULRunner) {
-				byte[] path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
-				int rc = XPCOMInit.XPCOMGlueStartup (path);
-				if (rc != XPCOM.NS_OK) {
-					mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
-					if (Device.DEBUG) System.out.println ("cannot use detected XULRunner: " + mozillaPath); //$NON-NLS-1$
-
-					/* attempt to XPCOMGlueStartup the GRE pointed at by MOZILLA_FIVE_HOME */
-					int /*long*/ ptr = C.getenv (MozillaDelegate.wcsToMbcs (null, XPCOM.MOZILLA_FIVE_HOME, true));
-					if (ptr == 0) {
-						isXULRunner = false;
-					} else {
-						int length = C.strlen (ptr);
-						byte[] buffer = new byte[length];
-						C.memmove (buffer, ptr, length);
-						mozillaPath = new String (MozillaDelegate.mbcsToWcs (null, buffer));
-						/*
-						 * Attempting to XPCOMGlueStartup a mozilla-based GRE != xulrunner can
-						 * crash, so don't attempt unless the GRE appears to be xulrunner.
-						 */
-						if (mozillaPath.indexOf("xulrunner") == -1) { //$NON-NLS-1$
-							isXULRunner = false;	
-						} else {
-							mozillaPath += SEPARATOR_OS + MozillaDelegate.getLibraryName ();
-							path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
-							rc = XPCOMInit.XPCOMGlueStartup (path);
-							if (rc == XPCOM.NS_OK) {
-								/* ensure that client-supplied path is using correct separators */
-								if (SEPARATOR_OS == '/') {
-									mozillaPath = mozillaPath.replace ('\\', SEPARATOR_OS);
-								} else {
-									mozillaPath = mozillaPath.replace ('/', SEPARATOR_OS);
-								}
-							} else {
-								isXULRunner = false;
-								mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
-								if (Device.DEBUG) System.out.println ("failed to start as XULRunner: " + mozillaPath); //$NON-NLS-1$
-							}
-						}
-					} 
-				}
-				if (isXULRunner) {
-					XPCOMInitWasGlued = true;
-				}
-			}
-		}
-
-		if (isXULRunner) {
+		if (IsXULRunner) {
 			/* load swt's xulrunner library and invoke XPCOMGlueStartup to load xulrunner's dependencies */
-			mozillaPath = initXULRunner (mozillaPath);
+			MozillaPath = initXULRunner (MozillaPath);
 		} else {
 			/*
 			* If style SWT.MOZILLA was specified then this initialization has already
@@ -662,31 +666,31 @@ public void create (Composite parent, int style) {
 			*/
 			if ((style & SWT.MOZILLA) != 0) {
 				browser.dispose ();
-				String errorString = (mozillaPath != null && mozillaPath.length () > 0) ?
-					" [Failed to use detected XULRunner: " + mozillaPath + "]" :
+				String errorString = (MozillaPath != null && MozillaPath.length () > 0) ?
+					" [Failed to use detected XULRunner: " + MozillaPath + "]" :
 					" [Could not detect registered XULRunner to use]";	//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				SWT.error (SWT.ERROR_NO_HANDLES, null, errorString);
 			}
 
 			/* load swt's mozilla library */
-			mozillaPath = initMozilla (mozillaPath);
+			MozillaPath = initMozilla (MozillaPath);
 		}
 
 		if (!Initialized) {
 			/* create LocationProvider, which tells mozilla where to find things on the file system */
 			String profilePath = delegate.getProfilePath ();
-			LocationProvider = new AppFileLocProvider (mozillaPath, profilePath, isXULRunner);
+			LocationProvider = new AppFileLocProvider (MozillaPath, profilePath, IsXULRunner);
 			LocationProvider.AddRef ();
 
 			/* write external.xpt to the file system if needed */
 			initExternal (profilePath);
 
 			/* load swt's mozilla/xulrunner library and invoke appropriate Init function */
-			initXPCOM (mozillaPath, isXULRunner);
+			initXPCOM (MozillaPath, IsXULRunner);
 		}
 
 		/* attempt to initialize JavaXPCOM in the detected XULRunner */
-		if (isXULRunner) initJavaXPCOM (mozillaPath);
+		if (IsXULRunner) initJavaXPCOM (MozillaPath);
 
 		/* get the nsIComponentManager and nsIServiceManager, used throughout initialization */
 		int rc = XPCOM.NS_GetComponentManager (result);
@@ -732,14 +736,14 @@ public void create (Composite parent, int style) {
 		}
 
 		/* notify mozilla that the profile directory has been changed from its default value */
-		initProfile (serviceManager, isXULRunner);
+		initProfile (serviceManager, IsXULRunner);
 
 		/* init preference values that give desired mozilla behaviours */ 
 		initPreferences (serviceManager, componentManager);
 
 		/* init our various factories that mozilla can invoke as needed */
 		if (!factoriesRegistered) {
-			initFactories (serviceManager, componentManager, isXULRunner);
+			initFactories (serviceManager, componentManager, IsXULRunner);
 		}
 
 		serviceManager.Release ();
@@ -1587,7 +1591,7 @@ public Object getWebBrowser () {
 	return null;
 }
 
-String initDiscoverXULRunner () {
+static String InitDiscoverXULRunner () {
 	GREVersionRange range = new GREVersionRange ();
 	byte[] bytes = MozillaDelegate.wcsToMbcs (null, GRERANGE_LOWER, true);
 	int /*long*/ lower = C.malloc (bytes.length);

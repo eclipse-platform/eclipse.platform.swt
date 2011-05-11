@@ -106,7 +106,7 @@ String getProfilePath () {
 	return baseDir + Mozilla.SEPARATOR_OS + "Mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
-String getSWTInitLibraryName () {
+static String GetSWTInitLibraryName () {
 	return "swt-xulrunner"; //$NON-NLS-1$
 }
 
