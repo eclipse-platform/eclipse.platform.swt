@@ -1752,7 +1752,7 @@ int /*long*/ callJava (int /*long*/ ctx, int /*long*/ func, int /*long*/ thisObj
 			C.memmove (result, arguments + C.PTR_SIZEOF, C.PTR_SIZEOF);
 			type = WebKitGTK.JSValueGetType (ctx, result[0]);
 			if (type == WebKitGTK.kJSTypeNumber) {
-				int token = ((Double)convertToJava (ctx, result[0])).intValue ();
+				long token = ((Double)convertToJava (ctx, result[0])).longValue ();
 				BrowserFunction function = (BrowserFunction)functions.get (key);
 				if (function != null && token == function.token) {
 					try {
