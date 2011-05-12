@@ -1156,6 +1156,19 @@ public void setItemLayout (int[] itemOrder, int[] wrapIndices, Point[] sizes) {
 	setItemSizes(sizes);	
 	relayout();
 }
+public void setOrientation (int orientation) {
+	super.setOrientation(orientation);
+	for (int row = 0; row < items.length; row++) {
+		for (int column = 0; column < items[row].length; column++) {
+			CoolItem item = items[row][column];
+			if (item.arrowImage != null) {
+				item.arrowImage.dispose();
+				item.arrowImage = null;
+			}
+			item.updateChevron();
+		}
+	}
+}
 void wrapItems (int maxWidth) {
 	int itemCount = originalItems.length;
 	if (itemCount < 2) return;
