@@ -301,7 +301,18 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 	}
 	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwnd == hwndText) {
-		if (lockText && msg == OS.WM_SETTEXT) return 0;
+		if (lockText && msg == OS.WM_SETTEXT) {
+			int /*long*/ hHeap = OS.GetProcessHeap ();
+			int length = OS.GetWindowTextLength (handle);
+			TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+			OS.GetWindowText (handle, buffer, length + 1);
+			int byteCount = buffer.length () * TCHAR.sizeof;
+			int /*long*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+			OS.MoveMemory (pszText, buffer, byteCount); 
+			int /*long*/ code = OS.CallWindowProc (EditProc, hwndText, msg, wParam, pszText);
+			OS.HeapFree (hHeap, 0, pszText);
+			return code; 
+		}
 		return OS.CallWindowProc (EditProc, hwnd, msg, wParam, lParam);
 	}
 	int /*long*/ hwndList = OS.GetDlgItem (handle, CBID_LIST);
@@ -1494,7 +1505,20 @@ void setBounds (int x, int y, int width, int height, int flags) {
 
 public void setFont (Font font) {
 	checkWidget ();
+
+	/*
+	* Feature in Windows.  For some reason, in a editable combo box,
+	* when WM_SETFONT is used to set the font of the control
+	* and the current text does not match an item in the
+	* list, Windows selects the item that most closely matches the
+	* contents of the combo.  The fix is to lock the current text
+	* by ignoring all WM_SETTEXT messages during processing of
+	* WM_SETFONT.
+	*/
+	boolean oldLockText = lockText;
+	if ((style & SWT.READ_ONLY) == 0) lockText = true;
 	super.setFont (font);
+	if ((style & SWT.READ_ONLY) == 0) lockText = oldLockText;
 	if ((style & SWT.H_SCROLL) != 0) setScrollWidth ();
 }
 
@@ -2361,6 +2385,7 @@ LRESULT wmClipboard (int /*long*/ hwndText, int msg, int /*long*/ wParam, int /*
 			}
 			break;
 		case OS.WM_SETTEXT:
+			if (lockText) return null;
 			end [0] = OS.GetWindowTextLength (hwndText);
 			int length = OS.IsUnicode ? OS.wcslen (lParam) : OS.strlen (lParam);
 			TCHAR buffer = new TCHAR (getCodePage (), length);
