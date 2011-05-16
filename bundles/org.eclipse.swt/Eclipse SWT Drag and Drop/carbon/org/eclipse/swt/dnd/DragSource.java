@@ -351,6 +351,7 @@ void drag(Event dragEvent) {
 }
 
 int dragSendDataProc(int theType, int dragSendRefCon, int theItemRef, int theDrag) {
+	control.setData(DRAG_STARTED, null);
 	if (theType == 0) return OS.badDragFlavorErr;
 	TransferData transferData = new TransferData();
 	transferData.type = theType;
