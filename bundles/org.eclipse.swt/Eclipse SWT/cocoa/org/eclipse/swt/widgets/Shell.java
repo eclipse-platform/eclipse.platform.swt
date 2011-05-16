@@ -524,7 +524,7 @@ void attachObserversToWindow(NSWindow newWindow) {
 void becomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 	Shell modal = getModalShell();
 	if (modal != null && modal.window != null) {
-		modal.window.becomeKeyWindow();
+		modal.window.makeKeyAndOrderFront(null);
 		return;
 	}
 	Display display = this.display;
