@@ -31,8 +31,7 @@ import org.eclipse.swt.graphics.*;
  * Note: Only one of the styles HORIZONTAL and VERTICAL may be specified.
  * </p><p>
  * <p>
- * IMPORTANT: This class is intended to be subclassed <em>only</em>
- * within the SWT implementation.
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#scale">Scale snippets</a>

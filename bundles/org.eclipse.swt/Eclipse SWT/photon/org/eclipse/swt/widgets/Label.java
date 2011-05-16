@@ -40,8 +40,7 @@ import org.eclipse.swt.graphics.*;
  * SHADOW_NONE is a HINT. Only one of HORIZONTAL and VERTICAL may be specified.
  * Only one of CENTER, LEFT and RIGHT may be specified.
  * </p><p>
- * IMPORTANT: This class is intended to be subclassed <em>only</em>
- * within the SWT implementation.
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#label">Label snippets</a>

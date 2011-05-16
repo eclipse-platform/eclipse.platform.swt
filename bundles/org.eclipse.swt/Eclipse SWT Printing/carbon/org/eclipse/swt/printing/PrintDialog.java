@@ -20,8 +20,7 @@ import org.eclipse.swt.internal.carbon.OS;
  * a printer and various print-related parameters
  * prior to starting a print job.
  * <p>
- * IMPORTANT: This class is intended to be subclassed <em>only</em>
- * within the SWT implementation.
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#printing">Printing snippets</a>

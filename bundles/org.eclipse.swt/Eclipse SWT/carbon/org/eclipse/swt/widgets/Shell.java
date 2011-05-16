@@ -110,7 +110,7 @@ import org.eclipse.swt.graphics.*;
  * Note: Only one of the styles APPLICATION_MODAL, MODELESS, 
  * PRIMARY_MODAL and SYSTEM_MODAL may be specified.
  * </p><p>
- * IMPORTANT: This class is not intended to be subclassed.
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *
  * @see Decorations
@@ -118,6 +118,7 @@ import org.eclipse.swt.graphics.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#shell">Shell snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
  */
 public class Shell extends Decorations {
 	int shellHandle, windowGroup;
