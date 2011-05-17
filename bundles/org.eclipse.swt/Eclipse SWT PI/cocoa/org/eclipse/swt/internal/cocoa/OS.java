@@ -1548,6 +1548,7 @@ public static final int /*long*/ sel_outlineView_shouldEditTableColumn_item_ = s
 public static final int /*long*/ sel_outlineView_shouldExpandItem_ = sel_registerName("outlineView:shouldExpandItem:");
 public static final int /*long*/ sel_outlineView_shouldReorderColumn_toColumn_ = sel_registerName("outlineView:shouldReorderColumn:toColumn:");
 public static final int /*long*/ sel_outlineView_shouldSelectItem_ = sel_registerName("outlineView:shouldSelectItem:");
+public static final int /*long*/ sel_outlineView_shouldTrackCell_forTableColumn_item_ = sel_registerName("outlineView:shouldTrackCell:forTableColumn:item:");
 public static final int /*long*/ sel_outlineView_validateDrop_proposedItem_proposedChildIndex_ = sel_registerName("outlineView:validateDrop:proposedItem:proposedChildIndex:");
 public static final int /*long*/ sel_outlineView_willDisplayCell_forTableColumn_item_ = sel_registerName("outlineView:willDisplayCell:forTableColumn:item:");
 public static final int /*long*/ sel_outlineView_writeItems_toPasteboard_ = sel_registerName("outlineView:writeItems:toPasteboard:");
@@ -2058,6 +2059,7 @@ public static final int /*long*/ sel_tableView_setObjectValue_forTableColumn_row
 public static final int /*long*/ sel_tableView_shouldEditTableColumn_row_ = sel_registerName("tableView:shouldEditTableColumn:row:");
 public static final int /*long*/ sel_tableView_shouldReorderColumn_toColumn_ = sel_registerName("tableView:shouldReorderColumn:toColumn:");
 public static final int /*long*/ sel_tableView_shouldSelectRow_ = sel_registerName("tableView:shouldSelectRow:");
+public static final int /*long*/ sel_tableView_shouldTrackCell_forTableColumn_row_ = sel_registerName("tableView:shouldTrackCell:forTableColumn:row:");
 public static final int /*long*/ sel_tableView_validateDrop_proposedRow_proposedDropOperation_ = sel_registerName("tableView:validateDrop:proposedRow:proposedDropOperation:");
 public static final int /*long*/ sel_tableView_willDisplayCell_forTableColumn_row_ = sel_registerName("tableView:willDisplayCell:forTableColumn:row:");
 public static final int /*long*/ sel_tableView_writeRowsWithIndexes_toPasteboard_ = sel_registerName("tableView:writeRowsWithIndexes:toPasteboard:");
@@ -3754,6 +3756,8 @@ public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
 /** @method flags=cast */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2);
+/** @method flags=cast */
+public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3);
 /** @method flags=cast */
 public static final native boolean objc_msgSend_bool(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4);
 /** @method flags=cast */

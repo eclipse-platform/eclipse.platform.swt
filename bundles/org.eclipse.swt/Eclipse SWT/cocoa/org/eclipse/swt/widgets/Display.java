@@ -2581,6 +2581,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineView_shouldReorderColumn_toColumn_, proc5, "@:@ii");
 	OS.class_addMethod(cls, OS.sel_outlineView_setObjectValue_forTableColumn_byItem_, proc6, "@:@@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_shouldEditTableColumn_item_, proc5, "@:@@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_shouldTrackCell_forTableColumn_item_, proc6, "@:@@@@@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_shouldExpandItem_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_setShouldExpandItem_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_setShouldScrollClipView_, proc3, "@:@");
@@ -2751,6 +2752,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableView_objectValueForTableColumn_row_, proc5, "@:@@i");
 	OS.class_addMethod(cls, OS.sel_tableView_shouldEditTableColumn_row_, proc5, "@:@@i");
 	OS.class_addMethod(cls, OS.sel_tableView_shouldReorderColumn_toColumn_, proc5, "@:@ii");
+	OS.class_addMethod(cls, OS.sel_tableView_shouldTrackCell_forTableColumn_row_, proc6, "@:@@@i");
 	OS.class_addMethod(cls, OS.sel_tableViewSelectionIsChanging_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableViewSelectionDidChange_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_willDisplayCell_forTableColumn_row_, proc6, "@:@@@i");
@@ -5825,6 +5827,10 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		widget.tableView_setObjectValue_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3);
 	} else if (sel == OS.sel_view_stringForToolTip_point_userData_) {
 		return widget.view_stringForToolTip_point_userData(id, sel, arg0, arg1, arg2, arg3);
+	} else if (sel == OS.sel_tableView_shouldTrackCell_forTableColumn_row_) {
+		return widget.tableView_shouldTrackCell_forTableColumn_row(id, sel, arg0, arg1, arg2, arg3) ? 1 : 0;
+	} else if (sel == OS.sel_outlineView_shouldTrackCell_forTableColumn_item_) {
+		return widget.outlineView_shouldTrackCell_forTableColumn_item(id, sel, arg0, arg1, arg2, arg3) ? 1 : 0;
 	}
 	return 0;
 }

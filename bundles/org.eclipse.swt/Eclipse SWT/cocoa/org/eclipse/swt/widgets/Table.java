@@ -3237,6 +3237,14 @@ boolean tableView_shouldReorderColumn_toColumn(int /*long*/ id, int /*long*/ sel
 	return true;
 }
 
+boolean tableView_shouldTrackCell_forTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ table, int /*long*/ cell, /*long*/ int /*long*/ tableColumn, int /*long*/ rowIndex) {
+	if ((style & SWT.CHECK) != 0) {
+		if (new NSCell(cell).isKindOfClass(OS.class_NSButtonCell)) return true;
+	}
+	NSTableView widget = (NSTableView)view;
+	return widget.isRowSelected(rowIndex);
+}
+
 void tableView_setObjectValue_forTableColumn_row (int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ anObject, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
 	if (checkColumn != null && aTableColumn == checkColumn.id)  {
 		TableItem item = items [(int)/*64*/rowIndex];

@@ -2129,6 +2129,15 @@ boolean outlineView_shouldReorderColumn_toColumn(int /*long*/ id, int /*long*/ s
 	return true;
 }
 
+boolean outlineView_shouldTrackCell_forTableColumn_item(int /*long*/ id, int /*long*/ sel, int /*long*/ table, int /*long*/ cell, int /*long*/ tableColumn, int /*long*/ item) {
+	if ((style & SWT.CHECK) != 0) {
+		if (new NSCell(cell).isKindOfClass(OS.class_NSButtonCell)) return true;
+	}
+	NSOutlineView widget = (NSOutlineView)view;
+	int /*long*/ rowIndex = widget.rowForItem(new id(item)); 
+	return widget.isRowSelected(rowIndex);
+}
+
 void outlineView_willDisplayCell_forTableColumn_item (int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ cell, int /*long*/ tableColumn, int /*long*/ itemID) {
 	if (checkColumn != null && tableColumn == checkColumn.id) return;
 	TreeItem item = (TreeItem) display.getWidget(itemID);

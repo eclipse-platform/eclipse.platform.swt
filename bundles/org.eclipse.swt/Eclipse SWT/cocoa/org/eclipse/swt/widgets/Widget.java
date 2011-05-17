@@ -1217,6 +1217,10 @@ boolean outlineView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel,
 	return false;
 }
 
+boolean outlineView_shouldTrackCell_forTableColumn_item(int /*long*/ id, int /*long*/ sel, int /*long*/ table, int /*long*/ cell, int /*long*/ tableColumn, int /*long*/ item) {
+	return true;
+}
+
 void outlineView_willDisplayCell_forTableColumn_item(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ cell, int /*long*/ tableColumn, int /*long*/ item) {
 }
 
@@ -1927,6 +1931,10 @@ boolean tableView_shouldReorderColumn_toColumn(int /*long*/ id, int /*long*/ sel
 
 boolean tableView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
 	return false;
+}
+
+boolean tableView_shouldTrackCell_forTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ table, int /*long*/ cell, /*long*/ int /*long*/ tableColumn, int /*long*/ rowIndex) {
+	return true;
 }
 
 void tableView_willDisplayCell_forTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aCell, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
