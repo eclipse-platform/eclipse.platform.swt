@@ -40,6 +40,7 @@ class IE extends WebBrowser {
 	int style, lastKeyCode, lastCharCode;
 	int lastMouseMoveX, lastMouseMoveY;
 
+	static boolean Initialized;
 	static int IEVersion, PDFCount;
 	static String ProgId = "Shell.Explorer";	//$NON-NLS-1$
 
@@ -105,9 +106,13 @@ class IE extends WebBrowser {
 	
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String CLSID_SHELLEXPLORER1 = "{EAB22AC3-30C1-11CF-A7EB-0000C05BAE0B}"; //$NON-NLS-1$
+	static final int DEFAULT_IE_VERSION = 9000;
 	static final String EXTENSION_PDF = ".pdf";	//$NON-NLS-1$
 	static final String HTML_DOCUMENT = "HTML Document";	//$NON-NLS-1$
 	static final int MAX_PDF = 20;
+	static final char SEPARATOR_OS = System.getProperty ("file.separator").charAt (0); //$NON-NLS-1$
+	static final String PROPERTY_IEVERSION = "org.eclipse.swt.browser.IEVersion"; //$NON-NLS-1$
+	static final String VALUE_DEFAULT = "default"; //$NON-NLS-1$
 
 	static final String EVENT_DOUBLECLICK = "dblclick"; //$NON-NLS-1$
 	static final String EVENT_DRAGEND = "dragend";	//$NON-NLS-1$
@@ -136,7 +141,6 @@ class IE extends WebBrowser {
 	static final String PROPERTY_TOELEMENT = "toElement"; //$NON-NLS-1$
 	static final String PROPERTY_TYPE = "type"; //$NON-NLS-1$
 	static final String PROPERTY_WHEELDELTA = "wheelDelta"; //$NON-NLS-1$
-
 
 	static {
 		NativeClearSessions = new Runnable() {
@@ -265,7 +269,60 @@ public void create(Composite parent, int style) {
 		browser.dispose();
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
-	
+
+	if (!Initialized) {
+		Initialized = true;
+		int version = 0;
+		String versionProperty = System.getProperty(PROPERTY_IEVERSION);
+		if (versionProperty != null) {
+			if (versionProperty.equalsIgnoreCase(VALUE_DEFAULT)) {
+				version = -1;
+			} else {
+				try {
+					version = Integer.valueOf(versionProperty).intValue();
+				} catch (NumberFormatException e) {
+					/* 
+					 * An invalid value was specified for the IEVersion java property.  Ignore it
+					 * and continue with the usual steps for determining the version to specify.
+					 */
+				}
+			}
+		}
+		if (version == 0) {
+			if (IEVersion != 0) {
+				version = IEVersion * 1000;
+			} else {
+				version = DEFAULT_IE_VERSION;
+			}
+		}
+
+		if (version != -1) {
+			int /*long*/[] key = new int /*long*/[1];
+			final TCHAR subkey = new TCHAR(0, "Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION", true);	//$NON-NLS-1$
+			if (OS.RegCreateKeyEx(OS.HKEY_CURRENT_USER, subkey, 0, null, OS.REG_OPTION_VOLATILE, OS.KEY_WRITE | OS.KEY_QUERY_VALUE, 0, key, null) == 0) {
+				TCHAR lpszFile = new TCHAR(0, OS.MAX_PATH);
+				OS.GetModuleFileName(0, lpszFile, lpszFile.length());
+				String path = lpszFile.toString(0, lpszFile.strlen());
+				int index = path.lastIndexOf(SEPARATOR_OS);
+				String executable = index != -1 ? path.substring(index + 1) : path;
+				final TCHAR lpValueName = new TCHAR(0, executable, true);
+				if (OS.RegQueryValueEx(key[0], lpValueName, 0, null, (int[])null, null) == OS.ERROR_FILE_NOT_FOUND) {
+					if (OS.RegSetValueEx(key[0], lpValueName, 0, OS.REG_DWORD, new int[] {version}, 4) == 0) {
+						parent.getDisplay().addListener(SWT.Dispose, new Listener() {			
+							public void handleEvent(Event event) {
+								int /*long*/[] key = new int /*long*/[1];
+								if (OS.RegOpenKeyEx(OS.HKEY_CURRENT_USER, subkey, 0, OS.KEY_WRITE, key) == 0) {
+									OS.RegDeleteValue(key[0], lpValueName);
+								}
+							}
+						});
+					}
+				}
+				OS.RegCloseKey(key[0]);
+			}
+		}
+	}
+
 	site.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
 	auto = new OleAutomation(site);
 

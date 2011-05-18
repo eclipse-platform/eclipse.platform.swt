@@ -1264,6 +1264,10 @@ typedef enum {
 	Rectangle_FUNC,
 	RedrawWindow_FUNC,
 	RegCloseKey_FUNC,
+	RegCreateKeyExA_FUNC,
+	RegCreateKeyExW_FUNC,
+	RegDeleteValueA_FUNC,
+	RegDeleteValueW_FUNC,
 	RegEnumKeyExA_FUNC,
 	RegEnumKeyExW_FUNC,
 	RegOpenKeyExA_FUNC,
@@ -1290,6 +1294,8 @@ typedef enum {
 #else
 	RegQueryValueExW__J_3CJ_3I_3I_3I_FUNC,
 #endif
+	RegSetValueExA_FUNC,
+	RegSetValueExW_FUNC,
 	RegisterClassA_FUNC,
 	RegisterClassW_FUNC,
 	RegisterClipboardFormatA_FUNC,

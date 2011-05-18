@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1053;
-int OS_nativeFunctionCallCount[1053];
+int OS_nativeFunctionCount = 1059;
+int OS_nativeFunctionCallCount[1059];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -1256,6 +1256,10 @@ char * OS_nativeFunctionNames[] = {
 	"Rectangle",
 	"RedrawWindow",
 	"RegCloseKey",
+	"RegCreateKeyExA",
+	"RegCreateKeyExW",
+	"RegDeleteValueA",
+	"RegDeleteValueW",
 	"RegEnumKeyExA",
 	"RegEnumKeyExW",
 	"RegOpenKeyExA",
@@ -1282,6 +1286,8 @@ char * OS_nativeFunctionNames[] = {
 #else
 	"RegQueryValueExW__J_3CJ_3I_3I_3I",
 #endif
+	"RegSetValueExA",
+	"RegSetValueExW",
 	"RegisterClassA",
 	"RegisterClassW",
 	"RegisterClipboardFormatA",

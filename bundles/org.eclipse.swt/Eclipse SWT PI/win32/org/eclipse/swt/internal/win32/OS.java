@@ -649,6 +649,7 @@ public class OS extends C {
 	public static final int EN_ALIGN_RTL_EC = 0x0701;
 	public static final int EN_CHANGE = 0x300;
 	public static final int EP_EDITTEXT = 1;
+	public static final int ERROR_FILE_NOT_FOUND = 0x2;
 	public static final int ERROR_NO_MORE_ITEMS = 0x103;
 	public static final int ESB_DISABLE_BOTH = 0x3;
 	public static final int ESB_ENABLE_BOTH = 0x0;
@@ -906,6 +907,7 @@ public class OS extends C {
 	public static final int KEY_NOTIFY = 0x10;
 	public static final int KEY_QUERY_VALUE = 0x1;
 	public static final int KEY_READ = 0x20019;
+	public static final int KEY_WRITE = 0x20006;
 	public static final int KEYEVENTF_EXTENDEDKEY = 0x0001;
 	public static final int KEYEVENTF_KEYUP = 0x0002;
 	public static final int L_MAX_URL_LENGTH = 2084;
@@ -1433,6 +1435,8 @@ public class OS extends C {
 	public static final int RDW_UPDATENOW = 0x100;
 	public static final int READ_CONTROL = 0x20000;
 	public static final String REBARCLASSNAME = "ReBarWindow32"; //$NON-NLS-1$
+	public static final int REG_DWORD = 4;
+	public static final int REG_OPTION_VOLATILE = 0x1;
 	public static final int RGN_AND = 0x1;
 	public static final int RGN_COPY = 5;
 	public static final int RGN_DIFF = 0x4;
@@ -3107,6 +3111,26 @@ public static final boolean PrintDlg (PRINTDLG lppd) {
 	return PrintDlgA (lppd);
 }
 
+public static final int RegCreateKeyEx (int /*long*/ hKey, TCHAR lpSubKey, int Reserved, TCHAR lpClass, int dwOptions, int samDesired, int /*long*/ lpSecurityAttributes, int /*long*/[] phkResult, int /*long*/[] lpdwDisposition) {
+	if (IsUnicode) {
+		char [] lpClass1 = lpClass == null ? null : lpClass.chars;
+		char [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.chars;
+		return RegCreateKeyExW (hKey, lpSubKey1, Reserved, lpClass1, dwOptions, samDesired, lpSecurityAttributes, phkResult, lpdwDisposition);
+	}
+	byte [] lpClass1 = lpClass == null ? null : lpClass.bytes;
+	byte [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.bytes;
+	return RegCreateKeyExA (hKey, lpSubKey1, Reserved, lpClass1, dwOptions, samDesired, lpSecurityAttributes, phkResult, lpdwDisposition);
+}
+
+public static final int RegDeleteValue (int /*long*/ hKey, TCHAR lpValueName) {
+	if (IsUnicode) {
+		char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
+		return RegDeleteValueW (hKey, lpValueName1);
+	}
+	byte [] lpValueName1 = lpValueName == null ? null : lpValueName.bytes;
+	return RegDeleteValueA (hKey, lpValueName1);
+}
+
 public static final int RegEnumKeyEx (int /*long*/ hKey, int dwIndex, TCHAR lpName, int [] lpcName, int [] lpReserved, TCHAR lpClass, int [] lpcClass, FILETIME lpftLastWriteTime) {
 	if (IsUnicode) {
 		char [] lpName1 = lpName == null ? null : lpName.chars;
@@ -3173,6 +3197,15 @@ public static final int RegQueryValueEx (int /*long*/ hKey, TCHAR lpValueName, i
 	}
 	byte [] lpValueName1 = lpValueName == null ? null : lpValueName.bytes;
 	return RegQueryValueExA (hKey, lpValueName1, lpReserved, lpType, lpData, lpcbData);
+}
+
+public static final int RegSetValueEx (int /*long*/ hKey, TCHAR lpValueName, int Reserved, int dwType, int[] lpData, int cbData) {
+	if (IsUnicode) {
+		char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
+		return RegSetValueExW (hKey, lpValueName1, Reserved, dwType, lpData, cbData);
+	}
+	byte [] lpValueName1 = lpValueName == null ? null : lpValueName.bytes;
+	return RegSetValueExA (hKey, lpValueName1, Reserved, dwType, lpData, cbData);
 }
 
 public static final int /*long*/ RemoveProp  (int /*long*/ hWnd, int /*long*/ lpString){
@@ -5705,6 +5738,34 @@ public static final native boolean RedrawWindow (int /*long*/ hWnd, RECT lprcUpd
 public static final native int RegCloseKey (int /*long*/ hKey);
 /**
  * @param hKey cast=(HKEY)
+ * @param lpSubKey cast=(LPWSTR)
+ * @param lpClass cast=(LPWSTR)
+ * @param lpSecurityAttributes cast=(LPSECURITY_ATTRIBUTES)
+ * @param phkResult cast=(PHKEY)
+ * @param lpdwDisposition cast=(LPDWORD)
+ */
+public static final native int RegCreateKeyExW (int /*long*/ hKey, char[] lpSubKey, int Reserved, char[] lpClass, int dwOptions, int samDesired, int /*long*/ lpSecurityAttributes, int /*long*/[] phkResult, int /*long*/[] lpdwDisposition);
+/**
+ * @param hKey cast=(HKEY)
+ * @param lpSubKey cast=(LPSTR)
+ * @param lpClass cast=(LPTSTR)
+ * @param lpSecurityAttributes cast=(LPSECURITY_ATTRIBUTES)
+ * @param phkResult cast=(PHKEY)
+ * @param lpdwDisposition cast=(LPDWORD)
+ */
+public static final native int RegCreateKeyExA (int /*long*/ hKey, byte[] lpSubKey, int Reserved, byte[] lpClass, int dwOptions, int samDesired, int /*long*/ lpSecurityAttributes, int /*long*/[] phkResult, int /*long*/[] lpdwDisposition);
+/**
+ * @param hKey cast=(HKEY)
+ * @param lpValueName cast=(LPWSTR)
+ */
+public static final native int RegDeleteValueW (int /*long*/ hKey, char[] lpValueName);
+/**
+ * @param hKey cast=(HKEY)
+ * @param lpValueName cast=(LPSTR)
+ */
+public static final native int RegDeleteValueA (int /*long*/ hKey, byte[] lpValueName);
+/**
+ * @param hKey cast=(HKEY)
  * @param lpName cast=(LPWSTR)
  * @param lpcName cast=(LPDWORD)
  * @param lpReserved cast=(LPDWORD)
@@ -5807,6 +5868,18 @@ public static final native int RegQueryValueExW (int /*long*/ hKey, char[] lpVal
  * @param lpcbData cast=(LPDWORD)
  */
 public static final native int RegQueryValueExA (int /*long*/ hKey, byte[] lpValueName, int /*long*/ lpReserved, int[] lpType, byte [] lpData, int[] lpcbData);
+/**
+ * @param hKey cast=(HKEY)
+ * @param lpValueName cast=(LPWSTR)
+ * @param lpData cast=(const BYTE*)
+ */
+public static final native int RegSetValueExW (int /*long*/ hKey, char[] lpValueName, int Reserved, int dwType, int[] lpData, int cbData);
+/**
+ * @param hKey cast=(HKEY)
+ * @param lpValueName cast=(LPSTR)
+ * @param lpData cast=(const BYTE*)
+ */
+public static final native int RegSetValueExA (int /*long*/ hKey, byte[] lpValueName, int Reserved, int dwType, int[] lpData, int cbData);
 /**
  * @param hKey cast=(HKEY)
  * @param lpValueName cast=(LPSTR)

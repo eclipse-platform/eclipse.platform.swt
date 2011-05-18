@@ -12634,6 +12634,88 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegCloseKey)
 }
 #endif
 
+#ifndef NO_RegCreateKeyExA
+JNIEXPORT jint JNICALL OS_NATIVE(RegCreateKeyExA)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jint arg2, jbyteArray arg3, jint arg4, jint arg5, jintLong arg6, jintLongArray arg7, jintLongArray arg8)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg3=NULL;
+	jintLong *lparg7=NULL;
+	jintLong *lparg8=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, RegCreateKeyExA_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = (*env)->GetIntLongArrayElements(env, arg7, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = (*env)->GetIntLongArrayElements(env, arg8, NULL)) == NULL) goto fail;
+	rc = (jint)RegCreateKeyExA((HKEY)arg0, (LPSTR)lparg1, arg2, (LPTSTR)lparg3, arg4, arg5, (LPSECURITY_ATTRIBUTES)arg6, (PHKEY)lparg7, (LPDWORD)lparg8);
+fail:
+	if (arg8 && lparg8) (*env)->ReleaseIntLongArrayElements(env, arg8, lparg8, 0);
+	if (arg7 && lparg7) (*env)->ReleaseIntLongArrayElements(env, arg7, lparg7, 0);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, RegCreateKeyExA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RegCreateKeyExW
+JNIEXPORT jint JNICALL OS_NATIVE(RegCreateKeyExW)
+	(JNIEnv *env, jclass that, jintLong arg0, jcharArray arg1, jint arg2, jcharArray arg3, jint arg4, jint arg5, jintLong arg6, jintLongArray arg7, jintLongArray arg8)
+{
+	jchar *lparg1=NULL;
+	jchar *lparg3=NULL;
+	jintLong *lparg7=NULL;
+	jintLong *lparg8=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, RegCreateKeyExW_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = (*env)->GetIntLongArrayElements(env, arg7, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = (*env)->GetIntLongArrayElements(env, arg8, NULL)) == NULL) goto fail;
+	rc = (jint)RegCreateKeyExW((HKEY)arg0, (LPWSTR)lparg1, arg2, (LPWSTR)lparg3, arg4, arg5, (LPSECURITY_ATTRIBUTES)arg6, (PHKEY)lparg7, (LPDWORD)lparg8);
+fail:
+	if (arg8 && lparg8) (*env)->ReleaseIntLongArrayElements(env, arg8, lparg8, 0);
+	if (arg7 && lparg7) (*env)->ReleaseIntLongArrayElements(env, arg7, lparg7, 0);
+	if (arg3 && lparg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
+	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, RegCreateKeyExW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RegDeleteValueA
+JNIEXPORT jint JNICALL OS_NATIVE(RegDeleteValueA)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, RegDeleteValueA_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)RegDeleteValueA((HKEY)arg0, (LPSTR)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, RegDeleteValueA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RegDeleteValueW
+JNIEXPORT jint JNICALL OS_NATIVE(RegDeleteValueW)
+	(JNIEnv *env, jclass that, jintLong arg0, jcharArray arg1)
+{
+	jchar *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, RegDeleteValueW_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)RegDeleteValueW((HKEY)arg0, (LPWSTR)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, RegDeleteValueW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_RegEnumKeyExA
 JNIEXPORT jint JNICALL OS_NATIVE(RegEnumKeyExA)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jbyteArray arg2, jintArray arg3, jintArray arg4, jbyteArray arg5, jintArray arg6, jobject arg7)
@@ -12948,6 +13030,44 @@ fail:
 #else
 	OS_NATIVE_EXIT(env, that, RegQueryValueExW__J_3CJ_3I_3I_3I_FUNC);
 #endif
+	return rc;
+}
+#endif
+
+#ifndef NO_RegSetValueExA
+JNIEXPORT jint JNICALL OS_NATIVE(RegSetValueExA)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jint arg2, jint arg3, jintArray arg4, jint arg5)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, RegSetValueExA_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)RegSetValueExA((HKEY)arg0, (LPSTR)lparg1, arg2, arg3, (const BYTE*)lparg4, arg5);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, RegSetValueExA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RegSetValueExW
+JNIEXPORT jint JNICALL OS_NATIVE(RegSetValueExW)
+	(JNIEnv *env, jclass that, jintLong arg0, jcharArray arg1, jint arg2, jint arg3, jintArray arg4, jint arg5)
+{
+	jchar *lparg1=NULL;
+	jint *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, RegSetValueExW_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)RegSetValueExW((HKEY)arg0, (LPWSTR)lparg1, arg2, arg3, (const BYTE*)lparg4, arg5);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, RegSetValueExW_FUNC);
 	return rc;
 }
 #endif
