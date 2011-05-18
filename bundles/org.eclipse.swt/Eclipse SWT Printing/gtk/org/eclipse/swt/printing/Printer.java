@@ -44,6 +44,8 @@ import org.eclipse.swt.printing.PrinterData;
  */
 public final class Printer extends Device {
 	static PrinterData [] printerList;
+	static int /*long*/ findPrinter;
+	static PrinterData findData;
 	
 	PrinterData data;
 	int /*long*/ printer;
@@ -63,9 +65,20 @@ public final class Printer extends Device {
 	static int start, end;
 
 	static final String GTK_LPR_BACKEND = "GtkPrintBackendLpr"; //$NON-NLS-1$
+	static final String GTK_FILE_BACKEND = "GtkPrintBackendFile"; //$NON-NLS-1$
 
 	static boolean disablePrinting = System.getProperty("org.eclipse.swt.internal.gtk.disablePrinting") != null; //$NON-NLS-1$
 	
+static void gtk_init() {
+	if (!OS.g_thread_supported ()) {
+		OS.g_thread_init (0);
+	}
+	OS.gtk_set_locale();
+	if (!OS.gtk_init_check (new int /*long*/ [] {0}, null)) {
+		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]");
+	}
+}
+
 /**
  * Returns an array of <code>PrinterData</code> objects
  * representing all available printers.  If there are no
@@ -78,13 +91,7 @@ public static PrinterData[] getPrinterList() {
 	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0) || disablePrinting) {
 		return printerList;
 	}
-	if (!OS.g_thread_supported ()) {
-		OS.g_thread_init (0);
-	}
-	OS.gtk_set_locale();
-	if (!OS.gtk_init_check (new int /*long*/ [] {0}, null)) {
-		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]");
-	}
+	gtk_init();
 	Callback printerCallback = new Callback(Printer.class, "GtkPrinterFunc_List", 2); //$NON-NLS-1$
 	int /*long*/ GtkPrinterFunc_List = printerCallback.getAddress();
 	if (GtkPrinterFunc_List == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -128,17 +135,11 @@ static int /*long*/ GtkPrinterFunc_List (int /*long*/ printer, int /*long*/ user
  * @since 2.1
  */
 public static PrinterData getDefaultPrinterData() {
-	printerList = new PrinterData [1];
+	findData = null;
 	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0) || disablePrinting) {
 		return null;
 	}
-	if (!OS.g_thread_supported ()) {
-		OS.g_thread_init (0);
-	}
-	OS.gtk_set_locale();
-	if (!OS.gtk_init_check (new int /*long*/ [] {0}, null)) {
-		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]");
-	}
+	gtk_init();
 	Callback printerCallback = new Callback(Printer.class, "GtkPrinterFunc_Default", 2); //$NON-NLS-1$
 	int /*long*/ GtkPrinterFunc_Default = printerCallback.getAddress();
 	if (GtkPrinterFunc_Default == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -151,12 +152,12 @@ public static PrinterData getDefaultPrinterData() {
 	*/
 	OS.gdk_threads_leave();
 	printerCallback.dispose ();
-	return printerList[0];
+	return findData;
 }
 
 static int /*long*/ GtkPrinterFunc_Default (int /*long*/ printer, int /*long*/ user_data) {
 	if (OS.gtk_printer_is_default(printer)) {
-		printerList[0] = printerDataFromGtkPrinter(printer);
+		findData = printerDataFromGtkPrinter(printer);
 		return 1;
 	} else if (OS.GTK_VERSION < OS.VERSION(2, 10, 12) && printerDataFromGtkPrinter(printer).driver.equals (GTK_LPR_BACKEND)) { 
 		return 1;
@@ -164,11 +165,13 @@ static int /*long*/ GtkPrinterFunc_Default (int /*long*/ printer, int /*long*/ u
 	return 0;
 }
 
-int /*long*/ gtkPrinterFromPrinterData() {
-	Callback printerCallback = new Callback(this, "GtkPrinterFunc_FindNamedPrinter", 2); //$NON-NLS-1$
+static int /*long*/ gtkPrinterFromPrinterData(PrinterData data) {
+	gtk_init();
+	Callback printerCallback = new Callback(Printer.class, "GtkPrinterFunc_FindNamedPrinter", 2); //$NON-NLS-1$
 	int /*long*/ GtkPrinterFunc_FindNamedPrinter = printerCallback.getAddress();
 	if (GtkPrinterFunc_FindNamedPrinter == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	printer = 0;
+	findPrinter = 0;
+	findData = data;
 	OS.gtk_enumerate_printers(GtkPrinterFunc_FindNamedPrinter, 0, 0, true);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
@@ -178,13 +181,15 @@ int /*long*/ gtkPrinterFromPrinterData() {
 	*/
 	OS.gdk_threads_leave();
 	printerCallback.dispose ();
-	return printer;
+	return findPrinter;
 }
 
-int /*long*/ GtkPrinterFunc_FindNamedPrinter (int /*long*/ printer, int /*long*/ user_data) {
+static int /*long*/ GtkPrinterFunc_FindNamedPrinter (int /*long*/ printer, int /*long*/ user_data) {
 	PrinterData pd = printerDataFromGtkPrinter(printer);
-	if (pd.driver.equals(data.driver) && pd.name.equals(data.name)) {
-		this.printer = printer;
+	if ((pd.driver.equals(findData.driver) && pd.name.equals(findData.name))
+			|| (pd.driver.equals(GTK_FILE_BACKEND)) && findData.printToFile && findData.driver == null && findData.name == null) {
+			// TODO: GTK_FILE_BACKEND is not GTK API (see gtk bug 345590)
+		findPrinter = printer;
 		OS.g_object_ref(printer);
 		return 1;
 	} else if (OS.GTK_VERSION < OS.VERSION (2, 10, 12) && pd.driver.equals(GTK_LPR_BACKEND)) {
@@ -260,13 +265,45 @@ static void restore(byte [] data, int /*long*/ settings, int /*long*/ page_setup
 	OS.gtk_paper_size_free(paper_size);
 }
 
+static byte [] uriFromFilename(String filename) {
+	if (filename == null) return null;
+	int length = filename.length();
+	if (length == 0) return null;
+	char[] chars = new char[length];
+	filename.getChars(0, length, chars, 0);		
+	int /*long*/[] error = new int /*long*/[1];
+	int /*long*/ utf8Ptr = OS.g_utf16_to_utf8(chars, chars.length, null, null, error);
+	if (error[0] != 0 || utf8Ptr == 0) return null;
+	int /*long*/ localePtr = OS.g_filename_from_utf8(utf8Ptr, -1, null, null, error);
+	OS.g_free(utf8Ptr);
+	if (error[0] != 0 || localePtr == 0) return null;
+	int /*long*/ uriPtr = OS.g_filename_to_uri(localePtr, 0, error);
+	OS.g_free(localePtr);
+	if (error[0] != 0 || uriPtr == 0) return null;
+	length = OS.strlen(uriPtr);
+	byte[] uri = new byte[length + 1];
+	OS.memmove (uri, uriPtr, length);
+	OS.g_free(uriPtr);
+	return uri;
+}
+
 static DeviceData checkNull (PrinterData data) {
 	if (data == null) data = new PrinterData();
 	if (data.driver == null || data.name == null) {
-		PrinterData defaultPrinter = getDefaultPrinterData();
-		if (defaultPrinter == null) SWT.error(SWT.ERROR_NO_HANDLES);
-		data.driver = defaultPrinter.driver;
-		data.name = defaultPrinter.name;		
+		PrinterData defaultData = null;
+		if (data.printToFile) {
+			int /*long*/ filePrinter = gtkPrinterFromPrinterData(data);
+			if (filePrinter != 0) {
+				defaultData = printerDataFromGtkPrinter(filePrinter);
+				OS.g_object_unref(filePrinter);
+			}
+		}
+		if (defaultData == null) {
+			defaultData = getDefaultPrinterData();
+			if (defaultData == null) SWT.error(SWT.ERROR_NO_HANDLES);
+		}
+		data.driver = defaultData.driver;
+		data.name = defaultData.name;		
 	}
 	return data;
 }
@@ -735,7 +772,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 protected void create(DeviceData deviceData) {
 	this.data = (PrinterData)deviceData;
 	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0) || disablePrinting) SWT.error(SWT.ERROR_NO_HANDLES);
-	printer = gtkPrinterFromPrinterData();
+	printer = gtkPrinterFromPrinterData(data);
 	if (printer == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
 
@@ -759,14 +796,11 @@ protected void init() {
 	}
 	
 	/* Set values of print_settings and page_setup from PrinterData. */
-	//TODO: Should we look at printToFile, or driver/name for "Print to File", or both? (see gtk bug 345590)
 	if (data.printToFile && data.fileName != null) {
-		byte [] buffer = Converter.wcsToMbcs (null, data.fileName, true);
-		OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, buffer);
-	}
-	if (data.driver.equals("GtkPrintBackendFile") && data.name.equals("Print to File") && data.fileName != null) { //$NON-NLS-1$ //$NON-NLS-2$
-		byte [] buffer = Converter.wcsToMbcs (null, data.fileName, true);
-		OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, buffer);
+		byte [] uri = uriFromFilename(data.fileName);
+		if (uri != null) {
+			OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, uri);
+		}
 	}
 	OS.gtk_print_settings_set_n_copies(settings, data.copyCount);
 	OS.gtk_print_settings_set_collate(settings, data.collate);

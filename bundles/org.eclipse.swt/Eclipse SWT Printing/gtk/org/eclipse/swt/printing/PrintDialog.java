@@ -313,8 +313,18 @@ public PrinterData open() {
 		}
 		
 		/* Set values of print_settings and page_setup from PrinterData. */
-		if (printerData.name != null) {
-			byte [] nameBytes = Converter.wcsToMbcs (null, printerData.name, true);
+		String printerName = printerData.name;
+		if (printerName == null && printerData.printToFile) {
+			/* Find the printer name corresponding to the file backend. */
+			int /*long*/ printer = Printer.gtkPrinterFromPrinterData(printerData);
+			if (printer != 0) {
+				PrinterData data = Printer.printerDataFromGtkPrinter(printer);
+				printerName = data.name;
+				OS.g_object_unref(printer);
+			}
+		}
+		if (printerName != null) {
+			byte [] nameBytes = Converter.wcsToMbcs (null, printerName, true);
 			OS.gtk_print_settings_set_printer(settings, nameBytes);
 		}
 		
@@ -334,22 +344,12 @@ public PrinterData open() {
 				OS.gtk_print_settings_set_print_pages(settings, OS.GTK_PRINT_PAGES_ALL);
 				break;
 		}
-		if (printerData.fileName != null) {
-			//TODO: Should we look at printToFile, or driver/name for "Print to File", or both? (see gtk bug 345590)
-			if (printerData.printToFile) {
-				byte [] buffer = Converter.wcsToMbcs (null, printerData.fileName, true);
-				OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, buffer);
+		if ((printerData.printToFile || Printer.GTK_FILE_BACKEND.equals(printerData.driver)) && printerData.fileName != null) {
+			// TODO: GTK_FILE_BACKEND is not GTK API (see gtk bug 345590)
+			byte [] uri = Printer.uriFromFilename(printerData.fileName);
+			if (uri != null) {
+				OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, uri);
 			}
-			if (printerData.driver != null && printerData.name != null) {
-				if (printerData.driver.equals("GtkPrintBackendFile") && printerData.name.equals("Print to File")) { //$NON-NLS-1$ //$NON-NLS-2$
-					byte [] buffer = Converter.wcsToMbcs (null, printerData.fileName, true);
-					OS.gtk_print_settings_set(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI, buffer);
-				}
-			}
-		}
-		if (printerData.printToFile) {
-			byte [] buffer = Converter.wcsToMbcs (null, "Print to File", true); //$NON-NLS-1$
-			OS.gtk_print_settings_set_printer(settings, buffer);
 		}
 		OS.gtk_print_settings_set_n_copies(settings, printerData.copyCount);
 		OS.gtk_print_settings_set_collate(settings, printerData.collate);
@@ -445,7 +445,7 @@ public PrinterData open() {
 						break;
 				}
 				
-				data.printToFile = data.name.equals("Print to File"); //$NON-NLS-1$
+				data.printToFile = Printer.GTK_FILE_BACKEND.equals(data.driver); // TODO: GTK_FILE_BACKEND is not GTK API (see gtk bug 345590)
 				if (data.printToFile) {
 					int /*long*/ address = OS.gtk_print_settings_get(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI);
 					int length = OS.strlen (address);
