@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,40 @@
 
 #include "swt.h"
 #include "xpcominit_structs.h"
+
+#ifndef NO_GREProperty
+typedef struct GREProperty_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID property, value;
+} GREProperty_FID_CACHE;
+
+GREProperty_FID_CACHE GREPropertyFc;
+
+void cacheGREPropertyFields(JNIEnv *env, jobject lpObject)
+{
+	if (GREPropertyFc.cached) return;
+	GREPropertyFc.clazz = env->GetObjectClass(lpObject);
+	GREPropertyFc.property = env->GetFieldID(GREPropertyFc.clazz, "property", I_J);
+	GREPropertyFc.value = env->GetFieldID(GREPropertyFc.clazz, "value", I_J);
+	GREPropertyFc.cached = 1;
+}
+
+GREProperty *getGREPropertyFields(JNIEnv *env, jobject lpObject, GREProperty *lpStruct)
+{
+	if (!GREPropertyFc.cached) cacheGREPropertyFields(env, lpObject);
+	lpStruct->property = (const char *)env->GetIntLongField(lpObject, GREPropertyFc.property);
+	lpStruct->value = (const char *)env->GetIntLongField(lpObject, GREPropertyFc.value);
+	return lpStruct;
+}
+
+void setGREPropertyFields(JNIEnv *env, jobject lpObject, GREProperty *lpStruct)
+{
+	if (!GREPropertyFc.cached) cacheGREPropertyFields(env, lpObject);
+	env->SetIntLongField(lpObject, GREPropertyFc.property, (jintLong)lpStruct->property);
+	env->SetIntLongField(lpObject, GREPropertyFc.value, (jintLong)lpStruct->value);
+}
+#endif
 
 #ifndef NO_GREVersionRange
 typedef struct GREVersionRange_FID_CACHE {

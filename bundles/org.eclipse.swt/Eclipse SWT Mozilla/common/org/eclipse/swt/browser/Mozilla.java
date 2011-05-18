@@ -70,11 +70,13 @@ class Mozilla extends WebBrowser {
 	static byte[] pathBytes_NSFree;
 
 	/* XULRunner detect constants */
+	static final String GCC3 = "-gcc3"; //$NON-NLS-1$
 	static final String GRERANGE_LOWER = "1.8.1.2"; //$NON-NLS-1$
 	static final String GRERANGE_LOWER_FALLBACK = "1.8"; //$NON-NLS-1$
 	static final boolean LowerRangeInclusive = true;
 	static final String GRERANGE_UPPER = "1.9.*"; //$NON-NLS-1$
 	static final boolean UpperRangeInclusive = true;
+	static final String PROPERTY_ABI = "abi"; //$NON-NLS-1$
 
 	static final int MAX_PORT = 65535;
 	static final String DEFAULTVALUE_STRING = "default"; //$NON-NLS-1$
@@ -530,6 +532,15 @@ class Mozilla extends WebBrowser {
 			}
 		};
 	}
+
+static String Arch () {
+	String osArch = System.getProperty("os.arch"); //$NON-NLS-1$
+	if (osArch.equals ("i386") || osArch.equals ("i686")) return "x86"; //$NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$
+	if (osArch.equals ("amd64")) return "x86_64"; //$NON-NLS-1$ $NON-NLS-2$
+	if (osArch.equals ("IA64N")) return "ia64_32"; //$NON-NLS-1$ $NON-NLS-2$
+	if (osArch.equals ("IA64W")) return "ia64"; //$NON-NLS-1$ $NON-NLS-2$
+	return osArch;
+}
 
 static void LoadLibraries () {
 	boolean initLoaded = false;
@@ -1592,6 +1603,17 @@ public Object getWebBrowser () {
 }
 
 static String InitDiscoverXULRunner () {
+	/*
+	* Up to three XULRunner detection attempts will be made:
+	*
+	* 1. A XULRunner with 1.8.1.2 <= version < 2.0, and with "abi" property matching
+	* the current runtime.  Note that XULRunner registrations began including abi
+	* info as of version 1.9.x, so older versions than this will not be returned.
+	* 2. A XULRunner with 1.8.1.2 <= version < 2.0.  XULRunner 1.8.1.2 is the oldest
+	* release that enables the Browser to expose its JavaXPCOM interfaces to clients.
+	* 3. A XULRunner with 1.8.0.1 <= version < 2.0.
+	*/
+
 	GREVersionRange range = new GREVersionRange ();
 	byte[] bytes = MozillaDelegate.wcsToMbcs (null, GRERANGE_LOWER, true);
 	int /*long*/ lower = C.malloc (bytes.length);
@@ -1605,26 +1627,37 @@ static String InitDiscoverXULRunner () {
 	range.upper = upper;
 	range.upperInclusive = UpperRangeInclusive;
 
+	GREProperty property = new GREProperty ();
+	bytes = MozillaDelegate.wcsToMbcs (null, PROPERTY_ABI, true);
+	int /*long*/ name = C.malloc (bytes.length);
+	C.memmove (name, bytes, bytes.length);
+	property.property = name;
+	bytes = MozillaDelegate.wcsToMbcs (null, Arch () + GCC3, true);
+	int /*long*/ value = C.malloc (bytes.length);
+	C.memmove (value, bytes, bytes.length);
+	property.value = value;
+
 	int length = XPCOMInit.PATH_MAX;
 	int /*long*/ greBuffer = C.malloc (length);
-	int /*long*/ propertiesPtr = C.malloc (2 * C.PTR_SIZEOF);
-	int rc = XPCOMInit.GRE_GetGREPathWithProperties (range, 1, propertiesPtr, 0, greBuffer, length);
+	int rc = XPCOMInit.GRE_GetGREPathWithProperties (range, 1, property, 1, greBuffer, length);
 
-	/*
-	 * A XULRunner was not found that supports wrapping of XPCOM handles as JavaXPCOM objects.
-	 * Drop the lower version bound and try to detect an earlier XULRunner installation.
-	 */
 	if (rc != XPCOM.NS_OK) {
-		C.free (lower);
-		bytes = MozillaDelegate.wcsToMbcs (null, GRERANGE_LOWER_FALLBACK, true);
-		lower = C.malloc (bytes.length);
-		C.memmove (lower, bytes, bytes.length);
-		range.lower = lower;
-		rc = XPCOMInit.GRE_GetGREPathWithProperties (range, 1, propertiesPtr, 0, greBuffer, length);
+		/* Fall back to attempt #2 */
+		rc = XPCOMInit.GRE_GetGREPathWithProperties (range, 1, property, 0, greBuffer, length); /* note: propertiesLength is 0 */
+		if (rc != XPCOM.NS_OK) {
+			/* Fall back to attempt #3 */
+			C.free (lower);
+			bytes = MozillaDelegate.wcsToMbcs (null, GRERANGE_LOWER_FALLBACK, true);
+			lower = C.malloc (bytes.length);
+			C.memmove (lower, bytes, bytes.length);
+			range.lower = lower;
+			rc = XPCOMInit.GRE_GetGREPathWithProperties (range, 1, property, 0, greBuffer, length); /* note: propertiesLength is 0 */
+		}
 	}
+	C.free (value);
+	C.free (name);
 	C.free (lower);
 	C.free (upper);
-	C.free (propertiesPtr);
 
 	String result = null;
 	if (rc == XPCOM.NS_OK) {

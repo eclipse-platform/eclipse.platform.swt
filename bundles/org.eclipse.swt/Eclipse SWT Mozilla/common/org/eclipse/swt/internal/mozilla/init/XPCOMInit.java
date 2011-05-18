@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2006 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2011 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla.init;
@@ -32,7 +32,8 @@ import org.eclipse.swt.internal.Platform;
 /** @jniclass flags=cpp */
 public class XPCOMInit extends Platform {
 	public static final int PATH_MAX = 4096;
-	
+
+public static final native int GREProperty_sizeof ();
 public static final native int GREVersionRange_sizeof ();
 
 /**
@@ -40,8 +41,8 @@ public static final native int GREVersionRange_sizeof ();
  * @param properties cast=(const GREProperty *)
  * @param buffer cast=(char *)
  */
-public static final native int _GRE_GetGREPathWithProperties (GREVersionRange versions, int versionsLength, int /*long*/ properties, int propertiesLength, int /*long*/ buffer, int buflen);
-public static final int GRE_GetGREPathWithProperties (GREVersionRange versions, int versionsLength, int /*long*/ properties, int propertiesLength, int /*long*/ buffer, int buflen) {
+public static final native int _GRE_GetGREPathWithProperties (GREVersionRange versions, int versionsLength, GREProperty properties, int propertiesLength, int /*long*/ buffer, int buflen);
+public static final int GRE_GetGREPathWithProperties (GREVersionRange versions, int versionsLength, GREProperty properties, int propertiesLength, int /*long*/ buffer, int buflen) {
 	lock.lock();
 	try {
 		return _GRE_GetGREPathWithProperties(versions, versionsLength, properties, propertiesLength, buffer, buflen);
