@@ -2564,7 +2564,7 @@ fail:
 
 #ifndef NO_HIWindowFindAtLocation
 JNIEXPORT jint JNICALL OS_NATIVE(HIWindowFindAtLocation)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jintLongArray arg4, jintLongArray arg5, jintLong arg6)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jint arg3, jintLongArray arg4, jintLongArray arg5, jintLong arg6)
 {
 	jintLong *lparg4=NULL;
 	jintLong *lparg5=NULL;
