@@ -25,16 +25,16 @@ if [ "${CC}" = "" ]; then
 fi
 
 # Check if we have to compile external.xpt from external.idl
-COMPONENTS_DIR=$(pwd)/../../components
+COMPONENTS_DIR=`pwd`/../../components
 if test ! -f ${COMPONENTS_DIR}/external.xpt; then
 	if test ! -f ${COMPONENTS_DIR}/external.idl; then
 		echo "Can't find ${COMPONENTS_DIR}/external.idl"
 	else
-		IDLDIR=$(pkg-config --variable=idldir libxul | sed 's@/stable$@@')/unstable
+		IDLDIR=`pkg-config --variable=idldir libxul | sed 's@/stable$@@'`/unstable
 		if test ! -d ${IDLDIR}; then
-			IDLDIR=$(pkg-config --variable=idldir libxul)
+			IDLDIR=`pkg-config --variable=idldir libxul`
 		fi
-		XPIDL=$(pkg-config --variable=sdkdir libxul)/bin/xpidl
+		XPIDL=`pkg-config --variable=sdkdir libxul`/bin/xpidl
 		echo "${XPIDL} -m typelib -I ${IDLDIR} -e ${COMPONENTS_DIR}/external.xpt ${COMPONENTS_DIR}/external.idl"
 		${XPIDL} -m typelib -I ${IDLDIR} -e ${COMPONENTS_DIR}/external.xpt ${COMPONENTS_DIR}/external.idl
 	fi
