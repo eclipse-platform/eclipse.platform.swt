@@ -459,11 +459,14 @@
 #define NO_PROPVARIANT_1sizeof
 #define NO_PSPropertyKeyFromString
 #define NO_RedrawWindow
+#define NO_RegCreateKeyExA
+#define NO_RegDeleteValueA
 #define NO_RegEnumKeyExA
 #define NO_RegOpenKeyExA
 #define NO_RegQueryInfoKeyA
 #define NO_RegQueryValueExA__I_3BI_3I_3B_3I
 #define NO_RegQueryValueExA__I_3BI_3I_3I_3I
+#define NO_RegSetValueExA
 #define NO_RegisterClassA
 #define NO_RegisterClipboardFormatA
 #define NO_RegisterTouchWindow
