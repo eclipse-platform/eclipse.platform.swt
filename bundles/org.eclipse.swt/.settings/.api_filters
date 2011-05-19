@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <component id="org.eclipse.swt" version="2">
 <resource path="Eclipse SWT Accessibility/cocoa/org/eclipse/swt/accessibility/Accessible.java" type="org.eclipse.swt.accessibility.Accessible">
 <filter id="643842064">
@@ -731,6 +731,13 @@
 <message_argument value="SWTEventListener"/>
 <message_argument value="TypedListener"/>
 <message_argument value="getEventListener()"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Shell.java" type="org.eclipse.swt.widgets.Shell">
+<filter id="336744520">
+<message_arguments>
+<message_argument value="org.eclipse.swt.widgets.Shell"/>
 </message_arguments>
 </filter>
 </resource>
