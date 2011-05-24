@@ -658,7 +658,9 @@ public void create(Composite parent, int style) {
 					case NavigateComplete2: {
 						Variant varResult = event.arguments[1];
 						String url = varResult.getString();
-						isAboutBlank = url.startsWith(ABOUT_BLANK);
+						if (!performingInitialNavigate) {
+							isAboutBlank = url.startsWith(ABOUT_BLANK);
+						}
 
 						/*
 						* Bug in Acrobat Reader.  Opening > MAX_PDF PDF files causes Acrobat to not
