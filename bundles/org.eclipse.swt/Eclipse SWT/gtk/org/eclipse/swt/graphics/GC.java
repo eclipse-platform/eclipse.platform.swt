@@ -2813,6 +2813,9 @@ void init(Drawable drawable, GCData data, int /*long*/ gdkGC) {
 	this.drawable = drawable;
 	this.data = data;
 	handle = gdkGC;
+	if (device.useCairo) {
+		initCairo();
+	}
 	if ((data.style & SWT.MIRRORED) != 0) {
 	  initCairo();
 	  int /*long*/ cairo = data.cairo;
@@ -2949,7 +2952,7 @@ boolean isIdentity(double[] matrix) {
  */
 public void setAdvanced(boolean advanced) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if ((data.style & SWT.MIRRORED) != 0) {
+	if ((data.style & SWT.MIRRORED) != 0 || device.useCairo) {
 		if (!advanced) {
 			setAlpha(0xFF);
 			setAntialias(SWT.DEFAULT);

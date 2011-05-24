@@ -85,7 +85,7 @@ public abstract class Device implements Drawable {
 	int /*long*/ emptyTab;
 
 	boolean useXRender;
-
+	boolean useCairo;
 	static boolean CAIRO_LOADED;
 
 	/*
@@ -588,6 +588,11 @@ protected void init () {
 			useXRender = major_versionp[0] > 0 || (major_versionp[0] == 0 && minor_versionp[0] >= 8);
 		}
 	}
+	
+	if (OS.GTK_VERSION > OS.VERSION (2, 17, 0) && System.getProperty("org.eclipse.swt.internal.gtk.useCairo") != null) {
+		useCairo = true;
+	}
+	
 	//TODO: Remove; temporary code only
 	boolean fixAIX = OS.IsAIX && OS.PTR_SIZEOF == 8;
 	
