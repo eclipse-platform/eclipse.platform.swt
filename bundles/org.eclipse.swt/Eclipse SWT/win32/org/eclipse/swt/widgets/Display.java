@@ -1470,10 +1470,10 @@ public Shell getActiveShell () {
 }
 
 /**
- * Returns the single instance of the application menu bar or null
- * when there is no application menu bar for the platform.
+ * Returns the single instance of the application menu bar, or
+ * <code>null</code> if there is no application menu bar for the platform.
  *
- * @return the application menu bar or <code>null</code>
+ * @return the application menu bar, or <code>null</code>
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -2528,10 +2528,10 @@ public Image getSystemImage (int id) {
 }
 
 /**
- * Returns the single instance of the system-provided menu for the application.
- * On platforms where no menu is provided for the application this method returns null.
+ * Returns the single instance of the system-provided menu for the application, or
+ * <code>null</code> on platforms where no menu is provided for the application.
  *
- * @return the system menu or <code>null</code>
+ * @return the system menu, or <code>null</code>
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2602,10 +2602,10 @@ public Thread getThread () {
 }
 
 /**	 
- * Returns true if a touch-aware input device is attached to the system,
- * enabled, and ready for use.
+ * Returns a boolean indicating whether a touch-aware input device is
+ * attached to the system and is ready for use.
  *
- * @return <code>true</code> if a touch-aware input device is available, or <code>false</code> otherwise
+ * @return <code>true</code> if a touch-aware input device is detected, or <code>false</code> otherwise
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

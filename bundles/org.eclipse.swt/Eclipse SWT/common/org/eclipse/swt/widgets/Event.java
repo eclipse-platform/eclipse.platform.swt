@@ -217,6 +217,7 @@ public class Event {
 	
 	/**
 	 * An array of the touch states for the current touch event.
+	 *
 	 * @since 3.7
 	 */
 	public Touch[] touches;
@@ -224,6 +225,7 @@ public class Event {
 	/**
 	 * If nonzero, a positive value indicates a swipe to the right,
 	 * and a negative value indicates a swipe to the left.
+	 *
 	 * @since 3.7
 	 */
 	public int xDirection;
@@ -231,19 +233,22 @@ public class Event {
 	/**
 	 * If nonzero, a positive value indicates a swipe in the up direction,
 	 * and a negative value indicates a swipe in the down direction.
+	 *
 	 * @since 3.7
 	 */
 	public int yDirection;
 	
 	/**
-	 * Change in magnification. This value should be added to the current 
+	 * The change in magnification. This value should be added to the current 
 	 * scaling of an item to get the new scale factor.
+	 *
 	 * @since 3.7
 	 */
 	public double magnification;
 	
 	/**
-	 * Number of degrees rotated on the track pad.
+	 * The number of degrees rotated on the track pad.
+	 *
 	 * @since 3.7
 	 */
 	public double rotation;

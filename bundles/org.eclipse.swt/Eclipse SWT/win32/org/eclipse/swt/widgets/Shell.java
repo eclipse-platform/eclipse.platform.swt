@@ -1137,13 +1137,13 @@ public Shell [] getShells () {
 }
 
 /**
- * Returns the instance of the ToolBar object representing the tool bar that can appear on the
- * trim of the shell. This will return <code>null</code> if the platform does not support tool bars that
- * not part of the content area of the shell, or if the style of the shell does not support a 
- * tool bar. 
+ * Returns a ToolBar object representing the tool bar that can be shown in the receiver's
+ * trim. This will return <code>null</code> if the platform does not support tool bars that
+ * are not part of the content area of the shell, or if the Shell's style does not support 
+ * having a tool bar. 
  * <p>
  * 
- * @return a ToolBar object representing the window's tool bar or null.
+ * @return a ToolBar object representing the Shell's tool bar, or <ocde>null</code>.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

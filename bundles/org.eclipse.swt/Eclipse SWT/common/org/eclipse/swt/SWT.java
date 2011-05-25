@@ -718,6 +718,11 @@ public class SWT {
 	/**
 	 * The touch event type (value is 47).
 	 * 
+	 * <p>
+	 * This event is sent when a touch has been performed
+	 * on a touch-based input source.
+	 * </p>
+	 *
      * @see org.eclipse.swt.widgets.Display#addListener
      * @see org.eclipse.swt.widgets.Event
      * 

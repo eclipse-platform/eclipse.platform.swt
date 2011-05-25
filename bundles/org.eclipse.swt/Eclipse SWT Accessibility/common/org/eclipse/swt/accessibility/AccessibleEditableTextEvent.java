@@ -53,7 +53,7 @@ public class AccessibleEditableTextEvent extends SWTEventObject {
 
 	/**
 	 * [out] Set this field to {@link ACC#OK} if the operation
-	 * was completed successfully, and null otherwise.
+	 * was completed successfully, and <code>null</code> otherwise.
 	 * 
 	 * @see AccessibleEditableTextListener#copyText
 	 * @see AccessibleEditableTextListener#cutText
