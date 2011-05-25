@@ -2605,6 +2605,8 @@ public Thread getThread () {
  * Returns true if a touch-aware input device is attached to the system,
  * enabled, and ready for use.
  *
+ * @return <code>true</code> if a touch-aware input device is available, or <code>false</code> otherwise
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>

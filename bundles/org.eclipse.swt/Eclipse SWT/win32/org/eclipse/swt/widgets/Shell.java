@@ -1049,7 +1049,8 @@ public Point getMinimumSize () {
 /**
  * Gets the receiver's modified state.
  *
- * </ul>
+ * @return <code>true</code> if the receiver is marked as modified, or <code>false</code> otherwise
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1064,9 +1065,9 @@ public boolean getModified () {
 
 /** 
  * Returns the region that defines the shape of the shell,
- * or null if the shell has the default shape.
+ * or <code>null</code> if the shell has the default shape.
  *
- * @return the region that defines the shape of the shell (or null)
+ * @return the region that defines the shape of the shell, or <code>null</code>
  *	
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
