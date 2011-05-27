@@ -187,7 +187,13 @@ public void addFocusListener (FocusListener listener) {
  * be notified when gesture events are generated for the control,
  * by sending it one of the messages defined in the
  * <code>GestureListener</code> interface.
- *
+ * <p>
+ * NOTE: If <code>setTouchEnabled(true)</code> has previously been
+ * invoked on the receiver then <code>setTouchEnabled(false)</code>
+ * must be invoked on it to specify that gesture events should be
+ * sent instead of touch events.
+ * </p>
+ * 
  * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
@@ -200,6 +206,7 @@ public void addFocusListener (FocusListener listener) {
  *
  * @see GestureListener
  * @see #removeGestureListener
+ * @see #setTouchEnabled
  * 
  * @since 3.7
  */
@@ -444,8 +451,9 @@ public void addPaintListener (PaintListener listener) {
  * one of the messages defined in the <code>TouchListener</code>
  * interface.
  * <p>
- * NOTE: You must also call <code>setTouchEnabled</code> to notify the 
- * windowing toolkit that you want touch events to be generated.
+ * NOTE: You must also call <code>setTouchEnabled(true)</code> to 
+ * specify that touch events should be sent, which will cause gesture
+ * events to not be sent.
  * </p>
  * 
  * @param listener the listener which should be notified
@@ -460,6 +468,7 @@ public void addPaintListener (PaintListener listener) {
  *
  * @see TouchListener
  * @see #removeTouchListener
+ * @see #setTouchEnabled
  * 
  * @since 3.7
  */
@@ -1327,19 +1336,23 @@ public String getToolTipText () {
 }
 
 /**
- * Returns <code>true</code> if this control is receiving OS-level touch events,
- * otherwise <code>false</code>
- * <p>
- * Note that this method will return false if the current platform does not support touch-based input.
- * If this method does return true, gesture events will not be sent to the control.
+ * Returns <code>true</code> if this control is set to send touch events, or
+ * <code>false</code> if it is set to send gesture events instead.  This method
+ * also returns <code>false</code> if a touch-based input device is not detected
+ * (this can be determined with <code>Display#getTouchEnabled()</code>).  Use
+ * {@link #setTouchEnabled(boolean)} to switch the events that a control sends
+ * between touch events and gesture events.
  *
- * @return <code>true</code> if the widget is currently receiving touch events; <code>false</code> otherwise.
+ * @return <code>true</code> if the control is set to send touch events, or <code>false</code> otherwise
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
+ * @see #setTouchEnabled
+ * @see Display#getTouchEnabled
+ *
  * @since 3.7
  */
 public boolean getTouchEnabled() {
@@ -3302,15 +3315,19 @@ public void setTransform (Transform t) {
 }
 
 /**
- * Sets whether the receiver should accept touch events. By default, a Control does not accept touch
- * events. No error or exception is thrown if the underlying hardware does not support touch input.
+ * Sets whether this control should send touch events (by default controls do not).
+ * Setting this to <code>false</code> causes the receiver to send gesture events
+ * instead.  No exception is thrown if a touch-based input device is not
+ * detected (this can be determined with <code>Display#getTouchEnabled()</code>).
  * 
  * @param enabled the new touch-enabled state
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    
+ *
+ * @see Display#getTouchEnabled
+ *
  * @since 3.7
  */
 public void setTouchEnabled(boolean enabled) {

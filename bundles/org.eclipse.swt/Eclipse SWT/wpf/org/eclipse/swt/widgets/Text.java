@@ -748,7 +748,7 @@ public String getText (int start, int end) {
  * Returns the widget's text as a character array.
  * <p>
  * The text for a text widget is the characters in the widget, or
- * a zero length array if this has never been set.
+ * a zero-length array if this has never been set.
  * </p>
  *
  * @return a character array that contains the widget's text
@@ -757,7 +757,9 @@ public String getText (int start, int end) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
  * @see #setTextChars(char[])
+ *
  * @since 3.7
  */
 public char [] getTextChars () {
@@ -1396,9 +1398,9 @@ public void setText (String string) {
 }
 
 /**
- * Sets the contents of the receiver to the characters in the array. If the receiver has style
- * SINGLE and the argument contains multiple lines of text, the result of this
- * operation is undefined and may vary from platform to platform.
+ * Sets the contents of the receiver to the characters in the array. If the receiver
+ * has style <code>SWT.SINGLE</code> and the argument contains multiple lines of text
+ * then the result of this operation is undefined and may vary between platforms.
  *
  * @param text a character array that contains the new text
  *
@@ -1409,7 +1411,9 @@ public void setText (String string) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
  * @see #getTextChars()
+ *
  * @since 3.7
  */
 public void setTextChars (char [] text) {

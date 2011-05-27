@@ -290,6 +290,8 @@ public boolean getEnabled () {
 /**
  * Gets the identifier associated with the receiver.
  *
+ * @return the receiver's identifier
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
