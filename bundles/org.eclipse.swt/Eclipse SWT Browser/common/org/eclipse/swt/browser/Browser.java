@@ -47,9 +47,11 @@ public class Browser extends Composite {
 	int userStyle;
 	boolean isClosing;
 
+	static int DefaultType = SWT.DEFAULT;
+
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
-	static final String PROPERTY_USEWEBKITGTK = "org.eclipse.swt.browser.UseWebKitGTK"; //$NON-NLS-1$
+	static final String PROPERTY_DEFAULTTYPE = "org.eclipse.swt.browser.DefaultType"; //$NON-NLS-1$
 
 /**
  * Constructs a new instance of this class given its parent
@@ -90,6 +92,7 @@ public Browser (Composite parent, int style) {
 		parent.getDisplay ().setData (NO_INPUT_METHOD, null);
 	}
 
+	style = getStyle ();
 	webBrowser = new BrowserFactory ().createWebBrowser (style);
 	if (webBrowser != null) {
 		webBrowser.setBrowser (this);
@@ -122,6 +125,24 @@ static Composite checkParent (Composite parent) {
 }
 
 static int checkStyle(int style) {
+	if (DefaultType == SWT.DEFAULT) {
+		String value = System.getProperty (PROPERTY_DEFAULTTYPE);
+		if (value != null) {
+			if (value.equalsIgnoreCase ("mozilla")) { //$NON-NLS-1$
+				DefaultType = SWT.MOZILLA;
+			} else if (value.equalsIgnoreCase ("webkit")) { //$NON-NLS-1$
+				DefaultType = SWT.WEBKIT;
+			}
+		}
+		if (DefaultType == SWT.DEFAULT) {
+			DefaultType = SWT.NONE;
+		}
+	}
+
+	if ((style & (SWT.MOZILLA | SWT.WEBKIT)) == 0) {
+		style |= DefaultType;
+	}
+
 	if ((style & (SWT.MOZILLA | SWT.WEBKIT)) == (SWT.MOZILLA | SWT.WEBKIT)) {
 		style &= ~SWT.WEBKIT;
 	}
