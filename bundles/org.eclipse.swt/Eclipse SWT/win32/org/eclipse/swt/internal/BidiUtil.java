@@ -630,7 +630,7 @@ static void unsubclass(int /*long*/ hwnd) {
 static int /*long*/ windowProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wParam, int /*long*/ lParam) {
 	LONG key = new LONG (hwnd);
 	switch ((int)/*64*/msg) {
-		case 0x51 /*OS.WM_INPUTLANGCHANGE*/:
+		case OS.WM_INPUTLANGCHANGE:
 			Runnable runnable = (Runnable) languageMap.get (key);
 			if (runnable != null) runnable.run ();
 			break;
