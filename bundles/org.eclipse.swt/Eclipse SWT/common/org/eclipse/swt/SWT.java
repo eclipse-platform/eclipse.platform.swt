@@ -1221,6 +1221,7 @@ public class SWT {
 	/**
 	 * Style constant for automatic line wrap behavior (value is 1&lt;&lt;6).
 	 * <p><b>Used By:</b><ul>
+	 * <li><code>Button</code></li>
 	 * <li><code>Label</code></li>
 	 * <li><code>Text</code></li>
 	 * <li><code>ToolBar</code></li>
