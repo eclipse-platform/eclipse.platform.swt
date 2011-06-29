@@ -6407,12 +6407,18 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 			}
 		}
 		dragStarted = gestureCompleted = false;
-		if (fixSelection) ignoreDeselect = ignoreSelect = lockSelection = true;
+		if (fixSelection) {
+			hSelect = lpht.hItem;
+			ignoreDeselect = ignoreSelect = lockSelection = true;
+		}
 		int /*long*/ code = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 			if (OS.GetFocus () != handle) OS.SetFocus (handle);
 		}
-		if (fixSelection) ignoreDeselect = ignoreSelect = lockSelection = false;
+		if (fixSelection) {
+			hSelect = 0;
+			ignoreDeselect = ignoreSelect = lockSelection = false;
+		}
 		int /*long*/ hNewSelection = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 		if (hOldSelection != hNewSelection) hAnchor = hNewSelection;
 		if (dragStarted) {
