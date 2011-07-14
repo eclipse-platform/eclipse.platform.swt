@@ -52,6 +52,7 @@ public class OS extends C {
 	public static final int SM_DBCSENABLED = 0x2A;
 	public static final int SM_IMMENABLED = 0x52;
 	public static final int LANG_KOREAN = 0x12;
+	public static final int LANG_JAPANESE = 0x11;
 	public static final int MAX_PATH = 260;
 	
 	/* Get the Windows version and the flags */

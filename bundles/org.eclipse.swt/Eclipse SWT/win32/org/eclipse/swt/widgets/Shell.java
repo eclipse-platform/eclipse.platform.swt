@@ -1594,7 +1594,15 @@ public void setImeInputMode (int mode) {
 					oldBits = OS.IME_CMODE_KATAKANA;
 				}
 			}
-			if ((mode & (SWT.DBCS | SWT.NATIVE)) != 0) {
+			boolean fullShape = (mode & SWT.DBCS) != 0;
+			if ((mode & SWT.NATIVE) != 0) {
+				int /*long*/ hkl = OS.GetKeyboardLayout (0);
+				int langid = OS.PRIMARYLANGID (OS.LOWORD (hkl));
+				if (langid == OS.LANG_JAPANESE) {
+					fullShape = true;
+				}
+			}
+			if (fullShape) {
 				newBits |= OS.IME_CMODE_FULLSHAPE;
 			} else {
 				oldBits |= OS.IME_CMODE_FULLSHAPE;
