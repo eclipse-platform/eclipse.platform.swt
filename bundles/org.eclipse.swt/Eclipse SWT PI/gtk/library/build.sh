@@ -55,9 +55,7 @@ case $OS in
 			fi
 		fi
 		case $MODEL in
-			"i386")
-				;&
-			"x86")
+			"i386" | "x86")
 				MAKEFILE=make_solaris_x86.mak
 				MAKE_TYPE=gmake
 				;;
