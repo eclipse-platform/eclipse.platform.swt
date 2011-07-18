@@ -61,7 +61,7 @@ ATKLIBS = `pkg-config --libs-only-L atk gtk+-2.0` -latk-1.0 -lgtk-x11-2.0
 GNOMECFLAGS = `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 GNOMELIBS = `pkg-config --libs-only-L gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0` -lgnomevfs-2 -lgnome-2 -lgnomeui-2
 
-GLXLIBS = -L/usr/X11R6/lib -lGL -lGLU -lm
+GLXLIBS = -lGL -lGLU -lm
 
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS

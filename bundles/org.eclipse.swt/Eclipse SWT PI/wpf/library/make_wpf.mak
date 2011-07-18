@@ -53,7 +53,7 @@ $(SWT_WIN32_LIB): $(SWT_C_OBJS) $(SWT_WIN32_OBJS)
 	link $(WIN32LFLAGS) -OUT:$(SWT_WIN32_LIB) $(SWT_C_OBJS) $(SWT_WIN32_OBJS)
 
 install: all
-	copy *.dll $(OUTPUT_DIR)
+	copy *.dll "$(OUTPUT_DIR)"
 
 clean:
     del *.obj *.res *.dll *.lib *.exp *.manifest

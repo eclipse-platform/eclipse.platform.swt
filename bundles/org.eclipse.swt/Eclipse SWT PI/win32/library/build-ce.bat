@@ -40,7 +40,7 @@ IF "%CFG%"=="hpc2000" GOTO HPC2000
 IF "%CFG%"=="SmartPhone 2002" GOTO SMARTPHONE
 
 :POCKETPC
-set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.wce_ppc.arm
+IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.wce_ppc.arm
 set OSVERSION=WCE300
 set PLATFORM=MS Pocket PC
 set PATH=%WCEROOT%\bin;%WCEROOT%\%OSVERSION%\bin;%path%

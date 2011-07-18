@@ -25,6 +25,6 @@ call "S:\swt-builddir\MSSDKs\Microsoft SDK 6.0 Vista\Bin\setenv.cmd" /x86 /vista
 rem ****** 
 rem OUTPUT DIR
 rem ******
-set OUTPUT_DIR=..\..\..\org.eclipse.swt.wpf.win32.x86
+IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.wpf.win32.x86
 
 nmake -f make_wpf.mak %1 %2 %3 %4
