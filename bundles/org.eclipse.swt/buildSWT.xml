@@ -1,0 +1,1050 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Copyright (c) 2009, 2011 IBM Corporation and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+        IBM Corporation - initial API and implementation
+ -->
+
+<!-- 
+ 
+	TAG: a tag param can be passed in to work on branch. If no tag is set master is used.
+		For example: ant -f buildNatives.xml increment_version -DTAG=R3_5_maintenance
+		
+	natives_changed: when starting a integration build the increment of the version 
+		can be forced by setting this project. If property is not defined the increment 
+		is determine automatically based on changes in the native code since the last 
+		revision in the swp.map.
+		for Example: ant -f buildNatives.xml increment_version -Dnatives_changed=true
+	
+	To build the libraries of a fragment, run
+		ant -f <fragment dir>/build.xml build_libraries 
+	
+	Notes:
+	 To void clean after build define a property named "clean" to empty ("").
+	 To run only clean define a property named "targets" to empty ("").
+	 
+ -->
+
+<project name="swtbuild" basedir="../../..">
+	<property name="gitroot" value="fheidric@dev.eclipse.org:/gitroot/platform/"/>
+	<property name="keyfile" value="C:\BUILD\ssh\swtbuild_dsa_private" /> 
+	<property name="TAG" value="master"/>
+	<property name="src.repo" value="eclipse.platform.swt"/>
+	<property name="bin.repo" value="eclipse.platform.swt.binaries"/>
+	<property name="releng.repo" value="eclipse.platform.releng"/>
+	<property name="tmphome" value="./tmp"/>
+
+	<property name="cp_common" value="'bundles/org.eclipse.swt/Eclipse SWT/common/library' 'bundles/org.eclipse.swt/Eclipse SWT Mozilla/common/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/common/library'"/>
+	<property name="cp_win32" value="${cp_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT WebKit/win32/library'"/>
+	<property name="cp_gtk" value="${cp_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/gtk/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/gnome/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/cde/library'"/>
+	<property name="cp_cocoa" value="${cp_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/cocoa/library'"/>
+	<property name="cp_carbon" value="${cp_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/carbon/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/carbon/library'"/>
+	<property name="cp_motif" value="${cp_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/motif/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/motif_gtk/library'  'bundles/org.eclipse.swt/Eclipse SWT AWT/motif/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/gnome/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/cde/library'"/>
+	<property name="cp_wpf" value="${cp_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/wpf/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/wpf_win32/library'"/>
+	<property name="cp_photon" value="${cp_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/photon/library'"/>
+	
+	<property name="library_j2se" value="bundles/org.eclipse.swt/Eclipse SWT PI/common_j2se/org/eclipse/swt/internal/Library.java"/>
+	<property name="library_j2me" value="bundles/org.eclipse.swt/Eclipse SWT PI/common_j2me/org/eclipse/swt/internal/Library.java"/>
+	<property name="make_common" value="bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
+	<property name="version_file" value="bundles/org.eclipse.swt/Eclipse SWT/common/version.txt"/>
+	<property name="build_notes" value="bundles/org.eclipse.swt/buildnotes_swt.html"/>
+		
+	<target name="check_libraries" depends="get_version">
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="5"/>
+			<param name="fragment" value="org.eclipse.swt.carbon.macosx"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="4"/>
+			<param name="fragment" value="org.eclipse.swt.cocoa.macosx"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="4"/>
+			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.x86_64"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="5"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.aix.ppc"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="5"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.aix.ppc64"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="4"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.hpux.ia64_32"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="11"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="10"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="10"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="10"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390x"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="12"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="12"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="9"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.solaris.sparc"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="8"/>
+			<param name="fragment" value="org.eclipse.swt.gtk.solaris.x86"/>
+		</antcall>
+		<!-- Motif is not being built
+		antcall target="check_fragment_libraries">
+			<param name="library_count" value="9"/>
+			<param name="fragment" value="org.eclipse.swt.motif.linux.x86"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="4"/>
+			<param name="fragment" value="org.eclipse.swt.motif.aix.ppc"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="3"/>
+			<param name="fragment" value="org.eclipse.swt.motif.hpux.ia64_32"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="5"/>
+			<param name="fragment" value="org.eclipse.swt.motif.solaris.sparc"/>
+		</antcall-->
+		<!-- Photon is not being built
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="1"/>
+			<param name="fragment" value="org.eclipse.swt.photon.qnx.x86"/>
+		</antcall>
+		-->
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="4"/>
+			<param name="fragment" value="org.eclipse.swt.win32.win32.ia64"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="6"/>
+			<param name="fragment" value="org.eclipse.swt.win32.win32.x86"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="4"/>
+			<param name="fragment" value="org.eclipse.swt.win32.win32.x86_64"/>
+		</antcall>
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="1"/>
+			<param name="fragment" value="org.eclipse.swt.win32.wce_ppc.arm"/>
+		</antcall>
+		<!-- WPF is not being built
+		<antcall target="check_fragment_libraries">
+			<param name="library_count" value="2"/>
+			<param name="fragment" value="org.eclipse.swt.wpf.win32.x86"/>
+		</antcall>
+		-->
+	</target>
+	
+	<target name="check_fragment_libraries" depends="get_version">
+		<property name="checkdir" value="~/build/check_libraries"/>
+		<property name="library_count" value="124"/>
+		<property name="fragment" value=""/>
+		<fileset id="match" dir="${bin.repo}/bundles/${fragment}">
+			<filename regex="[0-9][0-9][0-9][0-9]."/>
+			<filename regex="${swt_version}."/>
+			<exclude name="**/.git/**"/>
+			<exclude name="**/org.eclipse.swt.gtk.hpux.ia64/**"/>
+			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
+			<exclude name="**/org.eclipse.swt.motif.aix.ppc/**"/>
+			<exclude name="**/org.eclipse.swt.motif.hpux.ia64_32/**"/>
+			<exclude name="**/org.eclipse.swt.motif.hpux.PA_RISC/**"/>
+			<exclude name="**/org.eclipse.swt.motif.linux.x86/**"/>
+			<exclude name="**/org.eclipse.swt.motif.solaris.sparc/**"/>
+			<exclude name="**/org.eclipse.swt.photon.qnx.x86/**"/>
+			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
+		</fileset>
+		<fileset id="not_match" dir="${bin.repo}/bundles/${fragment}">
+			<filename regex="[0-9][0-9][0-9][0-9]."/>
+			<filename regex="${swt_version}." negate="true"/>
+			<exclude name="**/.git/**"/>
+			<exclude name="**/org.eclipse.swt.gtk.hpux.ia64/**"/>
+			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
+			<exclude name="**/org.eclipse.swt.motif.aix.ppc/**"/>
+			<exclude name="**/org.eclipse.swt.motif.hpux.ia64_32/**"/>
+			<exclude name="**/org.eclipse.swt.motif.hpux.PA_RISC/**"/>
+			<exclude name="**/org.eclipse.swt.motif.linux.x86/**"/>
+			<exclude name="**/org.eclipse.swt.motif.solaris.sparc/**"/>
+			<exclude name="**/org.eclipse.swt.photon.qnx.x86/**"/>
+			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
+		</fileset>
+		<property name="not_match_text" refid="not_match"/>
+		<echo>Old libraries: ${not_match_text}</echo>
+		<resourcecount refid="match" property="match_count"/>
+		<resourcecount refid="not_match" property="not_match_count"/>
+		<echo>Found ${match_count} libraries with version ${swt_version} and ${not_match_count} libraries with old versions</echo>
+		<condition property="m_fail">
+			<not>
+				<and>
+					<equals arg1="${match_count}" arg2="${library_count}"/>
+					<equals arg1="${not_match_count}" arg2="0"/>
+				</and>
+			</not>
+		</condition>
+		<fail if="m_fail" message="Failed. Expecting ${library_count} and 0."/>
+		<echo>Success</echo>
+	</target>	
+	
+	<target name="check_machines">
+		<parallel>
+		<sshexec host="${m_linux_x86}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			failonerror="false"
+			trust="true"
+			outputproperty="m_linux_x86_output"
+			command="hostname"/>
+		<sshexec host="${m_linux_x86_64}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			failonerror="false"
+			trust="true"
+			outputproperty="m_linux_x86_64_output"
+			command="hostname"/>
+		<!-- These machines are only used for 3.5.x builds. -->
+		<!--sshexec host="${m_linux_rh3_x86}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			failonerror="false"
+			trust="true"
+			outputproperty="m_linux_rh3_x86_output"
+			command="hostname"/>
+		<sshexec host="${m_linux_rh3_x86_64}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			failonerror="false"
+			trust="true"
+			outputproperty="m_linux_rh3_x86_64_output"
+			command="hostname"/-->
+			
+		<sshexec host="${m_linux_ppc}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			failonerror="false"
+			trust="true"
+			outputproperty="m_linux_ppc_output"
+			command="hostname"/>
+		<sshexec host="${m_linux_ppc64}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			failonerror="false"
+			trust="true"
+			outputproperty="m_linux_ppc64_output"
+			command="hostname"/>
+			
+		<sshexec host="${m_solaris_sparc}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			failonerror="false"
+			trust="true"
+			outputproperty="m_solaris_sparc_output"
+			command="hostname"/>
+		<sshexec host="${m_solaris_x86}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			failonerror="false"
+			trust="true"
+			outputproperty="m_solaris_x86_output"
+			command="hostname"/>
+			
+		<sshexec host="${m_aix}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			failonerror="false"
+			trust="true"
+			outputproperty="m_aix_output"
+			command="hostname"/>
+			
+		<sshexec host="${m_hpux}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			failonerror="false"
+			trust="true"
+			outputproperty="m_hpux_output"
+			command="hostname"/>
+		<sshexec host="${m_mac}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			failonerror="false"
+			trust="true"
+			outputproperty="m_mac_output"
+			command="hostname"/>
+		</parallel>
+		<property name="success_msg" value="Success"/>
+		<property name="fail_msg" value="*** Fail ***"/>
+		<condition property="m_linux_x86_test" value="${success_msg}" else="${fail_msg}">
+			<matches pattern="${m_linux_x86}*" string="${m_linux_x86_output}"/>
+		</condition>
+		<condition property="m_linux_x86_64_test" value="${success_msg}" else="${fail_msg}">
+			<matches pattern="${m_linux_x86_64}*" string="${m_linux_x86_64_output}"/>
+		</condition>
+		<!--condition property="m_linux_rh3_x86_test" value="${success_msg}" else="${fail_msg}">
+			<matches pattern="${m_linux_rh3_x86}*" string="${m_linux_rh3_x86_output}"/>
+		</condition>
+		<condition property="m_linux_rh3_x86_64_test" value="${success_msg}" else="${fail_msg}">
+			<matches pattern="${m_linux_rh3_x86_64}*" string="${m_linux_rh3_x86_64_output}"/>
+		</condition-->
+		
+		<condition property="m_linux_ppc_test" value="${success_msg}" else="${fail_msg}">
+			<matches pattern="${m_linux_ppc}*" string="${m_linux_ppc_output}"/>
+		</condition>
+		<condition property="m_linux_ppc64_test" value="${success_msg}" else="${fail_msg}">
+			<matches pattern="${m_linux_ppc64}*" string="${m_linux_ppc64_output}"/>
+		</condition>
+		<condition property="m_solaris_sparc_test" value="${success_msg}" else="${fail_msg}">
+			<matches pattern="${m_solaris_sparc}*" string="${m_solaris_sparc_output}"/>
+		</condition>
+		<condition property="m_solaris_x86_test" value="${success_msg}" else="${fail_msg}">
+			<matches pattern="${m_solaris_x86}*" string="${m_solaris_x86_output}"/>
+		</condition>
+		<condition property="m_aix_test" value="${success_msg}" else="${fail_msg}">
+			<matches pattern="${m_aix}*" string="${m_aix_output}"/>
+		</condition>
+		<condition property="m_hpux_test" value="${success_msg}" else="${fail_msg}">
+			<matches pattern="${m_hpux}*" string="${m_hpux_output}"/>
+		</condition>
+		<condition property="m_mac_test" value="${success_msg}" else="${fail_msg}">
+			<matches pattern="${m_mac}*" string="${m_mac_output}"/>
+		</condition>
+		<echo>-------------------------</echo>
+		<echo>Status:</echo>
+		<echo></echo>
+		<echo>${m_linux_x86} - ${m_linux_x86_test}</echo>
+		<echo>${m_linux_x86_64} - ${m_linux_x86_64_test}</echo>
+		<!--echo>${m_linux_rh3_x86} ${m_linux_rh3_x86_test}</echo>
+		<echo>${m_linux_rh3_x86_64} ${m_linux_rh3_x86_64_test}</echo-->
+		<echo>${m_linux_ppc} - ${m_linux_ppc_test}</echo>
+		<echo>${m_linux_ppc64} - ${m_linux_ppc64_test}</echo>
+		<echo>${m_solaris_sparc} - ${m_solaris_sparc_test}</echo>
+		<echo>${m_solaris_x86} - ${m_solaris_x86_test}</echo>
+		<echo>${m_aix} - ${m_aix_test}</echo>
+		<echo>${m_hpux} - ${m_hpux_test}</echo>
+		<echo>${m_mac} - ${m_mac_test}</echo>
+		<echo>-------------------------</echo>
+		<condition property="m_fail">
+			<matches pattern="Fail" string="${m_linux_x86_test} ${m_linux_x86_64_test} ${m_linux_ppc_test} ${m_linux_ppc64_test} ${m_solaris_sparc_test} ${m_solaris_x86_test} ${m_aix_test} ${m_hpux_test} ${m_mac_test}"/>
+		</condition>
+		<fail if="m_fail" message="Failed"/>
+	</target>
+
+	<target name="check_s390_machines">
+		<parallel>
+		<sshexec host="${m_linux_s390}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			failonerror="false"
+			trust="true"
+			outputproperty="m_linux_s390_output"
+			command="hostname"/>
+		<sshexec host="${m_linux_s390x}" 
+				username="swtbuild" 
+				keyfile="${keyfile}" 
+				failonerror="false"
+				trust="true"
+				outputproperty="m_linux_s390x_output"
+				command="hostname"/>
+		</parallel>
+		<property name="success_msg" value="Success"/>
+		<property name="fail_msg" value="*** Fail ***"/>
+		<condition property="m_linux_s390x_test" value="${success_msg}" else="${fail_msg}">
+			<matches pattern="${m_linux_s390x_output}*" string="${m_linux_s390x}"/>
+		</condition>
+		<condition property="m_linux_s390_test" value="${success_msg}" else="${fail_msg}">
+			<matches pattern="${m_linux_s390_output}*" string="${m_linux_s390}"/>
+		</condition>
+		<echo>-------------------------</echo>
+		<echo>Status:</echo>
+		<echo></echo>
+		<echo>${m_linux_s390} - ${m_linux_s390_test}</echo>
+		<echo>${m_linux_s390x} - ${m_linux_s390x_test}</echo>
+		<echo>-------------------------</echo>
+		<condition property="m_fail">
+			<matches pattern="Fail" string="${m_linux_s390_test} ${m_linux_s390x_test}"/>
+		</condition>
+		<fail if="m_fail" message="Failed"/>
+	</target>
+	
+	<target name="check_compilation">
+		<property name="tmpdir" value="${tmphome}/check.compile.${TAG}"/>
+		<property name="projectDir" value="${src.repo}/bundles/org.eclipse.swt"/>
+		<property name="buildDir" value="${tmpdir}/build"/>
+
+		<!-- 64 bit -->
+		<antcall target="build_classes">
+			<param name="cp" value=".classpath_cocoa"/>
+			<param name="is64" value="64 bit"/>
+		</antcall>
+		<antcall target="build_classes">
+			<param name="cp" value=".classpath_gtk"/>
+			<param name="is64" value="64 bit"/>
+		</antcall>
+		<antcall target="build_classes">
+			<param name="cp" value=".classpath_win32"/>
+			<param name="is64" value="64 bit"/>
+		</antcall>
+		
+		<!-- 32 bit -->
+		<antcall target="build_classes">
+			<param name="cp" value=".classpath_carbon"/>
+		</antcall>
+		<antcall target="build_classes">
+			<param name="cp" value=".classpath_cocoa"/>
+		</antcall>
+		<antcall target="build_classes">
+			<param name="cp" value=".classpath_gtk"/>
+		</antcall>
+		<antcall target="build_classes">
+			<param name="cp" value=".classpath_win32"/>
+		</antcall>
+		<!-- Not building motif
+		<antcall target="build_classes">
+			<param name="cp" value=".classpath_motif"/>
+		</antcall>
+		-->
+		<!-- Not building Photon
+		<antcall target="build_classes">
+			<param name="cp" value=".classpath_photon"/>
+		</antcall>
+		-->
+		<!-- Not building WPF
+		<antcall target="build_classes">
+			<param name="cp" value=".classpath_wpf"/>
+		</antcall>
+		-->
+		
+		<delete dir="${tmpdir}" quiet="true"/>
+	</target>
+	
+	<target name="replace64" if="is64">
+		<antcall target="replace.32.to.64">
+			<param name="replace_dir" value="${buildDir}"/>
+		</antcall>
+	</target>
+	
+	<target name="build_classes">
+		<echo>Building ${cp} ${is64}</echo>
+		<delete file="${tmpdir}/copy.xml"/>
+		<delete dir="${buildDir}"/>
+				
+		<xslt style="${projectDir}/tasks/classpath.xls" in="${projectDir}/${cp}" out="${tmpdir}/copy.xml">
+			<param name="srcDir" expression="${projectDir}"/>
+			<param name="outputDir" expression="${buildDir}"/>
+		</xslt>
+		<ant antfile="${tmpdir}/copy.xml" target="copy_files"/>
+		
+		<antcall target="replace64"></antcall>
+				
+		<javac srcdir="${buildDir}"></javac>
+	</target>
+
+	<!-- common build tasks -->
+	<target name="new_release">
+		<property name="tmpdir" value="${tmphome}/new_release"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+		<mkdir dir="${tmpdir}"/>
+		<antcall target="new_release_imp"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+	</target>
+	
+	<target name="new_release_imp" depends="get_new_release_version">
+		<property name="natives_changed" value="true"/>
+		<antcall target="increment_version_imp"/>
+	</target>
+	
+	<target name="increment_version">
+		<property name="tmpdir" value="${tmphome}/inc.${TAG}"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+		<mkdir dir="${tmpdir}"/>
+		<antcall target="increment_version_imp"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+	</target>
+	
+	<target name="increment_version_imp" depends="check_natives_changed, get_version" if="natives_changed">
+		<!-- Update the files -->
+		<replace file="${src.repo}/${library_j2se}" token="MAJOR_VERSION = ${maj_ver}" value="MAJOR_VERSION = ${new_maj_ver}"/>
+		<replace file="${src.repo}/${library_j2me}" token="MAJOR_VERSION = ${maj_ver}" value="MAJOR_VERSION = ${new_maj_ver}"/>
+		<replace file="${src.repo}/${library_j2se}" token="MINOR_VERSION = ${min_ver}" value="MINOR_VERSION = ${new_min_ver}"/>
+		<replace file="${src.repo}/${library_j2me}" token="MINOR_VERSION = ${min_ver}" value="MINOR_VERSION = ${new_min_ver}"/>
+		<replace file="${src.repo}/${version_file}" token="version ${maj_ver}.${min_ver}" value="version ${new_maj_ver}.${new_min_ver}"/>
+		<replace file="${src.repo}/${make_common}" token="min_ver=${min_ver}" value="min_ver=${new_min_ver}"/>
+		<replace file="${src.repo}/${make_common}" token="maj_ver=${maj_ver}" value="maj_ver=${new_maj_ver}"/>
+		<replace file="${src.repo}/${make_common}" token="comma_ver=${comma_ver}" value="comma_ver=${new_comma_ver}"/>
+
+		<!-- Commit the files -->
+		<exec dir="${src.repo}" executable="git" failonerror="true">
+			<arg line="add '${library_j2se}' '${library_j2me}' '${version_file}' '${make_common}'"/>
+		</exec>
+		<exec dir="${src.repo}" executable="git" failonerror="true">
+			<arg line="commit -m 'Update current version from v${swt_version} to v${new_version}'"/>
+		</exec>
+	</target>
+	
+	<target name="cvs_tag">
+		<condition property="CVS_TAG" value="" else="-r${TAG}">
+			<equals arg1="${TAG}" arg2="master"/>
+		</condition>
+		<echo>CVS_TAG=${CVS_TAG}</echo>
+	</target>
+
+	<!-- Set swt_tag to the current tag in the swt map file -->
+	<target name="get_tag" unless="swt_tag" depends="cvs_tag">
+		<property name="tmpdir" value="."/>
+		<!--property name="map" value="${releng.repo}/bundles/org.eclipse.releng/maps/swt.map"/-->
+		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
+		<property name="cvsRsh" value="plink"/>
+		<property name="cvsRoot" value=":ext:fheidric@dev.eclipse.org:/cvsroot/eclipse"/>
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="checkout"/>
+				<argument line="${CVS_TAG}"/>
+				<argument value="${map}"/>
+			</commandline>
+		</cvs>
+		
+		<loadfile property="swt_tag" srcfile="${tmpdir}/${map}">
+			<filterchain>
+				<tokenfilter delimoutput="">
+					<containsstring contains="plugin@org.eclipse.swt=GIT,tag="/>
+					<replaceregex pattern=".*(v\d\d\d\d[a-z]?).*" replace="\1"/>
+				</tokenfilter>
+			</filterchain>
+		</loadfile>
+		<echo>Current tag=${swt_tag}.</echo>
+	</target>
+	
+	<!-- Set swt_new_tag  -->
+	<target name="get_new_tag" unless="swt_new_tag" depends="get_version">
+		<property name="tmpdir" value="."/>
+		<exec dir="${bin.repo}" executable="git" failonerror="true" outputproperty="tags">
+			<arg line="tag"/>
+		</exec>
+		<script language="javascript">
+			<![CDATA[
+				tags = project.getProperty("tags");
+				swt_version = project.getProperty("swt_version");
+				if (!tags.match(swt_version)) {
+					project.setProperty("swt_new_tag", swt_version);
+				} else {
+					for (i=97; i<123; i++) {
+						t = swt_version + String.fromCharCode(i);
+						if (!tags.match(t)) {
+							project.setProperty("swt_new_tag", t);
+							break;
+						}
+					}
+				}
+	   	 	]]>
+		</script>
+		<fail message="Unable to determine new tag">
+			<condition>
+				<not>
+					<isset property="swt_new_tag"/>
+				</not>
+			</condition>
+		</fail>
+		<echo>New tag=${swt_new_tag}.</echo>
+	</target>
+
+	<!-- Set swt_version, new_version, (and min_ver, maj_ver, new_min_ver, new_maj_ver) from the make_common.mak  -->
+	<target name="get_version" unless="swt_version">
+		<property name="tmpdir" value="."/>
+		
+		<loadproperties srcFile="${src.repo}/${make_common}"/>
+		<copy file="${src.repo}/${make_common}" tofile="${tmpdir}/tmp.txt" overwrite="true"/>
+		<propertyfile file="${tmpdir}/tmp.txt">
+			<entry key="new_min_ver" default="${min_ver}" type="int" operation="+"/>
+			<entry key="new_maj_ver" default="${maj_ver}" type="int" operation="="/>
+		</propertyfile>
+		<loadproperties srcFile="${tmpdir}/tmp.txt"/>
+		<property name="swt_version" value="${maj_ver}${min_ver}"/>
+		<property name="new_version" value="${maj_ver}${new_min_ver}"/>
+		<replace file="${tmpdir}/tmp.txt" token="comma_ver=${comma_ver}" value="new_comma_ver=${new_version}"/>
+		<replaceregexp file="${tmpdir}/tmp.txt" match="new_comma_ver=(\d)(\d)(\d)(\d)" replace="new_comma_ver=\1,\2,\3,\4" byline="true"/>
+		<loadproperties srcFile="${tmpdir}/tmp.txt"/>
+		<delete file="${tmpdir}/tmp.txt"/>
+		<echo>Version=${swt_version}; New=${new_version}; New comma_ver=${new_comma_ver}</echo>
+	</target>
+
+	<target name="get_new_release_version" unless="min_ver">
+		<property name="tmpdir" value="."/>
+		
+		<loadproperties srcFile="${src.repo}/${make_common}"/>
+		<script language="javascript">
+			<![CDATA[
+				min_ver = project.getProperty("min_ver");
+				maj_ver = project.getProperty("maj_ver");
+				new_min_ver = (Math.floor(parseInt(min_ver) / 100) + 1) * 100;
+				new_maj_ver = maj_ver;
+				if (new_min_ver >= 1000) {
+					new_min_ver = "000";
+					new_maj_ver = parseInt(new_maj_ver) + 1;
+				}
+				project.setProperty("new_min_ver", new_min_ver);
+				project.setProperty("new_maj_ver", new_maj_ver);
+	   	 	]]>
+		</script>
+		<property name="swt_version" value="${maj_ver}${min_ver}"/>
+		<property name="new_version" value="${new_maj_ver}${new_min_ver}"/>
+		<copy file="${src.repo}/${make_common}" tofile="${tmpdir}/tmp.txt" overwrite="true"/>
+		<replace file="${tmpdir}/tmp.txt" token="comma_ver=${comma_ver}" value="new_comma_ver=${new_version}"/>
+		<replaceregexp file="${tmpdir}/tmp.txt" match="new_comma_ver=(\d)(\d)(\d)(\d)" replace="new_comma_ver=\1,\2,\3,\4" byline="true"/>
+		<loadproperties srcFile="${tmpdir}/tmp.txt"/>
+		<delete file="${tmpdir}/tmp.txt"/>
+		<echo>Version=${swt_version}; New=${new_version}; New comma_ver=${new_comma_ver}</echo>
+	</target>
+	
+	<!-- Set natives_changed if there are changes in the C code -->
+	<target name="check_natives_changed" unless="natives_changed" depends="get_tag">
+		<exec dir="${src.repo}" executable="git" failonerror="true" outputproperty="diffs">
+			<arg line="diff ${TAG} ${swt_tag}"/>
+			<arg line="${cp_win32}"/>
+			<arg line="${cp_gtk}"/>
+			<arg line="${cp_cocoa}"/>
+		</exec>
+		<condition property="natives_changed">
+			<not>
+				<equals arg1="${diffs}" arg2=""/>
+			</not>
+		</condition>
+		<echo>Natives changed: ${natives_changed} since ${swt_tag}</echo>
+	</target>
+
+	<!-- Params: tmpdir, and swt_new_tag -->
+	<target name="update_buildnotes" depends="get_tag, get_new_tag">
+		<property name="MILESTONE" value=""/>
+		<tstamp>
+			<format property="header.time" pattern="EEEE MMMMM dd, yyyy" offset="1" unit="day"/>
+		</tstamp>
+		<tstamp>
+			<format property="url.to.time" pattern="yyyy-MM-dd'+'HH'%3A'mm'%3A'ss'+%2B0000'" timezone="gmt"/>
+		</tstamp>
+		
+		<exec dir="${src.repo}" executable="git" failonerror="true" output="${tmpdir}/startdate.txt">
+			<arg line="log --pretty='%ad' --date=iso -1 ${swt_tag}"/>
+		</exec>
+
+		<loadfile property="url.from.time" srcfile="${tmpdir}/startdate.txt">
+			<filterchain>
+				<tokenfilter delimoutput="">
+					<replaceregex pattern="\+" replace="%2B" flags="g"/>
+					<replaceregex pattern=":" replace="%3A" flags="g"/>
+					<replaceregex pattern="\s" replace="+" flags="g"/>
+				</tokenfilter>
+			</filterchain>
+		</loadfile>
+		<echo> Searching bugs from "${url.from.time}" to "${url.to.time}"</echo>
+		
+		<property name="match_line" value="SWT&lt;/h1&gt;"/>
+		<property name="delimiter" value="&#13;&#10;"/>
+		<property name="url" value="https://bugs.eclipse.org/bugs/buglist.cgi?bug_file_loc=;bug_file_loc_type=allwordssubstr;bug_id=;bugidtype=include;chfield=resolution;target_milestone=${MILESTONE};chfieldfrom=${url.from.time};chfieldto=${url.to.time};chfieldvalue=FIXED;classification=Eclipse;component=SWT;email1=;email2=;emailtype1=substring;emailtype2=substring;field-1-0-0=classification;field-1-1-0=product;field-1-2-0=component;field0-0-0=noop;keywords=;keywords_type=allwords;long_desc=;long_desc_type=allwordssubstr;product=Platform;query_format=advanced;remaction=;short_desc=;short_desc_type=allwordssubstr;status_whiteboard=;status_whiteboard_type=allwordssubstr;type-1-0-0=anyexact;type-1-1-0=anyexact;type-1-2-0=anyexact;type0-0-0=noop;value-1-0-0=Eclipse;value-1-1-0=Platform;value-1-2-0=SWT;value0-0-0=;votes=;query_based_on="/>
+		<property name="body" value="${delimiter}${delimiter}&lt;h2&gt;SWT Build ${swt_new_tag} - ${header.time}&lt;/h2&gt;${delimiter}${delimiter}&lt;blockquote&gt;${delimiter}&lt;a href=${url}&gt;Bugs fixed&lt;/a&gt;${delimiter}&lt;/blockquote&gt;"/>
+		<replace file="${src.repo}/${build_notes}" token="${match_line}" value="${match_line}${body}"/>
+		
+		<exec dir="${src.repo}" executable="git" failonerror="true">
+			<arg line="add '${build_notes}'"/>
+		</exec>
+		<exec dir="${src.repo}" executable="git" failonerror="true">
+			<arg line="commit -m 'new version v${swt_new_tag}'"/>
+		</exec>
+	</target>
+
+	<!-- depends on 'get_new_tag' to define swt_new_tag, swt_version, maj_ver and min_ver -->
+	<target name="tag_projects">
+		<property name="tmpdir" value="${tmphome}/tag.${TAG}"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+		<mkdir dir="${tmpdir}"/>
+		<antcall target="tag_projects_imp"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+	</target>
+	
+	<target name="update_swt_map" depends="cvs_tag">
+		<property name="cvsRsh" value="plink"/>
+		<property name="cvsRoot" value=":ext:fheidric@dev.eclipse.org:/cvsroot/eclipse"/>
+		<!-- download the map file -->
+		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="checkout"/>
+				<argument line="${CVS_TAG}"/>
+				<argument value="${map}"/>
+			</commandline>
+		</cvs>
+
+		<!-- update and commit map file -->
+		<replaceregexp file="${tmpdir}/${map}" match="=v\d\d\d\d[a-z]?" replace="=v${swt_new_tag}" byline="true"/>
+		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
+			<commandline>
+				<argument value="commit"/>
+				<argument value="-m"/>
+				<argument value="'new version v${swt_new_tag}'"/>
+				<argument value="${map}"/>
+			</commandline>
+		</cvs>
+	</target>
+	
+	<target name="tag_projects_imp" depends="get_new_tag">
+		<!-- These two lines perform the same check. check_libraries is slower because it checks each fragment separetely  -->
+		<!--antcall target="check_libraries"/-->
+		<antcall target="check_fragment_libraries"/>
+
+		<!-- update and commit the buildnotes_swt.html file -->
+		<antcall target="update_buildnotes"/>
+		
+		<exec dir="${src.repo}" executable="git" failonerror="true">
+			<arg line="tag ${swt_new_tag}"/>
+		</exec>
+		<exec dir="${bin.repo}" executable="git" failonerror="true">
+			<arg line="tag ${swt_new_tag}"/>
+		</exec>
+		
+		<antcall target="update_swt_map"/>
+	</target>
+	
+	<target name="check_sha1_file" unless="natives_changed">
+		<condition property="natives_changed">
+			<not>
+				<available file="${sha1_file}" type="file"/>
+			</not>
+		</condition>
+	</target>
+	
+	<target name="check_sha1_changed" depends="check_sha1_file" unless="natives_changed">
+		<loadproperties srcfile="${sha1_file}"/>
+		
+		<!-- Check for changes -->
+		<exec dir="${src.repo}" executable="git" failonerror="true" outputproperty="diffs">
+			<arg line="diff ${TAG} ${SHA1} ${cp}"/>
+		</exec>
+		<condition property="natives_changed">
+			<not>
+				<equals arg1="${diffs}" arg2=""/>
+			</not>
+		</condition>
+		<echo>Has native changes: ${natives_changed}, compared against ${SHA1}</echo>
+	</target>
+	
+	<target name="init_fragment">
+		<condition property="m_fail">
+			<not><and>
+				<isset property="swt.ws"/>
+				<isset property="swt.os"/>
+			</and></not>
+		</condition>
+		<fail if="m_fail" message="Failed: ${swt.ws} and ${swt.os} not set"/>
+		<condition property="fragment" value="org.eclipse.swt.${swt.ws}.${swt.os}.${swt.arch}" else="org.eclipse.swt.${swt.ws}.${swt.os}">
+			<isset property="swt.arch"/>
+		</condition>
+		<property name="fragment_dir" value="${bin.repo}/bundles/${fragment}"/>
+		<property name="sha1_file" value="${fragment_dir}/build.sha1"/>
+		<script language="javascript">
+			<![CDATA[
+				project.setProperty("cp", project.getProperty("cp_" + project.getProperty("swt.ws")));
+	   	 	]]>
+		</script>
+	</target>
+	
+	<!-- Params: swt.ws, swt.os, swt.arch -->
+	<target name="build_fragment" depends="init_fragment">
+		<property name="tmpdir" value="${tmphome}/build.${fragment}.${TAG}"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+		<mkdir dir="${tmpdir}"/>
+		<antcall target="build_fragment_impl"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+	</target>
+	
+	<target name="build_fragment_impl" depends="check_sha1_changed" if="natives_changed">
+		<!-- build natives -->
+		<antcall target="build_libraries"/>
+		<!-- commit libraries -->
+		<antcall target="commit_fragment"/>
+	</target>
+
+	<!-- Params: fragment, swt_version -->
+	<target name="commit_fragment" depends="init_fragment,get_version" if="natives_changed">
+		<fileset id="removeid" dir="${fragment_dir}">
+			<filename regex="[0-9][0-9][0-9][0-9]."/>
+			<filename regex="${swt_version}." negate="true"/>
+		</fileset>
+		
+		<copy todir="${fragment_dir}" overwrite="false">
+			<fileset refid="removeid"/>
+			<regexpmapper from="(.*)[0-9][0-9][0-9][0-9](.*)" to="\1${swt_version}\2"/>
+		</copy>
+		
+		<property name="rfiles" refid="removeid"/>
+		<echo file="${tmpdir}/tmp.txt">removed_files=${rfiles}</echo>
+		<replace file="${tmpdir}/tmp.txt" token=";" value=" "/>
+		<loadproperties srcfile="${tmpdir}/tmp.txt"/>
+		<delete file="${tmpdir}/tmp.txt"/>
+
+		<chmod perm="755">
+			<fileset dir="${fragment_dir}" includes="*${swt_version}*"/>
+		</chmod>
+		
+		<condition property="files_removed">
+			<length string="${removed_files}" trim="true" when="greater" length="0"/>
+		</condition>
+		<antcall target="git_rm"/>
+		<exec dir="${src.repo}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
+			<arg line="rev-list ${TAG} -1"/>
+		</exec>
+		<propertyfile file="${fragment_dir}/build.sha1">
+			<entry key="SHA1" value="${HEAD_TAG}"/>
+		</propertyfile>
+		<exec dir="${bin.repo}" executable="git" failonerror="true">
+			<arg line="add 'bundles/${fragment}'"/>
+		</exec>
+		<exec dir="${bin.repo}" executable="git" failonerror="true">
+			<arg line="commit -a -m 'v${swt_version} ${fragment}'"/>
+		</exec>
+	</target>
+
+	<target name="git_rm" if="files_removed">
+		<echo>Removing old libs: -${removed_files}-</echo>
+		<exec dir="${bin.repo}" executable="git" failonerror="true">
+			<arg line="rm ${removed_files}"/>
+		</exec>
+	</target>
+
+	<target name="init_build" if="eclipse.running">
+		<eclipse.refreshLocal resource="org.eclipse.swt" depth="infinite"/>
+		<eclipse.incrementalBuild project="org.eclipse.swt" kind="incr"/>
+	</target>
+
+	<target name="refresh_fragment" if="eclipse.running">
+		<echo>refreshing ${fragment}</echo>
+		<eclipse.refreshLocal resource="${fragment}" depth="infinite"/>
+	</target>
+		
+	<target name="copy.library.src">
+		<script language="javascript">
+			<![CDATA[
+				importClass(java.io.File);
+				importClass(java.io.StreamTokenizer);
+				importClass(java.io.StringReader);
+				task = project.createTask("copy");
+				projectDir = project.getProperty("project_dir");
+				task.setTodir(new File(project.getProperty("build_dir")));
+				tk = new StreamTokenizer(new StringReader(project.getProperty("cp")));
+				while ((token = tk.nextToken()) != StreamTokenizer.TT_EOF) {
+					fileset = project.createDataType("fileset");
+					fileset.setDir(new File(projectDir + "/" + tk.sval + "/"));
+					task.addFileset(fileset);
+				}
+				task.execute();
+	   	 	]]>
+		</script>
+	</target>
+
+	<!-- Params: swt.ws, swt.os, swt.arch -->
+	<target name="build_libraries" depends="init_fragment">
+		<property name="swt.arch" value=""/>
+		<property name="clean" value="clean"/>
+		<property name="targets" value="install"/>
+		<property name="project_dir" value="${basedir}/${src.repo}"/>
+		<property name="output_dir" value="${basedir}${fragment_dir}"/>
+		<property name="build_dir" value="${basedir}${fragment_dir}/tmpdir"/>
+		<delete dir="${build_dir}" quiet="true"/>
+		<antcall target="copy.library.src"/>
+		<condition property="build_task" value="build_local_win">
+			<or>
+				<equals arg1="${swt.ws}" arg2="win32"/>
+				<equals arg1="${swt.ws}" arg2="wpf"/>
+			</or>
+		</condition>
+		<condition property="build_task" value="build_remote" else="build_local">
+			<isset property="machine"/>
+		</condition>
+		<antcall target="init_build"/>
+		<antcall target="${build_task}"/>
+		<delete dir="${build_dir}" quiet="true"/>
+		<antcall target="refresh_fragment"/>
+	</target>
+	
+	<!-- machine targets swt.ws swt.os swt.arch -->
+	<target name="build_remote">
+		<property name="remotebuilddir" value="~/build"/>
+		<property name="remotetmpdir" value="${remotebuilddir}/${fragment}.${TAG}"/>
+		<property name="lib_output" value="${remotetmpdir}/libs"/>
+		<property name="zip_file" value="${fragment}.${TAG}.zip"/>
+		<zip destfile="${fragment_dir}/${zip_file}" basedir="${build_dir}"/>
+		<scp file="${fragment_dir}/${zip_file}"
+			todir="swtbuild@${machine}:${remotebuilddir}" 
+			keyfile="${keyfile}"
+			trust="true"/>
+		<delete file="${fragment_dir}/${zip_file}" quiet="true"/>
+		<sshexec host="${machine}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			trust="true"
+	 		command="rm -rf ${remotetmpdir}; mkdir ${remotetmpdir}; mkdir ${lib_output}; cd ${remotetmpdir}; unzip -aa ${remotebuilddir}/${zip_file}; export MODEL=${swt.arch}; export OUTPUT_DIR=${lib_output}; if sh build.sh ${targets}; then cd; else cd; rm -rf ${remotetmpdir}; exit 1; fi"/>
+		<scp file="swtbuild@${machine}:${lib_output}/*"
+			todir="${output_dir}"
+			keyfile="${keyfile}"
+			trust="true"/>
+		<sshexec host="${machine}" 
+			username="swtbuild" 
+			keyfile="${keyfile}" 
+			trust="true"
+	 		command="rm -rf ${remotetmpdir}; rm ${remotebuilddir}/${zip_file}"/>
+	</target>
+	
+	<target name="build_local">
+		<exec dir="${build_dir}" executable="sh" failonerror="true">
+			<arg line="build.sh"/>
+			<env key="MODEL" value="${swt.arch}"/>
+			<env key="OUTPUT_DIR" value="${output_dir}"/>
+			<arg line="${targets}"/>
+			<arg line="${clean}"/>
+		</exec>
+	</target>
+
+	<target name="build_local_win">
+		<pathconvert property="win_output_dir">
+			<path location="${output_dir}"></path>
+		</pathconvert>
+		<condition property="build_file" value="build_ce.bat" else="build.bat">
+			<equals arg1="${swt.os}" arg2="wce_ppc"/>
+		</condition>
+		<exec dir="${build_dir}" executable="${build_dir}/${build_file}" failonerror="true">
+			<env key="JAVA_HOME" value=""/>
+			<env key="OUTPUT_DIR" value="${win_output_dir}"/>
+			<arg line="${targets}"/>
+			<arg line="${clean}"/>
+		</exec>
+		<condition property="should_build_xulrunner" value="true">
+			<equals arg1="${swt.arch}" arg2="x86"/>
+		</condition>
+		<antcall target="build_local_win_xulrunner"/>
+		<delete dir="${tmpdir}" quiet="true"/>
+	</target>
+
+	<target name="build_local_win_xulrunner" if="should_build_xulrunner">
+		<exec dir="${build_dir}" executable="cmd" failonerror="true">
+			<env key="JAVA_HOME" value=""/>
+			<env key="BUILD_XULRUNNER" value="true"/>
+			<env key="OUTPUT_DIR" value="${win_output_dir}"/>
+			<arg line="/c '${build_dir}/${build_file}' x86 make_xulrunner install ${clean}"/>
+		</exec>
+	</target>
+
+	<target name="check_repo">
+		 <condition property="${repo.exists}">       
+		 	<available file="../${TAG}/${repo}" type="dir"/>     
+		 </condition>
+	</target>
+	
+	<target name="init_repo" depends="check_repo" unless="${repo.exists}" >
+		<delete dir="../${TAG}/${repo}" quiet="true"/>
+		<mkdir dir="../${TAG}"/>
+		<exec dir="../${TAG}" executable="git" failonerror="true">
+			<arg line="clone ${gitroot}/${repo}"/>
+		</exec>
+		<condition property="perform.checkout">
+			<not>
+				<equals arg1="${TAG}" arg2="master"/>
+			</not>
+		</condition>
+		<antcall target="checkout_repo"/>
+	</target>
+	
+	<target name="checkout_repo" if="perform.checkout">
+		<echo>Checking out ${repo}=${TAG}</echo>
+		<exec dir="../${TAG}/${repo}" executable="git" failonerror="true">
+			<arg line="checkout -b ${TAG} origin/${TAG}"/>
+		</exec>
+	</target>
+
+	<target name="pull_remote">
+		<antcall target="init_repo">
+			<param name="repo" value="${src.repo}"/>
+			<param name="repo.exists" value="src.repo.exists"/>
+		</antcall>
+		<exec dir="../${TAG}/${src.repo}" executable="git"  failonerror="true">
+			<arg line="pull"/>
+		</exec>
+		<antcall target="init_repo">
+			<param name="repo" value="${bin.repo}"/>
+			<param name="repo.exists" value="bin.repo.exists"/>
+		</antcall>
+		<exec dir="../${TAG}/${bin.repo}" executable="git" failonerror="true">
+			<arg line="pull"/>
+		</exec>
+		<!--antcall target="init_repo">
+			<param name="repo" value="${releng.repo}"/>
+			<param name="repo.exists" value="releng.repo.exists"/>
+		</antcall>
+		<exec dir="../${TAG}/${releng.repo}" executable="git" failonerror="true">
+			<arg line="pull"/>
+		</exec-->
+	</target>
+
+	<target name="push_remote">
+		<antcall target="init_repo">
+			<param name="repo" value="${src.repo}"/>
+			<param name="repo.exists" value="src.repo.exists"/>
+		</antcall>
+		<exec dir="../${TAG}/${src.repo}" executable="git" failonerror="true">
+			<arg line="push"/>
+		</exec>
+		<antcall target="init_repo">
+			<param name="repo" value="${bin.repo}"/>
+			<param name="repo.exists" value="bin.repo.exists"/>
+		</antcall>
+		<exec dir="../${TAG}/${bin.repo}" executable="git" failonerror="true">
+			<arg line="push"/>
+		</exec>
+		<!--antcall target="init_repo">
+			<param name="repo" value="${releng.repo}"/>
+			<param name="repo.exists" value="releng.repo.exists"/>
+		</antcall>
+		<exec dir="../${TAG}/${releng.repo}" executable="git" failonerror="true">
+			<arg line="push"/>
+		</exec-->
+	</target>
+
+	<!-- Convert SWT 32 bit java and C source to 64 bit  -->
+	<target name="replace.32.to.64" depends="init_build">
+		<property name="replace_dir" value="${src.repo}/bundles/org.eclipse.swt"/>
+		<echo>Converting java files to 64 bit in ${replace_dir} project</echo>
+		<replace dir="${replace_dir}" includes="**/*.java" token="int /*long*/" value="long /*int*/"/>
+		<replace dir="${replace_dir}" includes="**/*.java" token="int[] /*long[]*/" value="long[] /*int[]*/"/>
+		<replace dir="${replace_dir}" includes="**/*.java" token="float /*double*/" value="double /*float*/"/>
+		<replace dir="${replace_dir}" includes="**/*.java" token="float[] /*double[]*/" value="double[] /*float[]*/"/>
+		<antcall target="init_build"/>
+	</target>
+
+	<!-- Convert SWT 64 bit java and C source to 32 bit  -->
+	<target name="replace.64.to.32" depends="init_build">
+		<property name="replace_dir" value="${src.repo}/bundles/org.eclipse.swt"/>
+		<echo>Converting java files to 32 bit in ${replace_dir} project</echo>
+		<replace dir="${replace_dir}" includes="**/*.java" token="long /*int*/" value="int /*long*/"/>
+		<replace dir="${replace_dir}" includes="**/*.java" token="long[] /*int[]*/" value="int[] /*long[]*/"/>
+		<replace dir="${replace_dir}" includes="**/*.java" token="double /*float*/" value="float /*double*/"/>
+		<replace dir="${replace_dir}" includes="**/*.java" token="double[] /*float[]*/" value="float[] /*double[]*/"/>
+		<antcall target="init_build"/>
+	</target>
+</project>
