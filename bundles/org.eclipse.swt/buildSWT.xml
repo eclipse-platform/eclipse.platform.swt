@@ -14,13 +14,13 @@
 <!-- 
  
 	TAG: a tag param can be passed in to work on branch. If no tag is set master is used.
-		For example: ant -f buildNatives.xml increment_version -DTAG=R3_5_maintenance
+		For example: ant -f buildSWT.xml increment_version -DTAG=R3_5_maintenance
 		
 	natives_changed: when starting a integration build the increment of the version 
 		can be forced by setting this project. If property is not defined the increment 
 		is determine automatically based on changes in the native code since the last 
 		revision in the swp.map.
-		for Example: ant -f buildNatives.xml increment_version -Dnatives_changed=true
+		for Example: ant -f buildSWT.xml increment_version -Dnatives_changed=true
 	
 	To build the libraries of a fragment, run
 		ant -f <fragment dir>/build.xml build_libraries 

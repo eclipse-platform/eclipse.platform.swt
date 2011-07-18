@@ -54,10 +54,14 @@ case $OS in
 				MODEL=`uname -p`
 			fi
 		fi
-		if [ ${MODEL} = 'i386' ]; then
-			MAKEFILE=make_solaris_x86.mak
-			MAKE_TYPE=gmake
-		fi
+		case $MODEL in
+			"i386")
+				;&
+			"x86")
+				MAKEFILE=make_solaris_x86.mak
+				MAKE_TYPE=gmake
+				;;
+		esac
 		;;
 	"FreeBSD")
 		SWT_OS=freebsd
