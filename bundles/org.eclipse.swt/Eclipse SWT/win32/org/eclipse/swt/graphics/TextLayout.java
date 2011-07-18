@@ -1030,6 +1030,7 @@ RECT drawRunTextGDIP(int /*long*/ graphics, StyleItem run, RECT rect, int /*long
 	boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
 	boolean partialSelection = hasSelection && !fullSelection && !(selectionStart > end || run.start > selectionEnd);
 	int drawY = rect.top + baseline;
+	if (run.style != null && run.style.rise != 0) drawY -= run.style.rise;
 	int drawX = rect.left;
 	int /*long*/ brush = color;
 	if (fullSelection) {
