@@ -784,6 +784,12 @@
 
 	<!-- Params: fragment, swt_version -->
 	<target name="commit_fragment" depends="init_fragment,get_version" if="natives_changed">
+		<waitfor maxwait="1" maxwaitunit="hour">
+			<not>
+				<available file="${bin.repo}/.git/index.lock" type="file"/>
+			</not>
+		</waitfor>
+		
 		<fileset id="removeid" dir="${fragment_dir}">
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
 			<filename regex="${swt_version}." negate="true"/>
