@@ -865,8 +865,8 @@
 		<property name="clean" value="clean"/>
 		<property name="targets" value="install"/>
 		<property name="project_dir" value="${basedir}/${src.repo}"/>
-		<property name="output_dir" value="${basedir}${fragment_dir}"/>
-		<property name="build_dir" value="${basedir}${fragment_dir}/tmpdir"/>
+		<property name="output_dir" value="${basedir}/${fragment_dir}"/>
+		<property name="build_dir" value="${basedir}/${fragment_dir}/tmpdir"/>
 		<delete dir="${build_dir}" quiet="true"/>
 		<antcall target="copy.library.src"/>
 		<condition property="build_task" value="build_local_win">
@@ -926,7 +926,7 @@
 		<pathconvert property="win_output_dir">
 			<path location="${output_dir}"></path>
 		</pathconvert>
-		<condition property="build_file" value="build_ce.bat" else="build.bat">
+		<condition property="build_file" value="build-ce.bat" else="build.bat">
 			<equals arg1="${swt.os}" arg2="wce_ppc"/>
 		</condition>
 		<exec dir="${build_dir}" executable="${build_dir}/${build_file}" failonerror="true">
@@ -936,7 +936,10 @@
 			<arg line="${clean}"/>
 		</exec>
 		<condition property="should_build_xulrunner" value="true">
-			<equals arg1="${swt.arch}" arg2="x86"/>
+			<and>
+				<equals arg1="${swt.ws}" arg2="win32"/>
+				<equals arg1="${swt.arch}" arg2="x86"/>
+			</and>
 		</condition>
 		<antcall target="build_local_win_xulrunner"/>
 		<delete dir="${tmpdir}" quiet="true"/>

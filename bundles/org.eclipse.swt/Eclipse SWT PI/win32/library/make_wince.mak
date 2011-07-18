@@ -48,7 +48,7 @@ swt.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(SWT_LIB)\" -r -fo swt.res swt.rc
 
 install: all
-	copy *.dll $(OUTPUT_DIR)
+	copy *.dll "$(OUTPUT_DIR)"
 
 clean:
     del *.obj *.res *.dll *.lib *.exp
@@ -81,7 +81,7 @@ swt.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(SWT_LIB)\" -r -fo swt.res swt.rc
 
 install: all
-	copy *.dll $(OUTPUT_DIR)
+	copy *.dll "$(OUTPUT_DIR)"
 
 clean:
     del *.obj *.res *.dll *.lib *.exp
