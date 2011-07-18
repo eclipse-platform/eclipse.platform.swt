@@ -988,6 +988,7 @@
 	</target>
 
 	<target name="pull_remote">
+		<echo>Pull ${src.repo}</echo>
 		<antcall target="init_repo">
 			<param name="repo" value="${src.repo}"/>
 			<param name="repo.exists" value="src.repo.exists"/>
@@ -995,6 +996,7 @@
 		<exec dir="../${TAG}/${src.repo}" executable="git"  failonerror="true">
 			<arg line="pull"/>
 		</exec>
+		<echo>Pull ${bin.repo}</echo>
 		<antcall target="init_repo">
 			<param name="repo" value="${bin.repo}"/>
 			<param name="repo.exists" value="bin.repo.exists"/>
@@ -1002,6 +1004,7 @@
 		<exec dir="../${TAG}/${bin.repo}" executable="git" failonerror="true">
 			<arg line="pull"/>
 		</exec>
+		<echo>Pull ${releng.repo}</echo>
 		<!--antcall target="init_repo">
 			<param name="repo" value="${releng.repo}"/>
 			<param name="repo.exists" value="releng.repo.exists"/>
