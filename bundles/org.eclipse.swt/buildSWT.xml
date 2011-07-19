@@ -1008,48 +1008,68 @@
 	</target>
 
 	<target name="pull_remote">
+		<delete includeemptydirs="true">
+			<fileset dir="${bin.repo}" defaultexcludes="false">
+				<include name="bundles/*/tmpdir/**"/>
+			</fileset>
+		</delete>
 		<antcall target="init_repo">
 			<param name="repo" value="${src.repo}"/>
 			<param name="repo.exists" value="src.repo.exists"/>
 		</antcall>
 		<exec dir="../${TAG}/${src.repo}" executable="git"  failonerror="true">
-			<arg line="pull"/>
+			<arg line="fetch"/>
+		</exec>
+		<exec dir="../${TAG}/${src.repo}" executable="git"  failonerror="true">
+			<arg line="reset --hard origin/${TAG}"/>
 		</exec>
 		<antcall target="init_repo">
 			<param name="repo" value="${bin.repo}"/>
 			<param name="repo.exists" value="bin.repo.exists"/>
 		</antcall>
 		<exec dir="../${TAG}/${bin.repo}" executable="git" failonerror="true">
-			<arg line="pull"/>
+			<arg line="fetch"/>
+		</exec>
+		<exec dir="../${TAG}/${bin.repo}" executable="git" failonerror="true">
+			<arg line="reset --hard origin/${TAG}"/>
 		</exec>
 		<!--antcall target="init_repo">
 			<param name="repo" value="${releng.repo}"/>
 			<param name="repo.exists" value="releng.repo.exists"/>
 		</antcall>
 		<exec dir="../${TAG}/${releng.repo}" executable="git" failonerror="true">
-			<arg line="pull"/>
+			<arg line="fetch"/>
+		</exec>
+		<exec dir="../${TAG}/${releng.repo}" executable="git" failonerror="true">
+			<arg line="reset --><!--hard origin/${TAG}"/>
 		</exec-->
 	</target>
 
 	<target name="push_remote">
-		<antcall target="init_repo">
-			<param name="repo" value="${src.repo}"/>
-			<param name="repo.exists" value="src.repo.exists"/>
-		</antcall>
+		<exec dir="../${TAG}/${src.repo}" executable="git" failonerror="true">
+			<arg line="fetch"/>
+		</exec>
+		<exec dir="../${TAG}/${src.repo}" executable="git" failonerror="true">
+			<arg line="rebase origin/${TAG}"/>
+		</exec>
 		<exec dir="../${TAG}/${src.repo}" executable="git" failonerror="true">
 			<arg line="push"/>
 		</exec>
-		<antcall target="init_repo">
-			<param name="repo" value="${bin.repo}"/>
-			<param name="repo.exists" value="bin.repo.exists"/>
-		</antcall>
+		<exec dir="../${TAG}/${bin.repo}" executable="git" failonerror="true">
+			<arg line="fetch"/>
+		</exec>
+		<exec dir="../${TAG}/${bin.repo}" executable="git" failonerror="true">
+			<arg line="rebase origin/${TAG}"/>
+		</exec>
 		<exec dir="../${TAG}/${bin.repo}" executable="git" failonerror="true">
 			<arg line="push"/>
 		</exec>
-		<!--antcall target="init_repo">
-			<param name="repo" value="${releng.repo}"/>
-			<param name="repo.exists" value="releng.repo.exists"/>
-		</antcall>
+		<!--exec dir="../${TAG}/${releng.repo}" executable="git" failonerror="true">
+			<arg line="fetch"/>
+		</exec>
+		<exec dir="../${TAG}/${releng.repo}" executable="git" failonerror="true">
+			<arg line="rebase origin/${TAG}"/>
+		</exec>
 		<exec dir="../${TAG}/${releng.repo}" executable="git" failonerror="true">
 			<arg line="push"/>
 		</exec-->
