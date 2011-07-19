@@ -784,12 +784,6 @@
 
 	<!-- Params: fragment, swt_version -->
 	<target name="commit_fragment" depends="init_fragment,get_version" if="natives_changed">
-		<waitfor maxwait="1" maxwaitunit="hour">
-			<not>
-				<available file="${bin.repo}/.git/index.lock" type="file"/>
-			</not>
-		</waitfor>
-		
 		<fileset id="removeid" dir="${fragment_dir}">
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
 			<filename regex="${swt_version}." negate="true"/>
@@ -813,13 +807,20 @@
 		<condition property="files_removed">
 			<length string="${removed_files}" trim="true" when="greater" length="0"/>
 		</condition>
-		<antcall target="git_rm"/>
 		<exec dir="${src.repo}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
 			<arg line="rev-list ${TAG} -1"/>
 		</exec>
 		<propertyfile file="${fragment_dir}/build.sha1">
 			<entry key="SHA1" value="${HEAD_TAG}"/>
 		</propertyfile>
+
+		<waitfor maxwait="1" maxwaitunit="hour">
+			<not>
+				<available file="${bin.repo}/.git/index.lock" type="file"/>
+			</not>
+		</waitfor>
+		
+		<antcall target="git_rm"/>
 		<exec dir="${bin.repo}" executable="git" failonerror="true">
 			<arg line="add 'bundles/${fragment}'"/>
 		</exec>
