@@ -54,6 +54,8 @@
 	<property name="make_common" value="bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
 	<property name="version_file" value="bundles/org.eclipse.swt/Eclipse SWT/common/version.txt"/>
 	<property name="build_notes" value="bundles/org.eclipse.swt/buildnotes_swt.html"/>
+
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
 		
 	<target name="check_libraries" depends="get_version">
 		<antcall target="check_fragment_libraries">
@@ -767,72 +769,90 @@
 	</target>
 	
 	<!-- Params: swt.ws, swt.os, swt.arch -->
-	<target name="build_fragment" depends="init_fragment">
-		<property name="tmpdir" value="${tmphome}/build.${fragment}.${TAG}"/>
-		<delete dir="${tmpdir}" quiet="true"/>
-		<mkdir dir="${tmpdir}"/>
-		<antcall target="build_fragment_impl"/>
-		<delete dir="${tmpdir}" quiet="true"/>
-	</target>
-	
-	<target name="build_fragment_impl" depends="check_sha1_changed" if="natives_changed">
-		<!-- build natives -->
+	<target name="build_fragment" depends="init_fragment,check_sha1_changed" if="natives_changed">
+		<!-- Build natives -->
 		<antcall target="build_libraries"/>
-		<!-- commit libraries -->
-		<antcall target="commit_fragment"/>
-	</target>
-
-	<!-- Params: fragment, swt_version -->
-	<target name="commit_fragment" depends="init_fragment,get_version" if="natives_changed">
-		<fileset id="removeid" dir="${fragment_dir}">
-			<filename regex="[0-9][0-9][0-9][0-9]."/>
-			<filename regex="${swt_version}." negate="true"/>
-		</fileset>
 		
-		<copy todir="${fragment_dir}" overwrite="false">
-			<fileset refid="removeid"/>
-			<regexpmapper from="(.*)[0-9][0-9][0-9][0-9](.*)" to="\1${swt_version}\2"/>
-		</copy>
-		
-		<property name="rfiles" refid="removeid"/>
-		<echo file="${tmpdir}/tmp.txt">removed_files=${rfiles}</echo>
-		<replace file="${tmpdir}/tmp.txt" token=";" value=" "/>
-		<loadproperties srcfile="${tmpdir}/tmp.txt"/>
-		<delete file="${tmpdir}/tmp.txt"/>
-
-		<chmod perm="755">
-			<fileset dir="${fragment_dir}" includes="*${swt_version}*"/>
-		</chmod>
-		
-		<condition property="files_removed">
-			<length string="${removed_files}" trim="true" when="greater" length="0"/>
-		</condition>
+		<!-- Update build.sha1 file -->
 		<exec dir="${src.repo}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
 			<arg line="rev-list ${TAG} -1"/>
 		</exec>
 		<propertyfile file="${fragment_dir}/build.sha1">
 			<entry key="SHA1" value="${HEAD_TAG}"/>
 		</propertyfile>
+	</target>
 
-		<waitfor maxwait="1" maxwaitunit="hour">
-			<not>
-				<available file="${bin.repo}/.git/index.lock" type="file"/>
-			</not>
-		</waitfor>
+	<!-- Params: fragment, swt_version -->
+	<target name="commit_binaries" depends="get_version">
+		<!-- Figure out libraries to remove from repo -->
+		<fileset id="removeid" dir="${bin.repo}">
+			<filename regex="[0-9][0-9][0-9][0-9]."/>
+			<filename regex="${swt_version}." negate="true"/>
+			<exclude name="**/.git/**"/>
+			<exclude name="**/org.eclipse.swt.gtk.hpux.ia64/**"/>
+			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
+			<exclude name="**/org.eclipse.swt.motif.aix.ppc/**"/>
+			<exclude name="**/org.eclipse.swt.motif.hpux.ia64_32/**"/>
+			<exclude name="**/org.eclipse.swt.motif.hpux.PA_RISC/**"/>
+			<exclude name="**/org.eclipse.swt.motif.linux.x86/**"/>
+			<exclude name="**/org.eclipse.swt.motif.solaris.sparc/**"/>
+			<exclude name="**/org.eclipse.swt.photon.qnx.x86/**"/>
+			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
+		</fileset>
+
+		<!-- Rename libraries that were not built to the new version -->
+		<copy todir="${bin.repo}" overwrite="false">
+			<fileset refid="removeid"/>
+			<regexpmapper from="(.*)[0-9][0-9][0-9][0-9](.*)" to="\1${swt_version}\2"/>
+		</copy>
+		<property name="rfiles" refid="removeid"/>
+		<propertyregex property="removed_files" input="${rfiles}" regexp=";" replace=" " global="true"/>
+		
+		<!-- Get list of files to commit -->
+		<fileset id="addid" dir="${bin.repo}">
+			<include name="bundles/*/*${swt_version}*"/>
+			<include name="bundles/*/build.sha1"/>
+			<exclude name="**/.git/**"/>
+			<exclude name="**/tmpdir/**"/>
+			<exclude name="**/org.eclipse.swt.gtk.hpux.ia64/**"/>
+			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
+			<exclude name="**/org.eclipse.swt.motif.aix.ppc/**"/>
+			<exclude name="**/org.eclipse.swt.motif.hpux.ia64_32/**"/>
+			<exclude name="**/org.eclipse.swt.motif.hpux.PA_RISC/**"/>
+			<exclude name="**/org.eclipse.swt.motif.linux.x86/**"/>
+			<exclude name="**/org.eclipse.swt.motif.solaris.sparc/**"/>
+			<exclude name="**/org.eclipse.swt.photon.qnx.x86/**"/>
+			<exclude name="**/org.eclipse.swt.wpf.win32.x86/**"/>
+		</fileset>
+		<property name="afiles" refid="addid"/>
+		<propertyregex property="added_files" input="${afiles}" regexp=";" replace=" " global="true"/>
+		<echo>${added_files}</echo>
+		
+		<chmod perm="755">
+			<fileset dir="${bin.repo}" includes="*${swt_version}*"/>
+		</chmod>
 		
 		<antcall target="git_rm"/>
 		<exec dir="${bin.repo}" executable="git" failonerror="true">
-			<arg line="add 'bundles/${fragment}'"/>
+			<arg line="add ${added_files}"/>
 		</exec>
-		<exec dir="${bin.repo}" executable="git" failonerror="true">
-			<arg line="commit -a -m 'v${swt_version} ${fragment}'"/>
+		<exec dir="${bin.repo}" executable="git" failonerror="true" outputproperty="files_added">
+			<arg line="diff HEAD"/>
 		</exec>
+		<antcall target="git_commit"/>
 	</target>
 
-	<target name="git_rm" if="files_removed">
+	<target name="git_rm" if="removed_files">
 		<echo>Removing old libs: -${removed_files}-</echo>
 		<exec dir="${bin.repo}" executable="git" failonerror="true">
 			<arg line="rm ${removed_files}"/>
+		</exec>
+	</target>
+
+	<target name="git_commit" if="files_added">
+		<echo>Commiting libs: -${added_files}-</echo>
+		<exec dir="${bin.repo}" executable="git" failonerror="true">
+			<arg line="commit -m 'v${swt_version}'"/>
 		</exec>
 	</target>
 
@@ -891,18 +911,16 @@
 		<antcall target="refresh_fragment"/>
 	</target>
 	
-	<!-- machine targets swt.ws swt.os swt.arch -->
 	<target name="build_remote">
 		<property name="remotebuilddir" value="~/build"/>
 		<property name="remotetmpdir" value="${remotebuilddir}/${fragment}.${TAG}"/>
 		<property name="lib_output" value="${remotetmpdir}/libs"/>
 		<property name="zip_file" value="${fragment}.${TAG}.zip"/>
-		<zip destfile="${fragment_dir}/${zip_file}" basedir="${build_dir}"/>
-		<scp file="${fragment_dir}/${zip_file}"
+		<zip destfile="${build_dir}/${zip_file}" basedir="${build_dir}"/>
+		<scp file="${build_dir}/${zip_file}"
 			todir="swtbuild@${machine}:${remotebuilddir}" 
 			keyfile="${keyfile}"
 			trust="true"/>
-		<delete file="${fragment_dir}/${zip_file}" quiet="true"/>
 		<sshexec host="${machine}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
