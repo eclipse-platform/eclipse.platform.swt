@@ -637,6 +637,8 @@ Point computeNativeSize (int /*long*/ h, int wHint, int hHint, boolean changed) 
 		width = wHint == SWT.DEFAULT ? requisition.width : wHint;
 		height = hHint == SWT.DEFAULT ? requisition.height : hHint;
 	}
+	if (width == 0) width = DEFAULT_WIDTH;
+	if (height == 0) height = DEFAULT_HEIGHT;
 	return new Point (width, height);
 }
 

@@ -207,6 +207,7 @@ void createHandle (int index) {
 	if (columnHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_tree_view_column_pack_start (columnHandle, textRenderer, true);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.text, TEXT_COLUMN);
+	OS.gtk_tree_view_column_set_min_width (columnHandle, 0);
 	OS.gtk_tree_view_insert_column (handle, columnHandle, index);
 	OS.gtk_container_add (fixedHandle, scrolledHandle);
 	OS.gtk_container_add (scrolledHandle, handle);
