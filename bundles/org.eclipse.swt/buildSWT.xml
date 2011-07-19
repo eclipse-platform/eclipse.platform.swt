@@ -826,7 +826,6 @@
 		</fileset>
 		<property name="afiles" refid="addid"/>
 		<propertyregex property="added_files" input="${afiles}" regexp=";" replace=" " global="true"/>
-		<echo>${added_files}</echo>
 		
 		<chmod perm="755">
 			<fileset dir="${bin.repo}" includes="*${swt_version}*"/>
@@ -836,9 +835,12 @@
 		<exec dir="${bin.repo}" executable="git" failonerror="true">
 			<arg line="add ${added_files}"/>
 		</exec>
-		<exec dir="${bin.repo}" executable="git" failonerror="true" outputproperty="files_added">
+		<exec dir="${bin.repo}" executable="git" failonerror="true" outputproperty="diffs">
 			<arg line="diff HEAD"/>
 		</exec>
+		<condition property="commit_changes">
+			<length string="${diffs}" trim="true" when="greater" length="0"/>
+		</condition>
 		<antcall target="git_commit"/>
 	</target>
 
@@ -849,7 +851,7 @@
 		</exec>
 	</target>
 
-	<target name="git_commit" if="files_added">
+	<target name="git_commit" if="commit_changes">
 		<echo>Commiting libs: -${added_files}-</echo>
 		<exec dir="${bin.repo}" executable="git" failonerror="true">
 			<arg line="commit -m 'v${swt_version}'"/>
