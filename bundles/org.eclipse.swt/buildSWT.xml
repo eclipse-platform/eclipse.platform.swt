@@ -466,7 +466,7 @@
 		<antcall target="new_build"/>
 	</target>
 	
-	<target name="new_build">
+	<target name="new_build" depends="get_version">
 		<!-- Update the version files -->
 		<antcall target="increment_version"/>
 		
@@ -491,6 +491,37 @@
 		<replace file="${repo.src}/${file_make_common}" token="min_ver=${min_ver}" value="min_ver=${new_min_ver}"/>
 		<replace file="${repo.src}/${file_make_common}" token="maj_ver=${maj_ver}" value="maj_ver=${new_maj_ver}"/>
 		<replace file="${repo.src}/${file_make_common}" token="comma_ver=${comma_ver}" value="comma_ver=${new_comma_ver}"/>
+	</target>
+
+	<!-- Params: swt_new_tag -->
+	<target name="update_buildnotes" depends="get_tag, get_new_tag">
+		<property name="MILESTONE" value=""/>
+		<tstamp>
+			<format property="header.time" pattern="EEEE MMMMM dd, yyyy" offset="1" unit="day"/>
+		</tstamp>
+		<tstamp>
+			<format property="url.to.time" pattern="yyyy-MM-dd'+'HH'%3A'mm'%3A'ss'+%2B0000'" timezone="gmt"/>
+		</tstamp>
+		
+		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="gitlog">
+			<arg line="log --pretty='%ad' --date=iso -1 ${swt_tag}"/>
+		</exec>
+		<script language="javascript">
+		<![CDATA[
+			gitlog = project.getProperty("gitlog");
+			gitlog = gitlog.replaceAll("\\+", "%2B"); 
+			gitlog = gitlog.replaceAll("\\:", "%3A"); 
+			gitlog = gitlog.replaceAll("\\s", "+"); 
+			project.setProperty("url.from.time", gitlog);
+   	 	]]>
+		</script>
+		<echo> Searching bugs from "${url.from.time}" to "${url.to.time}"</echo>
+		
+		<property name="match_line" value="SWT&lt;/h1&gt;"/>
+		<property name="delimiter" value="&#13;&#10;"/>
+		<property name="url" value="https://bugs.eclipse.org/bugs/buglist.cgi?bug_file_loc=;bug_file_loc_type=allwordssubstr;bug_id=;bugidtype=include;chfield=resolution;target_milestone=${MILESTONE};chfieldfrom=${url.from.time};chfieldto=${url.to.time};chfieldvalue=FIXED;classification=Eclipse;component=SWT;email1=;email2=;emailtype1=substring;emailtype2=substring;field-1-0-0=classification;field-1-1-0=product;field-1-2-0=component;field0-0-0=noop;keywords=;keywords_type=allwords;long_desc=;long_desc_type=allwordssubstr;product=Platform;query_format=advanced;remaction=;short_desc=;short_desc_type=allwordssubstr;status_whiteboard=;status_whiteboard_type=allwordssubstr;type-1-0-0=anyexact;type-1-1-0=anyexact;type-1-2-0=anyexact;type0-0-0=noop;value-1-0-0=Eclipse;value-1-1-0=Platform;value-1-2-0=SWT;value0-0-0=;votes=;query_based_on="/>
+		<property name="body" value="${delimiter}${delimiter}&lt;h2&gt;SWT Build ${swt_new_tag} - ${header.time}&lt;/h2&gt;${delimiter}${delimiter}&lt;blockquote&gt;${delimiter}&lt;a href=${url}&gt;Bugs fixed&lt;/a&gt;${delimiter}&lt;/blockquote&gt;"/>
+		<replace file="${repo.src}/${file_build_notes}" token="${match_line}" value="${match_line}${body}"/>
 	</target>
 	
 	<target name="cvs_tag">
@@ -619,37 +650,6 @@
 			<length string="${diffs}" trim="true" when="greater" length="0"/>
 		</condition>
 		<echo>Natives changed: ${natives_changed} since ${swt_tag}</echo>
-	</target>
-
-	<!-- Params: swt_new_tag -->
-	<target name="update_buildnotes" depends="get_tag, get_new_tag">
-		<property name="MILESTONE" value=""/>
-		<tstamp>
-			<format property="header.time" pattern="EEEE MMMMM dd, yyyy" offset="1" unit="day"/>
-		</tstamp>
-		<tstamp>
-			<format property="url.to.time" pattern="yyyy-MM-dd'+'HH'%3A'mm'%3A'ss'+%2B0000'" timezone="gmt"/>
-		</tstamp>
-		
-		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="gitlog">
-			<arg line="log --pretty='%ad' --date=iso -1 ${swt_tag}"/>
-		</exec>
-		<script language="javascript">
-		<![CDATA[
-			gitlog = project.getProperty("gitlog");
-			gitlog = gitlog.replaceAll("\\+", "%2B"); 
-			gitlog = gitlog.replaceAll("\\:", "%3A"); 
-			gitlog = gitlog.replaceAll("\\s", "+"); 
-			project.setProperty("url.from.time", gitlog);
-   	 	]]>
-		</script>
-		<echo> Searching bugs from "${url.from.time}" to "${url.to.time}"</echo>
-		
-		<property name="match_line" value="SWT&lt;/h1&gt;"/>
-		<property name="delimiter" value="&#13;&#10;"/>
-		<property name="url" value="https://bugs.eclipse.org/bugs/buglist.cgi?bug_file_loc=;bug_file_loc_type=allwordssubstr;bug_id=;bugidtype=include;chfield=resolution;target_milestone=${MILESTONE};chfieldfrom=${url.from.time};chfieldto=${url.to.time};chfieldvalue=FIXED;classification=Eclipse;component=SWT;email1=;email2=;emailtype1=substring;emailtype2=substring;field-1-0-0=classification;field-1-1-0=product;field-1-2-0=component;field0-0-0=noop;keywords=;keywords_type=allwords;long_desc=;long_desc_type=allwordssubstr;product=Platform;query_format=advanced;remaction=;short_desc=;short_desc_type=allwordssubstr;status_whiteboard=;status_whiteboard_type=allwordssubstr;type-1-0-0=anyexact;type-1-1-0=anyexact;type-1-2-0=anyexact;type0-0-0=noop;value-1-0-0=Eclipse;value-1-1-0=Platform;value-1-2-0=SWT;value0-0-0=;votes=;query_based_on="/>
-		<property name="body" value="${delimiter}${delimiter}&lt;h2&gt;SWT Build ${swt_new_tag} - ${header.time}&lt;/h2&gt;${delimiter}${delimiter}&lt;blockquote&gt;${delimiter}&lt;a href=${url}&gt;Bugs fixed&lt;/a&gt;${delimiter}&lt;/blockquote&gt;"/>
-		<replace file="${repo.src}/${file_build_notes}" token="${match_line}" value="${match_line}${body}"/>
 	</target>
 
 	<!-- depends on 'get_new_tag' to define swt_new_tag, swt_version, maj_ver and min_ver -->
