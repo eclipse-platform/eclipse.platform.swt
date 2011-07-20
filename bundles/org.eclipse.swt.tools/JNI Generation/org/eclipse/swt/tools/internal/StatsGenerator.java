@@ -170,6 +170,7 @@ void generateStatsNatives(String className) {
 	outputln("\t(JNIEnv *env, jclass that, jint index)");
 	outputln("{");
 	output("\treturn ");
+	boolean isCPP = getCPP();
 	if (isCPP) {
 		output("env->NewStringUTF(");
 	} else {
