@@ -466,7 +466,7 @@
 		<antcall target="new_build"/>
 	</target>
 	
-	<target name="new_build" depends="get_version">
+	<target name="new_build" depends="get_version,get_tag">
 		<!-- Update the version files -->
 		<antcall target="increment_version"/>
 		
@@ -476,6 +476,9 @@
 		<!-- Commit the files -->
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="add '${file_library_j2se}' '${file_library_j2me}' '${file_version}' '${file_make_common}' '${file_build_notes}'"/>
+		</exec>
+		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="status"/>
 		</exec>
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="commit -m 'v${new_version}'"/>
