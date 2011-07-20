@@ -667,6 +667,12 @@
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
 			<arg line="tag ${swt_new_tag}"/>
 		</exec>
+		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="push --tags"/>
+		</exec>
+		<exec dir="${repo.bin}" executable="git" failonerror="true">
+			<arg line="push --tags"/>
+		</exec>
 		
 		<antcall target="update_swt_map"/>
 	</target>
