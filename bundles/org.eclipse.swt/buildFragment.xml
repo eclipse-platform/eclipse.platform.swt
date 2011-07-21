@@ -105,7 +105,7 @@
 			<fileset    dir="${temp.folder}/@dot.src/library/" excludes="**/*.sh"/>
 			<zipfileset dir="${temp.folder}/@dot.src/library/" includes="**/*.sh" filemode="755"/>
 			<fileset dir="${temp.folder}/@dot.src" includes="**/version.txt"/>
-			<fileset dir="${basedir}" includes="about.html,about_files/"/>
+			<fileset dir="${fragmentdir}" includes="about.html,about_files/"/>
 		</zip>
 		<delete dir="${temp.folder}/@dot.src"/>
 	</target>
@@ -117,7 +117,7 @@
 			<fileset dir="${temp.folder}/@dot.src" includes="**/*.properties"/>
 			<fileset dir="${temp.folder}/@dot.src/library/"/>
 			<fileset dir="${temp.folder}/@dot.src" includes="**/version.txt"/>
-			<fileset dir="${basedir}" includes="about.html,about_files/"/>
+			<fileset dir="${fragmentdir}" includes="about.html,about_files/"/>
 		</copy>
 		<delete dir="${temp.folder}/@dot.src"/>
 	</target>
@@ -440,14 +440,14 @@
 		<mkdir dir="${destination.temp.folder}/${full.name}" />
 		<copy file="${build.result.folder}/src.zip" todir="${destination.temp.folder}/${full.name}/" />
 		<copy todir="${destination.temp.folder}/${full.name}">
-			<fileset dir="${basedir}" includes="about.html,about_files/" />
+			<fileset dir="${fragmentdir}" includes="about.html,about_files/" />
 		</copy>
 	</target>
 
 	<target name="gather.individual.sources" depends="init">
 		<antcall target="copy.src" />
 		<copy todir="${destination.temp.folder}">
-			<fileset dir="${basedir}" includes="about.html,about_files/" />
+			<fileset dir="${fragmentdir}" includes="about.html,about_files/" />
 		</copy>
 	</target>
 
@@ -469,13 +469,13 @@
 			<fileset dir="${build.result.folder}/@dot" includes="**" />
 		</copy>
 		<copy todir="${destination.temp.folder}/${full.name}">
-			<fileset dir="${basedir}" includes="fragment.properties,about.html,about_files/,swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,libcairo-swt.so,META-INF/" />
+			<fileset dir="${fragmentdir}" includes="fragment.properties,about.html,about_files/,swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,libcairo-swt.so,META-INF/" />
 		</copy>
 		<chmod perm="755" dir="${destination.temp.folder}/${full.name}" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,libcairo-swt.so" />
 		<eclipse.versionReplacer path="${destination.temp.folder}/${full.name}" version="${version.suffix}" />
 		<antcall target="apitools.generation">
 			<param name="target.folder" value="${destination.temp.folder}/${full.name}"/>
-			<param name="projectLocation" value="${basedir}"/>
+			<param name="projectLocation" value="${fragmentdir}"/>
 			<param name="binary.folders" value="${build.result.folder}/@dot"/>
 			<param name="projectName" value="${full.name}"/>
 			<param name="extraSourceLocations" value="${basedir}/${plugindir}"/>
@@ -492,21 +492,21 @@
 			<param name="debug" value="true" />
 			<param name="jar.filename" value="swt-debug.jar" />
 		</antcall>
-		<jar jarfile="${build.result.folder}/swt-debug.jar" basedir="${basedir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
+		<jar jarfile="${build.result.folder}/swt-debug.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
 		<copy file="${build.result.folder}/swt-debug.jar" todir="${temp.folder}/swtdownload" />
 		<delete dir="${build.result.folder}/@dot" />
 		<antcall target="build.jars">
 			<param name="debug" value="false" />
 			<param name="jar.filename" value="swt.jar" />
 		</antcall>
-		<jar jarfile="${build.result.folder}/swt.jar" basedir="${basedir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
+		<jar jarfile="${build.result.folder}/swt.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
 		<copy file="${build.result.folder}/swt.jar" todir="${temp.folder}/swtdownload" />
 		<antcall target="build.sources" />
 		<copy file="${build.result.folder}/src.zip" todir="${temp.folder}/swtdownload" />
 		<copy file="${plugindir}/build/.project" todir="${temp.folder}/swtdownload" />
 		<copy file="${plugindir}/build/.classpath" todir="${temp.folder}/swtdownload" />
 		<copy todir="${temp.folder}/swtdownload">
-			<fileset dir="${basedir}" includes="about.html,about_files/" />
+			<fileset dir="${fragmentdir}" includes="about.html,about_files/" />
 		</copy>
 		<condition property="zipfilename" value="swt-${buildid}-${swt.ws}-${swt.os}-${swt.arch}.zip" else="swt-${buildid}-${swt.ws}-${swt.os}.zip">
 			<isset property="swt.arch"/>
@@ -554,7 +554,7 @@
 		<antcall target="gather.bin.parts">
 			<param name="destination.temp.folder" value="${temp.folder}/" />
 		</antcall>
-		<jar jarfile="${plugin.destination}/${full.name}.jar" basedir="${temp.folder}/${full.name}" filesonly="true" manifest="${basedir}/META-INF/MANIFEST.MF"/>
+		<jar jarfile="${plugin.destination}/${full.name}.jar" basedir="${temp.folder}/${full.name}" filesonly="true" manifest="${fragmentdir}/META-INF/MANIFEST.MF"/>
 		<delete dir="${temp.folder}" />
 	</target>
 
