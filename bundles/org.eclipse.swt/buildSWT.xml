@@ -662,10 +662,10 @@
 		<antcall target="check_fragment_libraries"/>
 		
 		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="tag ${swt_new_tag}"/>
+			<arg line="tag v${swt_new_tag}"/>
 		</exec>
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
-			<arg line="tag ${swt_new_tag}"/>
+			<arg line="tag v${swt_new_tag}"/>
 		</exec>
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="push --tags"/>
