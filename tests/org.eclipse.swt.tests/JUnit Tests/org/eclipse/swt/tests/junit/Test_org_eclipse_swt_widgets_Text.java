@@ -17,6 +17,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.events.SegmentListener;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Text
@@ -1387,6 +1388,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_consistency_Modify");
 	methodNames.addElement("test_consistency_MenuDetect");
 	methodNames.addElement("test_consistency_DragDetect");
+	methodNames.addElement("test_consistency_Segments");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Scrollable.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -1444,6 +1446,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_consistency_Modify")) test_consistency_Modify();
 	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
 	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
+	else if (getName().equals("test_consistency_Segments")) test_consistency_Segments();
 	else super.runTest();
 }
 
@@ -1498,4 +1501,119 @@ public void test_consistency_DragDetect () {
     consistencyEvent(30, 10, 50, 0, ConsistencyUtility.MOUSE_DRAG);
 }
 
+public void test_consistency_Segments () {
+	final SegmentListener sl1 = new SegmentListener() {
+		public void getSegments(SegmentEvent event) {
+			if ((event.text.length() & 1) == 1) {
+				event.segments = new int [] {1, event.text.length()};
+				event.segmentsChars = null;
+			} else {
+				event.segments = new int [] {0, 0, event.text.length()};
+				event.segmentsChars = new char [] {':', '<', '>'};
+			}
+			listenerCalled = true;
+		}
+	};
+	try {
+		text.addSegmentListener(null);
+		fail("No exception thrown for addSegmentListener(null)");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	boolean[] singleLine = {false, true};
+	for (int i = singleLine.length; i-- > 0;) {
+		makeCleanEnvironment(singleLine[i]);
+		text.addSegmentListener(sl1);
+		doSegmentsTest(true);
+	
+		text.addSegmentListener(sl1);
+		doSegmentsTest(true);
+	
+		text.removeSegmentListener(sl1);
+		doSegmentsTest(true);
+	
+		text.removeSegmentListener(sl1);
+		text.setText(text.getText());
+		doSegmentsTest(false);
+	}
+}
+
+private void doSegmentsTest (boolean isListening) {
+	String string = "1234";
+
+	// Test setText
+	text.setText(string);
+	assertEquals(isListening, listenerCalled);
+	listenerCalled = false;
+	assertEquals(string, text.getText());
+
+	// Test append
+	String substr = "56";
+	text.append(substr);
+	string += substr;
+	assertEquals(isListening, listenerCalled);
+	listenerCalled = false;
+	assertEquals(string, text.getText());
+
+	// Test limit
+	if ((text.getStyle() & SWT.SINGLE) != 0) {
+		int limit = string.length() - 1;
+		text.setTextLimit(limit);
+		assertEquals(limit, text.getTextLimit());
+		text.setText(string);
+		assertEquals(string.substring(0, limit), text.getText());
+	}
+	text.setTextLimit(Text.LIMIT);
+	text.setText(string);
+	assertEquals(string, text.getText());
+
+	// Test selection, copy and paste
+	listenerCalled = false;
+	Point pt = new Point(1, 3);
+	text.setSelection(pt);
+	assertEquals(pt, text.getSelection());
+	assertFalse(listenerCalled);
+	text.copy();
+	assertEquals(isListening, listenerCalled);
+	listenerCalled = false;
+
+	substr = string.substring(pt.x, pt.y);
+	pt.x = pt.y = 1;
+	text.setSelection(pt);
+	text.paste();
+	assertEquals(isListening, listenerCalled);
+	listenerCalled = false;
+	
+	assertEquals(string.substring(0, pt.x) + substr + string.substring(pt.y), text.getText());
+	pt.x = pt.y = pt.x + substr.length();
+	assertEquals(pt, text.getSelection());
+
+	// Test cut
+	pt.x -= 2;
+	text.setSelection(pt);
+	assertEquals(substr, text.getSelectionText());
+	assertEquals(substr, text.getText(pt.x, pt.y - 1));
+	text.cut();
+	assertEquals(isListening, listenerCalled);
+	listenerCalled = false;
+	assertEquals(string, text.getText());
+
+	// Test insert
+	substr = "12";
+	pt.x = 6;
+	pt.y = 8;
+	text.setSelection(pt.x, pt.y);
+	text.cut();
+	pt.y = pt.x;
+	assertEquals(pt, text.getSelection());
+	listenerCalled = false;
+	pt.x = pt.y = 0;
+	text.setSelection(pt);
+	text.insert(substr);
+	assertEquals(isListening, listenerCalled);
+	listenerCalled = false;
+	pt.x = pt.y = pt.x + substr.length();
+	assertEquals(pt, text.getSelection());
+	assertEquals(substr + string, text.getText());
+}
 }

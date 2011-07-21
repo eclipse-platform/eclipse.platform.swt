@@ -748,6 +748,24 @@ public class SWT {
 	 */
 	public static final int Gesture = 48;
 
+	/**
+	 * The get segments event type (value is 49).
+	 * 
+	 * <p>
+	 * This event is sent when text content has been changed.
+	 * </p>
+	 *  
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
+	 * @see org.eclipse.swt.widgets.Event
+	 * 
+	 * @see org.eclipse.swt.widgets.Text#addSegmentListener
+	 * @see org.eclipse.swt.events.SegmentEvent
+     * 
+     * @since 3.7
+	 */
+	public static final int GetSegments = 49;
+
 	/* Event Details */
 	
 	/**

@@ -445,6 +445,7 @@ public class OS extends C {
 	
 	/** Signals */
 	public static final byte[] activate = ascii("activate");
+	public static final byte[] backspace = ascii("backspace");
 	public static final byte[] button_press_event = ascii("button-press-event");
 	public static final byte[] button_release_event = ascii("button-release-event");
 	public static final byte[] changed = ascii("changed");
@@ -453,11 +454,15 @@ public class OS extends C {
 	public static final byte[] clicked = ascii("clicked");
 	public static final byte[] commit = ascii("commit");
 	public static final byte[] configure_event = ascii("configure-event");
+	public static final byte[] copy_clipboard = ascii("copy-clipboard");
+	public static final byte[] cut_clipboard = ascii("cut-clipboard");
 	public static final byte[] delete_event = ascii("delete-event");
+	public static final byte[] delete_from_cursor = ascii("delete-from-cursor");
 	public static final byte[] day_selected = ascii("day-selected");
 	public static final byte[] day_selected_double_click = ascii("day-selected-double-click");
 	public static final byte[] delete_range = ascii("delete-range");
 	public static final byte[] delete_text = ascii("delete-text");
+	public static final byte[] direction_changed = ascii("direction-changed");
 	public static final byte[] drag_data_delete = ascii("drag_data_delete");
 	public static final byte[] drag_data_get = ascii("drag_data_get");
 	public static final byte[] drag_data_received = ascii("drag_data_received");
@@ -486,8 +491,10 @@ public class OS extends C {
 	public static final byte[] mnemonic_activate = ascii("mnemonic-activate");
 	public static final byte[] month_changed = ascii("month-changed");
 	public static final byte[] motion_notify_event = ascii("motion-notify-event");
+	public static final byte[] move_cursor = ascii("move-cursor");
 	public static final byte[] move_focus = ascii("move-focus");
 	public static final byte[] output = ascii("output");
+	public static final byte[] paste_clipboard = ascii("paste-clipboard");
 	public static final byte[] popup_menu = ascii("popup-menu");
 	public static final byte[] populate_popup = ascii("populate-popup");
 	public static final byte[] preedit_changed = ascii("preedit-changed");

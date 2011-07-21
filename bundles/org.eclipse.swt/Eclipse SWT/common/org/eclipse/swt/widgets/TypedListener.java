@@ -149,6 +149,13 @@ public void handleEvent (Event e) {
 			e.doit = event.doit;
 			break;
 		}
+		case SWT.GetSegments: {
+			SegmentEvent event = new SegmentEvent(e);
+			((SegmentListener) eventListener).getSegments(event);
+			e.segments = event.segments;
+			e.segmentsChars = event.segmentsChars;
+			break;
+		}
 		case SWT.Help: {
 			((HelpListener) eventListener).helpRequested (new HelpEvent (e));
 			break;

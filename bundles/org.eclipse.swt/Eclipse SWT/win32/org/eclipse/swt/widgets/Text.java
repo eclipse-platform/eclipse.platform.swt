@@ -58,7 +58,13 @@ public class Text extends Scrollable {
 	int tabs, oldStart, oldEnd;
 	boolean doubleClick, ignoreModify, ignoreVerify, ignoreCharacter, allowPasswordChar;
 	String message;
-	
+	int[] segments;
+	int clearSegmentsCount = 0;
+
+	// XXX The following two variables are also required for other widgets, move them to some shared space
+	static final char LTR_MARK = '\u200e';
+	static final char RTL_MARK = '\u200f';
+
 	/**
 	* The maximum number of characters that can be entered
 	* into a text widget.
@@ -303,6 +309,44 @@ public void addModifyListener (ModifyListener listener) {
 }
 
 /**
+ * Adds a segment listener.
+ * <p>
+ * A {@link #SegmentEvent} is sent whenever text content is being modified. The user can 
+ * customize appearance of text by indicating certain characters to be inserted
+ * at certain text offsets. This may be used for bidi purposes, e.g. when
+ * adjacent segments of right-to-left text should not be reordered relative to
+ * each other. 
+ * E.g., Multiple Java string literals in a right-to-left language
+ * should generally remain in logical order to each other, that is, the
+ * way they are stored.
+ * <br>
+ * After SegmentListener is added, user may call <code>setText(String)</code>
+ * for segments to take effect.
+ * </p>
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SegmentEvent
+ * @see SegmentListener
+ * @see #removeSegmentListener
+ * 
+ * @since 3.7
+ */
+public void addSegmentListener (SegmentListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	addListener (SWT.GetSegments, new TypedListener (listener));
+}
+
+/**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
@@ -389,6 +433,9 @@ public void append (String string) {
 		if (string == null) return;
 	}
 	OS.SendMessage (handle, OS.EM_SETSEL, length, length);
+	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+		clearSegments (true);
+	}
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	/*
 	* Feature in Windows.  When an edit control with ES_MULTILINE
@@ -405,6 +452,86 @@ public void append (String string) {
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	ignoreCharacter = false;
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
+	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+		applySegments ();
+	}
+}
+
+void applySegments () {
+	if (--clearSegmentsCount != 0) return;
+	if (!hooks (SWT.GetSegments) && !filters (SWT.GetSegments)) return;
+	int length = OS.GetWindowTextLength (handle);
+	int cp = getCodePage ();
+	TCHAR buffer = new TCHAR (cp, length + 1);
+	if (length > 0) OS.GetWindowText (handle, buffer, length + 1);
+	String string = buffer.toString (0, length);
+	/* Get segments text */
+	Event event = new Event ();
+	event.text = string;
+	event.segments = segments;
+	sendEvent (SWT.GetSegments, event);
+	segments = event.segments;
+	if (segments == null) return;
+	int nSegments = segments.length;
+	if (nSegments == 0) return;
+	length = string == null ? 0 : string.length ();
+
+	for (int i = 1; i < nSegments; i++) {
+		if (event.segments [i] < event.segments [i - 1] || event.segments [i] > length) {
+			SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
+	int/*64*/ limit = (int/*64*/)OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7fffffff;
+	OS.SendMessage (handle, OS.EM_SETLIMITTEXT, limit + Math.min (nSegments, LIMIT - limit), 0);
+	char [] segmentsChars = event.segmentsChars;
+	length += nSegments;
+	char [] newChars = new char [length + 1];
+	int charCount = 0, segmentCount = 0;
+	char defaultSeparator = getOrientation () == SWT.RIGHT_TO_LEFT ? RTL_MARK : LTR_MARK;
+	while (charCount < length) {
+		if (segmentCount < nSegments && charCount - segmentCount == segments [segmentCount]) {
+			char separator = segmentsChars != null && segmentsChars.length > segmentCount ? segmentsChars [segmentCount] : defaultSeparator;
+			newChars [charCount++] = separator;
+			segmentCount++;
+		} else if (string != null) {
+			newChars [charCount] = string.charAt (charCount++ - segmentCount);
+		}
+	}
+	while (segmentCount < nSegments) {
+		segments [segmentCount] = charCount - segmentCount;
+		char separator = segmentsChars != null && segmentsChars.length > segmentCount ? segmentsChars [segmentCount] : defaultSeparator;
+		newChars [charCount++] = separator;
+		segmentCount++;
+	}
+	/* Get the current selection */
+	int [] start = new int [1], end = new int [1];
+	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
+	if (!OS.IsUnicode && OS.IsDBLocale) {
+		start [0] = mbcsToWcsPos (start [0]);
+		end [0] = mbcsToWcsPos (end [0]);
+	}
+	boolean oldIgnoreCharacter = ignoreCharacter, oldIgnoreModify = ignoreModify, oldIgnoreVerify = ignoreVerify;
+	ignoreCharacter = ignoreModify = ignoreVerify = true;
+	/*
+	 * SetWindowText empties the undo buffer and disables undo menu item.
+	 * Sending OS.EM_REPLACESEL message instead.
+	 */
+	newChars [length] = 0;
+	buffer = new TCHAR (cp, newChars, false);
+	OS.SendMessage (handle, OS.EM_SETSEL, 0, -1);
+	int undo = OS.SendMessage (handle, OS.EM_CANUNDO, 0, 0);
+	OS.SendMessage (handle, OS.EM_REPLACESEL, undo, buffer);
+	/* Restore selection */
+	start [0] = translateOffset (start [0]);
+	end [0] = translateOffset (end [0]);
+	if (!OS.IsUnicode && OS.IsDBLocale) {
+		start [0] = wcsToMbcsPos (start [0]);
+		end [0] = wcsToMbcsPos (end [0]);
+	}
+	OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
+	ignoreCharacter = oldIgnoreCharacter;
+	ignoreModify = oldIgnoreModify;
+	ignoreVerify = oldIgnoreVerify;
 }
 
 static int checkStyle (int style) {
@@ -430,6 +557,54 @@ static int checkStyle (int style) {
 	if ((style & (SWT.SINGLE | SWT.MULTI)) != 0) return style;
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) return style | SWT.MULTI;
 	return style | SWT.SINGLE;
+}
+
+void clearSegments (boolean applyText) {
+	if (clearSegmentsCount++ != 0) return;
+	if (segments == null) return;
+	int nSegments = segments.length;
+	if (nSegments == 0) return;
+	int/*64*/ limit = (int/*64*/)OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7fffffff;
+	if (limit < LIMIT) {
+		OS.SendMessage (handle, OS.EM_SETLIMITTEXT, Math.max (1, limit - nSegments), 0);
+	}
+	if (!applyText) {
+		segments = null;
+		return;
+	}
+	boolean oldIgnoreCharacter = ignoreCharacter, oldIgnoreModify = ignoreModify, oldIgnoreVerify = ignoreVerify;
+	ignoreCharacter = ignoreModify = ignoreVerify = true;
+	int length = OS.GetWindowTextLength (handle);
+	int cp = getCodePage ();
+	TCHAR buffer = new TCHAR (cp, length + 1);
+	if (length > 0) OS.GetWindowText (handle, buffer, length + 1);
+	buffer = deprocessText (buffer, 0, -1, true);
+	/* Get the current selection */
+	int [] start = new int [1], end = new int [1];
+	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
+	if (!OS.IsUnicode && OS.IsDBLocale) {
+		start [0] = mbcsToWcsPos (start[0]);
+		end [0]= mbcsToWcsPos (end [0]);
+	}
+	start [0] = untranslateOffset (start [0]);
+	end [0] = untranslateOffset (end[0]);
+	segments = null;
+	/*
+	 * SetWindowText empties the undo buffer and disables undo in the context
+	 * menu. Sending OS.EM_REPLACESEL message instead.
+	 */
+	OS.SendMessage (handle, OS.EM_SETSEL, 0, -1);
+	int undo = OS.SendMessage (handle, OS.EM_CANUNDO, 0, 0);
+	OS.SendMessage (handle, OS.EM_REPLACESEL, undo, buffer);
+	/* Restore selection */
+	if (!OS.IsUnicode && OS.IsDBLocale) {
+		start [0] = wcsToMbcsPos (start [0]);
+		end [0] = wcsToMbcsPos (end [0]);
+	}
+	OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
+	ignoreCharacter = oldIgnoreCharacter;
+	ignoreModify = oldIgnoreModify;
+	ignoreVerify = oldIgnoreVerify;
 }
 
 /**
@@ -573,6 +748,42 @@ int defaultBackground () {
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	return OS.GetSysColor ((bits & OS.ES_READONLY) != 0 ? OS.COLOR_3DFACE : OS.COLOR_WINDOW);
 }
+TCHAR deprocessText (TCHAR text, int start, int end, boolean terminate) {
+	if (text == null) return null;
+	int length = text.length ();
+	char [] chars;
+	if (start < 0) start = 0;
+	if (OS.IsUnicode) {
+		chars = text.chars;
+		if (text.chars [length - 1] == 0) length--;
+	} else {
+		chars = new char [length];
+		length = OS.MultiByteToWideChar (getCodePage (), OS.MB_PRECOMPOSED, text.bytes, length, chars, length);
+	}
+	if (end == -1) end = length;
+	if (segments != null && end > segments [0]) {
+		int nSegments = segments.length;
+		if (nSegments > 0 && start <= segments [nSegments - 1]) {
+			int nLeadSegments = 0;
+			while (start - nLeadSegments > segments [nLeadSegments]) nLeadSegments++;
+			int segmentCount = nLeadSegments;
+			for (int i = start; i < end; i++) {
+				if (segmentCount < nSegments && i - segmentCount == segments [segmentCount]) {
+					++segmentCount;
+				} else {
+					chars [i - segmentCount + nLeadSegments] = chars [i];
+				}
+			}
+			length = end - start - segmentCount + nLeadSegments;
+		}
+	}
+	if (start != 0 || end != length) {
+		char [] newChars = new char [length];
+		System.arraycopy(chars, start, newChars, 0, length);
+		return new TCHAR (getCodePage (), newChars, terminate);
+	}
+	return text;
+}
 
 boolean dragDetect (int /*long*/ hwnd, int x, int y, boolean filter, boolean [] detect, boolean [] consume) {
 	if (filter) {
@@ -706,6 +917,7 @@ public Point getCaretLocation () {
 	* pixel coordinates (0,0). 
 	*/
 	int position = getCaretPosition ();
+	if (segments != null) position = translateOffset (position);
 	int /*long*/ caretPos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, position, 0);
 	if (caretPos == -1) {
 		caretPos = 0;
@@ -798,6 +1010,7 @@ public int getCaretPosition () {
 		}
 	}
 	if (!OS.IsUnicode && OS.IsDBLocale) caret = mbcsToWcsPos (caret);
+	if (segments != null) caret = untranslateOffset (caret);
 	return caret;
 }
 
@@ -815,6 +1028,7 @@ public int getCharCount () {
 	checkWidget ();
 	int length = OS.GetWindowTextLength (handle);
 	if (!OS.IsUnicode && OS.IsDBLocale) length = mbcsToWcsPos (length);
+	if (segments != null) length = untranslateOffset (length);
 	return length;
 }
 
@@ -995,6 +1209,7 @@ public String getMessage () {
 	int /*long*/ lParam = OS.MAKELPARAM (point.x, point.y);
 	int position = OS.LOWORD (OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam));
 	if (!OS.IsUnicode && OS.IsDBLocale) position = mbcsToWcsPos (position);
+	if (segments != null) position = untranslateOffset (position);
 	return position;
 }
 
@@ -1023,6 +1238,10 @@ public Point getSelection () {
 	if (!OS.IsUnicode && OS.IsDBLocale) {
 		start [0] = mbcsToWcsPos (start [0]);
 		end [0] = mbcsToWcsPos (end [0]);
+	}
+	if (segments != null) {
+		start [0] = untranslateOffset (start [0]);
+		end [0] = untranslateOffset (end [0]);
 	}
 	return new Point (start [0], end [0]);
 }
@@ -1062,6 +1281,10 @@ public String getSelectionText () {
 	if (start [0] == end [0]) return "";
 	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 	OS.GetWindowText (handle, buffer, length + 1);
+	if (segments != null) {
+		buffer = deprocessText (buffer, start [0], end [0], false);
+		return buffer.toString ();
+	}
 	return buffer.toString (start [0], end [0] - start [0]);
 }
 
@@ -1119,6 +1342,10 @@ public String getText () {
 	if (length == 0) return "";
 	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 	OS.GetWindowText (handle, buffer, length + 1);
+	if (segments != null) {
+		buffer = deprocessText (buffer, 0, -1, false);
+		return buffer.toString ();
+	}
 	return buffer.toString (0, length);
 }
 
@@ -1146,6 +1373,7 @@ public char[] getTextChars () {
 	if (length == 0) return new char[0];
 	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 	OS.GetWindowText (handle, buffer, length + 1);
+	if (segments != null) buffer = deprocessText (buffer, 0, -1, false);
 	char [] chars = new char [length];
 	System.arraycopy (buffer.chars, 0, chars, 0, length);
 	return chars;
@@ -1174,6 +1402,7 @@ public String getText (int start, int end) {
 	if (!(start <= end && 0 <= end)) return "";
 	int length = OS.GetWindowTextLength (handle);
 	if (!OS.IsUnicode && OS.IsDBLocale) length = mbcsToWcsPos (length);
+	if (segments != null) length = untranslateOffset (length);
 	end = Math.min (end, length - 1);
 	if (start > end) return "";
 	start = Math.max (0, start);
@@ -1203,7 +1432,9 @@ public String getText (int start, int end) {
  */
 public int getTextLimit () {
 	checkWidget ();
-	return (int)/*64*/OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
+	int/*64*/ limit = (int)/*64*/OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
+	if (segments != null && limit < LIMIT) limit = Math.max (1, limit - segments.length);
+	return limit;
 }
 
 /**
@@ -1285,6 +1516,9 @@ public void insert (String string) {
 		string = verifyText (string, start [0], end [0], null);
 		if (string == null) return;
 	}
+	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+		clearSegments (true);
+	}
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	/*
 	* Feature in Windows.  When an edit control with ES_MULTILINE
@@ -1300,6 +1534,9 @@ public void insert (String string) {
 	ignoreCharacter = true;
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	ignoreCharacter = false;
+	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+		applySegments ();
+	}
 }
 
 int mbcsToWcsPos (int mbcsPos) {
@@ -1387,6 +1624,36 @@ public void removeModifyListener (ModifyListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Modify, listener);	
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the receiver's text is modified.
+ * <p>
+ * After SegmentListener is removed, user may call <code>setText(String)</code>
+ * for segments to take effect.
+ * </p>
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SegmentEvent
+ * @see SegmentListener
+ * @see #addSegmentListener
+ * 
+ * @since 3.7
+ */
+public void removeSegmentListener (SegmentListener listener) {
+	checkWidget ();
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	eventTable.unhook (SWT.GetSegments, listener);
 }
 
 /**
@@ -1818,6 +2085,7 @@ public void setOrientation (int orientation) {
  */
 public void setSelection (int start) {
 	checkWidget ();
+	if (segments != null) start = translateOffset (start);
 	if (!OS.IsUnicode && OS.IsDBLocale) start = wcsToMbcsPos (start);
 	OS.SendMessage (handle, OS.EM_SETSEL, start, start);
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
@@ -1850,6 +2118,10 @@ public void setSelection (int start) {
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
+	if (segments != null) {
+		start = translateOffset (start);
+		end = translateOffset (end);
+	}
 	if (!OS.IsUnicode && OS.IsDBLocale) {
 		start = wcsToMbcsPos (start);
 		end = wcsToMbcsPos (end);
@@ -1971,10 +2243,13 @@ public void setText (String string) {
 		string = verifyText (string, 0, length, null);
 		if (string == null) return;
 	}
+	boolean processSegments = segments != null || hooks (SWT.GetSegments) || filters (SWT.GetSegments);
+	if (processSegments) clearSegments (false);
 	int limit = (int)/*64*/OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
 	if (string.length () > limit) string = string.substring (0, limit);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
+	if (processSegments) applySegments ();
 	/*
 	* Bug in Windows.  When the widget is multi line
 	* text widget, it does not send a WM_COMMAND with
@@ -2019,6 +2294,9 @@ public void setTextChars (char[] text) {
 		text = new char [string.length()];
 		string.getChars (0, text.length, text, 0);
 	}
+	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+		clearSegments (false);
+	}
 	int limit = (int)/*64*/OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
 	if (text.length > limit) {
 		char [] temp = new char [limit];
@@ -2027,6 +2305,9 @@ public void setTextChars (char[] text) {
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), text, true);
 	OS.SetWindowText (handle, buffer);
+	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+		applySegments ();
+	}
 	/*
 	* Bug in Windows.  When the widget is multi line
 	* text widget, it does not send a WM_COMMAND with
@@ -2068,7 +2349,11 @@ public void setTextChars (char[] text) {
 public void setTextLimit (int limit) {
 	checkWidget ();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-	OS.SendMessage (handle, OS.EM_SETLIMITTEXT, limit, 0);
+	if (segments != null && limit > 0) {
+		OS.SendMessage (handle, OS.EM_SETLIMITTEXT, limit + Math.min (segments.length, LIMIT - limit), 0);
+	} else {
+		OS.SendMessage (handle, OS.EM_SETLIMITTEXT, limit, 0);
+	}
 }
 
 /**
@@ -2110,6 +2395,22 @@ public void showSelection () {
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
 }
 
+int translateOffset (int offset) {
+	if (segments == null) return offset;
+	for (int i = 0, nSegments = segments.length; i < nSegments && offset - i >= segments [i]; i++) {
+		offset++;
+	}	
+	return offset;
+}
+
+int untranslateOffset (int offset) {
+	if (segments == null) return offset;
+	for (int i = 0, nSegments = segments.length; i < nSegments && offset > segments [i]; i++) {
+		offset--;
+	}
+	return offset;
+}
+
 void updateOrientation (){
 	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
@@ -2135,6 +2436,10 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 	if (!OS.IsUnicode && OS.IsDBLocale) {
 		event.start = mbcsToWcsPos (start);
 		event.end = mbcsToWcsPos (end);
+	}
+	if (segments != null) {
+		event.start = untranslateOffset (event.start);
+		event.end = untranslateOffset (event.end);
 	}
 	/*
 	* It is possible (but unlikely), that application
@@ -2233,6 +2538,62 @@ int /*long*/ windowProc () {
 }
 
 int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+	boolean processSegments = false, redraw = false;
+	int code;
+	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+		switch (msg) {
+			case OS.WM_KEYDOWN: {
+				switch (wParam) {
+					case OS.VK_DELETE: {
+						processSegments = segments != null;
+						break;
+					}
+					case OS.VK_LEFT:
+					case OS.VK_RIGHT: {
+						if (segments != null && OS.GetKeyState (OS.VK_MENU) >= 0) {
+							int [] start = new int [1], newStart = new int [1], end = new int [1], newEnd = new int [1];
+							OS.SendMessage (handle, OS.EM_GETSEL, start, end);
+							for (;;) {
+								code = super.windowProc (hwnd, msg, wParam, lParam);
+								if (code != 1) return code;
+								OS.SendMessage (handle, OS.EM_GETSEL, newStart, newEnd);
+								if (newStart [0] != start [0] && untranslateOffset (newStart [0]) == untranslateOffset (start [0])) {
+									continue;
+								}
+								if (newEnd [0] != end [0] && untranslateOffset (newEnd [0]) == untranslateOffset (end [0])) {
+									continue;
+								}
+								return code;
+							}
+						}
+						break;
+					}
+				}
+				break;
+			}
+			case OS.WM_COPY: {
+				processSegments = segments != null;
+				break;
+			}
+			case OS.WM_CHAR: {
+				processSegments = !ignoreCharacter && OS.GetKeyState (OS.VK_CONTROL) >= 0 && OS.GetKeyState (OS.VK_MENU) >= 0;
+				break;
+			}
+			case OS.WM_PASTE:
+			case OS.WM_CUT:
+			case OS.WM_CLEAR: {
+				processSegments = true;
+				break;
+			}
+		}
+	}
+	if (processSegments) {
+		if (getDrawing () && OS.IsWindowVisible (handle)) {
+			redraw = true;
+			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+		}
+		clearSegments (true);
+	}
 	if (msg == OS.EM_UNDO) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		if ((bits & OS.ES_MULTILINE) == 0) {
@@ -2251,7 +2612,20 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 		callWindowProc (hwnd, OS.WM_SETFOCUS, 0, 0);
 		return 1;
 	}
-	return super.windowProc (hwnd, msg, wParam, lParam);
+	code = super.windowProc (hwnd, msg, wParam, lParam);
+	if (processSegments) {
+		applySegments ();
+		if (redraw) {
+			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+			if (OS.IsWinCE) {
+				OS.InvalidateRect (handle, null, true);
+			} else {
+				OS.RedrawWindow (handle, null, 0, OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE); 
+			}
+		}
+		OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
+	}
+	return code;
 }
 
 LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
@@ -2595,6 +2969,9 @@ LRESULT wmColorChild (int /*long*/ wParam, int /*long*/ lParam) {
 LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 	int code = OS.HIWORD (wParam);
 	switch (code) {
+		case 0x0601/*OS.EN_HSCROLL*/:
+			System.out.println ("OS.EN_HSCROLL");
+			break;
 		case OS.EN_CHANGE:
 			if (findImageControl () != null) {
 				OS.InvalidateRect (handle, null, true);
@@ -2634,6 +3011,9 @@ LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 					style |= SWT.LEFT_TO_RIGHT;
 				}	
 				OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
+			} else if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+				clearSegments (true);
+				applySegments ();
 			}
 			fixAlignment();
 			break;

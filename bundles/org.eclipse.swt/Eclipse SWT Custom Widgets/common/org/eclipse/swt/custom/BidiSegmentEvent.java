@@ -73,7 +73,7 @@ import org.eclipse.swt.events.*;
  *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-public class BidiSegmentEvent extends TypedEvent {
+public class BidiSegmentEvent extends SegmentEvent {
 	
 	/** 
 	 * line start offset 
@@ -84,19 +84,7 @@ public class BidiSegmentEvent extends TypedEvent {
 	 * line text 
 	 */			
 	public String lineText;
-	
-	/** 
-	 * bidi segments, see above 
-	 */
-	public int[] segments;
 
-	/** 
-	 * characters to be used in the segment boundaries (optional)
-	 * 
-	 * @since 3.6
-	 */
-	public char[] segmentsChars;
-		
 	static final long serialVersionUID = 3257846571587547957L;
 
 BidiSegmentEvent(StyledTextEvent e) {

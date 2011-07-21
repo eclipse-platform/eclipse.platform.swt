@@ -2499,6 +2499,14 @@ void initializeCallbacks () {
 	closures [Widget.VALUE_CHANGED] = OS.g_cclosure_new (windowProc2, Widget.VALUE_CHANGED, 0);
 	closures [Widget.UNMAP] = OS.g_cclosure_new (windowProc2, Widget.UNMAP, 0);
 	closures [Widget.UNREALIZE] = OS.g_cclosure_new (windowProc2, Widget.UNREALIZE, 0);
+	closures [Widget.BACKSPACE] = OS.g_cclosure_new (windowProc2, Widget.BACKSPACE, 0);
+	closures [Widget.BACKSPACE_INVERSE] = OS.g_cclosure_new (windowProc2, Widget.BACKSPACE_INVERSE, 0);
+	closures [Widget.COPY_CLIPBOARD] = OS.g_cclosure_new (windowProc2, Widget.COPY_CLIPBOARD, 0);
+	closures [Widget.COPY_CLIPBOARD_INVERSE] = OS.g_cclosure_new (windowProc2, Widget.COPY_CLIPBOARD_INVERSE, 0);
+	closures [Widget.CUT_CLIPBOARD] = OS.g_cclosure_new (windowProc2, Widget.CUT_CLIPBOARD, 0);
+	closures [Widget.CUT_CLIPBOARD_INVERSE] = OS.g_cclosure_new (windowProc2, Widget.CUT_CLIPBOARD_INVERSE, 0);
+	closures [Widget.PASTE_CLIPBOARD] = OS.g_cclosure_new (windowProc2, Widget.PASTE_CLIPBOARD, 0);
+	closures [Widget.PASTE_CLIPBOARD_INVERSE] = OS.g_cclosure_new (windowProc2, Widget.PASTE_CLIPBOARD_INVERSE, 0);
 
 	windowCallback3 = new Callback (this, "windowProc", 3); //$NON-NLS-1$
 	windowProc3 = windowCallback3.getAddress ();
@@ -2538,6 +2546,7 @@ void initializeCallbacks () {
 	closures [Widget.VISIBILITY_NOTIFY_EVENT] = OS.g_cclosure_new (windowProc3, Widget.VISIBILITY_NOTIFY_EVENT, 0);
 	closures [Widget.WINDOW_STATE_EVENT] = OS.g_cclosure_new (windowProc3, Widget.WINDOW_STATE_EVENT, 0);
 	closures [Widget.ROW_DELETED] = OS.g_cclosure_new (windowProc3, Widget.ROW_DELETED, 0);
+	closures [Widget.DIRECTION_CHANGED] = OS.g_cclosure_new (windowProc3, Widget.DIRECTION_CHANGED, 0);
 
 	windowCallback4 = new Callback (this, "windowProc", 4); //$NON-NLS-1$
 	windowProc4 = windowCallback4.getAddress ();
@@ -2553,6 +2562,8 @@ void initializeCallbacks () {
 	closures [Widget.TEST_COLLAPSE_ROW] = OS.g_cclosure_new (windowProc4, Widget.TEST_COLLAPSE_ROW, 0);
 	closures [Widget.TEST_EXPAND_ROW] = OS.g_cclosure_new (windowProc4, Widget.TEST_EXPAND_ROW, 0);
 	closures [Widget.ROW_INSERTED] = OS.g_cclosure_new (windowProc4, Widget.ROW_INSERTED, 0);
+	closures [Widget.DELETE_FROM_CURSOR] = OS.g_cclosure_new (windowProc4, Widget.DELETE_FROM_CURSOR, 0);
+	closures [Widget.DELETE_FROM_CURSOR_INVERSE] = OS.g_cclosure_new (windowProc4, Widget.DELETE_FROM_CURSOR_INVERSE, 0);
 
 	windowCallback5 = new Callback (this, "windowProc", 5); //$NON-NLS-1$
 	windowProc5 = windowCallback5.getAddress ();
@@ -2562,6 +2573,8 @@ void initializeCallbacks () {
 	closures [Widget.EXPAND_COLLAPSE_CURSOR_ROW] = OS.g_cclosure_new (windowProc5, Widget.EXPAND_COLLAPSE_CURSOR_ROW, 0);
 	closures [Widget.INSERT_TEXT] = OS.g_cclosure_new (windowProc5, Widget.INSERT_TEXT, 0);
 	closures [Widget.TEXT_BUFFER_INSERT_TEXT] = OS.g_cclosure_new (windowProc5, Widget.TEXT_BUFFER_INSERT_TEXT, 0);
+	closures [Widget.MOVE_CURSOR] = OS.g_cclosure_new (windowProc5, Widget.MOVE_CURSOR, 0);
+	closures [Widget.MOVE_CURSOR_INVERSE] = OS.g_cclosure_new (windowProc5, Widget.MOVE_CURSOR_INVERSE, 0);
 
 	for (int i = 0; i < Widget.LAST_SIGNAL; i++) {
 		if (closures [i] != 0) OS.g_closure_ref (closures [i]);

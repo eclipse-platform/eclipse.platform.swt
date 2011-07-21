@@ -203,6 +203,18 @@ public class Event {
 	 */
 	public String text;
 
+	/** 
+	 * Bidi segment offsets
+	 * @since 3.7
+	 */
+	public int[] segments;
+	
+	/** 
+	 * Characters to be applied on the segment boundaries
+	 * @since 3.7
+	 */
+	public char[] segmentsChars;
+
 	/**
 	 * depending on the event, a flag indicating whether the operation
 	 * should be allowed.  Setting this field to false will cancel the
