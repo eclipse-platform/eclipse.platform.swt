@@ -2252,7 +2252,10 @@ int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 			display.pollingTimer = timer = id [0];
 		}
 	}
+	int window = OS.GetControlOwner (handle);
+	OS.CFRetain (window);
 	int result = super.kEventControlTrack (nextHandler, theEvent, userData);
+	OS.CFRelease (window);
 	if (timer != 0) {
 		OS.RemoveEventLoopTimer (timer);
 		display.pollingTimer = 0;
