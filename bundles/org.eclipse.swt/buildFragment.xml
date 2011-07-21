@@ -18,7 +18,7 @@
 			<isset property="swt.arch"/>
 		</condition>
 		<property name="full.name" value="${fragment}_${version.suffix}" />
-		<property name="plugindir" value="eclipse.platform.swt/bundles/org.eclipse.swt" />
+		<property name="plugindir" value="${basedir}/eclipse.platform.swt/bundles/org.eclipse.swt" />
 		<property name="fragmentdir" value="${basedir}/eclipse.platform.swt.binaries/bundles/${fragment}" />
 		<property name="temp.folder" value="${fragmentdir}/temp.folder" />
 		<property name="plugin.destination" value="${fragmentdir}" />
@@ -478,8 +478,8 @@
 			<param name="projectLocation" value="${fragmentdir}"/>
 			<param name="binary.folders" value="${build.result.folder}/@dot"/>
 			<param name="projectName" value="${full.name}"/>
-			<param name="extraSourceLocations" value="${basedir}/${plugindir}"/>
-			<param name="extraManifests" value="${basedir}/${plugindir}/META-INF/MANIFEST.MF"/>
+			<param name="extraSourceLocations" value="${plugindir}"/>
+			<param name="extraManifests" value="${plugindir}/META-INF/MANIFEST.MF"/>
 		</antcall>
 	</target>
 
