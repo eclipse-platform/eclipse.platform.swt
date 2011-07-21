@@ -370,10 +370,10 @@
 		<property name="success_msg" value="Success"/>
 		<property name="fail_msg" value="*** Fail ***"/>
 		<condition property="m_linux_s390x_test" value="${success_msg}" else="${fail_msg}">
-			<matches pattern="${m_linux_s390x_output}*" string="${m_linux_s390x}"/>
+			<matches pattern="x${m_linux_s390x_output}*" string="x${m_linux_s390x}"/>
 		</condition>
 		<condition property="m_linux_s390_test" value="${success_msg}" else="${fail_msg}">
-			<matches pattern="${m_linux_s390_output}*" string="${m_linux_s390}"/>
+			<matches pattern="x${m_linux_s390_output}*" string="x${m_linux_s390}"/>
 		</condition>
 		<echo>-------------------------</echo>
 		<echo>Status:</echo>
