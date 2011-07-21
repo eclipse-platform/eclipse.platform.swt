@@ -204,41 +204,37 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 			/* Calculate the new x or y position */
 			if (OS.GetKeyState (OS.VK_LBUTTON) < 0) return result;
 			int step = OS.GetKeyState (OS.VK_CONTROL) < 0 ? INCREMENT : PAGE_INCREMENT;
-			POINT pt = new POINT ();
 			if ((style & SWT.VERTICAL) != 0) {
 				if (wParam == OS.VK_UP || wParam == OS.VK_DOWN) break;
-				pt.x = wParam == OS.VK_LEFT ? -step : step;
+				if (wParam == OS.VK_LEFT) step = -step;
+				if ((parent.style & SWT.MIRRORED) != 0) step = -step;
 			} else {
 				if (wParam == OS.VK_LEFT || wParam == OS.VK_RIGHT) break;
-				pt.y = wParam == OS.VK_UP ? -step : step;
+				if (wParam == OS.VK_UP) step = -step;
 			}
-			int /*long*/ hwndTrack = parent.handle;
-			OS.MapWindowPoints (handle, hwndTrack, pt, 1);
-			RECT rect = new RECT (), clientRect = new RECT ();
+			RECT rect = new RECT ();
 			OS.GetWindowRect (handle, rect);
 			int width = rect.right - rect.left;
 			int height = rect.bottom - rect.top;
+			int /*long*/ hwndTrack = parent.handle;
+			RECT clientRect = new RECT ();
 			OS.GetClientRect (hwndTrack, clientRect);
 			int clientWidth = clientRect.right - clientRect.left;
 			int clientHeight = clientRect.bottom - clientRect.top;
-			int newX = lastX, newY = lastY;
+			OS.MapWindowPoints (0, hwndTrack, rect, 2);
+			POINT cursorPt = new POINT ();
+			int newX = rect.left, newY = rect.top;
 			if ((style & SWT.VERTICAL) != 0) {
-				newX = Math.min (Math.max (0, pt.x - startX), clientWidth - width);
+				cursorPt.x = newX = Math.min (Math.max (clientRect.left, newX + step), clientWidth - width);
+				cursorPt.y = rect.top + height / 2; 
 			} else {
-				newY = Math.min (Math.max (0, pt.y - startY), clientHeight - height);
+				cursorPt.x = rect.left + width / 2;
+				cursorPt.y = newY = Math.min (Math.max (clientRect.top, newY + step), clientHeight - height);
 			}
-			if (newX == lastX && newY == lastY) return result;
+			if (newX == rect.left && newY == rect.top) return result;
 
 			/* Update the pointer position */
-			POINT cursorPt = new POINT ();
-			cursorPt.x = pt.x;  cursorPt.y = pt.y;
 			OS.ClientToScreen (hwndTrack, cursorPt);
-			if ((style & SWT.VERTICAL) != 0) {
-				cursorPt.y += height / 2;
-			}
-			else {
-				cursorPt.x += width / 2;
-			}
 			OS.SetCursorPos (cursorPt.x, cursorPt.y);
 
 			Event event = new Event ();
