@@ -913,7 +913,7 @@
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
-	 		command="rm -rf ${remotetmpdir}; mkdir ${remotetmpdir}; mkdir ${lib_output}; cd ${remotetmpdir}; unzip -aa ${remotebuilddir}/${zip_file}; export MODEL=${swt.arch}; export OUTPUT_DIR=${lib_output}; if sh build.sh ${targets}; then cd; else cd; rm -rf ${remotetmpdir}; exit 1; fi"/>
+	 		command="rm -rf ${remotetmpdir}; mkdir ${remotetmpdir}; mkdir ${lib_output}; cd ${remotetmpdir}; unzip -aa ${remotebuilddir}/${zip_file}; export MODEL=${swt.arch}; export OUTPUT_DIR=${lib_output}; if sh build.sh ${targets}; then cd; else cd; rm -rf ${remotetmpdir}; rm ${remotebuilddir}/${zip_file}; exit 1; fi"/>
 		<scp file="swtbuild@${machine}:${lib_output}/*"
 			todir="${output_dir}"
 			keyfile="${keyfile}"
