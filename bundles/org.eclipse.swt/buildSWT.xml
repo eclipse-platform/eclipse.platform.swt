@@ -31,15 +31,15 @@
 	 
  -->
 
-<project name="swtbuild" basedir="../../..">
+<project name="swtbuild" basedir=".">
 	<property name="gitroot" value="fheidric@dev.eclipse.org:/gitroot/platform/"/>
 	<property name="keyfile" value="C:\BUILD\ssh\swtbuild_dsa_private" /> 
 	<property name="TAG" value="master"/>
 	<property name="tmphome" value="./tmp"/>
 	
-	<property name="repo.src" value="eclipse.platform.swt"/>
-	<property name="repo.bin" value="eclipse.platform.swt.binaries"/>
-	<property name="repo.releng" value="eclipse.platform.releng"/>
+	<property name="repo.src" value="../../../eclipse.platform.swt"/>
+	<property name="repo.bin" value="../../../eclipse.platform.swt.binaries"/>
+	<property name="repo.releng" value="../../../eclipse.platform.releng"/>
 
 	<property name="src_common" value="'bundles/org.eclipse.swt/Eclipse SWT/common/library' 'bundles/org.eclipse.swt/Eclipse SWT Mozilla/common/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/common/library'"/>
 	<property name="src_win32" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT WebKit/win32/library'"/>
@@ -997,69 +997,50 @@
 	<target name="pull_remote">
 		<delete includeemptydirs="true">
 			<fileset dir="${repo.bin}" defaultexcludes="false">
-				<include name="bundles/*/tmpdir/**"/>
+				<include name="bundles/*/tmp*/**"/>
 			</fileset>
 		</delete>
 		<antcall target="init_repo">
-			<param name="repo" value="${repo.src}"/>
+			<param name="repo" value="eclipse.platform.swt"/>
 			<param name="repo.exists" value="repo.src.exists"/>
 		</antcall>
-		<exec dir="../${TAG}/${repo.src}" executable="git"  failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true">
 			<arg line="fetch"/>
 		</exec>
-		<exec dir="../${TAG}/${repo.src}" executable="git"  failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true">
 			<arg line="reset --hard origin/${TAG}"/>
 		</exec>
 		<antcall target="init_repo">
-			<param name="repo" value="${repo.bin}"/>
+			<param name="repo" value="eclipse.platform.swt.binaries"/>
 			<param name="repo.exists" value="repo.bin.exists"/>
 		</antcall>
-		<exec dir="../${TAG}/${repo.bin}" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
 			<arg line="fetch"/>
 		</exec>
-		<exec dir="../${TAG}/${repo.bin}" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
 			<arg line="reset --hard origin/${TAG}"/>
 		</exec>
-		<!--antcall target="init_repo">
-			<param name="repo" value="${repo.releng}"/>
-			<param name="repo.exists" value="repo.releng.exists"/>
-		</antcall>
-		<exec dir="../${TAG}/${repo.releng}" executable="git" failonerror="true">
-			<arg line="fetch"/>
-		</exec>
-		<exec dir="../${TAG}/${repo.releng}" executable="git" failonerror="true">
-			<arg line="reset --><!--hard origin/${TAG}"/>
-		</exec-->
 	</target>
 
 	<target name="push_remote">
-		<exec dir="../${TAG}/${repo.src}" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
 			<arg line="fetch"/>
 		</exec>
-		<exec dir="../${TAG}/${repo.src}" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
 			<arg line="rebase origin/${TAG}"/>
 		</exec>
-		<exec dir="../${TAG}/${repo.src}" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
 			<arg line="push"/>
 		</exec>
-		<exec dir="../${TAG}/${repo.bin}" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
 			<arg line="fetch"/>
 		</exec>
-		<exec dir="../${TAG}/${repo.bin}" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
 			<arg line="rebase origin/${TAG}"/>
 		</exec>
-		<exec dir="../${TAG}/${repo.bin}" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
 			<arg line="push"/>
 		</exec>
-		<!--exec dir="../${TAG}/${repo.releng}" executable="git" failonerror="true">
-			<arg line="fetch"/>
-		</exec>
-		<exec dir="../${TAG}/${repo.releng}" executable="git" failonerror="true">
-			<arg line="rebase origin/${TAG}"/>
-		</exec>
-		<exec dir="../${TAG}/${repo.releng}" executable="git" failonerror="true">
-			<arg line="push"/>
-		</exec-->
 	</target>
 
 	<!-- Convert SWT 32 bit java and C source to 64 bit  -->
