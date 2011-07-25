@@ -969,14 +969,14 @@
 	<target name="check_repo">
 		<echo>Check ${repo}</echo>
 		 <condition property="${repo.exists}">       
-		 	<available file="../${TAG}/${repo}" type="dir"/>     
+		 	<available file="../../../../${TAG}/${repo}" type="dir"/>     
 		 </condition>
 	</target>
 	
 	<target name="init_repo" depends="check_repo" unless="${repo.exists}" >
-		<delete dir="../${TAG}/${repo}" quiet="true"/>
-		<mkdir dir="../${TAG}"/>
-		<exec dir="../${TAG}" executable="git" failonerror="true">
+		<delete dir="../../../../${TAG}/${repo}" quiet="true"/>
+		<mkdir dir="../../../..${TAG}"/>
+		<exec dir="../../../..${TAG}" executable="git" failonerror="true">
 			<arg line="clone ${gitroot}/${repo}"/>
 		</exec>
 		<condition property="perform.checkout">
@@ -989,7 +989,7 @@
 	
 	<target name="checkout_repo" if="perform.checkout">
 		<echo>Checking out ${repo}=${TAG}</echo>
-		<exec dir="../${TAG}/${repo}" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/${repo}" executable="git" failonerror="true">
 			<arg line="checkout -b ${TAG} origin/${TAG}"/>
 		</exec>
 	</target>
