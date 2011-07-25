@@ -2545,25 +2545,25 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 			case OS.WM_KEYDOWN: {
 				switch (wParam) {
 					case OS.VK_DELETE: {
-						processSegments = segments != null;
+						processSegments = true;
 						break;
 					}
 					case OS.VK_LEFT:
 					case OS.VK_RIGHT: {
 						if (segments != null && OS.GetKeyState (OS.VK_MENU) >= 0) {
-							int [] start = new int [1], newStart = new int [1], end = new int [1], newEnd = new int [1];
+							int [] start = new int [1], end = new int [1], newStart = new int [1], newEnd = new int [1];
 							OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-							for (;;) {
+							for (;; start [0] = newStart [0], end [0] = newEnd [0]) {
 								code = super.windowProc (hwnd, msg, wParam, lParam);
 								if (code != 1) return code;
 								OS.SendMessage (handle, OS.EM_GETSEL, newStart, newEnd);
-								if (newStart [0] != start [0] && untranslateOffset (newStart [0]) == untranslateOffset (start [0])) {
-									continue;
+								if (newStart [0] != start [0]) {
+									if (untranslateOffset (newStart [0]) != untranslateOffset (start [0])) return code;
+								} else if (newEnd [0] == end [0]) {
+									return code;
+								} else if (untranslateOffset (newEnd [0]) != untranslateOffset (end [0])) {
+									return code;
 								}
-								if (newEnd [0] != end [0] && untranslateOffset (newEnd [0]) == untranslateOffset (end [0])) {
-									continue;
-								}
-								return code;
 							}
 						}
 						break;
