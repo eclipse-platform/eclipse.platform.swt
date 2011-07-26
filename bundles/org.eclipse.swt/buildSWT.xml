@@ -804,7 +804,6 @@
 		<script language="javascript">
 		<![CDATA[
 			rfiles = project.getProperty("rfiles");
-			println(rfiles);
 			if (rfiles.length() > 0) {
 				project.setProperty("removed_files", rfiles.replace(";", " "));
 			}
