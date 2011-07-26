@@ -710,7 +710,7 @@
 		
 		<!-- Check for changes -->
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="diffs">
-			<arg line="diff ${TAG} ${SHA1} ${library_src}"/>
+			<arg line="diff ${SHA1} ${library_src}"/>
 		</exec>
 		<condition property="natives_changed">
 			<length string="${diffs}" trim="true" when="greater" length="0"/>
