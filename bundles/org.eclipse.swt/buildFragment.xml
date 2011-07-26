@@ -18,7 +18,6 @@
 			<isset property="swt.arch"/>
 		</condition>
 		<property name="full.name" value="${fragment}_${version.suffix}" />
-		<property name="plugindir" value="${pluginroot}/org.eclipse.swt" />
 		<property name="fragmentdir" value="${basedir}" />
 		<property name="temp.folder" value="${fragmentdir}/temp.folder" />
 		<property name="plugin.destination" value="${fragmentdir}" />
