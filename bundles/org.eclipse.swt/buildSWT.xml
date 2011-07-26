@@ -975,8 +975,8 @@
 	
 	<target name="init_repo" depends="check_repo" unless="${repo.exists}" >
 		<delete dir="../../../../${TAG}/${repo}" quiet="true"/>
-		<mkdir dir="../../../..${TAG}"/>
-		<exec dir="../../../..${TAG}" executable="git" failonerror="true">
+		<mkdir dir="../../../../${TAG}"/>
+		<exec dir="../../../../${TAG}" executable="git" failonerror="true">
 			<arg line="clone ${gitroot}/${repo}"/>
 		</exec>
 		<condition property="perform.checkout">
