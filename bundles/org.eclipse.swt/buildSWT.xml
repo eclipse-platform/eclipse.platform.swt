@@ -466,23 +466,9 @@
 		<antcall target="new_build"/>
 	</target>
 	
-	<target name="new_build" depends="get_version,get_tag">
+	<target name="new_build" depends="get_version">
 		<!-- Update the version files -->
 		<antcall target="increment_version"/>
-		
-		<!-- Update the buildnotes_swt.html file -->
-		<antcall target="update_buildnotes"/>
-
-		<!-- Commit the files -->
-		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="add '${file_library_j2se}' '${file_library_j2me}' '${file_version}' '${file_make_common}' '${file_build_notes}'"/>
-		</exec>
-		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="status"/>
-		</exec>
-		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="commit -m 'v${new_version}'"/>
-		</exec>
 	</target>
 	
 	<target name="increment_version" depends="check_natives_changed, get_version" if="natives_changed">
@@ -661,17 +647,25 @@
 		<!--antcall target="check_libraries"/-->
 		<antcall target="check_fragment_libraries"/>
 		
+		<!-- Update the buildnotes_swt.html file -->
+		<antcall target="update_buildnotes"/>
+
+		<!-- Commit the files -->
+		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="add '${file_library_j2se}' '${file_library_j2me}' '${file_version}' '${file_make_common}' '${file_build_notes}'"/>
+		</exec>
+		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="status"/>
+		</exec>
+		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="commit -m 'v${swt_version}'"/>
+		</exec>
+
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="tag v${swt_new_tag}"/>
 		</exec>
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
 			<arg line="tag v${swt_new_tag}"/>
-		</exec>
-		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="push --tags"/>
-		</exec>
-		<exec dir="${repo.bin}" executable="git" failonerror="true">
-			<arg line="push --tags"/>
 		</exec>
 		
 		<antcall target="update_swt_map"/>
@@ -1039,6 +1033,12 @@
 		</exec>
 		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
 			<arg line="push origin ${TAG}"/>
+		</exec>
+		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="push --tags"/>
+		</exec>
+		<exec dir="${repo.bin}" executable="git" failonerror="true">
+			<arg line="push --tags"/>
 		</exec>
 	</target>
 
