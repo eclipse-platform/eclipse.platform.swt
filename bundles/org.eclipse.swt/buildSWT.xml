@@ -35,7 +35,7 @@
 	<property name="gitroot" value="fheidric@dev.eclipse.org:/gitroot/platform/"/>
 	<property name="keyfile" value="C:\BUILD\ssh\swtbuild_dsa_private" /> 
 	<property name="TAG" value="master"/>
-	<property name="tmphome" value="./tmp"/>
+	<property name="tmphome" value="../../../tmp"/>
 	
 	<property name="repo.src" value="../../../eclipse.platform.swt"/>
 	<property name="repo.bin" value="../../../eclipse.platform.swt.binaries"/>
@@ -536,7 +536,7 @@
 
 	<!-- Set swt_tag to the current tag in the swt map file -->
 	<target name="get_tag" unless="swt_tag" depends="cvs_tag">
-		<property name="tmpdir" value="."/>
+		<property name="tmpdir" value="${tmphome}"/>
 		<!--property name="map" value="${repo.releng}/bundles/org.eclipse.releng/maps/swt.map"/-->
 		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
 		<property name="cvsRsh" value="plink"/>
@@ -678,7 +678,7 @@
 	</target>
 	
 	<target name="update_swt_map" depends="cvs_tag">
-		<property name="tmpdir" value="."/>
+		<property name="tmpdir" value="${tmphome}"/>
 		<property name="cvsRsh" value="plink"/>
 		<property name="cvsRoot" value=":ext:fheidric@dev.eclipse.org:/cvsroot/eclipse"/>
 		<!-- download the map file -->
