@@ -564,6 +564,8 @@ void sendSelection () {
 
 	Event event = new Event ();
 	sendSelectionEvent (SWT.Selection, event, nsItemAction != 0);
+	// Widget may be disposed at this point
+	if (isDisposed()) return;
 	if (nsItemAction != 0) {
 		if (event.doit) {
 			NSApplication app = NSApplication.sharedApplication();
