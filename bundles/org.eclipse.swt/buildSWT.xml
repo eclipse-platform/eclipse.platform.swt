@@ -1030,7 +1030,7 @@
 			<arg line="rebase origin/${TAG}"/>
 		</exec>
 		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
-			<arg line="push"/>
+			<arg line="push origin ${TAG}"/>
 		</exec>
 		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
 			<arg line="fetch"/>
@@ -1039,7 +1039,7 @@
 			<arg line="rebase origin/${TAG}"/>
 		</exec>
 		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
-			<arg line="push"/>
+			<arg line="push origin ${TAG}"/>
 		</exec>
 	</target>
 
