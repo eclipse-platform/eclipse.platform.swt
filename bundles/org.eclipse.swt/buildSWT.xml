@@ -466,12 +466,13 @@
 		<antcall target="new_build"/>
 	</target>
 	
-	<target name="new_build" depends="get_version">
+	<target name="new_build">
 		<!-- Update the version files -->
 		<antcall target="increment_version"/>
 	</target>
 	
 	<target name="increment_version" depends="check_natives_changed, get_version" if="natives_changed">
+		<echo>Incrementing version from ${swt_version} to ${new_version}...</echo>
 		<replace file="${repo.src}/${file_library_j2se}" token="MAJOR_VERSION = ${maj_ver}" value="MAJOR_VERSION = ${new_maj_ver}"/>
 		<replace file="${repo.src}/${file_library_j2me}" token="MAJOR_VERSION = ${maj_ver}" value="MAJOR_VERSION = ${new_maj_ver}"/>
 		<replace file="${repo.src}/${file_library_j2se}" token="MINOR_VERSION = ${min_ver}" value="MINOR_VERSION = ${new_min_ver}"/>
