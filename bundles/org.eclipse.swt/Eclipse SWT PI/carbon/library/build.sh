@@ -12,9 +12,9 @@
 
 cd `dirname $0`
 
-OUTPUT_DIR=../../../org.eclipse.swt.carbon.macosx
-
-export OUTPUT_DIR
+if [ "x${OUTPUT_DIR}" = "x" ]; then
+	export OUTPUT_DIR=../../../org.eclipse.swt.carbon.macosx
+fi
 
 export MACOSX_DEPLOYMENT_TARGET=10.4
 

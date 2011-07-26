@@ -85,8 +85,10 @@ void generateSTATS_C(JNIClass[] classes) {
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		gen.setOutput(new PrintStream(out));
+		String fileName = outputDir + gen.getFileName();
+		gen.setDelimiter(JNIGenerator.getDelimiter(fileName));
 		gen.generate();
-		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), outputDir + gen.getFileName());
+		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), fileName);
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -102,8 +104,10 @@ void generateSTATS_H(JNIClass[] classes) {
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		gen.setOutput(new PrintStream(out));
+		String fileName = outputDir + gen.getFileName();
+		gen.setDelimiter(JNIGenerator.getDelimiter(fileName));
 		gen.generate();
-		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), outputDir + gen.getFileName());
+		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), fileName);
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -119,13 +123,14 @@ void generateSTRUCTS_H(JNIClass[] classes) {
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		gen.setOutput(new PrintStream(out));
+		String fileName = outputDir + gen.getFileName();
+		gen.setDelimiter(JNIGenerator.getDelimiter(fileName));
 		gen.generate();
-		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), outputDir + gen.getFileName());
+		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), fileName);
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
 	}
-
 }
 
 void generateSTRUCTS_C(JNIClass[] classes) {
@@ -137,8 +142,10 @@ void generateSTRUCTS_C(JNIClass[] classes) {
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		gen.setOutput(new PrintStream(out));
+		String fileName = outputDir + gen.getFileName();
+		gen.setDelimiter(JNIGenerator.getDelimiter(fileName));
 		gen.generate();
-		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), outputDir + gen.getFileName());
+		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), fileName);
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -155,8 +162,10 @@ void generateSWT_C(JNIClass[] classes) {
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		gen.setOutput(new PrintStream(out));
+		String fileName = outputDir + gen.getFileName();
+		gen.setDelimiter(JNIGenerator.getDelimiter(fileName));
 		gen.generate();
-		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), outputDir + gen.getFileName());
+		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), fileName);
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -173,13 +182,15 @@ void generateMetaData(JNIClass[] classes) {
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		gen.setOutput(new PrintStream(out));
-		if (new File(getMetaDataDir() + gen.getFileName()).exists()) {
+		String fileName = getMetaDataDir() + gen.getFileName();
+		if (new File(fileName).exists()) {
+			gen.setDelimiter(JNIGenerator.getDelimiter(fileName));
 			gen.generate();
 			if (!new File(getMetaDataDir()).exists()) {
 				System.out.println("Warning: Meta data output dir does not exist");
 				return;
 			}
-			if (out.size() > 0) JNIGenerator.output(out.toByteArray(), getMetaDataDir() + gen.getFileName());
+			if (out.size() > 0) JNIGenerator.output(out.toByteArray(), fileName);
 		}
 	} catch (Exception e) {
 		System.out.println("Problem");

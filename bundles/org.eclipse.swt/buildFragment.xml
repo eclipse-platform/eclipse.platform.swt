@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><!--
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
     Copyright (c) 2009, 2010 IBM Corporation and others.
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
@@ -17,11 +18,11 @@
 			<isset property="swt.arch"/>
 		</condition>
 		<property name="full.name" value="${fragment}_${version.suffix}" />
-		<property name="temp.folder" value="${basedir}/temp.folder" />
-		<property name="plugin.destination" value="${basedir}" />
-		<property name="build.result.folder" value="${basedir}" />
-		<property name="destination" value="${basedir}" />
-		<property name="plugindir" value="../org.eclipse.swt" />
+		<property name="fragmentdir" value="${basedir}" />
+		<property name="temp.folder" value="${fragmentdir}/temp.folder" />
+		<property name="plugin.destination" value="${fragmentdir}" />
+		<property name="build.result.folder" value="${fragmentdir}" />
+		<property name="destination" value="${fragmentdir}" />
 		<property name="javacVerbose" value="false" />
 		<property name="logExtension" value=".xml" />
 		<property name="javacSource" value="1.3" />
@@ -103,7 +104,7 @@
 			<fileset    dir="${temp.folder}/@dot.src/library/" excludes="**/*.sh"/>
 			<zipfileset dir="${temp.folder}/@dot.src/library/" includes="**/*.sh" filemode="755"/>
 			<fileset dir="${temp.folder}/@dot.src" includes="**/version.txt"/>
-			<fileset dir="${basedir}" includes="about.html,about_files/"/>
+			<fileset dir="${fragmentdir}" includes="about.html,about_files/"/>
 		</zip>
 		<delete dir="${temp.folder}/@dot.src"/>
 	</target>
@@ -115,7 +116,7 @@
 			<fileset dir="${temp.folder}/@dot.src" includes="**/*.properties"/>
 			<fileset dir="${temp.folder}/@dot.src/library/"/>
 			<fileset dir="${temp.folder}/@dot.src" includes="**/version.txt"/>
-			<fileset dir="${basedir}" includes="about.html,about_files/"/>
+			<fileset dir="${fragmentdir}" includes="about.html,about_files/"/>
 		</copy>
 		<delete dir="${temp.folder}/@dot.src"/>
 	</target>
@@ -136,7 +137,8 @@
 			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/carbon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT WebKit/carbon/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>			<fileset dir="${plugindir}/Eclipse SWT Browser/carbon/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/carbon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/carbon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
@@ -173,7 +175,8 @@
 			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT WebKit/cocoa/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>			<fileset dir="${plugindir}/Eclipse SWT Browser/cocoa/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
@@ -209,7 +212,8 @@
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/gtk/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>			<fileset dir="${plugindir}/Eclipse SWT Browser/gtk/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
@@ -257,7 +261,8 @@
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/emulated/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT AWT/motif/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>			<fileset dir="${plugindir}/Eclipse SWT Browser/motif/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Browser/motif/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/motif/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
@@ -336,7 +341,8 @@
 			<fileset dir="${plugindir}/Eclipse SWT Browser/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Browser/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Mozilla/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT Mozilla/win32/"/>			<fileset dir="${plugindir}/Eclipse SWT WebKit/win32/"/>
+			<fileset dir="${plugindir}/Eclipse SWT Mozilla/win32/"/>
+			<fileset dir="${plugindir}/Eclipse SWT WebKit/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Custom Widgets/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Drag and Drop/win32/"/>
@@ -433,14 +439,14 @@
 		<mkdir dir="${destination.temp.folder}/${full.name}" />
 		<copy file="${build.result.folder}/src.zip" todir="${destination.temp.folder}/${full.name}/" />
 		<copy todir="${destination.temp.folder}/${full.name}">
-			<fileset dir="${basedir}" includes="about.html,about_files/" />
+			<fileset dir="${fragmentdir}" includes="about.html,about_files/" />
 		</copy>
 	</target>
 
 	<target name="gather.individual.sources" depends="init">
 		<antcall target="copy.src" />
 		<copy todir="${destination.temp.folder}">
-			<fileset dir="${basedir}" includes="about.html,about_files/" />
+			<fileset dir="${fragmentdir}" includes="about.html,about_files/" />
 		</copy>
 	</target>
 
@@ -462,17 +468,17 @@
 			<fileset dir="${build.result.folder}/@dot" includes="**" />
 		</copy>
 		<copy todir="${destination.temp.folder}/${full.name}">
-			<fileset dir="${basedir}" includes="fragment.properties,about.html,about_files/,swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,libcairo-swt.so,META-INF/" />
+			<fileset dir="${fragmentdir}" includes="fragment.properties,about.html,about_files/,swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,libcairo-swt.so,META-INF/" />
 		</copy>
 		<chmod perm="755" dir="${destination.temp.folder}/${full.name}" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,libcairo-swt.so" />
 		<eclipse.versionReplacer path="${destination.temp.folder}/${full.name}" version="${version.suffix}" />
 		<antcall target="apitools.generation">
 			<param name="target.folder" value="${destination.temp.folder}/${full.name}"/>
-			<param name="projectLocation" value="${basedir}"/>
+			<param name="projectLocation" value="${fragmentdir}"/>
 			<param name="binary.folders" value="${build.result.folder}/@dot"/>
 			<param name="projectName" value="${full.name}"/>
-			<param name="extraSourceLocations" value="${basedir}/${plugindir}"/>
-			<param name="extraManifests" value="${basedir}/${plugindir}/META-INF/MANIFEST.MF"/>
+			<param name="extraSourceLocations" value="${plugindir}"/>
+			<param name="extraManifests" value="${plugindir}/META-INF/MANIFEST.MF"/>
 		</antcall>
 	</target>
 
@@ -485,19 +491,21 @@
 			<param name="debug" value="true" />
 			<param name="jar.filename" value="swt-debug.jar" />
 		</antcall>
-		<jar jarfile="${build.result.folder}/swt-debug.jar" basedir="${basedir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
+		<jar jarfile="${build.result.folder}/swt-debug.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
 		<copy file="${build.result.folder}/swt-debug.jar" todir="${temp.folder}/swtdownload" />
 		<delete dir="${build.result.folder}/@dot" />
 		<antcall target="build.jars">
 			<param name="debug" value="false" />
 			<param name="jar.filename" value="swt.jar" />
 		</antcall>
-		<jar jarfile="${build.result.folder}/swt.jar" basedir="${basedir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
+		<jar jarfile="${build.result.folder}/swt.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
 		<copy file="${build.result.folder}/swt.jar" todir="${temp.folder}/swtdownload" />
 		<antcall target="build.sources" />
 		<copy file="${build.result.folder}/src.zip" todir="${temp.folder}/swtdownload" />
-		<copy file="${plugindir}/build/.project" todir="${temp.folder}/swtdownload" />		<copy file="${plugindir}/build/.classpath" todir="${temp.folder}/swtdownload" />		<copy todir="${temp.folder}/swtdownload">
-			<fileset dir="${basedir}" includes="about.html,about_files/" />
+		<copy file="${plugindir}/build/.project" todir="${temp.folder}/swtdownload" />
+		<copy file="${plugindir}/build/.classpath" todir="${temp.folder}/swtdownload" />
+		<copy todir="${temp.folder}/swtdownload">
+			<fileset dir="${fragmentdir}" includes="about.html,about_files/" />
 		</copy>
 		<condition property="zipfilename" value="swt-${buildid}-${swt.ws}-${swt.os}-${swt.arch}.zip" else="swt-${buildid}-${swt.ws}-${swt.os}.zip">
 			<isset property="swt.arch"/>
@@ -545,7 +553,7 @@
 		<antcall target="gather.bin.parts">
 			<param name="destination.temp.folder" value="${temp.folder}/" />
 		</antcall>
-		<jar jarfile="${plugin.destination}/${full.name}.jar" basedir="${temp.folder}/${full.name}" filesonly="true" manifest="${basedir}/META-INF/MANIFEST.MF"/>
+		<jar jarfile="${plugin.destination}/${full.name}.jar" basedir="${temp.folder}/${full.name}" filesonly="true" manifest="${fragmentdir}/META-INF/MANIFEST.MF"/>
 		<delete dir="${temp.folder}" />
 	</target>
 

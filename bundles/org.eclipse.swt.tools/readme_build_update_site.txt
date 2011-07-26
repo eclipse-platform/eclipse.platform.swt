@@ -1,8 +1,8 @@
 Instructions to build the update site:
 
-1) Check out
-	:extssh:<user>@dev.eclipse.org:/cvsroot/eclipse/org.eclipse.swt.tools
-	:extssh:<user>@dev.eclipse.org:/cvsroot/eclipse/org.eclipse.swt.tools/feature
+1) Import projects
+	ssh://<user>@git.eclipse.org/gitroot/platform/eclipse.platform.swt/bundles/org.eclipse.swt.tools
+	ssh://<user>@git.eclipse.org/gitroot/platform/eclipse.platform.swt/bundles/org.eclipse.swt.tools/feature
 	:extssh:<user>@dev.eclipse.org:/cvsroot/org.eclipse/www/swt
 2) Popup menu on Package Explorer and select "Export"
 3) Choose "Deployable features" and click "Next"

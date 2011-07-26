@@ -19,7 +19,6 @@ public abstract class JNIGenerator implements Flags {
 	JNIClass mainClass;
 	JNIClass[] classes;
 	MetaData metaData;
-	boolean isCPP;
 	String delimiter;
 	PrintStream output;
 	ProgressMonitor progress;
@@ -88,6 +87,31 @@ public static void output(byte[] bytes, String fileName) throws IOException {
 	FileOutputStream out = new FileOutputStream(fileName);
 	out.write(bytes);
 	out.close();
+}
+
+public static String getDelimiter(String fileName) {
+	InputStream is = null;
+	try {
+		is = new BufferedInputStream(new FileInputStream(fileName));
+		int c;
+		while ((c = is.read()) != -1) {
+			if (c == '\n') return "\n";
+			if (c == '\r') {
+				int c1 = is.read();
+				if (c1 == '\n') {
+					return "\r\n";
+				} else {
+					return "\r";
+				}
+			}
+		}
+	} catch (IOException e) {
+	} finally {
+		try {
+			if (is != null) is.close();
+		} catch (IOException e) {}
+	}
+	return System.getProperty("line.separator");
 }
 
 String fixDelimiter(String str) {
@@ -213,13 +237,6 @@ public void generate() {
 	sort(classes);
 	for (int i = 0; i < classes.length; i++) {
 		JNIClass clazz = classes[i];
-		if (clazz.getFlag(FLAG_CPP)) {
-			isCPP = true;
-			break;
-		}
-	}
-	for (int i = 0; i < classes.length; i++) {
-		JNIClass clazz = classes[i];
 		if (getGenerate(clazz)) generate(clazz);
 		if (progress != null) progress.step();
 	}
@@ -239,7 +256,13 @@ public JNIClass[] getClasses() {
 }
 
 public boolean getCPP() {
-	return isCPP;
+	for (int i = 0; i < classes.length; i++) {
+		JNIClass clazz = classes[i];
+		if (clazz.getFlag(FLAG_CPP)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 public String getDelimiter() {

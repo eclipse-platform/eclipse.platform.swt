@@ -44,9 +44,7 @@ XULRUNNERCFLAGS = -c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS)
 	-Wno-non-virtual-dtor -include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include 
 XULRUNNERLFLAGS = $(LFLAGS)
 
-all: $(SWT_LIB) $(SWTPI_LIB) $(AWT_LIB) #$(XULRUNNER_LIB)
-
-all_x86_64: $(SWT_LIB) $(SWTPI_LIB) $(AWT_LIB) #$(XULRUNNER_LIB)
+all: $(SWT_LIB) $(SWTPI_LIB) $(AWT_LIB) $(XULRUNNER_LIB)
 
 .c.o:
 	cc $(CFLAGS) $*.c
@@ -79,9 +77,6 @@ xpcominit_stats.o: xpcominit_stats.cpp
 	g++ $(XULRUNNERCFLAGS) xpcominit_stats.cpp
 
 install: all
-	cp *.jnilib $(OUTPUT_DIR)
-	
-install_x86_64: all_x86_64
 	cp *.jnilib $(OUTPUT_DIR)
 
 clean:

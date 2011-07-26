@@ -192,7 +192,7 @@ swt_xpcominit.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(XPCOMINIT_LIB)\" -r -fo swt_xpcom.res swt_xpcom.rc
 
 install:
-	copy *.dll $(OUTPUT_DIR)
+	copy *.dll "$(OUTPUT_DIR)"
 
 clean:
     del *.obj *.res *.dll *.lib *.exp

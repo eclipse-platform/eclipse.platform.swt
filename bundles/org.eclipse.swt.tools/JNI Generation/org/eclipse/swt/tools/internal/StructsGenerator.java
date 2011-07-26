@@ -228,6 +228,7 @@ void generateCacheFunction(JNIClass clazz) {
 	}
 	output("\t");
 	output(clazzName);
+	boolean isCPP = getCPP();
 	if (isCPP) {
 		if (GLOBAL_REF) {
 			output("Fc.clazz = (jclass)env->NewGlobalRef(env->GetObjectClass(lpObject));");
@@ -303,6 +304,7 @@ void generateGetFields(JNIClass clazz) {
 		String typeName = type.getSimpleName();
 		String accessor = field.getAccessor();
 		if (accessor == null || accessor.length() == 0) accessor = field.getName();
+		boolean isCPP = getCPP();
 		if (type.isPrimitive()) {
 			output("\tlpStruct->");
 			output(accessor);
@@ -456,6 +458,7 @@ void generateSetFields(JNIClass clazz) {
 		String typeName = type.getSimpleName();
 		String accessor = field.getAccessor();
 		if (accessor == null || accessor.length() == 0) accessor = field.getName();
+		boolean isCPP = getCPP();
 		if (type.isPrimitive()) {
 			if (isCPP) {
 				output("\tenv->Set");

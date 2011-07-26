@@ -28,15 +28,20 @@ case $OS in
 		case $MODEL in		
 		*) 
 			if [ "${JAVA_HOME}" = "" ]; then
-				echo "Please set JAVA_HOME to point at a JRE."
+				JAVA_HOME="/bluebird/teamswt/swt-builddir/aixj9_r5"
+			fi
+			if [ "${AWT_HOME}" = "" ]; then
+				AWT_HOME="/bluebird/teamswt/swt-builddir/aixj9_r5/jre/bin"
 			fi
 			if [ "${MOTIF_HOME}" = "" ]; then
-				MOTIF_HOME=/usr
+				MOTIF_HOME="/bluebird/teamswt/swt-builddir/motif21"
 			fi
 			if [ "${CDE_HOME}" = "" ]; then
 				CDE_HOME=/usr/dt
 			fi
-			OUTPUT_DIR=../../../org.eclipse.swt.motif.aix.ppc
+			if [ "${OUTPUT_DIR}" = "" ]; then
+				OUTPUT_DIR=../../../org.eclipse.swt.motif.aix.ppc
+			fi
 			makefile="make_aix.mak"
 			echo "Building AIX motif ppc version of SWT"
 		esac
@@ -45,10 +50,31 @@ case $OS in
 		case $MODEL in
 		*)
 			if [ "${JAVA_HOME}" = "" ]; then
-				echo "Please set JAVA_HOME to point at a JRE."
+				JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/x86/ibm-java2-i386-50"
 			fi
 			if [ "${MOTIF_HOME}" = "" ]; then
-				echo "Please set MOTIF_HOME to point at a Motif dev path."
+				MOTIF_HOME="/bluebird/teamswt/swt-builddir/motif21"
+			fi
+			if [ "${MOZILLA_SDK}" = "" ]; then
+				MOZILLA_SDK="/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk"
+			fi
+			if [ "${XULRUNNER_SDK}" = "" ]; then
+				XULRUNNER_SDK="/bluebird/teamswt/swt-builddir/geckoSDK/1.8.0.4/gecko-sdk"
+			fi
+			if [ "${MOZILLA_INCLUDES}" = "" ]; then
+				MOZILLA_INCLUDES="-include ${MOZILLA_SDK}/mozilla-config.h -I${MOZILLA_SDK}/../include/xpcom -I${MOZILLA_SDK}/../include/nspr -I${MOZILLA_SDK}/../include/embed_base -I${MOZILLA_SDK}/../include/embedstring -I${MOZILLA_SDK}/../include/string"
+			fi
+			if [ "${MOZILLA_LIBS}" = "" ]; then
+				MOZILLA_LIBS="${MOZILLA_SDK}/../lib/libembedstring.a -L${MOZILLA_SDK}/../bin -L${MOZILLA_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"
+			fi
+			if [ "${XULRUNNER_INCLUDES}" = "" ]; then
+				XULRUNNER_INCLUDES="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"
+			fi
+			if [ "${XULRUNNER_LIBS}" = "" ]; then
+				XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
+			fi
+			if [ "${PKG_CONFIG_PATH}" = "" ]; then
+				PKG_CONFIG_PATH="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86/lib/pkgconfig"
 			fi
 			if [ -z "${MOZILLA_INCLUDES}" -a -z "${MOZILLA_LIBS}" ]; then
 				if [ x`pkg-config --exists mozilla-xpcom && echo YES` = "xYES" ]; then
@@ -74,7 +100,9 @@ case $OS in
 					echo "    *** Mozilla embedding support will not be compiled."
 				fi
 			fi
-			OUTPUT_DIR=../../../org.eclipse.swt.motif.linux.x86
+			if [ "${OUTPUT_DIR}" = "" ]; then
+				OUTPUT_DIR=../../../org.eclipse.swt.motif.linux.x86
+			fi
 			makefile="make_linux.mak"
 			echo "Building Linux motif x86 version of SWT"
 		esac
@@ -91,8 +119,13 @@ case $OS in
 			if [ "${CDE_HOME}" = "" ]; then
 				CDE_HOME=/usr/dt		
 			fi
-			OUTPUT_DIR=../../../org.eclipse.swt.motif.solaris.sparc
-			PATH=/usr/ccs/bin:/opt/SUNWspro/bin:$PATH
+			if [ "${PKG_CONFIG_PATH}" = "" ]; then
+				PKG_CONFIG_PATH="/usr/local/cairo-1.4.10/lib/pkgconfig/"
+			fi
+			if [ "${OUTPUT_DIR}" = "" ]; then
+				OUTPUT_DIR=../../../org.eclipse.swt.motif.solaris.sparc
+			fi
+			PATH="/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/bin:$PATH"
 			export PATH
 			makefile="make_solaris.mak"
 			echo "Building Solaris motif sparc version of SWT"
@@ -102,7 +135,7 @@ case $OS in
 		case $MODEL in
 			"ia64")
 				if [ "${JAVA_HOME}" = "" ]; then
-					echo "Please set JAVA_HOME to point at a JRE."
+					JAVA_HOME="/opt/java1.5/"
 				fi
 				if [ "${MOTIF_HOME}" = "" ]; then
 					MOTIF_HOME=/usr
@@ -110,7 +143,12 @@ case $OS in
 				if [ "${CDE_HOME}" = "" ]; then
 					CDE_HOME=/usr/dt
 				fi
-				OUTPUT_DIR=../../../org.eclipse.swt.motif.hpux.ia64_32
+				if [ "${AWT_HOME}" = "" ]; then
+					AWT_HOME="/opt/java1.5/jre/lib/IA64N/"
+				fi
+				if [ "${OUTPUT_DIR}" = "" ]; then
+					OUTPUT_DIR=../../../org.eclipse.swt.motif.hpux.ia64_32
+				fi
 				makefile="make_hpux_ia64_32.mak"
 				echo "Building HPUX motif 32 bit ia64 version of SWT"
 				;;
@@ -124,7 +162,9 @@ case $OS in
 				if [ "${CDE_HOME}" = "" ]; then
 					CDE_HOME=/usr/dt
 				fi
-				OUTPUT_DIR=../../../org.eclipse.swt.motif.hpux.PA_RISC
+				if [ "${OUTPUT_DIR}" = "" ]; then
+					OUTPUT_DIR=../../../org.eclipse.swt.motif.hpux.PA_RISC
+				fi
 				makefile="make_hpux_PA_RISC.mak"
 				echo "Building HPUX motif risc version of SWT"
 				;;
@@ -136,6 +176,6 @@ case $OS in
 		;;
 esac
 
-export JAVA_HOME MOTIF_HOME CDE_HOME MOZILLA_SDK MOZILLA_INCLUDES MOZILLA_LIBS XULRUNNER_SDK XULRUNNER_INCLUDES XULRUNNER_LIBS OUTPUT_DIR
+export JAVA_HOME MOTIF_HOME CDE_HOME AWT_HOME MOZILLA_SDK MOZILLA_INCLUDES MOZILLA_LIBS XULRUNNER_SDK XULRUNNER_INCLUDES XULRUNNER_LIBS PKG_CONFIG_PATH OUTPUT_DIR
 
 make -f $makefile $1 $2 $3 $4 $5 $6 $7 $8 $9

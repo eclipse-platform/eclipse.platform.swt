@@ -182,6 +182,7 @@ public void generate(JNIMethod method) {
 		output(JNI64);
 		outputln();
 	}
+	boolean isCPP = getCPP();
 	if (isCPP) {
 		output("extern \"C\" ");
 		generateFunctionPrototype(method, function, params, returnType, returnType64, true);
@@ -258,6 +259,7 @@ boolean generateGetParameter(JNIMethod method, JNIParameter param, boolean criti
 	output(") if ((lparg");
 	output(iStr);
 	output(" = ");
+	boolean isCPP = getCPP();
 	if (paramType.isArray()) {
 		JNIType componentType = paramType.getComponentType();
 		if (componentType.isPrimitive()) {
@@ -330,6 +332,7 @@ void generateSetParameter(JNIParameter param, boolean critical) {
 	JNIType paramType = param.getType(), paramType64 = param.getType64();
 	if (paramType.isPrimitive() || isSystemClass(paramType)) return;
 	String iStr = String.valueOf(param.getParameter());
+	boolean isCPP = getCPP();
 	if (paramType.isArray()) {
 		output("\tif (arg");
 		output(iStr);
@@ -621,6 +624,7 @@ void generateFunctionCallLeftSide(JNIMethod method, JNIType returnType, JNIType 
 		output("&");
 	}	
 	if (method.getFlag(FLAG_JNI)) {
+		boolean isCPP = getCPP();
 		output(isCPP ? "env->" : "(*env)->");
 	}
 }
@@ -629,6 +633,7 @@ void generateFunctionCallRightSide(JNIMethod method, JNIParameter[] params, int 
 	if (!method.getFlag(FLAG_CONST)) {
 		output("(");
 		if (method.getFlag(FLAG_JNI)) {
+			boolean isCPP = getCPP();
 			if (!isCPP) output("env, ");
 		}
 		for (int i = paramStart; i < params.length; i++) {
@@ -653,6 +658,7 @@ void generateFunctionCallRightSide(JNIMethod method, JNIParameter[] params, int 
 void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType returnType, JNIType returnType64, boolean needsReturn) {
 	String name = method.getName();
 	String copy = (String)method.getParam("copy");
+	boolean isCPP = getCPP();
 	boolean makeCopy = copy.length() != 0 && isCPP && !returnType.isType("void");
 	if (makeCopy) {
 		output("\t");
