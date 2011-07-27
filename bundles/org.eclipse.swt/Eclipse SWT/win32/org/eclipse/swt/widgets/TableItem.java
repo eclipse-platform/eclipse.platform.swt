@@ -387,7 +387,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 					TCHAR buffer = new TCHAR (parent.getCodePage (), string, false);
 					int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_CALCRECT;
 					OS.DrawText (hDC, buffer, buffer.length (), textRect, flags);
-					rect.right += textRect.right - textRect.left + Table.INSET * 3 + 1;
+					rect.right += textRect.right - textRect.left + Table.INSET * 3 + 2;
 				}
 			}
 		}
