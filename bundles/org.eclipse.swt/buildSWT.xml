@@ -161,6 +161,7 @@
 	</target>
 	
 	<target name="check_fragment_libraries" depends="get_version">
+		<echo>Checking ${fragment}</echo>
 		<property name="checkdir" value="~/build/check_libraries"/>
 		<property name="library_count" value="124"/>
 		<property name="fragment" value=""/>
