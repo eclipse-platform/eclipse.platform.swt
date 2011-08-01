@@ -63,7 +63,7 @@ public void javaToNative (Object object, TransferData transferData){
 	string.getChars (0, chars.length, chars, 0);
 	transferData.result = -1;
 
-	int encoding = OS.CFStringGetSystemEncoding();
+	int encoding = OS.kCFStringEncodingUTF8;
 	int cfstring = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
 	if (cfstring == 0) return;
 	byte[] buffer = null;
@@ -98,7 +98,7 @@ public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
 	if (transferData.data.length == 0 || transferData.data[0].length == 0) return null;
 	byte[] buffer = transferData.data[0];
-	int encoding = OS.CFStringGetSystemEncoding();
+	int encoding = OS.kCFStringEncodingUTF8;
 	int cfstring = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, false);
 	if (cfstring == 0) return null;
 	try {
