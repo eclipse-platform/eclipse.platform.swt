@@ -488,7 +488,8 @@ public void copyArea(Image image, int x, int y) {
 			for (int i = 0; i < count[0]; i++) {
 				OS.memmove(display, displays + (i * 4), 4);
 				OS.CGDisplayBounds(display[0], rect);
-				int /*long*/ address = OS.CGDisplayBaseAddress(display[0]);
+				int /*long*/ srcImage = 0;
+				int /*long*/ address = OS.VERSION >= 0x1070 ? 0 : OS.CGDisplayBaseAddress(display[0]);
 				if (address != 0) {
 					int /*long*/ width = OS.CGDisplayPixelsWide(display[0]);
 					int /*long*/ height = OS.CGDisplayPixelsHigh(display[0]);
@@ -500,7 +501,6 @@ public void copyArea(Image image, int x, int y) {
 						case 16: bitmapInfo |= OS.kCGBitmapByteOrder16Host; break;
 						case 32: bitmapInfo |= OS.kCGBitmapByteOrder32Host; break;
 					}
-					int /*long*/ srcImage = 0;
 					if (OS.__BIG_ENDIAN__() && OS.VERSION >= 0x1040) {
 						int /*long*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
 						int /*long*/ context = OS.CGBitmapContextCreate(address, width, height, bps, bpr, colorspace, bitmapInfo);
@@ -514,8 +514,12 @@ public void copyArea(Image image, int x, int y) {
 						OS.CGColorSpaceRelease(colorspace);
 						OS.CGDataProviderRelease(provider);
 					}
+				} else {
+					if (OS.VERSION >= 0x1060) srcImage = OS.CGDisplayCreateImage(display[0]);
+				}
+				if (srcImage != 0) {
 					copyArea(image, x - (int)rect.origin.x, y - (int)rect.origin.y, srcImage);
-					if (srcImage != 0) OS.CGImageRelease(srcImage);
+					OS.CGImageRelease(srcImage);
 				}
 			}
 			OS.free(displays);

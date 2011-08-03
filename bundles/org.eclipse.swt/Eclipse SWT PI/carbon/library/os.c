@@ -2748,6 +2748,26 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGDisplayBytesPerRow)
 }
 #endif
 
+#ifndef NO_CGDisplayCreateImage
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayCreateImage)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGDisplayCreateImage_FUNC);
+/*
+	rc = (jintLong)CGDisplayCreateImage((CGDirectDisplayID)arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, CGDisplayCreateImage)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(CGDirectDisplayID))fp)((CGDirectDisplayID)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, CGDisplayCreateImage_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGDisplayHideCursor
 JNIEXPORT jint JNICALL OS_NATIVE(CGDisplayHideCursor)
 	(JNIEnv *env, jclass that, jint arg0)

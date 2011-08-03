@@ -451,7 +451,8 @@ public void copyArea(Image image, int x, int y) {
 		for (int i = 0; i < count[0]; i++) {
 			int display = displays[i];
 			OS.CGDisplayBounds(display, rect);
-			int address = OS.CGDisplayBaseAddress(display);
+			int /*long*/ srcImage = 0;
+			int /*long*/ address = OS.VERSION >= 0x1070 ? 0 : OS.CGDisplayBaseAddress(display);
 			if (address != 0) {
 				int width = OS.CGDisplayPixelsWide(display);
 				int height = OS.CGDisplayPixelsHigh(display);
@@ -463,7 +464,6 @@ public void copyArea(Image image, int x, int y) {
 					case 16: bitmapInfo |= OS.kCGBitmapByteOrder16Host; break;
 					case 32: bitmapInfo |= OS.kCGBitmapByteOrder32Host; break;
 				}
-				int srcImage = 0;
 				if (OS.__BIG_ENDIAN__() && OS.VERSION >= 0x1040) {
 					int context = OS.CGBitmapContextCreate(address, width, height, bps, bpr, data.device.colorspace, bitmapInfo);
 					srcImage = OS.CGBitmapContextCreateImage(context);
@@ -473,6 +473,10 @@ public void copyArea(Image image, int x, int y) {
 					srcImage = OS.CGImageCreate(width, height, bps, bpp, bpr, data.device.colorspace, bitmapInfo, provider, null, true, 0);
 					OS.CGDataProviderRelease(provider);
 				}
+			} else {
+				if (OS.VERSION >= 0x1060) srcImage = OS.CGDisplayCreateImage(display);
+			}
+			if (srcImage != 0) {
 				copyArea(image, x - (int)rect.x, y - (int)rect.y, srcImage);
 				if (srcImage != 0) OS.CGImageRelease(srcImage);
 			}

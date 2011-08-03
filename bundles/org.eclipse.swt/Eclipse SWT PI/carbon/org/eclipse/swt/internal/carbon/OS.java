@@ -2045,6 +2045,11 @@ public static final native int CGDisplayBitsPerPixel (int display);
 public static final native int CGDisplayBitsPerSample (int display);
 /** @param display cast=(CGDirectDisplayID) */
 public static final native int CGDisplayBytesPerRow (int display);
+/**
+ * @method flags=dynamic
+ * @param displayID cast=(CGDirectDisplayID)
+ */
+public static final native int /*long*/ CGDisplayCreateImage(int displayID);
 /** @param display cast=(CGDirectDisplayID) */
 public static final native int CGDisplayPixelsHigh (int display);
 /** @param display cast=(CGDirectDisplayID) */
