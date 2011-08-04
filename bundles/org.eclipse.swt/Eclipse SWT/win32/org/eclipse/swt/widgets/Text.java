@@ -338,7 +338,7 @@ public void addModifyListener (ModifyListener listener) {
  * @see SegmentListener
  * @see #removeSegmentListener
  * 
- * @since 3.7
+ * @since 3.8
  */
 public void addSegmentListener (SegmentListener listener) {
 	checkWidget ();
@@ -1539,6 +1539,19 @@ public void insert (String string) {
 	}
 }
 
+boolean isValidOffet (int start, int end) {
+	int charCount = 0, segmentCount = 0;
+	int nSegments = segments.length;
+	while (charCount <= end) {
+		if (segmentCount < nSegments && charCount - segmentCount == segments [segmentCount]) {
+			if (start == charCount || end == charCount) return false;
+			segmentCount++;
+		}
+		charCount++;
+	}
+	return true;
+}
+
 int mbcsToWcsPos (int mbcsPos) {
 	if (mbcsPos <= 0) return 0;
 	if (OS.IsUnicode) return mbcsPos;
@@ -1648,7 +1661,7 @@ public void removeModifyListener (ModifyListener listener) {
  * @see SegmentListener
  * @see #addSegmentListener
  * 
- * @since 3.7
+ * @since 3.8
  */
 public void removeSegmentListener (SegmentListener listener) {
 	checkWidget ();
@@ -2294,9 +2307,8 @@ public void setTextChars (char[] text) {
 		text = new char [string.length()];
 		string.getChars (0, text.length, text, 0);
 	}
-	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
-		clearSegments (false);
-	}
+	boolean processSegments = segments != null || hooks (SWT.GetSegments) || filters (SWT.GetSegments);
+	if (processSegments) clearSegments (false);
 	int limit = (int)/*64*/OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
 	if (text.length > limit) {
 		char [] temp = new char [limit];
@@ -2305,9 +2317,7 @@ public void setTextChars (char[] text) {
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), text, true);
 	OS.SetWindowText (handle, buffer);
-	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
-		applySegments ();
-	}
+	if (processSegments) applySegments ();
 	/*
 	* Bug in Windows.  When the widget is multi line
 	* text widget, it does not send a WM_COMMAND with
@@ -2542,49 +2552,20 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 	int code;
 	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
 		switch (msg) {
-			case OS.WM_KEYDOWN: {
-				switch (wParam) {
-					case OS.VK_DELETE: {
-						processSegments = true;
-						break;
-					}
-					case OS.VK_LEFT:
-					case OS.VK_RIGHT: {
-						if (segments != null && OS.GetKeyState (OS.VK_MENU) >= 0) {
-							int [] start = new int [1], end = new int [1], newStart = new int [1], newEnd = new int [1];
-							OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-							for (;; start [0] = newStart [0], end [0] = newEnd [0]) {
-								code = super.windowProc (hwnd, msg, wParam, lParam);
-								if (code != 1) return code;
-								OS.SendMessage (handle, OS.EM_GETSEL, newStart, newEnd);
-								if (newStart [0] != start [0]) {
-									if (untranslateOffset (newStart [0]) != untranslateOffset (start [0])) return code;
-								} else if (newEnd [0] == end [0]) {
-									return code;
-								} else if (untranslateOffset (newEnd [0]) != untranslateOffset (end [0])) {
-									return code;
-								}
-							}
-						}
-						break;
-					}
-				}
+			case OS.WM_KEYDOWN: 
+				processSegments = wParam == OS.VK_DELETE;
 				break;
-			}
-			case OS.WM_COPY: {
+			case OS.WM_COPY:
 				processSegments = segments != null;
 				break;
-			}
-			case OS.WM_CHAR: {
+			case OS.WM_CHAR: 
 				processSegments = !ignoreCharacter && OS.GetKeyState (OS.VK_CONTROL) >= 0 && OS.GetKeyState (OS.VK_MENU) >= 0;
 				break;
-			}
 			case OS.WM_PASTE:
 			case OS.WM_CUT:
-			case OS.WM_CLEAR: {
+			case OS.WM_CLEAR:
 				processSegments = true;
 				break;
-			}
 		}
 	}
 	if (processSegments) {
@@ -2617,11 +2598,7 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 		applySegments ();
 		if (redraw) {
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-			if (OS.IsWinCE) {
-				OS.InvalidateRect (handle, null, true);
-			} else {
-				OS.RedrawWindow (handle, null, 0, OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE); 
-			}
+			OS.InvalidateRect (handle, null, true);
 		}
 		OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
 	}
@@ -2969,9 +2946,6 @@ LRESULT wmColorChild (int /*long*/ wParam, int /*long*/ lParam) {
 LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 	int code = OS.HIWORD (wParam);
 	switch (code) {
-		case 0x0601/*OS.EN_HSCROLL*/:
-			System.out.println ("OS.EN_HSCROLL");
-			break;
 		case OS.EN_CHANGE:
 			if (findImageControl () != null) {
 				OS.InvalidateRect (handle, null, true);
@@ -3011,14 +2985,57 @@ LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 					style |= SWT.LEFT_TO_RIGHT;
 				}	
 				OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
-			} else if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
-				clearSegments (true);
-				applySegments ();
+			} else {
+				if (segments != null) {
+					clearSegments (true);
+					applySegments ();
+				}
 			}
 			fixAlignment();
 			break;
 	}
 	return super.wmCommandChild (wParam, lParam);
+}
+
+LRESULT wmKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
+	if (result != null) return result;
+	
+	if (segments != null) {
+		switch (wParam) {
+		case OS.VK_LEFT:
+		case OS.VK_UP:
+		case OS.VK_RIGHT:
+		case OS.VK_DOWN:
+			int /*long*/ code = 0;
+			int [] start = new int [1], end = new int [1], newStart = new int [1], newEnd = new int [1];
+			
+			//make sure initial start and end are valid char offsets 
+			OS.SendMessage (handle, OS.EM_GETSEL, start, end);
+			while (!isValidOffet (start [0], end [0])) {
+				code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
+				OS.SendMessage (handle, OS.EM_GETSEL, newStart, newEnd);
+				if (start [0] == newStart [0] && end [0] == newEnd [0]) break;
+				start [0] = newStart [0];
+				end [0] = newEnd [0];
+			}
+			
+			code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
+
+			//make sure resulting start and end are valid char offsets 
+			OS.SendMessage (handle, OS.EM_GETSEL, start, end);
+			while (!isValidOffet (start [0], end [0])) {
+				code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
+				OS.SendMessage (handle, OS.EM_GETSEL, newStart, newEnd);
+				if (start [0] == newStart [0] && end [0] == newEnd [0]) break;
+				start [0] = newStart [0];
+				end [0] = newEnd [0];
+			}
+			
+			result = code == 0 ? LRESULT.ZERO : new LRESULT (code);
+		}
+	}
+	return result; 
 }
 
 }

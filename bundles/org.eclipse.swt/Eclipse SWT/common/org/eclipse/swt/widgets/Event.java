@@ -205,13 +205,13 @@ public class Event {
 
 	/** 
 	 * Bidi segment offsets
-	 * @since 3.7
+	 * @since 3.8
 	 */
 	public int[] segments;
 	
 	/** 
 	 * Characters to be applied on the segment boundaries
-	 * @since 3.7
+	 * @since 3.8
 	 */
 	public char[] segmentsChars;
 

@@ -30,7 +30,7 @@ public interface SegmentListener extends SWTEventListener {
  * @param event the given event
  * @see SegmentEvent
  *
- * @since 3.7
+ * @since 3.8
  */
 public void getSegments(SegmentEvent event);
 

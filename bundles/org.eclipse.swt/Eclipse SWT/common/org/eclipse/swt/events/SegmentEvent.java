@@ -66,7 +66,7 @@ import org.eclipse.swt.widgets.Event;
  * </ul>
  * </p>
  *
- * @since 3.7
+ * @since 3.8
  */
 
 public class SegmentEvent extends TypedEvent {

@@ -762,7 +762,7 @@ public class SWT {
 	 * @see org.eclipse.swt.widgets.Text#addSegmentListener
 	 * @see org.eclipse.swt.events.SegmentEvent
      * 
-     * @since 3.7
+     * @since 3.8
 	 */
 	public static final int GetSegments = 49;
 
