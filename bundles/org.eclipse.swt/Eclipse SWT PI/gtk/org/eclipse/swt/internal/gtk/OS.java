@@ -1466,11 +1466,29 @@ public static final int /*long*/ GDK_TYPE_PIXBUF() {
 		lock.unlock();
 	}
 }
+public static final native boolean _GTK_IS_ACCEL_LABEL(int /*long*/ obj);
+public static final boolean GTK_IS_ACCEL_LABEL(int /*long*/ obj) {
+	lock.lock();
+	try {
+		return _GTK_IS_ACCEL_LABEL(obj);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native boolean _GTK_IS_BUTTON(int /*long*/ obj);
 public static final boolean GTK_IS_BUTTON(int /*long*/ obj) {
 	lock.lock();
 	try {
 		return _GTK_IS_BUTTON(obj);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _GTK_IS_LABEL(int /*long*/ obj);
+public static final boolean GTK_IS_LABEL(int /*long*/ obj) {
+	lock.lock();
+	try {
+		return _GTK_IS_LABEL(obj);
 	} finally {
 		lock.unlock();
 	}

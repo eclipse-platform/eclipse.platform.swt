@@ -1395,6 +1395,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1GString_1str)
 }
 #endif
 
+#ifndef NO__1GTK_1IS_1ACCEL_1LABEL
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1ACCEL_1LABEL)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1IS_1ACCEL_1LABEL_FUNC);
+	rc = (jboolean)GTK_IS_ACCEL_LABEL(arg0);
+	OS_NATIVE_EXIT(env, that, _1GTK_1IS_1ACCEL_1LABEL_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GTK_1IS_1BUTTON
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1BUTTON)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1463,6 +1475,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1IMAGE_1MENU_1ITEM)
 	OS_NATIVE_ENTER(env, that, _1GTK_1IS_1IMAGE_1MENU_1ITEM_FUNC);
 	rc = (jboolean)GTK_IS_IMAGE_MENU_ITEM(arg0);
 	OS_NATIVE_EXIT(env, that, _1GTK_1IS_1IMAGE_1MENU_1ITEM_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1GTK_1IS_1LABEL
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1LABEL)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1IS_1LABEL_FUNC);
+	rc = (jboolean)GTK_IS_LABEL(arg0);
+	OS_NATIVE_EXIT(env, that, _1GTK_1IS_1LABEL_FUNC);
 	return rc;
 }
 #endif
