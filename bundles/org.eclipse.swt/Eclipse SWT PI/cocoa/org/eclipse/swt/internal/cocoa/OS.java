@@ -143,6 +143,10 @@ public class OS extends C {
 	/** @method flags=const dynamic no_gen*/
 	public static final native int /*long*/ NSAccessibilityCellRole();
 	public static final NSString NSAccessibilityCellRole = new NSString(NSAccessibilityCellRole());
+	
+	/** 10.7 selectors */
+	public static final int /*long*/ sel_isCompatibleWithOverlayScrollers = sel_registerName("isCompatibleWithOverlayScrollers");
+	public static final int /*long*/ sel_flashScrollers = sel_registerName("flashScrollers");
 
 	/* AWT application delegate. Remove these when JavaRuntimeSupport.framework has bridgesupport generated for it. */
 	public static final int /*long*/ class_JRSAppKitAWT = objc_getClass("JRSAppKitAWT");
@@ -1425,6 +1429,7 @@ public static final int /*long*/ sel_keyEquivalent = sel_registerName("keyEquiva
 public static final int /*long*/ sel_keyEquivalentModifierMask = sel_registerName("keyEquivalentModifierMask");
 public static final int /*long*/ sel_keyUp_ = sel_registerName("keyUp:");
 public static final int /*long*/ sel_keyWindow = sel_registerName("keyWindow");
+public static final int /*long*/ sel_knobProportion = sel_registerName("knobProportion");
 public static final int /*long*/ sel_knobThickness = sel_registerName("knobThickness");
 public static final int /*long*/ sel_lastPathComponent = sel_registerName("lastPathComponent");
 public static final int /*long*/ sel_layoutManager = sel_registerName("layoutManager");
@@ -1875,6 +1880,7 @@ public static final int /*long*/ sel_setJobDisposition_ = sel_registerName("setJ
 public static final int /*long*/ sel_setJobTitle_ = sel_registerName("setJobTitle:");
 public static final int /*long*/ sel_setKeyEquivalent_ = sel_registerName("setKeyEquivalent:");
 public static final int /*long*/ sel_setKeyEquivalentModifierMask_ = sel_registerName("setKeyEquivalentModifierMask:");
+public static final int /*long*/ sel_setKnobProportion_ = sel_registerName("setKnobProportion:");
 public static final int /*long*/ sel_setLabel_ = sel_registerName("setLabel:");
 public static final int /*long*/ sel_setLabel_forSegment_ = sel_registerName("setLabel:forSegment:");
 public static final int /*long*/ sel_setLeaf_ = sel_registerName("setLeaf:");
