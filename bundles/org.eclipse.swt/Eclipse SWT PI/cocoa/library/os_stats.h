@@ -187,7 +187,6 @@ typedef enum {
 	GetSystemUIMode_FUNC,
 	GetThemeMetric_FUNC,
 	HIThemeDrawFocusRect_FUNC,
-	HIWindowFindAtLocation_FUNC,
 	HIWindowGetCGWindowID_FUNC,
 	JNIGetObject_FUNC,
 	JSEvaluateScript_FUNC,
