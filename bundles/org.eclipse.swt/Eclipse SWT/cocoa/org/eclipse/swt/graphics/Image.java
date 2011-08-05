@@ -1014,9 +1014,7 @@ void initNative(String filename) {
 		OS.CGColorSpaceRelease(colorspace);
 		NSGraphicsContext.static_saveGraphicsState();
 		NSGraphicsContext.setCurrentContext(NSGraphicsContext.graphicsContextWithGraphicsPort(ctx, false));
-		if (hasAlpha) OS.objc_msgSend(nativeRep.id, OS.sel_setAlpha_, 0);
 		nativeRep.drawInRect(rect);
-		if (hasAlpha) OS.objc_msgSend(nativeRep.id, OS.sel_setAlpha_, 1);
 		NSGraphicsContext.static_restoreGraphicsState();
 		OS.CGContextRelease(ctx);
 		
@@ -1040,6 +1038,12 @@ void initNative(String filename) {
 			OS.memmove(srcData, rep.bitmapData(), srcData.length);
 			for (int a = 0, p = 0; a < alphaData.length; a++, p += 4) {
 				srcData[p] = alphaData[a];
+				float alpha = alphaData[a] & 0xFF;
+				if (alpha != 0) {
+					srcData[p+1] = (byte)(((srcData[p+1] & 0xFF) / alpha) * 0xFF);
+					srcData[p+2] = (byte)(((srcData[p+2] & 0xFF) / alpha) * 0xFF);
+					srcData[p+3] = (byte)(((srcData[p+3] & 0xFF) / alpha) * 0xFF);
+				}
 			}
 			OS.memmove(rep.bitmapData(), srcData, srcData.length);
 			
@@ -1057,7 +1061,7 @@ void initNative(String filename) {
 				int red = (int) (color.redComponent() * 255);
 				int green = (int) (color.greenComponent() * 255);
 				int blue = (int) (color.blueComponent() * 255);
-				this.transparentPixel = (red << 16) + (green << 8) + blue;
+				this.transparentPixel = (red << 16) | (green << 8) | blue;
 				
 				/*
 				* If the image has opaque pixels that have the same color as the transparent
@@ -1065,7 +1069,7 @@ void initNative(String filename) {
 				*/
 				for (int j = 0; j < srcData.length; j+=4) {
 					if (srcData [j] != 0) {
-						int pixel = (srcData[j+1] << 16) + (srcData[j+2] << 8) + srcData[j+3];
+						int pixel = ((srcData[j+1] & 0xFF) << 16) | ((srcData[j+2] & 0xFF) << 8) | (srcData[j+3] & 0xFF);
 						if (pixel == this.transparentPixel){
 							this.transparentPixel = -1;
 							break;
