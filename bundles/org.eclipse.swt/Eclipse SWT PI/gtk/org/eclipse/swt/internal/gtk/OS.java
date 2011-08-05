@@ -3589,6 +3589,16 @@ public static final void gdk_cairo_region(int /*long*/ cairo, int /*long*/ regio
 	}
 }
 /** @method flags=dynamic */
+public static final native void _gdk_cairo_reset_clip(int /*long*/ cairo, int /*long*/ drawable);
+public static final void gdk_cairo_reset_clip(int /*long*/ cairo, int /*long*/ drawable) {
+	lock.lock();
+	try {
+		_gdk_cairo_reset_clip(cairo, drawable);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
 public static final native void _gdk_cairo_set_source_color(int /*long*/ cairo, GdkColor color);
 public static final void gdk_cairo_set_source_color(int /*long*/ cairo, GdkColor color) {
 	lock.lock();

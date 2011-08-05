@@ -433,6 +433,7 @@ typedef enum {
 	_1gdk_1bitmap_1create_1from_1data_FUNC,
 	_1gdk_1cairo_1create_FUNC,
 	_1gdk_1cairo_1region_FUNC,
+	_1gdk_1cairo_1reset_1clip_FUNC,
 	_1gdk_1cairo_1set_1source_1color_FUNC,
 	_1gdk_1color_1white_FUNC,
 	_1gdk_1colormap_1alloc_1color_FUNC,
