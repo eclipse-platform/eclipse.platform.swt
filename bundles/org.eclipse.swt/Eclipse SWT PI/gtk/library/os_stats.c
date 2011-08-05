@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1395;
-int OS_nativeFunctionCallCount[1395];
+int OS_nativeFunctionCount = 1396;
+int OS_nativeFunctionCallCount[1396];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -427,6 +427,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1bitmap_1create_1from_1data",
 	"_1gdk_1cairo_1create",
 	"_1gdk_1cairo_1region",
+	"_1gdk_1cairo_1reset_1clip",
 	"_1gdk_1cairo_1set_1source_1color",
 	"_1gdk_1color_1white",
 	"_1gdk_1colormap_1alloc_1color",

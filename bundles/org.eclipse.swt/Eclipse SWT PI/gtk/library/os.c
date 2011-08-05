@@ -4962,6 +4962,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1region)
 }
 #endif
 
+#ifndef NO__1gdk_1cairo_1reset_1clip
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1reset_1clip)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1cairo_1reset_1clip_FUNC);
+/*
+	gdk_cairo_reset_clip(arg0, arg1);
+*/
+	{
+		LOAD_FUNCTION(fp, gdk_cairo_reset_clip)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1cairo_1reset_1clip_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1cairo_1set_1source_1color
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1set_1source_1color)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
