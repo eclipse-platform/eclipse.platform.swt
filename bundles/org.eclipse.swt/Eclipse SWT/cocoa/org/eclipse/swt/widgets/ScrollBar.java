@@ -729,8 +729,14 @@ void updateBar (int selection, int minimum, int maximum, int thumb) {
 	int range = maximum - thumb - minimum;
 	float fraction = range <= 0 ? 1 : (float) (selection - minimum) / range;
 	float knob = range <= 0 ? 1 : (float) thumb / (maximum - minimum);
-	widget.setFloatValue (fraction, knob);
-	widget.setEnabled (range > 0); 
+	double oldFraction = widget.doubleValue();
+	float /*double*/ oldKnob = widget.knobProportion();
+	widget.setDoubleValue(fraction);
+	widget.setKnobProportion(knob);
+	widget.setEnabled (range > 0);
+	if (target == null && (knob != oldKnob || fraction != oldFraction)) {
+		OS.objc_msgSend(parent.scrollView.id, OS.sel_flashScrollers);
+	}
 }
 
 }

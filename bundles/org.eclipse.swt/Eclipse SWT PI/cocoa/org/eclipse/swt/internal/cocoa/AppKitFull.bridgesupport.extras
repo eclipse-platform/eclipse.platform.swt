@@ -2860,6 +2860,9 @@
 		<method selector="hitPart" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="knobProportion" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="rectForPart:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -2875,8 +2878,7 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="setFloatValue:knobProportion:" swt_gen="true">
-			<arg swt_gen="true"></arg>
+		<method selector="setKnobProportion:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>

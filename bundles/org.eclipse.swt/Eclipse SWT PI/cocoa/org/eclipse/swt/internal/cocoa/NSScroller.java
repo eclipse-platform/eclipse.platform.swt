@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,10 @@ public int /*long*/ hitPart() {
 	return OS.objc_msgSend(this.id, OS.sel_hitPart);
 }
 
+public float /*double*/ knobProportion() {
+	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_knobProportion);
+}
+
 public NSRect rectForPart(int /*long*/ partCode) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_rectForPart_, partCode);
@@ -50,8 +54,8 @@ public void setControlSize(int /*long*/ controlSize) {
 	OS.objc_msgSend(this.id, OS.sel_setControlSize_, controlSize);
 }
 
-public void setFloatValue(float aFloat, float /*double*/ proportion) {
-	OS.objc_msgSend(this.id, OS.sel_setFloatValue_knobProportion_, aFloat, proportion);
+public void setKnobProportion(float /*double*/ proportion) {
+	OS.objc_msgSend(this.id, OS.sel_setKnobProportion_, proportion);
 }
 
 public int /*long*/ testPart(NSPoint thePoint) {
