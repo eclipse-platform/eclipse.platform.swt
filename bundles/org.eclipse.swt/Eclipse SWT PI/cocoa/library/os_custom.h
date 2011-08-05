@@ -34,6 +34,7 @@
 #define GetCurrentEventButtonState_LIB "com.apple.Carbon"
 #define GetDblTime_LIB "com.apple.Carbon"
 #define CGContextCopyPath_LIB "com.apple.Cocoa"
+#define CGDisplayCreateImage_LIB "com.apple.Cocoa"
 #define TISCopyCurrentKeyboardInputSource_LIB "com.apple.Carbon"
 #define TISGetInputSourceProperty_LIB "com.apple.Carbon"
 #define UCKeyTranslate_LIB "com.apple.CoreServices"

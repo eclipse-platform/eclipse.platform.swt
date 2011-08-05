@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 627;
-int OS_nativeFunctionCallCount[627];
+int OS_nativeFunctionCount = 628;
+int OS_nativeFunctionCallCount[628];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -117,6 +117,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGDisplayBitsPerSample",
 	"CGDisplayBounds",
 	"CGDisplayBytesPerRow",
+	"CGDisplayCreateImage",
 	"CGDisplayPixelsHigh",
 	"CGDisplayPixelsWide",
 	"CGEventCreateKeyboardEvent",

@@ -364,6 +364,12 @@ public static final int kCGBitmapByteOrder32Host = __BIG_ENDIAN__() ? kCGBitmapB
  */
 public static final native void CGContextCopyWindowContentsToRect(int /*long*/ context, CGRect destRect, int /*long*/ contextID, int /*long*/ windowNumber, CGRect srcRect);
 
+/**
+ * @method flags=dynamic
+ * @param displayID cast=(CGDirectDisplayID)
+ */
+public static final native int /*long*/ CGDisplayCreateImage(int displayID);
+
 /** QuickDraw calls */
 
 /** @method flags=dynamic */
