@@ -26,7 +26,6 @@
 		ant -f <fragment dir>/build.xml build_libraries 
 	
 	Notes:
-	 To void clean after build define a property named "clean" to empty ("").
 	 To run only clean define a property named "targets" to empty ("").
 	 
  -->
