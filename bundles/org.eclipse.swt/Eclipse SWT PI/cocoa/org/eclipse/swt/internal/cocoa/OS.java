@@ -424,18 +424,6 @@ public static final int kQDRegionToRectsMsgParse = 2;
 
 /**
  * @method flags=dynamic
- * @param cgLocation cast=(HIPoint *)
- * @param inSpace cast=(HICoordinateSpace)
- * @param inStartWindow cast=(WindowRef)
- * @param inOptions cast=(OptionBits)
- * @param outWindow cast=(WindowRef *)
- * @param outWindowPart cast=(WindowPartCode *)
- * @param outWindowLocation cast=(HIPoint *)
- */
-public static final native int HIWindowFindAtLocation(int /*long*/ cgLocation, int inSpace, int /*long*/ inStartWindow, int inOptions, int /*long*/[] outWindow, int /*long*/ [] outWindowPart, int /*long*/ outWindowLocation);
-
-/**
- * @method flags=dynamic
  * @param inWindow cast=(WindowRef)
  */
 public static final native int HIWindowGetCGWindowID(int /*long*/ inWindow);

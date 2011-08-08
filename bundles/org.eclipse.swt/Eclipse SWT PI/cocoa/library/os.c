@@ -2582,33 +2582,6 @@ fail:
 }
 #endif
 
-#ifndef NO_HIWindowFindAtLocation
-JNIEXPORT jint JNICALL OS_NATIVE(HIWindowFindAtLocation)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jint arg3, jintLongArray arg4, jintLongArray arg5, jintLong arg6)
-{
-	jintLong *lparg4=NULL;
-	jintLong *lparg5=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, HIWindowFindAtLocation_FUNC);
-	if (arg4) if ((lparg4 = (*env)->GetIntLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	if (arg5) if ((lparg5 = (*env)->GetIntLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)HIWindowFindAtLocation((HIPoint *)arg0, (HICoordinateSpace)arg1, (WindowRef)arg2, (OptionBits)arg3, (WindowRef *)lparg4, (WindowPartCode *)lparg5, (HIPoint *)arg6);
-*/
-	{
-		LOAD_FUNCTION(fp, HIWindowFindAtLocation)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(HIPoint *, HICoordinateSpace, WindowRef, OptionBits, WindowRef *, WindowPartCode *, HIPoint *))fp)((HIPoint *)arg0, (HICoordinateSpace)arg1, (WindowRef)arg2, (OptionBits)arg3, (WindowRef *)lparg4, (WindowPartCode *)lparg5, (HIPoint *)arg6);
-		}
-	}
-fail:
-	if (arg5 && lparg5) (*env)->ReleaseIntLongArrayElements(env, arg5, lparg5, 0);
-	if (arg4 && lparg4) (*env)->ReleaseIntLongArrayElements(env, arg4, lparg4, 0);
-	OS_NATIVE_EXIT(env, that, HIWindowFindAtLocation_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_HIWindowGetCGWindowID
 JNIEXPORT jint JNICALL OS_NATIVE(HIWindowGetCGWindowID)
 	(JNIEnv *env, jclass that, jintLong arg0)
