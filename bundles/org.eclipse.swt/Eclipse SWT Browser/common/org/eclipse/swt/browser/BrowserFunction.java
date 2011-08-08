@@ -48,7 +48,7 @@ public class BrowserFunction {
 	String functionString;
 	int index;
 	boolean isEvaluate;
-	long token;
+	String token;
 
 /**
  * Constructs a new instance of this class, which will be invokable
@@ -88,8 +88,13 @@ BrowserFunction (Browser browser, String name, boolean create) {
 	this.name = name;
 
 	Random random = new Random ();
-	long value = random.nextLong ();
-	token = ((value & 0xFFE0000000000000L) >>> 11) ^ (value & 0x1FFFFFFFFFFFFFL);
+	byte[] bytes = new byte[16];
+	random.nextBytes (bytes);
+	StringBuffer buffer = new StringBuffer ();
+	for (int i = 0; i < bytes.length; i++) {
+		buffer.append (Integer.toHexString (bytes[i] & 0xff));
+	}
+	token = buffer.toString ();
 	if (create) browser.webBrowser.createFunction (this);
 }
 

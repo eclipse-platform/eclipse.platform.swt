@@ -385,10 +385,10 @@ int /*long*/ callJava (int /*long*/ ctx, int /*long*/ func, int /*long*/ thisObj
 				Object key = new Integer (index);
 				C.memmove (result, arguments + C.PTR_SIZEOF, C.PTR_SIZEOF);
 				type = WebKit_win32.JSValueGetType (ctx, result[0]);
-				if (type == WebKit_win32.kJSTypeNumber) {
-					long token = ((Double)convertToJava (ctx, result[0])).longValue ();
+				if (type == WebKit_win32.kJSTypeString) {
+					String token = (String)convertToJava (ctx, result[0]);
 					BrowserFunction function = (BrowserFunction)functions.get (key);
-					if (function != null && token == function.token) {
+					if (function != null && token.equals (function.token)) {
 						try {
 							C.memmove (result, arguments + 2 * C.PTR_SIZEOF, C.PTR_SIZEOF);
 							Object temp = convertToJava (ctx, result[0]);

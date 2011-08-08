@@ -1765,11 +1765,11 @@ NSObject callJava (int /*long*/ index, int /*long*/ token, int /*long*/ args, in
 		NSNumber number = new NSNumber (index);
 		Object key = new Integer (number.intValue ());
 		object = new NSObject (token);
+		clazz = OS.objc_lookUpClass ("NSString"); //$NON-NLS-1$
 		if (object.isKindOfClass (clazz)) {
-			number = new NSNumber (token);
-			long tokenValue = (long)number.doubleValue ();
+			NSString tokenString = new NSString (token);
 			BrowserFunction function = (BrowserFunction)functions.get (key);
-			if (function != null && tokenValue == function.token) {
+			if (function != null && tokenString.getString ().equals (function.token)) {
 				try {
 					Object temp = convertToJava (args);
 					if (temp instanceof Object[]) {
