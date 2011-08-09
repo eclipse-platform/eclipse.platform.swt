@@ -457,17 +457,41 @@
 	</target>
 
 	<!-- common build tasks -->
-	<target name="new_release" depends="get_new_release_version">
+	<target name="new_release">
 		<property name="natives_changed" value="true"/>
+		<property name="increment_version_target" value="increment_release_version"/>
 		<antcall target="new_build"/>
 	</target>
 	
 	<target name="new_build">
 		<!-- Update the version files -->
-		<antcall target="increment_version"/>
+		<property name="increment_version_target" value="increment_version"/>
+		<antcall target="${increment_version_target}"/>
+		
+		<!-- Update the buildnotes_swt.html file -->
+		<antcall target="update_buildnotes"/>
+
+		<!-- Commit the files -->
+		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="add '${file_library_j2se}' '${file_library_j2me}' '${file_version}' '${file_make_common}' '${file_build_notes}'"/>
+		</exec>
+		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="status"/>
+		</exec>
+		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="commit -m 'v${swt_version}'"/>
+		</exec>
 	</target>
 	
 	<target name="increment_version" depends="check_natives_changed, get_version" if="natives_changed">
+		<antcall target="increment_version_impl"/>
+	</target>
+
+	<target name="increment_release_version" depends="check_natives_changed, get_new_release_version" if="natives_changed">
+		<antcall target="increment_version_impl"/>
+	</target>
+
+	<target name="increment_version_impl">
 		<echo>Incrementing version from ${swt_version} to ${new_version}...</echo>
 		<replace file="${repo.src}/${file_library_j2se}" token="MAJOR_VERSION = ${maj_ver}" value="MAJOR_VERSION = ${new_maj_ver}"/>
 		<replace file="${repo.src}/${file_library_j2me}" token="MAJOR_VERSION = ${maj_ver}" value="MAJOR_VERSION = ${new_maj_ver}"/>
@@ -501,7 +525,7 @@
 			project.setProperty("url.from.time", gitlog);
    	 	]]>
 		</script>
-		<echo> Searching bugs from "${url.from.time}" to "${url.to.time}"</echo>
+		<echo> Searching bugs from "${url.from.time}" to "${url.to.time}" with milestone -> "${MILESTONE}"</echo>
 		
 		<property name="match_line" value="SWT&lt;/h1&gt;"/>
 		<property name="delimiter" value="&#13;&#10;"/>
@@ -514,7 +538,6 @@
 		<condition property="CVS_TAG" value="" else="-r${TAG}">
 			<equals arg1="${TAG}" arg2="master"/>
 		</condition>
-		<echo>CVS_TAG=${CVS_TAG}</echo>
 	</target>
 
 	<!-- Set swt_tag to the current tag in the swt map file -->
@@ -644,20 +667,6 @@
 		<!--antcall target="check_libraries"/-->
 		<antcall target="check_fragment_libraries"/>
 		
-		<!-- Update the buildnotes_swt.html file -->
-		<antcall target="update_buildnotes"/>
-
-		<!-- Commit the files -->
-		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="add '${file_library_j2se}' '${file_library_j2me}' '${file_version}' '${file_make_common}' '${file_build_notes}'"/>
-		</exec>
-		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="status"/>
-		</exec>
-		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="commit -m 'v${swt_version}'"/>
-		</exec>
-
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="tag v${swt_new_tag}"/>
 		</exec>
