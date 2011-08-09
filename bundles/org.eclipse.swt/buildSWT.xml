@@ -476,6 +476,10 @@
 		<antcall target="update_buildnotes"/>
 
 		<!-- Commit the files -->
+		<antcall target="commit_sources"/>
+	</target>
+	
+	<target name="commit_sources" depends="get_version">
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="add '${file_library_j2se}' '${file_library_j2me}' '${file_version}' '${file_make_common}' '${file_build_notes}'"/>
 		</exec>
