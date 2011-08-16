@@ -387,7 +387,18 @@
 		<fail if="m_fail" message="Failed"/>
 	</target>
 	
-	<target name="check_compilation">
+	<target name="check_source_changed" unless="source_changed">
+		<!-- Check for changes -->
+		<exec dir="${repo.src}" executable="git" failonerror="false" outputproperty="diffs">
+			<arg line="diff compile_${TAG}"/>
+		</exec>
+		<condition property="source_changed">
+			<length string="${diffs}" trim="true" when="greater" length="0"/>
+		</condition>
+		<echo>Has source changes: ${source_changed} checked against compile_${TAG}</echo>
+	</target>
+	
+	<target name="check_compilation" depends="check_source_changed" if="source_changed">
 		<property name="tmpdir" value="${tmphome}/check.compile.${TAG}"/>
 		<property name="projectDir" value="${repo.src}/bundles/org.eclipse.swt"/>
 		<property name="buildDir" value="${tmpdir}/build"/>
@@ -434,6 +445,10 @@
 			<param name="cp" value=".classpath_wpf"/>
 		</antcall>
 		-->
+		
+		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="tag -f compile_${TAG}"/>
+		</exec>
 		
 		<delete dir="${tmpdir}" quiet="true"/>
 	</target>
