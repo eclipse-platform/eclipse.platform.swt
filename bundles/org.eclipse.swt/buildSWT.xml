@@ -490,7 +490,7 @@
 		<exec dir="${repo.bin}" executable="git" failonerror="false" outputproperty="bin_diffs">
 			<arg line="diff ${swt_tag}"/>
 		</exec>
-		<condition property="source_changed">
+		<condition property="build_changed">
 			<or>
 				<length string="${src_diffs}" trim="true" when="greater" length="0"/>
 				<length string="${bin_diffs}" trim="true" when="greater" length="0"/>
