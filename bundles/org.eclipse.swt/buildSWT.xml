@@ -383,21 +383,43 @@
 		<fail if="m_fail" message="Failed"/>
 	</target>
 	
-	<target name="check_source_changed" unless="source_changed">
+	<target name="check_source_sha1_file" unless="source_changed">
+		<property name="sha1_file" value="${tmphome}/build.sha1"/>
+		<condition property="source_changed">
+			<not>
+				<available file="${sha1_file}" type="file"/>
+			</not>
+		</condition>
+	</target>
+	
+	<target name="check_source_changed" depends="check_source_sha1_file" unless="source_changed">
+		<loadproperties srcfile="${sha1_file}"/>
+		
 		<!-- Check for changes -->
-		<exec dir="${repo.src}" executable="git" failonerror="false" outputproperty="diffs">
-			<arg line="diff compile_${TAG}"/>
+		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="diffs">
+			<arg line="diff ${SHA1}"/>
 		</exec>
 		<condition property="source_changed">
 			<length string="${diffs}" trim="true" when="greater" length="0"/>
 		</condition>
-		<echo>Has source changes: ${source_changed} checked against compile_${TAG}</echo>
+		<echo>Has source changes: ${source_changed}, compared against</echo>
+		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="diffs">
+			<arg line="log -1 ${SHA1}"/>
+		</exec>
 	</target>
 	
 	<target name="check_compilation" depends="check_source_changed" if="source_changed">
 		<property name="tmpdir" value="${tmphome}/check.compile.${TAG}"/>
 		<property name="projectDir" value="${repo.src}/bundles/org.eclipse.swt"/>
 		<property name="buildDir" value="${tmpdir}/build"/>
+		
+		<!-- Update build.sha1 file -->
+		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
+			<arg line="rev-list ${TAG} -1"/>
+		</exec>
+		<propertyfile file="${sha1_file}">
+			<entry key="SHA1" value="${HEAD_TAG}"/>
+		</propertyfile>
 
 		<!-- 64 bit -->
 		<antcall target="build_classes">
@@ -441,10 +463,6 @@
 			<param name="cp" value=".classpath_wpf"/>
 		</antcall>
 		-->
-		
-		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="tag -f compile_${TAG}"/>
-		</exec>
 		
 		<delete dir="${tmpdir}" quiet="true"/>
 	</target>
