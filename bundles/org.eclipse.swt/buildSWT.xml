@@ -406,8 +406,8 @@
 		<condition property="source_changed">
 			<length string="${diffs}" trim="true" when="greater" length="0"/>
 		</condition>
-		<echo>Has source changes: ${source_changed}, compared against</echo>
-		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="diffs">
+		<echo>Has source changes: ${source_changed}, compared against:</echo>
+		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="log -1 ${SHA1}"/>
 		</exec>
 	</target>
@@ -779,7 +779,10 @@
 		<condition property="natives_changed">
 			<length string="${diffs}" trim="true" when="greater" length="0"/>
 		</condition>
-		<echo>Has native changes: ${natives_changed}, compared against ${SHA1}</echo>
+		<echo>Has native changes: ${natives_changed}, compared against:</echo>
+		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="log -1 ${SHA1}"/>
+		</exec>
 	</target>
 	
 	<target name="init_fragment">
