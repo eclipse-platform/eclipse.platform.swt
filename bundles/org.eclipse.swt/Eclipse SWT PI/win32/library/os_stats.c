@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1059;
-int OS_nativeFunctionCallCount[1059];
+int OS_nativeFunctionCount = 1064;
+int OS_nativeFunctionCallCount[1064];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -90,6 +90,7 @@ char * OS_nativeFunctionNames[] = {
 	"CloseEnhMetaFile",
 	"CloseGestureInfoHandle",
 	"CloseHandle",
+	"ClosePrinter",
 	"CloseThemeData",
 	"CloseTouchInputHandle",
 	"CoCreateInstance",
@@ -185,6 +186,8 @@ char * OS_nativeFunctionNames[] = {
 	"DestroyWindow",
 	"DispatchMessageA",
 	"DispatchMessageW",
+	"DocumentPropertiesA",
+	"DocumentPropertiesW",
 	"DragDetect",
 	"DragFinish",
 	"DragQueryFileA",
@@ -1221,6 +1224,8 @@ char * OS_nativeFunctionNames[] = {
 	"OleInitialize",
 	"OleUninitialize",
 	"OpenClipboard",
+	"OpenPrinterA",
+	"OpenPrinterW",
 	"OpenProcess",
 	"OpenThemeData",
 	"PAINTSTRUCT_1sizeof",

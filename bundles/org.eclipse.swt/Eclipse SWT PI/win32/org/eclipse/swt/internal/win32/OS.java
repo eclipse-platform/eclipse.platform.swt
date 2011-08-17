@@ -551,6 +551,7 @@ public class OS extends C {
 	public static final int DM_COPIES = 0x00000100;
 	public static final int DM_DUPLEX = 0x00001000;
 	public static final int DM_ORIENTATION = 0x00000001;
+	public static final int DM_OUT_BUFFER = 2;
 	public static final short DMORIENT_PORTRAIT = 1;
 	public static final short DMORIENT_LANDSCAPE = 2;
 	public static final short DMDUP_SIMPLEX = 1;
@@ -2531,6 +2532,15 @@ public static final int /*long*/ DispatchMessage (MSG lpmsg) {
 	return DispatchMessageA (lpmsg);
 }
 
+public static final int DocumentProperties (int /*long*/ hWnd, int /*long*/ hPrinter, TCHAR pDeviceName, int /*long*/ pDevModeOutput, int /*long*/ pDevModeInput, int fMode) {
+	if (IsUnicode) {
+		char [] pDeviceName1 = pDeviceName == null ? null : pDeviceName.chars;
+		return DocumentPropertiesW (hWnd, hPrinter, pDeviceName1, pDevModeOutput, pDevModeInput, fMode);
+	}
+	byte [] pDeviceName1 = pDeviceName == null ? null : pDeviceName.bytes;
+	return DocumentPropertiesA (hWnd, hPrinter, pDeviceName1, pDevModeOutput, pDevModeInput, fMode);
+}
+
 public static final int DragQueryFile (int /*long*/ hDrop, int iFile, TCHAR lpszFile, int cch) {
 	if (IsUnicode) {
 		char [] lpszFile1 = lpszFile == null ? null : lpszFile.chars;
@@ -3091,6 +3101,15 @@ public static final void MoveMemory (TEXTMETRIC Destination, int /*long*/ Source
 	}
 }
 
+public static final boolean OpenPrinter (TCHAR pPrinterName, int /*long*/ [] phPrinter, int /*long*/ pDefault) {
+	if (IsUnicode) {
+		char [] pPrinterName1 = pPrinterName == null ? null : pPrinterName.chars;
+		return OpenPrinterW (pPrinterName1, phPrinter, pDefault);
+	}
+	byte [] pPrinterName1 = pPrinterName == null ? null : pPrinterName.bytes;
+	return OpenPrinterA (pPrinterName1, phPrinter, pDefault);
+}
+
 public static final boolean PeekMessage (MSG lpMsg, int /*long*/ hWnd, int wMsgFilterMin, int wMsgFilterMax, int wRemoveMsg) {
 	if (IsUnicode) return PeekMessageW (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
 	return PeekMessageA (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
@@ -3643,6 +3662,8 @@ public static final native int /*long*/ CloseEnhMetaFile (int /*long*/ hdc);
 public static final native int /*long*/ CloseGestureInfoHandle (int /*long*/ hGesture);
 /** @param hObject cast=(HANDLE) */
 public static final native boolean CloseHandle (int /*long*/ hObject);
+/** @param hPrinter cast=(HANDLE) */
+public static final native boolean ClosePrinter (int /*long*/ hPrinter);
 /**
  * @method flags=dynamic
  * @param hTheme cast=(HTHEME)
@@ -3910,6 +3931,22 @@ public static final native boolean DestroyMenu (int /*long*/ hMenu);
 public static final native boolean DestroyWindow (int /*long*/ hWnd);
 public static final native int /*long*/ DispatchMessageW (MSG lpmsg);
 public static final native int /*long*/ DispatchMessageA (MSG lpmsg);
+/**
+ * @param hWnd cast=(HWND)
+ * @param hPrinter cast=(HANDLE)
+ * @param pDeviceName cast=(LPWSTR)
+ * @param pDevModeOutput cast=(PDEVMODEW)
+ * @param pDevModeInput cast=(PDEVMODEW)
+ */
+public static final native int DocumentPropertiesW (int /*long*/ hWnd, int /*long*/ hPrinter, char[] pDeviceName, int /*long*/ pDevModeOutput, int /*long*/ pDevModeInput, int fMode);
+/**
+ * @param hWnd cast=(HWND)
+ * @param hPrinter cast=(HANDLE)
+ * @param pDeviceName cast=(LPTSTR)
+ * @param pDevModeOutput cast=(PDEVMODE)
+ * @param pDevModeInput cast=(PDEVMODE)
+ */
+public static final native int DocumentPropertiesA (int /*long*/ hWnd, int /*long*/ hPrinter, byte[] pDeviceName, int /*long*/ pDevModeOutput, int /*long*/ pDevModeInput, int fMode);
 /** @param hdc cast=(HDC) */
 public static final native boolean DPtoLP (int /*long*/ hdc, POINT lpPoints, int nCount);
 /**
@@ -4511,6 +4548,18 @@ public static final native int /*long*/ GetParent (int /*long*/ hWnd);
 public static final native int GetPixel (int /*long*/ hdc, int x, int y);
 /** @param hdc cast=(HDC) */
 public static final native int GetPolyFillMode (int /*long*/ hdc);
+/**
+ * @param pPrinterName cast=(LPWSTR)
+ * @param phPrinter cast=(LPHANDLE)
+ * @param pDefault cast=(LPPRINTER_DEFAULTSW)
+ */
+public static final native boolean OpenPrinterW (char[] pPrinterName, int /*long*/ [] phPrinter, int /*long*/ pDefault);
+/**
+ * @param pPrinterName cast=(LPTSTR)
+ * @param phPrinter cast=(LPHANDLE)
+ * @param pDefault cast=(LPPRINTER_DEFAULTS)
+ */
+public static final native boolean OpenPrinterA (byte[] pPrinterName, int /*long*/ [] phPrinter, int /*long*/ pDefault);
 /**
  * @param hModule cast=(HMODULE)
  * @param lpProcName cast=(LPCTSTR)

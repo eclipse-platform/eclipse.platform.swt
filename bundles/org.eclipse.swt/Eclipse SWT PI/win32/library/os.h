@@ -196,6 +196,7 @@
 #define NO_ChooseFontW
 #define NO_CloseEnhMetaFile
 #define NO_CloseGestureInfoHandle
+#define NO_ClosePrinter
 #define NO_CloseThemeData
 #define NO_CloseTouchInputHandle
 #define NO_CoCreateInstance
@@ -225,6 +226,8 @@
 #define NO_DeleteEnhMetaFile
 #define NO_DestroyCursor
 #define NO_DispatchMessageA
+#define NO_DocumentPropertiesA
+#define NO_DocumentPropertiesW
 #define NO_DPtoLP
 #define NO_DragDetect
 #define NO_DragFinish
@@ -446,6 +449,8 @@
 #define NO_NotifyWinEvent
 #define NO_OleInitialize
 #define NO_OleUninitialize
+#define NO_OpenPrinterA
+#define NO_OpenPrinterW
 #define NO_OpenThemeData
 #define NO_PathIsExe
 #define NO_PeekMessageA

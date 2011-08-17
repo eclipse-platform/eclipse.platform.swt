@@ -222,46 +222,48 @@ protected void create(DeviceData deviceData) {
 		lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, devmodeData.length);
 		OS.MoveMemory(lpInitData, devmodeData, devmodeData.length);
 	} else {
-		/* Initialize DEVMODE for the default printer. */
-		PRINTDLG pd = new PRINTDLG();
-		pd.lStructSize = PRINTDLG.sizeof;
-		pd.Flags = OS.PD_RETURNDEFAULT;
-		if (!OS.PrintDlg(pd)) SWT.error(SWT.ERROR_NO_HANDLES);
-		if (pd.hDevMode != 0) {
-			int /*long*/ hGlobal = pd.hDevMode;
-			int /*long*/ ptr = OS.GlobalLock(hGlobal);
-			int size = OS.GlobalSize(hGlobal);
-			lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, size);
-			OS.MoveMemory(lpInitData, ptr, size);
-			OS.GlobalUnlock(hGlobal);
-			OS.GlobalFree(pd.hDevMode);
+		if (!OS.IsWinCE) {
+			int /*long*/ [] hPrinter = new int /*long*/ [1];
+			OS.OpenPrinter(device, hPrinter, 0);
+			if (hPrinter[0] != 0) {
+				int dwNeeded = OS.DocumentProperties(0, hPrinter[0], device, 0, 0, 0);
+				if (dwNeeded >= 0) {
+					lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, dwNeeded);
+					int rc = OS.DocumentProperties(0, hPrinter[0], device, lpInitData, 0, OS.DM_OUT_BUFFER);
+					if (rc != OS.IDOK) {
+						OS.HeapFree(hHeap, 0, lpInitData);
+						lpInitData = 0;
+					}
+				}
+				OS.ClosePrinter(hPrinter[0]);
+			}
 		}
-		if (pd.hDevNames != 0) OS.GlobalFree(pd.hDevNames);
 	}
 	
 	/* Initialize DEVMODE struct fields from the printerData. */
-	DEVMODE devmode = OS.IsUnicode ? (DEVMODE)new DEVMODEW () : new DEVMODEA ();
-	OS.MoveMemory(devmode, lpInitData, DEVMODE.sizeof);
-	devmode.dmFields |= OS.DM_ORIENTATION;
-	devmode.dmOrientation = data.orientation == PrinterData.LANDSCAPE ? OS.DMORIENT_LANDSCAPE : OS.DMORIENT_PORTRAIT;
-	if (data.copyCount != 1) {
-		devmode.dmFields |= OS.DM_COPIES;
-		devmode.dmCopies = (short)data.copyCount;
-	}
-	if (data.collate != false) {
-		devmode.dmFields |= OS.DM_COLLATE;
-		devmode.dmCollate = OS.DMCOLLATE_TRUE;
-	}
-	if (data.duplex != SWT.DEFAULT) {
-		devmode.dmFields |= OS.DM_DUPLEX;
-		switch (data.duplex) {
-			case PrinterData.DUPLEX_SHORT_EDGE: devmode.dmDuplex = OS.DMDUP_HORIZONTAL; break;
-			case PrinterData.DUPLEX_LONG_EDGE: devmode.dmDuplex = OS.DMDUP_VERTICAL; break;
-			default: devmode.dmDuplex = OS.DMDUP_SIMPLEX;
+	if (lpInitData != 0) {
+		DEVMODE devmode = OS.IsUnicode ? (DEVMODE)new DEVMODEW () : new DEVMODEA ();
+		OS.MoveMemory(devmode, lpInitData, DEVMODE.sizeof);
+		devmode.dmFields |= OS.DM_ORIENTATION;
+		devmode.dmOrientation = data.orientation == PrinterData.LANDSCAPE ? OS.DMORIENT_LANDSCAPE : OS.DMORIENT_PORTRAIT;
+		if (data.copyCount != 1) {
+			devmode.dmFields |= OS.DM_COPIES;
+			devmode.dmCopies = (short)data.copyCount;
 		}
+		if (data.collate != false) {
+			devmode.dmFields |= OS.DM_COLLATE;
+			devmode.dmCollate = OS.DMCOLLATE_TRUE;
+		}
+		if (data.duplex != SWT.DEFAULT) {
+			devmode.dmFields |= OS.DM_DUPLEX;
+			switch (data.duplex) {
+				case PrinterData.DUPLEX_SHORT_EDGE: devmode.dmDuplex = OS.DMDUP_HORIZONTAL; break;
+				case PrinterData.DUPLEX_LONG_EDGE: devmode.dmDuplex = OS.DMDUP_VERTICAL; break;
+				default: devmode.dmDuplex = OS.DMDUP_SIMPLEX;
+			}
+		}
+		OS.MoveMemory(lpInitData, devmode, DEVMODE.sizeof);
 	}
-	OS.MoveMemory(lpInitData, devmode, DEVMODE.sizeof);
-
 	handle = OS.CreateDC(driver, device, 0, lpInitData);
 	if (lpInitData != 0) OS.HeapFree(hHeap, 0, lpInitData);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
