@@ -1023,6 +1023,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(CloseHandle)
 }
 #endif
 
+#ifndef NO_ClosePrinter
+JNIEXPORT jboolean JNICALL OS_NATIVE(ClosePrinter)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, ClosePrinter_FUNC);
+	rc = (jboolean)ClosePrinter((HANDLE)arg0);
+	OS_NATIVE_EXIT(env, that, ClosePrinter_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CloseThemeData
 JNIEXPORT jint JNICALL OS_NATIVE(CloseThemeData)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -2276,6 +2288,38 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(DispatchMessageW)
 fail:
 	if (arg0 && lparg0) setMSGFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, DispatchMessageW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DocumentPropertiesA
+JNIEXPORT jint JNICALL OS_NATIVE(DocumentPropertiesA)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jbyteArray arg2, jintLong arg3, jintLong arg4, jint arg5)
+{
+	jbyte *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DocumentPropertiesA_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)DocumentPropertiesA((HWND)arg0, (HANDLE)arg1, (LPTSTR)lparg2, (PDEVMODE)arg3, (PDEVMODE)arg4, arg5);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, DocumentPropertiesA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DocumentPropertiesW
+JNIEXPORT jint JNICALL OS_NATIVE(DocumentPropertiesW)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jcharArray arg2, jintLong arg3, jintLong arg4, jint arg5)
+{
+	jchar *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DocumentPropertiesW_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)DocumentPropertiesW((HWND)arg0, (HANDLE)arg1, (LPWSTR)lparg2, (PDEVMODEW)arg3, (PDEVMODEW)arg4, arg5);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, DocumentPropertiesW_FUNC);
 	return rc;
 }
 #endif
@@ -12109,6 +12153,44 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(OpenClipboard)
 	OS_NATIVE_ENTER(env, that, OpenClipboard_FUNC);
 	rc = (jboolean)OpenClipboard((HWND)arg0);
 	OS_NATIVE_EXIT(env, that, OpenClipboard_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_OpenPrinterA
+JNIEXPORT jboolean JNICALL OS_NATIVE(OpenPrinterA)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jintLongArray arg1, jintLong arg2)
+{
+	jbyte *lparg0=NULL;
+	jintLong *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, OpenPrinterA_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jboolean)OpenPrinterA((LPTSTR)lparg0, (LPHANDLE)lparg1, (LPPRINTER_DEFAULTS)arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, OpenPrinterA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_OpenPrinterW
+JNIEXPORT jboolean JNICALL OS_NATIVE(OpenPrinterW)
+	(JNIEnv *env, jclass that, jcharArray arg0, jintLongArray arg1, jintLong arg2)
+{
+	jchar *lparg0=NULL;
+	jintLong *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, OpenPrinterW_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jboolean)OpenPrinterW((LPWSTR)lparg0, (LPHANDLE)lparg1, (LPPRINTER_DEFAULTSW)arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, OpenPrinterW_FUNC);
 	return rc;
 }
 #endif
