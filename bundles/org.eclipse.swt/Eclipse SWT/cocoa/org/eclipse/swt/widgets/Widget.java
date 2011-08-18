@@ -1737,7 +1737,7 @@ boolean setKeyState (Event event, int type, NSEvent nsEvent) {
 		default:
 			if (event.keyCode == 0 || (SWT.KEYPAD_MULTIPLY <= event.keyCode && event.keyCode <= SWT.KEYPAD_CR)) {
 				NSString chars = nsEvent.characters ();
-				if (chars.length() > 0) event.character = (char)chars.characterAtIndex (0);
+				if (chars != null && chars.length() > 0) event.character = (char)chars.characterAtIndex (0);
 			}
 			if (event.keyCode == 0) {
 				int /*long*/ uchrPtr = 0;
