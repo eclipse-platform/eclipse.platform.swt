@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1394;
-int OS_nativeFunctionCallCount[1394];
+int OS_nativeFunctionCount = 1396;
+int OS_nativeFunctionCallCount[1396];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -143,12 +143,14 @@ char * OS_nativeFunctionNames[] = {
 	"_1GDK_1TYPE_1PIXBUF",
 	"_1GString_1len",
 	"_1GString_1str",
+	"_1GTK_1IS_1ACCEL_1LABEL",
 	"_1GTK_1IS_1BUTTON",
 	"_1GTK_1IS_1CELL_1RENDERER_1PIXBUF",
 	"_1GTK_1IS_1CELL_1RENDERER_1TEXT",
 	"_1GTK_1IS_1CELL_1RENDERER_1TOGGLE",
 	"_1GTK_1IS_1CONTAINER",
 	"_1GTK_1IS_1IMAGE_1MENU_1ITEM",
+	"_1GTK_1IS_1LABEL",
 	"_1GTK_1IS_1MENU_1ITEM",
 	"_1GTK_1IS_1PLUG",
 	"_1GTK_1IS_1SCROLLED_1WINDOW",
