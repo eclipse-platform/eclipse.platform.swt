@@ -144,9 +144,11 @@ public class OS extends C {
 	public static final native int /*long*/ NSAccessibilityCellRole();
 	public static final NSString NSAccessibilityCellRole = new NSString(NSAccessibilityCellRole());
 	
-	/** 10.7 selectors */
+	/** 10.7 selectors and constants */
 	public static final int /*long*/ sel_isCompatibleWithOverlayScrollers = sel_registerName("isCompatibleWithOverlayScrollers");
 	public static final int /*long*/ sel_flashScrollers = sel_registerName("flashScrollers");
+	public static final int /*long*/ sel_frameSizeForContentSize_horizontalScrollerClass_verticalScrollerClass_borderType_controlSize_scrollerStyle_ = sel_registerName("frameSizeForContentSize:horizontalScrollerClass:verticalScrollerClass:borderType:controlSize:scrollerStyle:");
+	public static final int NSScrollerStyleLegacy = 0;
 
 	/* AWT application delegate. Remove these when JavaRuntimeSupport.framework has bridgesupport generated for it. */
 	public static final int /*long*/ class_JRSAppKitAWT = objc_getClass("JRSAppKitAWT");
@@ -586,6 +588,12 @@ public static final native int /*long*/ object_setInstanceVariable(int /*long*/ 
 public static final native int /*long*/ object_setClass(int /*long*/ obj, int /*long*/ clazz);
 public static final native int /*long*/ sel_registerName(String selectorName);
 public static final native int objc_super_sizeof();
+
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native void objc_msgSend_stret(NSSize result, int /*long*/ id, int /*long*/ sel, NSSize arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5);
 
 
 /** This section is auto generated */
