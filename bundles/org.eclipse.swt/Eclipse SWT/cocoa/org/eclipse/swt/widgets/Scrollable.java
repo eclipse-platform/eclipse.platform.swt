@@ -111,7 +111,10 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 			// Always include the scroll bar in the trim even when the scroll style is overlay
 			OS.objc_msgSend_stret(size, OS.class_NSScrollView,
 				OS.sel_frameSizeForContentSize_horizontalScrollerClass_verticalScrollerClass_borderType_controlSize_scrollerStyle_,
-				size, OS.class_NSScroller, OS.class_NSScroller, border, OS.NSRegularControlSize, OS.NSScrollerStyleLegacy);
+				size,
+				(style & SWT.H_SCROLL) != 0 ? OS.class_NSScroller : 0,
+				(style & SWT.V_SCROLL) != 0 ? OS.class_NSScroller : 0,
+				border, OS.NSRegularControlSize, OS.NSScrollerStyleLegacy);
 		} else {
 			size = NSScrollView.frameSizeForContentSize(size, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0, border);
 		}
