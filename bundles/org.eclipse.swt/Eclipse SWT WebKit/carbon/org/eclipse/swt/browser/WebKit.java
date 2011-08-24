@@ -2169,11 +2169,14 @@ int /*long*/ callJava (int /*long*/ index, int /*long*/ token, int /*long*/ args
 	Object returnValue = null;
 	if (Cocoa.objc_msgSend (index, Cocoa.S_isKindOfClass, Cocoa.C_NSNumber) != 0) {
 		int functionIndex = Cocoa.objc_msgSend (index, Cocoa.S_intValue);
-		if (Cocoa.objc_msgSend (token, Cocoa.S_isKindOfClass, Cocoa.C_NSNumber) != 0) {
-			long tokenValue = (long)Cocoa.objc_msgSend_fpret (token, Cocoa.S_doubleValue);
+		if (Cocoa.objc_msgSend (token, Cocoa.S_isKindOfClass, Cocoa.C_NSString) != 0) {
+			int length = Cocoa.objc_msgSend (token, Cocoa.S_length);
+			char[] buffer = new char[length];
+			Cocoa.objc_msgSend (token, Cocoa.S_getCharacters_, buffer);
+			String tokenString = new String (buffer);
 			Object key = new Integer (functionIndex);
 			BrowserFunction function = (BrowserFunction)functions.get (key);
-			if (function != null && tokenValue == function.token) {
+			if (function != null && tokenString.equals (function.token)) {
 				try {
 					Object temp = convertToJava (args);
 					if (temp instanceof Object[]) {

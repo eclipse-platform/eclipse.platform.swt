@@ -740,21 +740,21 @@ int Invoke (int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*lo
 	ptr = dispParams.rgvarg + Variant.sizeof;
 	variant = Variant.win32_new (ptr);
 	int type = variant.getType ();
-	if (type != COM.VT_I4 && type != COM.VT_R8) {
+	if (type != COM.VT_BSTR) {
 		variant.dispose ();
 		if (pVarResult != 0) {
 			COM.MoveMemory (pVarResult, new int /*long*/[] {0}, C.PTR_SIZEOF);
 		}
 		return COM.S_OK;
 	}
-	long token = variant.getLong ();
+	String token = variant.getString ();
 	variant.dispose ();
 
 	variant = Variant.win32_new (dispParams.rgvarg);
 	Object key = new Integer (index);
 	BrowserFunction function = (BrowserFunction)functions.get (key);
 	Object returnValue = null;
-	if (function != null && token == function.token) {
+	if (function != null && token.equals (function.token)) {
 		try {
 			Object temp = convertToJava (variant);
 			if (temp instanceof Object[]) {

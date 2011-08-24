@@ -339,9 +339,9 @@ public void createFunction (BrowserFunction function) {
 	buffer.append (function.name);
 	buffer.append ("() {var result = window.external.callJava("); //$NON-NLS-1$
 	buffer.append (function.index);
-	buffer.append (',');
+	buffer.append (",'"); //$NON-NLS-1$
 	buffer.append (function.token);
-	buffer.append (",Array.prototype.slice.call(arguments)); if (typeof result == 'string' && result.indexOf('"); //$NON-NLS-1$
+	buffer.append ("',Array.prototype.slice.call(arguments)); if (typeof result == 'string' && result.indexOf('"); //$NON-NLS-1$
 	buffer.append (ERROR_ID);
 	buffer.append ("') == 0) {var error = new Error(result.substring("); //$NON-NLS-1$
 	buffer.append (ERROR_ID.length ());

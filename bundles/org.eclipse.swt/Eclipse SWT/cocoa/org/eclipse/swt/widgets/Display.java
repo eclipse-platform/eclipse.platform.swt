@@ -2596,7 +2596,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_collapseItem_collapseChildren_, proc4, "@:@Z");
 	OS.class_addMethod(cls, OS.sel_drawBackgroundInClipRect_, drawBackgroundInClipRectProc, "@:{NSRect}");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
-	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 
@@ -2645,6 +2644,11 @@ void initClasses () {
 	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
+	if (OS.VERSION >= 0x1070) {
+		/* Note that isFlippedProc is used for performance and convenience */
+		int /*long*/ metaClass = OS.objc_getMetaClass(className);
+		OS.class_addMethod(metaClass, OS.sel_isCompatibleWithOverlayScrollers, isFlippedProc, "@:");
+	}
 	
 	className = "SWTScrollView";
 	cls = OS.objc_allocateClassPair(OS.class_NSScrollView, className, 0);
@@ -2770,7 +2774,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_tableView_writeRowsWithIndexes_toPasteboard_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_drawBackgroundInClipRect_, drawBackgroundInClipRectProc, "@:{NSRect}");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
-	addFrameMethods(cls, setFrameOriginProc, setFrameSizeProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
 

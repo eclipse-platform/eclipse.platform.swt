@@ -125,6 +125,7 @@ typedef enum {
 	CGDisplayBitsPerSample_FUNC,
 	CGDisplayBounds_FUNC,
 	CGDisplayBytesPerRow_FUNC,
+	CGDisplayCreateImage_FUNC,
 	CGDisplayPixelsHigh_FUNC,
 	CGDisplayPixelsWide_FUNC,
 	CGEventCreateKeyboardEvent_FUNC,
@@ -187,7 +188,6 @@ typedef enum {
 	GetSystemUIMode_FUNC,
 	GetThemeMetric_FUNC,
 	HIThemeDrawFocusRect_FUNC,
-	HIWindowFindAtLocation_FUNC,
 	HIWindowGetCGWindowID_FUNC,
 	JNIGetObject_FUNC,
 	JSEvaluateScript_FUNC,
@@ -1265,6 +1265,11 @@ typedef enum {
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2I_FUNC,
 #else
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2J_FUNC,
+#endif
+#ifndef JNI64
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2IIIII_FUNC,
+#else
+	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2JJJJJ_FUNC,
 #endif
 #ifndef JNI64
 	objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2ZZI_FUNC,

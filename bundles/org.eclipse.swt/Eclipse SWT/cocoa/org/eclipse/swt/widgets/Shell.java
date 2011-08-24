@@ -492,14 +492,15 @@ public void addShellListener(ShellListener listener) {
 
 void attachObserversToWindow(NSWindow newWindow) {
 	if (newWindow == null || newWindow.id == 0) return;
+	int /*long*/ newHostWindowClass = OS.object_getClass(newWindow.id);
+	int /*long*/ sendEventImpl = OS.class_getMethodImplementation(newHostWindowClass, OS.sel_sendEvent_);
+	if (sendEventImpl == Display.windowCallback3.getAddress()) return;
 	hostWindow = newWindow;
 	hostWindow.retain();
-	int /*long*/ newHostWindowClass = OS.object_getClass(newWindow.id);
 	int /*long*/ embeddedSubclass = display.createWindowSubclass(newHostWindowClass, "SWTAWTWindow", true);
-	if (newHostWindowClass != embeddedSubclass) {
-		OS.object_setClass(hostWindow.id, embeddedSubclass);
-		hostWindowClass = newHostWindowClass;
-	}
+	OS.object_setClass(hostWindow.id, embeddedSubclass);
+	display.addWidget (hostWindow, this);
+	hostWindowClass = newHostWindowClass;
 	
 	if (windowEmbedCounts == null) windowEmbedCounts = new HashMap();
 	Integer embedCount = (Integer) windowEmbedCounts.get(hostWindow);
@@ -548,7 +549,7 @@ boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 	// Only answer if SWT created the window.
 	if (window != null) {
 		int /*long*/ styleMask = window.styleMask();
-		if (styleMask == OS.NSBorderlessWindowMask || (styleMask & (OS.NSNonactivatingPanelMask | OS.NSDocModalWindowMask)) != 0) return true;
+		if (styleMask == OS.NSBorderlessWindowMask || (styleMask & (OS.NSNonactivatingPanelMask | OS.NSDocModalWindowMask | OS.NSResizableWindowMask)) != 0) return true;
 	}
 	return super.canBecomeKeyWindow (id, sel);
 }
@@ -731,8 +732,8 @@ void createHandle () {
 
 	if (OS.VERSION < 0x1060) {
 		// Force a WindowRef to be created for this window so we can use
-		// HIWindowFindAtLocation (see Display.findControl())
-		window.windowRef();
+		// FindWindow() (see Display.findControl())
+		if (window != null) window.windowRef();
 	}
 	
 	NSWindow fieldEditorWindow = window;
@@ -752,7 +753,6 @@ void deferFlushing () {
 void deregister () {
 	super.deregister ();
 	if (window != null) display.removeWidget (window);
-	if (hostWindow != null)	display.removeWidget (hostWindow);
 	if (windowDelegate != null) display.removeWidget (windowDelegate);
 }
 
@@ -1357,7 +1357,6 @@ void register () {
 	 */
 	super.register ();
 	if (window != null) display.addWidget (window, this);
-	if (hostWindow != null)	display.addWidget (hostWindow, this);
 	if (windowDelegate != null) display.addWidget (windowDelegate, this);
 }
 
@@ -1411,7 +1410,7 @@ void removeObserversFromWindow () {
 
 		if (embedCount.intValue() <= 0) {
 			windowEmbedCounts.remove(hostWindow);
-			OS.object_setClass(hostWindow.id, hostWindowClass);
+			if (hostWindowClass != 0) OS.object_setClass(hostWindow.id, hostWindowClass);
 			display.removeWidget(hostWindow);
 			hostWindow.release();
 			hostWindow = null;
@@ -2088,11 +2087,9 @@ void viewWillMoveToWindow(int /*long*/ id, int /*long*/ sel, int /*long*/ newWin
 		int /*long*/ currentWindow = hostWindow != null ? hostWindow.id : 0;
 		if (currentWindow != 0) {
 			removeObserversFromWindow();
-			display.removeWidget(hostWindow);
 		}
 		if (newWindow != 0) {
 			attachObserversToWindow(new NSWindow(newWindow));
-			display.addWidget(hostWindow, this);
 		}
 	}
 }

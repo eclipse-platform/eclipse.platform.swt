@@ -1068,6 +1068,8 @@ void setContent(StyledTextContent content) {
 	lineCount = content.getLineCount();
 	lineWidth = new int[lineCount];
 	lineHeight = new int[lineCount];
+	maxWidth = 0;
+	maxWidthLineIndex = -1;
 	reset(0, lineCount);
 }
 void setFont(Font font, int tabs) {

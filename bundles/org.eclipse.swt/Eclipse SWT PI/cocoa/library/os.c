@@ -1659,6 +1659,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayBytesPerRow)
 }
 #endif
 
+#ifndef NO_CGDisplayCreateImage
+JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayCreateImage)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, CGDisplayCreateImage_FUNC);
+/*
+	rc = (jintLong)CGDisplayCreateImage((CGDirectDisplayID)arg0);
+*/
+	{
+		LOAD_FUNCTION(fp, CGDisplayCreateImage)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(CGDirectDisplayID))fp)((CGDirectDisplayID)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, CGDisplayCreateImage_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGDisplayPixelsHigh
 JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayPixelsHigh)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -2558,33 +2578,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawFocusRect)
 fail:
 	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, HIThemeDrawFocusRect_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_HIWindowFindAtLocation
-JNIEXPORT jint JNICALL OS_NATIVE(HIWindowFindAtLocation)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jint arg3, jintLongArray arg4, jintLongArray arg5, jintLong arg6)
-{
-	jintLong *lparg4=NULL;
-	jintLong *lparg5=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, HIWindowFindAtLocation_FUNC);
-	if (arg4) if ((lparg4 = (*env)->GetIntLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	if (arg5) if ((lparg5 = (*env)->GetIntLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)HIWindowFindAtLocation((HIPoint *)arg0, (HICoordinateSpace)arg1, (WindowRef)arg2, (OptionBits)arg3, (WindowRef *)lparg4, (WindowPartCode *)lparg5, (HIPoint *)arg6);
-*/
-	{
-		LOAD_FUNCTION(fp, HIWindowFindAtLocation)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(HIPoint *, HICoordinateSpace, WindowRef, OptionBits, WindowRef *, WindowPartCode *, HIPoint *))fp)((HIPoint *)arg0, (HICoordinateSpace)arg1, (WindowRef)arg2, (OptionBits)arg3, (WindowRef *)lparg4, (WindowPartCode *)lparg5, (HIPoint *)arg6);
-		}
-	}
-fail:
-	if (arg5 && lparg5) (*env)->ReleaseIntLongArrayElements(env, arg5, lparg5, 0);
-	if (arg4 && lparg4) (*env)->ReleaseIntLongArrayElements(env, arg4, lparg4, 0);
-	OS_NATIVE_EXIT(env, that, HIWindowFindAtLocation_FUNC);
 	return rc;
 }
 #endif
@@ -10636,6 +10629,38 @@ fail:
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2J_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO_objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2IIIII) && !defined(JNI64)) || (!defined(NO_objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2JJJJJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2IIIII)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2, jobject arg3, jintLong arg4, jintLong arg5, jintLong arg6, jintLong arg7, jintLong arg8)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2JJJJJ)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2, jobject arg3, jintLong arg4, jintLong arg5, jintLong arg6, jintLong arg7, jintLong arg8)
+#endif
+{
+	NSSize _arg0, *lparg0=NULL;
+	NSSize _arg3, *lparg3=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2IIIII_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2JJJJJ_FUNC);
+#endif
+	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getNSSizeFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+		*lparg0 = (*(NSSize (*)(jintLong, jintLong, NSSize, jintLong, jintLong, jintLong, jintLong, jintLong))objc_msgSend_stret)(arg1, arg2, *lparg3, arg4, arg5, arg6, arg7, arg8);
+	} else {
+		*lparg0 = (*(NSSize (*)(jintLong, jintLong, NSSize, jintLong, jintLong, jintLong, jintLong, jintLong))objc_msgSend)(arg1, arg2, *lparg3, arg4, arg5, arg6, arg7, arg8);
+	}
+fail:
+	if (arg3 && lparg3) setNSSizeFields(env, arg3, lparg3);
+	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2IILorg_eclipse_swt_internal_cocoa_NSSize_2IIIII_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2JJJJJ_FUNC);
 #endif
 }
 #endif

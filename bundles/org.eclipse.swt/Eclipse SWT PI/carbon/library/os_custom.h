@@ -33,3 +33,4 @@
 #define AXUIElementCreateWithDataBrowserAndItemInfo_LIB "com.apple.Carbon"
 #define PMPrinterGetOutputResolution_LIB "com.apple.Carbon"
 #define PMShowPrintDialogWithOptions_LIB "com.apple.Carbon"
+#define CGDisplayCreateImage_LIB "com.apple.Carbon"

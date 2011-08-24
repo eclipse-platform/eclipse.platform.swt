@@ -628,7 +628,7 @@ NSString getItemID() {
     	// If we are using a non-default width or control use that instead.  
     	if (control == null) {
     		if (width == DEFAULT_SEPARATOR_WIDTH || width == 0) {
-    			itemID = OS.NSToolbarSeparatorItemIdentifier;
+    			if (OS.VERSION < 0x1070) itemID = OS.NSToolbarSeparatorItemIdentifier;
     		} else if (width == SWT.DEFAULT) {
     			itemID = OS.NSToolbarSpaceItemIdentifier;
     		} else if (width == SWT.SEPARATOR_FILL) {

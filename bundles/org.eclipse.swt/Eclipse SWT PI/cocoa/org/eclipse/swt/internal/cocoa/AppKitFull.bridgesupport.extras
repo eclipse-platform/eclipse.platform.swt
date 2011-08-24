@@ -2860,6 +2860,9 @@
 		<method selector="hitPart" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="knobProportion" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="rectForPart:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -2875,8 +2878,7 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="setFloatValue:knobProportion:" swt_gen="true">
-			<arg swt_gen="true"></arg>
+		<method selector="setKnobProportion:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4845,6 +4847,7 @@
 	<enum name="NSShiftKeyMask" swt_gen="true"></enum>
 	<enum name="NSSmallControlSize" swt_gen="true"></enum>
 	<enum name="NSSquareLineCapStyle" swt_gen="true"></enum>
+	<enum name="NSSquareStatusItemLength" swt_gen="true"></enum>
 	<enum name="NSStatusWindowLevel" swt_gen="true"></enum>
 	<enum name="NSStringDrawingUsesLineFragmentOrigin" swt_gen="true"></enum>
 	<enum name="NSSubmenuWindowLevel" swt_gen="true"></enum>

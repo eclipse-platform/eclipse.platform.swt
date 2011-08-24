@@ -1395,6 +1395,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1GString_1str)
 }
 #endif
 
+#ifndef NO__1GTK_1IS_1ACCEL_1LABEL
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1ACCEL_1LABEL)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1IS_1ACCEL_1LABEL_FUNC);
+	rc = (jboolean)GTK_IS_ACCEL_LABEL(arg0);
+	OS_NATIVE_EXIT(env, that, _1GTK_1IS_1ACCEL_1LABEL_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GTK_1IS_1BUTTON
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1BUTTON)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1463,6 +1475,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1IMAGE_1MENU_1ITEM)
 	OS_NATIVE_ENTER(env, that, _1GTK_1IS_1IMAGE_1MENU_1ITEM_FUNC);
 	rc = (jboolean)GTK_IS_IMAGE_MENU_ITEM(arg0);
 	OS_NATIVE_EXIT(env, that, _1GTK_1IS_1IMAGE_1MENU_1ITEM_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1GTK_1IS_1LABEL
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1LABEL)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1IS_1LABEL_FUNC);
+	rc = (jboolean)GTK_IS_LABEL(arg0);
+	OS_NATIVE_EXIT(env, that, _1GTK_1IS_1LABEL_FUNC);
 	return rc;
 }
 #endif
@@ -4935,6 +4959,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1region)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1cairo_1region_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1cairo_1reset_1clip
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1reset_1clip)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1cairo_1reset_1clip_FUNC);
+/*
+	gdk_cairo_reset_clip(arg0, arg1);
+*/
+	{
+		LOAD_FUNCTION(fp, gdk_cairo_reset_clip)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1cairo_1reset_1clip_FUNC);
 }
 #endif
 

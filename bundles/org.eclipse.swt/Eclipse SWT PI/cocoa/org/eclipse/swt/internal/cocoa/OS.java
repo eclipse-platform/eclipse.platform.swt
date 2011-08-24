@@ -143,6 +143,12 @@ public class OS extends C {
 	/** @method flags=const dynamic no_gen*/
 	public static final native int /*long*/ NSAccessibilityCellRole();
 	public static final NSString NSAccessibilityCellRole = new NSString(NSAccessibilityCellRole());
+	
+	/** 10.7 selectors and constants */
+	public static final int /*long*/ sel_isCompatibleWithOverlayScrollers = sel_registerName("isCompatibleWithOverlayScrollers");
+	public static final int /*long*/ sel_flashScrollers = sel_registerName("flashScrollers");
+	public static final int /*long*/ sel_frameSizeForContentSize_horizontalScrollerClass_verticalScrollerClass_borderType_controlSize_scrollerStyle_ = sel_registerName("frameSizeForContentSize:horizontalScrollerClass:verticalScrollerClass:borderType:controlSize:scrollerStyle:");
+	public static final int NSScrollerStyleLegacy = 0;
 
 	/* AWT application delegate. Remove these when JavaRuntimeSupport.framework has bridgesupport generated for it. */
 	public static final int /*long*/ class_JRSAppKitAWT = objc_getClass("JRSAppKitAWT");
@@ -364,6 +370,12 @@ public static final int kCGBitmapByteOrder32Host = __BIG_ENDIAN__() ? kCGBitmapB
  */
 public static final native void CGContextCopyWindowContentsToRect(int /*long*/ context, CGRect destRect, int /*long*/ contextID, int /*long*/ windowNumber, CGRect srcRect);
 
+/**
+ * @method flags=dynamic
+ * @param displayID cast=(CGDirectDisplayID)
+ */
+public static final native int /*long*/ CGDisplayCreateImage(int displayID);
+
 /** QuickDraw calls */
 
 /** @method flags=dynamic */
@@ -411,18 +423,6 @@ public static final int kQDParseRegionFromLeft = (1 << 2);
 public static final int kQDParseRegionFromRight = (1 << 3);
 public static final int kQDParseRegionFromTopLeft = kQDParseRegionFromTop | kQDParseRegionFromLeft;
 public static final int kQDRegionToRectsMsgParse = 2;
-
-/**
- * @method flags=dynamic
- * @param cgLocation cast=(HIPoint *)
- * @param inSpace cast=(HICoordinateSpace)
- * @param inStartWindow cast=(WindowRef)
- * @param inOptions cast=(OptionBits)
- * @param outWindow cast=(WindowRef *)
- * @param outWindowPart cast=(WindowPartCode *)
- * @param outWindowLocation cast=(HIPoint *)
- */
-public static final native int HIWindowFindAtLocation(int /*long*/ cgLocation, int inSpace, int /*long*/ inStartWindow, int inOptions, int /*long*/[] outWindow, int /*long*/ [] outWindowPart, int /*long*/ outWindowLocation);
 
 /**
  * @method flags=dynamic
@@ -588,6 +588,12 @@ public static final native int /*long*/ object_setInstanceVariable(int /*long*/ 
 public static final native int /*long*/ object_setClass(int /*long*/ obj, int /*long*/ clazz);
 public static final native int /*long*/ sel_registerName(String selectorName);
 public static final native int objc_super_sizeof();
+
+/**
+ * @method flags=cast
+ * @param arg0 flags=struct
+ */
+public static final native void objc_msgSend_stret(NSSize result, int /*long*/ id, int /*long*/ sel, NSSize arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5);
 
 
 /** This section is auto generated */
@@ -1419,6 +1425,7 @@ public static final int /*long*/ sel_keyEquivalent = sel_registerName("keyEquiva
 public static final int /*long*/ sel_keyEquivalentModifierMask = sel_registerName("keyEquivalentModifierMask");
 public static final int /*long*/ sel_keyUp_ = sel_registerName("keyUp:");
 public static final int /*long*/ sel_keyWindow = sel_registerName("keyWindow");
+public static final int /*long*/ sel_knobProportion = sel_registerName("knobProportion");
 public static final int /*long*/ sel_knobThickness = sel_registerName("knobThickness");
 public static final int /*long*/ sel_lastPathComponent = sel_registerName("lastPathComponent");
 public static final int /*long*/ sel_layoutManager = sel_registerName("layoutManager");
@@ -1869,6 +1876,7 @@ public static final int /*long*/ sel_setJobDisposition_ = sel_registerName("setJ
 public static final int /*long*/ sel_setJobTitle_ = sel_registerName("setJobTitle:");
 public static final int /*long*/ sel_setKeyEquivalent_ = sel_registerName("setKeyEquivalent:");
 public static final int /*long*/ sel_setKeyEquivalentModifierMask_ = sel_registerName("setKeyEquivalentModifierMask:");
+public static final int /*long*/ sel_setKnobProportion_ = sel_registerName("setKnobProportion:");
 public static final int /*long*/ sel_setLabel_ = sel_registerName("setLabel:");
 public static final int /*long*/ sel_setLabel_forSegment_ = sel_registerName("setLabel:forSegment:");
 public static final int /*long*/ sel_setLeaf_ = sel_registerName("setLeaf:");
@@ -2372,6 +2380,7 @@ public static final int NSShadowlessSquareBezelStyle = 6;
 public static final int NSShiftKeyMask = 131072;
 public static final int NSSmallControlSize = 1;
 public static final int NSSquareLineCapStyle = 2;
+public static final int NSSquareStatusItemLength = -2;
 public static final int NSStatusWindowLevel = 25;
 public static final int NSStringDrawingUsesLineFragmentOrigin = 1;
 public static final int NSSubmenuWindowLevel = 3;

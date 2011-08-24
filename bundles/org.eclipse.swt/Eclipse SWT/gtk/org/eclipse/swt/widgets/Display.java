@@ -3624,6 +3624,7 @@ boolean runDeferredLayouts () {
 			Composite comp = temp[i];
 			if (!comp.isDisposed()) comp.setLayoutDeferred (false);
 		}
+		update ();
 		return true;
 	}	
 	return false;

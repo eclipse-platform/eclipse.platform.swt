@@ -237,6 +237,7 @@ typedef enum {
 	CGDisplayBitsPerSample_FUNC,
 	CGDisplayBounds_FUNC,
 	CGDisplayBytesPerRow_FUNC,
+	CGDisplayCreateImage_FUNC,
 	CGDisplayHideCursor_FUNC,
 	CGDisplayPixelsHigh_FUNC,
 	CGDisplayPixelsWide_FUNC,

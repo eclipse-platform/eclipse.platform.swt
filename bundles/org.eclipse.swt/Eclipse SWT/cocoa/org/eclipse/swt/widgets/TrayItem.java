@@ -44,8 +44,6 @@ public class TrayItem extends Item {
 	NSStatusItem item;
 	NSImageView view;
 	
-	static final float BORDER = 8f;
-	
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Tray</code>) and a style value
@@ -352,10 +350,13 @@ public void setImage (Image image) {
 		NSImage current = view.image ();
 		if (current != null && current.id == image.handle.id) {
 			view.setImage (null);
+			item.setLength (0);
 		}
 		view.setImage (image.handle);
 		if (visible) {
-			width = image.handle.size ().width + BORDER;
+			NSSize size = image.handle.size ();
+			view.setFrameSize (size);
+			width = OS.NSSquareStatusItemLength;
 		}
 	}
 	item.setLength (width);
@@ -439,7 +440,7 @@ public void setVisible (boolean visible) {
 		if (isDisposed ()) return;
 	}
 	this.visible = visible;
-	float /*double*/ width = image != null && visible ? image.handle.size().width + BORDER : 0;
+	float /*double*/ width = image != null && visible ? OS.NSSquareStatusItemLength : 0;
 	item.setLength(width);
 	if (!visible) sendEvent (SWT.Hide);
 }

@@ -10,7 +10,7 @@
         IBM Corporation - initial API and implementation
  -->
 
-<project name="org.eclipse.swt.fragment" default="" basedir="../../..">
+<project name="org.eclipse.swt.fragment" default="" basedir=".">
 
 	<target name="init" depends="properties">
 		<property name="compilerArg" value="" />
@@ -18,8 +18,7 @@
 			<isset property="swt.arch"/>
 		</condition>
 		<property name="full.name" value="${fragment}_${version.suffix}" />
-		<property name="plugindir" value="${basedir}/eclipse.platform.swt/bundles/org.eclipse.swt" />
-		<property name="fragmentdir" value="${basedir}/eclipse.platform.swt.binaries/bundles/${fragment}" />
+		<property name="fragmentdir" value="${basedir}" />
 		<property name="temp.folder" value="${fragmentdir}/temp.folder" />
 		<property name="plugin.destination" value="${fragmentdir}" />
 		<property name="build.result.folder" value="${fragmentdir}" />

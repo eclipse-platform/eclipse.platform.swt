@@ -126,6 +126,32 @@ static Composite checkParent (Composite parent) {
 
 static int checkStyle(int style) {
 	if (DefaultType == SWT.DEFAULT) {
+		/*
+		* Some Browser clients that explicitly specify the native renderer to use
+		* (by creating a Browser with style SWT.MOZILLA or SWT.WEBKIT) may also
+		* need to specify that all "default" Browser instances (those created with
+		* style SWT.NONE) should use this renderer as well.  This may be needed in
+		* order to avoid incompatibilities that can arise from having multiple
+		* native renderers loaded within the same process.  A client can do this by
+		* setting the "org.eclipse.swt.browser.DefaultType" java system property to
+		* a value like "mozilla" or "webkit".  
+		*/
+
+		/*
+		* Plug-ins need an opportunity to set the org.eclipse.swt.browser.DefaultType
+		* system property before the first Browser is created.  To facilitate this,
+		* reflection is used to reference non-existent class
+		* org.eclipse.swt.browser.BrowserInitializer the first time a Browser is created.
+		* A client wishing to use this hook can do so by creating a fragment of
+		* org.eclipse.swt that implements this class and sets the system property in its
+		* static initializer.
+		*/
+		try {
+			Class.forName ("org.eclipse.swt.browser.BrowserInitializer"); //$NON-NLS-1$
+		} catch (ClassNotFoundException e) {
+			/* no fragment is providing this class, which is the typical case */
+		}
+
 		String value = System.getProperty (PROPERTY_DEFAULTTYPE);
 		if (value != null) {
 			if (value.equalsIgnoreCase ("mozilla")) { //$NON-NLS-1$

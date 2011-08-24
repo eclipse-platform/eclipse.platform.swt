@@ -107,7 +107,17 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		size.width = width;
 		size.height = height;
 		int border = hasBorder() ? OS.NSBezelBorder : OS.NSNoBorder;
-		size = NSScrollView.frameSizeForContentSize(size, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0, border);
+		if (OS.VERSION >= 0x1070) {
+			// Always include the scroll bar in the trim even when the scroll style is overlay
+			OS.objc_msgSend_stret(size, OS.class_NSScrollView,
+				OS.sel_frameSizeForContentSize_horizontalScrollerClass_verticalScrollerClass_borderType_controlSize_scrollerStyle_,
+				size,
+				(style & SWT.H_SCROLL) != 0 ? OS.class_NSScroller : 0,
+				(style & SWT.V_SCROLL) != 0 ? OS.class_NSScroller : 0,
+				border, OS.NSRegularControlSize, OS.NSScrollerStyleLegacy);
+		} else {
+			size = NSScrollView.frameSizeForContentSize(size, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0, border);
+		}
 		width = (int)size.width;
 		height = (int)size.height;
 		NSRect frame = scrollView.contentView().frame();

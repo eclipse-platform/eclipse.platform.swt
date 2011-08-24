@@ -218,19 +218,26 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	str.release ();
 	width = (float)/*64*/size.width;
 	height = (float)/*64*/size.height;
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	Rectangle trim = computeTrim (0, 0, (int)Math.ceil (width), (int)Math.ceil (height));
+	if (hHint == SWT.DEFAULT) {
+		size = buttonView.cell ().cellSize ();
+		trim.height = Math.max (trim.height, (int)size.height);
+	}
+	return new Point (trim.width, trim.height);
+}
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget();
 	NSRect frameRect = textView.frame();
 	NSCell cell = new NSCell (textView.cell ());
 	NSRect cellRect = cell.drawingRectForBounds(frameRect);
 	width += frameRect.width - cellRect.width;
 	height += frameRect.height - cellRect.height;
 	width += GAP;
-	size = buttonView.cell ().cellSize ();
+	NSSize size = buttonView.cell ().cellSize ();
 	width += (int)/*64*/size.width;
-	height = Math.max (height, size.height);
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
-	Rectangle trim = computeTrim (0, 0, (int)Math.ceil (width), (int)Math.ceil (height));
-	return new Point (trim.width, trim.height);
+	return new Rectangle (x, y, width, height);
 }
 
 /**

@@ -554,9 +554,9 @@ int callJava (int functionId, int /*long*/ tokenVariant, int /*long*/ args, int 
 			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 			Object temp = convertToJava (variant, type[0]);
 			type[0] = 0;
-			if (temp instanceof Number) {
-				long token = ((Number)temp).longValue ();
-				if (token == function.token) {
+			if (temp instanceof String) {
+				String token = (String)temp;
+				if (token.equals (function.token)) {
 					variant = new nsIVariant (args);
 					rc = variant.GetDataType (type);
 					if (rc != XPCOM.NS_OK) Mozilla.error (rc);
