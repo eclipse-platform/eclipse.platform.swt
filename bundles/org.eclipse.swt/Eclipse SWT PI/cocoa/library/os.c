@@ -8783,18 +8783,6 @@ fail:
 }
 #endif
 
-#ifndef NO_objc_1msgSend__JJFD
-JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJFD)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jfloat arg2, jdouble arg3)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJFD_FUNC);
-	rc = (jlong)((jlong (*)(jlong, jlong, jfloat, jdouble))objc_msgSend)(arg0, arg1, arg2, arg3);
-	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJFD_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_objc_1msgSend__JJI
 JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJI)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2)
@@ -9886,6 +9874,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJS)(JNIEnv *env, jcla
 #else
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJS_FUNC);
 #endif
+	return rc;
+}
+#endif
+
+#ifndef NO_objc_1msgSend_1floatret
+JNIEXPORT jfloat JNICALL OS_NATIVE(objc_1msgSend_1floatret)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jfloat rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1floatret_FUNC);
+	rc = (jfloat)((jfloat (*)(jintLong, jintLong))objc_msgSend_floatret)(arg0, arg1);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1floatret_FUNC);
 	return rc;
 }
 #endif

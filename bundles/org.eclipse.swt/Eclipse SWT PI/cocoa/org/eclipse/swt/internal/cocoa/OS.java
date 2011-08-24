@@ -1828,7 +1828,6 @@ public static final int /*long*/ sel_setFill = sel_registerName("setFill");
 public static final int /*long*/ sel_setFillColor_ = sel_registerName("setFillColor:");
 public static final int /*long*/ sel_setFireDate_ = sel_registerName("setFireDate:");
 public static final int /*long*/ sel_setFirstLineHeadIndent_ = sel_registerName("setFirstLineHeadIndent:");
-public static final int /*long*/ sel_setFloatValue_knobProportion_ = sel_registerName("setFloatValue:knobProportion:");
 public static final int /*long*/ sel_setFloatingPanel_ = sel_registerName("setFloatingPanel:");
 public static final int /*long*/ sel_setFocusRingType_ = sel_registerName("setFocusRingType:");
 public static final int /*long*/ sel_setFont_ = sel_registerName("setFont:");
@@ -3778,6 +3777,8 @@ public static final native double objc_msgSend_fpret(int /*long*/ id, int /*long
 /** @method flags=cast */
 public static final native double objc_msgSend_fpret(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1);
 /** @method flags=cast */
+public static final native float objc_msgSend_floatret(int /*long*/ id, int /*long*/ sel);
+/** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel);
 /**
  * @method flags=cast
@@ -4047,8 +4048,6 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int[] /*long[]*/ arg0, int arg1, int arg2);
 /** @method flags=cast */
 public static final native int objc_msgSend(int id, int sel, float arg0);
-/** @method flags=cast */
-public static final native long objc_msgSend(long id, long sel, float arg0, double arg1);
 /** @method flags=cast */
 public static final native long objc_msgSend(long id, long sel, int arg0);
 /** @method flags=cast */

@@ -25,7 +25,7 @@ public NSColor(id id) {
 }
 
 public float /*double*/ alphaComponent() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_alphaComponent);
+	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_alphaComponent);
 }
 
 public static NSColor alternateSelectedControlColor() {
@@ -44,7 +44,7 @@ public static NSColor blackColor() {
 }
 
 public float /*double*/ blueComponent() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_blueComponent);
+	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_blueComponent);
 }
 
 public static NSColor clearColor() {
@@ -117,7 +117,7 @@ public void getComponents(float[] /*double[]*/ components) {
 }
 
 public float /*double*/ greenComponent() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_greenComponent);
+	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_greenComponent);
 }
 
 public int /*long*/ numberOfComponents() {
@@ -125,7 +125,7 @@ public int /*long*/ numberOfComponents() {
 }
 
 public float /*double*/ redComponent() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_redComponent);
+	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_redComponent);
 }
 
 public static NSColor secondarySelectedControlColor() {

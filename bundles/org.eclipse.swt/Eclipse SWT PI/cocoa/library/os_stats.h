@@ -952,7 +952,6 @@ typedef enum {
 #else
 	objc_1msgSend__JJ_3JII_FUNC,
 #endif
-	objc_1msgSend__JJFD_FUNC,
 	objc_1msgSend__JJI_FUNC,
 	objc_1msgSend__JJ_3I_FUNC,
 	objc_1msgSend__JJ_3JJJ_FUNC,
@@ -1141,6 +1140,7 @@ typedef enum {
 #else
 	objc_1msgSend_1bool__JJS_FUNC,
 #endif
+	objc_1msgSend_1floatret_FUNC,
 #ifndef JNI64
 	objc_1msgSend_1fpret__II_FUNC,
 #else

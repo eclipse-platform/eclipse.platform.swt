@@ -29,7 +29,7 @@ public void addChildWindow(NSWindow childWin, int /*long*/ place) {
 }
 
 public float /*double*/ alphaValue() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_alphaValue);
+	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_alphaValue);
 }
 
 public boolean areCursorRectsEnabled() {
@@ -199,7 +199,7 @@ public void makeKeyAndOrderFront(id sender) {
 }
 
 public static float /*double*/ minFrameWidthWithTitle(NSString aTitle, int /*long*/ aStyle) {
-	return (float)OS.objc_msgSend_fpret(OS.class_NSWindow, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
+	return (float /*double*/)OS.objc_msgSend_fpret(OS.class_NSWindow, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
 }
 
 public NSSize minSize() {
@@ -363,7 +363,7 @@ public NSToolbar toolbar() {
 }
 
 public float /*double*/ userSpaceScaleFactor() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_userSpaceScaleFactor);
+	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_userSpaceScaleFactor);
 }
 
 public int /*long*/ windowNumber() {

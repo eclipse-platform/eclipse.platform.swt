@@ -944,7 +944,6 @@ char * OS_nativeFunctionNames[] = {
 #else
 	"objc_1msgSend__JJ_3JII",
 #endif
-	"objc_1msgSend__JJFD",
 	"objc_1msgSend__JJI",
 	"objc_1msgSend__JJ_3I",
 	"objc_1msgSend__JJ_3JJJ",
@@ -1133,6 +1132,7 @@ char * OS_nativeFunctionNames[] = {
 #else
 	"objc_1msgSend_1bool__JJS",
 #endif
+	"objc_1msgSend_1floatret",
 #ifndef JNI64
 	"objc_1msgSend_1fpret__II",
 #else
