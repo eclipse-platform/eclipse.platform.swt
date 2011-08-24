@@ -519,7 +519,7 @@ void applySegments () {
 	newChars [length] = 0;
 	buffer = new TCHAR (cp, newChars, false);
 	OS.SendMessage (handle, OS.EM_SETSEL, 0, -1);
-	int undo = OS.SendMessage (handle, OS.EM_CANUNDO, 0, 0);
+	int /*long*/ undo = OS.SendMessage (handle, OS.EM_CANUNDO, 0, 0);
 	OS.SendMessage (handle, OS.EM_REPLACESEL, undo, buffer);
 	/* Restore selection */
 	start [0] = translateOffset (start [0]);
@@ -594,7 +594,7 @@ void clearSegments (boolean applyText) {
 	 * menu. Sending OS.EM_REPLACESEL message instead.
 	 */
 	OS.SendMessage (handle, OS.EM_SETSEL, 0, -1);
-	int undo = OS.SendMessage (handle, OS.EM_CANUNDO, 0, 0);
+	int /*long*/ undo = OS.SendMessage (handle, OS.EM_CANUNDO, 0, 0);
 	OS.SendMessage (handle, OS.EM_REPLACESEL, undo, buffer);
 	/* Restore selection */
 	if (!OS.IsUnicode && OS.IsDBLocale) {
@@ -2549,7 +2549,7 @@ int /*long*/ windowProc () {
 
 int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	boolean processSegments = false, redraw = false;
-	int code;
+	int /*long*/ code;
 	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
 		switch (msg) {
 			case OS.WM_KEYDOWN: 
@@ -3002,7 +3002,7 @@ LRESULT wmKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 	if (result != null) return result;
 	
 	if (segments != null) {
-		switch (wParam) {
+		switch ((int)/*64*/wParam) {
 		case OS.VK_LEFT:
 		case OS.VK_UP:
 		case OS.VK_RIGHT:
