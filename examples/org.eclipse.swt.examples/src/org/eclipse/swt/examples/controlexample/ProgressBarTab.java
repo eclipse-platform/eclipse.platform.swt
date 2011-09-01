@@ -171,8 +171,12 @@ class ProgressBarTab extends RangeTab {
 	 * on the "Example" widget.
 	 */
 	void updateSpinners () {
-		minimumSpinner.setSelection (progressBar1.getMinimum ());
-		selectionSpinner.setSelection (progressBar1.getSelection ());
-		maximumSpinner.setSelection (progressBar1.getMaximum ());
+		updateSpinner (minimumSpinner, progressBar1.getMinimum ());
+		updateSpinner (selectionSpinner, progressBar1.getSelection ());
+		updateSpinner (maximumSpinner, progressBar1.getMaximum ());
+	}
+	
+	void updateSpinner(Spinner spinner, int selection) {
+		if (spinner.getSelection() != selection) spinner.setSelection (selection);
 	}
 }
