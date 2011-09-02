@@ -1539,19 +1539,6 @@ public void insert (String string) {
 	}
 }
 
-boolean isValidOffet (int start, int end) {
-	int charCount = 0, segmentCount = 0;
-	int nSegments = segments.length;
-	while (charCount <= end) {
-		if (segmentCount < nSegments && charCount - segmentCount == segments [segmentCount]) {
-			if (start == charCount || end == charCount) return false;
-			segmentCount++;
-		}
-		charCount++;
-	}
-	return true;
-}
-
 int mbcsToWcsPos (int mbcsPos) {
 	if (mbcsPos <= 0) return 0;
 	if (OS.IsUnicode) return mbcsPos;
@@ -3009,29 +2996,20 @@ LRESULT wmKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 		case OS.VK_DOWN:
 			int /*long*/ code = 0;
 			int [] start = new int [1], end = new int [1], newStart = new int [1], newEnd = new int [1];
-			
-			//make sure initial start and end are valid char offsets 
 			OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-			while (!isValidOffet (start [0], end [0])) {
+			while (true) {
 				code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
 				OS.SendMessage (handle, OS.EM_GETSEL, newStart, newEnd);
-				if (start [0] == newStart [0] && end [0] == newEnd [0]) break;
+				if (newStart [0] != start [0]) {
+					if (untranslateOffset (newStart [0]) != untranslateOffset (start [0])) break;
+				} else if (newEnd [0] != end [0]) {
+					if (untranslateOffset (newEnd [0]) != untranslateOffset (end [0]))  break;
+				} else {
+					break;
+				}
 				start [0] = newStart [0];
-				end [0] = newEnd [0];
+				end [0] = newEnd [0]; 
 			}
-			
-			code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
-
-			//make sure resulting start and end are valid char offsets 
-			OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-			while (!isValidOffet (start [0], end [0])) {
-				code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
-				OS.SendMessage (handle, OS.EM_GETSEL, newStart, newEnd);
-				if (start [0] == newStart [0] && end [0] == newEnd [0]) break;
-				start [0] = newStart [0];
-				end [0] = newEnd [0];
-			}
-			
 			result = code == 0 ? LRESULT.ZERO : new LRESULT (code);
 		}
 	}
