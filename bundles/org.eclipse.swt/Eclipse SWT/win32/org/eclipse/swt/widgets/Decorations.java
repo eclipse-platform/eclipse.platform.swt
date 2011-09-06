@@ -107,6 +107,7 @@ public class Decorations extends Canvas {
 	boolean moved, resized, opened;
 	int oldX = OS.CW_USEDEFAULT, oldY = OS.CW_USEDEFAULT;
 	int oldWidth = OS.CW_USEDEFAULT, oldHeight = OS.CW_USEDEFAULT;
+	RECT maxRect = new RECT();
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -485,6 +486,11 @@ public Rectangle getBounds () {
 			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
 			lpwndpl.length = WINDOWPLACEMENT.sizeof;
 			OS.GetWindowPlacement (handle, lpwndpl);
+			if ((lpwndpl.flags & OS.WPF_RESTORETOMAXIMIZED) != 0) {
+				int width = maxRect.right - maxRect.left;
+				int height = maxRect.bottom - maxRect.top;
+				return new Rectangle (maxRect.left, maxRect.top, width, height);
+			}
 			int width = lpwndpl.right - lpwndpl.left;
 			int height = lpwndpl.bottom - lpwndpl.top;
 			return new Rectangle (lpwndpl.left, lpwndpl.top, width, height);
@@ -515,6 +521,9 @@ public Rectangle getClientArea () {
 			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
 			lpwndpl.length = WINDOWPLACEMENT.sizeof;
 			OS.GetWindowPlacement (handle, lpwndpl);
+			if ((lpwndpl.flags & OS.WPF_RESTORETOMAXIMIZED) != 0) {
+				return new Rectangle (0, 0, oldWidth, oldHeight);
+			}
 			int width = lpwndpl.right - lpwndpl.left;
 			int height = lpwndpl.bottom - lpwndpl.top;
 			/*
@@ -630,6 +639,9 @@ public Point getLocation () {
 			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
 			lpwndpl.length = WINDOWPLACEMENT.sizeof;
 			OS.GetWindowPlacement (handle, lpwndpl);
+			if ((lpwndpl.flags & OS.WPF_RESTORETOMAXIMIZED) != 0) {
+				return new Point (maxRect.left, maxRect.top);
+			}
 			return new Point (lpwndpl.left, lpwndpl.top);
 		}
 	}
@@ -705,6 +717,11 @@ public Point getSize () {
 			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
 			lpwndpl.length = WINDOWPLACEMENT.sizeof;
 			OS.GetWindowPlacement (handle, lpwndpl);
+			if ((lpwndpl.flags & OS.WPF_RESTORETOMAXIMIZED) != 0) {
+				int width = maxRect.right - maxRect.left;
+				int height = maxRect.bottom - maxRect.top;
+				return new Point (width, height);
+			}
 			int width = lpwndpl.right - lpwndpl.left;
 			int height = lpwndpl.bottom - lpwndpl.top;
 			return new Point (width, height);
@@ -1769,8 +1786,9 @@ LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	if (resized) {
 		int newWidth = 0, newHeight = 0;
 		switch ((int)/*64*/wParam) {
-			case OS.SIZE_RESTORED:
 			case OS.SIZE_MAXIMIZED:
+				OS.GetWindowRect (handle, maxRect);
+			case OS.SIZE_RESTORED:
 				newWidth = OS.LOWORD (lParam);
 				newHeight = OS.HIWORD (lParam);
 				break;

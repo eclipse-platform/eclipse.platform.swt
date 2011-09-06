@@ -2190,6 +2190,7 @@ public class OS extends C {
 	public static final int WM_VSCROLL = 0x115;
 	public static final int WM_WINDOWPOSCHANGED = 0x47;
 	public static final int WM_WINDOWPOSCHANGING = 0x46;
+	public static final int WPF_RESTORETOMAXIMIZED = 0x0002;
 	public static final int WS_BORDER = 0x800000;
 	public static final int WS_CAPTION = 0xc00000;
 	public static final int WS_CHILD = 0x40000000;
