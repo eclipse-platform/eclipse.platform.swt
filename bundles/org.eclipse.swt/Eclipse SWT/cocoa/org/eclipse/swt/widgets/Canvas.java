@@ -41,7 +41,8 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Canvas extends Composite {
 	Caret caret;
 	IME ime;
-	NSOpenGLContext context;
+	NSOpenGLContext glcontext;
+	NSBezierPath visiblePath;
 
 	static NSMutableArray supportedPboardTypes;
 	
@@ -135,8 +136,25 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 	drawBackground(gc, x, y, width, height, 0, 0);
 }
 
+void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+	super.drawBackground(id, context, rect);
+	if (glcontext != null) {
+		context.saveGraphicsState();
+		context.setCompositingOperation(OS.NSCompositeClear);
+		if (visiblePath == null) {
+			int /*long*/ visibleRegion = getVisibleRegion();
+			visiblePath = getPath(visibleRegion);
+			OS.DisposeRgn(visibleRegion);
+		}
+		visiblePath.addClip();
+		NSBezierPath.fillRect(rect);
+		context.restoreGraphicsState();
+		return;
+	}
+}
+
 void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
-	if (context != null && context.view() == null) context.setView(view);
+	if (glcontext != null && glcontext.view() == null) glcontext.setView(view);
 	super.drawRect(id, sel, rect);
 }
 
@@ -257,7 +275,7 @@ boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
 }
 
 boolean isOpaque (int /*long*/ id, int /*long*/ sel) {
-	if (context != null) return true;
+	if (glcontext != null) return true;
 	return super.isOpaque(id, sel);
 }
 
@@ -317,6 +335,18 @@ void reskinChildren (int flags) {
 	if (caret != null) caret.reskin (flags);
 	if (ime != null)  ime.reskin (flags);
 	super.reskinChildren (flags);
+}
+
+void releaseWidget () {
+	super.releaseWidget();
+	if (visiblePath != null) visiblePath.release();
+	visiblePath = null;
+}
+
+void resetVisibleRegion () {
+	super.resetVisibleRegion ();
+	if (visiblePath != null) visiblePath.release();
+	visiblePath = null;
 }
 
 /**
@@ -504,7 +534,13 @@ public void setFont (Font font) {
 }
 
 void setOpenGLContext(Object value) {
-	context = (NSOpenGLContext)value;
+	glcontext = (NSOpenGLContext)value;
+	NSWindow window = view.window();
+	if (glcontext != null) {
+		window.setOpaque(false);
+	} else {
+		window.setOpaque(getShell().region == null);
+	}
 }
 
 /**
@@ -567,7 +603,16 @@ int /*long*/ validRequestorForSendType(int /*long*/ id, int /*long*/ sel, int /*
 }
 
 void updateOpenGLContext(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
-	if (context != null) ((NSOpenGLContext)context).update();
+	if (glcontext != null) ((NSOpenGLContext)glcontext).update();
+}
+
+void viewWillMoveToWindow(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {	
+	super.viewWillMoveToWindow(id, sel, arg0);
+	if (glcontext != null) {
+		new NSWindow(arg0).setOpaque(false);
+		NSWindow window = view.window();
+		window.setOpaque(getShell().region == null);
+	}
 }
 
 boolean writeSelectionToPasteboard(int /*long*/ id, int /*long*/ sel, int /*long*/ pasteboardObj, int /*long*/ typesObj) {

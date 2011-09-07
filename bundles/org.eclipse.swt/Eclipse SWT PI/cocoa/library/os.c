@@ -8756,6 +8756,33 @@ fail:
 }
 #endif
 
+#if (!defined(NO_objc_1msgSend__II_3II) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJ_3II) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__II_3II)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintArray arg2, jint arg3)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJ_3II)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintArray arg2, jint arg3)
+#endif
+{
+	jint *lparg2=NULL;
+	jintLong rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__II_3II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJ_3II_FUNC);
+#endif
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jint *, jint))objc_msgSend)(arg0, arg1, lparg2, arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__II_3II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJ_3II_FUNC);
+#endif
+	return rc;
+}
+#endif
+
 #if (!defined(NO_objc_1msgSend__II_3III) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJ_3JII) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__II_3III)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2, jint arg3, jint arg4)
