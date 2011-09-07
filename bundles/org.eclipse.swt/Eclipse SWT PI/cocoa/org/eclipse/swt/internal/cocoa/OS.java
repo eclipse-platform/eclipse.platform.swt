@@ -1988,6 +1988,7 @@ public static final int /*long*/ sel_setUsesThreadedAnimation_ = sel_registerNam
 public static final int /*long*/ sel_setValue_forHTTPHeaderField_ = sel_registerName("setValue:forHTTPHeaderField:");
 public static final int /*long*/ sel_setValue_forKey_ = sel_registerName("setValue:forKey:");
 public static final int /*long*/ sel_setValueWraps_ = sel_registerName("setValueWraps:");
+public static final int /*long*/ sel_setValues_forParameter_ = sel_registerName("setValues:forParameter:");
 public static final int /*long*/ sel_setVerticalScroller_ = sel_registerName("setVerticalScroller:");
 public static final int /*long*/ sel_setView_ = sel_registerName("setView:");
 public static final int /*long*/ sel_setVisible_ = sel_registerName("setVisible:");
@@ -2333,6 +2334,8 @@ public static final int NSNonactivatingPanelMask = 128;
 public static final int NSNormalWindowLevel = 0;
 public static final int NSOffState = 0;
 public static final int NSOnState = 1;
+public static final int NSOpenGLCPSurfaceOrder = 235;
+public static final int NSOpenGLCPSwapInterval = 222;
 public static final int NSOpenGLPFAAccumSize = 14;
 public static final int NSOpenGLPFAAlphaSize = 11;
 public static final int NSOpenGLPFAColorSize = 8;
@@ -4044,6 +4047,8 @@ public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int[] /*long[]*/ arg0);
 /** @method flags=cast */
 public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int[] /*long[]*/ arg0, int arg1, int arg2);
+/** @method flags=cast */
+public static final native int /*long*/ objc_msgSend(int /*long*/ id, int /*long*/ sel, int[] arg0, int arg1);
 /** @method flags=cast */
 public static final native int objc_msgSend(int id, int sel, float arg0);
 /** @method flags=cast */

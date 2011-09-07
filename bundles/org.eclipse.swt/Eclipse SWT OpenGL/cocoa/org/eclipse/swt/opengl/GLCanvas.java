@@ -117,6 +117,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
 	context = context.initWithFormat(pixelFormat, ctx);
+	context.setValues(new int[]{-1}, OS.NSOpenGLCPSurfaceOrder);
 	setData(GLCONTEXT_KEY, context);
 	NSNotificationCenter.defaultCenter().addObserver(view,  OS.sel_updateOpenGLContext_, OS.NSViewGlobalFrameDidChangeNotification, view);
 	
