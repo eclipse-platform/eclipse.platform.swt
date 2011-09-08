@@ -1458,17 +1458,17 @@ static String getMozillaPath () {
 
 	nsIFile mozillaDir = new nsIFile (result[0]);
 	result[0] = 0;
-	int /*long*/ path = XPCOM.nsEmbedCString_new ();
-	rc = mozillaDir.GetNativePath (path);
+	int /*long*/ path = XPCOM.nsEmbedString_new ();
+	rc = mozillaDir.GetPath (path);
 	if (rc != XPCOM.NS_OK) error (rc);
-	int length = XPCOM.nsEmbedCString_Length (path);
-	int /*long*/ ptr = XPCOM.nsEmbedCString_get (path);
-	buffer = new byte[length];
-	XPCOM.memmove (buffer, ptr, length);
-	XPCOM.nsEmbedCString_delete (path);
+	int length = XPCOM.nsEmbedString_Length (path);
+	int /*long*/ ptr = XPCOM.nsEmbedString_get (path);
+	char[] chars = new char[length];
+	XPCOM.memmove (chars, ptr, length * 2);
+	XPCOM.nsEmbedString_delete (path);
 	mozillaDir.Release ();
 
-	return new String (MozillaDelegate.mbcsToWcs (null, buffer)) + SEPARATOR_OS;
+	return new String (chars) + SEPARATOR_OS;
 }
 
 int getNextFunctionIndex () {

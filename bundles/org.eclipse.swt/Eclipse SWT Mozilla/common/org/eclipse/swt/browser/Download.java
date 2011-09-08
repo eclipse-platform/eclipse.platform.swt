@@ -205,15 +205,15 @@ int Init (int /*long*/ aSource, int /*long*/ aTarget, int /*long*/ aDisplayName,
 		target.Release ();
 	} else {	/* < 1.7 */
 		nsILocalFile target = new nsILocalFile (aTarget);
-		int /*long*/ aNativeTarget = XPCOM.nsEmbedCString_new ();
-		rc = target.GetNativeLeafName (aNativeTarget);
+		int /*long*/ aNativeTarget = XPCOM.nsEmbedString_new ();
+		rc = target.GetLeafName (aNativeTarget);
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-		length = XPCOM.nsEmbedCString_Length (aNativeTarget);
-		buffer = XPCOM.nsEmbedCString_get (aNativeTarget);
-		dest = new byte[length];
-		XPCOM.memmove (dest, buffer, length);
-		XPCOM.nsEmbedCString_delete (aNativeTarget);
-		filename = new String (dest);
+		length = XPCOM.nsEmbedString_Length (aNativeTarget);
+		buffer = XPCOM.nsEmbedString_get (aNativeTarget);
+		char[] chars = new char[length];
+		XPCOM.memmove (chars, buffer, length * 2);
+		XPCOM.nsEmbedString_delete (aNativeTarget);
+		filename = new String (chars);
 	}
 
 	Listener listener = new Listener () {

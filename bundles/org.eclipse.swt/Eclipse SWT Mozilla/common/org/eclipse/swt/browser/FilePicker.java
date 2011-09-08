@@ -211,14 +211,14 @@ int GetFile (int /*long*/ aFile) {
 int SetDisplayDirectory (int /*long*/ aDisplayDirectory) {
 	if (aDisplayDirectory == 0) return XPCOM.NS_OK;
 	nsILocalFile file = new nsILocalFile (aDisplayDirectory);
-	int /*long*/ pathname = XPCOM.nsEmbedCString_new ();
-	file.GetNativePath (pathname);
-	int length = XPCOM.nsEmbedCString_Length (pathname);
-	int /*long*/ buffer = XPCOM.nsEmbedCString_get (pathname);
-	byte[] bytes = new byte[length];
-	XPCOM.memmove (bytes, buffer, length);
-	XPCOM.nsEmbedCString_delete (pathname);
-	char[] chars = MozillaDelegate.mbcsToWcs (null, bytes);
+	int /*long*/ pathname = XPCOM.nsEmbedString_new ();
+	int rc = file.GetPath (pathname);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	int length = XPCOM.nsEmbedString_Length (pathname);
+	int /*long*/ buffer = XPCOM.nsEmbedString_get (pathname);
+	char[] chars = new char[length];
+	XPCOM.memmove (chars, buffer, length * 2);
+	XPCOM.nsEmbedString_delete (pathname);
 	directory = new String (chars);
 	return XPCOM.NS_OK;
 }
