@@ -5094,6 +5094,11 @@
 			<arg swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
+	<informal_protocol name="NSFontPanelValidationAdditions" swt_gen="true">
+		<method selector="validModesForFontPanel:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+		</method>
+	</informal_protocol>
 	<informal_protocol name="NSMenuDelegate" swt_gen="mixed">
 		<method selector="menu:willHighlightItem:" swt_gen="true">
 			<arg swt_gen="true"></arg>
