@@ -589,9 +589,11 @@ protected void init () {
 		}
 	}
 	
-	if (OS.GTK_VERSION > OS.VERSION (2, 17, 0) && System.getProperty("org.eclipse.swt.internal.gtk.useCairo") != null) {
-		useCairo = true;
+	if (OS.GTK_VERSION > OS.VERSION (2, 17, 0)) {
+		useCairo = !"false".equals(System.getProperty("org.eclipse.swt.internal.gtk.useCairo")); 
 	}
+	
+	
 	
 	//TODO: Remove; temporary code only
 	boolean fixAIX = OS.IsAIX && OS.PTR_SIZEOF == 8;
