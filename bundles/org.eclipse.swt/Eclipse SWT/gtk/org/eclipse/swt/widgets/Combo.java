@@ -69,7 +69,6 @@ public class Combo extends Composite {
 	 * that the text field in an instance of this class can hold
 	 */
 	public final static int LIMIT;
-	
 	/*
 	* These values can be different on different platforms.
 	* Therefore they are not initialized in the declaration
@@ -840,6 +839,28 @@ int /*long*/ eventWindow () {
 
 GdkColor getBackgroundColor () {
 	return getBaseColor ();
+}
+
+public Point getCaretLocation() {
+	checkWidget();
+	int index = OS.gtk_editable_get_position (entryHandle);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
+		index = OS.gtk_entry_text_index_to_layout_index (entryHandle, index);
+	}
+	int [] offset_x = new int [1], offset_y = new int [1];
+	OS.gtk_entry_get_layout_offsets (entryHandle, offset_x, offset_y);
+	int /*long*/ layout = OS.gtk_entry_get_layout (entryHandle);
+	PangoRectangle pos = new PangoRectangle ();
+	OS.pango_layout_index_to_pos (layout, index, pos);
+	int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidth ();
+	int y = offset_y [0] + OS.PANGO_PIXELS (pos.y);
+	return new Point (x, y);
+}
+
+public int getCaretPosition() {
+	checkWidget();
+	int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
+	return (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, OS.gtk_editable_get_position (entryHandle));
 }
 
 GdkColor getForegroundColor () {
