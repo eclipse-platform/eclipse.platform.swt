@@ -763,6 +763,7 @@ public int getCaretPosition () {
 	* of the selection.
 	*/
 	int caret = start [0];
+	//System.out.println(caret);
 	if (start [0] != end [0]) {
 		int startLine = (int)/*64*/OS.SendMessage (handle, OS.EM_LINEFROMCHAR, start [0], 0);
 		int endLine = (int)/*64*/OS.SendMessage (handle, OS.EM_LINEFROMCHAR, end [0], 0);

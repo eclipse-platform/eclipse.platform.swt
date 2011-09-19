@@ -657,6 +657,70 @@ boolean dragDetect (int /*long*/ hwnd, int x, int y, boolean filter, boolean [] 
 	return super.dragDetect (hwnd, x, y, filter, detect, consume);
 }
 
+public Point getCaretLocation() {
+	checkWidget();
+	int position = getCaretPosition();
+	int hwndText = OS.GetDlgItem(handle, CBID_EDIT);
+	int /*long*/ caretPos = OS.SendMessage (hwndText, OS.EM_POSFROMCHAR, position, 0);
+	if (caretPos == -1) {
+		caretPos = 0;
+		if (position >= OS.GetWindowTextLength (hwndText)) {
+			int cp = getCodePage ();
+			int [] start = new int [1], end = new int [1];
+			OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
+			OS.SendMessage (hwndText, OS.EM_SETSEL, position, position);
+			ignoreCharacter = ignoreModify = true;
+			OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, new TCHAR (cp, " ", true));
+			caretPos = OS.SendMessage (hwndText, OS.EM_POSFROMCHAR, position, 0);
+			OS.SendMessage (hwndText, OS.EM_SETSEL, position, position + 1);
+			OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, new TCHAR (cp, "", true));
+			ignoreCharacter = ignoreModify = false;
+			OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], start [0]);
+			OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
+		}
+	}
+	return new Point (OS.GET_X_LPARAM (caretPos), OS.GET_Y_LPARAM (caretPos));
+}
+
+public int getCaretPosition() {
+	checkWidget();
+	int [] start = new int [1], end = new int [1];
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
+	int caret = start [0];
+	if (start [0] != end [0]) {
+		
+		if (!OS.IsWinCE) {
+			int idThread = OS.GetWindowThreadProcessId (hwndText, null);
+			GUITHREADINFO lpgui = new GUITHREADINFO ();
+			lpgui.cbSize = GUITHREADINFO.sizeof;
+			if (OS.GetGUIThreadInfo (idThread, lpgui)) {
+				if (lpgui.hwndCaret == hwndText || lpgui.hwndCaret == 0) {
+					POINT ptCurrentPos = new POINT ();
+					if (OS.GetCaretPos (ptCurrentPos)) {
+						int /*long*/ endPos = OS.SendMessage (hwndText, OS.EM_POSFROMCHAR, end [0], 0);
+						if (endPos == -1) {
+							int /*long*/ startPos = OS.SendMessage (hwndText, OS.EM_POSFROMCHAR, start [0], 0);
+							int startX = OS.GET_X_LPARAM (startPos);
+							if (ptCurrentPos.x > startX) caret = end [0];
+						} else {
+							int endX = OS.GET_X_LPARAM (endPos);
+							if (ptCurrentPos.x >= endX) caret = end [0];
+						}
+					}
+				}
+			}
+		}
+	}
+	if (!OS.IsUnicode && OS.IsDBLocale) {
+		caret = mbcsToWcsPos (caret);
+		
+	}
+	return caret;
+}
+
+
+
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver's list. Throws an exception if the index is out
