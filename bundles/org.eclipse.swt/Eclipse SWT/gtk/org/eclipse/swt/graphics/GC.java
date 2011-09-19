@@ -770,11 +770,11 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
-	int[] width = new int[1];
-	int[] height = new int[1];
- 	OS.gdk_drawable_get_size(srcImage.pixmap, width, height);
- 	int imgWidth = width[0];
- 	int imgHeight = height[0];
+//	int[] width = new int[1];
+//	int[] height = new int[1];
+// 	OS.gdk_drawable_get_size(srcImage.pixmap, width, height);
+ 	int imgWidth = srcImage.width;
+ 	int imgHeight = srcImage.height;
  	if (simple) {
  		srcWidth = destWidth = imgWidth;
  		srcHeight = destHeight = imgHeight;

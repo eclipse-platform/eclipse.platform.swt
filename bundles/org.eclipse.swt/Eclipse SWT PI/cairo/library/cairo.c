@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2009 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2011 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -295,6 +295,26 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1font_1options_1set_1antialias)
 	Cairo_NATIVE_ENTER(env, that, _1cairo_1font_1options_1set_1antialias_FUNC);
 	cairo_font_options_set_antialias((cairo_font_options_t *)arg0, arg1);
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1font_1options_1set_1antialias_FUNC);
+}
+#endif
+
+#ifndef NO__1cairo_1format_1stride_1for_1width
+JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1format_1stride_1for_1width)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1format_1stride_1for_1width_FUNC);
+/*
+	rc = (jint)cairo_format_stride_for_width(arg0, arg1);
+*/
+	{
+		LOAD_FUNCTION(fp, cairo_format_stride_for_width)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint))fp)(arg0, arg1);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1format_1stride_1for_1width_FUNC);
+	return rc;
 }
 #endif
 

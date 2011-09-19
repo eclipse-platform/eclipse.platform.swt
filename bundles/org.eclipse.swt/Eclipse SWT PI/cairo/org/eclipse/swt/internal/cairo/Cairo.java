@@ -327,6 +327,16 @@ public static final void cairo_font_options_set_antialias(int /*long*/ options, 
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native int _cairo_format_stride_for_width(int format, int width);
+public static final int cairo_format_stride_for_width(int format, int width) {
+	lock.lock();
+	try {
+		return _cairo_format_stride_for_width(format, width);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param cr cast=(cairo_t *) */
 public static final native int _cairo_get_antialias(int /*long*/ cr);
 public static final int cairo_get_antialias(int /*long*/ cr) {

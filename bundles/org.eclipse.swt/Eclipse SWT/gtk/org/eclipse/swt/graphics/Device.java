@@ -580,7 +580,7 @@ public boolean getWarnings () {
 protected void init () {
 	this.dpi = getDPI();
 	
-	if (xDisplay != 0) {
+	if (xDisplay != 0 && OS.GTK_VERSION < OS.VERSION(2, 22, 0)) {
 		int[] event_basep = new int[1], error_basep = new int [1];
 		if (OS.XRenderQueryExtension (xDisplay, event_basep, error_basep)) {
 			int[] major_versionp = new int[1], minor_versionp = new int [1];

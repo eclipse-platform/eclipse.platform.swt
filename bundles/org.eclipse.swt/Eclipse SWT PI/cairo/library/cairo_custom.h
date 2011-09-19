@@ -28,6 +28,7 @@
 #define LIB_CAIRO "libcairo.so.2"
 #endif
 
+#define cairo_format_stride_for_width_LIB LIB_CAIRO
 #define cairo_pdf_surface_set_size_LIB LIB_CAIRO
 #define cairo_ps_surface_set_size_LIB LIB_CAIRO
 #define cairo_surface_set_fallback_resolution_LIB LIB_CAIRO
