@@ -2854,7 +2854,11 @@ void initCairo() {
 		data.cairo = cairo = Cairo.cairo_create(surface);
 		Cairo.cairo_surface_destroy(surface);
 	} else {
-		data.cairo = cairo = OS.gdk_cairo_create(data.drawable);
+		if (OS.USE_CAIRO_SURFACE && data.image != null) {
+			data.cairo = cairo = Cairo.cairo_create(data.image.surface);
+		} else {
+			data.cairo = cairo = OS.gdk_cairo_create(data.drawable);
+		}
 	}
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.disposeCairo = true;
@@ -3163,7 +3167,7 @@ static void setCairoPatternColor(int /*long*/ pattern, int offset, Color c, int 
 
 void setCairoClip(int /*long*/ damageRgn, int /*long*/ clipRgn) {
 	int /*long*/ cairo = data.cairo;
-	if (OS.GTK_VERSION < OS.VERSION(2,18,0)) {
+	if (OS.GTK_VERSION < OS.VERSION(2,18,0) || data.drawable == 0) {
 		Cairo.cairo_reset_clip(cairo);
 	} else {
 		OS.gdk_cairo_reset_clip(cairo, data.drawable);

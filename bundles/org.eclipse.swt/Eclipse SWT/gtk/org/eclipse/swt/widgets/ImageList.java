@@ -110,14 +110,14 @@ public void remove (Image image) {
 }
 
 void set (int index, Image image) {
-	int [] w = new int [1], h = new int [1];
- 	OS.gdk_drawable_get_size (image.pixmap, w, h);
 	int /*long*/ pixbuf = Display.createPixbuf (image);
+	int w = OS.gdk_pixbuf_get_width(pixbuf);
+	int h = OS.gdk_pixbuf_get_height(pixbuf);
 	if (width == -1 || height == -1) {
-		width = w [0];
-		height = h [0];
+		width = w;
+		height = h;
 	}
-	if (w [0] != width || h [0] != height) {
+	if (w != width || h != height) {
 		int /*long*/ scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, width, height, OS.GDK_INTERP_BILINEAR);
 		OS.g_object_unref (pixbuf);
 		pixbuf = scaledPixbuf;
