@@ -843,6 +843,9 @@ GdkColor getBackgroundColor () {
 
 public Point getCaretLocation() {
 	checkWidget();
+	if((style & SWT.READ_ONLY) != 0) {
+		return new Point(0, 0);
+	}
 	int index = OS.gtk_editable_get_position (entryHandle);
 	if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
 		index = OS.gtk_entry_text_index_to_layout_index (entryHandle, index);
@@ -859,6 +862,9 @@ public Point getCaretLocation() {
 
 public int getCaretPosition() {
 	checkWidget();
+	if((style & SWT.READ_ONLY) != 0) {
+		return 0;
+	}
 	int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
 	return (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, OS.gtk_editable_get_position (entryHandle));
 }
