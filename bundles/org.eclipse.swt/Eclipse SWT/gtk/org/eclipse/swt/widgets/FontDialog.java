@@ -82,6 +82,22 @@ public FontDialog (Shell parent, int style) {
 }
 
 /**
+ * Returns <code>true</code> if the dialog's effects selection controls
+ * are visible, and <code>false</code> otherwise.
+ * <p>
+ * If the platform's font dialog does not have any effects selection controls,
+ * then this method always returns false.
+ * </p> 
+ *
+ * @return <code>true</code> if the dialog's effects selection controls
+ * are visible and <code>false</code> otherwise
+ */
+public boolean getEffectsVisible () {
+	// The GTK FontDialog does not have any effects selection controls.
+	return false;
+}
+
+/**
  * Returns a FontData object describing the font that was
  * selected in the dialog, or null if none is available.
  * 
@@ -205,6 +221,20 @@ public FontData open () {
 	if (!success) return null;
 	return fontData;
 }
+/**
+ * Sets the effects selection controls in the dialog visible if the
+ * argument is <code>true</code>, and invisible otherwise.
+ * <p>
+ * By default the effects selection controls are displayed if the
+ * platform font dialog supports effects selection.
+ * </p>
+ *
+ * @param visible whether or not the dialog will show the effects selection controls
+ */
+public void setEffectsVisible(boolean visible) {
+	// The GTK FontDialog does not have any effects selection controls.
+}
+
 /**
  * Sets a FontData object describing the font to be
  * selected by default in the dialog, or null to let
