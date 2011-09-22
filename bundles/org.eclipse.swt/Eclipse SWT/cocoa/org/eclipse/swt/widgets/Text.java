@@ -702,11 +702,20 @@ boolean acceptsFirstResponder(int /*long*/ id, int /*long*/ sel) {
  */
 public Point getCaretLocation () {
 	checkWidget ();
+	NSTextView widget = null;
 	if ((style & SWT.SINGLE) != 0) {
+		if(this.isFocusControl()) {
+			widget = new NSTextView(view.window().fieldEditor(true, view));
+		}
+		else {
+			return new Point (0, 0);
+		}
 		//TODO - caret location for single text
-		return new Point (0, 0);
+		//return new Point (0, 0);
+	} else {
+		widget = (NSTextView) view;
 	}
-	NSTextView widget = (NSTextView)view;
+	//NSTextView widget = (NSTextView)view;
 	NSLayoutManager layoutManager = widget.layoutManager();
 	NSTextContainer container = widget.textContainer();
 	NSRange range = widget.selectedRange();
