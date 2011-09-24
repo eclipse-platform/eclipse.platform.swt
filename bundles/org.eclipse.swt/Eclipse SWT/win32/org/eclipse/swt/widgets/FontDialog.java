@@ -93,6 +93,8 @@ public FontDialog (Shell parent, int style) {
  *
  * @return <code>true</code> if the dialog's effects selection controls
  * are visible and <code>false</code> otherwise
+ * 
+ * @since 3.8
  */
 public boolean getEffectsVisible () {
 	return effectsVisible;
@@ -305,6 +307,8 @@ public FontData open () {
  * </p>
  *
  * @param visible whether or not the dialog will show the effects selection controls
+ * 
+ * @since 3.8
  */
 public void setEffectsVisible(boolean visible) {
 	effectsVisible = visible;
