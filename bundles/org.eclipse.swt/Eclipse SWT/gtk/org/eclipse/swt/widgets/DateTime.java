@@ -17,7 +17,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.accessibility.*;
-import org.eclipse.swt.internal.gtk.OS;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -458,6 +458,14 @@ String formattedStringValue(int fieldName, int value, boolean adjust) {
 		}
 	}
 	return String.valueOf(value);
+}
+
+GdkColor getBackgroundColor () {
+	if ((style & SWT.CALENDAR) != 0) {
+		return getBaseColor ();
+	} else {
+		return super.getBackgroundColor ();
+	}
 }
 
 String getComputeSizeString(int style) {
@@ -1061,9 +1069,20 @@ void sendSelectionEvent () {
 
 public void setBackground(Color color) {
 	super.setBackground(color);
+	if (((style & SWT.CALENDAR) != 0) && color == null) {
+		OS.gtk_widget_modify_base(handle, 0, null);
+	}
 	bg = color;
 	if (text != null) text.setBackground(color);
 	if (popupCalendar != null) popupCalendar.setBackground(color);
+}
+
+void setBackgroundColor (GdkColor color) {
+	if ((style & SWT.CALENDAR) != 0) {
+		OS.gtk_widget_modify_base(handle, 0, color);
+	} else {
+		super.setBackgroundColor (color);
+	}
 }
 
 public void setEnabled (boolean enabled){
