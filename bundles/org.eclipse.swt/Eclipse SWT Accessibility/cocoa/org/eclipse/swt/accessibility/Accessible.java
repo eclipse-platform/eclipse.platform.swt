@@ -3150,6 +3150,55 @@ public class Accessible {
 	}
 
 	/**
+	 * Sends a message with event-specific data and a childID
+	 * to accessible clients, indicating that something has changed
+	 * within a custom control.
+	 * 
+	 * NOTE: This API is intended for applications that are still using childIDs.
+	 * Moving forward, applications should use accessible objects instead of childIDs.
+	 *
+	 * @param event an <code>ACC</code> constant beginning with EVENT_* indicating the message to send
+	 * @param eventData an object containing event-specific data, or null if there is no event-specific data
+	 * (eventData is specified in the documentation for individual ACC.EVENT_* constants)
+	 * @param childID an identifier specifying a child of the control
+	 * 
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 * 
+	 * @see ACC#EVENT_DESCRIPTION_CHANGED
+	 * @see ACC#EVENT_LOCATION_CHANGED
+	 * @see ACC#EVENT_NAME_CHANGED
+	 * @see ACC#EVENT_SELECTION_CHANGED
+	 * @see ACC#EVENT_STATE_CHANGED
+	 * @see ACC#EVENT_TEXT_SELECTION_CHANGED
+	 * @see ACC#EVENT_VALUE_CHANGED
+	 * 
+	 * @since 3.8
+	 */
+	public void sendEvent(int event, Object eventData, int childID) {
+		checkWidget();
+		
+		id eventSource = childIDToOs(childID);
+		if (DEBUG) System.out.println("sendEvent: 0x" + Integer.toHexString(event) + ", data = " + eventData + ", source = " + eventSource);
+
+		switch (event) {
+			case ACC.EVENT_VALUE_CHANGED:
+			case ACC.EVENT_STATE_CHANGED:
+			case ACC.EVENT_SELECTION_CHANGED:
+				OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilitySelectedChildrenChangedNotification.id); break;
+			case ACC.EVENT_TEXT_SELECTION_CHANGED:
+				OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilitySelectedTextChangedNotification.id); break;
+			case ACC.EVENT_LOCATION_CHANGED:
+				OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilityMovedNotification.id); break;
+			case ACC.EVENT_NAME_CHANGED:
+			case ACC.EVENT_DESCRIPTION_CHANGED:
+				OS.NSAccessibilityPostNotification(eventSource.id, OS.NSAccessibilityTitleChangedNotification.id); break;
+		}
+	}
+	
+	/**
 	 * Sends a message to accessible clients that the child selection
 	 * within a custom container control has changed.
 	 *
