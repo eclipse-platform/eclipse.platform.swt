@@ -29,4 +29,6 @@
 
 #include "cairo_custom.h"
 
+#define Cairo_LOAD_FUNCTION LOAD_FUNCTION
+
 #endif /* INC_cairo_H */

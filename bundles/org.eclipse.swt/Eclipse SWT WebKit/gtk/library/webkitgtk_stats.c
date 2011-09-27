@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2010 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2011 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -47,12 +47,10 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1JSValueToBoolean",
 	"_1JSValueToNumber",
 	"_1JSValueToStringCopy",
-	"_1SOUP_1IS_1SESSION",
 	"_1SoupCookie_1expires",
 	"_1SoupMessage_1method",
 	"_1SoupMessage_1request_1body",
 	"_1SoupMessage_1request_1headers",
-	"_1WEBKIT_1IS_1WEB_1FRAME",
 	"_1soup_1auth_1authenticate",
 	"_1soup_1auth_1get_1host",
 	"_1soup_1auth_1get_1scheme_1name",
@@ -70,6 +68,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1soup_1session_1feature_1attach",
 	"_1soup_1session_1feature_1detach",
 	"_1soup_1session_1get_1feature",
+	"_1soup_1session_1get_1type",
 	"_1soup_1uri_1free",
 	"_1soup_1uri_1new",
 	"_1soup_1uri_1to_1string",
@@ -95,6 +94,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1web_1frame_1get_1load_1status",
 	"_1webkit_1web_1frame_1get_1parent",
 	"_1webkit_1web_1frame_1get_1title",
+	"_1webkit_1web_1frame_1get_1type",
 	"_1webkit_1web_1frame_1get_1uri",
 	"_1webkit_1web_1frame_1get_1web_1view",
 	"_1webkit_1web_1policy_1decision_1download",

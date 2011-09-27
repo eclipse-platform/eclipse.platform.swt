@@ -93,11 +93,11 @@
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390x"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="12"/>
+			<param name="library_count" value="11"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="12"/>
+			<param name="library_count" value="11"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
@@ -158,7 +158,7 @@
 	<target name="check_fragment_libraries" depends="get_version">
 		<echo>Checking ${fragment}</echo>
 		<property name="checkdir" value="~/build/check_libraries"/>
-		<property name="library_count" value="124"/>
+		<property name="library_count" value="122"/>
 		<property name="fragment" value=""/>
 		<fileset id="match" dir="${repo.bin}/bundles/${fragment}">
 			<filename regex="[0-9][0-9][0-9][0-9]."/>

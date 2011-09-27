@@ -16,6 +16,7 @@
 #ifndef INC_webkitgtk_H
 #define INC_webkitgtk_H
 
+#include <dlfcn.h>
 #include <string.h>
 #include <JavaScriptCore/JSContextRef.h>
 #include <JavaScriptCore/JSObjectRef.h>
@@ -35,5 +36,19 @@
 #if WEBKIT_CHECK_VERSION(1,4,0)
 #include <webkit/webkitglobals.h>
 #endif
+
+#define WebKitGTK_LOAD_FUNCTION(var, name) \
+	static int initialized = 0; \
+	static void *var = NULL; \
+	if (!initialized) { \
+		void* handle = dlopen("libwebkit-1.0.so.2", LOAD_FLAGS); /* webkitgtk 1.2.x lib */ \
+		if (!handle) { \
+			handle = dlopen("libwebkitgtk-1.0.so.0", LOAD_FLAGS); /* webkitgtk 1.4.x lib */ \
+		} \
+		if (handle) { \
+			var = dlsym(handle, #name); \
+		} \
+		initialized = 1; \
+	}
 
 #endif /* INC_webkitgtk_H */

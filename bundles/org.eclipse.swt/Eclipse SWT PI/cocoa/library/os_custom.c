@@ -51,7 +51,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(FindWindow)
 	 rc = (jintLong)FindWindow(arg0, arg1, (WindowRef *)lparg2);
 	 */
 	{
-		LOAD_FUNCTION(fp, FindWindow)
+		OS_LOAD_FUNCTION(fp, FindWindow)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(Point, WindowRef *))fp)(p, (WindowRef *)lparg2);
 		}

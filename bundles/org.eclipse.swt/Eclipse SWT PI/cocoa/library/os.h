@@ -25,6 +25,8 @@
 
 extern jint CPSSetProcessName(void *, jintLong);
 
+#define OS_LOAD_FUNCTION LOAD_FUNCTION
+
 #define objc_msgSend_bool objc_msgSend
 #define objc_msgSendSuper_bool objc_msgSendSuper
 

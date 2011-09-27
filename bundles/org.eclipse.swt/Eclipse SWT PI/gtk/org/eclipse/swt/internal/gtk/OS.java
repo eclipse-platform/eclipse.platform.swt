@@ -1780,6 +1780,15 @@ public static final int /*long*/ G_OBJECT_TYPE_NAME (int /*long*/ object) {
 		lock.unlock();
 	}
 }
+public static final native boolean _G_TYPE_CHECK_INSTANCE_TYPE (int /*long*/ instance, int type);
+public static final boolean G_TYPE_CHECK_INSTANCE_TYPE (int /*long*/ instance, int type) {
+	lock.lock();
+	try {
+		return _G_TYPE_CHECK_INSTANCE_TYPE(instance, type);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @method flags=const */
 public static final native int /*long*/ G_TYPE_BOOLEAN();
 /** @method flags=const */

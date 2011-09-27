@@ -66,6 +66,8 @@ XtAppContext _XtDefaultAppContext();
 #include <sys/select.h>
 #endif
 
+#define OS_LOAD_FUNCTION LOAD_FUNCTION
+
 #ifdef NO_XPRINTING_EXTENSIONS
 #define NO__1XpCancelJob
 #define NO__1XpCreateContext

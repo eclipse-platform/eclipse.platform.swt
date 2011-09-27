@@ -89,20 +89,10 @@ class WebKit extends WebBrowser {
 	static Callback JSObjectHasPropertyProc, JSObjectGetPropertyProc, JSObjectCallAsFunctionProc;
 
 	static {
-
-		/*
-		* WebKitGTK is binary-incompatible between its 1.2 and 1.4 releases,
-		* so swt has separate libraries compiled against each.
-		*/
 		try {
-			Library.loadLibrary ("swt-webkit12"); // $NON-NLS-1$
+			Library.loadLibrary ("swt-webkit"); // $NON-NLS-1$
 			LibraryLoaded = true;
 		} catch (Throwable e) {
-			try {
-				Library.loadLibrary ("swt-webkit"); // $NON-NLS-1$
-				LibraryLoaded = true;
-			} catch (Throwable e2) {
-			}
 		}
 
 		if (LibraryLoaded) {
@@ -286,7 +276,7 @@ static int /*long*/ Proc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ u
 	}
 
 	int /*long*/ webView;
-	if (WebKitGTK.WEBKIT_IS_WEB_FRAME (handle)) {
+	if (OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.webkit_web_frame_get_type ())) {
 		webView = WebKitGTK.webkit_web_frame_get_web_view (handle);
 	} else {
 		webView = handle;
@@ -310,7 +300,7 @@ static int /*long*/ Proc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ a
 
 static int /*long*/ Proc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ user_data) {
 	int /*long*/ webView;
-	if (WebKitGTK.SOUP_IS_SESSION (handle)) {
+	if (OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.soup_session_get_type ())) {
 		webView = user_data;
 	} else {
 		webView = handle;

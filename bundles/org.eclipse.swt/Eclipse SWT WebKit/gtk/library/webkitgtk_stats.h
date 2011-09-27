@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2010 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2011 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -55,12 +55,10 @@ typedef enum {
 	_1JSValueToBoolean_FUNC,
 	_1JSValueToNumber_FUNC,
 	_1JSValueToStringCopy_FUNC,
-	_1SOUP_1IS_1SESSION_FUNC,
 	_1SoupCookie_1expires_FUNC,
 	_1SoupMessage_1method_FUNC,
 	_1SoupMessage_1request_1body_FUNC,
 	_1SoupMessage_1request_1headers_FUNC,
-	_1WEBKIT_1IS_1WEB_1FRAME_FUNC,
 	_1soup_1auth_1authenticate_FUNC,
 	_1soup_1auth_1get_1host_FUNC,
 	_1soup_1auth_1get_1scheme_1name_FUNC,
@@ -78,6 +76,7 @@ typedef enum {
 	_1soup_1session_1feature_1attach_FUNC,
 	_1soup_1session_1feature_1detach_FUNC,
 	_1soup_1session_1get_1feature_FUNC,
+	_1soup_1session_1get_1type_FUNC,
 	_1soup_1uri_1free_FUNC,
 	_1soup_1uri_1new_FUNC,
 	_1soup_1uri_1to_1string_FUNC,
@@ -103,6 +102,7 @@ typedef enum {
 	_1webkit_1web_1frame_1get_1load_1status_FUNC,
 	_1webkit_1web_1frame_1get_1parent_FUNC,
 	_1webkit_1web_1frame_1get_1title_FUNC,
+	_1webkit_1web_1frame_1get_1type_FUNC,
 	_1webkit_1web_1frame_1get_1uri_FUNC,
 	_1webkit_1web_1frame_1get_1web_1view_FUNC,
 	_1webkit_1web_1policy_1decision_1download_FUNC,

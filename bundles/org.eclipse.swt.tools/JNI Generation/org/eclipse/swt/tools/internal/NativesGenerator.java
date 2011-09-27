@@ -572,7 +572,9 @@ void generateDynamicFunctionCall(JNIMethod method, JNIParameter[] params, JNITyp
 
 	String name = method.getName();
 	if (name.startsWith("_")) name = name.substring(1);
-	output("\t\tLOAD_FUNCTION(fp, ");
+	output("\t\t");
+	output(method.getDeclaringClass().getSimpleName());
+	output("_LOAD_FUNCTION(fp, ");
 	output(name);
 	outputln(")");
 	outputln("\t\tif (fp) {");

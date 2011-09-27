@@ -80,6 +80,7 @@ protected static byte [] ascii (String name) {
 
 
 /**
+ * @method flags=dynamic
  * @param definition cast=(const JSClassDefinition*)
  */
 public static final native int /*long*/ _JSClassCreate (int /*long*/ definition);
@@ -93,6 +94,7 @@ public static final int /*long*/ JSClassCreate (int /*long*/ definition) {
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  */
 public static final native int /*long*/ _JSContextGetGlobalObject (int /*long*/ ctx);
@@ -106,6 +108,7 @@ public static final int /*long*/ JSContextGetGlobalObject (int /*long*/ ctx) {
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  * @param script cast=(JSStringRef)
  * @param thisObject cast=(JSObjectRef)
@@ -123,6 +126,7 @@ public static final int /*long*/ JSEvaluateScript (int /*long*/ ctx, int /*long*
 }
 
 /**
+ * @method flags=dynamic
  * @param object cast=(JSObjectRef)
  */
 public static final native int /*long*/ _JSObjectGetPrivate (int /*long*/ object);
@@ -136,6 +140,7 @@ public static final int /*long*/ JSObjectGetPrivate (int /*long*/ object) {
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  * @param object cast=(JSObjectRef)
  * @param propertyName cast=(JSStringRef)
@@ -152,6 +157,7 @@ public static final int /*long*/ JSObjectGetProperty (int /*long*/ ctx, int /*lo
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  * @param object cast=(JSObjectRef)
  * @param propertyIndex cast=(unsigned)
@@ -168,6 +174,7 @@ public static final int /*long*/ JSObjectGetPropertyAtIndex (int /*long*/ ctx, i
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  * @param jsClass cast=(JSClassRef)
  * @param data cast=(void *)
@@ -183,6 +190,7 @@ public static final int /*long*/ JSObjectMake (int /*long*/ ctx, int /*long*/ js
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  * @param argumentCount cast=(size_t)
  * @param arguments cast=(const struct OpaqueJSValue * const*)
@@ -199,6 +207,7 @@ public static final int /*long*/ JSObjectMakeArray (int /*long*/ ctx, int /*long
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  * @param name cast=(JSStringRef)
  * @param callAsFunction cast=(JSObjectCallAsFunctionCallback)
@@ -214,6 +223,7 @@ public static final int /*long*/ JSObjectMakeFunctionWithCallback (int /*long*/ 
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  * @param object cast=(JSObjectRef)
  * @param propertyName cast=(JSStringRef)
@@ -232,6 +242,7 @@ public static final void JSObjectSetProperty (int /*long*/ ctx, int /*long*/ obj
 }
 
 /**
+ * @method flags=dynamic
  * @param string cast=(const char *)
  */
 public static final native int /*long*/ _JSStringCreateWithUTF8CString (byte[] string);
@@ -245,6 +256,7 @@ public static final int /*long*/ JSStringCreateWithUTF8CString (byte[] string) {
 }
 
 /**
+ * @method flags=dynamic
  * @param string cast=(JSStringRef)
  */
 public static final native int /*long*/ _JSStringGetLength (int /*long*/ string);
@@ -258,6 +270,7 @@ public static final int /*long*/ JSStringGetLength (int /*long*/ string) {
 }
 
 /**
+ * @method flags=dynamic
  * @param string cast=(JSStringRef)
  */
 public static final native int /*long*/ _JSStringGetMaximumUTF8CStringSize (int /*long*/ string);
@@ -271,6 +284,7 @@ public static final int /*long*/ JSStringGetMaximumUTF8CStringSize (int /*long*/
 }
 
 /**
+ * @method flags=dynamic
  * @param string cast=(JSStringRef)
  * @param buffer cast=(char *)
  * @param bufferSize cast=(size_t)
@@ -286,6 +300,7 @@ public static final int /*long*/ JSStringGetUTF8CString (int /*long*/ string, by
 }
 
 /**
+ * @method flags=dynamic
  * @param a cast=(JSStringRef)
  * @param b cast=(const char *)
  */
@@ -300,6 +315,7 @@ public static final int JSStringIsEqualToUTF8CString (int /*long*/ a, byte[] b) 
 }
 
 /**
+ * @method flags=dynamic
  * @param string cast=(JSStringRef)
  */
 public static final native void _JSStringRelease (int /*long*/ string);
@@ -313,6 +329,7 @@ public static final void JSStringRelease (int /*long*/ string) {
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  * @param value cast=(JSValueRef)
  */
@@ -327,6 +344,7 @@ public static final int JSValueGetType (int /*long*/ ctx, int /*long*/ value) {
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  * @param value cast=(JSValueRef)
  * @param jsClass cast=(JSClassRef)
@@ -342,6 +360,7 @@ public static final int JSValueIsObjectOfClass (int /*long*/ ctx, int /*long*/ v
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  * @param bool cast=(bool)
  */
@@ -356,6 +375,7 @@ public static final int /*long*/ JSValueMakeBoolean (int /*long*/ ctx, int bool)
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  * @param number cast=(double)
  */
@@ -370,6 +390,7 @@ public static final int /*long*/ JSValueMakeNumber (int /*long*/ ctx, double num
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  * @param string cast=(JSStringRef)
  */
@@ -384,6 +405,7 @@ public static final int /*long*/ JSValueMakeString (int /*long*/ ctx, int /*long
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  */
 public static final native int /*long*/ _JSValueMakeUndefined (int /*long*/ ctx);
@@ -397,6 +419,7 @@ public static final int /*long*/ JSValueMakeUndefined (int /*long*/ ctx) {
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  * @param value cast=(JSValueRef)
  */
@@ -411,6 +434,7 @@ public static final int JSValueToBoolean (int /*long*/ ctx, int /*long*/ value) 
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  * @param value cast=(JSValueRef)
  * @param exception cast=(JSValueRef*)
@@ -426,6 +450,7 @@ public static final double JSValueToNumber (int /*long*/ ctx, int /*long*/ value
 }
 
 /**
+ * @method flags=dynamic
  * @param ctx cast=(JSContextRef)
  * @param value cast=(JSValueRef)
  * @param exception cast=(JSValueRef*)
@@ -443,6 +468,7 @@ public static final int /*long*/ JSValueToStringCopy (int /*long*/ ctx, int /*lo
 /* --------------------- start libsoup natives --------------------- */
 
 /**
+ * @method flags=dynamic
  * @param auth cast=(SoupAuth *)
  * @param username cast=(const char *)
  * @param password cast=(const char *)
@@ -458,6 +484,7 @@ public static final void soup_auth_authenticate (int /*long*/ auth, byte[] usern
 }
 
 /**
+ * @method flags=dynamic
  * @param auth cast=(SoupAuth *)
  */
 public static final native int /*long*/ _soup_auth_get_host (int /*long*/ auth);
@@ -471,6 +498,7 @@ public static final int /*long*/ soup_auth_get_host (int /*long*/ auth) {
 }
 
 /**
+ * @method flags=dynamic
  * @param auth cast=(SoupAuth *)
  */
 public static final native int /*long*/ _soup_auth_get_scheme_name (int /*long*/ auth);
@@ -484,6 +512,7 @@ public static final int /*long*/ soup_auth_get_scheme_name (int /*long*/ auth) {
 }
 
 /**
+ * @method flags=dynamic
  * @param jar cast=(SoupCookieJar *)
  * @param cookie cast=(SoupCookie *)
  */
@@ -498,6 +527,7 @@ public static final void soup_cookie_jar_add_cookie (int /*long*/ jar, int /*lon
 }
 
 /**
+ * @method flags=dynamic
  * @param jar cast=(SoupCookieJar *)
  */
 public static final native int /*long*/ _soup_cookie_jar_all_cookies (int /*long*/ jar);
@@ -511,6 +541,7 @@ public static final int /*long*/ soup_cookie_jar_all_cookies (int /*long*/ jar) 
 }
 
 /**
+ * @method flags=dynamic
  * @param jar cast=(SoupCookieJar *)
  * @param cookie cast=(SoupCookie *)
  */
@@ -525,6 +556,7 @@ public static final void soup_cookie_jar_delete_cookie (int /*long*/ jar, int /*
 }
 
 /**
+ * @method flags=dynamic
  * @param jar cast=(SoupCookieJar *)
  * @param uri cast=(SoupURI *)
  */
@@ -538,6 +570,9 @@ public static final int /*long*/ soup_cookie_jar_get_cookies (int /*long*/ jar, 
 	}
 }
 
+/**
+ * @method flags=dynamic
+ */
 public static final native int /*long*/ _soup_cookie_jar_get_type ();
 public static final int /*long*/ soup_cookie_jar_get_type () {
 	lock.lock();
@@ -549,6 +584,7 @@ public static final int /*long*/ soup_cookie_jar_get_type () {
 }
 
 /**
+ * @method flags=dynamic
  * @param header cast=(const char *)
  * @param origin cast=(SoupURI *)
  */
@@ -563,6 +599,826 @@ public static final int /*long*/ soup_cookie_parse (byte[] header, int /*long*/ 
 }
 
 /**
+ * @method flags=dynamic
+ * @param body cast=(SoupMessageBody *)
+ * @param use cast=(SoupMemoryUse)
+ * @param data cast=(gconstpointer)
+ * @param length cast=(gsize)
+ */
+public static final native void _soup_message_body_append (int /*long*/ body, int use, int /*long*/ data, int /*long*/ length);
+public static final void soup_message_body_append (int /*long*/ body, int use, int /*long*/ data, int /*long*/ length) {
+	lock.lock();
+	try {
+		_soup_message_body_append (body, use, data, length);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param body cast=(SoupMessageBody *)
+ */
+public static final native void _soup_message_body_flatten (int /*long*/ body);
+public static final void soup_message_body_flatten (int /*long*/ body) {
+	lock.lock();
+	try {
+		_soup_message_body_flatten (body);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param msg cast=(SoupMessage *)
+ */
+public static final native int /*long*/ _soup_message_get_uri (int /*long*/ msg);
+public static final int /*long*/ soup_message_get_uri (int /*long*/ msg) {
+	lock.lock();
+	try {
+		return _soup_message_get_uri (msg);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param headers cast=(SoupMessageHeaders *)
+ * @param name cast=(const char *)
+ * @param value cast=(const char *)
+ */
+public static final native void _soup_message_headers_append (int /*long*/ headers, byte[] name, byte[] value);
+public static final void soup_message_headers_append (int /*long*/ headers, byte[] name, byte[] value) {
+	lock.lock();
+	try {
+		_soup_message_headers_append (headers, name, value);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param session cast=(SoupSession *)
+ * @param type cast=(GType)
+ */
+public static final native void _soup_session_add_feature_by_type (int /*long*/ session, int /*long*/ type);
+public static final void soup_session_add_feature_by_type (int /*long*/ session, int /*long*/ type) {
+	lock.lock();
+	try {
+		_soup_session_add_feature_by_type (session, type);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param session cast=(SoupSession *)
+ * @param feature_type cast=(GType)
+ */
+public static final native int /*long*/ _soup_session_get_feature (int /*long*/ session, int /*long*/ feature_type);
+public static final int /*long*/ soup_session_get_feature (int /*long*/ session, int /*long*/ feature_type) {
+	lock.lock();
+	try {
+		return _soup_session_get_feature (session, feature_type);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param feature cast=(SoupSessionFeature *)
+ * @param session cast=(SoupSession *)
+ */
+public static final native void _soup_session_feature_attach (int /*long*/ feature, int /*long*/ session);
+public static final void soup_session_feature_attach (int /*long*/ feature, int /*long*/ session) {
+	lock.lock();
+	try {
+		_soup_session_feature_attach (feature, session);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ */
+public static final native int _soup_session_get_type ();
+public static final int soup_session_get_type () {
+	lock.lock();
+	try {
+		return _soup_session_get_type ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param feature cast=(SoupSessionFeature *)
+ * @param session cast=(SoupSession *)
+ */
+public static final native void _soup_session_feature_detach (int /*long*/ feature, int /*long*/ session);
+public static final void soup_session_feature_detach (int /*long*/ feature, int /*long*/ session) {
+	lock.lock();
+	try {
+		_soup_session_feature_detach (feature, session);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param uri cast=(SoupURI *)
+ */
+public static final native void _soup_uri_free (int /*long*/ uri);
+public static final void soup_uri_free (int /*long*/ uri) {
+	lock.lock();
+	try {
+		_soup_uri_free (uri);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param uri_string cast=(const char *)
+ */
+public static final native int /*long*/ _soup_uri_new (byte[] uri_string);
+public static final int /*long*/ soup_uri_new (byte[] uri_string) {
+	lock.lock();
+	try {
+		return _soup_uri_new (uri_string);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param uri cast=(SoupURI *)
+ */
+public static final native int /*long*/ _soup_uri_to_string (int /*long*/ uri, int just_path_and_query);
+public static final int /*long*/ soup_uri_to_string (int /*long*/ uri, int just_path_and_query) {
+	lock.lock();
+	try {
+		return _soup_uri_to_string (uri, just_path_and_query);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/* --------------------- start WebKitGTK natives --------------------- */
+
+/**
+ * @method flags=dynamic
+ * @param download cast=(WebKitDownload *)
+ */
+public static final native void _webkit_download_cancel (int /*long*/ download);
+public static final void webkit_download_cancel (int /*long*/ download) {
+	lock.lock();
+	try {
+		_webkit_download_cancel (download);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param download cast=(WebKitDownload *)
+ */
+public static final native long _webkit_download_get_current_size (int /*long*/ download);
+public static final long webkit_download_get_current_size (int /*long*/ download) {
+	lock.lock();
+	try {
+		return _webkit_download_get_current_size (download);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param download cast=(WebKitDownload *)
+ */
+public static final native int _webkit_download_get_status (int /*long*/ download);
+public static final int webkit_download_get_status (int /*long*/ download) {
+	lock.lock();
+	try {
+		return _webkit_download_get_status (download);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param download cast=(WebKitDownload *)
+ */
+public static final native int /*long*/ _webkit_download_get_suggested_filename (int /*long*/ download);
+public static final int /*long*/ webkit_download_get_suggested_filename (int /*long*/ download) {
+	lock.lock();
+	try {
+		return _webkit_download_get_suggested_filename (download);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param download cast=(WebKitDownload *)
+ */
+public static final native long _webkit_download_get_total_size (int /*long*/ download);
+public static final long webkit_download_get_total_size (int /*long*/ download) {
+	lock.lock();
+	try {
+		return _webkit_download_get_total_size (download);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param download cast=(WebKitDownload *)
+ */
+public static final native int /*long*/ _webkit_download_get_uri (int /*long*/ download);
+public static final int /*long*/ webkit_download_get_uri (int /*long*/ download) {
+	lock.lock();
+	try {
+		return _webkit_download_get_uri (download);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param download cast=(WebKitDownload *)
+ * @param destination_uri cast=(const gchar *)
+ */
+public static final native void _webkit_download_set_destination_uri (int /*long*/ download, byte[] destination_uri);
+public static final void webkit_download_set_destination_uri (int /*long*/ download, byte[] destination_uri) {
+	lock.lock();
+	try {
+		_webkit_download_set_destination_uri (download, destination_uri);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ */
+public static final native int /*long*/ _webkit_get_default_session ();
+public static final int /*long*/ webkit_get_default_session () {
+	lock.lock();
+	try {
+		return _webkit_get_default_session ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ */
+public static final native int _webkit_major_version ();
+public static final int webkit_major_version () {
+	lock.lock();
+	try {
+		return _webkit_major_version ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ */
+public static final native int _webkit_micro_version ();
+public static final int webkit_micro_version () {
+	lock.lock();
+	try {
+		return _webkit_micro_version ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ */
+public static final native int _webkit_minor_version ();
+public static final int webkit_minor_version () {
+	lock.lock();
+	try {
+		return _webkit_minor_version ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param request cast=(WebKitNetworkRequest *)
+ */
+public static final native int /*long*/ _webkit_network_request_get_message (int /*long*/ request);
+public static final int /*long*/ webkit_network_request_get_message (int /*long*/ request) {
+	lock.lock();
+	try {
+		return _webkit_network_request_get_message (request);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param request cast=(WebKitNetworkRequest *)
+ */
+public static final native int /*long*/ _webkit_network_request_get_uri (int /*long*/ request);
+public static final int /*long*/ webkit_network_request_get_uri (int /*long*/ request) {
+	lock.lock();
+	try {
+		return _webkit_network_request_get_uri (request);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param uri cast=(const gchar *)
+ */
+public static final native int /*long*/ _webkit_network_request_new (byte[] uri);
+public static final int /*long*/ webkit_network_request_new (byte[] uri) {
+	lock.lock();
+	try {
+		return _webkit_network_request_new (uri);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ */
+public static final native int /*long*/ _webkit_soup_auth_dialog_get_type ();
+public static final int /*long*/ webkit_soup_auth_dialog_get_type () {
+	lock.lock();
+	try {
+		return _webkit_soup_auth_dialog_get_type ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param data_source cast=(WebKitWebDataSource *)
+ */
+public static final native int /*long*/ _webkit_web_data_source_get_data (int /*long*/ data_source);
+public static final int /*long*/ webkit_web_data_source_get_data (int /*long*/ data_source) {
+	lock.lock();
+	try {
+		return _webkit_web_data_source_get_data (data_source);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param data_source cast=(WebKitWebDataSource *)
+ */
+public static final native int /*long*/ _webkit_web_data_source_get_encoding (int /*long*/ data_source);
+public static final int /*long*/ webkit_web_data_source_get_encoding (int /*long*/ data_source) {
+	lock.lock();
+	try {
+		return _webkit_web_data_source_get_encoding (data_source);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param frame cast=(WebKitWebFrame *)
+ */
+public static final native int /*long*/ _webkit_web_frame_get_data_source (int /*long*/ frame);
+public static final int /*long*/ webkit_web_frame_get_data_source (int /*long*/ frame) {
+	lock.lock();
+	try {
+		return _webkit_web_frame_get_data_source (frame);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param frame cast=(WebKitWebFrame *)
+ */
+public static final native int /*long*/ _webkit_web_frame_get_global_context (int /*long*/ frame);
+public static final int /*long*/ webkit_web_frame_get_global_context (int /*long*/ frame) {
+	lock.lock();
+	try {
+		return _webkit_web_frame_get_global_context (frame);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param frame cast=(WebKitWebFrame *)
+ */
+public static final native int _webkit_web_frame_get_load_status (int /*long*/ frame);
+public static final int webkit_web_frame_get_load_status (int /*long*/ frame) {
+	lock.lock();
+	try {
+		return _webkit_web_frame_get_load_status (frame);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param frame cast=(WebKitWebFrame *)
+ */
+public static final native int /*long*/ _webkit_web_frame_get_parent (int /*long*/ frame);
+public static final int /*long*/ webkit_web_frame_get_parent (int /*long*/ frame) {
+	lock.lock();
+	try {
+		return _webkit_web_frame_get_parent (frame);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param frame cast=(WebKitWebFrame *)
+ */
+public static final native int /*long*/ _webkit_web_frame_get_title (int /*long*/ frame);
+public static final int /*long*/ webkit_web_frame_get_title (int /*long*/ frame) {
+	lock.lock();
+	try {
+		return _webkit_web_frame_get_title (frame);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ */
+public static final native int _webkit_web_frame_get_type ();
+public static final int webkit_web_frame_get_type () {
+	lock.lock();
+	try {
+		return _webkit_web_frame_get_type ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param frame cast=(WebKitWebFrame *)
+ */
+public static final native int /*long*/ _webkit_web_frame_get_uri (int /*long*/ frame);
+public static final int /*long*/ webkit_web_frame_get_uri (int /*long*/ frame) {
+	lock.lock();
+	try {
+		return _webkit_web_frame_get_uri (frame);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param frame cast=(WebKitWebFrame *)
+ */
+public static final native int /*long*/ _webkit_web_frame_get_web_view (int /*long*/ frame);
+public static final int /*long*/ webkit_web_frame_get_web_view (int /*long*/ frame) {
+	lock.lock();
+	try {
+		return _webkit_web_frame_get_web_view (frame);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param decision cast=(WebKitWebPolicyDecision *)
+ */
+public static final native void _webkit_web_policy_decision_download (int /*long*/ decision);
+public static final void webkit_web_policy_decision_download (int /*long*/ decision) {
+	lock.lock();
+	try {
+		_webkit_web_policy_decision_download (decision);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param decision cast=(WebKitWebPolicyDecision *)
+ */
+public static final native void _webkit_web_policy_decision_ignore (int /*long*/ decision);
+public static final void webkit_web_policy_decision_ignore (int /*long*/ decision) {
+	lock.lock();
+	try {
+		_webkit_web_policy_decision_ignore (decision);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ */
+public static final native int _webkit_web_view_can_go_back (int /*long*/ web_view);
+public static final int webkit_web_view_can_go_back (int /*long*/ web_view) {
+	lock.lock();
+	try {
+		return _webkit_web_view_can_go_back (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ */
+public static final native int _webkit_web_view_can_go_forward (int /*long*/ web_view);
+public static final int webkit_web_view_can_go_forward (int /*long*/ web_view) {
+	lock.lock();
+	try {
+		return _webkit_web_view_can_go_forward (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ * @param mime_type cast=(const gchar *)
+ */
+public static final native int _webkit_web_view_can_show_mime_type (int /*long*/ web_view, int /*long*/ mime_type);
+public static final int webkit_web_view_can_show_mime_type (int /*long*/ web_view, int /*long*/ mime_type) {
+	lock.lock();
+	try {
+		return _webkit_web_view_can_show_mime_type (web_view, mime_type);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ * @param script cast=(const gchar *)
+ */
+public static final native void _webkit_web_view_execute_script (int /*long*/ web_view, byte[] script);
+public static final void webkit_web_view_execute_script (int /*long*/ web_view, byte[] script) {
+	lock.lock();
+	try {
+		_webkit_web_view_execute_script (web_view, script);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ */
+public static final native int _webkit_web_view_get_load_status (int /*long*/ web_view);
+public static final int webkit_web_view_get_load_status (int /*long*/ web_view) {
+	lock.lock();
+	try {
+		return _webkit_web_view_get_load_status (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ */
+public static final native int /*long*/ _webkit_web_view_get_main_frame (int /*long*/ web_view);
+public static final int /*long*/ webkit_web_view_get_main_frame (int /*long*/ web_view) {
+	lock.lock();
+	try {
+		return _webkit_web_view_get_main_frame (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ */
+public static final native double _webkit_web_view_get_progress (int /*long*/ web_view);
+public static final double webkit_web_view_get_progress (int /*long*/ web_view) {
+	lock.lock();
+	try {
+		return _webkit_web_view_get_progress (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ */
+public static final native int /*long*/ _webkit_web_view_get_settings (int /*long*/ web_view);
+public static final int /*long*/ webkit_web_view_get_settings (int /*long*/ web_view) {
+	lock.lock();
+	try {
+		return _webkit_web_view_get_settings (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ */
+public static final native int /*long*/ _webkit_web_view_get_title (int /*long*/ web_view);
+public static final int /*long*/ webkit_web_view_get_title (int /*long*/ web_view) {
+	lock.lock();
+	try {
+		return _webkit_web_view_get_title (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ */
+public static final native int /*long*/ _webkit_web_view_get_uri (int /*long*/ web_view);
+public static final int /*long*/ webkit_web_view_get_uri (int /*long*/ web_view) {
+	lock.lock();
+	try {
+		return _webkit_web_view_get_uri (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ */
+public static final native int /*long*/ _webkit_web_view_get_window_features (int /*long*/ web_view);
+public static final int /*long*/ webkit_web_view_get_window_features (int /*long*/ web_view) {
+	lock.lock();
+	try {
+		return _webkit_web_view_get_window_features (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ */
+public static final native void _webkit_web_view_go_back (int /*long*/ web_view);
+public static final void webkit_web_view_go_back (int /*long*/ web_view) {
+	lock.lock();
+	try {
+		_webkit_web_view_go_back (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ */
+public static final native void _webkit_web_view_go_forward (int /*long*/ web_view);
+public static final void webkit_web_view_go_forward (int /*long*/ web_view) {
+	lock.lock();
+	try {
+		_webkit_web_view_go_forward (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ * @param content cast=(const gchar *)
+ * @param mime_type cast=(const gchar *)
+ * @param encoding cast=(const gchar *)
+ * @param base_uri cast=(const gchar *)
+ */
+public static final native void _webkit_web_view_load_string (int /*long*/ web_view, byte[] content, byte[] mime_type, byte[] encoding, byte[] base_uri);
+public static final void webkit_web_view_load_string (int /*long*/ web_view, byte[] content, byte[] mime_type, byte[] encoding, byte[] base_uri) {
+	lock.lock();
+	try {
+		_webkit_web_view_load_string (web_view, content, mime_type, encoding, base_uri);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ * @param uri cast=(const gchar *)
+ */
+public static final native void _webkit_web_view_load_uri (int /*long*/ web_view, byte[] uri);
+public static final void webkit_web_view_load_uri (int /*long*/ web_view, byte[] uri) {
+	lock.lock();
+	try {
+		_webkit_web_view_load_uri (web_view, uri);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ */
+public static final native int /*long*/ _webkit_web_view_new ();
+public static final int /*long*/ webkit_web_view_new () {
+	lock.lock();
+	try {
+		return _webkit_web_view_new ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ */
+public static final native void _webkit_web_view_reload (int /*long*/ web_view);
+public static final void webkit_web_view_reload (int /*long*/ web_view) {
+	lock.lock();
+	try {
+		_webkit_web_view_reload (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ * @param web_view cast=(WebKitWebView *)
+ */
+public static final native void _webkit_web_view_stop_loading (int /*long*/ web_view);
+public static final void webkit_web_view_stop_loading (int /*long*/ web_view) {
+	lock.lock();
+	try {
+		_webkit_web_view_stop_loading (web_view);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/* --------------------- start SWT natives --------------------- */
+
+public static final native int JSClassDefinition_sizeof ();
+
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ * @param size cast=(size_t)
+ */
+public static final native void memmove (int /*long*/ dest, JSClassDefinition src, int /*long*/ size);
+
+/**
  * @method flags=getter
  * @param cookie cast=(SoupCookie *)
  */
@@ -571,16 +1427,6 @@ public static final int /*long*/ SoupCookie_expires (int /*long*/ cookie) {
 	lock.lock();
 	try {
 		return _SoupCookie_expires (cookie);
-	} finally {
-		lock.unlock();
-	}
-}
-
-public static final native boolean _SOUP_IS_SESSION (int /*long*/ object);
-public static final boolean SOUP_IS_SESSION (int /*long*/ object) {
-	lock.lock();
-	try {
-		return _SOUP_IS_SESSION (object);
 	} finally {
 		lock.unlock();
 	}
@@ -628,742 +1474,5 @@ public static final int /*long*/ SoupMessage_request_headers (int /*long*/ messa
 		lock.unlock();
 	}
 }
-
-/**
- * @param body cast=(SoupMessageBody *)
- * @param use cast=(SoupMemoryUse)
- * @param data cast=(gconstpointer)
- * @param length cast=(gsize)
- */
-public static final native void _soup_message_body_append (int /*long*/ body, int use, int /*long*/ data, int /*long*/ length);
-public static final void soup_message_body_append (int /*long*/ body, int use, int /*long*/ data, int /*long*/ length) {
-	lock.lock();
-	try {
-		_soup_message_body_append (body, use, data, length);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param body cast=(SoupMessageBody *)
- */
-public static final native void _soup_message_body_flatten (int /*long*/ body);
-public static final void soup_message_body_flatten (int /*long*/ body) {
-	lock.lock();
-	try {
-		_soup_message_body_flatten (body);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param msg cast=(SoupMessage *)
- */
-public static final native int /*long*/ _soup_message_get_uri (int /*long*/ msg);
-public static final int /*long*/ soup_message_get_uri (int /*long*/ msg) {
-	lock.lock();
-	try {
-		return _soup_message_get_uri (msg);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param headers cast=(SoupMessageHeaders *)
- * @param name cast=(const char *)
- * @param value cast=(const char *)
- */
-public static final native void _soup_message_headers_append (int /*long*/ headers, byte[] name, byte[] value);
-public static final void soup_message_headers_append (int /*long*/ headers, byte[] name, byte[] value) {
-	lock.lock();
-	try {
-		_soup_message_headers_append (headers, name, value);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param session cast=(SoupSession *)
- * @param type cast=(GType)
- */
-public static final native void _soup_session_add_feature_by_type (int /*long*/ session, int /*long*/ type);
-public static final void soup_session_add_feature_by_type (int /*long*/ session, int /*long*/ type) {
-	lock.lock();
-	try {
-		_soup_session_add_feature_by_type (session, type);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param session cast=(SoupSession *)
- * @param feature_type cast=(GType)
- */
-public static final native int /*long*/ _soup_session_get_feature (int /*long*/ session, int /*long*/ feature_type);
-public static final int /*long*/ soup_session_get_feature (int /*long*/ session, int /*long*/ feature_type) {
-	lock.lock();
-	try {
-		return _soup_session_get_feature (session, feature_type);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param feature cast=(SoupSessionFeature *)
- * @param session cast=(SoupSession *)
- */
-public static final native void _soup_session_feature_attach (int /*long*/ feature, int /*long*/ session);
-public static final void soup_session_feature_attach (int /*long*/ feature, int /*long*/ session) {
-	lock.lock();
-	try {
-		_soup_session_feature_attach (feature, session);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param feature cast=(SoupSessionFeature *)
- * @param session cast=(SoupSession *)
- */
-public static final native void _soup_session_feature_detach (int /*long*/ feature, int /*long*/ session);
-public static final void soup_session_feature_detach (int /*long*/ feature, int /*long*/ session) {
-	lock.lock();
-	try {
-		_soup_session_feature_detach (feature, session);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param uri cast=(SoupURI *)
- */
-public static final native void _soup_uri_free (int /*long*/ uri);
-public static final void soup_uri_free (int /*long*/ uri) {
-	lock.lock();
-	try {
-		_soup_uri_free (uri);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param uri_string cast=(const char *)
- */
-public static final native int /*long*/ _soup_uri_new (byte[] uri_string);
-public static final int /*long*/ soup_uri_new (byte[] uri_string) {
-	lock.lock();
-	try {
-		return _soup_uri_new (uri_string);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param uri cast=(SoupURI *)
- */
-public static final native int /*long*/ _soup_uri_to_string (int /*long*/ uri, int just_path_and_query);
-public static final int /*long*/ soup_uri_to_string (int /*long*/ uri, int just_path_and_query) {
-	lock.lock();
-	try {
-		return _soup_uri_to_string (uri, just_path_and_query);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/* --------------------- start WebKitGTK natives --------------------- */
-
-/**
- * @param download cast=(WebKitDownload *)
- */
-public static final native void _webkit_download_cancel (int /*long*/ download);
-public static final void webkit_download_cancel (int /*long*/ download) {
-	lock.lock();
-	try {
-		_webkit_download_cancel (download);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param download cast=(WebKitDownload *)
- */
-public static final native long _webkit_download_get_current_size (int /*long*/ download);
-public static final long webkit_download_get_current_size (int /*long*/ download) {
-	lock.lock();
-	try {
-		return _webkit_download_get_current_size (download);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param download cast=(WebKitDownload *)
- */
-public static final native int _webkit_download_get_status (int /*long*/ download);
-public static final int webkit_download_get_status (int /*long*/ download) {
-	lock.lock();
-	try {
-		return _webkit_download_get_status (download);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param download cast=(WebKitDownload *)
- */
-public static final native int /*long*/ _webkit_download_get_suggested_filename (int /*long*/ download);
-public static final int /*long*/ webkit_download_get_suggested_filename (int /*long*/ download) {
-	lock.lock();
-	try {
-		return _webkit_download_get_suggested_filename (download);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param download cast=(WebKitDownload *)
- */
-public static final native long _webkit_download_get_total_size (int /*long*/ download);
-public static final long webkit_download_get_total_size (int /*long*/ download) {
-	lock.lock();
-	try {
-		return _webkit_download_get_total_size (download);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param download cast=(WebKitDownload *)
- */
-public static final native int /*long*/ _webkit_download_get_uri (int /*long*/ download);
-public static final int /*long*/ webkit_download_get_uri (int /*long*/ download) {
-	lock.lock();
-	try {
-		return _webkit_download_get_uri (download);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param download cast=(WebKitDownload *)
- * @param destination_uri cast=(const gchar *)
- */
-public static final native void _webkit_download_set_destination_uri (int /*long*/ download, byte[] destination_uri);
-public static final void webkit_download_set_destination_uri (int /*long*/ download, byte[] destination_uri) {
-	lock.lock();
-	try {
-		_webkit_download_set_destination_uri (download, destination_uri);
-	} finally {
-		lock.unlock();
-	}
-}
-
-public static final native int /*long*/ _webkit_get_default_session ();
-public static final int /*long*/ webkit_get_default_session () {
-	lock.lock();
-	try {
-		return _webkit_get_default_session ();
-	} finally {
-		lock.unlock();
-	}
-}
-
-public static final native boolean _WEBKIT_IS_WEB_FRAME (int /*long*/ object);
-public static final boolean WEBKIT_IS_WEB_FRAME (int /*long*/ object) {
-	lock.lock();
-	try {
-		return _WEBKIT_IS_WEB_FRAME (object);
-	} finally {
-		lock.unlock();
-	}
-}
-
-public static final native int _webkit_major_version ();
-public static final int webkit_major_version () {
-	lock.lock();
-	try {
-		return _webkit_major_version ();
-	} finally {
-		lock.unlock();
-	}
-}
-
-public static final native int _webkit_micro_version ();
-public static final int webkit_micro_version () {
-	lock.lock();
-	try {
-		return _webkit_micro_version ();
-	} finally {
-		lock.unlock();
-	}
-}
-
-public static final native int _webkit_minor_version ();
-public static final int webkit_minor_version () {
-	lock.lock();
-	try {
-		return _webkit_minor_version ();
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param request cast=(WebKitNetworkRequest *)
- */
-public static final native int /*long*/ _webkit_network_request_get_message (int /*long*/ request);
-public static final int /*long*/ webkit_network_request_get_message (int /*long*/ request) {
-	lock.lock();
-	try {
-		return _webkit_network_request_get_message (request);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param request cast=(WebKitNetworkRequest *)
- */
-public static final native int /*long*/ _webkit_network_request_get_uri (int /*long*/ request);
-public static final int /*long*/ webkit_network_request_get_uri (int /*long*/ request) {
-	lock.lock();
-	try {
-		return _webkit_network_request_get_uri (request);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param uri cast=(const gchar *)
- */
-public static final native int /*long*/ _webkit_network_request_new (byte[] uri);
-public static final int /*long*/ webkit_network_request_new (byte[] uri) {
-	lock.lock();
-	try {
-		return _webkit_network_request_new (uri);
-	} finally {
-		lock.unlock();
-	}
-}
-
-public static final native int /*long*/ _webkit_soup_auth_dialog_get_type ();
-public static final int /*long*/ webkit_soup_auth_dialog_get_type () {
-	lock.lock();
-	try {
-		return _webkit_soup_auth_dialog_get_type ();
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param data_source cast=(WebKitWebDataSource *)
- */
-public static final native int /*long*/ _webkit_web_data_source_get_data (int /*long*/ data_source);
-public static final int /*long*/ webkit_web_data_source_get_data (int /*long*/ data_source) {
-	lock.lock();
-	try {
-		return _webkit_web_data_source_get_data (data_source);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param data_source cast=(WebKitWebDataSource *)
- */
-public static final native int /*long*/ _webkit_web_data_source_get_encoding (int /*long*/ data_source);
-public static final int /*long*/ webkit_web_data_source_get_encoding (int /*long*/ data_source) {
-	lock.lock();
-	try {
-		return _webkit_web_data_source_get_encoding (data_source);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param frame cast=(WebKitWebFrame *)
- */
-public static final native int /*long*/ _webkit_web_frame_get_data_source (int /*long*/ frame);
-public static final int /*long*/ webkit_web_frame_get_data_source (int /*long*/ frame) {
-	lock.lock();
-	try {
-		return _webkit_web_frame_get_data_source (frame);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param frame cast=(WebKitWebFrame *)
- */
-public static final native int /*long*/ _webkit_web_frame_get_global_context (int /*long*/ frame);
-public static final int /*long*/ webkit_web_frame_get_global_context (int /*long*/ frame) {
-	lock.lock();
-	try {
-		return _webkit_web_frame_get_global_context (frame);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param frame cast=(WebKitWebFrame *)
- */
-public static final native int _webkit_web_frame_get_load_status (int /*long*/ frame);
-public static final int webkit_web_frame_get_load_status (int /*long*/ frame) {
-	lock.lock();
-	try {
-		return _webkit_web_frame_get_load_status (frame);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param frame cast=(WebKitWebFrame *)
- */
-public static final native int /*long*/ _webkit_web_frame_get_parent (int /*long*/ frame);
-public static final int /*long*/ webkit_web_frame_get_parent (int /*long*/ frame) {
-	lock.lock();
-	try {
-		return _webkit_web_frame_get_parent (frame);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param frame cast=(WebKitWebFrame *)
- */
-public static final native int /*long*/ _webkit_web_frame_get_title (int /*long*/ frame);
-public static final int /*long*/ webkit_web_frame_get_title (int /*long*/ frame) {
-	lock.lock();
-	try {
-		return _webkit_web_frame_get_title (frame);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param frame cast=(WebKitWebFrame *)
- */
-public static final native int /*long*/ _webkit_web_frame_get_uri (int /*long*/ frame);
-public static final int /*long*/ webkit_web_frame_get_uri (int /*long*/ frame) {
-	lock.lock();
-	try {
-		return _webkit_web_frame_get_uri (frame);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param frame cast=(WebKitWebFrame *)
- */
-public static final native int /*long*/ _webkit_web_frame_get_web_view (int /*long*/ frame);
-public static final int /*long*/ webkit_web_frame_get_web_view (int /*long*/ frame) {
-	lock.lock();
-	try {
-		return _webkit_web_frame_get_web_view (frame);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param decision cast=(WebKitWebPolicyDecision *)
- */
-public static final native void _webkit_web_policy_decision_download (int /*long*/ decision);
-public static final void webkit_web_policy_decision_download (int /*long*/ decision) {
-	lock.lock();
-	try {
-		_webkit_web_policy_decision_download (decision);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param decision cast=(WebKitWebPolicyDecision *)
- */
-public static final native void _webkit_web_policy_decision_ignore (int /*long*/ decision);
-public static final void webkit_web_policy_decision_ignore (int /*long*/ decision) {
-	lock.lock();
-	try {
-		_webkit_web_policy_decision_ignore (decision);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- */
-public static final native int _webkit_web_view_can_go_back (int /*long*/ web_view);
-public static final int webkit_web_view_can_go_back (int /*long*/ web_view) {
-	lock.lock();
-	try {
-		return _webkit_web_view_can_go_back (web_view);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- */
-public static final native int _webkit_web_view_can_go_forward (int /*long*/ web_view);
-public static final int webkit_web_view_can_go_forward (int /*long*/ web_view) {
-	lock.lock();
-	try {
-		return _webkit_web_view_can_go_forward (web_view);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- * @param mime_type cast=(const gchar *)
- */
-public static final native int _webkit_web_view_can_show_mime_type (int /*long*/ web_view, int /*long*/ mime_type);
-public static final int webkit_web_view_can_show_mime_type (int /*long*/ web_view, int /*long*/ mime_type) {
-	lock.lock();
-	try {
-		return _webkit_web_view_can_show_mime_type (web_view, mime_type);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- * @param script cast=(const gchar *)
- */
-public static final native void _webkit_web_view_execute_script (int /*long*/ web_view, byte[] script);
-public static final void webkit_web_view_execute_script (int /*long*/ web_view, byte[] script) {
-	lock.lock();
-	try {
-		_webkit_web_view_execute_script (web_view, script);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- */
-public static final native int _webkit_web_view_get_load_status (int /*long*/ web_view);
-public static final int webkit_web_view_get_load_status (int /*long*/ web_view) {
-	lock.lock();
-	try {
-		return _webkit_web_view_get_load_status (web_view);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- */
-public static final native int /*long*/ _webkit_web_view_get_main_frame (int /*long*/ web_view);
-public static final int /*long*/ webkit_web_view_get_main_frame (int /*long*/ web_view) {
-	lock.lock();
-	try {
-		return _webkit_web_view_get_main_frame (web_view);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- */
-public static final native double _webkit_web_view_get_progress (int /*long*/ web_view);
-public static final double webkit_web_view_get_progress (int /*long*/ web_view) {
-	lock.lock();
-	try {
-		return _webkit_web_view_get_progress (web_view);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- */
-public static final native int /*long*/ _webkit_web_view_get_settings (int /*long*/ web_view);
-public static final int /*long*/ webkit_web_view_get_settings (int /*long*/ web_view) {
-	lock.lock();
-	try {
-		return _webkit_web_view_get_settings (web_view);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- */
-public static final native int /*long*/ _webkit_web_view_get_title (int /*long*/ web_view);
-public static final int /*long*/ webkit_web_view_get_title (int /*long*/ web_view) {
-	lock.lock();
-	try {
-		return _webkit_web_view_get_title (web_view);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- */
-public static final native int /*long*/ _webkit_web_view_get_uri (int /*long*/ web_view);
-public static final int /*long*/ webkit_web_view_get_uri (int /*long*/ web_view) {
-	lock.lock();
-	try {
-		return _webkit_web_view_get_uri (web_view);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- */
-public static final native int /*long*/ _webkit_web_view_get_window_features (int /*long*/ web_view);
-public static final int /*long*/ webkit_web_view_get_window_features (int /*long*/ web_view) {
-	lock.lock();
-	try {
-		return _webkit_web_view_get_window_features (web_view);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- */
-public static final native void _webkit_web_view_go_back (int /*long*/ web_view);
-public static final void webkit_web_view_go_back (int /*long*/ web_view) {
-	lock.lock();
-	try {
-		_webkit_web_view_go_back (web_view);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- */
-public static final native void _webkit_web_view_go_forward (int /*long*/ web_view);
-public static final void webkit_web_view_go_forward (int /*long*/ web_view) {
-	lock.lock();
-	try {
-		_webkit_web_view_go_forward (web_view);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- * @param content cast=(const gchar *)
- * @param mime_type cast=(const gchar *)
- * @param encoding cast=(const gchar *)
- * @param base_uri cast=(const gchar *)
- */
-public static final native void _webkit_web_view_load_string (int /*long*/ web_view, byte[] content, byte[] mime_type, byte[] encoding, byte[] base_uri);
-public static final void webkit_web_view_load_string (int /*long*/ web_view, byte[] content, byte[] mime_type, byte[] encoding, byte[] base_uri) {
-	lock.lock();
-	try {
-		_webkit_web_view_load_string (web_view, content, mime_type, encoding, base_uri);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- * @param uri cast=(const gchar *)
- */
-public static final native void _webkit_web_view_load_uri (int /*long*/ web_view, byte[] uri);
-public static final void webkit_web_view_load_uri (int /*long*/ web_view, byte[] uri) {
-	lock.lock();
-	try {
-		_webkit_web_view_load_uri (web_view, uri);
-	} finally {
-		lock.unlock();
-	}
-}
-
-public static final native int /*long*/ _webkit_web_view_new ();
-public static final int /*long*/ webkit_web_view_new () {
-	lock.lock();
-	try {
-		return _webkit_web_view_new ();
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- */
-public static final native void _webkit_web_view_reload (int /*long*/ web_view);
-public static final void webkit_web_view_reload (int /*long*/ web_view) {
-	lock.lock();
-	try {
-		_webkit_web_view_reload (web_view);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/**
- * @param web_view cast=(WebKitWebView *)
- */
-public static final native void _webkit_web_view_stop_loading (int /*long*/ web_view);
-public static final void webkit_web_view_stop_loading (int /*long*/ web_view) {
-	lock.lock();
-	try {
-		_webkit_web_view_stop_loading (web_view);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/* --------------------- start SWT natives --------------------- */
-
-public static final native int JSClassDefinition_sizeof ();
-
-/**
- * @param dest cast=(void *)
- * @param src cast=(const void *),flags=no_out
- * @param size cast=(size_t)
- */
-public static final native void memmove (int /*long*/ dest, JSClassDefinition src, int /*long*/ size);
 
 }

@@ -27,7 +27,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(AccessibleChildren)
 	rc = (jint)AccessibleChildren((IAccessible *)arg0, (LONG)arg1, (LONG)arg2, (VARIANT *)arg3, (LONG *)lparg4);
 */
 	{
-		LOAD_FUNCTION(fp, AccessibleChildren)
+		COM_LOAD_FUNCTION(fp, AccessibleChildren)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(IAccessible *, LONG, LONG, VARIANT *, LONG *))fp)((IAccessible *)arg0, (LONG)arg1, (LONG)arg2, (VARIANT *)arg3, (LONG *)lparg4);
 		}
@@ -53,7 +53,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(AccessibleObjectFromWindow)
 	rc = (jint)AccessibleObjectFromWindow((HWND)arg0, (DWORD)arg1, lparg2, (LPVOID *)lparg3);
 */
 	{
-		LOAD_FUNCTION(fp, AccessibleObjectFromWindow)
+		COM_LOAD_FUNCTION(fp, AccessibleObjectFromWindow)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(HWND, DWORD, GUID *, LPVOID *))fp)((HWND)arg0, (DWORD)arg1, lparg2, (LPVOID *)lparg3);
 		}
@@ -220,7 +220,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(CreateStdAccessibleObject)
 	rc = (jint)CreateStdAccessibleObject((HWND)arg0, arg1, lparg2, (LPVOID *)lparg3);
 */
 	{
-		LOAD_FUNCTION(fp, CreateStdAccessibleObject)
+		COM_LOAD_FUNCTION(fp, CreateStdAccessibleObject)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(HWND, jint, GUID *, LPVOID *))fp)((HWND)arg0, arg1, lparg2, (LPVOID *)lparg3);
 		}
@@ -414,7 +414,7 @@ JNIEXPORT jintLong JNICALL COM_NATIVE(LresultFromObject)
 	rc = (jintLong)LresultFromObject(lparg0, arg1, (LPUNKNOWN)arg2);
 */
 	{
-		LOAD_FUNCTION(fp, LresultFromObject)
+		COM_LOAD_FUNCTION(fp, LresultFromObject)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GUID *, jintLong, LPUNKNOWN))fp)(lparg0, arg1, (LPUNKNOWN)arg2);
 		}

@@ -33,6 +33,8 @@
 #include <locale.h>
 #include <unistd.h>
 
+#define OS_LOAD_FUNCTION LOAD_FUNCTION
+
 #ifndef GDK_WINDOWING_X11
 
 /* X Structures */
