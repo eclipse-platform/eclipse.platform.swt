@@ -131,9 +131,6 @@ case $SWT_OS.$SWT_ARCH in
 		if [ "${XULRUNNER_LIBS}" = "" ]; then
 			export XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
 		fi
-		if [ "${WEBKIT_INCLUDES}" = "" ]; then
-			export WEBKIT_INCLUDES="`pkg-config --cflags gtk+-2.0` -I/bluebird/teamswt/swt-builddir/webkitgtk/1.2/"
-		fi
 		;;
 	"linux.x86_64")
 		if [ "${CC}" = "" ]; then
@@ -162,9 +159,6 @@ case $SWT_OS.$SWT_ARCH in
 		fi
 		if [ "${XULRUNNER_LIBS}" = "" ]; then
 			export XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
-		fi
-		if [ "${WEBKIT_INCLUDES}" = "" ]; then
-			export WEBKIT_INCLUDES="`pkg-config --cflags gtk+-2.0` -I/bluebird/teamswt/swt-builddir/webkitgtk/1.2/"
 		fi
 		;;
 	"linux.ppc")
@@ -195,9 +189,6 @@ case $SWT_OS.$SWT_ARCH in
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
 			export PKG_CONFIG_PATH="/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_ppc/lib/pkgconfig/"
 		fi
-		if [ "${WEBKIT_INCLUDES}" = "" ]; then
-			export WEBKIT_INCLUDES="`pkg-config --cflags gtk+-2.0` -I/bluebird/teamswt/swt-builddir/webkitgtk/1.2/"
-		fi
 		;;
 	"linux.ppc64")
 		if [ "${CC}" = "" ]; then
@@ -226,9 +217,6 @@ case $SWT_OS.$SWT_ARCH in
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
 			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig/:/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_ppc64/lib/pkgconfig/:/usr/local/GNOME/lib/pkgconfig:/usr/local/gtk2.4/lib/pkgconfig/"
-		fi
-		if [ "${WEBKIT_INCLUDES}" = "" ]; then
-			export WEBKIT_INCLUDES="`pkg-config --cflags gtk+-2.0` -I/bluebird/teamswt/swt-builddir/webkitgtk/1.2/"
 		fi
 		;;
 	"solaris.x86")
@@ -343,9 +331,6 @@ case $SWT_OS.$SWT_ARCH in
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
 			export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"
 		fi
-		if [ "${WEBKIT_INCLUDES}" = "" ]; then
-			export WEBKIT_INCLUDES="`pkg-config --cflags gtk+-2.0` -I/bluebird/teamswt/swt-builddir/webkitgtk/1.2/"
-		fi
 		;;
 	"linux.s390x")
 		if [ "${CC}" = "" ]; then
@@ -374,9 +359,6 @@ case $SWT_OS.$SWT_ARCH in
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
 			export PKG_CONFIG_PATH="/usr/local/cairo64/lib/pkgconfig"
-		fi
-		if [ "${WEBKIT_INCLUDES}" = "" ]; then
-			export WEBKIT_INCLUDES="`pkg-config --cflags gtk+-2.0` -I/bluebird/teamswt/swt-builddir/webkitgtk/1.2/"
 		fi
 		;;
 	"aix.ppc")
@@ -509,14 +491,6 @@ if [ -z "${MOZILLA_INCLUDES}" -a -z "${MOZILLA_LIBS}" -a ${MODEL} != 'sparc64' ]
 	fi
 fi
 
-if [ x`pkg-config --exists webkit-1.0 && echo YES` = "xYES" ]; then
-	echo "WebKit found, compiling webkit embedded browser support."
-	MAKE_WEBKIT=make_webkit
-else
-	echo "WebKit not found:"
-	echo "    *** WebKit embedding support will not be compiled."
-fi
-
 # Find AWT if available
 if [ -z "${AWT_LIB_PATH}" ]; then
 	if [ -f ${JAVA_HOME}/jre/lib/${AWT_ARCH}/libjawt.* ]; then
@@ -545,5 +519,5 @@ fi
 if [ "x${1}" = "xclean" ]; then
 	${MAKE_TYPE} -f $MAKEFILE clean
 else
-	${MAKE_TYPE} -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA $MAKE_WEBKIT ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9}
+	${MAKE_TYPE} -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9}
 fi

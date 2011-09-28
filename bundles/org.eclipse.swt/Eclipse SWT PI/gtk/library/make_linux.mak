@@ -91,8 +91,6 @@ MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
 	-DNO_nsDynamicFunctionLoad
 XULRUNNEREXCLUDES = -DNO__1NS_1InitXPCOM2
 
-WEBKITCFLAGS = ${WEBKIT_INCLUDES}
-
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
 AWT_OBJECTS = swt_awt.o
@@ -281,13 +279,13 @@ $(WEBKIT_LIB): $(WEBKIT_OBJECTS)
 	$(CC) $(LFLAGS) -o $(WEBKIT_LIB) $(WEBKIT_OBJECTS)
 
 webkit.o: webkitgtk.c 
-	$(CC) $(CFLAGS) $(WEBKITCFLAGS) -c webkitgtk.c -o webkit.o
+	$(CC) $(CFLAGS) -c webkitgtk.c -o webkit.o
 
 webkit_structs.o: webkitgtk_structs.c 
-	$(CC) $(CFLAGS) $(WEBKITCFLAGS) -c webkitgtk_structs.c -o webkit_structs.o
+	$(CC) $(CFLAGS) -c webkitgtk_structs.c -o webkit_structs.o
 	
 webkit_stats.o: webkitgtk_stats.c webkitgtk_stats.h
-	$(CC) $(CFLAGS) $(WEBKITCFLAGS) -c webkitgtk_stats.c -o webkit_stats.o
+	$(CC) $(CFLAGS) -c webkitgtk_stats.c -o webkit_stats.o
 
 #
 # GLX lib

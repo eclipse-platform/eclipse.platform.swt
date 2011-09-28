@@ -18,24 +18,7 @@
 
 #include <dlfcn.h>
 #include <string.h>
-#include <JavaScriptCore/JSContextRef.h>
-#include <JavaScriptCore/JSObjectRef.h>
-#include <JavaScriptCore/JSStringRef.h>
-#include <libsoup/soup-cookie.h>
-#include <libsoup/soup-cookie-jar.h>
-#include <libsoup/soup-session-feature.h>
-#include <libsoup/soup-uri.h>
-#include <webkit/webkitdownload.h>
-#include <webkit/webkitnetworkrequest.h>
-#include <webkit/webkitsoupauthdialog.h>
-#include <webkit/webkitversion.h>
-#include <webkit/webkitwebpolicydecision.h>
-#include <webkit/webkitwebsettings.h>
-#include <webkit/webkitwebview.h>
-
-#if WEBKIT_CHECK_VERSION(1,4,0)
-#include <webkit/webkitglobals.h>
-#endif
+#include "swt.h"
 
 #define WebKitGTK_LOAD_FUNCTION(var, name) \
 	static int initialized = 0; \
@@ -50,5 +33,46 @@
 		} \
 		initialized = 1; \
 	}
+
+typedef struct {
+    int version;
+    int attributes;
+    const char* className;
+    void* parentClass;
+    const void* staticValues;
+    const void* staticFunctions;
+    void* initialize;
+    void* finalize;
+    void* hasProperty;
+    void* getProperty;
+    void* setProperty;
+    void* deleteProperty;
+    void* getPropertyNames;
+    void* callAsFunction;
+    void* callAsConstructor;
+    void* hasInstance;
+    void* convertToType;
+} JSClassDefinition;
+
+typedef struct {
+	char* name;
+	char* value;
+	char* domain;
+	char* path;
+	void* expires;
+	int secure;
+	int http_only;
+} SoupCookie;
+
+typedef struct {
+	void* parent;
+	const char* method;
+	int status_code;
+	char* reason_phrase;
+	void* request_body;
+	void* request_headers;
+	void* response_body;
+	void* response_headers;
+} SoupMessage;
 
 #endif /* INC_webkitgtk_H */
