@@ -1780,8 +1780,8 @@ public static final int /*long*/ G_OBJECT_TYPE_NAME (int /*long*/ object) {
 		lock.unlock();
 	}
 }
-public static final native boolean _G_TYPE_CHECK_INSTANCE_TYPE (int /*long*/ instance, int type);
-public static final boolean G_TYPE_CHECK_INSTANCE_TYPE (int /*long*/ instance, int type) {
+public static final native boolean _G_TYPE_CHECK_INSTANCE_TYPE (int /*long*/ instance, int /*long*/ type);
+public static final boolean G_TYPE_CHECK_INSTANCE_TYPE (int /*long*/ instance, int /*long*/ type) {
 	lock.lock();
 	try {
 		return _G_TYPE_CHECK_INSTANCE_TYPE(instance, type);

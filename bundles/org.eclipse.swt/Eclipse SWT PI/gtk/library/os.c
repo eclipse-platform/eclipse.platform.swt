@@ -1813,7 +1813,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1G_1OBJECT_1TYPE_1NAME)
 
 #ifndef NO__1G_1TYPE_1CHECK_1INSTANCE_1TYPE
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1G_1TYPE_1CHECK_1INSTANCE_1TYPE)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, _1G_1TYPE_1CHECK_1INSTANCE_1TYPE_FUNC);

@@ -707,8 +707,8 @@ public static final void soup_session_feature_attach (int /*long*/ feature, int 
 /**
  * @method flags=dynamic
  */
-public static final native int _soup_session_get_type ();
-public static final int soup_session_get_type () {
+public static final native int /*long*/ _soup_session_get_type ();
+public static final int /*long*/ soup_session_get_type () {
 	lock.lock();
 	try {
 		return _soup_session_get_type ();
@@ -1083,8 +1083,8 @@ public static final int /*long*/ webkit_web_frame_get_title (int /*long*/ frame)
 /**
  * @method flags=dynamic
  */
-public static final native int _webkit_web_frame_get_type ();
-public static final int webkit_web_frame_get_type () {
+public static final native int /*long*/ _webkit_web_frame_get_type ();
+public static final int /*long*/ webkit_web_frame_get_type () {
 	lock.lock();
 	try {
 		return _webkit_web_frame_get_type ();

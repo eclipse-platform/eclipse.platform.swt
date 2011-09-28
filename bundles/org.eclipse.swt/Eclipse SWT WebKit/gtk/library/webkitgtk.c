@@ -957,18 +957,18 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1soup_1session_1get_1feature)
 #endif
 
 #ifndef NO__1soup_1session_1get_1type
-JNIEXPORT jint JNICALL WebKitGTK_NATIVE(_1soup_1session_1get_1type)
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1soup_1session_1get_1type)
 	(JNIEnv *env, jclass that)
 {
-	jint rc = 0;
+	jintLong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, _1soup_1session_1get_1type_FUNC);
 /*
-	rc = (jint)soup_session_get_type();
+	rc = (jintLong)soup_session_get_type();
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, soup_session_get_type)
 		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, _1soup_1session_1get_1type_FUNC);
@@ -1483,18 +1483,18 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1frame_1get_1title)
 #endif
 
 #ifndef NO__1webkit_1web_1frame_1get_1type
-JNIEXPORT jint JNICALL WebKitGTK_NATIVE(_1webkit_1web_1frame_1get_1type)
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1frame_1get_1type)
 	(JNIEnv *env, jclass that)
 {
-	jint rc = 0;
+	jintLong rc = 0;
 	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1frame_1get_1type_FUNC);
 /*
-	rc = (jint)webkit_web_frame_get_type();
+	rc = (jintLong)webkit_web_frame_get_type();
 */
 	{
 		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_frame_get_type)
 		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1frame_1get_1type_FUNC);
