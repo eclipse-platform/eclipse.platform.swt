@@ -18,7 +18,7 @@
 
 #include <dlfcn.h>
 #include <string.h>
-#include "swt.h"
+#include <glib-object.h>
 
 #define WebKitGTK_LOAD_FUNCTION(var, name) \
 	static int initialized = 0; \
@@ -60,14 +60,14 @@ typedef struct {
 	char* domain;
 	char* path;
 	void* expires;
-	int secure;
-	int http_only;
+	gboolean secure;
+	gboolean http_only;
 } SoupCookie;
 
 typedef struct {
-	void* parent;
+	GObject parent;
 	const char* method;
-	int status_code;
+	guint status_code;
 	char* reason_phrase;
 	void* request_body;
 	void* request_headers;
