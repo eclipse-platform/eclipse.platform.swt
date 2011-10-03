@@ -242,9 +242,11 @@ public class OS extends C {
 	public static final int GDK_XOR = 0x2;
 	public static final int GDK_XTERM = 0x98;
 	public static final int GDK_X_CURSOR = 0x0;
+	public static final int GDK_VISIBILITY_NOTIFY = 29; 	 
 	public static final int GDK_VISIBILITY_FULLY_OBSCURED = 2;
 	public static final int GDK_VISIBILITY_NOTIFY_MASK = 1 << 17;
 	public static final int GDK_WINDOW_CHILD = 2;
+	public static final int GDK_WINDOW_STATE = 32;
 	public static final int GDK_WINDOW_STATE_ICONIFIED  = 1 << 1;
 	public static final int GDK_WINDOW_STATE_MAXIMIZED  = 1 << 2;
 	public static final int GDK_WINDOW_STATE_FULLSCREEN  = 1 << 4;
