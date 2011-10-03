@@ -17,7 +17,7 @@ class BrowserFactory {
 	static boolean mozillaLibsLoaded;
 
 WebBrowser createWebBrowser (int style) {
-	boolean webkitInstalled = WebKit.isInstalled ();
+	boolean webkitInstalled = WebKit.IsInstalled ();
 	if ((style & SWT.MOZILLA) != 0 || (!webkitInstalled && (style & SWT.WEBKIT) == 0)) {
 		mozillaLibsLoaded = true;
 		return new Mozilla ();

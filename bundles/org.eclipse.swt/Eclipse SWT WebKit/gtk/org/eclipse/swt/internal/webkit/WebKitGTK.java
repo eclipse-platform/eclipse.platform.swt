@@ -67,6 +67,16 @@ public class WebKitGTK extends C {
 	public static final byte[] x = ascii ("x"); // $NON-NLS-1$
 	public static final byte[] y = ascii ("y"); // $NON-NLS-1$
 
+	/** DOM events */
+	public static final byte[] dragstart = ascii ("dragstart"); // $NON-NLS-1$
+	public static final byte[] keydown = ascii ("keydown"); // $NON-NLS-1$
+	public static final byte[] keypress = ascii ("keypress"); // $NON-NLS-1$
+	public static final byte[] keyup = ascii ("keyup"); // $NON-NLS-1$
+	public static final byte[] mousedown = ascii ("mousedown"); // $NON-NLS-1$
+	public static final byte[] mousemove = ascii ("mousemove"); // $NON-NLS-1$
+	public static final byte[] mouseup = ascii ("mouseup"); // $NON-NLS-1$
+	public static final byte[] mousewheel = ascii ("mousewheel"); // $NON-NLS-1$
+
 protected static byte [] ascii (String name) {
 	int length = name.length ();
 	char [] chars = new char [length];
@@ -590,6 +600,127 @@ public static final int /*long*/ soup_uri_to_string (int /*long*/ uri, int just_
 /* --------------------- start WebKitGTK natives --------------------- */
 
 /** @method flags=dynamic */
+public static final native int _webkit_dom_event_target_add_event_listener (int /*long*/ target, byte[] name, int /*long*/ handler, int bubble, int /*long*/ userData);
+public static final int webkit_dom_event_target_add_event_listener (int /*long*/ target, byte[] name, int /*long*/ handler, int bubble, int /*long*/ userData) {
+	lock.lock();
+	try {
+		return _webkit_dom_event_target_add_event_listener (target, name, handler, bubble, userData);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native int _webkit_dom_mouse_event_get_alt_key (int /*long*/ self);
+public static final int webkit_dom_mouse_event_get_alt_key (int /*long*/ self) {
+	lock.lock();
+	try {
+		return _webkit_dom_mouse_event_get_alt_key (self);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native short _webkit_dom_mouse_event_get_button (int /*long*/ self);
+public static final short webkit_dom_mouse_event_get_button (int /*long*/ self) {
+	lock.lock();
+	try {
+		return _webkit_dom_mouse_event_get_button (self);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native int _webkit_dom_mouse_event_get_ctrl_key (int /*long*/ self);
+public static final int webkit_dom_mouse_event_get_ctrl_key (int /*long*/ self) {
+	lock.lock();
+	try {
+		return _webkit_dom_mouse_event_get_ctrl_key (self);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native int _webkit_dom_mouse_event_get_meta_key (int /*long*/ self);
+public static final int webkit_dom_mouse_event_get_meta_key (int /*long*/ self) {
+	lock.lock();
+	try {
+		return _webkit_dom_mouse_event_get_meta_key (self);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long _webkit_dom_mouse_event_get_screen_x (int /*long*/ self);
+public static final long webkit_dom_mouse_event_get_screen_x (int /*long*/ self) {
+	lock.lock();
+	try {
+		return _webkit_dom_mouse_event_get_screen_x (self);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long _webkit_dom_mouse_event_get_screen_y (int /*long*/ self);
+public static final long webkit_dom_mouse_event_get_screen_y (int /*long*/ self) {
+	lock.lock();
+	try {
+		return _webkit_dom_mouse_event_get_screen_y (self);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native int _webkit_dom_mouse_event_get_shift_key (int /*long*/ self);
+public static final int webkit_dom_mouse_event_get_shift_key (int /*long*/ self) {
+	lock.lock();
+	try {
+		return _webkit_dom_mouse_event_get_shift_key (self);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long _webkit_dom_ui_event_get_char_code (int /*long*/ self);
+public static final long webkit_dom_ui_event_get_char_code (int /*long*/ self) {
+	lock.lock();
+	try {
+		return _webkit_dom_ui_event_get_char_code (self);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long _webkit_dom_ui_event_get_detail (int /*long*/ self);
+public static final long webkit_dom_ui_event_get_detail (int /*long*/ self) {
+	lock.lock();
+	try {
+		return _webkit_dom_ui_event_get_detail (self);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long _webkit_dom_ui_event_get_key_code (int /*long*/ self);
+public static final long webkit_dom_ui_event_get_key_code (int /*long*/ self) {
+	lock.lock();
+	try {
+		return _webkit_dom_ui_event_get_key_code (self);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native void _webkit_download_cancel (int /*long*/ download);
 public static final void webkit_download_cancel (int /*long*/ download) {
 	lock.lock();
@@ -925,6 +1056,17 @@ public static final void webkit_web_view_execute_script (int /*long*/ web_view, 
 	lock.lock();
 	try {
 		_webkit_web_view_execute_script (web_view, script);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native int /*long*/ _webkit_web_view_get_dom_document (int /*long*/ web_view);
+public static final int /*long*/ webkit_web_view_get_dom_document (int /*long*/ web_view) {
+	lock.lock();
+	try {
+		return _webkit_web_view_get_dom_document (web_view);
 	} finally {
 		lock.unlock();
 	}
