@@ -684,7 +684,7 @@ public Point getCaretLocation () {
 	* pixel coordinates (0,0). 
 	*/
 	int position = getCaretPosition ();
-	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	int /*long*/ caretPos = OS.SendMessage (hwndText, OS.EM_POSFROMCHAR, position, 0);
 	if (caretPos == -1) {
 		caretPos = 0;
