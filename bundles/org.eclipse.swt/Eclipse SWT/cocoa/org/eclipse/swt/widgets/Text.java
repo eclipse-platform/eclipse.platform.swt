@@ -704,18 +704,13 @@ public Point getCaretLocation () {
 	checkWidget ();
 	NSTextView widget = null;
 	if ((style & SWT.SINGLE) != 0) {
-		if(this.isFocusControl()) {
+		if (this.hasFocus()) {
 			widget = new NSTextView(view.window().fieldEditor(true, view));
 		}
-		else {
-			return new Point (0, 0);
-		}
-		//TODO - caret location for single text
-		//return new Point (0, 0);
 	} else {
 		widget = (NSTextView) view;
 	}
-	//NSTextView widget = (NSTextView)view;
+	if (widget == null) return new Point (0, 0);
 	NSLayoutManager layoutManager = widget.layoutManager();
 	NSTextContainer container = widget.textContainer();
 	NSRange range = widget.selectedRange();

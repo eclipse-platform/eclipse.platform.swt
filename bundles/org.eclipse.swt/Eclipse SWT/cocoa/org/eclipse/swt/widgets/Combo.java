@@ -597,22 +597,16 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 }
 public int getCaretPosition() {
 	checkWidget();
-	if(this.isFocusControl()) {
-		return selectionRange != null ? (int)/*64*/selectionRange.location : 0;
-	}
-	else {
-		return 0;
-	}
+	return selectionRange != null ? (int)/*64*/selectionRange.location : 0;
 }
 
 public Point getCaretLocation() {
-	NSTextView widget;
-	if(this.isFocusControl()) {
+	checkWidget();
+	NSTextView widget = null;
+	if (this.hasFocus()) {
 		widget = new NSTextView(view.window().fieldEditor(true, view));
 	}
-	else {
-		return new Point(0, 0);
-	}
+	if (widget == null) return new Point (0, 0);
 	NSLayoutManager layoutManager = widget.layoutManager();
 	NSTextContainer container = widget.textContainer();
 	NSRange range = widget.selectedRange();
