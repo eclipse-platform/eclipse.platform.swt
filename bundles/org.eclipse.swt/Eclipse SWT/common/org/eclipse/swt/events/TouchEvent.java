@@ -78,7 +78,7 @@ public TouchEvent(Event e) {
 public String toString() {
 	String string = super.toString();
 	string = string.substring (0, string.length() - 1); // remove trailing '}'
-	string += " stateMask=" + stateMask
+	string += " stateMask=0x" + Integer.toHexString(stateMask)
 			+ " x=" + x
 			+ " y=" + y;
 	if (touches != null) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,7 +25,7 @@ public NSFont(id id) {
 }
 
 public float /*double*/ ascender() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_ascender);
+	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_ascender);
 }
 
 public static NSFont controlContentFontOfSize(float /*double*/ fontSize) {
@@ -34,7 +34,7 @@ public static NSFont controlContentFontOfSize(float /*double*/ fontSize) {
 }
 
 public float /*double*/ descender() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_descender);
+	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_descender);
 }
 
 public NSString displayName() {
@@ -58,7 +58,7 @@ public static NSFont fontWithName(NSString fontName, float /*double*/ fontSize) 
 }
 
 public float /*double*/ leading() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_leading);
+	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_leading);
 }
 
 public static NSFont menuBarFontOfSize(float /*double*/ fontSize) {
@@ -72,11 +72,11 @@ public static NSFont menuFontOfSize(float /*double*/ fontSize) {
 }
 
 public float /*double*/ pointSize() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_pointSize);
+	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_pointSize);
 }
 
 public static float /*double*/ smallSystemFontSize() {
-	return (float)OS.objc_msgSend_fpret(OS.class_NSFont, OS.sel_smallSystemFontSize);
+	return (float /*double*/)OS.objc_msgSend_fpret(OS.class_NSFont, OS.sel_smallSystemFontSize);
 }
 
 public static NSFont systemFontOfSize(float /*double*/ fontSize) {
@@ -85,11 +85,11 @@ public static NSFont systemFontOfSize(float /*double*/ fontSize) {
 }
 
 public static float /*double*/ systemFontSize() {
-	return (float)OS.objc_msgSend_fpret(OS.class_NSFont, OS.sel_systemFontSize);
+	return (float /*double*/)OS.objc_msgSend_fpret(OS.class_NSFont, OS.sel_systemFontSize);
 }
 
 public static float /*double*/ systemFontSizeForControlSize(int /*long*/ controlSize) {
-	return (float)OS.objc_msgSend_fpret(OS.class_NSFont, OS.sel_systemFontSizeForControlSize_, controlSize);
+	return (float /*double*/)OS.objc_msgSend_fpret(OS.class_NSFont, OS.sel_systemFontSizeForControlSize_, controlSize);
 }
 
 }

@@ -33,7 +33,7 @@ public int /*long*/ hitPart() {
 }
 
 public float /*double*/ knobProportion() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_knobProportion);
+	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_knobProportion);
 }
 
 public NSRect rectForPart(int /*long*/ partCode) {
@@ -43,11 +43,11 @@ public NSRect rectForPart(int /*long*/ partCode) {
 }
 
 public static float /*double*/ scrollerWidth() {
-	return (float)OS.objc_msgSend_fpret(OS.class_NSScroller, OS.sel_scrollerWidth);
+	return (float /*double*/)OS.objc_msgSend_fpret(OS.class_NSScroller, OS.sel_scrollerWidth);
 }
 
 public static float /*double*/ scrollerWidthForControlSize(int /*long*/ controlSize) {
-	return (float)OS.objc_msgSend_fpret(OS.class_NSScroller, OS.sel_scrollerWidthForControlSize_, controlSize);
+	return (float /*double*/)OS.objc_msgSend_fpret(OS.class_NSScroller, OS.sel_scrollerWidthForControlSize_, controlSize);
 }
 
 public void setControlSize(int /*long*/ controlSize) {

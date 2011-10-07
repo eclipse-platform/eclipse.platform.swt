@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,11 +43,11 @@ public int /*long*/ characterIndexForGlyphAtIndex(int /*long*/ glyphIndex) {
 }
 
 public float /*double*/ defaultBaselineOffsetForFont(NSFont theFont) {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_defaultBaselineOffsetForFont_, theFont != null ? theFont.id : 0);
+	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_defaultBaselineOffsetForFont_, theFont != null ? theFont.id : 0);
 }
 
 public float /*double*/ defaultLineHeightForFont(NSFont theFont) {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_defaultLineHeightForFont_, theFont != null ? theFont.id : 0);
+	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_defaultLineHeightForFont_, theFont != null ? theFont.id : 0);
 }
 
 public void drawBackgroundForGlyphRange(NSRange glyphsToShow, NSPoint origin) {

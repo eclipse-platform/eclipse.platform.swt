@@ -63,7 +63,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ActivateActCtx)
 	rc = (jboolean)ActivateActCtx(arg0, (ULONG_PTR*)lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, ActivateActCtx)
+		OS_LOAD_FUNCTION(fp, ActivateActCtx)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, ULONG_PTR*))fp)(arg0, (ULONG_PTR*)lparg1);
 		}
@@ -99,7 +99,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(AddFontResourceExA)
 	rc = (jint)AddFontResourceExA(lparg0, arg1, arg2);
 */
 	{
-		LOAD_FUNCTION(fp, AddFontResourceExA)
+		OS_LOAD_FUNCTION(fp, AddFontResourceExA)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jbyte *, jint, jintLong))fp)(lparg0, arg1, arg2);
 		}
@@ -123,7 +123,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(AddFontResourceExW)
 	rc = (jint)AddFontResourceExW(lparg0, arg1, arg2);
 */
 	{
-		LOAD_FUNCTION(fp, AddFontResourceExW)
+		OS_LOAD_FUNCTION(fp, AddFontResourceExW)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jchar *, jint, jintLong))fp)(lparg0, arg1, arg2);
 		}
@@ -161,7 +161,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(AllowSetForegroundWindow)
 	rc = (jboolean)AllowSetForegroundWindow(arg0);
 */
 	{
-		LOAD_FUNCTION(fp, AllowSetForegroundWindow)
+		OS_LOAD_FUNCTION(fp, AllowSetForegroundWindow)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jint))fp)(arg0);
 		}
@@ -183,7 +183,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(AlphaBlend)
 	rc = (jboolean)AlphaBlend(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, *lparg10);
 */
 	{
-		LOAD_FUNCTION(fp, AlphaBlend)
+		OS_LOAD_FUNCTION(fp, AlphaBlend)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, jint, jint, jint, jint, jintLong, jint, jint, jint, jint, BLENDFUNCTION))fp)(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, *lparg10);
 		}
@@ -205,7 +205,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(AnimateWindow)
 	rc = (jboolean)AnimateWindow((HWND)arg0, arg1, arg2);
 */
 	{
-		LOAD_FUNCTION(fp, AnimateWindow)
+		OS_LOAD_FUNCTION(fp, AnimateWindow)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HWND, jint, jint))fp)((HWND)arg0, arg1, arg2);
 		}
@@ -245,7 +245,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(AssocQueryStringA)
 	rc = (jint)AssocQueryStringA(arg0, arg1, lparg2, lparg3, lparg4, lparg5);
 */
 	{
-		LOAD_FUNCTION(fp, AssocQueryStringA)
+		OS_LOAD_FUNCTION(fp, AssocQueryStringA)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jbyte *, jbyte *, jbyte *, jint *))fp)(arg0, arg1, lparg2, lparg3, lparg4, lparg5);
 		}
@@ -278,7 +278,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(AssocQueryStringW)
 	rc = (jint)AssocQueryStringW(arg0, arg1, lparg2, lparg3, lparg4, lparg5);
 */
 	{
-		LOAD_FUNCTION(fp, AssocQueryStringW)
+		OS_LOAD_FUNCTION(fp, AssocQueryStringW)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jchar *, jchar *, jchar *, jint *))fp)(arg0, arg1, lparg2, lparg3, lparg4, lparg5);
 		}
@@ -393,7 +393,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(BeginBufferedPaint)
 	rc = (jintLong)BeginBufferedPaint((HDC)arg0, lparg1, arg2, lparg3, (HDC*)lparg4);
 */
 	{
-		LOAD_FUNCTION(fp, BeginBufferedPaint)
+		OS_LOAD_FUNCTION(fp, BeginBufferedPaint)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(HDC, RECT *, jint, BP_PAINTPARAMS *, HDC*))fp)((HDC)arg0, lparg1, arg2, lparg3, (HDC*)lparg4);
 		}
@@ -481,7 +481,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(BufferedPaintInit)
 	rc = (jint)BufferedPaintInit();
 */
 	{
-		LOAD_FUNCTION(fp, BufferedPaintInit)
+		OS_LOAD_FUNCTION(fp, BufferedPaintInit)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
 		}
@@ -503,7 +503,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(BufferedPaintSetAlpha)
 	rc = (jint)BufferedPaintSetAlpha((HPAINTBUFFER)arg0, lparg1, arg2);
 */
 	{
-		LOAD_FUNCTION(fp, BufferedPaintSetAlpha)
+		OS_LOAD_FUNCTION(fp, BufferedPaintSetAlpha)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(HPAINTBUFFER, RECT *, jbyte))fp)((HPAINTBUFFER)arg0, lparg1, arg2);
 		}
@@ -525,7 +525,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(BufferedPaintUnInit)
 	rc = (jint)BufferedPaintUnInit();
 */
 	{
-		LOAD_FUNCTION(fp, BufferedPaintUnInit)
+		OS_LOAD_FUNCTION(fp, BufferedPaintUnInit)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
 		}
@@ -1001,7 +1001,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CloseGestureInfoHandle)
 	rc = (jintLong)CloseGestureInfoHandle((HGESTUREINFO)arg0);
 */
 	{
-		LOAD_FUNCTION(fp, CloseGestureInfoHandle)
+		OS_LOAD_FUNCTION(fp, CloseGestureInfoHandle)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(HGESTUREINFO))fp)((HGESTUREINFO)arg0);
 		}
@@ -1045,7 +1045,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(CloseThemeData)
 	rc = (jint)CloseThemeData((HTHEME)arg0);
 */
 	{
-		LOAD_FUNCTION(fp, CloseThemeData)
+		OS_LOAD_FUNCTION(fp, CloseThemeData)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(HTHEME))fp)((HTHEME)arg0);
 		}
@@ -1065,7 +1065,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(CloseTouchInputHandle)
 	rc = (jboolean)CloseTouchInputHandle((HTOUCHINPUT)arg0);
 */
 	{
-		LOAD_FUNCTION(fp, CloseTouchInputHandle)
+		OS_LOAD_FUNCTION(fp, CloseTouchInputHandle)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HTOUCHINPUT))fp)((HTOUCHINPUT)arg0);
 		}
@@ -1107,7 +1107,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(CoInternetIsFeatureEnabled)
 	rc = (jint)CoInternetIsFeatureEnabled(arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, CoInternetIsFeatureEnabled)
+		OS_LOAD_FUNCTION(fp, CoInternetIsFeatureEnabled)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint))fp)(arg0, arg1);
 		}
@@ -1127,7 +1127,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(CoInternetSetFeatureEnabled)
 	rc = (jint)CoInternetSetFeatureEnabled(arg0, arg1, (BOOL)arg2);
 */
 	{
-		LOAD_FUNCTION(fp, CoInternetSetFeatureEnabled)
+		OS_LOAD_FUNCTION(fp, CoInternetSetFeatureEnabled)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, BOOL))fp)(arg0, arg1, (BOOL)arg2);
 		}
@@ -1321,7 +1321,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CreateActCtxA)
 	rc = (jintLong)CreateActCtxA(lparg0);
 */
 	{
-		LOAD_FUNCTION(fp, CreateActCtxA)
+		OS_LOAD_FUNCTION(fp, CreateActCtxA)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(ACTCTX *))fp)(lparg0);
 		}
@@ -1344,7 +1344,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CreateActCtxW)
 	rc = (jintLong)CreateActCtxW(lparg0);
 */
 	{
-		LOAD_FUNCTION(fp, CreateActCtxW)
+		OS_LOAD_FUNCTION(fp, CreateActCtxW)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(ACTCTX *))fp)(lparg0);
 		}
@@ -2577,7 +2577,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(DrawThemeBackground)
 	rc = (jint)DrawThemeBackground((HTHEME)arg0, (HDC)arg1, arg2, arg3, (const RECT *)lparg4, (const RECT *)lparg5);
 */
 	{
-		LOAD_FUNCTION(fp, DrawThemeBackground)
+		OS_LOAD_FUNCTION(fp, DrawThemeBackground)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(HTHEME, HDC, jint, jint, const RECT *, const RECT *))fp)((HTHEME)arg0, (HDC)arg1, arg2, arg3, (const RECT *)lparg4, (const RECT *)lparg5);
 		}
@@ -2604,7 +2604,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(DrawThemeEdge)
 	rc = (jint)DrawThemeEdge(arg0, arg1, arg2, arg3, lparg4, arg5, arg6, lparg7);
 */
 	{
-		LOAD_FUNCTION(fp, DrawThemeEdge)
+		OS_LOAD_FUNCTION(fp, DrawThemeEdge)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, RECT *, jint, jint, RECT *))fp)(arg0, arg1, arg2, arg3, lparg4, arg5, arg6, lparg7);
 		}
@@ -2629,7 +2629,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(DrawThemeIcon)
 	rc = (jint)DrawThemeIcon(arg0, arg1, arg2, arg3, lparg4, arg5, arg6);
 */
 	{
-		LOAD_FUNCTION(fp, DrawThemeIcon)
+		OS_LOAD_FUNCTION(fp, DrawThemeIcon)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, RECT *, jintLong, jint))fp)(arg0, arg1, arg2, arg3, lparg4, arg5, arg6);
 		}
@@ -2653,7 +2653,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(DrawThemeParentBackground)
 	rc = (jint)DrawThemeParentBackground(arg0, arg1, lparg2);
 */
 	{
-		LOAD_FUNCTION(fp, DrawThemeParentBackground)
+		OS_LOAD_FUNCTION(fp, DrawThemeParentBackground)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, RECT *))fp)(arg0, arg1, lparg2);
 		}
@@ -2679,7 +2679,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(DrawThemeText)
 	rc = (jint)DrawThemeText(arg0, arg1, arg2, arg3, lparg4, arg5, arg6, arg7, lparg8);
 */
 	{
-		LOAD_FUNCTION(fp, DrawThemeText)
+		OS_LOAD_FUNCTION(fp, DrawThemeText)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, jchar *, jint, jint, jint, RECT *))fp)(arg0, arg1, arg2, arg3, lparg4, arg5, arg6, arg7, lparg8);
 		}
@@ -2720,7 +2720,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(DwmEnableBlurBehindWindow)
 	rc = (jint)DwmEnableBlurBehindWindow((HWND)arg0, lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, DwmEnableBlurBehindWindow)
+		OS_LOAD_FUNCTION(fp, DwmEnableBlurBehindWindow)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(HWND, DWM_BLURBEHIND *))fp)((HWND)arg0, lparg1);
 		}
@@ -2744,7 +2744,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(DwmExtendFrameIntoClientArea)
 	rc = (jint)DwmExtendFrameIntoClientArea((HWND)arg0, lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, DwmExtendFrameIntoClientArea)
+		OS_LOAD_FUNCTION(fp, DwmExtendFrameIntoClientArea)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(HWND, MARGINS *))fp)((HWND)arg0, lparg1);
 		}
@@ -2862,7 +2862,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(EndBufferedPaint)
 	rc = (jint)EndBufferedPaint((HPAINTBUFFER)arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, EndBufferedPaint)
+		OS_LOAD_FUNCTION(fp, EndBufferedPaint)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(HPAINTBUFFER, jboolean))fp)((HPAINTBUFFER)arg0, arg1);
 		}
@@ -2948,7 +2948,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(EnumDisplayMonitors)
 	rc = (jboolean)EnumDisplayMonitors((HDC)arg0, (LPCRECT)lparg1, (MONITORENUMPROC)arg2, (LPARAM)arg3);
 */
 	{
-		LOAD_FUNCTION(fp, EnumDisplayMonitors)
+		OS_LOAD_FUNCTION(fp, EnumDisplayMonitors)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HDC, LPCRECT, MONITORENUMPROC, LPARAM))fp)((HDC)arg0, (LPCRECT)lparg1, (MONITORENUMPROC)arg2, (LPARAM)arg3);
 		}
@@ -3050,7 +3050,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(EnumSystemLanguageGroupsA)
 	rc = (jboolean)EnumSystemLanguageGroupsA((LANGUAGEGROUP_ENUMPROCA)arg0, arg1, (LONG_PTR)arg2);
 */
 	{
-		LOAD_FUNCTION(fp, EnumSystemLanguageGroupsA)
+		OS_LOAD_FUNCTION(fp, EnumSystemLanguageGroupsA)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(LANGUAGEGROUP_ENUMPROCA, jint, LONG_PTR))fp)((LANGUAGEGROUP_ENUMPROCA)arg0, arg1, (LONG_PTR)arg2);
 		}
@@ -3070,7 +3070,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(EnumSystemLanguageGroupsW)
 	rc = (jboolean)EnumSystemLanguageGroupsW((LANGUAGEGROUP_ENUMPROCW)arg0, arg1, (LONG_PTR)arg2);
 */
 	{
-		LOAD_FUNCTION(fp, EnumSystemLanguageGroupsW)
+		OS_LOAD_FUNCTION(fp, EnumSystemLanguageGroupsW)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(LANGUAGEGROUP_ENUMPROCW, jint, LONG_PTR))fp)((LANGUAGEGROUP_ENUMPROCW)arg0, arg1, (LONG_PTR)arg2);
 		}
@@ -4055,7 +4055,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetComboBoxInfo)
 	rc = (jboolean)GetComboBoxInfo((HWND)arg0, lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, GetComboBoxInfo)
+		OS_LOAD_FUNCTION(fp, GetComboBoxInfo)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HWND, COMBOBOXINFO *))fp)((HWND)arg0, lparg1);
 		}
@@ -4395,7 +4395,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetGestureInfo)
 	rc = (jboolean)GetGestureInfo((HGESTUREINFO)arg0, (PGESTUREINFO)lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, GetGestureInfo)
+		OS_LOAD_FUNCTION(fp, GetGestureInfo)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HGESTUREINFO, PGESTUREINFO))fp)((HGESTUREINFO)arg0, (PGESTUREINFO)lparg1);
 		}
@@ -4582,7 +4582,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetLayeredWindowAttributes)
 	rc = (jboolean)GetLayeredWindowAttributes((HWND)arg0, lparg1, lparg2, lparg3);
 */
 	{
-		LOAD_FUNCTION(fp, GetLayeredWindowAttributes)
+		OS_LOAD_FUNCTION(fp, GetLayeredWindowAttributes)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HWND, jint *, jbyte *, jint *))fp)((HWND)arg0, lparg1, lparg2, lparg3);
 		}
@@ -4606,7 +4606,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetLayout)
 	rc = (jint)GetLayout((HDC)arg0);
 */
 	{
-		LOAD_FUNCTION(fp, GetLayout)
+		OS_LOAD_FUNCTION(fp, GetLayout)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(HDC))fp)((HDC)arg0);
 		}
@@ -4684,7 +4684,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetMenuBarInfo)
 	rc = (jboolean)GetMenuBarInfo(arg0, arg1, arg2, lparg3);
 */
 	{
-		LOAD_FUNCTION(fp, GetMenuBarInfo)
+		OS_LOAD_FUNCTION(fp, GetMenuBarInfo)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, jint, jint, MENUBARINFO *))fp)(arg0, arg1, arg2, lparg3);
 		}
@@ -4720,7 +4720,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetMenuInfo)
 	rc = (jboolean)GetMenuInfo((HMENU)arg0, lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, GetMenuInfo)
+		OS_LOAD_FUNCTION(fp, GetMenuInfo)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HMENU, MENUINFO *))fp)((HMENU)arg0, lparg1);
 		}
@@ -4936,7 +4936,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetMonitorInfoA)
 	rc = (jboolean)GetMonitorInfoA((HMONITOR)arg0, (LPMONITORINFO)lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, GetMonitorInfoA)
+		OS_LOAD_FUNCTION(fp, GetMonitorInfoA)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HMONITOR, LPMONITORINFO))fp)((HMONITOR)arg0, (LPMONITORINFO)lparg1);
 		}
@@ -4960,7 +4960,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetMonitorInfoW)
 	rc = (jboolean)GetMonitorInfoW((HMONITOR)arg0, (LPMONITORINFO)lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, GetMonitorInfoW)
+		OS_LOAD_FUNCTION(fp, GetMonitorInfoW)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HMONITOR, LPMONITORINFO))fp)((HMONITOR)arg0, (LPMONITORINFO)lparg1);
 		}
@@ -5829,7 +5829,7 @@ JNIEXPORT jshort JNICALL OS_NATIVE(GetSystemDefaultUILanguage)
 	rc = (jshort)GetSystemDefaultUILanguage();
 */
 	{
-		LOAD_FUNCTION(fp, GetSystemDefaultUILanguage)
+		OS_LOAD_FUNCTION(fp, GetSystemDefaultUILanguage)
 		if (fp) {
 			rc = (jshort)((jshort (CALLING_CONVENTION*)())fp)();
 		}
@@ -6029,7 +6029,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetThemeBackgroundContentRect)
 	rc = (jint)GetThemeBackgroundContentRect(arg0, arg1, arg2, arg3, lparg4, lparg5);
 */
 	{
-		LOAD_FUNCTION(fp, GetThemeBackgroundContentRect)
+		OS_LOAD_FUNCTION(fp, GetThemeBackgroundContentRect)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, RECT *, RECT *))fp)(arg0, arg1, arg2, arg3, lparg4, lparg5);
 		}
@@ -6056,7 +6056,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetThemeBackgroundExtent)
 	rc = (jint)GetThemeBackgroundExtent(arg0, arg1, arg2, arg3, lparg4, lparg5);
 */
 	{
-		LOAD_FUNCTION(fp, GetThemeBackgroundExtent)
+		OS_LOAD_FUNCTION(fp, GetThemeBackgroundExtent)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, RECT *, RECT *))fp)(arg0, arg1, arg2, arg3, lparg4, lparg5);
 		}
@@ -6080,7 +6080,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetThemeColor)
 	rc = (jint)GetThemeColor(arg0, arg1, arg2, arg3, lparg4);
 */
 	{
-		LOAD_FUNCTION(fp, GetThemeColor)
+		OS_LOAD_FUNCTION(fp, GetThemeColor)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jint, jint, jint, jint *))fp)(arg0, arg1, arg2, arg3, lparg4);
 		}
@@ -6104,7 +6104,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetThemeInt)
 	rc = (jint)GetThemeInt(arg0, arg1, arg2, arg3, lparg4);
 */
 	{
-		LOAD_FUNCTION(fp, GetThemeInt)
+		OS_LOAD_FUNCTION(fp, GetThemeInt)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jint, jint, jint, jint *))fp)(arg0, arg1, arg2, arg3, lparg4);
 		}
@@ -6130,7 +6130,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetThemeMargins)
 	rc = (jint)GetThemeMargins(arg0, arg1, arg2, arg3, arg4, lparg5, lparg6);
 */
 	{
-		LOAD_FUNCTION(fp, GetThemeMargins)
+		OS_LOAD_FUNCTION(fp, GetThemeMargins)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, jint, RECT *, MARGINS *))fp)(arg0, arg1, arg2, arg3, arg4, lparg5, lparg6);
 		}
@@ -6155,7 +6155,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetThemeMetric)
 	rc = (jint)GetThemeMetric(arg0, arg1, arg2, arg3, arg4, lparg5);
 */
 	{
-		LOAD_FUNCTION(fp, GetThemeMetric)
+		OS_LOAD_FUNCTION(fp, GetThemeMetric)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, jint, jint *))fp)(arg0, arg1, arg2, arg3, arg4, lparg5);
 		}
@@ -6181,7 +6181,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetThemePartSize)
 	rc = (jint)GetThemePartSize(arg0, arg1, arg2, arg3, lparg4, arg5, lparg6);
 */
 	{
-		LOAD_FUNCTION(fp, GetThemePartSize)
+		OS_LOAD_FUNCTION(fp, GetThemePartSize)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, RECT *, jint, SIZE *))fp)(arg0, arg1, arg2, arg3, lparg4, arg5, lparg6);
 		}
@@ -6206,7 +6206,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetThemeRect)
 	rc = (jint)GetThemeRect(arg0, arg1, arg2, arg3, lparg4);
 */
 	{
-		LOAD_FUNCTION(fp, GetThemeRect)
+		OS_LOAD_FUNCTION(fp, GetThemeRect)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jint, jint, jint, RECT *))fp)(arg0, arg1, arg2, arg3, lparg4);
 		}
@@ -6228,7 +6228,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetThemeSysSize)
 	rc = (jint)GetThemeSysSize(arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, GetThemeSysSize)
+		OS_LOAD_FUNCTION(fp, GetThemeSysSize)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
 		}
@@ -6254,7 +6254,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetThemeTextExtent)
 	rc = (jint)GetThemeTextExtent(arg0, arg1, arg2, arg3, lparg4, arg5, arg6, lparg7, lparg8);
 */
 	{
-		LOAD_FUNCTION(fp, GetThemeTextExtent)
+		OS_LOAD_FUNCTION(fp, GetThemeTextExtent)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, jchar *, jint, jint, RECT *, RECT *))fp)(arg0, arg1, arg2, arg3, lparg4, arg5, arg6, lparg7, lparg8);
 		}
@@ -6334,7 +6334,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetTouchInputInfo)
 	rc = (jboolean)GetTouchInputInfo((HTOUCHINPUT)arg0, (UINT)arg1, (PTOUCHINPUT)arg2, arg3);
 */
 	{
-		LOAD_FUNCTION(fp, GetTouchInputInfo)
+		OS_LOAD_FUNCTION(fp, GetTouchInputInfo)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HTOUCHINPUT, UINT, PTOUCHINPUT, jint))fp)((HTOUCHINPUT)arg0, (UINT)arg1, (PTOUCHINPUT)arg2, arg3);
 		}
@@ -6634,7 +6634,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(GetWindowTheme)
 	rc = (jintLong)GetWindowTheme((HWND)arg0);
 */
 	{
-		LOAD_FUNCTION(fp, GetWindowTheme)
+		OS_LOAD_FUNCTION(fp, GetWindowTheme)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(HWND))fp)((HWND)arg0);
 		}
@@ -6778,7 +6778,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GradientFill)
 	rc = (jboolean)GradientFill((HDC)arg0, (PTRIVERTEX)arg1, (ULONG)arg2, (PVOID)arg3, (ULONG)arg4, (ULONG)arg5);
 */
 	{
-		LOAD_FUNCTION(fp, GradientFill)
+		OS_LOAD_FUNCTION(fp, GradientFill)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HDC, PTRIVERTEX, ULONG, PVOID, ULONG, ULONG))fp)((HDC)arg0, (PTRIVERTEX)arg1, (ULONG)arg2, (PVOID)arg3, (ULONG)arg4, (ULONG)arg5);
 		}
@@ -6924,7 +6924,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(HitTestThemeBackground)
 	rc = (jint)HitTestThemeBackground(arg0, arg1, arg2, arg3, arg4, lparg5, arg6, *lparg7, lparg8);
 */
 	{
-		LOAD_FUNCTION(fp, HitTestThemeBackground)
+		OS_LOAD_FUNCTION(fp, HitTestThemeBackground)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, jint, RECT *, jintLong, POINT, jshort *))fp)(arg0, arg1, arg2, arg3, arg4, lparg5, arg6, *lparg7, lparg8);
 		}
@@ -7279,7 +7279,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImmDisableTextFrameService)
 	rc = (jboolean)ImmDisableTextFrameService(arg0);
 */
 	{
-		LOAD_FUNCTION(fp, ImmDisableTextFrameService)
+		OS_LOAD_FUNCTION(fp, ImmDisableTextFrameService)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jint))fp)(arg0);
 		}
@@ -7901,7 +7901,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsAppThemed)
 	rc = (jboolean)IsAppThemed();
 */
 	{
-		LOAD_FUNCTION(fp, IsAppThemed)
+		OS_LOAD_FUNCTION(fp, IsAppThemed)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)())fp)();
 		}
@@ -7957,7 +7957,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsHungAppWindow)
 	rc = (jboolean)IsHungAppWindow((HWND)arg0);
 */
 	{
-		LOAD_FUNCTION(fp, IsHungAppWindow)
+		OS_LOAD_FUNCTION(fp, IsHungAppWindow)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HWND))fp)((HWND)arg0);
 		}
@@ -7991,7 +7991,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsTouchWindow)
 	rc = (jboolean)IsTouchWindow((HWND)arg0, (PULONG)lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, IsTouchWindow)
+		OS_LOAD_FUNCTION(fp, IsTouchWindow)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HWND, PULONG))fp)((HWND)arg0, (PULONG)lparg1);
 		}
@@ -8565,7 +8565,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(MCIWndRegisterClass)
 	rc = (jboolean)MCIWndRegisterClass();
 */
 	{
-		LOAD_FUNCTION(fp, MCIWndRegisterClass)
+		OS_LOAD_FUNCTION(fp, MCIWndRegisterClass)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)())fp)();
 		}
@@ -8837,7 +8837,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(MonitorFromWindow)
 	rc = (jintLong)MonitorFromWindow(arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, MonitorFromWindow)
+		OS_LOAD_FUNCTION(fp, MonitorFromWindow)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
 		}
@@ -11990,7 +11990,7 @@ JNIEXPORT void JNICALL OS_NATIVE(NotifyWinEvent)
 	NotifyWinEvent((DWORD)arg0, (HWND)arg1, (LONG)arg2, (LONG)arg3);
 */
 	{
-		LOAD_FUNCTION(fp, NotifyWinEvent)
+		OS_LOAD_FUNCTION(fp, NotifyWinEvent)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(DWORD, HWND, LONG, LONG))fp)((DWORD)arg0, (HWND)arg1, (LONG)arg2, (LONG)arg3);
 		}
@@ -12219,7 +12219,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(OpenThemeData)
 	rc = (jintLong)OpenThemeData((HWND)arg0, (LPCWSTR)lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, OpenThemeData)
+		OS_LOAD_FUNCTION(fp, OpenThemeData)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(HWND, LPCWSTR))fp)((HWND)arg0, (LPCWSTR)lparg1);
 		}
@@ -12355,7 +12355,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(PSPropertyKeyFromString)
 	rc = (jint)PSPropertyKeyFromString(lparg0, lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, PSPropertyKeyFromString)
+		OS_LOAD_FUNCTION(fp, PSPropertyKeyFromString)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jchar *, PROPERTYKEY *))fp)(lparg0, lparg1);
 		}
@@ -12586,7 +12586,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(PrintWindow)
 	rc = (jboolean)PrintWindow((HWND)arg0, (HDC)arg1, arg2);
 */
 	{
-		LOAD_FUNCTION(fp, PrintWindow)
+		OS_LOAD_FUNCTION(fp, PrintWindow)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HWND, HDC, jint))fp)((HWND)arg0, (HDC)arg1, arg2);
 		}
@@ -13228,7 +13228,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(RegisterTouchWindow)
 	rc = (jboolean)RegisterTouchWindow((HWND)arg0, (ULONG)arg1);
 */
 	{
-		LOAD_FUNCTION(fp, RegisterTouchWindow)
+		OS_LOAD_FUNCTION(fp, RegisterTouchWindow)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HWND, ULONG))fp)((HWND)arg0, (ULONG)arg1);
 		}
@@ -13582,7 +13582,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SHCreateItemFromRelativeName)
 	rc = (jint)SHCreateItemFromRelativeName(arg0, lparg1, arg2, lparg3, lparg4);
 */
 	{
-		LOAD_FUNCTION(fp, SHCreateItemFromRelativeName)
+		OS_LOAD_FUNCTION(fp, SHCreateItemFromRelativeName)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jchar *, jintLong, jbyte *, jintLong *))fp)(arg0, lparg1, arg2, lparg3, lparg4);
 		}
@@ -13614,7 +13614,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SHCreateItemInKnownFolder)
 	rc = (jint)SHCreateItemInKnownFolder(lparg0, arg1, lparg2, lparg3, lparg4);
 */
 	{
-		LOAD_FUNCTION(fp, SHCreateItemInKnownFolder)
+		OS_LOAD_FUNCTION(fp, SHCreateItemInKnownFolder)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jbyte *, jint, jchar *, jbyte *, jintLong *))fp)(lparg0, arg1, lparg2, lparg3, lparg4);
 		}
@@ -16292,7 +16292,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetCurrentProcessExplicitAppUserModelID)
 	rc = (jint)SetCurrentProcessExplicitAppUserModelID(lparg0);
 */
 	{
-		LOAD_FUNCTION(fp, SetCurrentProcessExplicitAppUserModelID)
+		OS_LOAD_FUNCTION(fp, SetCurrentProcessExplicitAppUserModelID)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jchar *))fp)(lparg0);
 		}
@@ -16370,7 +16370,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetDllDirectoryA)
 	rc = (jboolean)SetDllDirectoryA((LPSTR)lparg0);
 */
 	{
-		LOAD_FUNCTION(fp, SetDllDirectoryA)
+		OS_LOAD_FUNCTION(fp, SetDllDirectoryA)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(LPSTR))fp)((LPSTR)lparg0);
 		}
@@ -16394,7 +16394,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetDllDirectoryW)
 	rc = (jboolean)SetDllDirectoryW((LPWSTR)lparg0);
 */
 	{
-		LOAD_FUNCTION(fp, SetDllDirectoryW)
+		OS_LOAD_FUNCTION(fp, SetDllDirectoryW)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(LPWSTR))fp)((LPWSTR)lparg0);
 		}
@@ -16452,7 +16452,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetGestureConfig)
 	rc = (jboolean)SetGestureConfig((HWND)arg0, arg1, arg2, (PGESTURECONFIG)arg3, arg4);
 */
 	{
-		LOAD_FUNCTION(fp, SetGestureConfig)
+		OS_LOAD_FUNCTION(fp, SetGestureConfig)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HWND, jint, jint, PGESTURECONFIG, jint))fp)((HWND)arg0, arg1, arg2, (PGESTURECONFIG)arg3, arg4);
 		}
@@ -16484,7 +16484,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetLayeredWindowAttributes)
 	rc = (jboolean)SetLayeredWindowAttributes((HWND)arg0, arg1, arg2, arg3);
 */
 	{
-		LOAD_FUNCTION(fp, SetLayeredWindowAttributes)
+		OS_LOAD_FUNCTION(fp, SetLayeredWindowAttributes)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HWND, jint, jbyte, jint))fp)((HWND)arg0, arg1, arg2, arg3);
 		}
@@ -16504,7 +16504,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetLayout)
 	rc = (jint)SetLayout((HDC)arg0, (DWORD)arg1);
 */
 	{
-		LOAD_FUNCTION(fp, SetLayout)
+		OS_LOAD_FUNCTION(fp, SetLayout)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(HDC, DWORD))fp)((HDC)arg0, (DWORD)arg1);
 		}
@@ -16574,7 +16574,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetMenuInfo)
 	rc = (jboolean)SetMenuInfo((HMENU)arg0, lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, SetMenuInfo)
+		OS_LOAD_FUNCTION(fp, SetMenuInfo)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HMENU, MENUINFO *))fp)((HMENU)arg0, lparg1);
 		}
@@ -16706,7 +16706,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetProcessDPIAware)
 	rc = (jboolean)SetProcessDPIAware();
 */
 	{
-		LOAD_FUNCTION(fp, SetProcessDPIAware)
+		OS_LOAD_FUNCTION(fp, SetProcessDPIAware)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)())fp)();
 		}
@@ -17042,7 +17042,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetWindowTheme)
 	rc = (jint)SetWindowTheme((HWND)arg0, (LPCWSTR)lparg1, (LPCWSTR)lparg2);
 */
 	{
-		LOAD_FUNCTION(fp, SetWindowTheme)
+		OS_LOAD_FUNCTION(fp, SetWindowTheme)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(HWND, LPCWSTR, LPCWSTR))fp)((HWND)arg0, (LPCWSTR)lparg1, (LPCWSTR)lparg2);
 		}
@@ -17807,7 +17807,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(TransparentBlt)
 	rc = (jboolean)TransparentBlt(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
 */
 	{
-		LOAD_FUNCTION(fp, TransparentBlt)
+		OS_LOAD_FUNCTION(fp, TransparentBlt)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, jint, jint, jint, jint, jintLong, jint, jint, jint, jint, jint))fp)(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
 		}
@@ -17923,7 +17923,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(UnregisterTouchWindow)
 	rc = (jboolean)UnregisterTouchWindow(arg0);
 */
 	{
-		LOAD_FUNCTION(fp, UnregisterTouchWindow)
+		OS_LOAD_FUNCTION(fp, UnregisterTouchWindow)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong))fp)(arg0);
 		}
@@ -17951,7 +17951,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(UpdateLayeredWindow)
 	rc = (jboolean)UpdateLayeredWindow((HWND)arg0, (HDC)arg1, lparg2, lparg3, (HDC)arg4, lparg5, (COLORREF)arg6, lparg7, arg8);
 */
 	{
-		LOAD_FUNCTION(fp, UpdateLayeredWindow)
+		OS_LOAD_FUNCTION(fp, UpdateLayeredWindow)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HWND, HDC, POINT *, SIZE *, HDC, POINT *, COLORREF, BLENDFUNCTION *, jint))fp)((HWND)arg0, (HDC)arg1, lparg2, lparg3, (HDC)arg4, lparg5, (COLORREF)arg6, lparg7, arg8);
 		}

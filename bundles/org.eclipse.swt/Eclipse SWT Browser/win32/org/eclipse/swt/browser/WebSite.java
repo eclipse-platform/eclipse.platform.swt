@@ -335,6 +335,16 @@ int TranslateAccelerator(int /*long*/ lpMsg, int /*long*/ pguidCmdGroup, int nCm
 				 * if it will be within IE or out to another Control.
 				 */
 				break;
+			case OS.VK_UP:
+			case OS.VK_DOWN:
+			case OS.VK_LEFT:
+			case OS.VK_RIGHT:
+			case OS.VK_HOME:
+			case OS.VK_END:
+			case OS.VK_PRIOR:
+			case OS.VK_NEXT:
+				/* Do not translate/consume IE's keys for scrolling content. */
+				break;
 			case OS.VK_BACK:
 			case OS.VK_RETURN:
 				/*

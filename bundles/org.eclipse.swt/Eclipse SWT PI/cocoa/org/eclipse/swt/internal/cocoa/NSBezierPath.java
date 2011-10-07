@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -102,7 +102,7 @@ public void curveToPoint(NSPoint endPoint, NSPoint controlPoint1, NSPoint contro
 }
 
 public static float /*double*/ defaultFlatness() {
-	return (float)OS.objc_msgSend_fpret(OS.class_NSBezierPath, OS.sel_defaultFlatness);
+	return (float /*double*/)OS.objc_msgSend_fpret(OS.class_NSBezierPath, OS.sel_defaultFlatness);
 }
 
 public int /*long*/ elementAtIndex(int /*long*/ index, int /*long*/ points) {

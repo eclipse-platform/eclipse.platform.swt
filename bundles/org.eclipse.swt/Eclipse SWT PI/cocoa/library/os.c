@@ -29,7 +29,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSFontActivateFromFileReference)
 	rc = (jint)ATSFontActivateFromFileReference((const FSRef *)lparg0, (ATSFontContext)arg1, (ATSFontFormat)arg2, (void *)arg3, (ATSOptionFlags)arg4, (ATSFontContainerRef *)lparg5);
 */
 	{
-		LOAD_FUNCTION(fp, ATSFontActivateFromFileReference)
+		OS_LOAD_FUNCTION(fp, ATSFontActivateFromFileReference)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(const FSRef *, ATSFontContext, ATSFontFormat, void *, ATSOptionFlags, ATSFontContainerRef *))fp)((const FSRef *)lparg0, (ATSFontContext)arg1, (ATSFontFormat)arg2, (void *)arg3, (ATSOptionFlags)arg4, (ATSFontContainerRef *)lparg5);
 		}
@@ -52,7 +52,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(AcquireRootMenu)
 	rc = (jintLong)AcquireRootMenu();
 */
 	{
-		LOAD_FUNCTION(fp, AcquireRootMenu)
+		OS_LOAD_FUNCTION(fp, AcquireRootMenu)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
 		}
@@ -1314,7 +1314,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGContextCopyPath)
 	rc = (jintLong)CGContextCopyPath(arg0);
 */
 	{
-		LOAD_FUNCTION(fp, CGContextCopyPath)
+		OS_LOAD_FUNCTION(fp, CGContextCopyPath)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
 		}
@@ -1337,7 +1337,7 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextCopyWindowContentsToRect)
 	CGContextCopyWindowContentsToRect(arg0, *lparg1, arg2, arg3, *lparg4);
 */
 	{
-		LOAD_FUNCTION(fp, CGContextCopyWindowContentsToRect)
+		OS_LOAD_FUNCTION(fp, CGContextCopyWindowContentsToRect)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jintLong, CGRect, jintLong, jintLong, CGRect))fp)(arg0, *lparg1, arg2, arg3, *lparg4);
 		}
@@ -1669,7 +1669,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayCreateImage)
 	rc = (jintLong)CGDisplayCreateImage((CGDirectDisplayID)arg0);
 */
 	{
-		LOAD_FUNCTION(fp, CGDisplayCreateImage)
+		OS_LOAD_FUNCTION(fp, CGDisplayCreateImage)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(CGDirectDisplayID))fp)((CGDirectDisplayID)arg0);
 		}
@@ -2207,7 +2207,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(CancelMenuTracking)
 	rc = (jint)CancelMenuTracking(arg0, arg1, arg2);
 */
 	{
-		LOAD_FUNCTION(fp, CancelMenuTracking)
+		OS_LOAD_FUNCTION(fp, CancelMenuTracking)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jboolean, jint))fp)(arg0, arg1, arg2);
 		}
@@ -2226,7 +2226,7 @@ JNIEXPORT void JNICALL OS_NATIVE(CloseRgn)
 	CloseRgn(arg0);
 */
 	{
-		LOAD_FUNCTION(fp, CloseRgn)
+		OS_LOAD_FUNCTION(fp, CloseRgn)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
 		}
@@ -2244,7 +2244,7 @@ JNIEXPORT void JNICALL OS_NATIVE(CopyRgn)
 	CopyRgn(arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, CopyRgn)
+		OS_LOAD_FUNCTION(fp, CopyRgn)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
 		}
@@ -2272,7 +2272,7 @@ JNIEXPORT void JNICALL OS_NATIVE(DeleteMenuItem)
 	DeleteMenuItem((MenuRef)arg0, (short)arg1);
 */
 	{
-		LOAD_FUNCTION(fp, DeleteMenuItem)
+		OS_LOAD_FUNCTION(fp, DeleteMenuItem)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(MenuRef, short))fp)((MenuRef)arg0, (short)arg1);
 		}
@@ -2290,7 +2290,7 @@ JNIEXPORT void JNICALL OS_NATIVE(DiffRgn)
 	DiffRgn(arg0, arg1, arg2);
 */
 	{
-		LOAD_FUNCTION(fp, DiffRgn)
+		OS_LOAD_FUNCTION(fp, DiffRgn)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jintLong, jintLong, jintLong))fp)(arg0, arg1, arg2);
 		}
@@ -2308,7 +2308,7 @@ JNIEXPORT void JNICALL OS_NATIVE(DisposeRgn)
 	DisposeRgn(arg0);
 */
 	{
-		LOAD_FUNCTION(fp, DisposeRgn)
+		OS_LOAD_FUNCTION(fp, DisposeRgn)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
 		}
@@ -2327,7 +2327,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(EmptyRgn)
 	rc = (jboolean)EmptyRgn(arg0);
 */
 	{
-		LOAD_FUNCTION(fp, EmptyRgn)
+		OS_LOAD_FUNCTION(fp, EmptyRgn)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong))fp)(arg0);
 		}
@@ -2351,7 +2351,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(FSPathMakeRef)
 	rc = (jint)FSPathMakeRef((const UInt8 *)arg0, (FSRef *)lparg1, (Boolean *)lparg2);
 */
 	{
-		LOAD_FUNCTION(fp, FSPathMakeRef)
+		OS_LOAD_FUNCTION(fp, FSPathMakeRef)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(const UInt8 *, FSRef *, Boolean *))fp)((const UInt8 *)arg0, (FSRef *)lparg1, (Boolean *)lparg2);
 		}
@@ -2390,7 +2390,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentEventButtonState)
 	rc = (jint)GetCurrentEventButtonState();
 */
 	{
-		LOAD_FUNCTION(fp, GetCurrentEventButtonState)
+		OS_LOAD_FUNCTION(fp, GetCurrentEventButtonState)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
 		}
@@ -2426,7 +2426,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetDblTime)
 	rc = (jint)GetDblTime();
 */
 	{
-		LOAD_FUNCTION(fp, GetDblTime)
+		OS_LOAD_FUNCTION(fp, GetDblTime)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
 		}
@@ -2448,7 +2448,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetIconRefFromTypeInfo)
 	rc = (jint)GetIconRefFromTypeInfo((OSType)arg0, (OSType)arg1, (CFStringRef)arg2, (CFStringRef)arg3, (IconServicesUsageFlags)arg4, (IconRef *)lparg5);
 */
 	{
-		LOAD_FUNCTION(fp, GetIconRefFromTypeInfo)
+		OS_LOAD_FUNCTION(fp, GetIconRefFromTypeInfo)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(OSType, OSType, CFStringRef, CFStringRef, IconServicesUsageFlags, IconRef *))fp)((OSType)arg0, (OSType)arg1, (CFStringRef)arg2, (CFStringRef)arg3, (IconServicesUsageFlags)arg4, (IconRef *)lparg5);
 		}
@@ -2474,7 +2474,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetIndMenuItemWithCommandID)
 	rc = (jint)GetIndMenuItemWithCommandID((MenuRef)arg0, (MenuCommand)arg1, (UInt32)arg2, (MenuRef *)lparg3, (MenuItemIndex *)lparg4);
 */
 	{
-		LOAD_FUNCTION(fp, GetIndMenuItemWithCommandID)
+		OS_LOAD_FUNCTION(fp, GetIndMenuItemWithCommandID)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(MenuRef, MenuCommand, UInt32, MenuRef *, MenuItemIndex *))fp)((MenuRef)arg0, (MenuCommand)arg1, (UInt32)arg2, (MenuRef *)lparg3, (MenuItemIndex *)lparg4);
 		}
@@ -2498,7 +2498,7 @@ JNIEXPORT void JNICALL OS_NATIVE(GetRegionBounds)
 	GetRegionBounds(arg0, lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, GetRegionBounds)
+		OS_LOAD_FUNCTION(fp, GetRegionBounds)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jintLong, jshort *))fp)(arg0, lparg1);
 		}
@@ -2523,7 +2523,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetSystemUIMode)
 	rc = (jint)GetSystemUIMode((UInt32*)lparg0, (UInt32*)lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, GetSystemUIMode)
+		OS_LOAD_FUNCTION(fp, GetSystemUIMode)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(UInt32*, UInt32*))fp)((UInt32*)lparg0, (UInt32*)lparg1);
 		}
@@ -2547,7 +2547,7 @@ JNIEXPORT void JNICALL OS_NATIVE(GetThemeMetric)
 	GetThemeMetric(arg0, (SInt32 *)lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, GetThemeMetric)
+		OS_LOAD_FUNCTION(fp, GetThemeMetric)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jint, SInt32 *))fp)(arg0, (SInt32 *)lparg1);
 		}
@@ -2570,7 +2570,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawFocusRect)
 	rc = (jint)HIThemeDrawFocusRect(lparg0, arg1, (CGContextRef)arg2, arg3);
 */
 	{
-		LOAD_FUNCTION(fp, HIThemeDrawFocusRect)
+		OS_LOAD_FUNCTION(fp, HIThemeDrawFocusRect)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(CGRect *, jboolean, CGContextRef, jint))fp)(lparg0, arg1, (CGContextRef)arg2, arg3);
 		}
@@ -2592,7 +2592,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIWindowGetCGWindowID)
 	rc = (jint)HIWindowGetCGWindowID((WindowRef)arg0);
 */
 	{
-		LOAD_FUNCTION(fp, HIWindowGetCGWindowID)
+		OS_LOAD_FUNCTION(fp, HIWindowGetCGWindowID)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(WindowRef))fp)((WindowRef)arg0);
 		}
@@ -2654,7 +2654,7 @@ JNIEXPORT jbyte JNICALL OS_NATIVE(LMGetKbdType)
 	rc = (jbyte)LMGetKbdType();
 */
 	{
-		LOAD_FUNCTION(fp, LMGetKbdType)
+		OS_LOAD_FUNCTION(fp, LMGetKbdType)
 		if (fp) {
 			rc = (jbyte)((jbyte (CALLING_CONVENTION*)())fp)();
 		}
@@ -2692,7 +2692,7 @@ JNIEXPORT void JNICALL OS_NATIVE(LineTo)
 	LineTo(arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, LineTo)
+		OS_LOAD_FUNCTION(fp, LineTo)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jshort, jshort))fp)(arg0, arg1);
 		}
@@ -2710,7 +2710,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveTo)
 	MoveTo(arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, MoveTo)
+		OS_LOAD_FUNCTION(fp, MoveTo)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jshort, jshort))fp)(arg0, arg1);
 		}
@@ -5419,7 +5419,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NewRgn)
 	rc = (jintLong)NewRgn();
 */
 	{
-		LOAD_FUNCTION(fp, NewRgn)
+		OS_LOAD_FUNCTION(fp, NewRgn)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
 		}
@@ -5438,7 +5438,7 @@ JNIEXPORT void JNICALL OS_NATIVE(OffsetRgn)
 	OffsetRgn(arg0, arg1, arg2);
 */
 	{
-		LOAD_FUNCTION(fp, OffsetRgn)
+		OS_LOAD_FUNCTION(fp, OffsetRgn)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jintLong, jshort, jshort))fp)(arg0, arg1, arg2);
 		}
@@ -5456,7 +5456,7 @@ JNIEXPORT void JNICALL OS_NATIVE(OpenRgn)
 	OpenRgn();
 */
 	{
-		LOAD_FUNCTION(fp, OpenRgn)
+		OS_LOAD_FUNCTION(fp, OpenRgn)
 		if (fp) {
 			((void (CALLING_CONVENTION*)())fp)();
 		}
@@ -5477,7 +5477,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(PMGetDuplex)
 	rc = (jintLong)PMGetDuplex((PMPrintSettings)arg0, (PMDuplexMode *)lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, PMGetDuplex)
+		OS_LOAD_FUNCTION(fp, PMGetDuplex)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrintSettings, PMDuplexMode *))fp)((PMPrintSettings)arg0, (PMDuplexMode *)lparg1);
 		}
@@ -5501,7 +5501,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(PMPrinterGetIndexedPrinterResolution)
 	rc = (jintLong)PMPrinterGetIndexedPrinterResolution((PMPrinter)arg0, arg1, (PMResolution *)lparg2);
 */
 	{
-		LOAD_FUNCTION(fp, PMPrinterGetIndexedPrinterResolution)
+		OS_LOAD_FUNCTION(fp, PMPrinterGetIndexedPrinterResolution)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrinter, jint, PMResolution *))fp)((PMPrinter)arg0, arg1, (PMResolution *)lparg2);
 		}
@@ -5525,7 +5525,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(PMPrinterGetOutputResolution)
 	rc = (jintLong)PMPrinterGetOutputResolution((PMPrinter)arg0, (PMPrintSettings)arg1, (PMResolution *)lparg2);
 */
 	{
-		LOAD_FUNCTION(fp, PMPrinterGetOutputResolution)
+		OS_LOAD_FUNCTION(fp, PMPrinterGetOutputResolution)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrinter, PMPrintSettings, PMResolution *))fp)((PMPrinter)arg0, (PMPrintSettings)arg1, (PMResolution *)lparg2);
 		}
@@ -5549,7 +5549,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(PMPrinterGetPrinterResolutionCount)
 	rc = (jintLong)PMPrinterGetPrinterResolutionCount((PMPrinter)arg0, lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, PMPrinterGetPrinterResolutionCount)
+		OS_LOAD_FUNCTION(fp, PMPrinterGetPrinterResolutionCount)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrinter, jint *))fp)((PMPrinter)arg0, lparg1);
 		}
@@ -5573,7 +5573,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(PMSessionGetCurrentPrinter)
 	rc = (jintLong)PMSessionGetCurrentPrinter((PMPrintSession)arg0, (PMPrinter *)lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, PMSessionGetCurrentPrinter)
+		OS_LOAD_FUNCTION(fp, PMSessionGetCurrentPrinter)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrintSession, PMPrinter *))fp)((PMPrintSession)arg0, (PMPrinter *)lparg1);
 		}
@@ -5597,7 +5597,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(PMSessionGetDestinationType)
 	rc = (jintLong)PMSessionGetDestinationType((PMPrintSession)arg0, (PMPrintSettings)arg1, lparg2);
 */
 	{
-		LOAD_FUNCTION(fp, PMSessionGetDestinationType)
+		OS_LOAD_FUNCTION(fp, PMSessionGetDestinationType)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrintSession, PMPrintSettings, jshort *))fp)((PMPrintSession)arg0, (PMPrintSettings)arg1, lparg2);
 		}
@@ -5619,7 +5619,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(PMSetDuplex)
 	rc = (jintLong)PMSetDuplex((PMPrintSettings)arg0, (PMDuplexMode)arg1);
 */
 	{
-		LOAD_FUNCTION(fp, PMSetDuplex)
+		OS_LOAD_FUNCTION(fp, PMSetDuplex)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrintSettings, PMDuplexMode))fp)((PMPrintSettings)arg0, (PMDuplexMode)arg1);
 		}
@@ -5641,7 +5641,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(PtInRgn)
 	rc = (jboolean)PtInRgn(*(Point *)lparg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, PtInRgn)
+		OS_LOAD_FUNCTION(fp, PtInRgn)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(Point, jintLong))fp)(*(Point *)lparg0, arg1);
 		}
@@ -5663,7 +5663,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(QDRegionToRects)
 	rc = (jint)QDRegionToRects(arg0, arg1, arg2, arg3);
 */
 	{
-		LOAD_FUNCTION(fp, QDRegionToRects)
+		OS_LOAD_FUNCTION(fp, QDRegionToRects)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jint, jintLong, jintLong))fp)(arg0, arg1, arg2, arg3);
 		}
@@ -5685,7 +5685,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(RectInRgn)
 	rc = (jboolean)RectInRgn(lparg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, RectInRgn)
+		OS_LOAD_FUNCTION(fp, RectInRgn)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jshort *, jintLong))fp)(lparg0, arg1);
 		}
@@ -5708,7 +5708,7 @@ JNIEXPORT void JNICALL OS_NATIVE(RectRgn)
 	RectRgn(arg0, lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, RectRgn)
+		OS_LOAD_FUNCTION(fp, RectRgn)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jintLong, jshort *))fp)(arg0, lparg1);
 		}
@@ -5776,7 +5776,7 @@ JNIEXPORT void JNICALL OS_NATIVE(SectRgn)
 	SectRgn(arg0, arg1, arg2);
 */
 	{
-		LOAD_FUNCTION(fp, SectRgn)
+		OS_LOAD_FUNCTION(fp, SectRgn)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jintLong, jintLong, jintLong))fp)(arg0, arg1, arg2);
 		}
@@ -5812,7 +5812,7 @@ JNIEXPORT void JNICALL OS_NATIVE(SetRect)
 	SetRect(lparg0, arg1, arg2, arg3, arg4);
 */
 	{
-		LOAD_FUNCTION(fp, SetRect)
+		OS_LOAD_FUNCTION(fp, SetRect)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jshort *, jshort, jshort, jshort, jshort))fp)(lparg0, arg1, arg2, arg3, arg4);
 		}
@@ -5833,7 +5833,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetSystemUIMode)
 	rc = (jint)SetSystemUIMode((UInt32)arg0, (UInt32)arg1);
 */
 	{
-		LOAD_FUNCTION(fp, SetSystemUIMode)
+		OS_LOAD_FUNCTION(fp, SetSystemUIMode)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(UInt32, UInt32))fp)((UInt32)arg0, (UInt32)arg1);
 		}
@@ -5853,7 +5853,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetThemeCursor)
 	rc = (jint)SetThemeCursor(arg0);
 */
 	{
-		LOAD_FUNCTION(fp, SetThemeCursor)
+		OS_LOAD_FUNCTION(fp, SetThemeCursor)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint))fp)(arg0);
 		}
@@ -5873,7 +5873,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(TISCopyCurrentKeyboardInputSource)
 	rc = (jintLong)TISCopyCurrentKeyboardInputSource();
 */
 	{
-		LOAD_FUNCTION(fp, TISCopyCurrentKeyboardInputSource)
+		OS_LOAD_FUNCTION(fp, TISCopyCurrentKeyboardInputSource)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
 		}
@@ -5893,7 +5893,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(TISGetInputSourceProperty)
 	rc = (jintLong)TISGetInputSourceProperty(arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, TISGetInputSourceProperty)
+		OS_LOAD_FUNCTION(fp, TISGetInputSourceProperty)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
 		}
@@ -5935,7 +5935,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(UCKeyTranslate)
 	rc = (jint)UCKeyTranslate((const UCKeyboardLayout *)arg0, (UInt16)arg1, (UInt16)arg2, (UInt32)arg3, (UInt32)arg4, (OptionBits)arg5, (UInt32 *)lparg6, (UniCharCount)arg7, (UniCharCount *)lparg8, (UniChar *)lparg9);
 */
 	{
-		LOAD_FUNCTION(fp, UCKeyTranslate)
+		OS_LOAD_FUNCTION(fp, UCKeyTranslate)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(const UCKeyboardLayout *, UInt16, UInt16, UInt32, UInt32, OptionBits, UInt32 *, UniCharCount, UniCharCount *, UniChar *))fp)((const UCKeyboardLayout *)arg0, (UInt16)arg1, (UInt16)arg2, (UInt32)arg3, (UInt32)arg4, (OptionBits)arg5, (UInt32 *)lparg6, (UniCharCount)arg7, (UniCharCount *)lparg8, (UniChar *)lparg9);
 		}
@@ -5970,7 +5970,7 @@ JNIEXPORT void JNICALL OS_NATIVE(UnionRgn)
 	UnionRgn(arg0, arg1, arg2);
 */
 	{
-		LOAD_FUNCTION(fp, UnionRgn)
+		OS_LOAD_FUNCTION(fp, UnionRgn)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jintLong, jintLong, jintLong))fp)(arg0, arg1, arg2);
 		}
@@ -6133,7 +6133,7 @@ JNIEXPORT void JNICALL OS_NATIVE(instrumentObjcMessageSends)
 	instrumentObjcMessageSends(arg0);
 */
 	{
-		LOAD_FUNCTION(fp, instrumentObjcMessageSends)
+		OS_LOAD_FUNCTION(fp, instrumentObjcMessageSends)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jboolean))fp)(arg0);
 		}
@@ -8756,6 +8756,33 @@ fail:
 }
 #endif
 
+#if (!defined(NO_objc_1msgSend__II_3II) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJ_3II) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__II_3II)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintArray arg2, jint arg3)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__JJ_3II)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintArray arg2, jint arg3)
+#endif
+{
+	jint *lparg2=NULL;
+	jintLong rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__II_3II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJ_3II_FUNC);
+#endif
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jint *, jint))objc_msgSend)(arg0, arg1, lparg2, arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__II_3II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJ_3II_FUNC);
+#endif
+	return rc;
+}
+#endif
+
 #if (!defined(NO_objc_1msgSend__II_3III) && !defined(JNI64)) || (!defined(NO_objc_1msgSend__JJ_3JII) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jintLong JNICALL OS_NATIVE(objc_1msgSend__II_3III)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2, jint arg3, jint arg4)
@@ -8779,18 +8806,6 @@ fail:
 #else
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJ_3JII_FUNC);
 #endif
-	return rc;
-}
-#endif
-
-#ifndef NO_objc_1msgSend__JJFD
-JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJFD)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jfloat arg2, jdouble arg3)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJFD_FUNC);
-	rc = (jlong)((jlong (*)(jlong, jlong, jfloat, jdouble))objc_msgSend)(arg0, arg1, arg2, arg3);
-	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJFD_FUNC);
 	return rc;
 }
 #endif
@@ -9886,6 +9901,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJS)(JNIEnv *env, jcla
 #else
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJS_FUNC);
 #endif
+	return rc;
+}
+#endif
+
+#ifndef NO_objc_1msgSend_1floatret
+JNIEXPORT jfloat JNICALL OS_NATIVE(objc_1msgSend_1floatret)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jfloat rc = 0;
+	OS_NATIVE_ENTER(env, that, objc_1msgSend_1floatret_FUNC);
+	rc = (jfloat)((jfloat (*)(jintLong, jintLong))objc_msgSend_floatret)(arg0, arg1);
+	OS_NATIVE_EXIT(env, that, objc_1msgSend_1floatret_FUNC);
 	return rc;
 }
 #endif

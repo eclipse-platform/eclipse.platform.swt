@@ -35,6 +35,7 @@ import org.eclipse.swt.graphics.*;
 public class FontDialog extends Dialog {
 	FontData fontData;
 	RGB rgb;
+	boolean effectsVisible = true;
 	
 /**
  * Constructs a new instance of this class given only its parent.
@@ -80,6 +81,23 @@ public FontDialog (Shell parent) {
 public FontDialog (Shell parent, int style) {
 	super (parent, checkStyle (parent, style));
 	checkSubclass ();
+}
+
+/**
+ * Returns <code>true</code> if the dialog's effects selection controls
+ * are visible, and <code>false</code> otherwise.
+ * <p>
+ * If the platform's font dialog does not have any effects selection controls,
+ * then this method always returns false.
+ * </p> 
+ *
+ * @return <code>true</code> if the dialog's effects selection controls
+ * are visible and <code>false</code> otherwise
+ * 
+ * @since 3.8
+ */
+public boolean getEffectsVisible () {
+	return effectsVisible;
 }
 
 /**
@@ -173,7 +191,11 @@ public FontData open () {
 	CHOOSEFONT lpcf = new CHOOSEFONT ();
 	lpcf.lStructSize = CHOOSEFONT.sizeof;
 	lpcf.hwndOwner = hwndOwner;
-	lpcf.Flags = OS.CF_SCREENFONTS | OS.CF_EFFECTS;
+	lpcf.Flags = OS.CF_SCREENFONTS;
+	if (effectsVisible) {
+		lpcf.Flags |= OS.CF_EFFECTS;
+	}
+
 	int /*long*/ lpLogFont = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, LOGFONT.sizeof);
 	if (fontData != null && fontData.data != null) {
 		LOGFONT logFont = fontData.data;
@@ -202,7 +224,7 @@ public FontData open () {
 		oldModal = display.getModalDialog ();
 		display.setModalDialog (this);
 	}
-
+	
 	/* Open the dialog */
 	boolean success = OS.ChooseFont (lpcf);
 	
@@ -246,10 +268,12 @@ public FontData open () {
 
 		float points = pixels * 72f /logPixelsY;
 		fontData = FontData.win32_new (logFont, points);
-		int red = lpcf.rgbColors & 0xFF;
-		int green = (lpcf.rgbColors >> 8) & 0xFF;
-		int blue = (lpcf.rgbColors >> 16) & 0xFF;
-		rgb = new RGB (red, green, blue);
+		if (effectsVisible) {
+			int red = lpcf.rgbColors & 0xFF;
+			int green = (lpcf.rgbColors >> 8) & 0xFF;
+			int blue = (lpcf.rgbColors >> 16) & 0xFF;
+			rgb = new RGB (red, green, blue);
+		}
 	}
 		
 	/* Free the OS memory */
@@ -272,6 +296,22 @@ public FontData open () {
 	
 	if (!success) return null;
 	return fontData;
+}
+
+/**
+ * Sets the effects selection controls in the dialog visible if the
+ * argument is <code>true</code>, and invisible otherwise.
+ * <p>
+ * By default the effects selection controls are displayed if the
+ * platform font dialog supports effects selection.
+ * </p>
+ *
+ * @param visible whether or not the dialog will show the effects selection controls
+ * 
+ * @since 3.8
+ */
+public void setEffectsVisible(boolean visible) {
+	effectsVisible = visible;
 }
 
 /**

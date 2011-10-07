@@ -2035,6 +2035,8 @@ public void setVisible (boolean visible) {
 				OS.GDK_MAP,
 				OS.GDK_UNMAP,
 				OS.GDK_NO_EXPOSE,
+				OS.GDK_VISIBILITY_NOTIFY,
+				OS.GDK_WINDOW_STATE 
 			};
 			Display display = this.display;
 			display.putGdkEvents();

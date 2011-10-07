@@ -37,6 +37,7 @@ public class FontDialog extends Dialog {
 	RGB rgb;
 	boolean selected;
 	int fontID, fontSize;
+	boolean effectsVisible = true;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -86,6 +87,21 @@ public FontDialog (Shell parent, int style) {
 
 void changeFont(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	selected = true;
+}
+
+/**
+ * Returns <code>true</code> if the dialog's effects selection controls
+ * are visible, and <code>false</code> otherwise.
+ * <p>
+ * If the platform's font dialog does not have any effects selection controls,
+ * then this method always returns false.
+ * </p> 
+ *
+ * @return <code>true</code> if the dialog's effects selection controls
+ * are visible and <code>false</code> otherwise
+ */
+public boolean getEffectsVisible () {
+	return effectsVisible;
 }
 
 /**
@@ -186,6 +202,20 @@ void setColor_forAttribute(int /*long*/ id, int /*long*/ sel, int /*long*/ color
 }
 
 /**
+ * Sets the effects selection controls in the dialog visible if the
+ * argument is <code>true</code>, and invisible otherwise.
+ * <p>
+ * By default the effects selection controls are displayed if the
+ * platform font dialog supports effects selection.
+ * </p>
+ *
+ * @param visible whether or not the dialog will show the effects selection controls
+ */
+public void setEffectsVisible(boolean visible) {
+	effectsVisible = visible;
+}
+
+/**
  * Sets a FontData object describing the font to be
  * selected by default in the dialog, or null to let
  * the platform choose one.
@@ -230,6 +260,10 @@ public void setFontList (FontData [] fontData) {
  */
 public void setRGB (RGB rgb) {
 	this.rgb = rgb;
+}
+
+int validModesForFontPanel(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+	return effectsVisible ? OS.NSFontPanelAllModesMask : OS.NSFontPanelAllModesMask & ~OS.NSFontPanelAllEffectsModeMask;
 }
 
 void windowWillClose(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {

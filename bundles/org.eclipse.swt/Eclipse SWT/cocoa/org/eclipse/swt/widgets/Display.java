@@ -2606,6 +2606,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_changeColor_, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_setColor_forAttribute_, dialogProc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_changeFont_, dialogProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_validModesForFontPanel_, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection_, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_panel_shouldShowFilename_, dialogProc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_panelDidEnd_returnCode_contextInfo_, dialogProc5, "@:@i@");
@@ -5240,6 +5241,10 @@ static int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		FontDialog dialog = (FontDialog)OS.JNIGetObject(jniRef[0]);
 		if (dialog == null) return 0;
 		dialog.changeFont(id, sel, arg0);
+	} else if (sel == OS.sel_validModesForFontPanel_) {
+		FontDialog dialog = (FontDialog)OS.JNIGetObject(jniRef[0]);
+		if (dialog == null) return 0;
+		return dialog.validModesForFontPanel(id, sel, arg0);
 	} else if (sel == OS.sel_sendSelection_) {
 		FileDialog dialog = (FileDialog)OS.JNIGetObject(jniRef[0]);
 		if (dialog == null) return 0;

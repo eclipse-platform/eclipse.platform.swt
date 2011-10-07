@@ -1181,7 +1181,7 @@ RECT drawStrikeout(int /*long*/ hdc, int x, int baseline, StyleItem[] line, int 
 			}
 		}
 		RECT rect = new RECT();
-		OS.SetRect(rect, x + left, baseline - run.strikeoutPos, x + run.x + run.width, baseline - run.strikeoutPos + run.strikeoutThickness);
+		OS.SetRect(rect, x + left, baseline - run.strikeoutPos - style.rise, x + run.x + run.width, baseline - run.strikeoutPos + run.strikeoutThickness - style.rise);
 		int /*long*/ brush = OS.CreateSolidBrush(color);
 		OS.FillRect(hdc, rect, brush);
 		OS.DeleteObject(brush);
@@ -1240,14 +1240,14 @@ RECT drawStrikeoutGDIP(int /*long*/ graphics, int x, int baseline, StyleItem[] l
 			gdipRect.Width = clipRect.right - clipRect.left;
 			gdipRect.Height = clipRect.bottom - clipRect.top;
 			Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeExclude);
-			Gdip.Graphics_FillRectangle(graphics, brush, x + left, baseline - run.strikeoutPos, run.x + run.width - left, run.strikeoutThickness);
+			Gdip.Graphics_FillRectangle(graphics, brush, x + left, baseline - run.strikeoutPos - style.rise, run.x + run.width - left, run.strikeoutThickness);
 			Gdip.Graphics_Restore(graphics, gstate);
 			gstate = Gdip.Graphics_Save(graphics);
 			Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeIntersect);
-			Gdip.Graphics_FillRectangle(graphics, selectionColor, x + left, baseline - run.strikeoutPos, run.x + run.width - left, run.strikeoutThickness);
+			Gdip.Graphics_FillRectangle(graphics, selectionColor, x + left, baseline - run.strikeoutPos - style.rise, run.x + run.width - left, run.strikeoutThickness);
 			Gdip.Graphics_Restore(graphics, gstate);
 		} else {
-			Gdip.Graphics_FillRectangle(graphics, brush, x + left, baseline - run.strikeoutPos, run.x + run.width - left, run.strikeoutThickness);
+			Gdip.Graphics_FillRectangle(graphics, brush, x + left, baseline - run.strikeoutPos - style.rise, run.x + run.width - left, run.strikeoutThickness);
 		}
 		if (brush != selectionColor && brush != color) Gdip.SolidBrush_delete(brush);
 		return null;
@@ -1287,7 +1287,7 @@ RECT drawUnderline(int /*long*/ hdc, int x, int baseline, int lineUnderlinePos, 
 			}
 		}
 		RECT rect = new RECT();
-		OS.SetRect(rect, x + left, baseline - lineUnderlinePos, x + run.x + run.width, baseline - lineUnderlinePos + run.underlineThickness);
+		OS.SetRect(rect, x + left, baseline - lineUnderlinePos - style.rise, x + run.x + run.width, baseline - lineUnderlinePos + run.underlineThickness - style.rise);
 		if (clipRect != null) {
 			if (clipRect.left == -1) clipRect.left = 0;
 			if (clipRect.right == -1) clipRect.right = 0x7ffff;
@@ -1417,7 +1417,7 @@ RECT drawUnderlineGDIP (int /*long*/ graphics, int x, int baseline, int lineUnde
 			}
 		}
 		RECT rect = new RECT();
-		OS.SetRect(rect, x + left, baseline - lineUnderlinePos, x + run.x + run.width, baseline - lineUnderlinePos + run.underlineThickness);
+		OS.SetRect(rect, x + left, baseline - lineUnderlinePos - style.rise, x + run.x + run.width, baseline - lineUnderlinePos + run.underlineThickness - style.rise);
 		Rect gdipRect = null;
 		if (clipRect != null) {
 			if (clipRect.left == -1) clipRect.left = 0;

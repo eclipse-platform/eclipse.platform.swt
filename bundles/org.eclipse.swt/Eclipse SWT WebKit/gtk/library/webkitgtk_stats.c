@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2010 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2011 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int WebKitGTK_nativeFunctionCount = 97;
-int WebKitGTK_nativeFunctionCallCount[97];
+int WebKitGTK_nativeFunctionCount = 109;
+int WebKitGTK_nativeFunctionCallCount[109];
 char * WebKitGTK_nativeFunctionNames[] = {
 	"JSClassDefinition_1sizeof",
 	"_1JSClassCreate",
@@ -47,12 +47,10 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1JSValueToBoolean",
 	"_1JSValueToNumber",
 	"_1JSValueToStringCopy",
-	"_1SOUP_1IS_1SESSION",
 	"_1SoupCookie_1expires",
 	"_1SoupMessage_1method",
 	"_1SoupMessage_1request_1body",
 	"_1SoupMessage_1request_1headers",
-	"_1WEBKIT_1IS_1WEB_1FRAME",
 	"_1soup_1auth_1authenticate",
 	"_1soup_1auth_1get_1host",
 	"_1soup_1auth_1get_1scheme_1name",
@@ -70,9 +68,21 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1soup_1session_1feature_1attach",
 	"_1soup_1session_1feature_1detach",
 	"_1soup_1session_1get_1feature",
+	"_1soup_1session_1get_1type",
 	"_1soup_1uri_1free",
 	"_1soup_1uri_1new",
 	"_1soup_1uri_1to_1string",
+	"_1webkit_1dom_1event_1target_1add_1event_1listener",
+	"_1webkit_1dom_1mouse_1event_1get_1alt_1key",
+	"_1webkit_1dom_1mouse_1event_1get_1button",
+	"_1webkit_1dom_1mouse_1event_1get_1ctrl_1key",
+	"_1webkit_1dom_1mouse_1event_1get_1meta_1key",
+	"_1webkit_1dom_1mouse_1event_1get_1screen_1x",
+	"_1webkit_1dom_1mouse_1event_1get_1screen_1y",
+	"_1webkit_1dom_1mouse_1event_1get_1shift_1key",
+	"_1webkit_1dom_1ui_1event_1get_1char_1code",
+	"_1webkit_1dom_1ui_1event_1get_1detail",
+	"_1webkit_1dom_1ui_1event_1get_1key_1code",
 	"_1webkit_1download_1cancel",
 	"_1webkit_1download_1get_1current_1size",
 	"_1webkit_1download_1get_1status",
@@ -95,6 +105,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1web_1frame_1get_1load_1status",
 	"_1webkit_1web_1frame_1get_1parent",
 	"_1webkit_1web_1frame_1get_1title",
+	"_1webkit_1web_1frame_1get_1type",
 	"_1webkit_1web_1frame_1get_1uri",
 	"_1webkit_1web_1frame_1get_1web_1view",
 	"_1webkit_1web_1policy_1decision_1download",
@@ -103,6 +114,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1web_1view_1can_1go_1forward",
 	"_1webkit_1web_1view_1can_1show_1mime_1type",
 	"_1webkit_1web_1view_1execute_1script",
+	"_1webkit_1web_1view_1get_1dom_1document",
 	"_1webkit_1web_1view_1get_1load_1status",
 	"_1webkit_1web_1view_1get_1main_1frame",
 	"_1webkit_1web_1view_1get_1progress",

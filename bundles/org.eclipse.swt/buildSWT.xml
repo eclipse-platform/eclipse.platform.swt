@@ -38,7 +38,7 @@
 
 	<property name="src_common" value="'bundles/org.eclipse.swt/Eclipse SWT/common/library' 'bundles/org.eclipse.swt/Eclipse SWT Mozilla/common/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/common/library'"/>
 	<property name="src_win32" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT WebKit/win32/library'"/>
-	<property name="src_gtk" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/gtk/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/gnome/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/cde/library'"/>
+	<property name="src_gtk" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/gtk/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/gnome/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/cde/library' 'bundles/org.eclipse.swt/Eclipse SWT WebKit/gtk/library' "/>
 	<property name="src_cocoa" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/cocoa/library'"/>
 	<property name="src_carbon" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/carbon/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/carbon/library'"/>
 	<property name="src_motif" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/motif/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/motif_gtk/library'  'bundles/org.eclipse.swt/Eclipse SWT AWT/motif/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/gnome/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/cde/library'"/>
@@ -81,7 +81,7 @@
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="10"/>
+			<param name="library_count" value="11"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
@@ -93,11 +93,11 @@
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390x"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="12"/>
+			<param name="library_count" value="11"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="12"/>
+			<param name="library_count" value="11"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
@@ -158,7 +158,7 @@
 	<target name="check_fragment_libraries" depends="get_version">
 		<echo>Checking ${fragment}</echo>
 		<property name="checkdir" value="~/build/check_libraries"/>
-		<property name="library_count" value="124"/>
+		<property name="library_count" value="123"/>
 		<property name="fragment" value=""/>
 		<fileset id="match" dir="${repo.bin}/bundles/${fragment}">
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
@@ -1060,20 +1060,20 @@
 			<param name="repo" value="eclipse.platform.swt"/>
 			<param name="repo.exists" value="repo.src.exists"/>
 		</antcall>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true" timeout="900000">
 			<arg line="fetch"/>
 		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true" timeout="900000">
 			<arg line="reset --hard origin/${TAG}"/>
 		</exec>
 		<antcall target="init_repo">
 			<param name="repo" value="eclipse.platform.swt.binaries"/>
 			<param name="repo.exists" value="repo.bin.exists"/>
 		</antcall>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true" timeout="900000">
 			<arg line="fetch"/>
 		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true" timeout="900000">
 			<arg line="reset --hard origin/${TAG}"/>
 		</exec>
 	</target>

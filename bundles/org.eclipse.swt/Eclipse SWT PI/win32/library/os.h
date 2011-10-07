@@ -50,6 +50,8 @@
 /* Optional custom definitions to exclude some types */
 #include "defines.h"
 
+#define OS_LOAD_FUNCTION LOAD_FUNCTION
+
 /* Structs excludes */
 #ifdef _WIN32_WCE
 #define NO_ACTCTX

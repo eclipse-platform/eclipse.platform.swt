@@ -235,8 +235,13 @@ void generateMethods(String className, ArrayList methods) {
 			out("OS.objc_msgSend_bool(");
 		} else if (returnNode != null && isFloatingPoint(returnNode)) {
 			out("\treturn ");
-			if (returnType.equals("float")) out("(float)");
-			out("OS.objc_msgSend_fpret(");
+			String type = getType(returnNode), type64 = getType64(returnNode);
+			if (type.equals(type64) && type.equals("float")) {
+				out("OS.objc_msgSend_floatret(");
+			} else {
+				if (returnType.equals("float")) out("(float /*double*/)");
+				out("OS.objc_msgSend_fpret(");
+			}
 		} else if (returnNode != null && isObject(returnNode)) {
 			out("\tint /*long*/ result = OS.objc_msgSend(");
 		} else {
@@ -1099,8 +1104,14 @@ String buildSend(Node method, boolean tags, boolean only64, boolean superCall) {
 		buffer.append(getJavaType(returnNode));
 		buffer.append(" result, ");
 	} else if (returnNode != null && isFloatingPoint(returnNode)) {
-		buffer.append("double ");
-		buffer.append(superCall ? "objc_msgSendSuper_fpret" : "objc_msgSend_fpret");
+		String type = getType(returnNode), type64 = getType64(returnNode);
+		if (type.equals(type64) && type.equals("float")) {
+			buffer.append("float ");
+			buffer.append(superCall ? "objc_msgSendSuper_floatret" : "objc_msgSend_floatret");
+		} else {
+			buffer.append("double ");
+			buffer.append(superCall ? "objc_msgSendSuper_fpret" : "objc_msgSend_fpret");
+		}
 		buffer.append("(");
 	} else if (returnNode != null && isBoolean(returnNode)) {
 		buffer.append("boolean ");

@@ -28,6 +28,8 @@
 #include <libgnomevfs/gnome-vfs-mime-handlers.h>
 #include <libgnomevfs/gnome-vfs-mime-info.h>
 
+#define GNOME_LOAD_FUNCTION LOAD_FUNCTION
+
 #ifdef AIX
 #define LIB_VFS "libgnomevfs-2.a(libgnomevfs-2.so.0)"
 #elif HPUX

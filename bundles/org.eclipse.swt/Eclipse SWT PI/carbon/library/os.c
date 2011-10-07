@@ -993,7 +993,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(AXUIElementCreateWithDataBrowserAndItemInfo)
 	rc = (jint)AXUIElementCreateWithDataBrowserAndItemInfo(arg0, lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, AXUIElementCreateWithDataBrowserAndItemInfo)
+		OS_LOAD_FUNCTION(fp, AXUIElementCreateWithDataBrowserAndItemInfo)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, DataBrowserAccessibilityItemInfo *))fp)(arg0, lparg1);
 		}
@@ -1029,7 +1029,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(AXUIElementGetDataBrowserItemInfo)
 	rc = (jint)AXUIElementGetDataBrowserItemInfo(arg0, arg1, arg2, lparg3);
 */
 	{
-		LOAD_FUNCTION(fp, AXUIElementGetDataBrowserItemInfo)
+		OS_LOAD_FUNCTION(fp, AXUIElementGetDataBrowserItemInfo)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jint, DataBrowserAccessibilityItemInfo *))fp)(arg0, arg1, arg2, lparg3);
 		}
@@ -1950,7 +1950,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGBitmapContextCreateImage)
 	rc = (jint)CGBitmapContextCreateImage(arg0);
 */
 	{
-		LOAD_FUNCTION(fp, CGBitmapContextCreateImage)
+		OS_LOAD_FUNCTION(fp, CGBitmapContextCreateImage)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint))fp)(arg0);
 		}
@@ -2329,7 +2329,7 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetBlendMode)
 	CGContextSetBlendMode((CGContextRef)arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, CGContextSetBlendMode)
+		OS_LOAD_FUNCTION(fp, CGContextSetBlendMode)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(CGContextRef, jint))fp)((CGContextRef)arg0, arg1);
 		}
@@ -2758,7 +2758,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayCreateImage)
 	rc = (jintLong)CGDisplayCreateImage((CGDirectDisplayID)arg0);
 */
 	{
-		LOAD_FUNCTION(fp, CGDisplayCreateImage)
+		OS_LOAD_FUNCTION(fp, CGDisplayCreateImage)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(CGDirectDisplayID))fp)((CGDirectDisplayID)arg0);
 		}
@@ -2922,7 +2922,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGImageCreateCopy)
 	rc = (jint)CGImageCreateCopy(arg0);
 */
 	{
-		LOAD_FUNCTION(fp, CGImageCreateCopy)
+		OS_LOAD_FUNCTION(fp, CGImageCreateCopy)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint))fp)(arg0);
 		}
@@ -2944,7 +2944,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGImageCreateWithImageInRect)
 	rc = (jint)CGImageCreateWithImageInRect(arg0, *lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, CGImageCreateWithImageInRect)
+		OS_LOAD_FUNCTION(fp, CGImageCreateWithImageInRect)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, CGRect))fp)(arg0, *lparg1);
 		}
@@ -4384,7 +4384,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(DataBrowserChangeAttributes)
 	rc = (jint)DataBrowserChangeAttributes(arg0, arg1, arg2);
 */
 	{
-		LOAD_FUNCTION(fp, DataBrowserChangeAttributes)
+		OS_LOAD_FUNCTION(fp, DataBrowserChangeAttributes)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jint))fp)(arg0, arg1, arg2);
 		}
@@ -4406,7 +4406,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(DataBrowserGetAttributes)
 	rc = (jint)DataBrowserGetAttributes(arg0, lparg1);
 */
 	{
-		LOAD_FUNCTION(fp, DataBrowserGetAttributes)
+		OS_LOAD_FUNCTION(fp, DataBrowserGetAttributes)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint *))fp)(arg0, lparg1);
 		}
@@ -4432,7 +4432,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(DataBrowserGetMetric)
 	rc = (jint)DataBrowserGetMetric(arg0, arg1, lparg2, lparg3);
 */
 	{
-		LOAD_FUNCTION(fp, DataBrowserGetMetric)
+		OS_LOAD_FUNCTION(fp, DataBrowserGetMetric)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jboolean *, jfloat *))fp)(arg0, arg1, lparg2, lparg3);
 		}
@@ -4455,7 +4455,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(DataBrowserSetMetric)
 	rc = (jint)DataBrowserSetMetric(arg0, arg1, arg2, arg3);
 */
 	{
-		LOAD_FUNCTION(fp, DataBrowserSetMetric)
+		OS_LOAD_FUNCTION(fp, DataBrowserSetMetric)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jboolean, jfloat))fp)(arg0, arg1, arg2, arg3);
 		}
@@ -6594,7 +6594,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetIconRefFromIconFamilyPtr)
 	rc = (jint)GetIconRefFromIconFamilyPtr(arg0, arg1, lparg2);
 */
 	{
-		LOAD_FUNCTION(fp, GetIconRefFromIconFamilyPtr)
+		OS_LOAD_FUNCTION(fp, GetIconRefFromIconFamilyPtr)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jint *))fp)(arg0, arg1, lparg2);
 		}
@@ -7639,7 +7639,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(HIComboBoxIsListVisible)
 	rc = (jboolean)HIComboBoxIsListVisible((HIViewRef)arg0);
 */
 	{
-		LOAD_FUNCTION(fp, HIComboBoxIsListVisible)
+		OS_LOAD_FUNCTION(fp, HIComboBoxIsListVisible)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(HIViewRef))fp)((HIViewRef)arg0);
 		}
@@ -7671,7 +7671,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIComboBoxSetListVisible)
 	rc = (jint)HIComboBoxSetListVisible((HIViewRef)arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, HIComboBoxSetListVisible)
+		OS_LOAD_FUNCTION(fp, HIComboBoxSetListVisible)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(HIViewRef, jboolean))fp)((HIViewRef)arg0, arg1);
 		}
@@ -7705,7 +7705,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(HICreateTransformedCGImage)
 	rc = (jint)HICreateTransformedCGImage((CGImageRef)arg0, arg1, (CGImageRef *)lparg2);
 */
 	{
-		LOAD_FUNCTION(fp, HICreateTransformedCGImage)
+		OS_LOAD_FUNCTION(fp, HICreateTransformedCGImage)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(CGImageRef, jint, CGImageRef *))fp)((CGImageRef)arg0, arg1, (CGImageRef *)lparg2);
 		}
@@ -7913,7 +7913,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIShapeCreateWithQDRgn)
 	rc = (jint)HIShapeCreateWithQDRgn(arg0);
 */
 	{
-		LOAD_FUNCTION(fp, HIShapeCreateWithQDRgn)
+		OS_LOAD_FUNCTION(fp, HIShapeCreateWithQDRgn)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint))fp)(arg0);
 		}
@@ -7933,7 +7933,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIShapeReplacePathInCGContext)
 	rc = (jint)HIShapeReplacePathInCGContext(arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, HIShapeReplacePathInCGContext)
+		OS_LOAD_FUNCTION(fp, HIShapeReplacePathInCGContext)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint))fp)(arg0, arg1);
 		}
@@ -8486,7 +8486,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIThemeSetFill)
 	rc = (jint)HIThemeSetFill((ThemeBrush)arg0, (void *)arg1, (CGContextRef)arg2, (HIThemeOrientation)arg3);
 */
 	{
-		LOAD_FUNCTION(fp, HIThemeSetFill)
+		OS_LOAD_FUNCTION(fp, HIThemeSetFill)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(ThemeBrush, void *, CGContextRef, HIThemeOrientation))fp)((ThemeBrush)arg0, (void *)arg1, (CGContextRef)arg2, (HIThemeOrientation)arg3);
 		}
@@ -8506,7 +8506,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIThemeSetTextFill)
 	rc = (jint)HIThemeSetTextFill(arg0, arg1, arg2, arg3);
 */
 	{
-		LOAD_FUNCTION(fp, HIThemeSetTextFill)
+		OS_LOAD_FUNCTION(fp, HIThemeSetTextFill)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jint, jint))fp)(arg0, arg1, arg2, arg3);
 		}
@@ -9746,7 +9746,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(LSCopyAllRoleHandlersForContentType)
 	rc = (jint)LSCopyAllRoleHandlersForContentType((CFStringRef)arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, LSCopyAllRoleHandlersForContentType)
+		OS_LOAD_FUNCTION(fp, LSCopyAllRoleHandlersForContentType)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(CFStringRef, jint))fp)((CFStringRef)arg0, arg1);
 		}
@@ -10139,7 +10139,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(NavDialogSetFilterTypeIdentifiers)
 	rc = (jint)NavDialogSetFilterTypeIdentifiers(arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, NavDialogSetFilterTypeIdentifiers)
+		OS_LOAD_FUNCTION(fp, NavDialogSetFilterTypeIdentifiers)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint))fp)(arg0, arg1);
 		}
@@ -10643,7 +10643,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(PMPrinterGetOutputResolution)
 	rc = (jint)PMPrinterGetOutputResolution((PMPrinter)arg0, (PMPrintSettings)arg1, (PMResolution *)lparg2);
 */
 	{
-		LOAD_FUNCTION(fp, PMPrinterGetOutputResolution)
+		OS_LOAD_FUNCTION(fp, PMPrinterGetOutputResolution)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(PMPrinter, PMPrintSettings, PMResolution *))fp)((PMPrinter)arg0, (PMPrintSettings)arg1, (PMResolution *)lparg2);
 		}
@@ -11059,7 +11059,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(PMShowPrintDialogWithOptions)
 	rc = (jint)PMShowPrintDialogWithOptions(arg0, arg1, arg2, arg3, lparg4);
 */
 	{
-		LOAD_FUNCTION(fp, PMShowPrintDialogWithOptions)
+		OS_LOAD_FUNCTION(fp, PMShowPrintDialogWithOptions)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jint, jint, jboolean *))fp)(arg0, arg1, arg2, arg3, lparg4);
 		}

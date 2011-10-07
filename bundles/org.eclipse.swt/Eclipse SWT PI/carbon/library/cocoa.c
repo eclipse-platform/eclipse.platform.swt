@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,7 +27,7 @@ JNIEXPORT jint JNICALL Cocoa_NATIVE(HICocoaViewCreate)
 	rc = (jint)HICocoaViewCreate(arg0, arg1, lparg2);
 */
 	{
-		LOAD_FUNCTION(fp, HICocoaViewCreate)
+		Cocoa_LOAD_FUNCTION(fp, HICocoaViewCreate)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint, jint *))fp)(arg0, arg1, lparg2);
 		}

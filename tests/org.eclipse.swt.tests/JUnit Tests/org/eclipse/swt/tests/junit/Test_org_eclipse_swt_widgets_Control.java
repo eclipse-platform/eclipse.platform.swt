@@ -426,9 +426,9 @@ public void test_removeTraverseListenerLorg_eclipse_swt_events_TraverseListener(
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	Color color = new Color(control.getDisplay(), 255, 0, 0);
 	control.setBackground(color);
-	assertEquals(color, control.getBackground());
+	assertEquals("getBackground not equal color after setBackground(color)", color, control.getBackground());
 	control.setBackground(null);
-	assertTrue(!control.getBackground().equals(color));
+	assertTrue("getBackground unchanged after setBackground(null)", !control.getBackground().equals(color));
 	color.dispose();
 }
 

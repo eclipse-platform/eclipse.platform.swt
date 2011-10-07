@@ -156,15 +156,17 @@ void computeRuns() {
 	//TODO ascend descent wrap
 	NSMutableParagraphStyle paragraph = (NSMutableParagraphStyle)new NSMutableParagraphStyle().alloc().init();
 	int align = OS.NSLeftTextAlignment;
-	if (justify) {
-		align = OS.NSJustifiedTextAlignment;
-	} else {
-		switch (alignment) {
-			case SWT.CENTER:
-				align = OS.NSCenterTextAlignment;
-				break;
-			case SWT.RIGHT:
-				align = OS.NSRightTextAlignment;
+	if (wrapWidth != -1) {
+		if (justify) {
+			align = OS.NSJustifiedTextAlignment;
+		} else {
+			switch (alignment) {
+				case SWT.CENTER:
+					align = OS.NSCenterTextAlignment;
+					break;
+				case SWT.RIGHT:
+					align = OS.NSRightTextAlignment;
+			}
 		}
 	}
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {

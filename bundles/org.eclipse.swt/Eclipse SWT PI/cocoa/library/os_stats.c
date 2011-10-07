@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 629;
-int OS_nativeFunctionCallCount[629];
+int OS_nativeFunctionCount = 630;
+int OS_nativeFunctionCallCount[630];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -940,11 +940,15 @@ char * OS_nativeFunctionNames[] = {
 	"objc_1msgSend__JJ_3J",
 #endif
 #ifndef JNI64
+	"objc_1msgSend__II_3II",
+#else
+	"objc_1msgSend__JJ_3II",
+#endif
+#ifndef JNI64
 	"objc_1msgSend__II_3III",
 #else
 	"objc_1msgSend__JJ_3JII",
 #endif
-	"objc_1msgSend__JJFD",
 	"objc_1msgSend__JJI",
 	"objc_1msgSend__JJ_3I",
 	"objc_1msgSend__JJ_3JJJ",
@@ -1133,6 +1137,7 @@ char * OS_nativeFunctionNames[] = {
 #else
 	"objc_1msgSend_1bool__JJS",
 #endif
+	"objc_1msgSend_1floatret",
 #ifndef JNI64
 	"objc_1msgSend_1fpret__II",
 #else

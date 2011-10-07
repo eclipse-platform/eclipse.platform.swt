@@ -625,10 +625,11 @@ void initNative(String filename) {
 							this.handle = createDIB(width, height, 16);
 							break;
 						case Gdip.PixelFormat24bppRGB:
+						case Gdip.PixelFormat32bppCMYK:
 							this.handle = createDIB(width, height, 24);
 							break;
 						case Gdip.PixelFormat32bppRGB:
-						// These will loose either precision or transparency
+						// These will lose either precision or transparency
 						case Gdip.PixelFormat16bppGrayScale:
 						case Gdip.PixelFormat48bppRGB:
 						case Gdip.PixelFormat32bppPARGB:

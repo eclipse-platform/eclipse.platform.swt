@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,11 +47,11 @@ public int /*long*/ clickCount() {
 }
 
 public float /*double*/ deltaX() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_deltaX);
+	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_deltaX);
 }
 
 public float /*double*/ deltaY() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_deltaY);
+	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_deltaY);
 }
 
 public static NSEvent enterExitEventWithType(int /*long*/ type, NSPoint location, int /*long*/ flags, double time, int /*long*/ wNum, NSGraphicsContext context, int /*long*/ eNum, int /*long*/ tNum, int /*long*/ data) {
@@ -70,7 +70,7 @@ public NSPoint locationInWindow() {
 }
 
 public float /*double*/ magnification() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_magnification);
+	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_magnification);
 }
 
 public int /*long*/ modifierFlags() {
@@ -89,7 +89,7 @@ public static NSEvent otherEventWithType(int /*long*/ type, NSPoint location, in
 }
 
 public float rotation() {
-	return (float)OS.objc_msgSend_fpret(this.id, OS.sel_rotation);
+	return OS.objc_msgSend_floatret(this.id, OS.sel_rotation);
 }
 
 public double timestamp() {

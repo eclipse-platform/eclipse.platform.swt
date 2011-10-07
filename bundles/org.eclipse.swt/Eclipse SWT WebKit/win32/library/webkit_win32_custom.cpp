@@ -88,7 +88,7 @@ JNIEXPORT jint JNICALL WebKit_win32_NATIVE(WebKitCreateInstance)
 	rc = (jint)WebKitCreateInstance(lparg0, arg1, lparg2, lparg3);
 */
 	{
-		LOAD_FUNCTION(fp, WebKitCreateInstance)
+		WebKit_LOAD_FUNCTION(fp, WebKitCreateInstance)
 		if (fp) {
 			rc = (jint)((jint (*)(jbyte *, jintLong, jbyte *, jintLong *))fp)(lparg0, arg1, lparg2, lparg3);
 		}

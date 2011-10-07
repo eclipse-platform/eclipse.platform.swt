@@ -1666,7 +1666,10 @@ void setImage (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 }
 
 boolean setInputState (Event event, NSEvent nsEvent, int type) {
-	if (nsEvent == null) return true;
+	if (nsEvent == null) {
+		nsEvent = NSApplication.sharedApplication().currentEvent();
+		if (nsEvent == null) return true;
+	}
 	int /*long*/ modifierFlags = nsEvent.modifierFlags();
 	if ((modifierFlags & OS.NSAlternateKeyMask) != 0) event.stateMask |= SWT.ALT;
 	if ((modifierFlags & OS.NSShiftKeyMask) != 0) event.stateMask |= SWT.SHIFT;

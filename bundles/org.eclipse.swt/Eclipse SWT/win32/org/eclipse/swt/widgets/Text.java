@@ -890,11 +890,8 @@ public int getCaretLineNumber () {
 }
 
 /**
- * Returns a point describing the receiver's location relative
- * to its parent (or its display if its parent is null).
- * <p>
- * The location of the caret is returned.
- * </p>
+ * Returns a point describing the location of the caret relative
+ * to the receiver.
  *
  * @return a point, the location of the caret
  *
