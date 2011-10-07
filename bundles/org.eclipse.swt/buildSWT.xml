@@ -1060,20 +1060,20 @@
 			<param name="repo" value="eclipse.platform.swt"/>
 			<param name="repo.exists" value="repo.src.exists"/>
 		</antcall>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true" timeout="900000">
 			<arg line="fetch"/>
 		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true" timeout="900000">
 			<arg line="reset --hard origin/${TAG}"/>
 		</exec>
 		<antcall target="init_repo">
 			<param name="repo" value="eclipse.platform.swt.binaries"/>
 			<param name="repo.exists" value="repo.bin.exists"/>
 		</antcall>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true" timeout="900000">
 			<arg line="fetch"/>
 		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true" timeout="900000">
 			<arg line="reset --hard origin/${TAG}"/>
 		</exec>
 	</target>
