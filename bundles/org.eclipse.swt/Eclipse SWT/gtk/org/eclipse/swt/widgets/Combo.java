@@ -69,6 +69,7 @@ public class Combo extends Composite {
 	 * that the text field in an instance of this class can hold
 	 */
 	public final static int LIMIT;
+	
 	/*
 	* These values can be different on different platforms.
 	* Therefore they are not initialized in the declaration
@@ -841,10 +842,10 @@ GdkColor getBackgroundColor () {
 	return getBaseColor ();
 }
 
-public Point getCaretLocation() {
-	checkWidget();
-	if((style & SWT.READ_ONLY) != 0) {
-		return new Point(0, 0);
+public Point getCaretLocation () {
+	checkWidget ();
+	if ((style & SWT.READ_ONLY) != 0) {
+		return new Point (0, 0);
 	}
 	int index = OS.gtk_editable_get_position (entryHandle);
 	if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
@@ -860,9 +861,9 @@ public Point getCaretLocation() {
 	return new Point (x, y);
 }
 
-public int getCaretPosition() {
-	checkWidget();
-	if((style & SWT.READ_ONLY) != 0) {
+public int getCaretPosition () {
+	checkWidget ();
+	if ((style & SWT.READ_ONLY) != 0) {
 		return 0;
 	}
 	int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
