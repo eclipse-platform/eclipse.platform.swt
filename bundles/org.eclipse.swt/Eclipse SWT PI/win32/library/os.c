@@ -2756,6 +2756,30 @@ fail:
 }
 #endif
 
+#ifndef NO_DwmIsCompositionEnabled
+JNIEXPORT jint JNICALL OS_NATIVE(DwmIsCompositionEnabled)
+	(JNIEnv *env, jclass that, jbooleanArray arg0)
+{
+	jboolean *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DwmIsCompositionEnabled_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetBooleanArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)DwmIsCompositionEnabled(lparg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, DwmIsCompositionEnabled)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jboolean *))fp)(lparg0);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseBooleanArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, DwmIsCompositionEnabled_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_EMREXTCREATEFONTINDIRECTW_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(EMREXTCREATEFONTINDIRECTW_1sizeof)
 	(JNIEnv *env, jclass that)

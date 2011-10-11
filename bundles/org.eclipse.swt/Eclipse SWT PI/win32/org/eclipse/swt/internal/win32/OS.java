@@ -4035,7 +4035,9 @@ public static final native int DwmEnableBlurBehindWindow (int /*long*/ hWnd, DWM
  * @method flags=dynamic
  * @param hWnd cast=(HWND)
  */
-public static final native int DwmExtendFrameIntoClientArea (int /*long*/ hWnd, MARGINS pMarInset); 
+public static final native int DwmExtendFrameIntoClientArea (int /*long*/ hWnd, MARGINS pMarInset);
+/** @method flags=dynamic */
+public static final native int DwmIsCompositionEnabled (boolean[] pfEnabled); 
 /** @param hdc cast=(HDC) */
 public static final native boolean Ellipse (int /*long*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 /** @param hMenu cast=(HMENU) */

@@ -40,6 +40,7 @@
 #define DrawThemeText_LIB "uxtheme.dll"
 #define DwmEnableBlurBehindWindow_LIB "dwmapi.dll"
 #define DwmExtendFrameIntoClientArea_LIB "dwmapi.dll"
+#define DwmIsCompositionEnabled_LIB "dwmapi.dll"
 #define GetGestureInfo_LIB "user32.dll"
 #define GetThemeInt_LIB "uxtheme.dll"
 #define GetThemeMargins_LIB "uxtheme.dll"

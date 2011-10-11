@@ -218,6 +218,7 @@ typedef enum {
 	DuplicateHandle_FUNC,
 	DwmEnableBlurBehindWindow_FUNC,
 	DwmExtendFrameIntoClientArea_FUNC,
+	DwmIsCompositionEnabled_FUNC,
 	EMREXTCREATEFONTINDIRECTW_1sizeof_FUNC,
 	EMR_1sizeof_FUNC,
 	EXTLOGFONTW_1sizeof_FUNC,
