@@ -2537,8 +2537,6 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
 		switch (msg) {
 			case OS.EM_UNDO:
-				if ((OS.GetWindowLong (handle, OS.GWL_STYLE) & OS.ES_MULTILINE) == 0) return 1;
-				// else FALL THROUGH
 			case OS.WM_UNDO:
 			case OS.EM_CANUNDO:
 				return 0;
