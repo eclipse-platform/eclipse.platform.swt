@@ -712,6 +712,41 @@ typedef struct _DWM_BLURBEHIND {
 } DWM_BLURBEHIND, *PDWM_BLURBEHIND;
 #endif
 
+#ifndef DTT_CALLBACK_PROC
+typedef 
+int
+(WINAPI *DTT_CALLBACK_PROC)
+(
+    __in HDC hdc,
+    __inout_ecount(cchText) LPWSTR pszText,
+    __in int cchText,
+    __inout LPRECT prc,
+    __in UINT dwFlags,
+    __in LPARAM lParam);
+#endif
+    
+#ifndef _DTTOPTS
+typedef struct _DTTOPTS
+{
+    DWORD             dwSize;
+    DWORD             dwFlags;
+    COLORREF          crText;
+    COLORREF          crBorder;
+    COLORREF          crShadow;
+    int               iTextShadowType;
+    POINT             ptShadowOffset;
+    int               iBorderSize;
+    int               iFontPropId;
+    int               iColorPropId;
+    int               iStateId;
+    BOOL              fApplyOverlay;
+    int               iGlowSize;
+    DTT_CALLBACK_PROC pfnDrawTextCallback;
+    LPARAM            lParam;
+} DTTOPTS, *PDTTOPTS; 
+#endif
+
+
 #if (_WIN32_IE <= 0x0600)
 typedef struct tagTVITEMCHANGE {
     NMHDR hdr;

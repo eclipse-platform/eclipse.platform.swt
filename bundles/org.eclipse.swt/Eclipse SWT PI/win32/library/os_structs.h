@@ -383,6 +383,18 @@ void setDROPFILESFields(JNIEnv *env, jobject lpObject, DROPFILES *lpStruct);
 #define DROPFILES_sizeof() 0
 #endif
 
+#ifndef NO_DTTOPTS
+void cacheDTTOPTSFields(JNIEnv *env, jobject lpObject);
+DTTOPTS *getDTTOPTSFields(JNIEnv *env, jobject lpObject, DTTOPTS *lpStruct);
+void setDTTOPTSFields(JNIEnv *env, jobject lpObject, DTTOPTS *lpStruct);
+#define DTTOPTS_sizeof() sizeof(DTTOPTS)
+#else
+#define cacheDTTOPTSFields(a,b)
+#define getDTTOPTSFields(a,b,c) NULL
+#define setDTTOPTSFields(a,b,c)
+#define DTTOPTS_sizeof() 0
+#endif
+
 #ifndef NO_DWM_BLURBEHIND
 void cacheDWM_BLURBEHINDFields(JNIEnv *env, jobject lpObject);
 DWM_BLURBEHIND *getDWM_BLURBEHINDFields(JNIEnv *env, jobject lpObject, DWM_BLURBEHIND *lpStruct);

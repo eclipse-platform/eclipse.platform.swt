@@ -2044,6 +2044,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(DROPFILES_1sizeof)
 }
 #endif
 
+#ifndef NO_DTTOPTS_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(DTTOPTS_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DTTOPTS_1sizeof_FUNC);
+	rc = (jint)DTTOPTS_sizeof();
+	OS_NATIVE_EXIT(env, that, DTTOPTS_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DWM_1BLURBEHIND_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(DWM_1BLURBEHIND_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -2688,6 +2700,36 @@ fail:
 	if (arg8 && lparg8) setRECTFields(env, arg8, lparg8);
 	if (arg4 && lparg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
 	OS_NATIVE_EXIT(env, that, DrawThemeText_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DrawThemeTextEx
+JNIEXPORT jint JNICALL OS_NATIVE(DrawThemeTextEx)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jcharArray arg4, jint arg5, jint arg6, jobject arg7, jobject arg8)
+{
+	jchar *lparg4=NULL;
+	RECT _arg7, *lparg7=NULL;
+	DTTOPTS _arg8, *lparg8=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DrawThemeTextEx_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = getRECTFields(env, arg7, &_arg7)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = getDTTOPTSFields(env, arg8, &_arg8)) == NULL) goto fail;
+/*
+	rc = (jint)DrawThemeTextEx(arg0, arg1, arg2, arg3, lparg4, arg5, arg6, lparg7, lparg8);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, DrawThemeTextEx)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, jchar *, jint, jint, RECT *, DTTOPTS *))fp)(arg0, arg1, arg2, arg3, lparg4, arg5, arg6, lparg7, lparg8);
+		}
+	}
+fail:
+	if (arg8 && lparg8) setDTTOPTSFields(env, arg8, lparg8);
+	if (arg7 && lparg7) setRECTFields(env, arg7, lparg7);
+	if (arg4 && lparg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, DrawThemeTextEx_FUNC);
 	return rc;
 }
 #endif
