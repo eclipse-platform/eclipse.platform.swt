@@ -74,6 +74,7 @@
 #define NO_DEVMODEW
 #define NO_DOCINFO
 #define NO_DWM_BLURBEHIND
+#define NO_DTTOPTS
 #define NO_EMR
 #define NO_EMREXTCREATEFONTINDIRECTW
 #define NO_EXTLOGFONTW
@@ -244,9 +245,11 @@
 #define NO_DrawThemeIcon
 #define NO_DrawThemeParentBackground
 #define NO_DrawThemeText
+#define NO_DrawThemeTextEx
 #define NO_DuplicateHandle
 #define NO_DwmEnableBlurBehindWindow
 #define NO_DwmExtendFrameIntoClientArea
+#define NO_DTTOPTS_1sizeof
 #define NO_EnableScrollBar
 #define NO_EndBufferedPaint
 #define NO_EndDoc
@@ -712,6 +715,7 @@ typedef struct _DWM_BLURBEHIND {
 } DWM_BLURBEHIND, *PDWM_BLURBEHIND;
 #endif
 
+#ifndef _WIN32_WCE
 #ifndef DTT_CALLBACK_PROC
 typedef 
 int
@@ -745,6 +749,7 @@ typedef struct _DTTOPTS
     LPARAM            lParam;
 } DTTOPTS, *PDTTOPTS; 
 #endif
+#endif /* _WIN32_WCE */
 
 
 #if (_WIN32_IE <= 0x0600)
