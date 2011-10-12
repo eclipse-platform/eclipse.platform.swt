@@ -136,5 +136,18 @@ public class ST {
 	 *  @since 3.2
 	 */
 	public static final int BULLET_CUSTOM = 1 << 5;
+	
+	static final int ExtendedModify = 3000;
+	static final int LineGetBackground = 3001;
+	static final int LineGetStyle = 3002;
+	static final int TextChanging = 3003;
+	static final int TextSet = 3004;
+	static final int VerifyKey = 3005;
+	static final int TextChanged = 3006;
+	static final int LineGetSegments = 3007;
+	static final int PaintObject = 3008;
+	static final int WordNext = 3009;
+	static final int WordPrevious = 3010;
+	static final int CaretMoved = 3011;
 
 }
