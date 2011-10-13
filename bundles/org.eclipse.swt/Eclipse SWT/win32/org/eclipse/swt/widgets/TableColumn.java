@@ -805,8 +805,9 @@ public void setText (String string) {
 	* mnemonic characters and replace doubled mnemonics
 	* with spaces.
 	*/
+	boolean replace = !OS.IsWinCE && OS.WIN32_VERSION <= OS.VERSION (4, 10);
 	int /*long*/ hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), fixMnemonic (string, true), true);
+	TCHAR buffer = new TCHAR (parent.getCodePage (), fixMnemonic (string, replace), true);
 	int byteCount = buffer.length () * TCHAR.sizeof;
 	int /*long*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (pszText, buffer, byteCount);
