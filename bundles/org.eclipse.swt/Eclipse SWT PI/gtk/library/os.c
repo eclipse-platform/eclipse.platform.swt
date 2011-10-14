@@ -4460,6 +4460,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1thread_1supported)
 }
 #endif
 
+#ifndef NO__1g_1timeout_1add
+JNIEXPORT jint JNICALL OS_NATIVE(_1g_1timeout_1add)
+	(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jintLong arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1timeout_1add_FUNC);
+	rc = (jint)g_timeout_add((guint32)arg0, (GSourceFunc)arg1, (gpointer)arg2);
+	OS_NATIVE_EXIT(env, that, _1g_1timeout_1add_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1g_1type_1add_1interface_1static
 JNIEXPORT void JNICALL OS_NATIVE(_1g_1type_1add_1interface_1static)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
@@ -14143,28 +14155,6 @@ fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1text_1view_1window_1to_1buffer_1coords_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1timeout_1add
-JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1timeout_1add)
-	(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jintLong arg2)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1timeout_1add_FUNC);
-	rc = (jint)gtk_timeout_add((guint32)arg0, (GtkFunction)arg1, (gpointer)arg2);
-	OS_NATIVE_EXIT(env, that, _1gtk_1timeout_1add_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1timeout_1remove
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1timeout_1remove)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1timeout_1remove_FUNC);
-	gtk_timeout_remove((guint)arg0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1timeout_1remove_FUNC);
 }
 #endif
 

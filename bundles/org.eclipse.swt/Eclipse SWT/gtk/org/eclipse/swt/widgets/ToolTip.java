@@ -581,7 +581,7 @@ void releaseWidget () {
 	layoutText = 0;
 	if (layoutMessage != 0) OS.g_object_unref (layoutMessage);
 	layoutMessage = 0;
-	if (timerId != 0) OS.gtk_timeout_remove(timerId);
+	if (timerId != 0) OS.g_source_remove(timerId);
 	timerId = 0;
 	text = null;
 	message = null;
@@ -782,7 +782,7 @@ public void setText (String string) {
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if (timerId != 0) OS.gtk_timeout_remove(timerId);
+	if (timerId != 0) OS.g_source_remove(timerId);
 	timerId = 0;
 	if (visible) {
 		if ((style & SWT.BALLOON) != 0) {
@@ -799,7 +799,7 @@ public void setVisible (boolean visible) {
 			OS.GTK_TOOLTIPS_SET_ACTIVE (handle, data);
 			OS.gtk_tooltips_set_tip (handle, vboxHandle, buffer, null);
 		}		
-		if (autohide) timerId = OS.gtk_timeout_add (DELAY, display.windowTimerProc, handle);
+		if (autohide) timerId = OS.g_timeout_add (DELAY, display.windowTimerProc, handle);
 	} else {
 		if ((style & SWT.BALLOON) != 0) {
 			OS.gtk_widget_hide (handle);

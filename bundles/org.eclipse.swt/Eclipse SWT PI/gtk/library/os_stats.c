@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1387;
-int OS_nativeFunctionCallCount[1387];
+int OS_nativeFunctionCount = 1386;
+int OS_nativeFunctionCallCount[1386];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -390,6 +390,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1strtod",
 	"_1g_1thread_1init",
 	"_1g_1thread_1supported",
+	"_1g_1timeout_1add",
 	"_1g_1type_1add_1interface_1static",
 	"_1g_1type_1class_1peek",
 	"_1g_1type_1class_1peek_1parent",
@@ -1100,8 +1101,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1text_1view_1set_1tabs",
 	"_1gtk_1text_1view_1set_1wrap_1mode",
 	"_1gtk_1text_1view_1window_1to_1buffer_1coords",
-	"_1gtk_1timeout_1add",
-	"_1gtk_1timeout_1remove",
 	"_1gtk_1toggle_1button_1get_1active",
 	"_1gtk_1toggle_1button_1get_1inconsistent",
 	"_1gtk_1toggle_1button_1new",

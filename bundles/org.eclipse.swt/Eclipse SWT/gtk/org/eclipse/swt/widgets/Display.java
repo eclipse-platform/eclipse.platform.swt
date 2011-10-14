@@ -630,8 +630,8 @@ int /*long*/ allChildrenProc (int /*long*/ widget, int /*long*/ recurse) {
 }
 
 void addMouseHoverTimeout (int /*long*/ handle) {
-	if (mouseHoverId != 0) OS.gtk_timeout_remove (mouseHoverId);
-	mouseHoverId = OS.gtk_timeout_add (400, mouseHoverProc, handle);
+	if (mouseHoverId != 0) OS.g_source_remove (mouseHoverId);
+	mouseHoverId = OS.g_timeout_add (400, mouseHoverProc, handle);
 	mouseHoverHandle = handle;
 }
 
@@ -3334,7 +3334,7 @@ void releaseDisplay () {
 	allChildrenProc = 0;
 
 	/* Dispose the caret callback */
-	if (caretId != 0) OS.gtk_timeout_remove (caretId);
+	if (caretId != 0) OS.g_source_remove (caretId);
 	caretId = 0;
 	caretProc = 0;
 	caretCallback.dispose ();
@@ -3349,7 +3349,7 @@ void releaseDisplay () {
 	/* Dispose the timer callback */
 	if (timerIds != null) {
 		for (int i=0; i<timerIds.length; i++) {
-			if (timerIds [i] != 0) OS.gtk_timeout_remove (timerIds [i]);
+			if (timerIds [i] != 0) OS.g_source_remove (timerIds [i]);
 		}
 	}
 	timerIds = null;
@@ -3362,7 +3362,7 @@ void releaseDisplay () {
 	windowTimerCallback = null;
 	
 	/* Dispose mouse hover callback */
-	if (mouseHoverId != 0) OS.gtk_timeout_remove (mouseHoverId);
+	if (mouseHoverId != 0) OS.g_source_remove (mouseHoverId);
 	mouseHoverId = 0;
 	mouseHoverHandle = mouseHoverProc = 0;
 	mouseHoverCallback.dispose ();
@@ -3529,7 +3529,7 @@ public void removeListener (int eventType, Listener listener) {
 
 void removeMouseHoverTimeout (int /*long*/ handle) {
 	if (handle != mouseHoverHandle) return;
-	if (mouseHoverId != 0) OS.gtk_timeout_remove (mouseHoverId);
+	if (mouseHoverId != 0) OS.g_source_remove (mouseHoverId);
 	mouseHoverId = 0;
 	mouseHoverHandle = 0;
 }
@@ -4118,7 +4118,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 		index++;
 	}
 	if (index != timerList.length) {
-		OS.gtk_timeout_remove (timerIds [index]);
+		OS.g_source_remove (timerIds [index]);
 		timerList [index] = null;
 		timerIds [index] = 0;
 		if (milliseconds < 0) return;
@@ -4138,7 +4138,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 			timerIds = newTimerIds;
 		}
 	}
-	int timerId = OS.gtk_timeout_add (milliseconds, timerProc, index);
+	int timerId = OS.g_timeout_add (milliseconds, timerProc, index);
 	if (timerId != 0) {
 		timerIds [index] = timerId;
 		timerList [index] = runnable;
@@ -4165,7 +4165,7 @@ int /*long*/ caretProc (int /*long*/ clientData) {
 	if (currentCaret.blinkCaret()) {
 		int blinkRate = currentCaret.blinkRate;
 		if (blinkRate == 0) return 0;
-		caretId = OS.gtk_timeout_add (blinkRate, caretProc, 0);
+		caretId = OS.g_timeout_add (blinkRate, caretProc, 0);
 	} else {
 		currentCaret = null;
 	}
@@ -4234,12 +4234,12 @@ void sendEvent (int eventType, Event event) {
 }
 
 void setCurrentCaret (Caret caret) {
-	if (caretId != 0) OS.gtk_timeout_remove(caretId);
+	if (caretId != 0) OS.g_source_remove(caretId);
 	caretId = 0;
 	currentCaret = caret;
 	if (caret == null) return;
 	int blinkRate = currentCaret.blinkRate;
-	caretId = OS.gtk_timeout_add (blinkRate, caretProc, 0); 
+	caretId = OS.g_timeout_add (blinkRate, caretProc, 0); 
 }
 
 int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {

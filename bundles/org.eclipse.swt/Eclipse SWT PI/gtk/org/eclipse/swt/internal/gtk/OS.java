@@ -11039,24 +11039,14 @@ public static final void gtk_text_view_window_to_buffer_coords(int /*long*/ text
 }
 /**
  * @param interval cast=(guint32)
- * @param function cast=(GtkFunction)
+ * @param function cast=(GSourceFunc)
  * @param data cast=(gpointer)
  */
-public static final native int _gtk_timeout_add(int interval, int /*long*/ function, int /*long*/ data);
-public static final int gtk_timeout_add(int interval, int /*long*/ function, int /*long*/ data) {
+public static final native int _g_timeout_add(int interval, int /*long*/ function, int /*long*/ data);
+public static final int g_timeout_add(int interval, int /*long*/ function, int /*long*/ data) {
 	lock.lock();
 	try {
-		return _gtk_timeout_add(interval, function, data);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param timeout_handler_id cast=(guint) */
-public static final native void _gtk_timeout_remove(int timeout_handler_id);
-public static final void gtk_timeout_remove(int timeout_handler_id) {
-	lock.lock();
-	try {
-		_gtk_timeout_remove(timeout_handler_id);
+		return _g_timeout_add(interval, function, data);
 	} finally {
 		lock.unlock();
 	}
