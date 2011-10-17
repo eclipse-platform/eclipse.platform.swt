@@ -98,6 +98,8 @@ public class StyledText extends Canvas {
 	TextChangeListener textChangeListener;	// listener for TextChanging, TextChanged and TextSet events from StyledTextContent
 	int verticalScrollOffset = 0;		// pixel based
 	int horizontalScrollOffset = 0;		// pixel based
+	boolean alwaysShowScroll = true;
+	int ignoreResize = 0;
 	int topIndex = 0;					// top visible line
 	int topIndexY;
 	int clientAreaHeight = 0;			// the client area height. Needed to calculate content width for new visible lines during Resize callback
@@ -1820,6 +1822,26 @@ boolean copySelection(int type) {
 public int getAlignment() {
 	checkWidget();
 	return alignment;
+}
+/**
+ * Returns the Always Show Scrollbars flag.  True if the scrollbars are 
+ * always shown even if they are not required.  False if the scrollbars are only 
+ * visible when some part of the content needs to be scrolled to be seen.
+ * The H_SCROLL and V_SCROLL style bits are also required to enable scrollbars in the 
+ * horizontal and vertical directions.
+ * 
+ * @return the Always Show Scrollbars flag value
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.8
+ */
+public boolean getAlwaysShowScrollBars() {
+	checkWidget();
+	return alwaysShowScroll;
 }
 int getAvailableHeightAbove(int height) {
 	int maxHeight = verticalScrollOffset;
@@ -6105,6 +6127,8 @@ void handleResize(Event event) {
 	Rectangle clientArea = getClientArea();
 	clientAreaHeight = clientArea.height;
 	clientAreaWidth = clientArea.width;
+	if (!alwaysShowScroll && ignoreResize != 0) return;
+	
 	/* Redraw the old or new right/bottom margin if needed */
 	if (oldWidth != clientAreaWidth) {
 		if (rightMargin > 0) {
@@ -8140,6 +8164,28 @@ public void setAlignment(int alignment) {
 	super.redraw();
 }
 /**
+ * Set the Always Show Scrollbars flag.  True if the scrollbars are 
+ * always shown even if they are not required.  False if the scrollbars are only 
+ * visible when some part of the content needs to be scrolled to be seen.
+ * The H_SCROLL and V_SCROLL style bits are also required to enable scrollbars in the 
+ * horizontal and vertical directions.
+ * 
+ * @param show true to show the scrollbars even when not required, false to show scrollbars only when required
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @ since 3.8
+ */
+public void setAlwaysShowScrollBars(boolean show) {
+	checkWidget();
+	if (show == alwaysShowScroll) return;
+	alwaysShowScroll = show;
+	setScrollBars(true);
+}
+/**
  * @see Control#setBackground(Color)
  */
 public void setBackground(Color color) {
@@ -9257,6 +9303,17 @@ public void setRightMargin (int rightMargin) {
 	checkWidget();
 	setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
 }
+void setScrollBar(ScrollBar bar, int clientArea, int maximum, int margin) {
+	int inactive = 1;
+	if (clientArea < maximum) {
+		bar.setMaximum(maximum - margin);
+		bar.setThumb(clientArea - margin);
+		bar.setPageIncrement(clientArea - margin);
+		if (!alwaysShowScroll) bar.setVisible(true);
+	} else if (bar.getThumb() != inactive || bar.getMaximum() != inactive) {
+		bar.setValues(bar.getSelection(), bar.getMinimum(), inactive, inactive, bar.getIncrement(), inactive);
+	}
+}
 /**
  * Adjusts the maximum and the page size of the scroll bars to 
  * reflect content width/length changes.
@@ -9264,49 +9321,24 @@ public void setRightMargin (int rightMargin) {
  * @param vertical indicates if the vertical scrollbar also needs to be set 
  */
 void setScrollBars(boolean vertical) {
-	int inactive = 1;
-	if (vertical || !isFixedLineHeight()) {
-		ScrollBar verticalBar = getVerticalBar();
-		if (verticalBar != null) {
-			int maximum = renderer.getHeight();
-			// only set the real values if the scroll bar can be used 
-			// (ie. because the thumb size is less than the scroll maximum)
-			// avoids flashing on Motif, fixes 1G7RE1J and 1G5SE92
-			if (clientAreaHeight < maximum) {
-				verticalBar.setMaximum(maximum - topMargin - bottomMargin);
-				verticalBar.setThumb(clientAreaHeight - topMargin - bottomMargin);
-				verticalBar.setPageIncrement(clientAreaHeight - topMargin - bottomMargin);
-			} else if (verticalBar.getThumb() != inactive || verticalBar.getMaximum() != inactive) {
-				verticalBar.setValues(
-					verticalBar.getSelection(),
-					verticalBar.getMinimum(),
-					inactive,
-					inactive,
-					verticalBar.getIncrement(),
-					inactive);
-			}
-		}
-	}
+	ignoreResize++;
+	if (!isFixedLineHeight() || !alwaysShowScroll) vertical = true;
+	ScrollBar verticalBar = vertical ? getVerticalBar() : null;
 	ScrollBar horizontalBar = getHorizontalBar();
-	if (horizontalBar != null && horizontalBar.getVisible()) {
-		int maximum = renderer.getWidth();
-		// only set the real values if the scroll bar can be used 
-		// (ie. because the thumb size is less than the scroll maximum)
-		// avoids flashing on Motif, fixes 1G7RE1J and 1G5SE92
-		if (clientAreaWidth < maximum) {
-			horizontalBar.setMaximum(maximum - leftMargin - rightMargin);
-			horizontalBar.setThumb(clientAreaWidth - leftMargin - rightMargin);
-			horizontalBar.setPageIncrement(clientAreaWidth - leftMargin - rightMargin);
-		} else if (horizontalBar.getThumb() != inactive || horizontalBar.getMaximum() != inactive) {
-			horizontalBar.setValues(
-				horizontalBar.getSelection(),
-				horizontalBar.getMinimum(),
-				inactive,
-				inactive,
-				horizontalBar.getIncrement(),
-				inactive);
+	if (!alwaysShowScroll) {
+		if (verticalBar != null) verticalBar.setVisible(false);
+		if (horizontalBar != null) horizontalBar.setVisible(false);
+	}
+	if (verticalBar != null) {
+		setScrollBar(verticalBar, clientAreaHeight, renderer.getHeight(), topMargin + bottomMargin);
+	}
+	if (horizontalBar != null) {
+		setScrollBar(horizontalBar, clientAreaWidth, renderer.getWidth(), leftMargin + rightMargin);
+		if (!alwaysShowScroll && horizontalBar.getVisible() && verticalBar != null && !verticalBar.getVisible()) {
+			setScrollBar(verticalBar, clientAreaHeight, renderer.getHeight(), topMargin + bottomMargin);
 		}
 	}
+	ignoreResize--;
 }
 /** 
  * Sets the selection to the given position and scrolls it into view.  Equivalent to setSelection(start,start).
