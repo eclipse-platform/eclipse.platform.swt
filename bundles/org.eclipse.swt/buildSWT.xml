@@ -724,7 +724,7 @@
 			<arg line="status"/>
 		</exec>
 		<exec dir="${repo.common}" executable="git" failonerror="true">
-			<arg line="commit -m 'SWT contribuition v${swt_new_tag}'"/>
+			<arg line="commit -m 'SWT contribution v${swt_new_tag}'"/>
 		</exec>
 	</target>
 	
