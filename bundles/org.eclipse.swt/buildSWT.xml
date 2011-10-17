@@ -718,7 +718,7 @@
 		<replaceregexp file="${repo.common}/${file_swt_map}" match="=v\d\d\d\d[a-z]?" replace="=v${swt_new_tag}" byline="true"/>
 		
 		<exec dir="${repo.common}" executable="git" failonerror="true">
-			<arg line="add '${map}'"/>
+			<arg line="add '${file_swt_map}'"/>
 		</exec>
 		<exec dir="${repo.common}" executable="git" failonerror="true">
 			<arg line="status"/>
