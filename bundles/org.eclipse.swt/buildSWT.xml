@@ -50,6 +50,7 @@
 	<property name="file_make_common" value="bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
 	<property name="file_version" value="bundles/org.eclipse.swt/Eclipse SWT/common/version.txt"/>
 	<property name="file_build_notes" value="bundles/org.eclipse.swt/buildnotes_swt.html"/>
+	<property name="file_swt_map" value="maps/org.eclipse.releng/maps/swt.map"/>
 
 	<target name="check_libraries" depends="get_version">
 		<antcall target="check_fragment_libraries">
@@ -590,9 +591,7 @@
 	
 	<!-- Set swt_tag to the current tag in the swt map file -->
 	<target name="get_tag" unless="swt_tag">
-		<property name="tmpdir" value="${tmphome}"/>
-		<property name="map" value="${repo.common}/maps/org.eclipse.releng/maps/swt.map"/>
-		<loadfile property="swt_tag" srcfile="${map}">
+		<loadfile property="swt_tag" srcfile="${repo.common}/${file_swt_map}">
 			<filterchain>
 				<tokenfilter delimoutput="">
 					<containsstring contains="plugin@org.eclipse.swt=GIT,tag="/>
@@ -716,8 +715,17 @@
 	
 	<target name="update_swt_map" depends="get_new_tag">
 		<!-- update and commit map file -->
-		<property name="map" value="${repo.common}/maps/org.eclipse.releng/maps/swt.map"/>
-		<replaceregexp file="${map}" match="=v\d\d\d\d[a-z]?" replace="=v${swt_new_tag}" byline="true"/>
+		<replaceregexp file="${repo.common}/${file_swt_map}" match="=v\d\d\d\d[a-z]?" replace="=v${swt_new_tag}" byline="true"/>
+		
+		<exec dir="${repo.common}" executable="git" failonerror="true">
+			<arg line="add '${map}'"/>
+		</exec>
+		<exec dir="${repo.common}" executable="git" failonerror="true">
+			<arg line="status"/>
+		</exec>
+		<exec dir="${repo.common}" executable="git" failonerror="true">
+			<arg line="commit -m 'v${swt_new_tag}'"/>
+		</exec>
 	</target>
 	
 	<target name="check_sha1_file" unless="natives_changed">
