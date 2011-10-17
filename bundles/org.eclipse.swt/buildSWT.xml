@@ -714,7 +714,7 @@
 		<antcall target="update_swt_map"/>
 	</target>
 	
-	<target name="update_swt_map">
+	<target name="update_swt_map" depends="get_new_tag">
 		<!-- update and commit map file -->
 		<property name="map" value="${repo.common}/maps/org.eclipse.releng/maps/swt.map"/>
 		<replaceregexp file="${map}" match="=v\d\d\d\d[a-z]?" replace="=v${swt_new_tag}" byline="true"/>
