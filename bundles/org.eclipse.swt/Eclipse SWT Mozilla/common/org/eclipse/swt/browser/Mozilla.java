@@ -83,7 +83,8 @@ class Mozilla extends WebBrowser {
 	static final char SEPARATOR_OS = System.getProperty ("file.separator").charAt (0); //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String DISPOSE_LISTENER_HOOKED = "org.eclipse.swt.browser.Mozilla.disposeListenerHooked"; //$NON-NLS-1$
-	static final String HEADER_CONTENTTYPE = "Content-Type"; //$NON-NLS-1
+	static final String HEADER_CONTENTLENGTH = "content-length"; //$NON-NLS-1
+	static final String HEADER_CONTENTTYPE = "content-type"; //$NON-NLS-1
 	static final String MIMETYPE_FORMURLENCODED = "application/x-www-form-urlencoded"; //$NON-NLS-1$
 	static final String PREFIX_JAVASCRIPT = "javascript:"; //$NON-NLS-1$
 	static final String PREFERENCE_CHARSET = "intl.charset.default"; //$NON-NLS-1$
@@ -2819,12 +2820,30 @@ public boolean setUrl (String url, String postData, String[] headers) {
 			postDataStream = new nsIMIMEInputStream (result[0]);
 			rc = postDataStream.SetData (dataStream.getAddress ());
 			if (rc != XPCOM.NS_OK) error (rc);
-			rc = postDataStream.SetAddContentLength (1);
+
+			boolean foundLength = false;
+			boolean foundType = false;
+			if (headers != null) {
+				for (int i = 0; i < headers.length; i++) {
+					int index = headers[i].indexOf (':');
+					if (index != -1) {
+						String name = headers[i].substring (0, index).trim ().toLowerCase ();
+						if (name.equals (HEADER_CONTENTLENGTH)) {
+							foundLength = true;
+						} else if (name.equals (HEADER_CONTENTTYPE)) {
+							foundType = true;
+						}
+					}
+				}
+			}
+			rc = postDataStream.SetAddContentLength (foundLength ? 0 : 1);
 			if (rc != XPCOM.NS_OK) error (rc);
-			byte[] name = MozillaDelegate.wcsToMbcs (null, HEADER_CONTENTTYPE, true);
-			byte[] value = MozillaDelegate.wcsToMbcs (null, MIMETYPE_FORMURLENCODED, true);
-			rc = postDataStream.AddHeader (name, value);
-			if (rc != XPCOM.NS_OK) error (rc);
+			if (!foundType) {
+				byte[] name = MozillaDelegate.wcsToMbcs (null, HEADER_CONTENTTYPE, true);
+				byte[] value = MozillaDelegate.wcsToMbcs (null, MIMETYPE_FORMURLENCODED, true);
+				rc = postDataStream.AddHeader (name, value);
+				if (rc != XPCOM.NS_OK) error (rc);
+			}
 		}
 		result[0] = 0;
 	}

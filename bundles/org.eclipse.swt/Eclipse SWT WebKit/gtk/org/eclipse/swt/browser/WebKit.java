@@ -39,8 +39,9 @@ class WebKit extends WebBrowser {
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String CHARSET_UTF8 = "UTF-8"; //$NON-NLS-1$
 	static final String CLASSNAME_EXTERNAL = "External"; //$NON-NLS-1$
-	static final String ENCODING_FORM = "Content-Type: application/x-www-form-urlencoded"; //$NON-NLS-1$
 	static final String FUNCTIONNAME_CALLJAVA = "callJava"; //$NON-NLS-1$
+	static final String HEADER_CONTENTTYPE = "content-type"; //$NON-NLS-1$
+	static final String MIMETYPE_FORMURLENCODED = "application/x-www-form-urlencoded"; //$NON-NLS-1$
 	static final String OBJECTNAME_EXTERNAL = "external"; //$NON-NLS-1$
 	static final String PROPERTY_LENGTH = "length"; //$NON-NLS-1$
 	static final String PROPERTY_PROXYHOST = "network.proxy_host"; //$NON-NLS-1$
@@ -1748,10 +1749,23 @@ int /*long*/ webkit_resource_request_starting (int /*long*/ web_view, int /*long
 				WebKitGTK.soup_message_body_flatten (body);
 
 				if (headers == null) headers = new String[0];
-				String[] temp = new String[headers.length + 1];
-				System.arraycopy (headers, 0, temp, 0, headers.length);
-				temp[headers.length] = ENCODING_FORM;
-				headers = temp;
+				boolean found = false;
+				for (int i = 0; i < headers.length; i++) {
+					int index = headers[i].indexOf (':');
+					if (index != -1) {
+						String name = headers[i].substring (0, index).trim ().toLowerCase ();
+						if (name.equals (HEADER_CONTENTTYPE)) {
+							found = true;
+							break;
+						}
+					}
+				}
+				if (!found) {
+					String[] temp = new String[headers.length + 1];
+					System.arraycopy (headers, 0, temp, 0, headers.length);
+					temp[headers.length] = HEADER_CONTENTTYPE + ':' + MIMETYPE_FORMURLENCODED;
+					headers = temp;
+				}
 				postData = null;
 			}
 
