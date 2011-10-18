@@ -12494,22 +12494,6 @@ public static final void gtk_tree_view_set_search_column(int /*long*/ tree_view,
 		lock.unlock();
 	}
 }
-/**
- * @param tree_view cast=(GtkTreeView *)
- * @param tx cast=(gint)
- * @param ty cast=(gint)
- * @param wx cast=(gint *)
- * @param wy cast=(gint *)
- */
-public static final native void _gtk_tree_view_tree_to_widget_coords(int /*long*/ tree_view, int tx, int ty, int[] wx, int[] wy);
-public static final void gtk_tree_view_tree_to_widget_coords(int /*long*/ tree_view, int tx, int ty, int[] wx, int[] wy) {
-	lock.lock();
-	try {
-		_gtk_tree_view_tree_to_widget_coords(tree_view, tx, ty, wx, wy);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param tree_view cast=(GtkTreeView *) */
 public static final native void _gtk_tree_view_unset_rows_drag_dest(int /*long*/ tree_view);
 public static final void gtk_tree_view_unset_rows_drag_dest(int /*long*/ tree_view) {
