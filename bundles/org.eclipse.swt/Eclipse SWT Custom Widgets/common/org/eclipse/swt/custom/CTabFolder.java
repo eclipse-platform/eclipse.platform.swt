@@ -1034,12 +1034,12 @@ void initAccessible() {
 				if (text != null) {
 					char mnemonic = _findMnemonic(text);	
 					if (mnemonic != '\0') {
-						shortcut = "Alt+"+mnemonic; //$NON-NLS-1$
+						shortcut = SWT.getMessage ("SWT_Page_Mnemonic", new Object[] {new Character(mnemonic)}); //$NON-NLS-1$
 					}
 				}
 			}
 			if (childID == ACC.CHILDID_SELF) {
-				shortcut = "Ctrl+PageDown"; //$NON-NLS-1$
+				shortcut = SWT.getMessage ("SWT_SwitchPage_Shortcut"); //$NON-NLS-1$
 			}
 			e.result = shortcut;
 		}
