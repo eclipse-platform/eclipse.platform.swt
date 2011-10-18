@@ -2279,7 +2279,8 @@ public class Accessible {
 			/* Get the default keyboard shortcut from the OS. */
 			code = iaccessible.get_accKeyboardShortcut(varChild, pszKeyboardShortcut);
 			if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
-			if (accessibleListeners.size() == 0) return code;
+			/* Process TabFolder even if there are no apps listening. */
+			if (accessibleListeners.size() == 0 && !(control instanceof TabFolder)) return code;
 			if (code == COM.S_OK) {
 				int /*long*/[] pKeyboardShortcut = new int /*long*/[1];
 				COM.MoveMemory(pKeyboardShortcut, pszKeyboardShortcut, OS.PTR_SIZEOF);
@@ -2295,6 +2296,10 @@ public class Accessible {
 		AccessibleEvent event = new AccessibleEvent(this);
 		event.childID = osToChildID(v.lVal);
 		event.result = osKeyboardShortcut;
+		/* SWT TabFolders use Ctrl+PageDown to switch pages (not Ctrl+Tab). */
+		if (v.lVal == COM.CHILDID_SELF && control instanceof TabFolder) {
+			event.result = "Ctrl+PageDown"; //$NON-NLS-1$
+		}
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
 			listener.getKeyboardShortcut(event);

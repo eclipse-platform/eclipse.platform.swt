@@ -1064,6 +1064,7 @@ void initAccessible() {
 					childID = items.length + MAXIMIZE_CHILD_ID;
 				} else {
 					Rectangle location = getBounds();
+					location.x = location.y = 0;
 					location.height = location.height - getClientArea().height;
 					if (location.contains(testPoint)) {
 						childID = ACC.CHILDID_SELF;
