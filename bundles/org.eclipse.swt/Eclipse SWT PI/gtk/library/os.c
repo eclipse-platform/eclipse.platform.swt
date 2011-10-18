@@ -1671,18 +1671,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1WIDGET_1HAS_1FOCUS)
 }
 #endif
 
-#ifndef NO__1GTK_1WIDGET_1IS_1SENSITIVE
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1WIDGET_1IS_1SENSITIVE)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1GTK_1WIDGET_1IS_1SENSITIVE_FUNC);
-	rc = (jboolean)GTK_WIDGET_IS_SENSITIVE(arg0);
-	OS_NATIVE_EXIT(env, that, _1GTK_1WIDGET_1IS_1SENSITIVE_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1GTK_1WIDGET_1MAPPED
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1WIDGET_1MAPPED)
 	(JNIEnv *env, jclass that, jintLong arg0)

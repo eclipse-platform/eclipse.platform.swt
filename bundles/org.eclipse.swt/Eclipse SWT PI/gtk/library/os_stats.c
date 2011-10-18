@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1386;
-int OS_nativeFunctionCallCount[1386];
+int OS_nativeFunctionCount = 1385;
+int OS_nativeFunctionCallCount[1385];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -166,7 +166,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1GTK_1WIDGET_1FLAGS",
 	"_1GTK_1WIDGET_1HAS_1DEFAULT",
 	"_1GTK_1WIDGET_1HAS_1FOCUS",
-	"_1GTK_1WIDGET_1IS_1SENSITIVE",
 	"_1GTK_1WIDGET_1MAPPED",
 	"_1GTK_1WIDGET_1SENSITIVE",
 	"_1GTK_1WIDGET_1SET_1FLAGS",

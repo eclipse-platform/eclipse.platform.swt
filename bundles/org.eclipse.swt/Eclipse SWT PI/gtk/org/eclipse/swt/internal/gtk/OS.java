@@ -1700,15 +1700,6 @@ public static final boolean GTK_WIDGET_HAS_FOCUS(int /*long*/ wid) {
 		lock.unlock();
 	}
 }
-public static final native boolean _GTK_WIDGET_IS_SENSITIVE(int /*long*/ wid);
-public static final boolean GTK_WIDGET_IS_SENSITIVE(int /*long*/ wid) {
-	lock.lock();
-	try {
-		return _GTK_WIDGET_IS_SENSITIVE(wid);
-	} finally {
-		lock.unlock();
-	}
-}
 public static final native boolean _GTK_WIDGET_MAPPED(int /*long*/ wid);
 public static final boolean GTK_WIDGET_MAPPED(int /*long*/ wid) {
 	lock.lock();
