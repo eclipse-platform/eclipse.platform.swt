@@ -595,6 +595,27 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 	
 	return super.dragDetect(x, y, filter, consume);
 }
+public int getCaretPosition() {
+	checkWidget();
+	return selectionRange != null ? (int)/*64*/selectionRange.location : 0;
+}
+
+public Point getCaretLocation() {
+	checkWidget();
+	NSTextView widget = null;
+	if (this.hasFocus()) {
+		widget = new NSTextView(view.window().fieldEditor(true, view));
+	}
+	if (widget == null) return new Point (0, 0);
+	NSLayoutManager layoutManager = widget.layoutManager();
+	NSTextContainer container = widget.textContainer();
+	NSRange range = widget.selectedRange();
+	int /*long*/ [] rectCount = new int /*long*/ [1];
+	int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, container, rectCount);
+	NSRect rect = new NSRect();
+	if (rectCount[0] > 0) OS.memmove(rect, pArray, NSRect.sizeof);
+	return new Point((int)rect.x, (int)rect.y);
+}
 
 int getCharCount() {
 	NSString str;

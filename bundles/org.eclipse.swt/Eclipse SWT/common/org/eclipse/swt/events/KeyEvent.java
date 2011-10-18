@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -124,10 +124,10 @@ public KeyEvent(Event e) {
 public String toString() {
 	String string = super.toString ();
 	return string.substring (0, string.length() - 1) // remove trailing '}'
-		+ " character='" + ((character == 0) ? "\\0" : "" + character) + "'"
-		+ " keyCode=" + keyCode
-		+ " keyLocation=" + keyLocation
-		+ " stateMask=" + stateMask
+		+ " character='" + ((character == 0) ? "\\0" : String.valueOf(character)) + "'=0x" + Integer.toHexString(character)
+		+ " keyCode=0x" + Integer.toHexString(keyCode)
+		+ " keyLocation=0x" + Integer.toHexString(keyLocation)
+		+ " stateMask=0x" + Integer.toHexString(stateMask)
 		+ " doit=" + doit
 		+ "}";
 }

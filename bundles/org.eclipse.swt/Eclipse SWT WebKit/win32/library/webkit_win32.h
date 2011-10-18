@@ -22,5 +22,7 @@
 #include <WebKitCOMAPI.h>
 #include "webkit_win32_custom.h"
 
+#define WebKit_LOAD_FUNCTION LOAD_FUNCTION
+
 #endif /* INC_webkit_win32_H */
 

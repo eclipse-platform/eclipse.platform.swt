@@ -22,6 +22,8 @@
 
 #include "os_custom.h"
 
+#define OS_LOAD_FUNCTION LOAD_FUNCTION
+
 extern jint CPSEnableForegroundOperation(jint *, jint, jint, jint, jint);
 extern jint CPSSetProcessName(jint *, jbyte *);
 

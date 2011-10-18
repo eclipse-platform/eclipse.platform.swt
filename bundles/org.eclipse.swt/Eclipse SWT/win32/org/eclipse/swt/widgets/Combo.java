@@ -658,6 +658,126 @@ boolean dragDetect (int /*long*/ hwnd, int x, int y, boolean filter, boolean [] 
 }
 
 /**
+ * Returns a point describing the location of the caret relative
+ * to the receiver.
+ *
+ * @return a point, the location of the caret
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.8
+ */
+public Point getCaretLocation () {
+	checkWidget ();
+	/*
+	* Bug in Windows.  For some reason, Windows is unable
+	* to return the pixel coordinates of the last character
+	* in the widget.  The fix is to temporarily insert a
+	* space, query the coordinates and delete the space.
+	* The selection is always an i-beam in this case because
+	* this is the only time the start of the selection can
+	* be equal to the last character position in the widget.
+	* If EM_POSFROMCHAR fails for any other reason, return
+	* pixel coordinates (0,0). 
+	*/
+	int position = getCaretPosition ();
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int /*long*/ caretPos = OS.SendMessage (hwndText, OS.EM_POSFROMCHAR, position, 0);
+	if (caretPos == -1) {
+		caretPos = 0;
+		if (position >= OS.GetWindowTextLength (hwndText)) {
+			int cp = getCodePage ();
+			int [] start = new int [1], end = new int [1];
+			OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
+			OS.SendMessage (hwndText, OS.EM_SETSEL, position, position);
+			/*
+			* Feature in Windows.  When an edit control with ES_MULTILINE
+			* style that does not have the WS_VSCROLL style is full (i.e.
+			* there is no space at the end to draw any more characters),
+			* EM_REPLACESEL sends a WM_CHAR with a backspace character
+			* to remove any further text that is added.  This is an
+			* implementation detail of the edit control that is unexpected
+			* and can cause endless recursion when EM_REPLACESEL is sent
+			* from a WM_CHAR handler.  The fix is to ignore calling the
+			* handler from WM_CHAR.
+			*/
+			ignoreCharacter = ignoreModify = true;
+			OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, new TCHAR (cp, " ", true));
+			caretPos = OS.SendMessage (hwndText, OS.EM_POSFROMCHAR, position, 0);
+			OS.SendMessage (hwndText, OS.EM_SETSEL, position, position + 1);
+			OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, new TCHAR (cp, "", true));
+			ignoreCharacter = ignoreModify = false;
+			OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], start [0]);
+			OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
+		}
+	}
+	return new Point (OS.GET_X_LPARAM (caretPos), OS.GET_Y_LPARAM (caretPos));
+}
+
+/**
+ * Returns the character position of the caret.
+ * <p>
+ * Indexing is zero based.
+ * </p>
+ *
+ * @return the position of the caret
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.8
+ */
+public int getCaretPosition () {
+	checkWidget ();
+	int [] start = new int [1], end = new int [1];
+	int /*long*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
+	/*
+	* In Windows, there is no API to get the position of the caret
+	* when the selection is not an i-beam.  The best that can be done
+	* is to query the pixel position of the current caret and compare
+	* it to the pixel position of the start and end of the selection.
+	* 
+	* NOTE:  This does not work when the i-beam belongs to another
+	* control.  In this case, guess that the i-beam is at the start
+	* of the selection.
+	*/
+	int caret = start [0];
+	if (start [0] != end [0]) {
+		if (!OS.IsWinCE) {
+			int idThread = OS.GetWindowThreadProcessId (hwndText, null);
+			GUITHREADINFO lpgui = new GUITHREADINFO ();
+			lpgui.cbSize = GUITHREADINFO.sizeof;
+			if (OS.GetGUIThreadInfo (idThread, lpgui)) {
+				if (lpgui.hwndCaret == hwndText || lpgui.hwndCaret == 0) {
+					POINT ptCurrentPos = new POINT ();
+					if (OS.GetCaretPos (ptCurrentPos)) {
+						int /*long*/ endPos = OS.SendMessage (hwndText, OS.EM_POSFROMCHAR, end [0], 0);
+						if (endPos == -1) {
+							int /*long*/ startPos = OS.SendMessage (hwndText, OS.EM_POSFROMCHAR, start [0], 0);
+							int startX = OS.GET_X_LPARAM (startPos);
+							if (ptCurrentPos.x > startX) caret = end [0];
+						} else {
+							int endX = OS.GET_X_LPARAM (endPos);
+							if (ptCurrentPos.x >= endX) caret = end [0];
+						}
+					}
+				}
+			}
+		}
+	}
+	if (!OS.IsUnicode && OS.IsDBLocale) {
+		caret = mbcsToWcsPos (caret);
+	}
+	return caret;
+}
+
+/**
  * Returns the item at the given, zero-relative index in the
  * receiver's list. Throws an exception if the index is out
  * of range.

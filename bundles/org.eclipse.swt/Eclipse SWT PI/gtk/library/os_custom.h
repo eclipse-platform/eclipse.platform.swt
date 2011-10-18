@@ -354,7 +354,7 @@
 #define localeconv_decimal_point() localeconv()->decimal_point
 
 #define gtk_status_icon_position_menu_func() 0; \
-LOAD_FUNCTION(fp, gtk_status_icon_position_menu) \
+OS_LOAD_FUNCTION(fp, gtk_status_icon_position_menu) \
 rc = (jintLong)fp;
 
 glong g_utf16_pointer_to_offset(const gchar*, const gchar*);

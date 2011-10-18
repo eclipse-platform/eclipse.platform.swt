@@ -104,7 +104,8 @@ public class Gdip extends Platform {
 	public static final int PixelFormat48bppRGB = (12 | (48 << 8) | PixelFormatExtended);
 	public static final int PixelFormat64bppARGB = (13 | (64 << 8) | PixelFormatAlpha  | PixelFormatCanonical | PixelFormatExtended);
 	public static final int PixelFormat64bppPARGB = (14 | (64 << 8) | PixelFormatAlpha  | PixelFormatPAlpha | PixelFormatExtended);
-	public static final int PixelFormatMax = 15;
+	public static final int PixelFormat32bppCMYK = (15 | (32 << 8));
+	public static final int PixelFormatMax = 16;
 	public static final int PixelOffsetModeNone = QualityModeHigh + 1;
 	public static final int PixelOffsetModeHalf = QualityModeHigh + 2;
 	public static final int SmoothingModeDefault = QualityModeDefault;

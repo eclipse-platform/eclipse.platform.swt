@@ -87,20 +87,6 @@ public class StyledText extends Canvas {
 	static final int DEFAULT_HEIGHT = 64;
 	static final int V_SCROLL_RATE = 50;
 	static final int H_SCROLL_RATE = 10;
-	
-	static final int ExtendedModify = 3000;
-	static final int LineGetBackground = 3001;
-	static final int LineGetStyle = 3002;
-	static final int TextChanging = 3003;
-	static final int TextSet = 3004;
-	static final int VerifyKey = 3005;
-	static final int TextChanged = 3006;
-	static final int LineGetSegments = 3007;
-	static final int PaintObject = 3008;
-	static final int WordNext = 3009;
-	static final int WordPrevious = 3010;
-	static final int CaretMoved = 3011;
-	
 	static final int PREVIOUS_OFFSET_TRAILING = 0;
 	static final int OFFSET_LEADING = 1;
 	
@@ -112,6 +98,8 @@ public class StyledText extends Canvas {
 	TextChangeListener textChangeListener;	// listener for TextChanging, TextChanged and TextSet events from StyledTextContent
 	int verticalScrollOffset = 0;		// pixel based
 	int horizontalScrollOffset = 0;		// pixel based
+	boolean alwaysShowScroll = true;
+	int ignoreResize = 0;
 	int topIndex = 0;					// top visible line
 	int topIndexY;
 	int clientAreaHeight = 0;			// the client area height. Needed to calculate content width for new visible lines during Resize callback
@@ -259,7 +247,7 @@ public class StyledText extends Canvas {
 		fontData = styledText.getFont().getFontData()[0];
 		tabLength = styledText.tabLength;
 		int lineCount = printerRenderer.lineCount;
-		if (styledText.isListening(LineGetBackground) || (styledText.isBidi() && styledText.isListening(LineGetSegments)) || styledText.isListening(LineGetStyle)) {
+		if (styledText.isListening(ST.LineGetBackground) || (styledText.isBidi() && styledText.isListening(ST.LineGetSegments)) || styledText.isListening(ST.LineGetStyle)) {
 			StyledTextContent content = printerRenderer.content;
 			for (int i = 0; i < lineCount; i++) {
 				String line = content.getLine(i);
@@ -1295,7 +1283,7 @@ public void addExtendedModifyListener(ExtendedModifyListener extendedModifyListe
 	checkWidget();
 	if (extendedModifyListener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	StyledTextListener typedListener = new StyledTextListener(extendedModifyListener);
-	addListener(ExtendedModify, typedListener);
+	addListener(ST.ExtendedModify, typedListener);
 }
 /**
  * Adds a bidirectional segment listener.
@@ -1325,7 +1313,7 @@ public void addExtendedModifyListener(ExtendedModifyListener extendedModifyListe
 public void addBidiSegmentListener(BidiSegmentListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	addListener(LineGetSegments, new StyledTextListener(listener));
+	addListener(ST.LineGetSegments, new StyledTextListener(listener));
 }
 /**
  * Adds a caret listener. CaretEvent is sent when the caret offset changes.
@@ -1344,7 +1332,7 @@ public void addBidiSegmentListener(BidiSegmentListener listener) {
 public void addCaretListener(CaretListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	addListener(CaretMoved, new StyledTextListener(listener));
+	addListener(ST.CaretMoved, new StyledTextListener(listener));
 }
 /**
  * Adds a line background listener. A LineGetBackground event is sent by the 
@@ -1362,10 +1350,10 @@ public void addCaretListener(CaretListener listener) {
 public void addLineBackgroundListener(LineBackgroundListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (!isListening(LineGetBackground)) {
+	if (!isListening(ST.LineGetBackground)) {
 		renderer.clearLineBackground(0, content.getLineCount());
 	}
-	addListener(LineGetBackground, new StyledTextListener(listener));
+	addListener(ST.LineGetBackground, new StyledTextListener(listener));
 }
 /**
  * Adds a line style listener. A LineGetStyle event is sent by the widget to 
@@ -1383,11 +1371,11 @@ public void addLineBackgroundListener(LineBackgroundListener listener) {
 public void addLineStyleListener(LineStyleListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (!isListening(LineGetStyle)) {
+	if (!isListening(ST.LineGetStyle)) {
 		setStyleRanges(0, 0, null, null, true);
 		renderer.clearLineStyle(0, content.getLineCount());
 	}
-	addListener(LineGetStyle, new StyledTextListener(listener));
+	addListener(ST.LineGetStyle, new StyledTextListener(listener));
 	setCaretLocation();
 }
 /**	 
@@ -1429,7 +1417,7 @@ public void addModifyListener(ModifyListener modifyListener) {
 public void addPaintObjectListener(PaintObjectListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	addListener(PaintObject, new StyledTextListener(listener));
+	addListener(ST.PaintObject, new StyledTextListener(listener));
 }
 /**	 
  * Adds a selection listener. A Selection event is sent by the widget when the 
@@ -1476,7 +1464,7 @@ public void addSelectionListener(SelectionListener listener) {
 public void addVerifyKeyListener(VerifyKeyListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	addListener(VerifyKey, new StyledTextListener(listener));
+	addListener(ST.VerifyKey, new StyledTextListener(listener));
 }
 /**	 
  * Adds a verify listener. A Verify event is sent by the widget when the widget text 
@@ -1521,8 +1509,8 @@ public void addVerifyListener(VerifyListener verifyListener) {
 public void addWordMovementListener(MovementListener movementListener) {
 	checkWidget();
 	if (movementListener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	addListener(WordNext, new StyledTextListener(movementListener));
-	addListener(WordPrevious, new StyledTextListener(movementListener));
+	addListener(ST.WordNext, new StyledTextListener(movementListener));
+	addListener(ST.WordPrevious, new StyledTextListener(movementListener));
 }
 /** 
  * Appends a string to the text at the end of the widget.
@@ -1627,8 +1615,11 @@ void calculateTopIndex(int delta) {
 		}
 	}
 	if (topIndex != oldTopIndex || oldTopIndexY != topIndexY) {
+		int width = renderer.getWidth();
 		renderer.calculateClientArea();
-		setScrollBars(false);
+		if (width != renderer.getWidth()) {
+			setScrollBars(false);
+		}
 	}
 }
 /**
@@ -1834,6 +1825,26 @@ boolean copySelection(int type) {
 public int getAlignment() {
 	checkWidget();
 	return alignment;
+}
+/**
+ * Returns the Always Show Scrollbars flag.  True if the scrollbars are 
+ * always shown even if they are not required.  False if the scrollbars are only 
+ * visible when some part of the content needs to be scrolled to be seen.
+ * The H_SCROLL and V_SCROLL style bits are also required to enable scrollbars in the 
+ * horizontal and vertical directions.
+ * 
+ * @return the Always Show Scrollbars flag value
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.8
+ */
+public boolean getAlwaysShowScrollBars() {
+	checkWidget();
+	return alwaysShowScroll;
 }
 int getAvailableHeightAbove(int height) {
 	int maxHeight = verticalScrollOffset;
@@ -3936,7 +3947,7 @@ public Color getLineBackground(int index) {
 	if (index < 0 || index > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	return isListening(LineGetBackground) ? null : renderer.getLineBackground(index, null);
+	return isListening(ST.LineGetBackground) ? null : renderer.getLineBackground(index, null);
 }
 /**
  * Returns the bullet of the line at the given index.
@@ -3960,7 +3971,7 @@ public Bullet getLineBullet(int index) {
 	if (index < 0 || index > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	return isListening(LineGetStyle) ? null : renderer.getLineBullet(index, null);
+	return isListening(ST.LineGetStyle) ? null : renderer.getLineBullet(index, null);
 }
 /**
  * Returns the line background data for the given line or null if 
@@ -3972,7 +3983,7 @@ public Bullet getLineBullet(int index) {
  * @return line background data for the given line.
  */
 StyledTextEvent getLineBackgroundData(int lineOffset, String line) {
-	return sendLineEvent(LineGetBackground, lineOffset, line);
+	return sendLineEvent(ST.LineGetBackground, lineOffset, line);
 }
 /** 
  * Gets the number of text lines.
@@ -4091,7 +4102,7 @@ public int getLineIndent(int index) {
 	if (index < 0 || index > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	return isListening(LineGetStyle) ? 0 : renderer.getLineIndent(index, indent);
+	return isListening(ST.LineGetStyle) ? 0 : renderer.getLineIndent(index, indent);
 }
 /**
  * Returns whether the line at the given index is justified.
@@ -4117,7 +4128,7 @@ public boolean getLineJustify(int index) {
 	if (index < 0 || index > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	return isListening(LineGetStyle) ? false : renderer.getLineJustify(index, justify);	
+	return isListening(ST.LineGetStyle) ? false : renderer.getLineJustify(index, justify);	
 }
 /**
  * Returns the line spacing of the widget.
@@ -4151,7 +4162,7 @@ public int getLineSpacing() {
  * 	line start and end after line end
  */
 StyledTextEvent getLineStyleData(int lineOffset, String line) {
-	return sendLineEvent(LineGetStyle, lineOffset, line);
+	return sendLineEvent(ST.LineGetStyle, lineOffset, line);
 }
 /**
  * Returns the top pixel, relative to the client area, of a given line.
@@ -4246,7 +4257,7 @@ public int[] getLineTabStops(int index) {
 	if (index < 0 || index > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (isListening(LineGetStyle)) return null;
+	if (isListening(ST.LineGetStyle)) return null;
 	int[] tabs = renderer.getLineTabStops(index, null);
 	if (tabs == null) tabs = this.tabs;
 	if (tabs == null) return new int [] {renderer.tabWidth};
@@ -4278,7 +4289,7 @@ public int getLineWrapIndent(int index) {
 	if (index < 0 || index > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	return isListening(LineGetStyle) ? 0 : renderer.getLineWrapIndent(index, wrapIndent);
+	return isListening(ST.LineGetStyle) ? 0 : renderer.getLineWrapIndent(index, wrapIndent);
 }
 /** 
  * Returns the left margin.
@@ -4539,7 +4550,7 @@ String getPlatformDelimitedText(TextWriter writer) {
  */
 public int[] getRanges() {
 	checkWidget();
-	if (!isListening(LineGetStyle)) {
+	if (!isListening(ST.LineGetStyle)) {
 		int[] ranges = renderer.getRanges(0, content.getCharCount());
 		if (ranges != null) return ranges;
 	}
@@ -4581,7 +4592,7 @@ public int[] getRanges(int start, int length) {
 	if (start > end || start < 0 || end > contentLength) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}
-	if (!isListening(LineGetStyle)) {
+	if (!isListening(ST.LineGetStyle)) {
 		int[] ranges = renderer.getRanges(start, length);
 		if (ranges != null) return ranges;
 	}
@@ -4756,12 +4767,12 @@ public String getSelectionText() {
 }
 StyledTextEvent getBidiSegments(int lineOffset, String line) {
 	if (!isBidi()) return null;
-	if (!isListening(LineGetSegments)) {
+	if (!isListening(ST.LineGetSegments)) {
 		StyledTextEvent event = new StyledTextEvent(content);
 		event.segments = getBidiSegmentsCompatibility(line, lineOffset);
 		return event;
 	}
-	StyledTextEvent event = sendLineEvent(LineGetSegments, lineOffset, line);
+	StyledTextEvent event = sendLineEvent(ST.LineGetSegments, lineOffset, line);
 	if (event == null || event.segments == null || event.segments.length == 0) return null;
 	int lineLength = line.length();
 	int[] segments = event.segments;
@@ -4875,7 +4886,7 @@ public StyleRange getStyleRangeAtOffset(int offset) {
 	if (offset < 0 || offset >= getCharCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (!isListening(LineGetStyle)) {
+	if (!isListening(ST.LineGetStyle)) {
 		StyleRange[] ranges = renderer.getStyleRanges(offset, 1, true);
 		if (ranges != null) return ranges[0];
 	}
@@ -5022,7 +5033,7 @@ public StyleRange[] getStyleRanges(int start, int length, boolean includeRanges)
 	if (start > end || start < 0 || end > contentLength) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}
-	if (!isListening(LineGetStyle)) {
+	if (!isListening(ST.LineGetStyle)) {
 		StyleRange[] ranges = renderer.getStyleRanges(start, length, includeRanges);
 		if (ranges != null) return ranges;
 	}
@@ -5336,7 +5347,7 @@ int getWordNext (int offset, int movement, boolean ignoreListener) {
 		}
 	}
 	if (ignoreListener) return newOffset; 
-	return sendWordBoundaryEvent(WordNext, movement, offset, newOffset, lineText, lineOffset);
+	return sendWordBoundaryEvent(ST.WordNext, movement, offset, newOffset, lineText, lineOffset);
 }
 int getWordPrevious(int offset, int movement) {
 	return getWordPrevious(offset, movement, false); 
@@ -5365,7 +5376,7 @@ int getWordPrevious(int offset, int movement, boolean ignoreListener) {
 		}
 	}
 	if (ignoreListener) return newOffset;
-	return sendWordBoundaryEvent(WordPrevious, movement, offset, newOffset, lineText, lineOffset);
+	return sendWordBoundaryEvent(ST.WordPrevious, movement, offset, newOffset, lineText, lineOffset);
 }
 /**
  * Returns whether the widget wraps lines.
@@ -5933,7 +5944,7 @@ void handleKeyDown(Event event) {
 	verifyEvent.keyLocation = event.keyLocation;
 	verifyEvent.stateMask = event.stateMask;
 	verifyEvent.doit = true;
-	notifyListeners(VerifyKey, verifyEvent);
+	notifyListeners(ST.VerifyKey, verifyEvent);
 	if (verifyEvent.doit) {
 		if ((event.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL && event.keyCode == SWT.SHIFT && isBidiCaret()) {
 			newOrientation = event.keyLocation == SWT.LEFT ? SWT.LEFT_TO_RIGHT : SWT.RIGHT_TO_LEFT; 
@@ -6119,6 +6130,8 @@ void handleResize(Event event) {
 	Rectangle clientArea = getClientArea();
 	clientAreaHeight = clientArea.height;
 	clientAreaWidth = clientArea.width;
+	if (!alwaysShowScroll && ignoreResize != 0) return;
+	
 	/* Redraw the old or new right/bottom margin if needed */
 	if (oldWidth != clientAreaWidth) {
 		if (rightMargin > 0) {
@@ -6708,7 +6721,7 @@ void initializeAccessible() {
 		public void getTextAttributes(AccessibleTextAttributeEvent e) {
 			StyledText st = StyledText.this;
 			int contentLength = st.getCharCount();
-			if (!isListening(LineGetStyle) && st.renderer.styleCount == 0) {
+			if (!isListening(ST.LineGetStyle) && st.renderer.styleCount == 0) {
 				e.start = 0;
 				e.end = contentLength;
 				e.textStyle = new TextStyle(st.getFont(), st.foreground, st.background);
@@ -7149,7 +7162,7 @@ void modifyContent(Event event, boolean updateCaret) {
 	if (event.doit) {
 		StyledTextEvent styledTextEvent = null;
 		int replacedLength = event.end - event.start;
-		if (isListening(ExtendedModify)) {
+		if (isListening(ST.ExtendedModify)) {
 			styledTextEvent = new StyledTextEvent(content);
 			styledTextEvent.start = event.start;
 			styledTextEvent.end = event.start + event.text.length();
@@ -7186,13 +7199,13 @@ void modifyContent(Event event, boolean updateCaret) {
 			showCaret();
 		}
 		notifyListeners(SWT.Modify, event);
-		if (isListening(ExtendedModify)) {
-			notifyListeners(ExtendedModify, styledTextEvent);
+		if (isListening(ST.ExtendedModify)) {
+			notifyListeners(ST.ExtendedModify, styledTextEvent);
 		}
 	}
 }
 void paintObject(GC gc, int x, int y, int ascent, int descent, StyleRange style, Bullet bullet, int bulletIndex) {
-	if (isListening(PaintObject)) {
+	if (isListening(ST.PaintObject)) {
 		StyledTextEvent event = new StyledTextEvent (content) ;
 		event.gc = gc;
 		event.x = x;
@@ -7202,7 +7215,7 @@ void paintObject(GC gc, int x, int y, int ascent, int descent, StyleRange style,
 		event.style = style;
 		event.bullet = bullet;
 		event.bulletIndex = bulletIndex;
-		notifyListeners(PaintObject, event);
+		notifyListeners(ST.PaintObject, event);
 	}
 }
 /** 
@@ -7475,7 +7488,7 @@ public void redrawRange(int start, int length, boolean clearBackground) {
 public void removeBidiSegmentListener(BidiSegmentListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(LineGetSegments, listener);	
+	removeListener(ST.LineGetSegments, listener);	
 }
 /**
  * Removes the specified caret listener.
@@ -7495,7 +7508,7 @@ public void removeBidiSegmentListener(BidiSegmentListener listener) {
 public void removeCaretListener(CaretListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(CaretMoved, listener);
+	removeListener(ST.CaretMoved, listener);
 }
 /**
  * Removes the specified extended modify listener.
@@ -7513,7 +7526,7 @@ public void removeCaretListener(CaretListener listener) {
 public void removeExtendedModifyListener(ExtendedModifyListener extendedModifyListener) {
 	checkWidget();
 	if (extendedModifyListener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(ExtendedModify, extendedModifyListener);	
+	removeListener(ST.ExtendedModify, extendedModifyListener);	
 }
 /**
  * Removes the specified line background listener.
@@ -7531,7 +7544,7 @@ public void removeExtendedModifyListener(ExtendedModifyListener extendedModifyLi
 public void removeLineBackgroundListener(LineBackgroundListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(LineGetBackground, listener);
+	removeListener(ST.LineGetBackground, listener);
 }
 /**
  * Removes the specified line style listener.
@@ -7549,7 +7562,7 @@ public void removeLineBackgroundListener(LineBackgroundListener listener) {
 public void removeLineStyleListener(LineStyleListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(LineGetStyle, listener);
+	removeListener(ST.LineGetStyle, listener);
 	setCaretLocation();
 }
 /**
@@ -7587,7 +7600,7 @@ public void removeModifyListener(ModifyListener modifyListener) {
 public void removePaintObjectListener(PaintObjectListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(PaintObject, listener);
+	removeListener(ST.PaintObject, listener);
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -7644,7 +7657,7 @@ public void removeVerifyListener(VerifyListener verifyListener) {
  */
 public void removeVerifyKeyListener(VerifyKeyListener listener) {
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(VerifyKey, listener);
+	removeListener(ST.VerifyKey, listener);
 }
 /**
  * Removes the specified word movement listener.
@@ -7669,8 +7682,8 @@ public void removeVerifyKeyListener(VerifyKeyListener listener) {
 public void removeWordMovementListener(MovementListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(WordNext, listener);	
-	removeListener(WordPrevious, listener);
+	removeListener(ST.WordNext, listener);	
+	removeListener(ST.WordPrevious, listener);
 }
 /** 
  * Replaces the styles in the given range with new styles.  This method
@@ -7708,7 +7721,7 @@ public void removeWordMovementListener(MovementListener listener) {
  */
 public void replaceStyleRanges(int start, int length, StyleRange[] ranges) {
 	checkWidget();
-	if (isListening(LineGetStyle)) return;
+	if (isListening(ST.LineGetStyle)) return;
  	if (ranges == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
  	setStyleRanges(start, length, null, ranges, false);
 }
@@ -8154,6 +8167,28 @@ public void setAlignment(int alignment) {
 	super.redraw();
 }
 /**
+ * Set the Always Show Scrollbars flag.  True if the scrollbars are 
+ * always shown even if they are not required.  False if the scrollbars are only 
+ * visible when some part of the content needs to be scrolled to be seen.
+ * The H_SCROLL and V_SCROLL style bits are also required to enable scrollbars in the 
+ * horizontal and vertical directions.
+ * 
+ * @param show true to show the scrollbars even when not required, false to show scrollbars only when required
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @ since 3.8
+ */
+public void setAlwaysShowScrollBars(boolean show) {
+	checkWidget();
+	if (show == alwaysShowScroll) return;
+	alwaysShowScroll = show;
+	setScrollBars(true);
+}
+/**
  * @see Control#setBackground(Color)
  */
 public void setBackground(Color color) {
@@ -8448,10 +8483,10 @@ public void setCaretOffset(int offset) {
 void setCaretOffset(int offset, int alignment) {
 	if (caretOffset != offset) {
 		caretOffset = offset;
-		if (isListening(CaretMoved)) {
+		if (isListening(ST.CaretMoved)) {
 			StyledTextEvent event = new StyledTextEvent(content);
 			event.end = caretOffset;
-			notifyListeners(CaretMoved, event);
+			notifyListeners(ST.CaretMoved, event);
 		}
 	}
 	if (alignment != SWT.DEFAULT) {
@@ -8834,7 +8869,7 @@ public void setLeftMargin (int leftMargin) {
  */
 public void setLineAlignment(int startLine, int lineCount, int alignment) {
 	checkWidget();
-	if (isListening(LineGetStyle)) return;
+	if (isListening(ST.LineGetStyle)) return;
 	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -8885,7 +8920,7 @@ public void setLineAlignment(int startLine, int lineCount, int alignment) {
  */
 public void setLineBackground(int startLine, int lineCount, Color background) {
 	checkWidget();	
-	if (isListening(LineGetBackground)) return;
+	if (isListening(ST.LineGetBackground)) return;
 	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -8930,7 +8965,7 @@ public void setLineBackground(int startLine, int lineCount, Color background) {
  */
 public void setLineBullet(int startLine, int lineCount, Bullet bullet) {
 	checkWidget();
-	if (isListening(LineGetStyle)) return;	
+	if (isListening(ST.LineGetStyle)) return;	
 	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -8984,7 +9019,7 @@ void setVariableLineHeight () {
  */
 public void setLineIndent(int startLine, int lineCount, int indent) {
 	checkWidget();
-	if (isListening(LineGetStyle)) return;
+	if (isListening(ST.LineGetStyle)) return;
 	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -9033,7 +9068,7 @@ public void setLineIndent(int startLine, int lineCount, int indent) {
  */
 public void setLineJustify(int startLine, int lineCount, boolean justify) {
 	checkWidget();
-	if (isListening(LineGetStyle)) return;
+	if (isListening(ST.LineGetStyle)) return;
 	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -9100,7 +9135,7 @@ public void setLineSpacing(int lineSpacing) {
  */
 public void setLineTabStops(int startLine, int lineCount, int[] tabStops) {
 	checkWidget();
-	if (isListening(LineGetStyle)) return;
+	if (isListening(ST.LineGetStyle)) return;
 	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -9157,7 +9192,7 @@ public void setLineTabStops(int startLine, int lineCount, int[] tabStops) {
  */
 public void setLineWrapIndent(int startLine, int lineCount, int wrapIndent) {
 	checkWidget();
-	if (isListening(LineGetStyle)) return;
+	if (isListening(ST.LineGetStyle)) return;
 	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -9271,6 +9306,17 @@ public void setRightMargin (int rightMargin) {
 	checkWidget();
 	setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
 }
+void setScrollBar(ScrollBar bar, int clientArea, int maximum, int margin) {
+	int inactive = 1;
+	if (clientArea < maximum) {
+		bar.setMaximum(maximum - margin);
+		bar.setThumb(clientArea - margin);
+		bar.setPageIncrement(clientArea - margin);
+		if (!alwaysShowScroll) bar.setVisible(true);
+	} else if (bar.getThumb() != inactive || bar.getMaximum() != inactive) {
+		bar.setValues(bar.getSelection(), bar.getMinimum(), inactive, inactive, bar.getIncrement(), inactive);
+	}
+}
 /**
  * Adjusts the maximum and the page size of the scroll bars to 
  * reflect content width/length changes.
@@ -9278,49 +9324,24 @@ public void setRightMargin (int rightMargin) {
  * @param vertical indicates if the vertical scrollbar also needs to be set 
  */
 void setScrollBars(boolean vertical) {
-	int inactive = 1;
-	if (vertical || !isFixedLineHeight()) {
-		ScrollBar verticalBar = getVerticalBar();
-		if (verticalBar != null) {
-			int maximum = renderer.getHeight();
-			// only set the real values if the scroll bar can be used 
-			// (ie. because the thumb size is less than the scroll maximum)
-			// avoids flashing on Motif, fixes 1G7RE1J and 1G5SE92
-			if (clientAreaHeight < maximum) {
-				verticalBar.setMaximum(maximum - topMargin - bottomMargin);
-				verticalBar.setThumb(clientAreaHeight - topMargin - bottomMargin);
-				verticalBar.setPageIncrement(clientAreaHeight - topMargin - bottomMargin);
-			} else if (verticalBar.getThumb() != inactive || verticalBar.getMaximum() != inactive) {
-				verticalBar.setValues(
-					verticalBar.getSelection(),
-					verticalBar.getMinimum(),
-					inactive,
-					inactive,
-					verticalBar.getIncrement(),
-					inactive);
-			}
-		}
-	}
+	ignoreResize++;
+	if (!isFixedLineHeight() || !alwaysShowScroll) vertical = true;
+	ScrollBar verticalBar = vertical ? getVerticalBar() : null;
 	ScrollBar horizontalBar = getHorizontalBar();
-	if (horizontalBar != null && horizontalBar.getVisible()) {
-		int maximum = renderer.getWidth();
-		// only set the real values if the scroll bar can be used 
-		// (ie. because the thumb size is less than the scroll maximum)
-		// avoids flashing on Motif, fixes 1G7RE1J and 1G5SE92
-		if (clientAreaWidth < maximum) {
-			horizontalBar.setMaximum(maximum - leftMargin - rightMargin);
-			horizontalBar.setThumb(clientAreaWidth - leftMargin - rightMargin);
-			horizontalBar.setPageIncrement(clientAreaWidth - leftMargin - rightMargin);
-		} else if (horizontalBar.getThumb() != inactive || horizontalBar.getMaximum() != inactive) {
-			horizontalBar.setValues(
-				horizontalBar.getSelection(),
-				horizontalBar.getMinimum(),
-				inactive,
-				inactive,
-				horizontalBar.getIncrement(),
-				inactive);
+	if (!alwaysShowScroll) {
+		if (verticalBar != null) verticalBar.setVisible(false);
+		if (horizontalBar != null) horizontalBar.setVisible(false);
+	}
+	if (verticalBar != null) {
+		setScrollBar(verticalBar, clientAreaHeight, renderer.getHeight(), topMargin + bottomMargin);
+	}
+	if (horizontalBar != null) {
+		setScrollBar(horizontalBar, clientAreaWidth, renderer.getWidth(), leftMargin + rightMargin);
+		if (!alwaysShowScroll && horizontalBar.getVisible() && verticalBar != null) {
+			setScrollBar(verticalBar, clientAreaHeight, renderer.getHeight(), topMargin + bottomMargin);
 		}
 	}
+	ignoreResize--;
 }
 /** 
  * Sets the selection to the given position and scrolls it into view.  Equivalent to setSelection(start,start).
@@ -9553,7 +9574,7 @@ public void setSelectionRange(int start, int length) {
  */
 public void setStyleRange(StyleRange range) {
 	checkWidget();
-	if (isListening(LineGetStyle)) return;
+	if (isListening(ST.LineGetStyle)) return;
 	if (range != null) {
 		if (range.isUnstyled()) {
 			setStyleRanges(range.start, range.length, null, null, false);
@@ -9601,7 +9622,7 @@ public void setStyleRange(StyleRange range) {
  */
 public void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles) {
 	checkWidget();
-	if (isListening(LineGetStyle)) return;
+	if (isListening(ST.LineGetStyle)) return;
 	if (ranges == null || styles == null) {
 		setStyleRanges(start, length, null, null, false);
 	} else {
@@ -9643,7 +9664,7 @@ public void setStyleRanges(int start, int length, int[] ranges, StyleRange[] sty
  */
 public void setStyleRanges(int[] ranges, StyleRange[] styles) {
 	checkWidget();
-	if (isListening(LineGetStyle)) return;
+	if (isListening(ST.LineGetStyle)) return;
 	if (ranges == null || styles == null) {
 		setStyleRanges(0, 0, null, null, true);
 	} else {
@@ -9769,7 +9790,7 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
  */
 public void setStyleRanges(StyleRange[] ranges) {
 	checkWidget();
-	if (isListening(LineGetStyle)) return;
+	if (isListening(ST.LineGetStyle)) return;
  	if (ranges == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	setStyleRanges(0, 0, null, ranges, true);
 }
@@ -9865,7 +9886,7 @@ public void setText(String text) {
 	notifyListeners(SWT.Verify, event);
 	if (event.doit) {
 		StyledTextEvent styledTextEvent = null;
-		if (isListening(ExtendedModify)) {
+		if (isListening(ST.ExtendedModify)) {
 			styledTextEvent = new StyledTextEvent(content);
 			styledTextEvent.start = event.start;
 			styledTextEvent.end = event.start + event.text.length();
@@ -9874,7 +9895,7 @@ public void setText(String text) {
 		content.setText(event.text);
 		notifyListeners(SWT.Modify, event);	
 		if (styledTextEvent != null) {
-			notifyListeners(ExtendedModify, styledTextEvent);
+			notifyListeners(ST.ExtendedModify, styledTextEvent);
 		}
 	}
 }

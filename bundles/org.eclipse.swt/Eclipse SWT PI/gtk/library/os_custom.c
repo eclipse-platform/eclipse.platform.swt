@@ -75,7 +75,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)
 		* are passing in, otherwise it crashes.
 		*/
 		typedef jintLong (CALLING_CONVENTION* FPTR)(jbyte *, jintLong, jint, jintLong, jint, jintLong, jint, jintLong, ...);
-		LOAD_FUNCTION(fp, gtk_file_chooser_dialog_new)
+		OS_LOAD_FUNCTION(fp, gtk_file_chooser_dialog_new)
 		if (fp) {
 			rc = (jintLong)((FPTR) fp)(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 		}
@@ -107,7 +107,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1set_1attributes)
 		* are passing in, otherwise it crashes.
 		*/
 		typedef void (*FPTR)(jintLong, jintLong, jbyte *, jint, jintLong, ...);
-		LOAD_FUNCTION(fp, gtk_cell_layout_set_attributes)
+		OS_LOAD_FUNCTION(fp, gtk_cell_layout_set_attributes)
 		if (fp) {
 			((FPTR)fp)(arg0, arg1, lparg2, arg3, arg4);
 		}

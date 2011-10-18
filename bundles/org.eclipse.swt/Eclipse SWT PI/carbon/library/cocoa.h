@@ -20,6 +20,8 @@
 
 #include "cocoa_custom.h"
 
+#define Cocoa_LOAD_FUNCTION LOAD_FUNCTION
+
 #ifndef __i386__
 #define objc_msgSend_fpret objc_msgSend
 #endif

@@ -1807,6 +1807,85 @@ void setDROPFILESFields(JNIEnv *env, jobject lpObject, DROPFILES *lpStruct)
 }
 #endif
 
+#ifndef NO_DTTOPTS
+typedef struct DTTOPTS_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID dwSize, dwFlags, crText, crBorder, crShadow, iTextShadowType, ptShadowOffset, iBorderSize, iFontPropId, iColorPropId, iStateId, fApplyOverlay, iGlowSize, pfnDrawTextCallback, lParam;
+} DTTOPTS_FID_CACHE;
+
+DTTOPTS_FID_CACHE DTTOPTSFc;
+
+void cacheDTTOPTSFields(JNIEnv *env, jobject lpObject)
+{
+	if (DTTOPTSFc.cached) return;
+	DTTOPTSFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	DTTOPTSFc.dwSize = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "dwSize", "I");
+	DTTOPTSFc.dwFlags = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "dwFlags", "I");
+	DTTOPTSFc.crText = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "crText", I_J);
+	DTTOPTSFc.crBorder = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "crBorder", I_J);
+	DTTOPTSFc.crShadow = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "crShadow", I_J);
+	DTTOPTSFc.iTextShadowType = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "iTextShadowType", "I");
+	DTTOPTSFc.ptShadowOffset = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "ptShadowOffset", "Lorg/eclipse/swt/internal/win32/POINT;");
+	DTTOPTSFc.iBorderSize = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "iBorderSize", "I");
+	DTTOPTSFc.iFontPropId = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "iFontPropId", "I");
+	DTTOPTSFc.iColorPropId = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "iColorPropId", "I");
+	DTTOPTSFc.iStateId = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "iStateId", "I");
+	DTTOPTSFc.fApplyOverlay = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "fApplyOverlay", "Z");
+	DTTOPTSFc.iGlowSize = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "iGlowSize", "I");
+	DTTOPTSFc.pfnDrawTextCallback = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "pfnDrawTextCallback", I_J);
+	DTTOPTSFc.lParam = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "lParam", I_J);
+	DTTOPTSFc.cached = 1;
+}
+
+DTTOPTS *getDTTOPTSFields(JNIEnv *env, jobject lpObject, DTTOPTS *lpStruct)
+{
+	if (!DTTOPTSFc.cached) cacheDTTOPTSFields(env, lpObject);
+	lpStruct->dwSize = (*env)->GetIntField(env, lpObject, DTTOPTSFc.dwSize);
+	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, DTTOPTSFc.dwFlags);
+	lpStruct->crText = (*env)->GetIntLongField(env, lpObject, DTTOPTSFc.crText);
+	lpStruct->crBorder = (*env)->GetIntLongField(env, lpObject, DTTOPTSFc.crBorder);
+	lpStruct->crShadow = (*env)->GetIntLongField(env, lpObject, DTTOPTSFc.crShadow);
+	lpStruct->iTextShadowType = (*env)->GetIntField(env, lpObject, DTTOPTSFc.iTextShadowType);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, DTTOPTSFc.ptShadowOffset);
+	if (lpObject1 != NULL) getPOINTFields(env, lpObject1, &lpStruct->ptShadowOffset);
+	}
+	lpStruct->iBorderSize = (*env)->GetIntField(env, lpObject, DTTOPTSFc.iBorderSize);
+	lpStruct->iFontPropId = (*env)->GetIntField(env, lpObject, DTTOPTSFc.iFontPropId);
+	lpStruct->iColorPropId = (*env)->GetIntField(env, lpObject, DTTOPTSFc.iColorPropId);
+	lpStruct->iStateId = (*env)->GetIntField(env, lpObject, DTTOPTSFc.iStateId);
+	lpStruct->fApplyOverlay = (*env)->GetBooleanField(env, lpObject, DTTOPTSFc.fApplyOverlay);
+	lpStruct->iGlowSize = (*env)->GetIntField(env, lpObject, DTTOPTSFc.iGlowSize);
+	lpStruct->pfnDrawTextCallback = (DTT_CALLBACK_PROC)(*env)->GetIntLongField(env, lpObject, DTTOPTSFc.pfnDrawTextCallback);
+	lpStruct->lParam = (*env)->GetIntLongField(env, lpObject, DTTOPTSFc.lParam);
+	return lpStruct;
+}
+
+void setDTTOPTSFields(JNIEnv *env, jobject lpObject, DTTOPTS *lpStruct)
+{
+	if (!DTTOPTSFc.cached) cacheDTTOPTSFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, DTTOPTSFc.dwSize, (jint)lpStruct->dwSize);
+	(*env)->SetIntField(env, lpObject, DTTOPTSFc.dwFlags, (jint)lpStruct->dwFlags);
+	(*env)->SetIntLongField(env, lpObject, DTTOPTSFc.crText, (jintLong)lpStruct->crText);
+	(*env)->SetIntLongField(env, lpObject, DTTOPTSFc.crBorder, (jintLong)lpStruct->crBorder);
+	(*env)->SetIntLongField(env, lpObject, DTTOPTSFc.crShadow, (jintLong)lpStruct->crShadow);
+	(*env)->SetIntField(env, lpObject, DTTOPTSFc.iTextShadowType, (jint)lpStruct->iTextShadowType);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, DTTOPTSFc.ptShadowOffset);
+	if (lpObject1 != NULL) setPOINTFields(env, lpObject1, &lpStruct->ptShadowOffset);
+	}
+	(*env)->SetIntField(env, lpObject, DTTOPTSFc.iBorderSize, (jint)lpStruct->iBorderSize);
+	(*env)->SetIntField(env, lpObject, DTTOPTSFc.iFontPropId, (jint)lpStruct->iFontPropId);
+	(*env)->SetIntField(env, lpObject, DTTOPTSFc.iColorPropId, (jint)lpStruct->iColorPropId);
+	(*env)->SetIntField(env, lpObject, DTTOPTSFc.iStateId, (jint)lpStruct->iStateId);
+	(*env)->SetBooleanField(env, lpObject, DTTOPTSFc.fApplyOverlay, (jboolean)lpStruct->fApplyOverlay);
+	(*env)->SetIntField(env, lpObject, DTTOPTSFc.iGlowSize, (jint)lpStruct->iGlowSize);
+	(*env)->SetIntLongField(env, lpObject, DTTOPTSFc.pfnDrawTextCallback, (jintLong)lpStruct->pfnDrawTextCallback);
+	(*env)->SetIntLongField(env, lpObject, DTTOPTSFc.lParam, (jintLong)lpStruct->lParam);
+}
+#endif
+
 #ifndef NO_DWM_BLURBEHIND
 typedef struct DWM_BLURBEHIND_FID_CACHE {
 	int cached;

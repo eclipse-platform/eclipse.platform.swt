@@ -34,11 +34,11 @@
 	
 	<property name="repo.src" value="../../../eclipse.platform.swt"/>
 	<property name="repo.bin" value="../../../eclipse.platform.swt.binaries"/>
-	<property name="repo.releng" value="../../../eclipse.platform.releng"/>
+	<property name="repo.common" value="../../../eclipse.platform.common"/>
 
 	<property name="src_common" value="'bundles/org.eclipse.swt/Eclipse SWT/common/library' 'bundles/org.eclipse.swt/Eclipse SWT Mozilla/common/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/common/library'"/>
 	<property name="src_win32" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT WebKit/win32/library'"/>
-	<property name="src_gtk" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/gtk/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/gnome/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/cde/library'"/>
+	<property name="src_gtk" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/gtk/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/gnome/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/cde/library' 'bundles/org.eclipse.swt/Eclipse SWT WebKit/gtk/library' "/>
 	<property name="src_cocoa" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/cocoa/library'"/>
 	<property name="src_carbon" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/carbon/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/carbon/library'"/>
 	<property name="src_motif" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/motif/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/motif_gtk/library'  'bundles/org.eclipse.swt/Eclipse SWT AWT/motif/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/glx/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/cairo/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/gnome/library' 'bundles/org.eclipse.swt/Eclipse SWT Program/cde/library'"/>
@@ -50,6 +50,7 @@
 	<property name="file_make_common" value="bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
 	<property name="file_version" value="bundles/org.eclipse.swt/Eclipse SWT/common/version.txt"/>
 	<property name="file_build_notes" value="bundles/org.eclipse.swt/buildnotes_swt.html"/>
+	<property name="file_swt_map" value="maps/org.eclipse.releng/maps/swt.map"/>
 
 	<target name="check_libraries" depends="get_version">
 		<antcall target="check_fragment_libraries">
@@ -81,7 +82,7 @@
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="10"/>
+			<param name="library_count" value="11"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
@@ -93,11 +94,11 @@
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.s390x"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="12"/>
+			<param name="library_count" value="11"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="12"/>
+			<param name="library_count" value="11"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
@@ -158,7 +159,7 @@
 	<target name="check_fragment_libraries" depends="get_version">
 		<echo>Checking ${fragment}</echo>
 		<property name="checkdir" value="~/build/check_libraries"/>
-		<property name="library_count" value="124"/>
+		<property name="library_count" value="123"/>
 		<property name="fragment" value=""/>
 		<fileset id="match" dir="${repo.bin}/bundles/${fragment}">
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
@@ -588,28 +589,9 @@
 		<replace file="${repo.src}/${file_build_notes}" token="${match_line}" value="${match_line}${body}"/>
 	</target>
 	
-	<target name="cvs_tag">
-		<condition property="CVS_TAG" value="" else="-r${TAG}">
-			<equals arg1="${TAG}" arg2="master"/>
-		</condition>
-	</target>
-
 	<!-- Set swt_tag to the current tag in the swt map file -->
-	<target name="get_tag" unless="swt_tag" depends="cvs_tag">
-		<property name="tmpdir" value="${tmphome}"/>
-		<!--property name="map" value="${repo.releng}/bundles/org.eclipse.releng/maps/swt.map"/-->
-		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
-		<property name="cvsRsh" value="plink"/>
-		<property name="cvsRoot" value=":ext:fheidric@dev.eclipse.org:/cvsroot/eclipse"/>
-		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
-			<commandline>
-				<argument value="checkout"/>
-				<argument line="${CVS_TAG}"/>
-				<argument value="${map}"/>
-			</commandline>
-		</cvs>
-		
-		<loadfile property="swt_tag" srcfile="${tmpdir}/${map}">
+	<target name="get_tag" unless="swt_tag">
+		<loadfile property="swt_tag" srcfile="${repo.common}/${file_swt_map}">
 			<filterchain>
 				<tokenfilter delimoutput="">
 					<containsstring contains="plugin@org.eclipse.swt=GIT,tag="/>
@@ -731,30 +713,19 @@
 		<antcall target="update_swt_map"/>
 	</target>
 	
-	<target name="update_swt_map" depends="cvs_tag">
-		<property name="tmpdir" value="${tmphome}"/>
-		<property name="cvsRsh" value="plink"/>
-		<property name="cvsRoot" value=":ext:fheidric@dev.eclipse.org:/cvsroot/eclipse"/>
-		<!-- download the map file -->
-		<property name="map" value="org.eclipse.releng/maps/swt.map"/>
-		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
-			<commandline>
-				<argument value="checkout"/>
-				<argument line="${CVS_TAG}"/>
-				<argument value="${map}"/>
-			</commandline>
-		</cvs>
-
+	<target name="update_swt_map" depends="get_new_tag">
 		<!-- update and commit map file -->
-		<replaceregexp file="${tmpdir}/${map}" match="=v\d\d\d\d[a-z]?" replace="=v${swt_new_tag}" byline="true"/>
-		<cvs cvsRoot="${cvsRoot}" cvsrsh="${cvsRsh}" failonerror="true" dest="${tmpdir}">
-			<commandline>
-				<argument value="commit"/>
-				<argument value="-m"/>
-				<argument value="'new version v${swt_new_tag}'"/>
-				<argument value="${map}"/>
-			</commandline>
-		</cvs>
+		<replaceregexp file="${repo.common}/${file_swt_map}" match="=v\d\d\d\d[a-z]?" replace="=v${swt_new_tag}" byline="true"/>
+		
+		<exec dir="${repo.common}" executable="git" failonerror="true">
+			<arg line="add '${file_swt_map}'"/>
+		</exec>
+		<exec dir="${repo.common}" executable="git" failonerror="true">
+			<arg line="status"/>
+		</exec>
+		<exec dir="${repo.common}" executable="git" failonerror="true">
+			<arg line="commit -m 'SWT contribution v${swt_new_tag}'"/>
+		</exec>
 	</target>
 	
 	<target name="check_sha1_file" unless="natives_changed">
@@ -1060,20 +1031,30 @@
 			<param name="repo" value="eclipse.platform.swt"/>
 			<param name="repo.exists" value="repo.src.exists"/>
 		</antcall>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true" timeout="900000">
 			<arg line="fetch"/>
 		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true" timeout="900000">
 			<arg line="reset --hard origin/${TAG}"/>
 		</exec>
 		<antcall target="init_repo">
 			<param name="repo" value="eclipse.platform.swt.binaries"/>
 			<param name="repo.exists" value="repo.bin.exists"/>
 		</antcall>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true" timeout="900000">
 			<arg line="fetch"/>
 		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true" timeout="900000">
+			<arg line="reset --hard origin/${TAG}"/>
+		</exec>
+		<antcall target="init_repo">
+			<param name="repo" value="eclipse.platform.common"/>
+			<param name="repo.exists" value="repo.common.exists"/>
+		</antcall>
+		<exec dir="../../../../${TAG}/eclipse.platform.common" executable="git"  failonerror="true">
+			<arg line="fetch"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.common" executable="git"  failonerror="true">
 			<arg line="reset --hard origin/${TAG}"/>
 		</exec>
 	</target>
@@ -1095,6 +1076,15 @@
 			<arg line="rebase origin/${TAG}"/>
 		</exec>
 		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+			<arg line="push origin ${TAG}"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.common" executable="git" failonerror="true">
+			<arg line="fetch"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.common" executable="git" failonerror="true">
+			<arg line="rebase origin/${TAG}"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.common" executable="git" failonerror="true">
 			<arg line="push origin ${TAG}"/>
 		</exec>
 		<exec dir="${repo.src}" executable="git" failonerror="true">

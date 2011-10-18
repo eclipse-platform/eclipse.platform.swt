@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2010 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2011 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -53,22 +53,22 @@ JSClassDefinition *getJSClassDefinitionFields(JNIEnv *env, jobject lpObject, JSC
 {
 	if (!JSClassDefinitionFc.cached) cacheJSClassDefinitionFields(env, lpObject);
 	lpStruct->version = (*env)->GetIntField(env, lpObject, JSClassDefinitionFc.version);
-	lpStruct->attributes = (JSClassAttributes)(*env)->GetIntField(env, lpObject, JSClassDefinitionFc.attributes);
+	lpStruct->attributes = (*env)->GetIntField(env, lpObject, JSClassDefinitionFc.attributes);
 	lpStruct->className = (const char*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.className);
-	lpStruct->parentClass = (JSClassRef)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.parentClass);
-	lpStruct->staticValues = (const JSStaticValue*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.staticValues);
-	lpStruct->staticFunctions = (const JSStaticFunction*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.staticFunctions);
-	lpStruct->initialize = (JSObjectInitializeCallback)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.initialize);
-	lpStruct->finalize = (JSObjectFinalizeCallback)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.finalize);
-	lpStruct->hasProperty = (JSObjectHasPropertyCallback)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.hasProperty);
-	lpStruct->getProperty = (JSObjectGetPropertyCallback)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.getProperty);
-	lpStruct->setProperty = (JSObjectSetPropertyCallback)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.setProperty);
-	lpStruct->deleteProperty = (JSObjectDeletePropertyCallback)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.deleteProperty);
-	lpStruct->getPropertyNames = (JSObjectGetPropertyNamesCallback)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.getPropertyNames);
-	lpStruct->callAsFunction = (JSObjectCallAsFunctionCallback)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.callAsFunction);
-	lpStruct->callAsConstructor = (JSObjectCallAsConstructorCallback)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.callAsConstructor);
-	lpStruct->hasInstance = (JSObjectHasInstanceCallback)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.hasInstance);
-	lpStruct->convertToType = (JSObjectConvertToTypeCallback)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.convertToType);
+	lpStruct->parentClass = (void*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.parentClass);
+	lpStruct->staticValues = (const void*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.staticValues);
+	lpStruct->staticFunctions = (const void*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.staticFunctions);
+	lpStruct->initialize = (void*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.initialize);
+	lpStruct->finalize = (void*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.finalize);
+	lpStruct->hasProperty = (void*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.hasProperty);
+	lpStruct->getProperty = (void*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.getProperty);
+	lpStruct->setProperty = (void*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.setProperty);
+	lpStruct->deleteProperty = (void*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.deleteProperty);
+	lpStruct->getPropertyNames = (void*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.getPropertyNames);
+	lpStruct->callAsFunction = (void*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.callAsFunction);
+	lpStruct->callAsConstructor = (void*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.callAsConstructor);
+	lpStruct->hasInstance = (void*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.hasInstance);
+	lpStruct->convertToType = (void*)(*env)->GetIntLongField(env, lpObject, JSClassDefinitionFc.convertToType);
 	return lpStruct;
 }
 

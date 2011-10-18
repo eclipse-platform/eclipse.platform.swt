@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1396;
-int OS_nativeFunctionCallCount[1396];
+int OS_nativeFunctionCount = 1397;
+int OS_nativeFunctionCallCount[1397];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -178,6 +178,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1G_1OBJECT_1GET_1CLASS",
 	"_1G_1OBJECT_1TYPE",
 	"_1G_1OBJECT_1TYPE_1NAME",
+	"_1G_1TYPE_1CHECK_1INSTANCE_1TYPE",
 	"_1G_1TYPE_1STRING",
 	"_1PANGO_1PIXELS",
 	"_1PANGO_1TYPE_1FONT_1DESCRIPTION",

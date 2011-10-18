@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1462,7 +1462,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XRenderComposite)
 	XRenderComposite(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
 */
 	{
-		LOAD_FUNCTION(fp, XRenderComposite)
+		OS_LOAD_FUNCTION(fp, XRenderComposite)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jintLong, jint, jintLong, jintLong, jintLong, jint, jint, jint, jint, jint, jint, jint, jint))fp)(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
 		}
@@ -1483,7 +1483,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1XRenderCreatePicture)
 	rc = (jintLong)XRenderCreatePicture(arg0, arg1, arg2, arg3, lparg4);
 */
 	{
-		LOAD_FUNCTION(fp, XRenderCreatePicture)
+		OS_LOAD_FUNCTION(fp, XRenderCreatePicture)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jintLong, jintLong, XRenderPictureAttributes *))fp)(arg0, arg1, arg2, arg3, lparg4);
 		}
@@ -1505,7 +1505,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1XRenderFindStandardFormat)
 	rc = (jintLong)XRenderFindStandardFormat(arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, XRenderFindStandardFormat)
+		OS_LOAD_FUNCTION(fp, XRenderFindStandardFormat)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
 		}
@@ -1525,7 +1525,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1XRenderFindVisualFormat)
 	rc = (jintLong)XRenderFindVisualFormat(arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, XRenderFindVisualFormat)
+		OS_LOAD_FUNCTION(fp, XRenderFindVisualFormat)
 		if (fp) {
 			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
 		}
@@ -1544,7 +1544,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XRenderFreePicture)
 	XRenderFreePicture(arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, XRenderFreePicture)
+		OS_LOAD_FUNCTION(fp, XRenderFreePicture)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
 		}
@@ -1567,7 +1567,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1XRenderQueryExtension)
 	rc = (jboolean)XRenderQueryExtension(arg0, lparg1, lparg2);
 */
 	{
-		LOAD_FUNCTION(fp, XRenderQueryExtension)
+		OS_LOAD_FUNCTION(fp, XRenderQueryExtension)
 		if (fp) {
 			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, jint *, jint *))fp)(arg0, lparg1, lparg2);
 		}
@@ -1594,7 +1594,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XRenderQueryVersion)
 	rc = (jint)XRenderQueryVersion(arg0, lparg1, lparg2);
 */
 	{
-		LOAD_FUNCTION(fp, XRenderQueryVersion)
+		OS_LOAD_FUNCTION(fp, XRenderQueryVersion)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jint *, jint *))fp)(arg0, lparg1, lparg2);
 		}
@@ -1618,7 +1618,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XRenderSetPictureClipRectangles)
 	XRenderSetPictureClipRectangles(arg0, arg1, arg2, arg3, lparg4, arg5);
 */
 	{
-		LOAD_FUNCTION(fp, XRenderSetPictureClipRectangles)
+		OS_LOAD_FUNCTION(fp, XRenderSetPictureClipRectangles)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, jshort *, jint))fp)(arg0, arg1, arg2, arg3, lparg4, arg5);
 		}
@@ -1638,7 +1638,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XRenderSetPictureClipRegion)
 	XRenderSetPictureClipRegion(arg0, arg1, arg2);
 */
 	{
-		LOAD_FUNCTION(fp, XRenderSetPictureClipRegion)
+		OS_LOAD_FUNCTION(fp, XRenderSetPictureClipRegion)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jintLong, jintLong, jintLong))fp)(arg0, arg1, arg2);
 		}
@@ -1658,7 +1658,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XRenderSetPictureTransform)
 	XRenderSetPictureTransform(arg0, arg1, lparg2);
 */
 	{
-		LOAD_FUNCTION(fp, XRenderSetPictureTransform)
+		OS_LOAD_FUNCTION(fp, XRenderSetPictureTransform)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jintLong, jintLong, jint *))fp)(arg0, arg1, lparg2);
 		}

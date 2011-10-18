@@ -3736,6 +3736,14 @@ class AccessibleObject {
 		}
 	}
 	
+	void sendEvent(int event, Object eventData, int childID) {
+		updateChildren ();
+		AccessibleObject accObject = getChildByID (childID);
+		if (accObject != null) {
+			accObject.sendEvent(event, eventData);
+		}
+	}
+	
 	void setFocus (int childID) {
 		updateChildren ();
 		AccessibleObject accObject = getChildByID (childID);

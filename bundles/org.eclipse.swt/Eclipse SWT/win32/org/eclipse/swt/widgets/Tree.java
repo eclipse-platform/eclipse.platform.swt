@@ -97,6 +97,7 @@ public class Tree extends Composite {
 	int /*long*/ headerToolTipHandle, itemToolTipHandle;
 	int /*long*/ lastTimerID = -1;
 	int lastTimerCount;
+	static final boolean ENABLE_TVS_EX_FADEINOUTEXPANDOS = System.getProperty("org.eclipse.swt.internal.win32.enableFadeInOutExpandos") != null;
 	static final int TIMER_MAX_COUNT = 8;
 	static final int INSET = 3;
 	static final int GRID_WIDTH = 1;
@@ -277,7 +278,7 @@ void _setBackgroundPixel (int newPixel) {
 		* set the background color of a tree, the plus/minus
 		* animation draws badly.  The fix is to clear the effect.
 		*/	
-		if (explorerTheme) {
+		if (explorerTheme && ENABLE_TVS_EX_FADEINOUTEXPANDOS) {
 			int bits2 = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
 			if (newPixel == -1 && findImageControl () == null) {
 				bits2 |= OS.TVS_EX_FADEINOUTEXPANDOS;
@@ -1841,7 +1842,8 @@ void createHandle () {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0) && OS.IsAppThemed ()) {
 			explorerTheme = true;
 			OS.SetWindowTheme (handle, Display.EXPLORER, null);
-			int bits = OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS | OS.TVS_EX_RICHTOOLTIP;
+			int bits = OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_RICHTOOLTIP;
+			if (ENABLE_TVS_EX_FADEINOUTEXPANDOS) bits |= OS.TVS_EX_FADEINOUTEXPANDOS;
 			/*
 			* This code is intentionally commented.
 			*/

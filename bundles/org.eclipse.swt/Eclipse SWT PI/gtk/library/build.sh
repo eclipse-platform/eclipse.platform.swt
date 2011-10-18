@@ -491,14 +491,6 @@ if [ -z "${MOZILLA_INCLUDES}" -a -z "${MOZILLA_LIBS}" -a ${MODEL} != 'sparc64' ]
 	fi
 fi
 
-if [ x`pkg-config --exists webkit-1.0 && echo YES` = "xYES" ]; then
-	echo "WebKit found, compiling webkit embedded browser support."
-	MAKE_WEBKIT=make_webkit
-else
-	echo "WebKit not found:"
-	echo "    *** WebKit embedding support will not be compiled."
-fi
-
 # Find AWT if available
 if [ -z "${AWT_LIB_PATH}" ]; then
 	if [ -f ${JAVA_HOME}/jre/lib/${AWT_ARCH}/libjawt.* ]; then
@@ -527,5 +519,5 @@ fi
 if [ "x${1}" = "xclean" ]; then
 	${MAKE_TYPE} -f $MAKEFILE clean
 else
-	${MAKE_TYPE} -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA $MAKE_WEBKIT ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9}
+	${MAKE_TYPE} -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9}
 fi

@@ -15,6 +15,8 @@
 #include "os_structs.h"
 #include "com_custom.h"
 
+#define COM_LOAD_FUNCTION LOAD_FUNCTION
+
 #define COM_NATIVE_ENTER_TRY(env, that, func) \
 	COM_NATIVE_ENTER(env, that, func); \
 	NATIVE_TRY(env, that, func);

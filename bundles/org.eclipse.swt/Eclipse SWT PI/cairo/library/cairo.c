@@ -1032,7 +1032,7 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1pdf_1surface_1set_1size)
 	cairo_pdf_surface_set_size((cairo_surface_t *)arg0, arg1, arg2);
 */
 	{
-		LOAD_FUNCTION(fp, cairo_pdf_surface_set_size)
+		Cairo_LOAD_FUNCTION(fp, cairo_pdf_surface_set_size)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(cairo_surface_t *, jdouble, jdouble))fp)((cairo_surface_t *)arg0, arg1, arg2);
 		}
@@ -1050,7 +1050,7 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1ps_1surface_1set_1size)
 	cairo_ps_surface_set_size((cairo_surface_t *)arg0, arg1, arg2);
 */
 	{
-		LOAD_FUNCTION(fp, cairo_ps_surface_set_size)
+		Cairo_LOAD_FUNCTION(fp, cairo_ps_surface_set_size)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(cairo_surface_t *, jdouble, jdouble))fp)((cairo_surface_t *)arg0, arg1, arg2);
 		}
@@ -1510,7 +1510,7 @@ JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1surface_1get_1type)
 	rc = (jint)cairo_surface_get_type((cairo_surface_t *)arg0);
 */
 	{
-		LOAD_FUNCTION(fp, cairo_surface_get_type)
+		Cairo_LOAD_FUNCTION(fp, cairo_surface_get_type)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(cairo_surface_t *))fp)((cairo_surface_t *)arg0);
 		}
@@ -1561,7 +1561,7 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1surface_1set_1fallback_1resolution)
 	cairo_surface_set_fallback_resolution(arg0, arg1, arg2);
 */
 	{
-		LOAD_FUNCTION(fp, cairo_surface_set_fallback_resolution)
+		Cairo_LOAD_FUNCTION(fp, cairo_surface_set_fallback_resolution)
 		if (fp) {
 			((void (CALLING_CONVENTION*)(jintLong, jdouble, jdouble))fp)(arg0, arg1, arg2);
 		}

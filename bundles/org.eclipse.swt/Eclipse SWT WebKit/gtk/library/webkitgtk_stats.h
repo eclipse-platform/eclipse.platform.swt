@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2010 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2011 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -55,12 +55,10 @@ typedef enum {
 	_1JSValueToBoolean_FUNC,
 	_1JSValueToNumber_FUNC,
 	_1JSValueToStringCopy_FUNC,
-	_1SOUP_1IS_1SESSION_FUNC,
 	_1SoupCookie_1expires_FUNC,
 	_1SoupMessage_1method_FUNC,
 	_1SoupMessage_1request_1body_FUNC,
 	_1SoupMessage_1request_1headers_FUNC,
-	_1WEBKIT_1IS_1WEB_1FRAME_FUNC,
 	_1soup_1auth_1authenticate_FUNC,
 	_1soup_1auth_1get_1host_FUNC,
 	_1soup_1auth_1get_1scheme_1name_FUNC,
@@ -78,9 +76,21 @@ typedef enum {
 	_1soup_1session_1feature_1attach_FUNC,
 	_1soup_1session_1feature_1detach_FUNC,
 	_1soup_1session_1get_1feature_FUNC,
+	_1soup_1session_1get_1type_FUNC,
 	_1soup_1uri_1free_FUNC,
 	_1soup_1uri_1new_FUNC,
 	_1soup_1uri_1to_1string_FUNC,
+	_1webkit_1dom_1event_1target_1add_1event_1listener_FUNC,
+	_1webkit_1dom_1mouse_1event_1get_1alt_1key_FUNC,
+	_1webkit_1dom_1mouse_1event_1get_1button_FUNC,
+	_1webkit_1dom_1mouse_1event_1get_1ctrl_1key_FUNC,
+	_1webkit_1dom_1mouse_1event_1get_1meta_1key_FUNC,
+	_1webkit_1dom_1mouse_1event_1get_1screen_1x_FUNC,
+	_1webkit_1dom_1mouse_1event_1get_1screen_1y_FUNC,
+	_1webkit_1dom_1mouse_1event_1get_1shift_1key_FUNC,
+	_1webkit_1dom_1ui_1event_1get_1char_1code_FUNC,
+	_1webkit_1dom_1ui_1event_1get_1detail_FUNC,
+	_1webkit_1dom_1ui_1event_1get_1key_1code_FUNC,
 	_1webkit_1download_1cancel_FUNC,
 	_1webkit_1download_1get_1current_1size_FUNC,
 	_1webkit_1download_1get_1status_FUNC,
@@ -103,6 +113,7 @@ typedef enum {
 	_1webkit_1web_1frame_1get_1load_1status_FUNC,
 	_1webkit_1web_1frame_1get_1parent_FUNC,
 	_1webkit_1web_1frame_1get_1title_FUNC,
+	_1webkit_1web_1frame_1get_1type_FUNC,
 	_1webkit_1web_1frame_1get_1uri_FUNC,
 	_1webkit_1web_1frame_1get_1web_1view_FUNC,
 	_1webkit_1web_1policy_1decision_1download_FUNC,
@@ -111,6 +122,7 @@ typedef enum {
 	_1webkit_1web_1view_1can_1go_1forward_FUNC,
 	_1webkit_1web_1view_1can_1show_1mime_1type_FUNC,
 	_1webkit_1web_1view_1execute_1script_FUNC,
+	_1webkit_1web_1view_1get_1dom_1document_FUNC,
 	_1webkit_1web_1view_1get_1load_1status_FUNC,
 	_1webkit_1web_1view_1get_1main_1frame_FUNC,
 	_1webkit_1web_1view_1get_1progress_FUNC,

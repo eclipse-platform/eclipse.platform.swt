@@ -50,6 +50,8 @@
 /* Optional custom definitions to exclude some types */
 #include "defines.h"
 
+#define OS_LOAD_FUNCTION LOAD_FUNCTION
+
 /* Structs excludes */
 #ifdef _WIN32_WCE
 #define NO_ACTCTX
@@ -72,6 +74,7 @@
 #define NO_DEVMODEW
 #define NO_DOCINFO
 #define NO_DWM_BLURBEHIND
+#define NO_DTTOPTS
 #define NO_EMR
 #define NO_EMREXTCREATEFONTINDIRECTW
 #define NO_EXTLOGFONTW
@@ -242,9 +245,11 @@
 #define NO_DrawThemeIcon
 #define NO_DrawThemeParentBackground
 #define NO_DrawThemeText
+#define NO_DrawThemeTextEx
 #define NO_DuplicateHandle
 #define NO_DwmEnableBlurBehindWindow
 #define NO_DwmExtendFrameIntoClientArea
+#define NO_DTTOPTS_1sizeof
 #define NO_EnableScrollBar
 #define NO_EndBufferedPaint
 #define NO_EndDoc
@@ -709,6 +714,43 @@ typedef struct _DWM_BLURBEHIND {
     BOOL fTransitionOnMaximized;
 } DWM_BLURBEHIND, *PDWM_BLURBEHIND;
 #endif
+
+#ifndef _WIN32_WCE
+#ifndef DTT_CALLBACK_PROC
+typedef 
+int
+(WINAPI *DTT_CALLBACK_PROC)
+(
+    __in HDC hdc,
+    __inout_ecount(cchText) LPWSTR pszText,
+    __in int cchText,
+    __inout LPRECT prc,
+    __in UINT dwFlags,
+    __in LPARAM lParam);
+#endif
+    
+#ifndef _DTTOPTS
+typedef struct _DTTOPTS
+{
+    DWORD             dwSize;
+    DWORD             dwFlags;
+    COLORREF          crText;
+    COLORREF          crBorder;
+    COLORREF          crShadow;
+    int               iTextShadowType;
+    POINT             ptShadowOffset;
+    int               iBorderSize;
+    int               iFontPropId;
+    int               iColorPropId;
+    int               iStateId;
+    BOOL              fApplyOverlay;
+    int               iGlowSize;
+    DTT_CALLBACK_PROC pfnDrawTextCallback;
+    LPARAM            lParam;
+} DTTOPTS, *PDTTOPTS; 
+#endif
+#endif /* _WIN32_WCE */
+
 
 #if (_WIN32_IE <= 0x0600)
 typedef struct tagTVITEMCHANGE {

@@ -35,6 +35,7 @@ class DialogTab extends Tab {
 	Button primaryModalButton, applicationModalButton, systemModalButton;
 	Button sheetButton;
 	Button saveButton, openButton, multiButton;
+	private Button effectsVisibleButton;
 
 	static String [] FilterExtensions	= {"*.txt", "*.bat", "*.doc", "*"};
 	static String [] FilterNames		= {ControlExample.getResourceString("FilterName_0"),
@@ -164,6 +165,7 @@ class DialogTab extends Tab {
 		if (name.equals (ControlExample.getResourceString("FontDialog"))) {
 			FontDialog dialog = new FontDialog (shell, style);
 			dialog.setText (ControlExample.getResourceString("Title"));
+			dialog.setEffectsVisible(effectsVisibleButton.getSelection());
 			FontData result = dialog.open ();
 			textWidget.append (ControlExample.getResourceString("FontDialog") + Text.DELIMITER);
 			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER);
@@ -174,6 +176,7 @@ class DialogTab extends Tab {
 					textWidget.append ("\t" + fonts [i] + Text.DELIMITER);
 				}
 			}
+			textWidget.append ("getEffectsVisible() = " + dialog.getEffectsVisible() + Text.DELIMITER);
 			textWidget.append ("getRGB() = " + dialog.getRGB() + Text.DELIMITER + Text.DELIMITER);
 			return;
 		}
@@ -371,6 +374,16 @@ class DialogTab extends Tab {
 		multiButton = new Button(fileDialogStyleGroup, SWT.CHECK);
 		multiButton.setText("SWT.MULTI");
 	
+		/* Create a group for the font dialog controls */
+		Group fontDialogStyleGroup = new Group (controlGroup, SWT.NONE);
+		fontDialogStyleGroup.setLayout (new GridLayout ());
+		fontDialogStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		fontDialogStyleGroup.setText (ControlExample.getResourceString("Font_Dialog"));
+	
+		/* Create the font dialog  buttons */
+		effectsVisibleButton = new Button(fontDialogStyleGroup, SWT.CHECK);
+		effectsVisibleButton.setText("Effects Visible");
+	
 		/* Create the orientation group */
 		if (RTL_SUPPORT_ENABLE) {
 			createOrientationGroup();
@@ -419,6 +432,8 @@ class DialogTab extends Tab {
 		openButton.setSelection (true);
 		multiButton.setEnabled (false);
 		noIconButton.setSelection (true);
+		effectsVisibleButton.setEnabled(false);
+		effectsVisibleButton.setSelection(true);
 	}
 	
 	/**
@@ -467,6 +482,7 @@ class DialogTab extends Tab {
 		String name = dialogCombo.getText ();
 		boolean isMessageBox = name.equals (ControlExample.getResourceString("MessageBox"));
 		boolean isFileDialog = name.equals (ControlExample.getResourceString("FileDialog"));
+		boolean isFontDialog = name.equals (ControlExample.getResourceString("FontDialog"));
 		okButton.setEnabled (isMessageBox);
 		cancelButton.setEnabled (isMessageBox);
 		yesButton.setEnabled (isMessageBox);
@@ -483,6 +499,7 @@ class DialogTab extends Tab {
 		saveButton.setEnabled (isFileDialog);
 		openButton.setEnabled (isFileDialog);
 		multiButton.setEnabled (isFileDialog);
+		effectsVisibleButton.setEnabled (isFontDialog);
 	
 		/* Unselect the buttons */
 		if (!isMessageBox) {

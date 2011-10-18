@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Tree example snippet: compute the visible rows in a tree
+ * Tree example snippet: compute the number of visible rows in a tree
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

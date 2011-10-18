@@ -91,8 +91,7 @@ MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
 	-DNO_nsDynamicFunctionLoad
 XULRUNNEREXCLUDES = -DNO__1NS_1InitXPCOM2
 
-WEBKITCFLAGS = `pkg-config --cflags webkit-1.0`
-WEBKITLIBS = `pkg-config --libs webkit-1.0`
+WEBKITCFLAGS = `pkg-config --cflags glib-2.0`
 
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
@@ -279,7 +278,7 @@ xpcominit_stats.o: xpcominit_stats.cpp
 make_webkit: $(WEBKIT_LIB)
 
 $(WEBKIT_LIB): $(WEBKIT_OBJECTS)
-	$(CC) $(LFLAGS) -o $(WEBKIT_LIB) $(WEBKIT_OBJECTS) $(WEBKITLIBS)
+	$(CC) $(LFLAGS) -o $(WEBKIT_LIB) $(WEBKIT_OBJECTS)
 
 webkit.o: webkitgtk.c 
 	$(CC) $(CFLAGS) $(WEBKITCFLAGS) -c webkitgtk.c -o webkit.o

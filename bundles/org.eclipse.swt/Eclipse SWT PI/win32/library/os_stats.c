@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1064;
-int OS_nativeFunctionCallCount[1064];
+int OS_nativeFunctionCount = 1067;
+int OS_nativeFunctionCallCount[1067];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -166,6 +166,7 @@ char * OS_nativeFunctionNames[] = {
 	"DPtoLP",
 	"DRAWITEMSTRUCT_1sizeof",
 	"DROPFILES_1sizeof",
+	"DTTOPTS_1sizeof",
 	"DWM_1BLURBEHIND_1sizeof",
 	"DefFrameProcA",
 	"DefFrameProcW",
@@ -207,9 +208,11 @@ char * OS_nativeFunctionNames[] = {
 	"DrawThemeIcon",
 	"DrawThemeParentBackground",
 	"DrawThemeText",
+	"DrawThemeTextEx",
 	"DuplicateHandle",
 	"DwmEnableBlurBehindWindow",
 	"DwmExtendFrameIntoClientArea",
+	"DwmIsCompositionEnabled",
 	"EMREXTCREATEFONTINDIRECTW_1sizeof",
 	"EMR_1sizeof",
 	"EXTLOGFONTW_1sizeof",

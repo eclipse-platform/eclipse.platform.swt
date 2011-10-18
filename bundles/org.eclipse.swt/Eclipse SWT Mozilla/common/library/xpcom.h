@@ -28,6 +28,8 @@
 #include "nsIScriptGlobalObject.h"
 #endif /* nsIScriptContext_h__ */
 
+#define XPCOM_LOAD_FUNCTION LOAD_FUNCTION
+
 #ifdef _WIN32
 #define STDMETHODCALLTYPE __stdcall
 #define NO__1NS_1InitXPCOM2

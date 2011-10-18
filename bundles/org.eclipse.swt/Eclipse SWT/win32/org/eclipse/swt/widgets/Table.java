@@ -6740,7 +6740,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 					string = item.text;
 				} else {
 					String [] strings  = item.strings;
-					if (strings != null) string = strings [plvfi.iSubItem];
+					if (strings != null && plvfi.iSubItem < strings.length) string = strings [plvfi.iSubItem];
 				}
 				if (string != null) {
 					/*
@@ -6785,7 +6785,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 					image = item.image;
 				} else {
 					Image [] images = item.images;
-					if (images != null) image = images [plvfi.iSubItem];
+					if (images != null && plvfi.iSubItem < images.length) image = images [plvfi.iSubItem];
 				}
 				if (image != null) {
 					plvfi.iImage = imageIndex (image, plvfi.iSubItem);

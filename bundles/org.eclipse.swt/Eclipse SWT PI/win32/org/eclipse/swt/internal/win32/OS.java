@@ -2267,6 +2267,7 @@ public static final native int DOCHOSTUIINFO_sizeof ();
 public static final native int DOCINFO_sizeof ();
 public static final native int DRAWITEMSTRUCT_sizeof ();
 public static final native int DROPFILES_sizeof ();
+public static final native int DTTOPTS_sizeof ();
 public static final native int DWM_BLURBEHIND_sizeof ();
 public static final native int EMR_sizeof ();
 public static final native int EMREXTCREATEFONTINDIRECTW_sizeof ();
@@ -4026,6 +4027,8 @@ public static final native int DrawThemeIcon (int /*long*/ hTheme, int /*long*/ 
 public static final native int DrawThemeParentBackground (int /*long*/ hwnd, int /*long*/ hdc, RECT prc);
 /** @method flags=dynamic */
 public static final native int DrawThemeText (int /*long*/ hTheme, int /*long*/ hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwTextFlags, int dwTextFlags2, RECT pRect);
+/** @method flags=dynamic */
+public static final native int DrawThemeTextEx (int /*long*/ hTheme, int /*long*/ hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwFlags, RECT pRect, DTTOPTS pOptions);
 /**
  * @method flags=dynamic
  * @param hWnd cast=(HWND)
@@ -4035,7 +4038,9 @@ public static final native int DwmEnableBlurBehindWindow (int /*long*/ hWnd, DWM
  * @method flags=dynamic
  * @param hWnd cast=(HWND)
  */
-public static final native int DwmExtendFrameIntoClientArea (int /*long*/ hWnd, MARGINS pMarInset); 
+public static final native int DwmExtendFrameIntoClientArea (int /*long*/ hWnd, MARGINS pMarInset);
+/** @method flags=dynamic */
+public static final native int DwmIsCompositionEnabled (boolean[] pfEnabled); 
 /** @param hdc cast=(HDC) */
 public static final native boolean Ellipse (int /*long*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 /** @param hMenu cast=(HMENU) */
