@@ -1615,8 +1615,11 @@ void calculateTopIndex(int delta) {
 		}
 	}
 	if (topIndex != oldTopIndex || oldTopIndexY != topIndexY) {
+		int width = renderer.getWidth();
 		renderer.calculateClientArea();
-		setScrollBars(false);
+		if (width != renderer.getWidth()) {
+			setScrollBars(false);
+		}
 	}
 }
 /**
@@ -9334,7 +9337,7 @@ void setScrollBars(boolean vertical) {
 	}
 	if (horizontalBar != null) {
 		setScrollBar(horizontalBar, clientAreaWidth, renderer.getWidth(), leftMargin + rightMargin);
-		if (!alwaysShowScroll && horizontalBar.getVisible() && verticalBar != null && !verticalBar.getVisible()) {
+		if (!alwaysShowScroll && horizontalBar.getVisible() && verticalBar != null) {
 			setScrollBar(verticalBar, clientAreaHeight, renderer.getHeight(), topMargin + bottomMargin);
 		}
 	}
