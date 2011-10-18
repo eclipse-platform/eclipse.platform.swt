@@ -1084,49 +1084,158 @@ void init(ImageData image) {
 	if (!(((image.depth == 1 || image.depth == 2 || image.depth == 4 || image.depth == 8) && !palette.isDirect) ||
 		((image.depth == 8) || (image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect)))
 			SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
-	int stride, destDepth, redMask = 0xFF0000, greenMask = 0xFF00, blueMask = 0xFF, srcOrder = ImageData.MSB_FIRST;
-	int /*long*/ data, pixbuf = 0;
-	int oa = 0, or = 0, og = 0, ob = 0;
 	if (OS.USE_CAIRO_SURFACE) {
-		stride = Cairo.cairo_format_stride_for_width(Cairo.CAIRO_FORMAT_ARGB32, width);
-		data = surfaceData = OS.g_malloc(stride * height);
+		int stride = Cairo.cairo_format_stride_for_width(Cairo.CAIRO_FORMAT_ARGB32, width);
+		int /*long*/ data = surfaceData = OS.g_malloc(stride * height);
 		if (surfaceData == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		surface = Cairo.cairo_image_surface_create_for_data(surfaceData, Cairo.CAIRO_FORMAT_ARGB32, width, height, stride);
 		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		destDepth = 32;
-		byte[] line = new byte[stride];
+		byte[] buffer = new byte[4];
 		int /*long*/ ptr = OS.malloc(4);
 		OS.memmove(ptr, new int[]{1}, 4);
-		OS.memmove(line, ptr, 1);
+		OS.memmove(buffer, ptr, 1);
 		OS.free(ptr);
-		boolean bigendian = line[0] == 0;
+		boolean bigendian = buffer[0] == 0;
+		int oa = 0, or = 0, og = 0, ob = 0;
+		int redMask, greenMask, blueMask, destDepth = 32, destOrder;
 		if (bigendian) {
 			oa = 0; or = 1; og = 2; ob = 3;
 			redMask = 0xFF00;
 			greenMask = 0xFF0000;
 			blueMask = 0xFF000000;
+			destOrder = ImageData.MSB_FIRST;
 		} else {
 			oa = 3; or = 2; og = 1; ob = 0;
 			redMask = 0xFF0000;
 			greenMask = 0xFF00;
 			blueMask = 0xFF;
-			srcOrder = ImageData.LSB_FIRST;
+			destOrder = ImageData.LSB_FIRST;
 		}
-	} else {
-		pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
-		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-		data = OS.gdk_pixbuf_get_pixels(pixbuf);
-		destDepth = 24;
+		buffer = image.data;
+		if (!palette.isDirect || image.depth != destDepth || stride != image.bytesPerLine || palette.redMask != redMask || palette.greenMask != greenMask || palette.blueMask != blueMask) {
+			buffer = new byte[stride * height];
+			if (palette.isDirect) {
+				ImageData.blit(ImageData.BLIT_SRC,
+					image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, width, height, palette.redMask, palette.greenMask, palette.blueMask,
+					ImageData.ALPHA_OPAQUE, null, 0, 0, 0, 
+					buffer, destDepth, stride, destOrder, 0, 0, width, height, redMask, greenMask, blueMask,
+					false, false);
+			} else {
+				RGB[] rgbs = palette.getRGBs();
+				int length = rgbs.length;
+				byte[] srcReds = new byte[length];
+				byte[] srcGreens = new byte[length];
+				byte[] srcBlues = new byte[length];
+				for (int i = 0; i < rgbs.length; i++) {
+					RGB rgb = rgbs[i];
+					if (rgb == null) continue;
+					srcReds[i] = (byte)rgb.red;
+					srcGreens[i] = (byte)rgb.green;
+					srcBlues[i] = (byte)rgb.blue;
+				}
+				ImageData.blit(ImageData.BLIT_SRC,
+					image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, width, height, srcReds, srcGreens, srcBlues,
+					ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+					buffer, destDepth, stride, destOrder, 0, 0, width, height, redMask, greenMask, blueMask,
+					false, false);
+			}
+		}
+		boolean isIcon = image.getTransparencyType() == SWT.TRANSPARENCY_MASK;
+		this.type = isIcon ? SWT.ICON : SWT.BITMAP;
+		if (isIcon || image.transparentPixel != -1) {
+			if (image.transparentPixel != -1) {
+				RGB rgb = null;
+				if (palette.isDirect) {
+					rgb = palette.getRGB(image.transparentPixel);
+				} else {
+					if (image.transparentPixel < palette.colors.length) {
+						rgb = palette.getRGB(image.transparentPixel);
+					}
+				}
+				if (rgb != null) {
+					transparentPixel = rgb.red << 16 | rgb.green << 8 | rgb.blue;
+				}
+			}
+			ImageData mask = image.getTransparencyMask();
+			for (int y = 0, offset = 0; y < height; y++) {
+				for (int x=0; x<width; x++, offset += 4) {
+					int alpha = mask.getPixel(x, y) == 0 ? 0 : 0xff;
+					/* pre-multiplied alpha */
+					int r = ((buffer[offset + or] & 0xFF) * alpha) + 128;
+					r = (r + (r >> 8)) >> 8;
+					int g = ((buffer[offset + og] & 0xFF) * alpha) + 128;
+					g = (g + (g >> 8)) >> 8;
+					int b = ((buffer[offset + ob] & 0xFF) * alpha) + 128;
+					b = (b + (b >> 8)) >> 8;
+					buffer[offset + oa] = (byte)alpha;
+					buffer[offset + or] = (byte)r;
+					buffer[offset + og] = (byte)g;
+					buffer[offset + ob] = (byte)b;
+				}
+			}
+		} else {
+			this.alpha = image.alpha;
+			if (image.alpha == -1 && image.alphaData != null) {
+				this.alphaData = new byte[image.alphaData.length];
+				System.arraycopy(image.alphaData, 0, this.alphaData, 0, alphaData.length);
+			}
+			if (this.alpha != -1) {
+				for (int y = 0, offset = 0; y < height; y++) {
+					for (int x=0; x<width; x++, offset += 4) {
+						int alpha = this.alpha;
+						/* pre-multiplied alpha */
+						int r = ((buffer[offset + or] & 0xFF) * alpha) + 128;
+						r = (r + (r >> 8)) >> 8;
+						int g = ((buffer[offset + og] & 0xFF) * alpha) + 128;
+						g = (g + (g >> 8)) >> 8;
+						int b = ((buffer[offset + ob] & 0xFF) * alpha) + 128;
+						b = (b + (b >> 8)) >> 8;
+						buffer[offset + oa] = (byte)alpha;
+						buffer[offset + or] = (byte)r;
+						buffer[offset + og] = (byte)g;
+						buffer[offset + ob] = (byte)b;
+					}
+				}
+			} else if (this.alphaData != null) {
+				for (int y = 0, offset = 0; y < height; y++) {
+					for (int x=0; x<width; x++, offset += 4) {
+						int alpha = alphaData [y*width+x] & 0xFF;
+						/* pre-multiplied alpha */
+						int r = ((buffer[offset + or] & 0xFF) * alpha) + 128;
+						r = (r + (r >> 8)) >> 8;
+						int g = ((buffer[offset + og] & 0xFF) * alpha) + 128;
+						g = (g + (g >> 8)) >> 8;
+						int b = ((buffer[offset + ob] & 0xFF) * alpha) + 128;
+						b = (b + (b >> 8)) >> 8;
+						buffer[offset + oa] = (byte)alpha;
+						buffer[offset + or] = (byte)r;
+						buffer[offset + og] = (byte)g;
+						buffer[offset + ob] = (byte)b;
+					}
+				}
+			} else {
+				for (int y = 0, offset = 0; y < height; y++) {
+					for (int x=0; x<width; x++, offset += 4) {
+						buffer[offset + oa] = (byte)0xFF;
+					}
+				}
+			}
+		}
+		OS.memmove(data, buffer, stride * height);
+		return;
 	}
+	int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
+	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
+	int /*long*/ data = OS.gdk_pixbuf_get_pixels(pixbuf);
 	byte[] buffer = image.data;
-	if (!palette.isDirect || image.depth != destDepth || stride != image.bytesPerLine || palette.redMask != redMask || palette.greenMask != greenMask || palette.blueMask != blueMask) {
+	if (!palette.isDirect || image.depth != 24 || stride != image.bytesPerLine || palette.redMask != 0xFF0000 || palette.greenMask != 0xFF00 || palette.blueMask != 0xFF) {
 		buffer = new byte[stride * height];
 		if (palette.isDirect) {
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, width, height, palette.redMask, palette.greenMask, palette.blueMask,
 				ImageData.ALPHA_OPAQUE, null, 0, 0, 0, 
-				buffer, destDepth, stride, srcOrder, 0, 0, width, height, redMask, greenMask, blueMask,
+				buffer, 24, stride, ImageData.MSB_FIRST, 0, 0, width, height, 0xFF0000, 0xFF00, 0xFF,
 				false, false);
 		} else {
 			RGB[] rgbs = palette.getRGBs();
@@ -1144,21 +1253,19 @@ void init(ImageData image) {
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, width, height, srcReds, srcGreens, srcBlues,
 				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-				buffer, destDepth, stride, srcOrder, 0, 0, width, height, redMask, greenMask, blueMask,
+				buffer, 24, stride, ImageData.MSB_FIRST, 0, 0, width, height, 0xFF0000, 0xFF00, 0xFF,
 				false, false);
 		}
 	}
 	OS.memmove(data, buffer, stride * height);
-	if (!OS.USE_CAIRO_SURFACE) {
-		int /*long*/ pixmap = OS.gdk_pixmap_new (OS.GDK_ROOT_PARENT(), width, height, -1);
-		if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int /*long*/ gdkGC = OS.gdk_gc_new(pixmap);
-		if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		OS.gdk_pixbuf_render_to_drawable(pixbuf, pixmap, gdkGC, 0, 0, 0, 0, width, height, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
-		OS.g_object_unref(gdkGC);
-		OS.g_object_unref(pixbuf);
-		this.pixmap = pixmap;
-	}
+	int /*long*/ pixmap = OS.gdk_pixmap_new (OS.GDK_ROOT_PARENT(), width, height, -1);
+	if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int /*long*/ gdkGC = OS.gdk_gc_new(pixmap);
+	if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.gdk_pixbuf_render_to_drawable(pixbuf, pixmap, gdkGC, 0, 0, 0, 0, width, height, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
+	OS.g_object_unref(gdkGC);
+	OS.g_object_unref(pixbuf);
+	
 	boolean isIcon = image.getTransparencyType() == SWT.TRANSPARENCY_MASK;
 	if (isIcon || image.transparentPixel != -1) {
 		if (image.transparentPixel != -1) {
@@ -1174,31 +1281,9 @@ void init(ImageData image) {
 				transparentPixel = rgb.red << 16 | rgb.green << 8 | rgb.blue;
 			}
 		}
-		if (OS.USE_CAIRO_SURFACE) {
-			ImageData mask = image.getTransparencyMask();
-			int offset = 0;
-			for (int y = 0; y < height; y++) {
-				for (int x=0; x<width; x++, offset += 4) {
-					int alpha = mask.getPixel(x, y) == 0 ? 0 : 0xff;
-					/* pre-multiplied alpha */
-					int r = ((buffer[offset + or] & 0xFF) * alpha) + 128;
-					r = (r + (r >> 8)) >> 8;
-					int g = ((buffer[offset + og] & 0xFF) * alpha) + 128;
-					g = (g + (g >> 8)) >> 8;
-					int b = ((buffer[offset + ob] & 0xFF) * alpha) + 128;
-					b = (b + (b >> 8)) >> 8;
-					buffer[offset + oa] = (byte)alpha;
-					buffer[offset + or] = (byte)r;
-					buffer[offset + og] = (byte)g;
-					buffer[offset + ob] = (byte)b;
-				}
-			}
-			OS.memmove(data, buffer, stride * height);
-		} else {
-			int /*long*/ mask = createMask(image, isIcon);
-			if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			this.mask = mask;
-		}
+		int /*long*/ mask = createMask(image, isIcon);
+		if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		this.mask = mask;
 		if (isIcon) {
 			this.type = SWT.ICON;
 		} else {
@@ -1212,49 +1297,9 @@ void init(ImageData image) {
 			this.alphaData = new byte[image.alphaData.length];
 			System.arraycopy(image.alphaData, 0, this.alphaData, 0, alphaData.length);
 		}
-		if (OS.USE_CAIRO_SURFACE) {
-			if (this.alpha != -1) {
-				int offset = 0; 
-				for (int y = 0; y < height; y++) {
-					for (int x=0; x<width; x++, offset += 4) {
-						int alpha = this.alpha;
-						/* pre-multiplied alpha */
-						int r = ((buffer[offset + or] & 0xFF) * alpha) + 128;
-						r = (r + (r >> 8)) >> 8;
-						int g = ((buffer[offset + og] & 0xFF) * alpha) + 128;
-						g = (g + (g >> 8)) >> 8;
-						int b = ((buffer[offset + ob] & 0xFF) * alpha) + 128;
-						b = (b + (b >> 8)) >> 8;
-						buffer[offset + oa] = (byte)alpha;
-						buffer[offset + or] = (byte)r;
-						buffer[offset + og] = (byte)g;
-						buffer[offset + ob] = (byte)b;
-					}
-				}
-				OS.memmove(data, buffer, stride * height);
-			} else if (this.alphaData != null) {
-				int offset = 0; 
-				for (int y = 0; y < height; y++) {
-					for (int x=0; x<width; x++, offset += 4) {
-						int alpha = alphaData [y*width+x] & 0xFF;
-						/* pre-multiplied alpha */
-						int r = ((buffer[offset + or] & 0xFF) * alpha) + 128;
-						r = (r + (r >> 8)) >> 8;
-						int g = ((buffer[offset + og] & 0xFF) * alpha) + 128;
-						g = (g + (g >> 8)) >> 8;
-						int b = ((buffer[offset + ob] & 0xFF) * alpha) + 128;
-						b = (b + (b >> 8)) >> 8;
-						buffer[offset + oa] = (byte)alpha;
-						buffer[offset + or] = (byte)r;
-						buffer[offset + og] = (byte)g;
-						buffer[offset + ob] = (byte)b;
-					}
-				}
-				OS.memmove(data, buffer, stride * height);
-			}
-		}
 		createAlphaMask(width, height);
 	}
+	this.pixmap = pixmap;
 }
 
 /**	 
