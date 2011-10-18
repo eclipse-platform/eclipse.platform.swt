@@ -308,7 +308,7 @@ JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1format_1stride_1for_1width)
 	rc = (jint)cairo_format_stride_for_width(arg0, arg1);
 */
 	{
-		LOAD_FUNCTION(fp, cairo_format_stride_for_width)
+		Cairo_LOAD_FUNCTION(fp, cairo_format_stride_for_width)
 		if (fp) {
 			rc = (jint)((jint (CALLING_CONVENTION*)(jint, jint))fp)(arg0, arg1);
 		}
