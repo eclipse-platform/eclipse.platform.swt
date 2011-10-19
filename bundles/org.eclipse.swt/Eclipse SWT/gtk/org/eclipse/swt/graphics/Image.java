@@ -547,17 +547,19 @@ void initNative(String filename) {
 		byte [] buffer = Converter.wcsToMbcs(null, chars, true);
 		int /*long*/ pixbuf = OS.gdk_pixbuf_new_from_file(buffer, null);
 		if (pixbuf != 0) {
+			boolean hasAlpha = OS.gdk_pixbuf_get_has_alpha(pixbuf);
 			if (OS.USE_CAIRO_SURFACE) {
 				int width = this.width = OS.gdk_pixbuf_get_width(pixbuf);
 				int height = this.height = OS.gdk_pixbuf_get_height(pixbuf);
 				int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
 				int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
-				int cairoStride = Cairo.cairo_format_stride_for_width(Cairo.CAIRO_FORMAT_ARGB32, width);
+				int format = hasAlpha ? Cairo.CAIRO_FORMAT_ARGB32 : Cairo.CAIRO_FORMAT_RGB24;
+				int cairoStride = Cairo.cairo_format_stride_for_width(format, width);
 				int /*long*/ data = surfaceData = OS.g_malloc(cairoStride * height);
 				if (surfaceData == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				surface = Cairo.cairo_image_surface_create_for_data(surfaceData, Cairo.CAIRO_FORMAT_ARGB32, width, height, cairoStride);
+				surface = Cairo.cairo_image_surface_create_for_data(surfaceData, format, width, height, cairoStride);
 				if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				byte[] line = new byte[Math.max(cairoStride, stride)];
+				byte[] line = new byte[stride];
 				int /*long*/ ptr = OS.malloc(4);
 				OS.memmove(ptr, new int[]{1}, 4);
 				OS.memmove(line, ptr, 1);
@@ -569,26 +571,42 @@ void initNative(String filename) {
 				} else {
 					oa = 3; or = 2; og = 1; ob = 0;
 				}
-				for (int y = 0; y < height; y++) {
-					OS.memmove(line, pixels + (y * stride), stride);
-					for (int x = 0, offset = 0; x < width; x++, offset += 4) {
-						int a = line[offset + 3] & 0xFF;
-						int r = ((line[offset + 0] & 0xFF) * a) + 128;
-						r = (r + (r >> 8)) >> 8;
-						int g = ((line[offset + 1] & 0xFF) * a) + 128;
-						g = (g + (g >> 8)) >> 8;
-						int b = ((line[offset + 2] & 0xFF) * a) + 128;
-						b = (b + (b >> 8)) >> 8;
-						line[offset + oa] = (byte)a;
-						line[offset + or] = (byte)r;
-						line[offset + og] = (byte)g;
-						line[offset + ob] = (byte)b;
+				if (hasAlpha) {
+					byte[] cairoLine = new byte[cairoStride];
+					for (int y = 0; y < height; y++) {
+						OS.memmove(line, pixels + (y * stride), stride);
+						for (int x = 0, offset = 0; x < width; x++, offset += 4) {
+							int a = line[offset + 3] & 0xFF;
+							int r = ((line[offset + 0] & 0xFF) * a) + 128;
+							r = (r + (r >> 8)) >> 8;
+							int g = ((line[offset + 1] & 0xFF) * a) + 128;
+							g = (g + (g >> 8)) >> 8;
+							int b = ((line[offset + 2] & 0xFF) * a) + 128;
+							b = (b + (b >> 8)) >> 8;
+							cairoLine[offset + oa] = (byte)a;
+							cairoLine[offset + or] = (byte)r;
+							cairoLine[offset + og] = (byte)g;
+							cairoLine[offset + ob] = (byte)b;
+						}
+						OS.memmove(data + (y * cairoStride), cairoLine, cairoStride);
 					}
-					OS.memmove(data + (y * cairoStride), line, cairoStride);
+				} else {
+					byte[] cairoLine = new byte[cairoStride];
+					for (int y = 0; y < height; y++) {
+						OS.memmove(line, pixels + (y * stride), stride);
+						for (int x = 0, offset = 0, cairoOffset = 0; x < width; x++, offset += 3, cairoOffset += 4) {
+							int r = line[offset + 0] & 0xFF;
+							int g = line[offset + 1] & 0xFF;
+							int b = line[offset + 2] & 0xFF;
+							cairoLine[cairoOffset + or] = (byte)r;
+							cairoLine[cairoOffset + og] = (byte)g;
+							cairoLine[cairoOffset + ob] = (byte)b;
+						}
+						OS.memmove(data + (y * cairoStride), cairoLine, cairoStride);
+					}
 				}
 				OS.g_object_unref (pixbuf);
 			} else {
-				boolean hasAlpha = OS.gdk_pixbuf_get_has_alpha(pixbuf);
 				if (hasAlpha) {
 					/*
 					* Bug in GTK. Depending on the image (seems to affect images that have
@@ -1050,10 +1068,10 @@ void init(int width, int height) {
 
 	/* Create the pixmap */
 	if (OS.USE_CAIRO_SURFACE) {
-		int stride = Cairo.cairo_format_stride_for_width(Cairo.CAIRO_FORMAT_ARGB32, width);
+		int stride = Cairo.cairo_format_stride_for_width(Cairo.CAIRO_FORMAT_RGB24, width);
 		int /*long*/ data = surfaceData = OS.g_malloc(stride * height);
 		if (surfaceData == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		surface = Cairo.cairo_image_surface_create_for_data(surfaceData, Cairo.CAIRO_FORMAT_ARGB32, width, height, stride);
+		surface = Cairo.cairo_image_surface_create_for_data(surfaceData, Cairo.CAIRO_FORMAT_RGB24, width, height, stride);
 		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		OS.memset(data, 0xff, stride * height);
 		this.width = width;
