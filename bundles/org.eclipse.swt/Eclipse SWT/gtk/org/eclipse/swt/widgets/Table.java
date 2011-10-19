@@ -212,8 +212,8 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 				/* Give an image from the image list to make sure the row has
 				* the correct height.
 				*/
-				if (imageList != null && imageList.pixbufs.length > 0) {
-					if (isPixbuf) OS.g_object_set (cell, OS.pixbuf, imageList.pixbufs [0], 0);
+				if (imageList != null && imageList.size () > 0) {
+					if (isPixbuf) OS.g_object_set (cell, OS.pixbuf, imageList.getPixbuf (0), 0);
 				}
 				return 0;
 			}
