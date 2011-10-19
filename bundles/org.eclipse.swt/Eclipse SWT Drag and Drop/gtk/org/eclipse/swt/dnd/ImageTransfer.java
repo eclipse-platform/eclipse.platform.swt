@@ -12,7 +12,7 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.Converter;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 
@@ -89,37 +89,32 @@ public void javaToNative(Object object, TransferData transferData) {
 	ImageData imgData = (ImageData)object;
 	if (imgData == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	Image image = new Image(Display.getCurrent(), imgData);	
-	int /*long*/ pixmap = image.pixmap; 
- 	int width = imgData.width;
- 	int height = imgData.height;  	
- 	int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, width, height);
-	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int /*long*/ colormap = OS.gdk_colormap_get_system();
-	OS.gdk_pixbuf_get_from_drawable(pixbuf, pixmap, colormap, 0, 0, 0, 0, width, height);	
-	
-	String typeStr = "";
-	if (transferData.type ==  JPEG_ID) typeStr = "jpeg";
-	if (transferData.type ==  PNG_ID) typeStr = "png";
-	if (transferData.type ==  BMP_ID) typeStr = "bmp";
-	if (transferData.type ==  EPS_ID) typeStr = "eps";
-	if (transferData.type ==  PCX_ID) typeStr = "pcx";
-	if (transferData.type ==  PPM_ID) typeStr = "ppm";
-	if (transferData.type ==  RGB_ID) typeStr = "rgb";
-	if (transferData.type ==  TGA_ID) typeStr = "tga";
-	if (transferData.type ==  XBM_ID) typeStr = "xbm";
-	if (transferData.type ==  XPM_ID) typeStr = "xpm";
-	if (transferData.type ==  XV_ID) typeStr = "xv";
-	byte[] type = Converter.wcsToMbcs(null, typeStr , true);
-	int /*long*/ [] buffer = new int /*long*/ [1];
-	int /*long*/ [] len = new int /*long*/ [1];
-	if (type == null) return;
-	OS.gdk_pixbuf_save_to_bufferv(pixbuf, buffer, len, type, null, null, null);
-	OS.g_object_unref(pixbuf);
+ 	int /*long*/ pixbuf = ImageList.createPixbuf(image);
+	if (pixbuf != 0) {
+		String typeStr = "";
+		if (transferData.type ==  JPEG_ID) typeStr = "jpeg";
+		else if (transferData.type ==  PNG_ID) typeStr = "png";
+		else if (transferData.type ==  BMP_ID) typeStr = "bmp";
+		else if (transferData.type ==  EPS_ID) typeStr = "eps";
+		else if (transferData.type ==  PCX_ID) typeStr = "pcx";
+		else if (transferData.type ==  PPM_ID) typeStr = "ppm";
+		else if (transferData.type ==  RGB_ID) typeStr = "rgb";
+		else if (transferData.type ==  TGA_ID) typeStr = "tga";
+		else if (transferData.type ==  XBM_ID) typeStr = "xbm";
+		else if (transferData.type ==  XPM_ID) typeStr = "xpm";
+		else if (transferData.type ==  XV_ID) typeStr = "xv";
+		byte[] type = Converter.wcsToMbcs(null, typeStr , true);
+		int /*long*/ [] buffer = new int /*long*/ [1];
+		int /*long*/ [] len = new int /*long*/ [1];
+		if (type == null) return;
+		OS.gdk_pixbuf_save_to_bufferv(pixbuf, buffer, len, type, null, null, null);
+		OS.g_object_unref(pixbuf);
+		transferData.pValue = buffer[0];
+		transferData.length = (int)(len[0] + 3) / 4 * 4;
+		transferData.result = 1;
+		transferData.format = 32;
+	}
 	image.dispose();
-	transferData.pValue = buffer[0];
-	transferData.length = (int)(len[0] + 3) / 4 * 4;
-	transferData.result = 1;
-	transferData.format = 32;
 }
 
 /**
