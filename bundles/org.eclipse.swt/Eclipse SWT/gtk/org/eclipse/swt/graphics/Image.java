@@ -548,7 +548,7 @@ void initNative(String filename) {
 		int /*long*/ pixbuf = OS.gdk_pixbuf_new_from_file(buffer, null);
 		if (pixbuf != 0) {
 			try {
-				createFromPixbuf (pixbuf);
+				createFromPixbuf (SWT.BITMAP, pixbuf);
 			} finally {
 				if (pixbuf != 0) OS.g_object_unref (pixbuf);
 			}
@@ -587,7 +587,8 @@ void createAlphaMask (int width, int height) {
 	}
 }
 
-void createFromPixbuf(int /*long*/ pixbuf) {
+void createFromPixbuf(int type, int /*long*/ pixbuf) {
+	this.type = type;
 	boolean hasAlpha = OS.gdk_pixbuf_get_has_alpha(pixbuf);
 	if (OS.USE_CAIRO_SURFACE) {
 		int width = this.width = OS.gdk_pixbuf_get_width(pixbuf);
@@ -675,7 +676,6 @@ void createFromPixbuf(int /*long*/ pixbuf) {
 		}
 		int /*long*/ [] pixmap_return = new int /*long*/ [1];
 		OS.gdk_pixbuf_render_pixmap_and_mask(pixbuf, pixmap_return, null, 0);
-		this.type = SWT.BITMAP;
 		this.pixmap = pixmap_return[0];
 		if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	}
@@ -1068,7 +1068,7 @@ public static Image gtk_new(Device device, int type, int /*long*/ pixmap, int /*
  */
 public static Image gtk_new_from_pixbuf(Device device, int type, int /*long*/ pixbuf) {
 	Image image = new Image(device);
-	image.createFromPixbuf(pixbuf);
+	image.createFromPixbuf(type, pixbuf);
 	image.type = type;
 	return image;
 }
