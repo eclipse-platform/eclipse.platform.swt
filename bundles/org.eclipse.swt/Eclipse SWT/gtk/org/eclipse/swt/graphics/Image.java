@@ -977,8 +977,7 @@ public ImageData getImageData() {
 			oa = 3; or = 2; og = 1; ob = 0;
 		}
 		OS.memmove(srcData, this.surfaceData, srcData.length);
-		//TODO make palette more sensible
-		PaletteData palette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
+		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
 		data = new ImageData(width, height, 32, palette, 4, srcData);
 		for (int y = 0, offset = 0; y < height; y++) {
 			for (int x = 0; x < width; x++, offset += 4) {
@@ -986,11 +985,11 @@ public ImageData getImageData() {
 				int r = srcData[offset + or] & 0xFF;
 				int g = srcData[offset + og] & 0xFF;
 				int b = srcData[offset + ob] & 0xFF;
-				srcData[offset + 3] = (byte)a;
+				srcData[offset + 0] = (byte)a;
 				if (a != 0) {
-					srcData[offset + 2] = (byte)(((r) / (float)a) * 0xFF);
-					srcData[offset + 1] = (byte)(((g) / (float)a) * 0xFF);
-					srcData[offset + 0] = (byte)(((b) / (float)a) * 0xFF);
+					srcData[offset + 1] = (byte)(((r) / (float)a) * 0xFF);
+					srcData[offset + 2] = (byte)(((g) / (float)a) * 0xFF);
+					srcData[offset + 3] = (byte)(((b) / (float)a) * 0xFF);
 				}
 			}
 		}
@@ -1008,7 +1007,7 @@ public ImageData getImageData() {
 			}
 		}
 		
-		for (int i = 3; i < srcData.length; i+= 4) {
+		for (int i = 0; i < srcData.length; i+= 4) {
 			srcData[i] = 0;
 		}
 	} else {
