@@ -35,13 +35,8 @@ public static int /*long*/ createPixbuf(Image image) {
 		int stride = OS.gdk_pixbuf_get_rowstride (pixbuf);
 		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels (pixbuf);
 		byte[] line = new byte[stride];
-		int /*long*/ ptr = OS.malloc(4);
-		OS.memmove(ptr, new int[]{1}, 4);
-		OS.memmove(line, ptr, 1);
-		OS.free(ptr);
 		int oa, or, og, ob;
-		boolean bigendian = line[0] == 0;
-		if (bigendian) {
+		if (OS.BIG_ENDIAN) {
 			oa = 0; or = 1; og = 2; ob = 3;
 		} else {
 			oa = 3; or = 2; og = 1; ob = 0;

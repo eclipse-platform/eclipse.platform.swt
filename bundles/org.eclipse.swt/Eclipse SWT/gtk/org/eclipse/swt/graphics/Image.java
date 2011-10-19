@@ -602,13 +602,8 @@ void createFromPixbuf(int type, int /*long*/ pixbuf) {
 		surface = Cairo.cairo_image_surface_create_for_data(surfaceData, format, width, height, cairoStride);
 		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		byte[] line = new byte[stride];
-		int /*long*/ ptr = OS.malloc(4);
-		OS.memmove(ptr, new int[]{1}, 4);
-		OS.memmove(line, ptr, 1);
-		OS.free(ptr);
-		boolean bigendian = line[0] == 0;
 		int oa = 0, or = 0, og = 0, ob = 0;
-		if (bigendian) {
+		if (OS.BIG_ENDIAN) {
 			oa = 0; or = 1; og = 2; ob = 3;
 		} else {
 			oa = 3; or = 2; og = 1; ob = 0;
@@ -719,13 +714,8 @@ void createSurface() {
 		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
 		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);		
 		byte[] line = new byte[stride];
-		int /*long*/ ptr = OS.malloc(4);
-		OS.memmove(ptr, new int[]{1}, 4);
-		OS.memmove(line, ptr, 1);
-		OS.free(ptr);
 		int oa, or, og, ob;
-		boolean bigendian = line[0] == 0;
-		if (bigendian) {
+		if (OS.BIG_ENDIAN) {
 			oa = 0; or = 1; og = 2; ob = 3;
 		} else {
 			oa = 3; or = 2; og = 1; ob = 0;
@@ -940,13 +930,8 @@ public ImageData getImageData() {
 		int height = this.height;
 		int stride = Cairo.cairo_format_stride_for_width(Cairo.CAIRO_FORMAT_ARGB32, width);
 		byte[] srcData = new byte[stride * height];
-		int /*long*/ ptr = OS.malloc(4);
-		OS.memmove(ptr, new int[]{1}, 4);
-		OS.memmove(srcData, ptr, 1);
-		OS.free(ptr);
 		int oa, or, og, ob;
-		boolean bigendian = srcData[0] == 0;
-		if (bigendian) {
+		if (OS.BIG_ENDIAN) {
 			oa = 0; or = 1; og = 2; ob = 3;
 		} else {
 			oa = 3; or = 2; og = 1; ob = 0;
@@ -1139,15 +1124,9 @@ void init(ImageData image) {
 		if (surfaceData == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		surface = Cairo.cairo_image_surface_create_for_data(surfaceData, Cairo.CAIRO_FORMAT_ARGB32, width, height, stride);
 		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		byte[] buffer = new byte[4];
-		int /*long*/ ptr = OS.malloc(4);
-		OS.memmove(ptr, new int[]{1}, 4);
-		OS.memmove(buffer, ptr, 1);
-		OS.free(ptr);
-		boolean bigendian = buffer[0] == 0;
 		int oa = 0, or = 0, og = 0, ob = 0;
 		int redMask, greenMask, blueMask, destDepth = 32, destOrder;
-		if (bigendian) {
+		if (OS.BIG_ENDIAN) {
 			oa = 0; or = 1; og = 2; ob = 3;
 			redMask = 0xFF00;
 			greenMask = 0xFF0000;
@@ -1160,7 +1139,7 @@ void init(ImageData image) {
 			blueMask = 0xFF;
 			destOrder = ImageData.LSB_FIRST;
 		}
-		buffer = image.data;
+		byte[] buffer = image.data;
 		if (!palette.isDirect || image.depth != destDepth || stride != image.bytesPerLine || palette.redMask != redMask || palette.greenMask != greenMask || palette.blueMask != blueMask) {
 			buffer = new byte[stride * height];
 			if (palette.isDirect) {

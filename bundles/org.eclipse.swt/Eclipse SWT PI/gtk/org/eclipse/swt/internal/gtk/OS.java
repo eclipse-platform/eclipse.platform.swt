@@ -23,7 +23,7 @@ public class OS extends C {
 	}
 	
 	/** OS Constants */
-	public static final boolean IsAIX, IsSunOS, IsLinux, IsHPUX;
+	public static final boolean IsAIX, IsSunOS, IsLinux, IsHPUX, BIG_ENDIAN;
 	static {
 		
 		/* Initialize the OS flags and locale constants */
@@ -35,6 +35,13 @@ public class OS extends C {
 		if (osName.equals ("SunOS")) isSunOS = true;
 		if (osName.equals ("HP-UX")) isHPUX = true;
 		IsAIX = isAIX;  IsSunOS = isSunOS;  IsLinux = isLinux;  IsHPUX = isHPUX;
+		
+		byte[] buffer = new byte[4];
+		int /*long*/ ptr = OS.malloc(4);
+		OS.memmove(ptr, new int[]{1}, 4);
+		OS.memmove(buffer, ptr, 1);
+		OS.free(ptr);
+		BIG_ENDIAN = buffer[0] == 0;
 	}
 
 	/** Constants */
