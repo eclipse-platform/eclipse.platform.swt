@@ -680,6 +680,45 @@ void createFromPixbuf(int type, int /*long*/ pixbuf) {
  * Create the receiver's mask if necessary.
  */
 void createMask() {
+	if (OS.USE_CAIRO_SURFACE) {
+		int width = this.width;
+		int height = this.height;
+		int stride = Cairo.cairo_format_stride_for_width(Cairo.CAIRO_FORMAT_ARGB32, width);
+		byte[] srcData = new byte[stride * height];
+		int oa, or, og, ob, tr, tg, tb;
+		if (OS.BIG_ENDIAN) {
+			oa = 0; or = 1; og = 2; ob = 3;
+			tr = (transparentPixel >> 24) & 0xFF;
+			tg = (transparentPixel >> 16) & 0xFF;
+			tb = (transparentPixel >> 8) & 0xFF;
+		} else {
+			oa = 3; or = 2; og = 1; ob = 0;
+			tr = (transparentPixel >> 16) & 0xFF;
+			tg = (transparentPixel >> 8) & 0xFF;
+			tb = (transparentPixel >> 0) & 0xFF;
+		}
+		OS.memmove(srcData, this.surfaceData, srcData.length);
+		int offset = 0;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++, offset += 4) {
+				int a = srcData[offset + oa] & 0xFF;
+				int r = srcData[offset + or] & 0xFF;
+				int g = srcData[offset + og] & 0xFF;
+				int b = srcData[offset + ob] & 0xFF;
+				if (r == tr && g == tg && b == tb) {
+					a = r = g = b = 0;
+				} else {
+					a = 0xff;
+				}
+				srcData[offset + oa] = (byte)a;
+				srcData[offset + or] = (byte)r;
+				srcData[offset + og] = (byte)g;
+				srcData[offset + ob] = (byte)b;
+			}
+		}
+		OS.memmove(this.surfaceData, srcData, srcData.length);
+		return;
+	}
 	if (mask != 0) return;
 	mask = createMask(getImageData(), false);
 	if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -939,8 +978,7 @@ public ImageData getImageData() {
 		OS.memmove(srcData, this.surfaceData, srcData.length);
 		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
 		data = new ImageData(width, height, 32, palette, 4, srcData);
-		int offset = 0;
-		for (int y = 0; y < height; y++) {
+		for (int y = 0, offset = 0; y < height; y++) {
 			for (int x = 0; x < width; x++, offset += 4) {
 				int a = srcData[offset + oa] & 0xFF;
 				int r = srcData[offset + or] & 0xFF;
@@ -951,6 +989,18 @@ public ImageData getImageData() {
 					srcData[offset + 2] = (byte)(((r) / (float)a) * 0xFF);
 					srcData[offset + 1] = (byte)(((g) / (float)a) * 0xFF);
 					srcData[offset + 0] = (byte)(((b) / (float)a) * 0xFF);
+				}
+			}
+		}
+		/*
+		* TODO is it impossible to retrieve the RGB values when alpha is zero? If this is true
+		* then this code is necessary because the transparent pixel needs the RGB values to work. 
+		*/
+		if (transparentPixel != -1) {
+			byte[] alphaData = data.alphaData = new byte[width * height];
+			for (int y = 0, offset = 3, alphaOffset = 0; y < height; y++) {
+				for (int x = 0; x < width; x++, offset += 4) {
+					alphaData[alphaOffset++] = srcData[offset];
 				}
 			}
 		}
@@ -1000,8 +1050,8 @@ public ImageData getImageData() {
 			}
 			data.maskData = maskData;
 		}
+		data.transparentPixel = transparentPixel;
 	}
-	data.transparentPixel = transparentPixel;
 	data.alpha = alpha;
 	if (alpha == -1 && alphaData != null) {
 		data.alphaData = new byte[alphaData.length];
