@@ -8183,7 +8183,7 @@ public void setAlignment(int alignment) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @ since 3.8
+ * @since 3.8
  */
 public void setAlwaysShowScrollBars(boolean show) {
 	checkWidget();
