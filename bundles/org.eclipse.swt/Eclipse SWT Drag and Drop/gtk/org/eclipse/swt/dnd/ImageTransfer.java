@@ -129,22 +129,20 @@ public void javaToNative(Object object, TransferData transferData) {
  */
 public Object nativeToJava(TransferData transferData) {
 	ImageData imgData = null;
-	if (transferData.length > 0)
-	{
+	if (transferData.length > 0) {
 		int /*long*/ loader = OS.gdk_pixbuf_loader_new();
-		OS.gdk_pixbuf_loader_write(loader, transferData.pValue, transferData.length, null);
-		OS.gdk_pixbuf_loader_close(loader, null);
-		int /*long*/ pixbuf = OS.gdk_pixbuf_loader_get_pixbuf(loader);
-		if (pixbuf != 0) {
-			int /*long*/ [] pixmap_return = new int /*long*/ [1];
-			OS.gdk_pixbuf_render_pixmap_and_mask(pixbuf, pixmap_return, null, 0);
-			int /*long*/ handle = pixmap_return[0];
-			if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		try {
+			OS.gdk_pixbuf_loader_write(loader, transferData.pValue, transferData.length, null);
+			OS.gdk_pixbuf_loader_close(loader, null);
+			int /*long*/ pixbuf = OS.gdk_pixbuf_loader_get_pixbuf(loader);
+			if (pixbuf != 0) {
+				Image img = Image.gtk_new_from_pixbuf(Display.getCurrent(), SWT.BITMAP, pixbuf);
+				imgData = img.getImageData();
+				img.dispose();
+			}		
+		} finally {
 			OS.g_object_unref(loader);
-			Image img = Image.gtk_new(Display.getCurrent(), SWT.BITMAP, handle, 0);		
-			imgData = img.getImageData();
-			img.dispose();
-		}		
+		}
 	}
 	return imgData;
 }
