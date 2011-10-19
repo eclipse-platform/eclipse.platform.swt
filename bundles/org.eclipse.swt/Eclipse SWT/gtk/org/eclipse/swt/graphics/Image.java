@@ -637,6 +637,7 @@ void createFromPixbuf(int type, int /*long*/ pixbuf) {
 					int r = line[offset + 0] & 0xFF;
 					int g = line[offset + 1] & 0xFF;
 					int b = line[offset + 2] & 0xFF;
+					cairoLine[cairoOffset + oa] = (byte)0xFF;
 					cairoLine[cairoOffset + or] = (byte)r;
 					cairoLine[cairoOffset + og] = (byte)g;
 					cairoLine[cairoOffset + ob] = (byte)b;
@@ -976,7 +977,8 @@ public ImageData getImageData() {
 			oa = 3; or = 2; og = 1; ob = 0;
 		}
 		OS.memmove(srcData, this.surfaceData, srcData.length);
-		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+		//TODO make palette more sensible
+		PaletteData palette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
 		data = new ImageData(width, height, 32, palette, 4, srcData);
 		for (int y = 0, offset = 0; y < height; y++) {
 			for (int x = 0; x < width; x++, offset += 4) {
@@ -992,6 +994,7 @@ public ImageData getImageData() {
 				}
 			}
 		}
+		
 		/*
 		* TODO is it impossible to retrieve the RGB values when alpha is zero? If this is true
 		* then this code is necessary because the transparent pixel needs the RGB values to work. 
@@ -1003,6 +1006,10 @@ public ImageData getImageData() {
 					alphaData[alphaOffset++] = srcData[offset];
 				}
 			}
+		}
+		
+		for (int i = 3; i < srcData.length; i+= 4) {
+			srcData[i] = 0;
 		}
 	} else {
 		int[] w = new int[1], h = new int[1];
@@ -1190,7 +1197,7 @@ void init(ImageData image) {
 			destOrder = ImageData.LSB_FIRST;
 		}
 		byte[] buffer = image.data;
-		if (!palette.isDirect || image.depth != destDepth || stride != image.bytesPerLine || palette.redMask != redMask || palette.greenMask != greenMask || palette.blueMask != blueMask) {
+		if (!palette.isDirect || image.depth != destDepth || stride != image.bytesPerLine || palette.redMask != redMask || palette.greenMask != greenMask || palette.blueMask != blueMask || destOrder != image.getByteOrder()) {
 			buffer = new byte[stride * height];
 			if (palette.isDirect) {
 				ImageData.blit(ImageData.BLIT_SRC,
