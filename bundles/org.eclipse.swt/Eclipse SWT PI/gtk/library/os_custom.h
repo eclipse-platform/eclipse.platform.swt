@@ -124,6 +124,7 @@
 #define gtk_icon_theme_get_default_LIB LIB_GTK
 #define gtk_menu_shell_set_take_focus_LIB LIB_GTK
 #define gtk_window_set_keep_below_LIB LIB_GTK
+#define gtk_toolbar_set_orientation_LIB LIB_GTK
 #define gtk_tooltip_trigger_tooltip_query_LIB LIB_GTK
 #define gtk_tree_selection_count_selected_rows_LIB LIB_GTK
 #define gtk_tree_selection_get_selected_rows_LIB LIB_GTK
@@ -187,6 +188,7 @@
 #define gdk_cairo_region_LIB LIB_GDK
 #define gdk_cairo_create_LIB LIB_GDK
 #define gtk_enumerate_printers_LIB LIB_GTK
+#define gtk_orientable_set_orientation_LIB LIB_GTK
 #define gtk_page_setup_get_bottom_margin_LIB LIB_GTK
 #define gtk_page_setup_get_left_margin_LIB LIB_GTK
 #define gtk_page_setup_get_orientation_LIB LIB_GTK

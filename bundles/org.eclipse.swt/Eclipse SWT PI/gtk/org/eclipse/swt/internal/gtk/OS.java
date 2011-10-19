@@ -8610,6 +8610,20 @@ public static final void gtk_object_sink(int /*long*/ object) {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ * @param toolbar cast=(GtkOrientable *)
+ * @param orientation cast=(GtkOrientation)
+ */
+public static final native void _gtk_orientable_set_orientation(int /*long*/ orientable, int orientation);
+public static final void gtk_orientable_set_orientation(int /*long*/ orientable, int orientation) {
+	lock.lock();
+	try {
+		_gtk_orientable_set_orientation(orientable, orientation);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @method flags=dynamic */
 public static final native int /*long*/ _gtk_page_setup_new ();
 public static final int /*long*/ gtk_page_setup_new () {
@@ -11136,6 +11150,7 @@ public static final int /*long*/ gtk_toolbar_new() {
 	}
 }
 /**
+ * @method flags=dynamic
  * @param toolbar cast=(GtkToolbar *)
  * @param orientation cast=(GtkOrientation)
  */

@@ -895,6 +895,7 @@ typedef enum {
 	_1gtk_1notebook_1set_1show_1tabs_FUNC,
 	_1gtk_1notebook_1set_1tab_1pos_FUNC,
 	_1gtk_1object_1sink_FUNC,
+	_1gtk_1orientable_1set_1orientation_FUNC,
 	_1gtk_1page_1setup_1get_1bottom_1margin_FUNC,
 	_1gtk_1page_1setup_1get_1left_1margin_FUNC,
 	_1gtk_1page_1setup_1get_1orientation_FUNC,
