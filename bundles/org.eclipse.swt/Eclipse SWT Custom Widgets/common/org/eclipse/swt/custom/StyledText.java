@@ -6132,19 +6132,7 @@ void handleResize(Event event) {
 	clientAreaWidth = clientArea.width;
 	if (!alwaysShowScroll && ignoreResize != 0) return;
 	
-	/* Redraw the old or new right/bottom margin if needed */
-	if (oldWidth != clientAreaWidth) {
-		if (rightMargin > 0) {
-			int x = (oldWidth < clientAreaWidth ? oldWidth : clientAreaWidth) - rightMargin; 
-			super.redraw(x, 0, rightMargin, oldHeight, false);
-		}
-	}
-	if (oldHeight != clientAreaHeight) {
-		if (bottomMargin > 0) {
-			int y = (oldHeight < clientAreaHeight ? oldHeight : clientAreaHeight) - bottomMargin; 
-			super.redraw(0, y, oldWidth, bottomMargin, false);
-		}
-	}
+	redrawMargins(oldHeight, oldWidth);
 	if (wordWrap) {
 		if (oldWidth != clientAreaWidth) {
 			renderer.reset(0, content.getLineCount());
@@ -7431,6 +7419,21 @@ void redrawLinesBullet (int[] redrawLines) {
 		int height = renderer.getLineHeight(lineIndex);
 		int y = getLinePixel(lineIndex);
 		super.redraw(0, y, width, height, false);
+	}
+}
+void redrawMargins(int oldHeight, int oldWidth) {
+	/* Redraw the old or new right/bottom margin if needed */
+	if (oldWidth != clientAreaWidth) {
+		if (rightMargin > 0) {
+			int x = (oldWidth < clientAreaWidth ? oldWidth : clientAreaWidth) - rightMargin; 
+			super.redraw(x, 0, rightMargin, oldHeight, false);
+		}
+	}
+	if (oldHeight != clientAreaHeight) {
+		if (bottomMargin > 0) {
+			int y = (oldHeight < clientAreaHeight ? oldHeight : clientAreaHeight) - bottomMargin; 
+			super.redraw(0, y, oldWidth, bottomMargin, false);
+		}
 	}
 }
 /** 
@@ -9328,6 +9331,8 @@ void setScrollBars(boolean vertical) {
 	if (!isFixedLineHeight() || !alwaysShowScroll) vertical = true;
 	ScrollBar verticalBar = vertical ? getVerticalBar() : null;
 	ScrollBar horizontalBar = getHorizontalBar();
+	int oldHeight = clientAreaHeight;
+	int oldWidth = clientAreaWidth;
 	if (!alwaysShowScroll) {
 		if (verticalBar != null) verticalBar.setVisible(false);
 		if (horizontalBar != null) horizontalBar.setVisible(false);
@@ -9339,7 +9344,13 @@ void setScrollBars(boolean vertical) {
 		setScrollBar(horizontalBar, clientAreaWidth, renderer.getWidth(), leftMargin + rightMargin);
 		if (!alwaysShowScroll && horizontalBar.getVisible() && verticalBar != null) {
 			setScrollBar(verticalBar, clientAreaHeight, renderer.getHeight(), topMargin + bottomMargin);
+			if (verticalBar.getVisible()) {
+				setScrollBar(horizontalBar, clientAreaWidth, renderer.getWidth(), leftMargin + rightMargin);
+			}
 		}
+	}
+	if (!alwaysShowScroll) {
+		redrawMargins(oldHeight, oldWidth);
 	}
 	ignoreResize--;
 }
