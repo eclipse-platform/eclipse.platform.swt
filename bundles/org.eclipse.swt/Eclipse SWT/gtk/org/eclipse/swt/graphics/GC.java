@@ -812,8 +812,8 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 			if (pattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			if (srcWidth != destWidth || srcHeight != destHeight) {
 				/*
-				* Bug in Cairo.  When drawing the image streched with an interpolation
-				* alghorithm, the edges of the image are faded.  This is not a bug, but
+				* Bug in Cairo.  When drawing the image stretched with an interpolation
+				* algorithm, the edges of the image are faded.  This is not a bug, but
 				* it is not desired.  To avoid the faded edges, it should be possible to
 				* use cairo_pattern_set_extend() to set the pattern extend to either
 				* CAIRO_EXTEND_REFLECT or CAIRO_EXTEND_PAD, but these are not implemented
@@ -823,10 +823,13 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 				* the original image in every quadrant (with an appropriate transform) and
 				* use this image as the pattern.
 				* 
-				* NOTE: For some reaons, it is necessary to use CAIRO_EXTEND_PAD with
+				* NOTE: For some reason, it is necessary to use CAIRO_EXTEND_PAD with
 				* the image that was created or the edges are still faded.
+				* 
+				* NOTE: Cairo.CAIRO_EXTEND_PAD works on Cairo 1.8.x and greater.
 				*/
-				if (Cairo.cairo_version () >= Cairo.CAIRO_VERSION_ENCODE(1, 4, 0)) {
+				int version = Cairo.cairo_version ();
+				if (version >= Cairo.CAIRO_VERSION_ENCODE(1, 4, 0) && version < Cairo.CAIRO_VERSION_ENCODE(1, 8, 0)) {
 					int /*long*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, imgWidth * 3, imgHeight * 3);
 					int /*long*/ cr = Cairo.cairo_create(surface);
 					Cairo.cairo_set_source_surface(cr, srcImage.surface, imgWidth, imgHeight);
@@ -860,8 +863,9 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 					double[] matrix = new double[6]; 
 					Cairo.cairo_matrix_init_translate(matrix, imgWidth, imgHeight);
 					Cairo.cairo_pattern_set_matrix(pattern, matrix);
+				} else if (version >= Cairo.CAIRO_VERSION_ENCODE(1, 8, 0)) {
+					Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_PAD);
 				}
-//				Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_REFLECT);
 			}
 			Cairo.cairo_pattern_set_filter(pattern, filter);
 			Cairo.cairo_set_source(cairo, pattern);
