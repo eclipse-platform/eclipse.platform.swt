@@ -112,7 +112,7 @@ public final class Image extends Resource implements Drawable {
 	 */
 	public int /*long*/ mask;
 
-	public int /*long*/ surface, surfaceData;
+	public int /*long*/ surface;
 	
 	/**
 	 * specifies the transparent pixel
@@ -596,20 +596,18 @@ void createFromPixbuf(int type, int /*long*/ pixbuf) {
 		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
 		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
 		int format = hasAlpha ? Cairo.CAIRO_FORMAT_ARGB32 : Cairo.CAIRO_FORMAT_RGB24;
-		int cairoStride = Cairo.cairo_format_stride_for_width(format, width);
-		int /*long*/ data = surfaceData = OS.g_malloc(cairoStride * height);
-		if (surfaceData == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		surface = Cairo.cairo_image_surface_create_for_data(surfaceData, format, width, height, cairoStride);
+		surface = Cairo.cairo_image_surface_create(format, width, height);
 		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		byte[] line = new byte[stride];
+		int /*long*/ data = Cairo.cairo_image_surface_get_data(surface);
+		int cairoStride = Cairo.cairo_image_surface_get_stride(surface);
 		int oa = 0, or = 0, og = 0, ob = 0;
 		if (OS.BIG_ENDIAN) {
 			oa = 0; or = 1; og = 2; ob = 3;
 		} else {
 			oa = 3; or = 2; og = 1; ob = 0;
 		}
+		byte[] line = new byte[stride];
 		if (hasAlpha) {
-			byte[] cairoLine = new byte[cairoStride];
 			alphaData = new byte[width * height];
 			for (int y = 0, alphaOffset = 0; y < height; y++) {
 				OS.memmove(line, pixels + (y * stride), stride);
@@ -621,13 +619,13 @@ void createFromPixbuf(int type, int /*long*/ pixbuf) {
 					g = (g + (g >> 8)) >> 8;
 					int b = ((line[offset + 2] & 0xFF) * a) + 128;
 					b = (b + (b >> 8)) >> 8;
-					cairoLine[offset + oa] = (byte)a;
-					cairoLine[offset + or] = (byte)r;
-					cairoLine[offset + og] = (byte)g;
-					cairoLine[offset + ob] = (byte)b;
+					line[offset + oa] = (byte)a;
+					line[offset + or] = (byte)r;
+					line[offset + og] = (byte)g;
+					line[offset + ob] = (byte)b;
 					alphaData[alphaOffset++] = (byte)a;
 				}
-				OS.memmove(data + (y * cairoStride), cairoLine, cairoStride);
+				OS.memmove(data + (y * stride), line, stride);
 			}
 		} else {
 			byte[] cairoLine = new byte[cairoStride];
@@ -637,7 +635,6 @@ void createFromPixbuf(int type, int /*long*/ pixbuf) {
 					int r = line[offset + 0] & 0xFF;
 					int g = line[offset + 1] & 0xFF;
 					int b = line[offset + 2] & 0xFF;
-					cairoLine[cairoOffset + oa] = (byte)0xFF;
 					cairoLine[cairoOffset + or] = (byte)r;
 					cairoLine[cairoOffset + og] = (byte)g;
 					cairoLine[cairoOffset + ob] = (byte)b;
@@ -684,8 +681,8 @@ void createMask() {
 	if (OS.USE_CAIRO_SURFACE) {
 		int width = this.width;
 		int height = this.height;
-		int stride = Cairo.cairo_format_stride_for_width(Cairo.CAIRO_FORMAT_ARGB32, width);
-		byte[] srcData = new byte[stride * height];
+		int stride = Cairo.cairo_image_surface_get_stride(surface);
+		int /*long*/ surfaceData = Cairo.cairo_image_surface_get_data(surface);
 		int oa, or, og, ob, tr, tg, tb;
 		if (OS.BIG_ENDIAN) {
 			oa = 0; or = 1; og = 2; ob = 3;
@@ -698,7 +695,8 @@ void createMask() {
 			tg = (transparentPixel >> 8) & 0xFF;
 			tb = (transparentPixel >> 0) & 0xFF;
 		}
-		OS.memmove(srcData, this.surfaceData, srcData.length);
+		byte[] srcData = new byte[stride * height];
+		OS.memmove(srcData, surfaceData, srcData.length);
 		int offset = 0;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++, offset += 4) {
@@ -717,7 +715,7 @@ void createMask() {
 				srcData[offset + ob] = (byte)b;
 			}
 		}
-		OS.memmove(this.surfaceData, srcData, srcData.length);
+		OS.memmove(surfaceData, srcData, srcData.length);
 		return;
 	}
 	if (mask != 0) return;
@@ -847,9 +845,9 @@ void createSurface() {
 				offset += stride;
 			}
 		}
-		surfaceData = OS.g_malloc(stride * height);
-		OS.memmove(surfaceData, pixels, stride * height);
-		surface = Cairo.cairo_image_surface_create_for_data(surfaceData, Cairo.CAIRO_FORMAT_ARGB32, width, height, stride);
+		surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, width, height);
+		int /*long*/ data = Cairo.cairo_image_surface_get_data(surface);
+		OS.memmove(data, pixels, stride * height);
 		OS.g_object_unref(pixbuf);
 	} else {
 		int /*long*/ xDisplay = OS.GDK_DISPLAY();
@@ -875,8 +873,7 @@ void destroy() {
 	if (pixmap != 0) OS.g_object_unref(pixmap);
 	if (mask != 0) OS.g_object_unref(mask);
 	if (surface != 0) Cairo.cairo_surface_destroy(surface);
-	if (surfaceData != 0) OS.g_free(surfaceData);
-	surfaceData = surface = pixmap = mask = 0;
+	surface = pixmap = mask = 0;
 	memGC = null;
 }
 
@@ -966,49 +963,52 @@ public ImageData getImageData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	ImageData data;
 	if (OS.USE_CAIRO_SURFACE) {
-		int width = this.width;
-		int height = this.height;
-		int stride = Cairo.cairo_format_stride_for_width(Cairo.CAIRO_FORMAT_ARGB32, width);
-		byte[] srcData = new byte[stride * height];
+		int format = Cairo.cairo_image_surface_get_format(surface);
+		int width = Cairo.cairo_image_surface_get_width(surface);
+		int height = Cairo.cairo_image_surface_get_height(surface);
+		int stride = Cairo.cairo_image_surface_get_stride(surface);
+		int /*long*/ surfaceData = Cairo.cairo_image_surface_get_data(surface);
+		boolean hasAlpha = format == Cairo.CAIRO_FORMAT_ARGB32;
 		int oa, or, og, ob;
 		if (OS.BIG_ENDIAN) {
 			oa = 0; or = 1; og = 2; ob = 3;
 		} else {
 			oa = 3; or = 2; og = 1; ob = 0;
 		}
-		OS.memmove(srcData, this.surfaceData, srcData.length);
+		byte[] srcData = new byte[stride * height];
+		OS.memmove(srcData, surfaceData, srcData.length);
 		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
 		data = new ImageData(width, height, 32, palette, 4, srcData);
-		for (int y = 0, offset = 0; y < height; y++) {
-			for (int x = 0; x < width; x++, offset += 4) {
-				int a = srcData[offset + oa] & 0xFF;
-				int r = srcData[offset + or] & 0xFF;
-				int g = srcData[offset + og] & 0xFF;
-				int b = srcData[offset + ob] & 0xFF;
-				srcData[offset + 0] = (byte)a;
-				if (a != 0) {
-					srcData[offset + 1] = (byte)(((r) / (float)a) * 0xFF);
-					srcData[offset + 2] = (byte)(((g) / (float)a) * 0xFF);
-					srcData[offset + 3] = (byte)(((b) / (float)a) * 0xFF);
-				}
-			}
-		}
-		
-		/*
-		* TODO is it impossible to retrieve the RGB values when alpha is zero? If this is true
-		* then this code is necessary because the transparent pixel needs the RGB values to work. 
-		*/
-		if (transparentPixel != -1) {
+		if (hasAlpha) {
 			byte[] alphaData = data.alphaData = new byte[width * height];
-			for (int y = 0, offset = 3, alphaOffset = 0; y < height; y++) {
+			for (int y = 0, offset = 0, alphaOffset = 0; y < height; y++) {
 				for (int x = 0; x < width; x++, offset += 4) {
-					alphaData[alphaOffset++] = srcData[offset];
+					int a = srcData[offset + oa] & 0xFF;
+					int r = srcData[offset + or] & 0xFF;
+					int g = srcData[offset + og] & 0xFF;
+					int b = srcData[offset + ob] & 0xFF;
+					srcData[offset + 0] = 0;
+					alphaData[alphaOffset++] = (byte)a;
+					if (a != 0) {
+						//TODO write this without floating point math
+						srcData[offset + 1] = (byte)(((r) / (float)a) * 0xFF);
+						srcData[offset + 2] = (byte)(((g) / (float)a) * 0xFF);
+						srcData[offset + 3] = (byte)(((b) / (float)a) * 0xFF);
+					}
 				}
 			}
-		}
-		
-		for (int i = 0; i < srcData.length; i+= 4) {
-			srcData[i] = 0;
+		} else {
+			for (int y = 0, offset = 0; y < height; y++) {
+				for (int x = 0; x < width; x++, offset += 4) {
+					byte r = srcData[offset + or];
+					byte g = srcData[offset + og];
+					byte b = srcData[offset + ob];
+					srcData[offset + 0] = 0;
+					srcData[offset + 1] = r;
+					srcData[offset + 2] = g;
+					srcData[offset + 3] = b;
+				}
+			}
 		}
 	} else {
 		int[] w = new int[1], h = new int[1];
@@ -1057,11 +1057,11 @@ public ImageData getImageData() {
 			data.maskData = maskData;
 		}
 		data.transparentPixel = transparentPixel;
-	}
-	data.alpha = alpha;
-	if (alpha == -1 && alphaData != null) {
-		data.alphaData = new byte[alphaData.length];
-		System.arraycopy(alphaData, 0, data.alphaData, 0, alphaData.length);
+		data.alpha = alpha;
+		if (alpha == -1 && alphaData != null) {
+			data.alphaData = new byte[alphaData.length];
+			System.arraycopy(alphaData, 0, data.alphaData, 0, alphaData.length);
+		}
 	}
 	return data;
 }
@@ -1140,11 +1140,10 @@ void init(int width, int height) {
 
 	/* Create the pixmap */
 	if (OS.USE_CAIRO_SURFACE) {
-		int stride = Cairo.cairo_format_stride_for_width(Cairo.CAIRO_FORMAT_RGB24, width);
-		int /*long*/ data = surfaceData = OS.g_malloc(stride * height);
-		if (surfaceData == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		surface = Cairo.cairo_image_surface_create_for_data(surfaceData, Cairo.CAIRO_FORMAT_RGB24, width, height, stride);
+		surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_RGB24, width, height);
 		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int stride = Cairo.cairo_image_surface_get_stride(surface);
+		int /*long*/ data = Cairo.cairo_image_surface_get_data(surface);
 		OS.memset(data, 0xff, stride * height);
 		this.width = width;
 		this.height = height;
@@ -1175,11 +1174,12 @@ void init(ImageData image) {
 		((image.depth == 8) || (image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect)))
 			SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	if (OS.USE_CAIRO_SURFACE) {
-		int stride = Cairo.cairo_format_stride_for_width(Cairo.CAIRO_FORMAT_ARGB32, width);
-		int /*long*/ data = surfaceData = OS.g_malloc(stride * height);
-		if (surfaceData == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		surface = Cairo.cairo_image_surface_create_for_data(surfaceData, Cairo.CAIRO_FORMAT_ARGB32, width, height, stride);
+		boolean hasAlpha = image.transparentPixel != -1 || image.alpha != -1 || image.maskData != null || image.alphaData != null;
+		int format = hasAlpha ? Cairo.CAIRO_FORMAT_ARGB32 : Cairo.CAIRO_FORMAT_RGB24;
+		surface = Cairo.cairo_image_surface_create(format, width, height);
 		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int stride = Cairo.cairo_image_surface_get_stride(surface);
+		int /*long*/ data = Cairo.cairo_image_surface_get_data(surface);
 		int oa = 0, or = 0, og = 0, ob = 0;
 		int redMask, greenMask, blueMask, destDepth = 32, destOrder;
 		if (OS.BIG_ENDIAN) {
@@ -1295,12 +1295,6 @@ void init(ImageData image) {
 						buffer[offset + or] = (byte)r;
 						buffer[offset + og] = (byte)g;
 						buffer[offset + ob] = (byte)b;
-					}
-				}
-			} else {
-				for (int y = 0, offset = 0; y < height; y++) {
-					for (int x=0; x<width; x++, offset += 4) {
-						buffer[offset + oa] = (byte)0xFF;
 					}
 				}
 			}

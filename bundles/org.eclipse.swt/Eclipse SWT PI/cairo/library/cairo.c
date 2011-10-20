@@ -559,6 +559,46 @@ JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1image_1surface_1create_1for_1da
 }
 #endif
 
+#ifndef NO__1cairo_1image_1surface_1get_1data
+JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1image_1surface_1get_1data)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1image_1surface_1get_1data_FUNC);
+/*
+	rc = (jintLong)cairo_image_surface_get_data((cairo_surface_t *)arg0);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_image_surface_get_data)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(cairo_surface_t *))fp)((cairo_surface_t *)arg0);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1image_1surface_1get_1data_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1cairo_1image_1surface_1get_1format
+JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1image_1surface_1get_1format)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1image_1surface_1get_1format_FUNC);
+/*
+	rc = (jint)cairo_image_surface_get_format((cairo_surface_t *)arg0);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_image_surface_get_format)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(cairo_surface_t *))fp)((cairo_surface_t *)arg0);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1image_1surface_1get_1format_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1cairo_1image_1surface_1get_1height
 JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1image_1surface_1get_1height)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -567,6 +607,26 @@ JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1image_1surface_1get_1height)
 	Cairo_NATIVE_ENTER(env, that, _1cairo_1image_1surface_1get_1height_FUNC);
 	rc = (jint)cairo_image_surface_get_height((cairo_surface_t *)arg0);
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1image_1surface_1get_1height_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1cairo_1image_1surface_1get_1stride
+JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1image_1surface_1get_1stride)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1image_1surface_1get_1stride_FUNC);
+/*
+	rc = (jint)cairo_image_surface_get_stride((cairo_surface_t *)arg0);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_image_surface_get_stride)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(cairo_surface_t *))fp)((cairo_surface_t *)arg0);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1image_1surface_1get_1stride_FUNC);
 	return rc;
 }
 #endif

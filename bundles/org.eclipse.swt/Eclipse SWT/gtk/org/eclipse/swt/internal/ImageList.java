@@ -12,6 +12,7 @@ package org.eclipse.swt.internal;
 
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 
@@ -28,35 +29,56 @@ public ImageList() {
 public static int /*long*/ createPixbuf(Image image) {
 	int /*long*/ pixbuf;
 	if (OS.USE_CAIRO_SURFACE) {
-		Rectangle bounds = image.getBounds();
-		int w = bounds.width, h = bounds.height;
-		pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, true, 8, w, h);
+		int /*long*/ surface = image.surface;
+		int format = Cairo.cairo_image_surface_get_format(surface);
+		int width = Cairo.cairo_image_surface_get_width(surface);
+		int height = Cairo.cairo_image_surface_get_height(surface);
+		boolean hasAlpha = format == Cairo.CAIRO_FORMAT_ARGB32;
+		pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, hasAlpha, 8, width, height);
 		if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 		int stride = OS.gdk_pixbuf_get_rowstride (pixbuf);
 		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels (pixbuf);
-		byte[] line = new byte[stride];
 		int oa, or, og, ob;
 		if (OS.BIG_ENDIAN) {
 			oa = 0; or = 1; og = 2; ob = 3;
 		} else {
 			oa = 3; or = 2; og = 1; ob = 0;
 		}
-		int /*long*/ surfaceData = image.surfaceData;
-		for (int y = 0; y < h; y++) {
-			OS.memmove (line, surfaceData + (y * stride), stride);
-			for (int x = 0, offset = 0; x < w; x++, offset += 4) {
-				int a = line[offset + oa] & 0xFF;
-				int r = line[offset + or] & 0xFF;
-				int g = line[offset + og] & 0xFF;
-				int b = line[offset + ob] & 0xFF;
-				line[offset + 3] = (byte)a;
-				if (a != 0) {
-					line[offset + 0] = (byte)(((r) / (float)a) * 0xFF);
-					line[offset + 1] = (byte)(((g) / (float)a) * 0xFF);
-					line[offset + 2] = (byte)(((b) / (float)a) * 0xFF);
+		byte[] line = new byte[stride];
+		int /*long*/ surfaceData = Cairo.cairo_image_surface_get_data(surface);
+		if (hasAlpha) {
+			for (int y = 0; y < height; y++) {
+				OS.memmove (line, surfaceData + (y * stride), stride);
+				for (int x = 0, offset = 0; x < width; x++, offset += 4) {
+					int a = line[offset + oa] & 0xFF;
+					int r = line[offset + or] & 0xFF;
+					int g = line[offset + og] & 0xFF;
+					int b = line[offset + ob] & 0xFF;
+					line[offset + 3] = (byte)a;
+					if (a != 0) {
+						//TODO write this without floating point math
+						line[offset + 0] = (byte)(((r) / (float)a) * 0xFF);
+						line[offset + 1] = (byte)(((g) / (float)a) * 0xFF);
+						line[offset + 2] = (byte)(((b) / (float)a) * 0xFF);
+					}
 				}
+				OS.memmove (pixels + (y * stride), line, stride);
 			}
-			OS.memmove (pixels + (y * stride), line, stride);
+		} else {
+			int cairoStride = Cairo.cairo_image_surface_get_stride(surface);
+			byte[] cairoLine = new byte[cairoStride];
+			for (int y = 0; y < height; y++) {
+				OS.memmove (cairoLine, surfaceData + (y * cairoStride), cairoStride);
+				for (int x = 0, offset = 0, cairoOffset = 0; x < width; x++, offset += 3, cairoOffset += 4) {
+					byte r = cairoLine[cairoOffset + or];
+					byte g = cairoLine[cairoOffset + og];
+					byte b = cairoLine[cairoOffset + ob];
+					line[offset + 0] = r;
+					line[offset + 1] = g;
+					line[offset + 2] = b;
+				}
+				OS.memmove (pixels + (y * stride), line, stride);
+			}
 		}
 	} else {
 		int [] w = new int [1], h = new int [1];

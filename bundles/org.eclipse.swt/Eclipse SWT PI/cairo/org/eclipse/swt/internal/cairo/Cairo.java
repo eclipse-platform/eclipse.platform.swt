@@ -552,6 +552,32 @@ public static final int /*long*/ cairo_image_surface_create_for_data(int /*long*
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ * @param surface cast=(cairo_surface_t *)
+ */
+public static final native int /*long*/ _cairo_image_surface_get_data(int /*long*/ surface);
+public static final int /*long*/ cairo_image_surface_get_data(int /*long*/ surface) {
+	lock.lock();
+	try {
+		return _cairo_image_surface_get_data(surface);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param surface cast=(cairo_surface_t *)
+ */
+public static final native int _cairo_image_surface_get_format(int /*long*/ surface);
+public static final int cairo_image_surface_get_format(int /*long*/ surface) {
+	lock.lock();
+	try {
+		return _cairo_image_surface_get_format(surface);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param surface cast=(cairo_surface_t *) */
 public static final native int _cairo_image_surface_get_height(int /*long*/ surface);
 public static final int cairo_image_surface_get_height(int /*long*/ surface) {
@@ -568,6 +594,19 @@ public static final int cairo_image_surface_get_width(int /*long*/ surface) {
 	lock.lock();
 	try {
 		return _cairo_image_surface_get_width(surface);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param surface cast=(cairo_surface_t *)
+ */
+public static final native int _cairo_image_surface_get_stride(int /*long*/ surface);
+public static final int cairo_image_surface_get_stride(int /*long*/ surface) {
+	lock.lock();
+	try {
+		return _cairo_image_surface_get_stride(surface);
 	} finally {
 		lock.unlock();
 	}
