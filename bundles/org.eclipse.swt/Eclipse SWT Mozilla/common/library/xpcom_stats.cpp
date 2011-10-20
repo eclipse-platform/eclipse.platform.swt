@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 226;
-int XPCOM_nativeFunctionCallCount[226];
+int XPCOM_nativeFunctionCount = 227;
+int XPCOM_nativeFunctionCallCount[227];
 char * XPCOM_nativeFunctionNames[] = {
 #ifndef JNI64
 	"_1Call__I",
@@ -217,6 +217,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IIII_3J",
 #else
 	"_1VtblCall__IJII_3J",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIIJ",
+#else
+	"_1VtblCall__IJIJ",
 #endif
 #ifndef JNI64
 	"_1VtblCall__IIIJJ",
