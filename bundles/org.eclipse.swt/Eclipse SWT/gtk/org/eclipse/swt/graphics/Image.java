@@ -246,6 +246,122 @@ public Image(Device device, Image srcImage, int flag) {
 	}
 	device = this.device;
 	this.type = srcImage.type;
+	
+	if (OS.USE_CAIRO_SURFACE) {
+		if (flag != SWT.IMAGE_DISABLE) transparentPixel = srcImage.transparentPixel;
+		alpha = srcImage.alpha;
+		if (srcImage.alphaData != null) {
+			alphaData = new byte[srcImage.alphaData.length];
+			System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
+		}
+	
+		int /*long*/ imageSurface = srcImage.surface;
+		int format = Cairo.cairo_image_surface_get_format(imageSurface);
+		int width = this.width = Cairo.cairo_image_surface_get_width(imageSurface);
+		int height = this.height = Cairo.cairo_image_surface_get_height(imageSurface);
+		boolean hasAlpha = format == Cairo.CAIRO_FORMAT_ARGB32;
+		surface = Cairo.cairo_image_surface_create(format, width, height);
+		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int /*long*/ cairo = Cairo.cairo_create(surface);
+		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SRC);
+		Cairo.cairo_set_source_surface (cairo, imageSurface, 0, 0);
+		Cairo.cairo_paint (cairo);
+		Cairo.cairo_destroy(cairo);
+		if (flag != SWT.IMAGE_COPY) {
+			int stride = Cairo.cairo_image_surface_get_stride(surface);
+			int /*long*/ data = Cairo.cairo_image_surface_get_data(surface);
+			int oa, or, og, ob;
+			if (OS.BIG_ENDIAN) {
+				oa = 0; or = 1; og = 2; ob = 3;
+			} else {
+				oa = 3; or = 2; og = 1; ob = 0;
+			}
+			switch (flag) {
+				case SWT.IMAGE_DISABLE: {
+					Color zeroColor = device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+					RGB zeroRGB = zeroColor.getRGB();
+					int zeroRed = zeroRGB.red;
+					int zeroGreen = zeroRGB.green;
+					int zeroBlue = zeroRGB.blue;
+					Color oneColor = device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+					RGB oneRGB = oneColor.getRGB();
+					int oneRed = oneRGB.red;
+					int oneGreen = oneRGB.green;
+					int oneBlue = oneRGB.blue;
+					byte[] line = new byte[stride];
+					for (int y=0; y<height; y++) {
+						OS.memmove(line, data + (y * stride), stride);
+						for (int x=0, offset=0; x<width; x++, offset += 4) {
+							int a = line[offset + oa] & 0xFF;
+							int r = line[offset + or] & 0xFF;
+							int g = line[offset + og] & 0xFF;
+							int b = line[offset + ob] & 0xFF;
+							if (hasAlpha && a != 0) {
+								//TODO write this without floating point math
+								r = (int)((r / (float)a) * 0xFF);
+								g = (int)((g / (float)a) * 0xFF);
+								b = (int)((b / (float)a) * 0xFF);
+							}
+							int intensity = r * r + g * g + b * b;
+							if (intensity < 98304) {
+								r = zeroRed;
+								g = zeroGreen;
+								b = zeroBlue;
+							} else {
+								r = oneRed;
+								g = oneGreen;
+								b = oneBlue;
+							}
+							if (hasAlpha) {
+								/* pre-multiplied alpha */
+								r = (r * a) + 128;
+								r = (r + (r >> 8)) >> 8;
+								g = (g * a) + 128;
+								g = (g + (g >> 8)) >> 8;
+								b = (b * a) + 128;
+								b = (b + (b >> 8)) >> 8;
+							}
+							line[offset + or] = (byte)r;
+							line[offset + og] = (byte)g;
+							line[offset + ob] = (byte)b;
+						}
+						OS.memmove(data + (y * stride), line, stride);
+					}
+					break;
+				}
+				case SWT.IMAGE_GRAY: {			
+					byte[] line = new byte[stride];
+					for (int y=0; y<height; y++) {
+						OS.memmove(line, data + (y * stride), stride);
+						for (int x=0, offset = 0; x<width; x++, offset += 4) {
+							int a = line[offset + oa] & 0xFF;
+							int r = line[offset + or] & 0xFF;
+							int g = line[offset + og] & 0xFF;
+							int b = line[offset + ob] & 0xFF;
+							if (hasAlpha && a != 0) {
+								//TODO write this without floating point math
+								r = (int)((r / (float)a) * 0xFF);
+								g = (int)((g / (float)a) * 0xFF);
+								b = (int)((b / (float)a) * 0xFF);
+							}
+							int intensity = (r+r+g+g+g+g+g+b) >> 3;
+							if (hasAlpha) {
+								/* pre-multiplied alpha */
+								intensity = (intensity * a) + 128;
+								intensity = (intensity + (intensity >> 8)) >> 8;
+							}
+							line[offset+or] = line[offset+og] = line[offset+ob] = (byte)intensity;
+						}
+						OS.memmove(data + (y * stride), line, stride);
+					}
+					break;
+				}
+			}
+		}
+		init();
+		return;
+	}
 
 	/* Get source image size */
 	int[] w = new int[1], h = new int[1];
