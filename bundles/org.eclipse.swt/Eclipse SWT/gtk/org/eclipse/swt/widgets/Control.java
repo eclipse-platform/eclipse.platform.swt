@@ -109,6 +109,29 @@ void deregister () {
 }
 
 void drawBackground (Control control, int /*long*/ window, int /*long*/ region, int x, int y, int width, int height) {
+	if (OS.USE_CAIRO_SURFACE) {
+		int /*long*/ cairo = OS.gdk_cairo_create(window);
+		if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
+		if (region != 0) OS.gdk_cairo_region(cairo, region);
+		if (control.backgroundImage != null) {
+			int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface (control.backgroundImage.surface);
+			if (pattern == 0) error (SWT.ERROR_NO_HANDLES);
+			Cairo.cairo_pattern_set_extend (pattern, Cairo.CAIRO_EXTEND_REPEAT);
+			if ((style & SWT.MIRRORED) != 0) {
+				double[] matrix = {-1, 0, 0, 1, 0, 0};
+				Cairo.cairo_pattern_set_matrix(pattern, matrix);
+			}
+			Cairo.cairo_set_source (cairo, pattern);
+			Cairo.cairo_pattern_destroy (pattern);
+		} else {
+			GdkColor color = control.getBackgroundColor ();
+			Cairo.cairo_set_source_rgba (cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, 1);
+		}
+		Cairo.cairo_rectangle (cairo, x, y, width, height);
+		Cairo.cairo_fill (cairo);
+		Cairo.cairo_destroy(cairo);
+		return;
+	}
 	int /*long*/ gdkGC = OS.gdk_gc_new (window);
 	if (region != 0) OS.gdk_gc_set_clip_region (gdkGC, region);
 	if (control.backgroundImage != null) {
@@ -3105,7 +3128,7 @@ int /*long*/ gtk_realize (int /*long*/ widget) {
 		OS.gtk_im_context_set_client_window (imHandle, window);
 	}
 	if (backgroundImage != null) {
-		setBackgroundPixmap (backgroundImage.pixmap);
+		setBackgroundPixmap (backgroundImage);
 	}
 	return 0;
 }
@@ -3133,7 +3156,7 @@ int /*long*/ gtk_show_help (int /*long*/ widget, int /*long*/ helpType) {
 
 int /*long*/ gtk_style_set (int /*long*/ widget, int /*long*/ previousStyle) {
 	if (backgroundImage != null) {
-		setBackgroundPixmap (backgroundImage.pixmap);
+		setBackgroundPixmap (backgroundImage);
 	}
 	return 0;
 }
@@ -3763,7 +3786,7 @@ public void setBackgroundImage (Image image) {
 	if (image == backgroundImage) return;
 	this.backgroundImage = image;
 	if (backgroundImage != null) {
-		setBackgroundPixmap (backgroundImage.pixmap);
+		setBackgroundPixmap (backgroundImage);
 		redrawWidget (0, 0, 0, 0, true, false, false);
 	} else {
 		setWidgetBackground ();
@@ -3771,9 +3794,15 @@ public void setBackgroundImage (Image image) {
 	redrawChildren ();
 }
 
-void setBackgroundPixmap (int /*long*/ pixmap) {
+void setBackgroundPixmap (Image image) {
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
-	if (window != 0) OS.gdk_window_set_back_pixmap (window, pixmap, false);
+	if (window != 0) {
+		if (image.pixmap != 0) {
+			OS.gdk_window_set_back_pixmap (window, image.pixmap, false);
+		} else if (image.surface != 0) {
+			//TODO we need to either create xlib surfaces for opaque images in Image.java or create a pixmap from the surface
+		}
+	}
 }
 
 /**
