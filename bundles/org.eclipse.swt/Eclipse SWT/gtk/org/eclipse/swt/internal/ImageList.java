@@ -28,7 +28,7 @@ public ImageList() {
 
 public static int /*long*/ createPixbuf(Image image) {
 	int /*long*/ pixbuf;
-	if (OS.USE_CAIRO_SURFACE) {
+	if (OS.USE_CAIRO) {
 		int /*long*/ surface = image.surface;
 		int format = Cairo.cairo_image_surface_get_format(surface);
 		int width = Cairo.cairo_image_surface_get_width(surface);

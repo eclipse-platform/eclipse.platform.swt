@@ -448,6 +448,7 @@ public void copyArea(Image image, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	//TODO fix for USE_CAIRO
 	Rectangle rect = image.getBounds();
 	int /*long*/ gdkGC = OS.gdk_gc_new(image.pixmap);
 	if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -497,6 +498,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - srcX, deltaY = destY - srcY;
 	if (deltaX == 0 && deltaY == 0) return;
+	//TODO fix for USE_CAIRO
 	int /*long*/ drawable = data.drawable;
 	if (data.image == null && paint) OS.gdk_gc_set_exposures(handle, true);
 	OS.gdk_draw_drawable(drawable, handle, drawable, srcX, srcY, destX, destY, width, height);
@@ -562,8 +564,8 @@ void destroy() {
 	if (data.disposeCairo) {
 		int /*long*/ cairo = data.cairo;
 		if (cairo != 0) Cairo.cairo_destroy(cairo);
-		data.cairo = 0;
 	}
+	data.cairo = 0;
 
 	/* Free resources */
 	int /*long*/ clipRgn = data.clipRgn;
@@ -2290,15 +2292,10 @@ public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	/* Calculate visible bounds in device space */
 	int x = 0, y = 0, width = 0, height = 0;
-	if (data.width != -1 && data.height != -1) {
-		width = data.width;
-		height = data.height;
-	} else {
-		int[] w = new int[1], h = new int[1];
-		OS.gdk_drawable_get_size(data.drawable, w, h);
-		width = w[0];
-		height = h[0];
-	}
+	int[] w = new int[1], h = new int[1];
+	getSize(w, h);
+	width = w[0];
+	height = h[0];
 	/* Intersect visible bounds with clipping in device space and then convert then to user space */
 	int /*long*/ cairo = data.cairo;
 	int /*long*/ clipRgn = data.clipRgn;
@@ -2366,15 +2363,10 @@ public void getClipping(Region region) {
 	int /*long*/ clipRgn = data.clipRgn;
 	if (clipRgn == 0) {
 		GdkRectangle rect = new GdkRectangle();
-		if (data.width != -1 && data.height != -1) {
-			rect.width = data.width;
-			rect.height = data.height;
-		} else {
-			int[] width = new int[1], height = new int[1];
-			OS.gdk_drawable_get_size(data.drawable, width, height);
-			rect.width = width[0];
-			rect.height = height[0];
-		}
+		int[] width = new int[1], height = new int[1];
+		getSize(width, height);
+		rect.width = width[0];
+		rect.height = height[0];
 		OS.gdk_region_union_with_rect(clipping, rect);
 	} else {
 		/* Convert clipping to device space if needed */
@@ -2677,6 +2669,29 @@ public int getStyle () {
 	return data.style;
 }
 
+void getSize(int[] width, int[] height) {
+	if (data.width != -1 && data.height != -1) {
+		width[0] = data.width;
+		height[0] = data.height;
+		return;
+	}
+	if (OS.USE_CAIRO) {
+		int /*long*/ surface = Cairo.cairo_get_target(handle);
+		switch (Cairo.cairo_surface_get_type(surface)) {
+			case Cairo.CAIRO_SURFACE_TYPE_IMAGE:
+				width[0] = Cairo.cairo_image_surface_get_width(surface);
+				height[0] = Cairo.cairo_image_surface_get_height(surface);
+				break;
+			case Cairo.CAIRO_SURFACE_TYPE_XLIB: 
+				width[0] = Cairo.cairo_xlib_surface_get_width(surface);
+				height[0] = Cairo.cairo_xlib_surface_get_height(surface);
+				break;
+		}
+	} else {
+		OS.gdk_drawable_get_size(data.drawable, width, height);
+	}
+}
+
 /**
  * Returns the receiver's text drawing anti-aliasing setting value,
  * which will be one of <code>SWT.DEFAULT</code>, <code>SWT.OFF</code> or
@@ -2791,7 +2806,7 @@ double[] identity() {
 	double[] identity = new double[6];
 	if ((data.style & SWT.MIRRORED) != 0) {
 		int[] w = new int[1], h = new int[1];
-		OS.gdk_drawable_get_size(data.drawable, w, h);
+		getSize(w, h);
 		Cairo.cairo_matrix_init(identity, -1, 0, 0, 1, w[0], 0);
 	} else {
 		Cairo.cairo_matrix_init_identity(identity);
@@ -2817,9 +2832,12 @@ void init(Drawable drawable, GCData data, int /*long*/ gdkGC) {
 	this.drawable = drawable;
 	this.data = data;
 	handle = gdkGC;
-	if (device.useCairo) {
-		initCairo();
+	if (OS.USE_CAIRO) {
+		int /*long*/ cairo = data.cairo = handle;
+		Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
+		data.state &= ~(BACKGROUND | FOREGROUND | FONT | LINE_WIDTH | LINE_CAP | LINE_JOIN | LINE_STYLE | DRAW_OFFSET);
 	}
+	setClipping(data.clipRgn);
 	if ((data.style & SWT.MIRRORED) != 0) {
 	  initCairo();
 	  int /*long*/ cairo = data.cairo;
@@ -2858,11 +2876,7 @@ void initCairo() {
 		data.cairo = cairo = Cairo.cairo_create(surface);
 		Cairo.cairo_surface_destroy(surface);
 	} else {
-		if (OS.USE_CAIRO_SURFACE && data.image != null) {
-			data.cairo = cairo = Cairo.cairo_create(data.image.surface);
-		} else {
-			data.cairo = cairo = OS.gdk_cairo_create(data.drawable);
-		}
+		data.cairo = cairo = OS.gdk_cairo_create(data.drawable);
 	}
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.disposeCairo = true;
@@ -2960,7 +2974,7 @@ boolean isIdentity(double[] matrix) {
  */
 public void setAdvanced(boolean advanced) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if ((data.style & SWT.MIRRORED) != 0 || device.useCairo) {
+	if ((data.style & SWT.MIRRORED) != 0 || OS.USE_CAIRO) {
 		if (!advanced) {
 			setAlpha(0xFF);
 			setAntialias(SWT.DEFAULT);
@@ -3171,10 +3185,10 @@ static void setCairoPatternColor(int /*long*/ pattern, int offset, Color c, int 
 
 void setCairoClip(int /*long*/ damageRgn, int /*long*/ clipRgn) {
 	int /*long*/ cairo = data.cairo;
-	if (OS.GTK_VERSION < OS.VERSION(2,18,0) || data.drawable == 0) {
-		Cairo.cairo_reset_clip(cairo);
-	} else {
+	if (OS.GTK_VERSION >= OS.VERSION(2,18,0) && data.drawable != 0) {
 		OS.gdk_cairo_reset_clip(cairo, data.drawable);
+	} else {
+		Cairo.cairo_reset_clip(cairo);
 	}
 	if (damageRgn != 0) {
 		double[] matrix = new double[6];

@@ -566,7 +566,14 @@ public class OS extends C {
 	public static final byte[] GTK_STOCK_CLEAR = ascii("gtk-clear");
 	
 	public static final int GTK_VERSION = VERSION(gtk_major_version(), gtk_minor_version(), gtk_micro_version()); 
-	public static final boolean USE_CAIRO_SURFACE = GTK_VERSION >= VERSION(2, 18, 0);//TODO this should probably be 2.22.0
+	public static final boolean USE_CAIRO;
+	static {
+		boolean useCairo = false;
+		if (!"false".equals(System.getProperty("org.eclipse.swt.internal.gtk.useCairo"))) {
+			useCairo  = GTK_VERSION >= VERSION(2, 17, 0);//TODO this should probably be 2.22.0
+		}
+		USE_CAIRO = useCairo;
+	}
 	
 protected static byte [] ascii (String name) {
 	int length = name.length ();

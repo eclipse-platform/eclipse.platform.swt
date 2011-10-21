@@ -175,6 +175,8 @@ typedef enum {
 	_1cairo_1user_1to_1device_1distance_FUNC,
 	_1cairo_1xlib_1surface_1create_FUNC,
 	_1cairo_1xlib_1surface_1create_1for_1bitmap_FUNC,
+	_1cairo_1xlib_1surface_1get_1height_FUNC,
+	_1cairo_1xlib_1surface_1get_1width_FUNC,
 	_1cairo_1xlib_1surface_1set_1size_FUNC,
 	cairo_1font_1extents_1t_1sizeof_FUNC,
 	cairo_1path_1data_1t_1sizeof_FUNC,

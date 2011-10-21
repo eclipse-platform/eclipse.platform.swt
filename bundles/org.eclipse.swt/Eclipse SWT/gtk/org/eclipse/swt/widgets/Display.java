@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 
@@ -2646,8 +2647,12 @@ void initializeWindowManager () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public void internal_dispose_GC (int /*long*/ gdkGC, GCData data) {
-	OS.g_object_unref (gdkGC);
+public void internal_dispose_GC (int /*long*/ gc, GCData data) {
+	if (OS.USE_CAIRO) {
+		Cairo.cairo_destroy (gc);
+	} else {
+		OS.g_object_unref (gc);
+	}
 }
 
 /**	 
@@ -2675,9 +2680,16 @@ public void internal_dispose_GC (int /*long*/ gdkGC, GCData data) {
 public int /*long*/ internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	int /*long*/ root = OS.GDK_ROOT_PARENT ();
-	int /*long*/ gdkGC = OS.gdk_gc_new (root);
-	if (gdkGC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	OS.gdk_gc_set_subwindow (gdkGC, OS.GDK_INCLUDE_INFERIORS);
+	int /*long*/ gc;
+	if (OS.USE_CAIRO) {
+		gc = OS.gdk_cairo_create (root);
+		if (gc == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+		//TODO how gdk_gc_set_subwindow is done in cairo?
+	} else {
+		gc = OS.gdk_gc_new (root);
+		if (gc == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+		OS.gdk_gc_set_subwindow (gc, OS.GDK_INCLUDE_INFERIORS);
+	}
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
@@ -2689,7 +2701,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
 		data.font = getSystemFont ();
 	}
-	return gdkGC;
+	return gc;
 }
 
 boolean isValidThread () {

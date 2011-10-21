@@ -109,7 +109,7 @@ void deregister () {
 }
 
 void drawBackground (Control control, int /*long*/ window, int /*long*/ region, int x, int y, int width, int height) {
-	if (OS.USE_CAIRO_SURFACE) {
+	if (OS.USE_CAIRO) {
 		int /*long*/ cairo = OS.gdk_cairo_create(window);
 		if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
 		if (region != 0) OS.gdk_cairo_region(cairo, region);
@@ -382,6 +382,7 @@ public boolean print (GC gc) {
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
 	GCData data = gc.getGCData ();
 	OS.gdk_window_process_updates (window, true);
+	//TODO fix for USE_CAIRO
 	printWidget (gc, data.drawable, OS.gdk_drawable_get_depth (data.drawable), 0, 0);
 	return true;
 }
@@ -2982,7 +2983,6 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	GCData data = new GCData ();
 	data.damageRgn = gdkEvent.region;
 	GC gc = event.gc = GC.gtk_new (this, data);
-	OS.gdk_gc_set_clip_region (gc.handle, gdkEvent.region);
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
 	event.gc = null;
@@ -3219,8 +3219,13 @@ public int /*long*/ internal_new_GC (GCData data) {
 	checkWidget ();
 	int /*long*/ window = paintWindow ();
 	if (window == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	int /*long*/ gdkGC = OS.gdk_gc_new (window);
-	if (gdkGC == 0) error (SWT.ERROR_NO_HANDLES);	
+	int /*long*/ gc;
+	if (OS.USE_CAIRO) {
+		gc = OS.gdk_cairo_create (window);
+	} else {
+		gc = OS.gdk_gc_new (window);
+	}
+	if (gc == 0) error (SWT.ERROR_NO_HANDLES);	
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
@@ -3238,7 +3243,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 		data.background = control.getBackgroundColor ();
 		data.font = font != null ? font : defaultFont (); 
 	}	
-	return gdkGC;
+	return gc;
 }
 
 int /*long*/ imHandle () {
@@ -3260,9 +3265,13 @@ int /*long*/ imHandle () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public void internal_dispose_GC (int /*long*/ gdkGC, GCData data) {
+public void internal_dispose_GC (int /*long*/ gc, GCData data) {
 	checkWidget ();
-	OS.g_object_unref (gdkGC);
+	if (OS.USE_CAIRO) {
+		Cairo.cairo_destroy (gc);
+	} else {
+		OS.g_object_unref (gc);
+	}
 }
 
 /**

@@ -1608,6 +1608,32 @@ public static final void cairo_xlib_surface_set_size(int /*long*/ surface, int w
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param surface cast=(cairo_surface_t *)
+ */
+public static final native int _cairo_xlib_surface_get_height(int /*long*/ surface);
+public static final int cairo_xlib_surface_get_height(int /*long*/ surface) {
+	lock.lock();
+	try {
+		return _cairo_xlib_surface_get_height(surface);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param surface cast=(cairo_surface_t *)
+ */
+public static final native int _cairo_xlib_surface_get_width(int /*long*/ surface);
+public static final int cairo_xlib_surface_get_width(int /*long*/ surface) {
+	lock.lock();
+	try {
+		return _cairo_xlib_surface_get_width(surface);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param dest cast=(void *)
  * @param src cast=(const void *)
  * @param size cast=(size_t)

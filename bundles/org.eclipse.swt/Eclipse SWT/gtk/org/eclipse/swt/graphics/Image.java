@@ -247,7 +247,7 @@ public Image(Device device, Image srcImage, int flag) {
 	device = this.device;
 	this.type = srcImage.type;
 	
-	if (OS.USE_CAIRO_SURFACE) {
+	if (OS.USE_CAIRO) {
 		if (flag != SWT.IMAGE_DISABLE) transparentPixel = srcImage.transparentPixel;
 		alpha = srcImage.alpha;
 		if (srcImage.alphaData != null) {
@@ -718,7 +718,7 @@ void createAlphaMask (int width, int height) {
 void createFromPixbuf(int type, int /*long*/ pixbuf) {
 	this.type = type;
 	boolean hasAlpha = OS.gdk_pixbuf_get_has_alpha(pixbuf);
-	if (OS.USE_CAIRO_SURFACE) {
+	if (OS.USE_CAIRO) {
 		int width = this.width = OS.gdk_pixbuf_get_width(pixbuf);
 		int height = this.height = OS.gdk_pixbuf_get_height(pixbuf);
 		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
@@ -806,7 +806,7 @@ void createFromPixbuf(int type, int /*long*/ pixbuf) {
  * Create the receiver's mask if necessary.
  */
 void createMask() {
-	if (OS.USE_CAIRO_SURFACE) {
+	if (OS.USE_CAIRO) {
 		int width = this.width;
 		int height = this.height;
 		int stride = Cairo.cairo_image_surface_get_stride(surface);
@@ -1019,7 +1019,7 @@ public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Image)) return false;
 	Image image = (Image)object;
-	if (OS.USE_CAIRO_SURFACE) {
+	if (OS.USE_CAIRO) {
 		return device == image.device && surface == image.surface;
 	} else {
 		return device == image.device && pixmap == image.pixmap;
@@ -1090,7 +1090,7 @@ public Rectangle getBounds() {
 public ImageData getImageData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	ImageData data;
-	if (OS.USE_CAIRO_SURFACE) {
+	if (OS.USE_CAIRO) {
 		int format = Cairo.cairo_image_surface_get_format(surface);
 		int width = Cairo.cairo_image_surface_get_width(surface);
 		int height = Cairo.cairo_image_surface_get_height(surface);
@@ -1253,7 +1253,7 @@ public static Image gtk_new_from_pixbuf(Device device, int type, int /*long*/ pi
  * @see #equals
  */
 public int hashCode () {
-	if (OS.USE_CAIRO_SURFACE) {
+	if (OS.USE_CAIRO) {
 		return (int)/*64*/surface;
 	} else {
 		return (int)/*64*/pixmap;
@@ -1267,7 +1267,7 @@ void init(int width, int height) {
 	this.type = SWT.BITMAP;
 
 	/* Create the pixmap */
-	if (OS.USE_CAIRO_SURFACE) {
+	if (OS.USE_CAIRO) {
 		surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_RGB24, width, height);
 		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		int stride = Cairo.cairo_image_surface_get_stride(surface);
@@ -1301,7 +1301,7 @@ void init(ImageData image) {
 	if (!(((image.depth == 1 || image.depth == 2 || image.depth == 4 || image.depth == 8) && !palette.isDirect) ||
 		((image.depth == 8) || (image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect)))
 			SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
-	if (OS.USE_CAIRO_SURFACE) {
+	if (OS.USE_CAIRO) {
 		boolean hasAlpha = image.transparentPixel != -1 || image.alpha != -1 || image.maskData != null || image.alphaData != null;
 		int format = hasAlpha ? Cairo.CAIRO_FORMAT_ARGB32 : Cairo.CAIRO_FORMAT_RGB24;
 		surface = Cairo.cairo_image_surface_create(format, width, height);
@@ -1528,8 +1528,12 @@ public int /*long*/ internal_new_GC (GCData data) {
 	if (type != SWT.BITMAP || memGC != null) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	//TODO the handle of the GC should be a cairo object instead of GdkGC.
-	int /*long*/ gdkGC = OS.gdk_gc_new(OS.USE_CAIRO_SURFACE ? OS.GDK_ROOT_PARENT() : pixmap);
+	int /*long*/ gc;
+	if (OS.USE_CAIRO) {
+		gc = Cairo.cairo_create(surface);
+	} else {
+		gc = OS.gdk_gc_new(pixmap);
+	}
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
@@ -1546,7 +1550,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 		data.font = device.systemFont;
 		data.image = this;
 	}
-	return gdkGC;
+	return gc;
 }
 
 /**	 
@@ -1564,8 +1568,12 @@ public int /*long*/ internal_new_GC (GCData data) {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public void internal_dispose_GC (int /*long*/ gdkGC, GCData data) {
-	OS.g_object_unref(gdkGC);
+public void internal_dispose_GC (int /*long*/ gc, GCData data) {
+	if (OS.USE_CAIRO) {
+		Cairo.cairo_destroy(gc);
+	} else {
+		OS.g_object_unref(gc);
+	}
 }
 
 /**
@@ -1579,7 +1587,7 @@ public void internal_dispose_GC (int /*long*/ gdkGC, GCData data) {
  * @return <code>true</code> when the image is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed() {
-	if (OS.USE_CAIRO_SURFACE) {
+	if (OS.USE_CAIRO) {
 		return surface == 0;
 	} else {
 		return pixmap == 0;
@@ -1636,7 +1644,7 @@ public void setBackground(Color color) {
  */
 public String toString () {
 	if (isDisposed()) return "Image {*DISPOSED*}";
-	if (OS.USE_CAIRO_SURFACE) {
+	if (OS.USE_CAIRO) {
 		return "Image {" + surface + "}";
 	} else {
 		return "Image {" + pixmap + "}";
