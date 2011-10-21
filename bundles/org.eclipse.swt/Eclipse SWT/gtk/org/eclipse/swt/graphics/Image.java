@@ -1271,7 +1271,7 @@ void init(int width, int height) {
 			surface = OS.gdk_window_create_similar_surface(OS.GDK_ROOT_PARENT(), Cairo.CAIRO_CONTENT_COLOR, width, height);
 		} else {
 			int /*long*/ xDisplay = OS.GDK_DISPLAY();
-			int /*long*/ xDrawable = OS.GDK_PIXMAP_XID(OS.GDK_ROOT_PARENT());
+			int /*long*/ xDrawable = OS.gdk_x11_drawable_get_xid(OS.GDK_ROOT_PARENT());
 			int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
 			int /*long*/ rootSurface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, 1, 1);
 			if (rootSurface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
