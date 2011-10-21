@@ -114,6 +114,10 @@ void drawBackground (Control control, int /*long*/ window, int /*long*/ region, 
 		if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
 		if (region != 0) OS.gdk_cairo_region(cairo, region);
 		if (control.backgroundImage != null) {
+			Point pt = display.map (this, control, 0, 0);
+			Cairo.cairo_translate (cairo, -pt.x, -pt.y);
+			x += pt.x;
+			y += pt.y;
 			int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface (control.backgroundImage.surface);
 			if (pattern == 0) error (SWT.ERROR_NO_HANDLES);
 			Cairo.cairo_pattern_set_extend (pattern, Cairo.CAIRO_EXTEND_REPEAT);
@@ -3810,7 +3814,18 @@ void setBackgroundPixmap (Image image) {
 		if (image.pixmap != 0) {
 			OS.gdk_window_set_back_pixmap (window, image.pixmap, false);
 		} else if (image.surface != 0) {
-			//TODO we need to either create xlib surfaces for opaque images in Image.java or create a pixmap from the surface
+			// TODO background pixmap does not have colormap. For now draw background in windowProc()
+			// Another option would be to create a pixmap from the surface
+//			int /*long*/ surface = image.surface;
+//			int type = Cairo.cairo_surface_get_type(surface);
+//			switch (type) {
+//				case Cairo.CAIRO_SURFACE_TYPE_XLIB:
+//					int /*long*/ pixmap = OS.gdk_pixmap_foreign_new(Cairo.cairo_xlib_surface_get_drawable(surface));
+//					OS.gdk_window_set_back_pixmap (window, pixmap, false);
+//					OS.g_object_unref(pixmap);
+//					break;
+//			}
+//			
 		}
 	}
 }
@@ -5032,7 +5047,19 @@ void updateLayout (boolean all) {
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
 	switch ((int)/*64*/user_data) {
 		case EXPOSE_EVENT_INVERSE: {
-			if ((OS.GTK_VERSION <  OS.VERSION (2, 8, 0)) && ((state & OBSCURED) == 0)) {
+			if ((state & OBSCURED) != 0) break;
+			if (OS.USE_CAIRO) {
+				Control control = findBackgroundControl ();
+				if (control != null && control.backgroundImage != null) {
+					GdkEventExpose gdkEvent = new GdkEventExpose ();
+					OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
+					int /*long*/ paintWindow = paintWindow();
+					int /*long*/ window = gdkEvent.window;
+					if (window != paintWindow) break;
+					drawBackground(control, window, gdkEvent.region, gdkEvent.area_y, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
+				}
+			}
+			if (OS.GTK_VERSION <  OS.VERSION (2, 8, 0)) {
 				Control control = findBackgroundControl ();
 				if (control != null && control.backgroundImage != null) {
 					GdkEventExpose gdkEvent = new GdkEventExpose ();

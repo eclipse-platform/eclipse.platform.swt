@@ -1775,6 +1775,26 @@ JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1xlib_1surface_1create_1for_1bit
 }
 #endif
 
+#ifndef NO__1cairo_1xlib_1surface_1get_1drawable
+JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1xlib_1surface_1get_1drawable)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1xlib_1surface_1get_1drawable_FUNC);
+/*
+	rc = (jintLong)cairo_xlib_surface_get_drawable((cairo_surface_t *)arg0);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_xlib_surface_get_drawable)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(cairo_surface_t *))fp)((cairo_surface_t *)arg0);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1xlib_1surface_1get_1drawable_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1cairo_1xlib_1surface_1get_1height
 JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1xlib_1surface_1get_1height)
 	(JNIEnv *env, jclass that, jintLong arg0)

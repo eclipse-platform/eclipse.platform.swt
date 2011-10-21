@@ -1440,6 +1440,7 @@ void init(ImageData image) {
 			}
 		}
 		OS.memmove(data, buffer, stride * height);
+		//TODO convert to XLIB surface if opaque for better performance
 		return;
 	}
 	int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
