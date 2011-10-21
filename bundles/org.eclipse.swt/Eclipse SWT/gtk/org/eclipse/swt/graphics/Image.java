@@ -298,10 +298,9 @@ public Image(Device device, Image srcImage, int flag) {
 							int g = line[offset + og] & 0xFF;
 							int b = line[offset + ob] & 0xFF;
 							if (hasAlpha && a != 0) {
-								//TODO write this without floating point math
-								r = (int)((r / (float)a) * 0xFF);
-								g = (int)((g / (float)a) * 0xFF);
-								b = (int)((b / (float)a) * 0xFF);
+								r = ((r * 0xFF) + a / 2) / a;
+								g = ((g * 0xFF) + a / 2) / a;
+								b = ((b * 0xFF) + a / 2) / a;
 							}
 							int intensity = r * r + g * g + b * b;
 							if (intensity < 98304) {
@@ -340,10 +339,9 @@ public Image(Device device, Image srcImage, int flag) {
 							int g = line[offset + og] & 0xFF;
 							int b = line[offset + ob] & 0xFF;
 							if (hasAlpha && a != 0) {
-								//TODO write this without floating point math
-								r = (int)((r / (float)a) * 0xFF);
-								g = (int)((g / (float)a) * 0xFF);
-								b = (int)((b / (float)a) * 0xFF);
+								r = ((r * 0xFF) + a / 2) / a;
+								g = ((g * 0xFF) + a / 2) / a;
+								b = ((b * 0xFF) + a / 2) / a;
 							}
 							int intensity = (r+r+g+g+g+g+g+b) >> 3;
 							if (hasAlpha) {
@@ -1118,10 +1116,9 @@ public ImageData getImageData() {
 					srcData[offset + 0] = 0;
 					alphaData[alphaOffset++] = (byte)a;
 					if (a != 0) {
-						//TODO write this without floating point math
-						srcData[offset + 1] = (byte)(((r) / (float)a) * 0xFF);
-						srcData[offset + 2] = (byte)(((g) / (float)a) * 0xFF);
-						srcData[offset + 3] = (byte)(((b) / (float)a) * 0xFF);
+						srcData[offset + 1] = (byte)(((r * 0xFF) + a / 2) / a);
+						srcData[offset + 2] = (byte)(((g * 0xFF) + a / 2) / a);
+						srcData[offset + 3] = (byte)(((b * 0xFF) + a / 2) / a);
 					}
 				}
 			}

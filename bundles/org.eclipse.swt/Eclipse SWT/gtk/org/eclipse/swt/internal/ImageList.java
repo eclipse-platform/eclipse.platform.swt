@@ -56,10 +56,9 @@ public static int /*long*/ createPixbuf(Image image) {
 					int b = line[offset + ob] & 0xFF;
 					line[offset + 3] = (byte)a;
 					if (a != 0) {
-						//TODO write this without floating point math
-						line[offset + 0] = (byte)(((r) / (float)a) * 0xFF);
-						line[offset + 1] = (byte)(((g) / (float)a) * 0xFF);
-						line[offset + 2] = (byte)(((b) / (float)a) * 0xFF);
+						line[offset + 0] = (byte)(((r * 0xFF) + a / 2) / a);
+						line[offset + 1] = (byte)(((g * 0xFF) + a / 2) / a);
+						line[offset + 2] = (byte)(((b * 0xFF) + a / 2) / a);
 					}
 				}
 				OS.memmove (pixels + (y * stride), line, stride);
