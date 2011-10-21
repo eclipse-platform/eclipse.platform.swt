@@ -38,3 +38,4 @@
 #define cairo_image_surface_get_stride_LIB LIB_CAIRO
 #define cairo_xlib_surface_get_height_LIB LIB_CAIRO
 #define cairo_xlib_surface_get_width_LIB LIB_CAIRO
+#define cairo_surface_get_content_LIB LIB_CAIRO

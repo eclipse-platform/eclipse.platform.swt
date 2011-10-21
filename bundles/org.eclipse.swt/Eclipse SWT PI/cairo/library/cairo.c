@@ -1560,6 +1560,26 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1surface_1finish)
 }
 #endif
 
+#ifndef NO__1cairo_1surface_1get_1content
+JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1surface_1get_1content)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1surface_1get_1content_FUNC);
+/*
+	rc = (jint)cairo_surface_get_content((cairo_surface_t *)arg0);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_surface_get_content)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(cairo_surface_t *))fp)((cairo_surface_t *)arg0);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1surface_1get_1content_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1cairo_1surface_1get_1type
 JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1surface_1get_1type)
 	(JNIEnv *env, jclass that, jintLong arg0)

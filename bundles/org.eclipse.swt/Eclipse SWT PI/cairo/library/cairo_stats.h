@@ -161,6 +161,7 @@ typedef enum {
 	_1cairo_1surface_1create_1similar_FUNC,
 	_1cairo_1surface_1destroy_FUNC,
 	_1cairo_1surface_1finish_FUNC,
+	_1cairo_1surface_1get_1content_FUNC,
 	_1cairo_1surface_1get_1type_FUNC,
 	_1cairo_1surface_1get_1user_1data_FUNC,
 	_1cairo_1surface_1reference_FUNC,

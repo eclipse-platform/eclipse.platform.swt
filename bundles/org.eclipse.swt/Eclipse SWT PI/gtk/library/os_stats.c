@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1397;
-int OS_nativeFunctionCallCount[1397];
+int OS_nativeFunctionCount = 1398;
+int OS_nativeFunctionCallCount[1398];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -559,6 +559,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1window_1at_1pointer",
 	"_1gdk_1window_1begin_1paint_1rect",
 	"_1gdk_1window_1clear_1area",
+	"_1gdk_1window_1create_1similar_1surface",
 	"_1gdk_1window_1destroy",
 	"_1gdk_1window_1end_1paint",
 	"_1gdk_1window_1focus",

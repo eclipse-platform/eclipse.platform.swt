@@ -6801,6 +6801,26 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1clear_1area)
 }
 #endif
 
+#ifndef NO__1gdk_1window_1create_1similar_1surface
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1window_1create_1similar_1surface)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1window_1create_1similar_1surface_FUNC);
+/*
+	rc = (jintLong)gdk_window_create_similar_surface((GdkWindow *)arg0, arg1, arg2, arg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_window_create_similar_surface)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkWindow *, jint, jint, jint))fp)((GdkWindow *)arg0, arg1, arg2, arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1window_1create_1similar_1surface_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1window_1destroy
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1destroy)
 	(JNIEnv *env, jclass that, jintLong arg0)

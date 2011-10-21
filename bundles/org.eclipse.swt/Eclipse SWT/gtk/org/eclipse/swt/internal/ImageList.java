@@ -26,10 +26,30 @@ public ImageList() {
 	pixbufs = new int /*long*/ [4];
 }
 
+public static int /*long*/ convertSurface(Image image) {
+	int /*long*/ newSurface = image.surface;
+	int type = Cairo.cairo_surface_get_type(newSurface);
+	if (type != Cairo.CAIRO_SURFACE_TYPE_IMAGE) {
+		Rectangle bounds = image.getBounds();
+		int format = Cairo.cairo_surface_get_content(newSurface) == Cairo.CAIRO_CONTENT_COLOR ? Cairo.CAIRO_FORMAT_RGB24 : Cairo.CAIRO_FORMAT_ARGB32;
+		newSurface = Cairo.cairo_image_surface_create(format, bounds.width, bounds.height);
+		if (newSurface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int /*long*/ cairo = Cairo.cairo_create(newSurface);
+		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SRC);
+		Cairo.cairo_set_source_surface (cairo, image.surface, 0, 0);
+		Cairo.cairo_paint (cairo);
+		Cairo.cairo_destroy(cairo);
+	} else {
+		Cairo.cairo_surface_reference(newSurface);
+	}
+	return newSurface;
+}
+
 public static int /*long*/ createPixbuf(Image image) {
 	int /*long*/ pixbuf;
 	if (OS.USE_CAIRO) {
-		int /*long*/ surface = image.surface;
+		int /*long*/ surface = convertSurface(image);
 		int format = Cairo.cairo_image_surface_get_format(surface);
 		int width = Cairo.cairo_image_surface_get_width(surface);
 		int height = Cairo.cairo_image_surface_get_height(surface);
@@ -79,6 +99,7 @@ public static int /*long*/ createPixbuf(Image image) {
 				OS.memmove (pixels + (y * stride), line, stride);
 			}
 		}
+		Cairo.cairo_surface_destroy(surface);
 	} else {
 		int [] w = new int [1], h = new int [1];
 	 	OS.gdk_drawable_get_size (image.pixmap, w, h);

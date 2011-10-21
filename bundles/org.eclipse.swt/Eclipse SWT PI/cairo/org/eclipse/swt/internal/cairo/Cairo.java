@@ -31,7 +31,10 @@ public class Cairo extends Platform {
 	public static final int CAIRO_ANTIALIAS_DEFAULT = 0;
 	public static final int CAIRO_ANTIALIAS_NONE = 1;
 	public static final int CAIRO_ANTIALIAS_GRAY = 2;
-	public static final int CAIRO_ANTIALIAS_SUBPIXEL = 3;
+	public static final int CAIRO_ANTIALIAS_SUBPIXEL = 3;   
+	public static final int CAIRO_CONTENT_COLOR = 0x1000;
+	public static final int CAIRO_CONTENT_ALPHA = 0x2000;
+	public static final int CAIRO_CONTENT_COLOR_ALPHA = 0x3000;
 	public static final int CAIRO_FORMAT_ARGB32 = 0;
 	public static final int CAIRO_FORMAT_RGB24 = 1;
 	public static final int CAIRO_FORMAT_A8 = 2;
@@ -1436,6 +1439,19 @@ public static final int cairo_surface_get_type(int /*long*/ surface) {
 	lock.lock();
 	try {
 		return _cairo_surface_get_type(surface);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param surface cast=(cairo_surface_t *)
+ */
+public static final native int _cairo_surface_get_content(int /*long*/ surface);
+public static final int cairo_surface_get_content(int /*long*/ surface) {
+	lock.lock();
+	try {
+		return _cairo_surface_get_content(surface);
 	} finally {
 		lock.unlock();
 	}

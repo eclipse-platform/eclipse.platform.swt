@@ -256,9 +256,9 @@ public Image(Device device, Image srcImage, int flag) {
 		}
 	
 		int /*long*/ imageSurface = srcImage.surface;
-		int format = Cairo.cairo_image_surface_get_format(imageSurface);
-		int width = this.width = Cairo.cairo_image_surface_get_width(imageSurface);
-		int height = this.height = Cairo.cairo_image_surface_get_height(imageSurface);
+		int width = this.width = srcImage.width;
+		int height = this.height = srcImage.height;
+		int format = Cairo.cairo_surface_get_content(imageSurface) == Cairo.CAIRO_CONTENT_COLOR ? Cairo.CAIRO_FORMAT_RGB24 : Cairo.CAIRO_FORMAT_ARGB32;
 		boolean hasAlpha = format == Cairo.CAIRO_FORMAT_ARGB32;
 		surface = Cairo.cairo_image_surface_create(format, width, height);
 		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -1089,6 +1089,7 @@ public ImageData getImageData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	ImageData data;
 	if (OS.USE_CAIRO) {
+		int /*long*/ surface = ImageList.convertSurface(this);
 		int format = Cairo.cairo_image_surface_get_format(surface);
 		int width = Cairo.cairo_image_surface_get_width(surface);
 		int height = Cairo.cairo_image_surface_get_height(surface);
@@ -1135,6 +1136,7 @@ public ImageData getImageData() {
 				}
 			}
 		}
+		Cairo.cairo_surface_destroy(surface);
 	} else {
 		int[] w = new int[1], h = new int[1];
 	 	OS.gdk_drawable_get_size(pixmap, w, h);
@@ -1265,11 +1267,24 @@ void init(int width, int height) {
 
 	/* Create the pixmap */
 	if (OS.USE_CAIRO) {
-		surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_RGB24, width, height);
+		if (OS.GTK_VERSION >= OS.VERSION(2, 22, 0)) {
+			surface = OS.gdk_window_create_similar_surface(OS.GDK_ROOT_PARENT(), Cairo.CAIRO_CONTENT_COLOR, width, height);
+		} else {
+			int /*long*/ xDisplay = OS.GDK_DISPLAY();
+			int /*long*/ xDrawable = OS.GDK_PIXMAP_XID(OS.GDK_ROOT_PARENT());
+			int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
+			int /*long*/ rootSurface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, 1, 1);
+			if (rootSurface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			surface = Cairo.cairo_surface_create_similar(rootSurface, Cairo.CAIRO_CONTENT_COLOR, width, height);
+			Cairo.cairo_surface_destroy(rootSurface);
+		}
 		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int stride = Cairo.cairo_image_surface_get_stride(surface);
-		int /*long*/ data = Cairo.cairo_image_surface_get_data(surface);
-		OS.memset(data, 0xff, stride * height);
+		int /*long*/ cairo = Cairo.cairo_create(surface);
+		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
+		Cairo.cairo_rectangle(cairo, 0, 0, width, height);
+		Cairo.cairo_fill(cairo);
+		Cairo.cairo_destroy(cairo);
 		this.width = width;
 		this.height = height;
 	} else {

@@ -5262,6 +5262,19 @@ public static final void gdk_window_clear_area(int /*long*/ window, int x, int y
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic 
+ * @param window cast=(GdkWindow *)
+ */
+public static final native int /*long*/ _gdk_window_create_similar_surface(int /*long*/ window, int content, int width, int height);
+public static final int /*long*/ gdk_window_create_similar_surface(int /*long*/ window, int content, int width, int height) {
+	lock.lock();
+	try {
+		return _gdk_window_create_similar_surface(window, content, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param window cast=(GdkWindow *) */
 public static final native void _gdk_window_destroy(int /*long*/ window);
 public static final void gdk_window_destroy(int /*long*/ window) {

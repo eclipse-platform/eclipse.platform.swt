@@ -152,6 +152,7 @@
 #define gtk_status_icon_position_menu_LIB LIB_GTK
 #define gtk_window_get_group_LIB LIB_GTK
 #define gtk_window_get_opacity_LIB LIB_GTK
+#define gdk_window_create_similar_surface_LIB LIB_GDK
 #define gdk_window_restack_LIB LIB_GDK
 #define gdk_window_set_keep_above_LIB LIB_GDK
 #define gdk_window_set_accept_focus_LIB LIB_GDK
