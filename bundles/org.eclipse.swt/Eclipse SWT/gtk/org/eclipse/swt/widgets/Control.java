@@ -382,8 +382,9 @@ public boolean print (GC gc) {
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
 	GCData data = gc.getGCData ();
 	OS.gdk_window_process_updates (window, true);
-	//TODO fix for USE_CAIRO
-	printWidget (gc, data.drawable, OS.gdk_drawable_get_depth (data.drawable), 0, 0);
+	int /*long*/ drawable = data.drawable;
+	if (drawable == 0) drawable = OS.GDK_ROOT_PARENT();
+	printWidget (gc, drawable, OS.gdk_drawable_get_depth (drawable), 0, 0);
 	return true;
 }
 
