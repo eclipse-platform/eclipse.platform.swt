@@ -240,6 +240,7 @@ void computeRuns () {
 				attribute.end_index = byteEnd;
 				OS.memmove(attr, attribute, PangoAttribute.sizeof);
 				OS.pango_attr_list_insert(attrList, attr);
+				OS.pango_attr_list_insert(selAttrList, OS.pango_attribute_copy(attr));
 			}
 		}
 		if (style.strikeout) {
@@ -258,6 +259,7 @@ void computeRuns () {
 				attribute.end_index = byteEnd;
 				OS.memmove(attr, attribute, PangoAttribute.sizeof);
 				OS.pango_attr_list_insert(attrList, attr);
+				OS.pango_attr_list_insert(selAttrList, OS.pango_attribute_copy(attr));
 			}
 		}
 		Color foreground = style.foreground;
