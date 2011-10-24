@@ -34,7 +34,7 @@
 	
 	<property name="repo.src" value="../../../eclipse.platform.swt"/>
 	<property name="repo.bin" value="../../../eclipse.platform.swt.binaries"/>
-	<property name="repo.common" value="../../../eclipse.platform.common"/>
+	<property name="repo.common" value="../../../eclipse.platform.releng.maps"/>
 
 	<property name="src_common" value="'bundles/org.eclipse.swt/Eclipse SWT/common/library' 'bundles/org.eclipse.swt/Eclipse SWT Mozilla/common/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/common/library'"/>
 	<property name="src_win32" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT WebKit/win32/library'"/>
