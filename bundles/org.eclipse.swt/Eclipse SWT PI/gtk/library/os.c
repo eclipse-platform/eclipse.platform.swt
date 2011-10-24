@@ -17420,6 +17420,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1attr_1weight_1new)
 }
 #endif
 
+#ifndef NO__1pango_1attribute_1copy
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1attribute_1copy)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1attribute_1copy_FUNC);
+	rc = (jintLong)pango_attribute_copy((const PangoAttribute *)arg0);
+	OS_NATIVE_EXIT(env, that, _1pango_1attribute_1copy_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1pango_1cairo_1context_1get_1font_1options
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1pango_1cairo_1context_1get_1font_1options)
 	(JNIEnv *env, jclass that, jintLong arg0)

@@ -14138,6 +14138,16 @@ public static final native void memmove(PangoLayoutRun dest, int /*long*/ src, i
  * @param size cast=(size_t)
  */
 public static final native void memmove(PangoLogAttr dest, int /*long*/ src, int /*long*/ size);
+/** @param attribute cast=(const PangoAttribute *) */
+public static final native int /*long*/ _pango_attribute_copy (int /*long*/ attribute);
+public static final int /*long*/ pango_attribute_copy (int /*long*/ attribute) {
+	lock.lock();
+	try {
+		return _pango_attribute_copy(attribute);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _pango_attr_background_new (short red, short green, short blue);
 public static final int /*long*/ pango_attr_background_new (short red, short green, short blue) {
 	lock.lock();

@@ -1416,6 +1416,7 @@ typedef enum {
 	_1pango_1attr_1underline_1color_1new_FUNC,
 	_1pango_1attr_1underline_1new_FUNC,
 	_1pango_1attr_1weight_1new_FUNC,
+	_1pango_1attribute_1copy_FUNC,
 	_1pango_1cairo_1context_1get_1font_1options_FUNC,
 	_1pango_1cairo_1context_1set_1font_1options_FUNC,
 	_1pango_1cairo_1create_1layout_FUNC,
