@@ -50,7 +50,7 @@
 	<property name="file_make_common" value="bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
 	<property name="file_version" value="bundles/org.eclipse.swt/Eclipse SWT/common/version.txt"/>
 	<property name="file_build_notes" value="bundles/org.eclipse.swt/buildnotes_swt.html"/>
-	<property name="file_swt_map" value="maps/org.eclipse.releng/maps/swt.map"/>
+	<property name="file_swt_map" value="org.eclipse.releng/maps/swt.map"/>
 
 	<target name="check_libraries" depends="get_version">
 		<antcall target="check_fragment_libraries">
