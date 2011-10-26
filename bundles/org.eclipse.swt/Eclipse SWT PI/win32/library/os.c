@@ -4265,28 +4265,33 @@ fail:
 
 #ifndef NO_GetDIBits
 JNIEXPORT jint JNICALL OS_NATIVE(GetDIBits)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jintLong arg4, jbyteArray arg5, jint arg6)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jbyteArray arg4, jbyteArray arg5, jint arg6)
 {
+	jbyte *lparg4=NULL;
 	jbyte *lparg5=NULL;
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, GetDIBits_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
+		if (arg4) if ((lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL)) == NULL) goto fail;
 		if (arg5) if ((lparg5 = (*env)->GetPrimitiveArrayCritical(env, arg5, NULL)) == NULL) goto fail;
 	} else
 #endif
 	{
+		if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
 		if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	}
-	rc = (jint)GetDIBits((HDC)arg0, (HBITMAP)arg1, arg2, arg3, (LPVOID)arg4, (LPBITMAPINFO)lparg5, arg6);
+	rc = (jint)GetDIBits((HDC)arg0, (HBITMAP)arg1, arg2, arg3, (LPVOID)lparg4, (LPBITMAPINFO)lparg5, arg6);
 fail:
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg5 && lparg5) (*env)->ReleasePrimitiveArrayCritical(env, arg5, lparg5, 0);
+		if (arg4 && lparg4) (*env)->ReleasePrimitiveArrayCritical(env, arg4, lparg4, 0);
 	} else
 #endif
 	{
 		if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+		if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
 	}
 	OS_NATIVE_EXIT(env, that, GetDIBits_FUNC);
 	return rc;

@@ -4321,10 +4321,10 @@ public static final native int GetDIBColorTable (int /*long*/ hdc, int uStartInd
 /**
  * @param hdc cast=(HDC)
  * @param hbmp cast=(HBITMAP)
- * @param lpvBits cast=(LPVOID)
+ * @param lpvBits cast=(LPVOID),flags=critical
  * @param lpbi cast=(LPBITMAPINFO),flags=critical
  */
-public static final native int GetDIBits (int /*long*/ hdc, int /*long*/ hbmp, int uStartScan, int cScanLines, int /*long*/ lpvBits, byte[] lpbi, int uUsage);
+public static final native int GetDIBits (int /*long*/ hdc, int /*long*/ hbmp, int uStartScan, int cScanLines, byte[] lpvBits, byte[] lpbi, int uUsage);
 /** @param hDlg cast=(HWND) */
 public static final native int /*long*/ GetDlgItem (int /*long*/ hDlg, int nIDDlgItem);
 public static final native int GetDoubleClickTime ();
