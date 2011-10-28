@@ -30,7 +30,7 @@
 #define LIB_GTK "libgtk-x11-2.0.a(libgtk-x11-2.0.so.0)"
 #define LIB_GDK "libgdk-x11-2.0.a(libgdk-x11-2.0.so.0)"
 #define LIB_ATK "libatk-1.0.a(libatk-1.0.so.0)"
-#define LIB_PANGO "libpango-1.0.a(libpango-1.0.so.0"
+#define LIB_PANGO "libpango-1.0.a(libpango-1.0.so.0)"
 #define LIB_PANGOCAIRO "libpangocairo-1.0.a(libpangocairo-1.0.so.0)"
 #define LIB_GIO "libgio-2.0.a(libgio-2.0.so.0)"
 #define LIB_FONTCONFIG "libfontconfig.a(libfontconfig.so.1)"
