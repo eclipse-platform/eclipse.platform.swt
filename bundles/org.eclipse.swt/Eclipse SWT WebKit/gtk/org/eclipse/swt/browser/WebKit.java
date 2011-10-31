@@ -33,7 +33,7 @@ class WebKit extends WebBrowser {
 	BrowserFunction eventFunction;
 
 	static int /*long*/ ExternalClass, PostString;
-	static boolean HasDOMAPI, LibraryLoaded;
+	static boolean IsWebKitGTK14orNewer, LibraryLoaded;
 	static Hashtable WindowMappings = new Hashtable ();
 
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
@@ -224,7 +224,7 @@ static boolean IsInstalled () {
 	int major = WebKitGTK.webkit_major_version ();
 	int minor = WebKitGTK.webkit_minor_version ();
 	int micro = WebKitGTK.webkit_micro_version ();
-	HasDOMAPI = major > 1 ||
+	IsWebKitGTK14orNewer = major > 1 ||
 		(major == 1 && minor > 4) ||
 		(major == 1 && minor == 4 && micro >= 0);
 	return major > MIN_VERSION[0] ||
@@ -584,7 +584,7 @@ public void create (Composite parent, int style) {
 }
 
 void addEventHandlers (int /*long*/ web_view, boolean top) {
-	if (top && HasDOMAPI) {
+	if (top && IsWebKitGTK14orNewer) {
 		int /*long*/ domDocument = WebKitGTK.webkit_web_view_get_dom_document (web_view);
 		if (domDocument != 0) {
 			WindowMappings.put (new LONG (domDocument), new LONG (web_view));
@@ -1121,14 +1121,16 @@ boolean handleMouseEvent (String type, int screenX, int screenY, int detail, int
 			case 4: mouseEvent.stateMask |= SWT.BUTTON4; break;
 			case 5: mouseEvent.stateMask |= SWT.BUTTON5; break;
 		}
-		browser.notifyListeners (mouseEvent.type, mouseEvent);
 		/*
-		* Bug in WebKitGTK.  Dragging an image quickly and repeatedly can cause
-		* WebKitGTK to take the mouse grab indefinitely and lock up the display,
-		* see https://bugs.webkit.org/show_bug.cgi?id=32840.  The workaround is
-		* to veto all drag attempts.
+		* Bug in WebKitGTK 1.2.x.  Dragging an image quickly and repeatedly can
+		* cause WebKitGTK to take the mouse grab indefinitely and lock up the
+		* display, see https://bugs.webkit.org/show_bug.cgi?id=32840.  The
+		* workaround is to veto all drag attempts if using WebKitGTK 1.2.x.
 		*/
-		return false;
+		if (!IsWebKitGTK14orNewer) {
+			browser.notifyListeners (mouseEvent.type, mouseEvent);
+			return false;
+		}
 	}
 
 	browser.notifyListeners (mouseEvent.type, mouseEvent);
