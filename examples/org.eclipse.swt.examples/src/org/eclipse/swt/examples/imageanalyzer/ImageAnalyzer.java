@@ -1725,7 +1725,8 @@ public class ImageAnalyzer {
 							   new Integer(imageData.height)});
 		sizeLabel.setText(string);
 
-		string = createMsg(bundle.getString("Depth_value"), new Integer(imageData.depth));
+		string = createMsg(bundle.getString("Depth_value"),
+				new Object[] {new Integer(imageData.depth), new Integer(display.getDepth())});
 		depthLabel.setText(string);
 
 		string = createMsg(bundle.getString("Transparent_pixel_value"), pixelInfo(imageData.transparentPixel));
