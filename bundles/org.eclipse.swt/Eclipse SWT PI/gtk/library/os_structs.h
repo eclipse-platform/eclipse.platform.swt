@@ -363,18 +363,6 @@ void setGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSel
 #define GtkColorSelectionDialog_sizeof() 0
 #endif
 
-#ifndef NO_GtkFileSelection
-void cacheGtkFileSelectionFields(JNIEnv *env, jobject lpObject);
-GtkFileSelection *getGtkFileSelectionFields(JNIEnv *env, jobject lpObject, GtkFileSelection *lpStruct);
-void setGtkFileSelectionFields(JNIEnv *env, jobject lpObject, GtkFileSelection *lpStruct);
-#define GtkFileSelection_sizeof() sizeof(GtkFileSelection)
-#else
-#define cacheGtkFileSelectionFields(a,b)
-#define getGtkFileSelectionFields(a,b,c) NULL
-#define setGtkFileSelectionFields(a,b,c)
-#define GtkFileSelection_sizeof() 0
-#endif
-
 #ifndef NO_GtkFixed
 void cacheGtkFixedFields(JNIEnv *env, jobject lpObject);
 GtkFixed *getGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct);

@@ -110,7 +110,6 @@ typedef enum {
 	GtkCellRendererToggleClass_1sizeof_FUNC,
 	GtkCellRendererToggle_1sizeof_FUNC,
 	GtkColorSelectionDialog_1sizeof_FUNC,
-	GtkFileSelection_1sizeof_FUNC,
 	GtkFixedClass_1sizeof_FUNC,
 	GtkFixed_1sizeof_FUNC,
 	GtkRequisition_1sizeof_FUNC,
@@ -758,12 +757,6 @@ typedef enum {
 	_1gtk_1file_1filter_1get_1name_FUNC,
 	_1gtk_1file_1filter_1new_FUNC,
 	_1gtk_1file_1filter_1set_1name_FUNC,
-	_1gtk_1file_1selection_1get_1filename_FUNC,
-	_1gtk_1file_1selection_1get_1selections_FUNC,
-	_1gtk_1file_1selection_1hide_1fileop_1buttons_FUNC,
-	_1gtk_1file_1selection_1new_FUNC,
-	_1gtk_1file_1selection_1set_1filename_FUNC,
-	_1gtk_1file_1selection_1set_1select_1multiple_FUNC,
 	_1gtk_1fixed_1move_FUNC,
 	_1gtk_1fixed_1new_FUNC,
 	_1gtk_1fixed_1set_1has_1window_FUNC,
@@ -1702,11 +1695,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2J_FUNC,
-#endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2I_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2J_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I_FUNC,

@@ -604,7 +604,6 @@ public static final native int GtkAdjustment_sizeof();
 public static final native int GtkAllocation_sizeof();
 public static final native int GtkBorder_sizeof();
 public static final native int GtkColorSelectionDialog_sizeof();
-public static final native int GtkFileSelection_sizeof();
 public static final native int GtkFixed_sizeof();
 public static final native int GtkFixedClass_sizeof();
 public static final native int GtkRequisition_sizeof();
@@ -7346,72 +7345,6 @@ public static final void gtk_file_filter_set_name(int /*long*/ filter, byte[] na
 		lock.unlock();
 	}
 }
-/** @param filesel cast=(GtkFileSelection *) */
-public static final native int /*long*/ _gtk_file_selection_get_filename(int /*long*/ filesel);
-public static final int /*long*/ gtk_file_selection_get_filename(int /*long*/ filesel) {
-	lock.lock();
-	try {
-		return _gtk_file_selection_get_filename(filesel);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param filesel cast=(GtkFileSelection *) */
-public static final native int /*long*/ _gtk_file_selection_get_selections(int /*long*/ filesel);
-public static final int /*long*/ gtk_file_selection_get_selections(int /*long*/ filesel) {
-	lock.lock();
-	try {
-		return _gtk_file_selection_get_selections(filesel);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param filesel cast=(GtkFileSelection *) */
-public static final native void _gtk_file_selection_hide_fileop_buttons(int /*long*/ filesel);
-public static final void gtk_file_selection_hide_fileop_buttons(int /*long*/ filesel) {
-	lock.lock();
-	try {
-		_gtk_file_selection_hide_fileop_buttons(filesel);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param title cast=(const gchar *) */
-public static final native int /*long*/ _gtk_file_selection_new(byte[] title);
-public static final int /*long*/ gtk_file_selection_new(byte[] title) {
-	lock.lock();
-	try {
-		return _gtk_file_selection_new(title);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param filesel cast=(GtkFileSelection *)
- * @param filename cast=(const gchar *)
- */
-public static final native void _gtk_file_selection_set_filename(int /*long*/ filesel, int /*long*/ filename);
-public static final void gtk_file_selection_set_filename(int /*long*/ filesel, int /*long*/ filename) {
-	lock.lock();
-	try {
-		_gtk_file_selection_set_filename(filesel, filename);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param filesel cast=(GtkFileSelection *)
- * @param select_multiple cast=(gboolean)
- */
-public static final native void _gtk_file_selection_set_select_multiple(int /*long*/ filesel, boolean select_multiple);
-public static final void gtk_file_selection_set_select_multiple(int /*long*/ filesel, boolean select_multiple) {
-	lock.lock();
-	try {
-		_gtk_file_selection_set_select_multiple(filesel, select_multiple);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @param fixed cast=(GtkFixed *)
  * @param widget cast=(GtkWidget *)
@@ -13815,11 +13748,6 @@ public static final native void memmove(GTypeQuery dest, int /*long*/ src, int /
  * @param src cast=(const void *)
  */
 public static final native void memmove(GtkColorSelectionDialog dest, int /*long*/ src);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- */
-public static final native void memmove(GtkFileSelection dest, int /*long*/ src);
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)

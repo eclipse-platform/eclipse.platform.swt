@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1385;
-int OS_nativeFunctionCallCount[1385];
+int OS_nativeFunctionCount = 1377;
+int OS_nativeFunctionCallCount[1377];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -102,7 +102,6 @@ char * OS_nativeFunctionNames[] = {
 	"GtkCellRendererToggleClass_1sizeof",
 	"GtkCellRendererToggle_1sizeof",
 	"GtkColorSelectionDialog_1sizeof",
-	"GtkFileSelection_1sizeof",
 	"GtkFixedClass_1sizeof",
 	"GtkFixed_1sizeof",
 	"GtkRequisition_1sizeof",
@@ -750,12 +749,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1file_1filter_1get_1name",
 	"_1gtk_1file_1filter_1new",
 	"_1gtk_1file_1filter_1set_1name",
-	"_1gtk_1file_1selection_1get_1filename",
-	"_1gtk_1file_1selection_1get_1selections",
-	"_1gtk_1file_1selection_1hide_1fileop_1buttons",
-	"_1gtk_1file_1selection_1new",
-	"_1gtk_1file_1selection_1set_1filename",
-	"_1gtk_1file_1selection_1set_1select_1multiple",
 	"_1gtk_1fixed_1move",
 	"_1gtk_1fixed_1new",
 	"_1gtk_1fixed_1set_1has_1window",
@@ -1694,11 +1687,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2J",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2J",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I",

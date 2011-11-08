@@ -891,18 +891,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GtkColorSelectionDialog_1sizeof)
 }
 #endif
 
-#ifndef NO_GtkFileSelection_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(GtkFileSelection_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GtkFileSelection_1sizeof_FUNC);
-	rc = (jint)GtkFileSelection_sizeof();
-	OS_NATIVE_EXIT(env, that, GtkFileSelection_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GtkFixedClass_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GtkFixedClass_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -9489,76 +9477,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1filter_1set_1name)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1file_1filter_1set_1name_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1file_1selection_1get_1filename
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1selection_1get_1filename)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1file_1selection_1get_1filename_FUNC);
-	rc = (jintLong)gtk_file_selection_get_filename((GtkFileSelection *)arg0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1file_1selection_1get_1filename_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1file_1selection_1get_1selections
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1selection_1get_1selections)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1file_1selection_1get_1selections_FUNC);
-	rc = (jintLong)gtk_file_selection_get_selections((GtkFileSelection *)arg0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1file_1selection_1get_1selections_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1file_1selection_1hide_1fileop_1buttons
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1selection_1hide_1fileop_1buttons)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1file_1selection_1hide_1fileop_1buttons_FUNC);
-	gtk_file_selection_hide_fileop_buttons((GtkFileSelection *)arg0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1file_1selection_1hide_1fileop_1buttons_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1file_1selection_1new
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1file_1selection_1new)
-	(JNIEnv *env, jclass that, jbyteArray arg0)
-{
-	jbyte *lparg0=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1file_1selection_1new_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jintLong)gtk_file_selection_new((const gchar *)lparg0);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1file_1selection_1new_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1file_1selection_1set_1filename
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1selection_1set_1filename)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1file_1selection_1set_1filename_FUNC);
-	gtk_file_selection_set_filename((GtkFileSelection *)arg0, (const gchar *)arg1);
-	OS_NATIVE_EXIT(env, that, _1gtk_1file_1selection_1set_1filename_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1file_1selection_1set_1select_1multiple
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1selection_1set_1select_1multiple)
-	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1file_1selection_1set_1select_1multiple_FUNC);
-	gtk_file_selection_set_select_multiple((GtkFileSelection *)arg0, (gboolean)arg1);
-	OS_NATIVE_EXIT(env, that, _1gtk_1file_1selection_1set_1select_1multiple_FUNC);
 }
 #endif
 
@@ -19632,27 +19550,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkColor
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2J_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2I) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2J) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2I)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2J)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#endif
-{
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2I_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2J_FUNC);
-#endif
-	if (arg0) setGtkFileSelectionFields(env, arg0, (GtkFileSelection *)arg1);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2I_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2J_FUNC);
 #endif
 }
 #endif
