@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
 	Browser browser;
+	Shell eventShell;
 	Listener listener;
 	boolean hasFocus;
 	
@@ -122,16 +123,22 @@ void handleFocus () {
 	listener = new Listener () {
 		public void handleEvent (Event event) {
 			if (event.widget == browser) return;
-			((Mozilla)browser.webBrowser).Deactivate ();
-			hasFocus = false;
-			browser.getDisplay ().removeFilter (SWT.FocusIn, this);
-			browser.getShell ().removeListener (SWT.Deactivate, this);
+			if (event.type != SWT.Dispose) {
+				((Mozilla)browser.webBrowser).Deactivate ();
+				hasFocus = false;
+			}
+			eventShell.getDisplay ().removeFilter (SWT.FocusIn, this);
+			eventShell.removeListener (SWT.Deactivate, this);
+			eventShell.removeListener (SWT.Dispose, this);
+			eventShell = null;
 			listener = null;
 		}
 	
 	};
-	browser.getDisplay ().addFilter (SWT.FocusIn, listener);
-	browser.getShell ().addListener (SWT.Deactivate, listener);
+	eventShell = browser.getShell ();
+	eventShell.getDisplay ().addFilter (SWT.FocusIn, listener);
+	eventShell.addListener (SWT.Deactivate, listener);
+	eventShell.addListener (SWT.Dispose, listener);
 }
 
 void handleMouseDown () {
@@ -150,8 +157,10 @@ boolean needsSpinup () {
 
 void onDispose (int /*long*/ embedHandle) {
 	if (listener != null) {
-		browser.getDisplay ().removeFilter (SWT.FocusIn, listener);
-		browser.getShell ().removeListener (SWT.Deactivate, listener);
+		eventShell.getDisplay ().removeFilter (SWT.FocusIn, listener);
+		eventShell.removeListener (SWT.Deactivate, listener);
+		eventShell.removeListener (SWT.Dispose, listener);
+		eventShell = null;
 		listener = null;
 	}
 	browser = null;
