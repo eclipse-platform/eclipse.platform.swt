@@ -11159,10 +11159,7 @@ public static final void gtk_tooltips_force_window(int /*long*/ tooltips) {
 	}
 }
 /**
- * @param tooltips cast=(GtkTooltips *)
- * @param widget cast=(GtkWidget *)
- * @param tip_text cast=(const gchar *)
- * @param tip_private cast=(const gchar *)
+ * @method flags=dynamic
  */
 public static final native void _gtk_tooltips_set_tip(int /*long*/ tooltips, int /*long*/ widget, byte[] tip_text, byte[] tip_private);
 public static final void gtk_tooltips_set_tip(int /*long*/ tooltips, int /*long*/ widget, byte[] tip_text, byte[] tip_private) {

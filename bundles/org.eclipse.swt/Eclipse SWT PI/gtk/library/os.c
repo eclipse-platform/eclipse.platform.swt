@@ -14304,7 +14304,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tooltips_1set_1tip)
 	OS_NATIVE_ENTER(env, that, _1gtk_1tooltips_1set_1tip_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	gtk_tooltips_set_tip((GtkTooltips *)arg0, (GtkWidget *)arg1, (const gchar *)lparg2, (const gchar *)lparg3);
+/*
+	gtk_tooltips_set_tip(arg0, arg1, lparg2, lparg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_tooltips_set_tip)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, jbyte *, jbyte *))fp)(arg0, arg1, lparg2, lparg3);
+		}
+	}
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);

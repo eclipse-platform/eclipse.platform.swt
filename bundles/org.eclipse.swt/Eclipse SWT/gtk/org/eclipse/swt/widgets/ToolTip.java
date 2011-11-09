@@ -794,10 +794,14 @@ public void setVisible (boolean visible) {
 			if (text.length () > 0) string.append ("\n\n");
 			string.append (message);
 			byte [] buffer = Converter.wcsToMbcs (null, string.toString(), true);
-			OS.gtk_tooltips_set_tip (handle, vboxHandle, buffer, null);
-			int /*long*/ data = OS.gtk_tooltips_data_get (vboxHandle);
-			OS.GTK_TOOLTIPS_SET_ACTIVE (handle, data);
-			OS.gtk_tooltips_set_tip (handle, vboxHandle, buffer, null);
+			if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+				OS.gtk_widget_set_tooltip_text(vboxHandle, buffer);
+			} else {
+				OS.gtk_tooltips_set_tip (handle, vboxHandle, buffer, null);
+				int /*long*/ data = OS.gtk_tooltips_data_get (vboxHandle);
+				OS.GTK_TOOLTIPS_SET_ACTIVE (handle, data);
+				OS.gtk_tooltips_set_tip (handle, vboxHandle, buffer, null);
+			}
 		}		
 		if (autohide) timerId = OS.g_timeout_add (DELAY, display.windowTimerProc, handle);
 	} else {
