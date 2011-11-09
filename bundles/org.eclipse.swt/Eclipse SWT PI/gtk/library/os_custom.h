@@ -74,6 +74,7 @@
 #define gtk_calendar_set_display_options_LIB LIB_GTK
 #define gtk_clipboard_store_LIB LIB_GTK
 #define gtk_clipboard_set_can_store_LIB LIB_GTK
+#define gtk_cell_layout_get_cells_LIB LIB_GTK
 #define gtk_cell_layout_set_attributes_LIB LIB_GTK
 #define gtk_cell_layout_clear_LIB LIB_GTK
 #define gtk_cell_layout_pack_start_LIB LIB_GTK
@@ -129,6 +130,7 @@
 #define gtk_tooltip_trigger_tooltip_query_LIB LIB_GTK
 #define gtk_tree_selection_count_selected_rows_LIB LIB_GTK
 #define gtk_tree_selection_get_selected_rows_LIB LIB_GTK
+#define gtk_tree_view_column_get_cell_renderers_LIB LIB_GTK
 #define gtk_tree_view_column_cell_get_position_LIB LIB_GTK
 #define gtk_tree_view_convert_widget_to_bin_window_coords_LIB LIB_GTK
 #define gtk_tree_view_set_grid_lines_LIB LIB_GTK

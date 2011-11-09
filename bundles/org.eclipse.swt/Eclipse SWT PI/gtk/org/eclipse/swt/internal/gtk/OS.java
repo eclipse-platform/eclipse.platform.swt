@@ -6094,6 +6094,16 @@ public static final void gtk_cell_layout_clear(int /*long*/ cell_layout) {
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native int /*long*/ _gtk_cell_layout_get_cells(int /*long*/ cell_layout);
+public static final int /*long*/ gtk_cell_layout_get_cells(int /*long*/ cell_layout) {
+	lock.lock();
+	try {
+		return _gtk_cell_layout_get_cells(cell_layout);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @method flags=no_gen */
 public static final native void _gtk_cell_layout_set_attributes(int /*long*/ cell_layout, int /*long*/ cell, byte[] attribute, int column, int /*long*/ sentinel);
 public static final void gtk_cell_layout_set_attributes(int /*long*/ cell_layout, int /*long*/ cell, byte[] attribute, int column, int /*long*/ sentinel) {
@@ -11786,7 +11796,10 @@ public static final void gtk_tree_view_column_clear(int /*long*/ tree_column) {
 		lock.unlock();
 	}
 }
-/** @param tree_column cast=(GtkTreeViewColumn *) */
+/** 
+ * @method flags=dynamic
+ * @param tree_column cast=(GtkTreeViewColumn *) 
+ */
 public static final native int /*long*/ _gtk_tree_view_column_get_cell_renderers(int /*long*/ tree_column);
 public static final int /*long*/ gtk_tree_view_column_get_cell_renderers(int /*long*/ tree_column) {
 	lock.lock();

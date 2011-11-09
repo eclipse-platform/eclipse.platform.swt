@@ -7830,6 +7830,26 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1clear)
 }
 #endif
 
+#ifndef NO__1gtk_1cell_1layout_1get_1cells
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1cell_1layout_1get_1cells)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1layout_1get_1cells_FUNC);
+/*
+	rc = (jintLong)gtk_cell_layout_get_cells(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_cell_layout_get_cells)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1layout_1get_1cells_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1cell_1layout_1pack_1start
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1pack_1start)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jboolean arg2)
@@ -15018,7 +15038,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1get_1cell_1rende
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1column_1get_1cell_1renderers_FUNC);
+/*
 	rc = (jintLong)gtk_tree_view_column_get_cell_renderers((GtkTreeViewColumn *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_tree_view_column_get_cell_renderers)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkTreeViewColumn *))fp)((GtkTreeViewColumn *)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1column_1get_1cell_1renderers_FUNC);
 	return rc;
 }
