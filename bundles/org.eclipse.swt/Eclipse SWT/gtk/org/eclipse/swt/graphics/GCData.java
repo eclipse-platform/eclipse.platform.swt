@@ -54,7 +54,7 @@ public final class GCData {
 	public int /*long*/ cairo;
 	public double cairoXoffset, cairoYoffset;
 	public boolean disposeCairo;
-	public double[] clippingTransform;
+	public double[] identity, clippingTransform;
 	public String string;
 	public int stringWidth = -1;
 	public int stringHeight = -1;
