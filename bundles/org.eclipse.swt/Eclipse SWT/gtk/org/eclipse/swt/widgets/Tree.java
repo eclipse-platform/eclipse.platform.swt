@@ -3408,7 +3408,11 @@ void showItem (int /*long*/ path, boolean scroll) {
 		OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
 		boolean isHidden = cellRect.y == 0 && cellRect.height == 0;
 		int [] tx = new int [1], ty = new int [1];
-		OS.gtk_tree_view_widget_to_tree_coords (handle, cellRect.x, cellRect.y, tx, ty);
+		if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+			OS.gtk_tree_view_convert_widget_to_bin_window_coords(handle, cellRect.x, cellRect.y, tx, ty);
+		} else {
+			OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
+		}
 		GdkRectangle visibleRect = new GdkRectangle ();
 		OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
 		if (!isHidden) {

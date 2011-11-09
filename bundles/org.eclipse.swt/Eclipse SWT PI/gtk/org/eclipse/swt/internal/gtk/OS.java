@@ -11938,7 +11938,7 @@ public static final void gtk_tree_view_column_set_alignment(int /*long*/ tree_co
  * @param cell_renderer cast=(GtkCellRenderer *)
  * @param func cast=(GtkTreeCellDataFunc)
  * @param func_data cast=(gpointer)
- * @param destroy cast=(GtkDestroyNotify)
+ * @param destroy cast=(GDestroyNotify)
  */
 public static final native void _gtk_tree_view_column_set_cell_data_func(int /*long*/ tree_column, int /*long*/ cell_renderer, int /*long*/ func, int /*long*/ func_data, int /*long*/ destroy);
 public static final void gtk_tree_view_column_set_cell_data_func(int /*long*/ tree_column, int /*long*/ cell_renderer, int /*long*/ func, int /*long*/ func_data, int /*long*/ destroy) {
@@ -12455,12 +12455,28 @@ public static final void gtk_tree_view_unset_rows_drag_dest(int /*long*/ tree_vi
 		lock.unlock();
 	}
 }
-/** @param tree_view cast=(GtkTreeView *) */
+/** 
+ * @method flags=dynamic
+ * @param tree_view cast=(GtkTreeView *) 
+ */
 public static final native void _gtk_tree_view_widget_to_tree_coords(int /*long*/ tree_view, int wx, int wy, int[] tx, int[] ty);
 public static final void gtk_tree_view_widget_to_tree_coords(int /*long*/ tree_view, int wx, int wy, int[] tx, int[] ty) {
 	lock.lock();
 	try {
 		_gtk_tree_view_widget_to_tree_coords(tree_view, wx, wy, tx, ty);
+	} finally {
+		lock.unlock();
+	}
+}
+/** 
+ * @method flags=dynamic
+ * @param tree_view cast=(GtkTreeView *) 
+ */
+public static final native void _gtk_tree_view_convert_widget_to_bin_window_coords(int /*long*/ tree_view, int wx, int wy, int[] tx, int[] ty);
+public static final void gtk_tree_view_convert_widget_to_bin_window_coords(int /*long*/ tree_view, int wx, int wy, int[] tx, int[] ty) {
+	lock.lock();
+	try {
+		_gtk_tree_view_convert_widget_to_bin_window_coords(tree_view, wx, wy, tx, ty);
 	} finally {
 		lock.unlock();
 	}

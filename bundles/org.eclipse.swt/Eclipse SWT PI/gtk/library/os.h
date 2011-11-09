@@ -19,9 +19,11 @@
 #define NDEBUG
 
 #define G_DISABLE_DEPRECATED
-/*
 #define GTK_DISABLE_DEPRECATED
 /*
+#define GDK_DISABLE_DEPRECATED
+#define GTK_DISABLE_SINGLE_INCLUDES
+#define GSEAL_ENABLE
 */
 
 #include <stdlib.h>

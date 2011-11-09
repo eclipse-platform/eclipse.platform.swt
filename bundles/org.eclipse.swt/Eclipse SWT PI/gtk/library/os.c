@@ -15179,7 +15179,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1set_1cell_1data_1fun
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1column_1set_1cell_1data_1func_FUNC);
-	gtk_tree_view_column_set_cell_data_func((GtkTreeViewColumn *)arg0, (GtkCellRenderer *)arg1, (GtkTreeCellDataFunc)arg2, (gpointer)arg3, (GtkDestroyNotify)arg4);
+	gtk_tree_view_column_set_cell_data_func((GtkTreeViewColumn *)arg0, (GtkCellRenderer *)arg1, (GtkTreeCellDataFunc)arg2, (gpointer)arg3, (GDestroyNotify)arg4);
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1column_1set_1cell_1data_1func_FUNC);
 }
 #endif
@@ -15295,6 +15295,31 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1set_1widget)
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1column_1set_1widget_FUNC);
 	gtk_tree_view_column_set_widget((GtkTreeViewColumn *)arg0, (GtkWidget *)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1column_1set_1widget_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1tree_1view_1convert_1widget_1to_1bin_1window_1coords
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1convert_1widget_1to_1bin_1window_1coords)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1convert_1widget_1to_1bin_1window_1coords_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+/*
+	gtk_tree_view_convert_widget_to_bin_window_coords((GtkTreeView *)arg0, arg1, arg2, lparg3, lparg4);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_tree_view_convert_widget_to_bin_window_coords)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkTreeView *, jint, jint, jint *, jint *))fp)((GtkTreeView *)arg0, arg1, arg2, lparg3, lparg4);
+		}
+	}
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1convert_1widget_1to_1bin_1window_1coords_FUNC);
 }
 #endif
 
@@ -15673,7 +15698,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1widget_1to_1tree_1coords)
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1widget_1to_1tree_1coords_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+/*
 	gtk_tree_view_widget_to_tree_coords((GtkTreeView *)arg0, arg1, arg2, lparg3, lparg4);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_tree_view_widget_to_tree_coords)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkTreeView *, jint, jint, jint *, jint *))fp)((GtkTreeView *)arg0, arg1, arg2, lparg3, lparg4);
+		}
+	}
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
