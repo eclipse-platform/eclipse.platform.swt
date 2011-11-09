@@ -19,6 +19,7 @@
 #define NDEBUG
 
 #define G_DISABLE_DEPRECATED
+/*
 #define GTK_DISABLE_DEPRECATED
 /*
 */

@@ -8253,7 +8253,10 @@ public static final int /*long*/ gtk_menu_get_attach_widget(int /*long*/ menu) {
 		lock.unlock();
 	}
 }
-/** @param menu_item cast=(GtkMenuItem *) */
+/**
+ * @method flags=dynamic 
+ * @param menu_item cast=(GtkMenuItem *) 
+ */
 public static final native void _gtk_menu_item_remove_submenu(int /*long*/ menu_item);
 public static final void gtk_menu_item_remove_submenu(int /*long*/ menu_item) {
 	lock.lock();

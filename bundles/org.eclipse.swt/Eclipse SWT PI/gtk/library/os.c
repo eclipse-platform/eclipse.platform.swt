@@ -10541,7 +10541,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1menu_1item_1remove_1submenu)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1menu_1item_1remove_1submenu_FUNC);
+/*
 	gtk_menu_item_remove_submenu((GtkMenuItem *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_menu_item_remove_submenu)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkMenuItem *))fp)((GtkMenuItem *)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1menu_1item_1remove_1submenu_FUNC);
 }
 #endif

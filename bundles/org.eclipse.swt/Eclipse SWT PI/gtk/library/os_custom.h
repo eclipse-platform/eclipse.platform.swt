@@ -122,6 +122,7 @@
 #define gtk_icon_info_free_LIB LIB_GTK
 #define gtk_icon_theme_lookup_by_gicon_LIB LIB_GTK
 #define gtk_icon_theme_get_default_LIB LIB_GTK
+#define gtk_menu_item_remove_submenu_LIB LIB_GTK
 #define gtk_menu_shell_set_take_focus_LIB LIB_GTK
 #define gtk_window_set_keep_below_LIB LIB_GTK
 #define gtk_toolbar_set_orientation_LIB LIB_GTK
