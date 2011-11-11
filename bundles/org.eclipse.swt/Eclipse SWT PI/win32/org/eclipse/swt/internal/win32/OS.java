@@ -707,6 +707,9 @@ public class OS extends C {
 	public static final int FVIRTKEY = 0x1;
 	public static final int GBS_NORMAL = 1;
 	public static final int GBS_DISABLED = 2;
+	public static final int GBF_DIRECT = 0x00000001;
+	public static final int GBF_COPY = 0x00000002;
+	public static final int GBF_VALIDBITS = 0x00000003;
 	public static final int GCP_REORDER = 0x0002;
 	public static final int GCP_GLYPHSHAPE = 0x0010;
 	public static final int GCP_CLASSIN = 0x00080000;
@@ -1410,6 +1413,14 @@ public class OS extends C {
 	public static final int RBN_CHILDSIZE = RBN_FIRST - 8;
 	public static final int RBN_CHEVRONPUSHED = RBN_FIRST - 10;
 	public static final int RBN_HEIGHTCHANGE = 0xfffffcc1;
+	public static final int RBS_UNCHECKEDNORMAL = 1;
+	public static final int RBS_UNCHECKEDHOT = 2;
+	public static final int RBS_UNCHECKEDPRESSED = 3;
+	public static final int RBS_UNCHECKEDDISABLED = 4;
+	public static final int RBS_CHECKEDNORMAL = 5;
+	public static final int RBS_CHECKEDHOT = 6;
+	public static final int RBS_CHECKEDPRESSED = 7;
+	public static final int RBS_CHECKEDDISABLED = 8;
 	public static final int RBS_DBLCLKTOGGLE = 0x8000;
 	public static final int RBS_BANDBORDERS = 0x400;
 	public static final int RBS_VARHEIGHT = 0x200;
@@ -4421,6 +4432,8 @@ public static final native int GetMessageTime ();
  * @param hrgn cast=(HRGN)
  */
 public static final native int GetMetaRgn (int /*long*/ hdc, int /*long*/ hrgn);
+/** @method flags=dynamic */
+public static final native int GetThemeBitmap (int /*long*/ hTheme, int iPartId, int iStateId, int iPropId, int dwFlags, int /*long*/[] hBitmap);
 /** @method flags=dynamic */
 public static final native int GetThemeColor (int /*long*/ hTheme, int iPartId, int iStateId, int iPropId, int[] pColor);
 /** @method flags=dynamic */

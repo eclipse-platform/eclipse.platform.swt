@@ -6139,6 +6139,30 @@ fail:
 }
 #endif
 
+#ifndef NO_GetThemeBitmap
+JNIEXPORT jint JNICALL OS_NATIVE(GetThemeBitmap)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jint arg4, jintLongArray arg5)
+{
+	jintLong *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetThemeBitmap_FUNC);
+	if (arg5) if ((lparg5 = (*env)->GetIntLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)GetThemeBitmap(arg0, arg1, arg2, arg3, arg4, lparg5);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, GetThemeBitmap)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jint, jint, jint, jint, jintLong *))fp)(arg0, arg1, arg2, arg3, arg4, lparg5);
+		}
+	}
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntLongArrayElements(env, arg5, lparg5, 0);
+	OS_NATIVE_EXIT(env, that, GetThemeBitmap_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetThemeColor
 JNIEXPORT jint JNICALL OS_NATIVE(GetThemeColor)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
