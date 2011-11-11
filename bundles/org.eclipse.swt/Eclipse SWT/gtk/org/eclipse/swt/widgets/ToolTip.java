@@ -576,6 +576,7 @@ void register () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	setVisible(false);
 	if (layoutText != 0) OS.g_object_unref (layoutText);
 	layoutText = 0;
 	if (layoutMessage != 0) OS.g_object_unref (layoutMessage);
@@ -803,8 +804,9 @@ public void setVisible (boolean visible) {
 		if ((style & SWT.BALLOON) != 0) {
 			OS.gtk_widget_hide (handle);
 		} else {
-			int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
-			OS.gtk_widget_hide (tipWindow);
+			int /*long*/ vboxHandle = parent.vboxHandle;
+			byte[] buffer = Converter.wcsToMbcs(null, "", true);
+			OS.gtk_tooltips_set_tip(handle, vboxHandle, buffer, null);
 		}
 	}
 }
