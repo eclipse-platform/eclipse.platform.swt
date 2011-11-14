@@ -623,8 +623,14 @@ void paint(Event event) {
 	int x = 0;
 	// Temporary code - need a better way to determine trim
 	String platform = SWT.getPlatform();
-	if (image != null || (orderedIndex > 0 && "win32".equals(platform))) { //$NON-NLS-1$
-		x += 2;
+	if (image != null) {
+		if ("win32".equals(platform)) { //$NON-NLS-1$
+			if (orderedIndex > 0) { 
+				x += 2;
+			}
+		} else {
+			x += 2;
+		}
 	}
 	Point size = getSize();
 	if (image != null) {
