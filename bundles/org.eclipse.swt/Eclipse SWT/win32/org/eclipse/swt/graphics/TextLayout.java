@@ -2266,8 +2266,8 @@ public int getOffset (int x, int y, int[] trailing) {
 			int /*long*/ advances = run.justify != 0 ? run.justify : run.advances;
 			OS.ScriptXtoCP(xRun, cChars, cGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piCP, piTrailing);
 			int offset = run.start + piCP[0];
-			char ch = segmentsText.charAt(offset);
 			int length = segmentsText.length();
+			char ch = offset < length ? segmentsText.charAt(offset) : 0;
 			if (0xD800 <= ch && ch <= 0xDBFF) {
 				if (offset + 1 < length) {
 					ch = segmentsText.charAt(offset + 1);
