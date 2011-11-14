@@ -503,7 +503,7 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 	int /*long*/ result = super.gtk_focus_out_event (widget, event);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
-	if ((style & SWT.PUSH) != 0 && !OS.GTK_WIDGET_HAS_DEFAULT (handle)) {
+	if ((style & SWT.PUSH) != 0) {
 		Decorations menuShell = menuShell ();
 		if (menuShell.defaultButton == this) {
 			menuShell.defaultButton = null;
