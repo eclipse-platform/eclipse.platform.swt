@@ -3653,6 +3653,20 @@ public static final void gdk_cairo_set_source_color(int /*long*/ cairo, GdkColor
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param window cast=(GdkWindow *)
+ */
+public static final native void _gdk_cairo_set_source_window(int /*long*/ cairo, int /*long*/ window, int x, int y);
+public static final void gdk_cairo_set_source_window(int /*long*/ cairo, int /*long*/ window, int x, int y) {
+        lock.lock();
+        try {
+                _gdk_cairo_set_source_window(cairo, window, x, y);
+        }
+        finally {
+                lock.unlock();
+        }
+}
+/**
  * @param colormap cast=(GdkColormap *)
  * @param color cast=(GdkColor *),flags=no_in
  */

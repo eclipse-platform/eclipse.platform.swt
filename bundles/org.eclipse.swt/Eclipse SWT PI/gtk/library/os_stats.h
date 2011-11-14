@@ -438,6 +438,7 @@ typedef enum {
 	_1gdk_1cairo_1region_FUNC,
 	_1gdk_1cairo_1reset_1clip_FUNC,
 	_1gdk_1cairo_1set_1source_1color_FUNC,
+	_1gdk_1cairo_1set_1source_1window_FUNC,
 	_1gdk_1color_1white_FUNC,
 	_1gdk_1colormap_1alloc_1color_FUNC,
 	_1gdk_1colormap_1free_1colors_FUNC,

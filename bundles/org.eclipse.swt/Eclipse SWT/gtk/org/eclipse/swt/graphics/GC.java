@@ -448,7 +448,26 @@ public void copyArea(Image image, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	//TODO fix for USE_CAIRO
+	if (OS.USE_CAIRO) {
+		int /*long*/ cairo = Cairo.cairo_create(image.surface);
+		if (data.image != null) {
+			Cairo.cairo_set_source_surface(cairo, data.image.surface, x, y);
+		} else if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
+			OS.gdk_cairo_set_source_window(cairo, data.drawable, x, y);
+		} else {
+			int[] w = new int[1], h = new int[1];
+			OS.gdk_drawable_get_size(data.drawable, w, h);
+			int width = w[0], height = h[0];
+			int /*long*/ xDisplay = OS.GDK_DISPLAY();
+			int /*long*/ xDrawable = OS.gdk_x11_drawable_get_xid(data.drawable);
+			int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
+			int /*long*/ srcSurface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width, height);
+			Cairo.cairo_set_source_surface(cairo, srcSurface, x, y);
+		}
+		Cairo.cairo_paint(cairo);
+		Cairo.cairo_destroy(cairo);
+        return;
+	}
 	Rectangle rect = image.getBounds();
 	int /*long*/ gdkGC = OS.gdk_gc_new(image.pixmap);
 	if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);

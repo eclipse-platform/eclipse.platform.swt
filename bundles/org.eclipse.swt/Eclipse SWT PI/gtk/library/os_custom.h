@@ -184,6 +184,7 @@
 #define pango_cairo_font_map_set_resolution_LIB LIB_PANGOCAIRO
 #define gdk_cairo_reset_clip_LIB LIB_GDK
 #define gdk_cairo_set_source_color_LIB LIB_GDK
+#define gdk_cairo_set_source_window_LIB LIB_GDK
 #define gdk_cairo_region_LIB LIB_GDK
 #define gdk_cairo_create_LIB LIB_GDK
 #define gtk_enumerate_printers_LIB LIB_GTK

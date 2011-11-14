@@ -5014,6 +5014,24 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1cairo_1set_1source_1window
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1set_1source_1window)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1cairo_1set_1source_1window_FUNC);
+/*
+	gdk_cairo_set_source_window(arg0, (GdkWindow *)arg1, arg2, arg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_cairo_set_source_window)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GdkWindow *, jint, jint))fp)(arg0, (GdkWindow *)arg1, arg2, arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1cairo_1set_1source_1window_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1color_1white
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1color_1white)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
