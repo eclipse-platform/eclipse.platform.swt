@@ -1206,7 +1206,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 	PangoLogAttr logAttr = new PangoLogAttr();
 	while (0 <= utf8Offset && utf8Offset <= utf8Length) {
 		OS.memmove(logAttr, attrs[0] + utf8Offset * PangoLogAttr.sizeof, PangoLogAttr.sizeof);
-		boolean found = false;
+		boolean found = false, limit = false;
 		if (((movement & SWT.MOVEMENT_CLUSTER) != 0) && logAttr.is_cursor_position) found = true; 
 		if ((movement & SWT.MOVEMENT_WORD) != 0) {
 			if (forward) {
@@ -1223,9 +1223,14 @@ int _getOffset (int offset, int movement, boolean forward) {
 			if (logAttr.is_word_end) found = true;
 			if (logAttr.is_sentence_start) found = true;
 		}
-		if (found) {
+		if (forward) {
+			if (utf8Offset == utf8Length) limit = true;
+		} else {
+			if (utf8Offset == 0) limit = true;
+		}
+		if (found || limit) {
 			int testOffset = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, utf8Offset); 
-			if (invalidOffsets != null) {
+			if (found && invalidOffsets != null) {
 				for (int i = 0; i < invalidOffsets.length; i++) {
 					if (testOffset == invalidOffsets[i]) {
 						found = false;
@@ -1233,7 +1238,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 					}
 				}
 			}
-			if (found) {
+			if (found || limit) {
 				offset = untranslateOffset(testOffset);
 				break;
 			}
