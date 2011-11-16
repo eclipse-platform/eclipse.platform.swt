@@ -954,7 +954,7 @@ static boolean gio_isExecutable(String fileName) {
 static boolean gio_launch(String fileName) {
 	boolean result = false;
 	byte[] fileNameBuffer = Converter.wcsToMbcs (null, fileName, true);
-	int /*long*/ file = OS.g_file_new_for_path (fileNameBuffer);
+	int /*long*/ file = OS.g_file_new_for_commandline_arg (fileNameBuffer);
 	if (file != 0) {
 		int /*long*/ uri = OS.g_file_get_uri (file);
 		if (uri != 0) {

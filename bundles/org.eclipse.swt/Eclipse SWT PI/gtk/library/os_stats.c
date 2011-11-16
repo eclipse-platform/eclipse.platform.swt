@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1384;
-int OS_nativeFunctionCallCount[1384];
+int OS_nativeFunctionCount = 1385;
+int OS_nativeFunctionCallCount[1385];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -250,6 +250,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1file_1icon_1get_1file",
 	"_1g_1file_1info_1get_1content_1type",
 	"_1g_1file_1info_1get_1modification_1time",
+	"_1g_1file_1new_1for_1commandline_1arg",
 	"_1g_1file_1new_1for_1path",
 	"_1g_1file_1new_1for_1uri",
 	"_1g_1file_1query_1info",

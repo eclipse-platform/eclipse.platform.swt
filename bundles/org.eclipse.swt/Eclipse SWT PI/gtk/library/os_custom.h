@@ -280,6 +280,7 @@
 #define g_file_icon_get_file_LIB LIB_GIO
 #define g_file_info_get_content_type_LIB LIB_GIO
 #define g_file_info_get_modification_time_LIB LIB_GIO
+#define g_file_new_for_commandline_arg_LIB LIB_GIO
 #define g_file_new_for_path_LIB LIB_GIO
 #define g_file_new_for_uri_LIB LIB_GIO
 #define g_file_read_LIB LIB_GIO
