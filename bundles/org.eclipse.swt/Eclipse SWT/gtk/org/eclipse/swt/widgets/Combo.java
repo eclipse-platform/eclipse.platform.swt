@@ -62,7 +62,7 @@ public class Combo extends Composite {
 	int /*long*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
 	String [] items = new String [0];
-	boolean ignoreSelect, lockText, selectionAdded;
+	boolean ignoreSelect, selectionAdded;
 	int indexSelected;
 	/**
 	 * the operating system limit for the number of characters
@@ -169,29 +169,10 @@ public void add (String string, int index) {
 	System.arraycopy (items, index, newItems, index + 1, items.length - index);
 	items = newItems;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		OS.gtk_combo_box_insert_text (handle, index, buffer);
 		if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
 			OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);    
 		}
-	} else {
-		/*
-		* Feature in GTK. When the list is empty and the first item
-		* is added, the combo box selects that item replacing the
-		* text in the entry field.  The fix is to avoid this by
-		* stopping the "delete" and "insert_text" signal emission. 
-		*/
-		ignoreSelect = lockText = true;
-		int /*long*/ item = OS.gtk_list_item_new_with_label (buffer);
-		int /*long*/ label = OS.gtk_bin_get_child (item); 
-		setForegroundColor (label, getForegroundColor ());
-		OS.gtk_widget_modify_font (label, getFontDescription ());
-		OS.gtk_widget_set_direction (label, OS.gtk_widget_get_direction (handle));
-		OS.gtk_widget_show (item);
-		int /*long*/ items = OS.g_list_append (0, item);
-		OS.gtk_list_insert_items (listHandle, items, index);
-		ignoreSelect = lockText = false;
-	}
 }
 
 /**
@@ -714,22 +695,9 @@ int /*long*/ imContext () {
 public void deselect (int index) {
 	checkWidget();
 	if (index < 0 || index >= items.length) return;
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		if (OS.gtk_combo_box_get_active (handle) == index) {
 			clearText ();
 		}
-	} else {
-		ignoreSelect = true;
-		int /*long*/ children = OS.gtk_container_get_children (listHandle);
-		int /*long*/ item = OS.g_list_nth_data (children, index);
-		boolean selected = OS.GTK_WIDGET_STATE (item) == OS.GTK_STATE_SELECTED;
-		if (selected) {
-			OS.gtk_list_unselect_all (listHandle);
-			OS.gtk_entry_set_text (entryHandle, new byte[1]);
-		}
-		OS.g_list_free (children);
-		ignoreSelect = false;
-	}
 }
 
 /**
@@ -748,14 +716,7 @@ public void deselect (int index) {
  */
 public void deselectAll () {
 	checkWidget();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		clearText ();
-	} else {
-		ignoreSelect = true;
-		OS.gtk_list_unselect_all (listHandle);
-		OS.gtk_entry_set_text (entryHandle, new byte[1]);
-		ignoreSelect = false;
-	}
 }
 
 boolean dragDetect(int x, int y, boolean filter, boolean dragOnTimeout, boolean[] consume) {
@@ -1245,11 +1206,6 @@ int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
 }
 
 int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /*long*/ end_pos) {
-	if (lockText) {
-		OS.gtk_list_unselect_item (listHandle, 0);
-		OS.g_signal_stop_emission_by_name (entryHandle, OS.delete_text);
-		return 0;
-	}
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
 	if (end_pos == -1) end_pos = OS.g_utf8_strlen (ptr, -1);
@@ -1345,11 +1301,6 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*long*/ new_text_length, int /*long*/ position) {
-	if (lockText) {
-		OS.gtk_list_unselect_item (listHandle, 0);
-		OS.g_signal_stop_emission_by_name (entryHandle, OS.insert_text);
-		return 0;
-	}
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;	
 	if (new_text == 0 || new_text_length == 0) return 0;
 	byte [] buffer = new byte [(int)/*64*/new_text_length];
@@ -1599,23 +1550,8 @@ public void remove (int index) {
 	System.arraycopy (oldItems, 0, newItems, 0, index);
 	System.arraycopy (oldItems, index + 1, newItems, index, oldItems.length - index - 1);
 	items = newItems;
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		if (OS.gtk_combo_box_get_active (handle) == index) clearText ();
 		OS.gtk_combo_box_remove_text (handle, index);
-	} else {
-		ignoreSelect = true;
-		int /*long*/ children = OS.gtk_container_get_children (listHandle);
-		int /*long*/ item = OS.g_list_nth_data (children, index);
-		boolean selected = OS.GTK_WIDGET_STATE (item) == OS.GTK_STATE_SELECTED;
-		int /*long*/ items = OS.g_list_append (0, item);
-		OS.gtk_list_remove_items (listHandle, items);
-		OS.g_list_free (items);
-		OS.g_list_free (children);
-		if (selected) {
-			OS.gtk_entry_set_text (entryHandle, new byte[1]);
-		}
-		ignoreSelect = false;
-	}
 }
 
 /**
@@ -1645,30 +1581,11 @@ public void remove (int start, int end) {
 	System.arraycopy (oldItems, 0, newItems, 0, start);
 	System.arraycopy (oldItems, end + 1, newItems, start, oldItems.length - end - 1);
 	items = newItems;
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		int index = OS.gtk_combo_box_get_active (handle);
 		if (start <= index && index <= end) clearText();
 		for (int i = end; i >= start; i--) {
 			OS.gtk_combo_box_remove_text (handle, i);
 		}
-	} else {
-		boolean selected = false;
-		ignoreSelect = true;
-		int /*long*/ items = 0;
-		int /*long*/ children = OS.gtk_container_get_children (listHandle);
-		for (int i = start; i <= end; i++) {
-			int /*long*/ item = OS.g_list_nth_data (children, i);
-			selected |= OS.GTK_WIDGET_STATE (item) == OS.GTK_STATE_SELECTED;
-			items = OS.g_list_append (items, item);
-		}
-		OS.gtk_list_remove_items (listHandle, items);
-		OS.g_list_free (items);
-		OS.g_list_free (children);
-		if (selected) {
-			OS.gtk_entry_set_text (entryHandle, new byte[1]);
-		}
-		ignoreSelect = false;
-	}
 }
 
 /**
@@ -1708,17 +1625,10 @@ public void removeAll () {
 	checkWidget();
 	int count = items.length;
 	items = new String[0];
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		clearText ();
 		for (int i = count - 1; i >= 0; i--) {
 			OS.gtk_combo_box_remove_text (handle, i);
 		}
-	} else {
-		ignoreSelect = true;
-		OS.gtk_list_clear_items (listHandle, 0, -1);
-		OS.gtk_entry_set_text (entryHandle, new byte[1]);
-		ignoreSelect = false;
-	}
 }
 
 /**
@@ -1811,7 +1721,6 @@ public void removeVerifyListener (VerifyListener listener) {
 public void select (int index) {
 	checkWidget();
 	if (index < 0 || index >= items.length) return;
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.gtk_combo_box_set_active (handle, index);
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -1823,11 +1732,6 @@ public void select (int index) {
 			*/
 			sendEvent (SWT.Modify);
 		}
-	} else {
-		ignoreSelect = true;
-		OS.gtk_list_select_item (listHandle, index);
-		ignoreSelect = false;
-	}
 }
 
 void setBackgroundColor (GdkColor color) {
@@ -1968,7 +1872,6 @@ public void setItems (String [] items) {
 	int count = this.items.length;
 	this.items = new String [items.length];
 	System.arraycopy (items, 0, this.items, 0, items.length);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		clearText ();
 		for (int i = count - 1; i >= 0; i--) {
 			OS.gtk_combo_box_remove_text (handle, i);
@@ -1981,28 +1884,6 @@ public void setItems (String [] items) {
 				OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);    
 			}
 		}
-	} else {
-		lockText = ignoreSelect = true;
-		OS.gtk_list_clear_items (listHandle, 0, -1);
-		int /*long*/ font = getFontDescription ();
-		GdkColor color = getForegroundColor ();
-		int direction = OS.gtk_widget_get_direction (handle);
-		int i = 0;
-		while (i < items.length) {
-			String string = items [i];
-			byte [] buffer = Converter.wcsToMbcs (null, string, true);
-			int /*long*/ item = OS.gtk_list_item_new_with_label (buffer);
-			int /*long*/ label = OS.gtk_bin_get_child (item); 
-			setForegroundColor (label, color);
-			OS.gtk_widget_modify_font (label, font);
-			OS.gtk_widget_set_direction (label, direction);
-			OS.gtk_container_add (listHandle, item);
-			OS.gtk_widget_show (item);
-			i++;
-		}
-		lockText = ignoreSelect = false;
-		OS.gtk_entry_set_text (entryHandle, new byte[1]);
-	}
 }
 
 /**

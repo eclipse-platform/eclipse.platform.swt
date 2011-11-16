@@ -832,12 +832,6 @@ typedef enum {
 	_1gtk_1label_1set_1text__J_3B_FUNC,
 #endif
 	_1gtk_1label_1set_1text_1with_1mnemonic_FUNC,
-	_1gtk_1list_1append_1items_FUNC,
-	_1gtk_1list_1clear_1items_FUNC,
-	_1gtk_1list_1insert_1items_FUNC,
-	_1gtk_1list_1item_1new_1with_1label_FUNC,
-	_1gtk_1list_1remove_1items_FUNC,
-	_1gtk_1list_1select_1item_FUNC,
 	_1gtk_1list_1store_1append_FUNC,
 	_1gtk_1list_1store_1clear_FUNC,
 	_1gtk_1list_1store_1insert_FUNC,
@@ -868,8 +862,6 @@ typedef enum {
 #else
 	_1gtk_1list_1store_1set__JJI_3BJ_FUNC,
 #endif
-	_1gtk_1list_1unselect_1all_FUNC,
-	_1gtk_1list_1unselect_1item_FUNC,
 	_1gtk_1main_FUNC,
 	_1gtk_1main_1do_1event_FUNC,
 	_1gtk_1main_1iteration_FUNC,

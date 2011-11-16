@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1392;
-int OS_nativeFunctionCallCount[1392];
+int OS_nativeFunctionCount = 1384;
+int OS_nativeFunctionCallCount[1384];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -824,12 +824,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1label_1set_1text__J_3B",
 #endif
 	"_1gtk_1label_1set_1text_1with_1mnemonic",
-	"_1gtk_1list_1append_1items",
-	"_1gtk_1list_1clear_1items",
-	"_1gtk_1list_1insert_1items",
-	"_1gtk_1list_1item_1new_1with_1label",
-	"_1gtk_1list_1remove_1items",
-	"_1gtk_1list_1select_1item",
 	"_1gtk_1list_1store_1append",
 	"_1gtk_1list_1store_1clear",
 	"_1gtk_1list_1store_1insert",
@@ -860,8 +854,6 @@ char * OS_nativeFunctionNames[] = {
 #else
 	"_1gtk_1list_1store_1set__JJI_3BJ",
 #endif
-	"_1gtk_1list_1unselect_1all",
-	"_1gtk_1list_1unselect_1item",
 	"_1gtk_1main",
 	"_1gtk_1main_1do_1event",
 	"_1gtk_1main_1iteration",

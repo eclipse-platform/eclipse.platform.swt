@@ -10346,72 +10346,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1list_1append_1items
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1append_1items)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1list_1append_1items_FUNC);
-	gtk_list_append_items((GtkList *)arg0, (GList *)arg1);
-	OS_NATIVE_EXIT(env, that, _1gtk_1list_1append_1items_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1list_1clear_1items
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1clear_1items)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1list_1clear_1items_FUNC);
-	gtk_list_clear_items((GtkList *)arg0, arg1, arg2);
-	OS_NATIVE_EXIT(env, that, _1gtk_1list_1clear_1items_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1list_1insert_1items
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1insert_1items)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1list_1insert_1items_FUNC);
-	gtk_list_insert_items((GtkList *)arg0, (GList *)arg1, arg2);
-	OS_NATIVE_EXIT(env, that, _1gtk_1list_1insert_1items_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1list_1item_1new_1with_1label
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1list_1item_1new_1with_1label)
-	(JNIEnv *env, jclass that, jbyteArray arg0)
-{
-	jbyte *lparg0=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1list_1item_1new_1with_1label_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jintLong)gtk_list_item_new_with_label((const gchar *)lparg0);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1list_1item_1new_1with_1label_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1list_1remove_1items
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1remove_1items)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1list_1remove_1items_FUNC);
-	gtk_list_remove_items((GtkList *)arg0, (GList *)arg1);
-	OS_NATIVE_EXIT(env, that, _1gtk_1list_1remove_1items_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1list_1select_1item
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1select_1item)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1list_1select_1item_FUNC);
-	gtk_list_select_item((GtkList *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, _1gtk_1list_1select_1item_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1list_1store_1append
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1append)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -10577,26 +10511,6 @@ fail:
 #else
 	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__JJI_3BJ_FUNC);
 #endif
-}
-#endif
-
-#ifndef NO__1gtk_1list_1unselect_1all
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1unselect_1all)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1list_1unselect_1all_FUNC);
-	gtk_list_unselect_all((GtkList *)arg0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1list_1unselect_1all_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1list_1unselect_1item
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1unselect_1item)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1list_1unselect_1item_FUNC);
-	gtk_list_unselect_item((GtkList *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, _1gtk_1list_1unselect_1item_FUNC);
 }
 #endif
 
