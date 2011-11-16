@@ -420,7 +420,6 @@ void createHandle (int index) {
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		int /*long*/ oldList = OS.gtk_window_list_toplevels ();  
 		if ((style & SWT.READ_ONLY) != 0) {
 			handle = OS.gtk_combo_box_new_text ();
@@ -476,55 +475,6 @@ void createHandle (int index) {
 		if ((style & SWT.READ_ONLY) != 0 && buttonHandle != 0) {
 			OS.GTK_WIDGET_UNSET_FLAGS (buttonHandle, OS.GTK_RECEIVES_DEFAULT);
 		}
-	} else {
-		handle = OS.gtk_combo_new ();
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gtk_container_add (fixedHandle, handle);
-		GtkCombo combo = new GtkCombo ();
-		OS.memmove (combo, handle);
-		entryHandle = combo.entry;
-		listHandle = combo.list;
-		
-		if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
-			int /*long*/ parentHandle = 0;
-			int /*long*/ temp = listHandle;
-			while ((temp = OS.gtk_widget_get_parent(temp)) != 0) {
-				parentHandle = temp;
-			}
-			popupHandle = parentHandle;
-			if (popupHandle != 0) {
-				int /*long*/ modalGroup = getShell().modalGroup;
-				if (modalGroup != 0) {
-					OS.gtk_window_group_add_window (modalGroup, popupHandle);
-				}
-			}
-		}
-		/*
-		* Feature in GTK.  There is no API to query the arrow
-		* handle from a combo box although it is possible to
-		* get the list and text field.  The arrow handle is needed
-		* to hook events.  The fix is to find the first child that is
-		* not the entry or list and assume this is the arrow handle.
-		*/
-		int /*long*/ list = OS.gtk_container_get_children (handle);
-		if (list != 0) {
-			int i = 0, count = OS.g_list_length (list);
-			while (i<count) {
-				int /*long*/ childHandle = OS.g_list_nth_data (list, i);
-				if (childHandle != entryHandle && childHandle != listHandle) {
-					buttonHandle = childHandle;
-					break;
-				}
-				i++;
-			}
-			OS.g_list_free (list);
-		}
-		
-		boolean editable = (style & SWT.READ_ONLY) == 0;
-		OS.gtk_editable_set_editable (entryHandle, editable);
-		OS.gtk_combo_disable_activate (handle);
-		OS.gtk_combo_set_case_sensitive (handle, true);
-	}
 }
 
 /**

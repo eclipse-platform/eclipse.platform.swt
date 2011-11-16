@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2011 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -1503,40 +1503,6 @@ void setGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSel
 	(*env)->SetIntLongField(env, lpObject, GtkColorSelectionDialogFc.ok_button, (jintLong)lpStruct->ok_button);
 	(*env)->SetIntLongField(env, lpObject, GtkColorSelectionDialogFc.cancel_button, (jintLong)lpStruct->cancel_button);
 	(*env)->SetIntLongField(env, lpObject, GtkColorSelectionDialogFc.help_button, (jintLong)lpStruct->help_button);
-}
-#endif
-
-#ifndef NO_GtkCombo
-typedef struct GtkCombo_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID entry, list;
-} GtkCombo_FID_CACHE;
-
-GtkCombo_FID_CACHE GtkComboFc;
-
-void cacheGtkComboFields(JNIEnv *env, jobject lpObject)
-{
-	if (GtkComboFc.cached) return;
-	GtkComboFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GtkComboFc.entry = (*env)->GetFieldID(env, GtkComboFc.clazz, "entry", I_J);
-	GtkComboFc.list = (*env)->GetFieldID(env, GtkComboFc.clazz, "list", I_J);
-	GtkComboFc.cached = 1;
-}
-
-GtkCombo *getGtkComboFields(JNIEnv *env, jobject lpObject, GtkCombo *lpStruct)
-{
-	if (!GtkComboFc.cached) cacheGtkComboFields(env, lpObject);
-	lpStruct->entry = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkComboFc.entry);
-	lpStruct->list = (GtkWidget *)(*env)->GetIntLongField(env, lpObject, GtkComboFc.list);
-	return lpStruct;
-}
-
-void setGtkComboFields(JNIEnv *env, jobject lpObject, GtkCombo *lpStruct)
-{
-	if (!GtkComboFc.cached) cacheGtkComboFields(env, lpObject);
-	(*env)->SetIntLongField(env, lpObject, GtkComboFc.entry, (jintLong)lpStruct->entry);
-	(*env)->SetIntLongField(env, lpObject, GtkComboFc.list, (jintLong)lpStruct->list);
 }
 #endif
 

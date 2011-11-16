@@ -604,7 +604,6 @@ public static final native int GtkAdjustment_sizeof();
 public static final native int GtkAllocation_sizeof();
 public static final native int GtkBorder_sizeof();
 public static final native int GtkColorSelectionDialog_sizeof();
-public static final native int GtkCombo_sizeof();
 public static final native int GtkFileSelection_sizeof();
 public static final native int GtkFixed_sizeof();
 public static final native int GtkFixedClass_sizeof();
@@ -6352,57 +6351,12 @@ public static final void gtk_color_selection_set_has_palette(int /*long*/ colors
 		lock.unlock();
 	}
 }
-/** @param combo cast=(GtkCombo *) */
-public static final native void _gtk_combo_disable_activate(int /*long*/ combo);
-public static final void gtk_combo_disable_activate(int /*long*/ combo) {
-	lock.lock();
-	try {
-		_gtk_combo_disable_activate(combo);
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native int /*long*/ _gtk_combo_new();
-public static final int /*long*/ gtk_combo_new() {
-	lock.lock();
-	try {
-		return _gtk_combo_new();
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param combo cast=(GtkCombo *)
- * @param val cast=(gboolean)
- */
-public static final native void _gtk_combo_set_case_sensitive(int /*long*/ combo, boolean val);
-public static final void gtk_combo_set_case_sensitive(int /*long*/ combo, boolean val) {
-	lock.lock();
-	try {
-		_gtk_combo_set_case_sensitive(combo, val);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @method flags=dynamic */
 public static final native void _gtk_combo_box_set_focus_on_click(int /*long*/ combo, boolean val);
 public static final void gtk_combo_box_set_focus_on_click(int /*long*/ combo, boolean val) {
 	lock.lock();
 	try {
 		_gtk_combo_box_set_focus_on_click(combo, val);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param combo cast=(GtkCombo *)
- * @param strings cast=(GList *)
- */
-public static final native void _gtk_combo_set_popdown_strings(int /*long*/ combo, int /*long*/ strings);
-public static final void gtk_combo_set_popdown_strings(int /*long*/ combo, int /*long*/ strings) {
-	lock.lock();
-	try {
-		_gtk_combo_set_popdown_strings(combo, strings);
 	} finally {
 		lock.unlock();
 	}
@@ -13980,11 +13934,6 @@ public static final native void memmove(GtkWidgetClass dest, int /*long*/ src);
  * @param size cast=(size_t)
  */
 public static final native void memmove(GtkTargetPair dest, int /*long*/ src, int /*long*/ size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- */
-public static final native void memmove(GtkCombo dest, int /*long*/ src);
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)

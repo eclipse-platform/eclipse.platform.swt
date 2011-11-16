@@ -891,18 +891,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GtkColorSelectionDialog_1sizeof)
 }
 #endif
 
-#ifndef NO_GtkCombo_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(GtkCombo_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GtkCombo_1sizeof_FUNC);
-	rc = (jint)GtkCombo_sizeof();
-	OS_NATIVE_EXIT(env, that, GtkCombo_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GtkFileSelection_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GtkFileSelection_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -8308,48 +8296,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1set_1focus_1on_1click)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1set_1focus_1on_1click_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1combo_1disable_1activate
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1disable_1activate)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1disable_1activate_FUNC);
-	gtk_combo_disable_activate((GtkCombo *)arg0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1disable_1activate_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1combo_1new
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1combo_1new)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1new_FUNC);
-	rc = (jintLong)gtk_combo_new();
-	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1new_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1combo_1set_1case_1sensitive
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1set_1case_1sensitive)
-	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1set_1case_1sensitive_FUNC);
-	gtk_combo_set_case_sensitive((GtkCombo *)arg0, (gboolean)arg1);
-	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1set_1case_1sensitive_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1combo_1set_1popdown_1strings
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1set_1popdown_1strings)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1set_1popdown_1strings_FUNC);
-	gtk_combo_set_popdown_strings((GtkCombo *)arg0, (GList *)arg1);
-	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1set_1popdown_1strings_FUNC);
 }
 #endif
 
@@ -19741,27 +19687,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkColor
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2J_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkCombo_2I) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkCombo_2J) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkCombo_2I)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkCombo_2J)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1)
-#endif
-{
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkCombo_2I_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkCombo_2J_FUNC);
-#endif
-	if (arg0) setGtkComboFields(env, arg0, (GtkCombo *)arg1);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkCombo_2I_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkCombo_2J_FUNC);
 #endif
 }
 #endif
