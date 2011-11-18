@@ -1088,10 +1088,10 @@
 			<arg line="push origin ${TAG}"/>
 		</exec>
 		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="push refs/tags/${swt_tag}"/>
+			<arg line="push origin refs/tags/${swt_tag}"/>
 		</exec>
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
-			<arg line="push refs/tags/${swt_tag}"/>
+			<arg line="push origin refs/tags/${swt_tag}"/>
 		</exec>
 	</target>
 	
