@@ -1059,7 +1059,7 @@
 		</exec>
 	</target>
 
-	<target name="push_remote">
+	<target name="push_remote" depends="get_tag">
 		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
 			<arg line="fetch"/>
 		</exec>
@@ -1088,10 +1088,32 @@
 			<arg line="push origin ${TAG}"/>
 		</exec>
 		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="push --tags"/>
+			<arg line="push refs/tags/${swt_tag}"/>
 		</exec>
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
-			<arg line="push --tags"/>
+			<arg line="push refs/tags/${swt_tag}"/>
+		</exec>
+	</target>
+	
+	<target name="push_integration">
+		<property name="TAG" value="master"/>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
+			<arg line="checkout master"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
+			<arg line="reset --hard origin/${TAG}"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
+			<arg line="checkout integration"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
+			<arg line="merge master"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
+			<arg line="push origin integration"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
+			<arg line="checkout master"/>
 		</exec>
 	</target>
 
