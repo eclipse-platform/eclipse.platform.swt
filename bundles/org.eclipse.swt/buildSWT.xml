@@ -1097,6 +1097,7 @@
 	
 	<target name="push_integration">
 		<property name="TAG" value="master"/>
+		<!-- src -->
 		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
 			<arg line="checkout master"/>
 		</exec>
@@ -1113,6 +1114,25 @@
 			<arg line="push origin integration"/>
 		</exec>
 		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
+			<arg line="checkout master"/>
+		</exec>
+		<!-- bin -->
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+			<arg line="checkout master"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+			<arg line="reset --hard origin/${TAG}"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+			<arg line="checkout integration"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+			<arg line="merge master"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+			<arg line="push origin integration"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
 			<arg line="checkout master"/>
 		</exec>
 	</target>
