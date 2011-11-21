@@ -57,12 +57,12 @@ import org.eclipse.swt.events.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Combo extends Composite {
-	int /*long*/ buttonHandle, entryHandle, listHandle, textRenderer, cellHandle, popupHandle, menuHandle;
+	int /*long*/ buttonHandle, entryHandle, textRenderer, cellHandle, popupHandle, menuHandle;
 	int lastEventTime, visibleCount = 10;
 	int /*long*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
 	String [] items = new String [0];
-	boolean ignoreSelect, selectionAdded;
+	boolean selectionAdded;
 	int indexSelected;
 	/**
 	 * the operating system limit for the number of characters
@@ -169,10 +169,10 @@ public void add (String string, int index) {
 	System.arraycopy (items, index, newItems, index + 1, items.length - index);
 	items = newItems;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-		OS.gtk_combo_box_insert_text (handle, index, buffer);
-		if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
-			OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);    
-		}
+	OS.gtk_combo_box_insert_text (handle, index, buffer);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
+		OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);    
+	}
 }
 
 /**
@@ -319,63 +319,29 @@ public void clearSelection () {
 }
 
 void clearText () {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		if ((style & SWT.READ_ONLY) != 0) {
-			int index = OS.gtk_combo_box_get_active (handle);
-			if (index != -1) {
-				int /*long*/ modelHandle = OS.gtk_combo_box_get_model (handle);
-				int /*long*/ [] ptr = new int /*long*/ [1];
-				int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-				OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-				OS.gtk_tree_model_get (modelHandle, iter, 0, ptr, -1);
-				OS.g_free (iter);
-				if (ptr [0] != 0 && OS.strlen (ptr [0]) > 0) postEvent (SWT.Modify);
-				OS.g_free (ptr [0]);
-			}
-		} else {
-			OS.gtk_entry_set_text (entryHandle, new byte[1]);
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	if ((style & SWT.READ_ONLY) != 0) {
+		int index = OS.gtk_combo_box_get_active (handle);
+		if (index != -1) {
+			int /*long*/ modelHandle = OS.gtk_combo_box_get_model (handle);
+			int /*long*/ [] ptr = new int /*long*/ [1];
+			int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+			OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+			OS.gtk_tree_model_get (modelHandle, iter, 0, ptr, -1);
+			OS.g_free (iter);
+			if (ptr [0] != 0 && OS.strlen (ptr [0]) > 0) postEvent (SWT.Modify);
+			OS.g_free (ptr [0]);
 		}
-		OS.gtk_combo_box_set_active (handle, -1);
- 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	} else {
+		OS.gtk_entry_set_text (entryHandle, new byte[1]);
 	}
+	OS.gtk_combo_box_set_active (handle, -1);
+	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		return computeNativeSize (handle, wHint, hHint, changed);
-	}
-	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
-	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
-	int[] w = new int [1], h = new int [1];
-	OS.gtk_widget_realize (entryHandle);
-	int /*long*/ layout = OS.gtk_entry_get_layout (entryHandle);
-	OS.pango_layout_get_size (layout, w, h);
-	int xborder = Display.INNER_BORDER, yborder = Display.INNER_BORDER;
-	int /*long*/ style = OS.gtk_widget_get_style (entryHandle);
-	xborder += OS.gtk_style_get_xthickness (style);
-	yborder += OS.gtk_style_get_ythickness (style);
-	int [] property = new int [1];
-	OS.gtk_widget_style_get (entryHandle, OS.interior_focus, property, 0);
-	if (property [0] == 0) {
-		OS.gtk_widget_style_get (entryHandle, OS.focus_line_width, property, 0);
-		xborder += property [0];
-		yborder += property [0];
-	}
-	int width = OS.PANGO_PIXELS (w [0]) + xborder  * 2;
-	int height = OS.PANGO_PIXELS (h [0]) + yborder  * 2;
-
-	GtkRequisition arrowRequesition = new GtkRequisition ();
-	OS.gtk_widget_size_request (buttonHandle, arrowRequesition);
-	GtkRequisition listRequesition = new GtkRequisition ();
-	int /*long*/ listParent = OS.gtk_widget_get_parent (listHandle);
-	OS.gtk_widget_size_request (listParent != 0 ? listParent : listHandle, listRequesition);
-	
-	width = Math.max (listRequesition.width, width) + arrowRequesition.width + 4;
-	width = wHint == SWT.DEFAULT ? width : wHint;
-	height = hHint == SWT.DEFAULT ? height : hHint;
-	return new Point (width, height);
+	return computeNativeSize (handle, wHint, hHint, changed);
 }
 
 /**
@@ -401,61 +367,61 @@ void createHandle (int index) {
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
-		int /*long*/ oldList = OS.gtk_window_list_toplevels ();  
-		if ((style & SWT.READ_ONLY) != 0) {
-			handle = OS.gtk_combo_box_new_text ();
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			cellHandle = OS.gtk_bin_get_child (handle);
-			if (cellHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		} else {
-			handle = OS.gtk_combo_box_entry_new_text ();
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			entryHandle = OS.gtk_bin_get_child (handle);
-			if (entryHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		}
-		popupHandle = findPopupHandle (oldList);    
-		OS.gtk_container_add (fixedHandle, handle);
-		textRenderer = OS.gtk_cell_renderer_text_new ();
-		if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
-		/*
-		* Feature in GTK. In order to make a read only combo box the same
-		* height as an editable combo box the ypad must be set to 0. In 
-		* versions 2.4.x of GTK, a pad of 0 will clip some letters. The
-		* fix is to set the pad to 1.
-		*/
-		int pad = 0;
-		if (OS.GTK_VERSION < OS.VERSION(2, 6, 0)) pad = 1;
-		OS.g_object_set (textRenderer, OS.ypad, pad, 0);
-		/*
-		* Feature in GTK.  In version 2.4.9 of GTK, a warning is issued
-		* when a call to gtk_cell_layout_clear() is made. The fix is to hide
-		* the warning.
-		*/
-		boolean warnings = display.getWarnings ();
-		display.setWarnings (false);
-		OS.gtk_cell_layout_clear (handle);
-		display.setWarnings (warnings);
-		OS.gtk_cell_layout_pack_start (handle, textRenderer, true);
-		OS.gtk_cell_layout_set_attributes (handle, textRenderer, OS.text, 0, 0);
- 		/*
-		* Feature in GTK. Toggle button creation differs between GTK versions. The 
-		* fix is to call size_request() to force the creation of the button 
-		* for those versions of GTK that defer the creation. 
-		*/
-		if (OS.GTK_VERSION < OS.VERSION (2, 8, 0)) {
-			OS.gtk_widget_size_request(handle, new GtkRequisition());
-		}
-		if (popupHandle != 0) findMenuHandle ();
-		findButtonHandle ();
-		/*
-		* Feature in GTK. By default, read only combo boxes 
-		* process the RETURN key rather than allowing the 
-		* default button to process the key. The fix is to
-		* clear the GTK_RECEIVES_DEFAULT flag.
-		*/
-		if ((style & SWT.READ_ONLY) != 0 && buttonHandle != 0) {
-			OS.GTK_WIDGET_UNSET_FLAGS (buttonHandle, OS.GTK_RECEIVES_DEFAULT);
-		}
+	int /*long*/ oldList = OS.gtk_window_list_toplevels ();  
+	if ((style & SWT.READ_ONLY) != 0) {
+		handle = OS.gtk_combo_box_new_text ();
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		cellHandle = OS.gtk_bin_get_child (handle);
+		if (cellHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	} else {
+		handle = OS.gtk_combo_box_entry_new_text ();
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		entryHandle = OS.gtk_bin_get_child (handle);
+		if (entryHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	}
+	popupHandle = findPopupHandle (oldList);    
+	OS.gtk_container_add (fixedHandle, handle);
+	textRenderer = OS.gtk_cell_renderer_text_new ();
+	if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
+	/*
+	* Feature in GTK. In order to make a read only combo box the same
+	* height as an editable combo box the ypad must be set to 0. In 
+	* versions 2.4.x of GTK, a pad of 0 will clip some letters. The
+	* fix is to set the pad to 1.
+	*/
+	int pad = 0;
+	if (OS.GTK_VERSION < OS.VERSION(2, 6, 0)) pad = 1;
+	OS.g_object_set (textRenderer, OS.ypad, pad, 0);
+	/*
+	* Feature in GTK.  In version 2.4.9 of GTK, a warning is issued
+	* when a call to gtk_cell_layout_clear() is made. The fix is to hide
+	* the warning.
+	*/
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	OS.gtk_cell_layout_clear (handle);
+	display.setWarnings (warnings);
+	OS.gtk_cell_layout_pack_start (handle, textRenderer, true);
+	OS.gtk_cell_layout_set_attributes (handle, textRenderer, OS.text, 0, 0);
+	/*
+	* Feature in GTK. Toggle button creation differs between GTK versions. The 
+	* fix is to call size_request() to force the creation of the button 
+	* for those versions of GTK that defer the creation. 
+	*/
+	if (OS.GTK_VERSION < OS.VERSION (2, 8, 0)) {
+		OS.gtk_widget_size_request(handle, new GtkRequisition());
+	}
+	if (popupHandle != 0) findMenuHandle ();
+	findButtonHandle ();
+	/*
+	* Feature in GTK. By default, read only combo boxes 
+	* process the RETURN key rather than allowing the 
+	* default button to process the key. The fix is to
+	* clear the GTK_RECEIVES_DEFAULT flag.
+	*/
+	if ((style & SWT.READ_ONLY) != 0 && buttonHandle != 0) {
+		OS.GTK_WIDGET_UNSET_FLAGS (buttonHandle, OS.GTK_RECEIVES_DEFAULT);
+	}
 }
 
 /**
@@ -481,7 +447,6 @@ void deregister () {
 	super.deregister ();
 	if (buttonHandle != 0) display.removeWidget (buttonHandle);
 	if (entryHandle != 0) display.removeWidget (entryHandle);
-	if (listHandle != 0) display.removeWidget (listHandle);
 	if (popupHandle != 0) display.removeWidget (popupHandle);
 	if (menuHandle != 0) display.removeWidget (menuHandle);
 	int /*long*/ imContext = imContext ();
@@ -558,7 +523,7 @@ void findButtonHandle() {
 void findMenuHandle() {
 	OS.gtk_container_forall (popupHandle, display.allChildrenProc, 0);
 	if (display.allChildren != 0) {
-	int /*long*/ list = display.allChildren;
+	    int /*long*/ list = display.allChildren;
 		while (list != 0) {
 		int /*long*/ widget = OS.g_list_data (list);
 		if (OS.G_OBJECT_TYPE (widget) == OS.GTK_TYPE_MENU ()) {
@@ -567,8 +532,8 @@ void findMenuHandle() {
 		}
 		list = OS.g_list_next (list);
 	}
-	OS.g_list_free (display.allChildren);
-	display.allChildren = 0;
+	    OS.g_list_free (display.allChildren);
+	    display.allChildren = 0;
 	}
 }
 	
@@ -610,9 +575,7 @@ int /*long*/ fontHandle () {
 }
 
 int /*long*/ focusHandle () {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		if ((style & SWT.READ_ONLY) != 0 && buttonHandle != 0) return buttonHandle;
-	}
+	if ((style & SWT.READ_ONLY) != 0 && buttonHandle != 0) return buttonHandle;
 	if (entryHandle != 0) return entryHandle;
 	return super.focusHandle ();
 }
@@ -620,15 +583,12 @@ int /*long*/ focusHandle () {
 boolean hasFocus () {
 	if (super.hasFocus ()) return true;
 	if (entryHandle != 0 && OS.GTK_WIDGET_HAS_FOCUS (entryHandle)) return true;
-	if (listHandle != 0 && OS.GTK_WIDGET_HAS_FOCUS (listHandle)) return true;
 	return false;
 }
 
 void hookEvents () {
 	super.hookEvents ();
-	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
-		OS.g_signal_connect_closure (handle, OS.changed, display.closures [CHANGED], true);
-	}
+	OS.g_signal_connect_closure (handle, OS.changed, display.closures [CHANGED], true);
 
 	if (entryHandle != 0) {
 		OS.g_signal_connect_closure (entryHandle, OS.changed, display.closures [CHANGED], true);
@@ -639,7 +599,7 @@ void hookEvents () {
 	}
 	int eventMask =	OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK | 
 		OS.GDK_BUTTON_RELEASE_MASK;
- 	int /*long*/ [] handles = new int /*long*/ [] {buttonHandle, entryHandle, listHandle, menuHandle};
+ 	int /*long*/ [] handles = new int /*long*/ [] {buttonHandle, entryHandle, menuHandle};
 	for (int i=0; i<handles.length; i++) {
 		int /*long*/ eventHandle = handles [i];
 		if (eventHandle != 0) {
@@ -716,7 +676,7 @@ public void deselect (int index) {
  */
 public void deselectAll () {
 	checkWidget();
-		clearText ();
+	clearText ();
 }
 
 boolean dragDetect(int x, int y, boolean filter, boolean dragOnTimeout, boolean[] consume) {
@@ -837,7 +797,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget();
-	return fontHeight (getFontDescription (), listHandle != 0 ? listHandle : handle);
+	return fontHeight (getFontDescription (), handle);
 }
 
 /**
@@ -884,10 +844,7 @@ public String [] getItems () {
  */
 public boolean getListVisible () {
 	checkWidget ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		return popupHandle != 0 && OS.GTK_WIDGET_VISIBLE (popupHandle); 
-	}
-	return false;
+	return popupHandle != 0 && OS.GTK_WIDGET_VISIBLE (popupHandle); 
 }
 
 String getNameText () {
@@ -933,13 +890,8 @@ public Point getSelection () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) {
 		int length = 0;
-		if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-			int index = OS.gtk_combo_box_get_active (handle);
-			if (index != -1) length = getItem (index).length ();
-		} else {
-			int /*long*/ str = OS.gtk_entry_get_text (entryHandle);
-			if (str != 0) length = (int)/*64*/OS.g_utf16_strlen (str, -1);
-		}
+		int index = OS.gtk_combo_box_get_active (handle);
+		if (index != -1) length = getItem (index).length ();
 		return new Point (0, length);
 	}
 	int [] start = new int [1];
@@ -966,23 +918,7 @@ public Point getSelection () {
  */
 public int getSelectionIndex () {
 	checkWidget();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		return OS.gtk_combo_box_get_active (handle);
-	}
-	int index = 0, result = -1;
-	int /*long*/ children = OS.gtk_container_get_children (listHandle);
-	int /*long*/ temp = children;
-	while (temp != 0) {
-		int /*long*/ item = OS.g_list_data (temp);
-		if (OS.GTK_WIDGET_STATE (item) == OS.GTK_STATE_SELECTED) {
-			result = index;
-			break;
-		}
-		index++;
-		temp = OS.g_list_next (temp);
-	}	
-	OS.g_list_free (children);
-	return result;
+	return OS.gtk_combo_box_get_active (handle);
 }
 
 /**
@@ -1092,53 +1028,35 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	* the left mouse button event from being propagated. The fix is to
 	* send the mouse event from the event_after handler.
 	*/
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		GdkEventButton gdkEvent = new GdkEventButton ();
-		OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-		if (gdkEvent.type == OS.GDK_BUTTON_PRESS && gdkEvent.button == 1) {
-			return gtk_button_press_event(widget, event, false);
-		}
+	GdkEventButton gdkEvent = new GdkEventButton ();
+	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+	if (gdkEvent.type == OS.GDK_BUTTON_PRESS && gdkEvent.button == 1) {
+		return gtk_button_press_event(widget, event, false);
 	}
 	return super.gtk_button_press_event (widget, event);
 }
 
 int /*long*/ gtk_changed (int /*long*/ widget) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		if (widget == handle) {
-			if (entryHandle == 0) {
-				sendEvent(SWT.Modify);
-				if (isDisposed ()) return 0;
-			}
-			/*
-			* Feature in GTK.  GTK emits a changed signal whenever
-			* the contents of a combo box are altered by typing or
-			* by selecting an item in the list, but the event should
-			* only be sent when the list is selected. The fix is to
-			* only send out a selection event when there is a selected
-			* item. 
-			* 
-			* NOTE: This code relies on GTK clearing the selected
-			* item and not matching the item as the user types.
-			*/
-			int index = OS.gtk_combo_box_get_active (handle);
-			if (index != -1) sendSelectionEvent (SWT.Selection);
-			indexSelected = -1;
-			return 0;
+	if (widget == handle) {
+		if (entryHandle == 0) {
+			sendEvent(SWT.Modify);
+			if (isDisposed ()) return 0;
 		}
-	} else {
-		if (!ignoreSelect) {
-			int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
-			int length = OS.strlen (ptr);
-			byte [] buffer = new byte [length];
-			OS.memmove (buffer, ptr, length);
-			String text = new String (Converter.mbcsToWcs (null, buffer));
-			for (int i = 0; i < items.length; i++) {
-				if (items [i].equals (text)) {
-					sendSelectionEvent (SWT.Selection);
-					break;
-				}
-			}
-		}
+		/*
+		* Feature in GTK.  GTK emits a changed signal whenever
+		* the contents of a combo box are altered by typing or
+		* by selecting an item in the list, but the event should
+		* only be sent when the list is selected. The fix is to
+		* only send out a selection event when there is a selected
+		* item. 
+		* 
+		* NOTE: This code relies on GTK clearing the selected
+		* item and not matching the item as the user types.
+		*/
+		int index = OS.gtk_combo_box_get_active (handle);
+		if (index != -1) sendSelectionEvent (SWT.Selection);
+		indexSelected = -1;
+		return 0;
 	}
 	/*
 	* Feature in GTK.  When the user types, GTK positions
@@ -1244,52 +1162,50 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent)  {
 	* user clicks on the drop down button focus is assigned to the text 
 	* field.
 	*/
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		GdkEvent event = new GdkEvent ();
-		OS.memmove (event, gdkEvent, GdkEvent.sizeof);
-		switch (event.type) {
-			case OS.GDK_BUTTON_PRESS: {
-				if (OS.GTK_VERSION < OS.VERSION (2, 8, 0) && !selectionAdded) {
-					int /*long*/ grabHandle = OS.gtk_grab_get_current ();
-					if (grabHandle != 0) {
-						if (OS.G_OBJECT_TYPE (grabHandle) == OS.GTK_TYPE_MENU ()) {
-							menuHandle = grabHandle;
-							OS.g_signal_connect_closure_by_id (menuHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT], false);
-							OS.g_signal_connect_closure_by_id (menuHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT_INVERSE], true);
-							OS.g_signal_connect_closure (menuHandle, OS.selection_done, display.closures [SELECTION_DONE], false);
-							display.addWidget (menuHandle, this);
-							selectionAdded = true;
-						}
+	GdkEvent event = new GdkEvent ();
+	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
+	switch (event.type) {
+		case OS.GDK_BUTTON_PRESS: {
+			if (OS.GTK_VERSION < OS.VERSION (2, 8, 0) && !selectionAdded) {
+				int /*long*/ grabHandle = OS.gtk_grab_get_current ();
+				if (grabHandle != 0) {
+					if (OS.G_OBJECT_TYPE (grabHandle) == OS.GTK_TYPE_MENU ()) {
+						menuHandle = grabHandle;
+						OS.g_signal_connect_closure_by_id (menuHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT], false);
+						OS.g_signal_connect_closure_by_id (menuHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT_INVERSE], true);
+						OS.g_signal_connect_closure (menuHandle, OS.selection_done, display.closures [SELECTION_DONE], false);
+						display.addWidget (menuHandle, this);
+						selectionAdded = true;
 					}
 				}
-				GdkEventButton gdkEventButton = new GdkEventButton ();
-				OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
-				if (gdkEventButton.button == 1) {
-					if (!sendMouseEvent (SWT.MouseDown, gdkEventButton.button, display.clickCount, 0, false, gdkEventButton.time, gdkEventButton.x_root, gdkEventButton.y_root, false, gdkEventButton.state)) {
-						return 1;
-					}
-					if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
-						if ((style & SWT.READ_ONLY) == 0 && widget == buttonHandle) {
-							OS.gtk_widget_grab_focus (entryHandle);
-						}
-					}
-				}
-				break;
 			}
-			case OS.GDK_FOCUS_CHANGE: {
+			GdkEventButton gdkEventButton = new GdkEventButton ();
+			OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
+			if (gdkEventButton.button == 1) {
+				if (!sendMouseEvent (SWT.MouseDown, gdkEventButton.button, display.clickCount, 0, false, gdkEventButton.time, gdkEventButton.x_root, gdkEventButton.y_root, false, gdkEventButton.state)) {
+					return 1;
+				}
 				if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
-					if ((style & SWT.READ_ONLY) == 0) {
-						GdkEventFocus gdkEventFocus = new GdkEventFocus ();
-						OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
-						if (gdkEventFocus.in != 0) {
-							OS.gtk_combo_box_set_focus_on_click (handle, false);
-						} else {
-							OS.gtk_combo_box_set_focus_on_click (handle, true);
-						}
+					if ((style & SWT.READ_ONLY) == 0 && widget == buttonHandle) {
+						OS.gtk_widget_grab_focus (entryHandle);
 					}
 				}
-				break;
 			}
+			break;
+		}
+		case OS.GDK_FOCUS_CHANGE: {
+			if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
+				if ((style & SWT.READ_ONLY) == 0) {
+					GdkEventFocus gdkEventFocus = new GdkEventFocus ();
+					OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+					if (gdkEventFocus.in != 0) {
+						OS.gtk_combo_box_set_focus_on_click (handle, false);
+					} else {
+						OS.gtk_combo_box_set_focus_on_click (handle, true);
+					}
+				}
+			}
+			break;
 		}
 	}
 	return super.gtk_event_after(widget, gdkEvent);
@@ -1349,7 +1265,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	}
 	if (gdkEventKey == -1) result = 1;
 	gdkEventKey = 0;
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0) && (style & SWT.READ_ONLY) == 0) {
+	if ((style & SWT.READ_ONLY) == 0) {
 		GdkEventKey keyEvent = new GdkEventKey ();
 		OS.memmove (keyEvent, event, GdkEventKey.sizeof);
 		int oldIndex = OS.gtk_combo_box_get_active (handle);
@@ -1461,10 +1377,8 @@ public int indexOf (String string, int start) {
 }
 
 boolean isFocusHandle(int widget) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		if (buttonHandle != 0 && widget == buttonHandle) return true;
-		if (entryHandle != 0 && widget == entryHandle) return true;
-	}
+	if (buttonHandle != 0 && widget == buttonHandle) return true;
+	if (entryHandle != 0 && widget == entryHandle) return true;
 	return super.isFocusHandle (widget);
 }
 
@@ -1472,9 +1386,7 @@ int /*long*/ paintWindow () {
 	int /*long*/ childHandle =  entryHandle != 0 ? entryHandle : handle;	
 	OS.gtk_widget_realize (childHandle);
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (childHandle);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		if ((style & SWT.READ_ONLY) != 0) return window;
-	}
+	if ((style & SWT.READ_ONLY) != 0) return window;
 	int /*long*/ children = OS.gdk_window_get_children (window);
 	if (children != 0) window = OS.g_list_data (children);
 	OS.g_list_free (children);
@@ -1508,7 +1420,6 @@ void register () {
 	super.register ();
 	if (buttonHandle != 0) display.addWidget (buttonHandle, this);
 	if (entryHandle != 0) display.addWidget (entryHandle, this);
-	if (listHandle != 0) display.addWidget (listHandle, this);
 	if (popupHandle != 0) display.addWidget (popupHandle, this);
 	if (menuHandle != 0) display.addWidget (menuHandle, this);
 	int /*long*/ imContext = imContext ();
@@ -1517,7 +1428,7 @@ void register () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	buttonHandle = entryHandle = listHandle = 0;
+	buttonHandle = entryHandle = 0;
 }
 
 void releaseWidget () {
@@ -1550,8 +1461,8 @@ public void remove (int index) {
 	System.arraycopy (oldItems, 0, newItems, 0, index);
 	System.arraycopy (oldItems, index + 1, newItems, index, oldItems.length - index - 1);
 	items = newItems;
-		if (OS.gtk_combo_box_get_active (handle) == index) clearText ();
-		OS.gtk_combo_box_remove_text (handle, index);
+	if (OS.gtk_combo_box_get_active (handle) == index) clearText ();
+	OS.gtk_combo_box_remove_text (handle, index);
 }
 
 /**
@@ -1581,11 +1492,11 @@ public void remove (int start, int end) {
 	System.arraycopy (oldItems, 0, newItems, 0, start);
 	System.arraycopy (oldItems, end + 1, newItems, start, oldItems.length - end - 1);
 	items = newItems;
-		int index = OS.gtk_combo_box_get_active (handle);
-		if (start <= index && index <= end) clearText();
-		for (int i = end; i >= start; i--) {
-			OS.gtk_combo_box_remove_text (handle, i);
-		}
+	int index = OS.gtk_combo_box_get_active (handle);
+	if (start <= index && index <= end) clearText();
+	for (int i = end; i >= start; i--) {
+		OS.gtk_combo_box_remove_text (handle, i);
+	}
 }
 
 /**
@@ -1625,10 +1536,10 @@ public void removeAll () {
 	checkWidget();
 	int count = items.length;
 	items = new String[0];
-		clearText ();
-		for (int i = count - 1; i >= 0; i--) {
-			OS.gtk_combo_box_remove_text (handle, i);
-		}
+	clearText ();
+	for (int i = count - 1; i >= 0; i--) {
+		OS.gtk_combo_box_remove_text (handle, i);
+	}
 }
 
 /**
@@ -1721,29 +1632,24 @@ public void removeVerifyListener (VerifyListener listener) {
 public void select (int index) {
 	checkWidget();
 	if (index < 0 || index >= items.length) return;
-		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		OS.gtk_combo_box_set_active (handle, index);
-		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		if ((style & SWT.READ_ONLY) != 0) {
-			/*
-			* Feature in GTK. Read Only combo boxes do not get a chance to send out a 
-			* Modify event in the gtk_changed callback. The fix is to send a Modify event 
-			* here.
-			*/
-			sendEvent (SWT.Modify);
-		}
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.gtk_combo_box_set_active (handle, index);
+	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	if ((style & SWT.READ_ONLY) != 0) {
+		/*
+		* Feature in GTK. Read Only combo boxes do not get a chance to send out a 
+		* Modify event in the gtk_changed callback. The fix is to send a Modify event 
+		* here.
+		*/
+		sendEvent (SWT.Modify);
+	}
 }
 
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		if (entryHandle != 0) OS.gtk_widget_modify_base (entryHandle, 0, color);
-		if (cellHandle != 0) OS.g_object_set (cellHandle, OS.background_gdk, color, 0);
-		OS.g_object_set (textRenderer, OS.background_gdk, color, 0);
-	} else {
-		OS.gtk_widget_modify_base (entryHandle, 0, color);
-		if (listHandle != 0) OS.gtk_widget_modify_base (listHandle, 0, color);
-	}
+	if (entryHandle != 0) OS.gtk_widget_modify_base (entryHandle, 0, color);
+	if (cellHandle != 0) OS.g_object_set (cellHandle, OS.background_gdk, color, 0);
+	OS.g_object_set (textRenderer, OS.background_gdk, color, 0);
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
@@ -1754,58 +1660,26 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 
 void setFontDescription (int /*long*/ font) {
 	super.setFontDescription (font);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		if (entryHandle != 0) OS.gtk_widget_modify_font (entryHandle, font);
-		OS.g_object_set (textRenderer, OS.font_desc, font, 0);
-		if ((style & SWT.READ_ONLY) != 0) {
-			/*
-			* Bug in GTK.  Setting the font can leave the combo box with an
-			* invalid minimum size.  The fix is to temporarily change the
-			* selected item to force the combo box to resize.
-			*/
-			int index = OS.gtk_combo_box_get_active (handle);
-			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-			OS.gtk_combo_box_set_active (handle, -1);
-			OS.gtk_combo_box_set_active (handle, index);
-			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		}
-	} else {
-		OS.gtk_widget_modify_font (entryHandle, font);
-		if (listHandle != 0) {
-			OS.gtk_widget_modify_font (listHandle, font);
-			int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
-			if (itemsList != 0) {
-				int count = OS.g_list_length (itemsList);
-				for (int i=count - 1; i>=0; i--) {
-					int /*long*/ widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
-					OS.gtk_widget_modify_font (widget, font);
-				}
-				OS.g_list_free (itemsList);
-			}
-		}
+	if (entryHandle != 0) OS.gtk_widget_modify_font (entryHandle, font);
+	OS.g_object_set (textRenderer, OS.font_desc, font, 0);
+	if ((style & SWT.READ_ONLY) != 0) {
+		/*
+		* Bug in GTK.  Setting the font can leave the combo box with an
+		* invalid minimum size.  The fix is to temporarily change the
+		* selected item to force the combo box to resize.
+		*/
+		int index = OS.gtk_combo_box_get_active (handle);
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		OS.gtk_combo_box_set_active (handle, -1);
+		OS.gtk_combo_box_set_active (handle, index);
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	}
 }
 
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		if (entryHandle != 0) setForegroundColor (entryHandle, color);
-		OS.g_object_set (textRenderer, OS.foreground_gdk, color, 0);
-	} else {
-		setForegroundColor (entryHandle, color);
-		if (listHandle != 0) {
-			setForegroundColor (listHandle, color);
-			int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
-			if (itemsList != 0) {
-				int count = OS.g_list_length (itemsList);
-				for (int i=count - 1; i>=0; i--) {
-					int /*long*/ widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
-					setForegroundColor (widget, color);
-				}
-				OS.g_list_free (itemsList);
-			}
-		}
-	}
+	if (entryHandle != 0) setForegroundColor (entryHandle, color);
+	OS.g_object_set (textRenderer, OS.foreground_gdk, color, 0);
 }
 
 /**
@@ -1832,20 +1706,10 @@ public void setItem (int index, String string) {
 	}
 	items [index] = string;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		OS.gtk_combo_box_remove_text (handle, index);
-		OS.gtk_combo_box_insert_text (handle, index, buffer);
-		if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
-			OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);    
-		}
-	} else {
-		ignoreSelect = true;
-		int /*long*/ children = OS.gtk_container_get_children (listHandle);
-		int /*long*/ item = OS.g_list_nth_data (children, index);
-		int /*long*/ label = OS.gtk_bin_get_child (item);
-		OS.gtk_label_set_text (label, buffer);
-		OS.g_list_free (children);
-		ignoreSelect = false;
+	OS.gtk_combo_box_remove_text (handle, index);
+	OS.gtk_combo_box_insert_text (handle, index, buffer);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
+		OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);    
 	}
 }
 
@@ -1872,18 +1736,18 @@ public void setItems (String [] items) {
 	int count = this.items.length;
 	this.items = new String [items.length];
 	System.arraycopy (items, 0, this.items, 0, items.length);
-		clearText ();
-		for (int i = count - 1; i >= 0; i--) {
-			OS.gtk_combo_box_remove_text (handle, i);
+	clearText ();
+	for (int i = count - 1; i >= 0; i--) {
+		OS.gtk_combo_box_remove_text (handle, i);
+	}
+	for (int i = 0; i < items.length; i++) {
+		String string = items [i];
+		byte [] buffer = Converter.wcsToMbcs (null, string, true);
+		OS.gtk_combo_box_insert_text (handle, i, buffer);
+		if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
+			OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);    
 		}
-		for (int i = 0; i < items.length; i++) {
-			String string = items [i];
-			byte [] buffer = Converter.wcsToMbcs (null, string, true);
-			OS.gtk_combo_box_insert_text (handle, i, buffer);
-			if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
-				OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);    
-			}
-		}
+	}
 }
 
 /**
@@ -1906,12 +1770,10 @@ public void setItems (String [] items) {
  */
 public void setListVisible (boolean visible) {
 	checkWidget ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		if (visible) {
-			OS.gtk_combo_box_popup (handle);
-		} else {
-			OS.gtk_combo_box_popdown (handle);
-		}
+	if (visible) {
+		OS.gtk_combo_box_popup (handle);
+	} else {
+		OS.gtk_combo_box_popdown (handle);
 	}
 }
 
@@ -1919,22 +1781,9 @@ void setOrientation (boolean create) {
 	super.setOrientation (create);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
 		int dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
-		if (listHandle != 0) OS.gtk_widget_set_direction (listHandle, dir);
 		if (entryHandle != 0) OS.gtk_widget_set_direction (entryHandle, dir);
 		if (cellHandle != 0) OS.gtk_widget_set_direction (cellHandle, dir);
 		if (!create) {
-			if (listHandle != 0) {
-				OS.gtk_widget_set_direction (listHandle, dir);
-				int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
-				if (itemsList != 0) {
-					int count = OS.g_list_length (itemsList);
-					for (int i=count - 1; i>=0; i--) {
-						int /*long*/ widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
-						OS.gtk_widget_set_direction (widget, dir);
-					}
-					OS.g_list_free (itemsList);
-				}
-			}
 			if (popupHandle != 0) OS.gtk_container_forall (popupHandle, display.setDirectionProc, dir);
 		}
 	}
@@ -2018,18 +1867,16 @@ public void setText (String string) {
 	if ((style & SWT.READ_ONLY) != 0) {
 		int index = indexOf (string);
 		if (index == -1) return;
-		if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-			OS.gtk_combo_box_set_active (handle, index);
-			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-			/*
-			* Feature in GTK. Read Only combo boxes do not get a chance to send out a 
-			* Modify event in the gtk_changed callback. The fix is to send a Modify event 
-			* here.
-			*/
-			sendEvent (SWT.Modify);
-			return;
-		}
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		OS.gtk_combo_box_set_active (handle, index);
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		/*
+		* Feature in GTK. Read Only combo boxes do not get a chance to send out a 
+		* Modify event in the gtk_changed callback. The fix is to send a Modify event 
+		* here.
+		*/
+		sendEvent (SWT.Modify);
+		return;
 	}
 	/*
 	* Feature in gtk.  When text is set in gtk, separate events are fired for the deletion and 
@@ -2042,16 +1889,12 @@ public void setText (String string) {
 		if (string == null) return;
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	}
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 	OS.gtk_entry_set_text (entryHandle, buffer);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	}
+	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
