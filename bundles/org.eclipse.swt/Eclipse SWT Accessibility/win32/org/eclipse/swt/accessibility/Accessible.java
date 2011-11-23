@@ -1558,7 +1558,8 @@ public class Accessible {
 			if (accessibleActionListeners.size() > 0 || accessibleAttributeListeners.size() > 0 ||
 				accessibleHyperlinkListeners.size() > 0 || accessibleTableListeners.size() > 0 ||
 				accessibleTableCellListeners.size() > 0 || accessibleTextExtendedListeners.size() > 0 ||
-				accessibleValueListeners.size() > 0 || getRelationCount() > 0) {
+				accessibleValueListeners.size() > 0 || getRelationCount() > 0
+				|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0))) {
 				if (objIServiceProvider == null) createIServiceProvider();
 				COM.MoveMemory(ppvObject, new int /*long*/[] { objIServiceProvider.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
@@ -1721,7 +1722,8 @@ public class Accessible {
 			if (accessibleActionListeners.size() > 0 || accessibleAttributeListeners.size() > 0 ||
 					accessibleHyperlinkListeners.size() > 0 || accessibleTableListeners.size() > 0 ||
 					accessibleTableCellListeners.size() > 0 || accessibleTextExtendedListeners.size() > 0 ||
-					accessibleValueListeners.size() > 0 || getRelationCount() > 0) {
+					accessibleValueListeners.size() > 0 || getRelationCount() > 0
+					|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0))) {
 				if (objIAccessible2 == null) createIAccessible2();
 				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessible2.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
@@ -2878,11 +2880,24 @@ public class Accessible {
 		int groupLevel = 0;
 		COM.MoveMemory(pGroupLevel, new int [] { groupLevel }, 4);
 		//get the children of the parent
-		//collect all children with the same role, if none, then 0 (for N/A)
+		//count all children with the same role, if none, then 0 (for N/A)
+		//find this control's 1-based index in the same-type children of the parent (0 for N/A)
 		int similarItemsInGroup = 0;
-		COM.MoveMemory(pSimilarItemsInGroup, new int [] { similarItemsInGroup }, 4);
-		//find this guy's 1-based index in the children of the parent (0 for N/A)
 		int positionInGroup = 0;
+		if (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0)) {
+			/* We currently only determine position and count for radio buttons. */
+			Control [] children = control.getParent().getChildren();
+			positionInGroup = 1;
+			similarItemsInGroup = 1;
+			for (int i = 0; i < children.length; i++) {
+				Control child = children[i];
+				if (child instanceof Button && ((child.getStyle() & SWT.RADIO) != 0)) {
+					if (child == control) positionInGroup = similarItemsInGroup;
+					else similarItemsInGroup++;
+				}
+			}
+		}
+		COM.MoveMemory(pSimilarItemsInGroup, new int [] { similarItemsInGroup }, 4);
 		COM.MoveMemory(pPositionInGroup, new int [] { positionInGroup }, 4);
 		if (DEBUG) print(this + ".IAccessible2::get_groupPosition() returning" + hresult(groupLevel == 0 && similarItemsInGroup == 0 && positionInGroup == 0 ? COM.S_FALSE : COM.S_OK));
 		if (groupLevel == 0 && similarItemsInGroup == 0 && positionInGroup == 0) return COM.S_FALSE;
