@@ -158,6 +158,7 @@
 #define gtk_window_set_opacity_LIB LIB_GTK
 #define gtk_window_set_skip_taskbar_hint_LIB LIB_GTK
 #define gtk_widget_is_composited_LIB LIB_GTK
+#define gtk_widget_get_tooltip_text_LIB LIB_GTK
 #define gtk_widget_set_tooltip_text_LIB LIB_GTK
 #define gdk_x11_screen_get_window_manager_name_LIB LIB_GDK
 #define gdk_x11_screen_lookup_visual_LIB LIB_GDK

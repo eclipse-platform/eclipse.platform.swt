@@ -16095,6 +16095,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1style)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1get_1tooltip_1text
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1tooltip_1text)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1tooltip_1text_FUNC);
+/*
+	rc = (jintLong)gtk_widget_get_tooltip_text(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_get_tooltip_text)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1tooltip_1text_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1get_1toplevel
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1toplevel)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -20032,6 +20052,22 @@ fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, realpath_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_strcmp
+JNIEXPORT jint JNICALL OS_NATIVE(strcmp)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, strcmp_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)strcmp((const char*)arg0, (const char*)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, strcmp_FUNC);
 	return rc;
 }
 #endif

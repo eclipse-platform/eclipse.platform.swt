@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1385;
-int OS_nativeFunctionCallCount[1385];
+int OS_nativeFunctionCount = 1387;
+int OS_nativeFunctionCallCount[1387];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -1291,6 +1291,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1get_1parent_1window",
 	"_1gtk_1widget_1get_1size_1request",
 	"_1gtk_1widget_1get_1style",
+	"_1gtk_1widget_1get_1tooltip_1text",
 	"_1gtk_1widget_1get_1toplevel",
 	"_1gtk_1widget_1grab_1focus",
 	"_1gtk_1widget_1hide",
@@ -1778,6 +1779,7 @@ char * OS_nativeFunctionNames[] = {
 #endif
 	"pangoLayoutNewProc_1CALLBACK",
 	"realpath",
+	"strcmp",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

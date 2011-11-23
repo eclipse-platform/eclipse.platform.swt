@@ -1299,6 +1299,7 @@ typedef enum {
 	_1gtk_1widget_1get_1parent_1window_FUNC,
 	_1gtk_1widget_1get_1size_1request_FUNC,
 	_1gtk_1widget_1get_1style_FUNC,
+	_1gtk_1widget_1get_1tooltip_1text_FUNC,
 	_1gtk_1widget_1get_1toplevel_FUNC,
 	_1gtk_1widget_1grab_1focus_FUNC,
 	_1gtk_1widget_1hide_FUNC,
@@ -1786,4 +1787,5 @@ typedef enum {
 #endif
 	pangoLayoutNewProc_1CALLBACK_FUNC,
 	realpath_FUNC,
+	strcmp_FUNC,
 } OS_FUNCS;

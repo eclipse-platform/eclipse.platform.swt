@@ -847,6 +847,7 @@ public void setDisabledImage (Image image) {
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	int /*long*/ topHandle = topHandle ();
+	if (OS.GTK_WIDGET_SENSITIVE (topHandle) == enabled) return;
 	OS.gtk_widget_set_sensitive (topHandle, enabled);
 	if (enabled) {
 		/*
@@ -1034,6 +1035,7 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
+	if (string.equals(this.text)) return;
 	super.setText (string);
 	if (labelHandle == 0) return;
 	char [] chars = fixMnemonic (string);

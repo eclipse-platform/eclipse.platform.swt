@@ -12834,6 +12834,16 @@ public static final int /*long*/ gtk_widget_get_toplevel (int /*long*/ widget) {
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native int /*long*/ _gtk_widget_get_tooltip_text (int /*long*/ widget);
+public static final int /*long*/ gtk_widget_get_tooltip_text (int /*long*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_widget_get_tooltip_text(widget);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param widget cast=(GtkWidget *) */
 public static final native void _gtk_widget_grab_focus(int /*long*/ widget);
 public static final void gtk_widget_grab_focus(int /*long*/ widget) {
@@ -15242,4 +15252,9 @@ public static final int access (byte [] path, int amode) {
 		lock.unlock();
 	}
 }
+/**
+ * @param s1 cast=(const char*)
+ * @param s2 cast=(const char*)
+ */
+public static final native int strcmp (int /*long*/ s1, byte [] s2);
 }
