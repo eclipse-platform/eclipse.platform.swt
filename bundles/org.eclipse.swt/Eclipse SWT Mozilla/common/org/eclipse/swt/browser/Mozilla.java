@@ -954,7 +954,56 @@ public void create (Composite parent, int style) {
 					break;
 				}
 				case SWT.Resize: onResize (); break;
-				case SWT.FocusIn: Activate (); break;
+				case SWT.FocusIn: {
+					Activate ();
+
+					/* if tabbing onto a page for the first time then full-Browser focus ring should be shown */
+
+					int /*long*/[] result = new int /*long*/[1];
+					int rc = XPCOM.NS_GetServiceManager (result);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+					nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+					result[0] = 0;
+					byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FOCUSMANAGER_CONTRACTID, true);
+					rc = serviceManager.GetServiceByContractID (aContractID, nsIFocusManager.NS_IFOCUSMANAGER_IID, result);
+					serviceManager.Release ();
+
+					if (rc == XPCOM.NS_OK && result[0] != 0) {
+						nsIFocusManager focusManager = new nsIFocusManager (result[0]);
+						result[0] = 0;
+						rc = focusManager.GetFocusedElement (result);
+						if (rc == XPCOM.NS_OK) {
+							if (result[0] != 0) {
+								new nsISupports (result[0]).Release ();
+								result[0] = 0;
+							} else {
+								/* show full browser focus ring */
+								rc = webBrowser.GetContentDOMWindow (result);
+								if (rc == XPCOM.NS_OK && result[0] != 0) {
+									nsIDOMWindow domWindow = new nsIDOMWindow (result[0]);
+									result[0] = 0;
+									rc = domWindow.GetDocument (result);
+									domWindow.Release ();
+									if (rc == XPCOM.NS_OK && result[0] != 0) {
+										nsIDOMDocument domDocument = new nsIDOMDocument (result[0]);
+										result[0] = 0;
+										rc = domDocument.GetDocumentElement (result);
+										domDocument.Release ();
+										if (rc == XPCOM.NS_OK && result[0] != 0) {
+											nsIDOMElement domElement = new nsIDOMElement (result[0]);
+											result[0] = 0;
+											rc = focusManager.SetFocus (domElement.getAddress (), nsIFocusManager.FLAG_BYKEY);
+											domElement.Release ();
+										}
+									}
+								}
+							}
+						}
+						focusManager.Release ();
+					}
+					break;
+				}
 				case SWT.Activate: Activate (); break;
 				case SWT.Deactivate: {
 					Display display = event.display;

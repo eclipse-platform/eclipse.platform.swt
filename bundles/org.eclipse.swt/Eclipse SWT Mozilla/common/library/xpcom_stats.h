@@ -137,6 +137,11 @@ typedef enum {
 	_1VtblCall__IJIIII_3C_3I_3I_FUNC,
 #endif
 #ifndef JNI64
+	_1VtblCall__IIIIII_3I_FUNC,
+#else
+	_1VtblCall__IJIIII_3I_FUNC,
+#endif
+#ifndef JNI64
 	_1VtblCall__IIIIII_3I_3I_FUNC,
 #else
 	_1VtblCall__IJIIII_3I_3I_FUNC,
@@ -377,6 +382,11 @@ typedef enum {
 	_1VtblCall__IJI_3I_3I_3J_FUNC,
 #endif
 #ifndef JNI64
+	_1VtblCall__III_3J_FUNC,
+#else
+	_1VtblCall__IJI_3J_FUNC,
+#endif
+#ifndef JNI64
 	_1VtblCall__IIJ_FUNC,
 #else
 	_1VtblCall__IJJ_FUNC,
@@ -427,6 +437,11 @@ typedef enum {
 	_1VtblCall__IJJI_3J_FUNC,
 #endif
 #ifndef JNI64
+	_1VtblCall__IIJI_3J_3J_FUNC,
+#else
+	_1VtblCall__IJJI_3J_3J_FUNC,
+#endif
+#ifndef JNI64
 	_1VtblCall__IIJJ_FUNC,
 #else
 	_1VtblCall__IJJJ_FUNC,
@@ -445,6 +460,11 @@ typedef enum {
 	_1VtblCall__IIJJIIII_FUNC,
 #else
 	_1VtblCall__IJJJIIII_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIJJII_3J_FUNC,
+#else
+	_1VtblCall__IJJJII_3J_FUNC,
 #endif
 #ifndef JNI64
 	_1VtblCall__IIJJIJ_3C_3I_3I_FUNC,
