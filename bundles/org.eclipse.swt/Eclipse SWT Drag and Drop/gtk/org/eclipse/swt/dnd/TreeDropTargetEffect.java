@@ -168,9 +168,9 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 					if (cellRect.y < cellRect.height) {
 						int[] tx = new int[1], ty = new int[1];
 						if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
-							OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y - cellRect.height, tx, ty);
-						} else {
 							OS.gtk_tree_view_convert_widget_to_bin_window_coords(handle, cellRect.x, cellRect.y - cellRect.height, tx, ty);
+						} else {
+							OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y - cellRect.height, tx, ty);
 						}
 						OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
 					} else {
