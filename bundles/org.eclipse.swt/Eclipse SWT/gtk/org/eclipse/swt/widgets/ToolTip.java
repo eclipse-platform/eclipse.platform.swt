@@ -810,7 +810,11 @@ public void setVisible (boolean visible) {
 		} else {
 			int /*long*/ vboxHandle = parent.vboxHandle;
 			byte[] buffer = Converter.wcsToMbcs(null, "", true);
-			OS.gtk_tooltips_set_tip(handle, vboxHandle, buffer, null);
+			if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+				OS.gtk_widget_set_tooltip_text(vboxHandle, buffer);
+			} else {
+				OS.gtk_tooltips_set_tip(handle, vboxHandle, buffer, null);
+			}
 		}
 	}
 }
