@@ -27,29 +27,30 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIDOMEventTarget extends nsISupports {
+public class nsIDOMUIEvent_1_9 extends nsIDOMEvent {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 3;
+	static final int LAST_METHOD_ID = nsIDOMEvent.LAST_METHOD_ID + 3;
 
-	public static final String NS_IDOMEVENTTARGET_IID_STR =
-		"1797d5a4-b12a-428d-9eef-a0e13839728c";
+	public static final String NS_IDOMUIEVENT_IID_STR =
+		"a6cf906b-15b3-11d2-932e-00805f8add32";
 
-	public static final nsID NS_IDOMEVENTTARGET_IID =
-		new nsID(NS_IDOMEVENTTARGET_IID_STR);
+	public static final nsID NS_IDOMUIEVENT_IID =
+		new nsID(NS_IDOMUIEVENT_IID_STR);
 
-	public nsIDOMEventTarget(int /*long*/ address) {
+	public nsIDOMUIEvent_1_9(int /*long*/ address) {
 		super(address);
 	}
 
-	public int AddEventListener(int /*long*/ type, int /*long*/ listener, int useCapture, int wantsUntrusted, int _argc) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), type, listener, useCapture, wantsUntrusted, _argc);
+	public int GetView(int /*long*/[] aView) {
+		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 1, getAddress(), aView);
 	}
 
-	public int RemoveEventListener(int /*long*/ type, int /*long*/ listener, int useCapture) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), type, listener, useCapture);
+	public int GetDetail(int[] aDetail) {
+		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 2, getAddress(), aDetail);
 	}
 
-	public int DispatchEvent(int /*long*/ evt, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), evt, _retval);
+	//nsIDOMWindow - viewArg
+	public int InitUIEvent(int /*long*/ typeArg, int canBubbleArg, int cancelableArg, int /*long*/ viewArg, int detailArg) {
+		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 3, getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, detailArg);
 	}
 }

@@ -27,17 +27,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIDOMEvent extends nsISupports {
+public class nsIDOMEvent_1_9 extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 11;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 10;
 
 	public static final String NS_IDOMEVENT_IID_STR =
-		"548137e8-fd2c-48c4-8635-3033f7db79e0";
+		"a66b7b80-ff46-bd97-0080-5f8ae38add32";
 
 	public static final nsID NS_IDOMEVENT_IID =
 		new nsID(NS_IDOMEVENT_IID_STR);
 
-	public nsIDOMEvent(int /*long*/ address) {
+	public nsIDOMEvent_1_9(int /*long*/ address) {
 		super(address);
 	}
 
@@ -85,9 +85,5 @@ public class nsIDOMEvent extends nsISupports {
 
 	public int InitEvent(int /*long*/ eventTypeArg, int canBubbleArg, int cancelableArg) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), eventTypeArg, canBubbleArg, cancelableArg);
-	}
-	
-	public int GetDefaultPrevented(int[] aDefaultPrevented) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aDefaultPrevented);
 	}
 }

@@ -27,9 +27,9 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class  nsIPrincipal extends nsISerializable {
+public class  nsIPrincipal_1_9 extends nsISerializable {
 
-	static final int LAST_METHOD_ID = nsISerializable.LAST_METHOD_ID + 26;
+	static final int LAST_METHOD_ID = nsISerializable.LAST_METHOD_ID + 23;
 
 	public static final String NS_IPRINCIPAL_IID_STR =
 		"b406a2db-e547-4c95-b8e2-ad09ecb54ce0";
@@ -37,7 +37,7 @@ public class  nsIPrincipal extends nsISerializable {
 	public static final nsID NS_IPRINCIPAL_IID =
 		new nsID(NS_IPRINCIPAL_IID_STR);
 
-	public  nsIPrincipal(int /*long*/ address) {
+	public  nsIPrincipal_1_9(int /*long*/ address) {
 		super(address);
 	}
 
@@ -58,86 +58,86 @@ public class  nsIPrincipal extends nsISerializable {
 	}
 
 	public int GetHashValue(int[] aHashValue) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 4, getAddress(), aHashValue);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 3, getAddress(), aHashValue);
 	}
 
 	public int GetJSPrincipals(int /*long*/ cx, int /*long*/[] _retval) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 5, getAddress(), cx, _retval);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 4, getAddress(), cx, _retval);
 	}
 
 	public int GetSecurityPolicy(int /*long*/[] aSecurityPolicy) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 6, getAddress(), aSecurityPolicy);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 5, getAddress(), aSecurityPolicy);
 	}
 
 	public int SetSecurityPolicy(int /*long*/ aSecurityPolicy) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 7, getAddress(), aSecurityPolicy);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 6, getAddress(), aSecurityPolicy);
 	}
 
 	public int CanEnableCapability(byte[] capability, int /*long*/ _retval) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 8, getAddress(), capability, _retval);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 7, getAddress(), capability, _retval);
 	}
 
 	public int SetCanEnableCapability(byte[] capability, short canEnable) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 9, getAddress(), capability, canEnable);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 8, getAddress(), capability, canEnable);
 	}
 
 	public int IsCapabilityEnabled(byte[] capability, int /*long*/ annotation, int[] _retval) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 10, getAddress(), capability, annotation, _retval);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 9, getAddress(), capability, annotation, _retval);
 	}
 
 	public int EnableCapability(byte[] capability, int /*long*/[] annotation) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 11, getAddress(), capability, annotation);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 10, getAddress(), capability, annotation);
 	}
 
 	public int RevertCapability(byte[] capability, int /*long*/[] annotation) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 12, getAddress(), capability, annotation);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 11, getAddress(), capability, annotation);
 	}
 
 	public int DisableCapability(byte[] capability, int /*long*/[] annotation) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 13, getAddress(), capability, annotation);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 12, getAddress(), capability, annotation);
 	}
 
 	public int GetURI(int /*long*/[] aURI) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 14, getAddress(), aURI);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 13, getAddress(), aURI);
 	}
 
 	public int GetDomain(int /*long*/[] aDomain) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 15, getAddress(), aDomain);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 14, getAddress(), aDomain);
 	}
 
 	public int SetDomain(int /*long*/ aDomain) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 16, getAddress(), aDomain);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 15, getAddress(), aDomain);
 	}
 
 	public int GetOrigin(int /*long*/[] aOrigin) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 17, getAddress(), aOrigin);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 16, getAddress(), aOrigin);
 	}
 
 	public int GetHasCertificate(int[] aHasCertificate) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 18, getAddress(), aHasCertificate);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 17, getAddress(), aHasCertificate);
 	}
 
 	public int GetFingerprint(int /*long*/ aFingerprint) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 19, getAddress(), aFingerprint);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 18, getAddress(), aFingerprint);
 	}
 
 	public int GetPrettyName(int /*long*/ aPrettyName) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 20, getAddress(), aPrettyName);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 19, getAddress(), aPrettyName);
 	}
 
 	public int Subsumes(int /*long*/ other, int[] _retval) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 21, getAddress(), other, _retval);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 20, getAddress(), other, _retval);
 	}
 
 	public int CheckMayLoad(int /*long*/ uri, int report) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 22, getAddress(), uri, report);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 21, getAddress(), uri, report);
 	}
 
 	public int GetSubjectName(int /*long*/ aSubjectName) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 23, getAddress(), aSubjectName);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 22, getAddress(), aSubjectName);
 	}
 
 	public int GetCertificate(int /*long*/[] aCertificate) {
-		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 24, getAddress(), aCertificate);
+		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 23, getAddress(), aCertificate);
 	}
 }

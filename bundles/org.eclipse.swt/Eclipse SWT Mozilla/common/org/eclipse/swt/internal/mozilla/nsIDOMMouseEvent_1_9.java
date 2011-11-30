@@ -27,61 +27,61 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIDOMMouseEvent extends nsIDOMUIEvent {
+public class nsIDOMMouseEvent_1_9 extends nsIDOMUIEvent_1_9 {
 
-	static final int LAST_METHOD_ID = nsIDOMUIEvent.LAST_METHOD_ID + 11;
+	static final int LAST_METHOD_ID = nsIDOMUIEvent_1_9.LAST_METHOD_ID + 11;
 
 	public static final String NS_IDOMMOUSEEVENT_IID_STR =
-		"73558605-f479-493e-86d1-9794cd117fef";
+		"ff751edc-8b02-aae7-0010-8301838a3123";
 
 	public static final nsID NS_IDOMMOUSEEVENT_IID =
 		new nsID(NS_IDOMMOUSEEVENT_IID_STR);
 
-	public nsIDOMMouseEvent(int /*long*/ address) {
+	public nsIDOMMouseEvent_1_9(int /*long*/ address) {
 		super(address);
 	}
 
 	public int GetScreenX(int[] aScreenX) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 1, getAddress(), aScreenX);
+		return XPCOM.VtblCall(nsIDOMUIEvent_1_9.LAST_METHOD_ID + 1, getAddress(), aScreenX);
 	}
 
 	public int GetScreenY(int[] aScreenY) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 2, getAddress(), aScreenY);
+		return XPCOM.VtblCall(nsIDOMUIEvent_1_9.LAST_METHOD_ID + 2, getAddress(), aScreenY);
 	}
 
 	public int GetClientX(int[] aClientX) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 3, getAddress(), aClientX);
+		return XPCOM.VtblCall(nsIDOMUIEvent_1_9.LAST_METHOD_ID + 3, getAddress(), aClientX);
 	}
 
 	public int GetClientY(int[] aClientY) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 4, getAddress(), aClientY);
+		return XPCOM.VtblCall(nsIDOMUIEvent_1_9.LAST_METHOD_ID + 4, getAddress(), aClientY);
 	}
 
 	public int GetCtrlKey(int[] aCtrlKey) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 5, getAddress(), aCtrlKey);
+		return XPCOM.VtblCall(nsIDOMUIEvent_1_9.LAST_METHOD_ID + 5, getAddress(), aCtrlKey);
 	}
 
 	public int GetShiftKey(int[] aShiftKey) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 6, getAddress(), aShiftKey);
+		return XPCOM.VtblCall(nsIDOMUIEvent_1_9.LAST_METHOD_ID + 6, getAddress(), aShiftKey);
 	}
 
 	public int GetAltKey(int[] aAltKey) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 7, getAddress(), aAltKey);
+		return XPCOM.VtblCall(nsIDOMUIEvent_1_9.LAST_METHOD_ID + 7, getAddress(), aAltKey);
 	}
 
 	public int GetMetaKey(int[] aMetaKey) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 8, getAddress(), aMetaKey);
+		return XPCOM.VtblCall(nsIDOMUIEvent_1_9.LAST_METHOD_ID + 8, getAddress(), aMetaKey);
 	}
 
 	public int GetButton(short[] aButton) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 9, getAddress(), aButton);
+		return XPCOM.VtblCall(nsIDOMUIEvent_1_9.LAST_METHOD_ID + 9, getAddress(), aButton);
 	}
 
 	public int GetRelatedTarget(int /*long*/[] aRelatedTarget) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 10, getAddress(), aRelatedTarget);
+		return XPCOM.VtblCall(nsIDOMUIEvent_1_9.LAST_METHOD_ID + 10, getAddress(), aRelatedTarget);
 	}
 
 	public int InitMouseEvent(int /*long*/ typeArg, int canBubbleArg, int cancelableArg, int /*long*/ viewArg, int detailArg, int screenXArg, int screenYArg, int clientXArg, int clientYArg, int ctrlKeyArg, int altKeyArg, int shiftKeyArg, int metaKeyArg, short buttonArg, int /*long*/ relatedTargetArg) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 11, getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, detailArg, screenXArg, screenYArg, clientXArg, clientYArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, buttonArg, relatedTargetArg);
+		return XPCOM.VtblCall(nsIDOMUIEvent_1_9.LAST_METHOD_ID + 11, getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, detailArg, screenXArg, screenYArg, clientXArg, clientYArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, buttonArg, relatedTargetArg);
 	}
 }

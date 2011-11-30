@@ -27,7 +27,7 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIDOMWindow extends nsISupports {
+public class nsIDOMWindow_8 extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 75;
 
@@ -37,7 +37,7 @@ public class nsIDOMWindow extends nsISupports {
 	public static final nsID NS_IDOMWINDOW_IID =
 		new nsID(NS_IDOMWINDOW_IID_STR);
 
-	public nsIDOMWindow(int /*long*/ address) {
+	public nsIDOMWindow_8(int /*long*/ address) {
 		super(address);
 	}
 

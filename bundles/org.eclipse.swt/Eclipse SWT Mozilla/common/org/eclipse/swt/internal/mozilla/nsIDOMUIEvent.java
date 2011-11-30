@@ -32,7 +32,7 @@ public class nsIDOMUIEvent extends nsIDOMEvent {
 	static final int LAST_METHOD_ID = nsIDOMEvent.LAST_METHOD_ID + 3;
 
 	public static final String NS_IDOMUIEVENT_IID_STR =
-		"a6cf90c3-15b3-11d2-932e-00805f8add32";
+		"25f28689-3f78-47e8-8d76-15b936faf8c1";
 
 	public static final nsID NS_IDOMUIEVENT_IID =
 		new nsID(NS_IDOMUIEVENT_IID_STR);
@@ -49,6 +49,7 @@ public class nsIDOMUIEvent extends nsIDOMEvent {
 		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 2, getAddress(), aDetail);
 	}
 
+	//nsIDOMWindow - viewArg
 	public int InitUIEvent(int /*long*/ typeArg, int canBubbleArg, int cancelableArg, int /*long*/ viewArg, int detailArg) {
 		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 3, getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, detailArg);
 	}

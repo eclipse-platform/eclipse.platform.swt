@@ -15,13 +15,12 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.widgets.*;
 
-class PromptService2 {
+class Prompter {
 	XPCOMObject supports;
-	XPCOMObject promptService;
-	XPCOMObject promptService2;
+	XPCOMObject prompt;
 	int refCount = 0;
 	
-PromptService2 () {
+Prompter () {
 	createCOMInterfaces ();
 }
 
@@ -38,36 +37,19 @@ void createCOMInterfaces () {
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
 	};
 	
-	promptService = new XPCOMObject (new int[] {2, 0, 0, 3, 5, 4, 6, 10, 7, 8, 7, 7}) {
+	prompt = new XPCOMObject (new int[] {2, 0, 0, 2, 4, 3, 5, 9, 6, 6, 7, 6}) {
 		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
 		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return Alert (args[0], args[1], args[2]);}
-		public int /*long*/ method4 (int /*long*/[] args) {return AlertCheck (args[0], args[1], args[2], args[3], args[4]);}
-		public int /*long*/ method5 (int /*long*/[] args) {return Confirm (args[0], args[1], args[2], args[3]);}
-		public int /*long*/ method6 (int /*long*/[] args) {return ConfirmCheck (args[0], args[1], args[2], args[3], args[4], args[5]);}
-		public int /*long*/ method7 (int /*long*/[] args) {return ConfirmEx (args[0], args[1], args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7], args[8], args[9]);}
-		public int /*long*/ method8 (int /*long*/[] args) {return Prompt (args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
-		public int /*long*/ method9 (int /*long*/[] args) {return PromptUsernameAndPassword (args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);}
-		public int /*long*/ method10 (int /*long*/[] args) {return PromptPassword (args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
-		public int /*long*/ method11 (int /*long*/[] args) {return Select (args[0], args[1], args[2], (int)/*64*/args[3], args[4], args[5], args[6]);}
-	};
-	
-	promptService2 = new XPCOMObject (new int[] {2, 0, 0, 3, 5, 4, 6, 10, 7, 8, 7, 7, 7, 9}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
-		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return Alert (args[0], args[1], args[2]);}
-		public int /*long*/ method4 (int /*long*/[] args) {return AlertCheck (args[0], args[1], args[2], args[3], args[4]);}
-		public int /*long*/ method5 (int /*long*/[] args) {return Confirm (args[0], args[1], args[2], args[3]);}
-		public int /*long*/ method6 (int /*long*/[] args) {return ConfirmCheck (args[0], args[1], args[2], args[3], args[4], args[5]);}
-		public int /*long*/ method7 (int /*long*/[] args) {return ConfirmEx (args[0], args[1], args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7], args[8], args[9]);}
-		public int /*long*/ method8 (int /*long*/[] args) {return Prompt (args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
-		public int /*long*/ method9 (int /*long*/[] args) {return PromptUsernameAndPassword (args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);}
-		public int /*long*/ method10 (int /*long*/[] args) {return PromptPassword (args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
-		public int /*long*/ method11 (int /*long*/[] args) {return Select (args[0], args[1], args[2], (int)/*64*/args[3], args[4], args[5], args[6]);}
-		public int /*long*/ method12 (int /*long*/[] args) {return PromptAuth (args[0], args[1], (int)/*64*/args[2], args[3], args[4], args[5], args[6]);}
-		public int /*long*/ method13 (int /*long*/[] args) {return AsyncPromptAuth (args[0], args[1], args[2], args[3], (int)/*64*/args[4], args[5], args[6], args[7], args[8]);}
+		public int /*long*/ method3 (int /*long*/[] args) {return Alert (args[0], args[1] );}
+		public int /*long*/ method4 (int /*long*/[] args) {return AlertCheck (args[0], args[1], args[2], args[3]);}
+		public int /*long*/ method5 (int /*long*/[] args) {return Confirm (args[0], args[1], args[2]);}
+		public int /*long*/ method6 (int /*long*/[] args) {return ConfirmCheck (args[0], args[1], args[2], args[3], args[4]);}
+		public int /*long*/ method7 (int /*long*/[] args) {return ConfirmEx (args[0], args[1], args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7], args[8]);}
+		public int /*long*/ method8 (int /*long*/[] args) {return Prompt (args[0], args[1], args[2], args[3], args[4], args[5]);}
+		public int /*long*/ method9 (int /*long*/[] args) {return PromptPassword (args[0], args[1], args[2], args[3], args[4], args[5]);}
+		public int /*long*/ method10 (int /*long*/[] args) {return PromptUsernameAndPassword (args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
+		public int /*long*/ method11 (int /*long*/[] args) {return Select (args[0], args[1], args[2], (int)/*64*/args[3], args[4], args[5]);}
 	};
 }
 
@@ -76,18 +58,14 @@ void disposeCOMInterfaces () {
 		supports.dispose ();
 		supports = null;
 	}	
-	if (promptService != null) {
-		promptService.dispose ();
-		promptService = null;	
-	}
-	if (promptService2 != null) {
-		promptService2.dispose ();
-		promptService2 = null;	
+	if (prompt != null) {
+		prompt.dispose ();
+		prompt = null;	
 	}
 }
 
 int /*long*/ getAddress () {
-	return promptService2.getAddress ();
+	return prompt.getAddress ();
 }
 
 int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
@@ -100,17 +78,11 @@ int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIPromptService.NS_IPROMPTSERVICE_IID)) {
-		XPCOM.memmove (ppvObject, new int /*long*/[] {promptService.getAddress ()}, C.PTR_SIZEOF);
+	if (guid.Equals (nsIPrompt.NS_IPROMPT_IID)) {
+		XPCOM.memmove (ppvObject, new int /*long*/[] {prompt.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIPromptService2.NS_IPROMPTSERVICE2_IID)) {
-		XPCOM.memmove (ppvObject, new int /*long*/[] {promptService2.getAddress ()}, C.PTR_SIZEOF);
-		AddRef ();
-		return XPCOM.NS_OK;
-	}
-
 	XPCOM.memmove (ppvObject, new int /*long*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
@@ -121,21 +93,16 @@ int Release () {
 	return refCount;
 }
 
-Browser getBrowser (int /*long*/ aDOMWindow) {
-	if (aDOMWindow == 0) return null;
-	return Mozilla.getBrowser (aDOMWindow);
-}
-
 String getLabel (int buttonFlag, int index, int /*long*/ buttonTitle) {
 	String label = null;
 	int flag = (buttonFlag & (0xff * index)) / index;
 	switch (flag) {
-		case nsIPromptService.BUTTON_TITLE_CANCEL : label = SWT.getMessage ("SWT_Cancel"); break; //$NON-NLS-1$
-		case nsIPromptService.BUTTON_TITLE_NO : label = SWT.getMessage ("SWT_No"); break; //$NON-NLS-1$
-		case nsIPromptService.BUTTON_TITLE_OK : label = SWT.getMessage ("SWT_OK"); break; //$NON-NLS-1$
-		case nsIPromptService.BUTTON_TITLE_SAVE : label = SWT.getMessage ("SWT_Save"); break; //$NON-NLS-1$
-		case nsIPromptService.BUTTON_TITLE_YES : label = SWT.getMessage ("SWT_Yes"); break; //$NON-NLS-1$
-		case nsIPromptService.BUTTON_TITLE_IS_STRING : {
+		case nsIPrompt.BUTTON_TITLE_CANCEL : label = SWT.getMessage ("SWT_Cancel"); break; //$NON-NLS-1$
+		case nsIPrompt.BUTTON_TITLE_NO : label = SWT.getMessage ("SWT_No"); break; //$NON-NLS-1$
+		case nsIPrompt.BUTTON_TITLE_OK : label = SWT.getMessage ("SWT_OK"); break; //$NON-NLS-1$
+		case nsIPrompt.BUTTON_TITLE_SAVE : label = SWT.getMessage ("SWT_Save"); break; //$NON-NLS-1$
+		case nsIPrompt.BUTTON_TITLE_YES : label = SWT.getMessage ("SWT_Yes"); break; //$NON-NLS-1$
+		case nsIPrompt.BUTTON_TITLE_IS_STRING : {
 			int length = XPCOM.strlen_PRUnichar (buttonTitle);
 			char[] dest = new char[length];
 			XPCOM.memmove (dest, buttonTitle, length * 2);
@@ -145,10 +112,10 @@ String getLabel (int buttonFlag, int index, int /*long*/ buttonTitle) {
 	return label;
 }
 
-/* nsIPromptService */
+/* nsIPrompt */
 
-int Alert (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText) {
-	final Browser browser = getBrowser (aParent);
+int Alert ( int /*long*/ aDialogTitle, int /*long*/ aText) {
+	final Browser browser = getBrowser ();
 	
 	int length = XPCOM.strlen_PRUnichar (aDialogTitle);
 	char[] dest = new char[length];
@@ -177,8 +144,27 @@ int Alert (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText) 
 	return XPCOM.NS_OK;
 }
 
-int AlertCheck (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aCheckMsg, int /*long*/ aCheckState) {
-	Browser browser = getBrowser (aParent);
+Browser getBrowser() {
+	int /*long*/[] result = new int /*long*/[1];
+	int rc = XPCOM.NS_GetComponentManager (result);
+	if (rc == XPCOM.NS_OK && result[0] != 0) {
+		nsIComponentManager componentManager = new nsIComponentManager (result[0]);
+		result[0] = 0;
+		componentManager.GetClassObject(XPCOM.NS_IWEBBROWSER_CID, nsIWebBrowser.NS_IWEBBROWSER_IID, result);
+		if (rc == XPCOM.NS_OK && result[0] != 0) {
+			nsIWebBrowser browser = new nsIWebBrowser(result[0]);
+			result[0] = 0;
+			rc = browser.GetContentDOMWindow(result);
+			if (rc == XPCOM.NS_OK && result[0] != 0) {
+					return Mozilla.getBrowser(result[0]);
+			}
+	}
+	}
+	return null;
+}
+
+int AlertCheck (int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aCheckMsg, int /*long*/ aCheckState) {
+	Browser browser = getBrowser ();
 	
 	int length = XPCOM.strlen_PRUnichar (aDialogTitle);
 	char[] dest = new char[length];
@@ -204,12 +190,8 @@ int AlertCheck (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aT
 	return XPCOM.NS_OK;
 }
 
-int AsyncPromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int /*long*/ aCallback, int /*long*/ aContext, int level, int /*long*/ authInfo, int /*long*/ checkboxLabel, int /*long*/ checkValue, int /*long*/ _retval) {
-	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
-}
-
-int Confirm (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ _retval) {
-	Browser browser = getBrowser (aParent);
+int Confirm (int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ _retval) {
+	Browser browser = getBrowser ();
 
 	if (browser != null && ((Mozilla)browser.webBrowser).ignoreAllMessages) {
 		XPCOM.memmove (_retval, new int[] {1}, 4); /* PRBool */
@@ -236,12 +218,12 @@ int Confirm (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText
 	return XPCOM.NS_OK;
 }
 
-int ConfirmCheck (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
+int ConfirmCheck (int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int ConfirmEx (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int aButtonFlags, int /*long*/ aButton0Title, int /*long*/ aButton1Title, int /*long*/ aButton2Title, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
-	Browser browser = getBrowser (aParent);
+int ConfirmEx (int /*long*/ aDialogTitle, int /*long*/ aText, int aButtonFlags, int /*long*/ aButton0Title, int /*long*/ aButton1Title, int /*long*/ aButton2Title, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
+	Browser browser = getBrowser ();
 	
 	int length = XPCOM.strlen_PRUnichar (aDialogTitle);
 	char[] dest = new char[length];
@@ -261,14 +243,14 @@ int ConfirmEx (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aTe
 		checkLabel = new String (dest);
 	}
 	
-	String button0Label = getLabel (aButtonFlags, nsIPromptService.BUTTON_POS_0, aButton0Title);
-	String button1Label = getLabel (aButtonFlags, nsIPromptService.BUTTON_POS_1, aButton1Title);
-	String button2Label = getLabel (aButtonFlags, nsIPromptService.BUTTON_POS_2, aButton2Title);
+	String button0Label = getLabel (aButtonFlags, nsIPrompt.BUTTON_POS_0, aButton0Title);
+	String button1Label = getLabel (aButtonFlags, nsIPrompt.BUTTON_POS_1, aButton1Title);
+	String button2Label = getLabel (aButtonFlags, nsIPrompt.BUTTON_POS_2, aButton2Title);
 	
 	int defaultIndex = 0;
-	if ((aButtonFlags & nsIPromptService.BUTTON_POS_1_DEFAULT) != 0) {
+	if ((aButtonFlags & nsIPrompt.BUTTON_POS_1_DEFAULT) != 0) {
 		defaultIndex = 1;
-	} else if ((aButtonFlags & nsIPromptService.BUTTON_POS_2_DEFAULT) != 0) {
+	} else if ((aButtonFlags & nsIPrompt.BUTTON_POS_2_DEFAULT) != 0) {
 		defaultIndex = 2;
 	}
 	
@@ -282,8 +264,8 @@ int ConfirmEx (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aTe
 	return XPCOM.NS_OK;
 }
 
-int Prompt (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aValue, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
-	Browser browser = getBrowser (aParent);
+int Prompt (int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aValue, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
+	Browser browser = getBrowser ();
 	String titleLabel = null, textLabel, checkLabel = null;
 	String[] valueLabel = new String[1];
 	char[] dest;
@@ -365,10 +347,10 @@ int Prompt (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText,
 	return XPCOM.NS_OK;
 }
 
-int PromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int level, int /*long*/ authInfo, int /*long*/ checkboxLabel, int /*long*/ checkboxValue, int /*long*/ _retval) {
+int PromptAuth(int /*long*/ aChannel, int level, int /*long*/ authInfo, int /*long*/ _retval) {
 	nsIAuthInformation auth = new nsIAuthInformation (authInfo);
 
-	Browser browser = getBrowser (aParent);
+	Browser browser = getBrowser ();
 	if (browser != null) {
 		Mozilla mozilla = (Mozilla)browser.webBrowser;
 		/*
@@ -408,14 +390,6 @@ int PromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int level, int /*lon
 	String[] userLabel = new String[1], passLabel = new String[1];
 
 	String title = SWT.getMessage ("SWT_Authentication_Required"); //$NON-NLS-1$
-
-	if (checkboxLabel != 0 && checkboxValue != 0) {
-		int length = XPCOM.strlen_PRUnichar (checkboxLabel);
-		char[] dest = new char[length];
-		XPCOM.memmove (dest, checkboxLabel, length * 2);
-		checkLabel = new String (dest);
-		XPCOM.memmove (checkValue, checkboxValue, 4); /* PRBool */
-	}
 
 	/* get initial username and password values */
 
@@ -495,12 +469,11 @@ int PromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int level, int /*lon
 		string.dispose ();
 	}
 
-	if (checkboxValue != 0) XPCOM.memmove (checkboxValue, checkValue, 4); /* PRBool */
 	return XPCOM.NS_OK;
 }
 
-int PromptUsernameAndPassword (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aUsername, int /*long*/ aPassword, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
-	Browser browser = getBrowser (aParent);
+int PromptUsernameAndPassword (int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aUsername, int /*long*/ aPassword, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
+	Browser browser = getBrowser ();
 	String user = null, password = null;
 
 	if (browser != null) {
@@ -643,11 +616,11 @@ int PromptUsernameAndPassword (int /*long*/ aParent, int /*long*/ aDialogTitle, 
 	return XPCOM.NS_OK;
 }
 
-int PromptPassword (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aPassword, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
+int PromptPassword (int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aPassword, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int Select (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int aCount, int /*long*/ aSelectList, int /*long*/ aOutSelection, int /*long*/ _retval) {
+int Select (int /*long*/ aDialogTitle, int /*long*/ aText, int aCount, int /*long*/ aSelectList, int /*long*/ aOutSelection, int /*long*/ _retval) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 

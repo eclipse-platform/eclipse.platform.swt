@@ -101,6 +101,11 @@ int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
+	if (guid.Equals (nsIFilePicker_2.NS_IFILEPICKER_IID)) {
+		XPCOM.memmove(ppvObject, new int /*long*/[] {filePicker.getAddress ()}, C.PTR_SIZEOF);
+		AddRef ();
+		return XPCOM.NS_OK;
+	}
 
 	XPCOM.memmove (ppvObject, new int /*long*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
@@ -114,8 +119,7 @@ int Release () {
 
 Browser getBrowser (int /*long*/ aDOMWindow) {
 	if (aDOMWindow == 0) return null;
-	nsIDOMWindow window = new nsIDOMWindow (aDOMWindow);
-	return Mozilla.findBrowser (window);
+	return Mozilla.getBrowser (aDOMWindow);
 }
 
 /*

@@ -14,13 +14,18 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 231;
-int XPCOM_nativeFunctionCallCount[231];
+int XPCOM_nativeFunctionCount = 232;
+int XPCOM_nativeFunctionCallCount[232];
 char * XPCOM_nativeFunctionNames[] = {
 #ifndef JNI64
 	"_1Call__I",
 #else
 	"_1Call__J",
+#endif
+#ifndef JNI64
+	"_1Call__IIII",
+#else
+	"_1Call__JJJJ",
 #endif
 #ifndef JNI64
 	"_1Call__IIIIII",

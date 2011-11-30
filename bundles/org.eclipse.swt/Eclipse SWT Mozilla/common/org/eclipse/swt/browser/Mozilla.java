@@ -62,7 +62,7 @@ class Mozilla extends WebBrowser {
 	static int BrowserCount, NextJSFunctionIndex = 1;
 	static Hashtable AllFunctions = new Hashtable ();
 	static Listener DisplayListener;
-	static boolean Initialized, IsPre_1_8, IsPre_1_9, IsXULRunner, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
+	static boolean Initialized, IsPre_1_8, IsPre_1_9, IsPre_2, IsXULRunner, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
 	static String MozillaPath;
 	static String oldProxyHostFTP, oldProxyHostHTTP, oldProxyHostSSL;
 	static int oldProxyPortFTP = -1, oldProxyPortHTTP = -1, oldProxyPortSSL = -1, oldProxyType = -1;
@@ -113,6 +113,7 @@ class Mozilla extends WebBrowser {
 	static final String TRUE = "true"; //$NON-NLS-1$
 	static final String URI_FILEROOT = "file:///"; //$NON-NLS-1$
 	static final String XULRUNNER_PATH = "org.eclipse.swt.browser.XULRunnerPath"; //$NON-NLS-1$
+	static final String XULRUNNER_VERSION = "org.eclipse.swt.browser.XULRunnerVersion"; //$NON-NLS-1$
 
 	// TEMPORARY CODE
 	static final String FACTORIES_REGISTERED = "org.eclipse.swt.browser.MozillaFactoriesRegistered"; //$NON-NLS-1$
@@ -794,8 +795,11 @@ public void create (Composite parent, int style) {
 	nsID NS_IWEBBROWSER_CID = new nsID ("F1EAC761-87E9-11d3-AF80-00A024FFC08C"); //$NON-NLS-1$
 	rc = componentManager.CreateInstance (NS_IWEBBROWSER_CID, 0, nsIWebBrowser.NS_IWEBBROWSER_IID, result);
 	if (rc != XPCOM.NS_OK) {
-		browser.dispose ();
-		error (rc);
+		rc = componentManager.CreateInstance (NS_IWEBBROWSER_CID, 0, nsIWebBrowser_1_9.NS_IWEBBROWSER_IID, result);
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
 	}
 	if (result[0] == 0) {
 		browser.dispose ();
@@ -836,18 +840,6 @@ public void create (Composite parent, int style) {
 			factoriesRegistered = true;
 		}
 
-		if (!factoriesRegistered) {
-			HelperAppLauncherDialogFactory dialogFactory = new HelperAppLauncherDialogFactory ();
-			dialogFactory.AddRef ();
-			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID, true);
-			byte[] aClassName = MozillaDelegate.wcsToMbcs (null, "swtHelperAppLauncherDialog", true); //$NON-NLS-1$
-			rc = componentRegistrar.RegisterFactory (XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CID, aClassName, aContractID, dialogFactory.getAddress ());
-			if (rc != XPCOM.NS_OK) {
-				browser.dispose ();
-				error (rc);
-			}
-			dialogFactory.Release ();
-		}
 
 		/*
 		* Check for the availability of the pre-1.8 implementation of nsIDocShell
@@ -870,8 +862,9 @@ public void create (Composite parent, int style) {
 			IsPre_1_8 = true;
 			new nsISupports (result[0]).Release ();
 		}
-		result[0] = 0;
 		IsPre_1_9 = true;
+		IsPre_2 = true;
+		result[0] = 0;
 
 		/*
 		* A Download factory for contract "Transfer" must be registered iff the GRE's version is 1.8.x.
@@ -902,12 +895,31 @@ public void create (Composite parent, int style) {
 				}
 			} else { /* >= 1.9 */
 				IsPre_1_9 = false;
+				result[0] = 0;
+				rc = interfaceRequestor.GetInterface(nsIDocShell_2.NS_IDOCSHELL_IID, result);
+				if (rc == XPCOM.NS_OK && result[0] != 0) { /* >=2.0 */
+					IsPre_2 = false;
+					new nsISupports (result[0]).Release();
+				}
 			}
 		}
 		result[0] = 0;
 		interfaceRequestor.Release ();
 		componentRegistrar.Release ();
 
+		if (!factoriesRegistered) {
+			HelperAppLauncherDialogFactory dialogFactory = new HelperAppLauncherDialogFactory ();
+			dialogFactory.AddRef ();
+			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID, true);
+			byte[] aClassName = MozillaDelegate.wcsToMbcs (null, "swtHelperAppLauncherDialog", true); //$NON-NLS-1$
+			rc = componentRegistrar.RegisterFactory (XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CID, aClassName, aContractID, dialogFactory.getAddress ());
+			if (rc != XPCOM.NS_OK) {
+				browser.dispose ();
+				error (rc);
+			}
+			dialogFactory.Release ();
+		}
+		
 		System.setProperty (FACTORIES_REGISTERED, TRUE);
 	}
 	componentManager.Release ();
@@ -1271,7 +1283,7 @@ public boolean execute (String script) {
 	* exposed as of mozilla 1.9.
 	*/
 	int /*long*/[] result = new int /*long*/[1];
-	if (!IsPre_1_9) {
+	if (!IsPre_2) {
 		int rc = XPCOM.NS_GetServiceManager (result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
@@ -1279,10 +1291,11 @@ public boolean execute (String script) {
 		nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 		result[0] = 0;
 		nsIPrincipal principal = null;
+		nsIPrincipal_1_9 principal_1_9 = null;
 		byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_SCRIPTSECURITYMANAGER_CONTRACTID, true);
-		rc = serviceManager.GetServiceByContractID (aContractID, nsIScriptSecurityManager_1_9_1.NS_ISCRIPTSECURITYMANAGER_IID, result);
+		rc = serviceManager.GetServiceByContractID (aContractID, nsIScriptSecurityManager_2.NS_ISCRIPTSECURITYMANAGER_IID, result);
 		if (rc == XPCOM.NS_OK && result[0] != 0) {
-			nsIScriptSecurityManager_1_9_1 securityManager = new nsIScriptSecurityManager_1_9_1 (result[0]);
+			nsIScriptSecurityManager_2 securityManager = new nsIScriptSecurityManager_2 (result[0]);
 			result[0] = 0;
 			rc = securityManager.GetSystemPrincipal (result);
 			if (rc != XPCOM.NS_OK) error (rc);
@@ -1291,32 +1304,49 @@ public boolean execute (String script) {
 			result[0] = 0;
 			securityManager.Release ();
 		} else {
-			rc = serviceManager.GetServiceByContractID (aContractID, nsIScriptSecurityManager_1_9.NS_ISCRIPTSECURITYMANAGER_IID, result);
+			rc = serviceManager.GetServiceByContractID (aContractID, nsIScriptSecurityManager_1_9_1.NS_ISCRIPTSECURITYMANAGER_IID, result);
 			if (rc == XPCOM.NS_OK && result[0] != 0) {
-				nsIScriptSecurityManager_1_9 securityManager = new nsIScriptSecurityManager_1_9 (result[0]);
+				nsIScriptSecurityManager_1_9_1 securityManager = new nsIScriptSecurityManager_1_9_1 (result[0]);
 				result[0] = 0;
 				rc = securityManager.GetSystemPrincipal (result);
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
-				principal = new nsIPrincipal (result[0]);
+				principal_1_9 = new nsIPrincipal_1_9 (result[0]);
 				result[0] = 0;
 				securityManager.Release ();
+			} else {
+				rc = serviceManager.GetServiceByContractID (aContractID, nsIScriptSecurityManager_1_9.NS_ISCRIPTSECURITYMANAGER_IID, result);
+				if (rc == XPCOM.NS_OK && result[0] != 0) {
+					nsIScriptSecurityManager_1_9 securityManager = new nsIScriptSecurityManager_1_9 (result[0]);
+					result[0] = 0;
+					rc = securityManager.GetSystemPrincipal (result);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
+					principal_1_9 = new nsIPrincipal_1_9 (result[0]);
+					result[0] = 0;
+					securityManager.Release ();
+				}
 			}
 		}
 
-		if (principal != null) {
+		if (principal != null || principal_1_9 != null) {
 			rc = webBrowser.QueryInterface (nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
 			if (rc != XPCOM.NS_OK) error (rc);
 			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
 			nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
 			result[0] = 0;
-			nsID scriptGlobalObjectNSID_1_9 = new nsID ("6afecd40-0b9a-4cfd-8c42-0f645cd91829"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
-			rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_1_9, result);
+			nsID scriptGlobalObjectNSID_2 = new nsID ("4eb16819-4e81-406e-9305-6f30fcd2624a"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
+			rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_2, result);
 			if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
 				result[0] = 0;
 				nsID scriptGlobalObjectNSID_1_9_2 = new nsID ("e9f3f2c1-2d94-4722-bbd4-2bf6fdf42f48"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
 				rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_1_9_2, result);
+				if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
+					result[0] = 0;
+					nsID scriptGlobalObjectNSID_1_9 = new nsID ("6afecd40-0b9a-4cfd-8c42-0f645cd91829"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
+					rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_1_9, result);
+				}
 			}
 			interfaceRequestor.Release ();
 
@@ -1331,12 +1361,17 @@ public boolean execute (String script) {
 
 				if (scriptContext != 0 && globalJSObject != 0) {
 					/* ensure that the received nsIScriptContext implements the expected interface */
-					nsID scriptContextNSID_1_9 = new nsID ("e7b9871d-3adc-4bf7-850d-7fb9554886bf"); /* nsIScriptContext */ //$NON-NLS-1$					
-					rc = new nsISupports (scriptContext).QueryInterface (scriptContextNSID_1_9, result);
+					nsID scriptContextNSID_2 = new nsID ("a7139c0e-962c-44b6-bec3-e4166bfe84eb"); /* nsIScriptContext */ //$NON-NLS-1$					
+					rc = new nsISupports (scriptContext).QueryInterface (scriptContextNSID_2, result);
 					if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
 						result[0] = 0;
 						nsID scriptContextNSID_1_9_2 = new nsID ("87482b5e-e019-4df5-9bc2-b2a51b1f2d28"); /* nsIScriptContext */ //$NON-NLS-1$					
 						rc = new nsISupports (scriptContext).QueryInterface (scriptContextNSID_1_9_2, result);
+						if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
+							result[0] = 0;
+							nsID scriptContextNSID_1_9 = new nsID ("e7b9871d-3adc-4bf7-850d-7fb9554886bf"); /* nsIScriptContext */ //$NON-NLS-1$					
+							rc = new nsISupports (scriptContext).QueryInterface (scriptContextNSID_1_9, result);
+						}
 					}
 
 					if (rc == XPCOM.NS_OK && result[0] != 0) {
@@ -1349,13 +1384,21 @@ public boolean execute (String script) {
 							char[] scriptChars = new char[length];
 							script.getChars(0, length, scriptChars, 0);
 							byte[] urlbytes = MozillaDelegate.wcsToMbcs (null, getUrl (), true);
-							rc = principal.GetJSPrincipals (nativeContext, result);
+							rc = (principal != null) ? principal.GetJSPrincipals (nativeContext, result) 
+									: principal_1_9.GetJSPrincipals (nativeContext, result);
 							if (rc == XPCOM.NS_OK && result[0] != 0) {
 								int /*long*/ principals = result[0];
 								result[0] = 0;
-								principal.Release ();
+								String jsLibraryName = null;
+								if (principal != null) {
+									principal.Release ();
+									jsLibraryName = delegate.getJSLibraryName();
+								} else {
+									principal_1_9.Release();
+									jsLibraryName = delegate.getJSLibraryName_Pre2();
+								}
 								if (pathBytes_JSEvaluateUCScriptForPrincipals == null) {
-									String mozillaPath = getMozillaPath () + delegate.getJSLibraryName () + '\0';
+									String mozillaPath = getMozillaPath () + jsLibraryName + '\0';
 									try {
 										pathBytes_JSEvaluateUCScriptForPrincipals = mozillaPath.getBytes ("UTF-8"); //$NON-NLS-1$
 									} catch (UnsupportedEncodingException e) {
@@ -1385,7 +1428,8 @@ public boolean execute (String script) {
 					}
 				}
 			}
-			principal.Release ();
+			if (principal != null) principal.Release ();
+			else principal_1_9.Release();
 		}
 		serviceManager.Release ();
 	}
@@ -1410,7 +1454,7 @@ static Browser findBrowser (int /*long*/ handle) {
 	return MozillaDelegate.findBrowser (handle);
 }
 
-static Browser findBrowser (nsIDOMWindow aDOMWindow) {
+static Browser getBrowser (int /*long*/ aDOMWindow) {
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = XPCOM.NS_GetServiceManager (result);
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
@@ -1427,7 +1471,13 @@ static Browser findBrowser (nsIDOMWindow aDOMWindow) {
 	nsIWindowWatcher windowWatcher = new nsIWindowWatcher (result[0]);
 	result[0] = 0;
 	/* the chrome will only be answered for the top-level nsIDOMWindow */
-	rc = aDOMWindow.GetTop (result);
+	if (!IsPre_2) {
+		nsIDOMWindow window = new nsIDOMWindow (aDOMWindow);
+		rc = window.GetTop (result);
+	} else {
+		nsIDOMWindow_1_9 window = new nsIDOMWindow_1_9 (aDOMWindow);
+		rc = window.GetTop (result);
+	}
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 	int /*long*/ topDOMWindow = result[0];
@@ -1531,13 +1581,22 @@ public String getText () {
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
-	nsIDOMWindow window = new nsIDOMWindow (result[0]);
-	result[0] = 0;
-	rc = window.GetDocument (result);
-	if (rc != XPCOM.NS_OK) error (rc);
-	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-	window.Release ();
-
+	if (!IsPre_2) {
+		nsIDOMWindow window = new nsIDOMWindow (result[0]);
+		result[0] = 0;
+		rc = window.GetDocument (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		window.Release ();
+	} else {
+		nsIDOMWindow_1_9 window = new nsIDOMWindow_1_9 (result[0]);
+		result[0] = 0;
+		rc = window.GetDocument (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		window.Release ();
+	}
+	
 	int /*long*/ document = result[0];
 	result[0] = 0;
 	rc = XPCOM.NS_GetComponentManager (result);
@@ -1767,13 +1826,29 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 	factory.AddRef ();
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PROMPTSERVICE_CONTRACTID, true); 
 	byte[] aClassName = MozillaDelegate.wcsToMbcs (null, "swtPromptService", true); //$NON-NLS-1$
-	rc = componentRegistrar.RegisterFactory (XPCOM.NS_PROMPTSERVICE_CID, aClassName, aContractID, factory.getAddress ());
+//	rc = componentRegistrar.RegisterFactory (XPCOM.NS_PROMPTSERVICE_CID, aClassName, aContractID, factory.getAddress());
 	if (rc != XPCOM.NS_OK) {
 		browser.dispose ();
 		error (rc);
 	}
-	factory.Release ();
-
+	if (!IsPre_2) {
+		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PROMPTER_CONTRACTID, true);
+		aClassName = MozillaDelegate.wcsToMbcs (null, "swtPrompter", true); //$NON-NLS-1$
+		rc = componentRegistrar.RegisterFactory (XPCOM.NS_PROMPTER_CID, aClassName, aContractID, factory.getAddress());
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
+		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_AUTHPROMPTER_CONTRACTID, true);
+		aClassName = MozillaDelegate.wcsToMbcs (null, "swtAuthPrompter", true); //$NON-NLS-1$
+		rc = componentRegistrar.RegisterFactory (XPCOM.NS_AUTHPROMPTER_CID, aClassName, aContractID, factory.getAddress());
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
+	}
+	factory.Release();
+	
 	ExternalFactory externalFactory = new ExternalFactory ();
 	externalFactory.AddRef ();
 	aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.EXTERNAL_CONTRACTID, true); 
@@ -1804,18 +1879,20 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 	* If the GRE version is >= 1.9 then no Download factory is registered because this
 	*   functionality is provided by the GRE.
 	*/
-	DownloadFactory downloadFactory = new DownloadFactory ();
-	downloadFactory.AddRef ();
-	aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_DOWNLOAD_CONTRACTID, true);
-	aClassName = MozillaDelegate.wcsToMbcs (null, "swtDownload", true); //$NON-NLS-1$
-	rc = componentRegistrar.RegisterFactory (XPCOM.NS_DOWNLOAD_CID, aClassName, aContractID, downloadFactory.getAddress ());
-	if (rc != XPCOM.NS_OK) {
-		browser.dispose ();
-		error (rc);
+	if (IsPre_2) {
+		DownloadFactory downloadFactory = new DownloadFactory ();
+		downloadFactory.AddRef ();
+		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_DOWNLOAD_CONTRACTID, true);
+		aClassName = MozillaDelegate.wcsToMbcs (null, "swtDownload", true); //$NON-NLS-1$
+		rc = componentRegistrar.RegisterFactory (XPCOM.NS_DOWNLOAD_CID, aClassName, aContractID, downloadFactory.getAddress ());
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
+		downloadFactory.Release ();
 	}
-	downloadFactory.Release ();
 
-	FilePickerFactory pickerFactory = isXULRunner ? new FilePickerFactory_1_8 () : new FilePickerFactory ();
+	FilePickerFactory pickerFactory = !IsPre_2 ? new FilePickerFactory_2() : (isXULRunner ? new FilePickerFactory_1_8 () : new FilePickerFactory ());
 	pickerFactory.AddRef ();
 	aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FILEPICKER_CONTRACTID, true);
 	aClassName = MozillaDelegate.wcsToMbcs (null, "swtFilePicker", true); //$NON-NLS-1$
@@ -1934,7 +2011,10 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 		int /*long*/ ptr = C.malloc (size * 2);
 		C.memset (ptr, 0, size * 2);
 		nsDynamicFunctionLoad functionLoad = new nsDynamicFunctionLoad ();
-		byte[] bytes = MozillaDelegate.wcsToMbcs (null, "XRE_InitEmbedding", true); //$NON-NLS-1$
+		int version = Integer.getInteger(XULRUNNER_VERSION, 0).intValue();
+		if (version < 2) IsPre_2 = true;
+		String initFunctionName = IsPre_2 ? "XRE_InitEmbedding" : "XRE_InitEmbedding2";
+		byte[] bytes = MozillaDelegate.wcsToMbcs (null, initFunctionName, true); //$NON-NLS-1$
 		functionLoad.functionName = C.malloc (bytes.length);
 		C.memmove (functionLoad.functionName, bytes, bytes.length);
 		functionLoad.function = C.malloc (C.PTR_SIZEOF);
@@ -1951,7 +2031,11 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 			browser.dispose ();
 			error (XPCOM.NS_ERROR_NULL_POINTER);
 		}
-		rc = XPCOM.Call (functionPtr, localFile.getAddress (), localFile.getAddress (), LocationProvider.getAddress (), 0, 0);
+		if (IsPre_2) {
+			rc = XPCOM.Call (functionPtr, localFile.getAddress (), localFile.getAddress (), LocationProvider.getAddress (), 0, 0);
+		} else {
+			rc = XPCOM.Call (functionPtr, localFile.getAddress (), localFile.getAddress (), LocationProvider.getAddress ());
+		}
 		if (rc == XPCOM.NS_OK) {
 			System.setProperty (XULRUNNER_PATH, mozillaPath);
 		}
@@ -2549,7 +2633,7 @@ public boolean isForwardEnabled () {
 }
 
 static String error (int code) {
-	throw new SWTError ("XPCOM error " + code); //$NON-NLS-1$
+	throw new SWTError ("XPCOM error " + Integer.toHexString(code)); //$NON-NLS-1$
 }
 
 void onDispose (Display display) {
@@ -3104,6 +3188,53 @@ public void stop () {
 
 void hookDOMListeners (nsIDOMEventTarget target, boolean isTop) {
 	nsEmbedString string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0, 1, 0);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0, 1, 0);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEDOWN);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0, 1, 0);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEUP);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0, 1, 0);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEMOVE);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0, 1, 0);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEWHEEL);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0, 1, 0);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEDRAG);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0, 1, 0);
+	string.dispose ();
+
+	/*
+	* Only hook mouseover and mouseout if the target is a top-level frame, so that mouse moves
+	* between frames will not generate events.
+	*/
+	if (isTop && delegate.hookEnterExit ()) {
+		string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOVER);
+		target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0, 1, 0);
+		string.dispose ();
+		string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOUT);
+		target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0, 1, 0);
+		string.dispose ();
+	}
+
+	string = new nsEmbedString (XPCOM.DOMEVENT_KEYDOWN);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0, 1, 0);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_KEYPRESS);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0, 1, 0);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_KEYUP);
+	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0, 1, 0);
+	string.dispose ();
+}
+
+void hookDOMListeners_1_9 (nsIDOMEventTarget_1_9 target, boolean isTop) {
+	nsEmbedString string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
 	target.AddEventListener (string.getAddress (), domEventListener.getAddress (), 0);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
@@ -3154,19 +3285,27 @@ void unhookDOMListeners () {
 	int rc = webBrowser.GetContentDOMWindow (result);
 	if (rc != XPCOM.NS_OK || result[0] == 0) return;
 
-	nsIDOMWindow window = new nsIDOMWindow (result[0]);
-	result[0] = 0;
-	rc = window.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+	nsIDOMWindow_1_9 window_1_9 = null;
+	nsIDOMWindow window = null;
+	if (!IsPre_2) {
+		window = new nsIDOMWindow (result[0]);
+		result[0] = 0;
+		rc = window.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+	} else {
+		window_1_9 = new nsIDOMWindow_1_9 (result[0]);
+		result[0] = 0;
+		rc = window_1_9.QueryInterface (nsIDOMEventTarget_1_9.NS_IDOMEVENTTARGET_IID, result);
+	}
+
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-
 	nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
 	result[0] = 0;
 	unhookDOMListeners (target);
 	target.Release ();
 
 	/* Listeners must be unhooked in pages contained in frames */
-	rc = window.GetFrames (result);
+	rc = !IsPre_2 ? window.GetFrames (result) : window_1_9.GetFrames(result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 	nsIDOMWindowCollection frames = new nsIDOMWindowCollection (result[0]);
@@ -3184,7 +3323,7 @@ void unhookDOMListeners () {
 
 			nsIDOMWindow frame = new nsIDOMWindow (result[0]);
 			result[0] = 0;
-			rc = frame.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+			rc = frame.QueryInterface (!IsPre_2 ? nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID : nsIDOMEventTarget_1_9.NS_IDOMEVENTTARGET_IID, result);
 			if (rc != XPCOM.NS_OK) error (rc);
 			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
@@ -3196,7 +3335,8 @@ void unhookDOMListeners () {
 		}
 	}
 	frames.Release ();
-	window.Release ();
+	if (!IsPre_2) window.Release ();
+	else window_1_9.Release();
 }
 
 void unhookDOMListeners (nsIDOMEventTarget target) {
@@ -3333,7 +3473,7 @@ int GetInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
-	if (guid.Equals (nsIDOMWindow.NS_IDOMWINDOW_IID)) {
+	if (guid.Equals (nsIDOMWindow.NS_IDOMWINDOW_IID) || guid.Equals(nsIDOMWindow_1_9.NS_IDOMWINDOW_IID)) {
 		int /*long*/[] aContentDOMWindow = new int /*long*/[1];
 		int rc = webBrowser.GetContentDOMWindow (aContentDOMWindow);
 		if (rc != XPCOM.NS_OK) error (rc);
@@ -3474,32 +3614,48 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 		* received for every window in a page, which is when these listeners
 		* are typically added.
 		*/
-		int /*long*/[] result = new int /*long*/[1];
-		nsIWebProgress progress = new nsIWebProgress (aWebProgress);
-		int rc = progress.GetDOMWindow (result);
-		if (rc != XPCOM.NS_OK) error (rc);
-		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-		nsIDOMWindow domWindow = new nsIDOMWindow (result[0]);
 
+		int /*long*/[] result = new int /*long*/[1];
+		int rc;
 		LONG ptrObject = new LONG (result[0]);
 		result[0] = 0;
 		int index = unhookedDOMWindows.indexOf (ptrObject);
 		if (index != -1) {
+			int /*long*/[] window = new int /*long*/[1];
+			nsIWebProgress progress = new nsIWebProgress (aWebProgress);
+			rc = progress.GetDOMWindow (window);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (window[0] == 0) error (XPCOM.NS_NOINTERFACE);
+			
 			rc = webBrowser.GetContentDOMWindow (result);
 			if (rc != XPCOM.NS_OK) error (rc);
 			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-			boolean isTop = result[0] == domWindow.getAddress ();
+			boolean isTop = result[0] == window[0];
 			new nsISupports (result[0]).Release ();
 			result[0] = 0;
 
-			rc = domWindow.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+			if (!IsPre_2) {
+				nsIDOMWindow domWindow = new nsIDOMWindow (window[0]);
+				rc = domWindow.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+				domWindow.Release();
+			} else {
+				nsIDOMWindow_1_9 domWindow = new nsIDOMWindow_1_9 (window[0]);
+				rc = domWindow.QueryInterface (nsIDOMEventTarget_1_9.NS_IDOMEVENTTARGET_IID, result);
+				domWindow.Release();
+			}
 			if (rc != XPCOM.NS_OK) error (rc);
 			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
-			nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
+			if (!IsPre_2) {
+				nsIDOMEventTarget_1_9 target = new nsIDOMEventTarget_1_9 (result[0]);
+				hookDOMListeners_1_9 (target, isTop);
+				target.Release ();
+			} else {
+				nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
+				hookDOMListeners (target, isTop);
+				target.Release ();
+			}
 			result[0] = 0;
-			hookDOMListeners (target, isTop);
-			target.Release ();
 
 			/*
 			* Remove and unreference the nsIDOMWindow from the collection of windows
@@ -3623,14 +3779,28 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 				*/
 				deferCompleted = true;
 
+				int /*long*/[] window = new int /*long*/[1];
+				nsIWebProgress progress = new nsIWebProgress (aWebProgress);
+				rc = progress.GetDOMWindow (window);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (window[0] == 0) error (XPCOM.NS_NOINTERFACE);
+				
 				rc = webBrowser.GetContentDOMWindow (result);
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-				boolean isTop = result[0] == domWindow.getAddress ();
+				boolean isTop = result[0] == window[0];
 				new nsISupports (result[0]).Release ();
 				result[0] = 0;
 
-				rc = domWindow.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+				if (!IsPre_2) {
+					nsIDOMWindow domWindow = new nsIDOMWindow (window[0]);
+					rc = domWindow.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+					domWindow.Release();
+				} else {
+					nsIDOMWindow_1_9 domWindow = new nsIDOMWindow_1_9 (window[0]);
+					rc = domWindow.QueryInterface (nsIDOMEventTarget_1_9.NS_IDOMEVENTTARGET_IID, result);
+					domWindow.Release();
+				}
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 				nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
@@ -3641,7 +3811,6 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 				registerFunctionsOnState = 0;
 			}
 		}
-		domWindow.Release ();
 
 		/*
 		* Feature in Mozilla.  When a request is redirected (STATE_REDIRECTING),
@@ -3732,7 +3901,7 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 			new nsISupports (result[0]).Release ();
 			result[0] = 0;
 
-			rc = domWindow.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+			rc = domWindow.QueryInterface (!IsPre_2 ? nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID : nsIDOMEventTarget_1_9.NS_IDOMEVENTTARGET_IID, result);
 			if (rc != XPCOM.NS_OK) error (rc);
 			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
@@ -3786,15 +3955,22 @@ int OnLocationChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int /*lo
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (aDOMWindow[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 	
-	nsIDOMWindow domWindow = new nsIDOMWindow (aDOMWindow[0]);
 	int /*long*/[] aTop = new int /*long*/[1];
-	rc = domWindow.GetTop (aTop);
-	if (rc != XPCOM.NS_OK) error (rc);
-	if (aTop[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-	domWindow.Release ();
-	
-	nsIDOMWindow topWindow = new nsIDOMWindow (aTop[0]);
-	topWindow.Release ();
+	if (!IsPre_2) {
+		nsIDOMWindow domWindow = new nsIDOMWindow (aDOMWindow[0]);
+		rc = domWindow.GetTop (aTop);
+		domWindow.Release ();
+		nsIDOMWindow topWindow = new nsIDOMWindow (aTop[0]);
+		topWindow.Release ();
+	} else {
+		nsIDOMWindow_1_9 domWindow = new nsIDOMWindow_1_9 (aDOMWindow[0]);
+		rc = domWindow.GetTop (aTop);
+		domWindow.Release ();
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (aTop[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+		nsIDOMWindow_1_9 topWindow = new nsIDOMWindow_1_9 (aTop[0]);
+		topWindow.Release ();
+	}
 	
 	nsIURI location = new nsIURI (aLocation);
 	int /*long*/ aSpec = XPCOM.nsEmbedCString_new ();
@@ -4387,10 +4563,8 @@ int OnHideTooltip () {
 }
 
 /* nsIDOMEventListener */
-
-int HandleEvent (int /*long*/ event) {
+int HandleEvent_2 (int /*long*/ event) {
 	nsIDOMEvent domEvent = new nsIDOMEvent (event);
-
 	int /*long*/ type = XPCOM.nsEmbedString_new ();
 	int rc = domEvent.GetType (type);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -4754,6 +4928,381 @@ int HandleEvent (int /*long*/ event) {
 		browser.notifyListeners (mouseEvent.type, mouseEvent);	
 	}
 	return XPCOM.NS_OK;
+}
+
+int HandleEvent_1_9 (int /*long*/ event) {
+	nsIDOMEvent_1_9 domEvent = new nsIDOMEvent_1_9 (event);
+	int /*long*/ type = XPCOM.nsEmbedString_new ();
+	int rc = domEvent.GetType (type);
+	if (rc != XPCOM.NS_OK) error (rc);
+	int length = XPCOM.nsEmbedString_Length (type);
+	int /*long*/ buffer = XPCOM.nsEmbedString_get (type);
+	char[] chars = new char[length];
+	XPCOM.memmove (chars, buffer, length * 2);
+	String typeString = new String (chars);
+	XPCOM.nsEmbedString_delete (type);
+
+	if (XPCOM.DOMEVENT_UNLOAD.equals (typeString)) {
+		int /*long*/[] result = new int /*long*/[1];
+		rc = domEvent.GetCurrentTarget (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+		nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
+		unhookDOMListeners (target);
+		target.Release ();
+		return XPCOM.NS_OK;
+	}
+
+	if (XPCOM.DOMEVENT_FOCUS.equals (typeString)) {
+		delegate.handleFocus ();
+		return XPCOM.NS_OK;
+	}
+
+	if (XPCOM.DOMEVENT_KEYDOWN.equals (typeString)) {
+		int /*long*/[] result = new int /*long*/[1];
+		rc = domEvent.QueryInterface (nsIDOMKeyEvent_1_9.NS_IDOMKEYEVENT_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		nsIDOMKeyEvent_1_9 domKeyEvent = new nsIDOMKeyEvent_1_9 (result[0]);
+		result[0] = 0;
+
+		int[] aKeyCode = new int[1]; /* PRUint32 */
+		rc = domKeyEvent.GetKeyCode (aKeyCode);
+		if (rc != XPCOM.NS_OK) error (rc);
+		int keyCode = translateKey (aKeyCode[0]);
+
+		/*
+		* if keyCode == lastKeyCode then either a repeating key like Shift
+		* is being held or a key for which key events are not sent has been
+		* pressed.  In both of these cases a KeyDown should not be sent.
+		*/
+		if (keyCode != lastKeyCode) {
+			lastKeyCode = keyCode;
+			switch (keyCode) {
+				case SWT.SHIFT:
+				case SWT.CONTROL:
+				case SWT.ALT:
+				case SWT.CAPS_LOCK:
+				case SWT.NUM_LOCK:
+				case SWT.SCROLL_LOCK:
+				case SWT.COMMAND: {
+					/* keypress events will not be received for these keys, so send KeyDowns for them now */
+					int[] aAltKey = new int[1], aCtrlKey = new int[1], aShiftKey = new int[1], aMetaKey = new int[1]; /* PRBool */
+					rc = domKeyEvent.GetAltKey (aAltKey);
+					if (rc != XPCOM.NS_OK) error (rc);
+					rc = domKeyEvent.GetCtrlKey (aCtrlKey);
+					if (rc != XPCOM.NS_OK) error (rc);
+					rc = domKeyEvent.GetShiftKey (aShiftKey);
+					if (rc != XPCOM.NS_OK) error (rc);
+					rc = domKeyEvent.GetMetaKey (aMetaKey);
+					if (rc != XPCOM.NS_OK) error (rc);
+
+					Event keyEvent = new Event ();
+					keyEvent.widget = browser;
+					keyEvent.type = SWT.KeyDown;
+					keyEvent.keyCode = keyCode;
+					keyEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0 ? SWT.CTRL : 0) | (aShiftKey[0] != 0 ? SWT.SHIFT : 0) | (aMetaKey[0] != 0 ? SWT.COMMAND : 0);
+					keyEvent.stateMask &= ~keyCode;		/* remove current keydown if it's a state key */
+					browser.notifyListeners (keyEvent.type, keyEvent);
+					if (!keyEvent.doit || browser.isDisposed ()) {
+						domEvent.PreventDefault ();
+					}
+					break;
+				}
+				default: {
+					/* 
+					* If the keydown has Meta (but not Meta+Ctrl) as a modifier then send a KeyDown event for it here
+					* because a corresponding keypress event will not be received for it from the DOM.  If the keydown
+					* does not have Meta as a modifier, or has Meta+Ctrl as a modifier, then then do nothing here
+					* because its KeyDown event will be sent from the keypress listener.
+					*/
+					int[] aMetaKey = new int[1]; /* PRBool */
+					rc = domKeyEvent.GetMetaKey (aMetaKey);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (aMetaKey[0] != 0) {
+						int[] aCtrlKey = new int[1]; /* PRBool */
+						rc = domKeyEvent.GetCtrlKey (aCtrlKey);
+						if (rc != XPCOM.NS_OK) error (rc);
+						if (aCtrlKey[0] == 0) {
+							int[] aAltKey = new int[1], aShiftKey = new int[1]; /* PRBool */
+							rc = domKeyEvent.GetAltKey (aAltKey);
+							if (rc != XPCOM.NS_OK) error (rc);
+							rc = domKeyEvent.GetShiftKey (aShiftKey);
+							if (rc != XPCOM.NS_OK) error (rc);
+
+							Event keyEvent = new Event ();
+							keyEvent.widget = browser;
+							keyEvent.type = SWT.KeyDown;
+							keyEvent.keyCode = lastKeyCode;
+							keyEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0? SWT.CTRL : 0) | (aShiftKey[0] != 0? SWT.SHIFT : 0) | (aMetaKey[0] != 0? SWT.COMMAND : 0);
+							browser.notifyListeners (keyEvent.type, keyEvent);
+							if (!keyEvent.doit || browser.isDisposed ()) {
+								domEvent.PreventDefault ();
+							}
+						}
+					}
+				}
+			}
+		}
+
+		domKeyEvent.Release ();
+		return XPCOM.NS_OK;
+	}
+
+	if (XPCOM.DOMEVENT_KEYPRESS.equals (typeString)) {
+		/*
+		* if keydown could not determine a keycode for this key then it's a
+		* key for which key events are not sent (eg.- the Windows key)
+		*/
+		if (lastKeyCode == 0) return XPCOM.NS_OK;
+
+		/*
+		* On linux only, unexpected keypress events are received for some
+		* modifier keys.  The workaround is to ignore these events since
+		* KeyDown events are sent for these keys in the keydown listener.  
+		*/
+		switch (lastKeyCode) {
+			case SWT.CAPS_LOCK:
+			case SWT.NUM_LOCK:
+			case SWT.SCROLL_LOCK: return XPCOM.NS_OK;
+		}
+
+		int /*long*/[] result = new int /*long*/[1];
+		rc = domEvent.QueryInterface (nsIDOMKeyEvent_1_9.NS_IDOMKEYEVENT_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		nsIDOMKeyEvent_1_9 domKeyEvent = new nsIDOMKeyEvent_1_9 (result[0]);
+		result[0] = 0;
+
+		int[] aAltKey = new int[1], aCtrlKey = new int[1], aShiftKey = new int[1], aMetaKey = new int[1]; /* PRBool */
+		rc = domKeyEvent.GetAltKey (aAltKey);
+		if (rc != XPCOM.NS_OK) error (rc);
+		rc = domKeyEvent.GetCtrlKey (aCtrlKey);
+		if (rc != XPCOM.NS_OK) error (rc);
+		rc = domKeyEvent.GetShiftKey (aShiftKey);
+		if (rc != XPCOM.NS_OK) error (rc);
+		rc = domKeyEvent.GetMetaKey (aMetaKey);
+		if (rc != XPCOM.NS_OK) error (rc);
+		domKeyEvent.Release ();
+
+		int[] aCharCode = new int[1]; /* PRUint32 */
+		rc = domKeyEvent.GetCharCode (aCharCode);
+		if (rc != XPCOM.NS_OK) error (rc);
+		lastCharCode = aCharCode[0];
+		if (lastCharCode == 0) {
+			switch (lastKeyCode) {
+				case SWT.TAB: lastCharCode = SWT.TAB; break;
+				case SWT.CR: lastCharCode = SWT.CR; break;
+				case SWT.BS: lastCharCode = SWT.BS; break;
+				case SWT.ESC: lastCharCode = SWT.ESC; break;
+				case SWT.DEL: lastCharCode = SWT.DEL; break;
+			}
+		}
+		if (aCtrlKey[0] != 0 && (0 <= lastCharCode && lastCharCode <= 0x7F)) {
+			if ('a'  <= lastCharCode && lastCharCode <= 'z') lastCharCode -= 'a' - 'A';
+			if (64 <= lastCharCode && lastCharCode <= 95) lastCharCode -= 64;
+		}
+
+		Event keyEvent = new Event ();
+		keyEvent.widget = browser;
+		keyEvent.type = SWT.KeyDown;
+		keyEvent.keyCode = lastKeyCode;
+		keyEvent.character = (char)lastCharCode;
+		keyEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0 ? SWT.CTRL : 0) | (aShiftKey[0] != 0 ? SWT.SHIFT : 0) | (aMetaKey[0] != 0 ? SWT.COMMAND : 0);
+		boolean doit = true;
+		if (delegate.sendTraverse ()) {
+			doit = sendKeyEvent (keyEvent);
+		} else {
+			browser.notifyListeners (keyEvent.type, keyEvent);
+			doit = keyEvent.doit; 
+		}
+		if (!doit || browser.isDisposed ()) {
+			domEvent.PreventDefault ();
+		}
+		return XPCOM.NS_OK;
+	}
+
+	if (XPCOM.DOMEVENT_KEYUP.equals (typeString)) {
+		int /*long*/[] result = new int /*long*/[1];
+		rc = domEvent.QueryInterface (nsIDOMKeyEvent_1_9.NS_IDOMKEYEVENT_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		nsIDOMKeyEvent_1_9 domKeyEvent = new nsIDOMKeyEvent_1_9 (result[0]);
+		result[0] = 0;
+
+		int[] aKeyCode = new int[1]; /* PRUint32 */
+		rc = domKeyEvent.GetKeyCode (aKeyCode);
+		if (rc != XPCOM.NS_OK) error (rc);
+		int keyCode = translateKey (aKeyCode[0]);
+		if (keyCode == 0) {
+			/* indicates a key for which key events are not sent */
+			domKeyEvent.Release ();
+			return XPCOM.NS_OK;
+		}
+		if (keyCode != lastKeyCode) {
+			/* keyup does not correspond to the last keydown */
+			lastKeyCode = keyCode;
+			lastCharCode = 0;
+		}
+
+		int[] aAltKey = new int[1], aCtrlKey = new int[1], aShiftKey = new int[1], aMetaKey = new int[1]; /* PRBool */
+		rc = domKeyEvent.GetAltKey (aAltKey);
+		if (rc != XPCOM.NS_OK) error (rc);
+		rc = domKeyEvent.GetCtrlKey (aCtrlKey);
+		if (rc != XPCOM.NS_OK) error (rc);
+		rc = domKeyEvent.GetShiftKey (aShiftKey);
+		if (rc != XPCOM.NS_OK) error (rc);
+		rc = domKeyEvent.GetMetaKey (aMetaKey);
+		if (rc != XPCOM.NS_OK) error (rc);
+		domKeyEvent.Release ();
+
+		Event keyEvent = new Event ();
+		keyEvent.widget = browser;
+		keyEvent.type = SWT.KeyUp;
+		keyEvent.keyCode = lastKeyCode;
+		keyEvent.character = (char)lastCharCode;
+		keyEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0 ? SWT.CTRL : 0) | (aShiftKey[0] != 0 ? SWT.SHIFT : 0) | (aMetaKey[0] != 0 ? SWT.COMMAND : 0);
+		switch (lastKeyCode) {
+			case SWT.SHIFT:
+			case SWT.CONTROL:
+			case SWT.ALT:
+			case SWT.COMMAND: {
+				keyEvent.stateMask |= lastKeyCode;
+			}
+		}
+		browser.notifyListeners (keyEvent.type, keyEvent);
+		if (!keyEvent.doit || browser.isDisposed ()) {
+			domEvent.PreventDefault ();
+		}
+		lastKeyCode = lastCharCode = 0;
+		return XPCOM.NS_OK;
+	}
+
+	/* mouse event */
+
+	int /*long*/[] result = new int /*long*/[1];
+	rc = domEvent.QueryInterface (nsIDOMMouseEvent_1_9.NS_IDOMMOUSEEVENT_IID, result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+	nsIDOMMouseEvent_1_9 domMouseEvent = new nsIDOMMouseEvent_1_9 (result[0]);
+	result[0] = 0;
+
+	/*
+	 * MouseOver and MouseOut events are fired any time the mouse enters or exits
+	 * any element within the Browser.  To ensure that SWT events are only
+	 * fired for mouse movements into or out of the Browser, do not fire an
+	 * event if the element being exited (on MouseOver) or entered (on MouseExit)
+	 * is within the Browser.
+	 */
+	if (XPCOM.DOMEVENT_MOUSEOVER.equals (typeString) || XPCOM.DOMEVENT_MOUSEOUT.equals (typeString)) {
+		rc = domMouseEvent.GetRelatedTarget (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] != 0) {
+			new nsISupports (result[0]).Release ();
+			domMouseEvent.Release ();
+			return XPCOM.NS_OK;
+		}
+	}
+
+	int[] aScreenX = new int[1], aScreenY = new int[1]; /* PRInt32 */
+
+	/*
+	 * The position of mouse events is received in screen-relative coordinates
+	 * in order to handle pages with frames, since frames express their event
+	 * coordinates relative to themselves rather than relative to their top-
+	 * level page.  Convert screen-relative coordinates to be browser-relative.
+	 */
+	rc = domMouseEvent.GetScreenX (aScreenX);
+	if (rc != XPCOM.NS_OK) error (rc);
+	rc = domMouseEvent.GetScreenY (aScreenY);
+	if (rc != XPCOM.NS_OK) error (rc);
+	Point position = new Point (aScreenX[0], aScreenY[0]);
+	position = browser.getDisplay ().map (null, browser, position);
+
+	int[] aDetail = new int[1]; /* PRInt32 */
+	rc = domMouseEvent.GetDetail (aDetail);
+	if (rc != XPCOM.NS_OK) error (rc);
+	short[] aButton = new short[1]; /* PRUint16 */
+	rc = domMouseEvent.GetButton (aButton);
+	if (rc != XPCOM.NS_OK) error (rc);
+	int[] aAltKey = new int[1], aCtrlKey = new int[1], aShiftKey = new int[1], aMetaKey = new int[1]; /* PRBool */
+	rc = domMouseEvent.GetAltKey (aAltKey);
+	if (rc != XPCOM.NS_OK) error (rc);
+	rc = domMouseEvent.GetCtrlKey (aCtrlKey);
+	if (rc != XPCOM.NS_OK) error (rc);
+	rc = domMouseEvent.GetShiftKey (aShiftKey);
+	if (rc != XPCOM.NS_OK) error (rc);
+	rc = domMouseEvent.GetMetaKey (aMetaKey);
+	if (rc != XPCOM.NS_OK) error (rc);
+	domMouseEvent.Release ();
+
+	Event mouseEvent = new Event ();
+	mouseEvent.widget = browser;
+	mouseEvent.x = position.x; mouseEvent.y = position.y;
+	mouseEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0 ? SWT.CTRL : 0) | (aShiftKey[0] != 0 ? SWT.SHIFT : 0) | (aMetaKey[0] != 0 ? SWT.COMMAND : 0);
+
+	if (XPCOM.DOMEVENT_MOUSEDOWN.equals (typeString)) {
+		delegate.handleMouseDown ();
+		mouseEvent.type = SWT.MouseDown;
+		mouseEvent.button = aButton[0] + 1;
+		mouseEvent.count = aDetail[0];
+	} else if (XPCOM.DOMEVENT_MOUSEUP.equals (typeString)) {
+		/*
+		 * Bug on OSX.  For some reason multiple mouseup events come from the DOM
+		 * when button 3 is released on OSX.  The first of these events has a count
+		 * detail and the others do not.  The workaround is to not fire received
+		 * button 3 mouseup events that do not have a count since mouse events
+		 * without a click count are not valid.
+		 */
+		int button = aButton[0] + 1;
+		int count = aDetail[0];
+		if (count == 0 && button == 3) return XPCOM.NS_OK;
+		mouseEvent.type = SWT.MouseUp;
+		mouseEvent.button = button;
+		mouseEvent.count = count;
+	} else if (XPCOM.DOMEVENT_MOUSEMOVE.equals (typeString)) {
+		mouseEvent.type = SWT.MouseMove;
+	} else if (XPCOM.DOMEVENT_MOUSEWHEEL.equals (typeString)) {
+		mouseEvent.type = SWT.MouseWheel;
+		mouseEvent.count = -aDetail[0];
+	} else if (XPCOM.DOMEVENT_MOUSEOVER.equals (typeString)) {
+		mouseEvent.type = SWT.MouseEnter;
+	} else if (XPCOM.DOMEVENT_MOUSEOUT.equals (typeString)) {
+		mouseEvent.type = SWT.MouseExit;
+	} else if (XPCOM.DOMEVENT_MOUSEDRAG.equals (typeString)) {
+		mouseEvent.type = SWT.DragDetect;
+		mouseEvent.button = aButton[0] + 1;
+		switch (mouseEvent.button) {
+			case 1: mouseEvent.stateMask |= SWT.BUTTON1; break;
+			case 2: mouseEvent.stateMask |= SWT.BUTTON2; break;
+			case 3: mouseEvent.stateMask |= SWT.BUTTON3; break;
+			case 4: mouseEvent.stateMask |= SWT.BUTTON4; break;
+			case 5: mouseEvent.stateMask |= SWT.BUTTON5; break;
+		}
+	}
+
+	browser.notifyListeners (mouseEvent.type, mouseEvent);
+	if (browser.isDisposed ()) return XPCOM.NS_OK;
+	if (aDetail[0] == 2 && XPCOM.DOMEVENT_MOUSEDOWN.equals (typeString)) {
+		mouseEvent = new Event ();
+		mouseEvent.widget = browser;
+		mouseEvent.x = position.x; mouseEvent.y = position.y;
+		mouseEvent.stateMask = (aAltKey[0] != 0 ? SWT.ALT : 0) | (aCtrlKey[0] != 0 ? SWT.CTRL : 0) | (aShiftKey[0] != 0 ? SWT.SHIFT : 0) | (aMetaKey[0] != 0 ? SWT.COMMAND : 0);
+		mouseEvent.type = SWT.MouseDoubleClick;
+		mouseEvent.button = aButton[0] + 1;
+		mouseEvent.count = aDetail[0];
+		browser.notifyListeners (mouseEvent.type, mouseEvent);	
+	}
+	return XPCOM.NS_OK;
+}
+
+int HandleEvent (int /*long*/ event) {
+	if (!IsPre_2) {
+		return HandleEvent_2(event);
+	} else {
+		return HandleEvent_1_9(event);
+	}
 }
 
 /* nsIBadCertListener2 */

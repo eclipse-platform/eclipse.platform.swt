@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2009 IBM Corporation and others.
+ * Copyright (c) 2003, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,12 +13,12 @@ package org.eclipse.swt.browser;
 import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.mozilla.*;
 
-class HelperAppLauncherDialogFactory {
+class PromptFactory {
 	XPCOMObject supports;
 	XPCOMObject factory;
 	int refCount = 0;
 
-HelperAppLauncherDialogFactory () {
+PromptFactory () {
 	createCOMInterfaces ();
 }
 
@@ -39,8 +39,7 @@ void createCOMInterfaces () {
 		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
 		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return CreateInstance (args[0], args[1], args[2]);}
-		public int /*long*/ method4 (int /*long*/[] args) {return LockFactory ((int)/*64*/args[0]);}
+		public int /*long*/ method3 (int /*long*/[] args) {return GetPrompt (args[0], args[1], args[2]);}
 	};
 }
 
@@ -69,7 +68,7 @@ int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIFactory.NS_IFACTORY_IID)) {
+	if (guid.Equals (nsIPromptFactory.NS_IPROMPTFACTORY_IID)) {
 		XPCOM.memmove (ppvObject, new int /*long*/[] {factory.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -85,26 +84,32 @@ int Release () {
 	return refCount;
 }
 	
-/* nsIFactory */
+/* nsIPromptFactory */
 
-int CreateInstance (int /*long*/ aOuter, int /*long*/ iid, int /*long*/ result) {
-	if (Mozilla.IsPre_1_9) {
-		HelperAppLauncherDialog helperAppLauncherDialog = new HelperAppLauncherDialog ();
-		helperAppLauncherDialog.AddRef ();
-		XPCOM.memmove (result, new int /*long*/[] {helperAppLauncherDialog.getAddress ()}, C.PTR_SIZEOF);
-	} else if (Mozilla.IsPre_2){
-		HelperAppLauncherDialog_1_9 helperAppLauncherDialog = new HelperAppLauncherDialog_1_9 ();
-		helperAppLauncherDialog.AddRef ();
-		XPCOM.memmove (result, new int /*long*/[] {helperAppLauncherDialog.getAddress ()}, C.PTR_SIZEOF);
-	} else {
-		HelperAppLauncherDialog_2 helperAppLauncherDialog = new HelperAppLauncherDialog_2 ();
-		helperAppLauncherDialog.AddRef ();
-		XPCOM.memmove (result, new int /*long*/[] {helperAppLauncherDialog.getAddress ()}, C.PTR_SIZEOF);
+int GetPrompt (int /*long*/ aOuter, int /*long*/ iid, int /*long*/ result) {
+	nsID guid = new nsID ();
+	XPCOM.memmove (guid, iid, nsID.sizeof);
+	
+	if (guid.Equals (nsIPrompt.NS_IPROMPT_IID)) {
+		Prompter prompter = new Prompter ();
+		prompter.AddRef ();
+		XPCOM.memmove (result, new int /*long*/[] {prompter.getAddress ()}, C.PTR_SIZEOF);
+		AddRef ();
+		return XPCOM.NS_OK;
 	}
-	return XPCOM.NS_OK;
+	if (guid.Equals (nsIAuthPrompt2.NS_IAUTHPROMPT2_IID)) {
+		PromptAuth2 promptAuth = new PromptAuth2();
+		promptAuth.AddRef ();
+		XPCOM.memmove (result, new int /*long*/[] {promptAuth.getAddress ()}, C.PTR_SIZEOF);
+		AddRef ();
+		return XPCOM.NS_OK;
+	}
+	
+	return XPCOM.NS_NOINTERFACE;
 }
 
 int LockFactory (int lock) {
 	return XPCOM.NS_OK;
 }
+
 }

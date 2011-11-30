@@ -73,6 +73,10 @@ static String getLibraryName () {
 	return "libxpcom.so"; //$NON-NLS-1$
 }
 
+String getJSLibraryName_Pre2() {
+	return "libxpcom.so";
+}
+
 static char[] mbcsToWcs (String codePage, byte [] buffer) {
 	return Converter.mbcsToWcs (codePage, buffer);
 }

@@ -58,6 +58,7 @@ XULRUNNER_LIBS = Advapi32.lib $(XULRUNNER_SDK)\lib\xpcomglue.lib
 XULRUNNER_OBJS = xpcom.obj xpcom_custom.obj xpcom_structs.obj xpcom_stats.obj xpcominit.obj xpcominit_structs.obj xpcominit_stats.obj
 
 MOZILLACFLAGS = -c \
+	-Zc:wchar_t \
 	-O1 \
 	-DSWT_VERSION=$(SWT_VERSION) \
 	$(NATIVE_STATS) \

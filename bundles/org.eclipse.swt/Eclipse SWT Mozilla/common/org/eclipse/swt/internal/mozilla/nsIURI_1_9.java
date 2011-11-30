@@ -27,17 +27,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIURI extends nsISupports {
+public class nsIURI_1_9 extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 30;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 26;
 
 	public static final String NS_IURI_IID_STR =
-		"12120b20-0929-40e9-88cf-6e08766e8b23";
+		"07a22cc0-0ce5-11d3-9331-00104ba0fd40";
 
 	public static final nsID NS_IURI_IID =
 		new nsID(NS_IURI_IID_STR);
 
-	public nsIURI(int /*long*/ address) {
+	public nsIURI_1_9(int /*long*/ address) {
 		super(address);
 	}
 

@@ -27,17 +27,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIWebBrowser extends nsISupports {
+public class nsIWebBrowser_1_9 extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 9;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 7;
 
 	public static final String NS_IWEBBROWSER_IID_STR =
-		"33e9d001-caab-4ba9-8961-54902f197202";
+		"69e5df00-7b8b-11d3-af61-00a024ffc08c";
 
 	public static final nsID NS_IWEBBROWSER_IID =
 		new nsID(NS_IWEBBROWSER_IID_STR);
 
-	public nsIWebBrowser(int /*long*/ address) {
+	public nsIWebBrowser_1_9(int /*long*/ address) {
 		super(address);
 	}
 

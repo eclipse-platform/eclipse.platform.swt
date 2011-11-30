@@ -88,9 +88,19 @@ int Release () {
 /* nsIFactory */
 
 int CreateInstance (int /*long*/ aOuter, int /*long*/ iid, int /*long*/ result) {
-	PromptService2 promptService = new PromptService2 ();
-	promptService.AddRef ();
-	XPCOM.memmove (result, new int /*long*/[] {promptService.getAddress ()}, C.PTR_SIZEOF);
+	nsID guid = new nsID ();
+	XPCOM.memmove (guid, iid, nsID.sizeof);
+	if (guid.Equals (nsIPromptService2.NS_IPROMPTSERVICE2_IID)) {
+		PromptService2 promptService = new PromptService2 ();
+		promptService.AddRef ();
+		XPCOM.memmove (result, new int /*long*/[] {promptService.getAddress ()}, C.PTR_SIZEOF);
+	} else if (guid.Equals (nsIPromptFactory.NS_IPROMPTFACTORY_IID)) {
+		PromptFactory promptFactory = new PromptFactory();
+		promptFactory.AddRef ();
+		XPCOM.memmove (result, new int /*long*/[] {promptFactory.getAddress ()}, C.PTR_SIZEOF);
+		AddRef ();
+		return XPCOM.NS_OK;
+	}
 	return XPCOM.NS_OK;
 }
 

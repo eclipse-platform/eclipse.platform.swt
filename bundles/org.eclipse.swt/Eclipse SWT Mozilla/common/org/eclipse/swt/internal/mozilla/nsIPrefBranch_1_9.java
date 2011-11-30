@@ -27,17 +27,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIPrefBranch extends nsISupports {
+public class nsIPrefBranch_1_9 extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 18;
 
 	public static final String NS_IPREFBRANCH_IID_STR =
-		"e0b6e170-691b-11e0-ae3e-0800200c9a66";
+		"56c35506-f14b-11d3-99d3-ddbfac2ccf65";
 
 	public static final nsID NS_IPREFBRANCH_IID =
 		new nsID(NS_IPREFBRANCH_IID_STR);
 
-	public nsIPrefBranch(int /*long*/ address) {
+	public nsIPrefBranch_1_9(int /*long*/ address) {
 		super(address);
 	}
 

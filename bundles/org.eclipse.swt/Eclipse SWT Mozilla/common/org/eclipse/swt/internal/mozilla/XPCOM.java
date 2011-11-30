@@ -54,11 +54,14 @@ public class XPCOM extends C {
 	public static final nsID NS_CATEGORYMANAGER_CID = new nsID("16d222a6-1dd2-11b2-b693-f38b02c021b2"); //$NON-NLS-1$
 	public static final nsID NS_DOWNLOAD_CID = new nsID("e3fa9D0a-1dd1-11b2-bdef-8c720b597445"); //$NON-NLS-1$
 	public static final nsID NS_FILEPICKER_CID = new nsID("54ae32f8-1dd2-11b2-a209-df7c505370f8"); //$NON-NLS-1$
-	public static final nsID NS_HELPERAPPLAUNCHERDIALOG_CID = new nsID("f68578eb-6ec2-4169-ae19-8c6243f0abe1"); //$NON-NLS-1$
+	public static final nsID NS_HELPERAPPLAUNCHERDIALOG_CID = new nsID("e68578eb-6ec2-4169-ae19-8c6243f0abe1"); //$NON-NLS-1$
 	public static final nsID NS_INPUTSTREAMCHANNEL_CID = new nsID("6ddb050c-0d04-11d4-986e-00c04fa0cf4a"); //$NON-NLS-1$
 	public static final nsID NS_IOSERVICE_CID =	new nsID("9ac9e770-18bc-11d3-9337-00104ba0fd40"); //$NON-NLS-1$
 	public static final nsID NS_LOADGROUP_CID = new nsID("e1c61582-2a84-11d3-8cce-0060b0fc14a3"); //$NON-NLS-1$
 	public static final nsID NS_PROMPTSERVICE_CID = new nsID("a2112d6a-0e28-421f-b46a-25c0b308cbd0"); //$NON-NLS-1$
+	public static final nsID NS_PROMPTER_CID = new nsID("f2112d6a-0e28-421f-b46a-25c0b308cbd0"); //$NON-NLS-1$
+	public static final nsID NS_AUTHPROMPTER_CID = new nsID("e2112d6a-0e28-421f-b46a-25c0b308cbd0"); //$NON-NLS-1$
+	public static final nsID NS_IWEBBROWSER_CID = new nsID ("F1EAC761-87E9-11d3-AF80-00A024FFC08C"); //$NON-NLS-1$
 
 	public static final String EXTERNAL_CONTRACTID = "@eclipse.org/external;1"; //$NON-NLS-1$
 	public static final String NS_CERTOVERRIDE_CONTRACTID = "@mozilla.org/security/certoverride;1"; //$NON-NLS-1$
@@ -79,6 +82,8 @@ public class XPCOM extends C {
 	public static final String NS_PREFLOCALIZEDSTRING_CONTRACTID = "@mozilla.org/pref-localizedstring;1"; //$NON-NLS-1$
 	public static final String NS_PREFSERVICE_CONTRACTID = "@mozilla.org/preferences-service;1"; //$NON-NLS-1$
 	public static final String NS_PROMPTSERVICE_CONTRACTID = "@mozilla.org/embedcomp/prompt-service;1"; //$NON-NLS-1$
+	public static final String NS_PROMPTER_CONTRACTID = "@mozilla.org/prompter;1"; //$NON-NLS-1$
+	public static final String NS_AUTHPROMPTER_CONTRACTID = "@mozilla.org/passwordmanager/authpromptfactory;1"; //$NON-NLS-1$
 	public static final String NS_TRANSFER_CONTRACTID = "@mozilla.org/transfer;1"; //$NON-NLS-1$
 	public static final String NS_VARIANT_CONTRACTID = "@mozilla.org/variant;1"; //$NON-NLS-1$
 	public static final String NS_WEBNAVIGATIONINFO_CONTRACTID = "@mozilla.org/webnavigation-info;1"; //$NON-NLS-1$
@@ -557,6 +562,22 @@ public static final int Call(int /*long*/ ptr, int /*long*/ aLibXULDirectory, in
 	lock.lock();
 	try {
 		return _Call(ptr, aLibXULDirectory, aAppDirectory, aAppDirProvider, aStaticComponents, aStaticComponentsCount);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param ptr cast=(SWT_XREInitEmbedding2)
+ * @param aLibXULDirectory cast=(nsILocalFile *)
+ * @param aAppDirectory cast=(nsILocalFile *)
+ * @param aAppDirProvider cast=(nsIDirectoryServiceProvider *)
+ */
+public static final native int _Call(int /*long*/ ptr, int /*long*/ aLibXULDirectory, int /*long*/ aAppDirectory, int /*long*/ aAppDirProvider);
+public static final int Call(int /*long*/ ptr, int /*long*/ aLibXULDirectory, int /*long*/ aAppDirectory, int /*long*/ aAppDirProvider) {
+	lock.lock();
+	try {
+		return _Call(ptr, aLibXULDirectory, aAppDirectory, aAppDirProvider);
 	} finally {
 		lock.unlock();
 	}

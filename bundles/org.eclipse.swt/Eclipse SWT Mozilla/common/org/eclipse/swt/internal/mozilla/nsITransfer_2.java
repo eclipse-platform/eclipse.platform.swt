@@ -22,34 +22,26 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIDOMEventTarget extends nsISupports {
+public class nsITransfer_2 extends nsIWebProgressListener2_2 {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 3;
+	static final int LAST_METHOD_ID = nsIWebProgressListener2_2.LAST_METHOD_ID + 1;
 
-	public static final String NS_IDOMEVENTTARGET_IID_STR =
-		"1797d5a4-b12a-428d-9eef-a0e13839728c";
+	public static final String NS_ITRANSFER_IID_STR =
+		"3a982955-dc44-422e-8734-8462bf8d2121";
 
-	public static final nsID NS_IDOMEVENTTARGET_IID =
-		new nsID(NS_IDOMEVENTTARGET_IID_STR);
+	public static final nsID NS_ITRANSFER_IID =
+		new nsID(NS_ITRANSFER_IID_STR);
 
-	public nsIDOMEventTarget(int /*long*/ address) {
+	public nsITransfer_2(int /*long*/ address) {
 		super(address);
 	}
 
-	public int AddEventListener(int /*long*/ type, int /*long*/ listener, int useCapture, int wantsUntrusted, int _argc) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), type, listener, useCapture, wantsUntrusted, _argc);
-	}
-
-	public int RemoveEventListener(int /*long*/ type, int /*long*/ listener, int useCapture) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), type, listener, useCapture);
-	}
-
-	public int DispatchEvent(int /*long*/ evt, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), evt, _retval);
+	public int Init(int /*long*/ aSource, int /*long*/ aTarget, int /*long*/ aDisplayName, int /*long*/ aMIMEInfo, long startTime, int /*long*/ aTempFile, int /*long*/ aCancelable) {
+		return XPCOM.VtblCall(nsIWebProgressListener2_2.LAST_METHOD_ID + 1, getAddress(), aSource, aTarget, aDisplayName, aMIMEInfo, startTime, aTempFile, aCancelable);
 	}
 }

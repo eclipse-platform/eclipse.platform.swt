@@ -40,6 +40,7 @@
 #endif /* __APPLE__ */
 #endif /* _WIN32 */
 
+#define SWT_XREInitEmbedding2 nsresult (*)(nsILocalFile *,nsILocalFile *,nsIDirectoryServiceProvider *)
 #define SWT_XREInitEmbedding nsresult (*)(nsILocalFile *,nsILocalFile *,nsIDirectoryServiceProvider *,nsStaticModuleInfo const *,PRUint32)
 
 #endif /* INC_xpcom_H */

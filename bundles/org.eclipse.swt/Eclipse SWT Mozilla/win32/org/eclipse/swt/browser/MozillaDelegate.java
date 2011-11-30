@@ -90,8 +90,12 @@ int /*long*/ getHandle () {
 	return browser.handle;
 }
 
-String getJSLibraryName () {
+String getJSLibraryName_Pre2 () {
 	return "js3250.dll"; //$NON-NLS-1$
+}
+
+String getJSLibraryName () {
+	return "mozjs.dll"; //$NON-NLS-1$
 }
 
 String getProfilePath () {

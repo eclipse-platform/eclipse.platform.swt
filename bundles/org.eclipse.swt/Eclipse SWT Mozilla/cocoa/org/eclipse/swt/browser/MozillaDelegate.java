@@ -103,6 +103,10 @@ int /*long*/ getHandle () {
 }
 
 String getJSLibraryName () {
+	return "libxpcom.dylib";
+}
+
+String getJSLibraryName_Pre2 () {
 	return "libmozjs.dylib"; //$NON-NLS-1$
 }
 
