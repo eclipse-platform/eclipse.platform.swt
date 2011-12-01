@@ -1826,7 +1826,7 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 	factory.AddRef ();
 	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PROMPTSERVICE_CONTRACTID, true); 
 	byte[] aClassName = MozillaDelegate.wcsToMbcs (null, "swtPromptService", true); //$NON-NLS-1$
-//	rc = componentRegistrar.RegisterFactory (XPCOM.NS_PROMPTSERVICE_CID, aClassName, aContractID, factory.getAddress());
+	rc = componentRegistrar.RegisterFactory (XPCOM.NS_PROMPTSERVICE_CID, aClassName, aContractID, factory.getAddress ());
 	if (rc != XPCOM.NS_OK) {
 		browser.dispose ();
 		error (rc);
@@ -1834,14 +1834,14 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 	if (!IsPre_2) {
 		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PROMPTER_CONTRACTID, true);
 		aClassName = MozillaDelegate.wcsToMbcs (null, "swtPrompter", true); //$NON-NLS-1$
-		rc = componentRegistrar.RegisterFactory (XPCOM.NS_PROMPTER_CID, aClassName, aContractID, factory.getAddress());
+		rc = componentRegistrar.RegisterFactory (XPCOM.NS_PROMPTER_CID, aClassName, aContractID, factory.getAddress ());
 		if (rc != XPCOM.NS_OK) {
 			browser.dispose ();
 			error (rc);
 		}
 		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_AUTHPROMPTER_CONTRACTID, true);
 		aClassName = MozillaDelegate.wcsToMbcs (null, "swtAuthPrompter", true); //$NON-NLS-1$
-		rc = componentRegistrar.RegisterFactory (XPCOM.NS_AUTHPROMPTER_CID, aClassName, aContractID, factory.getAddress());
+		rc = componentRegistrar.RegisterFactory (XPCOM.NS_AUTHPROMPTER_CID, aClassName, aContractID, factory.getAddress ());
 		if (rc != XPCOM.NS_OK) {
 			browser.dispose ();
 			error (rc);
@@ -3647,12 +3647,12 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
 			if (!IsPre_2) {
-				nsIDOMEventTarget_1_9 target = new nsIDOMEventTarget_1_9 (result[0]);
-				hookDOMListeners_1_9 (target, isTop);
-				target.Release ();
-			} else {
 				nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
 				hookDOMListeners (target, isTop);
+				target.Release ();
+			} else {
+				nsIDOMEventTarget_1_9 target = new nsIDOMEventTarget_1_9 (result[0]);
+				hookDOMListeners_1_9 (target, isTop);
 				target.Release ();
 			}
 			result[0] = 0;
@@ -3803,10 +3803,17 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 				}
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-				nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
+				
+				if (!IsPre_2) {
+					nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
+					hookDOMListeners (target, isTop);
+					target.Release ();
+				} else {
+					nsIDOMEventTarget_1_9 target = new nsIDOMEventTarget_1_9 (result[0]);
+					hookDOMListeners_1_9 (target, isTop);
+					target.Release ();
+				}
 				result[0] = 0;
-				hookDOMListeners (target, isTop);
-				target.Release ();
 			} else {
 				registerFunctionsOnState = 0;
 			}
@@ -3905,10 +3912,16 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 			if (rc != XPCOM.NS_OK) error (rc);
 			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
-			nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
+			if (!IsPre_2) {
+				nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
+				hookDOMListeners (target, isTop);
+				target.Release ();
+			} else {
+				nsIDOMEventTarget_1_9 target = new nsIDOMEventTarget_1_9 (result[0]);
+				hookDOMListeners_1_9 (target, isTop);
+				target.Release ();
+			}
 			result[0] = 0;
-			hookDOMListeners (target, isTop);
-			target.Release ();
 
 			/*
 			* Remove and unreference the nsIDOMWindow from the collection of windows
@@ -4330,17 +4343,26 @@ int FocusPrevElement () {
 int OnShowContextMenu (int aContextFlags, int /*long*/ aEvent, int /*long*/ aNode) {
 	nsIDOMEvent domEvent = new nsIDOMEvent (aEvent);
 	int /*long*/[] result = new int /*long*/[1];
-	int rc = domEvent.QueryInterface (nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_IID, result);
+	int rc = domEvent.QueryInterface (IsPre_2 ? nsIDOMMouseEvent_1_9.NS_IDOMMOUSEEVENT_IID : nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
-	nsIDOMMouseEvent domMouseEvent = new nsIDOMMouseEvent (result[0]);
 	int[] aScreenX = new int[1], aScreenY = new int[1];
-	rc = domMouseEvent.GetScreenX (aScreenX);
-	if (rc != XPCOM.NS_OK) error (rc);
-	rc = domMouseEvent.GetScreenY (aScreenY);
-	if (rc != XPCOM.NS_OK) error (rc);
-	domMouseEvent.Release ();
+	if (!IsPre_2) {
+		nsIDOMMouseEvent domMouseEvent = new nsIDOMMouseEvent (result[0]);
+		rc = domMouseEvent.GetScreenX (aScreenX);
+		if (rc != XPCOM.NS_OK) error (rc);
+		rc = domMouseEvent.GetScreenY (aScreenY);
+		if (rc != XPCOM.NS_OK) error (rc);
+		domMouseEvent.Release ();
+	} else {
+		nsIDOMMouseEvent_1_9 domMouseEvent = new nsIDOMMouseEvent_1_9 (result[0]);
+		rc = domMouseEvent.GetScreenX (aScreenX);
+		if (rc != XPCOM.NS_OK) error (rc);
+		rc = domMouseEvent.GetScreenY (aScreenY);
+		if (rc != XPCOM.NS_OK) error (rc);
+		domMouseEvent.Release ();
+	}
 	
 	Event event = new Event ();
 	event.x = aScreenX[0];

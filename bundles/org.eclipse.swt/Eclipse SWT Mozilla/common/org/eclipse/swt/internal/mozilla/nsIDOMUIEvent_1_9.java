@@ -27,9 +27,9 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIDOMUIEvent_1_9 extends nsIDOMEvent {
+public class nsIDOMUIEvent_1_9 extends nsIDOMEvent_1_9 {
 
-	static final int LAST_METHOD_ID = nsIDOMEvent.LAST_METHOD_ID + 3;
+	static final int LAST_METHOD_ID = nsIDOMEvent_1_9.LAST_METHOD_ID + 3;
 
 	public static final String NS_IDOMUIEVENT_IID_STR =
 		"a6cf906b-15b3-11d2-932e-00805f8add32";
@@ -42,15 +42,15 @@ public class nsIDOMUIEvent_1_9 extends nsIDOMEvent {
 	}
 
 	public int GetView(int /*long*/[] aView) {
-		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 1, getAddress(), aView);
+		return XPCOM.VtblCall(nsIDOMEvent_1_9.LAST_METHOD_ID + 1, getAddress(), aView);
 	}
 
 	public int GetDetail(int[] aDetail) {
-		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 2, getAddress(), aDetail);
+		return XPCOM.VtblCall(nsIDOMEvent_1_9.LAST_METHOD_ID + 2, getAddress(), aDetail);
 	}
 
 	//nsIDOMWindow - viewArg
 	public int InitUIEvent(int /*long*/ typeArg, int canBubbleArg, int cancelableArg, int /*long*/ viewArg, int detailArg) {
-		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 3, getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, detailArg);
+		return XPCOM.VtblCall(nsIDOMEvent_1_9.LAST_METHOD_ID + 3, getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, detailArg);
 	}
 }
