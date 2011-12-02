@@ -146,12 +146,21 @@ int /*long*/ accessibilityActionDescription(int /*long*/ id, int /*long*/ sel, i
 }
 
 int /*long*/ accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
-	if (handleIsAccessible(id) && accessible != null) {
-		NSArray returnValue = accessible.internal_accessibilityActionNames(ACC.CHILDID_SELF);
-		if (returnValue != null) return returnValue.id;
+	int /*long*/ returnValue = super.accessibilityActionNames(id, sel);
+	if (handleIsAccessible(id)) {
+		if (accessible != null) {
+			NSArray baseArray = accessible.internal_accessibilityActionNames(ACC.CHILDID_SELF);
+			if (baseArray != null) returnValue = baseArray.id;
+		}
+		if (hooks(SWT.MenuDetect) || (menu != null && !menu.isDisposed())) {
+			NSArray baseArray = new NSArray(returnValue);
+			NSMutableArray ourNames = NSMutableArray.arrayWithCapacity(baseArray.count() + 1);
+			ourNames.addObjectsFromArray(baseArray);
+			ourNames.addObject(OS.NSAccessibilityShowMenuAction);
+			returnValue = ourNames.id;
+		}
 	}
-	
-	return super.accessibilityActionNames(id, sel);
+	return returnValue;
 }
 
 int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
