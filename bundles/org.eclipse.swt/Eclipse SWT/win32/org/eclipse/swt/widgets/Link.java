@@ -303,8 +303,8 @@ void enableWidget (boolean enabled) {
 			Point point = offsets [i];
 			layout.setStyle (linkStyle, point.x, point.y);
 		}
-		redraw ();
 	}
+	redraw ();
 	/*
 	* Feature in Windows.  For some reason, setting
 	* LIS_ENABLED state using LM_SETITEM causes the
