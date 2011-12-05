@@ -5014,6 +5014,16 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1color_1free
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1color_1free)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1color_1free_FUNC);
+	gdk_color_free((GdkColor *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1color_1free_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1color_1white
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1color_1white)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)

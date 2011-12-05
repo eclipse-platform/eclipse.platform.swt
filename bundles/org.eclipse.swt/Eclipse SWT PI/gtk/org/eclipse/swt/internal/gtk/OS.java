@@ -3636,6 +3636,16 @@ public static final void gdk_cairo_set_source_color(int /*long*/ cairo, GdkColor
 		lock.unlock();
 	}
 }
+/** @param color cast=(GdkColor *) */
+public static final native void _gdk_color_free(int /*long*/ color);
+public static final void gdk_color_free(int /*long*/ color) {
+	lock.lock();
+	try {
+		_gdk_color_free(color);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @param colormap cast=(GdkColormap *)
  * @param color cast=(GdkColor *),flags=no_in
