@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1397;
-int OS_nativeFunctionCallCount[1397];
+int OS_nativeFunctionCount = 1379;
+int OS_nativeFunctionCallCount[1379];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -102,8 +102,6 @@ char * OS_nativeFunctionNames[] = {
 	"GtkCellRendererToggleClass_1sizeof",
 	"GtkCellRendererToggle_1sizeof",
 	"GtkColorSelectionDialog_1sizeof",
-	"GtkCombo_1sizeof",
-	"GtkFileSelection_1sizeof",
 	"GtkFixedClass_1sizeof",
 	"GtkFixed_1sizeof",
 	"GtkRequisition_1sizeof",
@@ -167,7 +165,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1GTK_1WIDGET_1FLAGS",
 	"_1GTK_1WIDGET_1HAS_1DEFAULT",
 	"_1GTK_1WIDGET_1HAS_1FOCUS",
-	"_1GTK_1WIDGET_1IS_1SENSITIVE",
 	"_1GTK_1WIDGET_1MAPPED",
 	"_1GTK_1WIDGET_1SENSITIVE",
 	"_1GTK_1WIDGET_1SET_1FLAGS",
@@ -251,6 +248,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1file_1icon_1get_1file",
 	"_1g_1file_1info_1get_1content_1type",
 	"_1g_1file_1info_1get_1modification_1time",
+	"_1g_1file_1new_1for_1commandline_1arg",
 	"_1g_1file_1new_1for_1path",
 	"_1g_1file_1new_1for_1uri",
 	"_1g_1file_1query_1info",
@@ -390,6 +388,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1strtod",
 	"_1g_1thread_1init",
 	"_1g_1thread_1supported",
+	"_1g_1timeout_1add",
 	"_1g_1type_1add_1interface_1static",
 	"_1g_1type_1class_1peek",
 	"_1g_1type_1class_1peek_1parent",
@@ -639,6 +638,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1calendar_1select_1month",
 	"_1gtk_1calendar_1set_1display_1options",
 	"_1gtk_1cell_1layout_1clear",
+	"_1gtk_1cell_1layout_1get_1cells",
 	"_1gtk_1cell_1layout_1pack_1start",
 	"_1gtk_1cell_1layout_1set_1attributes",
 	"_1gtk_1cell_1renderer_1get_1size",
@@ -671,10 +671,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1combo_1box_1remove_1text",
 	"_1gtk_1combo_1box_1set_1active",
 	"_1gtk_1combo_1box_1set_1focus_1on_1click",
-	"_1gtk_1combo_1disable_1activate",
-	"_1gtk_1combo_1new",
-	"_1gtk_1combo_1set_1case_1sensitive",
-	"_1gtk_1combo_1set_1popdown_1strings",
 	"_1gtk_1container_1add",
 	"_1gtk_1container_1forall",
 	"_1gtk_1container_1get_1border_1width",
@@ -754,12 +750,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1file_1filter_1get_1name",
 	"_1gtk_1file_1filter_1new",
 	"_1gtk_1file_1filter_1set_1name",
-	"_1gtk_1file_1selection_1get_1filename",
-	"_1gtk_1file_1selection_1get_1selections",
-	"_1gtk_1file_1selection_1hide_1fileop_1buttons",
-	"_1gtk_1file_1selection_1new",
-	"_1gtk_1file_1selection_1set_1filename",
-	"_1gtk_1file_1selection_1set_1select_1multiple",
 	"_1gtk_1fixed_1move",
 	"_1gtk_1fixed_1new",
 	"_1gtk_1fixed_1set_1has_1window",
@@ -829,12 +819,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1label_1set_1text__J_3B",
 #endif
 	"_1gtk_1label_1set_1text_1with_1mnemonic",
-	"_1gtk_1list_1append_1items",
-	"_1gtk_1list_1clear_1items",
-	"_1gtk_1list_1insert_1items",
-	"_1gtk_1list_1item_1new_1with_1label",
-	"_1gtk_1list_1remove_1items",
-	"_1gtk_1list_1select_1item",
 	"_1gtk_1list_1store_1append",
 	"_1gtk_1list_1store_1clear",
 	"_1gtk_1list_1store_1insert",
@@ -865,8 +849,6 @@ char * OS_nativeFunctionNames[] = {
 #else
 	"_1gtk_1list_1store_1set__JJI_3BJ",
 #endif
-	"_1gtk_1list_1unselect_1all",
-	"_1gtk_1list_1unselect_1item",
 	"_1gtk_1main",
 	"_1gtk_1main_1do_1event",
 	"_1gtk_1main_1iteration",
@@ -899,6 +881,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1notebook_1set_1show_1tabs",
 	"_1gtk_1notebook_1set_1tab_1pos",
 	"_1gtk_1object_1sink",
+	"_1gtk_1orientable_1set_1orientation",
 	"_1gtk_1page_1setup_1get_1bottom_1margin",
 	"_1gtk_1page_1setup_1get_1left_1margin",
 	"_1gtk_1page_1setup_1get_1orientation",
@@ -1112,8 +1095,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1text_1view_1set_1tabs",
 	"_1gtk_1text_1view_1set_1wrap_1mode",
 	"_1gtk_1text_1view_1window_1to_1buffer_1coords",
-	"_1gtk_1timeout_1add",
-	"_1gtk_1timeout_1remove",
 	"_1gtk_1toggle_1button_1get_1active",
 	"_1gtk_1toggle_1button_1get_1inconsistent",
 	"_1gtk_1toggle_1button_1new",
@@ -1238,6 +1219,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tree_1view_1column_1set_1title",
 	"_1gtk_1tree_1view_1column_1set_1visible",
 	"_1gtk_1tree_1view_1column_1set_1widget",
+	"_1gtk_1tree_1view_1convert_1widget_1to_1bin_1window_1coords",
 	"_1gtk_1tree_1view_1create_1row_1drag_1icon",
 	"_1gtk_1tree_1view_1expand_1row",
 	"_1gtk_1tree_1view_1get_1background_1area",
@@ -1267,7 +1249,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tree_1view_1set_1model",
 	"_1gtk_1tree_1view_1set_1rules_1hint",
 	"_1gtk_1tree_1view_1set_1search_1column",
-	"_1gtk_1tree_1view_1tree_1to_1widget_1coords",
 	"_1gtk_1tree_1view_1unset_1rows_1drag_1dest",
 	"_1gtk_1tree_1view_1widget_1to_1tree_1coords",
 	"_1gtk_1vbox_1new",
@@ -1303,6 +1284,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1get_1parent_1window",
 	"_1gtk_1widget_1get_1size_1request",
 	"_1gtk_1widget_1get_1style",
+	"_1gtk_1widget_1get_1tooltip_1text",
 	"_1gtk_1widget_1get_1toplevel",
 	"_1gtk_1widget_1grab_1focus",
 	"_1gtk_1widget_1hide",
@@ -1408,6 +1390,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1pango_1attr_1underline_1color_1new",
 	"_1pango_1attr_1underline_1new",
 	"_1pango_1attr_1weight_1new",
+	"_1pango_1attribute_1copy",
 	"_1pango_1cairo_1context_1get_1font_1options",
 	"_1pango_1cairo_1context_1set_1font_1options",
 	"_1pango_1cairo_1create_1layout",
@@ -1708,16 +1691,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2J",
 #endif
 #ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkCombo_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkCombo_2J",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2J",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2J",
@@ -1794,6 +1767,7 @@ char * OS_nativeFunctionNames[] = {
 #endif
 	"pangoLayoutNewProc_1CALLBACK",
 	"realpath",
+	"strcmp",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

@@ -348,7 +348,12 @@ int calculateWidth (int /*long*/ column, int /*long*/ iter) {
 	int [] w = new int [1];
 	OS.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
 	width += 2 * w [0];
-	int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	int /*long*/ list = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+		list = OS.gtk_cell_layout_get_cells(column);
+	} else {
+		list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	}
 	if (list == 0) return 0;
 	int /*long*/ temp = list;
 	while (temp != 0) {
@@ -1577,7 +1582,13 @@ public boolean getLinesVisible() {
 }
 
 int /*long*/ getPixbufRenderer (int /*long*/ column) {
-	int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	int /*long*/ list = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+		list = OS.gtk_cell_layout_get_cells(column);
+	} else {
+		list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	}
+	
 	if (list == 0) return 0;
 	int count = OS.g_list_length (list);
 	int /*long*/ pixbufRenderer = 0;
@@ -1818,7 +1829,12 @@ public int getSortDirection () {
 }
 
 int /*long*/ getTextRenderer (int /*long*/ column) {
-	int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	int /*long*/ list = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+		list = OS.gtk_cell_layout_get_cells(column);
+	} else {
+		list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	}
 	if (list == 0) return 0;
 	int count = OS.g_list_length (list);
 	int /*long*/ textRenderer = 0;
@@ -3576,7 +3592,11 @@ void showItem (int /*long*/ iter) {
 	GdkRectangle cellRect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
 	int[] tx = new int[1], ty = new int[1];
-	OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
+	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+		OS.gtk_tree_view_convert_widget_to_bin_window_coords(handle, cellRect.x, cellRect.y, tx, ty);
+	} else {
+		OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
+	}
 	if (ty[0] < visibleRect.y ) {
 		OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0f, 0f);
 		OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);

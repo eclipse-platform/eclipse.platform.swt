@@ -45,7 +45,7 @@ public interface OpenWindowListener extends SWTEventListener {
  * <ul>
  * <li>(in/out) required true if the platform requires the user to provide a
  * <code>Browser</code> to handle the new window or false otherwise.
- * <li>(out) browser the new <code>Browser</code> that will host the 
+ * <li>(out) browser the new (unique) <code>Browser</code> that will host the 
  * content of the new window.
  * <li>(in) widget the <code>Browser</code> that is requesting to open a 
  * new window

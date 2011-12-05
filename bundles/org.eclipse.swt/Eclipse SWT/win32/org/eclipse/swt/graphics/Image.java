@@ -1257,17 +1257,13 @@ public ImageData getImageData() {
 			int imageSize;
 			/* Call with null lpBits to get the image size */
 			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-			OS.GetDIBits(hBitmapDC, hBitmap, 0, height, 0, bmi, OS.DIB_RGB_COLORS);
+			OS.GetDIBits(hBitmapDC, hBitmap, 0, height, null, bmi, OS.DIB_RGB_COLORS);
 			OS.MoveMemory(bmiHeader, bmi, BITMAPINFOHEADER.sizeof);
 			imageSize = bmiHeader.biSizeImage;
 			byte[] data = new byte[imageSize];
 			/* Get the bitmap data */
-			int /*long*/ hHeap = OS.GetProcessHeap();
-			int /*long*/ lpvBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);
-			if (lpvBits == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-			OS.GetDIBits(hBitmapDC, hBitmap, 0, height, lpvBits, bmi, OS.DIB_RGB_COLORS);
-			OS.MoveMemory(data, lpvBits, imageSize);
+			OS.GetDIBits(hBitmapDC, hBitmap, 0, height, data, bmi, OS.DIB_RGB_COLORS);
 			/* Calculate the palette */
 			PaletteData palette = null;
 			if (depth <= 8) {
@@ -1294,8 +1290,7 @@ public ImageData getImageData() {
 				/* Do the bottom half of the mask */
 				maskData = new byte[imageSize];
 				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-				OS.GetDIBits(hBitmapDC, hBitmap, height, height, lpvBits, bmi, OS.DIB_RGB_COLORS);
-				OS.MoveMemory(maskData, lpvBits, imageSize);
+				OS.GetDIBits(hBitmapDC, hBitmap, height, height, maskData, bmi, OS.DIB_RGB_COLORS);
 			} else {
 				/* Do the entire mask */
 				/* Create the BITMAPINFO */
@@ -1316,16 +1311,12 @@ public ImageData getImageData() {
 				OS.SelectObject(hBitmapDC, info.hbmMask);
 				/* Call with null lpBits to get the image size */
 				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-				OS.GetDIBits(hBitmapDC, info.hbmMask, 0, height, 0, bmi, OS.DIB_RGB_COLORS);
+				OS.GetDIBits(hBitmapDC, info.hbmMask, 0, height, null, bmi, OS.DIB_RGB_COLORS);
 				OS.MoveMemory(bmiHeader, bmi, BITMAPINFOHEADER.sizeof);
 				imageSize = bmiHeader.biSizeImage;
 				maskData = new byte[imageSize];
-				int /*long*/ lpvMaskBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);
-				if (lpvMaskBits == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-				OS.GetDIBits(hBitmapDC, info.hbmMask, 0, height, lpvMaskBits, bmi, OS.DIB_RGB_COLORS);
-				OS.MoveMemory(maskData, lpvMaskBits, imageSize);	
-				OS.HeapFree(hHeap, 0, lpvMaskBits);
+				OS.GetDIBits(hBitmapDC, info.hbmMask, 0, height, maskData, bmi, OS.DIB_RGB_COLORS);
 				/* Loop to invert the mask */
 				for (int i = 0; i < maskData.length; i++) {
 					maskData[i] ^= -1;
@@ -1340,7 +1331,6 @@ public ImageData getImageData() {
 				maskData = ImageData.convertPad(maskData, width, height, 1, maskPad, 2);
 			}
 			/* Clean up */
-			OS.HeapFree(hHeap, 0, lpvBits);
 			OS.SelectObject(hBitmapDC, hOldBitmap);
 			if (oldPalette != 0) {
 				OS.SelectPalette(hBitmapDC, oldPalette, false);
@@ -1445,7 +1435,7 @@ public ImageData getImageData() {
 			} else {
 				/* Call with null lpBits to get the image size */
 				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-				OS.GetDIBits(hBitmapDC, handle, 0, height, 0, bmi, OS.DIB_RGB_COLORS);
+				OS.GetDIBits(hBitmapDC, handle, 0, height, null, bmi, OS.DIB_RGB_COLORS);
 				OS.MoveMemory(bmiHeader, bmi, BITMAPINFOHEADER.sizeof);
 				imageSize = bmiHeader.biSizeImage;
 			}
@@ -1459,13 +1449,8 @@ public ImageData getImageData() {
 					OS.MoveMemory(data, bm.bmBits, imageSize);
 				}
 			} else {
-				int /*long*/ hHeap = OS.GetProcessHeap();
-				int /*long*/ lpvBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);
-				if (lpvBits == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-				OS.GetDIBits(hBitmapDC, handle, 0, height, lpvBits, bmi, OS.DIB_RGB_COLORS);
-				OS.MoveMemory(data, lpvBits, imageSize);
-				OS.HeapFree(hHeap, 0, lpvBits);
+				OS.GetDIBits(hBitmapDC, handle, 0, height, data, bmi, OS.DIB_RGB_COLORS);
 			}
 			/* Calculate the palette */
 			PaletteData palette = null;

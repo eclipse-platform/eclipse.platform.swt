@@ -215,91 +215,6 @@ String computeResultChooserDialog () {
 	return fullPath;
 }
 
-String computeResultClassicDialog () {
-	filterIndex = -1;
-	GtkFileSelection selection = new GtkFileSelection ();
-	OS.memmove (selection, handle);
-	int /*long*/ entry = selection.selection_entry;
-	int /*long*/ entryText = OS.gtk_entry_get_text (entry);
-	int entryLength = OS.strlen (entryText);
-	if (entryLength == 0) {
-		int /*long*/ fileList = selection.file_list;
-		int /*long*/ listSelection = OS.gtk_tree_view_get_selection (fileList);
-		int /*long*/[] model = new int /*long*/[1];
-		int /*long*/ selectedList = OS.gtk_tree_selection_get_selected_rows (listSelection, model);
-		if (selectedList == 0) return null;
-		int listLength = OS.g_list_length (selectedList);
-		if (listLength == 0) {
-			OS.g_list_free (selectedList);
-			return null;
-		}
-		int /*long*/ path = OS.g_list_nth_data (selectedList, 0);
-		int /*long*/ [] ptr = new int /*long*/[1];
-		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-		if (OS.gtk_tree_model_get_iter (model [0], iter, path)) {
-			OS.gtk_tree_model_get (model [0], iter, 0, ptr, -1);
-		}
-		OS.g_free (iter);
-		for (int i = 0; i < listLength; i++) {
-			OS.gtk_tree_path_free (OS.g_list_nth_data (selectedList, i));
-		}
-		OS.g_list_free (selectedList);
-		if (ptr [0] == 0) return null;
-		int length = OS.strlen (ptr [0]);
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, ptr [0], length);
-		OS.g_free (ptr [0]);
-		OS.gtk_entry_set_text (entry, buffer);
-	}
-
-	int /*long*/ fileNamePtr = OS.gtk_file_selection_get_filename (handle);
-	int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (fileNamePtr, -1, null, null, null);
-	int /*long*/ [] items_written = new int /*long*/ [1];
-	int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
-	entryLength = (int)/*64*/items_written [0];
-	char [] buffer = new char [entryLength];
-	OS.memmove (buffer, utf16Ptr, entryLength * 2);
-	String osAnswer = new String (buffer);
-	OS.g_free (utf16Ptr);
-	OS.g_free (utf8Ptr);
-
-	int separatorIndex = osAnswer.lastIndexOf (SEPARATOR);
-	if (separatorIndex+1 == osAnswer.length ()) return null;
-	
-	String answer = fullPath = osAnswer;
-	fileName = fullPath.substring (separatorIndex+1);
-	filterPath = fullPath.substring (0, separatorIndex);
-	if ((style & SWT.MULTI) == 0) {
-		fileNames = new String[] {fileName};
-	} else {
-		int /*long*/ namesPtr = OS.gtk_file_selection_get_selections (handle);
-		int /*long*/ namesPtr1 = namesPtr;
-		int /*long*/ [] namePtr = new int /*long*/ [1];
-		OS.memmove (namePtr, namesPtr1, OS.PTR_SIZEOF);
-		int length = 0;
-		while (namePtr[0] != 0) {
-			length++;
-			namesPtr1+=OS.PTR_SIZEOF;
-			OS.memmove(namePtr, namesPtr1, OS.PTR_SIZEOF);
-		}
-		fileNames = new String [length];
-		namePtr = new int /*long*/ [length];
-		OS.memmove (namePtr, namesPtr, length * OS.PTR_SIZEOF);
-		for (int i = 0; i < length; i++) {			
-			utf8Ptr = OS.g_filename_to_utf8 (namePtr [i], -1, null, null, null);
-			items_written = new int /*long*/ [1];
-			utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
-			buffer = new char [(int)/*64*/items_written [0]];
-			OS.memmove (buffer, utf16Ptr, items_written [0] * 2);
-			String name = new String (buffer);
-			fileNames [i] = name.substring (name.lastIndexOf (SEPARATOR) + 1);
-			OS.g_free (utf16Ptr);
-			OS.g_free (utf8Ptr);
-		}
-		OS.g_strfreev (namesPtr);
-	}
-	return answer;
-}
 /**
  * Returns the path of the first file that was
  * selected in the dialog relative to the filter path, or an
@@ -393,12 +308,7 @@ public boolean getOverwrite () {
  * </ul>
  */
 public String open () {
-	boolean useChooserDialog = OS.GTK_VERSION >= OS.VERSION (2, 4, 10); 
-	if (useChooserDialog) {
 		return openChooserDialog ();
-	} else {
-		return openClassicDialog ();
-	}
 }
 String openChooserDialog () {
 	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
@@ -456,55 +366,6 @@ String openChooserDialog () {
 	}
 	if (response == OS.GTK_RESPONSE_OK) {
 		answer = computeResultChooserDialog ();
-	}
-	display.removeIdleProc ();
-	OS.gtk_widget_destroy (handle);
-	return answer;
-}
-String openClassicDialog () {
-	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
-	handle = OS.gtk_file_selection_new (titleBytes);
-	if (parent != null) {
-		int /*long*/ shellHandle = parent.topHandle ();
-		OS.gtk_window_set_transient_for (handle, shellHandle);
-		int /*long*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
-		if (pixbufs != 0) {
-			OS.gtk_window_set_icon_list (handle, pixbufs);
-			OS.g_list_free (pixbufs);
-		}
-	}
-	OS.gtk_window_set_modal (handle, true);
-	presetClassicDialog ();
-	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
-	display.addIdleProc ();
-	String answer = null;
-	Dialog oldModal = null;
-	if (OS.gtk_window_get_modal (handle)) {
-		oldModal = display.getModalDialog ();
-		display.setModalDialog (this);
-	}
-	int signalId = 0;
-	int /*long*/ hookId = 0;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
-		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
-	}	
-	int response = OS.gtk_dialog_run (handle);
-	/*
-	* This call to gdk_threads_leave() is a temporary work around
-	* to avoid deadlocks when gdk_threads_init() is called by native
-	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above. 
-	*/
-	OS.gdk_threads_leave();
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		OS.g_signal_remove_emission_hook (signalId, hookId);
-	}
-	if (OS.gtk_window_get_modal (handle)) {
-		display.setModalDialog (oldModal);
-	}
-	if (response == OS.GTK_RESPONSE_OK) {
-		answer = computeResultClassicDialog ();
 	}
 	display.removeIdleProc ();
 	OS.gtk_widget_destroy (handle);
@@ -616,41 +477,6 @@ void presetChooserDialog () {
 	if (initialFilter != 0) {
 		OS.gtk_file_chooser_set_filter(handle, initialFilter);
 	}
-	fullPath = null;
-	fileNames = new String [0];
-}
-void presetClassicDialog () {
-	OS.gtk_file_selection_set_select_multiple(handle, (style & SWT.MULTI) != 0);
-
-	/* Calculate the fully-specified file name and convert to bytes */
-	StringBuffer stringBuffer = new StringBuffer ();
-	if (filterPath == null) {
-		filterPath = "";
-	} else {
-		if (filterPath.length () > 0) {
-			stringBuffer.append (filterPath);
-			if (filterPath.charAt (filterPath.length () - 1) != SEPARATOR) {
-				stringBuffer.append (SEPARATOR);
-			}
-		}
-	}
-	if (fileName == null) {
-		fileName = "";
-	} else {
-		stringBuffer.append (fileName);
-	}
-	fullPath = stringBuffer.toString ();
-	int length = fullPath.length ();
-	char [] buffer = new char [length + 1];
-	fullPath.getChars (0, length, buffer, 0);
-	int /*long*/ utf8Ptr = OS.g_utf16_to_utf8 (buffer, -1, null, null, null);
-	int /*long*/ fileNamePtr = OS.g_filename_from_utf8 (utf8Ptr, -1, null, null, null);
-	OS.gtk_file_selection_set_filename (handle, fileNamePtr);
-	OS.g_free (utf8Ptr);
-	OS.g_free (fileNamePtr);
-				
-	if (filterNames == null) filterNames = new String [0];
-	if (filterExtensions == null) filterExtensions = new String [0];
 	fullPath = null;
 	fileNames = new String [0];
 }

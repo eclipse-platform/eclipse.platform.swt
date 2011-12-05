@@ -260,6 +260,15 @@ void _setVisible (boolean visible) {
 	} else {
 		OS.SendMessage (hwndParent, OS.WM_CANCELMODE, 0, 0);
 	}
+	/*
+	* Bug in Windows.  After closing a popup menu, the accessibility focus
+	* is not returned to the focus control.  This causes confusion for AT users.
+	* The fix is to explicitly set the accessibility focus back to the focus control.
+	*/
+	int /*long*/ hFocus = OS.GetFocus();
+	if (hFocus != 0) {
+		OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, hFocus, OS.OBJID_CLIENT, 0);
+	}
 }
 
 /**

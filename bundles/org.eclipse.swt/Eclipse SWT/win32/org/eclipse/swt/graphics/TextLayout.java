@@ -2266,8 +2266,8 @@ public int getOffset (int x, int y, int[] trailing) {
 			int /*long*/ advances = run.justify != 0 ? run.justify : run.advances;
 			OS.ScriptXtoCP(xRun, cChars, cGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piCP, piTrailing);
 			int offset = run.start + piCP[0];
-			char ch = segmentsText.charAt(offset);
 			int length = segmentsText.length();
+			char ch = offset < length ? segmentsText.charAt(offset) : 0;
 			if (0xD800 <= ch && ch <= 0xDBFF) {
 				if (offset + 1 < length) {
 					ch = segmentsText.charAt(offset + 1);
@@ -2603,6 +2603,18 @@ StyleItem[] itemize () {
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
 		scriptState.uBidiLevel = 1;
 		scriptState.fArabicNumContext = true;
+	}
+	
+	/*
+	* In the version of Usp10.h that SWT is compiled the fReserved field is declared
+	* as a bitfield size 8. In newer versions of the Uniscribe, the first bit of fReserved
+	* was used to implement the fMergeNeutralItems feature which can be used to increase
+	* performance by reducing the number of SCRIPT_ITEM returned by ScriptItemize.
+	* 
+	* Note: This code is wrong on a big endian machine.
+	*/
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		scriptControl.fReserved = 0x1;
 	}
 	OS.ScriptApplyDigitSubstitution(null, scriptControl, scriptState);
 	

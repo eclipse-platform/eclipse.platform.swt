@@ -611,8 +611,6 @@ public static final native int GtkAdjustment_sizeof();
 public static final native int GtkAllocation_sizeof();
 public static final native int GtkBorder_sizeof();
 public static final native int GtkColorSelectionDialog_sizeof();
-public static final native int GtkCombo_sizeof();
-public static final native int GtkFileSelection_sizeof();
 public static final native int GtkFixed_sizeof();
 public static final native int GtkFixedClass_sizeof();
 public static final native int GtkRequisition_sizeof();
@@ -1708,15 +1706,6 @@ public static final boolean GTK_WIDGET_HAS_FOCUS(int /*long*/ wid) {
 		lock.unlock();
 	}
 }
-public static final native boolean _GTK_WIDGET_IS_SENSITIVE(int /*long*/ wid);
-public static final boolean GTK_WIDGET_IS_SENSITIVE(int /*long*/ wid) {
-	lock.lock();
-	try {
-		return _GTK_WIDGET_IS_SENSITIVE(wid);
-	} finally {
-		lock.unlock();
-	}
-}
 public static final native boolean _GTK_WIDGET_MAPPED(int /*long*/ wid);
 public static final boolean GTK_WIDGET_MAPPED(int /*long*/ wid) {
 	lock.lock();
@@ -2126,6 +2115,16 @@ public static final int /*long*/ g_file_new_for_path(byte[] fileName) {
 	lock.lock();
 	try {
 		return _g_file_new_for_path(fileName);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_file_new_for_commandline_arg(byte[] fileName);
+public static final int /*long*/ g_file_new_for_commandline_arg(byte[] fileName) {
+	lock.lock();
+	try {
+		return _g_file_new_for_commandline_arg(fileName);
 	} finally {
 		lock.unlock();
 	}
@@ -6102,6 +6101,16 @@ public static final void gtk_cell_layout_clear(int /*long*/ cell_layout) {
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native int /*long*/ _gtk_cell_layout_get_cells(int /*long*/ cell_layout);
+public static final int /*long*/ gtk_cell_layout_get_cells(int /*long*/ cell_layout) {
+	lock.lock();
+	try {
+		return _gtk_cell_layout_get_cells(cell_layout);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @method flags=no_gen */
 public static final native void _gtk_cell_layout_set_attributes(int /*long*/ cell_layout, int /*long*/ cell, byte[] attribute, int column, int /*long*/ sentinel);
 public static final void gtk_cell_layout_set_attributes(int /*long*/ cell_layout, int /*long*/ cell, byte[] attribute, int column, int /*long*/ sentinel) {
@@ -6359,57 +6368,12 @@ public static final void gtk_color_selection_set_has_palette(int /*long*/ colors
 		lock.unlock();
 	}
 }
-/** @param combo cast=(GtkCombo *) */
-public static final native void _gtk_combo_disable_activate(int /*long*/ combo);
-public static final void gtk_combo_disable_activate(int /*long*/ combo) {
-	lock.lock();
-	try {
-		_gtk_combo_disable_activate(combo);
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native int /*long*/ _gtk_combo_new();
-public static final int /*long*/ gtk_combo_new() {
-	lock.lock();
-	try {
-		return _gtk_combo_new();
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param combo cast=(GtkCombo *)
- * @param val cast=(gboolean)
- */
-public static final native void _gtk_combo_set_case_sensitive(int /*long*/ combo, boolean val);
-public static final void gtk_combo_set_case_sensitive(int /*long*/ combo, boolean val) {
-	lock.lock();
-	try {
-		_gtk_combo_set_case_sensitive(combo, val);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @method flags=dynamic */
 public static final native void _gtk_combo_box_set_focus_on_click(int /*long*/ combo, boolean val);
 public static final void gtk_combo_box_set_focus_on_click(int /*long*/ combo, boolean val) {
 	lock.lock();
 	try {
 		_gtk_combo_box_set_focus_on_click(combo, val);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param combo cast=(GtkCombo *)
- * @param strings cast=(GList *)
- */
-public static final native void _gtk_combo_set_popdown_strings(int /*long*/ combo, int /*long*/ strings);
-public static final void gtk_combo_set_popdown_strings(int /*long*/ combo, int /*long*/ strings) {
-	lock.lock();
-	try {
-		_gtk_combo_set_popdown_strings(combo, strings);
 	} finally {
 		lock.unlock();
 	}
@@ -7398,72 +7362,6 @@ public static final void gtk_file_filter_set_name(int /*long*/ filter, byte[] na
 		lock.unlock();
 	}
 }
-/** @param filesel cast=(GtkFileSelection *) */
-public static final native int /*long*/ _gtk_file_selection_get_filename(int /*long*/ filesel);
-public static final int /*long*/ gtk_file_selection_get_filename(int /*long*/ filesel) {
-	lock.lock();
-	try {
-		return _gtk_file_selection_get_filename(filesel);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param filesel cast=(GtkFileSelection *) */
-public static final native int /*long*/ _gtk_file_selection_get_selections(int /*long*/ filesel);
-public static final int /*long*/ gtk_file_selection_get_selections(int /*long*/ filesel) {
-	lock.lock();
-	try {
-		return _gtk_file_selection_get_selections(filesel);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param filesel cast=(GtkFileSelection *) */
-public static final native void _gtk_file_selection_hide_fileop_buttons(int /*long*/ filesel);
-public static final void gtk_file_selection_hide_fileop_buttons(int /*long*/ filesel) {
-	lock.lock();
-	try {
-		_gtk_file_selection_hide_fileop_buttons(filesel);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param title cast=(const gchar *) */
-public static final native int /*long*/ _gtk_file_selection_new(byte[] title);
-public static final int /*long*/ gtk_file_selection_new(byte[] title) {
-	lock.lock();
-	try {
-		return _gtk_file_selection_new(title);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param filesel cast=(GtkFileSelection *)
- * @param filename cast=(const gchar *)
- */
-public static final native void _gtk_file_selection_set_filename(int /*long*/ filesel, int /*long*/ filename);
-public static final void gtk_file_selection_set_filename(int /*long*/ filesel, int /*long*/ filename) {
-	lock.lock();
-	try {
-		_gtk_file_selection_set_filename(filesel, filename);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param filesel cast=(GtkFileSelection *)
- * @param select_multiple cast=(gboolean)
- */
-public static final native void _gtk_file_selection_set_select_multiple(int /*long*/ filesel, boolean select_multiple);
-public static final void gtk_file_selection_set_select_multiple(int /*long*/ filesel, boolean select_multiple) {
-	lock.lock();
-	try {
-		_gtk_file_selection_set_select_multiple(filesel, select_multiple);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @param fixed cast=(GtkFixed *)
  * @param widget cast=(GtkWidget *)
@@ -8167,95 +8065,6 @@ public static final void gtk_label_set_text_with_mnemonic(int /*long*/ label, by
 	}
 }
 /**
- * @param list cast=(GtkList *)
- * @param items cast=(GList *)
- */
-public static final native void _gtk_list_append_items(int /*long*/ list, int /*long*/ items);
-public static final void gtk_list_append_items(int /*long*/ list, int /*long*/ items) {
-	lock.lock();
-	try {
-		_gtk_list_append_items(list, items);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param list cast=(GtkList *) */
-public static final native void _gtk_list_clear_items(int /*long*/ list, int start, int end);
-public static final void gtk_list_clear_items(int /*long*/ list, int start, int end) {
-	lock.lock();
-	try {
-		_gtk_list_clear_items(list, start, end);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param list cast=(GtkList *)
- * @param items cast=(GList *)
- */
-public static final native void _gtk_list_insert_items(int /*long*/ list, int /*long*/ items, int position);
-public static final void gtk_list_insert_items(int /*long*/ list, int /*long*/ items, int position) {
-	lock.lock();
-	try {
-		_gtk_list_insert_items(list, items, position);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param label cast=(const gchar *) */
-public static final native int /*long*/ _gtk_list_item_new_with_label(byte[] label);
-public static final int /*long*/ gtk_list_item_new_with_label(byte[] label) {
-	lock.lock();
-	try {
-		return _gtk_list_item_new_with_label(label);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param list cast=(GtkList *)
- * @param items cast=(GList *)
- */
-public static final native void _gtk_list_remove_items(int /*long*/ list, int /*long*/ items);
-public static final void gtk_list_remove_items(int /*long*/ list, int /*long*/ items) {
-	lock.lock();
-	try {
-		_gtk_list_remove_items(list, items);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param list cast=(GtkList *) */
-public static final native void _gtk_list_select_item(int /*long*/ list, int item);
-public static final void gtk_list_select_item(int /*long*/ list, int item) {
-	lock.lock();
-	try {
-		_gtk_list_select_item(list, item);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param list cast=(GtkList *) */
-public static final native void _gtk_list_unselect_all(int /*long*/ list);
-public static final void gtk_list_unselect_all(int /*long*/ list) {
-	lock.lock();
-	try {
-		_gtk_list_unselect_all(list);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param list cast=(GtkList *) */
-public static final native void _gtk_list_unselect_item(int /*long*/ list, int item);
-public static final void gtk_list_unselect_item(int /*long*/ list, int item) {
-	lock.lock();
-	try {
-		_gtk_list_unselect_item(list, item);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
  * @param list_store cast=(GtkListStore *)
  * @param iter cast=(GtkTreeIter *)
  */
@@ -8461,7 +8270,10 @@ public static final int /*long*/ gtk_menu_get_attach_widget(int /*long*/ menu) {
 		lock.unlock();
 	}
 }
-/** @param menu_item cast=(GtkMenuItem *) */
+/**
+ * @method flags=dynamic 
+ * @param menu_item cast=(GtkMenuItem *) 
+ */
 public static final native void _gtk_menu_item_remove_submenu(int /*long*/ menu_item);
 public static final void gtk_menu_item_remove_submenu(int /*long*/ menu_item) {
 	lock.lock();
@@ -8747,6 +8559,20 @@ public static final void gtk_object_sink(int /*long*/ object) {
 	lock.lock();
 	try {
 		_gtk_object_sink(object);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param toolbar cast=(GtkOrientable *)
+ * @param orientation cast=(GtkOrientation)
+ */
+public static final native void _gtk_orientable_set_orientation(int /*long*/ orientable, int orientation);
+public static final void gtk_orientable_set_orientation(int /*long*/ orientable, int orientation) {
+	lock.lock();
+	try {
+		_gtk_orientable_set_orientation(orientable, orientation);
 	} finally {
 		lock.unlock();
 	}
@@ -11171,24 +10997,14 @@ public static final void gtk_text_view_window_to_buffer_coords(int /*long*/ text
 }
 /**
  * @param interval cast=(guint32)
- * @param function cast=(GtkFunction)
+ * @param function cast=(GSourceFunc)
  * @param data cast=(gpointer)
  */
-public static final native int _gtk_timeout_add(int interval, int /*long*/ function, int /*long*/ data);
-public static final int gtk_timeout_add(int interval, int /*long*/ function, int /*long*/ data) {
+public static final native int _g_timeout_add(int interval, int /*long*/ function, int /*long*/ data);
+public static final int g_timeout_add(int interval, int /*long*/ function, int /*long*/ data) {
 	lock.lock();
 	try {
-		return _gtk_timeout_add(interval, function, data);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param timeout_handler_id cast=(guint) */
-public static final native void _gtk_timeout_remove(int timeout_handler_id);
-public static final void gtk_timeout_remove(int timeout_handler_id) {
-	lock.lock();
-	try {
-		_gtk_timeout_remove(timeout_handler_id);
+		return _g_timeout_add(interval, function, data);
 	} finally {
 		lock.unlock();
 	}
@@ -11287,6 +11103,7 @@ public static final int /*long*/ gtk_toolbar_new() {
 	}
 }
 /**
+ * @method flags=dynamic
  * @param toolbar cast=(GtkToolbar *)
  * @param orientation cast=(GtkOrientation)
  */
@@ -11349,10 +11166,7 @@ public static final void gtk_tooltips_force_window(int /*long*/ tooltips) {
 	}
 }
 /**
- * @param tooltips cast=(GtkTooltips *)
- * @param widget cast=(GtkWidget *)
- * @param tip_text cast=(const gchar *)
- * @param tip_private cast=(const gchar *)
+ * @method flags=dynamic
  */
 public static final native void _gtk_tooltips_set_tip(int /*long*/ tooltips, int /*long*/ widget, byte[] tip_text, byte[] tip_private);
 public static final void gtk_tooltips_set_tip(int /*long*/ tooltips, int /*long*/ widget, byte[] tip_text, byte[] tip_private) {
@@ -11986,7 +11800,10 @@ public static final void gtk_tree_view_column_clear(int /*long*/ tree_column) {
 		lock.unlock();
 	}
 }
-/** @param tree_column cast=(GtkTreeViewColumn *) */
+/** 
+ * @method flags=dynamic
+ * @param tree_column cast=(GtkTreeViewColumn *) 
+ */
 public static final native int /*long*/ _gtk_tree_view_column_get_cell_renderers(int /*long*/ tree_column);
 public static final int /*long*/ gtk_tree_view_column_get_cell_renderers(int /*long*/ tree_column) {
 	lock.lock();
@@ -12138,7 +11955,7 @@ public static final void gtk_tree_view_column_set_alignment(int /*long*/ tree_co
  * @param cell_renderer cast=(GtkCellRenderer *)
  * @param func cast=(GtkTreeCellDataFunc)
  * @param func_data cast=(gpointer)
- * @param destroy cast=(GtkDestroyNotify)
+ * @param destroy cast=(GDestroyNotify)
  */
 public static final native void _gtk_tree_view_column_set_cell_data_func(int /*long*/ tree_column, int /*long*/ cell_renderer, int /*long*/ func, int /*long*/ func_data, int /*long*/ destroy);
 public static final void gtk_tree_view_column_set_cell_data_func(int /*long*/ tree_column, int /*long*/ cell_renderer, int /*long*/ func, int /*long*/ func_data, int /*long*/ destroy) {
@@ -12645,22 +12462,6 @@ public static final void gtk_tree_view_set_search_column(int /*long*/ tree_view,
 		lock.unlock();
 	}
 }
-/**
- * @param tree_view cast=(GtkTreeView *)
- * @param tx cast=(gint)
- * @param ty cast=(gint)
- * @param wx cast=(gint *)
- * @param wy cast=(gint *)
- */
-public static final native void _gtk_tree_view_tree_to_widget_coords(int /*long*/ tree_view, int tx, int ty, int[] wx, int[] wy);
-public static final void gtk_tree_view_tree_to_widget_coords(int /*long*/ tree_view, int tx, int ty, int[] wx, int[] wy) {
-	lock.lock();
-	try {
-		_gtk_tree_view_tree_to_widget_coords(tree_view, tx, ty, wx, wy);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param tree_view cast=(GtkTreeView *) */
 public static final native void _gtk_tree_view_unset_rows_drag_dest(int /*long*/ tree_view);
 public static final void gtk_tree_view_unset_rows_drag_dest(int /*long*/ tree_view) {
@@ -12671,12 +12472,28 @@ public static final void gtk_tree_view_unset_rows_drag_dest(int /*long*/ tree_vi
 		lock.unlock();
 	}
 }
-/** @param tree_view cast=(GtkTreeView *) */
+/** 
+ * @method flags=dynamic
+ * @param tree_view cast=(GtkTreeView *) 
+ */
 public static final native void _gtk_tree_view_widget_to_tree_coords(int /*long*/ tree_view, int wx, int wy, int[] tx, int[] ty);
 public static final void gtk_tree_view_widget_to_tree_coords(int /*long*/ tree_view, int wx, int wy, int[] tx, int[] ty) {
 	lock.lock();
 	try {
 		_gtk_tree_view_widget_to_tree_coords(tree_view, wx, wy, tx, ty);
+	} finally {
+		lock.unlock();
+	}
+}
+/** 
+ * @method flags=dynamic
+ * @param tree_view cast=(GtkTreeView *) 
+ */
+public static final native void _gtk_tree_view_convert_widget_to_bin_window_coords(int /*long*/ tree_view, int wx, int wy, int[] tx, int[] ty);
+public static final void gtk_tree_view_convert_widget_to_bin_window_coords(int /*long*/ tree_view, int wx, int wy, int[] tx, int[] ty) {
+	lock.lock();
+	try {
+		_gtk_tree_view_convert_widget_to_bin_window_coords(tree_view, wx, wy, tx, ty);
 	} finally {
 		lock.unlock();
 	}
@@ -12962,6 +12779,16 @@ public static final int /*long*/ gtk_widget_get_toplevel (int /*long*/ widget) {
 	lock.lock();
 	try {
 		return _gtk_widget_get_toplevel(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _gtk_widget_get_tooltip_text (int /*long*/ widget);
+public static final int /*long*/ gtk_widget_get_tooltip_text (int /*long*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_widget_get_tooltip_text(widget);
 	} finally {
 		lock.unlock();
 	}
@@ -13961,11 +13788,6 @@ public static final native void memmove(GtkColorSelectionDialog dest, int /*long
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)
  */
-public static final native void memmove(GtkFileSelection dest, int /*long*/ src);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- */
 public static final native void memmove(GdkEventProperty dest, int /*long*/ src);
 /**
  * @param dest cast=(void *),flags=no_in
@@ -13987,11 +13809,6 @@ public static final native void memmove(GtkWidgetClass dest, int /*long*/ src);
  * @param size cast=(size_t)
  */
 public static final native void memmove(GtkTargetPair dest, int /*long*/ src, int /*long*/ size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- */
-public static final native void memmove(GtkCombo dest, int /*long*/ src);
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)
@@ -14145,6 +13962,16 @@ public static final native void memmove(PangoLayoutRun dest, int /*long*/ src, i
  * @param size cast=(size_t)
  */
 public static final native void memmove(PangoLogAttr dest, int /*long*/ src, int /*long*/ size);
+/** @param attribute cast=(const PangoAttribute *) */
+public static final native int /*long*/ _pango_attribute_copy (int /*long*/ attribute);
+public static final int /*long*/ pango_attribute_copy (int /*long*/ attribute) {
+	lock.lock();
+	try {
+		return _pango_attribute_copy(attribute);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _pango_attr_background_new (short red, short green, short blue);
 public static final int /*long*/ pango_attr_background_new (short red, short green, short blue) {
 	lock.lock();
@@ -15369,4 +15196,9 @@ public static final int access (byte [] path, int amode) {
 		lock.unlock();
 	}
 }
+/**
+ * @param s1 cast=(const char*)
+ * @param s2 cast=(const char*)
+ */
+public static final native int strcmp (int /*long*/ s1, byte [] s2);
 }

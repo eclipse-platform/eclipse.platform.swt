@@ -39,7 +39,7 @@ import org.eclipse.swt.internal.win32.*;
 public class TrayItem extends Item {
 	Tray parent;
 	int id;
-	Image image2;
+	Image image2, highlightImage;
 	ToolTip toolTip;
 	String toolTipText;
 	boolean visible = true;
@@ -158,6 +158,24 @@ void createWidget () {
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
+}
+
+/**
+ * Returns the receiver's highlight image if it has one, or null
+ * if it does not.
+ *
+ * @return the receiver's highlight image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.8
+ */
+public Image getHighlightImage () {
+	checkWidget ();
+	return highlightImage;
 }
 
 /**
@@ -320,6 +338,7 @@ void releaseWidget () {
 	toolTip = null;
 	if (image2 != null) image2.dispose ();
 	image2 = null;
+	highlightImage = null;
 	toolTipText = null;
 	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
@@ -378,6 +397,27 @@ public void removeMenuDetectListener (MenuDetectListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.MenuDetect, listener);
+}
+
+/**
+ * Sets the receiver's highlight image.
+ *
+ * @param image the new highlight image
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.8
+ */
+public void setHighlightImage (Image image) {
+	checkWidget ();
+	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	highlightImage = image;
 }
 
 /**

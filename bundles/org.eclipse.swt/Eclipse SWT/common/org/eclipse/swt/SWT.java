@@ -4157,7 +4157,24 @@ static String findErrorText (int code) {
 public static String getMessage(String key) {
 	return Compatibility.getMessage(key);
 }
-	
+
+/**
+ * Returns the NLS'ed message for the given arguments.
+ * 
+ * @param key the key to look up
+ * @param args the parameters to insert into the message
+ * @return the message for the given parameterized key
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the key or args are null</li>
+ * </ul>
+ * 
+ * @since 3.8
+ */
+public static String getMessage(String key, Object[] args) {
+	return Compatibility.getMessage(key, args);
+}
+
 /**
  * Returns the SWT platform name.
  * Examples: "win32", "motif", "gtk", "photon", "carbon", "cocoa", "wpf"

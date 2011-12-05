@@ -136,5 +136,89 @@ public class ST {
 	 *  @since 3.2
 	 */
 	public static final int BULLET_CUSTOM = 1 << 5;
+	
+	/**
+	 *  The ExtendedModify event type (value is 3000).
+	 *  
+	 *  @since 3.8
+	 */
+	public static final int ExtendedModify = 3000;
+
+	/**
+	 *  The LineGetBackground event type (value is 3001).
+	 *  
+	 *  @since 3.8
+	 */
+	public static final int LineGetBackground = 3001;
+	
+	/**
+	 *  The LineGetStyle event type (value is 3002).
+	 *  
+	 *  @since 3.8
+	 */
+	public static final int LineGetStyle = 3002;
+	
+	/**
+	 *  The TextChanging event type (value is 3003).
+	 *  
+	 *  @since 3.8
+	 */
+	public static final int TextChanging = 3003;
+	
+	/**
+	 *  The TextSet event type (value is 3004).
+	 *  
+	 *  @since 3.8
+	 */
+	public static final int TextSet = 3004;
+	
+	/**
+	 *  The VerifyKey event type (value is 3005).
+	 *  
+	 *  @since 3.8
+	 */
+	public static final int VerifyKey = 3005;
+	
+	/**
+	 *  The TextChanged event type (value is 3006).
+	 *  
+	 *  @since 3.8
+	 */
+	public static final int TextChanged = 3006;
+	
+	/**
+	 *  The LineGetSegments event type (value is 3007).
+	 *  
+	 *  @since 3.8
+	 */
+	public static final int LineGetSegments = 3007;
+	
+	/**
+	 *  The PaintObject event type (value is 3008).
+	 *  
+	 *  @since 3.8
+	 */
+	public static final int PaintObject = 3008;
+	
+	/**
+	 *  The WordNext event type (value is 3009).
+	 *  
+	 *  @since 3.8
+	 */
+	public static final int WordNext = 3009;
+	
+	/**
+	 *  The WordPrevious event type (value is 3010).
+	 *  
+	 *  @since 3.8
+	 */
+	public static final int WordPrevious = 3010;
+	
+	/**
+	 *  The CaretMoved event type (value is 3011).
+	 *  
+	 *  @since 3.8
+	 */
+	public static final int CaretMoved = 3011;
 
 }

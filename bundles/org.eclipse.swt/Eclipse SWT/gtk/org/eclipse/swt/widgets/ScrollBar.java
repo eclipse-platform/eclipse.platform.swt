@@ -450,9 +450,9 @@ public boolean getVisible () {
 	int [] hsp = new int [1], vsp = new int [1];
 	OS.gtk_scrolled_window_get_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.HORIZONTAL) != 0) {
-		return hsp [0] != OS.GTK_POLICY_NEVER;
+		return hsp [0] != OS.GTK_POLICY_NEVER && OS.GTK_WIDGET_VISIBLE(handle);
 	} else {
-		return vsp [0] != OS.GTK_POLICY_NEVER;
+		return vsp [0] != OS.GTK_POLICY_NEVER && OS.GTK_WIDGET_VISIBLE(handle);
 	}
 }
 

@@ -707,6 +707,9 @@ public class OS extends C {
 	public static final int FVIRTKEY = 0x1;
 	public static final int GBS_NORMAL = 1;
 	public static final int GBS_DISABLED = 2;
+	public static final int GBF_DIRECT = 0x00000001;
+	public static final int GBF_COPY = 0x00000002;
+	public static final int GBF_VALIDBITS = 0x00000003;
 	public static final int GCP_REORDER = 0x0002;
 	public static final int GCP_GLYPHSHAPE = 0x0010;
 	public static final int GCP_CLASSIN = 0x00080000;
@@ -1410,6 +1413,14 @@ public class OS extends C {
 	public static final int RBN_CHILDSIZE = RBN_FIRST - 8;
 	public static final int RBN_CHEVRONPUSHED = RBN_FIRST - 10;
 	public static final int RBN_HEIGHTCHANGE = 0xfffffcc1;
+	public static final int RBS_UNCHECKEDNORMAL = 1;
+	public static final int RBS_UNCHECKEDHOT = 2;
+	public static final int RBS_UNCHECKEDPRESSED = 3;
+	public static final int RBS_UNCHECKEDDISABLED = 4;
+	public static final int RBS_CHECKEDNORMAL = 5;
+	public static final int RBS_CHECKEDHOT = 6;
+	public static final int RBS_CHECKEDPRESSED = 7;
+	public static final int RBS_CHECKEDDISABLED = 8;
 	public static final int RBS_DBLCLKTOGGLE = 0x8000;
 	public static final int RBS_BANDBORDERS = 0x400;
 	public static final int RBS_VARHEIGHT = 0x200;
@@ -2267,6 +2278,7 @@ public static final native int DOCHOSTUIINFO_sizeof ();
 public static final native int DOCINFO_sizeof ();
 public static final native int DRAWITEMSTRUCT_sizeof ();
 public static final native int DROPFILES_sizeof ();
+public static final native int DTTOPTS_sizeof ();
 public static final native int DWM_BLURBEHIND_sizeof ();
 public static final native int EMR_sizeof ();
 public static final native int EMREXTCREATEFONTINDIRECTW_sizeof ();
@@ -4026,6 +4038,8 @@ public static final native int DrawThemeIcon (int /*long*/ hTheme, int /*long*/ 
 public static final native int DrawThemeParentBackground (int /*long*/ hwnd, int /*long*/ hdc, RECT prc);
 /** @method flags=dynamic */
 public static final native int DrawThemeText (int /*long*/ hTheme, int /*long*/ hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwTextFlags, int dwTextFlags2, RECT pRect);
+/** @method flags=dynamic */
+public static final native int DrawThemeTextEx (int /*long*/ hTheme, int /*long*/ hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwFlags, RECT pRect, DTTOPTS pOptions);
 /**
  * @method flags=dynamic
  * @param hWnd cast=(HWND)
@@ -4035,7 +4049,9 @@ public static final native int DwmEnableBlurBehindWindow (int /*long*/ hWnd, DWM
  * @method flags=dynamic
  * @param hWnd cast=(HWND)
  */
-public static final native int DwmExtendFrameIntoClientArea (int /*long*/ hWnd, MARGINS pMarInset); 
+public static final native int DwmExtendFrameIntoClientArea (int /*long*/ hWnd, MARGINS pMarInset);
+/** @method flags=dynamic */
+public static final native int DwmIsCompositionEnabled (boolean[] pfEnabled); 
 /** @param hdc cast=(HDC) */
 public static final native boolean Ellipse (int /*long*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 /** @param hMenu cast=(HMENU) */
@@ -4316,10 +4332,10 @@ public static final native int GetDIBColorTable (int /*long*/ hdc, int uStartInd
 /**
  * @param hdc cast=(HDC)
  * @param hbmp cast=(HBITMAP)
- * @param lpvBits cast=(LPVOID)
+ * @param lpvBits cast=(LPVOID),flags=critical
  * @param lpbi cast=(LPBITMAPINFO),flags=critical
  */
-public static final native int GetDIBits (int /*long*/ hdc, int /*long*/ hbmp, int uStartScan, int cScanLines, int /*long*/ lpvBits, byte[] lpbi, int uUsage);
+public static final native int GetDIBits (int /*long*/ hdc, int /*long*/ hbmp, int uStartScan, int cScanLines, byte[] lpvBits, byte[] lpbi, int uUsage);
 /** @param hDlg cast=(HWND) */
 public static final native int /*long*/ GetDlgItem (int /*long*/ hDlg, int nIDDlgItem);
 public static final native int GetDoubleClickTime ();
@@ -4416,6 +4432,8 @@ public static final native int GetMessageTime ();
  * @param hrgn cast=(HRGN)
  */
 public static final native int GetMetaRgn (int /*long*/ hdc, int /*long*/ hrgn);
+/** @method flags=dynamic */
+public static final native int GetThemeBitmap (int /*long*/ hTheme, int iPartId, int iStateId, int iPropId, int dwFlags, int /*long*/[] hBitmap);
 /** @method flags=dynamic */
 public static final native int GetThemeColor (int /*long*/ hTheme, int iPartId, int iStateId, int iPropId, int[] pColor);
 /** @method flags=dynamic */

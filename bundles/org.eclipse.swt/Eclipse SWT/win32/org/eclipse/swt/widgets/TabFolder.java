@@ -869,6 +869,16 @@ LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
 	return new LRESULT (OS.DLGC_BUTTON | OS.DLGC_WANTARROWS);
 }
 
+LRESULT WM_GETOBJECT (int /*long*/ wParam, int /*long*/ lParam) {
+	/*
+	* Ensure that there is an accessible object created for this
+	* control because support for publishing the keyboard shortcut
+	* for page switching is implemented in the accessibility package.
+	*/
+	if (accessible == null) accessible = new_Accessible (this);
+	return super.WM_GETOBJECT (wParam, lParam);
+}
+
 LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;

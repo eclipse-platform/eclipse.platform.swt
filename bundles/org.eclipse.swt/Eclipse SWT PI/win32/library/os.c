@@ -2044,6 +2044,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(DROPFILES_1sizeof)
 }
 #endif
 
+#ifndef NO_DTTOPTS_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(DTTOPTS_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DTTOPTS_1sizeof_FUNC);
+	rc = (jint)DTTOPTS_sizeof();
+	OS_NATIVE_EXIT(env, that, DTTOPTS_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DWM_1BLURBEHIND_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(DWM_1BLURBEHIND_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -2692,6 +2704,36 @@ fail:
 }
 #endif
 
+#ifndef NO_DrawThemeTextEx
+JNIEXPORT jint JNICALL OS_NATIVE(DrawThemeTextEx)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jcharArray arg4, jint arg5, jint arg6, jobject arg7, jobject arg8)
+{
+	jchar *lparg4=NULL;
+	RECT _arg7, *lparg7=NULL;
+	DTTOPTS _arg8, *lparg8=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DrawThemeTextEx_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = getRECTFields(env, arg7, &_arg7)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = getDTTOPTSFields(env, arg8, &_arg8)) == NULL) goto fail;
+/*
+	rc = (jint)DrawThemeTextEx(arg0, arg1, arg2, arg3, lparg4, arg5, arg6, lparg7, lparg8);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, DrawThemeTextEx)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, jchar *, jint, jint, RECT *, DTTOPTS *))fp)(arg0, arg1, arg2, arg3, lparg4, arg5, arg6, lparg7, lparg8);
+		}
+	}
+fail:
+	if (arg8 && lparg8) setDTTOPTSFields(env, arg8, lparg8);
+	if (arg7 && lparg7) setRECTFields(env, arg7, lparg7);
+	if (arg4 && lparg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, DrawThemeTextEx_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DuplicateHandle
 JNIEXPORT jboolean JNICALL OS_NATIVE(DuplicateHandle)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLongArray arg3, jint arg4, jboolean arg5, jint arg6)
@@ -2752,6 +2794,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(DwmExtendFrameIntoClientArea)
 fail:
 	if (arg1 && lparg1) setMARGINSFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, DwmExtendFrameIntoClientArea_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DwmIsCompositionEnabled
+JNIEXPORT jint JNICALL OS_NATIVE(DwmIsCompositionEnabled)
+	(JNIEnv *env, jclass that, jbooleanArray arg0)
+{
+	jboolean *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DwmIsCompositionEnabled_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetBooleanArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)DwmIsCompositionEnabled(lparg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, DwmIsCompositionEnabled)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jboolean *))fp)(lparg0);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseBooleanArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, DwmIsCompositionEnabled_FUNC);
 	return rc;
 }
 #endif
@@ -4199,28 +4265,33 @@ fail:
 
 #ifndef NO_GetDIBits
 JNIEXPORT jint JNICALL OS_NATIVE(GetDIBits)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jintLong arg4, jbyteArray arg5, jint arg6)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jbyteArray arg4, jbyteArray arg5, jint arg6)
 {
+	jbyte *lparg4=NULL;
 	jbyte *lparg5=NULL;
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, GetDIBits_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
+		if (arg4) if ((lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL)) == NULL) goto fail;
 		if (arg5) if ((lparg5 = (*env)->GetPrimitiveArrayCritical(env, arg5, NULL)) == NULL) goto fail;
 	} else
 #endif
 	{
+		if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
 		if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	}
-	rc = (jint)GetDIBits((HDC)arg0, (HBITMAP)arg1, arg2, arg3, (LPVOID)arg4, (LPBITMAPINFO)lparg5, arg6);
+	rc = (jint)GetDIBits((HDC)arg0, (HBITMAP)arg1, arg2, arg3, (LPVOID)lparg4, (LPBITMAPINFO)lparg5, arg6);
 fail:
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg5 && lparg5) (*env)->ReleasePrimitiveArrayCritical(env, arg5, lparg5, 0);
+		if (arg4 && lparg4) (*env)->ReleasePrimitiveArrayCritical(env, arg4, lparg4, 0);
 	} else
 #endif
 	{
 		if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+		if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
 	}
 	OS_NATIVE_EXIT(env, that, GetDIBits_FUNC);
 	return rc;
@@ -6064,6 +6135,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetThemeBackgroundExtent)
 fail:
 	if (arg5 && lparg5) setRECTFields(env, arg5, lparg5);
 	OS_NATIVE_EXIT(env, that, GetThemeBackgroundExtent_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetThemeBitmap
+JNIEXPORT jint JNICALL OS_NATIVE(GetThemeBitmap)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jint arg4, jintLongArray arg5)
+{
+	jintLong *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetThemeBitmap_FUNC);
+	if (arg5) if ((lparg5 = (*env)->GetIntLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)GetThemeBitmap(arg0, arg1, arg2, arg3, arg4, lparg5);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, GetThemeBitmap)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jint, jint, jint, jint, jintLong *))fp)(arg0, arg1, arg2, arg3, arg4, lparg5);
+		}
+	}
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntLongArrayElements(env, arg5, lparg5, 0);
+	OS_NATIVE_EXIT(env, that, GetThemeBitmap_FUNC);
 	return rc;
 }
 #endif

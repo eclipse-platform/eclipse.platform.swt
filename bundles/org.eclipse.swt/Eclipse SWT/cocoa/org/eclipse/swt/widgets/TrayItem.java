@@ -43,6 +43,7 @@ public class TrayItem extends Item {
 	boolean visible = true, highlight;
 	NSStatusItem item;
 	NSImageView view;
+	Image highlightImage;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -168,6 +169,11 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
+public Image getHighlightImage () {
+	checkWidget();
+	return highlightImage;
+}
+
 Point getLocation () {
 	NSRect rect = view.frame();
 	NSRect windowRect = view.window().frame();
@@ -264,6 +270,10 @@ void releaseWidget () {
 	super.releaseWidget ();
 	NSStatusBar statusBar = NSStatusBar.systemStatusBar();
 	statusBar.removeStatusItem(item);
+	if (toolTip != null) toolTip.item = null;
+	toolTip = null;
+	toolTipText = null;
+	highlightImage = null;
 }
 
 /**
@@ -335,31 +345,14 @@ public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	super.setImage (image);
-	float /*double*/ width = 0;
-	if (image == null) {
-		view.setImage (null);
-	} else {
-		/*
-		 * Feature in Cocoa.  If the NSImage object being set into the view is
-		 * the same NSImage object that is already there then the new image is
-		 * not taken.  This results in the view's image not changing even if the
-		 * NSImage object's content has changed since it was last set into the
-		 * view.  The workaround is to temporarily set the view's image to null
-		 * so that the new image will then be taken.
-		 */
-		NSImage current = view.image ();
-		if (current != null && current.id == image.handle.id) {
-			view.setImage (null);
-			item.setLength (0);
-		}
-		view.setImage (image.handle);
-		if (visible) {
-			NSSize size = image.handle.size ();
-			view.setFrameSize (size);
-			width = OS.NSSquareStatusItemLength;
-		}
-	}
-	item.setLength (width);
+	updateImage ();
+}
+
+public void setHighlightImage (Image image) {
+	checkWidget ();
+	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	highlightImage = image;
+	updateImage ();
 }
 
 /**
@@ -440,8 +433,7 @@ public void setVisible (boolean visible) {
 		if (isDisposed ()) return;
 	}
 	this.visible = visible;
-	float /*double*/ width = image != null && visible ? OS.NSSquareStatusItemLength : 0;
-	item.setLength(width);
+	updateImage ();
 	if (!visible) sendEvent (SWT.Hide);
 }
 
@@ -496,6 +488,7 @@ boolean shouldShowMenu (NSEvent event) {
 void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	NSEvent nsEvent = new NSEvent(theEvent);
 	highlight = true;
+	updateImage();
 	view.setNeedsDisplay(true);
 	if (shouldShowMenu(nsEvent)) displayMenu();
 }
@@ -503,7 +496,11 @@ void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSRect frame = view.frame();
+	boolean oldHighlight = highlight;
 	highlight = OS.NSPointInRect(nsEvent.locationInWindow(), frame);
+	if (oldHighlight != highlight) {
+		updateImage ();
+	}
 	view.setNeedsDisplay(true);
 	if (shouldShowMenu(nsEvent)) displayMenu();
 }
@@ -514,8 +511,9 @@ void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 		if (nsEvent.type() == OS.NSLeftMouseUp) {
 			sendSelectionEvent(nsEvent.clickCount() == 2 ? SWT.DefaultSelection : SWT.Selection);
 		}
+		highlight = false;
+		updateImage ();
 	}
-	highlight = false;
 	view.setNeedsDisplay(true);
 }
 
@@ -534,5 +532,33 @@ void rightMouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent)
 void drawRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {
 	item.drawStatusBarBackgroundInRect(rect, highlight);
 	super.drawRect(id, sel, rect);
+}
+
+void updateImage () {
+	float /*double*/ width = 0;
+	Image image = this.image;
+	if (highlight && highlightImage != null) image = highlightImage;
+	if (image == null) {
+		view.setImage (null);
+	} else {
+		/*
+		 * Feature in Cocoa.  If the NSImage object being set into the view is
+		 * the same NSImage object that is already there then the new image is
+		 * not taken.  This results in the view's image not changing even if the
+		 * NSImage object's content has changed since it was last set into the
+		 * view.  The workaround is to temporarily set the view's image to null
+		 * so that the new image will then be taken.
+		 */
+		NSImage current = view.image ();
+		if (current != null && current.id == image.handle.id) {
+			view.setImage (null);
+			item.setLength (0);
+		}
+		view.setImage (image.handle);
+		if (visible) {
+			width = OS.NSSquareStatusItemLength;
+		}
+	}
+	item.setLength (width);
 }
 }

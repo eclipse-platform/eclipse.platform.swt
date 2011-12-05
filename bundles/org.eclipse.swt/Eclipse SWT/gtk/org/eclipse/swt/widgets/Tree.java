@@ -435,7 +435,12 @@ int calculateWidth (int /*long*/ column, int /*long*/ iter, boolean recurse) {
 	}
 	OS.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
 	width += 2 * w [0];
-	int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	int /*long*/ list = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+		list = OS.gtk_cell_layout_get_cells(column);
+	} else {
+		list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	}
 	if (list == 0) return 0;
 	int /*long*/ temp = list;
 	while (temp != 0) {
@@ -1677,7 +1682,12 @@ public TreeItem getParentItem () {
 }
 
 int /*long*/ getPixbufRenderer (int /*long*/ column) {
-	int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	int /*long*/ list = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+		list = OS.gtk_cell_layout_get_cells(column);
+	} else {
+		list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	}
 	if (list == 0) return 0;
 	int count = OS.g_list_length (list);
 	int /*long*/ pixbufRenderer = 0;
@@ -1817,7 +1827,12 @@ public int getSortDirection () {
 }
 
 int /*long*/ getTextRenderer (int /*long*/ column) {
-	int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	int /*long*/ list = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+		list = OS.gtk_cell_layout_get_cells(column);
+	} else {
+		list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	}
 	if (list == 0) return 0;
 	int count = OS.g_list_length (list);
 	int /*long*/ textRenderer = 0;
@@ -3408,7 +3423,11 @@ void showItem (int /*long*/ path, boolean scroll) {
 		OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
 		boolean isHidden = cellRect.y == 0 && cellRect.height == 0;
 		int [] tx = new int [1], ty = new int [1];
-		OS.gtk_tree_view_widget_to_tree_coords (handle, cellRect.x, cellRect.y, tx, ty);
+		if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+			OS.gtk_tree_view_convert_widget_to_bin_window_coords(handle, cellRect.x, cellRect.y, tx, ty);
+		} else {
+			OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
+		}
 		GdkRectangle visibleRect = new GdkRectangle ();
 		OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
 		if (!isHidden) {

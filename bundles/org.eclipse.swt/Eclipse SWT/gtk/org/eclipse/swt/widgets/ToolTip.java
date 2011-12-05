@@ -576,11 +576,12 @@ void register () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	setVisible(false);
 	if (layoutText != 0) OS.g_object_unref (layoutText);
 	layoutText = 0;
 	if (layoutMessage != 0) OS.g_object_unref (layoutMessage);
 	layoutMessage = 0;
-	if (timerId != 0) OS.gtk_timeout_remove(timerId);
+	if (timerId != 0) OS.g_source_remove(timerId);
 	timerId = 0;
 	text = null;
 	message = null;
@@ -781,7 +782,7 @@ public void setText (String string) {
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if (timerId != 0) OS.gtk_timeout_remove(timerId);
+	if (timerId != 0) OS.g_source_remove(timerId);
 	timerId = 0;
 	if (visible) {
 		if ((style & SWT.BALLOON) != 0) {
@@ -793,18 +794,27 @@ public void setVisible (boolean visible) {
 			if (text.length () > 0) string.append ("\n\n");
 			string.append (message);
 			byte [] buffer = Converter.wcsToMbcs (null, string.toString(), true);
-			OS.gtk_tooltips_set_tip (handle, vboxHandle, buffer, null);
-			int /*long*/ data = OS.gtk_tooltips_data_get (vboxHandle);
-			OS.GTK_TOOLTIPS_SET_ACTIVE (handle, data);
-			OS.gtk_tooltips_set_tip (handle, vboxHandle, buffer, null);
+			if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+				OS.gtk_widget_set_tooltip_text(vboxHandle, buffer);
+			} else {
+				OS.gtk_tooltips_set_tip (handle, vboxHandle, buffer, null);
+				int /*long*/ data = OS.gtk_tooltips_data_get (vboxHandle);
+				OS.GTK_TOOLTIPS_SET_ACTIVE (handle, data);
+				OS.gtk_tooltips_set_tip (handle, vboxHandle, buffer, null);
+			}
 		}		
-		if (autohide) timerId = OS.gtk_timeout_add (DELAY, display.windowTimerProc, handle);
+		if (autohide) timerId = OS.g_timeout_add (DELAY, display.windowTimerProc, handle);
 	} else {
 		if ((style & SWT.BALLOON) != 0) {
 			OS.gtk_widget_hide (handle);
 		} else {
-			int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
-			OS.gtk_widget_hide (tipWindow);
+			int /*long*/ vboxHandle = parent.vboxHandle;
+			byte[] buffer = Converter.wcsToMbcs(null, "", true);
+			if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+				OS.gtk_widget_set_tooltip_text(vboxHandle, buffer);
+			} else {
+				OS.gtk_tooltips_set_tip(handle, vboxHandle, buffer, null);
+			}
 		}
 	}
 }
