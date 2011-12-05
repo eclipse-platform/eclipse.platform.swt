@@ -274,6 +274,7 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 			ptr [0] = 0;
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
 			OS.g_object_set (cell, OS.pixbuf, ptr[0], 0);
+			OS.g_object_unref (ptr [0]);
 		} else {
 			ptr [0] = 0;
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1); 
@@ -294,6 +295,7 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 				OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_BACKGROUND, ptr, -1);
 				if (ptr [0] != 0) {
 					OS.g_object_set (cell, OS.cell_background_gdk, ptr[0], 0);
+					OS.gdk_color_free (ptr [0]);
 				}
 			}
 		}
@@ -302,11 +304,13 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_FOREGROUND, ptr, -1);
 			if (ptr [0] != 0) {
 				OS.g_object_set (cell, OS.foreground_gdk, ptr[0], 0);
+				OS.gdk_color_free (ptr [0]);
 			}
 			ptr [0] = 0;
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_FONT, ptr, -1);
 			if (ptr [0] != 0) {
 				OS.g_object_set (cell, OS.font_desc, ptr[0], 0);
+				OS.pango_font_description_free (ptr [0]);
 			}
 		}
 	}
@@ -589,12 +593,32 @@ void copyModel (int /*long*/ oldModel, int oldStart, int /*long*/ newModel, int 
 					for (int j = 0; j < FIRST_COLUMN; j++) {
 						OS.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
 						OS.gtk_tree_store_set (newModel, newItem, j, ptr [0], -1);
-						if (types [j] == OS.G_TYPE_STRING ()) OS.g_free ((ptr [0]));
+						if (types[j] == OS.G_TYPE_STRING()) {
+							OS.g_free((ptr[0]));
+						} else if (ptr[0] != 0) {
+							if (types[j] == OS.GDK_TYPE_COLOR()) {
+								OS.gdk_color_free(ptr[0]);
+							} else if (types[j] == OS.GDK_TYPE_PIXBUF()) {
+								OS.g_object_unref(ptr[0]);
+							} else if (types[j] == OS.PANGO_TYPE_FONT_DESCRIPTION()) {
+								OS.pango_font_description_free(ptr[0]);
+							}
+						}
 					}
 					for (int j= 0; j<modelLength - FIRST_COLUMN; j++) {
 						OS.gtk_tree_model_get (oldModel, oldItem, oldStart + j, ptr, -1);
 						OS.gtk_tree_store_set (newModel, newItem, newStart + j, ptr [0], -1);
-						if (types [j] == OS.G_TYPE_STRING ()) OS.g_free ((ptr [0]));
+						if (types[j] == OS.G_TYPE_STRING()) {
+							OS.g_free((ptr[0]));
+						} else if (ptr[0] != 0) {
+							if (types[j] == OS.GDK_TYPE_COLOR()) {
+								OS.gdk_color_free(ptr[0]);
+							} else if (types[j] == OS.GDK_TYPE_PIXBUF()) {
+								OS.g_object_unref(ptr[0]);
+							} else if (types[j] == OS.PANGO_TYPE_FONT_DESCRIPTION()) {
+								OS.pango_font_description_free(ptr[0]);
+							}
+						}
 					}
 				}
 			} else {
@@ -2646,7 +2670,10 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 				int modelIndex = columnCount == 0 ? Tree.FIRST_COLUMN : columns [columnIndex].modelIndex;
 				OS.gtk_tree_model_get (modelHandle, item.handle, modelIndex + Tree.CELL_BACKGROUND, ptr, -1);
 			}
-			if (ptr [0] != 0) drawState |= SWT.BACKGROUND;
+			if (ptr[0] != 0) {
+				drawState |= SWT.BACKGROUND;
+				OS.gdk_color_free(ptr[0]);
+			}
 			if ((flags & OS.GTK_CELL_RENDERER_SELECTED) != 0) drawState |= SWT.SELECTED;
 			if ((flags & OS.GTK_CELL_RENDERER_FOCUSED) != 0) drawState |= SWT.FOCUSED;			
 			

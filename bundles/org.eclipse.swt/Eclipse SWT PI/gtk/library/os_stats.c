@@ -18,19 +18,11 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1379;
-int OS_nativeFunctionCallCount[1379];
+int OS_nativeFunctionCount = 1380;
+int OS_nativeFunctionCallCount[1380];
 char * OS_nativeFunctionNames[] = {
-#ifndef JNI64
 	"Call__IIII",
-#else
-	"Call__JJII",
-#endif
-#ifndef JNI64
 	"Call__IIIJ",
-#else
-	"Call__JJIJ",
-#endif
 	"GDK_1EVENT_1TYPE",
 	"GDK_1EVENT_1WINDOW",
 	"GDK_1WINDOWING_1X11",
@@ -292,50 +284,18 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1main_1context_1query",
 	"_1g_1main_1context_1release",
 	"_1g_1malloc",
-#ifndef JNI64
 	"_1g_1object_1get__I_3B_3II",
-#else
-	"_1g_1object_1get__J_3B_3IJ",
-#endif
-#ifndef JNI64
 	"_1g_1object_1get__I_3B_3JI",
-#else
-	"_1g_1object_1get__J_3B_3JJ",
-#endif
 	"_1g_1object_1get_1qdata",
 	"_1g_1object_1new",
 	"_1g_1object_1notify",
 	"_1g_1object_1ref",
-#ifndef JNI64
 	"_1g_1object_1set__I_3BFI",
-#else
-	"_1g_1object_1set__J_3BFJ",
-#endif
-#ifndef JNI64
 	"_1g_1object_1set__I_3BII",
-#else
-	"_1g_1object_1set__J_3BIJ",
-#endif
-#ifndef JNI64
 	"_1g_1object_1set__I_3BJI",
-#else
-	"_1g_1object_1set__J_3BJJ",
-#endif
-#ifndef JNI64
 	"_1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkColor_2I",
-#else
-	"_1g_1object_1set__J_3BLorg_eclipse_swt_internal_gtk_GdkColor_2J",
-#endif
-#ifndef JNI64
 	"_1g_1object_1set__I_3BZI",
-#else
-	"_1g_1object_1set__J_3BZJ",
-#endif
-#ifndef JNI64
 	"_1g_1object_1set__I_3B_3BI",
-#else
-	"_1g_1object_1set__J_3B_3BJ",
-#endif
 	"_1g_1object_1set_1qdata",
 	"_1g_1object_1unref",
 	"_1g_1quark_1from_1string",
@@ -345,31 +305,11 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1signal_1connect_1after",
 	"_1g_1signal_1connect_1closure",
 	"_1g_1signal_1connect_1closure_1by_1id",
-#ifndef JNI64
 	"_1g_1signal_1emit_1by_1name__I_3B",
-#else
-	"_1g_1signal_1emit_1by_1name__J_3B",
-#endif
-#ifndef JNI64
 	"_1g_1signal_1emit_1by_1name__I_3BI",
-#else
-	"_1g_1signal_1emit_1by_1name__J_3BJ",
-#endif
-#ifndef JNI64
 	"_1g_1signal_1emit_1by_1name__I_3BII",
-#else
-	"_1g_1signal_1emit_1by_1name__J_3BJJ",
-#endif
-#ifndef JNI64
 	"_1g_1signal_1emit_1by_1name__I_3BLorg_eclipse_swt_internal_gtk_GdkRectangle_2",
-#else
-	"_1g_1signal_1emit_1by_1name__J_3BLorg_eclipse_swt_internal_gtk_GdkRectangle_2",
-#endif
-#ifndef JNI64
 	"_1g_1signal_1emit_1by_1name__I_3B_3B",
-#else
-	"_1g_1signal_1emit_1by_1name__J_3B_3B",
-#endif
 	"_1g_1signal_1handler_1disconnect",
 	"_1g_1signal_1handler_1find",
 	"_1g_1signal_1handlers_1block_1matched",
@@ -410,16 +350,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1utf8_1offset_1to_1utf16_1offset",
 	"_1g_1utf8_1pointer_1to_1offset",
 	"_1g_1utf8_1strlen",
-#ifndef JNI64
 	"_1g_1utf8_1to_1utf16__II_3I_3I_3I",
-#else
-	"_1g_1utf8_1to_1utf16__JJ_3J_3J_3J",
-#endif
-#ifndef JNI64
 	"_1g_1utf8_1to_1utf16___3BI_3I_3I_3I",
-#else
-	"_1g_1utf8_1to_1utf16___3BJ_3J_3J_3J",
-#endif
 	"_1g_1value_1peek_1pointer",
 	"_1gdk_1atom_1intern",
 	"_1gdk_1atom_1name",
@@ -429,6 +361,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1cairo_1region",
 	"_1gdk_1cairo_1reset_1clip",
 	"_1gdk_1cairo_1set_1source_1color",
+	"_1gdk_1color_1free",
 	"_1gdk_1color_1white",
 	"_1gdk_1colormap_1alloc_1color",
 	"_1gdk_1colormap_1free_1colors",
@@ -808,47 +741,19 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1label_1set_1justify",
 	"_1gtk_1label_1set_1line_1wrap",
 	"_1gtk_1label_1set_1line_1wrap_1mode",
-#ifndef JNI64
 	"_1gtk_1label_1set_1text__II",
-#else
-	"_1gtk_1label_1set_1text__JJ",
-#endif
-#ifndef JNI64
 	"_1gtk_1label_1set_1text__I_3B",
-#else
-	"_1gtk_1label_1set_1text__J_3B",
-#endif
 	"_1gtk_1label_1set_1text_1with_1mnemonic",
 	"_1gtk_1list_1store_1append",
 	"_1gtk_1list_1store_1clear",
 	"_1gtk_1list_1store_1insert",
 	"_1gtk_1list_1store_1newv",
 	"_1gtk_1list_1store_1remove",
-#ifndef JNI64
 	"_1gtk_1list_1store_1set__IIIII",
-#else
-	"_1gtk_1list_1store_1set__JJIIJ",
-#endif
-#ifndef JNI64
 	"_1gtk_1list_1store_1set__IIIJI",
-#else
-	"_1gtk_1list_1store_1set__JJIJJ",
-#endif
-#ifndef JNI64
 	"_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I",
-#else
-	"_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2J",
-#endif
-#ifndef JNI64
 	"_1gtk_1list_1store_1set__IIIZI",
-#else
-	"_1gtk_1list_1store_1set__JJIZJ",
-#endif
-#ifndef JNI64
 	"_1gtk_1list_1store_1set__III_3BI",
-#else
-	"_1gtk_1list_1store_1set__JJI_3BJ",
-#endif
 	"_1gtk_1main",
 	"_1gtk_1main_1do_1event",
 	"_1gtk_1main_1iteration",
@@ -1063,16 +968,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1text_1buffer_1get_1selection_1bound",
 	"_1gtk_1text_1buffer_1get_1selection_1bounds",
 	"_1gtk_1text_1buffer_1get_1text",
-#ifndef JNI64
 	"_1gtk_1text_1buffer_1insert__II_3BI",
-#else
-	"_1gtk_1text_1buffer_1insert__JJ_3BI",
-#endif
-#ifndef JNI64
 	"_1gtk_1text_1buffer_1insert__I_3B_3BI",
-#else
-	"_1gtk_1text_1buffer_1insert__J_3B_3BI",
-#endif
 	"_1gtk_1text_1buffer_1move_1mark",
 	"_1gtk_1text_1buffer_1paste_1clipboard",
 	"_1gtk_1text_1buffer_1place_1cursor",
@@ -1111,16 +1008,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tooltips_1force_1window",
 	"_1gtk_1tooltips_1new",
 	"_1gtk_1tooltips_1set_1tip",
-#ifndef JNI64
 	"_1gtk_1tree_1model_1get__III_3II",
-#else
-	"_1gtk_1tree_1model_1get__JJI_3IJ",
-#endif
-#ifndef JNI64
 	"_1gtk_1tree_1model_1get__III_3JI",
-#else
-	"_1gtk_1tree_1model_1get__JJI_3JJ",
-#endif
 	"_1gtk_1tree_1model_1get_1iter",
 	"_1gtk_1tree_1model_1get_1iter_1first",
 	"_1gtk_1tree_1model_1get_1n_1columns",
@@ -1138,11 +1027,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tree_1path_1get_1indices",
 	"_1gtk_1tree_1path_1new",
 	"_1gtk_1tree_1path_1new_1first",
-#ifndef JNI64
 	"_1gtk_1tree_1path_1new_1from_1string__I",
-#else
-	"_1gtk_1tree_1path_1new_1from_1string__J",
-#endif
 	"_1gtk_1tree_1path_1new_1from_1string___3B",
 	"_1gtk_1tree_1path_1next",
 	"_1gtk_1tree_1path_1prev",
@@ -1162,31 +1047,11 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tree_1store_1insert",
 	"_1gtk_1tree_1store_1newv",
 	"_1gtk_1tree_1store_1remove",
-#ifndef JNI64
 	"_1gtk_1tree_1store_1set__IIIII",
-#else
-	"_1gtk_1tree_1store_1set__JJIIJ",
-#endif
-#ifndef JNI64
 	"_1gtk_1tree_1store_1set__IIIJI",
-#else
-	"_1gtk_1tree_1store_1set__JJIJJ",
-#endif
-#ifndef JNI64
 	"_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I",
-#else
-	"_1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2J",
-#endif
-#ifndef JNI64
 	"_1gtk_1tree_1store_1set__IIIZI",
-#else
-	"_1gtk_1tree_1store_1set__JJIZJ",
-#endif
-#ifndef JNI64
 	"_1gtk_1tree_1store_1set__III_3BI",
-#else
-	"_1gtk_1tree_1store_1set__JJI_3BJ",
-#endif
 	"_1gtk_1tree_1view_1collapse_1row",
 	"_1gtk_1tree_1view_1column_1add_1attribute",
 	"_1gtk_1tree_1view_1column_1cell_1get_1position",
@@ -1260,16 +1125,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1add_1accelerator",
 	"_1gtk_1widget_1add_1events",
 	"_1gtk_1widget_1child_1focus",
-#ifndef JNI64
 	"_1gtk_1widget_1create_1pango_1layout__II",
-#else
-	"_1gtk_1widget_1create_1pango_1layout__JJ",
-#endif
-#ifndef JNI64
 	"_1gtk_1widget_1create_1pango_1layout__I_3B",
-#else
-	"_1gtk_1widget_1create_1pango_1layout__J_3B",
-#endif
 	"_1gtk_1widget_1destroy",
 	"_1gtk_1widget_1event",
 	"_1gtk_1widget_1get_1accessible",
@@ -1320,16 +1177,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1show_1now",
 	"_1gtk_1widget_1size_1allocate",
 	"_1gtk_1widget_1size_1request",
-#ifndef JNI64
 	"_1gtk_1widget_1style_1get__I_3B_3II",
-#else
-	"_1gtk_1widget_1style_1get__J_3B_3IJ",
-#endif
-#ifndef JNI64
 	"_1gtk_1widget_1style_1get__I_3B_3JI",
-#else
-	"_1gtk_1widget_1style_1get__J_3B_3JJ",
-#endif
 	"_1gtk_1widget_1translate_1coordinates",
 	"_1gtk_1widget_1unrealize",
 	"_1gtk_1window_1activate_1default",
@@ -1495,276 +1344,60 @@ char * OS_nativeFunctionNames[] = {
 	"gdk_1threads_1leave",
 	"gdk_1threads_1set_1lock_1functions",
 	"localeconv_1decimal_1point",
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GObjectClass_2",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_GObjectClass_2",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GTypeInfo_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_GTypeInfo_2I",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_GdkEventButton_2J",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GdkEventExpose_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_GdkEventExpose_2J",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GdkEventMotion_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_GdkEventMotion_2J",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkAdjustment_2",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_GtkAdjustment_2",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkFixed_2",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_GtkFixed_2",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_GtkTargetEntry_2J",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkWidgetClass_2",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_GtkWidgetClass_2",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_PangoAttribute_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_PangoAttribute_2J",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_XClientMessageEvent_2J",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_XCrossingEvent_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_XCrossingEvent_2J",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_XExposeEvent_2J",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2J",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GObjectClass_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GObjectClass_2J",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventFocus_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventFocus_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventKey_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventKey_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventProperty_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventProperty_2J",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventScroll_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2J",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkRectangle_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkRectangle_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkVisual_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GdkVisual_2J",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2J",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2J",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2J",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2J",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkWidgetClass_2I",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkWidgetClass_2J",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoAttrColor_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_PangoAttrColor_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoAttrInt_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_PangoAttrInt_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoAttribute_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_PangoAttribute_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoItem_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_PangoItem_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutLine_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutLine_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutRun_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutRun_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2JJ",
-#endif
 	"pangoLayoutNewProc_1CALLBACK",
 	"realpath",
 	"strcmp",

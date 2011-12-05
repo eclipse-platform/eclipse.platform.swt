@@ -229,6 +229,7 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 		if (isPixbuf) {
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
 			OS.g_object_set (cell, OS.pixbuf, ptr [0], 0);
+			OS.g_object_unref (ptr [0]);
 		} else {
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1); 
 			if (ptr [0] != 0) {
@@ -248,6 +249,7 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 				OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_BACKGROUND, ptr, -1);
 				if (ptr [0] != 0) {
 					OS.g_object_set (cell, OS.cell_background_gdk, ptr [0], 0);
+					OS.gdk_color_free (ptr [0]);
 				}
 			}
 		}
@@ -256,11 +258,13 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_FOREGROUND, ptr, -1);
 			if (ptr [0] != 0) {
 				OS.g_object_set (cell, OS.foreground_gdk, ptr [0], 0);
+				OS.gdk_color_free (ptr [0]);
 			}
 			ptr [0] = 0;
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_FONT, ptr, -1);
 			if (ptr [0] != 0) {
 				OS.g_object_set (cell, OS.font_desc, ptr [0], 0);
+				OS.pango_font_description_free (ptr [0]);
 			}
 		}
 	}
@@ -544,7 +548,17 @@ void createColumn (TableColumn column, int index) {
 					for (int j=0; j<modelLength; j++) {
 						OS.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
 						OS.gtk_list_store_set (newModel, newItem, j, ptr [0], -1);
-						if (types [j] == OS.G_TYPE_STRING ()) OS.g_free ((ptr [0]));
+						if (types [j] == OS.G_TYPE_STRING ()) {
+							OS.g_free ((ptr [0]));
+						} else if (ptr [0] != 0) {
+							if (types [j] == OS.GDK_TYPE_COLOR()) {
+								OS.gdk_color_free (ptr [0]);
+							} else if (types [j] == OS.GDK_TYPE_PIXBUF()) {
+								OS.g_object_unref (ptr [0]);
+							} else if (types [j] == OS.PANGO_TYPE_FONT_DESCRIPTION()) {
+								OS.pango_font_description_free (ptr [0]);
+							}
+						}
 					}
 					OS.gtk_list_store_remove (oldModel, oldItem);
 					OS.g_free (oldItem);
@@ -997,18 +1011,29 @@ void destroyItem (TableColumn column) {
 				for (int j=0; j<FIRST_COLUMN; j++) {
 					OS.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
 					OS.gtk_list_store_set (newModel, newItem, j, ptr [0], -1);
+					if (ptr [0] != 0) {
+						if (j == FOREGROUND_COLUMN || j == BACKGROUND_COLUMN) {
+							OS.gdk_color_free (ptr [0]);
+						} else if (j == FONT_COLUMN) {
+							OS.pango_font_description_free (ptr [0]);
+						}
+					}
 				}
 				OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_PIXBUF, ptr, -1);
 				OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_PIXBUF, ptr [0], -1);
+				if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
 				OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_TEXT, ptr, -1);
 				OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_TEXT, ptr [0], -1);
 				OS.g_free (ptr [0]);
 				OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_FOREGROUND, ptr, -1);
 				OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_FOREGROUND, ptr [0], -1);
+				if (ptr [0] != 0) OS.gdk_color_free (ptr [0]);
 				OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_BACKGROUND, ptr, -1);
 				OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_BACKGROUND, ptr [0], -1);
+				if (ptr [0] != 0) OS.gdk_color_free (ptr [0]);
 				OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_FONT, ptr, -1);
 				OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_FONT, ptr [0], -1);
+				if (ptr [0] != 0) OS.pango_font_description_free (ptr [0]);
 				OS.gtk_list_store_remove (oldModel, oldItem);
 				OS.g_free (oldItem);
 				item.handle = newItem;
@@ -2649,7 +2674,10 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 				int modelIndex = columnCount == 0 ? Table.FIRST_COLUMN : columns [columnIndex].modelIndex;
 				OS.gtk_tree_model_get (modelHandle, item.handle, modelIndex + Table.CELL_BACKGROUND, ptr, -1);
 			}
-			if (ptr [0] != 0) drawState |= SWT.BACKGROUND;
+			if (ptr [0] != 0) {
+				drawState |= SWT.BACKGROUND;
+				OS.gdk_color_free (ptr [0]);
+			}
 			if ((flags & OS.GTK_CELL_RENDERER_SELECTED) != 0) drawState |= SWT.SELECTED;
 			if ((flags & OS.GTK_CELL_RENDERER_FOCUSED) != 0) drawState |= SWT.FOCUSED;			
 			
