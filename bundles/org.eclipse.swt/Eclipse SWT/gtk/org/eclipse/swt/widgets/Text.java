@@ -265,21 +265,6 @@ public void addSegmentListener (SegmentListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	addListener (SWT.GetSegments, new TypedListener (listener));
-	if (OS.g_signal_handler_find (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, BACKSPACE) == 0) {
-		OS.g_signal_connect_closure (handle, OS.backspace, display.closures [BACKSPACE], false);
-		OS.g_signal_connect_closure (handle, OS.backspace, display.closures [BACKSPACE_INVERSE], true);
-		OS.g_signal_connect_closure (handle, OS.copy_clipboard, display.closures [COPY_CLIPBOARD], false);
-		OS.g_signal_connect_closure (handle, OS.copy_clipboard, display.closures [COPY_CLIPBOARD_INVERSE], true);
-		OS.g_signal_connect_closure (handle, OS.cut_clipboard, display.closures [CUT_CLIPBOARD], false);
-		OS.g_signal_connect_closure (handle, OS.cut_clipboard, display.closures [CUT_CLIPBOARD_INVERSE], true);
-		OS.g_signal_connect_closure (handle, OS.paste_clipboard, display.closures [PASTE_CLIPBOARD], false);
-		OS.g_signal_connect_closure (handle, OS.paste_clipboard, display.closures [PASTE_CLIPBOARD_INVERSE], true);
-		OS.g_signal_connect_closure (handle, OS.delete_from_cursor, display.closures [DELETE_FROM_CURSOR], false);
-		OS.g_signal_connect_closure (handle, OS.delete_from_cursor, display.closures [DELETE_FROM_CURSOR_INVERSE], true);
-		OS.g_signal_connect_closure (handle, OS.move_cursor, display.closures [MOVE_CURSOR], false);
-		OS.g_signal_connect_closure (handle, OS.move_cursor, display.closures [MOVE_CURSOR_INVERSE], true);
-		OS.g_signal_connect_closure (handle, OS.direction_changed, display.closures [DIRECTION_CHANGED], true);
-	}
 }
 
 /**
@@ -1755,6 +1740,19 @@ void hookEvents () {
 		int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
 		OS.g_signal_handlers_block_matched (imContext, mask, id, 0, 0, 0, handle);
 	}
+	OS.g_signal_connect_closure (handle, OS.backspace, display.closures [BACKSPACE], false);
+	OS.g_signal_connect_closure (handle, OS.backspace, display.closures [BACKSPACE_INVERSE], true);
+	OS.g_signal_connect_closure (handle, OS.copy_clipboard, display.closures [COPY_CLIPBOARD], false);
+	OS.g_signal_connect_closure (handle, OS.copy_clipboard, display.closures [COPY_CLIPBOARD_INVERSE], true);
+	OS.g_signal_connect_closure (handle, OS.cut_clipboard, display.closures [CUT_CLIPBOARD], false);
+	OS.g_signal_connect_closure (handle, OS.cut_clipboard, display.closures [CUT_CLIPBOARD_INVERSE], true);
+	OS.g_signal_connect_closure (handle, OS.paste_clipboard, display.closures [PASTE_CLIPBOARD], false);
+	OS.g_signal_connect_closure (handle, OS.paste_clipboard, display.closures [PASTE_CLIPBOARD_INVERSE], true);
+	OS.g_signal_connect_closure (handle, OS.delete_from_cursor, display.closures [DELETE_FROM_CURSOR], false);
+	OS.g_signal_connect_closure (handle, OS.delete_from_cursor, display.closures [DELETE_FROM_CURSOR_INVERSE], true);
+	OS.g_signal_connect_closure (handle, OS.move_cursor, display.closures [MOVE_CURSOR], false);
+	OS.g_signal_connect_closure (handle, OS.move_cursor, display.closures [MOVE_CURSOR_INVERSE], true);
+	OS.g_signal_connect_closure (handle, OS.direction_changed, display.closures [DIRECTION_CHANGED], true);
 }
 
 int /*long*/ imContext () {
@@ -1910,21 +1908,6 @@ public void removeSegmentListener (SegmentListener listener) {
 	checkWidget ();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	eventTable.unhook (SWT.GetSegments, listener);
-	if (getListeners (SWT.GetSegments).length == 0) {
-		OS.g_signal_handlers_disconnect_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, BACKSPACE);
-		OS.g_signal_handlers_disconnect_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, BACKSPACE_INVERSE);
-		OS.g_signal_handlers_disconnect_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COPY_CLIPBOARD);
-		OS.g_signal_handlers_disconnect_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COPY_CLIPBOARD_INVERSE);
-		OS.g_signal_handlers_disconnect_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CUT_CLIPBOARD);
-		OS.g_signal_handlers_disconnect_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CUT_CLIPBOARD_INVERSE);
-		OS.g_signal_handlers_disconnect_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, PASTE_CLIPBOARD);
-		OS.g_signal_handlers_disconnect_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, PASTE_CLIPBOARD_INVERSE);
-		OS.g_signal_handlers_disconnect_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_FROM_CURSOR);
-		OS.g_signal_handlers_disconnect_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_FROM_CURSOR_INVERSE);
-		OS.g_signal_handlers_disconnect_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, MOVE_CURSOR);
-		OS.g_signal_handlers_disconnect_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, MOVE_CURSOR_INVERSE);
-		OS.g_signal_handlers_disconnect_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DIRECTION_CHANGED);
-	}
 }
 
 /**
@@ -2561,59 +2544,67 @@ String verifyText (String string, int start, int end) {
 }
 
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
-	switch ((int)/*64*/user_data) {
-		case BACKSPACE:
-		case COPY_CLIPBOARD:
-		case CUT_CLIPBOARD:
-		case PASTE_CLIPBOARD: {
-			if (segments != null) clearSegments (true);
-			break;
-		}
-		case BACKSPACE_INVERSE:
-		case COPY_CLIPBOARD_INVERSE:
-		case CUT_CLIPBOARD_INVERSE:
-		case PASTE_CLIPBOARD_INVERSE: {
-			applySegments ();
-			return 0;
+	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+		switch ((int)/*64*/user_data) {
+			case BACKSPACE:
+			case COPY_CLIPBOARD:
+			case CUT_CLIPBOARD:
+			case PASTE_CLIPBOARD: {
+				if (segments != null) clearSegments (true);
+				break;
+			}
+			case BACKSPACE_INVERSE:
+			case COPY_CLIPBOARD_INVERSE:
+			case CUT_CLIPBOARD_INVERSE:
+			case PASTE_CLIPBOARD_INVERSE: {
+				applySegments ();
+				return 0;
+			}
 		}
 	}
 	return super.windowProc (handle, user_data);
 }
 
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
-	switch ((int)/*64*/user_data) {
-		case DIRECTION_CHANGED: {
-			if (segments != null) clearSegments (true);
-			applySegments ();
-			return 0;
+	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+		switch ((int)/*64*/user_data) {
+			case DIRECTION_CHANGED: {
+				if (segments != null) clearSegments (true);
+				applySegments ();
+				return 0;
+			}
 		}
 	}
 	return super.windowProc (handle, arg0, user_data);
 }
 
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ user_data) {
-	switch ((int)/*64*/user_data) {
-		case DELETE_FROM_CURSOR: {
-			if (segments != null) clearSegments (true);
-			break;
-		}
-		case DELETE_FROM_CURSOR_INVERSE: {
-			applySegments ();
-			return 0;
+	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+		switch ((int)/*64*/user_data) {
+			case DELETE_FROM_CURSOR: {
+				if (segments != null) clearSegments (true);
+				break;
+			}
+			case DELETE_FROM_CURSOR_INVERSE: {
+				applySegments ();
+				return 0;
+			}
 		}
 	}
 	return super.windowProc (handle, arg0, arg1, user_data);
 }
 
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ user_data) {
-	switch ((int)/*64*/user_data) {
-		case MOVE_CURSOR: {
-			if (arg0 == 1 /*GtkMovementStep#GTK_MOVEMENT_VISUAL_POSITIONS*/ && segments != null) clearSegments (true);
-			break;
-		}
-		case MOVE_CURSOR_INVERSE: {
-			if (arg0 == 1 /*GtkMovementStep#GTK_MOVEMENT_VISUAL_POSITIONS*/) applySegments ();
-			return 0;
+	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+		switch ((int)/*64*/user_data) {
+			case MOVE_CURSOR: {
+				if (arg0 == OS.GTK_MOVEMENT_VISUAL_POSITIONS && segments != null) clearSegments (true);
+				break;
+			}
+			case MOVE_CURSOR_INVERSE: {
+				if (arg0 == OS.GTK_MOVEMENT_VISUAL_POSITIONS) applySegments ();
+				return 0;
+			}
 		}
 	}
 	return super.windowProc (handle, arg0, arg1, arg2, user_data);
