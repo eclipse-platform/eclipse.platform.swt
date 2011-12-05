@@ -2401,7 +2401,9 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 		if (string == null && oldTooltip == 0) {
 			return;
 		} else if (string != null && oldTooltip != 0) {
-			if (OS.strcmp (oldTooltip, buffer) == 0) return;
+			if (buffer != null) {
+				if (OS.strcmp (oldTooltip, buffer) == 0) return;
+			}
 		}
 		OS.gtk_widget_set_tooltip_text (rootWidget, null);
 		/*
