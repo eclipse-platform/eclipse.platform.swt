@@ -217,6 +217,7 @@ Color _getBackground () {
 	if (ptr [0] == 0) return parent.getBackground ();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	OS.gdk_color_free (ptr [0]);
 	return Color.gtk_new (display, gdkColor);
 }
 
