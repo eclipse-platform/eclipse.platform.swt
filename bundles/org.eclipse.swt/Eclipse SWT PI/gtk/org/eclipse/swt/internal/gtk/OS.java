@@ -699,6 +699,10 @@ public static final native int /*long*/ GTK_TOOLTIPS_TIP_WINDOW(int /*long*/ wid
  * @param data cast=(GtkTooltipsData *)
  */
 public static final native void GTK_TOOLTIPS_SET_ACTIVE(int /*long*/ widget, int /*long*/ data);
+/**
+ * @param data cast=(GtkTooltipsData *)
+ */
+public static final native int GTK_TOOLTIPS_GET_TIP_TEXT(int /*long*/ data);
 /** @param widget cast=(GtkWidget *) */
 public static final native void GTK_WIDGET_SET_HEIGHT(int /*long*/ widget, int height);
 /** @param widget cast=(GtkWidget *) */

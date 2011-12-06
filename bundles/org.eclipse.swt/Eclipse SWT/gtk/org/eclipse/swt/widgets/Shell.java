@@ -2446,6 +2446,17 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 			char [] chars = fixMnemonic (string, false);
 			buffer = Converter.wcsToMbcs (null, chars, true);
 		}
+		int /*long*/ tipData = OS.gtk_tooltips_data_get(tipWidget);
+		if (tipData != 0) {
+			int /*long*/ oldTooltip = OS.GTK_TOOLTIPS_GET_TIP_TEXT(tipData);
+			if (string == null && oldTooltip == 0) {
+				return;
+			} else if (string != null && oldTooltip != 0) {
+				if (buffer != null) {
+					if (OS.strcmp (oldTooltip, buffer) == 0) return;
+				}
+			}
+		}
 		if (tooltipsHandle == 0) {
 			tooltipsHandle = OS.gtk_tooltips_new ();
 			if (tooltipsHandle == 0) error (SWT.ERROR_NO_HANDLES);
