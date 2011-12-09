@@ -562,10 +562,10 @@ public void copy () {
 		int /*long*/ clipboard = OS.gtk_clipboard_get (OS.GDK_NONE);
 		if (segments != null) {
 			clearSegments (true);
-			OS.gtk_text_buffer_copy_clipboard (bufferHandle, clipboard);
+		}
+		OS.gtk_text_buffer_copy_clipboard (bufferHandle, clipboard);
+		if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
 			applySegments ();
-		} else {
-			OS.gtk_text_buffer_copy_clipboard (bufferHandle, clipboard);
 		}
 	}
 }
@@ -588,12 +588,12 @@ public void cut () {
 		OS.gtk_editable_cut_clipboard (handle);
 	} else {
 		int /*long*/ clipboard = OS.gtk_clipboard_get (OS.GDK_NONE);
+		if (segments != null) {
+			clearSegments (true);
+		}
+		OS.gtk_text_buffer_cut_clipboard (bufferHandle, clipboard, OS.gtk_text_view_get_editable (handle));
 		if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
-			if (segments != null) clearSegments (true);
-			OS.gtk_text_buffer_cut_clipboard (bufferHandle, clipboard, OS.gtk_text_view_get_editable (handle));
 			applySegments ();
-		} else {
-			OS.gtk_text_buffer_cut_clipboard (bufferHandle, clipboard, OS.gtk_text_view_get_editable (handle));
 		}
 	}
 }
@@ -1845,12 +1845,12 @@ public void paste () {
 		OS.gtk_editable_paste_clipboard (handle);
 	} else {
 		int /*long*/ clipboard = OS.gtk_clipboard_get (OS.GDK_NONE);
+		if (segments != null) {
+			clearSegments (true);
+		}
+		OS.gtk_text_buffer_paste_clipboard (bufferHandle, clipboard, null, OS.gtk_text_view_get_editable (handle));
 		if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
-			if (segments != null) clearSegments (true);
-			OS.gtk_text_buffer_paste_clipboard (bufferHandle, clipboard, null, OS.gtk_text_view_get_editable (handle));
 			applySegments ();
-		} else {
-			OS.gtk_text_buffer_paste_clipboard (bufferHandle, clipboard, null, OS.gtk_text_view_get_editable (handle));
 		}
 	}
 }
@@ -2558,7 +2558,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
 			case CUT_CLIPBOARD_INVERSE:
 			case PASTE_CLIPBOARD_INVERSE: {
 				applySegments ();
-				return 0;
+				break;
 			}
 		}
 	}
@@ -2571,7 +2571,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ us
 			case DIRECTION_CHANGED: {
 				if (segments != null) clearSegments (true);
 				applySegments ();
-				return 0;
+				break;
 			}
 		}
 	}
@@ -2587,7 +2587,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ ar
 			}
 			case DELETE_FROM_CURSOR_INVERSE: {
 				applySegments ();
-				return 0;
+				break;
 			}
 		}
 	}
@@ -2603,7 +2603,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ ar
 			}
 			case MOVE_CURSOR_INVERSE: {
 				if (arg0 == OS.GTK_MOVEMENT_VISUAL_POSITIONS) applySegments ();
-				return 0;
+				break;
 			}
 		}
 	}
