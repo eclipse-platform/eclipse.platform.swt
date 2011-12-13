@@ -11180,7 +11180,7 @@ public static final int /*long*/ gtk_tooltips_data_get(int /*long*/ widget) {
 		lock.unlock();
 	}
 }
-/** @param tooltips cast=(GtkTooltips *) */
+/** @method flags=dynamic */
 public static final native void _gtk_tooltips_disable(int /*long*/ tooltips);
 public static final void gtk_tooltips_disable(int /*long*/ tooltips) {
 	lock.lock();
@@ -11190,7 +11190,7 @@ public static final void gtk_tooltips_disable(int /*long*/ tooltips) {
 		lock.unlock();
 	}
 }
-/** @param tooltips cast=(GtkTooltips *) */
+/** @method flags=dynamic */
 public static final native void _gtk_tooltips_enable(int /*long*/ tooltips);
 public static final void gtk_tooltips_enable(int /*long*/ tooltips) {
 	lock.lock();

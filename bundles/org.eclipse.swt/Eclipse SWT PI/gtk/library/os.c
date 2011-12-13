@@ -14318,7 +14318,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tooltips_1disable)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1tooltips_1disable_FUNC);
-	gtk_tooltips_disable((GtkTooltips *)arg0);
+/*
+	gtk_tooltips_disable(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_tooltips_disable)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1tooltips_1disable_FUNC);
 }
 #endif
@@ -14328,7 +14336,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tooltips_1enable)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1tooltips_1enable_FUNC);
-	gtk_tooltips_enable((GtkTooltips *)arg0);
+/*
+	gtk_tooltips_enable(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_tooltips_enable)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1tooltips_1enable_FUNC);
 }
 #endif
