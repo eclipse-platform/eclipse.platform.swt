@@ -10077,6 +10077,7 @@ public static final int /*long*/ gtk_separator_menu_item_new() {
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
 public static final native int /*long*/ _gtk_set_locale();
 public static final int /*long*/ gtk_set_locale() {
 	lock.lock();

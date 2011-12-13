@@ -126,6 +126,7 @@
 #define gtk_menu_item_remove_submenu_LIB LIB_GTK
 #define gtk_menu_shell_set_take_focus_LIB LIB_GTK
 #define gtk_window_set_keep_below_LIB LIB_GTK
+#define gtk_set_locale_LIB LIB_GTK
 #define gtk_toolbar_set_orientation_LIB LIB_GTK
 #define gtk_tooltip_trigger_tooltip_query_LIB LIB_GTK
 #define gtk_tooltips_set_tip_LIB LIB_GTK

@@ -13043,7 +13043,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1set_1locale)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1set_1locale_FUNC);
+/*
 	rc = (jintLong)gtk_set_locale();
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_set_locale)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1set_1locale_FUNC);
 	return rc;
 }
