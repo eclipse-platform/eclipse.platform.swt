@@ -14307,7 +14307,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1tooltips_1data_1get)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1tooltips_1data_1get_FUNC);
-	rc = (jintLong)gtk_tooltips_data_get((GtkWidget *)arg0);
+/*
+	rc = (jintLong)gtk_tooltips_data_get(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_tooltips_data_get)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1tooltips_1data_1get_FUNC);
 	return rc;
 }

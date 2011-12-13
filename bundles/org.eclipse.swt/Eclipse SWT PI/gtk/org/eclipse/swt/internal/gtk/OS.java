@@ -11170,7 +11170,7 @@ public static final void gtk_toolbar_set_orientation(int /*long*/ toolbar, int o
 		lock.unlock();
 	}
 }
-/** @param widget cast=(GtkWidget *) */
+/** @method flags=dynamic */
 public static final native int /*long*/ _gtk_tooltips_data_get(int /*long*/ widget);
 public static final int /*long*/ gtk_tooltips_data_get(int /*long*/ widget) {
 	lock.lock();

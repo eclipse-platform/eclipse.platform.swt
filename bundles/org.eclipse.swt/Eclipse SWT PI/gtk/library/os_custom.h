@@ -131,6 +131,7 @@
 #define gtk_tooltips_set_tip_LIB LIB_GTK
 #define gtk_tooltips_enable_LIB LIB_GTK
 #define gtk_tooltips_disable_LIB LIB_GTK
+#define gtk_tooltips_data_get_LIB LIB_GTK
 #define gtk_tooltips_force_window_LIB LIB_GTK
 #define gtk_tree_selection_count_selected_rows_LIB LIB_GTK
 #define gtk_tree_selection_get_selected_rows_LIB LIB_GTK
