@@ -14338,7 +14338,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tooltips_1force_1window)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1tooltips_1force_1window_FUNC);
-	gtk_tooltips_force_window((GtkTooltips *)arg0);
+/*
+	gtk_tooltips_force_window(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_tooltips_force_window)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1tooltips_1force_1window_FUNC);
 }
 #endif

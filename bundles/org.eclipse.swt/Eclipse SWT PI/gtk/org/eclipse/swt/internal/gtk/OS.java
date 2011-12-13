@@ -11209,7 +11209,7 @@ public static final int /*long*/ gtk_tooltips_new() {
 		lock.unlock();
 	}
 }
-/** @param tooltips cast=(GtkTooltips *) */
+/** @method flags=dynamic */
 public static final native void _gtk_tooltips_force_window(int /*long*/ tooltips);
 public static final void gtk_tooltips_force_window(int /*long*/ tooltips) {
 	lock.lock();
