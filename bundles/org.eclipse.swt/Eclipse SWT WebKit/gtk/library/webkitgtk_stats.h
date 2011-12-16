@@ -62,6 +62,7 @@ typedef enum {
 	_1soup_1auth_1authenticate_FUNC,
 	_1soup_1auth_1get_1host_FUNC,
 	_1soup_1auth_1get_1scheme_1name_FUNC,
+	_1soup_1cookie_1free_FUNC,
 	_1soup_1cookie_1jar_1add_1cookie_FUNC,
 	_1soup_1cookie_1jar_1all_1cookies_FUNC,
 	_1soup_1cookie_1jar_1delete_1cookie_FUNC,

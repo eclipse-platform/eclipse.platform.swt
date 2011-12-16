@@ -136,9 +136,10 @@ class WebKit extends WebBrowser {
 							/* indicates a session cookie */
 							WebKitGTK.soup_cookie_jar_delete_cookie (jar, cookie);
 						}
-						OS.g_free (cookie);
+						WebKitGTK.soup_cookie_free (cookie);
 						current = OS.g_slist_next (current);
 					}
+					OS.g_slist_free (cookies);
 				}
 			};
 

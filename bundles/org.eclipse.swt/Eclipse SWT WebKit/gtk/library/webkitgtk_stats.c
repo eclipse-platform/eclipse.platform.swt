@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int WebKitGTK_nativeFunctionCount = 109;
-int WebKitGTK_nativeFunctionCallCount[109];
+int WebKitGTK_nativeFunctionCount = 110;
+int WebKitGTK_nativeFunctionCallCount[110];
 char * WebKitGTK_nativeFunctionNames[] = {
 	"JSClassDefinition_1sizeof",
 	"_1JSClassCreate",
@@ -54,6 +54,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1soup_1auth_1authenticate",
 	"_1soup_1auth_1get_1host",
 	"_1soup_1auth_1get_1scheme_1name",
+	"_1soup_1cookie_1free",
 	"_1soup_1cookie_1jar_1add_1cookie",
 	"_1soup_1cookie_1jar_1all_1cookies",
 	"_1soup_1cookie_1jar_1delete_1cookie",
