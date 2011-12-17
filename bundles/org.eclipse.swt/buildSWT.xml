@@ -27,6 +27,8 @@
  -->
 
 <project name="swtbuild" basedir=".">
+	<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask"/>
+	
 	<property name="gitroot" value="silenio@dev.eclipse.org:/gitroot/platform/"/>
 	<property name="TAG" value="master"/>
 	<property name="tmphome" value="../../../tmp"/>
@@ -1159,6 +1161,21 @@
 			<arg line="checkout master"/>
 		</exec>
 	</target>
+	
+	<target name="generate_qualifier">
+		<tstamp><format property="build.qualifier" pattern="yyyyMMdd-HHmm"/></tstamp>
+		<echo>${build.qualifier}</echo>
+	</target>
+	
+	<target name="write_qualifier" depends="generate_qualifier" description="writes the generated qualifier in pom.xml in src and binaries repo">
+		<xmltask source="${basedir}/${repo.src}/bundles/org.eclipse.swt/pom.xml" dest="${basedir}/${repo.src}/bundles/org.eclipse.swt/pom.xml" failWithoutMatch="true">
+			<replace path="/:project/:properties/:forceContextQualifier/text()" withText="v${build.qualifier}"/>
+		</xmltask>
+		<xmltask source="${basedir}/${repo.bin}/bundles/binaries-parent/pom.xml" dest="${basedir}/${repo.bin}/bundles/binaries-parent/pom.xml" failWithoutMatch="true">
+			<replace path="/:project/:properties/:forceContextQualifier/text()" withText="v${build.qualifier}"/>
+		</xmltask>
+	</target>
+
 
 	<!-- Convert SWT 32 bit java and C source to 64 bit  -->
 	<target name="replace.32.to.64" depends="init_build">
