@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2010 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2011 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -478,6 +478,16 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1soup_1auth_1get_1scheme_1name)
 	rc = (jintLong)soup_auth_get_scheme_name((SoupAuth *)arg0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1soup_1auth_1get_1scheme_1name_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1soup_1cookie_1free
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1soup_1cookie_1free)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	WebKitGTK_NATIVE_ENTER(env, that, _1soup_1cookie_1free_FUNC);
+	soup_cookie_free((SoupCookie *)arg0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1soup_1cookie_1free_FUNC);
 }
 #endif
 

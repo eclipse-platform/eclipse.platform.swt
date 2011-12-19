@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2010 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2011 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -64,6 +64,7 @@ typedef enum {
 	_1soup_1auth_1authenticate_FUNC,
 	_1soup_1auth_1get_1host_FUNC,
 	_1soup_1auth_1get_1scheme_1name_FUNC,
+	_1soup_1cookie_1free_FUNC,
 	_1soup_1cookie_1jar_1add_1cookie_FUNC,
 	_1soup_1cookie_1jar_1all_1cookies_FUNC,
 	_1soup_1cookie_1jar_1delete_1cookie_FUNC,
