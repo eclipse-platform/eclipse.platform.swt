@@ -150,7 +150,7 @@ Browser getBrowser() {
 	if (rc == XPCOM.NS_OK && result[0] != 0) {
 		nsIComponentManager componentManager = new nsIComponentManager (result[0]);
 		result[0] = 0;
-		componentManager.GetClassObject(XPCOM.NS_IWEBBROWSER_CID, nsIWebBrowser.NS_IWEBBROWSER_IID, result);
+		componentManager.GetClassObject(XPCOM.NS_IWEBBROWSER_CID, !Mozilla.IsPre_4 ? nsIWebBrowser.NS_IWEBBROWSER_8_IID : nsIWebBrowser.NS_IWEBBROWSER_IID, result);
 		if (rc == XPCOM.NS_OK && result[0] != 0) {
 			nsIWebBrowser browser = new nsIWebBrowser(result[0]);
 			result[0] = 0;

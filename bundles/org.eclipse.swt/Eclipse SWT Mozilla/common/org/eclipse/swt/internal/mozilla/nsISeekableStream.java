@@ -37,14 +37,12 @@ public class nsISeekableStream extends nsISupports {
 	public static final nsID NS_ISEEKABLESTREAM_IID =
 		new nsID(NS_ISEEKABLESTREAM_IID_STR);
 
-	public  nsISeekableStream(int /*long*/ address) {
+	public nsISeekableStream(int /*long*/ address) {
 		super(address);
 	}
 
 	public static final int NS_SEEK_SET = 0;
-
 	public static final int NS_SEEK_CUR = 1;
-
 	public static final int NS_SEEK_END = 2;
 
 	public int Seek(int whence, long offset) {

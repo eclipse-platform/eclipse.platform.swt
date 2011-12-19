@@ -222,17 +222,11 @@ public class nsIDocShell extends nsISupports {
 	}
 
 	public static final int BUSY_FLAGS_NONE = 0;
-
 	public static final int BUSY_FLAGS_BUSY = 1;
-
 	public static final int BUSY_FLAGS_BEFORE_PAGE_LOAD = 2;
-
 	public static final int BUSY_FLAGS_PAGE_LOADING = 4;
-
 	public static final int LOAD_CMD_NORMAL = 1;
-
 	public static final int LOAD_CMD_RELOAD = 2;
-
 	public static final int LOAD_CMD_HISTORY = 4;
 
 	public int GetBusyFlags(int[] aBusyFlags) {

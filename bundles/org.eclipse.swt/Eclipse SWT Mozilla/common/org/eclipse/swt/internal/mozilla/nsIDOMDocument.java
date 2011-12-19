@@ -27,7 +27,7 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class  nsIDOMDocument extends nsIDOMNode {
+public class nsIDOMDocument extends nsIDOMNode {
 
 	static final int LAST_METHOD_ID = nsIDOMNode.LAST_METHOD_ID + 17;
 
@@ -37,7 +37,7 @@ public class  nsIDOMDocument extends nsIDOMNode {
 	public static final nsID NS_IDOMDOCUMENT_IID =
 		new nsID(NS_IDOMDOCUMENT_IID_STR);
 
-	public  nsIDOMDocument(int /*long*/ address) {
+	public nsIDOMDocument(int /*long*/ address) {
 		super(address);
 	}
 

@@ -37,7 +37,7 @@ public class nsIHttpChannel extends nsIChannel {
 	public static final nsID NS_IHTTPCHANNEL_IID =
 		new nsID(NS_IHTTPCHANNEL_IID_STR);
 
-	public  nsIHttpChannel(int /*long*/ address) {
+	public nsIHttpChannel(int /*long*/ address) {
 		super(address);
 	}
 

@@ -27,7 +27,7 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class  nsIFocusManager extends nsISupports {
+public class nsIFocusManager extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 17;
 
@@ -37,7 +37,7 @@ public class  nsIFocusManager extends nsISupports {
 	public static final nsID NS_IFOCUSMANAGER_IID =
 		new nsID(NS_IFOCUSMANAGER_IID_STR);
 
-	public  nsIFocusManager(int /*long*/ address) {
+	public nsIFocusManager(int /*long*/ address) {
 		super(address);
 	}
 
@@ -86,31 +86,18 @@ public class  nsIFocusManager extends nsISupports {
 	}
 
 	public static final int FLAG_RAISE = 1;
-
 	public static final int FLAG_NOSCROLL = 2;
-
 	public static final int FLAG_NOSWITCHFRAME = 4;
-
 	public static final int FLAG_BYMOUSE = 4096;
-
 	public static final int FLAG_BYKEY = 8192;
-
 	public static final int FLAG_BYMOVEFOCUS = 16384;
-
 	public static final int MOVEFOCUS_FORWARD = 1;
-
 	public static final int MOVEFOCUS_BACKWARD = 2;
-
 	public static final int MOVEFOCUS_FORWARDDOC = 3;
-
 	public static final int MOVEFOCUS_BACKWARDDOC = 4;
-
 	public static final int MOVEFOCUS_FIRST = 5;
-
 	public static final int MOVEFOCUS_LAST = 6;
-
 	public static final int MOVEFOCUS_ROOT = 7;
-
 	public static final int MOVEFOCUS_CARET = 8;
 
 	public int WindowRaised(int /*long*/ aWindow) {

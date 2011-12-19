@@ -42,9 +42,7 @@ public class nsIEmbeddingSiteWindow extends nsISupports {
 	}
 
 	public static final int DIM_FLAGS_POSITION = 1;
-
 	public static final int DIM_FLAGS_SIZE_INNER = 2;
-
 	public static final int DIM_FLAGS_SIZE_OUTER = 4;
 
 	public int SetDimensions(int flags, int x, int y, int cx, int cy) {

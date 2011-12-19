@@ -21,19 +21,19 @@ import org.eclipse.swt.widgets.*;
  * implemented by class HelperAppLauncherDialog_1_9.  HelperAppLauncherDialogFactory
  * determines at runtime which of these classes to instantiate. 
  */
-class HelperAppLauncherDialog_2 extends HelperAppLauncherDialog_1_9 {
+class HelperAppLauncherDialog_8 extends HelperAppLauncherDialog_1_9 {
 	XPCOMObject supports;
 	XPCOMObject helperAppLauncherDialog;
 	int refCount = 0;
 
-HelperAppLauncherDialog_2 () {
+HelperAppLauncherDialog_8 () {
 	createCOMInterfaces ();
 }
 
 /* nsIHelperAppLauncherDialog */
 
 int Show (int /*long*/ aLauncher, int /*long*/ aContext, int aReason) {
-	nsIHelperAppLauncher_2 helperAppLauncher = new nsIHelperAppLauncher_2 (aLauncher);
+	nsIHelperAppLauncher_8 helperAppLauncher = new nsIHelperAppLauncher_8 (aLauncher);
 	return helperAppLauncher.SaveToDisk (0, 0);
 }
 
@@ -55,7 +55,7 @@ int PromptForSaveToFile (int /*long*/ aLauncher, int /*long*/ aWindowContext, in
 	String name = fileDialog.open ();
 	shell.close ();
 	if (name == null) {
-		nsIHelperAppLauncher_2 launcher = new nsIHelperAppLauncher_2 (aLauncher);
+		nsIHelperAppLauncher_8 launcher = new nsIHelperAppLauncher_8 (aLauncher);
 		int rc = launcher.Cancel (XPCOM.NS_BINDING_ABORTED);
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 		return XPCOM.NS_ERROR_FAILURE;

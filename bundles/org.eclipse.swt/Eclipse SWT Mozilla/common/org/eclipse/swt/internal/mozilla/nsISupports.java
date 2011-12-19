@@ -37,6 +37,8 @@ public class nsISupports {
 	
 	static final int FIRST_METHOD_ID = IsSolaris ? 2 : 0;
 	static final int LAST_METHOD_ID = FIRST_METHOD_ID + 2;
+
+	public static boolean Is8;
 	
 	public static final String NS_ISUPPORTS_IID_STR =
 		"00000000-0000-0000-c000-000000000046";

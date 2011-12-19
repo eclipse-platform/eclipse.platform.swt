@@ -37,7 +37,7 @@ public class nsIX509Cert extends nsISupports {
 	public static final nsID NS_IX509CERT_IID =
 		new nsID(NS_IX509CERT_IID_STR);
 
-	public  nsIX509Cert(int /*long*/ address) {
+	public nsIX509Cert(int /*long*/ address) {
 		super(address);
 	}
 
@@ -122,55 +122,30 @@ public class nsIX509Cert extends nsISupports {
 	}
 
 	public static final int UNKNOWN_CERT = 0;
-
 	public static final int CA_CERT = 1;
-
 	public static final int USER_CERT = 2;
-
 	public static final int EMAIL_CERT = 4;
-
 	public static final int SERVER_CERT = 8;
-
 	public static final int VERIFIED_OK = 0;
-
 	public static final int NOT_VERIFIED_UNKNOWN = 1;
-
 	public static final int CERT_REVOKED = 2;
-
 	public static final int CERT_EXPIRED = 4;
-
 	public static final int CERT_NOT_TRUSTED = 8;
-
 	public static final int ISSUER_NOT_TRUSTED = 16;
-
 	public static final int ISSUER_UNKNOWN = 32;
-
 	public static final int INVALID_CA = 64;
-
 	public static final int USAGE_NOT_ALLOWED = 128;
-
 	public static final int CERT_USAGE_SSLClient = 0;
-
 	public static final int CERT_USAGE_SSLServer = 1;
-
 	public static final int CERT_USAGE_SSLServerWithStepUp = 2;
-
 	public static final int CERT_USAGE_SSLCA = 3;
-
 	public static final int CERT_USAGE_EmailSigner = 4;
-
 	public static final int CERT_USAGE_EmailRecipient = 5;
-
 	public static final int CERT_USAGE_ObjectSigner = 6;
-
 	public static final int CERT_USAGE_UserCertImport = 7;
-
 	public static final int CERT_USAGE_VerifyCA = 8;
-
 	public static final int CERT_USAGE_ProtectedObjectSigner = 9;
-
 	public static final int CERT_USAGE_StatusResponder = 10;
-
 	public static final int CERT_USAGE_AnyCA = 11;
 
 	public int GetChain(int /*long*/[] _retval) {

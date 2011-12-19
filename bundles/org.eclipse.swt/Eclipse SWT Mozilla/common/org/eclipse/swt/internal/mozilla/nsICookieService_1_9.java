@@ -27,7 +27,7 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class  nsICookieService_1_9 extends nsISupports {
+public class nsICookieService_1_9 extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 4;
 
@@ -37,7 +37,7 @@ public class  nsICookieService_1_9 extends nsISupports {
 	public static final nsID NS_ICOOKIESERVICE_IID =
 		new nsID(NS_ICOOKIESERVICE_IID_STR);
 
-	public  nsICookieService_1_9(int /*long*/ address) {
+	public nsICookieService_1_9(int /*long*/ address) {
 		super(address);
 	}
 

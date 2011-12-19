@@ -42,9 +42,7 @@ public class nsIWebBrowserChrome extends nsISupports {
 	}
 
 	public static final int STATUS_SCRIPT = 1;
-
 	public static final int STATUS_SCRIPT_DEFAULT = 2;
-
 	public static final int STATUS_LINK = 3;
 
 	public int SetStatus(int statusType, char[] status) {
@@ -60,51 +58,28 @@ public class nsIWebBrowserChrome extends nsISupports {
 	}
 
 	public static final int CHROME_DEFAULT = 1;
-
 	public static final int CHROME_WINDOW_BORDERS = 2;
-
 	public static final int CHROME_WINDOW_CLOSE = 4;
-
 	public static final int CHROME_WINDOW_RESIZE = 8;
-
 	public static final int CHROME_MENUBAR = 16;
-
 	public static final int CHROME_TOOLBAR = 32;
-
 	public static final int CHROME_LOCATIONBAR = 64;
-
 	public static final int CHROME_STATUSBAR = 128;
-
 	public static final int CHROME_PERSONAL_TOOLBAR = 256;
-
 	public static final int CHROME_SCROLLBARS = 512;
-
 	public static final int CHROME_TITLEBAR = 1024;
-
 	public static final int CHROME_EXTRA = 2048;
-
 	public static final int CHROME_WITH_SIZE = 4096;
-
 	public static final int CHROME_WITH_POSITION = 8192;
-
 	public static final int CHROME_WINDOW_MIN = 16384;
-
 	public static final int CHROME_WINDOW_POPUP = 32768;
-
 	public static final int CHROME_WINDOW_RAISED = 33554432;
-
 	public static final int CHROME_WINDOW_LOWERED = 67108864;
-
 	public static final int CHROME_CENTER_SCREEN = 134217728;
-
 	public static final int CHROME_DEPENDENT = 268435456;
-
 	public static final int CHROME_MODAL = 536870912;
-
 	public static final int CHROME_OPENAS_DIALOG = 1073741824;
-
 	public static final int CHROME_OPENAS_CHROME = -2147483648;
-
 	public static final int CHROME_ALL = 4094;
 
 	public int GetChromeFlags(int[] aChromeFlags) {

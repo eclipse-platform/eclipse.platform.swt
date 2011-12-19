@@ -32,16 +32,28 @@ public class nsIDOMEventTarget extends nsISupports {
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 3;
 
 	public static final String NS_IDOMEVENTTARGET_IID_STR =
-		"1797d5a4-b12a-428d-9eef-a0e13839728c";
+		"1c773b30-d1cf-11d2-bd95-00805f8ae3f4";
 
+	public static final String NS_IDOMEVENTTARGET_8_IID_STR =
+		"1797d5a4-b12a-428d-9eef-a0e13839728c";
+	
 	public static final nsID NS_IDOMEVENTTARGET_IID =
 		new nsID(NS_IDOMEVENTTARGET_IID_STR);
+
+	public static final nsID NS_IDOMEVENTTARGET_8_IID =
+		new nsID(NS_IDOMEVENTTARGET_8_IID_STR);
 
 	public nsIDOMEventTarget(int /*long*/ address) {
 		super(address);
 	}
 
+	public int AddEventListener(int /*long*/ type, int /*long*/ listener, int useCapture) {
+		if (Is8) return XPCOM.NS_COMFALSE;
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), type, listener, useCapture);
+	}
+
 	public int AddEventListener(int /*long*/ type, int /*long*/ listener, int useCapture, int wantsUntrusted, int _argc) {
+		if (!Is8) return AddEventListener(type, listener, useCapture);
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), type, listener, useCapture, wantsUntrusted, _argc);
 	}
 

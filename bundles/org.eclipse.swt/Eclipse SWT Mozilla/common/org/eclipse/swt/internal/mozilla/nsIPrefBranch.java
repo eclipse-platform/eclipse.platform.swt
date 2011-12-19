@@ -32,21 +32,24 @@ public class nsIPrefBranch extends nsISupports {
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 18;
 
 	public static final String NS_IPREFBRANCH_IID_STR =
-		"e0b6e170-691b-11e0-ae3e-0800200c9a66";
+		"56c35506-f14b-11d3-99d3-ddbfac2ccf65";
 
+	public static final String NS_IPREFBRANCH_8_IID_STR =
+		"e0b6e170-691b-11e0-ae3e-0800200c9a66";
+	
 	public static final nsID NS_IPREFBRANCH_IID =
 		new nsID(NS_IPREFBRANCH_IID_STR);
 
+	public static final nsID NS_IPREFBRANCH_8_IID =
+		new nsID(NS_IPREFBRANCH_8_IID_STR);
+	
 	public nsIPrefBranch(int /*long*/ address) {
 		super(address);
 	}
 
 	public static final int PREF_INVALID = 0;
-
 	public static final int PREF_STRING = 32;
-
 	public static final int PREF_INT = 64;
-
 	public static final int PREF_BOOL = 128;
 
 	public int GetRoot(int /*long*/[] aRoot) {

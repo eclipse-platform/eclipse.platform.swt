@@ -42,7 +42,6 @@ public class nsIFile extends nsISupports {
 	}
 
 	public static final int NORMAL_FILE_TYPE = 0;
-
 	public static final int DIRECTORY_TYPE = 1;
 
 	public int Append(int /*long*/ node) {

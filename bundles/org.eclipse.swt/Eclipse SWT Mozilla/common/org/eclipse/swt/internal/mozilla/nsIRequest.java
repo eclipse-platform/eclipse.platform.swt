@@ -82,20 +82,12 @@ public class nsIRequest extends nsISupports {
 	}
 
 	public static final int LOAD_NORMAL = 0;
-
 	public static final int LOAD_BACKGROUND = 1;
-
 	public static final int INHIBIT_CACHING = 128;
-
 	public static final int INHIBIT_PERSISTENT_CACHING = 256;
-
 	public static final int LOAD_BYPASS_CACHE = 512;
-
 	public static final int LOAD_FROM_CACHE = 1024;
-
 	public static final int VALIDATE_ALWAYS = 2048;
-
 	public static final int VALIDATE_NEVER = 4096;
-
 	public static final int VALIDATE_ONCE_PER_SESSION = 8192;
 }

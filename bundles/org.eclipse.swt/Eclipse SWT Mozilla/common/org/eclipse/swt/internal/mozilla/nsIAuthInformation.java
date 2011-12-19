@@ -42,11 +42,8 @@ public class nsIAuthInformation extends nsISupports {
 	}
 
 	public static final int AUTH_HOST = 1;
-
 	public static final int AUTH_PROXY = 2;
-
 	public static final int NEED_DOMAIN = 4;
-
 	public static final int ONLY_PASSWORD = 8;
 
 	public int GetFlags(int[] aFlags) {

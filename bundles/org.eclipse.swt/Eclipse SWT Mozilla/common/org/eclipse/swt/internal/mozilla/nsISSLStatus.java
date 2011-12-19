@@ -37,7 +37,7 @@ public class nsISSLStatus extends nsISupports {
 	public static final nsID NS_ISSLSTATUS_IID =
 		new nsID(NS_ISSLSTATUS_IID_STR);
 
-	public  nsISSLStatus(int /*long*/ address) {
+	public nsISSLStatus(int /*long*/ address) {
 		super(address);
 	}
 

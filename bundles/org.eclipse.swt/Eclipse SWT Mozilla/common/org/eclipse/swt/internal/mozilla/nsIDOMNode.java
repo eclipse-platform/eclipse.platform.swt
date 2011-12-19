@@ -27,7 +27,7 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class  nsIDOMNode extends nsISupports {
+public class nsIDOMNode extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 25;
 
@@ -37,32 +37,21 @@ public class  nsIDOMNode extends nsISupports {
 	public static final nsID NS_IDOMNODE_IID =
 		new nsID(NS_IDOMNODE_IID_STR);
 
-	public  nsIDOMNode(int /*long*/ address) {
+	public nsIDOMNode(int /*long*/ address) {
 		super(address);
 	}
 
 	public static final int ELEMENT_NODE = 1;
-
 	public static final int ATTRIBUTE_NODE = 2;
-
 	public static final int TEXT_NODE = 3;
-
 	public static final int CDATA_SECTION_NODE = 4;
-
 	public static final int ENTITY_REFERENCE_NODE = 5;
-
 	public static final int ENTITY_NODE = 6;
-
 	public static final int PROCESSING_INSTRUCTION_NODE = 7;
-
 	public static final int COMMENT_NODE = 8;
-
 	public static final int DOCUMENT_NODE = 9;
-
 	public static final int DOCUMENT_TYPE_NODE = 10;
-
 	public static final int DOCUMENT_FRAGMENT_NODE = 11;
-
 	public static final int NOTATION_NODE = 12;
 
 	public int GetNodeName(int /*long*/ aNodeName) {

@@ -27,7 +27,7 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class  nsISerializable extends nsISupports {
+public class nsISerializable extends nsISupports {
 
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 2;
 
@@ -37,7 +37,7 @@ public class  nsISerializable extends nsISupports {
 	public static final nsID NS_ISERIALIZABLE_IID =
 		new nsID(NS_ISERIALIZABLE_IID_STR);
 
-	public  nsISerializable(int /*long*/ address) {
+	public nsISerializable(int /*long*/ address) {
 		super(address);
 	}
 

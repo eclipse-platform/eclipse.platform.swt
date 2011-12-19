@@ -67,6 +67,16 @@ typedef enum {
 	_1VtblCall__IJF_FUNC,
 #endif
 #ifndef JNI64
+	_1VtblCall__IIFF_3I_FUNC,
+#else
+	_1VtblCall__IJFF_3I_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIFF_3J_FUNC,
+#else
+	_1VtblCall__IJFF_3J_FUNC,
+#endif
+#ifndef JNI64
 	_1VtblCall__III_FUNC,
 #else
 	_1VtblCall__IJI_FUNC,
@@ -180,6 +190,11 @@ typedef enum {
 	_1VtblCall__IIIIJJJJ_FUNC,
 #else
 	_1VtblCall__IJIIJJJJ_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIIIS_FUNC,
+#else
+	_1VtblCall__IJIIS_FUNC,
 #endif
 #ifndef JNI64
 	_1VtblCall__IIII_3B_FUNC,
@@ -392,6 +407,11 @@ typedef enum {
 	_1VtblCall__IJI_3J_FUNC,
 #endif
 #ifndef JNI64
+	_1VtblCall__III_3S_FUNC,
+#else
+	_1VtblCall__IJI_3S_FUNC,
+#endif
+#ifndef JNI64
 	_1VtblCall__IIJ_FUNC,
 #else
 	_1VtblCall__IJJ_FUNC,
@@ -400,6 +420,21 @@ typedef enum {
 	_1VtblCall__IIJI_FUNC,
 #else
 	_1VtblCall__IJJI_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIJII_FUNC,
+#else
+	_1VtblCall__IJJII_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIJIIIIII_3I_FUNC,
+#else
+	_1VtblCall__IJJIIIIII_3I_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIJIIJI_FUNC,
+#else
+	_1VtblCall__IJJIIJI_FUNC,
 #endif
 #ifndef JNI64
 	_1VtblCall__IIJIIJIIIIII_FUNC,
@@ -425,6 +460,11 @@ typedef enum {
 	_1VtblCall__IIJIJII_FUNC,
 #else
 	_1VtblCall__IJJIJII_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIJIJI_3J_FUNC,
+#else
+	_1VtblCall__IJJIJI_3J_FUNC,
 #endif
 #ifndef JNI64
 	_1VtblCall__IIJIJJ_3I_3I_3I_FUNC,
@@ -532,6 +572,11 @@ typedef enum {
 	_1VtblCall__IJJJJJJ_3J_FUNC,
 #endif
 #ifndef JNI64
+	_1VtblCall__IIJJJJ_3J_FUNC,
+#else
+	_1VtblCall__IJJJJJ_3J_FUNC,
+#endif
+#ifndef JNI64
 	_1VtblCall__IIJJJ_3B_3BJ_FUNC,
 #else
 	_1VtblCall__IJJJJ_3B_3BJ_FUNC,
@@ -545,6 +590,11 @@ typedef enum {
 	_1VtblCall__IIJJJ_3J_FUNC,
 #else
 	_1VtblCall__IJJJJ_3J_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIJJS_FUNC,
+#else
+	_1VtblCall__IJJJS_FUNC,
 #endif
 #ifndef JNI64
 	_1VtblCall__IIJJ_3B_FUNC,
@@ -712,6 +762,11 @@ typedef enum {
 	_1VtblCall__IJJ_3J_FUNC,
 #endif
 #ifndef JNI64
+	_1VtblCall__IIJ_3S_FUNC,
+#else
+	_1VtblCall__IJJ_3S_FUNC,
+#endif
+#ifndef JNI64
 	_1VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2I_FUNC,
 #else
 	_1VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2I_FUNC,
@@ -770,6 +825,11 @@ typedef enum {
 	_1VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC,
 #else
 	_1VtblCall__IJLorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIS_FUNC,
+#else
+	_1VtblCall__IJS_FUNC,
 #endif
 #ifndef JNI64
 	_1VtblCall__IISIII_FUNC,
@@ -855,6 +915,11 @@ typedef enum {
 	_1VtblCall__II_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC,
 #else
 	_1VtblCall__IJ_3BLorg_eclipse_swt_internal_mozilla_nsID_2_3J_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__II_3BS_FUNC,
+#else
+	_1VtblCall__IJ_3BS_FUNC,
 #endif
 #ifndef JNI64
 	_1VtblCall__II_3B_3B_FUNC,

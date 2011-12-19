@@ -66,19 +66,12 @@ public class nsIClassInfo extends nsISupports {
 	}
 
 	public static final int SINGLETON = 1;
-
 	public static final int THREADSAFE = 2;
-
 	public static final int MAIN_THREAD_ONLY = 4;
-
 	public static final int DOM_OBJECT = 8;
-
 	public static final int PLUGIN_OBJECT = 16;
-
 	public static final int EAGER_CLASSINFO = 32;
-
 	public static final int CONTENT_NODE = 64;
-
 //	public static final int RESERVED = 2147483648;
 
 	public int GetFlags(int[] aFlags) {

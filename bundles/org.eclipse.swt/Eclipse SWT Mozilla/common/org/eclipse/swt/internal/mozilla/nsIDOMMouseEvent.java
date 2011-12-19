@@ -32,10 +32,16 @@ public class nsIDOMMouseEvent extends nsIDOMUIEvent {
 	static final int LAST_METHOD_ID = nsIDOMUIEvent.LAST_METHOD_ID + 11;
 
 	public static final String NS_IDOMMOUSEEVENT_IID_STR =
+		"ff751edc-8b02-aae7-0010-8301838a3123";
+
+	public static final String NS_IDOMMOUSEEVENT_8_IID_STR =
 		"73558605-f479-493e-86d1-9794cd117fef";
 
 	public static final nsID NS_IDOMMOUSEEVENT_IID =
 		new nsID(NS_IDOMMOUSEEVENT_IID_STR);
+
+	public static final nsID NS_IDOMMOUSEEVENT_8_IID =
+		new nsID(NS_IDOMMOUSEEVENT_8_IID_STR);
 
 	public nsIDOMMouseEvent(int /*long*/ address) {
 		super(address);

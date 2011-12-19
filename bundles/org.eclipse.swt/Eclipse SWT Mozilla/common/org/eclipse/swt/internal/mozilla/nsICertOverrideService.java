@@ -37,14 +37,12 @@ public class nsICertOverrideService extends nsISupports {
 	public static final nsID NS_ICERTOVERRIDESERVICE_IID =
 		new nsID(NS_ICERTOVERRIDESERVICE_IID_STR);
 
-	public  nsICertOverrideService(int /*long*/ address) {
+	public nsICertOverrideService(int /*long*/ address) {
 		super(address);
 	}
 
 	public static final int ERROR_UNTRUSTED = 1;
-
 	public static final int ERROR_MISMATCH = 2;
-
 	public static final int ERROR_TIME = 4;
 
 	public int RememberValidityOverride(int /*long*/ aHostName, int aPort, int /*long*/ aCert, int aOverrideBits, int aTemporary) {

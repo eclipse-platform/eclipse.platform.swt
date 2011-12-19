@@ -44,5 +44,4 @@ public class nsIPromptFactory extends nsISupports {
 	public int Alert(char[] aDialogTitle, char[] aText) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aDialogTitle, aText);
 	}
-
 }

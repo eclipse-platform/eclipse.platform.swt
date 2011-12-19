@@ -37,7 +37,7 @@ public class nsIUploadChannel extends nsISupports {
 	public static final nsID NS_IUPLOADCHANNEL_IID =
 		new nsID(NS_IUPLOADCHANNEL_IID_STR);
 
-	public  nsIUploadChannel(int /*long*/ address) {
+	public nsIUploadChannel(int /*long*/ address) {
 		super(address);
 	}
 

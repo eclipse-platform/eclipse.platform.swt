@@ -42,15 +42,10 @@ public class nsIContextMenuListener extends nsISupports {
 	}
 
 	public static final int CONTEXT_NONE = 0;
-
 	public static final int CONTEXT_LINK = 1;
-
 	public static final int CONTEXT_IMAGE = 2;
-
 	public static final int CONTEXT_DOCUMENT = 4;
-
 	public static final int CONTEXT_TEXT = 8;
-
 	public static final int CONTEXT_INPUT = 16;
 
 	public int OnShowContextMenu(int aContextFlags, int /*long*/ aEvent, int /*long*/ aNode) {

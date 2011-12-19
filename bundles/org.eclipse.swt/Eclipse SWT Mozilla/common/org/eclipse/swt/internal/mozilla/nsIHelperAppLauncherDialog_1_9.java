@@ -42,9 +42,7 @@ public class nsIHelperAppLauncherDialog_1_9 extends nsISupports {
 	}
 
 	public static final int REASON_CANTHANDLE = 0;
-
 	public static final int REASON_SERVERREQUEST = 1;
-
 	public static final int REASON_TYPESNIFFED = 2;
 
 	public int Show(int /*long*/ aLauncher, int /*long*/ aWindowContext, int aReason) {

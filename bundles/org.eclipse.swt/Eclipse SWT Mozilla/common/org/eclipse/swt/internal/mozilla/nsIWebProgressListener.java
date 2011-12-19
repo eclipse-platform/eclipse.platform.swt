@@ -42,33 +42,19 @@ public class nsIWebProgressListener extends nsISupports {
 	}
 
 	public static final int STATE_START = 1;
-
 	public static final int STATE_REDIRECTING = 2;
-
 	public static final int STATE_TRANSFERRING = 4;
-
 	public static final int STATE_NEGOTIATING = 8;
-
 	public static final int STATE_STOP = 16;
-
 	public static final int STATE_IS_REQUEST = 65536;
-
 	public static final int STATE_IS_DOCUMENT = 131072;
-
 	public static final int STATE_IS_NETWORK = 262144;
-
 	public static final int STATE_IS_WINDOW = 524288;
-
 	public static final int STATE_IS_INSECURE = 4;
-
 	public static final int STATE_IS_BROKEN = 1;
-
 	public static final int STATE_IS_SECURE = 2;
-
 	public static final int STATE_SECURE_HIGH = 262144;
-
 	public static final int STATE_SECURE_MED = 65536;
-
 	public static final int STATE_SECURE_LOW = 131072;
 
 	public int OnStateChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateFlags, int aStatus) {

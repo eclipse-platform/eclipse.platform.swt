@@ -37,6 +37,12 @@ public class nsIDocShell_1_8 extends nsISupports {
 	public static final nsID NS_IDOCSHELL_IID =
 		new nsID(NS_IDOCSHELL_IID_STR);
 
+	public static final String NS_IDOCSHELL_8_IID_STR =
+		"0666adf8-8738-4ca7-a917-0348f47d2f40";
+
+	public static final nsID NS_IDOCSHELL_8_IID =
+		new nsID(NS_IDOCSHELL_8_IID_STR);
+
 	public nsIDocShell_1_8(int /*long*/ address) {
 		super(address);
 	}
@@ -50,9 +56,7 @@ public class nsIDocShell_1_8 extends nsISupports {
 	}
 
 	public static final int INTERNAL_LOAD_FLAGS_NONE = 0;
-
 	public static final int INTERNAL_LOAD_FLAGS_INHERIT_OWNER = 1;
-
 	public static final int INTERNAL_LOAD_FLAGS_DONT_SEND_REFERRER = 2;
 
 	public int InternalLoad(int /*long*/ aURI, int /*long*/ aReferrer, int /*long*/ aOwner, int aFlags, char[] aWindowTarget, byte[] aTypeHint, int /*long*/ aPostDataStream, int /*long*/ aHeadersStream, int aLoadFlags, int /*long*/ aSHEntry, int firstParty, int /*long*/[] aDocShell, int /*long*/[] aRequest) {
@@ -148,7 +152,6 @@ public class nsIDocShell_1_8 extends nsISupports {
 	}
 
 	public static final int ENUMERATE_FORWARDS = 0;
-
 	public static final int ENUMERATE_BACKWARDS = 1;
 
 	public int GetDocShellEnumerator(int aItemType, int aDirection, int /*long*/[] _retval) {
@@ -156,9 +159,7 @@ public class nsIDocShell_1_8 extends nsISupports {
 	}
 
 	public static final int APP_TYPE_UNKNOWN = 0;
-
 	public static final int APP_TYPE_MAIL = 1;
-
 	public static final int APP_TYPE_EDITOR = 2;
 
 	public int GetAppType(int[] aAppType) {
@@ -222,17 +223,11 @@ public class nsIDocShell_1_8 extends nsISupports {
 	}
 
 	public static final int BUSY_FLAGS_NONE = 0;
-
 	public static final int BUSY_FLAGS_BUSY = 1;
-
 	public static final int BUSY_FLAGS_BEFORE_PAGE_LOAD = 2;
-
 	public static final int BUSY_FLAGS_PAGE_LOADING = 4;
-
 	public static final int LOAD_CMD_NORMAL = 1;
-
 	public static final int LOAD_CMD_RELOAD = 2;
-
 	public static final int LOAD_CMD_HISTORY = 4;
 
 	public int GetBusyFlags(int[] aBusyFlags) {

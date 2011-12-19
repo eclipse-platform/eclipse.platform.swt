@@ -42,11 +42,8 @@ public class nsIWebNavigationInfo extends nsISupports {
 	}
 
 	public static final int UNSUPPORTED = 0;
-
 	public static final int IMAGE = 1;
-
 	public static final int PLUGIN = 2;
-
 	public static final int OTHER = 32768;
 
 	public int IsTypeSupported(int /*long*/ aType, int /*long*/ aWebNav, int[] _retval) {

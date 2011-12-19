@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2011 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -42,9 +42,7 @@ public class nsIAuthPrompt2 extends nsISupports {
 	}
 
 	public static final int LEVEL_NONE = 0;
-
 	public static final int LEVEL_PW_ENCRYPTED = 1;
-
 	public static final int LEVEL_SECURE = 2;
 
 	public int PromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int level, int /*long*/ authInfo, char[] checkboxLabel, int[] checkValue, int[] _retval) {

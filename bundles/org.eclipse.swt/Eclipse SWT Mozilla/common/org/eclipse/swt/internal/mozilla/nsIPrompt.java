@@ -42,37 +42,20 @@ public class nsIPrompt extends nsISupports {
 	}
 
 	public static final int BUTTON_POS_0 = 1;
-
 	public static final int BUTTON_POS_1 = 256;
-
 	public static final int BUTTON_POS_2 = 65536;
-
 	public static final int BUTTON_TITLE_OK = 1;
-
 	public static final int BUTTON_TITLE_CANCEL = 2;
-
 	public static final int BUTTON_TITLE_YES = 3;
-
 	public static final int BUTTON_TITLE_NO = 4;
-
 	public static final int BUTTON_TITLE_SAVE = 5;
-
 	public static final int BUTTON_TITLE_DONT_SAVE = 6;
-
 	public static final int BUTTON_TITLE_REVERT = 7;
-
 	public static final int BUTTON_TITLE_IS_STRING = 127;
-
 	public static final int BUTTON_POS_0_DEFAULT = 0;
-
 	public static final int BUTTON_POS_1_DEFAULT = 16777216;
-
 	public static final int BUTTON_POS_2_DEFAULT = 33554432;
-
 	public static final int BUTTON_DELAY_ENABLE = 67108864;
-
 	public static final int STD_OK_CANCEL_BUTTONS = 513;
-
 	public static final int STD_YES_NO_BUTTONS = 1027;
-	
 }

@@ -90,7 +90,7 @@ int /*long*/ getHandle () {
 	return browser.handle;
 }
 
-String getJSLibraryName_Pre2 () {
+String getJSLibraryName_Pre4 () {
 	return "js3250.dll"; //$NON-NLS-1$
 }
 

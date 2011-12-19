@@ -62,21 +62,13 @@ public class nsIWebNavigation extends nsISupports {
 	}
 
 	public static final int LOAD_FLAGS_MASK = 65535;
-
 	public static final int LOAD_FLAGS_NONE = 0;
-
 	public static final int LOAD_FLAGS_IS_REFRESH = 16;
-
 	public static final int LOAD_FLAGS_IS_LINK = 32;
-
 	public static final int LOAD_FLAGS_BYPASS_HISTORY = 64;
-
 	public static final int LOAD_FLAGS_REPLACE_HISTORY = 128;
-
 	public static final int LOAD_FLAGS_BYPASS_CACHE = 256;
-
 	public static final int LOAD_FLAGS_BYPASS_PROXY = 512;
-
 	public static final int LOAD_FLAGS_CHARSET_CHANGE = 1024;
 
 	public int LoadURI(char[] uri, int loadFlags, int /*long*/ referrer, int /*long*/ postData, int /*long*/ headers) {
@@ -88,9 +80,7 @@ public class nsIWebNavigation extends nsISupports {
 	}
 
 	public static final int STOP_NETWORK = 1;
-
 	public static final int STOP_CONTENT = 2;
-
 	public static final int STOP_ALL = 3;
 
 	public int Stop(int stopFlags) {

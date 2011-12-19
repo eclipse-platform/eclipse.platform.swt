@@ -37,7 +37,7 @@ public class nsIHttpHeaderVisitor extends nsISupports {
 	public static final nsID NS_IHTTPHEADERVISITOR_IID =
 		new nsID(NS_IHTTPHEADERVISITOR_IID_STR);
 
-	public  nsIHttpHeaderVisitor(int /*long*/ address) {
+	public nsIHttpHeaderVisitor(int /*long*/ address) {
 		super(address);
 	}
 

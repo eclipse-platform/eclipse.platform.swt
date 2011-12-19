@@ -106,14 +106,9 @@ public class nsIChannel extends nsIRequest {
 	}
 
 	public static final int LOAD_DOCUMENT_URI = 65536;
-
 	public static final int LOAD_RETARGETED_DOCUMENT_URI = 131072;
-
 	public static final int LOAD_REPLACE = 262144;
-
 	public static final int LOAD_INITIAL_DOCUMENT_URI = 524288;
-
 	public static final int LOAD_TARGETED = 1048576;
-
 	public static final int LOAD_CALL_CONTENT_SNIFFERS = 2097152;
 }

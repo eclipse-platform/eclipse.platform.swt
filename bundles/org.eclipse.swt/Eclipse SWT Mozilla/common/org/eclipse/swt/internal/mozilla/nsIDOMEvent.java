@@ -29,22 +29,26 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMEvent extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 11;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (Is8 ? 11 : 10);
 
 	public static final String NS_IDOMEVENT_IID_STR =
+		"a66b7b80-ff46-bd97-0080-5f8ae38add32";
+
+	public static final String NS_IDOMEVENT_8_IID_STR =
 		"548137e8-fd2c-48c4-8635-3033f7db79e0";
 
 	public static final nsID NS_IDOMEVENT_IID =
 		new nsID(NS_IDOMEVENT_IID_STR);
+
+	public static final nsID NS_IDOMEVENT_8_IID =
+		new nsID(NS_IDOMEVENT_8_IID_STR);
 
 	public nsIDOMEvent(int /*long*/ address) {
 		super(address);
 	}
 
 	public static final int CAPTURING_PHASE = 1;
-
 	public static final int AT_TARGET = 2;
-
 	public static final int BUBBLING_PHASE = 3;
 
 	public int GetType(int /*long*/ aType) {
@@ -71,7 +75,7 @@ public class nsIDOMEvent extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aCancelable);
 	}
 
-	public int GetTimeStamp(int /*long*/[] aTimeStamp) {
+	public int GetTimeStamp(int /*long*/ aTimeStamp) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aTimeStamp);
 	}
 
@@ -88,6 +92,7 @@ public class nsIDOMEvent extends nsISupports {
 	}
 	
 	public int GetDefaultPrevented(int[] aDefaultPrevented) {
+		if (!Is8) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aDefaultPrevented);
 	}
 }
