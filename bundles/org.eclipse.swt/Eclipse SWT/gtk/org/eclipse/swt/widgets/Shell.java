@@ -2398,12 +2398,10 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 			buffer = Converter.wcsToMbcs (null, chars, true);
 		}
 		int /*long*/ oldTooltip = OS.gtk_widget_get_tooltip_text (rootWidget);
-		if (string == null && oldTooltip == 0) {
+		if (buffer == null && oldTooltip == 0) {
 			return;
-		} else if (string != null && oldTooltip != 0) {
-			if (buffer != null) {
+		} else if (buffer != null && oldTooltip != 0) {
 				if (OS.strcmp (oldTooltip, buffer) == 0) return;
-			}
 		}
 		OS.gtk_widget_set_tooltip_text (rootWidget, null);
 		/*
