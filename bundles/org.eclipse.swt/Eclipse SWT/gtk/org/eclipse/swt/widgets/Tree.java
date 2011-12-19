@@ -1774,6 +1774,7 @@ public TreeItem[] getSelection () {
 				length++;
 			}
 			OS.g_free (iter);
+			OS.gtk_tree_path_free (data);
 		}
 		OS.g_list_free (list);
 		if (length < count) {

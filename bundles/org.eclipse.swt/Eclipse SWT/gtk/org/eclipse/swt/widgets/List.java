@@ -621,8 +621,13 @@ public int getSelectionIndex () {
 		for (int i=0; i<count; i++) {
 			int /*long*/ data = OS.g_list_nth_data (list, i);
 			int /*long*/ indices = OS.gtk_tree_path_get_indices (data);
+			OS.gtk_tree_path_free (data);
 			if (indices != 0) {
 				OS.memmove (index, indices, 4);
+				for (int j = i + 1; j < count; j++) {
+					data = OS.g_list_nth_data (list, j);
+					OS.gtk_tree_path_free (data);
+				}
 				break;
 			}
 		}
@@ -675,6 +680,7 @@ public int [] getSelectionIndices () {
 		for (int i=0; i<count; i++) {
 			int /*long*/ data = OS.g_list_nth_data (list, i);
 			int /*long*/ indices = OS.gtk_tree_path_get_indices (data);
+			OS.gtk_tree_path_free (data);
 			if (indices != 0) {
 				int [] index = new int [1];
 				OS.memmove (index, indices, 4);
