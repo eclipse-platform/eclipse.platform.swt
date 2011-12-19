@@ -483,18 +483,18 @@ public static final int /*long*/ soup_auth_get_scheme_name (int /*long*/ auth) {
 	}
 }
 
-/**
- * @param cookie cast=(SoupCookie *)
- */
-public static final native void _soup_cookie_free (int /*long*/ cookie);
-public static final void soup_cookie_free (int /*long*/ cookie) {
-	lock.lock();
-	try {
-		_soup_cookie_free (cookie);
-	} finally {
-		lock.unlock();
-	}
-}
+///**
+// * @param cookie cast=(SoupCookie *)
+// */
+//public static final native void _soup_cookie_free (int /*long*/ cookie);
+//public static final void soup_cookie_free (int /*long*/ cookie) {
+//	lock.lock();
+//	try {
+//		_soup_cookie_free (cookie);
+//	} finally {
+//		lock.unlock();
+//	}
+//}
 
 /**
  * @param jar cast=(SoupCookieJar *)

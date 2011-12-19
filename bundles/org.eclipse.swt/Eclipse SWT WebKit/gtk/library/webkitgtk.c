@@ -481,16 +481,6 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1soup_1auth_1get_1scheme_1name)
 }
 #endif
 
-#ifndef NO__1soup_1cookie_1free
-JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1soup_1cookie_1free)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	WebKitGTK_NATIVE_ENTER(env, that, _1soup_1cookie_1free_FUNC);
-	soup_cookie_free((SoupCookie *)arg0);
-	WebKitGTK_NATIVE_EXIT(env, that, _1soup_1cookie_1free_FUNC);
-}
-#endif
-
 #ifndef NO__1soup_1cookie_1jar_1add_1cookie
 JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1soup_1cookie_1jar_1add_1cookie)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
