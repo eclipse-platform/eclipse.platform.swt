@@ -81,6 +81,22 @@ public class ImageLoader {
 	 * The default is 1. A value of 0 means 'display repeatedly'
 	 */
 	public int repeatCount;
+	
+	/**
+	 * This is the compression used when saving jpeg and png files.
+	 * <p>
+	 * When saving jpeg files, the value is from 1 to 100, 
+	 * where 1 is very high compression but low quality, and 100 is 
+	 * no compression and high quality; default is 75.
+	 * </p><p>
+	 * When saving png files, the value is from 0 to 3, but they do not impact the quality 
+	 * because PNG is lossless compression. 0 is uncompressed, 1 is low compression and fast,
+	 * 2 is default compression, and 3 is high compression but slow.
+	 * </p>
+	 * 
+	 * @since 3.8
+	 */
+	public int compression;
 		
 	/*
 	 * the set of ImageLoader event listeners, created on demand
@@ -104,6 +120,7 @@ void reset() {
 	logicalScreenHeight = 0;
 	backgroundPixel = -1;
 	repeatCount = 1;
+	compression = -1;
 }
 
 /**

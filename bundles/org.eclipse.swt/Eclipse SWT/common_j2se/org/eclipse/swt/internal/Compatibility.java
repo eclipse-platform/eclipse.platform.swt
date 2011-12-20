@@ -15,6 +15,7 @@ import java.io.*;
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.zip.Deflater;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.DeflaterOutputStream;
 
@@ -159,7 +160,7 @@ public static int pow2(int n) {
 }
 
 /**
- * Create an DeflaterOutputStream if such things are supported.
+ * Create a DeflaterOutputStream if such things are supported.
  * 
  * @param stream the output stream
  * @return a deflater stream or <code>null</code>
@@ -167,8 +168,8 @@ public static int pow2(int n) {
  * 
  * @since 3.4
  */
-public static OutputStream newDeflaterOutputStream(OutputStream stream) throws IOException {
-	return new DeflaterOutputStream(stream);
+public static OutputStream newDeflaterOutputStream(OutputStream stream, int level) throws IOException {
+	return new DeflaterOutputStream(stream, new Deflater(level));
 }
 
 /**
