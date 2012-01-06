@@ -392,21 +392,21 @@ public Object evaluate (String script) throws SWTException {
 	buffer.append (functionName);
 	buffer.append (" == undefined) {window.external.callJava("); // $NON-NLS-1$
 	buffer.append (index);
-	buffer.append (',');
+	buffer.append (",'"); //$NON-NLS-1$
 	buffer.append (function.token);
-	buffer.append (", ['"); // $NON-NLS-1$
+	buffer.append ("', ['"); // $NON-NLS-1$
 	buffer.append (ERROR_ID);
 	buffer.append ("']);} else {try {var result = "); // $NON-NLS-1$
 	buffer.append (functionName);
 	buffer.append ("(); window.external.callJava("); // $NON-NLS-1$
 	buffer.append (index);
-	buffer.append (',');
+	buffer.append (",'"); //$NON-NLS-1$
 	buffer.append (function.token);
-	buffer.append (", [result]);} catch (e) {window.external.callJava("); // $NON-NLS-1$
+	buffer.append ("', [result]);} catch (e) {window.external.callJava("); // $NON-NLS-1$
 	buffer.append (index);
-	buffer.append (',');
+	buffer.append (",'"); //$NON-NLS-1$
 	buffer.append (function.token);
-	buffer.append (", ['"); // $NON-NLS-1$
+	buffer.append ("', ['"); // $NON-NLS-1$
 	buffer.append (ERROR_ID);
 	buffer.append ("' + e.message]);}}"); // $NON-NLS-1$
 	execute (buffer.toString ());
