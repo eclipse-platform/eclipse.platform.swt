@@ -313,6 +313,7 @@ int /*long*/ getAccelGroup () {
 	}
 	if (menu == null) return 0;
 	Decorations shell = menu.parent;
+	if (shell == null) return 0;
 	return shell.menuBar == menu ? shell.accelGroup : 0;
 }
 
