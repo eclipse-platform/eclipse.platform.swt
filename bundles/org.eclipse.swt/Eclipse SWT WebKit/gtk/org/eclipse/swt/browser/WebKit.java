@@ -1960,7 +1960,7 @@ Object convertToJava (int /*long*/ ctx, int /*long*/ value) {
 	int type = WebKitGTK.JSValueGetType (ctx, value);
 	switch (type) {
 		case WebKitGTK.kJSTypeBoolean: {
-			int result = WebKitGTK.JSValueToBoolean (ctx, value);
+			int result = (int)WebKitGTK.JSValueToNumber (ctx, value, null);
 			return new Boolean (result != 0);
 		}
 		case WebKitGTK.kJSTypeNumber: {
