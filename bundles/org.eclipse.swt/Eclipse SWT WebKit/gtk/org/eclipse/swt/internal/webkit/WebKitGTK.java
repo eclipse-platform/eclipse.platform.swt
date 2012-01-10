@@ -332,17 +332,6 @@ public static final int /*long*/ JSValueMakeUndefined (int /*long*/ ctx) {
 }
 
 /** @method flags=dynamic */
-public static final native int _JSValueToBoolean (int /*long*/ ctx, int /*long*/ value);
-public static final int JSValueToBoolean (int /*long*/ ctx, int /*long*/ value) {
-	lock.lock();
-	try {
-		return _JSValueToBoolean (ctx, value);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/** @method flags=dynamic */
 public static final native double _JSValueToNumber (int /*long*/ ctx, int /*long*/ value, int /*long*/[] exception);
 public static final double JSValueToNumber (int /*long*/ ctx, int /*long*/ value, int /*long*/[] exception) {
 	lock.lock();

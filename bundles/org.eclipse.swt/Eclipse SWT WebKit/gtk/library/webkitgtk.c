@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2011 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -498,26 +498,6 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1JSValueMakeUndefined)
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, _1JSValueMakeUndefined_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1JSValueToBoolean
-JNIEXPORT jint JNICALL WebKitGTK_NATIVE(_1JSValueToBoolean)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	jint rc = 0;
-	WebKitGTK_NATIVE_ENTER(env, that, _1JSValueToBoolean_FUNC);
-/*
-	rc = (jint)JSValueToBoolean(arg0, arg1);
-*/
-	{
-		WebKitGTK_LOAD_FUNCTION(fp, JSValueToBoolean)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
-	WebKitGTK_NATIVE_EXIT(env, that, _1JSValueToBoolean_FUNC);
 	return rc;
 }
 #endif

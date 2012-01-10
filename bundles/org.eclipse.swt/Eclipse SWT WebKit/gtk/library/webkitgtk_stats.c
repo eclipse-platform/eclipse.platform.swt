@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2011 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int WebKitGTK_nativeFunctionCount = 110;
-int WebKitGTK_nativeFunctionCallCount[110];
+int WebKitGTK_nativeFunctionCount = 109;
+int WebKitGTK_nativeFunctionCallCount[109];
 char * WebKitGTK_nativeFunctionNames[] = {
 	"JSClassDefinition_1sizeof",
 	"_1JSClassCreate",
@@ -44,7 +44,6 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1JSValueMakeNumber",
 	"_1JSValueMakeString",
 	"_1JSValueMakeUndefined",
-	"_1JSValueToBoolean",
 	"_1JSValueToNumber",
 	"_1JSValueToStringCopy",
 	"_1SoupCookie_1expires",
