@@ -1421,6 +1421,16 @@ public static final void cairo_surface_destroy(int /*long*/ surface) {
 	}
 }
 /** @param surface cast=(cairo_surface_t *) */
+public static final native void _cairo_surface_flush(int /*long*/ surface);
+public static final void cairo_surface_flush(int /*long*/ surface) {
+	lock.lock();
+	try {
+		_cairo_surface_flush(surface);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param surface cast=(cairo_surface_t *) */
 public static final native void _cairo_surface_finish(int /*long*/ surface);
 public static final void cairo_surface_finish(int /*long*/ surface) {
 	lock.lock();

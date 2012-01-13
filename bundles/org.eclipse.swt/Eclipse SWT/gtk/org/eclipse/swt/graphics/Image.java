@@ -1440,6 +1440,7 @@ void init(ImageData image) {
 			}
 		}
 		OS.memmove(data, buffer, stride * height);
+		Cairo.cairo_surface_flush(surface);
 		//TODO convert to XLIB surface if opaque for better performance
 		return;
 	}

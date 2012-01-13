@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2011 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2012 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -24,8 +24,8 @@
 
 #ifdef NATIVE_STATS
 
-int Cairo_nativeFunctionCount = 153;
-int Cairo_nativeFunctionCallCount[153];
+int Cairo_nativeFunctionCount = 154;
+int Cairo_nativeFunctionCallCount[154];
 char * Cairo_nativeFunctionNames[] = {
 	"CAIRO_1VERSION_1ENCODE",
 	"_1cairo_1append_1path",
@@ -153,6 +153,7 @@ char * Cairo_nativeFunctionNames[] = {
 	"_1cairo_1surface_1create_1similar",
 	"_1cairo_1surface_1destroy",
 	"_1cairo_1surface_1finish",
+	"_1cairo_1surface_1flush",
 	"_1cairo_1surface_1get_1content",
 	"_1cairo_1surface_1get_1type",
 	"_1cairo_1surface_1get_1user_1data",

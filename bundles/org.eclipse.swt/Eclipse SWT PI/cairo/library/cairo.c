@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2011 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2012 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -1557,6 +1557,16 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1surface_1finish)
 	Cairo_NATIVE_ENTER(env, that, _1cairo_1surface_1finish_FUNC);
 	cairo_surface_finish((cairo_surface_t *)arg0);
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1surface_1finish_FUNC);
+}
+#endif
+
+#ifndef NO__1cairo_1surface_1flush
+JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1surface_1flush)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1surface_1flush_FUNC);
+	cairo_surface_flush((cairo_surface_t *)arg0);
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1surface_1flush_FUNC);
 }
 #endif
 
