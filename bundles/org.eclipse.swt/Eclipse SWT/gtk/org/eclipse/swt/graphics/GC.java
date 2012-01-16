@@ -450,19 +450,24 @@ public void copyArea(Image image, int x, int y) {
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (OS.USE_CAIRO) {
 		int /*long*/ cairo = Cairo.cairo_create(image.surface);
+		Cairo.cairo_translate(cairo, -x, -y);
 		if (data.image != null) {
-			Cairo.cairo_set_source_surface(cairo, data.image.surface, x, y);
-		} else if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-			OS.gdk_cairo_set_source_window(cairo, data.drawable, x, y);
+			Cairo.cairo_set_source_surface(cairo, data.image.surface, 0, 0);
+		} else if (data.drawable != 0) {
+			if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
+				OS.gdk_cairo_set_source_window(cairo, data.drawable, 0, 0);
+			} else {
+				int[] w = new int[1], h = new int[1];
+				OS.gdk_drawable_get_size(data.drawable, w, h);
+				int width = w[0], height = h[0];
+				int /*long*/ xDisplay = OS.GDK_DISPLAY();
+				int /*long*/ xDrawable = OS.gdk_x11_drawable_get_xid(data.drawable);
+				int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
+				int /*long*/ srcSurface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width, height);
+				Cairo.cairo_set_source_surface(cairo, srcSurface, 0, 0);
+			}
 		} else {
-			int[] w = new int[1], h = new int[1];
-			OS.gdk_drawable_get_size(data.drawable, w, h);
-			int width = w[0], height = h[0];
-			int /*long*/ xDisplay = OS.GDK_DISPLAY();
-			int /*long*/ xDrawable = OS.gdk_x11_drawable_get_xid(data.drawable);
-			int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
-			int /*long*/ srcSurface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width, height);
-			Cairo.cairo_set_source_surface(cairo, srcSurface, x, y);
+			return;
 		}
 		Cairo.cairo_paint(cairo);
 		Cairo.cairo_destroy(cairo);
