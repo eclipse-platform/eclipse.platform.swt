@@ -2694,6 +2694,10 @@ void getSize(int[] width, int[] height) {
 		height[0] = data.height;
 		return;
 	}
+	if (data.drawable != 0) {
+		OS.gdk_drawable_get_size(data.drawable, width, height);
+		return;
+	}
 	if (OS.USE_CAIRO) {
 		int /*long*/ surface = Cairo.cairo_get_target(handle);
 		switch (Cairo.cairo_surface_get_type(surface)) {
@@ -2706,8 +2710,6 @@ void getSize(int[] width, int[] height) {
 				height[0] = Cairo.cairo_xlib_surface_get_height(surface);
 				break;
 		}
-	} else {
-		OS.gdk_drawable_get_size(data.drawable, width, height);
 	}
 }
 
