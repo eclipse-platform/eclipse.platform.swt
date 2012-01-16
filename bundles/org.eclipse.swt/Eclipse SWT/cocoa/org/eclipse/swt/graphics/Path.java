@@ -384,7 +384,7 @@ public void addString(String string, float x, float y, Font font) {
 		range = layoutManager.glyphRangeForTextContainer(textContainer);
 		if (range.length != 0) {
 			int /*long*/ glyphs = OS.malloc((range.length + 1) * 4);
-			int count = layoutManager.getGlyphs(glyphs, range);
+			int /*long*/ count = layoutManager.getGlyphs(glyphs, range);
 			NSBezierPath path = NSBezierPath.bezierPath();
 			for (int i = 0; i < count; i++) {
 				NSPoint pt = layoutManager.locationForGlyphAtIndex(i);
