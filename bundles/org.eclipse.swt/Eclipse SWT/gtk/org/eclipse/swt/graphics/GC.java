@@ -3972,7 +3972,9 @@ public void setTransform(Transform transform) {
  */
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	OS.gdk_gc_set_function(handle, xor ? OS.GDK_XOR : OS.GDK_COPY);
+	if (!OS.USE_CAIRO) {
+		OS.gdk_gc_set_function(handle, xor ? OS.GDK_XOR : OS.GDK_COPY);
+	}
 	data.xorMode = xor;
 }
 
