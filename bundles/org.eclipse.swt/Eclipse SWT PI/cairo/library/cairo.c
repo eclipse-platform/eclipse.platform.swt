@@ -1622,6 +1622,16 @@ JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1surface_1get_1user_1data)
 }
 #endif
 
+#ifndef NO__1cairo_1surface_1mark_1dirty
+JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1surface_1mark_1dirty)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1surface_1mark_1dirty_FUNC);
+	cairo_surface_mark_dirty((cairo_surface_t *)arg0);
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1surface_1mark_1dirty_FUNC);
+}
+#endif
+
 #ifndef NO__1cairo_1surface_1reference
 JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1surface_1reference)
 	(JNIEnv *env, jclass that, jintLong arg0)

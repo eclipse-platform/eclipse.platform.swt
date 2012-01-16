@@ -768,6 +768,7 @@ void createFromPixbuf(int type, int /*long*/ pixbuf) {
 				OS.memmove(data + (y * cairoStride), cairoLine, cairoStride);
 			}
 		}
+		Cairo.cairo_surface_mark_dirty(surface);
 	} else {
 		if (hasAlpha) {
 			/*
@@ -974,6 +975,7 @@ void createSurface() {
 		surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, width, height);
 		int /*long*/ data = Cairo.cairo_image_surface_get_data(surface);
 		OS.memmove(data, pixels, stride * height);
+		Cairo.cairo_surface_mark_dirty(surface);
 		OS.g_object_unref(pixbuf);
 	} else {
 		int /*long*/ xDisplay = OS.GDK_DISPLAY();
@@ -1440,7 +1442,7 @@ void init(ImageData image) {
 			}
 		}
 		OS.memmove(data, buffer, stride * height);
-		Cairo.cairo_surface_flush(surface);
+		Cairo.cairo_surface_mark_dirty(surface);
 		//TODO convert to XLIB surface if opaque for better performance
 		return;
 	}

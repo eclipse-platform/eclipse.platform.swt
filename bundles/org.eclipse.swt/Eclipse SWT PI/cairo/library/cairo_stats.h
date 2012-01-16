@@ -165,6 +165,7 @@ typedef enum {
 	_1cairo_1surface_1get_1content_FUNC,
 	_1cairo_1surface_1get_1type_FUNC,
 	_1cairo_1surface_1get_1user_1data_FUNC,
+	_1cairo_1surface_1mark_1dirty_FUNC,
 	_1cairo_1surface_1reference_FUNC,
 	_1cairo_1surface_1set_1device_1offset_FUNC,
 	_1cairo_1surface_1set_1fallback_1resolution_FUNC,
