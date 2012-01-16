@@ -34,11 +34,11 @@ public class AtkTableIface {
 	public int /*long*/ get_row_extent_at;
 	/** @field cast=(AtkObject* (*)()) */
 	public int /*long*/ get_caption;
-	/** @field cast=(G_CONST_RETURN gchar* (*)()) */
+	/** @field cast=(const gchar* (*)()) */
 	public int /*long*/ get_column_description;
 	/** @field cast=(AtkObject* (*)()) */
 	public int /*long*/ get_column_header;
-	/** @field cast=(G_CONST_RETURN gchar* (*)()) */
+	/** @field cast=(const gchar* (*)()) */
 	public int /*long*/ get_row_description;
 	/** @field cast=(AtkObject* (*)()) */
 	public int /*long*/ get_row_header;

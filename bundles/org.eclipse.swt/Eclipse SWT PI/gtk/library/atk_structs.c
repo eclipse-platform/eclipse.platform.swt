@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -43,9 +43,9 @@ AtkActionIface *getAtkActionIfaceFields(JNIEnv *env, jobject lpObject, AtkAction
 	if (!AtkActionIfaceFc.cached) cacheAtkActionIfaceFields(env, lpObject);
 	lpStruct->do_action = (gboolean (*)())(*env)->GetIntLongField(env, lpObject, AtkActionIfaceFc.do_action);
 	lpStruct->get_n_actions = (gint (*)())(*env)->GetIntLongField(env, lpObject, AtkActionIfaceFc.get_n_actions);
-	lpStruct->get_description = (G_CONST_RETURN gchar *(*)())(*env)->GetIntLongField(env, lpObject, AtkActionIfaceFc.get_description);
-	lpStruct->get_name = (G_CONST_RETURN gchar *(*)())(*env)->GetIntLongField(env, lpObject, AtkActionIfaceFc.get_name);
-	lpStruct->get_keybinding = (G_CONST_RETURN gchar *(*)())(*env)->GetIntLongField(env, lpObject, AtkActionIfaceFc.get_keybinding);
+	lpStruct->get_description = (const gchar *(*)())(*env)->GetIntLongField(env, lpObject, AtkActionIfaceFc.get_description);
+	lpStruct->get_name = (const gchar *(*)())(*env)->GetIntLongField(env, lpObject, AtkActionIfaceFc.get_name);
+	lpStruct->get_keybinding = (const gchar *(*)())(*env)->GetIntLongField(env, lpObject, AtkActionIfaceFc.get_keybinding);
 	lpStruct->set_description = (gboolean (*)())(*env)->GetIntLongField(env, lpObject, AtkActionIfaceFc.set_description);
 	return lpStruct;
 }
@@ -292,8 +292,8 @@ void cacheAtkObjectClassFields(JNIEnv *env, jobject lpObject)
 AtkObjectClass *getAtkObjectClassFields(JNIEnv *env, jobject lpObject, AtkObjectClass *lpStruct)
 {
 	if (!AtkObjectClassFc.cached) cacheAtkObjectClassFields(env, lpObject);
-	lpStruct->get_name = (G_CONST_RETURN gchar *(*)())(*env)->GetIntLongField(env, lpObject, AtkObjectClassFc.get_name);
-	lpStruct->get_description = (G_CONST_RETURN gchar *(*)())(*env)->GetIntLongField(env, lpObject, AtkObjectClassFc.get_description);
+	lpStruct->get_name = (const gchar *(*)())(*env)->GetIntLongField(env, lpObject, AtkObjectClassFc.get_name);
+	lpStruct->get_description = (const gchar *(*)())(*env)->GetIntLongField(env, lpObject, AtkObjectClassFc.get_description);
 	lpStruct->get_parent = (AtkObject *(*)())(*env)->GetIntLongField(env, lpObject, AtkObjectClassFc.get_parent);
 	lpStruct->get_n_children = (gint (*)())(*env)->GetIntLongField(env, lpObject, AtkObjectClassFc.get_n_children);
 	lpStruct->ref_child = (AtkObject *(*)())(*env)->GetIntLongField(env, lpObject, AtkObjectClassFc.ref_child);
@@ -502,9 +502,9 @@ AtkTableIface *getAtkTableIfaceFields(JNIEnv *env, jobject lpObject, AtkTableIfa
 	lpStruct->get_column_extent_at = (gint (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_column_extent_at);
 	lpStruct->get_row_extent_at = (gint (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_row_extent_at);
 	lpStruct->get_caption = (AtkObject* (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_caption);
-	lpStruct->get_column_description = (G_CONST_RETURN gchar* (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_column_description);
+	lpStruct->get_column_description = (const gchar* (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_column_description);
 	lpStruct->get_column_header = (AtkObject* (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_column_header);
-	lpStruct->get_row_description = (G_CONST_RETURN gchar* (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_row_description);
+	lpStruct->get_row_description = (const gchar* (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_row_description);
 	lpStruct->get_row_header = (AtkObject* (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_row_header);
 	lpStruct->get_summary = (AtkObject* (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.get_summary);
 	lpStruct->set_caption = (void (*)())(*env)->GetIntLongField(env, lpObject, AtkTableIfaceFc.set_caption);
