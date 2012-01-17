@@ -1101,6 +1101,24 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1pdf_1surface_1set_1size)
 }
 #endif
 
+#ifndef NO__1cairo_1pop_1group_1to_1source
+JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1pop_1group_1to_1source)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1pop_1group_1to_1source_FUNC);
+/*
+	cairo_pop_group_to_source((cairo_t *)arg0);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_pop_group_to_source)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(cairo_t *))fp)((cairo_t *)arg0);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1pop_1group_1to_1source_FUNC);
+}
+#endif
+
 #ifndef NO__1cairo_1ps_1surface_1set_1size
 JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1ps_1surface_1set_1size)
 	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1, jdouble arg2)
@@ -1116,6 +1134,24 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1ps_1surface_1set_1size)
 		}
 	}
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1ps_1surface_1set_1size_FUNC);
+}
+#endif
+
+#ifndef NO__1cairo_1push_1group
+JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1push_1group)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1push_1group_FUNC);
+/*
+	cairo_push_group((cairo_t *)arg0);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_push_group)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(cairo_t *))fp)((cairo_t *)arg0);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1push_1group_FUNC);
 }
 #endif
 

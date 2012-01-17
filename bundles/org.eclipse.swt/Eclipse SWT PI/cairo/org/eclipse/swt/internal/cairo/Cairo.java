@@ -40,7 +40,7 @@ public class Cairo extends Platform {
 	public static final int CAIRO_FORMAT_A8 = 2;
 	public static final int CAIRO_FORMAT_A1 = 3;
 	public static final int CAIRO_OPERATOR_CLEAR = 0;
-	public static final int CAIRO_OPERATOR_SRC = 1;
+	public static final int CAIRO_OPERATOR_SOURCE = 1;
 	public static final int CAIRO_OPERATOR_DST = 2;
 	public static final int CAIRO_OPERATOR_OVER = 3;
 	public static final int CAIRO_OPERATOR_OVER_REVERSE = 4;
@@ -988,6 +988,32 @@ public static final void cairo_pdf_surface_set_size(int /*long*/ surface, double
 	lock.lock();
 	try {
 		_cairo_pdf_surface_set_size(surface, width_in_points, height_in_points);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param cairo cast=(cairo_t *)
+ */
+public static final native void _cairo_push_group(int /*long*/ cairo);
+public static final void cairo_push_group(int /*long*/ cairo) {
+	lock.lock();
+	try {
+		_cairo_push_group(cairo);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param cairo cast=(cairo_t *)
+ */
+public static final native void _cairo_pop_group_to_source(int /*long*/ cairo);
+public static final void cairo_pop_group_to_source(int /*long*/ cairo) {
+	lock.lock();
+	try {
+		_cairo_pop_group_to_source(cairo);
 	} finally {
 		lock.unlock();
 	}
