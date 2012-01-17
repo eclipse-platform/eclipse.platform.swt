@@ -53,6 +53,7 @@ public class Cairo extends Platform {
 	public static final int CAIRO_OPERATOR_XOR = 11;
 	public static final int CAIRO_OPERATOR_ADD = 12;
 	public static final int CAIRO_OPERATOR_SATURATE = 13;
+	public static final int CAIRO_OPERATOR_DIFFERENCE = 23;
 	public static final int CAIRO_FILL_RULE_WINDING = 0;
 	public static final int CAIRO_FILL_RULE_EVEN_ODD = 1;
 	public static final int CAIRO_LINE_CAP_BUTT = 0;

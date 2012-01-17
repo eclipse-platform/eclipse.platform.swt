@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 
@@ -97,30 +98,62 @@ boolean drawCaret () {
 	if (parent == null) return false;
 	if (parent.isDisposed ()) return false;
 	int /*long*/ window = parent.paintWindow ();
-	int /*long*/ gc = OS.gdk_gc_new (window);
-	GdkColor color = new GdkColor ();
-	color.red = (short) 0xffff;
-	color.green = (short) 0xffff;
-	color.blue = (short) 0xffff;
-	int /*long*/ colormap = OS.gdk_colormap_get_system ();
-	OS.gdk_colormap_alloc_color (colormap, color, true, true);
-	OS.gdk_gc_set_foreground (gc, color);
-	OS.gdk_gc_set_function (gc, OS.GDK_XOR);
-	if (image != null && !image.isDisposed() && image.mask == 0) {
-		int[] width = new int[1]; int[] height = new int[1];
-	 	OS.gdk_drawable_get_size(image.pixmap, width, height);
-	 	int nX = x;
-		if ((parent.style & SWT.MIRRORED) != 0) nX = parent.getClientWidth () - width[0] - nX;
-	 	OS.gdk_draw_drawable(window, gc, image.pixmap, 0, 0, nX, y, width[0], height[0]);
+	if (OS.USE_CAIRO) {
+		int /*long*/ cairo = OS.gdk_cairo_create(window);
+		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
+		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);
+		if (image != null && !image.isDisposed() && image.mask == 0) {
+			int /*long*/ surface = Cairo.cairo_get_target(cairo);
+			int nWidth = 0;
+			switch (Cairo.cairo_surface_get_type(surface)) {
+				case Cairo.CAIRO_SURFACE_TYPE_IMAGE:
+					nWidth = Cairo.cairo_image_surface_get_width(surface);
+					break;
+				case Cairo.CAIRO_SURFACE_TYPE_XLIB: 
+					nWidth = Cairo.cairo_xlib_surface_get_width(surface);
+					break;
+			}
+			int nX = x;
+			if ((parent.style & SWT.MIRRORED) != 0) nX = parent.getClientWidth () - nWidth - nX;
+			Cairo.cairo_translate(cairo, nX, y); 
+			Cairo.cairo_set_source_surface(cairo, image.surface, 0, 0);
+			Cairo.cairo_paint(cairo);
+		} else {
+			int nWidth = width, nHeight = height;
+			if (nWidth <= 0) nWidth = DEFAULT_WIDTH;
+			int nX = x;
+			if ((parent.style & SWT.MIRRORED) != 0) nX = parent.getClientWidth () - nWidth - nX;
+			Cairo.cairo_rectangle(cairo, nX, y, nWidth, nHeight);
+		}
+		Cairo.cairo_fill(cairo);
+		Cairo.cairo_destroy(cairo);
 	} else {
-		int nWidth = width, nHeight = height;
-		if (nWidth <= 0) nWidth = DEFAULT_WIDTH;
-		int nX = x;
-		if ((parent.style & SWT.MIRRORED) != 0) nX = parent.getClientWidth () - nWidth - nX;
-		OS.gdk_draw_rectangle (window, gc, 1, nX, y, nWidth, nHeight);
+		int /*long*/ gc = OS.gdk_gc_new (window);
+		GdkColor color = new GdkColor ();
+		color.red = (short) 0xffff;
+		color.green = (short) 0xffff;
+		color.blue = (short) 0xffff;
+		int /*long*/ colormap = OS.gdk_colormap_get_system ();
+		OS.gdk_colormap_alloc_color (colormap, color, true, true);
+		OS.gdk_gc_set_foreground (gc, color);
+		OS.gdk_gc_set_function (gc, OS.GDK_XOR);
+		if (image != null && !image.isDisposed() && image.mask == 0) {
+			int[] width = new int[1]; int[] height = new int[1];
+			OS.gdk_drawable_get_size(image.pixmap, width, height);
+			int nX = x;
+			if ((parent.style & SWT.MIRRORED) != 0) nX = parent.getClientWidth () - width[0] - nX;
+			OS.gdk_draw_drawable(window, gc, image.pixmap, 0, 0, nX, y, width[0], height[0]);
+		} else {
+			int nWidth = width, nHeight = height;
+			if (nWidth <= 0) nWidth = DEFAULT_WIDTH;
+			int nX = x;
+			if ((parent.style & SWT.MIRRORED) != 0) nX = parent.getClientWidth () - nWidth - nX;
+			OS.gdk_draw_rectangle (window, gc, 1, nX, y, nWidth, nHeight);
+		}
+		OS.g_object_unref (gc);
+		OS.gdk_colormap_free_colors (colormap, color, 1);
 	}
-	OS.g_object_unref (gc);
-	OS.gdk_colormap_free_colors (colormap, color, 1);
 	return true;
 }
 
