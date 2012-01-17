@@ -40,3 +40,5 @@
 #define cairo_xlib_surface_get_height_LIB LIB_CAIRO
 #define cairo_xlib_surface_get_width_LIB LIB_CAIRO
 #define cairo_surface_get_content_LIB LIB_CAIRO
+#define cairo_push_group_LIB LIB_CAIRO
+#define cairo_pop_group_to_source_LIB LIB_CAIRO
