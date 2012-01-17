@@ -144,6 +144,7 @@ void createHandle (int index) {
 
 void drawBand (int x, int y, int width, int height) {
 	if ((style & SWT.SMOOTH) != 0) return;
+	//TODO: Use Cairo
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
 	if (window == 0) return;
 	byte [] bits = {-86, 85, -86, 85, -86, 85, -86, 85};

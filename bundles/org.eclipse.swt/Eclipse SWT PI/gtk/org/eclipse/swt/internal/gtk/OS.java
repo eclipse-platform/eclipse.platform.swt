@@ -570,7 +570,7 @@ public class OS extends C {
 	static {
 		boolean useCairo = false;
 		if (!"false".equals(System.getProperty("org.eclipse.swt.internal.gtk.useCairo"))) {
-			useCairo  = GTK_VERSION >= VERSION(2, 17, 0);//TODO this should probably be 2.22.0
+			useCairo  = GTK_VERSION >= VERSION(2, 24, 0);
 		}
 		USE_CAIRO = useCairo;
 	}

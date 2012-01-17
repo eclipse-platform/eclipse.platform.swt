@@ -115,6 +115,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 				yy[i] = rect.y;
 				hh[i] = h[0];
 			}
+			//TODO: Use Cairo
 			int /*long*/ source = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), width, height, -1);
 			int /*long*/ gcSource = OS.gdk_gc_new(source);
 			int /*long*/ mask = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), width, height, 1);

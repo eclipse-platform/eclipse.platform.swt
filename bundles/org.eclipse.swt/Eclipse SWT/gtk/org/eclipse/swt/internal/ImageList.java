@@ -36,7 +36,7 @@ public static int /*long*/ convertSurface(Image image) {
 		if (newSurface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		int /*long*/ cairo = Cairo.cairo_create(newSurface);
 		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SRC);
+		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
 		Cairo.cairo_set_source_surface (cairo, image.surface, 0, 0);
 		Cairo.cairo_paint (cairo);
 		Cairo.cairo_destroy(cairo);

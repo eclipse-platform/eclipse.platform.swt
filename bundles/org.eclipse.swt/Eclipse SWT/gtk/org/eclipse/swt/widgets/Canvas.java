@@ -275,6 +275,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 //		GC gc = new GC (this);
 //		gc.copyArea (x, y, width, height, destX, destY);
 //		gc.dispose ();
+		//TODO: Use Cairo
 		int /*long*/ gdkGC = OS.gdk_gc_new (window);
 		OS.gdk_gc_set_exposures (gdkGC, true);
 		OS.gdk_draw_drawable (window, gdkGC, window, copyRect.x, copyRect.y, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);

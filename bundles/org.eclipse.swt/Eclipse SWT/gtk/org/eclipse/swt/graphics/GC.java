@@ -14,6 +14,7 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.*;
 
 /**
@@ -450,6 +451,7 @@ public void copyArea(Image image, int x, int y) {
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (OS.USE_CAIRO) {
 		int /*long*/ cairo = Cairo.cairo_create(image.surface);
+		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		Cairo.cairo_translate(cairo, -x, -y);
 		if (data.image != null) {
 			Cairo.cairo_set_source_surface(cairo, data.image.surface, 0, 0);
@@ -469,6 +471,7 @@ public void copyArea(Image image, int x, int y) {
 		} else {
 			return;
 		}
+		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
 		Cairo.cairo_paint(cairo);
 		Cairo.cairo_destroy(cairo);
         return;
@@ -522,12 +525,51 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - srcX, deltaY = destY - srcY;
 	if (deltaX == 0 && deltaY == 0) return;
-	//TODO fix for USE_CAIRO
 	int /*long*/ drawable = data.drawable;
-	if (data.image == null && paint) OS.gdk_gc_set_exposures(handle, true);
-	OS.gdk_draw_drawable(drawable, handle, drawable, srcX, srcY, destX, destY, width, height);
+	if (OS.USE_CAIRO) {
+		if (data.image != null) {
+			Cairo.cairo_set_source_surface(handle, data.image.surface, deltaX, deltaY);
+			Cairo.cairo_rectangle(handle, destX, destY, width, height);
+			Cairo.cairo_set_operator(handle, Cairo.CAIRO_OPERATOR_SOURCE);
+			Cairo.cairo_fill(handle);
+		} else if (drawable != 0) {
+			Cairo.cairo_save(handle);
+			Cairo.cairo_rectangle(handle, destX, destY, width, height);
+			Cairo.cairo_clip(handle);
+			Cairo.cairo_translate(handle, deltaX, deltaY);
+			Cairo.cairo_set_operator(handle, Cairo.CAIRO_OPERATOR_SOURCE);
+			Cairo.cairo_push_group(handle);
+			OS.gdk_cairo_set_source_window(handle, drawable, 0, 0);
+			Cairo.cairo_paint(handle);
+			Cairo.cairo_pop_group_to_source(handle);
+			Cairo.cairo_rectangle(handle, destX - deltaX, destY - deltaY, width, height);
+			Cairo.cairo_clip(handle);
+			Cairo.cairo_paint(handle);
+			Cairo.cairo_restore(handle);
+			if (paint) {
+				int /*long*/ visibleRegion = OS.gdk_drawable_get_visible_region (drawable);
+				GdkRectangle srcRect = new GdkRectangle ();
+				srcRect.x = srcX;
+				srcRect.y = srcY;
+				srcRect.width = width;
+				srcRect.height = height;
+				int /*long*/ copyRegion = OS.gdk_region_rectangle (srcRect);
+				OS.gdk_region_intersect(copyRegion, visibleRegion);
+				int /*long*/ invalidateRegion = OS.gdk_region_rectangle (srcRect);	
+				OS.gdk_region_subtract (invalidateRegion, visibleRegion);
+				OS.gdk_region_offset (invalidateRegion, deltaX, deltaY);
+				OS.gdk_window_invalidate_region(drawable, invalidateRegion, false);
+				OS.gdk_region_destroy (visibleRegion);
+				OS.gdk_region_destroy (copyRegion);
+				OS.gdk_region_destroy (invalidateRegion);
+			}
+		}
+	} else {
+		if (data.image == null && paint) OS.gdk_gc_set_exposures(handle, true);
+		OS.gdk_draw_drawable(drawable, handle, drawable, srcX, srcY, destX, destY, width, height);
+	}
 	if (data.image == null & paint) {
-		OS.gdk_gc_set_exposures(handle, false);
+		if (!OS.USE_CAIRO) OS.gdk_gc_set_exposures(handle, false);
 		boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
 		GdkRectangle rect = new GdkRectangle ();
 		if (disjoint) {
