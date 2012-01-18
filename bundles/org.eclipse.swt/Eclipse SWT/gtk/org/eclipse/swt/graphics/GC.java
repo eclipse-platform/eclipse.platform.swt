@@ -14,7 +14,6 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.*;
 
 /**
@@ -838,11 +837,17 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
-//	int[] width = new int[1];
-//	int[] height = new int[1];
-// 	OS.gdk_drawable_get_size(srcImage.pixmap, width, height);
- 	int imgWidth = srcImage.width;
- 	int imgHeight = srcImage.height;
+	int imgWidth, imgHeight;
+	if (OS.USE_CAIRO){
+	 	imgWidth = srcImage.width;
+	 	imgHeight = srcImage.height;
+	} else {
+		int[] width = new int[1];
+		int[] height = new int[1];
+	 	OS.gdk_drawable_get_size(srcImage.pixmap, width, height);
+	 	imgWidth = width[0];
+	 	imgHeight = height[0];
+	}
  	if (simple) {
  		srcWidth = destWidth = imgWidth;
  		srcHeight = destHeight = imgHeight;
@@ -4026,7 +4031,9 @@ public void setTransform(Transform transform) {
  */
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (!OS.USE_CAIRO) {
+	if (OS.USE_CAIRO) {
+		Cairo.cairo_set_operator(handle, xor ? Cairo.CAIRO_OPERATOR_DIFFERENCE : Cairo.CAIRO_OPERATOR_OVER); 
+	} else {
 		OS.gdk_gc_set_function(handle, xor ? OS.GDK_XOR : OS.GDK_COPY);
 	}
 	data.xorMode = xor;
