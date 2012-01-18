@@ -566,13 +566,18 @@ public class OS extends C {
 	public static final byte[] GTK_STOCK_CLEAR = ascii("gtk-clear");
 	
 	public static final int GTK_VERSION = VERSION(gtk_major_version(), gtk_minor_version(), gtk_micro_version()); 
-	public static final boolean USE_CAIRO;
+	public static final boolean USE_CAIRO, INIT_CAIRO;
 	static {
 		boolean useCairo = false;
-		if (!"false".equals(System.getProperty("org.eclipse.swt.internal.gtk.useCairo"))) {
+		if ("true".equals(System.getProperty("org.eclipse.swt.internal.gtk.cairoGraphics"))) {
 			useCairo  = GTK_VERSION >= VERSION(2, 24, 0);
 		}
 		USE_CAIRO = useCairo;
+		boolean initCairo = false;
+		if (!"false".equals(System.getProperty("org.eclipse.swt.internal.gtk.useCairo"))) {
+			initCairo  = GTK_VERSION >= VERSION(2, 17, 0);
+		}
+		INIT_CAIRO = initCairo;
 	}
 	
 protected static byte [] ascii (String name) {

@@ -2904,6 +2904,8 @@ void init(Drawable drawable, GCData data, int /*long*/ gdkGC) {
 		int /*long*/ cairo = data.cairo = handle;
 		Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
 		data.state &= ~(BACKGROUND | FOREGROUND | FONT | LINE_WIDTH | LINE_CAP | LINE_JOIN | LINE_STYLE | DRAW_OFFSET);
+	} else if (OS.INIT_CAIRO) {
+		 initCairo();
 	}
 	setClipping(data.clipRgn);
 	if ((data.style & SWT.MIRRORED) != 0) {
@@ -3042,7 +3044,7 @@ boolean isIdentity(double[] matrix) {
  */
 public void setAdvanced(boolean advanced) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if ((data.style & SWT.MIRRORED) != 0 || OS.USE_CAIRO) {
+	if ((data.style & SWT.MIRRORED) != 0 || OS.USE_CAIRO || OS.INIT_CAIRO) {
 		if (!advanced) {
 			setAlpha(0xFF);
 			setAntialias(SWT.DEFAULT);
