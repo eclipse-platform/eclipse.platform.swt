@@ -122,7 +122,7 @@ ifndef NO_STRIP
 	LFLAGS := $(LFLAGS) -s
 endif
 
-all: make_swt make_atk make_glx
+all: make_swt make_atk make_glx make_webkit
 
 #
 # SWT libs
