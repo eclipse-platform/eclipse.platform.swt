@@ -1678,8 +1678,8 @@ public void drawText (String string, int x, int y, int flags) {
 		NSPoint pt = new NSPoint();
 		pt.x = x;
 		pt.y = y;
+		NSRange range = data.layoutManager.glyphRangeForTextContainer(data.textContainer);
 		if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
-			data.layoutManager.glyphRangeForTextContainer(data.textContainer);
 			NSRect rect = data.layoutManager.usedRectForTextContainer(data.textContainer);
 			rect.x = x;
 			rect.y = y;
@@ -1692,8 +1692,6 @@ public void drawText (String string, int x, int y, int flags) {
 			bg.setFill();
 			NSBezierPath.fillRect(rect);
 		}
-		NSRange range = new NSRange();
-		range.length = data.layoutManager.numberOfGlyphs();
 		data.layoutManager.drawGlyphsForGlyphRange(range, pt);
 		handle.restoreGraphicsState();
 	} finally {

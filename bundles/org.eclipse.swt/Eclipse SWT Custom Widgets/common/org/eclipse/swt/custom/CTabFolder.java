@@ -1034,12 +1034,12 @@ void initAccessible() {
 				if (text != null) {
 					char mnemonic = _findMnemonic(text);	
 					if (mnemonic != '\0') {
-						shortcut = "Alt+"+mnemonic; //$NON-NLS-1$
+						shortcut = SWT.getMessage ("SWT_Page_Mnemonic", new Object[] {new Character(mnemonic)}); //$NON-NLS-1$
 					}
 				}
 			}
 			if (childID == ACC.CHILDID_SELF) {
-				shortcut = "Ctrl+PageDown"; //$NON-NLS-1$
+				shortcut = SWT.getMessage ("SWT_SwitchPage_Shortcut"); //$NON-NLS-1$
 			}
 			e.result = shortcut;
 		}
@@ -1064,6 +1064,7 @@ void initAccessible() {
 					childID = items.length + MAXIMIZE_CHILD_ID;
 				} else {
 					Rectangle location = getBounds();
+					location.x = location.y = 0;
 					location.height = location.height - getClientArea().height;
 					if (location.contains(testPoint)) {
 						childID = ACC.CHILDID_SELF;

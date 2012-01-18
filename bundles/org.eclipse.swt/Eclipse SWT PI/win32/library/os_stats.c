@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1067;
-int OS_nativeFunctionCallCount[1067];
+int OS_nativeFunctionCount = 1068;
+int OS_nativeFunctionCallCount[1068];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -462,6 +462,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetTextMetricsW",
 	"GetThemeBackgroundContentRect",
 	"GetThemeBackgroundExtent",
+	"GetThemeBitmap",
 	"GetThemeColor",
 	"GetThemeInt",
 	"GetThemeMargins",

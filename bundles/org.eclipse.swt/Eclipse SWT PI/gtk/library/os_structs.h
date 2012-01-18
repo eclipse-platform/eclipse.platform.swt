@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2011 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -361,30 +361,6 @@ void setGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSel
 #define getGtkColorSelectionDialogFields(a,b,c) NULL
 #define setGtkColorSelectionDialogFields(a,b,c)
 #define GtkColorSelectionDialog_sizeof() 0
-#endif
-
-#ifndef NO_GtkCombo
-void cacheGtkComboFields(JNIEnv *env, jobject lpObject);
-GtkCombo *getGtkComboFields(JNIEnv *env, jobject lpObject, GtkCombo *lpStruct);
-void setGtkComboFields(JNIEnv *env, jobject lpObject, GtkCombo *lpStruct);
-#define GtkCombo_sizeof() sizeof(GtkCombo)
-#else
-#define cacheGtkComboFields(a,b)
-#define getGtkComboFields(a,b,c) NULL
-#define setGtkComboFields(a,b,c)
-#define GtkCombo_sizeof() 0
-#endif
-
-#ifndef NO_GtkFileSelection
-void cacheGtkFileSelectionFields(JNIEnv *env, jobject lpObject);
-GtkFileSelection *getGtkFileSelectionFields(JNIEnv *env, jobject lpObject, GtkFileSelection *lpStruct);
-void setGtkFileSelectionFields(JNIEnv *env, jobject lpObject, GtkFileSelection *lpStruct);
-#define GtkFileSelection_sizeof() sizeof(GtkFileSelection)
-#else
-#define cacheGtkFileSelectionFields(a,b)
-#define getGtkFileSelectionFields(a,b,c) NULL
-#define setGtkFileSelectionFields(a,b,c)
-#define GtkFileSelection_sizeof() 0
 #endif
 
 #ifndef NO_GtkFixed

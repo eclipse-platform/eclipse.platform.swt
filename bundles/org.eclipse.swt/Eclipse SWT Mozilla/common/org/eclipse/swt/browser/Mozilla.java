@@ -46,7 +46,7 @@ class Mozilla extends WebBrowser {
 	int chromeFlags = nsIWebBrowserChrome.CHROME_DEFAULT;
 	int registerFunctionsOnState = 0;
 	int refCount, lastKeyCode, lastCharCode, authCount;
-	int /*long*/ request;
+	int /*long*/ request, badCertRequest;
 	Point location, size;
 	boolean visible, isChild, ignoreDispose, isRetrievingBadCert, isViewingErrorPage, ignoreAllMessages, untrustedText;
 	boolean updateLastNavigateUrl;
@@ -954,7 +954,56 @@ public void create (Composite parent, int style) {
 					break;
 				}
 				case SWT.Resize: onResize (); break;
-				case SWT.FocusIn: Activate (); break;
+				case SWT.FocusIn: {
+					Activate ();
+
+					/* if tabbing onto a page for the first time then full-Browser focus ring should be shown */
+
+					int /*long*/[] result = new int /*long*/[1];
+					int rc = XPCOM.NS_GetServiceManager (result);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+					nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+					result[0] = 0;
+					byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FOCUSMANAGER_CONTRACTID, true);
+					rc = serviceManager.GetServiceByContractID (aContractID, nsIFocusManager.NS_IFOCUSMANAGER_IID, result);
+					serviceManager.Release ();
+
+					if (rc == XPCOM.NS_OK && result[0] != 0) {
+						nsIFocusManager focusManager = new nsIFocusManager (result[0]);
+						result[0] = 0;
+						rc = focusManager.GetFocusedElement (result);
+						if (rc == XPCOM.NS_OK) {
+							if (result[0] != 0) {
+								new nsISupports (result[0]).Release ();
+								result[0] = 0;
+							} else {
+								/* show full browser focus ring */
+								rc = webBrowser.GetContentDOMWindow (result);
+								if (rc == XPCOM.NS_OK && result[0] != 0) {
+									nsIDOMWindow domWindow = new nsIDOMWindow (result[0]);
+									result[0] = 0;
+									rc = domWindow.GetDocument (result);
+									domWindow.Release ();
+									if (rc == XPCOM.NS_OK && result[0] != 0) {
+										nsIDOMDocument domDocument = new nsIDOMDocument (result[0]);
+										result[0] = 0;
+										rc = domDocument.GetDocumentElement (result);
+										domDocument.Release ();
+										if (rc == XPCOM.NS_OK && result[0] != 0) {
+											nsIDOMElement domElement = new nsIDOMElement (result[0]);
+											result[0] = 0;
+											rc = focusManager.SetFocus (domElement.getAddress (), nsIFocusManager.FLAG_BYKEY);
+											domElement.Release ();
+										}
+									}
+								}
+							}
+						}
+						focusManager.Release ();
+					}
+					break;
+				}
 				case SWT.Activate: Activate (); break;
 				case SWT.Deactivate: {
 					Display display = event.display;
@@ -2514,6 +2563,10 @@ void onDispose (Display display) {
 		locationListeners = oldLocationListeners;	
 	}
 
+	if (badCertRequest != 0) {
+		new nsISupports (badCertRequest).Release ();
+	}
+
 	int rc = webBrowser.RemoveWebBrowserListener (weakReference.getAddress (), nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_IID);
 	if (rc != XPCOM.NS_OK) error (rc);
 
@@ -2591,6 +2644,150 @@ void Deactivate () {
 	rc = webBrowserFocus.Deactivate ();
 	if (rc != XPCOM.NS_OK) error (rc);
 	webBrowserFocus.Release ();
+}
+
+void navigate (int /*long*/ requestHandle) {
+	nsIRequest request = new nsIRequest (requestHandle);
+
+	/* get the request post data, if any */
+	int /*long*/[] result = new int /*long*/[1];
+	byte[] postData = null;
+	final Vector headers = new Vector ();
+	int rc = request.QueryInterface (nsIUploadChannel.NS_IUPLOADCHANNEL_IID, result);
+	if (rc == XPCOM.NS_OK && result[0] != 0) {
+		nsIUploadChannel uploadChannel = new nsIUploadChannel (result[0]);
+		result[0] = 0;
+		rc = uploadChannel.GetUploadStream (result);
+		if (rc == XPCOM.NS_OK && result[0] != 0) {
+			nsIInputStream inputStream = new nsIInputStream (result[0]);
+			result[0] = 0;
+			rc = inputStream.QueryInterface (nsISeekableStream.NS_ISEEKABLESTREAM_IID, result);
+			if (rc == XPCOM.NS_OK && result[0] != 0) {
+				nsISeekableStream seekableStream = new nsISeekableStream (result[0]);
+				result[0] = 0;
+				long[] initialOffset = new long[1];
+				rc = seekableStream.Tell (initialOffset);
+				if (rc == XPCOM.NS_OK) {
+					rc = seekableStream.Seek (nsISeekableStream.NS_SEEK_SET, 0);
+					if (rc == XPCOM.NS_OK) {
+						int[] available = new int[1];
+						rc = inputStream.Available (available);
+						if (rc == XPCOM.NS_OK) {
+							int length = available[0];
+							byte[] bytes = new byte[length];
+							int[] retVal = new int[1];
+							rc = inputStream.Read (bytes, length, retVal);
+							if (rc == XPCOM.NS_OK) {
+								int start = 0;
+								for (int i = 0; i < length; i++) {
+									if (bytes[i] == 13) {
+										byte[] current = new byte[i - start];
+										System.arraycopy (bytes, start, current, 0, i - start);
+										String string = new String (current).trim ();
+										if (string.length () != 0) {
+											headers.add (string);
+										} else {
+											start = i + 2; /* skip \r\n */
+											postData = new byte[length - start];
+											System.arraycopy (bytes, start, postData, 0, length - start);
+											break;
+										}
+										start = i;
+									}
+								}
+							}
+						}
+					}
+					seekableStream.Seek (nsISeekableStream.NS_SEEK_SET, initialOffset[0]);
+				}
+				seekableStream.Release ();
+			}
+			inputStream.Release ();
+		}
+		uploadChannel.Release ();
+	}
+
+	/* get the request headers */
+	XPCOMObject visitor = new XPCOMObject (new int[] {2, 0, 0, 2}) {
+		int refCount = 0;
+		public int /*long*/ method0 (int /*long*/[] args) {
+			/* QueryInterface */
+			int /*long*/ riid = args[0];
+			int /*long*/ ppvObject = args[1];
+			if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
+			nsID guid = new nsID ();
+			XPCOM.memmove (guid, riid, nsID.sizeof);
+			if (guid.Equals (nsISupports.NS_ISUPPORTS_IID) || guid.Equals (nsIHttpHeaderVisitor.NS_IHTTPHEADERVISITOR_IID)) {
+				XPCOM.memmove (ppvObject, new int /*long*/[] {getAddress ()}, C.PTR_SIZEOF);
+				refCount++;
+				return XPCOM.NS_OK;
+			}
+			XPCOM.memmove (ppvObject, new int /*long*/[] {0}, C.PTR_SIZEOF);
+			return XPCOM.NS_ERROR_NO_INTERFACE;
+		}
+		public int /*long*/ method1 (int /*long*/[] args) {
+			/* AddRef */
+			return ++refCount;
+		}
+		public int /*long*/ method2 (int /*long*/[] args) {
+			/* Release */
+			if (--refCount == 0) dispose ();
+			return refCount;
+		}
+		public int /*long*/ method3 (int /*long*/[] args) {
+			/* VisitHeader */
+			int /*long*/ aHeader = args[0];
+			int /*long*/ aValue = args[1];
+
+			int length = XPCOM.nsEmbedCString_Length (aHeader);
+			int /*long*/ buffer = XPCOM.nsEmbedCString_get (aHeader);
+			byte[] dest = new byte[length];
+			XPCOM.memmove (dest, buffer, length);
+			String header = new String (dest);
+
+			length = XPCOM.nsEmbedCString_Length (aValue);
+			buffer = XPCOM.nsEmbedCString_get (aValue);
+			dest = new byte[length];
+			XPCOM.memmove (dest, buffer, length);
+			String value = new String (dest);
+
+			headers.add(header + ':' + value);
+			return XPCOM.NS_OK;
+		}
+	};
+
+	new nsISupports (visitor.getAddress ()).AddRef ();
+	rc = request.QueryInterface (nsIHttpChannel.NS_IHTTPCHANNEL_IID, result);
+	if (rc == XPCOM.NS_OK && result[0] != 0) {
+		nsIHttpChannel httpChannel = new nsIHttpChannel (result[0]);
+		result[0] = 0;
+		httpChannel.VisitRequestHeaders (visitor.getAddress ());
+		httpChannel.Release ();
+	}
+	new nsISupports (visitor.getAddress ()).Release ();
+
+	String[] headersArray = null;
+	int size = headers.size ();
+	if (size > 0) {
+		headersArray = new String[size];
+		headers.copyInto (headersArray);
+	}
+
+	/* a request's name often (but not always) is its url */
+	String url = lastNavigateURL;
+	int /*long*/ name = XPCOM.nsEmbedCString_new ();
+	rc = request.GetName (name);
+	if (rc == XPCOM.NS_OK) {
+		int length = XPCOM.nsEmbedCString_Length (name);
+		int /*long*/ buffer = XPCOM.nsEmbedCString_get (name);
+		byte[] bytes = new byte[length];
+		XPCOM.memmove (bytes, buffer, length);
+		String value = new String (bytes);
+		if (value.indexOf (":/") != -1) url = value;	//$NON-NLS-1$
+	}
+	XPCOM.nsEmbedCString_delete (name);
+
+	setUrl (url, postData, headersArray);
 }
 
 void onResize () {
@@ -2782,6 +2979,14 @@ public boolean setText (String html, boolean trusted) {
 }
 
 public boolean setUrl (String url, String postData, String[] headers) {
+	byte[] postDataBytes = null;
+	if (postData != null) {
+		postDataBytes = MozillaDelegate.wcsToMbcs (null, postData, false);
+	}
+	return setUrl (url, postDataBytes, headers);
+}
+
+boolean setUrl (String url, byte[] postData, String[] headers) {
 	htmlBytes = null;
 
 	int /*long*/[] result = new int /*long*/[1];
@@ -2814,8 +3019,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 		componentManager.Release();
 
 		if (rc == XPCOM.NS_OK && result[0] != 0) { /* nsIMIMEInputStream is not in mozilla 1.4 */
-			byte[] bytes = MozillaDelegate.wcsToMbcs (null, postData, false);
-			dataStream = new InputStream (bytes);
+			dataStream = new InputStream (postData);
 			dataStream.AddRef ();
 			postDataStream = new nsIMIMEInputStream (result[0]);
 			rc = postDataStream.SetData (dataStream.getAddress ());
@@ -3201,7 +3405,6 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 		* callbacks on the channel so that our nsIBadCertListener2 will be invoked.
 		*/
 		if (isRetrievingBadCert) {
-			isRetrievingBadCert = false;
 			nsIRequest request = new nsIRequest (aRequest);
 			int rc = request.QueryInterface (nsIChannel.NS_ICHANNEL_IID, result);
 			if (rc != XPCOM.NS_OK) error (rc);
@@ -3233,6 +3436,37 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 		registerFunctionsOnState = nsIWebProgressListener.STATE_TRANSFERRING;
 		updateLastNavigateUrl = true;
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_STOP) != 0) {
+		if (isRetrievingBadCert) {
+			isRetrievingBadCert = false;
+			return XPCOM.NS_OK;
+		}
+
+		/*
+		* If a site with a bad certificate is being encountered for the first time
+		* then store the request for future reference, set the isRetrievingBadCert
+		* flag and re-navigate to the site so that notification callbacks can be
+		* hooked on it to get its certificate info.
+		*/
+		switch (aStatus) {
+			case XPCOM.SSL_ERROR_BAD_CERT_DOMAIN:
+			case XPCOM.SEC_ERROR_CA_CERT_INVALID:
+			case XPCOM.SEC_ERROR_EXPIRED_CERTIFICATE:
+			case XPCOM.SEC_ERROR_EXPIRED_ISSUER_CERTIFICATE:
+			case XPCOM.SEC_ERROR_INADEQUATE_KEY_USAGE:
+			case XPCOM.SEC_ERROR_UNKNOWN_ISSUER:
+			case XPCOM.SEC_ERROR_UNTRUSTED_CERT:
+			case XPCOM.SEC_ERROR_UNTRUSTED_ISSUER: {
+				new nsISupports (aRequest).AddRef ();
+				if (badCertRequest != 0) {
+					new nsISupports (badCertRequest).Release ();
+				}
+				badCertRequest = aRequest;
+				isRetrievingBadCert = true;
+				navigate (aRequest);
+				return XPCOM.NS_OK;
+			}
+		}
+
 		/*
 		* If this page's nsIDOMWindow handle is still in unhookedDOMWindows then
 		* add its DOM listeners now.  It's possible for this to happen since
@@ -3973,7 +4207,7 @@ int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 	if (value.indexOf ("aboutCertError.xhtml") != -1 || (isViewingErrorPage && value.indexOf ("javascript:showSecuritySection") != -1)) { //$NON-NLS-1$ //$NON-NLS-2$
 		XPCOM.memmove (retval, new int[] {1}, 4); /* PRBool */
 		isRetrievingBadCert = true;
-		setUrl (lastNavigateURL, null, null);
+		setUrl (lastNavigateURL, (byte[])null, null);
 		return XPCOM.NS_OK;
 	}
 	isViewingErrorPage = value.indexOf ("netError.xhtml") != -1; //$NON-NLS-1$
@@ -4635,33 +4869,35 @@ int NotifyCertProblem (int /*long*/ socketInfo, int /*long*/ status, int /*long*
 	browser.getDisplay().asyncExec(new Runnable() {
 		public void run() {
 			if (browser.isDisposed ()) return;
-			if (!url.equals (lastNavigateURL)) return;	/* user has navigated elsewhere */
-
-			String message = Compatibility.getMessage ("SWT_InvalidCert_Message", new String[] {urlPort}); //$NON-NLS-1$
-			if (new PromptDialog (browser.getShell ()).invalidCert (browser, message, finalProblems, cert)) {
-				int /*long*/[] result = new int /*long*/[1];
-				int rc = XPCOM.NS_GetServiceManager (result);
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-		
-				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
-				result[0] = 0;
-				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CERTOVERRIDE_CONTRACTID, true);
-				rc = serviceManager.GetServiceByContractID (aContractID, nsICertOverrideService.NS_ICERTOVERRIDESERVICE_IID, result);
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-				serviceManager.Release ();
-		
-				nsICertOverrideService overrideService = new nsICertOverrideService (result[0]);
-				result[0] = 0;
-				byte[] hostBytes = MozillaDelegate.wcsToMbcs (null, host, false);
-				int /*long*/ hostString = XPCOM.nsEmbedCString_new (hostBytes, hostBytes.length);
-				rc = overrideService.RememberValidityOverride (hostString, port, cert.getAddress (), finalFlags, 1);
-				browser.setUrl (url);
-				XPCOM.nsEmbedCString_delete (hostString);
-				overrideService.Release ();
+			if (url.equals (lastNavigateURL)) {
+				String message = Compatibility.getMessage ("SWT_InvalidCert_Message", new String[] {urlPort}); //$NON-NLS-1$
+				if (new PromptDialog (browser.getShell ()).invalidCert (browser, message, finalProblems, cert)) {
+					int /*long*/[] result = new int /*long*/[1];
+					int rc = XPCOM.NS_GetServiceManager (result);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+			
+					nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+					result[0] = 0;
+					byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CERTOVERRIDE_CONTRACTID, true);
+					rc = serviceManager.GetServiceByContractID (aContractID, nsICertOverrideService.NS_ICERTOVERRIDESERVICE_IID, result);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+					serviceManager.Release ();
+			
+					nsICertOverrideService overrideService = new nsICertOverrideService (result[0]);
+					result[0] = 0;
+					byte[] hostBytes = MozillaDelegate.wcsToMbcs (null, host, false);
+					int /*long*/ hostString = XPCOM.nsEmbedCString_new (hostBytes, hostBytes.length);
+					rc = overrideService.RememberValidityOverride (hostString, port, cert.getAddress (), finalFlags, 1);
+					navigate (badCertRequest);
+					XPCOM.nsEmbedCString_delete (hostString);
+					overrideService.Release ();
+				}
 			}
 			cert.Release ();
+			new nsISupports (badCertRequest).Release ();
+			badCertRequest = 0;
 		}
 	});
 

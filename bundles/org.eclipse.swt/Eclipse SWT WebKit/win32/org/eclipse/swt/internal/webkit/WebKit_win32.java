@@ -318,11 +318,6 @@ public static final native int /*long*/ JSValueMakeUndefined (int /*long*/ ctx);
 /**
  * @param ctx cast=(JSContextRef)
  * @param value cast=(JSValueRef)
- */
-public static final native int JSValueToBoolean (int /*long*/ ctx, int /*long*/ value);
-/**
- * @param ctx cast=(JSContextRef)
- * @param value cast=(JSValueRef)
  * @param exception cast=(JSValueRef*)
  */
 public static final native double JSValueToNumber (int /*long*/ ctx, int /*long*/ value, int /*long*/[] exception);

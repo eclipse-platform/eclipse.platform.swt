@@ -4751,6 +4751,17 @@
 	<enum name="NSFileHandlingPanelOKButton" swt_gen="true"></enum>
 	<enum name="NSFlagsChanged" swt_gen="true"></enum>
 	<enum name="NSFocusRingTypeNone" swt_gen="true"></enum>
+	<enum name="NSFontPanelAllEffectsModeMask" swt_gen="true"></enum>
+	<enum name="NSFontPanelAllModesMask" swt_gen="true"></enum>
+	<enum name="NSFontPanelCollectionModeMask" swt_gen="true"></enum>
+	<enum name="NSFontPanelDocumentColorEffectModeMask" swt_gen="true"></enum>
+	<enum name="NSFontPanelFaceModeMask" swt_gen="true"></enum>
+	<enum name="NSFontPanelShadowEffectModeMask" swt_gen="true"></enum>
+	<enum name="NSFontPanelSizeModeMask" swt_gen="true"></enum>
+	<enum name="NSFontPanelStandardModesMask" swt_gen="true"></enum>
+	<enum name="NSFontPanelStrikethroughEffectModeMask" swt_gen="true"></enum>
+	<enum name="NSFontPanelTextColorEffectModeMask" swt_gen="true"></enum>
+	<enum name="NSFontPanelUnderlineEffectModeMask" swt_gen="true"></enum>
 	<enum name="NSHelpFunctionKey" swt_gen="true"></enum>
 	<enum name="NSHelpKeyMask" swt_gen="true"></enum>
 	<enum name="NSHourMinuteDatePickerElementFlag" swt_gen="true"></enum>

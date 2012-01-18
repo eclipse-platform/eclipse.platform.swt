@@ -191,7 +191,7 @@ public static int pow2(int n) {
 }
 
 /**
- * Create an DeflaterOutputStream if such things are supported.
+ * Create a DeflaterOutputStream if such things are supported.
  * 
  * @param stream the output stream
  * @return a deflater stream or <code>null</code>
@@ -199,7 +199,7 @@ public static int pow2(int n) {
  * 
  * @since 3.4
  */
-public static OutputStream newDeflaterOutputStream(OutputStream stream) throws IOException {
+public static OutputStream newDeflaterOutputStream(OutputStream stream, int level) throws IOException {
 	return null;
 }
 

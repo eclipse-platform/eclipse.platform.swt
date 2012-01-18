@@ -13,7 +13,6 @@ package org.eclipse.swt.accessibility;
 
 import java.util.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.gtk.*;
 
@@ -112,12 +111,6 @@ public class Accessible {
 		super ();
 		this.control = control;
 		AccessibleFactory.registerAccessible (this);
-		control.addDisposeListener (new DisposeListener () {
-			public void widgetDisposed (DisposeEvent e) {
-				AccessibleFactory.unregisterAccessible (Accessible.this);
-				release ();
-			}
-		});
 	}	
 	
 	/**
@@ -495,6 +488,23 @@ public class Accessible {
 		return result;
 	}
 
+	/**
+	 * Invokes platform specific functionality to dispose an accessible object.
+	 * <p>
+	 * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+	 * API for <code>Accessible</code>. It is marked public only so that it
+	 * can be shared within the packages provided by SWT. It is not
+	 * available on all platforms, and should never be called from
+	 * application code.
+	 * </p>
+	 * 
+	 * @noreference This method is not intended to be referenced by clients.
+	 */
+	public void internal_dispose_Accessible() {
+		AccessibleFactory.unregisterAccessible (Accessible.this);
+		release ();
+	}
+	
 	/**
 	 * Invokes platform specific functionality to allocate a new accessible object.
 	 * <p>

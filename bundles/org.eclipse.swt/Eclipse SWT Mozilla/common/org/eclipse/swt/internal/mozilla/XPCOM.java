@@ -70,6 +70,7 @@ public class XPCOM extends C {
 	public static final String NS_DOMSERIALIZER_CONTRACTID = "@mozilla.org/xmlextras/xmlserializer;1"; //$NON-NLS-1$
 	public static final String NS_DOWNLOAD_CONTRACTID = "@mozilla.org/download;1"; //$NON-NLS-1$
 	public static final String NS_FILEPICKER_CONTRACTID = "@mozilla.org/filepicker;1"; //$NON-NLS-1$
+	public static final String NS_FOCUSMANAGER_CONTRACTID = "@mozilla.org/focus-manager;1"; //$NON-NLS-1$
 	public static final String NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID = "@mozilla.org/helperapplauncherdialog;1"; //$NON-NLS-1$
 	public static final String NS_MEMORY_CONTRACTID = "@mozilla.org/xpcom/memory-service;1"; //$NON-NLS-1$
 	public static final String NS_MIMEINPUTSTREAM_CONTRACTID = "@mozilla.org/network/mime-input-stream;1"; //$NON-NLS-1$
@@ -132,6 +133,14 @@ public class XPCOM extends C {
 	public static final int NS_ERROR_HTMLPARSER_UNRESOLVEDDTD = 0x804e03f3;
 	public static final int NS_ERROR_FILE_NOT_FOUND = 0x80520012;
 	public static final int NS_ERROR_FILE_UNRECOGNIZED_PATH = 0x80520001;
+	public static final int SEC_ERROR_EXPIRED_ISSUER_CERTIFICATE = 0x805A1FE2;
+	public static final int SEC_ERROR_CA_CERT_INVALID = 0x805A1FDC;
+	public static final int SEC_ERROR_EXPIRED_CERTIFICATE = 0x805A1FF5;
+	public static final int SEC_ERROR_INADEQUATE_KEY_USAGE = 0x805A1FA6;
+	public static final int SEC_ERROR_UNKNOWN_ISSUER = 0x805A1FF3;
+	public static final int SEC_ERROR_UNTRUSTED_CERT = 0x805A1FEB;
+	public static final int SEC_ERROR_UNTRUSTED_ISSUER = 0x805A1FEC;
+	public static final int SSL_ERROR_BAD_CERT_DOMAIN = 0x805A2FF4;
 
 public static final native int nsDynamicFunctionLoad_sizeof ();
 
@@ -663,6 +672,15 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1)
 		lock.unlock();
 	}
 }
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, long arg1);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, long arg1) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1);
+	} finally {
+		lock.unlock();
+	}
+}
 static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1);
 static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1) {
 	lock.lock();
@@ -690,8 +708,17 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int[] arg
 		lock.unlock();
 	}
 }
-static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long [] arg1);
-static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long [] arg1) {
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, long[] arg1);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, long[] arg1) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1);
+	} finally {
+		lock.unlock();
+	}
+}
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long[] arg1);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long[] arg1) {
 	lock.lock();
 	try {
 		return _VtblCall(fnNumber, ppVtbl, arg0, arg1);
@@ -1116,8 +1143,8 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg
 		lock.unlock();
 	}
 }
-static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, long [] arg2);
-static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, long [] arg2) {
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, long[] arg2);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, long[] arg2) {
 	lock.lock();
 	try {
 		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2);
@@ -1639,6 +1666,15 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1,
 		lock.unlock();
 	}
 }
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, long[] arg2, long[] arg3);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, long[] arg2, long[] arg3) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3);
+	} finally {
+		lock.unlock();
+	}
+}
 static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, int[] arg2, int[] arg3);
 static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, int[] arg2, int[] arg3) {
 	lock.lock();
@@ -1678,6 +1714,15 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg
 }
 static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4);
 static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3, arg4);
+	} finally {
+		lock.unlock();
+	}
+}
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int arg3, int[] arg4);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int arg3, int[] arg4) {
 	lock.lock();
 	try {
 		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3, arg4);
@@ -1769,6 +1814,15 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, nsID arg
 }
 static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, long arg2, int arg3, int arg4);
 static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, long arg2, int arg3, int arg4) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3, arg4);
+	} finally {
+		lock.unlock();
+	}
+}
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, int arg2, int arg3, long[] arg4);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, int arg2, int arg3, long[] arg4) {
 	lock.lock();
 	try {
 		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3, arg4);

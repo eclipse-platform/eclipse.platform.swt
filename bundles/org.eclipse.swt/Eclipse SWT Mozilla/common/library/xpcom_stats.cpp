@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2011 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 226;
-int XPCOM_nativeFunctionCallCount[226];
+int XPCOM_nativeFunctionCount = 231;
+int XPCOM_nativeFunctionCallCount[231];
 char * XPCOM_nativeFunctionNames[] = {
 #ifndef JNI64
 	"_1Call__I",
@@ -129,6 +129,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IJIIII_3C_3I_3I",
 #endif
 #ifndef JNI64
+	"_1VtblCall__IIIIII_3I",
+#else
+	"_1VtblCall__IJIIII_3I",
+#endif
+#ifndef JNI64
 	"_1VtblCall__IIIIII_3I_3I",
 #else
 	"_1VtblCall__IJIIII_3I_3I",
@@ -217,6 +222,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IIII_3J",
 #else
 	"_1VtblCall__IJII_3J",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIIJ",
+#else
+	"_1VtblCall__IJIJ",
 #endif
 #ifndef JNI64
 	"_1VtblCall__IIIJJ",
@@ -364,6 +374,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IJI_3I_3I_3J",
 #endif
 #ifndef JNI64
+	"_1VtblCall__III_3J",
+#else
+	"_1VtblCall__IJI_3J",
+#endif
+#ifndef JNI64
 	"_1VtblCall__IIJ",
 #else
 	"_1VtblCall__IJJ",
@@ -414,6 +429,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IJJI_3J",
 #endif
 #ifndef JNI64
+	"_1VtblCall__IIJI_3J_3J",
+#else
+	"_1VtblCall__IJJI_3J_3J",
+#endif
+#ifndef JNI64
 	"_1VtblCall__IIJJ",
 #else
 	"_1VtblCall__IJJJ",
@@ -432,6 +452,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IIJJIIII",
 #else
 	"_1VtblCall__IJJJIIII",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIJJII_3J",
+#else
+	"_1VtblCall__IJJJII_3J",
 #endif
 #ifndef JNI64
 	"_1VtblCall__IIJJIJ_3C_3I_3I",

@@ -43,6 +43,7 @@ public class TrayItem extends Item {
 	int /*long*/ imageHandle;
 	int /*long*/ tooltipsHandle;
 	ImageList imageList;
+	Image highlightImage;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -218,6 +219,11 @@ void destroyWidget () {
 public Tray getParent () {
 	checkWidget ();
 	return parent;
+}
+
+public Image getHighlightImage () {
+	checkWidget ();
+	return highlightImage;
 }
 
 /**
@@ -397,6 +403,7 @@ void releaseWidget () {
 	if (imageList != null) imageList.dispose ();
 	imageList = null;
 	toolTipText = null;
+	highlightImage = null;
 }
 
 /**
@@ -449,6 +456,12 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection, listener);
+}
+
+public void setHighlightImage (Image image) {
+	checkWidget ();
+	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	highlightImage = image;
 }
 
 /**

@@ -29,6 +29,11 @@ final class PngEncoder extends Object {
 	static final byte TAG_IDAT[] = {(byte) 'I', (byte) 'D', (byte) 'A', (byte) 'T'};
 	static final byte TAG_IEND[] = {(byte) 'I', (byte) 'E', (byte) 'N', (byte) 'D'};
 	
+	static final int NO_COMPRESSION = 0;
+	static final int BEST_SPEED = 1;
+	static final int BEST_COMPRESSION = 9;
+	static final int DEFAULT_COMPRESSION = -1;
+	
 	ByteArrayOutputStream bytes = new ByteArrayOutputStream(1024);
 	PngChunk chunk;
 	
@@ -232,8 +237,22 @@ void writeTransparency() {
 void writeImageData() throws IOException {
 
 	ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-	OutputStream os = Compatibility.newDeflaterOutputStream(baos);
-	if (os == null) os = baos;
+	OutputStream os = null;
+	switch (loader.compression) {
+	case 0:
+		os = Compatibility.newDeflaterOutputStream(baos, NO_COMPRESSION);
+		break;
+	case 1:
+		os = Compatibility.newDeflaterOutputStream(baos, BEST_SPEED);
+		break;
+	case 3:
+		os = Compatibility.newDeflaterOutputStream(baos, BEST_COMPRESSION);
+		break;
+	default:
+		os = Compatibility.newDeflaterOutputStream(baos, DEFAULT_COMPRESSION);
+		break;
+	}
+	if (os == null) os = baos; // returns null for J2ME
 	
 	if (colorType == 3) {
 	
@@ -312,6 +331,7 @@ void writeImageData() throws IOException {
 	
 	byte[] compressed = baos.toByteArray();
 	if (os == baos) {
+		/* Use PngDeflater for J2ME. */
 		PngDeflater deflater = new PngDeflater();
 		compressed = deflater.deflate(compressed);
 	}

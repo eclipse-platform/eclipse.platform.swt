@@ -28,6 +28,11 @@ public static void main(String[] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	Image image = new Image (display, 16, 16);
+	Image image2 = new Image (display, 16, 16);
+	GC gc = new GC(image2);
+	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+	gc.fillRectangle(image2.getBounds());
+	gc.dispose();
 	final Tray tray = display.getSystemTray ();
 	if (tray == null) {
 		System.out.println ("The system tray is not available");
@@ -70,7 +75,8 @@ public static void main(String[] args) {
 				menu.setVisible (true);
 			}
 		});
-		item.setImage (image);
+		item.setImage (image2);
+		item.setHighlightImage (image);
 	}
 	shell.setBounds(50, 50, 300, 200);
 	shell.open ();
@@ -78,6 +84,7 @@ public static void main(String[] args) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	image.dispose ();
+	image2.dispose ();
 	display.dispose ();
 }
 }

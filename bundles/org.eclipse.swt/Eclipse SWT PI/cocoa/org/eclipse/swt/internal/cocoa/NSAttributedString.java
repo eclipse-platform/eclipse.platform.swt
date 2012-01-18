@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -67,6 +67,11 @@ public NSSize size() {
 	NSSize result = new NSSize();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_size);
 	return result;
+}
+
+public id attribute(NSString attrName, int /*long*/ location, int /*long*/ range) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_attribute_atIndex_effectiveRange_, attrName != null ? attrName.id : 0, location, range);
+	return result != 0 ? new id(result) : null;
 }
 
 public NSAttributedString attributedSubstringFromRange(NSRange range) {

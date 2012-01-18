@@ -462,6 +462,9 @@ public int /*long*/ internal_new_GC(GCData data) {
 		double printY = OS.gtk_page_setup_get_top_margin(pageSetup, OS.GTK_UNIT_POINTS);
 		Cairo.cairo_translate(cairo, printX, printY);
 		Cairo.cairo_scale(cairo, screenDPI.x / (float)dpi.x, screenDPI.y / (float)dpi.y);
+		double[] matrix = new double[6];
+		Cairo.cairo_get_matrix(cairo, matrix);
+		data.identity = matrix;
 		data.cairo = cairo;
 		isGCCreated = true;
 	}

@@ -313,6 +313,7 @@ int /*long*/ getAccelGroup () {
 	}
 	if (menu == null) return 0;
 	Decorations shell = menu.parent;
+	if (shell == null) return 0;
 	return shell.menuBar == menu ? shell.accelGroup : 0;
 }
 
@@ -772,7 +773,11 @@ public void setMenu (Menu menu) {
 		* to replace or GTK will destroy it.
 		*/
 		OS.g_object_ref (oldMenu.handle);
-		OS.gtk_menu_item_remove_submenu (handle);
+		if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+			OS.gtk_menu_item_set_submenu (handle, 0);
+		} else {
+		    OS.gtk_menu_item_remove_submenu (handle);
+		}
 	}
 	if ((this.menu = menu) != null) {
 		menu.cascade = this;

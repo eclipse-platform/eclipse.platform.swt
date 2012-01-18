@@ -2397,6 +2397,12 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 			char [] chars = fixMnemonic (string, false);
 			buffer = Converter.wcsToMbcs (null, chars, true);
 		}
+		int /*long*/ oldTooltip = OS.gtk_widget_get_tooltip_text (rootWidget);
+		if (buffer == null && oldTooltip == 0) {
+			return;
+		} else if (buffer != null && oldTooltip != 0) {
+				if (OS.strcmp (oldTooltip, buffer) == 0) return;
+		}
 		OS.gtk_widget_set_tooltip_text (rootWidget, null);
 		/*
 		* Bug in GTK. In GTK 2.12, due to a miscalculation of window
@@ -2437,6 +2443,17 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 		if (string != null && string.length () > 0) {
 			char [] chars = fixMnemonic (string, false);
 			buffer = Converter.wcsToMbcs (null, chars, true);
+		}
+		int /*long*/ tipData = OS.gtk_tooltips_data_get(tipWidget);
+		if (tipData != 0) {
+			int /*long*/ oldTooltip = OS.GTK_TOOLTIPS_GET_TIP_TEXT(tipData);
+			if (string == null && oldTooltip == 0) {
+				return;
+			} else if (string != null && oldTooltip != 0) {
+				if (buffer != null) {
+					if (OS.strcmp (oldTooltip, buffer) == 0) return;
+				}
+			}
 		}
 		if (tooltipsHandle == 0) {
 			tooltipsHandle = OS.gtk_tooltips_new ();

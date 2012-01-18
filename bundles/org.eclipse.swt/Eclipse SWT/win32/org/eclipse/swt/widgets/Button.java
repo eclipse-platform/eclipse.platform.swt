@@ -1215,6 +1215,18 @@ LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
+LRESULT WM_GETOBJECT (int /*long*/ wParam, int /*long*/ lParam) {
+	/*
+	* Ensure that there is an accessible object created for this
+	* control because support for radio button position in group
+	* accessibility is implemented in the accessibility package.
+	*/
+	if ((style & SWT.RADIO) != 0) {
+		if (accessible == null) accessible = new_Accessible (this);
+	}
+	return super.WM_GETOBJECT (wParam, lParam);
+}
+
 LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
 	if ((style & SWT.PUSH) != 0 && getDefault ()) {

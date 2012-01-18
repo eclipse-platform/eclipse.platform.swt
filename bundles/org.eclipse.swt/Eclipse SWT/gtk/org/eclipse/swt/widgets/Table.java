@@ -229,6 +229,7 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 		if (isPixbuf) {
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
 			OS.g_object_set (cell, OS.pixbuf, ptr [0], 0);
+			OS.g_object_unref (ptr [0]);
 		} else {
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1); 
 			if (ptr [0] != 0) {
@@ -248,6 +249,7 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 				OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_BACKGROUND, ptr, -1);
 				if (ptr [0] != 0) {
 					OS.g_object_set (cell, OS.cell_background_gdk, ptr [0], 0);
+					OS.gdk_color_free (ptr [0]);
 				}
 			}
 		}
@@ -256,11 +258,13 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_FOREGROUND, ptr, -1);
 			if (ptr [0] != 0) {
 				OS.g_object_set (cell, OS.foreground_gdk, ptr [0], 0);
+				OS.gdk_color_free (ptr [0]);
 			}
 			ptr [0] = 0;
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_FONT, ptr, -1);
 			if (ptr [0] != 0) {
 				OS.g_object_set (cell, OS.font_desc, ptr [0], 0);
+				OS.pango_font_description_free (ptr [0]);
 			}
 		}
 	}
@@ -348,7 +352,12 @@ int calculateWidth (int /*long*/ column, int /*long*/ iter) {
 	int [] w = new int [1];
 	OS.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
 	width += 2 * w [0];
-	int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	int /*long*/ list = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+		list = OS.gtk_cell_layout_get_cells(column);
+	} else {
+		list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	}
 	if (list == 0) return 0;
 	int /*long*/ temp = list;
 	while (temp != 0) {
@@ -539,7 +548,17 @@ void createColumn (TableColumn column, int index) {
 					for (int j=0; j<modelLength; j++) {
 						OS.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
 						OS.gtk_list_store_set (newModel, newItem, j, ptr [0], -1);
-						if (types [j] == OS.G_TYPE_STRING ()) OS.g_free ((ptr [0]));
+						if (types [j] == OS.G_TYPE_STRING ()) {
+							OS.g_free ((ptr [0]));
+						} else if (ptr [0] != 0) {
+							if (types [j] == OS.GDK_TYPE_COLOR()) {
+								OS.gdk_color_free (ptr [0]);
+							} else if (types [j] == OS.GDK_TYPE_PIXBUF()) {
+								OS.g_object_unref (ptr [0]);
+							} else if (types [j] == OS.PANGO_TYPE_FONT_DESCRIPTION()) {
+								OS.pango_font_description_free (ptr [0]);
+							}
+						}
 					}
 					OS.gtk_list_store_remove (oldModel, oldItem);
 					OS.g_free (oldItem);
@@ -992,18 +1011,29 @@ void destroyItem (TableColumn column) {
 				for (int j=0; j<FIRST_COLUMN; j++) {
 					OS.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
 					OS.gtk_list_store_set (newModel, newItem, j, ptr [0], -1);
+					if (ptr [0] != 0) {
+						if (j == FOREGROUND_COLUMN || j == BACKGROUND_COLUMN) {
+							OS.gdk_color_free (ptr [0]);	
+						} else if (j == FONT_COLUMN) {
+							OS.pango_font_description_free (ptr [0]);
+						}
+					}
 				}
 				OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_PIXBUF, ptr, -1);
 				OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_PIXBUF, ptr [0], -1);
+				if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
 				OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_TEXT, ptr, -1);
 				OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_TEXT, ptr [0], -1);
 				OS.g_free (ptr [0]);
 				OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_FOREGROUND, ptr, -1);
 				OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_FOREGROUND, ptr [0], -1);
+				if (ptr [0] != 0) OS.gdk_color_free (ptr [0]);
 				OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_BACKGROUND, ptr, -1);
 				OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_BACKGROUND, ptr [0], -1);
+				if (ptr [0] != 0) OS.gdk_color_free (ptr [0]);
 				OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_FONT, ptr, -1);
 				OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_FONT, ptr [0], -1);
+				if (ptr [0] != 0) OS.pango_font_description_free (ptr [0]);
 				OS.gtk_list_store_remove (oldModel, oldItem);
 				OS.g_free (oldItem);
 				item.handle = newItem;
@@ -1577,7 +1607,13 @@ public boolean getLinesVisible() {
 }
 
 int /*long*/ getPixbufRenderer (int /*long*/ column) {
-	int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	int /*long*/ list = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+		list = OS.gtk_cell_layout_get_cells(column);
+	} else {
+		list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	}
+	
 	if (list == 0) return 0;
 	int count = OS.g_list_length (list);
 	int /*long*/ pixbufRenderer = 0;
@@ -1641,6 +1677,7 @@ public TableItem [] getSelection () {
 				treeSelection [length] = index [0];
 				length++;
 			}
+			OS.gtk_tree_path_free (data);
 		}
 		OS.g_list_free (list);
 		TableItem [] result = new TableItem [length];
@@ -1709,8 +1746,13 @@ public int getSelectionIndex () {
 			int /*long*/ indices = OS.gtk_tree_path_get_indices (data);
 			if (indices != 0) {
 				OS.memmove (index, indices, 4);
+				for (int j = i; j < count; j++) {
+					data = OS.g_list_nth_data (list, j);
+					OS.gtk_tree_path_free (data);
+				}
 				break;
 			}
+			OS.gtk_tree_path_free (data);
 		}
 		OS.g_list_free (list);
 		return index [0];
@@ -1766,6 +1808,7 @@ public int [] getSelectionIndices () {
 				treeSelection [length] = index [0];
 				length++;
 			}
+			OS.gtk_tree_path_free (data);
 		}
 		OS.g_list_free (list);
 		int [] result = new int [length];
@@ -1818,7 +1861,12 @@ public int getSortDirection () {
 }
 
 int /*long*/ getTextRenderer (int /*long*/ column) {
-	int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	int /*long*/ list = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+		list = OS.gtk_cell_layout_get_cells(column);
+	} else {
+		list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	}
 	if (list == 0) return 0;
 	int count = OS.g_list_length (list);
 	int /*long*/ textRenderer = 0;
@@ -2633,7 +2681,10 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 				int modelIndex = columnCount == 0 ? Table.FIRST_COLUMN : columns [columnIndex].modelIndex;
 				OS.gtk_tree_model_get (modelHandle, item.handle, modelIndex + Table.CELL_BACKGROUND, ptr, -1);
 			}
-			if (ptr [0] != 0) drawState |= SWT.BACKGROUND;
+			if (ptr [0] != 0) {
+				drawState |= SWT.BACKGROUND;
+				OS.gdk_color_free (ptr [0]);
+			}
 			if ((flags & OS.GTK_CELL_RENDERER_SELECTED) != 0) drawState |= SWT.SELECTED;
 			if ((flags & OS.GTK_CELL_RENDERER_FOCUSED) != 0) drawState |= SWT.FOCUSED;			
 			
@@ -3576,7 +3627,11 @@ void showItem (int /*long*/ iter) {
 	GdkRectangle cellRect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
 	int[] tx = new int[1], ty = new int[1];
-	OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
+	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+		OS.gtk_tree_view_convert_widget_to_bin_window_coords(handle, cellRect.x, cellRect.y, tx, ty);
+	} else {
+		OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
+	}
 	if (ty[0] < visibleRect.y ) {
 		OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0f, 0f);
 		OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);

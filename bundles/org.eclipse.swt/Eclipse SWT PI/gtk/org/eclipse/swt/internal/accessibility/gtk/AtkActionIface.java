@@ -21,11 +21,11 @@ public class AtkActionIface {
 	public int /*long*/ do_action;
 	/** @field cast=(gint (*)()) */
 	public int /*long*/ get_n_actions;
-	/** @field cast=(G_CONST_RETURN gchar *(*)()) */
+	/** @field cast=(const gchar *(*)()) */
 	public int /*long*/ get_description;
-	/** @field cast=(G_CONST_RETURN gchar *(*)()) */
+	/** @field cast=(const gchar *(*)()) */
 	public int /*long*/ get_name;
-	/** @field cast=(G_CONST_RETURN gchar *(*)()) */
+	/** @field cast=(const gchar *(*)()) */
 	public int /*long*/ get_keybinding;
 	/** @field cast=(gboolean (*)()) */
 	public int /*long*/ set_description;	

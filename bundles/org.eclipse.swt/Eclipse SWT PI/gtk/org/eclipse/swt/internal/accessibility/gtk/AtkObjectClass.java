@@ -16,9 +16,9 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 
 public class AtkObjectClass {
-	/** @field cast=(G_CONST_RETURN gchar *(*)()) */
+	/** @field cast=(const gchar *(*)()) */
 	public int /*long*/ get_name;
-	/** @field cast=(G_CONST_RETURN gchar *(*)()) */
+	/** @field cast=(const gchar *(*)()) */
 	public int /*long*/ get_description;
 	/** @field cast=(AtkObject *(*)()) */
 	public int /*long*/ get_parent;

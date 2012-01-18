@@ -332,17 +332,6 @@ public static final int /*long*/ JSValueMakeUndefined (int /*long*/ ctx) {
 }
 
 /** @method flags=dynamic */
-public static final native int _JSValueToBoolean (int /*long*/ ctx, int /*long*/ value);
-public static final int JSValueToBoolean (int /*long*/ ctx, int /*long*/ value) {
-	lock.lock();
-	try {
-		return _JSValueToBoolean (ctx, value);
-	} finally {
-		lock.unlock();
-	}
-}
-
-/** @method flags=dynamic */
 public static final native double _JSValueToNumber (int /*long*/ ctx, int /*long*/ value, int /*long*/[] exception);
 public static final double JSValueToNumber (int /*long*/ ctx, int /*long*/ value, int /*long*/[] exception) {
 	lock.lock();
@@ -394,6 +383,17 @@ public static final int /*long*/ soup_auth_get_scheme_name (int /*long*/ auth) {
 	lock.lock();
 	try {
 		return _soup_auth_get_scheme_name (auth);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native void _soup_cookie_free (int /*long*/ cookie);
+public static final void soup_cookie_free (int /*long*/ cookie) {
+	lock.lock();
+	try {
+		_soup_cookie_free (cookie);
 	} finally {
 		lock.unlock();
 	}

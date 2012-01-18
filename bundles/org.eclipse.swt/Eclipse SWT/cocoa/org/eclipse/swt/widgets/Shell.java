@@ -1641,7 +1641,7 @@ public void setEnabled (boolean enabled) {
 	checkWidget();
 	if (((state & DISABLED) == 0) == enabled) return;
 	super.setEnabled (enabled);
-	if (enabled && window.isMainWindow()) {
+	if (enabled && window != null && window.isMainWindow()) {
 		if (!restoreFocus ()) traverseGroup (false);
 	}
 }

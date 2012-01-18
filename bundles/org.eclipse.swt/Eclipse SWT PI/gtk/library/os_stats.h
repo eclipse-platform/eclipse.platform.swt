@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -57,6 +57,7 @@ typedef enum {
 	GTK_1SCROLLED_1WINDOW_1SCROLLBAR_1SPACING_FUNC,
 	GTK_1SCROLLED_1WINDOW_1VSCROLLBAR_FUNC,
 	GTK_1TEXTVIEW_1IM_1CONTEXT_FUNC,
+	GTK_1TOOLTIPS_1GET_1TIP_1TEXT_FUNC,
 	GTK_1TOOLTIPS_1SET_1ACTIVE_FUNC,
 	GTK_1TOOLTIPS_1TIP_1WINDOW_FUNC,
 	GTK_1WIDGET_1HEIGHT_FUNC,
@@ -110,8 +111,6 @@ typedef enum {
 	GtkCellRendererToggleClass_1sizeof_FUNC,
 	GtkCellRendererToggle_1sizeof_FUNC,
 	GtkColorSelectionDialog_1sizeof_FUNC,
-	GtkCombo_1sizeof_FUNC,
-	GtkFileSelection_1sizeof_FUNC,
 	GtkFixedClass_1sizeof_FUNC,
 	GtkFixed_1sizeof_FUNC,
 	GtkRequisition_1sizeof_FUNC,
@@ -175,7 +174,6 @@ typedef enum {
 	_1GTK_1WIDGET_1FLAGS_FUNC,
 	_1GTK_1WIDGET_1HAS_1DEFAULT_FUNC,
 	_1GTK_1WIDGET_1HAS_1FOCUS_FUNC,
-	_1GTK_1WIDGET_1IS_1SENSITIVE_FUNC,
 	_1GTK_1WIDGET_1MAPPED_FUNC,
 	_1GTK_1WIDGET_1SENSITIVE_FUNC,
 	_1GTK_1WIDGET_1SET_1FLAGS_FUNC,
@@ -259,6 +257,7 @@ typedef enum {
 	_1g_1file_1icon_1get_1file_FUNC,
 	_1g_1file_1info_1get_1content_1type_FUNC,
 	_1g_1file_1info_1get_1modification_1time_FUNC,
+	_1g_1file_1new_1for_1commandline_1arg_FUNC,
 	_1g_1file_1new_1for_1path_FUNC,
 	_1g_1file_1new_1for_1uri_FUNC,
 	_1g_1file_1query_1info_FUNC,
@@ -398,6 +397,7 @@ typedef enum {
 	_1g_1strtod_FUNC,
 	_1g_1thread_1init_FUNC,
 	_1g_1thread_1supported_FUNC,
+	_1g_1timeout_1add_FUNC,
 	_1g_1type_1add_1interface_1static_FUNC,
 	_1g_1type_1class_1peek_FUNC,
 	_1g_1type_1class_1peek_1parent_FUNC,
@@ -439,6 +439,7 @@ typedef enum {
 	_1gdk_1cairo_1reset_1clip_FUNC,
 	_1gdk_1cairo_1set_1source_1color_FUNC,
 	_1gdk_1cairo_1set_1source_1window_FUNC,
+	_1gdk_1color_1free_FUNC,
 	_1gdk_1color_1white_FUNC,
 	_1gdk_1colormap_1alloc_1color_FUNC,
 	_1gdk_1colormap_1free_1colors_FUNC,
@@ -649,6 +650,7 @@ typedef enum {
 	_1gtk_1calendar_1select_1month_FUNC,
 	_1gtk_1calendar_1set_1display_1options_FUNC,
 	_1gtk_1cell_1layout_1clear_FUNC,
+	_1gtk_1cell_1layout_1get_1cells_FUNC,
 	_1gtk_1cell_1layout_1pack_1start_FUNC,
 	_1gtk_1cell_1layout_1set_1attributes_FUNC,
 	_1gtk_1cell_1renderer_1get_1size_FUNC,
@@ -681,10 +683,6 @@ typedef enum {
 	_1gtk_1combo_1box_1remove_1text_FUNC,
 	_1gtk_1combo_1box_1set_1active_FUNC,
 	_1gtk_1combo_1box_1set_1focus_1on_1click_FUNC,
-	_1gtk_1combo_1disable_1activate_FUNC,
-	_1gtk_1combo_1new_FUNC,
-	_1gtk_1combo_1set_1case_1sensitive_FUNC,
-	_1gtk_1combo_1set_1popdown_1strings_FUNC,
 	_1gtk_1container_1add_FUNC,
 	_1gtk_1container_1forall_FUNC,
 	_1gtk_1container_1get_1border_1width_FUNC,
@@ -764,12 +762,6 @@ typedef enum {
 	_1gtk_1file_1filter_1get_1name_FUNC,
 	_1gtk_1file_1filter_1new_FUNC,
 	_1gtk_1file_1filter_1set_1name_FUNC,
-	_1gtk_1file_1selection_1get_1filename_FUNC,
-	_1gtk_1file_1selection_1get_1selections_FUNC,
-	_1gtk_1file_1selection_1hide_1fileop_1buttons_FUNC,
-	_1gtk_1file_1selection_1new_FUNC,
-	_1gtk_1file_1selection_1set_1filename_FUNC,
-	_1gtk_1file_1selection_1set_1select_1multiple_FUNC,
 	_1gtk_1fixed_1move_FUNC,
 	_1gtk_1fixed_1new_FUNC,
 	_1gtk_1fixed_1set_1has_1window_FUNC,
@@ -839,12 +831,6 @@ typedef enum {
 	_1gtk_1label_1set_1text__J_3B_FUNC,
 #endif
 	_1gtk_1label_1set_1text_1with_1mnemonic_FUNC,
-	_1gtk_1list_1append_1items_FUNC,
-	_1gtk_1list_1clear_1items_FUNC,
-	_1gtk_1list_1insert_1items_FUNC,
-	_1gtk_1list_1item_1new_1with_1label_FUNC,
-	_1gtk_1list_1remove_1items_FUNC,
-	_1gtk_1list_1select_1item_FUNC,
 	_1gtk_1list_1store_1append_FUNC,
 	_1gtk_1list_1store_1clear_FUNC,
 	_1gtk_1list_1store_1insert_FUNC,
@@ -875,8 +861,6 @@ typedef enum {
 #else
 	_1gtk_1list_1store_1set__JJI_3BJ_FUNC,
 #endif
-	_1gtk_1list_1unselect_1all_FUNC,
-	_1gtk_1list_1unselect_1item_FUNC,
 	_1gtk_1main_FUNC,
 	_1gtk_1main_1do_1event_FUNC,
 	_1gtk_1main_1iteration_FUNC,
@@ -909,6 +893,7 @@ typedef enum {
 	_1gtk_1notebook_1set_1show_1tabs_FUNC,
 	_1gtk_1notebook_1set_1tab_1pos_FUNC,
 	_1gtk_1object_1sink_FUNC,
+	_1gtk_1orientable_1set_1orientation_FUNC,
 	_1gtk_1page_1setup_1get_1bottom_1margin_FUNC,
 	_1gtk_1page_1setup_1get_1left_1margin_FUNC,
 	_1gtk_1page_1setup_1get_1orientation_FUNC,
@@ -1122,8 +1107,6 @@ typedef enum {
 	_1gtk_1text_1view_1set_1tabs_FUNC,
 	_1gtk_1text_1view_1set_1wrap_1mode_FUNC,
 	_1gtk_1text_1view_1window_1to_1buffer_1coords_FUNC,
-	_1gtk_1timeout_1add_FUNC,
-	_1gtk_1timeout_1remove_FUNC,
 	_1gtk_1toggle_1button_1get_1active_FUNC,
 	_1gtk_1toggle_1button_1get_1inconsistent_FUNC,
 	_1gtk_1toggle_1button_1new_FUNC,
@@ -1248,6 +1231,7 @@ typedef enum {
 	_1gtk_1tree_1view_1column_1set_1title_FUNC,
 	_1gtk_1tree_1view_1column_1set_1visible_FUNC,
 	_1gtk_1tree_1view_1column_1set_1widget_FUNC,
+	_1gtk_1tree_1view_1convert_1widget_1to_1bin_1window_1coords_FUNC,
 	_1gtk_1tree_1view_1create_1row_1drag_1icon_FUNC,
 	_1gtk_1tree_1view_1expand_1row_FUNC,
 	_1gtk_1tree_1view_1get_1background_1area_FUNC,
@@ -1277,7 +1261,6 @@ typedef enum {
 	_1gtk_1tree_1view_1set_1model_FUNC,
 	_1gtk_1tree_1view_1set_1rules_1hint_FUNC,
 	_1gtk_1tree_1view_1set_1search_1column_FUNC,
-	_1gtk_1tree_1view_1tree_1to_1widget_1coords_FUNC,
 	_1gtk_1tree_1view_1unset_1rows_1drag_1dest_FUNC,
 	_1gtk_1tree_1view_1widget_1to_1tree_1coords_FUNC,
 	_1gtk_1vbox_1new_FUNC,
@@ -1313,6 +1296,7 @@ typedef enum {
 	_1gtk_1widget_1get_1parent_1window_FUNC,
 	_1gtk_1widget_1get_1size_1request_FUNC,
 	_1gtk_1widget_1get_1style_FUNC,
+	_1gtk_1widget_1get_1tooltip_1text_FUNC,
 	_1gtk_1widget_1get_1toplevel_FUNC,
 	_1gtk_1widget_1grab_1focus_FUNC,
 	_1gtk_1widget_1hide_FUNC,
@@ -1418,6 +1402,7 @@ typedef enum {
 	_1pango_1attr_1underline_1color_1new_FUNC,
 	_1pango_1attr_1underline_1new_FUNC,
 	_1pango_1attr_1weight_1new_FUNC,
+	_1pango_1attribute_1copy_FUNC,
 	_1pango_1cairo_1context_1get_1font_1options_FUNC,
 	_1pango_1cairo_1context_1set_1font_1options_FUNC,
 	_1pango_1cairo_1create_1layout_FUNC,
@@ -1718,16 +1703,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2J_FUNC,
 #endif
 #ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_GtkCombo_2I_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_GtkCombo_2J_FUNC,
-#endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2I_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2J_FUNC,
-#endif
-#ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2J_FUNC,
@@ -1804,4 +1779,5 @@ typedef enum {
 #endif
 	pangoLayoutNewProc_1CALLBACK_FUNC,
 	realpath_FUNC,
+	strcmp_FUNC,
 } OS_FUNCS;

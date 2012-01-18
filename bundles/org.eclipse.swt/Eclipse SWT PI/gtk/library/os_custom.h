@@ -30,7 +30,7 @@
 #define LIB_GTK "libgtk-x11-2.0.a(libgtk-x11-2.0.so.0)"
 #define LIB_GDK "libgdk-x11-2.0.a(libgdk-x11-2.0.so.0)"
 #define LIB_ATK "libatk-1.0.a(libatk-1.0.so.0)"
-#define LIB_PANGO "libpango-1.0.a(libpango-1.0.so.0"
+#define LIB_PANGO "libpango-1.0.a(libpango-1.0.so.0)"
 #define LIB_PANGOCAIRO "libpangocairo-1.0.a(libpangocairo-1.0.so.0)"
 #define LIB_GIO "libgio-2.0.a(libgio-2.0.so.0)"
 #define LIB_FONTCONFIG "libfontconfig.a(libfontconfig.so.1)"
@@ -74,6 +74,7 @@
 #define gtk_calendar_set_display_options_LIB LIB_GTK
 #define gtk_clipboard_store_LIB LIB_GTK
 #define gtk_clipboard_set_can_store_LIB LIB_GTK
+#define gtk_cell_layout_get_cells_LIB LIB_GTK
 #define gtk_cell_layout_set_attributes_LIB LIB_GTK
 #define gtk_cell_layout_clear_LIB LIB_GTK
 #define gtk_cell_layout_pack_start_LIB LIB_GTK
@@ -122,13 +123,19 @@
 #define gtk_icon_info_free_LIB LIB_GTK
 #define gtk_icon_theme_lookup_by_gicon_LIB LIB_GTK
 #define gtk_icon_theme_get_default_LIB LIB_GTK
+#define gtk_menu_item_remove_submenu_LIB LIB_GTK
 #define gtk_menu_shell_set_take_focus_LIB LIB_GTK
 #define gtk_window_set_keep_below_LIB LIB_GTK
+#define gtk_toolbar_set_orientation_LIB LIB_GTK
 #define gtk_tooltip_trigger_tooltip_query_LIB LIB_GTK
+#define gtk_tooltips_set_tip_LIB LIB_GTK
 #define gtk_tree_selection_count_selected_rows_LIB LIB_GTK
 #define gtk_tree_selection_get_selected_rows_LIB LIB_GTK
+#define gtk_tree_view_column_get_cell_renderers_LIB LIB_GTK
 #define gtk_tree_view_column_cell_get_position_LIB LIB_GTK
+#define gtk_tree_view_convert_widget_to_bin_window_coords_LIB LIB_GTK
 #define gtk_tree_view_set_grid_lines_LIB LIB_GTK
+#define gtk_tree_view_widget_to_tree_coords_LIB LIB_GTK
 #define gtk_entry_set_alignment_LIB LIB_GTK
 #define gtk_entry_set_icon_from_stock_LIB LIB_GTK
 #define gtk_entry_set_icon_sensitive_LIB LIB_GTK
@@ -159,6 +166,7 @@
 #define gtk_window_set_opacity_LIB LIB_GTK
 #define gtk_window_set_skip_taskbar_hint_LIB LIB_GTK
 #define gtk_widget_is_composited_LIB LIB_GTK
+#define gtk_widget_get_tooltip_text_LIB LIB_GTK
 #define gtk_widget_set_tooltip_text_LIB LIB_GTK
 #define gdk_x11_screen_get_window_manager_name_LIB LIB_GDK
 #define gdk_x11_screen_lookup_visual_LIB LIB_GDK
@@ -188,6 +196,7 @@
 #define gdk_cairo_region_LIB LIB_GDK
 #define gdk_cairo_create_LIB LIB_GDK
 #define gtk_enumerate_printers_LIB LIB_GTK
+#define gtk_orientable_set_orientation_LIB LIB_GTK
 #define gtk_page_setup_get_bottom_margin_LIB LIB_GTK
 #define gtk_page_setup_get_left_margin_LIB LIB_GTK
 #define gtk_page_setup_get_orientation_LIB LIB_GTK
@@ -282,6 +291,7 @@
 #define g_file_icon_get_file_LIB LIB_GIO
 #define g_file_info_get_content_type_LIB LIB_GIO
 #define g_file_info_get_modification_time_LIB LIB_GIO
+#define g_file_new_for_commandline_arg_LIB LIB_GIO
 #define g_file_new_for_path_LIB LIB_GIO
 #define g_file_new_for_uri_LIB LIB_GIO
 #define g_file_read_LIB LIB_GIO
@@ -315,6 +325,7 @@
 #define GTK_TEXTVIEW_IM_CONTEXT(arg0) (arg0)->im_context
 #define GTK_TOOLTIPS_TIP_WINDOW(arg0) (arg0)->tip_window
 #define GTK_TOOLTIPS_SET_ACTIVE(arg0, arg1) (arg0)->active_tips_data = arg1
+#define GTK_TOOLTIPS_GET_TIP_TEXT(arg0) (arg0)->tip_text
 #define GTK_WIDGET_Y(arg0) ((GtkWidget *)arg0)->allocation.y
 #define GTK_WIDGET_SET_Y(arg0, arg1) (arg0)->allocation.y = arg1
 #define GTK_WIDGET_REQUISITION_WIDTH(arg0) (arg0)->requisition.width

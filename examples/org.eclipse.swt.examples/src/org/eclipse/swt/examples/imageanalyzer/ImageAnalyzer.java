@@ -31,8 +31,8 @@ public class ImageAnalyzer {
 	Label typeLabel, sizeLabel, depthLabel, transparentPixelLabel,
 		timeToLoadLabel, screenSizeLabel, backgroundPixelLabel,
 		locationLabel, disposalMethodLabel, delayTimeLabel,
-		repeatCountLabel, paletteLabel, dataLabel, statusLabel;
-	Combo backgroundCombo, scaleXCombo, scaleYCombo, alphaCombo;
+		repeatCountLabel, compressionRatioLabel, paletteLabel, dataLabel, statusLabel;
+	Combo backgroundCombo, imageTypeCombo, compressionCombo, scaleXCombo, scaleYCombo, alphaCombo;
 	Button incrementalCheck, transparentCheck, maskCheck, backgroundCheck;
 	Button previousButton, nextButton, animateButton;
 	StyledText dataText;
@@ -45,6 +45,7 @@ public class ImageAnalyzer {
 	
 	int paletteWidth = 140; // recalculated and used as a width hint
 	int ix = 0, iy = 0, py = 0; // used to scroll the image and palette
+	int compression; // used to modify the compression ratio of the image
 	float xscale = 1, yscale = 1; // used to scale the image
 	int alpha = 255; // used to modify the alpha value of the image
 	boolean incremental = false; // used to incrementally display an image
@@ -71,8 +72,8 @@ public class ImageAnalyzer {
 	static final int ALPHA_X = 1;
 	static final int ALPHA_Y = 2;
 	static final String[] OPEN_FILTER_EXTENSIONS = new String[] {
-			"*.bmp; *.gif; *.ico; *.jfif; *.jpeg; *.jpg; *.png; *.tif; *.tiff",
-			"*.bmp", "*.gif", "*.ico", "*.jpg; *.jpeg; *.jfif", "*.png", "*.tif; *.tiff" };
+			"*.bmp;*.gif;*.ico;*.jfif;*.jpeg;*.jpg;*.png;*.tif;*.tiff",
+			"*.bmp", "*.gif", "*.ico", "*.jpg;*.jpeg;*.jfif", "*.png", "*.tif;*.tiff" };
 	static final String[] OPEN_FILTER_NAMES = new String[] {
 			bundle.getString("All_images") + " (bmp, gif, ico, jfif, jpeg, jpg, png, tif, tiff)",
 			"BMP (*.bmp)", "GIF (*.gif)", "ICO (*.ico)", "JPEG (*.jpg, *.jpeg, *.jfif)",
@@ -83,7 +84,6 @@ public class ImageAnalyzer {
 			"Uncompressed BMP (*.bmp)", "RLE Compressed BMP (*.bmp)", "GIF (*.gif)",
 			"ICO (*.ico)", "JPEG (*.jpg)", "PNG (*.png)",
 			"TIFF (*.tif)", "OS/2 BMP (*.bmp)" };
-
 	class TextPrompter extends Dialog {
 		String message = "";
 		String result = null;
@@ -260,6 +260,60 @@ public class ImageAnalyzer {
 			}
 		});
 		
+		// Combo to change the compression ratio.
+		group = new Group(controls, SWT.NONE);
+		group.setLayout(new GridLayout(3, true));
+		group.setText(bundle.getString("Save_group"));
+		imageTypeCombo = new Combo(group, SWT.DROP_DOWN | SWT.READ_ONLY);
+		String[] types = {"JPEG", "PNG", "GIF", "ICO", "TIFF", "BMP"};
+		for (int i = 0; i < types.length; i++) {
+			imageTypeCombo.add(types[i]);
+		}
+		imageTypeCombo.select(imageTypeCombo.indexOf("JPEG"));
+		imageTypeCombo.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				int index = imageTypeCombo.getSelectionIndex();
+				switch(index) {
+				case 0:
+					compressionCombo.setEnabled(true);
+					compressionRatioLabel.setEnabled(true);
+					if (compressionCombo.getItemCount() == 100) break;
+					compressionCombo.removeAll();
+					for (int i = 0; i < 100; i++) {
+						compressionCombo.add(String.valueOf(i + 1));
+					}
+					compressionCombo.select(compressionCombo.indexOf("75"));
+					break;
+				case 1:
+					compressionCombo.setEnabled(true);
+					compressionRatioLabel.setEnabled(true);
+					if (compressionCombo.getItemCount() == 10) break;
+					compressionCombo.removeAll();
+					for (int i = 0; i < 4; i++) {
+						compressionCombo.add(String.valueOf(i));
+					}
+					compressionCombo.select(0);
+					break;
+				case 2:
+				case 3:
+				case 4:
+				case 5:
+					compressionCombo.setEnabled(false);
+					compressionRatioLabel.setEnabled(false);
+					break;
+				}
+			}
+		});
+		imageTypeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		compressionRatioLabel = new Label(group, SWT.NONE);
+		compressionRatioLabel.setText(bundle.getString("Compression"));
+		compressionRatioLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+		compressionCombo = new Combo(group, SWT.DROP_DOWN | SWT.READ_ONLY);
+		for (int i = 0; i < 100; i++) {
+			compressionCombo.add(String.valueOf(i + 1));
+		}
+		compressionCombo.select(compressionCombo.indexOf("75"));
+		compressionCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		// Combo to change the x scale.
 		String[] values = {
 			"0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1",
@@ -862,7 +916,7 @@ public class ImageAnalyzer {
 		lastPath = fileChooser.getFilterPath();
 		if (filename == null)
 			return;
-
+		showFileType(filename);
 		Cursor waitCursor = display.getSystemCursor(SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
 		imageCanvas.setCursor(waitCursor);
@@ -1040,8 +1094,9 @@ public class ImageAnalyzer {
 		try {
 			// Save the current image to the current file.
 			loader.data = new ImageData[] {imageData};
+			if (imageData.type == SWT.IMAGE_JPEG) loader.compression = compressionCombo.indexOf(compressionCombo.getText()) + 1;
+			if (imageData.type == SWT.IMAGE_PNG) loader.compression = compressionCombo.indexOf(compressionCombo.getText());
 			loader.save(fileName, imageData.type);
-			
 		} catch (SWTException e) {
 			showErrorDialog(bundle.getString("Saving_lc"), fileName, e);
 		} catch (SWTError e) {
@@ -1065,10 +1120,30 @@ public class ImageAnalyzer {
 			if (nameStart > -1) {
 				name = name.substring(nameStart + 1);
 			}
-			fileChooser.setFileName(name);
+			fileChooser.setFileName(name.substring(0, name.indexOf(".")) + "." + imageTypeCombo.getText().toLowerCase());
 		}
 		fileChooser.setFilterExtensions(SAVE_FILTER_EXTENSIONS);
 		fileChooser.setFilterNames(SAVE_FILTER_NAMES);
+		switch (imageTypeCombo.getSelectionIndex()) {
+		case 0:
+			fileChooser.setFilterIndex(4);
+			break;
+		case 1:
+			fileChooser.setFilterIndex(5);
+			break;
+		case 2:
+			fileChooser.setFilterIndex(2);
+			break;
+		case 3:
+			fileChooser.setFilterIndex(3);
+			break;
+		case 4:
+			fileChooser.setFilterIndex(6);
+			break;
+		case 5:
+			fileChooser.setFilterIndex(0);
+			break;
+		}
 		String filename = fileChooser.open();
 		lastPath = fileChooser.getFilterPath();
 		if (filename == null)
@@ -1118,6 +1193,7 @@ public class ImageAnalyzer {
 			}
 			
 			if (!multi) loader.data = new ImageData[] {imageData};
+			loader.compression = compressionCombo.indexOf(compressionCombo.getText());
 			loader.save(filename, filetype);
 			
 			/* Restore the previous transparency setting. */
@@ -1298,8 +1374,7 @@ public class ImageAnalyzer {
 		} else {
 			imageCanvas.setBackground(null);
 		}
-	}
-	
+	}	
 	/*
 	 * Called when the ScaleX combo selection changes.
 	 */
@@ -1725,7 +1800,8 @@ public class ImageAnalyzer {
 							   new Integer(imageData.height)});
 		sizeLabel.setText(string);
 
-		string = createMsg(bundle.getString("Depth_value"), new Integer(imageData.depth));
+		string = createMsg(bundle.getString("Depth_value"),
+				new Object[] {new Integer(imageData.depth), new Integer(display.getDepth())});
 		depthLabel.setText(string);
 
 		string = createMsg(bundle.getString("Transparent_pixel_value"), pixelInfo(imageData.transparentPixel));
@@ -2371,6 +2447,48 @@ public class ImageAnalyzer {
 		if (ext.equalsIgnoreCase("tif") || ext.equalsIgnoreCase("tiff"))
 			return SWT.IMAGE_TIFF;
 		return SWT.IMAGE_UNDEFINED;
+	}
+	
+	void showFileType(String filename) {
+		String ext = filename.substring(filename.lastIndexOf('.') + 1);
+		if (ext.equalsIgnoreCase("jpg") || ext.equalsIgnoreCase("jpeg") || ext.equalsIgnoreCase("jfif")) {
+			imageTypeCombo.select(0);
+			compressionCombo.setEnabled(true);
+			compressionRatioLabel.setEnabled(true);
+			if (compressionCombo.getItemCount() == 100) return;
+			compressionCombo.removeAll();
+			for (int i = 0; i < 100; i++) {
+				compressionCombo.add(String.valueOf(i + 1));
+			}
+			compressionCombo.select(compressionCombo.indexOf("75"));
+			return;
+		}
+		if (ext.equalsIgnoreCase("png")) {
+			imageTypeCombo.select(1);
+			compressionCombo.setEnabled(true);
+			compressionRatioLabel.setEnabled(true);
+			if (compressionCombo.getItemCount() == 10) return;
+			compressionCombo.removeAll();
+			for (int i = 0; i < 4; i++) {
+				compressionCombo.add(String.valueOf(i));
+			}
+			compressionCombo.select(0);
+			return;
+		} 
+		if (ext.equalsIgnoreCase("bmp")) {
+			imageTypeCombo.select(5);
+		}
+		if (ext.equalsIgnoreCase("gif")) {
+			imageTypeCombo.select(2);
+		}
+		if (ext.equalsIgnoreCase("ico")) {
+			imageTypeCombo.select(3);
+		}
+		if (ext.equalsIgnoreCase("tif") || ext.equalsIgnoreCase("tiff")) {
+			imageTypeCombo.select(4);
+		}
+		compressionCombo.setEnabled(false);
+		compressionRatioLabel.setEnabled(false);	
 	}
 	
 	static String createMsg(String msg, Object[] args) {

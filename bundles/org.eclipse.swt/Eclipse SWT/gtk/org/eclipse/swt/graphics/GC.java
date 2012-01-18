@@ -2879,6 +2879,9 @@ double[] identity() {
 	} else {
 		Cairo.cairo_matrix_init_identity(identity);
 	}
+	if (data.identity != null) {
+		Cairo.cairo_matrix_multiply(identity, data.identity, identity);
+	}
 	return identity;
 }
 

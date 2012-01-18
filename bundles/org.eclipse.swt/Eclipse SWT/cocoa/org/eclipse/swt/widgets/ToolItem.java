@@ -1123,6 +1123,7 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
+	if (string.equals (getText ())) return;
 	super.setText (string);
 	NSButton widget = (NSButton)button;
 	if (parent.nsToolbar != null) {
@@ -1167,6 +1168,8 @@ public void setText (String string) {
  */
 public void setToolTipText (String string) {
 	checkWidget();
+	if (string == null && toolTipText == null) return;
+	if (string != null && string.equals (toolTipText)) return;
     toolTipText = string;
 	if (parent.nsToolbar != null) {
         char[] chars = new char [toolTipText.length ()];

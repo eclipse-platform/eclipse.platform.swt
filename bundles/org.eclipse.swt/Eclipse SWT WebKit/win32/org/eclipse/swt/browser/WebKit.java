@@ -425,7 +425,7 @@ Object convertToJava (int /*long*/ ctx, int /*long*/ value) {
 	int type = WebKit_win32.JSValueGetType (ctx, value);
 	switch (type) {
 		case WebKit_win32.kJSTypeBoolean: {
-			int result = WebKit_win32.JSValueToBoolean (ctx, value);
+			int result = (int)WebKit_win32.JSValueToNumber (ctx, value, null);
 			return new Boolean (result != 0);
 		}
 		case WebKit_win32.kJSTypeNumber: {

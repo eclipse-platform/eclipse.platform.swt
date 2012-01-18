@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * TableCursor example snippet: navigate a table cells with arrow keys. 
+ * TableCursor example snippet: navigate a Table's cells with the arrow keys. 
  * Edit when user hits Return key.  Exit edit mode by hitting Escape (cancels edit)
  * or Return (applies edit to table).
  *
@@ -143,20 +143,15 @@ public static void main(String[] args) {
 	// This signals the end of the multiple selection task.
 	table.addKeyListener(new KeyAdapter() {
 		public void keyReleased(KeyEvent e) {
-			if (e.keyCode == SWT.CONTROL && (e.stateMask & SWT.SHIFT) != 0)
-				return;
-			if (e.keyCode == SWT.SHIFT && (e.stateMask & SWT.CONTROL) != 0)
-				return;
-			if (e.keyCode != SWT.CONTROL
-				&& (e.stateMask & SWT.CONTROL) != 0)
-				return;
-			if (e.keyCode != SWT.SHIFT && (e.stateMask & SWT.SHIFT) != 0)
-				return;
+			if (e.keyCode == SWT.CONTROL && (e.stateMask & SWT.SHIFT) != 0) return;
+			if (e.keyCode == SWT.SHIFT && (e.stateMask & SWT.CONTROL) != 0) return;
+			if (e.keyCode != SWT.CONTROL && (e.stateMask & SWT.CONTROL) != 0) return;
+			if (e.keyCode != SWT.SHIFT && (e.stateMask & SWT.SHIFT) != 0) return;
 
 			TableItem[] selection = table.getSelection();
 			TableItem row = (selection.length == 0) ? table.getItem(table.getTopIndex()) : selection[0];
 			table.showItem(row);
-			cursor.setSelection(row, 0);
+			cursor.setSelection(row, cursor.getColumn());
 			cursor.setVisible(true);
 			cursor.setFocus();
 		}

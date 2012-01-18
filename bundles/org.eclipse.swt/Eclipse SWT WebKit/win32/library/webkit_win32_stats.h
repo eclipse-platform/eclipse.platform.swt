@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2011 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -82,7 +82,6 @@ typedef enum {
 	JSValueMakeNumber_FUNC,
 	JSValueMakeString_FUNC,
 	JSValueMakeUndefined_FUNC,
-	JSValueToBoolean_FUNC,
 	JSValueToNumber_FUNC,
 	JSValueToStringCopy_FUNC,
 	WebKitCreateInstance_FUNC,

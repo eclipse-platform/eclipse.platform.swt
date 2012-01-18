@@ -34,7 +34,7 @@
 	
 	<property name="repo.src" value="../../../eclipse.platform.swt"/>
 	<property name="repo.bin" value="../../../eclipse.platform.swt.binaries"/>
-	<property name="repo.common" value="../../../eclipse.platform.common"/>
+	<property name="repo.releng" value="../../../eclipse.platform.releng.maps"/>
 
 	<property name="src_common" value="'bundles/org.eclipse.swt/Eclipse SWT/common/library' 'bundles/org.eclipse.swt/Eclipse SWT Mozilla/common/library' 'bundles/org.eclipse.swt/Eclipse SWT PI/common/library'"/>
 	<property name="src_win32" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT AWT/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT OpenGL/win32/library' 'bundles/org.eclipse.swt/Eclipse SWT WebKit/win32/library'"/>
@@ -50,7 +50,7 @@
 	<property name="file_make_common" value="bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
 	<property name="file_version" value="bundles/org.eclipse.swt/Eclipse SWT/common/version.txt"/>
 	<property name="file_build_notes" value="bundles/org.eclipse.swt/buildnotes_swt.html"/>
-	<property name="file_swt_map" value="maps/org.eclipse.releng/maps/swt.map"/>
+	<property name="file_swt_map" value="org.eclipse.releng/maps/swt.map"/>
 
 	<target name="check_libraries" depends="get_version">
 		<antcall target="check_fragment_libraries">
@@ -591,7 +591,7 @@
 	
 	<!-- Set swt_tag to the current tag in the swt map file -->
 	<target name="get_tag" unless="swt_tag">
-		<loadfile property="swt_tag" srcfile="${repo.common}/${file_swt_map}">
+		<loadfile property="swt_tag" srcfile="${repo.releng}/${file_swt_map}">
 			<filterchain>
 				<tokenfilter delimoutput="">
 					<containsstring contains="plugin@org.eclipse.swt=GIT,tag="/>
@@ -715,15 +715,15 @@
 	
 	<target name="update_swt_map" depends="get_new_tag">
 		<!-- update and commit map file -->
-		<replaceregexp file="${repo.common}/${file_swt_map}" match="=v\d\d\d\d[a-z]?" replace="=v${swt_new_tag}" byline="true"/>
+		<replaceregexp file="${repo.releng}/${file_swt_map}" match="=v\d\d\d\d[a-z]?" replace="=v${swt_new_tag}" byline="true"/>
 		
-		<exec dir="${repo.common}" executable="git" failonerror="true">
+		<exec dir="${repo.releng}" executable="git" failonerror="true">
 			<arg line="add '${file_swt_map}'"/>
 		</exec>
-		<exec dir="${repo.common}" executable="git" failonerror="true">
+		<exec dir="${repo.releng}" executable="git" failonerror="true">
 			<arg line="status"/>
 		</exec>
-		<exec dir="${repo.common}" executable="git" failonerror="true">
+		<exec dir="${repo.releng}" executable="git" failonerror="true">
 			<arg line="commit -m 'SWT contribution v${swt_new_tag}'"/>
 		</exec>
 	</target>
@@ -1048,18 +1048,18 @@
 			<arg line="reset --hard origin/${TAG}"/>
 		</exec>
 		<antcall target="init_repo">
-			<param name="repo" value="eclipse.platform.common"/>
-			<param name="repo.exists" value="repo.common.exists"/>
+			<param name="repo" value="eclipse.platform.releng.maps"/>
+			<param name="repo.exists" value="repo.releng.exists"/>
 		</antcall>
-		<exec dir="../../../../${TAG}/eclipse.platform.common" executable="git"  failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.releng.maps" executable="git"  failonerror="true">
 			<arg line="fetch"/>
 		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.common" executable="git"  failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.releng.maps" executable="git"  failonerror="true">
 			<arg line="reset --hard origin/${TAG}"/>
 		</exec>
 	</target>
 
-	<target name="push_remote">
+	<target name="push_remote" depends="get_tag">
 		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
 			<arg line="fetch"/>
 		</exec>
@@ -1078,20 +1078,62 @@
 		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
 			<arg line="push origin ${TAG}"/>
 		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.common" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.releng.maps" executable="git" failonerror="true">
 			<arg line="fetch"/>
 		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.common" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.releng.maps" executable="git" failonerror="true">
 			<arg line="rebase origin/${TAG}"/>
 		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.common" executable="git" failonerror="true">
+		<exec dir="../../../../${TAG}/eclipse.platform.releng.maps" executable="git" failonerror="true">
 			<arg line="push origin ${TAG}"/>
 		</exec>
 		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="push --tags"/>
+			<arg line="push origin refs/tags/${swt_tag}"/>
 		</exec>
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
-			<arg line="push --tags"/>
+			<arg line="push origin refs/tags/${swt_tag}"/>
+		</exec>
+	</target>
+	
+	<target name="push_integration">
+		<property name="TAG" value="master"/>
+		<!-- src -->
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
+			<arg line="checkout master"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
+			<arg line="reset --hard origin/${TAG}"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
+			<arg line="checkout integration"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
+			<arg line="merge master"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
+			<arg line="push origin integration"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
+			<arg line="checkout master"/>
+		</exec>
+		<!-- bin -->
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+			<arg line="checkout master"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+			<arg line="reset --hard origin/${TAG}"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+			<arg line="checkout integration"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+			<arg line="merge master"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+			<arg line="push origin integration"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
+			<arg line="checkout master"/>
 		</exec>
 	</target>
 

@@ -3562,6 +3562,9 @@ void releaseWidget () {
 	cursor = null;
 	toolTipText = null;
 	layoutData = null;
+	if (accessible != null) {
+		accessible.internal_dispose_Accessible ();
+	}
 	accessible = null;
 	region = null;
 }

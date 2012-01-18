@@ -1768,6 +1768,7 @@ void unloadIntoByteStream(ImageLoader loader) {
 	}
 	quantizationTables = new int[4][];
 	JPEGQuantizationTable chromDQT = JPEGQuantizationTable.defaultChrominanceTable();
+	int encoderQFactor = loader.compression >= 1 && loader.compression <= 100 ? loader.compression : 75;
 	chromDQT.scaleBy(encoderQFactor);
 	int[] jpegDQTKeys = chromDQT.getQuantizationTablesKeys();
 	int[][] jpegDQTValues = chromDQT.getQuantizationTablesValues();
