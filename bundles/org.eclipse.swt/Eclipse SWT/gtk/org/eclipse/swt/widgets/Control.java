@@ -112,7 +112,10 @@ void drawBackground (Control control, int /*long*/ window, int /*long*/ region, 
 	if (OS.USE_CAIRO) {
 		int /*long*/ cairo = OS.gdk_cairo_create(window);
 		if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
-		if (region != 0) OS.gdk_cairo_region(cairo, region);
+		if (region != 0) {
+			OS.gdk_cairo_region(cairo, region);
+			Cairo.cairo_clip(cairo);
+		}
 		if (control.backgroundImage != null) {
 			Point pt = display.map (this, control, 0, 0);
 			Cairo.cairo_translate (cairo, -pt.x, -pt.y);
