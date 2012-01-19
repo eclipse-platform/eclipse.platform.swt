@@ -80,6 +80,8 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 		
 		Tree tree = (Tree) control;
 		if (OS.GTK_VERSION < OS.VERSION (2, 2, 0)) return null;
+		//TODO: Use Cairo
+		if (OS.USE_CAIRO) return null;
 		//TEMPORARY CODE
 		if (tree.isListening(SWT.EraseItem) || tree.isListening (SWT.PaintItem)) return null;
 		/*

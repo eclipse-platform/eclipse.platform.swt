@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2009 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2012 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -24,8 +24,8 @@
 
 #ifdef NATIVE_STATS
 
-int Cairo_nativeFunctionCount = 145;
-int Cairo_nativeFunctionCallCount[145];
+int Cairo_nativeFunctionCount = 157;
+int Cairo_nativeFunctionCallCount[157];
 char * Cairo_nativeFunctionNames[] = {
 	"CAIRO_1VERSION_1ENCODE",
 	"_1cairo_1append_1path",
@@ -50,6 +50,7 @@ char * Cairo_nativeFunctionNames[] = {
 	"_1cairo_1font_1options_1destroy",
 	"_1cairo_1font_1options_1get_1antialias",
 	"_1cairo_1font_1options_1set_1antialias",
+	"_1cairo_1format_1stride_1for_1width",
 	"_1cairo_1get_1antialias",
 	"_1cairo_1get_1current_1point",
 	"_1cairo_1get_1fill_1rule",
@@ -70,7 +71,10 @@ char * Cairo_nativeFunctionNames[] = {
 	"_1cairo_1identity_1matrix",
 	"_1cairo_1image_1surface_1create",
 	"_1cairo_1image_1surface_1create_1for_1data",
+	"_1cairo_1image_1surface_1get_1data",
+	"_1cairo_1image_1surface_1get_1format",
 	"_1cairo_1image_1surface_1get_1height",
+	"_1cairo_1image_1surface_1get_1stride",
 	"_1cairo_1image_1surface_1get_1width",
 	"_1cairo_1in_1fill",
 	"_1cairo_1in_1stroke",
@@ -108,7 +112,9 @@ char * Cairo_nativeFunctionNames[] = {
 	"_1cairo_1pattern_1set_1filter",
 	"_1cairo_1pattern_1set_1matrix",
 	"_1cairo_1pdf_1surface_1set_1size",
+	"_1cairo_1pop_1group_1to_1source",
 	"_1cairo_1ps_1surface_1set_1size",
+	"_1cairo_1push_1group",
 	"_1cairo_1rectangle",
 	"_1cairo_1reference",
 	"_1cairo_1rel_1curve_1to",
@@ -149,8 +155,11 @@ char * Cairo_nativeFunctionNames[] = {
 	"_1cairo_1surface_1create_1similar",
 	"_1cairo_1surface_1destroy",
 	"_1cairo_1surface_1finish",
+	"_1cairo_1surface_1flush",
+	"_1cairo_1surface_1get_1content",
 	"_1cairo_1surface_1get_1type",
 	"_1cairo_1surface_1get_1user_1data",
+	"_1cairo_1surface_1mark_1dirty",
 	"_1cairo_1surface_1reference",
 	"_1cairo_1surface_1set_1device_1offset",
 	"_1cairo_1surface_1set_1fallback_1resolution",
@@ -163,6 +172,9 @@ char * Cairo_nativeFunctionNames[] = {
 	"_1cairo_1user_1to_1device_1distance",
 	"_1cairo_1xlib_1surface_1create",
 	"_1cairo_1xlib_1surface_1create_1for_1bitmap",
+	"_1cairo_1xlib_1surface_1get_1drawable",
+	"_1cairo_1xlib_1surface_1get_1height",
+	"_1cairo_1xlib_1surface_1get_1width",
 	"_1cairo_1xlib_1surface_1set_1size",
 	"cairo_1font_1extents_1t_1sizeof",
 	"cairo_1path_1data_1t_1sizeof",

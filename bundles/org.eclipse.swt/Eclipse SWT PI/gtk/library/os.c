@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -5026,6 +5026,24 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1cairo_1set_1source_1window
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1set_1source_1window)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1cairo_1set_1source_1window_FUNC);
+/*
+	gdk_cairo_set_source_window(arg0, (GdkWindow *)arg1, arg2, arg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_cairo_set_source_window)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GdkWindow *, jint, jint))fp)(arg0, (GdkWindow *)arg1, arg2, arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1cairo_1set_1source_1window_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1color_1free
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1color_1free)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -6820,6 +6838,26 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1clear_1area)
 	OS_NATIVE_ENTER(env, that, _1gdk_1window_1clear_1area_FUNC);
 	gdk_window_clear_area((GdkWindow *)arg0, arg1, arg2, arg3, arg4);
 	OS_NATIVE_EXIT(env, that, _1gdk_1window_1clear_1area_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1window_1create_1similar_1surface
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1window_1create_1similar_1surface)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1window_1create_1similar_1surface_FUNC);
+/*
+	rc = (jintLong)gdk_window_create_similar_surface((GdkWindow *)arg0, arg1, arg2, arg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_window_create_similar_surface)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkWindow *, jint, jint, jint))fp)((GdkWindow *)arg0, arg1, arg2, arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1window_1create_1similar_1surface_FUNC);
+	return rc;
 }
 #endif
 

@@ -109,6 +109,36 @@ void deregister () {
 }
 
 void drawBackground (Control control, int /*long*/ window, int /*long*/ region, int x, int y, int width, int height) {
+	if (OS.USE_CAIRO) {
+		int /*long*/ cairo = OS.gdk_cairo_create(window);
+		if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
+		if (region != 0) {
+			OS.gdk_cairo_region(cairo, region);
+			Cairo.cairo_clip(cairo);
+		}
+		if (control.backgroundImage != null) {
+			Point pt = display.map (this, control, 0, 0);
+			Cairo.cairo_translate (cairo, -pt.x, -pt.y);
+			x += pt.x;
+			y += pt.y;
+			int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface (control.backgroundImage.surface);
+			if (pattern == 0) error (SWT.ERROR_NO_HANDLES);
+			Cairo.cairo_pattern_set_extend (pattern, Cairo.CAIRO_EXTEND_REPEAT);
+			if ((style & SWT.MIRRORED) != 0) {
+				double[] matrix = {-1, 0, 0, 1, 0, 0};
+				Cairo.cairo_pattern_set_matrix(pattern, matrix);
+			}
+			Cairo.cairo_set_source (cairo, pattern);
+			Cairo.cairo_pattern_destroy (pattern);
+		} else {
+			GdkColor color = control.getBackgroundColor ();
+			Cairo.cairo_set_source_rgba (cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, 1);
+		}
+		Cairo.cairo_rectangle (cairo, x, y, width, height);
+		Cairo.cairo_fill (cairo);
+		Cairo.cairo_destroy(cairo);
+		return;
+	}
 	int /*long*/ gdkGC = OS.gdk_gc_new (window);
 	if (region != 0) OS.gdk_gc_set_clip_region (gdkGC, region);
 	if (control.backgroundImage != null) {
@@ -359,7 +389,9 @@ public boolean print (GC gc) {
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
 	GCData data = gc.getGCData ();
 	OS.gdk_window_process_updates (window, true);
-	printWidget (gc, data.drawable, OS.gdk_drawable_get_depth (data.drawable), 0, 0);
+	int /*long*/ drawable = data.drawable;
+	if (drawable == 0) drawable = OS.GDK_ROOT_PARENT();
+	printWidget (gc, drawable, OS.gdk_drawable_get_depth (drawable), 0, 0);
 	return true;
 }
 
@@ -2959,7 +2991,6 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	GCData data = new GCData ();
 	data.damageRgn = gdkEvent.region;
 	GC gc = event.gc = GC.gtk_new (this, data);
-	OS.gdk_gc_set_clip_region (gc.handle, gdkEvent.region);
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
 	event.gc = null;
@@ -3105,7 +3136,7 @@ int /*long*/ gtk_realize (int /*long*/ widget) {
 		OS.gtk_im_context_set_client_window (imHandle, window);
 	}
 	if (backgroundImage != null) {
-		setBackgroundPixmap (backgroundImage.pixmap);
+		setBackgroundPixmap (backgroundImage);
 	}
 	return 0;
 }
@@ -3133,7 +3164,7 @@ int /*long*/ gtk_show_help (int /*long*/ widget, int /*long*/ helpType) {
 
 int /*long*/ gtk_style_set (int /*long*/ widget, int /*long*/ previousStyle) {
 	if (backgroundImage != null) {
-		setBackgroundPixmap (backgroundImage.pixmap);
+		setBackgroundPixmap (backgroundImage);
 	}
 	return 0;
 }
@@ -3196,8 +3227,13 @@ public int /*long*/ internal_new_GC (GCData data) {
 	checkWidget ();
 	int /*long*/ window = paintWindow ();
 	if (window == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	int /*long*/ gdkGC = OS.gdk_gc_new (window);
-	if (gdkGC == 0) error (SWT.ERROR_NO_HANDLES);	
+	int /*long*/ gc;
+	if (OS.USE_CAIRO) {
+		gc = OS.gdk_cairo_create (window);
+	} else {
+		gc = OS.gdk_gc_new (window);
+	}
+	if (gc == 0) error (SWT.ERROR_NO_HANDLES);	
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
@@ -3215,7 +3251,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 		data.background = control.getBackgroundColor ();
 		data.font = font != null ? font : defaultFont (); 
 	}	
-	return gdkGC;
+	return gc;
 }
 
 int /*long*/ imHandle () {
@@ -3237,9 +3273,13 @@ int /*long*/ imHandle () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public void internal_dispose_GC (int /*long*/ gdkGC, GCData data) {
+public void internal_dispose_GC (int /*long*/ gc, GCData data) {
 	checkWidget ();
-	OS.g_object_unref (gdkGC);
+	if (OS.USE_CAIRO) {
+		Cairo.cairo_destroy (gc);
+	} else {
+		OS.g_object_unref (gc);
+	}
 }
 
 /**
@@ -3766,7 +3806,7 @@ public void setBackgroundImage (Image image) {
 	if (image == backgroundImage) return;
 	this.backgroundImage = image;
 	if (backgroundImage != null) {
-		setBackgroundPixmap (backgroundImage.pixmap);
+		setBackgroundPixmap (backgroundImage);
 		redrawWidget (0, 0, 0, 0, true, false, false);
 	} else {
 		setWidgetBackground ();
@@ -3774,9 +3814,30 @@ public void setBackgroundImage (Image image) {
 	redrawChildren ();
 }
 
-void setBackgroundPixmap (int /*long*/ pixmap) {
+void setBackgroundPixmap (Image image) {
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
-	if (window != 0) OS.gdk_window_set_back_pixmap (window, pixmap, false);
+	if (window != 0) {
+		if (image.pixmap != 0) {
+			OS.gdk_window_set_back_pixmap (window, image.pixmap, false);
+		} else if (image.surface != 0) {
+			/*
+			* TODO This code code is commented because it does not work since the pixmap
+			* created with gdk_pixmap_foreign_new() does not have colormap. Another option
+			* would be to create a pixmap on the fly from the surface.
+			* 
+			* For now draw background in windowProc().
+			*/
+//			int /*long*/ surface = image.surface;
+//			int type = Cairo.cairo_surface_get_type(surface);
+//			switch (type) {
+//				case Cairo.CAIRO_SURFACE_TYPE_XLIB:
+//					int /*long*/ pixmap = OS.gdk_pixmap_foreign_new(Cairo.cairo_xlib_surface_get_drawable(surface));
+//					OS.gdk_window_set_back_pixmap (window, pixmap, false);
+//					OS.g_object_unref(pixmap);
+//					break;
+//			}
+		}
+	}
 }
 
 /**
@@ -4996,7 +5057,19 @@ void updateLayout (boolean all) {
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
 	switch ((int)/*64*/user_data) {
 		case EXPOSE_EVENT_INVERSE: {
-			if ((OS.GTK_VERSION <  OS.VERSION (2, 8, 0)) && ((state & OBSCURED) == 0)) {
+			if ((state & OBSCURED) != 0) break;
+			if (OS.USE_CAIRO) {
+				Control control = findBackgroundControl ();
+				if (control != null && control.backgroundImage != null) {
+					GdkEventExpose gdkEvent = new GdkEventExpose ();
+					OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
+					int /*long*/ paintWindow = paintWindow();
+					int /*long*/ window = gdkEvent.window;
+					if (window != paintWindow) break;
+					drawBackground(control, window, gdkEvent.region, gdkEvent.area_y, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
+				}
+			}
+			if (OS.GTK_VERSION <  OS.VERSION (2, 8, 0)) {
 				Control control = findBackgroundControl ();
 				if (control != null && control.backgroundImage != null) {
 					GdkEventExpose gdkEvent = new GdkEventExpose ();

@@ -311,6 +311,7 @@ void drawRectangles (Rectangle [] rects) {
 		window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
 	} 
 	if (window == 0) return;
+	//TODO: Use Cairo
 	int /*long*/ gc = OS.gdk_gc_new (window);
 	if (gc == 0) return;
 	int /*long*/ colormap = OS.gdk_colormap_get_system ();

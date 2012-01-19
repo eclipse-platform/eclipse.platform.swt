@@ -363,7 +363,6 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	GCData data = new GCData ();
 	data.damageRgn = gdkEvent.region;
 	GC gc = GC.gtk_new (this, data);
-	OS.gdk_gc_set_clip_region (gc.handle, gdkEvent.region);
 	int selStart = selection.x;
 	int selEnd = selection.y;
 	if (selStart > selEnd) {

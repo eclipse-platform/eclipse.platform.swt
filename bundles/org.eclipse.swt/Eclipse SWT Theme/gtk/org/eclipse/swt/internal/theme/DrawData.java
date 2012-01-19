@@ -85,7 +85,7 @@ void drawImage(Theme theme, Image image, GC gc, Rectangle bounds) {
 	if (state_type == OS.GTK_STATE_NORMAL) {
 		gc.drawImage(image, 0, 0, rect.width, rect.height, bounds.x, bounds.y, bounds.width, bounds.height);
 	} else {
-		int /*long*/ pixbuf = Theme.createPixbuf(image);
+		int /*long*/ pixbuf = ImageList.createPixbuf(image);
 		int /*long*/ source = OS.gtk_icon_source_new();
 		if (source != 0) {
 			OS.gtk_icon_source_set_pixbuf(source, pixbuf);

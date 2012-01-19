@@ -23,7 +23,7 @@ public class OS extends C {
 	}
 	
 	/** OS Constants */
-	public static final boolean IsAIX, IsSunOS, IsLinux, IsHPUX;
+	public static final boolean IsAIX, IsSunOS, IsLinux, IsHPUX, BIG_ENDIAN;
 	static {
 		
 		/* Initialize the OS flags and locale constants */
@@ -35,6 +35,13 @@ public class OS extends C {
 		if (osName.equals ("SunOS")) isSunOS = true;
 		if (osName.equals ("HP-UX")) isHPUX = true;
 		IsAIX = isAIX;  IsSunOS = isSunOS;  IsLinux = isLinux;  IsHPUX = isHPUX;
+		
+		byte[] buffer = new byte[4];
+		int /*long*/ ptr = OS.malloc(4);
+		OS.memmove(ptr, new int[]{1}, 4);
+		OS.memmove(buffer, ptr, 1);
+		OS.free(ptr);
+		BIG_ENDIAN = buffer[0] == 0;
 	}
 
 	/** Constants */
@@ -559,6 +566,19 @@ public class OS extends C {
 	public static final byte[] GTK_STOCK_CLEAR = ascii("gtk-clear");
 	
 	public static final int GTK_VERSION = VERSION(gtk_major_version(), gtk_minor_version(), gtk_micro_version()); 
+	public static final boolean USE_CAIRO, INIT_CAIRO;
+	static {
+		boolean useCairo = false;
+		if ("true".equals(System.getProperty("org.eclipse.swt.internal.gtk.cairoGraphics"))) {
+			useCairo  = GTK_VERSION >= VERSION(2, 24, 0);
+		}
+		USE_CAIRO = useCairo;
+		boolean initCairo = false;
+		if (!"false".equals(System.getProperty("org.eclipse.swt.internal.gtk.useCairo"))) {
+			initCairo  = GTK_VERSION >= VERSION(2, 17, 0);
+		}
+		INIT_CAIRO = initCairo;
+	}
 	
 protected static byte [] ascii (String name) {
 	int length = name.length ();
@@ -3651,6 +3671,20 @@ public static final void gdk_color_free(int /*long*/ color) {
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param window cast=(GdkWindow *)
+ */
+public static final native void _gdk_cairo_set_source_window(int /*long*/ cairo, int /*long*/ window, int x, int y);
+public static final void gdk_cairo_set_source_window(int /*long*/ cairo, int /*long*/ window, int x, int y) {
+        lock.lock();
+        try {
+                _gdk_cairo_set_source_window(cairo, window, x, y);
+        }
+        finally {
+                lock.unlock();
+        }
+}
+/**
  * @param colormap cast=(GdkColormap *)
  * @param color cast=(GdkColor *),flags=no_in
  */
@@ -5256,6 +5290,19 @@ public static final void gdk_window_clear_area(int /*long*/ window, int x, int y
 	lock.lock();
 	try {
 		_gdk_window_clear_area(window, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic 
+ * @param window cast=(GdkWindow *)
+ */
+public static final native int /*long*/ _gdk_window_create_similar_surface(int /*long*/ window, int content, int width, int height);
+public static final int /*long*/ gdk_window_create_similar_surface(int /*long*/ window, int content, int width, int height) {
+	lock.lock();
+	try {
+		return _gdk_window_create_similar_surface(window, content, width, height);
 	} finally {
 		lock.unlock();
 	}

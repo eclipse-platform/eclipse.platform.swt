@@ -257,8 +257,8 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 				/* Give an image from the image list to make sure the row has
 				* the correct height.
 				*/
-				if (imageList != null && imageList.pixbufs.length > 0) {
-					if (isPixbuf) OS.g_object_set (cell, OS.pixbuf, imageList.pixbufs [0], 0);
+				if (imageList != null && imageList.size () > 0) {
+					if (isPixbuf) OS.g_object_set (cell, OS.pixbuf, imageList.getPixbuf (0), 0);
 				}
 				return 0;
 			}
@@ -3003,7 +3003,7 @@ void setBackgroundColor (GdkColor color) {
 	OS.gtk_widget_modify_base (handle, 0, color);
 }
 
-void setBackgroundPixmap (int /*long*/ pixmap) {
+void setBackgroundPixmap (Image image) {
 	ownerDraw = true;
 	recreateRenderers ();
 }

@@ -432,11 +432,16 @@ public Font getSystemFont () {
  * @noreference This method is not intended to be referenced by clients.
  */
 public int /*long*/ internal_new_GC(GCData data) {
-	GdkVisual visual = new GdkVisual ();
-	OS.memmove (visual, OS.gdk_visual_get_system());
-	int /*long*/ drawable = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), 1, 1, visual.depth);
-	int /*long*/ gdkGC = OS.gdk_gc_new (drawable);
-	if (gdkGC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	int /*long*/ gc, drawable = 0;
+	if (OS.USE_CAIRO) {
+		gc = cairo;
+	} else {
+		GdkVisual visual = new GdkVisual ();
+		OS.memmove (visual, OS.gdk_visual_get_system());
+		drawable = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), 1, 1, visual.depth);
+		gc = OS.gdk_gc_new (drawable);
+	}
+	if (gc == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
 		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
@@ -463,7 +468,7 @@ public int /*long*/ internal_new_GC(GCData data) {
 		data.cairo = cairo;
 		isGCCreated = true;
 	}
-	return gdkGC;
+	return gc;
 }
 
 /**	 
@@ -481,9 +486,10 @@ public int /*long*/ internal_new_GC(GCData data) {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public void internal_dispose_GC(int /*long*/ gdkGC, GCData data) {
+public void internal_dispose_GC(int /*long*/ gc, GCData data) {
 	if (data != null) isGCCreated = false;
-	OS.g_object_unref (gdkGC);
+	if (OS.USE_CAIRO) return;
+	OS.g_object_unref (gc);
 	if (data != null) {
 		if (data.drawable != 0) OS.g_object_unref (data.drawable);
 		data.drawable = data.cairo = 0;

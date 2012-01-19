@@ -1398,6 +1398,7 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
 				case SWT.CENTER: x = (width - rect.width) / 2; break;
 				case SWT.RIGHT: x = rtl ? innerBorder.left : width - rect.width; break;
 			}
+			//TODO: Use Cairo
 			int /*long*/ gc = OS.gdk_gc_new	(window);
 			int /*long*/ style = OS.gtk_widget_get_style (handle);	
 			GdkColor textColor = new GdkColor ();

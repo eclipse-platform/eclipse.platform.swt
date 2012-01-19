@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -438,6 +438,7 @@ typedef enum {
 	_1gdk_1cairo_1region_FUNC,
 	_1gdk_1cairo_1reset_1clip_FUNC,
 	_1gdk_1cairo_1set_1source_1color_FUNC,
+	_1gdk_1cairo_1set_1source_1window_FUNC,
 	_1gdk_1color_1free_FUNC,
 	_1gdk_1color_1white_FUNC,
 	_1gdk_1colormap_1alloc_1color_FUNC,
@@ -568,6 +569,7 @@ typedef enum {
 	_1gdk_1window_1at_1pointer_FUNC,
 	_1gdk_1window_1begin_1paint_1rect_FUNC,
 	_1gdk_1window_1clear_1area_FUNC,
+	_1gdk_1window_1create_1similar_1surface_FUNC,
 	_1gdk_1window_1destroy_FUNC,
 	_1gdk_1window_1end_1paint_FUNC,
 	_1gdk_1window_1focus_FUNC,

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1381;
-int OS_nativeFunctionCallCount[1381];
+int OS_nativeFunctionCount = 1383;
+int OS_nativeFunctionCallCount[1383];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -430,6 +430,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1cairo_1region",
 	"_1gdk_1cairo_1reset_1clip",
 	"_1gdk_1cairo_1set_1source_1color",
+	"_1gdk_1cairo_1set_1source_1window",
 	"_1gdk_1color_1free",
 	"_1gdk_1color_1white",
 	"_1gdk_1colormap_1alloc_1color",
@@ -560,6 +561,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1window_1at_1pointer",
 	"_1gdk_1window_1begin_1paint_1rect",
 	"_1gdk_1window_1clear_1area",
+	"_1gdk_1window_1create_1similar_1surface",
 	"_1gdk_1window_1destroy",
 	"_1gdk_1window_1end_1paint",
 	"_1gdk_1window_1focus",

@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2009 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2012 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -58,6 +58,7 @@ typedef enum {
 	_1cairo_1font_1options_1destroy_FUNC,
 	_1cairo_1font_1options_1get_1antialias_FUNC,
 	_1cairo_1font_1options_1set_1antialias_FUNC,
+	_1cairo_1format_1stride_1for_1width_FUNC,
 	_1cairo_1get_1antialias_FUNC,
 	_1cairo_1get_1current_1point_FUNC,
 	_1cairo_1get_1fill_1rule_FUNC,
@@ -78,7 +79,10 @@ typedef enum {
 	_1cairo_1identity_1matrix_FUNC,
 	_1cairo_1image_1surface_1create_FUNC,
 	_1cairo_1image_1surface_1create_1for_1data_FUNC,
+	_1cairo_1image_1surface_1get_1data_FUNC,
+	_1cairo_1image_1surface_1get_1format_FUNC,
 	_1cairo_1image_1surface_1get_1height_FUNC,
+	_1cairo_1image_1surface_1get_1stride_FUNC,
 	_1cairo_1image_1surface_1get_1width_FUNC,
 	_1cairo_1in_1fill_FUNC,
 	_1cairo_1in_1stroke_FUNC,
@@ -116,7 +120,9 @@ typedef enum {
 	_1cairo_1pattern_1set_1filter_FUNC,
 	_1cairo_1pattern_1set_1matrix_FUNC,
 	_1cairo_1pdf_1surface_1set_1size_FUNC,
+	_1cairo_1pop_1group_1to_1source_FUNC,
 	_1cairo_1ps_1surface_1set_1size_FUNC,
+	_1cairo_1push_1group_FUNC,
 	_1cairo_1rectangle_FUNC,
 	_1cairo_1reference_FUNC,
 	_1cairo_1rel_1curve_1to_FUNC,
@@ -157,8 +163,11 @@ typedef enum {
 	_1cairo_1surface_1create_1similar_FUNC,
 	_1cairo_1surface_1destroy_FUNC,
 	_1cairo_1surface_1finish_FUNC,
+	_1cairo_1surface_1flush_FUNC,
+	_1cairo_1surface_1get_1content_FUNC,
 	_1cairo_1surface_1get_1type_FUNC,
 	_1cairo_1surface_1get_1user_1data_FUNC,
+	_1cairo_1surface_1mark_1dirty_FUNC,
 	_1cairo_1surface_1reference_FUNC,
 	_1cairo_1surface_1set_1device_1offset_FUNC,
 	_1cairo_1surface_1set_1fallback_1resolution_FUNC,
@@ -171,6 +180,9 @@ typedef enum {
 	_1cairo_1user_1to_1device_1distance_FUNC,
 	_1cairo_1xlib_1surface_1create_FUNC,
 	_1cairo_1xlib_1surface_1create_1for_1bitmap_FUNC,
+	_1cairo_1xlib_1surface_1get_1drawable_FUNC,
+	_1cairo_1xlib_1surface_1get_1height_FUNC,
+	_1cairo_1xlib_1surface_1get_1width_FUNC,
 	_1cairo_1xlib_1surface_1set_1size_FUNC,
 	cairo_1font_1extents_1t_1sizeof_FUNC,
 	cairo_1path_1data_1t_1sizeof_FUNC,
