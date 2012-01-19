@@ -4031,9 +4031,13 @@ public void setTransform(Transform transform) {
  */
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.USE_CAIRO) {
-		Cairo.cairo_set_operator(handle, xor ? Cairo.CAIRO_OPERATOR_DIFFERENCE : Cairo.CAIRO_OPERATOR_OVER); 
-	} else {
+	int /*long*/ cairo = data.cairo;
+	if (cairo != 0) {
+		if (Cairo.cairo_version() >= Cairo.CAIRO_VERSION_ENCODE(1, 10, 0)) {
+			Cairo.cairo_set_operator(handle, xor ? Cairo.CAIRO_OPERATOR_DIFFERENCE : Cairo.CAIRO_OPERATOR_OVER);
+		}
+	}
+	if (!OS.USE_CAIRO) {
 		OS.gdk_gc_set_function(handle, xor ? OS.GDK_XOR : OS.GDK_COPY);
 	}
 	data.xorMode = xor;

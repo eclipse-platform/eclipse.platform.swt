@@ -1089,7 +1089,7 @@ public Rectangle getBounds() {
  */
 public ImageData getImageData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	ImageData data;
+
 	if (OS.USE_CAIRO) {
 		int /*long*/ surface = ImageList.convertSurface(this);
 		int format = Cairo.cairo_image_surface_get_format(surface);
@@ -1107,7 +1107,7 @@ public ImageData getImageData() {
 		byte[] srcData = new byte[stride * height];
 		OS.memmove(srcData, surfaceData, srcData.length);
 		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-		data = new ImageData(width, height, 32, palette, 4, srcData);
+		ImageData data = new ImageData(width, height, 32, palette, 4, srcData);
 		if (hasAlpha) {
 			byte[] alphaData = data.alphaData = new byte[width * height];
 			for (int y = 0, offset = 0, alphaOffset = 0; y < height; y++) {
@@ -1139,58 +1139,58 @@ public ImageData getImageData() {
 			}
 		}
 		Cairo.cairo_surface_destroy(surface);
-	} else {
-		int[] w = new int[1], h = new int[1];
-	 	OS.gdk_drawable_get_size(pixmap, w, h);
-	 	int width = w[0], height = h[0]; 	
-	 	int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
-		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int /*long*/ colormap = OS.gdk_colormap_get_system();
-		OS.gdk_pixbuf_get_from_drawable(pixbuf, pixmap, colormap, 0, 0, 0, 0, width, height);
-		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
-		byte[] srcData = new byte[stride * height];
-		OS.memmove(srcData, pixels, srcData.length);
-		OS.g_object_unref(pixbuf);
-	
-		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-		data = new ImageData(width, height, 24, palette, 4, srcData);
-		data.bytesPerLine = stride;
-	
-		if (transparentPixel == -1 && type == SWT.ICON && mask != 0) {
-			/* Get the icon mask data */
-			int /*long*/ gdkImagePtr = OS.gdk_drawable_get_image(mask, 0, 0, width, height);
-			if (gdkImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			GdkImage gdkImage = new GdkImage();
-			OS.memmove(gdkImage, gdkImagePtr);
-			byte[] maskData = new byte[gdkImage.bpl * gdkImage.height];
-			OS.memmove(maskData, gdkImage.mem, maskData.length);
-			OS.g_object_unref(gdkImagePtr);
-			int maskPad;
-			for (maskPad = 1; maskPad < 128; maskPad++) {
-				int bpl = (((width + 7) / 8) + (maskPad - 1)) / maskPad * maskPad;
-				if (gdkImage.bpl == bpl) break;
-			}
-			/* Make mask scanline pad equals to 2 */
-			data.maskPad = 2;
-			maskData = ImageData.convertPad(maskData, width, height, 1, maskPad, data.maskPad);
-			/* Bit swap the mask data if necessary */
-			if (gdkImage.byte_order == OS.GDK_LSB_FIRST) {
-				for (int i = 0; i < maskData.length; i++) {
-					byte b = maskData[i];
-					maskData[i] = (byte)(((b & 0x01) << 7) | ((b & 0x02) << 5) | 
-						((b & 0x04) << 3) |	((b & 0x08) << 1) | ((b & 0x10) >> 1) | 
-						((b & 0x20) >> 3) |	((b & 0x40) >> 5) | ((b & 0x80) >> 7));
-				}
-			}
-			data.maskData = maskData;
+		return data;
+	}
+	int[] w = new int[1], h = new int[1];
+ 	OS.gdk_drawable_get_size(pixmap, w, h);
+ 	int width = w[0], height = h[0]; 	
+ 	int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
+	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int /*long*/ colormap = OS.gdk_colormap_get_system();
+	OS.gdk_pixbuf_get_from_drawable(pixbuf, pixmap, colormap, 0, 0, 0, 0, width, height);
+	int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
+	int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
+	byte[] srcData = new byte[stride * height];
+	OS.memmove(srcData, pixels, srcData.length);
+	OS.g_object_unref(pixbuf);
+
+	PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+	ImageData data = new ImageData(width, height, 24, palette, 4, srcData);
+	data.bytesPerLine = stride;
+
+	if (transparentPixel == -1 && type == SWT.ICON && mask != 0) {
+		/* Get the icon mask data */
+		int /*long*/ gdkImagePtr = OS.gdk_drawable_get_image(mask, 0, 0, width, height);
+		if (gdkImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		GdkImage gdkImage = new GdkImage();
+		OS.memmove(gdkImage, gdkImagePtr);
+		byte[] maskData = new byte[gdkImage.bpl * gdkImage.height];
+		OS.memmove(maskData, gdkImage.mem, maskData.length);
+		OS.g_object_unref(gdkImagePtr);
+		int maskPad;
+		for (maskPad = 1; maskPad < 128; maskPad++) {
+			int bpl = (((width + 7) / 8) + (maskPad - 1)) / maskPad * maskPad;
+			if (gdkImage.bpl == bpl) break;
 		}
-		data.transparentPixel = transparentPixel;
-		data.alpha = alpha;
-		if (alpha == -1 && alphaData != null) {
-			data.alphaData = new byte[alphaData.length];
-			System.arraycopy(alphaData, 0, data.alphaData, 0, alphaData.length);
+		/* Make mask scanline pad equals to 2 */
+		data.maskPad = 2;
+		maskData = ImageData.convertPad(maskData, width, height, 1, maskPad, data.maskPad);
+		/* Bit swap the mask data if necessary */
+		if (gdkImage.byte_order == OS.GDK_LSB_FIRST) {
+			for (int i = 0; i < maskData.length; i++) {
+				byte b = maskData[i];
+				maskData[i] = (byte)(((b & 0x01) << 7) | ((b & 0x02) << 5) | 
+					((b & 0x04) << 3) |	((b & 0x08) << 1) | ((b & 0x10) >> 1) | 
+					((b & 0x20) >> 3) |	((b & 0x40) >> 5) | ((b & 0x80) >> 7));
+			}
 		}
+		data.maskData = maskData;
+	}
+	data.transparentPixel = transparentPixel;
+	data.alpha = alpha;
+	if (alpha == -1 && alphaData != null) {
+		data.alphaData = new byte[alphaData.length];
+		System.arraycopy(alphaData, 0, data.alphaData, 0, alphaData.length);
 	}
 	return data;
 }
@@ -1289,22 +1289,22 @@ void init(int width, int height) {
 		Cairo.cairo_destroy(cairo);
 		this.width = width;
 		this.height = height;
-	} else {
-		this.pixmap = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), width, height, -1);
-		if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		/* Fill the bitmap with white */
-		GdkColor white = new GdkColor();
-		white.red = (short)0xFFFF;
-		white.green = (short)0xFFFF;
-		white.blue = (short)0xFFFF;
-		int /*long*/ colormap = OS.gdk_colormap_get_system();
-		OS.gdk_colormap_alloc_color(colormap, white, true, true);
-		int /*long*/ gdkGC = OS.gdk_gc_new(pixmap);
-		OS.gdk_gc_set_foreground(gdkGC, white);
-		OS.gdk_draw_rectangle(pixmap, gdkGC, 1, 0, 0, width, height);
-		OS.g_object_unref(gdkGC);
-		OS.gdk_colormap_free_colors(colormap, white, 1);
+		return;
 	}
+	this.pixmap = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), width, height, -1);
+	if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	/* Fill the bitmap with white */
+	GdkColor white = new GdkColor();
+	white.red = (short)0xFFFF;
+	white.green = (short)0xFFFF;
+	white.blue = (short)0xFFFF;
+	int /*long*/ colormap = OS.gdk_colormap_get_system();
+	OS.gdk_colormap_alloc_color(colormap, white, true, true);
+	int /*long*/ gdkGC = OS.gdk_gc_new(pixmap);
+	OS.gdk_gc_set_foreground(gdkGC, white);
+	OS.gdk_draw_rectangle(pixmap, gdkGC, 1, 0, 0, width, height);
+	OS.g_object_unref(gdkGC);
+	OS.gdk_colormap_free_colors(colormap, white, 1);
 }
 
 void init(ImageData image) {

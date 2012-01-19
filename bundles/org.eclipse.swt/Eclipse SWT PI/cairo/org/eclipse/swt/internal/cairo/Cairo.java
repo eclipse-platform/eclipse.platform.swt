@@ -1494,7 +1494,6 @@ public static final int /*long*/ cairo_surface_get_user_data(int /*long*/ surfac
 		lock.unlock();
 	}
 }
-
 /** @param surface cast=(cairo_surface_t *) */
 public static final native void _cairo_surface_mark_dirty(int /*long*/ surface);
 public static final void cairo_surface_mark_dirty(int /*long*/ surface) {

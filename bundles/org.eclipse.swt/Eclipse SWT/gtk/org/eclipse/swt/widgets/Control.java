@@ -3817,8 +3817,13 @@ void setBackgroundPixmap (Image image) {
 		if (image.pixmap != 0) {
 			OS.gdk_window_set_back_pixmap (window, image.pixmap, false);
 		} else if (image.surface != 0) {
-			// TODO background pixmap does not have colormap. For now draw background in windowProc()
-			// Another option would be to create a pixmap from the surface
+			/*
+			* TODO This code code is commented because it does not work since the pixmap
+			* created with gdk_pixmap_foreign_new() does not have colormap. Another option
+			* would be to create a pixmap on the fly from the surface.
+			* 
+			* For now draw background in windowProc().
+			*/
 //			int /*long*/ surface = image.surface;
 //			int type = Cairo.cairo_surface_get_type(surface);
 //			switch (type) {
@@ -3828,7 +3833,6 @@ void setBackgroundPixmap (Image image) {
 //					OS.g_object_unref(pixmap);
 //					break;
 //			}
-//			
 		}
 	}
 }
