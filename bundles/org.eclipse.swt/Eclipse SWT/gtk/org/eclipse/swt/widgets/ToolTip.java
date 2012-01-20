@@ -273,7 +273,7 @@ void createHandle (int index) {
 		* The call is to be avoided on GTK versions newer than 2.12.0
 		* where it's deprecated.
 		*/
-		if (OS.GTK_VERSION >= OS.VERSION (2, 2, 1) && OS.GTK_VERSION < OS.VERSION (2, 12, 0)) { 
+		if (OS.GTK_VERSION >= OS.VERSION (2, 2, 1)) { 
 			OS.gtk_tooltips_force_window (handle);
 		}
 		OS.g_object_ref (handle);
