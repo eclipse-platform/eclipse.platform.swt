@@ -594,8 +594,7 @@ public int getSelectionCount () {
 public int getSelectionIndex () {
 	checkWidget();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
-	int /*long*/ [] model = null;
-	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
+	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, null);
 	if (list != 0) {
 		int count = OS.g_list_length (list);
 		int [] index = new int [1];
@@ -637,8 +636,7 @@ public int getSelectionIndex () {
 public int [] getSelectionIndices () {
 	checkWidget();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
-	int /*long*/ [] model = null;
-	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
+	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, null);
 	if (list != 0) {
 		int count = OS.g_list_length (list);
 		int [] treeSelection = new int [count];
@@ -764,12 +762,6 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	if (!OS.GTK_WIDGET_HAS_FOCUS (handle)) {
 		OS.gtk_widget_grab_focus (handle);
 	}
-	return result;
-}
-
-int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_key_press_event (widget, event);
-	if (result != 0) return result;
 	return result;
 }
 
