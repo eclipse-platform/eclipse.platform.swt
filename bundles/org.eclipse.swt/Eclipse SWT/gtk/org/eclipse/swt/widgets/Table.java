@@ -3533,18 +3533,6 @@ public void showSelection () {
 	showItem (item.handle);
 }
 
-int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*long*/ iter, int[] selection, int length) {
-	if (selection != null) { 
-		int /*long*/ indices = OS.gtk_tree_path_get_indices (path);
-		if (indices != 0) {
-			int [] index = new int [1];
-			OS.memmove (index, indices, 4);
-			selection [(int)/*64*/length] = index [0];
-		}
-	}
-	return 0;
-}
-
 void updateScrollBarValue (ScrollBar bar) {
 	super.updateScrollBarValue (bar);
 	/*

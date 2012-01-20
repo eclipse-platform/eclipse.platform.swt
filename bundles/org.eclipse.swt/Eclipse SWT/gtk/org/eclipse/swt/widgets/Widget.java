@@ -1679,10 +1679,6 @@ int /*long*/ timerProc (int /*long*/ widget) {
 	return 0;
 }
 
-int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*long*/ iter, int [] selection, int length) {
-	return 0;
-}
-
 boolean translateTraversal (int event) {
 	return false;
 }

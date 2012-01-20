@@ -655,12 +655,7 @@ void createColumn (TreeColumn column, int index) {
 		createRenderers (checkColumn.handle, checkColumn.modelIndex, false, checkColumn.style);
 	}
 	createRenderers (columnHandle, modelIndex, index == 0, column == null ? 0 : column.style);
-	/*
-	* Use GTK_TREE_VIEW_COLUMN_GROW_ONLY on GTK versions < 2.3.2
-	* because fixed_height_mode is not supported.
-	*/
-	boolean useVirtual = (style & SWT.VIRTUAL) != 0 ;
-	if (!useVirtual && columnCount == 0) {
+	if ((style & SWT.VIRTUAL) == 0 && columnCount == 0) {
 		OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_GROW_ONLY);
 	} else {
 		OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
@@ -1676,8 +1671,7 @@ int /*long*/ getPixbufRenderer (int /*long*/ column) {
 public TreeItem[] getSelection () {
 	checkWidget();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
-	int /*long*/ [] model = null;
-	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
+	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, null);
 	if (list != 0) {
 		int count = OS.g_list_length (list);
 		TreeItem [] treeSelection = new TreeItem [count];
@@ -1946,12 +1940,6 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		}
 	}
 	return super.gtk_expose_event (widget, eventPtr);
-}
-
-int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
-	int /*long*/ result = super.gtk_key_press_event (widget, eventPtr);
-	if (result != 0) return result;
-	return result;
 }
 
 int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
@@ -3403,15 +3391,6 @@ public void showItem (TreeItem item) {
 	int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
 	showItem (path, true);
 	OS.gtk_tree_path_free (path);
-}
-
-int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*long*/ iter, int[] selection, int length) {
-	if (selection != null) {
-		int [] index = new int [1];
-		OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
-		selection [(int)/*64*/length] = index [0];
-	}
-	return 0;
 }
 
 void updateScrollBarValue (ScrollBar bar) {

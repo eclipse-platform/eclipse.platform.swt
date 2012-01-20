@@ -216,10 +216,6 @@ public class Display extends Device {
 	boolean idleNeeded;
 	
 	/* GtkTreeView callbacks */
-	int[] treeSelection;
-	int treeSelectionLength;
-	int /*long*/ treeSelectionProc;
-	Callback treeSelectionCallback;
 	int /*long*/ cellDataProc;
 	Callback cellDataCallback;
 	
@@ -2547,10 +2543,6 @@ void initializeCallbacks () {
 
 	shellMapProcClosure = OS.g_cclosure_new (shellMapProc, 0, 0);
 	OS.g_closure_ref (shellMapProcClosure);
-
-	treeSelectionCallback = new Callback(this, "treeSelectionProc", 4); //$NON-NLS-1$
-	treeSelectionProc = treeSelectionCallback.getAddress();
-	if (treeSelectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	cellDataCallback = new Callback (this, "cellDataProc", 5); //$NON-NLS-1$
 	cellDataProc = cellDataCallback.getAddress ();
@@ -3273,8 +3265,6 @@ void releaseDisplay () {
 	idleHandle = 0;
 	
 	/* Dispose GtkTreeView callbacks */
-	treeSelectionCallback.dispose (); treeSelectionCallback = null;
-	treeSelectionProc = 0;
 	cellDataCallback.dispose (); cellDataCallback = null;
 	cellDataProc = 0;
 	
@@ -3389,7 +3379,7 @@ void releaseDisplay () {
 	thread = null;
 	lastWidget = activeShell = null;
 	flushData = closures = null;
-	indexTable = signalIds = treeSelection = null;
+	indexTable = signalIds = null;
 	widgetTable = modalShells = null;
 	data = null;
 	values = keys = null;
@@ -4139,12 +4129,6 @@ int /*long*/ sizeRequestProc (int /*long*/ handle, int /*long*/ arg0, int /*long
 	Widget widget = getWidget (user_data);
 	if (widget == null) return 0;
 	return widget.sizeRequestProc (handle, arg0, user_data);
-}
-
-int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*long*/ iter, int /*long*/ data) {
-	Widget widget = getWidget (data);
-	if (widget == null) return 0;
-	return widget.treeSelectionProc (model, path, iter, treeSelection, treeSelectionLength++);
 }
 
 void saveResources () {
