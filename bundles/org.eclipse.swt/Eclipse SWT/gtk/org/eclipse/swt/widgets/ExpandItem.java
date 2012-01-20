@@ -121,24 +121,22 @@ protected void checkSubclass () {
 }
 
 void createHandle (int index) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		state |= HANDLE;
-		handle = OS.gtk_expander_new (null);
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		clientHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
-		if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gtk_container_add (handle, clientHandle);	
-		boxHandle = OS.gtk_hbox_new (false, 4);
-		if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		labelHandle = OS.gtk_label_new (null);
-		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		imageHandle = OS.gtk_image_new ();
-		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gtk_container_add (boxHandle, imageHandle);
-		OS.gtk_container_add (boxHandle, labelHandle);
-		OS.gtk_expander_set_label_widget (handle, boxHandle);
-		OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
-	}
+	state |= HANDLE;
+	handle = OS.gtk_expander_new (null);
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	clientHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
+	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_container_add (handle, clientHandle);	
+	boxHandle = OS.gtk_hbox_new (false, 4);
+	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	labelHandle = OS.gtk_label_new (null);
+	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	imageHandle = OS.gtk_image_new ();
+	if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_container_add (boxHandle, imageHandle);
+	OS.gtk_container_add (boxHandle, labelHandle);
+	OS.gtk_expander_set_label_widget (handle, boxHandle);
+	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
 }
 
 void createWidget (int index) {
@@ -149,12 +147,10 @@ void createWidget (int index) {
 
 void deregister() {
 	super.deregister();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		display.removeWidget (clientHandle);
-		display.removeWidget (boxHandle);
-		display.removeWidget (labelHandle);
-		display.removeWidget (imageHandle);
-	}
+	display.removeWidget (clientHandle);
+	display.removeWidget (boxHandle);
+	display.removeWidget (labelHandle);
+	display.removeWidget (imageHandle);
 }
 
 void destroyWidget () {
@@ -269,10 +265,7 @@ public boolean getExpanded () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		return OS.GTK_WIDGET_HEIGHT (handle) - (expanded ? height : 0);
-	}
-	return Math.max (parent.getBandHeight (), imageHeight);
+	return OS.GTK_WIDGET_HEIGHT (handle) - (expanded ? height : 0);
 }
 
 /**
@@ -351,34 +344,23 @@ boolean hasFocus () {
 
 void hookEvents () {
 	super.hookEvents ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE], false);
-		OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE_INVERSE], true);
-		OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
-		OS.g_signal_connect_closure_by_id (handle, display.signalIds [FOCUS_OUT_EVENT], 0, display.closures [FOCUS_OUT_EVENT], false);
-		OS.g_signal_connect_closure (clientHandle, OS.size_allocate, display.closures [SIZE_ALLOCATE], true);
-		OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
-	}
+	OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE], false);
+	OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE_INVERSE], true);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [FOCUS_OUT_EVENT], 0, display.closures [FOCUS_OUT_EVENT], false);
+	OS.g_signal_connect_closure (clientHandle, OS.size_allocate, display.closures [SIZE_ALLOCATE], true);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
 }
 
 void redraw () {
-	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
-		int headerHeight = parent.getBandHeight ();
-		if (imageHeight > headerHeight) {
-			parent.redraw (x + ExpandItem.TEXT_INSET, y + headerHeight - imageHeight, imageWidth, imageHeight, false);
-		}
-		parent.redraw (x, y, width, headerHeight + height, false);
-	}
 }
 
 void register () {
 	super.register ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		display.addWidget (clientHandle, this);
-		display.addWidget (boxHandle, this);
-		display.addWidget (labelHandle, this);
-		display.addWidget (imageHandle, this);
-	}
+	display.addWidget (clientHandle, this);
+	display.addWidget (boxHandle, this);
+	display.addWidget (labelHandle, this);
+	display.addWidget (imageHandle, this);
 }
 
 void releaseHandle () {
@@ -390,9 +372,7 @@ void releaseHandle () {
 void releaseWidget () {
 	super.releaseWidget ();
 	if (imageList != null) imageList.dispose ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		if (parent.lastFocus == this) parent.lastFocus = null;
-	}
+	if (parent.lastFocus == this) parent.lastFocus = null;
 	imageList = null;
 	control = null;
 }
@@ -478,14 +458,8 @@ public void setControl (Control control) {
 	this.control = control;
 	if (control != null) {
 		control.setVisible (expanded);
-		if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
-			int headerHeight = parent.getBandHeight ();
-			control.setBounds (x + BORDER, y + headerHeight, Math.max (0, width - 2 * BORDER), Math.max (0, height - BORDER));
-		}
 	}
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		parent.layoutItems (0, true);
-	}
+	parent.layoutItems (0, true);
 }
 
 /**
@@ -501,12 +475,8 @@ public void setControl (Control control) {
 public void setExpanded (boolean expanded) {
 	checkWidget ();
 	this.expanded = expanded;
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		OS.gtk_expander_set_expanded (handle, expanded);
-		parent.layoutItems (0, true);
-	} else {
-		parent.showItem (this);
-	}
+	OS.gtk_expander_set_expanded (handle, expanded);
+	parent.layoutItems (0, true);
 }
 
 boolean setFocus () {
@@ -546,48 +516,27 @@ void setForegroundColor (GdkColor color) {
 public void setHeight (int height) {
 	checkWidget ();
 	if (height < 0) return;
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		this.height = height;
-		OS.gtk_widget_set_size_request (clientHandle, -1, height);
-		parent.layoutItems (0, false);
-	} else {
-		setBounds (0, 0, width, height, false, true);
-		if (expanded) parent.layoutItems (parent.indexOf (this) + 1, true);
-	}
+	this.height = height;
+	OS.gtk_widget_set_size_request (clientHandle, -1, height);
+	parent.layoutItems (0, false);
 }
 
 public void setImage (Image image) {
 	super.setImage (image);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		if (imageList != null) imageList.dispose ();
-		imageList = null;
-		if (image != null) {
-			if (image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-			imageList = new ImageList ();
-			int imageIndex = imageList.add (image);
-			int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
-			OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
-			if (text.length () == 0) OS.gtk_widget_hide (labelHandle);
-			OS.gtk_widget_show (imageHandle);
-		} else {
-			OS.gtk_image_set_from_pixbuf (imageHandle, 0);
-			OS.gtk_widget_show (labelHandle);
-			OS.gtk_widget_hide (imageHandle);
-		}
+	if (imageList != null) imageList.dispose ();
+	imageList = null;
+	if (image != null) {
+		if (image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		imageList = new ImageList ();
+		int imageIndex = imageList.add (image);
+		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
+		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
+		if (text.length () == 0) OS.gtk_widget_hide (labelHandle);
+		OS.gtk_widget_show (imageHandle);
 	} else {
-		int oldImageHeight = imageHeight;
-		if (image != null) {
-			Rectangle bounds = image.getBounds ();
-			imageHeight = bounds.height;
-			imageWidth = bounds.width;
-		} else {
-			imageHeight = imageWidth = 0;
-		}
-		if (oldImageHeight != imageHeight) {
-			parent.layoutItems (parent.indexOf (this), true);
-		} else {
-			redraw ();
-		}
+		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
+		OS.gtk_widget_show (labelHandle);
+		OS.gtk_widget_hide (imageHandle);
 	}
 }
 
@@ -602,23 +551,17 @@ void setOrientation (boolean create) {
 	
 public void setText (String string) {
 	super.setText (string);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		byte [] buffer = Converter.wcsToMbcs (null, string, true);
-		OS.gtk_label_set_text (labelHandle, buffer);
-	} else {
-		redraw ();
-	}
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	OS.gtk_label_set_text (labelHandle, buffer);
 }
 
 void showWidget (int index) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		OS.gtk_widget_show (handle);
-		OS.gtk_widget_show (clientHandle);
-		OS.gtk_container_add (parent.handle, handle);
-		OS.gtk_box_set_child_packing (parent.handle, handle, false, false, 0, OS.GTK_PACK_START);
-		if (boxHandle != 0) OS.gtk_widget_show (boxHandle);
-		if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
-	}
+	OS.gtk_widget_show (handle);
+	OS.gtk_widget_show (clientHandle);
+	OS.gtk_container_add (parent.handle, handle);
+	OS.gtk_box_set_child_packing (parent.handle, handle, false, false, 0, OS.GTK_PACK_START);
+	if (boxHandle != 0) OS.gtk_widget_show (boxHandle);
+	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
 }
 
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
