@@ -988,7 +988,6 @@ void createDisplay (DeviceData data) {
 	}
 	
 	OS.gtk_widget_set_default_direction (OS.GTK_TEXT_DIR_LTR);
-	OS.gdk_rgb_init ();
 	byte [] buffer = Converter.wcsToMbcs (null, APP_NAME, true);
 	OS.g_set_prgname (buffer);
 	OS.gdk_set_program_class (buffer);

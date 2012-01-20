@@ -6523,16 +6523,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gdk_1rgb_1init
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1rgb_1init)
-	(JNIEnv *env, jclass that)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1rgb_1init_FUNC);
-	gdk_rgb_init();
-	OS_NATIVE_EXIT(env, that, _1gdk_1rgb_1init_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1screen_1get_1default
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1screen_1get_1default)
 	(JNIEnv *env, jclass that)

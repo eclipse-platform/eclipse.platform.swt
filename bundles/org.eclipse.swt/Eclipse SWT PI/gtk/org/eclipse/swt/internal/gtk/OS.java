@@ -5054,15 +5054,6 @@ public static final void gdk_region_union_with_rect(int /*long*/ region, GdkRect
 		lock.unlock();
 	}
 }
-public static final native void _gdk_rgb_init();
-public static final void gdk_rgb_init() {
-	lock.lock();
-	try {
-		_gdk_rgb_init();
-	} finally {
-		lock.unlock();
-	}
-}
 /** @method flags=dynamic */
 public static final native int /*long*/ _gdk_screen_get_default();
 public static final int /*long*/ gdk_screen_get_default() {
