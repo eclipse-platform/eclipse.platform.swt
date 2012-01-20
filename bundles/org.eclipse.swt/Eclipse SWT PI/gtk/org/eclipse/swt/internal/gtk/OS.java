@@ -4231,16 +4231,6 @@ public static final void gdk_flush() {
 		lock.unlock();
 	}
 }
-/** @param list cast=(gchar **) */
-public static final native void _gdk_free_text_list(int /*long*/ list);
-public static final void gdk_free_text_list(int /*long*/ list) {
-	lock.lock();
-	try {
-		_gdk_free_text_list(list);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @param gc cast=(GdkGC *)
  * @param values cast=(GdkGCValues *),flags=no_in

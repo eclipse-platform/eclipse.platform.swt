@@ -482,7 +482,6 @@ typedef enum {
 	_1gdk_1event_1peek_FUNC,
 	_1gdk_1event_1put_FUNC,
 	_1gdk_1flush_FUNC,
-	_1gdk_1free_1text_1list_FUNC,
 	_1gdk_1gc_1get_1values_FUNC,
 	_1gdk_1gc_1new_FUNC,
 	_1gdk_1gc_1set_1background_FUNC,

@@ -5650,16 +5650,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1flush)
 }
 #endif
 
-#ifndef NO__1gdk_1free_1text_1list
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1free_1text_1list)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1free_1text_1list_FUNC);
-	gdk_free_text_list((gchar **)arg0);
-	OS_NATIVE_EXIT(env, that, _1gdk_1free_1text_1list_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1gc_1get_1values
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1get_1values)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
