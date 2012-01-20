@@ -6193,16 +6193,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1pixbuf_1render_1to_1drawable)
 }
 #endif
 
-#ifndef NO__1gdk_1pixbuf_1render_1to_1drawable_1alpha
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1pixbuf_1render_1to_1drawable_1alpha)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1render_1to_1drawable_1alpha_FUNC);
-	gdk_pixbuf_render_to_drawable_alpha((GdkPixbuf *)arg0, (GdkDrawable *)arg1, arg2, arg3, arg4, arg5, arg6, arg7, (GdkPixbufAlphaMode)arg8, arg9, (GdkRgbDither)arg10, arg11, arg12);
-	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1render_1to_1drawable_1alpha_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1pixbuf_1save_1to_1bufferv
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1pixbuf_1save_1to_1bufferv)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1, jintLongArray arg2, jbyteArray arg3, jintLongArray arg4, jintLongArray arg5, jintLongArray arg6)

@@ -4737,21 +4737,6 @@ public static final void gdk_pixbuf_render_to_drawable(int /*long*/ pixbuf, int 
 }
 /**
  * @param pixbuf cast=(GdkPixbuf *)
- * @param drawable cast=(GdkDrawable *)
- * @param alpha_mode cast=(GdkPixbufAlphaMode)
- * @param dither cast=(GdkRgbDither)
- */
-public static final native void _gdk_pixbuf_render_to_drawable_alpha(int /*long*/ pixbuf, int /*long*/ drawable, int src_x, int src_y, int dest_x, int dest_y, int width, int height, int alpha_mode, int alpha_threshold, int dither, int x_dither, int y_dither);
-public static final void gdk_pixbuf_render_to_drawable_alpha(int /*long*/ pixbuf, int /*long*/ drawable, int src_x, int src_y, int dest_x, int dest_y, int width, int height, int alpha_mode, int alpha_threshold, int dither, int x_dither, int y_dither) {
-	lock.lock();
-	try {
-		_gdk_pixbuf_render_to_drawable_alpha(pixbuf, drawable, src_x, src_y, dest_x, dest_y, width, height, alpha_mode, alpha_threshold, dither, x_dither, y_dither);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param pixbuf cast=(GdkPixbuf *)
  * @param pixmap_return cast=(GdkDrawable **)
  * @param mask_return cast=(GdkBitmap **)
  */

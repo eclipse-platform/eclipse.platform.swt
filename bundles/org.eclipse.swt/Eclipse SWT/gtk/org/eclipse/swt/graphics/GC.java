@@ -1008,15 +1008,7 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 		if (scaledPixbuf == 0) return;
 		pixbuf = scaledPixbuf;
 	}
-	/*
-	* Feature in GTK.  gdk_draw_pixbuf was introduced in GTK+ 2.2.0 and
-	* supports clipping.
-	*/
-	if (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) {
-		OS.gdk_draw_pixbuf(data.drawable, handle, pixbuf, 0, 0, destX, destY, destWidth, destHeight, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
-	} else {
-		OS.gdk_pixbuf_render_to_drawable_alpha(pixbuf, data.drawable, 0, 0, destX, destY, destWidth, destHeight, OS.GDK_PIXBUF_ALPHA_BILEVEL, 128, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
-	}
+	OS.gdk_draw_pixbuf(data.drawable, handle, pixbuf, 0, 0, destX, destY, destWidth, destHeight, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
 	OS.g_object_unref(pixbuf);
 }
 void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {

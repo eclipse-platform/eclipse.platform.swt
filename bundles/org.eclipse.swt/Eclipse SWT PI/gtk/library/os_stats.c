@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1382;
-int OS_nativeFunctionCallCount[1382];
+int OS_nativeFunctionCount = 1381;
+int OS_nativeFunctionCallCount[1381];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -517,7 +517,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1pixbuf_1new_1from_1file",
 	"_1gdk_1pixbuf_1render_1pixmap_1and_1mask",
 	"_1gdk_1pixbuf_1render_1to_1drawable",
-	"_1gdk_1pixbuf_1render_1to_1drawable_1alpha",
 	"_1gdk_1pixbuf_1save_1to_1bufferv",
 	"_1gdk_1pixbuf_1scale",
 	"_1gdk_1pixbuf_1scale_1simple",

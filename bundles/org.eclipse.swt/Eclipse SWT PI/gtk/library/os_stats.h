@@ -525,7 +525,6 @@ typedef enum {
 	_1gdk_1pixbuf_1new_1from_1file_FUNC,
 	_1gdk_1pixbuf_1render_1pixmap_1and_1mask_FUNC,
 	_1gdk_1pixbuf_1render_1to_1drawable_FUNC,
-	_1gdk_1pixbuf_1render_1to_1drawable_1alpha_FUNC,
 	_1gdk_1pixbuf_1save_1to_1bufferv_FUNC,
 	_1gdk_1pixbuf_1scale_FUNC,
 	_1gdk_1pixbuf_1scale_1simple_FUNC,
