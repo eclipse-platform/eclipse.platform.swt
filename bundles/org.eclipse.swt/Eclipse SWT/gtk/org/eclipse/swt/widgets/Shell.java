@@ -2473,7 +2473,7 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 		* The call is to be avoided on GTK versions newer than 2.12.0
 		* where it's deprecated.
 		*/
-		if (OS.GTK_VERSION >= OS.VERSION (2, 2, 1) && OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 2, 1)) {
 			OS.gtk_tooltips_force_window (tooltipsHandle);
 		}
 		int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (tooltipsHandle);
