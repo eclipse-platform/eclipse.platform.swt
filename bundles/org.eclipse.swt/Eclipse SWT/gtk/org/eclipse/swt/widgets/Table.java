@@ -195,29 +195,6 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 	if (modelIndex == -1) return 0;
 	boolean setData = false;
 	if ((style & SWT.VIRTUAL) != 0) {
-		/*
-		* Feature in GTK.  On GTK before 2.4, fixed_height_mode is not
-		* supported, and the tree asks for the data of all items.  The
-		* fix is to only provide the data if the row is visible.
-		*/
-		if (OS.GTK_VERSION < OS.VERSION (2, 3, 2)) {
-			OS.gtk_widget_realize (handle);
-			GdkRectangle visible = new GdkRectangle ();
-			OS.gtk_tree_view_get_visible_rect (handle, visible);
-			GdkRectangle area = new GdkRectangle ();
-			path = OS.gtk_tree_model_get_path (tree_model, iter);
-			OS.gtk_tree_view_get_cell_area (handle, path, tree_column, area);
-			OS.gtk_tree_path_free (path);
-			if (area.y + area.height < 0 || area.y + visible.y > visible.y + visible.height) {
-				/* Give an image from the image list to make sure the row has
-				* the correct height.
-				*/
-				if (imageList != null && imageList.size () > 0) {
-					if (isPixbuf) OS.g_object_set (cell, OS.pixbuf, imageList.getPixbuf (0), 0);
-				}
-				return 0;
-			}
-		}
 		if (!item.cached) {
 			lastIndexOf = index[0];
 			setData = checkData (item);
@@ -239,18 +216,12 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 		}
 	}
 	if (customDraw) {
-		/*
-		* Bug on GTK. Gtk renders the background on top of the checkbox and pixbuf.
-		* This only happens in version 2.2.1 and earlier. The fix is not to set the background.   
-		*/
-		if (OS.GTK_VERSION > OS.VERSION (2, 2, 1)) {
-			if (!ownerDraw) {
-				ptr [0] = 0;
-				OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_BACKGROUND, ptr, -1);
-				if (ptr [0] != 0) {
-					OS.g_object_set (cell, OS.cell_background_gdk, ptr [0], 0);
-					OS.gdk_color_free (ptr [0]);
-				}
+		if (!ownerDraw) {
+			ptr [0] = 0;
+			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_BACKGROUND, ptr, -1);
+			if (ptr [0] != 0) {
+				OS.g_object_set (cell, OS.cell_background_gdk, ptr [0], 0);
+				OS.gdk_color_free (ptr [0]);
 			}
 		}
 		if (!isPixbuf) {
@@ -583,7 +554,7 @@ void createColumn (TableColumn column, int index) {
 	* Use GTK_TREE_VIEW_COLUMN_GROW_ONLY on GTK versions < 2.3.2
 	* because fixed_height_mode is not supported.
 	*/
-	boolean useVirtual = (style & SWT.VIRTUAL) != 0 && OS.GTK_VERSION >= OS.VERSION (2, 3, 2);
+	boolean useVirtual = (style & SWT.VIRTUAL) != 0 ;
 	if (!useVirtual && columnCount == 0) {
 		OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_GROW_ONLY);
 	} else {
@@ -651,10 +622,7 @@ void createHandle (int index) {
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.BORDER) != 0) OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
 	if ((style & SWT.VIRTUAL) != 0) {
-		/* The fixed_height_mode property only exists in GTK 2.3.2 and greater */
-		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2)) {
-			OS.g_object_set (handle, OS.fixed_height_mode, true, 0);
-		}
+		OS.g_object_set (handle, OS.fixed_height_mode, true, 0);
 	}
 	if (!searchEnabled ()) {
 		/*
@@ -772,19 +740,8 @@ void createRenderers (int /*long*/ columnHandle, int modelIndex, boolean check, 
 	if ((style & SWT.CHECK) != 0 && check) {
 		OS.gtk_tree_view_column_pack_start (columnHandle, checkRenderer, false);
 		OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.active, CHECKED_COLUMN);
-		/*
-		* Feature in GTK. The inconsistent property only exists in GTK 2.2.x.
-		*/
-		if (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) {
-			OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.inconsistent, GRAYED_COLUMN);
-		}
-		/*
-		* Bug in GTK. GTK renders the background on top of the checkbox.
-		* This only happens in version 2.2.1 and earlier. The fix is not to set the background.   
-		*/
-		if (OS.GTK_VERSION > OS.VERSION (2, 2, 1)) {
-			if (!ownerDraw) OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
-		}
+		OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.inconsistent, GRAYED_COLUMN);
+		if (!ownerDraw) OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
 		if (ownerDraw) {
 			OS.gtk_tree_view_column_set_cell_data_func (columnHandle, checkRenderer, display.cellDataProc, handle, 0);
 			OS.g_object_set_qdata (checkRenderer, Display.SWT_OBJECT_INDEX1, columnHandle);
@@ -829,15 +786,9 @@ void createRenderers (int /*long*/ columnHandle, int modelIndex, boolean check, 
 
 	/* Add attributes */
 	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.pixbuf, modelIndex + CELL_PIXBUF);
-	/*
-	 * Bug on GTK. Gtk renders the background on top of the pixbuf.
-	 * This only happens in version 2.2.1 and earlier. The fix is not to set the background.   
-	 */
-	if (OS.GTK_VERSION > OS.VERSION (2, 2, 1)) {
-		if (!ownerDraw) {
-			OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
-			OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
-		}
+	if (!ownerDraw) {
+		OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
+		OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
 	}
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.text, modelIndex + CELL_TEXT);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.foreground_gdk, FOREGROUND_COLUMN);
@@ -1649,20 +1600,12 @@ int /*long*/ getPixbufRenderer (int /*long*/ column) {
 public TableItem [] getSelection () {
 	checkWidget();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
-	if (OS.GTK_VERSION < OS.VERSION (2, 2, 0)) {
-		display.treeSelectionLength  = 0;
-		display.treeSelection = new int [itemCount];
-		OS.gtk_tree_selection_selected_foreach (selection, display.treeSelectionProc, handle);
-		TableItem [] result = new TableItem [display.treeSelectionLength];
-		for (int i=0; i<result.length; i++) result [i] = _getItem (display.treeSelection [i]);
-		return result;
-	}
 	/*
 	* Bug in GTK.  gtk_tree_selection_get_selected_rows() segmentation faults
 	* in versions smaller than 2.2.4 if the model is NULL.  The fix is
 	* to give a valid pointer instead.
 	*/
-	int /*long*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new int /*long*/ [1] : null;
+	int /*long*/ [] model = null;
 	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
 	if (list != 0) {
 		int count = OS.g_list_length (list);
@@ -1700,12 +1643,6 @@ public TableItem [] getSelection () {
 public int getSelectionCount () {
 	checkWidget();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
-	if (OS.GTK_VERSION < OS.VERSION (2, 2, 0)) {
-		display.treeSelectionLength = 0;
-		display.treeSelection = null;
-		OS.gtk_tree_selection_selected_foreach (selection, display.treeSelectionProc, handle);
-		return display.treeSelectionLength;
-	}
 	return OS.gtk_tree_selection_count_selected_rows (selection);
 }
 
@@ -1722,21 +1659,8 @@ public int getSelectionCount () {
  */
 public int getSelectionIndex () {
 	checkWidget();
-	if (OS.GTK_VERSION < OS.VERSION (2, 2, 0)) {
-		display.treeSelectionLength  = 0;
-		display.treeSelection = new int [itemCount];
-		int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
-		OS.gtk_tree_selection_selected_foreach (selection, display.treeSelectionProc, handle);
-		if (display.treeSelectionLength == 0) return -1;
-		return display.treeSelection [0];
-	}
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
-	/*
-	* Bug in GTK.  gtk_tree_selection_get_selected_rows() segmentation faults
-	* in versions smaller than 2.2.4 if the model is NULL.  The fix is
-	* to give a valid pointer instead.
-	*/
-	int /*long*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new int /*long*/ [1] : null;
+	int /*long*/ [] model = null;
 	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
 	if (list != 0) {
 		int count = OS.g_list_length (list);
@@ -1779,21 +1703,7 @@ public int getSelectionIndex () {
 public int [] getSelectionIndices () {
 	checkWidget();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
-	if (OS.GTK_VERSION < OS.VERSION (2, 2, 0)) {
-		display.treeSelectionLength  = 0;
-		display.treeSelection = new int [itemCount];
-		OS.gtk_tree_selection_selected_foreach (selection, display.treeSelectionProc, handle);
-		if (display.treeSelectionLength == display.treeSelection.length) return display.treeSelection;
-		int [] result = new int [display.treeSelectionLength];
-		System.arraycopy (display.treeSelection, 0, result, 0, display.treeSelectionLength);
-		return result;
-	}
-	/*
-	* Bug in GTK.  gtk_tree_selection_get_selected_rows() segmentation faults
-	* in versions smaller than 2.2.4 if the model is NULL.  The fix is
-	* to give a valid pointer instead.
-	*/
-	int /*long*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new int /*long*/ [1] : null;
+	int /*long*/ [] model = null;
 	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
 	if (list != 0) {
 		int count = OS.g_list_length (list);
@@ -2034,25 +1944,6 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	int /*long*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
-	if (OS.GTK_VERSION < OS.VERSION (2, 2 ,0)) {
-		/*
-		* Feature in GTK 2.0.x.  When an item is default selected using
-		* the return key, GTK does not issue notification. The fix is
-		* to issue this notification when the return key is pressed.
-		*/
-		GdkEventKey keyEvent = new GdkEventKey ();
-		OS.memmove (keyEvent, eventPtr, GdkEventKey.sizeof);
-		int key = keyEvent.keyval;
-		switch (key) {
-			case OS.GDK_Return:
-			case OS.GDK_KP_Enter: {
-				Event event = new Event ();
-				event.item = getFocusItem (); 
-				sendSelectionEvent (SWT.DefaultSelection, event, false);
-				break;
-			}
-		}
-	}
 	return result;
 }
 
@@ -3245,11 +3136,6 @@ public void setRedraw (boolean redraw) {
 
 void setScrollWidth (int /*long*/ column, TableItem item) {
 	if (columnCount != 0 || currentItem == item) return;
-	/*
-	* Use GTK_TREE_VIEW_COLUMN_GROW_ONLY on GTK versions < 2.3.2
-	* because fixed_height_mode is not supported.
-	*/
-	if (((style & SWT.VIRTUAL) != 0) && OS.GTK_VERSION < OS.VERSION (2, 3, 2)) return;
 	int width = OS.gtk_tree_view_column_get_fixed_width (column);
 	int itemWidth = calculateWidth (column, item.handle);
 	if (width < itemWidth) {
