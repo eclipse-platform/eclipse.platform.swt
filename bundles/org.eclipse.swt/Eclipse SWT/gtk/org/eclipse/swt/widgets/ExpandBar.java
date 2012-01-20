@@ -212,13 +212,6 @@ int getBandHeight () {
 	return Math.max (ExpandItem.CHEVRON_SIZE, metrics.getHeight ());
 }
 
-GdkColor getForegroundColor () {
-	if ((state & FOREGROUND) == 0) {
-		return display.getSystemColor (SWT.COLOR_TITLE_FOREGROUND).handle;
-	}
-	return super.getForegroundColor ();
-}
-
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
@@ -291,11 +284,6 @@ public ExpandItem [] getItems () {
 public int getSpacing () {
 	checkWidget ();
 	return spacing;
-}
-
-int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
-	if ((state & OBSCURED) != 0) return 0;
-	return super.gtk_expose_event (widget, eventPtr);
 }
 
 int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
