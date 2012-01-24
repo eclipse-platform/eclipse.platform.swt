@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1380;
-int OS_nativeFunctionCallCount[1380];
+int OS_nativeFunctionCount = 1379;
+int OS_nativeFunctionCallCount[1379];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -631,7 +631,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1button_1new",
 	"_1gtk_1button_1set_1relief",
 	"_1gtk_1calendar_1clear_1marks",
-	"_1gtk_1calendar_1display_1options",
 	"_1gtk_1calendar_1get_1date",
 	"_1gtk_1calendar_1mark_1day",
 	"_1gtk_1calendar_1new",

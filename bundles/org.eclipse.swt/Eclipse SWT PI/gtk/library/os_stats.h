@@ -639,7 +639,6 @@ typedef enum {
 	_1gtk_1button_1new_FUNC,
 	_1gtk_1button_1set_1relief_FUNC,
 	_1gtk_1calendar_1clear_1marks_FUNC,
-	_1gtk_1calendar_1display_1options_FUNC,
 	_1gtk_1calendar_1get_1date_FUNC,
 	_1gtk_1calendar_1mark_1day_FUNC,
 	_1gtk_1calendar_1new_FUNC,

@@ -343,11 +343,7 @@ void createHandle (int index) {
 		handle = OS.gtk_calendar_new ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (fixedHandle, handle);
-		if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
-			OS.gtk_calendar_set_display_options(handle, OS.GTK_CALENDAR_SHOW_HEADING | OS.GTK_CALENDAR_SHOW_DAY_NAMES);
-		} else {
-			OS.gtk_calendar_display_options(handle, OS.GTK_CALENDAR_SHOW_HEADING | OS.GTK_CALENDAR_SHOW_DAY_NAMES);			
-		}
+		OS.gtk_calendar_set_display_options(handle, OS.GTK_CALENDAR_SHOW_HEADING | OS.GTK_CALENDAR_SHOW_DAY_NAMES);
 	} else {
 		super.createHandle(index);
 	}

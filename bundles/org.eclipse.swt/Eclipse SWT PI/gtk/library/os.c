@@ -7702,24 +7702,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1calendar_1clear_1marks)
 }
 #endif
 
-#ifndef NO__1gtk_1calendar_1display_1options
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1calendar_1display_1options)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1calendar_1display_1options_FUNC);
-/*
-	gtk_calendar_display_options((GtkCalendar *)arg0, (GtkCalendarDisplayOptions)arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_calendar_display_options)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkCalendar *, GtkCalendarDisplayOptions))fp)((GtkCalendar *)arg0, (GtkCalendarDisplayOptions)arg1);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1calendar_1display_1options_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1calendar_1get_1date
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1calendar_1get_1date)
 	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2, jintArray arg3)
