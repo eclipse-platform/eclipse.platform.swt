@@ -206,7 +206,7 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 		if (isPixbuf) {
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
 			OS.g_object_set (cell, OS.pixbuf, ptr [0], 0);
-			OS.g_object_unref (ptr [0]);
+			if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
 		} else {
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1); 
 			if (ptr [0] != 0) {
