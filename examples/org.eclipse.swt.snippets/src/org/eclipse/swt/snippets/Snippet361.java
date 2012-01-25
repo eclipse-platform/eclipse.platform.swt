@@ -11,7 +11,8 @@
 package org.eclipse.swt.snippets;
 
 /*
- * example snippet: use Java2D to modify an image being displayed in an SWT GUI
+ * example snippet: use Java2D to modify an image being displayed in an SWT GUI.
+ * Take a screen snapshot to print the image to a printer.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -153,6 +154,7 @@ public class Snippet361 {
 		canvas = new Canvas() {
 			public void paint (Graphics g) {
 				if (image != null) {
+					/* Use Java2D here to modify the image as desired. */
 					Graphics2D g2d = (Graphics2D) g;
 					AffineTransform t = new AffineTransform();
 					t.translate(translateX, translateY);
