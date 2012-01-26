@@ -610,8 +610,11 @@ void viewWillMoveToWindow(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) 
 	super.viewWillMoveToWindow(id, sel, arg0);
 	if (glcontext != null) {
 		new NSWindow(arg0).setOpaque(false);
-		NSWindow window = view.window();
-		window.setOpaque(getShell().region == null);
+		Shell shell = getShell();
+		NSWindow window = shell.window;
+		if (window != null) {
+			window.setOpaque(shell.region == null);
+		}
 	}
 }
 
