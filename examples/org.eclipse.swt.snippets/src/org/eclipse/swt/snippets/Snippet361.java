@@ -19,6 +19,7 @@ package org.eclipse.swt.snippets;
  * 
  * @since 3.8
  */
+import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Canvas;
 import java.awt.Graphics;
@@ -102,9 +103,7 @@ public class Snippet361 {
 		printButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				Rectangle r = composite.getBounds();
-				System.out.println(r);
 				Point p = shell.toDisplay(r.x, r.y);
-				System.out.println(p);
 				org.eclipse.swt.graphics.Image snapshotImage
 					= new org.eclipse.swt.graphics.Image(display, r.width-2, r.height-2);
 				GC snapshotGC = new GC(display);
@@ -154,12 +153,17 @@ public class Snippet361 {
 		canvas = new Canvas() {
 			public void paint (Graphics g) {
 				if (image != null) {
+					g.setColor(Color.WHITE);
+					g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+					
 					/* Use Java2D here to modify the image as desired. */
 					Graphics2D g2d = (Graphics2D) g;
 					AffineTransform t = new AffineTransform();
 					t.translate(translateX, translateY);
 					t.rotate(rotate);
 					g2d.setTransform(t);
+					/*------------*/
+					
 					g.drawImage(image, 0, 0, this);
 				}
 			}
@@ -167,7 +171,7 @@ public class Snippet361 {
 		frame.add(canvas);
 		composite.getAccessible().addAccessibleListener(new AccessibleAdapter() {
 			public void getName(AccessibleEvent e) {
-				e.result = "AWT Canvas showing Image";
+				e.result = "Image drawn in AWT Canvas";
 			}
 		});
 		
