@@ -149,7 +149,8 @@ public class Snippet361 {
 		
 		composite = new Composite(shell, SWT.EMBEDDED | SWT.BORDER);
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true, 8, 1);
-		data.heightHint = 400;
+		data.widthHint = 640;
+		data.heightHint = 480;
 		composite.setLayoutData(data);
 		Frame frame = SWT_AWT.new_Frame(composite);
 		canvas = new Canvas() {
