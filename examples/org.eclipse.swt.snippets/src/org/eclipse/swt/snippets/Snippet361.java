@@ -148,7 +148,9 @@ public class Snippet361 {
 		});
 		
 		composite = new Composite(shell, SWT.EMBEDDED | SWT.BORDER);
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 8, 1));
+		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true, 8, 1);
+		data.heightHint = 400;
+		composite.setLayoutData(data);
 		Frame frame = SWT_AWT.new_Frame(composite);
 		canvas = new Canvas() {
 			public void paint (Graphics g) {
@@ -175,6 +177,7 @@ public class Snippet361 {
 			}
 		});
 		
+		shell.pack();
 		shell.open();
 		while(!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();
