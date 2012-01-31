@@ -44,6 +44,12 @@ public static NSCursor currentCursor() {
 	return result != 0 ? new NSCursor(result) : null;
 }
 
+public NSPoint hotSpot() {
+	NSPoint result = new NSPoint();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_hotSpot);
+	return result;
+}
+
 public NSCursor initWithImage(NSImage newImage, NSPoint aPoint) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithImage_hotSpot_, newImage != null ? newImage.id : 0, aPoint);
 	return result == this.id ? this : (result != 0 ? new NSCursor(result) : null);

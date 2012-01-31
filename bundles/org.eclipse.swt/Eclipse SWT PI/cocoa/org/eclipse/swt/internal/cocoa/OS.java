@@ -1311,6 +1311,7 @@ public static final int /*long*/ sel_highlightSelectionInClipRect_ = sel_registe
 public static final int /*long*/ sel_hitPart = sel_registerName("hitPart");
 public static final int /*long*/ sel_hitTest_ = sel_registerName("hitTest:");
 public static final int /*long*/ sel_hitTestForEvent_inRect_ofView_ = sel_registerName("hitTestForEvent:inRect:ofView:");
+public static final int /*long*/ sel_hotSpot = sel_registerName("hotSpot");
 public static final int /*long*/ sel_host = sel_registerName("host");
 public static final int /*long*/ sel_hourOfDay = sel_registerName("hourOfDay");
 public static final int /*long*/ sel_iconForFile_ = sel_registerName("iconForFile:");

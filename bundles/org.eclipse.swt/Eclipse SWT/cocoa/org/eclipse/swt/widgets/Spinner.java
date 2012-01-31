@@ -355,6 +355,11 @@ void drawInteriorWithFrame_inView(int id, int sel, NSRect cellFrame, int viewid)
 	super.drawInteriorWithFrame_inView(id, sel, cellFrame, viewid);
 }
 
+Cursor findCursor () {
+	Cursor cursor = super.findCursor ();
+	return (cursor != null || (style & SWT.READ_ONLY) != 0) ? cursor : display.getSystemCursor (SWT.CURSOR_IBEAM);
+}
+
 NSView focusView () {
 	return textView;
 }
