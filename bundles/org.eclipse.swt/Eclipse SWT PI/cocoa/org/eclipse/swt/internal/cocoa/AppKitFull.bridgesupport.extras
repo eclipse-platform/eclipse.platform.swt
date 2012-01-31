@@ -1130,6 +1130,9 @@
 		<method class_method="true" selector="currentCursor" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="hotSpot" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="initWithImage:hotSpot:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -1821,6 +1824,10 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="numberOfItems" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="performKeyEquivalent:" swt_gen="true">
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="popUpContextMenu:withEvent:forView:" swt_gen="true">

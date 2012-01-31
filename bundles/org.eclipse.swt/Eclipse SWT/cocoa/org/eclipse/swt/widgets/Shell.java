@@ -2222,6 +2222,15 @@ void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 			break;
 			
 		case OS.NSKeyDown:
+			/*
+			* Feature in Cocoa.  For some reason, Cocoa does not perform accelerators
+			* with ESC key code.  The fix is to perform the accelerators ourselves. 
+			*/
+			if (nsEvent.keyCode() == 53 /* ESC */ && menuBar != null && !menuBar.isDisposed()) {
+				if (menuBar.nsMenu.performKeyEquivalent(nsEvent)) {
+					return;
+				}
+			}
 			/**
 			 * Feature in cocoa.  Control+Tab, Ctrl+Shift+Tab, Ctrl+PageDown and Ctrl+PageUp are
 			 * swallowed to handle native traversal. If we find that, force the key event to
