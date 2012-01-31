@@ -2105,8 +2105,11 @@ public int /*long*/ internal_new_GC (GCData data) {
 		 * to create a GC on a deferred NSWindow.
 		 */
 		if (window.windowNumber() <= 0) {
+			float /*double*/ alpha = window.alphaValue();
+			window.setAlphaValue(0);
 			window.orderBack(null);
-			window.orderOut(null);			
+			window.orderOut(null);
+			window.setAlphaValue(alpha);
 		}
 		NSGraphicsContext graphicsContext = NSGraphicsContext.graphicsContextWithWindow (window);
 		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(graphicsContext.graphicsPort(), true);
