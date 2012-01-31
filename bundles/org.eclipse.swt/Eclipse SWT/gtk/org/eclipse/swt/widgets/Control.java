@@ -653,10 +653,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 Point computeNativeSize (int /*long*/ h, int wHint, int hHint, boolean changed) {
-	return computeNativeSize (h, wHint, hHint, changed, DEFAULT_WIDTH, DEFAULT_HEIGHT);
-}
-
-Point computeNativeSize (int /*long*/ h, int wHint, int hHint, boolean changed, int defaultWidth, int defaultHeight) {
 	int width = wHint, height = hHint;
 	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
 		GtkRequisition requisition = new GtkRequisition ();
@@ -673,8 +669,6 @@ Point computeNativeSize (int /*long*/ h, int wHint, int hHint, boolean changed, 
 		width = wHint == SWT.DEFAULT ? requisition.width : wHint;
 		height = hHint == SWT.DEFAULT ? requisition.height : hHint;
 	}
-	if (width == 0) width = defaultWidth;
-	if (height == 0) height = defaultHeight;
 	return new Point (width, height);
 }
 
