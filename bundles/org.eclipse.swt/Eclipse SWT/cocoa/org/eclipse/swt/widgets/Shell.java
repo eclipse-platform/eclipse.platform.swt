@@ -668,6 +668,7 @@ void createHandle () {
 			// TOOL shells always become key, so disable that behavior.
 			((NSPanel)window).setBecomesKeyOnlyIfNeeded(false);
 		}
+		window.setReleasedWhenClosed(true);
 		if ((style & SWT.NO_TRIM) == 0) {
 			NSSize size = window.minSize();
 			size.width = NSWindow.minFrameWidthWithTitle(NSString.string(), styleMask);
@@ -773,8 +774,8 @@ void destroyWidget () {
 		window.close();
 	} else if (view != null) {
 		view.removeFromSuperview();
-		view.release();
 	}
+	if (view != null) view.release();
 	
 	// If another shell is not going to become active, clear the menu bar.
 	// Don't modify the menu bar if we are an embedded Shell, though.
