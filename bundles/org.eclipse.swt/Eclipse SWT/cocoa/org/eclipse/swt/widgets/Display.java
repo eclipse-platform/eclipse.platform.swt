@@ -3151,7 +3151,7 @@ public boolean post(Event event) {
 					if (vKey == -1) {
 						for (short i = 0 ; i <= 0x7F ; i++) {
 							deadKeyState[0] = 0;
-							OS.UCKeyTranslate (uchrPtr, i, (short)(type == SWT.KeyDown ? OS.kUCKeyActionDown : OS.kUCKeyActionUp), OS.shiftKey, OS.LMGetKbdType(), 0, deadKeyState, maxStringLength, actualStringLength, output);
+							OS.UCKeyTranslate (uchrPtr, i, (short)(type == SWT.KeyDown ? OS.kUCKeyActionDown : OS.kUCKeyActionUp), (OS.shiftKey >> 8) & 0xFF, OS.LMGetKbdType(), 0, deadKeyState, maxStringLength, actualStringLength, output);
 							if (output[0] == event.character) {
 								vKey = i;
 								break;
@@ -3230,12 +3230,12 @@ public boolean post(Event event) {
 		// returnValue is true if we called CGPostKeyboardEvent (10.5 only).
 		if (returnValue == false) {
 			if (eventRef != 0) {
+				OS.CGEventPost(OS.kCGHIDEventTap, eventRef);
+				OS.CFRelease(eventRef);
 				try {
 					Thread.sleep(1);
 				} catch (Exception e) {
 				}
-				OS.CGEventPost(OS.kCGSessionEventTap, eventRef);
-				OS.CFRelease(eventRef);
 				returnValue = true;
 			}
 		}
