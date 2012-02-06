@@ -1217,6 +1217,7 @@ public static Image gtk_new(Device device, int type, int /*long*/ pixmap, int /*
 	image.type = type;
 	image.pixmap = pixmap;
 	image.mask = mask;
+	if (OS.USE_CAIRO) image.createSurface();
 	return image;
 }
 

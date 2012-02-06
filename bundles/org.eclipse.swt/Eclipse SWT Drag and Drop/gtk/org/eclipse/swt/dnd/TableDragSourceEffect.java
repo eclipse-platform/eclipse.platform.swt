@@ -81,8 +81,6 @@ public class TableDragSourceEffect extends DragSourceEffect {
 		
 		Table table = (Table) control;
 		if (OS.GTK_VERSION < OS.VERSION (2, 2, 0)) return null;
-		//TODO: Use Cairo
-		if (OS.USE_CAIRO) return null;
 		//TEMPORARY CODE
 		if (table.isListening(SWT.EraseItem) || table.isListening (SWT.PaintItem)) return null;
 		/*
