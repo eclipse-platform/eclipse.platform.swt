@@ -5064,7 +5064,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ us
 					int /*long*/ paintWindow = paintWindow();
 					int /*long*/ window = gdkEvent.window;
 					if (window != paintWindow) break;
-					drawBackground(control, window, gdkEvent.region, gdkEvent.area_y, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
+					drawBackground(control, window, gdkEvent.region, gdkEvent.area_x, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
 				}
 			}
 			if (OS.GTK_VERSION <  OS.VERSION (2, 8, 0)) {
