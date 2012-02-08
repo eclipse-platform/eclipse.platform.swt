@@ -27,8 +27,6 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-import org.eclipse.swt.internal.ole.win32.COM;
-
 public class nsIScriptSecurityManager extends nsIXPCSecurityManager {
 
 	static final int LAST_METHOD_ID = nsIXPCSecurityManager.LAST_METHOD_ID + (Is8 ? 27 : 26);
@@ -60,7 +58,7 @@ public class nsIScriptSecurityManager extends nsIXPCSecurityManager {
 //	}
 
 	public int CheckConnect(int /*long*/ aJSContext, int /*long*/ aTargetURI, byte[] aClassName, byte[] aProperty) {
-		if (Is8) return COM.S_FALSE;
+		if (Is8) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIXPCSecurityManager.LAST_METHOD_ID + 2, getAddress(), aJSContext, aTargetURI, aClassName, aProperty);
 	}
 
@@ -168,12 +166,12 @@ public class nsIScriptSecurityManager extends nsIXPCSecurityManager {
 	}
 	
 	public int PushContextPrincipal(int /*long*/ cx, int /*long*/ fp, int /*long*/ principal) {
-		if (!Is8) return COM.S_FALSE;
+		if (!Is8) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIXPCSecurityManager.LAST_METHOD_ID + 26, getAddress(), cx, fp, principal);
 	}
 	
 	public int PopContextPrincipal(int /*long*/ cx) {
-		if (!Is8) return COM.S_FALSE;
+		if (!Is8) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIXPCSecurityManager.LAST_METHOD_ID + 27, getAddress(), cx);
 	}
 }

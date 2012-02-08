@@ -73,7 +73,7 @@ static String getLibraryName () {
 	return "libxpcom.so"; //$NON-NLS-1$
 }
 
-String getJSLibraryName_Pre2() {
+String getJSLibraryName_Pre4() {
 	return "libxpcom.so";
 }
 

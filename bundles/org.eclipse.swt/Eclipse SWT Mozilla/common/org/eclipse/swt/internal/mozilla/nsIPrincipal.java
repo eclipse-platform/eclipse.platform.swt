@@ -27,8 +27,6 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-import org.eclipse.swt.internal.ole.win32.COM;
-
 public class nsIPrincipal extends nsISerializable {
 
 	static final int LAST_METHOD_ID = nsISerializable.LAST_METHOD_ID + (Is8 ? 26 : 23);
@@ -63,7 +61,7 @@ public class nsIPrincipal extends nsISerializable {
 	}
 
 	public int EqualsIgnoringDomain(int /*long*/ other, int[] _retval) {
-		if (!Is8) return COM.S_FALSE;
+		if (!Is8) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 3, getAddress(), other, _retval);
 	}
 
@@ -152,12 +150,12 @@ public class nsIPrincipal extends nsISerializable {
 	}
 	
 	public int GetCsp(int /*long*/[] aCsp) {
-		if (!Is8) return COM.S_FALSE;
+		if (!Is8) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 25, getAddress(), aCsp);
 	}
 
 	public int SetCsp(int /*long*/ aCsp) {
-		if (!Is8) return COM.S_FALSE;
+		if (!Is8) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISerializable.LAST_METHOD_ID + 26, getAddress(), aCsp);
 	}
 }
