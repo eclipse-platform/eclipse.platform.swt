@@ -129,8 +129,11 @@ int CreateChromeWindow2 (int /*long*/ parent, int chromeFlags, int contextFlags,
 
 		nsIWebBrowser webBrowser = new nsIWebBrowser (aWebBrowser[0]);
 		int /*long*/[] result = new int /*long*/[1];
-		rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
-		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+		rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_10_IID, result);
+		if (rc != XPCOM.NS_OK) {
+			rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
+			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+		}
 		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
 		webBrowser.Release ();
 
@@ -222,7 +225,7 @@ int CreateChromeWindow2 (int /*long*/ parent, int chromeFlags, int contextFlags,
 		XPCOM.memmove (_retval, new int /*long*/[] {chromePtr}, C.PTR_SIZEOF);
 	} else {
 		if (cancel != 0) {
-			C.memmove (cancel, new int[] {1}, 4);	/* PRBool */
+			XPCOM.memmove (cancel, new boolean[] {true});
 		}
 	}
 	return doit ? XPCOM.NS_OK : XPCOM.NS_ERROR_NOT_IMPLEMENTED;

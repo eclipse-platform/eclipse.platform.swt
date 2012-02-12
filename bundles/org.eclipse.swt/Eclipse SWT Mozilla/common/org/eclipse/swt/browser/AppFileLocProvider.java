@@ -302,7 +302,7 @@ int getFile(int /*long*/ prop, int /*long*/ persistent, int /*long*/ _retval) {
 		if (isXULRunner) propertyValue = profilePath;
 	}
 
-	XPCOM.memmove (persistent, new int[] {1}, 4); /* PRBool */
+	XPCOM.memmove (persistent, new boolean[] {true});
 	XPCOM.memmove (_retval, new int /*long*/[] {0}, C.PTR_SIZEOF);
 	if (propertyValue != null && propertyValue.length () > 0) {
 		int /*long*/[] result = new int /*long*/[1];

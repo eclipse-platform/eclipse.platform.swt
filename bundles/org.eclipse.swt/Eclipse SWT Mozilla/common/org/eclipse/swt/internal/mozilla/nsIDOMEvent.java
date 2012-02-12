@@ -29,19 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMEvent extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (Is8 ? 11 : 10);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 12 : 10);
 
 	public static final String NS_IDOMEVENT_IID_STR =
 		"a66b7b80-ff46-bd97-0080-5f8ae38add32";
 
-	public static final String NS_IDOMEVENT_8_IID_STR =
-		"548137e8-fd2c-48c4-8635-3033f7db79e0";
+	public static final String NS_IDOMEVENT_10_IID_STR =
+		"e85cff74-951f-45c1-be0c-89442ea2f500";
 
 	public static final nsID NS_IDOMEVENT_IID =
 		new nsID(NS_IDOMEVENT_IID_STR);
 
-	public static final nsID NS_IDOMEVENT_8_IID =
-		new nsID(NS_IDOMEVENT_8_IID_STR);
+	public static final nsID NS_IDOMEVENT_10_IID =
+		new nsID(NS_IDOMEVENT_10_IID_STR);
 
 	public nsIDOMEvent(int /*long*/ address) {
 		super(address);
@@ -92,7 +92,12 @@ public class nsIDOMEvent extends nsISupports {
 	}
 	
 	public int GetDefaultPrevented(int[] aDefaultPrevented) {
-		if (!Is8) return XPCOM.NS_COMFALSE;
+		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aDefaultPrevented);
+	}
+
+	public int StopImmediatePropagation() {
+		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress());
 	}
 }

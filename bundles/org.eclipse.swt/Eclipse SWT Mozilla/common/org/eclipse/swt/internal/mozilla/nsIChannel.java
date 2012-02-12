@@ -29,13 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIChannel extends nsIRequest {
 
-	static final int LAST_METHOD_ID = nsIRequest.LAST_METHOD_ID + 16;
+	static final int LAST_METHOD_ID = nsIRequest.LAST_METHOD_ID + (IsXULRunner10 ? 19 : 16);
 
 	public static final String NS_ICHANNEL_IID_STR =
 		"c63a055a-a676-4e71-bf3c-6cfa11082018";
 
+	public static final String NS_ICHANNEL_10_IID_STR =
+		"06f6ada3-7729-4e72-8d3f-bf8ba630ff9b";
+
 	public static final nsID NS_ICHANNEL_IID =
 		new nsID(NS_ICHANNEL_IID_STR);
+
+	public static final nsID NS_ICHANNEL_10_IID =
+		new nsID(NS_ICHANNEL_10_IID_STR);
 
 	public nsIChannel(int /*long*/ address) {
 		super(address);
@@ -105,10 +111,28 @@ public class nsIChannel extends nsIRequest {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 16, getAddress(), aListener, aContext);
 	}
 
+	public int GetContentDisposition(int[] aContentDisposition) {
+		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 17, getAddress(), aContentDisposition);
+	}
+
+	public int GetContentDispositionFilename(int /*long*/ aContentDispositionFilename) {
+		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 18, getAddress(), aContentDispositionFilename);
+	}
+
+	public int GetContentDispositionHeader(int /*long*/ aContentDispositionHeader) {
+		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 19, getAddress(), aContentDispositionHeader);
+	}
+
 	public static final int LOAD_DOCUMENT_URI = 65536;
 	public static final int LOAD_RETARGETED_DOCUMENT_URI = 131072;
 	public static final int LOAD_REPLACE = 262144;
 	public static final int LOAD_INITIAL_DOCUMENT_URI = 524288;
 	public static final int LOAD_TARGETED = 1048576;
 	public static final int LOAD_CALL_CONTENT_SNIFFERS = 2097152;
+	public static final int LOAD_CLASSIFY_URI = 4194304;
+	public static final int DISPOSITION_INLINE = 0;
+	public static final int DISPOSITION_ATTACHMENT = 1;
 }

@@ -53,7 +53,7 @@ void disposeCOMInterfaces () {
 	}	
 	if (promptAuth != null) {
 		promptAuth.dispose ();
-		promptAuth = null;	
+		promptAuth = null;
 	}
 }
 
@@ -93,7 +93,7 @@ Browser getBrowser() {
 	if (rc == XPCOM.NS_OK && result[0] != 0) {
 		nsIComponentManager componentManager = new nsIComponentManager (result[0]);
 		result[0] = 0;
-		componentManager.GetClassObject(XPCOM.NS_IWEBBROWSER_CID, !Mozilla.IsPre_4 ? nsIWebBrowser.NS_IWEBBROWSER_8_IID : nsIWebBrowser.NS_IWEBBROWSER_IID, result);
+		componentManager.GetClassObject(XPCOM.NS_IWEBBROWSER_CID, !Mozilla.IsPre_4 ? nsIWebBrowser.NS_IWEBBROWSER_10_IID : nsIWebBrowser.NS_IWEBBROWSER_IID, result);
 		if (rc == XPCOM.NS_OK && result[0] != 0) {
 			nsIWebBrowser browser = new nsIWebBrowser(result[0]);
 			result[0] = 0;
@@ -124,7 +124,7 @@ int PromptAuth(int /*long*/ aChannel, int level, int /*long*/ authInfo, int /*lo
 				event.location = mozilla.lastNavigateURL;
 				mozilla.authenticationListeners[i].authenticate (event);
 				if (!event.doit) {
-					XPCOM.memmove (_retval, new int[] {0}, 4);	/* PRBool */
+					XPCOM.memmove (_retval, new boolean[] {false});
 					return XPCOM.NS_OK;
 				}
 				if (event.user != null && event.password != null) {
@@ -136,7 +136,7 @@ int PromptAuth(int /*long*/ aChannel, int level, int /*long*/ authInfo, int /*lo
 					rc = auth.SetPassword (string.getAddress ());
 					if (rc != XPCOM.NS_OK) SWT.error (rc);
 					string.dispose ();
-					XPCOM.memmove (_retval, new int[] {1}, 4);	/* PRBool */
+					XPCOM.memmove (_retval, new boolean[] {true});
 					return XPCOM.NS_OK;
 				}
 			}
@@ -146,7 +146,7 @@ int PromptAuth(int /*long*/ aChannel, int level, int /*long*/ authInfo, int /*lo
 	/* no listener handled the challenge, so show an authentication dialog */
 
 	String checkLabel = null;
-	int[] checkValue = new int[1];
+	boolean[] checkValue = new boolean[1];
 	String[] userLabel = new String[1], passLabel = new String[1];
 
 	String title = SWT.getMessage ("SWT_Authentication_Required"); //$NON-NLS-1$
@@ -213,11 +213,11 @@ int PromptAuth(int /*long*/ aChannel, int level, int /*long*/ authInfo, int /*lo
 	/* open the prompter */
 	Shell shell = browser == null ? new Shell () : browser.getShell ();
 	PromptDialog dialog = new PromptDialog (shell);
-	int[] result = new int[1];
+	boolean[] result = new boolean[1];
 	dialog.promptUsernameAndPassword (title, message, checkLabel, userLabel, passLabel, checkValue, result);
 
-	XPCOM.memmove (_retval, result, 4);	/* PRBool */
-	if (result[0] == 1) {	/* User selected OK */
+	XPCOM.memmove (_retval, result);
+	if (result[0]) {	/* User selected OK */
 		nsEmbedString string = new nsEmbedString (userLabel[0]);
 		rc = auth.SetUsername(string.getAddress ());
 		if (rc != XPCOM.NS_OK) SWT.error (rc);

@@ -37,11 +37,11 @@ public class nsIDocShell_1_8 extends nsISupports {
 	public static final nsID NS_IDOCSHELL_IID =
 		new nsID(NS_IDOCSHELL_IID_STR);
 
-	public static final String NS_IDOCSHELL_8_IID_STR =
+	public static final String NS_IDOCSHELL_10_IID_STR =
 		"0666adf8-8738-4ca7-a917-0348f47d2f40";
 
-	public static final nsID NS_IDOCSHELL_8_IID =
-		new nsID(NS_IDOCSHELL_8_IID_STR);
+	public static final nsID NS_IDOCSHELL_10_IID =
+		new nsID(NS_IDOCSHELL_10_IID_STR);
 
 	public nsIDocShell_1_8(int /*long*/ address) {
 		super(address);

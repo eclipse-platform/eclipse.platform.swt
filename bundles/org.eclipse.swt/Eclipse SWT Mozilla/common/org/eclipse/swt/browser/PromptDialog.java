@@ -28,7 +28,7 @@ class PromptDialog extends Dialog {
 		this(parent, 0);
 	}
 	
-	void alertCheck(String title, String text, String check, final int[] checkValue) {
+	void alertCheck(String title, String text, String check, final boolean[] checkValue) {
 		Shell parent = getParent();
 		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		if (title != null) shell.setText(title);
@@ -48,7 +48,7 @@ class PromptDialog extends Dialog {
 		final Button checkButton = check != null ? new Button(shell, SWT.CHECK) : null;
 		if (checkButton != null) {
 			checkButton.setText(check);
-			checkButton.setSelection(checkValue[0] != 0);
+			checkButton.setSelection(checkValue[0]);
 			data = new GridData ();
 			data.horizontalAlignment = GridData.BEGINNING;
 			checkButton.setLayoutData (data);
@@ -60,7 +60,7 @@ class PromptDialog extends Dialog {
 		okButton.setLayoutData (data);
 		okButton.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
-				if (checkButton != null) checkValue[0] = checkButton.getSelection() ? 1 : 0;
+				if (checkButton != null) checkValue[0] = checkButton.getSelection();
 				shell.close();
 			}
 		});
@@ -207,7 +207,7 @@ class PromptDialog extends Dialog {
 		return result[0];
 	}
 
-	void confirmEx(String title, String text, String check, String button0, String button1, String button2, int defaultIndex, final int[] checkValue, final int[] result) {
+	void confirmEx(String title, String text, String check, String button0, String button1, String button2, int defaultIndex, final boolean[] checkValue, final int[] result) {
 		Shell parent = getParent();
 		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		shell.setText(title);
@@ -227,7 +227,7 @@ class PromptDialog extends Dialog {
 		final Button[] buttons = new Button[4];
 		Listener listener = new Listener() {
 			public void handleEvent(Event event) {
-				if (buttons[0] != null) checkValue[0] = buttons[0].getSelection() ? 1 : 0;
+				if (buttons[0] != null) checkValue[0] = buttons[0].getSelection();
 				Widget widget = event.widget;
 				for (int i = 1; i < buttons.length; i++) {
 					if (widget == buttons[i]) {
@@ -241,7 +241,7 @@ class PromptDialog extends Dialog {
 		if (check != null) {
 			buttons[0] = new Button(shell, SWT.CHECK);
 			buttons[0].setText(check);
-			buttons[0].setSelection(checkValue[0] != 0);
+			buttons[0].setSelection(checkValue[0]);
 			data = new GridData ();
 			data.horizontalAlignment = GridData.BEGINNING;
 			buttons[0].setLayoutData (data);
@@ -287,7 +287,7 @@ class PromptDialog extends Dialog {
 		}
 	}
 	
-	void prompt(String title, String text, String check, final String[] value, final int[] checkValue, final int[] result) {
+	void prompt(String title, String text, String check, final String[] value, final boolean[] checkValue, final boolean[] result) {
 		Shell parent = getParent();
 		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		if (title != null) shell.setText(title);
@@ -316,16 +316,16 @@ class PromptDialog extends Dialog {
 		final Button[] buttons = new Button[3];
 		Listener listener = new Listener() {
 			public void handleEvent(Event event) {
-				if (buttons[0] != null) checkValue[0] = buttons[0].getSelection() ? 1 : 0;
+				if (buttons[0] != null) checkValue[0] = buttons[0].getSelection();
 				value[0] = valueText.getText();
-				result[0] = event.widget == buttons[1] ? 1 : 0;
+				result[0] = event.widget == buttons[1];
 				shell.close();
 			}	
 		};
 		if (check != null) {
 			buttons[0] = new Button(shell, SWT.CHECK);
 			buttons[0].setText(check);
-			buttons[0].setSelection(checkValue[0] != 0);
+			buttons[0].setSelection(checkValue[0]);
 			data = new GridData ();
 			data.horizontalAlignment = GridData.BEGINNING;
 			buttons[0].setLayoutData (data);
@@ -352,7 +352,7 @@ class PromptDialog extends Dialog {
 		}	
 	}
 
-	void promptUsernameAndPassword(String title, String text, String check, final String[] user, final String[] pass, final int[] checkValue, final int[] result) {
+	void promptUsernameAndPassword(String title, String text, String check, final String[] user, final String[] pass, final boolean[] checkValue, final boolean[] result) {
 		Shell parent = getParent();
 		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		shell.setText(title);
@@ -392,17 +392,17 @@ class PromptDialog extends Dialog {
 		final Button[] buttons = new Button[3];
 		Listener listener = new Listener() {
 			public void handleEvent(Event event) {
-				if (buttons[0] != null) checkValue[0] = buttons[0].getSelection() ? 1 : 0;
+				if (buttons[0] != null) checkValue[0] = buttons[0].getSelection();
 				user[0] = userText.getText();
 				pass[0] = passwordText.getText();
-				result[0] = event.widget == buttons[1] ? 1 : 0;
+				result[0] = event.widget == buttons[1];
 				shell.close();
 			}	
 		};
 		if (check != null) {
 			buttons[0] = new Button(shell, SWT.CHECK);
 			buttons[0].setText(check);
-			buttons[0].setSelection(checkValue[0] != 0);
+			buttons[0].setSelection(checkValue[0]);
 			data = new GridData ();
 			data.horizontalAlignment = GridData.BEGINNING;
 			buttons[0].setLayoutData (data);

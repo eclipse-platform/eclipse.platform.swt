@@ -34,14 +34,14 @@ public class nsIDOMKeyEvent extends nsIDOMUIEvent {
 	public static final String NS_IDOMKEYEVENT_IID_STR =
 		"028e0e6e-8b01-11d3-aae7-0010838a3123";
 
-	public static final String NS_IDOMKEYEVENT_8_IID_STR =
-		"e44d7977-20f2-442e-bc13-0f2f52992a4c";
+	public static final String NS_IDOMKEYEVENT_10_IID_STR =
+		"def974c3-b491-481b-bc67-29174af4b26a";
 	
 	public static final nsID NS_IDOMKEYEVENT_IID =
 		new nsID(NS_IDOMKEYEVENT_IID_STR);
 
-	public static final nsID NS_IDOMKEYEVENT_8_IID =
-		new nsID(NS_IDOMKEYEVENT_8_IID_STR);
+	public static final nsID NS_IDOMKEYEVENT_10_IID =
+		new nsID(NS_IDOMKEYEVENT_10_IID_STR);
 	
 	public nsIDOMKeyEvent(int /*long*/ address) {
 		super(address);
@@ -162,7 +162,7 @@ public class nsIDOMKeyEvent extends nsIDOMUIEvent {
 	public static final int DOM_VK_QUOTE = 222;
 	public static final int DOM_VK_META = 224;
 	
-	/* the follow constants are defined in Mozilla 8 */
+	/* the following constants are defined in Mozilla 10 */
 	public static final int DOM_VK_KANA = 21;
 	public static final int DOM_VK_HANGUL = 21;
 	public static final int DOM_VK_JUNJA = 23;

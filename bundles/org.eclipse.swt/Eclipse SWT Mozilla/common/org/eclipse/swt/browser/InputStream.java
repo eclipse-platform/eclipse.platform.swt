@@ -126,7 +126,7 @@ int ReadSegments (int /*long*/ aWriter, int /*long*/ aClosure, int aCount, int /
 
 int IsNonBlocking (int /*long*/ _retval) {
 	/* blocking */
-	XPCOM.memmove (_retval, new int[] {0}, 4);
+	XPCOM.memmove (_retval, new boolean[] {false});
 	return XPCOM.NS_OK;
 }		
 }

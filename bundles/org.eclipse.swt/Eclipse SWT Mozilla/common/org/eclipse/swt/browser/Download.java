@@ -187,7 +187,7 @@ int Init (int /*long*/ aSource, int /*long*/ aTarget, int /*long*/ aDisplayName,
 	String filename = null;
 	nsISupports supports = new nsISupports (aTarget);
 	int /*long*/[] result = new int /*long*/[1];
-	rc = supports.QueryInterface (!Mozilla.IsPre_4 ? nsIURI.NS_IURI_8_IID : nsIURI.NS_IURI_IID, result);
+	rc = supports.QueryInterface (!Mozilla.IsPre_4 ? nsIURI.NS_IURI_10_IID : nsIURI.NS_IURI_IID, result);
 	if (rc == XPCOM.NS_OK) {	/* >= 1.7 */
 		nsIURI target = new nsIURI (result[0]);
 		result[0] = 0;

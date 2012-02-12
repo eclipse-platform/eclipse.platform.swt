@@ -29,14 +29,20 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIBaseWindow extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 24;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 22 : 24);
 
 	public static final String NS_IBASEWINDOW_IID_STR =
 		"046bc8a0-8015-11d3-af70-00a024ffc08c";
 
+	public static final String NS_IBASEWINDOW_10_IID_STR =
+		"7144ac8b-6702-4a4b-a73d-d1d4e9717e46";
+
 	public static final nsID NS_IBASEWINDOW_IID =
 		new nsID(NS_IBASEWINDOW_IID_STR);
 
+	public static final nsID NS_IBASEWINDOW_10_IID =
+		new nsID(NS_IBASEWINDOW_10_IID_STR);
+		
 	public nsIBaseWindow(int /*long*/ address) {
 		super(address);
 	}
@@ -114,26 +120,28 @@ public class nsIBaseWindow extends nsISupports {
 	}
 
 	public int GetBlurSuppression(int[] aBlurSuppression) {
+		if (IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 19, getAddress(), aBlurSuppression);
 	}
 
 	public int SetBlurSuppression(int aBlurSuppression) {
+		if (IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 20, getAddress(), aBlurSuppression);
 	}
 
 	public int GetMainWidget(int /*long*/[] aMainWidget) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 21, getAddress(), aMainWidget);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 19 : 21), getAddress(), aMainWidget);
 	}
 
 	public int SetFocus() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 22, getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 20 : 22), getAddress());
 	}
 
 	public int GetTitle(int /*long*/[] aTitle) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 23, getAddress(), aTitle);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 21 : 23), getAddress(), aTitle);
 	}
 
 	public int SetTitle(char[] aTitle) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 24, getAddress(), aTitle);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 22 : 24), getAddress(), aTitle);
 	}
 }

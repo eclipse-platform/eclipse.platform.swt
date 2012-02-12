@@ -149,12 +149,32 @@ public class XPCOM extends C {
 
 public static final native int nsDynamicFunctionLoad_sizeof ();
 
+public static void memmove(int /*long*/ dest, boolean[] src) {
+	if (nsISupports.IsXULRunner10) { // TODO change this reference
+		memmove (dest, new byte[] {src[0] ? (byte)1 : 0}, 1);
+	} else {
+		memmove (dest, new int[] {src[0] ? 1 : 0}, 4);
+	}
+}
+
+public static void memmove(boolean[] dest, int /*long*/ src) {
+	if (nsISupports.IsXULRunner10) { // TODO change this reference
+		byte[] result = new byte[1];
+		memmove (result, src, 1);
+		dest[0] = result[0] != 0;
+	} else {
+		int[] result = new int[1];
+		memmove (result, src, 4);
+		dest[0] = result[0] != 0;
+	}
+}
+
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out critical
  * @param size cast=(size_t)
  */
-public static final native void memmove (int /*long*/ dest, nsDynamicFunctionLoad src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, nsDynamicFunctionLoad src, int /*long*/ size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *)
@@ -2456,6 +2476,26 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1
 	lock.lock();
 	try {
 		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
+	} finally {
+		lock.unlock();
+	}
+}
+
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11, int arg12, short arg13, int arg14, float arg15, short arg16);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11, int arg12, short arg13, int arg14, float arg15, short arg16) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
+	} finally {
+		lock.unlock();
+	}
+}
+
+static final native int _VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, int arg2, long arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11, int arg12, short arg13, long arg14, float arg15, short arg16);
+static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, int arg2, long arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11, int arg12, short arg13, long arg14, float arg15, short arg16) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
 	} finally {
 		lock.unlock();
 	}

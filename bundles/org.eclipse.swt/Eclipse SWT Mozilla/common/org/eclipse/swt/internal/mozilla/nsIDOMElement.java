@@ -29,13 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMElement extends nsIDOMNode {
 
-	static final int LAST_METHOD_ID = nsIDOMNode.LAST_METHOD_ID + 16;
+	static final int LAST_METHOD_ID = nsIDOMNode.LAST_METHOD_ID + (IsXULRunner10 ? 20 : 16);
 
 	public static final String NS_IDOMELEMENT_IID_STR =
 		"a6cf9078-15b3-11d2-932e-00805f8add32";
 
+	public static final String NS_IDOMELEMENT_10_IID_STR =
+		"1f249e8b-7b41-44c0-a8d5-15298c1198cd";
+
 	public static final nsID NS_IDOMELEMENT_IID =
 		new nsID(NS_IDOMELEMENT_IID_STR);
+
+	public static final nsID NS_IDOMELEMENT_10_IID =
+		new nsID(NS_IDOMELEMENT_10_IID_STR);
 
 	public nsIDOMElement(int /*long*/ address) {
 		super(address);
@@ -103,5 +109,25 @@ public class nsIDOMElement extends nsIDOMNode {
 
 	public int HasAttributeNS(int /*long*/ namespaceURI, int /*long*/ localName, int[] _retval) {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 16, getAddress(), namespaceURI, localName, _retval);
+	}
+
+	public int GetOnmouseenter(int /*long*/ cx, int /*long*/ aOnmouseenter) {
+		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 17, getAddress(), cx, aOnmouseenter);
+	}
+
+	public int SetOnmouseenter(int /*long*/ cx, int /*long*/ aOnmouseenter) {
+		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 18, getAddress(), cx, aOnmouseenter);
+	}
+
+	public int GetOnmouseleave(int /*long*/ cx, int /*long*/ aOnmouseleave) {
+		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 19, getAddress(), cx, aOnmouseleave);
+	}
+
+	public int SetOnmouseleave(int /*long*/ cx, int /*long*/ aOnmouseleave) {
+		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 20, getAddress(), cx, aOnmouseleave);
 	}
 }

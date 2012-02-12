@@ -29,19 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIWebBrowser extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (Is8 ? 9 : 7);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 9 : 7);
 
 	public static final String NS_IWEBBROWSER_IID_STR =
 		"69e5df00-7b8b-11d3-af61-00a024ffc08c";
 
-	public static final String NS_IWEBBROWSER_8_IID_STR =
+	public static final String NS_IWEBBROWSER_10_IID_STR =
 		"33e9d001-caab-4ba9-8961-54902f197202";
 	
 	public static final nsID NS_IWEBBROWSER_IID =
 		new nsID(NS_IWEBBROWSER_IID_STR);
 
-	public static final nsID NS_IWEBBROWSER_8_IID =
-		new nsID(NS_IWEBBROWSER_8_IID_STR);
+	public static final nsID NS_IWEBBROWSER_10_IID =
+		new nsID(NS_IWEBBROWSER_10_IID_STR);
 	
 	public nsIWebBrowser(int /*long*/ address) {
 		super(address);
@@ -76,12 +76,12 @@ public class nsIWebBrowser extends nsISupports {
 	}
 
 	public int GetIsActive(int[] aIsActive) {
-		if (!Is8) return XPCOM.NS_COMFALSE;
+		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aIsActive);
 	}
 
 	public int SetIsActive(int aIsActive) {
-		if (!Is8) return XPCOM.NS_COMFALSE;
+		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aIsActive);
 	}
 }

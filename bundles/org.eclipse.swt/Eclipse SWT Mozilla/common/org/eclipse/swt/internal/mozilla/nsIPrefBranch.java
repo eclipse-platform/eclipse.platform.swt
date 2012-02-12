@@ -34,14 +34,14 @@ public class nsIPrefBranch extends nsISupports {
 	public static final String NS_IPREFBRANCH_IID_STR =
 		"56c35506-f14b-11d3-99d3-ddbfac2ccf65";
 
-	public static final String NS_IPREFBRANCH_8_IID_STR =
-		"e0b6e170-691b-11e0-ae3e-0800200c9a66";
+	public static final String NS_IPREFBRANCH_10_IID_STR =
+		"e162bfa0-01bd-4e9f-9843-8fb2efcd6d1f";
 	
 	public static final nsID NS_IPREFBRANCH_IID =
 		new nsID(NS_IPREFBRANCH_IID_STR);
 
-	public static final nsID NS_IPREFBRANCH_8_IID =
-		new nsID(NS_IPREFBRANCH_8_IID_STR);
+	public static final nsID NS_IPREFBRANCH_10_IID =
+		new nsID(NS_IPREFBRANCH_10_IID_STR);
 	
 	public nsIPrefBranch(int /*long*/ address) {
 		super(address);

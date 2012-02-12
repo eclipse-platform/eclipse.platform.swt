@@ -792,7 +792,7 @@ public void create (Composite parent, int style) {
 	result[0] = 0;
 
 	/* create the nsIWebBrowser instance */
-	rc = componentManager.CreateInstance (XPCOM.NS_IWEBBROWSER_CID, 0, nsIWebBrowser.NS_IWEBBROWSER_8_IID, result);
+	rc = componentManager.CreateInstance (XPCOM.NS_IWEBBROWSER_CID, 0, nsIWebBrowser.NS_IWEBBROWSER_10_IID, result);
 	if (rc != XPCOM.NS_OK) {
 		rc = componentManager.CreateInstance (XPCOM.NS_IWEBBROWSER_CID, 0, nsIWebBrowser.NS_IWEBBROWSER_IID, result);
 		if (rc != XPCOM.NS_OK) {
@@ -895,7 +895,7 @@ public void create (Composite parent, int style) {
 			} else { /* >= 1.9 */
 				IsPre_1_9 = false;
 				result[0] = 0;
-				rc = interfaceRequestor.GetInterface(nsIDocShell_1_8.NS_IDOCSHELL_8_IID, result);
+				rc = interfaceRequestor.GetInterface(nsIDocShell_1_8.NS_IDOCSHELL_10_IID, result);
 				if (rc == XPCOM.NS_OK && result[0] != 0) { /* >=2.0 */
 					IsPre_4 = false;
 					new nsISupports (result[0]).Release();
@@ -1290,7 +1290,7 @@ public boolean execute (String script) {
 		nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 		result[0] = 0;
 		byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_SCRIPTSECURITYMANAGER_CONTRACTID, true);
-		rc = serviceManager.GetServiceByContractID (aContractID, nsIScriptSecurityManager.NS_ISCRIPTSECURITYMANAGER_8_IID, result);
+		rc = serviceManager.GetServiceByContractID (aContractID, nsIScriptSecurityManager.NS_ISCRIPTSECURITYMANAGER_10_IID, result);
 		if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
 			result[0] = 0;
 			rc = serviceManager.GetServiceByContractID (aContractID, nsIScriptSecurityManager.NS_ISCRIPTSECURITYMANAGER_191_IID, result);
@@ -1658,7 +1658,7 @@ public Object getWebBrowser () {
 		Method method = clazz.getMethod ("getInstance", new Class[0]); //$NON-NLS-1$
 		Object mozilla = method.invoke (null, new Object[0]);
 		method = clazz.getMethod ("wrapXPCOMObject", new Class[] {Long.TYPE, String.class}); //$NON-NLS-1$
-		webBrowserObject = method.invoke (mozilla, new Object[] {new Long (webBrowser.getAddress ()), !IsPre_4 ? nsIWebBrowser.NS_IWEBBROWSER_8_IID_STR : nsIWebBrowser.NS_IWEBBROWSER_IID_STR});
+		webBrowserObject = method.invoke (mozilla, new Object[] {new Long (webBrowser.getAddress ()), !IsPre_4 ? nsIWebBrowser.NS_IWEBBROWSER_10_IID_STR : nsIWebBrowser.NS_IWEBBROWSER_IID_STR});
 		/*
 		 * The following AddRef() is needed to offset the automatic Release() that
 		 * will be performed by JavaXPCOM when webBrowserObject is finalized.
@@ -1978,7 +1978,7 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 		if (version < 4) {
 			IsPre_4 = true;
 		} else {
-			nsISupports.Is8 = true;
+			nsISupports.IsXULRunner10 = true;
 		}
 		String initFunctionName = IsPre_4 ? "XRE_InitEmbedding" : "XRE_InitEmbedding2";
 		byte[] bytes = MozillaDelegate.wcsToMbcs (null, initFunctionName, true); //$NON-NLS-1$
@@ -2487,10 +2487,13 @@ void initWebBrowserWindows () {
 	}
 
 	int /*long*/[] result = new int /*long*/[1];
-	rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
+	rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_10_IID, result);
 	if (rc != XPCOM.NS_OK) {
-		browser.dispose ();
-		error (rc);
+		rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
 	}
 	if (result[0] == 0) {
 		browser.dispose ();
@@ -2630,8 +2633,11 @@ void onDispose (Display display) {
 	unhookDOMListeners ();
 
 	int /*long*/[] result = new int /*long*/[1];
-	rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
-	if (rc != XPCOM.NS_OK) error (rc);
+	rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_10_IID, result);
+	if (rc != XPCOM.NS_OK) {
+		rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+	}
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
 	nsIBaseWindow baseWindow = new nsIBaseWindow (result[0]);
@@ -2847,8 +2853,11 @@ void onResize () {
 	int height = Math.max (1, rect.height);
 
 	int /*long*/[] result = new int /*long*/[1];
-	int rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
-	if (rc != XPCOM.NS_OK) error (rc);
+	int rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_10_IID, result);
+	if (rc != XPCOM.NS_OK) {
+		rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+	}
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
 	delegate.setSize (embedHandle, width, height);
@@ -3207,7 +3216,7 @@ void unhookDOMListeners () {
 
 	nsIDOMWindow window = new nsIDOMWindow (result[0]);
 	result[0] = 0;
-	rc = window.QueryInterface (!IsPre_4 ? nsIDOMEventTarget.NS_IDOMEVENTTARGET_8_IID : nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+	rc = window.QueryInterface (!IsPre_4 ? nsIDOMEventTarget.NS_IDOMEVENTTARGET_10_IID : nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 	nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
@@ -3234,7 +3243,7 @@ void unhookDOMListeners () {
 
 			nsIDOMWindow frame = new nsIDOMWindow (result[0]);
 			result[0] = 0;
-			rc = frame.QueryInterface (!IsPre_4 ? nsIDOMEventTarget.NS_IDOMEVENTTARGET_8_IID : nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+			rc = frame.QueryInterface (!IsPre_4 ? nsIDOMEventTarget.NS_IDOMEVENTTARGET_10_IID : nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
 			if (rc != XPCOM.NS_OK) error (rc);
 			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
@@ -3383,7 +3392,7 @@ int GetInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
-	if (guid.Equals (nsIDOMWindow.NS_IDOMWINDOW_8_IID) || guid.Equals(nsIDOMWindow.NS_IDOMWINDOW_IID)) {
+	if (guid.Equals (nsIDOMWindow.NS_IDOMWINDOW_10_IID) || guid.Equals(nsIDOMWindow.NS_IDOMWINDOW_IID)) {
 		int /*long*/[] aContentDOMWindow = new int /*long*/[1];
 		int rc = webBrowser.GetContentDOMWindow (aContentDOMWindow);
 		if (rc != XPCOM.NS_OK) error (rc);
@@ -3456,8 +3465,11 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 		*/
 		if (isRetrievingBadCert) {
 			nsIRequest request = new nsIRequest (aRequest);
-			int rc = request.QueryInterface (nsIChannel.NS_ICHANNEL_IID, result);
-			if (rc != XPCOM.NS_OK) error (rc);
+			int rc = request.QueryInterface (nsIChannel.NS_ICHANNEL_10_IID, result);
+			if (rc != XPCOM.NS_OK) {
+				rc = request.QueryInterface (nsIChannel.NS_ICHANNEL_IID, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+			}
 			if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
 			nsIChannel channel = new nsIChannel (result[0]);
@@ -3545,7 +3557,7 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 			result[0] = 0;
 
 			nsIDOMWindow domWindow = new nsIDOMWindow (window[0]);
-			rc = domWindow.QueryInterface (!IsPre_4 ? nsIDOMEventTarget.NS_IDOMEVENTTARGET_8_IID : nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+			rc = domWindow.QueryInterface (!IsPre_4 ? nsIDOMEventTarget.NS_IDOMEVENTTARGET_10_IID : nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
 			domWindow.Release();
 			if (rc != XPCOM.NS_OK) error (rc);
 			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
@@ -3691,7 +3703,7 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 				result[0] = 0;
 
 				nsIDOMWindow domWindow = new nsIDOMWindow (window[0]);
-				rc = domWindow.QueryInterface (!IsPre_4 ? nsIDOMEventTarget.NS_IDOMEVENTTARGET_8_IID : nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+				rc = domWindow.QueryInterface (!IsPre_4 ? nsIDOMEventTarget.NS_IDOMEVENTTARGET_10_IID : nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
 				domWindow.Release();
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
@@ -3745,10 +3757,13 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_TRANSFERRING) != 0) {
 		if (updateLastNavigateUrl) {
 			updateLastNavigateUrl = false;
-			int /*long*/[] result = new int /*long*/[1];
 			nsIRequest request = new nsIRequest (aRequest);
 
-			int rc = request.QueryInterface (nsIChannel.NS_ICHANNEL_IID, result);
+			int /*long*/[] result = new int /*long*/[1];
+			int rc = request.QueryInterface (nsIChannel.NS_ICHANNEL_10_IID, result);
+			if (rc != XPCOM.NS_OK) {
+				rc = request.QueryInterface (nsIChannel.NS_ICHANNEL_IID, result);
+			}
 			if (rc == XPCOM.NS_OK && result[0] != 0) {
 				nsIChannel channel = new nsIChannel (result[0]);
 				result[0] = 0;
@@ -3794,7 +3809,7 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 			new nsISupports (result[0]).Release ();
 			result[0] = 0;
 
-			rc = domWindow.QueryInterface (!IsPre_4 ? nsIDOMEventTarget.NS_IDOMEVENTTARGET_8_IID : nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+			rc = domWindow.QueryInterface (!IsPre_4 ? nsIDOMEventTarget.NS_IDOMEVENTTARGET_10_IID : nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
 			if (rc != XPCOM.NS_OK) error (rc);
 			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
@@ -4022,8 +4037,8 @@ int ShowAsModal () {
 }
 
 int IsWindowModal (int /*long*/ retval) {
-	int result = (chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0 ? 1 : 0;
-	XPCOM.memmove (retval, new int[] {result}, 4); /* PRBool */
+	boolean result = (chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0;
+	XPCOM.memmove (retval, new boolean[] {result});
 	return XPCOM.NS_OK;
 }
    
@@ -4076,8 +4091,11 @@ int GetDimensions (int flags, int /*long*/ x, int /*long*/ y, int /*long*/ cx, i
 
 int SetFocus () {
 	int /*long*/[] result = new int /*long*/[1];
-	int rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
-	if (rc != XPCOM.NS_OK) error (rc);
+	int rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_10_IID, result);
+	if (rc != XPCOM.NS_OK) {
+		rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+	}
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 	
 	nsIBaseWindow baseWindow = new nsIBaseWindow (result[0]);
@@ -4095,7 +4113,7 @@ int SetFocus () {
 
 int GetVisibility (int /*long*/ aVisibility) {
 	boolean visible = browser.isVisible () && !browser.getShell ().getMinimized ();
-	XPCOM.memmove (aVisibility, new int[] {visible ? 1 : 0}, 4); /* PRBool */
+	XPCOM.memmove (aVisibility, new boolean[] {visible});
 	return XPCOM.NS_OK;
 }
 
@@ -4215,7 +4233,7 @@ int FocusPrevElement () {
 int OnShowContextMenu (int aContextFlags, int /*long*/ aEvent, int /*long*/ aNode) {
 	nsIDOMEvent domEvent = new nsIDOMEvent (aEvent);
 	int /*long*/[] result = new int /*long*/[1];
-	int rc = domEvent.QueryInterface (!IsPre_4 ? nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_8_IID : nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_IID, result);
+	int rc = domEvent.QueryInterface (!IsPre_4 ? nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_10_IID : nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
@@ -4266,7 +4284,7 @@ int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 	* to the page with the bad certificate so that NotifyCertProblem will be invoked.
 	*/
 	if (value.indexOf ("aboutCertError.xhtml") != -1 || (isViewingErrorPage && value.indexOf ("javascript:showSecuritySection") != -1)) { //$NON-NLS-1$ //$NON-NLS-2$
-		XPCOM.memmove (retval, new int[] {1}, 4); /* PRBool */
+		XPCOM.memmove (retval, new boolean[] {true});
 		isRetrievingBadCert = true;
 		setUrl (lastNavigateURL, (byte[])null, null);
 		return XPCOM.NS_OK;
@@ -4323,7 +4341,7 @@ int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 			}
 		}
 	}
-	XPCOM.memmove (retval, new int[] {doit ? 0 : 1}, 4); /* PRBool */
+	XPCOM.memmove (retval, new boolean[] {!doit});
 	return XPCOM.NS_OK;
 }
 
@@ -4382,7 +4400,7 @@ int IsPreferred (int /*long*/ aContentType, int /*long*/ aDesiredContentType, in
 		}
 	}
 
-	XPCOM.memmove(retval, new int[] {preferred ? 1 : 0}, 4); /* PRBool */
+	XPCOM.memmove(retval, new boolean[] {preferred});
 	if (preferred) {
 		XPCOM.memmove (aDesiredContentType, new int /*long*/[] {0}, C.PTR_SIZEOF);
 	}
@@ -4478,7 +4496,7 @@ int HandleEvent (int /*long*/ event) {
 
 	if (XPCOM.DOMEVENT_KEYDOWN.equals (typeString)) {
 		int /*long*/[] result = new int /*long*/[1];
-		rc = domEvent.QueryInterface (!IsPre_4 ? nsIDOMKeyEvent.NS_IDOMKEYEVENT_8_IID : nsIDOMKeyEvent.NS_IDOMKEYEVENT_IID, result);
+		rc = domEvent.QueryInterface (!IsPre_4 ? nsIDOMKeyEvent.NS_IDOMKEYEVENT_10_IID : nsIDOMKeyEvent.NS_IDOMKEYEVENT_IID, result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 		nsIDOMKeyEvent domKeyEvent = new nsIDOMKeyEvent (result[0]);
@@ -4586,7 +4604,7 @@ int HandleEvent (int /*long*/ event) {
 		}
 
 		int /*long*/[] result = new int /*long*/[1];
-		rc = domEvent.QueryInterface (!IsPre_4 ? nsIDOMKeyEvent.NS_IDOMKEYEVENT_8_IID : nsIDOMKeyEvent.NS_IDOMKEYEVENT_IID, result);
+		rc = domEvent.QueryInterface (!IsPre_4 ? nsIDOMKeyEvent.NS_IDOMKEYEVENT_10_IID : nsIDOMKeyEvent.NS_IDOMKEYEVENT_IID, result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 		nsIDOMKeyEvent domKeyEvent = new nsIDOMKeyEvent (result[0]);
@@ -4642,7 +4660,7 @@ int HandleEvent (int /*long*/ event) {
 
 	if (XPCOM.DOMEVENT_KEYUP.equals (typeString)) {
 		int /*long*/[] result = new int /*long*/[1];
-		rc = domEvent.QueryInterface (!IsPre_4 ? nsIDOMKeyEvent.NS_IDOMKEYEVENT_8_IID : nsIDOMKeyEvent.NS_IDOMKEYEVENT_IID, result);
+		rc = domEvent.QueryInterface (!IsPre_4 ? nsIDOMKeyEvent.NS_IDOMKEYEVENT_10_IID : nsIDOMKeyEvent.NS_IDOMKEYEVENT_IID, result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 		nsIDOMKeyEvent domKeyEvent = new nsIDOMKeyEvent (result[0]);
@@ -4699,7 +4717,7 @@ int HandleEvent (int /*long*/ event) {
 	/* mouse event */
 
 	int /*long*/[] result = new int /*long*/[1];
-	rc = domEvent.QueryInterface (!IsPre_4 ? nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_8_IID : nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_IID, result);
+	rc = domEvent.QueryInterface (!IsPre_4 ? nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_10_IID : nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 	nsIDOMMouseEvent domMouseEvent = new nsIDOMMouseEvent (result[0]);
@@ -4831,8 +4849,11 @@ int NotifyCertProblem (int /*long*/ socketInfo, int /*long*/ status, int /*long*
 
 	int /*long*/[] result = new int /*long*/[1];
 	nsISupports supports = new nsISupports (status);
-	int rc = supports.QueryInterface (nsISSLStatus.NS_ISSLSTATUS_IID, result);
-	if (rc != XPCOM.NS_OK) error (rc);
+	int rc = supports.QueryInterface (nsISSLStatus.NS_ISSLSTATUS_10_IID, result);
+	if (rc != XPCOM.NS_OK) {
+		rc = supports.QueryInterface (nsISSLStatus.NS_ISSLSTATUS_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+	}
 	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
 	nsISSLStatus sslStatus = new nsISSLStatus (result[0]);
@@ -4959,7 +4980,7 @@ int NotifyCertProblem (int /*long*/ socketInfo, int /*long*/ status, int /*long*
 		}
 	});
 
-	C.memmove (_suppressError, new int[] {1}, 4); /* PRInt32 */
+	XPCOM.memmove (_suppressError, new boolean[] {true});
 	return XPCOM.NS_OK;
 }
 

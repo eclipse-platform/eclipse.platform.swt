@@ -29,19 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIFilePicker_1_8 extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (Is8 ? 17 : 15);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 17 : 15);
 
 	public static final String NS_IFILEPICKER_IID_STR =
 		"80faf095-c807-4558-a2cc-185ed70754ea";
 
-	public static final String NS_IFILEPICKER_8_IID_STR =
+	public static final String NS_IFILEPICKER_10_IID_STR =
 		"f2c0e216-5d07-4df4-bbcb-37683077ae7e";
 	
 	public static final nsID NS_IFILEPICKER_IID =
 		new nsID(NS_IFILEPICKER_IID_STR);
 
-	public static final nsID NS_IFILEPICKER_8_IID =
-		new nsID(NS_IFILEPICKER_8_IID_STR);
+	public static final nsID NS_IFILEPICKER_10_IID =
+		new nsID(NS_IFILEPICKER_10_IID_STR);
 	
 	public nsIFilePicker_1_8(int /*long*/ address) {
 		super(address);
@@ -124,16 +124,16 @@ public class nsIFilePicker_1_8 extends nsISupports {
 	}
 
 	public int Show(int /*long*/ _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (Is8 ? 17 : 15), getAddress(), _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 17 : 15), getAddress(), _retval);
 	}
 	
 	public int GetAddToRecentDocs(int[] aAddToRecentDocs) {
-		if (!Is8) return XPCOM.NS_COMFALSE;
+		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 15, getAddress(), aAddToRecentDocs);
 	}
 
 	public int SetAddToRecentDocs(int aAddToRecentDocs) {
-		if (!Is8) return XPCOM.NS_COMFALSE;
+		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 16, getAddress(), aAddToRecentDocs);
 	}
 }
