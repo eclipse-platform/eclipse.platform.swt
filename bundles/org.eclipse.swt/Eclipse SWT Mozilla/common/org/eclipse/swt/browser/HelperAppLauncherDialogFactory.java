@@ -97,7 +97,7 @@ int CreateInstance (int /*long*/ aOuter, int /*long*/ iid, int /*long*/ result) 
 		helperAppLauncherDialog.AddRef ();
 		XPCOM.memmove (result, new int /*long*/[] {helperAppLauncherDialog.getAddress ()}, C.PTR_SIZEOF);
 	} else {
-		HelperAppLauncherDialog_8 helperAppLauncherDialog = new HelperAppLauncherDialog_8 ();
+		HelperAppLauncherDialog_10 helperAppLauncherDialog = new HelperAppLauncherDialog_10 ();
 		helperAppLauncherDialog.AddRef ();
 		XPCOM.memmove (result, new int /*long*/[] {helperAppLauncherDialog.getAddress ()}, C.PTR_SIZEOF);
 	}

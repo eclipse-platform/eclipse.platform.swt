@@ -89,7 +89,7 @@ int Release () {
 
 int CreateInstance (int /*long*/ aOuter, int /*long*/ iid, int /*long*/ result) {
 	if (!Mozilla.IsPre_4) {
-		FilePicker_8 picker = new FilePicker_8 ();
+		FilePicker_10 picker = new FilePicker_10 ();
 		picker.AddRef ();
 		XPCOM.memmove (result, new int /*long*/[] {picker.getAddress ()}, C.PTR_SIZEOF);
 	} else if (Mozilla.IsXULRunner) {

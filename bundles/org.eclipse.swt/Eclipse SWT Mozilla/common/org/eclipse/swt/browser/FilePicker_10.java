@@ -12,7 +12,7 @@ package org.eclipse.swt.browser;
 
 import org.eclipse.swt.internal.mozilla.*;
 
-class FilePicker_8 extends FilePicker_1_8 {
+class FilePicker_10 extends FilePicker_1_8 {
 
 void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */

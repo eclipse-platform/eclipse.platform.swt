@@ -21,12 +21,12 @@ import org.eclipse.swt.widgets.*;
  * implemented by class HelperAppLauncherDialog_1_9.  HelperAppLauncherDialogFactory
  * determines at runtime which of these classes to instantiate. 
  */
-class HelperAppLauncherDialog_8 extends HelperAppLauncherDialog_1_9 {
+class HelperAppLauncherDialog_10 extends HelperAppLauncherDialog_1_9 {
 	XPCOMObject supports;
 	XPCOMObject helperAppLauncherDialog;
 	int refCount = 0;
 
-HelperAppLauncherDialog_8 () {
+HelperAppLauncherDialog_10 () {
 	createCOMInterfaces ();
 }
 
