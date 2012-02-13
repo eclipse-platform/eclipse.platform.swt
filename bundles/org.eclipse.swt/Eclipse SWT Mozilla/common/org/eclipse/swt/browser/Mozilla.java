@@ -546,8 +546,7 @@ static String Arch () {
 static void LoadLibraries () {
 	boolean initLoaded = false;
 
-	String greInitialized = System.getProperty (GRE_INITIALIZED);
-	if (TRUE.equals (greInitialized)) {
+	if (Boolean.getBoolean (GRE_INITIALIZED)) {
 		/* 
 		 * Another browser has already initialized xulrunner in this process,
 		 * so just bind to it instead of trying to initialize a new one.
@@ -736,11 +735,7 @@ public void create (Composite parent, int style) {
 		 * Check for the property indicating that factories have already been registered,
 		 * in which case this browser should not overwrite them with its own.
 		 */
-		boolean factoriesRegistered = false;
-		String propertyString = System.getProperty (FACTORIES_REGISTERED);
-		if (TRUE.equals (propertyString)) {
-			factoriesRegistered = true;
-		}
+		boolean factoriesRegistered = Boolean.getBoolean (FACTORIES_REGISTERED);
 
 		/* init our WindowCreator, which mozilla uses for the creation of child browsers in external Shells */
 		if (!factoriesRegistered) {
@@ -829,15 +824,10 @@ public void create (Composite parent, int style) {
 		result[0] = 0;
 
 		/*
-		 * Check for the property indicating that factories have already been registered,
-		 * in which case this browser should not overwrite them with its own.
-		 */
-		boolean factoriesRegistered = false;
-		String propertyString = System.getProperty (FACTORIES_REGISTERED);
-		if (TRUE.equals (propertyString)) {
-			factoriesRegistered = true;
-		}
-
+		* Check for the property indicating that factories have already been registered,
+		* in which case this browser should not overwrite them with its own.
+		*/
+		boolean factoriesRegistered = Boolean.getBoolean (FACTORIES_REGISTERED);
 
 		/*
 		* Check for the availability of the pre-1.8 implementation of nsIDocShell
@@ -2232,17 +2222,9 @@ void initPreferences (nsIServiceManager serviceManager, nsIComponentManager comp
 	* preferences with these values if needed.
 	*/
 	String proxyHost = System.getProperty (PROPERTY_PROXYHOST);
-	String proxyPortString = System.getProperty (PROPERTY_PROXYPORT);
-
 	int port = -1;
-	if (proxyPortString != null) {
-		try {
-			int value = Integer.valueOf (proxyPortString).intValue ();
-			if (0 <= value && value <= MAX_PORT) port = value;
-		} catch (NumberFormatException e) {
-			/* do nothing, java property has non-integer value */
-		}
-	}
+	int propertyValue = Integer.getInteger (PROPERTY_PROXYPORT, -1).intValue ();
+	if (0 <= propertyValue && propertyValue <= MAX_PORT) port = propertyValue;
 
 	if (proxyHost != null) {
 		byte[] contractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_PREFLOCALIZEDSTRING_CONTRACTID, true);
