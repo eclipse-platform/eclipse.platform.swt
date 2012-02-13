@@ -97,12 +97,12 @@ String getLabel (int buttonFlag, int index, int /*long*/ buttonTitle) {
 	String label = null;
 	int flag = (buttonFlag & (0xff * index)) / index;
 	switch (flag) {
-		case nsIPrompt.BUTTON_TITLE_CANCEL : label = SWT.getMessage ("SWT_Cancel"); break; //$NON-NLS-1$
-		case nsIPrompt.BUTTON_TITLE_NO : label = SWT.getMessage ("SWT_No"); break; //$NON-NLS-1$
-		case nsIPrompt.BUTTON_TITLE_OK : label = SWT.getMessage ("SWT_OK"); break; //$NON-NLS-1$
-		case nsIPrompt.BUTTON_TITLE_SAVE : label = SWT.getMessage ("SWT_Save"); break; //$NON-NLS-1$
-		case nsIPrompt.BUTTON_TITLE_YES : label = SWT.getMessage ("SWT_Yes"); break; //$NON-NLS-1$
-		case nsIPrompt.BUTTON_TITLE_IS_STRING : {
+		case nsIPrompt.BUTTON_TITLE_CANCEL: label = SWT.getMessage ("SWT_Cancel"); break; //$NON-NLS-1$
+		case nsIPrompt.BUTTON_TITLE_NO: label = SWT.getMessage ("SWT_No"); break; //$NON-NLS-1$
+		case nsIPrompt.BUTTON_TITLE_OK: label = SWT.getMessage ("SWT_OK"); break; //$NON-NLS-1$
+		case nsIPrompt.BUTTON_TITLE_SAVE: label = SWT.getMessage ("SWT_Save"); break; //$NON-NLS-1$
+		case nsIPrompt.BUTTON_TITLE_YES: label = SWT.getMessage ("SWT_Yes"); break; //$NON-NLS-1$
+		case nsIPrompt.BUTTON_TITLE_IS_STRING: {
 			int length = XPCOM.strlen_PRUnichar (buttonTitle);
 			char[] dest = new char[length];
 			XPCOM.memmove (dest, buttonTitle, length * 2);
@@ -114,7 +114,7 @@ String getLabel (int buttonFlag, int index, int /*long*/ buttonTitle) {
 
 /* nsIPrompt */
 
-int Alert ( int /*long*/ aDialogTitle, int /*long*/ aText) {
+int Alert (int /*long*/ aDialogTitle, int /*long*/ aText) {
 	final Browser browser = getBrowser ();
 	
 	int length = XPCOM.strlen_PRUnichar (aDialogTitle);
@@ -156,16 +156,16 @@ Browser getBrowser() {
 			result[0] = 0;
 			rc = browser.GetContentDOMWindow(result);
 			if (rc == XPCOM.NS_OK && result[0] != 0) {
-					return Mozilla.getBrowser(result[0]);
+				return Mozilla.getBrowser(result[0]);
 			}
-	}
+		}
 	}
 	return null;
 }
 
 int AlertCheck (int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aCheckMsg, int /*long*/ aCheckState) {
 	Browser browser = getBrowser ();
-	
+
 	int length = XPCOM.strlen_PRUnichar (aDialogTitle);
 	char[] dest = new char[length];
 	XPCOM.memmove (dest, aDialogTitle, length * 2);
