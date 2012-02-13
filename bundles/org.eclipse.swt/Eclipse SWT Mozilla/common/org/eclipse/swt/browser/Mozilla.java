@@ -113,7 +113,6 @@ class Mozilla extends WebBrowser {
 	static final String TRUE = "true"; //$NON-NLS-1$
 	static final String URI_FILEROOT = "file:///"; //$NON-NLS-1$
 	static final String XULRUNNER_PATH = "org.eclipse.swt.browser.XULRunnerPath"; //$NON-NLS-1$
-	static final String XULRUNNER_VERSION = "org.eclipse.swt.browser.XULRunnerVersion"; //$NON-NLS-1$
 
 	// TEMPORARY CODE
 	static final String FACTORIES_REGISTERED = "org.eclipse.swt.browser.MozillaFactoriesRegistered"; //$NON-NLS-1$
@@ -698,7 +697,7 @@ public void create (Composite parent, int style) {
 			/* write external.xpt to the file system if needed */
 			initExternal (profilePath);
 
-			/* load swt's mozilla/xulrunner library and invoke appropriate Init function */
+			/* invoke appropriate Init function (based on mozilla version) */
 			initXPCOM (MozillaPath, IsXULRunner);
 		}
 
@@ -1974,20 +1973,37 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 		int /*long*/ ptr = C.malloc (size * 2);
 		C.memset (ptr, 0, size * 2);
 		nsDynamicFunctionLoad functionLoad = new nsDynamicFunctionLoad ();
-		int version = Integer.getInteger(XULRUNNER_VERSION, 0).intValue();
-		if (version < 4) {
-			IsPre_4 = true;
-		} else {
-			nsISupports.IsXULRunner10 = true;
-		}
-		String initFunctionName = IsPre_4 ? "XRE_InitEmbedding" : "XRE_InitEmbedding2";
-		byte[] bytes = MozillaDelegate.wcsToMbcs (null, initFunctionName, true); //$NON-NLS-1$
+
+		/* 
+		 * Attempt to load the XRE_InitEmbedding2 function first, which is present in
+		 * mozilla versions > 3.x.
+		 */
+		byte[] bytes = MozillaDelegate.wcsToMbcs (null, "XRE_InitEmbedding2", true); //$NON-NLS-1$
 		functionLoad.functionName = C.malloc (bytes.length);
 		C.memmove (functionLoad.functionName, bytes, bytes.length);
 		functionLoad.function = C.malloc (C.PTR_SIZEOF);
 		C.memmove (functionLoad.function, new int /*long*/[] {0} , C.PTR_SIZEOF);
 		XPCOM.memmove (ptr, functionLoad, XPCOM.nsDynamicFunctionLoad_sizeof ());
-		XPCOM.XPCOMGlueLoadXULFunctions (ptr);
+		rc = XPCOM.XPCOMGlueLoadXULFunctions (ptr);
+		if (rc == XPCOM.NS_OK) {
+			IsPre_4 = false;
+			nsISupports.IsXULRunner10 = true;
+		} else {
+			/*
+			 * XRE_InitEmbedding2 was not found, so fall back to XRE_InitEmbedding, which is
+			 * present in older mozilla versions.
+			 */
+			C.free (functionLoad.functionName);
+			bytes = MozillaDelegate.wcsToMbcs (null, "XRE_InitEmbedding", true); //$NON-NLS-1$
+			functionLoad.functionName = C.malloc (bytes.length);
+			C.memmove (functionLoad.functionName, bytes, bytes.length);
+			rc = XPCOM.XPCOMGlueLoadXULFunctions (ptr);
+			if (rc == XPCOM.NS_OK) {
+				IsPre_4 = true;
+				nsISupports.IsXULRunner10 = false;
+			}
+		}
+
 		C.memmove (result, functionLoad.function, C.PTR_SIZEOF);
 		int /*long*/ functionPtr = result[0];
 		result[0] = 0;
