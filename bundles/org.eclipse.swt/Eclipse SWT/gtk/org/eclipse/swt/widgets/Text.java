@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
@@ -1398,15 +1399,22 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
 				case SWT.CENTER: x = (width - rect.width) / 2; break;
 				case SWT.RIGHT: x = rtl ? innerBorder.left : width - rect.width; break;
 			}
-			//TODO: Use Cairo
-			int /*long*/ gc = OS.gdk_gc_new	(window);
 			int /*long*/ style = OS.gtk_widget_get_style (handle);	
 			GdkColor textColor = new GdkColor ();
 			OS.gtk_style_get_text (style, OS.GTK_STATE_INSENSITIVE, textColor);
 			GdkColor baseColor = new GdkColor ();
 			OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, baseColor);
-			OS.gdk_draw_layout_with_colors (window, gc, x, y, layout, textColor, baseColor);
-			OS.g_object_unref (gc);
+			if (OS.USE_CAIRO) {
+				int /*long*/ cairo = OS.gdk_cairo_create(window);
+				Cairo.cairo_set_source_rgba(cairo, (textColor.red & 0xFFFF) / (float)0xFFFF, (textColor.green & 0xFFFF) / (float)0xFFFF, (textColor.blue & 0xFFFF) / (float)0xFFFF, 1);
+				Cairo.cairo_move_to(cairo, x, y);
+				OS.pango_cairo_show_layout(cairo, layout);
+				Cairo.cairo_destroy(cairo);
+			} else {
+				int /*long*/ gc = OS.gdk_gc_new	(window);
+				OS.gdk_draw_layout_with_colors (window, gc, x, y, layout, textColor, baseColor);
+				OS.g_object_unref (gc);
+			}
 			OS.g_object_unref (layout);
 		}
 	}
