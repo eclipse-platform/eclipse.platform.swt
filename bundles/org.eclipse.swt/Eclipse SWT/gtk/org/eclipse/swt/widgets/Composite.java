@@ -372,14 +372,19 @@ public void drawBackground (GC gc, int x, int y, int width, int height, int offs
 				Cairo.cairo_translate (cairo, -pt.x - offsetX, -pt.y - offsetY);
 				x += pt.x + offsetX;
 				y += pt.y + offsetY;
-				int /*long*/ xDisplay = OS.GDK_DISPLAY ();
-				int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual (OS.gdk_visual_get_system());
-				int /*long*/ drawable = control.backgroundImage.pixmap;
-				int /*long*/ xDrawable = OS.GDK_PIXMAP_XID (drawable);				
-				int [] w = new int [1], h = new int [1];
-				OS.gdk_drawable_get_size (drawable, w, h);
-				int /*long*/ surface = Cairo.cairo_xlib_surface_create (xDisplay, xDrawable, xVisual, w [0], h [0]);
-				if (surface == 0) error (SWT.ERROR_NO_HANDLES);
+				int /*long*/ surface = control.backgroundImage.surface;
+				if (surface == 0) {
+					int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+					int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual (OS.gdk_visual_get_system());
+					int /*long*/ drawable = control.backgroundImage.pixmap;
+					int /*long*/ xDrawable = OS.GDK_PIXMAP_XID (drawable);				
+					int [] w = new int [1], h = new int [1];
+					OS.gdk_drawable_get_size (drawable, w, h);
+					surface = Cairo.cairo_xlib_surface_create (xDisplay, xDrawable, xVisual, w [0], h [0]);
+					if (surface == 0) error (SWT.ERROR_NO_HANDLES);
+				} else {
+					Cairo.cairo_surface_reference(surface);
+				}
 				int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface (surface);
 				if (pattern == 0) error (SWT.ERROR_NO_HANDLES);
 				Cairo.cairo_pattern_set_extend (pattern, Cairo.CAIRO_EXTEND_REPEAT);
@@ -720,7 +725,6 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		GCData data = new GCData ();
 		data.damageRgn = damageRgn;
 		GC gc = event.gc = GC.gtk_new (this, data);
-		OS.gdk_gc_set_clip_region (gc.handle, damageRgn);
 		sendEvent (SWT.Paint, event);
 		gc.dispose ();
 		OS.gdk_region_destroy (damageRgn);

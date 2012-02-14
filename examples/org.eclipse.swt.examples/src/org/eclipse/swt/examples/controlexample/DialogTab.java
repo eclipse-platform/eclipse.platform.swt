@@ -34,10 +34,16 @@ class DialogTab extends Tab {
 	Button iconWarningButton, iconWorkingButton, noIconButton;
 	Button primaryModalButton, applicationModalButton, systemModalButton;
 	Button sheetButton;
+	Button effectsVisibleButton, usePreviousResultButton;
 	Button saveButton, openButton, multiButton;
-	private Button effectsVisibleButton;
+	RGB colorDialogResult, fontDialogColorResult;
+	String directoryDialogResult;
+	String fileDialogResult;
+	int fileDialogIndexResult;
+	FontData[] fontDialogFontListResult;
+	PrinterData printDialogResult;
 
-	static String [] FilterExtensions	= {"*.txt", "*.bat", "*.doc", "*"};
+	static String [] FilterExtensions	= {"*.txt", "*.bat", "*.doc;*.rtf", "*"};
 	static String [] FilterNames		= {ControlExample.getResourceString("FilterName_0"),
 										   ControlExample.getResourceString("FilterName_1"),
 										   ControlExample.getResourceString("FilterName_2"),
@@ -123,34 +129,45 @@ class DialogTab extends Tab {
 		
 		if (name.equals (ControlExample.getResourceString("ColorDialog"))) {
 			ColorDialog dialog = new ColorDialog (shell ,style);
-			dialog.setRGB (new RGB (100, 100, 100));
+			if (usePreviousResultButton.getSelection()) {
+				dialog.setRGB (colorDialogResult);
+			}
 			dialog.setText (ControlExample.getResourceString("Title"));
 			RGB result = dialog.open ();
 			textWidget.append (ControlExample.getResourceString("ColorDialog") + Text.DELIMITER);
 			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER);
 			textWidget.append ("getRGB() = " + dialog.getRGB() + Text.DELIMITER + Text.DELIMITER);
+			colorDialogResult = result;
 			return;
 		}
 		
 		if (name.equals (ControlExample.getResourceString("DirectoryDialog"))) {
 			DirectoryDialog dialog = new DirectoryDialog (shell, style);
+			if (usePreviousResultButton.getSelection()) {
+				dialog.setFilterPath (directoryDialogResult);
+			}
 			dialog.setMessage (ControlExample.getResourceString("Example_string"));
 			dialog.setText (ControlExample.getResourceString("Title"));
 			String result = dialog.open ();
 			textWidget.append (ControlExample.getResourceString("DirectoryDialog") + Text.DELIMITER);
 			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
+			directoryDialogResult = result;
 			return;
 		}
 		
 		if (name.equals (ControlExample.getResourceString("FileDialog"))) {
 			FileDialog dialog = new FileDialog (shell, style);
-			dialog.setFileName (ControlExample.getResourceString("readme_txt"));
+			if (usePreviousResultButton.getSelection()) {
+				dialog.setFileName (fileDialogResult);
+				dialog.setFilterIndex(fileDialogIndexResult);
+			}
 			dialog.setFilterNames (FilterNames);
 			dialog.setFilterExtensions (FilterExtensions);
 			dialog.setText (ControlExample.getResourceString("Title"));
 			String result = dialog.open();
 			textWidget.append (ControlExample.getResourceString("FileDialog") + Text.DELIMITER);
 			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER);
+			textWidget.append ("getFilterIndex() =" + dialog.getFilterIndex() + Text.DELIMITER);
 			textWidget.append ("getFilterPath() =" + dialog.getFilterPath() + Text.DELIMITER);
 			textWidget.append ("getFileName() =" + dialog.getFileName() + Text.DELIMITER);
 			textWidget.append ("getFileNames() =" + Text.DELIMITER);
@@ -158,14 +175,20 @@ class DialogTab extends Tab {
 			for (int i=0; i<files.length; i++) {
 				textWidget.append ("\t" + files [i] + Text.DELIMITER);
 			}
-			textWidget.append ("getFilterIndex() = " + dialog.getFilterIndex() + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append (Text.DELIMITER);
+			fileDialogResult = result;
+			fileDialogIndexResult = dialog.getFilterIndex();
 			return;
 		}
 		
 		if (name.equals (ControlExample.getResourceString("FontDialog"))) {
 			FontDialog dialog = new FontDialog (shell, style);
-			dialog.setText (ControlExample.getResourceString("Title"));
+			if (usePreviousResultButton.getSelection()) {
+				dialog.setFontList (fontDialogFontListResult);
+				dialog.setRGB(fontDialogColorResult);
+			}
 			dialog.setEffectsVisible(effectsVisibleButton.getSelection());
+			dialog.setText (ControlExample.getResourceString("Title"));
 			FontData result = dialog.open ();
 			textWidget.append (ControlExample.getResourceString("FontDialog") + Text.DELIMITER);
 			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER);
@@ -178,26 +201,33 @@ class DialogTab extends Tab {
 			}
 			textWidget.append ("getEffectsVisible() = " + dialog.getEffectsVisible() + Text.DELIMITER);
 			textWidget.append ("getRGB() = " + dialog.getRGB() + Text.DELIMITER + Text.DELIMITER);
+			fontDialogFontListResult = dialog.getFontList ();
+			fontDialogColorResult = dialog.getRGB();
 			return;
 		}
 		
 		if (name.equals (ControlExample.getResourceString("PrintDialog"))) {
 			PrintDialog dialog = new PrintDialog (shell, style);
+			if (usePreviousResultButton.getSelection()) {
+				dialog.setPrinterData(printDialogResult);
+			}
 			dialog.setText(ControlExample.getResourceString("Title"));
 			PrinterData result = dialog.open ();
 			textWidget.append (ControlExample.getResourceString("PrintDialog") + Text.DELIMITER);
 			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER);
-			textWidget.append ("getScope() = " + dialog.getScope() + Text.DELIMITER);
-			textWidget.append ("getStartPage() = " + dialog.getStartPage() + Text.DELIMITER);
-			textWidget.append ("getEndPage() = " + dialog.getEndPage() + Text.DELIMITER);
-			textWidget.append ("getPrintToFile() = " + dialog.getPrintToFile() + Text.DELIMITER);
 			if (result != null) {
-				textWidget.append ("result.fileName = " + result.fileName + Text.DELIMITER);
-				textWidget.append ("result.orientation = " + (result.orientation == PrinterData.LANDSCAPE ? "PrinterData.LANDSCAPE" : "PrinterData.PORTRAIT") + Text.DELIMITER);
-				textWidget.append ("result.copyCount = " + result.copyCount + Text.DELIMITER);
-				textWidget.append ("result.collate = " + result.collate + Text.DELIMITER);
+				textWidget.append ("printerData.scope = " + (result.scope == PrinterData.PAGE_RANGE ? "PAGE_RANGE" : result.scope == PrinterData.SELECTION ? "SELECTION" : "ALL_PAGES") + Text.DELIMITER);
+				textWidget.append ("printerData.startPage = " + result.startPage + Text.DELIMITER);
+				textWidget.append ("printerData.endPage = " + result.endPage + Text.DELIMITER);
+				textWidget.append ("printerData.printToFile = " + result.printToFile + Text.DELIMITER);
+				textWidget.append ("printerData.fileName = " + result.fileName + Text.DELIMITER);
+				textWidget.append ("printerData.orientation = " + (result.orientation == PrinterData.LANDSCAPE ? "LANDSCAPE" : "PORTRAIT") + Text.DELIMITER);
+				textWidget.append ("printerData.copyCount = " + result.copyCount + Text.DELIMITER);
+				textWidget.append ("printerData.collate = " + result.collate + Text.DELIMITER);
+				textWidget.append ("printerData.duplex = " + (result.duplex == PrinterData.DUPLEX_LONG_EDGE ? "DUPLEX_LONG_EDGE" : result.duplex == PrinterData.DUPLEX_SHORT_EDGE ? "DUPLEX_SHORT_EDGE" : "NONE") + Text.DELIMITER);
 			}
 			textWidget.append (Text.DELIMITER);
+			printDialogResult = result;
 			return;
 		}
 	
@@ -350,16 +380,6 @@ class DialogTab extends Tab {
 		systemModalButton = new Button (modalStyleGroup, SWT.RADIO);
 		systemModalButton.setText ("SWT.SYSTEM_MODAL");
 	
-		/* Create a group for other style controls */
-		Group otherStyleGroup = new Group (controlGroup, SWT.NONE);
-		otherStyleGroup.setLayout (new GridLayout ());
-		otherStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		otherStyleGroup.setText (ControlExample.getResourceString("Other_Styles"));
-	
-		/* Create the other style buttons */
-		sheetButton = new Button(otherStyleGroup, SWT.CHECK);
-		sheetButton.setText("SWT.SHEET");
-
 		/* Create a group for the file dialog style controls */
 		Group fileDialogStyleGroup = new Group (controlGroup, SWT.NONE);
 		fileDialogStyleGroup.setLayout (new GridLayout ());
@@ -374,21 +394,25 @@ class DialogTab extends Tab {
 		multiButton = new Button(fileDialogStyleGroup, SWT.CHECK);
 		multiButton.setText("SWT.MULTI");
 	
-		/* Create a group for the font dialog controls */
-		Group fontDialogStyleGroup = new Group (controlGroup, SWT.NONE);
-		fontDialogStyleGroup.setLayout (new GridLayout ());
-		fontDialogStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		fontDialogStyleGroup.setText (ControlExample.getResourceString("Font_Dialog"));
-	
-		/* Create the font dialog  buttons */
-		effectsVisibleButton = new Button(fontDialogStyleGroup, SWT.CHECK);
-		effectsVisibleButton.setText("Effects Visible");
-	
 		/* Create the orientation group */
 		if (RTL_SUPPORT_ENABLE) {
 			createOrientationGroup();
 		}
 		
+		/* Create a group for other style and setting controls */
+		Group otherGroup = new Group (controlGroup, SWT.NONE);
+		otherGroup.setLayout (new GridLayout ());
+		otherGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		otherGroup.setText (ControlExample.getResourceString("Other"));
+	
+		/* Create the other style and setting controls */
+		sheetButton = new Button(otherGroup, SWT.CHECK);
+		sheetButton.setText("SWT.SHEET");
+		usePreviousResultButton = new Button(otherGroup, SWT.CHECK);
+		usePreviousResultButton.setText(ControlExample.getResourceString("Use_Previous_Result"));
+		effectsVisibleButton = new Button(otherGroup, SWT.CHECK);
+		effectsVisibleButton.setText("FontDialog.setEffectsVisible");
+
 		/* Add the listeners */
 		dialogCombo.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
@@ -500,8 +524,9 @@ class DialogTab extends Tab {
 		openButton.setEnabled (isFileDialog);
 		multiButton.setEnabled (isFileDialog);
 		effectsVisibleButton.setEnabled (isFontDialog);
+		usePreviousResultButton.setEnabled (!isMessageBox);
 	
-		/* Unselect the buttons */
+		/* Deselect the buttons */
 		if (!isMessageBox) {
 			okButton.setSelection (false);
 			cancelButton.setSelection (false);

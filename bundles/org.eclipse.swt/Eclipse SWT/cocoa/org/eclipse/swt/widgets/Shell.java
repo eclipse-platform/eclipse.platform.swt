@@ -668,6 +668,7 @@ void createHandle () {
 			// TOOL shells always become key, so disable that behavior.
 			((NSPanel)window).setBecomesKeyOnlyIfNeeded(false);
 		}
+		window.setReleasedWhenClosed(true);
 		if ((style & SWT.NO_TRIM) == 0) {
 			NSSize size = window.minSize();
 			size.width = NSWindow.minFrameWidthWithTitle(NSString.string(), styleMask);
@@ -773,8 +774,8 @@ void destroyWidget () {
 		window.close();
 	} else if (view != null) {
 		view.removeFromSuperview();
-		view.release();
 	}
+	if (view != null) view.release();
 	
 	// If another shell is not going to become active, clear the menu bar.
 	// Don't modify the menu bar if we are an embedded Shell, though.
@@ -1641,7 +1642,7 @@ public void setEnabled (boolean enabled) {
 	checkWidget();
 	if (((state & DISABLED) == 0) == enabled) return;
 	super.setEnabled (enabled);
-	if (enabled && window.isMainWindow()) {
+	if (enabled && window != null && window.isMainWindow()) {
 		if (!restoreFocus ()) traverseGroup (false);
 	}
 }
@@ -2222,6 +2223,15 @@ void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 			break;
 			
 		case OS.NSKeyDown:
+			/*
+			* Feature in Cocoa.  For some reason, Cocoa does not perform accelerators
+			* with ESC key code.  The fix is to perform the accelerators ourselves. 
+			*/
+			if (nsEvent.keyCode() == 53 /* ESC */ && menuBar != null && !menuBar.isDisposed()) {
+				if (menuBar.nsMenu.performKeyEquivalent(nsEvent)) {
+					return;
+				}
+			}
 			/**
 			 * Feature in cocoa.  Control+Tab, Ctrl+Shift+Tab, Ctrl+PageDown and Ctrl+PageUp are
 			 * swallowed to handle native traversal. If we find that, force the key event to

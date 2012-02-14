@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -67,6 +67,10 @@ public NSMenuItem itemWithTag(int /*long*/ tag) {
 
 public int /*long*/ numberOfItems() {
 	return OS.objc_msgSend(this.id, OS.sel_numberOfItems);
+}
+
+public boolean performKeyEquivalent(NSEvent theEvent) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_performKeyEquivalent_, theEvent != null ? theEvent.id : 0);
 }
 
 public static void popUpContextMenu(NSMenu menu, NSEvent event, NSView view) {

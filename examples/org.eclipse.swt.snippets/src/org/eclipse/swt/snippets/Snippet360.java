@@ -13,7 +13,7 @@ package org.eclipse.swt.snippets;
 /*
  * TreeCursor example snippet: navigate a Tree's cells with the arrow keys.
  * Edit when user hits Return key.  Exit edit mode by hitting Escape (cancels edit)
- * or Return (applies edit to tree).  Expand/Collapse with Ctrl+Arrow keys.
+ * or Return (applies edit to tree).  Expand/Collapse with MOD1+Arrow keys.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

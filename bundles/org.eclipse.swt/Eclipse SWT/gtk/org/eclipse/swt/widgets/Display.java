@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 
@@ -215,10 +216,6 @@ public class Display extends Device {
 	boolean idleNeeded;
 	
 	/* GtkTreeView callbacks */
-	int[] treeSelection;
-	int treeSelectionLength;
-	int /*long*/ treeSelectionProc;
-	Callback treeSelectionCallback;
 	int /*long*/ cellDataProc;
 	Callback cellDataCallback;
 	
@@ -904,7 +901,9 @@ void createDisplay (DeviceData data) {
 	if (!OS.g_thread_supported ()) {
 		OS.g_thread_init (0);
 	}
-	OS.gtk_set_locale();
+	if (OS.GTK_VERSION < OS.VERSION(2, 24, 0)) {
+	    OS.gtk_set_locale();
+	}
 	if (!OS.gtk_init_check (new int /*long*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
 	}
@@ -985,7 +984,6 @@ void createDisplay (DeviceData data) {
 	}
 	
 	OS.gtk_widget_set_default_direction (OS.GTK_TEXT_DIR_LTR);
-	OS.gdk_rgb_init ();
 	byte [] buffer = Converter.wcsToMbcs (null, APP_NAME, true);
 	OS.g_set_prgname (buffer);
 	OS.gdk_set_program_class (buffer);
@@ -1056,62 +1054,6 @@ Image createImage (String name) {
 	imageData.data = data;
 	imageData.bytesPerLine = stride;
 	return new Image (this, imageData);
-}
-
-static int /*long*/ createPixbuf(Image image) {
-	int [] w = new int [1], h = new int [1];
- 	OS.gdk_drawable_get_size (image.pixmap, w, h);
-	int /*long*/ colormap = OS.gdk_colormap_get_system ();
-	int /*long*/ pixbuf;
-	boolean hasMask = image.mask != 0 && OS.gdk_drawable_get_depth (image.mask) == 1;
-	if (hasMask) {
-		pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, true, 8, w [0], h [0]);
-		if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-		OS.gdk_pixbuf_get_from_drawable (pixbuf, image.pixmap, colormap, 0, 0, 0, 0, w [0], h [0]);
-		int /*long*/ maskPixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, w [0], h [0]);
-		if (maskPixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-		OS.gdk_pixbuf_get_from_drawable(maskPixbuf, image.mask, 0, 0, 0, 0, 0, w [0], h [0]);
-		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
-		byte[] line = new byte[stride];
-		int maskStride = OS.gdk_pixbuf_get_rowstride(maskPixbuf);
-		int /*long*/ maskPixels = OS.gdk_pixbuf_get_pixels(maskPixbuf);
-		byte[] maskLine = new byte[maskStride];
-		for (int y=0; y<h[0]; y++) {
-			int /*long*/ offset = pixels + (y * stride);
-			OS.memmove(line, offset, stride);
-			int /*long*/ maskOffset = maskPixels + (y * maskStride);
-			OS.memmove(maskLine, maskOffset, maskStride);
-			for (int x=0; x<w[0]; x++) {
-				if (maskLine[x * 3] == 0) {
-					line[x * 4 + 3] = 0;
-				}
-			}
-			OS.memmove(offset, line, stride);
-		}
-		OS.g_object_unref(maskPixbuf);
-	} else {
-		ImageData data = image.getImageData ();
-		boolean hasAlpha = data.getTransparencyType () == SWT.TRANSPARENCY_ALPHA;
-		pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, hasAlpha, 8, w [0], h [0]);
-		if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-		OS.gdk_pixbuf_get_from_drawable (pixbuf, image.pixmap, colormap, 0, 0, 0, 0, w [0], h [0]);
-		if (hasAlpha) {
-			byte [] alpha = data.alphaData;
-			int stride = OS.gdk_pixbuf_get_rowstride (pixbuf);
-			int /*long*/ pixels = OS.gdk_pixbuf_get_pixels (pixbuf);
-			byte [] line = new byte [stride];
-			for (int y = 0; y < h [0]; y++) {
-				int /*long*/ offset = pixels + (y * stride);
-				OS.memmove (line, offset, stride);
-				for (int x = 0; x < w [0]; x++) {
-					line [x*4+3] = alpha [y*w [0]+x];
-				}
-				OS.memmove (offset, line, stride);
-			}
-		}
-	}
-	return pixbuf;
 }
 
 static void deregister (Display display) {
@@ -2614,10 +2556,6 @@ void initializeCallbacks () {
 
 	shellMapProcClosure = OS.g_cclosure_new (shellMapProc, 0, 0);
 	OS.g_closure_ref (shellMapProcClosure);
-
-	treeSelectionCallback = new Callback(this, "treeSelectionProc", 4); //$NON-NLS-1$
-	treeSelectionProc = treeSelectionCallback.getAddress();
-	if (treeSelectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	cellDataCallback = new Callback (this, "cellDataProc", 5); //$NON-NLS-1$
 	cellDataProc = cellDataCallback.getAddress ();
@@ -2715,8 +2653,12 @@ void initializeWindowManager () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public void internal_dispose_GC (int /*long*/ gdkGC, GCData data) {
-	OS.g_object_unref (gdkGC);
+public void internal_dispose_GC (int /*long*/ gc, GCData data) {
+	if (OS.USE_CAIRO) {
+		Cairo.cairo_destroy (gc);
+	} else {
+		OS.g_object_unref (gc);
+	}
 }
 
 /**	 
@@ -2744,9 +2686,16 @@ public void internal_dispose_GC (int /*long*/ gdkGC, GCData data) {
 public int /*long*/ internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	int /*long*/ root = OS.GDK_ROOT_PARENT ();
-	int /*long*/ gdkGC = OS.gdk_gc_new (root);
-	if (gdkGC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	OS.gdk_gc_set_subwindow (gdkGC, OS.GDK_INCLUDE_INFERIORS);
+	int /*long*/ gc;
+	if (OS.USE_CAIRO) {
+		gc = OS.gdk_cairo_create (root);
+		if (gc == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+		//TODO how gdk_gc_set_subwindow is done in cairo?
+	} else {
+		gc = OS.gdk_gc_new (root);
+		if (gc == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+		OS.gdk_gc_set_subwindow (gc, OS.GDK_INCLUDE_INFERIORS);
+	}
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
@@ -2758,7 +2707,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
 		data.font = getSystemFont ();
 	}
-	return gdkGC;
+	return gc;
 }
 
 boolean isValidThread () {
@@ -3329,8 +3278,6 @@ void releaseDisplay () {
 	idleHandle = 0;
 	
 	/* Dispose GtkTreeView callbacks */
-	treeSelectionCallback.dispose (); treeSelectionCallback = null;
-	treeSelectionProc = 0;
 	cellDataCallback.dispose (); cellDataCallback = null;
 	cellDataProc = 0;
 	
@@ -3445,7 +3392,7 @@ void releaseDisplay () {
 	thread = null;
 	lastWidget = activeShell = null;
 	flushData = closures = null;
-	indexTable = signalIds = treeSelection = null;
+	indexTable = signalIds = null;
 	widgetTable = modalShells = null;
 	data = null;
 	values = keys = null;
@@ -4195,12 +4142,6 @@ int /*long*/ sizeRequestProc (int /*long*/ handle, int /*long*/ arg0, int /*long
 	Widget widget = getWidget (user_data);
 	if (widget == null) return 0;
 	return widget.sizeRequestProc (handle, arg0, user_data);
-}
-
-int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*long*/ iter, int /*long*/ data) {
-	Widget widget = getWidget (data);
-	if (widget == null) return 0;
-	return widget.treeSelectionProc (model, path, iter, treeSelection, treeSelectionLength++);
 }
 
 void saveResources () {

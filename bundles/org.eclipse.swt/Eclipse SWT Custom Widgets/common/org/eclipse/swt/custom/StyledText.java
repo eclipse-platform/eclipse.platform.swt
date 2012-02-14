@@ -5281,7 +5281,7 @@ int getVisualLineIndex(TextLayout layout, int offsetInLine) {
 	int[] offsets = layout.getLineOffsets();
 	if (lineIndex != 0 && offsetInLine == offsets[lineIndex]) {
 		int lineY = layout.getLineBounds(lineIndex).y;
-		int caretY = getCaret().getLocation().y - topMargin - getLinePixel(getCaretLine());
+		int caretY = getCaret().getLocation().y - getLinePixel(getCaretLine());
 		if (lineY > caretY) lineIndex--;
 		caretAlignment = OFFSET_LEADING;
  	}

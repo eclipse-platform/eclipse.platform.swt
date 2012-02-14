@@ -136,9 +136,10 @@ class WebKit extends WebBrowser {
 							/* indicates a session cookie */
 							WebKitGTK.soup_cookie_jar_delete_cookie (jar, cookie);
 						}
-						OS.g_free (cookie);
+						WebKitGTK.soup_cookie_free (cookie);
 						current = OS.g_slist_next (current);
 					}
+					OS.g_slist_free (cookies);
 				}
 			};
 
@@ -1959,7 +1960,7 @@ Object convertToJava (int /*long*/ ctx, int /*long*/ value) {
 	int type = WebKitGTK.JSValueGetType (ctx, value);
 	switch (type) {
 		case WebKitGTK.kJSTypeBoolean: {
-			int result = WebKitGTK.JSValueToBoolean (ctx, value);
+			int result = (int)WebKitGTK.JSValueToNumber (ctx, value, null);
 			return new Boolean (result != 0);
 		}
 		case WebKitGTK.kJSTypeNumber: {

@@ -362,6 +362,7 @@ public void addString(String string, float x, float y, Font font) {
 		size.width = OS.MAX_TEXT_CONTAINER_SIZE;
 		size.height = OS.MAX_TEXT_CONTAINER_SIZE;
 		textContainer.initWithContainerSize(size);
+		textContainer.setLineFragmentPadding(0);
 		textStorage.addLayoutManager(layoutManager);
 		layoutManager.addTextContainer(textContainer);
 		NSRange range = new NSRange();
@@ -382,18 +383,22 @@ public void addString(String string, float x, float y, Font font) {
 		attrStr.release();
 		range = layoutManager.glyphRangeForTextContainer(textContainer);
 		if (range.length != 0) {
-			int /*long*/ glyphs = OS.malloc(4 * range.length * 2);
-			layoutManager.getGlyphs(glyphs, range);
+			int /*long*/ glyphs = OS.malloc((range.length + 1) * 4);
+			int /*long*/ count = layoutManager.getGlyphs(glyphs, range);
 			NSBezierPath path = NSBezierPath.bezierPath();
-			NSPoint point = new NSPoint();
-			path.moveToPoint(point);
-			path.appendBezierPathWithGlyphs(glyphs, range.length, font.handle);
+			for (int i = 0; i < count; i++) {
+				NSPoint pt = layoutManager.locationForGlyphAtIndex(i);
+				NSRect lineFragmentRect = layoutManager.lineFragmentUsedRectForGlyphAtIndex(i, 0);
+				NSFont actualFont = new NSFont(textStorage.attribute(OS.NSFontAttributeName, layoutManager.characterIndexForGlyphAtIndex(i), 0));
+				pt.x = pt.x + x + lineFragmentRect.x;
+				pt.y =  - pt.y - y - lineFragmentRect.y;
+				path.moveToPoint(pt);
+				path.appendBezierPathWithGlyphs(glyphs + (i * 4), 1, actualFont);
+			}
+			OS.free(glyphs);
 			NSAffineTransform transform = NSAffineTransform.transform();
 			transform.scaleXBy(1, -1);
-			float /*double*/ baseline = layoutManager.defaultBaselineOffsetForFont(font.handle);
-			transform.translateXBy(x, -(y + baseline));
 			path.transformUsingAffineTransform(transform);
-			OS.free(glyphs);
 			handle.appendBezierPath(path);
 		}
 		textContainer.release();

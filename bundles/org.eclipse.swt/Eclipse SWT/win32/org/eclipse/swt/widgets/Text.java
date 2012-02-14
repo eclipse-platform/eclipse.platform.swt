@@ -354,8 +354,10 @@ public void addSegmentListener (SegmentListener listener) {
  * <p>
  * <code>widgetSelected</code> is not called for texts.
  * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed in a single-line text,
- * or when ENTER is pressed in a search text. If the receiver has the <code>SWT.SEARCH | SWT.CANCEL</code> style
- * and the user cancels the search, the event object detail field contains the value <code>SWT.CANCEL</code>.
+ * or when ENTER is pressed in a search text. If the receiver has the <code>SWT.SEARCH | SWT.ICON_CANCEL</code> style
+ * and the user cancels the search, the event object detail field contains the value <code>SWT.ICON_CANCEL</code>.
+ * Likewise, if the receiver has the <code>SWT.ICON_SEARCH</code> style and the icon search is selected, the 
+ * event object detail field contains the value <code>SWT.ICON_SEARCH</code>.
  * </p>
  *
  * @param listener the listener which should be notified when the control is selected by the user

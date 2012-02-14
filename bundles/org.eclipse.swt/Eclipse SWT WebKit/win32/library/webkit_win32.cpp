@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2011 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -701,19 +701,6 @@ JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSValueMakeUndefined)
 	WebKit_win32_NATIVE_ENTER(env, that, JSValueMakeUndefined_FUNC);
 	rc = (jintLong)JSValueMakeUndefined((JSContextRef)arg0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSValueMakeUndefined_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_JSValueToBoolean
-extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSValueToBoolean)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1);
-JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSValueToBoolean)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	jint rc = 0;
-	WebKit_win32_NATIVE_ENTER(env, that, JSValueToBoolean_FUNC);
-	rc = (jint)JSValueToBoolean((JSContextRef)arg0, (JSValueRef)arg1);
-	WebKit_win32_NATIVE_EXIT(env, that, JSValueToBoolean_FUNC);
 	return rc;
 }
 #endif

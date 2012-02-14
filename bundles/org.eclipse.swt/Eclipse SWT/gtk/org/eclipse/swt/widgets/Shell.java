@@ -725,7 +725,9 @@ int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*
 					case OS.NotifyNonlinear:
 					case OS.NotifyNonlinearVirtual:
 					case OS.NotifyAncestor:
-						if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
+						if (tooltipsHandle != 0 && OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
+						    OS.gtk_tooltips_enable (tooltipsHandle);
+						}
 						display.activeShell = this;
 						display.activePending = false;
 						sendEvent (SWT.Activate);
@@ -743,7 +745,9 @@ int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*
 					case OS.NotifyNonlinear:
 					case OS.NotifyNonlinearVirtual:
 					case OS.NotifyVirtual:
-						if (tooltipsHandle != 0) OS.gtk_tooltips_disable (tooltipsHandle);
+						if (tooltipsHandle != 0 && OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
+							OS.gtk_tooltips_disable (tooltipsHandle);
+						}
 						Display display = this.display;
 						sendEvent (SWT.Deactivate);
 						setActiveControl (null);
@@ -2398,10 +2402,10 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 			buffer = Converter.wcsToMbcs (null, chars, true);
 		}
 		int /*long*/ oldTooltip = OS.gtk_widget_get_tooltip_text (rootWidget);
-		if (string == null && oldTooltip == 0) {
+		if (buffer == null && oldTooltip == 0) {
 			return;
-		} else if (string != null && oldTooltip != 0) {
-			if (OS.strcmp (oldTooltip, buffer) == 0) return;
+		} else if (buffer != null && oldTooltip != 0) {
+				if (OS.strcmp (oldTooltip, buffer) == 0) return;
 		}
 		OS.gtk_widget_set_tooltip_text (rootWidget, null);
 		/*
@@ -2444,6 +2448,17 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 			char [] chars = fixMnemonic (string, false);
 			buffer = Converter.wcsToMbcs (null, chars, true);
 		}
+		int /*long*/ tipData = OS.gtk_tooltips_data_get(tipWidget);
+		if (tipData != 0) {
+			int /*long*/ oldTooltip = OS.GTK_TOOLTIPS_GET_TIP_TEXT(tipData);
+			if (string == null && oldTooltip == 0) {
+				return;
+			} else if (string != null && oldTooltip != 0) {
+				if (buffer != null) {
+					if (OS.strcmp (oldTooltip, buffer) == 0) return;
+				}
+			}
+		}
 		if (tooltipsHandle == 0) {
 			tooltipsHandle = OS.gtk_tooltips_new ();
 			if (tooltipsHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -2459,6 +2474,8 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 		* Bug in Solaris-GTK.  Invoking gtk_tooltips_force_window()
 		* can cause a crash in older versions of GTK.  The fix is
 		* to avoid this call if the GTK version is older than 2.2.x.
+		* The call is to be avoided on GTK versions newer than 2.12.0
+		* where it's deprecated.
 		*/
 		if (OS.GTK_VERSION >= OS.VERSION (2, 2, 1)) {
 			OS.gtk_tooltips_force_window (tooltipsHandle);

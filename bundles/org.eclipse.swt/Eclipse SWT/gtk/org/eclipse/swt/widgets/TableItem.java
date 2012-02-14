@@ -132,6 +132,7 @@ Color _getBackground () {
 	if (ptr [0] == 0) return parent.getBackground ();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	OS.gdk_color_free (ptr [0]);
 	return Color.gtk_new (display, gdkColor);
 }
 
@@ -144,6 +145,7 @@ Color _getBackground (int index) {
 	if (ptr [0] == 0) return _getBackground ();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	OS.gdk_color_free (ptr [0]);
 	return Color.gtk_new (display, gdkColor);
 }
 
@@ -159,6 +161,7 @@ Color _getForeground () {
 	if (ptr [0] == 0) return parent.getForeground ();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	OS.gdk_color_free (ptr [0]);
 	return Color.gtk_new (display, gdkColor);
 }
 
@@ -171,6 +174,7 @@ Color _getForeground (int index) {
 	if (ptr [0] == 0) return _getForeground ();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	OS.gdk_color_free (ptr [0]);
 	return Color.gtk_new (display, gdkColor);
 }
 
@@ -183,6 +187,7 @@ Image _getImage (int index) {
 	if (ptr [0] == 0) return null;
 	ImageList imageList = parent.imageList;
 	int imageIndex = imageList.indexOf (ptr [0]);
+	OS.g_object_unref (ptr [0]);
 	if (imageIndex == -1) return null;
 	return imageList.get (imageIndex);
 }

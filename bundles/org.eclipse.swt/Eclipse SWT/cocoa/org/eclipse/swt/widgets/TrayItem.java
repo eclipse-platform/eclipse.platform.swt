@@ -490,7 +490,10 @@ void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	highlight = true;
 	updateImage();
 	view.setNeedsDisplay(true);
-	if (shouldShowMenu(nsEvent)) displayMenu();
+	if (shouldShowMenu(nsEvent)) {
+		displayMenu();
+		updateImage ();
+	}
 }
 
 void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
@@ -502,7 +505,10 @@ void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 		updateImage ();
 	}
 	view.setNeedsDisplay(true);
-	if (shouldShowMenu(nsEvent)) displayMenu();
+	if (shouldShowMenu(nsEvent)) {
+		displayMenu();
+		updateImage ();
+	}
 }
 
 void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {

@@ -3151,7 +3151,7 @@ public boolean post(Event event) {
 					if (vKey == -1) {
 						for (short i = 0 ; i <= 0x7F ; i++) {
 							deadKeyState[0] = 0;
-							OS.UCKeyTranslate (uchrPtr, i, (short)(type == SWT.KeyDown ? OS.kUCKeyActionDown : OS.kUCKeyActionUp), OS.shiftKey, OS.LMGetKbdType(), 0, deadKeyState, maxStringLength, actualStringLength, output);
+							OS.UCKeyTranslate (uchrPtr, i, (short)(type == SWT.KeyDown ? OS.kUCKeyActionDown : OS.kUCKeyActionUp), (OS.shiftKey >> 8) & 0xFF, OS.LMGetKbdType(), 0, deadKeyState, maxStringLength, actualStringLength, output);
 							if (output[0] == event.character) {
 								vKey = i;
 								break;
@@ -3193,23 +3193,29 @@ public boolean post(Event event) {
 	 				mouseCursorPosition.x = nsCursorPosition.x;
 	 				mouseCursorPosition.y = (int) (primaryFrame.height - nsCursorPosition.y);
 	 				int eventType = 0;
-	 				int button = event.button;
-	 				switch (button) {
+	 				// SWT buttons are 1-based: 1,2,3,4,5; CG buttons are 0 based: 0,2,1,3,4
+	 				int cgButton;
+	 				switch (event.button) {
 	 				case 1:
 	 					eventType = (event.type == SWT.MouseDown ? OS.kCGEventLeftMouseDown : OS.kCGEventLeftMouseUp);
+	 					cgButton = 0;
 	 					break;
 	 				case 2:
+	 					eventType = (event.type == SWT.MouseDown ? OS.kCGEventOtherMouseDown : OS.kCGEventOtherMouseUp);
+	 					cgButton = 2;
+	 					break;
+	 				case 3:
 	 					eventType = (event.type == SWT.MouseDown ? OS.kCGEventRightMouseDown : OS.kCGEventRightMouseUp);
+	 					cgButton = 1;
 	 					break;
 	 				default:
 	 					eventType = (event.type == SWT.MouseDown ? OS.kCGEventOtherMouseDown : OS.kCGEventOtherMouseUp);
+	 					cgButton = event.button - 1;
 	 					break;
 	 				}
 
-	 				// SWT buttons are 1-based; CG buttons are 0 based.
-	 				button -= 1;
-	 				if (button >= 0) {
-	 					eventRef = OS.CGEventCreateMouseEvent(eventSource, eventType, mouseCursorPosition, button);
+	 				if (cgButton >= 0) {
+	 					eventRef = OS.CGEventCreateMouseEvent(eventSource, eventType, mouseCursorPosition, cgButton);
 	 				}
 				}
 				break;
@@ -3224,12 +3230,12 @@ public boolean post(Event event) {
 		// returnValue is true if we called CGPostKeyboardEvent (10.5 only).
 		if (returnValue == false) {
 			if (eventRef != 0) {
+				OS.CGEventPost(OS.kCGHIDEventTap, eventRef);
+				OS.CFRelease(eventRef);
 				try {
 					Thread.sleep(1);
 				} catch (Exception e) {
 				}
-				OS.CGEventPost(OS.kCGSessionEventTap, eventRef);
-				OS.CFRelease(eventRef);
 				returnValue = true;
 			}
 		}

@@ -595,6 +595,12 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 	
 	return super.dragDetect(x, y, filter, consume);
 }
+
+Cursor findCursor () {
+	Cursor cursor = super.findCursor ();
+	return (cursor != null || (style & SWT.READ_ONLY) != 0) ? cursor : display.getSystemCursor (SWT.CURSOR_IBEAM);
+}
+
 public int getCaretPosition() {
 	checkWidget();
 	return selectionRange != null ? (int)/*64*/selectionRange.location : 0;

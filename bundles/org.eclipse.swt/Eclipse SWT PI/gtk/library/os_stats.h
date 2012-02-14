@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -57,6 +57,7 @@ typedef enum {
 	GTK_1SCROLLED_1WINDOW_1SCROLLBAR_1SPACING_FUNC,
 	GTK_1SCROLLED_1WINDOW_1VSCROLLBAR_FUNC,
 	GTK_1TEXTVIEW_1IM_1CONTEXT_FUNC,
+	GTK_1TOOLTIPS_1GET_1TIP_1TEXT_FUNC,
 	GTK_1TOOLTIPS_1SET_1ACTIVE_FUNC,
 	GTK_1TOOLTIPS_1TIP_1WINDOW_FUNC,
 	GTK_1WIDGET_1HEIGHT_FUNC,
@@ -437,6 +438,8 @@ typedef enum {
 	_1gdk_1cairo_1region_FUNC,
 	_1gdk_1cairo_1reset_1clip_FUNC,
 	_1gdk_1cairo_1set_1source_1color_FUNC,
+	_1gdk_1cairo_1set_1source_1window_FUNC,
+	_1gdk_1color_1free_FUNC,
 	_1gdk_1color_1white_FUNC,
 	_1gdk_1colormap_1alloc_1color_FUNC,
 	_1gdk_1colormap_1free_1colors_FUNC,
@@ -479,7 +482,6 @@ typedef enum {
 	_1gdk_1event_1peek_FUNC,
 	_1gdk_1event_1put_FUNC,
 	_1gdk_1flush_FUNC,
-	_1gdk_1free_1text_1list_FUNC,
 	_1gdk_1gc_1get_1values_FUNC,
 	_1gdk_1gc_1new_FUNC,
 	_1gdk_1gc_1set_1background_FUNC,
@@ -522,7 +524,6 @@ typedef enum {
 	_1gdk_1pixbuf_1new_1from_1file_FUNC,
 	_1gdk_1pixbuf_1render_1pixmap_1and_1mask_FUNC,
 	_1gdk_1pixbuf_1render_1to_1drawable_FUNC,
-	_1gdk_1pixbuf_1render_1to_1drawable_1alpha_FUNC,
 	_1gdk_1pixbuf_1save_1to_1bufferv_FUNC,
 	_1gdk_1pixbuf_1scale_FUNC,
 	_1gdk_1pixbuf_1scale_1simple_FUNC,
@@ -546,7 +547,6 @@ typedef enum {
 	_1gdk_1region_1subtract_FUNC,
 	_1gdk_1region_1union_FUNC,
 	_1gdk_1region_1union_1with_1rect_FUNC,
-	_1gdk_1rgb_1init_FUNC,
 	_1gdk_1screen_1get_1default_FUNC,
 	_1gdk_1screen_1get_1monitor_1at_1point_FUNC,
 	_1gdk_1screen_1get_1monitor_1at_1window_FUNC,
@@ -566,6 +566,7 @@ typedef enum {
 	_1gdk_1window_1at_1pointer_FUNC,
 	_1gdk_1window_1begin_1paint_1rect_FUNC,
 	_1gdk_1window_1clear_1area_FUNC,
+	_1gdk_1window_1create_1similar_1surface_FUNC,
 	_1gdk_1window_1destroy_FUNC,
 	_1gdk_1window_1end_1paint_FUNC,
 	_1gdk_1window_1focus_FUNC,
@@ -638,7 +639,6 @@ typedef enum {
 	_1gtk_1button_1new_FUNC,
 	_1gtk_1button_1set_1relief_FUNC,
 	_1gtk_1calendar_1clear_1marks_FUNC,
-	_1gtk_1calendar_1display_1options_FUNC,
 	_1gtk_1calendar_1get_1date_FUNC,
 	_1gtk_1calendar_1mark_1day_FUNC,
 	_1gtk_1calendar_1new_FUNC,

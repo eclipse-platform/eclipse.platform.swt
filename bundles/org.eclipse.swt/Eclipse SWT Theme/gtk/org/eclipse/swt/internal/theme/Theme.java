@@ -67,63 +67,6 @@ public Theme(Device device) {
 	OS.gtk_widget_realize (shellHandle);
 }
 
-//TODO - share this code 
-static int /*long*/ createPixbuf(Image image) {
-	int [] w = new int [1], h = new int [1];
- 	OS.gdk_drawable_get_size (image.pixmap, w, h);
-	int /*long*/ colormap = OS.gdk_colormap_get_system ();
-	int /*long*/ pixbuf;
-	boolean hasMask = image.mask != 0 && OS.gdk_drawable_get_depth (image.mask) == 1;
-	if (hasMask) {
-		pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, true, 8, w [0], h [0]);
-		if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-		OS.gdk_pixbuf_get_from_drawable (pixbuf, image.pixmap, colormap, 0, 0, 0, 0, w [0], h [0]);
-		int /*long*/ maskPixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, w [0], h [0]);
-		if (maskPixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-		OS.gdk_pixbuf_get_from_drawable(maskPixbuf, image.mask, 0, 0, 0, 0, 0, w [0], h [0]);
-		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
-		byte[] line = new byte[stride];
-		int maskStride = OS.gdk_pixbuf_get_rowstride(maskPixbuf);
-		int /*long*/ maskPixels = OS.gdk_pixbuf_get_pixels(maskPixbuf);
-		byte[] maskLine = new byte[maskStride];
-		for (int y=0; y<h[0]; y++) {
-			int /*long*/ offset = pixels + (y * stride);
-			OS.memmove(line, offset, stride);
-			int /*long*/ maskOffset = maskPixels + (y * maskStride);
-			OS.memmove(maskLine, maskOffset, maskStride);
-			for (int x=0; x<w[0]; x++) {
-				if (maskLine[x * 3] == 0) {
-					line[x * 4 + 3] = 0;
-				}
-			}
-			OS.memmove(offset, line, stride);
-		}
-		OS.g_object_unref(maskPixbuf);
-	} else {
-		ImageData data = image.getImageData ();
-		boolean hasAlpha = data.getTransparencyType () == SWT.TRANSPARENCY_ALPHA;
-		pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, hasAlpha, 8, w [0], h [0]);
-		if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-		OS.gdk_pixbuf_get_from_drawable (pixbuf, image.pixmap, colormap, 0, 0, 0, 0, w [0], h [0]);
-		if (hasAlpha) {
-			byte [] alpha = data.alphaData;
-			int stride = OS.gdk_pixbuf_get_rowstride (pixbuf);
-			int /*long*/ pixels = OS.gdk_pixbuf_get_pixels (pixbuf);
-			byte [] line = new byte [stride];
-			for (int y = 0; y < h [0]; y++) {
-				int /*long*/ offset = pixels + (y * stride);
-				OS.memmove (line, offset, stride);
-				for (int x = 0; x < w [0]; x++) {
-					line [x*4+3] = alpha [y*w [0]+x];
-				}
-				OS.memmove (offset, line, stride);
-			}
-		}
-	}
-	return pixbuf;
-}
-
 void checkTheme() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 }

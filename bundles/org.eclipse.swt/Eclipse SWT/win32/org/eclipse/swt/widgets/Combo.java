@@ -2377,6 +2377,13 @@ LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	return result; 
 }
 
+LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
+	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
+	if (result != null) return result;
+	OS.InvalidateRect (handle, null, true);
+	return result;
+}
+
 LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;

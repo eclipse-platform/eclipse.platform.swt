@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2011 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -502,26 +502,6 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1JSValueMakeUndefined)
 }
 #endif
 
-#ifndef NO__1JSValueToBoolean
-JNIEXPORT jint JNICALL WebKitGTK_NATIVE(_1JSValueToBoolean)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	jint rc = 0;
-	WebKitGTK_NATIVE_ENTER(env, that, _1JSValueToBoolean_FUNC);
-/*
-	rc = (jint)JSValueToBoolean(arg0, arg1);
-*/
-	{
-		WebKitGTK_LOAD_FUNCTION(fp, JSValueToBoolean)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
-	WebKitGTK_NATIVE_EXIT(env, that, _1JSValueToBoolean_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1JSValueToNumber
 JNIEXPORT jdouble JNICALL WebKitGTK_NATIVE(_1JSValueToNumber)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2)
@@ -678,6 +658,24 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1soup_1auth_1get_1scheme_1name)
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, _1soup_1auth_1get_1scheme_1name_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1soup_1cookie_1free
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1soup_1cookie_1free)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	WebKitGTK_NATIVE_ENTER(env, that, _1soup_1cookie_1free_FUNC);
+/*
+	soup_cookie_free(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, soup_cookie_free)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1soup_1cookie_1free_FUNC);
 }
 #endif
 

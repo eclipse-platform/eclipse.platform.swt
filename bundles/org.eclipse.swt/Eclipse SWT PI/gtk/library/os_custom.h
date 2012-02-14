@@ -126,9 +126,14 @@
 #define gtk_menu_item_remove_submenu_LIB LIB_GTK
 #define gtk_menu_shell_set_take_focus_LIB LIB_GTK
 #define gtk_window_set_keep_below_LIB LIB_GTK
+#define gtk_set_locale_LIB LIB_GTK
 #define gtk_toolbar_set_orientation_LIB LIB_GTK
 #define gtk_tooltip_trigger_tooltip_query_LIB LIB_GTK
 #define gtk_tooltips_set_tip_LIB LIB_GTK
+#define gtk_tooltips_enable_LIB LIB_GTK
+#define gtk_tooltips_disable_LIB LIB_GTK
+#define gtk_tooltips_data_get_LIB LIB_GTK
+#define gtk_tooltips_force_window_LIB LIB_GTK
 #define gtk_tree_selection_count_selected_rows_LIB LIB_GTK
 #define gtk_tree_selection_get_selected_rows_LIB LIB_GTK
 #define gtk_tree_view_column_get_cell_renderers_LIB LIB_GTK
@@ -159,6 +164,7 @@
 #define gtk_status_icon_position_menu_LIB LIB_GTK
 #define gtk_window_get_group_LIB LIB_GTK
 #define gtk_window_get_opacity_LIB LIB_GTK
+#define gdk_window_create_similar_surface_LIB LIB_GDK
 #define gdk_window_restack_LIB LIB_GDK
 #define gdk_window_set_keep_above_LIB LIB_GDK
 #define gdk_window_set_accept_focus_LIB LIB_GDK
@@ -167,6 +173,7 @@
 #define gtk_widget_is_composited_LIB LIB_GTK
 #define gtk_widget_get_tooltip_text_LIB LIB_GTK
 #define gtk_widget_set_tooltip_text_LIB LIB_GTK
+#define gdk_pango_context_set_colormap_LIB LIB_GDK
 #define gdk_x11_screen_get_window_manager_name_LIB LIB_GDK
 #define gdk_x11_screen_lookup_visual_LIB LIB_GDK
 #define gdk_threads_set_lock_functions_LIB LIB_GDK
@@ -191,6 +198,7 @@
 #define pango_cairo_font_map_set_resolution_LIB LIB_PANGOCAIRO
 #define gdk_cairo_reset_clip_LIB LIB_GDK
 #define gdk_cairo_set_source_color_LIB LIB_GDK
+#define gdk_cairo_set_source_window_LIB LIB_GDK
 #define gdk_cairo_region_LIB LIB_GDK
 #define gdk_cairo_create_LIB LIB_GDK
 #define gtk_enumerate_printers_LIB LIB_GTK
@@ -323,6 +331,7 @@
 #define GTK_TEXTVIEW_IM_CONTEXT(arg0) (arg0)->im_context
 #define GTK_TOOLTIPS_TIP_WINDOW(arg0) (arg0)->tip_window
 #define GTK_TOOLTIPS_SET_ACTIVE(arg0, arg1) (arg0)->active_tips_data = arg1
+#define GTK_TOOLTIPS_GET_TIP_TEXT(arg0) (arg0)->tip_text
 #define GTK_WIDGET_Y(arg0) ((GtkWidget *)arg0)->allocation.y
 #define GTK_WIDGET_SET_Y(arg0, arg1) (arg0)->allocation.y = arg1
 #define GTK_WIDGET_REQUISITION_WIDTH(arg0) (arg0)->requisition.width

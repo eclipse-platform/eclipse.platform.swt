@@ -112,7 +112,19 @@ public final class Image extends Resource implements Drawable {
 	 */
 	public int /*long*/ mask;
 
-	int /*long*/ surface, surfaceData;
+	/**
+	 * The handle to the OS cairo surface resource.
+	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
+	 */
+	public int /*long*/ surface;
 	
 	/**
 	 * specifies the transparent pixel
@@ -234,6 +246,120 @@ public Image(Device device, Image srcImage, int flag) {
 	}
 	device = this.device;
 	this.type = srcImage.type;
+	
+	if (OS.USE_CAIRO) {
+		if (flag != SWT.IMAGE_DISABLE) transparentPixel = srcImage.transparentPixel;
+		alpha = srcImage.alpha;
+		if (srcImage.alphaData != null) {
+			alphaData = new byte[srcImage.alphaData.length];
+			System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
+		}
+	
+		int /*long*/ imageSurface = srcImage.surface;
+		int width = this.width = srcImage.width;
+		int height = this.height = srcImage.height;
+		int format = Cairo.cairo_surface_get_content(imageSurface) == Cairo.CAIRO_CONTENT_COLOR ? Cairo.CAIRO_FORMAT_RGB24 : Cairo.CAIRO_FORMAT_ARGB32;
+		boolean hasAlpha = format == Cairo.CAIRO_FORMAT_ARGB32;
+		surface = Cairo.cairo_image_surface_create(format, width, height);
+		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int /*long*/ cairo = Cairo.cairo_create(surface);
+		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
+		Cairo.cairo_set_source_surface (cairo, imageSurface, 0, 0);
+		Cairo.cairo_paint (cairo);
+		Cairo.cairo_destroy(cairo);
+		if (flag != SWT.IMAGE_COPY) {
+			int stride = Cairo.cairo_image_surface_get_stride(surface);
+			int /*long*/ data = Cairo.cairo_image_surface_get_data(surface);
+			int oa, or, og, ob;
+			if (OS.BIG_ENDIAN) {
+				oa = 0; or = 1; og = 2; ob = 3;
+			} else {
+				oa = 3; or = 2; og = 1; ob = 0;
+			}
+			switch (flag) {
+				case SWT.IMAGE_DISABLE: {
+					Color zeroColor = device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+					RGB zeroRGB = zeroColor.getRGB();
+					int zeroRed = zeroRGB.red;
+					int zeroGreen = zeroRGB.green;
+					int zeroBlue = zeroRGB.blue;
+					Color oneColor = device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+					RGB oneRGB = oneColor.getRGB();
+					int oneRed = oneRGB.red;
+					int oneGreen = oneRGB.green;
+					int oneBlue = oneRGB.blue;
+					byte[] line = new byte[stride];
+					for (int y=0; y<height; y++) {
+						OS.memmove(line, data + (y * stride), stride);
+						for (int x=0, offset=0; x<width; x++, offset += 4) {
+							int a = line[offset + oa] & 0xFF;
+							int r = line[offset + or] & 0xFF;
+							int g = line[offset + og] & 0xFF;
+							int b = line[offset + ob] & 0xFF;
+							if (hasAlpha && a != 0) {
+								r = ((r * 0xFF) + a / 2) / a;
+								g = ((g * 0xFF) + a / 2) / a;
+								b = ((b * 0xFF) + a / 2) / a;
+							}
+							int intensity = r * r + g * g + b * b;
+							if (intensity < 98304) {
+								r = zeroRed;
+								g = zeroGreen;
+								b = zeroBlue;
+							} else {
+								r = oneRed;
+								g = oneGreen;
+								b = oneBlue;
+							}
+							if (hasAlpha) {
+								/* pre-multiplied alpha */
+								r = (r * a) + 128;
+								r = (r + (r >> 8)) >> 8;
+								g = (g * a) + 128;
+								g = (g + (g >> 8)) >> 8;
+								b = (b * a) + 128;
+								b = (b + (b >> 8)) >> 8;
+							}
+							line[offset + or] = (byte)r;
+							line[offset + og] = (byte)g;
+							line[offset + ob] = (byte)b;
+						}
+						OS.memmove(data + (y * stride), line, stride);
+					}
+					break;
+				}
+				case SWT.IMAGE_GRAY: {			
+					byte[] line = new byte[stride];
+					for (int y=0; y<height; y++) {
+						OS.memmove(line, data + (y * stride), stride);
+						for (int x=0, offset = 0; x<width; x++, offset += 4) {
+							int a = line[offset + oa] & 0xFF;
+							int r = line[offset + or] & 0xFF;
+							int g = line[offset + og] & 0xFF;
+							int b = line[offset + ob] & 0xFF;
+							if (hasAlpha && a != 0) {
+								r = ((r * 0xFF) + a / 2) / a;
+								g = ((g * 0xFF) + a / 2) / a;
+								b = ((b * 0xFF) + a / 2) / a;
+							}
+							int intensity = (r+r+g+g+g+g+g+b) >> 3;
+							if (hasAlpha) {
+								/* pre-multiplied alpha */
+								intensity = (intensity * a) + 128;
+								intensity = (intensity + (intensity >> 8)) >> 8;
+							}
+							line[offset+or] = line[offset+og] = line[offset+ob] = (byte)intensity;
+						}
+						OS.memmove(data + (y * stride), line, stride);
+					}
+					break;
+				}
+			}
+		}
+		init();
+		return;
+	}
 
 	/* Get source image size */
 	int[] w = new int[1], h = new int[1];
@@ -535,7 +661,7 @@ public Image(Device device, String filename) {
 	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initNative(filename);
-	if (this.pixmap == 0) init(new ImageData(filename));
+	if (this.pixmap == 0 && this.surface == 0) init(new ImageData(filename));
 	init();
 }
 
@@ -547,37 +673,11 @@ void initNative(String filename) {
 		byte [] buffer = Converter.wcsToMbcs(null, chars, true);
 		int /*long*/ pixbuf = OS.gdk_pixbuf_new_from_file(buffer, null);
 		if (pixbuf != 0) {
-			boolean hasAlpha = OS.gdk_pixbuf_get_has_alpha(pixbuf);
-			if (hasAlpha) {
-				/*
-				* Bug in GTK. Depending on the image (seems to affect images that have
-				* some degree of transparency all over the image), gdk_pixbuff_render_pixmap_and_mask()
-				* will return a corrupt pixmap. To avoid this, read in and store the alpha channel data
-				* for the image and then set it to 0xFF to prevent any possible corruption from 
-				* gdk_pixbuff_render_pixmap_and_mask(). 
-				*/
-				int width = OS.gdk_pixbuf_get_width(pixbuf);
-				int height = OS.gdk_pixbuf_get_height(pixbuf);
-				int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-				int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
-				byte[] line = new byte[stride];
-				alphaData = new byte[width * height];
-				for (int y = 0; y < height; y++) {
-					OS.memmove(line, pixels + (y * stride), stride);
-					for (int x = 0; x < width; x++) {
-						alphaData[y*width+x] = line[x*4 + 3];
-						line[x*4 + 3] = (byte) 0xFF;
-					}
-					OS.memmove(pixels + (y * stride), line, stride);
-				}
-				createAlphaMask(width, height);
+			try {
+				createFromPixbuf (SWT.BITMAP, pixbuf);
+			} finally {
+				if (pixbuf != 0) OS.g_object_unref (pixbuf);
 			}
-			int /*long*/ [] pixmap_return = new int /*long*/ [1];
-			OS.gdk_pixbuf_render_pixmap_and_mask(pixbuf, pixmap_return, null, 0);
-			this.type = SWT.BITMAP;
-			this.pixmap = pixmap_return[0];
-			if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			OS.g_object_unref (pixbuf);
 		}
 	} catch (SWTException e) {}
 }
@@ -613,10 +713,138 @@ void createAlphaMask (int width, int height) {
 	}
 }
 
+void createFromPixbuf(int type, int /*long*/ pixbuf) {
+	this.type = type;
+	boolean hasAlpha = OS.gdk_pixbuf_get_has_alpha(pixbuf);
+	if (OS.USE_CAIRO) {
+		int width = this.width = OS.gdk_pixbuf_get_width(pixbuf);
+		int height = this.height = OS.gdk_pixbuf_get_height(pixbuf);
+		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
+		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
+		int format = hasAlpha ? Cairo.CAIRO_FORMAT_ARGB32 : Cairo.CAIRO_FORMAT_RGB24;
+		surface = Cairo.cairo_image_surface_create(format, width, height);
+		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int /*long*/ data = Cairo.cairo_image_surface_get_data(surface);
+		int cairoStride = Cairo.cairo_image_surface_get_stride(surface);
+		int oa = 0, or = 0, og = 0, ob = 0;
+		if (OS.BIG_ENDIAN) {
+			oa = 0; or = 1; og = 2; ob = 3;
+		} else {
+			oa = 3; or = 2; og = 1; ob = 0;
+		}
+		byte[] line = new byte[stride];
+		if (hasAlpha) {
+			alphaData = new byte[width * height];
+			for (int y = 0, alphaOffset = 0; y < height; y++) {
+				OS.memmove(line, pixels + (y * stride), stride);
+				for (int x = 0, offset = 0; x < width; x++, offset += 4) {
+					int a = line[offset + 3] & 0xFF;
+					int r = ((line[offset + 0] & 0xFF) * a) + 128;
+					r = (r + (r >> 8)) >> 8;
+					int g = ((line[offset + 1] & 0xFF) * a) + 128;
+					g = (g + (g >> 8)) >> 8;
+					int b = ((line[offset + 2] & 0xFF) * a) + 128;
+					b = (b + (b >> 8)) >> 8;
+					line[offset + oa] = (byte)a;
+					line[offset + or] = (byte)r;
+					line[offset + og] = (byte)g;
+					line[offset + ob] = (byte)b;
+					alphaData[alphaOffset++] = (byte)a;
+				}
+				OS.memmove(data + (y * stride), line, stride);
+			}
+		} else {
+			byte[] cairoLine = new byte[cairoStride];
+			for (int y = 0; y < height; y++) {
+				OS.memmove(line, pixels + (y * stride), stride);
+				for (int x = 0, offset = 0, cairoOffset = 0; x < width; x++, offset += 3, cairoOffset += 4) {
+					int r = line[offset + 0] & 0xFF;
+					int g = line[offset + 1] & 0xFF;
+					int b = line[offset + 2] & 0xFF;
+					cairoLine[cairoOffset + or] = (byte)r;
+					cairoLine[cairoOffset + og] = (byte)g;
+					cairoLine[cairoOffset + ob] = (byte)b;
+				}
+				OS.memmove(data + (y * cairoStride), cairoLine, cairoStride);
+			}
+		}
+		Cairo.cairo_surface_mark_dirty(surface);
+	} else {
+		if (hasAlpha) {
+			/*
+			* Bug in GTK. Depending on the image (seems to affect images that have
+			* some degree of transparency all over the image), gdk_pixbuff_render_pixmap_and_mask()
+			* will return a corrupt pixmap. To avoid this, read in and store the alpha channel data
+			* for the image and then set it to 0xFF to prevent any possible corruption from 
+			* gdk_pixbuff_render_pixmap_and_mask(). 
+			*/
+			int width = OS.gdk_pixbuf_get_width(pixbuf);
+			int height = OS.gdk_pixbuf_get_height(pixbuf);
+			int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
+			int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
+			byte[] line = new byte[stride];
+			alphaData = new byte[width * height];
+			for (int y = 0; y < height; y++) {
+				OS.memmove(line, pixels + (y * stride), stride);
+				for (int x = 0; x < width; x++) {
+					alphaData[y*width+x] = line[x*4 + 3];
+					line[x*4 + 3] = (byte) 0xFF;
+				}
+				OS.memmove(pixels + (y * stride), line, stride);
+			}
+			createAlphaMask(width, height);
+		}
+		int /*long*/ [] pixmap_return = new int /*long*/ [1];
+		OS.gdk_pixbuf_render_pixmap_and_mask(pixbuf, pixmap_return, null, 0);
+		this.pixmap = pixmap_return[0];
+		if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	}
+}
+
 /**
  * Create the receiver's mask if necessary.
  */
 void createMask() {
+	if (OS.USE_CAIRO) {
+		int width = this.width;
+		int height = this.height;
+		int stride = Cairo.cairo_image_surface_get_stride(surface);
+		int /*long*/ surfaceData = Cairo.cairo_image_surface_get_data(surface);
+		int oa, or, og, ob, tr, tg, tb;
+		if (OS.BIG_ENDIAN) {
+			oa = 0; or = 1; og = 2; ob = 3;
+			tr = (transparentPixel >> 24) & 0xFF;
+			tg = (transparentPixel >> 16) & 0xFF;
+			tb = (transparentPixel >> 8) & 0xFF;
+		} else {
+			oa = 3; or = 2; og = 1; ob = 0;
+			tr = (transparentPixel >> 16) & 0xFF;
+			tg = (transparentPixel >> 8) & 0xFF;
+			tb = (transparentPixel >> 0) & 0xFF;
+		}
+		byte[] srcData = new byte[stride * height];
+		OS.memmove(srcData, surfaceData, srcData.length);
+		int offset = 0;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++, offset += 4) {
+				int a = srcData[offset + oa] & 0xFF;
+				int r = srcData[offset + or] & 0xFF;
+				int g = srcData[offset + og] & 0xFF;
+				int b = srcData[offset + ob] & 0xFF;
+				if (r == tr && g == tg && b == tb) {
+					a = r = g = b = 0;
+				} else {
+					a = 0xff;
+				}
+				srcData[offset + oa] = (byte)a;
+				srcData[offset + or] = (byte)r;
+				srcData[offset + og] = (byte)g;
+				srcData[offset + ob] = (byte)b;
+			}
+		}
+		OS.memmove(surfaceData, srcData, srcData.length);
+		return;
+	}
 	if (mask != 0) return;
 	mask = createMask(getImageData(), false);
 	if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -651,13 +879,8 @@ void createSurface() {
 		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
 		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);		
 		byte[] line = new byte[stride];
-		int /*long*/ ptr = OS.malloc(4);
-		OS.memmove(ptr, new int[]{1}, 4);
-		OS.memmove(line, ptr, 1);
-		OS.free(ptr);
 		int oa, or, og, ob;
-		boolean bigendian = line[0] == 0;
-		if (bigendian) {
+		if (OS.BIG_ENDIAN) {
 			oa = 0; or = 1; og = 2; ob = 3;
 		} else {
 			oa = 3; or = 2; og = 1; ob = 0;
@@ -749,9 +972,10 @@ void createSurface() {
 				offset += stride;
 			}
 		}
-		surfaceData = OS.g_malloc(stride * height);
-		OS.memmove(surfaceData, pixels, stride * height);
-		surface = Cairo.cairo_image_surface_create_for_data(surfaceData, Cairo.CAIRO_FORMAT_ARGB32, width, height, stride);
+		surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, width, height);
+		int /*long*/ data = Cairo.cairo_image_surface_get_data(surface);
+		OS.memmove(data, pixels, stride * height);
+		Cairo.cairo_surface_mark_dirty(surface);
 		OS.g_object_unref(pixbuf);
 	} else {
 		int /*long*/ xDisplay = OS.GDK_DISPLAY();
@@ -777,8 +1001,7 @@ void destroy() {
 	if (pixmap != 0) OS.g_object_unref(pixmap);
 	if (mask != 0) OS.g_object_unref(mask);
 	if (surface != 0) Cairo.cairo_surface_destroy(surface);
-	if (surfaceData != 0) OS.g_free(surfaceData);
-	surfaceData = surface = pixmap = mask = 0;
+	surface = pixmap = mask = 0;
 	memGC = null;
 }
 
@@ -796,7 +1019,11 @@ public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Image)) return false;
 	Image image = (Image)object;
-	return device == image.device && pixmap == image.pixmap;
+	if (OS.USE_CAIRO) {
+		return device == image.device && surface == image.surface;
+	} else {
+		return device == image.device && pixmap == image.pixmap;
+	}
 }
 
 /**
@@ -863,6 +1090,57 @@ public Rectangle getBounds() {
 public ImageData getImageData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 
+	if (OS.USE_CAIRO) {
+		int /*long*/ surface = ImageList.convertSurface(this);
+		int format = Cairo.cairo_image_surface_get_format(surface);
+		int width = Cairo.cairo_image_surface_get_width(surface);
+		int height = Cairo.cairo_image_surface_get_height(surface);
+		int stride = Cairo.cairo_image_surface_get_stride(surface);
+		int /*long*/ surfaceData = Cairo.cairo_image_surface_get_data(surface);
+		boolean hasAlpha = format == Cairo.CAIRO_FORMAT_ARGB32;
+		int oa, or, og, ob;
+		if (OS.BIG_ENDIAN) {
+			oa = 0; or = 1; og = 2; ob = 3;
+		} else {
+			oa = 3; or = 2; og = 1; ob = 0;
+		}
+		byte[] srcData = new byte[stride * height];
+		OS.memmove(srcData, surfaceData, srcData.length);
+		PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+		ImageData data = new ImageData(width, height, 32, palette, 4, srcData);
+		if (hasAlpha) {
+			byte[] alphaData = data.alphaData = new byte[width * height];
+			for (int y = 0, offset = 0, alphaOffset = 0; y < height; y++) {
+				for (int x = 0; x < width; x++, offset += 4) {
+					int a = srcData[offset + oa] & 0xFF;
+					int r = srcData[offset + or] & 0xFF;
+					int g = srcData[offset + og] & 0xFF;
+					int b = srcData[offset + ob] & 0xFF;
+					srcData[offset + 0] = 0;
+					alphaData[alphaOffset++] = (byte)a;
+					if (a != 0) {
+						srcData[offset + 1] = (byte)(((r * 0xFF) + a / 2) / a);
+						srcData[offset + 2] = (byte)(((g * 0xFF) + a / 2) / a);
+						srcData[offset + 3] = (byte)(((b * 0xFF) + a / 2) / a);
+					}
+				}
+			}
+		} else {
+			for (int y = 0, offset = 0; y < height; y++) {
+				for (int x = 0; x < width; x++, offset += 4) {
+					byte r = srcData[offset + or];
+					byte g = srcData[offset + og];
+					byte b = srcData[offset + ob];
+					srcData[offset + 0] = 0;
+					srcData[offset + 1] = r;
+					srcData[offset + 2] = g;
+					srcData[offset + 3] = b;
+				}
+			}
+		}
+		Cairo.cairo_surface_destroy(surface);
+		return data;
+	}
 	int[] w = new int[1], h = new int[1];
  	OS.gdk_drawable_get_size(pixmap, w, h);
  	int width = w[0], height = h[0]; 	
@@ -939,6 +1217,30 @@ public static Image gtk_new(Device device, int type, int /*long*/ pixmap, int /*
 	image.type = type;
 	image.pixmap = pixmap;
 	image.mask = mask;
+	if (OS.USE_CAIRO) image.createSurface();
+	return image;
+}
+
+/**	 
+ * Invokes platform specific functionality to allocate a new image.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Image</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param device the device on which to allocate the color
+ * @param type the type of the image (<code>SWT.BITMAP</code> or <code>SWT.ICON</code>)
+ * @param pixbuf an GdkPixbuf
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static Image gtk_new_from_pixbuf(Device device, int type, int /*long*/ pixbuf) {
+	Image image = new Image(device);
+	image.createFromPixbuf(type, pixbuf);
+	image.type = type;
 	return image;
 }
 
@@ -953,7 +1255,11 @@ public static Image gtk_new(Device device, int type, int /*long*/ pixmap, int /*
  * @see #equals
  */
 public int hashCode () {
-	return (int)/*64*/pixmap;
+	if (OS.USE_CAIRO) {
+		return (int)/*64*/surface;
+	} else {
+		return (int)/*64*/pixmap;
+	}
 }
 
 void init(int width, int height) {
@@ -963,6 +1269,29 @@ void init(int width, int height) {
 	this.type = SWT.BITMAP;
 
 	/* Create the pixmap */
+	if (OS.USE_CAIRO) {
+		if (OS.GTK_VERSION >= OS.VERSION(2, 22, 0)) {
+			surface = OS.gdk_window_create_similar_surface(OS.GDK_ROOT_PARENT(), Cairo.CAIRO_CONTENT_COLOR, width, height);
+		} else {
+			int /*long*/ xDisplay = OS.GDK_DISPLAY();
+			int /*long*/ xDrawable = OS.gdk_x11_drawable_get_xid(OS.GDK_ROOT_PARENT());
+			int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
+			int /*long*/ rootSurface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, 1, 1);
+			if (rootSurface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			surface = Cairo.cairo_surface_create_similar(rootSurface, Cairo.CAIRO_CONTENT_COLOR, width, height);
+			Cairo.cairo_surface_destroy(rootSurface);
+		}
+		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int /*long*/ cairo = Cairo.cairo_create(surface);
+		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
+		Cairo.cairo_rectangle(cairo, 0, 0, width, height);
+		Cairo.cairo_fill(cairo);
+		Cairo.cairo_destroy(cairo);
+		this.width = width;
+		this.height = height;
+		return;
+	}
 	this.pixmap = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), width, height, -1);
 	if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	/* Fill the bitmap with white */
@@ -981,12 +1310,143 @@ void init(int width, int height) {
 
 void init(ImageData image) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int width = image.width;
-	int height = image.height;
+	int width = this.width = image.width;
+	int height = this.height = image.height;
 	PaletteData palette = image.palette;
 	if (!(((image.depth == 1 || image.depth == 2 || image.depth == 4 || image.depth == 8) && !palette.isDirect) ||
 		((image.depth == 8) || (image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect)))
 			SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
+	if (OS.USE_CAIRO) {
+		boolean hasAlpha = image.transparentPixel != -1 || image.alpha != -1 || image.maskData != null || image.alphaData != null;
+		int format = hasAlpha ? Cairo.CAIRO_FORMAT_ARGB32 : Cairo.CAIRO_FORMAT_RGB24;
+		surface = Cairo.cairo_image_surface_create(format, width, height);
+		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int stride = Cairo.cairo_image_surface_get_stride(surface);
+		int /*long*/ data = Cairo.cairo_image_surface_get_data(surface);
+		int oa = 0, or = 0, og = 0, ob = 0;
+		int redMask, greenMask, blueMask, destDepth = 32, destOrder;
+		if (OS.BIG_ENDIAN) {
+			oa = 0; or = 1; og = 2; ob = 3;
+			redMask = 0xFF00;
+			greenMask = 0xFF0000;
+			blueMask = 0xFF000000;
+			destOrder = ImageData.MSB_FIRST;
+		} else {
+			oa = 3; or = 2; og = 1; ob = 0;
+			redMask = 0xFF0000;
+			greenMask = 0xFF00;
+			blueMask = 0xFF;
+			destOrder = ImageData.LSB_FIRST;
+		}
+		byte[] buffer = image.data;
+		if (!palette.isDirect || image.depth != destDepth || stride != image.bytesPerLine || palette.redMask != redMask || palette.greenMask != greenMask || palette.blueMask != blueMask || destOrder != image.getByteOrder()) {
+			buffer = new byte[stride * height];
+			if (palette.isDirect) {
+				ImageData.blit(ImageData.BLIT_SRC,
+					image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, width, height, palette.redMask, palette.greenMask, palette.blueMask,
+					ImageData.ALPHA_OPAQUE, null, 0, 0, 0, 
+					buffer, destDepth, stride, destOrder, 0, 0, width, height, redMask, greenMask, blueMask,
+					false, false);
+			} else {
+				RGB[] rgbs = palette.getRGBs();
+				int length = rgbs.length;
+				byte[] srcReds = new byte[length];
+				byte[] srcGreens = new byte[length];
+				byte[] srcBlues = new byte[length];
+				for (int i = 0; i < rgbs.length; i++) {
+					RGB rgb = rgbs[i];
+					if (rgb == null) continue;
+					srcReds[i] = (byte)rgb.red;
+					srcGreens[i] = (byte)rgb.green;
+					srcBlues[i] = (byte)rgb.blue;
+				}
+				ImageData.blit(ImageData.BLIT_SRC,
+					image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, width, height, srcReds, srcGreens, srcBlues,
+					ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+					buffer, destDepth, stride, destOrder, 0, 0, width, height, redMask, greenMask, blueMask,
+					false, false);
+			}
+		}
+		boolean isIcon = image.getTransparencyType() == SWT.TRANSPARENCY_MASK;
+		this.type = isIcon ? SWT.ICON : SWT.BITMAP;
+		if (isIcon || image.transparentPixel != -1) {
+			if (image.transparentPixel != -1) {
+				RGB rgb = null;
+				if (palette.isDirect) {
+					rgb = palette.getRGB(image.transparentPixel);
+				} else {
+					if (image.transparentPixel < palette.colors.length) {
+						rgb = palette.getRGB(image.transparentPixel);
+					}
+				}
+				if (rgb != null) {
+					transparentPixel = rgb.red << 16 | rgb.green << 8 | rgb.blue;
+				}
+			}
+			ImageData mask = image.getTransparencyMask();
+			for (int y = 0, offset = 0; y < height; y++) {
+				for (int x=0; x<width; x++, offset += 4) {
+					int alpha = mask.getPixel(x, y) == 0 ? 0 : 0xff;
+					/* pre-multiplied alpha */
+					int r = ((buffer[offset + or] & 0xFF) * alpha) + 128;
+					r = (r + (r >> 8)) >> 8;
+					int g = ((buffer[offset + og] & 0xFF) * alpha) + 128;
+					g = (g + (g >> 8)) >> 8;
+					int b = ((buffer[offset + ob] & 0xFF) * alpha) + 128;
+					b = (b + (b >> 8)) >> 8;
+					buffer[offset + oa] = (byte)alpha;
+					buffer[offset + or] = (byte)r;
+					buffer[offset + og] = (byte)g;
+					buffer[offset + ob] = (byte)b;
+				}
+			}
+		} else {
+			this.alpha = image.alpha;
+			if (image.alpha == -1 && image.alphaData != null) {
+				this.alphaData = new byte[image.alphaData.length];
+				System.arraycopy(image.alphaData, 0, this.alphaData, 0, alphaData.length);
+			}
+			if (this.alpha != -1) {
+				for (int y = 0, offset = 0; y < height; y++) {
+					for (int x=0; x<width; x++, offset += 4) {
+						int alpha = this.alpha;
+						/* pre-multiplied alpha */
+						int r = ((buffer[offset + or] & 0xFF) * alpha) + 128;
+						r = (r + (r >> 8)) >> 8;
+						int g = ((buffer[offset + og] & 0xFF) * alpha) + 128;
+						g = (g + (g >> 8)) >> 8;
+						int b = ((buffer[offset + ob] & 0xFF) * alpha) + 128;
+						b = (b + (b >> 8)) >> 8;
+						buffer[offset + oa] = (byte)alpha;
+						buffer[offset + or] = (byte)r;
+						buffer[offset + og] = (byte)g;
+						buffer[offset + ob] = (byte)b;
+					}
+				}
+			} else if (this.alphaData != null) {
+				for (int y = 0, offset = 0; y < height; y++) {
+					for (int x=0; x<width; x++, offset += 4) {
+						int alpha = alphaData [y*width+x] & 0xFF;
+						/* pre-multiplied alpha */
+						int r = ((buffer[offset + or] & 0xFF) * alpha) + 128;
+						r = (r + (r >> 8)) >> 8;
+						int g = ((buffer[offset + og] & 0xFF) * alpha) + 128;
+						g = (g + (g >> 8)) >> 8;
+						int b = ((buffer[offset + ob] & 0xFF) * alpha) + 128;
+						b = (b + (b >> 8)) >> 8;
+						buffer[offset + oa] = (byte)alpha;
+						buffer[offset + or] = (byte)r;
+						buffer[offset + og] = (byte)g;
+						buffer[offset + ob] = (byte)b;
+					}
+				}
+			}
+		}
+		OS.memmove(data, buffer, stride * height);
+		Cairo.cairo_surface_mark_dirty(surface);
+		//TODO convert to XLIB surface if opaque for better performance
+		return;
+	}
 	int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
 	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
@@ -1081,11 +1541,16 @@ void init(ImageData image) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public int /*long*/ internal_new_GC (GCData data) {
-	if (pixmap == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (type != SWT.BITMAP || memGC != null) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int /*long*/ gdkGC = OS.gdk_gc_new(pixmap);
+	int /*long*/ gc;
+	if (OS.USE_CAIRO) {
+		gc = Cairo.cairo_create(surface);
+	} else {
+		gc = OS.gdk_gc_new(pixmap);
+	}
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
@@ -1102,7 +1567,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 		data.font = device.systemFont;
 		data.image = this;
 	}
-	return gdkGC;
+	return gc;
 }
 
 /**	 
@@ -1120,8 +1585,12 @@ public int /*long*/ internal_new_GC (GCData data) {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public void internal_dispose_GC (int /*long*/ gdkGC, GCData data) {
-	OS.g_object_unref(gdkGC);
+public void internal_dispose_GC (int /*long*/ gc, GCData data) {
+	if (OS.USE_CAIRO) {
+		Cairo.cairo_destroy(gc);
+	} else {
+		OS.g_object_unref(gc);
+	}
 }
 
 /**
@@ -1135,7 +1604,11 @@ public void internal_dispose_GC (int /*long*/ gdkGC, GCData data) {
  * @return <code>true</code> when the image is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed() {
-	return pixmap == 0;
+	if (OS.USE_CAIRO) {
+		return surface == 0;
+	} else {
+		return pixmap == 0;
+	}
 }
 
 /**
@@ -1188,7 +1661,11 @@ public void setBackground(Color color) {
  */
 public String toString () {
 	if (isDisposed()) return "Image {*DISPOSED*}";
-	return "Image {" + pixmap + "}";
+	if (OS.USE_CAIRO) {
+		return "Image {" + surface + "}";
+	} else {
+		return "Image {" + pixmap + "}";
+	}
 }
 
 }

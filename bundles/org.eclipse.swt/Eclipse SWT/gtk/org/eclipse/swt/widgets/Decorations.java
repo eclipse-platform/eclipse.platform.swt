@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 
@@ -175,7 +176,7 @@ void _setImages (Image [] images) {
 	if (images != null) {
 		for (int i = 0; i < images.length; i++) {
 			Image image = images [i];
-			int /*long*/ pixbuf = Display.createPixbuf (image);
+			int /*long*/ pixbuf = ImageList.createPixbuf (image);
 			pixbufs = OS.g_list_append (pixbufs, pixbuf);			
 		}
 	}

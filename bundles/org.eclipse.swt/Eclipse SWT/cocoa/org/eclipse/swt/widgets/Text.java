@@ -662,6 +662,11 @@ void enableWidget(boolean enabled) {
 	}
 }
 
+Cursor findCursor () {
+	Cursor cursor = super.findCursor ();
+	return (cursor != null) ? cursor : display.getSystemCursor (SWT.CURSOR_IBEAM);
+}
+
 /**
  * Returns the line number of the caret.
  * <p>

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2011 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int WebKit_win32_nativeFunctionCount = 61;
-int WebKit_win32_nativeFunctionCallCount[61];
+int WebKit_win32_nativeFunctionCount = 60;
+int WebKit_win32_nativeFunctionCallCount[60];
 char * WebKit_win32_nativeFunctionNames[] = {
 	"CFArrayGetCount",
 	"CFArrayGetValueAtIndex",
@@ -74,7 +74,6 @@ char * WebKit_win32_nativeFunctionNames[] = {
 	"JSValueMakeNumber",
 	"JSValueMakeString",
 	"JSValueMakeUndefined",
-	"JSValueToBoolean",
 	"JSValueToNumber",
 	"JSValueToStringCopy",
 	"WebKitCreateInstance",

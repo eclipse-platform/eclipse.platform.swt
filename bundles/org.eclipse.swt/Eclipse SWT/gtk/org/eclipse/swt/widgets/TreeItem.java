@@ -217,6 +217,7 @@ Color _getBackground () {
 	if (ptr [0] == 0) return parent.getBackground ();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	OS.gdk_color_free (ptr [0]);
 	return Color.gtk_new (display, gdkColor);
 }
 
@@ -229,6 +230,7 @@ Color _getBackground (int index) {
 	if (ptr [0] == 0) return _getBackground ();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	OS.gdk_color_free (ptr [0]);
 	return Color.gtk_new (display, gdkColor);
 }
 
@@ -244,6 +246,7 @@ Color _getForeground () {
 	if (ptr [0] == 0) return parent.getForeground ();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	OS.gdk_color_free (ptr [0]);
 	return Color.gtk_new (display, gdkColor);
 }
 
@@ -256,6 +259,7 @@ Color _getForeground (int index) {
 	if (ptr [0] == 0) return _getForeground ();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	OS.gdk_color_free (ptr [0]);
 	return Color.gtk_new (display, gdkColor);
 }
 
@@ -268,6 +272,7 @@ Image _getImage (int index) {
 	if (ptr [0] == 0) return null;
 	ImageList imageList = parent.imageList;
 	int imageIndex = imageList.indexOf (ptr [0]);
+	OS.g_object_unref (ptr [0]);
 	if (imageIndex == -1) return null;
 	return imageList.get (imageIndex);
 }
@@ -1310,18 +1315,19 @@ public void setChecked (boolean checked) {
 public void setExpanded (boolean expanded) {
 	checkWidget();
 	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
-	if (expanded) {
-		OS.g_signal_handlers_block_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
-		OS.gtk_tree_view_expand_row (parent.handle, path, false);
-		OS.g_signal_handlers_unblock_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
-	} else {
-		OS.g_signal_handlers_block_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
-		OS.gtk_widget_realize (parent.handle);
-		OS.gtk_tree_view_collapse_row (parent.handle, path);
-		OS.g_signal_handlers_unblock_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
+	if (expanded != OS.gtk_tree_view_row_expanded (parent.handle, path)) {
+		if (expanded) {
+			OS.g_signal_handlers_block_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
+			OS.gtk_tree_view_expand_row (parent.handle, path, false);
+			OS.g_signal_handlers_unblock_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
+		} else {
+			OS.g_signal_handlers_block_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
+			OS.gtk_widget_realize (parent.handle);
+			OS.gtk_tree_view_collapse_row (parent.handle, path);
+			OS.g_signal_handlers_unblock_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
+		}
 	}
 	OS.gtk_tree_path_free (path);
-	cached = true;
 }
 
 
