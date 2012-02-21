@@ -569,7 +569,7 @@ public class OS extends C {
 	public static final boolean USE_CAIRO, INIT_CAIRO;
 	static {
 		boolean useCairo = false;
-		if ("true".equals(System.getProperty("org.eclipse.swt.internal.gtk.cairoGraphics"))) {
+		if (!"false".equals(System.getProperty("org.eclipse.swt.internal.gtk.cairoGraphics"))) {
 			useCairo  = GTK_VERSION >= VERSION(2, 24, 0);
 		}
 		USE_CAIRO = useCairo;
