@@ -1304,8 +1304,8 @@ public boolean execute (String script) {
 
 				nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
 				result[0] = 0;
-				nsID scriptGlobalObjectNSID_8 = new nsID ("4eb16819-4e81-406e-9305-6f30fcd2624a"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
-				rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_8, result);
+				nsID scriptGlobalObjectNSID_10 = new nsID ("08f73284-26e3-4fa6-bf89-8326f92a94b3"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
+				rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_10, result);
 				if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
 					result[0] = 0;
 					nsID scriptGlobalObjectNSID_1_9_2 = new nsID ("e9f3f2c1-2d94-4722-bbd4-2bf6fdf42f48"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
@@ -1332,8 +1332,8 @@ public boolean execute (String script) {
 						if (scriptContext != 0 && globalJSObject != 0) {
 							/* ensure that the received nsIScriptContext implements the expected interface */
 							nsISupports supports = new nsISupports (scriptContext);
-							nsID scriptContextNSID_8 = new nsID ("a7139c0e-962c-44b6-bec3-e4166bfe84eb"); /* nsIScriptContext */ //$NON-NLS-1$					
-							rc = supports.QueryInterface (scriptContextNSID_8, result);
+							nsID scriptContextNSID_10 = new nsID ("2e583bf4-3c1f-432d-8283-8dee7eccc88b"); /* nsIScriptContext */ //$NON-NLS-1$					
+							rc = supports.QueryInterface (scriptContextNSID_10, result);
 							if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
 								result[0] = 0;
 								nsID scriptContextNSID_1_9_2 = new nsID ("87482b5e-e019-4df5-9bc2-b2a51b1f2d28"); /* nsIScriptContext */ //$NON-NLS-1$					
