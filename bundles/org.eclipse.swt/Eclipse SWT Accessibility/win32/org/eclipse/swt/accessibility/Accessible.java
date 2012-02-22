@@ -2384,7 +2384,8 @@ public class Accessible {
 				}
 			}
 			if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
-			if (accessibleListeners.size() == 0) {
+			/* Process Text even if there are no apps listening. */
+			if (accessibleListeners.size() == 0 && !(control instanceof Text)) {
 				if (DEBUG) print(this + ".IAccessible::get_accName(" + v.lVal + ") returning name=" + osName + " from super" + hresult(code));
 				return code;
 			}
@@ -2393,6 +2394,15 @@ public class Accessible {
 		AccessibleEvent event = new AccessibleEvent(this);
 		event.childID = osToChildID(v.lVal);
 		event.result = osName;
+		/*
+		* Bug in Windows:  A Text with SWT.SEARCH style uses EM_SETCUEBANNER
+		* to set the message text. This text should be used as the control's
+		* accessible name, however it is not. The fix is to return the message
+		* text here as the accName (unless there is a preceding label).
+		*/
+		if (control instanceof Text && (control.getStyle() & SWT.SEARCH) != 0 && osName == null) {
+			event.result = ((Text) control).getMessage();
+		}
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
 			listener.getName(event);
@@ -2594,7 +2604,8 @@ public class Accessible {
 				}
 			}
 			if (code == COM.E_INVALIDARG) code = COM.DISP_E_MEMBERNOTFOUND; // proxy doesn't know about app childID
-			if (accessibleControlListeners.size() == 0) {
+			/* Process Text even if there are no apps listening. */
+			if (accessibleControlListeners.size() == 0 && !(control instanceof Text)) {
 				if (DEBUG) print(this + ".IAccessible::get_accValue(" + v.lVal + ") returning value=" + osValue + " from super" + hresult(code));
 				return code;
 			}
@@ -2603,6 +2614,15 @@ public class Accessible {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = osToChildID(v.lVal);
 		event.result = osValue;
+		/*
+		* Bug in Windows:  A Text with SWT.SEARCH style uses EM_SETCUEBANNER
+		* to set the message text. This text should be used as the control's
+		* accessible value when the control does not have focus, however it
+		* is not. The fix is to return the message text here as the accValue.
+		*/
+		if (control instanceof Text && (control.getStyle() & SWT.SEARCH) != 0 && !control.isFocusControl()) {
+			event.result = ((Text) control).getMessage();
+		}
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getValue(event);
