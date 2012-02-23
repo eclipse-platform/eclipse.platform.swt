@@ -4069,7 +4069,20 @@ public class SWT {
 	 */
 	public static final String SKIN_ID = "org.eclipse.swt.skin.id";
 
-	
+/**
+ * Returns a boolean indicating whether this SWT implementation can
+ * be loaded.  Examples of criteria that may be used to determine this
+ * include the OS and architecture of the JRE that is being used.
+ *
+ * @return <code>true</code> if this SWT implementation can be loaded
+ * and <code>false</code> otherwise
+ *
+ * @since 3.8
+ */
+public static boolean isLoadable () {
+	return Platform.IsLoadable ();
+}
+
 /**
  * Answers a concise, human readable description of the error code.
  *
