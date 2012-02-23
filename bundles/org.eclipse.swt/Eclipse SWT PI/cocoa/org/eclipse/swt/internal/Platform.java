@@ -15,9 +15,9 @@ import java.net.*;
 import java.util.jar.*;
 
 public class Platform {
-	
-public static final String PLATFORM = "cocoa"; //$NON-NLS-1$
-public static final Lock lock = new Lock ();
+
+	public static final String PLATFORM = "cocoa"; //$NON-NLS-1$
+	public static final Lock lock = new Lock ();
 
 public static boolean IsLoadable () {
 	URL url = Platform.class.getClassLoader ().getResource ("org/eclipse/swt/SWT.class"); //$NON-NLS-1$
