@@ -4080,7 +4080,7 @@ public class SWT {
  * @since 3.8
  */
 public static boolean isLoadable () {
-	return Platform.IsLoadable ();
+	return Platform.isLoadable ();
 }
 
 /**

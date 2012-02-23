@@ -11,6 +11,8 @@
 package org.eclipse.swt.internal;
 
 import java.io.*;
+import java.net.*;
+import java.util.jar.*;
 
 public class Library {
 
@@ -158,6 +160,49 @@ static boolean extract (String fileName, String mappedName, StringBuffer message
 			if (is != null) is.close ();
 		} catch (IOException e1) {}
 		if (extracted && file.exists ()) file.delete ();
+	}
+	return false;
+}
+
+static boolean isLoadable () {
+	URL url = Platform.class.getClassLoader ().getResource ("org/eclipse/swt/internal/Library.class"); //$NON-NLS-1$
+	if (!url.getProtocol ().equals ("jar")) { //$NON-NLS-1$
+		/* SWT is presumably running in a development environment */
+		return true;
+	}
+
+	try {
+		url = new URL (url.getPath ());
+	} catch (MalformedURLException e) {
+		/* should never happen since url's initial path value must be valid */
+	}
+	String path = url.getPath ();
+	int index = path.indexOf ('!');
+	File file = new File (path.substring (0, index));
+
+	Attributes attributes = null;
+	try {
+		JarFile jar = new JarFile (file);
+		attributes = jar.getManifest ().getMainAttributes ();
+	} catch (IOException e) {
+		/* should never happen for a valid SWT jar with the expected manifest values */
+		return false;
+	}
+
+	String libraryOS = os ();
+	String libraryArch = arch ();
+	String manifestOS = attributes.getValue ("SWT-OS"); //$NON-NLS-1$
+	String manifestArch = attributes.getValue ("SWT-Arch"); //$NON-NLS-1$
+	if (libraryArch.equals (manifestArch) && libraryOS.equals (manifestOS)) {
+		return true;
+	}
+
+	/*
+	* Mac has a special case since SWT's 32-bit libraries on Mac contain natives
+	* for both the x86 and PPC architectures.
+	*/
+	if (libraryOS.equals ("macosx") && libraryOS.equals (manifestOS)) {
+		return manifestArch.equals ("x86") && libraryArch.equals ("ppc"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	return false;
 }
