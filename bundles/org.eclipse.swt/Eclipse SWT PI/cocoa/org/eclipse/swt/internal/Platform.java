@@ -15,7 +15,6 @@ import java.net.*;
 import java.util.jar.*;
 
 public class Platform {
-
 	public static final String PLATFORM = "cocoa"; //$NON-NLS-1$
 	public static final Lock lock = new Lock ();
 
