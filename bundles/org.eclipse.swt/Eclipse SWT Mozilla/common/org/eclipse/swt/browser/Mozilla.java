@@ -966,7 +966,7 @@ public void create (Composite parent, int style) {
 					nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 					result[0] = 0;
 					byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FOCUSMANAGER_CONTRACTID, true);
-					rc = serviceManager.GetServiceByContractID (aContractID, nsIFocusManager.NS_IFOCUSMANAGER_IID, result);
+					rc = serviceManager.GetServiceByContractID (aContractID, !IsPre_4 ? nsIFocusManager.NS_IFOCUSMANAGER_10_IID : nsIFocusManager.NS_IFOCUSMANAGER_IID, result);
 					serviceManager.Release ();
 
 					if (rc == XPCOM.NS_OK && result[0] != 0) {

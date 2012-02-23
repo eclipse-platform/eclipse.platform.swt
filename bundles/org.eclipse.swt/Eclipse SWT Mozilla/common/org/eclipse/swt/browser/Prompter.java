@@ -146,15 +146,26 @@ int Alert (int /*long*/ aDialogTitle, int /*long*/ aText) {
 
 Browser getBrowser() {
 	int /*long*/[] result = new int /*long*/[1];
-	int rc = XPCOM.NS_GetComponentManager (result);
+	int rc = XPCOM.NS_GetServiceManager (result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+	
+	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+	result[0] = 0;
+	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FOCUSMANAGER_CONTRACTID, true);
+	rc = serviceManager.GetServiceByContractID (aContractID, !Mozilla.IsPre_4 ? nsIFocusManager.NS_IFOCUSMANAGER_10_IID : nsIFocusManager.NS_IFOCUSMANAGER_IID, result);
+	serviceManager.Release ();
+
 	if (rc == XPCOM.NS_OK && result[0] != 0) {
-		nsIComponentManager componentManager = new nsIComponentManager (result[0]);
+		nsIFocusManager focusManager = new nsIFocusManager (result[0]);
 		result[0] = 0;
-		componentManager.GetClassObject(XPCOM.NS_IWEBBROWSER_CID, !Mozilla.IsPre_4 ? nsIWebBrowser.NS_IWEBBROWSER_10_IID : nsIWebBrowser.NS_IWEBBROWSER_IID, result);
+		rc = focusManager.GetActiveWindow (result);
+		focusManager.Release ();
 		if (rc == XPCOM.NS_OK && result[0] != 0) {
-			nsIWebBrowser browser = new nsIWebBrowser(result[0]);
+			nsIDOMWindow domWindow = new nsIDOMWindow (result[0]);
 			result[0] = 0;
-			rc = browser.GetContentDOMWindow(result);
+			rc = domWindow.GetTop(result);
+			domWindow.Release();
 			if (rc == XPCOM.NS_OK && result[0] != 0) {
 				return Mozilla.getBrowser(result[0]);
 			}

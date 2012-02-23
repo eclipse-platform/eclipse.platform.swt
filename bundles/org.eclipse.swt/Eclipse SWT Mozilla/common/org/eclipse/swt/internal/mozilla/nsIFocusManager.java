@@ -29,13 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIFocusManager extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 17;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 18 : 17);
 
 	public static final String NS_IFOCUSMANAGER_IID_STR =
-		"cd6040a8-243f-412a-8a16-0bf2aa1083b9";
+			"cd6040a8-243f-412a-8a16-0bf2aa1083b9";
+	
+	public static final String NS_IFOCUSMANAGER_10_IID_STR =
+			"51db277b-7ee7-4bce-9b84-fd2efcd2c8bd";
 
 	public static final nsID NS_IFOCUSMANAGER_IID =
 		new nsID(NS_IFOCUSMANAGER_IID_STR);
+	
+	public static final nsID NS_IFOCUSMANAGER_10_IID =
+			new nsID(NS_IFOCUSMANAGER_10_IID_STR);
 
 	public nsIFocusManager(int /*long*/ address) {
 		super(address);
@@ -122,5 +128,10 @@ public class nsIFocusManager extends nsISupports {
 
 	public int FireDelayedEvents(int /*long*/ aDocument) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 17, getAddress(), aDocument);
+	}
+	
+	public int FocusPlugin(int /*long*/ aPlugin) {
+		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 18, getAddress(), aPlugin);
 	}
 }
