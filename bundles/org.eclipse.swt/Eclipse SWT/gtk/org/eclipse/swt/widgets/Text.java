@@ -398,7 +398,7 @@ void applySegments () {
 			}
 			byte [] buffer = Converter.wcsToMbcs (null, separator, false);
 			int /*long*/ ptr = OS.gtk_entry_get_text (handle);
-			pos = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, pos);
+			pos [0] = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, pos [0]);
 			OS.gtk_editable_insert_text (handle, buffer, buffer.length, pos);
 		}
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
