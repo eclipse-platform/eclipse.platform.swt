@@ -434,9 +434,7 @@ public void append (String string) {
 		if (string == null) return;
 	}
 	OS.SendMessage (handle, OS.EM_SETSEL, length, length);
-	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
-		clearSegments (true);
-	}
+	clearSegments (true);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	/*
 	* Feature in Windows.  When an edit control with ES_MULTILINE
@@ -453,9 +451,7 @@ public void append (String string) {
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	ignoreCharacter = false;
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
-	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
-		applySegments ();
-	}
+	applySegments ();
 }
 
 void applySegments () {
@@ -914,8 +910,7 @@ public Point getCaretLocation () {
 	* If EM_POSFROMCHAR fails for any other reason, return
 	* pixel coordinates (0,0). 
 	*/
-	int position = getCaretPosition ();
-	if (segments != null) position = translateOffset (position);
+	int position = translateOffset (getCaretPosition ());
 	int /*long*/ caretPos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, position, 0);
 	if (caretPos == -1) {
 		caretPos = 0;
@@ -1008,8 +1003,7 @@ public int getCaretPosition () {
 		}
 	}
 	if (!OS.IsUnicode && OS.IsDBLocale) caret = mbcsToWcsPos (caret);
-	if (segments != null) caret = untranslateOffset (caret);
-	return caret;
+	return untranslateOffset (caret);
 }
 
 /**
@@ -1026,8 +1020,7 @@ public int getCharCount () {
 	checkWidget ();
 	int length = OS.GetWindowTextLength (handle);
 	if (!OS.IsUnicode && OS.IsDBLocale) length = mbcsToWcsPos (length);
-	if (segments != null) length = untranslateOffset (length);
-	return length;
+	return untranslateOffset (length);
 }
 
 /**
@@ -1207,8 +1200,7 @@ public String getMessage () {
 	int /*long*/ lParam = OS.MAKELPARAM (point.x, point.y);
 	int position = OS.LOWORD (OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam));
 	if (!OS.IsUnicode && OS.IsDBLocale) position = mbcsToWcsPos (position);
-	if (segments != null) position = untranslateOffset (position);
-	return position;
+	return untranslateOffset (position);
 }
 
 /**
@@ -1237,11 +1229,7 @@ public Point getSelection () {
 		start [0] = mbcsToWcsPos (start [0]);
 		end [0] = mbcsToWcsPos (end [0]);
 	}
-	if (segments != null) {
-		start [0] = untranslateOffset (start [0]);
-		end [0] = untranslateOffset (end [0]);
-	}
-	return new Point (start [0], end [0]);
+	return new Point (untranslateOffset (start [0]), untranslateOffset (end [0]));
 }
 
 /**
@@ -1400,8 +1388,7 @@ public String getText (int start, int end) {
 	if (!(start <= end && 0 <= end)) return "";
 	int length = OS.GetWindowTextLength (handle);
 	if (!OS.IsUnicode && OS.IsDBLocale) length = mbcsToWcsPos (length);
-	if (segments != null) length = untranslateOffset (length);
-	end = Math.min (end, length - 1);
+	end = Math.min (end, untranslateOffset (length) - 1);
 	if (start > end) return "";
 	start = Math.max (0, start);
 	/*
@@ -1514,9 +1501,7 @@ public void insert (String string) {
 		string = verifyText (string, start [0], end [0], null);
 		if (string == null) return;
 	}
-	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
-		clearSegments (true);
-	}
+	clearSegments (true);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	/*
 	* Feature in Windows.  When an edit control with ES_MULTILINE
@@ -1532,9 +1517,7 @@ public void insert (String string) {
 	ignoreCharacter = true;
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	ignoreCharacter = false;
-	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
-		applySegments ();
-	}
+	applySegments ();
 }
 
 int mbcsToWcsPos (int mbcsPos) {
@@ -2083,7 +2066,7 @@ public void setOrientation (int orientation) {
  */
 public void setSelection (int start) {
 	checkWidget ();
-	if (segments != null) start = translateOffset (start);
+	start = translateOffset (start);
 	if (!OS.IsUnicode && OS.IsDBLocale) start = wcsToMbcsPos (start);
 	OS.SendMessage (handle, OS.EM_SETSEL, start, start);
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
@@ -2116,10 +2099,8 @@ public void setSelection (int start) {
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
-	if (segments != null) {
-		start = translateOffset (start);
-		end = translateOffset (end);
-	}
+	start = translateOffset (start);
+	end = translateOffset (end);
 	if (!OS.IsUnicode && OS.IsDBLocale) {
 		start = wcsToMbcsPos (start);
 		end = wcsToMbcsPos (end);
@@ -2241,13 +2222,12 @@ public void setText (String string) {
 		string = verifyText (string, 0, length, null);
 		if (string == null) return;
 	}
-	boolean processSegments = segments != null || hooks (SWT.Segments) || filters (SWT.Segments);
-	if (processSegments) clearSegments (false);
+	clearSegments (false);
 	int limit = (int)/*64*/OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
 	if (string.length () > limit) string = string.substring (0, limit);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
-	if (processSegments) applySegments ();
+	applySegments ();
 	/*
 	* Bug in Windows.  When the widget is multi line
 	* text widget, it does not send a WM_COMMAND with
@@ -2292,8 +2272,7 @@ public void setTextChars (char[] text) {
 		text = new char [string.length()];
 		string.getChars (0, text.length, text, 0);
 	}
-	boolean processSegments = segments != null || hooks (SWT.Segments) || filters (SWT.Segments);
-	if (processSegments) clearSegments (false);
+	clearSegments (false);
 	int limit = (int)/*64*/OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
 	if (text.length > limit) {
 		char [] temp = new char [limit];
@@ -2302,7 +2281,7 @@ public void setTextChars (char[] text) {
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), text, true);
 	OS.SetWindowText (handle, buffer);
-	if (processSegments) applySegments ();
+	applySegments ();
 	/*
 	* Bug in Windows.  When the widget is multi line
 	* text widget, it does not send a WM_COMMAND with
@@ -2432,10 +2411,9 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		event.start = mbcsToWcsPos (start);
 		event.end = mbcsToWcsPos (end);
 	}
-	if (segments != null) {
-		event.start = untranslateOffset (event.start);
-		event.end = untranslateOffset (event.end);
-	}
+	event.start = untranslateOffset (event.start);
+	event.end = untranslateOffset (event.end);
+	
 	/*
 	* It is possible (but unlikely), that application
 	* code could have disposed the widget in the verify
@@ -2987,10 +2965,8 @@ LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 				}	
 				OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
 			} else {
-				if (segments != null) {
-					clearSegments (true);
-					applySegments ();
-				}
+				clearSegments (true);
+				applySegments ();
 			}
 			fixAlignment();
 			break;
