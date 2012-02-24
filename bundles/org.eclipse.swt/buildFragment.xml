@@ -491,10 +491,14 @@
 			<param name="debug" value="true" />
 			<param name="jar.filename" value="swt-debug.jar" />
 		</antcall>
+		<condition property="arch" value="${swt.arch}" else="">
+			<isset property="swt.arch"/>
+		</condition>
 		<jar jarfile="${build.result.folder}/swt-debug.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2">
 			<manifest>
 				<attribute name="SWT-OS" value="${swt.os}"/>
-				<attribute name="SWT-Arch" value="${swt.arch}"/>
+				<attribute name="SWT-WS" value="${swt.ws}"/>
+				<attribute name="SWT-Arch" value="${arch}"/>
 			</manifest>
 		</jar>
 		<copy file="${build.result.folder}/swt-debug.jar" todir="${temp.folder}/swtdownload" />
@@ -506,7 +510,8 @@
 		<jar jarfile="${build.result.folder}/swt.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2">
 			<manifest>
 				<attribute name="SWT-OS" value="${swt.os}"/>
-				<attribute name="SWT-Arch" value="${swt.arch}"/>
+				<attribute name="SWT-WS" value="${swt.ws}"/>
+				<attribute name="SWT-Arch" value="${arch}"/>
 			</manifest>
 		</jar>
 		<copy file="${build.result.folder}/swt.jar" todir="${temp.folder}/swtdownload" />

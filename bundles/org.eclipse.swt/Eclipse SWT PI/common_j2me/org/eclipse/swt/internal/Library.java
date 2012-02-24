@@ -10,6 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
+import java.io.*;
+import java.net.*;
+import java.util.jar.*;
+
 public class Library {
 
 	/* SWT Version - Mmmm (M=major, mmm=minor) */
@@ -81,6 +85,38 @@ public static int JAVA_VERSION (int major, int minor, int micro) {
  */
 public static int SWT_VERSION (int major, int minor) {
 	return major * 1000 + minor;
+}
+
+static boolean isLoadable () {
+	URL url = Platform.class.getClassLoader ().getResource ("org/eclipse/swt/internal/Library.class"); //$NON-NLS-1$
+	if (!url.getProtocol ().equals ("jar")) { //$NON-NLS-1$
+		/* SWT is presumably running in a development environment */
+		return true;
+	}
+
+	try {
+		url = new URL (url.getPath ());
+	} catch (MalformedURLException e) {
+		/* should never happen since url's initial path value must be valid */
+	}
+	String path = url.getPath ();
+	int index = path.indexOf ('!');
+	File file = new File (path.substring (0, index));
+
+	Attributes attributes = null;
+	try {
+		JarFile jar = new JarFile (file);
+		attributes = jar.getManifest ().getMainAttributes ();
+	} catch (IOException e) {
+		/* should never happen for a valid SWT jar with the expected manifest values */
+		return false;
+	}
+
+	String os = System.getProperty ("os.name"); //$NON-NLS-1$;
+	String arch = System.getProperty ("os.arch"); //$NON-NLS-1$
+	String manifestOS = attributes.getValue ("SWT-OS"); //$NON-NLS-1$
+	String manifestArch = attributes.getValue ("SWT-Arch"); //$NON-NLS-1$
+	return arch.equals (manifestArch) && os.equals (manifestOS);
 }
 
 /**
