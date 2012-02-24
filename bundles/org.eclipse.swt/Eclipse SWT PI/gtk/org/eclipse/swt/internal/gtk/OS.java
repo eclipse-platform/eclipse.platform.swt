@@ -14,7 +14,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.gtk;
 
- 
+
 import org.eclipse.swt.internal.*;
 
 public class OS extends C {

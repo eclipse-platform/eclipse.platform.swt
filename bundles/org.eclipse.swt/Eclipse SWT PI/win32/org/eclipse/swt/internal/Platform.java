@@ -10,12 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
-import java.io.*;
-import java.net.*;
-import java.util.jar.*;
 
 public class Platform {
-
 	public static final String PLATFORM = "win32"; //$NON-NLS-1$
 	public static final Lock lock = new Lock ();
 
