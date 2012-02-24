@@ -2703,6 +2703,18 @@ LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
+LRESULT WM_GETOBJECT (int /*long*/ wParam, int /*long*/ lParam) {
+	/*
+	* Ensure that there is an accessible object created for this
+	* control because support for search text accessibility is
+	* implemented in the accessibility package.
+	*/
+	if ((style & SWT.SEARCH) != 0) {
+		if (accessible == null) accessible = new_Accessible (this);
+	}
+	return super.WM_GETOBJECT (wParam, lParam);
+}
+
 LRESULT WM_IME_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 
 	/* Process a DBCS character */

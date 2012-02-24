@@ -199,6 +199,32 @@ public ScrollBar getHorizontalBar () {
 }
 
 /**
+ * Returns the mode of the receiver's scrollbars. This will be
+ * <em>bitwise</em> OR of one or more of the constants defined in class
+ * <code>SWT</code>.<br>
+ * <li><code>SWT.SCROLLBAR_OVERLAY</code> - if receiver
+ * uses overlay scrollbars</li>
+ * <li><code>SWT.NONE</code> - otherwise</li>
+ * 
+ * @return the mode of scrollbars
+ * 
+ * @exception SWTException <ul>
+ * <li>ERROR_WIDGET_DISPOSED - if the receiver has been
+ * disposed</li>
+ * <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
+ * thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#SCROLLBAR_OVERLAY
+ * 
+ * @since 3.8
+ */
+public int getScrollbarsMode () {
+	checkWidget();
+	return SWT.NONE;
+}
+
+/**
  * Returns the receiver's vertical scroll bar if it has
  * one, and null if it does not.
  *

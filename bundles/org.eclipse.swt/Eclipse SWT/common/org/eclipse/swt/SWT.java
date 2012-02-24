@@ -4086,8 +4086,30 @@ public class SWT {
 	 * @since 3.6
 	 */
 	public static final String SKIN_ID = "org.eclipse.swt.skin.id";
-
 	
+	/**
+	 * The <code>Scrollable</code> constant to indicate that
+	 * the receiver is using overlay scrollbars. (value is 1)
+	 *
+	 * @since 3.8
+	 */
+	public static final int SCROLLBAR_OVERLAY = 1 << 1;
+	 	
+
+/**
+ * Returns a boolean indicating whether this SWT implementation can
+ * be loaded.  Examples of criteria that may be used to determine this
+ * include the OS and architecture of the JRE that is being used.
+ *
+ * @return <code>true</code> if this SWT implementation can be loaded
+ * and <code>false</code> otherwise
+ *
+ * @since 3.8
+ */
+public static boolean isLoadable () {
+	return Platform.isLoadable ();
+}
+
 /**
  * Answers a concise, human readable description of the error code.
  *
