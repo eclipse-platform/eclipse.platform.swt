@@ -349,7 +349,7 @@ public void append (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string, false);
-	if (segments != null) clearSegments (true);
+	clearSegments (true);
 	if ((style & SWT.SINGLE) != 0) {
 		OS.gtk_editable_insert_text (handle, buffer, buffer.length, new int[]{-1});
 		OS.gtk_editable_set_position (handle, -1);
@@ -361,9 +361,7 @@ public void append (String string) {
 		int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 	}
-	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
-		applySegments ();
-	}
+	applySegments ();
 }
 
 void applySegments () {
@@ -576,13 +574,9 @@ public void copy () {
 		OS.gtk_editable_copy_clipboard (handle);
 	} else {
 		int /*long*/ clipboard = OS.gtk_clipboard_get (OS.GDK_NONE);
-		if (segments != null) {
-			clearSegments (true);
-		}
+		clearSegments (true);
 		OS.gtk_text_buffer_copy_clipboard (bufferHandle, clipboard);
-		if (hooks (SWT.Segments) || filters (SWT.Segments)) {
-			applySegments ();
-		}
+		applySegments ();
 	}
 }
 
@@ -604,13 +598,9 @@ public void cut () {
 		OS.gtk_editable_cut_clipboard (handle);
 	} else {
 		int /*long*/ clipboard = OS.gtk_clipboard_get (OS.GDK_NONE);
-		if (segments != null) {
-			clearSegments (true);
-		}
+		clearSegments (true);
 		OS.gtk_text_buffer_cut_clipboard (bufferHandle, clipboard, OS.gtk_text_view_get_editable (handle));
-		if (hooks (SWT.Segments) || filters (SWT.Segments)) {
-			applySegments ();
-		}
+		applySegments ();
 	}
 }
 
@@ -1805,7 +1795,7 @@ int /*long*/ imContext () {
 public void insert (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (segments != null) clearSegments (true);
+	clearSegments (true);
 	byte [] buffer = Converter.wcsToMbcs (null, string, false);
 	if ((style & SWT.SINGLE) != 0) {
 		int [] start = new int [1], end = new int [1];
@@ -1824,9 +1814,7 @@ public void insert (String string) {
 		int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 	}
-	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
-		applySegments ();
-	}
+	applySegments ();
 }
 
 int /*long*/ paintWindow () {
@@ -1869,13 +1857,9 @@ public void paste () {
 		OS.gtk_editable_paste_clipboard (handle);
 	} else {
 		int /*long*/ clipboard = OS.gtk_clipboard_get (OS.GDK_NONE);
-		if (segments != null) {
-			clearSegments (true);
-		}
+		clearSegments (true);
 		OS.gtk_text_buffer_paste_clipboard (bufferHandle, clipboard, null, OS.gtk_text_view_get_editable (handle));
-		if (hooks (SWT.Segments) || filters (SWT.Segments)) {
-			applySegments ();
-		}
+		applySegments ();
 	}
 }
 
@@ -2377,12 +2361,12 @@ public void setTextChars (char [] text) {
 }
 
 void setText (char [] text) {
+	clearSegments (false);
 	if ((style & SWT.SINGLE) != 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, text, true);
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-		if (segments != null) clearSegments (false);
 		OS.gtk_entry_set_text (handle, buffer);
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
@@ -2390,7 +2374,6 @@ void setText (char [] text) {
 	} else {
 		byte [] buffer = Converter.wcsToMbcs (null, text, false);
 		byte [] position =  new byte [ITER_SIZEOF];
-		if (segments != null) clearSegments (false);
 		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_RANGE);
 		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEXT_BUFFER_INSERT_TEXT);
@@ -2409,9 +2392,7 @@ void setText (char [] text) {
 			OS.gtk_entry_set_icon_sensitive (handle, OS.GTK_ENTRY_ICON_SECONDARY, true);
 		}
 	}
-	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
-		applySegments ();
-	}
+	applySegments ();
 }
 
 /**
@@ -2568,13 +2549,13 @@ String verifyText (String string, int start, int end) {
 }
 
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
-	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
+	if (hooks (SWT.Segments) || filters (SWT.Segments) || segments != null) {
 		switch ((int)/*64*/user_data) {
 			case BACKSPACE:
 			case COPY_CLIPBOARD:
 			case CUT_CLIPBOARD:
 			case PASTE_CLIPBOARD: {
-				if (segments != null) clearSegments (true);
+				clearSegments (true);
 				break;
 			}
 			case BACKSPACE_INVERSE:
@@ -2590,10 +2571,10 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
 }
 
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
-	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
+	if (hooks (SWT.Segments) || filters (SWT.Segments) || segments != null) {
 		switch ((int)/*64*/user_data) {
 			case DIRECTION_CHANGED: {
-				if (segments != null) clearSegments (true);
+				clearSegments (true);
 				applySegments ();
 				break;
 			}
@@ -2603,10 +2584,10 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ us
 }
 
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ user_data) {
-	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
+	if (hooks (SWT.Segments) || filters (SWT.Segments) || segments != null) {
 		switch ((int)/*64*/user_data) {
 			case DELETE_FROM_CURSOR: {
-				if (segments != null) clearSegments (true);
+				clearSegments (true);
 				break;
 			}
 			case DELETE_FROM_CURSOR_INVERSE: {
@@ -2619,14 +2600,18 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ ar
 }
 
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ user_data) {
-	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
+	if (hooks (SWT.Segments) || filters (SWT.Segments) || segments != null) {
 		switch ((int)/*64*/user_data) {
 			case MOVE_CURSOR: {
-				if (arg0 == OS.GTK_MOVEMENT_VISUAL_POSITIONS && segments != null) clearSegments (true);
+				if (arg0 == OS.GTK_MOVEMENT_VISUAL_POSITIONS) {
+					clearSegments (true);
+				}
 				break;
 			}
 			case MOVE_CURSOR_INVERSE: {
-				if (arg0 == OS.GTK_MOVEMENT_VISUAL_POSITIONS) applySegments ();
+				if (arg0 == OS.GTK_MOVEMENT_VISUAL_POSITIONS) {
+					applySegments ();
+				}
 				break;
 			}
 		}
