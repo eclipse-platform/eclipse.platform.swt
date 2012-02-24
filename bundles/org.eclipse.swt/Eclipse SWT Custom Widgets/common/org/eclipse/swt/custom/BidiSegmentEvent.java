@@ -60,7 +60,7 @@ import org.eclipse.swt.events.*;
  * </pre>
  * 
  * <p>
- * The segments and segementsChars fields can be used together to obtain different
+ * The segments and segmentsChars fields can be used together to obtain different
  * types of bidi reordering and text display. The application can use these two fields
  * to insert Unicode Control Characters in specific offsets in the line, the character
  * at segmentsChars[i] is inserted at the offset specified by segments[i]. When both fields 
@@ -75,21 +75,9 @@ import org.eclipse.swt.events.*;
  */
 public class BidiSegmentEvent extends SegmentEvent {
 	
-	/** 
-	 * line start offset 
-	 */
-	public int lineOffset;
-	
-	/** 
-	 * line text 
-	 */			
-	public String lineText;
-
-	static final long serialVersionUID = 3257846571587547957L;
+	static final long serialVersionUID = -3712986188155944253L;
 
 BidiSegmentEvent(StyledTextEvent e) {
 	super(e);
-	lineOffset = e.detail;
-	lineText = e.text;
 }
 }

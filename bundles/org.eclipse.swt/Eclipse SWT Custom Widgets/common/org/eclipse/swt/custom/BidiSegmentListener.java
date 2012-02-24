@@ -26,8 +26,8 @@ public interface BidiSegmentListener extends SWTEventListener {
  * The following event fields are used:<ul>
  * <li>event.lineOffset line start offset (input)</li>
  * <li>event.lineText line text (input)</li>
- * <li>event.segments text segments that should be reordered 
- *	separately. (output)</li> 
+ * <li>event.segments text segments that should be reordered separately (output)</li> 
+ * <li>event.segmentsChars characters that should be inserted (output)</li>
  * </ul>
  *
  * @param event the given event

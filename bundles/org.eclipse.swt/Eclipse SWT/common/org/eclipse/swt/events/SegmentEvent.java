@@ -70,26 +70,32 @@ import org.eclipse.swt.widgets.Event;
  */
 
 public class SegmentEvent extends TypedEvent {
-	/**
-	 * Text with respect to which segments are calculated
+
+	/** 
+	 * The start offset of the <code>lineText</code> relative to text (always zero for single line widget) 
 	 */
-	public String text;
+	public int lineOffset;
+	
+	/** 
+	 * Text used to calculate the segments 
+	 */			
+	public String lineText;
 
 	/**
-	 * Text ranges that should be treated as separate segments (e.g. for bidi
-	 * reordering)
+	 * Text ranges that should be treated as separate segments (e.g. for bidi reordering)
 	 */
 	public int[] segments;
 
 	/**
-	 * Characters to be used in the segment boundaries (optional) 
+	 * Characters to be used in the segment boundaries (optional)
 	 */
 	public char[] segmentsChars;
 
-	private static final long serialVersionUID = -89306787890624323L;
-
+	static final long serialVersionUID = -2414889726745247762L;
+	
 	public SegmentEvent(Event e) {
 		super(e);
-		text = e.text;
+		lineText = e.text;
+		lineOffset = e.detail;
 	}
 }

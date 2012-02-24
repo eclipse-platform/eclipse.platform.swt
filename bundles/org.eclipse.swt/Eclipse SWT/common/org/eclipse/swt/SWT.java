@@ -749,7 +749,7 @@ public class SWT {
 	public static final int Gesture = 48;
 
 	/**
-	 * The get segments event type (value is 49).
+	 * The segments event type (value is 49).
 	 * 
 	 * <p>
 	 * This event is sent when text content has been changed.
@@ -764,7 +764,7 @@ public class SWT {
      * 
      * @since 3.8
 	 */
-	public static final int GetSegments = 49;
+	public static final int Segments = 49;
 
 	/* Event Details */
 	

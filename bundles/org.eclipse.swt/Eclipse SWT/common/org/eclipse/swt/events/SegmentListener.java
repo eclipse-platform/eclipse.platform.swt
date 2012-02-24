@@ -24,8 +24,9 @@ public interface SegmentListener extends SWTEventListener {
  * <p>
  * The following event fields are used:<ul>
  * <li>event.text text content (input)</li>
- * <li>event.segmentsChars characters that should be inserted</li>
- * <li>event.segments text offsets for segment characters</li></ul>
+ * <li>event.segmentsChars characters that should be inserted (output)</li>
+ * <li>event.segments text offsets for segment characters (output)</li>
+ * </ul>
  *
  * @param event the given event
  * @see SegmentEvent

@@ -17,7 +17,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.events.SegmentListener;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Text
@@ -1504,11 +1503,11 @@ public void test_consistency_DragDetect () {
 public void test_consistency_Segments () {
 	final SegmentListener sl1 = new SegmentListener() {
 		public void getSegments(SegmentEvent event) {
-			if ((event.text.length() & 1) == 1) {
-				event.segments = new int [] {1, event.text.length()};
+			if ((event.lineText.length() & 1) == 1) {
+				event.segments = new int [] {1, event.lineText.length()};
 				event.segmentsChars = null;
 			} else {
-				event.segments = new int [] {0, 0, event.text.length()};
+				event.segments = new int [] {0, 0, event.lineText.length()};
 				event.segmentsChars = new char [] {':', '<', '>'};
 			}
 			listenerCalled = true;

@@ -190,6 +190,12 @@ public void addModifyListener (ModifyListener listener) {
 	addListener (SWT.Modify, typedListener);
 }
 
+public void addSegmentListener (SegmentListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	addListener (SWT.Segments, new TypedListener (listener));
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is selected by the user, by sending
@@ -1455,6 +1461,12 @@ public void removeModifyListener (ModifyListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Modify, listener);
+}
+
+public void removeSegmentListener (SegmentListener listener) {
+	checkWidget ();
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	eventTable.unhook (SWT.Segments, listener);
 }
 
 /**

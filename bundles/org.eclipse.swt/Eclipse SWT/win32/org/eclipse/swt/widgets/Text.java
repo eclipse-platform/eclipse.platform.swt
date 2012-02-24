@@ -61,7 +61,6 @@ public class Text extends Scrollable {
 	int[] segments;
 	int clearSegmentsCount = 0;
 
-	// XXX The following two variables are also required for other widgets, move them to some shared space
 	static final char LTR_MARK = '\u200e';
 	static final char RTL_MARK = '\u200f';
 
@@ -343,7 +342,7 @@ public void addModifyListener (ModifyListener listener) {
 public void addSegmentListener (SegmentListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	addListener (SWT.GetSegments, new TypedListener (listener));
+	addListener (SWT.Segments, new TypedListener (listener));
 }
 
 /**
@@ -435,7 +434,7 @@ public void append (String string) {
 		if (string == null) return;
 	}
 	OS.SendMessage (handle, OS.EM_SETSEL, length, length);
-	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
 		clearSegments (true);
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
@@ -454,14 +453,14 @@ public void append (String string) {
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	ignoreCharacter = false;
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
-	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
 		applySegments ();
 	}
 }
 
 void applySegments () {
 	if (--clearSegmentsCount != 0) return;
-	if (!hooks (SWT.GetSegments) && !filters (SWT.GetSegments)) return;
+	if (!hooks (SWT.Segments) && !filters (SWT.Segments)) return;
 	int length = OS.GetWindowTextLength (handle);
 	int cp = getCodePage ();
 	TCHAR buffer = new TCHAR (cp, length + 1);
@@ -471,7 +470,7 @@ void applySegments () {
 	Event event = new Event ();
 	event.text = string;
 	event.segments = segments;
-	sendEvent (SWT.GetSegments, event);
+	sendEvent (SWT.Segments, event);
 	segments = event.segments;
 	if (segments == null) return;
 	int nSegments = segments.length;
@@ -1515,7 +1514,7 @@ public void insert (String string) {
 		string = verifyText (string, start [0], end [0], null);
 		if (string == null) return;
 	}
-	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
 		clearSegments (true);
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
@@ -1533,7 +1532,7 @@ public void insert (String string) {
 	ignoreCharacter = true;
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	ignoreCharacter = false;
-	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
 		applySegments ();
 	}
 }
@@ -1652,7 +1651,7 @@ public void removeModifyListener (ModifyListener listener) {
 public void removeSegmentListener (SegmentListener listener) {
 	checkWidget ();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	eventTable.unhook (SWT.GetSegments, listener);
+	eventTable.unhook (SWT.Segments, listener);
 }
 
 /**
@@ -2242,7 +2241,7 @@ public void setText (String string) {
 		string = verifyText (string, 0, length, null);
 		if (string == null) return;
 	}
-	boolean processSegments = segments != null || hooks (SWT.GetSegments) || filters (SWT.GetSegments);
+	boolean processSegments = segments != null || hooks (SWT.Segments) || filters (SWT.Segments);
 	if (processSegments) clearSegments (false);
 	int limit = (int)/*64*/OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
 	if (string.length () > limit) string = string.substring (0, limit);
@@ -2293,7 +2292,7 @@ public void setTextChars (char[] text) {
 		text = new char [string.length()];
 		string.getChars (0, text.length, text, 0);
 	}
-	boolean processSegments = segments != null || hooks (SWT.GetSegments) || filters (SWT.GetSegments);
+	boolean processSegments = segments != null || hooks (SWT.Segments) || filters (SWT.Segments);
 	if (processSegments) clearSegments (false);
 	int limit = (int)/*64*/OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
 	if (text.length > limit) {
@@ -2536,7 +2535,7 @@ int /*long*/ windowProc () {
 int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
 	boolean processSegments = false, redraw = false;
 	int /*long*/ code;
-	if (hooks (SWT.GetSegments) || filters (SWT.GetSegments)) {
+	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
 		switch (msg) {
 			case OS.EM_UNDO:
 			case OS.WM_UNDO:

@@ -29,9 +29,6 @@ class StyledTextEvent extends Event {
 	int[] tabStops;
 	// used by LineBackgroundEvent
 	Color lineBackground;
-	// used by BidiSegmentEvent
-	int[] segments;	
-	char[] segmentsChars;
 	// used by TextChangedEvent
 	int replaceCharCount; 	
 	int newCharCount; 
