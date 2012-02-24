@@ -4068,6 +4068,15 @@ public class SWT {
 	 * @since 3.6
 	 */
 	public static final String SKIN_ID = "org.eclipse.swt.skin.id";
+	
+	/**
+	 * The <code>Scrollable</code> constant to indicate that
+	 * the receiver is using overlay scrollbars. (value is 1)
+	 *
+	 * @since 3.8
+	 */
+	public static final int SCROLLBAR_OVERLAY = 1 << 1;
+	 	
 
 /**
  * Returns a boolean indicating whether this SWT implementation can
