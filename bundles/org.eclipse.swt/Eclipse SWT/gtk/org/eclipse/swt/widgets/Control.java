@@ -4213,6 +4213,7 @@ public boolean setParent (Composite parent) {
 	int /*long*/ topHandle = topHandle ();
 	int x = OS.GTK_WIDGET_X (topHandle);
 	int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+	int height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
 	if ((this.parent.style & SWT.MIRRORED) != 0) {
 		x =  this.parent.getClientWidth () - width - x;
 	}
@@ -4232,6 +4233,23 @@ public boolean setParent (Composite parent) {
 	int /*long*/ newParent = parent.parentingHandle();
 	OS.gtk_widget_reparent (topHandle, newParent);
 	OS.gtk_fixed_move (newParent, topHandle, x, y);
+	/*
+	* Restore the original widget size since GTK does not keep it.
+	*/
+	resizeHandle(width, height);
+	/*
+	* Cause a size allocation this widget's topHandle.  Note that
+	* all calls to gtk_widget_size_allocate() must be preceded by
+	* a call to gtk_widget_size_request().
+	*/
+	GtkRequisition requisition = new GtkRequisition ();
+	gtk_widget_size_request (topHandle, requisition);
+	GtkAllocation allocation = new GtkAllocation ();
+	allocation.x = x;
+	allocation.y = y;
+	allocation.width = width;
+	allocation.height = height;
+	OS.gtk_widget_size_allocate (topHandle, allocation);
 	this.parent = parent;
 	setZOrder (null, false, true);
 	reskin (SWT.ALL);
