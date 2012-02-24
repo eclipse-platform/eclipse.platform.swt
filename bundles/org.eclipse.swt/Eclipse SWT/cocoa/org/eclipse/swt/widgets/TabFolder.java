@@ -156,11 +156,6 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return super.computeTrim (x, y, width, height);
 }
 
-NSAttributedString createString(String text) {
-	NSAttributedString attribStr = createString(text, null, foreground, 0, false, true, true);
-	return attribStr;
-}
-
 void createHandle () {
 	NSTabView widget = (NSTabView)new SWTTabView().alloc();
 	widget.init ();
@@ -501,15 +496,17 @@ void reskinChildren (int flags) {
 
 void setFont (NSFont font) {
 	((NSTabView)view).setFont(font);
+	int index = getSelectionIndex();
 	for (int i = 0; i < itemCount; i++) {
-		items[i].updateText();
+		items[i].updateText(i == index);
 	}
 }
 
 void setForeground (float /*double*/ [] color) {
 	super.setForeground(color);
+	int index = getSelectionIndex();
 	for (int i = 0; i < itemCount; i++) {
-		items[i].updateText();
+		items[i].updateText(i == index);
 	}
 }
 
@@ -644,6 +641,7 @@ void tabView_willSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long
 			if (currentIndex != -1) {
 				TabItem selected = items [currentIndex];
 				if (selected != null) {
+					if (OS.VERSION >= 0x1070) selected.updateText(false);
 					Control control = selected.control;
 					if (control != null && !control.isDisposed ()) {
 						control.setVisible (false);
@@ -654,6 +652,7 @@ void tabView_willSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long
 			if (control != null && !control.isDisposed ()) {
 				control.setVisible (true);
 			}
+			if (OS.VERSION >= 0x1070) item.updateText(true);
 			break;
 		}
 	}

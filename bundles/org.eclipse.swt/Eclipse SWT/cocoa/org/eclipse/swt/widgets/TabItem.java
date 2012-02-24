@@ -433,10 +433,19 @@ String tooltipText () {
 }
 
 void updateText () {
+	NSTabViewItem selected = ((NSTabView)parent.view).selectedTabViewItem();
+	updateText(selected != null && selected.id == nsItem.id);
+}
+
+void updateText (boolean selected) {
 	if (attriStr != null) {
 		attriStr.release();
 	}
-	attriStr = parent.createString(getText());
+	float /*double*/ [] foreground = parent.foreground;
+	if (foreground == null && selected && OS.VERSION >= 0x1070) {
+		foreground = display.getNSColorRGB(NSColor.alternateSelectedControlTextColor());
+	}
+	attriStr = parent.createString(text, null, foreground, 0, false, true, true);
 	//force parent to resize
 	nsItem.setLabel(NSString.string());
 }
