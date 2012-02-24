@@ -828,8 +828,7 @@ public int getCaretPosition () {
 		result = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, OS.gtk_text_iter_get_offset (position));
 		OS.g_free (ptr);
 	}
-	if (segments != null) result = untranslateOffset (result);
-	return result;
+	return untranslateOffset (result);
 }
 
 /**
@@ -856,8 +855,7 @@ public int getCharCount () {
 		result = (int)/*64*/OS.g_utf16_strlen(ptr, -1);
 		OS.g_free (ptr);
 	}
-	if (segments != null) result = untranslateOffset (result);
-	return result;
+	return untranslateOffset (result);
 }
 
 /**
@@ -1035,8 +1033,7 @@ public int getOrientation () {
 		position = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, OS.gtk_text_iter_get_offset (p));
 		OS.g_free (ptr);
 	}
-	if (segments != null) position = untranslateOffset(position);
-	return position;
+	return untranslateOffset (position);
 }
 
 /**
@@ -1080,10 +1077,8 @@ public Point getSelection () {
 		OS.g_free (ptr);
 		selection = new Point (start, end);
 	}
-	if (segments != null) {
-		selection.x = untranslateOffset (selection.x);
-		selection.y = untranslateOffset (selection.y);
-	}
+	selection.x = untranslateOffset (selection.x);
+	selection.y = untranslateOffset (selection.y);
 	return selection;
 }
 
@@ -1261,7 +1256,7 @@ public int getTextLimit () {
 	checkWidget ();
 	if ((style & SWT.MULTI) != 0) return LIMIT;
 	int limit = OS.gtk_entry_get_max_length (handle);
-	return limit == 0 ? 0xFFFF : segments != null ? untranslateOffset (limit) : limit;
+	return limit == 0 ? 0xFFFF : untranslateOffset (limit);
 }
 
 /**
@@ -2153,7 +2148,7 @@ public void setOrientation (int orientation) {
  */
 public void setSelection (int start) {
 	checkWidget ();
-	if (segments != null) start = translateOffset (start);
+	start = translateOffset (start);
 	if ((style & SWT.SINGLE) != 0) {
 		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
 		start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, start);
@@ -2199,10 +2194,8 @@ public void setSelection (int start) {
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
-	if (segments != null) {
-		start = translateOffset (start);
-		end = translateOffset (end);
-	}
+	start = translateOffset (start);
+	end = translateOffset (end);
 	if ((style & SWT.SINGLE) != 0) {
 		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
 		start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, start);
