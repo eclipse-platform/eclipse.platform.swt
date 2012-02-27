@@ -576,6 +576,9 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			}
 		}
 	}
+	if (cairo != 0) {
+		Cairo.cairo_new_path(cairo);
+	}
 }
 
 void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelection, GdkColor fg, GdkColor bg) {
