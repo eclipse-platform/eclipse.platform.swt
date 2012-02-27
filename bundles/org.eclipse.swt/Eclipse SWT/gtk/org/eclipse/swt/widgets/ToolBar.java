@@ -138,19 +138,6 @@ void createHandle (int index) {
 		byte [] swt_toolbar_flat = Converter.wcsToMbcs (null, "swt-toolbar-flat", true);
 		OS.gtk_widget_set_name (handle, swt_toolbar_flat);
 	}
-	/*
-	 * Feature in GTK. When the toolItems contain only image, 
-	 * then GTK considers the toolItem to have both label 
-	 * and image and thus, it sets an empty label. Due to  
-	 * this, the toolItem appear bigger than the required size.
-	 * The fix is to modify the style which doesn't require the
-	 * label. If SWT.RIGHT is set, then toolItem will set the 
-	 * "is_important" flag in order to display the text horizontally.
-	 * If any of the toolItem has set non-empty text, then the 
-	 * the style shall be changed back to default in order to
-	 * display the text vertically.
-	 */
-	OS.gtk_toolbar_set_style (handle, OS.GTK_TOOLBAR_BOTH_HORIZ);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -509,15 +496,28 @@ boolean mnemonicMatch (char key) {
 
 void relayout () {
 	ToolItem [] items = getItems ();
-	boolean hasTextItems = false;
+	boolean hasText = false, hasImage = false;
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];
 		if (item != null) {
 			item.resizeControl ();
-			hasTextItems |= item.hasText;
+			hasText |= item.text != null && item.text.length() > 0;
+			hasImage |= item.image != null;
 		}
 	}
-	if (!hasTextItems) OS.gtk_toolbar_set_style (handle, OS.GTK_TOOLBAR_BOTH_HORIZ);
+	int type = OS.GTK_TOOLBAR_ICONS;
+	if (hasText && hasImage) {
+		if ((style & SWT.RIGHT) != 0) { 
+			type = OS.GTK_TOOLBAR_BOTH_HORIZ;
+		} else {
+			type = OS.GTK_TOOLBAR_BOTH;
+		}
+	} else if (hasText) {
+		type = OS.GTK_TOOLBAR_TEXT;
+	} else if (hasImage) {
+		type = OS.GTK_TOOLBAR_ICONS;
+	}
+	OS.gtk_toolbar_set_style (handle, type);
 }
 
 void releaseChildren (boolean destroy) {

@@ -44,7 +44,7 @@ public class ToolItem extends Item {
 	Control control;
 	Image hotImage, disabledImage;
 	String toolTipText;
-	boolean drawHotImage, hasText;
+	boolean drawHotImage;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -1096,30 +1096,6 @@ public void setText (String string) {
 		}
 	}
 	OS.gtk_tool_button_set_label (handle, buffer);
-	/*
-	 * Feature in GTK. Toolitems with only image appear larger
-	 * than the preferred size. The fix is to set the style as
-	 * TOOLBAR_BOTH_HORIZ. If any of the child toolItem is set
-	 * text, then the style shall be set back to default.
-	 */
-	if (string.length() != 0) {
-		hasText = true;
-		if ((parent.style & SWT.RIGHT) == 0) OS.gtk_toolbar_set_style (parent.handle, OS.GTK_TOOLBAR_BOTH);
-	} else {
-		/*
-		 * If the toolbar has any item containing text, then the style
-		 * should be TOOLBAR_BOTH. Otherwise, it should be set back to
-		 * BOTH_HORIZ in order to prevent the larger size consumed by item.
-		 */
-		hasText = false;
-		ToolItem[] items = parent._getItems();
-		boolean hasTextItems = false;
-		for (int i=0; i<items.length; i++) {
-			ToolItem item = items[i];
-			if (item != null) hasTextItems |= item.hasText;
-		}
-		if (!hasTextItems) OS.gtk_toolbar_set_style (parent.handle, OS.GTK_TOOLBAR_BOTH_HORIZ);
-	}
 	if ((style & SWT.DROP_DOWN) != 0) {
 		proxyMenuItem = 0;
 		proxyMenuItem = OS.gtk_tool_item_retrieve_proxy_menu_item (handle);

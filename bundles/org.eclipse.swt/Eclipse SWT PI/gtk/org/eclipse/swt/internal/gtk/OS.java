@@ -375,6 +375,8 @@ public class OS extends C {
 	public static final int GTK_TOOLBAR_CHILD_BUTTON = 0x1;
 	public static final int GTK_TOOLBAR_CHILD_RADIOBUTTON = 0x3;
 	public static final int GTK_TOOLBAR_CHILD_TOGGLEBUTTON = 0x2;
+	public static final int GTK_TOOLBAR_ICONS = 0;
+	public static final int GTK_TOOLBAR_TEXT = 1;
 	public static final int GTK_TOOLBAR_BOTH = 2;
 	public static final int GTK_TOOLBAR_BOTH_HORIZ = 3;	
 	public static final int GTK_TREE_VIEW_COLUMN_GROW_ONLY = 0;
