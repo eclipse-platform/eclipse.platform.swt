@@ -14251,24 +14251,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toolbar_1set_1orientation)
 }
 #endif
 
-#ifndef NO__1gtk_1tooltip_1trigger_1tooltip_1query
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tooltip_1trigger_1tooltip_1query)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1tooltip_1trigger_1tooltip_1query_FUNC);
-/*
-	gtk_tooltip_trigger_tooltip_query((GdkDisplay*)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_tooltip_trigger_tooltip_query)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkDisplay*))fp)((GdkDisplay*)arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1tooltip_1trigger_1tooltip_1query_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1tooltips_1data_1get
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1tooltips_1data_1get)
 	(JNIEnv *env, jclass that, jintLong arg0)

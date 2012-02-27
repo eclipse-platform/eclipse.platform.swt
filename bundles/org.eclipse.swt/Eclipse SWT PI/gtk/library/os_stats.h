@@ -1112,7 +1112,6 @@ typedef enum {
 	_1gtk_1toolbar_1insert_1widget_FUNC,
 	_1gtk_1toolbar_1new_FUNC,
 	_1gtk_1toolbar_1set_1orientation_FUNC,
-	_1gtk_1tooltip_1trigger_1tooltip_1query_FUNC,
 	_1gtk_1tooltips_1data_1get_FUNC,
 	_1gtk_1tooltips_1disable_FUNC,
 	_1gtk_1tooltips_1enable_FUNC,
