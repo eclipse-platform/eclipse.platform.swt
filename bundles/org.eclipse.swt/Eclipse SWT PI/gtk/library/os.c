@@ -10833,6 +10833,30 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1menu_1shell_1set_1take_1focus)
 }
 #endif
 
+#ifndef NO__1gtk_1menu_1tool_1button_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1menu_1tool_1button_1new)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1menu_1tool_1button_1new_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)gtk_menu_tool_button_new(arg0, lparg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_menu_tool_button_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jbyte *))fp)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1menu_1tool_1button_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1message_1dialog_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1message_1dialog_1new)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jbyteArray arg4)
@@ -13146,6 +13170,28 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1separator_1menu_1item_1new)
 }
 #endif
 
+#ifndef NO__1gtk_1separator_1tool_1item_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1separator_1tool_1item_1new)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1separator_1tool_1item_1new_FUNC);
+	rc = (jintLong)gtk_separator_tool_item_new();
+	OS_NATIVE_EXIT(env, that, _1gtk_1separator_1tool_1item_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1separator_1tool_1item_1set_1draw
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1separator_1tool_1item_1set_1draw)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1separator_1tool_1item_1set_1draw_FUNC);
+	gtk_separator_tool_item_set_draw((GtkSeparatorToolItem *)arg0, (gboolean)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1separator_1tool_1item_1set_1draw_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1set_1locale
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1set_1locale)
 	(JNIEnv *env, jclass that)
@@ -14373,6 +14419,162 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toggle_1button_1set_1mode)
 }
 #endif
 
+#ifndef NO__1gtk_1toggle_1tool_1button_1get_1active
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1toggle_1tool_1button_1get_1active)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1toggle_1tool_1button_1get_1active_FUNC);
+	rc = (jboolean)gtk_toggle_tool_button_get_active((GtkToggleToolButton *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1toggle_1tool_1button_1get_1active_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1toggle_1tool_1button_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1toggle_1tool_1button_1new)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1toggle_1tool_1button_1new_FUNC);
+	rc = (jintLong)gtk_toggle_tool_button_new();
+	OS_NATIVE_EXIT(env, that, _1gtk_1toggle_1tool_1button_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1toggle_1tool_1button_1set_1active
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toggle_1tool_1button_1set_1active)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1toggle_1tool_1button_1set_1active_FUNC);
+	gtk_toggle_tool_button_set_active((GtkToggleToolButton *)arg0, (gboolean)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1toggle_1tool_1button_1set_1active_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1tool_1button_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1tool_1button_1new)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tool_1button_1new_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jintLong)gtk_tool_button_new((GtkWidget *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tool_1button_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1tool_1button_1set_1icon_1widget
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tool_1button_1set_1icon_1widget)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tool_1button_1set_1icon_1widget_FUNC);
+	gtk_tool_button_set_icon_widget((GtkToolButton *)arg0, (GtkWidget *)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tool_1button_1set_1icon_1widget_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1tool_1button_1set_1label
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tool_1button_1set_1label)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tool_1button_1set_1label_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_tool_button_set_label((GtkToolButton *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tool_1button_1set_1label_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1tool_1button_1set_1label_1widget
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tool_1button_1set_1label_1widget)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tool_1button_1set_1label_1widget_FUNC);
+	gtk_tool_button_set_label_widget((GtkToolButton *)arg0, (GtkWidget *)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tool_1button_1set_1label_1widget_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1tool_1button_1set_1use_1underline
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tool_1button_1set_1use_1underline)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tool_1button_1set_1use_1underline_FUNC);
+	gtk_tool_button_set_use_underline((GtkToolButton *)arg0, (gboolean)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tool_1button_1set_1use_1underline_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1tool_1item_1get_1proxy_1menu_1item
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1tool_1item_1get_1proxy_1menu_1item)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tool_1item_1get_1proxy_1menu_1item_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jintLong)gtk_tool_item_get_proxy_menu_item((GtkToolItem *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tool_1item_1get_1proxy_1menu_1item_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1tool_1item_1retrieve_1proxy_1menu_1item
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1tool_1item_1retrieve_1proxy_1menu_1item)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tool_1item_1retrieve_1proxy_1menu_1item_FUNC);
+	rc = (jintLong)gtk_tool_item_retrieve_proxy_menu_item((GtkToolItem *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tool_1item_1retrieve_1proxy_1menu_1item_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1tool_1item_1set_1is_1important
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tool_1item_1set_1is_1important)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tool_1item_1set_1is_1important_FUNC);
+	gtk_tool_item_set_is_important((GtkToolItem *)arg0, (gboolean)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tool_1item_1set_1is_1important_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1tool_1item_1set_1proxy_1menu_1item
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tool_1item_1set_1proxy_1menu_1item)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tool_1item_1set_1proxy_1menu_1item_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_tool_item_set_proxy_menu_item((GtkToolItem *)arg0, (const gchar *)lparg1, (GtkWidget *)arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tool_1item_1set_1proxy_1menu_1item_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1toolbar_1insert
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toolbar_1insert)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1toolbar_1insert_FUNC);
+	gtk_toolbar_insert((GtkToolbar *)arg0, (GtkToolItem *)arg1, arg2);
+	OS_NATIVE_EXIT(env, that, _1gtk_1toolbar_1insert_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1toolbar_1insert_1widget
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toolbar_1insert_1widget)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jbyteArray arg2, jbyteArray arg3, jint arg4)
@@ -14417,6 +14619,26 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toolbar_1set_1orientation)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1toolbar_1set_1orientation_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1toolbar_1set_1show_1arrow
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toolbar_1set_1show_1arrow)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1toolbar_1set_1show_1arrow_FUNC);
+	gtk_toolbar_set_show_arrow((GtkToolbar *)arg0, (gboolean)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1toolbar_1set_1show_1arrow_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1toolbar_1set_1style
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toolbar_1set_1style)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1toolbar_1set_1style_FUNC);
+	gtk_toolbar_set_style((GtkToolbar *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1toolbar_1set_1style_FUNC);
 }
 #endif
 

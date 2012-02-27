@@ -189,7 +189,8 @@ public abstract class Widget {
 	static final int MOVE_CURSOR = 80;
 	static final int MOVE_CURSOR_INVERSE = 81;
 	static final int DIRECTION_CHANGED = 82;
-	static final int LAST_SIGNAL = 83;
+	static final int CREATE_MENU_PROXY = 83;
+	static final int LAST_SIGNAL = 84;
 	
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
@@ -662,6 +663,10 @@ int /*long*/ gtk_commit (int /*long*/ imcontext, int /*long*/ text) {
 }
 
 int /*long*/ gtk_configure_event (int /*long*/ widget, int /*long*/ event) {
+	return 0;
+}
+
+int /*long*/ gtk_create_menu_proxy (int /*long*/ widget) {
 	return 0;
 }
 
@@ -1701,6 +1706,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
 		case ACTIVATE: return gtk_activate (handle);
 		case CHANGED: return gtk_changed (handle);
 		case CLICKED: return gtk_clicked (handle);
+		case CREATE_MENU_PROXY: return gtk_create_menu_proxy (handle);
 		case DAY_SELECTED: return gtk_day_selected (handle);
 		case DAY_SELECTED_DOUBLE_CLICK: return gtk_day_selected_double_click (handle);
 		case HIDE: return gtk_hide (handle);

@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1383;
-int OS_nativeFunctionCallCount[1383];
+int OS_nativeFunctionCount = 1401;
+int OS_nativeFunctionCallCount[1401];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -867,6 +867,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1menu_1shell_1insert",
 	"_1gtk_1menu_1shell_1select_1item",
 	"_1gtk_1menu_1shell_1set_1take_1focus",
+	"_1gtk_1menu_1tool_1button_1new",
 	"_1gtk_1message_1dialog_1new",
 	"_1gtk_1micro_1version",
 	"_1gtk_1minor_1version",
@@ -1008,6 +1009,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1selection_1data_1free",
 	"_1gtk_1selection_1data_1set",
 	"_1gtk_1separator_1menu_1item_1new",
+	"_1gtk_1separator_1tool_1item_1new",
+	"_1gtk_1separator_1tool_1item_1set_1draw",
 	"_1gtk_1set_1locale",
 	"_1gtk_1settings_1get_1default",
 	"_1gtk_1settings_1set_1string_1property",
@@ -1104,9 +1107,24 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1toggle_1button_1set_1active",
 	"_1gtk_1toggle_1button_1set_1inconsistent",
 	"_1gtk_1toggle_1button_1set_1mode",
+	"_1gtk_1toggle_1tool_1button_1get_1active",
+	"_1gtk_1toggle_1tool_1button_1new",
+	"_1gtk_1toggle_1tool_1button_1set_1active",
+	"_1gtk_1tool_1button_1new",
+	"_1gtk_1tool_1button_1set_1icon_1widget",
+	"_1gtk_1tool_1button_1set_1label",
+	"_1gtk_1tool_1button_1set_1label_1widget",
+	"_1gtk_1tool_1button_1set_1use_1underline",
+	"_1gtk_1tool_1item_1get_1proxy_1menu_1item",
+	"_1gtk_1tool_1item_1retrieve_1proxy_1menu_1item",
+	"_1gtk_1tool_1item_1set_1is_1important",
+	"_1gtk_1tool_1item_1set_1proxy_1menu_1item",
+	"_1gtk_1toolbar_1insert",
 	"_1gtk_1toolbar_1insert_1widget",
 	"_1gtk_1toolbar_1new",
 	"_1gtk_1toolbar_1set_1orientation",
+	"_1gtk_1toolbar_1set_1show_1arrow",
+	"_1gtk_1toolbar_1set_1style",
 	"_1gtk_1tooltips_1data_1get",
 	"_1gtk_1tooltips_1disable",
 	"_1gtk_1tooltips_1enable",

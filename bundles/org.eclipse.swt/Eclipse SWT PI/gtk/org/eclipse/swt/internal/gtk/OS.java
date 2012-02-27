@@ -375,6 +375,8 @@ public class OS extends C {
 	public static final int GTK_TOOLBAR_CHILD_BUTTON = 0x1;
 	public static final int GTK_TOOLBAR_CHILD_RADIOBUTTON = 0x3;
 	public static final int GTK_TOOLBAR_CHILD_TOGGLEBUTTON = 0x2;
+	public static final int GTK_TOOLBAR_BOTH = 2;
+	public static final int GTK_TOOLBAR_BOTH_HORIZ = 3;	
 	public static final int GTK_TREE_VIEW_COLUMN_GROW_ONLY = 0;
 	public static final int GTK_TREE_VIEW_COLUMN_AUTOSIZE = 1;
 	public static final int GTK_TREE_VIEW_COLUMN_FIXED = 2;
@@ -466,6 +468,7 @@ public class OS extends C {
 	public static final byte[] configure_event = ascii("configure-event");
 	public static final byte[] copy_clipboard = ascii("copy-clipboard");
 	public static final byte[] cut_clipboard = ascii("cut-clipboard");
+	public static final byte[] create_menu_proxy = ascii("create-menu-proxy");
 	public static final byte[] delete_event = ascii("delete-event");
 	public static final byte[] delete_from_cursor = ascii("delete-from-cursor");
 	public static final byte[] day_selected = ascii("day-selected");
@@ -8421,6 +8424,16 @@ public static final void gtk_menu_shell_set_take_focus(int /*long*/ menu_shell, 
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native int /*long*/ _gtk_menu_tool_button_new(int /*long*/ icon_widget, byte[] label);
+public static final int /*long*/ gtk_menu_tool_button_new(int /*long*/ icon_widget, byte[] label) {
+	lock.lock();
+	try {
+		return _gtk_menu_tool_button_new(icon_widget, label);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @param parent cast=(GtkWindow *)
  * @param flags cast=(GtkDialogFlags)
@@ -10061,6 +10074,28 @@ public static final int /*long*/ gtk_separator_menu_item_new() {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gtk_separator_tool_item_new();
+public static final int /*long*/ gtk_separator_tool_item_new() {
+	lock.lock();
+	try {
+		return _gtk_separator_tool_item_new();
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param item cast=(GtkSeparatorToolItem *)
+ * @param draw cast=(gboolean)
+ */
+public static final native void _gtk_separator_tool_item_set_draw(int /*long*/ item, boolean draw);
+public static final void gtk_separator_tool_item_set_draw(int /*long*/ item, boolean draw) {
+	lock.lock();
+	try {
+		_gtk_separator_tool_item_set_draw(item, draw);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @method flags=dynamic */
 public static final native int /*long*/ _gtk_set_locale();
 public static final int /*long*/ gtk_set_locale() {
@@ -11116,6 +11151,166 @@ public static final void gtk_toggle_button_set_mode(int /*long*/ toggle_button, 
 		lock.unlock();
 	}
 }
+/** @param button cast=(GtkToggleToolButton *) */
+public static final native boolean _gtk_toggle_tool_button_get_active(int /*long*/ button);
+public static final boolean gtk_toggle_tool_button_get_active(int /*long*/ button) {
+	lock.lock();
+	try {
+		return _gtk_toggle_tool_button_get_active(button);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gtk_toggle_tool_button_new();
+public static final int /*long*/ gtk_toggle_tool_button_new() {
+	lock.lock();
+	try {
+		return _gtk_toggle_tool_button_new();
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param item cast=(GtkToggleToolButton *)
+ * @param selected cast=(gboolean)
+ */
+public static final native void _gtk_toggle_tool_button_set_active(int /*long*/ item, boolean selected);
+public static final void gtk_toggle_tool_button_set_active(int /*long*/ item, boolean selected) {
+	lock.lock();
+	try {
+		_gtk_toggle_tool_button_set_active(item, selected);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param icon_widget cast=(GtkWidget *)
+ * @param label cast=(const gchar *)
+ */
+public static final native int /*long*/ _gtk_tool_button_new(int /*long*/ icon_widget, byte[] label);
+public static final int /*long*/ gtk_tool_button_new(int /*long*/ icon_widget, byte[] label) {
+	lock.lock();
+	try {
+		return _gtk_tool_button_new(icon_widget, label);
+	} finally {
+		lock.unlock();
+	}
+}
+/** 
+ * @param button cast=(GtkToolButton *)
+ * @param widget cast=(GtkWidget *)
+ */
+public static final native void _gtk_tool_button_set_icon_widget(int /*long*/ button, int /*long*/ widget);
+public static final void gtk_tool_button_set_icon_widget(int /*long*/ button, int /*long*/ widget) {
+	lock.lock();
+	try {
+		_gtk_tool_button_set_icon_widget(button, widget);
+	} finally {
+		lock.unlock();
+	}
+}
+/** 
+ * @param button cast=(GtkToolButton *)
+ * @param label cast=(const gchar *)
+ */
+public static final native void _gtk_tool_button_set_label(int /*long*/ button,  byte[] label);
+public static final void gtk_tool_button_set_label(int /*long*/ button,  byte[] label) {
+	lock.lock();
+	try {
+		_gtk_tool_button_set_label(button, label);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param button cast=(GtkToolButton *)
+ * @param widget cast=(GtkWidget *)
+ */
+public static final native void _gtk_tool_button_set_label_widget(int /*long*/ button,  int /*long*/ widget);
+public static final void gtk_tool_button_set_label_widget(int /*long*/ button,  int /*long*/ widget) {
+	lock.lock();
+	try {
+		_gtk_tool_button_set_label_widget(button, widget);
+	} finally {
+		lock.unlock();
+	}
+}
+/** 
+ * @param item cast=(GtkToolButton *)
+ * @param underline cast=(gboolean)
+ */
+public static final native void _gtk_tool_button_set_use_underline(int /*long*/ item, boolean underline);
+public static final void gtk_tool_button_set_use_underline(int /*long*/ item, boolean underline) {
+	lock.lock();
+	try {
+		_gtk_tool_button_set_use_underline(item, underline);
+	} finally {
+		lock.unlock();
+	}
+}
+/** 
+ * @param item cast=(GtkToolItem *)
+ * @param menu_id cast=(const gchar *)
+ */ 
+public static final native int /*long*/ _gtk_tool_item_get_proxy_menu_item(int /*long*/ item, byte[] menu_id);
+public static final int /*long*/ gtk_tool_item_get_proxy_menu_item(int /*long*/ item, byte[] menu_id) {
+	lock.lock();
+	try {
+		return _gtk_tool_item_get_proxy_menu_item(item, menu_id);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param item cast=(GtkToolItem *) */
+public static final native int /*long*/ _gtk_tool_item_retrieve_proxy_menu_item(int /*long*/ item);
+public static final int /*long*/ gtk_tool_item_retrieve_proxy_menu_item(int /*long*/ item) {
+	lock.lock();
+	try {
+		return _gtk_tool_item_retrieve_proxy_menu_item(item);
+	} finally {
+		lock.unlock();
+	}
+}
+/** 
+ * @param item cast=(GtkToolItem *)
+ * @param important cast=(gboolean)
+ */
+public static final native void _gtk_tool_item_set_is_important(int /*long*/ item, boolean important);
+public static final void gtk_tool_item_set_is_important(int /*long*/ item, boolean important) {
+	lock.lock();
+	try {
+		_gtk_tool_item_set_is_important(item, important);
+	} finally {
+		lock.unlock();
+	}
+}
+/** 
+ * @param item cast=(GtkToolItem *)
+ * @param menu_id cast=(const gchar *)
+ * @param widget cast=(GtkWidget *)
+ */
+public static final native void _gtk_tool_item_set_proxy_menu_item(int /*long*/ item, byte[] menu_id, int /*long*/ widget);
+public static final void gtk_tool_item_set_proxy_menu_item(int /*long*/ item, byte[] menu_id, int /*long*/ widget) {
+	lock.lock();
+	try {
+		_gtk_tool_item_set_proxy_menu_item(item, menu_id, widget);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param toolbar cast=(GtkToolbar *)
+ * @param item cast=(GtkToolItem *)
+ */
+public static final native void _gtk_toolbar_insert(int /*long*/ toolbar, int /*long*/ item, int pos);
+public static final void gtk_toolbar_insert(int /*long*/ toolbar, int /*long*/ item, int pos) {
+	lock.lock();
+	try {
+		_gtk_toolbar_insert(toolbar, item, pos);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @param toolbar cast=(GtkToolbar *)
  * @param widget cast=(GtkWidget *)
@@ -11151,6 +11346,31 @@ public static final void gtk_toolbar_set_orientation(int /*long*/ toolbar, int o
 	lock.lock();
 	try {
 		_gtk_toolbar_set_orientation(toolbar, orientation);
+	} finally {
+		lock.unlock();
+	}
+}
+/** 
+ * @param toolbar cast=(GtkToolbar *)
+ * @param show_arrow cast=(gboolean)
+ */
+public static final native void _gtk_toolbar_set_show_arrow(int /*long*/ toolbar, boolean show_arrow);
+public static final void gtk_toolbar_set_show_arrow(int /*long*/ toolbar, boolean show_arrow) {
+	lock.lock();
+	try {
+		_gtk_toolbar_set_show_arrow(toolbar, show_arrow);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param toolbar cast=(GtkToolbar *) 
+ * @param type cast=(GtkToolbarStyle)
+ */
+public static final native void _gtk_toolbar_set_style(int /*long*/ toolbar, int style);
+public static final void gtk_toolbar_set_style(int /*long*/ toolbar, int style) {
+	lock.lock();
+	try {
+		_gtk_toolbar_set_style(toolbar, style);
 	} finally {
 		lock.unlock();
 	}

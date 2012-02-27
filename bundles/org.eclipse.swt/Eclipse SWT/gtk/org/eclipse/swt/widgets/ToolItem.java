@@ -38,12 +38,13 @@ import org.eclipse.swt.events.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class ToolItem extends Item {
-	int /*long*/ boxHandle, arrowHandle, arrowBoxHandle, separatorHandle, labelHandle, imageHandle;
+	int /*long*/ arrowHandle, arrowBoxHandle, labelHandle, imageHandle;
+	int /*long*/ eventHandle, proxyMenuItem;
 	ToolBar parent;
 	Control control;
 	Image hotImage, disabledImage;
 	String toolTipText;
-	boolean drawHotImage;
+	boolean drawHotImage, hasText;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -180,91 +181,83 @@ protected void checkSubclass () {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	if ((style & SWT.SEPARATOR) == 0) {
-		boxHandle = (parent.style & SWT.RIGHT) != 0 ? OS.gtk_hbox_new (false, 0) : OS.gtk_vbox_new (false, 0);
-		if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		labelHandle = OS.gtk_label_new_with_mnemonic (null);
-		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		imageHandle = OS.gtk_image_new ();
-		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gtk_container_add (boxHandle, imageHandle);
-		OS.gtk_container_add (boxHandle, labelHandle);
-		if ((parent.style & SWT.VERTICAL) != 0) {
-			// Align text and images to the left
-			OS.gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, OS.GTK_PACK_START);
-			OS.gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 2, OS.GTK_PACK_START);
-		}
-	}
 	int bits = SWT.SEPARATOR | SWT.RADIO | SWT.CHECK | SWT.PUSH | SWT.DROP_DOWN;
 	switch (style & bits) {
 		case SWT.SEPARATOR:
-			handle = OS.gtk_hbox_new (false, 0);
+			handle = OS.gtk_separator_tool_item_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			boolean isVertical = (parent.style & SWT.VERTICAL) != 0;
-			separatorHandle = isVertical ? OS.gtk_hseparator_new() : OS.gtk_vseparator_new();
-			if (separatorHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.gtk_widget_set_size_request (separatorHandle, isVertical ? 15 : 6, isVertical ? 6 : 15);
-			OS.gtk_widget_set_size_request (handle, isVertical ? 15 : 6, isVertical ? 6 : 15);
-			OS.gtk_container_add (handle, separatorHandle);
+			OS.gtk_separator_tool_item_set_draw (handle, true);
 			break;
 		case SWT.DROP_DOWN:
-			handle = OS.gtk_button_new ();
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			arrowBoxHandle = OS.gtk_hbox_new (false, 0);
-			if (arrowBoxHandle == 0) error(SWT.ERROR_NO_HANDLES);
-			arrowHandle = OS.gtk_arrow_new (OS.GTK_ARROW_DOWN, OS.GTK_SHADOW_NONE);
-			if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.gtk_widget_set_size_request (arrowHandle, 8, 6);
-			OS.gtk_container_add (handle, arrowBoxHandle);
-			OS.gtk_container_add (arrowBoxHandle, boxHandle);	
-			OS.gtk_container_add (arrowBoxHandle, arrowHandle);	
+			if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
+				handle = OS.gtk_menu_tool_button_new (0, null);
+				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+				/*
+				 * Feature in GTK. The arrow button of DropDown tool-item is 
+				 * disabled when it does not contain menu. The fix is to
+				 * find the arrow button handle and enable it.
+				 */
+				int /*long*/ child = OS.gtk_bin_get_child (handle);
+				int /*long*/ list = OS.gtk_container_get_children (child);
+				arrowHandle = OS.g_list_nth_data (list, 1);
+				OS.gtk_widget_set_sensitive (arrowHandle, true);
+			} else {
+				/*
+				 * GTK does not support GtkMenuToolButton until 2.6.
+				 * So, we try to emulate it on the un-supported version.
+				 */
+				handle = OS.gtk_tool_button_new (0, null);
+				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+				labelHandle = OS.gtk_label_new_with_mnemonic (null);
+				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				arrowBoxHandle = OS.gtk_hbox_new (false, 0);
+				if (arrowBoxHandle == 0) error(SWT.ERROR_NO_HANDLES);
+				arrowHandle = OS.gtk_arrow_new (OS.GTK_ARROW_DOWN, OS.GTK_SHADOW_NONE);
+				if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				OS.gtk_widget_set_size_request (arrowHandle, 8, 6);
+				OS.gtk_tool_button_set_label_widget (handle, arrowBoxHandle);
+				OS.gtk_container_add (arrowBoxHandle, labelHandle);	
+				OS.gtk_container_add (arrowBoxHandle, arrowHandle);
+				/*
+				 * As we are try to emulate GtkMenuToolButton and in order
+				 * to display both the label and image, it is required
+				 * the set the toolitem as important. This will entitle
+				 * to display the label all the times.    
+				 */
+				OS.gtk_tool_item_set_is_important (handle, true);
+			}
 			break;
 		case SWT.RADIO:
 			/*
-			* This code is intentionally commented.  Because GTK
-			* enforces radio behavior in a button group a radio group
-			* is not created for each set of contiguous buttons, each
-			* radio button will not draw unpressed.  The fix is to use
-			* toggle buttons instead.
+			* Because GTK enforces radio behavior in a button group 
+			* a radio group is not created for each set of contiguous
+			* buttons, each radio button will not draw unpressed.
+			* The fix is to use toggle buttons instead.
 			*/
-//			handle = OS.gtk_radio_button_new (0);
-//			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-//			OS.gtk_toggle_button_set_mode (handle, false);
-//			OS.gtk_container_add (handle, boxHandle);	
-//			break;
 		case SWT.CHECK:
-			handle = OS.gtk_toggle_button_new ();
+			handle = OS.gtk_toggle_tool_button_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.gtk_toggle_button_set_mode (handle, false);
-			OS.gtk_container_add (handle, boxHandle);	
 			break;
 		case SWT.PUSH:
 		default:
-			handle = OS.gtk_button_new ();
+			handle = OS.gtk_tool_button_new (0, null);
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.gtk_container_add (handle, boxHandle);
+			OS.gtk_tool_button_set_label (handle, null);
 			break;
 	}
-	if ((style & SWT.SEPARATOR) == 0) {
-		int [] relief = new int [1];
-		OS.gtk_widget_style_get (parent.handle, OS.button_relief, relief, 0);
-		OS.gtk_button_set_relief (handle, relief [0]);
-	}
-	OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_CAN_FOCUS);
-//	This code is intentionally commented.
-//	int /*long*/ fontHandle = parent.fontHandle ();
-//	GdkColor color = new GdkColor ();
-//	int /*long*/ style = OS.gtk_widget_get_style (fontHandle);
-//	OS.gtk_style_get_fg (style, OS.GTK_STATE_NORMAL, color);
-//	int /*long*/ font = OS.gtk_style_get_font_desc (style);
-//	setForegroundColor (color);
-//	setFontDescription (font);
 	if ((parent.state & FOREGROUND) != 0) {
 		setForegroundColor (parent.getForegroundColor());
 	}
 	if ((parent.state & FONT) != 0) {
 		setFontDescription (parent.getFontDescription());
 	}
+	/*
+	 * Feature in GTK. GtkToolButton class uses this property to 
+	 * determine whether to show or hide its label when the toolbar 
+	 * style is GTK_TOOLBAR_BOTH_HORIZ (or SWT.RIGHT).
+	 */
+	if ((parent.style & SWT.RIGHT) != 0) OS.gtk_tool_item_set_is_important (handle, true);
+	if ((style & SWT.SEPARATOR) == 0) OS.gtk_tool_button_set_use_underline (handle, true);
 }
 
 void createWidget (int index) {
@@ -288,7 +281,8 @@ Widget [] computeTabList () {
 
 void deregister() {
 	super.deregister ();
-	if (labelHandle != 0) display.removeWidget (labelHandle);
+	if (eventHandle != 0) display.removeWidget (eventHandle);
+	if (arrowHandle != 0) display.removeWidget (arrowHandle);
 }
 
 public void dispose () {
@@ -314,36 +308,10 @@ public Rectangle getBounds () {
 	parent.forceResize ();
 	int /*long*/ topHandle = topHandle ();
 	int x, y, width, height;
-	/*
-	* Bug in GTK.  Toolbar items are only allocated their minimum size
-	* in versions before 2.4.0.  The fix is to use the total size
-	* available minus any borders.
-	*/
-	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0) && control != null && !control.isDisposed ()) {
-		int border = OS.gtk_container_get_border_width (parent.handle);
-		byte [] shadowType = Converter.wcsToMbcs (null, "shadow_type", true);
-		int [] shadow = new int [1];
-		OS.gtk_widget_style_get (parent.handle, shadowType, shadow, 0);
-		if (shadow [0] != OS.GTK_SHADOW_NONE) {
-			border += OS.gtk_style_get_xthickness (OS.gtk_widget_get_style (parent.handle));
-		}
-		if ((parent.style & SWT.VERTICAL) != 0) {
-			x = border;
-			y = OS.GTK_WIDGET_Y (topHandle) + border;
-			width = OS.GTK_WIDGET_WIDTH (parent.handle) - border*2;
-			height = OS.GTK_WIDGET_HEIGHT (topHandle);			
-		} else {
-			x = OS.GTK_WIDGET_X (topHandle) + border;
-			y = border;
-			width = OS.GTK_WIDGET_WIDTH (topHandle);
-			height = OS.GTK_WIDGET_HEIGHT (parent.handle) - border*2;
-		}
-	} else {
-		x = OS.GTK_WIDGET_X (topHandle);
-		y = OS.GTK_WIDGET_Y (topHandle);
-		width = OS.GTK_WIDGET_WIDTH (topHandle);
-		height = OS.GTK_WIDGET_HEIGHT (topHandle);		
-	}
+	x = OS.GTK_WIDGET_X (topHandle);
+	y = OS.GTK_WIDGET_Y (topHandle);
+	width = OS.GTK_WIDGET_WIDTH (topHandle);
+	height = OS.GTK_WIDGET_HEIGHT (topHandle);
 	if ((parent.style & SWT.MIRRORED) != 0) x = parent.getClientWidth () - width - x;
 	if ((style & SWT.SEPARATOR) != 0 && control != null) height = Math.max (height, 23);
 	return new Rectangle (x, y, width, height);
@@ -460,7 +428,7 @@ public ToolBar getParent () {
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-	return OS.gtk_toggle_button_get_active (handle);
+	return OS.gtk_toggle_tool_button_get_active (handle);
 }
 
 /**
@@ -532,19 +500,36 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 		if (eventPtr != 0) {
 			GdkEvent gdkEvent = new GdkEvent ();
 			OS.memmove (gdkEvent, eventPtr, GdkEvent.sizeof);
+			int /*long*/ topHandle = topHandle();
 			switch (gdkEvent.type) {
+				case OS.GDK_KEY_RELEASE: //Fall Through..
 				case OS.GDK_BUTTON_PRESS:
 				case OS.GDK_2BUTTON_PRESS: 
 				case OS.GDK_BUTTON_RELEASE: {
-					double [] x_win = new double [1];
-					double [] y_win = new double [1];
-					OS.gdk_event_get_coords (eventPtr, x_win, y_win);
-					int x = OS.GTK_WIDGET_X (arrowHandle) - OS.GTK_WIDGET_X (handle);
-					int width = OS.GTK_WIDGET_WIDTH (arrowHandle);
-					if ((((parent.style & SWT.RIGHT_TO_LEFT) == 0) && x <= (int)x_win [0])
-						|| (((parent.style & SWT.RIGHT_TO_LEFT) != 0) && (int)x_win [0] <= x + width)) {
+					boolean isArrow = false;
+					if (OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {
+						double [] x_win = new double [1];
+						double [] y_win = new double [1];
+						OS.gdk_event_get_coords (eventPtr, x_win, y_win);
+						int x = OS.GTK_WIDGET_X (arrowHandle) - OS.GTK_WIDGET_X (handle);
+						int width = OS.GTK_WIDGET_WIDTH (arrowHandle);
+						if ((((parent.style & SWT.RIGHT_TO_LEFT) == 0) && x <= (int)x_win [0])
+								|| (((parent.style & SWT.RIGHT_TO_LEFT) != 0) && (int)x_win [0] <= x + width)) {
+							isArrow = true;
+						}
+					} else if (widget == arrowHandle) {
+						isArrow = true;
+						topHandle = widget;
+						/*
+						 * Feature in GTK. ArrowButton stays in toggled state if there is no popup menu.
+						 * It is required to set back the state of arrow to normal state after it is clicked.
+						 */
+						OS.g_signal_handlers_block_matched (widget, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
+						OS.gtk_toggle_button_set_active(widget, false);
+						OS.g_signal_handlers_unblock_matched (widget, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
+					}
+					if (isArrow) {
 						event.detail = SWT.ARROW;
-						int /*long*/ topHandle = topHandle ();
 						event.x = OS.GTK_WIDGET_X (topHandle);
 						if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth () - OS.GTK_WIDGET_WIDTH (topHandle) - event.x;
 						event.y = OS.GTK_WIDGET_Y (topHandle) + OS.GTK_WIDGET_HEIGHT (topHandle);
@@ -564,16 +549,73 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 	return 0;
 }
 
+int /*long*/ gtk_create_menu_proxy (int /*long*/ widget) {
+	/*
+	 * Feature in GTK. If the item is a radio/check button 
+	 * with only image, then that image does not appear in 
+	 * the overflow menu.
+	 * The fix is to create and use the proxy menu for the
+	 * items appearing in the overflow menu.
+	 */
+	byte [] buffer = Converter.wcsToMbcs (null, "menu-id", true); //$NON-NLS-1$
+	if (proxyMenuItem != 0) {
+		/*
+		 * The menuItem to appear in the overflow menu is cached 
+		 * for the tool-item. If the text/image of the item changes, 
+		 * then the proxyMenu is reset.
+		 */
+		OS.gtk_tool_item_set_proxy_menu_item (widget, buffer, proxyMenuItem);
+		return 1;
+	}
+	/*
+	 * Since the arrow button does not appear in the drop_down
+	 * item, we request the menu-item and then, hook the 
+	 * activate signal to send the Arrow selection signal. 
+	 */
+	if ((style & SWT.DROP_DOWN) != 0) return 0;
+	if (image != null /*&& (text == null || text.length() == 0)*/) {
+		ImageList imageList = parent.imageList;
+		if (imageList != null) {
+			int index = imageList.indexOf (image);
+			if (index != -1) {
+				int /*long*/ pixbuf = imageList.getPixbuf (index);
+				byte[] label;
+				if (text == null || text.length() == 0) {
+					label = new byte[]{0};
+				}
+				else {
+					label = Converter.wcsToMbcs(null, text, true);
+				}					
+				/*
+				 * Feature in GTK. If the menuItem is initialised only 
+				 * with the image, then the menu appears very sloppy. 
+				 * The fix is to initialise menu item with empty string.
+				 */
+				int /*long*/ menuItem = OS.gtk_image_menu_item_new_with_label (label);
+				int /*long*/ menuImage = OS.gtk_image_new_from_pixbuf (pixbuf);
+				OS.gtk_image_menu_item_set_image (menuItem, menuImage);
+				OS.gtk_tool_item_set_proxy_menu_item (widget, buffer, menuItem);
+				proxyMenuItem = OS.gtk_tool_item_get_proxy_menu_item (widget, buffer);
+				OS.g_signal_connect(menuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
 int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
 	parent.gtk_enter_notify_event (widget, event);
 	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
-	if (drawHotImage && imageHandle != 0) {
+	if (drawHotImage) {
 		ImageList imageList = parent.imageList;
 		if (imageList != null) {
 			int index = imageList.indexOf (hotImage);
 			if (index != -1) {
 				int /*long*/ pixbuf = imageList.getPixbuf (index);
-				OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
+				imageHandle = OS.gtk_image_new_from_pixbuf (pixbuf);
+				OS.gtk_widget_show (imageHandle);
+				OS.gtk_tool_button_set_icon_widget (handle, imageHandle);
 			}
 		}
 	}
@@ -596,9 +638,14 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 	return 0;
 }
 
+int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
+	parent.hasChildFocus = true;
+	parent.currentFocusItem = this;
+	return 0;
+}
+
 int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
-	OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_CAN_FOCUS);
-	parent.lastFocus = this;
+	parent.hasChildFocus = false;
 	return 0;
 }
 
@@ -606,13 +653,15 @@ int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
 	parent.gtk_leave_notify_event (widget, event);
 	if (drawHotImage) {
 		drawHotImage = false;
-		if (imageHandle != 0 && image != null) {
+		if (image != null) {
 			ImageList imageList = parent.imageList;
 			if (imageList != null) {
 				int index = imageList.indexOf (image);
 				if (index != -1) {
 					int /*long*/ pixbuf = imageList.getPixbuf (index);
-					OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
+					imageHandle = OS.gtk_image_new_from_pixbuf (pixbuf);
+					OS.gtk_widget_show (imageHandle);
+					OS.gtk_tool_button_set_icon_widget (handle, imageHandle);
 				}
 			}
 		}	
@@ -629,20 +678,28 @@ int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 	return parent.gtk_mnemonic_activate (widget, arg1);
 }
 
-boolean hasFocus () {
-	return OS.GTK_WIDGET_HAS_FOCUS (handle);
-}
-
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	OS.g_signal_connect_closure (handle, OS.clicked, display.closures [CLICKED], false);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.closures [LEAVE_NOTIFY_EVENT], false);
-	if (labelHandle != 0) OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.closures [MNEMONIC_ACTIVATE], false);
-
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [FOCUS_OUT_EVENT], 0, display.closures [FOCUS_OUT_EVENT], false);
-
+	/*
+	 * Feature in GTK. GtkToolItem does not respond to basic listeners 
+	 * such as button-press, enter-notify to it. The fix is to assign 
+	 * the listener to child (GtkButton) of the tool-item.
+	 */
+	eventHandle = OS.gtk_bin_get_child(handle);
+	if ((style & SWT.DROP_DOWN) != 0 && OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
+		int /*long*/ list = OS.gtk_container_get_children(eventHandle);
+		eventHandle = OS.g_list_nth_data(list, 0);
+		if (arrowHandle != 0) OS.g_signal_connect_closure (arrowHandle, OS.clicked, display.closures [CLICKED], false);
+	}
+	if ((style & (SWT.CHECK | SWT.RADIO | SWT.DROP_DOWN)) != 0)	{
+		OS.g_signal_connect_closure (handle, OS.create_menu_proxy, display.closures [CREATE_MENU_PROXY], false);
+	}
+	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
+	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.closures [LEAVE_NOTIFY_EVENT], false);
+	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.closures [FOCUS_IN_EVENT], false);
+	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.closures [FOCUS_OUT_EVENT], false);
 	/*
 	* Feature in GTK.  Usually, GTK widgets propagate all events to their
 	* parent when they are done their own processing.  However, in contrast
@@ -657,10 +714,10 @@ void hookEvents () {
 		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK | 
 		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
 		OS.GDK_FOCUS_CHANGE_MASK;
-	OS.gtk_widget_add_events (handle, mask);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT], false);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT_AFTER], 0, display.closures[EVENT_AFTER], false);
+	OS.gtk_widget_add_events (eventHandle, mask);
+	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
+	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT], false);
+	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.closures[EVENT_AFTER], false);
 
 	int /*long*/ topHandle = topHandle ();
 	OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.closures [MAP], true);
@@ -702,17 +759,18 @@ boolean isTabGroup () {
 
 void register () {
 	super.register ();
-	if (labelHandle != 0) display.addWidget (labelHandle, this);
+	if (eventHandle != 0) display.addWidget (eventHandle, this);
+	if (arrowHandle != 0) display.addWidget (arrowHandle, this);
 }
 
 void releaseHandle () {
 	super.releaseHandle ();
-	boxHandle = arrowHandle = separatorHandle = labelHandle = imageHandle = 0;
+	arrowHandle = labelHandle = imageHandle = eventHandle = 0;
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
-	if (parent.lastFocus == this) parent.lastFocus = null;
+	if (parent.currentFocusItem == this) parent.currentFocusItem = null;
 	parent = null;
 	control = null;
 	hotImage = disabledImage = null;
@@ -746,7 +804,6 @@ public void removeSelectionListener(SelectionListener listener) {
 
 void resizeControl () {
 	if (control != null && !control.isDisposed ()) {
-		if (separatorHandle != 0) OS.gtk_widget_hide (separatorHandle);
 		/*
 		* Set the size and location of the control
 		* separately to minimize flashing in the
@@ -762,8 +819,6 @@ void resizeControl () {
 		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
 		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
 		control.setLocation (rect.x, rect.y);
-	} else {
-		if (separatorHandle != 0) OS.gtk_widget_show (separatorHandle);
 	}
 }
 
@@ -877,27 +932,15 @@ public void setEnabled (boolean enabled) {
 }
 
 boolean setFocus () {
-	if ((style & SWT.SEPARATOR) != 0) return false;
-	if (!OS.gtk_widget_get_child_visible (handle)) return false;
-	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
-	OS.gtk_widget_grab_focus (handle);
-	// widget could be disposed at this point
-	if (isDisposed ()) return false;
-	boolean result = OS.gtk_widget_is_focus (handle);
-	if (!result) OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_CAN_FOCUS);
-	return result;
+	return OS.gtk_widget_child_focus (handle, OS.GTK_DIR_TAB_FORWARD);
 }
 
 void setFontDescription (int /*long*/ font) {
 	OS.gtk_widget_modify_font (handle, font);
-	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
-	if (imageHandle != 0) OS.gtk_widget_modify_font (imageHandle, font);
 }
 
 void setForegroundColor (GdkColor color) {
-	setForegroundColor (handle, color);
-	if (labelHandle != 0) setForegroundColor (labelHandle, color);
-	if (imageHandle != 0) setForegroundColor (imageHandle, color);
+	setForegroundColor (OS.gtk_bin_get_child(handle), color);
 }
 
 /**
@@ -937,7 +980,6 @@ public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-	if (imageHandle == 0) return;
 	if (image != null) {
 		ImageList imageList = parent.imageList;
 		if (imageList == null) imageList = parent.imageList = new ImageList ();
@@ -948,11 +990,23 @@ public void setImage (Image image) {
 			imageList.put (imageIndex, image);
 		}
 		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
-		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
+		imageHandle = OS.gtk_image_new_from_pixbuf (pixbuf);
 		OS.gtk_widget_show (imageHandle);
 	} else {
-		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
-		OS.gtk_widget_hide (imageHandle);
+		imageHandle = OS.gtk_image_new_from_pixbuf (0);
+	}
+	OS.gtk_tool_button_set_icon_widget (handle, imageHandle);
+	/*
+	 * If Text/Image of a tool-item changes, then it is 
+	 * required to reset the proxy menu. Otherwise, the 
+	 * old menuItem appears in the overflow menu.
+	 */
+	if ((style & SWT.CHECK | SWT.RADIO | SWT.DROP_DOWN) != 0) {
+		proxyMenuItem = 0;
+		if ((style & SWT.DROP_DOWN) != 0) {
+			proxyMenuItem = OS.gtk_tool_item_retrieve_proxy_menu_item (handle);
+			OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
+		}
 	}
 	parent.relayout ();
 }
@@ -961,12 +1015,6 @@ void setOrientation (boolean create) {
 	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
 		int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
 		if (handle != 0) OS.gtk_widget_set_direction (handle, dir);
-		if (labelHandle != 0) OS.gtk_widget_set_direction (labelHandle, dir);
-		if (imageHandle != 0) OS.gtk_widget_set_direction (imageHandle, dir);
-		if (separatorHandle != 0) OS.gtk_widget_set_direction (separatorHandle, dir);
-		if (arrowHandle != 0) OS.gtk_widget_set_direction (arrowHandle, dir);
-		if (boxHandle != 0) OS.gtk_widget_set_direction (boxHandle, dir);
-		if (arrowBoxHandle != 0) OS.gtk_widget_set_direction (arrowBoxHandle, dir);
 	}
 }
 
@@ -998,7 +1046,7 @@ public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
-	OS.gtk_toggle_button_set_active (handle, selected);
+	OS.gtk_toggle_tool_button_set_active (handle, selected);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 }
 
@@ -1034,17 +1082,48 @@ boolean setTabItemFocus (boolean next) {
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if ((style & SWT.SEPARATOR) != 0) return;
+	if (((style & SWT.SEPARATOR) != 0) || text.equals(string)) return;
 	if (string.equals(this.text)) return;
 	super.setText (string);
-	if (labelHandle == 0) return;
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
-	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
-	if (string.length () != 0) {
-		OS.gtk_widget_show (labelHandle);
+	if ((style & SWT.DROP_DOWN) != 0 && OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {
+		OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+		if (string.length () != 0) {
+			OS.gtk_widget_show (labelHandle);
+		} else {
+			OS.gtk_widget_hide (labelHandle);
+		}
+	}
+	OS.gtk_tool_button_set_label (handle, buffer);
+	/*
+	 * Feature in GTK. Toolitems with only image appear larger
+	 * than the preferred size. The fix is to set the style as
+	 * TOOLBAR_BOTH_HORIZ. If any of the child toolItem is set
+	 * text, then the style shall be set back to default.
+	 */
+	if (string.length() != 0) {
+		hasText = true;
+		if ((parent.style & SWT.RIGHT) == 0) OS.gtk_toolbar_set_style (parent.handle, OS.GTK_TOOLBAR_BOTH);
 	} else {
-		OS.gtk_widget_hide (labelHandle);
+		/*
+		 * If the toolbar has any item containing text, then the style
+		 * should be TOOLBAR_BOTH. Otherwise, it should be set back to
+		 * BOTH_HORIZ in order to prevent the larger size consumed by item.
+		 */
+		hasText = false;
+		ToolItem[] items = parent._getItems();
+		boolean hasTextItems = false;
+		for (int i=0; i<items.length; i++) {
+			ToolItem item = items[i];
+			if (item != null) hasTextItems |= item.hasText;
+		}
+		if (!hasTextItems) OS.gtk_toolbar_set_style (parent.handle, OS.GTK_TOOLBAR_BOTH_HORIZ);
+	}
+	if ((style & SWT.DROP_DOWN) != 0) {
+		proxyMenuItem = 0;
+		proxyMenuItem = OS.gtk_tool_item_retrieve_proxy_menu_item (handle);
+		OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
 	}
 	parent.relayout ();
 }
@@ -1104,17 +1183,16 @@ public void setWidth (int width) {
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
 	boolean isVertical = (parent.style & SWT.VERTICAL) != 0;
-	OS.gtk_widget_set_size_request (separatorHandle, width, isVertical ? 6 : 15);
 	OS.gtk_widget_set_size_request (handle, width, isVertical ? 6 : 15);
 	parent.relayout ();
 }
 
 void showWidget (int index) {
 	if (handle != 0) OS.gtk_widget_show (handle);
-	if (boxHandle != 0) OS.gtk_widget_show (boxHandle);
-	if (separatorHandle != 0) OS.gtk_widget_show (separatorHandle);
-	if (arrowBoxHandle != 0) OS.gtk_widget_show (arrowBoxHandle);
-	if (arrowHandle != 0) OS.gtk_widget_show (arrowHandle);
-	OS.gtk_toolbar_insert_widget (parent.handle, handle, null, null, index);
+	if ((style & SWT.DROP_DOWN) != 0 && OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {
+		if (arrowBoxHandle != 0) OS.gtk_widget_show (arrowBoxHandle);
+		if (arrowHandle != 0) OS.gtk_widget_show (arrowHandle);
+	}
+	OS.gtk_toolbar_insert(parent.handle, handle, index);
 }
 }
