@@ -85,7 +85,16 @@
 		<copy todir="${build.result.folder}/@dot" failonerror="true">
 			<fileset dir="${temp.folder}/@dot.bin" />
 		</copy>
-		<jar jarfile="${build.result.folder}/${jar.filename}" basedir="${temp.folder}/@dot.bin" />
+		<condition property="arch" value="${swt.arch}" else="">
+			<isset property="swt.arch"/>
+		</condition>
+		<jar jarfile="${build.result.folder}/${jar.filename}" basedir="${temp.folder}/@dot.bin">
+			<manifest>
+				<attribute name="SWT-OS" value="${swt.os}"/>
+				<attribute name="SWT-WS" value="${swt.ws}"/>
+				<attribute name="SWT-Arch" value="${arch}"/>
+			</manifest>
+		</jar>
 		<!--delete dir="${temp.folder}/@dot.bin" />
 		<delete dir="${temp.folder}/@dot.src" /-->
 	</target>
@@ -491,24 +500,14 @@
 			<param name="debug" value="true" />
 			<param name="jar.filename" value="swt-debug.jar" />
 		</antcall>
-		<jar jarfile="${build.result.folder}/swt-debug.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2">
-			<manifest>
-				<attribute name="SWT-OS" value="${swt.os}"/>
-				<attribute name="SWT-Arch" value="${swt.arch}"/>
-			</manifest>
-		</jar>
+		<jar jarfile="${build.result.folder}/swt-debug.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
 		<copy file="${build.result.folder}/swt-debug.jar" todir="${temp.folder}/swtdownload" />
 		<delete dir="${build.result.folder}/@dot" />
 		<antcall target="build.jars">
 			<param name="debug" value="false" />
 			<param name="jar.filename" value="swt.jar" />
 		</antcall>
-		<jar jarfile="${build.result.folder}/swt.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2">
-			<manifest>
-				<attribute name="SWT-OS" value="${swt.os}"/>
-				<attribute name="SWT-Arch" value="${swt.arch}"/>
-			</manifest>
-		</jar>
+		<jar jarfile="${build.result.folder}/swt.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
 		<copy file="${build.result.folder}/swt.jar" todir="${temp.folder}/swtdownload" />
 		<antcall target="build.sources" />
 		<copy file="${build.result.folder}/src.zip" todir="${temp.folder}/swtdownload" />
@@ -563,11 +562,15 @@
 		<antcall target="gather.bin.parts">
 			<param name="destination.temp.folder" value="${temp.folder}/" />
 		</antcall>
+		<condition property="arch" value="${swt.arch}" else="">
+			<isset property="swt.arch"/>
+		</condition>
 		<jar jarfile="${plugin.destination}/${full.name}.jar" basedir="${temp.folder}/${full.name}" filesonly="true" manifest="${fragmentdir}/META-INF/MANIFEST.MF">
-	        <manifest>
-	            <attribute name="SWT-OS" value="${swt.os}"/>
-	            <attribute name="SWT-Arch" value="${swt.arch}"/>
-	        </manifest>
+			<manifest>
+				<attribute name="SWT-OS" value="${swt.os}"/>
+				<attribute name="SWT-WS" value="${swt.ws}"/>
+				<attribute name="SWT-Arch" value="${arch}"/>
+			</manifest>
 		</jar>
 		<delete dir="${temp.folder}" />
 	</target>

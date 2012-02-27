@@ -189,20 +189,21 @@ static boolean isLoadable () {
 		return false;
 	}
 
-	String libraryOS = os ();
-	String libraryArch = arch ();
+	String os = os ();
+	String arch = arch ();
 	String manifestOS = attributes.getValue ("SWT-OS"); //$NON-NLS-1$
 	String manifestArch = attributes.getValue ("SWT-Arch"); //$NON-NLS-1$
-	if (libraryArch.equals (manifestArch) && libraryOS.equals (manifestOS)) {
+	if (arch.equals (manifestArch) && os.equals (manifestOS)) {
 		return true;
 	}
 
 	/*
 	* Mac has a special case since SWT's 32-bit libraries on Mac contain natives
-	* for both the x86 and PPC architectures.
+	* for both the x86 and PPC architectures.  For this reason SWT's manifest file
+	* for 32-bit Mac does not specify a value for SWT-Arch. 
 	*/
-	if (libraryOS.equals ("macosx") && libraryOS.equals (manifestOS)) {
-		return manifestArch.equals ("x86") && libraryArch.equals ("ppc"); //$NON-NLS-1$ //$NON-NLS-2$
+	if (os.equals ("macosx") && os.equals (manifestOS)) { //$NON-NLS-1$
+		return manifestArch.length () == 0 && (arch.equals ("ppc") || arch.equals ("x86")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	return false;
 }
