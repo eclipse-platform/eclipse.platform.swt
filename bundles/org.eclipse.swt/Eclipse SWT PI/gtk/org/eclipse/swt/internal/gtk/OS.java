@@ -5201,19 +5201,6 @@ public static final native void gdk_threads_leave ();
  * @method flags=dynamic
  */
 public static final native void gdk_threads_set_lock_functions(int /*long*/ enter_fn, int /*long*/ leave_fn);
-/**
- * @method flags=dynamic
- * @param display cast=(GdkDisplay*)
- */
-public static final native void _gtk_tooltip_trigger_tooltip_query (int /*long*/ display);
-public static final void gtk_tooltip_trigger_tooltip_query (int /*long*/ display){
-	lock.lock();
-	try {
-		 _gtk_tooltip_trigger_tooltip_query (display);
-	} finally {
-		lock.unlock();
-	}
-}
 
 public static final native  int _gdk_unicode_to_keyval(int wc);
 public static final  int gdk_unicode_to_keyval(int wc) {
