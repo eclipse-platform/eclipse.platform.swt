@@ -745,6 +745,7 @@ int defaultBackground () {
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	return OS.GetSysColor ((bits & OS.ES_READONLY) != 0 ? OS.COLOR_3DFACE : OS.COLOR_WINDOW);
 }
+
 TCHAR deprocessText (TCHAR text, int start, int end, boolean terminate) {
 	if (text == null) return null;
 	int length = text.length ();
