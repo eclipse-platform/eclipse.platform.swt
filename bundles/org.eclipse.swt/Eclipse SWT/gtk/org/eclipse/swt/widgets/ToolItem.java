@@ -993,7 +993,7 @@ public void setImage (Image image) {
 		imageHandle = OS.gtk_image_new_from_pixbuf (pixbuf);
 		OS.gtk_widget_show (imageHandle);
 	} else {
-		imageHandle = OS.gtk_image_new_from_pixbuf (0);
+		imageHandle = 0;
 	}
 	OS.gtk_tool_button_set_icon_widget (handle, imageHandle);
 	/*
