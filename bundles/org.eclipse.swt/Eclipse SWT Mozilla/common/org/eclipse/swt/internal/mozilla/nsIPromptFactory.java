@@ -41,7 +41,7 @@ public class nsIPromptFactory extends nsISupports {
 		super(address);
 	}
 
-	public int Alert(char[] aDialogTitle, char[] aText) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aDialogTitle, aText);
+	public int getPrompt(int /*long*/ aParent, nsID iid, int /*long*/[] result) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aParent, iid, result);
 	}
 }

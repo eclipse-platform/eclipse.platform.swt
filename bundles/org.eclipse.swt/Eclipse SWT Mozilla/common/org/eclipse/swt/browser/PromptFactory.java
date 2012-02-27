@@ -86,13 +86,14 @@ int Release () {
 	
 /* nsIPromptFactory */
 
-int GetPrompt (int /*long*/ aOuter, int /*long*/ iid, int /*long*/ result) {
+int GetPrompt (int /*long*/ aParent, int /*long*/ iid, int /*long*/ result) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, iid, nsID.sizeof);
 	
 	if (guid.Equals (nsIPrompt.NS_IPROMPT_IID)) {
 		Prompter prompter = new Prompter ();
 		prompter.AddRef ();
+		prompter.setParent (aParent);
 		XPCOM.memmove (result, new int /*long*/[] {prompter.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -100,6 +101,7 @@ int GetPrompt (int /*long*/ aOuter, int /*long*/ iid, int /*long*/ result) {
 	if (guid.Equals (nsIAuthPrompt2.NS_IAUTHPROMPT2_IID)) {
 		PromptAuth2 promptAuth = new PromptAuth2();
 		promptAuth.AddRef ();
+		promptAuth.setParent (aParent);
 		XPCOM.memmove (result, new int /*long*/[] {promptAuth.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;

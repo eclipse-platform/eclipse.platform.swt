@@ -19,6 +19,7 @@ class PromptAuth2 {
 	XPCOMObject supports;
 	XPCOMObject promptAuth;
 	int refCount = 0;
+	int /*long*/ parent;
 	
 PromptAuth2 () {
 	createCOMInterfaces ();
@@ -87,36 +88,14 @@ int Release () {
 	return refCount;
 }
 
-Browser getBrowser() {
-	int /*long*/[] result = new int /*long*/[1];
-	int rc = XPCOM.NS_GetServiceManager (result);
-	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
-	
-	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
-	result[0] = 0;
-	byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FOCUSMANAGER_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (aContractID, !Mozilla.IsPre_4 ? nsIFocusManager.NS_IFOCUSMANAGER_10_IID : nsIFocusManager.NS_IFOCUSMANAGER_IID, result);
-	serviceManager.Release ();
-
-	if (rc == XPCOM.NS_OK && result[0] != 0) {
-		nsIFocusManager focusManager = new nsIFocusManager (result[0]);
-		result[0] = 0;
-		rc = focusManager.GetActiveWindow (result);
-		focusManager.Release ();
-		if (rc == XPCOM.NS_OK && result[0] != 0) {
-			nsIDOMWindow domWindow = new nsIDOMWindow (result[0]);
-			result[0] = 0;
-			rc = domWindow.GetTop(result);
-			domWindow.Release();
-			if (rc == XPCOM.NS_OK && result[0] != 0) {
-				return Mozilla.getBrowser(result[0]);
-			}
-		}
-	}
-	return null;
+Browser getBrowser () {
+	if (parent == 0) return null;
+	return Mozilla.getBrowser (parent);
 }
 
+void setParent(int /*long*/ aParent) {
+	parent = aParent;
+}
 
 int PromptAuth(int /*long*/ aChannel, int level, int /*long*/ authInfo, int /*long*/ _retval) {
 	nsIAuthInformation auth = new nsIAuthInformation (authInfo);
