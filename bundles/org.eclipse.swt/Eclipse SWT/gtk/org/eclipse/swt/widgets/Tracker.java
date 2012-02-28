@@ -306,7 +306,7 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 }
 
 void drawRectangles (Rectangle [] rects) {
-	int /*long*/ window = OS.GDK_ROOT_PARENT ();
+	int /*long*/ window = OS.gdk_get_default_root_window();
 	if (parent != null) {
 		window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
 	} 
@@ -662,7 +662,7 @@ void moveRectangles (int xChange, int yChange) {
  */
 public boolean open () {
 	checkWidget();
-	window = OS.GDK_ROOT_PARENT ();
+	window = OS.gdk_get_default_root_window();
 	if (parent != null) {
 		window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
 	} 

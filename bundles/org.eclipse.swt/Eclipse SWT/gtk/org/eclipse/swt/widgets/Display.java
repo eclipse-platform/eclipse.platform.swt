@@ -1818,7 +1818,7 @@ Rectangle getWorkArea() {
 	int[] actualFormat = new int[1];
 	int[] actualLength = new int[1];
 	int /*long*/[] data = new int /*long*/[1];
-	if (!OS.gdk_property_get (OS.GDK_ROOT_PARENT (), atom, OS.GDK_NONE, 0, 16, 0, actualType, actualFormat, actualLength, data)) {
+	if (!OS.gdk_property_get (OS.gdk_get_default_root_window(), atom, OS.GDK_NONE, 0, 16, 0, actualType, actualFormat, actualLength, data)) {
 		return null;
 	}
 	Rectangle result = null;
@@ -2685,7 +2685,7 @@ public void internal_dispose_GC (int /*long*/ gc, GCData data) {
  */
 public int /*long*/ internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	int /*long*/ root = OS.GDK_ROOT_PARENT ();
+	int /*long*/ root = OS.gdk_get_default_root_window();
 	int /*long*/ gc;
 	if (OS.USE_CAIRO) {
 		gc = OS.gdk_cairo_create (root);

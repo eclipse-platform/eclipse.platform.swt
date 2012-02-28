@@ -392,7 +392,7 @@ public Image(Device device, Image srcImage, int flag) {
 	createAlphaMask(width, height);
 
 	/* Create the new pixmap */
-	int /*long*/ pixmap = OS.gdk_pixmap_new (OS.GDK_ROOT_PARENT(), width, height, -1);
+	int /*long*/ pixmap = OS.gdk_pixmap_new (OS.gdk_get_default_root_window(), width, height, -1);
 	if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int /*long*/ gdkGC = OS.gdk_gc_new(pixmap);
 	if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -1271,10 +1271,10 @@ void init(int width, int height) {
 	/* Create the pixmap */
 	if (OS.USE_CAIRO) {
 		if (OS.GTK_VERSION >= OS.VERSION(2, 22, 0)) {
-			surface = OS.gdk_window_create_similar_surface(OS.GDK_ROOT_PARENT(), Cairo.CAIRO_CONTENT_COLOR, width, height);
+			surface = OS.gdk_window_create_similar_surface(OS.gdk_get_default_root_window(), Cairo.CAIRO_CONTENT_COLOR, width, height);
 		} else {
 			int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
-			int /*long*/ xDrawable = OS.gdk_x11_drawable_get_xid(OS.GDK_ROOT_PARENT());
+			int /*long*/ xDrawable = OS.gdk_x11_drawable_get_xid(OS.gdk_get_default_root_window());
 			int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
 			int /*long*/ rootSurface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, 1, 1);
 			if (rootSurface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -1292,7 +1292,7 @@ void init(int width, int height) {
 		this.height = height;
 		return;
 	}
-	this.pixmap = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), width, height, -1);
+	this.pixmap = OS.gdk_pixmap_new(OS.gdk_get_default_root_window(), width, height, -1);
 	if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	/* Fill the bitmap with white */
 	GdkColor white = new GdkColor();
@@ -1481,7 +1481,7 @@ void init(ImageData image) {
 		}
 	}
 	OS.memmove(data, buffer, stride * height);
-	int /*long*/ pixmap = OS.gdk_pixmap_new (OS.GDK_ROOT_PARENT(), width, height, -1);
+	int /*long*/ pixmap = OS.gdk_pixmap_new (OS.gdk_get_default_root_window(), width, height, -1);
 	if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int /*long*/ gdkGC = OS.gdk_gc_new(pixmap);
 	if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
