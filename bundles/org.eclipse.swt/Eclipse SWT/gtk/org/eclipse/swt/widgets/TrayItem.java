@@ -174,7 +174,7 @@ void createHandle (int index) {
 		byte [] trayBuffer = Converter.wcsToMbcs (null, "_NET_SYSTEM_TRAY_S" + monitor, true);
 		int /*long*/ trayAtom = OS.gdk_atom_intern (trayBuffer, true);
 		int /*long*/ xTrayAtom = OS.gdk_x11_atom_to_xatom (trayAtom);
-		int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+		int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 		int /*long*/ trayWindow = OS.XGetSelectionOwner (xDisplay, xTrayAtom);
 		byte [] messageBuffer = Converter.wcsToMbcs (null, "_NET_SYSTEM_TRAY_OPCODE", true);
 		int /*long*/ messageAtom = OS.gdk_atom_intern (messageBuffer, true);

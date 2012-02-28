@@ -447,7 +447,7 @@ void printWindow (boolean first, Control control, GC gc, int /*long*/ drawable, 
 	GCData gcData = gc.getGCData();
 	int /*long*/ cairo = gcData.cairo;
 	if (cairo != 0) {
-		int /*long*/ xDisplay = OS.GDK_DISPLAY();
+		int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 		int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
 		int /*long*/ xDrawable = OS.GDK_PIXMAP_XID(real_drawable [0]);
 		int /*long*/ surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width [0], height [0]);
@@ -3895,7 +3895,7 @@ void setCursor (int /*long*/ cursor) {
 		if (!OS.GDK_WINDOWING_X11 ()) {
 			OS.gdk_flush ();
 		} else {
-			int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+			int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 			OS.XFlush (xDisplay);
 		}
 	}

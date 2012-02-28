@@ -374,7 +374,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height, int offs
 				y += pt.y + offsetY;
 				int /*long*/ surface = control.backgroundImage.surface;
 				if (surface == 0) {
-					int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+					int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 					int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual (OS.gdk_visual_get_system());
 					int /*long*/ drawable = control.backgroundImage.pixmap;
 					int /*long*/ xDrawable = OS.GDK_PIXMAP_XID (drawable);				
