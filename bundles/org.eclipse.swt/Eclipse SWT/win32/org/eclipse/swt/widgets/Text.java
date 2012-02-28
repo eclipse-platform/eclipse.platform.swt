@@ -310,7 +310,7 @@ public void addModifyListener (ModifyListener listener) {
 /**
  * Adds a segment listener.
  * <p>
- * A {@link #SegmentEvent} is sent whenever text content is being modified. The user can 
+ * A <code>SegmentEvent</code> is sent whenever text content is being modified. The user can 
  * customize appearance of text by indicating certain characters to be inserted
  * at certain text offsets. This may be used for bidi purposes, e.g. when
  * adjacent segments of right-to-left text should not be reordered relative to
