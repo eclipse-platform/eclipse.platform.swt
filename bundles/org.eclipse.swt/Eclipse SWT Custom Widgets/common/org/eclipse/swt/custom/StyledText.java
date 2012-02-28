@@ -4776,29 +4776,12 @@ StyledTextEvent getBidiSegments(int lineOffset, String line) {
 	if (event == null || event.segments == null || event.segments.length == 0) return null;
 	int lineLength = line.length();
 	int[] segments = event.segments;
-	int segmentCount = segments.length;
-	if (event.segmentsChars == null) {
-		// test segment index consistency
-		if (segments[0] != 0) {
+	if (segments[0] > lineLength) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	for (int i = 1; i < segments.length; i++) {
+		if (segments[i] <= segments[i - 1] || segments[i] > lineLength) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		}
-		for (int i = 1; i < segmentCount; i++) {
-			if (segments[i] <= segments[i - 1] || segments[i] > lineLength) {
-				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-			}
-		}
-		// ensure that last segment index is line end offset
-		if (segments[segmentCount - 1] != lineLength) {
-			segments = new int[segmentCount + 1];
-			System.arraycopy(event.segments, 0, segments, 0, segmentCount);
-			segments[segmentCount] = lineLength;
-		}
-		event.segments = segments;
-	} else {
-		for (int i = 1; i < segmentCount; i++) {
-			if (event.segments[i] < event.segments[i - 1] || event.segments[i] > lineLength) {
-				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-			}
 		}
 	}
 	return event;
