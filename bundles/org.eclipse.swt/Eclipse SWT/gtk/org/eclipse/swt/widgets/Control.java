@@ -390,7 +390,7 @@ public boolean print (GC gc) {
 	GCData data = gc.getGCData ();
 	OS.gdk_window_process_updates (window, true);
 	int /*long*/ drawable = data.drawable;
-	if (drawable == 0) drawable = OS.GDK_ROOT_PARENT();
+	if (drawable == 0) drawable = OS.gdk_get_default_root_window();
 	printWidget (gc, drawable, OS.gdk_drawable_get_depth (drawable), 0, 0);
 	return true;
 }

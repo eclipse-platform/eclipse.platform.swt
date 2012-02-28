@@ -1311,18 +1311,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1GDK_1PIXMAP_1XID)
 }
 #endif
 
-#ifndef NO__1GDK_1ROOT_1PARENT
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1GDK_1ROOT_1PARENT)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1GDK_1ROOT_1PARENT_FUNC);
-	rc = (jintLong)GDK_ROOT_PARENT();
-	OS_NATIVE_EXIT(env, that, _1GDK_1ROOT_1PARENT_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1GDK_1TYPE_1COLOR
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1GDK_1TYPE_1COLOR)
 	(JNIEnv *env, jclass that)
@@ -5851,6 +5839,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1values)
 	gdk_gc_set_values((GdkGC *)arg0, (GdkGCValues *)lparg1, (GdkGCValuesMask)arg2);
 fail:
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1values_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1get_1default_1root_1window
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1get_1default_1root_1window)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1get_1default_1root_1window_FUNC);
+	rc = (jintLong)gdk_get_default_root_window();
+	OS_NATIVE_EXIT(env, that, _1gdk_1get_1default_1root_1window_FUNC);
+	return rc;
 }
 #endif
 

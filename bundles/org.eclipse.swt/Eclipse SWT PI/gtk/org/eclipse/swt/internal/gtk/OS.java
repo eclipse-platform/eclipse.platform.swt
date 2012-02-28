@@ -1470,15 +1470,6 @@ public static final native int /*long*/ pangoLayoutNewProc_CALLBACK(int /*long*/
 /** Natives */
 public static final native int Call (int /*long*/ func, int /*long*/ arg0, int arg1, int arg2);
 public static final native long Call (int /*long*/ func, int /*long*/ arg0, int arg1, long arg2);
-public static final native int /*long*/ _GDK_ROOT_PARENT();
-public static final int /*long*/ GDK_ROOT_PARENT() {
-	lock.lock();
-	try {
-		return _GDK_ROOT_PARENT();
-	} finally {
-		lock.unlock();
-	}
-}
 /** @method flags=const */
 public static final native int /*long*/ _GDK_TYPE_COLOR();
 public static final int /*long*/ GDK_TYPE_COLOR() {
@@ -4471,6 +4462,15 @@ public static final void gdk_gc_set_values(int /*long*/ gc, GdkGCValues values, 
 	lock.lock();
 	try {
 		_gdk_gc_set_values(gc, values, values_mask);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gdk_get_default_root_window();
+public static final int /*long*/ gdk_get_default_root_window() {
+	lock.lock();
+	try {
+		return _gdk_get_default_root_window();
 	} finally {
 		lock.unlock();
 	}

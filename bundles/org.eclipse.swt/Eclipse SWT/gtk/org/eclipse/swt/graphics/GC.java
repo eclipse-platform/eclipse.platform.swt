@@ -1744,7 +1744,7 @@ public void drawText (String string, int x, int y, int flags) {
 		if (data.stringWidth == -1) {
 			computeStringSize();
 		}
-		int /*long*/ pixmap = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), data.stringWidth, data.stringHeight, -1);
+		int /*long*/ pixmap = OS.gdk_pixmap_new(OS.gdk_get_default_root_window(), data.stringWidth, data.stringHeight, -1);
 		if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		int /*long*/ gdkGC = OS.gdk_gc_new(pixmap);
 		if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);

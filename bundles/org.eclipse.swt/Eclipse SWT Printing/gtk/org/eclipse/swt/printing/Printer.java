@@ -440,7 +440,7 @@ public int /*long*/ internal_new_GC(GCData data) {
 	} else {
 		GdkVisual visual = new GdkVisual ();
 		OS.memmove (visual, OS.gdk_visual_get_system());
-		drawable = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), 1, 1, visual.depth);
+		drawable = OS.gdk_pixmap_new(OS.gdk_get_default_root_window(), 1, 1, visual.depth);
 		gc = OS.gdk_gc_new (drawable);
 	}
 	if (gc == 0) SWT.error (SWT.ERROR_NO_HANDLES);
