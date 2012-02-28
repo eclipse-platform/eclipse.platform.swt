@@ -1188,6 +1188,16 @@ public static final int /*long*/ gdk_x11_colormap_get_xcolormap(int /*long*/ col
 		lock.unlock();
 	}
 }
+/** @param gdkdisplay cast=(GdkDisplay *) */
+public static final native int /*long*/ _gdk_x11_display_get_xdisplay(int /*long*/ gdkdisplay);
+public static final int /*long*/ gdk_x11_display_get_xdisplay (int /*long*/ gdkdisplay) {
+	lock.lock();
+	try {
+		return _gdk_x11_display_get_xdisplay(gdkdisplay);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param drawable cast=(GdkDrawable *) */
 public static final native int /*long*/ _gdk_x11_drawable_get_xdisplay(int /*long*/ drawable);
 public static final int /*long*/ gdk_x11_drawable_get_xdisplay(int /*long*/ drawable) {
@@ -1460,15 +1470,6 @@ public static final native int /*long*/ pangoLayoutNewProc_CALLBACK(int /*long*/
 /** Natives */
 public static final native int Call (int /*long*/ func, int /*long*/ arg0, int arg1, int arg2);
 public static final native long Call (int /*long*/ func, int /*long*/ arg0, int arg1, long arg2);
-public static final native int /*long*/ _GDK_DISPLAY();
-public static final int /*long*/ GDK_DISPLAY() {
-	lock.lock();
-	try {
-		return _GDK_DISPLAY();
-	} finally {
-		lock.unlock();
-	}
-}
 public static final native int /*long*/ _GDK_ROOT_PARENT();
 public static final int /*long*/ GDK_ROOT_PARENT() {
 	lock.lock();

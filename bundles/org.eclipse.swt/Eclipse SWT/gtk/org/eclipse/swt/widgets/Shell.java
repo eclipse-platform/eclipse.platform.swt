@@ -1691,7 +1691,7 @@ void setCursor (int /*long*/ cursor) {
 		if (!OS.GDK_WINDOWING_X11 ()) {
 			OS.gdk_flush ();
 		} else {
-			int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+			int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 			OS.XFlush (xDisplay);
 		}
 	}
@@ -1741,7 +1741,7 @@ public void setEnabled (boolean enabled) {
 				if (!OS.GDK_WINDOWING_X11 ()) {
 					OS.gdk_flush ();
 				} else {
-					int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+					int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 					OS.XFlush (xDisplay);
 				}
 			}

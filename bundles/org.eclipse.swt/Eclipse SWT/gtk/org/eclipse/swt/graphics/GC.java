@@ -461,7 +461,7 @@ public void copyArea(Image image, int x, int y) {
 				int[] w = new int[1], h = new int[1];
 				OS.gdk_drawable_get_size(data.drawable, w, h);
 				int width = w[0], height = h[0];
-				int /*long*/ xDisplay = OS.GDK_DISPLAY();
+				int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 				int /*long*/ xDrawable = OS.gdk_x11_drawable_get_xid(data.drawable);
 				int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
 				int /*long*/ srcSurface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width, height);
@@ -1122,7 +1122,7 @@ void drawImageXRender(Image srcImage, int srcX, int srcY, int srcWidth, int srcH
 		translateX = -x[0];
 		translateY = -y[0];
 	}
-	int /*long*/ xDisplay = OS.GDK_DISPLAY();
+	int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 	int /*long*/ maskPict = 0;
 	if (maskPixmap != 0) {
 		int attribCount = 0;
@@ -2925,7 +2925,7 @@ void initCairo() {
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) return;
 	if (OS.GTK_VERSION < OS.VERSION(2, 17, 0)) {
-		int /*long*/ xDisplay = OS.GDK_DISPLAY();
+		int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 		int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
 		int /*long*/ xDrawable = 0;
 		int translateX = 0, translateY = 0;

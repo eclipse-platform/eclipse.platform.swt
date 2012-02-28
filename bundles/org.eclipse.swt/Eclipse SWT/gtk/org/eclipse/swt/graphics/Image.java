@@ -978,7 +978,7 @@ void createSurface() {
 		Cairo.cairo_surface_mark_dirty(surface);
 		OS.g_object_unref(pixbuf);
 	} else {
-		int /*long*/ xDisplay = OS.GDK_DISPLAY();
+		int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 		int /*long*/ xDrawable = OS.GDK_PIXMAP_XID(pixmap);
 		int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
 		surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width, height);
@@ -1273,7 +1273,7 @@ void init(int width, int height) {
 		if (OS.GTK_VERSION >= OS.VERSION(2, 22, 0)) {
 			surface = OS.gdk_window_create_similar_surface(OS.GDK_ROOT_PARENT(), Cairo.CAIRO_CONTENT_COLOR, width, height);
 		} else {
-			int /*long*/ xDisplay = OS.GDK_DISPLAY();
+			int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 			int /*long*/ xDrawable = OS.gdk_x11_drawable_get_xid(OS.GDK_ROOT_PARENT());
 			int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
 			int /*long*/ rootSurface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, 1, 1);

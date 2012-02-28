@@ -733,7 +733,7 @@ public void beep () {
 	if (!OS.GDK_WINDOWING_X11 ()) {
 		OS.gdk_flush ();
 	} else {
-		int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+		int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 		OS.XFlush (xDisplay);
 	}
 }
@@ -907,7 +907,7 @@ void createDisplay (DeviceData data) {
 	if (!OS.gtk_init_check (new int /*long*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
 	}
-	if (OS.GDK_WINDOWING_X11 ()) xDisplay = OS.GDK_DISPLAY ();
+	if (OS.GDK_WINDOWING_X11 ()) xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 	int /*long*/ ptr = OS.gtk_check_version (MAJOR, MINOR, MICRO);
 	if (ptr != 0) {
 		int length = OS.strlen (ptr);
@@ -1008,9 +1008,9 @@ void createDisplay (DeviceData data) {
 	if (OS.GDK_WINDOWING_X11 ()) {
 		int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (OS.GTK_WIDGET_WINDOW (shellHandle));
 		byte[] atomName = Converter.wcsToMbcs (null, "SWT_Window_" + APP_NAME, true); //$NON-NLS-1$
-		int /*long*/ atom = OS.XInternAtom (OS.GDK_DISPLAY (), atomName, false);
-		OS.XSetSelectionOwner (OS.GDK_DISPLAY (), atom, xWindow, OS.CurrentTime);
-		OS.XGetSelectionOwner (OS.GDK_DISPLAY (), atom);
+		int /*long*/ atom = OS.XInternAtom (OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default()), atomName, false);
+		OS.XSetSelectionOwner (OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default()), atom, xWindow, OS.CurrentTime);
+		OS.XGetSelectionOwner (OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default()), atom);
 	}
 
 	signalCallback = new Callback (this, "signalProc", 3); //$NON-NLS-1$
@@ -1318,7 +1318,7 @@ void flushExposes (int /*long*/ window, boolean all) {
 	if (OS.GDK_WINDOWING_X11 ()) {
 		this.flushWindow = window;
 		this.flushAll = all;
-		int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+		int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 		int /*long*/ xEvent = OS.g_malloc (XEvent.sizeof);
 		OS.XCheckIfEvent (xDisplay, xEvent, checkIfEventProc, 0);
 		OS.g_free (xEvent);
@@ -3027,7 +3027,7 @@ public boolean post (Event event) {
 			if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 			if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 			if (!OS.GDK_WINDOWING_X11()) return false;
-			int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+			int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 			int type = event.type;
 			switch (type) {
 				case SWT.KeyDown:
@@ -3708,7 +3708,7 @@ public static void setAppVersion (String version) {
 public void setCursorLocation (int x, int y) {
 	checkDevice ();
 	if (OS.GDK_WINDOWING_X11 ()) {
-		int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+		int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 		int /*long*/ xWindow = OS.XDefaultRootWindow (xDisplay);
 		OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, x, y);
 	}
@@ -4220,7 +4220,7 @@ int /*long*/ signalProc (int /*long*/ gobject, int /*long*/ arg1, int /*long*/ u
 					int [] nitems = new int [1];
 					int [] bytes_after = new int [1];
 					int /*long*/ [] data = new int /*long*/ [1];
-					OS.XGetWindowProperty (OS.GDK_DISPLAY (), xWindow, atom, 0, -1, true, OS.AnyPropertyType,
+					OS.XGetWindowProperty (OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default()), xWindow, atom, 0, -1, true, OS.AnyPropertyType,
 							type, format, nitems, bytes_after, data);
 					
 					if (nitems [0] > 0) {
