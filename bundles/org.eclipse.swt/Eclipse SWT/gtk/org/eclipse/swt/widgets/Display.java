@@ -1008,9 +1008,9 @@ void createDisplay (DeviceData data) {
 	if (OS.GDK_WINDOWING_X11 ()) {
 		int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (OS.GTK_WIDGET_WINDOW (shellHandle));
 		byte[] atomName = Converter.wcsToMbcs (null, "SWT_Window_" + APP_NAME, true); //$NON-NLS-1$
-		int /*long*/ atom = OS.XInternAtom (OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default()), atomName, false);
-		OS.XSetSelectionOwner (OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default()), atom, xWindow, OS.CurrentTime);
-		OS.XGetSelectionOwner (OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default()), atom);
+		int /*long*/ atom = OS.XInternAtom (xDisplay, atomName, false);
+		OS.XSetSelectionOwner (xDisplay, atom, xWindow, OS.CurrentTime);
+		OS.XGetSelectionOwner (xDisplay, atom);
 	}
 
 	signalCallback = new Callback (this, "signalProc", 3); //$NON-NLS-1$
