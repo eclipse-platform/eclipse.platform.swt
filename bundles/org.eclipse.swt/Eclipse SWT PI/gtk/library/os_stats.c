@@ -548,7 +548,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1screen_1width",
 	"_1gdk_1screen_1width_1mm",
 	"_1gdk_1set_1program_1class",
-	"_1gdk_1text_1property_1to_1utf8_1list",
+	"_1gdk_1text_1property_1to_1utf8_1list_1for_1display",
 	"_1gdk_1unicode_1to_1keyval",
 	"_1gdk_1utf8_1to_1compound_1text",
 	"_1gdk_1utf8_1to_1string_1target",

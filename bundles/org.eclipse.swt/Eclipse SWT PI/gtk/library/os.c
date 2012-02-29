@@ -6671,18 +6671,18 @@ fail:
 }
 #endif
 
-#ifndef NO__1gdk_1text_1property_1to_1utf8_1list
-JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1text_1property_1to_1utf8_1list)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2, jint arg3, jintLongArray arg4)
+#ifndef NO__1gdk_1text_1property_1to_1utf8_1list_1for_1display
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1text_1property_1to_1utf8_1list_1for_1display)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintLong arg3, jint arg4, jintLongArray arg5)
 {
-	jintLong *lparg4=NULL;
+	jintLong *lparg5=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gdk_1text_1property_1to_1utf8_1list_FUNC);
-	if (arg4) if ((lparg4 = (*env)->GetIntLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)gdk_text_property_to_utf8_list((GdkAtom)arg0, arg1, (guchar *)arg2, arg3, (gchar ***)lparg4);
+	OS_NATIVE_ENTER(env, that, _1gdk_1text_1property_1to_1utf8_1list_1for_1display_FUNC);
+	if (arg5) if ((lparg5 = (*env)->GetIntLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jint)gdk_text_property_to_utf8_list_for_display((GdkDisplay *)arg0, (GdkAtom)arg1, arg2, (guchar *)arg3, arg4, (gchar ***)lparg5);
 fail:
-	if (arg4 && lparg4) (*env)->ReleaseIntLongArrayElements(env, arg4, lparg4, 0);
-	OS_NATIVE_EXIT(env, that, _1gdk_1text_1property_1to_1utf8_1list_FUNC);
+	if (arg5 && lparg5) (*env)->ReleaseIntLongArrayElements(env, arg5, lparg5, 0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1text_1property_1to_1utf8_1list_1for_1display_FUNC);
 	return rc;
 }
 #endif

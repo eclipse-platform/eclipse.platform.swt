@@ -117,7 +117,7 @@ public void javaToNative (Object object, TransferData transferData) {
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) ||  transferData.pValue == 0) return null;
 	int /*long*/[] list = new int /*long*/[1];
-	int count = OS.gdk_text_property_to_utf8_list(transferData.type, transferData.format, transferData.pValue, transferData.length, list);
+	int count = OS.gdk_text_property_to_utf8_list_for_display(OS.gdk_display_get_default(), transferData.type, transferData.format, transferData.pValue, transferData.length, list);
 	if (count == 0) return null;
 	int /*long*/[] ptr = new int /*long*/[1];
 	OS.memmove(ptr, list[0], OS.PTR_SIZEOF);

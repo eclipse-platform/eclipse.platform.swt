@@ -5198,15 +5198,16 @@ public static final int /*long*/ gdk_utf8_to_string_target(byte[] str) {
 	}
 }
 /**
+ * @param display cast=(GdkDisplay *)
  * @param encoding cast=(GdkAtom)
  * @param text cast=(guchar *)
  * @param list cast=(gchar ***)
  */
-public static final native int _gdk_text_property_to_utf8_list  (int /*long*/ encoding, int format, int /*long*/ text, int length,  int /*long*/[] list);
-public static final int gdk_text_property_to_utf8_list  (int /*long*/ encoding, int format, int /*long*/ text, int length,  int /*long*/[] list) {
+public static final native int _gdk_text_property_to_utf8_list_for_display  (int /*long*/ display, int /*long*/ encoding, int format, int /*long*/ text, int length,  int /*long*/[] list);
+public static final int gdk_text_property_to_utf8_list_for_display  (int /*long*/ display, int /*long*/ encoding, int format, int /*long*/ text, int length,  int /*long*/[] list) {
 	lock.lock();
 	try {
-		return _gdk_text_property_to_utf8_list(encoding, format, text, length, list);
+		return _gdk_text_property_to_utf8_list_for_display(display, encoding, format, text, length, list);
 	} finally {
 		lock.unlock();
 	}

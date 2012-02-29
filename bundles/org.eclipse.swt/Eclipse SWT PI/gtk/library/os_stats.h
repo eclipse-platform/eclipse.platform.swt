@@ -556,7 +556,7 @@ typedef enum {
 	_1gdk_1screen_1width_FUNC,
 	_1gdk_1screen_1width_1mm_FUNC,
 	_1gdk_1set_1program_1class_FUNC,
-	_1gdk_1text_1property_1to_1utf8_1list_FUNC,
+	_1gdk_1text_1property_1to_1utf8_1list_1for_1display_FUNC,
 	_1gdk_1unicode_1to_1keyval_FUNC,
 	_1gdk_1utf8_1to_1compound_1text_FUNC,
 	_1gdk_1utf8_1to_1string_1target_FUNC,
