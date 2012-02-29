@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 245;
-int XPCOM_nativeFunctionCallCount[245];
+int XPCOM_nativeFunctionCount = 247;
+int XPCOM_nativeFunctionCallCount[247];
 char * XPCOM_nativeFunctionNames[] = {
 #ifndef JNI64
 	"_1Call__I",
@@ -38,6 +38,7 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1Call__JJJ_3BII_3I",
 #endif
 	"_1JS_1EvaluateUCScriptForPrincipals",
+	"_1JS_1GetGlobalObject",
 	"_1NS_1Free",
 	"_1NS_1GetComponentManager",
 	"_1NS_1GetServiceManager",
@@ -107,6 +108,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IIIIIIIIIIIIIIISI",
 #else
 	"_1VtblCall__IJIIIIIIIIIIIIISI",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIIIIIIIIIIIIIISIFS",
+#else
+	"_1VtblCall__IJIIIIIIIIIIIIISIFS",
 #endif
 #ifndef JNI64
 	"_1VtblCall__IIIIIIIII_3I",
@@ -437,6 +443,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__IIJIIJIIIIIIIIISJ",
 #else
 	"_1VtblCall__IJJIIJIIIIIIIIISJ",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIJIIJIIIIIIIIISJFS",
+#else
+	"_1VtblCall__IJJIIJIIIIIIIIISJFS",
 #endif
 #ifndef JNI64
 	"_1VtblCall__IIJIIJ_3I_3J",
@@ -1104,7 +1115,6 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1nsIScriptContext_1GetNativeContext",
 	"_1nsIScriptGlobalObject_1EnsureScriptEnvironment",
 	"_1nsIScriptGlobalObject_1GetScriptContext",
-	"_1nsIScriptGlobalObject_1GetScriptGlobal",
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2I",
 #else

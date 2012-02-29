@@ -11,7 +11,6 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#define JS_EvaluateUCScriptForPrincipals_LIB "js3250.dll"
 #define NS_Free_LIB "xpcom.dll"
 #define XP_WIN
 #else

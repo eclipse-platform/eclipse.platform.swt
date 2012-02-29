@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -514,6 +514,31 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IJIIIIIIIIIIIIISI)(JNIEnv *env, 
 	XPCOM_NATIVE_EXIT(env, that, _1VtblCall__IIIIIIIIIIIIIIISI_FUNC);
 #else
 	XPCOM_NATIVE_EXIT(env, that, _1VtblCall__IJIIIIIIIIIIIIISI_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO__1VtblCall__IIIIIIIIIIIIIIISIFS) && !defined(JNI64)) || (!defined(NO__1VtblCall__IJIIIIIIIIIIIIISIFS) && defined(JNI64))
+#ifndef JNI64
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IIIIIIIIIIIIIIISIFS)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12, jint arg13, jint arg14, jshort arg15, jint arg16, jfloat arg17, jshort arg18);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IIIIIIIIIIIIIIISIFS)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12, jint arg13, jint arg14, jshort arg15, jint arg16, jfloat arg17, jshort arg18)
+#else
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IJIIIIIIIIIIIIISIFS)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12, jint arg13, jint arg14, jshort arg15, jint arg16, jfloat arg17, jshort arg18);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IJIIIIIIIIIIIIISIFS)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12, jint arg13, jint arg14, jshort arg15, jint arg16, jfloat arg17, jshort arg18)
+#endif
+{
+	jint rc = 0;
+#ifndef JNI64
+	XPCOM_NATIVE_ENTER(env, that, _1VtblCall__IIIIIIIIIIIIIIISIFS_FUNC);
+#else
+	XPCOM_NATIVE_ENTER(env, that, _1VtblCall__IJIIIIIIIIIIIIISIFS_FUNC);
+#endif
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jshort, jint, jfloat, jshort))(*(jintLong **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18);
+#ifndef JNI64
+	XPCOM_NATIVE_EXIT(env, that, _1VtblCall__IIIIIIIIIIIIIIISIFS_FUNC);
+#else
+	XPCOM_NATIVE_EXIT(env, that, _1VtblCall__IJIIIIIIIIIIIIISIFS_FUNC);
 #endif
 	return rc;
 }
@@ -2585,6 +2610,31 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IJJIIJIIIIIIIIISJ)(JNIEnv *env, 
 	XPCOM_NATIVE_EXIT(env, that, _1VtblCall__IIJIIJIIIIIIIIISJ_FUNC);
 #else
 	XPCOM_NATIVE_EXIT(env, that, _1VtblCall__IJJIIJIIIIIIIIISJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO__1VtblCall__IIJIIJIIIIIIIIISJFS) && !defined(JNI64)) || (!defined(NO__1VtblCall__IJJIIJIIIIIIIIISJFS) && defined(JNI64))
+#ifndef JNI64
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IIJIIJIIIIIIIIISJFS)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jlong arg2, jint arg3, jint arg4, jlong arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12, jint arg13, jint arg14, jshort arg15, jlong arg16, jfloat arg17, jshort arg18);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IIJIIJIIIIIIIIISJFS)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jlong arg2, jint arg3, jint arg4, jlong arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12, jint arg13, jint arg14, jshort arg15, jlong arg16, jfloat arg17, jshort arg18)
+#else
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IJJIIJIIIIIIIIISJFS)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jlong arg2, jint arg3, jint arg4, jlong arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12, jint arg13, jint arg14, jshort arg15, jlong arg16, jfloat arg17, jshort arg18);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IJJIIJIIIIIIIIISJFS)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jlong arg2, jint arg3, jint arg4, jlong arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12, jint arg13, jint arg14, jshort arg15, jlong arg16, jfloat arg17, jshort arg18)
+#endif
+{
+	jint rc = 0;
+#ifndef JNI64
+	XPCOM_NATIVE_ENTER(env, that, _1VtblCall__IIJIIJIIIIIIIIISJFS_FUNC);
+#else
+	XPCOM_NATIVE_ENTER(env, that, _1VtblCall__IJJIIJIIIIIIIIISJFS_FUNC);
+#endif
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jlong, jint, jint, jlong, jint, jint, jint, jint, jint, jint, jint, jint, jint, jshort, jlong, jfloat, jshort))(*(jintLong **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18);
+#ifndef JNI64
+	XPCOM_NATIVE_EXIT(env, that, _1VtblCall__IIJIIJIIIIIIIIISJFS_FUNC);
+#else
+	XPCOM_NATIVE_EXIT(env, that, _1VtblCall__IJJIIJIIIIIIIIISJFS_FUNC);
 #endif
 	return rc;
 }
@@ -7011,19 +7061,6 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptGlobalObject_1GetScriptContex
 	XPCOM_NATIVE_ENTER(env, that, _1nsIScriptGlobalObject_1GetScriptContext_FUNC);
 	rc = (jintLong)((nsIScriptGlobalObject *)arg0)->GetScriptContext(arg1);
 	XPCOM_NATIVE_EXIT(env, that, _1nsIScriptGlobalObject_1GetScriptContext_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1nsIScriptGlobalObject_1GetScriptGlobal
-extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptGlobalObject_1GetScriptGlobal)(JNIEnv *env, jclass that, jintLong arg0, jint arg1);
-JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptGlobalObject_1GetScriptGlobal)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	jintLong rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, _1nsIScriptGlobalObject_1GetScriptGlobal_FUNC);
-	rc = (jintLong)((nsIScriptGlobalObject *)arg0)->GetScriptGlobal(arg1);
-	XPCOM_NATIVE_EXIT(env, that, _1nsIScriptGlobalObject_1GetScriptGlobal_FUNC);
 	return rc;
 }
 #endif

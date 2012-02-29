@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -46,6 +46,7 @@ typedef enum {
 	_1Call__JJJ_3BII_3I_FUNC,
 #endif
 	_1JS_1EvaluateUCScriptForPrincipals_FUNC,
+	_1JS_1GetGlobalObject_FUNC,
 	_1NS_1Free_FUNC,
 	_1NS_1GetComponentManager_FUNC,
 	_1NS_1GetServiceManager_FUNC,
@@ -115,6 +116,11 @@ typedef enum {
 	_1VtblCall__IIIIIIIIIIIIIIISI_FUNC,
 #else
 	_1VtblCall__IJIIIIIIIIIIIIISI_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIIIIIIIIIIIIIISIFS_FUNC,
+#else
+	_1VtblCall__IJIIIIIIIIIIIIISIFS_FUNC,
 #endif
 #ifndef JNI64
 	_1VtblCall__IIIIIIIII_3I_FUNC,
@@ -445,6 +451,11 @@ typedef enum {
 	_1VtblCall__IIJIIJIIIIIIIIISJ_FUNC,
 #else
 	_1VtblCall__IJJIIJIIIIIIIIISJ_FUNC,
+#endif
+#ifndef JNI64
+	_1VtblCall__IIJIIJIIIIIIIIISJFS_FUNC,
+#else
+	_1VtblCall__IJJIIJIIIIIIIIISJFS_FUNC,
 #endif
 #ifndef JNI64
 	_1VtblCall__IIJIIJ_3I_3J_FUNC,
@@ -1112,7 +1123,6 @@ typedef enum {
 	_1nsIScriptContext_1GetNativeContext_FUNC,
 	_1nsIScriptGlobalObject_1EnsureScriptEnvironment_FUNC,
 	_1nsIScriptGlobalObject_1GetScriptContext_FUNC,
-	_1nsIScriptGlobalObject_1GetScriptGlobal_FUNC,
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_mozilla_nsDynamicFunctionLoad_2I_FUNC,
 #else

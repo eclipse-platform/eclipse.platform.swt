@@ -201,6 +201,16 @@ public static final int JS_EvaluateUCScriptForPrincipals(byte[] mozillaPath, int
 	}
 }
 /** @method flags=no_gen */
+public static final native int /*long*/ _JS_GetGlobalObject(byte[] mozillaPath, int /*long*/ cx);	
+public static final int /*long*/ JS_GetGlobalObject(byte[] mozillaPath, int /*long*/ cx) {
+	lock.lock();
+	try {
+		return _JS_GetGlobalObject(mozillaPath, cx);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=no_gen */
 public static final native boolean _NS_Free(byte[] mozillaPath, int /*long*/ aPtr);
 public static final boolean NS_Free(byte[] mozillaPath, int /*long*/ aPtr) {
 	lock.lock();
@@ -328,19 +338,6 @@ public static final int nsIScriptGlobalObject_EnsureScriptEnvironment(int /*long
 	lock.lock();
 	try {
 		return _nsIScriptGlobalObject_EnsureScriptEnvironment(ptr, lang);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=cpp
- * @param ptr cast=(nsIScriptGlobalObject *)
- */
-public static final native int /*long*/ _nsIScriptGlobalObject_GetScriptGlobal(int /*long*/ ptr, int lang);
-public static final int /*long*/ nsIScriptGlobalObject_GetScriptGlobal(int /*long*/ ptr, int lang) {
-	lock.lock();
-	try {
-		return _nsIScriptGlobalObject_GetScriptGlobal(ptr, lang);
 	} finally {
 		lock.unlock();
 	}

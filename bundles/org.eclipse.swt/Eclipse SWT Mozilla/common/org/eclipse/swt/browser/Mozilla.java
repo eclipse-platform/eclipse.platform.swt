@@ -1326,10 +1326,9 @@ public boolean execute (String script) {
 						new nsISupports (scriptGlobalObject).Release ();
 					} else {
 						int /*long*/ scriptContext = XPCOM.nsIScriptGlobalObject_GetScriptContext (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
-						int /*long*/ globalJSObject = XPCOM.nsIScriptGlobalObject_GetScriptGlobal (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
 						new nsISupports (scriptGlobalObject).Release ();
 
-						if (scriptContext != 0 && globalJSObject != 0) {
+						if (scriptContext != 0) {
 							/* ensure that the received nsIScriptContext implements the expected interface */
 							nsISupports supports = new nsISupports (scriptContext);
 							nsID scriptContextNSID_10 = new nsID ("2e583bf4-3c1f-432d-8283-8dee7eccc88b"); /* nsIScriptContext */ //$NON-NLS-1$					
@@ -1369,23 +1368,26 @@ public boolean execute (String script) {
 											}
 										}
 
-										aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CONTEXTSTACK_CONTRACTID, true);
-										rc = serviceManager.GetServiceByContractID (aContractID, nsIJSContextStack.NS_IJSCONTEXTSTACK_IID, result);
-										if (rc == XPCOM.NS_OK && result[0] != 0) {
-											nsIJSContextStack stack = new nsIJSContextStack (result[0]);
-											result[0] = 0;
-											rc = stack.Push (nativeContext);
-											if (rc != XPCOM.NS_OK) {
-												stack.Release ();
-											} else {
-												boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals (pathBytes_JSEvaluateUCScriptForPrincipals, nativeContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result) != 0;
+										int /*long*/ globalJSObject = XPCOM.JS_GetGlobalObject (pathBytes_JSEvaluateUCScriptForPrincipals, nativeContext);
+										if (globalJSObject != 0) {
+											aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CONTEXTSTACK_CONTRACTID, true);
+											rc = serviceManager.GetServiceByContractID (aContractID, nsIJSContextStack.NS_IJSCONTEXTSTACK_IID, result);
+											if (rc == XPCOM.NS_OK && result[0] != 0) {
+												nsIJSContextStack stack = new nsIJSContextStack (result[0]);
 												result[0] = 0;
-												rc = stack.Pop (result);
-												stack.Release ();
-												// should principals be Release()d too?
-												principal.Release ();
-												serviceManager.Release ();
-												return success;
+												rc = stack.Push (nativeContext);
+												if (rc != XPCOM.NS_OK) {
+													stack.Release ();
+												} else {
+													boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals (pathBytes_JSEvaluateUCScriptForPrincipals, nativeContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result) != 0;
+													result[0] = 0;
+													rc = stack.Pop (result);
+													stack.Release ();
+													// should principals be Release()d too?
+													principal.Release ();
+													serviceManager.Release ();
+													return success;
+												}
 											}
 										}
 									}
