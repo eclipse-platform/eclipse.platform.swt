@@ -35,9 +35,12 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class ColorDialog extends Dialog {
+	static final int CUSTOM_COLOR_COUNT = 16; // from the MS spec for CHOOSECOLOR.lpCustColors
 	Display display;
 	int width, height;
 	RGB rgb;
+	RGB [] rgbs;
+	int [] colors = new int [CUSTOM_COLOR_COUNT];
 	
 /**
  * Constructs a new instance of this class given only its parent.
@@ -137,6 +140,19 @@ public RGB getRGB () {
 }
 
 /**
+ * Returns an array of <code>RGB</code>s which are the list of
+ * custom colors selected by the user in the receiver, or null
+ * if no custom colors were selected.
+ *
+ * @return the array of RGBs, which may be null
+ * 
+ * @since 3.8
+ */
+public RGB[] getRGBs() {
+	return rgbs;
+}
+
+/**
  * Makes the receiver visible and brings it to the front
  * of the display.
  *
@@ -188,11 +204,30 @@ public RGB open () {
 	int /*long*/ lpfnHook = callback.getAddress ();
 	if (lpfnHook == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	
-	/* Allocate the Custom Colors */
+	/* Allocate the Custom Colors and initialize to white */
 	display = parent.display;
 	if (display.lpCustColors == 0) {
 		int /*long*/ hHeap = OS.GetProcessHeap ();
-		display.lpCustColors = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 16 * 4);
+		display.lpCustColors = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, CUSTOM_COLOR_COUNT * 4);
+		for (int i=0; i < CUSTOM_COLOR_COUNT; i++) {
+			colors[i] = 0x00FFFFFF;
+		}
+		OS.MoveMemory (display.lpCustColors, colors, CUSTOM_COLOR_COUNT * 4);
+	}
+	
+	/* Set the Custom Colors (if any) into the dialog */
+	if (rgbs != null) {
+		for (int i=0; i<rgbs.length; i++) {
+			RGB rgb = rgbs [i];
+			int red = rgb.red & 0xFF;
+			int green = (rgb.green << 8) & 0xFF00;
+			int blue = (rgb.blue << 16) & 0xFF0000;
+			colors[i] = red | green | blue;
+		}
+		for (int i=rgbs.length; i < CUSTOM_COLOR_COUNT; i++) {
+			colors[i] = 0x00FFFFFF;
+		}
+		OS.MoveMemory (display.lpCustColors, colors, CUSTOM_COLOR_COUNT * 4);
 	}
 	
 	/* Open the dialog */	
@@ -226,6 +261,26 @@ public RGB open () {
 		display.setModalDialog (oldModal);
 	}
 	
+	/* Get the Custom Colors (if the user defined any) from the dialog */
+	boolean customColor = false;
+	OS.MoveMemory (colors, display.lpCustColors, colors.length * 4);
+	for (int i=0; i<colors.length; i++) {
+		if (colors[i] != 0x00FFFFFF) {
+			customColor = true;
+			break;
+		}
+	}
+	if (customColor) {
+		rgbs = new RGB [CUSTOM_COLOR_COUNT];
+		for (int i=0; i<colors.length; i++) {
+			int color = colors[i];
+			int red = color & 0xFF;
+			int green = (color >> 8) & 0xFF;
+			int blue = (color >> 16) & 0xFF;
+			rgbs[i] = new RGB (red, green, blue);
+		}
+	}
+
 	if (success) {
 		int red = lpcc.rgbResult & 0xFF;
 		int green = (lpcc.rgbResult >> 8) & 0xFF;
@@ -275,6 +330,28 @@ public RGB open () {
  */
 public void setRGB (RGB rgb) {
 	this.rgb = rgb;
+}
+
+/**
+ * Sets the receiver's list of custom colors to be the given array
+ * of <code>RGB</code>s, which may be null to let the platform select
+ * a default when open() is called.
+ *
+ * @param rgbs the array of RGBs, which may be null
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if an RGB in the rgbs array is null</li>
+ * </ul>
+ * 
+ * @since 3.8
+ */
+public void setRGBs(RGB[] rgbs) {
+	if (rgbs != null) {
+		for (int i=0; i<rgbs.length; i++) {
+			if (rgbs [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
+	this.rgbs = rgbs;
 }
 
 }
