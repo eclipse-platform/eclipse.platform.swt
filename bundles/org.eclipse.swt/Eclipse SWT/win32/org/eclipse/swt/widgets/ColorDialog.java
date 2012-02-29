@@ -217,14 +217,15 @@ public RGB open () {
 	
 	/* Set the Custom Colors (if any) into the dialog */
 	if (rgbs != null) {
-		for (int i=0; i<rgbs.length; i++) {
+		int length = rgbs.length > CUSTOM_COLOR_COUNT ? CUSTOM_COLOR_COUNT : rgbs.length;
+		for (int i=0; i<length; i++) {
 			RGB rgb = rgbs [i];
 			int red = rgb.red & 0xFF;
 			int green = (rgb.green << 8) & 0xFF00;
 			int blue = (rgb.blue << 16) & 0xFF0000;
 			colors[i] = red | green | blue;
 		}
-		for (int i=rgbs.length; i < CUSTOM_COLOR_COUNT; i++) {
+		for (int i=length; i < CUSTOM_COLOR_COUNT; i++) {
 			colors[i] = 0x00FFFFFF;
 		}
 		OS.MoveMemory (display.lpCustColors, colors, CUSTOM_COLOR_COUNT * 4);
