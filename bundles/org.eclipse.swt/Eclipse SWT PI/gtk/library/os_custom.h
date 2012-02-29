@@ -165,6 +165,7 @@
 #define gtk_window_get_group_LIB LIB_GTK
 #define gtk_window_get_opacity_LIB LIB_GTK
 #define gdk_window_create_similar_surface_LIB LIB_GDK
+#define gdk_window_lookup_LIB LIB_GDK
 #define gdk_window_restack_LIB LIB_GDK
 #define gdk_window_set_keep_above_LIB LIB_GDK
 #define gdk_window_set_accept_focus_LIB LIB_GDK
@@ -176,6 +177,7 @@
 #define gdk_pango_context_set_colormap_LIB LIB_GDK
 #define gdk_x11_screen_get_window_manager_name_LIB LIB_GDK
 #define gdk_x11_screen_lookup_visual_LIB LIB_GDK
+#define gdk_x11_window_lookup_for_display_LIB LIB_GDK
 #define gdk_threads_set_lock_functions_LIB LIB_GDK
 
 #define atk_object_add_relationship_LIB LIB_ATK

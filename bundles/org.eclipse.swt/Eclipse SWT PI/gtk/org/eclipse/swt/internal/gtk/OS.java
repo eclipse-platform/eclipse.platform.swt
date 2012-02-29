@@ -1255,6 +1255,19 @@ public static final int /*long*/ gdk_x11_visual_get_xvisual(int /*long*/ visual)
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ * @param gdkdisplay cast=(GdkDisplay *)
+ */
+public static final native int /*long*/ _gdk_x11_window_lookup_for_display(int /*long*/ gdkdisplay, int /*long*/ xid);
+public static final int /*long*/ gdk_x11_window_lookup_for_display(int /*long*/ gdkdisplay, int /*long*/ xid) {
+	lock.lock();
+	try {
+		return _gdk_x11_window_lookup_for_display(gdkdisplay, xid);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gdk_pixmap_foreign_new(int /*long*/ anid);
 public static final int /*long*/ gdk_pixmap_foreign_new(int /*long*/ anid) {
 	lock.lock();
@@ -1264,6 +1277,9 @@ public static final int /*long*/ gdk_pixmap_foreign_new(int /*long*/ anid) {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ */
 public static final native int /*long*/ _gdk_window_lookup(int /*long*/ xid);
 public static final int /*long*/ gdk_window_lookup(int /*long*/ xid) {
 	lock.lock();

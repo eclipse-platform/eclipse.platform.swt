@@ -777,7 +777,12 @@ int /*long*/ checkIfEventProc (int /*long*/ display, int /*long*/ xEvent, int /*
 		default:
 			return 0;
 	}
-	int /*long*/ window = OS.gdk_window_lookup (OS.X_EVENT_WINDOW (xEvent));
+	int /*long*/ window = 0;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 24, 0)) {
+		window = OS.gdk_x11_window_lookup_for_display(OS.gdk_display_get_default(), OS.X_EVENT_WINDOW (xEvent));
+	} else {
+	    window = OS.gdk_window_lookup (OS.X_EVENT_WINDOW (xEvent));
+	}
 	if (window == 0) return 0;
 	if (flushWindow != 0) {
 		if (flushAll) {
@@ -1426,7 +1431,12 @@ public Control getCursorControl () {
 			}
 			if ((xWindow = buffer [0]) != 0) {
 				xParent = xWindow;
-				int /*long*/ gdkWindow = OS.gdk_window_lookup (xWindow);
+				int /*long*/ gdkWindow = 0;
+				if (OS.GTK_VERSION >= OS.VERSION (2, 24, 0)) {
+					gdkWindow = OS.gdk_x11_window_lookup_for_display(OS.gdk_display_get_default(), xWindow);
+				} else {
+					gdkWindow = OS.gdk_window_lookup (xWindow);
+				}
 				if (gdkWindow != 0)	{
 					OS.gdk_window_get_user_data (gdkWindow, user_data);
 					if (user_data[0] != 0) handle = user_data[0];	
