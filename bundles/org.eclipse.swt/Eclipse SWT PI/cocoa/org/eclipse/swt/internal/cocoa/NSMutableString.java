@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -46,8 +46,8 @@ public static NSString stringWithCharacters(char[] characters, int /*long*/ leng
 	return result != 0 ? new NSMutableString(result) : null;
 }
 
-public static NSString stringWithFormat(NSString stringWithFormat) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableString, OS.sel_stringWithFormat_, stringWithFormat != null ? stringWithFormat.id : 0);
+public static NSString stringWithFormat(NSString format) {
+	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableString, OS.sel_stringWithFormat_, format != null ? format.id : 0);
 	return result != 0 ? new NSString(result) : null;
 }
 

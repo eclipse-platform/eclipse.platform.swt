@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -64,20 +64,20 @@ public boolean isFlipped() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isFlipped);
 }
 
-public void restoreGraphicsState() {
-	OS.objc_msgSend(this.id, OS.sel_restoreGraphicsState);
-}
-
 public static void static_restoreGraphicsState() {
 	OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_restoreGraphicsState);
 }
 
-public void saveGraphicsState() {
-	OS.objc_msgSend(this.id, OS.sel_saveGraphicsState);
+public void restoreGraphicsState() {
+	OS.objc_msgSend(this.id, OS.sel_restoreGraphicsState);
 }
 
 public static void static_saveGraphicsState() {
 	OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_saveGraphicsState);
+}
+
+public void saveGraphicsState() {
+	OS.objc_msgSend(this.id, OS.sel_saveGraphicsState);
 }
 
 public void setCompositingOperation(int /*long*/ operation) {

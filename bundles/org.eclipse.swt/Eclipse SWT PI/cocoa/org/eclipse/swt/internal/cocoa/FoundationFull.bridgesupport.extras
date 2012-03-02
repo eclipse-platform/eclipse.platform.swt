@@ -1,5 +1,50 @@
 <?xml version="1.0" encoding="UTF8"?>
 <signatures swt_gen="mixed">
+	<class name="NSAffineTransform" swt_gen="mixed">
+		<method selector="initWithTransform:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true" swt_java_type="NSAffineTransform"></retval>
+		</method>
+		<method selector="invert" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="prependTransform:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="rotateByDegrees:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="scaleXBy:yBy:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setTransformStruct:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method class_method="true" selector="transform" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="transformPoint:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="transformSize:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="transformStruct" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="translateXBy:yBy:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
 	<class name="NSAppleEventDescriptor" swt_gen="mixed">
 		<method selector="initListDescriptor" swt_gen="true">
 			<retval swt_gen="true" swt_java_type="NSAppleEventDescriptor"></retval>
@@ -37,7 +82,7 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
+			<arg swt_gen="true" swt_param_name="format"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="handleFailureInMethod:object:file:lineNumber:description:" swt_gen="true">
@@ -45,7 +90,7 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
+			<arg swt_gen="true" swt_param_name="format"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -60,7 +105,18 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="attributesAtIndex:longestEffectiveRange:inRange:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="initWithString:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true" swt_java_type="NSAttributedString"></retval>
+		</method>
+		<method selector="initWithString:attributes:" swt_gen="true">
+			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSAttributedString"></retval>
 		</method>
@@ -72,10 +128,6 @@
 		</method>
 	</class>
 	<class name="NSAutoreleasePool" swt_gen="mixed">
-		<method class_method="true" selector="enableFreedObjectCheck:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 	</class>
 	<class name="NSBundle" swt_gen="mixed">
 		<method selector="bundleIdentifier" swt_gen="true">
@@ -461,13 +513,25 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="appendAttributedString:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="beginEditing" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="endEditing" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="mutableString" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="removeAttribute:range:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="replaceCharactersInRange:withString:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -1129,6 +1193,7 @@
 		<method selector="download:decideDestinationWithSuggestedFilename:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 	</informal_protocol>
 	<struct name="NSAffineTransformStruct" swt_gen="true">

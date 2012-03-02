@@ -349,6 +349,28 @@ public static final native int /*long*/ PMPrinterGetIndexedPrinterResolution(int
  */
 public static final native int /*long*/ FindWindow (int /*long*/ h, int /*long*/ v, int /*long*/ [] wHandle);
 
+/**
+ * @method flags=dynamic
+ * @param display cast=(CGDirectDisplayID)
+ */
+public static final native int /*long*/ CGDisplayBaseAddress(int display);
+/**
+ * @method flags=dynamic
+ * @param display cast=(CGDirectDisplayID)
+ */
+public static final native int /*long*/ CGDisplayBitsPerPixel(int display);
+/**
+ * @method flags=dynamic
+ * @param display cast=(CGDirectDisplayID)
+ */
+public static final native int /*long*/ CGDisplayBitsPerSample(int display);
+/**
+ * @method flags=dynamic
+ * @param display cast=(CGDirectDisplayID)
+ */
+public static final native int /*long*/ CGDisplayBytesPerRow(int display);
+
+
 /** C calls */
 
 public static final native int getpid();
@@ -1226,7 +1248,6 @@ public static final int /*long*/ sel_elementAtIndex_associatedPoints_ = sel_regi
 public static final int /*long*/ sel_elementCount = sel_registerName("elementCount");
 public static final int /*long*/ sel_enableCursorRects = sel_registerName("enableCursorRects");
 public static final int /*long*/ sel_enableFlushWindow = sel_registerName("enableFlushWindow");
-public static final int /*long*/ sel_enableFreedObjectCheck_ = sel_registerName("enableFreedObjectCheck:");
 public static final int /*long*/ sel_endDocument = sel_registerName("endDocument");
 public static final int /*long*/ sel_endEditing = sel_registerName("endEditing");
 public static final int /*long*/ sel_endEditingFor_ = sel_registerName("endEditingFor:");
@@ -2266,7 +2287,7 @@ public static final int NSControlKeyMask = 262144;
 public static final int NSCriticalAlertStyle = 2;
 public static final int NSCurveToBezierPathElement = 2;
 public static final int NSDeleteCharacter = 127;
-public static final int NSDeviceIndependentModifierFlagsMask = -65536;
+public static final long NSDeviceIndependentModifierFlagsMask = 4294901760L;
 public static final int NSDocModalWindowMask = 64;
 public static final int NSDragOperationCopy = 1;
 public static final int NSDragOperationDelete = 32;
@@ -2468,6 +2489,7 @@ public static final int kCGEventRightMouseUp = 4;
 public static final int kCGEventSourceStateHIDSystemState = 1;
 public static final int kCGEventSuppressionStateRemoteMouseDrag = 1;
 public static final int kCGEventSuppressionStateSuppressionInterval = 0;
+public static final int kCGHIDEventTap = 0;
 public static final int kCGImageAlphaFirst = 4;
 public static final int kCGImageAlphaLast = 3;
 public static final int kCGImageAlphaNoneSkipFirst = 6;
@@ -2488,7 +2510,6 @@ public static final int kCGPathElementMoveToPoint = 0;
 public static final int kCGPathStroke = 2;
 public static final int kCGScrollEventUnitLine = 1;
 public static final int kCGScrollEventUnitPixel = 0;
-public static final int kCGHIDEventTap = 0;
 public static final int kCGTextFillStroke = 2;
 public static final int kCTParagraphStyleSpecifierBaseWritingDirection = 13;
 public static final int kCTWritingDirectionLeftToRight = 0;
@@ -3414,22 +3435,6 @@ public static final native int /*long*/ CGDataProviderCreateWithData(int /*long*
  * @param provider cast=(CGDataProviderRef)
  */
 public static final native void CGDataProviderRelease(int /*long*/ provider);
-/**
- * @param display cast=(CGDirectDisplayID)
- */
-public static final native int /*long*/ CGDisplayBaseAddress(int display);
-/**
- * @param display cast=(CGDirectDisplayID)
- */
-public static final native int /*long*/ CGDisplayBitsPerPixel(int display);
-/**
- * @param display cast=(CGDirectDisplayID)
- */
-public static final native int /*long*/ CGDisplayBitsPerSample(int display);
-/**
- * @param display cast=(CGDirectDisplayID)
- */
-public static final native int /*long*/ CGDisplayBytesPerRow(int display);
 /**
  * @param display cast=(CGDirectDisplayID)
  */

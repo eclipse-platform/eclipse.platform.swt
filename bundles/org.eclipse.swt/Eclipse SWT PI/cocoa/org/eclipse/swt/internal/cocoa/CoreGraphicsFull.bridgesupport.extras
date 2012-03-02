@@ -18,6 +18,7 @@
 	<enum name="kCGEventSourceStateHIDSystemState" swt_gen="true"></enum>
 	<enum name="kCGEventSuppressionStateRemoteMouseDrag" swt_gen="true"></enum>
 	<enum name="kCGEventSuppressionStateSuppressionInterval" swt_gen="true"></enum>
+	<enum name="kCGHIDEventTap" swt_gen="true"></enum>
 	<enum name="kCGImageAlphaFirst" swt_gen="true"></enum>
 	<enum name="kCGImageAlphaLast" swt_gen="true"></enum>
 	<enum name="kCGImageAlphaNoneSkipFirst" swt_gen="true"></enum>
@@ -38,7 +39,6 @@
 	<enum name="kCGPathStroke" swt_gen="true"></enum>
 	<enum name="kCGScrollEventUnitLine" swt_gen="true"></enum>
 	<enum name="kCGScrollEventUnitPixel" swt_gen="true"></enum>
-	<enum name="kCGSessionEventTap" swt_gen="true"></enum>
 	<enum name="kCGTextFillStroke" swt_gen="true"></enum>
 	<function name="CGBitmapContextCreate" swt_gen="true">
 		<arg swt_gen="true"></arg>
@@ -65,109 +65,135 @@
 	</function>
 	<function name="CGColorRelease" swt_gen="true">
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGColorSpaceCreateDeviceRGB" swt_gen="true">
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CGColorSpaceRelease" swt_gen="true">
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextAddPath" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextBeginTransparencyLayerWithRect" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextDrawImage" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextEndTransparencyLayer" swt_gen="true">
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextFillRect" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextRelease" swt_gen="true">
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextReplacePathWithStrokedPath" swt_gen="true">
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextRestoreGState" swt_gen="true">
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextSaveGState" swt_gen="true">
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextScaleCTM" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextSetBlendMode" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextSetFillColor" swt_gen="true">
 		<arg swt_gen="true" swt_param_name="c"></arg>
 		<arg swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextSetFillColorSpace" swt_gen="true">
 		<arg swt_gen="true" swt_param_name="c"></arg>
 		<arg swt_gen="true" swt_param_name="colorspace"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextSetLineCap" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextSetLineDash" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true" swt_java_type="float[]" swt_java_type64="float[]"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextSetLineJoin" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextSetLineWidth" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextSetMiterLimit" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextSetShouldAntialias" swt_gen="true">
 		<arg swt_gen="true" swt_param_name="c"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextSetTextDrawingMode" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextSetTextMatrix" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextSetTextPosition" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextStrokePath" swt_gen="true">
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGContextTranslateCTM" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGDataProviderCreateWithData" swt_gen="true">
 		<arg swt_gen="true"></arg>
@@ -183,6 +209,7 @@
 	</function>
 	<function name="CGDataProviderRelease" swt_gen="true">
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGDisplayBaseAddress" swt_gen="true">
 		<arg swt_gen="true"></arg>
@@ -236,6 +263,7 @@
 	<function name="CGEventPost" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGEventSourceCreate" swt_gen="true">
 		<arg swt_gen="true" swt_param_name="sourceState"></arg>
@@ -272,6 +300,7 @@
 	</function>
 	<function name="CGImageRelease" swt_gen="true">
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGPathAddCurveToPoint" swt_gen="true">
 		<arg swt_gen="true"></arg>
@@ -282,17 +311,20 @@
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGPathAddLineToPoint" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGPathAddRect" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGPathApply" swt_gen="true">
 		<arg swt_gen="true"></arg>
@@ -302,9 +334,11 @@
 			<arg></arg>
 			<retval swt_gen="true"></retval>
 		</arg>
+		<retval></retval>
 	</function>
 	<function name="CGPathCloseSubpath" swt_gen="true">
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGPathCreateCopy" swt_gen="true">
 		<arg swt_gen="true"></arg>
@@ -318,9 +352,11 @@
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGPathRelease" swt_gen="true">
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CGPostKeyboardEvent" swt_gen="true">
 		<arg swt_gen="true"></arg>

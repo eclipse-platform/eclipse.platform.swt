@@ -243,49 +243,65 @@
 		</method>
 	</class>
 	<informal_protocol name="WebDocumentRepresentation" swt_gen="true">
-		<method selector="documentSource" swt_gen="true"></method>
+		<method selector="documentSource" swt_gen="true">
+			<retval></retval>
+		</method>
 	</informal_protocol>
 	<informal_protocol name="WebFrameLoadDelegate" swt_gen="mixed">
 		<method selector="webView:didChangeLocationWithinPageForFrame:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:didCommitLoadForFrame:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:didFailProvisionalLoadWithError:forFrame:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:didFinishLoadForFrame:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:didReceiveTitle:forFrame:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:didStartProvisionalLoadForFrame:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:windowScriptObjectAvailable:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="WebOpenPanelResultListener" swt_gen="true">
 		<method selector="chooseFilename:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="WebPolicyDecisionListener" swt_gen="true">
-		<method selector="download" swt_gen="true"></method>
-		<method selector="ignore" swt_gen="true"></method>
-		<method selector="use" swt_gen="true"></method>
+		<method selector="download" swt_gen="true">
+			<retval></retval>
+		</method>
+		<method selector="ignore" swt_gen="true">
+			<retval></retval>
+		</method>
+		<method selector="use" swt_gen="true">
+			<retval></retval>
+		</method>
 	</informal_protocol>
 	<informal_protocol name="WebPolicyDelegate" swt_gen="true">
 		<method selector="webView:decidePolicyForMIMEType:request:frame:decisionListener:" swt_gen="true">
@@ -294,6 +310,7 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:decidePolicyForNavigationAction:request:frame:decisionListener:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -301,6 +318,7 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:decidePolicyForNewWindowAction:request:newFrameName:decisionListener:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -308,11 +326,13 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:unableToImplementPolicyWithError:frame:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="WebResourceLoadDelegate" swt_gen="mixed">
@@ -320,23 +340,27 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:resource:didFailLoadingWithError:fromDataSource:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:resource:didFinishLoadingFromDataSource:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:resource:didReceiveAuthenticationChallenge:fromDataSource:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:resource:willSendRequest:redirectResponse:fromDataSource:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -344,6 +368,7 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="WebUIDelegate" swt_gen="mixed">
@@ -351,78 +376,97 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:createWebViewWithRequest:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:mouseDidMoveOverElement:modifierFlags:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:printFrameView:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:runBeforeUnloadConfirmPanelWithMessage:initiatedByFrame:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:runJavaScriptAlertPanelWithMessage:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:runJavaScriptAlertPanelWithMessage:initiatedByFrame:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:runJavaScriptConfirmPanelWithMessage:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:runOpenPanelForFileButtonWithResultListener:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:setFrame:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:setResizable:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:setStatusBarVisible:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:setStatusText:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webView:setToolbarsVisible:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webViewClose:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webViewFocus:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webViewShow:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 		<method selector="webViewUnfocus:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval></retval>
 		</method>
 	</informal_protocol>
 </signatures>

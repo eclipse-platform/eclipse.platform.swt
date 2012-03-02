@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,7 +34,7 @@ public NSTableHeaderCell headerCell() {
 	return result != 0 ? new NSTableHeaderCell(result) : null;
 }
 
-public NSTableColumn initWithIdentifier(id identifier) {
+public NSTableColumn initWithIdentifier(NSString identifier) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIdentifier_, identifier != null ? identifier.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSTableColumn(result) : null);
 }
@@ -55,7 +55,7 @@ public void setHeaderCell(NSCell cell) {
 	OS.objc_msgSend(this.id, OS.sel_setHeaderCell_, cell != null ? cell.id : 0);
 }
 
-public void setIdentifier(id identifier) {
+public void setIdentifier(NSString identifier) {
 	OS.objc_msgSend(this.id, OS.sel_setIdentifier_, identifier != null ? identifier.id : 0);
 }
 

@@ -162,8 +162,19 @@ String fixDelimiter(String str) {
 String getParamName(Node param) {
 	NamedNodeMap paramAttributes = param.getAttributes();
 	Node swtName = paramAttributes.getNamedItem("swt_param_name");
-	String paramName = swtName != null ? swtName.getNodeValue() : paramAttributes.getNamedItem("name").getNodeValue();
-	if (paramName.length() == 0) paramName = "arg" + paramAttributes.getNamedItem("index").getNodeValue();
+	String paramName = "";
+	if (swtName != null) {
+		paramName = swtName.getNodeValue();
+	} else {
+		 Node node = paramAttributes.getNamedItem("name");
+		 if (node != null) paramName = node.getNodeValue();
+	}
+	if (paramName.length() == 0) {
+		Node node = paramAttributes.getNamedItem("index");
+		String index = "0";
+		if (node != null) index = node.getNodeValue();
+		paramName = "arg" + index;
+	}
 	if (paramName.equals("boolean")) paramName = "b";
 	return paramName;
 }
@@ -875,12 +886,17 @@ void generateEnums() {
 						if (value.indexOf('.') != -1) {
 							out("double ");
 						} else {
-							try {
-								Integer.parseInt(value);
+							if (value.equals("4294967295")) {
 								out("int ");
-							} catch (NumberFormatException e) {
-								isLong = true;
-								out("long ");
+								value = "-1";
+							} else {
+								try {
+									Integer.parseInt(value);
+									out("int ");
+								} catch (NumberFormatException e) {
+									isLong = true;
+									out("long ");
+								}
 							}
 						}
 						out(attributes.getNamedItem("name").getNodeValue());
@@ -925,25 +941,33 @@ boolean isStatic(Node node) {
 
 boolean isStruct(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
-	String code = attributes.getNamedItem("type").getNodeValue();
+	Node type = attributes.getNamedItem("type");
+	if (type == null) return false;
+	String code = type.getNodeValue();
 	return code.startsWith("{");
 }
 
 boolean isFloatingPoint(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
-	String code = attributes.getNamedItem("type").getNodeValue();
+	Node type = attributes.getNamedItem("type");
+	if (type == null) return false;
+	String code = type.getNodeValue();
 	return code.equals("f") || code.equals("d");
 }
 
 boolean isObject(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
-	String code = attributes.getNamedItem("type").getNodeValue();
+	Node type = attributes.getNamedItem("type");
+	if (type == null) return false;
+	String code = type.getNodeValue();
 	return code.equals("@");
 }
 
 boolean isBoolean(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
-	String code = attributes.getNamedItem("type").getNodeValue();
+	Node type = attributes.getNamedItem("type");
+	if (type == null) return false;
+	String code = type.getNodeValue();
 	return code.equals("B");
 }
 
@@ -1446,7 +1470,9 @@ String getType(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
 	Node javaType = attributes.getNamedItem("swt_java_type");
 	if (javaType != null) return javaType.getNodeValue();
-	String code = attributes.getNamedItem("type").getNodeValue();
+	Node type = attributes.getNamedItem("type");
+	if (type == null) return "notype";
+	String code = type.getNodeValue();
 	return getType(code, attributes, false);
 }
 
@@ -1458,6 +1484,7 @@ String getType64(Node node) {
 		return javaType64 != null ? javaType64.getNodeValue() : javaType.getNodeValue();
 	}
 	Node attrib = attributes.getNamedItem("type");
+	if (attrib == null) return "notype";
 	String code = attrib.getNodeValue();
 	Node attrib64 = attributes.getNamedItem("type64");
 	if (attrib64 != null) code = attrib64.getNodeValue();
@@ -1524,7 +1551,9 @@ String getJavaType(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
 	Node javaType = attributes.getNamedItem("swt_java_type");
 	if (javaType != null) return javaType.getNodeValue().trim();
-	String code = attributes.getNamedItem("type").getNodeValue();
+	Node type = attributes.getNamedItem("type");
+	if (type == null) return "notype";
+	String code = type.getNodeValue();
 	return getJavaType(code, attributes, false);
 }
 
@@ -1536,6 +1565,7 @@ String getJavaType64(Node node) {
 		return javaType64 != null ? javaType64.getNodeValue() : javaType.getNodeValue();
 	}
 	Node attrib = attributes.getNamedItem("type");
+	if (attrib == null) return "notype";
 	String code = attrib.getNodeValue();
 	Node attrib64 = attributes.getNamedItem("type64");
 	if (attrib64 != null) code = attrib64.getNodeValue();

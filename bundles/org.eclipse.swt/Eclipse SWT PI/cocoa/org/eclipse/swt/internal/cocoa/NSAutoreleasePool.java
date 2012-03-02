@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,10 +22,6 @@ public NSAutoreleasePool(int /*long*/ id) {
 
 public NSAutoreleasePool(id id) {
 	super(id);
-}
-
-public static void enableFreedObjectCheck(boolean enable) {
-	OS.objc_msgSend(OS.class_NSAutoreleasePool, OS.sel_enableFreedObjectCheck_, enable);
 }
 
 }

@@ -66,3 +66,7 @@
 #define PMSetDuplex_LIB "com.apple.ApplicationServices"
 #define HIWindowFindAtLocation_LIB "com.apple.Carbon"
 #define HIWindowGetCGWindowID_LIB "com.apple.Carbon"
+#define CGDisplayBaseAddress_LIB "com.apple.ApplicationServices"
+#define CGDisplayBitsPerPixel_LIB "com.apple.ApplicationServices"
+#define CGDisplayBitsPerSample_LIB "com.apple.ApplicationServices"
+#define CGDisplayBytesPerRow_LIB "com.apple.ApplicationServices"

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1617,7 +1617,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayBaseAddress)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, CGDisplayBaseAddress_FUNC);
+/*
 	rc = (jintLong)CGDisplayBaseAddress((CGDirectDisplayID)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, CGDisplayBaseAddress)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(CGDirectDisplayID))fp)((CGDirectDisplayID)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, CGDisplayBaseAddress_FUNC);
 	return rc;
 }
@@ -1629,7 +1637,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayBitsPerPixel)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, CGDisplayBitsPerPixel_FUNC);
+/*
 	rc = (jintLong)CGDisplayBitsPerPixel((CGDirectDisplayID)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, CGDisplayBitsPerPixel)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(CGDirectDisplayID))fp)((CGDirectDisplayID)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, CGDisplayBitsPerPixel_FUNC);
 	return rc;
 }
@@ -1641,7 +1657,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayBitsPerSample)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, CGDisplayBitsPerSample_FUNC);
+/*
 	rc = (jintLong)CGDisplayBitsPerSample((CGDirectDisplayID)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, CGDisplayBitsPerSample)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(CGDirectDisplayID))fp)((CGDirectDisplayID)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, CGDisplayBitsPerSample_FUNC);
 	return rc;
 }
@@ -1653,7 +1677,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGDisplayBytesPerRow)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, CGDisplayBytesPerRow_FUNC);
+/*
 	rc = (jintLong)CGDisplayBytesPerRow((CGDirectDisplayID)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, CGDisplayBytesPerRow)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(CGDirectDisplayID))fp)((CGDirectDisplayID)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, CGDisplayBytesPerRow_FUNC);
 	return rc;
 }

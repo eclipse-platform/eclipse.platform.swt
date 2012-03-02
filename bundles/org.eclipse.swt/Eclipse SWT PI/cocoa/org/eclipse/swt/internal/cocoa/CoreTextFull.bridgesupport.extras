@@ -26,6 +26,7 @@
 	<function name="CTLineDraw" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
+		<retval></retval>
 	</function>
 	<function name="CTLineGetTypographicBounds" swt_gen="true">
 		<arg swt_gen="true"></arg>

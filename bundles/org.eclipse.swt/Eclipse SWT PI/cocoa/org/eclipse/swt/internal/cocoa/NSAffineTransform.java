@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,6 +28,10 @@ public void concat() {
 	OS.objc_msgSend(this.id, OS.sel_concat);
 }
 
+public void set() {
+	OS.objc_msgSend(this.id, OS.sel_set);
+}
+
 public NSAffineTransform initWithTransform(NSAffineTransform transform) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithTransform_, transform != null ? transform.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSAffineTransform(result) : null);
@@ -47,10 +51,6 @@ public void rotateByDegrees(float /*double*/ angle) {
 
 public void scaleXBy(float /*double*/ scaleX, float /*double*/ scaleY) {
 	OS.objc_msgSend(this.id, OS.sel_scaleXBy_yBy_, scaleX, scaleY);
-}
-
-public void set() {
-	OS.objc_msgSend(this.id, OS.sel_set);
 }
 
 public void setTransformStruct(NSAffineTransformStruct transformStruct) {

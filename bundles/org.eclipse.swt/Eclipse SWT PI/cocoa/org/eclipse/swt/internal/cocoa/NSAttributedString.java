@@ -29,11 +29,6 @@ public static NSAttributedString attributedStringWithAttachment(NSTextAttachment
 	return result != 0 ? new NSAttributedString(result) : null;
 }
 
-public NSDictionary attributesAtIndex(int /*long*/ location, int /*long*/ range, NSRange rangeLimit) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_attributesAtIndex_longestEffectiveRange_inRange_, location, range, rangeLimit);
-	return result != 0 ? new NSDictionary(result) : null;
-}
-
 public NSRect boundingRectWithSize(NSSize size, int /*long*/ options) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_boundingRectWithSize_options_, size, options);
@@ -52,11 +47,6 @@ public void drawAtPoint(NSPoint point) {
 
 public void drawInRect(NSRect rect) {
 	OS.objc_msgSend(this.id, OS.sel_drawInRect_, rect);
-}
-
-public NSAttributedString initWithString(NSString str, NSDictionary attrs) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithString_attributes_, str != null ? str.id : 0, attrs != null ? attrs.id : 0);
-	return result == this.id ? this : (result != 0 ? new NSAttributedString(result) : null);
 }
 
 public int /*long*/ nextWordFromIndex(int /*long*/ location, boolean isForward) {
@@ -79,8 +69,18 @@ public NSAttributedString attributedSubstringFromRange(NSRange range) {
 	return result == this.id ? this : (result != 0 ? new NSAttributedString(result) : null);
 }
 
+public NSDictionary attributesAtIndex(int /*long*/ location, int /*long*/ range, NSRange rangeLimit) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_attributesAtIndex_longestEffectiveRange_inRange_, location, range, rangeLimit);
+	return result != 0 ? new NSDictionary(result) : null;
+}
+
 public NSAttributedString initWithString(NSString str) {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithString_, str != null ? str.id : 0);
+	return result == this.id ? this : (result != 0 ? new NSAttributedString(result) : null);
+}
+
+public NSAttributedString initWithString(NSString str, NSDictionary attrs) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithString_attributes_, str != null ? str.id : 0, attrs != null ? attrs.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSAttributedString(result) : null);
 }
 
