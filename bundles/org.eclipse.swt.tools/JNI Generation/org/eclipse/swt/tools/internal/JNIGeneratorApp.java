@@ -24,7 +24,7 @@ public class JNIGeneratorApp {
 	JNIClass mainClass;
 	JNIClass[] classes;
 	ProgressMonitor progress;
-	String mainClassName, outputDir, classpath;
+	String mainClassName, classesDir, outputDir, classpath;
 	MetaData metaData;
 	
 	static boolean USE_AST = true;
@@ -34,6 +34,10 @@ public JNIGeneratorApp() {
 
 public String getClasspath() {
 	return classpath;
+}
+
+public String getClassesDir() {
+	return classesDir;
 }
 
 public JNIClass getMainClass() {
@@ -332,7 +336,8 @@ public JNIClass[] getClasses() {
 			if (qualifiedName.equals(mainClassName)) {
 				classes[i] = mainClass;
 			} else {
-				String sourcePath = new File(outputDir).getParent() + "/" + qualifiedName.replace('.', '/') + ".java";
+				String root = classesDir != null ? classesDir : new File(outputDir).getParent() + "/";
+				String sourcePath = root + qualifiedName.replace('.', '/') + ".java";
 				classes[i] = new ReflectClass(Class.forName(qualifiedName, false, getClass().getClassLoader()), metaData, sourcePath);
 			}
 		} catch (Exception e) {
@@ -345,8 +350,8 @@ public JNIClass[] getClasses() {
 JNIClass[] getASTClasses() {
 	if (classes != null) return classes;
 	if (mainClassName == null) return new JNIClass[0];
-	String root = new File(outputDir).getParent();
-	String mainPath = new File(root + "/" + mainClassName.replace('.', '/') + ".java").getAbsolutePath();
+	String root = classesDir != null ? classesDir : new File(outputDir).getParent() + "/";
+	String mainPath = new File(root + mainClassName.replace('.', '/') + ".java").getAbsolutePath();
 	ArrayList classes = new ArrayList();
 	String packageName = getPackageName(mainClassName);
 	File dir = new File(root + "/" + packageName.replace('.', '/'));
@@ -445,7 +450,8 @@ public void setMainClassName(String str) {
 	}
 	if (mainClassName != null) {
 		try {
-			String sourcePath = new File(outputDir).getParent() + "/" + mainClassName.replace('.', '/') + ".java";
+			String root = classesDir != null ? classesDir : new File(outputDir).getParent() + "/";
+			String sourcePath = root + mainClassName.replace('.', '/') + ".java";
 			if (USE_AST) {
 				mainClass = new ASTClass(sourcePath, metaData);
 			} else {
@@ -457,11 +463,17 @@ public void setMainClassName(String str) {
 	}
 }
 public void setMainClassName(String str, String outputDir) {
+	setMainClassName(str, outputDir, null);
+}
+
+public void setMainClassName(String str, String outputDir, String classesDir) {
 	mainClassName = str;
+	setClassesDir(classesDir);
 	setOutputDir(outputDir);
 	metaData = new MetaData(mainClassName);
 	try {
-		String sourcePath = new File(this.outputDir).getParent() + "/" + mainClassName.replace('.', '/') + ".java";
+		String root = classesDir != null ? classesDir : new File(outputDir).getParent() + "/";
+		String sourcePath = root + mainClassName.replace('.', '/') + ".java";
 		if (USE_AST) {
 			mainClass = new ASTClass(sourcePath, metaData);
 		} else {
@@ -472,13 +484,24 @@ public void setMainClassName(String str, String outputDir) {
 	}
 }
 
+public void setClassesDir(String str) {
+	if (str != null) {
+		if (!str.endsWith("\\") && !str.endsWith("/") ) {
+			str += File.separator;
+		}
+		str = str.replace('\\', '/');
+	}
+	classesDir = str;
+}
+
 public void setOutputDir(String str) {
 	if (str != null) {
 		if (!str.endsWith("\\") && !str.endsWith("/") ) {
 			str += File.separator;
 		}
+		str = str.replace('\\', '/');
 	}
-	outputDir = str.replace('\\', '/');
+	outputDir = str;
 }
 
 public static String getDefaultMainClass() {

@@ -20,7 +20,7 @@ import org.xml.sax.InputSource;
 public class MacGenerator {
 	String[] xmls;
 	Document[] documents;
-	String outputDir, mainClassName;
+	String outputDir, outputLibDir, extrasDir, mainClassName;
 	String delimiter = System.getProperty("line.separator");
 
 	PrintStream out;
@@ -137,7 +137,8 @@ public void generate(ProgressMonitor progress) {
 
 void generateCSource() {
 	JNIGeneratorApp app = new JNIGeneratorApp();
-	app.setMainClassName(mainClassName, outputDir + "/library");
+	String outputLibDir = this.outputLibDir != null ? this.outputLibDir : outputDir + "/library";
+	app.setMainClassName(mainClassName, outputLibDir, outputDir);
 	app.generate();
 }
 
@@ -446,7 +447,7 @@ void copyClassMethodsDown(final Map classes) {
 		int getHierarchyLevel(Node node) {
 			String superclass = getSuperclassName(node);
 			int level = 0;
-			while (!superclass.equals("id")) {
+			while (!superclass.equals("id") && !superclass.equals("NSObject")) {
 				level++;
 				superclass = getSuperclassName((Node)((Object[])classes.get(superclass))[0]);
 			}
@@ -561,7 +562,7 @@ void generateMainClass() {
 		int start = str.indexOf(section) + section.length();
 		int end = str.indexOf(section, start);
 		header = str.substring(0, start);
-		footer = str.substring(end);
+		footer = end == -1 ? "\n}" : str.substring(end);
 	} catch (IOException e) {
 	} finally {
 		try {
@@ -633,7 +634,8 @@ public Document[] getDocuments() {
 			if (document == null) continue;
 			if (mainClassName != null && outputDir != null) {
 				String packageName = getPackageName(mainClassName);
-				String extrasPath = outputDir + packageName.replace('.', '/') + "/" + getFileName(xmlPath) + ".extras";
+				String folder = extrasDir != null ? extrasDir : outputDir + packageName.replace('.', '/');
+				String extrasPath = folder + "/" + getFileName(xmlPath) + ".extras";
 				merge(document, getDocument(extrasPath));
 			}
 		}
@@ -660,7 +662,8 @@ public String[] getXmls() {
 void saveExtraAttributes(String xmlPath, Document document) {
 	try {
 		String packageName = getPackageName(mainClassName);
-		String fileName = outputDir + packageName.replace('.', '/') + "/" + getFileName(xmlPath) + ".extras";
+		String folder = extrasDir != null ? extrasDir : outputDir + packageName.replace('.', '/');
+		String fileName = folder + "/" + getFileName(xmlPath) + ".extras";
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		DOMWriter writer = new DOMWriter(new PrintStream(out));
 		String[] names = getIDAttributeNames();
@@ -686,6 +689,24 @@ public void setOutputDir(String dir) {
 		}
 	}
 	this.outputDir = dir;
+}
+
+public void setOutputLibDir(String dir) {
+	if (dir != null) {
+		if (!dir.endsWith("\\") && !dir.endsWith("/") ) {
+			dir += "/";
+		}
+	}
+	this.outputLibDir = dir;
+}
+
+public void setExtrasDir(String dir) {
+	if (dir != null) {
+		if (!dir.endsWith("\\") && !dir.endsWith("/") ) {
+			dir += "/";
+		}
+	}
+	this.extrasDir = dir;
 }
 
 public void setXmls(String[] xmls) {
