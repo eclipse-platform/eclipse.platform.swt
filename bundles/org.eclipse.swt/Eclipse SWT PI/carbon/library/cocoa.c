@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -524,7 +524,9 @@ JNIEXPORT void JNICALL Cocoa_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_inter
 	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSPoint_2JJ_FUNC);
 #endif
 	if (arg0) if ((lparg0 = getNSPointFields(env, arg0, &_arg0)) == NULL) goto fail;
-	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+	if (STRUCT_SIZE_LIMIT == 0) {
+		((void (*)(NSPoint *, jintLong, jintLong))objc_msgSend_stret)(lparg0, arg1, arg2);
+	} else if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
 		*lparg0 = (*(NSPoint (*)(jintLong, jintLong))objc_msgSend_stret)(arg1, arg2);
 	} else {
 		*lparg0 = (*(NSPoint (*)(jintLong, jintLong))objc_msgSend)(arg1, arg2);
@@ -546,7 +548,9 @@ JNIEXPORT void JNICALL Cocoa_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_inter
 	NSRect _arg0, *lparg0=NULL;
 	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2II_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
-	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+	if (STRUCT_SIZE_LIMIT == 0) {
+		objc_msgSend_stret((void *)lparg0, (void *)arg1, (SEL)arg2);
+	} else if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
 		*lparg0 = (*(NSRect (*)(void *, SEL))objc_msgSend_stret)((void *)arg1, (SEL)arg2);
 	} else {
 		*lparg0 = (*(NSRect (*)(void *, SEL))objc_msgSend)((void *)arg1, (SEL)arg2);
@@ -566,7 +570,9 @@ JNIEXPORT void JNICALL Cocoa_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_inter
 	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSRect_2I_FUNC);
 	if (arg0) if ((lparg0 = getNSRectFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
-	if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
+	if (STRUCT_SIZE_LIMIT == 0) {
+		objc_msgSend_stret((void *)lparg0, (void *)arg1, (SEL)arg2, *lparg3, arg4);
+	} else if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
 		*lparg0 = (*(NSRect (*)(void *, SEL, NSRect, jint))objc_msgSend_stret)((void *)arg1, (SEL)arg2, *lparg3, arg4);
 	} else {
 		*lparg0 = (*(NSRect (*)(void *, SEL, NSRect, jint))objc_msgSend)((void *)arg1, (SEL)arg2, *lparg3, arg4);
