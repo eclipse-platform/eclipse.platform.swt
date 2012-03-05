@@ -22,6 +22,7 @@ public interface Flags {
 	public static final String FLAG_UNICODE = "unicode";
 	public static final String FLAG_SENTINEL = "sentinel";
 	public static final String FLAG_CPP = "cpp";
+	public static final String FLAG_M = "m";
 	public static final String FLAG_NEW = "new";
 	public static final String FLAG_DELETE ="delete";
 	public static final String FLAG_CONST = "const";

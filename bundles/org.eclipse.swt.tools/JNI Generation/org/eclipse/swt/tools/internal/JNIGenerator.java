@@ -270,7 +270,7 @@ public String getDelimiter() {
 }
 
 public String getExtension() {
-	return getCPP() ? ".cpp" : ".c";
+	return getCPP() ? ".cpp" : getM() ? ".m" : ".c";
 }
 
 public String getFileName() {
@@ -287,6 +287,16 @@ public PrintStream getOutput() {
 
 public String getOutputName() {
 	return getMainClass().getSimpleName().toLowerCase();
+}
+
+public boolean getM() {
+	for (int i = 0; i < classes.length; i++) {
+		JNIClass clazz = classes[i];
+		if (clazz.getFlag(FLAG_M)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 public JNIClass getMainClass() {
