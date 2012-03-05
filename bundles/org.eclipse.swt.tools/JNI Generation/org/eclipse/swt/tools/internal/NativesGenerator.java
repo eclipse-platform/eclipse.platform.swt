@@ -675,10 +675,10 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 	boolean objc_struct = false;
 	if (name.equals("objc_msgSend_stret") || name.equals("objc_msgSendSuper_stret")) objc_struct = true;
 	if (objc_struct) {
-		outputln("if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {");
-		generate_objc_msgSend_stret (method, params, name);
-		paramStart = 1;
-	} else if (name.equalsIgnoreCase("call")) {
+		outputln("if (STRUCT_SIZE_LIMIT == 0) {");
+		output("\t\t");
+	}
+	if (name.equalsIgnoreCase("call")) {
 		output("(");
 		String cast = params[0].getCast(); 
 		if (cast.length() != 0 && !cast.equals("()")) {
@@ -850,6 +850,10 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 		outputln("\t}");
 	}
 	if (objc_struct) {
+		outputln("\t} else if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {");
+		generate_objc_msgSend_stret (method, params, name);
+		generateFunctionCallRightSide(method, params, 1);
+		outputln(";");
 		outputln("\t} else {");
 		generate_objc_msgSend_stret (method, params, name.substring(0, name.length() - "_stret".length()));
 		generateFunctionCallRightSide(method, params, 1);
