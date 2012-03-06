@@ -659,9 +659,7 @@ void createHandle (int index) {
 			if (!isUndecorated ()) {
 				OS.gtk_window_set_type_hint (shellHandle, OS.GDK_WINDOW_TYPE_HINT_DIALOG);
 			} else {
-				if (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) {
-					OS.gtk_window_set_skip_taskbar_hint (shellHandle, true);
-				}
+				OS.gtk_window_set_skip_taskbar_hint (shellHandle, true);
 			}
 		}
 		/*
@@ -2124,7 +2122,7 @@ void showWidget () {
 		* no focusIn events are generated on the window until the window loses
 		* and gain focus.
 		*/
-		if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0) && OS.gtk_window_is_active (shellHandle)) {
+		if (OS.gtk_window_is_active (shellHandle)) {
 			display.activeShell = this;
 			display.activePending = true;
 		}
@@ -2264,9 +2262,6 @@ void updateModal () {
 		if (modalGroup != 0) {
 			OS.gtk_window_group_remove_window (modalGroup, shellHandle);
 		}
-	}
-	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
-		fixModal (group, modalGroup);
 	}
 	modalGroup = group;
 }
@@ -2477,9 +2472,7 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 		* The call is to be avoided on GTK versions newer than 2.12.0
 		* where it's deprecated.
 		*/
-		if (OS.GTK_VERSION >= OS.VERSION (2, 2, 1)) {
-			OS.gtk_tooltips_force_window (tooltipsHandle);
-		}
+		OS.gtk_tooltips_force_window (tooltipsHandle);
 		int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (tooltipsHandle);
 		if (tipWindow != 0 && tipWindow != tooltipWindow) {
 			OS.g_signal_connect (tipWindow, OS.size_allocate, display.sizeAllocateProc, shellHandle);
