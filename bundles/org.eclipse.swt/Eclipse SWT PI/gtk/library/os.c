@@ -5030,6 +5030,25 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1color_1free)
 }
 #endif
 
+#ifndef NO__1gdk_1color_1parse
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1color_1parse)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jobject arg1)
+{
+	jbyte *lparg0=NULL;
+	GdkColor _arg1, *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1color_1parse_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+	rc = (jboolean)gdk_color_parse((const gchar *)lparg0, (GdkColor *)lparg1);
+fail:
+	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1color_1parse_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1color_1white
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1color_1white)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
@@ -8133,6 +8152,35 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1color_1selection_1get_1current_1color)
 fail:
 	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1color_1selection_1get_1current_1color_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1color_1selection_1palette_1from_1string
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1color_1selection_1palette_1from_1string)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jintLong arg1, jintArray arg2)
+{
+	jbyte *lparg0=NULL;
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1color_1selection_1palette_1from_1string_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_color_selection_palette_from_string((const gchar *)lparg0, (GdkColor **)arg1, (gint *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1color_1selection_1palette_1from_1string_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1color_1selection_1palette_1to_1string
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1color_1selection_1palette_1to_1string)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1color_1selection_1palette_1to_1string_FUNC);
+	rc = (jintLong)gtk_color_selection_palette_to_string((GdkColor *)arg0, (gint)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1color_1selection_1palette_1to_1string_FUNC);
+	return rc;
 }
 #endif
 
@@ -13026,6 +13074,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1settings_1get_1default)
 	rc = (jintLong)gtk_settings_get_default();
 	OS_NATIVE_EXIT(env, that, _1gtk_1settings_1get_1default_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1settings_1set_1string_1property
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1settings_1set_1string_1property)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jbyteArray arg2, jbyteArray arg3)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1settings_1set_1string_1property_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	gtk_settings_set_string_property((GtkSettings *)arg0, (const gchar *)lparg1, (const gchar *)lparg2, (const gchar *)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1settings_1set_1string_1property_FUNC);
 }
 #endif
 

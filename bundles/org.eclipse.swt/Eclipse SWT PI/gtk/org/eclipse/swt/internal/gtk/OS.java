@@ -549,6 +549,7 @@ public class OS extends C {
 	public static final byte[] foreground_gdk = ascii("foreground-gdk");
 	public static final byte[] grid_line_width = ascii("grid-line-width");
 	public static final byte[] gtk_alternative_button_order = ascii("gtk-alternative-button-order");
+	public static final byte[] gtk_color_palette = ascii("gtk-color-palette");
 	public static final byte[] gtk_cursor_blink = ascii("gtk-cursor-blink");
 	public static final byte[] gtk_cursor_blink_time = ascii("gtk-cursor-blink-time");
 	public static final byte[] gtk_double_click_time = ascii("gtk-double-click-time");
@@ -3660,16 +3661,6 @@ public static final void gdk_cairo_set_source_color(int /*long*/ cairo, GdkColor
 		lock.unlock();
 	}
 }
-/** @param color cast=(GdkColor *) */
-public static final native void _gdk_color_free(int /*long*/ color);
-public static final void gdk_color_free(int /*long*/ color) {
-	lock.lock();
-	try {
-		_gdk_color_free(color);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @method flags=dynamic
  * @param window cast=(GdkWindow *)
@@ -3683,6 +3674,29 @@ public static final void gdk_cairo_set_source_window(int /*long*/ cairo, int /*l
         finally {
                 lock.unlock();
         }
+}
+/** @param color cast=(GdkColor *) */
+public static final native void _gdk_color_free(int /*long*/ color);
+public static final void gdk_color_free(int /*long*/ color) {
+	lock.lock();
+	try {
+		_gdk_color_free(color);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param spec cast=(const gchar *)
+ * @param color cast=(GdkColor *),flags=no_in
+ */
+public static final native boolean _gdk_color_parse(byte[] spec, GdkColor color);
+public static final boolean gdk_color_parse(byte[] spec, GdkColor color) {
+	lock.lock();
+	try {
+		return _gdk_color_parse(spec, color);
+	} finally {
+		lock.unlock();
+	}
 }
 /**
  * @param colormap cast=(GdkColormap *)
@@ -6344,6 +6358,33 @@ public static final void gtk_color_selection_get_current_color(int /*long*/ colo
 	lock.lock();
 	try {
 		_gtk_color_selection_get_current_color(colorsel, color);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param str cast=(const gchar *)
+ * @param colors cast=(GdkColor **)
+ * @param n_colors cast=(gint *)
+ */
+public static final native void _gtk_color_selection_palette_from_string(byte[] str, int /*long*/ colors, int[] n_colors);
+public static final void gtk_color_selection_palette_from_string(byte[] str, int /*long*/ colors, int[] n_colors) {
+	lock.lock();
+	try {
+		_gtk_color_selection_palette_from_string(str, colors, n_colors);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param colors cast=(GdkColor *)
+ * @param n_colors cast=(gint)
+ */
+public static final native int /*long*/ _gtk_color_selection_palette_to_string(int /*long*/ colors, int n_colors);
+public static final int /*long*/ gtk_color_selection_palette_to_string(int /*long*/ colors, int n_colors) {
+	lock.lock();
+	try {
+		return _gtk_color_selection_palette_to_string(colors, n_colors);
 	} finally {
 		lock.unlock();
 	}
@@ -9987,6 +10028,21 @@ public static final int /*long*/ gtk_settings_get_default() {
 	lock.lock();
 	try {
 		return _gtk_settings_get_default();
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param settings cast=(GtkSettings *)
+ * @param name cast=(const gchar *)
+ * @param v_string cast=(const gchar *)
+ * @param origin cast=(const gchar *)
+ */
+public static final native void _gtk_settings_set_string_property(int /*long*/ settings, byte[] name, byte[] v_string, byte[] origin);
+public static final void gtk_settings_set_string_property(int /*long*/ settings, byte[] name, byte[] v_string, byte[] origin) {
+	lock.lock();
+	try {
+		_gtk_settings_set_string_property(settings, name, v_string, origin);
 	} finally {
 		lock.unlock();
 	}
@@ -15205,4 +15261,5 @@ public static final int access (byte [] path, int amode) {
  * @param s2 cast=(const char*)
  */
 public static final native int strcmp (int /*long*/ s1, byte [] s2);
+
 }

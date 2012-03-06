@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1378;
-int OS_nativeFunctionCallCount[1378];
+int OS_nativeFunctionCount = 1382;
+int OS_nativeFunctionCallCount[1382];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -430,6 +430,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1cairo_1set_1source_1color",
 	"_1gdk_1cairo_1set_1source_1window",
 	"_1gdk_1color_1free",
+	"_1gdk_1color_1parse",
 	"_1gdk_1color_1white",
 	"_1gdk_1colormap_1alloc_1color",
 	"_1gdk_1colormap_1free_1colors",
@@ -659,6 +660,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1clipboard_1wait_1for_1contents",
 	"_1gtk_1color_1selection_1dialog_1new",
 	"_1gtk_1color_1selection_1get_1current_1color",
+	"_1gtk_1color_1selection_1palette_1from_1string",
+	"_1gtk_1color_1selection_1palette_1to_1string",
 	"_1gtk_1color_1selection_1set_1current_1color",
 	"_1gtk_1color_1selection_1set_1has_1palette",
 	"_1gtk_1combo_1box_1entry_1new_1text",
@@ -1008,6 +1011,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1separator_1menu_1item_1new",
 	"_1gtk_1set_1locale",
 	"_1gtk_1settings_1get_1default",
+	"_1gtk_1settings_1set_1string_1property",
 	"_1gtk_1socket_1get_1id",
 	"_1gtk_1socket_1new",
 	"_1gtk_1spin_1button_1configure",

@@ -37,6 +37,7 @@ class DialogTab extends Tab {
 	Button effectsVisibleButton, usePreviousResultButton;
 	Button saveButton, openButton, multiButton;
 	RGB colorDialogResult, fontDialogColorResult;
+	RGB[] colorDialogCustomColors;
 	String directoryDialogResult;
 	String fileDialogResult;
 	int fileDialogIndexResult;
@@ -131,13 +132,23 @@ class DialogTab extends Tab {
 			ColorDialog dialog = new ColorDialog (shell ,style);
 			if (usePreviousResultButton.getSelection()) {
 				dialog.setRGB (colorDialogResult);
+				dialog.setRGBs(colorDialogCustomColors);
 			}
 			dialog.setText (ControlExample.getResourceString("Title"));
 			RGB result = dialog.open ();
 			textWidget.append (ControlExample.getResourceString("ColorDialog") + Text.DELIMITER);
 			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER);
-			textWidget.append ("getRGB() = " + dialog.getRGB() + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append ("getRGB() = " + dialog.getRGB() + Text.DELIMITER);
+			textWidget.append ("getRGBs() =" + Text.DELIMITER);
+			RGB[] rgbs = dialog.getRGBs();
+			if (rgbs != null) {
+				for (int i=0; i<rgbs.length; i++) {
+					textWidget.append ("\t" + rgbs [i] + Text.DELIMITER);
+				}
+			}
+			textWidget.append (Text.DELIMITER);
 			colorDialogResult = result;
+			colorDialogCustomColors = rgbs;
 			return;
 		}
 		

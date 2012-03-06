@@ -35,6 +35,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class ColorDialog extends Dialog {
 	RGB rgb;
+	RGB [] rgbs;
 /**
  * Constructs a new instance of this class given only its parent.
  *
@@ -99,6 +100,18 @@ public RGB getRGB () {
 	return rgb;
 }
 /**
+ * Returns an array of <code>RGB</code>s which are the list of
+ * custom colors selected by the user in the receiver, or null
+ * if no custom colors were selected.
+ *
+ * @return the array of RGBs, which may be null
+ * 
+ * @since 3.8
+ */
+public RGB[] getRGBs() {
+	return rgbs;
+}
+/**
  * Makes the receiver visible and brings it to the front
  * of the display.
  *
@@ -139,6 +152,25 @@ public RGB open () {
 		OS.gtk_color_selection_set_current_color (dialog.colorsel, color);
 	}
 	OS.gtk_color_selection_set_has_palette (dialog.colorsel, true);
+	if (rgbs != null) {
+		StringBuffer sb = new StringBuffer();
+		for (int i=0; i<rgbs.length; i++) {
+			RGB rgb = rgbs[i];
+			if (rgb != null) {
+				sb.append("#"); // $NON_NLS1$
+				sb.append(String.format("%02x", new Integer[] {new Integer(rgb.red & 0xFF)}));
+				sb.append(String.format("%02x", new Integer[] {new Integer(rgb.green & 0xFF)}));
+				sb.append(String.format("%02x", new Integer[] {new Integer(rgb.blue & 0xFF)}));
+				if (i<rgbs.length-1) sb.append(":"); // $NON_NLS1$
+			}
+		}
+		int /*long*/ settings = OS.gtk_settings_get_default ();
+		if (settings != 0) {
+			System.out.println("Setting color palette to: " + sb.toString());
+			buffer = Converter.wcsToMbcs (null, sb.toString(), true);
+			OS.gtk_settings_set_string_property(settings, OS.gtk_color_palette, buffer, Converter.wcsToMbcs (null, "gtk_color_selection_palette_to_string", true));
+		}
+	}
 	display.addIdleProc ();
 	Dialog oldModal = null;
 	if (OS.gtk_window_get_modal (handle)) {
@@ -172,6 +204,31 @@ public RGB open () {
 		int green = (color.green >> 8) & 0xFF;
 		int blue = (color.blue >> 8) & 0xFF;
 		rgb = new RGB (red, green, blue);
+		
+		int /*long*/ settings = OS.gtk_settings_get_default ();
+		if (settings != 0) {
+			int /*long*/ [] gcp_buffer = new int /*long*/ [1];
+			OS.g_object_get (settings, OS.gtk_color_palette, gcp_buffer, 0);
+			if (gcp_buffer [0] != 0) {
+				int /*long*/ paletteString = gcp_buffer [0];
+				int length = OS.strlen (paletteString);
+				buffer = new byte [length + 1];
+				OS.memmove (buffer, paletteString, length);
+				// TODO: free or not?
+				//OS.g_free (paletteString);
+				String [] gdkColorString = new String(buffer).split(":");
+				rgbs = new RGB [gdkColorString.length];
+				for (int i=0; i<gdkColorString.length; i++) {
+					String colorString = gdkColorString[i];
+					buffer = Converter.wcsToMbcs (null, colorString, true);
+					OS.gdk_color_parse(buffer, color);
+					red = (color.red >> 8) & 0xFF;
+					green = (color.green >> 8) & 0xFF;
+					blue = (color.blue >> 8) & 0xFF;
+					rgbs [i] = new RGB (red, green, blue);
+				}
+			}
+		}
 	}
 	display.removeIdleProc ();
 	OS.gtk_widget_destroy (handle);
@@ -188,5 +245,17 @@ public RGB open () {
  */
 public void setRGB (RGB rgb) {
 	this.rgb = rgb;
+}
+/**
+ * Sets the receiver's list of custom colors to be the given array
+ * of <code>RGB</code>s.
+ *
+ * @param rgbs the array of RGBs, which may be null to let the platform
+ * select a default when open() is called
+ *
+ * @since 3.8
+ */
+public void setRGBs(RGB[] rgbs) {
+	this.rgbs = rgbs;
 }
 }
