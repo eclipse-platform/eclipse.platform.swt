@@ -2593,13 +2593,11 @@ void initializeCallbacks () {
 }
 
 void initializeSubclasses () {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		int /*long*/ pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
-		int /*long*/ pangoLayoutClass = OS.g_type_class_ref (pangoLayoutType);
-		pangoLayoutNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoLayoutClass);
-		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, OS.pangoLayoutNewProc_CALLBACK(pangoLayoutNewProc));
-		OS.g_type_class_unref (pangoLayoutClass);
-	}
+	int /*long*/ pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
+	int /*long*/ pangoLayoutClass = OS.g_type_class_ref (pangoLayoutType);
+	pangoLayoutNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoLayoutClass);
+	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, OS.pangoLayoutNewProc_CALLBACK(pangoLayoutNewProc));
+	OS.g_type_class_unref (pangoLayoutClass);
 }
 
 void initializeSystemSettings () {
@@ -2632,17 +2630,15 @@ void initializeWidgetTable () {
 void initializeWindowManager () {
 	/* Get the window manager name */
 	windowManager = ""; //$NON-NLS-1$
-	if (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) {
-		int /*long*/ screen = OS.gdk_screen_get_default ();
-		if (screen != 0) {
-			int /*long*/ ptr2 = OS.gdk_x11_screen_get_window_manager_name (screen);
-			if (ptr2 != 0) {
-				int length = OS.strlen (ptr2);
-				if (length > 0) {
-					byte [] buffer2 = new byte [length];
-					OS.memmove (buffer2, ptr2, length);
-					windowManager = new String (Converter.mbcsToWcs (null, buffer2));
-				}
+	int /*long*/ screen = OS.gdk_screen_get_default ();
+	if (screen != 0) {
+		int /*long*/ ptr2 = OS.gdk_x11_screen_get_window_manager_name (screen);
+		if (ptr2 != 0) {
+			int length = OS.strlen (ptr2);
+			if (length > 0) {
+				byte [] buffer2 = new byte [length];
+				OS.memmove (buffer2, ptr2, length);
+				windowManager = new String (Converter.mbcsToWcs (null, buffer2));
 			}
 		}
 	}
@@ -3385,13 +3381,11 @@ void releaseDisplay () {
 	signalProc = 0;
 
 	/* Dispose subclass */
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		int /*long*/ pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
-		int /*long*/ pangoLayoutClass = OS.g_type_class_ref (pangoLayoutType);
-		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, pangoLayoutNewProc);
-		OS.g_type_class_unref (pangoLayoutClass);
-		pangoLayoutNewProc = 0;
-	}
+	int /*long*/ pangoLayoutType = OS.PANGO_TYPE_LAYOUT ();
+	int /*long*/ pangoLayoutClass = OS.g_type_class_ref (pangoLayoutType);
+	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, pangoLayoutNewProc);
+	OS.g_type_class_unref (pangoLayoutClass);
+	pangoLayoutNewProc = 0;
 	
 	/* Release the sleep resources */
 	max_priority = timeout = null;
