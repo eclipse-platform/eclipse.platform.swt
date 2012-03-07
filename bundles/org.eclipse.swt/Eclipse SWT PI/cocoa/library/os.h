@@ -20,6 +20,7 @@
 #include <Carbon/Carbon.h>
 #include <WebKit/WebKit.h>
 #include <JavaScriptCore/JavaScriptCore.h>
+#include "/usr/include/mach-o/dyld.h"
 
 #include "os_custom.h"
 
