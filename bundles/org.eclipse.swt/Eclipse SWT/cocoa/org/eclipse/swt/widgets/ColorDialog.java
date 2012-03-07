@@ -152,7 +152,7 @@ public RGB open() {
 	}
 	if (rgbs != null) {
 		NSArray keys = colorList.allKeys();
-		int length = keys.count();
+		int length = (int)/*64*/keys.count();
 		for (int i=length-1; i>=0; i--) {
 			colorList.removeColorWithKey(new NSString(keys.objectAtIndex(i)));
 		}
@@ -190,7 +190,7 @@ public RGB open() {
 		}
 	}
 	NSArray keys = colorList.allKeys();
-	int length = keys.count();
+	int length = (int)/*64*/keys.count();
 	rgbs = new RGB[length];
 	for (int i=0; i<length; i++) {
 		NSString key = new NSString(keys.objectAtIndex(i));
