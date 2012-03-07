@@ -34,6 +34,7 @@ import org.eclipse.swt.internal.cocoa.*;
  */
 public class ColorDialog extends Dialog {
 	RGB rgb;
+	RGB [] rgbs;
 	boolean selected;
 
 /**
@@ -106,6 +107,19 @@ public RGB getRGB() {
 }
 
 /**
+ * Returns an array of <code>RGB</code>s which are the list of
+ * custom colors selected by the user in the receiver, or null
+ * if no custom colors were selected.
+ *
+ * @return the array of RGBs, which may be null
+ * 
+ * @since 3.8
+ */
+public RGB[] getRGBs() {
+	return rgbs;
+}
+
+/**
  * Makes the receiver visible and brings it to the front
  * of the display.
  *
@@ -126,6 +140,33 @@ public RGB open() {
 	if (rgb != null) {
 		NSColor color = NSColor.colorWithDeviceRed(rgb.red / 255f, rgb.green / 255f, rgb.blue / 255f, 1);
 		panel.setColor(color);
+	}
+	NSString appName = Display.getApplicationName();
+	NSColorList colorList = NSColorList.colorListNamed(appName);
+	if (colorList == null) {
+		colorList = (NSColorList)new NSColorList().alloc();
+		colorList.initWithName(appName);
+		panel.attachColorList(colorList);
+	} else {
+		colorList.retain();
+	}
+	if (rgbs != null) {
+		NSArray keys = colorList.allKeys();
+		int length = keys.count();
+		for (int i=length-1; i>=0; i--) {
+			colorList.removeColorWithKey(new NSString(keys.objectAtIndex(i)));
+		}
+		for (int i=0; i<rgbs.length; i++) {
+			RGB rgb = rgbs [i];
+			if (rgb != null) {
+				NSColor color = NSColor.colorWithDeviceRed(rgb.red / 255f, rgb.green / 255f, rgb.blue / 255f, 1);
+				NSString key = appName;
+				if (i > 0) {
+					key = key.stringByAppendingString(NSString.stringWith(" "+i));
+				}
+				colorList.insertColor(color, key, i);
+			}
+		}
 	}
 	SWTPanelDelegate delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
 	int /*long*/ jniRef = OS.NewGlobalRef(this);
@@ -148,6 +189,15 @@ public RGB open() {
 			rgb = new RGB((int)(handle[0] * 255), (int)(handle[1] * 255), (int)(handle[2] * 255));
 		}
 	}
+	NSArray keys = colorList.allKeys();
+	int length = keys.count();
+	rgbs = new RGB[length];
+	for (int i=0; i<length; i++) {
+		NSString key = new NSString(keys.objectAtIndex(i));
+		float /*double*/ [] handle = display.getNSColorRGB(colorList.colorWithKey(key));
+		rgbs[i] = new RGB((int)(handle[0] * 255), (int)(handle[1] * 255), (int)(handle[2] * 255));
+	}
+	colorList.release();
 	return rgb;
 }
 
@@ -161,6 +211,19 @@ public RGB open() {
  */
 public void setRGB(RGB rgb) {
 	this.rgb = rgb;
+}
+
+/**
+ * Sets the receiver's list of custom colors to be the given array
+ * of <code>RGB</code>s, which may be null to let the platform select
+ * a default when open() is called.
+ *
+ * @param rgbs the array of RGBs, which may be null
+ *
+ * @since 3.8
+ */
+public void setRGBs(RGB[] rgbs) {
+	this.rgbs = rgbs;
 }
 
 void windowWillClose(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {

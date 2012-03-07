@@ -906,7 +906,38 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
+	<class name="NSColorList" swt_gen="mixed">
+		<method selector="allKeys" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method class_method="true" selector="colorListNamed:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="colorWithKey:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="initWithName:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="insertColor:key:atIndex:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="removeColorWithKey:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
 	<class name="NSColorPanel" swt_gen="mixed" swt_superclass="NSPanel">
+		<method selector="attachColorList:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="color" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
