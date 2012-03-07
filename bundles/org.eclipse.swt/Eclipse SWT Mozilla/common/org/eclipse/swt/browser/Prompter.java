@@ -46,11 +46,11 @@ void createCOMInterfaces () {
 		public int /*long*/ method4 (int /*long*/[] args) {return AlertCheck (args[0], args[1], args[2], args[3]);}
 		public int /*long*/ method5 (int /*long*/[] args) {return Confirm (args[0], args[1], args[2]);}
 		public int /*long*/ method6 (int /*long*/[] args) {return ConfirmCheck (args[0], args[1], args[2], args[3], args[4]);}
-		public int /*long*/ method7 (int /*long*/[] args) {return ConfirmEx (args[0], args[1], args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7], args[8]);}
+		public int /*long*/ method7 (int /*long*/[] args) {return ConfirmEx (args[0], args[1], (int)/*64*/args[2], args[3], args[4], args[5], args[6], args[7], args[8]);}
 		public int /*long*/ method8 (int /*long*/[] args) {return Prompt (args[0], args[1], args[2], args[3], args[4], args[5]);}
 		public int /*long*/ method9 (int /*long*/[] args) {return PromptPassword (args[0], args[1], args[2], args[3], args[4], args[5]);}
 		public int /*long*/ method10 (int /*long*/[] args) {return PromptUsernameAndPassword (args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
-		public int /*long*/ method11 (int /*long*/[] args) {return Select (args[0], args[1], args[2], (int)/*64*/args[3], args[4], args[5]);}
+		public int /*long*/ method11 (int /*long*/[] args) {return Select (args[0], args[1], (int)/*64*/args[2], args[3], args[4], args[5]);}
 	};
 }
 

@@ -1358,7 +1358,7 @@ public boolean execute (String script) {
 									if (rc == XPCOM.NS_OK && result[0] != 0) {
 										int /*long*/ principals = result[0];
 										result[0] = 0;
-										String jsLibraryName = IsPre_4 ? delegate.getJSLibraryName_Pre4() : delegate.getJSLibraryName();
+										String jsLibraryName = IsPre_4 ? MozillaDelegate.getJSLibraryName_Pre4() : MozillaDelegate.getJSLibraryName();
 										if (pathBytes_JSEvaluateUCScriptForPrincipals == null) {
 											String mozillaPath = getMozillaPath () + jsLibraryName + '\0';
 											try {
@@ -1822,7 +1822,7 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 	result[0] = 0;
 	byte[] category = MozillaDelegate.wcsToMbcs (null, "JavaScript global property", true); //$NON-NLS-1$
 	byte[] entry = MozillaDelegate.wcsToMbcs (null, "external", true); //$NON-NLS-1$
-	rc = categoryManager.AddCategoryEntry(category, entry, aContractID, 1, 1, result);
+	rc = categoryManager.AddCategoryEntry(category, entry, aContractID, 0, 1, result);
 	result[0] = 0;
 	categoryManager.Release ();
 
@@ -1851,10 +1851,7 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 	aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FILEPICKER_CONTRACTID, true);
 	aClassName = MozillaDelegate.wcsToMbcs (null, "swtFilePicker", true); //$NON-NLS-1$
 	rc = componentRegistrar.RegisterFactory (XPCOM.NS_FILEPICKER_CID, aClassName, aContractID, pickerFactory.getAddress ());
-	if (rc != XPCOM.NS_OK) {
-		browser.dispose ();
-		error (rc);
-	}
+	/* a failure here is fine, it likely indicates that the OS has provided a default implementation */
 	pickerFactory.Release ();
 
 	componentRegistrar.Release ();
@@ -2448,7 +2445,7 @@ void initProfile (nsIServiceManager serviceManager, boolean isXULRunner) {
 }
 
 void initSpinup (nsIComponentManager componentManager) {
-	if (delegate.needsSpinup ()) {
+	if (MozillaDelegate.needsSpinup ()) {
 		int /*long*/[] result = new int /*long*/[1];
 
 		/* nsIAppShell is discontinued as of xulrunner 1.9, so do not fail if it is not found */
@@ -2561,6 +2558,14 @@ String initXULRunner (String mozillaPath) {
 	} catch (UnsatisfiedLinkError e) {
 		SWT.error (SWT.ERROR_NO_HANDLES, e);
 	}
+
+	/*
+	* Remove the trailing xpcom lib name from mozillaPath because the
+	* Mozilla.initialize and NS_InitXPCOM2 invocations require a directory name only.
+	*/
+	String mozillaDirPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
+	MozillaDelegate.loadAdditionalLibraries (mozillaDirPath);
+
 	byte[] path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
 	int rc = XPCOM.XPCOMGlueStartup (path);
 	if (rc != XPCOM.NS_OK) {
@@ -2569,11 +2574,7 @@ String initXULRunner (String mozillaPath) {
 	}
 	XPCOMWasGlued = true;
 
-	/*
-	 * Remove the trailing xpcom lib name from mozillaPath because the
-	 * Mozilla.initialize and NS_InitXPCOM2 invocations require a directory name only.
-	 */ 
-	return mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
+	return mozillaDirPath;
 }
 
 public boolean isBackEnabled () {

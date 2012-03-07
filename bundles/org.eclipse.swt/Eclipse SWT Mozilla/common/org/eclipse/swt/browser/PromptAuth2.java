@@ -42,8 +42,8 @@ void createCOMInterfaces () {
 		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
 		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return PromptAuth (args[0], args[1], (int)/*64*/args[2], args[3]);}
-		public int /*long*/ method4 (int /*long*/[] args) {return AsyncPromptAuth (args[0], args[1], args[2], args[3], (int)/*64*/args[4], args[5]);}
+		public int /*long*/ method3 (int /*long*/[] args) {return PromptAuth (args[0], (int)/*64*/args[1], args[2], args[3]);}
+		public int /*long*/ method4 (int /*long*/[] args) {return AsyncPromptAuth (args[0], args[1], args[2], (int)/*64*/args[3], args[4], args[5]);}
 	};
 }
 
