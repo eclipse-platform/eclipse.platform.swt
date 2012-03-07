@@ -153,21 +153,25 @@ public RGB open () {
 	}
 	OS.gtk_color_selection_set_has_palette (dialog.colorsel, true);
 	if (rgbs != null) {
-		StringBuffer sb = new StringBuffer();
+		int /*long*/ colors = OS.g_malloc(GdkColor.sizeof * rgbs.length);
 		for (int i=0; i<rgbs.length; i++) {
 			RGB rgb = rgbs[i];
 			if (rgb != null) {
-				sb.append("#"); // $NON_NLS1$
-				sb.append(String.format("%02x", new Integer[] {new Integer(rgb.red & 0xFF)}));
-				sb.append(String.format("%02x", new Integer[] {new Integer(rgb.green & 0xFF)}));
-				sb.append(String.format("%02x", new Integer[] {new Integer(rgb.blue & 0xFF)}));
-				if (i<rgbs.length-1) sb.append(":"); // $NON_NLS1$
+				color.red = (short)((rgb.red & 0xFF) | ((rgb.red & 0xFF) << 8));
+				color.green = (short)((rgb.green & 0xFF) | ((rgb.green & 0xFF) << 8));
+				color.blue = (short)((rgb.blue & 0xFF) | ((rgb.blue & 0xFF) << 8));
+				OS.memmove (colors + i * GdkColor.sizeof, color, GdkColor.sizeof);
 			}
 		}
+		int /*long*/ strPtr = OS.gtk_color_selection_palette_to_string(colors, rgbs.length);
+		int length = OS.strlen (strPtr);
+		buffer = new byte [length];
+		OS.memmove (buffer, strPtr, length);
+		String paletteString = new String (Converter.mbcsToWcs (null, buffer));
+		buffer = Converter.wcsToMbcs (null, paletteString, true);
+		OS.g_free (colors);
 		int /*long*/ settings = OS.gtk_settings_get_default ();
 		if (settings != 0) {
-			System.out.println("Setting color palette to: " + sb.toString());
-			buffer = Converter.wcsToMbcs (null, sb.toString(), true);
 			OS.gtk_settings_set_string_property(settings, OS.gtk_color_palette, buffer, Converter.wcsToMbcs (null, "gtk_color_selection_palette_to_string", true));
 		}
 	}
@@ -204,29 +208,27 @@ public RGB open () {
 		int green = (color.green >> 8) & 0xFF;
 		int blue = (color.blue >> 8) & 0xFF;
 		rgb = new RGB (red, green, blue);
-		
-		int /*long*/ settings = OS.gtk_settings_get_default ();
-		if (settings != 0) {
-			int /*long*/ [] gcp_buffer = new int /*long*/ [1];
-			OS.g_object_get (settings, OS.gtk_color_palette, gcp_buffer, 0);
-			if (gcp_buffer [0] != 0) {
-				int /*long*/ paletteString = gcp_buffer [0];
-				int length = OS.strlen (paletteString);
-				buffer = new byte [length + 1];
-				OS.memmove (buffer, paletteString, length);
-				// TODO: free or not?
-				//OS.g_free (paletteString);
-				String [] gdkColorString = new String(buffer).split(":");
-				rgbs = new RGB [gdkColorString.length];
-				for (int i=0; i<gdkColorString.length; i++) {
-					String colorString = gdkColorString[i];
-					buffer = Converter.wcsToMbcs (null, colorString, true);
-					OS.gdk_color_parse(buffer, color);
-					red = (color.red >> 8) & 0xFF;
-					green = (color.green >> 8) & 0xFF;
-					blue = (color.blue >> 8) & 0xFF;
-					rgbs [i] = new RGB (red, green, blue);
-				}
+	}
+	int /*long*/ settings = OS.gtk_settings_get_default ();
+	if (settings != 0) {
+		int /*long*/ [] ptr = new int /*long*/ [1];
+		OS.g_object_get (settings, OS.gtk_color_palette, ptr, 0);
+		if (ptr [0] != 0) {
+			int length = OS.strlen (ptr [0]);
+			buffer = new byte [length];
+			OS.memmove (buffer, ptr [0], length);
+			OS.g_free (ptr [0]);
+			String [] gdkColorStrings = new String(Converter.mbcsToWcs (null, buffer)).split(":");
+			length = length == 0 ? 0 : gdkColorStrings.length;
+			rgbs = new RGB [length];
+			for (int i=0; i<length; i++) {
+				String colorString = gdkColorStrings[i];
+				buffer = Converter.wcsToMbcs (null, colorString, true);
+				OS.gdk_color_parse(buffer, color);
+				int red = (color.red >> 8) & 0xFF;
+				int green = (color.green >> 8) & 0xFF;
+				int blue = (color.blue >> 8) & 0xFF;
+				rgbs [i] = new RGB (red, green, blue);
 			}
 		}
 	}

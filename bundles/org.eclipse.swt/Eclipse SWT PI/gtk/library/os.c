@@ -18894,6 +18894,30 @@ fail:
 }
 #endif
 
+#if (!defined(NO_memmove__ILorg_eclipse_swt_internal_gtk_GdkColor_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkColor_2J) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GdkColor_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_gtk_GdkColor_2J)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+#endif
+{
+	GdkColor _arg1, *lparg1=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC);
+#endif
+	if (arg1) if ((lparg1 = getGdkColorFields(env, arg1, &_arg1)) == NULL) goto fail;
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+fail:
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC);
+#endif
+}
+#endif
+
 #if (!defined(NO_memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkEventButton_2J) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)

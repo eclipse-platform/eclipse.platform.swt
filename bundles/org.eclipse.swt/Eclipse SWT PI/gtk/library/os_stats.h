@@ -1522,6 +1522,11 @@ typedef enum {
 	memmove__JLorg_eclipse_swt_internal_gtk_GTypeInfo_2I_FUNC,
 #endif
 #ifndef JNI64
+	memmove__ILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC,
+#else
+	memmove__JLorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC,
+#endif
+#ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I_FUNC,
 #else
 	memmove__JLorg_eclipse_swt_internal_gtk_GdkEventButton_2J_FUNC,

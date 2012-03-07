@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1382;
-int OS_nativeFunctionCallCount[1382];
+int OS_nativeFunctionCount = 1383;
+int OS_nativeFunctionCallCount[1383];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -1512,6 +1512,11 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_gtk_GTypeInfo_2I",
 #else
 	"memmove__JLorg_eclipse_swt_internal_gtk_GTypeInfo_2I",
+#endif
+#ifndef JNI64
+	"memmove__ILorg_eclipse_swt_internal_gtk_GdkColor_2I",
+#else
+	"memmove__JLorg_eclipse_swt_internal_gtk_GdkColor_2J",
 #endif
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I",

@@ -13807,6 +13807,12 @@ public static final native void memmove(int /*long*/ dest, GtkAdjustment src);
  * @param src cast=(const void *),flags=no_out
  * @param size cast=(size_t)
  */
+public static final native void memmove(int /*long*/ dest, GdkColor src, int /*long*/ size);
+/**
+ * @param dest cast=(void *)
+ * @param src cast=(const void *),flags=no_out
+ * @param size cast=(size_t)
+ */
 public static final native void memmove(int /*long*/ dest, GdkEventButton src, int /*long*/ size);
 /**
  * @param dest cast=(void *)
@@ -15261,5 +15267,4 @@ public static final int access (byte [] path, int amode) {
  * @param s2 cast=(const char*)
  */
 public static final native int strcmp (int /*long*/ s1, byte [] s2);
-
 }
