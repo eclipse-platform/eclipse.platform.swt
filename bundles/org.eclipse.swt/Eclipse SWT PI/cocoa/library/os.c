@@ -4415,6 +4415,22 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityWindowRole)
 }
 #endif
 
+#ifndef NO_NSAddImage
+JNIEXPORT jintLong JNICALL OS_NATIVE(NSAddImage)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
+{
+	jbyte *lparg0=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAddImage_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jintLong)NSAddImage((const char*)lparg0, (uint32_t)arg1);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, NSAddImage_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSAffineTransformStruct_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(NSAffineTransformStruct_1sizeof)
 	(JNIEnv *env, jclass that)

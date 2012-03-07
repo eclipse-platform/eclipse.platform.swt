@@ -35,6 +35,21 @@ static String getLibraryName () {
 	return "xpcom.dll"; //$NON-NLS-1$
 }
 
+static String getJSLibraryName_Pre4 () {
+	return "js3250.dll"; //$NON-NLS-1$
+}
+
+static String getJSLibraryName () {
+	return "mozjs.dll"; //$NON-NLS-1$
+}
+
+static String getSWTInitLibraryName () {
+	return "swt-xulrunner"; //$NON-NLS-1$
+}
+
+static void loadAdditionalLibraries (String mozillaPath) {
+}
+
 static char[] mbcsToWcs (String codePage, byte[] buffer) {
 	char[] chars = new char[buffer.length];
 	int charCount = OS.MultiByteToWideChar (OS.CP_ACP, OS.MB_PRECOMPOSED, buffer, buffer.length, chars, chars.length);
@@ -42,6 +57,10 @@ static char[] mbcsToWcs (String codePage, byte[] buffer) {
 	char[] result = new char[charCount];
 	System.arraycopy (chars, 0, result, 0, charCount);
 	return result;
+}
+
+static boolean needsSpinup () {
+	return false;
 }
 
 static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
@@ -90,14 +109,6 @@ int /*long*/ getHandle () {
 	return browser.handle;
 }
 
-String getJSLibraryName_Pre4 () {
-	return "js3250.dll"; //$NON-NLS-1$
-}
-
-String getJSLibraryName () {
-	return "mozjs.dll"; //$NON-NLS-1$
-}
-
 String getProfilePath () {
 	String baseDir;
 	/* Use the character encoding for the default locale */
@@ -108,10 +119,6 @@ String getProfilePath () {
 		baseDir = System.getProperty("user.home"); //$NON-NLS-1$
 	}
 	return baseDir + Mozilla.SEPARATOR_OS + "Mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
-}
-
-static String GetSWTInitLibraryName () {
-	return "swt-xulrunner"; //$NON-NLS-1$
 }
 
 void handleFocus () {
@@ -125,10 +132,6 @@ boolean hookEnterExit () {
 }
 
 void init () {
-}
-
-boolean needsSpinup () {
-	return false;
 }
 
 void onDispose (int /*long*/ embedHandle) {

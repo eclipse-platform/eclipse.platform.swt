@@ -171,12 +171,12 @@ class PromptDialog extends Dialog {
 				rc = ((Mozilla)localBrowser.webBrowser).webBrowser.GetContentDOMWindow(result);
 				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 				if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
-				
+
 				nsIDOMWindow window = new nsIDOMWindow(result[0]);
+				result[0] = 0;
 				rc = dialogs.ViewCert(window.getAddress(), cert.getAddress());
 				browser.getDisplay().timerExec(-1, runnable);
 				window.Release();
-				result[0] = 0;
 				dialogs.Release();
 			}
 		});

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 630;
-int OS_nativeFunctionCallCount[630];
+int OS_nativeFunctionCount = 631;
+int OS_nativeFunctionCallCount[631];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -332,6 +332,7 @@ char * OS_nativeFunctionNames[] = {
 	"NSAccessibilityVisibleRowsAttribute",
 	"NSAccessibilityWindowAttribute",
 	"NSAccessibilityWindowRole",
+	"NSAddImage",
 	"NSAffineTransformStruct_1sizeof",
 	"NSApplicationDidChangeScreenParametersNotification",
 	"NSAttachmentAttributeName",

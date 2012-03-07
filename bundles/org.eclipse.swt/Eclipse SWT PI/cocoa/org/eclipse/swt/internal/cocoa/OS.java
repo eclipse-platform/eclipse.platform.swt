@@ -2250,6 +2250,8 @@ public static final int /*long*/ sel_yearOfCommonEra = sel_registerName("yearOfC
 public static final int /*long*/ sel_zoom_ = sel_registerName("zoom:");
 
 /** Constants */
+public static final int NSADDIMAGE_OPTION_RETURN_ON_ERROR = 0x1;
+public static final int NSADDIMAGE_OPTION_MATCH_FILENAME_BY_INSTALLNAME = 0x8;
 public static final int NSAlertFirstButtonReturn = 1000;
 public static final int NSAlertSecondButtonReturn = 1001;
 public static final int NSAlertThirdButtonReturn = 1002;
@@ -3167,6 +3169,11 @@ public static final native void NSBeep();
  * @param depth cast=(NSWindowDepth)
  */
 public static final native int /*long*/ NSBitsPerPixelFromDepth(int depth);
+/**
+ * @param image_name cast=(const char*)
+ * @param options cast=(uint32_t)
+ */
+public static final native int /*long*/ NSAddImage(byte[] image_name, int options);
 /**
  * @param srcGState cast=(NSInteger)
  * @param srcRect flags=struct

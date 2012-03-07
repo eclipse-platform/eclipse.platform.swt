@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2008 IBM Corporation and others.
+ * Copyright (c) 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * This class implements the nsIHelperAppLauncherDialog interface for mozilla
- * versions >=2.0.  For mozilla versions >= 1.9, < 2.0 this interface is
+ * versions >= 4.  For mozilla versions >= 1.9, < 4 this interface is
  * implemented by class HelperAppLauncherDialog_1_9.  HelperAppLauncherDialogFactory
  * determines at runtime which of these classes to instantiate. 
  */
