@@ -37,6 +37,25 @@ static String getLibraryName () {
 	return "libxpcom.dylib"; //$NON-NLS-1$
 }
 
+static String getJSLibraryName () {
+	return "libxpcom.dylib"; //$NON-NLS-1$
+}
+
+static String getJSLibraryName_Pre4 () {
+	return "libmozjs.dylib"; //$NON-NLS-1$
+}
+
+static String getSWTInitLibraryName () {
+	return "swt-xulrunner"; //$NON-NLS-1$
+}
+
+static void loadAdditionalLibraries (String mozillaPath) {
+	// workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=727616
+	String utilsPath = mozillaPath + Mozilla.SEPARATOR_OS + "libmozutils.dylib"; //$NON-NLS-1$
+	byte[] bytes = MozillaDelegate.wcsToMbcs (null, utilsPath, true);
+	OS.NSAddImage (bytes, OS.NSADDIMAGE_OPTION_RETURN_ON_ERROR | OS.NSADDIMAGE_OPTION_MATCH_FILENAME_BY_INSTALLNAME);
+}
+
 static char[] mbcsToWcs (String codePage, byte [] buffer) {
 //	int encoding = OS.CFStringGetSystemEncoding ();
 //	int cfstring = OS.CFStringCreateWithBytes (OS.kCFAllocatorDefault, buffer, buffer.length, encoding, false);
@@ -54,6 +73,10 @@ static char[] mbcsToWcs (String codePage, byte [] buffer) {
 //	return chars;
 	// TODO implement mbcsToWcs
 	return new String(buffer).toCharArray();
+}
+
+static boolean needsSpinup () {
+	return false;
 }
 
 static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
@@ -102,21 +125,9 @@ int /*long*/ getHandle () {
 	return browser.view.id;
 }
 
-String getJSLibraryName () {
-	return "libxpcom.dylib";
-}
-
-String getJSLibraryName_Pre4 () {
-	return "libmozjs.dylib"; //$NON-NLS-1$
-}
-
 String getProfilePath () {
 	String baseDir = System.getProperty ("user.home"); //$NON-NLS-1$
 	return baseDir + Mozilla.SEPARATOR_OS + ".mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
-}
-
-static String GetSWTInitLibraryName () {
-	return "swt-xulrunner"; //$NON-NLS-1$
 }
 
 void handleFocus () {
@@ -153,10 +164,6 @@ boolean hookEnterExit () {
 }
 
 void init () {
-}
-
-boolean needsSpinup () {
-	return false;
 }
 
 void onDispose (int /*long*/ embedHandle) {

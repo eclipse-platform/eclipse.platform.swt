@@ -576,7 +576,7 @@ static void LoadLibraries () {
 
 	if (MozillaPath == null) {
 		try {
-			String libName = MozillaDelegate.GetSWTInitLibraryName ();
+			String libName = MozillaDelegate.getSWTInitLibraryName ();
 			Library.loadLibrary (libName);
 			initLoaded = true;
 		} catch (UnsatisfiedLinkError e) {
@@ -885,7 +885,7 @@ public void create (Composite parent, int style) {
 				IsPre_1_9 = false;
 				result[0] = 0;
 				rc = interfaceRequestor.GetInterface(nsIDocShell_1_8.NS_IDOCSHELL_10_IID, result);
-				if (rc == XPCOM.NS_OK && result[0] != 0) { /* >=2.0 */
+				if (rc == XPCOM.NS_OK && result[0] != 0) { /* >= 4.0 */
 					IsPre_4 = false;
 					new nsISupports (result[0]).Release();
 				}
@@ -1550,7 +1550,7 @@ public String getText () {
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 	window.Release ();
-	
+
 	int /*long*/ document = result[0];
 	result[0] = 0;
 	rc = XPCOM.NS_GetComponentManager (result);
@@ -1802,7 +1802,7 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 		}
 	}
 	factory.Release();
-	
+
 	ExternalFactory externalFactory = new ExternalFactory ();
 	externalFactory.AddRef ();
 	aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.EXTERNAL_CONTRACTID, true); 
@@ -2603,7 +2603,7 @@ public boolean isForwardEnabled () {
 }
 
 static String error (int code) {
-	throw new SWTError ("XPCOM error " + Integer.toHexString(code)); //$NON-NLS-1$
+	throw new SWTError ("XPCOM error 0x" + Integer.toHexString(code)); //$NON-NLS-1$
 }
 
 void onDispose (Display display) {
@@ -3392,7 +3392,7 @@ int GetInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
-	if (guid.Equals (nsIDOMWindow.NS_IDOMWINDOW_10_IID) || guid.Equals(nsIDOMWindow.NS_IDOMWINDOW_IID)) {
+	if (guid.Equals (nsIDOMWindow.NS_IDOMWINDOW_10_IID) || guid.Equals (nsIDOMWindow.NS_IDOMWINDOW_IID)) {
 		int /*long*/[] aContentDOMWindow = new int /*long*/[1];
 		int rc = webBrowser.GetContentDOMWindow (aContentDOMWindow);
 		if (rc != XPCOM.NS_OK) error (rc);
@@ -3707,7 +3707,7 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 				domWindow.Release();
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-				
+
 				nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
 				hookDOMListeners (target, isTop);
 				target.Release ();
