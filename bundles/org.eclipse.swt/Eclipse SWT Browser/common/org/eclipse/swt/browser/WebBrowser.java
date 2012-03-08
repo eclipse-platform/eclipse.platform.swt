@@ -179,7 +179,7 @@ abstract class WebBrowser {
 
 public class EvaluateFunction extends BrowserFunction {
 	public EvaluateFunction (Browser browser, String name) {
-		super (browser, name, false);
+		super (browser, name, true, new String[0], false);
 	}
 	public Object function (Object[] arguments) {
 		if (arguments[0] instanceof String) {
@@ -333,24 +333,44 @@ public void createFunction (BrowserFunction function) {
 	function.index = getNextFunctionIndex ();
 	registerFunction (function);
 
-	StringBuffer buffer = new StringBuffer ("window."); //$NON-NLS-1$
-	buffer.append (function.name);
-	buffer.append (" = function "); //$NON-NLS-1$
-	buffer.append (function.name);
-	buffer.append ("() {var result = window.external.callJava("); //$NON-NLS-1$
-	buffer.append (function.index);
-	buffer.append (",'"); //$NON-NLS-1$
-	buffer.append (function.token);
-	buffer.append ("',Array.prototype.slice.call(arguments)); if (typeof result == 'string' && result.indexOf('"); //$NON-NLS-1$
-	buffer.append (ERROR_ID);
-	buffer.append ("') == 0) {var error = new Error(result.substring("); //$NON-NLS-1$
-	buffer.append (ERROR_ID.length ());
-	buffer.append (")); throw error;} return result;};"); //$NON-NLS-1$
-	buffer.append ("for (var i = 0; i < frames.length; i++) {try { frames[i]."); //$NON-NLS-1$
-	buffer.append (function.name);
-	buffer.append (" = window."); //$NON-NLS-1$
-	buffer.append (function.name);
-	buffer.append (";} catch (e) {} };"); //$NON-NLS-1$
+	StringBuffer functionBuffer = new StringBuffer (function.name);
+	functionBuffer.append (" = function "); //$NON-NLS-1$
+	functionBuffer.append (function.name);
+	functionBuffer.append ("() {var result = callJava("); //$NON-NLS-1$
+	functionBuffer.append (function.index);
+	functionBuffer.append (",'"); //$NON-NLS-1$
+	functionBuffer.append (function.token);
+	functionBuffer.append ("',Array.prototype.slice.call(arguments)); if (typeof result == 'string' && result.indexOf('"); //$NON-NLS-1$
+	functionBuffer.append (ERROR_ID);
+	functionBuffer.append ("') == 0) {var error = new Error(result.substring("); //$NON-NLS-1$
+	functionBuffer.append (ERROR_ID.length ());
+	functionBuffer.append (")); throw error;} return result;};"); //$NON-NLS-1$
+
+	StringBuffer buffer = new StringBuffer ("if (!window.callJava) {window.callJava = function callJava(index, token, args) {"); //$NON-NLS-1$
+	buffer.append ("return external.callJava(index,token,args);}};"); //$NON-NLS-1$
+	if (function.top) {
+		buffer.append (functionBuffer.toString ());
+	}
+
+	buffer.append ("var frameIds = null;"); //$NON-NLS-1$
+	if (function.frameNames != null) {
+		buffer.append ("frameIds = {"); //$NON-NLS-1$
+		for (int i = 0; i < function.frameNames.length; i++) {
+			buffer.append ('\'');
+			buffer.append (function.frameNames[i]);
+			buffer.append ("':1,"); //$NON-NLS-1$
+		}
+		if (function.frameNames.length > 0) {
+			buffer.deleteCharAt(buffer.length () - 1);
+		}
+		buffer.append ("};"); //$NON-NLS-1$
+	}
+
+	buffer.append ("for (var i = 0; i < frames.length; i++) {try {if (!frameIds || (frames[i].name && frameIds[frames[i].name])) {"); //$NON-NLS-1$
+	buffer.append ("if (!frames[i].callJava) {frames[i].callJava = window.callJava;} frames[i]."); //$NON-NLS-1$
+	buffer.append (functionBuffer.toString ());
+	buffer.append ("}} catch(e) {}};"); //$NON-NLS-1$
+
 	function.functionString = buffer.toString ();
 	execute (function.functionString);
 }

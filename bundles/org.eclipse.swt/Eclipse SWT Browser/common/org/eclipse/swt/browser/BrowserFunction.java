@@ -47,12 +47,17 @@ public class BrowserFunction {
 	String name;
 	String functionString;
 	int index;
-	boolean isEvaluate;
+	boolean isEvaluate, top;
 	String token;
+	String[] frameNames;
 
 /**
  * Constructs a new instance of this class, which will be invokable
- * by javascript running in the specified Browser.
+ * by javascript running in the specified Browser.  The function will
+ * be accessible in the top-level window and all child frames.  To
+ * create a function with a reduced scope of accessibility use the
+ * <code>BrowserFunction</code> constructor that accepts frame names
+ * instead.
  * <p>
  * You must dispose the BrowserFunction when it is no longer required.
  * A common place to do this is in a <code>LocationListener.changed()</code>
@@ -72,13 +77,55 @@ public class BrowserFunction {
  * </ul>
  * 
  * @see #dispose()
+ * @see BrowserFunction(Browser, String, boolean, String[])
  * @see org.eclipse.swt.browser.LocationListener#changed(LocationEvent)
  */
 public BrowserFunction (Browser browser, String name) {
-	this (browser, name, true);
+	this (browser, name, true, null, true);
 }
 
-BrowserFunction (Browser browser, String name, boolean create) {
+/**
+ * Constructs a new instance of this class, which will be invokable
+ * by javascript running in the specified Browser.  The accessibility
+ * of the function to the top-level window and its child frames is
+ * determined by the <code>top</code> and <code>frameNames</code>
+ * arguments.  To create a function that is globally accessible to
+ * the top-level window and all child frames use the
+ * <code>BrowserFunction</code> constructor that does not accept frame
+ * names instead.
+ * <p>
+ * You must dispose the BrowserFunction when it is no longer required.
+ * A common place to do this is in a <code>LocationListener.changed()</code>
+ * listener.
+ * </p>
+ * @param browser the browser whose javascript can invoke this function
+ * @param name the name that javascript will use to invoke this function
+ * @param top <code>true</code> if the function should be accessible to the
+ * top-level window and <code>false</code> otherwise
+ * @param frameNames the names of the child frames that the function should
+ * be accessible in
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the browser is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the name is null</li>
+ * </ul>
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the browser has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #dispose()
+ * @see BrowserFunction(Browser, String)
+ * @see org.eclipse.swt.browser.LocationListener#changed(LocationEvent)
+ * 
+ * @since 3.8
+ */
+public BrowserFunction (Browser browser, String name, boolean top, String[] frameNames) {
+	this (browser, name, top, frameNames, true);
+}
+
+BrowserFunction (Browser browser, String name, boolean top, String[] frameNames, boolean create) {
 	super ();
 	if (browser == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (name == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
@@ -86,6 +133,8 @@ BrowserFunction (Browser browser, String name, boolean create) {
 	browser.checkWidget ();
 	this.browser = browser;
 	this.name = name;
+	this.top = top;
+	this.frameNames = frameNames;
 
 	Random random = new Random ();
 	byte[] bytes = new byte[16];
