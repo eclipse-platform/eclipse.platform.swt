@@ -185,6 +185,7 @@ public void handleEvent (Event e) {
 			e.x = event.x;
 			e.y = event.y;
 			e.doit = event.doit;
+			e.detail = event.detail;
 			break;
 		}
 		case SWT.MouseDown: {

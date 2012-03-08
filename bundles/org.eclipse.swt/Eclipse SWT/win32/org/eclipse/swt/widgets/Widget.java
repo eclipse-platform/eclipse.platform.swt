@@ -1458,9 +1458,14 @@ boolean SetWindowPos (int /*long*/ hWnd, int /*long*/ hWndInsertAfter, int X, in
 }
 
 boolean showMenu (int x, int y) {
+	return showMenu (x, y, SWT.CONTEXT_POINTER);
+}
+
+boolean showMenu (int x, int y, int detail) {
 	Event event = new Event ();
 	event.x = x;
 	event.y = y;
+	event.detail = detail;
 	sendEvent (SWT.MenuDetect, event);
 	// widget could be disposed at this point
 	if (isDisposed ()) return false;
@@ -1540,12 +1545,13 @@ LRESULT wmContextMenu (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lPar
 	* originated from a mouse event and display the menu when the
 	* mouse was released in the client area.
 	*/
-	int x = 0, y = 0;
+	int x = 0, y = 0, detail = 0;
 	if (lParam != -1) {
 		POINT pt = new POINT ();
 		OS.POINTSTOPOINT (pt, lParam);
 		x = pt.x;
 		y = pt.y;
+		detail = SWT.CONTEXT_POINTER;
 		OS.ScreenToClient (hwnd, pt);
 		RECT rect = new RECT ();
 		OS.GetClientRect (hwnd, rect);
@@ -1554,10 +1560,11 @@ LRESULT wmContextMenu (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lPar
 		int pos = OS.GetMessagePos ();
 		x = OS.GET_X_LPARAM (pos);
 		y = OS.GET_Y_LPARAM (pos);
+		detail = SWT.CONTEXT_FOCUS;
 	}
 
 	/* Show the menu */
-	return showMenu (x, y) ? LRESULT.ZERO : null;
+	return showMenu (x, y, detail) ? LRESULT.ZERO : null;
 }
 
 LRESULT wmIMEChar (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {

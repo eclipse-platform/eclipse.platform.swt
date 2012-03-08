@@ -1025,6 +1025,10 @@ public class SWT {
 	 */
 	public static final int TOUCHSTATE_UP = 1 << 2;
 	
+	public static final int CONTEXT_NONE = 1 << 0;
+	public static final int CONTEXT_POINTER = 1 << 1;
+	public static final int CONTEXT_FOCUS = 1 << 2;
+
 	/**
 	 * A constant indicating that widgets have changed.
 	 * (value is 1&lt;&lt;1).

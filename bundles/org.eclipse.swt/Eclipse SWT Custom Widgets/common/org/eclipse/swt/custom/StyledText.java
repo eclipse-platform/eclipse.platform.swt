@@ -5628,6 +5628,7 @@ void installListeners() {
 				case SWT.Dispose: handleDispose(event); break;
 				case SWT.KeyDown: handleKeyDown(event); break;
 				case SWT.KeyUp: handleKeyUp(event); break;
+				case SWT.MenuDetect: handleMenuDetect(event); break;
 				case SWT.MouseDown: handleMouseDown(event); break;
 				case SWT.MouseUp: handleMouseUp(event); break;
 				case SWT.MouseMove: handleMouseMove(event); break;
@@ -5640,6 +5641,7 @@ void installListeners() {
 	addListener(SWT.Dispose, listener);
 	addListener(SWT.KeyDown, listener);
 	addListener(SWT.KeyUp, listener);
+	addListener(SWT.MenuDetect, listener);
 	addListener(SWT.MouseDown, listener);
 	addListener(SWT.MouseUp, listener);
 	addListener(SWT.MouseMove, listener);
@@ -5958,6 +5960,20 @@ void handleKeyUp(Event event) {
 			}
 		}
 		newOrientation = SWT.NONE;
+	}
+}
+/**
+ * Update the event location for focus-based context menu triggers.
+ *
+ * @param event menu detect event
+ */
+void handleMenuDetect(Event event) {
+	if (event.detail == SWT.CONTEXT_FOCUS) {
+		Point point = getPointAtOffset(caretOffset);
+		Display display = getDisplay();
+		point = display.map(this, null, point);
+		event.x = point.x;
+		event.y = point.y;
 	}
 }
 /** 
