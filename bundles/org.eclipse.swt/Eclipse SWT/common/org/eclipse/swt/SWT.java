@@ -33,6 +33,7 @@ import org.eclipse.swt.internal.*;
  * </p>
  *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @since 3.8
  */
  
 /* NOTE:
@@ -1025,9 +1026,21 @@ public class SWT {
 	 */
 	public static final int TOUCHSTATE_UP = 1 << 2;
 	
-	public static final int CONTEXT_NONE = 1 << 0;
-	public static final int CONTEXT_POINTER = 1 << 1;
-	public static final int CONTEXT_FOCUS = 1 << 2;
+	/**
+	 * Menu detect event detail value indicating that a context menu
+	 * was requested by a mouse or other pointing device.
+	 * 
+	 * @since 3.8
+	 */
+	public static final int MENU_MOUSE = 1 << 1;
+	
+	/**
+	 * Menu detect event detail value indicating that a context menu
+	 * was requested by a keyboard or other focus-based device.
+	 * 
+	 * @since 3.8
+	 */
+	public static final int MENU_KEYBOARD = 1 << 2;
 
 	/**
 	 * A constant indicating that widgets have changed.

@@ -47,8 +47,8 @@ public final class MenuDetectEvent extends TypedEvent {
 	 * The event trigger type.
 	 * <p><ul>
 	 * <li>{@link org.eclipse.swt.SWT#CONTEXT_NONE}</li>
-	 * <li>{@link org.eclipse.swt.SWT#CONTEXT_POINTER}</li>
-	 * <li>{@link org.eclipse.swt.SWT#CONTEXT_FOCUS}</li>
+	 * <li>{@link org.eclipse.swt.SWT#MENU_MOUSE}</li>
+	 * <li>{@link org.eclipse.swt.SWT#MENU_KEYBOARD}</li>
 	 * </ul></p>
 	 * 
 	 * A field indicating whether the event was triggered by a pointing device,

@@ -1458,7 +1458,7 @@ boolean SetWindowPos (int /*long*/ hWnd, int /*long*/ hWndInsertAfter, int X, in
 }
 
 boolean showMenu (int x, int y) {
-	return showMenu (x, y, SWT.CONTEXT_POINTER);
+	return showMenu (x, y, SWT.MENU_MOUSE);
 }
 
 boolean showMenu (int x, int y, int detail) {
@@ -1551,7 +1551,7 @@ LRESULT wmContextMenu (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lPar
 		OS.POINTSTOPOINT (pt, lParam);
 		x = pt.x;
 		y = pt.y;
-		detail = SWT.CONTEXT_POINTER;
+		detail = SWT.MENU_MOUSE;
 		OS.ScreenToClient (hwnd, pt);
 		RECT rect = new RECT ();
 		OS.GetClientRect (hwnd, rect);
@@ -1560,7 +1560,7 @@ LRESULT wmContextMenu (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lPar
 		int pos = OS.GetMessagePos ();
 		x = OS.GET_X_LPARAM (pos);
 		y = OS.GET_Y_LPARAM (pos);
-		detail = SWT.CONTEXT_FOCUS;
+		detail = SWT.MENU_KEYBOARD;
 	}
 
 	/* Show the menu */
