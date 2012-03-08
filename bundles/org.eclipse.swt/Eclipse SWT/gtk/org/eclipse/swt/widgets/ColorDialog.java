@@ -218,8 +218,12 @@ public RGB open () {
 			buffer = new byte [length];
 			OS.memmove (buffer, ptr [0], length);
 			OS.g_free (ptr [0]);
-			String [] gdkColorStrings = new String(Converter.mbcsToWcs (null, buffer)).split(":");
-			length = length == 0 ? 0 : gdkColorStrings.length;
+			String [] gdkColorStrings = null;
+			if (length > 0) {
+				String gtk_color_palette = new String(Converter.mbcsToWcs (null, buffer));
+				gdkColorStrings = splitString(gtk_color_palette, ':');
+				length = gdkColorStrings.length;
+			}
 			rgbs = new RGB [length];
 			for (int i=0; i<length; i++) {
 				String colorString = gdkColorStrings[i];
@@ -259,5 +263,22 @@ public void setRGB (RGB rgb) {
  */
 public void setRGBs(RGB[] rgbs) {
 	this.rgbs = rgbs;
+}
+static String[] splitString(String text, char ch) {
+    String[] substrings = new String[1];
+    int start = 0, pos = 0;
+    while (pos != -1) {
+        pos = text.indexOf(ch, start);
+        if (pos == -1) {
+        	substrings[substrings.length - 1] = text.substring(start);
+        } else {
+            substrings[substrings.length - 1] = text.substring(start, pos);
+            start = pos + 1;
+            String[] newSubstrings = new String[substrings.length+1];
+            System.arraycopy(substrings, 0, newSubstrings, 0, substrings.length);
+       		substrings = newSubstrings;
+        }
+    }
+    return substrings;
 }
 }
