@@ -270,6 +270,7 @@ void _setVisible (boolean visible) {
 		} else {
 			location = window.mouseLocationOutsideOfEventStream();
 		}
+		hasLocation = false;
 	
 		// Hold on to window in case it is disposed while the popup is open.
 		window.retain();

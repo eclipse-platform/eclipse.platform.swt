@@ -2418,6 +2418,7 @@ int /*long*/ menuForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEv
 	Event event = new Event ();
 	event.x = x;
 	event.y = y;
+	event.detail = SWT.MENU_MOUSE;
 	sendEvent (SWT.MenuDetect, event);
 	//widget could be disposed at this point
 	if (isDisposed ()) return 0;

@@ -1032,19 +1032,19 @@ public class SWT {
 	
 	/**
 	 * MenuDetect event detail value indicating that a context menu
-	 * was requested by a mouse or other pointing device (value is 1&lt;&lt;1).
+	 * was requested by a mouse or other pointing device (value is 0).
 	 * 
 	 * @since 3.8
 	 */
-	public static final int MENU_MOUSE = 1 << 1;
+	public static final int MENU_MOUSE = 0;
 	
 	/**
 	 * MenuDetect event detail value indicating that a context menu
-	 * was requested by a keyboard or other focus-based device (value is 1&lt;&lt;2).
+	 * was requested by a keyboard or other focus-based device (value is 1).
 	 * 
 	 * @since 3.8
 	 */
-	public static final int MENU_KEYBOARD = 1 << 2;
+	public static final int MENU_KEYBOARD = 1;
 
 	/**
 	 * A constant indicating that widgets have changed.

@@ -1750,6 +1750,9 @@ void textEvent (Event event) {
 		case SWT.MenuDetect: {
 			Event e = new Event ();
 			e.time = event.time;
+			e.x = event.x;
+			e.y = event.y;
+			e.detail = event.detail;
 			notifyListeners (SWT.MenuDetect, e);
 			break;
 		}
