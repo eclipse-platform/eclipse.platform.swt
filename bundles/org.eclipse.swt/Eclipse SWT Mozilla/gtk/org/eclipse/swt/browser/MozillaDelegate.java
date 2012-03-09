@@ -69,15 +69,15 @@ static Browser findBrowser (int /*long*/ handle) {
 	return (Browser)display.findWidget (parent); 
 }
 
-static String getLibraryName () {
-	return "libxpcom.so"; //$NON-NLS-1$
-}
-
 static String getJSLibraryName () {
-	return "libmozjs.so"; //$NON-NLS-1$
+	return "libxul.so"; //$NON-NLS-1$
 }
 
 static String getJSLibraryName_Pre4() {
+	return "libmozjs.so"; //$NON-NLS-1$
+}
+
+static String getLibraryName () {
 	return "libxpcom.so"; //$NON-NLS-1$
 }
 

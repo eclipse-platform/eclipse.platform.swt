@@ -31,16 +31,16 @@ static Browser findBrowser (int /*long*/ handle) {
 	return (Browser)display.findWidget (handle);
 }
 
-static String getLibraryName () {
-	return "xpcom.dll"; //$NON-NLS-1$
+static String getJSLibraryName () {
+	return "mozjs.dll"; //$NON-NLS-1$
 }
 
 static String getJSLibraryName_Pre4 () {
 	return "js3250.dll"; //$NON-NLS-1$
 }
 
-static String getJSLibraryName () {
-	return "mozjs.dll"; //$NON-NLS-1$
+static String getLibraryName () {
+	return "xpcom.dll"; //$NON-NLS-1$
 }
 
 static String getSWTInitLibraryName () {
