@@ -10942,12 +10942,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1orientable_1set_1orientation)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1orientable_1set_1orientation_FUNC);
 /*
-	gtk_orientable_set_orientation((GtkOrientable *)arg0, (GtkOrientation)arg1);
+	gtk_orientable_set_orientation(arg0, arg1);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gtk_orientable_set_orientation)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkOrientable *, GtkOrientation))fp)((GtkOrientable *)arg0, (GtkOrientation)arg1);
+			((void (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1orientable_1set_1orientation_FUNC);

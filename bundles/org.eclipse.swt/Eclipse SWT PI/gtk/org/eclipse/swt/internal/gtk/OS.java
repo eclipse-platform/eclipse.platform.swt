@@ -8622,11 +8622,7 @@ public static final void gtk_object_sink(int /*long*/ object) {
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param orientable cast=(GtkOrientable *)
- * @param orientation cast=(GtkOrientation)
- */
+/** @method flags=dynamic */
 public static final native void _gtk_orientable_set_orientation(int /*long*/ orientable, int orientation);
 public static final void gtk_orientable_set_orientation(int /*long*/ orientable, int orientation) {
 	lock.lock();
