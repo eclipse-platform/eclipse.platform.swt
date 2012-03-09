@@ -1491,6 +1491,7 @@ typedef enum {
 	_1pango_1tab_1array_1get_1tabs_FUNC,
 	_1pango_1tab_1array_1new_FUNC,
 	_1pango_1tab_1array_1set_1tab_FUNC,
+	_1ubuntu_1menu_1proxy_1get_FUNC,
 	g_1main_1context_1wakeup_FUNC,
 	g_1value_1get_1double_FUNC,
 	g_1value_1get_1float_FUNC,

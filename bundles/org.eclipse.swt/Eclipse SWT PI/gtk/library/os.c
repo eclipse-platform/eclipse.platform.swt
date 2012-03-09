@@ -18673,6 +18673,26 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1tab_1array_1set_1tab)
 }
 #endif
 
+#ifndef NO__1ubuntu_1menu_1proxy_1get
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1ubuntu_1menu_1proxy_1get)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1ubuntu_1menu_1proxy_1get_FUNC);
+/*
+	rc = (jintLong)ubuntu_menu_proxy_get();
+*/
+	{
+		OS_LOAD_FUNCTION(fp, ubuntu_menu_proxy_get)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1ubuntu_1menu_1proxy_1get_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1main_1context_1wakeup
 JNIEXPORT void JNICALL OS_NATIVE(g_1main_1context_1wakeup)
 	(JNIEnv *env, jclass that, jintLong arg0)

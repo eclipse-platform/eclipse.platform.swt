@@ -274,6 +274,7 @@
 #define gtk_printer_get_backend_LIB LIB_GTK
 #define gtk_printer_get_name_LIB LIB_GTK
 #define gtk_printer_is_default_LIB LIB_GTK
+#define ubuntu_menu_proxy_get_LIB LIB_GTK
 #define FcConfigAppFontAddFile_LIB LIB_FONTCONFIG
 
 #define g_app_info_create_from_commandline_LIB LIB_GIO

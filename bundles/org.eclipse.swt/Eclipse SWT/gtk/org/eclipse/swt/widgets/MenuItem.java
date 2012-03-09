@@ -919,4 +919,66 @@ void updateAccelerator (int /*long*/ accelGroup, boolean add) {
 		}
 	}
 }
+
+boolean updateAcceleratorText (boolean show) {
+	if (accelerator != 0) return false;
+	int mask = 0, keysym = 0;
+	if (show) {
+		int accelIndex = text.indexOf ('\t');
+		if (accelIndex == -1) return true;
+		int start = accelIndex + 1;
+		int plusIndex = text.indexOf('+', start);
+		while (plusIndex != -1) {
+			String maskStr = text.substring(start, plusIndex);
+			if (maskStr.equals("Ctrl")) mask |= OS.GDK_CONTROL_MASK;
+			if (maskStr.equals("Shift")) mask |= OS.GDK_SHIFT_MASK;
+			if (maskStr.equals("Alt")) mask |= OS.GDK_MOD1_MASK;
+			start = plusIndex + 1;
+			plusIndex = text.indexOf('+', start);
+		}
+		switch (text.length() - start) {
+			case 1:
+				keysym = text.charAt(start);
+				keysym = Display.wcsToMbcs ((char) keysym);
+				break;
+			case 2:
+				if (text.charAt(start) == 'F') {
+					switch (text.charAt(start + 1)) {
+						case '1': keysym = OS.GDK_F1; break;
+						case '2': keysym = OS.GDK_F2; break;
+						case '3': keysym = OS.GDK_F3; break;
+						case '4': keysym = OS.GDK_F4; break;
+						case '5': keysym = OS.GDK_F5; break;
+						case '6': keysym = OS.GDK_F6; break;
+						case '7': keysym = OS.GDK_F7; break;
+						case '8': keysym = OS.GDK_F8; break;
+						case '9': keysym = OS.GDK_F9; break;
+					}
+				}
+				break;
+			case 3:
+				if (text.charAt(start) == 'F' && text.charAt(start + 1) == '1') {
+					switch (text.charAt(start + 2)) {
+						case '0': keysym = OS.GDK_F10; break;
+						case '1': keysym = OS.GDK_F11; break;
+						case '2': keysym = OS.GDK_F12; break;
+						case '3': keysym = OS.GDK_F13; break;
+						case '4': keysym = OS.GDK_F14; break;
+						case '5': keysym = OS.GDK_F15; break;
+					}
+				}
+				break;
+		}
+	}
+	if (keysym != 0) {
+		int /*long*/ accelGroup = getAccelGroup ();
+		if (show) {
+			OS.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, keysym, mask, OS.GTK_ACCEL_VISIBLE);
+		} else {
+			OS.gtk_widget_remove_accelerator (handle, accelGroup, keysym, mask);
+		}
+	}
+	return keysym != 0;
+}
+
 }

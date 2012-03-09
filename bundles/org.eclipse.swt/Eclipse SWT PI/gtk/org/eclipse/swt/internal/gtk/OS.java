@@ -15233,6 +15233,18 @@ public static final void pango_tab_array_set_tab(int /*long*/ tab_array, int tab
 }
 /**
  * @method flags=dynamic
+ */
+public static final native int /*long*/_ubuntu_menu_proxy_get();
+public static final int /*long*/ ubuntu_menu_proxy_get() {
+	lock.lock();
+	try {
+		return _ubuntu_menu_proxy_get();
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
  * @param object cast=(AtkObject *)
  * @param relationship cast=(AtkRelationType)
  * @param target cast=(AtkObject *)
