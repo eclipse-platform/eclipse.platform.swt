@@ -33,7 +33,6 @@ import org.eclipse.swt.internal.*;
  * </p>
  *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @since 3.8
  */
  
 /* NOTE:
@@ -536,6 +535,11 @@ public class SWT {
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
 	 * 
+	 * @see org.eclipse.swt.widgets.Control#addMenuDetectListener
+	 * @see org.eclipse.swt.widgets.TrayItem#addMenuDetectListener
+	 * @see org.eclipse.swt.events.MenuDetectListener#menuDetected
+	 * @see org.eclipse.swt.events.MenuDetectEvent
+	 * 
 	 * @since 3.0
 	 */
 	public static final int MenuDetect = 35;
@@ -1027,16 +1031,16 @@ public class SWT {
 	public static final int TOUCHSTATE_UP = 1 << 2;
 	
 	/**
-	 * Menu detect event detail value indicating that a context menu
-	 * was requested by a mouse or other pointing device.
+	 * MenuDetect event detail value indicating that a context menu
+	 * was requested by a mouse or other pointing device (value is 1&lt;&lt;1).
 	 * 
 	 * @since 3.8
 	 */
 	public static final int MENU_MOUSE = 1 << 1;
 	
 	/**
-	 * Menu detect event detail value indicating that a context menu
-	 * was requested by a keyboard or other focus-based device.
+	 * MenuDetect event detail value indicating that a context menu
+	 * was requested by a keyboard or other focus-based device (value is 1&lt;&lt;2).
 	 * 
 	 * @since 3.8
 	 */
