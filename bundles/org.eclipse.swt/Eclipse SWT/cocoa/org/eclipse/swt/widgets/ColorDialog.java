@@ -134,9 +134,7 @@ public RGB[] getRGBs() {
  */
 public RGB open() {	
 	NSColorPanel panel = NSColorPanel.sharedColorPanel();
-	String className = "SWTColorDialogPanel";
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
-	display.subclassPanel(panel, className);
 	if (rgb != null) {
 		NSColor color = NSColor.colorWithDeviceRed(rgb.red / 255f, rgb.green / 255f, rgb.blue / 255f, 1);
 		panel.setColor(color);

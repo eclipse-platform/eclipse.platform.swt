@@ -124,11 +124,7 @@ public String open () {
 	String directoryPath = null;
 	NSOpenPanel panel = NSOpenPanel.openPanel();
 
-	// Install a callback so editing keys work.
-	String className = "SWTFileOpenPanel";
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
-	display.subclassPanel(panel, className);
-	
 	OS.objc_msgSend(panel.id, OS.sel_setShowsHiddenFiles_, true);
 	panel.setCanCreateDirectories(true);
 	panel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);

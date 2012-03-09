@@ -221,9 +221,6 @@ public String open () {
 	}
 	
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
-	// Note that SWTFileOpenPanel is also used by DirectoryDialog!!
-	String className = ((style & SWT.OPEN) != 0) ? "SWTFileOpenPanel" : "SWTFileSavePanel";
-	display.subclassPanel(panel, className);	
 	panel.setCanCreateDirectories(true);
 	OS.objc_msgSend(panel.id, OS.sel_setShowsHiddenFiles_, true);
 	int /*long*/ jniRef = 0;

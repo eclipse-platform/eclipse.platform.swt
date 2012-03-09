@@ -158,8 +158,6 @@ public RGB getRGB () {
 public FontData open () {
 	Display display = parent != null ? parent.display : Display.getCurrent ();	
 	NSFontPanel panel = NSFontPanel.sharedFontPanel();
-	String className = "SWTFontDialogPanel";
-	display.subclassPanel(panel, className);
 	panel.setTitle(NSString.stringWith(title != null ? title : ""));
 	boolean create = fontData != null;
 	Font font = create ? new Font(display, fontData) : display.getSystemFont();
