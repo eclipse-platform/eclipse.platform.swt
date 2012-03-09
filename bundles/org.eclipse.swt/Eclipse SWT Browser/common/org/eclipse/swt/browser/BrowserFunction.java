@@ -77,7 +77,7 @@ public class BrowserFunction {
  * </ul>
  * 
  * @see #dispose()
- * @see BrowserFunction(Browser, String, boolean, String[])
+ * @see #BrowserFunction(Browser, String, boolean, String[])
  * @see org.eclipse.swt.browser.LocationListener#changed(LocationEvent)
  */
 public BrowserFunction (Browser browser, String name) {
@@ -116,7 +116,7 @@ public BrowserFunction (Browser browser, String name) {
  * </ul>
  * 
  * @see #dispose()
- * @see BrowserFunction(Browser, String)
+ * @see #BrowserFunction(Browser, String)
  * @see org.eclipse.swt.browser.LocationListener#changed(LocationEvent)
  * 
  * @since 3.8

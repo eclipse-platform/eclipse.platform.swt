@@ -636,9 +636,9 @@ public void setPageIncrement (int value) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setSelection (int value) {
+public void setSelection (int selection) {
 	checkWidget();
-	updateBar(value, minimum, maximum, thumb);
+	updateBar(selection, minimum, maximum, thumb);
 }
 
 /**

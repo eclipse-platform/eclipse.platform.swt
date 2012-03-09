@@ -11,7 +11,7 @@
 package org.eclipse.swt.dnd;
 
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.Converter;
 import org.eclipse.swt.internal.gtk.GtkSelectionData;
 import org.eclipse.swt.internal.gtk.OS;

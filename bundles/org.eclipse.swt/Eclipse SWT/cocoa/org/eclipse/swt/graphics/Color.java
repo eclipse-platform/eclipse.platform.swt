@@ -220,7 +220,8 @@ public RGB getRGB () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public static Color cocoa_new(Device device, float /*double*/ [] rgbColor) {
+public static Color cocoa_new(Device device, float /*double*/ [] handle) {
+	float /*double*/ [] rgbColor = handle;
 	Color color = new Color(device);
 	color.handle = rgbColor;
 	return color;

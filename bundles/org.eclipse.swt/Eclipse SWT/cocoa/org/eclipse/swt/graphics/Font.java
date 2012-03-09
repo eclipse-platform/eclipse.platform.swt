@@ -275,8 +275,6 @@ public FontData[] getFontData() {
  *
  * @param device the device on which to allocate the color
  * @param handle the handle for the font
- * @param style the style for the font
- * @param size the size for the font
  * 
  * @noreference This method is not intended to be referenced by clients.
  */

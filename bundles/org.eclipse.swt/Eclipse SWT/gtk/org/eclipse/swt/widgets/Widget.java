@@ -1149,11 +1149,11 @@ void releaseWidget () {
  * @see #getListeners(int)
  * @see #notifyListeners
  */
-public void removeListener (int eventType, Listener handler) {
+public void removeListener (int eventType, Listener listener) {
 	checkWidget ();
-	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
-	eventTable.unhook (eventType, handler);
+	eventTable.unhook (eventType, listener);
 }
 
 /**

@@ -277,10 +277,10 @@ void sendSelection () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setIncrement (int value) {
+public void setIncrement (int increment) {
 	checkWidget();
-	if (value < 1) return;
-	increment = value;
+	if (increment < 1) return;
+	this.increment = increment;
 }
 
 /**
@@ -336,10 +336,10 @@ public void setMinimum (int value) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setPageIncrement (int value) {
+public void setPageIncrement (int pageIncrement) {
 	checkWidget();
-	if (value < 1) return;
-	pageIncrement = value;
+	if (pageIncrement < 1) return;
+	this.pageIncrement = pageIncrement;
 }
 
 /**

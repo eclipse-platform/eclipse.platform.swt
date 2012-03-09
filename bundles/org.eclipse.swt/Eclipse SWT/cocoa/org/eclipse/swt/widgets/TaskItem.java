@@ -273,11 +273,11 @@ public void setMenu (Menu menu) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setOverlayImage (Image image) {
+public void setOverlayImage (Image overlayImage) {
 	checkWidget ();
-	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	overlayImage = image;
-	updateOverlayText (image != null ? null : overlayText);
+	if (overlayImage != null && overlayImage.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	this.overlayImage = overlayImage;
+	updateOverlayText (overlayImage != null ? null : overlayText);
 	updateImage ();
 }
 
@@ -307,11 +307,11 @@ public void setOverlayImage (Image image) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setOverlayText (String string) {
+public void setOverlayText (String overlayText) {
 	checkWidget ();
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	overlayText = string;
-	updateOverlayText (string);
+	if (overlayText == null) error (SWT.ERROR_NULL_ARGUMENT);
+	this.overlayText = overlayText;
+	updateOverlayText (overlayText);
 	updateImage ();
 }
 

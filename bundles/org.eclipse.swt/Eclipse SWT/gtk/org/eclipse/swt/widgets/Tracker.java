@@ -935,9 +935,9 @@ void resizeRectangles (int xChange, int yChange) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setCursor (Cursor value) {
+public void setCursor (Cursor newCursor) {
 	checkWidget ();
-	cursor = value;
+	cursor = newCursor;
 }
 
 /**

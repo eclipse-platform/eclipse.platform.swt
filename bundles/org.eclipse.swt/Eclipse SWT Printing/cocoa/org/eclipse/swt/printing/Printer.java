@@ -347,7 +347,7 @@ protected void init () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public void internal_dispose_GC(int /*long*/ context, GCData data) {
+public void internal_dispose_GC(int /*long*/ hDC, GCData data) {
 	if (data != null) isGCCreated = false;
 }
 

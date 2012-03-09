@@ -2663,7 +2663,8 @@ void initializeWindowManager () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public void internal_dispose_GC (int /*long*/ gc, GCData data) {
+public void internal_dispose_GC (int /*long*/ hDC, GCData data) {
+	int /*long*/ gc = hDC;
 	if (OS.USE_CAIRO) {
 		Cairo.cairo_destroy (gc);
 	} else {

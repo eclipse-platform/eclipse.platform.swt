@@ -902,7 +902,7 @@ public static final void XFree(int /*long*/ address) {
 /**
  * @param display cast=(Display *)
  * @param selection cast=(Atom)
- * @param owner cast=(Window)
+ * @param window cast=(Window)
  * @param time cast=(Time)
  */
 public static final native int /*long*/ _XSetSelectionOwner(int /*long*/ display, int /*long*/ selection, int /*long*/ window, int time);
@@ -934,7 +934,6 @@ public static final int /*long*/ XGetSelectionOwner(int /*long*/ display, int /*
  * @param property cast=(Atom)
  * @param req_type cast=(Atom)
  * @param actual_type_return cast=(Atom*)
- * @param actual_format_return cast=(Atom*)
  * @param actual_format_return cast=(int *)
  * @param nitems_return cast=(unsigned long *)
  * @param bytes_after_return cast=(unsigned long *)
@@ -4785,8 +4784,8 @@ public static final void gdk_pixbuf_render_pixmap_and_mask(int /*long*/ pixbuf, 
  * @param buffer cast=(gchar **)
  * @param buffer_size cast=(gsize *)
  * @param type cast=(const char *)
- * @param option_keys=(char **)
- * @param option_values=(char **)
+ * @param option_keys cast=(char **)
+ * @param option_values cast=(char **)
  * @param error cast=(GError **)
  */
 public static final native boolean _gdk_pixbuf_save_to_bufferv(int /*long*/ pixbuf, int /*long*/ [] buffer, int /*long*/ [] buffer_size, byte [] type, int /*long*/ [] option_keys, int /*long*/ [] option_values, int /*long*/ [] error);
@@ -6084,7 +6083,6 @@ public static final void gtk_calendar_mark_day(int /*long*/ calendar, int day) {
 /**
  * @method flags=dynamic
  * @param calendar cast=(GtkCalendar *)
- * @param day cast=(guint)
  */
 public static final native void _gtk_calendar_clear_marks(int /*long*/ calendar);
 public static final void gtk_calendar_clear_marks(int /*long*/ calendar) {
@@ -8626,7 +8624,7 @@ public static final void gtk_object_sink(int /*long*/ object) {
 }
 /**
  * @method flags=dynamic
- * @param toolbar cast=(GtkOrientable *)
+ * @param orientable cast=(GtkOrientable *)
  * @param orientation cast=(GtkOrientation)
  */
 public static final native void _gtk_orientable_set_orientation(int /*long*/ orientable, int orientation);

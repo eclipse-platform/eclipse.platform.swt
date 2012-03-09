@@ -762,11 +762,11 @@ public void setPageIncrement (int value) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setSelection (int value) {
+public void setSelection (int selection) {
 	checkWidget ();
-	value = Math.min (value, getMaximum() - getThumb());
+	selection = Math.min (selection, getMaximum() - getThumb());
 	OS.g_signal_handlers_block_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	OS.gtk_adjustment_set_value (adjustmentHandle, value);
+	OS.gtk_adjustment_set_value (adjustmentHandle, selection);
 	OS.g_signal_handlers_unblock_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 

@@ -694,7 +694,7 @@ public abstract int /*long*/ internal_new_GC (GCData data);
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public abstract void internal_dispose_GC (int /*long*/ handle, GCData data);
+public abstract void internal_dispose_GC (int /*long*/ hDC, GCData data);
 
 /**
  * Returns <code>true</code> if the device has been disposed,

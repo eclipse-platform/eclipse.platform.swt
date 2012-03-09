@@ -405,12 +405,12 @@ public ToolItem getItem (int index) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public ToolItem getItem (Point pt) {
+public ToolItem getItem (Point point) {
 	checkWidget();
-	if (pt == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	for (int i=0; i<itemCount; i++) {
 		Rectangle rect = items [i].getBounds ();
-		if (rect.contains (pt)) return items [i];
+		if (rect.contains (point)) return items [i];
 	}
 	return null;
 }

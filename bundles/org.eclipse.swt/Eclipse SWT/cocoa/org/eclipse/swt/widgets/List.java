@@ -664,11 +664,11 @@ public int getTopIndex () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public int indexOf (String item) {
+public int indexOf (String string) {
 	checkWidget();
-	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	for (int i=0; i<itemCount; i++) {
-		if (items [i].equals (item)) return i;
+		if (items [i].equals (string)) return i;
 	}
 	return -1;
 }

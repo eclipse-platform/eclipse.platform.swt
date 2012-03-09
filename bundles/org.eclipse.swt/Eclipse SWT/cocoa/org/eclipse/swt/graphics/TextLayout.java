@@ -1318,11 +1318,11 @@ public int getOrientation() {
  * 
  * @see #getNextOffset(int, int)
  */
-public int getPreviousOffset (int index, int movement) {
+public int getPreviousOffset (int offset, int movement) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		return _getOffset(index, movement, false);
+		return _getOffset(offset, movement, false);
 	} finally {
 		if (pool != null) pool.release();
 	}

@@ -281,11 +281,11 @@ public void removeSelectionListener (SelectionListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setIncrement (int value) {
+public void setIncrement (int increment) {
 	checkWidget ();
-	if (value < 1) return;
+	if (increment < 1) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	OS.gtk_range_set_increments (handle, value, getPageIncrement ());
+	OS.gtk_range_set_increments (handle, increment, getPageIncrement ());
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
@@ -347,11 +347,11 @@ public void setMinimum (int value) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setPageIncrement (int value) {
+public void setPageIncrement (int pageIncrement) {
 	checkWidget ();
-	if (value < 1) return;
+	if (pageIncrement < 1) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	OS.gtk_range_set_increments (handle, getIncrement (), value);
+	OS.gtk_range_set_increments (handle, getIncrement (), pageIncrement);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 

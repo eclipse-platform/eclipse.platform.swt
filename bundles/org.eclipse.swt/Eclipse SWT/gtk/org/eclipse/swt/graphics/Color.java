@@ -224,7 +224,7 @@ public RGB getRGB () {
  * </p>
  *
  * @param device the device on which to allocate the color
- * @param handle the handle for the color
+ * @param gdkColor the handle for the color
  * 
  * @noreference This method is not intended to be referenced by clients.
  */

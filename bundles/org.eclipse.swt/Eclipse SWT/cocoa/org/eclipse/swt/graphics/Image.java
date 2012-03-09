@@ -774,8 +774,7 @@ public ImageData getImageData() {
  *
  * @param device the device on which to allocate the color
  * @param type the type of the image (<code>SWT.BITMAP</code> or <code>SWT.ICON</code>)
- * @param handle the OS handle for the image
- * @param data the OS data for the image
+ * @param nsImage the OS data for the image
  *
  * @noreference This method is not intended to be referenced by clients.
  */
@@ -1167,7 +1166,8 @@ public int /*long*/ internal_new_GC (GCData data) {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public void internal_dispose_GC (int /*long*/ context, GCData data) {
+public void internal_dispose_GC (int /*long*/ hDC, GCData data) {
+	int /*long*/ context = hDC;
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {

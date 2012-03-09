@@ -1390,8 +1390,8 @@ public int getOrientation() {
  * 
  * @see #getNextOffset(int, int)
  */
-public int getPreviousOffset (int index, int movement) {
-	return _getOffset(index, movement, false);
+public int getPreviousOffset (int offset, int movement) {
+	return _getOffset(offset, movement, false);
 }
 
 /**

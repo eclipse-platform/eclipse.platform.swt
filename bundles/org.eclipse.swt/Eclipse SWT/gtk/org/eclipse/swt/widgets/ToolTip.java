@@ -630,9 +630,9 @@ public void removeSelectionListener (SelectionListener listener) {
  * @see #getVisible
  * @see #setVisible
  */
-public void setAutoHide (boolean autohide) {
+public void setAutoHide (boolean autoHide) {
 	checkWidget ();
-	this.autohide = autohide;
+	this.autohide = autoHide;
 	//TODO - update when visible
 }
 

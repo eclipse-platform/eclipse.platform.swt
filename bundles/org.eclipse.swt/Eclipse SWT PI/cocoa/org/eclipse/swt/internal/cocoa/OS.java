@@ -195,13 +195,13 @@ public static final native int GetDblTime();
 	@param outIconRef cast=(IconRef *) */
 public static final native int GetIconRefFromTypeInfo(int inCreator, int inType, int /*long*/ inExtension, int /*long*/ inMIMEType, int inUsageFlags, int /*long*/ outIconRef[]);
 /** @method flags=dynamic 
-    @param  cast=(CGContextRef) */
+    @param context cast=(CGContextRef) */
 public static final native int /*long*/ CGContextCopyPath(int /*long*/ context);
 /** @method flags=dynamic */
 public static final native int /*long*/ TISCopyCurrentKeyboardInputSource();
 /** @method flags=dynamic 
-    @param  cast=(TISInputSourceRef) 
-    @param  cast=(CFStringRef) */
+    @param inputSource cast=(TISInputSourceRef) 
+    @param propertyKey cast=(CFStringRef) */
 public static final native int /*long*/ TISGetInputSourceProperty (int /*long*/ inputSource, int /*long*/ propertyKey);
 /** @method flags=no_gen */
 public static final native int /*long*/ kTISPropertyUnicodeKeyLayoutData();
@@ -327,7 +327,7 @@ public static final native int /*long*/ PMGetDuplex(int /*long*/ printSettings, 
 public static final native int /*long*/ PMSetDuplex(int /*long*/ printSettings, int duplexSetting);
 /** @method flags=dynamic
  * @param pmPrinter cast=(PMPrinter)
- * @param pmPrintSettings cast=(PMPrintSettings)
+ * @param outNumResolutions cast=(UInt32 *)
  */
 public static final native int /*long*/ PMPrinterGetPrinterResolutionCount(int /*long*/ pmPrinter, int[] outNumResolutions);
 /** @method flags=dynamic
@@ -542,7 +542,6 @@ public static final native boolean class_addMethod(int /*long*/ cls, int /*long*
  */
 public static final native boolean class_addProtocol(int /*long*/ cls, int /*long*/ protocol);
 /**
- * @param method cast=(Method)
  * @param aClass cast=(Class)
  * @param aSelector cast=(SEL)
  */

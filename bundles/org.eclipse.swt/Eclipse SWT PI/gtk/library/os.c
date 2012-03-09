@@ -2312,7 +2312,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1XSetSelectionOwner)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1XSetSelectionOwner_FUNC);
-	rc = (jintLong)XSetSelectionOwner((Display *)arg0, (Atom)arg1, arg2, (Time)arg3);
+	rc = (jintLong)XSetSelectionOwner((Display *)arg0, (Atom)arg1, (Window)arg2, (Time)arg3);
 	OS_NATIVE_EXIT(env, that, _1XSetSelectionOwner_FUNC);
 	return rc;
 }
@@ -6217,12 +6217,12 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1pixbuf_1save_1to_1bufferv)
 	if (arg5) if ((lparg5 = (*env)->GetIntLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetIntLongArrayElements(env, arg6, NULL)) == NULL) goto fail;
 /*
-	rc = (jboolean)gdk_pixbuf_save_to_bufferv((GdkPixbuf *)arg0, (gchar **)lparg1, (gsize *)lparg2, (const char *)lparg3, lparg4, lparg5, (GError **)lparg6);
+	rc = (jboolean)gdk_pixbuf_save_to_bufferv((GdkPixbuf *)arg0, (gchar **)lparg1, (gsize *)lparg2, (const char *)lparg3, (char **)lparg4, (char **)lparg5, (GError **)lparg6);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gdk_pixbuf_save_to_bufferv)
 		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GdkPixbuf *, gchar **, gsize *, const char *, jintLong *, jintLong *, GError **))fp)((GdkPixbuf *)arg0, (gchar **)lparg1, (gsize *)lparg2, (const char *)lparg3, lparg4, lparg5, (GError **)lparg6);
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GdkPixbuf *, gchar **, gsize *, const char *, char **, char **, GError **))fp)((GdkPixbuf *)arg0, (gchar **)lparg1, (gsize *)lparg2, (const char *)lparg3, (char **)lparg4, (char **)lparg5, (GError **)lparg6);
 		}
 	}
 fail:
@@ -10942,12 +10942,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1orientable_1set_1orientation)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1orientable_1set_1orientation_FUNC);
 /*
-	gtk_orientable_set_orientation(arg0, (GtkOrientation)arg1);
+	gtk_orientable_set_orientation((GtkOrientable *)arg0, (GtkOrientation)arg1);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gtk_orientable_set_orientation)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GtkOrientation))fp)(arg0, (GtkOrientation)arg1);
+			((void (CALLING_CONVENTION*)(GtkOrientable *, GtkOrientation))fp)((GtkOrientable *)arg0, (GtkOrientation)arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1orientable_1set_1orientation_FUNC);

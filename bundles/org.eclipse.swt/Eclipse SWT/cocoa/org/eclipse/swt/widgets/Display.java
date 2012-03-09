@@ -3027,9 +3027,8 @@ public int /*long*/ internal_new_GC (GCData data) {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public void internal_dispose_GC (int /*long*/ context, GCData data) {
+public void internal_dispose_GC (int /*long*/ hDC, GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	
 }
 
 boolean isBundled () {

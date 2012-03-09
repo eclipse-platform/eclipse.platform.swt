@@ -6921,7 +6921,7 @@ public static final native boolean UnregisterClassA (byte [] lpClassName, int /*
 public static final native boolean UpdateLayeredWindow (int /*long*/ hwnd, int /*long*/ hdcDst, POINT pptDst, SIZE psize, int /*long*/ hdcSrc, POINT pptSrc, int crKey, BLENDFUNCTION pblend, int dwFlags);
 /**
  * @method flags=dynamic
- * @param hWnd cast=(HWND)
+ * @param hwnd cast=(HWND)
  */
 public static final native boolean UnregisterTouchWindow (int /*long*/ hwnd);
 /** @param hWnd cast=(HWND) */

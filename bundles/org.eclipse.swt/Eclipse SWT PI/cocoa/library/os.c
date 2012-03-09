@@ -1311,12 +1311,12 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CGContextCopyPath)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, CGContextCopyPath_FUNC);
 /*
-	rc = (jintLong)CGContextCopyPath(arg0);
+	rc = (jintLong)CGContextCopyPath((CGContextRef)arg0);
 */
 	{
 		OS_LOAD_FUNCTION(fp, CGContextCopyPath)
 		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(CGContextRef))fp)((CGContextRef)arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, CGContextCopyPath_FUNC);
@@ -5594,12 +5594,12 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(PMPrinterGetPrinterResolutionCount)
 	OS_NATIVE_ENTER(env, that, PMPrinterGetPrinterResolutionCount_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 /*
-	rc = (jintLong)PMPrinterGetPrinterResolutionCount((PMPrinter)arg0, lparg1);
+	rc = (jintLong)PMPrinterGetPrinterResolutionCount((PMPrinter)arg0, (UInt32 *)lparg1);
 */
 	{
 		OS_LOAD_FUNCTION(fp, PMPrinterGetPrinterResolutionCount)
 		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrinter, jint *))fp)((PMPrinter)arg0, lparg1);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(PMPrinter, UInt32 *))fp)((PMPrinter)arg0, (UInt32 *)lparg1);
 		}
 	}
 fail:
@@ -5938,12 +5938,12 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(TISGetInputSourceProperty)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, TISGetInputSourceProperty_FUNC);
 /*
-	rc = (jintLong)TISGetInputSourceProperty(arg0, arg1);
+	rc = (jintLong)TISGetInputSourceProperty((TISInputSourceRef)arg0, (CFStringRef)arg1);
 */
 	{
 		OS_LOAD_FUNCTION(fp, TISGetInputSourceProperty)
 		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(TISInputSourceRef, CFStringRef))fp)((TISInputSourceRef)arg0, (CFStringRef)arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, TISGetInputSourceProperty_FUNC);
