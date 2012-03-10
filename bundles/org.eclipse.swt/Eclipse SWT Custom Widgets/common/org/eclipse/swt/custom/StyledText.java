@@ -5969,9 +5969,7 @@ void handleKeyUp(Event event) {
  */
 void handleMenuDetect(Event event) {
 	if (event.detail == SWT.MENU_KEYBOARD) {
-		Point point = getPointAtOffset(caretOffset);
-		Display display = getDisplay();
-		point = display.map(this, null, point);
+		Point point = getDisplay().map(this, null, getPointAtOffset(caretOffset));
 		event.x = point.x;
 		event.y = point.y;
 	}

@@ -1750,10 +1750,18 @@ void textEvent (Event event) {
 		case SWT.MenuDetect: {
 			Event e = new Event ();
 			e.time = event.time;
+			e.detail = event.detail;
 			e.x = event.x;
 			e.y = event.y;
-			e.detail = event.detail;
+			if (event.detail == SWT.MENU_KEYBOARD) {
+				Point pt = getDisplay().map(text, null, text.getCaretLocation());
+				e.x = pt.x;
+				e.y = pt.y;
+			}
 			notifyListeners (SWT.MenuDetect, e);
+			event.doit = e.doit;
+			event.x = e.x;
+			event.y = e.y;
 			break;
 		}
 		case SWT.Modify: {
