@@ -240,6 +240,7 @@ void _setVisible (boolean visible) {
 			nX = OS.GET_X_LPARAM (pos);
 			nY = OS.GET_Y_LPARAM (pos);
 		}
+		hasLocation = false;
 		/*
 		* Feature in Windows.  It is legal use TrackPopupMenu()
 		* to display an empty menu as long as menu items are added
