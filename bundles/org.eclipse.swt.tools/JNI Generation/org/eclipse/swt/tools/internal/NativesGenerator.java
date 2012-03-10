@@ -84,6 +84,10 @@ boolean isStruct(String flagsStr) {
 	return false;
 }
 
+boolean isFloatingPoint(String type) {
+	return type.equals("float") || type.equals("double");
+}
+
 void generateCallback(JNIMethod method, String function, JNIParameter[] params, JNIType returnType) {
 	output("static jintLong ");
 	output(function);
@@ -108,7 +112,7 @@ void generateCallback(JNIMethod method, String function, JNIParameter[] params, 
 	outputln(") {");
 	
 	output("\t");
-	if (isStruct(flags[0])) {
+	if (isStruct(flags[0]) || isFloatingPoint(types[0])) {
 		output(types[0]);
 		output("* lprc = ");
 	} else if (!types[0].equals("void")) {
@@ -116,14 +120,14 @@ void generateCallback(JNIMethod method, String function, JNIParameter[] params, 
 	}
 	output("((");
 	output(types[0]);
-	if (isStruct(flags[0])) output("*");
+	if (isStruct(flags[0]) || isFloatingPoint(types[0])) output("*");
 	output(" (*)(");
 	first = true;
 	for (int i = 1; i < types.length; i++) {
 		if (!first) output(", ");
 		first = false;
 		output(types[i]);
-		if (isStruct(flags[i])) output("*");
+		if (isStruct(flags[i]) || isFloatingPoint(types[i])) output("*");
 	}
 	output("))");
 	output(function);
@@ -132,12 +136,12 @@ void generateCallback(JNIMethod method, String function, JNIParameter[] params, 
 	for (int i = 1; i < types.length; i++) {
 		if (!first) output(", ");
 		first = false;
-		if (isStruct(flags[i])) output("&");
+		if (isStruct(flags[i]) || isFloatingPoint(types[i])) output("&");
 		output("arg");
 		output(String.valueOf(i -1));
 	}
 	outputln(");");
-	if (isStruct(flags[0])) {
+	if (isStruct(flags[0]) || isFloatingPoint(types[0])) {
 		output("\t");
 		output(types[0]);
 		outputln(" rc;");
