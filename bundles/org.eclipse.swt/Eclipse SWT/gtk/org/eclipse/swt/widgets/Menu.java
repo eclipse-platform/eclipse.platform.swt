@@ -209,6 +209,7 @@ void _setVisible (boolean visible) {
 				}
 			}
 			int /*long*/ address = hasLocation ? display.menuPositionProc: 0;
+			hasLocation = false;
 			int /*long*/ data = 0;
 			if ((OS.GTK_VERSION >=  OS.VERSION (2, 10, 0))) {
 				/*

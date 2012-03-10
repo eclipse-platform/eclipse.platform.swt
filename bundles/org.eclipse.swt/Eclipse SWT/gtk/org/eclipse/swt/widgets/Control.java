@@ -3119,7 +3119,7 @@ int /*long*/ gtk_popup_menu (int /*long*/ widget) {
 	if (!hasFocus()) return 0;
 	int [] x = new int [1], y = new int [1];
 	OS.gdk_window_get_pointer (0, x, y, null);
-	return showMenu (x [0], y [0]) ? 1 : 0;
+	return showMenu (x [0], y [0], SWT.MENU_KEYBOARD) ? 1 : 0;
 }
 
 int /*long*/ gtk_preedit_changed (int /*long*/ imcontext) {
@@ -4587,9 +4587,14 @@ void setWidgetBackground  () {
 }
 
 boolean showMenu (int x, int y) {
+	return showMenu (x, y, SWT.MENU_MOUSE);
+}
+
+boolean showMenu (int x, int y, int detail) {
 	Event event = new Event ();
 	event.x = x;
 	event.y = y;
+	event.detail = detail;
 	sendEvent (SWT.MenuDetect, event);
 	//widget could be disposed at this point
 	if (isDisposed ()) return false;
