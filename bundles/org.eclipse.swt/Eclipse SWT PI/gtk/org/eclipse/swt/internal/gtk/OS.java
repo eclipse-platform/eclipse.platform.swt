@@ -3860,8 +3860,7 @@ public static final void gdk_drag_status(int /*long*/ context, int action, int t
 	}
 }
 /**
- * @param drawable cast=(GdkDrawable *)
- * @param gc cast=(GdkGC *)
+ * @method flags=dynamic
  * @param filled cast=(gint)
  * @param x cast=(gint)
  * @param y cast=(gint)
