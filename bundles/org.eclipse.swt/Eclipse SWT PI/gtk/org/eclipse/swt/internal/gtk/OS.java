@@ -3929,8 +3929,7 @@ public static final void gdk_draw_layout(int /*long*/ drawable, int /*long*/ gc,
 	}
 }
 /**
- * @param drawable cast=(GdkDrawable *)
- * @param gc cast=(GdkGC *)
+ * @method flags=dynamic
  * @param x cast=(gint)
  * @param y cast=(gint)
  * @param layout cast=(PangoLayout *)

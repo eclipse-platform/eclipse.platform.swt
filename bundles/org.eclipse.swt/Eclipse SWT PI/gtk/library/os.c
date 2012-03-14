@@ -5286,7 +5286,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1layout_1with_1colors)
 	OS_NATIVE_ENTER(env, that, _1gdk_1draw_1layout_1with_1colors_FUNC);
 	if (arg5) if ((lparg5 = getGdkColorFields(env, arg5, &_arg5)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = getGdkColorFields(env, arg6, &_arg6)) == NULL) goto fail;
-	gdk_draw_layout_with_colors((GdkDrawable *)arg0, (GdkGC *)arg1, (gint)arg2, (gint)arg3, (PangoLayout *)arg4, lparg5, lparg6);
+/*
+	gdk_draw_layout_with_colors(arg0, arg1, (gint)arg2, (gint)arg3, (PangoLayout *)arg4, lparg5, lparg6);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_draw_layout_with_colors)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, gint, gint, PangoLayout *, GdkColor *, GdkColor *))fp)(arg0, arg1, (gint)arg2, (gint)arg3, (PangoLayout *)arg4, lparg5, lparg6);
+		}
+	}
 fail:
 	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1layout_1with_1colors_FUNC);
 }
