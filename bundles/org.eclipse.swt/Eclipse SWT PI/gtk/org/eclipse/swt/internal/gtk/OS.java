@@ -3779,11 +3779,11 @@ public static final void gdk_colormap_query_color(int /*long*/ colormap, int /*l
 	}
 }
 /** @param cursor cast=(GdkCursor *) */
-public static final native void _gdk_cursor_destroy(int /*long*/ cursor);
-public static final void gdk_cursor_destroy(int /*long*/ cursor) {
+public static final native void _gdk_cursor_unref(int /*long*/ cursor);
+public static final void gdk_cursor_unref(int /*long*/ cursor) {
 	lock.lock();
 	try {
-		_gdk_cursor_destroy(cursor);
+		_gdk_cursor_unref(cursor);
 	} finally {
 		lock.unlock();
 	}

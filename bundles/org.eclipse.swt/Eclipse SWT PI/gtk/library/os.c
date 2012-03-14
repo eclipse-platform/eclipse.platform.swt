@@ -5120,16 +5120,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gdk_1cursor_1destroy
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cursor_1destroy)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1cursor_1destroy_FUNC);
-	gdk_cursor_destroy((GdkCursor *)arg0);
-	OS_NATIVE_EXIT(env, that, _1gdk_1cursor_1destroy_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1cursor_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1cursor_1new)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -5176,6 +5166,16 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1cursor_1new_1from_1pixmap)
 fail:
 	OS_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1pixmap_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1cursor_1unref
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cursor_1unref)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1cursor_1unref_FUNC);
+	gdk_cursor_unref((GdkCursor *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1cursor_1unref_FUNC);
 }
 #endif
 

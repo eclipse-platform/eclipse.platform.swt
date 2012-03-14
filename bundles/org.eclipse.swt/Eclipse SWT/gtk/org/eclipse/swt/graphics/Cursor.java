@@ -449,7 +449,7 @@ int /*long*/ createCursor(byte[] sourceData, byte[] maskData, int width, int hei
 }
 
 void destroy() {
-	OS.gdk_cursor_destroy(handle);
+	OS.gdk_cursor_unref(handle);
 	handle = 0;
 }
 
