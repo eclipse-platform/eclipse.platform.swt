@@ -3947,8 +3947,7 @@ public static final void gdk_draw_layout_with_colors(int /*long*/ drawable, int 
 	}
 }
 /**
- * @param drawable cast=(GdkDrawable *)
- * @param gc cast=(GdkGC *)
+ * @method flags=dynamic
  * @param x1 cast=(gint)
  * @param y1 cast=(gint)
  * @param x2 cast=(gint)
