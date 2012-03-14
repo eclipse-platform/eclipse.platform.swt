@@ -3963,8 +3963,7 @@ public static final void gdk_draw_line(int /*long*/ drawable, int /*long*/ gc, i
 	}
 }
 /**
- * @param drawable cast=(GdkDrawable *)
- * @param gc cast=(GdkGC *)
+ * @method flags=dynamic
  * @param points cast=(GdkPoint *),flags=no_out critical
  * @param npoints cast=(gint)
  */

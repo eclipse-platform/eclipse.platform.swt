@@ -149,6 +149,7 @@
 #define gdk_display_supports_cursor_color_LIB LIB_GDK
 #define gdk_draw_arc_LIB LIB_GDK
 #define gdk_draw_line_LIB LIB_GDK
+#define gdk_draw_lines_LIB LIB_GDK
 #define gdk_draw_pixbuf_LIB LIB_GDK
 #define gdk_draw_point_LIB LIB_GDK
 #define gdk_pixbuf_save_to_bufferv_LIB LIB_GDK

@@ -5324,7 +5324,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1lines)
 	{
 		if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	}
-	gdk_draw_lines((GdkDrawable *)arg0, (GdkGC *)arg1, (GdkPoint *)lparg2, (gint)arg3);
+/*
+	gdk_draw_lines(arg0, arg1, (GdkPoint *)lparg2, (gint)arg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_draw_lines)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, GdkPoint *, gint))fp)(arg0, arg1, (GdkPoint *)lparg2, (gint)arg3);
+		}
+	}
 fail:
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
