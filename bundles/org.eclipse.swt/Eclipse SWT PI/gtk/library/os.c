@@ -5353,7 +5353,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1point)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1draw_1point_FUNC);
-	gdk_draw_point((GdkDrawable *)arg0, (GdkGC *)arg1, arg2, arg3);
+/*
+	gdk_draw_point(arg0, arg1, arg2, arg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_draw_point)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint))fp)(arg0, arg1, arg2, arg3);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1point_FUNC);
 }
 #endif

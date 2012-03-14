@@ -149,6 +149,7 @@
 #define gdk_display_supports_cursor_color_LIB LIB_GDK
 #define gdk_draw_arc_LIB LIB_GDK
 #define gdk_draw_pixbuf_LIB LIB_GDK
+#define gdk_draw_point_LIB LIB_GDK
 #define gdk_pixbuf_save_to_bufferv_LIB LIB_GDK
 #define gdk_screen_get_default_LIB LIB_GDK
 #define gdk_screen_get_monitor_at_point_LIB LIB_GDK

@@ -4003,8 +4003,7 @@ public static final void gdk_draw_pixbuf(int /*long*/ drawable, int /*long*/ gc,
 	}
 }
 /**
- * @param drawable cast=(GdkDrawable *)
- * @param gc cast=(GdkGC *)
+ * @method flags=dynamic
  */
 public static final native void _gdk_draw_point(int /*long*/ drawable, int /*long*/ gc, int x, int y);
 public static final void gdk_draw_point(int /*long*/ drawable, int /*long*/ gc, int x, int y) {
