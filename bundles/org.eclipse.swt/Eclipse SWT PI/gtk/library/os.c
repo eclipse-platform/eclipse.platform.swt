@@ -5797,7 +5797,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1dashes)
 	{
 		if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	}
-	gdk_gc_set_dashes((GdkGC *)arg0, (gint)arg1, (gint8 *)lparg2, (gint)arg3);
+/*
+	gdk_gc_set_dashes(arg0, (gint)arg1, (gint8 *)lparg2, (gint)arg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_gc_set_dashes)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, gint, gint8 *, gint))fp)(arg0, (gint)arg1, (gint8 *)lparg2, (gint)arg3);
+		}
+	}
 fail:
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {

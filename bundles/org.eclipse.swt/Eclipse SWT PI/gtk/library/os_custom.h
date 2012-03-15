@@ -155,6 +155,7 @@
 #define gdk_draw_point_LIB LIB_GDK
 #define gdk_gc_set_clip_mask_LIB LIB_GDK
 #define gdk_gc_set_clip_origin_LIB LIB_GDK
+#define gdk_gc_set_dashes_LIB LIB_GDK
 #define gdk_pixbuf_save_to_bufferv_LIB LIB_GDK
 #define gdk_screen_get_default_LIB LIB_GDK
 #define gdk_screen_get_monitor_at_point_LIB LIB_GDK

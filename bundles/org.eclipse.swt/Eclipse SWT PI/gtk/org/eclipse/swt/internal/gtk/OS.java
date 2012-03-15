@@ -4344,7 +4344,7 @@ public static final void gdk_gc_set_clip_region(int /*long*/ gc, int /*long*/ re
 	}
 }
 /**
- * @param gc cast=(GdkGC *)
+ * @method flags=dynamic
  * @param dash_offset cast=(gint)
  * @param dash_list cast=(gint8 *),flags=no_out critical
  * @param n cast=(gint)
