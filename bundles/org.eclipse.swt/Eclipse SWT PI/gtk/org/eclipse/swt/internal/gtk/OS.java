@@ -4279,7 +4279,7 @@ public static final int /*long*/ gdk_gc_new(int /*long*/ window) {
 	}
 }
 /**
- * @param gc cast=(GdkGC *)
+ * @method flags=dynamic
  * @param color cast=(GdkColor *),flags=no_out
  */
 public static final native void _gdk_gc_set_background(int /*long*/ gc, GdkColor color);
