@@ -4319,19 +4319,6 @@ public static final void gdk_gc_set_clip_origin(int /*long*/ gc, int x, int y) {
 }
 /**
  * @param gc cast=(GdkGC *)
- * @param rectangle cast=(GdkRectangle *),flags=no_out
- */
-public static final native void _gdk_gc_set_clip_rectangle(int /*long*/ gc, GdkRectangle rectangle);
-public static final void gdk_gc_set_clip_rectangle(int /*long*/ gc, GdkRectangle rectangle) {
-	lock.lock();
-	try {
-		_gdk_gc_set_clip_rectangle(gc, rectangle);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param gc cast=(GdkGC *)
  * @param region cast=(GdkRegion *)
  */
 public static final native void _gdk_gc_set_clip_region(int /*long*/ gc, int /*long*/ region);

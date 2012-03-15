@@ -486,7 +486,6 @@ typedef enum {
 	_1gdk_1gc_1set_1background_FUNC,
 	_1gdk_1gc_1set_1clip_1mask_FUNC,
 	_1gdk_1gc_1set_1clip_1origin_FUNC,
-	_1gdk_1gc_1set_1clip_1rectangle_FUNC,
 	_1gdk_1gc_1set_1clip_1region_FUNC,
 	_1gdk_1gc_1set_1dashes_FUNC,
 	_1gdk_1gc_1set_1exposures_FUNC,

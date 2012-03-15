@@ -5768,19 +5768,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1clip_1origin)
 }
 #endif
 
-#ifndef NO__1gdk_1gc_1set_1clip_1rectangle
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1clip_1rectangle)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-{
-	GdkRectangle _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1clip_1rectangle_FUNC);
-	if (arg1) if ((lparg1 = getGdkRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
-	gdk_gc_set_clip_rectangle((GdkGC *)arg0, (GdkRectangle *)lparg1);
-fail:
-	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1clip_1rectangle_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1gc_1set_1clip_1region
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1clip_1region)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
