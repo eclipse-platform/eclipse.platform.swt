@@ -5729,7 +5729,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1clip_1mask)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1clip_1mask_FUNC);
-	gdk_gc_set_clip_mask((GdkGC *)arg0, (GdkBitmap *)arg1);
+/*
+	gdk_gc_set_clip_mask(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_gc_set_clip_mask)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1clip_1mask_FUNC);
 }
 #endif
@@ -5739,7 +5747,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1clip_1origin)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1clip_1origin_FUNC);
-	gdk_gc_set_clip_origin((GdkGC *)arg0, (gint)arg1, (gint)arg2);
+/*
+	gdk_gc_set_clip_origin(arg0, (gint)arg1, (gint)arg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_gc_set_clip_origin)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, gint, gint))fp)(arg0, (gint)arg1, (gint)arg2);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1clip_1origin_FUNC);
 }
 #endif

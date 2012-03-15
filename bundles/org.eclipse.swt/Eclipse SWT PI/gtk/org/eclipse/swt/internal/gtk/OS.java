@@ -4292,8 +4292,7 @@ public static final void gdk_gc_set_background(int /*long*/ gc, GdkColor color) 
 	}
 }
 /**
- * @param gc cast=(GdkGC *)
- * @param mask cast=(GdkBitmap *)
+ * @method flags=dynamic
  */
 public static final native void _gdk_gc_set_clip_mask(int /*long*/ gc, int /*long*/ mask);
 public static final void gdk_gc_set_clip_mask(int /*long*/ gc, int /*long*/ mask) {
@@ -4305,7 +4304,7 @@ public static final void gdk_gc_set_clip_mask(int /*long*/ gc, int /*long*/ mask
 	}
 }
 /**
- * @param gc cast=(GdkGC *)
+ * @method flags=dynamic
  * @param x cast=(gint)
  * @param y cast=(gint)
  */
