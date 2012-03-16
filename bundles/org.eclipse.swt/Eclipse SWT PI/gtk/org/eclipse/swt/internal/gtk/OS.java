@@ -4447,7 +4447,9 @@ public static final void gdk_gc_set_tile(int /*long*/ gc, int /*long*/ tile) {
 		lock.unlock();
 	}
 }
-/** @param gc cast=(GdkGC *) */
+/** 
+ * @method flags=dynamic 
+ */
 public static final native void _gdk_gc_set_ts_origin(int /*long*/ gc, int x, int y);
 public static final void gdk_gc_set_ts_origin(int /*long*/ gc, int x, int y) {
 	lock.lock();

@@ -5918,7 +5918,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1ts_1origin)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1ts_1origin_FUNC);
-	gdk_gc_set_ts_origin((GdkGC *)arg0, arg1, arg2);
+/*
+	gdk_gc_set_ts_origin(arg0, arg1, arg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_gc_set_ts_origin)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, jint))fp)(arg0, arg1, arg2);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1ts_1origin_FUNC);
 }
 #endif
