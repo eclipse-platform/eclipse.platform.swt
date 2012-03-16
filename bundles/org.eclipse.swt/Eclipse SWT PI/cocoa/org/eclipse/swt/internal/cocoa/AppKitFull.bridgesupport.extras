@@ -2691,6 +2691,9 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="undoManager" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="validRequestorForSendType:returnType:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -3628,6 +3631,10 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="selectedTextAttributes" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setAllowsUndo:" swt_gen="true">
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setBaseWritingDirection:range:" swt_gen="true">

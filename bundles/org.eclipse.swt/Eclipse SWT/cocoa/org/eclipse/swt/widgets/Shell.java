@@ -742,6 +742,7 @@ void createHandle () {
 	id id = fieldEditorWindow.fieldEditor (true, null);
 	if (id != null) {
 		OS.object_setClass (id.id, OS.objc_getClass ("SWTEditorView"));
+		new NSTextView(id).setAllowsUndo(true);
 	}
 
 }

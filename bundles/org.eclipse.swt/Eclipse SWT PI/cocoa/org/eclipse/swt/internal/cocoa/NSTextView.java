@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -59,6 +59,10 @@ public NSDictionary markedTextAttributes() {
 public NSDictionary selectedTextAttributes() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_selectedTextAttributes);
 	return result != 0 ? new NSDictionary(result) : null;
+}
+
+public void setAllowsUndo(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setAllowsUndo_, flag);
 }
 
 public void setBaseWritingDirection(int /*long*/ writingDirection, NSRange range) {

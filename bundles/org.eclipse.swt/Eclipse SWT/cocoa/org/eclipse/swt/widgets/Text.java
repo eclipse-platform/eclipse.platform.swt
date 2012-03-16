@@ -505,6 +505,7 @@ void createHandle () {
 		NSTextView widget = (NSTextView) new SWTTextView ().alloc ();
 		widget.init ();
 		widget.setEditable ((style & SWT.READ_ONLY) == 0);
+		widget.setAllowsUndo(true);
 		
 		NSSize size = new NSSize ();
 		size.width = size.height = Float.MAX_VALUE;
@@ -1539,13 +1540,8 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	boolean result = super.sendKeyEvent (nsEvent, type);
 	if (!result) return result;
 	if (type != SWT.KeyDown) return result;
-	int stateMask = 0;
 	int /*long*/ modifierFlags = nsEvent.modifierFlags();
-	if ((modifierFlags & OS.NSAlternateKeyMask) != 0) stateMask |= SWT.ALT;
-	if ((modifierFlags & OS.NSShiftKeyMask) != 0) stateMask |= SWT.SHIFT;
-	if ((modifierFlags & OS.NSControlKeyMask) != 0) stateMask |= SWT.CONTROL;
-	if ((modifierFlags & OS.NSCommandKeyMask) != 0) stateMask |= SWT.COMMAND;
-	if (stateMask == SWT.COMMAND) {
+	if ((modifierFlags & OS.NSCommandKeyMask) != 0) {
 		short keyCode = nsEvent.keyCode ();
 		switch (keyCode) {
 			case 7: /* X */
@@ -1557,8 +1553,32 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 			case 9: /* V */
 				paste ();
 				return false;
+			case 0: /* A */
+				NSApplication.sharedApplication().sendAction(OS.sel_selectAll_, null, NSApplication.sharedApplication());
+				return false;
+			case 6: /* Z */
+				NSUndoManager undoManager = view.undoManager();
+				if (undoManager == null && (style & SWT.SINGLE) != 0) {
+					NSText fieldEditor = ((NSTextField) view).currentEditor ();
+					undoManager = fieldEditor.undoManager();
+				}
+				if (undoManager != null) {
+					if ((modifierFlags & OS.NSShiftKeyMask) != 0) {
+						if (undoManager.canRedo()) {
+							undoManager.redo();
+							return false;
+						}
+					} else {
+						if (undoManager.canUndo()) {
+							undoManager.undo();
+							return false;
+						}
+					}
+				}
+				break;
 		}
 	}
+	if (isDisposed()) return false;
 	if ((style & SWT.SINGLE) != 0) {
 		short keyCode = nsEvent.keyCode ();
 		switch (keyCode) {

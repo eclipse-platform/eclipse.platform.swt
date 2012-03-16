@@ -1102,6 +1102,20 @@
 	</class>
 	<class name="NSUnarchiver" swt_superclass="NSCoder">
 	</class>
+	<class name="NSUndoManager" swt_gen="mixed">
+		<method selector="canRedo" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="canUndo" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="redo" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="undo" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
+	</class>
 	<class name="NSUniqueIDSpecifier" swt_superclass="NSScriptObjectSpecifier">
 	</class>
 	<class name="NSValue" swt_gen="mixed">
