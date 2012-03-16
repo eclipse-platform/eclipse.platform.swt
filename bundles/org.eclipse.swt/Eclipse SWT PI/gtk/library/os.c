@@ -5900,7 +5900,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1tile)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1tile_FUNC);
-	gdk_gc_set_tile((GdkGC *)arg0, (GdkPixmap *)arg1);
+/*
+	gdk_gc_set_tile(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_gc_set_tile)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1tile_FUNC);
 }
 #endif
