@@ -472,7 +472,6 @@ typedef enum {
 	_1gdk_1event_1free_FUNC,
 	_1gdk_1event_1get_FUNC,
 	_1gdk_1event_1get_1coords_FUNC,
-	_1gdk_1event_1get_1graphics_1expose_FUNC,
 	_1gdk_1event_1get_1root_1coords_FUNC,
 	_1gdk_1event_1get_1state_FUNC,
 	_1gdk_1event_1get_1time_FUNC,

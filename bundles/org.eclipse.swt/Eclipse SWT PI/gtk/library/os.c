@@ -5572,18 +5572,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gdk_1event_1get_1graphics_1expose
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1event_1get_1graphics_1expose)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gdk_1event_1get_1graphics_1expose_FUNC);
-	rc = (jintLong)gdk_event_get_graphics_expose((GdkWindow *)arg0);
-	OS_NATIVE_EXIT(env, that, _1gdk_1event_1get_1graphics_1expose_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gdk_1event_1get_1root_1coords
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1event_1get_1root_1coords)
 	(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1, jdoubleArray arg2)

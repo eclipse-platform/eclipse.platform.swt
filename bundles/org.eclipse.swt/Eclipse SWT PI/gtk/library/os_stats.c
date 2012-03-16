@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1384;
-int OS_nativeFunctionCallCount[1384];
+int OS_nativeFunctionCount = 1383;
+int OS_nativeFunctionCallCount[1383];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -464,7 +464,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1event_1free",
 	"_1gdk_1event_1get",
 	"_1gdk_1event_1get_1coords",
-	"_1gdk_1event_1get_1graphics_1expose",
 	"_1gdk_1event_1get_1root_1coords",
 	"_1gdk_1event_1get_1state",
 	"_1gdk_1event_1get_1time",

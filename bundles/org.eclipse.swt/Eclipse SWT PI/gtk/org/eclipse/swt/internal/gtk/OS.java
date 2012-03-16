@@ -4153,16 +4153,6 @@ public static final boolean gdk_event_get_coords(int /*long*/ event, double[] px
 		lock.unlock();
 	}
 }
-/** @param window cast=(GdkWindow *) */
-public static final native int /*long*/ _gdk_event_get_graphics_expose(int /*long*/ window);
-public static final int /*long*/ gdk_event_get_graphics_expose(int /*long*/ window) {
-	lock.lock();
-	try {
-		return _gdk_event_get_graphics_expose(window);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @param event cast=(GdkEvent *)
  * @param pmod cast=(GdkModifierType *)
