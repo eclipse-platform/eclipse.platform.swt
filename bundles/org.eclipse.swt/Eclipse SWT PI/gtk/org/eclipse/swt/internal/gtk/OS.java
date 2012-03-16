@@ -4398,11 +4398,7 @@ public static final void gdk_gc_set_function(int /*long*/ gc, int /*long*/ funct
 	}
 }
 /**
- * @param gc cast=(GdkGC *)
- * @param line_width cast=(gint)
- * @param line_style cast=(GdkLineStyle)
- * @param cap_style cast=(GdkCapStyle)
- * @param join_style cast=(GdkJoinStyle)
+ * @method flags=dynamic
  */
 public static final native void _gdk_gc_set_line_attributes(int /*long*/ gc, int line_width, int line_style, int cap_style, int join_style);
 public static final void gdk_gc_set_line_attributes(int /*long*/ gc, int line_width, int line_style, int cap_style, int join_style) {

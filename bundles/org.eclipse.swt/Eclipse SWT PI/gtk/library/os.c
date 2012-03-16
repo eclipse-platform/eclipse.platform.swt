@@ -5862,7 +5862,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1line_1attributes)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1line_1attributes_FUNC);
-	gdk_gc_set_line_attributes((GdkGC *)arg0, (gint)arg1, (GdkLineStyle)arg2, (GdkCapStyle)arg3, (GdkJoinStyle)arg4);
+/*
+	gdk_gc_set_line_attributes(arg0, arg1, arg2, arg3, arg4);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_gc_set_line_attributes)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, jint, jint, jint))fp)(arg0, arg1, arg2, arg3, arg4);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1line_1attributes_FUNC);
 }
 #endif
