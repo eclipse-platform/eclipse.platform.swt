@@ -980,6 +980,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 		path.appendBezierPathWithArcWithCenter(center, 1, sAngle,  eAngle, arcAngle>0);
 		path.transformUsingAffineTransform(transform);
 		Pattern pattern = data.foregroundPattern;
+		if (pattern != null) setPatternPhase(pattern);
 		if (pattern != null && pattern.gradient != null) {
 			strokePattern(path, pattern);
 		} else {
@@ -1168,6 +1169,7 @@ public void drawLine(int x1, int y1, int x2, int y2) {
 		pt.y = y2 + data.drawYOffset;
 		path.lineToPoint(pt);
 		Pattern pattern = data.foregroundPattern;
+		if (pattern != null) setPatternPhase(pattern);
 		if (pattern != null && pattern.gradient != null) {
 			strokePattern(path, pattern);
 		} else {
@@ -1220,6 +1222,7 @@ public void drawOval(int x, int y, int width, int height) {
 		rect.height = height;
 		path.appendBezierPathWithOvalInRect(rect);
 		Pattern pattern = data.foregroundPattern;
+		if (pattern != null) setPatternPhase(pattern);
 		if (pattern != null && pattern.gradient != null) {
 			strokePattern(path, pattern);
 		} else {
@@ -1267,6 +1270,7 @@ public void drawPath(Path path) {
 		NSBezierPath drawPath = data.path;
 		drawPath.appendBezierPath(path.handle);
 		Pattern pattern = data.foregroundPattern;
+		if (pattern != null) setPatternPhase(pattern);
 		if (pattern != null && pattern.gradient != null) {
 			strokePattern(drawPath, pattern);
 		} else {
@@ -1351,6 +1355,7 @@ public void drawPolygon(int[] pointArray) {
 		}
 		path.closePath();
 		Pattern pattern = data.foregroundPattern;
+		if (pattern != null) setPatternPhase(pattern);
 		if (pattern != null && pattern.gradient != null) {
 			strokePattern(path, pattern);
 		} else {
@@ -1398,6 +1403,7 @@ public void drawPolyline(int[] pointArray) {
 			path.lineToPoint(pt);
 		}
 		Pattern pattern = data.foregroundPattern;
+		if (pattern != null) setPatternPhase(pattern);
 		if (pattern != null && pattern.gradient != null) {
 			strokePattern(path, pattern);
 		} else {
@@ -1444,6 +1450,7 @@ public void drawRectangle(int x, int y, int width, int height) {
 		NSBezierPath path = data.path;
 		path.appendBezierPathWithRect(rect);
 		Pattern pattern = data.foregroundPattern;
+		if (pattern != null) setPatternPhase(pattern);
 		if (pattern != null && pattern.gradient != null) {
 			strokePattern(path, pattern);
 		} else {
@@ -1514,6 +1521,7 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 		rect.height = height;
 		path.appendBezierPathWithRoundedRect(rect, arcWidth / 2f, arcHeight / 2f);
 		Pattern pattern = data.foregroundPattern;
+		if (pattern != null) setPatternPhase(pattern);
 		if (pattern != null && pattern.gradient != null) {
 			strokePattern(path, pattern);
 		} else {
@@ -1774,6 +1782,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 		path.closePath();
 		path.transformUsingAffineTransform(transform);
 		Pattern pattern = data.backgroundPattern;
+		if (pattern != null) setPatternPhase(pattern);
 		if (pattern != null && pattern.gradient != null) {
 			fillPattern(path, pattern);
 		} else {
@@ -1886,6 +1895,7 @@ public void fillOval(int x, int y, int width, int height) {
 		rect.height = height;
 		path.appendBezierPathWithOvalInRect(rect);
 		Pattern pattern = data.backgroundPattern;
+		if (pattern != null) setPatternPhase(pattern);
 		if (pattern != null && pattern.gradient != null) {
 			fillPattern(path, pattern);
 		} else {
@@ -2008,6 +2018,7 @@ public void fillPath(Path path) {
 		NSBezierPath drawPath = data.path;
 		drawPath.appendBezierPath(path.handle);
 		Pattern pattern = data.backgroundPattern;
+		if (pattern != null) setPatternPhase(pattern);
 		if (pattern != null && pattern.gradient != null) {
 			fillPattern(drawPath, pattern);
 		} else {
@@ -2057,6 +2068,7 @@ public void fillPolygon(int[] pointArray) {
 		}
 		path.closePath();
 		Pattern pattern = data.backgroundPattern;
+		if (pattern != null) setPatternPhase(pattern);
 		if (pattern != null && pattern.gradient != null) {
 			fillPattern(path, pattern);
 		} else {
@@ -2103,6 +2115,7 @@ public void fillRectangle(int x, int y, int width, int height) {
 		NSBezierPath path = data.path;
 		path.appendBezierPathWithRect(rect);
 		Pattern pattern = data.backgroundPattern;
+		if (pattern != null) setPatternPhase(pattern);
 		if (pattern != null && pattern.gradient != null) {
 			fillPattern(path, pattern);
 		} else {
@@ -2168,6 +2181,7 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 		rect.height = height;
 		path.appendBezierPathWithRoundedRect(rect, arcWidth / 2f, arcHeight / 2f);
 		Pattern pattern = data.backgroundPattern;
+		if (pattern != null) setPatternPhase(pattern);
 		if (pattern != null && pattern.gradient != null) {
 			fillPattern(path, pattern);
 		} else {
@@ -3740,6 +3754,25 @@ public void setLineWidth(int lineWidth) {
 	if (data.lineWidth == lineWidth) return;
 	data.lineWidth = lineWidth;
 	data.state &= ~(LINE_WIDTH | DRAW_OFFSET);	
+}
+
+void setPatternPhase(Pattern pattern) {
+	if (pattern.image == null) return;
+	NSPoint phase = new NSPoint();
+	if (data.image != null) {
+		phase.y += data.image.handle.size().height - pattern.image.handle.size().height;
+	} else if (data.view != null) {
+		NSView view = data.view;
+		if (!view.isFlipped()) {
+			phase.y = view.bounds().height;
+		}
+		NSView contentView = view.window().contentView();
+		phase = view.convertPoint_toView_(phase, contentView);
+		phase.y = contentView.bounds().height - phase.y;
+	} else if (data.size != null) {
+		phase.y += data.size.height - pattern.image.handle.size().height;
+	}
+	handle.setPatternPhase(phase);
 }
 
 /** 
