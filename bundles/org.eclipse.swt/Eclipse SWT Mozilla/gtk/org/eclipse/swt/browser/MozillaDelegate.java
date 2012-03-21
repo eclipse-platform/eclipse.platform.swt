@@ -133,6 +133,22 @@ int /*long*/ getHandle () {
 
 String getProfilePath () {
 	String baseDir = System.getProperty ("user.home"); //$NON-NLS-1$
+
+	/*
+	* Bug in Sun JRE.  Under some circumstances the value of java property "user.home" is
+	* "?", even when the HOME environment variable has a valid value.  If this happens
+	* then attempt to read the value from the environment directly.
+	*/
+	if (baseDir.equals ("?")) { //$NON-NLS-1$
+		int /*long*/ ptr = C.getenv (wcsToMbcs (null, "HOME", true)); //$NON-NLS-1$
+		if (ptr != 0) {
+			int length = C.strlen (ptr);
+			byte[] bytes = new byte[length];
+			C.memmove (bytes, ptr, length);
+			baseDir = new String (mbcsToWcs (null, bytes));
+		}
+	}
+
 	return baseDir + Mozilla.SEPARATOR_OS + ".mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
