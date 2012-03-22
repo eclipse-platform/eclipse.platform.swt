@@ -940,7 +940,10 @@ void setFontDescription (int /*long*/ font) {
 }
 
 void setForegroundColor (GdkColor color) {
-	setForegroundColor (OS.gtk_bin_get_child(handle), color);
+	int /*long*/ childHandle = OS.gtk_bin_get_child(handle);
+	if (childHandle != 0) {
+	    setForegroundColor (childHandle, color);
+	}
 }
 
 /**
