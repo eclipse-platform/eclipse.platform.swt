@@ -192,6 +192,9 @@ void createHandle (int index) {
 			if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
 				handle = OS.gtk_menu_tool_button_new (0, null);
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+				labelHandle = OS.gtk_label_new_with_mnemonic (null);
+				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				OS.gtk_tool_button_set_label_widget(handle, labelHandle);
 				/*
 				 * Feature in GTK. The arrow button of DropDown tool-item is 
 				 * disabled when it does not contain menu. The fix is to
@@ -237,12 +240,17 @@ void createHandle (int index) {
 		case SWT.CHECK:
 			handle = OS.gtk_toggle_tool_button_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			labelHandle = OS.gtk_label_new_with_mnemonic (null);
+			if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.gtk_tool_button_set_label_widget(handle, labelHandle);
 			break;
 		case SWT.PUSH:
 		default:
 			handle = OS.gtk_tool_button_new (0, null);
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.gtk_tool_button_set_label (handle, null);
+			labelHandle = OS.gtk_label_new_with_mnemonic (null);
+			if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.gtk_tool_button_set_label_widget(handle, labelHandle);
 			break;
 	}
 	if ((parent.state & FOREGROUND) != 0) {
@@ -936,7 +944,7 @@ boolean setFocus () {
 }
 
 void setFontDescription (int /*long*/ font) {
-	OS.gtk_widget_modify_font (handle, font);
+	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
 }
 
 void setForegroundColor (GdkColor color) {
@@ -944,6 +952,7 @@ void setForegroundColor (GdkColor color) {
 	if (childHandle != 0) {
 	    setForegroundColor (childHandle, color);
 	}
+	if (labelHandle != 0) setForegroundColor (labelHandle, color);
 }
 
 /**
@@ -1098,7 +1107,7 @@ public void setText (String string) {
 			OS.gtk_widget_hide (labelHandle);
 		}
 	}
-	OS.gtk_tool_button_set_label (handle, buffer);
+	OS.gtk_label_set_text(labelHandle, buffer) ;
 	if ((style & SWT.DROP_DOWN) != 0) {
 		proxyMenuItem = 0;
 		proxyMenuItem = OS.gtk_tool_item_retrieve_proxy_menu_item (handle);
@@ -1168,6 +1177,7 @@ public void setWidth (int width) {
 
 void showWidget (int index) {
 	if (handle != 0) OS.gtk_widget_show (handle);
+	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
 	if ((style & SWT.DROP_DOWN) != 0 && OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {
 		if (arrowBoxHandle != 0) OS.gtk_widget_show (arrowBoxHandle);
 		if (arrowHandle != 0) OS.gtk_widget_show (arrowHandle);
