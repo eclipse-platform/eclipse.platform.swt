@@ -66,7 +66,7 @@ class Mozilla extends WebBrowser {
 	static String MozillaPath;
 	static String oldProxyHostFTP, oldProxyHostHTTP, oldProxyHostSSL;
 	static int oldProxyPortFTP = -1, oldProxyPortHTTP = -1, oldProxyPortSSL = -1, oldProxyType = -1;
-	static byte[] pathBytes_JSEvaluateUCScriptForPrincipals;
+	static byte[] jsLibPathBytes;
 	static byte[] pathBytes_NSFree;
 
 	/* XULRunner detect constants */
@@ -1360,16 +1360,16 @@ public boolean execute (String script) {
 										int /*long*/ principals = result[0];
 										result[0] = 0;
 										String jsLibraryName = IsPre_4 ? MozillaDelegate.getJSLibraryName_Pre4() : MozillaDelegate.getJSLibraryName();
-										if (pathBytes_JSEvaluateUCScriptForPrincipals == null) {
+										if (jsLibPathBytes == null) {
 											String mozillaPath = getMozillaPath () + jsLibraryName + '\0';
 											try {
-												pathBytes_JSEvaluateUCScriptForPrincipals = mozillaPath.getBytes ("UTF-8"); //$NON-NLS-1$
+												jsLibPathBytes = mozillaPath.getBytes ("UTF-8"); //$NON-NLS-1$
 											} catch (UnsupportedEncodingException e) {
-												pathBytes_JSEvaluateUCScriptForPrincipals = mozillaPath.getBytes ();
+												jsLibPathBytes = mozillaPath.getBytes ();
 											}
 										}
 
-										int /*long*/ globalJSObject = XPCOM.JS_GetGlobalObject (pathBytes_JSEvaluateUCScriptForPrincipals, nativeContext);
+										int /*long*/ globalJSObject = XPCOM.JS_GetGlobalObject (jsLibPathBytes, nativeContext);
 										if (globalJSObject != 0) {
 											aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CONTEXTSTACK_CONTRACTID, true);
 											rc = serviceManager.GetServiceByContractID (aContractID, nsIJSContextStack.NS_IJSCONTEXTSTACK_IID, result);
@@ -1380,7 +1380,7 @@ public boolean execute (String script) {
 												if (rc != XPCOM.NS_OK) {
 													stack.Release ();
 												} else {
-													boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals (pathBytes_JSEvaluateUCScriptForPrincipals, nativeContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result) != 0;
+													boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals (jsLibPathBytes, nativeContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result) != 0;
 													result[0] = 0;
 													rc = stack.Pop (result);
 													stack.Release ();
@@ -1806,7 +1806,7 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 
 	ExternalFactory externalFactory = new ExternalFactory ();
 	externalFactory.AddRef ();
-	aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.EXTERNAL_CONTRACTID, true); 
+	aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.EXTERNAL_CONTRACTID, true);
 	aClassName = MozillaDelegate.wcsToMbcs (null, "External", true); //$NON-NLS-1$
 	rc = componentRegistrar.RegisterFactory (XPCOM.EXTERNAL_CID, aClassName, aContractID, externalFactory.getAddress ());
 	if (rc != XPCOM.NS_OK) {
@@ -1821,10 +1821,18 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 
 	nsICategoryManager categoryManager = new nsICategoryManager (result[0]);
 	result[0] = 0;
-	byte[] category = MozillaDelegate.wcsToMbcs (null, "JavaScript global property", true); //$NON-NLS-1$
 	byte[] entry = MozillaDelegate.wcsToMbcs (null, "external", true); //$NON-NLS-1$
+
+	/* register for mozilla versions <= 3.6.x */
+	byte[] category = MozillaDelegate.wcsToMbcs (null, "JavaScript global property", true); //$NON-NLS-1$
 	rc = categoryManager.AddCategoryEntry(category, entry, aContractID, 0, 1, result);
 	result[0] = 0;
+
+	/* register for mozilla versions >= 3.6.x */
+	category = MozillaDelegate.wcsToMbcs (null, "JavaScript-global-property", true); //$NON-NLS-1$
+	rc = categoryManager.AddCategoryEntry(category, entry, aContractID, 0, 1, result);
+	result[0] = 0;
+
 	categoryManager.Release ();
 
 	/*

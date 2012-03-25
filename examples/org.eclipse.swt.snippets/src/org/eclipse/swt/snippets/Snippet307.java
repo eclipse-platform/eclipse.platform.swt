@@ -20,12 +20,17 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.browser.*;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet307 {
 
 public static void main (String [] args) {
+	Device.DEBUG = true;
+	System.setProperty("org.eclipse.swt.browser.XULRunnerPath","C:\\xulrunner-10\\xulrunner\\");
+//	System.setProperty("org.eclipse.swt.browser.XULRunnerPath","C:\\xulrunner-10\\mozilla-release\\obj-i686-pc-mingw32\\dist\\bin\\");
+//	System.setProperty("org.eclipse.swt.browser.XULRunnerPath","C:\\xulrunner-3.6.23\\xulrunner\\");
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	shell.setLayout (new FillLayout ());
@@ -33,17 +38,17 @@ public static void main (String [] args) {
 
 	final Browser browser;
 	try {
-		browser = new Browser (shell, SWT.NONE);
+		browser = new Browser (shell, SWT.MOZILLA);
 	} catch (SWTError e) {
 		System.out.println ("Could not instantiate Browser: " + e.getMessage ());
 		display.dispose();
 		return;
 	}
 	browser.setText (createHTML ());
-	final BrowserFunction function = new CustomFunction (browser, "theJavaFunction");
 
 	browser.addProgressListener (new ProgressAdapter () {
 		public void completed (ProgressEvent event) {
+			final BrowserFunction function = new CustomFunction (browser, "theJavaFunction");
 			browser.addLocationListener (new LocationAdapter () {
 				public void changed (LocationEvent event) {
 					browser.removeLocationListener (this);

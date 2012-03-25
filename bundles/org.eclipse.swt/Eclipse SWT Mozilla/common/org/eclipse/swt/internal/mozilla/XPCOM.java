@@ -191,6 +191,16 @@ public static final native void memmove(int /*long*/ dest, nsID src, int nbytes)
 public static final native int strlen_PRUnichar(int /*long*/ s);
 
 /** @method flags=no_gen */
+public static final native int /*long*/ _JS_DefineFunction(byte[] mozillaPath, int /*long*/ cx, int /*long*/ obj, byte[] name, int /*long*/ call, int nargs, int flags);	
+public static final int /*long*/ JS_DefineFunction(byte[] mozillaPath, int /*long*/ cx, int /*long*/ obj, byte[] name, int /*long*/ call, int nargs, int flags) {
+	lock.lock();
+	try {
+		return _JS_DefineFunction(mozillaPath, cx, obj, name, call, nargs, flags);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=no_gen */
 public static final native int _JS_EvaluateUCScriptForPrincipals(byte[] mozillaPath, int /*long*/ cx, int /*long*/ obj, int /*long*/ principals, char[] chars, int length, byte[] filename, int lineno, int /*long*/[] retVal);	
 public static final int JS_EvaluateUCScriptForPrincipals(byte[] mozillaPath, int /*long*/ cx, int /*long*/ obj, int /*long*/ principals, char[] chars, int length, byte[] filename, int lineno, int /*long*/[] retVal) {
 	lock.lock();
@@ -206,6 +216,76 @@ public static final int /*long*/ JS_GetGlobalObject(byte[] mozillaPath, int /*lo
 	lock.lock();
 	try {
 		return _JS_GetGlobalObject(mozillaPath, cx);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=no_gen */
+public static final native int /*long*/ _JS_GetGlobalForScopeChain(byte[] mozillaPath, int /*long*/ cx);	
+public static final int /*long*/ JS_GetGlobalForScopeChain(byte[] mozillaPath, int /*long*/ cx) {
+	lock.lock();
+	try {
+		return _JS_GetGlobalForScopeChain(mozillaPath, cx);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=no_gen */
+public static final native int /*long*/ _JSVAL_TO_IMPL2(byte[] mozillaPath, int /*long*/ cx);	
+public static final int /*long*/ JSVAL_TO_IMPL2(byte[] mozillaPath, int /*long*/ cx) {
+	lock.lock();
+	try {
+		return _JSVAL_TO_IMPL2(mozillaPath, cx);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=no_gen */
+public static final native int /*long*/ _JS_NewObject(byte[] mozillaPath, int /*long*/ cx, int /*long*/ clasp, int /*long*/ proto, int /*long*/ parent);	
+public static final int /*long*/ JS_NewObject(byte[] mozillaPath, int /*long*/ cx, int /*long*/ clasp, int /*long*/ proto, int /*long*/ parent) {
+	lock.lock();
+	try {
+		return _JS_NewObject(mozillaPath, cx, clasp, proto, parent);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=no_gen */
+public static final native int /*long*/ _JS_ValueToString(byte[] mozillaPath, int /*long*/ cx, int /*long*/ string);	
+public static final int /*long*/ JS_ValueToString(byte[] mozillaPath, int /*long*/ cx, int /*long*/ string) {
+	lock.lock();
+	try {
+		return _JS_ValueToString(mozillaPath, cx, string);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=no_gen */
+public static final native int /*long*/ _JS_TypeOfValue(byte[] mozillaPath, int /*long*/ cx, int /*long*/ value);	
+public static final int /*long*/ JS_TypeOfValue(byte[] mozillaPath, int /*long*/ cx, int /*long*/ value) {
+	lock.lock();
+	try {
+		return _JS_TypeOfValue(mozillaPath, cx, value);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=no_gen */
+public static final native int /*long*/ _JS_GetStringCharsZ(byte[] mozillaPath, int /*long*/ cx, int /*long*/ string);	
+public static final int /*long*/ JS_GetStringCharsZ(byte[] mozillaPath, int /*long*/ cx, int /*long*/ string) {
+	lock.lock();
+	try {
+		return _JS_GetStringCharsZ(mozillaPath, cx, string);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=no_gen */
+public static final native int /*long*/ _JS_GetStringLength(byte[] mozillaPath, int /*long*/ string);	
+public static final int /*long*/ JS_GetStringLength(byte[] mozillaPath, int /*long*/ string) {
+	lock.lock();
+	try {
+		return _JS_GetStringLength(mozillaPath, string);
 	} finally {
 		lock.unlock();
 	}
@@ -351,6 +431,19 @@ public static final int /*long*/ nsIScriptGlobalObject_GetScriptContext(int /*lo
 	lock.lock();
 	try {
 		return _nsIScriptGlobalObject_GetScriptContext(ptr, lang);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=cpp
+ * @param ptr cast=(nsIScriptContext *)
+ */
+public static final native int /*long*/ _nsIScriptContext_GetGlobalObject(int /*long*/ ptr);
+public static final int /*long*/ nsIScriptContext_GetGlobalObject(int /*long*/ ptr) {
+	lock.lock();
+	try {
+		return _nsIScriptContext_GetGlobalObject(ptr);
 	} finally {
 		lock.unlock();
 	}
@@ -2497,5 +2590,13 @@ static final int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1
 		lock.unlock();
 	}
 }
+
+
+// added by nsIXPConnect
+//static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, !ERROR UNKNOWN C TYPE <PRInt16 >! arg0);
+//static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/[] arg0);
+//static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, !ERROR UNKNOWN C TYPE <bool >! arg0, !ERROR UNKNOWN C TYPE <bool >! arg1);
+//static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, nsID arg0, int /*long*/[] arg1);
+//static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, short arg2, int /*long*/ arg3, int /*long*/[] arg4, int /*long*/[] arg5);
 
 }

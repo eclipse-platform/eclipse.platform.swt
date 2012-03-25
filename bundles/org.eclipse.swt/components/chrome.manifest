@@ -1,0 +1,6 @@
+interfaces external.xpt
+contract @eclipse.org/external;1 {f2c59ad0-bd76-11dd-ad8b-0800200c9a66}
+
+# component {f2c59ad0-bd76-11dd-ad8b-0800200c9a66}
+# public static final nsID EXTERNAL_CID = new nsID ("f2c59ad0-bd76-11dd-ad8b-0800200c9a66"); //$NON-NLS-1$
+# public static final String EXTERNAL_CONTRACTID = "@eclipse.org/external;1"; //$NON-NLS-1$

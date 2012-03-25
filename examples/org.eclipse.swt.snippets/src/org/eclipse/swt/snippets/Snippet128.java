@@ -19,12 +19,18 @@ package org.eclipse.swt.snippets;
  * @since 3.0
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.browser.*;
 
 public class Snippet128 {
 	public static void main(String [] args) {
+		Device.DEBUG = true;
+		System.setProperty("org.eclipse.swt.browser.XULRunnerPath","C:\\xulrunner-10\\xulrunner\\");
+//		System.setProperty("org.eclipse.swt.browser.XULRunnerPath","C:\\xulrunner-10\\mozilla-release\\obj-i686-pc-mingw32\\dist\\bin\\");
+//		System.setProperty("org.eclipse.swt.browser.XULRunnerPath","C:\\xulrunner-3.6.23\\xulrunner\\");
+
 		Display display = new Display();
 		final Shell shell = new Shell(display);
 		GridLayout gridLayout = new GridLayout();
@@ -58,7 +64,7 @@ public class Snippet128 {
 
 		final Browser browser;
 		try {
-			browser = new Browser(shell, SWT.NONE);
+			browser = new Browser(shell, SWT.MOZILLA);
 		} catch (SWTError e) {
 			System.out.println("Could not instantiate Browser: " + e.getMessage());
 			display.dispose();

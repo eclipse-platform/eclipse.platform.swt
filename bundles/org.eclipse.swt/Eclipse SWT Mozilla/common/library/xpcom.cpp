@@ -7026,6 +7026,19 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIMemory_1Realloc)
 }
 #endif
 
+#ifndef NO__1nsIScriptContext_1GetGlobalObject
+extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptContext_1GetGlobalObject)(JNIEnv *env, jclass that, jintLong arg0);
+JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptContext_1GetGlobalObject)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, _1nsIScriptContext_1GetGlobalObject_FUNC);
+	rc = (jintLong)((nsIScriptContext *)arg0)->GetGlobalObject();
+	XPCOM_NATIVE_EXIT(env, that, _1nsIScriptContext_1GetGlobalObject_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1nsIScriptContext_1GetNativeContext
 extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptContext_1GetNativeContext)(JNIEnv *env, jclass that, jintLong arg0);
 JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptContext_1GetNativeContext)

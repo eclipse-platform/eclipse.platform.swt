@@ -975,12 +975,14 @@
 		<condition property="build_file" value="build-ce.bat" else="build.bat">
 			<equals arg1="${swt.os}" arg2="wce_ppc"/>
 		</condition>
+<!--
 		<exec dir="${build_dir}" executable="${build_dir}/${build_file}" failonerror="true">
 			<env key="JAVA_HOME" value=""/>
 			<env key="OUTPUT_DIR" value="${win_output_dir}"/>
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
 		</exec>
+-->
 		<condition property="should_build_xulrunner" value="true">
 			<and>
 				<equals arg1="${swt.ws}" arg2="win32"/>
