@@ -41,6 +41,10 @@ static Browser findBrowser (int handle) {
 	return null;
 }
 
+static String getCacheParentPath () {
+	return getProfilePath ();
+}
+
 static String getLibraryName () {
 	return "libxpcom.dylib"; //$NON-NLS-1$
 }
@@ -51,6 +55,11 @@ static String getJSLibraryName () {
 
 static String getJSLibraryName_Pre4 () {
 	return "libmozjs.dylib"; //$NON-NLS-1$
+}
+
+static String getProfilePath () {
+	String baseDir = System.getProperty ("user.home"); //$NON-NLS-1$
+	return baseDir + Mozilla.SEPARATOR_OS + ".mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 static String getSWTInitLibraryName () {
@@ -246,11 +255,6 @@ int getHandle () {
 	OS.InstallEventHandler (controlTarget, callback3Address, mask.length / 2, mask, browser.handle, null);
 
 	return embedHandle;
-}
-
-String getProfilePath () {
-	String baseDir = System.getProperty ("user.home"); //$NON-NLS-1$
-	return baseDir + Mozilla.SEPARATOR_OS + ".mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 void handleFocus () {

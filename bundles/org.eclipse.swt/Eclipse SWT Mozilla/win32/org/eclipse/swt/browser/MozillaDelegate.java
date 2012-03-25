@@ -31,6 +31,15 @@ static Browser findBrowser (int /*long*/ handle) {
 	return (Browser)display.findWidget (handle);
 }
 
+static String getCacheParentPath () {
+	/* Use the character encoding for the default locale */
+	TCHAR buffer = new TCHAR (0, OS.MAX_PATH);
+	if (OS.SHGetFolderPath (0, OS.CSIDL_LOCAL_APPDATA, 0, OS.SHGFP_TYPE_CURRENT, buffer) == OS.S_OK) {
+		return buffer.toString (0, buffer.strlen ()) + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$
+	}
+	return getProfilePath ();
+}
+
 static String getJSLibraryName () {
 	return "mozjs.dll"; //$NON-NLS-1$
 }
@@ -41,6 +50,18 @@ static String getJSLibraryName_Pre4 () {
 
 static String getLibraryName () {
 	return "xpcom.dll"; //$NON-NLS-1$
+}
+
+static String getProfilePath () {
+	String baseDir;
+	/* Use the character encoding for the default locale */
+	TCHAR buffer = new TCHAR (0, OS.MAX_PATH);
+	if (OS.SHGetFolderPath (0, OS.CSIDL_APPDATA, 0, OS.SHGFP_TYPE_CURRENT, buffer) == OS.S_OK) {
+		baseDir = buffer.toString (0, buffer.strlen ());
+	} else {
+		baseDir = System.getProperty("user.home"); //$NON-NLS-1$
+	}
+	return baseDir + Mozilla.SEPARATOR_OS + "Mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 static String getSWTInitLibraryName () {
@@ -107,18 +128,6 @@ int createBaseWindow (nsIBaseWindow baseWindow) {
 
 int /*long*/ getHandle () {
 	return browser.handle;
-}
-
-String getProfilePath () {
-	String baseDir;
-	/* Use the character encoding for the default locale */
-	TCHAR buffer = new TCHAR (0, OS.MAX_PATH);
-	if (OS.SHGetFolderPath (0, OS.CSIDL_APPDATA, 0, OS.SHGFP_TYPE_CURRENT, buffer) == OS.S_OK) {
-		baseDir = buffer.toString (0, buffer.strlen ());
-	} else {
-		baseDir = System.getProperty("user.home"); //$NON-NLS-1$
-	}
-	return baseDir + Mozilla.SEPARATOR_OS + "Mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 void handleFocus () {

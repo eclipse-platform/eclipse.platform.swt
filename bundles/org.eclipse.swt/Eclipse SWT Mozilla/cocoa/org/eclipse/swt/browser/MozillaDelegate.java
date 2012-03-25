@@ -33,6 +33,10 @@ static Browser findBrowser (int /*long*/ handle) {
 	return (Browser)display.findWidget (handle);
 }
 
+static String getCacheParentPath () {
+	return getProfilePath ();
+}
+
 static String getJSLibraryName () {
 	return "libxpcom.dylib"; //$NON-NLS-1$
 }
@@ -43,6 +47,11 @@ static String getJSLibraryName_Pre4 () {
 
 static String getLibraryName () {
 	return "libxpcom.dylib"; //$NON-NLS-1$
+}
+
+static String getProfilePath () {
+	String baseDir = System.getProperty ("user.home"); //$NON-NLS-1$
+	return baseDir + Mozilla.SEPARATOR_OS + ".mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 static String getSWTInitLibraryName () {
@@ -123,11 +132,6 @@ int createBaseWindow (nsIBaseWindow baseWindow) {
 
 int /*long*/ getHandle () {
 	return browser.view.id;
-}
-
-String getProfilePath () {
-	String baseDir = System.getProperty ("user.home"); //$NON-NLS-1$
-	return baseDir + Mozilla.SEPARATOR_OS + ".mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 void handleFocus () {

@@ -689,8 +689,9 @@ public void create (Composite parent, int style) {
 
 		if (!Initialized) {
 			/* create LocationProvider, which tells mozilla where to find things on the file system */
-			String profilePath = delegate.getProfilePath ();
-			LocationProvider = new AppFileLocProvider (MozillaPath, profilePath, IsXULRunner);
+			String profilePath = MozillaDelegate.getProfilePath ();
+			String cacheParentPath = MozillaDelegate.getCacheParentPath ();
+			LocationProvider = new AppFileLocProvider (MozillaPath, profilePath, cacheParentPath, IsXULRunner);
 			LocationProvider.AddRef ();
 
 			/* write external.xpt to the file system if needed */

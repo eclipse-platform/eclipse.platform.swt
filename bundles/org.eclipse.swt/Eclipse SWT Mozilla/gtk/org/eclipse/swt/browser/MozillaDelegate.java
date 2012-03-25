@@ -69,6 +69,10 @@ static Browser findBrowser (int /*long*/ handle) {
 	return (Browser)display.findWidget (parent); 
 }
 
+static String getCacheParentPath () {
+	return getProfilePath ();
+}
+
 static String getJSLibraryName () {
 	return "libxul.so"; //$NON-NLS-1$
 }
@@ -79,6 +83,27 @@ static String getJSLibraryName_Pre4() {
 
 static String getLibraryName () {
 	return "libxpcom.so"; //$NON-NLS-1$
+}
+
+static String getProfilePath () {
+	String baseDir = System.getProperty ("user.home"); //$NON-NLS-1$
+	
+	/*
+	 * Bug in Sun JRE.  Under some circumstances the value of java property "user.home" is
+	 * "?", even when the HOME environment variable has a valid value.  If this happens
+	 * then attempt to read the value from the environment directly.
+	 */
+	if (baseDir.equals ("?")) { //$NON-NLS-1$
+		int /*long*/ ptr = C.getenv (wcsToMbcs (null, "HOME", true)); //$NON-NLS-1$
+		if (ptr != 0) {
+			int length = C.strlen (ptr);
+			byte[] bytes = new byte[length];
+			C.memmove (bytes, ptr, length);
+			baseDir = new String (mbcsToWcs (null, bytes));
+		}
+	}
+	
+	return baseDir + Mozilla.SEPARATOR_OS + ".mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 static String getSWTInitLibraryName () {
@@ -129,27 +154,6 @@ int /*long*/ getHandle () {
 	OS.gtk_container_add (browser.handle, embedHandle);
 	OS.gtk_widget_show (embedHandle);
 	return embedHandle;
-}
-
-String getProfilePath () {
-	String baseDir = System.getProperty ("user.home"); //$NON-NLS-1$
-
-	/*
-	* Bug in Sun JRE.  Under some circumstances the value of java property "user.home" is
-	* "?", even when the HOME environment variable has a valid value.  If this happens
-	* then attempt to read the value from the environment directly.
-	*/
-	if (baseDir.equals ("?")) { //$NON-NLS-1$
-		int /*long*/ ptr = C.getenv (wcsToMbcs (null, "HOME", true)); //$NON-NLS-1$
-		if (ptr != 0) {
-			int length = C.strlen (ptr);
-			byte[] bytes = new byte[length];
-			C.memmove (bytes, ptr, length);
-			baseDir = new String (mbcsToWcs (null, bytes));
-		}
-	}
-
-	return baseDir + Mozilla.SEPARATOR_OS + ".mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 int /*long*/ gtk_event (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/ pointer) {

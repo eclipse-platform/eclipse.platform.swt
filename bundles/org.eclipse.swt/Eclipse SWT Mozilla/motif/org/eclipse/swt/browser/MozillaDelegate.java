@@ -77,6 +77,10 @@ static Browser findBrowser (Control control, int gtkHandle) {
 	return null;
 }
 
+static String getCacheParentPath () {
+	return getProfilePath ();
+}
+
 static String getLibraryName () {
 	return "libxpcom.so"; //$NON-NLS-1$
 }
@@ -87,6 +91,11 @@ static String getJSLibraryName () {
 
 static String getJSLibraryName_Pre4() {
 	return "libxpcom.so"; //$NON-NLS-1$
+}
+
+static String getProfilePath () {
+	String baseDir = System.getProperty ("user.home"); //$NON-NLS-1$
+	return baseDir + Mozilla.SEPARATOR_OS + ".mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 static String getSWTInitLibraryName () {
@@ -140,11 +149,6 @@ int getHandle() {
 	int result = GTK.gtk_plug_new (browser.embeddedHandle);
 	GTK.gtk_widget_show (result);
 	return result;
-}
-
-String getProfilePath () {
-	String baseDir = System.getProperty ("user.home"); //$NON-NLS-1$
-	return baseDir + Mozilla.SEPARATOR_OS + ".mozilla" + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 void handleFocus () {
