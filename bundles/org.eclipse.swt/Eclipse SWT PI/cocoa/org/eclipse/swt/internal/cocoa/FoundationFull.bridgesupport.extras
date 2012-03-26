@@ -324,6 +324,11 @@
 		</method>
 	</class>
 	<class name="NSFileManager" swt_gen="mixed">
+		<method selector="URLsForDirectory:inDomains:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="createFileAtPath:contents:attributes:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -1166,6 +1171,8 @@
 	<constant name="NSLocaleLanguageCode" swt_gen="true"></constant>
 	<enum name="NSAllApplicationsDirectory" swt_gen="true"></enum>
 	<enum name="NSAllDomainsMask" swt_gen="true"></enum>
+	<enum name="NSCachesDirectory" swt_gen="true"></enum>
+	<enum name="NSLocalDomainMask" swt_gen="true"></enum>
 	<enum name="NSNotFound" swt_gen="true"></enum>
 	<enum name="NSOrderedSame" swt_gen="true"></enum>
 	<enum name="NSURLCredentialPersistenceForSession" swt_gen="true"></enum>

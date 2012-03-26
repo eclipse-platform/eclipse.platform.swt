@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,6 +22,11 @@ public NSFileManager(int /*long*/ id) {
 
 public NSFileManager(id id) {
 	super(id);
+}
+
+public NSArray URLsForDirectory(int /*long*/ directory, int /*long*/ domainMask) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_URLsForDirectory_inDomains_, directory, domainMask);
+	return result != 0 ? new NSArray(result) : null;
 }
 
 public boolean createFileAtPath(NSString path, NSData data, NSDictionary attr) {

@@ -34,7 +34,14 @@ static Browser findBrowser (int /*long*/ handle) {
 }
 
 static String getCacheParentPath () {
-	return getProfilePath ();
+	if (OS.VERSION >= 0x1060) {
+		NSArray array = NSFileManager.defaultManager ().URLsForDirectory (OS.NSCachesDirectory, OS.NSLocalDomainMask);
+		if (array.count () > 0) {
+			NSURL url = new NSURL (array.objectAtIndex (0));
+			return url.path ().getString () + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$
+		}
+	}
+	return "/Library/Caches/eclipse"; //$NON-NLS-1$
 }
 
 static String getJSLibraryName () {
