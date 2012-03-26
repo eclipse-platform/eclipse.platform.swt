@@ -1009,16 +1009,14 @@ public void setImage (Image image) {
 	}
 	OS.gtk_tool_button_set_icon_widget (handle, imageHandle);
 	/*
-	 * If Text/Image of a tool-item changes, then it is 
-	 * required to reset the proxy menu. Otherwise, the 
-	 * old menuItem appears in the overflow menu.
-	 */
-	if ((style & SWT.CHECK | SWT.RADIO | SWT.DROP_DOWN) != 0) {
+	* If Text/Image of a tool-item changes, then it is 
+	* required to reset the proxy menu. Otherwise, the 
+	* old menuItem appears in the overflow menu.
+	*/
+	if ((style & SWT.DROP_DOWN) != 0) {
 		proxyMenuItem = 0;
-		if ((style & SWT.DROP_DOWN) != 0) {
-			proxyMenuItem = OS.gtk_tool_item_retrieve_proxy_menu_item (handle);
-			OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
-		}
+		proxyMenuItem = OS.gtk_tool_item_retrieve_proxy_menu_item (handle);
+		OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
 	}
 	parent.relayout ();
 }
@@ -1094,20 +1092,25 @@ boolean setTabItemFocus (boolean next) {
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (((style & SWT.SEPARATOR) != 0) || text.equals(string)) return;
+	if ((style & SWT.SEPARATOR) != 0) return;
 	if (string.equals(this.text)) return;
 	super.setText (string);
+	if (labelHandle == 0) return;
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
+	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	if ((style & SWT.DROP_DOWN) != 0 && OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {
-		OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 		if (string.length () != 0) {
 			OS.gtk_widget_show (labelHandle);
 		} else {
 			OS.gtk_widget_hide (labelHandle);
 		}
 	}
-	OS.gtk_label_set_text(labelHandle, buffer) ;
+	/*
+	* If Text/Image of a tool-item changes, then it is 
+	* required to reset the proxy menu. Otherwise, the 
+	* old menuItem appears in the overflow menu.
+	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
 		proxyMenuItem = 0;
 		proxyMenuItem = OS.gtk_tool_item_retrieve_proxy_menu_item (handle);
