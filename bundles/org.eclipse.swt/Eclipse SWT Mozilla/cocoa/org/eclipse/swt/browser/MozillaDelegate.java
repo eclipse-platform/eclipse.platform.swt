@@ -41,7 +41,8 @@ static String getCacheParentPath () {
 			return url.path ().getString () + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$
 		}
 	}
-	return "/Library/Caches/eclipse"; //$NON-NLS-1$
+	String baseDir = System.getProperty ("user.home"); //$NON-NLS-1$
+	return baseDir + "/Library/Caches/eclipse"; //$NON-NLS-1$
 }
 
 static String getJSLibraryName () {
