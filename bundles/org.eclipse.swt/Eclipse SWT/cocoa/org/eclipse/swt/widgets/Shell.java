@@ -417,17 +417,6 @@ public static Shell cocoa_new (Display display, int /*long*/ handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, true);
 }
 
-Control [] _getChildren () {
-	Control [] children = super._getChildren();
-	if (toolBar != null) {
-		Control [] newChildren = new Control [children.length + 1];
-		System.arraycopy (children, 0, newChildren, 1, children.length);
-		newChildren[0] = toolBar;
-		children = newChildren;
-	}
-	return children;
-}
-
 static int checkStyle (Shell parent, int style) {
 	style = Decorations.checkStyle (style);
 	style &= ~SWT.TRANSPARENT;
@@ -609,6 +598,17 @@ void closeWidget (boolean force) {
 	Event event = new Event ();
 	sendEvent (SWT.Close, event);
 	if ((force || event.doit) && !isDisposed ()) dispose ();
+}
+
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	Point size = super.computeSize (wHint, hHint, changed);
+	if (toolBar != null) {
+		if (wHint == SWT.DEFAULT && toolBar.itemCount > 0) {
+			Point tbSize = toolBar.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+			size.x = Math.max (tbSize.x, size.x);
+		}
+	}
+	return size;
 }
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
@@ -1179,7 +1179,9 @@ float getThemeAlpha () {
  */
 public ToolBar getToolBar() {
 	checkWidget();
-	if (toolBar == null) toolBar = new ToolBar(this, SWT.HORIZONTAL | SWT.SMOOTH, true);
+	if ((style & SWT.NO_TRIM) == 0) {
+		if (toolBar == null) toolBar = new ToolBar(this, SWT.HORIZONTAL | SWT.SMOOTH, true);
+	}
 	return toolBar;
 }
 
@@ -1204,6 +1206,7 @@ void helpRequested(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 
 void invalidateVisibleRegion () {
 	resetVisibleRegion ();
+	if (toolBar != null) toolBar.resetVisibleRegion();
 	invalidateChildrenVisibleRegion ();
 }
 
@@ -1251,26 +1254,6 @@ void makeKeyAndOrderFront() {
 		if (parentWindow.isMiniaturized()) parentWindow.deminiaturize(null);
 	}
 	window.makeKeyAndOrderFront (null);
-}
-
-Point minimumSize (int wHint, int Hint, boolean changed) {
-	// minimumSize is used by computeSize() to figure out how big the view
-	// (or, in this case, the content view of the Shell) should be.
-	// An NSToolbar does not contribute to the content area, but must be
-	// accounted for. If the shell has a toolbar but no other children
-	// this will return the width of the toolbar and a height of 1
-	Control [] children = _getChildren ();
-	int width = 0, height = 0;
-	for (int i=0; i<children.length; i++) {
-		Rectangle rect = children [i].getBounds ();
-		width = Math.max (width, rect.x + rect.width);
-		if (children[i] != toolBar)	{
-			height = Math.max (height, rect.y + rect.height);
-		} else {
-			height = Math.max (height, 1);
-		}
-	}
-	return new Point (width, height);
 }
 
 void mouseMoved(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
@@ -1389,6 +1372,10 @@ void releaseParent () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (toolBar != null) {
+		toolBar.dispose();
+		toolBar = null;
+	}
 	if (tooltipTag != 0) {
 		view.window().contentView().removeToolTip(tooltipTag);
 		tooltipTag = 0;
@@ -1451,6 +1438,7 @@ public void removeShellListener(ShellListener listener) {
 }
 
 void reskinChildren (int flags) {
+	if (toolBar != null) toolBar.reskin(flags);
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
@@ -2020,6 +2008,11 @@ boolean traverseEscape () {
 	close ();
 	return true;
 }
+
+void updateCursorRects(boolean enabled) {
+	super.updateCursorRects(enabled);
+	if (toolBar != null) toolBar.updateCursorRects(enabled);
+};
 
 void updateModal () {
 	// do nothing

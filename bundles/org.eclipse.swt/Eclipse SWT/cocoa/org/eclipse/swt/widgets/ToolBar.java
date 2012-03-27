@@ -208,7 +208,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	if (scrollView != null) {
+	if (nsToolbar != null) {
+		NSRect outer = view.frame();
+		NSRect inner = new NSView(view.subviews().objectAtIndex(0)).frame();
+		width += (int)outer.width - (int)inner.width;
+	} else if (scrollView != null) {
 		NSSize size = new NSSize();
 		size.width = width;
 		size.height = height;
