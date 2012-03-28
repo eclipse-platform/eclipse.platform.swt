@@ -581,7 +581,7 @@ int /*long*/ gtk_create_menu_proxy (int /*long*/ widget) {
 	 * activate signal to send the Arrow selection signal. 
 	 */
 	if ((style & SWT.DROP_DOWN) != 0) return 0;
-	if (image != null /*&& (text == null || text.length() == 0)*/) {
+	if (image != null) {
 		ImageList imageList = parent.imageList;
 		if (imageList != null) {
 			int index = imageList.indexOf (image);
@@ -948,10 +948,6 @@ void setFontDescription (int /*long*/ font) {
 }
 
 void setForegroundColor (GdkColor color) {
-	int /*long*/ childHandle = OS.gtk_bin_get_child(handle);
-	if (childHandle != 0) {
-	    setForegroundColor (childHandle, color);
-	}
 	if (labelHandle != 0) setForegroundColor (labelHandle, color);
 }
 
