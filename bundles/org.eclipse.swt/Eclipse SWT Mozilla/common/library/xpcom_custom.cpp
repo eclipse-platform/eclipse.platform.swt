@@ -46,7 +46,7 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1DefineFunction)
 	if (mozillaPath) if ((lpmozillaPath = env->GetByteArrayElements(mozillaPath, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
 /*
-	rc = (jint)JS_DefineFunction(arg0, arg1, lparg2, arg3, arg4, arg5);
+	rc = (jintLong)JS_DefineFunction(arg0, arg1, lparg2, arg3, arg4, arg5);
 */
 	{
 	
@@ -61,7 +61,7 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1DefineFunction)
 			initialized = 1;
 		}
 		if (fp) {
-			rc = (jintLong)((jint (*)(jintLong, jintLong, jbyte *, jintLong, jint, jint))fp)(arg0, arg1, lparg2, arg3, arg4, arg5);
+			rc = (jintLong)((jintLong (*)(jintLong, jintLong, jbyte *, jintLong, jint, jint))fp)(arg0, arg1, lparg2, arg3, arg4, arg5);
 		}
 #else
 #define CALLING_CONVENTION
@@ -75,7 +75,7 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1DefineFunction)
 			initialized = 1;
 		}
 		if (fp) {
-			rc = (jintLong)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jbyte *, jintLong, jint, jint))fp)(arg0, arg1, lparg2, arg3, arg4, arg5);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jbyte *, jintLong, jint, jint))fp)(arg0, arg1, lparg2, arg3, arg4, arg5);
 		}
 #endif /* _WIN32 */
 	}
@@ -154,7 +154,7 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1GetGlobalObject)
 	XPCOM_NATIVE_ENTER(env, that, _1JS_1GetGlobalObject_FUNC);
 	if (mozillaPath) if ((lpmozillaPath = env->GetByteArrayElements(mozillaPath, NULL)) == NULL) goto fail;
 /*
-	rc = (jint)JS_GetGlobalObject(arg0);
+	rc = (jintLong)JS_GetGlobalObject(arg0);
 */
 	{
 	
@@ -169,7 +169,7 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1GetGlobalObject)
 			initialized = 1;
 		}
 		if (fp) {
-			rc = (jintLong)((jint (*)(jintLong))fp)(arg0);
+			rc = (jintLong)((jintLong (*)(jintLong))fp)(arg0);
 		}
 #else
 #define CALLING_CONVENTION
@@ -183,7 +183,7 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1GetGlobalObject)
 			initialized = 1;
 		}
 		if (fp) {
-			rc = (jintLong)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
 		}
 #endif /* _WIN32 */
 	}
@@ -203,7 +203,7 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1NewObject)
 	XPCOM_NATIVE_ENTER(env, that, _1JS_1NewObject_FUNC);
 	if (mozillaPath) if ((lpmozillaPath = env->GetByteArrayElements(mozillaPath, NULL)) == NULL) goto fail;
 /*
-	rc = (jint)JS_NewObject(arg0, arg1, arg2, arg3);
+	rc = (jintLong)JS_NewObject(arg0, arg1, arg2, arg3);
 */
 	{
 	
@@ -218,7 +218,7 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1NewObject)
 			initialized = 1;
 		}
 		if (fp) {
-			rc = (jintLong)((jint (*)(jintLong, jintLong, jintLong, jintLong))fp)(arg0, arg1, arg2, arg3);
+			rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, jintLong))fp)(arg0, arg1, arg2, arg3);
 		}
 #else
 #define CALLING_CONVENTION
@@ -232,7 +232,7 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1NewObject)
 			initialized = 1;
 		}
 		if (fp) {
-			rc = (jintLong)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jintLong, jintLong))fp)(arg0, arg1, arg2, arg3);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jintLong, jintLong))fp)(arg0, arg1, arg2, arg3);
 		}
 #endif /* _WIN32 */
 	}
