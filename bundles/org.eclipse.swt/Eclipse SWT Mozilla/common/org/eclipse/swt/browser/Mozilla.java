@@ -3519,6 +3519,10 @@ int OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int aStateF
 		if (request == aRequest) request = 0;
 		registerFunctionsOnState = nsIWebProgressListener.STATE_TRANSFERRING;
 		updateLastNavigateUrl = true;
+	} else if ((aStateFlags & nsIWebProgressListener.STATE_TRANSFERRING) != 0) {
+		if (!IsPre_4) {
+			registerFunctionsOnState = nsIWebProgressListener.STATE_IS_REQUEST | nsIWebProgressListener.STATE_STOP;
+		}
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_STOP) != 0) {
 		if (isRetrievingBadCert) {
 			isRetrievingBadCert = false;
