@@ -245,11 +245,15 @@ void generateExcludes(JNIMethod[] methods) {
 }
 
 void generateNativeMacro(JNIClass clazz) {
+	output("#ifndef ");
+	output(clazz.getSimpleName());
+	outputln("_NATIVE");
 	output("#define ");
 	output(clazz.getSimpleName());
 	output("_NATIVE(func) Java_");
 	output(toC(clazz.getName()));
 	outputln("_##func");
+	outputln("#endif");
 	outputln();
 }
 
