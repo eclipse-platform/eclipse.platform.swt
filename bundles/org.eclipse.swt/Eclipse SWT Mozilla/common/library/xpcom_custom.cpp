@@ -194,55 +194,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1JS_1GetGlobalObject
-JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1GetGlobalForScopeChain)
-	(JNIEnv *env, jclass that, jbyteArray mozillaPath, jintLong arg0)
-{
-	jbyte *lpmozillaPath=NULL;
-	jintLong rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, _1JS_1GetGlobalForScopeChain_FUNC);
-	if (mozillaPath) if ((lpmozillaPath = env->GetByteArrayElements(mozillaPath, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)JS_GetGlobalForScopeChain(arg0);
-*/
-	{
-	
-#ifdef _WIN32
-		static int initialized = 0;
-		static FARPROC fp = NULL;
-		if (!initialized) {
-			HMODULE hm = LoadLibrary((const char *)lpmozillaPath);
-			if (hm) {
-				fp = GetProcAddress(hm, "JS_GetGlobalForScopeChain");
-			}
-			initialized = 1;
-		}
-		if (fp) {
-			rc = (jintLong)((jint (*)(jintLong))fp)(arg0);
-		}
-#else
-#define CALLING_CONVENTION
-		static int initialized = 0;
-		static void *fp = NULL;
-		if (!initialized) {
-			void* handle = dlopen((const char *)lpmozillaPath, RTLD_LAZY);
-			if (handle) {
-				fp = dlsym(handle, "JS_GetGlobalForScopeChain");
-			}
-			initialized = 1;
-		}
-		if (fp) {
-			rc = (jintLong)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-#endif /* _WIN32 */
-	}
-fail:
-	if (mozillaPath && lpmozillaPath) env->ReleaseByteArrayElements(mozillaPath, lpmozillaPath, 0);
-	XPCOM_NATIVE_EXIT(env, that, _1JS_1GetGlobalForScopeChain_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1JS_1NewObject
 JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1NewObject)
 	(JNIEnv *env, jclass that, jbyteArray mozillaPath, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3)
@@ -252,7 +203,7 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1NewObject)
 	XPCOM_NATIVE_ENTER(env, that, _1JS_1NewObject_FUNC);
 	if (mozillaPath) if ((lpmozillaPath = env->GetByteArrayElements(mozillaPath, NULL)) == NULL) goto fail;
 /*
-	rc = (jint)JS_GetGlobalObject(arg0, arg1, arg2, arg3);
+	rc = (jint)JS_NewObject(arg0, arg1, arg2, arg3);
 */
 	{
 	
@@ -292,252 +243,26 @@ fail:
 }
 #endif
 
-#ifndef NO__1JS_1ValueToString
-JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1ValueToString)
-	(JNIEnv *env, jclass that, jbyteArray mozillaPath, jintLong arg0, jintLong arg1)
+#ifndef NO_CALLBACK_1JSNative
+extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(CALLBACK_1JSNative)(JNIEnv *env, jclass that, jintLong arg0);
+static jintLong CALLBACK_1JSNative;
+static jint proc_CALLBACK_1JSNative(jintLong arg0, jint arg1, jintLong arg2) {
+	return ((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jintLong))CALLBACK_1JSNative)(arg0, arg1, arg2);
+}
+static jintLong CALLBACK_JSNative(jintLong func) {
+	CALLBACK_1JSNative = func;
+	return (jintLong)proc_CALLBACK_1JSNative;
+}
+JNIEXPORT jintLong JNICALL XPCOM_NATIVE(CALLBACK_1JSNative)
+	(JNIEnv *env, jclass that, jintLong arg0)
 {
-	jbyte *lpmozillaPath=NULL;
 	jintLong rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, _1JS_1ValueToString_FUNC);
-	if (mozillaPath) if ((lpmozillaPath = env->GetByteArrayElements(mozillaPath, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)JS_ValueToString(arg0, arg1, arg2, arg3);
-*/
-	{
-	
-#ifdef _WIN32
-		static int initialized = 0;
-		static FARPROC fp = NULL;
-		if (!initialized) {
-			HMODULE hm = LoadLibrary((const char *)lpmozillaPath);
-			if (hm) {
-				fp = GetProcAddress(hm, "JS_ValueToString");
-			}
-			initialized = 1;
-		}
-		if (fp) {
-			rc = (jintLong)((jint (*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-#else
-#define CALLING_CONVENTION
-		static int initialized = 0;
-		static void *fp = NULL;
-		if (!initialized) {
-			void* handle = dlopen((const char *)lpmozillaPath, RTLD_LAZY);
-			if (handle) {
-				fp = dlsym(handle, "JS_ValueToString");
-			}
-			initialized = 1;
-		}
-		if (fp) {
-			rc = (jintLong)((jint (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-#endif /* _WIN32 */
-	}
-fail:
-	if (mozillaPath && lpmozillaPath) env->ReleaseByteArrayElements(mozillaPath, lpmozillaPath, 0);
-	XPCOM_NATIVE_EXIT(env, that, _1JS_1ValueToString_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, CALLBACK_1JSNative_FUNC);
+	rc = (jintLong)CALLBACK_JSNative(arg0);
+	XPCOM_NATIVE_EXIT(env, that, CALLBACK_1JSNative_FUNC);
 	return rc;
 }
 #endif
-
-
-
-JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JSVAL_1TO_1IMPL2)
-	(JNIEnv *env, jclass that, jbyteArray mozillaPath, jintLong arg0)
-{
-	jbyte *lpmozillaPath=NULL;
-	jintLong rc = 0;
-	if (mozillaPath) if ((lpmozillaPath = env->GetByteArrayElements(mozillaPath, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)JSVAL_TO_IMPL2(arg0);
-*/
-	{
-	
-#ifdef _WIN32
-		static int initialized = 0;
-		static FARPROC fp = NULL;
-		if (!initialized) {
-			HMODULE hm = LoadLibrary((const char *)lpmozillaPath);
-			if (hm) {
-				fp = GetProcAddress(hm, "JSVAL_TO_IMPL2");
-			}
-			initialized = 1;
-		}
-		if (fp) {
-			rc = (jintLong)((jint (*)(jintLong))fp)(arg0);
-		}
-#else
-#define CALLING_CONVENTION
-		static int initialized = 0;
-		static void *fp = NULL;
-		if (!initialized) {
-			void* handle = dlopen((const char *)lpmozillaPath, RTLD_LAZY);
-			if (handle) {
-				fp = dlsym(handle, "JSVAL_TO_IMPL2");
-			}
-			initialized = 1;
-		}
-		if (fp) {
-			rc = (jintLong)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-#endif /* _WIN32 */
-	}
-fail:
-	if (mozillaPath && lpmozillaPath) env->ReleaseByteArrayElements(mozillaPath, lpmozillaPath, 0);
-	return rc;
-}
-
-#ifndef NO__1JS_1GetStringCharsZ
-JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1GetStringCharsZ)
-	(JNIEnv *env, jclass that, jbyteArray mozillaPath, jintLong arg0, jintLong arg1)
-{
-	jbyte *lpmozillaPath=NULL;
-	jintLong rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, _1JS_1GetStringCharsZ_FUNC);
-	if (mozillaPath) if ((lpmozillaPath = env->GetByteArrayElements(mozillaPath, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)JS_GetStringCharsZ(arg0, arg1, arg2, arg3);
-*/
-	{
-	
-#ifdef _WIN32
-		static int initialized = 0;
-		static FARPROC fp = NULL;
-		if (!initialized) {
-			HMODULE hm = LoadLibrary((const char *)lpmozillaPath);
-			if (hm) {
-				fp = GetProcAddress(hm, "JS_GetStringCharsZ");
-			}
-			initialized = 1;
-		}
-		if (fp) {
-			rc = (jintLong)((jint (*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-#else
-#define CALLING_CONVENTION
-		static int initialized = 0;
-		static void *fp = NULL;
-		if (!initialized) {
-			void* handle = dlopen((const char *)lpmozillaPath, RTLD_LAZY);
-			if (handle) {
-				fp = dlsym(handle, "JS_GetStringCharsZ");
-			}
-			initialized = 1;
-		}
-		if (fp) {
-			rc = (jintLong)((jint (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-#endif /* _WIN32 */
-	}
-fail:
-	if (mozillaPath && lpmozillaPath) env->ReleaseByteArrayElements(mozillaPath, lpmozillaPath, 0);
-	XPCOM_NATIVE_EXIT(env, that, _1JS_1GetStringCharsZ_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1JS_1TypeOfValue
-JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1TypeOfValue)
-	(JNIEnv *env, jclass that, jbyteArray mozillaPath, jintLong arg0, jintLong arg1)
-{
-	jbyte *lpmozillaPath=NULL;
-	jintLong rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, _1JS_1TypeOfValue_FUNC);
-	if (mozillaPath) if ((lpmozillaPath = env->GetByteArrayElements(mozillaPath, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)JS_TypeOfValue(arg0, arg1);
-*/
-	{
-	
-#ifdef _WIN32
-		static int initialized = 0;
-		static FARPROC fp = NULL;
-		if (!initialized) {
-			HMODULE hm = LoadLibrary((const char *)lpmozillaPath);
-			if (hm) {
-				fp = GetProcAddress(hm, "JS_TypeOfValue");
-			}
-			initialized = 1;
-		}
-		if (fp) {
-			rc = (jintLong)((jint (*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-#else
-#define CALLING_CONVENTION
-		static int initialized = 0;
-		static void *fp = NULL;
-		if (!initialized) {
-			void* handle = dlopen((const char *)lpmozillaPath, RTLD_LAZY);
-			if (handle) {
-				fp = dlsym(handle, "JS_TypeOfValue");
-			}
-			initialized = 1;
-		}
-		if (fp) {
-			rc = (jintLong)((jint (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-#endif /* _WIN32 */
-	}
-fail:
-	if (mozillaPath && lpmozillaPath) env->ReleaseByteArrayElements(mozillaPath, lpmozillaPath, 0);
-	XPCOM_NATIVE_EXIT(env, that, _1JS_1TypeOfValue_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1JS_1GetStringLength
-JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1GetStringLength)
-	(JNIEnv *env, jclass that, jbyteArray mozillaPath, jintLong arg0)
-{
-	jbyte *lpmozillaPath=NULL;
-	jintLong rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, _1JS_1GetStringLength_FUNC);
-	if (mozillaPath) if ((lpmozillaPath = env->GetByteArrayElements(mozillaPath, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)JS_GetStringLength(arg0);
-*/
-	{
-	
-#ifdef _WIN32
-		static int initialized = 0;
-		static FARPROC fp = NULL;
-		if (!initialized) {
-			HMODULE hm = LoadLibrary((const char *)lpmozillaPath);
-			if (hm) {
-				fp = GetProcAddress(hm, "JS_GetStringLength");
-			}
-			initialized = 1;
-		}
-		if (fp) {
-			rc = (jintLong)((jint (*)(jintLong))fp)(arg0);
-		}
-#else
-#define CALLING_CONVENTION
-		static int initialized = 0;
-		static void *fp = NULL;
-		if (!initialized) {
-			void* handle = dlopen((const char *)lpmozillaPath, RTLD_LAZY);
-			if (handle) {
-				fp = dlsym(handle, "JS_GetStringLength");
-			}
-			initialized = 1;
-		}
-		if (fp) {
-			rc = (jintLong)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-#endif /* _WIN32 */
-	}
-fail:
-	if (mozillaPath && lpmozillaPath) env->ReleaseByteArrayElements(mozillaPath, lpmozillaPath, 0);
-	XPCOM_NATIVE_EXIT(env, that, _1JS_1GetStringLength_FUNC);
-	return rc;
-}
-#endif
-
-
-
-
 
 #ifndef NO__1NS_1Free
 JNIEXPORT jint JNICALL XPCOM_NATIVE(_1NS_1Free)

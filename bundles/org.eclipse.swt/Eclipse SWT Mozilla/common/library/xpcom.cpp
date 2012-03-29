@@ -3231,6 +3231,31 @@ fail:
 }
 #endif
 
+#if (!defined(NO__1VtblCall__IIJJJJ) && !defined(JNI64)) || (!defined(NO__1VtblCall__IJJJJJ) && defined(JNI64))
+#ifndef JNI64
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IIJJJJ)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IIJJJJ)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5)
+#else
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IJJJJJ)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IJJJJJ)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5)
+#endif
+{
+	jint rc = 0;
+#ifndef JNI64
+	XPCOM_NATIVE_ENTER(env, that, _1VtblCall__IIJJJJ_FUNC);
+#else
+	XPCOM_NATIVE_ENTER(env, that, _1VtblCall__IJJJJJ_FUNC);
+#endif
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jlong, jlong, jlong, jlong))(*(jintLong **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5);
+#ifndef JNI64
+	XPCOM_NATIVE_EXIT(env, that, _1VtblCall__IIJJJJ_FUNC);
+#else
+	XPCOM_NATIVE_EXIT(env, that, _1VtblCall__IJJJJJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
 #if (!defined(NO__1VtblCall__IIJJJJIJ_3C_3I_3J) && !defined(JNI64)) || (!defined(NO__1VtblCall__IJJJJJIJ_3C_3I_3J) && defined(JNI64))
 #ifndef JNI64
 extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IIJJJJIJ_3C_3I_3J)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5, jint arg6, jlong arg7, jcharArray arg8, jintArray arg9, jlongArray arg10);
@@ -7022,19 +7047,6 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIMemory_1Realloc)
 	XPCOM_NATIVE_ENTER(env, that, _1nsIMemory_1Realloc_FUNC);
 	rc = (jintLong)((nsIMemory *)arg0)->Realloc((void *)arg1, (size_t)arg2);
 	XPCOM_NATIVE_EXIT(env, that, _1nsIMemory_1Realloc_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1nsIScriptContext_1GetGlobalObject
-extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptContext_1GetGlobalObject)(JNIEnv *env, jclass that, jintLong arg0);
-JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptContext_1GetGlobalObject)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, _1nsIScriptContext_1GetGlobalObject_FUNC);
-	rc = (jintLong)((nsIScriptContext *)arg0)->GetGlobalObject();
-	XPCOM_NATIVE_EXIT(env, that, _1nsIScriptContext_1GetGlobalObject_FUNC);
 	return rc;
 }
 #endif

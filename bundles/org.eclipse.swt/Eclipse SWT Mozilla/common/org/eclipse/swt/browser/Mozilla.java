@@ -694,9 +694,6 @@ public void create (Composite parent, int style) {
 			LocationProvider = new AppFileLocProvider (MozillaPath, profilePath, cacheParentPath, IsXULRunner);
 			LocationProvider.AddRef ();
 
-			/* write external.xpt to the file system if needed */
-			initExternal (profilePath);
-
 			/* invoke appropriate Init function (based on mozilla version) */
 			initXPCOM (MozillaPath, IsXULRunner);
 		}
@@ -895,6 +892,9 @@ public void create (Composite parent, int style) {
 		result[0] = 0;
 		interfaceRequestor.Release ();
 		componentRegistrar.Release ();
+
+		/* write external.xpt to the file system if needed */
+		initExternal (LocationProvider.profilePath);
 
 		if (!factoriesRegistered) {
 			HelperAppLauncherDialogFactory dialogFactory = new HelperAppLauncherDialogFactory ();
@@ -1359,17 +1359,9 @@ public boolean execute (String script) {
 									if (rc == XPCOM.NS_OK && result[0] != 0) {
 										int /*long*/ principals = result[0];
 										result[0] = 0;
-										String jsLibraryName = IsPre_4 ? MozillaDelegate.getJSLibraryName_Pre4() : MozillaDelegate.getJSLibraryName();
-										if (jsLibPathBytes == null) {
-											String mozillaPath = getMozillaPath () + jsLibraryName + '\0';
-											try {
-												jsLibPathBytes = mozillaPath.getBytes ("UTF-8"); //$NON-NLS-1$
-											} catch (UnsupportedEncodingException e) {
-												jsLibPathBytes = mozillaPath.getBytes ();
-											}
-										}
 
-										int /*long*/ globalJSObject = XPCOM.JS_GetGlobalObject (jsLibPathBytes, nativeContext);
+										byte[] jsLibPath = getJSLibPathBytes ();
+										int /*long*/ globalJSObject = XPCOM.JS_GetGlobalObject (jsLibPath, nativeContext);
 										if (globalJSObject != 0) {
 											aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CONTEXTSTACK_CONTRACTID, true);
 											rc = serviceManager.GetServiceByContractID (aContractID, nsIJSContextStack.NS_IJSCONTEXTSTACK_IID, result);
@@ -1380,7 +1372,7 @@ public boolean execute (String script) {
 												if (rc != XPCOM.NS_OK) {
 													stack.Release ();
 												} else {
-													boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals (jsLibPathBytes, nativeContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result) != 0;
+													boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals (jsLibPath, nativeContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result) != 0;
 													result[0] = 0;
 													rc = stack.Pop (result);
 													stack.Release ();
@@ -1486,6 +1478,19 @@ public boolean forward () {
 
 public String getBrowserType () {
 	return "mozilla"; //$NON-NLS-1$
+}
+
+static byte[] getJSLibPathBytes () {
+	if (jsLibPathBytes == null) {
+		String jsLibraryName = IsPre_4 ? MozillaDelegate.getJSLibraryName_Pre4 () : MozillaDelegate.getJSLibraryName ();
+		String mozillaPath = getMozillaPath () + jsLibraryName + '\0';
+		try {
+			jsLibPathBytes = mozillaPath.getBytes ("UTF-8"); //$NON-NLS-1$
+		} catch (UnsupportedEncodingException e) {
+			jsLibPathBytes = mozillaPath.getBytes ();
+		}
+	}
+	return jsLibPathBytes;
 }
 
 static String getMozillaPath () {
@@ -1738,6 +1743,13 @@ static String InitDiscoverXULRunner () {
 }
 
 void initExternal (String profilePath) {
+	/*
+	 * external.xpt does not need to be written to the file system if the
+	 * XULRunner version is >= 4 since External.java handles this case
+	 * differently than for earlier XULRunner releases.
+	 */
+	if (!IsPre_4) return;
+
 	File componentsDir = new File (profilePath, AppFileLocProvider.COMPONENTS_DIR);
 	java.io.InputStream is = Library.class.getResourceAsStream ("/external.xpt"); //$NON-NLS-1$
 	if (is != null) {
@@ -1825,12 +1837,12 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 
 	/* register for mozilla versions <= 3.6.x */
 	byte[] category = MozillaDelegate.wcsToMbcs (null, "JavaScript global property", true); //$NON-NLS-1$
-	rc = categoryManager.AddCategoryEntry(category, entry, aContractID, 0, 1, result);
+	rc = categoryManager.AddCategoryEntry (category, entry, aContractID, 0, 1, result);
 	result[0] = 0;
 
 	/* register for mozilla versions >= 3.6.x */
 	category = MozillaDelegate.wcsToMbcs (null, "JavaScript-global-property", true); //$NON-NLS-1$
-	rc = categoryManager.AddCategoryEntry(category, entry, aContractID, 0, 1, result);
+	rc = categoryManager.AddCategoryEntry (category, entry, aContractID, 0, 1, result);
 	result[0] = 0;
 
 	categoryManager.Release ();

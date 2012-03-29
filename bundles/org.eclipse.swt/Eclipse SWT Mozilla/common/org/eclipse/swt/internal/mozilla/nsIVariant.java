@@ -29,13 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIVariant extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 26;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 27 : 26);
 
 	public static final String NS_IVARIANT_IID_STR =
 		"6c9eb060-8c6a-11d5-90f3-0010a4e73d9a";
 
+	public static final String NS_IVARIANT_10_IID_STR =
+		"81e4c2de-acac-4ad6-901a-b5fb1b851a0d";
+
 	public static final nsID NS_IVARIANT_IID =
 		new nsID(NS_IVARIANT_IID_STR);
+
+	public static final nsID NS_IVARIANT_10_IID =
+		new nsID(NS_IVARIANT_10_IID_STR);
 
 	public nsIVariant(int /*long*/ address) {
 		super(address);
@@ -129,19 +135,24 @@ public class nsIVariant extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 22, getAddress(), _retval);
 	}
 
+	public int GetAsJSVal(int /*long*/[] _retval) {
+		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 23, getAddress(), _retval);
+	}
+
 	public int GetAsInterface(int /*long*/[] iid, int /*long*/[] iface) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 23, getAddress(), iid, iface);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 24 : 23), getAddress(), iid, iface);
 	}
 
 	public int GetAsArray(short[] type, int /*long*/ iid, int[] count, int /*long*/[] ptr) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 24, getAddress(), type, iid, count, ptr);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 25 : 24), getAddress(), type, iid, count, ptr);
 	}
 
 	public int GetAsStringWithSize(int[] size, int /*long*/[] str) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 25, getAddress(), size, str);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 26 : 25), getAddress(), size, str);
 	}
 
 	public int GetAsWStringWithSize(int[] size, int /*long*/[] str) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 26, getAddress(), size, str);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 27 : 26), getAddress(), size, str);
 	}
 }

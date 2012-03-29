@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2009 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2012 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -41,11 +41,11 @@ public class nsIXPConnect extends nsISupports {
 		super(address);
 	}
 
-	public int Equals(int /*long*/ other, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 27, getAddress(), other, _retval);
-	}
-	
 	public int JSValToVariant(int /*long*/ cx, int /*long*/ aJSVal, int /*long*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), cx, aJSVal, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), cx, aJSVal, _retval);
+	}
+
+	public int VariantToJS(int /*long*/ ctx, int /*long*/ scope, int /*long*/ value, int /*long*/ _retval) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 33, getAddress(), ctx, scope, value, _retval);
 	}
 }

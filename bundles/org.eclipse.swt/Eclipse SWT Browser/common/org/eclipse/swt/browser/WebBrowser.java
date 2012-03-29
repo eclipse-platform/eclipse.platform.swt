@@ -347,8 +347,7 @@ public void createFunction (BrowserFunction function) {
 	functionBuffer.append (")); throw error;} return result;};"); //$NON-NLS-1$
 
 	StringBuffer buffer = new StringBuffer ("if (!window.callJava) {window.callJava = function callJava(index, token, args) {"); //$NON-NLS-1$
-//	buffer.append ("return external.callJava(index,token,args);}};"); //$NON-NLS-1$
-	buffer.append ("return external.callJava(1, 2, 3);}};"); //$NON-NLS-1$
+	buffer.append ("return external.callJava(index,token,args);}};"); //$NON-NLS-1$
 	if (function.top) {
 		buffer.append (functionBuffer.toString ());
 	}
