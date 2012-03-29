@@ -23,7 +23,9 @@
 #include "cairo_structs.h"
 #include "cairo_stats.h"
 
+#ifndef Cairo_NATIVE
 #define Cairo_NATIVE(func) Java_org_eclipse_swt_internal_cairo_Cairo_##func
+#endif
 
 #ifndef NO_CAIRO_1VERSION_1ENCODE
 JNIEXPORT jint JNICALL Cairo_NATIVE(CAIRO_1VERSION_1ENCODE)

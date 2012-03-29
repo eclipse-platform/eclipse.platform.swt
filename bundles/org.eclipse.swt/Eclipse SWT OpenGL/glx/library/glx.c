@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,9 @@
 #include "glx_structs.h"
 #include "glx_stats.h"
 
+#ifndef GLX_NATIVE
 #define GLX_NATIVE(func) Java_org_eclipse_swt_internal_opengl_glx_GLX_##func
+#endif
 
 #ifndef NO_XVisualInfo_1sizeof
 JNIEXPORT jint JNICALL GLX_NATIVE(XVisualInfo_1sizeof)

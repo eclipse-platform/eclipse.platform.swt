@@ -17,7 +17,9 @@
 #include "webkitgtk_structs.h"
 #include "webkitgtk_stats.h"
 
+#ifndef WebKitGTK_NATIVE
 #define WebKitGTK_NATIVE(func) Java_org_eclipse_swt_internal_webkit_WebKitGTK_##func
+#endif
 
 #ifndef NO_JSClassDefinition_1sizeof
 JNIEXPORT jint JNICALL WebKitGTK_NATIVE(JSClassDefinition_1sizeof)

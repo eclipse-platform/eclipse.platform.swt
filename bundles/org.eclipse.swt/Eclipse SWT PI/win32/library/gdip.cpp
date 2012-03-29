@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,9 @@
 #include "gdip_structs.h"
 #include "gdip_stats.h"
 
+#ifndef Gdip_NATIVE
 #define Gdip_NATIVE(func) Java_org_eclipse_swt_internal_gdip_Gdip_##func
+#endif
 
 #ifndef NO_BitmapData_1delete
 extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(BitmapData_1delete)(JNIEnv *env, jclass that, jintLong arg0);

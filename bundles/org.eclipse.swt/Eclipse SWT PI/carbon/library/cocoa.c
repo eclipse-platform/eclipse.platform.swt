@@ -13,7 +13,9 @@
 #include "cocoa_structs.h"
 #include "cocoa_stats.h"
 
+#ifndef Cocoa_NATIVE
 #define Cocoa_NATIVE(func) Java_org_eclipse_swt_internal_cocoa_Cocoa_##func
+#endif
 
 #ifndef NO_HICocoaViewCreate
 JNIEXPORT jint JNICALL Cocoa_NATIVE(HICocoaViewCreate)

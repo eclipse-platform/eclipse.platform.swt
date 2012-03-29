@@ -13,7 +13,9 @@
 #include "os_structs.h"
 #include "os_stats.h"
 
+#ifndef OS_NATIVE
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_cocoa_OS_##func
+#endif
 
 #ifndef NO_ATSFontActivateFromFileReference
 JNIEXPORT jint JNICALL OS_NATIVE(ATSFontActivateFromFileReference)

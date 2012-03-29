@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -17,7 +17,9 @@
 #include "gtk_structs.h"
 #include "gtk_stats.h"
 
+#ifndef GTK_NATIVE
 #define GTK_NATIVE(func) Java_org_eclipse_swt_internal_gtk_GTK_##func
+#endif
 
 #ifndef NO__1GTK_1WIDGET_1HEIGHT
 JNIEXPORT jint JNICALL GTK_NATIVE(_1GTK_1WIDGET_1HEIGHT)

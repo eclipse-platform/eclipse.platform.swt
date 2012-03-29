@@ -17,7 +17,9 @@
 #include "os_structs.h"
 #include "os_stats.h"
 
+#ifndef OS_NATIVE
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_gtk_OS_##func
+#endif
 
 #if (!defined(NO_Call__IIII) && !defined(JNI64)) || (!defined(NO_Call__JJII) && defined(JNI64))
 #ifndef JNI64

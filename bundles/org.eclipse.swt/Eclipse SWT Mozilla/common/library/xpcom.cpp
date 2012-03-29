@@ -13,7 +13,9 @@
 #include "xpcom_structs.h"
 #include "xpcom_stats.h"
 
+#ifndef XPCOM_NATIVE
 #define XPCOM_NATIVE(func) Java_org_eclipse_swt_internal_mozilla_XPCOM_##func
+#endif
 
 #if (!defined(NO__1Call__I) && !defined(JNI64)) || (!defined(NO__1Call__J) && defined(JNI64))
 #ifndef JNI64

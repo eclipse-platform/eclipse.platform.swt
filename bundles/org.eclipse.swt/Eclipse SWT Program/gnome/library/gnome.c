@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -17,7 +17,9 @@
 #include "gnome_structs.h"
 #include "gnome_stats.h"
 
+#ifndef GNOME_NATIVE
 #define GNOME_NATIVE(func) Java_org_eclipse_swt_internal_gnome_GNOME_##func
+#endif
 
 #ifndef NO_GnomeVFSMimeApplication_1sizeof
 JNIEXPORT jint JNICALL GNOME_NATIVE(GnomeVFSMimeApplication_1sizeof)

@@ -13,7 +13,9 @@
 #include "os_structs.h"
 #include "os_stats.h"
 
+#ifndef OS_NATIVE
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_win32_OS_##func
+#endif
 
 #ifndef NO_ACCEL_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(ACCEL_1sizeof)

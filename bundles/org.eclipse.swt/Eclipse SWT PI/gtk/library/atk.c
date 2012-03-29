@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -17,7 +17,9 @@
 #include "atk_structs.h"
 #include "atk_stats.h"
 
+#ifndef ATK_NATIVE
 #define ATK_NATIVE(func) Java_org_eclipse_swt_internal_accessibility_gtk_ATK_##func
+#endif
 
 #ifndef NO_ATK_1IS_1NO_1OP_1OBJECT_1FACTORY
 JNIEXPORT jboolean JNICALL ATK_NATIVE(ATK_1IS_1NO_1OP_1OBJECT_1FACTORY)

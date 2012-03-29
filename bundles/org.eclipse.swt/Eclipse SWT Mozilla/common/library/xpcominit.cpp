@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,9 @@
 #include "xpcominit_structs.h"
 #include "xpcominit_stats.h"
 
+#ifndef XPCOMInit_NATIVE
 #define XPCOMInit_NATIVE(func) Java_org_eclipse_swt_internal_mozilla_init_XPCOMInit_##func
+#endif
 
 #ifndef NO_GREProperty_1sizeof
 extern "C" JNIEXPORT jint JNICALL XPCOMInit_NATIVE(GREProperty_1sizeof)(JNIEnv *env, jclass that);

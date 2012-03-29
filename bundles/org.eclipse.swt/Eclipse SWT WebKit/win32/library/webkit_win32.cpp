@@ -17,7 +17,9 @@
 #include "webkit_win32_structs.h"
 #include "webkit_win32_stats.h"
 
+#ifndef WebKit_win32_NATIVE
 #define WebKit_win32_NATIVE(func) Java_org_eclipse_swt_internal_webkit_WebKit_1win32_##func
+#endif
 
 #ifndef NO_CFArrayGetCount
 extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFArrayGetCount)(JNIEnv *env, jclass that, jintLong arg0);
