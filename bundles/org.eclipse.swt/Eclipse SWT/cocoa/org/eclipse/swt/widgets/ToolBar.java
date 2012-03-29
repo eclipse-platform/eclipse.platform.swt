@@ -368,7 +368,7 @@ boolean forceFocus (NSView focusView) {
 			return true;
 		}
 	}
-	return super.forceFocus (focusView);
+	return false;
 }
 
 /**
