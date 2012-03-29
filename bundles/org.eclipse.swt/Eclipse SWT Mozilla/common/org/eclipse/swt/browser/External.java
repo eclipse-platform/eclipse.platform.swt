@@ -480,10 +480,22 @@ void disposeCOMInterfaces () {
 	if (supports != null) {
 		supports.dispose ();
 		supports = null;
-	}	
+	}
+	if (classInfo != null) {
+		classInfo.dispose ();
+		classInfo = null;
+	}
+	if (securityCheckedComponent != null) {
+		securityCheckedComponent.dispose ();
+		securityCheckedComponent = null;
+	}
 	if (external != null) {
 		external.dispose ();
-		external = null;	
+		external = null;
+	}
+	if (scriptObjectOwner != null) {
+		scriptObjectOwner.dispose ();
+		scriptObjectOwner = null;
 	}
 }
 
