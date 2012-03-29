@@ -35,7 +35,7 @@ static Browser findBrowser (int /*long*/ handle) {
 
 static String getCacheParentPath () {
 	if (OS.VERSION >= 0x1060) {
-		NSArray array = NSFileManager.defaultManager ().URLsForDirectory (OS.NSCachesDirectory, OS.NSLocalDomainMask);
+		NSArray array = NSFileManager.defaultManager ().URLsForDirectory (OS.NSCachesDirectory, OS.NSUserDomainMask);
 		if (array.count () > 0) {
 			NSURL url = new NSURL (array.objectAtIndex (0));
 			return url.path ().getString () + Mozilla.SEPARATOR_OS + "eclipse"; //$NON-NLS-1$

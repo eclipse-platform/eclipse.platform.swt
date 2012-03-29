@@ -2534,7 +2534,6 @@ public static final int kCTWritingDirectionRightToLeft = 1;
 public static final int NSAllApplicationsDirectory = 100;
 public static final int NSAllDomainsMask = 65535;
 public static final int NSCachesDirectory = 13;
-public static final int NSLocalDomainMask = 2;
 public static final int NSNotFound = 2147483647;
 public static final int NSOrderedSame = 0;
 public static final int NSURLCredentialPersistenceForSession = 1;
@@ -2543,6 +2542,7 @@ public static final int NSURLErrorSecureConnectionFailed = -1200;
 public static final int NSURLErrorServerCertificateNotYetValid = -1204;
 public static final int NSURLRequestReloadIgnoringLocalCacheData = 1;
 public static final int NSUTF8StringEncoding = 4;
+public static final int NSUserDomainMask = 1;
 
 /** Globals */
 /** @method flags=const */

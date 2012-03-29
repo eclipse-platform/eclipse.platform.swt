@@ -1172,7 +1172,6 @@
 	<enum name="NSAllApplicationsDirectory" swt_gen="true"></enum>
 	<enum name="NSAllDomainsMask" swt_gen="true"></enum>
 	<enum name="NSCachesDirectory" swt_gen="true"></enum>
-	<enum name="NSLocalDomainMask" swt_gen="true"></enum>
 	<enum name="NSNotFound" swt_gen="true"></enum>
 	<enum name="NSOrderedSame" swt_gen="true"></enum>
 	<enum name="NSURLCredentialPersistenceForSession" swt_gen="true"></enum>
@@ -1181,6 +1180,7 @@
 	<enum name="NSURLErrorServerCertificateNotYetValid" swt_gen="true"></enum>
 	<enum name="NSURLRequestReloadIgnoringLocalCacheData" swt_gen="true"></enum>
 	<enum name="NSUTF8StringEncoding" swt_gen="true"></enum>
+	<enum name="NSUserDomainMask" swt_gen="true"></enum>
 	<function name="NSEqualRects" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
