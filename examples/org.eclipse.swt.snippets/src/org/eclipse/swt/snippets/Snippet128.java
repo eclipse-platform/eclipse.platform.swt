@@ -19,7 +19,6 @@ package org.eclipse.swt.snippets;
  * @since 3.0
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.browser.*;
