@@ -40,10 +40,10 @@ public static void main (String [] args) {
 		return;
 	}
 	browser.setText (createHTML ());
+	final BrowserFunction function = new CustomFunction (browser, "theJavaFunction");
 
 	browser.addProgressListener (new ProgressAdapter () {
 		public void completed (ProgressEvent event) {
-			final BrowserFunction function = new CustomFunction (browser, "theJavaFunction");
 			browser.addLocationListener (new LocationAdapter () {
 				public void changed (LocationEvent event) {
 					browser.removeLocationListener (this);
