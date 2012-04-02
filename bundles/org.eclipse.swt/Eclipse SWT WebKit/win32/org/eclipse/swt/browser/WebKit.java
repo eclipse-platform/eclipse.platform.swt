@@ -94,41 +94,43 @@ static {
 	*/
 	if (!LibraryLoaded) {
 		/*
-		* Registry entry HKEY_LOCAL_MACHINE\SOFTWARE\Apple Inc.\Apple Application Support\InstallDir
-		* indicates where the required Apple Application Support package is installed.  Check this
-		* value to ensure that it is installed, and to update the library lookup path.
-		*/
-		boolean AASDetected = false;
-		TCHAR key = new TCHAR (0, "SOFTWARE\\Apple Inc.\\Apple Application Support", true);	//$NON-NLS-1$
-		int /*long*/[] phkResult = new int /*long*/[1];
-		if (OS.RegOpenKeyEx (OS.HKEY_LOCAL_MACHINE, key, 0, OS.KEY_READ, phkResult) == 0) {
-			int[] lpcbData = new int[1];
-			TCHAR buffer = new TCHAR (0, "InstallDir", true); //$NON-NLS-1$
-			int result = OS.RegQueryValueEx (phkResult[0], buffer, 0, null, (TCHAR)null, lpcbData);
-			if (result == 0) {
-				TCHAR lpData = new TCHAR (0, lpcbData[0] / TCHAR.sizeof);
-				result = OS.RegQueryValueEx (phkResult[0], buffer, 0, null, lpData, lpcbData);
-				if (result == 0) {
-					AASDetected = true;
-					String AASDirectory = lpData.toString (0, lpData.strlen ());
-					buffer = new TCHAR (0, AASDirectory, true);
-					boolean success = OS.SetDllDirectory (buffer); /* should succeed on XP+SP1 and newer */
-					if (success) {
-						try {
-							Library.loadLibrary ("swt-webkit"); //$NON-NLS-1$
-							LibraryLoaded = true;
-						} catch (Throwable e) {
-							LibraryLoadError = "Failed to load the swt-webkit library"; //$NON-NLS-1$
-						}
-					} else {
-						LibraryLoadError = "Failed to add the Apple Application Support package to the library lookup path.  "; //$NON-NLS-1$
-						LibraryLoadError += "To use a SWT.WEBKIT-style Browser prepend " + AASDirectory + " to your Windows 'Path' environment variable and restart."; //$NON-NLS-1$ //$NON-NLS-2$
-					}
-				}
+		 * Locate the Apple Application Support directory (if installed) and add its path to the library lookup path.
+		 *
+		 * As of Safari 5.1.4, the Apple Application Support directory is in the Safari installation directory,
+		 * which is pointed to by registry entry "HKEY_LOCAL_MACHINE\SOFTWARE\Apple Computer, Inc.\Safari".
+		 *
+		 * With earlier versions of Safari the Apple Application Support is installed in a stand-alone location, which
+		 * is pointed to by registry entry "HKEY_LOCAL_MACHINE\SOFTWARE\Apple Inc.\Apple Application Support\InstallDir".
+		 */
+
+		String AASDirectory = readInstallDir ("SOFTWARE\\Apple Computer, Inc.\\Safari"); //$NON-NLS-1$
+		if (AASDirectory != null) {
+			AASDirectory += "\\Apple Application Support"; //$NON-NLS-1$
+			if (!new File(AASDirectory).exists()) {
+				AASDirectory = null;
 			}
-			OS.RegCloseKey (phkResult[0]);
 		}
-		if (!AASDetected) {
+
+		if (AASDirectory == null) {
+			AASDirectory = readInstallDir ("SOFTWARE\\Apple Inc.\\Apple Application Support"); //$NON-NLS-1$
+		}
+
+		if (AASDirectory != null) {
+			TCHAR buffer = new TCHAR (0, AASDirectory, true);
+			boolean success = OS.SetDllDirectory (buffer); /* should succeed on XP+SP1 and newer */
+			if (success) {
+				try {
+					Library.loadLibrary ("swt-webkit"); //$NON-NLS-1$
+					LibraryLoaded = true;
+				} catch (Throwable e) {
+					LibraryLoadError = "Failed to load the swt-webkit library"; //$NON-NLS-1$
+					if (Device.DEBUG) System.out.println ("Failed to load swt-webkit library. Apple Application Support directory path: " + AASDirectory); //$NON-NLS-1$
+				}
+			} else {
+				LibraryLoadError = "Failed to add the Apple Application Support package to the library lookup path.  "; //$NON-NLS-1$
+				LibraryLoadError += "To use a SWT.WEBKIT-style Browser prepend " + AASDirectory + " to your Windows 'Path' environment variable and restart."; //$NON-NLS-1$ //$NON-NLS-2$
+			}
+		} else {
 			LibraryLoadError = "Safari must be installed to use a SWT.WEBKIT-style Browser"; //$NON-NLS-1$
 		}
 	}
@@ -341,6 +343,26 @@ static int /*long*/ JSObjectHasPropertyProc (int /*long*/ ctx, int /*long*/ obje
 		bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes ();
 	}
 	return WebKit_win32.JSStringIsEqualToUTF8CString (propertyName, bytes);
+}
+
+static String readInstallDir (String keyString) {
+	int /*long*/[] phkResult = new int /*long*/[1];
+	TCHAR key = new TCHAR (0, keyString, true);
+	if (OS.RegOpenKeyEx (OS.HKEY_LOCAL_MACHINE, key, 0, OS.KEY_READ, phkResult) == 0) {
+		int[] lpcbData = new int[1];
+		TCHAR buffer = new TCHAR (0, "InstallDir", true); //$NON-NLS-1$
+		int result = OS.RegQueryValueEx (phkResult[0], buffer, 0, null, (TCHAR)null, lpcbData);
+		if (result == 0) {
+			TCHAR lpData = new TCHAR (0, lpcbData[0] / TCHAR.sizeof);
+			result = OS.RegQueryValueEx (phkResult[0], buffer, 0, null, lpData, lpcbData);
+			if (result == 0) {
+				OS.RegCloseKey (phkResult[0]);
+				return lpData.toString (0, lpData.strlen ());
+			}
+		}
+		OS.RegCloseKey (phkResult[0]);
+    }
+    return null;
 }
 
 static String stringFromCFString (int /*long*/ cfString) {
