@@ -821,6 +821,7 @@
 		<fileset id="addid" dir="${repo.bin}">
 			<include name="bundles/*/*${swt_version}*"/>
 			<include name="bundles/*/build.sha1"/>
+			<include name="bundles/*/*xulrunner-fix*"/>
 			<exclude name="**/.git/**"/>
 			<exclude name="**/tmpdir/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.hpux.ia64/**"/>
