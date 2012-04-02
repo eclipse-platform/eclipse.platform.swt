@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -64,7 +65,19 @@ public static void main(String args[]) {
 			mainFrame.setVisible(true);
 		}
 	});
-	while (true) {
+	display.addListener(SWT.Close, new Listener() {
+		public void handleEvent(Event event) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					Frame[] frames = JFrame.getFrames();
+					for (int i = 0; i < frames.length; i++) {
+						frames[i].dispose();
+					}
+				}
+			});
+		}
+	});
+	while (!display.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();
 	}
 }
