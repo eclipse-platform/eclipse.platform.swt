@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.io.*;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.internal.*;
@@ -111,13 +113,38 @@ static String getSWTInitLibraryName () {
 }
 
 static void loadAdditionalLibraries (String mozillaPath) {
-// the following is intentionally commented
+	if (Mozilla.IsPre_4) return;
 
-//	if (!Mozilla.IsPre_4) {
-//		System.loadLibrary ("swt-xulrunner10"); // get it extracted
-//		byte[] bytes = Converter.wcsToMbcs (null, /* path to libswt-xulrunner10.so */ "", true); //$NON-NLS-1$
-//		OS.dlopen (bytes, OS.RTLD_NOW | OS.RTLD_GLOBAL);
-//	}
+	/*
+	* The use of the swt-xulrunner-fix library works around mozilla bug
+	* https://bugzilla.mozilla.org/show_bug.cgi?id=720682 (XULRunner 10).
+	*/
+	String libName = "libswt-xulrunner-fix.so"; //$NON-NLS-1$
+	File libsDir = new File (getProfilePath () + "/libs/" + Mozilla.OS() + '/' + Mozilla.Arch ()); //$NON-NLS-1$
+	File file = new File (libsDir, libName);
+	java.io.InputStream is = Library.class.getResourceAsStream ('/' + libName);
+	if (is != null) {
+		if (!libsDir.exists ()) {
+			libsDir.mkdirs ();
+		}
+		int read;
+		byte [] buffer = new byte [4096];
+		try {
+			FileOutputStream os = new FileOutputStream (file);
+			while ((read = is.read (buffer)) != -1) {
+				os.write(buffer, 0, read);
+			}
+			os.close ();
+			is.close ();
+		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
+		}
+	}
+
+	if (file.exists ()) {
+		byte[] bytes = Converter.wcsToMbcs (null, file.getAbsolutePath (), true);
+		OS.dlopen (bytes, OS.RTLD_NOW | OS.RTLD_GLOBAL);
+	}
 }
 
 static char[] mbcsToWcs (String codePage, byte [] buffer) {

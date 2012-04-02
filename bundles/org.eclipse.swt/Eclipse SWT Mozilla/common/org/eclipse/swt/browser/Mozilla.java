@@ -543,6 +543,17 @@ static String Arch () {
 	return osArch;
 }
 
+static String OS() {
+	String osName = System.getProperty("os.name"); //$NON-NLS-1$
+	if (osName.equals ("Linux")) return "linux"; //$NON-NLS-1$ $NON-NLS-2$
+	if (osName.equals ("AIX")) return "aix"; //$NON-NLS-1$ $NON-NLS-2$
+	if (osName.equals ("Solaris") || osName.equals ("SunOS")) return "solaris"; //$NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$
+	if (osName.equals ("HP-UX")) return "hpux"; //$NON-NLS-1$ $NON-NLS-2$
+	if (osName.equals ("Mac OS X")) return "macosx"; //$NON-NLS-1$ $NON-NLS-2$
+	if (osName.startsWith ("Win")) return "win32"; //$NON-NLS-1$ $NON-NLS-2$
+	return osName;
+}
+
 static void LoadLibraries () {
 	boolean initLoaded = false;
 
