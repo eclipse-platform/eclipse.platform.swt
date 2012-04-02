@@ -873,7 +873,7 @@ public void create (Composite parent, int style) {
 		*   functionality is provided by the GRE.
 		*/
 		if (!IsPre_1_8) {
-			rc = interfaceRequestor.GetInterface (nsIDocShell_1_8.NS_IDOCSHELL_IID, result);
+			rc = interfaceRequestor.GetInterface (nsIDocShell.NS_IDOCSHELL_1_8_IID, result);
 			if (rc == XPCOM.NS_OK && result[0] != 0) { /* 1.8 */
 				new nsISupports (result[0]).Release ();
 				result[0] = 0;
@@ -893,7 +893,7 @@ public void create (Composite parent, int style) {
 			} else { /* >= 1.9 */
 				IsPre_1_9 = false;
 				result[0] = 0;
-				rc = interfaceRequestor.GetInterface(nsIDocShell_1_8.NS_IDOCSHELL_10_IID, result);
+				rc = interfaceRequestor.GetInterface(nsIDocShell.NS_IDOCSHELL_10_IID, result);
 				if (rc == XPCOM.NS_OK && result[0] != 0) { /* >= 4.0 */
 					IsPre_4 = false;
 					new nsISupports (result[0]).Release();
