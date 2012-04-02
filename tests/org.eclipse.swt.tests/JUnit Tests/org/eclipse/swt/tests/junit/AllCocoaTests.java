@@ -45,6 +45,9 @@ static String[] excludeTests = {
 	"test_invokeActionI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText)",
 	"test_paste(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText)",
 	
+	// Text segments not implemented on cocoa
+	"test_consistency_Segments(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
+	
 	// TextLayout bugs
 	"test_getLineIndex(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
 	"test_getLineBounds(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout)",
