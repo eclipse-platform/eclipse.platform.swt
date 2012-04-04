@@ -784,6 +784,7 @@ abstract class Tab {
 		final Table table = new Table (dialog, SWT.BORDER | SWT.V_SCROLL | SWT.CHECK);
 		GridData data = new GridData(GridData.FILL_BOTH);
 		data.verticalSpan = 3;
+		data.heightHint = 440;
 		table.setLayoutData(data);
 		for (int i = 0; i < EVENT_INFO.length; i++) {
 			TableItem item = new TableItem (table, SWT.NONE);

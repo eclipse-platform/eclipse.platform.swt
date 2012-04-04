@@ -239,8 +239,9 @@ class BrowserTab extends Tab {
 	 * @return an array containing custom event names
 	 */
 	String [] getCustomEventNames () {
-		return new String [] {"CloseWindowListener", "LocationListener", "OpenWindowListener",
-				"ProgressListener", "StatusTextListener", "TitleListener", "VisibilityWindowListener"};
+		return new String [] {"AuthenticationListener", "CloseWindowListener", "LocationListener",
+				"OpenWindowListener", "ProgressListener", "StatusTextListener", "TitleListener",
+				"VisibilityWindowListener"};
 	}
 	
 	/**
