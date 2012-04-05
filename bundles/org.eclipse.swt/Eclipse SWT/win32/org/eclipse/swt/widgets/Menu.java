@@ -868,6 +868,10 @@ public MenuItem [] getItems () {
 	}
 	int index = 0, count = 0;
 	int length = OS.IsWinCE ? 4 : OS.GetMenuItemCount (handle);
+	if (length < 0) {
+		int error = OS.GetLastError();
+		SWT.error(SWT.ERROR_CANNOT_GET_COUNT, null, " [GetLastError=0x" + Integer.toHexString(error) + "]");//$NON-NLS-1$ $NON-NLS-2$
+	}
 	MenuItem [] items = new MenuItem [length];
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
