@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.internal.Callback;
 import org.eclipse.swt.internal.mozilla.*;
@@ -141,6 +142,41 @@ boolean hookEnterExit () {
 }
 
 void init () {
+	if (!Mozilla.IsPre_4) {
+		/*
+		* In XULRunner versions > 4, sending WM_GETDLGCODE to a WM_KEYDOWN's MSG hwnd answers 0
+		* instead of the expected DLGC_WANTTAB or DLGC_WANTALLKEYS.  As a result, Tab presses
+		* always default to traversals out of the browser.  The workaround for this is to add a
+		* Traverse listener that vetos any tab traversals that are attempted while an element
+		* in the browser has focus. 
+		*/
+		browser.addListener (SWT.Traverse, new Listener () {
+			public void handleEvent (Event event) {
+				if ((event.detail & (SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS)) == 0) return;
+
+				int /*long*/[] result = new int /*long*/[1];
+				int rc = XPCOM.NS_GetServiceManager (result);
+				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+				if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+				result[0] = 0;
+				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FOCUSMANAGER_CONTRACTID, true);
+				rc = serviceManager.GetServiceByContractID (aContractID, nsIFocusManager.NS_IFOCUSMANAGER_10_IID, result);
+				serviceManager.Release ();
+
+				if (rc == XPCOM.NS_OK && result[0] != 0) {
+					nsIFocusManager focusManager = new nsIFocusManager (result[0]);
+					result[0] = 0;
+					rc = focusManager.GetFocusedElement (result);
+					focusManager.Release ();
+					event.doit = result[0] == 0;
+					if (rc == XPCOM.NS_OK && result[0] != 0) {
+						new nsISupports (result[0]).Release ();
+					}
+				}
+			}
+		});
+	}
 }
 
 void onDispose (int /*long*/ embedHandle) {
