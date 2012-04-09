@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
 	Browser browser;
+	int embedHandle;
 	Listener listener;
 	boolean hasFocus;
 	static Callback Callback3;
@@ -187,7 +188,7 @@ int createBaseWindow (nsIBaseWindow baseWindow) {
 }
 
 int getHandle () {
-    int embedHandle = Cocoa.objc_msgSend (Cocoa.C_NSImageView, Cocoa.S_alloc);
+    embedHandle = Cocoa.objc_msgSend (Cocoa.C_NSImageView, Cocoa.S_alloc);
 	if (embedHandle == 0) {
 		browser.dispose ();
 		SWT.error (SWT.ERROR_NO_HANDLES);
