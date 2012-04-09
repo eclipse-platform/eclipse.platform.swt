@@ -257,6 +257,10 @@ int getHandle () {
 	return embedHandle;
 }
 
+int /*long*/ getSiteWindow () {
+	return embedHandle;
+}
+
 void handleFocus () {
 	if (hasFocus) return;
 	hasFocus = true;

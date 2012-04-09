@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.util.*;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.internal.Callback;
@@ -19,6 +21,7 @@ import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
 	Browser browser;
+	Vector childWindows = new Vector (9);
 	static int /*long*/ MozillaProc;
 	static Callback SubclassProc;
 	
@@ -131,6 +134,33 @@ int /*long*/ getHandle () {
 	return browser.handle;
 }
 
+int /*long*/ getSiteWindow () {
+	/*
+	* As of XULRunner 4, XULRunner's printing facilities on Windows destroy
+	* the HWND that is returned from here once the print dialog is dismissed
+	* (originating bug: https://bugzilla.mozilla.org/show_bug.cgi?id=588735 ).
+	* For this scenario it is now expected that the handle that is returned
+	* here is a child of the browser handle, not the browser handle itself.
+	*
+	* The other scenario that requests this handle is the Mozilla.getBrowser()
+	* implementation.  This method's GetSiteWindow() invocation is surrounded
+	* by boolean flags to help differentiate it from the printing scenario,
+	* since Mozilla.getBrowser() does not destroy the handle it receives back.
+	*
+	* All children that are created here are stored and then destroyed once
+	* the current page is left.  This is guard code that should only be needed
+	* if Mozilla.getSiteWindow() is ever invoked by a path other than one of
+	* the two described above. 
+	*/
+	if (Mozilla.IsPre_4 || Mozilla.IsGettingSiteWindow) {
+		return getHandle ();
+	}
+
+	Composite child = new Composite (browser, SWT.NONE);
+	childWindows.addElement (child);
+	return child.handle;
+}
+
 void handleFocus () {
 }
 
@@ -176,11 +206,23 @@ void init () {
 				}
 			}
 		});
+
+		/* children created in getSiteHandle() should be destroyed whenever a page is left */
+		browser.addLocationListener (new LocationAdapter () {
+			public void changing (LocationEvent event) {
+				Enumeration enumeration = childWindows.elements ();
+				while (enumeration.hasMoreElements ()) {
+					((Composite)enumeration.nextElement ()).dispose ();
+				}
+				childWindows.clear ();
+			}
+		});
 	}
 }
 
 void onDispose (int /*long*/ embedHandle) {
 	removeWindowSubclass ();
+	childWindows = null;
 	browser = null;
 }
 

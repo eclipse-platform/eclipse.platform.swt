@@ -63,6 +63,7 @@ class Mozilla extends WebBrowser {
 	static Hashtable AllFunctions = new Hashtable ();
 	static Listener DisplayListener;
 	static boolean Initialized, IsPre_1_8, IsPre_1_9, IsPre_4, IsXULRunner, PerformedVersionCheck, XPCOMWasGlued, XPCOMInitWasGlued;
+	static boolean IsGettingSiteWindow;
 	static String MozillaPath;
 	static String oldProxyHostFTP, oldProxyHostHTTP, oldProxyHostSSL;
 	static int oldProxyPortFTP = -1, oldProxyPortHTTP = -1, oldProxyPortSSL = -1, oldProxyType = -1;
@@ -1464,7 +1465,9 @@ static Browser getBrowser (int /*long*/ aDOMWindow) {
 
 	nsIEmbeddingSiteWindow embeddingSiteWindow = new nsIEmbeddingSiteWindow (result[0]);
 	result[0] = 0;
+	IsGettingSiteWindow = true;
 	rc = embeddingSiteWindow.GetSiteWindow (result);
+	IsGettingSiteWindow = false;
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
 	embeddingSiteWindow.Release ();
@@ -4221,15 +4224,16 @@ int SetTitle (int /*long*/ aTitle) {
 
 int GetSiteWindow (int /*long*/ aSiteWindow) {
 	/*
-	* Note.  The handle is expected to be an HWND on Windows and
-	* a GtkWidget* on GTK.  This callback is invoked on Windows
-	* when the javascript window.print is invoked and the print
-	* dialog comes up. If no handle is returned, the print dialog
-	* does not come up on this platform.  
+	* This is expected to be an HWND on Windows, a GtkWidget* on GTK, and
+	* a WindowPtr on OS X.  This callback is invoked on Windows when the
+	* print dialog is to be shown.  If no handle is returned then no print
+	* dialog is shown with XULRunner versions < 4.
 	*/
-	XPCOM.memmove (aSiteWindow, new int /*long*/[] {embedHandle}, C.PTR_SIZEOF);
+
+	int /*long*/ siteWindow = delegate.getSiteWindow ();
+	XPCOM.memmove (aSiteWindow, new int /*long*/[] {siteWindow}, C.PTR_SIZEOF);
 	return XPCOM.NS_OK;     	
-}  
+}
  
 /* nsIWebBrowserChromeFocus */
 

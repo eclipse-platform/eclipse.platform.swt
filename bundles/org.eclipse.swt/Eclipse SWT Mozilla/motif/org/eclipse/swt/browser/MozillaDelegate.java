@@ -20,6 +20,7 @@ class MozillaDelegate {
 	Browser browser;
 	Listener listener;
 	boolean hasFocus;
+	int embedHandle;
 
 	static boolean GtkLoaded, IsLinux;
 	static {
@@ -146,9 +147,13 @@ int getHandle() {
 		});
 	}
 	browser.getShell ().setFocus ();
-	int result = GTK.gtk_plug_new (browser.embeddedHandle);
-	GTK.gtk_widget_show (result);
-	return result;
+	embedHandle = GTK.gtk_plug_new (browser.embeddedHandle);
+	GTK.gtk_widget_show (embedHandle);
+	return embedHandle;
+}
+
+int /*long*/ getSiteWindow () {
+	return embedHandle;
 }
 
 void handleFocus () {

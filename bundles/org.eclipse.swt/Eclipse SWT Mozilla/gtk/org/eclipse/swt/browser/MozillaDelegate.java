@@ -183,6 +183,10 @@ int /*long*/ getHandle () {
 	return embedHandle;
 }
 
+int /*long*/ getSiteWindow () {
+	return embedHandle;
+}
+
 int /*long*/ gtk_event (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/ pointer) {
 	GdkEvent event = new GdkEvent ();
 	OS.memmove (event, gdkEvent, GdkEvent.sizeof);

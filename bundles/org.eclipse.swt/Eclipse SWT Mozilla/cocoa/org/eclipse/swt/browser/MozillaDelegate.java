@@ -142,6 +142,10 @@ int /*long*/ getHandle () {
 	return browser.view.id;
 }
 
+int /*long*/ getSiteWindow () {
+	return browser.view.id;
+}
+
 void handleFocus () {
 	if (hasFocus) return;
 	hasFocus = true;
