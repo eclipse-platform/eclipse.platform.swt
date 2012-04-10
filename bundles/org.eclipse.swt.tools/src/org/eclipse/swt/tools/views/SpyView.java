@@ -23,7 +23,7 @@ import org.eclipse.ui.part.*;
 
 public class SpyView extends ViewPart {
 	private StyledText output;
-	private Action spyAction;
+	private Action spyAction, fullyQualifiedAction;
 	private Listener keyFilter;
 	private Runnable timer;
 	private Control lastControl;
@@ -62,16 +62,19 @@ public class SpyView extends ViewPart {
 				if (control != lastControl) {
 					StringBuffer text = new StringBuffer();
 					if (control != null) {
-						text.append(control+"@"+getOSHandle(control)+"\n");
+						text.append(getName(control)+"@"+getOSHandle(control)+"\n");
 						text.append("\tStyle: "+getStyle(control)+"\n");
-						text.append("\tLayout Data: "+control.getLayoutData()+"\n");
+						text.append("\tLayout Data: "+getName(control.getLayoutData())+"\n");
 						text.append("\tBounds: "+control.getBounds()+"\n");
+						if (control instanceof Composite && ((Composite)control).getLayout() != null) {
+							text.append("\tLayout: "+getName(((Composite)control).getLayout())+"\n");
+						}
 						text.append("\n");
 						if (control instanceof Composite) {
 							text.append("\nChildren:\n");
 							Control[] children = ((Composite)control).getChildren();
 							for (int i = 0; i < children.length; i++) {
-								text.append("\t"+children[i]+"\n");
+								text.append("\t"+getName(children[i])+"\n");
 							}
 						}
 						Composite parent = control.getParent();
@@ -81,8 +84,8 @@ public class SpyView extends ViewPart {
 							for (int i = 0; i < peers.length; i++) {
 								text.append("\t");
 								if (peers[i] == control) text.append("*");
-								text.append(peers[i]+"@"+getOSHandle(peers[i]));
-								text.append(" Layout Data: "+peers[i].getLayoutData());
+								text.append(getName(peers[i])+"@"+getOSHandle(peers[i]));
+								text.append(" Layout Data: "+getName(peers[i].getLayoutData()));
 								text.append(" Bounds: "+peers[i].getBounds());
 								text.append("\n");
 							}
@@ -100,11 +103,11 @@ public class SpyView extends ViewPart {
 								for (int j = 0; j < parents.length - i - 1; j++) {
 									prefix += "\t";
 								}
-								text.append(prefix + parents[i]+"@"+getOSHandle(parents[i])+"\n");
+								text.append(prefix + getName(parents[i])+"@"+getOSHandle(parents[i])+"\n");
 								text.append(prefix+"\t Style: "+getStyle(parents[i])+"\n");
 								text.append(prefix+"\t Bounds: "+parents[i].getBounds()+"\n");
-								text.append(prefix+"\t Layout: "+parents[i].getLayout()+"\n");
-								text.append(prefix+"\t LayoutData: "+parents[i].getLayoutData()+"\n");
+								text.append(prefix+"\t Layout: "+getName(parents[i].getLayout())+"\n");
+								text.append(prefix+"\t LayoutData: "+getName(parents[i].getLayoutData())+"\n");
 							}
 						}
 						Error error = (Error)control.getData("StackTrace");
@@ -125,6 +128,18 @@ public class SpyView extends ViewPart {
 		
 		makeActions();
 		contributeToActionBars();
+	}
+	
+	String getName(Object object) {
+		if (object == null) return "null";
+		String name = object.toString ();
+		if (fullyQualifiedAction.isChecked()) {
+			int index = name.indexOf(' ');
+			if (index >= 0 && name.length() >= 1) {
+				name = object.getClass ().getName () + name.substring(index);
+			}
+		}
+		return name;
 	}
 	
 	/**
@@ -165,6 +180,7 @@ public class SpyView extends ViewPart {
 
 	private void fillLocalPullDown(IMenuManager manager) {
 		manager.add(spyAction);
+		manager.add(fullyQualifiedAction);
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
@@ -172,15 +188,18 @@ public class SpyView extends ViewPart {
 	}
 	
 	private void makeActions() {
-		spyAction = new Action() {
+		spyAction = new Action("Spy", IAction.AS_CHECK_BOX) {
 			public void run() {
 				Display.getCurrent().timerExec(TIMEOUT, timer);
 			}
 		};
-		spyAction.setText("Spy");
 		spyAction.setToolTipText("Toggle Spy (CONTROL+ALT+SHIFT+.)");
 		spyAction.setImageDescriptor(Activator.getImageDescriptor("icons/spy.gif"));
-		spyAction.setChecked(false);
+		
+		fullyQualifiedAction = new Action("Fully Qualify Names", IAction.AS_CHECK_BOX) {
+			public void run() {
+			}
+		};
 	}
 	
 	private String getStyle(Widget w) {
