@@ -7374,19 +7374,6 @@ public static final int /*long*/ gtk_image_new_from_pixbuf(int /*long*/ pixbuf) 
 	}
 }
 /**
- * @param pixmap cast=(GdkPixmap *)
- * @param mask cast=(GdkBitmap *)
- */
-public static final native int /*long*/ _gtk_image_new_from_pixmap(int /*long*/ pixmap, int /*long*/ mask);
-public static final int /*long*/ gtk_image_new_from_pixmap(int /*long*/ pixmap, int /*long*/ mask) {
-	lock.lock();
-	try {
-		return _gtk_image_new_from_pixmap(pixmap, mask);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
  * @param image cast=(GtkImage *)
  * @param pixbuf cast=(GdkPixbuf *)
  */
@@ -7395,20 +7382,6 @@ public static final void gtk_image_set_from_pixbuf(int /*long*/ image, int /*lon
 	lock.lock();
 	try {
 		_gtk_image_set_from_pixbuf(image, pixbuf);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param image cast=(GtkImage *)
- * @param pixmap cast=(GdkBitmap *)
- * @param mask cast=(GdkBitmap *)
- */
-public static final native void _gtk_image_set_from_pixmap(int /*long*/ image, int /*long*/ pixmap, int /*long*/ mask);
-public static final void gtk_image_set_from_pixmap(int /*long*/ image, int /*long*/ pixmap, int /*long*/ mask) {
-	lock.lock();
-	try {
-		_gtk_image_set_from_pixmap(image, pixmap, mask);
 	} finally {
 		lock.unlock();
 	}
@@ -7646,19 +7619,6 @@ public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ ite
 /**
  * @param store cast=(GtkListStore *)
  * @param iter cast=(GtkTreeIter *)
- */
-public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int /*long*/ terminator);
-public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int /*long*/ terminator) {
-	lock.lock();
-	try {
-		_gtk_list_store_set(store, iter, column, value, terminator);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param store cast=(GtkListStore *)
- * @param iter cast=(GtkTreeIter *)
  * @param value flags=no_out
  */
 public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int /*long*/ terminator);
@@ -7722,15 +7682,6 @@ public static final void gtk_main() {
 		lock.unlock();
 	}
 }
-public static final native int _gtk_main_iteration();
-public static final int gtk_main_iteration() {
-	lock.lock();
-	try {
-		return _gtk_main_iteration();
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param event cast=(GdkEvent *) */
 public static final native void _gtk_main_do_event(int /*long*/ event);
 public static final void gtk_main_do_event(int /*long*/ event) {
@@ -7746,16 +7697,6 @@ public static final int /*long*/ gtk_menu_bar_new() {
 	lock.lock();
 	try {
 		return _gtk_menu_bar_new();
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param menu cast=(GtkMenu *) */
-public static final native int /*long*/ _gtk_menu_get_attach_widget(int /*long*/ menu);
-public static final int /*long*/ gtk_menu_get_attach_widget(int /*long*/ menu) {
-	lock.lock();
-	try {
-		return _gtk_menu_get_attach_widget(menu);
 	} finally {
 		lock.unlock();
 	}
@@ -7853,19 +7794,6 @@ public static final void gtk_menu_shell_insert(int /*long*/ menu_shell, int /*lo
 	lock.lock();
 	try {
 		_gtk_menu_shell_insert(menu_shell, child, position);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param menu_shell cast=(GtkMenuShell *)
- * @param menu_item cast=(GtkWidget *)
- */
-public static final native void _gtk_menu_shell_select_item(int /*long*/ menu_shell, int /*long*/ menu_item);
-public static final void gtk_menu_shell_select_item(int /*long*/ menu_shell, int /*long*/ menu_item) {
-	lock.lock();
-	try {
-		_gtk_menu_shell_select_item(menu_shell, menu_item);
 	} finally {
 		lock.unlock();
 	}
@@ -8311,36 +8239,6 @@ public static final void gtk_paint_option(int /*long*/ style, int /*long*/ windo
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)
  */
-public static final native void _gtk_paint_slider(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height, int orientation);
-public static final void gtk_paint_slider(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height, int orientation) {
-	lock.lock();
-	try {
-		_gtk_paint_slider(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height, orientation);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param style cast=(GtkStyle *)
- * @param window cast=(GdkWindow *)
- * @param widget cast=(GtkWidget *)
- * @param detail cast=(const gchar *)
- */
-public static final native void _gtk_paint_tab(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height);
-public static final void gtk_paint_tab(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height) {
-	lock.lock();
-	try {
-		_gtk_paint_tab(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param style cast=(GtkStyle *)
- * @param window cast=(GdkWindow *)
- * @param widget cast=(GtkWidget *)
- * @param detail cast=(const gchar *)
- */
 public static final native void _gtk_paint_arrow(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int arrow_type, boolean fill, int x, int y, int width, int height);
 public static final void gtk_paint_arrow(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int arrow_type, boolean fill, int x, int y, int width, int height) {
 	lock.lock();
@@ -8679,60 +8577,6 @@ public static final int /*long*/ gtk_print_job_new(byte[] title, int /*long*/ pr
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
-public static final native int /*long*/ _gtk_print_job_get_settings(int /*long*/ job);
-public static final int /*long*/ gtk_print_job_get_settings(int /*long*/ job) {
-	lock.lock();
-	try {
-		return _gtk_print_job_get_settings(job);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native int /*long*/ _gtk_print_job_get_printer(int /*long*/ job);
-public static final int /*long*/ gtk_print_job_get_printer(int /*long*/ job) {
-	lock.lock();
-	try {
-		return _gtk_print_job_get_printer(job);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native int /*long*/ _gtk_print_job_get_title(int /*long*/ job);
-public static final int /*long*/ gtk_print_job_get_title(int /*long*/ job) {
-	lock.lock();
-	try {
-		return _gtk_print_job_get_title(job);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native int _gtk_print_job_get_status(int /*long*/ job);
-public static final int gtk_print_job_get_status(int /*long*/ job) {
-	lock.lock();
-	try {
-		return _gtk_print_job_get_status(job);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param filename cast=(const gchar *)
- * @param error cast=(GError **)
- */
-public static final native boolean _gtk_print_job_set_source_file(int /*long*/ job, byte[] filename, int /*long*/ error[]);
-public static final boolean gtk_print_job_set_source_file(int /*long*/ job, byte[] filename, int /*long*/ error[]) {
-	lock.lock();
-	try {
-		return _gtk_print_job_set_source_file(job, filename, error);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @method flags=dynamic
  * @param error cast=(GError **)
@@ -8811,31 +8655,11 @@ public static final void gtk_print_settings_set(int /*long*/ settings, byte [] k
 	}
 }
 /** @method flags=dynamic */
-public static final native int /*long*/ _gtk_print_settings_get_printer(int /*long*/ settings);
-public static final int /*long*/ gtk_print_settings_get_printer(int /*long*/ settings) {
-	lock.lock();
-	try {
-		return _gtk_print_settings_get_printer(settings);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
 public static final native void _gtk_print_settings_set_printer(int /*long*/ settings, byte[] printer);
 public static final void gtk_print_settings_set_printer(int /*long*/ settings, byte[] printer) {
 	lock.lock();
 	try {
 		_gtk_print_settings_set_printer(settings, printer);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native int _gtk_print_settings_get_orientation(int /*long*/ settings);
-public static final int gtk_print_settings_get_orientation(int /*long*/ settings) {
-	lock.lock();
-	try {
-		return _gtk_print_settings_get_orientation(settings);
 	} finally {
 		lock.unlock();
 	}
@@ -8958,26 +8782,6 @@ public static final void gtk_print_settings_set_page_ranges(int /*long*/ setting
 	lock.lock();
 	try {
 		_gtk_print_settings_set_page_ranges(settings, page_ranges, num_ranges);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native double _gtk_print_settings_get_paper_width(int /*long*/ settings, int unit);
-public static final double gtk_print_settings_get_paper_width(int /*long*/ settings, int unit) {
-	lock.lock();
-	try {
-		return _gtk_print_settings_get_paper_width(settings, unit);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native double _gtk_print_settings_get_paper_height(int /*long*/ settings, int unit);
-public static final double gtk_print_settings_get_paper_height(int /*long*/ settings, int unit) {
-	lock.lock();
-	try {
-		return _gtk_print_settings_get_paper_height(settings, unit);
 	} finally {
 		lock.unlock();
 	}
@@ -9457,19 +9261,6 @@ public static final int /*long*/ gtk_scrolled_window_new(int /*long*/ hadjustmen
 	lock.lock();
 	try {
 		return _gtk_scrolled_window_new(hadjustment, vadjustment);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param scrolled_window cast=(GtkScrolledWindow *)
- * @param placement cast=(GtkCornerType)
- */
-public static final native void _gtk_scrolled_window_set_placement(int /*long*/ scrolled_window, int placement);
-public static final void gtk_scrolled_window_set_placement(int /*long*/ scrolled_window, int placement) {
-	lock.lock();
-	try {
-		_gtk_scrolled_window_set_placement(scrolled_window, placement);
 	} finally {
 		lock.unlock();
 	}
@@ -10116,16 +9907,6 @@ public static final void gtk_text_buffer_get_bounds(int /*long*/ buffer, byte[] 
 		lock.unlock();
 	}
 }
-/** @param buffer cast=(GtkTextBuffer *) */
-public static final native int _gtk_text_buffer_get_char_count(int /*long*/ buffer);
-public static final int gtk_text_buffer_get_char_count(int /*long*/ buffer) {
-	lock.lock();
-	try {
-		return _gtk_text_buffer_get_char_count(buffer);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @param buffer cast=(GtkTextBuffer *)
  * @param iter cast=(GtkTextIter *)
@@ -10539,23 +10320,6 @@ public static final void gtk_text_view_set_wrap_mode(int /*long*/ text_view, int
 	}
 }
 /**
- * @param text_view cast=(GtkTextView *)
- * @param win cast=(GtkTextWindowType)
- * @param window_x cast=(gint)
- * @param window_y cast=(gint)
- * @param buffer_x cast=(gint *)
- * @param buffer_y cast=(gint *)
- */
-public static final native void _gtk_text_view_window_to_buffer_coords(int /*long*/ text_view, int win, int window_x, int window_y, int[] buffer_x, int[] buffer_y);
-public static final void gtk_text_view_window_to_buffer_coords(int /*long*/ text_view,  int win, int window_x, int window_y, int[] buffer_x, int[] buffer_y) {
-	lock.lock();
-	try {
-		_gtk_text_view_window_to_buffer_coords(text_view, win, window_x, window_y, buffer_x, buffer_y);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
  * @param interval cast=(guint32)
  * @param function cast=(GSourceFunc)
  * @param data cast=(gpointer)
@@ -10584,16 +10348,6 @@ public static final int /*long*/ gtk_toggle_button_new() {
 	lock.lock();
 	try {
 		return _gtk_toggle_button_new();
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param toggle_button cast=(GtkToggleButton *) */
-public static final native boolean _gtk_toggle_button_get_inconsistent(int /*long*/ toggle_button);
-public static final boolean gtk_toggle_button_get_inconsistent(int /*long*/ toggle_button) {
-	lock.lock();
-	try {
-		return _gtk_toggle_button_get_inconsistent(toggle_button);
 	} finally {
 		lock.unlock();
 	}
@@ -10922,19 +10676,6 @@ public static final void gtk_tree_model_get(int /*long*/ tree_model, int /*long*
 /**
  * @param tree_model cast=(GtkTreeModel *)
  * @param iter cast=(GtkTreeIter *)
- */
-public static final native void _gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, long[] value, int /*long*/ terminator);
-public static final void gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, long[] value, int /*long*/ terminator) {
-	lock.lock();
-	try {
-		_gtk_tree_model_get(tree_model, iter, column, value, terminator);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param tree_model cast=(GtkTreeModel *)
- * @param iter cast=(GtkTreeIter *)
  * @param path cast=(GtkTreePath *)
  */
 public static final native boolean _gtk_tree_model_get_iter(int /*long*/ tree_model, int /*long*/ iter, int /*long*/ path);
@@ -11069,16 +10810,6 @@ public static final int /*long*/ gtk_tree_path_compare(int /*long*/ a, int /*lon
 	}
 }
 /** @param path cast=(GtkTreePath *) */
-public static final native void _gtk_tree_path_down(int /*long*/ path);
-public static final void gtk_tree_path_down(int /*long*/ path) {
-	lock.lock();
-	try {
-		 _gtk_tree_path_down(path);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param path cast=(GtkTreePath *) */
 public static final native void _gtk_tree_path_free(int /*long*/ path);
 public static final void gtk_tree_path_free(int /*long*/ path) {
 	lock.lock();
@@ -11113,15 +10844,6 @@ public static final int /*long*/ gtk_tree_path_new() {
 	lock.lock();
 	try {
 		return _gtk_tree_path_new();
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native int /*long*/ _gtk_tree_path_new_first();
-public static final int /*long*/ gtk_tree_path_new_first() {
-	lock.lock();
-	try {
-		return _gtk_tree_path_new_first();
 	} finally {
 		lock.unlock();
 	}
@@ -11190,20 +10912,6 @@ public static final int gtk_tree_selection_count_selected_rows(int /*long*/ sele
 	}
 }
 /**
- * @param selection cast=(GtkTreeSelection *)
- * @param model cast=(GtkTreeModel **)
- * @param iter cast=(GtkTreeIter *)
- */
-public static final native boolean _gtk_tree_selection_get_selected(int /*long*/ selection, int /*long*/[] model, int /*long*/ iter);
-public static final boolean gtk_tree_selection_get_selected(int /*long*/ selection, int /*long*/[] model, int /*long*/ iter) {
-	lock.lock();
-	try {
-		return _gtk_tree_selection_get_selected(selection, model, iter);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
  * @method flags=dynamic
  * @param selection cast=(GtkTreeSelection *)
  * @param model cast=(GtkTreeModel **)
@@ -11249,20 +10957,6 @@ public static final void gtk_tree_selection_select_iter(int /*long*/ selection, 
 	lock.lock();
 	try {
 		_gtk_tree_selection_select_iter(selection, iter);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param selection cast=(GtkTreeSelection *)
- * @param func cast=(GtkTreeSelectionForeachFunc)
- * @param data cast=(gpointer)
- */
-public static final native void _gtk_tree_selection_selected_foreach(int /*long*/ selection, int /*long*/ func, int /*long*/ data);
-public static final void gtk_tree_selection_selected_foreach(int /*long*/ selection, int /*long*/ func, int /*long*/ data) {
-	lock.lock();
-	try {
-		_gtk_tree_selection_selected_foreach(selection, func, data);
 	} finally {
 		lock.unlock();
 	}
@@ -11384,19 +11078,6 @@ public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ ite
  */
 public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int /*long*/ terminator);
 public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int /*long*/ terminator) {
-	lock.lock();
-	try {
-		_gtk_tree_store_set(store, iter, column, value, terminator);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param store cast=(GtkTreeStore *)
- * @param iter cast=(GtkTreeIter *)
- */
-public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int /*long*/ terminator);
-public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_gtk_tree_store_set(store, iter, column, value, terminator);
@@ -11572,52 +11253,12 @@ public static final boolean gtk_tree_view_column_get_resizable(int /*long*/ colu
 		lock.unlock();
 	}
 }
-/** @param tree_column cast=(GtkTreeViewColumn *) */
-public static final native int _gtk_tree_view_column_get_sizing(int /*long*/ tree_column);
-public static final int gtk_tree_view_column_get_sizing(int /*long*/ tree_column) {
-	lock.lock();
-	try {
-		return _gtk_tree_view_column_get_sizing(tree_column);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param tree_column cast=(GtkTreeViewColumn *) */
-public static final native int _gtk_tree_view_column_get_spacing(int /*long*/ tree_column);
-public static final int gtk_tree_view_column_get_spacing(int /*long*/ tree_column) {
-	lock.lock();
-	try {
-		return _gtk_tree_view_column_get_spacing(tree_column);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param column cast=(GtkTreeViewColumn *) */
 public static final native boolean _gtk_tree_view_column_get_visible(int /*long*/ column);
 public static final boolean gtk_tree_view_column_get_visible(int /*long*/ column) {
 	lock.lock();
 	try {
 		return _gtk_tree_view_column_get_visible(column);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param tree_column cast=(GtkTreeViewColumn *) */
-public static final native boolean _gtk_tree_view_column_get_sort_indicator(int /*long*/ tree_column);
-public static final boolean gtk_tree_view_column_get_sort_indicator(int /*long*/ tree_column) {
-	lock.lock();
-	try {
-		return _gtk_tree_view_column_get_sort_indicator(tree_column);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param tree_column cast=(GtkTreeViewColumn *) */
-public static final native int _gtk_tree_view_column_get_sort_order(int /*long*/ tree_column);
-public static final int gtk_tree_view_column_get_sort_order(int /*long*/ tree_column) {
-	lock.lock();
-	try {
-		return _gtk_tree_view_column_get_sort_order(tree_column);
 	} finally {
 		lock.unlock();
 	}
@@ -11795,19 +11436,6 @@ public static final void gtk_tree_view_column_set_sort_order(int /*long*/ tree_c
 	lock.lock();
 	try {
 		_gtk_tree_view_column_set_sort_order(tree_column, order);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param tree_column cast=(GtkTreeViewColumn *)
- * @param title cast=(const gchar *)
- */
-public static final native void _gtk_tree_view_column_set_title(int /*long*/ tree_column, byte[] title);
-public static final void gtk_tree_view_column_set_title(int /*long*/ tree_column, byte[] title) {
-	lock.lock();
-	try {
-		_gtk_tree_view_column_set_title(tree_column, title);
 	} finally {
 		lock.unlock();
 	}
@@ -12240,16 +11868,6 @@ public static final int /*long*/ gtk_vbox_new(boolean homogeneous, int spacing) 
 		lock.unlock();
 	}
 }
-/** @param viewport cast=(GtkViewport *) */
-public static final native int _gtk_viewport_get_shadow_type(int /*long*/ viewport);
-public static final int gtk_viewport_get_shadow_type(int /*long*/ viewport) {
-	lock.lock();
-	try {
-		return _gtk_viewport_get_shadow_type(viewport);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @param viewport cast=(GtkViewport *)
  * @param type cast=(GtkShadowType)
@@ -12400,30 +12018,11 @@ public static final boolean gtk_widget_get_child_visible (int /*long*/ widget) {
 		lock.unlock();
 	}
 }
-public static final native int _gtk_widget_get_default_direction();
-public static final int gtk_widget_get_default_direction() {
-	lock.lock();
-	try {
-		return _gtk_widget_get_default_direction();
-	} finally {
-		lock.unlock();
-	}
-}
 public static final native int /*long*/ _gtk_widget_get_default_style();
 public static final int /*long*/ gtk_widget_get_default_style() {
 	lock.lock();
 	try {
 		return _gtk_widget_get_default_style();
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param widget cast=(GtkWidget *) */
-public static final native int _gtk_widget_get_direction(int /*long*/ widget);
-public static final int gtk_widget_get_direction(int /*long*/ widget) {
-	lock.lock();
-	try {
-		return _gtk_widget_get_direction(widget);
 	} finally {
 		lock.unlock();
 	}
@@ -12618,20 +12217,6 @@ public static final void gtk_widget_modify_bg(int /*long*/ widget, int state, Gd
 }
 /**
  * @param widget cast=(GtkWidget *)
- * @param state cast=(GtkStateType)
- * @param color cast=(GdkColor *),flags=no_out
- */
-public static final native void _gtk_widget_modify_fg(int /*long*/ widget, int state, GdkColor color);
-public static final void gtk_widget_modify_fg(int /*long*/ widget, int state, GdkColor color) {
-	lock.lock();
-	try {
-		_gtk_widget_modify_fg(widget, state, color);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param widget cast=(GtkWidget *)
  * @param pango_font_descr cast=(PangoFontDescription *)
  */
 public static final native void _gtk_widget_modify_font(int /*long*/ widget, int /*long*/ pango_font_descr);
@@ -12652,20 +12237,6 @@ public static final void gtk_widget_modify_style(int /*long*/ widget, int /*long
 	lock.lock();
 	try {
 		_gtk_widget_modify_style(widget, style);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param widget cast=(GtkWidget *)
- * @param state cast=(GtkStateType)
- * @param color cast=(GdkColor *),flags=no_out
- */
-public static final native void _gtk_widget_modify_text(int /*long*/ widget, int state, GdkColor color);
-public static final void gtk_widget_modify_text(int /*long*/ widget, int state, GdkColor color) {
-	lock.lock();
-	try {
-		_gtk_widget_modify_text(widget, state, color);
 	} finally {
 		lock.unlock();
 	}
@@ -12843,50 +12414,12 @@ public static final void gtk_widget_set_state(int /*long*/ widget, int state) {
 		lock.unlock();
 	}
 }
-/**
- * @param widget cast=(GtkWidget *)
- * @param style cast=(GtkStyle *)
- */
-public static final native void _gtk_widget_set_style(int /*long*/ widget, int /*long*/ style);
-public static final void gtk_widget_set_style(int /*long*/ widget, int /*long*/ style) {
-	lock.lock();
-	try {
-		_gtk_widget_set_style(widget, style);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param widget cast=(GtkWidget *)
- * @param shape_mask cast=(GdkBitmap *)
- * @param offset_x cast=(gint)
- * @param offset_y cast=(gint)
- */
-public static final native void _gtk_widget_shape_combine_mask(int /*long*/ widget, int /*long*/ shape_mask, int offset_x, int offset_y);
-public static final void gtk_widget_shape_combine_mask(int /*long*/ widget, int /*long*/ shape_mask, int offset_x, int offset_y) {
-	lock.lock();
-	try {
-		_gtk_widget_shape_combine_mask(widget, shape_mask, offset_x, offset_y);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param widget cast=(GtkWidget *) */
 public static final native void _gtk_widget_show(int /*long*/ widget);
 public static final void gtk_widget_show(int /*long*/ widget) {
 	lock.lock();
 	try {
 		_gtk_widget_show(widget);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param widget cast=(GtkWidget *) */
-public static final native void _gtk_widget_show_now(int /*long*/ widget);
-public static final void gtk_widget_show_now(int /*long*/ widget) {
-	lock.lock();
-	try {
-		_gtk_widget_show_now(widget);
 	} finally {
 		lock.unlock();
 	}
@@ -12932,20 +12465,6 @@ public static final void gtk_widget_style_get(int /*long*/ widget, byte[] proper
 	}
 }
 /**
- * @param widget cast=(GtkWidget *)
- * @param property_name cast=(const gchar *)
- * @param terminator cast=(const gchar *),flags=sentinel
- */
-public static final native void _gtk_widget_style_get(int /*long*/ widget, byte[] property_name, long[] value, int /*long*/ terminator);
-public static final void gtk_widget_style_get(int /*long*/ widget, byte[] property_name, long[] value, int /*long*/ terminator) {
-	lock.lock();
-	try {
-		_gtk_widget_style_get(widget, property_name, value, terminator);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
  * @param src_widget cast=(GtkWidget *)
  * @param dest_widget cast=(GtkWidget *)
  */
@@ -12954,16 +12473,6 @@ public static final boolean gtk_widget_translate_coordinates(int /*long*/ src_wi
 	lock.lock();
 	try {
 		return _gtk_widget_translate_coordinates(src_widget, dest_widget, src_x, src_y, dest_x, dest_y);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param widget cast=(GtkWidget *) */
-public static final native void _gtk_widget_unrealize(int /*long*/ widget);
-public static final void gtk_widget_unrealize(int /*long*/ widget) {
-	lock.lock();
-	try {
-		_gtk_widget_unrealize(widget);
 	} finally {
 		lock.unlock();
 	}
@@ -13077,20 +12586,6 @@ public static final void gtk_window_get_position(int /*long*/ handle, int[] x, i
 	lock.lock();
 	try {
 		_gtk_window_get_position(handle, x, y);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param handle cast=(GtkWindow *)
- * @param x cast=(gint *)
- * @param y cast=(gint *)
- */
-public static final native void _gtk_window_get_size(int /*long*/ handle, int[] x, int[] y);
-public static final void gtk_window_get_size(int /*long*/ handle, int[] x, int[] y) {
-	lock.lock();
-	try {
-		_gtk_window_get_size(handle, x, y);
 	} finally {
 		lock.unlock();
 	}
@@ -13213,16 +12708,6 @@ public static final int /*long*/ gtk_window_new(int type) {
 		lock.unlock();
 	}
 }
-/** @param window cast=(GtkWindow *) */
-public static final native void _gtk_window_present(int /*long*/ window);
-public static final void gtk_window_present(int /*long*/ window) {
-	lock.lock();
-	try {
-		_gtk_window_present(window);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @param window cast=(GtkWindow *)
  * @param accel_group cast=(GtkAccelGroup *)
@@ -13272,20 +12757,6 @@ public static final void gtk_window_set_destroy_with_parent(int /*long*/ window,
 	lock.lock();
 	try {
 		_gtk_window_set_destroy_with_parent(window, setting);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param window cast=(GtkWindow *)
- * @param setting cast=(gboolean)
- */
-public static final native void _gtk_window_set_keep_below(int /*long*/ window, boolean setting);
-public static final void gtk_window_set_keep_below(int /*long*/ window,  boolean setting) {
-	lock.lock();
-	try {
-		_gtk_window_set_keep_below(window, setting);
 	} finally {
 		lock.unlock();
 	}
