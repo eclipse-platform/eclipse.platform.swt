@@ -11,7 +11,9 @@
 
 @echo off
 
+#IF EXIST C:\BUILD\swt-builddir set SWT_BUILDDIR=C:\BUILD\swt-builddir
 IF x.%SWT_BUILDDIR%==x. set SWT_BUILDDIR=S:\swt-builddir
+echo SWT build dir: %SWT_BUILDDIR%
 IF x.%MSSDK%==x. set MSSDK="%SWT_BUILDDIR%\MSSDKs\Windows Server 2003 SP1 SDK"
 
 IF x.%1==x.x86 GOTO X86

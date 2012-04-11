@@ -12,23 +12,27 @@ rem ****************************************************************************
 
 @echo off
 
+IF EXIST C:\BUILD\swt-builddir set SWT_BUILDDIR=C:\BUILD\swt-builddir
+IF x.%SWT_BUILDDIR%==x. set SWT_BUILDDIR=S:\swt-builddir
+echo SWT build dir: %SWT_BUILDDIR%
+
 IF NOT "%JAVA_HOME%"=="" GOTO MAKE
 
 rem *****
 rem Javah
 rem *****
-set JAVA_HOME=s:\swt-builddir\ive\bin
+set JAVA_HOME=%SWT_BUILDDIR%\ive\bin
 set path=%JAVA_HOME%;%path%
 
 rem ********
 rem MSVC 6.0
 rem ********
-call S:\swt-builddir\MSVCs\msvc60\vc98\bin\vcvars32.bat
+call %SWT_BUILDDIR%\MSVCs\msvc60\vc98\bin\vcvars32.bat
 
 rem *****************
 rem MS-SDK WinCE
 rem *****************
-set WCEROOT=S:\swt-builddir\MSSDKs\wince.sdk
+set WCEROOT=%SWT_BUILDDIR%\MSSDKs\wince.sdk
 
 rem **********************************************************
 rem By default, build library for ARM Pocket PC
