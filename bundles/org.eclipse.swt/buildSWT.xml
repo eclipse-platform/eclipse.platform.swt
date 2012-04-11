@@ -53,10 +53,12 @@
 	<property name="file_swt_map" value="org.eclipse.releng/maps/swt.map"/>
 
 	<target name="check_libraries" depends="get_version">
+		<!-- Carbon is not being built
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="5"/>
 			<param name="fragment" value="org.eclipse.swt.carbon.macosx"/>
 		</antcall>
+		-->
 		<antcall target="check_fragment_libraries">
 			<param name="library_count" value="4"/>
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx"/>
@@ -159,12 +161,13 @@
 	<target name="check_fragment_libraries" depends="get_version">
 		<echo>Checking ${fragment}</echo>
 		<property name="checkdir" value="~/build/check_libraries"/>
-		<property name="library_count" value="125"/>
+		<property name="library_count" value="120"/>
 		<property name="fragment" value=""/>
 		<fileset id="match" dir="${repo.bin}/bundles/${fragment}">
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
 			<filename regex="${swt_version}."/>
 			<exclude name="**/.git/**"/>
+			<exclude name="**/org.eclipse.swt.carbon.macosx/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.hpux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.motif.aix.ppc/**"/>
@@ -179,6 +182,7 @@
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
 			<filename regex="${swt_version}." negate="true"/>
 			<exclude name="**/.git/**"/>
+			<exclude name="**/org.eclipse.swt.carbon.macosx/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.hpux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.motif.aix.ppc/**"/>
@@ -443,9 +447,11 @@
 		</antcall>
 		
 		<!-- 32 bit -->
+		<!-- Not building carbon
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_carbon"/>
 		</antcall>
+		-->
 		<antcall target="build_classes">
 			<param name="cp" value=".classpath_cocoa"/>
 		</antcall>
@@ -799,6 +805,7 @@
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
 			<filename regex="${swt_version}." negate="true"/>
 			<exclude name="**/.git/**"/>
+			<exclude name="**/org.eclipse.swt.carbon.macosx/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.hpux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.motif.aix.ppc/**"/>
@@ -824,6 +831,7 @@
 			<include name="bundles/*/*xulrunner-fix*"/>
 			<exclude name="**/.git/**"/>
 			<exclude name="**/tmpdir/**"/>
+			<exclude name="**/org.eclipse.swt.carbon.macosx/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.hpux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.gtk.linux.ia64/**"/>
 			<exclude name="**/org.eclipse.swt.motif.aix.ppc/**"/>
