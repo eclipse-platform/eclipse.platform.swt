@@ -19533,30 +19533,6 @@ fail:
 }
 #endif
 
-#if (!defined(NO_memmove__ILorg_eclipse_swt_internal_gtk_XCrossingEvent_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_gtk_XCrossingEvent_2J) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XCrossingEvent_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_gtk_XCrossingEvent_2J)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
-#endif
-{
-	XCrossingEvent _arg1, *lparg1=NULL;
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XCrossingEvent_2I_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_gtk_XCrossingEvent_2J_FUNC);
-#endif
-	if (arg1) if ((lparg1 = getXCrossingEventFields(env, arg1, &_arg1)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XCrossingEvent_2I_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_gtk_XCrossingEvent_2J_FUNC);
-#endif
-}
-#endif
-
 #if (!defined(NO_memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_gtk_XExposeEvent_2J) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
@@ -19577,30 +19553,6 @@ fail:
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_gtk_XExposeEvent_2J_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO_memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2J) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2J)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
-#endif
-{
-	XFocusChangeEvent _arg1, *lparg1=NULL;
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2J_FUNC);
-#endif
-	if (arg1) if ((lparg1 = getXFocusChangeEventFields(env, arg1, &_arg1)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2J_FUNC);
 #endif
 }
 #endif
@@ -20415,31 +20367,6 @@ fail:
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2II_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2JJ_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2JJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2JJ)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
-#endif
-{
-	XCrossingEvent _arg0, *lparg0=NULL;
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2JJ_FUNC);
-#endif
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) setXCrossingEventFields(env, arg0, lparg0);
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2JJ_FUNC);
 #endif
 }
 #endif

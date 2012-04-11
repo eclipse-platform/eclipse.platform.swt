@@ -1269,25 +1269,7 @@ public static final native void memmove(int /*long*/ dest, XClientMessageEvent s
  * @param src cast=(const void *),flags=no_out
  * @param size cast=(size_t)
  */
-public static final native void memmove(int /*long*/ dest, XCrossingEvent src, int /*long*/ size);
-/**
- * @param dest cast=(void *)
- * @param src cast=(const void *),flags=no_out
- * @param size cast=(size_t)
- */
 public static final native void memmove(int /*long*/ dest, XExposeEvent src, int /*long*/ size);
-/**
- * @param dest cast=(void *)
- * @param src cast=(const void *),flags=no_out
- * @param size cast=(size_t)
- */
-public static final native void memmove(int /*long*/ dest, XFocusChangeEvent src, int /*long*/ size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
-public static final native void memmove(XCrossingEvent dest, int /*long*/ src, int /*long*/ size);
 /**
  * @param dest cast=(void *),flags=no_in
  * @param src cast=(const void *)

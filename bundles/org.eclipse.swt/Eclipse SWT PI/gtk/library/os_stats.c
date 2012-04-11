@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1400;
-int OS_nativeFunctionCallCount[1400];
+int OS_nativeFunctionCount = 1397;
+int OS_nativeFunctionCallCount[1397];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -1586,19 +1586,9 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__JLorg_eclipse_swt_internal_gtk_XClientMessageEvent_2J",
 #endif
 #ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_gtk_XCrossingEvent_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_XCrossingEvent_2J",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I",
 #else
 	"memmove__JLorg_eclipse_swt_internal_gtk_XExposeEvent_2J",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2J",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GObjectClass_2I",
@@ -1769,11 +1759,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2JJ",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II",
