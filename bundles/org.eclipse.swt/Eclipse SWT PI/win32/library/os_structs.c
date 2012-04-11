@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1822,9 +1822,9 @@ void cacheDTTOPTSFields(JNIEnv *env, jobject lpObject)
 	DTTOPTSFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	DTTOPTSFc.dwSize = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "dwSize", "I");
 	DTTOPTSFc.dwFlags = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "dwFlags", "I");
-	DTTOPTSFc.crText = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "crText", I_J);
-	DTTOPTSFc.crBorder = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "crBorder", I_J);
-	DTTOPTSFc.crShadow = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "crShadow", I_J);
+	DTTOPTSFc.crText = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "crText", "I");
+	DTTOPTSFc.crBorder = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "crBorder", "I");
+	DTTOPTSFc.crShadow = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "crShadow", "I");
 	DTTOPTSFc.iTextShadowType = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "iTextShadowType", "I");
 	DTTOPTSFc.ptShadowOffset = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "ptShadowOffset", "Lorg/eclipse/swt/internal/win32/POINT;");
 	DTTOPTSFc.iBorderSize = (*env)->GetFieldID(env, DTTOPTSFc.clazz, "iBorderSize", "I");
@@ -1843,9 +1843,9 @@ DTTOPTS *getDTTOPTSFields(JNIEnv *env, jobject lpObject, DTTOPTS *lpStruct)
 	if (!DTTOPTSFc.cached) cacheDTTOPTSFields(env, lpObject);
 	lpStruct->dwSize = (*env)->GetIntField(env, lpObject, DTTOPTSFc.dwSize);
 	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, DTTOPTSFc.dwFlags);
-	lpStruct->crText = (*env)->GetIntLongField(env, lpObject, DTTOPTSFc.crText);
-	lpStruct->crBorder = (*env)->GetIntLongField(env, lpObject, DTTOPTSFc.crBorder);
-	lpStruct->crShadow = (*env)->GetIntLongField(env, lpObject, DTTOPTSFc.crShadow);
+	lpStruct->crText = (*env)->GetIntField(env, lpObject, DTTOPTSFc.crText);
+	lpStruct->crBorder = (*env)->GetIntField(env, lpObject, DTTOPTSFc.crBorder);
+	lpStruct->crShadow = (*env)->GetIntField(env, lpObject, DTTOPTSFc.crShadow);
 	lpStruct->iTextShadowType = (*env)->GetIntField(env, lpObject, DTTOPTSFc.iTextShadowType);
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, DTTOPTSFc.ptShadowOffset);
@@ -1867,9 +1867,9 @@ void setDTTOPTSFields(JNIEnv *env, jobject lpObject, DTTOPTS *lpStruct)
 	if (!DTTOPTSFc.cached) cacheDTTOPTSFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, DTTOPTSFc.dwSize, (jint)lpStruct->dwSize);
 	(*env)->SetIntField(env, lpObject, DTTOPTSFc.dwFlags, (jint)lpStruct->dwFlags);
-	(*env)->SetIntLongField(env, lpObject, DTTOPTSFc.crText, (jintLong)lpStruct->crText);
-	(*env)->SetIntLongField(env, lpObject, DTTOPTSFc.crBorder, (jintLong)lpStruct->crBorder);
-	(*env)->SetIntLongField(env, lpObject, DTTOPTSFc.crShadow, (jintLong)lpStruct->crShadow);
+	(*env)->SetIntField(env, lpObject, DTTOPTSFc.crText, (jint)lpStruct->crText);
+	(*env)->SetIntField(env, lpObject, DTTOPTSFc.crBorder, (jint)lpStruct->crBorder);
+	(*env)->SetIntField(env, lpObject, DTTOPTSFc.crShadow, (jint)lpStruct->crShadow);
 	(*env)->SetIntField(env, lpObject, DTTOPTSFc.iTextShadowType, (jint)lpStruct->iTextShadowType);
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, DTTOPTSFc.ptShadowOffset);
