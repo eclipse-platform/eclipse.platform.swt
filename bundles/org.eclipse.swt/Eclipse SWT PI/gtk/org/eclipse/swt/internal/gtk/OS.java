@@ -823,35 +823,6 @@ public static final int /*long*/ GDK_PIXMAP_XID(int /*long*/ pixmap) {
 }
 /**
  * @param display cast=(Display *)
- * @param event_mask cast=(long)
- * @param event_return cast=(XEvent *)
- */
-public static final native boolean _XCheckMaskEvent(int /*long*/ display, int /*long*/ event_mask, int /*long*/ event_return);
-public static final boolean XCheckMaskEvent(int /*long*/ display, int /*long*/ event_mask, int /*long*/ event_return) {
-	lock.lock();
-	try {
-		return _XCheckMaskEvent(display, event_mask, event_return);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param display cast=(Display *)
- * @param window cast=(Window)
- * @param event_mask cast=(long)
- * @param event_return cast=(XEvent *)
- */
-public static final native boolean _XCheckWindowEvent(int /*long*/ display, int /*long*/ window, int /*long*/ event_mask, int /*long*/ event_return);
-public static final boolean XCheckWindowEvent(int /*long*/ display, int /*long*/ window, int /*long*/ event_mask, int /*long*/ event_return) {
-	lock.lock();
-	try {
-		return _XCheckWindowEvent(display, window, event_mask, event_return);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param display cast=(Display *)
  * @param event_return cast=(XEvent *)
  * @param predicate cast=(Bool (*)())
  * @param arg cast=(XPointer)
@@ -986,23 +957,6 @@ public static final int XQueryPointer(int /*long*/ display, int /*long*/ w, int 
 	lock.lock();
 	try {
 		return _XQueryPointer(display, w, root_return, child_return, root_x_return, root_y_return, win_x_return, win_y_return, mask_return);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param display cast=(Display *)
- * @param w cast=(Window)
- * @param root_return cast=(Window *)
- * @param parent_return cast=(Window *)
- * @param children_return cast=(Window **)
- * @param nchildren_return cast=(unsigned int *)
- */
-public static final native int _XQueryTree(int /*long*/ display, int /*long*/ w, int /*long*/[] root_return, int /*long*/[] parent_return, int /*long*/[] children_return, int[] nchildren_return);
-public static final int XQueryTree(int /*long*/ display, int /*long*/ w, int /*long*/[] root_return, int /*long*/[] parent_return, int /*long*/[] children_return, int[] nchildren_return) {
-	lock.lock();
-	try {
-		return _XQueryTree(display, w, root_return, parent_return, children_return, nchildren_return);
 	} finally {
 		lock.unlock();
 	}

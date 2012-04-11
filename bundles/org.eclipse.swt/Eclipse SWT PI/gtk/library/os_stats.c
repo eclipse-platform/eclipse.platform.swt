@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1405;
-int OS_nativeFunctionCallCount[1405];
+int OS_nativeFunctionCount = 1402;
+int OS_nativeFunctionCallCount[1402];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -180,8 +180,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1PANGO_1TYPE_1FONT_1DESCRIPTION",
 	"_1PANGO_1TYPE_1LAYOUT",
 	"_1XCheckIfEvent",
-	"_1XCheckMaskEvent",
-	"_1XCheckWindowEvent",
 	"_1XDefaultRootWindow",
 	"_1XDefaultScreen",
 	"_1XFlush",
@@ -192,7 +190,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1XKeysymToKeycode",
 	"_1XListProperties",
 	"_1XQueryPointer",
-	"_1XQueryTree",
 	"_1XReconfigureWMWindow",
 	"_1XRenderComposite",
 	"_1XRenderCreatePicture",

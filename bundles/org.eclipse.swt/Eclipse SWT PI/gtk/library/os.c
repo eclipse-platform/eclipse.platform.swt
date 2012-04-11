@@ -17,9 +17,7 @@
 #include "os_structs.h"
 #include "os_stats.h"
 
-#ifndef OS_NATIVE
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_gtk_OS_##func
-#endif
 
 #if (!defined(NO_Call__IIII) && !defined(JNI64)) || (!defined(NO_Call__JJII) && defined(JNI64))
 #ifndef JNI64
@@ -1837,30 +1835,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1XCheckIfEvent)
 }
 #endif
 
-#ifndef NO__1XCheckMaskEvent
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1XCheckMaskEvent)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1XCheckMaskEvent_FUNC);
-	rc = (jboolean)XCheckMaskEvent((Display *)arg0, (long)arg1, (XEvent *)arg2);
-	OS_NATIVE_EXIT(env, that, _1XCheckMaskEvent_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1XCheckWindowEvent
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1XCheckWindowEvent)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1XCheckWindowEvent_FUNC);
-	rc = (jboolean)XCheckWindowEvent((Display *)arg0, (Window)arg1, (long)arg2, (XEvent *)arg3);
-	OS_NATIVE_EXIT(env, that, _1XCheckWindowEvent_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1XDefaultRootWindow
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1XDefaultRootWindow)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -2019,31 +1993,6 @@ fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, _1XQueryPointer_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1XQueryTree
-JNIEXPORT jint JNICALL OS_NATIVE(_1XQueryTree)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2, jintLongArray arg3, jintLongArray arg4, jintArray arg5)
-{
-	jintLong *lparg2=NULL;
-	jintLong *lparg3=NULL;
-	jintLong *lparg4=NULL;
-	jint *lparg5=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1XQueryTree_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = (*env)->GetIntLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	rc = (jint)XQueryTree((Display *)arg0, (Window)arg1, (Window *)lparg2, (Window *)lparg3, (Window **)lparg4, (unsigned int *)lparg5);
-fail:
-	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
-	if (arg4 && lparg4) (*env)->ReleaseIntLongArrayElements(env, arg4, lparg4, 0);
-	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1XQueryTree_FUNC);
 	return rc;
 }
 #endif
