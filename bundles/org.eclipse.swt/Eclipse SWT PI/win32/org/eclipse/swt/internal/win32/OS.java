@@ -4297,6 +4297,8 @@ public static final native boolean GetComboBoxInfo (int /*long*/ hwndCombo, COMB
 public static final native int /*long*/ GetCurrentObject (int /*long*/ hdc, int uObjectType);
 public static final native int GetCurrentProcessId ();
 public static final native int GetCurrentThreadId ();
+/** @method flags=dynamic */
+public static final native int GetCurrentProcessExplicitAppUserModelID(int /*long*/[] AppID);
 public static final native int /*long*/ GetCursor ();
 public static final native boolean GetCursorPos (POINT lpPoint);
 /**

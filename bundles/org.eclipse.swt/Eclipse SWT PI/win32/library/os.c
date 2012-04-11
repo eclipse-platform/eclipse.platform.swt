@@ -4159,6 +4159,30 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(GetCurrentProcess)
 }
 #endif
 
+#ifndef NO_GetCurrentProcessExplicitAppUserModelID
+JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentProcessExplicitAppUserModelID)
+	(JNIEnv *env, jclass that, jintLongArray arg0)
+{
+	jintLong *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetCurrentProcessExplicitAppUserModelID_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetIntLongArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)GetCurrentProcessExplicitAppUserModelID(lparg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, GetCurrentProcessExplicitAppUserModelID)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong *))fp)(lparg0);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseIntLongArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, GetCurrentProcessExplicitAppUserModelID_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetCurrentProcessId
 JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentProcessId)
 	(JNIEnv *env, jclass that)
