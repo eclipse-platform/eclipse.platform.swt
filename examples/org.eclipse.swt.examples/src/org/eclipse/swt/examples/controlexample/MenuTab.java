@@ -182,6 +182,9 @@ class MenuTab extends Tab {
 		separatorButton.setText ("SWT.SEPARATOR");
 		
 		/* Create the 'other' buttons */
+		enabledButton = new Button(otherGroup, SWT.CHECK);
+		enabledButton.setText(ControlExample.getResourceString("Enabled"));
+		enabledButton.setSelection(true);
 		imagesButton = new Button (otherGroup, SWT.CHECK);
 		imagesButton.setText (ControlExample.getResourceString("Images"));
 		acceleratorsButton = new Button (otherGroup, SWT.CHECK);
@@ -239,6 +242,7 @@ class MenuTab extends Tab {
 			item.setText(getMenuItemText("Push"));
 			if (acceleratorsButton.getSelection()) item.setAccelerator(SWT.MOD1 + SWT.MOD2 + 'P');
 			if (imagesButton.getSelection()) item.setImage(instance.images[ControlExample.ciClosedFolder]);
+			item.setEnabled(enabledButton.getSelection());
 			hookListeners(item);
 		}
 		
@@ -251,6 +255,7 @@ class MenuTab extends Tab {
 			item.setText(getMenuItemText("Check"));
 			if (acceleratorsButton.getSelection()) item.setAccelerator(SWT.MOD1 + SWT.MOD2 + 'C');
 			if (imagesButton.getSelection()) item.setImage(instance.images[ControlExample.ciOpenFolder]);
+			item.setEnabled(enabledButton.getSelection());
 			hookListeners(item);
 		}
 				
@@ -260,12 +265,14 @@ class MenuTab extends Tab {
 			if (acceleratorsButton.getSelection()) item.setAccelerator(SWT.MOD1 + SWT.MOD2 + '1');
 			if (imagesButton.getSelection()) item.setImage(instance.images[ControlExample.ciTarget]);
 			item.setSelection(true);
+			item.setEnabled(enabledButton.getSelection());
 			hookListeners(item);
 
 			item = new MenuItem(menu, SWT.RADIO);
 			item.setText(getMenuItemText("2Radio"));
 			if (acceleratorsButton.getSelection()) item.setAccelerator(SWT.MOD1 + SWT.MOD2 + '2');
 			if (imagesButton.getSelection()) item.setImage(instance.images[ControlExample.ciTarget]);
+			item.setEnabled(enabledButton.getSelection());
 			hookListeners(item);
 		}
 
@@ -277,6 +284,7 @@ class MenuTab extends Tab {
 			hookListeners(item);
 			Menu subMenu = new Menu(menu.getShell(), SWT.DROP_DOWN);
 			item.setMenu(subMenu);
+			item.setEnabled(enabledButton.getSelection());
 			hookListeners(subMenu);
 			
 			createMenuItems(subMenu, createSubSubMenu, false);
