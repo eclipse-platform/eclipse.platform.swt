@@ -249,6 +249,7 @@
 #define NO_DuplicateHandle
 #define NO_DwmEnableBlurBehindWindow
 #define NO_DwmExtendFrameIntoClientArea
+#define NO_DwmIsCompositionEnabled
 #define NO_DTTOPTS_1sizeof
 #define NO_EnableScrollBar
 #define NO_EndBufferedPaint
@@ -288,6 +289,7 @@
 #define NO_GetClassNameA
 #define NO_GetClipboardFormatNameA
 #define NO_GetComboBoxInfo
+#define NO_GetCurrentProcessExplicitAppUserModelID
 #define NO_GetDateFormatA
 #define NO_GetDIBColorTable
 #define NO_GetDIBits
