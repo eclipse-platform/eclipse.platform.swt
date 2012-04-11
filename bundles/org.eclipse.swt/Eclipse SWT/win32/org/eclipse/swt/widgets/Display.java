@@ -2703,7 +2703,11 @@ protected void init () {
 			int length = APP_NAME.length ();
 			appName = new char [length + 1];
 			APP_NAME.getChars (0, length, appName, 0);
-			OS.SetCurrentProcessExplicitAppUserModelID (appName);
+			int /*long*/ [] appID = new int /*long*/ [1];
+			if (OS.GetCurrentProcessExplicitAppUserModelID(appID) != 0) {
+				OS.SetCurrentProcessExplicitAppUserModelID (appName);
+			}
+			if (appID[0] != 0) OS.CoTaskMemFree(appID[0]);
 		}
 	}
 	
