@@ -1138,16 +1138,6 @@ public static final int /*long*/ gdk_x11_atom_to_xatom(int /*long*/ atom) {
 		lock.unlock();
 	}
 }
-/** @param colormap cast=(GdkColormap *) */
-public static final native int /*long*/ _gdk_x11_colormap_get_xcolormap(int /*long*/ colormap);
-public static final int /*long*/ gdk_x11_colormap_get_xcolormap(int /*long*/ colormap) {
-	lock.lock();
-	try {
-		return _gdk_x11_colormap_get_xcolormap(colormap);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param gdkdisplay cast=(GdkDisplay *) */
 public static final native int /*long*/ _gdk_x11_display_get_xdisplay(int /*long*/ gdkdisplay);
 public static final int /*long*/ gdk_x11_display_get_xdisplay (int /*long*/ gdkdisplay) {
@@ -1224,15 +1214,6 @@ public static final int /*long*/ gdk_x11_window_lookup_for_display(int /*long*/ 
 	lock.lock();
 	try {
 		return _gdk_x11_window_lookup_for_display(gdkdisplay, xid);
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native int /*long*/ _gdk_pixmap_foreign_new(int /*long*/ anid);
-public static final int /*long*/ gdk_pixmap_foreign_new(int /*long*/ anid) {
-	lock.lock();
-	try {
-		return _gdk_pixmap_foreign_new(anid);
 	} finally {
 		lock.unlock();
 	}

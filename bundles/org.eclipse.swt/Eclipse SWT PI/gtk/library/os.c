@@ -6377,18 +6377,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1pixbuf_1scale_1simple)
 }
 #endif
 
-#ifndef NO__1gdk_1pixmap_1foreign_1new
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1pixmap_1foreign_1new)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gdk_1pixmap_1foreign_1new_FUNC);
-	rc = (jintLong)gdk_pixmap_foreign_new(arg0);
-	OS_NATIVE_EXIT(env, that, _1gdk_1pixmap_1foreign_1new_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gdk_1pixmap_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1pixmap_1new)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3)
@@ -7520,18 +7508,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1x11_1atom_1to_1xatom)
 	OS_NATIVE_ENTER(env, that, _1gdk_1x11_1atom_1to_1xatom_FUNC);
 	rc = (jintLong)gdk_x11_atom_to_xatom((GdkAtom)arg0);
 	OS_NATIVE_EXIT(env, that, _1gdk_1x11_1atom_1to_1xatom_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1x11_1colormap_1get_1xcolormap
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1x11_1colormap_1get_1xcolormap)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gdk_1x11_1colormap_1get_1xcolormap_FUNC);
-	rc = (jintLong)gdk_x11_colormap_get_xcolormap((GdkColormap *)arg0);
-	OS_NATIVE_EXIT(env, that, _1gdk_1x11_1colormap_1get_1xcolormap_FUNC);
 	return rc;
 }
 #endif
