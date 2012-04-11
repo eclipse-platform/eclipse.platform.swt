@@ -38,58 +38,6 @@ public static final native int GnomeVFSMimeApplication_sizeof();
 
 /** Natives */
 
-/** @param mem cast=(gpointer) */
-public static final native void _g_free(int /*long*/ mem);
-public static final void g_free(int /*long*/ mem) {
-	lock.lock();
-	try {
-		_g_free(mem);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param list cast=(GList *)
- * @param data cast=(gpointer)
- */
-public static final native int /*long*/ _g_list_append(int /*long*/ list, int /*long*/ data);
-public static final int /*long*/ g_list_append(int /*long*/ list, int /*long*/ data) {
-	lock.lock();
-	try {
-		return _g_list_append(list, data);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param list cast=(GList *) */
-public static final native void _g_list_free(int /*long*/ list);
-public static final void g_list_free(int /*long*/ list) {
-	lock.lock();
-	try {
-		_g_list_free(list);
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native int /*long*/ _g_list_next(int /*long*/ list);
-public static final int /*long*/ g_list_next(int /*long*/ list) {
-	lock.lock();
-	try {
-		return _g_list_next(list);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param object cast=(gpointer) */
-public static final native void _g_object_unref(int /*long*/ object);
-public static final void g_object_unref(int /*long*/ object) {
-	lock.lock();
-	try {
-		_g_object_unref(object);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @param icon_theme cast=(GnomeIconTheme *)
  * @param thumbnail_factory cast=(GnomeThumbnailFactory *)

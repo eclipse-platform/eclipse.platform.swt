@@ -381,11 +381,11 @@ boolean gnome_24_execute(String fileName) {
 	int /*long*/ ptr = GNOME.gnome_vfs_mime_get_default_application(mimeTypeBuffer);
 	byte[] fileNameBuffer = Converter.wcsToMbcs(null, fileName, true);
 	int /*long*/ uri = GNOME.gnome_vfs_make_uri_from_input_with_dirs(fileNameBuffer, GNOME.GNOME_VFS_MAKE_URI_DIR_CURRENT);
-	int /*long*/ list = GNOME.g_list_append(0, uri);
+	int /*long*/ list = OS.g_list_append(0, uri);
 	int result = GNOME.gnome_vfs_mime_application_launch(ptr, list);
 	GNOME.gnome_vfs_mime_application_free(ptr);
-	GNOME.g_free(uri);
-	GNOME.g_list_free(list);
+	OS.g_free(uri);
+	OS.g_list_free(list);
 	return result == GNOME.GNOME_VFS_OK;
 }
 
@@ -396,7 +396,7 @@ static boolean gnome_24_launch(String fileName) {
 	byte[] fileNameBuffer = Converter.wcsToMbcs(null, fileName, true);
 	int /*long*/ uri = GNOME.gnome_vfs_make_uri_from_input_with_dirs(fileNameBuffer, GNOME.GNOME_VFS_MAKE_URI_DIR_CURRENT);
 	int result = GNOME.gnome_vfs_url_show(uri);
-	GNOME.g_free(uri);
+	OS.g_free(uri);
 	return (result == GNOME.GNOME_VFS_OK);
 }
 
@@ -415,7 +415,7 @@ boolean gnome_execute(String fileName) {
 				OS.memmove(buffer, uri, length);
 				fileName = new String(Converter.mbcsToWcs(null, buffer));
 			}
-			GNOME.g_free(uri);
+			OS.g_free(uri);
 		}
 	}
 
@@ -495,12 +495,12 @@ static Hashtable gnome_getMimeInfo() {
 				String extension = new String(Converter.mbcsToWcs(null, extensionBuffer));
 				extension = '.' + extension;
 				extensions.addElement(extension);
-				extensionElement = GNOME.g_list_next(extensionElement); 
+				extensionElement = OS.g_list_next(extensionElement); 
 			}
 			GNOME.gnome_vfs_mime_extensions_list_free(extensionList);
 			if (extensions.size() > 0) mimeInfo.put(mimeType, extensions);
 		}
-		mimeElement = GNOME.g_list_next(mimeElement);
+		mimeElement = OS.g_list_next(mimeElement);
 	}
 	if (mimeList != 0) GNOME.gnome_vfs_mime_registered_mime_type_list_free(mimeList);
 	return mimeInfo;
@@ -553,9 +553,9 @@ static Program gnome_getProgram(Display display, String mimeType) {
 				OS.memmove(buffer, path, length);
 				program.iconPath = new String(Converter.mbcsToWcs(null, buffer));
 			}
-			GNOME.g_free(path);
+			OS.g_free(path);
 		}
-		if (icon_name != 0) GNOME.g_free(icon_name);
+		if (icon_name != 0) OS.g_free(icon_name);
 		GNOME.gnome_vfs_mime_application_free(ptr);
 	}
 	return program;
@@ -577,7 +577,7 @@ static boolean gnome_isExecutable(String fileName) {
 	/* check if the mime type is executable */
 	int /*long*/ uri = GNOME.gnome_vfs_make_uri_from_input(fileNameBuffer);
 	int /*long*/ mimeType = GNOME.gnome_vfs_get_mime_type(uri);
-	GNOME.g_free(uri);
+	OS.g_free(uri);
 	
 	byte[] exeType = Converter.wcsToMbcs (null, "application/x-executable", true); //$NON-NLS-1$
 	boolean result = GNOME.gnome_vfs_mime_type_get_equivalence(mimeType, exeType) != GNOME.GNOME_VFS_MIME_UNRELATED;

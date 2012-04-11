@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -30,11 +30,6 @@ extern char* GNOME_nativeFunctionNames[];
 
 typedef enum {
 	GnomeVFSMimeApplication_1sizeof_FUNC,
-	_1g_1free_FUNC,
-	_1g_1list_1append_FUNC,
-	_1g_1list_1free_FUNC,
-	_1g_1list_1next_FUNC,
-	_1g_1object_1unref_FUNC,
 	_1gnome_1icon_1lookup_FUNC,
 	_1gnome_1icon_1theme_1lookup_1icon_FUNC,
 	_1gnome_1icon_1theme_1new_FUNC,
