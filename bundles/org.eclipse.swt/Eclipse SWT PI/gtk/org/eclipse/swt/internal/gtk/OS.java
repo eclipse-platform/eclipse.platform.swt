@@ -1876,16 +1876,6 @@ public static final int /*long*/ g_app_info_get_icon(int /*long*/ appInfo) {
 	}
 }
 /** @method flags=dynamic */
-public static final native int /*long*/ _g_app_info_get_id(int /*long*/ appInfo);
-public static final int /*long*/ g_app_info_get_id(int /*long*/ appInfo) {
-	lock.lock();
-	try {
-		return _g_app_info_get_id(appInfo);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
 public static final native int /*long*/ _g_app_info_get_name(int /*long*/ appInfo);
 public static final int /*long*/ g_app_info_get_name(int /*long*/ appInfo) {
 	lock.lock();
@@ -1986,51 +1976,11 @@ public static final boolean g_content_type_is_a(int /*long*/ type, byte[] supert
 	}
 }
 /** @method flags=dynamic */
-public static final native int /*long*/ _g_content_type_get_mime_type(byte[] mime_type);
-public static final int /*long*/ g_content_type_get_mime_type(byte[] mime_type) {
-	lock.lock();
-	try {
-		return _g_content_type_get_mime_type(mime_type);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native int /*long*/ _g_content_types_get_registered();
-public static final int /*long*/ g_content_types_get_registered() {
-	lock.lock();
-	try {
-		return _g_content_types_get_registered();
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native int /*long*/ _g_desktop_app_info_new_from_filename(byte[] fileName);
-public static final int /*long*/ g_desktop_app_info_new_from_filename(byte[] fileName) {
-	lock.lock();
-	try {
-		return _g_desktop_app_info_new_from_filename(fileName);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
 public static final native int /*long*/ _g_file_info_get_content_type (int /*long*/ info);
 public static final int /*long*/ g_file_info_get_content_type (int /*long*/ info) {
 	lock.lock();
 	try {
 		return _g_file_info_get_content_type (info);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native int /*long*/ _g_file_get_path(int /*long*/ file);
-public static final int /*long*/ g_file_get_path (int /*long*/ file) {
-	lock.lock();
-	try {
-		return _g_file_get_path(file);
 	} finally {
 		lock.unlock();
 	}
@@ -2051,16 +2001,6 @@ public static final void g_file_info_get_modification_time(int /*long*/ info, in
 	lock.lock();
 	try {
 		_g_file_info_get_modification_time(info, result);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
-public static final native int /*long*/ _g_file_icon_get_file(int /*long*/ icon);
-public static final int /*long*/ g_file_icon_get_file(int /*long*/ icon) {
-	lock.lock();
-	try {
-		return _g_file_icon_get_file(icon);
 	} finally {
 		lock.unlock();
 	}
@@ -2247,16 +2187,6 @@ public static final boolean g_main_context_iteration(int /*long*/ context, boole
 	lock.lock();
 	try {
 		return _g_main_context_iteration(context, may_block);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param context cast=(GMainContext *) */
-public static final native boolean _g_main_context_pending(int /*long*/ context);
-public static final boolean g_main_context_pending(int /*long*/ context) {
-	lock.lock();
-	try {
-		return _g_main_context_pending(context);
 	} finally {
 		lock.unlock();
 	}
@@ -2558,48 +2488,6 @@ public static final int /*long*/ g_list_remove_link(int /*long*/ list, int /*lon
 	lock.lock();
 	try {
 		return _g_list_remove_link(list, link);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param list cast=(GList *) */
-public static final native int /*long*/ _g_list_reverse(int /*long*/ list);
-public static final int /*long*/ g_list_reverse(int /*long*/ list) {
-	lock.lock();
-	try {
-		return _g_list_reverse(list);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param utf8string cast=(const gchar *)
- * @param len cast=(gssize)
- * @param bytes_read cast=(gsize *)
- * @param bytes_written cast=(gsize *)
- * @param error cast=(GError **)
- */
-public static final native int /*long*/ _g_locale_from_utf8(int /*long*/ utf8string, int /*long*/ len, int /*long*/[] bytes_read, int /*long*/[] bytes_written, int /*long*/[] error);
-public static final int /*long*/ g_locale_from_utf8(int /*long*/ utf8string, int /*long*/ len, int /*long*/[] bytes_read, int /*long*/[] bytes_written, int /*long*/[] error) {
-	lock.lock();
-	try {
-		return _g_locale_from_utf8(utf8string, len, bytes_read, bytes_written, error);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param opsysstring cast=(const gchar *)
- * @param len cast=(gssize)
- * @param bytes_read cast=(gsize *)
- * @param bytes_written cast=(gsize *)
- * @param error cast=(GError **)
- */
-public static final native int /*long*/ _g_locale_to_utf8(int /*long*/ opsysstring, int /*long*/ len, int /*long*/[] bytes_read, int /*long*/[] bytes_written, int /*long*/[] error);
-public static final int /*long*/ g_locale_to_utf8(int /*long*/ opsysstring, int /*long*/ len, int /*long*/[] bytes_read, int /*long*/[] bytes_written, int /*long*/[] error) {
-	lock.lock();
-	try {
-		return _g_locale_to_utf8(opsysstring, len, bytes_read, bytes_written, error);
 	} finally {
 		lock.unlock();
 	}
@@ -2924,21 +2812,6 @@ public static final int g_signal_connect_closure_by_id(int /*long*/ instance, in
 /**
  * @param instance cast=(gpointer)
  * @param detailed_signal cast=(const gchar *),flags=no_out
- * @param proc cast=(GCallback)
- * @param data cast=(gpointer)
- */
-public static final native int _g_signal_connect_after(int /*long*/ instance, byte[] detailed_signal, int /*long*/ proc, int /*long*/ data);
-public static final int g_signal_connect_after(int /*long*/ instance, byte[] detailed_signal, int /*long*/ proc, int /*long*/ data) {
-	lock.lock();
-	try {
-		return _g_signal_connect_after(instance, detailed_signal, proc, data);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param instance cast=(gpointer)
- * @param detailed_signal cast=(const gchar *),flags=no_out
  */
 public static final native void _g_signal_emit_by_name(int /*long*/ instance, byte[] detailed_signal);
 public static final void g_signal_emit_by_name(int /*long*/ instance, byte[] detailed_signal) {
@@ -3044,24 +2917,6 @@ public static final int g_signal_handlers_block_matched(int /*long*/ instance, i
 	lock.lock();
 	try {
 		return _g_signal_handlers_block_matched(instance, mask, signal_id, detail, closure, func, data);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param instance cast=(gpointer)
- * @param mask cast=(GSignalMatchType)
- * @param signal_id cast=(guint)
- * @param detail cast=(GQuark)
- * @param closure cast=(GClosure *)
- * @param func cast=(gpointer)
- * @param data cast=(gpointer)
- */
-public static final native int _g_signal_handlers_disconnect_matched(int /*long*/ instance, int mask, int signal_id, int detail, int /*long*/ closure, int /*long*/ func, int /*long*/ data);
-public static final int g_signal_handlers_disconnect_matched(int /*long*/ instance, int mask, int signal_id, int detail, int /*long*/ closure, int /*long*/ func, int /*long*/ data) {
-	lock.lock();
-	try {
-		return _g_signal_handlers_disconnect_matched(instance, mask, signal_id, detail, closure, func, data);
 	} finally {
 		lock.unlock();
 	}
@@ -3385,16 +3240,6 @@ public static final int /*long*/ g_utf16_to_utf8(char[] str, int /*long*/ len, i
 	lock.lock();
 	try {
 		return _g_utf16_to_utf8(str, len, items_read, items_written, error);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param str cast=(const gchar *) */
-public static final native int /*long*/ _g_utf8_offset_to_pointer(int /*long*/ str, int /*long*/ offset);
-public static final int /*long*/ g_utf8_offset_to_pointer(int /*long*/ str, int /*long*/ offset) {
-	lock.lock();
-	try {
-		return _g_utf8_offset_to_pointer(str, offset);
 	} finally {
 		lock.unlock();
 	}

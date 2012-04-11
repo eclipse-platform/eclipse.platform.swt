@@ -2560,26 +2560,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1app_1info_1get_1icon)
 }
 #endif
 
-#ifndef NO__1g_1app_1info_1get_1id
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1app_1info_1get_1id)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1app_1info_1get_1id_FUNC);
-/*
-	rc = (jintLong)g_app_info_get_id(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_app_info_get_id)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1g_1app_1info_1get_1id_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1g_1app_1info_1get_1name
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1app_1info_1get_1name)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -2738,30 +2718,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1g_1content_1type_1get_1mime_1type
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1content_1type_1get_1mime_1type)
-	(JNIEnv *env, jclass that, jbyteArray arg0)
-{
-	jbyte *lparg0=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1content_1type_1get_1mime_1type_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-/*
-	rc = (jintLong)g_content_type_get_mime_type(lparg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_content_type_get_mime_type)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jbyte *))fp)(lparg0);
-		}
-	}
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, _1g_1content_1type_1get_1mime_1type_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1g_1content_1type_1is_1a
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1content_1type_1is_1a)
 	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
@@ -2782,26 +2738,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1content_1type_1is_1a)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1g_1content_1type_1is_1a_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1g_1content_1types_1get_1registered
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1content_1types_1get_1registered)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1content_1types_1get_1registered_FUNC);
-/*
-	rc = (jintLong)g_content_types_get_registered();
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_content_types_get_registered)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1g_1content_1types_1get_1registered_FUNC);
 	return rc;
 }
 #endif
@@ -2850,50 +2786,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1g_1desktop_1app_1info_1new_1from_1filename
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1desktop_1app_1info_1new_1from_1filename)
-	(JNIEnv *env, jclass that, jbyteArray arg0)
-{
-	jbyte *lparg0=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1desktop_1app_1info_1new_1from_1filename_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-/*
-	rc = (jintLong)g_desktop_app_info_new_from_filename(lparg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_desktop_app_info_new_from_filename)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jbyte *))fp)(lparg0);
-		}
-	}
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, _1g_1desktop_1app_1info_1new_1from_1filename_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1g_1file_1get_1path
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1file_1get_1path)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1file_1get_1path_FUNC);
-/*
-	rc = (jintLong)g_file_get_path(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_file_get_path)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1g_1file_1get_1path_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1g_1file_1get_1uri
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1file_1get_1uri)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -2910,26 +2802,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1file_1get_1uri)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1g_1file_1get_1uri_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1g_1file_1icon_1get_1file
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1file_1icon_1get_1file)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1file_1icon_1get_1file_FUNC);
-/*
-	rc = (jintLong)g_file_icon_get_file(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_file_icon_get_file)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1g_1file_1icon_1get_1file_FUNC);
 	return rc;
 }
 #endif
@@ -3424,18 +3296,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1list_1remove_1link)
 }
 #endif
 
-#ifndef NO__1g_1list_1reverse
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1list_1reverse)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1list_1reverse_FUNC);
-	rc = (jintLong)g_list_reverse((GList *)arg0);
-	OS_NATIVE_EXIT(env, that, _1g_1list_1reverse_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1g_1list_1set_1next
 JNIEXPORT void JNICALL OS_NATIVE(_1g_1list_1set_1next)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -3453,50 +3313,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1list_1set_1previous)
 	OS_NATIVE_ENTER(env, that, _1g_1list_1set_1previous_FUNC);
 	g_list_set_previous((GList *)arg0, (GList *)arg1);
 	OS_NATIVE_EXIT(env, that, _1g_1list_1set_1previous_FUNC);
-}
-#endif
-
-#ifndef NO__1g_1locale_1from_1utf8
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1locale_1from_1utf8)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2, jintLongArray arg3, jintLongArray arg4)
-{
-	jintLong *lparg2=NULL;
-	jintLong *lparg3=NULL;
-	jintLong *lparg4=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1locale_1from_1utf8_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = (*env)->GetIntLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jintLong)g_locale_from_utf8((const gchar *)arg0, (gssize)arg1, (gsize *)lparg2, (gsize *)lparg3, (GError **)lparg4);
-fail:
-	if (arg4 && lparg4) (*env)->ReleaseIntLongArrayElements(env, arg4, lparg4, 0);
-	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1g_1locale_1from_1utf8_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1g_1locale_1to_1utf8
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1locale_1to_1utf8)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2, jintLongArray arg3, jintLongArray arg4)
-{
-	jintLong *lparg2=NULL;
-	jintLong *lparg3=NULL;
-	jintLong *lparg4=NULL;
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1locale_1to_1utf8_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = (*env)->GetIntLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jintLong)g_locale_to_utf8((const gchar *)arg0, (gssize)arg1, (gsize *)lparg2, (gsize *)lparg3, (GError **)lparg4);
-fail:
-	if (arg4 && lparg4) (*env)->ReleaseIntLongArrayElements(env, arg4, lparg4, 0);
-	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1g_1locale_1to_1utf8_FUNC);
-	return rc;
 }
 #endif
 
@@ -3596,18 +3412,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1main_1context_1iteration)
 	OS_NATIVE_ENTER(env, that, _1g_1main_1context_1iteration_FUNC);
 	rc = (jboolean)g_main_context_iteration((GMainContext *)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, _1g_1main_1context_1iteration_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1g_1main_1context_1pending
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1main_1context_1pending)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1main_1context_1pending_FUNC);
-	rc = (jboolean)g_main_context_pending((GMainContext *)arg0);
-	OS_NATIVE_EXIT(env, that, _1g_1main_1context_1pending_FUNC);
 	return rc;
 }
 #endif
@@ -4022,22 +3826,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1g_1signal_1connect_1after
-JNIEXPORT jint JNICALL OS_NATIVE(_1g_1signal_1connect_1after)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2, jintLong arg3)
-{
-	jbyte *lparg1=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1signal_1connect_1after_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jint)g_signal_connect_after((gpointer)arg0, (const gchar *)lparg1, (GCallback)arg2, (gpointer)arg3);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
-	OS_NATIVE_EXIT(env, that, _1g_1signal_1connect_1after_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1g_1signal_1connect_1closure
 JNIEXPORT jint JNICALL OS_NATIVE(_1g_1signal_1connect_1closure)
 	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2, jboolean arg3)
@@ -4227,18 +4015,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1g_1signal_1handlers_1block_1matched)
 	OS_NATIVE_ENTER(env, that, _1g_1signal_1handlers_1block_1matched_FUNC);
 	rc = (jint)g_signal_handlers_block_matched((gpointer)arg0, (GSignalMatchType)arg1, (guint)arg2, (GQuark)arg3, (GClosure *)arg4, (gpointer)arg5, (gpointer)arg6);
 	OS_NATIVE_EXIT(env, that, _1g_1signal_1handlers_1block_1matched_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1g_1signal_1handlers_1disconnect_1matched
-JNIEXPORT jint JNICALL OS_NATIVE(_1g_1signal_1handlers_1disconnect_1matched)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jintLong arg4, jintLong arg5, jintLong arg6)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1signal_1handlers_1disconnect_1matched_FUNC);
-	rc = (jint)g_signal_handlers_disconnect_matched((gpointer)arg0, (GSignalMatchType)arg1, (guint)arg2, (GQuark)arg3, (GClosure *)arg4, (gpointer)arg5, (gpointer)arg6);
-	OS_NATIVE_EXIT(env, that, _1g_1signal_1handlers_1disconnect_1matched_FUNC);
 	return rc;
 }
 #endif
@@ -4660,18 +4436,6 @@ fail:
 		if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, JNI_ABORT);
 	}
 	OS_NATIVE_EXIT(env, that, _1g_1utf16_1to_1utf8_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1g_1utf8_1offset_1to_1pointer
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1utf8_1offset_1to_1pointer)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1utf8_1offset_1to_1pointer_FUNC);
-	rc = (jintLong)g_utf8_offset_to_pointer((const gchar *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, _1g_1utf8_1offset_1to_1pointer_FUNC);
 	return rc;
 }
 #endif

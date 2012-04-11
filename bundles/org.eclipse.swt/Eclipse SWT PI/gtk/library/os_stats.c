@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1397;
-int OS_nativeFunctionCallCount[1397];
+int OS_nativeFunctionCount = 1384;
+int OS_nativeFunctionCallCount[1384];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -223,7 +223,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1app_1info_1get_1default_1for_1type",
 	"_1g_1app_1info_1get_1executable",
 	"_1g_1app_1info_1get_1icon",
-	"_1g_1app_1info_1get_1id",
 	"_1g_1app_1info_1get_1name",
 	"_1g_1app_1info_1launch",
 	"_1g_1app_1info_1launch_1default_1for_1uri",
@@ -233,15 +232,10 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1closure_1ref",
 	"_1g_1closure_1unref",
 	"_1g_1content_1type_1equals",
-	"_1g_1content_1type_1get_1mime_1type",
 	"_1g_1content_1type_1is_1a",
-	"_1g_1content_1types_1get_1registered",
 	"_1g_1data_1input_1stream_1new",
 	"_1g_1data_1input_1stream_1read_1line",
-	"_1g_1desktop_1app_1info_1new_1from_1filename",
-	"_1g_1file_1get_1path",
 	"_1g_1file_1get_1uri",
-	"_1g_1file_1icon_1get_1file",
 	"_1g_1file_1info_1get_1content_1type",
 	"_1g_1file_1info_1get_1modification_1time",
 	"_1g_1file_1new_1for_1commandline_1arg",
@@ -271,11 +265,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1list_1prepend",
 	"_1g_1list_1previous",
 	"_1g_1list_1remove_1link",
-	"_1g_1list_1reverse",
 	"_1g_1list_1set_1next",
 	"_1g_1list_1set_1previous",
-	"_1g_1locale_1from_1utf8",
-	"_1g_1locale_1to_1utf8",
 	"_1g_1log_1default_1handler",
 	"_1g_1log_1remove_1handler",
 	"_1g_1log_1set_1handler",
@@ -284,7 +275,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1main_1context_1default",
 	"_1g_1main_1context_1get_1poll_1func",
 	"_1g_1main_1context_1iteration",
-	"_1g_1main_1context_1pending",
 	"_1g_1main_1context_1prepare",
 	"_1g_1main_1context_1query",
 	"_1g_1main_1context_1release",
@@ -340,7 +330,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1set_1prgname",
 	"_1g_1signal_1add_1emission_1hook",
 	"_1g_1signal_1connect",
-	"_1g_1signal_1connect_1after",
 	"_1g_1signal_1connect_1closure",
 	"_1g_1signal_1connect_1closure_1by_1id",
 #ifndef JNI64
@@ -371,7 +360,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1signal_1handler_1disconnect",
 	"_1g_1signal_1handler_1find",
 	"_1g_1signal_1handlers_1block_1matched",
-	"_1g_1signal_1handlers_1disconnect_1matched",
 	"_1g_1signal_1handlers_1unblock_1matched",
 	"_1g_1signal_1lookup",
 	"_1g_1signal_1remove_1emission_1hook",
@@ -404,7 +392,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1utf16_1pointer_1to_1offset",
 	"_1g_1utf16_1strlen",
 	"_1g_1utf16_1to_1utf8",
-	"_1g_1utf8_1offset_1to_1pointer",
 	"_1g_1utf8_1offset_1to_1utf16_1offset",
 	"_1g_1utf8_1pointer_1to_1offset",
 	"_1g_1utf8_1strlen",
