@@ -3571,20 +3571,6 @@ public static final int /*long*/ gdk_colormap_get_system() {
 		lock.unlock();
 	}
 }
-/**
- * @param colormap cast=(GdkColormap *)
- * @param pixel cast=(gulong)
- * @param result cast=(GdkColor *)
- */
-public static final native void _gdk_colormap_query_color(int /*long*/ colormap, int /*long*/ pixel, GdkColor result);
-public static final void gdk_colormap_query_color(int /*long*/ colormap, int /*long*/ pixel, GdkColor result) {
-	lock.lock();
-	try {
-		_gdk_colormap_query_color(colormap, pixel, result);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param cursor cast=(GdkCursor *) */
 public static final native void _gdk_cursor_unref(int /*long*/ cursor);
 public static final void gdk_cursor_unref(int /*long*/ cursor) {
@@ -3919,20 +3905,6 @@ public static final int /*long*/ gdk_event_get() {
 	lock.lock();
 	try {
 		return _gdk_event_get();
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param event cast=(GdkEvent *)
- * @param px cast=(gdouble *)
- * @param py cast=(gdouble *)
- */
-public static final native boolean _gdk_event_get_root_coords(int /*long*/ event, double[] px, double[] py);
-public static final boolean gdk_event_get_root_coords(int /*long*/ event, double[] px, double[] py) {
-	lock.lock();
-	try {
-		return _gdk_event_get_root_coords(event, px, py);
 	} finally {
 		lock.unlock();
 	}
@@ -4322,15 +4294,6 @@ public static final int gdk_keyval_to_unicode(int keyval) {
 		lock.unlock();
 	}
 }
-public static final native int /*long*/ _gdk_pango_attr_embossed_new(boolean embossed);
-public static final int /*long*/ gdk_pango_attr_embossed_new(boolean embossed) {
-	lock.lock();
-	try {
-		return _gdk_pango_attr_embossed_new(embossed);
-	} finally {
-		lock.unlock();
-	}
-}
 public static final native int /*long*/ _gdk_pango_context_get();
 public static final int /*long*/ gdk_pango_context_get() {
 	lock.lock();
@@ -4564,23 +4527,6 @@ public static final boolean gdk_pixbuf_save_to_bufferv(int /*long*/ pixbuf, int 
 }
 /**
  * @param src cast=(const GdkPixbuf *)
- * @param dest cast=(GdkPixbuf *)
- * @param offset_x cast=(double)
- * @param offset_y cast=(double)
- * @param scale_x cast=(double)
- * @param scale_y cast=(double)
- */
-public static final native void _gdk_pixbuf_scale(int /*long*/ src, int /*long*/ dest, int dest_x, int dest_y, int dest_width, int dest_height, double offset_x, double offset_y, double scale_x, double scale_y, int interp_type);
-public static final void gdk_pixbuf_scale(int /*long*/ src, int /*long*/ dest, int dest_x, int dest_y, int dest_width, int dest_height, double offset_x, double offset_y, double scale_x, double scale_y, int interp_type) {
-	lock.lock();
-	try {
-		_gdk_pixbuf_scale(src, dest, dest_x, dest_y, dest_width, dest_height, offset_x, offset_y, scale_x, scale_y, interp_type);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param src cast=(const GdkPixbuf *)
  * @param interp_type cast=(GdkInterpType)
  */
 public static final native int /*long*/ _gdk_pixbuf_scale_simple(int /*long*/ src, int dest_width, int dest_height, int interp_type);
@@ -4620,15 +4566,6 @@ public static final int gdk_pointer_grab(int /*long*/ window, boolean owner_even
 	lock.lock();
 	try {
 		return _gdk_pointer_grab(window, owner_events, event_mask, confine_to, cursor, time);
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native boolean _gdk_pointer_is_grabbed();
-public static final boolean gdk_pointer_is_grabbed() {
-	lock.lock();
-	try {
-		return _gdk_pointer_is_grabbed();
 	} finally {
 		lock.unlock();
 	}
@@ -5042,16 +4979,6 @@ public static final void gdk_window_begin_paint_rect(int /*long*/ window, GdkRec
 		lock.unlock();
 	}
 }
-/** @param window cast=(GdkWindow *) */
-public static final native void _gdk_window_clear_area(int /*long*/ window, int x, int y, int width, int height);
-public static final void gdk_window_clear_area(int /*long*/ window, int x, int y, int width, int height) {
-	lock.lock();
-	try {
-		_gdk_window_clear_area(window, x, y, width, height);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @method flags=dynamic 
  * @param window cast=(GdkWindow *)
@@ -5111,16 +5038,6 @@ public static final void gdk_window_focus(int /*long*/ window, int timestamp) {
 	lock.lock();
 	try {
 		_gdk_window_focus(window, timestamp);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param window cast=(GdkWindow *) */
-public static final native void _gdk_window_freeze_updates(int /*long*/ window);
-public static final void gdk_window_freeze_updates(int /*long*/ window) {
-	lock.lock();
-	try {
-		_gdk_window_freeze_updates(window);
 	} finally {
 		lock.unlock();
 	}
@@ -5268,16 +5185,6 @@ public static final boolean gdk_window_is_visible(int /*long*/ window) {
 	}
 }
 /** @param window cast=(GdkWindow *) */
-public static final native boolean _gdk_window_is_viewable (int /*long*/ window);
-public static final boolean gdk_window_is_viewable (int /*long*/ window) {
-	lock.lock();
-	try {
-		return _gdk_window_is_viewable (window);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param window cast=(GdkWindow *) */
 public static final native void _gdk_window_move(int /*long*/ window, int x, int y);
 public static final void gdk_window_move(int /*long*/ window, int x, int y) {
 	lock.lock();
@@ -5377,30 +5284,6 @@ public static final void gdk_window_restack(int /*long*/ window, int /*long*/ si
 		lock.unlock();
 	}
 }
-/** @param window cast=(GdkWindow *) */
-public static final native void _gdk_window_scroll(int /*long*/ window, int dx, int dy);
-public static final void gdk_window_scroll(int /*long*/ window, int dx, int dy) {
-	lock.lock();
-	try {
-		_gdk_window_scroll(window, dx, dy);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param window cast=(GdkWindow *)
- * @param accept_focus cast=(gboolean)
- */
-public static final native void _gdk_window_set_accept_focus(int /*long*/ window, boolean accept_focus);
-public static final void gdk_window_set_accept_focus(int /*long*/ window, boolean accept_focus) {
-	lock.lock();
-	try {
-		_gdk_window_set_accept_focus(window, accept_focus);
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @param window cast=(GdkWindow *)
  * @param pixmap cast=(GdkPixmap *)
@@ -5463,48 +5346,6 @@ public static final void gdk_window_set_events(int /*long*/ window, int event_ma
 }
 /**
  * @param window cast=(GdkWindow *)
- * @param icon_window cast=(GdkWindow *)
- * @param pixmap cast=(GdkPixmap *)
- * @param mask cast=(GdkBitmap *)
- */
-public static final native void _gdk_window_set_icon(int /*long*/ window, int /*long*/ icon_window, int /*long*/ pixmap, int /*long*/ mask);
-public static final void gdk_window_set_icon(int /*long*/ window, int /*long*/ icon_window, int /*long*/ pixmap, int /*long*/ mask) {
-	lock.lock();
-	try {
-		_gdk_window_set_icon(window, icon_window, pixmap, mask);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param window cast=(GdkWindow *)
- * @param pixbufs cast=(GList *)
- */
-public static final native void _gdk_window_set_icon_list(int /*long*/ window, int /*long*/ pixbufs);
-public static final void gdk_window_set_icon_list(int /*long*/ window, int /*long*/ pixbufs) {
-	lock.lock();
-	try {
-		_gdk_window_set_icon_list(window, pixbufs);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param window cast=(GdkWindow *)
- * @param setting cast=(gboolean)
- */
-public static final native void _gdk_window_set_keep_above(int /*long*/ window, boolean setting);
-public static final void gdk_window_set_keep_above(int /*long*/ window, boolean setting) {
-	lock.lock();
-	try {
-		_gdk_window_set_keep_above(window, setting);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param window cast=(GdkWindow *)
  * @param override_redirect cast=(gboolean)
  */
 public static final native void _gdk_window_set_override_redirect(int /*long*/ window, boolean override_redirect);
@@ -5558,16 +5399,6 @@ public static final void gdk_window_show_unraised(int /*long*/ window) {
 	lock.lock();
 	try {
 		_gdk_window_show_unraised(window);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param window cast=(GdkWindow *) */
-public static final native void _gdk_window_thaw_updates(int /*long*/ window);
-public static final void gdk_window_thaw_updates(int /*long*/ window) {
-	lock.lock();
-	try {
-		_gdk_window_thaw_updates(window);
 	} finally {
 		lock.unlock();
 	}
