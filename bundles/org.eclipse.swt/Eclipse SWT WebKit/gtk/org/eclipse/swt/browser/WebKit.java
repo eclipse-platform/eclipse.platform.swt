@@ -291,26 +291,44 @@ static int /*long*/ JSDOMEventProc (int /*long*/ arg0, int /*long*/ event, int /
 			final Browser browser = FindBrowser (arg0);
 			if (browser != null && !((WebKit)browser.webBrowser).jsEnabled) {
 				/* this instance does need to use the GDK event to create an SWT event to send */
-				OS.gtk_widget_event (browser.handle, event);
 				switch (OS.GDK_EVENT_TYPE (event)) {
-					case OS.GDK_KEY_PRESS: 
+					case OS.GDK_KEY_PRESS: {
 						if (browser.isFocusControl ()) {
 							final GdkEventKey gdkEvent = new GdkEventKey ();
 							OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
-							if ((gdkEvent.keyval == OS.GDK_ISO_Left_Tab || gdkEvent.keyval == OS.GDK_Tab) && (gdkEvent.state & (OS.GDK_CONTROL_MASK | OS.GDK_MOD1_MASK)) == 0) {
-								browser.getDisplay ().asyncExec (new Runnable () {
-									public void run () {
-										if (browser.isDisposed ()) return;
-										if (browser.getDisplay ().getFocusControl () == null) {
-											int traversal = (gdkEvent.state & OS.GDK_SHIFT_MASK) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
-											browser.traverse (traversal);
-										}
+							switch (gdkEvent.keyval) {
+								case OS.GDK_ISO_Left_Tab:
+								case OS.GDK_Tab: {
+									if ((gdkEvent.state & (OS.GDK_CONTROL_MASK | OS.GDK_MOD1_MASK)) == 0) {
+										browser.getDisplay ().asyncExec (new Runnable () {
+											public void run () {
+												if (browser.isDisposed ()) return;
+												if (browser.getDisplay ().getFocusControl () == null) {
+													int traversal = (gdkEvent.state & OS.GDK_SHIFT_MASK) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
+													browser.traverse (traversal);
+												}
+											}
+										});
 									}
-								});
+									break;
+								}
+								case OS.GDK_Escape: {
+									Event keyEvent = new Event ();
+									keyEvent.widget = browser;
+									keyEvent.type = SWT.KeyDown;
+									keyEvent.keyCode = keyEvent.character = SWT.ESC;
+									if ((gdkEvent.state & OS.GDK_MOD1_MASK) != 0) keyEvent.stateMask |= SWT.ALT;
+									if ((gdkEvent.state & OS.GDK_SHIFT_MASK) != 0) keyEvent.stateMask |= SWT.SHIFT;
+									if ((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0) keyEvent.stateMask |= SWT.CONTROL;
+									((WebKit)browser.webBrowser).sendKeyEvent (keyEvent);
+									return 1;
+								}
 							}
 						}
 						break;
+					}
 				}
+				OS.gtk_widget_event (browser.handle, event);
 			}
 		}
 		return 0;
