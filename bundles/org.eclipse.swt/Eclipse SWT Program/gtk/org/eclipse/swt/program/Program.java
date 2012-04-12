@@ -137,17 +137,6 @@ static int getDesktop(final Display display) {
 						if (gnomeIconTheme.value != 0) OS.g_object_unref(gnomeIconTheme.value);
 					}
 				});
-				/* Check for libgnomevfs-2 version 2.4 */
-				buffer = Converter.wcsToMbcs(null, "libgnomevfs-2.so.0", true);
-				long /*int*/ libgnomevfs = OS.dlopen(buffer, OS.RTLD_LAZY);
-				if (libgnomevfs != 0) {
-					buffer = Converter.wcsToMbcs(null, "gnome_vfs_url_show", true);
-					long /*int*/ gnome_vfs_url_show = OS.dlsym(libgnomevfs, buffer);
-					if (gnome_vfs_url_show != 0) {
-						desktop = DESKTOP_GNOME;
-					}
-					OS.dlclose(libgnomevfs);
-				}
 			}
 		}
 	}
