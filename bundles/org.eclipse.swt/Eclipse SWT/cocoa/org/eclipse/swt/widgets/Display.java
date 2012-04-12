@@ -1964,11 +1964,7 @@ public Menu getMenuBar () {
 	checkDevice ();
 	if (appMenuBar != null) return appMenuBar;
 	appMenuBar = new Menu (this);
-	
-	// If there is an active menu bar don't replace it.
-	// It will be updated when the next Shell without a menu bar activates.
-	if (menuBar == null) setMenuBar(appMenuBar);
-	
+	// the menubar will be updated when the Shell or the application activates.
 	return appMenuBar;
 }
 
@@ -4845,6 +4841,8 @@ void applicationDidBecomeActive (int /*long*/ id, int /*long*/ sel, int /*long*/
 	NSWindow keyWindow = application.keyWindow();
 	if (keyWindow != null) {
 		keyWindow.orderFrontRegardless();
+	} else {
+		setMenuBar (menuBar);
 	}
 	checkFocus();
 	checkEnterExit(findControl(true), null, false);
