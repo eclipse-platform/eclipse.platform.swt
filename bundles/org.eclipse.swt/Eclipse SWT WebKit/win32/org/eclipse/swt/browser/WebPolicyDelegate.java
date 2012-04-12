@@ -112,8 +112,8 @@ int decidePolicyForNavigationAction (int /*long*/ webView, int /*long*/ actionIn
 		}
 	}
 	if (newEvent.doit) {
-		if (webkit.jsEnabled != webkit.jsEnabledOnNextPage) {
-			webkit.jsEnabled = webkit.jsEnabledOnNextPage;
+		if (webKit.jsEnabled != webKit.jsEnabledOnNextPage) {
+			webKit.jsEnabled = webKit.jsEnabledOnNextPage;
 			IWebView view = new IWebView (webView);
 			result[0] = 0;
 			hr = view.preferences (result);
