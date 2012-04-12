@@ -1865,8 +1865,8 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 			}
 		}
 		if (newEvent.doit) {
-			if (jsEnabledChanged) {
-				jsEnabledChanged = false;
+			if (jsEnabled != jsEnabledOnNextPage) {
+				jsEnabled = jsEnabledOnNextPage;
 				if (preferences == 0) {
 					preferences = Cocoa.objc_msgSend (Cocoa.C_WebPreferences, Cocoa.S_alloc);
 					Cocoa.objc_msgSend (preferences, Cocoa.S_init);

@@ -4364,9 +4364,8 @@ int OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 			}
 
 			if (doit) {
-				if (jsEnabledChanged) {
-					jsEnabledChanged = false;
-	
+				if (jsEnabled != jsEnabledOnNextPage) {
+					jsEnabled = jsEnabledOnNextPage;
 					int /*long*/[] result = new int /*long*/[1];
 					int rc = webBrowser.QueryInterface (nsIWebBrowserSetup.NS_IWEBBROWSERSETUP_IID, result);
 					if (rc != XPCOM.NS_OK) error (rc);

@@ -128,6 +128,7 @@ typedef enum {
 	_1webkit_1web_1view_1get_1progress_FUNC,
 	_1webkit_1web_1view_1get_1settings_FUNC,
 	_1webkit_1web_1view_1get_1title_FUNC,
+	_1webkit_1web_1view_1get_1type_FUNC,
 	_1webkit_1web_1view_1get_1uri_FUNC,
 	_1webkit_1web_1view_1get_1window_1features_FUNC,
 	_1webkit_1web_1view_1go_1back_FUNC,

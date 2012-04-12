@@ -632,6 +632,9 @@ public String getBrowserType () {
 /**
  * Returns <code>true</code> if javascript will be allowed to run in pages
  * subsequently viewed in the receiver, and <code>false</code> otherwise.
+ * Note that this may not reflect the javascript enablement on the currently-
+ * viewed page if <code>setJavascriptEnabled()</code> has been invoked during
+ * its lifetime.
  *
  * @return the receiver's javascript enabled state
  *
@@ -646,7 +649,7 @@ public String getBrowserType () {
  */
 public boolean getJavascriptEnabled () {
 	checkWidget();
-	return webBrowser.jsEnabled;
+	return webBrowser.jsEnabledOnNextPage;
 }
 
 public int getStyle () {
@@ -972,8 +975,7 @@ public void removeVisibilityWindowListener (VisibilityWindowListener listener) {
  */
 public void setJavascriptEnabled (boolean enabled) {
 	checkWidget();
-	webBrowser.jsEnabled = enabled;
-	webBrowser.jsEnabledChanged = true;
+	webBrowser.jsEnabledOnNextPage = enabled;
 }
 
 /**

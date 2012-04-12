@@ -656,6 +656,8 @@ public void create(Composite parent, int style) {
 						break;
 					}
 					case NavigateComplete2: {
+						jsEnabled = jsEnabledOnNextPage;
+
 						Variant varResult = event.arguments[1];
 						String url = varResult.getString();
 						if (!performingInitialNavigate) {

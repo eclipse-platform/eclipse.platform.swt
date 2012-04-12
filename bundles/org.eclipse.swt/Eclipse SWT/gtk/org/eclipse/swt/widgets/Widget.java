@@ -1578,8 +1578,8 @@ boolean setKeyState (Event event, GdkEventKey keyEvent) {
 		case OS.GDK_ISO_Left_Tab: 	event.character = SWT.TAB; break;
 		default: {
 			if (event.keyCode == 0) {
-				int [] keyval = new int [1], effective_group= new int [1], level = new int [1], consumed_modifiers = new int [1];
-				if (OS.gdk_keymap_translate_keyboard_state(OS.gdk_keymap_get_default (), keyEvent.hardware_keycode, 0, keyEvent.group, keyval, effective_group, level, consumed_modifiers)) {
+				int [] keyval = new int [1], effective_group = new int [1], level = new int [1], consumed_modifiers = new int [1];
+				if (OS.gdk_keymap_translate_keyboard_state (OS.gdk_keymap_get_default (), keyEvent.hardware_keycode, 0, keyEvent.group, keyval, effective_group, level, consumed_modifiers)) {
 					event.keyCode = OS.gdk_keyval_to_unicode (keyval [0]);
 				}
 			}
@@ -1594,7 +1594,7 @@ boolean setKeyState (Event event, GdkEventKey keyEvent) {
 			}
 		}
 	}
-	setLocationState(event, keyEvent);
+	setLocationState (event, keyEvent);
 	if (event.keyCode == 0 && event.character == 0) {
 		if (!isNull) return false;
 	}

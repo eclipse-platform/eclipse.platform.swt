@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int WebKitGTK_nativeFunctionCount = 109;
-int WebKitGTK_nativeFunctionCallCount[109];
+int WebKitGTK_nativeFunctionCount = 110;
+int WebKitGTK_nativeFunctionCallCount[110];
 char * WebKitGTK_nativeFunctionNames[] = {
 	"JSClassDefinition_1sizeof",
 	"_1JSClassCreate",
@@ -120,6 +120,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1web_1view_1get_1progress",
 	"_1webkit_1web_1view_1get_1settings",
 	"_1webkit_1web_1view_1get_1title",
+	"_1webkit_1web_1view_1get_1type",
 	"_1webkit_1web_1view_1get_1uri",
 	"_1webkit_1web_1view_1get_1window_1features",
 	"_1webkit_1web_1view_1go_1back",

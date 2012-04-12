@@ -1128,6 +1128,17 @@ public static final int /*long*/ webkit_web_view_get_title (int /*long*/ web_vie
 }
 
 /** @method flags=dynamic */
+public static final native int /*long*/ _webkit_web_view_get_type ();
+public static final int /*long*/ webkit_web_view_get_type () {
+	lock.lock();
+	try {
+		return _webkit_web_view_get_type ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native int /*long*/ _webkit_web_view_get_uri (int /*long*/ web_view);
 public static final int /*long*/ webkit_web_view_get_uri (int /*long*/ web_view) {
 	lock.lock();

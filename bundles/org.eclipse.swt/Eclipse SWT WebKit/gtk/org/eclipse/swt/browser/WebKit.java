@@ -18,7 +18,7 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.gtk.OS;
+import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.webkit.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -32,8 +32,9 @@ class WebKit extends WebBrowser {
 	byte[] htmlBytes;
 	BrowserFunction eventFunction;
 
-	static int /*long*/ ExternalClass, PostString;
-	static boolean IsWebKitGTK14orNewer, LibraryLoaded;
+	static int DisabledJSCount;
+	static int /*long*/ ExternalClass, PostString, WebViewType;
+	static boolean IsWebKit14orNewer, LibraryLoaded;
 	static Hashtable WindowMappings = new Hashtable ();
 
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
@@ -100,6 +101,8 @@ class WebKit extends WebBrowser {
 		}
 
 		if (LibraryLoaded) {
+			WebViewType = WebKitGTK.webkit_web_view_get_type ();
+
 			Proc2 = new Callback (WebKit.class, "Proc", 2); //$NON-NLS-1$
 			if (Proc2.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 			Proc3 = new Callback (WebKit.class, "Proc", 3); //$NON-NLS-1$
@@ -225,7 +228,7 @@ static boolean IsInstalled () {
 	int major = WebKitGTK.webkit_major_version ();
 	int minor = WebKitGTK.webkit_minor_version ();
 	int micro = WebKitGTK.webkit_micro_version ();
-	IsWebKitGTK14orNewer = major > 1 ||
+	IsWebKit14orNewer = major > 1 ||
 		(major == 1 && minor > 4) ||
 		(major == 1 && minor == 4 && micro >= 0);
 	return major > MIN_VERSION[0] ||
@@ -269,13 +272,56 @@ static int /*long*/ JSObjectHasPropertyProc (int /*long*/ ctx, int /*long*/ obje
 	return WebKitGTK.JSStringIsEqualToUTF8CString (propertyName, bytes);
 }
 
-static int /*long*/ JSDOMEventProc (int /*long*/ window, int /*long*/ event, int /*long*/ user_data) {
-	LONG webViewHandle = (LONG)WindowMappings.get (new LONG (window));
+static int /*long*/ JSDOMEventProc (int /*long*/ arg0, int /*long*/ event, int /*long*/ user_data) {
+	if (OS.GTK_IS_SCROLLED_WINDOW (arg0)) {
+		/*
+		 * Stop the propagation of events that are not consumed by WebKit, before
+		 * they reach the parent embedder.  These events have already been received.
+		 */
+		return user_data;
+	}
+
+	if (OS.G_TYPE_CHECK_INSTANCE_TYPE (arg0, WebViewType)) {
+		/*
+		* Only consider using GDK events to create SWT events to send if JS is disabled
+		* in one or more WebKit instances (indicates that this instance may not be
+		* receiving events from the DOM).  This check is done up-front for performance.
+		*/
+		if (DisabledJSCount > 0) {
+			final Browser browser = FindBrowser (arg0);
+			if (browser != null && !((WebKit)browser.webBrowser).jsEnabled) {
+				/* this instance does need to use the GDK event to create an SWT event to send */
+				OS.gtk_widget_event (browser.handle, event);
+				switch (OS.GDK_EVENT_TYPE (event)) {
+					case OS.GDK_KEY_PRESS: 
+						if (browser.isFocusControl ()) {
+							final GdkEventKey gdkEvent = new GdkEventKey ();
+							OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
+							if ((gdkEvent.keyval == OS.GDK_ISO_Left_Tab || gdkEvent.keyval == OS.GDK_Tab) && (gdkEvent.state & (OS.GDK_CONTROL_MASK | OS.GDK_MOD1_MASK)) == 0) {
+								browser.getDisplay ().asyncExec (new Runnable () {
+									public void run () {
+										if (browser.isDisposed ()) return;
+										if (browser.getDisplay ().getFocusControl () == null) {
+											int traversal = (gdkEvent.state & OS.GDK_SHIFT_MASK) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
+											browser.traverse (traversal);
+										}
+									}
+								});
+							}
+						}
+						break;
+				}
+			}
+		}
+		return 0;
+	}
+
+	LONG webViewHandle = (LONG)WindowMappings.get (new LONG (arg0));
 	if (webViewHandle == null) return 0;
 	Browser browser = FindBrowser (webViewHandle.value);
 	if (browser == null) return 0;
 	WebKit webkit = (WebKit)browser.webBrowser;
-	return webkit.handleEvent (event, (int)user_data) ? 0 : 1;
+	return webkit.handleDOMEvent (event, (int)user_data) ? 0 : STOP_PROPOGATE;
 }
 
 static int /*long*/ Proc (int /*long*/ handle, int /*long*/ user_data) {
@@ -286,14 +332,6 @@ static int /*long*/ Proc (int /*long*/ handle, int /*long*/ user_data) {
 }
 
 static int /*long*/ Proc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
-	if (OS.GTK_IS_SCROLLED_WINDOW (handle)) {
-		/*
-		 * Stop the propagation of events that are not consumed by WebKit, before
-		 * they reach the parent embedder.  These events have already been received.
-		 */
-		return user_data;
-	}
-
 	int /*long*/ webView;
 	if (OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.webkit_web_frame_get_type ())) {
 		webView = WebKitGTK.webkit_web_frame_get_web_view (handle);
@@ -451,14 +489,14 @@ public void create (Composite parent, int style) {
 		C.memmove (PostString, bytes, bytes.length);
 	}
 
-    scrolledWindow = OS.gtk_scrolled_window_new (0, 0);
-    OS.gtk_scrolled_window_set_policy (scrolledWindow, OS.GTK_POLICY_AUTOMATIC, OS.GTK_POLICY_AUTOMATIC);
-    webView = WebKitGTK.webkit_web_view_new ();
-    webViewData = C.malloc (C.PTR_SIZEOF);
-    C.memmove (webViewData, new int /*long*/[] {webView}, C.PTR_SIZEOF);
-    OS.gtk_container_add (scrolledWindow, webView);
-    OS.gtk_container_add (browser.handle, scrolledWindow);
-    OS.gtk_widget_show (scrolledWindow);
+	scrolledWindow = OS.gtk_scrolled_window_new (0, 0);
+	OS.gtk_scrolled_window_set_policy (scrolledWindow, OS.GTK_POLICY_AUTOMATIC, OS.GTK_POLICY_AUTOMATIC);
+	webView = WebKitGTK.webkit_web_view_new ();
+	webViewData = C.malloc (C.PTR_SIZEOF);
+	C.memmove (webViewData, new int /*long*/[] {webView}, C.PTR_SIZEOF);
+	OS.gtk_container_add (scrolledWindow, webView);
+	OS.gtk_container_add (browser.handle, scrolledWindow);
+	OS.gtk_widget_show (scrolledWindow);
 	OS.gtk_widget_show (webView);
 	OS.g_signal_connect (webView, WebKitGTK.close_web_view, Proc2.getAddress (), CLOSE_WEB_VIEW);
 	OS.g_signal_connect (webView, WebKitGTK.console_message, Proc5.getAddress (), CONSOLE_MESSAGE);
@@ -467,37 +505,43 @@ public void create (Composite parent, int style) {
 	OS.g_signal_connect (webView, WebKitGTK.hovering_over_link, Proc4.getAddress (), HOVERING_OVER_LINK);
 	OS.g_signal_connect (webView, WebKitGTK.mime_type_policy_decision_requested, Proc6.getAddress (), MIME_TYPE_POLICY_DECISION_REQUESTED);
 	OS.g_signal_connect (webView, WebKitGTK.navigation_policy_decision_requested, Proc6.getAddress (), NAVIGATION_POLICY_DECISION_REQUESTED);
-    OS.g_signal_connect (webView, WebKitGTK.notify_load_status, Proc3.getAddress (), NOTIFY_LOAD_STATUS);
-    OS.g_signal_connect (webView, WebKitGTK.notify_progress, Proc3.getAddress (), NOTIFY_PROGRESS);
-    OS.g_signal_connect (webView, WebKitGTK.notify_title, Proc3.getAddress (), NOTIFY_TITLE);
-    OS.g_signal_connect (webView, WebKitGTK.populate_popup, Proc3.getAddress (), POPULATE_POPUP);
-    OS.g_signal_connect (webView, WebKitGTK.resource_request_starting, Proc6.getAddress (), RESOURCE_REQUEST_STARTING);
-    OS.g_signal_connect (webView, WebKitGTK.status_bar_text_changed, Proc3.getAddress (), STATUS_BAR_TEXT_CHANGED);
-    OS.g_signal_connect (webView, WebKitGTK.web_view_ready, Proc2.getAddress (), WEB_VIEW_READY);
-    OS.g_signal_connect (webView, WebKitGTK.window_object_cleared, Proc5.getAddress (), WINDOW_OBJECT_CLEARED);
+	OS.g_signal_connect (webView, WebKitGTK.notify_load_status, Proc3.getAddress (), NOTIFY_LOAD_STATUS);
+	OS.g_signal_connect (webView, WebKitGTK.notify_progress, Proc3.getAddress (), NOTIFY_PROGRESS);
+	OS.g_signal_connect (webView, WebKitGTK.notify_title, Proc3.getAddress (), NOTIFY_TITLE);
+	OS.g_signal_connect (webView, WebKitGTK.populate_popup, Proc3.getAddress (), POPULATE_POPUP);
+	OS.g_signal_connect (webView, WebKitGTK.resource_request_starting, Proc6.getAddress (), RESOURCE_REQUEST_STARTING);
+	OS.g_signal_connect (webView, WebKitGTK.status_bar_text_changed, Proc3.getAddress (), STATUS_BAR_TEXT_CHANGED);
+	OS.g_signal_connect (webView, WebKitGTK.web_view_ready, Proc2.getAddress (), WEB_VIEW_READY);
+	OS.g_signal_connect (webView, WebKitGTK.window_object_cleared, Proc5.getAddress (), WINDOW_OBJECT_CLEARED);
 
 	/* Callback to get events before WebKit receives and consumes them */
-	OS.g_signal_connect (scrolledWindow, OS.event, Proc3.getAddress (), 0);
+	OS.g_signal_connect (webView, OS.button_press_event, JSDOMEventProc.getAddress (), 0);
+	OS.g_signal_connect (webView, OS.button_release_event, JSDOMEventProc.getAddress (), 0);
+	OS.g_signal_connect (webView, OS.key_press_event, JSDOMEventProc.getAddress (), 0);
+	OS.g_signal_connect (webView, OS.key_release_event, JSDOMEventProc.getAddress (), 0);
+	OS.g_signal_connect (webView, OS.scroll_event, JSDOMEventProc.getAddress (), 0);
+	OS.g_signal_connect (webView, OS.motion_notify_event, JSDOMEventProc.getAddress (), 0);
+
 	/*
 	* Callbacks to get the events not consumed by WebKit, and to block 
 	* them so that they don't get propagated to the parent handle twice.  
 	* This hook is set after WebKit and is therefore called after WebKit's 
 	* handler because GTK dispatches events in their order of registration.
 	*/
-	OS.g_signal_connect (scrolledWindow, OS.button_press_event, Proc3.getAddress (), STOP_PROPOGATE);
-	OS.g_signal_connect (scrolledWindow, OS.button_release_event, Proc3.getAddress (), STOP_PROPOGATE);
-	OS.g_signal_connect (scrolledWindow, OS.key_press_event, Proc3.getAddress (), STOP_PROPOGATE);
-	OS.g_signal_connect (scrolledWindow, OS.key_release_event, Proc3.getAddress (), STOP_PROPOGATE);
-	OS.g_signal_connect (scrolledWindow, OS.scroll_event, Proc3.getAddress (), STOP_PROPOGATE);
-	OS.g_signal_connect (scrolledWindow, OS.motion_notify_event, Proc3.getAddress (), STOP_PROPOGATE);
+	OS.g_signal_connect (scrolledWindow, OS.button_press_event, JSDOMEventProc.getAddress (), STOP_PROPOGATE);
+	OS.g_signal_connect (scrolledWindow, OS.button_release_event, JSDOMEventProc.getAddress (), STOP_PROPOGATE);
+	OS.g_signal_connect (scrolledWindow, OS.key_press_event, JSDOMEventProc.getAddress (), STOP_PROPOGATE);
+	OS.g_signal_connect (scrolledWindow, OS.key_release_event, JSDOMEventProc.getAddress (), STOP_PROPOGATE);
+	OS.g_signal_connect (scrolledWindow, OS.scroll_event, JSDOMEventProc.getAddress (), STOP_PROPOGATE);
+	OS.g_signal_connect (scrolledWindow, OS.motion_notify_event, JSDOMEventProc.getAddress (), STOP_PROPOGATE);
 
-    int /*long*/ settings = WebKitGTK.webkit_web_view_get_settings (webView);
-    OS.g_object_set (settings, WebKitGTK.javascript_can_open_windows_automatically, 1, 0);
-    OS.g_object_set (settings, WebKitGTK.enable_universal_access_from_file_uris, 1, 0);
-    byte[] bytes = Converter.wcsToMbcs (null, "UTF-8", true); // $NON-NLS-1$
-    OS.g_object_set (settings, WebKitGTK.default_encoding, bytes, 0);
+	int /*long*/ settings = WebKitGTK.webkit_web_view_get_settings (webView);
+	OS.g_object_set (settings, WebKitGTK.javascript_can_open_windows_automatically, 1, 0);
+	OS.g_object_set (settings, WebKitGTK.enable_universal_access_from_file_uris, 1, 0);
+	byte[] bytes = Converter.wcsToMbcs (null, "UTF-8", true); // $NON-NLS-1$
+	OS.g_object_set (settings, WebKitGTK.default_encoding, bytes, 0);
 
-    Listener listener = new Listener () {
+	Listener listener = new Listener () {
 		public void handleEvent (Event event) {
 			switch (event.type) {
 				case SWT.Dispose: {
@@ -585,7 +629,13 @@ public void create (Composite parent, int style) {
 }
 
 void addEventHandlers (int /*long*/ web_view, boolean top) {
-	if (top && IsWebKitGTK14orNewer) {
+	/*
+	* If JS is disabled (causes DOM events to not be delivered) then do not add event
+	* listeners here, DOM events will be inferred from received GDK events instead. 
+	*/
+	if (!jsEnabled) return;
+
+	if (top && IsWebKit14orNewer) {
 		int /*long*/ domDocument = WebKitGTK.webkit_web_view_get_dom_document (web_view);
 		if (domDocument != 0) {
 			WindowMappings.put (new LONG (domDocument), new LONG (web_view));
@@ -783,7 +833,7 @@ public String getUrl () {
 	return url;
 }
 
-boolean handleEvent (int /*long*/ event, int type) {
+boolean handleDOMEvent (int /*long*/ event, int type) {
 	/*
 	* This method handles JS events that are received through the DOM
 	* listener API that was introduced in WebKitGTK 1.4.
@@ -1128,7 +1178,7 @@ boolean handleMouseEvent (String type, int screenX, int screenY, int detail, int
 		* display, see https://bugs.webkit.org/show_bug.cgi?id=32840.  The
 		* workaround is to veto all drag attempts if using WebKitGTK 1.2.x.
 		*/
-		if (!IsWebKitGTK14orNewer) {
+		if (!IsWebKit14orNewer) {
 			browser.notifyListeners (mouseEvent.type, mouseEvent);
 			return false;
 		}
@@ -1620,8 +1670,9 @@ int /*long*/ webkit_navigation_policy_decision_requested (int /*long*/ web_view,
 		}
 	}
 	if (newEvent.doit && !browser.isDisposed ()) {
-		if (jsEnabledChanged) {
-			jsEnabledChanged = false;
+		if (jsEnabled != jsEnabledOnNextPage) {
+			jsEnabled = jsEnabledOnNextPage;
+			DisabledJSCount += !jsEnabled ? 1 : -1;
 			int /*long*/ settings = WebKitGTK.webkit_web_view_get_settings (webView);
 			OS.g_object_set (settings, WebKitGTK.enable_scripts, jsEnabled ? 1 : 0, 0);
 		}

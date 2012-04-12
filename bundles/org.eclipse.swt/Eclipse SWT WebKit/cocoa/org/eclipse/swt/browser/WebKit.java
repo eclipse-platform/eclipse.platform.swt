@@ -1494,8 +1494,8 @@ void webView_decidePolicyForNavigationAction_request_frame_decisionListener(int 
 		}
 	}
 	if (newEvent.doit) {
-		if (jsEnabledChanged) {
-			jsEnabledChanged = false;
+		if (jsEnabled != jsEnabledOnNextPage) {
+			jsEnabled = jsEnabledOnNextPage;
 			if (preferences == null) {
 				preferences = (WebPreferences)new WebPreferences ().alloc ().init ();
 				webView.setPreferences (preferences);
