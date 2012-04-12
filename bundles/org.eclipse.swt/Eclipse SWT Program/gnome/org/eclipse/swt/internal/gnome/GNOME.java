@@ -80,15 +80,7 @@ public static final long /*int*/ gnome_icon_theme_new() {
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _gnome_vfs_get_registered_mime_types();
-public static final long /*int*/ gnome_vfs_get_registered_mime_types() {
-	lock.lock();
-	try {
-		return _gnome_vfs_get_registered_mime_types();
-	} finally {
-		lock.unlock();
-	}
-}
+
 /** @param uri cast=(const char *) */
 public static final native long /*int*/ _gnome_vfs_get_mime_type(long /*int*/ uri);
 public static final long /*int*/ gnome_vfs_get_mime_type(long /*int*/ uri) {
@@ -166,16 +158,7 @@ public static final int gnome_vfs_mime_application_launch(long /*int*/ applicati
 		lock.unlock();
 	}
 }
-/** @param list cast=(GList *) */
-public static final native void _gnome_vfs_mime_extensions_list_free(long /*int*/ list);
-public static final void gnome_vfs_mime_extensions_list_free(long /*int*/ list) {
-	lock.lock();
-	try {
-		_gnome_vfs_mime_extensions_list_free(list);
-	} finally {
-		lock.unlock();
-	}
-}
+
 /** @param mimeType cast=(const char *) */
 public static final native long /*int*/ _gnome_vfs_mime_get_default_application(byte[] mimeType);
 public static final long /*int*/ gnome_vfs_mime_get_default_application(byte[] mimeType) {
@@ -186,26 +169,7 @@ public static final long /*int*/ gnome_vfs_mime_get_default_application(byte[] m
 		lock.unlock();
 	}
 }
-/** @param mime_type cast=(const char *) */
-public static final native long /*int*/ _gnome_vfs_mime_get_extensions_list(long /*int*/ mime_type);
-public static final long /*int*/ gnome_vfs_mime_get_extensions_list(long /*int*/ mime_type) {
-	lock.lock();
-	try {
-		return _gnome_vfs_mime_get_extensions_list(mime_type);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param list cast=(GList *) */
-public static final native void _gnome_vfs_mime_registered_mime_type_list_free(long /*int*/ list);
-public static final void gnome_vfs_mime_registered_mime_type_list_free(long /*int*/ list) {
-	lock.lock();
-	try {
-		_gnome_vfs_mime_registered_mime_type_list_free(list);
-	} finally {
-		lock.unlock();
-	}
-}
+
 /** @param file cast=(const char *) */
 public static final native long /*int*/ _gnome_vfs_mime_type_from_name(byte[] file);
 public static final long /*int*/ gnome_vfs_mime_type_from_name(byte[] file) {
