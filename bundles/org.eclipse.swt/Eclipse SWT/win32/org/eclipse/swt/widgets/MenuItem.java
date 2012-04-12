@@ -714,7 +714,10 @@ public void setEnabled (boolean enabled) {
 			info.cbSize = MENUITEMINFO.sizeof;
 			info.fMask = OS.MIIM_STATE;
 			boolean success = OS.GetMenuItemInfo (hMenu, id, false, info);
-			if (!success) error (SWT.ERROR_CANNOT_SET_ENABLED);
+			if (!success) {
+				int error = OS.GetLastError();
+				SWT.error (SWT.ERROR_CANNOT_SET_ENABLED, null, " [GetLastError=0x" + Integer.toHexString(error) + "]");//$NON-NLS-1$ $NON-NLS-2$
+			}
 			int bits = OS.MFS_DISABLED | OS.MFS_GRAYED;
 			if (enabled) {
 				if ((info.fState & bits) == 0) return;
@@ -736,7 +739,10 @@ public void setEnabled (boolean enabled) {
 				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 					success = id == OS.GetMenuDefaultItem (hMenu, OS.MF_BYCOMMAND, OS.GMDI_USEDISABLED);
 				}
-				if (!success) error (SWT.ERROR_CANNOT_SET_ENABLED);
+				if (!success) {
+					int error = OS.GetLastError();
+					SWT.error (SWT.ERROR_CANNOT_SET_ENABLED, null, " [GetLastError=0x" + Integer.toHexString(error) + "]");//$NON-NLS-1$ $NON-NLS-2$
+				}
 			}
 		}
 	}
@@ -954,7 +960,10 @@ void setMenu (Menu menu, boolean dispose) {
 			}
 		}
 		if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
-		if (!success) error (SWT.ERROR_CANNOT_SET_MENU);
+		if (!success) {
+			int error = OS.GetLastError();
+			SWT.error (SWT.ERROR_CANNOT_SET_MENU, null, " [GetLastError=0x" + Integer.toHexString(error) + "]");//$NON-NLS-1$ $NON-NLS-2$
+		}
 	}
 	parent.destroyAccelerators ();
 }
@@ -1022,7 +1031,10 @@ public void setSelection (boolean selected) {
 			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 				success = id == OS.GetMenuDefaultItem (hMenu, OS.MF_BYCOMMAND, OS.GMDI_USEDISABLED);
 			}
-			if (!success) error (SWT.ERROR_CANNOT_SET_SELECTION);
+			if (!success) {
+				int error = OS.GetLastError();
+				SWT.error (SWT.ERROR_CANNOT_SET_SELECTION, null, " [GetLastError=0x" + Integer.toHexString(error) + "]");//$NON-NLS-1$ $NON-NLS-2$
+			}
 		}
 	}
 	parent.redraw ();
@@ -1126,7 +1138,10 @@ public void setText (String string) {
 		success = OS.SetMenuItemInfo (hMenu, id, false, info);
 	}
 	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
-	if (!success) error (SWT.ERROR_CANNOT_SET_TEXT);
+	if (!success) {
+		int error = OS.GetLastError();
+		SWT.error (SWT.ERROR_CANNOT_SET_TEXT, null, " [GetLastError=0x" + Integer.toHexString(error) + "]");//$NON-NLS-1$ $NON-NLS-2$
+	}
 	parent.redraw ();
 }
 
