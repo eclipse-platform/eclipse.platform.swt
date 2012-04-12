@@ -55,9 +55,8 @@ public final class Program {
 	static final String PREFIX_HTTPS = "https://"; //$NON-NLS-1$
 	static final int DESKTOP_UNKNOWN = 0;
 	static final int DESKTOP_GNOME = 1;
-	static final int DESKTOP_GNOME_24 = 2;
-	static final int DESKTOP_GIO = 3;
-	static final int DESKTOP_CDE = 4;
+	static final int DESKTOP_GIO = 2;
+	static final int DESKTOP_CDE = 3;
 	static final int PREFERRED_ICON_SIZE = 16;
 	
 /**
@@ -145,7 +144,7 @@ static int getDesktop(final Display display) {
 					buffer = Converter.wcsToMbcs(null, "gnome_vfs_url_show", true);
 					long /*int*/ gnome_vfs_url_show = OS.dlsym(libgnomevfs, buffer);
 					if (gnome_vfs_url_show != 0) {
-						desktop = DESKTOP_GNOME_24;
+						desktop = DESKTOP_GNOME;
 					}
 					OS.dlclose(libgnomevfs);
 				}
@@ -404,55 +403,6 @@ static boolean gnome_24_launch(String fileName) {
 }
 
 /**
- * GNOME 2.2 - Execute the program for the given file. 
- */
-boolean gnome_execute(String fileName) {
-	if (gnomeExpectUri) {
-		/* Convert the given path into a URL */
-		byte[] fileNameBuffer = Converter.wcsToMbcs(null, fileName, true);
-		long /*int*/ uri = GNOME.gnome_vfs_make_uri_from_input(fileNameBuffer);
-		if (uri != 0) {
-			int length = OS.strlen(uri);
-			if (length > 0) {
-				byte[] buffer = new byte[length];
-				OS.memmove(buffer, uri, length);
-				fileName = new String(Converter.mbcsToWcs(null, buffer));
-			}
-			OS.g_free(uri);
-		}
-	}
-
-	/* Parse the command into its individual arguments. */
-	String[] args = parseCommand(command);
-	int fileArg = -1;
-	int index;
-	for (index = 0; index < args.length; index++) {
-		int j = args[index].indexOf("%f");
-		if (j != -1) {
-			String value = args[index];
-			fileArg = index;
-			args[index] = value.substring(0, j) + fileName + value.substring(j + 2);
-		}
-	}
-
-	/* If a file name was given but the command did not have "%f" */
-	if ((fileName.length() > 0) && (fileArg < 0)) {
-		String[] newArgs = new String[args.length + 1];
-		for (index = 0; index < args.length; index++) newArgs[index] = args[index];
-		newArgs[args.length] = fileName;
-		args = newArgs;
-	}
-
-	/* Execute the command. */
-	try {
-		Compatibility.exec(args);
-	} catch (IOException e) {
-		return false;
-	}
-	return true;
-}
-
-/**
  * GNOME - Get Image Data
  * 
  */ 
@@ -464,50 +414,6 @@ ImageData gnome_getImageData() {
 	return null;
 }
 
-/**
- * GNOME - Get mime types
- * 
- * Obtain the registered mime type information and
- * return it in a map. The key of each entry
- * in the map is the mime type name. The value is
- * a vector of the associated file extensions.
- */
-static Hashtable gnome_getMimeInfo() {
-	Hashtable mimeInfo = new Hashtable();
-	long /*int*/[] mimeData = new long /*int*/[1];
-	long /*int*/[] extensionData = new long /*int*/[1];
-	long /*int*/ mimeList = GNOME.gnome_vfs_get_registered_mime_types();
-	long /*int*/ mimeElement = mimeList;
-	while (mimeElement != 0) {
-		OS.memmove (mimeData, mimeElement, OS.PTR_SIZEOF);
-		long /*int*/ mimePtr = mimeData[0];
-		int mimeLength = OS.strlen(mimePtr);
-		byte[] mimeTypeBuffer = new byte[mimeLength];
-		OS.memmove(mimeTypeBuffer, mimePtr, mimeLength);
-		String mimeType = new String(Converter.mbcsToWcs(null, mimeTypeBuffer));
-		long /*int*/ extensionList = GNOME.gnome_vfs_mime_get_extensions_list(mimePtr);
-		if (extensionList != 0) {
-			Vector extensions = new Vector();
-			long /*int*/ extensionElement = extensionList;
-			while (extensionElement != 0) {
-				OS.memmove(extensionData, extensionElement, OS.PTR_SIZEOF);
-				long /*int*/ extensionPtr = extensionData[0];
-				int extensionLength = OS.strlen(extensionPtr);
-				byte[] extensionBuffer = new byte[extensionLength];
-				OS.memmove(extensionBuffer, extensionPtr, extensionLength);
-				String extension = new String(Converter.mbcsToWcs(null, extensionBuffer));
-				extension = '.' + extension;
-				extensions.addElement(extension);
-				extensionElement = OS.g_list_next(extensionElement); 
-			}
-			GNOME.gnome_vfs_mime_extensions_list_free(extensionList);
-			if (extensions.size() > 0) mimeInfo.put(mimeType, extensions);
-		}
-		mimeElement = OS.g_list_next(mimeElement);
-	}
-	if (mimeList != 0) GNOME.gnome_vfs_mime_registered_mime_type_list_free(mimeList);
-	return mimeInfo;
-}
 
 static String gnome_getMimeType(String extension) {
 	String mimeType = null;
@@ -625,7 +531,6 @@ static Program findProgram(Display display, String extension) {
 	String mimeType = null;
 	switch (desktop) {
 		case DESKTOP_GIO: mimeType = gio_getMimeType(extension); break;
-		case DESKTOP_GNOME_24:
 		case DESKTOP_GNOME: mimeType = gnome_getMimeType(extension); break;
 		case DESKTOP_CDE: mimeType = cde_getMimeType(extension); break;
 	}
@@ -633,7 +538,6 @@ static Program findProgram(Display display, String extension) {
 	Program program = null;
 	switch (desktop) {
 		case DESKTOP_GIO: program = gio_getProgram(display, mimeType); break;
-		case DESKTOP_GNOME_24: 
 		case DESKTOP_GNOME: program = gnome_getProgram(display, mimeType); break;
 		case DESKTOP_CDE: program = cde_getProgram(display, mimeType); break;
 	}
@@ -660,8 +564,7 @@ static String[] getExtensions(Display display) {
 	Hashtable mimeInfo = null;
 	switch (desktop) {
 		case DESKTOP_GIO: return gio_getExtensions();
-		case DESKTOP_GNOME_24: break;
-		case DESKTOP_GNOME: mimeInfo = gnome_getMimeInfo(); break;
+		case DESKTOP_GNOME: break;
 		case DESKTOP_CDE: mimeInfo = cde_getDataTypeInfo(); break;
 	}
 	if (mimeInfo == null) return new String[0];
@@ -707,8 +610,7 @@ static Program[] getPrograms(Display display) {
 	Hashtable mimeInfo = null;
 	switch (desktop) {
 		case DESKTOP_GIO: return gio_getPrograms(display);
-		case DESKTOP_GNOME_24: break;
-		case DESKTOP_GNOME: mimeInfo = gnome_getMimeInfo(); break;
+		case DESKTOP_GNOME: break;
 		case DESKTOP_CDE: mimeInfo = cde_getDataTypeInfo(); break;
 	}
 	if (mimeInfo == null) return new Program[0];
@@ -718,7 +620,6 @@ static Program[] getPrograms(Display display) {
 		String mimeType = (String)keys.nextElement();
 		Program program = null;
 		switch (desktop) {
-			case DESKTOP_GNOME: program = gnome_getProgram(display, mimeType); break;
 			case DESKTOP_CDE: program = cde_getProgram(display, mimeType); break;
 		}
 		if (program != null) programs.addElement(program);
@@ -1026,7 +927,6 @@ static String[] gio_getExtensions() {
 static boolean isExecutable(Display display, String fileName) {
 	switch(getDesktop(display)) {
 		case DESKTOP_GIO: return gio_isExecutable(fileName);
-		case DESKTOP_GNOME_24:
 		case DESKTOP_GNOME: return gnome_isExecutable(fileName);
 		case DESKTOP_CDE: return false; //cde_isExecutable()
 	}
@@ -1090,7 +990,7 @@ static boolean launch (Display display, String fileName, String workingDir) {
 	switch (getDesktop (display)) {
 		case DESKTOP_GIO:
 			if (gio_launch (fileName)) return true;
-		case DESKTOP_GNOME_24:
+		case DESKTOP_GNOME:
 			if (gnome_24_launch (fileName)) return true;
 		default:
 			int index = fileName.lastIndexOf ('.');
@@ -1153,8 +1053,7 @@ public boolean execute(String fileName) {
 	int desktop = getDesktop(display);
 	switch (desktop) {
 		case DESKTOP_GIO: return gio_execute(fileName);
-		case DESKTOP_GNOME_24: return gnome_24_execute(fileName);
-		case DESKTOP_GNOME: return gnome_execute(fileName);
+		case DESKTOP_GNOME: return gnome_24_execute(fileName);
 		case DESKTOP_CDE: return cde_execute(fileName);
 	}
 	return false;
@@ -1170,7 +1069,6 @@ public boolean execute(String fileName) {
 public ImageData getImageData() {
 	switch (getDesktop(display)) {
 		case DESKTOP_GIO: return gio_getImageData();
-		case DESKTOP_GNOME_24:
 		case DESKTOP_GNOME: return gnome_getImageData();
 		case DESKTOP_CDE: return cde_getImageData();
 	}
