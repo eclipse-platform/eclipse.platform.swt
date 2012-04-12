@@ -26,7 +26,7 @@ public class ClipboardExample {
 	Combo combo;
 	StyledText styledText;
 	Label status;
-	static final int SIZE = 60;
+	static final int HSIZE = 100, VSIZE = 60;
 	
 public static void main( String[] args) {
 	Display display = new Display();
@@ -58,22 +58,21 @@ public void open(Display display) {
 	
 	Group controlGroup = new Group(parent, SWT.NONE);
 	controlGroup.setText("Control API:");
-	data = new GridData(GridData.FILL_BOTH);
+	data = new GridData(GridData.FILL_HORIZONTAL);
 	data.horizontalSpan = 2;
 	controlGroup.setLayoutData(data);
 	controlGroup.setLayout(new GridLayout(5, false));
 	
 	Group typesGroup = new Group(parent, SWT.NONE);
 	typesGroup.setText("Available Types");
-	data = new GridData(GridData.FILL_BOTH);
+	data = new GridData(GridData.FILL_HORIZONTAL);
 	data.horizontalSpan = 2;
 	typesGroup.setLayoutData(data);
 	typesGroup.setLayout(new GridLayout(2, false));
 	
-	status = new Label(parent, SWT.BORDER);
+	status = new Label(parent, SWT.NONE);
 	data = new GridData(GridData.FILL_HORIZONTAL);
 	data.horizontalSpan = 2;
-	data.heightHint = 60;
 	status.setLayoutData(data);
 	
 	createTextTransfer(copyGroup, pasteGroup);
@@ -105,8 +104,9 @@ void createTextTransfer(Composite copyParent, Composite pasteParent) {
 	l.setText("TextTransfer:"); //$NON-NLS-1$
 	final Text copyText = new Text(copyParent, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 	copyText.setText("some\nplain\ntext");
-	GridData data = new GridData(GridData.FILL_HORIZONTAL);
-	data.heightHint = data.widthHint = SIZE;
+	GridData data = new GridData(GridData.FILL_BOTH);
+	data.widthHint = HSIZE;
+	data.heightHint = VSIZE;
 	copyText.setLayoutData(data);
 	Button b = new Button(copyParent, SWT.PUSH);
 	b.setText("Copy");
@@ -117,7 +117,7 @@ void createTextTransfer(Composite copyParent, Composite pasteParent) {
 				status.setText("");
 				clipboard.setContents(new Object[] {data}, new Transfer[] {TextTransfer.getInstance()});
 			} else {
-				status.setText("nothing to copy");
+				status.setText("No text to copy");
 			}
 		}
 	});
@@ -125,8 +125,9 @@ void createTextTransfer(Composite copyParent, Composite pasteParent) {
 	l = new Label(pasteParent, SWT.NONE);
 	l.setText("TextTransfer:"); //$NON-NLS-1$
 	final Text pasteText = new Text(pasteParent, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-	data = new GridData(GridData.FILL_HORIZONTAL);
-	data.heightHint = data.widthHint = SIZE;
+	data = new GridData(GridData.FILL_BOTH);
+	data.widthHint = HSIZE;
+	data.heightHint = VSIZE;
 	pasteText.setLayoutData(data);
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
@@ -137,7 +138,7 @@ void createTextTransfer(Composite copyParent, Composite pasteParent) {
 				status.setText("");
 				pasteText.setText("begin paste>"+data+"<end paste");
 			} else {
-				status.setText("nothing to paste");
+				status.setText("No text to paste");
 			}
 		}
 	});
@@ -148,8 +149,9 @@ void createRTFTransfer(Composite copyParent, Composite pasteParent){
 	l.setText("RTFTransfer:"); //$NON-NLS-1$
 	final Text copyRtfText = new Text(copyParent, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 	copyRtfText.setText("some\nrtf\ntext");
-	GridData data = new GridData(GridData.FILL_HORIZONTAL);
-	data.heightHint = data.widthHint = SIZE;
+	GridData data = new GridData(GridData.FILL_BOTH);
+	data.widthHint = HSIZE;
+	data.heightHint = VSIZE;
 	copyRtfText.setLayoutData(data);
 	Button b = new Button(copyParent, SWT.PUSH);
 	b.setText("Copy");
@@ -180,7 +182,7 @@ void createRTFTransfer(Composite copyParent, Composite pasteParent){
 				buffer.append("}");
 				clipboard.setContents(new Object[] {buffer.toString()}, new Transfer[] {RTFTransfer.getInstance()});
 			} else {
-				status.setText("nothing to copy");
+				status.setText("No RTF to copy");
 			}
 		}
 	});
@@ -188,8 +190,9 @@ void createRTFTransfer(Composite copyParent, Composite pasteParent){
 	l = new Label(pasteParent, SWT.NONE);
 	l.setText("RTFTransfer:"); //$NON-NLS-1$
 	final Text pasteRtfText = new Text(pasteParent, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-	data = new GridData(GridData.FILL_HORIZONTAL);
-	data.heightHint = data.widthHint = SIZE;
+	data = new GridData(GridData.FILL_BOTH);
+	data.widthHint = HSIZE;
+	data.heightHint = VSIZE;
 	pasteRtfText.setLayoutData(data);
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
@@ -200,7 +203,7 @@ void createRTFTransfer(Composite copyParent, Composite pasteParent){
 				status.setText("");
 				pasteRtfText.setText("start paste>"+data+"<end paste");
 			} else {
-				status.setText("nothing to paste");
+				status.setText("No RTF to paste");
 			}
 		}
 	});
@@ -211,8 +214,9 @@ void createHTMLTransfer(Composite copyParent, Composite pasteParent){
 	l.setText("HTMLTransfer:"); //$NON-NLS-1$
 	final Text copyHtmlText = new Text(copyParent, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 	copyHtmlText.setText("<b>Hello World</b>");
-	GridData data = new GridData(GridData.FILL_HORIZONTAL);
-	data.heightHint = data.widthHint = SIZE;
+	GridData data = new GridData(GridData.FILL_BOTH);
+	data.widthHint = HSIZE;
+	data.heightHint = VSIZE;
 	copyHtmlText.setLayoutData(data);
 	Button b = new Button(copyParent, SWT.PUSH);
 	b.setText("Copy");
@@ -223,7 +227,7 @@ void createHTMLTransfer(Composite copyParent, Composite pasteParent){
 				status.setText("");
 				clipboard.setContents(new Object[] {data}, new Transfer[] {HTMLTransfer.getInstance()});
 			} else {
-				status.setText("nothing to copy");
+				status.setText("No HTML to copy");
 			}
 		}
 	});
@@ -231,8 +235,9 @@ void createHTMLTransfer(Composite copyParent, Composite pasteParent){
 	l = new Label(pasteParent, SWT.NONE);
 	l.setText("HTMLTransfer:"); //$NON-NLS-1$
 	final Text pasteHtmlText = new Text(pasteParent, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-	data = new GridData(GridData.FILL_HORIZONTAL);
-	data.heightHint = data.widthHint = SIZE;
+	data = new GridData(GridData.FILL_BOTH);
+	data.widthHint = HSIZE;
+	data.heightHint = VSIZE;
 	pasteHtmlText.setLayoutData(data);
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
@@ -243,7 +248,7 @@ void createHTMLTransfer(Composite copyParent, Composite pasteParent){
 				status.setText("");
 				pasteHtmlText.setText("start paste>"+data+"<end paste");
 			} else {
-				status.setText("nothing to paste");
+				status.setText("No HTML to paste");
 			}
 		}
 	});
@@ -252,19 +257,18 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 	//File Transfer
 	Label l = new Label(copyParent, SWT.NONE);
 	l.setText("FileTransfer:"); //$NON-NLS-1$
+	GridData data = new GridData();
+	data.verticalSpan = 3;
+	l.setLayoutData(data);
 	
-	Composite c = new Composite(copyParent, SWT.NONE);
-	c.setLayout(new GridLayout(2, false));
-	GridData data = new GridData(GridData.FILL_HORIZONTAL);
-	c.setLayoutData(data);
-	
-	final Table copyFileTable = new Table(c, SWT.MULTI | SWT.BORDER);
-	data = new GridData(GridData.FILL_HORIZONTAL);
-	data.heightHint = data.widthHint = SIZE;
-	data.horizontalSpan = 2;
+	final Table copyFileTable = new Table(copyParent, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+	data = new GridData(GridData.FILL_BOTH);
+	data.widthHint = HSIZE;
+	data.heightHint = VSIZE;
+	data.verticalSpan = 3;
 	copyFileTable.setLayoutData(data);
 	
-	Button b = new Button(c, SWT.PUSH);
+	Button b = new Button(copyParent, SWT.PUSH);
 	b.setText("Select file(s)");
 	b.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
@@ -281,7 +285,7 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 			}
 		}
 	});
-	b = new Button(c, SWT.PUSH);
+	b = new Button(copyParent, SWT.PUSH);
 	b.setText("Select directory");
 	b.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
@@ -308,16 +312,17 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 				}
 				clipboard.setContents(new Object[] {data}, new Transfer[] {FileTransfer.getInstance()});
 			} else {
-				status.setText("nothing to copy");
+				status.setText("No file to copy");
 			}
 		}
 	});
 	
 	l = new Label(pasteParent, SWT.NONE);
 	l.setText("FileTransfer:"); //$NON-NLS-1$
-	final Table pasteFileTable = new Table(pasteParent, SWT.MULTI | SWT.BORDER);
-	data = new GridData(GridData.FILL_HORIZONTAL);
-	data.heightHint = data.widthHint = SIZE;
+	final Table pasteFileTable = new Table(pasteParent, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+	data = new GridData(GridData.FILL_BOTH);
+	data.widthHint = HSIZE;
+	data.heightHint = VSIZE;
 	pasteFileTable.setLayoutData(data);
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
@@ -332,7 +337,7 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 					item.setText(data[i]);
 				}
 			} else {
-				status.setText("nothing to paste");
+				status.setText("No file to paste");
 			}
 		}
 	});	 
@@ -342,15 +347,15 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 	final Image[] copyImage = new Image[] {null};
 	Label l = new Label(copyParent, SWT.NONE);
 	l.setText("ImageTransfer:"); //$NON-NLS-1$
+	GridData data = new GridData();
+	data.verticalSpan = 2;
+	l.setLayoutData(data);
 	
-	Composite c = new Composite(copyParent, SWT.NONE);
-	c.setLayout(new GridLayout(1, false));
-	GridData data = new GridData(GridData.FILL_HORIZONTAL);
-	c.setLayoutData(data);	
-	
-	final Canvas copyImageCanvas = new Canvas(c, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-	data = new GridData(GridData.FILL_HORIZONTAL);
-	data.heightHint = data.widthHint = SIZE;
+	final Canvas copyImageCanvas = new Canvas(copyParent, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+	data = new GridData(GridData.FILL_BOTH);
+	data.verticalSpan = 2;
+	data.widthHint = HSIZE;
+	data.heightHint = VSIZE;
 	copyImageCanvas.setLayoutData(data);	
 	
 	final Point copyOrigin = new Point(0, 0);
@@ -399,11 +404,8 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 			}
 		}
 	});
-	Button openButton = new Button(c, SWT.PUSH);
+	Button openButton = new Button(copyParent, SWT.PUSH);
 	openButton.setText("Open Image");
-	data = new GridData(GridData.FILL_HORIZONTAL);
-	data.horizontalAlignment = SWT.CENTER;
-	openButton.setLayoutData(data);
 	openButton.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
 			FileDialog dialog = new FileDialog (shell, SWT.OPEN);
@@ -430,7 +432,7 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 				copyImageCanvas.redraw();
 			}
 		}
-	});	
+	});
 	Button b = new Button(copyParent, SWT.PUSH);
 	b.setText("Copy");
 	b.addSelectionListener(new SelectionAdapter() {
@@ -439,7 +441,7 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 				status.setText("");
 				clipboard.setContents(new Object[] {copyImage[0].getImageData()}, new Transfer[] {ImageTransfer.getInstance()});
 			} else {
-				status.setText("nothing to copy");
+				status.setText("No image to copy");
 			}
 		}
 	});
@@ -448,8 +450,9 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 	l = new Label(pasteParent, SWT.NONE);
 	l.setText("ImageTransfer:");
 	final Canvas pasteImageCanvas = new Canvas(pasteParent, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-	data = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
-	data.heightHint = data.widthHint = SIZE;
+	data = new GridData(GridData.FILL_BOTH);
+	data.widthHint = HSIZE;
+	data.heightHint = VSIZE;
 	pasteImageCanvas.setLayoutData(data);
 	final Point pasteOrigin = new Point(0, 0);
 	final ScrollBar pasteHBar = pasteImageCanvas.getHorizontalBar();
@@ -522,7 +525,7 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 				pasteHBar.setSelection(0);
 				pasteImageCanvas.redraw();
 			} else {
-				status.setText("nothing to paste");
+				status.setText("No image to paste");
 			}			
 		}
 	});	
@@ -532,6 +535,7 @@ void createMyTransfer(Composite copyParent, Composite pasteParent){
 	// TODO
 }
 void createControlTransfer(Composite parent){
+	// TODO: CCombo and Spinner also have cut(), copy() and paste() API
 	Label l = new Label(parent, SWT.NONE);
 	l.setText("Text:");
 	Button b = new Button(parent, SWT.PUSH);
@@ -557,7 +561,8 @@ void createControlTransfer(Composite parent){
 	});
 	text = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 	GridData data = new GridData(GridData.FILL_HORIZONTAL);
-	data.heightHint = data.widthHint = SIZE;
+	data.widthHint = HSIZE;
+	data.heightHint = VSIZE;
 	text.setLayoutData(data);
 	
 	l = new Label(parent, SWT.NONE);
@@ -585,11 +590,17 @@ void createControlTransfer(Composite parent){
 	});
 	combo = new Combo(parent, SWT.NONE);
 	combo.setItems(new String[] {"Item 1", "Item 2", "Item 3", "A longer Item"});
+	combo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	
 	l = new Label(parent, SWT.NONE);
 	l.setText("StyledText:");
-	l = new Label(parent, SWT.NONE);
-	l.setVisible(false);
+	b = new Button(parent, SWT.PUSH);
+	b.setText("Cut");
+	b.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			styledText.cut();
+		}
+	});
 	b = new Button(parent, SWT.PUSH);
 	b.setText("Copy");
 	b.addSelectionListener(new SelectionAdapter() {
@@ -606,13 +617,14 @@ void createControlTransfer(Composite parent){
 	});
 	styledText = new StyledText(parent, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 	data = new GridData(GridData.FILL_HORIZONTAL);
-	data.heightHint = data.widthHint = SIZE;
+	data.widthHint = HSIZE;
+	data.heightHint = VSIZE;
 	styledText.setLayoutData(data);
 }
 void createAvailableTypes(Composite parent){
 	final List list = new List(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	GridData data = new GridData(GridData.FILL_BOTH);
-	data.heightHint = 100;
+	data.heightHint = VSIZE;
 	list.setLayoutData(data);
 	Button b = new Button(parent, SWT.PUSH);
 	b.setText("Get Available Types");
