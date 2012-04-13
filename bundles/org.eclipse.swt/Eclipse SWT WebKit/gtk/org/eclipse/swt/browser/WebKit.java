@@ -289,7 +289,7 @@ static int /*long*/ JSDOMEventProc (int /*long*/ arg0, int /*long*/ event, int /
 		*/
 		if (DisabledJSCount > 0) {
 			final Browser browser = FindBrowser (arg0);
-			if (browser != null && !((WebKit)browser.webBrowser).jsEnabled) {
+			if (browser != null && !browser.webBrowser.jsEnabled) {
 				/* this instance does need to use the GDK event to create an SWT event to send */
 				switch (OS.GDK_EVENT_TYPE (event)) {
 					case OS.GDK_KEY_PRESS: {
@@ -320,7 +320,7 @@ static int /*long*/ JSDOMEventProc (int /*long*/ arg0, int /*long*/ event, int /
 									if ((gdkEvent.state & OS.GDK_MOD1_MASK) != 0) keyEvent.stateMask |= SWT.ALT;
 									if ((gdkEvent.state & OS.GDK_SHIFT_MASK) != 0) keyEvent.stateMask |= SWT.SHIFT;
 									if ((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0) keyEvent.stateMask |= SWT.CONTROL;
-									((WebKit)browser.webBrowser).sendKeyEvent (keyEvent);
+									browser.webBrowser.sendKeyEvent (keyEvent);
 									return 1;
 								}
 							}
