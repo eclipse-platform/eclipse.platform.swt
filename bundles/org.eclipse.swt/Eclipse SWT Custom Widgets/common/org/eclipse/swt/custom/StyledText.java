@@ -5971,7 +5971,7 @@ void handleMenuDetect(Event event) {
 	if (event.detail == SWT.MENU_KEYBOARD) {
 		Point point = getDisplay().map(this, null, getPointAtOffset(caretOffset));
 		event.x = point.x;
-		event.y = point.y;
+		event.y = point.y + getLineHeight(caretOffset);
 	}
 }
 /** 
