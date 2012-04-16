@@ -451,13 +451,13 @@ void printWindow (boolean first, Control control, GC gc, int /*long*/ drawable, 
 		int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
 		int /*long*/ xDrawable = OS.GDK_PIXMAP_XID(real_drawable [0]);
 		int /*long*/ surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width [0], height [0]);
-		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		if (surface == 0) error(SWT.ERROR_NO_HANDLES);
 		Cairo.cairo_save(cairo);
 		Cairo.cairo_rectangle(cairo, destX , destY, destWidth, destHeight);
 		Cairo.cairo_clip(cairo);
 		Cairo.cairo_translate(cairo, destX, destY);
 		int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface(surface);
-		if (pattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		if (pattern == 0) error(SWT.ERROR_NO_HANDLES);
 		Cairo.cairo_pattern_set_filter(pattern, Cairo.CAIRO_FILTER_BEST);
 		Cairo.cairo_set_source(cairo, pattern);
 		if (gcData.alpha != 0xFF) {
@@ -3224,7 +3224,7 @@ void gtk_widget_size_request (int /*long*/ widget, GtkRequisition requisition) {
 public int /*long*/ internal_new_GC (GCData data) {
 	checkWidget ();
 	int /*long*/ window = paintWindow ();
-	if (window == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (window == 0) error (SWT.ERROR_NO_HANDLES);
 	int /*long*/ gc;
 	if (OS.USE_CAIRO) {
 		gc = OS.gdk_cairo_create (window);
@@ -3721,7 +3721,7 @@ public void setBackground (Color color) {
 	if (((state & BACKGROUND) == 0) && color == null) return;
 	GdkColor gdkColor = null;
 	if (color != null) {
-		if (color.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		gdkColor = color.handle;
 	}
 	boolean set = false;
@@ -3801,7 +3801,7 @@ void setBackgroundColor (GdkColor color) {
  */
 public void setBackgroundImage (Image image) {
 	checkWidget ();
-	if (image != null && image.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (image != null && image.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (image == backgroundImage) return;
 	this.backgroundImage = image;
 	if (backgroundImage != null) {
@@ -4032,7 +4032,7 @@ public void setFont (Font font) {
 	if (font == null) {
 		fontDesc = defaultFont ().handle;
 	} else {
-		if (font.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (font.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		fontDesc = font.handle;
 	}
 	if (font == null) {
@@ -4069,7 +4069,7 @@ public void setForeground (Color color) {
 	if (((state & FOREGROUND) == 0) && color == null) return;
 	GdkColor gdkColor = null;
 	if (color != null) {
-		if (color.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		gdkColor = color.handle;
 	}
 	boolean set = false;
@@ -4206,8 +4206,8 @@ public void setOrientation (int orientation) {
  */
 public boolean setParent (Composite parent) {
 	checkWidget ();
-	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if (parent.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (this.parent == parent) return true;
 	if (!isReparentable ()) return false;
 	OS.gtk_widget_realize (parent.handle);

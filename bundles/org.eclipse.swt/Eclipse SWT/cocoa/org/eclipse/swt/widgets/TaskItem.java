@@ -238,7 +238,7 @@ void releaseWidget () {
 public void setMenu (Menu menu) {
 	checkWidget ();
 	if (menu != null) {
-		if (menu.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (menu.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((menu.style & SWT.POP_UP) == 0) {
 			error (SWT.ERROR_MENU_NOT_POP_UP);
 		}

@@ -147,7 +147,7 @@ public String getMessage () {
  * </ul>
  */
 public String open () {
-	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
+	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 	
 	int /*long*/ hHeap = OS.GetProcessHeap ();
 	
@@ -180,7 +180,7 @@ public String open () {
 	/* Create the BrowseCallbackProc */
 	Callback callback = new Callback (this, "BrowseCallbackProc", 4); //$NON-NLS-1$
 	int /*long*/ lpfn = callback.getAddress ();
-	if (lpfn == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	if (lpfn == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	/* Make the parent shell be temporary modal */
 	Dialog oldModal = null;

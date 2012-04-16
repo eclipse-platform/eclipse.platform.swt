@@ -265,7 +265,7 @@ void createHandle (int index) {
 		OS.gtk_window_set_type_hint (handle, OS.GDK_WINDOW_TYPE_HINT_TOOLTIP);
 	} else {
 		handle = OS.gtk_tooltips_new ();
-		if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		/*
 		* Bug in Solaris-GTK.  Invoking gtk_tooltips_force_window()
 		* can cause a crash in older versions of GTK.  The fix is
@@ -691,7 +691,7 @@ public void setLocation (int x, int y) {
  */
 public void setLocation (Point location) {
 	checkWidget ();
-	if (location == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
 }
 

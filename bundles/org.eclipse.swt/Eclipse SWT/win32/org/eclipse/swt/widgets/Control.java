@@ -1696,7 +1696,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 	} else {
 		hDC = OS.BeginPaint (hwnd, data.ps);
 	}
-	if (hDC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (hDC == 0) error(SWT.ERROR_NO_HANDLES);
 	if (data != null) {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 			int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
@@ -2140,7 +2140,7 @@ public boolean print (GC gc) {
 			int /*long*/ clipRgn = 0;
 			Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
 			int /*long*/ rgn = Gdip.Region_new();
-			if (rgn == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			if (rgn == 0) error(SWT.ERROR_NO_HANDLES);
 			Gdip.Graphics_GetClip(gdipGraphics, rgn);
 			if (!Gdip.Region_IsInfinite(rgn, gdipGraphics)) {
 				clipRgn = Gdip.Region_GetHRGN(rgn, gdipGraphics);
@@ -2149,7 +2149,7 @@ public boolean print (GC gc) {
 			Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 			float[] lpXform = null;
 			int /*long*/ matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
-			if (matrix == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			if (matrix == 0) error(SWT.ERROR_NO_HANDLES);
 			Gdip.Graphics_GetTransform(gdipGraphics, matrix);
 			if (!Gdip.Matrix_IsIdentity(matrix)) {
 				lpXform = new float[6];
@@ -2991,7 +2991,7 @@ public void setBackground (Color color) {
 	checkWidget ();
 	int pixel = -1;
 	if (color != null) {
-		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
 	}
 	if (pixel == background) return;
@@ -3198,7 +3198,7 @@ void setCursor () {
  */
 public void setCursor (Cursor cursor) {
 	checkWidget ();
-	if (cursor != null && cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (cursor != null && cursor.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.cursor = cursor;
 	if (OS.IsWinCE) {
 		int /*long*/ hCursor = cursor != null ? cursor.handle : 0;
@@ -3322,7 +3322,7 @@ public void setFont (Font font) {
 	checkWidget ();
 	int /*long*/ hFont = 0;
 	if (font != null) { 
-		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (font.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		hFont = font.handle;
 	}
 	this.font = font;
@@ -3351,7 +3351,7 @@ public void setForeground (Color color) {
 	checkWidget ();
 	int pixel = -1;
 	if (color != null) {
-		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
 	}
 	if (pixel == foreground) return;
@@ -3454,7 +3454,7 @@ public void setLocation (Point location) {
 public void setMenu (Menu menu) {
 	checkWidget ();
 	if (menu != null) {
-		if (menu.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (menu.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((menu.style & SWT.POP_UP) == 0) {
 			error (SWT.ERROR_MENU_NOT_POP_UP);
 		}
@@ -4496,7 +4496,7 @@ int widgetStyle () {
 public boolean setParent (Composite parent) {
 	checkWidget ();
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (parent.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (this.parent == parent) return true;
 	if (!isReparentable ()) return false;
 	releaseParent ();

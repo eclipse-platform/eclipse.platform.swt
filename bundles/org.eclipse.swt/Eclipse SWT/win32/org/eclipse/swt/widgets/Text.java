@@ -475,7 +475,7 @@ void applySegments () {
 
 	for (int i = 1; i < nSegments; i++) {
 		if (event.segments [i] < event.segments [i - 1] || event.segments [i] > length) {
-			SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+			error (SWT.ERROR_INVALID_ARGUMENT);
 		}
 	}
 	int/*64*/ limit = (int/*64*/)OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7fffffff;
@@ -1634,7 +1634,7 @@ public void removeModifyListener (ModifyListener listener) {
  */
 public void removeSegmentListener (SegmentListener listener) {
 	checkWidget ();
-	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	eventTable.unhook (SWT.Segments, listener);
 }
 

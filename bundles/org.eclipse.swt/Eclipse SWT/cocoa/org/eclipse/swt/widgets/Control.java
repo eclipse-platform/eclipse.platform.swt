@@ -1866,7 +1866,7 @@ NSBezierPath getPath(Region region) {
 
 NSBezierPath getPath(int /*long*/ region) {
 	Callback callback = new Callback(this, "regionToRects", 4);
-	if (callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+	if (callback.getAddress() == 0) error(SWT.ERROR_NO_MORE_CALLBACKS);
 	NSBezierPath path = NSBezierPath.bezierPath();
 	path.retain();
 	OS.QDRegionToRects(region, OS.kQDParseRegionFromTopLeft, callback.getAddress(), path.id);
@@ -3447,7 +3447,7 @@ void setBackground () {
 public void setBackground (Color color) {
 	checkWidget();
 	if (color != null) {
-		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	float /*double*/ [] background = color != null ? color.handle : null;
 	if (equals (background, this.background)) return;
@@ -3480,7 +3480,7 @@ public void setBackground (Color color) {
  */
 public void setBackgroundImage (Image image) {
 	checkWidget();
-	if (image != null && image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (image == backgroundImage) return;
 	backgroundImage = image;
 	updateBackgroundImage();
@@ -3728,7 +3728,7 @@ public boolean setFocus () {
 public void setFont (Font font) {
 	checkWidget();
 	if (font != null) { 
-		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (font.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.font = font;
 	setFont (font != null ? font.handle : defaultFont().handle);
@@ -3760,7 +3760,7 @@ void setFont (NSFont font) {
 public void setForeground (Color color) {
 	checkWidget();
 	if (color != null) {
-		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	float /*double*/ [] foreground = color != null ? color.handle : null;
 	if (equals (foreground, this.foreground)) return;
@@ -3883,7 +3883,7 @@ public void setLocation (Point location) {
 public void setMenu (Menu menu) {
 	checkWidget();
 	if (menu != null) {
-		if (menu.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (menu.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((menu.style & SWT.POP_UP) == 0) {
 			error (SWT.ERROR_MENU_NOT_POP_UP);
 		}
@@ -3932,7 +3932,7 @@ public void setOrientation (int orientation) {
 public boolean setParent (Composite parent) {
 	checkWidget();
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (parent.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (this.parent == parent) return true;
 	if (!isReparentable ()) return false;
 	releaseParent ();

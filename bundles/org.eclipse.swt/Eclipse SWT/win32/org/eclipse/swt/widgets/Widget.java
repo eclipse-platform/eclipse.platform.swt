@@ -50,7 +50,7 @@ public abstract class Widget {
 	Display display;
 	EventTable eventTable;
 	Object data;
-
+	
 	/* Global state flags */
 	static final int DISPOSED		= 1<<0;
 	static final int CANVAS			= 1<<1;

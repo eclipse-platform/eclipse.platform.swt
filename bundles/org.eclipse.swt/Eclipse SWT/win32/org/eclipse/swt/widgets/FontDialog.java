@@ -152,7 +152,7 @@ public RGB getRGB () {
  * </ul>
  */
 public FontData open () {
-	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
+	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 	
 	/* Get the owner HWND for the dialog */
 	int /*long*/ hwndOwner = parent.handle;

@@ -308,7 +308,7 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 			int yoffset = (int) Math.floor (OS.GTK_WIDGET_Y (widget) + ((OS.GTK_WIDGET_HEIGHT (widget) - OS.GTK_WIDGET_REQUISITION_HEIGHT (widget)) * 0.5) + 0.5);
 			Rectangle b = image.getBounds();
 			int /*long*/ gdkImagePtr = OS.gdk_drawable_get_image (image.mask, 0, 0, b.width, b.height);
-			if (gdkImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			if (gdkImagePtr == 0) error(SWT.ERROR_NO_HANDLES);
 			GdkImage gdkImage = new GdkImage();
 			OS.memmove (gdkImage, gdkImagePtr);
 			byte[] maskData = new byte [gdkImage.bpl * gdkImage.height];

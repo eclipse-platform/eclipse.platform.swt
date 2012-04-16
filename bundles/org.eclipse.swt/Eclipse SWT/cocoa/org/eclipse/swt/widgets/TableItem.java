@@ -695,7 +695,7 @@ void releaseWidget () {
 public void setBackground (Color color) {
 	checkWidget ();
 	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	Color oldColor = background;
 	if (oldColor == color) return;
@@ -726,7 +726,7 @@ public void setBackground (Color color) {
 public void setBackground (int index, Color color) {
 	checkWidget ();
 	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;
@@ -782,7 +782,7 @@ public void setChecked (boolean checked) {
 public void setFont (Font font) {
 	checkWidget ();
 	if (font != null && font.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	Font oldFont = this.font;
 	if (oldFont == font) return;
@@ -815,7 +815,7 @@ public void setFont (Font font) {
 public void setFont (int index, Font font) {
 	checkWidget ();
 	if (font != null && font.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;
@@ -852,7 +852,7 @@ public void setFont (int index, Font font) {
 public void setForeground (Color color) {
 	checkWidget ();
 	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	Color oldColor = foreground;
 	if (oldColor == color) return;
@@ -883,7 +883,7 @@ public void setForeground (Color color) {
 public void setForeground (int index, Color color) {
 	checkWidget ();
 	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;

@@ -5093,8 +5093,8 @@ public void setSortDirection (int direction) {
  */
 public void setTopItem (TreeItem item) {
 	checkWidget ();
-	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if (item.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	int /*long*/ hItem = item.handle;
 	int /*long*/ hTopItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 	if (hItem == hTopItem) return;
@@ -5907,7 +5907,7 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 			OS.MoveMemory (bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
 			int /*long*/ [] pBits = new int /*long*/ [1];
 			int /*long*/ memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
-			if (memDib == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+			if (memDib == 0) error (SWT.ERROR_NO_HANDLES);
 			int /*long*/ oldMemBitmap = OS.SelectObject (memHdc, memDib);
 			int colorKey = 0x0000FD;
 			POINT pt = new POINT ();

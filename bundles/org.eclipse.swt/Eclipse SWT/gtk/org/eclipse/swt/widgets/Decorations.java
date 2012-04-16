@@ -231,7 +231,7 @@ Control computeTabRoot () {
 void createAccelGroup () {
 	if (accelGroup != 0) return;
 	accelGroup = OS.gtk_accel_group_new ();
-	if (accelGroup == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (accelGroup == 0) error (SWT.ERROR_NO_HANDLES);
 	//FIXME - what should we do for Decorations
 	int /*long*/ shellHandle = topHandle ();
 	OS.gtk_window_add_accel_group (shellHandle, accelGroup);

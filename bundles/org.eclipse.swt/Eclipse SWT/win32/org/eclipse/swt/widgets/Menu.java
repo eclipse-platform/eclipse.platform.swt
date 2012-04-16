@@ -1288,7 +1288,7 @@ void reskinChildren (int flags) {
 	checkWidget ();
 	int pixel = -1;
 	if (color != null) {
-		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
 	}
 	if (pixel == background) return;
@@ -1347,7 +1347,7 @@ void reskinChildren (int flags) {
 	checkWidget ();
 	int pixel = -1;
 	if (color != null) {
-		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
 	}
 	if (pixel == foreground) return;
@@ -1457,7 +1457,7 @@ public void setLocation (int x, int y) {
  */
 public void setLocation (Point location) {
 	checkWidget ();
-	if (location == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
 }
 

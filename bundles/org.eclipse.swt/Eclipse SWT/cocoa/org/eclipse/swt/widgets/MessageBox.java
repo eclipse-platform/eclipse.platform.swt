@@ -212,7 +212,7 @@ public int open () {
 	if ((style & SWT.SHEET) != 0) {
 		delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
 		jniRef = OS.NewGlobalRef(this);
-		if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		if (jniRef == 0) error(SWT.ERROR_NO_HANDLES);
 		OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
 		alert.beginSheetModalForWindow(parent.view.window (), delegate, OS.sel_panelDidEnd_returnCode_contextInfo_, 0);
 		display.setModalDialog(this);

@@ -168,7 +168,7 @@ public RGB open() {
 	}
 	SWTPanelDelegate delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
 	int /*long*/ jniRef = OS.NewGlobalRef(this);
-	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (jniRef == 0) error(SWT.ERROR_NO_HANDLES);
 	OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
 	panel.setDelegate(delegate);
 	rgb = null;

@@ -2098,7 +2098,7 @@ public Monitor [] getMonitors () {
 	monitors = new Monitor [4];
 	Callback callback = new Callback (this, "monitorEnumProc", 4); //$NON-NLS-1$
 	int /*long*/ lpfnEnum = callback.getAddress ();
-	if (lpfnEnum == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	if (lpfnEnum == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.EnumDisplayMonitors (0, null, lpfnEnum, 0);
 	callback.dispose ();
 	Monitor [] result = new Monitor [monitorCount];
@@ -2184,7 +2184,7 @@ public Monitor getPrimaryMonitor () {
 	monitors = new Monitor [4];
 	Callback callback = new Callback (this, "monitorEnumProc", 4); //$NON-NLS-1$
 	int /*long*/ lpfnEnum = callback.getAddress ();
-	if (lpfnEnum == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	if (lpfnEnum == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.EnumDisplayMonitors (0, null, lpfnEnum, 0);
 	callback.dispose ();
 	Monitor result = null;
@@ -2668,9 +2668,9 @@ int /*long*/ hTabTheme () {
  * @noreference This method is not intended to be referenced by clients.
  */
 public int /*long*/ internal_new_GC (GCData data) {
-	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+	if (isDisposed()) error(SWT.ERROR_DEVICE_DISPOSED);
 	int /*long*/ hDC = OS.GetDC (0);
-	if (hDC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (hDC == 0) error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) != 0) {

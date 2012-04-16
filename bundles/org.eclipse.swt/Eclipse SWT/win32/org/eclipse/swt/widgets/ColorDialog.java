@@ -202,7 +202,7 @@ public RGB open () {
 	/* Create the CCHookProc */
 	Callback callback = new Callback (this, "CCHookProc", 4); //$NON-NLS-1$
 	int /*long*/ lpfnHook = callback.getAddress ();
-	if (lpfnHook == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+	if (lpfnHook == 0) error(SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	/* Allocate the Custom Colors and initialize to white */
 	display = parent.display;

@@ -100,7 +100,7 @@ boolean drawCaret () {
 	int /*long*/ window = parent.paintWindow ();
 	if (OS.USE_CAIRO) {
 		int /*long*/ cairo = OS.gdk_cairo_create(window);
-		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		if (cairo == 0) error(SWT.ERROR_NO_HANDLES);
 		Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
 		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);
 		if (image != null && !image.isDisposed() && image.mask == 0) {

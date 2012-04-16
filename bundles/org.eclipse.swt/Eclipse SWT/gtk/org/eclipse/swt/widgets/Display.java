@@ -927,13 +927,13 @@ void createDisplay (DeviceData data) {
 		byte [] type_name = Converter.wcsToMbcs (null, "SwtFixed", true); //$NON-NLS-1$
 		fixedClassInitCallback = new Callback (getClass (), "fixedClassInitProc", 2); //$NON-NLS-1$
 		fixedClassInitProc = fixedClassInitCallback.getAddress ();
-		if (fixedClassInitProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		if (fixedClassInitProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		fixedMapCallback = new Callback (getClass (), "fixedMapProc", 1); //$NON-NLS-1$
 		fixedMapProc = fixedMapCallback.getAddress ();
-		if (fixedMapProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		if (fixedMapProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		fixedSizeAllocateCallback = new Callback (getClass (), "fixedSizeAllocateProc", 2); //$NON-NLS-1$
 		fixedSizeAllocateProc = fixedSizeAllocateCallback.getAddress ();
-		if (fixedSizeAllocateProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		if (fixedSizeAllocateProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		GTypeInfo fixed_info = new GTypeInfo ();
 		fixed_info.class_size = (short) OS.GtkFixedClass_sizeof ();
 		fixed_info.class_init = fixedClassInitProc;
@@ -945,17 +945,17 @@ void createDisplay (DeviceData data) {
 	if (rendererClassInitProc == 0) {
 		rendererClassInitCallback = new Callback (getClass (), "rendererClassInitProc", 2); //$NON-NLS-1$
 		rendererClassInitProc = rendererClassInitCallback.getAddress ();
-		if (rendererClassInitProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		if (rendererClassInitProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 	if (rendererRenderProc == 0) {
 		rendererRenderCallback = new Callback (getClass (), "rendererRenderProc", 7); //$NON-NLS-1$
 		rendererRenderProc = rendererRenderCallback.getAddress ();
-		if (rendererRenderProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		if (rendererRenderProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 	if (rendererGetSizeProc == 0) {
 		rendererGetSizeCallback = new Callback (getClass (), "rendererGetSizeProc", 7); //$NON-NLS-1$
 		rendererGetSizeProc = rendererGetSizeCallback.getAddress ();
-		if (rendererGetSizeProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		if (rendererGetSizeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 	if (text_renderer_type == 0) {
 		GTypeInfo renderer_info = new GTypeInfo ();
@@ -997,13 +997,13 @@ void createDisplay (DeviceData data) {
 
 	/* Initialize the hidden shell */
 	shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
-	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_widget_realize (shellHandle);
 
 	/* Initialize the filter and event callback */
 	eventCallback = new Callback (this, "eventProc", 2); //$NON-NLS-1$
 	eventProc = eventCallback.getAddress ();
-	if (eventProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	if (eventProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.gdk_event_handler_set (eventProc, 0, 0);
 	filterCallback = new Callback (this, "filterProc", 3); //$NON-NLS-1$
 	filterProc = filterCallback.getAddress ();
@@ -1020,7 +1020,7 @@ void createDisplay (DeviceData data) {
 
 	signalCallback = new Callback (this, "signalProc", 3); //$NON-NLS-1$
 	signalProc = signalCallback.getAddress ();
-	if (signalProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	if (signalProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.gtk_widget_add_events (shellHandle, OS.GDK_PROPERTY_CHANGE_MASK);
 	OS.g_signal_connect (shellHandle, OS.property_notify_event, signalProc, PROPERTY_NOTIFY);
 }
@@ -2179,7 +2179,7 @@ void initializeSystemColors () {
 	
 	/* Get Tooltip resources */
 	int /*long*/ tooltipShellHandle = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
-	if (tooltipShellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (tooltipShellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	byte[] gtk_tooltips = Converter.wcsToMbcs (null, "gtk-tooltips", true); //$NON-NLS-1$
 	OS.gtk_widget_set_name (tooltipShellHandle, gtk_tooltips);
 	OS.gtk_widget_realize (tooltipShellHandle);
@@ -2428,7 +2428,7 @@ void initializeCallbacks () {
 
 	windowCallback2 = new Callback (this, "windowProc", 2); //$NON-NLS-1$
 	windowProc2 = windowCallback2.getAddress ();
-	if (windowProc2 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	if (windowProc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	closures [Widget.ACTIVATE] = OS.g_cclosure_new (windowProc2, Widget.ACTIVATE, 0);
 	closures [Widget.ACTIVATE_INVERSE] = OS.g_cclosure_new (windowProc2, Widget.ACTIVATE_INVERSE, 0);
@@ -2462,7 +2462,7 @@ void initializeCallbacks () {
 
 	windowCallback3 = new Callback (this, "windowProc", 3); //$NON-NLS-1$
 	windowProc3 = windowCallback3.getAddress ();
-	if (windowProc3 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);	
+	if (windowProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);	
 
 	closures [Widget.BUTTON_PRESS_EVENT] = OS.g_cclosure_new (windowProc3, Widget.BUTTON_PRESS_EVENT, 0);
 	closures [Widget.BUTTON_PRESS_EVENT_INVERSE] = OS.g_cclosure_new (windowProc3, Widget.BUTTON_PRESS_EVENT_INVERSE, 0);
@@ -2502,7 +2502,7 @@ void initializeCallbacks () {
 
 	windowCallback4 = new Callback (this, "windowProc", 4); //$NON-NLS-1$
 	windowProc4 = windowCallback4.getAddress ();
-	if (windowProc4 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);	
+	if (windowProc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);	
 
 	closures [Widget.DELETE_RANGE] = OS.g_cclosure_new (windowProc4, Widget.DELETE_RANGE, 0);
 	closures [Widget.DELETE_TEXT] = OS.g_cclosure_new (windowProc4, Widget.DELETE_TEXT, 0);
@@ -2519,7 +2519,7 @@ void initializeCallbacks () {
 
 	windowCallback5 = new Callback (this, "windowProc", 5); //$NON-NLS-1$
 	windowProc5 = windowCallback5.getAddress ();
-	if (windowProc5 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	if (windowProc5 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	closures [Widget.CHANGE_VALUE] = OS.g_cclosure_new (windowProc5, Widget.CHANGE_VALUE, 0);
 	closures [Widget.EXPAND_COLLAPSE_CURSOR_ROW] = OS.g_cclosure_new (windowProc5, Widget.EXPAND_COLLAPSE_CURSOR_ROW, 0);
@@ -2691,16 +2691,16 @@ public void internal_dispose_GC (int /*long*/ hDC, GCData data) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public int /*long*/ internal_new_GC (GCData data) {
-	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+	if (isDisposed()) error(SWT.ERROR_DEVICE_DISPOSED);
 	int /*long*/ root = OS.gdk_get_default_root_window();
 	int /*long*/ gc;
 	if (OS.USE_CAIRO) {
 		gc = OS.gdk_cairo_create (root);
-		if (gc == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+		if (gc == 0) error (SWT.ERROR_NO_HANDLES);
 		//TODO how gdk_gc_set_subwindow is done in cairo?
 	} else {
 		gc = OS.gdk_gc_new (root);
-		if (gc == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+		if (gc == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gdk_gc_set_subwindow (gc, OS.GDK_INCLUDE_INFERIORS);
 	}
 	if (data != null) {

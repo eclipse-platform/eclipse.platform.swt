@@ -1147,7 +1147,7 @@ public void removeAll () {
 public void setBackground (Color color) {
 	checkWidget ();
 	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (_getBackground ().equals (color)) return;
 	GdkColor gdkColor = color != null ? color.handle : null;
@@ -1187,7 +1187,7 @@ public void setBackground (Color color) {
 public void setBackground (int index, Color color) {
 	checkWidget ();
 	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (_getBackground (index).equals (color)) return;
 	int count = Math.max (1, parent.getColumnCount ());
@@ -1308,7 +1308,7 @@ public void setExpanded (boolean expanded) {
 public void setFont (Font font){
 	checkWidget ();
 	if (font != null && font.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	Font oldFont = this.font;
 	if (oldFont == font) return;
@@ -1351,7 +1351,7 @@ public void setFont (Font font){
 public void setFont (int index, Font font) {
 	checkWidget ();
 	if (font != null && font.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
@@ -1426,7 +1426,7 @@ public void setFont (int index, Font font) {
 public void setForeground (Color color){
 	checkWidget ();
 	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (_getForeground ().equals (color)) return;
 	GdkColor gdkColor = color != null ? color.handle : null;
@@ -1466,7 +1466,7 @@ public void setForeground (Color color){
 public void setForeground (int index, Color color){
 	checkWidget ();
 	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (_getForeground (index).equals (color)) return;
 	int count = Math.max (1, parent.getColumnCount ());

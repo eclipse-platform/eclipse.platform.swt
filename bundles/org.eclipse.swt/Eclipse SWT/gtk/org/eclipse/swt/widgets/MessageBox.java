@@ -152,7 +152,7 @@ public int open () {
 	
 	byte [] buffer = Converter.wcsToMbcs (null, fixPercent (message), true);
 	handle = OS.gtk_message_dialog_new(parentHandle, dialogFlags, messageType, 0, buffer);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 	if (parentHandle != 0) {
 		int /*long*/ pixbufs = OS.gtk_window_get_icon_list (parentHandle);
 		if (pixbufs != 0) {

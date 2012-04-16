@@ -5861,7 +5861,7 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 			OS.MoveMemory (bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
 			int /*long*/ [] pBits = new int /*long*/ [1];
 			int /*long*/ memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
-			if (memDib == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+			if (memDib == 0) error (SWT.ERROR_NO_HANDLES);
 			int /*long*/ oldMemBitmap = OS.SelectObject (memHdc, memDib);
 			int colorKey = 0x0000FD;
 			POINT pt = new POINT();

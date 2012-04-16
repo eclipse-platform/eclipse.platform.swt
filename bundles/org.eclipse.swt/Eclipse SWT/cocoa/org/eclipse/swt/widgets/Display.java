@@ -2980,7 +2980,7 @@ void initFonts () {
  * @noreference This method is not intended to be referenced by clients.
  */
 public int /*long*/ internal_new_GC (GCData data) {
-	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+	if (isDisposed()) error(SWT.ERROR_DEVICE_DISPOSED);
 	if (screenWindow == null) {
 		NSWindow window = (NSWindow) new NSWindow ().alloc ();
 		NSRect rect = new NSRect();
@@ -3023,7 +3023,7 @@ public int /*long*/ internal_new_GC (GCData data) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public void internal_dispose_GC (int /*long*/ hDC, GCData data) {
-	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+	if (isDisposed()) error(SWT.ERROR_DEVICE_DISPOSED);
 }
 
 boolean isBundled () {

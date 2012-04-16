@@ -514,7 +514,7 @@ public boolean open () {
 		OS.SetLayeredWindowAttributes (hwndOpaque, 0xFFFFFF, (byte)0xFF, OS.LWA_COLORKEY | OS.LWA_ALPHA);		
 		newProc = new Callback (this, "transparentProc", 4); //$NON-NLS-1$
 		int /*long*/ newProcAddress = newProc.getAddress ();
-		if (newProcAddress == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		if (newProcAddress == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		oldTransparentProc = OS.GetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC);
 		OS.SetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC, newProcAddress);
 		oldOpaqueProc = OS.GetWindowLongPtr (hwndOpaque, OS.GWLP_WNDPROC);
@@ -543,7 +543,7 @@ public boolean open () {
 				null);
 			newProc = new Callback (this, "transparentProc", 4); //$NON-NLS-1$
 			int /*long*/ newProcAddress = newProc.getAddress ();
-			if (newProcAddress == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+			if (newProcAddress == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 			oldTransparentProc = OS.GetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC);
 			OS.SetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC, newProcAddress);
 			OS.ShowWindow (hwndTransparent, OS.SW_SHOWNOACTIVATE);

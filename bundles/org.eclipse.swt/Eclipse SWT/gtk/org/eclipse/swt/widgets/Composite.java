@@ -269,10 +269,10 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 		int /*long*/ hadj = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
 		if (hadj == 0) error (SWT.ERROR_NO_HANDLES);
 		scrolledHandle = OS.gtk_scrolled_window_new (hadj, vadj);
-		if (scrolledHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
 	handle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
-	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (handle, true);
 	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_FOCUS);
 	if ((style & SWT.EMBEDDED) == 0) {
@@ -305,7 +305,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 	}
 	if ((style & SWT.EMBEDDED) != 0) {
 		socketHandle = OS.gtk_socket_new ();
-		if (socketHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+		if (socketHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (handle, socketHandle);
 	}
 	if ((style & SWT.NO_REDRAW_RESIZE) != 0 && (style & SWT.RIGHT_TO_LEFT) == 0) {

@@ -237,7 +237,7 @@ void releaseWidget () {
 public void setMenu (Menu menu) {
 	checkWidget ();
 	if (menu != null) {
-		if (menu.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (menu.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((menu.style & SWT.POP_UP) == 0) {
 			error (SWT.ERROR_MENU_NOT_POP_UP);
 		}
@@ -486,11 +486,11 @@ void updateText () {
 	OS.MoveMemory (bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
 	int /*long*/ [] pBits = new int /*long*/ [1];
 	int /*long*/ hBitmap = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
-	if (hBitmap == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (hBitmap == 0) error (SWT.ERROR_NO_HANDLES);
 	int /*long*/ dstHdc = OS.CreateCompatibleDC (hdc);
 	int /*long*/ oldBitmap = OS.SelectObject (dstHdc, hBitmap);
 	int /*long*/ hMask = OS.CreateBitmap (width, height, 1, 1, null);
-	if (hMask == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (hMask == 0) error (SWT.ERROR_NO_HANDLES);
 	int /*long*/ maskHdc = OS.CreateCompatibleDC (hdc);
 	int /*long*/ oldMask = OS.SelectObject (maskHdc, hMask);
 	
@@ -550,7 +550,7 @@ void updateText () {
 	iconInfo.hbmColor = hBitmap;
 	iconInfo.hbmMask = hMask;
 	int /*long*/ hIcon = OS.CreateIconIndirect (iconInfo);
-	if (hIcon == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (hIcon == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.DeleteObject (hBitmap);
 	OS.DeleteObject (hMask);
 	
