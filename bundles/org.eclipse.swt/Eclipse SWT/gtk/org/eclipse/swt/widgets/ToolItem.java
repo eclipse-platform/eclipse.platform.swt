@@ -204,6 +204,7 @@ void createHandle (int index) {
 				int /*long*/ list = OS.gtk_container_get_children (child);
 				arrowHandle = OS.g_list_nth_data (list, 1);
 				OS.gtk_widget_set_sensitive (arrowHandle, true);
+				OS.gtk_widget_set_size_request(OS.gtk_bin_get_child(arrowHandle), 8, 6);
 			} else {
 				/*
 				 * GTK does not support GtkMenuToolButton until 2.6.
@@ -575,34 +576,46 @@ int /*long*/ gtk_create_menu_proxy (int /*long*/ widget) {
 		OS.gtk_tool_item_set_proxy_menu_item (widget, buffer, proxyMenuItem);
 		return 1;
 	}
-	/*
-	 * Since the arrow button does not appear in the drop_down
-	 * item, we request the menu-item and then, hook the 
-	 * activate signal to send the Arrow selection signal. 
-	 */
-	if ((style & SWT.DROP_DOWN) != 0) return 0;
+	
 	if (image != null) {
 		ImageList imageList = parent.imageList;
 		if (imageList != null) {
 			int index = imageList.indexOf (image);
 			if (index != -1) {
 				int /*long*/ pixbuf = imageList.getPixbuf (index);
-				byte[] label;
+				byte[] label = null;
+				int [] showImages = new int []{1};
+				int /*long*/ settings = OS.gtk_settings_get_default();
+				if (settings != 0) {
+					OS.g_object_get (settings, OS.gtk_menu_images, showImages, 0);
+				}
+				/* 
+				 * GTK tool items with only image appear as blank items 
+				 * in overflow menu when the system property "gtk-menu-images"
+				 * is set to false. To avoid that, display the tooltip text
+				 * if available, in the overflow menu. 
+				 * Feature in GTK. When the menuItem is initialised only 
+				 * with the image, the overflow menu appears very sloppy.
+				 * The fix is to initialise menu item with empty string.
+				 */
 				if (text == null || text.length() == 0) {
-					label = new byte[]{0};
+					if ((showImages [0] == 0) && (toolTipText != null))
+						label = Converter.wcsToMbcs(null, toolTipText, true);
+					else
+						label = new byte[]{0};
 				}
 				else {
 					label = Converter.wcsToMbcs(null, text, true);
 				}					
-				/*
-				 * Feature in GTK. If the menuItem is initialised only 
-				 * with the image, then the menu appears very sloppy. 
-				 * The fix is to initialise menu item with empty string.
-				 */
 				int /*long*/ menuItem = OS.gtk_image_menu_item_new_with_label (label);
 				int /*long*/ menuImage = OS.gtk_image_new_from_pixbuf (pixbuf);
 				OS.gtk_image_menu_item_set_image (menuItem, menuImage);
 				OS.gtk_tool_item_set_proxy_menu_item (widget, buffer, menuItem);
+				/*
+				 * Since the arrow button does not appear in the drop_down
+				 * item, we request the menu-item and then, hook the 
+				 * activate signal to send the Arrow selection signal. 
+				 */
 				proxyMenuItem = OS.gtk_tool_item_get_proxy_menu_item (widget, buffer);
 				OS.g_signal_connect(menuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
 				return 1;
@@ -701,9 +714,8 @@ void hookEvents () {
 		eventHandle = OS.g_list_nth_data(list, 0);
 		if (arrowHandle != 0) OS.g_signal_connect_closure (arrowHandle, OS.clicked, display.closures [CLICKED], false);
 	}
-	if ((style & (SWT.CHECK | SWT.RADIO | SWT.DROP_DOWN)) != 0)	{
-		OS.g_signal_connect_closure (handle, OS.create_menu_proxy, display.closures [CREATE_MENU_PROXY], false);
-	}
+	OS.g_signal_connect_closure (handle, OS.create_menu_proxy, display.closures [CREATE_MENU_PROXY], false);
+	
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.closures [LEAVE_NOTIFY_EVENT], false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.closures [FOCUS_IN_EVENT], false);
@@ -1142,6 +1154,18 @@ public void setToolTipText (String string) {
 		setToolTipText (shell, string);
 	}
 	toolTipText = string;
+	/*
+	* Since tooltip text of a tool-item is used in overflow 
+	* menu when images are not shown, it is required to 
+	* reset the proxy menu when the tooltip text changes.
+	* Otherwise, the old menuItem appears in the overflow 
+	* menu as a blank item.
+	*/
+	if ((style & SWT.DROP_DOWN) != 0) {
+		proxyMenuItem = 0;
+		proxyMenuItem = OS.gtk_tool_item_retrieve_proxy_menu_item (handle);
+		OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
+	}
 }
 
 void setToolTipText (Shell shell, String newString) {

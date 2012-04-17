@@ -561,6 +561,7 @@ public class OS extends C {
 	public static final byte[] gtk_entry_select_on_focus = ascii("gtk-entry-select-on-focus");
 	public static final byte[] gtk_show_input_method_menu = ascii("gtk-show-input-method-menu");
 	public static final byte[] gtk_menu_bar_accel = ascii("gtk-menu-bar-accel");
+	public static final byte[] gtk_menu_images = ascii("gtk-menu-images");
 	public static final byte[] inner_border = ascii("inner-border");
 	public static final byte[] horizontal_separator = ascii("horizontal-separator");
 	public static final byte[] inconsistent = ascii("inconsistent");
