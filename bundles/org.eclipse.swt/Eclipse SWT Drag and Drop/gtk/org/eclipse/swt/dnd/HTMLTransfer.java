@@ -88,10 +88,22 @@ public Object nativeToJava(TransferData transferData){
 	if ( !isSupportedType(transferData) ||  transferData.pValue == 0 ) return null;
 	/* Ensure byteCount is a multiple of 2 bytes */
 	int size = (transferData.format * transferData.length / 8) / 2 * 2;
-	if (size <= 0) return null;			
-	char[] chars = new char [size/2];
-	OS.memmove (chars, transferData.pValue, size);
-	String string = new String (chars);
+	if (size <= 0) return null;
+	char[] bom = new char[1]; // look for a Byte Order Mark
+	if (size > 1) OS.memmove (bom, transferData.pValue, 2);
+	String string;
+	if (bom[0] == '\ufeff' || bom[0] == '\ufffe') {
+		// utf16
+		char[] chars = new char [size/2];
+		OS.memmove (chars, transferData.pValue, size);
+		string = new String (chars);
+	} else {
+		byte[] utf8 = new byte[size];
+		OS.memmove(utf8, transferData.pValue, size);
+		// convert utf8 byte array to a unicode string
+		char [] unicode = org.eclipse.swt.internal.Converter.mbcsToWcs (null, utf8);
+		string = new String (unicode);
+	}
 	int end = string.indexOf('\0');
 	return (end == -1) ? string : string.substring(0, end);
 }
