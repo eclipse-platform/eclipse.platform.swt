@@ -595,18 +595,20 @@ public class MacGeneratorUI {
 	}
 
 	public static void main(String[] args) {
-//		args = new String[]{
-//			"./Mac Generation/org/eclipse/swt/tools/internal/AppKitFull.bridgesupport",
-//			"./Mac Generation/org/eclipse/swt/tools/internal/FoundationFull.bridgesupport",
-//			"./Mac Generation/org/eclipse/swt/tools/internal/WebKitFull.bridgesupport",
-//		};
+		String mainClass = args.length > 0 ? args[0] : "org.eclipse.swt.internal.cocoa.OS";
+		String outputDir = args.length > 1 ? args[1] : "../org.eclipse.swt/Eclipse SWT PI/cocoa/";
+		String[] xmls = {};
+		if (args.length > 2) {
+			xmls = new String[args.length - 2];
+			System.arraycopy(args, 2, xmls, 0, xmls.length);
+		}
 		try {
 			Display display = new Display();
 			Shell shell = new Shell(display);
 			MacGenerator gen = new MacGenerator();
-			gen.setXmls(args);
-			gen.setOutputDir("../org.eclipse.swt/Eclipse SWT PI/cocoa/");
-			gen.setMainClass("org.eclipse.swt.internal.cocoa.OS");
+			gen.setXmls(xmls);
+			gen.setOutputDir(outputDir);
+			gen.setMainClass(mainClass);
 			MacGeneratorUI ui = new MacGeneratorUI(gen);
 			ui.open(shell);
 			shell.open();

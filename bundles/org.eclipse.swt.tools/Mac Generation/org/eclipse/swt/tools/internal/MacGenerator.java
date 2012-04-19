@@ -160,7 +160,7 @@ String fixDelimiter(String str) {
 	return buffer.toString();
 }
 
-String getParamName(Node param) {
+String getParamName(Node param, int i) {
 	NamedNodeMap paramAttributes = param.getAttributes();
 	Node swtName = paramAttributes.getNamedItem("swt_param_name");
 	String paramName = "";
@@ -173,7 +173,11 @@ String getParamName(Node param) {
 	if (paramName.length() == 0) {
 		Node node = paramAttributes.getNamedItem("index");
 		String index = "0";
-		if (node != null) index = node.getNodeValue();
+		if (node != null) {
+			index = node.getNodeValue();
+		} else {
+			index = String.valueOf(i);
+		}
 		paramName = "arg" + index;
 	}
 	if (paramName.equals("boolean")) paramName = "b";
@@ -216,6 +220,7 @@ void generateMethods(String className, ArrayList methods) {
 		out("(");
 		NodeList params = method.getChildNodes();
 		boolean first = true;
+		int argIndex = 0;
 		for (int k = 0; k < params.getLength(); k++) {
 			Node param = params.item(k);
 			if ("arg".equals(param.getNodeName())) {
@@ -229,7 +234,7 @@ void generateMethods(String className, ArrayList methods) {
 				}
 				first = false;
 				out(" ");
-				out(getParamName(param));
+				out(getParamName(param, argIndex++));
 			}
 		}
 		out(") {");
@@ -281,12 +286,13 @@ void generateMethods(String className, ArrayList methods) {
 		out(", OS.");
 		out(getSelConst(sel));
 		first = false;
+		argIndex = 0;
 		for (int k = 0; k < params.getLength(); k++) {
 			Node param = params.item(k);
 			if ("arg".equals(param.getNodeName())) {
 				if (!first) out(", ");
 				first = false;
-				String paramName = getParamName(param);
+				String paramName = getParamName(param, argIndex++);
 				if (isObject(param)) {
 					out(paramName);
 					out(" != null ? ");
@@ -1066,7 +1072,7 @@ void generateSelectorsConst() {
 			}
 		}
 	}
-	set.add("alloc");
+	if (set.size() > 0) set.add("alloc");
 	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
 		String sel = (String) iterator.next();
 		String selConst = getSelConst(sel);
@@ -1658,11 +1664,12 @@ void generateFunctions() {
 						out("/**");
 						outln();
 					}
+					int argIndex = 0;
 					for (int j = 0; j < params.getLength(); j++) {
 						Node param = params.item(j);
 						if ("arg".equals(param.getNodeName())) {
 							out(" * @param ");
-							out(getParamName(param));
+							out(getParamName(param, argIndex++));
 							if (isStruct(param)) {
 								out(" flags=struct");
 							} else {
@@ -1700,6 +1707,7 @@ void generateFunctions() {
 					out("(");
 					params = node.getChildNodes();
 					boolean first = true;
+					argIndex = 0;
 					for (int j = 0; j < params.getLength(); j++) {
 						Node param = params.item(j);
 						if ("arg".equals(param.getNodeName())) {
@@ -1713,7 +1721,7 @@ void generateFunctions() {
 								out("*/");
 							}
 							out(" ");
-							out(getParamName(param));
+							out(getParamName(param, argIndex++));
 						}
 					}
 					generateVariadics(node);
