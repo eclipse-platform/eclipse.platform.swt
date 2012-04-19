@@ -2890,6 +2890,10 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_systemSettingsChanged_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidMiniaturize_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_windowDidDeminiaturize_, proc3, "@:@");
+	if (OS.VERSION >= 0x1070) {
+		OS.class_addMethod(cls, OS.sel_windowDidEnterFullScreen_, proc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_windowDidExitFullScreen_, proc3, "@:@");
+	}
 	OS.objc_registerClassPair(cls);	
 }
 
@@ -5645,6 +5649,10 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel, int /*long*/ a
 		widget.windowDidMiniturize(id, sel, arg0);
 	} else if (sel == OS.sel_windowDidDeminiaturize_) {
 		widget.windowDidDeminiturize(id, sel, arg0);
+	} else if (sel == OS.sel_windowDidEnterFullScreen_) {
+		widget.windowDidEnterFullScreen(id, sel, arg0);
+	} else if (sel == OS.sel_windowDidExitFullScreen_) {
+		widget.windowDidExitFullScreen(id, sel, arg0);
 	} else if (sel == OS.sel_touchesBeganWithEvent_) {
 		widget.touchesBeganWithEvent(id, sel, arg0);
 	} else if (sel == OS.sel_touchesMovedWithEvent_) {

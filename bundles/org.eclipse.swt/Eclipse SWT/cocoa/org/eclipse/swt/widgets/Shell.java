@@ -726,7 +726,12 @@ void createHandle () {
 		NSWindow hostWindow = view.window();
 		attachObserversToWindow(hostWindow);
 	} else {
-		if (parent != null) window.setCollectionBehavior(OS.NSWindowCollectionBehaviorMoveToActiveSpace);
+		int behavior = 0;
+		if (parent != null) behavior |= OS.NSWindowCollectionBehaviorMoveToActiveSpace;
+		if (OS.VERSION >= 0x1070) {
+			behavior = OS.NSWindowCollectionBehaviorFullScreenPrimary;
+		}
+		if (behavior != 0) window.setCollectionBehavior(behavior);
 		window.setAcceptsMouseMovedEvents(true);
 		window.setDelegate(windowDelegate);
 	}
@@ -1204,6 +1209,13 @@ void helpRequested(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	}
 }
 
+void hideFullScreenButton () {
+	if (OS.VERSION >= 0x1070 && parent != null) {
+		NSButton button = window.standardWindowButton(OS.NSWindowFullScreenButton);
+		if (button != null) button.setHidden(true);
+	}
+}
+
 void invalidateVisibleRegion () {
 	resetVisibleRegion ();
 	if (toolBar != null) toolBar.resetVisibleRegion();
@@ -1661,8 +1673,14 @@ public void setEnabled (boolean enabled) {
  */
 public void setFullScreen (boolean fullScreen) {
 	checkWidget ();
+	if (window == null) return;
 	if (this.fullScreen == fullScreen) return;
-	this.fullScreen = fullScreen; 
+	this.fullScreen = fullScreen;
+	
+	if (OS.VERSION >= 0x1070) {
+		OS.objc_msgSend(window.id, OS.sel_toggleFullScreen_, 0);
+		return;
+	}
 
 	if (fullScreen) {
 		currentFrame = window.frame();
@@ -1918,6 +1936,8 @@ void setWindowVisible (boolean visible, boolean key) {
 					OS.objc_msgSend(window.id, OS.sel__setNeedsToUseHeartBeatWindow_, 0);
 				}
 			} else {
+				// Hide fullscreen button for child window
+				hideFullScreenButton();
 				// If the parent window is miniaturized, the window will be shown
 				// when its parent is shown.
 				boolean parentMinimized = parent != null && parentWindow ().isMiniaturized();
@@ -2098,17 +2118,19 @@ void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 	if (isDisposed ()) return;
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 	if (isDisposed ()) return;
-	Shell parentShell = this;
-	while (parentShell.parent != null) {
-		parentShell = (Shell) parentShell.parent;
-		if (parentShell.fullScreen) {
-			break;
+	if (OS.VERSION < 0x1070) {
+		Shell parentShell = this;
+		while (parentShell.parent != null) {
+			parentShell = (Shell) parentShell.parent;
+			if (parentShell.fullScreen) {
+				break;
+			}
 		}
-	}
-	if (!parentShell.fullScreen || menuBar != null) {
-		updateSystemUIMode ();
-	} else {
-		parentShell.updateSystemUIMode ();
+		if (!parentShell.fullScreen || menuBar != null) {
+			updateSystemUIMode ();
+		} else {
+			parentShell.updateSystemUIMode ();
+		}
 	}
 }
 
@@ -2122,13 +2144,22 @@ void windowDidMiniturize(int /*long*/ id, int /*long*/ sel, int /*long*/ notific
 	sendEvent(SWT.Iconify);
 }
 
+void windowDidEnterFullScreen(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	this.fullScreen = true;
+}
+
+void windowDidExitFullScreen(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	this.fullScreen = false;
+	hideFullScreenButton();
+}
+
 void windowDidMove(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	moved = true;
 	sendEvent(SWT.Move);
 }
 
 void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
-	if (fullScreen) {
+	if (fullScreen && OS.VERSION < 0x1070) {
 		window.setFrame(fullScreenFrame, true);
 		NSRect contentViewFrame = new NSRect();
 		contentViewFrame.width = fullScreenFrame.width;

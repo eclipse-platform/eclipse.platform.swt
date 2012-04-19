@@ -149,8 +149,15 @@ public class OS extends C {
 	public static final int /*long*/ sel_flashScrollers = sel_registerName("flashScrollers");
 	public static final int /*long*/ sel_frameSizeForContentSize_horizontalScrollerClass_verticalScrollerClass_borderType_controlSize_scrollerStyle_ = sel_registerName("frameSizeForContentSize:horizontalScrollerClass:verticalScrollerClass:borderType:controlSize:scrollerStyle:");
 	public static final int /*long*/ sel_scrollerStyle = sel_registerName("scrollerStyle");
+	public static final int /*long*/ sel_toggleFullScreen_ = sel_registerName("toggleFullScreen:");
+	public static final int /*long*/ sel_windowDidEnterFullScreen_ = sel_registerName("windowDidEnterFullScreen:");
+	public static final int /*long*/ sel_windowDidExitFullScreen_ = sel_registerName("windowDidExitFullScreen:");
+
 	public static final int NSScrollerStyleLegacy = 0;
 	public static final int NSScrollerStyleOverlay = 1;
+	public static final int NSWindowFullScreenButton = 7;
+	public static final int /*long*/ NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7;
+	public static final int /*long*/ NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8;
 
 	/* AWT application delegate. Remove these when JavaRuntimeSupport.framework has bridgesupport generated for it. */
 	public static final int /*long*/ class_JRSAppKitAWT = objc_getClass("JRSAppKitAWT");

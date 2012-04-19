@@ -2091,6 +2091,12 @@ void windowDidMiniturize(int /*long*/ id, int /*long*/ sel, int /*long*/ notific
 void windowDidDeminiturize(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 }
 
+void windowDidEnterFullScreen(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+}
+
+void windowDidExitFullScreen(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+}
+
 void windowSendEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 	callSuper(id, sel, event);
 }
