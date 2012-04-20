@@ -193,15 +193,16 @@ public Rectangle getBounds() {
 		NSValue val = new NSValue (posValue);
 		NSPoint pt = val.pointValue ();
 		NSWindow window = parent.view.window ();
-		pt.y = display.getPrimaryFrame().height - pt.y;
-		pt = parent.view.convertPoint_fromView_ (pt, null);
+		// pt is the lower-left corner of the control, convert from screen based to window based
 		pt = window.convertScreenToBase (pt);
-		result.x = (int) pt.x;
-		result.y = (int) pt.y;
+		// convert from window based to view based
+		pt = parent.view.convertPoint_fromView_ (pt, null);
 		val = new NSValue (sizeValue);
 		NSSize size = val.sizeValue ();
 		result.width = (int) Math.ceil (size.width);
 		result.height = (int) Math.ceil (size.height);
+		result.x = (int) pt.x;
+		result.y = (int) pt.y - result.height;
 	}
 	return result;
 }
