@@ -729,7 +729,9 @@ void createHandle () {
 		int behavior = 0;
 		if (parent != null) behavior |= OS.NSWindowCollectionBehaviorMoveToActiveSpace;
 		if (OS.VERSION >= 0x1070) {
-			behavior = OS.NSWindowCollectionBehaviorFullScreenPrimary;
+			if (parent == null) {
+				behavior = OS.NSWindowCollectionBehaviorFullScreenPrimary;
+			}
 		}
 		if (behavior != 0) window.setCollectionBehavior(behavior);
 		window.setAcceptsMouseMovedEvents(true);
@@ -1206,13 +1208,6 @@ void helpRequested(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 			break;
 		}
 		control = control.parent;
-	}
-}
-
-void hideFullScreenButton () {
-	if (OS.VERSION >= 0x1070 && parent != null) {
-		NSButton button = window.standardWindowButton(OS.NSWindowFullScreenButton);
-		if (button != null) button.setHidden(true);
 	}
 }
 
@@ -1936,8 +1931,6 @@ void setWindowVisible (boolean visible, boolean key) {
 					OS.objc_msgSend(window.id, OS.sel__setNeedsToUseHeartBeatWindow_, 0);
 				}
 			} else {
-				// Hide fullscreen button for child window
-				hideFullScreenButton();
 				// If the parent window is miniaturized, the window will be shown
 				// when its parent is shown.
 				boolean parentMinimized = parent != null && parentWindow ().isMiniaturized();
@@ -2150,7 +2143,6 @@ void windowDidEnterFullScreen(int /*long*/ id, int /*long*/ sel, int /*long*/ no
 
 void windowDidExitFullScreen(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	this.fullScreen = false;
-	hideFullScreenButton();
 }
 
 void windowDidMove(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
