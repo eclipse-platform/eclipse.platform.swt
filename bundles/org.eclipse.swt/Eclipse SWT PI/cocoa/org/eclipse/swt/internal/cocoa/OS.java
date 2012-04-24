@@ -156,8 +156,8 @@ public class OS extends C {
 	public static final int NSScrollerStyleLegacy = 0;
 	public static final int NSScrollerStyleOverlay = 1;
 	public static final int NSWindowFullScreenButton = 7;
-	public static final int /*long*/ NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7;
-	public static final int /*long*/ NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8;
+	public static final int NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7;
+	public static final int NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8;
 
 	/* AWT application delegate. Remove these when JavaRuntimeSupport.framework has bridgesupport generated for it. */
 	public static final int /*long*/ class_JRSAppKitAWT = objc_getClass("JRSAppKitAWT");
