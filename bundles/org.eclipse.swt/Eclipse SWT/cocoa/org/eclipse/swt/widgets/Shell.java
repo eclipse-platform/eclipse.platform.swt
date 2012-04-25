@@ -1672,7 +1672,7 @@ public void setFullScreen (boolean fullScreen) {
 	if (this.fullScreen == fullScreen) return;
 	this.fullScreen = fullScreen;
 	
-	if (OS.VERSION >= 0x1070) {
+	if ((window.collectionBehavior() & OS.NSWindowCollectionBehaviorFullScreenPrimary) != 0) {
 		OS.objc_msgSend(window.id, OS.sel_toggleFullScreen_, 0);
 		return;
 	}
@@ -2061,6 +2061,7 @@ void updateParent (boolean visible) {
 }
 
 void updateSystemUIMode () {
+	if ((window.collectionBehavior() & OS.NSWindowCollectionBehaviorFullScreenPrimary) != 0) return;
 	if (!getMonitor ().equals (display.getPrimaryMonitor ())) return;
 	int mode = display.systemUIMode, options = display.systemUIOptions;
 	if (fullScreen) {
@@ -2111,7 +2112,7 @@ void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 	if (isDisposed ()) return;
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 	if (isDisposed ()) return;
-	if (OS.VERSION < 0x1070) {
+	if ((window.collectionBehavior() & OS.NSWindowCollectionBehaviorFullScreenPrimary) == 0) {
 		Shell parentShell = this;
 		while (parentShell.parent != null) {
 			parentShell = (Shell) parentShell.parent;
@@ -2151,7 +2152,7 @@ void windowDidMove(int /*long*/ id, int /*long*/ sel, int /*long*/ notification)
 }
 
 void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
-	if (fullScreen && OS.VERSION < 0x1070) {
+	if (fullScreen && ((window.collectionBehavior() & OS.NSWindowCollectionBehaviorFullScreenPrimary) == 0)) {
 		window.setFrame(fullScreenFrame, true);
 		NSRect contentViewFrame = new NSRect();
 		contentViewFrame.width = fullScreenFrame.width;

@@ -1092,6 +1092,7 @@ public static final int /*long*/ sel_closePath = sel_registerName("closePath");
 public static final int /*long*/ sel_code = sel_registerName("code");
 public static final int /*long*/ sel_collapseItem_ = sel_registerName("collapseItem:");
 public static final int /*long*/ sel_collapseItem_collapseChildren_ = sel_registerName("collapseItem:collapseChildren:");
+public static final int /*long*/ sel_collectionBehavior = sel_registerName("collectionBehavior");
 public static final int /*long*/ sel_color = sel_registerName("color");
 public static final int /*long*/ sel_colorAtX_y_ = sel_registerName("colorAtX:y:");
 public static final int /*long*/ sel_colorListNamed_ = sel_registerName("colorListNamed:");

@@ -54,6 +54,10 @@ public void close() {
 	OS.objc_msgSend(this.id, OS.sel_close);
 }
 
+public int /*long*/ collectionBehavior() {
+	return OS.objc_msgSend(this.id, OS.sel_collectionBehavior);
+}
+
 public NSView contentView() {
 	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_contentView);
 	return result != 0 ? new NSView(result) : null;
