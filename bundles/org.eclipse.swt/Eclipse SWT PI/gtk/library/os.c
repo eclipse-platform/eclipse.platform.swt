@@ -14637,7 +14637,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toolbar_1set_1style)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1toolbar_1set_1style_FUNC);
-	gtk_toolbar_set_style((GtkToolbar *)arg0, arg1);
+	gtk_toolbar_set_style((GtkToolbar *)arg0, (GtkToolbarStyle)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1toolbar_1set_1style_FUNC);
 }
 #endif

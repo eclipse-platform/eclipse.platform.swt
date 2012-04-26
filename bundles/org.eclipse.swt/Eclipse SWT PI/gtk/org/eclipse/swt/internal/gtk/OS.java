@@ -11367,7 +11367,7 @@ public static final void gtk_toolbar_set_show_arrow(int /*long*/ toolbar, boolea
 	}
 }
 /** @param toolbar cast=(GtkToolbar *) 
- * @param type cast=(GtkToolbarStyle)
+ * @param style cast=(GtkToolbarStyle)
  */
 public static final native void _gtk_toolbar_set_style(int /*long*/ toolbar, int style);
 public static final void gtk_toolbar_set_style(int /*long*/ toolbar, int style) {
