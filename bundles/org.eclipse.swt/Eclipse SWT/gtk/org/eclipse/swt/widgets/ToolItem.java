@@ -584,11 +584,17 @@ int /*long*/ gtk_create_menu_proxy (int /*long*/ widget) {
 			if (index != -1) {
 				int /*long*/ pixbuf = imageList.getPixbuf (index);
 				byte[] label = null;
-				int [] showImages = new int []{1};
-				int /*long*/ settings = OS.gtk_settings_get_default();
-				if (settings != 0) {
-					OS.g_object_get (settings, OS.gtk_menu_images, showImages, 0);
-				}
+				int [] showImages = new int [1];
+				/*
+				 * This code is intentionally commented out because it is outputting
+				 * warnings to the console. If there is no text then the tooltip text
+				 * will be used for overflow menu items.
+				 */
+//				int /*long*/ settings = OS.gtk_settings_get_default();
+//				if (settings != 0) {
+//					OS.g_object_get (settings, OS.gtk_menu_images, showImages, 0);
+//				}
+				
 				/* 
 				 * GTK tool items with only image appear as blank items 
 				 * in overflow menu when the system property "gtk-menu-images"
