@@ -623,29 +623,26 @@ public void create(Composite parent, int style) {
 					}
 					case DownloadComplete: {
 						/*
-						 * IE feature.  Some events that swt relies on are not sent when
-						 * a page is refreshed as opposed to being navigated to.  The
-						 * workaround is to use DownloadComplete as an indication that a
-						 * refresh has completed.   
-						 */
-						if (!isRefresh) break;
-						isRefresh = false;
-
-						/*
-						* NavigateComplete is not received for refreshes, so re-hook
-						* BrowserFunctions here. 
+						* IE feature.  Some events that swt relies on are not sent when
+						* a page is refreshed (as opposed to being navigated to).  The
+						* workaround is to use DownloadComplete as an opportunity to
+						* do this work.   
 						*/
+
 						Enumeration elements = functions.elements ();
 						while (elements.hasMoreElements ()) {
 							BrowserFunction function = (BrowserFunction)elements.nextElement ();
 							execute (function.functionString);
 						}
 
+						if (!isRefresh) break;
+						isRefresh = false;
+
 						/*
-						 * DocumentComplete is not received for refreshes, but clients may rely
-						 * on this event for tasks like hooking javascript listeners, so send the
-						 * event here.
-						 */
+						* DocumentComplete is not received for refreshes, but clients may rely
+						* on this event for tasks like hooking javascript listeners, so send the
+						* event here.
+						*/
 						ProgressEvent progressEvent = new ProgressEvent(browser);
 						progressEvent.display = browser.getDisplay();
 						progressEvent.widget = browser;
