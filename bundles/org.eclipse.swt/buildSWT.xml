@@ -1023,16 +1023,16 @@
 		</exec>
 		<condition property="perform.checkout">
 			<not>
-				<equals arg1="${TAG}" arg2="master"/>
+				<equals arg1="${checkout_tag}" arg2="master"/>
 			</not>
 		</condition>
 		<antcall target="checkout_repo"/>
 	</target>
 	
 	<target name="checkout_repo" if="perform.checkout">
-		<echo>Checking out ${repo}=${TAG}</echo>
+		<echo>Checking out ${repo}=${checkout_tag}</echo>
 		<exec dir="../../../../${TAG}/${repo}" executable="git" failonerror="true">
-			<arg line="checkout -b ${TAG} origin/${TAG}"/>
+			<arg line="checkout -b ${checkout_tag} origin/${checkout_tag}"/>
 		</exec>
 	</target>
 
@@ -1045,6 +1045,7 @@
 		<antcall target="init_repo">
 			<param name="repo" value="eclipse.platform.swt"/>
 			<param name="repo.exists" value="repo.src.exists"/>
+			<param name="checkout_tag" value="${TAG}"/>
 		</antcall>
 		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true" timeout="900000">
 			<arg line="fetch"/>
@@ -1055,6 +1056,7 @@
 		<antcall target="init_repo">
 			<param name="repo" value="eclipse.platform.swt.binaries"/>
 			<param name="repo.exists" value="repo.bin.exists"/>
+			<param name="checkout_tag" value="${TAG}"/>
 		</antcall>
 		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true" timeout="900000">
 			<arg line="fetch"/>
@@ -1062,15 +1064,17 @@
 		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true" timeout="900000">
 			<arg line="reset --hard origin/${TAG}"/>
 		</exec>
+		<property name="MAPS_TAG" value="${TAG}"/>
 		<antcall target="init_repo">
 			<param name="repo" value="eclipse.platform.releng.maps"/>
 			<param name="repo.exists" value="repo.releng.exists"/>
+			<param name="checkout_tag" value="${MAPS_TAG}"/>
 		</antcall>
 		<exec dir="../../../../${TAG}/eclipse.platform.releng.maps" executable="git"  failonerror="true">
 			<arg line="fetch"/>
 		</exec>
 		<exec dir="../../../../${TAG}/eclipse.platform.releng.maps" executable="git"  failonerror="true">
-			<arg line="reset --hard origin/${TAG}"/>
+			<arg line="reset --hard origin/${MAPS_TAG}"/>
 		</exec>
 	</target>
 
@@ -1096,11 +1100,12 @@
 		<exec dir="../../../../${TAG}/eclipse.platform.releng.maps" executable="git" failonerror="true">
 			<arg line="fetch"/>
 		</exec>
+		<property name="MAPS_TAG" value="${TAG}"/>
 		<exec dir="../../../../${TAG}/eclipse.platform.releng.maps" executable="git" failonerror="true">
-			<arg line="rebase origin/${TAG}"/>
+			<arg line="rebase origin/${MAPS_TAG}"/>
 		</exec>
 		<exec dir="../../../../${TAG}/eclipse.platform.releng.maps" executable="git" failonerror="true">
-			<arg line="push origin ${TAG}"/>
+			<arg line="push origin ${MAPS_TAG}"/>
 		</exec>
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="push origin refs/tags/${swt_tag}"/>
