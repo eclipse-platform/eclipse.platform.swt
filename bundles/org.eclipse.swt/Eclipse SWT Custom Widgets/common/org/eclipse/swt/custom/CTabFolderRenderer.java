@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2010 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-import java.util.Hashtable;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -53,7 +52,6 @@ public class CTabFolderRenderer {
 	 * We have to recompute the colors if the border color changes
 	 */
 	Color lastBorderColor = null;
-	static final String COLOR_CACHE = "org.eclipse.swt.custom.CTabFolderRenderer.ColorCache"; //$NON-NLS-1$
 	
 	//TOP_LEFT_CORNER_HILITE is laid out in reverse (ie. top to bottom)
 	//so can fade in same direction as right swoop curve
@@ -82,7 +80,8 @@ public class CTabFolderRenderer {
 	
 	static final RGB CLOSE_FILL = new RGB(252, 160, 160);
 	
-	static final int BUTTON_SIZE = 18;
+	static final int BUTTON_SIZE = 16;
+	static final int BUTTON_TRIM = 1;
 	
 	static final int BUTTON_BORDER = SWT.COLOR_WIDGET_DARK_SHADOW;
 	static final int BUTTON_FILL = SWT.COLOR_LIST_BACKGROUND;
@@ -124,45 +123,6 @@ public class CTabFolderRenderer {
 		if (parent == null) return;
 		if (parent.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		this.parent = parent;
-	}
-	
-	static Color getColor(Display display, RGB rgb) {
-		Color color;
-		Hashtable ColorCache = (Hashtable) display.getData(COLOR_CACHE);
-		if (ColorCache == null) {
-			ColorCache = new Hashtable();
-			display.setData(COLOR_CACHE, ColorCache);
-		}
-		Object [] colorData = (Object []) ColorCache.get(rgb);
-		if (colorData != null) {
-			color = (Color) colorData[0];
-			int refcount = ((Integer) colorData[1]).intValue();
-			colorData[1] = new Integer(refcount + 1);
-		} else {
-			color = new Color(display, rgb);
-			ColorCache.put(rgb, new Object[] {color, new Integer(1)});
-		}
-		return color;
-	}
-	
-	static void releaseColor(Display display, Color color) {
-		RGB rgb = color.getRGB();
-		Hashtable ColorCache = (Hashtable) display.getData(COLOR_CACHE);
-		if (ColorCache == null) {
-			ColorCache = new Hashtable();
-			display.setData(COLOR_CACHE, ColorCache);
-		}
-		Object [] colorData = (Object []) ColorCache.get(rgb);
-		if (colorData != null) {
-			int refcount = ((Integer) colorData[1]).intValue();
-			refcount--;
-			if (refcount == 0) {
-				ColorCache.remove(rgb);
-				color.dispose();
-			} else {
-				colorData[1] = new Integer(refcount);
-			}
-		}
 	}
 	
 	void antialias (int[] shape, Color innerColor, Color outerColor, GC gc){
@@ -384,12 +344,21 @@ public class CTabFolderRenderer {
 					y = parent.onBottom ? y - borderTop : y - highlight_header - tabHeight - borderTop;
 					height = borderTop + borderBottom + tabHeight + highlight_header;
 				} else {
-					y = parent.onBottom ? y - marginHeight - highlight_margin - borderTop: y - marginHeight - highlight_header - tabHeight - borderTop;
+					y = parent.onBottom ? y - marginHeight - highlight_margin - borderTop : y - marginHeight - highlight_header - tabHeight - borderTop;
 					height = height + borderTop + borderBottom + 2*marginHeight + tabHeight + highlight_header + highlight_margin;
 				}
 				break;
 			case PART_HEADER:
 				//no trim 
+				break;
+			case PART_MAX_BUTTON:
+			case PART_MIN_BUTTON:
+			case PART_CLOSE_BUTTON:
+			case PART_CHEVRON_BUTTON:
+				x -= BUTTON_TRIM;
+				y -= BUTTON_TRIM;
+				width += BUTTON_TRIM*2;
+				height += BUTTON_TRIM*2;
 				break;
 			case PART_BORDER:
 				x = x - borderLeft;
@@ -415,8 +384,7 @@ public class CTabFolderRenderer {
 	
 	void createAntialiasColors() {
 	    disposeAntialiasColors();
-	    Display display = parent.getDisplay();
-	    lastBorderColor = display.getSystemColor(BORDER1_COLOR);
+	    lastBorderColor = parent.getDisplay().getSystemColor(BORDER1_COLOR);
 	    RGB lineRGB = lastBorderColor.getRGB();
 	    /* compute the selected color */
 	    RGB innerRGB = parent.selectionBackground.getRGB();
@@ -434,7 +402,7 @@ public class CTabFolderRenderer {
 			int red = from.red + 2*(to.red - from.red)/3;
 			int green = from.green + 2*(to.green - from.green)/3;
 			int blue = from.blue + 2*(to.blue - from.blue)/3;
-			selectedOuterColor = getColor(display, new RGB(red, green, blue));
+			selectedOuterColor = new Color(parent.getDisplay(), red, green, blue);
 	    }
 	    if (innerRGB != null) {
 			RGB from = lineRGB;
@@ -442,7 +410,7 @@ public class CTabFolderRenderer {
 			int red = from.red + 2*(to.red - from.red)/3;
 			int green = from.green + 2*(to.green - from.green)/3;
 			int blue = from.blue + 2*(to.blue - from.blue)/3;
-			selectedInnerColor = getColor(display, new RGB(red, green, blue));
+			selectedInnerColor = new Color(parent.getDisplay(), red, green, blue);
 	    }
 	    /* compute the tabArea color */
 	    outerRGB = parent.getParent().getBackground().getRGB();
@@ -452,7 +420,7 @@ public class CTabFolderRenderer {
 			int red = from.red + 2*(to.red - from.red)/3;
 			int green = from.green + 2*(to.green - from.green)/3;
 			int blue = from.blue + 2*(to.blue - from.blue)/3;
-			tabAreaColor = getColor(display, new RGB(red, green, blue));
+			tabAreaColor = new Color(parent.getDisplay(), red, green, blue);
 	    }
 	}
 
@@ -478,14 +446,13 @@ public class CTabFolderRenderer {
 		selectionHighlightGradientColorsCache = new Color[fadeGradientSize];
 		int denom = fadeGradientSize - 1;
 
-		Display display = parent.getDisplay();
 		for (int i = 0; i < fadeGradientSize; i++) {
 			int propFrom = denom - i;
 			int propTo = i;
 			int red = (to.red * propTo + from.red * propFrom) / denom;
 			int green = (to.green * propTo  + from.green * propFrom) / denom;
 			int blue = (to.blue * propTo  + from.blue * propFrom) / denom;
-			selectionHighlightGradientColorsCache[i] = getColor(display, new RGB(red, green, blue));
+			selectionHighlightGradientColorsCache[i] = new Color(parent.getDisplay(), red, green, blue);
 		}
 	}
 	
@@ -500,25 +467,23 @@ public class CTabFolderRenderer {
 		disposeAntialiasColors();
 		disposeSelectionHighlightGradientColors();
 		if (fillColor != null) {
-			releaseColor(parent.getDisplay(), fillColor);
+		    fillColor.dispose();
 		    fillColor = null;
 		}
 	}
 	
 	void disposeAntialiasColors() {
-		Display display = parent.getDisplay();
-	    if (tabAreaColor != null) releaseColor(display, tabAreaColor);
-	    if (selectedInnerColor != null) releaseColor(display, selectedInnerColor);
-	    if (selectedOuterColor != null) releaseColor(display, selectedOuterColor);
+	    if (tabAreaColor != null) tabAreaColor.dispose();
+	    if (selectedInnerColor != null) selectedInnerColor.dispose();
+	    if (selectedOuterColor != null) selectedOuterColor.dispose();
 	    tabAreaColor = selectedInnerColor = selectedOuterColor = null;
 	}
 
 	void disposeSelectionHighlightGradientColors() {
 		if(selectionHighlightGradientColorsCache == null)
 			return;
-		Display display = parent.getDisplay();
 		for (int i = 0; i < selectionHighlightGradientColorsCache.length; i++) {
-			releaseColor(display, selectionHighlightGradientColorsCache[i]);
+			selectionHighlightGradientColorsCache[i].dispose();
 		}
 		selectionHighlightGradientColorsCache = null;
 	}
@@ -1669,7 +1634,7 @@ public class CTabFolderRenderer {
 		
 	Color getFillColor() {
 		if (fillColor == null) {
-			fillColor = getColor(parent.getDisplay(), CLOSE_FILL);
+			fillColor = new Color(parent.getDisplay(), CLOSE_FILL);
 		}
 		return fillColor;
 	}
@@ -1754,6 +1719,7 @@ public class CTabFolderRenderer {
 	}
 	
 	void updateCurves () {
+		if (this.getClass() != CTabFolderRenderer.class) return;
 		int tabHeight = parent.tabHeight;
 		if (tabHeight == lastTabHeight) return;
 		if (parent.onBottom) {
