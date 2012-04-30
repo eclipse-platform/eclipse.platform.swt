@@ -2386,6 +2386,12 @@ int untranslateOffset (int offset) {
 	return offset;
 }
 
+void updateMenuLocation (Event event) {
+	Point point = display.map (this, null, getCaretLocation ());
+	event.x = point.x;
+	event.y = point.y + getLineHeight ();
+}
+
 void updateOrientation (){
 	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
