@@ -583,7 +583,17 @@ void dropDown (boolean drop) {
 	int height = listRect.height + 2;
 	int x = parentRect.x;
 	int y = parentRect.y + comboSize.y;
-	if (y + height > displayRect.y + displayRect.height) y = parentRect.y - height;
+	if (y + height > displayRect.y + displayRect.height) {
+		int popUpwardsHeight = (parentRect.y - height < displayRect.y) ? parentRect.y - displayRect.y : height;
+		int popDownwardsHeight = displayRect.y + displayRect.height - y;
+		if (popUpwardsHeight > popDownwardsHeight) {
+			height = popUpwardsHeight;
+			y = parentRect.y - popUpwardsHeight;
+		} else {
+			height = popDownwardsHeight;
+		}
+		list.setSize (listRect.width, height - 2);
+	}
 	if (x + width > displayRect.x + displayRect.width) x = displayRect.x + displayRect.width - listRect.width;
 	popup.setBounds (x, y, width, height);
 	popup.setVisible (true);
