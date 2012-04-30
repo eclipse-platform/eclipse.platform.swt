@@ -469,7 +469,7 @@ void createPopup(String[] items, int selectionIndex) {
 	// create shell and list
 	popup = new Shell (getShell (), SWT.NO_TRIM | SWT.ON_TOP);
 	int style = getStyle ();
-	int listStyle = SWT.SINGLE | SWT.V_SCROLL;
+	int listStyle = SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL;
 	if ((style & SWT.FLAT) != 0) listStyle |= SWT.FLAT;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) listStyle |= SWT.RIGHT_TO_LEFT;
 	if ((style & SWT.LEFT_TO_RIGHT) != 0) listStyle |= SWT.LEFT_TO_RIGHT;
@@ -566,22 +566,24 @@ void dropDown (boolean drop) {
 		createPopup (items, selectionIndex);
 	}
 	
-	Point size = getSize ();
+	Point comboSize = getSize ();
 	int itemCount = list.getItemCount ();
 	itemCount = (itemCount == 0) ? visibleItemCount : Math.min(visibleItemCount, itemCount);
 	int itemHeight = list.getItemHeight () * itemCount;
 	Point listSize = list.computeSize (SWT.DEFAULT, itemHeight, false);
-	list.setBounds (1, 1, Math.max (size.x - 2, listSize.x), listSize.y);
+	Rectangle displayRect = getMonitor ().getClientArea ();
+	list.setBounds (1, 1, Math.max (comboSize.x - 2, Math.min(listSize.x, displayRect.width - 2)), listSize.y);
 	
 	int index = list.getSelectionIndex ();
 	if (index != -1) list.setTopIndex (index);
 	Rectangle listRect = list.getBounds ();
 	Rectangle parentRect = display.map (getParent (), null, getBounds ());
-	Point comboSize = getSize ();
-	Rectangle displayRect = getMonitor ().getClientArea ();
-	int width = Math.max (comboSize.x, listRect.width + 2);
+	int width = listRect.width + 2;
 	int height = listRect.height + 2;
 	int x = parentRect.x;
+	if (x + width > displayRect.x + displayRect.width) {
+		x = displayRect.x + displayRect.width - width;
+	}
 	int y = parentRect.y + comboSize.y;
 	if (y + height > displayRect.y + displayRect.height) {
 		int popUpwardsHeight = (parentRect.y - height < displayRect.y) ? parentRect.y - displayRect.y : height;
@@ -594,7 +596,6 @@ void dropDown (boolean drop) {
 		}
 		list.setSize (listRect.width, height - 2);
 	}
-	if (x + width > displayRect.x + displayRect.width) x = displayRect.x + displayRect.width - listRect.width;
 	popup.setBounds (x, y, width, height);
 	popup.setVisible (true);
 	if (isFocusControl()) list.setFocus ();
