@@ -1466,6 +1466,9 @@ boolean showMenu (int x, int y, int detail) {
 	event.x = x;
 	event.y = y;
 	event.detail = detail;
+	if (event.detail == SWT.MENU_KEYBOARD) {
+		updateMenuLocation (event);
+	}
 	sendEvent (SWT.MenuDetect, event);
 	// widget could be disposed at this point
 	if (isDisposed ()) return false;
@@ -1494,6 +1497,10 @@ public String toString () {
 		if (isValidThread ()) string = getNameText ();
 	}
 	return getName () + " {" + string + "}"; //$NON-NLS-1$ //$NON-NLS-2$
+}
+
+void updateMenuLocation (Event event) {
+	/* Do nothing */
 }
 
 LRESULT wmCaptureChanged (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {

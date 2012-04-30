@@ -1508,6 +1508,23 @@ public void showSelection () {
 	OS.SendMessage (handle, OS.LB_SETTOPINDEX, newTop, 0);
 }
 
+void updateMenuLocation (Event event) {
+	Rectangle clientArea = getClientArea ();
+	int x = clientArea.x, y = clientArea.y;
+	int focusIndex = getFocusIndex();
+	if (focusIndex != -1) {
+		RECT rect = new RECT ();
+		OS.SendMessage (handle, OS.LB_GETITEMRECT, focusIndex, rect);
+		x = Math.max (x, rect.right / 2);
+		x = Math.min (x, clientArea.x + clientArea.width);
+		y = Math.max (y, rect.bottom);
+		y = Math.min (y, clientArea.y + clientArea.height);
+	}
+	Point pt = toDisplay (x, y);
+	event.x = pt.x;
+	event.y = pt.y;
+}
+
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.LBS_NOTIFY | OS.LBS_NOINTEGRALHEIGHT;
 	if ((style & SWT.SINGLE) != 0) return bits;

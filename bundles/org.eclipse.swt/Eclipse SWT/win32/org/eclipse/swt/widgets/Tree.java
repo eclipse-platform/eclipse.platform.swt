@@ -5535,6 +5535,25 @@ void updateImages () {
 	}
 }
 
+void updateMenuLocation (Event event) {
+	Rectangle clientArea = getClientArea ();
+	int x = clientArea.x, y = clientArea.y;
+	TreeItem focusItem = getFocusItem ();
+	if (focusItem != null) {
+		Rectangle bounds = focusItem.getBounds (0);
+		if (focusItem.text != null && focusItem.text.length () != 0) {
+			bounds = focusItem.getTextBounds (0);
+		}
+		x = Math.max (x, bounds.x + bounds.width / 2);
+		x = Math.min (x, clientArea.x + clientArea.width);
+		y = Math.max (y, bounds.y + bounds.height);
+		y = Math.min (y, clientArea.y + clientArea.height);
+	}
+	Point pt = toDisplay (x, y);
+	event.x = pt.x;
+	event.y = pt.y;
+}
+
 void updateOrientation () {
 	super.updateOrientation ();
 	RECT rect = new RECT ();
