@@ -1514,9 +1514,29 @@ void updateMenuLocation (Event event) {
 	int focusIndex = getFocusIndex();
 	if (focusIndex != -1) {
 		RECT rect = new RECT ();
-		OS.SendMessage (handle, OS.LB_GETITEMRECT, focusIndex, rect);
+		int /*long*/ newFont, oldFont = 0;
+		int /*long*/ hDC = OS.GetDC (handle);
+		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+		int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
+		int cp = getCodePage ();
+		TCHAR buffer = new TCHAR (cp, 64 + 1);
+		int length = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXTLEN, focusIndex, 0);
+		if (length != OS.LB_ERR) {
+			if (length + 1 > buffer.length ()) {
+				buffer = new TCHAR (cp, length + 1);
+			}
+			int result = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTEXT, focusIndex, buffer);
+			if (result != OS.LB_ERR) {
+				OS.DrawText (hDC, buffer, length, rect, flags);
+			}
+		}
+		if (newFont != 0) OS.SelectObject (hDC, oldFont);
+		OS.ReleaseDC (handle, hDC);
 		x = Math.max (x, rect.right / 2);
 		x = Math.min (x, clientArea.x + clientArea.width);
+		
+		OS.SendMessage (handle, OS.LB_GETITEMRECT, focusIndex, rect);
 		y = Math.max (y, rect.bottom);
 		y = Math.min (y, clientArea.y + clientArea.height);
 	}

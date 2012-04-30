@@ -5542,7 +5542,7 @@ void updateMenuLocation (Event event) {
 	if (focusItem != null) {
 		Rectangle bounds = focusItem.getBounds (0);
 		if (focusItem.text != null && focusItem.text.length () != 0) {
-			bounds = focusItem.getTextBounds (0);
+			bounds = focusItem.getBounds ();
 		}
 		x = Math.max (x, bounds.x + bounds.width / 2);
 		x = Math.min (x, clientArea.x + clientArea.width);
