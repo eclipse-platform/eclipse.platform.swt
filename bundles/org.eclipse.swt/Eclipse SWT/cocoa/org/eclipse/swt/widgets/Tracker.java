@@ -550,12 +550,52 @@ void mouse (NSEvent nsEvent) {
 }
 
 void key (NSEvent nsEvent) {
-	//TODO send event
-//	if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
+	int nsType = (int)/*64*/nsEvent.type();
 	int /*long*/ modifierFlags = nsEvent.modifierFlags();
+	int nsKeyCode = nsEvent.keyCode();
+	int keyCode = Display.translateKey (nsKeyCode);
+
+	switch (nsType) {
+		case OS.NSKeyDown:
+		case OS.NSKeyUp: {
+			Event event = new Event();
+			event.keyCode = keyCode;
+			int type = nsType == OS.NSKeyDown ? SWT.KeyDown : SWT.KeyUp;
+			if (!setKeyState (event, type, nsEvent)) break;
+			sendKeyEvent (type, event);
+			break;
+		}
+		case OS.NSFlagsChanged: {
+			int mask = 0;
+			switch (keyCode) {
+				case SWT.ALT: mask = OS.NSAlternateKeyMask; break;
+				case SWT.CONTROL: mask = OS.NSControlKeyMask; break;
+				case SWT.COMMAND: mask = OS.NSCommandKeyMask; break;
+				case SWT.SHIFT: mask = OS.NSShiftKeyMask; break;
+				case SWT.CAPS_LOCK:
+					Event event = new Event();
+					event.keyCode = keyCode;
+					setInputState (event, nsEvent, SWT.KeyDown);
+					sendKeyEvent (SWT.KeyDown, event);
+					setInputState (event, nsEvent, SWT.KeyUp);
+					sendKeyEvent (SWT.KeyUp, event);
+					break;
+			}
+			if (mask != 0) {
+				int type = (mask & modifierFlags) != 0 ? SWT.KeyDown : SWT.KeyUp;
+				Event event = new Event();
+				event.keyCode = keyCode;
+				setLocationMask(event, nsEvent);
+				setInputState (event, nsEvent, type);
+				if (!sendKeyEvent (type, event)) return;
+			}
+			break;
+		}
+	}
+
 	int stepSize = (modifierFlags & OS.NSControlKeyMask) != 0 ? STEPSIZE_SMALL : STEPSIZE_LARGE;
 	int xChange = 0, yChange = 0;
-	switch (nsEvent.keyCode()) {
+	switch (nsKeyCode) {
 		case 53: /* Esc */
 			cancelled = true;
 			tracking = false;
@@ -814,7 +854,7 @@ public boolean open () {
 					mouse(event);
 					break;
 				case OS.NSKeyDown:
-//				case OS.NSKeyUp:
+				case OS.NSKeyUp:
 				case OS.NSFlagsChanged:
 					key(event);
 					break;
