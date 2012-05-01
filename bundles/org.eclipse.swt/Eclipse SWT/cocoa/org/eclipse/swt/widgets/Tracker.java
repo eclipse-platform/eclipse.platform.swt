@@ -562,7 +562,7 @@ void key (NSEvent nsEvent) {
 			event.keyCode = keyCode;
 			int type = nsType == OS.NSKeyDown ? SWT.KeyDown : SWT.KeyUp;
 			if (!setKeyState (event, type, nsEvent)) break;
-			sendKeyEvent (type, event);
+			if (!sendKeyEvent (type, event)) return;
 			break;
 		}
 		case OS.NSFlagsChanged: {
