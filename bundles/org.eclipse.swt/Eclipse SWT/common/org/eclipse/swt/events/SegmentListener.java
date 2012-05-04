@@ -16,6 +16,8 @@ import org.eclipse.swt.internal.SWTEventListener;
  * This listener interface may be implemented in order to receive
  * SegmentEvents.
  * @see SegmentEvent
+ *
+ * @since 3.8
  */
 public interface SegmentListener extends SWTEventListener {
 
@@ -30,8 +32,6 @@ public interface SegmentListener extends SWTEventListener {
  *
  * @param event the given event
  * @see SegmentEvent
- *
- * @since 3.8
  */
 public void getSegments(SegmentEvent event);
 
