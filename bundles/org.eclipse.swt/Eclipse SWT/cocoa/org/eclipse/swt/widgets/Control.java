@@ -2285,6 +2285,10 @@ public boolean isReparentable () {
 	return true;
 }
 
+boolean isResizing () {
+	return (state & RESIZING) != 0 || parent.isResizing();
+}
+
 boolean isShowing () {
 	/*
 	* This is not complete.  Need to check if the
@@ -3796,7 +3800,10 @@ void setFrameSize (int /*long*/ id, int /*long*/ sel, NSSize size) {
 	super.setFrameSize(id, sel, size);
 	if (frame.width != size.width || frame.height != size.height) {
 		invalidateVisibleRegion();
+		boolean oldResizing = (state & RESIZING) != 0;
+		state |= RESIZING;
 		resized ();
+		if (!oldResizing) state &= ~RESIZING; 
 	}
 }
 
@@ -4885,6 +4892,7 @@ public void update () {
 void update (boolean all) {
 //	checkWidget();
 	if (display.isPainting.containsObject(view)) return;
+	if (isResizing()) return;
 	Shell shell = getShell();
 	NSWindow window = shell.deferFlushing && shell.scrolling ? view.window() : null;
 	try {

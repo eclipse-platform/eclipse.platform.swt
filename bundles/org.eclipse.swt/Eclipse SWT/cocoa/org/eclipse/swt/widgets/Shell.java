@@ -1230,6 +1230,10 @@ boolean isEnabledCursor () {
 	return true;
 }
 
+boolean isResizing () {
+	return (state & RESIZING) != 0;
+}
+
 boolean isTransparent() {
 	return false;
 }

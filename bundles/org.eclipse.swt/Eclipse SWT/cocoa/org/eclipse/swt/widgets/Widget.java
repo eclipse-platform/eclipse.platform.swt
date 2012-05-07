@@ -78,6 +78,7 @@ public abstract class Widget {
 	static final int DISPOSE_SENT = 1<<16;	
 	static final int FOREIGN_HANDLE = 1<<17;
 	static final int DRAG_DETECT = 1<<18;
+	static final int RESIZING = 1<<19;
 
 	/* WebKit fixes */
 	static final int WEBKIT_EVENTS_FIX = 1<<19;
