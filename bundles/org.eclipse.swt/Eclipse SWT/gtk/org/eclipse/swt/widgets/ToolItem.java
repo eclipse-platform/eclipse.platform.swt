@@ -182,6 +182,12 @@ protected void checkSubclass () {
 void createHandle (int index) {
 	state |= HANDLE;
 	int bits = SWT.SEPARATOR | SWT.RADIO | SWT.CHECK | SWT.PUSH | SWT.DROP_DOWN;
+	if ((style & SWT.SEPARATOR) == 0) {
+		labelHandle = OS.gtk_label_new_with_mnemonic (null);
+		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		imageHandle = OS.gtk_image_new_from_pixbuf (0);
+		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	}
 	switch (style & bits) {
 		case SWT.SEPARATOR:
 			handle = OS.gtk_separator_tool_item_new ();
@@ -192,9 +198,6 @@ void createHandle (int index) {
 			if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
 				handle = OS.gtk_menu_tool_button_new (0, null);
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-				labelHandle = OS.gtk_label_new_with_mnemonic (null);
-				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-				OS.gtk_tool_button_set_label_widget(handle, labelHandle);
 				/*
 				 * Feature in GTK. The arrow button of DropDown tool-item is 
 				 * disabled when it does not contain menu. The fix is to
@@ -212,14 +215,11 @@ void createHandle (int index) {
 				 */
 				handle = OS.gtk_tool_button_new (0, null);
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-				labelHandle = OS.gtk_label_new_with_mnemonic (null);
-				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 				arrowBoxHandle = OS.gtk_hbox_new (false, 0);
 				if (arrowBoxHandle == 0) error(SWT.ERROR_NO_HANDLES);
 				arrowHandle = OS.gtk_arrow_new (OS.GTK_ARROW_DOWN, OS.GTK_SHADOW_NONE);
 				if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
 				OS.gtk_widget_set_size_request (arrowHandle, 8, 6);
-				OS.gtk_tool_button_set_label_widget (handle, arrowBoxHandle);
 				OS.gtk_container_add (arrowBoxHandle, labelHandle);	
 				OS.gtk_container_add (arrowBoxHandle, arrowHandle);
 				/*
@@ -241,18 +241,18 @@ void createHandle (int index) {
 		case SWT.CHECK:
 			handle = OS.gtk_toggle_tool_button_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			labelHandle = OS.gtk_label_new_with_mnemonic (null);
-			if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.gtk_tool_button_set_label_widget(handle, labelHandle);
 			break;
 		case SWT.PUSH:
 		default:
 			handle = OS.gtk_tool_button_new (0, null);
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			labelHandle = OS.gtk_label_new_with_mnemonic (null);
-			if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.gtk_tool_button_set_label_widget(handle, labelHandle);
 			break;
+	}
+	if (labelHandle != 0) {
+		OS.gtk_tool_button_set_label_widget(handle, labelHandle);
+	}
+	if (imageHandle != 0) {
+		OS.gtk_tool_button_set_icon_widget(handle, imageHandle);
 	}
 	if ((parent.state & FOREGROUND) != 0) {
 		setForegroundColor (parent.getForegroundColor());
@@ -638,11 +638,9 @@ int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
 		ImageList imageList = parent.imageList;
 		if (imageList != null) {
 			int index = imageList.indexOf (hotImage);
-			if (index != -1) {
+			if (index != -1 && imageHandle != 0) {
 				int /*long*/ pixbuf = imageList.getPixbuf (index);
-				imageHandle = OS.gtk_image_new_from_pixbuf (pixbuf);
-				OS.gtk_widget_show (imageHandle);
-				OS.gtk_tool_button_set_icon_widget (handle, imageHandle);
+				OS.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
 			}
 		}
 	}
@@ -684,11 +682,9 @@ int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
 			ImageList imageList = parent.imageList;
 			if (imageList != null) {
 				int index = imageList.indexOf (image);
-				if (index != -1) {
+				if (index != -1 && imageHandle != 0) {
 					int /*long*/ pixbuf = imageList.getPixbuf (index);
-					imageHandle = OS.gtk_image_new_from_pixbuf (pixbuf);
-					OS.gtk_widget_show (imageHandle);
-					OS.gtk_tool_button_set_icon_widget (handle, imageHandle);
+					OS.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
 				}
 			}
 		}	
@@ -1016,12 +1012,10 @@ public void setImage (Image image) {
 			imageList.put (imageIndex, image);
 		}
 		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
-		imageHandle = OS.gtk_image_new_from_pixbuf (pixbuf);
-		OS.gtk_widget_show (imageHandle);
+		OS.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
 	} else {
-		imageHandle = 0;
+		OS.gtk_image_set_from_pixbuf(imageHandle, 0);
 	}
-	OS.gtk_tool_button_set_icon_widget (handle, imageHandle);
 	/*
 	* If Text/Image of a tool-item changes, then it is 
 	* required to reset the proxy menu. Otherwise, the 
@@ -1207,6 +1201,7 @@ public void setWidth (int width) {
 void showWidget (int index) {
 	if (handle != 0) OS.gtk_widget_show (handle);
 	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
+	if (imageHandle != 0) OS.gtk_widget_show (imageHandle);
 	if ((style & SWT.DROP_DOWN) != 0 && OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {
 		if (arrowBoxHandle != 0) OS.gtk_widget_show (arrowBoxHandle);
 		if (arrowHandle != 0) OS.gtk_widget_show (arrowHandle);
