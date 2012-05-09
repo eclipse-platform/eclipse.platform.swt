@@ -2402,6 +2402,7 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 		} else if (buffer != null && oldTooltip != 0) {
 				if (OS.strcmp (oldTooltip, buffer) == 0) return;
 		}
+		if (oldTooltip != 0) OS.g_free(oldTooltip);
 		OS.gtk_widget_set_tooltip_text (rootWidget, null);
 		/*
 		* Bug in GTK. In GTK 2.12, due to a miscalculation of window
