@@ -2498,7 +2498,7 @@ boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, in
 	
 	switch (nsType) {
 		case OS.NSLeftMouseDown:
-			if (nsEvent.clickCount() == 1 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+			if (nsEvent.clickCount() == 1 && (nsEvent.modifierFlags() & OS.NSControlKeyMask) == 0 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 				consume = new boolean[1];
 				NSPoint location = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
 				if (!view.isFlipped ()) {
