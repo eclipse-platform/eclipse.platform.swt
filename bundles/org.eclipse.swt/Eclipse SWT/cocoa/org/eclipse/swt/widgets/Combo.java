@@ -1255,6 +1255,7 @@ public void select (int index) {
 	int count = getItemCount ();
 	ignoreSelection = true;
 	if (0 <= index && index < count) {
+		if (index == getSelectionIndex()) return;
 		if ((style & SWT.READ_ONLY) != 0) {
 			((NSPopUpButton)view).selectItemAtIndex(index);
 			sendEvent (SWT.Modify);
@@ -1563,9 +1564,8 @@ void setText (String string, boolean notify) {
 	}
 	if ((style & SWT.READ_ONLY) != 0) {
 		int index = indexOf (string);
-		if (index != -1 && index != getSelectionIndex ()) {
+		if (index != -1) {
 			select (index);
-			if (notify) sendEvent (SWT.Modify);
 		}
 	} else {
 		char[] buffer = new char [Math.min(string.length (), textLimit)];
