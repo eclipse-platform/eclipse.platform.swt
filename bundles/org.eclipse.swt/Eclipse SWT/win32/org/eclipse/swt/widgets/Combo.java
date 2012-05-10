@@ -714,7 +714,11 @@ public Point getCaretLocation () {
 			OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
 		}
 	}
-	return new Point (OS.GET_X_LPARAM (caretPos), OS.GET_Y_LPARAM (caretPos));
+	POINT point = new POINT ();
+	point.x = OS.GET_X_LPARAM (caretPos);
+	point.y = OS.GET_Y_LPARAM (caretPos);
+	OS.MapWindowPoints (hwndText, handle, point, 1);
+	return new Point (point.x, point.y);
 }
 
 /**
