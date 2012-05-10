@@ -620,7 +620,11 @@ public Point getCaretLocation() {
 	int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, container, rectCount);
 	NSRect rect = new NSRect();
 	if (rectCount[0] > 0) OS.memmove(rect, pArray, NSRect.sizeof);
-	return new Point((int)rect.x, (int)rect.y);
+	NSPoint pt = new NSPoint();
+	pt.x = (int)rect.x;
+	pt.y = (int)rect.y;
+	pt = widget.convertPoint_toView_(pt, view);
+	return new Point((int)pt.x, (int)pt.y);
 }
 
 int getCharCount() {
