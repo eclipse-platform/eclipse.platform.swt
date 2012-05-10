@@ -30,6 +30,13 @@ public abstract class FileFormat {
 	ImageLoader loader;
 	int compression;
 
+static FileFormat getFileFormat (LEDataInputStream stream, String format) throws Exception {
+	Class clazz = Class.forName(FORMAT_PACKAGE + '.' + format + FORMAT_SUFFIX);
+	FileFormat fileFormat = (FileFormat) clazz.newInstance();
+	if (fileFormat.isFileFormat(stream)) return fileFormat;
+	return null;
+}
+
 /**
  * Return whether or not the specified input stream
  * represents a supported file format.
@@ -63,23 +70,18 @@ public ImageData[] loadFromStream(LEDataInputStream stream) {
 public static ImageData[] load(InputStream is, ImageLoader loader) {
 	FileFormat fileFormat = null;
 	LEDataInputStream stream = new LEDataInputStream(is);
-	boolean isSupported = false;	
 	for (int i = 1; i < FORMATS.length; i++) {
 		if (FORMATS[i] != null) {
 			try {
-				Class clazz = Class.forName(FORMAT_PACKAGE + '.' + FORMATS[i] + FORMAT_SUFFIX);
-				fileFormat = (FileFormat) clazz.newInstance();
-				if (fileFormat.isFileFormat(stream)) {
-					isSupported = true;
-					break;
-				}
+				fileFormat = getFileFormat (stream, FORMATS[i]);
+				if (fileFormat != null) break;
 			} catch (ClassNotFoundException e) {
 				FORMATS[i] = null;
 			} catch (Exception e) {
 			}
 		}
 	}
-	if (!isSupported) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
+	if (fileFormat == null) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	fileFormat.loader = loader;
 	return fileFormat.loadFromStream(stream);
 }

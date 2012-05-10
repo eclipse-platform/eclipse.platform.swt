@@ -124,6 +124,14 @@ ImageData[] loadFromByteStream() {
  * Load one icon from the byte stream.
  */
 ImageData loadIcon(int[] iconHeader) {
+	try {
+		FileFormat png = getFileFormat(inputStream, "PNG");
+		if (png != null) {
+			png.loader = this.loader;
+			return png.loadFromStream(inputStream)[0];
+		}
+	} catch (Exception e) {
+	}
 	byte[] infoHeader = loadInfoHeader(iconHeader);
 	WinBMPFileFormat bmpFormat = new WinBMPFileFormat();
 	bmpFormat.inputStream = inputStream;
@@ -201,6 +209,13 @@ byte[] loadInfoHeader(int[] iconHeader) {
 	int infoWidth = (infoHeader[4] & 0xFF) | ((infoHeader[5] & 0xFF) << 8) | ((infoHeader[6] & 0xFF) << 16) | ((infoHeader[7] & 0xFF) << 24);
 	int infoHeight = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
 	int bitCount = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
+	/*
+	 * Feature in the ico spec. The spec says that a width/height of 0 represents 256, however, newer images can be created with even larger sizes. 
+	 * Images with a width/height >= 256 will have their width/height set to 0 in the icon header; the fix for this case is to read the width/height 
+	 * directly from the image header.
+	 */
+	if (width == 0) width = infoWidth;
+	if (height == 0) height = infoHeight / 2;
 	if (height == infoHeight && bitCount == 1) height /= 2;
 	if (!((width == infoWidth) && (height * 2 == infoHeight) &&
 		(bitCount == 1 || bitCount == 4 || bitCount == 8 || bitCount == 24 || bitCount == 32)))
