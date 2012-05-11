@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1401;
-int OS_nativeFunctionCallCount[1401];
+int OS_nativeFunctionCount = 1402;
+int OS_nativeFunctionCallCount[1402];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -291,6 +291,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1main_1context_1query",
 	"_1g_1main_1context_1release",
 	"_1g_1malloc",
+	"_1g_1object_1class_1find_1property",
 #ifndef JNI64
 	"_1g_1object_1get__I_3B_3II",
 #else

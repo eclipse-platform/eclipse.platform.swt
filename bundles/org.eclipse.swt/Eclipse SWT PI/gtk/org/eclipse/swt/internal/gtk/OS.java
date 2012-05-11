@@ -2729,6 +2729,19 @@ public static final int /*long*/ g_malloc(int /*long*/ size) {
 	}
 }
 /**
+ * @param oclass cast=(GObjectClass *)
+ * @param property_name cast=(const gchar *)
+ */
+public static final native int /*long*/ _g_object_class_find_property(int /*long*/ oclass, byte[] property_name);
+public static final int /*long*/ g_object_class_find_property(int /*long*/ oclass, byte[] property_name) {
+	lock.lock();
+	try {
+		return _g_object_class_find_property(oclass, property_name);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param object cast=(GObject *)
  * @param first_property_name cast=(const gchar *),flags=no_out
  * @param terminator cast=(const gchar *),flags=sentinel
