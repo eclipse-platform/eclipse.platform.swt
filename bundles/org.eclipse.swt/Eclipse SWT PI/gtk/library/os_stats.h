@@ -299,6 +299,7 @@ typedef enum {
 	_1g_1main_1context_1query_FUNC,
 	_1g_1main_1context_1release_FUNC,
 	_1g_1malloc_FUNC,
+	_1g_1object_1class_1find_1property_FUNC,
 #ifndef JNI64
 	_1g_1object_1get__I_3B_3II_FUNC,
 #else

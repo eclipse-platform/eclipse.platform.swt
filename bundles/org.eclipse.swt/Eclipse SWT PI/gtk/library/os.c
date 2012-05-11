@@ -3695,6 +3695,22 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1malloc)
 }
 #endif
 
+#ifndef NO__1g_1object_1class_1find_1property
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1object_1class_1find_1property)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1object_1class_1find_1property_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jintLong)g_object_class_find_property((GObjectClass *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1object_1class_1find_1property_FUNC);
+	return rc;
+}
+#endif
+
 #if (!defined(NO__1g_1object_1get__I_3B_3II) && !defined(JNI64)) || (!defined(NO__1g_1object_1get__J_3B_3IJ) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1get__I_3B_3II)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintArray arg2, jintLong arg3)
