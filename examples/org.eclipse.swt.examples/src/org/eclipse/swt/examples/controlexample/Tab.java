@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -784,7 +784,6 @@ abstract class Tab {
 		final Table table = new Table (dialog, SWT.BORDER | SWT.V_SCROLL | SWT.CHECK);
 		GridData data = new GridData(GridData.FILL_BOTH);
 		data.verticalSpan = 3;
-		data.heightHint = 440;
 		table.setLayoutData(data);
 		for (int i = 0; i < EVENT_INFO.length; i++) {
 			TableItem item = new TableItem (table, SWT.NONE);
