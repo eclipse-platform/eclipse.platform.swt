@@ -2612,10 +2612,13 @@ StyleItem[] itemize () {
 	* performance by reducing the number of SCRIPT_ITEM returned by ScriptItemize.
 	* 
 	* Note: This code is wrong on a big endian machine.
+	* 
+	* Note: This code is intentionally commented because it causes bug#377472.
 	*/
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-		scriptControl.fReserved = 0x1;
-	}
+//	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+//		scriptControl.fReserved = 0x1;
+//	}
+	
 	OS.ScriptApplyDigitSubstitution(null, scriptControl, scriptState);
 	
 	int /*long*/ hHeap = OS.GetProcessHeap();
