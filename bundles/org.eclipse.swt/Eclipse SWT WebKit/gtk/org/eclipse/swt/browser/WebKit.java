@@ -1603,21 +1603,37 @@ int /*long*/ webkit_download_requested (int /*long*/ web_view, int /*long*/ down
 	int length = OS.strlen (name);
 	byte[] bytes = new byte[length];
 	OS.memmove (bytes, name, length);
-	String nameString = new String (Converter.mbcsToWcs (null, bytes));
-	FileDialog dialog = new FileDialog (browser.getShell (), SWT.OPEN);
-	dialog.setFileName (nameString);
-	String title = Compatibility.getMessage ("SWT_FileDownload"); //$NON-NLS-1$
-	dialog.setText (title);
-	String path = dialog.open ();
+	final String nameString = new String (Converter.mbcsToWcs (null, bytes));
 
-	if (path != null) {
-		path = URI_FILEROOT + path;
-		byte[] uriBytes = Converter.wcsToMbcs (null, path, true);
-		WebKitGTK.webkit_download_set_destination_uri (download, uriBytes);
-		openDownloadWindow (download);
-	} else {
-		WebKitGTK.webkit_download_cancel (download);
-	}
+	final int /*long*/ request = WebKitGTK.webkit_download_get_network_request (download);
+	OS.g_object_ref (request);
+
+	/*
+	* As of WebKitGTK 1.8.x attempting to show a FileDialog in this callback causes
+	* a hang.  The workaround is to open it asynchronously with a new download.
+	*/
+	browser.getDisplay ().asyncExec (new Runnable () {
+		public void run () {
+			if (!browser.isDisposed ()) {
+				FileDialog dialog = new FileDialog (browser.getShell (), SWT.OPEN);
+				dialog.setFileName (nameString);
+				String title = Compatibility.getMessage ("SWT_FileDownload"); //$NON-NLS-1$
+				dialog.setText (title);
+				String path = dialog.open ();
+				if (path != null) {
+					path = URI_FILEROOT + path;
+					int /*long*/ newDownload = WebKitGTK.webkit_download_new (request);
+					byte[] uriBytes = Converter.wcsToMbcs (null, path, true);
+					WebKitGTK.webkit_download_set_destination_uri (newDownload, uriBytes);
+					openDownloadWindow (newDownload);
+					WebKitGTK.webkit_download_start (newDownload);
+					OS.g_object_unref (newDownload);
+				}
+			}
+			OS.g_object_unref (request);
+		}
+	});
+
 	return 1;
 }
 

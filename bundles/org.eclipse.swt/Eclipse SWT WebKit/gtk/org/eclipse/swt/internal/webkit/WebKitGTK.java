@@ -743,6 +743,17 @@ public static final long webkit_download_get_current_size (int /*long*/ download
 }
 
 /** @method flags=dynamic */
+public static final native int /*long*/ _webkit_download_get_network_request (int /*long*/ download);
+public static final int /*long*/ webkit_download_get_network_request (int /*long*/ download) {
+	lock.lock();
+	try {
+		return _webkit_download_get_network_request (download);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native int _webkit_download_get_status (int /*long*/ download);
 public static final int webkit_download_get_status (int /*long*/ download) {
 	lock.lock();
@@ -787,11 +798,33 @@ public static final int /*long*/ webkit_download_get_uri (int /*long*/ download)
 }
 
 /** @method flags=dynamic */
+public static final native int /*long*/ _webkit_download_new (int /*long*/ request);
+public static final int /*long*/ webkit_download_new (int /*long*/ request) {
+	lock.lock();
+	try {
+		return _webkit_download_new (request);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native void _webkit_download_set_destination_uri (int /*long*/ download, byte[] destination_uri);
 public static final void webkit_download_set_destination_uri (int /*long*/ download, byte[] destination_uri) {
 	lock.lock();
 	try {
 		_webkit_download_set_destination_uri (download, destination_uri);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native void _webkit_download_start (int /*long*/ download);
+public static final void webkit_download_start (int /*long*/ download) {
+	lock.lock();
+	try {
+		_webkit_download_start (download);
 	} finally {
 		lock.unlock();
 	}
