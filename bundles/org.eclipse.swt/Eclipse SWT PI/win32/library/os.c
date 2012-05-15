@@ -18099,6 +18099,50 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(UpdateWindow)
 }
 #endif
 
+#ifndef NO_UrlCreateFromPathA
+JNIEXPORT jint JNICALL OS_NATIVE(UrlCreateFromPathA)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, UrlCreateFromPathA_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)UrlCreateFromPathA((LPCTSTR)lparg0, (LPCTSTR)lparg1, lparg2, arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, UrlCreateFromPathA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_UrlCreateFromPathW
+JNIEXPORT jint JNICALL OS_NATIVE(UrlCreateFromPathW)
+	(JNIEnv *env, jclass that, jcharArray arg0, jcharArray arg1, jintArray arg2, jint arg3)
+{
+	jchar *lparg0=NULL;
+	jchar *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, UrlCreateFromPathW_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)UrlCreateFromPathW((LPCWSTR)lparg0, (LPCWSTR)lparg1, lparg2, arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, UrlCreateFromPathW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ValidateRect
 JNIEXPORT jboolean JNICALL OS_NATIVE(ValidateRect)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)

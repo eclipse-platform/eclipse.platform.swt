@@ -618,6 +618,8 @@
 #define NO_UnregisterClassA
 #define NO_UnregisterTouchWindow
 #define NO_UpdateLayeredWindow
+#define NO_UrlCreateFromPathA
+#define NO_UrlCreateFromPathW
 #define NO_VkKeyScanA
 #define NO_VkKeyScanW
 #define NO_VtblCall__IILorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2
