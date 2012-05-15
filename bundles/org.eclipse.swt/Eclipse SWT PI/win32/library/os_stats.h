@@ -1845,6 +1845,8 @@ typedef enum {
 	UnregisterTouchWindow_FUNC,
 	UpdateLayeredWindow_FUNC,
 	UpdateWindow_FUNC,
+	UrlCreateFromPathA_FUNC,
+	UrlCreateFromPathW_FUNC,
 	ValidateRect_FUNC,
 	VkKeyScanA_FUNC,
 	VkKeyScanW_FUNC,

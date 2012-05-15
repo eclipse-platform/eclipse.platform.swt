@@ -907,6 +907,7 @@ public class OS extends C {
 	public static final int INFINITE = 0xffffffff;
 	public static final int INPUT_KEYBOARD = 1;
 	public static final int INPUT_MOUSE = 0;
+	public static final int INTERNET_MAX_URL_LENGTH = 2084;
 	public static final int INTERNET_OPTION_END_BROWSER_SESSION = 42;
 	public static final int KEY_ENUMERATE_SUB_KEYS = 0x8;
 	public static final int KEY_NOTIFY = 0x10;
@@ -3542,6 +3543,17 @@ public static final boolean UnregisterClass (TCHAR lpClassName, int /*long*/ hIn
 	}
 	byte [] lpClassName1 = lpClassName == null ? null : lpClassName.bytes;
 	return UnregisterClassA (lpClassName1, hInstance);
+}
+
+public static final int UrlCreateFromPath (TCHAR pszPath, TCHAR pszURL, int[] pcchUrl, int flags) {
+	if (IsUnicode) {
+		char [] path = pszPath == null ? null : pszPath.chars;
+		char [] url = pszURL == null ? null : pszURL.chars;
+		return UrlCreateFromPathW (path, url, pcchUrl, flags);
+	}
+	byte [] path = pszPath == null ? null : pszPath.bytes;
+	byte [] url = pszURL == null ? null : pszURL.bytes;
+	return UrlCreateFromPathA (path, url, pcchUrl, flags);
 }
 
 public static final short VkKeyScan (short ch) {
@@ -6928,6 +6940,16 @@ public static final native boolean UpdateLayeredWindow (int /*long*/ hwnd, int /
 public static final native boolean UnregisterTouchWindow (int /*long*/ hwnd);
 /** @param hWnd cast=(HWND) */
 public static final native boolean UpdateWindow (int /*long*/ hWnd);
+/**
+ * @param pszPath cast=(LPCTSTR)
+ * @param pszURL cast=(LPCTSTR)
+ */
+public static final native int UrlCreateFromPathA (byte[] pszPath, byte[] pszURL, int[] pcchUrl, int flags);
+/**
+ * @param pszPath cast=(LPCWSTR)
+ * @param pszURL cast=(LPCWSTR)
+ */
+public static final native int UrlCreateFromPathW (char[] pszPath, char[] pszURL, int[] pcchUrl, int flags);
 /** @param hWnd cast=(HWND) */
 public static final native boolean ValidateRect (int /*long*/ hWnd, RECT lpRect);
 /** @param ch cast=(WCHAR) */

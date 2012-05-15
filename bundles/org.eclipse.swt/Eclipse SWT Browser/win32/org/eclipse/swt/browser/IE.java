@@ -472,12 +472,19 @@ public void create(Composite parent, int style) {
 
 						/*
 						* Feature in IE.  For navigations on the local machine, BeforeNavigate2's url
-						* field contains a string representing the file path in a non-URL format.
+						* field contains a string representation of the file path in a non-URL format.
 						* In order to be consistent with the other Browser implementations, this
 						* case is detected and the string is changed to be a proper url string.
 						*/
 						if (url.indexOf(":/") == -1 && url.indexOf(":\\") != -1) { //$NON-NLS-1$ //$NON-NLS-2$
-							url = PROTOCOL_FILE + url.replace('\\', '/');
+							TCHAR filePath = new TCHAR(0, url, true);
+							TCHAR urlResult = new TCHAR(0, OS.INTERNET_MAX_URL_LENGTH);
+							int[] size = new int[] {urlResult.length()};
+							if (!OS.IsWinCE && OS.UrlCreateFromPath(filePath, urlResult, size, 0) == COM.S_OK) {
+								url = urlResult.toString(0, size[0]);
+							} else {
+								url = PROTOCOL_FILE + url.replace('\\', '/');
+							}
 						}
 
 						/* Disallow local file system accesses if the browser content is untrusted */
@@ -542,13 +549,20 @@ public void create(Composite parent, int style) {
 						varResult = event.arguments[1];
 						String url = varResult.getString();
 						/*
-						* Bug in IE.  For navigations on the local machine, DocumentComplete's URL
-						* field contains a string representing the file path in a non-URL format.
+						* Feature in IE.  For navigations on the local machine, DocumentComplete's url
+						* field contains a string representation of the file path in a non-URL format.
 						* In order to be consistent with the other Browser implementations, this
 						* case is detected and the string is changed to be a proper url string.
 						*/
 						if (url.indexOf(":/") == -1 && url.indexOf(":\\") != -1) { //$NON-NLS-1$ //$NON-NLS-2$
-							url = PROTOCOL_FILE + url.replace('\\', '/');
+							TCHAR filePath = new TCHAR(0, url, true);
+							TCHAR urlResult = new TCHAR(0, OS.INTERNET_MAX_URL_LENGTH);
+							int[] size = new int[] {urlResult.length()};
+							if (!OS.IsWinCE && OS.UrlCreateFromPath(filePath, urlResult, size, 0) == COM.S_OK) {
+								url = urlResult.toString(0, size[0]);
+							} else {
+								url = PROTOCOL_FILE + url.replace('\\', '/');
+							}
 						}
 						if (html != null && url.equals(ABOUT_BLANK)) {
 							if (delaySetText) {
