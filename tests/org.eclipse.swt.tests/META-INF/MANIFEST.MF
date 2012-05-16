@@ -12,3 +12,4 @@ Export-Package: org.eclipse.swt.tests.junit,
 Require-Bundle: org.junit,
  org.eclipse.swt,
  org.eclipse.test.performance
+Eclipse-BundleShape: dir
