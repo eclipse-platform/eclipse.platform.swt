@@ -201,11 +201,29 @@
 </message_arguments>
 </filter>
 </resource>
+<resource path="Eclipse SWT Accessibility/win32/org/eclipse/swt/accessibility/Accessible.java" type="org.eclipse.swt.accessibility.Accessible">
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="sendEvent(int, Object, int)"/>
+</message_arguments>
+</filter>
+</resource>
 <resource path="Eclipse SWT Browser/common/org/eclipse/swt/browser/AuthenticationListener.java" type="org.eclipse.swt.browser.AuthenticationListener">
 <filter id="576720909">
 <message_arguments>
 <message_argument value="SWTEventListener"/>
 <message_argument value="AuthenticationListener"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Browser/common/org/eclipse/swt/browser/BrowserFunction.java" type="org.eclipse.swt.browser.BrowserFunction">
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="BrowserFunction(Browser, String, boolean, String[])"/>
 </message_arguments>
 </filter>
 </resource>
@@ -337,6 +355,92 @@
 </message_arguments>
 </filter>
 </resource>
+<resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/ST.java" type="org.eclipse.swt.custom.ST">
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="CaretMoved"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="ExtendedModify"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="LineGetBackground"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="LineGetSegments"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="LineGetStyle"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="PaintObject"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="TextChanged"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="TextChanging"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="TextSet"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="VerifyKey"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="WordNext"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="WordPrevious"/>
+</message_arguments>
+</filter>
+</resource>
 <resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/StyleRange.java" type="org.eclipse.swt.custom.StyleRange">
 <filter id="576725006">
 <message_arguments>
@@ -345,11 +449,36 @@
 </message_arguments>
 </filter>
 </resource>
+<resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/StyledText.java" type="org.eclipse.swt.custom.StyledText">
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="getAlwaysShowScrollBars()"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="setAlwaysShowScrollBars(boolean)"/>
+</message_arguments>
+</filter>
+</resource>
 <resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/TextChangeListener.java" type="org.eclipse.swt.custom.TextChangeListener">
 <filter id="576720909">
 <message_arguments>
 <message_argument value="SWTEventListener"/>
 <message_argument value="TextChangeListener"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT Custom Widgets/common/org/eclipse/swt/custom/TreeCursor.java" type="org.eclipse.swt.custom.TreeCursor">
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1108344834">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="org.eclipse.swt.custom.TreeCursor"/>
 </message_arguments>
 </filter>
 </resource>
@@ -494,6 +623,50 @@
 </message_arguments>
 </filter>
 </resource>
+<resource path="Eclipse SWT/common/org/eclipse/swt/SWT.java" type="org.eclipse.swt.SWT">
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="MENU_KEYBOARD"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="MENU_MOUSE"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="SCROLLBAR_OVERLAY"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="Segments"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="getMessage(String, Object[])"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="isLoadable()"/>
+</message_arguments>
+</filter>
+</resource>
 <resource path="Eclipse SWT/common/org/eclipse/swt/events/ArmListener.java" type="org.eclipse.swt.events.ArmListener">
 <filter id="576720909">
 <message_arguments>
@@ -566,6 +739,15 @@
 </message_arguments>
 </filter>
 </resource>
+<resource path="Eclipse SWT/common/org/eclipse/swt/events/MenuDetectEvent.java" type="org.eclipse.swt.events.MenuDetectEvent">
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="detail"/>
+</message_arguments>
+</filter>
+</resource>
 <resource path="Eclipse SWT/common/org/eclipse/swt/events/MenuDetectListener.java" type="org.eclipse.swt.events.MenuDetectListener">
 <filter id="576720909">
 <message_arguments>
@@ -630,11 +812,27 @@
 </message_arguments>
 </filter>
 </resource>
+<resource path="Eclipse SWT/common/org/eclipse/swt/events/SegmentEvent.java" type="org.eclipse.swt.events.SegmentEvent">
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1108344834">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="org.eclipse.swt.events.SegmentEvent"/>
+</message_arguments>
+</filter>
+</resource>
 <resource path="Eclipse SWT/common/org/eclipse/swt/events/SegmentListener.java" type="org.eclipse.swt.events.SegmentListener">
 <filter id="576720909">
 <message_arguments>
 <message_argument value="SWTEventListener"/>
 <message_argument value="SegmentListener"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1108344834">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="org.eclipse.swt.events.SegmentListener"/>
 </message_arguments>
 </filter>
 </resource>
@@ -694,6 +892,15 @@
 </message_arguments>
 </filter>
 </resource>
+<resource path="Eclipse SWT/common/org/eclipse/swt/graphics/ImageLoader.java" type="org.eclipse.swt.graphics.ImageLoader">
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="compression"/>
+</message_arguments>
+</filter>
+</resource>
 <resource path="Eclipse SWT/common/org/eclipse/swt/graphics/ImageLoaderListener.java" type="org.eclipse.swt.graphics.ImageLoaderListener">
 <filter id="576720909">
 <message_arguments>
@@ -726,6 +933,22 @@
 </message_arguments>
 </filter>
 </resource>
+<resource path="Eclipse SWT/common/org/eclipse/swt/widgets/Event.java" type="org.eclipse.swt.widgets.Event">
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="segments"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="segmentsChars"/>
+</message_arguments>
+</filter>
+</resource>
 <resource path="Eclipse SWT/common/org/eclipse/swt/widgets/TypedListener.java" type="org.eclipse.swt.widgets.TypedListener">
 <filter id="627060751">
 <message_arguments>
@@ -742,10 +965,99 @@
 </message_arguments>
 </filter>
 </resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/ColorDialog.java" type="org.eclipse.swt.widgets.ColorDialog">
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="getRGBs()"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="setRGBs(RGB[])"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Combo.java" type="org.eclipse.swt.widgets.Combo">
+<filter id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="getCaretLocation()"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="getCaretPosition()"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/FontDialog.java" type="org.eclipse.swt.widgets.FontDialog">
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="getEffectsVisible()"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="setEffectsVisible(boolean)"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Scrollable.java" type="org.eclipse.swt.widgets.Scrollable">
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="getScrollbarsMode()"/>
+</message_arguments>
+</filter>
+</resource>
 <resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Shell.java" type="org.eclipse.swt.widgets.Shell">
 <filter id="336744520">
 <message_arguments>
 <message_argument value="org.eclipse.swt.widgets.Shell"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/Text.java" type="org.eclipse.swt.widgets.Text">
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="addSegmentListener(SegmentListener)"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="removeSegmentListener(SegmentListener)"/>
+</message_arguments>
+</filter>
+</resource>
+<resource path="Eclipse SWT/win32/org/eclipse/swt/widgets/TrayItem.java" type="org.eclipse.swt.widgets.TrayItem">
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="getHighlightImage()"/>
+</message_arguments>
+</filter>
+<filter comment="@since 3.8 is valid in the 3.100 stream" id="1141899266">
+<message_arguments>
+<message_argument value="3.8"/>
+<message_argument value="3.100"/>
+<message_argument value="setHighlightImage(Image)"/>
 </message_arguments>
 </filter>
 </resource>
