@@ -1615,7 +1615,7 @@ int /*long*/ webkit_download_requested (int /*long*/ web_view, int /*long*/ down
 	browser.getDisplay ().asyncExec (new Runnable () {
 		public void run () {
 			if (!browser.isDisposed ()) {
-				FileDialog dialog = new FileDialog (browser.getShell (), SWT.OPEN);
+				FileDialog dialog = new FileDialog (browser.getShell (), SWT.SAVE);
 				dialog.setFileName (nameString);
 				String title = Compatibility.getMessage ("SWT_FileDownload"); //$NON-NLS-1$
 				dialog.setText (title);
