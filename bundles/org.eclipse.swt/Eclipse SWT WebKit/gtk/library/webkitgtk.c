@@ -1300,6 +1300,26 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1webkit_1download_1get_1current_1size)
 }
 #endif
 
+#ifndef NO__1webkit_1download_1get_1network_1request
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1download_1get_1network_1request)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1download_1get_1network_1request_FUNC);
+/*
+	rc = (jintLong)webkit_download_get_network_request(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_download_get_network_request)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1download_1get_1network_1request_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1webkit_1download_1get_1status
 JNIEXPORT jint JNICALL WebKitGTK_NATIVE(_1webkit_1download_1get_1status)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1380,6 +1400,26 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1download_1get_1uri)
 }
 #endif
 
+#ifndef NO__1webkit_1download_1new
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1download_1new)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1download_1new_FUNC);
+/*
+	rc = (jintLong)webkit_download_new(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_download_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1download_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1webkit_1download_1set_1destination_1uri
 JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1download_1set_1destination_1uri)
 	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
@@ -1399,6 +1439,24 @@ JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1download_1set_1destination_1ur
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1download_1set_1destination_1uri_FUNC);
+}
+#endif
+
+#ifndef NO__1webkit_1download_1start
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1download_1start)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1download_1start_FUNC);
+/*
+	webkit_download_start(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_download_start)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1download_1start_FUNC);
 }
 #endif
 

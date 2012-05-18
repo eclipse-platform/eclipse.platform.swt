@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int WebKitGTK_nativeFunctionCount = 110;
-int WebKitGTK_nativeFunctionCallCount[110];
+int WebKitGTK_nativeFunctionCount = 113;
+int WebKitGTK_nativeFunctionCallCount[113];
 char * WebKitGTK_nativeFunctionNames[] = {
 	"JSClassDefinition_1sizeof",
 	"_1JSClassCreate",
@@ -85,11 +85,14 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1dom_1ui_1event_1get_1key_1code",
 	"_1webkit_1download_1cancel",
 	"_1webkit_1download_1get_1current_1size",
+	"_1webkit_1download_1get_1network_1request",
 	"_1webkit_1download_1get_1status",
 	"_1webkit_1download_1get_1suggested_1filename",
 	"_1webkit_1download_1get_1total_1size",
 	"_1webkit_1download_1get_1uri",
+	"_1webkit_1download_1new",
 	"_1webkit_1download_1set_1destination_1uri",
+	"_1webkit_1download_1start",
 	"_1webkit_1get_1default_1session",
 	"_1webkit_1major_1version",
 	"_1webkit_1micro_1version",
