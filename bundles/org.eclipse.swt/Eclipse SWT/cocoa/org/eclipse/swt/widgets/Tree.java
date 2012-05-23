@@ -2331,6 +2331,13 @@ void register () {
 }
 
 void releaseChildren (boolean destroy) {
+	int count = itemCount;
+	itemCount = 0;
+	ignoreSelect = true;
+	((NSOutlineView) view).reloadData ();
+	ignoreSelect = false;
+	itemCount = count;
+
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null && !item.isDisposed ()) {
@@ -2379,6 +2386,12 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
+	int count = itemCount;
+	itemCount = 0;
+	ignoreSelect = true;
+	((NSOutlineView) view).reloadData ();
+	ignoreSelect = false;
+	itemCount = count;
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null && !item.isDisposed ()) item.release (false);
@@ -2387,9 +2400,6 @@ public void removeAll () {
 	itemCount = 0;
 	imageBounds = null;
 	insertItem = null;
-	ignoreSelect = true;
-	((NSOutlineView) view).reloadData ();
-	ignoreSelect = false;
 	setScrollWidth ();
 }
 
