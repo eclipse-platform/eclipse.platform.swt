@@ -1257,9 +1257,9 @@ public void removeVerifyListener (VerifyListener listener) {
 public void select (int index) {
 	checkWidget ();
 	int count = getItemCount ();
-	ignoreSelection = true;
 	if (0 <= index && index < count) {
 		if (index == getSelectionIndex()) return;
+		ignoreSelection = true;
 		if ((style & SWT.READ_ONLY) != 0) {
 			((NSPopUpButton)view).selectItemAtIndex(index);
 			sendEvent (SWT.Modify);
@@ -1268,8 +1268,8 @@ public void select (int index) {
 			widget.deselectItemAtIndex(index);
 			widget.selectItemAtIndex(index);
 		}
+		ignoreSelection = false;
 	}
-	ignoreSelection = false;
 }
 
 void sendSelection () {
