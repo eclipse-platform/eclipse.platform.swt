@@ -2331,12 +2331,10 @@ void register () {
 }
 
 void releaseChildren (boolean destroy) {
-	int count = itemCount;
 	itemCount = 0;
 	ignoreSelect = true;
 	((NSOutlineView) view).reloadData ();
 	ignoreSelect = false;
-	itemCount = count;
 
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
@@ -2386,12 +2384,10 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
-	int count = itemCount;
 	itemCount = 0;
 	ignoreSelect = true;
 	((NSOutlineView) view).reloadData ();
 	ignoreSelect = false;
-	itemCount = count;
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null && !item.isDisposed ()) item.release (false);
