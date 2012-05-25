@@ -1,0 +1,16 @@
+# Copyright by many contributors; see http://babel.eclipse.org/
+SWT_Yes=Ya
+SWT_No=Tidak
+SWT_Cancel=Membatalkan
+SWT_Sample=Contoh
+SWT_Selection=Pilihan
+SWT_Color=Warna
+SWT_Size=Ukuran
+SWT_Remove=Menghapus
+SWT_Up=Atas
+SWT_Down=Bawah
+SWT_Charset_Arabic=Arab
+SWT_Charset_Greek=Yunani
+SWT_Charset_Hebrew=Ibrani
+SWT_Open=Membuka
+SWT_Close=Menutup
