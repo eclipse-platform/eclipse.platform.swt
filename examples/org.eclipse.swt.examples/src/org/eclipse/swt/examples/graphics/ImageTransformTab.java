@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.*;
  */
 public class ImageTransformTab extends GraphicsTab {
 
-	private Spinner rotateSpinner, scaleSpinnerX, scaleSpinnerY;
+	private Spinner rotateSpinner, translateSpinnerX, translateSpinnerY, scaleSpinnerX, scaleSpinnerY;
 	private Button invertButton;
 
 /**
@@ -63,49 +63,91 @@ public void createControlPanel(Composite parent) {
  
 	new Label(comp, SWT.CENTER).setText(GraphicsExample.getResourceString("Rotate")); //$NON-NLS-1$
 	rotateSpinner = new Spinner(comp, SWT.BORDER | SWT.WRAP);
+	GC gc = new GC(rotateSpinner);
+	int width = gc.getFontMetrics().getAverageCharWidth() * 5;
+	gc.dispose();
+	rotateSpinner.setLayoutData(new GridData(width, SWT.DEFAULT));
 	rotateSpinner.setSelection(0);
-	rotateSpinner.setMinimum(0);
-	rotateSpinner.setMaximum(360);
-	rotateSpinner.setIncrement(10);
+	rotateSpinner.setMinimum(-720);
+	rotateSpinner.setMaximum(720);
+	rotateSpinner.setIncrement(30);
 	rotateSpinner.addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {	
 				example.redraw();
 		}
 	});
 	
-	// create a slider for scaling along the x axis
+	// create a spinner for translating along the x axis
+	comp = new Composite(parent, SWT.NONE);
+	comp.setLayout(gridLayout);
+	
+	new Label(comp, SWT.CENTER).setText(GraphicsExample.getResourceString("xtranslate")); //$NON-NLS-1$
+	translateSpinnerX = new Spinner(comp, SWT.BORDER | SWT.WRAP);
+	translateSpinnerX.setLayoutData(new GridData(width, SWT.DEFAULT));
+	translateSpinnerX.setMinimum(-100);
+	translateSpinnerX.setMaximum(500);
+	translateSpinnerX.setSelection(0);
+	translateSpinnerX.setIncrement(10);
+	translateSpinnerX.addListener(SWT.Selection, new Listener() {
+		public void handleEvent(Event event) {	
+				example.redraw();
+		}
+	});
+	
+	// create a spinner for translating along the y axis
+	comp = new Composite(parent, SWT.NONE);
+	comp.setLayout(gridLayout);
+
+	new Label(comp, SWT.CENTER).setText(GraphicsExample.getResourceString("ytranslate")); //$NON-NLS-1$
+	translateSpinnerY = new Spinner(comp, SWT.BORDER | SWT.WRAP);
+	translateSpinnerY.setLayoutData(new GridData(width, SWT.DEFAULT));
+	translateSpinnerY.setMinimum(-100);
+	translateSpinnerY.setMaximum(500);
+	translateSpinnerY.setSelection(0);
+	translateSpinnerY.setIncrement(10);
+	translateSpinnerY.addListener(SWT.Selection, new Listener() {
+		public void handleEvent(Event event) {	
+				example.redraw();
+		}
+	});
+	
+	// create a spinner for scaling along the x axis
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(gridLayout);
 	
 	new Label(comp, SWT.CENTER).setText(GraphicsExample.getResourceString("xscale")); //$NON-NLS-1$
 	scaleSpinnerX = new Spinner(comp, SWT.BORDER | SWT.WRAP);
+	scaleSpinnerX.setLayoutData(new GridData(width, SWT.DEFAULT));
 	scaleSpinnerX.setDigits(2);
 	scaleSpinnerX.setMinimum(1);
-	scaleSpinnerX.setMaximum(500);
-	scaleSpinnerX.setSelection(75);
+	scaleSpinnerX.setMaximum(400);
+	scaleSpinnerX.setSelection(100);
+	scaleSpinnerX.setIncrement(10);
 	scaleSpinnerX.addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {	
 				example.redraw();
 		}
 	});
 	
-	// create a slider for scaling along the y axis
+	// create a spinner for scaling along the y axis
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(gridLayout);
 
 	new Label(comp, SWT.CENTER).setText(GraphicsExample.getResourceString("yscale")); //$NON-NLS-1$
 	scaleSpinnerY = new Spinner(comp, SWT.BORDER | SWT.WRAP);
+	scaleSpinnerY.setLayoutData(new GridData(width, SWT.DEFAULT));
 	scaleSpinnerY.setDigits(2);
 	scaleSpinnerY.setMinimum(1);
-	scaleSpinnerY.setMaximum(500);
-	scaleSpinnerY.setSelection(75);
+	scaleSpinnerY.setMaximum(400);
+	scaleSpinnerY.setSelection(100);
+	scaleSpinnerY.setIncrement(10);
 	scaleSpinnerY.addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {	
 				example.redraw();
 		}
 	});
 	
-	// create a button for "invert"
+	// create a button for inverting the transform matrix
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout());
 	invertButton = new Button(comp, SWT.TOGGLE);
@@ -131,6 +173,9 @@ public void paint(GC gc, int width, int height) {
 	// scale image
 	transform.scale(scaleSpinnerX.getSelection()/100f, scaleSpinnerY.getSelection()/100f);
 	
+	// translate image
+	transform.translate(translateSpinnerX.getSelection(), translateSpinnerY.getSelection());
+	
 	// rotate on center of image
 	Rectangle rect = image.getBounds();
 	transform.translate(rect.width/2, rect.height/2);
@@ -142,10 +187,8 @@ public void paint(GC gc, int width, int height) {
 	}
 	
 	gc.setTransform(transform);
-	
 	gc.drawImage(image, 0, 0);
-	gc.drawRoundRectangle(0, 0, image.getBounds().width, 
-								image.getBounds().height, 22, 22);
+
 	transform.dispose();
 	image.dispose();
 }
