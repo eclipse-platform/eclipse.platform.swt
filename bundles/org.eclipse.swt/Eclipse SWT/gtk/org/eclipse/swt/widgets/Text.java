@@ -262,6 +262,38 @@ public void addModifyListener (ModifyListener listener) {
 	addListener (SWT.Modify, typedListener);
 }
 
+/**
+ * Adds a segment listener.
+ * <p>
+ * A <code>SegmentEvent</code> is sent whenever text content is being modified. The user can 
+ * customize appearance of text by indicating certain characters to be inserted
+ * at certain text offsets. This may be used for bidi purposes, e.g. when
+ * adjacent segments of right-to-left text should not be reordered relative to
+ * each other. 
+ * E.g., Multiple Java string literals in a right-to-left language
+ * should generally remain in logical order to each other, that is, the
+ * way they are stored.
+ * <br>
+ * After SegmentListener is added, user may call <code>setText(String)</code>
+ * for segments to take effect.
+ * </p>
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SegmentEvent
+ * @see SegmentListener
+ * @see #removeSegmentListener
+ * 
+ * @since 3.8
+ */
 public void addSegmentListener (SegmentListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -276,8 +308,10 @@ public void addSegmentListener (SegmentListener listener) {
  * <p>
  * <code>widgetSelected</code> is not called for texts.
  * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed in a single-line text,
- * or when ENTER is pressed in a search text. If the receiver has the <code>SWT.SEARCH | SWT.CANCEL</code> style
- * and the user cancels the search, the event object detail field contains the value <code>SWT.CANCEL</code>.
+ * or when ENTER is pressed in a search text. If the receiver has the <code>SWT.SEARCH | SWT.ICON_CANCEL</code> style
+ * and the user cancels the search, the event object detail field contains the value <code>SWT.ICON_CANCEL</code>.
+ * Likewise, if the receiver has the <code>SWT.ICON_SEARCH</code> style and the icon search is selected, the 
+ * event object detail field contains the value <code>SWT.ICON_SEARCH</code>.
  * </p>
  *
  * @param listener the listener which should be notified when the control is selected by the user
@@ -759,11 +793,8 @@ public int getCaretLineNumber () {
 }
 
 /**
- * Returns a point describing the receiver's location relative
- * to its parent (or its display if its parent is null).
- * <p>
- * The location of the caret is returned.
- * </p>
+ * Returns a point describing the location of the caret relative
+ * to the receiver.
  *
  * @return a point, the location of the caret
  *
@@ -1907,6 +1938,30 @@ public void removeModifyListener (ModifyListener listener) {
 	eventTable.unhook (SWT.Modify, listener);	
 }
 
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the receiver's text is modified.
+ * <p>
+ * After SegmentListener is removed, user may call <code>setText(String)</code>
+ * for segments to take effect.
+ * </p>
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SegmentEvent
+ * @see SegmentListener
+ * @see #addSegmentListener
+ * 
+ * @since 3.8
+ */
 public void removeSegmentListener (SegmentListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);

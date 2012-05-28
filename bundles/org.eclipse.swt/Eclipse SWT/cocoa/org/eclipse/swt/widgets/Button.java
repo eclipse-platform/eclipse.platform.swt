@@ -21,7 +21,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * issues notification when pressed and released. 
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>ARROW, CHECK, PUSH, RADIO, TOGGLE, FLAT</dd>
+ * <dd>ARROW, CHECK, PUSH, RADIO, TOGGLE, FLAT, WRAP</dd>
  * <dd>UP, DOWN, LEFT, RIGHT, CENTER</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>

@@ -256,7 +256,11 @@ public void setSelection (int value) {
  * 	<li>{@link SWT#ERROR}</li>
  * 	<li>{@link SWT#PAUSED}</li>
  * </ul>
- *
+ * <p>
+ * Note: This operation is a hint and is not supported on
+ * platforms that do not have this concept.
+ * </p>
+ * 
  * @param state the new state
  *
  * @exception SWTException <ul>

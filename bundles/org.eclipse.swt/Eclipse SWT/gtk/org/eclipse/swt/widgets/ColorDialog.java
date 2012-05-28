@@ -254,11 +254,15 @@ public void setRGB (RGB rgb) {
 }
 /**
  * Sets the receiver's list of custom colors to be the given array
- * of <code>RGB</code>s.
+ * of <code>RGB</code>s, which may be null to let the platform select
+ * a default when open() is called.
  *
- * @param rgbs the array of RGBs, which may be null to let the platform
- * select a default when open() is called
+ * @param rgbs the array of RGBs, which may be null
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if an RGB in the rgbs array is null</li>
+ * </ul>
+ * 
  * @since 3.8
  */
 public void setRGBs(RGB[] rgbs) {

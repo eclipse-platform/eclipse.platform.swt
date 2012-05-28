@@ -169,6 +169,19 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
+/**
+ * Returns the receiver's highlight image if it has one, or null
+ * if it does not.
+ *
+ * @return the receiver's highlight image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.8
+ */
 public Image getHighlightImage () {
 	checkWidget();
 	return highlightImage;
@@ -348,6 +361,21 @@ public void setImage (Image image) {
 	updateImage ();
 }
 
+/**
+ * Sets the receiver's highlight image.
+ *
+ * @param image the new highlight image
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.8
+ */
 public void setHighlightImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
