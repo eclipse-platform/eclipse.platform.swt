@@ -218,6 +218,10 @@ public void setRGB(RGB rgb) {
  *
  * @param rgbs the array of RGBs, which may be null
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if an RGB in the rgbs array is null</li>
+ * </ul>
+ * 
  * @since 3.8
  */
 public void setRGBs(RGB[] rgbs) {

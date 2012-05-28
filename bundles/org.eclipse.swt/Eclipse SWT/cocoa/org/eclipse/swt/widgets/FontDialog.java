@@ -99,6 +99,8 @@ void changeFont(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
  *
  * @return <code>true</code> if the dialog's effects selection controls
  * are visible and <code>false</code> otherwise
+ * 
+ * @since 3.8
  */
 public boolean getEffectsVisible () {
 	return effectsVisible;
@@ -208,6 +210,8 @@ void setColor_forAttribute(int /*long*/ id, int /*long*/ sel, int /*long*/ color
  * </p>
  *
  * @param visible whether or not the dialog will show the effects selection controls
+ * 
+ * @since 3.8
  */
 public void setEffectsVisible(boolean visible) {
 	effectsVisible = visible;

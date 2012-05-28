@@ -713,6 +713,19 @@ GdkColor getBackgroundColor () {
 	return getBaseColor ();
 }
 
+/**
+ * Returns a point describing the location of the caret relative
+ * to the receiver.
+ *
+ * @return a point, the location of the caret
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.8
+ */
 public Point getCaretLocation () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) {
@@ -732,6 +745,21 @@ public Point getCaretLocation () {
 	return new Point (x, y);
 }
 
+/**
+ * Returns the character position of the caret.
+ * <p>
+ * Indexing is zero based.
+ * </p>
+ *
+ * @return the position of the caret
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.8
+ */
 public int getCaretPosition () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) {
