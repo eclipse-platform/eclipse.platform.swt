@@ -22,7 +22,9 @@ class MozillaDelegate {
 	Shell eventShell;
 	Listener listener;
 	boolean hasFocus;
-	
+
+	static final String SET_MOZILLA_COUNT = "org.eclipse.swt.internal.setMozillaCount"; //$NON-NLS-1$
+
 MozillaDelegate (Browser browser) {
 	super ();
 	this.browser = browser;
@@ -123,6 +125,8 @@ void addWindowSubclass () {
 }
 
 int createBaseWindow (nsIBaseWindow baseWindow) {
+	browser.getDisplay ().setData (SET_MOZILLA_COUNT, new Integer (Mozilla.BrowserCount));
+
 	/*
 	* Feature of Mozilla on OSX.  Mozilla replaces the OSX application menu whenever
 	* a browser's base window is created.  The workaround is to restore the previous
@@ -190,6 +194,7 @@ void onDispose (int /*long*/ embedHandle) {
 		eventShell = null;
 		listener = null;
 	}
+	browser.getDisplay ().setData (SET_MOZILLA_COUNT, new Integer (Mozilla.BrowserCount));
 	browser = null;
 }
 

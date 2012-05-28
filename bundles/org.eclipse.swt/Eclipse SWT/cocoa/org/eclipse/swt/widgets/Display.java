@@ -175,6 +175,10 @@ public class Display extends Device {
 	int /*long*/ oldCursorSetProc;
 	Callback cursorSetCallback;
 
+	boolean comboPoppedUp = false;
+	int mozillaCount;
+	static final String SET_MOZILLA_COUNT = "org.eclipse.swt.internal.setMozillaCount"; //$NON-NLS-1$
+
 	// the following Callbacks are never freed
 	static Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	static Callback dialogCallback3, dialogCallback4, dialogCallback5;
@@ -4368,6 +4372,10 @@ public void setData (String key, Object value) {
 		}
 	}
 	
+	if (key.equals (SET_MOZILLA_COUNT)) {
+		mozillaCount = ((Integer)value).intValue ();
+	}
+
 	/* Remove the key/value pair */
 	if (value == null) {
 		if (keys == null) return;
@@ -4864,6 +4872,22 @@ int /*long*/ applicationNextEventMatchingMask (int /*long*/ id, int /*long*/ sel
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	int /*long*/ result = OS.objc_msgSendSuper(super_struct, sel, mask, expiration, mode, dequeue != 0);
 	if (result != 0) {
+		/*
+		 * Feature of Cocoa.  When an NSComboBox's items list is visible it runs an event
+		 * loop that will close the list in response to a processed NSApplicationDefined
+		 * event.
+		 *
+		 * Mozilla-style Browsers are a common source of NSApplicationDefined events that
+		 * will cause this to happen, which is not desirable in the context of SWT.  The
+		 * workaround is to detect this case and to not return the event that would trigger
+		 * this to happen.
+		 */
+		if (comboPoppedUp && mozillaCount > 0 && dequeue != 0) {
+			NSEvent event = new NSEvent(result);
+			if (event.type() == OS.NSApplicationDefined) {
+				return 0;
+			}
+		}
 		if (dequeue != 0 && trackingControl != null && !trackingControl.isDisposed()) {
 			applicationSendTrackingEvent(new NSEvent(result), trackingControl);
 		}
