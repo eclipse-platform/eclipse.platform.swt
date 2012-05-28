@@ -457,10 +457,12 @@ void createWidget() {
 }
 
 void comboBoxWillDismiss(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	display.comboPoppedUp = false;
 	listVisible = false;
 }
 
 void comboBoxWillPopUp(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+	display.comboPoppedUp = true;
 	listVisible = true;
 }
 
