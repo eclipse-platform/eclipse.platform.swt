@@ -532,15 +532,15 @@
 		<antcall target="${increment_version_target}"/>
 		
 		<!-- Update the buildnotes_swt.html file -->
-		<antcall target="update_buildnotes"/>
+		<!--antcall target="update_buildnotes"/-->
 
 		<!-- Commit the files -->
 		<antcall target="commit_sources"/>
 	</target>
 	
-	<target name="commit_sources" depends="get_version">
+	<target name="commit_sources" depends="get_version" if="natives_changed">
 		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="add '${file_library_j2se}' '${file_library_j2me}' '${file_version}' '${file_make_common}' '${file_build_notes}'"/>
+			<arg line="add '${file_library_j2se}' '${file_library_j2me}' '${file_version}' '${file_make_common}' "/>
 		</exec>
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="status"/>
