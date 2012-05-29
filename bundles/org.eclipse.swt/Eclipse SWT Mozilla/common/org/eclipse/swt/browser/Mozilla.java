@@ -2708,12 +2708,11 @@ void onDispose (Display display) {
 	}
 	functions = null;
 
-	BrowserCount--;
-
 	delegate.onDispose (embedHandle);
 	delegate = null;
 
 	embedHandle = 0;
+	BrowserCount--;
 }
 
 void Activate () {
