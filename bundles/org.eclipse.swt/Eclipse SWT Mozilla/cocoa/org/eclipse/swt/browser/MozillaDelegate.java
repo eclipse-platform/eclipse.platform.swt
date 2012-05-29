@@ -23,7 +23,7 @@ class MozillaDelegate {
 	Listener listener;
 	boolean hasFocus;
 
-	static final String SET_MOZILLA_COUNT = "org.eclipse.swt.internal.setMozillaCount"; //$NON-NLS-1$
+	static final String MOZILLA_RUNNING = "org.eclipse.swt.internal.mozillaRunning"; //$NON-NLS-1$
 
 MozillaDelegate (Browser browser) {
 	super ();
@@ -125,7 +125,7 @@ void addWindowSubclass () {
 }
 
 int createBaseWindow (nsIBaseWindow baseWindow) {
-	browser.getDisplay ().setData (SET_MOZILLA_COUNT, new Integer (Mozilla.BrowserCount));
+	browser.getDisplay ().setData (MOZILLA_RUNNING, Boolean.TRUE);
 
 	/*
 	* Feature of Mozilla on OSX.  Mozilla replaces the OSX application menu whenever
@@ -194,7 +194,6 @@ void onDispose (int /*long*/ embedHandle) {
 		eventShell = null;
 		listener = null;
 	}
-	browser.getDisplay ().setData (SET_MOZILLA_COUNT, new Integer (Mozilla.BrowserCount));
 	browser = null;
 }
 

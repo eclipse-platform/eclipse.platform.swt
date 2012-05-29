@@ -176,8 +176,8 @@ public class Display extends Device {
 	Callback cursorSetCallback;
 
 	boolean comboPoppedUp = false;
-	int mozillaCount;
-	static final String SET_MOZILLA_COUNT = "org.eclipse.swt.internal.setMozillaCount"; //$NON-NLS-1$
+	boolean mozillaRunning;
+	static final String MOZILLA_RUNNING = "org.eclipse.swt.internal.mozillaRunning"; //$NON-NLS-1$
 
 	// the following Callbacks are never freed
 	static Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
@@ -4372,8 +4372,8 @@ public void setData (String key, Object value) {
 		}
 	}
 	
-	if (key.equals (SET_MOZILLA_COUNT)) {
-		mozillaCount = ((Integer)value).intValue ();
+	if (key.equals (MOZILLA_RUNNING)) {
+		mozillaRunning = ((Boolean)value).booleanValue ();
 	}
 
 	/* Remove the key/value pair */
@@ -4882,7 +4882,7 @@ int /*long*/ applicationNextEventMatchingMask (int /*long*/ id, int /*long*/ sel
 		 * workaround is to detect this case and to not return the event that would trigger
 		 * this to happen.
 		 */
-		if (comboPoppedUp && mozillaCount > 0 && dequeue != 0) {
+		if (comboPoppedUp && mozillaRunning && dequeue != 0) {
 			NSEvent event = new NSEvent(result);
 			if (event.type() == OS.NSApplicationDefined) {
 				return 0;
