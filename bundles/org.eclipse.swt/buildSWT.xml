@@ -530,12 +530,6 @@
 		<!-- Update the version files -->
 		<property name="increment_version_target" value="increment_version"/>
 		<antcall target="${increment_version_target}"/>
-		
-		<!-- Update the buildnotes_swt.html file -->
-		<!--antcall target="update_buildnotes"/-->
-
-		<!-- Commit the files -->
-		<antcall target="commit_sources"/>
 	</target>
 	
 	<target name="commit_sources" depends="get_version" if="natives_changed">
@@ -568,6 +562,10 @@
 		<replace file="${repo.src}/${file_make_common}" token="min_ver=${min_ver}" value="min_ver=${new_min_ver}"/>
 		<replace file="${repo.src}/${file_make_common}" token="maj_ver=${maj_ver}" value="maj_ver=${new_maj_ver}"/>
 		<replace file="${repo.src}/${file_make_common}" token="comma_ver=${comma_ver}" value="comma_ver=${new_comma_ver}"/>
+		
+		<!-- Commit the files -->
+		<echo>Committing version files</echo>
+		<antcall target="commit_sources"/>
 	</target>
 
 	<!-- Params: swt_new_tag -->
