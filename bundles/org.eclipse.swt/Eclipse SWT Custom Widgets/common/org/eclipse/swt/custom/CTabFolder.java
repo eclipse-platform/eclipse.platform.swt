@@ -3390,10 +3390,12 @@ public void setTopRight(Control control) {
  * right of the folder and it will have its default size.  <code>SWT.FILL</code> 
  * will size the control to fill all the available space to the right of the
  * last tab.  If there is no available space, the control will not be visible.
+ * <code>SWT.RIGHT | SWT.WRAP</code> will allow the control to wrap below the
+ * tabs if there is not enough available space to the right of the last tab.
  * </p>
  *
  * @param control the control to be displayed in the top right corner or null
- * @param alignment <code>SWT.RIGHT</code> or <code>SWT.FILL</code> 
+ * @param alignment <code>SWT.RIGHT</code> or <code>SWT.FILL</code> or <code>SWT.RIGHT | SWT.WRAP</code>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
