@@ -3944,11 +3944,7 @@ public static final void gdk_draw_image(int /*long*/ drawable, int /*long*/ gc, 
 	}
 }
 /**
- * @param drawable cast=(GdkDrawable *)
- * @param gc cast=(GdkGC *)
- * @param x cast=(gint)
- * @param y cast=(gint)
- * @param layout cast=(PangoLayout *)
+  @method flags=dynamic
  */
 public static final native void _gdk_draw_layout(int /*long*/ drawable, int /*long*/ gc, int x, int y, int /*long*/ layout);
 public static final void gdk_draw_layout(int /*long*/ drawable, int /*long*/ gc, int x, int y, int /*long*/ layout) {
