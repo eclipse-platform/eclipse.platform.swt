@@ -3930,9 +3930,7 @@ public static final void gdk_draw_drawable(int /*long*/ drawable, int /*long*/ g
 	}
 }
 /**
- * @param drawable cast=(GdkDrawable *)
- * @param gc cast=(GdkGC *)
- * @param image cast=(GdkImage *)
+ * @method flags=dynamic
  */
 public static final native void _gdk_draw_image(int /*long*/ drawable, int /*long*/ gc, int /*long*/ image, int xsrc, int ysrc, int xdest, int ydest, int width, int height);
 public static final void gdk_draw_image(int /*long*/ drawable, int /*long*/ gc, int /*long*/ image, int xsrc, int ysrc, int xdest, int ydest, int width, int height) {

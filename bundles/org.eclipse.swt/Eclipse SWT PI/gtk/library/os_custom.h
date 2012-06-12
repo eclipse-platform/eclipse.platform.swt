@@ -160,6 +160,7 @@
 #define gdk_draw_pixbuf_LIB LIB_GDK
 #define gdk_draw_point_LIB LIB_GDK
 #define gdk_draw_polygon_LIB LIB_GDK
+#define gdk_draw_image_LIB LIB_GDK
 #define gdk_gc_set_background_LIB LIB_GDK
 #define gdk_gc_set_clip_mask_LIB LIB_GDK
 #define gdk_gc_set_clip_origin_LIB LIB_GDK

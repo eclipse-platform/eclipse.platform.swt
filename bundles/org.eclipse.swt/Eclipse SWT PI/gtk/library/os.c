@@ -5300,7 +5300,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1image)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1draw_1image_FUNC);
-	gdk_draw_image((GdkDrawable *)arg0, (GdkGC *)arg1, (GdkImage *)arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+/*
+	gdk_draw_image(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_draw_image)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, jintLong, jint, jint, jint, jint, jint, jint))fp)(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1image_FUNC);
 }
 #endif
