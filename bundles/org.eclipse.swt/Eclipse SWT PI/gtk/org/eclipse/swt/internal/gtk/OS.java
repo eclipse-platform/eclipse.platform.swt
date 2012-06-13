@@ -4277,8 +4277,7 @@ public static final void gdk_flush() {
 	}
 }
 /**
- * @param gc cast=(GdkGC *)
- * @param values cast=(GdkGCValues *),flags=no_in
+ * @method flags=dynamic
  */
 public static final native void _gdk_gc_get_values(int /*long*/ gc, GdkGCValues values);
 public static final void gdk_gc_get_values(int /*long*/ gc, GdkGCValues values) {
