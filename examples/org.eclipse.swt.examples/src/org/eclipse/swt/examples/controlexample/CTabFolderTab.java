@@ -27,6 +27,7 @@ class CTabFolderTab extends Tab {
 	
 	/* Style widgets added to the "Style" group */
 	Button topButton, bottomButton, flatButton, closeButton;
+	Button rightButton, fillButton, wrapButton;
 
 	static String [] CTabItems1 = {ControlExample.getResourceString("CTabItem1_0"),
 								  ControlExample.getResourceString("CTabItem1_1"),
@@ -40,7 +41,10 @@ class CTabFolderTab extends Tab {
 	Font itemFont;
 	
 	/* Other widgets added to the "Other" group */
-	Button simpleTabButton, singleTabButton, imageButton, showMinButton, showMaxButton, unselectedCloseButton, unselectedImageButton;
+	Button simpleTabButton, singleTabButton, imageButton, showMinButton, showMaxButton,
+	topRightButton, unselectedCloseButton, unselectedImageButton;
+
+	ToolBar topRightControl;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -161,6 +165,15 @@ class CTabFolderTab extends Tab {
 			}
 		});
 		
+		topRightButton = new Button (otherGroup, SWT.CHECK);
+		topRightButton.setText (ControlExample.getResourceString("Set_Top_Right"));
+		topRightButton.setSelection(false);
+		topRightButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setTopRight();
+			}
+		});
+		
 		imageButton = new Button (otherGroup, SWT.CHECK);
 		imageButton.setText (ControlExample.getResourceString("Set_Image"));
 		imageButton.addSelectionListener (new SelectionAdapter () {
@@ -227,7 +240,10 @@ class CTabFolderTab extends Tab {
 				lastSelectedTab = tabFolder1.getSelectionIndex();
 			}
 		});
+		
+		/* If we have saved state, restore it */
 		tabFolder1.setSelection(lastSelectedTab);
+		setTopRight ();
 	}
 	
 	/**
@@ -248,6 +264,18 @@ class CTabFolderTab extends Tab {
 		flatButton.setText ("SWT.FLAT");
 		closeButton = new Button (styleGroup, SWT.CHECK);
 		closeButton.setText ("SWT.CLOSE");
+		
+		Group topRightGroup = new Group(styleGroup, SWT.NONE);
+		topRightGroup.setLayout (new GridLayout ());
+		topRightGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, false));
+		topRightGroup.setText (ControlExample.getResourceString("Top_Right_Styles"));
+		rightButton = new Button (topRightGroup, SWT.RADIO);
+		rightButton.setText ("SWT.RIGHT");
+		rightButton.setSelection(true);
+		fillButton = new Button (topRightGroup, SWT.RADIO);
+		fillButton.setText ("SWT.FILL");
+		wrapButton = new Button (topRightGroup, SWT.RADIO);
+		wrapButton.setText ("SWT.RIGHT | SWT.WRAP");
 	}
 	
 	/**
@@ -377,6 +405,29 @@ class CTabFolderTab extends Tab {
 	 */
 	void setMaximizeVisible () {
 		tabFolder1.setMaximizeVisible(showMaxButton.getSelection ());
+		setExampleWidgetSize();
+	}
+	/**
+	 * Sets the top right control to a toolbar
+	 */
+	void setTopRight () {
+		if (topRightButton.getSelection ()) {
+			topRightControl = new ToolBar(tabFolder1, SWT.FLAT);
+			ToolItem item = new ToolItem(topRightControl, SWT.PUSH);
+			item.setImage(instance.images[ControlExample.ciClosedFolder]);
+			item = new ToolItem(topRightControl, SWT.PUSH);
+			item.setImage(instance.images[ControlExample.ciOpenFolder]);
+			int topRightStyle = 0;
+			if (rightButton.getSelection ()) topRightStyle |= SWT.RIGHT;
+			if (fillButton.getSelection ()) topRightStyle |= SWT.FILL;
+			if (wrapButton.getSelection ()) topRightStyle |= SWT.RIGHT | SWT.WRAP;
+			tabFolder1.setTopRight(topRightControl, topRightStyle);
+		} else {
+			if (topRightControl != null) {
+				tabFolder1.setTopRight(null);
+				topRightControl.dispose();
+			}
+		}
 		setExampleWidgetSize();
 	}
 	/**
