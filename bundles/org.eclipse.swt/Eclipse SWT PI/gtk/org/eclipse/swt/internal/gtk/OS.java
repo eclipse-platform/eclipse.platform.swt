@@ -2406,6 +2406,18 @@ public static final int /*long*/ g_filename_to_utf8(int /*long*/ opsysstring, in
 	}
 }
 /**
+ * @method flags=dynamic
+ */
+public static final native int /*long*/ _g_filename_display_name(int /*long*/ filename);
+public static final int /*long*/ g_filename_display_name(int /*long*/ filename) {
+	lock.lock();
+	try {
+		return _g_filename_display_name(filename);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param filename cast=(const char *)
  * @param hostname cast=(const char *)
  * @param error cast=(GError **)

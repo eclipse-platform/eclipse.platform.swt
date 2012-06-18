@@ -261,6 +261,7 @@ typedef enum {
 	_1g_1file_1query_1info_FUNC,
 	_1g_1file_1read_FUNC,
 	_1g_1file_1test_FUNC,
+	_1g_1filename_1display_1name_FUNC,
 	_1g_1filename_1from_1uri_FUNC,
 	_1g_1filename_1from_1utf8_FUNC,
 	_1g_1filename_1to_1uri_FUNC,
