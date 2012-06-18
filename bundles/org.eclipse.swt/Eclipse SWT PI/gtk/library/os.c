@@ -5442,7 +5442,14 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1polygon)
 {
 	jint *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, _1gdk_1draw_1polygon_FUNC);
-	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg3) if ((lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL)) == NULL) goto fail;
+	} else
+#endif
+	{
+		if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	}
 /*
 	gdk_draw_polygon(arg0, arg1, arg2, lparg3, arg4);
 */
@@ -5453,7 +5460,14 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1polygon)
 		}
 	}
 fail:
-	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg3 && lparg3) (*env)->ReleasePrimitiveArrayCritical(env, arg3, lparg3, JNI_ABORT);
+	} else
+#endif
+	{
+		if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, JNI_ABORT);
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1polygon_FUNC);
 }
 #endif
@@ -5719,7 +5733,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1get_1values)
 {
 	GdkGCValues _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1get_1values_FUNC);
-	if (arg1) if ((lparg1 = getGdkGCValuesFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
 /*
 	gdk_gc_get_values(arg0, lparg1);
 */

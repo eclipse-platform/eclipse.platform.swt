@@ -4040,6 +4040,7 @@ public static final void gdk_draw_point(int /*long*/ drawable, int /*long*/ gc, 
 }
 /**
  * @method flags=dynamic
+ * @param points flags=no_out critical
  */
 public static final native void _gdk_draw_polygon(int /*long*/ drawable, int /*long*/ gc, int filled, int[] points, int npoints);
 public static final void gdk_draw_polygon(int /*long*/ drawable, int /*long*/ gc, int filled, int[] points, int npoints) {
@@ -4270,6 +4271,7 @@ public static final void gdk_flush() {
 }
 /**
  * @method flags=dynamic
+ * @param values flags=no_in
  */
 public static final native void _gdk_gc_get_values(int /*long*/ gc, GdkGCValues values);
 public static final void gdk_gc_get_values(int /*long*/ gc, GdkGCValues values) {
