@@ -3165,6 +3165,26 @@ fail:
 }
 #endif
 
+#ifndef NO__1g_1filename_1display_1name
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1filename_1display_1name)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1filename_1display_1name_FUNC);
+/*
+	rc = (jintLong)g_filename_display_name(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, g_filename_display_name)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1g_1filename_1display_1name_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1g_1filename_1from_1uri
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1filename_1from_1uri)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1, jintLongArray arg2)

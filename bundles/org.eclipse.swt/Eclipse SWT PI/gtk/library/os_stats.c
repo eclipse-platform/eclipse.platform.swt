@@ -253,6 +253,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1file_1query_1info",
 	"_1g_1file_1read",
 	"_1g_1file_1test",
+	"_1g_1filename_1display_1name",
 	"_1g_1filename_1from_1uri",
 	"_1g_1filename_1from_1utf8",
 	"_1g_1filename_1to_1uri",
