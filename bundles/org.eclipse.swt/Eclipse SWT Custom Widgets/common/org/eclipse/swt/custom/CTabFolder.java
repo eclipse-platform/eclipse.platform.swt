@@ -3371,7 +3371,7 @@ public void setTabPosition(int position) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the control is not a child of this CTabFolder</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control is disposed, or not a child of this CTabFolder</li>
  * </ul>
  * 
  * @since 2.1
@@ -3400,7 +3400,7 @@ public void setTopRight(Control control) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the control is not a child of this CTabFolder</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control is disposed, or not a child of this CTabFolder</li>
  * </ul>
  * 
  * @since 3.0
@@ -3410,7 +3410,7 @@ public void setTopRight(Control control, int alignment) {
 	if (alignment != SWT.RIGHT && alignment != SWT.FILL && alignment != (SWT.RIGHT | SWT.WRAP)) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (control != null && control.getParent() != this) {
+	if (control != null && (control.isDisposed() || control.getParent() != this)) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (topRight == control && topRightAlignment == alignment) return;
