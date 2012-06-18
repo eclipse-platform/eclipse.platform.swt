@@ -174,12 +174,14 @@ public Object nativeToJava(TransferData transferData) {
 		int /*long*/ localePtr = OS.g_filename_from_uri(files[i], null, error);
 		OS.g_free(files[i]);
 		if (error[0] != 0 || localePtr == 0) continue;
-		int /*long*/ utf8Ptr = OS.g_filename_to_utf8(localePtr, -1, null, null, error);
-		OS.g_free(localePtr);
-		if (error[0] != 0 || utf8Ptr == 0) continue;
+		int /*long*/ utf8Ptr = OS.g_filename_to_utf8(localePtr, -1, null, null, null);
+		if (utf8Ptr == 0) utf8Ptr = OS.g_filename_display_name (localePtr);
+		if (localePtr != utf8Ptr) OS.g_free (localePtr);
+		if (utf8Ptr == 0) continue;
 		int /*long*/[] items_written = new int /*long*/[1];
 		int /*long*/ utf16Ptr = OS.g_utf8_to_utf16(utf8Ptr, -1, null, items_written, null);
 		OS.g_free(utf8Ptr);
+		if (utf16Ptr == 0) continue;
 		length = (int)/*64*/items_written[0];
 		char[] buffer = new char[length];
 		OS.memmove(buffer, utf16Ptr, length * 2);

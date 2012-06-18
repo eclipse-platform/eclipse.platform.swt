@@ -119,8 +119,9 @@ String computeResultChooserDialog () {
 				utf8Ptr = name;
 			} else {
 				utf8Ptr = OS.g_filename_to_utf8 (name, -1, null, null, null);
-				OS.g_free (name);
+				if (utf8Ptr == 0) utf8Ptr = OS.g_filename_display_name (name);
 			}
+			if (name != utf8Ptr) OS.g_free (name);
 			if (utf8Ptr != 0) {
 				int /*long*/ [] items_written = new int /*long*/ [1];
 				int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
@@ -150,7 +151,8 @@ String computeResultChooserDialog () {
 			int /*long*/ path = OS.gtk_file_chooser_get_filename (handle);
 			if (path != 0) {
 				utf8Ptr = OS.g_filename_to_utf8 (path, -1, null, null, null);
-				OS.g_free (path);
+				if (utf8Ptr == 0) utf8Ptr = OS.g_filename_display_name (path);
+				if (path != utf8Ptr) OS.g_free (path);
 			}
 		}
 		if (utf8Ptr != 0) {
