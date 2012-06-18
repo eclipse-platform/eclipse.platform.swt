@@ -1306,7 +1306,8 @@ void setScrollWidth (int newWidth, boolean grow) {
 
 /**
  * Selects the items at the given zero-relative indices in the receiver.
- * The current selection is cleared before the new items are selected.
+ * The current selection is cleared before the new items are selected,
+ * and if necessary the receiver is scrolled to make the new selection visible.
  * <p>
  * Indices that are out of range and duplicate indices are ignored.
  * If the receiver is single-select and multiple indices are specified,
@@ -1340,7 +1341,8 @@ public void setSelection(int [] indices) {
 
 /**
  * Sets the receiver's selection to be the given array of items.
- * The current selection is cleared before the new items are selected.
+ * The current selection is cleared before the new items are selected,
+ * and if necessary the receiver is scrolled to make the new selection visible.
  * <p>
  * Items that are not in the receiver are ignored.
  * If the receiver is single-select and multiple items are specified,
@@ -1392,7 +1394,8 @@ public void setSelection (String [] items) {
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains selected.
- * The current selection is first cleared, then the new item is selected.
+ * The current selection is first cleared, then the new item is selected,
+ * and if necessary the receiver is scrolled to make the new selection visible.
  * Indices that are out of range are ignored.
  *
  * @param index the index of the item to select
@@ -1416,7 +1419,8 @@ public void setSelection (int index) {
 /**
  * Selects the items in the range specified by the given zero-relative
  * indices in the receiver. The range of indices is inclusive.
- * The current selection is cleared before the new items are selected.
+ * The current selection is cleared before the new items are selected,
+ * and if necessary the receiver is scrolled to make the new selection visible.
  * <p>
  * Indices that are out of range are ignored and no items will be selected
  * if start is greater than end.
