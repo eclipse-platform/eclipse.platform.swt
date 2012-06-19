@@ -430,6 +430,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1cairo_1region",
 	"_1gdk_1cairo_1reset_1clip",
 	"_1gdk_1cairo_1set_1source_1color",
+	"_1gdk_1cairo_1set_1source_1pixbuf",
 	"_1gdk_1cairo_1set_1source_1window",
 	"_1gdk_1color_1free",
 	"_1gdk_1color_1parse",

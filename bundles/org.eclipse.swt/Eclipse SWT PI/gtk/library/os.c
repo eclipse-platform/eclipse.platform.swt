@@ -5040,6 +5040,24 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1cairo_1set_1source_1pixbuf
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1set_1source_1pixbuf)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1cairo_1set_1source_1pixbuf_FUNC);
+/*
+	gdk_cairo_set_source_pixbuf(arg0, (const GdkPixbuf *)arg1, arg2, arg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_cairo_set_source_pixbuf)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, const GdkPixbuf *, jdouble, jdouble))fp)(arg0, (const GdkPixbuf *)arg1, arg2, arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1cairo_1set_1source_1pixbuf_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1cairo_1set_1source_1window
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1set_1source_1window)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)

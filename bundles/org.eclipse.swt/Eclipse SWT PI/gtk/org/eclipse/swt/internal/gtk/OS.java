@@ -3709,6 +3709,20 @@ public static final void gdk_cairo_set_source_color(int /*long*/ cairo, GdkColor
 }
 /**
  * @method flags=dynamic
+ * @param pixbuf cast=(const GdkPixbuf *)
+ */
+public static final native void _gdk_cairo_set_source_pixbuf(int /*long*/ cairo, int /*long*/ pixbuf, double pixbuf_x, double pixbuf_y);
+public static final void gdk_cairo_set_source_pixbuf(int /*long*/ cairo, int /*long*/ pixbuf, double pixbuf_x, double pixbuf_y) {
+        lock.lock();
+        try {
+                _gdk_cairo_set_source_pixbuf(cairo,pixbuf,pixbuf_x,pixbuf_y);
+        }
+        finally {
+                lock.unlock();
+        }
+}
+/**
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  */
 public static final native void _gdk_cairo_set_source_window(int /*long*/ cairo, int /*long*/ window, int x, int y);

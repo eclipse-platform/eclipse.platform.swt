@@ -16,6 +16,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.cairo.Cairo;
 
 /**
  * Instances of this class represent popup windows that are used
@@ -472,11 +473,65 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	if ((state & OBSCURED) != 0) return 0;
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
-	//TODO: Use Cairo
-	int /*long*/ gdkGC = OS.gdk_gc_new (window);
-	OS.gdk_draw_polygon (window, gdkGC, 0, borderPolygon, borderPolygon.length / 2);
 	int x = BORDER + PADDING;
 	int y = BORDER + PADDING;
+	if (OS.USE_CAIRO) {
+		int /*long*/ cairo = OS.gdk_cairo_create(window);
+		if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
+		int count = borderPolygon.length / 2;
+		if (count == 0) return 0;
+		Cairo.cairo_set_line_width(cairo, 1);
+		Cairo.cairo_move_to(cairo, borderPolygon[0], borderPolygon[1]);
+		for (int i=1,j=2; i<count; i++,j+=2) {
+			Cairo.cairo_line_to(cairo, borderPolygon[j]+0.5, borderPolygon[j+1]+0.5);
+		}
+		Cairo.cairo_close_path(cairo);
+		Cairo.cairo_stroke(cairo);
+		if (spikeAbove) y += TIP_HEIGHT;
+		if (layoutText != 0) {
+			byte[] buffer = null;
+			int id = style & (SWT.ICON_ERROR | SWT.ICON_INFORMATION | SWT.ICON_WARNING);
+			switch (id) {
+				case SWT.ICON_ERROR: buffer = Converter.wcsToMbcs (null, "gtk-dialog-error", true); break; 
+				case SWT.ICON_INFORMATION: buffer = Converter.wcsToMbcs (null, "gtk-dialog-info", true); break;
+				case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs (null, "gtk-dialog-warning", true); break;
+			}
+			if (buffer != null) {
+				int /*long*/ style = OS.gtk_widget_get_default_style ();
+				int /*long*/ pixbuf = OS.gtk_icon_set_render_icon (
+				OS.gtk_icon_factory_lookup_default (buffer), 
+							style,
+							OS.GTK_TEXT_DIR_NONE, 
+							OS.GTK_STATE_NORMAL, 
+							OS.GTK_ICON_SIZE_MENU,
+							0, 
+							0);
+ 				OS.gdk_cairo_set_source_pixbuf(cairo, pixbuf, x, y);
+ 				Cairo.cairo_paint (cairo);
+				OS.g_object_unref (pixbuf);
+				x += IMAGE_SIZE;
+			}
+			x += INSET;
+			int [] w = new int [1], h = new int [1];
+			Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
+			OS.gdk_cairo_set_source_color(cairo,foreground.handle);
+			Cairo.cairo_move_to(cairo, x,y );
+			OS.pango_cairo_show_layout(cairo, layoutText);
+			OS.pango_layout_get_size (layoutText, w, h);
+			y += 2 * PADDING + Math.max (IMAGE_SIZE, OS.PANGO_PIXELS (h [0]));
+		}
+		if (layoutMessage != 0) {
+			x = BORDER + PADDING + INSET;
+			Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
+			OS.gdk_cairo_set_source_color(cairo,foreground.handle);
+			Cairo.cairo_move_to(cairo, x, y);
+			OS.pango_cairo_show_layout(cairo, layoutMessage);
+		}
+		Cairo.cairo_destroy(cairo);
+		return 0;
+	}
+	int /*long*/ gdkGC = OS.gdk_gc_new (window);
+	OS.gdk_draw_polygon (window, gdkGC, 0, borderPolygon, borderPolygon.length / 2);
 	if (spikeAbove) y += TIP_HEIGHT;
 	if (layoutText != 0) {
 		byte[] buffer = null;

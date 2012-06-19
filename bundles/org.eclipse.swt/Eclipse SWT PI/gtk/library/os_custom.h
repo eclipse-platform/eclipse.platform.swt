@@ -220,6 +220,7 @@
 #define pango_cairo_font_map_get_default_LIB LIB_PANGOCAIRO
 #define pango_cairo_font_map_set_resolution_LIB LIB_PANGOCAIRO
 #define gdk_cairo_reset_clip_LIB LIB_GDK
+#define gdk_cairo_set_source_pixbuf_LIB LIB_GDK
 #define gdk_cairo_set_source_color_LIB LIB_GDK
 #define gdk_cairo_set_source_window_LIB LIB_GDK
 #define gdk_cairo_region_LIB LIB_GDK
