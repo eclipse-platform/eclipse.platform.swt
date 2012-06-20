@@ -1691,14 +1691,21 @@ public void drawText (String string, int x, int y, int flags) {
 			NSRect rect = data.layoutManager.usedRectForTextContainer(data.textContainer);
 			rect.x = x;
 			rect.y = y;
-			NSColor bg = data.bg;
-			if (bg == null) {
-				float /*double*/ [] color = data.background;
-				bg = data.bg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
-				bg.retain();
+			Pattern pattern = data.backgroundPattern;
+			if (pattern != null) setPatternPhase(pattern);
+			if (pattern != null && pattern.gradient != null) {
+				NSBezierPath path = NSBezierPath.bezierPathWithRect(rect);
+				fillPattern(path, pattern);
+			} else {
+				NSColor bg = data.bg;
+				if (bg == null) {
+					float /*double*/ [] color = data.background;
+					bg = data.bg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
+					bg.retain();
+				}
+				bg.setFill();
+				NSBezierPath.fillRect(rect);
 			}
-			bg.setFill();
-			NSBezierPath.fillRect(rect);
 		}
 		data.layoutManager.drawGlyphsForGlyphRange(range, pt);
 		handle.restoreGraphicsState();
