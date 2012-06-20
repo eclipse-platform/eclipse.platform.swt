@@ -3212,6 +3212,7 @@ public void setBackgroundPattern(Pattern pattern) {
 }
 
 static void setCairoFont(int /*long*/ cairo, Font font) {
+	if (font == null || font.isDisposed()) return;
 	setCairoFont(cairo, font.handle);
 }
 
