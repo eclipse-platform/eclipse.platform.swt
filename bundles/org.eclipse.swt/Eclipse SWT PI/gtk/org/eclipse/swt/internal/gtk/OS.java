@@ -9961,6 +9961,19 @@ public static final int /*long*/ gtk_scrolled_window_get_hadjustment(int /*long*
 		lock.unlock();
 	}
 }
+/** 
+ * @method flags=dynamic
+ * @param scrolled_window cast=(GtkScrolledWindow *) 
+ */
+public static final native int /*long*/ _gtk_scrolled_window_get_hscrollbar(int /*long*/ scrolled_window);
+public static final int /*long*/ gtk_scrolled_window_get_hscrollbar(int /*long*/ scrolled_window) {
+	lock.lock();
+	try {
+		return _gtk_scrolled_window_get_hscrollbar(scrolled_window);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @param scrolled_window cast=(GtkScrolledWindow *)
  * @param hscrollbar_policy cast=(GtkPolicyType *)
@@ -9991,6 +10004,19 @@ public static final int /*long*/ gtk_scrolled_window_get_vadjustment(int /*long*
 	lock.lock();
 	try {
 		return _gtk_scrolled_window_get_vadjustment(scrolled_window);
+	} finally {
+		lock.unlock();
+	}
+}
+/** 
+ * @method flags=dynamic
+ * @param scrolled_window cast=(GtkScrolledWindow *) 
+ */
+public static final native int /*long*/ _gtk_scrolled_window_get_vscrollbar(int /*long*/ scrolled_window);
+public static final int /*long*/ gtk_scrolled_window_get_vscrollbar(int /*long*/ scrolled_window) {
+	lock.lock();
+	try {
+		return _gtk_scrolled_window_get_vscrollbar(scrolled_window);
 	} finally {
 		lock.unlock();
 	}

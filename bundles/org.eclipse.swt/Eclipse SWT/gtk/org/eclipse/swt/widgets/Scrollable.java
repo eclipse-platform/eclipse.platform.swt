@@ -136,10 +136,18 @@ ScrollBar createScrollBar (int style) {
 	bar.display = display;
 	bar.state |= HANDLE;
 	if ((style & SWT.H_SCROLL) != 0) {
-		bar.handle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR (scrolledHandle);
+		if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
+			bar.handle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR (scrolledHandle);
+		} else {
+			bar.handle = OS.gtk_scrolled_window_get_hscrollbar (scrolledHandle);
+		}
 		bar.adjustmentHandle = OS.gtk_scrolled_window_get_hadjustment (scrolledHandle);
 	} else {
-		bar.handle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (scrolledHandle);
+		if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
+			bar.handle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (scrolledHandle);
+		} else {
+			bar.handle = OS.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
+		}
 		bar.adjustmentHandle = OS.gtk_scrolled_window_get_vadjustment (scrolledHandle);
 	}
 	bar.setOrientation (true);
@@ -293,7 +301,12 @@ int /*long*/ gtk_scroll_event (int /*long*/ widget, int /*long*/ eventPtr) {
 
 int hScrollBarWidth() {
 	if (horizontalBar==null) return 0;
-	int /*long*/ hBarHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR(scrolledHandle);
+	int /*long*/ hBarHandle = 0;
+	if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
+		hBarHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR (scrolledHandle);
+	} else {
+		hBarHandle = OS.gtk_scrolled_window_get_hscrollbar (scrolledHandle);
+	}
 	if (hBarHandle==0) return 0;
 	GtkRequisition requisition = new GtkRequisition();
 	OS.gtk_widget_size_request(hBarHandle, requisition);
@@ -408,7 +421,12 @@ void updateScrollBarValue (ScrollBar bar) {
 
 int vScrollBarWidth() {
 	if (verticalBar == null) return 0;
-	int /*long*/ vBarHandle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR(scrolledHandle);
+	int /*long*/ vBarHandle = 0;
+	if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
+		vBarHandle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (scrolledHandle);
+	} else {
+		vBarHandle = OS.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
+	}
 	if (vBarHandle == 0) return 0;
 	GtkRequisition requisition = new GtkRequisition();
 	OS.gtk_widget_size_request (vBarHandle, requisition);

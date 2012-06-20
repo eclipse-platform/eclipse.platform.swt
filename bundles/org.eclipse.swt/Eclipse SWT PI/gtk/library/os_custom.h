@@ -176,6 +176,8 @@
 #define gdk_screen_get_monitor_geometry_LIB LIB_GDK
 #define gdk_screen_get_n_monitors_LIB LIB_GDK
 #define gdk_screen_get_number_LIB LIB_GDK
+#define gtk_scrolled_window_get_hscrollbar_LIB LIB_GTK
+#define gtk_scrolled_window_get_vscrollbar_LIB LIB_GTK
 #define gtk_status_icon_get_geometry_LIB LIB_GTK
 #define gtk_status_icon_get_visible_LIB LIB_GTK
 #define gtk_status_icon_new_LIB LIB_GTK
@@ -342,9 +344,17 @@
 #define GTK_RANGE_HAS_STEPPER_B(arg0) (arg0)->has_stepper_b
 #define GTK_RANGE_HAS_STEPPER_C(arg0) (arg0)->has_stepper_c
 #define GTK_RANGE_HAS_STEPPER_D(arg0) (arg0)->has_stepper_d
+#if GTK_CHECK_VERSION(2,8,0)
+#define GTK_SCROLLED_WINDOW_HSCROLLBAR(arg0) 0
+#else
 #define GTK_SCROLLED_WINDOW_HSCROLLBAR(arg0) (arg0)->hscrollbar
+#endif
 #define GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(arg0) (GTK_SCROLLED_WINDOW_GET_CLASS (arg0)->scrollbar_spacing >= 0 ? GTK_SCROLLED_WINDOW_GET_CLASS (arg0)->scrollbar_spacing : 3)		
+#if GTK_CHECK_VERSION(2,8,0)
+#define GTK_SCROLLED_WINDOW_VSCROLLBAR(arg0) 0
+#else
 #define GTK_SCROLLED_WINDOW_VSCROLLBAR(arg0) (arg0)->vscrollbar
+#endif
 #define GTK_WIDGET_HEIGHT(arg0) (arg0)->allocation.height
 #define GTK_WIDGET_SET_HEIGHT(arg0, arg1) (arg0)->allocation.height = arg1
 #define GTK_WIDGET_WIDTH(arg0) (arg0)->allocation.width

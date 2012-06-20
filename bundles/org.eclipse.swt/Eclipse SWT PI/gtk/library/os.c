@@ -13141,6 +13141,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1scrolled_1window_1get_1hadjustment)
 }
 #endif
 
+#ifndef NO__1gtk_1scrolled_1window_1get_1hscrollbar
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1scrolled_1window_1get_1hscrollbar)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1scrolled_1window_1get_1hscrollbar_FUNC);
+/*
+	rc = (jintLong)gtk_scrolled_window_get_hscrollbar((GtkScrolledWindow *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_scrolled_window_get_hscrollbar)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkScrolledWindow *))fp)((GtkScrolledWindow *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1scrolled_1window_1get_1hscrollbar_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1scrolled_1window_1get_1policy
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1scrolled_1window_1get_1policy)
 	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
@@ -13178,6 +13198,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1scrolled_1window_1get_1vadjustment)
 	OS_NATIVE_ENTER(env, that, _1gtk_1scrolled_1window_1get_1vadjustment_FUNC);
 	rc = (jintLong)gtk_scrolled_window_get_vadjustment((GtkScrolledWindow *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1scrolled_1window_1get_1vadjustment_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1scrolled_1window_1get_1vscrollbar
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1scrolled_1window_1get_1vscrollbar)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1scrolled_1window_1get_1vscrollbar_FUNC);
+/*
+	rc = (jintLong)gtk_scrolled_window_get_vscrollbar((GtkScrolledWindow *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_scrolled_window_get_vscrollbar)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkScrolledWindow *))fp)((GtkScrolledWindow *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1scrolled_1window_1get_1vscrollbar_FUNC);
 	return rc;
 }
 #endif

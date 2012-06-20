@@ -455,7 +455,12 @@ void setScrollbar () {
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, policy);
 	int width = OS.GTK_WIDGET_WIDTH (fixedHandle) - spacing * 2;
 	if (policy == OS.GTK_POLICY_ALWAYS) {
-		int /*long*/ vHandle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (scrolledHandle);
+		int /*long*/ vHandle = 0;
+		if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
+			vHandle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (scrolledHandle);
+		} else {
+			vHandle = OS.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
+		}
 		GtkRequisition requisition = new GtkRequisition ();
 		OS.gtk_widget_size_request (vHandle, requisition);
 		width -= requisition.width;
