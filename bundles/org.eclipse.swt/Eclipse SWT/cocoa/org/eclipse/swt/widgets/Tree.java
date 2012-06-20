@@ -3183,7 +3183,12 @@ void showItem (TreeItem item, boolean scroll) {
 	TreeItem parentItem = item.parentItem;
 	if (parentItem != null) {
 		showItem (parentItem, false);
-		parentItem.setExpanded (true);
+		if (!parentItem.getExpanded()) {
+			parentItem.setExpanded (true);
+			Event event = new Event ();
+			event.item = parentItem;
+			sendEvent (SWT.Expand, event);
+		}
 	}
 	if (scroll) {
 		NSOutlineView outlineView = (NSOutlineView) view;
