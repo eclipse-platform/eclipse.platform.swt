@@ -2087,6 +2087,7 @@ public static final int /*long*/ sel_stringByAppendingString_ = sel_registerName
 public static final int /*long*/ sel_stringByDeletingLastPathComponent = sel_registerName("stringByDeletingLastPathComponent");
 public static final int /*long*/ sel_stringByDeletingPathExtension = sel_registerName("stringByDeletingPathExtension");
 public static final int /*long*/ sel_stringByReplacingOccurrencesOfString_withString_ = sel_registerName("stringByReplacingOccurrencesOfString:withString:");
+public static final int /*long*/ sel_stringByReplacingPercentEscapesUsingEncoding_ = sel_registerName("stringByReplacingPercentEscapesUsingEncoding:");
 public static final int /*long*/ sel_stringForObjectValue_ = sel_registerName("stringForObjectValue:");
 public static final int /*long*/ sel_stringForType_ = sel_registerName("stringForType:");
 public static final int /*long*/ sel_stringValue = sel_registerName("stringValue");

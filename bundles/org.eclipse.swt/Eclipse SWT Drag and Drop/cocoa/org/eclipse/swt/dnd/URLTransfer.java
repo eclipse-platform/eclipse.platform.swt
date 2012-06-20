@@ -78,6 +78,7 @@ public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
 	NSURL nsUrl = (NSURL) transferData.data;
 	NSString nsString = nsUrl.absoluteString();
+	nsString = nsString.stringByReplacingPercentEscapesUsingEncoding(OS.NSUTF8StringEncoding);
 	return nsString.getString();
 }
 

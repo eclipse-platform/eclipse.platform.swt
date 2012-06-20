@@ -134,6 +134,11 @@ public NSString stringByReplacingOccurrencesOfString(NSString target, NSString r
 	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
 }
 
+public NSString stringByReplacingPercentEscapesUsingEncoding(int /*long*/ enc) {
+	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_stringByReplacingPercentEscapesUsingEncoding_, enc);
+	return result == this.id ? this : (result != 0 ? new NSString(result) : null);
+}
+
 public static NSString stringWithCharacters(char[] characters, int /*long*/ length) {
 	int /*long*/ result = OS.objc_msgSend(OS.class_NSString, OS.sel_stringWithCharacters_length_, characters, length);
 	return result != 0 ? new NSString(result) : null;
