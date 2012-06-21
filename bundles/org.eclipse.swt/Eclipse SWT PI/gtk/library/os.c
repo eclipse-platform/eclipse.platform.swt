@@ -14701,23 +14701,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toolbar_1insert)
 }
 #endif
 
-#ifndef NO__1gtk_1toolbar_1insert_1widget
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toolbar_1insert_1widget)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jbyteArray arg2, jbyteArray arg3, jint arg4)
-{
-	jbyte *lparg2=NULL;
-	jbyte *lparg3=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1toolbar_1insert_1widget_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	gtk_toolbar_insert_widget((GtkToolbar *)arg0, (GtkWidget *)arg1, (const char *)lparg2, (const char *)lparg3, (gint)arg4);
-fail:
-	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1toolbar_1insert_1widget_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1toolbar_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1toolbar_1new)
 	(JNIEnv *env, jclass that)

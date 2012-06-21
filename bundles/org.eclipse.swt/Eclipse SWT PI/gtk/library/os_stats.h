@@ -1133,7 +1133,6 @@ typedef enum {
 	_1gtk_1tool_1item_1set_1is_1important_FUNC,
 	_1gtk_1tool_1item_1set_1proxy_1menu_1item_FUNC,
 	_1gtk_1toolbar_1insert_FUNC,
-	_1gtk_1toolbar_1insert_1widget_FUNC,
 	_1gtk_1toolbar_1new_FUNC,
 	_1gtk_1toolbar_1set_1orientation_FUNC,
 	_1gtk_1toolbar_1set_1show_1arrow_FUNC,

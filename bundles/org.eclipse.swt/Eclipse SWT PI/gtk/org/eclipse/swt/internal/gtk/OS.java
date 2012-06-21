@@ -11370,22 +11370,6 @@ public static final void gtk_toolbar_insert(int /*long*/ toolbar, int /*long*/ i
 		lock.unlock();
 	}
 }
-/**
- * @param toolbar cast=(GtkToolbar *)
- * @param widget cast=(GtkWidget *)
- * @param tooltip_text cast=(const char *)
- * @param tooltip_private_text cast=(const char *)
- * @param position cast=(gint)
- */
-public static final native void _gtk_toolbar_insert_widget(int /*long*/ toolbar, int /*long*/ widget, byte[] tooltip_text, byte[] tooltip_private_text, int position);
-public static final void gtk_toolbar_insert_widget(int /*long*/ toolbar, int /*long*/ widget, byte[] tooltip_text, byte[] tooltip_private_text, int position) {
-	lock.lock();
-	try {
-		_gtk_toolbar_insert_widget(toolbar, widget, tooltip_text, tooltip_private_text, position);
-	} finally {
-		lock.unlock();
-	}
-}
 public static final native int /*long*/ _gtk_toolbar_new();
 public static final int /*long*/ gtk_toolbar_new() {
 	lock.lock();
