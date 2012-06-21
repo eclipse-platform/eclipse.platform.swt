@@ -1987,7 +1987,16 @@ void setWindowVisible (boolean visible, boolean key) {
 		sendEvent (SWT.Hide);
 	}
 	
+	if (isDisposed()) return;
 	display.updateQuitMenu();
+
+	if (isDisposed()) return;
+	NSView[] hitView = new NSView[1];
+	Control control = display.findControl (false, hitView);
+	if (control != null && (!control.isActive() || !control.isEnabled())) control = null;
+	Control trimControl = control;
+	if (trimControl != null && trimControl.isTrim (hitView[0])) trimControl = null;
+	display.checkEnterExit (trimControl, null, false);
 }
 
 void setZOrder () {
