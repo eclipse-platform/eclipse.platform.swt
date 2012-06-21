@@ -779,6 +779,7 @@ public boolean open () {
 	frame.height = maxY - minY;
 	window = window.initWithContentRect(frame, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
 	window.setOpaque(false);
+	window.setLevel(OS.NSStatusWindowLevel);
 	window.setContentView(null);
 	window.setBackgroundColor(NSColor.clearColor());
 	NSGraphicsContext context = window.graphicsContext();
