@@ -128,6 +128,7 @@ public class Display extends Device {
 	
 	boolean sendEvent;
 	int clickCountButton, clickCount;
+	int blinkTime;
 
 	Control currentControl, trackingControl, tooltipControl;
 	Widget tooltipTarget;
@@ -1299,7 +1300,7 @@ public static Display getCurrent () {
 
 int getCaretBlinkTime () {
 //	checkDevice ();
-	return 560;
+	return blinkTime;
 }
 
 /**
@@ -2223,6 +2224,10 @@ protected void init () {
 	markedAttributes = textView.markedTextAttributes ();
 	markedAttributes.retain ();
 	textView.release ();
+	
+	id blink = NSUserDefaults.standardUserDefaults().objectForKey(NSString.stringWith("NSTextInsertionPointBlinkPeriod"));
+	if (blink != null) blinkTime = (int)new NSNumber(blink).integerValue();
+	if (blinkTime == 0) blinkTime = 560;
 	
 	isPainting = (NSMutableArray)new NSMutableArray().alloc();
 	isPainting = isPainting.initWithCapacity(12);
