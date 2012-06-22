@@ -165,6 +165,7 @@
 #define gdk_gc_set_clip_mask_LIB LIB_GDK
 #define gdk_gc_set_clip_origin_LIB LIB_GDK
 #define gdk_gc_set_dashes_LIB LIB_GDK
+#define gdk_gc_set_exposures_LIB LIB_GDK
 #define gdk_gc_set_line_attributes_LIB LIB_GDK
 #define gdk_gc_set_tile_LIB LIB_GDK
 #define gdk_gc_set_ts_origin_LIB LIB_GDK

@@ -5895,7 +5895,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1exposures)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1exposures_FUNC);
-	gdk_gc_set_exposures((GdkGC *)arg0, (gboolean)arg1);
+/*
+	gdk_gc_set_exposures(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_gc_set_exposures)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jboolean))fp)(arg0, arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1exposures_FUNC);
 }
 #endif

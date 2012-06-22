@@ -4372,8 +4372,7 @@ public static final void gdk_gc_set_dashes(int /*long*/ gc, int dash_offset, byt
 	}
 }
 /**
- * @param gc cast=(GdkGC *)
- * @param exposures cast=(gboolean)
+ * @method flags=dynamic
  */
 public static final native void _gdk_gc_set_exposures(int /*long*/ gc, boolean exposures);
 public static final void gdk_gc_set_exposures(int /*long*/ gc, boolean exposures) {
