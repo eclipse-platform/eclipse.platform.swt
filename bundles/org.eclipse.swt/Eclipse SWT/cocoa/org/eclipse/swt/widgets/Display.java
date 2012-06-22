@@ -634,7 +634,11 @@ void checkEnterExit (Control control, NSEvent nsEvent, boolean send) {
 		}
 		setCursor (control);
 	}
-	timerExec (control != null && !control.isDisposed() ? getToolTipTime () : -1, hoverTimer);
+	NSPoint location = NSEvent.mouseLocation();
+	if (control == null || control != currentControl || hoverLastLocation == null || location.x != hoverLastLocation.x || location.y != hoverLastLocation.y) {
+		hoverLastLocation = location;
+		timerExec (control != null && !control.isDisposed() ? getToolTipTime () : -1, hoverTimer);
+	}
 }
 
 void checkFocus () {
@@ -4214,6 +4218,7 @@ public static void setAppVersion (String version) {
 }
 
 //TODO use custom timer instead of timerExec
+NSPoint hoverLastLocation;
 Runnable hoverTimer = new Runnable () {
 	public void run () {
 		if (currentControl != null && !currentControl.isDisposed()) {
