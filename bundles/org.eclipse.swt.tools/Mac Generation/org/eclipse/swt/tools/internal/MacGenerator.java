@@ -26,6 +26,7 @@ public class MacGenerator {
 	PrintStream out;
 	
 	public static boolean BUILD_C_SOURCE = true;
+	public static boolean GENERATE_ALLOC = true;
 
 public MacGenerator() {
 }
@@ -122,6 +123,11 @@ public void generate(ProgressMonitor progress) {
 		progress.setMessage("classes...");
 	}
 	generateClasses();
+	if (progress != null) {
+		progress.step();
+		progress.setMessage("structs...");
+	}
+	generateStructs();
 	if (BUILD_C_SOURCE) {
 		if (progress != null) {
 			progress.step();
@@ -184,11 +190,41 @@ String getParamName(Node param, int i) {
 	return paramName;
 }
 
+void generateFields(String structName, ArrayList fields) {
+	for (Iterator iterator = fields.iterator(); iterator.hasNext();) {
+		Node field = (Node)iterator.next();
+		NamedNodeMap fieldAttributes = field.getAttributes();
+		String fieldName = fieldAttributes.getNamedItem("name").getNodeValue();
+		String type = getJavaType(field), type64 = getJavaType64(field);
+		out("\t");
+		out("public ");
+		out(type);
+		if (!type.equals(type64)) {
+			out(" /*");
+			out(type64);
+			out("*/");
+		}
+		out(" ");
+		out(fieldName);
+		if (isStruct(field)) {
+			out(" = new ");
+			String clazz = fieldAttributes.getNamedItem("declared_type").getNodeValue();
+			out (clazz);
+			out ("()");
+		}
+		out(";");
+		outln();
+	}
+}
+
 void generateMethods(String className, ArrayList methods) {
 	for (Iterator iterator = methods.iterator(); iterator.hasNext();) {
 		Node method = (Node)iterator.next();
 		NamedNodeMap mthAttributes = method.getAttributes();
 		String sel = mthAttributes.getNamedItem("selector").getNodeValue();
+		if ("NSObject".equals(className)) {
+		    if ("alloc".equals(sel) || "dealloc".equals(sel)) continue;
+		}
 		out("public ");
 		boolean isStatic = isStatic(method); 
 		if (isStatic) out("static ");
@@ -333,6 +369,40 @@ void generateMethods(String className, ArrayList methods) {
 	}
 }
 
+void generateExtraFields(String className) {
+	/* sizeof field */
+	out("\t");
+	out("public static int sizeof = OS." + className + "_sizeof();");
+	outln();
+	if ("CGSize".equals(className)) {
+		outln();
+		out("\tpublic String toString () {");
+		outln();
+		out("\t\treturn \"CGSize {\" + width + \" \" + height + \"}\";");
+		outln();
+		out("\t}");
+		outln();
+	}
+	if ("CGRect".equals(className)) {
+		outln();
+		out("\tpublic String toString () {");
+		outln();
+		out("\t\treturn \"CGRect {\" + origin.x + \" \" + origin.y + \" \" + size.width + \" \" + size.height + \"}\";");
+		outln();
+		out("\t}");
+		outln();
+	}
+	if ("CGPoint".equals(className)) {
+		outln();
+		out("\tpublic String toString () {");
+		outln();
+		out("\t\treturn \"CGPoint {\" + x + \" \" + y + \"}\";");
+		outln();
+		out("\t}");
+		outln();
+	}
+}
+
 void generateExtraMethods(String className) {
 	/* Empty constructor */
 	out("public ");
@@ -366,15 +436,17 @@ void generateExtraMethods(String className) {
 	outln();
 	/* NSObject helpers */
 	if (className.equals("NSObject")) {
-		out("public NSObject alloc() {");
-		outln();
-		out("\tthis.id = OS.objc_msgSend(objc_getClass(), OS.sel_alloc);");
-		outln();
-		out("\treturn this;");
-		outln();
-		out("}");
-		outln();
-		outln();
+		if (GENERATE_ALLOC) {
+			out("public NSObject alloc() {");
+			outln();
+			out("\tthis.id = OS.objc_msgSend(objc_getClass(), OS.sel_alloc);");
+			outln();
+			out("\treturn this;");
+			outln();
+			out("}");
+			outln();
+			outln();
+		}
 	}
 	/* NSString helpers */
 	if (className.equals("NSString")) {
@@ -445,6 +517,37 @@ TreeMap getGeneratedClasses() {
 		}
 	}
 	return classes;
+}
+
+TreeMap getGeneratedStructs() {
+	TreeMap structs = new TreeMap();
+	for (int x = 0; x < xmls.length; x++) {
+		Document document = documents[x];
+		if (document == null) continue;
+		NodeList list = document.getDocumentElement().getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Node node = list.item(i);
+			if ("struct".equals(node.getNodeName()) && getGen(node)) {
+				ArrayList fields;
+				String name = node.getAttributes().getNamedItem("name").getNodeValue();
+				Object[] clazz = (Object[])structs.get(name);
+				if (clazz == null) {
+					fields = new ArrayList();
+					structs.put(name, new Object[]{node, fields});
+				} else {
+					fields = (ArrayList)clazz[1];
+				}
+				NodeList fieldList = node.getChildNodes();
+				for (int j = 0; j < fieldList.getLength(); j++) {
+					Node field = fieldList.item(j);
+					if ("field".equals(field.getNodeName()) && getGen(field)) {
+						fields.add(field);
+					}
+				}
+			}
+		}
+	}
+	return structs;
 }
 
 void copyClassMethodsDown(final Map classes) {
@@ -525,6 +628,48 @@ void generateClasses() {
 		outln();		
 		generateExtraMethods(className);
 		generateMethods(className, methods);		
+		out("}");
+		outln();
+		
+		String fileName = outputDir + packageName.replace('.', '/') + "/" + className + ".java";
+		try {
+			out.flush();
+			if (out.size() > 0) JNIGenerator.output(out.toByteArray(), fileName);
+		} catch (Exception e) {
+			System.out.println("Problem");
+			e.printStackTrace(System.out);
+		}
+		out = null;
+	}
+}
+
+void generateStructs() {
+	MetaData metaData = new MetaData(mainClassName);	
+	TreeMap structs = getGeneratedStructs();
+
+	Set structNames = structs.keySet();
+	for (Iterator iterator = structNames.iterator(); iterator.hasNext();) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		this.out = new PrintStream(out);
+
+		out(fixDelimiter(metaData.getCopyright()));
+
+		String className = (String) iterator.next();
+		Object[] clazz = (Object[])structs.get(className);
+		Node node = (Node)clazz[0];
+		ArrayList methods = (ArrayList)clazz[1];
+		out("package ");
+		String packageName = getPackageName(mainClassName);
+		out(packageName);
+		out(";");
+		outln();
+		outln();
+		out("public class ");
+		out(className);
+		out(" {");
+		outln();		
+		generateFields(className, methods);		
+		generateExtraFields(className);
 		out("}");
 		outln();
 		
@@ -688,6 +833,10 @@ void saveExtraAttributes(String xmlPath, Document document) {
 	}
 }
 
+public String getOutputDir() {
+	return outputDir;
+}
+
 public void setOutputDir(String dir) {
 	if (dir != null) {
 		if (!dir.endsWith("\\") && !dir.endsWith("/") ) {
@@ -739,6 +888,10 @@ Document getDocument(String xmlPath) {
 public String[] getExtraAttributeNames(Node node) {
 	String name = node.getNodeName();
 	if (name.equals("method")) {
+		NamedNodeMap attribs = node.getAttributes();
+		if (attribs != null && attribs.getNamedItem("variadic") != null) {
+			return new String[]{"swt_gen_super_msgSend", "swt_gen_custom_callback", "swt_variadic_count","swt_variadic_java_types"};
+		}
 		return new String[]{"swt_gen_super_msgSend", "swt_gen_custom_callback"};
 	} else if (name.equals("function")) {
 		NamedNodeMap attribs = node.getAttributes();
@@ -1072,7 +1225,10 @@ void generateSelectorsConst() {
 			}
 		}
 	}
-	if (set.size() > 0) set.add("alloc");
+	if (set.size() > 0) {
+		set.add("alloc");
+		set.add("dealloc");
+	}
 	for (Iterator iterator = set.iterator(); iterator.hasNext();) {
 		String sel = (String) iterator.next();
 		String selConst = getSelConst(sel);
@@ -1541,6 +1697,9 @@ String getType(String code, NamedNodeMap attributes, boolean is64) {
 	if (code.startsWith("{")) {		
 		return attributes.getNamedItem("declared_type").getNodeValue();
 	}
+    if (code.startsWith("@?")) {
+        return is64 ? "long" : "int";
+    }
 	return "BAD " + code;
 }
 
@@ -1566,6 +1725,7 @@ String getJNIType(Node node) {
 	if (code.equals("#")) return "I";
 	if (code.equals(":")) return "I";
 	if (code.startsWith("^")) return "I";
+    if (code.startsWith("@?")) return "I";
 	if (code.startsWith("[")) return "BAD " + code;
 	if (code.startsWith("{")) {		
 		return "BAD " + code;
@@ -1629,6 +1789,7 @@ String getJavaType(String code, NamedNodeMap attributes, boolean is64) {
 	if (code.startsWith("{")) {		
 		return attributes.getNamedItem("declared_type").getNodeValue().trim();
 	}
+    if (code.startsWith("@?")) return is64 ? "long" : "int";
 	return "BAD " + code;
 }
 

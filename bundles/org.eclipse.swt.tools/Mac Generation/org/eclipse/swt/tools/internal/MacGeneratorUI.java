@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.*;
 public class MacGeneratorUI {
 	MacGenerator gen;
 	boolean actions = true;
+	public static boolean SHOW_SWT_PREFIX = true;
 
 	Tree nodesTree;
 	Table attribTable;
@@ -106,7 +107,7 @@ public class MacGeneratorUI {
 		if (!(item.getData() instanceof Node)) return false;
 		if (column == 0) return false;
 		String attribName = item.getText();
-		return attribName.startsWith("swt_");
+		return attribName.startsWith("swt_") || item.getData("swt_") != null;
 	}
 
 	String getPrettyText(String text) {
@@ -279,6 +280,9 @@ public class MacGeneratorUI {
 				item.setText(column, value);
 				Element node = (Element)item.getData();
 				String name = item.getText();
+				if (!name.startsWith("swt_")) {
+					name = "swt_" + name;
+				}
 				if (value.length() != 0) {
 					node.setAttribute(name, value);
 				} else {
@@ -423,11 +427,14 @@ public class MacGeneratorUI {
 			}
 		}
 		Document[] documents = gen.getDocuments();
-		if (node == null && documents.length > 0) node = gen.getDocuments()[0];
+		if (node == null && documents.length > 0) {
+	        int index = 0;
+		    while (index < documents.length && (node = documents[index]) == null) index++;
+		}
 		if (flatNodes == null) {
 			flatNodes = new ArrayList();
 			for (int i = 0; i < documents.length; i++) {
-				addNodes(documents[i], flatNodes);
+				if (documents[i] != null) addNodes(documents[i], flatNodes);
 			}
 		}
 		int index = 0;
@@ -507,7 +514,12 @@ public class MacGeneratorUI {
 		String[] extraAttribs = gen.getExtraAttributeNames(node);
 		for (int i = 0; i < extraAttribs.length; i++) {
 			TableItem attribItem = new TableItem(attribTable, SWT.NONE);
-			attribItem.setText(extraAttribs[i]);
+			String attribName = extraAttribs[i];
+			if (!SHOW_SWT_PREFIX && attribName.startsWith("swt_")) {
+				attribName = attribName.substring("swt_".length(), attribName.length());
+				attribItem.setData("swt_", "swt_");
+			}
+			attribItem.setText(attribName);
 			attribItem.setData(node);
 			attribItem.setForeground(item.getDisplay().getSystemColor(SWT.COLOR_BLUE));
 			Node attrib = attributes.getNamedItem(extraAttribs[i]);
