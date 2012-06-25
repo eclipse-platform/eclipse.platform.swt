@@ -449,7 +449,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 	int rightWidth = 0;
 	int allWidth = 0;
 	for (int i = 0; i < controls.length; i++) {
-		Point ctrlSize = tabControlSize[i] = controls[i].getVisible() ? controls[i].computeSize(SWT.DEFAULT, SWT.DEFAULT) : new Point(0,0);
+		Point ctrlSize = tabControlSize[i] = !controls[i].isDisposed() && controls[i].getVisible() ? controls[i].computeSize(SWT.DEFAULT, SWT.DEFAULT) : new Point(0,0);
 		int alignment = controlAlignments[i];
 		if ((alignment & SWT.LEAD) != 0) {
 			rects[i].width = ctrlSize.x;
@@ -578,7 +578,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 					//Relayout this control in the next line
 					i--;
 				} else {
-					ctrlSize = controls[i].computeSize(bodyWidth, SWT.DEFAULT);
+					ctrlSize = controls[i].isDisposed() ? new Point(0,0) : controls[i].computeSize(bodyWidth, SWT.DEFAULT);
 					rects[i].width = bodyWidth;
 					rects[i].y = y;
 					rects[i].height = ctrlSize.y;
@@ -880,7 +880,7 @@ int getLeftItemEdge (GC gc, int part){
 	int x = -trim.x; 
 	int width = 0;
 	for (int i = 0; i < controls.length; i++) {
-		if ((controlAlignments[i] & SWT.LEAD) != 0 && controls[i].getVisible()) {
+		if ((controlAlignments[i] & SWT.LEAD) != 0 && !controls[i].isDisposed() && controls[i].getVisible()) {
 			width += controls[i].computeSize(SWT.DEFAULT, SWT.DEFAULT).x;	
 		}
 	}
@@ -1056,7 +1056,7 @@ int getRightItemEdge (GC gc){
 	int width = 0;
 	for (int i = 0; i < controls.length; i++) {
 		int align = controlAlignments[i];
-		if ((align & SWT.WRAP) == 0 && (align & SWT.LEAD) == 0 && controls[i].getVisible()) {
+		if ((align & SWT.WRAP) == 0 && (align & SWT.LEAD) == 0 && !controls[i].isDisposed() && controls[i].getVisible()) {
 			Point rightSize = controls[i].computeSize(SWT.DEFAULT, SWT.DEFAULT);
 			width += rightSize.x;
 		}
@@ -2456,11 +2456,13 @@ void setButtonBounds(GC gc) {
 	boolean changed = false;
 	ignoreResize = true;
 	for (int i = 0; i < controls.length; i++) {
-		if (overflow[0][i]) {
-			controls[i].setBounds(rects[i]);
-		} else {
-			controls[i].setBounds(rects[i].x, rects[i].y, rects[i].width, headerHeight);
-			controls[i].moveAbove(null);
+		if (!controls[i].isDisposed()) {
+			if (overflow[0][i]) {
+				controls[i].setBounds(rects[i]);
+			} else {
+				controls[i].setBounds(rects[i].x, rects[i].y, rects[i].width, headerHeight);
+				controls[i].moveAbove(null);
+			}
 		}
 		if (!changed && !rects[i].equals(controlRects[i])) changed = true;
 	}
@@ -3414,7 +3416,7 @@ public void setTopRight(Control control, int alignment) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (topRight == control && topRightAlignment == alignment) return;
-	if (topRight != null) removeTabControl(topRight, false);
+	if (topRight != null && !topRight.isDisposed()) removeTabControl(topRight, false);
 	topRight = control;
 	topRightAlignment = alignment;
 	alignment &= ~SWT.RIGHT;
@@ -3655,7 +3657,7 @@ boolean updateTabHeight(boolean force){
 	gc.dispose();
 	if (fixedTabHeight == SWT.DEFAULT && controls != null && controls.length > 0) {
 		for (int i = 0; i < controls.length; i++) {		
-			if ((controlAlignments[i] & SWT.WRAP) == 0 && controls[i].getVisible()) {
+			if ((controlAlignments[i] & SWT.WRAP) == 0 && !controls[i].isDisposed() && controls[i].getVisible()) {
 				int topHeight = controls[i].computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
 				topHeight += renderer.computeTrim(CTabFolderRenderer.PART_HEADER, SWT.NONE, 0,0,0,0).height + 1;
 				tabHeight = Math.max(topHeight, tabHeight);
@@ -3672,28 +3674,30 @@ void updateBkImages() {
 	if (controls != null && controls.length > 0) {
 		for (int i = 0; i < controls.length; i++) {
 			Control control = controls[i];
-			if (hovering) {
-				if (control instanceof Composite) ((Composite) control).setBackgroundMode(SWT.INHERIT_NONE);
-				control.setBackgroundImage(null);
-				control.setBackground(getBackground());
-			} else {
-				if (control instanceof Composite) ((Composite) control).setBackgroundMode(SWT.INHERIT_DEFAULT);
-				Rectangle bounds = control.getBounds();
-				if (bounds.y > getTabHeight() || gradientColors == null) {
+			if (!control.isDisposed()) {
+				if (hovering) {
+					if (control instanceof Composite) ((Composite) control).setBackgroundMode(SWT.INHERIT_NONE);
 					control.setBackgroundImage(null);
 					control.setBackground(getBackground());
 				} else {
-					bounds.width = 10;
-					bounds.y = -bounds.y;
-					bounds.height -= 2*bounds.y - 1;
-					bounds.x = 0;
-					if (controlBkImages[i] != null) controlBkImages[i].dispose();
-					controlBkImages[i] = new Image(control.getDisplay(), bounds);
-					GC gc = new GC(controlBkImages[i]);
-					renderer.drawBackground(gc, bounds, 0);
-					gc.dispose();
-					control.setBackground(null);
-					control.setBackgroundImage(controlBkImages[i]);
+					if (control instanceof Composite) ((Composite) control).setBackgroundMode(SWT.INHERIT_DEFAULT);
+					Rectangle bounds = control.getBounds();
+					if (bounds.y > getTabHeight() || gradientColors == null) {
+						control.setBackgroundImage(null);
+						control.setBackground(getBackground());
+					} else {
+						bounds.width = 10;
+						bounds.y = -bounds.y;
+						bounds.height -= 2*bounds.y - 1;
+						bounds.x = 0;
+						if (controlBkImages[i] != null) controlBkImages[i].dispose();
+						controlBkImages[i] = new Image(control.getDisplay(), bounds);
+						GC gc = new GC(controlBkImages[i]);
+						renderer.drawBackground(gc, bounds, 0);
+						gc.dispose();
+						control.setBackground(null);
+						control.setBackgroundImage(controlBkImages[i]);
+					}
 				}
 			}
 		}
