@@ -27,7 +27,7 @@ public class MacGenerator {
 	
 	public static boolean BUILD_C_SOURCE = true;
 	public static boolean GENERATE_ALLOC = true;
-	public static boolean GENERATE_STRUCTS = true;
+	public static boolean GENERATE_STRUCTS = false;
 
 public MacGenerator() {
 }
