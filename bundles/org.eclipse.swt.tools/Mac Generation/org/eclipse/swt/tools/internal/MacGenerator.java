@@ -27,6 +27,7 @@ public class MacGenerator {
 	
 	public static boolean BUILD_C_SOURCE = true;
 	public static boolean GENERATE_ALLOC = true;
+	public static boolean GENERATE_STRUCTS = true;
 
 public MacGenerator() {
 }
@@ -123,11 +124,13 @@ public void generate(ProgressMonitor progress) {
 		progress.setMessage("classes...");
 	}
 	generateClasses();
-	if (progress != null) {
-		progress.step();
-		progress.setMessage("structs...");
+	if (GENERATE_STRUCTS) {
+		if (progress != null) {
+			progress.step();
+			progress.setMessage("structs...");
+		}
+		generateStructs();
 	}
-	generateStructs();
 	if (BUILD_C_SOURCE) {
 		if (progress != null) {
 			progress.step();
