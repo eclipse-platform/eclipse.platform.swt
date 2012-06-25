@@ -44,7 +44,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	if (wHint == SWT.DEFAULT) {
 		for (int i = 0; i < folder.controls.length; i++) {
 			Control control = folder.controls[i];
-			if (control.getVisible()) {
+			if (!control.isDisposed() && control.getVisible()) {
 				if ((folder.controlAlignments[i] & SWT.LEAD) != 0) {
 					leftControl = true;
 				} else {
