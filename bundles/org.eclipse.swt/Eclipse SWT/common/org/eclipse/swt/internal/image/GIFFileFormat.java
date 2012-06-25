@@ -99,30 +99,34 @@ public final class GIFFileFormat extends FileFormat {
 		}
 		loader.backgroundPixel = backgroundPixel;
 
-		getExtensions();
-		int id = readID();
 		ImageData[] images = new ImageData[0];
-		while (id == GIF_IMAGE_BLOCK_ID) {
-			ImageData image = readImageBlock(palette);
-			if (loader.hasListeners()) {
-				loader.notifyListeners(new ImageLoaderEvent(loader, image, 3, true));
-			}
-			ImageData[] oldImages = images;
-			images = new ImageData[oldImages.length + 1];
-			System.arraycopy(oldImages, 0, images, 0, oldImages.length);
-			images[images.length - 1] = image;
-			try {
-				/* Read the 0-byte terminator at the end of the image. */
-				id = inputStream.read();
-				if (id > 0) {
-					/* We read the terminator earlier. */
-					inputStream.unread(new byte[] {(byte)id});
+		int id = readID();
+		while (id != GIF_TRAILER_ID && id != -1) {
+			if (id == GIF_IMAGE_BLOCK_ID) {
+				ImageData image = readImageBlock(palette);
+				if (loader.hasListeners()) {
+					loader.notifyListeners(new ImageLoaderEvent(loader, image, 3, true));
 				}
-			} catch (IOException e) {
-				SWT.error(SWT.ERROR_IO, e);
+				ImageData[] oldImages = images;
+				images = new ImageData[oldImages.length + 1];
+				System.arraycopy(oldImages, 0, images, 0, oldImages.length);
+				images[images.length - 1] = image;
+			} else if (id == GIF_EXTENSION_BLOCK_ID) {
+				/* Read the extension block. Currently, only the
+				 * interesting parts of certain extensions are kept,
+				 * and the rest is discarded. In future, if we want
+				 * to keep extensions, they should be grouped with
+				 * the image data before which they appear.
+				 */
+				readExtension();
+			} else {
+				/* The GIF is not to spec, but try to salvage it
+				 * if we read at least one image. */
+				if (images.length > 0) break;
+				SWT.error(SWT.ERROR_INVALID_IMAGE);
 			}
-			getExtensions();
-			id = readID();
+			id = readID(); // block terminator (0)
+			if (id == 0) id = readID(); // next block ID (unless we just read it)
 		}
 		return images;
 	}
@@ -137,33 +141,6 @@ public final class GIFFileFormat extends FileFormat {
 			SWT.error(SWT.ERROR_IO, e);
 		}
 		return -1;
-	}
-
-	/**
-	 * Read extensions until an image descriptor appears.
-	 * In the future, if we care about the extensions, they
-	 * should be properly grouped with the image data before
-	 * which they appeared. Right now, the interesting parts
-	 * of some extensions are kept, but the rest is discarded.
-	 * Throw an error if an error occurs.
-	 */
-	void getExtensions() {
-		int id = readID();
-		while (id != GIF_IMAGE_BLOCK_ID && id != GIF_TRAILER_ID && id > 0) {
-			if (id == GIF_EXTENSION_BLOCK_ID) {
-				readExtension();
-			} else {
-				SWT.error(SWT.ERROR_INVALID_IMAGE);
-			}
-			id = readID();
-		}
-		if (id == GIF_IMAGE_BLOCK_ID || id == GIF_TRAILER_ID) {
-			try {
-				inputStream.unread(new byte[] {(byte)id});
-			} catch (IOException e) {
-				SWT.error(SWT.ERROR_IO, e);
-			}
-		}
 	}
 
 	/**
@@ -276,8 +253,6 @@ public final class GIFFileFormat extends FileFormat {
 			} else {
 				transparentPixel = -1;
 			}
-			// Read block terminator.
-			inputStream.read();
 			return controlBlock;
 		} catch (Exception e) {
 			SWT.error(SWT.ERROR_IO, e);
