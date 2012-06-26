@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1311;
-int OS_nativeFunctionCallCount[1311];
+int OS_nativeFunctionCount = 1315;
+int OS_nativeFunctionCallCount[1315];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -787,6 +787,11 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1list_1store_1set__JJIIJ",
 #endif
 #ifndef JNI64
+	"_1gtk_1list_1store_1set__IIIJI",
+#else
+	"_1gtk_1list_1store_1set__JJIJJ",
+#endif
+#ifndef JNI64
 	"_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I",
 #else
 	"_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2J",
@@ -1064,7 +1069,16 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tooltips_1force_1window",
 	"_1gtk_1tooltips_1new",
 	"_1gtk_1tooltips_1set_1tip",
-	"_1gtk_1tree_1model_1get",
+#ifndef JNI64
+	"_1gtk_1tree_1model_1get__III_3II",
+#else
+	"_1gtk_1tree_1model_1get__JJI_3IJ",
+#endif
+#ifndef JNI64
+	"_1gtk_1tree_1model_1get__III_3JI",
+#else
+	"_1gtk_1tree_1model_1get__JJI_3JJ",
+#endif
 	"_1gtk_1tree_1model_1get_1iter",
 	"_1gtk_1tree_1model_1get_1iter_1first",
 	"_1gtk_1tree_1model_1get_1n_1columns",
@@ -1106,6 +1120,11 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tree_1store_1set__IIIII",
 #else
 	"_1gtk_1tree_1store_1set__JJIIJ",
+#endif
+#ifndef JNI64
+	"_1gtk_1tree_1store_1set__IIIJI",
+#else
+	"_1gtk_1tree_1store_1set__JJIJJ",
 #endif
 #ifndef JNI64
 	"_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I",
@@ -1242,7 +1261,16 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1show",
 	"_1gtk_1widget_1size_1allocate",
 	"_1gtk_1widget_1size_1request",
-	"_1gtk_1widget_1style_1get",
+#ifndef JNI64
+	"_1gtk_1widget_1style_1get__I_3B_3II",
+#else
+	"_1gtk_1widget_1style_1get__J_3B_3IJ",
+#endif
+#ifndef JNI64
+	"_1gtk_1widget_1style_1get__I_3B_3JI",
+#else
+	"_1gtk_1widget_1style_1get__J_3B_3JJ",
+#endif
 	"_1gtk_1widget_1translate_1coordinates",
 	"_1gtk_1window_1activate_1default",
 	"_1gtk_1window_1add_1accel_1group",

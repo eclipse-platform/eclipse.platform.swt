@@ -795,6 +795,11 @@ typedef enum {
 	_1gtk_1list_1store_1set__JJIIJ_FUNC,
 #endif
 #ifndef JNI64
+	_1gtk_1list_1store_1set__IIIJI_FUNC,
+#else
+	_1gtk_1list_1store_1set__JJIJJ_FUNC,
+#endif
+#ifndef JNI64
 	_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC,
 #else
 	_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC,
@@ -1072,7 +1077,16 @@ typedef enum {
 	_1gtk_1tooltips_1force_1window_FUNC,
 	_1gtk_1tooltips_1new_FUNC,
 	_1gtk_1tooltips_1set_1tip_FUNC,
-	_1gtk_1tree_1model_1get_FUNC,
+#ifndef JNI64
+	_1gtk_1tree_1model_1get__III_3II_FUNC,
+#else
+	_1gtk_1tree_1model_1get__JJI_3IJ_FUNC,
+#endif
+#ifndef JNI64
+	_1gtk_1tree_1model_1get__III_3JI_FUNC,
+#else
+	_1gtk_1tree_1model_1get__JJI_3JJ_FUNC,
+#endif
 	_1gtk_1tree_1model_1get_1iter_FUNC,
 	_1gtk_1tree_1model_1get_1iter_1first_FUNC,
 	_1gtk_1tree_1model_1get_1n_1columns_FUNC,
@@ -1114,6 +1128,11 @@ typedef enum {
 	_1gtk_1tree_1store_1set__IIIII_FUNC,
 #else
 	_1gtk_1tree_1store_1set__JJIIJ_FUNC,
+#endif
+#ifndef JNI64
+	_1gtk_1tree_1store_1set__IIIJI_FUNC,
+#else
+	_1gtk_1tree_1store_1set__JJIJJ_FUNC,
 #endif
 #ifndef JNI64
 	_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC,
@@ -1250,7 +1269,16 @@ typedef enum {
 	_1gtk_1widget_1show_FUNC,
 	_1gtk_1widget_1size_1allocate_FUNC,
 	_1gtk_1widget_1size_1request_FUNC,
-	_1gtk_1widget_1style_1get_FUNC,
+#ifndef JNI64
+	_1gtk_1widget_1style_1get__I_3B_3II_FUNC,
+#else
+	_1gtk_1widget_1style_1get__J_3B_3IJ_FUNC,
+#endif
+#ifndef JNI64
+	_1gtk_1widget_1style_1get__I_3B_3JI_FUNC,
+#else
+	_1gtk_1widget_1style_1get__J_3B_3JJ_FUNC,
+#endif
 	_1gtk_1widget_1translate_1coordinates_FUNC,
 	_1gtk_1window_1activate_1default_FUNC,
 	_1gtk_1window_1add_1accel_1group_FUNC,

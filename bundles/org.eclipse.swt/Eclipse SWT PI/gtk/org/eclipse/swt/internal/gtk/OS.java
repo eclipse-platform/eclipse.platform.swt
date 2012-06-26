@@ -7619,6 +7619,19 @@ public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ ite
 /**
  * @param store cast=(GtkListStore *)
  * @param iter cast=(GtkTreeIter *)
+ */
+public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int /*long*/ terminator);
+public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int /*long*/ terminator) {
+	lock.lock();
+	try {
+		_gtk_list_store_set(store, iter, column, value, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param store cast=(GtkListStore *)
+ * @param iter cast=(GtkTreeIter *)
  * @param value flags=no_out
  */
 public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int /*long*/ terminator);
@@ -10664,6 +10677,19 @@ public static final void gtk_tooltips_set_tip(int /*long*/ tooltips, int /*long*
  * @param tree_model cast=(GtkTreeModel *)
  * @param iter cast=(GtkTreeIter *)
  */
+public static final native void _gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, long[] value, int /*long*/ terminator);
+public static final void gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, long[] value, int /*long*/ terminator) {
+	lock.lock();
+	try {
+		_gtk_tree_model_get(tree_model, iter, column, value, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param tree_model cast=(GtkTreeModel *)
+ * @param iter cast=(GtkTreeIter *)
+ */
 public static final native void _gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, int[] value, int /*long*/ terminator);
 public static final void gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, int[] value, int /*long*/ terminator) {
 	lock.lock();
@@ -11078,6 +11104,19 @@ public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ ite
  */
 public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int /*long*/ terminator);
 public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int /*long*/ terminator) {
+	lock.lock();
+	try {
+		_gtk_tree_store_set(store, iter, column, value, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param store cast=(GtkTreeStore *)
+ * @param iter cast=(GtkTreeIter *)
+ */
+public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int /*long*/ terminator);
+public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_gtk_tree_store_set(store, iter, column, value, terminator);
@@ -12457,6 +12496,20 @@ public static final void gtk_widget_size_request(int /*long*/ widget, GtkRequisi
  */
 public static final native void _gtk_widget_style_get(int /*long*/ widget, byte[] property_name, int[] value, int /*long*/ terminator);
 public static final void gtk_widget_style_get(int /*long*/ widget, byte[] property_name, int[] value, int /*long*/ terminator) {
+	lock.lock();
+	try {
+		_gtk_widget_style_get(widget, property_name, value, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param widget cast=(GtkWidget *)
+ * @param property_name cast=(const gchar *)
+ * @param terminator cast=(const gchar *),flags=sentinel
+ */
+public static final native void _gtk_widget_style_get(int /*long*/ widget, byte[] property_name, long[] value, int /*long*/ terminator);
+public static final void gtk_widget_style_get(int /*long*/ widget, byte[] property_name, long[] value, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		_gtk_widget_style_get(widget, property_name, value, terminator);
