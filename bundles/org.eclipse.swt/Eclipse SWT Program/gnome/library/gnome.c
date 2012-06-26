@@ -17,7 +17,9 @@
 #include "gnome_structs.h"
 #include "gnome_stats.h"
 
+#ifndef GNOME_NATIVE
 #define GNOME_NATIVE(func) Java_org_eclipse_swt_internal_gnome_GNOME_##func
+#endif
 
 #ifndef NO_GnomeVFSMimeApplication_1sizeof
 JNIEXPORT jint JNICALL GNOME_NATIVE(GnomeVFSMimeApplication_1sizeof)
