@@ -1181,6 +1181,7 @@ public static final int /*long*/ sel_dateWithCalendarFormat_timeZone_ = sel_regi
 public static final int /*long*/ sel_dateWithTimeIntervalSinceNow_ = sel_registerName("dateWithTimeIntervalSinceNow:");
 public static final int /*long*/ sel_dateWithYear_month_day_hour_minute_second_timeZone_ = sel_registerName("dateWithYear:month:day:hour:minute:second:timeZone:");
 public static final int /*long*/ sel_dayOfMonth = sel_registerName("dayOfMonth");
+public static final int /*long*/ sel_dealloc = sel_registerName("dealloc");
 public static final int /*long*/ sel_decimalDigitCharacterSet = sel_registerName("decimalDigitCharacterSet");
 public static final int /*long*/ sel_decimalSeparator = sel_registerName("decimalSeparator");
 public static final int /*long*/ sel_declareTypes_owner_ = sel_registerName("declareTypes:owner:");
