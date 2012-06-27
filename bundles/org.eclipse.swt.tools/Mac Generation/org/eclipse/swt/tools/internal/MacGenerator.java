@@ -28,6 +28,7 @@ public class MacGenerator {
 	public static boolean BUILD_C_SOURCE = true;
 	public static boolean GENERATE_ALLOC = true;
 	public static boolean GENERATE_STRUCTS = false;
+	public static boolean USE_SYSTEM_BRIDGE_FILES = false;
 
 public MacGenerator() {
 }
@@ -800,9 +801,22 @@ public Document[] getDocuments() {
 public String[] getXmls() {
 	if (xmls == null || xmls.length == 0) {
 		ArrayList array = new ArrayList();
-		list(new File("/System/Library/Frameworks"), array);
-		list(new File("/System/Library/Frameworks/CoreServices.framework/Frameworks"), array);
-		list(new File("/System/Library/Frameworks/ApplicationServices.framework/Frameworks"), array);
+		if (USE_SYSTEM_BRIDGE_FILES) {
+			list(new File("/System/Library/Frameworks"), array);
+			list(new File("/System/Library/Frameworks/CoreServices.framework/Frameworks"), array);
+			list(new File("/System/Library/Frameworks/ApplicationServices.framework/Frameworks"), array);
+		} else {
+			String packageName = getPackageName(mainClassName);
+			File folder = new File(extrasDir != null ? extrasDir : outputDir + packageName.replace('.', '/'));
+			File[] files = folder.listFiles(new FilenameFilter() {
+				public boolean accept(File dir, String name) {
+					return name.endsWith("Full.bridgesupport");
+				}
+			});
+			for (int i = 0; i < files.length; i++) {
+				array.add(files[i].getAbsolutePath());
+			}
+		}
 		Collections.sort(array, new Comparator() {
 			public int compare(Object o1, Object o2) {
 				return new File((String)o1).getName().compareTo(new File((String)o2).getName());
