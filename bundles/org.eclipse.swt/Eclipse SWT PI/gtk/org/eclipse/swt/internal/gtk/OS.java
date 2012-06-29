@@ -3479,6 +3479,32 @@ public static final void gdk_cairo_set_source_color(int /*long*/ cairo, GdkColor
 		lock.unlock();
 	}
 }
+/** 
+ * @param window cast=(GdkWindow *) 
+ * @method flags=dynamic 
+ */
+public static final native int /*long*/ _gdk_window_get_width(int /*long*/ window);
+public static final int /*long*/ gdk_window_get_width(int /*long*/ window) {
+	lock.lock();
+	try {
+		return _gdk_window_get_width(window);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ *  @param window cast=(GdkWindow *)
+ *  @method flags=dynamic  
+ */
+public static final native int /*long*/ _gdk_window_get_height(int /*long*/ window);
+public static final int /*long*/ gdk_window_get_height(int /*long*/ window) {
+	lock.lock();
+	try {
+		return _gdk_window_get_height(window);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @method flags=dynamic
  * @param pixbuf cast=(const GdkPixbuf *)
@@ -3849,7 +3875,21 @@ public static final int gdk_drawable_get_depth(int /*long*/ drawable) {
 		lock.unlock();
 	}
 }
-
+/** 
+ * @param pixmap cast=(GdkPixmap *)
+ * @param width cast=(gint *),flags=no_in critical
+ * @param height cast=(gint *),flags=no_in critical
+ * @method flags=dynamic
+ */
+public static final native void _gdk_pixmap_get_size(int /*long*/ pixmap, int[] width, int[] height);
+public static final void gdk_pixmap_get_size(int /*long*/ pixmap, int[] width, int[] height) {
+	lock.lock();
+	try {
+		_gdk_pixmap_get_size (pixmap,width,height);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @param drawable cast=(GdkDrawable *)
  * @param x cast=(gint)

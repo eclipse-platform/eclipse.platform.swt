@@ -191,6 +191,9 @@
 #define gdk_window_create_similar_surface_LIB LIB_GDK
 #define gdk_window_lookup_LIB LIB_GDK
 #define gdk_window_restack_LIB LIB_GDK
+#define gdk_window_get_height_LIB LIB_GDK
+#define gdk_window_get_width_LIB LIB_GDK
+#define gdk_pixmap_get_size_LIB LIB_GDK
 #define gdk_window_set_keep_above_LIB LIB_GDK
 #define gdk_window_set_accept_focus_LIB LIB_GDK
 #define gtk_window_set_opacity_LIB LIB_GTK

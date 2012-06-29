@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1316;
-int OS_nativeFunctionCallCount[1316];
+int OS_nativeFunctionCount = 1319;
+int OS_nativeFunctionCallCount[1319];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -500,6 +500,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1pixbuf_1render_1to_1drawable",
 	"_1gdk_1pixbuf_1save_1to_1bufferv",
 	"_1gdk_1pixbuf_1scale_1simple",
+	"_1gdk_1pixmap_1get_1size",
 	"_1gdk_1pixmap_1new",
 	"_1gdk_1pointer_1grab",
 	"_1gdk_1pointer_1ungrab",
@@ -543,12 +544,14 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1window_1get_1children",
 	"_1gdk_1window_1get_1events",
 	"_1gdk_1window_1get_1frame_1extents",
+	"_1gdk_1window_1get_1height",
 	"_1gdk_1window_1get_1internal_1paint_1info",
 	"_1gdk_1window_1get_1origin",
 	"_1gdk_1window_1get_1parent",
 	"_1gdk_1window_1get_1pointer",
 	"_1gdk_1window_1get_1position",
 	"_1gdk_1window_1get_1user_1data",
+	"_1gdk_1window_1get_1width",
 	"_1gdk_1window_1hide",
 	"_1gdk_1window_1invalidate_1rect",
 	"_1gdk_1window_1invalidate_1region",
