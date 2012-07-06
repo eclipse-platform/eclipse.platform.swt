@@ -6969,14 +6969,25 @@ public static final int /*long*/ gtk_fixed_new() {
 	}
 }
 /**
- * @param fixed cast=(GtkFixed *)
- * @param has_window cast=(gboolean)
+ * @method flags=dynamic
  */
 public static final native void _gtk_fixed_set_has_window(int /*long*/ fixed, boolean has_window);
 public static final void gtk_fixed_set_has_window(int /*long*/ fixed, boolean has_window) {
 	lock.lock();
 	try {
 		_gtk_fixed_set_has_window(fixed, has_window);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_widget_set_has_window(int /*long*/ widget, boolean has_window);
+public static final void gtk_widget_set_has_window(int /*long*/ widget, boolean has_window) {
+	lock.lock();
+	try {
+		_gtk_fixed_set_has_window(widget, has_window);
 	} finally {
 		lock.unlock();
 	}

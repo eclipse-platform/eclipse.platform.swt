@@ -130,7 +130,11 @@ void createHandle (int index) {
 	state |= HANDLE | THEME_BACKGROUND;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_fixed_set_has_window (fixedHandle, true);
+	if (OS.GTK_VERSION >= OS.VERSION(2, 18, 0)) {
+		OS.gtk_widget_set_has_window(fixedHandle, true);
+	}else{
+		OS.gtk_fixed_set_has_window (fixedHandle, true);
+	}
 	handle = OS.gtk_toolbar_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_container_add (fixedHandle, handle);
