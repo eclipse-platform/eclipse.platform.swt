@@ -2005,7 +2005,11 @@ public void setVisible (boolean visible) {
 		updateModal ();
 	}
 	showWithParent = visible;
-	if ((OS.GTK_WIDGET_MAPPED (shellHandle) == visible)) return;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
+		if (OS.gtk_widget_get_mapped(shellHandle) == visible) return;
+	}else{
+		if ((OS.GTK_WIDGET_MAPPED (shellHandle) == visible)) return;
+	}
 	if (visible) {
 		if (center && !moved) {
 			center ();

@@ -2314,8 +2314,14 @@ int /*long*/ fixedMapProc (int /*long*/ widget) {
 		int /*long*/ widgets = widgetList;
 		while (widgets != 0) {
 			int /*long*/ child = OS.g_list_data (widgets);
-			if (OS.GTK_WIDGET_VISIBLE (child) && OS.gtk_widget_get_child_visible (child) && !OS.GTK_WIDGET_MAPPED (child)) {
-				OS.gtk_widget_map (child);
+			if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
+				if (OS.GTK_WIDGET_VISIBLE (child) && OS.gtk_widget_get_child_visible (child) && !OS.gtk_widget_get_mapped (child)) {
+					OS.gtk_widget_map (child);
+				}
+			}else{
+				if (OS.GTK_WIDGET_VISIBLE (child) && OS.gtk_widget_get_child_visible (child) && !OS.GTK_WIDGET_MAPPED (child)) {
+					OS.gtk_widget_map (child);
+				}
 			}
 			widgets = OS.g_list_next (widgets);
 		}

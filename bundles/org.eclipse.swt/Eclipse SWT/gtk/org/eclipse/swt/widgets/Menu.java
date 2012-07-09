@@ -193,7 +193,11 @@ static int checkStyle (int style) {
 }
 
 void _setVisible (boolean visible) {
-	if (visible == OS.GTK_WIDGET_MAPPED (handle)) return;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
+		if(visible == OS.gtk_widget_get_mapped(handle)) return;
+	}else{
+		if (visible == OS.GTK_WIDGET_MAPPED (handle)) return;
+	}
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {
@@ -372,8 +376,14 @@ void fixMenus (Decorations newParent) {
 
 /*public*/ Rectangle getBounds () {
 	checkWidget();
-	if (!OS.GTK_WIDGET_MAPPED (handle)) {
-		return new Rectangle (0, 0, 0, 0);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
+		if (!OS.gtk_widget_get_mapped (handle)){
+			return new Rectangle (0, 0, 0, 0);
+		}
+	}else{
+		if (!OS.GTK_WIDGET_MAPPED (handle)) {
+			return new Rectangle (0, 0, 0, 0);
+		}
 	}
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
 	int [] origin_x = new int [1], origin_y = new int [1];
@@ -639,7 +649,11 @@ public boolean getVisible () {
 			}
 		}
 	}
-	return OS.GTK_WIDGET_MAPPED (handle);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
+		return OS.gtk_widget_get_mapped(handle);
+	}else{
+		return OS.GTK_WIDGET_MAPPED (handle);
+	}
 }
 
 int /*long*/ gtk_hide (int /*long*/ widget) {

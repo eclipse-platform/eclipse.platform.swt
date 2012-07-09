@@ -1235,6 +1235,7 @@ typedef enum {
 	_1gtk_1widget_1get_1child_1visible_FUNC,
 	_1gtk_1widget_1get_1default_1style_FUNC,
 	_1gtk_1widget_1get_1events_FUNC,
+	_1gtk_1widget_1get_1mapped_FUNC,
 	_1gtk_1widget_1get_1modifier_1style_FUNC,
 	_1gtk_1widget_1get_1pango_1context_FUNC,
 	_1gtk_1widget_1get_1parent_FUNC,

@@ -319,8 +319,14 @@ int /*long*/ getAccelGroup () {
 
 /*public*/ Rectangle getBounds () {
 	checkWidget();
-	if (!OS.GTK_WIDGET_MAPPED (handle)) {
-		return new Rectangle (0, 0, 0, 0);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
+		if (!OS.gtk_widget_get_mapped (handle)) {
+			return new Rectangle (0, 0, 0, 0);
+		}
+	}else{
+		if (!OS.GTK_WIDGET_MAPPED (handle)) {
+			return new Rectangle (0, 0, 0, 0);
+		}
 	}
 	int x = OS.GTK_WIDGET_X (handle);
 	int y = OS.GTK_WIDGET_Y (handle);

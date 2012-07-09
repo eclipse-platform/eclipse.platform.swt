@@ -12147,6 +12147,16 @@ public static final int /*long*/ gtk_widget_get_modifier_style(int /*long*/ widg
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic  */
+public static final native boolean _gtk_widget_get_mapped(int /*long*/ widget);
+public static final boolean gtk_widget_get_mapped(int /*long*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_widget_get_mapped(widget);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param widget cast=(GtkWidget *) */
 public static final native int /*long*/ _gtk_widget_get_pango_context(int /*long*/ widget);
 public static final int /*long*/ gtk_widget_get_pango_context(int /*long*/ widget) {

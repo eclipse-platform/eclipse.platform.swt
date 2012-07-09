@@ -15486,6 +15486,26 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1widget_1get_1events)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1get_1mapped
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1widget_1get_1mapped)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1mapped_FUNC);
+/*
+	rc = (jboolean)gtk_widget_get_mapped(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_get_mapped)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1mapped_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1get_1modifier_1style
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1modifier_1style)
 	(JNIEnv *env, jclass that, jintLong arg0)
