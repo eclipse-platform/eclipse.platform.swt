@@ -1653,6 +1653,16 @@ public static final boolean GTK_WIDGET_HAS_DEFAULT(int /*long*/ wid) {
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native boolean _gtk_widget_has_default(int /*long*/ widget);
+public static final boolean gtk_widget_has_default(int /*long*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_widget_has_default(widget);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native boolean _GTK_WIDGET_HAS_FOCUS(int /*long*/ wid);
 public static final boolean GTK_WIDGET_HAS_FOCUS(int /*long*/ wid) {
 	lock.lock();

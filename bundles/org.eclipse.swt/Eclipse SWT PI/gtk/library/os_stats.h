@@ -1241,6 +1241,7 @@ typedef enum {
 	_1gtk_1widget_1get_1tooltip_1text_FUNC,
 	_1gtk_1widget_1get_1toplevel_FUNC,
 	_1gtk_1widget_1grab_1focus_FUNC,
+	_1gtk_1widget_1has_1default_FUNC,
 	_1gtk_1widget_1hide_FUNC,
 	_1gtk_1widget_1is_1composited_FUNC,
 	_1gtk_1widget_1is_1focus_FUNC,
