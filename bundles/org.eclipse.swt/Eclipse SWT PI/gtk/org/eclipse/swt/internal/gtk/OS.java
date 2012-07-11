@@ -1635,15 +1635,6 @@ public static final int GTK_WIDGET_FLAGS(int /*long*/ wid) {
 		lock.unlock();
 	}
 }
-public static final native int _GTK_WIDGET_STATE(int /*long*/ wid);
-public static final int GTK_WIDGET_STATE(int /*long*/ wid) {
-	lock.lock();
-	try {
-		return _GTK_WIDGET_STATE(wid);
-	} finally {
-		lock.unlock();
-	}
-}
 public static final native boolean _GTK_WIDGET_HAS_DEFAULT(int /*long*/ wid);
 public static final boolean GTK_WIDGET_HAS_DEFAULT(int /*long*/ wid) {
 	lock.lock();

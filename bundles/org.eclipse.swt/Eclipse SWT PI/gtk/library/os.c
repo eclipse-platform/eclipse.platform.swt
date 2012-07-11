@@ -1683,18 +1683,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1GTK_1WIDGET_1SET_1FLAGS)
 }
 #endif
 
-#ifndef NO__1GTK_1WIDGET_1STATE
-JNIEXPORT jint JNICALL OS_NATIVE(_1GTK_1WIDGET_1STATE)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1GTK_1WIDGET_1STATE_FUNC);
-	rc = (jint)GTK_WIDGET_STATE(arg0);
-	OS_NATIVE_EXIT(env, that, _1GTK_1WIDGET_1STATE_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1GTK_1WIDGET_1UNSET_1FLAGS
 JNIEXPORT void JNICALL OS_NATIVE(_1GTK_1WIDGET_1UNSET_1FLAGS)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
