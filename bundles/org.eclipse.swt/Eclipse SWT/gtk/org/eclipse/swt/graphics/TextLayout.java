@@ -240,12 +240,14 @@ void computeRuns () {
 			if (style.underlineColor != null) {
 				GdkColor fg = style.underlineColor.handle;
 				attr = OS.pango_attr_underline_color_new(fg.red, fg.green, fg.blue);
-				OS.memmove(attribute, attr, PangoAttribute.sizeof);
-				attribute.start_index = byteStart;
-				attribute.end_index = byteEnd;
-				OS.memmove(attr, attribute, PangoAttribute.sizeof);
-				OS.pango_attr_list_insert(attrList, attr);
-				OS.pango_attr_list_insert(selAttrList, OS.pango_attribute_copy(attr));
+				if (attr != 0) {
+					OS.memmove(attribute, attr, PangoAttribute.sizeof);
+					attribute.start_index = byteStart;
+					attribute.end_index = byteEnd;
+					OS.memmove(attr, attribute, PangoAttribute.sizeof);
+					OS.pango_attr_list_insert(attrList, attr);
+					OS.pango_attr_list_insert(selAttrList, OS.pango_attribute_copy(attr));
+				}
 			}
 		}
 		if (style.strikeout) {
@@ -259,12 +261,14 @@ void computeRuns () {
 			if (style.strikeoutColor != null) {
 				GdkColor fg = style.strikeoutColor.handle;
 				attr = OS.pango_attr_strikethrough_color_new(fg.red, fg.green, fg.blue);
-				OS.memmove(attribute, attr, PangoAttribute.sizeof);
-				attribute.start_index = byteStart;
-				attribute.end_index = byteEnd;
-				OS.memmove(attr, attribute, PangoAttribute.sizeof);
-				OS.pango_attr_list_insert(attrList, attr);
-				OS.pango_attr_list_insert(selAttrList, OS.pango_attribute_copy(attr));
+				if (attr != 0) {
+					OS.memmove(attribute, attr, PangoAttribute.sizeof);
+					attribute.start_index = byteStart;
+					attribute.end_index = byteEnd;
+					OS.memmove(attr, attribute, PangoAttribute.sizeof);
+					OS.pango_attr_list_insert(attrList, attr);
+					OS.pango_attr_list_insert(selAttrList, OS.pango_attribute_copy(attr));
+				}
 			}
 		}
 		Color foreground = style.foreground;
