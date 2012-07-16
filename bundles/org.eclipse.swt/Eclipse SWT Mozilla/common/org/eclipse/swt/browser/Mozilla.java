@@ -48,7 +48,7 @@ class Mozilla extends WebBrowser {
 	int refCount, lastKeyCode, lastCharCode, authCount;
 	int /*long*/ request, badCertRequest;
 	Point location, size;
-	boolean visible, isChild, ignoreDispose, isRetrievingBadCert, isViewingErrorPage, ignoreAllMessages, untrustedText;
+	boolean visible, isActive, isChild, ignoreDispose, isRetrievingBadCert, isViewingErrorPage, ignoreAllMessages, untrustedText;
 	boolean updateLastNavigateUrl;
 	Shell tip = null;
 	Listener listener;
@@ -2716,6 +2716,7 @@ void onDispose (Display display) {
 }
 
 void Activate () {
+	isActive = true;
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -2728,6 +2729,7 @@ void Activate () {
 }
 
 void Deactivate () {
+	isActive = false;
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
