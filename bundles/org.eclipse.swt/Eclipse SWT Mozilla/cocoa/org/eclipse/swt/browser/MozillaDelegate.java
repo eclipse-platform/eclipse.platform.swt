@@ -177,6 +177,8 @@ void handleFocus () {
 }
 
 void handleMouseDown () {
+	Mozilla mozilla = (Mozilla)browser.webBrowser;
+	if (!mozilla.isActive) mozilla.Activate ();
 }
 
 boolean hookEnterExit () {
