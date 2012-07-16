@@ -31,7 +31,7 @@ import java.util.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class Program {
-	String name;
+	String name = ""; //$NON-NLS-1$
 	String command;
 	String iconPath;
 	Display display;
@@ -289,10 +289,13 @@ static String cde_getMimeType(String extension) {
 }
 
 static Program cde_getProgram(Display display, String mimeType) {
+	String command = cde_getAction(mimeType);
+	if (command == null) return null;
+
 	Program program = new Program();
 	program.display = display;
 	program.name = mimeType;
-	program.command = cde_getAction(mimeType);
+	program.command = command;
 	program.iconPath = cde_getAttribute(program.name, CDE.DtDTS_DA_ICON);
 	return program;
 }
@@ -532,14 +535,18 @@ static Program gnome_getProgram(Display display, String mimeType) {
 		program.name = mimeType;
 		GnomeVFSMimeApplication application = new GnomeVFSMimeApplication();
 		GNOME.memmove(application, ptr, GnomeVFSMimeApplication.sizeof);
-		int length = OS.strlen(application.command);
-		byte[] buffer = new byte[length];
-		OS.memmove(buffer, application.command, length);		
-		program.command = new String(Converter.mbcsToWcs(null, buffer));
+		if (application.command != 0) {
+			int length = OS.strlen(application.command);
+			if (length > 0) {
+				byte[] buffer = new byte[length];
+				OS.memmove(buffer, application.command, length);		
+				program.command = new String(Converter.mbcsToWcs(null, buffer));
+			}
+		}
 		program.gnomeExpectUri = application.expects_uris == GNOME.GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS;
 		
-		length = OS.strlen(application.id);
-		buffer = new byte[length + 1];
+		int length = OS.strlen(application.id);
+		byte[] buffer = new byte[length + 1];
 		OS.memmove(buffer, application.id, length);
 		LONG gnomeIconTheme = (LONG)display.getData(ICON_THEME_DATA);
 		int /*long*/ icon_name = GNOME.gnome_icon_lookup(gnomeIconTheme.value, 0, null, buffer, 0, mimeTypeBuffer, 
@@ -558,7 +565,7 @@ static Program gnome_getProgram(Display display, String mimeType) {
 		if (icon_name != 0) GNOME.g_free(icon_name);
 		GNOME.gnome_vfs_mime_application_free(ptr);
 	}
-	return program;
+	return program.command != null ? program : null;
 }
 
 static boolean gnome_init() {
@@ -895,7 +902,7 @@ static Program gio_getProgram (Display display, int /*long*/ application) {
 		}
 		OS.g_object_unref(icon);
 	}
-	return program;
+	return program.command != null ? program : null;
 }
 
 static Program[] gio_getPrograms(Display display) {
