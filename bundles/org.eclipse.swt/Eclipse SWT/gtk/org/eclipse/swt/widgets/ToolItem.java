@@ -1165,7 +1165,15 @@ public void setToolTipText (String string) {
 }
 
 void setToolTipText (Shell shell, String newString) {
-	shell.setToolTipText (handle, newString);
+	int /*long*/ child = OS.gtk_bin_get_child (handle);
+	if ((style & SWT.DROP_DOWN) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
+			int /*long*/ list = OS.gtk_container_get_children (child);
+			child = OS.g_list_nth_data (list, 0);
+		}
+		if (arrowHandle != 0) shell.setToolTipText (arrowHandle, newString);
+	}
+	shell.setToolTipText (child != 0 ? child : handle, newString);
 }
 
 /**
