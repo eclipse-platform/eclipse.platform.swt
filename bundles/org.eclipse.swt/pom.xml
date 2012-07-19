@@ -16,11 +16,11 @@
   <parent>
     <artifactId>eclipse.platform.swt</artifactId>
     <groupId>eclipse.platform.swt</groupId>
-    <version>3.8.1-SNAPSHOT</version>
+    <version>3.8.0-SNAPSHOT</version>
     <relativePath>../../</relativePath>
   </parent>
   <groupId>eclipse.platform.swt</groupId>
   <artifactId>org.eclipse.swt</artifactId>
-  <version>3.8.1-SNAPSHOT</version>
+  <version>3.8.0-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>
