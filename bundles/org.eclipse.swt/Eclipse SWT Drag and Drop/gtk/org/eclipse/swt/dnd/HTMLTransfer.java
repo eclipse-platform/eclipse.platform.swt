@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
  
 /**
@@ -61,13 +62,11 @@ public void javaToNative (Object object, TransferData transferData){
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	String string = (String)object;
-	int charCount = string.length();
-	char [] chars = new char[charCount +1];
-	string.getChars(0, charCount , chars, 0);
-	int byteCount = chars.length*2;
+	byte[] utf8 = Converter.wcsToMbcs(null, string, true);
+	int byteCount = utf8.length;
 	int /*long*/ pValue = OS.g_malloc(byteCount);
 	if (pValue == 0) return;
-	OS.memmove(pValue, chars, byteCount);
+	OS.memmove(pValue, utf8, byteCount);
 	transferData.length = byteCount;
 	transferData.format = 8;
 	transferData.pValue = pValue;
