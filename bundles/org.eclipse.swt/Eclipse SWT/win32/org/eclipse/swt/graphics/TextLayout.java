@@ -2268,14 +2268,14 @@ public int getOffset (int x, int y, int[] trailing) {
 			int offset = run.start + piCP[0];
 			int length = segmentsText.length();
 			char ch = offset < length ? segmentsText.charAt(offset) : 0;
-			if (0xD800 <= ch && ch <= 0xDBFF) {
+			if (0xD800 <= ch && ch <= 0xDBFF && piTrailing[0] <= 1) {
 				if (offset + 1 < length) {
 					ch = segmentsText.charAt(offset + 1);
 					if (0xDC00 <= ch && ch <= 0xDFFF) {
 						if (trailing != null) trailing[0] = 0;
 					}
 				}
-			} else if (0xDC00 <= ch && ch <= 0xDFFF) {
+			} else if (0xDC00 <= ch && ch <= 0xDFFF && piTrailing[0] <= 1) {
 				if (offset - 1 >= 0) {
 					ch = segmentsText.charAt(offset - 1);
 					if (0xD800 <= ch && ch <= 0xDBFF) {
