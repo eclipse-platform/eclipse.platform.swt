@@ -1682,6 +1682,14 @@ int /*long*/ sizeRequestProc (int /*long*/ handle, int /*long*/ arg0, int /*long
 	return 0;
 }
 
+boolean gtk_widget_get_sensitive (int /*long*/ widget) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		return OS.gtk_widget_get_sensitive (widget);
+	} else {
+		return OS.GTK_WIDGET_SENSITIVE (widget);
+	}
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.

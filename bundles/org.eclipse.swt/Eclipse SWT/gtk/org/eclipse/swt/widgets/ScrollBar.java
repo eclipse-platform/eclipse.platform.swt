@@ -176,7 +176,7 @@ void destroyWidget () {
  */
 public boolean getEnabled () {
 	checkWidget ();
-	if (handle != 0) return OS.GTK_WIDGET_SENSITIVE (handle);
+	if (handle != 0) return gtk_widget_get_sensitive (handle);
 	return true;
 }
 

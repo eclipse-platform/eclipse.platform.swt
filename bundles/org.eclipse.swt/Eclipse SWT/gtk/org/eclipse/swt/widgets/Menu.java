@@ -419,7 +419,7 @@ public MenuItem getDefaultItem () {
  */
 public boolean getEnabled () {
 	checkWidget();
-	return OS.GTK_WIDGET_SENSITIVE (handle);     
+	return gtk_widget_get_sensitive (handle);
 }
 
 /**

@@ -1681,6 +1681,16 @@ public static final boolean GTK_WIDGET_SENSITIVE(int /*long*/ wid) {
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native boolean _gtk_widget_get_sensitive(int /*long*/ widget);
+public static final boolean gtk_widget_get_sensitive(int /*long*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_widget_get_sensitive(widget);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _GTK_WIDGET_SET_FLAGS(int /*long*/ wid, int flag);
 public static final void GTK_WIDGET_SET_FLAGS(int /*long*/ wid, int flag) {
 	lock.lock();

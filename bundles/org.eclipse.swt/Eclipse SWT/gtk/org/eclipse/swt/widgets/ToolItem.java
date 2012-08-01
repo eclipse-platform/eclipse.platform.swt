@@ -379,7 +379,7 @@ public Image getDisabledImage () {
 public boolean getEnabled () {
 	checkWidget();
 	int /*long*/ topHandle = topHandle ();
-	return OS.GTK_WIDGET_SENSITIVE (topHandle);
+	return gtk_widget_get_sensitive (topHandle);
 }
 
 /**
@@ -937,7 +937,7 @@ public void setDisabledImage (Image image) {
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	int /*long*/ topHandle = topHandle ();
-	if (OS.GTK_WIDGET_SENSITIVE (topHandle) == enabled) return;
+	if (OS.gtk_widget_get_sensitive (topHandle) == enabled) return;
 	OS.gtk_widget_set_sensitive (topHandle, enabled);
 	if (enabled) {
 		/*
