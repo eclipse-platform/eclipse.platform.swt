@@ -493,11 +493,11 @@ int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) { 
-		if ((style & SWT.PUSH) != 0 && OS.gtk_widget_has_default(handle)) {
+		if ((style & SWT.PUSH) != 0 && OS.gtk_widget_has_default (handle)) {
 			Decorations menuShell = menuShell ();
 			menuShell.defaultButton = this;
 		}
-	}else{
+	} else {
 		if ((style & SWT.PUSH) != 0 && OS.GTK_WIDGET_HAS_DEFAULT (handle)) {
 			Decorations menuShell = menuShell ();
 			menuShell.defaultButton = this;
