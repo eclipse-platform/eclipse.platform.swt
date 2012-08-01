@@ -752,8 +752,17 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	* resized so that it will draw wrapped.
 	*/
 	if (wrap) {
-		int boxWidth = OS.GTK_WIDGET_WIDTH (boxHandle);
-		int boxHeight = OS.GTK_WIDGET_HEIGHT (boxHandle);
+		int boxWidth = 0;
+		int boxHeight = 0;
+		GtkAllocation allocation = new GtkAllocation();
+		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+			OS.gtk_widget_get_allocation(boxHandle, allocation);
+			boxWidth = allocation.width;
+			boxHeight = allocation.height;
+		} else {
+			boxWidth = OS.GTK_WIDGET_WIDTH (boxHandle);
+			boxHeight = OS.GTK_WIDGET_HEIGHT (boxHandle);
+		}
 		int /*long*/ labelLayout = OS.gtk_label_get_layout (labelHandle);
 		int pangoWidth = OS.pango_layout_get_width (labelLayout);
 		OS.pango_layout_set_width (labelLayout, -1);
@@ -776,9 +785,12 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		*/
 		GtkRequisition requisition = new GtkRequisition ();
 		OS.gtk_widget_size_request (boxHandle, requisition);
-		GtkAllocation allocation = new GtkAllocation ();
-		allocation.x = OS.GTK_WIDGET_X (boxHandle);
-		allocation.y = OS.GTK_WIDGET_Y (boxHandle);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+			OS.gtk_widget_get_allocation(boxHandle, allocation);
+		} else {
+			allocation.x = OS.GTK_WIDGET_X (boxHandle);
+			allocation.y = OS.GTK_WIDGET_Y (boxHandle);
+		}
 		allocation.width = boxWidth;
 		allocation.height = boxHeight;
 		OS.gtk_widget_size_allocate (boxHandle, allocation);

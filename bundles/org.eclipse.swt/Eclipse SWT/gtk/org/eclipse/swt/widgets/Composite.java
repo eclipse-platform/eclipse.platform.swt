@@ -605,15 +605,31 @@ public Rectangle getClientArea () {
 		}
 		forceResize ();
 		int /*long*/ clientHandle = clientHandle ();
-		int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (clientHandle);
-		int height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (clientHandle);
+		int width = 0;
+		int height = 0;
+		GtkAllocation allocation = new GtkAllocation();
+		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+			OS.gtk_widget_get_allocation(clientHandle, allocation);
+			width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+			height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;	
+		} else {
+			width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (clientHandle);
+			height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (clientHandle);	
+		}
 		return new Rectangle (0, 0, width, height);
 	}
 	return super.getClientArea();
 }
 
 int getClientWidth() {
-	return (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (clientHandle ());
+	GtkAllocation allocation = new GtkAllocation();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation(clientHandle (), allocation);
+		return (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+	} else {
+		return (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (clientHandle ());
+	}
+
 }
 
 /**
@@ -1201,9 +1217,20 @@ void moveChildren(int oldWidth) {
 	for (int i = 0; i < children.length; i++) {
 		Control child = children[i];
 		int /*long*/ topHandle = child.topHandle ();
-		int x = OS.GTK_WIDGET_X (topHandle);
-		int y = OS.GTK_WIDGET_Y (topHandle);
-		int controlWidth = (child.state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+		int x = 0;
+		int y = 0;
+		int controlWidth = 0;
+		GtkAllocation allocation = new GtkAllocation();
+		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+			OS.gtk_widget_get_allocation(topHandle, allocation);
+			x = allocation.x;
+			y = allocation.y;
+			controlWidth = (child.state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+		} else {
+			x = OS.GTK_WIDGET_X (topHandle);
+			y = OS.GTK_WIDGET_Y (topHandle);
+			controlWidth = (child.state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+		}	
 		if (oldWidth > 0) x = oldWidth - controlWidth - x; 
 		int clientWidth = getClientWidth ();
 		x = clientWidth - controlWidth - x;
@@ -1218,11 +1245,14 @@ void moveChildren(int oldWidth) {
 		*/
 		GtkRequisition requisition = new GtkRequisition ();
 		gtk_widget_size_request (topHandle, requisition);
-		GtkAllocation allocation = new GtkAllocation ();
 		allocation.x = x;
 		allocation.y = y;
-		allocation.width = OS.GTK_WIDGET_WIDTH (topHandle);
-		allocation.height = OS.GTK_WIDGET_HEIGHT (topHandle);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+			OS.gtk_widget_get_allocation(topHandle, allocation);
+		} else {
+			allocation.width = OS.GTK_WIDGET_WIDTH (topHandle);
+			allocation.height = OS.GTK_WIDGET_HEIGHT (topHandle);	
+		}
 		OS.gtk_widget_size_allocate (topHandle, allocation);
 		Control control = child.findBackgroundControl ();
 		if (control != null && control.backgroundImage != null) {

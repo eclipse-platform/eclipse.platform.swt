@@ -1127,8 +1127,17 @@ public Rectangle getClientArea () {
 	int [] fixedX = new int [1], fixedY = new int [1];
 	OS.gdk_window_get_origin (fixedWindow, fixedX, fixedY);
 	int /*long*/ clientHandle = clientHandle ();
-	int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (clientHandle);
-	int height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (clientHandle);
+	int height = 0;
+	int width = 0;
+	GtkAllocation allocation = new GtkAllocation ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation(clientHandle, allocation);
+		width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+		height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
+	} else {
+		width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (clientHandle);
+		height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (clientHandle);
+	}
 	return new Rectangle (fixedX [0] - binX [0], fixedY [0] - binY [0], width, height);
 }
 

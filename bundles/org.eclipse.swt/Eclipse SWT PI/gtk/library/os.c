@@ -18308,6 +18308,28 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1threads_1set_1lock_1functions)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1get_1allocation
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1get_1allocation)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	GtkAllocation _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, gtk_1widget_1get_1allocation_FUNC);
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+/*
+	gtk_widget_get_allocation(arg0, (GtkAllocation *)lparg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_get_allocation)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GtkAllocation *))fp)(arg0, (GtkAllocation *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setGtkAllocationFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, gtk_1widget_1get_1allocation_FUNC);
+}
+#endif
+
 #ifndef NO_localeconv_1decimal_1point
 JNIEXPORT jintLong JNICALL OS_NATIVE(localeconv_1decimal_1point)
 	(JNIEnv *env, jclass that)

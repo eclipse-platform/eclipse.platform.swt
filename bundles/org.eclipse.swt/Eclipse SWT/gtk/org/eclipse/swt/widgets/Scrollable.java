@@ -204,10 +204,23 @@ public Rectangle getClientArea () {
 	checkWidget ();
 	forceResize ();
 	int /*long*/ clientHandle = clientHandle ();
-	int x = OS.GTK_WIDGET_X (clientHandle);
-	int y = OS.GTK_WIDGET_Y (clientHandle);
-	int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (clientHandle);
-	int height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (clientHandle);
+	int x = 0;
+	int y = 0;
+	int width = 0;
+	int height = 0;
+	GtkAllocation allocation = new GtkAllocation ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation(clientHandle, allocation);
+		x = allocation.x;
+		y = allocation.y;
+		width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+		height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
+	} else {
+		x = OS.GTK_WIDGET_X (clientHandle);
+		y = OS.GTK_WIDGET_Y (clientHandle);
+		width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (clientHandle);
+		height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (clientHandle);
+	}
 	return new Rectangle (x, y, width, height);
 }
 /**
@@ -364,8 +377,15 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
 	GdkRectangle rect = new GdkRectangle ();
 	if (redrawAll) {
-		rect.width = OS.GTK_WIDGET_WIDTH (topHandle);
-		rect.height = OS.GTK_WIDGET_HEIGHT (topHandle);
+		GtkAllocation allocation = new GtkAllocation ();
+		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+			OS.gtk_widget_get_allocation(topHandle, allocation);
+			rect.width = allocation.width;
+			rect.height = allocation.height;
+		} else {
+			rect.width = OS.GTK_WIDGET_WIDTH (topHandle);
+			rect.height = OS.GTK_WIDGET_HEIGHT (topHandle);	
+		}
 	} else {
 		int [] destX = new int [1], destY = new int [1];
 		OS.gtk_widget_translate_coordinates (paintHandle, topHandle, x, y, destX, destY);

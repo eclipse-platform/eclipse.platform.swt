@@ -317,10 +317,19 @@ public Rectangle getBounds () {
 	parent.forceResize ();
 	int /*long*/ topHandle = topHandle ();
 	int x, y, width, height;
-	x = OS.GTK_WIDGET_X (topHandle);
-	y = OS.GTK_WIDGET_Y (topHandle);
-	width = OS.GTK_WIDGET_WIDTH (topHandle);
-	height = OS.GTK_WIDGET_HEIGHT (topHandle);
+	GtkAllocation allocation = new GtkAllocation ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation(topHandle, allocation);
+		x = allocation.x;
+		y = allocation.y;
+		width = allocation.width;
+		height = allocation.height;
+	} else {
+		x = OS.GTK_WIDGET_X (topHandle);
+		y = OS.GTK_WIDGET_Y (topHandle);
+		width = OS.GTK_WIDGET_WIDTH (topHandle);
+		height = OS.GTK_WIDGET_HEIGHT (topHandle);
+	}
 	if ((parent.style & SWT.MIRRORED) != 0) x = parent.getClientWidth () - width - x;
 	if ((style & SWT.SEPARATOR) != 0 && control != null) height = Math.max (height, 23);
 	return new Rectangle (x, y, width, height);
@@ -469,16 +478,32 @@ public int getWidth () {
 	checkWidget();
 	parent.forceResize ();
 	int /*long*/ topHandle = topHandle ();
-	return OS.GTK_WIDGET_WIDTH (topHandle);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		GtkAllocation allocation = new GtkAllocation();
+		OS.gtk_widget_get_allocation (topHandle, allocation);
+		return allocation.width;
+	} else {
+		return OS.GTK_WIDGET_WIDTH (topHandle);	
+	}
 }
 
 int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	double x = gdkEvent.x;
-	gdkEvent.x += OS.GTK_WIDGET_X (handle);
+	GtkAllocation allocation = new GtkAllocation ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation(handle, allocation);
+		gdkEvent.x +=  allocation.x;
+	} else {
+		gdkEvent.x += OS.GTK_WIDGET_X (handle);
+	}
 	double y = gdkEvent.y;
-	gdkEvent.y += OS.GTK_WIDGET_Y (handle);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		gdkEvent.y +=  allocation.y;
+	} else {
+		gdkEvent.y += OS.GTK_WIDGET_Y (handle);
+	}
 	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
 	int /*long*/ result = parent.gtk_button_press_event (widget, event);
 	gdkEvent.x = x;
@@ -491,9 +516,19 @@ int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) 
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	double x = gdkEvent.x;
-	gdkEvent.x += OS.GTK_WIDGET_X (handle);
+	GtkAllocation allocation = new GtkAllocation ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation(handle, allocation);
+		gdkEvent.x +=  allocation.x;
+	} else {
+		gdkEvent.x += OS.GTK_WIDGET_X (handle);
+	}
 	double y = gdkEvent.y;
-	gdkEvent.y += OS.GTK_WIDGET_Y (handle);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		gdkEvent.y +=  allocation.y;
+	} else {
+		gdkEvent.y += OS.GTK_WIDGET_Y (handle);
+	}
 	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
 	int /*long*/ result = parent.gtk_button_release_event (widget, event);
 	gdkEvent.x = x;
@@ -520,8 +555,20 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 						double [] x_win = new double [1];
 						double [] y_win = new double [1];
 						OS.gdk_event_get_coords (eventPtr, x_win, y_win);
-						int x = OS.GTK_WIDGET_X (arrowHandle) - OS.GTK_WIDGET_X (handle);
-						int width = OS.GTK_WIDGET_WIDTH (arrowHandle);
+						int x = 0;
+						int width = 0;
+						GtkAllocation handleAllocation = new GtkAllocation ();
+						GtkAllocation arrowHandleAllocation = new GtkAllocation ();
+						if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+							OS.gtk_widget_get_allocation(arrowHandle, arrowHandleAllocation);
+							OS.gtk_widget_get_allocation(handle, handleAllocation);
+							x = arrowHandleAllocation.x - handleAllocation.x;
+							width = arrowHandleAllocation.width;
+						} else {
+							x = OS.GTK_WIDGET_X (arrowHandle) - OS.GTK_WIDGET_X (handle);
+							width = OS.GTK_WIDGET_WIDTH (arrowHandle);
+						}
+						
 						if ((((parent.style & SWT.RIGHT_TO_LEFT) == 0) && x <= (int)x_win [0])
 								|| (((parent.style & SWT.RIGHT_TO_LEFT) != 0) && (int)x_win [0] <= x + width)) {
 							isArrow = true;
@@ -539,9 +586,18 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 					}
 					if (isArrow) {
 						event.detail = SWT.ARROW;
-						event.x = OS.GTK_WIDGET_X (topHandle);
-						if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth () - OS.GTK_WIDGET_WIDTH (topHandle) - event.x;
-						event.y = OS.GTK_WIDGET_Y (topHandle) + OS.GTK_WIDGET_HEIGHT (topHandle);
+						GtkAllocation allocation = new GtkAllocation ();
+						if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+							OS.gtk_widget_get_allocation(topHandle, allocation);
+							event.x = allocation.x;
+							if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth () - allocation.width - event.x;
+							event.y = allocation.y + allocation.height;
+						} else {
+							event.x = OS.GTK_WIDGET_X (topHandle);
+							if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth () - OS.GTK_WIDGET_WIDTH (topHandle) - event.x;
+							event.y = OS.GTK_WIDGET_Y (topHandle) + OS.GTK_WIDGET_HEIGHT (topHandle);
+						}
+						
 					}
 					break;
 				}

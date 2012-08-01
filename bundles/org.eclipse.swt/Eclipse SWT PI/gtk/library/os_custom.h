@@ -202,6 +202,7 @@
 #define gtk_window_set_opacity_LIB LIB_GTK
 #define gtk_window_set_skip_taskbar_hint_LIB LIB_GTK
 #define gtk_widget_is_composited_LIB LIB_GTK
+#define gtk_widget_get_allocation_LIB LIB_GTK
 #define gtk_widget_get_tooltip_text_LIB LIB_GTK
 #define gtk_widget_has_default_LIB LIB_GTK
 #define gtk_widget_set_tooltip_text_LIB LIB_GTK
@@ -382,15 +383,27 @@
 #ifndef GTK_OBJECT_FLAGS
 #define GTK_OBJECT_FLAGS(arg0) 0
 #endif
+#if GTK_CHECK_VERSION(2,18,0)
+#define GTK_WIDGET_HEIGHT(arg0) 0
+#else
 #define GTK_WIDGET_HEIGHT(arg0) (arg0)->allocation.height
+#endif
 #define GTK_WIDGET_SET_HEIGHT(arg0, arg1) (arg0)->allocation.height = arg1
 #ifndef GTK_WIDGET_MAPPED
 #define GTK_WIDGET_MAPPED(arg0) 0
 #endif
+#if GTK_CHECK_VERSION(2,18,0)
+#define GTK_WIDGET_WIDTH(arg0) 0
+#else
 #define GTK_WIDGET_WIDTH(arg0) (arg0)->allocation.width
+#endif
 #define GTK_WIDGET_SET_WIDTH(arg0, arg1) (arg0)->allocation.width = arg1
 #define GTK_WIDGET_WINDOW(arg0) (arg0)->window
+#if GTK_CHECK_VERSION(2,18,0)
+#define GTK_WIDGET_X(arg0) 0
+#else
 #define GTK_WIDGET_X(arg0) (arg0)->allocation.x
+#endif
 #define GTK_WIDGET_SET_X(arg0, arg1) (arg0)->allocation.x = arg1
 #define GTK_ENTRY_IM_CONTEXT(arg0) (arg0)->im_context
 #define GTK_TEXTVIEW_IM_CONTEXT(arg0) (arg0)->im_context
@@ -405,7 +418,11 @@
 #else
 #define GTK_TOOLTIPS_GET_TIP_TEXT(arg0) (arg0)->tip_text
 #endif
+#if GTK_CHECK_VERSION(2,18,0)
+#define GTK_WIDGET_Y(arg0) 0
+#else
 #define GTK_WIDGET_Y(arg0) ((GtkWidget *)arg0)->allocation.y
+#endif
 #define GTK_WIDGET_SET_Y(arg0, arg1) (arg0)->allocation.y = arg1
 #define GTK_WIDGET_REQUISITION_WIDTH(arg0) (arg0)->requisition.width
 #define GTK_WIDGET_REQUISITION_HEIGHT(arg0) (arg0)->requisition.height

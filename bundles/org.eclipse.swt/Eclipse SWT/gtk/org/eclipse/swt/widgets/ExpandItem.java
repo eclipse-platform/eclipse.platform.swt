@@ -265,7 +265,13 @@ public boolean getExpanded () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	return OS.GTK_WIDGET_HEIGHT (handle) - (expanded ? height : 0);
+	GtkAllocation allocation = new GtkAllocation ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation(handle, allocation);
+		return allocation.height - (expanded ? height : 0);
+	} else {
+		return OS.GTK_WIDGET_HEIGHT (handle) - (expanded ? height : 0);
+	}
 }
 
 /**
@@ -378,14 +384,31 @@ void releaseWidget () {
 }
 
 void resizeControl (int yScroll) {
+	GtkAllocation allocation = new GtkAllocation ();
 	if (control != null && !control.isDisposed ()) {
 		boolean visible = OS.gtk_expander_get_expanded (handle);
 		if (visible) {
-			int x = OS.GTK_WIDGET_X (clientHandle);
-			int y = OS.GTK_WIDGET_Y (clientHandle);
+			int x = 0;
+			int y = 0;
+			if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+				OS.gtk_widget_get_allocation(clientHandle, allocation);
+				x = allocation.x;
+				y = allocation.y;
+			} else {
+				x = OS.GTK_WIDGET_X (clientHandle);
+				y = OS.GTK_WIDGET_Y (clientHandle);
+			}
 			if (x != -1 && y != -1) {
-				int width = OS.GTK_WIDGET_WIDTH (clientHandle);
-				int height = OS.GTK_WIDGET_HEIGHT (clientHandle);
+				int width = 0;
+				int height = 0;
+				if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+					OS.gtk_widget_get_allocation(clientHandle, allocation);
+					width = allocation.width;
+					height = allocation.height;	
+				} else {
+					width = OS.GTK_WIDGET_WIDTH (clientHandle);
+					height = OS.GTK_WIDGET_HEIGHT (clientHandle);	
+				}
 				int [] property = new int [1];
 				OS.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);				
 				y += property [0] * 2;
@@ -402,7 +425,12 @@ void resizeControl (int yScroll) {
 				ScrollBar vBar = parent.verticalBar;
 				if (vBar != null) {
 					if (OS.GTK_WIDGET_VISIBLE (vBar.handle)) {
-						width = OS.GTK_WIDGET_WIDTH (parent.scrolledHandle) - parent.vScrollBarWidth () - 2 * parent.spacing;
+						if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+							OS.gtk_widget_get_allocation(parent.scrolledHandle, allocation);
+							width = allocation.width - parent.vScrollBarWidth () - 2 * parent.spacing;	
+						} else {
+							width = OS.GTK_WIDGET_WIDTH (parent.scrolledHandle) - parent.vScrollBarWidth () - 2 * parent.spacing;	
+						}
 					}
 				}
 				control.setBounds (x, y - yScroll, width, Math.max (0, height), true, true);

@@ -582,8 +582,17 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 	int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, OS.GTK_WIDGET_WINDOW (widget));
 	GdkRectangle dest = new GdkRectangle ();
 	OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
-	int w = OS.GTK_WIDGET_WIDTH (widget);
-	int h = OS.GTK_WIDGET_HEIGHT (widget);
+	int w = 0;
+	int h = 0;
+	GtkAllocation widgetAllocation = new GtkAllocation ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation (widget, widgetAllocation);
+		w = widgetAllocation.width;
+		h = widgetAllocation.height;
+	} else {
+		w = OS.GTK_WIDGET_WIDTH (widget);
+		h = OS.GTK_WIDGET_HEIGHT (widget);
+	}
 	if (dest.height < y + h) y -= h;
 	if (dest.width < x + w) x -= w;
 	OS.gtk_window_move (widget, x, y);

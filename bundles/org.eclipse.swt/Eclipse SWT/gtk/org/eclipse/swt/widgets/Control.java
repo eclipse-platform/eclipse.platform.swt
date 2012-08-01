@@ -682,10 +682,14 @@ void forceResize () {
 	GtkRequisition requisition = new GtkRequisition ();
 	gtk_widget_size_request (topHandle, requisition);
 	GtkAllocation allocation = new GtkAllocation ();
-	allocation.x = OS.GTK_WIDGET_X (topHandle);
-	allocation.y = OS.GTK_WIDGET_Y (topHandle);
-	allocation.width = OS.GTK_WIDGET_WIDTH (topHandle);
-	allocation.height = OS.GTK_WIDGET_HEIGHT (topHandle);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation(topHandle, allocation);
+	} else {
+		allocation.x = OS.GTK_WIDGET_X (topHandle);
+		allocation.y = OS.GTK_WIDGET_Y (topHandle);
+		allocation.width = OS.GTK_WIDGET_WIDTH (topHandle);
+		allocation.height = OS.GTK_WIDGET_HEIGHT (topHandle);
+	}
 	OS.gtk_widget_size_allocate (topHandle, allocation);
 }
 
@@ -737,10 +741,23 @@ Accessible _getAccessible () {
 public Rectangle getBounds () {
 	checkWidget();
 	int /*long*/ topHandle = topHandle ();
-	int x = OS.GTK_WIDGET_X (topHandle);
-	int y = OS.GTK_WIDGET_Y (topHandle);
-	int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
-	int height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
+	int x = 0;
+	int y = 0;
+	int width = 0;
+	int height = 0;
+	GtkAllocation allocation = new GtkAllocation ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation(topHandle, allocation);
+		x = allocation.x;
+		y = allocation.y;
+		width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+		height = (state & ZERO_HEIGHT) != 0 ? 0 :allocation.height;
+	} else {
+		x = OS.GTK_WIDGET_X (topHandle);
+		y = OS.GTK_WIDGET_Y (topHandle);
+		width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+		height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
+	}
 	if ((parent.style & SWT.MIRRORED) != 0) x = parent.getClientWidth () - width - x;
 	return new Rectangle (x, y, width, height);
 }
@@ -841,8 +858,18 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	boolean sendMove = move;
 	if ((parent.style & SWT.MIRRORED) != 0) {
 		int clientWidth = parent.getClientWidth ();
-		int oldWidth = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
-		int oldX = clientWidth - oldWidth - OS.GTK_WIDGET_X (topHandle);
+		int oldWidth = 0;
+		int oldX = 0;
+		GtkAllocation allocation = new GtkAllocation ();
+		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+			OS.gtk_widget_get_allocation(topHandle, allocation);
+			oldWidth = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+			oldX = clientWidth - oldWidth - allocation.x;
+		} else {
+			oldWidth = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+			oldX = clientWidth - oldWidth - OS.GTK_WIDGET_X (topHandle);
+		}
+		
 		if (move) {
 			sendMove &= x != oldX;
 			x = clientWidth - (resize ? width : oldWidth) - x;
@@ -866,8 +893,17 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	}
 	int clientWidth = 0;
 	if (resize) {
-		int oldWidth = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
-		int oldHeight = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
+		int oldWidth = 0;
+		int oldHeight = 0;
+		GtkAllocation allocation = new GtkAllocation ();
+		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+			OS.gtk_widget_get_allocation(topHandle, allocation);
+			oldWidth = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+			oldHeight = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
+		} else {
+			oldWidth = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+			oldHeight = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
+		}
 		sameExtent = width == oldWidth && height == oldHeight;
 		if (!sameExtent && (style & SWT.MIRRORED) != 0) clientWidth = getClientWidth ();
 		if (!sameExtent && !(width == 0 && height == 0)) {
@@ -895,15 +931,24 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			allocation.x = x;
 			allocation.y = y;
 		} else {
-			allocation.x = OS.GTK_WIDGET_X (topHandle);
-			allocation.y = OS.GTK_WIDGET_Y (topHandle);
+			if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+				OS.gtk_widget_get_allocation(topHandle, allocation);
+			} else {
+				allocation.x = OS.GTK_WIDGET_X (topHandle);
+				allocation.y = OS.GTK_WIDGET_Y (topHandle);	
+			}
+
 		}
 		if (resize) {
 			allocation.width = width;
 			allocation.height = height;
 		} else {
-			allocation.width = OS.GTK_WIDGET_WIDTH (topHandle);
-			allocation.height = OS.GTK_WIDGET_HEIGHT (topHandle);
+			if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+				OS.gtk_widget_get_allocation(topHandle, allocation);
+			} else {
+				allocation.width = OS.GTK_WIDGET_WIDTH (topHandle);
+				allocation.height = OS.GTK_WIDGET_HEIGHT (topHandle);
+			}
 		}
 		OS.gtk_widget_size_allocate (topHandle, allocation);
 	}
@@ -962,10 +1007,24 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 public Point getLocation () {
 	checkWidget();
 	int /*long*/ topHandle = topHandle ();
-	int x = OS.GTK_WIDGET_X (topHandle);
-	int y = OS.GTK_WIDGET_Y (topHandle);
+	int x = 0;
+	int y = 0;
+	int width = 0;
+	GtkAllocation allocation = new GtkAllocation ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation(topHandle, allocation);
+		x = allocation.x;
+		y = allocation.y;
+	} else {
+		x = OS.GTK_WIDGET_X (topHandle);
+		y = OS.GTK_WIDGET_Y (topHandle);
+	}
 	if ((parent.style & SWT.MIRRORED) != 0) {
-		int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+			width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+		} else {
+			width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+		}
 		x = parent.getClientWidth () - width - x;
 	}
 	return new Point (x, y);
@@ -1027,8 +1086,17 @@ public void setLocation(int x, int y) {
 public Point getSize () {
 	checkWidget();
 	int /*long*/ topHandle = topHandle ();
-	int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
-	int height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
+	int width = 0;
+	int height = 0;
+	GtkAllocation allocation = new GtkAllocation ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation(topHandle, allocation);
+		width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+		height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
+	} else {
+		width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+		height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
+	}
 	return new Point (width, height);
 }
 
@@ -3977,10 +4045,20 @@ public void setEnabled (boolean enabled) {
 		int /*long*/ window = parent.eventWindow ();
 		int /*long*/ topHandle = topHandle ();
 		GdkWindowAttr attributes = new GdkWindowAttr ();
-		attributes.x = OS.GTK_WIDGET_X (topHandle);
-		attributes.y = OS.GTK_WIDGET_Y (topHandle);
-		attributes.width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
-		attributes.height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
+		GtkAllocation allocation = new GtkAllocation ();
+		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+			OS.gtk_widget_get_allocation(topHandle, allocation);
+			attributes.x = allocation.x;
+			attributes.y = allocation.y;
+			attributes.width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+			attributes.height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
+			
+		} else {
+			attributes.x = OS.GTK_WIDGET_X (topHandle);
+			attributes.y = OS.GTK_WIDGET_Y (topHandle);
+			attributes.width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+			attributes.height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
+		}
 		attributes.event_mask = (0xFFFFFFFF & ~OS.ExposureMask);
 		attributes.wclass = OS.GDK_INPUT_ONLY;
 		attributes.window_type = OS.GDK_WINDOW_CHILD;
@@ -4221,9 +4299,20 @@ public boolean setParent (Composite parent) {
 	if (!isReparentable ()) return false;
 	OS.gtk_widget_realize (parent.handle);
 	int /*long*/ topHandle = topHandle ();
-	int x = OS.GTK_WIDGET_X (topHandle);
-	int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
-	int height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
+	int x = 0;
+	int width = 0;
+	int height = 0;
+	GtkAllocation allocation = new GtkAllocation ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation(topHandle, allocation);
+		x = allocation.x;
+		width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+		height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
+	} else {
+		x = OS.GTK_WIDGET_X (topHandle);
+		width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+		height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
+	}
 	if ((this.parent.style & SWT.MIRRORED) != 0) {
 		x =  this.parent.getClientWidth () - width - x;
 	}
@@ -4266,7 +4355,6 @@ public boolean setParent (Composite parent) {
 	*/
 	GtkRequisition requisition = new GtkRequisition ();
 	gtk_widget_size_request (topHandle, requisition);
-	GtkAllocation allocation = new GtkAllocation ();
 	allocation.x = x;
 	allocation.y = y;
 	allocation.width = width;

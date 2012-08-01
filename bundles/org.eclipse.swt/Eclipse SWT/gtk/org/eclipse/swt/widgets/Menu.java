@@ -378,10 +378,24 @@ void fixMenus (Decorations newParent) {
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
-	int x = origin_x [0] + OS.GTK_WIDGET_X (handle);
-	int y = origin_y [0] + OS.GTK_WIDGET_Y (handle);
-	int width = OS.GTK_WIDGET_WIDTH (handle);
-	int height = OS.GTK_WIDGET_HEIGHT (handle);
+	int x = 0;
+	int y = 0;
+	int width = 0;
+	int height = 0;
+	GtkAllocation allocation = new GtkAllocation ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation(handle, allocation);
+		x = origin_x [0] + allocation.x;
+		y = origin_x [0] + allocation.y;
+		width = allocation.width;
+		height = allocation.height;
+	} else {
+		x = origin_x [0] + OS.GTK_WIDGET_X (handle);
+		y = origin_y [0] + OS.GTK_WIDGET_Y (handle);
+		width = OS.GTK_WIDGET_WIDTH (handle);
+		height = OS.GTK_WIDGET_HEIGHT (handle);
+	}
+
 	return new Rectangle (x, y, width, height);
 }
 

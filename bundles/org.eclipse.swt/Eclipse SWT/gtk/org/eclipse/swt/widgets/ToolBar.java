@@ -388,8 +388,15 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 				Event event = new Event ();
 				event.detail = SWT.ARROW;
 				int /*long*/ topHandle = currentFocusItem.topHandle ();
-				event.x = OS.GTK_WIDGET_X (topHandle);
-				event.y = OS.GTK_WIDGET_Y (topHandle) + OS.GTK_WIDGET_HEIGHT (topHandle);
+				GtkAllocation allocation = new GtkAllocation ();
+				if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+					OS.gtk_widget_get_allocation(topHandle, allocation);
+					event.x = allocation.x;
+					event.y = allocation.y + allocation.height;
+				} else {
+					event.x = OS.GTK_WIDGET_X (topHandle);
+					event.y = OS.GTK_WIDGET_Y (topHandle) + OS.GTK_WIDGET_HEIGHT (topHandle);
+				}
 				if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth() - OS.GTK_WIDGET_WIDTH(topHandle) - event.x;
 				currentFocusItem.sendSelectionEvent  (SWT.Selection, event, false);
 				/*
@@ -461,9 +468,17 @@ int /*long*/ menuItemSelected (int /*long*/ widget, ToolItem item) {
 			 * as Arrow click, in order to popup the drop-down. 
 			 */
 			event.detail = SWT.ARROW;
-			event.x = OS.GTK_WIDGET_X (widget);
-			if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - OS.GTK_WIDGET_WIDTH (widget) - event.x;
-			event.y = OS.GTK_WIDGET_Y (widget) + OS.GTK_WIDGET_HEIGHT (widget);
+			GtkAllocation allocation = new GtkAllocation ();
+			if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+				OS.gtk_widget_get_allocation(widget, allocation);
+				event.x = allocation.x;
+				if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - allocation.width - event.x;
+				event.y = allocation.y + allocation.height;
+			} else {
+				event.x = OS.GTK_WIDGET_X (widget);
+				if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - OS.GTK_WIDGET_WIDTH (widget) - event.x;
+				event.y = OS.GTK_WIDGET_Y (widget) + OS.GTK_WIDGET_HEIGHT (widget);
+			}
 			break;
 		case SWT.RADIO :
 			if ((style & SWT.NO_RADIO_GROUP) == 0)	item.selectRadio ();

@@ -262,7 +262,13 @@ Rectangle [] getRectangles (int linkIndex) {
 }
 
 int getClientWidth () {
-	return (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (handle);
+	GtkAllocation allocation = new GtkAllocation();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation(handle, allocation);
+		return (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+	} else {
+		return (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (handle);	
+	}
 }
 
 /**

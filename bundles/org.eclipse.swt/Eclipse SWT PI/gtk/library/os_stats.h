@@ -1454,6 +1454,7 @@ typedef enum {
 	gdk_1threads_1init_FUNC,
 	gdk_1threads_1leave_FUNC,
 	gdk_1threads_1set_1lock_1functions_FUNC,
+	gtk_1widget_1get_1allocation_FUNC,
 	localeconv_1decimal_1point_FUNC,
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I_FUNC,

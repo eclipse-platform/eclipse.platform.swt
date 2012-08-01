@@ -109,8 +109,17 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	forceResize ();
-	int clientX = OS.GTK_WIDGET_X (clientHandle);
-	int clientY = OS.GTK_WIDGET_Y (clientHandle);
+	int clientX = 0;
+	int clientY = 0;
+	GtkAllocation allocation = new GtkAllocation();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation(clientHandle, allocation);
+		clientX = allocation.x;
+		clientY = allocation.y;
+	} else {
+		clientX = OS.GTK_WIDGET_X (clientHandle);
+		clientY = OS.GTK_WIDGET_Y (clientHandle);
+	}
 	x -= clientX;
 	y -= clientY;
 	width += clientX + clientX;

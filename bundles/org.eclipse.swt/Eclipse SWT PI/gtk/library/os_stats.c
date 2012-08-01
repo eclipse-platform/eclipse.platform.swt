@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1329;
-int OS_nativeFunctionCallCount[1329];
+int OS_nativeFunctionCount = 1330;
+int OS_nativeFunctionCallCount[1330];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -1446,6 +1446,7 @@ char * OS_nativeFunctionNames[] = {
 	"gdk_1threads_1init",
 	"gdk_1threads_1leave",
 	"gdk_1threads_1set_1lock_1functions",
+	"gtk_1widget_1get_1allocation",
 	"localeconv_1decimal_1point",
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I",

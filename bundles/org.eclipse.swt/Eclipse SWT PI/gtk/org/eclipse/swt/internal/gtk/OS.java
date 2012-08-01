@@ -12269,6 +12269,19 @@ public static final int /*long*/ gtk_widget_get_parent_window(int /*long*/ widge
 		lock.unlock();
 	}
 }
+/** 
+ * @method flags=dynamic
+ * @param allocation cast=(GtkAllocation *),flags=no_in
+ * */
+public static final native void gtk_widget_get_allocation (int /*long*/ widget, GtkAllocation allocation);
+public static final void _gtk_widget_get_allocation (int /*long*/ widget, int /*long*/ allocation) {
+	lock.lock();
+	try {
+		_gtk_widget_get_allocation (widget, allocation);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param widget cast=(GtkWidget *) */
 public static final native int /*long*/ _gtk_widget_get_style(int /*long*/ widget);
 public static final int /*long*/ gtk_widget_get_style(int /*long*/ widget) {
