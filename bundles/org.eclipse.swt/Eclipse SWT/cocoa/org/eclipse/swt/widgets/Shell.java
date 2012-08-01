@@ -537,6 +537,16 @@ boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 	if (isPopup) return false;
 	// Only answer if SWT created the window.
 	if (window != null) {
+		if ((style & SWT.NO_FOCUS) != 0) {
+			NSEvent nsEvent = NSApplication.sharedApplication().currentEvent();
+			if (nsEvent != null && nsEvent.type() == OS.NSLeftMouseDown) {
+				NSView contentView = window.contentView();
+				if (contentView != null) {
+					NSView view = contentView.hitTest(nsEvent.locationInWindow());
+					if (view == contentView) return false;
+				}
+			}
+		}
 		int /*long*/ styleMask = window.styleMask();
 		if (styleMask == OS.NSBorderlessWindowMask || (styleMask & (OS.NSNonactivatingPanelMask | OS.NSDocModalWindowMask | OS.NSResizableWindowMask)) != 0) return true;
 	}
@@ -1939,7 +1949,7 @@ void setWindowVisible (boolean visible, boolean key) {
 				// when its parent is shown.
 				boolean parentMinimized = parent != null && parentWindow ().isMiniaturized();
 				if (!parentMinimized) {
-					if (key) {
+					if (key && (style & SWT.NO_FOCUS) == 0) {
 						makeKeyAndOrderFront ();
 					} else {
 						window.orderFront (null);
