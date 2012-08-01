@@ -258,7 +258,7 @@ void createHandle (int index) {
 	int bits = SWT.ARROW | SWT.TOGGLE | SWT.CHECK | SWT.RADIO | SWT.PUSH;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	setHasWindow (fixedHandle, true);
+	gtk_widget_set_has_window (fixedHandle, true);
 	switch (style & bits) {
 		case SWT.ARROW:
 			int arrow_type = OS.GTK_ARROW_UP;

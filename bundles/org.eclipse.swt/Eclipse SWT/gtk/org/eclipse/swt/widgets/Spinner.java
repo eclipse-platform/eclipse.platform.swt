@@ -290,7 +290,7 @@ void createHandle (int index) {
 	state |= HANDLE | MENU;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	setHasWindow (fixedHandle, true);
+	gtk_widget_set_has_window (fixedHandle, true);
 	int /*long*/ adjustment = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
 	if (adjustment == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = OS.gtk_spin_button_new (adjustment, climbRate, 0);

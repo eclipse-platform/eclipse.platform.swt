@@ -184,7 +184,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
-	setHasWindow (fixedHandle, true);
+	gtk_widget_set_has_window (fixedHandle, true);
 	handle = OS.gtk_notebook_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_container_add (fixedHandle, handle);

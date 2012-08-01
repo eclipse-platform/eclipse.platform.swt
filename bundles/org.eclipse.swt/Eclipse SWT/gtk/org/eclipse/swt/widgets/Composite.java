@@ -262,7 +262,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 		if (fixed) {
 			fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 			if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			setHasWindow (fixedHandle, true);
+			gtk_widget_set_has_window (fixedHandle, true);
 		}
 		int /*long*/ vadj = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
 		if (vadj == 0) error (SWT.ERROR_NO_HANDLES);
@@ -273,7 +273,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 	}
 	handle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	setHasWindow (handle, true);
+	gtk_widget_set_has_window (handle, true);
 	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_FOCUS);
 	if ((style & SWT.EMBEDDED) == 0) {
 		if ((state & CANVAS) != 0) {

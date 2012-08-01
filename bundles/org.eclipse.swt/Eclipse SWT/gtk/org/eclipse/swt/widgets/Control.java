@@ -971,14 +971,6 @@ public Point getLocation () {
 	return new Point (x, y);
 }
 
-void setHasWindow (int /*long*/ fixedHandle, boolean value) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		OS.gtk_widget_set_has_window (fixedHandle, value);
-	} else {
-		OS.gtk_fixed_set_has_window (fixedHandle, value);
-	}
-}
-
 /**
  * Sets the receiver's location to the point specified by
  * the arguments which are relative to the receiver's
@@ -3209,6 +3201,14 @@ int /*long*/ gtk_visibility_notify_event (int /*long*/ widget, int /*long*/ even
 		}
 	}
 	return 0;
+}
+
+void gtk_widget_set_has_window (int /*long*/ fixedHandle, boolean value) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_set_has_window (fixedHandle, value);
+	} else {
+		OS.gtk_fixed_set_has_window (fixedHandle, value);
+	}
 }
 
 void gtk_widget_size_request (int /*long*/ widget, GtkRequisition requisition) {
