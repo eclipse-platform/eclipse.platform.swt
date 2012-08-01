@@ -3483,8 +3483,8 @@ public static final void gdk_cairo_set_source_color(int /*long*/ cairo, GdkColor
  * @param window cast=(GdkWindow *) 
  * @method flags=dynamic 
  */
-public static final native int /*long*/ _gdk_window_get_width(int /*long*/ window);
-public static final int /*long*/ gdk_window_get_width(int /*long*/ window) {
+public static final native int _gdk_window_get_width(int /*long*/ window);
+public static final int gdk_window_get_width(int /*long*/ window) {
 	lock.lock();
 	try {
 		return _gdk_window_get_width(window);
@@ -3496,8 +3496,8 @@ public static final int /*long*/ gdk_window_get_width(int /*long*/ window) {
  *  @param window cast=(GdkWindow *)
  *  @method flags=dynamic  
  */
-public static final native int /*long*/ _gdk_window_get_height(int /*long*/ window);
-public static final int /*long*/ gdk_window_get_height(int /*long*/ window) {
+public static final native int _gdk_window_get_height(int /*long*/ window);
+public static final int gdk_window_get_height(int /*long*/ window) {
 	lock.lock();
 	try {
 		return _gdk_window_get_height(window);
