@@ -569,11 +569,14 @@ public boolean open () {
 		oldY = cursorPos.y;
 	}
 
+	Display display = this.display;
 	try {
 		/* Tracker behaves like a Dialog with its own OS event loop. */
 		MSG msg = new MSG ();
 		while (tracking && !cancelled) {
 			if (parent != null && parent.isDisposed ()) break;
+			display.runSkin ();
+			display.runDeferredLayouts ();
 			OS.GetMessage (msg, 0, 0, 0);
 			OS.TranslateMessage (msg);
 			switch (msg.message) {
@@ -609,6 +612,7 @@ public boolean open () {
 			update ();
 			drawRectangles (rectangles, stippled);
 		}
+		display.runAsyncMessages (false);
 	} finally {
 		/*
 		* Cleanup: If a transparent window was created in order to capture events then
