@@ -898,6 +898,14 @@ int /*long*/ gtk_visibility_notify_event (int /*long*/ widget, int /*long*/ even
 	return 0;
 }
 
+boolean gtk_widget_get_mapped (int /*long*/ widget) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
+		return OS.gtk_widget_get_mapped (widget);
+	} else {
+		return OS.GTK_WIDGET_MAPPED (widget);
+	}
+}
+
 int /*long*/ gtk_window_state_event (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
