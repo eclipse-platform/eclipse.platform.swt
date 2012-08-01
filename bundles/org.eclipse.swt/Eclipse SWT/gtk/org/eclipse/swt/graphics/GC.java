@@ -849,11 +849,11 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 	} else {
 		int[] width = new int[1];
 		int[] height = new int[1];
-        if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-        	OS.gdk_pixmap_get_size(srcImage.pixmap, width, height);
-        } else {
-        	OS.gdk_drawable_get_size(srcImage.pixmap, width, height);
-        }
+		if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
+			OS.gdk_pixmap_get_size(srcImage.pixmap, width, height);
+		} else {
+			OS.gdk_drawable_get_size(srcImage.pixmap, width, height);
+		}
 	 	imgWidth = width[0];
 	 	imgHeight = height[0];
 	}
@@ -2748,14 +2748,14 @@ void getSize(int[] width, int[] height) {
 		return;
 	}
 	if (data.drawable != 0) {
-        if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-        	width[0] = OS.gdk_window_get_width(data.drawable);
-        	height[0] = OS.gdk_window_get_height(data.drawable);
-		 	return;
-        } else {
-        	OS.gdk_drawable_get_size(data.drawable, width, height);
-        	return;
-        }
+		if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
+			width[0] = OS.gdk_window_get_width(data.drawable);
+			height[0] = OS.gdk_window_get_height(data.drawable);
+			return;
+		} else {
+			OS.gdk_drawable_get_size(data.drawable, width, height);
+			return;
+		}
 	}
 	if (OS.USE_CAIRO) {
 		int /*long*/ surface = Cairo.cairo_get_target(handle);
@@ -2954,15 +2954,15 @@ void initCairo() {
 		}
 		int width = 0;
 		int height = 0;
-        if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
-        	width = OS.gdk_window_get_width(data.drawable);
-        	height = OS.gdk_window_get_height(data.drawable);
-        } else {
-        	int[] w = new int[1], h = new int[1];
-        	OS.gdk_drawable_get_size(drawable, w, h);
-        	width = w[0];
-        	height = h[0];
-        }
+		if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
+			width = OS.gdk_window_get_width(data.drawable);
+			height = OS.gdk_window_get_height(data.drawable);
+		} else {
+			int[] w = new int[1], h = new int[1];
+			OS.gdk_drawable_get_size(drawable, w, h);
+			width = w[0];
+			height = h[0];
+		}
 		int /*long*/ surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width, height);
 		if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		Cairo.cairo_surface_set_device_offset(surface, translateX, translateY);
