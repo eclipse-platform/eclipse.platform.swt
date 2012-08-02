@@ -654,7 +654,7 @@ public void setAccelerator (int accelerator) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	if (OS.gtk_widget_get_sensitive (handle) == enabled) return;
+	if (gtk_widget_get_sensitive (handle) == enabled) return;
 	int /*long*/ accelGroup = getAccelGroup ();
 	if (accelGroup != 0) removeAccelerator (accelGroup);
 	OS.gtk_widget_set_sensitive (handle, enabled);

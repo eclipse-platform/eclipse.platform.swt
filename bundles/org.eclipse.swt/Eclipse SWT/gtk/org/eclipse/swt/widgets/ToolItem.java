@@ -937,7 +937,7 @@ public void setDisabledImage (Image image) {
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	int /*long*/ topHandle = topHandle ();
-	if (OS.gtk_widget_get_sensitive (topHandle) == enabled) return;
+	if (gtk_widget_get_sensitive (topHandle) == enabled) return;
 	OS.gtk_widget_set_sensitive (topHandle, enabled);
 	if (enabled) {
 		/*
