@@ -2490,7 +2490,7 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 		*/
 		boolean set = true;
 		if (tipWindow != 0) {
-			if ((OS.GTK_WIDGET_FLAGS (tipWidget) & (OS.GTK_REALIZED | OS.GTK_VISIBLE)) != 0) {
+			if (gtk_widget_get_visible (tipWidget) || gtk_widget_get_realized (tipWidget)) {
 				int [] x = new int [1], y = new int [1];
 				int /*long*/ window = OS.gdk_window_at_pointer (x, y);
 				if (window != 0) {

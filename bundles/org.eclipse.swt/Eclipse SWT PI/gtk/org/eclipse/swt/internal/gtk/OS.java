@@ -12150,6 +12150,46 @@ public static final int /*long*/ gtk_widget_get_accessible (int /*long*/ widget)
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native boolean _gtk_widget_get_visible (int /*long*/ widget);
+public static final boolean gtk_widget_get_visible (int /*long*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_widget_get_visible(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native boolean _gtk_widget_get_realized (int /*long*/ widget);
+public static final boolean gtk_widget_get_realized (int /*long*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_widget_get_realized(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native boolean _gtk_widget_get_has_window (int /*long*/ widget);
+public static final boolean gtk_widget_get_has_window (int /*long*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_widget_get_has_window(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native boolean _gtk_widget_get_can_default (int /*long*/ widget);
+public static final boolean gtk_widget_get_can_default (int /*long*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_widget_get_can_default(widget);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param widget cast=(GtkWidget *) */
 public static final native boolean _gtk_widget_get_child_visible (int /*long*/ widget);
 public static final boolean gtk_widget_get_child_visible (int /*long*/ widget) {

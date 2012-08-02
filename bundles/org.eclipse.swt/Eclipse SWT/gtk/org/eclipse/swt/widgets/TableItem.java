@@ -697,7 +697,7 @@ public Rectangle getTextBounds (int index) {
 }
 
 void redraw () {
-	if ((OS.GTK_WIDGET_FLAGS (parent.handle) & OS.GTK_REALIZED) != 0) {
+	if (gtk_widget_get_realized (parent.handle)) {
 		int /*long*/ parentHandle = parent.handle;
 		int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 		GdkRectangle rect = new GdkRectangle ();

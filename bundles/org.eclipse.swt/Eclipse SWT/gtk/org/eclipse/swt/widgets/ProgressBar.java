@@ -287,7 +287,7 @@ void updateBar (int selection, int minimum, int maximum) {
 	* fix is to update the progress bar state only when realized and restore
 	* the state when the progress bar becomes realized.
 	*/
-	if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) == 0) return;
+	if (!gtk_widget_get_realized (handle)) return;
 
 	double fraction = minimum == maximum ? 1 : (double)(selection - minimum) / (maximum - minimum);
 	OS.gtk_progress_bar_set_fraction (handle, fraction);

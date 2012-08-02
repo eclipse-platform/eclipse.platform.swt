@@ -351,7 +351,7 @@ int /*long*/ paintHandle () {
 	int /*long*/ topHandle = topHandle ();
 	int /*long*/ paintHandle = handle;
 	while (paintHandle != topHandle) {
-		if ((OS.GTK_WIDGET_FLAGS (paintHandle) & OS.GTK_NO_WINDOW) == 0) break;
+		if (gtk_widget_get_has_window (paintHandle)) break;
 		paintHandle = OS.gtk_widget_get_parent (paintHandle);
 	}
 	return paintHandle;
@@ -822,10 +822,10 @@ void moveHandle (int x, int y) {
 	* NOTE: Because every widget in SWT has an X window, the new and
 	* old bounds of the child are correctly redrawn.
 	*/
-	int flags = OS.GTK_WIDGET_FLAGS (parentHandle);
+	boolean visible = gtk_widget_get_visible (parentHandle);
 	OS.GTK_WIDGET_UNSET_FLAGS (parentHandle, OS.GTK_VISIBLE);
 	OS.gtk_fixed_move (parentHandle, topHandle, x, y);
-	if ((flags & OS.GTK_VISIBLE) != 0) {
+	if (visible) {
 		OS.GTK_WIDGET_SET_FLAGS (parentHandle, OS.GTK_VISIBLE);	
 	}
 }
@@ -2313,7 +2313,7 @@ int /*long*/ fixedMapProc (int /*long*/ widget) {
 		}
 		OS.g_list_free (widgetList);
 	}
-	if ((OS.GTK_WIDGET_FLAGS (widget) & OS.GTK_NO_WINDOW) == 0) {
+	if (gtk_widget_get_has_window (widget)) {
 		OS.gdk_window_show_unraised (OS.GTK_WIDGET_WINDOW (widget));
 	}
 	return 0;
@@ -3500,7 +3500,7 @@ void redrawChildren () {
 }
 
 void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean all, boolean trim) {
-	if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) == 0) return;
+	if (!gtk_widget_get_realized(handle)) return;
 	int /*long*/ window = paintWindow ();
 	GdkRectangle rect = new GdkRectangle ();
 	if (redrawAll) {
@@ -4328,7 +4328,7 @@ public void setRedraw (boolean redraw) {
 		}
 	} else {
 		if (drawCount++ == 0) {
-			if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) != 0) {
+			if (gtk_widget_get_realized (handle)) {
 				int /*long*/ window = paintWindow ();
 				Rectangle rect = getBounds ();
 				GdkWindowAttr attributes = new GdkWindowAttr ();
@@ -5078,7 +5078,7 @@ public void update () {
 void update (boolean all, boolean flush) {
 //	checkWidget();
 	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return; 
-	if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) == 0) return;
+	if (!gtk_widget_get_realized (handle)) return;
 	int /*long*/ window = paintWindow ();
 	if (flush) display.flushExposes (window, all);
 	OS.gdk_window_process_updates (window, all);

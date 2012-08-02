@@ -357,7 +357,7 @@ void redrawBackgroundImage () {
 
 void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean all, boolean trim) {
 	super.redrawWidget (x, y, width, height, redrawAll, all, trim);
-	if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) == 0) return;
+	if (!OS.gtk_widget_get_realized (handle)) return;
 	if (!trim) return;
 	int /*long*/ topHandle = topHandle (), paintHandle = paintHandle ();
 	if (topHandle == paintHandle) return;

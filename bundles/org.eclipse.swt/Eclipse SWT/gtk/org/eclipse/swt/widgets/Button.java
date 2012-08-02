@@ -184,7 +184,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.gtk_widget_set_size_request (boxHandle, -1, -1);
 	}
 	Point size;
-	boolean wrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && (OS.GTK_WIDGET_FLAGS (labelHandle) & OS.GTK_VISIBLE) != 0;
+	boolean wrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && gtk_widget_get_visible (labelHandle);
 	if (wrap) {
 		int borderWidth = OS.gtk_container_get_border_width (handle);
 		int[] focusWidth = new int[1];
@@ -207,7 +207,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			GtkBorder innerBorder = getBorder (OS.inner_border, handle, INNER_BORDER);
 			trimWidth += innerBorder.left + innerBorder.right;
 			trimHeight += innerBorder.top + innerBorder.bottom;
-			if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_CAN_DEFAULT) != 0) {
+			if (gtk_widget_get_can_default (handle)) {
 				GtkBorder defaultBorder = getBorder (OS.default_border, handle, DEFAULT_BORDER);
 				trimWidth += defaultBorder.left + defaultBorder.right;
 				trimHeight += defaultBorder.top + defaultBorder.bottom;
@@ -243,7 +243,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.gtk_widget_set_size_request (boxHandle, reqWidth [0], reqHeight [0]);
 	}
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
-		if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_CAN_DEFAULT) != 0) {
+		if (gtk_widget_get_can_default (handle)) {
 			GtkBorder border = getBorder (OS.default_border, handle, DEFAULT_BORDER);
 			if (wHint != SWT.DEFAULT) size.x += border.left + border.right;
 			if (hHint != SWT.DEFAULT) size.y += border.top + border.bottom;
@@ -737,7 +737,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	* resized to the preferred size but it still
 	* won't draw properly.
 	*/
-	boolean wrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && (OS.GTK_WIDGET_FLAGS (labelHandle) & OS.GTK_VISIBLE) != 0;
+	boolean wrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && gtk_widget_get_visible (labelHandle);
 	if (wrap) OS.gtk_widget_set_size_request (boxHandle, -1, -1);
 	int result = super.setBounds (x, y, width, height, move, resize);
 	/*

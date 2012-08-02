@@ -1698,6 +1698,38 @@ boolean gtk_widget_get_sensitive (int /*long*/ widget) {
 	}
 }
 
+boolean gtk_widget_get_visible (int /*long*/ widget) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		return OS.gtk_widget_get_visible (widget);
+	} else {
+		return (OS.GTK_WIDGET_FLAGS (widget) & OS.GTK_VISIBLE) != 0;
+	}
+}
+
+boolean gtk_widget_get_realized (int /*long*/ widget) {
+	 if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
+		 return OS.gtk_widget_get_realized (widget);
+	 } else {
+		 return (OS.GTK_WIDGET_FLAGS (widget) & OS.GTK_REALIZED) != 0;
+	 }
+}
+
+boolean gtk_widget_get_can_default (int /*long*/ widget){
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		return OS.gtk_widget_get_can_default (widget);
+	} else {
+		return (OS.GTK_WIDGET_FLAGS (widget) & OS.GTK_CAN_DEFAULT) != 0;
+	}
+}
+
+boolean gtk_widget_get_has_window (int /*long*/ widget) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		return OS.gtk_widget_get_has_window (widget);
+	} else {
+		return (OS.GTK_WIDGET_FLAGS (widget) & OS.GTK_NO_WINDOW) == 0;
+	}
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.

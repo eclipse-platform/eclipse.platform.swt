@@ -1052,7 +1052,7 @@ public int indexOf (TreeItem item) {
 
 void redraw () {
 	int /*long*/ parentHandle = parent.handle;
-	if ((OS.GTK_WIDGET_FLAGS (parentHandle) & OS.GTK_REALIZED) != 0) {
+	if (gtk_widget_get_realized (parentHandle)) {
 		int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 		GdkRectangle rect = new GdkRectangle ();
 		OS.gtk_tree_view_get_cell_area (parentHandle, path, 0, rect);
