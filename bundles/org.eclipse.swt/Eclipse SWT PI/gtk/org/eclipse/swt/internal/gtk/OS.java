@@ -12338,6 +12338,16 @@ public static final void gtk_widget_grab_focus(int /*long*/ widget) {
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native boolean _gtk_widget_has_focus(int /*long*/ widget);
+public static final boolean gtk_widget_has_focus(int /*long*/ widget) {
+       lock.lock();
+       try {
+               return _gtk_widget_has_focus(widget);
+       } finally {
+               lock.unlock();
+       }
+}
 /** @param widget cast=(GtkWidget *) */
 public static final native void _gtk_widget_hide(int /*long*/ widget);
 public static final void gtk_widget_hide(int /*long*/ widget) {

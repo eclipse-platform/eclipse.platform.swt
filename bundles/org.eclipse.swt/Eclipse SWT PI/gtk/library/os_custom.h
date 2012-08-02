@@ -206,6 +206,7 @@
 #define gtk_widget_get_allocation_LIB LIB_GTK
 #define gtk_widget_get_tooltip_text_LIB LIB_GTK
 #define gtk_widget_get_visible_LIB LIB_GTK
+#define gtk_widget_has_focus_LIB LIB_GTK
 #define gtk_widget_has_default_LIB LIB_GTK
 #define gtk_widget_set_tooltip_text_LIB LIB_GTK
 #define gtk_widget_set_has_window_LIB LIB_GTK
@@ -378,6 +379,9 @@
 #endif
 #ifndef GTK_WIDGET_HAS_DEFAULT
 #define GTK_WIDGET_HAS_DEFAULT(arg0) 0
+#endif
+#ifndef GTK_WIDGET_HAS_FOCUS
+#define GTK_WIDGET_HAS_FOCUS(arg0) 0
 #endif
 #ifndef GTK_WIDGET_SENSITIVE
 #define GTK_WIDGET_SENSITIVE(arg0) 0

@@ -15827,6 +15827,26 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1widget_1has_1default)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1has_1focus
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1widget_1has_1focus)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1has_1focus_FUNC);
+/*
+	rc = (jboolean)gtk_widget_has_focus(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_has_focus)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1has_1focus_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1hide
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1hide)
 	(JNIEnv *env, jclass that, jintLong arg0)

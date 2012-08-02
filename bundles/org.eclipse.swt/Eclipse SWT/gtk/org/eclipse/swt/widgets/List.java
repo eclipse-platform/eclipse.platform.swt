@@ -761,7 +761,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	* it finishes processing a button press.  The fix is to give
 	* focus to the widget before it starts processing the event.
 	*/
-	if (!OS.GTK_WIDGET_HAS_FOCUS (handle)) {
+	if (!gtk_widget_has_focus (handle)) {
 		OS.gtk_widget_grab_focus (handle);
 	}
 	return result;

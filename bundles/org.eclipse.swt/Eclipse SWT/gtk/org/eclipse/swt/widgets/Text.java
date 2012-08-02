@@ -1546,7 +1546,7 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
 	int /*long*/ result = super.gtk_expose_event (widget, event);
 	if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
 		int /*long*/ str = OS.gtk_entry_get_text (handle);
-		if (!OS.GTK_WIDGET_HAS_FOCUS (handle) && OS.strlen (str) == 0) {
+		if (!gtk_widget_has_focus (handle) && OS.strlen (str) == 0) {
 			GdkEventExpose gdkEvent = new GdkEventExpose ();
 			OS.memmove (gdkEvent, event, GdkEventExpose.sizeof);
 			int /*long*/ window = paintWindow ();

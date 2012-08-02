@@ -518,7 +518,7 @@ void bringToTop (boolean force) {
 		if (activeShell == null) return;
 		if (!display.activePending) {
 			int /*long*/ focusHandle = OS.gtk_window_get_focus (activeShell.shellHandle);
-			if (focusHandle != 0 && !OS.GTK_WIDGET_HAS_FOCUS (focusHandle)) return;
+			if (focusHandle != 0 && !gtk_widget_has_focus (focusHandle)) return;
 		}
 	}
 	/*

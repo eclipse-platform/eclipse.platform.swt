@@ -906,6 +906,14 @@ boolean gtk_widget_get_mapped (int /*long*/ widget) {
 	}
 }
 
+boolean gtk_widget_has_focus (int /*long*/ widget) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		return OS.gtk_widget_has_focus (widget);
+	} else {
+		return OS.GTK_WIDGET_HAS_FOCUS (widget);
+	}
+}
+
 int /*long*/ gtk_window_state_event (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
