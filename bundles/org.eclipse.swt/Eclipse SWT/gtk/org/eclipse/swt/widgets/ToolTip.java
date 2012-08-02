@@ -278,7 +278,7 @@ void createHandle (int index) {
 			OS.gtk_tooltips_force_window (handle);
 		}
 		OS.g_object_ref (handle);
-		OS.gtk_object_sink (handle);
+		g_object_ref_sink (handle);
 	}
 }
 

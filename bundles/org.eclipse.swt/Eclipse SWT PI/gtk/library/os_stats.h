@@ -301,6 +301,7 @@ typedef enum {
 	_1g_1object_1new_FUNC,
 	_1g_1object_1notify_FUNC,
 	_1g_1object_1ref_FUNC,
+	_1g_1object_1ref_1sink_FUNC,
 #ifndef JNI64
 	_1g_1object_1set__I_3BFI_FUNC,
 #else
@@ -592,6 +593,9 @@ typedef enum {
 	_1gdk_1x11_1screen_1lookup_1visual_FUNC,
 	_1gdk_1x11_1visual_1get_1xvisual_FUNC,
 	_1gdk_1x11_1window_1lookup_1for_1display_FUNC,
+	_1glib_1major_1version_FUNC,
+	_1glib_1micro_1version_FUNC,
+	_1glib_1minor_1version_FUNC,
 	_1gtk_1accel_1group_1new_FUNC,
 	_1gtk_1accel_1label_1set_1accel_1widget_FUNC,
 	_1gtk_1accelerator_1get_1default_1mod_1mask_FUNC,

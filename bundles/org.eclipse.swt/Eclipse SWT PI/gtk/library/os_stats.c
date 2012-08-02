@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1321;
-int OS_nativeFunctionCallCount[1321];
+int OS_nativeFunctionCount = 1325;
+int OS_nativeFunctionCallCount[1325];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -293,6 +293,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1object_1new",
 	"_1g_1object_1notify",
 	"_1g_1object_1ref",
+	"_1g_1object_1ref_1sink",
 #ifndef JNI64
 	"_1g_1object_1set__I_3BFI",
 #else
@@ -584,6 +585,9 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1x11_1screen_1lookup_1visual",
 	"_1gdk_1x11_1visual_1get_1xvisual",
 	"_1gdk_1x11_1window_1lookup_1for_1display",
+	"_1glib_1major_1version",
+	"_1glib_1micro_1version",
+	"_1glib_1minor_1version",
 	"_1gtk_1accel_1group_1new",
 	"_1gtk_1accel_1label_1set_1accel_1widget",
 	"_1gtk_1accelerator_1get_1default_1mod_1mask",

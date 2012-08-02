@@ -1681,6 +1681,14 @@ int /*long*/ sizeAllocateProc (int /*long*/ handle, int /*long*/ arg0, int /*lon
 int /*long*/ sizeRequestProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
 	return 0;
 }
+int /*long*/ g_object_ref_sink (int /*long*/ object) {
+	if (OS.GLIB_VERSION >= OS.VERSION (2, 10, 0)) { 
+		return OS.g_object_ref_sink (object);
+	} else {
+		OS.gtk_object_sink (object);
+	}
+	return 0;
+}
 
 boolean gtk_widget_get_sensitive (int /*long*/ widget) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {

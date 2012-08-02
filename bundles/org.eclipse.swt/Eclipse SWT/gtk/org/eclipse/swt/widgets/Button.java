@@ -294,7 +294,7 @@ void createHandle (int index) {
 			groupHandle = OS.gtk_radio_button_new (0);
 			if (groupHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.g_object_ref (groupHandle);
-			OS.gtk_object_sink (groupHandle);
+			g_object_ref_sink (groupHandle);
 			handle = OS.gtk_radio_button_new (OS.gtk_radio_button_get_group (groupHandle));
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;

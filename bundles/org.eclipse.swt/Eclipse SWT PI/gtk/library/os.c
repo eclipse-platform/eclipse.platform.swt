@@ -3580,6 +3580,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1object_1ref)
 }
 #endif
 
+#ifndef NO__1g_1object_1ref_1sink
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1object_1ref_1sink)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1object_1ref_1sink_FUNC);
+/*
+	rc = (jintLong)g_object_ref_sink(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, g_object_ref_sink)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1g_1object_1ref_1sink_FUNC);
+	return rc;
+}
+#endif
+
 #if (!defined(NO__1g_1object_1set__I_3BFI) && !defined(JNI64)) || (!defined(NO__1g_1object_1set__J_3BFJ) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1set__I_3BFI)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jfloat arg2, jintLong arg3)
@@ -7278,6 +7298,42 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1x11_1window_1lookup_1for_1display)
 }
 #endif
 
+#ifndef NO__1glib_1major_1version
+JNIEXPORT jint JNICALL OS_NATIVE(_1glib_1major_1version)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1glib_1major_1version_FUNC);
+	rc = (jint)glib_major_version;
+	OS_NATIVE_EXIT(env, that, _1glib_1major_1version_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1glib_1micro_1version
+JNIEXPORT jint JNICALL OS_NATIVE(_1glib_1micro_1version)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1glib_1micro_1version_FUNC);
+	rc = (jint)glib_micro_version;
+	OS_NATIVE_EXIT(env, that, _1glib_1micro_1version_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1glib_1minor_1version
+JNIEXPORT jint JNICALL OS_NATIVE(_1glib_1minor_1version)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1glib_1minor_1version_FUNC);
+	rc = (jint)glib_minor_version;
+	OS_NATIVE_EXIT(env, that, _1glib_1minor_1version_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1accel_1group_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1accel_1group_1new)
 	(JNIEnv *env, jclass that)
@@ -10464,7 +10520,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1object_1sink)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1object_1sink_FUNC);
-	gtk_object_sink((GtkObject *)arg0);
+/*
+	gtk_object_sink(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_object_sink)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1object_1sink_FUNC);
 }
 #endif

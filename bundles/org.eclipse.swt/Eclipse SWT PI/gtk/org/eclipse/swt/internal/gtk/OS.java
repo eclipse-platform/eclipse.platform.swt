@@ -581,6 +581,7 @@ public class OS extends C {
 	public static final byte[] GTK_STOCK_CLEAR = ascii("gtk-clear");
 	
 	public static final int GTK_VERSION = VERSION(gtk_major_version(), gtk_minor_version(), gtk_micro_version()); 
+	public static final int GLIB_VERSION = VERSION(glib_major_version(), glib_minor_version(), glib_micro_version()); 
 	public static final boolean USE_CAIRO, INIT_CAIRO;
 	static {
 		boolean useCairo = false;
@@ -7748,6 +7749,36 @@ public static final int gtk_micro_version() {
 		lock.unlock();
 	}
 }
+/** @method flags=const */
+public static final native int _glib_major_version();
+public static final int glib_major_version() {
+	lock.lock();
+	try {
+		return _glib_major_version();
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=const */
+public static final native int _glib_minor_version();
+public static final int glib_minor_version() {
+	lock.lock();
+	try {
+		return _glib_minor_version();
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=const */
+public static final native int _glib_micro_version();
+public static final int glib_micro_version() {
+	lock.lock();
+	try {
+		return _glib_micro_version();
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_main();
 public static final void gtk_main() {
 	lock.lock();
@@ -8056,12 +8087,22 @@ public static final void gtk_notebook_set_tab_pos(int /*long*/ notebook, int pos
 		lock.unlock();
 	}
 }
-/** @param object cast=(GtkObject *) */
+/** @method flags=dynamic */
 public static final native void _gtk_object_sink(int /*long*/ object);
 public static final void gtk_object_sink(int /*long*/ object) {
 	lock.lock();
 	try {
 		_gtk_object_sink(object);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _g_object_ref_sink(int /*long*/ object);
+public static final int /*long*/ g_object_ref_sink(int /*long*/ object) {
+	lock.lock();
+	try {
+		return _g_object_ref_sink(object);
 	} finally {
 		lock.unlock();
 	}
