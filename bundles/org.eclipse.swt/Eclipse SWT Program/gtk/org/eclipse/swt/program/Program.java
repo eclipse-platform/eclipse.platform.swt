@@ -565,7 +565,8 @@ static Program gnome_getProgram(Display display, String mimeType) {
 		if (icon_name != 0) GNOME.g_free(icon_name);
 		GNOME.gnome_vfs_mime_application_free(ptr);
 	}
-	return program.command != null ? program : null;
+	
+	return program != null && program.command != null ? program : null;
 }
 
 static boolean gnome_init() {
