@@ -1227,6 +1227,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1destroy",
 	"_1gtk_1widget_1event",
 	"_1gtk_1widget_1get_1accessible",
+	"_1gtk_1widget_1get_1allocation",
 	"_1gtk_1widget_1get_1can_1default",
 	"_1gtk_1widget_1get_1child_1visible",
 	"_1gtk_1widget_1get_1default_1style",
@@ -1446,7 +1447,6 @@ char * OS_nativeFunctionNames[] = {
 	"gdk_1threads_1init",
 	"gdk_1threads_1leave",
 	"gdk_1threads_1set_1lock_1functions",
-	"gtk_1widget_1get_1allocation",
 	"localeconv_1decimal_1point",
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I",

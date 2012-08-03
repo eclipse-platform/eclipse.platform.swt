@@ -1235,6 +1235,7 @@ typedef enum {
 	_1gtk_1widget_1destroy_FUNC,
 	_1gtk_1widget_1event_FUNC,
 	_1gtk_1widget_1get_1accessible_FUNC,
+	_1gtk_1widget_1get_1allocation_FUNC,
 	_1gtk_1widget_1get_1can_1default_FUNC,
 	_1gtk_1widget_1get_1child_1visible_FUNC,
 	_1gtk_1widget_1get_1default_1style_FUNC,
@@ -1454,7 +1455,6 @@ typedef enum {
 	gdk_1threads_1init_FUNC,
 	gdk_1threads_1leave_FUNC,
 	gdk_1threads_1set_1lock_1functions_FUNC,
-	gtk_1widget_1get_1allocation_FUNC,
 	localeconv_1decimal_1point_FUNC,
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I_FUNC,

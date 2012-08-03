@@ -12271,13 +12271,14 @@ public static final int /*long*/ gtk_widget_get_parent_window(int /*long*/ widge
 }
 /** 
  * @method flags=dynamic
+ * @param widget cast=(GtkWidget *)
  * @param allocation cast=(GtkAllocation *),flags=no_in
  * */
-public static final native void gtk_widget_get_allocation (int /*long*/ widget, GtkAllocation allocation);
-public static final void _gtk_widget_get_allocation (int /*long*/ widget, int /*long*/ allocation) {
+public static final native void _gtk_widget_get_allocation (int /*long*/ widget, GtkAllocation allocation);
+public static final void gtk_widget_get_allocation (int /*long*/ widget, GtkAllocation allocation) {
 	lock.lock();
 	try {
-		_gtk_widget_get_allocation (widget, allocation);
+		_gtk_widget_get_allocation(widget, allocation);
 	} finally {
 		lock.unlock();
 	}
