@@ -104,7 +104,12 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	}
 	glxAttrib [pos++] = 0;
 	OS.gtk_widget_realize (handle);
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
+	int /*long*/ window;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
+		window = OS.gtk_widget_get_window (handle);
+	} else {
+		window = OS.GTK_WIDGET_WINDOW (handle);
+	}
 	int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
 	int /*long*/ infoPtr = GLX.glXChooseVisual (xDisplay, OS.XDefaultScreen (xDisplay), glxAttrib);
 	if (infoPtr == 0) {
@@ -156,7 +161,12 @@ public GLCanvas (Composite parent, int style, GLData data) {
 				OS.gdk_window_resize (glWindow, clientArea.width, clientArea.height);
 				break;
 			case SWT.Dispose:
-				int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
+				int /*long*/ window;
+				if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
+					window = OS.gtk_widget_get_window (handle);
+				} else {
+					window = OS.GTK_WIDGET_WINDOW (handle);
+				}
 				int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
 				if (context != 0) {
 					if (GLX.glXGetCurrentContext () == context) {
@@ -189,7 +199,12 @@ public GLCanvas (Composite parent, int style, GLData data) {
  */
 public GLData getGLData () {
 	checkWidget ();
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
+	int /*long*/ window;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
+		window = OS.gtk_widget_get_window (handle);
+	} else {
+		window = OS.GTK_WIDGET_WINDOW (handle);
+	}
 	int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
 	GLData data = new GLData ();
 	int [] value = new int [1];

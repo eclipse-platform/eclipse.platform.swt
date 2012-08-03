@@ -137,7 +137,7 @@ public void addSelectionListener (SelectionListener listener) {
 void configure () {
 	int /*long*/ screen = OS.gdk_screen_get_default ();
 	OS.gtk_widget_realize (handle);
-	int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, OS.GTK_WIDGET_WINDOW (handle));
+	int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, gtk_widget_get_window (handle));
 	GdkRectangle dest = new GdkRectangle ();
 	OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
 	Point point = getSize (dest.width / 4);
@@ -251,7 +251,7 @@ void configure () {
 	}
 	int /*long*/ rgn = OS.gdk_region_polygon (polyline, polyline.length / 2, OS.GDK_EVEN_ODD_RULE);
 	OS.gtk_widget_realize (handle);
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
+	int /*long*/ window = gtk_widget_get_window (handle);
 	OS.gdk_window_shape_combine_region (window, rgn, 0, 0);
 	OS.gdk_region_destroy (rgn);
 }
@@ -345,7 +345,7 @@ Point getLocation () {
 			y = area.y + area.height / 2;
 		} else {
 			OS.gtk_widget_realize (itemHandle);
-			int /*long*/ window = OS.GTK_WIDGET_WINDOW (itemHandle);
+			int /*long*/ window = gtk_widget_get_window (itemHandle);
 			int [] px = new int [1], py = new int [1];
 			OS.gdk_window_get_origin (window, px, py);
 			x = px [0] + OS.GTK_WIDGET_WIDTH (itemHandle) / 2;
@@ -480,7 +480,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 
 int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	if ((state & OBSCURED) != 0) return 0;
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
+	int /*long*/ window = gtk_widget_get_window (handle);
 	int x = BORDER + PADDING;
 	int y = BORDER + PADDING;
 	if (OS.USE_CAIRO) {
@@ -587,7 +587,7 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 	int y = point.y;
 	int /*long*/ screen = OS.gdk_screen_get_default ();
 	OS.gtk_widget_realize (widget);
-	int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, OS.GTK_WIDGET_WINDOW (widget));
+	int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, gtk_widget_get_window (widget));
 	GdkRectangle dest = new GdkRectangle ();
 	OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
 	int w = 0;

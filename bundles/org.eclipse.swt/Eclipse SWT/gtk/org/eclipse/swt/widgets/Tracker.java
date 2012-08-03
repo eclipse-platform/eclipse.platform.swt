@@ -308,7 +308,7 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 void drawRectangles (Rectangle [] rects) {
 	int /*long*/ window = OS.gdk_get_default_root_window();
 	if (parent != null) {
-		window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
+		window = gtk_widget_get_window (parent.paintHandle());
 	} 
 	if (window == 0) return;
 	//TODO: Use Cairo
@@ -664,7 +664,7 @@ public boolean open () {
 	checkWidget();
 	window = OS.gdk_get_default_root_window();
 	if (parent != null) {
-		window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
+		window = gtk_widget_get_window (parent.paintHandle());
 	} 
 	if (window == 0) return false;
 	cancelled = false;

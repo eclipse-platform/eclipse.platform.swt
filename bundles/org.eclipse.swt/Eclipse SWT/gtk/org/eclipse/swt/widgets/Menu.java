@@ -375,7 +375,7 @@ void fixMenus (Decorations newParent) {
 	if (!gtk_widget_get_mapped (handle)) {
 		return new Rectangle (0, 0, 0, 0);
 	}
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
+	int /*long*/ window = gtk_widget_get_window (handle);
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
 	int x = 0;

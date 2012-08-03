@@ -504,7 +504,7 @@ void fixTabList (Control control) {
 void fixZOrder () {
 	if ((state & CANVAS) != 0) return;
 	int /*long*/ parentHandle = parentingHandle ();
-	int /*long*/ parentWindow = OS.GTK_WIDGET_WINDOW (parentHandle);
+	int /*long*/ parentWindow = gtk_widget_get_window (parentHandle);
 	if (parentWindow == 0) return;
 	int /*long*/ [] userData = new int /*long*/ [1];
 	int /*long*/ windowList = OS.gdk_window_get_children (parentWindow);
@@ -797,7 +797,7 @@ int /*long*/ gtk_map (int /*long*/ widget) {
 int /*long*/ gtk_realize (int /*long*/ widget) {
 	int /*long*/ result = super.gtk_realize (widget);
 	if ((style & SWT.NO_BACKGROUND) != 0) {
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
+		int /*long*/ window = gtk_widget_get_window (paintHandle ());
 		if (window != 0) OS.gdk_window_set_back_pixmap (window, 0, false);
 	}
 	if (socketHandle != 0) {
@@ -815,7 +815,7 @@ int /*long*/ gtk_scroll_child (int /*long*/ widget, int /*long*/ scrollType, int
 int /*long*/ gtk_style_set (int /*long*/ widget, int /*long*/ previousStyle) {
 	int /*long*/ result = super.gtk_style_set (widget, previousStyle);
 	if ((style & SWT.NO_BACKGROUND) != 0) {
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
+		int /*long*/ window = gtk_widget_get_window (paintHandle ());
 		if (window != 0) OS.gdk_window_set_back_pixmap (window, 0, false);
 	}
 	return result;

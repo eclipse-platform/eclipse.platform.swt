@@ -374,7 +374,7 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 	if (!trim) return;
 	int /*long*/ topHandle = topHandle (), paintHandle = paintHandle ();
 	if (topHandle == paintHandle) return;
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
+	int /*long*/ window = gtk_widget_get_window (topHandle);
 	GdkRectangle rect = new GdkRectangle ();
 	if (redrawAll) {
 		GtkAllocation allocation = new GtkAllocation ();

@@ -1011,7 +1011,12 @@ void createDisplay (DeviceData data) {
 	OS.gdk_window_add_filter  (0, filterProc, 0);
 
 	if (OS.GDK_WINDOWING_X11 ()) {
-		int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (OS.GTK_WIDGET_WINDOW (shellHandle));
+		int /*long*/ xWindow;
+		if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
+			xWindow = OS.gdk_x11_drawable_get_xid (OS.gtk_widget_get_window	(shellHandle));
+		} else {
+			xWindow = OS.gdk_x11_drawable_get_xid (OS.GTK_WIDGET_WINDOW (shellHandle));
+		}
 		byte[] atomName = Converter.wcsToMbcs (null, "SWT_Window_" + APP_NAME, true); //$NON-NLS-1$
 		int /*long*/ atom = OS.XInternAtom (xDisplay, atomName, false);
 		OS.XSetSelectionOwner (xDisplay, atom, xWindow, OS.CurrentTime);
@@ -4220,7 +4225,12 @@ int /*long*/ signalProc (int /*long*/ gobject, int /*long*/ arg1, int /*long*/ u
 				byte[] name = Converter.wcsToMbcs (null, "org.eclipse.swt.filePath.message", true); //$NON-NLS-1$
 				int /*long*/ atom = OS.gdk_x11_atom_to_xatom (OS.gdk_atom_intern (name, true));
 				if (atom == OS.gdk_x11_atom_to_xatom (gdkEvent.atom)) {
-					int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (OS.GTK_WIDGET_WINDOW( shellHandle));
+					int /*long*/ xWindow; 
+					if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
+						xWindow = OS.gdk_x11_drawable_get_xid (OS.gtk_widget_get_window( shellHandle));
+					} else {
+						xWindow = OS.gdk_x11_drawable_get_xid (OS.GTK_WIDGET_WINDOW( shellHandle));
+					}
 					int /*long*/ [] type = new int /*long*/ [1];
 					int [] format = new int [1];
 					int [] nitems = new int [1];

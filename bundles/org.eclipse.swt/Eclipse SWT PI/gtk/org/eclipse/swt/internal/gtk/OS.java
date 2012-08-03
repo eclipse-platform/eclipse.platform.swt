@@ -12220,6 +12220,16 @@ public static final int gtk_widget_get_events(int /*long*/ widget) {
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native int /*long*/ _gtk_widget_get_window (int /*long*/ widget);
+public static final int /*long*/ gtk_widget_get_window (int /*long*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_widget_get_window(widget);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param widget cast=(GtkWidget *) */
 public static final native int /*long*/ _gtk_widget_get_modifier_style(int /*long*/ widget);
 public static final int /*long*/ gtk_widget_get_modifier_style(int /*long*/ widget) {

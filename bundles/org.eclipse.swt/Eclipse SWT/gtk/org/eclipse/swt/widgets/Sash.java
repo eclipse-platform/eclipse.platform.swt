@@ -145,7 +145,7 @@ void createHandle (int index) {
 void drawBand (int x, int y, int width, int height) {
 	if ((style & SWT.SMOOTH) != 0) return;
 	//TODO: Use Cairo
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
+	int /*long*/ window = gtk_widget_get_window (parent.paintHandle());
 	if (window == 0) return;
 	byte [] bits = {-86, 85, -86, 85, -86, 85, -86, 85};
 	int /*long*/ stipplePixmap = OS.gdk_bitmap_create_from_data (window, bits, 8, 8);
@@ -172,7 +172,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr)
 	if (button != 1) return 0;
 	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) return 0;
 	if (gdkEvent.type == OS.GDK_3BUTTON_PRESS) return 0;
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (widget);
+	int /*long*/ window = gtk_widget_get_window (widget);
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
 	startX = (int) (gdkEvent.x_root - origin_x [0]);
@@ -329,7 +329,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 			if (newX == lastX && newY == lastY) return result;
 			
 			/* Ensure that the pointer image does not change */
-			int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
+			int /*long*/ window = gtk_widget_get_window (handle);
 			int grabMask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK;
 			int /*long*/ gdkCursor = cursor != null ? cursor.handle : defaultCursor;
 			int ptrGrabResult = OS.gdk_pointer_grab (window, false, grabMask, window, gdkCursor, OS.GDK_CURRENT_TIME);

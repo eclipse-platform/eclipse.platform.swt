@@ -348,7 +348,7 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 				}
 			}
 			OS.gtk_widget_realize (handle);
-			int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
+			int /*long*/ window = gtk_widget_get_window (handle);
 			OS.gdk_window_shape_combine_region (window, region.handle, 0, 0);
 			region.dispose ();
 		}

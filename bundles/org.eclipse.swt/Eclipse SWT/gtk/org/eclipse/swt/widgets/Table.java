@@ -1119,7 +1119,7 @@ public Rectangle getClientArea () {
 	checkWidget ();
 	forceResize ();
 	OS.gtk_widget_realize (handle);
-	int /*long*/ fixedWindow = OS.GTK_WIDGET_WINDOW (fixedHandle);
+	int /*long*/ fixedWindow = gtk_widget_get_window (fixedHandle);
 	int /*long*/ binWindow = OS.gtk_tree_view_get_bin_window (handle);
 	int [] binX = new int [1], binY = new int [1];
 	OS.gdk_window_get_origin (binWindow, binX, binY);
@@ -1366,7 +1366,7 @@ public int getHeaderHeight () {
 		return height;
 	}
 	OS.gtk_widget_realize (handle);
-	int /*long*/ fixedWindow = OS.GTK_WIDGET_WINDOW (fixedHandle);
+	int /*long*/ fixedWindow = gtk_widget_get_window (fixedHandle);
 	int /*long*/ binWindow = OS.gtk_tree_view_get_bin_window (handle);
 	int [] binY = new int [1];
 	OS.gdk_window_get_origin (binWindow, null, binY);

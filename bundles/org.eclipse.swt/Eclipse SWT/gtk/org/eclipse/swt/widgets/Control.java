@@ -157,7 +157,7 @@ void drawBackground (Control control, int /*long*/ window, int /*long*/ region, 
 
 boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	int /*long*/ paintHandle = paintHandle ();
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle);
+	int /*long*/ window = gtk_widget_get_window (paintHandle);
 	if (window == 0) return false;
 	int orientation = vertical ? OS.GTK_ORIENTATION_HORIZONTAL : OS.GTK_ORIENTATION_VERTICAL;
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - width - x;
@@ -180,7 +180,7 @@ int /*long*/ eventHandle () {
 int /*long*/ eventWindow () {
 	int /*long*/ eventHandle = eventHandle ();
 	OS.gtk_widget_realize (eventHandle);
-	return OS.GTK_WIDGET_WINDOW (eventHandle);
+	return gtk_widget_get_window (eventHandle);
 }
 
 void fixFocus (Control focusControl) {
@@ -360,7 +360,7 @@ int /*long*/ paintHandle () {
 int /*long*/ paintWindow () {
 	int /*long*/ paintHandle = paintHandle ();
 	OS.gtk_widget_realize (paintHandle);
-	return OS.GTK_WIDGET_WINDOW (paintHandle);
+	return gtk_widget_get_window (paintHandle);
 }
 
 /**
@@ -386,7 +386,7 @@ public boolean print (GC gc) {
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	int /*long*/ topHandle = topHandle ();
 	OS.gtk_widget_realize (topHandle);
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
+	int /*long*/ window = gtk_widget_get_window (topHandle);
 	GCData data = gc.getGCData ();
 	OS.gdk_window_process_updates (window, true);
 	int /*long*/ drawable = data.drawable;
@@ -399,7 +399,7 @@ void printWidget (GC gc, int /*long*/ drawable, int depth, int x, int y) {
 	boolean obscured = (state & OBSCURED) != 0;
 	state &= ~OBSCURED;
 	int /*long*/ topHandle = topHandle ();
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
+	int /*long*/ window = gtk_widget_get_window (topHandle);
 	printWindow (true, this, gc, drawable, depth, window, x, y);
 	if (obscured) state |= OBSCURED;
 }
@@ -825,7 +825,7 @@ void modifyStyle (int /*long*/ handle, int /*long*/ style) {
 	* has had a region set on it, the region is lost.  The 
 	* fix is to set the region again.
 	*/
-	if (region != null) OS.gdk_window_shape_combine_region (OS.GTK_WIDGET_WINDOW (topHandle ()), region.handle, 0, 0);
+	if (region != null) OS.gdk_window_shape_combine_region (gtk_widget_get_window (topHandle ()), region.handle, 0, 0);
 }
 
 void moveHandle (int x, int y) {
@@ -1144,7 +1144,7 @@ public void setSize (Point size) {
 public void setRegion (Region region) {
 	checkWidget ();
 	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle ());
+	int /*long*/ window = gtk_widget_get_window (topHandle ());
 	int /*long*/ shape_region = (region == null) ? 0 : region.handle;
 	OS.gdk_window_shape_combine_region (window, shape_region, 0, 0);
 	this.region = region;
@@ -2382,7 +2382,7 @@ int /*long*/ fixedMapProc (int /*long*/ widget) {
 		OS.g_list_free (widgetList);
 	}
 	if (gtk_widget_get_has_window (widget)) {
-		OS.gdk_window_show_unraised (OS.GTK_WIDGET_WINDOW (widget));
+		OS.gdk_window_show_unraised (gtk_widget_get_window (widget));
 	}
 	return 0;
 }
@@ -3199,7 +3199,7 @@ int /*long*/ gtk_preedit_changed (int /*long*/ imcontext) {
 int /*long*/ gtk_realize (int /*long*/ widget) {
 	int /*long*/ imHandle = imHandle ();
 	if (imHandle != 0) {
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
+		int /*long*/ window = gtk_widget_get_window (paintHandle ());
 		OS.gtk_im_context_set_client_window (imHandle, window);
 	}
 	if (backgroundImage != null) {
@@ -3891,7 +3891,7 @@ public void setBackgroundImage (Image image) {
 }
 
 void setBackgroundPixmap (Image image) {
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
+	int /*long*/ window = gtk_widget_get_window (paintHandle ());
 	if (window != 0) {
 		if (image.pixmap != 0) {
 			OS.gdk_window_set_back_pixmap (window, image.pixmap, false);
@@ -4068,7 +4068,7 @@ public void setEnabled (boolean enabled) {
 			if (!OS.GDK_WINDOWING_X11 ()) {
 				OS.gdk_window_raise (enableWindow);
 			} else {
-				restackWindow (enableWindow, OS.GTK_WIDGET_WINDOW (topHandle), true);
+				restackWindow (enableWindow, gtk_widget_get_window (topHandle), true);
 			}
 			if (gtk_widget_get_visible (topHandle)) OS.gdk_window_show_unraised (enableWindow);
 		}
@@ -4615,7 +4615,7 @@ void setZOrder (Control sibling, boolean above, boolean fixRelations, boolean fi
 
 	int /*long*/ topHandle = topHandle ();
 	int /*long*/ siblingHandle = sibling != null ? sibling.topHandle () : 0;
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
+	int /*long*/ window = gtk_widget_get_window (topHandle);
 	if (window != 0) {
 		int /*long*/ siblingWindow = 0;
 		if (sibling != null) {

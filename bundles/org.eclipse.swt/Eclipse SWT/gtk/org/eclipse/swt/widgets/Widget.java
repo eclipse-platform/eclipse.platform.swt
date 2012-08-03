@@ -1738,6 +1738,14 @@ boolean gtk_widget_get_has_window (int /*long*/ widget) {
 	}
 }
 
+int /*long*/ gtk_widget_get_window (int /*long*/ widget){
+	if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
+		return OS.gtk_widget_get_window (widget);
+	} else {
+		return OS.GTK_WIDGET_WINDOW (widget);
+	}
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.

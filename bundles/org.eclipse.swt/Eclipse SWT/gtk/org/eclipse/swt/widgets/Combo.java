@@ -1441,7 +1441,7 @@ boolean isFocusHandle(int widget) {
 int /*long*/ paintWindow () {
 	int /*long*/ childHandle =  entryHandle != 0 ? entryHandle : handle;	
 	OS.gtk_widget_realize (childHandle);
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (childHandle);
+	int /*long*/ window = gtk_widget_get_window (childHandle);
 	if ((style & SWT.READ_ONLY) != 0) return window;
 	int /*long*/ children = OS.gdk_window_get_children (window);
 	if (children != 0) window = OS.g_list_data (children);

@@ -462,7 +462,7 @@ void adjustTrim () {
 		width = OS.GTK_WIDGET_WIDTH (shellHandle);
 		height = OS.GTK_WIDGET_HEIGHT (shellHandle);
 	}
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	int /*long*/ window = gtk_widget_get_window (shellHandle);
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gdk_window_get_frame_extents (window, rect);
 	int trimWidth = Math.max (0, rect.width - width);
@@ -545,7 +545,7 @@ void bringToTop (boolean force) {
 	* window.  The fix is to use XSetInputFocus() to force
 	* the focus.
 	*/
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	int /*long*/ window = gtk_widget_get_window (shellHandle);
 	if ((xFocus || (style & SWT.ON_TOP) != 0) && OS.GDK_WINDOWING_X11 ()) {
 		int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
 		int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (window);
@@ -747,7 +747,7 @@ int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*
 						sendEvent (SWT.Activate);
 						if (isDisposed ()) return 0;
 						if (isCustomResize ()) {
-							OS.gdk_window_invalidate_rect (OS.GTK_WIDGET_WINDOW (shellHandle), null, false);
+							OS.gdk_window_invalidate_rect (gtk_widget_get_window (shellHandle), null, false);
 						}
 						break;
 				}
@@ -770,8 +770,9 @@ int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*
 							display.activePending = false;
 						}
 						if (isDisposed ()) return 0;
-						if (isCustomResize ()) {
-							OS.gdk_window_invalidate_rect (OS.GTK_WIDGET_WINDOW (shellHandle), null, false);
+						if (isCustomResize ()) {				
+							OS.gdk_window_invalidate_rect (gtk_widget_get_window (shellHandle), null, false);
+
 						}
 						break;
 				}
@@ -824,7 +825,7 @@ void hookEvents () {
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MAP_EVENT], 0, display.shellMapProcClosure, false);
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
 	OS.g_signal_connect_closure (shellHandle, OS.move_focus, display.closures [MOVE_FOCUS], false);
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	int /*long*/ window = gtk_widget_get_window (shellHandle);
 	OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
 	if (isCustomResize ()) {
 		int mask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK | OS.GDK_BUTTON_PRESS_MASK |  OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK;
@@ -1252,7 +1253,7 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
 			GdkEventExpose gdkEventExpose = new GdkEventExpose ();
 			OS.memmove (gdkEventExpose, event, GdkEventExpose.sizeof);
 			int /*long*/ style = OS.gtk_widget_get_style (widget);
-			int /*long*/ window = OS.GTK_WIDGET_WINDOW (widget);
+			int /*long*/ window = gtk_widget_get_window (widget);
 			int [] width = new int [1];
 			int [] height = new int [1];
 			OS.gdk_drawable_get_size (window, width, height);
@@ -1299,7 +1300,7 @@ int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
 			GdkEventCrossing gdkEvent = new GdkEventCrossing ();
 			OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
 			if ((gdkEvent.state & OS.GDK_BUTTON1_MASK) == 0) {
-				int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
+				int /*long*/ window = gtk_widget_get_window (shellHandle);
 				OS.gdk_window_set_cursor (window, 0);
 				display.resizeMode = 0;
 			}
@@ -1371,14 +1372,14 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 						break;
 				}
 				if (x != display.resizeBoundsX || y != display.resizeBoundsY) {
-					OS.gdk_window_move_resize (OS.GTK_WIDGET_WINDOW (shellHandle), x, y, width, height);
+					OS.gdk_window_move_resize (gtk_widget_get_window (shellHandle), x, y, width, height);
 				} else {
 					OS.gtk_window_resize (shellHandle, width, height);
 				}
 			} else {
 				int mode = getResizeMode (gdkEvent.x, gdkEvent.y);
 				if (mode != display.resizeMode) {
-					int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
+					int /*long*/ window = gtk_widget_get_window (shellHandle);
 					int /*long*/ cursor = OS.gdk_cursor_new (mode);
 					OS.gdk_window_set_cursor (window, cursor);
 					OS.gdk_cursor_unref (cursor);
@@ -1445,7 +1446,7 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 
 int /*long*/ gtk_realize (int /*long*/ widget) {
 	int /*long*/ result = super.gtk_realize (widget);
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	int /*long*/ window = gtk_widget_get_window (shellHandle);
 	if ((style & SWT.SHELL_TRIM) != SWT.SHELL_TRIM) {
 		int decorations = 0;
 		if ((style & SWT.NO_TRIM) == 0) {
@@ -1780,7 +1781,7 @@ public void setEnabled (boolean enabled) {
 	} else {
 		int /*long*/ parentHandle = shellHandle;
 		OS.gtk_widget_realize (parentHandle);
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (parentHandle);
+		int /*long*/ window = gtk_widget_get_window (parentHandle);
 		Rectangle rect = getBounds ();
 		GdkWindowAttr attributes = new GdkWindowAttr ();
 		attributes.width = rect.width;
@@ -2463,7 +2464,7 @@ void releaseWidget () {
 	tooltipsHandle = 0;
 	if (group != 0) OS.g_object_unref (group);
 	group = modalGroup = 0;
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	int /*long*/ window = gtk_widget_get_window (shellHandle);
 	OS.gdk_window_remove_filter(window, display.filterProc, shellHandle);
 	lastActive = null;
 }
@@ -2498,7 +2499,7 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 		* contain the proper x and y coordinates.
 		*/
 		int /*long*/ eventPtr = 0;
-		int /*long*/ tipWindow = OS.GTK_WIDGET_WINDOW (rootWidget);
+		int /*long*/ tipWindow = gtk_widget_get_window (rootWidget);
 		if (tipWindow != 0) {
 			int [] x = new int [1], y = new int [1];
 			int /*long*/ window = OS.gdk_window_at_pointer (x, y);

@@ -217,6 +217,7 @@
 #define gtk_widget_get_visible_LIB LIB_GTK
 #define gtk_widget_get_realized_LIB LIB_GTK
 #define gtk_widget_get_can_default_LIB LIB_GTK
+#define gtk_widget_get_window_LIB LIB_GTK
 #define gdk_pango_context_set_colormap_LIB LIB_GDK
 #define gdk_x11_screen_get_window_manager_name_LIB LIB_GDK
 #define gdk_x11_screen_lookup_visual_LIB LIB_GDK
@@ -413,7 +414,11 @@
 #define GTK_WIDGET_WIDTH(arg0) (arg0)->allocation.width
 #endif
 #define GTK_WIDGET_SET_WIDTH(arg0, arg1) (arg0)->allocation.width = arg1
+#if GTK_CHECK_VERSION(2,14,0)
+#define GTK_WIDGET_WINDOW(arg0) 0
+#else
 #define GTK_WIDGET_WINDOW(arg0) (arg0)->window
+#endif
 #if GTK_CHECK_VERSION(2,18,0)
 #define GTK_WIDGET_X(arg0) 0
 #else

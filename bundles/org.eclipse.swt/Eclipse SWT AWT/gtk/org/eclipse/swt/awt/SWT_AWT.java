@@ -202,7 +202,12 @@ public static Frame new_Frame (final Composite parent) {
 							loadLibrary();
 							int /*long*/ awtHandle = getAWTHandle(window);
 							if (awtHandle == 0) return;
-							int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid(OS.GTK_WIDGET_WINDOW(OS.gtk_widget_get_toplevel(shell.handle)));
+							int /*long*/ xWindow;
+							if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
+								xWindow = OS.gdk_x11_drawable_get_xid(OS.gtk_widget_get_window(OS.gtk_widget_get_toplevel(shell.handle)));
+							} else {
+								xWindow = OS.gdk_x11_drawable_get_xid(OS.GTK_WIDGET_WINDOW(OS.gtk_widget_get_toplevel(shell.handle)));
+							}
 							OS.XSetTransientForHint(OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default()), awtHandle, xWindow);
 						}
 					});
