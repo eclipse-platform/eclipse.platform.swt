@@ -30,6 +30,7 @@
 #define LIB_GTK "libgtk-x11-2.0.a(libgtk-x11-2.0.so.0)"
 #define LIB_GDK "libgdk-x11-2.0.a(libgdk-x11-2.0.so.0)"
 #define LIB_GLIB "libglib-2.0.a(libglib-2.0.so.0)"
+#define LIB_GOBJECT "libgobject-2.0.a(libgobject-2.0.so.0)"
 #define LIB_ATK "libatk-1.0.a(libatk-1.0.so.0)"
 #define LIB_PANGO "libpango-1.0.a(libpango-1.0.so.0)"
 #define LIB_PANGOCAIRO "libpangocairo-1.0.a(libpangocairo-1.0.so.0)"
@@ -40,6 +41,7 @@
 #define LIB_GTK "libgtk-x11-2.0.so"
 #define LIB_GDK "libgdk-x11-2.0.so"
 #define LIB_GLIB "libglib-2.0.so"
+#define LIB_GOBJECT "libgobject-2.0.so"
 #define LIB_ATK "libatk-1.0.so"
 #define LIB_PANGO "libpango-1.0.so"
 #define LIB_PANGOCAIRO "libpangocairo-1.0.so"
@@ -50,6 +52,7 @@
 #define LIB_GTK "libgtk-x11-2.0.so.0"
 #define LIB_GDK "libgdk-x11-2.0.so.0"
 #define LIB_GLIB "libglib-2.0.so.0"
+#define LIB_GOBJECT "libgobject-2.0.so.0"
 #define LIB_ATK "libatk-1.0.so.0"
 #define LIB_PANGO "libpango-1.0.so.0"
 #define LIB_PANGOCAIRO "libpangocairo-1.0.so.0"
@@ -346,7 +349,7 @@
 #define g_icon_to_string_LIB LIB_GIO
 #define g_icon_new_for_string_LIB LIB_GIO
 #define g_file_query_info_LIB LIB_GIO
-#define g_object_ref_sink_LIB LIB_GIO
+#define g_object_ref_sink_LIB LIB_GOBJECT
 
 /* Field accessors */
 #define G_OBJECT_CLASS_CONSTRUCTOR(arg0) (arg0)->constructor
