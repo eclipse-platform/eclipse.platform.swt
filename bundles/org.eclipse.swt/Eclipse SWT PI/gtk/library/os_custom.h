@@ -376,10 +376,9 @@
 #endif
 #ifndef GTK_WIDGET_SENSITIVE
 #define GTK_WIDGET_SENSITIVE(arg0) 0
-=======
+#endif
 #ifndef GTK_OBJECT_FLAGS
 #define GTK_OBJECT_FLAGS(arg0) 0
->>>>>>> 4bf36e6... Omit use of deprecated  GTK_WIDGET_FLAGS
 #endif
 #define GTK_WIDGET_HEIGHT(arg0) (arg0)->allocation.height
 #define GTK_WIDGET_SET_HEIGHT(arg0, arg1) (arg0)->allocation.height = arg1
