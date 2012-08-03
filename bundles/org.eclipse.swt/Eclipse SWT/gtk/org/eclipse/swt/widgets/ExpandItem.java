@@ -424,7 +424,7 @@ void resizeControl (int yScroll) {
 				*/
 				ScrollBar vBar = parent.verticalBar;
 				if (vBar != null) {
-					if (OS.GTK_WIDGET_VISIBLE (vBar.handle)) {
+					if (gtk_widget_get_visible (vBar.handle)) {
 						if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
 							OS.gtk_widget_get_allocation(parent.scrolledHandle, allocation);
 							width = allocation.width - parent.vScrollBarWidth () - 2 * parent.spacing;	

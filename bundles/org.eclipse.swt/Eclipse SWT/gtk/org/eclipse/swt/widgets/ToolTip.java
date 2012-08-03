@@ -464,7 +464,7 @@ public String getText () {
  */
 public boolean getVisible () {
 	checkWidget ();
-	if ((style & SWT.BALLOON) != 0) return OS.GTK_WIDGET_VISIBLE (handle);
+	if ((style & SWT.BALLOON) != 0) return gtk_widget_get_visible (handle);
 	if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
 		int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
 		return OS.GTK_WIDGET_VISIBLE (tipWindow);
@@ -734,11 +734,11 @@ public void setLocation (int x, int y) {
 	this.x = x;
 	this.y = y;
 	if ((style & SWT.BALLOON) != 0) {
-		if (OS.GTK_WIDGET_VISIBLE (handle)) configure ();
+		if (gtk_widget_get_visible (handle)) configure ();
 	} else {
 		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
 			int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
-			if (OS.GTK_WIDGET_VISIBLE (tipWindow)) {
+			if (gtk_widget_get_visible (tipWindow)) {
 				OS.gtk_window_move (tipWindow, x, y);
 			}
 		}
@@ -801,7 +801,7 @@ public void setMessage (String string) {
 		}
 		OS.pango_layout_set_wrap (layoutMessage, OS.PANGO_WRAP_WORD_CHAR);
 	}
-	if (OS.GTK_WIDGET_VISIBLE (handle)) configure ();
+	if (gtk_widget_get_visible (handle)) configure ();
 }
 
 /**
@@ -842,7 +842,7 @@ public void setText (String string) {
 		OS.pango_attr_list_unref (attrList);
 		OS.pango_layout_set_wrap (layoutText, OS.PANGO_WRAP_WORD_CHAR);
 	}
-	if (OS.GTK_WIDGET_VISIBLE (handle)) configure ();
+	if (gtk_widget_get_visible (handle)) configure ();
 }
 
 /**

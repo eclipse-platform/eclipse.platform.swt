@@ -2374,7 +2374,7 @@ int /*long*/ fixedMapProc (int /*long*/ widget) {
 		int /*long*/ widgets = widgetList;
 		while (widgets != 0) {
 			int /*long*/ child = OS.g_list_data (widgets);
-			if (OS.GTK_WIDGET_VISIBLE (child) && OS.gtk_widget_get_child_visible (child) && !gtk_widget_get_mapped (child)) {
+			if (gtk_widget_get_visible (child) && OS.gtk_widget_get_child_visible (child) && !gtk_widget_get_mapped (child)) {
 				OS.gtk_widget_map (child);
 			}
 			widgets = OS.g_list_next (widgets);
@@ -3523,7 +3523,7 @@ public void redraw () {
 
 void redraw (boolean all) {
 //	checkWidget();
-	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return;
+	if (!gtk_widget_get_visible (topHandle ())) return;
 	redrawWidget (0, 0, 0, 0, true, all, false);
 }
 
@@ -3559,7 +3559,7 @@ void redraw (boolean all) {
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget();
-	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return;
+	if (!gtk_widget_get_visible (topHandle ())) return;
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - width - x;
 	redrawWidget (x, y, width, height, false, all, false);
 }
@@ -4070,7 +4070,7 @@ public void setEnabled (boolean enabled) {
 			} else {
 				restackWindow (enableWindow, OS.GTK_WIDGET_WINDOW (topHandle), true);
 			}
-			if (OS.GTK_WIDGET_VISIBLE (topHandle)) OS.gdk_window_show_unraised (enableWindow);
+			if (gtk_widget_get_visible (topHandle)) OS.gdk_window_show_unraised (enableWindow);
 		}
 	}
 	if (fixFocus) fixFocus (control);
@@ -5165,7 +5165,7 @@ public void update () {
 
 void update (boolean all, boolean flush) {
 //	checkWidget();
-	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return; 
+	if (!gtk_widget_get_visible (topHandle ())) return; 
 	if (!gtk_widget_get_realized (handle)) return;
 	int /*long*/ window = paintWindow ();
 	if (flush) display.flushExposes (window, all);

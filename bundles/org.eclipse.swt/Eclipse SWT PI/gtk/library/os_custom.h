@@ -205,6 +205,7 @@
 #define gtk_widget_is_composited_LIB LIB_GTK
 #define gtk_widget_get_allocation_LIB LIB_GTK
 #define gtk_widget_get_tooltip_text_LIB LIB_GTK
+#define gtk_widget_get_visible_LIB LIB_GTK
 #define gtk_widget_has_default_LIB LIB_GTK
 #define gtk_widget_set_tooltip_text_LIB LIB_GTK
 #define gtk_widget_set_has_window_LIB LIB_GTK
@@ -383,6 +384,9 @@
 #endif
 #ifndef GTK_OBJECT_FLAGS
 #define GTK_OBJECT_FLAGS(arg0) 0
+#endif
+#ifndef GTK_WIDGET_VISIBLE
+#define GTK_WIDGET_VISIBLE(arg0) 0
 #endif
 #if GTK_CHECK_VERSION(2,18,0)
 #define GTK_WIDGET_HEIGHT(arg0) 0

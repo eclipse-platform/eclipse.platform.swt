@@ -397,7 +397,7 @@ public boolean getVisible () {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
 		return OS.gtk_status_icon_get_visible (handle);
 	}
-	return OS.GTK_WIDGET_VISIBLE (handle);
+	return gtk_widget_get_visible (handle);
 }
 
 void register () {
@@ -625,7 +625,7 @@ public void setVisible (boolean visible) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
 		if(OS.gtk_status_icon_get_visible (handle) == visible) return;	
 	} else {
-		if (OS.GTK_WIDGET_VISIBLE (handle) == visible) return;
+		if (gtk_widget_get_visible (handle) == visible) return;
 	}
 	if (visible) {
 		/*

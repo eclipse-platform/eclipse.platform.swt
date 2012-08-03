@@ -476,7 +476,7 @@ public class Accessible {
 				int /*long*/ temp = list;
 				while (temp != 0) {
 					int /*long*/ widget = OS.g_list_data( temp);
-					if (OS.GTK_WIDGET_VISIBLE (widget)) {
+					if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0) ? OS.gtk_widget_get_visible (widget) : OS.GTK_WIDGET_VISIBLE (widget)) {
 						result = widget;
 						break;
 					}

@@ -214,7 +214,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			}
 		}
 		int imageWidth = 0, imageHeight = 0;
-		if (OS.GTK_WIDGET_VISIBLE (imageHandle)) {
+		if (gtk_widget_get_visible (imageHandle)) {
 			GtkRequisition requisition = new GtkRequisition ();
 			OS.gtk_widget_size_request (imageHandle, requisition);
 			imageWidth = requisition.width;
@@ -677,7 +677,7 @@ void _setAlignment (int alignment) {
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	/* Alignment not honoured when image and text are visible */
-	boolean bothVisible = OS.GTK_WIDGET_VISIBLE (labelHandle) && OS.GTK_WIDGET_VISIBLE (imageHandle);
+	boolean bothVisible = gtk_widget_get_visible (labelHandle) && gtk_widget_get_visible (imageHandle);
 	if (bothVisible) {
 		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) alignment = SWT.LEFT;
 		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) alignment = SWT.CENTER;
@@ -770,7 +770,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		OS.pango_layout_get_size (labelLayout, w, h);
 		OS.pango_layout_set_width (labelLayout, pangoWidth);
 		int imageWidth = 0;
-		if (OS.GTK_WIDGET_VISIBLE (imageHandle)) {
+		if (gtk_widget_get_visible (imageHandle)) {
 			GtkRequisition requisition = new GtkRequisition ();
 			OS.gtk_widget_size_request (imageHandle, requisition);
 			imageWidth = requisition.width;

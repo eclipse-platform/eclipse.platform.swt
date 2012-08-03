@@ -296,7 +296,7 @@ int /*long*/ gtk_scroll_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		} else {
 			scrollBar = horizontalBar;
 		}
-		if (scrollBar != null && !OS.GTK_WIDGET_VISIBLE (scrollBar.handle) && scrollBar.getEnabled()) {
+		if (scrollBar != null && !gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
 			GtkAdjustment adjustment = new GtkAdjustment ();
 			OS.memmove (adjustment, scrollBar.adjustmentHandle);
 			/* Calculate wheel delta to match GTK+ 2.4 and higher */
