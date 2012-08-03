@@ -370,7 +370,6 @@
 #else
 #define GTK_SCROLLED_WINDOW_VSCROLLBAR(arg0) (arg0)->vscrollbar
 #endif
-<<<<<<< HEAD
 #ifndef GTK_WIDGET_HAS_DEFAULT
 #define GTK_WIDGET_HAS_DEFAULT(arg0) 0
 #endif
