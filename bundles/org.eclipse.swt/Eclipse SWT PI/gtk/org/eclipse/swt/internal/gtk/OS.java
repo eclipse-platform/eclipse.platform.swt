@@ -10745,6 +10745,7 @@ public static final void gtk_tooltips_enable(int /*long*/ tooltips) {
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
 public static final native int /*long*/ _gtk_tooltips_new();
 public static final int /*long*/ gtk_tooltips_new() {
 	lock.lock();

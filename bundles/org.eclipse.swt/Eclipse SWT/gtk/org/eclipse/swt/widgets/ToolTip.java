@@ -257,28 +257,31 @@ void configure () {
 }
 
 void createHandle (int index) {
-	state |= HANDLE;
 	if ((style & SWT.BALLOON) != 0) {
+		state |= HANDLE;
 		handle = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
 		Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
 		OS.gtk_widget_modify_bg (handle, OS.GTK_STATE_NORMAL, background.handle);
 		OS.gtk_widget_set_app_paintable (handle, true);
 		OS.gtk_window_set_type_hint (handle, OS.GDK_WINDOW_TYPE_HINT_TOOLTIP);
 	} else {
-		handle = OS.gtk_tooltips_new ();
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		/*
-		* Bug in Solaris-GTK.  Invoking gtk_tooltips_force_window()
-		* can cause a crash in older versions of GTK.  The fix is
-		* to avoid this call if the GTK version is older than 2.2.x.
-		* The call is to be avoided on GTK versions newer than 2.12.0
-		* where it's deprecated.
-		*/
-		if (OS.GTK_VERSION >= OS.VERSION (2, 2, 1)) { 
-			OS.gtk_tooltips_force_window (handle);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
+			state |= HANDLE;
+			handle = OS.gtk_tooltips_new ();
+			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			/*
+			* Bug in Solaris-GTK.  Invoking gtk_tooltips_force_window()
+			* can cause a crash in older versions of GTK.  The fix is
+			* to avoid this call if the GTK version is older than 2.2.x.
+			* The call is to be avoided on GTK versions newer than 2.12.0
+			* where it's deprecated.
+			*/
+			if (OS.GTK_VERSION >= OS.VERSION (2, 2, 1)) { 
+				OS.gtk_tooltips_force_window (handle);
+			}
+			OS.g_object_ref (handle);
+			g_object_ref_sink (handle);
 		}
-		OS.g_object_ref (handle);
-		g_object_ref_sink (handle);
 	}
 }
 
@@ -293,8 +296,10 @@ void createWidget (int index) {
 void deregister () {
 	super.deregister ();
 	if ((style & SWT.BALLOON) == 0) {
-		int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
-		if (tipWindow != 0) display.removeWidget (tipWindow);
+		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
+			int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
+			if (tipWindow != 0) display.removeWidget (tipWindow);
+		}
 	}
 }
 
@@ -460,8 +465,11 @@ public String getText () {
 public boolean getVisible () {
 	checkWidget ();
 	if ((style & SWT.BALLOON) != 0) return OS.GTK_WIDGET_VISIBLE (handle);
-	int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
-	return OS.GTK_WIDGET_VISIBLE (tipWindow);
+	if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
+		int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
+		return OS.GTK_WIDGET_VISIBLE (tipWindow);
+	}
+	return false;
 }
 
 int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
@@ -605,11 +613,13 @@ void hookEvents () {
 		OS.gtk_widget_add_events (handle, OS.GDK_BUTTON_PRESS_MASK);
 		OS.g_signal_connect_closure (handle, OS.button_press_event, display.closures [BUTTON_PRESS_EVENT], false);
 	} else {
-		int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
-		if (tipWindow != 0) {
-			OS.g_signal_connect_closure (tipWindow, OS.size_allocate, display.closures [SIZE_ALLOCATE], false);
-			OS.gtk_widget_add_events (tipWindow, OS.GDK_BUTTON_PRESS_MASK);
-			OS.g_signal_connect_closure (tipWindow, OS.button_press_event, display.closures [BUTTON_PRESS_EVENT], false);
+		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
+			int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
+			if (tipWindow != 0) {
+				OS.g_signal_connect_closure (tipWindow, OS.size_allocate, display.closures [SIZE_ALLOCATE], false);
+				OS.gtk_widget_add_events (tipWindow, OS.GDK_BUTTON_PRESS_MASK);
+				OS.g_signal_connect_closure (tipWindow, OS.button_press_event, display.closures [BUTTON_PRESS_EVENT], false);
+			}
 		}
 	}
 }
@@ -636,8 +646,10 @@ public boolean isVisible () {
 void register () {
 	super.register ();
 	if ((style & SWT.BALLOON) == 0) {
-		int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
-		if (tipWindow != 0) display.addWidget (tipWindow, this);
+		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
+			int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
+			if (tipWindow != 0) display.addWidget (tipWindow, this);
+		}
 	}
 }
 
@@ -724,9 +736,11 @@ public void setLocation (int x, int y) {
 	if ((style & SWT.BALLOON) != 0) {
 		if (OS.GTK_WIDGET_VISIBLE (handle)) configure ();
 	} else {
-		int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
-		if (OS.GTK_WIDGET_VISIBLE (tipWindow)) {
-			OS.gtk_window_move (tipWindow, x, y);
+		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
+			int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
+			if (OS.GTK_WIDGET_VISIBLE (tipWindow)) {
+				OS.gtk_window_move (tipWindow, x, y);
+			}
 		}
 	}
 }
@@ -890,8 +904,10 @@ int /*long*/ timerProc (int /*long*/ widget) {
 	if ((style & SWT.BALLOON) != 0) {
 		OS.gtk_widget_hide (handle);
 	} else {
-		int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
-		OS.gtk_widget_hide (tipWindow);
+		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
+			int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
+			OS.gtk_widget_hide (tipWindow);
+		}
 	}
 	return 0;
 }

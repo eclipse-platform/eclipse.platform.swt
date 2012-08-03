@@ -596,16 +596,17 @@ public void setToolTipText (String string) {
 	if (string != null && string.length () > 0) {
 		buffer = Converter.wcsToMbcs (null, string, true);
 	}
-	if (tooltipsHandle == 0) {
-		tooltipsHandle = OS.gtk_tooltips_new ();
-		if (tooltipsHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.g_object_ref (tooltipsHandle);
-		g_object_ref_sink (tooltipsHandle);
-	}
 	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
 		OS.gtk_status_icon_set_tooltip (handle, buffer);
-	} else
+	} else {
+		if (tooltipsHandle == 0) {
+			tooltipsHandle = OS.gtk_tooltips_new ();
+			if (tooltipsHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.g_object_ref (tooltipsHandle);
+			g_object_ref_sink (tooltipsHandle);
+		}
 		OS.gtk_tooltips_set_tip (tooltipsHandle, handle, buffer, null);
+	}
 }
 
 /**
