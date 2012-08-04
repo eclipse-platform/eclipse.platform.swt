@@ -382,8 +382,14 @@
 #ifndef GTK_WIDGET_SENSITIVE
 #define GTK_WIDGET_SENSITIVE(arg0) 0
 #endif
+#ifndef GTK_WIDGET_SET_FLAGS
+#define GTK_WIDGET_SET_FLAGS(arg0, arg1)
+#endif
+#ifndef GTK_WIDGET_UNSET_FLAGS
+#define GTK_WIDGET_UNSET_FLAGS(arg0, arg1)
+#endif
 #ifndef GTK_OBJECT_FLAGS
-#define GTK_OBJECT_FLAGS(arg0) 0
+#define GTK_OBJECT_FLAGS(arg0) arg0
 #endif
 #ifndef GTK_WIDGET_VISIBLE
 #define GTK_WIDGET_VISIBLE(arg0) 0
