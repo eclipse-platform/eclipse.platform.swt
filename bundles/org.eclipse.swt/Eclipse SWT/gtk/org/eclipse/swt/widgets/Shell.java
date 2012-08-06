@@ -772,7 +772,6 @@ int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*
 						if (isDisposed ()) return 0;
 						if (isCustomResize ()) {				
 							OS.gdk_window_invalidate_rect (gtk_widget_get_window (shellHandle), null, false);
-
 						}
 						break;
 				}

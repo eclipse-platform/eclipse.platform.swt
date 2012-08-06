@@ -456,7 +456,7 @@ public Rectangle getThumbTrackBounds () {
 	}
 	Rectangle rect = new Rectangle(x, y, width, height);
 	int [] origin_x = new int [1], origin_y = new int [1];
-	 int /*long*/ window = gtk_widget_get_window (parent.scrolledHandle);
+	int /*long*/ window = gtk_widget_get_window (parent.scrolledHandle);
 	if (window != 0) OS.gdk_window_get_origin (window, origin_x, origin_y);
 	rect.x += origin_x [0];
 	rect.y += origin_y [0];
