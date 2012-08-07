@@ -532,7 +532,7 @@ int /*long*/ focusHandle () {
 boolean forceFocus (int /*long*/ focusHandle) {
 	if (socketHandle != 0) gtk_widget_set_can_focus (focusHandle, true);
 	boolean result = super.forceFocus (focusHandle);
-	if (socketHandle != 0) OS.GTK_WIDGET_UNSET_FLAGS (focusHandle, OS.GTK_CAN_FOCUS);
+	if (socketHandle != 0) gtk_widget_set_can_focus (focusHandle, false);
 	return result;
 }
 

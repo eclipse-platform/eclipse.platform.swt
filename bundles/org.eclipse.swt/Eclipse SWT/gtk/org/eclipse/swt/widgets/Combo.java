@@ -450,7 +450,7 @@ void createHandle (int index) {
 	* clear the GTK_RECEIVES_DEFAULT flag.
 	*/
 	if ((style & SWT.READ_ONLY) != 0 && buttonHandle != 0) {
-		OS.GTK_WIDGET_UNSET_FLAGS (buttonHandle, OS.GTK_RECEIVES_DEFAULT);
+		gtk_widget_set_receives_default (buttonHandle, false);
 	}
 }
 

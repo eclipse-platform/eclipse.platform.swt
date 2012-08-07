@@ -1778,6 +1778,14 @@ void gtk_widget_set_visible (int /*long*/ widget, boolean visible) {
 	}
 }
 
+void gtk_widget_set_receives_default (int /*long*/ widget, boolean receives_default) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_set_receives_default (widget, receives_default);	
+	} else {
+		OS.GTK_WIDGET_UNSET_FLAGS (widget, OS.GTK_RECEIVES_DEFAULT);
+	}
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.

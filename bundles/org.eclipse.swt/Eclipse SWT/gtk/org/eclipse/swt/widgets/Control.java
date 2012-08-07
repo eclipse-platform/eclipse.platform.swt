@@ -195,7 +195,7 @@ void fixFocus (Control focusControl) {
 	OS.gtk_widget_grab_focus (focusHandle);
 	// widget could be disposed at this point
 	if (isDisposed ()) return;
-	OS.GTK_WIDGET_UNSET_FLAGS (focusHandle, OS.GTK_CAN_FOCUS);
+	gtk_widget_set_can_focus (focusHandle, false);
 }
 
 void fixStyle () {
@@ -840,7 +840,7 @@ void moveHandle (int x, int y) {
 	* old bounds of the child are correctly redrawn.
 	*/
 	boolean visible = gtk_widget_get_visible (parentHandle);
-	OS.GTK_WIDGET_UNSET_FLAGS (parentHandle, OS.GTK_VISIBLE);
+	gtk_widget_set_visible (parentHandle, false);
 	OS.gtk_fixed_move (parentHandle, topHandle, x, y);
 	if (visible) {
 		gtk_widget_set_visible (parentHandle, true);
@@ -4564,7 +4564,7 @@ public void setVisible (boolean visible) {
 		}
 		state |= HIDDEN;
 		if (fixFocus) {
-			OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);
+			gtk_widget_set_visible (topHandle, false);
 			fixFocus (control);
 			if (isDisposed ()) return;
 			gtk_widget_set_visible (topHandle, true);

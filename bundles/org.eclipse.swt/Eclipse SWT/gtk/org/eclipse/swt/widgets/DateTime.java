@@ -163,10 +163,10 @@ void createText(boolean dropDown) {
 		createPopupShell(-1, -1, -1);
 	} else {
 		up = new Button(this, SWT.ARROW | SWT.UP);
-		OS.GTK_WIDGET_UNSET_FLAGS(up.handle, OS.GTK_CAN_FOCUS);
+		gtk_widget_set_can_focus (up.handle, false);
 		//up.setToolTipText(SWT.getMessage ("SWT_Up")); //$NON-NLS-1$
 		down = new Button(this, SWT.ARROW | SWT.DOWN);
-		OS.GTK_WIDGET_UNSET_FLAGS(down.handle, OS.GTK_CAN_FOCUS);
+		gtk_widget_set_can_focus (down.handle, false);
 		//down.setToolTipText(SWT.getMessage ("SWT_Down")); //$NON-NLS-1$
 		up.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
@@ -185,7 +185,7 @@ void createText(boolean dropDown) {
 
 void createDropDownButton() {
 	down = new Button(this, SWT.ARROW  | SWT.DOWN);
-	OS.GTK_WIDGET_UNSET_FLAGS(down.handle, OS.GTK_CAN_FOCUS);
+	gtk_widget_set_can_focus (down.handle, false);
 	down.addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {
 			boolean dropped = isDropped();

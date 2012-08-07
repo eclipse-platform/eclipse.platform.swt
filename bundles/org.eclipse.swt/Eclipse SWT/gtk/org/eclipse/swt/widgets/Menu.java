@@ -963,7 +963,7 @@ public void setEnabled (boolean enabled) {
 	if (enabled) {
 		OS.gtk_widget_set_sensitive (handle, true);
 	} else {
-		OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_SENSITIVE);
+		OS.gtk_widget_set_sensitive (handle, false);
 	}
 }
 

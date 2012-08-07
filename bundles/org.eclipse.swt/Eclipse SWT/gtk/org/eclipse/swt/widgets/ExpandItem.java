@@ -329,7 +329,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
-	OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+	gtk_widget_set_can_focus (handle, false);
 	parent.lastFocus = this;
 	return 0;
 }
@@ -514,7 +514,7 @@ boolean setFocus () {
 	// widget could be disposed at this point
 	if (isDisposed ()) return false;
 	boolean result = OS.gtk_widget_is_focus (handle);
-	if (!result) OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+	if (!result) gtk_widget_set_can_focus (handle, false);
 	return result;
 }
 

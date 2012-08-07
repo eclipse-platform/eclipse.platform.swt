@@ -16147,6 +16147,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1parent_1window)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1set_1receives_1default
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1receives_1default)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1receives_1default_FUNC);
+/*
+	gtk_widget_set_receives_default(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_set_receives_default)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jboolean))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1receives_1default_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1set_1redraw_1on_1allocate
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1redraw_1on_1allocate)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)

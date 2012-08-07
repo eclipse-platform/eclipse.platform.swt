@@ -278,7 +278,7 @@ void createHandle (int index) {
 	boolean enabled = gtk_widget_get_sensitive (parentHandle);
 	if (!enabled) OS.gtk_widget_set_sensitive (parentHandle, true);
 	OS.gtk_menu_shell_insert (parentHandle, handle, index);
-	if (!enabled) OS.GTK_WIDGET_UNSET_FLAGS (parentHandle, OS.GTK_SENSITIVE);
+	if (!enabled) OS.gtk_widget_set_sensitive (parentHandle, false);
 	OS.gtk_widget_show (handle);
 }
 

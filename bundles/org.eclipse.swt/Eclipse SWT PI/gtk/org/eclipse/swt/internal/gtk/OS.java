@@ -12598,6 +12598,16 @@ public static final void gtk_widget_set_direction(int /*long*/ widget, int dir) 
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native void _gtk_widget_set_receives_default(int /*long*/ widget, boolean receives_default);
+public static final void gtk_widget_set_receives_default(int /*long*/ widget, boolean receives_default) {
+	lock.lock();
+	try {
+		_gtk_widget_set_receives_default(widget, receives_default);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @param widget cast=(GtkWidget *)
  * @param double_buffered cast=(gboolean)
