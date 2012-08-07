@@ -404,7 +404,6 @@
 #else
 #define GTK_WIDGET_HEIGHT(arg0) (arg0)->allocation.height
 #endif
-#define GTK_WIDGET_SET_HEIGHT(arg0, arg1) (arg0)->allocation.height = arg1
 #ifndef GTK_WIDGET_MAPPED
 #define GTK_WIDGET_MAPPED(arg0) 0
 #endif
@@ -413,7 +412,6 @@
 #else
 #define GTK_WIDGET_WIDTH(arg0) (arg0)->allocation.width
 #endif
-#define GTK_WIDGET_SET_WIDTH(arg0, arg1) (arg0)->allocation.width = arg1
 #if GTK_CHECK_VERSION(2,14,0)
 #define GTK_WIDGET_WINDOW(arg0) 0
 #else

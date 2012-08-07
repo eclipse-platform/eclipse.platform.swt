@@ -740,10 +740,6 @@ public static final native void GTK_TOOLTIPS_SET_ACTIVE(int /*long*/ widget, int
  */
 public static final native int /*long*/ GTK_TOOLTIPS_GET_TIP_TEXT(int /*long*/ data);
 /** @param widget cast=(GtkWidget *) */
-public static final native void GTK_WIDGET_SET_HEIGHT(int /*long*/ widget, int height);
-/** @param widget cast=(GtkWidget *) */
-public static final native void GTK_WIDGET_SET_WIDTH(int /*long*/ widget, int width);
-/** @param widget cast=(GtkWidget *) */
 public static final native void GTK_WIDGET_SET_X(int /*long*/ widget, int x);
 /** @param widget cast=(GtkWidget *) */
 public static final native void GTK_WIDGET_SET_Y(int /*long*/ widget, int y);
