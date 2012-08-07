@@ -16034,6 +16034,27 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1widget_1send_1expose)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1set_1allocation
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1allocation)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	GtkAllocation _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1allocation_FUNC);
+	if (arg1) if ((lparg1 = getGtkAllocationFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	gtk_widget_set_allocation(arg0, (GtkAllocation *)lparg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_set_allocation)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GtkAllocation *))fp)(arg0, (GtkAllocation *)lparg1);
+		}
+	}
+fail:
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1allocation_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1set_1app_1paintable
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1app_1paintable)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)

@@ -71,6 +71,7 @@
 #define XRenderSetPictureClipRectangles_LIB LIB_XRENDER
 #define XRenderSetPictureTransform_LIB LIB_XRENDER
 #define g_filename_display_name_LIB LIB_GLIB
+#define gtk_widget_set_allocation_LIB LIB_GTK
 #define gtk_calendar_display_options_LIB LIB_GTK
 #define gtk_calendar_get_date_LIB LIB_GTK
 #define gtk_calendar_new_LIB LIB_GTK
@@ -437,7 +438,11 @@
 #else
 #define GTK_WIDGET_X(arg0) (arg0)->allocation.x
 #endif
+#if GTK_CHECK_VERSION(2,18,0)
+#define GTK_WIDGET_SET_X(arg0, arg1)
+#else
 #define GTK_WIDGET_SET_X(arg0, arg1) (arg0)->allocation.x = arg1
+#endif
 #define GTK_ENTRY_IM_CONTEXT(arg0) (arg0)->im_context
 #define GTK_TEXTVIEW_IM_CONTEXT(arg0) (arg0)->im_context
 #if GTK_CHECK_VERSION(2,12,0)
@@ -454,7 +459,11 @@
 #else
 #define GTK_WIDGET_Y(arg0) ((GtkWidget *)arg0)->allocation.y
 #endif
+#if GTK_CHECK_VERSION(2,18,0)
+#define GTK_WIDGET_SET_Y(arg0, arg1)
+#else
 #define GTK_WIDGET_SET_Y(arg0, arg1) (arg0)->allocation.y = arg1
+#endif
 #define GTK_WIDGET_REQUISITION_WIDTH(arg0) (arg0)->requisition.width
 #define GTK_WIDGET_REQUISITION_HEIGHT(arg0) (arg0)->requisition.height
 #define GDK_EVENT_TYPE(arg0) (arg0)->type

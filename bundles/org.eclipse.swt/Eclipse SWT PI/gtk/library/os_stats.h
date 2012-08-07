@@ -1270,6 +1270,7 @@ typedef enum {
 	_1gtk_1widget_1remove_1accelerator_FUNC,
 	_1gtk_1widget_1reparent_FUNC,
 	_1gtk_1widget_1send_1expose_FUNC,
+	_1gtk_1widget_1set_1allocation_FUNC,
 	_1gtk_1widget_1set_1app_1paintable_FUNC,
 	_1gtk_1widget_1set_1can_1default_FUNC,
 	_1gtk_1widget_1set_1can_1focus_FUNC,

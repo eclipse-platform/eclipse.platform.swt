@@ -12739,6 +12739,19 @@ public static final void gtk_widget_size_request(int /*long*/ widget, GtkRequisi
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param allocation cast=(GtkAllocation *),flags=no_out
+ */
+public static final native void _gtk_widget_set_allocation(int /*long*/ widget, GtkAllocation allocation);
+public static final void gtk_widget_set_allocation(int /*long*/ widget, GtkAllocation allocation) {
+	lock.lock();
+	try {
+		_gtk_widget_set_allocation(widget, allocation);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param widget cast=(GtkWidget *)
  * @param property_name cast=(const gchar *)
  * @param terminator cast=(const gchar *),flags=sentinel
