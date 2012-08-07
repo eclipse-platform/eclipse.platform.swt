@@ -136,7 +136,7 @@ void createHandle (int index) {
 	OS.gtk_container_add (boxHandle, imageHandle);
 	OS.gtk_container_add (boxHandle, labelHandle);
 	OS.gtk_expander_set_label_widget (handle, boxHandle);
-	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+	gtk_widget_set_can_focus (handle, true);
 }
 
 void createWidget (int index) {
@@ -509,7 +509,7 @@ public void setExpanded (boolean expanded) {
 
 boolean setFocus () {
 	if (!OS.gtk_widget_get_child_visible (handle)) return false;
-	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+	gtk_widget_set_can_focus (handle, true);
 	OS.gtk_widget_grab_focus (handle);
 	// widget could be disposed at this point
 	if (isDisposed ()) return false;

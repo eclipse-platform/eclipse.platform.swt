@@ -302,7 +302,7 @@ void createHandle (int index) {
 		default:
 			handle = OS.gtk_button_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_DEFAULT);
+			gtk_widget_set_can_default (handle, true);
 			break;
 	}
 	if ((style & SWT.ARROW) != 0) {

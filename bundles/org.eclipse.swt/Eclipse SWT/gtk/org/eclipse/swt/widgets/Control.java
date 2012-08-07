@@ -191,7 +191,7 @@ void fixFocus (Control focusControl) {
 	}
 	shell.setSavedFocus (focusControl);
 	int /*long*/ focusHandle = shell.vboxHandle;
-	OS.GTK_WIDGET_SET_FLAGS (focusHandle, OS.GTK_CAN_FOCUS);
+	gtk_widget_set_can_focus (focusHandle, true);
 	OS.gtk_widget_grab_focus (focusHandle);
 	// widget could be disposed at this point
 	if (isDisposed ()) return;
@@ -843,7 +843,7 @@ void moveHandle (int x, int y) {
 	OS.GTK_WIDGET_UNSET_FLAGS (parentHandle, OS.GTK_VISIBLE);
 	OS.gtk_fixed_move (parentHandle, topHandle, x, y);
 	if (visible) {
-		OS.GTK_WIDGET_SET_FLAGS (parentHandle, OS.GTK_VISIBLE);	
+		gtk_widget_set_visible (parentHandle, true);
 	}
 }
 
@@ -2368,7 +2368,7 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 }
 
 int /*long*/ fixedMapProc (int /*long*/ widget) {
-	OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_MAPPED);
+	gtk_widget_set_mapped (widget, true);
 	int /*long*/ widgetList = OS.gtk_container_get_children (widget);
 	if (widgetList != 0) {
 		int /*long*/ widgets = widgetList;
@@ -4567,7 +4567,7 @@ public void setVisible (boolean visible) {
 			OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);
 			fixFocus (control);
 			if (isDisposed ()) return;
-			OS.GTK_WIDGET_SET_FLAGS (topHandle, OS.GTK_VISIBLE);
+			gtk_widget_set_visible (topHandle, true);
 		}
 		OS.gtk_widget_hide (topHandle);
 		if (isDisposed ()) return;

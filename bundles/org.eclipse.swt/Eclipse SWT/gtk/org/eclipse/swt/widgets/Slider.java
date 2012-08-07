@@ -170,7 +170,7 @@ void createHandle (int index) {
 	* (http://bugzilla.gnome.org/show_bug.cgi?id=475909) 
 	*/
 	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0) || (style & SWT.VERTICAL) != 0) {
-		OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+		gtk_widget_set_can_focus (handle, true);
 	}
 	OS.gtk_container_add (fixedHandle, handle);
 }

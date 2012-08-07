@@ -16019,6 +16019,44 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1app_1paintable)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1set_1can_1default
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1can_1default)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1can_1default_FUNC);
+/*
+	gtk_widget_set_can_default(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_set_can_default)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jboolean))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1can_1default_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1set_1can_1focus
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1widget_1set_1can_1focus)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1can_1focus_FUNC);
+/*
+	rc = (jboolean)gtk_widget_set_can_focus(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_set_can_focus)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, jboolean))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1can_1focus_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1set_1default_1direction
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1default_1direction)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -16064,6 +16102,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1has_1window)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1has_1window_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1set_1mapped
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1mapped)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1mapped_FUNC);
+/*
+	gtk_widget_set_mapped(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_set_mapped)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jboolean))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1mapped_FUNC);
 }
 #endif
 
@@ -16150,6 +16206,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1tooltip_1text)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1tooltip_1text_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1set_1visible
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1visible)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1visible_FUNC);
+/*
+	gtk_widget_set_visible(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_set_visible)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jboolean))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1visible_FUNC);
 }
 #endif
 

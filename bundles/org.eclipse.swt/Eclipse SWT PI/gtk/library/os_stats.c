@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1330;
-int OS_nativeFunctionCallCount[1330];
+int OS_nativeFunctionCount = 1334;
+int OS_nativeFunctionCallCount[1334];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -1262,10 +1262,13 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1reparent",
 	"_1gtk_1widget_1send_1expose",
 	"_1gtk_1widget_1set_1app_1paintable",
+	"_1gtk_1widget_1set_1can_1default",
+	"_1gtk_1widget_1set_1can_1focus",
 	"_1gtk_1widget_1set_1default_1direction",
 	"_1gtk_1widget_1set_1direction",
 	"_1gtk_1widget_1set_1double_1buffered",
 	"_1gtk_1widget_1set_1has_1window",
+	"_1gtk_1widget_1set_1mapped",
 	"_1gtk_1widget_1set_1name",
 	"_1gtk_1widget_1set_1parent_1window",
 	"_1gtk_1widget_1set_1redraw_1on_1allocate",
@@ -1273,6 +1276,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1set_1size_1request",
 	"_1gtk_1widget_1set_1state",
 	"_1gtk_1widget_1set_1tooltip_1text",
+	"_1gtk_1widget_1set_1visible",
 	"_1gtk_1widget_1show",
 	"_1gtk_1widget_1size_1allocate",
 	"_1gtk_1widget_1size_1request",

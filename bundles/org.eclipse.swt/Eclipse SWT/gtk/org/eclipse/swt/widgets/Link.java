@@ -146,7 +146,7 @@ void createHandle(int index) {
 	handle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	gtk_widget_set_has_window (handle, true);
-	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+	gtk_widget_set_can_focus (handle, true);
 	layout = new TextLayout (display);
 	linkColor = new Color (display, LINK_FOREGROUND);
 	disabledColor = new Color (display, LINK_DISABLED_FOREGROUND);

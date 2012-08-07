@@ -277,7 +277,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 	handle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	gtk_widget_set_has_window (handle, true);
-	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_FOCUS);
+	gtk_widget_set_can_focus (handle, true);
 	if ((style & SWT.EMBEDDED) == 0) {
 		if ((state & CANVAS) != 0) {
 			/* Prevent an input method context from being created for the Browser widget */
@@ -530,7 +530,7 @@ int /*long*/ focusHandle () {
 }
 
 boolean forceFocus (int /*long*/ focusHandle) {
-	if (socketHandle != 0) OS.GTK_WIDGET_SET_FLAGS (focusHandle, OS.GTK_CAN_FOCUS);
+	if (socketHandle != 0) gtk_widget_set_can_focus (focusHandle, true);
 	boolean result = super.forceFocus (focusHandle);
 	if (socketHandle != 0) OS.GTK_WIDGET_UNSET_FLAGS (focusHandle, OS.GTK_CAN_FOCUS);
 	return result;

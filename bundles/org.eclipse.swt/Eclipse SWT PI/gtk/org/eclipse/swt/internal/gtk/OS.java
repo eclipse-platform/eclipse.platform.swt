@@ -12545,6 +12545,46 @@ public static final void gtk_widget_set_default_direction(int dir) {
 		lock.unlock();
 	}
 } 
+/** @method flags=dynamic */
+public static final native void _gtk_widget_set_can_default(int /*long*/ widget, boolean can_default);
+public static final void gtk_widget_set_can_default(int /*long*/ widget, boolean can_default) {
+	lock.lock();
+	try {
+		_gtk_widget_set_can_default(widget,can_default) ;
+	} finally {
+		lock.unlock();
+	}
+} 
+/** @method flags=dynamic */
+public static final native boolean _gtk_widget_set_can_focus(int /*long*/ widget, boolean can_focus);
+public static final boolean gtk_widget_set_can_focus(int /*long*/ widget, boolean can_focus) {
+	lock.lock();
+	try {
+		return _gtk_widget_set_can_focus(widget,can_focus);
+	} finally {
+		lock.unlock();
+	}
+} 
+/** @method flags=dynamic */
+public static final native void _gtk_widget_set_mapped(int /*long*/ widget, boolean mapped);
+public static final void gtk_widget_set_mapped(int /*long*/ widget, boolean mapped) {
+	lock.lock();
+	try {
+		_gtk_widget_set_mapped(widget,mapped);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_widget_set_visible(int /*long*/ widget, boolean visible);
+public static final void gtk_widget_set_visible(int /*long*/ widget, boolean visible) {
+	lock.lock();
+	try {
+		_gtk_widget_set_visible(widget, visible);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @param widget cast=(GtkWidget *)
  * @param dir cast=(GtkTextDirection)
