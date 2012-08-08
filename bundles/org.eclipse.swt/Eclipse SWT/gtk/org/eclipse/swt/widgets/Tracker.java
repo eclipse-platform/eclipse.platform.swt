@@ -709,14 +709,18 @@ public boolean open () {
 
 	/* Tracker behaves like a Dialog with its own OS event loop. */
 	GdkEvent gdkEvent = new GdkEvent();
+	Display display = this.display;
 	while (tracking) {
 		if (parent != null && parent.isDisposed ()) break;
 		int /*long*/ eventPtr;
 		while (true) {
+			display.runSkin ();
+			display.runDeferredLayouts ();
 			eventPtr = OS.gdk_event_get ();
 			if (eventPtr != 0) {
 				break;
 			} else {
+				display.runAsyncMessages (false);
 				try { Thread.sleep(50); } catch (Exception ex) {}
 			}
 		}
@@ -744,6 +748,7 @@ public boolean open () {
 				OS.gtk_main_do_event (eventPtr);
 		}
 		OS.gdk_event_free (eventPtr);
+		display.runAsyncMessages (false);
 	}
 	if (!isDisposed ()) {
 		update ();
