@@ -841,6 +841,9 @@ public boolean open () {
 	while (tracking && !cancelled) {
 		display.addPool();
 		try {
+			if (parent != null && parent.isDisposed ()) break;
+			display.runSkin ();
+			display.runDeferredLayouts ();
 			NSEvent event = application.nextEventMatchingMask(0, NSDate.distantFuture(), OS.NSDefaultRunLoopMode, true);
 			if (event == null) continue;
 			int type = (int)/*64*/event.type();
@@ -885,6 +888,7 @@ public boolean open () {
 				clientCursor.handle.set();
 				display.lockCursor = true;
 			}
+			display.runAsyncMessages (false);
 		} finally {
 			display.removePool();
 		}

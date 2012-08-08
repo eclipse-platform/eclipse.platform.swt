@@ -606,13 +606,13 @@ public boolean open () {
 					drawRectangles (rectangles, stippled);
 				}
 			}
+			display.runAsyncMessages (false);
 		}
 		if (mouseDown) OS.ReleaseCapture ();
 		if (!isDisposed()) {
 			update ();
 			drawRectangles (rectangles, stippled);
 		}
-		display.runAsyncMessages (false);
 	} finally {
 		/*
 		* Cleanup: If a transparent window was created in order to capture events then
