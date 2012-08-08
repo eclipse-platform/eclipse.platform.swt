@@ -1798,7 +1798,11 @@ void gtk_widget_set_receives_default (int /*long*/ widget, boolean receives_defa
 	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
 		OS.gtk_widget_set_receives_default (widget, receives_default);	
 	} else {
-		OS.GTK_WIDGET_UNSET_FLAGS (widget, OS.GTK_RECEIVES_DEFAULT);
+		if (receives_default) {
+			OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_RECEIVES_DEFAULT);
+		} else {
+			OS.GTK_WIDGET_UNSET_FLAGS (widget, OS.GTK_RECEIVES_DEFAULT);
+		}
 	}
 }
 
