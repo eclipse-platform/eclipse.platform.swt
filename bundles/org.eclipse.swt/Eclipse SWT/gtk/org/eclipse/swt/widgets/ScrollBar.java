@@ -339,8 +339,8 @@ public int getThumb () {
  */
 public Rectangle getThumbBounds () {
 	checkWidget();
-	int slider_start = OS.GTK_RANGE_SLIDER_START (handle);
-	int slider_end = OS.GTK_RANGE_SLIDER_END (handle);
+	int [] slider_start = new int [1], slider_end = new int [1];
+	gtk_range_get_slider_range (handle, slider_start, slider_end);
 	int x, y, width, height;
 	GtkAllocation allocation = new GtkAllocation ();
 	if ((style & SWT.VERTICAL) != 0) {
@@ -352,10 +352,10 @@ public Rectangle getThumbBounds () {
 			x = OS.GTK_WIDGET_X (handle);
 			width = OS.GTK_WIDGET_WIDTH (handle);
 		}
-		y = slider_start;
-		height = slider_end - slider_start;
+		y = slider_start [0];
+		height = slider_end [0] - slider_start [0];
 	} else {
-		x = slider_start;
+		x = slider_start [0];
 		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
 			OS.gtk_widget_get_allocation(handle, allocation);
 			y = allocation.y;
@@ -364,7 +364,7 @@ public Rectangle getThumbBounds () {
 			y = OS.GTK_WIDGET_Y (handle);
 			height = OS.GTK_WIDGET_HEIGHT (handle);
 		}
-		width = slider_end - slider_start;
+		width = slider_end [0] - slider_start [0];
 	}
 	Rectangle rect = new Rectangle(x, y, width, height);
 	int [] origin_x = new int [1], origin_y = new int [1];
@@ -423,7 +423,9 @@ public Rectangle getThumbTrackBounds () {
 		if (hasC) height -= stepperSize;
 		if (hasD) height -= stepperSize;
 		if (height < 0) {
-			y = OS.GTK_RANGE_SLIDER_START (handle);
+			int [] slider_start = new int [1], slider_end = new int [1];
+			gtk_range_get_slider_range (handle, slider_start, slider_end);
+			y = slider_start [0];
 			height = 0;
 		}
 	} else {
@@ -450,7 +452,9 @@ public Rectangle getThumbTrackBounds () {
 			height = OS.GTK_WIDGET_HEIGHT (handle);	
 		}
 		if (width < 0) {
-			x = OS.GTK_RANGE_SLIDER_START (handle);
+			int [] slider_start = new int [1], slider_end = new int [1];
+			gtk_range_get_slider_range (handle, slider_start, slider_end);
+			x = slider_start [0];
 			width = 0;
 		}
 	}
@@ -507,6 +511,15 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr)
 int /*long*/ gtk_change_value (int /*long*/ widget, int /*long*/ scroll, int /*long*/ value1, int /*long*/ value2) {
 	detail = (int)/*64*/scroll;
 	return 0;
+}
+
+void gtk_range_get_slider_range (int /*long*/ widget, int [] slider_start, int [] slider_end) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
+		OS.gtk_range_get_slider_range (widget, slider_start, slider_end);
+	} else {
+		slider_start [0] = OS.GTK_RANGE_SLIDER_START (widget);
+		slider_end [0] = OS.GTK_RANGE_SLIDER_END (widget);
+	}
 }
 
 int /*long*/ gtk_value_changed (int /*long*/ adjustment) {

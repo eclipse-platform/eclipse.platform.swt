@@ -224,6 +224,7 @@
 #define gtk_widget_set_sensitive_LIB LIB_GTK
 #define gtk_widget_set_receives_default_LIB LIB_GTK
 #define gtk_widget_set_visible_LIB LIB_GTK
+#define gtk_range_get_slider_range_LIB LIB_GTK
 #define gdk_pango_context_set_colormap_LIB LIB_GDK
 #define gdk_x11_screen_get_window_manager_name_LIB LIB_GDK
 #define gdk_x11_screen_lookup_visual_LIB LIB_GDK
@@ -367,8 +368,16 @@
 #define G_OBJECT_CLASS_SET_CONSTRUCTOR(arg0, arg1) (arg0)->constructor = (GObject* (*) (GType, guint, GObjectConstructParam *))arg1
 #define GTK_ACCEL_LABEL_SET_ACCEL_STRING(arg0, arg1) (arg0)->accel_string = arg1
 #define GTK_ACCEL_LABEL_GET_ACCEL_STRING(arg0) (arg0)->accel_string
+#if GTK_CHECK_VERSION(2,20,0)
+#define GTK_RANGE_SLIDER_START(arg0) 0
+#else
 #define GTK_RANGE_SLIDER_START(arg0) (arg0)->slider_start
+#endif
+#if GTK_CHECK_VERSION(2,20,0)
+#define GTK_RANGE_SLIDER_END(arg0) 0
+#else
 #define GTK_RANGE_SLIDER_END(arg0) (arg0)->slider_end
+#endif
 #define GTK_RANGE_HAS_STEPPER_A(arg0) (arg0)->has_stepper_a
 #define GTK_RANGE_HAS_STEPPER_B(arg0) (arg0)->has_stepper_b
 #define GTK_RANGE_HAS_STEPPER_C(arg0) (arg0)->has_stepper_c

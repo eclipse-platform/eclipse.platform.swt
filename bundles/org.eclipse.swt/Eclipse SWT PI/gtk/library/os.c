@@ -12135,6 +12135,31 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1range_1get_1adjustment)
 }
 #endif
 
+#ifndef NO__1gtk_1range_1get_1slider_1range
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1range_1get_1slider_1range)
+	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1range_1get_1slider_1range_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	gtk_range_get_slider_range((GtkRange *)arg0, (gint *)lparg1, (gint *)lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_range_get_slider_range)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkRange *, gint *, gint *))fp)((GtkRange *)arg0, (gint *)lparg1, (gint *)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1range_1get_1slider_1range_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1range_1set_1increments
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1range_1set_1increments)
 	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1, jdouble arg2)

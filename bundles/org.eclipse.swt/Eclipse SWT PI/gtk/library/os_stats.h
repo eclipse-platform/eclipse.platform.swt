@@ -936,6 +936,7 @@ typedef enum {
 	_1gtk_1radio_1menu_1item_1new_FUNC,
 	_1gtk_1radio_1menu_1item_1new_1with_1label_FUNC,
 	_1gtk_1range_1get_1adjustment_FUNC,
+	_1gtk_1range_1get_1slider_1range_FUNC,
 	_1gtk_1range_1set_1increments_FUNC,
 	_1gtk_1range_1set_1inverted_FUNC,
 	_1gtk_1range_1set_1range_FUNC,

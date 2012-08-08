@@ -9163,6 +9163,21 @@ public static final void gtk_range_set_value(int /*long*/ range, double value) {
 		lock.unlock();
 	}
 }
+/** 
+ *  @method flags=dynamic
+ *  @param range cast=(GtkRange *)
+ *  @param slider_start cast=(gint *)
+ *  @param slider_end cast=(gint *)
+ */
+public static final native void _gtk_range_get_slider_range(int /*long*/ range, int[] slider_start, int[] slider_end);
+public static final void gtk_range_get_slider_range(int /*long*/ range, int[] slider_start, int[] slider_end) {
+        lock.lock();
+        try {
+        	_gtk_range_get_slider_range(range, slider_start, slider_end);
+        } finally {
+                lock.unlock();
+        }
+}
 /** @param rc_string cast=(const gchar *) */
 public static final native void _gtk_rc_parse_string(byte[] rc_string);
 public static final void gtk_rc_parse_string(byte[] rc_string) {
