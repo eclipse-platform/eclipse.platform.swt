@@ -1750,7 +1750,11 @@ void gtk_widget_set_can_default (int /*long*/ widget, boolean can_default) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
 		OS.gtk_widget_set_can_default (widget, can_default);
 	} else {
-		OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_CAN_DEFAULT);	
+		if (can_default) {
+			OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_CAN_DEFAULT);
+		} else {
+			OS.GTK_WIDGET_UNSET_FLAGS (widget, OS.GTK_CAN_DEFAULT);
+		}
 	}
 }
 
@@ -1758,7 +1762,11 @@ void gtk_widget_set_can_focus (int /*long*/ widget, boolean can_focus) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
 		OS.gtk_widget_set_can_focus (widget, can_focus);
 	} else {
-		OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_CAN_FOCUS);
+		if (can_focus) {
+			OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_CAN_FOCUS);
+		} else {
+			OS.GTK_WIDGET_UNSET_FLAGS (widget, OS.GTK_CAN_FOCUS);
+		}
 	}
 }
 
@@ -1766,7 +1774,11 @@ void gtk_widget_set_mapped (int /*long*/ widget, boolean mapped) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
 		OS.gtk_widget_set_mapped (widget, mapped);
 	} else {
-		OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_MAPPED);
+		if (mapped) {
+			OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_MAPPED);
+		} else {
+			OS.GTK_WIDGET_UNSET_FLAGS (widget, OS.GTK_MAPPED);
+		}
 	}
 }
 
@@ -1774,7 +1786,11 @@ void gtk_widget_set_visible (int /*long*/ widget, boolean visible) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
 		OS.gtk_widget_set_visible (widget,visible);
 	} else {
-		OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_VISIBLE);
+		if (visible) {
+			OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_VISIBLE);
+		} else {
+			OS.GTK_WIDGET_UNSET_FLAGS (widget, OS.GTK_VISIBLE);
+		}
 	}
 }
 
