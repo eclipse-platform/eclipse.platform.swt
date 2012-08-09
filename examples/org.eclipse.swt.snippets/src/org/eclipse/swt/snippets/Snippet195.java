@@ -100,7 +100,7 @@ public class Snippet195 {
 		shell.setSize(640, 480);
 		shell.open();
 
-		display.asyncExec(new Runnable() {
+		final Runnable run = new Runnable() {
 			int rot = 0;
 			public void run() {
 				if (!canvas.isDisposed()) {
@@ -123,7 +123,13 @@ public class Snippet195 {
 					display.asyncExec(this);
 				}
 			}
+		};
+		canvas.addListener(SWT.Paint, new Listener() {
+			public void handleEvent(Event event) {
+				run.run();
+			}
 		});
+		display.asyncExec(run);
 
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
