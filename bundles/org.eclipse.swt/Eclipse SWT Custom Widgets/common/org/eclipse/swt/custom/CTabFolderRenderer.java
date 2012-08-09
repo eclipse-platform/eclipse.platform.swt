@@ -1719,7 +1719,7 @@ public class CTabFolderRenderer {
 	}
 	
 	void updateCurves () {
-		if (!(this instanceof CTabFolderRenderer)) return;
+		if (this.getClass() != CTabFolderRenderer.class) return;
 		int tabHeight = parent.tabHeight;
 		if (tabHeight == lastTabHeight) return;
 		if (parent.onBottom) {
