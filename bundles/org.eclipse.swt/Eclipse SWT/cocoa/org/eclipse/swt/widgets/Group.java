@@ -43,6 +43,7 @@ public class Group extends Composite {
 	NSView contentView;
 	String text = "";
 	boolean ignoreResize;
+	int hMargin, vMargin;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -100,6 +101,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	NSBox widget = (NSBox)view;
 	NSRect newRect = new NSRect();
+	newRect.x = x;
+	newRect.y = y;
 	newRect.width = width;
 	newRect.height = height;
 	NSRect oldRect = widget.frame();
@@ -108,10 +111,10 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	newRect = widget.frame();
 	widget.setFrame(oldRect);
 	ignoreResize = false;
-	x = (int) Math.ceil(newRect.x);
-	y = (int) Math.ceil(newRect.y);
-	width = (int) Math.ceil(newRect.width);
-	height = (int) Math.ceil(newRect.height);
+	x = (int) Math.ceil(newRect.x) - hMargin;
+	y = (int) Math.ceil(newRect.y) - vMargin;
+	width = (int) Math.ceil(newRect.width) + (hMargin * 2);
+	height = (int) Math.ceil(newRect.height) + (vMargin * 2);
 	return super.computeTrim(x, y, width, height);
 }
 
@@ -124,6 +127,9 @@ void createHandle () {
 	NSBox widget = (NSBox)new SWTBox().alloc();
 	widget.init();
 	widget.setTitlePosition(OS.NSNoTitle);
+	NSSize margins = widget.contentViewMargins();
+	hMargin = (int) margins.width;
+	vMargin = (int) margins.height;
 	widget.setContentViewMargins(new NSSize());
 	
 	NSView contentWidget = (NSView)new SWTView().alloc();
@@ -157,7 +163,9 @@ NSView eventView () {
 public Rectangle getClientArea () {
 	checkWidget();
 	NSRect rect = contentView.bounds();
-	return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+	int width = Math.max (0, (int) rect.width - hMargin * 2);
+	int height = Math.max (0, (int) rect.height - vMargin * 2);
+	return new Rectangle((int)(rect.x) + hMargin, (int)(rect.y) + vMargin, width, height);
 }
 
 String getNameText () {
