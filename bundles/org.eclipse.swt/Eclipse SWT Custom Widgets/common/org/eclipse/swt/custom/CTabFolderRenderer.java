@@ -1719,7 +1719,8 @@ public class CTabFolderRenderer {
 	}
 	
 	void updateCurves () {
-		if (this.getClass() != CTabFolderRenderer.class) return;
+		//Temp fix for Bug 384743
+		if (this.getClass().getName().equals("org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering")) return;
 		int tabHeight = parent.tabHeight;
 		if (tabHeight == lastTabHeight) return;
 		if (parent.onBottom) {
