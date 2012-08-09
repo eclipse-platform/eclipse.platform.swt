@@ -123,6 +123,7 @@ public class Shell extends Decorations {
 	int /*long*/ hostWindowClass;
 	NSWindow hostWindow;
 	int /*long*/ tooltipOwner, tooltipTag, tooltipUserData;
+	int glContextCount;
 	boolean opened, moved, resized, fullScreen, center, deferFlushing, scrolling, isPopup;
 	Control lastActive;
 	Rectangle normalBounds;
@@ -1873,11 +1874,10 @@ public void setRegion (Region region) {
 	regionPath = getPath(region);
 	if (region != null) {
 		window.setBackgroundColor(NSColor.clearColor());
-		window.setOpaque(false);
 	} else {
 		window.setBackgroundColor(NSColor.windowBackgroundColor());
-		window.setOpaque(true);
 	}
+	updateOpaque ();
 	window.contentView().setNeedsDisplay(true);
 	if (isVisible() && window.hasShadow()) {
 		window.display();
@@ -2043,6 +2043,11 @@ void updateCursorRects(boolean enabled) {
 
 void updateModal () {
 	// do nothing
+}
+
+void updateOpaque () {
+	if (window == null) return;
+	window.setOpaque (region == null && glContextCount == 0);
 }
 
 void updateParent (boolean visible) {
