@@ -535,12 +535,13 @@ public void setFont (Font font) {
 
 void setOpenGLContext(Object value) {
 	glcontext = (NSOpenGLContext)value;
-	NSWindow window = view.window();
+	Shell shell = getShell ();
 	if (glcontext != null) {
-		window.setOpaque(false);
+		shell.glContextCount++;
 	} else {
-		window.setOpaque(getShell().region == null);
+		shell.glContextCount--;
 	}
+	shell.updateOpaque ();
 }
 
 /**
@@ -608,13 +609,15 @@ void updateOpenGLContext(int /*long*/ id, int /*long*/ sel, int /*long*/ notific
 
 void viewWillMoveToWindow(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {	
 	super.viewWillMoveToWindow(id, sel, arg0);
-	if (glcontext != null) {
-		new NSWindow(arg0).setOpaque(false);
-		Shell shell = getShell();
-		NSWindow window = shell.window;
-		if (window != null) {
-			window.setOpaque(shell.region == null);
+	if (glcontext != null && id == view.id && arg0 != 0) {
+		Widget newShell = display.getWidget(new NSWindow(arg0).contentView());
+		if (newShell instanceof Shell) {
+			((Shell) newShell).glContextCount++;
+			((Shell) newShell).updateOpaque();
 		}
+		Shell shell = getShell();
+		shell.glContextCount--;
+		shell.updateOpaque();
 	}
 }
 
