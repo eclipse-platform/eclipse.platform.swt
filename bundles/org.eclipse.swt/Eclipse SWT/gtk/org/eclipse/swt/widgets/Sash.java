@@ -393,6 +393,9 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr
 	int y = 0;
 	int width = 0;
 	int height = 0;
+	int parentBorder = 0;
+	int parentWidth = 0;
+	int parentHeight = 0;
 	GtkAllocation allocation = new GtkAllocation ();
 	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
 		OS.gtk_widget_get_allocation(handle, allocation);
@@ -400,15 +403,17 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr
 		y = allocation.y;
 		width = allocation.width;
 		height = allocation.height;
+		OS.gtk_widget_get_allocation(parent.handle, allocation);
+		parentWidth = allocation.width;
+		parentHeight = allocation.height;
 	} else {
 		x = OS.GTK_WIDGET_X (handle);
 		y = OS.GTK_WIDGET_Y (handle);
 		width = OS.GTK_WIDGET_WIDTH (handle);
 		height = OS.GTK_WIDGET_HEIGHT (handle);	
+		parentWidth = OS.GTK_WIDGET_WIDTH (parent.handle);
+		parentHeight = OS.GTK_WIDGET_HEIGHT (parent.handle);
 	}
-	int parentBorder = 0;
-	int parentWidth = OS.GTK_WIDGET_WIDTH (parent.handle);
-	int parentHeight = OS.GTK_WIDGET_HEIGHT (parent.handle);
 	int newX = lastX, newY = lastY;
 	if ((style & SWT.VERTICAL) != 0) {
 		newX = Math.min (Math.max (0, eventX + x - startX - parentBorder), parentWidth - width);
