@@ -477,9 +477,9 @@
 			<fileset dir="${build.result.folder}/@dot" includes="**" />
 		</copy>
 		<copy todir="${destination.temp.folder}/${full.name}">
-			<fileset dir="${fragmentdir}" includes="fragment.properties,about.html,about_files/,swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,libcairo-swt.so,META-INF/" />
+			<fileset dir="${fragmentdir}" includes="fragment.properties,about.html,about_files/,swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,META-INF/" />
 		</copy>
-		<chmod perm="755" dir="${destination.temp.folder}/${full.name}" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,libcairo-swt.so" />
+		<chmod perm="755" dir="${destination.temp.folder}/${full.name}" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
 		<eclipse.versionReplacer path="${destination.temp.folder}/${full.name}" version="${version.suffix}" />
 		<antcall target="apitools.generation">
 			<param name="target.folder" value="${destination.temp.folder}/${full.name}"/>
