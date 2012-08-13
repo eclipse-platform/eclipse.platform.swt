@@ -110,7 +110,11 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 				int /*long*/ path = OS.g_list_nth_data (list, i);
 				OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
 				pixmaps[i] = OS.gtk_tree_view_create_row_drag_icon(handle, path);
-				OS.gdk_drawable_get_size(pixmaps[i], w, h);
+				if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
+					OS.gdk_pixmap_get_size(pixmaps[i], w, h);
+				} else {
+					OS.gdk_drawable_get_size(pixmaps[i], w, h);
+				}
 				width = Math.max(width, w[0]);
 				height = rect.y + h[0] - yy[0];
 				yy[i] = rect.y;

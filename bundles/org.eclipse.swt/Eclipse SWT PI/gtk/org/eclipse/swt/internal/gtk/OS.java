@@ -3905,7 +3905,7 @@ public static final int /*long*/ gdk_drawable_get_image(int /*long*/ drawable, i
 	}
 }
 /**
- * @param drawable cast=(GdkDrawable *)
+ * @method flags=dynamic
  * @param width cast=(gint *),flags=no_in critical
  * @param height cast=(gint *),flags=no_in critical
  */

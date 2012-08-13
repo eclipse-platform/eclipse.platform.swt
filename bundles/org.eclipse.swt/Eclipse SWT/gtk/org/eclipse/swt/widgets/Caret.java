@@ -141,7 +141,7 @@ boolean drawCaret () {
 	OS.gdk_gc_set_function (gc, OS.GDK_XOR);
 	if (image != null && !image.isDisposed() && image.mask == 0) {
 		int[] width = new int[1]; int[] height = new int[1];
-	 	OS.gdk_drawable_get_size(image.pixmap, width, height);
+		gdk_pixmap_get_size (image.pixmap, width, height);
 	 	int nX = x;
 		if ((parent.style & SWT.MIRRORED) != 0) nX = parent.getClientWidth () - width[0] - nX;
 	 	OS.gdk_draw_drawable(window, gc, image.pixmap, 0, 0, nX, y, width[0], height[0]);

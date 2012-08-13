@@ -5238,7 +5238,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1drawable_1get_1size)
 		if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 		if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	}
-	gdk_drawable_get_size((GdkDrawable *)arg0, (gint *)lparg1, (gint *)lparg2);
+/*
+	gdk_drawable_get_size(arg0, (gint *)lparg1, (gint *)lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_drawable_get_size)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, gint *, gint *))fp)(arg0, (gint *)lparg1, (gint *)lparg2);
+		}
+	}
 fail:
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {

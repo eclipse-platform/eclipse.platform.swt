@@ -408,7 +408,7 @@ void printWindow (boolean first, Control control, GC gc, int /*long*/ drawable, 
 	if (OS.gdk_drawable_get_depth (window) != depth) return;
 	GdkRectangle rect = new GdkRectangle ();
 	int [] width = new int [1], height = new int [1];
-	OS.gdk_drawable_get_size (window, width, height);
+	gdk_window_get_size (window, width, height);
 	rect.width = width [0];
 	rect.height = height [0];
 	OS.gdk_window_begin_paint_rect (window, rect);
@@ -436,7 +436,7 @@ void printWindow (boolean first, Control control, GC gc, int /*long*/ drawable, 
 		OS.gdk_window_get_position (window, cX, cY);
 		int /*long*/ parentWindow = OS.gdk_window_get_parent (window);
 		int [] pW = new int [1], pH = new int [1];
-		OS.gdk_drawable_get_size (parentWindow, pW, pH);
+		gdk_window_get_size (parentWindow, pW, pH);
 		srcX = x_offset [0] - cX [0];
 		srcY = y_offset [0] - cY [0];
 		destX = x - cX [0];
@@ -3259,7 +3259,7 @@ int /*long*/ gtk_visibility_notify_event (int /*long*/ widget, int /*long*/ even
 		} else {
 			if ((state & OBSCURED) != 0) {		
 				int [] width = new int [1], height = new int [1];
-				OS.gdk_drawable_get_size (window, width, height);
+				gdk_window_get_size (window, width, height);
 				GdkRectangle rect = new GdkRectangle ();
 				rect.width = width [0];
 				rect.height = height [0];
@@ -3573,7 +3573,7 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 	GdkRectangle rect = new GdkRectangle ();
 	if (redrawAll) {
 		int [] w = new int [1], h = new int [1];
-		OS.gdk_drawable_get_size (window, w, h);
+		gdk_window_get_size (window, w, h);
 		rect.width = w [0];
 		rect.height = h [0];
 	} else {

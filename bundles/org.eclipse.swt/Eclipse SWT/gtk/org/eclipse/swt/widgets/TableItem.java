@@ -706,7 +706,7 @@ void redraw () {
 		int /*long*/ window = OS.gtk_tree_view_get_bin_window (parentHandle);
 		rect.x = 0;
 		int [] w = new int [1], h = new int [1];
-		OS.gdk_drawable_get_size (window, w, h);
+		gdk_window_get_size (window, w, h);
 		rect.width = w [0];
 		OS.gdk_window_invalidate_rect (window, rect, false);
 	}

@@ -1551,7 +1551,7 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
 			OS.memmove (gdkEvent, event, GdkEventExpose.sizeof);
 			int /*long*/ window = paintWindow ();
 			int [] w = new int [1], h = new int [1];
-			OS.gdk_drawable_get_size (window, w, h);
+			gdk_window_get_size (window, w, h);
 			GtkBorder innerBorder = Display.getEntryInnerBorder (handle);
 			int width = w [0] - innerBorder.left - innerBorder.right;
 			int height = h [0] - innerBorder.top - innerBorder.bottom;

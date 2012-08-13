@@ -1806,6 +1806,23 @@ void gtk_widget_set_receives_default (int /*long*/ widget, boolean receives_defa
 	}
 }
 
+void gdk_pixmap_get_size (int /*long*/ pixmap, int[] width, int[] height) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 24, 0)) {
+		OS.gdk_pixmap_get_size (pixmap, width, height);
+	} else {
+		OS.gdk_drawable_get_size (pixmap, width, height);
+	}
+}
+
+void gdk_window_get_size (int /*long*/ drawable, int[] width, int[] height) {
+	if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
+		width[0] = OS.gdk_window_get_width (drawable);
+		height[0] = OS.gdk_window_get_height (drawable);
+	} else {
+		OS.gdk_drawable_get_size (drawable, width, height);
+	}
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.

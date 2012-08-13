@@ -2751,11 +2751,10 @@ void getSize(int[] width, int[] height) {
 		if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
 			width[0] = OS.gdk_window_get_width(data.drawable);
 			height[0] = OS.gdk_window_get_height(data.drawable);
-			return;
 		} else {
 			OS.gdk_drawable_get_size(data.drawable, width, height);
-			return;
 		}
+		return;
 	}
 	if (OS.USE_CAIRO) {
 		int /*long*/ surface = Cairo.cairo_get_target(handle);

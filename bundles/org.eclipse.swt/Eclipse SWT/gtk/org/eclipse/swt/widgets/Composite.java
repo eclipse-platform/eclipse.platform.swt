@@ -382,7 +382,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height, int offs
 					int /*long*/ drawable = control.backgroundImage.pixmap;
 					int /*long*/ xDrawable = OS.GDK_PIXMAP_XID (drawable);				
 					int [] w = new int [1], h = new int [1];
-					OS.gdk_drawable_get_size (drawable, w, h);
+					gdk_pixmap_get_size (drawable, w, h);
 					surface = Cairo.cairo_xlib_surface_create (xDisplay, xDrawable, xVisual, w [0], h [0]);
 					if (surface == 0) error (SWT.ERROR_NO_HANDLES);
 				} else {

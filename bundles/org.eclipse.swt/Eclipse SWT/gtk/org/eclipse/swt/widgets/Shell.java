@@ -1255,7 +1255,7 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
 			int /*long*/ window = gtk_widget_get_window (widget);
 			int [] width = new int [1];
 			int [] height = new int [1];
-			OS.gdk_drawable_get_size (window, width, height);
+			gdk_window_get_size (window, width, height);
 			GdkRectangle area = new GdkRectangle ();
 			area.x = gdkEventExpose.area_x;
 			area.y = gdkEventExpose.area_y;

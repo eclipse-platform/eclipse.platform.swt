@@ -1144,7 +1144,7 @@ public Rectangle getClientArea () {
 int getClientWidth () {
 	int [] w = new int [1], h = new int [1];
 	OS.gtk_widget_realize (handle);
-	OS.gdk_drawable_get_size(OS.gtk_tree_view_get_bin_window(handle), w, h);
+	gdk_window_get_size(OS.gtk_tree_view_get_bin_window(handle), w, h);
 	return w[0];
 }
 
@@ -1927,7 +1927,7 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 			int /*long*/ window = OS.gtk_tree_view_get_bin_window (handle);
 			if (window == gdkEvent.window) {
 				int [] width = new int [1], height = new int [1];
-				OS.gdk_drawable_get_size (window, width, height);
+				gdk_window_get_size (window, width, height);
 				int /*long*/ parent = 0;
 				int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, parent);
 				GdkRectangle rect = new GdkRectangle ();

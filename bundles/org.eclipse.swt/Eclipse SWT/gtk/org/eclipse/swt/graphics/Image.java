@@ -363,7 +363,11 @@ public Image(Device device, Image srcImage, int flag) {
 
 	/* Get source image size */
 	int[] w = new int[1], h = new int[1];
- 	OS.gdk_drawable_get_size(srcImage.pixmap, w, h);
+	if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
+		OS.gdk_pixmap_get_size(pixmap, w, h);
+	} else {
+		OS.gdk_drawable_get_size(srcImage.pixmap, w, h);
+	}
  	int width = w[0];
  	int height = h[0];
  	
@@ -869,7 +873,11 @@ void createSurface() {
 	/* Generate the mask if necessary. */
 	if (transparentPixel != -1) createMask();
 	int[] w = new int[1], h = new int[1];
-	OS.gdk_drawable_get_size(pixmap, w, h);
+	if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
+		OS.gdk_pixmap_get_size(pixmap, w, h);
+	} else {
+		OS.gdk_drawable_get_size(pixmap, w, h);
+	}
 	int width = w[0], height = h[0];
 	if (mask != 0 || alpha != -1 || alphaData != null) {
 	 	int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, width, height);
@@ -1069,7 +1077,11 @@ public Rectangle getBounds() {
 		return new Rectangle(0, 0, width, height);
 	}
 	int[] w = new int[1]; int[] h = new int[1];
-	OS.gdk_drawable_get_size(pixmap, w, h);
+	if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
+		OS.gdk_pixmap_get_size(pixmap, w, h);
+	} else {
+		OS.gdk_drawable_get_size(pixmap, w, h);
+	}
 	return new Rectangle(0, 0, width = w[0], height = h[0]);
 }
 
@@ -1142,7 +1154,11 @@ public ImageData getImageData() {
 		return data;
 	}
 	int[] w = new int[1], h = new int[1];
- 	OS.gdk_drawable_get_size(pixmap, w, h);
+	if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
+		OS.gdk_pixmap_get_size(pixmap, w, h);
+	} else {
+		OS.gdk_drawable_get_size(pixmap, w, h);
+	}
  	int width = w[0], height = h[0]; 	
  	int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
 	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
