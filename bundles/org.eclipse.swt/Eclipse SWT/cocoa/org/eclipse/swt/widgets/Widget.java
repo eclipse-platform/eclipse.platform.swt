@@ -81,14 +81,14 @@ public abstract class Widget {
 	static final int RESIZING = 1<<19;
 
 	/* WebKit fixes */
-	static final int WEBKIT_EVENTS_FIX = 1<<19;
+	static final int WEBKIT_EVENTS_FIX = 1<<20;
 	static final String WEBKIT_EVENTS_FIX_KEY = "org.eclipse.swt.internal.webKitEventsFix"; //$NON-NLS-1$
 	static final String GLCONTEXT_KEY = "org.eclipse.swt.internal.cocoa.glcontext"; //$NON-NLS-1$
 	
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.isActive"; //$NON-NLS-1$
 
 	/* Notify of the opportunity to skin this widget */
-	static final int SKIN_NEEDED = 1<<20;
+	static final int SKIN_NEEDED = 1<<21;
 	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
