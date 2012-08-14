@@ -4267,9 +4267,8 @@ public static final void gdk_gc_set_ts_origin(int /*long*/ gc, int x, int y) {
 	}
 }
 /**
- * @param gc cast=(GdkGC *)
+ * @method flags=dynamic
  * @param values cast=(GdkGCValues *),flags=no_out
- * @param values_mask cast=(GdkGCValuesMask)
  */
 public static final native void _gdk_gc_set_values(int /*long*/ gc, GdkGCValues values, int values_mask);
 public static final void gdk_gc_set_values(int /*long*/ gc, GdkGCValues values, int values_mask) {
