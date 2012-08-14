@@ -4526,10 +4526,7 @@ public static final int /*long*/ gdk_pixbuf_new_from_file(byte[] filename, int /
 	}
 }
 /**
- * @param pixbuf cast=(GdkPixbuf *)
- * @param drawable cast=(GdkDrawable *)
- * @param gc cast=(GdkGC *)
- * @param dither cast=(GdkRgbDither)
+ * @method flags=dynamic
  */
 public static final native void _gdk_pixbuf_render_to_drawable(int /*long*/ pixbuf, int /*long*/ drawable, int /*long*/ gc, int src_x, int src_y, int dest_x, int dest_y, int width, int height, int dither, int x_dither, int y_dither);
 public static final void gdk_pixbuf_render_to_drawable(int /*long*/ pixbuf, int /*long*/ drawable, int /*long*/ gc, int src_x, int src_y, int dest_x, int dest_y, int width, int height, int dither, int x_dither, int y_dither) {
