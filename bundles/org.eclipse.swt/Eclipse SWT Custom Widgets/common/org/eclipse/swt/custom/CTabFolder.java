@@ -2459,8 +2459,8 @@ void setButtonBounds(GC gc) {
 		if (overflow[0][i]) {
 			controls[i].setBounds(rects[i]);
 		} else {
-			controls[i].setBounds(rects[i].x, rects[i].y, rects[i].width, headerHeight);
 			controls[i].moveAbove(null);
+			controls[i].setBounds(rects[i].x, rects[i].y, rects[i].width, headerHeight);
 		}
 		if (!changed && !rects[i].equals(controlRects[i])) changed = true;
 	}
