@@ -396,10 +396,15 @@ public Rectangle getThumbBounds () {
 public Rectangle getThumbTrackBounds () {
 	checkWidget();
 	int x = 0, y = 0, width, height;
-	boolean hasA = OS.GTK_RANGE_HAS_STEPPER_A (handle);
-	boolean hasB = OS.GTK_RANGE_HAS_STEPPER_B (handle);
-	boolean hasC = OS.GTK_RANGE_HAS_STEPPER_C (handle);
-	boolean hasD = OS.GTK_RANGE_HAS_STEPPER_D (handle);
+	int[] has_stepper = new int[1];
+	OS.gtk_widget_style_get (handle, OS.has_backward_stepper, has_stepper, 0);
+	boolean hasA = has_stepper[0] != 0;
+	OS.gtk_widget_style_get (handle, OS.has_secondary_backward_stepper, has_stepper, 0);
+	boolean hasB = has_stepper[0] != 0;
+	OS.gtk_widget_style_get (handle, OS.has_forward_stepper, has_stepper, 0);
+	boolean hasC = has_stepper[0] != 0;
+	OS.gtk_widget_style_get (handle, OS.has_secondary_forward_stepper, has_stepper, 0);
+	boolean hasD = has_stepper[0] != 0;
 	GtkAllocation allocation = new GtkAllocation ();
 	int stepperSize = 0;	
 	if ((style & SWT.VERTICAL) != 0) {

@@ -382,10 +382,6 @@
 #else
 #define GTK_RANGE_SLIDER_END(arg0) (arg0)->slider_end
 #endif
-#define GTK_RANGE_HAS_STEPPER_A(arg0) (arg0)->has_stepper_a
-#define GTK_RANGE_HAS_STEPPER_B(arg0) (arg0)->has_stepper_b
-#define GTK_RANGE_HAS_STEPPER_C(arg0) (arg0)->has_stepper_c
-#define GTK_RANGE_HAS_STEPPER_D(arg0) (arg0)->has_stepper_d
 #if GTK_CHECK_VERSION(2,8,0)
 #define GTK_SCROLLED_WINDOW_HSCROLLBAR(arg0) 0
 #else

@@ -563,6 +563,10 @@ public class OS extends C {
 	public static final byte[] gtk_menu_bar_accel = ascii("gtk-menu-bar-accel");
 	public static final byte[] gtk_menu_images = ascii("gtk-menu-images");
 	public static final byte[] inner_border = ascii("inner-border");
+	public static final byte[] has_backward_stepper = ascii("has-backward-stepper");
+	public static final byte[] has_secondary_backward_stepper = ascii("has-secondary-backward-stepper");
+	public static final byte[] has_forward_stepper = ascii("has-forward-stepper");
+	public static final byte[] has_secondary_forward_stepper = ascii("has-secondary-forward-stepper");
 	public static final byte[] horizontal_separator = ascii("horizontal-separator");
 	public static final byte[] inconsistent = ascii("inconsistent");
 	public static final byte[] indicator_size = ascii("indicator-size");
@@ -703,14 +707,6 @@ public static final native int GTK_WIDGET_Y(int /*long*/ widget);
 public static final native int GTK_RANGE_SLIDER_START(int /*long*/ widget);
 /** @param widget cast=(GtkRange *) */
 public static final native int GTK_RANGE_SLIDER_END(int /*long*/ widget);
-/** @param widget cast=(GtkRange *) */
-public static final native boolean GTK_RANGE_HAS_STEPPER_A(int /*long*/ widget);
-/** @param widget cast=(GtkRange *) */
-public static final native boolean GTK_RANGE_HAS_STEPPER_B(int /*long*/ widget);
-/** @param widget cast=(GtkRange *) */
-public static final native boolean GTK_RANGE_HAS_STEPPER_C(int /*long*/ widget);
-/** @param widget cast=(GtkRange *) */
-public static final native boolean GTK_RANGE_HAS_STEPPER_D(int /*long*/ widget);
 /** @param widget cast=(GtkScrolledWindow *) */
 public static final native int /*long*/ GTK_SCROLLED_WINDOW_HSCROLLBAR(int /*long*/ widget);
 /** @param widget cast=(GtkScrolledWindow *) */
