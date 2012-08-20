@@ -21,6 +21,6 @@
   </parent>
   <groupId>eclipse.platform.swt</groupId>
   <artifactId>org.eclipse.swt.tests</artifactId>
-  <version>3.100.0-SNAPSHOT</version>
+  <version>3.100.1-SNAPSHOT</version>
   <packaging>eclipse-test-plugin</packaging>
 </project>
