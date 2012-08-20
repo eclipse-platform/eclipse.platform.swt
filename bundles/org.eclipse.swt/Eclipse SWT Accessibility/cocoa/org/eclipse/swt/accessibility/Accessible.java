@@ -2054,6 +2054,7 @@ public class Accessible {
 					listener.getChildren(event);
 				}
 				Object[] children = event.children;
+				childCount = children != null ? children.length : 0;
 				NSMutableArray childArray = NSMutableArray.arrayWithCapacity(childCount);
 				for (int i = 0; i < childCount; i++) {
 					Object child = children[i];
