@@ -139,17 +139,21 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
 	super.drawBackground(id, context, rect);
 	if (glcontext != null) {
-		context.saveGraphicsState();
-		context.setCompositingOperation(OS.NSCompositeClear);
-		if (visiblePath == null) {
-			int /*long*/ visibleRegion = getVisibleRegion();
-			visiblePath = getPath(visibleRegion);
-			OS.DisposeRgn(visibleRegion);
+		if (isObscured()) {
+			glcontext.setValues(new int[]{-1}, OS.NSOpenGLCPSurfaceOrder);
+			context.saveGraphicsState();
+			context.setCompositingOperation(OS.NSCompositeClear);
+			if (visiblePath == null) {
+				int /*long*/ visibleRegion = getVisibleRegion();
+				visiblePath = getPath(visibleRegion);
+				OS.DisposeRgn(visibleRegion);
+			}
+			visiblePath.addClip();
+			NSBezierPath.fillRect(rect);
+			context.restoreGraphicsState();
+		} else {
+			glcontext.setValues(new int[]{1}, OS.NSOpenGLCPSurfaceOrder);
 		}
-		visiblePath.addClip();
-		NSBezierPath.fillRect(rect);
-		context.restoreGraphicsState();
-		return;
 	}
 }
 
