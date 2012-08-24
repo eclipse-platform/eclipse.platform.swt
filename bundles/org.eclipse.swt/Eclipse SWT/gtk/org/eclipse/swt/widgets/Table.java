@@ -541,8 +541,7 @@ void createColumn (TableColumn column, int index) {
 				}
 			}
 			OS.gtk_tree_view_set_model (handle, newModel);
-			OS.g_object_unref (oldModel);
-			modelHandle = newModel;
+			setModel (newModel);
 		}
 	}
 	int /*long*/ columnHandle = OS.gtk_tree_view_column_new ();
@@ -990,8 +989,7 @@ void destroyItem (TableColumn column) {
 			}
 		}
 		OS.gtk_tree_view_set_model (handle, newModel);
-		OS.g_object_unref (oldModel);
-		modelHandle = newModel;
+		setModel (newModel);
 		createColumn (null, 0);
 	} else {
 		for (int i=0; i<itemCount; i++) {
@@ -3089,6 +3087,17 @@ public void setLinesVisible (boolean show) {
 	OS.gtk_tree_view_set_rules_hint (handle, show);
 	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
 		OS.gtk_tree_view_set_grid_lines (handle, show ? OS.GTK_TREE_VIEW_GRID_LINES_VERTICAL : OS.GTK_TREE_VIEW_GRID_LINES_NONE);
+	}
+}
+
+void setModel (int /*long*/ newModel) {
+	display.removeWidget (modelHandle);
+	OS.g_object_unref (modelHandle);
+	modelHandle = newModel;
+	display.addWidget (modelHandle, this);
+	if (fixAccessibility ()) {
+		OS.g_signal_connect_closure (modelHandle, OS.row_inserted, display.closures [ROW_INSERTED], true);
+		OS.g_signal_connect_closure (modelHandle, OS.row_deleted, display.closures [ROW_DELETED], true);
 	}
 }
 
