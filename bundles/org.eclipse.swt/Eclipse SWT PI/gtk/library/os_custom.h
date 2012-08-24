@@ -233,6 +233,8 @@
 #define gdk_x11_screen_get_window_manager_name_LIB LIB_GDK
 #define gdk_x11_screen_lookup_visual_LIB LIB_GDK
 #define gdk_x11_window_lookup_for_display_LIB LIB_GDK
+#define gdk_x11_display_utf8_to_compound_text_LIB LIB_GDK
+#define gdk_utf8_to_compound_text_LIB LIB_GDK
 #define gdk_threads_set_lock_functions_LIB LIB_GDK
 
 #define atk_object_add_relationship_LIB LIB_ATK

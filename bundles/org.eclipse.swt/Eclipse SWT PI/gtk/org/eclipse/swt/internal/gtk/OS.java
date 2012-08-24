@@ -4926,17 +4926,26 @@ public static final void gdk_set_program_class(byte[] program_class) {
 	}
 }
 /**
- * @param str cast=(const gchar *)
- * @param encoding cast=(GdkAtom *)
- * @param format cast=(gint *)
- * @param ctext cast=(guchar **)
- * @param length cast=(gint *)
+ * @method flags=dynamic
  */
 public static final native boolean _gdk_utf8_to_compound_text(byte[] str, int /*long*/[] encoding, int[] format, int /*long*/[] ctext, int[] length);
 public static final boolean gdk_utf8_to_compound_text(byte[] str, int /*long*/[] encoding, int[] format, int /*long*/[] ctext, int[] length) {
 	lock.lock();
 	try {
 		return _gdk_utf8_to_compound_text(str, encoding, format, ctext, length);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param display cast=(GdkDisplay *)
+ * @method flags=dynamic
+ */
+public static final native boolean _gdk_x11_display_utf8_to_compound_text(int /*long*/ display, byte[] str, int /*long*/[] encoding, int[] format, int /*long*/[] ctext, int[] length);
+public static final boolean gdk_x11_display_utf8_to_compound_text(int /*long*/ display, byte[] str, int /*long*/[] encoding, int[] format, int /*long*/[] ctext, int[] length) {
+	lock.lock();
+	try {
+		return _gdk_x11_display_utf8_to_compound_text(display, str, encoding, format, ctext, length);
 	} finally {
 		lock.unlock();
 	}

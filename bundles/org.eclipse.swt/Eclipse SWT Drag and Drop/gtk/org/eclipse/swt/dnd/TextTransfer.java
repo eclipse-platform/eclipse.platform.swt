@@ -76,7 +76,12 @@ public void javaToNative (Object object, TransferData transferData) {
 		int[] format = new int[1];
 		int /*long*/[] ctext = new int /*long*/[1];
 		int[] length = new int[1];
-		boolean result = OS.gdk_utf8_to_compound_text(utf8, encoding, format, ctext, length);
+		boolean result;
+		if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
+			result = OS.gdk_x11_display_utf8_to_compound_text (OS.gdk_display_get_default(), utf8, encoding, format, ctext, length);
+		} else {
+			result = OS.gdk_utf8_to_compound_text(utf8, encoding, format, ctext, length);
+		}
 		if (!result) return;
 		transferData.type = encoding[0];
 		transferData.format = format[0];

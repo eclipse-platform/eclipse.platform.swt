@@ -6542,7 +6542,15 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1utf8_1to_1compound_1text)
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jboolean)gdk_utf8_to_compound_text((const gchar *)lparg0, (GdkAtom *)lparg1, (gint *)lparg2, (guchar **)lparg3, (gint *)lparg4);
+/*
+	rc = (jboolean)gdk_utf8_to_compound_text(lparg0, lparg1, lparg2, lparg3, lparg4);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_utf8_to_compound_text)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jbyte *, jintLong *, jint *, jintLong *, jint *))fp)(lparg0, lparg1, lparg2, lparg3, lparg4);
+		}
+	}
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
@@ -7154,6 +7162,42 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1x11_1display_1get_1xdisplay)
 	OS_NATIVE_ENTER(env, that, _1gdk_1x11_1display_1get_1xdisplay_FUNC);
 	rc = (jintLong)gdk_x11_display_get_xdisplay((GdkDisplay *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gdk_1x11_1display_1get_1xdisplay_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1x11_1display_1utf8_1to_1compound_1text
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1x11_1display_1utf8_1to_1compound_1text)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLongArray arg2, jintArray arg3, jintLongArray arg4, jintArray arg5)
+{
+	jbyte *lparg1=NULL;
+	jintLong *lparg2=NULL;
+	jint *lparg3=NULL;
+	jintLong *lparg4=NULL;
+	jint *lparg5=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1x11_1display_1utf8_1to_1compound_1text_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)gdk_x11_display_utf8_to_compound_text((GdkDisplay *)arg0, lparg1, lparg2, lparg3, lparg4, lparg5);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_x11_display_utf8_to_compound_text)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GdkDisplay *, jbyte *, jintLong *, jint *, jintLong *, jint *))fp)((GdkDisplay *)arg0, lparg1, lparg2, lparg3, lparg4, lparg5);
+		}
+	}
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseIntLongArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1x11_1display_1utf8_1to_1compound_1text_FUNC);
 	return rc;
 }
 #endif

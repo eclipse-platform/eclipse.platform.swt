@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1333;
-int OS_nativeFunctionCallCount[1333];
+int OS_nativeFunctionCount = 1334;
+int OS_nativeFunctionCallCount[1334];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -573,6 +573,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1window_1show_1unraised",
 	"_1gdk_1x11_1atom_1to_1xatom",
 	"_1gdk_1x11_1display_1get_1xdisplay",
+	"_1gdk_1x11_1display_1utf8_1to_1compound_1text",
 	"_1gdk_1x11_1drawable_1get_1xdisplay",
 	"_1gdk_1x11_1drawable_1get_1xid",
 	"_1gdk_1x11_1screen_1get_1window_1manager_1name",
