@@ -646,8 +646,7 @@ void createColumn (TreeColumn column, int index) {
 			if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
 			copyModel (oldModel, FIRST_COLUMN, newModel, FIRST_COLUMN, types, (int /*long*/)0, (int /*long*/)0, modelLength);
 			OS.gtk_tree_view_set_model (handle, newModel);
-			OS.g_object_unref (oldModel);
-			modelHandle = newModel;
+			setModel (newModel);
 		}
 	}
 	int /*long*/ columnHandle = OS.gtk_tree_view_column_new ();
@@ -994,10 +993,8 @@ void destroyItem (TreeColumn column) {
 		if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
 		copyModel(oldModel, column.modelIndex, newModel, FIRST_COLUMN, types, (int /*long*/)0, (int /*long*/)0, FIRST_COLUMN + CELL_TYPES);
 		OS.gtk_tree_view_set_model (handle, newModel);
-		OS.g_object_unref (oldModel);
-		modelHandle = newModel;
+		setModel (newModel);
 		createColumn (null, 0);
-		
 	} else {
 		for (int i=0; i<items.length; i++) {
 			TreeItem item = items [i];
@@ -3015,6 +3012,17 @@ public void setLinesVisible (boolean show) {
 	OS.gtk_tree_view_set_rules_hint (handle, show);
 	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
 		OS.gtk_tree_view_set_grid_lines (handle, show ? OS.GTK_TREE_VIEW_GRID_LINES_VERTICAL : OS.GTK_TREE_VIEW_GRID_LINES_NONE);
+	}
+}
+
+void setModel (int /*long*/ newModel) {
+	display.removeWidget (modelHandle);
+	OS.g_object_unref (modelHandle);
+	modelHandle = newModel;
+	display.addWidget (modelHandle, this);
+	if (fixAccessibility ()) {
+		OS.g_signal_connect_closure (modelHandle, OS.row_inserted, display.closures [ROW_INSERTED], true);
+		OS.g_signal_connect_closure (modelHandle, OS.row_deleted, display.closures [ROW_DELETED], true);
 	}
 }
 
