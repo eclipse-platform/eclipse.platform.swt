@@ -1486,7 +1486,7 @@ boolean gestureEvent(int /*long*/ id, int /*long*/ eventPtr, int detail) {
 		break;
 	}
 	case SWT.GESTURE_MAGNIFY:
-		display.magnification += nsEvent.magnification();
+		display.magnification *= (1.0 + nsEvent.magnification());
 		event.magnification = display.magnification;
 		break;
 	case SWT.GESTURE_PAN:
