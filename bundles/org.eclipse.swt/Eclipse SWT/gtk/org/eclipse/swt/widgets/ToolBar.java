@@ -389,15 +389,10 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 				event.detail = SWT.ARROW;
 				int /*long*/ topHandle = currentFocusItem.topHandle ();
 				GtkAllocation allocation = new GtkAllocation ();
-				if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-					OS.gtk_widget_get_allocation(topHandle, allocation);
-					event.x = allocation.x;
-					event.y = allocation.y + allocation.height;
-				} else {
-					event.x = OS.GTK_WIDGET_X (topHandle);
-					event.y = OS.GTK_WIDGET_Y (topHandle) + OS.GTK_WIDGET_HEIGHT (topHandle);
-				}
-				if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth() - OS.GTK_WIDGET_WIDTH(topHandle) - event.x;
+				gtk_widget_get_allocation (topHandle, allocation);
+				event.x = allocation.x;
+				event.y = allocation.y + allocation.height;
+				if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth() - allocation.width - event.x;
 				currentFocusItem.sendSelectionEvent  (SWT.Selection, event, false);
 				/*
 				 * Stop GTK from processing the event further as key_down binding
@@ -469,16 +464,10 @@ int /*long*/ menuItemSelected (int /*long*/ widget, ToolItem item) {
 			 */
 			event.detail = SWT.ARROW;
 			GtkAllocation allocation = new GtkAllocation ();
-			if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-				OS.gtk_widget_get_allocation(widget, allocation);
-				event.x = allocation.x;
-				if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - allocation.width - event.x;
-				event.y = allocation.y + allocation.height;
-			} else {
-				event.x = OS.GTK_WIDGET_X (widget);
-				if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - OS.GTK_WIDGET_WIDTH (widget) - event.x;
-				event.y = OS.GTK_WIDGET_Y (widget) + OS.GTK_WIDGET_HEIGHT (widget);
-			}
+			gtk_widget_get_allocation (widget, allocation);
+			event.x = allocation.x;
+			if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - allocation.width - event.x;
+			event.y = allocation.y + allocation.height;
 			break;
 		case SWT.RADIO :
 			if ((style & SWT.NO_RADIO_GROUP) == 0)	item.selectRadio ();

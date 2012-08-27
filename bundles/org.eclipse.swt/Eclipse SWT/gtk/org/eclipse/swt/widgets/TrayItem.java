@@ -316,18 +316,11 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr)
 
 int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 	if (image != null && image.mask != 0) {
-		int xoffset = 0;
-		int yoffset = 0;
-		GtkAllocation widgetAllocation = new GtkAllocation();
 		if (OS.gdk_drawable_get_depth (image.mask) == 1) {
-			if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-				OS.gtk_widget_get_allocation(widget, widgetAllocation);
-					xoffset = (int) Math.floor (widgetAllocation.x + ((widgetAllocation.width -OS.GTK_WIDGET_REQUISITION_WIDTH (widget)) * 0.5) + 0.5);
-					yoffset = (int) Math.floor (widgetAllocation.y + ((widgetAllocation.height - OS.GTK_WIDGET_REQUISITION_HEIGHT (widget)) * 0.5) + 0.5);
-			} else {
-				xoffset = (int) Math.floor (OS.GTK_WIDGET_X (widget) + ((OS.GTK_WIDGET_WIDTH (widget) - OS.GTK_WIDGET_REQUISITION_WIDTH (widget)) * 0.5) + 0.5);
-				yoffset = (int) Math.floor (OS.GTK_WIDGET_Y (widget) + ((OS.GTK_WIDGET_HEIGHT (widget) - OS.GTK_WIDGET_REQUISITION_HEIGHT (widget)) * 0.5) + 0.5);	
-			}
+			GtkAllocation widgetAllocation = new GtkAllocation ();
+			gtk_widget_get_allocation (widget, widgetAllocation);
+			int xoffset = (int) Math.floor (widgetAllocation.x + ((widgetAllocation.width -OS.GTK_WIDGET_REQUISITION_WIDTH (widget)) * 0.5) + 0.5);
+			int yoffset = (int) Math.floor (widgetAllocation.y + ((widgetAllocation.height - OS.GTK_WIDGET_REQUISITION_HEIGHT (widget)) * 0.5) + 0.5);
 			Rectangle b = image.getBounds();
 			int /*long*/ gdkImagePtr = OS.gdk_drawable_get_image (image.mask, 0, 0, b.width, b.height);
 			if (gdkImagePtr == 0) error(SWT.ERROR_NO_HANDLES);

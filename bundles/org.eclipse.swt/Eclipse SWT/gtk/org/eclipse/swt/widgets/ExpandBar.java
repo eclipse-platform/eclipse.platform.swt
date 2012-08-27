@@ -453,14 +453,9 @@ void setScrollbar () {
 	OS.gtk_adjustment_changed (adjustmentHandle);
 	int policy = maxHeight > height ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, policy);
-	int width = 0;
 	GtkAllocation allocation = new GtkAllocation ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		OS.gtk_widget_get_allocation(fixedHandle, allocation);
-		width = allocation.width - spacing * 2;
-	} else {
-		width = OS.GTK_WIDGET_WIDTH (fixedHandle) - spacing * 2;
-	}
+	gtk_widget_get_allocation (fixedHandle, allocation);
+	int width = allocation.width - spacing * 2;
 	if (policy == OS.GTK_POLICY_ALWAYS) {
 		int /*long*/ vHandle = 0;
 		if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {

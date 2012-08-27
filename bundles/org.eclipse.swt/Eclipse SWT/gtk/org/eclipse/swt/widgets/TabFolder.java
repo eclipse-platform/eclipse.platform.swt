@@ -166,32 +166,17 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	forceResize ();
 	int /*long*/ clientHandle = clientHandle ();
-	int clientX = 0;
-	int clientY = 0;
 	GtkAllocation allocation = new GtkAllocation ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		OS.gtk_widget_get_allocation(clientHandle, allocation);
-		clientX = allocation.x;
-		clientY = allocation.y;
-	} else {
-		clientX = OS.GTK_WIDGET_X (clientHandle);
-		clientY = OS.GTK_WIDGET_Y (clientHandle);	
-	}
+	gtk_widget_get_allocation (clientHandle, allocation);
+	int clientX = allocation.x;
+	int clientY = allocation.y;
 	x -= clientX;
 	y -= clientY;
 	width +=  clientX + clientX;
 	if ((style & SWT.BOTTOM) != 0) {
-		int parentHeight = 0;
-		int clientHeight = 0;
-		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-			OS.gtk_widget_get_allocation(clientHandle, allocation);
-			clientHeight = allocation.height;
-			OS.gtk_widget_get_allocation(handle, allocation);
-			parentHeight = allocation.height;
-		} else {
-			parentHeight = OS.GTK_WIDGET_HEIGHT (handle);
-			clientHeight = OS.GTK_WIDGET_HEIGHT (clientHandle);
-		}
+		int clientHeight = allocation.height;
+		gtk_widget_get_allocation (handle, allocation);
+		int parentHeight = allocation.height;
 		height += parentHeight - clientHeight;
 	} else {
 		height +=  clientX + clientY;
@@ -202,6 +187,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
+	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	gtk_widget_set_has_window (fixedHandle, true);
 	handle = OS.gtk_notebook_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);

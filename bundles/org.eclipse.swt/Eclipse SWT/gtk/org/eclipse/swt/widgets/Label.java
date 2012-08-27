@@ -465,17 +465,10 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	* resized so that it will draw wrapped.
 	*/
 	if (fixWrap) {
-		int labelWidth = 0;
-		int labelHeight = 0;
 		GtkAllocation allocation = new GtkAllocation();
-		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-			OS.gtk_widget_get_allocation(handle, allocation);
-			labelWidth = allocation.width;
-			labelHeight = allocation.height;
-		} else {
-			labelWidth = OS.GTK_WIDGET_WIDTH (handle);
-			labelHeight = OS.GTK_WIDGET_HEIGHT (handle);
-		}
+		gtk_widget_get_allocation (handle, allocation);
+		int labelWidth = allocation.width;
+		int labelHeight = allocation.height;
 		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
 		/*
 		* Bug in GTK.  Setting the size request should invalidate the label's
@@ -483,12 +476,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		*/
 		GtkRequisition requisition = new GtkRequisition ();
 		OS.gtk_widget_size_request (labelHandle, requisition);
-		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-			OS.gtk_widget_get_allocation(labelHandle, allocation);
-		} else {
-			allocation.x = OS.GTK_WIDGET_X (labelHandle);
-			allocation.y = OS.GTK_WIDGET_Y (labelHandle);
-		}
+		gtk_widget_get_allocation(labelHandle, allocation);
 		allocation.width = labelWidth;
 		allocation.height = labelHeight;
 		OS.gtk_widget_size_allocate (labelHandle, allocation);

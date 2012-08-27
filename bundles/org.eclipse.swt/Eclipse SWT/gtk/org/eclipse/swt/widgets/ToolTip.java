@@ -338,7 +338,7 @@ Point getLocation () {
 	int y = this.y;
 	if (item != null) {
 		int /*long*/ itemHandle = item.handle; 
-		if(OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
 			GdkRectangle area = new GdkRectangle ();
 			OS.gtk_status_icon_get_geometry (itemHandle, 0, area, 0);
 			x = area.x + area.width / 2;
@@ -348,8 +348,10 @@ Point getLocation () {
 			int /*long*/ window = gtk_widget_get_window (itemHandle);
 			int [] px = new int [1], py = new int [1];
 			OS.gdk_window_get_origin (window, px, py);
-			x = px [0] + OS.GTK_WIDGET_WIDTH (itemHandle) / 2;
-			y = py [0] + OS.GTK_WIDGET_HEIGHT (itemHandle) / 2;
+			GtkAllocation allocation = new GtkAllocation ();
+			gtk_widget_get_allocation (itemHandle, allocation);
+			x = px [0] + allocation.width / 2;
+			y = py [0] + allocation.height / 2;
 		}
 	}
 	if (x == -1 || y == -1) {
@@ -590,17 +592,10 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 	int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, gtk_widget_get_window (widget));
 	GdkRectangle dest = new GdkRectangle ();
 	OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
-	int w = 0;
-	int h = 0;
 	GtkAllocation widgetAllocation = new GtkAllocation ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		OS.gtk_widget_get_allocation (widget, widgetAllocation);
-		w = widgetAllocation.width;
-		h = widgetAllocation.height;
-	} else {
-		w = OS.GTK_WIDGET_WIDTH (widget);
-		h = OS.GTK_WIDGET_HEIGHT (widget);
-	}
+	gtk_widget_get_allocation (widget, widgetAllocation);
+	int w = widgetAllocation.width;
+	int h = widgetAllocation.height;
 	if (dest.height < y + h) y -= h;
 	if (dest.width < x + w) x -= w;
 	OS.gtk_window_move (widget, x, y);

@@ -898,6 +898,17 @@ int /*long*/ gtk_visibility_notify_event (int /*long*/ widget, int /*long*/ even
 	return 0;
 }
 
+void gtk_widget_get_allocation (int /*long*/ widget, GtkAllocation allocation) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+		OS.gtk_widget_get_allocation (widget, allocation);
+	} else {
+		allocation.x = OS.GTK_WIDGET_X (widget);
+		allocation.y = OS.GTK_WIDGET_Y (widget);
+		allocation.width = OS.GTK_WIDGET_WIDTH (widget);
+		allocation.height = OS.GTK_WIDGET_HEIGHT (widget);
+	}
+}
+
 boolean gtk_widget_get_mapped (int /*long*/ widget) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
 		return OS.gtk_widget_get_mapped (widget);

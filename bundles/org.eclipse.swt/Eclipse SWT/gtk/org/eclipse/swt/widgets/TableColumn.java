@@ -388,17 +388,10 @@ int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 
 int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 	useFixedWidth = false;
-	int x = 0;
-	int width = 0;
 	GtkAllocation widgetAllocation = new GtkAllocation ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		OS.gtk_widget_get_allocation (widget, widgetAllocation);
-		x = widgetAllocation.x;
-		width = widgetAllocation.width;
-	} else {
-		x = OS.GTK_WIDGET_X (widget);
-		width = OS.GTK_WIDGET_WIDTH (widget);
-	}
+	gtk_widget_get_allocation (widget, widgetAllocation);
+	int x = widgetAllocation.x;
+	int width = widgetAllocation.width;
 	if (x != lastX) {
 		lastX = x;
 		sendEvent (SWT.Move);

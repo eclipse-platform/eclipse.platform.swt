@@ -343,28 +343,17 @@ public Rectangle getThumbBounds () {
 	gtk_range_get_slider_range (handle, slider_start, slider_end);
 	int x, y, width, height;
 	GtkAllocation allocation = new GtkAllocation ();
+	gtk_widget_get_allocation (handle, allocation);
 	if ((style & SWT.VERTICAL) != 0) {
-		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-			OS.gtk_widget_get_allocation(handle, allocation);
-			x = allocation.x;
-			width = allocation.width;
-		} else {
-			x = OS.GTK_WIDGET_X (handle);
-			width = OS.GTK_WIDGET_WIDTH (handle);
-		}
+		x = allocation.x;
 		y = slider_start [0];
+		width = allocation.width;
 		height = slider_end [0] - slider_start [0];
 	} else {
 		x = slider_start [0];
-		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-			OS.gtk_widget_get_allocation(handle, allocation);
-			y = allocation.y;
-			height = allocation.height;
-		} else {
-			y = OS.GTK_WIDGET_Y (handle);
-			height = OS.GTK_WIDGET_HEIGHT (handle);
-		}
+		y = allocation.y;
 		width = slider_end [0] - slider_start [0];
+		height = allocation.height;
 	}
 	Rectangle rect = new Rectangle(x, y, width, height);
 	int [] origin_x = new int [1], origin_y = new int [1];
@@ -406,25 +395,14 @@ public Rectangle getThumbTrackBounds () {
 	OS.gtk_widget_style_get (handle, OS.has_secondary_forward_stepper, has_stepper, 0);
 	boolean hasD = has_stepper[0] != 0;
 	GtkAllocation allocation = new GtkAllocation ();
-	int stepperSize = 0;	
+	gtk_widget_get_allocation (handle, allocation);
 	if ((style & SWT.VERTICAL) != 0) {
-		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-			OS.gtk_widget_get_allocation(handle, allocation);
-			stepperSize = allocation.width;
-			x = allocation.x;
-		} else {
-			stepperSize = OS.GTK_WIDGET_WIDTH (handle);	
-			x = OS.GTK_WIDGET_X (handle);
-		}
+		int stepperSize = allocation.width;
+		x = allocation.x;
 		if (hasA) y += stepperSize;
 		if (hasB) y += stepperSize;
-		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-			width = allocation.width;
-			height = allocation.height - y;	
-		} else {
-			width = OS.GTK_WIDGET_WIDTH (handle);
-			height = OS.GTK_WIDGET_HEIGHT (handle) - y;	
-		}
+		width = allocation.width;
+		height = allocation.height - y;	
 		if (hasC) height -= stepperSize;
 		if (hasD) height -= stepperSize;
 		if (height < 0) {
@@ -434,28 +412,14 @@ public Rectangle getThumbTrackBounds () {
 			height = 0;
 		}
 	} else {
-		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-			OS.gtk_widget_get_allocation(handle, allocation);
-			stepperSize = allocation.height;
-		} else {
-			stepperSize = OS.GTK_WIDGET_HEIGHT (handle);	
-		}
+		int stepperSize = allocation.height;
 		if (hasA) x += stepperSize;
 		if (hasB) x += stepperSize;
-		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-			y = allocation.y;
-			width = allocation.width -x;
-		} else {
-			y = OS.GTK_WIDGET_Y (handle);
-			width = OS.GTK_WIDGET_WIDTH (handle) - x;	
-		}
+		y = allocation.y;
+		width = allocation.width -x;
 		if (hasC) width -= stepperSize;
 		if (hasD) width -= stepperSize;
-		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-			height = allocation.height;
-		} else {
-			height = OS.GTK_WIDGET_HEIGHT (handle);	
-		}
+		height = allocation.height;
 		if (width < 0) {
 			int [] slider_start = new int [1], slider_end = new int [1];
 			gtk_range_get_slider_range (handle, slider_start, slider_end);

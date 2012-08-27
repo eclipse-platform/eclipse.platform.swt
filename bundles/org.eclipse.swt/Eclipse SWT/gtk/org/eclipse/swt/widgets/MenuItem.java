@@ -322,23 +322,12 @@ int /*long*/ getAccelGroup () {
 	if (!gtk_widget_get_mapped (handle)) {
 		return new Rectangle (0, 0, 0, 0);
 	}
-	int x = 0;
-	int y = 0;
-	int width = 0;
-	int height = 0;
 	GtkAllocation allocation = new GtkAllocation ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		OS.gtk_widget_get_allocation(handle, allocation);
-		x = allocation.x;
-		y = allocation.y;
-		width = allocation.width;
-		height = allocation.height;
-	} else {
-		x = OS.GTK_WIDGET_X (handle);
-		y = OS.GTK_WIDGET_Y (handle);
-		width = OS.GTK_WIDGET_WIDTH (handle);
-		height = OS.GTK_WIDGET_HEIGHT (handle);
-	}
+	gtk_widget_get_allocation (handle, allocation);
+	int x = allocation.x;
+	int y = allocation.y;
+	int width = allocation.width;
+	int height = allocation.height;
 	return new Rectangle (x, y, width, height);
 }
 

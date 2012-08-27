@@ -177,23 +177,12 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr)
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
 	startX = (int) (gdkEvent.x_root - origin_x [0]);
 	startY = (int) (gdkEvent.y_root - origin_y [0]);
-	int x = 0;
-	int y = 0;
-	int width = 0;
-	int height = 0;
 	GtkAllocation allocation = new GtkAllocation ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		OS.gtk_widget_get_allocation(handle, allocation);
-		x = allocation.x;
-		y = allocation.y;
-		width = allocation.width;
-		height = allocation.height;
-	} else {
-		x = OS.GTK_WIDGET_X (handle);
-		y = OS.GTK_WIDGET_Y (handle);
-		width = OS.GTK_WIDGET_WIDTH (handle);
-		height = OS.GTK_WIDGET_HEIGHT (handle);	
-	}
+	gtk_widget_get_allocation(handle, allocation);
+	int x = allocation.x;
+	int y = allocation.y;
+	int width = allocation.width;
+	int height = allocation.height;
 	lastX = x; 
 	lastY = y;
 	Event event = new Event ();
@@ -232,17 +221,10 @@ int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ eventPt
 	if (button != 1) return 0;
 	if (!dragging) return 0;
 	dragging = false;
-	int width = 0;
-	int height = 0;
 	GtkAllocation allocation = new GtkAllocation ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		OS.gtk_widget_get_allocation(handle, allocation);
-		width = allocation.width;
-		height = allocation.height;
-	} else {
-		width = OS.GTK_WIDGET_WIDTH (handle);
-		height = OS.GTK_WIDGET_HEIGHT (handle);	
-	}
+	gtk_widget_get_allocation (handle, allocation);
+	int width = allocation.width;
+	int height = allocation.height;
 	Event event = new Event ();
 	event.time = gdkEvent.time;
 	event.x = lastX;
@@ -268,14 +250,9 @@ int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
 	// widget could be disposed at this point
 	if (handle != 0) {
 		GtkAllocation allocation = new GtkAllocation ();
-		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-			OS.gtk_widget_get_allocation(handle, allocation);
-			lastX = allocation.x;
-			lastY = allocation.y;	
-		} else {
-			lastX = OS.GTK_WIDGET_X (handle);
-			lastY = OS.GTK_WIDGET_Y (handle);
-		}
+		gtk_widget_get_allocation (handle, allocation);
+		lastX = allocation.x;
+		lastY = allocation.y;	
 	}
 	return 0;
 }
@@ -301,25 +278,14 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 				if (keyval == OS.GDK_Left ||keyval == OS.GDK_Right) break;
 				yChange = keyval == OS.GDK_Up ? -stepSize : stepSize;
 			}
-			int width = 0;
-			int height = 0;
 			int parentBorder = 0;
-			int parentWidth = 0;
-			int parentHeight = 0;
 			GtkAllocation allocation = new GtkAllocation ();
-			if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-				OS.gtk_widget_get_allocation(handle, allocation);
-				width = allocation.width;
-				height = allocation.height;
-				OS.gtk_widget_get_allocation(parent.handle, allocation);
-				parentWidth = allocation.width;
-				parentHeight = allocation.height;
-			} else {
-				width = OS.GTK_WIDGET_WIDTH (handle);
-				height = OS.GTK_WIDGET_HEIGHT (handle);
-				parentWidth = OS.GTK_WIDGET_WIDTH (parent.handle);
-				parentHeight = OS.GTK_WIDGET_HEIGHT (parent.handle);
-			}
+			gtk_widget_get_allocation (handle, allocation);
+			int width = allocation.width;
+			int height = allocation.height;
+			gtk_widget_get_allocation (parent.handle, allocation);
+			int parentWidth = allocation.width;
+			int parentHeight = allocation.height;
 			int newX = lastX, newY = lastY;
 			if ((style & SWT.VERTICAL) != 0) {
 				newX = Math.min (Math.max (0, lastX + xChange - parentBorder - startX), parentWidth - width);
@@ -389,31 +355,16 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr
 		eventState = gdkEvent.state;
 	}
 	if ((eventState & OS.GDK_BUTTON1_MASK) == 0) return 0;
-	int x = 0;
-	int y = 0;
-	int width = 0;
-	int height = 0;
-	int parentBorder = 0;
-	int parentWidth = 0;
-	int parentHeight = 0;
 	GtkAllocation allocation = new GtkAllocation ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
-		OS.gtk_widget_get_allocation(handle, allocation);
-		x = allocation.x;
-		y = allocation.y;
-		width = allocation.width;
-		height = allocation.height;
-		OS.gtk_widget_get_allocation(parent.handle, allocation);
-		parentWidth = allocation.width;
-		parentHeight = allocation.height;
-	} else {
-		x = OS.GTK_WIDGET_X (handle);
-		y = OS.GTK_WIDGET_Y (handle);
-		width = OS.GTK_WIDGET_WIDTH (handle);
-		height = OS.GTK_WIDGET_HEIGHT (handle);	
-		parentWidth = OS.GTK_WIDGET_WIDTH (parent.handle);
-		parentHeight = OS.GTK_WIDGET_HEIGHT (parent.handle);
-	}
+	gtk_widget_get_allocation (handle, allocation);
+	int x = allocation.x;
+	int y = allocation.y;
+	int width = allocation.width;
+	int height = allocation.height;
+	int parentBorder = 0;
+	gtk_widget_get_allocation (parent.handle, allocation);
+	int parentWidth = allocation.width;
+	int parentHeight = allocation.height;
 	int newX = lastX, newY = lastY;
 	if ((style & SWT.VERTICAL) != 0) {
 		newX = Math.min (Math.max (0, eventX + x - startX - parentBorder), parentWidth - width);
