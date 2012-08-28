@@ -631,7 +631,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	rect.width = trim.width;
 	rect.height = trim.height;
 	if (window != null) {
-		if (!fullScreen && !fixResize()) {
+		if (!_getFullScreen() && !fixResize()) {
 			float /*double*/ h = rect.height;
 			rect = window.frameRectForContentRect(rect);
 			rect.y += h-rect.height;
@@ -971,6 +971,13 @@ public Rectangle getClientArea () {
  */
 public boolean getFullScreen () {
 	checkWidget();
+	return _getFullScreen ();
+}
+
+boolean _getFullScreen () {
+	if ((window.collectionBehavior() & OS.NSWindowCollectionBehaviorFullScreenPrimary) != 0) {
+		return (window.styleMask() & OS.NSFullScreenWindowMask) != 0 ? true : false;
+	}
 	return fullScreen;
 }
 
@@ -1027,7 +1034,7 @@ public Point getLocation () {
 public boolean getMaximized () {
 	checkWidget();
 	if (window == null) return false;
-	return !fullScreen && window.isZoomed();
+	return !_getFullScreen() && window.isZoomed();
 }
 
 Shell getModalShell () {
@@ -1596,7 +1603,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 			return;
 		}
 	}
-	if (fullScreen) setFullScreen (false);
+	if (_getFullScreen ()) setFullScreen (false);
 	boolean sheet = window.isSheet();
 	if (sheet && move && !resize) return;
 	int screenHeight = (int) display.getPrimaryFrame().height;
@@ -1684,14 +1691,14 @@ public void setEnabled (boolean enabled) {
 public void setFullScreen (boolean fullScreen) {
 	checkWidget ();
 	if (window == null) return;
-	if (this.fullScreen == fullScreen) return;
-	this.fullScreen = fullScreen;
+	if (_getFullScreen () == fullScreen) return;
 	
 	if ((window.collectionBehavior() & OS.NSWindowCollectionBehaviorFullScreenPrimary) != 0) {
 		OS.objc_msgSend(window.id, OS.sel_toggleFullScreen_, 0);
 		return;
 	}
 
+	this.fullScreen = fullScreen;
 	if (fullScreen) {
 		currentFrame = window.frame();
 		window.setShowsResizeIndicator(false); //only hides resize indicator
@@ -2144,11 +2151,11 @@ void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 		Shell parentShell = this;
 		while (parentShell.parent != null) {
 			parentShell = (Shell) parentShell.parent;
-			if (parentShell.fullScreen) {
+			if (parentShell._getFullScreen ()) {
 				break;
 			}
 		}
-		if (!parentShell.fullScreen || menuBar != null) {
+		if (!parentShell._getFullScreen () || menuBar != null) {
 			updateSystemUIMode ();
 		} else {
 			parentShell.updateSystemUIMode ();
@@ -2166,21 +2173,13 @@ void windowDidMiniturize(int /*long*/ id, int /*long*/ sel, int /*long*/ notific
 	sendEvent(SWT.Iconify);
 }
 
-void windowDidEnterFullScreen(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
-	this.fullScreen = true;
-}
-
-void windowDidExitFullScreen(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
-	this.fullScreen = false;
-}
-
 void windowDidMove(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
 	moved = true;
 	sendEvent(SWT.Move);
 }
 
 void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
-	if (fullScreen && ((window.collectionBehavior() & OS.NSWindowCollectionBehaviorFullScreenPrimary) == 0)) {
+	if (((window.collectionBehavior() & OS.NSWindowCollectionBehaviorFullScreenPrimary) == 0) && fullScreen) {
 		window.setFrame(fullScreenFrame, true);
 		NSRect contentViewFrame = new NSRect();
 		contentViewFrame.width = fullScreenFrame.width;
