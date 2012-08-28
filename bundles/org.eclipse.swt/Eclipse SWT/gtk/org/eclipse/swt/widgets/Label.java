@@ -211,7 +211,7 @@ void createHandle (int index) {
 		}
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	} else {
-		handle = OS.gtk_hbox_new (false, 0);
+		handle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 0);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		labelHandle = OS.gtk_label_new_with_mnemonic (null);
 		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);

@@ -1834,6 +1834,21 @@ void gdk_window_get_size (int /*long*/ drawable, int[] width, int[] height) {
 	}
 }
 
+int /*long*/ gtk_box_new (int orientation, boolean homogeneous, int spacing) {
+	int /*long*/ box = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		box = OS.gtk_box_new (orientation, spacing);
+		OS.gtk_box_set_homogeneous (box, homogeneous);
+	} else {
+		if (orientation == OS.GTK_ORIENTATION_HORIZONTAL) {
+			box = OS.gtk_hbox_new (homogeneous, spacing);
+		} else if (orientation == OS.GTK_ORIENTATION_VERTICAL) {
+			box = OS.gtk_vbox_new (homogeneous, spacing);
+		}
+	}
+	return box;
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.

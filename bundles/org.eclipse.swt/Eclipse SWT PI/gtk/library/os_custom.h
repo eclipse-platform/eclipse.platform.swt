@@ -72,6 +72,10 @@
 #define XRenderSetPictureTransform_LIB LIB_XRENDER
 #define g_filename_display_name_LIB LIB_GLIB
 #define gtk_widget_set_allocation_LIB LIB_GTK
+#define gtk_box_new_LIB LIB_GTK
+#define gtk_box_set_homogeneous_LIB LIB_GTK
+#define gtk_hbox_new_LIB LIB_GTK
+#define gtk_vbox_new_LIB LIB_GTK
 #define gtk_calendar_display_options_LIB LIB_GTK
 #define gtk_calendar_get_date_LIB LIB_GTK
 #define gtk_calendar_new_LIB LIB_GTK

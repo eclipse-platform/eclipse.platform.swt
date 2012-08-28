@@ -217,7 +217,7 @@ void createItem (TabItem item, int index) {
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
-	int /*long*/ boxHandle = OS.gtk_hbox_new (false, 0);
+	int /*long*/ boxHandle = gtk_box_new ( OS.GTK_ORIENTATION_HORIZONTAL, false, 0);
 	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	int /*long*/ labelHandle = OS.gtk_label_new_with_mnemonic (null);
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);

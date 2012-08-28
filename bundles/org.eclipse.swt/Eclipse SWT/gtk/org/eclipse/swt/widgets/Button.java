@@ -308,7 +308,7 @@ void createHandle (int index) {
 	if ((style & SWT.ARROW) != 0) {
 		OS.gtk_container_add (handle, arrowHandle);
 	} else {
-		boxHandle = OS.gtk_hbox_new (false, 4);
+		boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 4);
 		if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		labelHandle = OS.gtk_label_new_with_mnemonic (null);
 		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);

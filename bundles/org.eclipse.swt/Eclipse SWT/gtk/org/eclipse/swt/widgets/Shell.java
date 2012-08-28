@@ -677,7 +677,7 @@ void createHandle (int index) {
 		} else {
 			OS.gtk_window_set_resizable (shellHandle, false);
 		}
-		vboxHandle = OS.gtk_vbox_new (false, 0);
+		vboxHandle = gtk_box_new (OS.GTK_ORIENTATION_VERTICAL, false, 0);
 		if (vboxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		createHandle (index, false, true);
 		OS.gtk_container_add (vboxHandle, scrolledHandle);

@@ -127,7 +127,7 @@ void createHandle (int index) {
 	clientHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_container_add (handle, clientHandle);	
-	boxHandle = OS.gtk_hbox_new (false, 4);
+	boxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 4);
 	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	labelHandle = OS.gtk_label_new (null);
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);

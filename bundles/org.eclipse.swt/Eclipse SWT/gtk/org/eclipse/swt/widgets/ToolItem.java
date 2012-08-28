@@ -215,7 +215,7 @@ void createHandle (int index) {
 				 */
 				handle = OS.gtk_tool_button_new (0, null);
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-				arrowBoxHandle = OS.gtk_hbox_new (false, 0);
+				arrowBoxHandle = gtk_box_new ( OS.GTK_ORIENTATION_HORIZONTAL, false, 0);;
 				if (arrowBoxHandle == 0) error(SWT.ERROR_NO_HANDLES);
 				arrowHandle = OS.gtk_arrow_new (OS.GTK_ARROW_DOWN, OS.GTK_SHADOW_NONE);
 				if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);

@@ -159,7 +159,13 @@ String openChooserDialog () {
 	}
 	if (message.length () > 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, message, true);
-		int /*long*/ box = OS.gtk_hbox_new (false, 0);
+		int /*long*/ box = 0;
+		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)){
+			box = OS.gtk_box_new(OS.GTK_ORIENTATION_HORIZONTAL, 0);
+			OS.gtk_box_set_homogeneous(box, false);
+		} else {
+			box = OS.gtk_hbox_new (false, 0);
+		}
 		if (box == 0) error (SWT.ERROR_NO_HANDLES);
 		int /*long*/ label = OS.gtk_label_new (buffer);
 		if (label == 0) error (SWT.ERROR_NO_HANDLES);

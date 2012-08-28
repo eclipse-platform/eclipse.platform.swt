@@ -7117,6 +7117,7 @@ public static final int /*long*/ gtk_grab_get_current() {
 	}
 }
 /**
+ * @method flags=dynamic
  * @param homogeneous cast=(gboolean)
  * @param spacing cast=(gint)
  */
@@ -7131,7 +7132,32 @@ public static final int /*long*/ gtk_hbox_new(boolean homogeneous, int spacing) 
 }
 /**
  * @method flags=dynamic
- * @param adjustment cast=(GtkAdjustment *)
+ * @param orientation cast=(GtkOrientation)
+ */
+public static final native int /*long*/ _gtk_box_new(int orientation, int spacing);
+public static final int /*long*/ gtk_box_new(int orientation, int spacing) {
+	lock.lock();
+	try {
+		return _gtk_box_new(orientation, spacing);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_box_set_homogeneous(int /*long*/ box, boolean homogeneous);
+public static final void gtk_box_set_homogeneous(int /*long*/ box, boolean homogeneous) {
+	lock.lock();
+	try {
+		_gtk_box_set_homogeneous(box, homogeneous);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ *  @method flags=dynamic
+ *  @param adjustment cast=(GtkAdjustment *)
  */
 public static final native int /*long*/ _gtk_hscale_new(int /*long*/ adjustment);
 public static final int /*long*/ gtk_hscale_new(int /*long*/ adjustment) {
@@ -12055,6 +12081,7 @@ public static final void gtk_tree_view_convert_widget_to_bin_window_coords(int /
 	}
 }
 /**
+ * @method flags=dynamic
  * @param homogeneous cast=(gboolean)
  * @param spacing cast=(gint)
  */
