@@ -4349,7 +4349,6 @@ public static final int /*long*/ gdk_pango_context_get() {
 /**
  * @method flags=dynamic 
  * @param context cast=(PangoContext *)
- * @param colormap cast=(GdkColormap *)
  */
 public static final native void _gdk_pango_context_set_colormap(int /*long*/ context, int /*long*/ colormap);
 public static final void gdk_pango_context_set_colormap(int /*long*/ context, int /*long*/ colormap) {

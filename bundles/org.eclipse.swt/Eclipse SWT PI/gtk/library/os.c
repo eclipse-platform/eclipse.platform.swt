@@ -5767,12 +5767,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1pango_1context_1set_1colormap)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1pango_1context_1set_1colormap_FUNC);
 /*
-	gdk_pango_context_set_colormap((PangoContext *)arg0, (GdkColormap *)arg1);
+	gdk_pango_context_set_colormap((PangoContext *)arg0, arg1);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gdk_pango_context_set_colormap)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(PangoContext *, GdkColormap *))fp)((PangoContext *)arg0, (GdkColormap *)arg1);
+			((void (CALLING_CONVENTION*)(PangoContext *, jintLong))fp)((PangoContext *)arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1pango_1context_1set_1colormap_FUNC);
