@@ -265,7 +265,7 @@ void createHandle (int index) {
 		OS.gtk_widget_set_app_paintable (handle, true);
 		OS.gtk_window_set_type_hint (handle, OS.GDK_WINDOW_TYPE_HINT_TOOLTIP);
 	} else {
-		if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
+		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
 			state |= HANDLE;
 			handle = OS.gtk_tooltips_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
