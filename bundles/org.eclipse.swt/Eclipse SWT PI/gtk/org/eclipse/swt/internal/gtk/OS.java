@@ -7129,7 +7129,10 @@ public static final int /*long*/ gtk_hbox_new(boolean homogeneous, int spacing) 
 		lock.unlock();
 	}
 }
-/** @param adjustment cast=(GtkAdjustment *) */
+/**
+ * @method flags=dynamic
+ * @param adjustment cast=(GtkAdjustment *)
+ */
 public static final native int /*long*/ _gtk_hscale_new(int /*long*/ adjustment);
 public static final int /*long*/ gtk_hscale_new(int /*long*/ adjustment) {
 	lock.lock();
@@ -7140,9 +7143,23 @@ public static final int /*long*/ gtk_hscale_new(int /*long*/ adjustment) {
 	}
 }
 /**
- * @method flags=dynamic 
- * @param adjustment cast=(GtkAdjustment *)
+ *  @method flags=dynamic
+ *  @param orientation cast=(GtkOrientation)
+ *  @param adjustment cast=(GtkAdjustment *) 
  */
+public static final native int /*long*/ _gtk_scale_new(int orientation, int /*long*/ adjustment);
+public static final int /*long*/ gtk_scale_new(int orientation, int /*long*/ adjustment) {
+	lock.lock();
+	try {
+		return _gtk_scale_new(orientation, adjustment);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+* @method flags=dynamic 
+* @param adjustment cast=(GtkAdjustment *)
+*/
 public static final native int /*long*/ _gtk_hscrollbar_new(int /*long*/ adjustment);
 public static final int /*long*/ gtk_hscrollbar_new(int /*long*/ adjustment) {
 	lock.lock();
@@ -12063,7 +12080,10 @@ public static final void gtk_viewport_set_shadow_type(int /*long*/ viewport, int
 		lock.unlock();
 	}
 }
-/** @param adjustment cast=(GtkAdjustment *) */
+/**
+ * @method flags=dynamic
+ * @param adjustment cast=(GtkAdjustment *)
+ */
 public static final native int /*long*/ _gtk_vscale_new(int /*long*/ adjustment);
 public static final int /*long*/ gtk_vscale_new(int /*long*/ adjustment) {
 	lock.lock();

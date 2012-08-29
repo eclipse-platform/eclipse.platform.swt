@@ -129,9 +129,9 @@ void createHandle (int index) {
 	int /*long*/ hAdjustment = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
 	if (hAdjustment == 0) error (SWT.ERROR_NO_HANDLES);	
 	if ((style & SWT.HORIZONTAL) != 0) {
-		handle = OS.gtk_hscale_new (hAdjustment);
+		handle = gtk_scale_new (OS.GTK_ORIENTATION_HORIZONTAL, hAdjustment);
 	} else {
-		handle = OS.gtk_vscale_new (hAdjustment);
+		handle = gtk_scale_new (OS.GTK_ORIENTATION_VERTICAL, hAdjustment);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_container_add (fixedHandle, handle);
@@ -373,4 +373,17 @@ public void setSelection (int value) {
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
+int /*long*/ gtk_scale_new (int orientation, int /*long*/ adjustment) {
+	int /*long*/ scale = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0))	{
+		scale = OS.gtk_scale_new (orientation, adjustment);
+	} else {
+		if (orientation == OS.GTK_ORIENTATION_HORIZONTAL) {
+			scale = OS.gtk_hscale_new (adjustment);
+		} else if (orientation == OS.GTK_ORIENTATION_VERTICAL) {
+			scale = OS.gtk_vscale_new (adjustment);
+		}
+	}
+	return scale;
+}
 }

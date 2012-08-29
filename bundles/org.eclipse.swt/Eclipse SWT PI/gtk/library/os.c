@@ -9469,7 +9469,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1hscale_1new)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1hscale_1new_FUNC);
+/*
 	rc = (jintLong)gtk_hscale_new((GtkAdjustment *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_hscale_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkAdjustment *))fp)((GtkAdjustment *)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1hscale_1new_FUNC);
 	return rc;
 }
@@ -12322,6 +12330,26 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1rc_1style_1set_1text)
 	gtk_rc_style_set_text((GtkRcStyle *)arg0, arg1, lparg2);
 fail:
 	OS_NATIVE_EXIT(env, that, _1gtk_1rc_1style_1set_1text_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1scale_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1scale_1new)
+	(JNIEnv *env, jclass that, jint arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1scale_1new_FUNC);
+/*
+	rc = (jintLong)gtk_scale_new((GtkOrientation)arg0, (GtkAdjustment *)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_scale_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkOrientation, GtkAdjustment *))fp)((GtkOrientation)arg0, (GtkAdjustment *)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1scale_1new_FUNC);
+	return rc;
 }
 #endif
 
@@ -15423,7 +15451,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1vscale_1new)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1vscale_1new_FUNC);
+/*
 	rc = (jintLong)gtk_vscale_new((GtkAdjustment *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_vscale_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkAdjustment *))fp)((GtkAdjustment *)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1vscale_1new_FUNC);
 	return rc;
 }

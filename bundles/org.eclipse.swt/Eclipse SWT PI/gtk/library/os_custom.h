@@ -190,6 +190,9 @@
 #define gdk_pixbuf_render_to_drawable_LIB LIB_GDK
 #define gtk_scrolled_window_get_hscrollbar_LIB LIB_GTK
 #define gtk_scrolled_window_get_vscrollbar_LIB LIB_GTK
+#define gtk_scale_new_LIB LIB_GTK
+#define gtk_hscale_new_LIB LIB_GTK
+#define gtk_vscale_new_LIB LIB_GTK
 #define gtk_status_icon_get_geometry_LIB LIB_GTK
 #define gtk_status_icon_get_visible_LIB LIB_GTK
 #define gtk_status_icon_new_LIB LIB_GTK
