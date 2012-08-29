@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1403;
-int OS_nativeFunctionCallCount[1403];
+int OS_nativeFunctionCount = 1404;
+int OS_nativeFunctionCallCount[1404];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -1124,6 +1124,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1toolbar_1insert",
 	"_1gtk_1toolbar_1insert_1widget",
 	"_1gtk_1toolbar_1new",
+	"_1gtk_1toolbar_1set_1icon_1size",
 	"_1gtk_1toolbar_1set_1orientation",
 	"_1gtk_1toolbar_1set_1show_1arrow",
 	"_1gtk_1toolbar_1set_1style",
