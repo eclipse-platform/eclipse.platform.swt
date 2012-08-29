@@ -7139,12 +7139,29 @@ public static final int /*long*/ gtk_hscale_new(int /*long*/ adjustment) {
 		lock.unlock();
 	}
 }
-/** @param adjustment cast=(GtkAdjustment *) */
+/**
+ * @method flags=dynamic 
+ * @param adjustment cast=(GtkAdjustment *)
+ */
 public static final native int /*long*/ _gtk_hscrollbar_new(int /*long*/ adjustment);
 public static final int /*long*/ gtk_hscrollbar_new(int /*long*/ adjustment) {
 	lock.lock();
 	try {
 		return _gtk_hscrollbar_new(adjustment);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param orientation cast=(GtkOrientation) 
+ * @param adjustment cast=(GtkAdjustment *) 
+ * */
+public static final native int /*long*/ _gtk_scrollbar_new(int orientation, int /*long*/ adjustment);
+public static final int /*long*/ gtk_scrollbar_new(int orientation, int /*long*/ adjustment) {
+	lock.lock();
+	try {
+		return _gtk_scrollbar_new(orientation, adjustment);
 	} finally {
 		lock.unlock();
 	}
@@ -12056,7 +12073,10 @@ public static final int /*long*/ gtk_vscale_new(int /*long*/ adjustment) {
 		lock.unlock();
 	}
 }
-/** @param adjustment cast=(GtkAdjustment *) */
+/**
+ * @method flags=dynamic 
+ * @param adjustment cast=(GtkAdjustment *)
+ */
 public static final native int /*long*/ _gtk_vscrollbar_new(int /*long*/ adjustment);
 public static final int /*long*/ gtk_vscrollbar_new(int /*long*/ adjustment) {
 	lock.lock();

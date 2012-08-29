@@ -940,6 +940,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1rc_1style_1set_1text",
 	"_1gtk_1scale_1set_1digits",
 	"_1gtk_1scale_1set_1draw_1value",
+	"_1gtk_1scrollbar_1new",
 	"_1gtk_1scrolled_1window_1add_1with_1viewport",
 	"_1gtk_1scrolled_1window_1get_1hadjustment",
 	"_1gtk_1scrolled_1window_1get_1hscrollbar",

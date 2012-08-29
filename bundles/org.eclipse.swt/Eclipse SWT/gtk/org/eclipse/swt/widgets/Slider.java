@@ -156,9 +156,9 @@ void createHandle (int index) {
 	int /*long*/ hAdjustment = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
 	if (hAdjustment == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.HORIZONTAL) != 0) {
-		handle = OS.gtk_hscrollbar_new (hAdjustment);
+		handle = gtk_scrollbar_new (OS.GTK_ORIENTATION_HORIZONTAL, hAdjustment);
 	} else {
-		handle = OS.gtk_vscrollbar_new (hAdjustment);
+		handle = gtk_scrollbar_new (OS.GTK_ORIENTATION_VERTICAL, hAdjustment);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	/*
@@ -611,6 +611,20 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	OS.gtk_adjustment_changed (hAdjustment);
 	OS.gtk_adjustment_value_changed (hAdjustment);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
+}
+
+int /*long*/ gtk_scrollbar_new (int orientation, int /*long*/ adjustment) {
+	int /*long*/ scrollbar = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		scrollbar = OS.gtk_scrollbar_new (orientation, adjustment);
+	} else {
+		if (orientation == OS.GTK_ORIENTATION_HORIZONTAL) {
+			scrollbar = OS.gtk_hscrollbar_new (adjustment);
+		} else if (orientation == OS.GTK_ORIENTATION_VERTICAL) {
+			scrollbar = OS.gtk_vscrollbar_new (adjustment);
+		}
+	}
+	return scrollbar;
 }
 
 }

@@ -136,6 +136,9 @@
 #define gtk_menu_tool_button_new_LIB LIB_GTK
 #define gtk_window_set_keep_below_LIB LIB_GTK
 #define gtk_set_locale_LIB LIB_GTK
+#define gtk_scrollbar_new_LIB LIB_GTK
+#define gtk_hscrollbar_new_LIB LIB_GTK
+#define gtk_vscrollbar_new_LIB LIB_GTK
 #define gtk_toolbar_set_orientation_LIB LIB_GTK
 #define gtk_tooltip_trigger_tooltip_query_LIB LIB_GTK
 #define gtk_tooltips_set_tip_LIB LIB_GTK

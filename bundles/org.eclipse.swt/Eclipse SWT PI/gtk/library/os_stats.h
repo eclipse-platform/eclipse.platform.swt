@@ -948,6 +948,7 @@ typedef enum {
 	_1gtk_1rc_1style_1set_1text_FUNC,
 	_1gtk_1scale_1set_1digits_FUNC,
 	_1gtk_1scale_1set_1draw_1value_FUNC,
+	_1gtk_1scrollbar_1new_FUNC,
 	_1gtk_1scrolled_1window_1add_1with_1viewport_FUNC,
 	_1gtk_1scrolled_1window_1get_1hadjustment_FUNC,
 	_1gtk_1scrolled_1window_1get_1hscrollbar_FUNC,
