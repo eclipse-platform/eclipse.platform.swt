@@ -138,6 +138,13 @@ void createHandle (int index) {
 		byte [] swt_toolbar_flat = Converter.wcsToMbcs (null, "swt-toolbar-flat", true);
 		OS.gtk_widget_set_name (handle, swt_toolbar_flat);
 	}
+	/*
+	* Bug in GTK.  GTK will segment fault if gtk_widget_reparent() is called
+	* on a toolbar or on a widget hierarchy containing a toolbar when the icon
+	* size is not GTK_ICON_SIZE_LARGE_TOOLBAR.  The fix is to set the icon
+	* size to GTK_ICON_SIZE_LARGE_TOOLBAR.
+	*/
+	OS.gtk_toolbar_set_icon_size (handle, OS.GTK_ICON_SIZE_LARGE_TOOLBAR);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {

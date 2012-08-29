@@ -4260,21 +4260,7 @@ public boolean setParent (Composite parent) {
 		oldDecorations.fixAccelGroup ();
 	}
 	int /*long*/ newParent = parent.parentingHandle();
-	
-	/*
-	* Bug in GTK.  GTK will segment fault if gtk_widget_reparent() is called
-	* on a toolbar or on a widget hierarchy containing a toolbar.  The fix is
-	* to reparent by removing the widget from its current parent and adding it
-	* to the new parent.
-	* 
-	* Temporarily put back for bug#387496.
-	*/
 	OS.gtk_widget_reparent(topHandle, newParent);
-//	OS.g_object_ref (topHandle);
-//	OS.gtk_container_remove (OS.gtk_widget_get_parent (topHandle), topHandle);
-//	OS.gtk_container_add (newParent, topHandle);
-//	OS.g_object_unref (topHandle);
-	
 	OS.gtk_fixed_move (newParent, topHandle, x, y);
 	/*
 	* Restore the original widget size since GTK does not keep it.

@@ -10726,6 +10726,17 @@ public static final void gtk_toolbar_set_style(int /*long*/ toolbar, int style) 
 		lock.unlock();
 	}
 }
+/** @param toolbar cast=(GtkToolbar *) 
+ */
+public static final native void _gtk_toolbar_set_icon_size(int /*long*/ toolbar, int size);
+public static final void gtk_toolbar_set_icon_size(int /*long*/ toolbar, int size) {
+	lock.lock();
+	try {
+		_gtk_toolbar_set_icon_size(toolbar, size);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @method flags=dynamic */
 public static final native int /*long*/ _gtk_tooltips_data_get(int /*long*/ widget);
 public static final int /*long*/ gtk_tooltips_data_get(int /*long*/ widget) {
