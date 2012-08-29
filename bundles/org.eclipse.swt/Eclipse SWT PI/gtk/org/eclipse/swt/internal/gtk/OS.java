@@ -7210,11 +7210,25 @@ public static final int /*long*/ gtk_scrollbar_new(int orientation, int /*long*/
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
 public static final native int /*long*/ _gtk_hseparator_new();
 public static final int /*long*/ gtk_hseparator_new() {
 	lock.lock();
 	try {
 		return _gtk_hseparator_new();
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param orientation cast=(GtkOrientation)
+ */
+public static final native int /*long*/ _gtk_separator_new(int orientation);
+public static final int /*long*/ gtk_separator_new(int orientation) {
+	lock.lock();
+	try {
+		return _gtk_separator_new(orientation);
 	} finally {
 		lock.unlock();
 	}
@@ -12134,6 +12148,7 @@ public static final int /*long*/ gtk_vscrollbar_new(int /*long*/ adjustment) {
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
 public static final native int /*long*/ _gtk_vseparator_new();
 public static final int /*long*/ gtk_vseparator_new() {
 	lock.lock();

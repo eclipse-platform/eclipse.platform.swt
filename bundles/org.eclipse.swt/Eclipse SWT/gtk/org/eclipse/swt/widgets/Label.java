@@ -205,9 +205,9 @@ void createHandle (int index) {
 	gtk_widget_set_has_window (fixedHandle, true);
 	if ((style & SWT.SEPARATOR) != 0) {
 		if ((style & SWT.HORIZONTAL)!= 0) {
-			handle = OS.gtk_hseparator_new ();
+			handle = gtk_separator_new (OS.GTK_ORIENTATION_HORIZONTAL);
 		} else {
-			handle = OS.gtk_vseparator_new ();
+			handle = gtk_separator_new (OS.GTK_ORIENTATION_VERTICAL);
 		}
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	} else {
@@ -583,5 +583,19 @@ void showWidget () {
 	super.showWidget ();
 	if (frameHandle != 0) OS.gtk_widget_show (frameHandle);
 	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
+}
+
+int /*long*/ gtk_separator_new (int orientation) {
+	int /*long*/ separator = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		separator = OS.gtk_separator_new (orientation);
+	} else {
+		if (orientation == OS.GTK_ORIENTATION_HORIZONTAL) {
+			separator = OS.gtk_hseparator_new ();
+		} else if (orientation == OS.GTK_ORIENTATION_VERTICAL) {
+			separator = OS.gtk_vseparator_new ();
+		}
+	}
+	return separator;
 }
 }

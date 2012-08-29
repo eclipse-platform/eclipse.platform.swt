@@ -965,6 +965,7 @@ typedef enum {
 	_1gtk_1selection_1data_1free_FUNC,
 	_1gtk_1selection_1data_1set_FUNC,
 	_1gtk_1separator_1menu_1item_1new_FUNC,
+	_1gtk_1separator_1new_FUNC,
 	_1gtk_1separator_1tool_1item_1new_FUNC,
 	_1gtk_1separator_1tool_1item_1set_1draw_FUNC,
 	_1gtk_1set_1locale_FUNC,

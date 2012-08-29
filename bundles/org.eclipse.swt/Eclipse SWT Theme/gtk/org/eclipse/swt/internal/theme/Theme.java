@@ -37,7 +37,7 @@ public Theme(Device device) {
 	progressHandle = OS.gtk_progress_bar_new();
 	toolbarHandle = OS.gtk_toolbar_new();
 	treeHandle = OS.gtk_tree_view_new_with_model(0);
-	separatorHandle = OS.gtk_vseparator_new();
+	separatorHandle = gtk_separator_new (OS.GTK_ORIENTATION_VERTICAL);
 	labelHandle = OS.gtk_label_new(null);
 	OS.gtk_container_add (fixedHandle, labelHandle);
 	OS.gtk_container_add (fixedHandle, frameHandle);
@@ -214,5 +214,19 @@ void transferClipping(GC gc, int /*long*/ style) {
 	if (clipping != clipRgn && clipping != damageRgn) {
 		OS.gdk_region_destroy(clipping);
 	}
+}
+
+int /*long*/ gtk_separator_new (int orientation) {
+	int /*long*/ separator = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		separator = OS.gtk_separator_new (orientation);
+	} else {
+		if (orientation == OS.GTK_ORIENTATION_HORIZONTAL) {
+			separator = OS.gtk_hseparator_new ();
+		} else if (orientation == OS.GTK_ORIENTATION_VERTICAL) {
+			separator = OS.gtk_vseparator_new ();
+		}
+	}
+	return separator;
 }
 }

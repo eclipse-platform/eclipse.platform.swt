@@ -9555,7 +9555,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1hseparator_1new)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1hseparator_1new_FUNC);
+/*
 	rc = (jintLong)gtk_hseparator_new();
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_hseparator_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1hseparator_1new_FUNC);
 	return rc;
 }
@@ -12606,6 +12614,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1separator_1menu_1item_1new)
 }
 #endif
 
+#ifndef NO__1gtk_1separator_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1separator_1new)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1separator_1new_FUNC);
+/*
+	rc = (jintLong)gtk_separator_new((GtkOrientation)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_separator_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkOrientation))fp)((GtkOrientation)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1separator_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1separator_1tool_1item_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1separator_1tool_1item_1new)
 	(JNIEnv *env, jclass that)
@@ -15545,7 +15573,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1vseparator_1new)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1vseparator_1new_FUNC);
+/*
 	rc = (jintLong)gtk_vseparator_new();
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_vseparator_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1vseparator_1new_FUNC);
 	return rc;
 }

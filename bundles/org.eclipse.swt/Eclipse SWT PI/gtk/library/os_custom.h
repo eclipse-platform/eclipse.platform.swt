@@ -143,6 +143,9 @@
 #define gtk_scrollbar_new_LIB LIB_GTK
 #define gtk_hscrollbar_new_LIB LIB_GTK
 #define gtk_vscrollbar_new_LIB LIB_GTK
+#define gtk_separator_new_LIB LIB_GTK
+#define gtk_hseparator_new_LIB LIB_GTK
+#define gtk_vseparator_new_LIB LIB_GTK
 #define gtk_toolbar_set_orientation_LIB LIB_GTK
 #define gtk_tooltip_trigger_tooltip_query_LIB LIB_GTK
 #define gtk_tooltips_set_tip_LIB LIB_GTK
