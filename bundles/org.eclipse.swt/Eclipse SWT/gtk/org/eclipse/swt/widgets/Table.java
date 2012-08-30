@@ -511,6 +511,7 @@ void createColumn (TableColumn column, int index) {
 			int /*long*/ newModel = OS.gtk_list_store_newv (types.length, types);
 			if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
 			int /*long*/ [] ptr = new int /*long*/ [1];
+			int [] ptr1 = new int [1];
 			for (int i=0; i<itemCount; i++) {
 				int /*long*/ newItem = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 				if (newItem == 0) error (SWT.ERROR_NO_HANDLES);
@@ -518,7 +519,12 @@ void createColumn (TableColumn column, int index) {
 				TableItem item = items [i];
 				if (item != null) {
 					int /*long*/ oldItem = item.handle;
-					for (int j=0; j<modelLength; j++) {
+					/* the first three columns contain int values, subsequent columns contain pointers */
+					for (int j=0; j<3; j++) {
+						OS.gtk_tree_model_get (oldModel, oldItem, j, ptr1, -1);
+						OS.gtk_list_store_set (newModel, newItem, j, ptr1 [0], -1);
+					}
+					for (int j=3; j<modelLength; j++) {
 						OS.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
 						OS.gtk_list_store_set (newModel, newItem, j, ptr [0], -1);
 						if (types [j] == OS.G_TYPE_STRING ()) {
@@ -948,6 +954,7 @@ void destroyItem (TableColumn column) {
 		int /*long*/ newModel = OS.gtk_list_store_newv (types.length, types);
 		if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
 		int /*long*/ [] ptr = new int /*long*/ [1];
+		int [] ptr1 = new int [1];
 		for (int i=0; i<itemCount; i++) {
 			int /*long*/ newItem = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 			if (newItem == 0) error (SWT.ERROR_NO_HANDLES);
@@ -955,7 +962,12 @@ void destroyItem (TableColumn column) {
 			TableItem item = items [i];
 			if (item != null) {
 				int /*long*/ oldItem = item.handle;
-				for (int j=0; j<FIRST_COLUMN; j++) {
+				/* the first three columns contain int values, subsequent columns contain pointers */
+				for (int j=0; j<3; j++) {
+					OS.gtk_tree_model_get (oldModel, oldItem, j, ptr1, -1);
+					OS.gtk_list_store_set (newModel, newItem, j, ptr1 [0], -1);
+				}
+				for (int j=3; j<FIRST_COLUMN; j++) {
 					OS.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
 					OS.gtk_list_store_set (newModel, newItem, j, ptr [0], -1);
 					if (ptr [0] != 0) {
