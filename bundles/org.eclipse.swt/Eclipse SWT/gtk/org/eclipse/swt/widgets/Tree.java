@@ -550,20 +550,26 @@ void copyModel (int /*long*/ oldModel, int oldStart, int /*long*/ newModel, int 
 	if (OS.gtk_tree_model_iter_children (oldModel, iter, oldParent))  {
 		int /*long*/ [] oldItems = new int /*long*/ [OS.gtk_tree_model_iter_n_children (oldModel, oldParent)];
 		int oldIndex = 0;
+		int /*long*/ [] ptr = new int /*long*/ [1];
+		int [] ptr1 = new int [1];
 		do {
 			int /*long*/ newItem = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 			if (newItem == 0) error (SWT.ERROR_NO_HANDLES);	
 			OS.gtk_tree_store_append (newModel, newItem, newParent);
-			int [] index = new int [1];
-			OS.gtk_tree_model_get (oldModel, iter, ID_COLUMN, index, -1);
+			OS.gtk_tree_model_get (oldModel, iter, ID_COLUMN, ptr1, -1);
+			int index = ptr1[0];
 			TreeItem item = null;
-			if (index [0] != -1) {
-				item = items [index [0]];
+			if (index != -1) {
+				item = items [index];
 				if (item != null) {
 					int /*long*/ oldItem = item.handle;
 					oldItems[oldIndex++] = oldItem;
-					int /*long*/ [] ptr = new int /*long*/ [1];
-					for (int j = 0; j < FIRST_COLUMN; j++) {
+					/* the first three columns contain int values, subsequent columns contain pointers */
+					for (int j = 0; j < 3; j++) {
+						OS.gtk_tree_model_get (oldModel, oldItem, j, ptr1, -1);
+						OS.gtk_tree_store_set (newModel, newItem, j, ptr1 [0], -1);
+					}
+					for (int j = 3; j < FIRST_COLUMN; j++) {
 						OS.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
 						OS.gtk_tree_store_set (newModel, newItem, j, ptr [0], -1);
 						if (types [j] == OS.G_TYPE_STRING ()) {

@@ -235,7 +235,7 @@ Color _getBackground (int index) {
 }
 
 boolean _getChecked () {
-	int /*long*/ [] ptr = new int /*long*/ [1];
+	int [] ptr = new int [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.CHECKED_COLUMN, ptr, -1);
 	return ptr [0] != 0;
 }
@@ -1532,7 +1532,7 @@ public void setGrayed (boolean grayed) {
 	* GTK+'s "inconsistent" state does not match SWT's concept of grayed.
 	* Render checked+grayed as "inconsistent", unchecked+grayed as blank.
 	*/
-	int /*long*/ [] ptr = new int /*long*/ [1];
+	int [] ptr = new int [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.CHECKED_COLUMN, ptr, -1);
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.GRAYED_COLUMN, ptr [0] == 0 ? false : grayed, -1);
 	cached = true;
