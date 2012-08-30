@@ -4675,12 +4675,29 @@ public static final int gdk_device_grab(long /*int*/ device, long /*int*/ window
 		lock.unlock();
 	}
 }
-/** @param time cast=(guint32) */
+/**
+ *  @method flags=dynamic
+ *  @param time cast=(guint32) 
+ */
 public static final native void _gdk_pointer_ungrab(int time);
 public static final void gdk_pointer_ungrab(int time) {
 	lock.lock();
 	try {
 		_gdk_pointer_ungrab(time);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ *  @method flags=dynamic
+ *  @param device cast=(GdkDevice *)
+ *  @param time_ cast=(guint32) 
+ */
+public static final native void _gdk_device_ungrab(long /*int*/ device, int time_);
+public static final void  gdk_device_ungrab(long /*int*/ device, int time_) {
+	lock.lock();
+	try {
+		_gdk_device_ungrab(device, time_);
 	} finally {
 		lock.unlock();
 	}

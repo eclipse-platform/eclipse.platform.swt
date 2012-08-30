@@ -167,6 +167,7 @@
 #define gdk_cursor_new_from_pixbuf_LIB LIB_GDK
 #define gdk_device_manager_get_client_pointer_LIB LIB_GDK
 #define gdk_device_grab_LIB LIB_GDK
+#define gdk_device_ungrab_LIB LIB_GDK
 #define gdk_display_get_device_manager_LIB LIB_GDK
 #define gdk_display_get_default_LIB LIB_GDK
 #define gdk_display_supports_cursor_color_LIB LIB_GDK
@@ -192,6 +193,7 @@
 #define gdk_gc_get_values_LIB LIB_GDK
 #define gdk_pixbuf_save_to_bufferv_LIB LIB_GDK
 #define gdk_pointer_grab_LIB LIB_GDK
+#define gdk_pointer_ungrab_LIB LIB_GDK
 #define gdk_screen_get_default_LIB LIB_GDK
 #define gdk_screen_get_monitor_at_point_LIB LIB_GDK
 #define gdk_screen_get_monitor_at_window_LIB LIB_GDK

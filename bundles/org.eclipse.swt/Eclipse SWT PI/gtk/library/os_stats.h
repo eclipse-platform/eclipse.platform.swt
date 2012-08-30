@@ -431,6 +431,7 @@ typedef enum {
 	_1gdk_1cursor_1unref_FUNC,
 	_1gdk_1device_1grab_FUNC,
 	_1gdk_1device_1manager_1get_1client_1pointer_FUNC,
+	_1gdk_1device_1ungrab_FUNC,
 	_1gdk_1display_1get_1default_FUNC,
 	_1gdk_1display_1get_1device_1manager_FUNC,
 	_1gdk_1display_1supports_1cursor_1color_FUNC,

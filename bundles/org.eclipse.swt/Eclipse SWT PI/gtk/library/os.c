@@ -4916,6 +4916,24 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1device_1manager_1get_1client_1pointe
 }
 #endif
 
+#ifndef NO__1gdk_1device_1ungrab
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1device_1ungrab)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1device_1ungrab_FUNC);
+/*
+	gdk_device_ungrab((GdkDevice *)arg0, (guint32)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_device_ungrab)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GdkDevice *, guint32))fp)((GdkDevice *)arg0, (guint32)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1device_1ungrab_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1display_1get_1default
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1display_1get_1default)
 	(JNIEnv *env, jclass that)
@@ -6188,7 +6206,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1pointer_1ungrab)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1pointer_1ungrab_FUNC);
+/*
 	gdk_pointer_ungrab((guint32)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_pointer_ungrab)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(guint32))fp)((guint32)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1pointer_1ungrab_FUNC);
 }
 #endif

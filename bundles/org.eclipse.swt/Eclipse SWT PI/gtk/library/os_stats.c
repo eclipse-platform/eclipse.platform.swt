@@ -421,6 +421,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1cursor_1unref",
 	"_1gdk_1device_1grab",
 	"_1gdk_1device_1manager_1get_1client_1pointer",
+	"_1gdk_1device_1ungrab",
 	"_1gdk_1display_1get_1default",
 	"_1gdk_1display_1get_1device_1manager",
 	"_1gdk_1display_1supports_1cursor_1color",

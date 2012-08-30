@@ -1866,6 +1866,17 @@ int gdk_pointer_grab (long /*int*/ window, int grab_ownership, boolean owner_eve
 	}
 }
 
+void gdk_pointer_ungrab (long /*int*/ window, int time_) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		long /*int*/ display = OS.gdk_window_get_display (window);
+		long /*int*/ device_manager = OS.gdk_display_get_device_manager (display);
+		long /*int*/ pointer = OS.gdk_device_manager_get_client_pointer (device_manager);
+		OS.gdk_device_ungrab(pointer, time_);
+	} else {
+		OS.gdk_pointer_ungrab(time_);
+	}
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
