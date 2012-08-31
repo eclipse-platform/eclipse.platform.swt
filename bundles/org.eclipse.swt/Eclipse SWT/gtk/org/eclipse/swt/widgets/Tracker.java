@@ -368,7 +368,7 @@ public boolean getStippled () {
 
 boolean grab () {
 	int /*long*/ cursor = this.cursor != null ? this.cursor.handle : 0;
-	int result = OS.gdk_pointer_grab (window, false, OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK, window, cursor, OS.GDK_CURRENT_TIME);
+	int result = gdk_pointer_grab(window, OS.GDK_OWNERSHIP_NONE, false, OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK, window, cursor, OS.GDK_CURRENT_TIME);
 	return result == OS.GDK_GRAB_SUCCESS;
 }
 

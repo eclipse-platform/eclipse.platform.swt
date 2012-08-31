@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1340;
-int OS_nativeFunctionCallCount[1340];
+int OS_nativeFunctionCount = 1344;
+int OS_nativeFunctionCallCount[1344];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -420,7 +420,10 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1cursor_1new_1from_1pixbuf",
 	"_1gdk_1cursor_1new_1from_1pixmap",
 	"_1gdk_1cursor_1unref",
+	"_1gdk_1device_1grab",
+	"_1gdk_1device_1manager_1get_1client_1pointer",
 	"_1gdk_1display_1get_1default",
+	"_1gdk_1display_1get_1device_1manager",
 	"_1gdk_1display_1supports_1cursor_1color",
 	"_1gdk_1drag_1status",
 	"_1gdk_1draw_1arc",
@@ -536,6 +539,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1window_1end_1paint",
 	"_1gdk_1window_1focus",
 	"_1gdk_1window_1get_1children",
+	"_1gdk_1window_1get_1display",
 	"_1gdk_1window_1get_1events",
 	"_1gdk_1window_1get_1frame_1extents",
 	"_1gdk_1window_1get_1height",

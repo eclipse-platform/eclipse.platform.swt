@@ -1849,6 +1849,23 @@ int /*long*/ gtk_box_new (int orientation, boolean homogeneous, int spacing) {
 	return box;
 }
 
+int gdk_pointer_grab (int /*long*/ window, int grab_ownership, boolean owner_events, int event_mask,int /*long*/ confine_to, int /*long*/ cursor, int time_) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		int /*long*/ display = 0;
+		if( window != 0){
+			display = OS.gdk_window_get_display (window);
+		} else {
+			window = OS.gdk_get_default_root_window();
+			display = OS.gdk_window_get_display (window);
+		}
+		int /*long*/ device_manager = OS.gdk_display_get_device_manager (display);
+		int /*long*/ pointer = OS.gdk_device_manager_get_client_pointer (device_manager);
+		return OS.gdk_device_grab(pointer, window, grab_ownership, owner_events, event_mask, cursor, time_);
+	} else {
+		return OS.gdk_pointer_grab(window, owner_events, event_mask, confine_to, cursor, time_);
+	}
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.

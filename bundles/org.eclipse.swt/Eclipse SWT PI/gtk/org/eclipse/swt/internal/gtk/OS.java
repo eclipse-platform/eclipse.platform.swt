@@ -207,6 +207,7 @@ public class OS extends C {
 	public static final int GDK_NOTIFY_INFERIOR = 2;
 	public static final int GDK_Num_Lock = 0xFF7F;
 	public static final int GDK_OVERLAP_RECTANGLE_OUT = 0x1;
+	public static final int GDK_OWNERSHIP_NONE = 0;	
 	public static final int GDK_PIXBUF_ALPHA_BILEVEL = 0x0;
 	public static final int GDK_POINTER_MOTION_HINT_MASK = 0x8;
 	public static final int GDK_POINTER_MOTION_MASK = 0x4;
@@ -3658,6 +3659,42 @@ public static final int /*long*/ gdk_display_get_default() {
 		lock.unlock();
 	}
 }
+/**
+ *  @method flags=dynamic
+ *  @param window cast=(GdkWindow *)
+ */
+public static final native int /*long*/ _gdk_window_get_display(int /*long*/ window);
+public static final int /*long*/ gdk_window_get_display(int /*long*/ window) {
+	lock.lock();
+	try {
+		return _gdk_window_get_display(window);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ *  @method flags=dynamic
+ *  @param display cast=(GdkDisplay *)
+ */
+public static final native int /*long*/ _gdk_display_get_device_manager(int /*long*/ display);
+public static final int /*long*/ gdk_display_get_device_manager(int /*long*/ display) {
+	lock.lock();
+	try {
+		return _gdk_display_get_device_manager(display);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native int /*long*/ _gdk_device_manager_get_client_pointer(int /*long*/ device_manager);
+public static final int /*long*/ gdk_device_manager_get_client_pointer(int /*long*/ device_manager) {
+	lock.lock();
+	try {
+		return _gdk_device_manager_get_client_pointer(device_manager);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @method flags=dynamic */
 public static final native boolean _gdk_display_supports_cursor_color(int /*long*/ display);
 public static final boolean gdk_display_supports_cursor_color(int /*long*/ display) {
@@ -4593,6 +4630,7 @@ public static final int /*long*/ gdk_pixmap_new(int /*long*/ window, int width, 
 	}
 }
 /**
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param owner_events cast=(gboolean)
  * @param event_mask cast=(GdkEventMask)
@@ -4605,6 +4643,24 @@ public static final int gdk_pointer_grab(int /*long*/ window, boolean owner_even
 	lock.lock();
 	try {
 		return _gdk_pointer_grab(window, owner_events, event_mask, confine_to, cursor, time);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param device cast=(GdkDevice *)
+ * @param window cast=(GdkWindow *)
+ * @param owner_events cast=(gboolean)
+ * @param event_mask cast=(GdkEventMask)
+ * @param cursor cast=(GdkCursor *)
+ * @param time_ cast=(guint32)
+ */
+public static final native int _gdk_device_grab(int /*long*/ device, int /*long*/ window, int grab_ownership, boolean owner_events, int event_mask, int /*long*/ cursor, int time_);
+public static final int gdk_device_grab(int /*long*/ device, int /*long*/ window, int grab_ownership, boolean owner_events, int event_mask, int /*long*/ cursor, int time_) {
+	lock.lock();
+	try {
+		return _gdk_device_grab(device, window, grab_ownership, owner_events, event_mask, cursor,time_);
 	} finally {
 		lock.unlock();
 	}
