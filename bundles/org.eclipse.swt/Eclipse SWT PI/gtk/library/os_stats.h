@@ -429,6 +429,7 @@ typedef enum {
 	_1gdk_1cursor_1new_1from_1pixbuf_FUNC,
 	_1gdk_1cursor_1new_1from_1pixmap_FUNC,
 	_1gdk_1cursor_1unref_FUNC,
+	_1gdk_1device_1get_1associated_1device_FUNC,
 	_1gdk_1device_1grab_FUNC,
 	_1gdk_1device_1manager_1get_1client_1pointer_FUNC,
 	_1gdk_1device_1ungrab_FUNC,

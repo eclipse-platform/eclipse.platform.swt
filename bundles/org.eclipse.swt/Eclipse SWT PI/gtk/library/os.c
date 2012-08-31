@@ -4876,6 +4876,26 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cursor_1unref)
 }
 #endif
 
+#ifndef NO__1gdk_1device_1get_1associated_1device
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1device_1get_1associated_1device)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1device_1get_1associated_1device_FUNC);
+/*
+	rc = (jintLong)gdk_device_get_associated_device(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_device_get_associated_device)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1device_1get_1associated_1device_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1device_1grab
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1device_1grab)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jboolean arg3, jint arg4, jintLong arg5, jint arg6)
@@ -5761,7 +5781,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1keyboard_1ungrab)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1keyboard_1ungrab_FUNC);
+/*
 	gdk_keyboard_ungrab(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_keyboard_ungrab)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jint))fp)(arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1keyboard_1ungrab_FUNC);
 }
 #endif

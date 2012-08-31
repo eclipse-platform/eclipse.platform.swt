@@ -419,6 +419,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1cursor_1new_1from_1pixbuf",
 	"_1gdk_1cursor_1new_1from_1pixmap",
 	"_1gdk_1cursor_1unref",
+	"_1gdk_1device_1get_1associated_1device",
 	"_1gdk_1device_1grab",
 	"_1gdk_1device_1manager_1get_1client_1pointer",
 	"_1gdk_1device_1ungrab",

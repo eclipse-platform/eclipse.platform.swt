@@ -134,6 +134,7 @@
 #define gtk_icon_info_load_icon_LIB LIB_GTK
 #define gtk_icon_info_free_LIB LIB_GTK
 #define gtk_icon_theme_lookup_by_gicon_LIB LIB_GTK
+#define gdk_keyboard_ungrab_LIB LIB_GDK
 #define gtk_icon_theme_get_default_LIB LIB_GTK
 #define gtk_menu_item_remove_submenu_LIB LIB_GTK
 #define gtk_menu_shell_set_take_focus_LIB LIB_GTK
@@ -169,6 +170,7 @@
 #define gdk_device_grab_LIB LIB_GDK
 #define gdk_device_ungrab_LIB LIB_GDK
 #define gdk_display_get_device_manager_LIB LIB_GDK
+#define gdk_device_get_associated_device_LIB LIB_GDK
 #define gdk_display_get_default_LIB LIB_GDK
 #define gdk_display_supports_cursor_color_LIB LIB_GDK
 #define gdk_draw_arc_LIB LIB_GDK

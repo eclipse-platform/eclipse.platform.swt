@@ -4331,6 +4331,7 @@ public static final long /*int*/ gdk_get_default_root_window() {
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
 public static final native void _gdk_keyboard_ungrab(int time);
 public static final void gdk_keyboard_ungrab(int time) {
 	lock.lock();
@@ -4698,6 +4699,16 @@ public static final void  gdk_device_ungrab(long /*int*/ device, int time_) {
 	lock.lock();
 	try {
 		_gdk_device_ungrab(device, time_);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native long /*int*/ _gdk_device_get_associated_device(long /*int*/ device);
+public static final long /*int*/  gdk_device_get_associated_device(long /*int*/ device) {
+	lock.lock();
+	try {
+		return _gdk_device_get_associated_device(device);
 	} finally {
 		lock.unlock();
 	}
