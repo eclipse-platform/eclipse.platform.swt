@@ -541,6 +541,7 @@ void findButtonHandle() {
 			int /*long*/ widget = OS.g_list_data (list);
 			if (OS.GTK_IS_BUTTON (widget)) {
 				buttonHandle = widget;
+				OS.g_object_ref (buttonHandle);
 				break;
 			}
 			list = OS.g_list_next (list);
@@ -555,13 +556,14 @@ void findMenuHandle() {
 	if (display.allChildren != 0) {
 	    int /*long*/ list = display.allChildren;
 		while (list != 0) {
-		int /*long*/ widget = OS.g_list_data (list);
-		if (OS.G_OBJECT_TYPE (widget) == OS.GTK_TYPE_MENU ()) {
-			menuHandle = widget;
-			break;
+			int /*long*/ widget = OS.g_list_data (list);
+			if (OS.G_OBJECT_TYPE (widget) == OS.GTK_TYPE_MENU ()) {
+				menuHandle = widget;
+				OS.g_object_ref (menuHandle);
+				break;
+			}
+			list = OS.g_list_next (list);
 		}
-		list = OS.g_list_next (list);
-	}
 	    OS.g_list_free (display.allChildren);
 	    display.allChildren = 0;
 	}
@@ -1229,6 +1231,7 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent)  {
 				if (grabHandle != 0) {
 					if (OS.G_OBJECT_TYPE (grabHandle) == OS.GTK_TYPE_MENU ()) {
 						menuHandle = grabHandle;
+						OS.g_object_ref (menuHandle);
 						OS.g_signal_connect_closure_by_id (menuHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT], false);
 						OS.g_signal_connect_closure_by_id (menuHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT_INVERSE], true);
 						OS.g_signal_connect_closure (menuHandle, OS.selection_done, display.closures [SELECTION_DONE], false);
@@ -1486,7 +1489,13 @@ void register () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	buttonHandle = entryHandle = 0;
+	if (menuHandle != 0) {
+		OS.g_object_unref (menuHandle);
+	}
+	if (buttonHandle != 0) {
+		OS.g_object_unref (buttonHandle);
+	}
+	menuHandle = buttonHandle = entryHandle = 0;
 }
 
 void releaseWidget () {
