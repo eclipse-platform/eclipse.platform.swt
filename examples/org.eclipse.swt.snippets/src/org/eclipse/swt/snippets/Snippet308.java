@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Browser example snippet: query DOM node value (improved implementation for eclipse/swt 3.5 and newer) 
+ * Browser example snippet: query DOM node value (improved implementation for Eclipse/SWT 3.5 and newer).
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

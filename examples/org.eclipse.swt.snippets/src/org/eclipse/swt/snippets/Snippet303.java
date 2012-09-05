@@ -12,9 +12,12 @@ package org.eclipse.swt.snippets;
 
 /*
  * Browser example snippet: listen for DOM mousedown events with javascript
+ * (Eclipse/SWT 3.4 and earlier).  For an improved implementation of this
+ * snippet that can be used with Eclipse/SWT 3.5 and newer see
+ * http://git.eclipse.org/c/platform/eclipse.platform.swt.git/tree/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet362.java .
  *
  * This snippet works for all supported browser types (ie.- Browsers created with style
- * SWT.NONE).  For a Browser created with style SWT.MOZILLA the cleaner approach would
+ * SWT.NONE).  For a Browser created with style SWT.MOZILLA an alternate approach would
  * be to use JavaXPCOM to hook the DOM listeners. 
  *
  * For a list of all SWT example snippets see
