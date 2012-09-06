@@ -1979,14 +1979,14 @@ int /*long*/ gtk_row_activated (int /*long*/ tree, int /*long*/ path, int /*long
 	return 0;
 }
 
-int gtk_row_deleted (int model, int path) {
+int /*long*/ gtk_row_deleted (int /*long*/ model, int /*long*/ path) {
 	if (ignoreAccessibility) {
 		OS.g_signal_stop_emission_by_name (model, OS.row_deleted);
 	}
 	return 0;
 }
 
-int gtk_row_inserted (int model, int path, int iter) {
+int /*long*/ gtk_row_inserted (int /*long*/ model, int /*long*/ path, int /*long*/ iter) {
 	if (ignoreAccessibility) {
 		OS.g_signal_stop_emission_by_name (model, OS.row_inserted);
 	}
