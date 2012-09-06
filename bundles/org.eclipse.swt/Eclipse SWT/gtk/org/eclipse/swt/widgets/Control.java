@@ -1022,14 +1022,11 @@ public void setLocation(int x, int y) {
  */
 public Point getSize () {
 	checkWidget();
-	int width = 0, height = 0;
-	if ((state & ZERO_WIDTH) == 0) {
-		int /*long*/ topHandle = topHandle ();
-		GtkAllocation allocation = new GtkAllocation ();
-		gtk_widget_get_allocation (topHandle, allocation);
-		width = allocation.width;
-		height = allocation.height;
-	}
+	int /*long*/ topHandle = topHandle ();
+	GtkAllocation allocation = new GtkAllocation ();
+	gtk_widget_get_allocation (topHandle, allocation);
+	int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+	int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
 	return new Point (width, height);
 }
 

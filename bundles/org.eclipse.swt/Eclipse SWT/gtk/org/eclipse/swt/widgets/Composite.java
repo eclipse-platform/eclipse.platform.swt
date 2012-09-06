@@ -605,13 +605,10 @@ public Rectangle getClientArea () {
 		}
 		forceResize ();
 		int /*long*/ clientHandle = clientHandle ();
-		int width = 0, height = 0;
-		if ((state & ZERO_WIDTH) == 0) {
-			GtkAllocation allocation = new GtkAllocation();
-			gtk_widget_get_allocation (clientHandle, allocation);
-			width = allocation.width;
-			height = allocation.height;	
-		}
+		GtkAllocation allocation = new GtkAllocation();
+		gtk_widget_get_allocation (clientHandle, allocation);
+		int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+		int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
 		return new Rectangle (0, 0, width, height);
 	}
 	return super.getClientArea();
