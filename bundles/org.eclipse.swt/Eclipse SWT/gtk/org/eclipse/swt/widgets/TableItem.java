@@ -214,8 +214,12 @@ void clear () {
 	if (parent.currentItem == this) return;
 	if (cached || (parent.style & SWT.VIRTUAL) == 0) {
 		int columnCount = OS.gtk_tree_model_get_n_columns (parent.modelHandle);
-		for (int i=0; i<columnCount; i++) {
+		/* the columns before FOREGROUND_COLUMN contain int values, subsequent columns contain pointers */
+		for (int i=Table.CHECKED_COLUMN; i<Table.FOREGROUND_COLUMN; i++) {
 			OS.gtk_list_store_set (parent.modelHandle, handle, i, 0, -1);
+		}
+		for (int i=Table.FOREGROUND_COLUMN; i<columnCount; i++) {
+			OS.gtk_list_store_set (parent.modelHandle, handle, i, (int /*long*/)0, -1);
 		}
 		/*
 		* Bug in GTK.  When using fixed-height-mode,
