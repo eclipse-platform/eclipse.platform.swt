@@ -380,7 +380,7 @@ int /*long*/ gtk_scale_new (int orientation, int /*long*/ adjustment) {
 	} else {
 		if (orientation == OS.GTK_ORIENTATION_HORIZONTAL) {
 			scale = OS.gtk_hscale_new (adjustment);
-		} else if (orientation == OS.GTK_ORIENTATION_VERTICAL) {
+		} else {
 			scale = OS.gtk_vscale_new (adjustment);
 		}
 	}

@@ -620,7 +620,7 @@ int /*long*/ gtk_scrollbar_new (int orientation, int /*long*/ adjustment) {
 	} else {
 		if (orientation == OS.GTK_ORIENTATION_HORIZONTAL) {
 			scrollbar = OS.gtk_hscrollbar_new (adjustment);
-		} else if (orientation == OS.GTK_ORIENTATION_VERTICAL) {
+		} else {
 			scrollbar = OS.gtk_vscrollbar_new (adjustment);
 		}
 	}
