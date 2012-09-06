@@ -879,6 +879,8 @@ void createSurface() {
 		OS.gdk_drawable_get_size(pixmap, w, h);
 	}
 	int width = w[0], height = h[0];
+	this.width = width;
+	this.height = height;
 	if (mask != 0 || alpha != -1 || alphaData != null) {
 	 	int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, width, height);
 		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
