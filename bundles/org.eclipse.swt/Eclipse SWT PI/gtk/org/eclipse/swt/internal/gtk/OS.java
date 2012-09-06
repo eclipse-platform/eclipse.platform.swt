@@ -7687,8 +7687,8 @@ public static final void gtk_list_store_remove(int /*long*/ list_store, int /*lo
  * @param store cast=(GtkListStore *)
  * @param iter cast=(GtkTreeIter *)
  */
-public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int /*long*/ terminator);
-public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int /*long*/ terminator) {
+public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int terminator);
+public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int terminator) {
 	lock.lock();
 	try {
 		_gtk_list_store_set(store, iter, column, value, terminator);
@@ -7700,8 +7700,8 @@ public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ ite
  * @param store cast=(GtkListStore *)
  * @param iter cast=(GtkTreeIter *)
  */
-public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int /*long*/ terminator);
-public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int /*long*/ terminator) {
+public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int terminator);
+public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int terminator) {
 	lock.lock();
 	try {
 		_gtk_list_store_set(store, iter, column, value, terminator);
@@ -7713,8 +7713,8 @@ public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ ite
  * @param store cast=(GtkListStore *)
  * @param iter cast=(GtkTreeIter *)
  */
-public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int /*long*/ terminator);
-public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int /*long*/ terminator) {
+public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int terminator);
+public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int terminator) {
 	lock.lock();
 	try {
 		_gtk_list_store_set(store, iter, column, value, terminator);
@@ -7727,8 +7727,8 @@ public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ ite
  * @param iter cast=(GtkTreeIter *)
  * @param value flags=no_out
  */
-public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int /*long*/ terminator);
-public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int /*long*/ terminator) {
+public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int terminator);
+public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int terminator) {
 	lock.lock();
 	try {
 		_gtk_list_store_set(store, iter, column, value, terminator);
@@ -7740,8 +7740,8 @@ public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ ite
  * @param store cast=(GtkListStore *)
  * @param iter cast=(GtkTreeIter *)
  */
-public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int /*long*/ terminator);
-public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int /*long*/ terminator) {
+public static final native void _gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int terminator);
+public static final void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int terminator) {
 	lock.lock();
 	try {
 		_gtk_list_store_set(store, iter, column, value, terminator);
@@ -10837,8 +10837,8 @@ public static final void gtk_tooltips_set_tip(int /*long*/ tooltips, int /*long*
  * @param tree_model cast=(GtkTreeModel *)
  * @param iter cast=(GtkTreeIter *)
  */
-public static final native void _gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, long[] value, int /*long*/ terminator);
-public static final void gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, long[] value, int /*long*/ terminator) {
+public static final native void _gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, long[] value, int terminator);
+public static final void gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, long[] value, int terminator) {
 	lock.lock();
 	try {
 		_gtk_tree_model_get(tree_model, iter, column, value, terminator);
@@ -10850,8 +10850,8 @@ public static final void gtk_tree_model_get(int /*long*/ tree_model, int /*long*
  * @param tree_model cast=(GtkTreeModel *)
  * @param iter cast=(GtkTreeIter *)
  */
-public static final native void _gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, int[] value, int /*long*/ terminator);
-public static final void gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, int[] value, int /*long*/ terminator) {
+public static final native void _gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, int[] value, int terminator);
+public static final void gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, int[] value, int terminator) {
 	lock.lock();
 	try {
 		_gtk_tree_model_get(tree_model, iter, column, value, terminator);
@@ -11249,8 +11249,8 @@ public static final void gtk_tree_store_remove(int /*long*/ store, int /*long*/ 
  * @param store cast=(GtkTreeStore *)
  * @param iter cast=(GtkTreeIter *)
  */
-public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int /*long*/ terminator);
-public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int /*long*/ terminator) {
+public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int terminator);
+public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int terminator) {
 	lock.lock();
 	try {
 		_gtk_tree_store_set(store, iter, column, value, terminator);
@@ -11262,8 +11262,8 @@ public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ ite
  * @param store cast=(GtkTreeStore *)
  * @param iter cast=(GtkTreeIter *)
  */
-public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int /*long*/ terminator);
-public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int /*long*/ terminator) {
+public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int terminator);
+public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int terminator) {
 	lock.lock();
 	try {
 		_gtk_tree_store_set(store, iter, column, value, terminator);
@@ -11275,8 +11275,8 @@ public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ ite
  * @param store cast=(GtkTreeStore *)
  * @param iter cast=(GtkTreeIter *)
  */
-public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int /*long*/ terminator);
-public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int /*long*/ terminator) {
+public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int terminator);
+public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int terminator) {
 	lock.lock();
 	try {
 		_gtk_tree_store_set(store, iter, column, value, terminator);
@@ -11289,8 +11289,8 @@ public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ ite
  * @param iter cast=(GtkTreeIter *)
  * @param value flags=no_out
  */
-public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int /*long*/ terminator);
-public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int /*long*/ terminator) {
+public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int terminator);
+public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int terminator) {
 	lock.lock();
 	try {
 		_gtk_tree_store_set(store, iter, column, value, terminator);
@@ -11302,8 +11302,8 @@ public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ ite
  * @param store cast=(GtkTreeStore *)
  * @param iter cast=(GtkTreeIter *)
  */
-public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int /*long*/ terminator);
-public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int /*long*/ terminator) {
+public static final native void _gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int terminator);
+public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int terminator) {
 	lock.lock();
 	try {
 		_gtk_tree_store_set(store, iter, column, value, terminator);

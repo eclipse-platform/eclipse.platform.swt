@@ -785,27 +785,27 @@ char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"_1gtk_1list_1store_1set__IIIII",
 #else
-	"_1gtk_1list_1store_1set__JJIIJ",
+	"_1gtk_1list_1store_1set__JJIII",
 #endif
 #ifndef JNI64
 	"_1gtk_1list_1store_1set__IIIJI",
 #else
-	"_1gtk_1list_1store_1set__JJIJJ",
+	"_1gtk_1list_1store_1set__JJIJI",
 #endif
 #ifndef JNI64
 	"_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I",
 #else
-	"_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2J",
+	"_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I",
 #endif
 #ifndef JNI64
 	"_1gtk_1list_1store_1set__IIIZI",
 #else
-	"_1gtk_1list_1store_1set__JJIZJ",
+	"_1gtk_1list_1store_1set__JJIZI",
 #endif
 #ifndef JNI64
 	"_1gtk_1list_1store_1set__III_3BI",
 #else
-	"_1gtk_1list_1store_1set__JJI_3BJ",
+	"_1gtk_1list_1store_1set__JJI_3BI",
 #endif
 	"_1gtk_1main",
 	"_1gtk_1main_1do_1event",
@@ -1077,12 +1077,12 @@ char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"_1gtk_1tree_1model_1get__III_3II",
 #else
-	"_1gtk_1tree_1model_1get__JJI_3IJ",
+	"_1gtk_1tree_1model_1get__JJI_3II",
 #endif
 #ifndef JNI64
 	"_1gtk_1tree_1model_1get__III_3JI",
 #else
-	"_1gtk_1tree_1model_1get__JJI_3JJ",
+	"_1gtk_1tree_1model_1get__JJI_3JI",
 #endif
 	"_1gtk_1tree_1model_1get_1iter",
 	"_1gtk_1tree_1model_1get_1iter_1first",
@@ -1124,27 +1124,27 @@ char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"_1gtk_1tree_1store_1set__IIIII",
 #else
-	"_1gtk_1tree_1store_1set__JJIIJ",
+	"_1gtk_1tree_1store_1set__JJIII",
 #endif
 #ifndef JNI64
 	"_1gtk_1tree_1store_1set__IIIJI",
 #else
-	"_1gtk_1tree_1store_1set__JJIJJ",
+	"_1gtk_1tree_1store_1set__JJIJI",
 #endif
 #ifndef JNI64
 	"_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I",
 #else
-	"_1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2J",
+	"_1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I",
 #endif
 #ifndef JNI64
 	"_1gtk_1tree_1store_1set__IIIZI",
 #else
-	"_1gtk_1tree_1store_1set__JJIZJ",
+	"_1gtk_1tree_1store_1set__JJIZI",
 #endif
 #ifndef JNI64
 	"_1gtk_1tree_1store_1set__III_3BI",
 #else
-	"_1gtk_1tree_1store_1set__JJI_3BJ",
+	"_1gtk_1tree_1store_1set__JJI_3BI",
 #endif
 	"_1gtk_1tree_1view_1collapse_1row",
 	"_1gtk_1tree_1view_1column_1add_1attribute",

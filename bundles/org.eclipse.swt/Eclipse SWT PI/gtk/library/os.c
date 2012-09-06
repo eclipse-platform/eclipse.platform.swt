@@ -10075,60 +10075,60 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1remove)
 }
 #endif
 
-#if (!defined(NO__1gtk_1list_1store_1set__IIIII) && !defined(JNI64)) || (!defined(NO__1gtk_1list_1store_1set__JJIIJ) && defined(JNI64))
+#if (!defined(NO__1gtk_1list_1store_1set__IIIII) && !defined(JNI64)) || (!defined(NO__1gtk_1list_1store_1set__JJIII) && defined(JNI64))
 #ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__IIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__IIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jint arg4)
 #else
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__JJIIJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__JJIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jint arg4)
 #endif
 {
 #ifndef JNI64
 	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__IIIII_FUNC);
 #else
-	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__JJIIJ_FUNC);
+	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__JJIII_FUNC);
 #endif
 	gtk_list_store_set((GtkListStore *)arg0, (GtkTreeIter *)arg1, arg2, arg3, arg4);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__IIIII_FUNC);
 #else
-	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__JJIIJ_FUNC);
+	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__JJIII_FUNC);
 #endif
 }
 #endif
 
-#if (!defined(NO__1gtk_1list_1store_1set__IIIJI) && !defined(JNI64)) || (!defined(NO__1gtk_1list_1store_1set__JJIJJ) && defined(JNI64))
+#if (!defined(NO__1gtk_1list_1store_1set__IIIJI) && !defined(JNI64)) || (!defined(NO__1gtk_1list_1store_1set__JJIJI) && defined(JNI64))
 #ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__IIIJI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jlong arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__IIIJI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jlong arg3, jint arg4)
 #else
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__JJIJJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jlong arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__JJIJI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jlong arg3, jint arg4)
 #endif
 {
 #ifndef JNI64
 	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__IIIJI_FUNC);
 #else
-	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__JJIJJ_FUNC);
+	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__JJIJI_FUNC);
 #endif
 	gtk_list_store_set((GtkListStore *)arg0, (GtkTreeIter *)arg1, arg2, arg3, arg4);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__IIIJI_FUNC);
 #else
-	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__JJIJJ_FUNC);
+	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__JJIJI_FUNC);
 #endif
 }
 #endif
 
-#if (!defined(NO__1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I) && !defined(JNI64)) || (!defined(NO__1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2J) && defined(JNI64))
+#if (!defined(NO__1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I) && !defined(JNI64)) || (!defined(NO__1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I) && defined(JNI64))
 #ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jint arg4)
 #else
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2J)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jint arg4)
 #endif
 {
 	GdkColor _arg3, *lparg3=NULL;
 #ifndef JNI64
 	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
 #else
-	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC);
+	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
 #endif
 	if (arg3) if ((lparg3 = getGdkColorFields(env, arg3, &_arg3)) == NULL) goto fail;
 	gtk_list_store_set((GtkListStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
@@ -10136,44 +10136,44 @@ fail:
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
 #else
-	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC);
+	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
 #endif
 }
 #endif
 
-#if (!defined(NO__1gtk_1list_1store_1set__IIIZI) && !defined(JNI64)) || (!defined(NO__1gtk_1list_1store_1set__JJIZJ) && defined(JNI64))
+#if (!defined(NO__1gtk_1list_1store_1set__IIIZI) && !defined(JNI64)) || (!defined(NO__1gtk_1list_1store_1set__JJIZI) && defined(JNI64))
 #ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__IIIZI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jboolean arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__IIIZI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jboolean arg3, jint arg4)
 #else
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__JJIZJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jboolean arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__JJIZI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jboolean arg3, jint arg4)
 #endif
 {
 #ifndef JNI64
 	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__IIIZI_FUNC);
 #else
-	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__JJIZJ_FUNC);
+	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__JJIZI_FUNC);
 #endif
 	gtk_list_store_set((GtkListStore *)arg0, (GtkTreeIter *)arg1, arg2, arg3, arg4);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__IIIZI_FUNC);
 #else
-	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__JJIZJ_FUNC);
+	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__JJIZI_FUNC);
 #endif
 }
 #endif
 
-#if (!defined(NO__1gtk_1list_1store_1set__III_3BI) && !defined(JNI64)) || (!defined(NO__1gtk_1list_1store_1set__JJI_3BJ) && defined(JNI64))
+#if (!defined(NO__1gtk_1list_1store_1set__III_3BI) && !defined(JNI64)) || (!defined(NO__1gtk_1list_1store_1set__JJI_3BI) && defined(JNI64))
 #ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__III_3BI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jbyteArray arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__III_3BI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jbyteArray arg3, jint arg4)
 #else
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__JJI_3BJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jbyteArray arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__JJI_3BI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jbyteArray arg3, jint arg4)
 #endif
 {
 	jbyte *lparg3=NULL;
 #ifndef JNI64
 	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__III_3BI_FUNC);
 #else
-	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__JJI_3BJ_FUNC);
+	OS_NATIVE_ENTER(env, that, _1gtk_1list_1store_1set__JJI_3BI_FUNC);
 #endif
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	gtk_list_store_set((GtkListStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
@@ -10182,7 +10182,7 @@ fail:
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__III_3BI_FUNC);
 #else
-	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__JJI_3BJ_FUNC);
+	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__JJI_3BI_FUNC);
 #endif
 }
 #endif
@@ -14103,18 +14103,18 @@ fail:
 }
 #endif
 
-#if (!defined(NO__1gtk_1tree_1model_1get__III_3II) && !defined(JNI64)) || (!defined(NO__1gtk_1tree_1model_1get__JJI_3IJ) && defined(JNI64))
+#if (!defined(NO__1gtk_1tree_1model_1get__III_3II) && !defined(JNI64)) || (!defined(NO__1gtk_1tree_1model_1get__JJI_3II) && defined(JNI64))
 #ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1model_1get__III_3II)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintArray arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1model_1get__III_3II)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintArray arg3, jint arg4)
 #else
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1model_1get__JJI_3IJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintArray arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1model_1get__JJI_3II)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintArray arg3, jint arg4)
 #endif
 {
 	jint *lparg3=NULL;
 #ifndef JNI64
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1model_1get__III_3II_FUNC);
 #else
-	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1model_1get__JJI_3IJ_FUNC);
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1model_1get__JJI_3II_FUNC);
 #endif
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	gtk_tree_model_get((GtkTreeModel *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
@@ -14123,23 +14123,23 @@ fail:
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1model_1get__III_3II_FUNC);
 #else
-	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1model_1get__JJI_3IJ_FUNC);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1model_1get__JJI_3II_FUNC);
 #endif
 }
 #endif
 
-#if (!defined(NO__1gtk_1tree_1model_1get__III_3JI) && !defined(JNI64)) || (!defined(NO__1gtk_1tree_1model_1get__JJI_3JJ) && defined(JNI64))
+#if (!defined(NO__1gtk_1tree_1model_1get__III_3JI) && !defined(JNI64)) || (!defined(NO__1gtk_1tree_1model_1get__JJI_3JI) && defined(JNI64))
 #ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1model_1get__III_3JI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jlongArray arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1model_1get__III_3JI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jlongArray arg3, jint arg4)
 #else
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1model_1get__JJI_3JJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jlongArray arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1model_1get__JJI_3JI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jlongArray arg3, jint arg4)
 #endif
 {
 	jlong *lparg3=NULL;
 #ifndef JNI64
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1model_1get__III_3JI_FUNC);
 #else
-	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1model_1get__JJI_3JJ_FUNC);
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1model_1get__JJI_3JI_FUNC);
 #endif
 	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	gtk_tree_model_get((GtkTreeModel *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
@@ -14148,7 +14148,7 @@ fail:
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1model_1get__III_3JI_FUNC);
 #else
-	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1model_1get__JJI_3JJ_FUNC);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1model_1get__JJI_3JI_FUNC);
 #endif
 }
 #endif
@@ -14564,60 +14564,60 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1remove)
 }
 #endif
 
-#if (!defined(NO__1gtk_1tree_1store_1set__IIIII) && !defined(JNI64)) || (!defined(NO__1gtk_1tree_1store_1set__JJIIJ) && defined(JNI64))
+#if (!defined(NO__1gtk_1tree_1store_1set__IIIII) && !defined(JNI64)) || (!defined(NO__1gtk_1tree_1store_1set__JJIII) && defined(JNI64))
 #ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__IIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__IIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jint arg4)
 #else
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__JJIIJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__JJIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jint arg4)
 #endif
 {
 #ifndef JNI64
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__IIIII_FUNC);
 #else
-	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__JJIIJ_FUNC);
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__JJIII_FUNC);
 #endif
 	gtk_tree_store_set((GtkTreeStore *)arg0, (GtkTreeIter *)arg1, arg2, arg3, arg4);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__IIIII_FUNC);
 #else
-	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__JJIIJ_FUNC);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__JJIII_FUNC);
 #endif
 }
 #endif
 
-#if (!defined(NO__1gtk_1tree_1store_1set__IIIJI) && !defined(JNI64)) || (!defined(NO__1gtk_1tree_1store_1set__JJIJJ) && defined(JNI64))
+#if (!defined(NO__1gtk_1tree_1store_1set__IIIJI) && !defined(JNI64)) || (!defined(NO__1gtk_1tree_1store_1set__JJIJI) && defined(JNI64))
 #ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__IIIJI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jlong arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__IIIJI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jlong arg3, jint arg4)
 #else
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__JJIJJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jlong arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__JJIJI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jlong arg3, jint arg4)
 #endif
 {
 #ifndef JNI64
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__IIIJI_FUNC);
 #else
-	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__JJIJJ_FUNC);
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__JJIJI_FUNC);
 #endif
 	gtk_tree_store_set((GtkTreeStore *)arg0, (GtkTreeIter *)arg1, arg2, arg3, arg4);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__IIIJI_FUNC);
 #else
-	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__JJIJJ_FUNC);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__JJIJI_FUNC);
 #endif
 }
 #endif
 
-#if (!defined(NO__1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I) && !defined(JNI64)) || (!defined(NO__1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2J) && defined(JNI64))
+#if (!defined(NO__1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I) && !defined(JNI64)) || (!defined(NO__1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I) && defined(JNI64))
 #ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jint arg4)
 #else
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2J)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jobject arg3, jint arg4)
 #endif
 {
 	GdkColor _arg3, *lparg3=NULL;
 #ifndef JNI64
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
 #else
-	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC);
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
 #endif
 	if (arg3) if ((lparg3 = getGdkColorFields(env, arg3, &_arg3)) == NULL) goto fail;
 	gtk_tree_store_set((GtkTreeStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
@@ -14625,44 +14625,44 @@ fail:
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
 #else
-	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
 #endif
 }
 #endif
 
-#if (!defined(NO__1gtk_1tree_1store_1set__IIIZI) && !defined(JNI64)) || (!defined(NO__1gtk_1tree_1store_1set__JJIZJ) && defined(JNI64))
+#if (!defined(NO__1gtk_1tree_1store_1set__IIIZI) && !defined(JNI64)) || (!defined(NO__1gtk_1tree_1store_1set__JJIZI) && defined(JNI64))
 #ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__IIIZI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jboolean arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__IIIZI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jboolean arg3, jint arg4)
 #else
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__JJIZJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jboolean arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__JJIZI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jboolean arg3, jint arg4)
 #endif
 {
 #ifndef JNI64
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__IIIZI_FUNC);
 #else
-	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__JJIZJ_FUNC);
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__JJIZI_FUNC);
 #endif
 	gtk_tree_store_set((GtkTreeStore *)arg0, (GtkTreeIter *)arg1, arg2, arg3, arg4);
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__IIIZI_FUNC);
 #else
-	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__JJIZJ_FUNC);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__JJIZI_FUNC);
 #endif
 }
 #endif
 
-#if (!defined(NO__1gtk_1tree_1store_1set__III_3BI) && !defined(JNI64)) || (!defined(NO__1gtk_1tree_1store_1set__JJI_3BJ) && defined(JNI64))
+#if (!defined(NO__1gtk_1tree_1store_1set__III_3BI) && !defined(JNI64)) || (!defined(NO__1gtk_1tree_1store_1set__JJI_3BI) && defined(JNI64))
 #ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__III_3BI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jbyteArray arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__III_3BI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jbyteArray arg3, jint arg4)
 #else
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__JJI_3BJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jbyteArray arg3, jintLong arg4)
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__JJI_3BI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jbyteArray arg3, jint arg4)
 #endif
 {
 	jbyte *lparg3=NULL;
 #ifndef JNI64
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__III_3BI_FUNC);
 #else
-	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__JJI_3BJ_FUNC);
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1set__JJI_3BI_FUNC);
 #endif
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	gtk_tree_store_set((GtkTreeStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
@@ -14671,7 +14671,7 @@ fail:
 #ifndef JNI64
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__III_3BI_FUNC);
 #else
-	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__JJI_3BJ_FUNC);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__JJI_3BI_FUNC);
 #endif
 }
 #endif

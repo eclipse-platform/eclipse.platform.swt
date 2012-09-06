@@ -793,27 +793,27 @@ typedef enum {
 #ifndef JNI64
 	_1gtk_1list_1store_1set__IIIII_FUNC,
 #else
-	_1gtk_1list_1store_1set__JJIIJ_FUNC,
+	_1gtk_1list_1store_1set__JJIII_FUNC,
 #endif
 #ifndef JNI64
 	_1gtk_1list_1store_1set__IIIJI_FUNC,
 #else
-	_1gtk_1list_1store_1set__JJIJJ_FUNC,
+	_1gtk_1list_1store_1set__JJIJI_FUNC,
 #endif
 #ifndef JNI64
 	_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC,
 #else
-	_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC,
+	_1gtk_1list_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC,
 #endif
 #ifndef JNI64
 	_1gtk_1list_1store_1set__IIIZI_FUNC,
 #else
-	_1gtk_1list_1store_1set__JJIZJ_FUNC,
+	_1gtk_1list_1store_1set__JJIZI_FUNC,
 #endif
 #ifndef JNI64
 	_1gtk_1list_1store_1set__III_3BI_FUNC,
 #else
-	_1gtk_1list_1store_1set__JJI_3BJ_FUNC,
+	_1gtk_1list_1store_1set__JJI_3BI_FUNC,
 #endif
 	_1gtk_1main_FUNC,
 	_1gtk_1main_1do_1event_FUNC,
@@ -1085,12 +1085,12 @@ typedef enum {
 #ifndef JNI64
 	_1gtk_1tree_1model_1get__III_3II_FUNC,
 #else
-	_1gtk_1tree_1model_1get__JJI_3IJ_FUNC,
+	_1gtk_1tree_1model_1get__JJI_3II_FUNC,
 #endif
 #ifndef JNI64
 	_1gtk_1tree_1model_1get__III_3JI_FUNC,
 #else
-	_1gtk_1tree_1model_1get__JJI_3JJ_FUNC,
+	_1gtk_1tree_1model_1get__JJI_3JI_FUNC,
 #endif
 	_1gtk_1tree_1model_1get_1iter_FUNC,
 	_1gtk_1tree_1model_1get_1iter_1first_FUNC,
@@ -1132,27 +1132,27 @@ typedef enum {
 #ifndef JNI64
 	_1gtk_1tree_1store_1set__IIIII_FUNC,
 #else
-	_1gtk_1tree_1store_1set__JJIIJ_FUNC,
+	_1gtk_1tree_1store_1set__JJIII_FUNC,
 #endif
 #ifndef JNI64
 	_1gtk_1tree_1store_1set__IIIJI_FUNC,
 #else
-	_1gtk_1tree_1store_1set__JJIJJ_FUNC,
+	_1gtk_1tree_1store_1set__JJIJI_FUNC,
 #endif
 #ifndef JNI64
 	_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC,
 #else
-	_1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2J_FUNC,
+	_1gtk_1tree_1store_1set__JJILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC,
 #endif
 #ifndef JNI64
 	_1gtk_1tree_1store_1set__IIIZI_FUNC,
 #else
-	_1gtk_1tree_1store_1set__JJIZJ_FUNC,
+	_1gtk_1tree_1store_1set__JJIZI_FUNC,
 #endif
 #ifndef JNI64
 	_1gtk_1tree_1store_1set__III_3BI_FUNC,
 #else
-	_1gtk_1tree_1store_1set__JJI_3BJ_FUNC,
+	_1gtk_1tree_1store_1set__JJI_3BI_FUNC,
 #endif
 	_1gtk_1tree_1view_1collapse_1row_FUNC,
 	_1gtk_1tree_1view_1column_1add_1attribute_FUNC,
