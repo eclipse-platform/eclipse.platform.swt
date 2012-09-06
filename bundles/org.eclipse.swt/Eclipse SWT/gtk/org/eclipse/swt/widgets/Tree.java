@@ -564,12 +564,12 @@ void copyModel (int /*long*/ oldModel, int oldStart, int /*long*/ newModel, int 
 				if (item != null) {
 					int /*long*/ oldItem = item.handle;
 					oldItems[oldIndex++] = oldItem;
-					/* the first three columns contain int values, subsequent columns contain pointers */
-					for (int j = 0; j < 3; j++) {
+					/* the columns before FOREGROUND_COLUMN contain int values, subsequent columns contain pointers */
+					for (int j = 0; j < FOREGROUND_COLUMN; j++) {
 						OS.gtk_tree_model_get (oldModel, oldItem, j, ptr1, -1);
 						OS.gtk_tree_store_set (newModel, newItem, j, ptr1 [0], -1);
 					}
-					for (int j = 3; j < FIRST_COLUMN; j++) {
+					for (int j = FOREGROUND_COLUMN; j < FIRST_COLUMN; j++) {
 						OS.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
 						OS.gtk_tree_store_set (newModel, newItem, j, ptr [0], -1);
 						if (types [j] == OS.G_TYPE_STRING ()) {
@@ -1007,11 +1007,11 @@ void destroyItem (TreeColumn column) {
 			if (item != null) {
 				int /*long*/ iter = item.handle;
 				int modelIndex = column.modelIndex;
-				OS.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_PIXBUF, 0, -1);
-				OS.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_TEXT, 0, -1);
-				OS.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_FOREGROUND, 0, -1);
-				OS.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_BACKGROUND, 0, -1);
-				OS.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_FONT, 0, -1);
+				OS.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_PIXBUF, (int /*long*/)0, -1);
+				OS.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_TEXT, (int /*long*/)0, -1);
+				OS.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_FOREGROUND, (int /*long*/)0, -1);
+				OS.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_BACKGROUND, (int /*long*/)0, -1);
+				OS.gtk_tree_store_set (modelHandle, iter, modelIndex + CELL_FONT, (int /*long*/)0, -1);
 				
 				Font [] cellFont = item.cellFont;
 				if (cellFont != null) {
