@@ -126,6 +126,10 @@ public Table (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+boolean acceptsFirstResponder (int /*long*/ id, int /*long*/ sel) {
+	return true;
+}
+
 int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	int /*long*/ returnValue = 0;
 	NSString attributeName = new NSString(arg0);
@@ -252,7 +256,7 @@ boolean canDragRowsWithIndexes_atPoint(int /*long*/ id, int /*long*/ sel, int /*
 	}
 	
 	// The clicked row must be selected to initiate a drag.
-	return (widget.isRowSelected(row) && drag);
+	return (widget.isRowSelected(row) && drag) || !hasFocus();
 }
 
 boolean checkData (TableItem item) {
@@ -2003,6 +2007,10 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	didSelect = false;
 	super.mouseDownSuper(id, sel, theEvent);
 	didSelect = false;
+}
+
+boolean needsPanelToBecomeKey (int /*long*/ id, int /*long*/ sel) {
+	return false;
 }
 
 /*

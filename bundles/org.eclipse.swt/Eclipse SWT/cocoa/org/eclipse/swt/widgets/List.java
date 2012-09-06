@@ -96,6 +96,10 @@ int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int
 	return super.accessibilityAttributeValue(id, sel, arg0);
 }
 
+boolean acceptsFirstResponder (int /*long*/ id, int /*long*/ sel) {
+	return true;
+}
+
 /**
  * Adds the argument to the end of the receiver's list.
  *
@@ -764,6 +768,10 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	didSelect = false;
 	super.mouseDownSuper(id, sel, theEvent);
 	didSelect = false;
+}
+
+boolean needsPanelToBecomeKey (int /*long*/ id, int /*long*/ sel) {
+	return false;
 }
 
 int /*long*/ numberOfRowsInTableView(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView) {

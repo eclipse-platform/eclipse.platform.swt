@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -209,6 +209,10 @@ public boolean mouse(NSPoint aPoint, NSRect aRect) {
 
 public boolean mouseDownCanMoveWindow() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_mouseDownCanMoveWindow);
+}
+
+public boolean needsPanelToBecomeKey() {
+	return OS.objc_msgSend_bool(this.id, OS.sel_needsPanelToBecomeKey);
 }
 
 public void registerForDraggedTypes(NSArray newTypes) {

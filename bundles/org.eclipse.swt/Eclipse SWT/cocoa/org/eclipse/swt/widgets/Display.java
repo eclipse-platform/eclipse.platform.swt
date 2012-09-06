@@ -2603,6 +2603,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_expandItem_expandChildren_, proc4, "@:@Z");
 	OS.class_addMethod(cls, OS.sel_collapseItem_collapseChildren_, proc4, "@:@Z");
 	OS.class_addMethod(cls, OS.sel_drawBackgroundInClipRect_, drawBackgroundInClipRectProc, "@:{NSRect}");
+	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_needsPanelToBecomeKey, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2782,6 +2784,8 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_deselectAll_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_tableView_writeRowsWithIndexes_toPasteboard_, proc5, "@:@@@");
 	OS.class_addMethod(cls, OS.sel_drawBackgroundInClipRect_, drawBackgroundInClipRectProc, "@:{NSRect}");
+	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_needsPanelToBecomeKey, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -4989,7 +4993,7 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 			}
 			break;
 	}
-	sendEvent = true;
+	if (type != OS.NSAppKitDefined) sendEvent = true;
 	
 	/*
 	 * Feature in Cocoa. The help key triggers context-sensitive help but doesn't get forwarded to the window as a key event.
@@ -5011,7 +5015,7 @@ void applicationSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event
 		super_struct.super_class = OS.objc_msgSend (id, OS.sel_superclass);
 		OS.objc_msgSendSuper (super_struct, sel, event);
 	}
-	sendEvent = false;
+	if (type != OS.NSAppKitDefined) sendEvent = false;
 }
 
 void applicationWillFinishLaunching (int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
@@ -5371,6 +5375,8 @@ static int /*long*/ windowProc(int /*long*/ id, int /*long*/ sel) {
 		return widget.isFlipped(id, sel) ? 1 : 0;
 	} else if (sel == OS.sel_canBecomeKeyView) {
 		return widget.canBecomeKeyView(id,sel) ? 1 : 0;
+	} else if (sel == OS.sel_needsPanelToBecomeKey) {
+		return widget.needsPanelToBecomeKey(id,sel) ? 1 : 0;
 	} else if (sel == OS.sel_becomeKeyWindow) {
 		widget.becomeKeyWindow(id, sel);
 	} else if (sel == OS.sel_unmarkText) {

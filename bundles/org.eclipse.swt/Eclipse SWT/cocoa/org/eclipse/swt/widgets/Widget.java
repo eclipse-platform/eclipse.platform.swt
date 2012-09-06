@@ -260,6 +260,10 @@ boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 	return callSuperBoolean (id, sel);
 }
 
+boolean needsPanelToBecomeKey (int /*long*/ id, int /*long*/ sel) {
+	return callSuperBoolean (id, sel);
+}
+
 void cancelOperation(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 }
 

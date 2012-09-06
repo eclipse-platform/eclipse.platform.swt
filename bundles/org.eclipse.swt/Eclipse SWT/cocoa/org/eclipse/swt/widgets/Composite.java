@@ -127,6 +127,13 @@ Control [] _getTabList () {
 	return tabList;
 }
 
+boolean acceptsFirstMouse (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+	if ((state & CANVAS) != 0) {
+		return true;
+	}
+	return super.acceptsFirstMouse (id, sel, theEvent);
+}
+
 boolean acceptsFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {

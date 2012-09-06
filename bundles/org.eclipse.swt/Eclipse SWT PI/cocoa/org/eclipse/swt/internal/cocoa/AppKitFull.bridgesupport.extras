@@ -3992,6 +3992,9 @@
 		<method selector="mouseDownCanMoveWindow" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="needsPanelToBecomeKey" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="registerForDraggedTypes:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -4683,6 +4686,7 @@
 	<enum name="NSAlphaFirstBitmapFormat" swt_gen="true"></enum>
 	<enum name="NSAlphaNonpremultipliedBitmapFormat" swt_gen="true"></enum>
 	<enum name="NSAlternateKeyMask" swt_gen="true"></enum>
+	<enum name="NSAppKitDefined" swt_gen="true"></enum>
 	<enum name="NSApplicationDefined" swt_gen="true"></enum>
 	<enum name="NSApplicationDelegateReplySuccess" swt_gen="true"></enum>
 	<enum name="NSAtTop" swt_gen="true"></enum>
