@@ -527,10 +527,10 @@ void createColumn (TableColumn column, int index) {
 					for (int j=FOREGROUND_COLUMN; j<modelLength; j++) {
 						OS.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
 						OS.gtk_list_store_set (newModel, newItem, j, ptr [0], -1);
-						if (types [j] == OS.G_TYPE_STRING ()) {
-							OS.g_free ((ptr [0]));
-						} else if (ptr [0] != 0) {
-							if (types [j] == OS.GDK_TYPE_COLOR()) {
+						if (ptr [0] != 0) {
+							if (types [j] == OS.G_TYPE_STRING ()) {
+								OS.g_free ((ptr [0]));
+							} else if (types [j] == OS.GDK_TYPE_COLOR()) {
 								OS.gdk_color_free (ptr [0]);
 							} else if (types [j] == OS.GDK_TYPE_PIXBUF()) {
 								OS.g_object_unref (ptr [0]);

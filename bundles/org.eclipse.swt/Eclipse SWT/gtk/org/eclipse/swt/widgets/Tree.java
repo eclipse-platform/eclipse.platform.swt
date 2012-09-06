@@ -572,10 +572,10 @@ void copyModel (int /*long*/ oldModel, int oldStart, int /*long*/ newModel, int 
 					for (int j = FOREGROUND_COLUMN; j < FIRST_COLUMN; j++) {
 						OS.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
 						OS.gtk_tree_store_set (newModel, newItem, j, ptr [0], -1);
-						if (types [j] == OS.G_TYPE_STRING ()) {
-							OS.g_free ((ptr [0]));
-						} else if (ptr[0] != 0) {
-							if (types[j] == OS.GDK_TYPE_COLOR()) {
+						if (ptr [0] != 0) {
+							if (types [j] == OS.G_TYPE_STRING ()) {
+								OS.g_free ((ptr [0]));
+							} else if (types[j] == OS.GDK_TYPE_COLOR()) {
 								OS.gdk_color_free(ptr[0]);
 							} else if (types[j] == OS.GDK_TYPE_PIXBUF()) {
 								OS.g_object_unref(ptr[0]);
@@ -585,16 +585,17 @@ void copyModel (int /*long*/ oldModel, int oldStart, int /*long*/ newModel, int 
 						}
 					}
 					for (int j= 0; j<modelLength - FIRST_COLUMN; j++) {
+						int newIndex = newStart + j;
 						OS.gtk_tree_model_get (oldModel, oldItem, oldStart + j, ptr, -1);
-						OS.gtk_tree_store_set (newModel, newItem, newStart + j, ptr [0], -1);
-						if (types [j] == OS.G_TYPE_STRING ()) {
-							OS.g_free ((ptr [0]));
-						} else if (ptr[0] != 0) {
-							if (types[j] == OS.GDK_TYPE_COLOR()) {
+						OS.gtk_tree_store_set (newModel, newItem, newIndex, ptr [0], -1);
+						if (ptr[0] != 0) {
+							if (types [newIndex] == OS.G_TYPE_STRING ()) {
+								OS.g_free ((ptr [0]));
+							} else if (types[newIndex] == OS.GDK_TYPE_COLOR()) {
 								OS.gdk_color_free(ptr[0]);
-							} else if (types[j] == OS.GDK_TYPE_PIXBUF()) {
+							} else if (types[newIndex] == OS.GDK_TYPE_PIXBUF()) {
 								OS.g_object_unref(ptr[0]);
-							} else if (types[j] == OS.PANGO_TYPE_FONT_DESCRIPTION()) {
+							} else if (types[newIndex] == OS.PANGO_TYPE_FONT_DESCRIPTION()) {
 								OS.pango_font_description_free(ptr[0]);
 							}
 						}
