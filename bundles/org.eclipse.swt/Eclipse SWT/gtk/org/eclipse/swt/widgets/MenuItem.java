@@ -884,13 +884,15 @@ public void setText (String string) {
 	int /*long*/ label = OS.gtk_bin_get_child (handle);
 	if (label != 0 && OS.GTK_IS_LABEL(label)) {
 		OS.gtk_label_set_text_with_mnemonic (label, buffer);
-		buffer = Converter.wcsToMbcs (null, accelString, true);
-		int /*long*/ ptr = OS.g_malloc (buffer.length);
-		OS.memmove (ptr, buffer, buffer.length);
-		if (OS.GTK_IS_ACCEL_LABEL(label)) {
-			int /*long*/ oldPtr = OS.GTK_ACCEL_LABEL_GET_ACCEL_STRING (label);
-			OS.GTK_ACCEL_LABEL_SET_ACCEL_STRING (label, ptr);
-			if (oldPtr != 0) OS.g_free (oldPtr);
+		if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+			if (OS.GTK_IS_ACCEL_LABEL(label)) {
+				buffer = Converter.wcsToMbcs (null, accelString, true);
+				int /*long*/ ptr = OS.g_malloc (buffer.length);
+				OS.memmove (ptr, buffer, buffer.length);
+				int /*long*/ oldPtr = OS.GTK_ACCEL_LABEL_GET_ACCEL_STRING (label);
+				OS.GTK_ACCEL_LABEL_SET_ACCEL_STRING (label, ptr);
+				if (oldPtr != 0) OS.g_free (oldPtr);
+			}
 		}
 	}
 }

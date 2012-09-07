@@ -378,8 +378,13 @@
 /* Field accessors */
 #define G_OBJECT_CLASS_CONSTRUCTOR(arg0) (arg0)->constructor
 #define G_OBJECT_CLASS_SET_CONSTRUCTOR(arg0, arg1) (arg0)->constructor = (GObject* (*) (GType, guint, GObjectConstructParam *))arg1
+#if GTK_CHECK_VERSION(3,0,0)
+#define GTK_ACCEL_LABEL_SET_ACCEL_STRING(arg0, arg1)
+#define GTK_ACCEL_LABEL_GET_ACCEL_STRING(arg0) 0
+#else
 #define GTK_ACCEL_LABEL_SET_ACCEL_STRING(arg0, arg1) (arg0)->accel_string = arg1
 #define GTK_ACCEL_LABEL_GET_ACCEL_STRING(arg0) (arg0)->accel_string
+#endif
 #if GTK_CHECK_VERSION(2,20,0)
 #define GTK_RANGE_SLIDER_START(arg0) 0
 #else
