@@ -28,7 +28,6 @@
   <packaging>pom</packaging>
 
   <modules>
-<!-- 
     <module>bundles/org.eclipse.swt</module>
     <module>bundles/org.eclipse.swt.opengl</module>
     <module>bundles/org.eclipse.swt.tools</module>
@@ -40,7 +39,6 @@
     <module>examples/org.eclipse.swt.examples.layouts</module>
     <module>examples/org.eclipse.swt.examples.ole.win32</module>
     <module>examples/org.eclipse.swt.examples.paint</module>
- -->
     <module>tests/org.eclipse.swt.tests</module>
   </modules>
 </project>
