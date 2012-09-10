@@ -1,0 +1,11 @@
+# ensure that the applicable implementation fragment gets installed (bug 361901)
+requires.0.namespace = org.eclipse.equinox.p2.iu
+requires.0.name = org.eclipse.swt.win32.win32.x86_64
+#requires.0.range = [$version$,$version$]
+requires.0.filter = (&(osgi.os=win32)(osgi.ws=win32)(osgi.arch=x86_64))
+
+
+requires.1.namespace = org.eclipse.equinox.p2.iu
+requires.1.name = org.eclipse.swt.win32.win32.x86
+#requires.1.range = [$version$,$version$]
+requires.1.filter = (&(osgi.os=win32)(osgi.ws=win32)(osgi.arch=x86))
