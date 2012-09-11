@@ -122,25 +122,26 @@ static void loadAdditionalLibraries (String mozillaPath) {
 	String libName = "libswt-xulrunner-fix.so"; //$NON-NLS-1$
 	File libsDir = new File (getProfilePath () + "/libs/" + Mozilla.OS() + '/' + Mozilla.Arch ()); //$NON-NLS-1$
 	File file = new File (libsDir, libName);
-	java.io.InputStream is = Library.class.getResourceAsStream ('/' + libName);
-	if (is != null) {
-		if (!libsDir.exists ()) {
-			libsDir.mkdirs ();
-		}
-		int read;
-		byte [] buffer = new byte [4096];
-		try {
-			FileOutputStream os = new FileOutputStream (file);
-			while ((read = is.read (buffer)) != -1) {
-				os.write(buffer, 0, read);
+	if (!file.exists()) {
+		java.io.InputStream is = Library.class.getResourceAsStream ('/' + libName);
+		if (is != null) {
+			if (!libsDir.exists ()) {
+				libsDir.mkdirs ();
 			}
-			os.close ();
-			is.close ();
-		} catch (FileNotFoundException e) {
-		} catch (IOException e) {
+			int read;
+			byte [] buffer = new byte [4096];
+			try {
+				FileOutputStream os = new FileOutputStream (file);
+				while ((read = is.read (buffer)) != -1) {
+					os.write(buffer, 0, read);
+				}
+				os.close ();
+				is.close ();
+			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
+			}
 		}
 	}
-
 	if (file.exists ()) {
 		byte[] bytes = Converter.wcsToMbcs (null, file.getAbsolutePath (), true);
 		OS.dlopen (bytes, OS.RTLD_NOW | OS.RTLD_GLOBAL);
