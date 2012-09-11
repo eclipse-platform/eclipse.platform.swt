@@ -7145,6 +7145,7 @@ public static final int /*long*/ gtk_box_new(int orientation, int spacing) {
 }
 /**
  * @method flags=dynamic
+ * @param box cast=(GtkBox *)
  */
 public static final native void _gtk_box_set_homogeneous(int /*long*/ box, boolean homogeneous);
 public static final void gtk_box_set_homogeneous(int /*long*/ box, boolean homogeneous) {

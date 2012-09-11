@@ -7507,12 +7507,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1box_1set_1homogeneous)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1box_1set_1homogeneous_FUNC);
 /*
-	gtk_box_set_homogeneous(arg0, arg1);
+	gtk_box_set_homogeneous((GtkBox *)arg0, arg1);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gtk_box_set_homogeneous)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jboolean))fp)(arg0, arg1);
+			((void (CALLING_CONVENTION*)(GtkBox *, jboolean))fp)((GtkBox *)arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1box_1set_1homogeneous_FUNC);

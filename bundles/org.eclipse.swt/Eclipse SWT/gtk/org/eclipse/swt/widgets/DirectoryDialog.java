@@ -160,9 +160,9 @@ String openChooserDialog () {
 	if (message.length () > 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, message, true);
 		int /*long*/ box = 0;
-		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)){
-			box = OS.gtk_box_new(OS.GTK_ORIENTATION_HORIZONTAL, 0);
-			OS.gtk_box_set_homogeneous(box, false);
+		if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+			box = OS.gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, 0);
+			OS.gtk_box_set_homogeneous (box, false);
 		} else {
 			box = OS.gtk_hbox_new (false, 0);
 		}
