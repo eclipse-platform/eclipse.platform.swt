@@ -29,6 +29,10 @@
 #include <stdlib.h>
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
+#if GTK_CHECK_VERSION(3,0,0)
+#include <gtk/gtkx.h>
+#include <gdk/gdkx.h>
+#endif
 #include <pango/pango.h>
 #include <pango/pango-font.h>
 #include <string.h>
