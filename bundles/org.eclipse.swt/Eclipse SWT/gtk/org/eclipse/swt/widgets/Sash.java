@@ -298,7 +298,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 			int /*long*/ window = gtk_widget_get_window (handle);
 			int grabMask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK;
 			int /*long*/ gdkCursor = cursor != null ? cursor.handle : defaultCursor;
-			int ptrGrabResult = gdk_pointer_grab(window, OS.GDK_OWNERSHIP_NONE, false, grabMask, window, gdkCursor, OS.GDK_CURRENT_TIME);
+			int ptrGrabResult = gdk_pointer_grab (window, OS.GDK_OWNERSHIP_NONE, false, grabMask, window, gdkCursor, OS.GDK_CURRENT_TIME);
 
 			/* The event must be sent because its doit flag is used. */
 			Event event = new Event ();
