@@ -19,6 +19,39 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_gtk_OS_##func
 
+#ifndef NO__1call_1get_1size
+JNIEXPORT void JNICALL OS_NATIVE(_1call_1get_1size)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jintLong arg6, jintLong arg7)
+{
+   /*
+   * Bug in Solaris. For some reason, the assembler generated for this function (when not putting the parameters in the stack)  crashes. 
+   * It seems that this  is caused by a bug in the Sun Studio Compiler when the optimization level is greater or equal to two.
+   * The fix is rewrite the function passing all parameters on the stack. Alternatively, the problem could be fixed by lowering the optimization level,
+   * but this solution would significantly increase the size of the library. 
+   */
+	const GdkRectangle rect;
+	gint x, y, width, height;
+	const GdkRectangle *lprect = NULL;
+	gint* lpx = NULL;
+	gint* lpy = NULL;
+	gint* lpwidth = NULL;
+	gint* lpheight = NULL;
+	OS_NATIVE_ENTER(env, that, _1call_1get_1size_FUNC);
+	if (arg3) lprect = &rect;
+	if (arg4) lpx = &x;
+	if (arg5) lpy = &y;
+	if (arg6) lpwidth = &width;
+	if (arg7) lpheight = &height;
+	((void (*)(GtkCellRenderer *, GtkWidget *, const GdkRectangle *, gint *, gint *, gint *, gint *))arg0)((GtkCellRenderer *)arg1, (GtkWidget *)arg2, lprect, lpx, lpy, lpwidth, lpheight);
+	if (arg3) *((GdkRectangle *)arg3) = rect;
+	if (arg4) *((gint *)arg4) = x;
+	if (arg5) *((gint *)arg5) = y;
+	if (arg6) *((gint *)arg6) = width;
+	if (arg7) *((gint *)arg7) = height;
+	OS_NATIVE_EXIT(env, that, _1call_1get_1size_FUNC);
+}
+#endif
+
 #ifndef NO_GDK_1WINDOWING_1X11
 JNIEXPORT jboolean JNICALL OS_NATIVE(GDK_1WINDOWING_1X11)
 	(JNIEnv *env, jclass that)

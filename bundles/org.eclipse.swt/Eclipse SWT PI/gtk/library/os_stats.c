@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1404;
-int OS_nativeFunctionCallCount[1404];
+int OS_nativeFunctionCount = 1405;
+int OS_nativeFunctionCallCount[1405];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -218,6 +218,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1atk_1object_1add_1relationship",
 	"_1atk_1object_1remove_1relationship",
 	"_1call",
+	"_1call_1get_1size",
 	"_1dlclose",
 	"_1dlopen",
 	"_1dlsym",
