@@ -804,6 +804,16 @@ public static final int /*long*/ call (int /*long*/ function, int /*long*/ arg0,
 	}
 }
 /** @method flags=no_gen */
+public static final native void _call_get_size (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5, int /*long*/ arg6);
+public static final void call_get_size (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5, int /*long*/ arg6) {
+	lock.lock();
+	try {
+		 _call_get_size(function, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=no_gen */
 public static final native boolean GDK_WINDOWING_X11();
 /** @param pixmap cast=(GdkPixmap *) */
 public static final native int /*long*/ _GDK_PIXMAP_XID(int /*long*/ pixmap);

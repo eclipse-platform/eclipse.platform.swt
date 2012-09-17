@@ -216,6 +216,7 @@ typedef enum {
 	_1atk_1object_1add_1relationship_FUNC,
 	_1atk_1object_1remove_1relationship_FUNC,
 	_1call_FUNC,
+	_1call_1get_1size_FUNC,
 	_1dlclose_FUNC,
 	_1dlopen_FUNC,
 	_1dlsym_FUNC,

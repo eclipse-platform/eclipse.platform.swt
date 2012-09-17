@@ -2478,7 +2478,7 @@ int /*long*/ rendererGetSizeProc (int /*long*/ cell, int /*long*/ widget, int /*
 	int /*long*/ g_class = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (cell));
 	GtkCellRendererClass klass = new GtkCellRendererClass ();
 	OS.memmove (klass, g_class);
-	int /*long*/ result = OS.call (klass.get_size, cell, handle, cell_area, x_offset, y_offset, width, height);
+	OS.call_get_size (klass.get_size, cell, handle, cell_area, x_offset, y_offset, width, height);
 	if (!ignoreSize && OS.GTK_IS_CELL_RENDERER_TEXT (cell)) {
 		int /*long*/ iter = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX2);
 		TableItem item = null;
@@ -2533,7 +2533,7 @@ int /*long*/ rendererGetSizeProc (int /*long*/ cell, int /*long*/ widget, int /*
 			}
 		}
 	}
-	return result;
+	return 0;
 }
 
 int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*long*/ widget, int /*long*/ background_area, int /*long*/ cell_area, int /*long*/ expose_area, int /*long*/ flags) {
