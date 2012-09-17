@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,6 @@
 
 #ifdef NATIVE_STATS
 
-int Win32_nativeFunctionCount = 26;
-int Win32_nativeFunctionCallCount[26];
 char * Win32_nativeFunctionNames[] = {
 	"CloseHandle",
 	"CreateCursor",
@@ -44,6 +42,9 @@ char * Win32_nativeFunctionNames[] = {
 	"ShellExecuteExW",
 	"ToUnicode",
 };
+#define NATIVE_FUNCTION_COUNT sizeof(Win32_nativeFunctionNames) / sizeof(char*)
+int Win32_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int Win32_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

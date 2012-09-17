@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,6 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOMInit_nativeFunctionCount = 5;
-int XPCOMInit_nativeFunctionCallCount[5];
 char * XPCOMInit_nativeFunctionNames[] = {
 	"GREProperty_1sizeof",
 	"GREVersionRange_1sizeof",
@@ -23,6 +21,9 @@ char * XPCOMInit_nativeFunctionNames[] = {
 	"_1XPCOMGlueShutdown",
 	"_1XPCOMGlueStartup",
 };
+#define NATIVE_FUNCTION_COUNT sizeof(XPCOMInit_nativeFunctionNames) / sizeof(char*)
+int XPCOMInit_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int XPCOMInit_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

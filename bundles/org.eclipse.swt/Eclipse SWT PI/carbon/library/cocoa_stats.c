@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,6 @@
 
 #ifdef NATIVE_STATS
 
-int Cocoa_nativeFunctionCount = 39;
-int Cocoa_nativeFunctionCallCount[39];
 char * Cocoa_nativeFunctionNames[] = {
 	"HICocoaViewCreate",
 	"HIJavaViewCreateWithCocoaView",
@@ -61,6 +59,9 @@ char * Cocoa_nativeFunctionNames[] = {
 	"objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRect_2IILorg_eclipse_swt_internal_cocoa_NSRect_2I",
 	"sel_1registerName",
 };
+#define NATIVE_FUNCTION_COUNT sizeof(Cocoa_nativeFunctionNames) / sizeof(char*)
+int Cocoa_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int Cocoa_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

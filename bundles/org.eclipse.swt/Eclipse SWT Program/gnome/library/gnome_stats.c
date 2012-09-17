@@ -18,8 +18,6 @@
 
 #ifdef NATIVE_STATS
 
-int GNOME_nativeFunctionCount = 20;
-int GNOME_nativeFunctionCallCount[20];
 char * GNOME_nativeFunctionNames[] = {
 	"GnomeVFSMimeApplication_1sizeof",
 	"_1gnome_1icon_1lookup",
@@ -42,6 +40,9 @@ char * GNOME_nativeFunctionNames[] = {
 	"_1gnome_1vfs_1url_1show",
 	"memmove",
 };
+#define NATIVE_FUNCTION_COUNT sizeof(GNOME_nativeFunctionNames) / sizeof(char*)
+int GNOME_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int GNOME_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

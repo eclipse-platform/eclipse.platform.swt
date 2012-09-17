@@ -14,8 +14,6 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 631;
-int OS_nativeFunctionCallCount[631];
 char * OS_nativeFunctionNames[] = {
 	"ATSFontActivateFromFileReference",
 	"AcquireRootMenu",
@@ -1289,6 +1287,9 @@ char * OS_nativeFunctionNames[] = {
 	"sel_1getName",
 	"sel_1registerName",
 };
+#define NATIVE_FUNCTION_COUNT sizeof(OS_nativeFunctionNames) / sizeof(char*)
+int OS_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int OS_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

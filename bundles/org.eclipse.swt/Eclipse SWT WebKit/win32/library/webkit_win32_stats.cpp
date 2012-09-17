@@ -18,8 +18,6 @@
 
 #ifdef NATIVE_STATS
 
-int WebKit_win32_nativeFunctionCount = 60;
-int WebKit_win32_nativeFunctionCallCount[60];
 char * WebKit_win32_nativeFunctionNames[] = {
 	"CFArrayGetCount",
 	"CFArrayGetValueAtIndex",
@@ -82,6 +80,9 @@ char * WebKit_win32_nativeFunctionNames[] = {
 	"memmove",
 	"willPerformClientRedirectToURL_1CALLBACK",
 };
+#define NATIVE_FUNCTION_COUNT sizeof(WebKit_win32_nativeFunctionNames) / sizeof(char*)
+int WebKit_win32_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int WebKit_win32_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

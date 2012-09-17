@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,6 @@
 
 #ifdef NATIVE_STATS
 
-int COM_nativeFunctionCount = 183;
-int COM_nativeFunctionCallCount[183];
 char * COM_nativeFunctionNames[] = {
 	"AccessibleChildren",
 	"AccessibleObjectFromWindow",
@@ -577,6 +575,9 @@ char * COM_nativeFunctionNames[] = {
 	"put_1accName_1CALLBACK",
 	"put_1accValue_1CALLBACK",
 };
+#define NATIVE_FUNCTION_COUNT sizeof(COM_nativeFunctionNames) / sizeof(char*)
+int COM_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int COM_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

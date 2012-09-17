@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -18,8 +18,6 @@
 
 #ifdef NATIVE_STATS
 
-int GTK_nativeFunctionCount = 12;
-int GTK_nativeFunctionCallCount[12];
 char * GTK_nativeFunctionNames[] = {
 	"_1GTK_1WIDGET_1HEIGHT",
 	"_1GTK_1WIDGET_1WIDTH",
@@ -34,6 +32,9 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1widget_1show_1now",
 	"_1gtk_1window_1new",
 };
+#define NATIVE_FUNCTION_COUNT sizeof(GTK_nativeFunctionNames) / sizeof(char*)
+int GTK_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int GTK_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

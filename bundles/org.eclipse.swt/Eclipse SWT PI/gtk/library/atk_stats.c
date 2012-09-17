@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -18,8 +18,6 @@
 
 #ifdef NATIVE_STATS
 
-int ATK_nativeFunctionCount = 78;
-int ATK_nativeFunctionCallCount[78];
 char * ATK_nativeFunctionNames[] = {
 	"ATK_1IS_1NO_1OP_1OBJECT_1FACTORY",
 	"ATK_1TYPE_1ACTION",
@@ -232,6 +230,9 @@ char * ATK_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2J",
 #endif
 };
+#define NATIVE_FUNCTION_COUNT sizeof(ATK_nativeFunctionNames) / sizeof(char*)
+int ATK_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int ATK_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

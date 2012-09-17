@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,6 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1016;
-int OS_nativeFunctionCallCount[1016];
 char * OS_nativeFunctionNames[] = {
 	"AECoerceDesc",
 	"AECountItems",
@@ -1034,6 +1032,9 @@ char * OS_nativeFunctionNames[] = {
 	"memmove___3C_3BI",
 	"memmove___3ILorg_eclipse_swt_internal_carbon_TXNTab_2I",
 };
+#define NATIVE_FUNCTION_COUNT sizeof(OS_nativeFunctionNames) / sizeof(char*)
+int OS_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int OS_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

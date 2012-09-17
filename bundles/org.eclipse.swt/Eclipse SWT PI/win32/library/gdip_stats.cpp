@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,6 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 186;
-int Gdip_nativeFunctionCallCount[186];
 char * Gdip_nativeFunctionNames[] = {
 	"BitmapData_1delete",
 	"BitmapData_1new",
@@ -308,6 +306,9 @@ char * Gdip_nativeFunctionNames[] = {
 	"TextureBrush_1delete",
 	"TextureBrush_1new",
 };
+#define NATIVE_FUNCTION_COUNT sizeof(Gdip_nativeFunctionNames) / sizeof(char*)
+int Gdip_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int Gdip_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

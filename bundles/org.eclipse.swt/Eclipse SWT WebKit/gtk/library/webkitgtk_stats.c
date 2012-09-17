@@ -18,8 +18,6 @@
 
 #ifdef NATIVE_STATS
 
-int WebKitGTK_nativeFunctionCount = 113;
-int WebKitGTK_nativeFunctionCallCount[113];
 char * WebKitGTK_nativeFunctionNames[] = {
 	"JSClassDefinition_1sizeof",
 	"_1JSClassCreate",
@@ -135,6 +133,9 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1web_1view_1stop_1loading",
 	"memmove",
 };
+#define NATIVE_FUNCTION_COUNT sizeof(WebKitGTK_nativeFunctionNames) / sizeof(char*)
+int WebKitGTK_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int WebKitGTK_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

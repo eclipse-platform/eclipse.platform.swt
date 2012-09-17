@@ -14,8 +14,6 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 251;
-int XPCOM_nativeFunctionCallCount[251];
 char * XPCOM_nativeFunctionNames[] = {
 	"CALLBACK_1JSNative",
 #ifndef JNI64
@@ -1141,6 +1139,9 @@ char * XPCOM_nativeFunctionNames[] = {
 	"nsDynamicFunctionLoad_1sizeof",
 	"strlen_1PRUnichar",
 };
+#define NATIVE_FUNCTION_COUNT sizeof(XPCOM_nativeFunctionNames) / sizeof(char*)
+int XPCOM_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int XPCOM_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

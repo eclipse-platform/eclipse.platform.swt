@@ -100,23 +100,7 @@ void generateSourceFile(JNIClass clazz) {
 	outputln("#ifdef NATIVE_STATS");
 	outputln();
 	JNIMethod[] methods = clazz.getDeclaredMethods();
-	int methodCount = 0;
-	for (int i = 0; i < methods.length; i++) {
-		JNIMethod method = methods[i];
-		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
-		methodCount++;
-	}
 	String className = clazz.getSimpleName();
-	output("int ");
-	output(className);
-	output("_nativeFunctionCount = ");
-	output(String.valueOf(methodCount));
-	outputln(";");
-	output("int ");
-	output(className);
-	output("_nativeFunctionCallCount[");
-	output(String.valueOf(methodCount));
-	outputln("];");
 	output("char * ");
 	output(className);
 	outputln("_nativeFunctionNames[] = {");
@@ -143,6 +127,15 @@ void generateSourceFile(JNIClass clazz) {
 		if (progress != null) progress.step();
 	}
 	outputln("};");
+	output("#define NATIVE_FUNCTION_COUNT sizeof(");
+	output(className);
+	outputln("_nativeFunctionNames) / sizeof(char*)");
+	output("int ");
+	output(className);
+	outputln("_nativeFunctionCount = NATIVE_FUNCTION_COUNT;");
+	output("int ");
+	output(className);
+	outputln("_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];");
 	outputln();
 	generateStatsNatives(className);
 	outputln();

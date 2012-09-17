@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,6 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 279;
-int OS_nativeFunctionCallCount[279];
 char * OS_nativeFunctionNames[] = {
 	"PfDecomposeStemToID",
 	"PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III",
@@ -297,6 +295,9 @@ char * OS_nativeFunctionNames[] = {
 	"strdup",
 	"uname",
 };
+#define NATIVE_FUNCTION_COUNT sizeof(OS_nativeFunctionNames) / sizeof(char*)
+int OS_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int OS_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

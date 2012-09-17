@@ -18,8 +18,6 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1345;
-int OS_nativeFunctionCallCount[1345];
 char * OS_nativeFunctionNames[] = {
 #ifndef JNI64
 	"Call__IIII",
@@ -1727,6 +1725,9 @@ char * OS_nativeFunctionNames[] = {
 	"realpath",
 	"strcmp",
 };
+#define NATIVE_FUNCTION_COUNT sizeof(OS_nativeFunctionNames) / sizeof(char*)
+int OS_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int OS_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 
