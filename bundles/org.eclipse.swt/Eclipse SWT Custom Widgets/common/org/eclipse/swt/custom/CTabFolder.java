@@ -635,7 +635,9 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return trim;
 }
 Image createButtonImage(Display display, int button) {
-	Point size = renderer.computeSize(button, SWT.NONE, null, SWT.DEFAULT, SWT.DEFAULT);
+	GC tempGC = new GC (this);
+	Point size = renderer.computeSize(button, SWT.NONE, tempGC, SWT.DEFAULT, SWT.DEFAULT);
+	tempGC.dispose();
 	Rectangle trim = renderer.computeTrim(button, SWT.NONE, 0, 0, 0, 0);
 	Image image = new Image (display, size.x - trim.width, size.y - trim.height);
 	GC gc = new GC (image);
