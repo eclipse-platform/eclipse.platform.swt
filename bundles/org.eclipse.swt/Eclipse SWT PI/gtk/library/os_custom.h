@@ -388,6 +388,9 @@
 #define g_object_ref_sink_LIB LIB_GOBJECT
 
 /* Field accessors */
+#if GTK_CHECK_VERSION(3,0,0)
+#define GTK_WIDGET_FLAGS(arg0) 0
+#endif
 #define G_OBJECT_CLASS_CONSTRUCTOR(arg0) (arg0)->constructor
 #define G_OBJECT_CLASS_SET_CONSTRUCTOR(arg0, arg1) (arg0)->constructor = (GObject* (*) (GType, guint, GObjectConstructParam *))arg1
 #if GTK_CHECK_VERSION(3,0,0)
