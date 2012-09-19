@@ -1794,7 +1794,7 @@ void gtk_widget_set_mapped (int /*long*/ widget, boolean mapped) {
 }
 
 void gtk_widget_set_visible (int /*long*/ widget, boolean visible) {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
 		OS.gtk_widget_set_visible (widget,visible);
 	} else {
 		if (visible) {
