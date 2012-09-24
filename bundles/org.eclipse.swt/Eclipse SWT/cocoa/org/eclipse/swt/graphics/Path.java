@@ -131,7 +131,7 @@ public Path (Device device, Path path, float flatness) {
 		if (flatness == 0) {
 			handle = new NSBezierPath(path.handle.copy().id);
 		} else {
-			float /*double*/ defaultFlatness = NSBezierPath.defaultFlatness();
+			double /*float*/ defaultFlatness = NSBezierPath.defaultFlatness();
 			NSBezierPath.setDefaultFlatness(flatness);
 			handle = path.handle.bezierPathByFlatteningPath();
 			handle.retain();
@@ -236,7 +236,7 @@ public void addArc(float x, float y, float width, float height, float startAngle
 
 void appendBezierPath (NSBezierPath path) {
 	int count = (int)/*64*/path.elementCount();
-	int /*long*/ points = OS.malloc(3 * NSPoint.sizeof);
+	long /*int*/ points = OS.malloc(3 * NSPoint.sizeof);
 	if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	NSPoint pt1 = new NSPoint();
 	NSPoint pt2 = new NSPoint();
@@ -383,8 +383,8 @@ public void addString(String string, float x, float y, Font font) {
 		attrStr.release();
 		range = layoutManager.glyphRangeForTextContainer(textContainer);
 		if (range.length != 0) {
-			int /*long*/ glyphs = OS.malloc((range.length + 1) * 4);
-			int /*long*/ count = layoutManager.getGlyphs(glyphs, range);
+			long /*int*/ glyphs = OS.malloc((range.length + 1) * 4);
+			long /*int*/ count = layoutManager.getGlyphs(glyphs, range);
 			NSBezierPath path = NSBezierPath.bezierPath();
 			for (int i = 0; i < count; i++) {
 				NSPoint pt = layoutManager.locationForGlyphAtIndex(i);
@@ -462,12 +462,12 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	try {
 		//TODO - see windows
 		if (outline) {
-			int /*long*/ pixel = OS.malloc(4);
+			long /*int*/ pixel = OS.malloc(4);
 			if (pixel == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			int[] buffer = new int[]{0xFFFFFFFF};
 			OS.memmove(pixel, buffer, 4);
-			int /*long*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
-			int /*long*/ context = OS.CGBitmapContextCreate(pixel, 1, 1, 8, 4, colorspace, OS.kCGImageAlphaNoneSkipFirst);
+			long /*int*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
+			long /*int*/ context = OS.CGBitmapContextCreate(pixel, 1, 1, 8, 4, colorspace, OS.kCGImageAlphaNoneSkipFirst);
 			OS.CGColorSpaceRelease(colorspace);
 			if (context == 0) {
 				OS.free(pixel);
@@ -490,7 +490,7 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 			OS.CGContextSetLineJoin(context, joinStyle);
 			OS.CGContextSetLineWidth(context, data.lineWidth);
 			OS.CGContextTranslateCTM(context, -x + 0.5f, -y + 0.5f);
-			int /*long*/ path = GC.createCGPathRef(handle);
+			long /*int*/ path = GC.createCGPathRef(handle);
 			OS.CGContextAddPath(context, path);
 			OS.CGPathRelease(path);
 			OS.CGContextStrokePath(context);
@@ -630,7 +630,7 @@ public PathData getPathData() {
 		int pointCount = 0, typeCount = 0;
 		byte[] types = new byte[count];
 		float[] pointArray = new float[count * 6];
-		int /*long*/ points = OS.malloc(3 * NSPoint.sizeof);
+		long /*int*/ points = OS.malloc(3 * NSPoint.sizeof);
 		if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		NSPoint pt = new NSPoint();
 		for (int i = 0; i < count; i++) {

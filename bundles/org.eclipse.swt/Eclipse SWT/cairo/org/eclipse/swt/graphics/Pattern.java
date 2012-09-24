@@ -46,9 +46,9 @@ public class Pattern extends Resource {
 	 * 
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public int /*long*/ handle;
+	public long /*int*/ handle;
 	
-	int /*long*/ surface;
+	long /*int*/ surface;
 
 /**
  * Constructs a new Pattern given an image. Drawing with the resulting

@@ -14,7 +14,7 @@ public final class SHDRAGIMAGE {
 	public SIZE sizeDragImage = new SIZE ();
 	public POINT ptOffset = new POINT ();
 	/** @field cast=(HBITMAP) */
-	public int /*long*/ hbmpDragImage;
+	public long /*int*/ hbmpDragImage;
 	public int crColorKey;
 	public static final int sizeof = OS.SHDRAGIMAGE_sizeof ();
 }

@@ -16,7 +16,7 @@ public NSUndoManager() {
 	super();
 }
 
-public NSUndoManager(int /*long*/ id) {
+public NSUndoManager(long /*int*/ id) {
 	super(id);
 }
 

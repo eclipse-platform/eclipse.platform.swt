@@ -49,7 +49,7 @@ public class Path extends Resource {
 	 * 
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public int /*long*/ handle;
+	public long /*int*/ handle;
 	
 	PointF currentPoint = new PointF(), startPoint = new PointF();
 	
@@ -199,9 +199,9 @@ public void addArc(float x, float y, float width, float height, float startAngle
 	if (width == height) {
 		Gdip.GraphicsPath_AddArc(handle, x, y, width, height, -startAngle, -arcAngle);
 	} else {
-		int /*long*/ path = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
+		long /*int*/ path = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
 		if (path == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int /*long*/ matrix = Gdip.Matrix_new(width, 0, 0, height, x, y);
+		long /*int*/ matrix = Gdip.Matrix_new(width, 0, 0, height, x, y);
 		if (matrix == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		Gdip.GraphicsPath_AddArc(path, 0, 0, 1, 1, -startAngle, -arcAngle);
 		Gdip.GraphicsPath_Transform(path, matrix);
@@ -283,9 +283,9 @@ public void addString(String string, float x, float y, Font font) {
 	int length = string.length();
 	char[] buffer = new char[length];
 	string.getChars(0, length, buffer, 0);
-	int /*long*/ hDC = device.internal_new_GC(null);
-	int /*long*/ [] family = new int /*long*/ [1];
-	int /*long*/ gdipFont = GC.createGdipFont(hDC, font.handle, 0, device.fontCollection, family, null);
+	long /*int*/ hDC = device.internal_new_GC(null);
+	long /*int*/ [] family = new long /*int*/ [1];
+	long /*int*/ gdipFont = GC.createGdipFont(hDC, font.handle, 0, device.fontCollection, family, null);
 	PointF point = new PointF();
 	point.X = x - (Gdip.Font_GetSize(gdipFont) / 6);
 	point.Y = y;

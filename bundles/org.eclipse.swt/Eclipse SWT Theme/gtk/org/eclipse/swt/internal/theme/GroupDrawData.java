@@ -29,9 +29,9 @@ public GroupDrawData() {
 static final int GROUP_HEADER_X = 9;
 static final int GROUP_HEADER_PAD = 2;
 void draw(Theme theme, GC gc, Rectangle bounds) {
-	int /*long*/ frameHandle = theme.frameHandle;
-	int /*long*/ gtkStyle = OS.gtk_widget_get_style (frameHandle);
-	int /*long*/ drawable = gc.getGCData().drawable;
+	long /*int*/ frameHandle = theme.frameHandle;
+	long /*int*/ gtkStyle = OS.gtk_widget_get_style (frameHandle);
+	long /*int*/ drawable = gc.getGCData().drawable;
 	theme.transferClipping(gc, gtkStyle);
 	int xthickness = OS.gtk_style_get_xthickness(gtkStyle);
 	int ythickness = OS.gtk_style_get_ythickness(gtkStyle);

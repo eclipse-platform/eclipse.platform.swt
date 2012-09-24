@@ -22,7 +22,7 @@ public ProgressBarDrawData() {
 
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		int /*long*/ hTheme = OS.OpenThemeData(0, getClassId());
+		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
 		RECT rect = new RECT ();
 		rect.left = bounds.x;
 		rect.right = rect.left + bounds.width;

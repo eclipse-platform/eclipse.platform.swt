@@ -16,7 +16,7 @@ public NSSearchField() {
 	super();
 }
 
-public NSSearchField(int /*long*/ id) {
+public NSSearchField(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,15 +25,15 @@ public NSSearchField(id id) {
 }
 
 public NSArray recentSearches() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_recentSearches);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_recentSearches);
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public static int /*long*/ cellClass() {
+public static long /*int*/ cellClass() {
 	return OS.objc_msgSend(OS.class_NSSearchField, OS.sel_cellClass);
 }
 
-public static void setCellClass(int /*long*/ factoryId) {
+public static void setCellClass(long /*int*/ factoryId) {
 	OS.objc_msgSend(OS.class_NSSearchField, OS.sel_setCellClass_, factoryId);
 }
 

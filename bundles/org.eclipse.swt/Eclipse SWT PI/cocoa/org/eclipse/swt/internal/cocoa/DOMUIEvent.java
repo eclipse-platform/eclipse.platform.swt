@@ -16,7 +16,7 @@ public DOMUIEvent() {
 	super();
 }
 
-public DOMUIEvent(int /*long*/ id) {
+public DOMUIEvent(long /*int*/ id) {
 	super(id);
 }
 

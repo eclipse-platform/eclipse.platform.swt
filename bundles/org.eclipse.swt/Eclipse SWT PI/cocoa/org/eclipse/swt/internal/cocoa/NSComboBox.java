@@ -16,7 +16,7 @@ public NSComboBox() {
 	super();
 }
 
-public NSComboBox(int /*long*/ id) {
+public NSComboBox(long /*int*/ id) {
 	super(id);
 }
 
@@ -28,32 +28,32 @@ public void addItemWithObjectValue(id object) {
 	OS.objc_msgSend(this.id, OS.sel_addItemWithObjectValue_, object != null ? object.id : 0);
 }
 
-public void deselectItemAtIndex(int /*long*/ index) {
+public void deselectItemAtIndex(long /*int*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_deselectItemAtIndex_, index);
 }
 
-public int /*long*/ indexOfSelectedItem() {
+public long /*int*/ indexOfSelectedItem() {
 	return OS.objc_msgSend(this.id, OS.sel_indexOfSelectedItem);
 }
 
-public void insertItemWithObjectValue(id object, int /*long*/ index) {
+public void insertItemWithObjectValue(id object, long /*int*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_insertItemWithObjectValue_atIndex_, object != null ? object.id : 0, index);
 }
 
-public float /*double*/ itemHeight() {
-	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_itemHeight);
+public double /*float*/ itemHeight() {
+	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_itemHeight);
 }
 
-public id itemObjectValueAtIndex(int /*long*/ index) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_itemObjectValueAtIndex_, index);
+public id itemObjectValueAtIndex(long /*int*/ index) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_itemObjectValueAtIndex_, index);
 	return result != 0 ? new id(result) : null;
 }
 
-public int /*long*/ numberOfItems() {
+public long /*int*/ numberOfItems() {
 	return OS.objc_msgSend(this.id, OS.sel_numberOfItems);
 }
 
-public int /*long*/ numberOfVisibleItems() {
+public long /*int*/ numberOfVisibleItems() {
 	return OS.objc_msgSend(this.id, OS.sel_numberOfVisibleItems);
 }
 
@@ -61,23 +61,23 @@ public void removeAllItems() {
 	OS.objc_msgSend(this.id, OS.sel_removeAllItems);
 }
 
-public void removeItemAtIndex(int /*long*/ index) {
+public void removeItemAtIndex(long /*int*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_removeItemAtIndex_, index);
 }
 
-public void selectItemAtIndex(int /*long*/ index) {
+public void selectItemAtIndex(long /*int*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_selectItemAtIndex_, index);
 }
 
-public void setNumberOfVisibleItems(int /*long*/ visibleItems) {
+public void setNumberOfVisibleItems(long /*int*/ visibleItems) {
 	OS.objc_msgSend(this.id, OS.sel_setNumberOfVisibleItems_, visibleItems);
 }
 
-public static int /*long*/ cellClass() {
+public static long /*int*/ cellClass() {
 	return OS.objc_msgSend(OS.class_NSComboBox, OS.sel_cellClass);
 }
 
-public static void setCellClass(int /*long*/ factoryId) {
+public static void setCellClass(long /*int*/ factoryId) {
 	OS.objc_msgSend(OS.class_NSComboBox, OS.sel_setCellClass_, factoryId);
 }
 

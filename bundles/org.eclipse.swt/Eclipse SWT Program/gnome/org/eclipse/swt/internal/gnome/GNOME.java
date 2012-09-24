@@ -48,8 +48,8 @@ public static final native int GnomeVFSMimeApplication_sizeof();
  * @param flags cast=(GnomeIconLookupFlags)
  * @param result cast=(GnomeIconLookupResultFlags *)
  */
-public static final native int /*long*/ _gnome_icon_lookup(int /*long*/ icon_theme, int /*long*/ thumbnail_factory, byte[] file_uri, byte[] custom_icon, int /*long*/ file_info, byte[] mime_type, int flags, int[] result);
-public static final int /*long*/ gnome_icon_lookup(int /*long*/ icon_theme, int /*long*/ thumbnail_factory, byte[] file_uri, byte[] custom_icon, int /*long*/ file_info, byte[] mime_type, int flags, int[] result) {
+public static final native long /*int*/ _gnome_icon_lookup(long /*int*/ icon_theme, long /*int*/ thumbnail_factory, byte[] file_uri, byte[] custom_icon, long /*int*/ file_info, byte[] mime_type, int flags, int[] result);
+public static final long /*int*/ gnome_icon_lookup(long /*int*/ icon_theme, long /*int*/ thumbnail_factory, byte[] file_uri, byte[] custom_icon, long /*int*/ file_info, byte[] mime_type, int flags, int[] result) {
 	lock.lock();
 	try {
 		return _gnome_icon_lookup(icon_theme, thumbnail_factory, file_uri, custom_icon, file_info, mime_type, flags, result);
@@ -62,8 +62,8 @@ public static final int /*long*/ gnome_icon_lookup(int /*long*/ icon_theme, int 
  * @param icon_name cast=(const char *)
  * @param icon_data cast=(const GnomeIconData **)
  */
-public static final native int /*long*/ _gnome_icon_theme_lookup_icon(int /*long*/ theme, int /*long*/ icon_name, int size, int /*long*/[] icon_data, int[] base_size);
-public static final int /*long*/ gnome_icon_theme_lookup_icon(int /*long*/ theme, int /*long*/ icon_name, int size, int /*long*/[] icon_data, int[] base_size) {
+public static final native long /*int*/ _gnome_icon_theme_lookup_icon(long /*int*/ theme, long /*int*/ icon_name, int size, long /*int*/[] icon_data, int[] base_size);
+public static final long /*int*/ gnome_icon_theme_lookup_icon(long /*int*/ theme, long /*int*/ icon_name, int size, long /*int*/[] icon_data, int[] base_size) {
 	lock.lock();
 	try {
 		return _gnome_icon_theme_lookup_icon(theme, icon_name, size, icon_data, base_size);
@@ -71,8 +71,8 @@ public static final int /*long*/ gnome_icon_theme_lookup_icon(int /*long*/ theme
 		lock.unlock();
 	}
 }
-public static final native int /*long*/ _gnome_icon_theme_new();
-public static final int /*long*/ gnome_icon_theme_new() {
+public static final native long /*int*/ _gnome_icon_theme_new();
+public static final long /*int*/ gnome_icon_theme_new() {
 	lock.lock();
 	try {
 		return _gnome_icon_theme_new();
@@ -80,8 +80,8 @@ public static final int /*long*/ gnome_icon_theme_new() {
 		lock.unlock();
 	}
 }
-public static final native int /*long*/ _gnome_vfs_get_registered_mime_types();
-public static final int /*long*/ gnome_vfs_get_registered_mime_types() {
+public static final native long /*int*/ _gnome_vfs_get_registered_mime_types();
+public static final long /*int*/ gnome_vfs_get_registered_mime_types() {
 	lock.lock();
 	try {
 		return _gnome_vfs_get_registered_mime_types();
@@ -90,8 +90,8 @@ public static final int /*long*/ gnome_vfs_get_registered_mime_types() {
 	}
 }
 /** @param uri cast=(const char *) */
-public static final native int /*long*/ _gnome_vfs_get_mime_type(int /*long*/ uri);
-public static final int /*long*/ gnome_vfs_get_mime_type(int /*long*/ uri) {
+public static final native long /*int*/ _gnome_vfs_get_mime_type(long /*int*/ uri);
+public static final long /*int*/ gnome_vfs_get_mime_type(long /*int*/ uri) {
 	lock.lock();
 	try {
 		return _gnome_vfs_get_mime_type(uri);
@@ -110,8 +110,8 @@ public static final boolean gnome_vfs_init() {
 	}
 }
 /** @param uri cast=(const char *) */
-public static final native int /*long*/ _gnome_vfs_make_uri_from_input(byte[] uri);
-public static final int /*long*/ gnome_vfs_make_uri_from_input(byte[] uri) {
+public static final native long /*int*/ _gnome_vfs_make_uri_from_input(byte[] uri);
+public static final long /*int*/ gnome_vfs_make_uri_from_input(byte[] uri) {
 	lock.lock();
 	try {
 		return _gnome_vfs_make_uri_from_input(uri);
@@ -123,8 +123,8 @@ public static final int /*long*/ gnome_vfs_make_uri_from_input(byte[] uri) {
  * @method flags=dynamic
  * @param uri cast=(const char *)
  */
-public static final native int /*long*/ _gnome_vfs_make_uri_from_input_with_dirs(byte[] uri, int dirs);
-public static final int /*long*/ gnome_vfs_make_uri_from_input_with_dirs(byte[] uri, int dirs) {
+public static final native long /*int*/ _gnome_vfs_make_uri_from_input_with_dirs(byte[] uri, int dirs);
+public static final long /*int*/ gnome_vfs_make_uri_from_input_with_dirs(byte[] uri, int dirs) {
 	lock.lock();
 	try {
 		return _gnome_vfs_make_uri_from_input_with_dirs(uri, dirs);
@@ -133,8 +133,8 @@ public static final int /*long*/ gnome_vfs_make_uri_from_input_with_dirs(byte[] 
 	}
 }
 /** @param application cast=(GnomeVFSMimeApplication *) */
-public static final native void _gnome_vfs_mime_application_free(int /*long*/ application);
-public static final void gnome_vfs_mime_application_free(int /*long*/ application) {
+public static final native void _gnome_vfs_mime_application_free(long /*int*/ application);
+public static final void gnome_vfs_mime_application_free(long /*int*/ application) {
 	lock.lock();
 	try {
 		_gnome_vfs_mime_application_free(application);
@@ -157,8 +157,8 @@ public static final boolean gnome_vfs_is_executable_command_string(byte[] comman
  * @param application cast=(GnomeVFSMimeApplication *)
  * @param uris cast=(GList *)
  */
-public static final native int _gnome_vfs_mime_application_launch(int /*long*/ application, int /*long*/ uris);
-public static final int gnome_vfs_mime_application_launch(int /*long*/ application, int /*long*/ uris) {	
+public static final native int _gnome_vfs_mime_application_launch(long /*int*/ application, long /*int*/ uris);
+public static final int gnome_vfs_mime_application_launch(long /*int*/ application, long /*int*/ uris) {	
 	lock.lock();
 	try {
 		return _gnome_vfs_mime_application_launch(application, uris);
@@ -167,8 +167,8 @@ public static final int gnome_vfs_mime_application_launch(int /*long*/ applicati
 	}
 }
 /** @param list cast=(GList *) */
-public static final native void _gnome_vfs_mime_extensions_list_free(int /*long*/ list);
-public static final void gnome_vfs_mime_extensions_list_free(int /*long*/ list) {
+public static final native void _gnome_vfs_mime_extensions_list_free(long /*int*/ list);
+public static final void gnome_vfs_mime_extensions_list_free(long /*int*/ list) {
 	lock.lock();
 	try {
 		_gnome_vfs_mime_extensions_list_free(list);
@@ -177,8 +177,8 @@ public static final void gnome_vfs_mime_extensions_list_free(int /*long*/ list) 
 	}
 }
 /** @param mimeType cast=(const char *) */
-public static final native int /*long*/ _gnome_vfs_mime_get_default_application(byte[] mimeType);
-public static final int /*long*/ gnome_vfs_mime_get_default_application(byte[] mimeType) {
+public static final native long /*int*/ _gnome_vfs_mime_get_default_application(byte[] mimeType);
+public static final long /*int*/ gnome_vfs_mime_get_default_application(byte[] mimeType) {
 	lock.lock();
 	try {
 		return _gnome_vfs_mime_get_default_application(mimeType);
@@ -187,8 +187,8 @@ public static final int /*long*/ gnome_vfs_mime_get_default_application(byte[] m
 	}
 }
 /** @param mime_type cast=(const char *) */
-public static final native int /*long*/ _gnome_vfs_mime_get_extensions_list(int /*long*/ mime_type);
-public static final int /*long*/ gnome_vfs_mime_get_extensions_list(int /*long*/ mime_type) {
+public static final native long /*int*/ _gnome_vfs_mime_get_extensions_list(long /*int*/ mime_type);
+public static final long /*int*/ gnome_vfs_mime_get_extensions_list(long /*int*/ mime_type) {
 	lock.lock();
 	try {
 		return _gnome_vfs_mime_get_extensions_list(mime_type);
@@ -197,8 +197,8 @@ public static final int /*long*/ gnome_vfs_mime_get_extensions_list(int /*long*/
 	}
 }
 /** @param list cast=(GList *) */
-public static final native void _gnome_vfs_mime_registered_mime_type_list_free(int /*long*/ list);
-public static final void gnome_vfs_mime_registered_mime_type_list_free(int /*long*/ list) {
+public static final native void _gnome_vfs_mime_registered_mime_type_list_free(long /*int*/ list);
+public static final void gnome_vfs_mime_registered_mime_type_list_free(long /*int*/ list) {
 	lock.lock();
 	try {
 		_gnome_vfs_mime_registered_mime_type_list_free(list);
@@ -207,8 +207,8 @@ public static final void gnome_vfs_mime_registered_mime_type_list_free(int /*lon
 	}
 }
 /** @param file cast=(const char *) */
-public static final native int /*long*/ _gnome_vfs_mime_type_from_name(byte[] file);
-public static final int /*long*/ gnome_vfs_mime_type_from_name(byte[] file) {
+public static final native long /*int*/ _gnome_vfs_mime_type_from_name(byte[] file);
+public static final long /*int*/ gnome_vfs_mime_type_from_name(byte[] file) {
 	lock.lock();
 	try {
 		return _gnome_vfs_mime_type_from_name(file);
@@ -220,8 +220,8 @@ public static final int /*long*/ gnome_vfs_mime_type_from_name(byte[] file) {
  * @param mime_type cast=(const char *)
  * @param base_mime_type cast=(const char *) 
  */
-public static final native int /*long*/ _gnome_vfs_mime_type_get_equivalence(int /*long*/ mime_type, byte [] base_mime_type);
-public static final int /*long*/ gnome_vfs_mime_type_get_equivalence(int /*long*/ mime_type, byte [] base_mime_type) {
+public static final native long /*int*/ _gnome_vfs_mime_type_get_equivalence(long /*int*/ mime_type, byte [] base_mime_type);
+public static final long /*int*/ gnome_vfs_mime_type_get_equivalence(long /*int*/ mime_type, byte [] base_mime_type) {
 	lock.lock();
 	try {
 		return _gnome_vfs_mime_type_get_equivalence(mime_type, base_mime_type);
@@ -233,8 +233,8 @@ public static final int /*long*/ gnome_vfs_mime_type_get_equivalence(int /*long*
  * @method flags=dynamic
  * @param url cast=(const char *)
  */
-public static final native int _gnome_vfs_url_show(int /*long*/ url);
-public static final int gnome_vfs_url_show(int /*long*/ url) {
+public static final native int _gnome_vfs_url_show(long /*int*/ url);
+public static final int gnome_vfs_url_show(long /*int*/ url) {
 	lock.lock();
 	try {
 		return _gnome_vfs_url_show(url);
@@ -247,5 +247,5 @@ public static final int gnome_vfs_url_show(int /*long*/ url) {
  * @param src cast=(const void *)
  * @param count cast=(size_t)
  */
-public static final native void memmove (GnomeVFSMimeApplication dest, int /*long*/ src, int /*long*/ count);
+public static final native void memmove (GnomeVFSMimeApplication dest, long /*int*/ src, long /*int*/ count);
 }

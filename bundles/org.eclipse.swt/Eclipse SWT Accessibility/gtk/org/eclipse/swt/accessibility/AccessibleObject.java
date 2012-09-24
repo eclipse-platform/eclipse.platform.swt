@@ -21,7 +21,7 @@ import org.eclipse.swt.internal.accessibility.gtk.*;
 import org.eclipse.swt.internal.gtk.*;
 
 class AccessibleObject {
-	int /*long*/ handle;
+	long /*int*/ handle;
 	int index = -1, id = ACC.CHILDID_SELF;
 	Accessible accessible;
 	AccessibleObject parent;
@@ -32,10 +32,10 @@ class AccessibleObject {
 	*/ 
 	boolean isLightweight = false;
 
-	static int /*long*/ actionNamePtr = -1;
-	static int /*long*/ descriptionPtr = -1;
-	static int /*long*/ keybindingPtr = -1;
-	static int /*long*/ namePtr = -1;
+	static long /*int*/ actionNamePtr = -1;
+	static long /*int*/ descriptionPtr = -1;
+	static long /*int*/ keybindingPtr = -1;
+	static long /*int*/ namePtr = -1;
 	static final Hashtable AccessibleObjects = new Hashtable (9);
 	static final boolean DEBUG = Device.DEBUG;
 	
@@ -45,7 +45,7 @@ class AccessibleObject {
 		COLUMN_ROLE = ATK.atk_role_register(Converter.wcsToMbcs(null, "column", true)); //$NON-NLS-1$
 	}
 
-	AccessibleObject (int /*long*/ type, int /*long*/ widget, Accessible accessible, boolean isLightweight) {
+	AccessibleObject (long /*int*/ type, long /*int*/ widget, Accessible accessible, boolean isLightweight) {
 		super ();
 		handle = ATK.g_object_new (type, 0);
 		ATK.atk_object_initialize (handle, widget);
@@ -59,7 +59,7 @@ class AccessibleObject {
 		System.out.println (str);
 	}
 	
-	static AtkActionIface getActionIface (int /*long*/ atkObject) {
+	static AtkActionIface getActionIface (long /*int*/ atkObject) {
 		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_ACTION())) {
 			AtkActionIface iface = new AtkActionIface ();
 			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_ACTION_GET_IFACE (atkObject)));
@@ -68,7 +68,7 @@ class AccessibleObject {
 		return null;
 	}
 	
-	static int /*long*/ atkAction_do_action (int /*long*/ atkObject, int /*long*/ index) {
+	static long /*int*/ atkAction_do_action (long /*int*/ atkObject, long /*int*/ index) {
 		if (DEBUG) print ("-->atkAction_do_action");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -85,7 +85,7 @@ class AccessibleObject {
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkActionIface iface = getActionIface (atkObject);
 		if (iface != null && iface.do_action != 0) {
 			parentResult = ATK.call (iface.do_action, atkObject, index);
@@ -93,7 +93,7 @@ class AccessibleObject {
 		return parentResult; 	
 	}
 
-	static int /*long*/ atkAction_get_n_actions (int /*long*/ atkObject) {
+	static long /*int*/ atkAction_get_n_actions (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkAction_get_n_actions");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -109,7 +109,7 @@ class AccessibleObject {
 				return event.count;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkActionIface iface = getActionIface (atkObject);
 		if (iface != null && iface.get_n_actions != 0) {
 			parentResult = ATK.call (iface.get_n_actions, atkObject);
@@ -117,7 +117,7 @@ class AccessibleObject {
 		return parentResult; 	
 	}
 	
-	static int /*long*/ atkAction_get_description (int /*long*/ atkObject, int /*long*/ index) {
+	static long /*int*/ atkAction_get_description (long /*int*/ atkObject, long /*int*/ index) {
 		if (DEBUG) print ("-->atkAction_get_description");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -136,7 +136,7 @@ class AccessibleObject {
 				return descriptionPtr = getStringPtr (event.result);
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkActionIface iface = getActionIface (atkObject);
 		if (iface != null && iface.get_description != 0) {
 			parentResult = ATK.call (iface.get_description, atkObject, index);
@@ -144,10 +144,10 @@ class AccessibleObject {
 		return parentResult; 	
 	}
 	
-	static int /*long*/ atkAction_get_keybinding (int /*long*/ atkObject, int /*long*/ index) {
+	static long /*int*/ atkAction_get_keybinding (long /*int*/ atkObject, long /*int*/ index) {
 		if (DEBUG) print ("-->atkAction_get_keybinding");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkActionIface iface = getActionIface (atkObject);
 		if (iface != null && iface.get_keybinding != 0) {
 			parentResult = ATK.call (iface.get_keybinding, atkObject, index);
@@ -187,10 +187,10 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkAction_get_name (int /*long*/ atkObject, int /*long*/ index) {
+	static long /*int*/ atkAction_get_name (long /*int*/ atkObject, long /*int*/ index) {
 		if (DEBUG) print ("-->atkAction_get_name");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkActionIface iface = getActionIface (atkObject);
 		if (iface != null && iface.get_name != 0) {
 			parentResult = ATK.call (iface.get_name, atkObject, index);
@@ -232,7 +232,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 	
-	static AtkComponentIface getComponentIface (int /*long*/ atkObject) {
+	static AtkComponentIface getComponentIface (long /*int*/ atkObject) {
 		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_COMPONENT())) {
 			AtkComponentIface iface = new AtkComponentIface ();
 			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_COMPONENT_GET_IFACE (atkObject)));
@@ -241,7 +241,7 @@ class AccessibleObject {
 		return null;
 	}
 
-	static int /*long*/ atkComponent_get_extents (int /*long*/ atkObject, int /*long*/ x, int /*long*/ y, int /*long*/ width, int /*long*/ height, int /*long*/ coord_type) {
+	static long /*int*/ atkComponent_get_extents (long /*int*/ atkObject, long /*int*/ x, long /*int*/ y, long /*int*/ width, long /*int*/ height, long /*int*/ coord_type) {
 		if (DEBUG) print ("-->atkComponent_get_extents: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		OS.memmove (x, new int[] {0}, 4);
@@ -291,7 +291,7 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int /*long*/ atkComponent_get_position (int /*long*/ atkObject, int /*long*/ x, int /*long*/ y, int /*long*/ coord_type) {
+	static long /*int*/ atkComponent_get_position (long /*int*/ atkObject, long /*int*/ x, long /*int*/ y, long /*int*/ coord_type) {
 		if (DEBUG) print ("-->atkComponent_get_position, object: " + atkObject + " x: " + x + " y: " + y + " coord: " + coord_type);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		OS.memmove (x, new int[] {0}, 4);
@@ -332,7 +332,7 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int /*long*/ atkComponent_get_size (int /*long*/ atkObject, int /*long*/ width, int /*long*/ height, int /*long*/ coord_type) {
+	static long /*int*/ atkComponent_get_size (long /*int*/ atkObject, long /*int*/ width, long /*int*/ height, long /*int*/ coord_type) {
 		if (DEBUG) print ("-->atkComponent_get_size");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		OS.memmove (width, new int[] {0}, 4);
@@ -363,7 +363,7 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int /*long*/ atkComponent_ref_accessible_at_point (int /*long*/ atkObject, int /*long*/ x, int /*long*/ y, int /*long*/ coord_type) {
+	static long /*int*/ atkComponent_ref_accessible_at_point (long /*int*/ atkObject, long /*int*/ x, long /*int*/ y, long /*int*/ coord_type) {
 		if (DEBUG) print ("-->atkComponent_ref_accessible_at_point: " + atkObject + " " + x + "," + y);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -392,7 +392,7 @@ class AccessibleObject {
 				}
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkComponentIface iface = getComponentIface (atkObject);
 		if (iface != null && iface.ref_accessible_at_point != 0) {
 			parentResult = ATK.call (iface.ref_accessible_at_point, atkObject, x, y, coord_type);
@@ -401,7 +401,7 @@ class AccessibleObject {
 	}	
 
 	
-	static AtkEditableTextIface getEditableTextIface (int /*long*/ atkObject) {
+	static AtkEditableTextIface getEditableTextIface (long /*int*/ atkObject) {
 		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_EDITABLE_TEXT())) {
 			AtkEditableTextIface iface = new AtkEditableTextIface ();
 			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_EDITABLE_TEXT_GET_IFACE (atkObject)));
@@ -411,7 +411,7 @@ class AccessibleObject {
 	}
 	
 //	gboolean atk_editable_text_set_run_attributes(AtkEditableText *text, AtkAttributeSet *attrib_set, gint start_offset, gint end_offset);
-	static int /*long*/ atkEditableText_set_run_attributes (int /*long*/ atkObject, int /*long*/ attrib_set, int /*long*/ start_offset, int /*long*/ end_offset) {
+	static long /*int*/ atkEditableText_set_run_attributes (long /*int*/ atkObject, long /*int*/ attrib_set, long /*int*/ start_offset, long /*int*/ end_offset) {
 		if (DEBUG) print ("-->atkEditableText_set_run_attributes");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -420,14 +420,14 @@ class AccessibleObject {
 			int length = listeners.size();
 			if (length > 0) {
 				Display display = accessible.control.getDisplay();
-				int /*long*/ fontDesc = OS.pango_font_description_new ();
+				long /*int*/ fontDesc = OS.pango_font_description_new ();
 				boolean createFont = false;
 				TextStyle style = new TextStyle();
 				String [] attributes = new String [0];
-				int /*long*/ current = attrib_set;
+				long /*int*/ current = attrib_set;
 				int listLength = OS.g_slist_length (attrib_set);
 				for (int i = 0; i < listLength; i++) {
-					int /*long*/ attrPtr = OS.g_slist_data (current);
+					long /*int*/ attrPtr = OS.g_slist_data (current);
 					if (attrPtr != 0) {
 						AtkAttribute attr = new AtkAttribute();
 						ATK.memmove(attr, attrPtr, AtkAttribute.sizeof);
@@ -550,7 +550,7 @@ class AccessibleObject {
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkEditableTextIface iface = getEditableTextIface (atkObject);
 		if (iface != null && iface.set_run_attributes != 0) {
 			parentResult = ATK.call (iface.set_run_attributes, atkObject, attrib_set, start_offset, end_offset);
@@ -576,7 +576,7 @@ class AccessibleObject {
 	}
 
 //	void atk_editable_text_set_text_contents (AtkEditableText *text, const gchar *string);
-	static int /*long*/ atkEditableText_set_text_contents (int /*long*/ atkObject, int /*long*/ string) {
+	static long /*int*/ atkEditableText_set_text_contents (long /*int*/ atkObject, long /*int*/ string) {
 		if (DEBUG) print ("-->atkEditableText_set_text_contents");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -596,7 +596,7 @@ class AccessibleObject {
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkEditableTextIface iface = getEditableTextIface (atkObject);
 		if (iface != null && iface.set_text_contents != 0) {
 			parentResult = ATK.call (iface.set_text_contents, atkObject, string);
@@ -605,7 +605,7 @@ class AccessibleObject {
 	}
 
 //	void atk_editable_text_insert_text (AtkEditableText *text, const gchar *string, gint length, gint *position);
-	static int /*long*/ atkEditableText_insert_text (int /*long*/ atkObject, int /*long*/ string, int /*long*/ string_length, int /*long*/ position) {
+	static long /*int*/ atkEditableText_insert_text (long /*int*/ atkObject, long /*int*/ string, long /*int*/ string_length, long /*int*/ position) {
 		if (DEBUG) print ("-->atkEditableText_insert_text");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -625,7 +625,7 @@ class AccessibleObject {
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkEditableTextIface iface = getEditableTextIface (atkObject);
 		if (iface != null && iface.insert_text != 0) {
 			parentResult = ATK.call (iface.insert_text, atkObject, string, string_length, position);
@@ -634,7 +634,7 @@ class AccessibleObject {
 	}
 
 //	void atk_editable_text_copy_text (AtkEditableText *text, gint start_pos, gint end_pos);
-	static int /*long*/ atkEditableText_copy_text(int /*long*/ atkObject, int /*long*/ start_pos, int /*long*/ end_pos) {
+	static long /*int*/ atkEditableText_copy_text(long /*int*/ atkObject, long /*int*/ start_pos, long /*int*/ end_pos) {
 		if (DEBUG) print ("-->atkEditableText_copy_text");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -652,7 +652,7 @@ class AccessibleObject {
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkEditableTextIface iface = getEditableTextIface (atkObject);
 		if (iface != null && iface.copy_text != 0) {
 			parentResult = ATK.call (iface.copy_text, atkObject, start_pos, end_pos);
@@ -661,7 +661,7 @@ class AccessibleObject {
 	}
 
 //	void atk_editable_text_cut_text (AtkEditableText *text, gint start_pos, gint end_pos);
-	static int /*long*/ atkEditableText_cut_text (int /*long*/ atkObject, int /*long*/ start_pos, int /*long*/ end_pos) {
+	static long /*int*/ atkEditableText_cut_text (long /*int*/ atkObject, long /*int*/ start_pos, long /*int*/ end_pos) {
 		if (DEBUG) print ("-->atkEditableText_cut_text");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -679,7 +679,7 @@ class AccessibleObject {
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkEditableTextIface iface = getEditableTextIface (atkObject);
 		if (iface != null && iface.cut_text != 0) {
 			parentResult = ATK.call (iface.cut_text, atkObject, start_pos, end_pos);
@@ -688,7 +688,7 @@ class AccessibleObject {
 	}
 	
 //	void atk_editable_text_delete_text (AtkEditableText *text, gint start_pos, gint end_pos);
-	static int /*long*/ atkEditableText_delete_text (int /*long*/ atkObject, int /*long*/ start_pos, int /*long*/ end_pos) {
+	static long /*int*/ atkEditableText_delete_text (long /*int*/ atkObject, long /*int*/ start_pos, long /*int*/ end_pos) {
 		if (DEBUG) print ("-->atkEditableText_delete_text");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -707,7 +707,7 @@ class AccessibleObject {
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkEditableTextIface iface = getEditableTextIface (atkObject);
 		if (iface != null && iface.delete_text != 0) {
 			parentResult = ATK.call (iface.delete_text, atkObject, start_pos, end_pos);
@@ -716,7 +716,7 @@ class AccessibleObject {
 	}
 
 //	void atk_editable_text_paste_text (AtkEditableText *text, gint position);
-	static int /*long*/ atkEditableText_paste_text (int /*long*/ atkObject, int /*long*/ position) {
+	static long /*int*/ atkEditableText_paste_text (long /*int*/ atkObject, long /*int*/ position) {
 		if (DEBUG) print ("-->atkEditableText_paste_text");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -733,7 +733,7 @@ class AccessibleObject {
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkEditableTextIface iface = getEditableTextIface (atkObject);
 		if (iface != null && iface.paste_text != 0) {
 			parentResult = ATK.call (iface.paste_text, atkObject, position);
@@ -741,7 +741,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 	
-	static AtkHypertextIface getHypertextIface (int /*long*/ atkObject) {
+	static AtkHypertextIface getHypertextIface (long /*int*/ atkObject) {
 		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_HYPERTEXT())) {
 			AtkHypertextIface iface = new AtkHypertextIface ();
 			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_HYPERTEXT_GET_IFACE (atkObject)));
@@ -750,7 +750,7 @@ class AccessibleObject {
 		return null;
 	}
 	
-	static int /*long*/ atkHypertext_get_link (int /*long*/ atkObject, int /*long*/ link_index) {
+	static long /*int*/ atkHypertext_get_link (long /*int*/ atkObject, long /*int*/ link_index) {
 		if (DEBUG) print ("-->atkHypertext_get_link");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -768,7 +768,7 @@ class AccessibleObject {
 				return result != null ? result.getAccessibleObject().handle : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkHypertextIface iface = getHypertextIface (atkObject);
 		if (iface != null && iface.get_link != 0) {
 			parentResult = ATK.call (iface.get_link, atkObject, link_index);
@@ -776,7 +776,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkHypertext_get_n_links (int /*long*/ atkObject) {
+	static long /*int*/ atkHypertext_get_n_links (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkHypertext_get_n_links");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -792,7 +792,7 @@ class AccessibleObject {
 				return event.count;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkHypertextIface iface = getHypertextIface (atkObject);
 		if (iface != null && iface.get_n_links != 0) {
 			parentResult = ATK.call (iface.get_n_links, atkObject);
@@ -800,7 +800,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkHypertext_get_link_index (int /*long*/ atkObject, int /*long*/ char_index) {
+	static long /*int*/ atkHypertext_get_link_index (long /*int*/ atkObject, long /*int*/ char_index) {
 		if (DEBUG) print ("-->atkHypertext_get_link_index");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -818,7 +818,7 @@ class AccessibleObject {
 				return event.index;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkHypertextIface iface = getHypertextIface (atkObject);
 		if (iface != null && iface.get_link_index != 0) {
 			parentResult = ATK.call (iface.get_link_index, atkObject, char_index);
@@ -826,16 +826,16 @@ class AccessibleObject {
 		return parentResult;
 	}
 	
-	static AtkObjectClass getObjectClass (int /*long*/ atkObject) {
+	static AtkObjectClass getObjectClass (long /*int*/ atkObject) {
 		AtkObjectClass objectClass = new AtkObjectClass ();
 		ATK.memmove (objectClass, ATK.g_type_class_peek (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject))));
 		return objectClass;
 	}
 
-	static int /*long*/ atkObject_get_description (int /*long*/ atkObject) {
+	static long /*int*/ atkObject_get_description (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkObject_get_description: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkObjectClass objectClass = getObjectClass (atkObject);
 		if (objectClass.get_description != 0) {
 			parentResult = ATK.call (objectClass.get_description, atkObject);
@@ -861,10 +861,10 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkObject_get_attributes (int /*long*/ atkObject) {
+	static long /*int*/ atkObject_get_attributes (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkObject_get_attributes: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkObjectClass objectClass = getObjectClass (atkObject);
 		if (objectClass.get_attributes != 0) {
 			parentResult = ATK.call (objectClass.get_attributes, atkObject);
@@ -882,48 +882,48 @@ class AccessibleObject {
 				}
 				AtkAttribute attr = new AtkAttribute();
 				if (event.leftMargin != -1) {
-					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_LEFT_MARGIN));
 					attr.value = getStringPtr (String.valueOf(event.leftMargin));
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				}
 				if (event.rightMargin != -1) {
-					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_RIGHT_MARGIN));
 					attr.value = getStringPtr (String.valueOf(event.rightMargin));
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				}
 				if (event.topMargin != -1) {
-					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 					attr.name = getStringPtr ("top-margin"); //$NON-NLS-1$
 					attr.value = getStringPtr (String.valueOf(event.topMargin));
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				}
 				if (event.bottomMargin != -1) {
-					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 					attr.name = getStringPtr ("bottom-margin"); //$NON-NLS-1$
 					attr.value = getStringPtr (String.valueOf(event.bottomMargin));
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				}
 				if (event.indent != -1) {
-					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_INDENT));
 					attr.value = getStringPtr (String.valueOf(event.indent));
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				}
 				if (event.justify) {
-					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_JUSTIFICATION));
 					attr.value = getStringPtr ("fill"); //$NON-NLS-1$
 					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				} else if (event.alignment != -1) {
-					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 					attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_JUSTIFICATION));
 					String str = "left"; //$NON-NLS-1$
 					switch (event.alignment) {
@@ -939,7 +939,7 @@ class AccessibleObject {
 				if (event.attributes != null) {
 					int end = event.attributes.length / 2 * 2;
 					for (int i = 0; i < end; i+= 2) {
-						int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+						long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = getStringPtr (event.attributes[i]);
 						attr.value = getStringPtr (event.attributes[i + 1]);
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
@@ -951,10 +951,10 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkObject_get_name (int /*long*/ atkObject) {
+	static long /*int*/ atkObject_get_name (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkObject_get_name: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkObjectClass objectClass = getObjectClass (atkObject);
 		if (objectClass.get_name != 0) {
 			parentResult = ATK.call (objectClass.get_name, atkObject);
@@ -980,10 +980,10 @@ class AccessibleObject {
 		return parentResult;
 	}	
 
-	static int /*long*/ atkObject_get_n_children (int /*long*/ atkObject) {
+	static long /*int*/ atkObject_get_n_children (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkObject_get_n_children: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkObjectClass objectClass = getObjectClass (atkObject);
 		if (objectClass.get_n_children != 0) { 
 			parentResult = ATK.call (objectClass.get_n_children, atkObject);
@@ -1007,7 +1007,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkObject_get_index_in_parent (int /*long*/ atkObject) {
+	static long /*int*/ atkObject_get_index_in_parent (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkObject_get_index_in_parent: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1031,12 +1031,12 @@ class AccessibleObject {
 		}
 		AtkObjectClass objectClass = getObjectClass (atkObject);
 		if (objectClass.get_index_in_parent == 0) return 0;
-		int /*long*/ result = ATK.call (objectClass.get_index_in_parent, atkObject);
+		long /*int*/ result = ATK.call (objectClass.get_index_in_parent, atkObject);
 		if (DEBUG) print ("---*> " + result);
 		return result;
 	}
 
-	static int /*long*/ atkObject_get_parent (int /*long*/ atkObject) {
+	static long /*int*/ atkObject_get_parent (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkObject_get_parent: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1047,12 +1047,12 @@ class AccessibleObject {
 		}
 		AtkObjectClass objectClass = getObjectClass (atkObject);
 		if (objectClass.get_parent == 0) return 0;
-		int /*long*/ parentResult = ATK.call (objectClass.get_parent, atkObject);
+		long /*int*/ parentResult = ATK.call (objectClass.get_parent, atkObject);
 		if (DEBUG) print ("---> " + parentResult);
 		return parentResult;
 	}
 
-	static int /*long*/ atkObject_get_role (int /*long*/ atkObject) {
+	static long /*int*/ atkObject_get_role (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkObject_get_role: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1132,7 +1132,7 @@ class AccessibleObject {
 		return ATK.call (objectClass.get_role, atkObject);
 	}
 
-	static int /*long*/ atkObject_ref_child (int /*long*/ atkObject, int /*long*/ index) {
+	static long /*int*/ atkObject_ref_child (long /*int*/ atkObject, long /*int*/ index) {
 		if (DEBUG) print ("-->atkObject_ref_child: " + index + " of: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null && object.id == ACC.CHILDID_SELF) {
@@ -1165,10 +1165,10 @@ class AccessibleObject {
 		return ATK.call (objectClass.ref_child, atkObject, index);
 	}
 
-	static int /*long*/ atkObject_ref_state_set (int /*long*/ atkObject) {
+	static long /*int*/ atkObject_ref_state_set (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkObject_ref_state_set: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkObjectClass objectClass = getObjectClass (atkObject);
 		if (objectClass.ref_state_set != 0) { 
 			parentResult = ATK.call (objectClass.ref_state_set, atkObject);
@@ -1178,7 +1178,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleControlListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				int /*long*/ set = parentResult;
+				long /*int*/ set = parentResult;
 				AccessibleControlEvent event = new AccessibleControlEvent (accessible);
 				event.childID = object.id;
 				event.detail = -1;
@@ -1218,7 +1218,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 	
-	static AtkSelectionIface getSelectionIface (int /*long*/ atkObject) {
+	static AtkSelectionIface getSelectionIface (long /*int*/ atkObject) {
 		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_SELECTION())) {
 			AtkSelectionIface iface = new AtkSelectionIface ();
 			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_SELECTION_GET_IFACE (atkObject)));
@@ -1227,10 +1227,10 @@ class AccessibleObject {
 		return null;
 	}
 	
-	static int /*long*/ atkSelection_is_child_selected (int /*long*/ atkObject, int /*long*/ index) {
+	static long /*int*/ atkSelection_is_child_selected (long /*int*/ atkObject, long /*int*/ index) {
 		if (DEBUG) print ("-->atkSelection_is_child_selected");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkSelectionIface iface = getSelectionIface (atkObject);
 		if (iface != null && iface.is_child_selected != 0) {
 			parentResult = ATK.call (iface.is_child_selected, atkObject, index);
@@ -1256,10 +1256,10 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkSelection_ref_selection (int /*long*/ atkObject, int /*long*/ index) {
+	static long /*int*/ atkSelection_ref_selection (long /*int*/ atkObject, long /*int*/ index) {
 		if (DEBUG) print ("-->atkSelection_ref_selection");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkSelectionIface iface = getSelectionIface (atkObject);
 		if (iface != null && iface.ref_selection != 0) {
 			parentResult = ATK.call (iface.ref_selection, atkObject, index);
@@ -1286,7 +1286,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static AtkTableIface getTableIface (int /*long*/ atkObject) {
+	static AtkTableIface getTableIface (long /*int*/ atkObject) {
 		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_TABLE())) {
 			AtkTableIface iface = new AtkTableIface ();
 			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_TABLE_GET_IFACE (atkObject)));
@@ -1295,7 +1295,7 @@ class AccessibleObject {
 		return null;
 	}
 	
-	static int /*long*/ atkTable_ref_at (int /*long*/ atkObject, int /*long*/ row, int /*long*/ column) {
+	static long /*int*/ atkTable_ref_at (long /*int*/ atkObject, long /*int*/ row, long /*int*/ column) {
 		if (DEBUG) print ("-->atkTable_ref_at");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1318,7 +1318,7 @@ class AccessibleObject {
 				}
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.ref_at != 0) {
 			parentResult = ATK.call (iface.ref_at, atkObject, row, column);
@@ -1326,7 +1326,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_get_index_at (int /*long*/ atkObject, int /*long*/ row, int /*long*/ column) {
+	static long /*int*/ atkTable_get_index_at (long /*int*/ atkObject, long /*int*/ row, long /*int*/ column) {
 		if (DEBUG) print ("-->atkTable_get_index_at");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1351,7 +1351,7 @@ class AccessibleObject {
 				return row * event.count + column;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.get_index_at != 0) {
 			parentResult = ATK.call (iface.get_index_at, atkObject, row, column);
@@ -1359,7 +1359,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_get_column_at_index (int /*long*/ atkObject, int /*long*/ index) {
+	static long /*int*/ atkTable_get_column_at_index (long /*int*/ atkObject, long /*int*/ index) {
 		if (DEBUG) print ("-->atkTable_get_column_at_index: " + atkObject + " " + index);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1372,12 +1372,12 @@ class AccessibleObject {
 					AccessibleTableListener listener = (AccessibleTableListener) listeners.elementAt(i);
 					listener.getColumnCount(event);
 				}
-				int /*long*/ result = event.count == 0 ? -1 : index % event.count;
+				long /*int*/ result = event.count == 0 ? -1 : index % event.count;
 				if (DEBUG) print ("---> " + result);
 				return result;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.get_column_at_index != 0) {
 			parentResult = ATK.call (iface.get_column_at_index, atkObject, index);
@@ -1385,7 +1385,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_get_row_at_index (int /*long*/ atkObject, int /*long*/ index) {
+	static long /*int*/ atkTable_get_row_at_index (long /*int*/ atkObject, long /*int*/ index) {
 		if (DEBUG) print ("-->atkTable_get_row_at_index: " + atkObject + " " + index);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1398,12 +1398,12 @@ class AccessibleObject {
 					AccessibleTableListener listener = (AccessibleTableListener) listeners.elementAt(i);
 					listener.getColumnCount(event);
 				}
-				int /*long*/ result = event.count == 0 ? -1 : index / event.count;
+				long /*int*/ result = event.count == 0 ? -1 : index / event.count;
 				if (DEBUG) print ("---> " + result);
 				return result;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.get_row_at_index != 0) {
 			parentResult = ATK.call (iface.get_row_at_index, atkObject, index);
@@ -1411,10 +1411,10 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_get_n_columns (int /*long*/ atkObject) {
+	static long /*int*/ atkTable_get_n_columns (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkTable_get_n_columns");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.get_n_columns != 0) {
 			parentResult = ATK.call (iface.get_n_columns, atkObject);
@@ -1436,10 +1436,10 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_get_n_rows (int /*long*/ atkObject) {
+	static long /*int*/ atkTable_get_n_rows (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkTable_get_n_rows");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.get_n_rows != 0) {
 			parentResult = ATK.call (iface.get_n_rows, atkObject);
@@ -1461,10 +1461,10 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_get_column_extent_at (int /*long*/ atkObject, int /*long*/ row, int /*long*/ column) {
+	static long /*int*/ atkTable_get_column_extent_at (long /*int*/ atkObject, long /*int*/ row, long /*int*/ column) {
 		if (DEBUG) print ("-->atkTable_get_column_extent_at");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.get_column_extent_at != 0) {
 			parentResult = ATK.call (iface.get_column_extent_at, atkObject, row, column);
@@ -1500,10 +1500,10 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_get_row_extent_at (int /*long*/ atkObject, int /*long*/ row, int /*long*/ column) {
+	static long /*int*/ atkTable_get_row_extent_at (long /*int*/ atkObject, long /*int*/ row, long /*int*/ column) {
 		if (DEBUG) print ("-->atkTable_get_row_extent_at");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.get_row_extent_at != 0) {
 			parentResult = ATK.call (iface.get_row_extent_at, atkObject, row, column);
@@ -1539,7 +1539,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_get_caption (int /*long*/ atkObject) {
+	static long /*int*/ atkTable_get_caption (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkTable_get_caption");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1556,7 +1556,7 @@ class AccessibleObject {
 				if (result != null) return result.getAccessibleObject().handle;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.get_caption != 0) {
 			parentResult = ATK.call (iface.get_caption, atkObject);
@@ -1564,7 +1564,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_get_summary (int /*long*/ atkObject) {
+	static long /*int*/ atkTable_get_summary (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkTable_get_summary");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1581,7 +1581,7 @@ class AccessibleObject {
 				if (result != null) return result.getAccessibleObject().handle;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.get_summary != 0) {
 			parentResult = ATK.call (iface.get_summary, atkObject);
@@ -1589,10 +1589,10 @@ class AccessibleObject {
 		return parentResult;
 	}
 	
-	static int /*long*/ atkTable_get_column_description (int /*long*/ atkObject, int /*long*/ column) {
+	static long /*int*/ atkTable_get_column_description (long /*int*/ atkObject, long /*int*/ column) {
 		if (DEBUG) print ("-->atkTable_get_column_description");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.get_column_description != 0) {
 			parentResult = ATK.call (iface.get_column_description, atkObject, column);
@@ -1617,7 +1617,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 	
-	static int /*long*/ atkTable_get_column_header (int /*long*/ atkObject, int /*long*/ column) {
+	static long /*int*/ atkTable_get_column_header (long /*int*/ atkObject, long /*int*/ column) {
 		if (DEBUG) print ("-->atkTable_get_column_header");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1638,7 +1638,7 @@ class AccessibleObject {
 				}
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.get_column_header != 0) {
 			parentResult = ATK.call (iface.get_column_header, atkObject, column);
@@ -1646,10 +1646,10 @@ class AccessibleObject {
 		return parentResult;
 	}
 	
-	static int /*long*/ atkTable_get_row_description (int /*long*/ atkObject, int /*long*/ row) {
+	static long /*int*/ atkTable_get_row_description (long /*int*/ atkObject, long /*int*/ row) {
 		if (DEBUG) print ("-->atkTable_get_row_description");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.get_row_description != 0) {
 			parentResult = ATK.call (iface.get_row_description, atkObject, row);
@@ -1674,7 +1674,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_get_row_header (int /*long*/ atkObject, int /*long*/ row) {
+	static long /*int*/ atkTable_get_row_header (long /*int*/ atkObject, long /*int*/ row) {
 		if (DEBUG) print ("-->atkTable_get_row_header");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1695,7 +1695,7 @@ class AccessibleObject {
 				}
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.get_row_header != 0) {
 			parentResult = ATK.call (iface.get_row_header, atkObject, row);
@@ -1703,7 +1703,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_get_selected_columns (int /*long*/ atkObject, int /*long*/ selected) {
+	static long /*int*/ atkTable_get_selected_columns (long /*int*/ atkObject, long /*int*/ selected) {
 		if (DEBUG) print ("-->atkTable_get_selected_columns");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1717,13 +1717,13 @@ class AccessibleObject {
 					listener.getSelectedColumns(event);
 				}
 				int count = event.selected != null ? event.selected.length : 0;
-				int /*long*/ result = OS.g_malloc(count * 4);
+				long /*int*/ result = OS.g_malloc(count * 4);
 				if (event.selected != null) OS.memmove(result, event.selected, count * 4);
-				if (selected != 0) OS.memmove(selected, new int /*long*/[]{result}, C.PTR_SIZEOF);
+				if (selected != 0) OS.memmove(selected, new long /*int*/[]{result}, C.PTR_SIZEOF);
 				return count;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.get_selected_columns != 0) {
 			parentResult = ATK.call (iface.get_selected_columns, atkObject, selected);
@@ -1731,7 +1731,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_get_selected_rows (int /*long*/ atkObject, int /*long*/ selected) {
+	static long /*int*/ atkTable_get_selected_rows (long /*int*/ atkObject, long /*int*/ selected) {
 		if (DEBUG) print ("-->atkTable_get_selected_rows");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1745,13 +1745,13 @@ class AccessibleObject {
 					listener.getSelectedRows(event);
 				}
 				int count = event.selected != null ? event.selected.length : 0;
-				int /*long*/ result = OS.g_malloc(count * 4);
+				long /*int*/ result = OS.g_malloc(count * 4);
 				if (event.selected != null) OS.memmove(result, event.selected, count * 4);
-				if (selected != 0) OS.memmove(selected, new int /*long*/[]{result}, C.PTR_SIZEOF);
+				if (selected != 0) OS.memmove(selected, new long /*int*/[]{result}, C.PTR_SIZEOF);
 				return count;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.get_selected_rows != 0) {
 			parentResult = ATK.call (iface.get_selected_rows, atkObject, selected);
@@ -1759,10 +1759,10 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_is_column_selected (int /*long*/ atkObject, int /*long*/ column) {
+	static long /*int*/ atkTable_is_column_selected (long /*int*/ atkObject, long /*int*/ column) {
 		if (DEBUG) print ("-->atkTable_is_column_selected");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.is_column_selected != 0) {
 			parentResult = ATK.call (iface.is_column_selected, atkObject, column);
@@ -1785,10 +1785,10 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_is_row_selected (int /*long*/ atkObject, int /*long*/ row) {
+	static long /*int*/ atkTable_is_row_selected (long /*int*/ atkObject, long /*int*/ row) {
 		if (DEBUG) print ("-->atkTable_is_row_selected");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.is_row_selected != 0) {
 			parentResult = ATK.call (iface.is_row_selected, atkObject, row);
@@ -1811,10 +1811,10 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_is_selected (int /*long*/ atkObject, int /*long*/ row, int /*long*/ column) {
+	static long /*int*/ atkTable_is_selected (long /*int*/ atkObject, long /*int*/ row, long /*int*/ column) {
 		if (DEBUG) print ("-->atkTable_is_selected");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.is_selected != 0) {
 			parentResult = ATK.call (iface.is_selected, atkObject, row, column);
@@ -1850,7 +1850,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_add_row_selection (int /*long*/ atkObject, int /*long*/ row) {
+	static long /*int*/ atkTable_add_row_selection (long /*int*/ atkObject, long /*int*/ row) {
 		if (DEBUG) print ("-->atkTable_add_row_selection");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1867,7 +1867,7 @@ class AccessibleObject {
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.add_row_selection != 0) {
 			parentResult = ATK.call (iface.add_row_selection, atkObject, row);
@@ -1875,7 +1875,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_remove_row_selection (int /*long*/ atkObject, int /*long*/ row) {
+	static long /*int*/ atkTable_remove_row_selection (long /*int*/ atkObject, long /*int*/ row) {
 		if (DEBUG) print ("-->atkTable_remove_row_selection");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1892,7 +1892,7 @@ class AccessibleObject {
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.remove_row_selection != 0) {
 			parentResult = ATK.call (iface.remove_row_selection, atkObject, row);
@@ -1900,7 +1900,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_add_column_selection (int /*long*/ atkObject, int /*long*/ column) {
+	static long /*int*/ atkTable_add_column_selection (long /*int*/ atkObject, long /*int*/ column) {
 		if (DEBUG) print ("-->atkTable_add_column_selection");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1917,7 +1917,7 @@ class AccessibleObject {
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.add_column_selection != 0) {
 			parentResult = ATK.call (iface.add_column_selection, atkObject, column);
@@ -1925,7 +1925,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkTable_remove_column_selection (int /*long*/ atkObject, int /*long*/ column) {
+	static long /*int*/ atkTable_remove_column_selection (long /*int*/ atkObject, long /*int*/ column) {
 		if (DEBUG) print ("-->atkTable_remove_column_selection");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1942,7 +1942,7 @@ class AccessibleObject {
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTableIface iface = getTableIface (atkObject);
 		if (iface != null && iface.remove_column_selection != 0) {
 			parentResult = ATK.call (iface.remove_column_selection, atkObject, column);
@@ -1950,7 +1950,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static AtkTextIface getTextIface (int /*long*/ atkObject) {
+	static AtkTextIface getTextIface (long /*int*/ atkObject) {
 		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_TEXT())) {
 			AtkTextIface iface = new AtkTextIface ();
 			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_TEXT_GET_IFACE (atkObject)));
@@ -1959,7 +1959,7 @@ class AccessibleObject {
 		return null;
 	}
 	
-	static int /*long*/ atkText_get_character_extents (int /*long*/ atkObject, int /*long*/ offset, int /*long*/ x, int /*long*/ y, int /*long*/ width, int /*long*/ height, int /*long*/ coords) {
+	static long /*int*/ atkText_get_character_extents (long /*int*/ atkObject, long /*int*/ offset, long /*int*/ x, long /*int*/ y, long /*int*/ width, long /*int*/ height, long /*int*/ coords) {
 		if (DEBUG) print ("-->atkText_get_character_extents");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -1994,21 +1994,21 @@ class AccessibleObject {
 		return 0;
 	}
 	
-	static String getString (int /*long*/ strPtr) {
+	static String getString (long /*int*/ strPtr) {
 		int length = OS.strlen (strPtr);
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, strPtr, length);
 		return new String (Converter.mbcsToWcs (null, buffer));
 	}
 	
-	static int /*long*/ getStringPtr (String str) {
+	static long /*int*/ getStringPtr (String str) {
 		byte [] buffer = Converter.wcsToMbcs(null, str != null ? str : "", true); 
-		int /*long*/ ptr = OS.g_malloc(buffer.length);
+		long /*int*/ ptr = OS.g_malloc(buffer.length);
 		OS.memmove(ptr, buffer, buffer.length);
 		return ptr;
 	}
 	
-	static int /*long*/ atkText_get_range_extents (int /*long*/ atkObject, int /*long*/ start_offset, int /*long*/ end_offset, int /*long*/ coord_type, int /*long*/ rect) {
+	static long /*int*/ atkText_get_range_extents (long /*int*/ atkObject, long /*int*/ start_offset, long /*int*/ end_offset, long /*int*/ coord_type, long /*int*/ rect) {
 		if (DEBUG) print ("-->atkText_get_range_extents");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -2045,7 +2045,7 @@ class AccessibleObject {
 		return 0;
 	}
 	
-	static int /*long*/ atkText_get_run_attributes (int /*long*/ atkObject, int /*long*/ offset, int /*long*/ start_offset, int /*long*/ end_offset) {
+	static long /*int*/ atkText_get_run_attributes (long /*int*/ atkObject, long /*int*/ offset, long /*int*/ start_offset, long /*int*/ end_offset) {
 		if (DEBUG) print ("-->atkText_get_run_attributes");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -2062,18 +2062,18 @@ class AccessibleObject {
 				OS.memmove (start_offset, new int []{event.start}, 4);
 				OS.memmove (end_offset, new int []{event.end}, 4);
 				TextStyle style = event.textStyle;
-				int /*long*/ result = 0;
+				long /*int*/ result = 0;
 				AtkAttribute attr = new AtkAttribute();
 				if (style != null) {
 					if (style.rise != 0) {
-						int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+						long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_RISE));
 						attr.value = getStringPtr (String.valueOf(style.rise));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
 					}
 					if (style.underline) {
-						int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+						long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_UNDERLINE));
 						String str = "none"; //$NON-NLS-1$
 						switch (style.underlineStyle) {
@@ -2087,7 +2087,7 @@ class AccessibleObject {
 						result = OS.g_slist_append(result, attrPtr);
 					}
 					if (style.strikeout) {
-						int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+						long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STRIKETHROUGH));
 						attr.value = getStringPtr ("1");
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
@@ -2096,7 +2096,7 @@ class AccessibleObject {
 					Font font = style.font;
 					if (font != null && !font.isDisposed()) {
 						//TODO language and direction
-						int /*long*/ attrPtr;
+						long /*int*/ attrPtr;
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_FAMILY_NAME));
 						attr.value = ATK.g_strdup (OS.pango_font_description_get_family (font.handle));
@@ -2135,7 +2135,7 @@ class AccessibleObject {
 					}
 					Color color = style.foreground;
 					if (color != null && !color.isDisposed()) {
-						int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+						long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_FG_COLOR));
 						attr.value = getStringPtr ((color.handle.red & 0xFFFF) + "," + (color.handle.blue & 0xFFFF) + "," + (color.handle.blue & 0xFFFF)); //$NON-NLS-1$ //$NON-NLS-2$
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
@@ -2143,7 +2143,7 @@ class AccessibleObject {
 					}
 					color = style.background;
 					if (color != null && !color.isDisposed()) {
-						int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+						long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = ATK.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_BG_COLOR));
 						attr.value = getStringPtr ((color.handle.red & 0xFFFF) + "," + (color.handle.blue & 0xFFFF) + "," + (color.handle.blue & 0xFFFF)); //$NON-NLS-1$ //$NON-NLS-2$
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
@@ -2153,7 +2153,7 @@ class AccessibleObject {
 				if (event.attributes != null) {
 					int end = event.attributes.length / 2 * 2;
 					for (int i = 0; i < end; i+= 2) {
-						int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+						long /*int*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = getStringPtr (event.attributes[i]);
 						attr.value = getStringPtr (event.attributes[i + 1]);
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
@@ -2163,7 +2163,7 @@ class AccessibleObject {
 				return result;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTextIface iface = getTextIface (atkObject);
 		if (iface != null && iface.get_run_attributes != 0) {
 			parentResult = ATK.call (iface.get_run_attributes, atkObject, offset, start_offset, end_offset);
@@ -2171,7 +2171,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkText_get_offset_at_point (int /*long*/ atkObject, int /*long*/ x, int /*long*/ y, int /*long*/ coords) {
+	static long /*int*/ atkText_get_offset_at_point (long /*int*/ atkObject, long /*int*/ x, long /*int*/ y, long /*int*/ coords) {
 		if (DEBUG) print ("-->atkText_get_offset_at_point");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -2195,7 +2195,7 @@ class AccessibleObject {
 				return event.offset;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTextIface iface = getTextIface (atkObject);
 		if (iface != null && iface.get_offset_at_point != 0) {
 			parentResult = ATK.call (iface.get_offset_at_point, atkObject, x, y, coords);
@@ -2203,7 +2203,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkText_add_selection (int /*long*/ atkObject, int /*long*/ start_offset, int /*long*/ end_offset) {
+	static long /*int*/ atkText_add_selection (long /*int*/ atkObject, long /*int*/ start_offset, long /*int*/ end_offset) {
 		if (DEBUG) print ("-->atkText_add_selection");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -2221,7 +2221,7 @@ class AccessibleObject {
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTextIface iface = getTextIface (atkObject);
 		if (iface != null && iface.add_selection != 0) {
 			parentResult = ATK.call (iface.add_selection, atkObject, start_offset, end_offset);
@@ -2229,7 +2229,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkText_remove_selection (int /*long*/ atkObject, int /*long*/ selection_num) {
+	static long /*int*/ atkText_remove_selection (long /*int*/ atkObject, long /*int*/ selection_num) {
 		if (DEBUG) print ("-->atkText_remove_selection");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -2246,7 +2246,7 @@ class AccessibleObject {
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTextIface iface = getTextIface (atkObject);
 		if (iface != null && iface.remove_selection != 0) {
 			parentResult = ATK.call (iface.remove_selection, atkObject, selection_num);
@@ -2254,7 +2254,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 	
-	static int /*long*/ atkText_set_caret_offset (int /*long*/ atkObject, int /*long*/ offset) {
+	static long /*int*/ atkText_set_caret_offset (long /*int*/ atkObject, long /*int*/ offset) {
 		if (DEBUG) print ("-->atkText_set_caret_offset");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -2278,7 +2278,7 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int /*long*/ atkText_set_selection (int /*long*/ atkObject, int /*long*/ selection_num, int /*long*/ start_offset, int /*long*/ end_offset) {
+	static long /*int*/ atkText_set_selection (long /*int*/ atkObject, long /*int*/ selection_num, long /*int*/ start_offset, long /*int*/ end_offset) {
 		if (DEBUG) print ("-->atkText_set_selection");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -2297,7 +2297,7 @@ class AccessibleObject {
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTextIface iface = getTextIface (atkObject);
 		if (iface != null && iface.set_selection != 0) {
 			parentResult = ATK.call (iface.set_selection, atkObject, selection_num, start_offset, end_offset);
@@ -2305,10 +2305,10 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkText_get_caret_offset (int /*long*/ atkObject) {
+	static long /*int*/ atkText_get_caret_offset (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkText_get_caret_offset");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTextIface iface = getTextIface (atkObject);
 		if (iface != null && iface.get_caret_offset != 0) {
 			parentResult = ATK.call (iface.get_caret_offset, atkObject);
@@ -2341,7 +2341,7 @@ class AccessibleObject {
 		return parentResult; 	
 	}
 	
-	static int /*long*/ atkText_get_bounded_ranges (int /*long*/ atkObject, int /*long*/ rect, int /*long*/ coord_type, int /*long*/ x_clip_type, int /*long*/ y_clip_type) {
+	static long /*int*/ atkText_get_bounded_ranges (long /*int*/ atkObject, long /*int*/ rect, long /*int*/ coord_type, long /*int*/ x_clip_type, long /*int*/ y_clip_type) {
 		if (DEBUG) print ("-->atkText_get_bounded_ranges");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -2362,7 +2362,7 @@ class AccessibleObject {
 				}
 				int [] ranges = event.ranges;
 				int size = ranges == null ? 1 : ranges.length / 2;
-				int /*long*/ result = OS.malloc(size * AtkTextRange.sizeof);
+				long /*int*/ result = OS.malloc(size * AtkTextRange.sizeof);
 				AtkTextRange range = new AtkTextRange();
 				for (int j = 0, end = (ranges != null ? ranges.length / 2 : 1); j < end; j++) {
 					if (ranges != null) {
@@ -2394,7 +2394,7 @@ class AccessibleObject {
 				return result;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTextIface iface = getTextIface (atkObject);
 		if (iface != null && iface.get_bounded_ranges != 0) {
 			parentResult = ATK.call (iface.get_bounded_ranges, atkObject);
@@ -2402,7 +2402,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 	
-	static int /*long*/ atkText_get_character_at_offset (int /*long*/ atkObject, int /*long*/ offset) {
+	static long /*int*/ atkText_get_character_at_offset (long /*int*/ atkObject, long /*int*/ offset) {
 		if (DEBUG) print ("-->atkText_get_character_at_offset");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -2431,7 +2431,7 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int /*long*/ atkText_get_character_count (int /*long*/ atkObject) {
+	static long /*int*/ atkText_get_character_count (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkText_get_character_count");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -2456,7 +2456,7 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int /*long*/ atkText_get_n_selections (int /*long*/ atkObject) {
+	static long /*int*/ atkText_get_n_selections (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->atkText_get_n_selections");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -2483,7 +2483,7 @@ class AccessibleObject {
 				if (event.length > 0) return 1;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkTextIface iface = getTextIface (atkObject);
 		if (iface != null && iface.get_n_selections != 0) {
 			parentResult = ATK.call (iface.get_n_selections, atkObject);
@@ -2491,10 +2491,10 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkText_get_selection (int /*long*/ atkObject, int /*long*/ selection_num, int /*long*/ start_offset, int /*long*/ end_offset) {
+	static long /*int*/ atkText_get_selection (long /*int*/ atkObject, long /*int*/ selection_num, long /*int*/ start_offset, long /*int*/ end_offset) {
 		if (DEBUG) print ("-->atkText_get_selection");
 		AccessibleObject object = getAccessibleObject (atkObject);
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		OS.memmove (start_offset, new int[] {0}, 4);
 		OS.memmove (end_offset, new int[] {0}, 4);
 		AtkTextIface iface = getTextIface (atkObject);
@@ -2560,7 +2560,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int /*long*/ atkText_get_text (int /*long*/ atkObject, int /*long*/ start_offset, int /*long*/ end_offset) {
+	static long /*int*/ atkText_get_text (long /*int*/ atkObject, long /*int*/ start_offset, long /*int*/ end_offset) {
 		if (DEBUG) print ("-->atkText_get_text: " + atkObject + " " + start_offset + "," + end_offset);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -2597,7 +2597,7 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int /*long*/ atkText_get_text_after_offset (int /*long*/ atkObject, int /*long*/ offset_value, int /*long*/ boundary_type, int /*long*/ start_offset, int /*long*/ end_offset) {
+	static long /*int*/ atkText_get_text_after_offset (long /*int*/ atkObject, long /*int*/ offset_value, long /*int*/ boundary_type, long /*int*/ start_offset, long /*int*/ end_offset) {
 		if (DEBUG) print ("-->atkText_get_text_after_offset");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -2605,7 +2605,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				int /*long*/ charCount = atkText_get_character_count (atkObject);
+				long /*int*/ charCount = atkText_get_character_count (atkObject);
 				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.start = event.end = (int)/*64*/offset_value;
 				event.count = 1;
@@ -2845,7 +2845,7 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int /*long*/ atkText_get_text_at_offset (int /*long*/ atkObject, int /*long*/ offset_value, int /*long*/ boundary_type, int /*long*/ start_offset, int /*long*/ end_offset) {
+	static long /*int*/ atkText_get_text_at_offset (long /*int*/ atkObject, long /*int*/ offset_value, long /*int*/ boundary_type, long /*int*/ start_offset, long /*int*/ end_offset) {
 		if (DEBUG) print ("-->atkText_get_text_at_offset: " + offset_value + " start: " + start_offset + " end: " + end_offset);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -2853,7 +2853,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				int /*long*/ charCount = atkText_get_character_count (atkObject);
+				long /*int*/ charCount = atkText_get_character_count (atkObject);
 				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.start = event.end = (int)/*64*/offset_value;
 				event.count = 0;
@@ -3036,7 +3036,7 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int /*long*/ atkText_get_text_before_offset (int /*long*/ atkObject, int /*long*/ offset_value, int /*long*/ boundary_type, int /*long*/ start_offset, int /*long*/ end_offset) {
+	static long /*int*/ atkText_get_text_before_offset (long /*int*/ atkObject, long /*int*/ offset_value, long /*int*/ boundary_type, long /*int*/ start_offset, long /*int*/ end_offset) {
 		if (DEBUG) print ("-->atkText_get_text_before_offset");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -3044,7 +3044,7 @@ class AccessibleObject {
 			Vector listeners = accessible.accessibleTextExtendedListeners;
 			int length = listeners.size();
 			if (length > 0) {
-				int /*long*/ charCount = atkText_get_character_count (atkObject);
+				long /*int*/ charCount = atkText_get_character_count (atkObject);
 				AccessibleTextEvent event = new AccessibleTextEvent(accessible);
 				event.start = event.end = (int)/*64*/offset_value;
 				event.count = -1;
@@ -3232,7 +3232,7 @@ class AccessibleObject {
 		return 0;
 	}
 	
-	static void setGValue (int /*long*/ value, Number number) {
+	static void setGValue (long /*int*/ value, Number number) {
 		if (number == null) return;
 		if (OS.G_VALUE_TYPE(value) != 0) OS.g_value_unset(value);
 		if (number instanceof Double) {
@@ -3250,8 +3250,8 @@ class AccessibleObject {
 		}
 	}
 
-	static Number getGValue (int /*long*/ value) {
-		int /*long*/ type = OS.G_VALUE_TYPE(value);
+	static Number getGValue (long /*int*/ value) {
+		long /*int*/ type = OS.G_VALUE_TYPE(value);
 		if (type == 0) return null;
 		if (type == OS.G_TYPE_DOUBLE()) return new Double(OS.g_value_get_double(value));
 		if (type == OS.G_TYPE_FLOAT()) return new Float(OS.g_value_get_float(value));
@@ -3259,7 +3259,7 @@ class AccessibleObject {
 		return new Integer(OS.g_value_get_int(value));
 	}
 	
-	static AtkValueIface getValueIface (int /*long*/ atkObject) {
+	static AtkValueIface getValueIface (long /*int*/ atkObject) {
 		if (ATK.g_type_is_a (OS.g_type_parent (OS.G_OBJECT_TYPE (atkObject)), ATK.ATK_TYPE_VALUE())) {
 			AtkValueIface iface = new AtkValueIface ();
 			ATK.memmove (iface, ATK.g_type_interface_peek_parent (ATK.ATK_VALUE_GET_IFACE (atkObject)));
@@ -3267,7 +3267,7 @@ class AccessibleObject {
 		}
 		return null;
 	}
-	static int /*long*/ atkValue_get_current_value (int /*long*/ atkObject, int /*long*/ value) {
+	static long /*int*/ atkValue_get_current_value (long /*int*/ atkObject, long /*int*/ value) {
 		if (DEBUG) print ("-->atkValue_get_current_value");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		AtkValueIface iface = getValueIface (atkObject);
@@ -3291,7 +3291,7 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int /*long*/ atkValue_get_maximum_value (int /*long*/ atkObject, int /*long*/ value) {
+	static long /*int*/ atkValue_get_maximum_value (long /*int*/ atkObject, long /*int*/ value) {
 		if (DEBUG) print ("-->atkValue_get_maximum_value");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		AtkValueIface iface = getValueIface (atkObject);
@@ -3315,7 +3315,7 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int /*long*/ atkValue_get_minimum_value (int /*long*/ atkObject, int /*long*/ value) {
+	static long /*int*/ atkValue_get_minimum_value (long /*int*/ atkObject, long /*int*/ value) {
 		if (DEBUG) print ("-->atkValue_get_minimum_value");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		AtkValueIface iface = getValueIface (atkObject);
@@ -3339,7 +3339,7 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int /*long*/ atkValue_set_current_value (int /*long*/ atkObject, int /*long*/ value) {
+	static long /*int*/ atkValue_set_current_value (long /*int*/ atkObject, long /*int*/ value) {
 		if (DEBUG) print ("-->atkValue_set_current_value");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
@@ -3356,7 +3356,7 @@ class AccessibleObject {
 				return event.value != null ? 1 : 0;
 			}
 		}
-		int /*long*/ parentResult = 0;
+		long /*int*/ parentResult = 0;
 		AtkValueIface iface = getValueIface (atkObject);
 		if (iface != null && iface.set_current_value != 0) {
 			parentResult = ATK.call (iface.set_current_value, atkObject, value);
@@ -3364,7 +3364,7 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static AccessibleObject getAccessibleObject (int /*long*/ atkObject) {
+	static AccessibleObject getAccessibleObject (long /*int*/ atkObject) {
 		AccessibleObject object = (AccessibleObject)AccessibleObjects.get (new LONG (atkObject));
 		if (object == null) return null;
 		if (object.accessible == null) return null;
@@ -3397,9 +3397,9 @@ class AccessibleObject {
 			String parentText = "";	//$NON-NLS-1$
 			AtkTextIface iface = getTextIface (handle);
 			if (iface != null && iface.get_character_count != 0) {
-				int /*long*/ characterCount = ATK.call (iface.get_character_count, handle);
+				long /*int*/ characterCount = ATK.call (iface.get_character_count, handle);
 				if (characterCount > 0 && iface.get_text != 0) {
-					int /*long*/ parentResult = ATK.call (iface.get_text, handle, 0, characterCount);
+					long /*int*/ parentResult = ATK.call (iface.get_text, handle, 0, characterCount);
 					if (parentResult != 0) {
 						parentText = getString (parentResult);
 						OS.g_free(parentResult);
@@ -3418,10 +3418,10 @@ class AccessibleObject {
 		return null;
 	}
 
-	static int /*long*/ gObjectClass_finalize (int /*long*/ atkObject) {
+	static long /*int*/ gObjectClass_finalize (long /*int*/ atkObject) {
 		if (DEBUG) print ("-->gObjectClass_finalize: " + atkObject);
-		int /*long*/ superType = ATK.g_type_class_peek_parent (ATK.G_OBJECT_GET_CLASS (atkObject));
-		int /*long*/ gObjectClass = ATK.G_OBJECT_CLASS (superType);
+		long /*int*/ superType = ATK.g_type_class_peek_parent (ATK.G_OBJECT_GET_CLASS (atkObject));
+		long /*int*/ gObjectClass = ATK.G_OBJECT_CLASS (superType);
 		GObjectClass objectClassStruct = new GObjectClass ();
 		ATK.memmove (objectClassStruct, gObjectClass);
 		ATK.call (objectClassStruct.finalize, atkObject);
@@ -3461,8 +3461,8 @@ class AccessibleObject {
 			ATK.memmove (gtkAccessible, object.handle);
 		}
 		if (gtkAccessible.widget == 0) return;
-		int /*long*/ topLevel = ATK.gtk_widget_get_toplevel (gtkAccessible.widget);
-		int /*long*/ window;
+		long /*int*/ topLevel = ATK.gtk_widget_get_toplevel (gtkAccessible.widget);
+		long /*int*/ window;
 		if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
 			window = OS.gtk_widget_get_window (topLevel);
 		} else {

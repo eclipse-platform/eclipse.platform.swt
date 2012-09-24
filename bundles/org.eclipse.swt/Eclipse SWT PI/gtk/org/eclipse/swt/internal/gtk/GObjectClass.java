@@ -17,17 +17,17 @@ package org.eclipse.swt.internal.gtk;
 
 public class GObjectClass {
 	/** @field cast=(GObject *(*)()) */
-	public int /*long*/ constructor;
+	public long /*int*/ constructor;
 	/** @field cast=(void (*)()) */
-	public int /*long*/ set_property;
+	public long /*int*/ set_property;
 	/** @field cast=(void (*)()) */
-	public int /*long*/ get_property;
+	public long /*int*/ get_property;
 	/** @field cast=(void (*)()) */
-	public int /*long*/ dispose;
+	public long /*int*/ dispose;
 	/** @field cast=(void (*)()) */
-	public int /*long*/ finalize;
+	public long /*int*/ finalize;
 	/** @field cast=(void (*)()) */
-	public int /*long*/ dispatch_properties_changed;
+	public long /*int*/ dispatch_properties_changed;
 	/** @field cast=(void (*)()) */
-	public int /*long*/ notify;
+	public long /*int*/ notify;
 }

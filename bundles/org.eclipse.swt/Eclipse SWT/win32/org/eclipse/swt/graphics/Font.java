@@ -45,7 +45,7 @@ public final class Font extends Resource {
 	 * 
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public int /*long*/ handle;
+	public long /*int*/ handle;
 	
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -253,7 +253,7 @@ public String toString () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public static Font win32_new(Device device, int /*long*/ handle) {
+public static Font win32_new(Device device, long /*int*/ handle) {
 	Font font = new Font(device);
 	font.handle = handle;
 	return font;

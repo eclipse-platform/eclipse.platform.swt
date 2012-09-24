@@ -12,11 +12,11 @@ package org.eclipse.swt.internal.win32;
 
 /** @jniclass flags=no_gen */
 public class LRESULT {
-	public int /*long*/ value;
+	public long /*int*/ value;
 	public static final LRESULT ONE = new LRESULT (1);
 	public static final LRESULT ZERO = new LRESULT (0);
 	
-public LRESULT (int /*long*/ value) {
+public LRESULT (long /*int*/ value) {
 	this.value = value;
 }
 

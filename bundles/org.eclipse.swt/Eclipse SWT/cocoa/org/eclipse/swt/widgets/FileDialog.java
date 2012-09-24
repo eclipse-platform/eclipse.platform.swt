@@ -201,15 +201,15 @@ public boolean getOverwrite () {
 public String open () {
 	String fullPath = null;
 	fileNames = new String [0];
-	int /*long*/ method = 0;
-	int /*long*/ methodImpl = 0;
+	long /*int*/ method = 0;
+	long /*int*/ methodImpl = 0;
 	Callback callback = null;
 	if ((style & SWT.SAVE) != 0) {
 		NSSavePanel savePanel = NSSavePanel.savePanel();
 		panel = savePanel;
 		if (!overwrite) {
 			callback = new Callback(this, "_overwriteExistingFileCheck", 3);
-			int /*long*/ proc = callback.getAddress();
+			long /*int*/ proc = callback.getAddress();
 			if (proc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 			method = OS.class_getInstanceMethod(OS.class_NSSavePanel, OS.sel_overwriteExistingFileCheck);
 			if (method != 0) methodImpl = OS.method_setImplementation(method, proc);
@@ -223,7 +223,7 @@ public String open () {
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
 	panel.setCanCreateDirectories(true);
 	OS.objc_msgSend(panel.id, OS.sel_setShowsHiddenFiles_, true);
-	int /*long*/ jniRef = 0;
+	long /*int*/ jniRef = 0;
 	SWTPanelDelegate delegate = null;
 	if (filterExtensions != null && filterExtensions.length != 0) {
 		delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
@@ -260,7 +260,7 @@ public String open () {
 	display.setModalDialog(this);
 	NSString dir = (filterPath != null && filterPath.length() > 0) ? NSString.stringWith(filterPath) : null;
 	NSString file = (fileName != null && fileName.length() > 0) ? NSString.stringWith(fileName) : null;
-	int /*long*/ response = panel.runModalForDirectory(dir, file);
+	long /*int*/ response = panel.runModalForDirectory(dir, file);
 	if (parent != null && (style & SWT.SHEET) != 0) {
 		application.endSheet(panel, 0);
 	}
@@ -339,15 +339,15 @@ public String open () {
 	return fullPath;	
 }
 
-int /*long*/ _overwriteExistingFileCheck (int /*long*/ id, int /*long*/ sel, int /*long*/ str) {
+long /*int*/ _overwriteExistingFileCheck (long /*int*/ id, long /*int*/ sel, long /*int*/ str) {
 	return 1;
 }
 
-int /*long*/ panel_shouldShowFilename (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+long /*int*/ panel_shouldShowFilename (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
 	NSString path = new NSString(arg1);
 	if (filterExtensions != null && filterExtensions.length != 0) {
 		NSFileManager manager = NSFileManager.defaultManager();
-		int /*long*/ ptr = OS.malloc(1);
+		long /*int*/ ptr = OS.malloc(1);
 		boolean found = manager.fileExistsAtPath(path, ptr);
 		byte[] isDirectory = new byte[1];
 		OS.memmove(isDirectory, ptr, 1);
@@ -376,7 +376,7 @@ int /*long*/ panel_shouldShowFilename (int /*long*/ id, int /*long*/ sel, int /*
 	return 1;
 }
 
-void sendSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ arg) {
+void sendSelection (long /*int*/ id, long /*int*/ sel, long /*int*/ arg) {
 	panel.validateVisibleColumns();
 }
 

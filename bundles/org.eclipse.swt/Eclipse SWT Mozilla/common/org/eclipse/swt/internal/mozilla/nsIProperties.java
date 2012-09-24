@@ -37,15 +37,15 @@ public class nsIProperties extends nsISupports {
 	public static final nsID NS_IPROPERTIES_IID =
 		new nsID(NS_IPROPERTIES_IID_STR);
 
-	public nsIProperties(int /*long*/ address) {
+	public nsIProperties(long /*int*/ address) {
 		super(address);
 	}
 
-	public int Get(byte[] prop, nsID iid, int /*long*/[] result) {
+	public int Get(byte[] prop, nsID iid, long /*int*/[] result) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), prop, iid, result);
 	}
 
-	public int Set(byte[] prop, int /*long*/ value) {
+	public int Set(byte[] prop, long /*int*/ value) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), prop, value);
 	}
 
@@ -57,7 +57,7 @@ public class nsIProperties extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), prop);
 	}
 
-	public int GetKeys(int[] count, int /*long*/[] keys) {
+	public int GetKeys(int[] count, long /*int*/[] keys) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), count, keys);
 	}
 }

@@ -14,7 +14,7 @@ public class DWM_BLURBEHIND {
 	public int dwFlags;
 	public boolean fEnable;
 	/** @field cast=(HRGN) */
-	public int /*long*/ hRgnBlur;
+	public long /*int*/ hRgnBlur;
 	public boolean fTransitionOnMaximized;
 	public static final int sizeof = OS.DWM_BLURBEHIND_sizeof ();
 }

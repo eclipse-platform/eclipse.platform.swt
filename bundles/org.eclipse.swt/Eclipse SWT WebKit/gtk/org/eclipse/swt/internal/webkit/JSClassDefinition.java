@@ -19,35 +19,35 @@ public class JSClassDefinition {
     public int version;
     public int attributes;
     /** @field cast=(const char*) */
-    public int /*long*/ className;
+    public long /*int*/ className;
     /** @field cast=(void*) */
-    public int /*long*/ parentClass;
+    public long /*int*/ parentClass;
     /** @field cast=(const void*) */
-    public int /*long*/ staticValues;
+    public long /*int*/ staticValues;
     /** @field cast=(const void*) */
-    public int /*long*/ staticFunctions;
+    public long /*int*/ staticFunctions;
     /** @field cast=(void*) */
-    public int /*long*/ initialize;
+    public long /*int*/ initialize;
     /** @field cast=(void*) */
-    public int /*long*/ finalize;
+    public long /*int*/ finalize;
     /** @field cast=(void*) */
-    public int /*long*/ hasProperty;
+    public long /*int*/ hasProperty;
     /** @field cast=(void*) */
-    public int /*long*/ getProperty;
+    public long /*int*/ getProperty;
     /** @field cast=(void*) */
-    public int /*long*/ setProperty;
+    public long /*int*/ setProperty;
     /** @field cast=(void*) */
-    public int /*long*/ deleteProperty;
+    public long /*int*/ deleteProperty;
     /** @field cast=(void*) */
-    public int /*long*/ getPropertyNames;
+    public long /*int*/ getPropertyNames;
     /** @field cast=(void*) */
-    public int /*long*/ callAsFunction;
+    public long /*int*/ callAsFunction;
     /** @field cast=(void*) */
-    public int /*long*/ callAsConstructor;
+    public long /*int*/ callAsConstructor;
     /** @field cast=(void*) */
-    public int /*long*/ hasInstance;
+    public long /*int*/ hasInstance;
     /** @field cast=(void*) */
-    public int /*long*/ convertToType;
+    public long /*int*/ convertToType;
     
     public static final int sizeof = WebKitGTK.JSClassDefinition_sizeof();
 }

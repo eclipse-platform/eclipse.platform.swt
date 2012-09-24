@@ -16,7 +16,7 @@ public NSGraphicsContext() {
 	super();
 }
 
-public NSGraphicsContext(int /*long*/ id) {
+public NSGraphicsContext(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,7 +25,7 @@ public NSGraphicsContext(id id) {
 }
 
 public static NSGraphicsContext currentContext() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_currentContext);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_currentContext);
 	return result != 0 ? new NSGraphicsContext(result) : null;
 }
 
@@ -34,25 +34,25 @@ public void flushGraphics() {
 }
 
 public static NSGraphicsContext graphicsContextWithBitmapImageRep(NSBitmapImageRep bitmapRep) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_graphicsContextWithBitmapImageRep_, bitmapRep != null ? bitmapRep.id : 0);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_graphicsContextWithBitmapImageRep_, bitmapRep != null ? bitmapRep.id : 0);
 	return result != 0 ? new NSGraphicsContext(result) : null;
 }
 
-public static NSGraphicsContext graphicsContextWithGraphicsPort(int /*long*/ graphicsPort, boolean initialFlippedState) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_graphicsContextWithGraphicsPort_flipped_, graphicsPort, initialFlippedState);
+public static NSGraphicsContext graphicsContextWithGraphicsPort(long /*int*/ graphicsPort, boolean initialFlippedState) {
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_graphicsContextWithGraphicsPort_flipped_, graphicsPort, initialFlippedState);
 	return result != 0 ? new NSGraphicsContext(result) : null;
 }
 
 public static NSGraphicsContext graphicsContextWithWindow(NSWindow window) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_graphicsContextWithWindow_, window != null ? window.id : 0);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_graphicsContextWithWindow_, window != null ? window.id : 0);
 	return result != 0 ? new NSGraphicsContext(result) : null;
 }
 
-public int /*long*/ graphicsPort() {
+public long /*int*/ graphicsPort() {
 	return OS.objc_msgSend(this.id, OS.sel_graphicsPort);
 }
 
-public int /*long*/ imageInterpolation() {
+public long /*int*/ imageInterpolation() {
 	return OS.objc_msgSend(this.id, OS.sel_imageInterpolation);
 }
 
@@ -80,7 +80,7 @@ public void saveGraphicsState() {
 	OS.objc_msgSend(this.id, OS.sel_saveGraphicsState);
 }
 
-public void setCompositingOperation(int /*long*/ operation) {
+public void setCompositingOperation(long /*int*/ operation) {
 	OS.objc_msgSend(this.id, OS.sel_setCompositingOperation_, operation);
 }
 
@@ -88,7 +88,7 @@ public static void setCurrentContext(NSGraphicsContext context) {
 	OS.objc_msgSend(OS.class_NSGraphicsContext, OS.sel_setCurrentContext_, context != null ? context.id : 0);
 }
 
-public void setImageInterpolation(int /*long*/ interpolation) {
+public void setImageInterpolation(long /*int*/ interpolation) {
 	OS.objc_msgSend(this.id, OS.sel_setImageInterpolation_, interpolation);
 }
 

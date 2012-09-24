@@ -16,7 +16,7 @@ public SFCertificatePanel() {
 	super();
 }
 
-public SFCertificatePanel(int /*long*/ id) {
+public SFCertificatePanel(long /*int*/ id) {
 	super(id);
 }
 
@@ -32,11 +32,11 @@ public void setShowsHelp(boolean showsHelp) {
 	OS.objc_msgSend(this.id, OS.sel_setShowsHelp_, showsHelp);
 }
 
-public static float /*double*/ minFrameWidthWithTitle(NSString aTitle, int /*long*/ aStyle) {
-	return (float /*double*/)OS.objc_msgSend_fpret(OS.class_SFCertificatePanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
+public static double /*float*/ minFrameWidthWithTitle(NSString aTitle, long /*int*/ aStyle) {
+	return (double /*float*/)OS.objc_msgSend_fpret(OS.class_SFCertificatePanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
 }
 
-public static int /*long*/ windowNumberAtPoint(NSPoint point, int /*long*/ windowNumber) {
+public static long /*int*/ windowNumberAtPoint(NSPoint point, long /*int*/ windowNumber) {
 	return OS.objc_msgSend(OS.class_SFCertificatePanel, OS.sel_windowNumberAtPoint_belowWindowWithWindowNumber_, point, windowNumber);
 }
 

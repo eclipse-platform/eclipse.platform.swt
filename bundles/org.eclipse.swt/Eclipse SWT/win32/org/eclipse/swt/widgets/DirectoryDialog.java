@@ -84,7 +84,7 @@ public DirectoryDialog (Shell parent, int style) {
 	checkSubclass ();
 }
 
-int /*long*/ BrowseCallbackProc (int /*long*/ hwnd, int /*long*/ uMsg, int /*long*/ lParam, int /*long*/ lpData) {
+long /*int*/ BrowseCallbackProc (long /*int*/ hwnd, long /*int*/ uMsg, long /*int*/ lParam, long /*int*/ lpData) {
 	switch ((int)/*64*/uMsg) {
 		case OS.BFFM_INITIALIZED:
 			if (filterPath != null && filterPath.length () != 0) {
@@ -149,14 +149,14 @@ public String getMessage () {
 public String open () {
 	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 	
-	int /*long*/ hHeap = OS.GetProcessHeap ();
+	long /*int*/ hHeap = OS.GetProcessHeap ();
 	
 	/* Get the owner HWND for the dialog */
-	int /*long*/ hwndOwner = 0;
+	long /*int*/ hwndOwner = 0;
 	if (parent != null) hwndOwner = parent.handle;
 
 	/* Copy the message to OS memory */
-	int /*long*/ lpszTitle = 0;
+	long /*int*/ lpszTitle = 0;
 	if (message.length () != 0) {
 		String string = message;
 		if (string.indexOf ('&') != -1) {
@@ -179,7 +179,7 @@ public String open () {
 
 	/* Create the BrowseCallbackProc */
 	Callback callback = new Callback (this, "BrowseCallbackProc", 4); //$NON-NLS-1$
-	int /*long*/ lpfn = callback.getAddress ();
+	long /*int*/ lpfn = callback.getAddress ();
 	if (lpfn == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	/* Make the parent shell be temporary modal */
@@ -228,7 +228,7 @@ public String open () {
 	*/
 	boolean oldRunMessages = display.runMessages;
 	if (OS.COMCTL32_MAJOR < 6) display.runMessages = false;
-	int /*long*/ lpItemIdList = OS.SHBrowseForFolder (lpbi);
+	long /*int*/ lpItemIdList = OS.SHBrowseForFolder (lpbi);
 	if (OS.COMCTL32_MAJOR < 6) display.runMessages = oldRunMessages;
 	OS.SetErrorMode (oldErrorMode);
 	
@@ -254,7 +254,7 @@ public String open () {
 	if (lpszTitle != 0) OS.HeapFree (hHeap, 0, lpszTitle);
 
 	/* Free the pointer to the ITEMIDLIST */
-	int /*long*/ [] ppMalloc = new int /*long*/ [1];
+	long /*int*/ [] ppMalloc = new long /*int*/ [1];
 	if (OS.SHGetMalloc (ppMalloc) == OS.S_OK) {
 		/* void Free (struct IMalloc *this, void *pv); */
 		OS.VtblCall (5, ppMalloc [0], lpItemIdList);

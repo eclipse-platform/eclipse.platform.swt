@@ -57,7 +57,7 @@ int[] getPartId(int part) {
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		//TODO - arrow and toggle
-		int /*long*/ hTheme = OS.OpenThemeData(0, getClassId());
+		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
 		RECT rect = new RECT ();
 		rect.left = bounds.x;
 		rect.right = bounds.x + bounds.width;
@@ -90,7 +90,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!(OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ())) return DrawData.WIDGET_NOWHERE;
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;
-	int /*long*/ hTheme = OS.OpenThemeData(0, getClassId());
+	long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
 	RECT rect = new RECT ();
 	rect.left = bounds.x;
 	rect.right = bounds.x + bounds.width;

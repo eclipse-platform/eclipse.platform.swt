@@ -37,15 +37,15 @@ public class nsIXPConnect extends nsISupports {
 	public static final nsID NS_IXPCONNECT_IID =
 		new nsID(NS_IXPCONNECT_IID_STR);
 
-	public nsIXPConnect(int /*long*/ address) {
+	public nsIXPConnect(long /*int*/ address) {
 		super(address);
 	}
 
-	public int JSValToVariant(int /*long*/ cx, int /*long*/ aJSVal, int /*long*/[] _retval) {
+	public int JSValToVariant(long /*int*/ cx, long /*int*/ aJSVal, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), cx, aJSVal, _retval);
 	}
 
-	public int VariantToJS(int /*long*/ ctx, int /*long*/ scope, int /*long*/ value, int /*long*/ _retval) {
+	public int VariantToJS(long /*int*/ ctx, long /*int*/ scope, long /*int*/ value, long /*int*/ _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 33, getAddress(), ctx, scope, value, _retval);
 	}
 }

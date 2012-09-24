@@ -16,7 +16,7 @@ public NSScreen() {
 	super();
 }
 
-public NSScreen(int /*long*/ id) {
+public NSScreen(long /*int*/ id) {
 	super(id);
 }
 
@@ -29,7 +29,7 @@ public int depth() {
 }
 
 public NSDictionary deviceDescription() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_deviceDescription);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_deviceDescription);
 	return result != 0 ? new NSDictionary(result) : null;
 }
 
@@ -40,17 +40,17 @@ public NSRect frame() {
 }
 
 public static NSScreen mainScreen() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSScreen, OS.sel_mainScreen);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSScreen, OS.sel_mainScreen);
 	return result != 0 ? new NSScreen(result) : null;
 }
 
 public static NSArray screens() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSScreen, OS.sel_screens);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSScreen, OS.sel_screens);
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public float /*double*/ userSpaceScaleFactor() {
-	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_userSpaceScaleFactor);
+public double /*float*/ userSpaceScaleFactor() {
+	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_userSpaceScaleFactor);
 }
 
 public NSRect visibleFrame() {

@@ -85,13 +85,13 @@ public void javaToNative(Object object, TransferData transferData) {
 		if (length == 0) continue;
 		char[] chars = new char[length];
 		string.getChars(0, length, chars, 0);		
-		int /*long*/[] error = new int /*long*/[1];
-		int /*long*/ utf8Ptr = OS.g_utf16_to_utf8(chars, chars.length, null, null, error);
+		long /*int*/[] error = new long /*int*/[1];
+		long /*int*/ utf8Ptr = OS.g_utf16_to_utf8(chars, chars.length, null, null, error);
 		if (error[0] != 0 || utf8Ptr == 0) continue;
-		int /*long*/ localePtr = OS.g_filename_from_utf8(utf8Ptr, -1, null, null, error);
+		long /*int*/ localePtr = OS.g_filename_from_utf8(utf8Ptr, -1, null, null, error);
 		OS.g_free(utf8Ptr);
 		if (error[0] != 0 || localePtr == 0) continue;
-		int /*long*/ uriPtr = OS.g_filename_to_uri(localePtr, 0, error);
+		long /*int*/ uriPtr = OS.g_filename_to_uri(localePtr, 0, error);
 		OS.g_free(localePtr);
 		if (error[0] != 0 || uriPtr == 0) continue;
 		length = OS.strlen(uriPtr);
@@ -111,7 +111,7 @@ public void javaToNative(Object object, TransferData transferData) {
 		buffer = newBuffer;
 	}
 	if (buffer.length == 0) return;
-	int /*long*/ ptr = OS.g_malloc(buffer.length+1);
+	long /*int*/ ptr = OS.g_malloc(buffer.length+1);
 	OS.memset(ptr, '\0', buffer.length+1);
 	OS.memmove(ptr, buffer, buffer.length);
 	transferData.pValue = ptr;
@@ -137,7 +137,7 @@ public Object nativeToJava(TransferData transferData) {
 	OS.memmove(temp, transferData.pValue, length);
 	boolean gnomeList = transferData.type == GNOME_LIST_ID;
 	int sepLength = gnomeList ? 1 : 2;
-	int /*long*/[] files = new int /*long*/[0];
+	long /*int*/[] files = new long /*int*/[0];
 	int offset = 0;
 	for (int i = 0; i < temp.length - 1; i++) {
 		boolean terminator = gnomeList ? temp[i] == '\n' : temp[i] == '\r' && temp[i+1] == '\n';
@@ -145,11 +145,11 @@ public Object nativeToJava(TransferData transferData) {
 			if (!(gnomeList && offset == 0)) {
 				/* The content of the first line in a gnome-list is always either 'copy' or 'cut' */
 				int size =  i - offset;
-				int /*long*/ file = OS.g_malloc(size + 1);
+				long /*int*/ file = OS.g_malloc(size + 1);
 				byte[] fileBuffer = new byte[size + 1];
 				System.arraycopy(temp, offset, fileBuffer, 0, size);
 				OS.memmove(file, fileBuffer, size + 1);
-				int /*long*/[] newFiles = new int /*long*/[files.length + 1];
+				long /*int*/[] newFiles = new long /*int*/[files.length + 1];
 				System.arraycopy(files, 0, newFiles, 0, files.length);
 				newFiles[files.length] = file;
 				files = newFiles;
@@ -159,27 +159,27 @@ public Object nativeToJava(TransferData transferData) {
 	}
 	if (offset < temp.length - sepLength) {
 		int size =  temp.length - offset;
-		int /*long*/ file = OS.g_malloc(size + 1);
+		long /*int*/ file = OS.g_malloc(size + 1);
 		byte[] fileBuffer = new byte[size + 1];
 		System.arraycopy(temp, offset, fileBuffer, 0, size);
 		OS.memmove(file, fileBuffer, size + 1);
-		int /*long*/[] newFiles = new int /*long*/[files.length + 1];
+		long /*int*/[] newFiles = new long /*int*/[files.length + 1];
 		System.arraycopy(files, 0, newFiles, 0, files.length);
 		newFiles[files.length] = file;
 		files = newFiles;
 	}
 	String[] fileNames = new String[0];
 	for (int i = 0; i < files.length; i++) {
-		int /*long*/[] error = new int /*long*/[1];
-		int /*long*/ localePtr = OS.g_filename_from_uri(files[i], null, error);
+		long /*int*/[] error = new long /*int*/[1];
+		long /*int*/ localePtr = OS.g_filename_from_uri(files[i], null, error);
 		OS.g_free(files[i]);
 		if (error[0] != 0 || localePtr == 0) continue;
-		int /*long*/ utf8Ptr = OS.g_filename_to_utf8(localePtr, -1, null, null, null);
+		long /*int*/ utf8Ptr = OS.g_filename_to_utf8(localePtr, -1, null, null, null);
 		if (utf8Ptr == 0) utf8Ptr = OS.g_filename_display_name (localePtr);
 		if (localePtr != utf8Ptr) OS.g_free (localePtr);
 		if (utf8Ptr == 0) continue;
-		int /*long*/[] items_written = new int /*long*/[1];
-		int /*long*/ utf16Ptr = OS.g_utf8_to_utf16(utf8Ptr, -1, null, items_written, null);
+		long /*int*/[] items_written = new long /*int*/[1];
+		long /*int*/ utf16Ptr = OS.g_utf8_to_utf16(utf8Ptr, -1, null, items_written, null);
 		OS.g_free(utf8Ptr);
 		if (utf16Ptr == 0) continue;
 		length = (int)/*64*/items_written[0];

@@ -17,15 +17,15 @@ package org.eclipse.swt.internal.gtk;
 
 public class GtkSelectionData {
 	/** @field cast=(GdkAtom) */
-	public int /*long*/  selection;
+	public long /*int*/  selection;
 	/** @field cast=(GdkAtom) */
-	public int /*long*/  target;
+	public long /*int*/  target;
 	/** @field cast=(GdkAtom) */
-	public int /*long*/  type;
+	public long /*int*/  type;
 	/** @field cast=(gint) */
 	public int  format;
 	/** @field cast=(guchar *) */
-	public int /*long*/  data;  
+	public long /*int*/  data;  
 	/** @field cast=(gint) */
 	public int  length;
 	public static final int sizeof = OS.GtkSelectionData_sizeof();

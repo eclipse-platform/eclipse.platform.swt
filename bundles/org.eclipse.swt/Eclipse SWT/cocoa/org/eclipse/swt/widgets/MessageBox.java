@@ -206,7 +206,7 @@ public int open () {
 	NSString message = NSString.stringWith(this.message != null ? this.message : "");
 	alert.setMessageText(message);
 	int response = 0;
-	int /*long*/ jniRef = 0;
+	long /*int*/ jniRef = 0;
 	SWTPanelDelegate delegate = null;
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
 	if ((style & SWT.SHEET) != 0) {
@@ -307,7 +307,7 @@ public int open () {
 	return SWT.CANCEL;
 }
 
-void panelDidEnd_returnCode_contextInfo(int /*long*/ id, int /*long*/ sel, int /*long*/ alert, int /*long*/ returnCode, int /*long*/ contextInfo) {
+void panelDidEnd_returnCode_contextInfo(long /*int*/ id, long /*int*/ sel, long /*int*/ alert, long /*int*/ returnCode, long /*int*/ contextInfo) {
 	this.returnCode = (int)/*64*/returnCode;
 	NSApplication application = NSApplication.sharedApplication();
 	application.endSheet(new NSAlert(alert).window(), returnCode);

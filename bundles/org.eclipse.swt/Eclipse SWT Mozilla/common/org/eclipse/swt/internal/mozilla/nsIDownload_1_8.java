@@ -37,11 +37,11 @@ public class nsIDownload_1_8 extends nsITransfer {
 	public static final nsID NS_IDOWNLOAD_IID =
 		new nsID(NS_IDOWNLOAD_IID_STR);
 
-	public nsIDownload_1_8(int /*long*/ address) {
+	public nsIDownload_1_8(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetTargetFile(int /*long*/[] aTargetFile) {
+	public int GetTargetFile(long /*int*/[] aTargetFile) {
 		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 1, getAddress(), aTargetFile);
 	}
 
@@ -49,27 +49,27 @@ public class nsIDownload_1_8 extends nsITransfer {
 		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 2, getAddress(), aPercentComplete);
 	}
 
-	public int GetAmountTransferred(int /*long*/ aAmountTransferred) {
+	public int GetAmountTransferred(long /*int*/ aAmountTransferred) {
 		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 3, getAddress(), aAmountTransferred);
 	}
 
-	public int GetSize(int /*long*/ aSize) {
+	public int GetSize(long /*int*/ aSize) {
 		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 4, getAddress(), aSize);
 	}
 
-	public int GetSource(int /*long*/[] aSource) {
+	public int GetSource(long /*int*/[] aSource) {
 		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 5, getAddress(), aSource);
 	}
 
-	public int GetTarget(int /*long*/[] aTarget) {
+	public int GetTarget(long /*int*/[] aTarget) {
 		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 6, getAddress(), aTarget);
 	}
 
-	public int GetCancelable(int /*long*/[] aCancelable) {
+	public int GetCancelable(long /*int*/[] aCancelable) {
 		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 7, getAddress(), aCancelable);
 	}
 
-	public int GetDisplayName(int /*long*/[] aDisplayName) {
+	public int GetDisplayName(long /*int*/[] aDisplayName) {
 		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 8, getAddress(), aDisplayName);
 	}
 
@@ -77,7 +77,7 @@ public class nsIDownload_1_8 extends nsITransfer {
 		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 9, getAddress(), aStartTime);
 	}
 
-	public int GetMIMEInfo(int /*long*/[] aMIMEInfo) {
+	public int GetMIMEInfo(long /*int*/[] aMIMEInfo) {
 		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 10, getAddress(), aMIMEInfo);
 	}
 }

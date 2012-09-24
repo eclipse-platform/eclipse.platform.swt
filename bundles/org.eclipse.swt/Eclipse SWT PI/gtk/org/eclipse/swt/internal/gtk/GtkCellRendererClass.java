@@ -17,7 +17,7 @@ package org.eclipse.swt.internal.gtk;
 
 public class GtkCellRendererClass {
 	/** @field cast=(void(*)()) */
-	public int /*long*/ render;
+	public long /*int*/ render;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ get_size;
+	public long /*int*/ get_size;
 }

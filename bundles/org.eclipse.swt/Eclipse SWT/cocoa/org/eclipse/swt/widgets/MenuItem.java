@@ -40,7 +40,7 @@ public class MenuItem extends Item {
 	NSMenuItem nsItem;
 	Menu parent, menu;
 	int accelerator;
-	int /*long*/ nsItemAction;
+	long /*int*/ nsItemAction;
 	id nsItemTarget;
 
 /**

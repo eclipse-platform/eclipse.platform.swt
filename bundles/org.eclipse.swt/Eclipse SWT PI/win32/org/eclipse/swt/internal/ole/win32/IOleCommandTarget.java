@@ -11,15 +11,15 @@
 package org.eclipse.swt.internal.ole.win32;
 
 public class IOleCommandTarget extends IUnknown {
-public IOleCommandTarget(int /*long*/ address) {
+public IOleCommandTarget(long /*int*/ address) {
 	super(address);
 }
 public int Exec(
 	GUID pguidCmdGroup,  // Pointer to command group
 	int  nCmdID,         // Identifier of command to execute
 	int  nCmdExecOpt,    // Options for executing the command
-	int /*long*/  pvaIn,        // Pointer to input arguments
-	int /*long*/  pvaOut        // Pointer to command output
+	long /*int*/  pvaIn,        // Pointer to input arguments
+	long /*int*/  pvaOut        // Pointer to command output
 ){
 	return COM.VtblCall(4, address, pguidCmdGroup, nCmdID, nCmdExecOpt, pvaIn, pvaOut);
 }

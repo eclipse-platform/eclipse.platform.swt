@@ -16,7 +16,7 @@ public NSStepper() {
 	super();
 }
 
-public NSStepper(int /*long*/ id) {
+public NSStepper(long /*int*/ id) {
 	super(id);
 }
 
@@ -52,11 +52,11 @@ public void setValueWraps(boolean valueWraps) {
 	OS.objc_msgSend(this.id, OS.sel_setValueWraps_, valueWraps);
 }
 
-public static int /*long*/ cellClass() {
+public static long /*int*/ cellClass() {
 	return OS.objc_msgSend(OS.class_NSStepper, OS.sel_cellClass);
 }
 
-public static void setCellClass(int /*long*/ factoryId) {
+public static void setCellClass(long /*int*/ factoryId) {
 	OS.objc_msgSend(OS.class_NSStepper, OS.sel_setCellClass_, factoryId);
 }
 

@@ -43,7 +43,7 @@ public class Menu extends Widget {
 	boolean hasLocation;
 	MenuItem cascade, selectedItem;
 	Decorations parent;
-	int /*long*/ imItem, imSeparator, imHandle;
+	long /*int*/ imItem, imSeparator, imHandle;
 	ImageList imageList;
 
 /**
@@ -208,9 +208,9 @@ void _setVisible (boolean visible) {
 					OS.gtk_menu_shell_set_take_focus (handle, false);
 				}
 			}
-			int /*long*/ address = hasLocation ? display.menuPositionProc: 0;
+			long /*int*/ address = hasLocation ? display.menuPositionProc: 0;
 			hasLocation = false;
-			int /*long*/ data = 0;
+			long /*int*/ data = 0;
 			if ((OS.GTK_VERSION >=  OS.VERSION (2, 10, 0))) {
 				/*
 				* Popup-menu to the status icon should be aligned to  
@@ -240,7 +240,7 @@ void _setVisible (boolean visible) {
 	}
 }
 
-void addAccelerators (int /*long*/ accelGroup) {
+void addAccelerators (long /*int*/ accelGroup) {
 	MenuItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		MenuItem item = items[i];
@@ -306,7 +306,7 @@ void createHandle (int index) {
 	if ((style & SWT.BAR) != 0) {
 		handle = OS.gtk_menu_bar_new ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		int /*long*/ vboxHandle = parent.vboxHandle;
+		long /*int*/ vboxHandle = parent.vboxHandle;
 		OS.gtk_container_add (vboxHandle, handle);
 		OS.gtk_box_set_child_packing (vboxHandle, handle, false, true, 0, OS.GTK_PACK_START);
 	} else {
@@ -315,9 +315,9 @@ void createHandle (int index) {
 	}
 }
 
-void createIMMenu (int /*long*/ imHandle) {
+void createIMMenu (long /*int*/ imHandle) {
 	boolean showInputMethod = false;
-	int /*long*/ settings = OS.gtk_settings_get_default ();
+	long /*int*/ settings = OS.gtk_settings_get_default ();
 	if (settings != 0) {
 		int [] buffer = new int [1];
 		OS.g_object_get (settings, OS.gtk_show_input_method_menu, buffer, 0);
@@ -349,7 +349,7 @@ void createIMMenu (int /*long*/ imHandle) {
 		OS.gtk_widget_show (imItem);
 		OS.gtk_menu_shell_insert (handle, imItem, -1);
 	}
-	int /*long*/ imSubmenu = OS.gtk_menu_new ();
+	long /*int*/ imSubmenu = OS.gtk_menu_new ();
 	OS.gtk_im_multicontext_append_menuitems (imHandle, imSubmenu);
 	OS.gtk_menu_item_set_submenu (imItem, imSubmenu);
 }
@@ -375,7 +375,7 @@ void fixMenus (Decorations newParent) {
 	if (!gtk_widget_get_mapped (handle)) {
 		return new Rectangle (0, 0, 0, 0);
 	}
-	int /*long*/ window = gtk_widget_get_window (handle);
+	long /*int*/ window = gtk_widget_get_window (handle);
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
 	GtkAllocation allocation = new GtkAllocation ();
@@ -441,13 +441,13 @@ public boolean getEnabled () {
  */
 public MenuItem getItem (int index) {
 	checkWidget();
-	int /*long*/ list = OS.gtk_container_get_children (handle);
+	long /*int*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 	int count = OS.g_list_length (list);
 	if (imSeparator != 0) count--;
 	if (imItem != 0) count--;
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	int /*long*/ data = OS.g_list_nth_data (list, index);
+	long /*int*/ data = OS.g_list_nth_data (list, index);
 	OS.g_list_free (list);
 	if (data == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 	return (MenuItem) display.getWidget (data);
@@ -465,7 +465,7 @@ public MenuItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget();
-	int /*long*/ list = OS.gtk_container_get_children (handle);
+	long /*int*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) return 0;
 	int count = OS.g_list_length (list);
 	OS.g_list_free (list);
@@ -492,7 +492,7 @@ public int getItemCount () {
  */
 public MenuItem [] getItems () {
 	checkWidget();
-	int /*long*/ list = OS.gtk_container_get_children (handle);
+	long /*int*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) return new MenuItem [0];
 	int count = OS.g_list_length (list);
 	if (imSeparator != 0) count--;
@@ -500,7 +500,7 @@ public MenuItem [] getItems () {
 	MenuItem [] items = new MenuItem [count];
 	int index = 0;
 	for (int i=0; i<count; i++) {
-		int /*long*/ data = OS.g_list_nth_data (list, i);
+		long /*int*/ data = OS.g_list_nth_data (list, i);
 		MenuItem item = (MenuItem) display.getWidget (data);
 		if (item != null) items [index++] = item; 
 	}
@@ -644,7 +644,7 @@ public boolean getVisible () {
 	return gtk_widget_get_mapped (handle);
 }
 
-int /*long*/ gtk_hide (int /*long*/ widget) {
+long /*int*/ gtk_hide (long /*int*/ widget) {
 	if ((style & SWT.POP_UP) != 0) {
 		if (display.activeShell != null) display.activeShell = getShell ();
 	}
@@ -670,7 +670,7 @@ int /*long*/ gtk_hide (int /*long*/ widget) {
 	return 0;
 }
 
-int /*long*/ gtk_show (int /*long*/ widget) {
+long /*int*/ gtk_show (long /*int*/ widget) {
 	if ((style & SWT.POP_UP) != 0) {
 		if (display.activeShell != null) display.activeShell = getShell ();
 		return 0;
@@ -687,7 +687,7 @@ int /*long*/ gtk_show (int /*long*/ widget) {
 }
 
 
-int /*long*/ gtk_show_help (int /*long*/ widget, int /*long*/ helpType) {
+long /*int*/ gtk_show_help (long /*int*/ widget, long /*int*/ helpType) {
 	if (sendHelpEvent (helpType)) {
 		OS.gtk_menu_shell_deactivate (handle);
 		return 1;
@@ -772,7 +772,7 @@ public boolean isVisible () {
 	return getVisible ();
 }
 
-int /*long*/ menuPositionProc (int /*long*/ menu, int /*long*/ x, int /*long*/ y, int /*long*/ push_in, int /*long*/ user_data) {
+long /*int*/ menuPositionProc (long /*int*/ menu, long /*int*/ x, long /*int*/ y, long /*int*/ push_in, long /*int*/ user_data) {
 	/*
 	* Feature in GTK.  The menu position function sets the position of the
 	* top-left pixel of the menu.  If the menu would be off-screen, GTK will
@@ -860,7 +860,7 @@ public void removeMenuListener (MenuListener listener) {
 	eventTable.unhook (SWT.Show, listener);
 }
 
-void removeAccelerators (int /*long*/ accelGroup) {
+void removeAccelerators (long /*int*/ accelGroup) {
 	MenuItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		MenuItem item = items[i];
@@ -901,7 +901,7 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
-boolean sendHelpEvent (int /*long*/ helpType) {
+boolean sendHelpEvent (long /*int*/ helpType) {
 	if (selectedItem != null && !selectedItem.isDisposed()) {
 		if (selectedItem.hooks (SWT.Help)) {
 			selectedItem.postEvent (SWT.Help);

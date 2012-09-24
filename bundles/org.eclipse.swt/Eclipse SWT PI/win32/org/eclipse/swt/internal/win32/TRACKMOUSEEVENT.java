@@ -14,7 +14,7 @@ public class TRACKMOUSEEVENT {
 	public int cbSize;
 	public int dwFlags;
 	/** @field cast=(HWND) */
-	public int /*long*/ hwndTrack;
+	public long /*int*/ hwndTrack;
 	public int dwHoverTime;
 	public static final int sizeof = OS.TRACKMOUSEEVENT_sizeof ();
 }

@@ -428,12 +428,12 @@
 		<echo>Is64=${is64}</echo>
 	</target>
 		
-    <target name="replace64" depends="is64" if="is64">
-    	<echo>Converting java files to 64 bit</echo>
-    	<replace dir="${copy.src.dir}" includes="**/*.java" token="int /*long*/" value="long /*int*/"/>
-    	<replace dir="${copy.src.dir}" includes="**/*.java" token="int[] /*long[]*/" value="long[] /*int[]*/"/>
-    	<replace dir="${copy.src.dir}" includes="**/*.java" token="float /*double*/" value="double /*float*/"/>
-    	<replace dir="${copy.src.dir}" includes="**/*.java" token="float[] /*double[]*/" value="double[] /*float[]*/"/>
+    <target name="replace64" depends="is64" unless="is64">
+    	<echo>Converting java files to 32 bit</echo>
+    	<replace dir="${copy.src.dir}" includes="**/*.java" value="int /*long*/" token="long /*int*/"/>
+    	<replace dir="${copy.src.dir}" includes="**/*.java" value="int[] /*long[]*/" token="long[] /*int[]*/"/>
+    	<replace dir="${copy.src.dir}" includes="**/*.java" value="float /*double*/" token="double /*float*/"/>
+    	<replace dir="${copy.src.dir}" includes="**/*.java" value="float[] /*double[]*/" token="double[] /*float[]*/"/>
     </target>
 
 	<target name="build.sources" depends="init">

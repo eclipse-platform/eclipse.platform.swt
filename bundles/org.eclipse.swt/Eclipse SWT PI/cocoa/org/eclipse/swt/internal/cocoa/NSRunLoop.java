@@ -16,7 +16,7 @@ public NSRunLoop() {
 	super();
 }
 
-public NSRunLoop(int /*long*/ id) {
+public NSRunLoop(long /*int*/ id) {
 	super(id);
 }
 
@@ -29,12 +29,12 @@ public void addTimer(NSTimer timer, NSString mode) {
 }
 
 public static NSRunLoop currentRunLoop() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSRunLoop, OS.sel_currentRunLoop);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSRunLoop, OS.sel_currentRunLoop);
 	return result != 0 ? new NSRunLoop(result) : null;
 }
 
 public static NSRunLoop mainRunLoop() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSRunLoop, OS.sel_mainRunLoop);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSRunLoop, OS.sel_mainRunLoop);
 	return result != 0 ? new NSRunLoop(result) : null;
 }
 

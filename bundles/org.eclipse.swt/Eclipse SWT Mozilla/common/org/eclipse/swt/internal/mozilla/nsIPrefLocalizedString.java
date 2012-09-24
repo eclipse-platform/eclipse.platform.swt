@@ -37,11 +37,11 @@ public class nsIPrefLocalizedString extends nsISupports {
 	public static final nsID NS_IPREFLOCALIZEDSTRING_IID =
 		new nsID(NS_IPREFLOCALIZEDSTRING_IID_STR);
 
-	public nsIPrefLocalizedString(int /*long*/ address) {
+	public nsIPrefLocalizedString(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetData(int /*long*/[] aData) {
+	public int GetData(long /*int*/[] aData) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aData);
 	}
 
@@ -49,7 +49,7 @@ public class nsIPrefLocalizedString extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aData);
 	}
 
-	public int ToString(int /*long*/[] _retval) {
+	public int ToString(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), _retval);
 	}
 

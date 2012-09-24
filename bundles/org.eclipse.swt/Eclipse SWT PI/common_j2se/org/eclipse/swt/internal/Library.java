@@ -42,7 +42,7 @@ public class Library {
 	static final String DELIMITER;
 	
 	/* 64-bit support */
-	static final boolean IS_64 = longConst() == (int /*long*/)longConst();
+	static final boolean IS_64 = longConst() == (long /*int*/)longConst();
 	static final String SUFFIX_64 = "-64";	//$NON-NLS-1$
 	static final String SWT_LIB_DIR;
 

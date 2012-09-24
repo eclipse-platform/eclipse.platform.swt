@@ -22,7 +22,7 @@ public ExpanderDrawData() {
 
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		int /*long*/ hTheme = OS.OpenThemeData(0, getClassId());
+		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
 		int iStateId = OS.GLPS_CLOSED;
 		if ((this.style & SWT.DOWN) != 0) iStateId = OS.GLPS_OPENED;
 		SIZE size = new SIZE();
@@ -51,7 +51,7 @@ int[] getPartId(int part) {
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!(OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ())) return DrawData.WIDGET_NOWHERE;
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;
-	int /*long*/ hTheme = OS.OpenThemeData(0, getClassId());
+	long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
 	SIZE size = new SIZE();
 	int[] part = getPartId(DrawData.WIDGET_WHOLE);
 	OS.GetThemePartSize(hTheme, 0, part[0], part[1], null, OS.TS_TRUE, size);

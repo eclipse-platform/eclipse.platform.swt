@@ -85,7 +85,7 @@ public IME (Canvas parent, int style) {
 	createWidget ();
 }
 
-int /*long*/ attributedSubstringFromRange (int /*long*/ id, int /*long*/ sel, int /*long*/ rangePtr) {
+long /*int*/ attributedSubstringFromRange (long /*int*/ id, long /*int*/ sel, long /*int*/ rangePtr) {
 	Event event = new Event ();
 	event.detail = SWT.COMPOSITION_SELECTION;
 	sendEvent (SWT.ImeComposition, event);
@@ -104,7 +104,7 @@ int /*long*/ attributedSubstringFromRange (int /*long*/ id, int /*long*/ sel, in
 	return 0;
 }
 
-int /*long*/ characterIndexForPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ point) {
+long /*int*/ characterIndexForPoint (long /*int*/ id, long /*int*/ sel, long /*int*/ point) {
 	if (!isInlineEnabled ()) return OS.NSNotFound;
 	NSPoint pt = new NSPoint ();
 	OS.memmove (pt, point, NSPoint.sizeof);
@@ -128,7 +128,7 @@ void createWidget () {
 	}
 }
 
-NSRect firstRectForCharacterRange(int /*long*/ id, int /*long*/ sel, int /*long*/ range) {
+NSRect firstRectForCharacterRange(long /*int*/ id, long /*int*/ sel, long /*int*/ range) {
 	NSRect rect = new NSRect ();
 	Caret caret = parent.caret;
 	if (caret != null) {
@@ -256,7 +256,7 @@ public TextStyle [] getStyles () {
 
 TextStyle getStyle (NSDictionary attribs) {
 	NSArray keys = attribs.allKeys ();
-	int /*long*/ count = keys.count ();
+	long /*int*/ count = keys.count ();
 	TextStyle style = new TextStyle ();
 	for (int j = 0; j < count; j++) {
 		NSString key = new NSString (keys.objectAtIndex (j));
@@ -330,11 +330,11 @@ public boolean getWideCaret() {
 	return false; 
 }
 
-boolean hasMarkedText (int /*long*/ id, int /*long*/ sel) {
+boolean hasMarkedText (long /*int*/ id, long /*int*/ sel) {
 	return text.length () != 0;
 }
 
-boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
+boolean insertText (long /*int*/ id, long /*int*/ sel, long /*int*/ string) {
 	if (startOffset == -1) return true;
 	NSString str = new NSString (string);
 	if (str.isKindOfClass (OS.class_NSAttributedString)) {
@@ -360,7 +360,7 @@ boolean isInlineEnabled () {
 	return hooks (SWT.ImeComposition);
 }
 
-NSRange markedRange (int /*long*/ id, int /*long*/ sel) {
+NSRange markedRange (long /*int*/ id, long /*int*/ sel) {
 	NSRange range = new NSRange ();
 	if (startOffset != -1) {
 		range.location = startOffset;
@@ -395,7 +395,7 @@ void releaseWidget () {
 	resetStyles ();
 }
 
-NSRange selectedRange (int /*long*/ id, int /*long*/ sel) {
+NSRange selectedRange (long /*int*/ id, long /*int*/ sel) {
 	Event event = new Event ();
 	event.detail = SWT.COMPOSITION_SELECTION;
 	sendEvent (SWT.ImeComposition, event);
@@ -429,7 +429,7 @@ public void setCompositionOffset (int offset) {
 	}
 }
 
-boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*long*/ string, int /*long*/ selRange) {
+boolean setMarkedText_selectedRange (long /*int*/ id, long /*int*/ sel, long /*int*/ string, long /*int*/ selRange) {
 	if (!isInlineEnabled ()) return true;
 	resetStyles ();
 	caretOffset = commitCount = 0;
@@ -451,7 +451,7 @@ boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*lo
 		NSRange rangeLimit = new NSRange (), effectiveRange = new NSRange ();
 		rangeLimit.length = length;
 		int rangeCount = 0;
-		int /*long*/ ptr = OS.malloc (NSRange.sizeof);
+		long /*int*/ ptr = OS.malloc (NSRange.sizeof);
 		for (int i = 0; i < length;) {
 			NSDictionary attribs = attribStr.attributesAtIndex(i, ptr, rangeLimit);
 			OS.memmove (effectiveRange, ptr, NSRange.sizeof);
@@ -494,7 +494,7 @@ boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*lo
 	return true;
 }
 
-int /*long*/ validAttributesForMarkedText (int /*long*/ id, int /*long*/ sel) {
+long /*int*/ validAttributesForMarkedText (long /*int*/ id, long /*int*/ sel) {
 	NSMutableArray attribs = NSMutableArray.arrayWithCapacity (6);
 	attribs.addObject (new NSString (OS.NSForegroundColorAttributeName ()));
 	attribs.addObject (new NSString (OS.NSBackgroundColorAttributeName ()));

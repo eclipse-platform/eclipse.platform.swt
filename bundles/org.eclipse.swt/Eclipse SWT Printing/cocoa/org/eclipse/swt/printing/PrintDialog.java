@@ -155,7 +155,7 @@ public PrinterData open() {
 	NSPrintPanel panel = NSPrintPanel.printPanel();
 	NSPrintInfo printInfo = new NSPrintInfo(NSPrintInfo.sharedPrintInfo().copy());
 	if (printerData.duplex != SWT.DEFAULT) {
-		int /*long*/ settings = printInfo.PMPrintSettings();
+		long /*int*/ settings = printInfo.PMPrintSettings();
 		int duplex = printerData.duplex == PrinterData.DUPLEX_SHORT_EDGE ? OS.kPMDuplexTumble
 				: printerData.duplex == PrinterData.DUPLEX_LONG_EDGE ? OS.kPMDuplexNoTumble
 				: OS.kPMDuplexNone;
@@ -191,7 +191,7 @@ public PrinterData open() {
 	if ((getStyle () & SWT.SHEET) != 0) {
 		initClasses();
 		SWTPrintPanelDelegate delegate = (SWTPrintPanelDelegate)new SWTPrintPanelDelegate().alloc().init();
-		int /*long*/ jniRef = OS.NewGlobalRef(this);
+		long /*int*/ jniRef = OS.NewGlobalRef(this);
 		if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		OS.object_setInstanceVariable(delegate.id, SWT_OBJECT, jniRef);
 		returnCode = -1;
@@ -226,7 +226,7 @@ public PrinterData open() {
 		data.copyCount = new NSNumber(dict.objectForKey(OS.NSPrintCopies)).intValue();
 		data.copyCount = 1; //TODO: Only set to 1 if the printer does the copy internally (most printers do)
 		data.orientation = new NSNumber(dict.objectForKey(OS.NSPrintOrientation)).intValue() == OS.NSLandscapeOrientation ? PrinterData.LANDSCAPE : PrinterData.PORTRAIT;
-		int /*long*/ settings = printInfo.PMPrintSettings();
+		long /*int*/ settings = printInfo.PMPrintSettings();
 		int outDuplexSetting[] = new int[1];
 		OS.PMGetDuplex(settings, outDuplexSetting);
 		data.duplex = outDuplexSetting[0] == OS.kPMDuplexTumble ? PrinterData.DUPLEX_SHORT_EDGE
@@ -264,8 +264,8 @@ static boolean getSheetEnabled () {
 	return !"false".equals(System.getProperty("org.eclipse.swt.sheet"));
 }
 
-static int /*long*/ dialogProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
-	int /*long*/ [] jniRef = new int /*long*/ [1];
+static long /*int*/ dialogProc(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2) {
+	long /*int*/ [] jniRef = new long /*int*/ [1];
 	OS.object_getInstanceVariable(id, SWT_OBJECT, jniRef);
 	if (jniRef[0] == 0) return 0;
 	if (sel == OS.sel_panelDidEnd_returnCode_contextInfo_) {
@@ -281,18 +281,18 @@ void initClasses () {
 	if (OS.objc_lookUpClass (className) != 0) return;
 	
 	dialogCallback5 = new Callback(getClass(), "dialogProc", 5);
-	int /*long*/ dialogProc5 = dialogCallback5.getAddress();
+	long /*int*/ dialogProc5 = dialogCallback5.getAddress();
 	if (dialogProc5 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);	
 	
 	byte[] types = {'*','\0'};
 	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
-	int /*long*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
+	long /*int*/ cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_panelDidEnd_returnCode_contextInfo_, dialogProc5, "@:@i@");
 	OS.objc_registerClassPair(cls);
 }
 
-void panelDidEnd_returnCode_contextInfo(int /*long*/ id, int /*long*/ sel, int /*long*/ alert, int /*long*/ returnCode, int /*long*/ contextInfo) {
+void panelDidEnd_returnCode_contextInfo(long /*int*/ id, long /*int*/ sel, long /*int*/ alert, long /*int*/ returnCode, long /*int*/ contextInfo) {
 	this.returnCode = (int)/*64*/returnCode;
 }
 

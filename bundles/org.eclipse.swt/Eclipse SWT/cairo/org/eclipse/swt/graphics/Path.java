@@ -49,7 +49,7 @@ public class Path extends Resource {
 	 * 
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public int /*long*/ handle;
+	public long /*int*/ handle;
 	
 	boolean moved, closed = true;
 
@@ -78,7 +78,7 @@ public class Path extends Resource {
 public Path (Device device) {
 	super(device);
 	this.device.checkCairo();
-	int /*long*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, 1, 1);
+	long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, 1, 1);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	handle = Cairo.cairo_create(surface);
 	Cairo.cairo_surface_destroy(surface);
@@ -121,12 +121,12 @@ public Path (Device device, Path path, float flatness) {
 	super(device);
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int /*long*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, 1, 1);
+	long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, 1, 1);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	handle = Cairo.cairo_create(surface);
 	Cairo.cairo_surface_destroy(surface);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int /*long*/ copy;
+	long /*int*/ copy;
 	flatness = Math.max(0, flatness);
 	if (flatness == 0) {
 		copy = Cairo.cairo_copy_path(path.handle);		
@@ -251,7 +251,7 @@ public void addPath(Path path) {
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	moved = false;
-	int /*long*/ copy = Cairo.cairo_copy_path(path.handle);
+	long /*int*/ copy = Cairo.cairo_copy_path(path.handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_append_path(handle, copy);
 	Cairo.cairo_path_destroy(copy);
@@ -350,8 +350,8 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	gc.initCairo();
 	gc.checkGC(GC.LINE_CAP | GC.LINE_JOIN | GC.LINE_STYLE | GC.LINE_WIDTH);
 	boolean result = false;
-	int /*long*/ cairo = gc.data.cairo;
-	int /*long*/ copy = Cairo.cairo_copy_path(handle);
+	long /*int*/ cairo = gc.data.cairo;
+	long /*int*/ copy = Cairo.cairo_copy_path(handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_append_path(cairo, copy);
 	Cairo.cairo_path_destroy(copy);
@@ -409,7 +409,7 @@ public void getBounds(float[] bounds) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (bounds.length < 4) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int /*long*/ copy = Cairo.cairo_copy_path(handle);
+	long /*int*/ copy = Cairo.cairo_copy_path(handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	cairo_path_t path = new cairo_path_t();
 	Cairo.memmove(path, copy, cairo_path_t.sizeof);
@@ -421,7 +421,7 @@ public void getBounds(float[] bounds) {
 		double[] points = new double[6]; 
 		cairo_path_data_t data = new cairo_path_data_t();
 		while (i < path.num_data) {
-			int /*long*/ offset = path.data + i * cairo_path_data_t.sizeof;
+			long /*int*/ offset = path.data + i * cairo_path_data_t.sizeof;
 			Cairo.memmove(data, offset, cairo_path_data_t.sizeof);
 			switch (data.type) {
 				case Cairo.CAIRO_PATH_MOVE_TO:
@@ -502,7 +502,7 @@ public void getCurrentPoint(float[] point) {
  */
 public PathData getPathData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int /*long*/ copy = Cairo.cairo_copy_path(handle);
+	long /*int*/ copy = Cairo.cairo_copy_path(handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	cairo_path_t path = new cairo_path_t();
 	Cairo.memmove(path, copy, cairo_path_t.sizeof);
@@ -514,7 +514,7 @@ public PathData getPathData() {
 		double[] points = new double[6]; 
 		cairo_path_data_t data = new cairo_path_data_t();
 		while (i < path.num_data) {
-			int /*long*/ offset = path.data + i * cairo_path_data_t.sizeof;
+			long /*int*/ offset = path.data + i * cairo_path_data_t.sizeof;
 			Cairo.memmove(data, offset, cairo_path_data_t.sizeof);
 			switch (data.type) {
 				case Cairo.CAIRO_PATH_MOVE_TO:

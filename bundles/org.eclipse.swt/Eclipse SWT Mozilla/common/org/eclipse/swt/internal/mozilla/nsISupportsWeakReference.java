@@ -37,11 +37,11 @@ public class nsISupportsWeakReference extends nsISupports {
 	public static final nsID NS_ISUPPORTSWEAKREFERENCE_IID =
 		new nsID(NS_ISUPPORTSWEAKREFERENCE_IID_STR);
 
-	public nsISupportsWeakReference(int /*long*/ address) {
+	public nsISupportsWeakReference(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetWeakReference(int /*long*/[] _retval) {
+	public int GetWeakReference(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), _retval);
 	}
 }

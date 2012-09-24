@@ -37,7 +37,7 @@ public class nsIWebNavigation extends nsISupports {
 	public static final nsID NS_IWEBNAVIGATION_IID =
 		new nsID(NS_IWEBNAVIGATION_IID_STR);
 
-	public nsIWebNavigation(int /*long*/ address) {
+	public nsIWebNavigation(long /*int*/ address) {
 		super(address);
 	}
 
@@ -71,7 +71,7 @@ public class nsIWebNavigation extends nsISupports {
 	public static final int LOAD_FLAGS_BYPASS_PROXY = 512;
 	public static final int LOAD_FLAGS_CHARSET_CHANGE = 1024;
 
-	public int LoadURI(char[] uri, int loadFlags, int /*long*/ referrer, int /*long*/ postData, int /*long*/ headers) {
+	public int LoadURI(char[] uri, int loadFlags, long /*int*/ referrer, long /*int*/ postData, long /*int*/ headers) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), uri, loadFlags, referrer, postData, headers);
 	}
 
@@ -87,23 +87,23 @@ public class nsIWebNavigation extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), stopFlags);
 	}
 
-	public int GetDocument(int /*long*/[] aDocument) {
+	public int GetDocument(long /*int*/[] aDocument) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aDocument);
 	}
 
-	public int GetCurrentURI(int /*long*/[] aCurrentURI) {
+	public int GetCurrentURI(long /*int*/[] aCurrentURI) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aCurrentURI);
 	}
 
-	public int GetReferringURI(int /*long*/[] aReferringURI) {
+	public int GetReferringURI(long /*int*/[] aReferringURI) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aReferringURI);
 	}
 
-	public int GetSessionHistory(int /*long*/[] aSessionHistory) {
+	public int GetSessionHistory(long /*int*/[] aSessionHistory) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), aSessionHistory);
 	}
 
-	public int SetSessionHistory(int /*long*/ aSessionHistory) {
+	public int SetSessionHistory(long /*int*/ aSessionHistory) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), aSessionHistory);
 	}
 }

@@ -16,7 +16,7 @@ public NSCharacterSet() {
 	super();
 }
 
-public NSCharacterSet(int /*long*/ id) {
+public NSCharacterSet(long /*int*/ id) {
 	super(id);
 }
 
@@ -29,7 +29,7 @@ public boolean characterIsMember(short aCharacter) {
 }
 
 public static id decimalDigitCharacterSet() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSCharacterSet, OS.sel_decimalDigitCharacterSet);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSCharacterSet, OS.sel_decimalDigitCharacterSet);
 	return result != 0 ? new id(result) : null;
 }
 

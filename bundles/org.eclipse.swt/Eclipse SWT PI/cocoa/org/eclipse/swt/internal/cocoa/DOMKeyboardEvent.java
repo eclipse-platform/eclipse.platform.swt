@@ -16,7 +16,7 @@ public DOMKeyboardEvent() {
 	super();
 }
 
-public DOMKeyboardEvent(int /*long*/ id) {
+public DOMKeyboardEvent(long /*int*/ id) {
 	super(id);
 }
 

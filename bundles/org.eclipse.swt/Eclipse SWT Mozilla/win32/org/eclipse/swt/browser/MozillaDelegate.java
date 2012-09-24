@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.*;
 class MozillaDelegate {
 	Browser browser;
 	Vector childWindows = new Vector (9);
-	static int /*long*/ MozillaProc;
+	static long /*int*/ MozillaProc;
 	static Callback SubclassProc;
 	
 MozillaDelegate (Browser browser) {
@@ -30,7 +30,7 @@ MozillaDelegate (Browser browser) {
 	this.browser = browser;
 }
 
-static Browser findBrowser (int /*long*/ handle) {
+static Browser findBrowser (long /*int*/ handle) {
 	Display display = Display.getCurrent ();
 	return (Browser)display.findWidget (handle);
 }
@@ -106,7 +106,7 @@ static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 	return bytes;
 }
 
-static int /*long*/ windowProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wParam, int /*long*/ lParam) {
+static long /*int*/ windowProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wParam, long /*int*/ lParam) {
 	switch ((int)/*64*/msg) {
 		case OS.WM_ERASEBKGND:
 			RECT rect = new RECT ();
@@ -118,7 +118,7 @@ static int /*long*/ windowProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*
 }
 
 void addWindowSubclass () {
-	int /*long*/ hwndChild = OS.GetWindow (browser.handle, OS.GW_CHILD);
+	long /*int*/ hwndChild = OS.GetWindow (browser.handle, OS.GW_CHILD);
 	if (SubclassProc == null) {
 		SubclassProc = new Callback (MozillaDelegate.class, "windowProc", 4); //$NON-NLS-1$
 		MozillaProc = OS.GetWindowLongPtr (hwndChild, OS.GWL_WNDPROC);
@@ -130,11 +130,11 @@ int createBaseWindow (nsIBaseWindow baseWindow) {
 	return baseWindow.Create ();
 }
 
-int /*long*/ getHandle () {
+long /*int*/ getHandle () {
 	return browser.handle;
 }
 
-int /*long*/ getSiteWindow () {
+long /*int*/ getSiteWindow () {
 	/*
 	* As of XULRunner 4, XULRunner's printing facilities on Windows destroy
 	* the HWND that is returned from here once the print dialog is dismissed
@@ -184,7 +184,7 @@ void init () {
 			public void handleEvent (Event event) {
 				if ((event.detail & (SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS)) == 0) return;
 
-				int /*long*/[] result = new int /*long*/[1];
+				long /*int*/[] result = new long /*int*/[1];
 				int rc = XPCOM.NS_GetServiceManager (result);
 				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 				if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
@@ -220,7 +220,7 @@ void init () {
 	}
 }
 
-void onDispose (int /*long*/ embedHandle) {
+void onDispose (long /*int*/ embedHandle) {
 	removeWindowSubclass ();
 	childWindows = null;
 	browser = null;
@@ -228,7 +228,7 @@ void onDispose (int /*long*/ embedHandle) {
 
 void removeWindowSubclass () {
 	if (SubclassProc == null) return;
-	int /*long*/ hwndChild = OS.GetWindow (browser.handle, OS.GW_CHILD);
+	long /*int*/ hwndChild = OS.GetWindow (browser.handle, OS.GW_CHILD);
 	OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, MozillaProc);
 }
 
@@ -236,6 +236,6 @@ boolean sendTraverse () {
 	return false;
 }
 
-void setSize (int /*long*/ embedHandle, int width, int height) {
+void setSize (long /*int*/ embedHandle, int width, int height) {
 }
 }

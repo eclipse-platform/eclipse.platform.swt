@@ -144,46 +144,46 @@ public IME getIME () {
 	return ime;
 }
 
-int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (ime != null) {
-		int /*long*/ result = ime.gtk_button_press_event (widget, event);
+		long /*int*/ result = ime.gtk_button_press_event (widget, event);
 		if (result != 0) return result;
 	}
 	return  super.gtk_button_press_event (widget, event);
 }
 
-int /*long*/ gtk_commit (int /*long*/ imcontext, int /*long*/ text) {
+long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ text) {
 	if (ime != null) {
-		int /*long*/ result = ime.gtk_commit (imcontext, text);
+		long /*int*/ result = ime.gtk_commit (imcontext, text);
 		if (result != 0) return result;
 	}
 	return super.gtk_commit (imcontext, text);
 }
 
-int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 	if ((state & OBSCURED) != 0) return 0;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	int /*long*/ result = super.gtk_expose_event (widget, event);
+	long /*int*/ result = super.gtk_expose_event (widget, event);
 	if (isFocus) caret.setFocus ();
 	return result;
 }
 
-int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_focus_in_event (widget, event);
+long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
+	long /*int*/ result = super.gtk_focus_in_event (widget, event);
 	if (caret != null) caret.setFocus ();
 	return result;
 }
 
-int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_focus_out_event (widget, event);
+long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
+	long /*int*/ result = super.gtk_focus_out_event (widget, event);
 	if (caret != null) caret.killFocus ();
 	return result;
 }
 
-int /*long*/ gtk_preedit_changed (int /*long*/ imcontext) {
+long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
 	if (ime != null) {
-		int /*long*/ result = ime.gtk_preedit_changed (imcontext);
+		long /*int*/ result = ime.gtk_preedit_changed (imcontext);
 		if (result != 0) return result;
 	}
 	return super.gtk_preedit_changed (imcontext);
@@ -249,16 +249,16 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (!isVisible ()) return;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	int /*long*/ window = paintWindow ();
-	int /*long*/ visibleRegion = OS.gdk_drawable_get_visible_region (window);
+	long /*int*/ window = paintWindow ();
+	long /*int*/ visibleRegion = OS.gdk_drawable_get_visible_region (window);
 	GdkRectangle srcRect = new GdkRectangle ();
 	srcRect.x = x;
 	srcRect.y = y;
 	srcRect.width = width;
 	srcRect.height = height;
-	int /*long*/ copyRegion = OS.gdk_region_rectangle (srcRect);
+	long /*int*/ copyRegion = OS.gdk_region_rectangle (srcRect);
 	OS.gdk_region_intersect(copyRegion, visibleRegion);
-	int /*long*/ invalidateRegion = OS.gdk_region_rectangle (srcRect);	
+	long /*int*/ invalidateRegion = OS.gdk_region_rectangle (srcRect);	
 	OS.gdk_region_subtract (invalidateRegion, visibleRegion);
 	OS.gdk_region_offset (invalidateRegion, deltaX, deltaY);
 	GdkRectangle copyRect = new GdkRectangle();
@@ -276,7 +276,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 //		gc.copyArea (x, y, width, height, destX, destY);
 //		gc.dispose ();
 		//TODO: Use Cairo
-		int /*long*/ gdkGC = OS.gdk_gc_new (window);
+		long /*int*/ gdkGC = OS.gdk_gc_new (window);
 		OS.gdk_gc_set_exposures (gdkGC, true);
 		OS.gdk_draw_drawable (window, gdkGC, window, copyRect.x, copyRect.y, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
 		OS.g_object_unref (gdkGC);
@@ -398,7 +398,7 @@ public void setIME (IME ime) {
 }
 	
 void updateCaret () {
-	int /*long*/ imHandle = imHandle ();
+	long /*int*/ imHandle = imHandle ();
 	if (imHandle == 0) return;
 	GdkRectangle rect = new GdkRectangle ();
 	rect.x = caret.x;

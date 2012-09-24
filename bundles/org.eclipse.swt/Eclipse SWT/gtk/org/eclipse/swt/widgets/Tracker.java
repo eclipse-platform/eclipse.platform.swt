@@ -42,7 +42,7 @@ import org.eclipse.swt.events.*;
 public class Tracker extends Widget {
 	Composite parent;
 	Cursor cursor;
-	int /*long*/ lastCursor, window;
+	long /*int*/ lastCursor, window;
 	boolean tracking, cancelled, grabbed, stippled;
 	Rectangle [] rectangles = new Rectangle [0], proportions = rectangles;
 	Rectangle bounds;
@@ -306,15 +306,15 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 }
 
 void drawRectangles (Rectangle [] rects) {
-	int /*long*/ window = OS.gdk_get_default_root_window();
+	long /*int*/ window = OS.gdk_get_default_root_window();
 	if (parent != null) {
 		window = gtk_widget_get_window (parent.paintHandle());
 	} 
 	if (window == 0) return;
 	//TODO: Use Cairo
-	int /*long*/ gc = OS.gdk_gc_new (window);
+	long /*int*/ gc = OS.gdk_gc_new (window);
 	if (gc == 0) return;
-	int /*long*/ colormap = OS.gdk_colormap_get_system ();
+	long /*int*/ colormap = OS.gdk_colormap_get_system ();
 	GdkColor color = new GdkColor ();
 	OS.gdk_color_white (colormap, color);
 	OS.gdk_gc_set_foreground (gc, color);
@@ -367,17 +367,17 @@ public boolean getStippled () {
 }
 
 boolean grab () {
-	int /*long*/ cursor = this.cursor != null ? this.cursor.handle : 0;
+	long /*int*/ cursor = this.cursor != null ? this.cursor.handle : 0;
 	int result = gdk_pointer_grab (window, OS.GDK_OWNERSHIP_NONE, false, OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK, window, cursor, OS.GDK_CURRENT_TIME);
 	return result == OS.GDK_GRAB_SUCCESS;
 }
 
-int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
 	return gtk_mouse (OS.GDK_BUTTON_RELEASE, widget, event);
 }
 
-int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
-	int /*long*/ result = super.gtk_key_press_event (widget, eventPtr);
+long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
+	long /*int*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
 	GdkEventKey keyEvent = new GdkEventKey ();
 	OS.memmove (keyEvent, eventPtr, GdkEventKey.sizeof);
@@ -511,8 +511,8 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	return result;
 }
 
-int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr) {
-	int /*long*/ cursor = this.cursor != null ? this.cursor.handle : 0;
+long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr) {
+	long /*int*/ cursor = this.cursor != null ? this.cursor.handle : 0;
 	if (cursor != lastCursor) {
 		ungrab ();
 		grabbed = grab ();
@@ -521,7 +521,7 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr
 	return gtk_mouse (OS.GDK_MOTION_NOTIFY, widget, eventPtr);
 }
 
-int /*long*/ gtk_mouse (int eventType, int /*long*/ widget, int /*long*/ eventPtr) {
+long /*int*/ gtk_mouse (int eventType, long /*int*/ widget, long /*int*/ eventPtr) {
 	int [] newX = new int [1], newY = new int [1];
 	OS.gdk_window_get_pointer (window, newX, newY, null);
 	if (oldX != newX [0] || oldY != newY [0]) {
@@ -712,7 +712,7 @@ public boolean open () {
 	Display display = this.display;
 	while (tracking) {
 		if (parent != null && parent.isDisposed ()) break;
-		int /*long*/ eventPtr;
+		long /*int*/ eventPtr;
 		while (true) {
 			display.runSkin ();
 			display.runDeferredLayouts ();
@@ -725,7 +725,7 @@ public boolean open () {
 			}
 		}
 		OS.memmove (gdkEvent, eventPtr, GdkEvent.sizeof);
-		int /*long*/ widget = OS.gtk_get_event_widget (eventPtr);
+		long /*int*/ widget = OS.gtk_get_event_widget (eventPtr);
 		switch (gdkEvent.type) {
 			case OS.GDK_MOTION_NOTIFY: gtk_motion_notify_event (widget, eventPtr); break;
 			case OS.GDK_BUTTON_RELEASE: gtk_button_release_event (widget, eventPtr); break;

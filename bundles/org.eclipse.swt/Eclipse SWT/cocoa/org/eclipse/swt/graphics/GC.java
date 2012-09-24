@@ -75,8 +75,8 @@ public final class GC extends Resource {
 	CGPathElement element;
 	int count, typeCount;
 	byte[] types;
-	float /*double*/[] points;
-	float /*double*/ [] point;
+	double /*float*/[] points;
+	double /*float*/ [] point;
 	
 	static final int TAB_COUNT = 32;
 
@@ -168,7 +168,7 @@ public GC(Drawable drawable, int style) {
 	try {
 		GCData data = new GCData();
 		data.style = checkStyle(style);
-		int /*long*/ contextId = drawable.internal_new_GC(data);
+		long /*int*/ contextId = drawable.internal_new_GC(data);
 		Device device = data.device;
 		if (device == null) device = Device.getDevice();
 		if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -204,13 +204,13 @@ static int checkStyle (int style) {
  */
 public static GC cocoa_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
-	int /*long*/ context = drawable.internal_new_GC(data);
+	long /*int*/ context = drawable.internal_new_GC(data);
 	gc.device = data.device;
 	gc.init(drawable, data, context);
 	return gc;
 }
 
-int /*long*/ applierFunc(int /*long*/ info, int /*long*/ elementPtr) {
+long /*int*/ applierFunc(long /*int*/ info, long /*int*/ elementPtr) {
 	OS.memmove(element, elementPtr, CGPathElement.sizeof);
 	int type = 0, length = 1;
 	switch (element.type) {
@@ -252,7 +252,7 @@ NSAutoreleasePool checkGC (int mask) {
 				NSRect rect = view.convertRect_toView_(view.bounds(), null);
 				if (data.paintRect == null) {
 					transform.translateXBy(rect.x, rect.y + rect.height);
-					float /*double*/ userSpaceScaleFactor = view.window().userSpaceScaleFactor();
+					double /*float*/ userSpaceScaleFactor = view.window().userSpaceScaleFactor();
 					transform.scaleXBy(userSpaceScaleFactor, userSpaceScaleFactor);
 				} else {
 					transform.translateXBy(0, rect.height);
@@ -288,7 +288,7 @@ NSAutoreleasePool checkGC (int mask) {
 		if (pattern != null) {
 			if (pattern.color != null) pattern.color.setStroke();
 		} else {
-			float /*double*/ [] color = data.foreground;
+			double /*float*/ [] color = data.foreground;
 			if (data.fg != null) data.fg.release();
 			NSColor fg = data.fg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
 			fg.retain();
@@ -300,7 +300,7 @@ NSAutoreleasePool checkGC (int mask) {
 		if (pattern != null) {
 			if (pattern.color != null) pattern.color.setFill();
 		} else {
-			float /*double*/ [] color = data.foreground;
+			double /*float*/ [] color = data.foreground;
 			if (data.fg != null) data.fg.release();
 			NSColor fg = data.fg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
 			fg.retain();
@@ -313,7 +313,7 @@ NSAutoreleasePool checkGC (int mask) {
 		if (pattern != null) {
 			if (pattern.color != null) pattern.color.setFill();
 		} else {
-			float /*double*/ [] color = data.background;
+			double /*float*/ [] color = data.background;
 			if (data.bg != null) data.bg.release();
 			NSColor bg = data.bg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
 			bg.retain();
@@ -344,7 +344,7 @@ NSAutoreleasePool checkGC (int mask) {
 			case SWT.LINE_CUSTOM: dashes = data.lineDashes; break;
 		}
 		if (dashes != null) {
-			float /*double*/[] lengths = new float /*double*/[dashes.length];
+			double /*float*/[] lengths = new double /*float*/[dashes.length];
 			for (int i = 0; i < lengths.length; i++) {
 				lengths[i] = width == 0 || data.lineStyle == SWT.LINE_CUSTOM ? dashes[i] : dashes[i] * width;
 			}
@@ -381,9 +381,9 @@ NSAutoreleasePool checkGC (int mask) {
 		if (data.transform != null) {
 			size = data.transform.transformSize(size);
 		}
-		float /*double*/ scaling = size.width;
+		double /*float*/ scaling = size.width;
 		if (scaling < 0) scaling = -scaling;
-		float /*double*/ strokeWidth = data.lineWidth * scaling;
+		double /*float*/ strokeWidth = data.lineWidth * scaling;
 		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
 			data.drawXOffset = 0.5f / scaling;
 		}
@@ -467,7 +467,7 @@ public void copyArea(Image image, int x, int y) {
 			NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(imageRep);
 			NSGraphicsContext.static_saveGraphicsState();
 			NSGraphicsContext.setCurrentContext(context);
-			int /*long*/ contextID = OS.objc_msgSend(NSApplication.sharedApplication().id, OS.sel_contextID);
+			long /*int*/ contextID = OS.objc_msgSend(NSApplication.sharedApplication().id, OS.sel_contextID);
 			OS.CGContextCopyWindowContentsToRect(context.graphicsPort(), destRect, contextID, window.windowNumber(), srcRect);
 			NSGraphicsContext.static_restoreGraphicsState();
 			return;
@@ -481,35 +481,35 @@ public void copyArea(Image image, int x, int y) {
 			rect.size.width = size.width;
 			rect.size.height = size.height;
 			int displayCount = 16;
-			int /*long*/ displays = OS.malloc(4 * displayCount), countPtr = OS.malloc(4);
+			long /*int*/ displays = OS.malloc(4 * displayCount), countPtr = OS.malloc(4);
 			if (OS.CGGetDisplaysWithRect(rect, displayCount, displays, countPtr) != 0) return;
 			int[] count = new int[1], display = new int[1];
 			OS.memmove(count, countPtr, OS.PTR_SIZEOF);
 			for (int i = 0; i < count[0]; i++) {
 				OS.memmove(display, displays + (i * 4), 4);
 				OS.CGDisplayBounds(display[0], rect);
-				int /*long*/ srcImage = 0;
-				int /*long*/ address = OS.VERSION >= 0x1070 ? 0 : OS.CGDisplayBaseAddress(display[0]);
+				long /*int*/ srcImage = 0;
+				long /*int*/ address = OS.VERSION >= 0x1070 ? 0 : OS.CGDisplayBaseAddress(display[0]);
 				if (address != 0) {
-					int /*long*/ width = OS.CGDisplayPixelsWide(display[0]);
-					int /*long*/ height = OS.CGDisplayPixelsHigh(display[0]);
-					int /*long*/ bpr = OS.CGDisplayBytesPerRow(display[0]);
-					int /*long*/ bpp = OS.CGDisplayBitsPerPixel(display[0]);
-					int /*long*/ bps = OS.CGDisplayBitsPerSample(display[0]);
+					long /*int*/ width = OS.CGDisplayPixelsWide(display[0]);
+					long /*int*/ height = OS.CGDisplayPixelsHigh(display[0]);
+					long /*int*/ bpr = OS.CGDisplayBytesPerRow(display[0]);
+					long /*int*/ bpp = OS.CGDisplayBitsPerPixel(display[0]);
+					long /*int*/ bps = OS.CGDisplayBitsPerSample(display[0]);
 					int bitmapInfo = OS.kCGImageAlphaNoneSkipFirst;
 					switch ((int)/*63*/bpp) {
 						case 16: bitmapInfo |= OS.kCGBitmapByteOrder16Host; break;
 						case 32: bitmapInfo |= OS.kCGBitmapByteOrder32Host; break;
 					}
 					if (OS.__BIG_ENDIAN__() && OS.VERSION >= 0x1040) {
-						int /*long*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
-						int /*long*/ context = OS.CGBitmapContextCreate(address, width, height, bps, bpr, colorspace, bitmapInfo);
+						long /*int*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
+						long /*int*/ context = OS.CGBitmapContextCreate(address, width, height, bps, bpr, colorspace, bitmapInfo);
 						OS.CGColorSpaceRelease(colorspace);
 						srcImage = OS.CGBitmapContextCreateImage(context);
 						OS.CGContextRelease(context);
 					} else {
-						int /*long*/ provider = OS.CGDataProviderCreateWithData(0, address, bpr * height, 0);
-						int /*long*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
+						long /*int*/ provider = OS.CGDataProviderCreateWithData(0, address, bpr * height, 0);
+						long /*int*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
 						srcImage = OS.CGImageCreate(width, height, bps, bpp, bpr, colorspace, bitmapInfo, provider, 0, true, 0);
 						OS.CGColorSpaceRelease(colorspace);
 						OS.CGDataProviderRelease(provider);
@@ -530,23 +530,23 @@ public void copyArea(Image image, int x, int y) {
 	}
 }
 
-void copyArea (Image image, int x, int y, int /*long*/ srcImage) {
+void copyArea (Image image, int x, int y, long /*int*/ srcImage) {
 	if (srcImage == 0) return;
 	NSBitmapImageRep rep = image.getRepresentation();
-	int /*long*/ bpc = rep.bitsPerSample();
-	int /*long*/ width = rep.pixelsWide();
-	int /*long*/ height = rep.pixelsHigh();
-	int /*long*/ bpr = rep.bytesPerRow();
-	int /*long*/ data = rep.bitmapData();
-	int /*long*/ format = rep.bitmapFormat();
+	long /*int*/ bpc = rep.bitsPerSample();
+	long /*int*/ width = rep.pixelsWide();
+	long /*int*/ height = rep.pixelsHigh();
+	long /*int*/ bpr = rep.bytesPerRow();
+	long /*int*/ data = rep.bitmapData();
+	long /*int*/ format = rep.bitmapFormat();
 	int alphaInfo;
 	if (rep.hasAlpha()) {
 		alphaInfo = (format & OS.NSAlphaFirstBitmapFormat) != 0 ? OS.kCGImageAlphaFirst : OS.kCGImageAlphaLast;
 	} else {
 		alphaInfo = (format & OS.NSAlphaFirstBitmapFormat) != 0 ? OS.kCGImageAlphaNoneSkipFirst : OS.kCGImageAlphaNoneSkipLast;
 	}
-	int /*long*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
-	int /*long*/ context = OS.CGBitmapContextCreate(data, width, height, bpc, bpr, colorspace, alphaInfo);
+	long /*int*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
+	long /*int*/ context = OS.CGBitmapContextCreate(data, width, height, bpc, bpr, colorspace, alphaInfo);
 	OS.CGColorSpaceRelease(colorspace);
 	if (context != 0) {
 	 	CGRect rect = new CGRect();
@@ -712,14 +712,14 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	}
 }
 
-static int /*long*/ createCGPathRef(NSBezierPath nsPath) {
-	int /*long*/ count = nsPath.elementCount();
+static long /*int*/ createCGPathRef(NSBezierPath nsPath) {
+	long /*int*/ count = nsPath.elementCount();
 	if (count > 0) {
-		int /*long*/ cgPath = OS.CGPathCreateMutable();
+		long /*int*/ cgPath = OS.CGPathCreateMutable();
 		if (cgPath == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int /*long*/ points = OS.malloc(NSPoint.sizeof * 3);
+		long /*int*/ points = OS.malloc(NSPoint.sizeof * 3);
 		if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		float /*double*/ [] pt = new float /*double*/ [6];
+		double /*float*/ [] pt = new double /*float*/ [6];
 		for (int i = 0; i < count; i++) {
 			int element = (int)/*64*/nsPath.elementAtIndex(i, points);
 			switch (element) {
@@ -777,7 +777,7 @@ NSAttributedString createString(String string, int flags, boolean draw) {
 		} else {
 			NSColor fg = data.fg;
 			if (fg == null) {
-				float /*double*/ [] color = data.foreground;
+				double /*float*/ [] color = data.foreground;
 				fg = data.fg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
 				fg.retain();
 			}
@@ -822,16 +822,16 @@ NSAttributedString createString(String string, int flags, boolean draw) {
 	return attribStr;
 }
 
-NSBezierPath createNSBezierPath (int /*long*/  cgPath) {
+NSBezierPath createNSBezierPath (long /*int*/  cgPath) {
 	Callback callback = new Callback(this, "applierFunc", 2);
-	int /*long*/  proc = callback.getAddress();
+	long /*int*/  proc = callback.getAddress();
 	if (proc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	count = typeCount = 0;
 	element = new CGPathElement();
 	OS.CGPathApply(cgPath, 0, proc);
 	types = new byte[typeCount];
-	points = new float /*double*/ [count];
-	point = new float /*double*/ [6];
+	points = new double /*float*/ [count];
+	point = new double /*float*/ [6];
 	count = typeCount = 0;
 	OS.CGPathApply(cgPath, 0, proc);
 	callback.dispose();
@@ -860,18 +860,18 @@ NSBezierPath createNSBezierPath (int /*long*/  cgPath) {
 				bezierPath.curveToPoint(nsPoint, nsPoint2, nsPoint3);
 				break;
 			case SWT.PATH_QUAD_TO:
-				float /*double*/ currentX = nsPoint.x;
-				float /*double*/ currentY = nsPoint.y;
+				double /*float*/ currentX = nsPoint.x;
+				double /*float*/ currentY = nsPoint.y;
 				nsPoint2.x = points[j++];
 				nsPoint2.y = points[j++];
 				nsPoint.x = points[j++];
 				nsPoint.y = points[j++];
-				float /*double*/ x0 = currentX;
-				float /*double*/ y0 = currentY;
-				float /*double*/ cx1 = x0 + 2 * (nsPoint2.x - x0) / 3;
-				float /*double*/ cy1 = y0 + 2 * (nsPoint2.y - y0) / 3;
-				float /*double*/ cx2 = cx1 + (nsPoint.x - x0) / 3;
-				float /*double*/ cy2 = cy1 + (nsPoint.y - y0) / 3;
+				double /*float*/ x0 = currentX;
+				double /*float*/ y0 = currentY;
+				double /*float*/ cx1 = x0 + 2 * (nsPoint2.x - x0) / 3;
+				double /*float*/ cy1 = y0 + 2 * (nsPoint2.y - y0) / 3;
+				double /*float*/ cx2 = cx1 + (nsPoint.x - x0) / 3;
+				double /*float*/ cy2 = cy1 + (nsPoint.y - y0) / 3;
 				nsPoint2.x = cx1;
 				nsPoint2.y = cy1;
 				nsPoint3.x = cx2;
@@ -970,7 +970,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 	try {
 		handle.saveGraphicsState();
 		NSAffineTransform transform = NSAffineTransform.transform();
-		float /*double*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+		double /*float*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
 		transform.translateXBy(x + xOffset + width / 2f, y + yOffset + height / 2f);
 		transform.scaleXBy(width / 2f, height / 2f);
 		NSBezierPath path = data.path;
@@ -1341,7 +1341,7 @@ public void drawPolygon(int[] pointArray) {
 	if (pointArray.length < 4) return;
 	NSAutoreleasePool pool = checkGC(DRAW);
 	try {
-		float /*double*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+		double /*float*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
 		NSBezierPath path = data.path;
 		NSPoint pt = new NSPoint();
 		pt.x = pointArray[0] + xOffset;
@@ -1390,7 +1390,7 @@ public void drawPolyline(int[] pointArray) {
 	if (pointArray.length < 4) return;
 	NSAutoreleasePool pool = checkGC(DRAW);
 	try {
-		float /*double*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+		double /*float*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
 		NSBezierPath path = data.path;
 		NSPoint pt = new NSPoint();
 		pt.x = pointArray[0] + xOffset;
@@ -1699,7 +1699,7 @@ public void drawText (String string, int x, int y, int flags) {
 			} else {
 				NSColor bg = data.bg;
 				if (bg == null) {
-					float /*double*/ [] color = data.background;
+					double /*float*/ [] color = data.background;
 					bg = data.bg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
 					bg.retain();
 				}
@@ -1777,7 +1777,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 	try {
 		handle.saveGraphicsState();
 		NSAffineTransform transform = NSAffineTransform.transform();
-		float /*double*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+		double /*float*/ xOffset = data.drawXOffset, yOffset = data.drawYOffset;
 		transform.translateXBy(x + xOffset + width / 2f, y + yOffset + height / 2f);
 		transform.scaleXBy(width / 2f, height / 2f);
 		NSBezierPath path = data.path;
@@ -1924,16 +1924,16 @@ void fillPattern(NSBezierPath path, Pattern pattern) {
 	NSPoint end = new NSPoint();
 	end.x = pattern.pt2.x;
 	end.y = pattern.pt2.y;
-	float /*double*/ difx = end.x - start.x;
-	float /*double*/ dify = end.y - start.y;
+	double /*float*/ difx = end.x - start.x;
+	double /*float*/ dify = end.y - start.y;
 	if (difx == 0 && dify == 0) {
-		float /*double*/ [] color = pattern.color1;		
+		double /*float*/ [] color = pattern.color1;		
 		NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f).setFill();		
 		path.fill();
 		handle.restoreGraphicsState();
 		return;
 	}
-	float /*double*/ startx, starty, endx, endy;
+	double /*float*/ startx, starty, endx, endy;
 	if (difx == 0 || dify == 0) {
 		startx = bounds.x;
 		starty = bounds.y;
@@ -1946,13 +1946,13 @@ void fillPattern(NSBezierPath path, Pattern pattern) {
 			endy = bounds.y;
 		}
 	} else {
-		float /*double*/ m = (end.y-start.y)/(end.x - start.x);
-		float /*double*/ b = end.y - (m * end.x);
-		float /*double*/ m2 = -1/m; //perpendicular slope
-		float /*double*/ b2 = bounds.y - (m2 * bounds.x);
+		double /*float*/ m = (end.y-start.y)/(end.x - start.x);
+		double /*float*/ b = end.y - (m * end.x);
+		double /*float*/ m2 = -1/m; //perpendicular slope
+		double /*float*/ b2 = bounds.y - (m2 * bounds.x);
 		startx = endx = (b - b2) / (m2 - m);
 		b2 = (bounds.y + bounds.height) - (m2 * bounds.x);
-		float /*double*/ x2 = (b - b2) / (m2 - m);
+		double /*float*/ x2 = (b - b2) / (m2 - m);
 		startx = difx > 0 ? Math.min(startx, x2) : Math.max(startx, x2);
 		endx = difx < 0 ? Math.min(endx, x2) : Math.max(endx, x2);
 		b2 = bounds.y - (m2 * (bounds.x + bounds.width));
@@ -2202,8 +2202,8 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 
 void strokePattern(NSBezierPath path, Pattern pattern) {
 	handle.saveGraphicsState();
-	int /*long*/ cgPath = createCGPathRef(path);
-	int /*long*/ cgContext = handle.graphicsPort();
+	long /*int*/ cgPath = createCGPathRef(path);
+	long /*int*/ cgContext = handle.graphicsPort();
 	OS.CGContextSaveGState(cgContext);
 	initCGContext(cgContext);
 	OS.CGContextAddPath(cgContext, cgPath);
@@ -2476,7 +2476,7 @@ public void getClipping(Region region) {
 			int pointCount = 0;
 			Region clipRgn = new Region(device);
 			int[] pointArray = new int[count * 2];
-			int /*long*/ points = OS.malloc(NSPoint.sizeof);
+			long /*int*/ points = OS.malloc(NSPoint.sizeof);
 			if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			NSPoint pt = new NSPoint();
 			for (int i = 0; i < count; i++) {
@@ -2898,7 +2898,7 @@ public int hashCode() {
 	return handle != null ? (int)/*64*/handle.id : 0;
 }
 
-void init(Drawable drawable, GCData data, int /*long*/ context) {
+void init(Drawable drawable, GCData data, long /*int*/ context) {
 	if (data.foreground != null) data.state &= ~(FOREGROUND | FOREGROUND_FILL);
 	if (data.background != null)  data.state &= ~BACKGROUND;
 	if (data.font != null) data.state &= ~FONT;
@@ -2916,7 +2916,7 @@ void init(Drawable drawable, GCData data, int /*long*/ context) {
 	data.path.retain();
 }
 
-void initCGContext(int /*long*/ cgContext) {
+void initCGContext(long /*int*/ cgContext) {
 	int state = data.state;
 	if ((state & LINE_WIDTH) != 0) {
 		OS.CGContextSetLineWidth(cgContext, data.lineWidth == 0 ?  1 : data.lineWidth);

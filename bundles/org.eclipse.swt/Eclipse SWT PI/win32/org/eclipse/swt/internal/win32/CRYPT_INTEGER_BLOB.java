@@ -14,7 +14,7 @@ package org.eclipse.swt.internal.win32;
 public class CRYPT_INTEGER_BLOB {
 	public int cbData;
 	/** @field cast=(BYTE *) */
-	public int /*long*/ pbData;
+	public long /*int*/ pbData;
 
 	static final public int sizeof = OS.CRYPT_INTEGER_BLOB_sizeof ();
 }

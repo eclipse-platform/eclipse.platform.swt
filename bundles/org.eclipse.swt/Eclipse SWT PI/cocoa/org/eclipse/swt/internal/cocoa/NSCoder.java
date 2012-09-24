@@ -16,7 +16,7 @@ public NSCoder() {
 	super();
 }
 
-public NSCoder(int /*long*/ id) {
+public NSCoder(long /*int*/ id) {
 	super(id);
 }
 

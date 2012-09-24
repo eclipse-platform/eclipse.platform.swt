@@ -14,13 +14,13 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IViewObject2 extends IUnknown
 {
-public IViewObject2(int /*long*/ address) {
+public IViewObject2(long /*int*/ address) {
 	super(address);
 }
 public int GetExtent(int dwAspect, int lindex, DVTARGETDEVICE ptd, SIZE lpsizel) {
 	return COM.VtblCall(9, address, dwAspect, lindex, ptd, lpsizel);
 }
-public int SetAdvise(int dwAspects, int dwAdvf, int /*long*/ pIAdviseSink) {
+public int SetAdvise(int dwAspects, int dwAdvf, long /*int*/ pIAdviseSink) {
 	return COM.VtblCall(7, address, dwAspects, dwAdvf, pIAdviseSink);
 }
 }

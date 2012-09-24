@@ -12,9 +12,9 @@ package org.eclipse.swt.internal;
 
 /** @jniclass flags=no_gen */
 public class LONG {
-	public int /*long*/ value;
+	public long /*int*/ value;
 	
-	public LONG (int /*long*/ value) {
+	public LONG (long /*int*/ value) {
 		this.value = value;
 	}
 

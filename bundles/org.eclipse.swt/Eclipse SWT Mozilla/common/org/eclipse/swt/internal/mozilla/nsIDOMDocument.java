@@ -43,166 +43,166 @@ public class nsIDOMDocument extends nsIDOMNode {
 	public static final nsID NS_IDOMDOCUMENT_10_IID =
 		new nsID(NS_IDOMDOCUMENT_10_IID_STR);
 
-	public nsIDOMDocument(int /*long*/ address) {
+	public nsIDOMDocument(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetDoctype(int /*long*/[] aDoctype) {
+	public int GetDoctype(long /*int*/[] aDoctype) {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 1, getAddress(), aDoctype);
 	}
 
-	public int GetImplementation(int /*long*/[] aImplementation) {
+	public int GetImplementation(long /*int*/[] aImplementation) {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 2, getAddress(), aImplementation);
 	}
 
-	public int GetDocumentElement(int /*long*/[] aDocumentElement) {
+	public int GetDocumentElement(long /*int*/[] aDocumentElement) {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 3, getAddress(), aDocumentElement);
 	}
 
-	public int CreateElement(int /*long*/ tagName, int /*long*/[] _retval) {
+	public int CreateElement(long /*int*/ tagName, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 4, getAddress(), tagName, _retval);
 	}
 
-	public int CreateDocumentFragment(int /*long*/[] _retval) {
+	public int CreateDocumentFragment(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 5, getAddress(), _retval);
 	}
 
-	public int CreateTextNode(int /*long*/ data, int /*long*/[] _retval) {
+	public int CreateTextNode(long /*int*/ data, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 6, getAddress(), data, _retval);
 	}
 
-	public int CreateComment(int /*long*/ data, int /*long*/[] _retval) {
+	public int CreateComment(long /*int*/ data, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 7, getAddress(), data, _retval);
 	}
 
-	public int CreateCDATASection(int /*long*/ data, int /*long*/[] _retval) {
+	public int CreateCDATASection(long /*int*/ data, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 8, getAddress(), data, _retval);
 	}
 
-	public int CreateProcessingInstruction(int /*long*/ target, int /*long*/ data, int /*long*/[] _retval) {
+	public int CreateProcessingInstruction(long /*int*/ target, long /*int*/ data, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 9, getAddress(), target, data, _retval);
 	}
 
-	public int CreateAttribute(int /*long*/ name, int /*long*/[] _retval) {
+	public int CreateAttribute(long /*int*/ name, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 10, getAddress(), name, _retval);
 	}
 
-	public int CreateEntityReference(int /*long*/ name, int /*long*/[] _retval) {
+	public int CreateEntityReference(long /*int*/ name, long /*int*/[] _retval) {
 		if (IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 11, getAddress(), name, _retval);
 	}
 
-	public int GetElementsByTagName(int /*long*/ tagname, int /*long*/[] _retval) {
+	public int GetElementsByTagName(long /*int*/ tagname, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + (IsXULRunner10 ? 11 : 12), getAddress(), tagname, _retval);
 	}
 
-	public int ImportNode(int /*long*/ importedNode, int deep, int /*long*/[] _retval) {
+	public int ImportNode(long /*int*/ importedNode, int deep, long /*int*/[] _retval) {
 		if (IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 13, getAddress(), importedNode, deep, _retval);
 	}
 
-	public int ImportNode(int /*long*/ importedNode, int deep, int _argc, int /*long*/[] _retval) {
+	public int ImportNode(long /*int*/ importedNode, int deep, int _argc, long /*int*/[] _retval) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 12, getAddress(), importedNode, deep, _argc, _retval);
 	}
 
-	public int CreateElementNS(int /*long*/ namespaceURI, int /*long*/ qualifiedName, int /*long*/[] _retval) {
+	public int CreateElementNS(long /*int*/ namespaceURI, long /*int*/ qualifiedName, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + (IsXULRunner10 ? 13 : 14), getAddress(), namespaceURI, qualifiedName, _retval);
 	}
 
-	public int CreateAttributeNS(int /*long*/ namespaceURI, int /*long*/ qualifiedName, int /*long*/[] _retval) {
+	public int CreateAttributeNS(long /*int*/ namespaceURI, long /*int*/ qualifiedName, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + (IsXULRunner10 ? 14 : 15), getAddress(), namespaceURI, qualifiedName, _retval);
 	}
 
-	public int GetElementsByTagNameNS(int /*long*/ namespaceURI, int /*long*/ localName, int /*long*/[] _retval) {
+	public int GetElementsByTagNameNS(long /*int*/ namespaceURI, long /*int*/ localName, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + (IsXULRunner10 ? 15 : 16), getAddress(), namespaceURI, localName, _retval);
 	}
 
-	public int GetElementById(int /*long*/ elementId, int /*long*/[] _retval) {
+	public int GetElementById(long /*int*/ elementId, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + (IsXULRunner10 ? 16 : 17), getAddress(), elementId, _retval);
 	}
 	
-	public int GetInputEncoding(int /*long*/ aInputEncoding) {
+	public int GetInputEncoding(long /*int*/ aInputEncoding) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 17, getAddress(), aInputEncoding);
 	}
 
-	public int GetDocumentURI(int /*long*/ aDocumentURI) {
+	public int GetDocumentURI(long /*int*/ aDocumentURI) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 18, getAddress(), aDocumentURI);
 	}
 
-	public int AdoptNode(int /*long*/ source, int /*long*/[] _retval) {
+	public int AdoptNode(long /*int*/ source, long /*int*/[] _retval) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 19, getAddress(), source, _retval);
 	}
 
-	public int CreateRange(int /*long*/[] _retval) {
+	public int CreateRange(long /*int*/[] _retval) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 20, getAddress(), _retval);
 	}
 
-	public int CreateNodeIterator(int /*long*/ root, int whatToShow, int /*long*/ filter, int entityReferenceExpansion, int /*long*/[] _retval) {
+	public int CreateNodeIterator(long /*int*/ root, int whatToShow, long /*int*/ filter, int entityReferenceExpansion, long /*int*/[] _retval) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 21, getAddress(), root, whatToShow, filter, entityReferenceExpansion, _retval);
 	}
 
-	public int CreateTreeWalker(int /*long*/ root, int whatToShow, int /*long*/ filter, int entityReferenceExpansion, int /*long*/[] _retval) {
+	public int CreateTreeWalker(long /*int*/ root, int whatToShow, long /*int*/ filter, int entityReferenceExpansion, long /*int*/[] _retval) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 22, getAddress(), root, whatToShow, filter, entityReferenceExpansion, _retval);
 	}
 
-	public int CreateEvent(int /*long*/ eventType, int /*long*/[] _retval) {
+	public int CreateEvent(long /*int*/ eventType, long /*int*/[] _retval) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 23, getAddress(), eventType, _retval);
 	}
 
-	public int GetDefaultView(int /*long*/[] aDefaultView) {
+	public int GetDefaultView(long /*int*/[] aDefaultView) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 24, getAddress(), aDefaultView);
 	}
 
-	public int GetCharacterSet(int /*long*/ aCharacterSet) {
+	public int GetCharacterSet(long /*int*/ aCharacterSet) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 25, getAddress(), aCharacterSet);
 	}
 
-	public int GetDir(int /*long*/ aDir) {
+	public int GetDir(long /*int*/ aDir) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 26, getAddress(), aDir);
 	}
 
-	public int SetDir(int /*long*/ aDir) {
+	public int SetDir(long /*int*/ aDir) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 27, getAddress(), aDir);
 	}
 
-	public int GetLocation(int /*long*/[] aLocation) {
+	public int GetLocation(long /*int*/[] aLocation) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 28, getAddress(), aLocation);
 	}
 
-	public int GetTitle(int /*long*/ aTitle) {
+	public int GetTitle(long /*int*/ aTitle) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 29, getAddress(), aTitle);
 	}
 
-	public int SetTitle(int /*long*/ aTitle) {
+	public int SetTitle(long /*int*/ aTitle) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 30, getAddress(), aTitle);
 	}
 
-	public int GetReadyState(int /*long*/ aReadyState) {
+	public int GetReadyState(long /*int*/ aReadyState) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 31, getAddress(), aReadyState);
 	}
 
-	public int GetLastModified(int /*long*/ aLastModified) {
+	public int GetLastModified(long /*int*/ aLastModified) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 32, getAddress(), aLastModified);
 	}
 
-	public int GetReferrer(int /*long*/ aReferrer) {
+	public int GetReferrer(long /*int*/ aReferrer) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 33, getAddress(), aReferrer);
 	}
@@ -212,57 +212,57 @@ public class nsIDOMDocument extends nsIDOMNode {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 34, getAddress(), _retval);
 	}
 
-	public int GetActiveElement(int /*long*/[] aActiveElement) {
+	public int GetActiveElement(long /*int*/[] aActiveElement) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 35, getAddress(), aActiveElement);
 	}
 
-	public int GetElementsByClassName(int /*long*/ classes, int /*long*/[] _retval) {
+	public int GetElementsByClassName(long /*int*/ classes, long /*int*/[] _retval) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 36, getAddress(), classes, _retval);
 	}
 
-	public int GetStyleSheets(int /*long*/[] aStyleSheets) {
+	public int GetStyleSheets(long /*int*/[] aStyleSheets) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 37, getAddress(), aStyleSheets);
 	}
 
-	public int GetPreferredStyleSheetSet(int /*long*/ aPreferredStyleSheetSet) {
+	public int GetPreferredStyleSheetSet(long /*int*/ aPreferredStyleSheetSet) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 38, getAddress(), aPreferredStyleSheetSet);
 	}
 
-	public int GetSelectedStyleSheetSet(int /*long*/ aSelectedStyleSheetSet) {
+	public int GetSelectedStyleSheetSet(long /*int*/ aSelectedStyleSheetSet) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 39, getAddress(), aSelectedStyleSheetSet);
 	}
 
-	public int SetSelectedStyleSheetSet(int /*long*/ aSelectedStyleSheetSet) {
+	public int SetSelectedStyleSheetSet(long /*int*/ aSelectedStyleSheetSet) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 40, getAddress(), aSelectedStyleSheetSet);
 	}
 
-	public int GetLastStyleSheetSet(int /*long*/ aLastStyleSheetSet) {
+	public int GetLastStyleSheetSet(long /*int*/ aLastStyleSheetSet) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 41, getAddress(), aLastStyleSheetSet);
 	}
 
-	public int GetStyleSheetSets(int /*long*/[] aStyleSheetSets) {
+	public int GetStyleSheetSets(long /*int*/[] aStyleSheetSets) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 42, getAddress(), aStyleSheetSets);
 	}
 
-	public int EnableStyleSheetsForSet(int /*long*/ name) {
+	public int EnableStyleSheetsForSet(long /*int*/ name) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 43, getAddress(), name);
 	}
 
-	public int ElementFromPoint(float x, float y, int /*long*/[] _retval) {
+	public int ElementFromPoint(float x, float y, long /*int*/[] _retval) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 44, getAddress(), x, y, _retval);
 	}
 
-	public int GetContentType(int /*long*/ aContentType) {
+	public int GetContentType(long /*int*/ aContentType) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 45, getAddress(), aContentType);
 	}
@@ -272,7 +272,7 @@ public class nsIDOMDocument extends nsIDOMNode {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 46, getAddress(), aMozSyntheticDocument);
 	}
 
-	public int GetCurrentScript(int /*long*/[] aCurrentScript) {
+	public int GetCurrentScript(long /*int*/[] aCurrentScript) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 47, getAddress(), aCurrentScript);
 	}
@@ -282,12 +282,12 @@ public class nsIDOMDocument extends nsIDOMNode {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 48, getAddress());
 	}
 
-	public int MozSetImageElement(int /*long*/ aImageElementId, int /*long*/ aImageElement) {
+	public int MozSetImageElement(long /*int*/ aImageElementId, long /*int*/ aImageElement) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 49, getAddress(), aImageElementId, aImageElement);
 	}
 
-	public int GetMozFullScreenElement(int /*long*/[] aMozFullScreenElement) {
+	public int GetMozFullScreenElement(long /*int*/[] aMozFullScreenElement) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 50, getAddress(), aMozFullScreenElement);
 	}
@@ -307,32 +307,32 @@ public class nsIDOMDocument extends nsIDOMNode {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 53, getAddress(), aMozFullScreenEnabled);
 	}
 
-	public int GetOnreadystatechange(int /*long*/ cx, int /*long*/ aOnreadystatechange) {
+	public int GetOnreadystatechange(long /*int*/ cx, long /*int*/ aOnreadystatechange) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 54, getAddress(), cx, aOnreadystatechange);
 	}
 
-	public int SetOnreadystatechange(int /*long*/ cx, int /*long*/ aOnreadystatechange) {
+	public int SetOnreadystatechange(long /*int*/ cx, long /*int*/ aOnreadystatechange) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 55, getAddress(), cx, aOnreadystatechange);
 	}
 
-	public int GetOnmouseenter(int /*long*/ cx, int /*long*/ aOnmouseenter) {
+	public int GetOnmouseenter(long /*int*/ cx, long /*int*/ aOnmouseenter) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 56, getAddress(), cx, aOnmouseenter);
 	}
 
-	public int SetOnmouseenter(int /*long*/ cx, int /*long*/ aOnmouseenter) {
+	public int SetOnmouseenter(long /*int*/ cx, long /*int*/ aOnmouseenter) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 57, getAddress(), cx, aOnmouseenter);
 	}
 
-	public int GetOnmouseleave(int /*long*/ cx, int /*long*/ aOnmouseleave) {
+	public int GetOnmouseleave(long /*int*/ cx, long /*int*/ aOnmouseleave) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 58, getAddress(), cx, aOnmouseleave);
 	}
 
-	public int SetOnmouseleave(int /*long*/ cx, int /*long*/ aOnmouseleave) {
+	public int SetOnmouseleave(long /*int*/ cx, long /*int*/ aOnmouseleave) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 59, getAddress(), cx, aOnmouseleave);
 	}
@@ -342,7 +342,7 @@ public class nsIDOMDocument extends nsIDOMNode {
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 60, getAddress(), aMozHidden);
 	}
 
-	public int GetMozVisibilityState(int /*long*/ aMozVisibilityState) {
+	public int GetMozVisibilityState(long /*int*/ aMozVisibilityState) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 61, getAddress(), aMozVisibilityState);
 	}

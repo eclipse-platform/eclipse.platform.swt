@@ -15,7 +15,7 @@ import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebURLResponse extends IUnknown {
 
-public IWebURLResponse (int /*long*/ address) {
+public IWebURLResponse (long /*int*/ address) {
 	super (address);
 }
 
@@ -23,7 +23,7 @@ public int expectedContentLength (long[] result) {
 	return COM.VtblCall (3, getAddress (), result);
 }
 
-public int URL (int /*long*/[] result) {
+public int URL (long /*int*/[] result) {
 	return COM.VtblCall (8, getAddress (), result);
 }
 

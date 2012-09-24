@@ -16,7 +16,7 @@ public NSMenu() {
 	super();
 }
 
-public NSMenu(int /*long*/ id) {
+public NSMenu(long /*int*/ id) {
 	super(id);
 }
 
@@ -28,8 +28,8 @@ public void addItem(NSMenuItem newItem) {
 	OS.objc_msgSend(this.id, OS.sel_addItem_, newItem != null ? newItem.id : 0);
 }
 
-public NSMenuItem addItemWithTitle(NSString aString, int /*long*/ aSelector, NSString charCode) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_addItemWithTitle_action_keyEquivalent_, aString != null ? aString.id : 0, aSelector, charCode != null ? charCode.id : 0);
+public NSMenuItem addItemWithTitle(NSString aString, long /*int*/ aSelector, NSString charCode) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_addItemWithTitle_action_keyEquivalent_, aString != null ? aString.id : 0, aSelector, charCode != null ? charCode.id : 0);
 	return result != 0 ? new NSMenuItem(result) : null;
 }
 
@@ -37,35 +37,35 @@ public void cancelTracking() {
 	OS.objc_msgSend(this.id, OS.sel_cancelTracking);
 }
 
-public int /*long*/ indexOfItemWithTarget(id target, int /*long*/ actionSelector) {
+public long /*int*/ indexOfItemWithTarget(id target, long /*int*/ actionSelector) {
 	return OS.objc_msgSend(this.id, OS.sel_indexOfItemWithTarget_andAction_, target != null ? target.id : 0, actionSelector);
 }
 
 public NSMenu initWithTitle(NSString aTitle) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithTitle_, aTitle != null ? aTitle.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithTitle_, aTitle != null ? aTitle.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSMenu(result) : null);
 }
 
-public void insertItem(NSMenuItem newItem, int /*long*/ index) {
+public void insertItem(NSMenuItem newItem, long /*int*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_insertItem_atIndex_, newItem != null ? newItem.id : 0, index);
 }
 
 public NSArray itemArray() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_itemArray);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_itemArray);
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public NSMenuItem itemAtIndex(int /*long*/ index) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_itemAtIndex_, index);
+public NSMenuItem itemAtIndex(long /*int*/ index) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_itemAtIndex_, index);
 	return result != 0 ? new NSMenuItem(result) : null;
 }
 
-public NSMenuItem itemWithTag(int /*long*/ tag) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_itemWithTag_, tag);
+public NSMenuItem itemWithTag(long /*int*/ tag) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_itemWithTag_, tag);
 	return result != 0 ? new NSMenuItem(result) : null;
 }
 
-public int /*long*/ numberOfItems() {
+public long /*int*/ numberOfItems() {
 	return OS.objc_msgSend(this.id, OS.sel_numberOfItems);
 }
 
@@ -81,7 +81,7 @@ public void removeItem(NSMenuItem item) {
 	OS.objc_msgSend(this.id, OS.sel_removeItem_, item != null ? item.id : 0);
 }
 
-public void removeItemAtIndex(int /*long*/ index) {
+public void removeItemAtIndex(long /*int*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_removeItemAtIndex_, index);
 }
 

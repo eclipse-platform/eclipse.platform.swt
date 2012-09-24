@@ -13,17 +13,17 @@ package org.eclipse.swt.internal.ole.win32;
 public class VARDESC {
 	public int memid;
 	/** @field cast=(OLECHAR FAR *) */
-	public int /*long*/ lpstrSchema;
+	public long /*int*/ lpstrSchema;
 	public int oInst;
 //	ELEMDESC elemdescVar
 //	TYPEDESC elemdescVar.tdesc
 	/** @field accessor=elemdescVar.tdesc.lptdesc,cast=(struct FARSTRUCT tagTYPEDESC FAR *) */
-	public int /*long*/ elemdescVar_tdesc_union;
+	public long /*int*/ elemdescVar_tdesc_union;
 	/** @field accessor=elemdescVar.tdesc.vt */
 	public short elemdescVar_tdesc_vt;
 //	PARAMDESC elemdescFunc.paramdesc
 	/** @field accessor=elemdescVar.paramdesc.pparamdescex,cast=(LPPARAMDESCEX) */
-	public int /*long*/ elemdescVar_paramdesc_pparamdescex;
+	public long /*int*/ elemdescVar_paramdesc_pparamdescex;
 	/** @field accessor=elemdescVar.paramdesc.wParamFlags */
 	public short elemdescVar_paramdesc_wParamFlags;
 	public short wVarFlags;

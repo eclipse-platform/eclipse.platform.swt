@@ -16,7 +16,7 @@ public NSURLCredential() {
 	super();
 }
 
-public NSURLCredential(int /*long*/ id) {
+public NSURLCredential(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,8 +24,8 @@ public NSURLCredential(id id) {
 	super(id);
 }
 
-public static NSURLCredential credentialWithUser(NSString user, NSString password, int /*long*/ persistence) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSURLCredential, OS.sel_credentialWithUser_password_persistence_, user != null ? user.id : 0, password != null ? password.id : 0, persistence);
+public static NSURLCredential credentialWithUser(NSString user, NSString password, long /*int*/ persistence) {
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSURLCredential, OS.sel_credentialWithUser_password_persistence_, user != null ? user.id : 0, password != null ? password.id : 0, persistence);
 	return result != 0 ? new NSURLCredential(result) : null;
 }
 
@@ -34,12 +34,12 @@ public boolean hasPassword() {
 }
 
 public NSString password() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_password);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_password);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public NSString user() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_user);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_user);
 	return result != 0 ? new NSString(result) : null;
 }
 

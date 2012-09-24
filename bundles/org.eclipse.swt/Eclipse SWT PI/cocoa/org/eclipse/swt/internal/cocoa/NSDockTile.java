@@ -16,7 +16,7 @@ public NSDockTile() {
 	super();
 }
 
-public NSDockTile(int /*long*/ id) {
+public NSDockTile(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,7 +25,7 @@ public NSDockTile(id id) {
 }
 
 public NSString badgeLabel() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_badgeLabel);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_badgeLabel);
 	return result != 0 ? new NSString(result) : null;
 }
 

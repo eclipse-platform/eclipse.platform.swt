@@ -37,15 +37,15 @@ public class nsIWebBrowserStream extends nsISupports {
 	public static final nsID NS_IWEBBROWSERSTREAM_IID =
 		new nsID(NS_IWEBBROWSERSTREAM_IID_STR);
 
-	public nsIWebBrowserStream(int /*long*/ address) {
+	public nsIWebBrowserStream(long /*int*/ address) {
 		super(address);
 	}
 
-	public int OpenStream(int /*long*/ aBaseURI, int /*long*/ aContentType) {
+	public int OpenStream(long /*int*/ aBaseURI, long /*int*/ aContentType) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aBaseURI, aContentType);
 	}
 
-	public int AppendToStream(int /*long*/ aData, int aLen) {
+	public int AppendToStream(long /*int*/ aData, int aLen) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aData, aLen);
 	}
 

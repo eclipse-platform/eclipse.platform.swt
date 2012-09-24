@@ -16,7 +16,7 @@ public NSMutableURLRequest() {
 	super();
 }
 
-public NSMutableURLRequest(int /*long*/ id) {
+public NSMutableURLRequest(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,7 +24,7 @@ public NSMutableURLRequest(id id) {
 	super(id);
 }
 
-public void setCachePolicy(int /*long*/ policy) {
+public void setCachePolicy(long /*int*/ policy) {
 	OS.objc_msgSend(this.id, OS.sel_setCachePolicy_, policy);
 }
 
@@ -45,7 +45,7 @@ public void setValue(NSString value, NSString field) {
 }
 
 public static NSURLRequest requestWithURL(NSURL URL) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableURLRequest, OS.sel_requestWithURL_, URL != null ? URL.id : 0);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSMutableURLRequest, OS.sel_requestWithURL_, URL != null ? URL.id : 0);
 	return result != 0 ? new NSMutableURLRequest(result) : null;
 }
 

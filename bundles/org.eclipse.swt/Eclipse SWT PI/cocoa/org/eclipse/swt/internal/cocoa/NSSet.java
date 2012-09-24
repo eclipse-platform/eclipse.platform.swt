@@ -16,7 +16,7 @@ public NSSet() {
 	super();
 }
 
-public NSSet(int /*long*/ id) {
+public NSSet(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,21 +25,21 @@ public NSSet(id id) {
 }
 
 public NSArray allObjects() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_allObjects);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_allObjects);
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public int /*long*/ count() {
+public long /*int*/ count() {
 	return OS.objc_msgSend(this.id, OS.sel_count);
 }
 
 public NSEnumerator objectEnumerator() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_objectEnumerator);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_objectEnumerator);
 	return result != 0 ? new NSEnumerator(result) : null;
 }
 
 public static NSSet set() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSSet, OS.sel_set);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSSet, OS.sel_set);
 	return result != 0 ? new NSSet(result) : null;
 }
 

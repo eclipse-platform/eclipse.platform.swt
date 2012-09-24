@@ -50,7 +50,7 @@ import org.eclipse.swt.graphics.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Label extends Control {
-	int /*long*/ frameHandle, labelHandle, imageHandle;
+	long /*int*/ frameHandle, labelHandle, imageHandle;
 	ImageList imageList;
 	Image image;
 	String text;
@@ -132,7 +132,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	boolean fixWrap = labelHandle != 0 && (style & SWT.WRAP) != 0 && gtk_widget_get_visible (labelHandle);
 	if (fixWrap || frameHandle != 0) forceResize ();
 	if (fixWrap) {
-		int /*long*/ labelLayout = OS.gtk_label_get_layout (labelHandle);
+		long /*int*/ labelLayout = OS.gtk_label_get_layout (labelHandle);
 		int pangoWidth = OS.pango_layout_get_width (labelLayout);
 		if (wHint != SWT.DEFAULT) {
 			OS.pango_layout_set_width (labelLayout, wHint * OS.PANGO_SCALE);
@@ -176,11 +176,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	* muliple lines of text.
 	*/
 	if (hHint == SWT.DEFAULT && labelHandle != 0) {
-		int /*long*/ layout = OS.gtk_label_get_layout (labelHandle);
-		int /*long*/ context = OS.pango_layout_get_context (layout);
-		int /*long*/ lang = OS.pango_context_get_language (context);
-		int /*long*/ font = getFontDescription ();
-		int /*long*/ metrics = OS.pango_context_get_metrics (context, font, lang);
+		long /*int*/ layout = OS.gtk_label_get_layout (labelHandle);
+		long /*int*/ context = OS.pango_layout_get_context (layout);
+		long /*int*/ lang = OS.pango_context_get_language (context);
+		long /*int*/ font = getFontDescription ();
+		long /*int*/ metrics = OS.pango_context_get_metrics (context, font, lang);
 		int ascent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_ascent (metrics));
 		int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
 		OS.pango_font_metrics_unref (metrics);
@@ -189,7 +189,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.g_object_get (labelHandle, OS.ypad, buffer, 0);
 		fontHeight += 2 * buffer [0];
 		if (frameHandle != 0) {
-			int /*long*/ style = OS.gtk_widget_get_style (frameHandle);
+			long /*int*/ style = OS.gtk_widget_get_style (frameHandle);
 			fontHeight += 2 * OS.gtk_style_get_ythickness (style);
 			fontHeight += 2 * OS.gtk_container_get_border_width (frameHandle);
 		}
@@ -251,7 +251,7 @@ void deregister () {
 	if (imageHandle != 0) display.removeWidget (imageHandle);
 }
 
-int /*long*/ eventHandle () {
+long /*int*/ eventHandle () {
 	return fixedHandle;
 }
 
@@ -484,7 +484,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	return result;
 }
 
-void setFontDescription (int /*long*/ font) {
+void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
 	if (imageHandle != 0) OS.gtk_widget_modify_font (imageHandle, font);
@@ -529,7 +529,7 @@ public void setImage (Image image) {
 	if (image != null) {
 		imageList = new ImageList ();
 		int imageIndex = imageList.add (image);
-		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
+		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
 		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
 		OS.gtk_widget_hide (labelHandle);
 		OS.gtk_widget_show (imageHandle);
@@ -585,8 +585,8 @@ void showWidget () {
 	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
 }
 
-int /*long*/ gtk_separator_new (int orientation) {
-	int /*long*/ separator = 0;
+long /*int*/ gtk_separator_new (int orientation) {
+	long /*int*/ separator = 0;
 	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
 		separator = OS.gtk_separator_new (orientation);
 	} else {

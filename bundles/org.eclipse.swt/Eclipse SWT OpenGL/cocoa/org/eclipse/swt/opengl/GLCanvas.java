@@ -155,7 +155,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 public GLData getGLData () {
 	checkWidget ();
 	GLData data = new GLData ();
-	int /*long*/ [] value = new int /*long*/ [1];
+	long /*int*/ [] value = new long /*int*/ [1];
 	pixelFormat.getValues(value, OS.NSOpenGLPFADoubleBuffer, 0);
 	data.doubleBuffer = value [0] != 0;
 	pixelFormat.getValues(value, OS.NSOpenGLPFAStereo, 0);

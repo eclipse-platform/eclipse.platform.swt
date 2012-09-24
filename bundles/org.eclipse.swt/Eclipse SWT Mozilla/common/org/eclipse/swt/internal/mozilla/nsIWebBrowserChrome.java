@@ -37,7 +37,7 @@ public class nsIWebBrowserChrome extends nsISupports {
 	public static final nsID NS_IWEBBROWSERCHROME_IID =
 		new nsID(NS_IWEBBROWSERCHROME_IID_STR);
 
-	public nsIWebBrowserChrome(int /*long*/ address) {
+	public nsIWebBrowserChrome(long /*int*/ address) {
 		super(address);
 	}
 
@@ -49,11 +49,11 @@ public class nsIWebBrowserChrome extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), statusType, status);
 	}
 
-	public int GetWebBrowser(int /*long*/[] aWebBrowser) {
+	public int GetWebBrowser(long /*int*/[] aWebBrowser) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aWebBrowser);
 	}
 
-	public int SetWebBrowser(int /*long*/ aWebBrowser) {
+	public int SetWebBrowser(long /*int*/ aWebBrowser) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aWebBrowser);
 	}
 

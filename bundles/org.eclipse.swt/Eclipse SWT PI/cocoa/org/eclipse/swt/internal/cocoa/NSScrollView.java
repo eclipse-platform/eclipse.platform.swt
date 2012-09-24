@@ -16,7 +16,7 @@ public NSScrollView() {
 	super();
 }
 
-public NSScrollView(int /*long*/ id) {
+public NSScrollView(long /*int*/ id) {
 	super(id);
 }
 
@@ -30,19 +30,19 @@ public NSSize contentSize() {
 	return result;
 }
 
-public static NSSize contentSizeForFrameSize(NSSize fSize, boolean hFlag, boolean vFlag, int /*long*/ aType) {
+public static NSSize contentSizeForFrameSize(NSSize fSize, boolean hFlag, boolean vFlag, long /*int*/ aType) {
 	NSSize result = new NSSize();
 	OS.objc_msgSend_stret(result, OS.class_NSScrollView, OS.sel_contentSizeForFrameSize_hasHorizontalScroller_hasVerticalScroller_borderType_, fSize, hFlag, vFlag, aType);
 	return result;
 }
 
 public NSClipView contentView() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_contentView);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_contentView);
 	return result != 0 ? new NSClipView(result) : null;
 }
 
 public NSView documentView() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_documentView);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_documentView);
 	return result != 0 ? new NSView(result) : null;
 }
 
@@ -52,7 +52,7 @@ public NSRect documentVisibleRect() {
 	return result;
 }
 
-public static NSSize frameSizeForContentSize(NSSize cSize, boolean hFlag, boolean vFlag, int /*long*/ aType) {
+public static NSSize frameSizeForContentSize(NSSize cSize, boolean hFlag, boolean vFlag, long /*int*/ aType) {
 	NSSize result = new NSSize();
 	OS.objc_msgSend_stret(result, OS.class_NSScrollView, OS.sel_frameSizeForContentSize_hasHorizontalScroller_hasVerticalScroller_borderType_, cSize, hFlag, vFlag, aType);
 	return result;
@@ -66,7 +66,7 @@ public void setAutohidesScrollers(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setAutohidesScrollers_, flag);
 }
 
-public void setBorderType(int /*long*/ aType) {
+public void setBorderType(long /*int*/ aType) {
 	OS.objc_msgSend(this.id, OS.sel_setBorderType_, aType);
 }
 

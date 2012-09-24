@@ -37,11 +37,11 @@ public class nsIWebProgressListener2 extends nsIWebProgressListener {
 	public static final nsID NS_IWEBPROGRESSLISTENER2_IID =
 		new nsID(NS_IWEBPROGRESSLISTENER2_IID_STR);
 
-	public nsIWebProgressListener2(int /*long*/ address) {
+	public nsIWebProgressListener2(long /*int*/ address) {
 		super(address);
 	}
 
-	public int OnProgressChange64(int /*long*/ aWebProgress, int /*long*/ aRequest, long aCurSelfProgress, long aMaxSelfProgress, long aCurTotalProgress, long aMaxTotalProgress) {
+	public int OnProgressChange64(long /*int*/ aWebProgress, long /*int*/ aRequest, long aCurSelfProgress, long aMaxSelfProgress, long aCurTotalProgress, long aMaxTotalProgress) {
 		return XPCOM.VtblCall(nsIWebProgressListener.LAST_METHOD_ID + 1, getAddress(), aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress);
 	}
 }

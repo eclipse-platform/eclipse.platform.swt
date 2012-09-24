@@ -16,7 +16,7 @@ public NSMenuItem() {
 	super();
 }
 
-public NSMenuItem(int /*long*/ id) {
+public NSMenuItem(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,22 +24,22 @@ public NSMenuItem(id id) {
 	super(id);
 }
 
-public int /*long*/ action() {
+public long /*int*/ action() {
 	return OS.objc_msgSend(this.id, OS.sel_action);
 }
 
 public NSAttributedString attributedTitle() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_attributedTitle);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_attributedTitle);
 	return result != 0 ? new NSAttributedString(result) : null;
 }
 
 public NSImage image() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_image);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_image);
 	return result != 0 ? new NSImage(result) : null;
 }
 
-public NSMenuItem initWithTitle(NSString aString, int /*long*/ aSelector, NSString charCode) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithTitle_action_keyEquivalent_, aString != null ? aString.id : 0, aSelector, charCode != null ? charCode.id : 0);
+public NSMenuItem initWithTitle(NSString aString, long /*int*/ aSelector, NSString charCode) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithTitle_action_keyEquivalent_, aString != null ? aString.id : 0, aSelector, charCode != null ? charCode.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSMenuItem(result) : null);
 }
 
@@ -52,20 +52,20 @@ public boolean isSeparatorItem() {
 }
 
 public NSString keyEquivalent() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_keyEquivalent);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_keyEquivalent);
 	return result != 0 ? new NSString(result) : null;
 }
 
-public int /*long*/ keyEquivalentModifierMask() {
+public long /*int*/ keyEquivalentModifierMask() {
 	return OS.objc_msgSend(this.id, OS.sel_keyEquivalentModifierMask);
 }
 
 public static NSMenuItem separatorItem() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSMenuItem, OS.sel_separatorItem);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSMenuItem, OS.sel_separatorItem);
 	return result != 0 ? new NSMenuItem(result) : null;
 }
 
-public void setAction(int /*long*/ aSelector) {
+public void setAction(long /*int*/ aSelector) {
 	OS.objc_msgSend(this.id, OS.sel_setAction_, aSelector);
 }
 
@@ -89,7 +89,7 @@ public void setKeyEquivalent(NSString aKeyEquivalent) {
 	OS.objc_msgSend(this.id, OS.sel_setKeyEquivalent_, aKeyEquivalent != null ? aKeyEquivalent.id : 0);
 }
 
-public void setKeyEquivalentModifierMask(int /*long*/ mask) {
+public void setKeyEquivalentModifierMask(long /*int*/ mask) {
 	OS.objc_msgSend(this.id, OS.sel_setKeyEquivalentModifierMask_, mask);
 }
 
@@ -97,7 +97,7 @@ public void setMenu(NSMenu menu) {
 	OS.objc_msgSend(this.id, OS.sel_setMenu_, menu != null ? menu.id : 0);
 }
 
-public void setState(int /*long*/ state) {
+public void setState(long /*int*/ state) {
 	OS.objc_msgSend(this.id, OS.sel_setState_, state);
 }
 
@@ -105,7 +105,7 @@ public void setSubmenu(NSMenu submenu) {
 	OS.objc_msgSend(this.id, OS.sel_setSubmenu_, submenu != null ? submenu.id : 0);
 }
 
-public void setTag(int /*long*/ anInt) {
+public void setTag(long /*int*/ anInt) {
 	OS.objc_msgSend(this.id, OS.sel_setTag_, anInt);
 }
 
@@ -117,26 +117,26 @@ public void setTitle(NSString aString) {
 	OS.objc_msgSend(this.id, OS.sel_setTitle_, aString != null ? aString.id : 0);
 }
 
-public int /*long*/ state() {
+public long /*int*/ state() {
 	return OS.objc_msgSend(this.id, OS.sel_state);
 }
 
 public NSMenu submenu() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_submenu);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_submenu);
 	return result != 0 ? new NSMenu(result) : null;
 }
 
-public int /*long*/ tag() {
+public long /*int*/ tag() {
 	return OS.objc_msgSend(this.id, OS.sel_tag);
 }
 
 public id target() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_target);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_target);
 	return result != 0 ? new id(result) : null;
 }
 
 public NSString title() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_title);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_title);
 	return result != 0 ? new NSString(result) : null;
 }
 

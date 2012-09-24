@@ -37,7 +37,7 @@ public class nsIMIMEInputStream extends nsIInputStream {
 	public static final nsID NS_IMIMEINPUTSTREAM_IID =
 		new nsID(NS_IMIMEINPUTSTREAM_IID_STR);
 
-	public nsIMIMEInputStream(int /*long*/ address) {
+	public nsIMIMEInputStream(long /*int*/ address) {
 		super(address);
 	}
 
@@ -53,7 +53,7 @@ public class nsIMIMEInputStream extends nsIInputStream {
 		return XPCOM.VtblCall(nsIInputStream.LAST_METHOD_ID + 3, getAddress(), name, value);
 	}
 
-	public int SetData(int /*long*/ stream) {
+	public int SetData(long /*int*/ stream) {
 		return XPCOM.VtblCall(nsIInputStream.LAST_METHOD_ID + 4, getAddress(), stream);
 	}
 }

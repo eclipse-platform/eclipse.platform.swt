@@ -30,10 +30,10 @@ public class COMBOBOXINFO {
 	public int buttonBottom;
 	public int stateButton;
 	/** @field cast=(HWND) */
-	public int /*long*/ hwndCombo;
+	public long /*int*/ hwndCombo;
 	/** @field cast=(HWND) */
-	public int /*long*/ hwndItem;
+	public long /*int*/ hwndItem;
 	/** @field cast=(HWND) */
-	public int /*long*/ hwndList;
+	public long /*int*/ hwndList;
 	public static final int sizeof = OS.COMBOBOXINFO_sizeof ();
 }

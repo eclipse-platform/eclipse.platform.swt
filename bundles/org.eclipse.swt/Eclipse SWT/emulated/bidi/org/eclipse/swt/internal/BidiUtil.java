@@ -42,7 +42,7 @@ public class BidiUtil {
 /*
  * Not implemented.
  */
-public static void addLanguageListener(int /*long*/ hwnd, Runnable runnable) {
+public static void addLanguageListener(long /*int*/ hwnd, Runnable runnable) {
 }
 public static void addLanguageListener (Control control, Runnable runnable) {
 }
@@ -93,7 +93,7 @@ public static int getKeyboardLanguage() {
 /*
  * Not implemented.
  */
-public static void removeLanguageListener(int /*long*/ hwnd) {
+public static void removeLanguageListener(long /*int*/ hwnd) {
 }	
 public static void removeLanguageListener (Control control) {
 }
@@ -105,7 +105,7 @@ public static void setKeyboardLanguage(int language) {
 /*
  * Not implemented.
  */
-public static boolean setOrientation(int /*long*/ hwnd, int orientation) {
+public static boolean setOrientation(long /*int*/ hwnd, int orientation) {
 	return false;
 }
 public static boolean setOrientation (Control control, int orientation) {

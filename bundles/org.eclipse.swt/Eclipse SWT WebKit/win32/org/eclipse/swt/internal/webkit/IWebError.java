@@ -15,7 +15,7 @@ import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebError extends IUnknown {
 
-public IWebError (int /*long*/ address) {
+public IWebError (long /*int*/ address) {
 	super (address);
 }
 
@@ -23,23 +23,23 @@ public int code (int[] result) {
 	return COM.VtblCall (4, getAddress (), result);
 }
 
-//public int domain (int /*long*/[] result) {
+//public int domain (long /*int*/[] result) {
 //	return COM.VtblCall (5, getAddress (), result);
 //}
 
-public int localizedDescription (int /*long*/[] result) {
+public int localizedDescription (long /*int*/[] result) {
 	return COM.VtblCall (6, getAddress (), result);
 }
 
-//public int localizedFailureReason (int /*long*/[] result) {
+//public int localizedFailureReason (long /*int*/[] result) {
 //	return COM.VtblCall (7, getAddress (), result);
 //}
 
-//public int userInfo (int /*long*/[] result) {
+//public int userInfo (long /*int*/[] result) {
 //return COM.VtblCall (11, getAddress (), result);
 //}
 
-public int failingURL (int /*long*/[] result) {
+public int failingURL (long /*int*/[] result) {
 	return COM.VtblCall (12, getAddress (), result);
 }
 

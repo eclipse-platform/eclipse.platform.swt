@@ -287,8 +287,8 @@ public PrinterData open() {
 	/* Get the owner HWND for the dialog */
 	Control parent = getParent();
 	int style = getStyle();
-	int /*long*/ hwndOwner = parent.handle;
-	int /*long*/ hwndParent = parent.handle;
+	long /*int*/ hwndOwner = parent.handle;
+	long /*int*/ hwndParent = parent.handle;
 
 	/*
 	* Feature in Windows.  There is no API to set the BIDI orientation
@@ -342,8 +342,8 @@ public PrinterData open() {
 			short[] offsets = new short[4]; // DEVNAMES (4 offsets)
 			int offsetsSize = offsets.length * 2; // 2 bytes each
 			offsets[1] = (short) offsets.length; // offset 1 points to wDeviceOffset
-			int /*long*/ hMem = OS.GlobalAlloc(OS.GMEM_MOVEABLE | OS.GMEM_ZEROINIT, offsetsSize + size);
-			int /*long*/ ptr = OS.GlobalLock(hMem);
+			long /*int*/ hMem = OS.GlobalAlloc(OS.GMEM_MOVEABLE | OS.GMEM_ZEROINIT, offsetsSize + size);
+			long /*int*/ ptr = OS.GlobalLock(hMem);
 			OS.MoveMemory(ptr, offsets, offsetsSize);
 			OS.MoveMemory(ptr + offsetsSize, buffer, size);
 			OS.GlobalUnlock(hMem);
@@ -368,8 +368,8 @@ public PrinterData open() {
 		 */
 		byte devmodeData [] = printerData.otherData;
 		if (devmodeData != null && devmodeData.length != 0) {
-			int /*long*/ hMem = OS.GlobalAlloc(OS.GMEM_MOVEABLE | OS.GMEM_ZEROINIT, devmodeData.length);
-			int /*long*/ ptr = OS.GlobalLock(hMem);
+			long /*int*/ hMem = OS.GlobalAlloc(OS.GMEM_MOVEABLE | OS.GMEM_ZEROINIT, devmodeData.length);
+			long /*int*/ ptr = OS.GlobalLock(hMem);
 			OS.MoveMemory(ptr, devmodeData, devmodeData.length);
 			OS.GlobalUnlock(hMem);
 			if (pd.hDevMode != 0) OS.GlobalFree(pd.hDevMode);
@@ -377,12 +377,12 @@ public PrinterData open() {
 		}
 		
 		/* Initialize the DEVMODE struct's fields from the printerData. */
-		int /*long*/ hMem = pd.hDevMode;
+		long /*int*/ hMem = pd.hDevMode;
 		if (hMem == 0) {
 			hMem = OS.GlobalAlloc(OS.GMEM_MOVEABLE | OS.GMEM_ZEROINIT, DEVMODE.sizeof);
 			pd.hDevMode = hMem;
 		}
-		int /*long*/ ptr = OS.GlobalLock(hMem);
+		long /*int*/ ptr = OS.GlobalLock(hMem);
 		DEVMODE devmode = OS.IsUnicode ? (DEVMODE)new DEVMODEW () : new DEVMODEA ();
 		OS.MoveMemory(devmode, ptr, OS.IsUnicode ? OS.DEVMODEW_sizeof() : OS.DEVMODEA_sizeof());
 		if (printerData.name != null) {

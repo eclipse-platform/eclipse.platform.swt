@@ -102,7 +102,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	 */
 	public void dragLeave(DropTargetEvent event) {
 		Table table = (Table) control;
-		int /*long*/ handle = table.handle;
+		long /*int*/ handle = table.handle;
 		OS.gtk_tree_view_set_drag_dest_row(handle, 0, OS.GTK_TREE_VIEW_DROP_BEFORE);
 
 		scrollBeginTime = 0;
@@ -128,15 +128,15 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	 */
 	public void dragOver(DropTargetEvent event) {
 		Table table = (Table) control;
-		int /*long*/ handle = table.handle;
+		long /*int*/ handle = table.handle;
 		int effect = checkEffect(event.feedback);
 		Point coordinates = new Point(event.x, event.y);
 		coordinates = table.toControl(coordinates);
-		int /*long*/ [] path = new int /*long*/ [1];
+		long /*int*/ [] path = new long /*int*/ [1];
 		OS.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);
 		int index = -1;
 		if (path[0] != 0) {
-			int /*long*/ indices = OS.gtk_tree_path_get_indices (path[0]);
+			long /*int*/ indices = OS.gtk_tree_path_get_indices (path[0]);
 			if (indices != 0) {
 				int[] temp = new int[1];
 				OS.memmove (temp, indices, 4);

@@ -33,6 +33,6 @@ public class SIPINFO {
 	public int rcSipRect_bottom;
 	public int dwImDataSize;
 	/** @field cast=(void *) */
-	public int /*long*/ pvImData;
+	public long /*int*/ pvImData;
 	public static final int sizeof = OS.SIPINFO_sizeof ();
 }

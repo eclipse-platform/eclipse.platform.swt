@@ -480,8 +480,8 @@
 		<delete dir="${tmpdir}" quiet="true"/>
 	</target>
 	
-	<target name="replace64" if="is64">
-		<antcall target="replace.32.to.64">
+	<target name="replace64" unless="is64">
+		<antcall target="replace.64.to.32">
 			<param name="replace_dir" value="${buildDir}"/>
 		</antcall>
 	</target>

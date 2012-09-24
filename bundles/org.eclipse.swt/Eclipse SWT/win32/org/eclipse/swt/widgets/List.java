@@ -41,7 +41,7 @@ import org.eclipse.swt.events.*;
 
 public class List extends Scrollable {
 	static final int INSET = 3;
-	static final int /*long*/ ListProc;
+	static final long /*int*/ ListProc;
 	static final TCHAR ListClass = new TCHAR (0, "LISTBOX", true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
@@ -178,7 +178,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	boolean redraw = false;
 	switch (msg) {
@@ -189,7 +189,7 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
 			break;
 		}
 	}
-	int /*long*/ code = OS.CallWindowProc (ListProc, hwnd, msg, wParam, lParam);
+	long /*int*/ code = OS.CallWindowProc (ListProc, hwnd, msg, wParam, lParam);
 	switch (msg) {
 		case OS.WM_HSCROLL:
 		case OS.WM_VSCROLL: {
@@ -216,8 +216,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width -= INSET;
 		} else {
 			int count = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
-			int /*long*/ newFont, oldFont = 0;
-			int /*long*/ hDC = OS.GetDC (handle);
+			long /*int*/ newFont, oldFont = 0;
+			long /*int*/ hDC = OS.GetDC (handle);
 			newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 			if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 			RECT rect = new RECT ();
@@ -741,7 +741,7 @@ public void remove (int [] indices) {
 	}
 	int topIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
 	RECT rect = null;
-	int /*long*/ hDC = 0, oldFont = 0, newFont = 0;
+	long /*int*/ hDC = 0, oldFont = 0, newFont = 0;
 	int newWidth = 0;
 	if ((style & SWT.H_SCROLL) != 0) {
 		rect = new RECT ();
@@ -861,7 +861,7 @@ public void remove (int start, int end) {
 	} 
 	int topIndex = (int)/*64*/OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
 	RECT rect = null;
-	int /*long*/ hDC = 0, oldFont = 0, newFont = 0;
+	long /*int*/ hDC = 0, oldFont = 0, newFont = 0;
 	int newWidth = 0;
 	if ((style & SWT.H_SCROLL) != 0) {
 		rect = new RECT ();
@@ -1198,14 +1198,14 @@ public void setItems (String [] items) {
 	for (int i=0; i<items.length; i++) {
 		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int /*long*/ oldProc = OS.GetWindowLongPtr (handle, OS.GWLP_WNDPROC);
+	long /*int*/ oldProc = OS.GetWindowLongPtr (handle, OS.GWLP_WNDPROC);
 	OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, ListProc);
 	boolean redraw = getDrawing () && OS.IsWindowVisible (handle);
 	if (redraw) {
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	}
 	RECT rect = null;
-	int /*long*/ hDC = 0, oldFont = 0, newFont = 0;
+	long /*int*/ hDC = 0, oldFont = 0, newFont = 0;
 	int newWidth = 0;
 	if ((style & SWT.H_SCROLL) != 0) {
 		rect = new RECT ();
@@ -1256,8 +1256,8 @@ public void setItems (String [] items) {
 void setScrollWidth () {
 	int newWidth = 0;
 	RECT rect = new RECT ();
-	int /*long*/ newFont, oldFont = 0;
-	int /*long*/ hDC = OS.GetDC (handle);
+	long /*int*/ newFont, oldFont = 0;
+	long /*int*/ hDC = OS.GetDC (handle);
 	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	int cp = getCodePage ();
@@ -1281,8 +1281,8 @@ void setScrollWidth () {
 
 void setScrollWidth (TCHAR buffer, boolean grow) {
 	RECT rect = new RECT ();
-	int /*long*/ newFont, oldFont = 0;
-	int /*long*/ hDC = OS.GetDC (handle);
+	long /*int*/ newFont, oldFont = 0;
+	long /*int*/ hDC = OS.GetDC (handle);
 	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
@@ -1518,8 +1518,8 @@ void updateMenuLocation (Event event) {
 	int focusIndex = getFocusIndex();
 	if (focusIndex != -1) {
 		RECT rect = new RECT ();
-		int /*long*/ newFont, oldFont = 0;
-		int /*long*/ hDC = OS.GetDC (handle);
+		long /*int*/ newFont, oldFont = 0;
+		long /*int*/ hDC = OS.GetDC (handle);
 		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 		int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
@@ -1563,11 +1563,11 @@ TCHAR windowClass () {
 	return ListClass;
 }
 
-int /*long*/ windowProc () {
+long /*int*/ windowProc () {
 	return ListProc;
 }
 
-LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -1595,7 +1595,7 @@ LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 	
-LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -1699,7 +1699,7 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_SETREDRAW (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_SETREDRAW (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETREDRAW (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -1712,7 +1712,7 @@ LRESULT WM_SETREDRAW (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Bug in Windows.  If the top index is changed while the
 	* list is being resized, Windows does not redraw properly
@@ -1740,7 +1740,7 @@ LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 	int code = OS.HIWORD (wParam);
 	switch (code) {
 		case OS.LBN_SELCHANGE:

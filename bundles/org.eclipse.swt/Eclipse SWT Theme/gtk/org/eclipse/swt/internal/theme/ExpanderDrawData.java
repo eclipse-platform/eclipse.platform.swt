@@ -22,9 +22,9 @@ public ExpanderDrawData() {
 }
 
 void draw(Theme theme, GC gc, Rectangle bounds) {
-	int /*long*/ treeHandle = theme.treeHandle;
-	int /*long*/ gtkStyle = OS.gtk_widget_get_style (treeHandle);
-	int /*long*/ drawable = gc.getGCData().drawable;
+	long /*int*/ treeHandle = theme.treeHandle;
+	long /*int*/ gtkStyle = OS.gtk_widget_get_style (treeHandle);
+	long /*int*/ drawable = gc.getGCData().drawable;
 	theme.transferClipping(gc, gtkStyle);
 	int state_type = getStateType(DrawData.WIDGET_WHOLE);
 	int expander_style = OS.GTK_EXPANDER_COLAPSED;
@@ -38,7 +38,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;
-	int /*long*/ treeHandle = theme.treeHandle;
+	long /*int*/ treeHandle = theme.treeHandle;
 	int expander_size = theme.getWidgetProperty(treeHandle, "expander-size");
 	if (new Rectangle(bounds.x, bounds.y, expander_size, expander_size).contains(position)) {
 		return DrawData.WIDGET_WHOLE;

@@ -14,7 +14,7 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IOleInPlaceActiveObject extends IOleWindow
 {
-public IOleInPlaceActiveObject(int /*long*/ address) {
+public IOleInPlaceActiveObject(long /*int*/ address) {
 	super(address);
 }
 public int TranslateAccelerator(MSG lpmsg) {
@@ -27,7 +27,7 @@ public void OnFrameWindowActivate(boolean fActivate) {
 public void OnDocWindowActivate(boolean fActivate) {
 	COM.VtblCall(7, getAddress(), fActivate);
 }
-public int ResizeBorder(RECT prcBorder, int /*long*/ pUIWindow, boolean fFrameWindow) {
+public int ResizeBorder(RECT prcBorder, long /*int*/ pUIWindow, boolean fFrameWindow) {
 	return COM.VtblCall(8, address, prcBorder, pUIWindow, fFrameWindow);
 }
 }

@@ -37,7 +37,7 @@ public class nsIWebProgress extends nsISupports {
 	public static final nsID NS_IWEBPROGRESS_IID =
 		new nsID(NS_IWEBPROGRESS_IID_STR);
 
-	public nsIWebProgress(int /*long*/ address) {
+	public nsIWebProgress(long /*int*/ address) {
 		super(address);
 	}
 
@@ -52,15 +52,15 @@ public class nsIWebProgress extends nsISupports {
 	public static final int NOTIFY_LOCATION = 128;
 	public static final int NOTIFY_ALL = 255;
 
-	public int AddProgressListener(int /*long*/ listener, int aNotifyMask) {
+	public int AddProgressListener(long /*int*/ listener, int aNotifyMask) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), listener, aNotifyMask);
 	}
 
-	public int RemoveProgressListener(int /*long*/ listener) {
+	public int RemoveProgressListener(long /*int*/ listener) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), listener);
 	}
 
-	public int GetDOMWindow(int /*long*/[] aDOMWindow) {
+	public int GetDOMWindow(long /*int*/[] aDOMWindow) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aDOMWindow);
 	}
 

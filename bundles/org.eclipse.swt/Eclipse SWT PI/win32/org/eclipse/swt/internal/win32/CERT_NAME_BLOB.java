@@ -14,7 +14,7 @@ package org.eclipse.swt.internal.win32;
 public class CERT_NAME_BLOB {
 	public int cbData;
 	/** @field cast=(BYTE *) */
-	public int /*long*/ pbData;
+	public long /*int*/ pbData;
 
 	static final public int sizeof = OS.CERT_NAME_BLOB_sizeof ();
 }

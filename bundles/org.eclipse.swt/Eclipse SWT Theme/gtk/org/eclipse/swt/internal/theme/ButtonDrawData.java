@@ -25,10 +25,10 @@ public ButtonDrawData() {
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	int state = this.state[DrawData.WIDGET_WHOLE];
 
-	int /*long*/ drawable = gc.getGCData().drawable;
+	long /*int*/ drawable = gc.getGCData().drawable;
 	if ((style & SWT.RADIO) != 0) {
-		int /*long*/ radioButtonHandle = theme.radioButtonHandle;
-		int /*long*/ gtkStyle = OS.gtk_widget_get_style (radioButtonHandle);
+		long /*int*/ radioButtonHandle = theme.radioButtonHandle;
+		long /*int*/ gtkStyle = OS.gtk_widget_get_style (radioButtonHandle);
 		theme.transferClipping (gc, gtkStyle);
 		int indicator_size = theme.getWidgetProperty(radioButtonHandle, "indicator-size");
 		int indicator_spacing = theme.getWidgetProperty(radioButtonHandle, "indicator-spacing");
@@ -74,8 +74,8 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}
 	
 	if ((style & SWT.CHECK) != 0) {
-		int /*long*/ checkButtonHandle = theme.checkButtonHandle;
-		int /*long*/ gtkStyle = OS.gtk_widget_get_style (checkButtonHandle);
+		long /*int*/ checkButtonHandle = theme.checkButtonHandle;
+		long /*int*/ gtkStyle = OS.gtk_widget_get_style (checkButtonHandle);
 		theme.transferClipping (gc, gtkStyle);
 		int indicator_size = theme.getWidgetProperty(checkButtonHandle, "indicator-size");
 		int indicator_spacing = theme.getWidgetProperty(checkButtonHandle, "indicator-spacing");
@@ -122,15 +122,15 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	
 
 	if ((style & SWT.PUSH) != 0) {
-		int /*long*/ buttonHandle = theme.buttonHandle;
-		int /*long*/ gtkStyle = OS.gtk_widget_get_style (buttonHandle);
+		long /*int*/ buttonHandle = theme.buttonHandle;
+		long /*int*/ gtkStyle = OS.gtk_widget_get_style (buttonHandle);
 		theme.transferClipping (gc, gtkStyle);		
 		int focus_line_width = theme.getWidgetProperty(buttonHandle, "focus-line-width");
 		int focus_padding = theme.getWidgetProperty(buttonHandle, "focus-padding");
 		int border_width = OS.gtk_container_get_border_width(buttonHandle);
 		
 		GtkBorder default_border = new GtkBorder();
-		int /*long*/ default_border_ptr = theme.getBorderProperty(buttonHandle, "default-border");
+		long /*int*/ default_border_ptr = theme.getBorderProperty(buttonHandle, "default-border");
 		if (default_border_ptr != 0) {
 			OS.memmove(default_border, default_border_ptr, GtkBorder.sizeof);
 			OS.gtk_border_free(default_border_ptr);
@@ -139,7 +139,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		}
 
 		GtkBorder default_outside_border = new GtkBorder();
-		int /*long*/ default_outside_border_ptr = theme.getBorderProperty(buttonHandle, "default-outside-border");
+		long /*int*/ default_outside_border_ptr = theme.getBorderProperty(buttonHandle, "default-outside-border");
 		if (default_outside_border_ptr != 0) {
 			OS.memmove(default_outside_border, default_outside_border_ptr, GtkBorder.sizeof);
 			OS.gtk_border_free(default_outside_border_ptr);

@@ -37,15 +37,15 @@ public class nsISerializable extends nsISupports {
 	public static final nsID NS_ISERIALIZABLE_IID =
 		new nsID(NS_ISERIALIZABLE_IID_STR);
 
-	public nsISerializable(int /*long*/ address) {
+	public nsISerializable(long /*int*/ address) {
 		super(address);
 	}
 
-	public int Read(int /*long*/ aInputStream) {
+	public int Read(long /*int*/ aInputStream) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aInputStream);
 	}
 
-	public int Write(int /*long*/ aOutputStream) {
+	public int Write(long /*int*/ aOutputStream) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aOutputStream);
 	}
 }

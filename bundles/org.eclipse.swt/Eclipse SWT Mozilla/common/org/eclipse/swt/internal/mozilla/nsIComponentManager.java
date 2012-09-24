@@ -37,23 +37,23 @@ public class nsIComponentManager extends nsISupports {
 	public static final nsID NS_ICOMPONENTMANAGER_IID =
 		new nsID(NS_ICOMPONENTMANAGER_IID_STR);
 
-	public nsIComponentManager(int /*long*/ address) {
+	public nsIComponentManager(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetClassObject(nsID aClass, nsID aIID, int /*long*/[] result) {
+	public int GetClassObject(nsID aClass, nsID aIID, long /*int*/[] result) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aClass, aIID, result);
 	}
 
-	public int GetClassObjectByContractID(byte[] aContractID, nsID aIID, int /*long*/[] result) {
+	public int GetClassObjectByContractID(byte[] aContractID, nsID aIID, long /*int*/[] result) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aContractID, aIID, result);
 	}
 
-	public int CreateInstance(nsID aClass, int /*long*/ aDelegate, nsID aIID, int /*long*/[] result) {
+	public int CreateInstance(nsID aClass, long /*int*/ aDelegate, nsID aIID, long /*int*/[] result) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aClass, aDelegate, aIID, result);
 	}
 
-	public int CreateInstanceByContractID(byte[] aContractID, int /*long*/ aDelegate, nsID aIID, int /*long*/[] result) {
+	public int CreateInstanceByContractID(byte[] aContractID, long /*int*/ aDelegate, nsID aIID, long /*int*/[] result) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aContractID, aDelegate, aIID, result);
 	}
 }

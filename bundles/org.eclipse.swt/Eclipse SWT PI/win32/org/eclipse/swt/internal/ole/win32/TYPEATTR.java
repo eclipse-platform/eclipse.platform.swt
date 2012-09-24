@@ -25,7 +25,7 @@ public final class TYPEATTR {
 	public int memidConstructor;
 	public int memidDestructor;
 	/** @field cast=(OLECHAR FAR *) */
-	public int /*long*/ lpstrSchema;
+	public long /*int*/ lpstrSchema;
 	public int cbSizeInstance;
 	public int typekind;
 	public short cFuncs;
@@ -38,7 +38,7 @@ public final class TYPEATTR {
 	public short wMinorVerNum;
 //	TYPEDESC tdescAlias
 	/** @field accessor=tdescAlias.lptdesc,cast=(struct FARSTRUCT tagTYPEDESC FAR *) */
-	public int /*long*/ tdescAlias_unionField;
+	public long /*int*/ tdescAlias_unionField;
 	/** @field accessor=tdescAlias.vt */
 	public short tdescAlias_vt;
 //	IDLDESC idldesctype

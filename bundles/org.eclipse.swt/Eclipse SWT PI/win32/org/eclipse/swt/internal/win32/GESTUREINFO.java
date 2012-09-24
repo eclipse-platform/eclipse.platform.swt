@@ -15,7 +15,7 @@ public class GESTUREINFO {
 	 public int dwFlags;
 	 public int dwID;
 	 /** @field cast=(HWND) */
-	 public int /*long*/ hwndTarget;
+	 public long /*int*/ hwndTarget;
 	 //	POINTS ptsLocation
 	 /** @field accessor=ptsLocation.x */
 	 public short x;

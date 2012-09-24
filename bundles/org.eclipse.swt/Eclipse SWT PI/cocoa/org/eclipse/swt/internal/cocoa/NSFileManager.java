@@ -16,7 +16,7 @@ public NSFileManager() {
 	super();
 }
 
-public NSFileManager(int /*long*/ id) {
+public NSFileManager(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,8 +24,8 @@ public NSFileManager(id id) {
 	super(id);
 }
 
-public NSArray URLsForDirectory(int /*long*/ directory, int /*long*/ domainMask) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_URLsForDirectory_inDomains_, directory, domainMask);
+public NSArray URLsForDirectory(long /*int*/ directory, long /*int*/ domainMask) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_URLsForDirectory_inDomains_, directory, domainMask);
 	return result != 0 ? new NSArray(result) : null;
 }
 
@@ -34,12 +34,12 @@ public boolean createFileAtPath(NSString path, NSData data, NSDictionary attr) {
 }
 
 public static NSFileManager defaultManager() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSFileManager, OS.sel_defaultManager);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSFileManager, OS.sel_defaultManager);
 	return result != 0 ? new NSFileManager(result) : null;
 }
 
 public NSDirectoryEnumerator enumeratorAtPath(NSString path) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_enumeratorAtPath_, path != null ? path.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_enumeratorAtPath_, path != null ? path.id : 0);
 	return result != 0 ? new NSDirectoryEnumerator(result) : null;
 }
 
@@ -47,7 +47,7 @@ public boolean fileExistsAtPath(NSString path) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_fileExistsAtPath_, path != null ? path.id : 0);
 }
 
-public boolean fileExistsAtPath(NSString path, int /*long*/ isDirectory) {
+public boolean fileExistsAtPath(NSString path, long /*int*/ isDirectory) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_fileExistsAtPath_isDirectory_, path != null ? path.id : 0, isDirectory);
 }
 
@@ -55,7 +55,7 @@ public boolean isExecutableFileAtPath(NSString path) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isExecutableFileAtPath_, path != null ? path.id : 0);
 }
 
-public boolean removeItemAtPath(NSString path, int /*long*/ error) {
+public boolean removeItemAtPath(NSString path, long /*int*/ error) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_removeItemAtPath_error_, path != null ? path.id : 0, error);
 }
 

@@ -37,7 +37,7 @@ public class nsIPrompt extends nsISupports {
 	public static final nsID NS_IPROMPT_IID =
 		new nsID(NS_IPROMPT_IID_STR);
 
-	public nsIPrompt(int /*long*/ address) {
+	public nsIPrompt(long /*int*/ address) {
 		super(address);
 	}
 

@@ -42,12 +42,12 @@ int AddRef () {
 	return refCount;
 }
 
-int canTakeFocus (int /*long*/ sender, int forward, int /*long*/ result) {
+int canTakeFocus (long /*int*/ sender, int forward, long /*int*/ result) {
 	OS.MoveMemory (result, new int[] {1}, 4); /* BOOL */
 	return COM.S_OK;
 }
 
-int contextMenuItemsForElement (int /*long*/ sender, int /*long*/ element, int /*long*/ defaultItemsHMenu, int /*long*/ resultHMenu) {
+int contextMenuItemsForElement (long /*int*/ sender, long /*int*/ element, long /*int*/ defaultItemsHMenu, long /*int*/ resultHMenu) {
 	Point pt = browser.getDisplay ().getCursorLocation ();
 	Event event = new Event ();
 	event.x = pt.x;
@@ -61,86 +61,86 @@ int contextMenuItemsForElement (int /*long*/ sender, int /*long*/ element, int /
 			}
 			menu.setVisible (true);
 		} else {
-			OS.MoveMemory (resultHMenu, new int /*long*/[] {defaultItemsHMenu}, C.PTR_SIZEOF);
+			OS.MoveMemory (resultHMenu, new long /*int*/[] {defaultItemsHMenu}, C.PTR_SIZEOF);
 			return COM.S_OK;
 		}
 	}
-	OS.MoveMemory (resultHMenu, new int /*long*/[] {0}, C.PTR_SIZEOF);
+	OS.MoveMemory (resultHMenu, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return COM.S_OK;
 }
 
 void createCOMInterfaces () {
 	iWebUIDelegate = new COMObject (new int[] {2, 0, 0, 3, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 4, 4, 2, 3, 4, 4, 3, 3, 3, 3, 5, 3, 1, 3, 2, 2, 2, 2, 3, 2, 3, 1, 1, 0, 0, 1, 1, 2, 2, 2, 2, 3, 5, 2, 2, 3, 1, 2, 2, 4, 10, 3}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
-		public int /*long*/ method2 (int /*long*/[] args)  {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args)  {return createWebViewWithRequest (args[0], args[1], args[2]);}
-		public int /*long*/ method4 (int /*long*/[] args)  {return webViewShow (args[0]);}
-		public int /*long*/ method5 (int /*long*/[] args)  {return webViewClose (args[0]);}
-		public int /*long*/ method6 (int /*long*/[] args)  {return COM.E_NOTIMPL;}
-		public int /*long*/ method7 (int /*long*/[] args)  {return COM.E_NOTIMPL;}
-		public int /*long*/ method8 (int /*long*/[] args)  {return COM.E_NOTIMPL;}
-		public int /*long*/ method9 (int /*long*/[] args)  {return COM.E_NOTIMPL;}
-		public int /*long*/ method10 (int /*long*/[] args) {return setStatusText (args[0], args[1]);}
-		public int /*long*/ method11 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method12 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method13 (int /*long*/[] args) {return setToolbarsVisible (args[0], (int)/*64*/args[1]);}
-		public int /*long*/ method14 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method15 (int /*long*/[] args) {return setStatusBarVisible (args[0], (int)/*64*/args[1]);}
-		public int /*long*/ method16 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method17 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method18 (int /*long*/[] args) {return setFrame (args[0], args[1]);}
-		public int /*long*/ method19 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method20 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method21 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method22 (int /*long*/[] args) {return runJavaScriptAlertPanelWithMessage (args[0], args[1]);}
-		public int /*long*/ method23 (int /*long*/[] args) {return runJavaScriptConfirmPanelWithMessage (args[0], args[1], args[2]);}
-		public int /*long*/ method24 (int /*long*/[] args) {return runJavaScriptTextInputPanelWithPrompt (args[0], args[1], args[2], args[3]);}
-		public int /*long*/ method25 (int /*long*/[] args) {return runBeforeUnloadConfirmPanelWithMessage (args[0], args[1], args[2], args[3]);}
-		public int /*long*/ method26 (int /*long*/[] args) {return runOpenPanelForFileButtonWithResultListener (args[0], args[1]);}
-		public int /*long*/ method27 (int /*long*/[] args) {return mouseDidMoveOverElement (args[0], args[1], (int)/*64*/args[2]);}
-		public int /*long*/ method28 (int /*long*/[] args) {return contextMenuItemsForElement (args[0], args[1], args[2], args[3]);}
-		public int /*long*/ method29 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method30 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method31 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method32 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method33 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method34 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method35 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method36 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method37 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method38 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method39 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method40 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method41 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method42 (int /*long*/[] args) {return canTakeFocus (args[0], (int)/*64*/args[1], args[2]);}
-		public int /*long*/ method43 (int /*long*/[] args) {return takeFocus (args[0], (int)/*64*/args[1]);}
-		public int /*long*/ method44 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method45 (int /*long*/[] args) {return COM.S_OK;}
-		public int /*long*/ method46 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method47 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method48 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method49 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method50 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method51 (int /*long*/[] args) {return printFrame (args[0], args[1]);}
-		public int /*long*/ method52 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method53 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method54 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method55 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method56 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method57 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method58 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method59 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method60 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method61 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method62 (int /*long*/[] args) {return setMenuBarVisible (args[0], (int)/*64*/args[1]);}
-		public int /*long*/ method63 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method64 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method65 (int /*long*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long /*int*/ method2 (long /*int*/[] args)  {return Release ();}
+		public long /*int*/ method3 (long /*int*/[] args)  {return createWebViewWithRequest (args[0], args[1], args[2]);}
+		public long /*int*/ method4 (long /*int*/[] args)  {return webViewShow (args[0]);}
+		public long /*int*/ method5 (long /*int*/[] args)  {return webViewClose (args[0]);}
+		public long /*int*/ method6 (long /*int*/[] args)  {return COM.E_NOTIMPL;}
+		public long /*int*/ method7 (long /*int*/[] args)  {return COM.E_NOTIMPL;}
+		public long /*int*/ method8 (long /*int*/[] args)  {return COM.E_NOTIMPL;}
+		public long /*int*/ method9 (long /*int*/[] args)  {return COM.E_NOTIMPL;}
+		public long /*int*/ method10 (long /*int*/[] args) {return setStatusText (args[0], args[1]);}
+		public long /*int*/ method11 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method12 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method13 (long /*int*/[] args) {return setToolbarsVisible (args[0], (int)/*64*/args[1]);}
+		public long /*int*/ method14 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method15 (long /*int*/[] args) {return setStatusBarVisible (args[0], (int)/*64*/args[1]);}
+		public long /*int*/ method16 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method17 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method18 (long /*int*/[] args) {return setFrame (args[0], args[1]);}
+		public long /*int*/ method19 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method20 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method21 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method22 (long /*int*/[] args) {return runJavaScriptAlertPanelWithMessage (args[0], args[1]);}
+		public long /*int*/ method23 (long /*int*/[] args) {return runJavaScriptConfirmPanelWithMessage (args[0], args[1], args[2]);}
+		public long /*int*/ method24 (long /*int*/[] args) {return runJavaScriptTextInputPanelWithPrompt (args[0], args[1], args[2], args[3]);}
+		public long /*int*/ method25 (long /*int*/[] args) {return runBeforeUnloadConfirmPanelWithMessage (args[0], args[1], args[2], args[3]);}
+		public long /*int*/ method26 (long /*int*/[] args) {return runOpenPanelForFileButtonWithResultListener (args[0], args[1]);}
+		public long /*int*/ method27 (long /*int*/[] args) {return mouseDidMoveOverElement (args[0], args[1], (int)/*64*/args[2]);}
+		public long /*int*/ method28 (long /*int*/[] args) {return contextMenuItemsForElement (args[0], args[1], args[2], args[3]);}
+		public long /*int*/ method29 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method30 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method31 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method32 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method33 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method34 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method35 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method36 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method37 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method38 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method39 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method40 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method41 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method42 (long /*int*/[] args) {return canTakeFocus (args[0], (int)/*64*/args[1], args[2]);}
+		public long /*int*/ method43 (long /*int*/[] args) {return takeFocus (args[0], (int)/*64*/args[1]);}
+		public long /*int*/ method44 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method45 (long /*int*/[] args) {return COM.S_OK;}
+		public long /*int*/ method46 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method47 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method48 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method49 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method50 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method51 (long /*int*/[] args) {return printFrame (args[0], args[1]);}
+		public long /*int*/ method52 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method53 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method54 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method55 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method56 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method57 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method58 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method59 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method60 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method61 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method62 (long /*int*/[] args) {return setMenuBarVisible (args[0], (int)/*64*/args[1]);}
+		public long /*int*/ method63 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method64 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method65 (long /*int*/[] args) {return COM.E_NOTIMPL;}
 	};
 }
 
-int createWebViewWithRequest (int /*long*/ sender, int /*long*/ request, int /*long*/ webView) {
+int createWebViewWithRequest (long /*int*/ sender, long /*int*/ request, long /*int*/ webView) {
 	WindowEvent newEvent = new WindowEvent (browser);
 	newEvent.display = browser.getDisplay ();
 	newEvent.widget = browser;
@@ -156,10 +156,10 @@ int createWebViewWithRequest (int /*long*/ sender, int /*long*/ request, int /*l
 	}
 	if (browser != null && !browser.isDisposed ()) {
 		iwebview = ((WebKit)browser.webBrowser).webView;
-		OS.MoveMemory (webView, new int /*long*/[] {iwebview.getAddress ()}, OS.PTR_SIZEOF);
+		OS.MoveMemory (webView, new long /*int*/[] {iwebview.getAddress ()}, OS.PTR_SIZEOF);
 		if (request != 0) {
 			IWebURLRequest req = new IWebURLRequest (request);
-			int /*long*/[] result = new int /*long*/[1];
+			long /*int*/[] result = new long /*int*/[1];
 			int hr = req.URL (result);
 			if (hr != COM.S_OK || result[0] == 0) {
 				return COM.S_OK;
@@ -189,17 +189,17 @@ protected void disposeCOMInterfaces () {
 	}	
 }
 
-int /*long*/ getAddress () {
+long /*int*/ getAddress () {
 	return iWebUIDelegate.getAddress ();
 }
 
-int mouseDidMoveOverElement (int /*long*/ sender, int /*long*/ elementInformation, int modifierFlags) {
+int mouseDidMoveOverElement (long /*int*/ sender, long /*int*/ elementInformation, int modifierFlags) {
 	if (elementInformation == 0) return COM.S_OK;
 
 	IPropertyBag info = new IPropertyBag (elementInformation);
-	int /*long*/ key = WebKit.createBSTR ("WebElementLinkURLKey"); //$NON-NLS-N$
-	int /*long*/ hHeap = OS.GetProcessHeap ();
-	int /*long*/ resultPtr = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, VARIANT.sizeof);
+	long /*int*/ key = WebKit.createBSTR ("WebElementLinkURLKey"); //$NON-NLS-N$
+	long /*int*/ hHeap = OS.GetProcessHeap ();
+	long /*int*/ resultPtr = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, VARIANT.sizeof);
 	int hr = info.Read (key, resultPtr, null);
 	if (hr != COM.S_OK || resultPtr == 0) {
 		return COM.S_OK;
@@ -235,15 +235,15 @@ int mouseDidMoveOverElement (int /*long*/ sender, int /*long*/ elementInformatio
 	return COM.S_OK;
 }
 
-int printFrame (int /*long*/ webView, int /*long*/ frame) {
+int printFrame (long /*int*/ webView, long /*int*/ frame) {
 	IWebFrame iwebFrame = new IWebFrame (frame);
 	PRINTDLG pd = new PRINTDLG ();
 	pd.lStructSize = PRINTDLG.sizeof;
 	pd.Flags = OS.PD_RETURNDC;
 	if (!OS.PrintDlg (pd)) return COM.S_OK;
-	int /*long*/ printDC = pd.hDC;
+	long /*int*/ printDC = pd.hDC;
 
-	int /*long*/[] result = new int /*long*/[1];
+	long /*int*/[] result = new long /*int*/[1];
 	int hr = iwebFrame.QueryInterface (WebKit_win32.IID_IWebFramePrivate, result);
 	if (hr != COM.S_OK || result[0] == 0) {
 		return COM.S_OK;
@@ -272,8 +272,8 @@ int printFrame (int /*long*/ webView, int /*long*/ frame) {
 	}
 	DOCINFO di = new DOCINFO ();
 	di.cbSize = DOCINFO.sizeof;
-	int /*long*/ hHeap = OS.GetProcessHeap ();
-	int /*long*/ lpszDocName = 0;
+	long /*int*/ hHeap = OS.GetProcessHeap ();
+	long /*int*/ lpszDocName = 0;
 	if (jobName != null && jobName.length () != 0) {
 		/* Use the character encoding for the default locale */
 		TCHAR buffer = new TCHAR (0, jobName, true);
@@ -297,23 +297,23 @@ int printFrame (int /*long*/ webView, int /*long*/ frame) {
 	return COM.S_OK;
 }
 
-int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
+int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return COM.E_INVALIDARG;
 	GUID guid = new GUID ();
 	COM.MoveMemory (guid, riid, GUID.sizeof);
 
 	if (COM.IsEqualGUID (guid, COM.IIDIUnknown)) {
-		COM.MoveMemory (ppvObject, new int /*long*/[] {iWebUIDelegate.getAddress ()}, OS.PTR_SIZEOF);
+		COM.MoveMemory (ppvObject, new long /*int*/[] {iWebUIDelegate.getAddress ()}, OS.PTR_SIZEOF);
 		new IUnknown (iWebUIDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID (guid, WebKit_win32.IID_IWebUIDelegate)) {
-		COM.MoveMemory (ppvObject, new int /*long*/[] {iWebUIDelegate.getAddress ()}, OS.PTR_SIZEOF);
+		COM.MoveMemory (ppvObject, new long /*int*/[] {iWebUIDelegate.getAddress ()}, OS.PTR_SIZEOF);
 		new IUnknown (iWebUIDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
 
-	COM.MoveMemory (ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
+	COM.MoveMemory (ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 
@@ -325,7 +325,7 @@ int Release () {
 	return refCount;
 }
 
-int runBeforeUnloadConfirmPanelWithMessage (int /*long*/ sender, int /*long*/ message, int /*long*/ initiatedByFrame, int /*long*/ result) {
+int runBeforeUnloadConfirmPanelWithMessage (long /*int*/ sender, long /*int*/ message, long /*int*/ initiatedByFrame, long /*int*/ result) {
 	if (!prompt) return COM.S_OK;
 
 	Shell parent = browser.getShell ();
@@ -343,13 +343,13 @@ int runBeforeUnloadConfirmPanelWithMessage (int /*long*/ sender, int /*long*/ me
 	return COM.S_OK;
 }
 
-int runJavaScriptAlertPanelWithMessage (int /*long*/ sender, int /*long*/ message) {
+int runJavaScriptAlertPanelWithMessage (long /*int*/ sender, long /*int*/ message) {
 	String messageString = WebKit.extractBSTR (message);
 	showAlertMessage ("Javascript", messageString);	//$NON-NLS-1$
 	return COM.S_OK;
 }
 
-int runJavaScriptConfirmPanelWithMessage (int /*long*/ sender, int /*long*/ message, int /*long*/ result) {
+int runJavaScriptConfirmPanelWithMessage (long /*int*/ sender, long /*int*/ message, long /*int*/ result) {
 	String messageString = WebKit.extractBSTR (message);
 	int[] response = new int[1];
 	response[0] = showConfirmPanel ("Javascript", messageString) == SWT.OK ? 1 : 0;	//$NON-NLS-1$
@@ -357,11 +357,11 @@ int runJavaScriptConfirmPanelWithMessage (int /*long*/ sender, int /*long*/ mess
 	return COM.S_OK;
 }
 
-int runJavaScriptTextInputPanelWithPrompt (int /*long*/ sender, int /*long*/ message, int /*long*/ defaultText, int /*long*/ result) {
+int runJavaScriptTextInputPanelWithPrompt (long /*int*/ sender, long /*int*/ message, long /*int*/ defaultText, long /*int*/ result) {
 	String messageString = WebKit.extractBSTR (message);
 	String defaultTextString = WebKit.extractBSTR (defaultText);
 	String resultString = showTextPrompter ("Javascript", messageString, defaultTextString); //$NON-NLS-1$
-	int /*long*/[] response = new int /*long*/[1];
+	long /*int*/[] response = new long /*int*/[1];
 	if (resultString != null) {
 		response[0] = WebKit.createBSTR (resultString);
 	}
@@ -369,7 +369,7 @@ int runJavaScriptTextInputPanelWithPrompt (int /*long*/ sender, int /*long*/ mes
 	return COM.S_OK;
 }
 
-int runOpenPanelForFileButtonWithResultListener (int /*long*/ sender, int /*long*/ resultListener) {
+int runOpenPanelForFileButtonWithResultListener (long /*int*/ sender, long /*int*/ resultListener) {
 	Shell parent = browser.getShell ();
 	FileDialog dialog = new FileDialog (parent, SWT.NONE);
 	String result = dialog.open ();
@@ -382,7 +382,7 @@ int runOpenPanelForFileButtonWithResultListener (int /*long*/ sender, int /*long
 	return COM.S_OK;
 }
 
-int setFrame (int /*long*/ sender, int /*long*/ frame) {
+int setFrame (long /*int*/ sender, long /*int*/ frame) {
 	RECT rect = new RECT ();
 	COM.MoveMemory (rect, frame, RECT.sizeof);
 	/* convert to SWT system coordinates */
@@ -394,19 +394,19 @@ int setFrame (int /*long*/ sender, int /*long*/ frame) {
 	return COM.S_OK;
 }
 
-int setMenuBarVisible (int /*long*/ sender, int visible) {
+int setMenuBarVisible (long /*int*/ sender, int visible) {
 	/* Note.  Webkit only emits the notification when the status bar should be hidden. */
 	menuBar = visible == 1;
 	return COM.S_OK;
 }
 
-int setStatusBarVisible (int /*long*/ sender, int visible) {
+int setStatusBarVisible (long /*int*/ sender, int visible) {
 	/* Note.  Webkit only emits the notification when the status bar should be hidden. */
 	statusBar = visible == 1;
 	return COM.S_OK;
 }
 
-int setStatusText (int /*long*/ sender, int /*long*/ text) {
+int setStatusText (long /*int*/ sender, long /*int*/ text) {
 	String statusText = WebKit.extractBSTR (text);
 	if (statusText.length () == 0) return COM.S_OK;
 	StatusTextEvent statusTextEvent = new StatusTextEvent (browser);
@@ -420,7 +420,7 @@ int setStatusText (int /*long*/ sender, int /*long*/ text) {
 	return COM.S_OK;
 }
 
-int setToolbarsVisible (int /*long*/ sender, int visible) {
+int setToolbarsVisible (long /*int*/ sender, int visible) {
 	/* Note.  Webkit only emits the notification when the status bar should be hidden. */
 	toolBar = visible == 1;
 	return COM.S_OK;
@@ -604,14 +604,14 @@ String showTextPrompter (String title, String message, String defaultText) {
 	return result[0];
 }
 
-int takeFocus (int /*long*/ sender, int forward) {
+int takeFocus (long /*int*/ sender, int forward) {
 	int traveralCode = forward == 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
 	((WebKit)browser.webBrowser).traverseOut = true;
 	browser.traverse (traveralCode);
 	return COM.S_OK;
 }
 
-int webViewClose (int /*long*/ sender) {
+int webViewClose (long /*int*/ sender) {
 	WindowEvent newEvent = new WindowEvent (browser);
 	newEvent.display = browser.getDisplay ();
 	newEvent.widget = browser;
@@ -623,13 +623,13 @@ int webViewClose (int /*long*/ sender) {
 	return COM.S_OK;
 }
 
-int webViewFrame (int /*long*/ sender, int /*long*/ frame) {
+int webViewFrame (long /*int*/ sender, long /*int*/ frame) {
 	RECT rect = new RECT ();
 	OS.MoveMemory (frame, rect, RECT.sizeof);
 	return COM.S_OK;
 }
 
-int webViewShow (int /*long*/ sender) {
+int webViewShow (long /*int*/ sender) {
 	WindowEvent newEvent = new WindowEvent (browser);
 	newEvent.display = browser.getDisplay ();
 	newEvent.widget = browser;

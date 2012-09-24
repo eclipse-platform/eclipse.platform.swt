@@ -37,11 +37,11 @@ public class nsIPromptFactory extends nsISupports {
 	public static final nsID NS_IPROMPTFACTORY_IID =
 		new nsID(NS_IPROMPTFACTORY_IID_STR);
 
-	public nsIPromptFactory(int /*long*/ address) {
+	public nsIPromptFactory(long /*int*/ address) {
 		super(address);
 	}
 
-	public int getPrompt(int /*long*/ aParent, nsID iid, int /*long*/[] result) {
+	public int getPrompt(long /*int*/ aParent, nsID iid, long /*int*/[] result) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aParent, iid, result);
 	}
 }

@@ -12,9 +12,9 @@ package org.eclipse.swt.internal.ole.win32;
 
 public final class DISPPARAMS {
 	/** @field cast=(VARIANTARG FAR *) */
-	public int /*long*/ rgvarg;
+	public long /*int*/ rgvarg;
 	/** @field cast=(DISPID FAR *) */
-	public int /*long*/ rgdispidNamedArgs;
+	public long /*int*/ rgdispidNamedArgs;
 	public int cArgs;
 	public int cNamedArgs;
 	public static final int sizeof = COM.DISPPARAMS_sizeof ();

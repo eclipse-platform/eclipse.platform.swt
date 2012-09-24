@@ -30,10 +30,10 @@ package org.eclipse.swt.internal.mozilla.init;
 /** @jniclass flags=cpp */
 public class GREVersionRange {
     /** @field cast=(const char *) */
-	public int /*long*/ lower;
+	public long /*int*/ lower;
     public boolean lowerInclusive;
     /** @field cast=(const char *) */
-	public int /*long*/ upper;
+	public long /*int*/ upper;
     public boolean upperInclusive;
     public static final int sizeof = XPCOMInit.GREVersionRange_sizeof();
 }

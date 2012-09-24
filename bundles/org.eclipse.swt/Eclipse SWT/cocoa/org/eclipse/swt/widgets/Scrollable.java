@@ -134,7 +134,7 @@ ScrollBar createScrollBar (int style) {
 	bar.style = style;
 	bar.display = display;
 	NSScroller scroller;
-	int /*long*/ actionSelector;
+	long /*int*/ actionSelector;
 	NSRect rect = new NSRect();
 	if ((style & SWT.H_SCROLL) != 0) {
 		rect.width = 1;
@@ -271,7 +271,7 @@ boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
 }
 
-boolean isEventView (int /*long*/ id) {
+boolean isEventView (long /*int*/ id) {
 	return id == eventView ().id;
 }
 
@@ -331,7 +331,7 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
-void scrollClipViewToPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ clipView, NSPoint point) {
+void scrollClipViewToPoint (long /*int*/ id, long /*int*/ sel, long /*int*/ clipView, NSPoint point) {
 	if ((state & CANVAS) == 0 && scrollView != null) {
 		NSClipView clip = new NSClipView (clipView);
 		boolean oldCopies = clip.copiesOnScroll (), copies = oldCopies;

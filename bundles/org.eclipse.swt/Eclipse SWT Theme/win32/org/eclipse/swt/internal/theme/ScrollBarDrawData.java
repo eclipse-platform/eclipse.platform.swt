@@ -25,7 +25,7 @@ public ScrollBarDrawData() {
 
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		int /*long*/ hTheme = OS.OpenThemeData(0, getClassId());
+		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
 		RECT rect = new RECT ();
 		if ((style & SWT.VERTICAL) != 0) {
 			int width = OS.GetThemeSysSize(hTheme, OS.SM_CXVSCROLL);
@@ -159,7 +159,7 @@ int[] getPartId(int part) {
 
 Rectangle getBounds(int part, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		int /*long*/ hTheme = OS.OpenThemeData(0, getClassId());
+		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
 		if ((style & SWT.VERTICAL) != 0) {
 			int width = OS.GetThemeSysSize(hTheme, OS.SM_CXVSCROLL);
 			int totalWidth = bounds.height - 2 * width;
@@ -187,7 +187,7 @@ Rectangle getBounds(int part, Rectangle bounds) {
 
 int getSelection(Point position, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		int /*long*/ hTheme = OS.OpenThemeData(0, getClassId());
+		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
 		if ((style & SWT.VERTICAL) != 0) {
 			int width = OS.GetThemeSysSize(hTheme, OS.SM_CXVSCROLL);			
 			int totalWidth = bounds.height - 2 * width;
@@ -205,7 +205,7 @@ int getSelection(Point position, Rectangle bounds) {
 
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!(OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ())) return -1;
-	int /*long*/ hTheme = OS.OpenThemeData(0, getClassId());
+	long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
 	//TODO - should we take a GC?
 	int hDC = 0;
 	RECT rect = new RECT ();

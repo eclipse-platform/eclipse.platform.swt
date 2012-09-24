@@ -115,7 +115,7 @@ public class Accessible {
 
 	Accessible(Control control) {
 		this.control = control;
-		int /*long*/[] ppvObject = new int /*long*/[1];
+		long /*int*/[] ppvObject = new long /*int*/[1];
 		/* CreateStdAccessibleObject([in] hwnd, [in] idObject, [in] riidInterface, [out] ppvObject).
 		 * AddRef has already been called on ppvObject by the callee and must be released by the caller.
 		 */
@@ -130,7 +130,7 @@ public class Accessible {
 		AddRef();
 	}
 
-	Accessible(Accessible parent, int /*long*/ iaccessible_address) {
+	Accessible(Accessible parent, long /*int*/ iaccessible_address) {
 		this(parent);
 		iaccessible = new IAccessible(iaccessible_address);
 	}
@@ -142,44 +142,44 @@ public class Accessible {
 
 	void createIAccessible() {
 		objIAccessible = new COMObject(new int[] {2,0,0,1,3,5,8,1,1,2,2,2,2,2,2,2,3,2,1,1,2,2,5,3,3,1,2,2}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-			public int /*long*/ method2(int /*long*/[] args) {return Release();}
+			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			public long /*int*/ method2(long /*int*/[] args) {return Release();}
 			// method3 GetTypeInfoCount - not implemented
 			// method4 GetTypeInfo - not implemented
 			// method5 GetIDsOfNames - not implemented
 			// method6 Invoke - not implemented
-			public int /*long*/ method7(int /*long*/[] args) {return get_accParent(args[0]);}
-			public int /*long*/ method8(int /*long*/[] args) {return get_accChildCount(args[0]);}
-			public int /*long*/ method9(int /*long*/[] args) {return get_accChild(args[0], args[1]);}
-			public int /*long*/ method10(int /*long*/[] args) {return get_accName(args[0], args[1]);}
-			public int /*long*/ method11(int /*long*/[] args) {return get_accValue(args[0], args[1]);}
-			public int /*long*/ method12(int /*long*/[] args) {return get_accDescription(args[0], args[1]);}
-			public int /*long*/ method13(int /*long*/[] args) {return get_accRole(args[0], args[1]);}
-			public int /*long*/ method14(int /*long*/[] args) {return get_accState(args[0], args[1]);}
-			public int /*long*/ method15(int /*long*/[] args) {return get_accHelp(args[0], args[1]);}
-			public int /*long*/ method16(int /*long*/[] args) {return get_accHelpTopic(args[0], args[1], args[2]);}
-			public int /*long*/ method17(int /*long*/[] args) {return get_accKeyboardShortcut(args[0], args[1]);}
-			public int /*long*/ method18(int /*long*/[] args) {return get_accFocus(args[0]);}
-			public int /*long*/ method19(int /*long*/[] args) {return get_accSelection(args[0]);}
-			public int /*long*/ method20(int /*long*/[] args) {return get_accDefaultAction(args[0], args[1]);}
-			public int /*long*/ method21(int /*long*/[] args) {return accSelect((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method22(int /*long*/[] args) {return accLocation(args[0], args[1], args[2], args[3], args[4]);}
-			public int /*long*/ method23(int /*long*/[] args) {return accNavigate((int)/*64*/args[0], args[1], args[2]);}
-			public int /*long*/ method24(int /*long*/[] args) {return accHitTest((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
-			public int /*long*/ method25(int /*long*/[] args) {return accDoDefaultAction(args[0]);}
-			public int /*long*/ method26(int /*long*/[] args) {return put_accName(args[0], args[1]);}
-			public int /*long*/ method27(int /*long*/[] args) {return put_accValue(args[0], args[1]);}
+			public long /*int*/ method7(long /*int*/[] args) {return get_accParent(args[0]);}
+			public long /*int*/ method8(long /*int*/[] args) {return get_accChildCount(args[0]);}
+			public long /*int*/ method9(long /*int*/[] args) {return get_accChild(args[0], args[1]);}
+			public long /*int*/ method10(long /*int*/[] args) {return get_accName(args[0], args[1]);}
+			public long /*int*/ method11(long /*int*/[] args) {return get_accValue(args[0], args[1]);}
+			public long /*int*/ method12(long /*int*/[] args) {return get_accDescription(args[0], args[1]);}
+			public long /*int*/ method13(long /*int*/[] args) {return get_accRole(args[0], args[1]);}
+			public long /*int*/ method14(long /*int*/[] args) {return get_accState(args[0], args[1]);}
+			public long /*int*/ method15(long /*int*/[] args) {return get_accHelp(args[0], args[1]);}
+			public long /*int*/ method16(long /*int*/[] args) {return get_accHelpTopic(args[0], args[1], args[2]);}
+			public long /*int*/ method17(long /*int*/[] args) {return get_accKeyboardShortcut(args[0], args[1]);}
+			public long /*int*/ method18(long /*int*/[] args) {return get_accFocus(args[0]);}
+			public long /*int*/ method19(long /*int*/[] args) {return get_accSelection(args[0]);}
+			public long /*int*/ method20(long /*int*/[] args) {return get_accDefaultAction(args[0], args[1]);}
+			public long /*int*/ method21(long /*int*/[] args) {return accSelect((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method22(long /*int*/[] args) {return accLocation(args[0], args[1], args[2], args[3], args[4]);}
+			public long /*int*/ method23(long /*int*/[] args) {return accNavigate((int)/*64*/args[0], args[1], args[2]);}
+			public long /*int*/ method24(long /*int*/[] args) {return accHitTest((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+			public long /*int*/ method25(long /*int*/[] args) {return accDoDefaultAction(args[0]);}
+			public long /*int*/ method26(long /*int*/[] args) {return put_accName(args[0], args[1]);}
+			public long /*int*/ method27(long /*int*/[] args) {return put_accValue(args[0], args[1]);}
 		};
 	
 		/* If the callback takes a struct parameter (for example, a VARIANT),
 		 * then create a custom callback that dereferences the struct and
 		 * passes a pointer to the original callback.
 		 */
-		int /*long*/ ppVtable = objIAccessible.ppVtable;
-		int /*long*/[] pVtable = new int /*long*/[1];
+		long /*int*/ ppVtable = objIAccessible.ppVtable;
+		long /*int*/[] pVtable = new long /*int*/[1];
 		COM.MoveMemory(pVtable, ppVtable, OS.PTR_SIZEOF);
-		int /*long*/[] funcs = new int /*long*/[28];
+		long /*int*/[] funcs = new long /*int*/[28];
 		COM.MoveMemory(funcs, pVtable[0], OS.PTR_SIZEOF * funcs.length);
 		funcs[9] = COM.get_accChild_CALLBACK(funcs[9]);
 		funcs[10] = COM.get_accName_CALLBACK(funcs[10]);
@@ -202,9 +202,9 @@ public class Accessible {
 
 	void createIAccessible2() {
 		objIAccessible2 = new COMObject(new int[] {2,0,0,/*IA>>*/1,3,5,8,1,1,2,2,2,2,2,2,2,3,2,1,1,2,2,5,3,3,1,2,2,/*<<IA*/1,2,3,1,1,3,3,1,1,1,1,3,3,1,1,1,1,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-			public int /*long*/ method2(int /*long*/[] args) {return Release();}
+			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			public long /*int*/ method2(long /*int*/[] args) {return Release();}
 			
 			/* 
 			 * Even though the IA2 spec says "AT's should not rely on IA inheritance",
@@ -214,57 +214,57 @@ public class Accessible {
 			// method4 GetTypeInfo - not implemented
 			// method5 GetIDsOfNames - not implemented
 			// method6 Invoke - not implemented
-			public int /*long*/ method7(int /*long*/[] args) {return get_accParent(args[0]);}
-			public int /*long*/ method8(int /*long*/[] args) {return get_accChildCount(args[0]);}
-			public int /*long*/ method9(int /*long*/[] args) {return get_accChild(args[0], args[1]);}
-			public int /*long*/ method10(int /*long*/[] args) {return get_accName(args[0], args[1]);}
-			public int /*long*/ method11(int /*long*/[] args) {return get_accValue(args[0], args[1]);}
-			public int /*long*/ method12(int /*long*/[] args) {return get_accDescription(args[0], args[1]);}
-			public int /*long*/ method13(int /*long*/[] args) {return get_accRole(args[0], args[1]);}
-			public int /*long*/ method14(int /*long*/[] args) {return get_accState(args[0], args[1]);}
-			public int /*long*/ method15(int /*long*/[] args) {return get_accHelp(args[0], args[1]);}
-			public int /*long*/ method16(int /*long*/[] args) {return get_accHelpTopic(args[0], args[1], args[2]);}
-			public int /*long*/ method17(int /*long*/[] args) {return get_accKeyboardShortcut(args[0], args[1]);}
-			public int /*long*/ method18(int /*long*/[] args) {return get_accFocus(args[0]);}
-			public int /*long*/ method19(int /*long*/[] args) {return get_accSelection(args[0]);}
-			public int /*long*/ method20(int /*long*/[] args) {return get_accDefaultAction(args[0], args[1]);}
-			public int /*long*/ method21(int /*long*/[] args) {return accSelect((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method22(int /*long*/[] args) {return accLocation(args[0], args[1], args[2], args[3], args[4]);}
-			public int /*long*/ method23(int /*long*/[] args) {return accNavigate((int)/*64*/args[0], args[1], args[2]);}
-			public int /*long*/ method24(int /*long*/[] args) {return accHitTest((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
-			public int /*long*/ method25(int /*long*/[] args) {return accDoDefaultAction(args[0]);}
-			public int /*long*/ method26(int /*long*/[] args) {return put_accName(args[0], args[1]);}
-			public int /*long*/ method27(int /*long*/[] args) {return put_accValue(args[0], args[1]);}
+			public long /*int*/ method7(long /*int*/[] args) {return get_accParent(args[0]);}
+			public long /*int*/ method8(long /*int*/[] args) {return get_accChildCount(args[0]);}
+			public long /*int*/ method9(long /*int*/[] args) {return get_accChild(args[0], args[1]);}
+			public long /*int*/ method10(long /*int*/[] args) {return get_accName(args[0], args[1]);}
+			public long /*int*/ method11(long /*int*/[] args) {return get_accValue(args[0], args[1]);}
+			public long /*int*/ method12(long /*int*/[] args) {return get_accDescription(args[0], args[1]);}
+			public long /*int*/ method13(long /*int*/[] args) {return get_accRole(args[0], args[1]);}
+			public long /*int*/ method14(long /*int*/[] args) {return get_accState(args[0], args[1]);}
+			public long /*int*/ method15(long /*int*/[] args) {return get_accHelp(args[0], args[1]);}
+			public long /*int*/ method16(long /*int*/[] args) {return get_accHelpTopic(args[0], args[1], args[2]);}
+			public long /*int*/ method17(long /*int*/[] args) {return get_accKeyboardShortcut(args[0], args[1]);}
+			public long /*int*/ method18(long /*int*/[] args) {return get_accFocus(args[0]);}
+			public long /*int*/ method19(long /*int*/[] args) {return get_accSelection(args[0]);}
+			public long /*int*/ method20(long /*int*/[] args) {return get_accDefaultAction(args[0], args[1]);}
+			public long /*int*/ method21(long /*int*/[] args) {return accSelect((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method22(long /*int*/[] args) {return accLocation(args[0], args[1], args[2], args[3], args[4]);}
+			public long /*int*/ method23(long /*int*/[] args) {return accNavigate((int)/*64*/args[0], args[1], args[2]);}
+			public long /*int*/ method24(long /*int*/[] args) {return accHitTest((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+			public long /*int*/ method25(long /*int*/[] args) {return accDoDefaultAction(args[0]);}
+			public long /*int*/ method26(long /*int*/[] args) {return put_accName(args[0], args[1]);}
+			public long /*int*/ method27(long /*int*/[] args) {return put_accValue(args[0], args[1]);}
 
 			// IAccessible2 methods
-			public int /*long*/ method28(int /*long*/[] args) {return get_nRelations(args[0]);}
-			public int /*long*/ method29(int /*long*/[] args) {return get_relation((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method30(int /*long*/[] args) {return get_relations((int)/*64*/args[0], args[1], args[2]);}
-			public int /*long*/ method31(int /*long*/[] args) {return get_role(args[0]);}
-			public int /*long*/ method32(int /*long*/[] args) {return scrollTo((int)/*64*/args[0]);}
-			public int /*long*/ method33(int /*long*/[] args) {return scrollToPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
-			public int /*long*/ method34(int /*long*/[] args) {return get_groupPosition(args[0], args[1], args[2]);}
-			public int /*long*/ method35(int /*long*/[] args) {return get_states(args[0]);}
-			public int /*long*/ method36(int /*long*/[] args) {return get_extendedRole(args[0]);}
-			public int /*long*/ method37(int /*long*/[] args) {return get_localizedExtendedRole(args[0]);}
-			public int /*long*/ method38(int /*long*/[] args) {return get_nExtendedStates(args[0]);}
-			public int /*long*/ method39(int /*long*/[] args) {return get_extendedStates((int)/*64*/args[0], args[1], args[2]);}
-			public int /*long*/ method40(int /*long*/[] args) {return get_localizedExtendedStates((int)/*64*/args[0], args[1], args[2]);}
-			public int /*long*/ method41(int /*long*/[] args) {return get_uniqueID(args[0]);}
-			public int /*long*/ method42(int /*long*/[] args) {return get_windowHandle(args[0]);}
-			public int /*long*/ method43(int /*long*/[] args) {return get_indexInParent(args[0]);}
-			public int /*long*/ method44(int /*long*/[] args) {return get_locale(args[0]);}
-			public int /*long*/ method45(int /*long*/[] args) {return get_attributes(args[0]);}
+			public long /*int*/ method28(long /*int*/[] args) {return get_nRelations(args[0]);}
+			public long /*int*/ method29(long /*int*/[] args) {return get_relation((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method30(long /*int*/[] args) {return get_relations((int)/*64*/args[0], args[1], args[2]);}
+			public long /*int*/ method31(long /*int*/[] args) {return get_role(args[0]);}
+			public long /*int*/ method32(long /*int*/[] args) {return scrollTo((int)/*64*/args[0]);}
+			public long /*int*/ method33(long /*int*/[] args) {return scrollToPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
+			public long /*int*/ method34(long /*int*/[] args) {return get_groupPosition(args[0], args[1], args[2]);}
+			public long /*int*/ method35(long /*int*/[] args) {return get_states(args[0]);}
+			public long /*int*/ method36(long /*int*/[] args) {return get_extendedRole(args[0]);}
+			public long /*int*/ method37(long /*int*/[] args) {return get_localizedExtendedRole(args[0]);}
+			public long /*int*/ method38(long /*int*/[] args) {return get_nExtendedStates(args[0]);}
+			public long /*int*/ method39(long /*int*/[] args) {return get_extendedStates((int)/*64*/args[0], args[1], args[2]);}
+			public long /*int*/ method40(long /*int*/[] args) {return get_localizedExtendedStates((int)/*64*/args[0], args[1], args[2]);}
+			public long /*int*/ method41(long /*int*/[] args) {return get_uniqueID(args[0]);}
+			public long /*int*/ method42(long /*int*/[] args) {return get_windowHandle(args[0]);}
+			public long /*int*/ method43(long /*int*/[] args) {return get_indexInParent(args[0]);}
+			public long /*int*/ method44(long /*int*/[] args) {return get_locale(args[0]);}
+			public long /*int*/ method45(long /*int*/[] args) {return get_attributes(args[0]);}
 		};
 
 		/* If the callback takes a struct parameter (for example, a VARIANT),
 		 * then create a custom callback that dereferences the struct and
 		 * passes a pointer to the original callback.
 		 */
-		int /*long*/ ppVtable = objIAccessible2.ppVtable;
-		int /*long*/[] pVtable = new int /*long*/[1];
+		long /*int*/ ppVtable = objIAccessible2.ppVtable;
+		long /*int*/[] pVtable = new long /*int*/[1];
 		COM.MoveMemory(pVtable, ppVtable, OS.PTR_SIZEOF);
-		int /*long*/[] funcs = new int /*long*/[28];
+		long /*int*/[] funcs = new long /*int*/[28];
 		COM.MoveMemory(funcs, pVtable[0], OS.PTR_SIZEOF * funcs.length);
 		funcs[9] = COM.get_accChild_CALLBACK(funcs[9]);
 		funcs[10] = COM.get_accName_CALLBACK(funcs[10]);
@@ -287,209 +287,209 @@ public class Accessible {
 
 	void createIAccessibleAction() {
 		objIAccessibleAction = new COMObject(new int[] {2,0,0,1,1,2,4,2,2}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-			public int /*long*/ method3(int /*long*/[] args) {return get_nActions(args[0]);}
-			public int /*long*/ method4(int /*long*/[] args) {return doAction((int)/*64*/args[0]);}
-			public int /*long*/ method5(int /*long*/[] args) {return get_description((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method6(int /*long*/[] args) {return get_keyBinding((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3]);}
-			public int /*long*/ method7(int /*long*/[] args) {return get_name((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method8(int /*long*/[] args) {return get_localizedName((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			public long /*int*/ method3(long /*int*/[] args) {return get_nActions(args[0]);}
+			public long /*int*/ method4(long /*int*/[] args) {return doAction((int)/*64*/args[0]);}
+			public long /*int*/ method5(long /*int*/[] args) {return get_description((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method6(long /*int*/[] args) {return get_keyBinding((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3]);}
+			public long /*int*/ method7(long /*int*/[] args) {return get_name((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method8(long /*int*/[] args) {return get_localizedName((int)/*64*/args[0], args[1]);}
 		};
 	}
 
 	void createIAccessibleApplication() {
 		objIAccessibleApplication = new COMObject(new int[] {2,0,0,1,1,1,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-			public int /*long*/ method3(int /*long*/[] args) {return get_appName(args[0]);}
-			public int /*long*/ method4(int /*long*/[] args) {return get_appVersion(args[0]);}
-			public int /*long*/ method5(int /*long*/[] args) {return get_toolkitName(args[0]);}
-			public int /*long*/ method6(int /*long*/[] args) {return get_toolkitVersion(args[0]);}
+			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			public long /*int*/ method3(long /*int*/[] args) {return get_appName(args[0]);}
+			public long /*int*/ method4(long /*int*/[] args) {return get_appVersion(args[0]);}
+			public long /*int*/ method5(long /*int*/[] args) {return get_toolkitName(args[0]);}
+			public long /*int*/ method6(long /*int*/[] args) {return get_toolkitVersion(args[0]);}
 		};
 	}
 
 	// This method is intentionally commented. We are not providing IAccessibleComponent at this time.
 //	void createIAccessibleComponent() {
 //		objIAccessibleComponent = new COMObject(new int[] {2,0,0,2,1,1}) {
-//			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-//			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-//			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-//			public int /*long*/ method3(int /*long*/[] args) {return get_locationInParent(args[0], args[1]);}
-//			public int /*long*/ method4(int /*long*/[] args) {return get_foreground(args[0]);}
-//			public int /*long*/ method5(int /*long*/[] args) {return get_background(args[0]);}
+//			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+//			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+//			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+//			public long /*int*/ method3(long /*int*/[] args) {return get_locationInParent(args[0], args[1]);}
+//			public long /*int*/ method4(long /*int*/[] args) {return get_foreground(args[0]);}
+//			public long /*int*/ method5(long /*int*/[] args) {return get_background(args[0]);}
 //		};
 //	}
 
 	void createIAccessibleEditableText() {
 		objIAccessibleEditableText = new COMObject(new int[] {2,0,0,2,2,2,2,1,3,3}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-			public int /*long*/ method3(int /*long*/[] args) {return copyText((int)/*64*/args[0], (int)/*64*/args[1]);}
-			public int /*long*/ method4(int /*long*/[] args) {return deleteText((int)/*64*/args[0], (int)/*64*/args[1]);}
-			public int /*long*/ method5(int /*long*/[] args) {return insertText((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method6(int /*long*/[] args) {return cutText((int)/*64*/args[0], (int)/*64*/args[1]);}
-			public int /*long*/ method7(int /*long*/[] args) {return pasteText((int)/*64*/args[0]);}
-			public int /*long*/ method8(int /*long*/[] args) {return replaceText((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
-			public int /*long*/ method9(int /*long*/[] args) {return setAttributes((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			public long /*int*/ method3(long /*int*/[] args) {return copyText((int)/*64*/args[0], (int)/*64*/args[1]);}
+			public long /*int*/ method4(long /*int*/[] args) {return deleteText((int)/*64*/args[0], (int)/*64*/args[1]);}
+			public long /*int*/ method5(long /*int*/[] args) {return insertText((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method6(long /*int*/[] args) {return cutText((int)/*64*/args[0], (int)/*64*/args[1]);}
+			public long /*int*/ method7(long /*int*/[] args) {return pasteText((int)/*64*/args[0]);}
+			public long /*int*/ method8(long /*int*/[] args) {return replaceText((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+			public long /*int*/ method9(long /*int*/[] args) {return setAttributes((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
 		};
 	}
 
 	void createIAccessibleHyperlink() {
 		objIAccessibleHyperlink = new COMObject(new int[] {2,0,0,/*IAA>>*/1,1,2,4,2,2,/*<<IAA*/2,2,1,1,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-			public int /*long*/ method2(int /*long*/[] args) {return Release();}
+			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			public long /*int*/ method2(long /*int*/[] args) {return Release();}
 			// IAccessibleAction
-			public int /*long*/ method3(int /*long*/[] args) {return get_nActions(args[0]);}
-			public int /*long*/ method4(int /*long*/[] args) {return doAction((int)/*64*/args[0]);}
-			public int /*long*/ method5(int /*long*/[] args) {return get_description((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method6(int /*long*/[] args) {return get_keyBinding((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3]);}
-			public int /*long*/ method7(int /*long*/[] args) {return get_name((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method8(int /*long*/[] args) {return get_localizedName((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method3(long /*int*/[] args) {return get_nActions(args[0]);}
+			public long /*int*/ method4(long /*int*/[] args) {return doAction((int)/*64*/args[0]);}
+			public long /*int*/ method5(long /*int*/[] args) {return get_description((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method6(long /*int*/[] args) {return get_keyBinding((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3]);}
+			public long /*int*/ method7(long /*int*/[] args) {return get_name((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method8(long /*int*/[] args) {return get_localizedName((int)/*64*/args[0], args[1]);}
 			// IAccessibleHyperlink
-			public int /*long*/ method9(int /*long*/[] args) {return get_anchor((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method10(int /*long*/[] args) {return get_anchorTarget((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method11(int /*long*/[] args) {return get_startIndex(args[0]);}
-			public int /*long*/ method12(int /*long*/[] args) {return get_endIndex(args[0]);}
-			public int /*long*/ method13(int /*long*/[] args) {return get_valid(args[0]);}
+			public long /*int*/ method9(long /*int*/[] args) {return get_anchor((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method10(long /*int*/[] args) {return get_anchorTarget((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method11(long /*int*/[] args) {return get_startIndex(args[0]);}
+			public long /*int*/ method12(long /*int*/[] args) {return get_endIndex(args[0]);}
+			public long /*int*/ method13(long /*int*/[] args) {return get_valid(args[0]);}
 		};
 	}
 
 	void createIAccessibleHypertext() {
 		objIAccessibleHypertext = new COMObject(new int[] {2,0,0,/*IAT>>*/2,4,1,6,1,4,3,3,5,5,5,1,1,3,1,3,5,1,1,/*<<IAT*/1,2,2}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-			public int /*long*/ method2(int /*long*/[] args) {return Release();}
+			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			public long /*int*/ method2(long /*int*/[] args) {return Release();}
 			// IAccessibleText
-			public int /*long*/ method3(int /*long*/[] args) {return addSelection((int)/*64*/args[0], (int)/*64*/args[1]);}
-			public int /*long*/ method4(int /*long*/[] args) {return get_attributes((int)/*64*/args[0], args[1], args[2], args[3]);}
-			public int /*long*/ method5(int /*long*/[] args) {return get_caretOffset(args[0]);}
-			public int /*long*/ method6(int /*long*/[] args) {return get_characterExtents((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4], args[5]);}
-			public int /*long*/ method7(int /*long*/[] args) {return get_nSelections(args[0]);}
-			public int /*long*/ method8(int /*long*/[] args) {return get_offsetAtPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], args[3]);}
-			public int /*long*/ method9(int /*long*/[] args) {return get_selection((int)/*64*/args[0], args[1], args[2]);}
-			public int /*long*/ method10(int /*long*/[] args) {return get_text((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
-			public int /*long*/ method11(int /*long*/[] args) {return get_textBeforeOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
-			public int /*long*/ method12(int /*long*/[] args) {return get_textAfterOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
-			public int /*long*/ method13(int /*long*/[] args) {return get_textAtOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
-			public int /*long*/ method14(int /*long*/[] args) {return removeSelection((int)/*64*/args[0]);}
-			public int /*long*/ method15(int /*long*/[] args) {return setCaretOffset((int)/*64*/args[0]);}
-			public int /*long*/ method16(int /*long*/[] args) {return setSelection((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
-			public int /*long*/ method17(int /*long*/[] args) {return get_nCharacters(args[0]);}
-			public int /*long*/ method18(int /*long*/[] args) {return scrollSubstringTo((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
-			public int /*long*/ method19(int /*long*/[] args) {return scrollSubstringToPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4]);}
-			public int /*long*/ method20(int /*long*/[] args) {return get_newText(args[0]);}
-			public int /*long*/ method21(int /*long*/[] args) {return get_oldText(args[0]);}
+			public long /*int*/ method3(long /*int*/[] args) {return addSelection((int)/*64*/args[0], (int)/*64*/args[1]);}
+			public long /*int*/ method4(long /*int*/[] args) {return get_attributes((int)/*64*/args[0], args[1], args[2], args[3]);}
+			public long /*int*/ method5(long /*int*/[] args) {return get_caretOffset(args[0]);}
+			public long /*int*/ method6(long /*int*/[] args) {return get_characterExtents((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4], args[5]);}
+			public long /*int*/ method7(long /*int*/[] args) {return get_nSelections(args[0]);}
+			public long /*int*/ method8(long /*int*/[] args) {return get_offsetAtPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], args[3]);}
+			public long /*int*/ method9(long /*int*/[] args) {return get_selection((int)/*64*/args[0], args[1], args[2]);}
+			public long /*int*/ method10(long /*int*/[] args) {return get_text((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+			public long /*int*/ method11(long /*int*/[] args) {return get_textBeforeOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+			public long /*int*/ method12(long /*int*/[] args) {return get_textAfterOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+			public long /*int*/ method13(long /*int*/[] args) {return get_textAtOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+			public long /*int*/ method14(long /*int*/[] args) {return removeSelection((int)/*64*/args[0]);}
+			public long /*int*/ method15(long /*int*/[] args) {return setCaretOffset((int)/*64*/args[0]);}
+			public long /*int*/ method16(long /*int*/[] args) {return setSelection((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
+			public long /*int*/ method17(long /*int*/[] args) {return get_nCharacters(args[0]);}
+			public long /*int*/ method18(long /*int*/[] args) {return scrollSubstringTo((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
+			public long /*int*/ method19(long /*int*/[] args) {return scrollSubstringToPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4]);}
+			public long /*int*/ method20(long /*int*/[] args) {return get_newText(args[0]);}
+			public long /*int*/ method21(long /*int*/[] args) {return get_oldText(args[0]);}
 			// IAccessibleHypertext
-			public int /*long*/ method22(int /*long*/[] args) {return get_nHyperlinks(args[0]);}
-			public int /*long*/ method23(int /*long*/[] args) {return get_hyperlink((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method24(int /*long*/[] args) {return get_hyperlinkIndex((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method22(long /*int*/[] args) {return get_nHyperlinks(args[0]);}
+			public long /*int*/ method23(long /*int*/[] args) {return get_hyperlink((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method24(long /*int*/[] args) {return get_hyperlinkIndex((int)/*64*/args[0], args[1]);}
 		};
 	}
 
 	// This method is intentionally commented. We are not providing IAccessibleImage at this time.
 //	void createIAccessibleImage() {
 //		objIAccessibleImage = new COMObject(new int[] {2,0,0,1,3,2}) {
-//			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-//			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-//			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-//			public int /*long*/ method3(int /*long*/[] args) {return get_description(args[0]);}
-//			public int /*long*/ method4(int /*long*/[] args) {return get_imagePosition((int)/*64*/args[0], args[1], args[2]);}
-//			public int /*long*/ method5(int /*long*/[] args) {return get_imageSize(args[0], args[1]);}
+//			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+//			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+//			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+//			public long /*int*/ method3(long /*int*/[] args) {return get_description(args[0]);}
+//			public long /*int*/ method4(long /*int*/[] args) {return get_imagePosition((int)/*64*/args[0], args[1], args[2]);}
+//			public long /*int*/ method5(long /*int*/[] args) {return get_imageSize(args[0], args[1]);}
 //		};
 //	}
 
 	void createIAccessibleTable2() {
 		objIAccessibleTable2 = new COMObject(new int[] {2,0,0,3,1,2,1,1,1,1,1,2,2,2,2,1,2,2,1,1,1,1,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-			public int /*long*/ method3(int /*long*/[] args) {return get_cellAt((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
-			public int /*long*/ method4(int /*long*/[] args) {return get_caption(args[0]);}
-			public int /*long*/ method5(int /*long*/[] args) {return get_columnDescription((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method6(int /*long*/[] args) {return get_nColumns(args[0]);}
-			public int /*long*/ method7(int /*long*/[] args) {return get_nRows(args[0]);}
-			public int /*long*/ method8(int /*long*/[] args) {return get_nSelectedCells(args[0]);}
-			public int /*long*/ method9(int /*long*/[] args) {return get_nSelectedColumns(args[0]);}
-			public int /*long*/ method10(int /*long*/[] args) {return get_nSelectedRows(args[0]);}
-			public int /*long*/ method11(int /*long*/[] args) {return get_rowDescription((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method12(int /*long*/[] args) {return get_selectedCells(args[0], args[1]);}
-			public int /*long*/ method13(int /*long*/[] args) {return get_selectedColumns(args[0], args[1]);}
-			public int /*long*/ method14(int /*long*/[] args) {return get_selectedRows(args[0], args[1]);}
-			public int /*long*/ method15(int /*long*/[] args) {return get_summary(args[0]);}
-			public int /*long*/ method16(int /*long*/[] args) {return get_isColumnSelected((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method17(int /*long*/[] args) {return get_isRowSelected((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method18(int /*long*/[] args) {return selectRow((int)/*64*/args[0]);}
-			public int /*long*/ method19(int /*long*/[] args) {return selectColumn((int)/*64*/args[0]);}
-			public int /*long*/ method20(int /*long*/[] args) {return unselectRow((int)/*64*/args[0]);}
-			public int /*long*/ method21(int /*long*/[] args) {return unselectColumn((int)/*64*/args[0]);}
-			public int /*long*/ method22(int /*long*/[] args) {return get_modelChange(args[0]);}
+			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			public long /*int*/ method3(long /*int*/[] args) {return get_cellAt((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+			public long /*int*/ method4(long /*int*/[] args) {return get_caption(args[0]);}
+			public long /*int*/ method5(long /*int*/[] args) {return get_columnDescription((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method6(long /*int*/[] args) {return get_nColumns(args[0]);}
+			public long /*int*/ method7(long /*int*/[] args) {return get_nRows(args[0]);}
+			public long /*int*/ method8(long /*int*/[] args) {return get_nSelectedCells(args[0]);}
+			public long /*int*/ method9(long /*int*/[] args) {return get_nSelectedColumns(args[0]);}
+			public long /*int*/ method10(long /*int*/[] args) {return get_nSelectedRows(args[0]);}
+			public long /*int*/ method11(long /*int*/[] args) {return get_rowDescription((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method12(long /*int*/[] args) {return get_selectedCells(args[0], args[1]);}
+			public long /*int*/ method13(long /*int*/[] args) {return get_selectedColumns(args[0], args[1]);}
+			public long /*int*/ method14(long /*int*/[] args) {return get_selectedRows(args[0], args[1]);}
+			public long /*int*/ method15(long /*int*/[] args) {return get_summary(args[0]);}
+			public long /*int*/ method16(long /*int*/[] args) {return get_isColumnSelected((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method17(long /*int*/[] args) {return get_isRowSelected((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method18(long /*int*/[] args) {return selectRow((int)/*64*/args[0]);}
+			public long /*int*/ method19(long /*int*/[] args) {return selectColumn((int)/*64*/args[0]);}
+			public long /*int*/ method20(long /*int*/[] args) {return unselectRow((int)/*64*/args[0]);}
+			public long /*int*/ method21(long /*int*/[] args) {return unselectColumn((int)/*64*/args[0]);}
+			public long /*int*/ method22(long /*int*/[] args) {return get_modelChange(args[0]);}
 		};
 	}
 
 	void createIAccessibleTableCell() {
 		objIAccessibleTableCell = new COMObject(new int[] {2,0,0,1,2,1,1,2,1,1,5,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-			public int /*long*/ method3(int /*long*/[] args) {return get_columnExtent(args[0]);}
-			public int /*long*/ method4(int /*long*/[] args) {return get_columnHeaderCells(args[0], args[1]);}
-			public int /*long*/ method5(int /*long*/[] args) {return get_columnIndex(args[0]);}
-			public int /*long*/ method6(int /*long*/[] args) {return get_rowExtent(args[0]);}
-			public int /*long*/ method7(int /*long*/[] args) {return get_rowHeaderCells(args[0], args[1]);}
-			public int /*long*/ method8(int /*long*/[] args) {return get_rowIndex(args[0]);}
-			public int /*long*/ method9(int /*long*/[] args) {return get_isSelected(args[0]);}
-			public int /*long*/ method10(int /*long*/[] args) {return get_rowColumnExtents(args[0], args[1], args[2], args[3], args[4]);}
-			public int /*long*/ method11(int /*long*/[] args) {return get_table(args[0]);}
+			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			public long /*int*/ method3(long /*int*/[] args) {return get_columnExtent(args[0]);}
+			public long /*int*/ method4(long /*int*/[] args) {return get_columnHeaderCells(args[0], args[1]);}
+			public long /*int*/ method5(long /*int*/[] args) {return get_columnIndex(args[0]);}
+			public long /*int*/ method6(long /*int*/[] args) {return get_rowExtent(args[0]);}
+			public long /*int*/ method7(long /*int*/[] args) {return get_rowHeaderCells(args[0], args[1]);}
+			public long /*int*/ method8(long /*int*/[] args) {return get_rowIndex(args[0]);}
+			public long /*int*/ method9(long /*int*/[] args) {return get_isSelected(args[0]);}
+			public long /*int*/ method10(long /*int*/[] args) {return get_rowColumnExtents(args[0], args[1], args[2], args[3], args[4]);}
+			public long /*int*/ method11(long /*int*/[] args) {return get_table(args[0]);}
 		};
 	}
 
 	void createIAccessibleText() {
 		objIAccessibleText = new COMObject(new int[] {2,0,0,2,4,1,6,1,4,3,3,5,5,5,1,1,3,1,3,5,1,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-			public int /*long*/ method3(int /*long*/[] args) {return addSelection((int)/*64*/args[0], (int)/*64*/args[1]);}
-			public int /*long*/ method4(int /*long*/[] args) {return get_attributes((int)/*64*/args[0], args[1], args[2], args[3]);}
-			public int /*long*/ method5(int /*long*/[] args) {return get_caretOffset(args[0]);}
-			public int /*long*/ method6(int /*long*/[] args) {return get_characterExtents((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4], args[5]);}
-			public int /*long*/ method7(int /*long*/[] args) {return get_nSelections(args[0]);}
-			public int /*long*/ method8(int /*long*/[] args) {return get_offsetAtPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], args[3]);}
-			public int /*long*/ method9(int /*long*/[] args) {return get_selection((int)/*64*/args[0], args[1], args[2]);}
-			public int /*long*/ method10(int /*long*/[] args) {return get_text((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
-			public int /*long*/ method11(int /*long*/[] args) {return get_textBeforeOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
-			public int /*long*/ method12(int /*long*/[] args) {return get_textAfterOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
-			public int /*long*/ method13(int /*long*/[] args) {return get_textAtOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
-			public int /*long*/ method14(int /*long*/[] args) {return removeSelection((int)/*64*/args[0]);}
-			public int /*long*/ method15(int /*long*/[] args) {return setCaretOffset((int)/*64*/args[0]);}
-			public int /*long*/ method16(int /*long*/[] args) {return setSelection((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
-			public int /*long*/ method17(int /*long*/[] args) {return get_nCharacters(args[0]);}
-			public int /*long*/ method18(int /*long*/[] args) {return scrollSubstringTo((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
-			public int /*long*/ method19(int /*long*/[] args) {return scrollSubstringToPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4]);}
-			public int /*long*/ method20(int /*long*/[] args) {return get_newText(args[0]);}
-			public int /*long*/ method21(int /*long*/[] args) {return get_oldText(args[0]);}
+			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			public long /*int*/ method3(long /*int*/[] args) {return addSelection((int)/*64*/args[0], (int)/*64*/args[1]);}
+			public long /*int*/ method4(long /*int*/[] args) {return get_attributes((int)/*64*/args[0], args[1], args[2], args[3]);}
+			public long /*int*/ method5(long /*int*/[] args) {return get_caretOffset(args[0]);}
+			public long /*int*/ method6(long /*int*/[] args) {return get_characterExtents((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4], args[5]);}
+			public long /*int*/ method7(long /*int*/[] args) {return get_nSelections(args[0]);}
+			public long /*int*/ method8(long /*int*/[] args) {return get_offsetAtPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], args[3]);}
+			public long /*int*/ method9(long /*int*/[] args) {return get_selection((int)/*64*/args[0], args[1], args[2]);}
+			public long /*int*/ method10(long /*int*/[] args) {return get_text((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
+			public long /*int*/ method11(long /*int*/[] args) {return get_textBeforeOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+			public long /*int*/ method12(long /*int*/[] args) {return get_textAfterOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+			public long /*int*/ method13(long /*int*/[] args) {return get_textAtOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
+			public long /*int*/ method14(long /*int*/[] args) {return removeSelection((int)/*64*/args[0]);}
+			public long /*int*/ method15(long /*int*/[] args) {return setCaretOffset((int)/*64*/args[0]);}
+			public long /*int*/ method16(long /*int*/[] args) {return setSelection((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
+			public long /*int*/ method17(long /*int*/[] args) {return get_nCharacters(args[0]);}
+			public long /*int*/ method18(long /*int*/[] args) {return scrollSubstringTo((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
+			public long /*int*/ method19(long /*int*/[] args) {return scrollSubstringToPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4]);}
+			public long /*int*/ method20(long /*int*/[] args) {return get_newText(args[0]);}
+			public long /*int*/ method21(long /*int*/[] args) {return get_oldText(args[0]);}
 		};
 	}
 
 	void createIAccessibleValue() {
 		objIAccessibleValue = new COMObject(new int[] {2,0,0,1,1,1,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-			public int /*long*/ method3(int /*long*/[] args) {return get_currentValue(args[0]);}
-			public int /*long*/ method4(int /*long*/[] args) {return setCurrentValue(args[0]);}
-			public int /*long*/ method5(int /*long*/[] args) {return get_maximumValue(args[0]);}
-			public int /*long*/ method6(int /*long*/[] args) {return get_minimumValue(args[0]);}
+			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			public long /*int*/ method3(long /*int*/[] args) {return get_currentValue(args[0]);}
+			public long /*int*/ method4(long /*int*/[] args) {return setCurrentValue(args[0]);}
+			public long /*int*/ method5(long /*int*/[] args) {return get_maximumValue(args[0]);}
+			public long /*int*/ method6(long /*int*/[] args) {return get_minimumValue(args[0]);}
 		};
 		/* Dereference VARIANT struct parameters. */
-		int /*long*/ ppVtable = objIAccessibleValue.ppVtable;
-		int /*long*/[] pVtable = new int /*long*/[1];
+		long /*int*/ ppVtable = objIAccessibleValue.ppVtable;
+		long /*int*/[] pVtable = new long /*int*/[1];
 		COM.MoveMemory(pVtable, ppVtable, OS.PTR_SIZEOF);
-		int /*long*/[] funcs = new int /*long*/[7];
+		long /*int*/[] funcs = new long /*int*/[7];
 		COM.MoveMemory(funcs, pVtable[0], OS.PTR_SIZEOF * funcs.length);
 		funcs[4] = COM.CALLBACK_setCurrentValue(funcs[4]);
 		COM.MoveMemory(pVtable[0], funcs, OS.PTR_SIZEOF * funcs.length);
@@ -497,22 +497,22 @@ public class Accessible {
 
 	void createIEnumVARIANT() {
 		objIEnumVARIANT = new COMObject(new int[] {2,0,0,3,1,0,1}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-			public int /*long*/ method3(int /*long*/[] args) {return Next((int)/*64*/args[0], args[1], args[2]);}
-			public int /*long*/ method4(int /*long*/[] args) {return Skip((int)/*64*/args[0]);}
-			public int /*long*/ method5(int /*long*/[] args) {return Reset();}
-			public int /*long*/ method6(int /*long*/[] args) {return Clone(args[0]);}
+			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			public long /*int*/ method3(long /*int*/[] args) {return Next((int)/*64*/args[0], args[1], args[2]);}
+			public long /*int*/ method4(long /*int*/[] args) {return Skip((int)/*64*/args[0]);}
+			public long /*int*/ method5(long /*int*/[] args) {return Reset();}
+			public long /*int*/ method6(long /*int*/[] args) {return Clone(args[0]);}
 		};
 	}
 
 	void createIServiceProvider() {
 		objIServiceProvider = new COMObject(new int[] {2,0,0,3}) {
-		    public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-		    public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-		    public int /*long*/ method2(int /*long*/[] args) {return Release();}        
-		    public int /*long*/ method3(int /*long*/[] args) {return QueryService(args[0], args[1], args[2]);}
+		    public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		    public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		    public long /*int*/ method2(long /*int*/[] args) {return Release();}        
+		    public long /*int*/ method3(long /*int*/[] args) {return QueryService(args[0], args[1], args[2]);}
 		};
 	}
 
@@ -852,7 +852,7 @@ public class Accessible {
 		parent = null;
 	}
 
-	int /*long*/ getAddress() {
+	long /*int*/ getAddress() {
 		/* The address of an Accessible is the address of its IAccessible COMObject. */
 		if (objIAccessible == null) createIAccessible();
 		return objIAccessible.getAddress();
@@ -904,7 +904,7 @@ public class Accessible {
 	 * 
 	 * @noreference This method is not intended to be referenced by clients.
 	 */
-	public int /*long*/ internal_WM_GETOBJECT (int /*long*/ wParam, int /*long*/ lParam) {
+	public long /*int*/ internal_WM_GETOBJECT (long /*int*/ wParam, long /*int*/ lParam) {
 		if (objIAccessible == null) return 0;
 		if ((int)/*64*/lParam == COM.OBJID_CLIENT) {
 			/* LresultFromObject([in] riid, [in] wParam, [in] pAcc)
@@ -1524,13 +1524,13 @@ public class Accessible {
 	 * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
 	 * must be incremented before returning.  Caller is responsible for releasing ppvObject.
 	 */
-	int QueryInterface(int /*long*/ iid, int /*long*/ ppvObject) {
-		COM.MoveMemory(ppvObject, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+	int QueryInterface(long /*int*/ iid, long /*int*/ ppvObject) {
+		COM.MoveMemory(ppvObject, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, iid, GUID.sizeof);
 
 		if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
-			COM.MoveMemory(ppvObject, new int /*long*/[] { getAddress() }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppvObject, new long /*int*/[] { getAddress() }, OS.PTR_SIZEOF);
 			AddRef();
 			if (DEBUG) print(this + ".QueryInterface guid=" + guidString(guid) + " returning " + getAddress() + hresult(COM.S_OK));
 			return COM.S_OK;
@@ -1538,7 +1538,7 @@ public class Accessible {
 
 		if (COM.IsEqualGUID(guid, COM.IIDIDispatch) || COM.IsEqualGUID(guid, COM.IIDIAccessible)) {
 			if (objIAccessible == null) createIAccessible();
-			COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessible.getAddress() }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessible.getAddress() }, OS.PTR_SIZEOF);
 			AddRef();
 			if (DEBUG) print(this + ".QueryInterface guid=" + guidString(guid) + " returning " + objIAccessible.getAddress() + hresult(COM.S_OK));
 			return COM.S_OK;
@@ -1546,7 +1546,7 @@ public class Accessible {
 
 		if (COM.IsEqualGUID(guid, COM.IIDIEnumVARIANT)) {
 			if (objIEnumVARIANT == null) createIEnumVARIANT();
-			COM.MoveMemory(ppvObject, new int /*long*/[] { objIEnumVARIANT.getAddress() }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppvObject, new long /*int*/[] { objIEnumVARIANT.getAddress() }, OS.PTR_SIZEOF);
 			AddRef();
 			enumIndex = 0;
 			if (DEBUG) print(this + ".QueryInterface guid=" + guidString(guid) + " returning " + objIEnumVARIANT.getAddress() + hresult(COM.S_OK));
@@ -1561,7 +1561,7 @@ public class Accessible {
 				accessibleValueListeners.size() > 0 || getRelationCount() > 0
 				|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0))) {
 				if (objIServiceProvider == null) createIServiceProvider();
-				COM.MoveMemory(ppvObject, new int /*long*/[] { objIServiceProvider.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(ppvObject, new long /*int*/[] { objIServiceProvider.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
 				if (DEBUG) print(this + ".QueryInterface guid=" + guidString(guid) + " returning " + objIServiceProvider.getAddress() + hresult(COM.S_OK));
 				return COM.S_OK;
@@ -1578,7 +1578,7 @@ public class Accessible {
 
 		if (iaccessible != null) {
 			/* Forward any other GUIDs to the OS proxy. */
-			int /*long*/[] ppv = new int /*long*/[1];
+			long /*int*/[] ppv = new long /*int*/[1];
 			code = iaccessible.QueryInterface(guid, ppv);
 			COM.MoveMemory(ppvObject, ppv, OS.PTR_SIZEOF);
 			if (DEBUG) if (interesting(guid)) print("QueryInterface guid=" + guidString(guid) + " returning super" + hresult(code));
@@ -1669,8 +1669,8 @@ public class Accessible {
 	}
 
 	/* QueryService([in] guidService, [in] riid, [out] ppvObject) */
-	int QueryService(int /*long*/ guidService, int /*long*/ riid, int /*long*/ ppvObject) {
-		COM.MoveMemory(ppvObject, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+	int QueryService(long /*int*/ guidService, long /*int*/ riid, long /*int*/ ppvObject) {
+		COM.MoveMemory(ppvObject, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
 		GUID service = new GUID();
 		COM.MoveMemory(service, guidService, GUID.sizeof);
 		GUID guid = new GUID();
@@ -1680,7 +1680,7 @@ public class Accessible {
 			if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDispatch) | COM.IsEqualGUID(guid, COM.IIDIAccessible)) {
 				if (objIAccessible == null) createIAccessible();
 				if (DEBUG) print(this + ".QueryService service=" + guidString(service) + " guid=" + guidString(guid) + " returning " + objIAccessible.getAddress() + hresult(COM.S_OK));
-				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessible.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessible.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -1701,11 +1701,11 @@ public class Accessible {
 
 		if (iaccessible != null) {
 			/* Forward any other GUIDs to the OS proxy. */
-			int /*long*/ [] ppv = new int /*long*/ [1];
+			long /*int*/ [] ppv = new long /*int*/ [1];
 			int code = iaccessible.QueryInterface(COM.IIDIServiceProvider, ppv);
 			if (code == COM.S_OK) {
 				IServiceProvider iserviceProvider = new IServiceProvider(ppv[0]);
-				int /*long*/ [] ppvx = new int /*long*/ [1];
+				long /*int*/ [] ppvx = new long /*int*/ [1];
 				code = iserviceProvider.QueryService(service, guid, ppvx);
 				COM.MoveMemory(ppvObject, ppvx, OS.PTR_SIZEOF);
 				if (DEBUG) if (interesting(service) && interesting(guid)) print("QueryService service=" + guidString(service) + " guid=" + guidString(guid) + " returning super" + hresult(code));
@@ -1717,7 +1717,7 @@ public class Accessible {
 		return COM.E_NOINTERFACE;
 	}
 
-	int queryAccessible2Interfaces(GUID guid, int /*long*/ ppvObject) {
+	int queryAccessible2Interfaces(GUID guid, long /*int*/ ppvObject) {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessible2)) {
 			if (accessibleActionListeners.size() > 0 || accessibleAttributeListeners.size() > 0 ||
 					accessibleHyperlinkListeners.size() > 0 || accessibleTableListeners.size() > 0 ||
@@ -1725,7 +1725,7 @@ public class Accessible {
 					accessibleValueListeners.size() > 0 || getRelationCount() > 0
 					|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0))) {
 				if (objIAccessible2 == null) createIAccessible2();
-				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessible2.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessible2.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -1735,7 +1735,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleAction)) {
 			if (accessibleActionListeners.size() > 0) {
 				if (objIAccessibleAction == null) createIAccessibleAction();
-				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleAction.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleAction.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -1744,7 +1744,7 @@ public class Accessible {
 		
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleApplication)) {
 			if (objIAccessibleApplication == null) createIAccessibleApplication();
-			COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleApplication.getAddress() }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleApplication.getAddress() }, OS.PTR_SIZEOF);
 			AddRef();
 			return COM.S_OK;
 		}
@@ -1753,7 +1753,7 @@ public class Accessible {
 			// The following lines are intentionally commented. We are not supporting IAccessibleComponent at this time.
 //			if (accessibleControlListeners.size() > 0) { // TO DO: can we reduce the scope of this somehow?
 //				if (objIAccessibleComponent == null) createIAccessibleComponent();
-//				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleComponent.getAddress() }, OS.PTR_SIZEOF);
+//				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleComponent.getAddress() }, OS.PTR_SIZEOF);
 //				AddRef();
 //				return COM.S_OK;
 //			}
@@ -1763,7 +1763,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleEditableText)) {
 			if (accessibleEditableTextListeners.size() > 0) {
 				if (objIAccessibleEditableText == null) createIAccessibleEditableText();
-				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleEditableText.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleEditableText.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -1773,7 +1773,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHyperlink)) {
 			if (accessibleHyperlinkListeners.size() > 0) {
 				if (objIAccessibleHyperlink == null) createIAccessibleHyperlink();
-				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleHyperlink.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleHyperlink.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -1783,7 +1783,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleHypertext)) {
 			if (accessibleTextExtendedListeners.size() > 0) {
 				if (objIAccessibleHypertext == null) createIAccessibleHypertext();
-				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleHypertext.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleHypertext.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -1794,7 +1794,7 @@ public class Accessible {
 			// The following lines are intentionally commented. We are not supporting IAccessibleImage at this time.
 //			if (getRole() == ACC.ROLE_GRAPHIC && (accessibleListeners.size() > 0 || accessibleControlListeners.size() > 0)) {
 //				if (objIAccessibleImage == null) createIAccessibleImage();
-//				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleImage.getAddress() }, OS.PTR_SIZEOF);
+//				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleImage.getAddress() }, OS.PTR_SIZEOF);
 //				AddRef();
 //				return COM.S_OK;
 //			}
@@ -1809,7 +1809,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTable2)) {
 			if (accessibleTableListeners.size() > 0) {
 				if (objIAccessibleTable2 == null) createIAccessibleTable2();
-				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleTable2.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleTable2.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -1819,7 +1819,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleTableCell)) {
 			if (accessibleTableCellListeners.size() > 0) {
 				if (objIAccessibleTableCell == null) createIAccessibleTableCell();
-				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleTableCell.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleTableCell.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -1829,7 +1829,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleText)) {
 			if (accessibleTextExtendedListeners.size() > 0 /* || accessibleAttributeListeners.size() > 0*/) {
 				if (objIAccessibleText == null) createIAccessibleText();
-				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleText.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleText.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -1839,7 +1839,7 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleValue)) {
 			if (accessibleValueListeners.size() > 0) {
 				if (objIAccessibleValue == null) createIAccessibleValue();
-				COM.MoveMemory(ppvObject, new int /*long*/[] { objIAccessibleValue.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleValue.getAddress() }, OS.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -1850,7 +1850,7 @@ public class Accessible {
 	}
 	
 	/* IAccessible::accDoDefaultAction([in] varChild) */
-	int accDoDefaultAction(int /*long*/ varChild) {
+	int accDoDefaultAction(long /*int*/ varChild) {
 		if (DEBUG) print(this + ".IAccessible::accDoDefaultAction");
 		if (accessibleActionListeners.size() > 0) {
 			VARIANT v = getVARIANT(varChild);
@@ -1867,9 +1867,9 @@ public class Accessible {
 	}
 
 	/* IAccessible::accHitTest([in] xLeft, [in] yTop, [out] pvarChild) */
-	int accHitTest(int xLeft, int yTop, int /*long*/ pvarChild) {
+	int accHitTest(int xLeft, int yTop, long /*int*/ pvarChild) {
 		int osChild = ACC.CHILDID_NONE;
-		int /*long*/ osChildObject = 0;
+		long /*int*/ osChildObject = 0;
 		if (iaccessible != null) {
 			/* Get the default child at point (left, top) from the OS. */
 			int code = iaccessible.accHitTest(xLeft, yTop, pvarChild);
@@ -1919,7 +1919,7 @@ public class Accessible {
 	}
 	
 	/* IAccessible::accLocation([out] pxLeft, [out] pyTop, [out] pcxWidth, [out] pcyHeight, [in] varChild) */
-	int accLocation(int /*long*/ pxLeft, int /*long*/ pyTop, int /*long*/ pcxWidth, int /*long*/ pcyHeight, int /*long*/ varChild) {
+	int accLocation(long /*int*/ pxLeft, long /*int*/ pyTop, long /*int*/ pcxWidth, long /*int*/ pcyHeight, long /*int*/ varChild) {
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
 		int osLeft = 0, osTop = 0, osWidth = 0, osHeight = 0;
@@ -1960,7 +1960,7 @@ public class Accessible {
 	}
 	
 	/* IAccessible::accNavigate([in] navDir, [in] varStart, [out] pvarEndUpAt) */
-	int accNavigate(int navDir, int /*long*/ varStart, int /*long*/ pvarEndUpAt) {
+	int accNavigate(int navDir, long /*int*/ varStart, long /*int*/ pvarEndUpAt) {
 		if (DEBUG) print(this + ".IAccessible::accNavigate");
 		/* MSAA: "The accNavigate method is deprecated and should not be used." */
 		int code = COM.DISP_E_MEMBERNOTFOUND;
@@ -1975,7 +1975,7 @@ public class Accessible {
 	
 	// TODO: Consider supporting this in future.
 	/* IAccessible::accSelect([in] flagsSelect, [in] varChild) */
-	int accSelect(int flagsSelect, int /*long*/ varChild) {
+	int accSelect(int flagsSelect, long /*int*/ varChild) {
 		int code = COM.DISP_E_MEMBERNOTFOUND;
 		if (iaccessible != null) {
 			/* Currently, we don't expose this as API. Forward to the proxy. */
@@ -1990,13 +1990,13 @@ public class Accessible {
 	 * Ownership of ppdispChild transfers from callee to caller so reference count on ppdispChild 
 	 * must be incremented before returning.  The caller is responsible for releasing ppdispChild.
 	 */
-	int get_accChild(int /*long*/ varChild, int /*long*/ ppdispChild) {
+	int get_accChild(long /*int*/ varChild, long /*int*/ ppdispChild) {
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
 		if (v.lVal == COM.CHILDID_SELF) {
 			if (DEBUG) print(this + ".IAccessible::get_accChild(" + v.lVal + ") returning " + getAddress() + hresult(COM.S_OK));
 			AddRef();
-			COM.MoveMemory(ppdispChild, new int /*long*/[] { getAddress() }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppdispChild, new long /*int*/[] { getAddress() }, OS.PTR_SIZEOF);
 			return COM.S_OK;
 		}
 		final int childID = osToChildID(v.lVal);
@@ -2010,7 +2010,7 @@ public class Accessible {
 				ToolBar toolBar = (ToolBar) control;
 				final ToolItem item = toolBar.getItem(childID);
 				if (item != null && (item.getStyle() & SWT.DROP_DOWN) != 0) {
-					int /*long*/[] addr = new int /*long*/[1];
+					long /*int*/[] addr = new long /*int*/[1];
 					COM.MoveMemory(addr, ppdispChild, OS.PTR_SIZEOF);
 					boolean found = false;
 					for (int i = 0; i < children.size(); i++) {
@@ -2068,7 +2068,7 @@ public class Accessible {
 		if (accessible != null) {
 			if (DEBUG) print(this + ".IAccessible::get_accChild(" + v.lVal + ") returning " + accessible.getAddress() + hresult(COM.S_OK));
 			accessible.AddRef();
-			COM.MoveMemory(ppdispChild, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppdispChild, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
 			return COM.S_OK;
 		}
 		if (DEBUG) print(this + ".IAccessible::get_accChild(" + v.lVal + ") returning from super" + hresult(code));
@@ -2076,7 +2076,7 @@ public class Accessible {
 	}
 	
 	/* IAccessible::get_accChildCount([out] pcountChildren) */
-	int get_accChildCount(int /*long*/ pcountChildren) {
+	int get_accChildCount(long /*int*/ pcountChildren) {
 		int osChildCount = 0;
 		if (iaccessible != null) {
 			/* Get the default child count from the OS. */
@@ -2105,7 +2105,7 @@ public class Accessible {
 	}
 	
 	/* IAccessible::get_accDefaultAction([in] varChild, [out] pszDefaultAction) */
-	int get_accDefaultAction(int /*long*/ varChild, int /*long*/ pszDefaultAction) {
+	int get_accDefaultAction(long /*int*/ varChild, long /*int*/ pszDefaultAction) {
 		if (DEBUG) print(this + ".IAccessible::get_accDefaultAction");
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
@@ -2117,7 +2117,7 @@ public class Accessible {
 			if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
 			if (accessibleControlListeners.size() == 0) return code;
 			if (code == COM.S_OK) {
-				int /*long*/[] pDefaultAction = new int /*long*/[1];
+				long /*int*/[] pDefaultAction = new long /*int*/[1];
 				COM.MoveMemory(pDefaultAction, pszDefaultAction, OS.PTR_SIZEOF);
 				int size = COM.SysStringByteLen(pDefaultAction[0]);
 				if (size > 0) {
@@ -2145,7 +2145,7 @@ public class Accessible {
 	}
 	
 	/* IAccessible::get_accDescription([in] varChild, [out] pszDescription) */
-	int get_accDescription(int /*long*/ varChild, int /*long*/ pszDescription) {
+	int get_accDescription(long /*int*/ varChild, long /*int*/ pszDescription) {
 		if (DEBUG) print(this + ".IAccessible::get_accDescription");
 		/* 
 		 * MSAA: "The accDescription property is not supported in the transition to
@@ -2168,7 +2168,7 @@ public class Accessible {
 			// TEMPORARY CODE - process tree even if there are no apps listening
 			if (accessibleListeners.size() == 0 && !(control instanceof Tree)) return code;
 			if (code == COM.S_OK) {
-				int /*long*/[] pDescription = new int /*long*/[1];
+				long /*int*/[] pDescription = new long /*int*/[1];
 				COM.MoveMemory(pDescription, pszDescription, OS.PTR_SIZEOF);
 				int size = COM.SysStringByteLen(pDescription[0]);
 				if (size > 0) {
@@ -2192,7 +2192,7 @@ public class Accessible {
 				Tree tree = (Tree) control;
 				int columnCount = tree.getColumnCount ();
 				if (columnCount > 1) {
-					int /*long*/ hwnd = control.handle, hItem = 0;
+					long /*int*/ hwnd = control.handle, hItem = 0;
 					if (OS.COMCTL32_MAJOR >= 6) {
 						hItem = OS.SendMessage (hwnd, OS.TVM_MAPACCIDTOHTREEITEM, v.lVal, 0);
 					} else {
@@ -2224,7 +2224,7 @@ public class Accessible {
 	 * Ownership of pvarChild transfers from callee to caller so reference count on pvarChild 
 	 * must be incremented before returning.  The caller is responsible for releasing pvarChild.
 	 */
-	int get_accFocus(int /*long*/ pvarChild) {
+	int get_accFocus(long /*int*/ pvarChild) {
 		int osChild = ACC.CHILDID_NONE;
 		if (iaccessible != null) {
 			/* Get the default focus child from the OS. */
@@ -2272,7 +2272,7 @@ public class Accessible {
 	}
 	
 	/* IAccessible::get_accHelp([in] varChild, [out] pszHelp) */
-	int get_accHelp(int /*long*/ varChild, int /*long*/ pszHelp) {
+	int get_accHelp(long /*int*/ varChild, long /*int*/ pszHelp) {
 		if (DEBUG) print(this + ".IAccessible::get_accHelp");
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
@@ -2284,7 +2284,7 @@ public class Accessible {
 			if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
 			if (accessibleListeners.size() == 0) return code;
 			if (code == COM.S_OK) {
-				int /*long*/[] pHelp = new int /*long*/[1];
+				long /*int*/[] pHelp = new long /*int*/[1];
 				COM.MoveMemory(pHelp, pszHelp, OS.PTR_SIZEOF);
 				int size = COM.SysStringByteLen(pHelp[0]);
 				if (size > 0) {
@@ -2309,7 +2309,7 @@ public class Accessible {
 	}
 	
 	/* IAccessible::get_accHelpTopic([out] pszHelpFile, [in] varChild, [out] pidTopic) */
-	int get_accHelpTopic(int /*long*/ pszHelpFile, int /*long*/ varChild, int /*long*/ pidTopic) {
+	int get_accHelpTopic(long /*int*/ pszHelpFile, long /*int*/ varChild, long /*int*/ pidTopic) {
 		if (DEBUG) print(this + ".IAccessible::get_accHelpTopic");
 		/* MSAA: "The accHelpTopic property is deprecated and should not be used." */
 		int code = COM.DISP_E_MEMBERNOTFOUND;
@@ -2323,7 +2323,7 @@ public class Accessible {
 	}
 
 	/* IAccessible::get_accKeyboardShortcut([in] varChild, [out] pszKeyboardShortcut) */
-	int get_accKeyboardShortcut(int /*long*/ varChild, int /*long*/ pszKeyboardShortcut) {
+	int get_accKeyboardShortcut(long /*int*/ varChild, long /*int*/ pszKeyboardShortcut) {
 		if (DEBUG) print(this + ".IAccessible::get_accKeyboardShortcut");
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
@@ -2336,7 +2336,7 @@ public class Accessible {
 			/* Process TabFolder even if there are no apps listening. */
 			if (accessibleListeners.size() == 0 && !(control instanceof TabFolder)) return code;
 			if (code == COM.S_OK) {
-				int /*long*/[] pKeyboardShortcut = new int /*long*/[1];
+				long /*int*/[] pKeyboardShortcut = new long /*int*/[1];
 				COM.MoveMemory(pKeyboardShortcut, pszKeyboardShortcut, OS.PTR_SIZEOF);
 				int size = COM.SysStringByteLen(pKeyboardShortcut[0]);
 				if (size > 0) {
@@ -2365,7 +2365,7 @@ public class Accessible {
 	}
 	
 	/* IAccessible::get_accName([in] varChild, [out] pszName) */
-	int get_accName(int /*long*/ varChild, int /*long*/ pszName) {
+	int get_accName(long /*int*/ varChild, long /*int*/ pszName) {
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
 		int code = COM.S_FALSE;
@@ -2374,7 +2374,7 @@ public class Accessible {
 			/* Get the default name from the OS. */
 			code = iaccessible.get_accName(varChild, pszName);
 			if (code == COM.S_OK) {
-				int /*long*/[] pName = new int /*long*/[1];
+				long /*int*/[] pName = new long /*int*/[1];
 				COM.MoveMemory(pName, pszName, OS.PTR_SIZEOF);
 				int size = COM.SysStringByteLen(pName[0]);
 				if (size > 0) {
@@ -2418,7 +2418,7 @@ public class Accessible {
 	 * Ownership of ppdispParent transfers from callee to caller so reference count on ppdispParent 
 	 * must be incremented before returning.  The caller is responsible for releasing ppdispParent.
 	 */
-	int get_accParent(int /*long*/ ppdispParent) {
+	int get_accParent(long /*int*/ ppdispParent) {
 		int code = COM.DISP_E_MEMBERNOTFOUND;
 		if (iaccessible != null) {
 			/* Currently, we don't expose this as API. Forward to the proxy. */
@@ -2427,7 +2427,7 @@ public class Accessible {
 		if (parent != null) {
 			/* For lightweight accessibles, return the accessible's parent. */
 			parent.AddRef();
-			COM.MoveMemory(ppdispParent, new int /*long*/[] { parent.getAddress() }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppdispParent, new long /*int*/[] { parent.getAddress() }, OS.PTR_SIZEOF);
 			code = COM.S_OK;
 		}
 		if (DEBUG) print(this + ".IAccessible::get_accParent() returning" + (parent != null ? " " + parent.getAddress() : " from super") + hresult(code));
@@ -2435,7 +2435,7 @@ public class Accessible {
 	}
 	
 	/* IAccessible::get_accRole([in] varChild, [out] pvarRole) */
-	int get_accRole(int /*long*/ varChild, int /*long*/ pvarRole) {
+	int get_accRole(long /*int*/ varChild, long /*int*/ pvarRole) {
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
 		int osRole = COM.ROLE_SYSTEM_CLIENT;
@@ -2470,10 +2470,10 @@ public class Accessible {
 	 * Ownership of pvarChildren transfers from callee to caller so reference count on pvarChildren 
 	 * must be incremented before returning.  The caller is responsible for releasing pvarChildren.
 	 */
-	int get_accSelection(int /*long*/ pvarChildren) {
+	int get_accSelection(long /*int*/ pvarChildren) {
 		if (DEBUG) print(this + ".IAccessible::get_accSelection");
 		int osChild = ACC.CHILDID_NONE;
-		int /*long*/ osChildObject = 0;
+		long /*int*/ osChildObject = 0;
 		if (iaccessible != null) {
 			/* Get the default selection from the OS. */
 			int code = iaccessible.get_accSelection(pvarChildren);
@@ -2525,7 +2525,7 @@ public class Accessible {
 	}
 	
 	/* IAccessible::get_accState([in] varChild, [out] pvarState) */
-	int get_accState(int /*long*/ varChild, int /*long*/ pvarState) {
+	int get_accState(long /*int*/ varChild, long /*int*/ pvarState) {
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
 		int osState = 0;
@@ -2547,7 +2547,7 @@ public class Accessible {
 		 * images, so we need to determine if the item state is 'checked'. */
 		if (v.lVal != COM.CHILDID_SELF) {
 			if (control instanceof Tree && (control.getStyle() & SWT.CHECK) != 0) {
-				int /*long*/ hwnd = control.handle;
+				long /*int*/ hwnd = control.handle;
 				TVITEM tvItem = new TVITEM ();
 				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 				tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
@@ -2556,7 +2556,7 @@ public class Accessible {
 				} else {
 					tvItem.hItem = v.lVal;
 				}
-				int /*long*/ result = OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
+				long /*int*/ result = OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
 				boolean checked = (result != 0) && (((tvItem.state >> 12) & 1) == 0);
 				if (checked) event.detail |= ACC.STATE_CHECKED;
 				grayed = tvItem.state >> 12 > 2;
@@ -2585,7 +2585,7 @@ public class Accessible {
 	}
 
 	/* IAccessible::get_accValue([in] varChild, [out] pszValue) */
-	int get_accValue(int /*long*/ varChild, int /*long*/ pszValue) {
+	int get_accValue(long /*int*/ varChild, long /*int*/ pszValue) {
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
 		int code = COM.DISP_E_MEMBERNOTFOUND;
@@ -2594,7 +2594,7 @@ public class Accessible {
 			/* Get the default value string from the OS. */
 			code = iaccessible.get_accValue(varChild, pszValue);
 			if (code == COM.S_OK) {
-				int /*long*/[] pValue = new int /*long*/[1];
+				long /*int*/[] pValue = new long /*int*/[1];
 				COM.MoveMemory(pValue, pszValue, OS.PTR_SIZEOF);
 				int size = COM.SysStringByteLen(pValue[0]);
 				if (size > 0) {
@@ -2635,13 +2635,13 @@ public class Accessible {
 	}
 	
 	/* put_accName([in] varChild, [in] szName) */
-	int put_accName(int /*long*/ varChild, int /*long*/ szName) {
+	int put_accName(long /*int*/ varChild, long /*int*/ szName) {
 		/* MSAA: "The IAccessible::put_accName method is no longer supported. Servers should return E_NOTIMPL." */
 		return COM.E_NOTIMPL;
 	}
 	
 	/* put_accValue([in] varChild, [in] szValue) */
-	int put_accValue(int /*long*/ varChild, int /*long*/ szValue) {
+	int put_accValue(long /*int*/ varChild, long /*int*/ szValue) {
 		/* MSAA: this method is supported for some UI elements (usually edit controls). */
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
@@ -2688,13 +2688,13 @@ public class Accessible {
 	 * Ownership of rgvar transfers from callee to caller so reference count on rgvar 
 	 * must be incremented before returning.  The caller is responsible for releasing rgvar.
 	 */
-	int Next(int celt, int /*long*/ rgvar, int /*long*/ pceltFetched) {
+	int Next(int celt, long /*int*/ rgvar, long /*int*/ pceltFetched) {
 		if (DEBUG) print(this + ".IEnumVARIANT::Next");
 		/* If there are no listeners, query the proxy for
 		 * its IEnumVariant, and get the Next items from it.
 		 */
 		if (iaccessible != null && accessibleControlListeners.size() == 0) {
-			int /*long*/[] ppvObject = new int /*long*/[1];
+			long /*int*/[] ppvObject = new long /*int*/[1];
 			int code = iaccessible.QueryInterface(COM.IIDIEnumVARIANT, ppvObject);
 			if (code != COM.S_OK) return code;
 			IEnumVARIANT ienumvariant = new IEnumVARIANT(ppvObject[0]);
@@ -2762,7 +2762,7 @@ public class Accessible {
 		 * for its IEnumVariant, and tell it to Skip.
 		 */
 		if (iaccessible != null && accessibleControlListeners.size() == 0) {
-			int /*long*/[] ppvObject = new int /*long*/[1];
+			long /*int*/[] ppvObject = new long /*int*/[1];
 			int code = iaccessible.QueryInterface(COM.IIDIEnumVARIANT, ppvObject);
 			if (code != COM.S_OK) return code;
 			IEnumVARIANT ienumvariant = new IEnumVARIANT(ppvObject[0]);
@@ -2787,7 +2787,7 @@ public class Accessible {
 		 * for its IEnumVariant, and tell it to Reset.
 		 */
 		if (iaccessible != null && accessibleControlListeners.size() == 0) {
-			int /*long*/[] ppvObject = new int /*long*/[1];
+			long /*int*/[] ppvObject = new long /*int*/[1];
 			int code = (int)/*64*/iaccessible.QueryInterface(COM.IIDIEnumVARIANT, ppvObject);
 			if (code != COM.S_OK) return code;
 			IEnumVARIANT ienumvariant = new IEnumVARIANT(ppvObject[0]);
@@ -2804,17 +2804,17 @@ public class Accessible {
 	 * Ownership of ppEnum transfers from callee to caller so reference count on ppEnum 
 	 * must be incremented before returning.  The caller is responsible for releasing ppEnum.
 	 */
-	int Clone(int /*long*/ ppEnum) {
+	int Clone(long /*int*/ ppEnum) {
 		if (DEBUG) print(this + ".IEnumVARIANT::Clone");
 		/* If there are no listeners, query the proxy for
 		 * its IEnumVariant, and get the Clone from it.
 		 */
 		if (iaccessible != null && accessibleControlListeners.size() == 0) {
-			int /*long*/[] ppvObject = new int /*long*/[1];
+			long /*int*/[] ppvObject = new long /*int*/[1];
 			int code = iaccessible.QueryInterface(COM.IIDIEnumVARIANT, ppvObject);
 			if (code != COM.S_OK) return code;
 			IEnumVARIANT ienumvariant = new IEnumVARIANT(ppvObject[0]);
-			int /*long*/ [] pEnum = new int /*long*/ [1];
+			long /*int*/ [] pEnum = new long /*int*/ [1];
 			code = ienumvariant.Clone(pEnum);
 			ienumvariant.Release();
 			COM.MoveMemory(ppEnum, pEnum, OS.PTR_SIZEOF);
@@ -2822,13 +2822,13 @@ public class Accessible {
 		}
 
 		if (ppEnum == 0) return COM.E_INVALIDARG;
-		COM.MoveMemory(ppEnum, new int /*long*/[] { objIEnumVARIANT.getAddress() }, OS.PTR_SIZEOF);
+		COM.MoveMemory(ppEnum, new long /*int*/[] { objIEnumVARIANT.getAddress() }, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 	
 	/* IAccessible2::get_nRelations([out] pNRelations) */
-	int get_nRelations(int /*long*/ pNRelations) {
+	int get_nRelations(long /*int*/ pNRelations) {
 		int count = getRelationCount();
 		if (DEBUG) print(this + ".IAccessible2::get_nRelations returning " + count + hresult(COM.S_OK));
 		COM.MoveMemory(pNRelations, new int [] { count }, 4);
@@ -2836,7 +2836,7 @@ public class Accessible {
 	}
 
 	/* IAccessible2::get_relation([in] relationIndex, [out] ppRelation) */
-	int get_relation(int relationIndex, int /*long*/ ppRelation) {
+	int get_relation(int relationIndex, long /*int*/ ppRelation) {
 		int i = -1;
 		for (int type = 0; type < MAX_RELATION_TYPES; type++) {
 			Relation relation = (Relation)relations[type];
@@ -2844,7 +2844,7 @@ public class Accessible {
 			if (i == relationIndex) {
 				if (DEBUG) print(this + ".IAccessible2::get_relation(" + relationIndex + ") returning " + relation.getAddress() + hresult(COM.S_OK));
 				relation.AddRef();
-				COM.MoveMemory(ppRelation, new int /*long*/[] { relation.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(ppRelation, new long /*int*/[] { relation.getAddress() }, OS.PTR_SIZEOF);
 				return COM.S_OK;
 			}
 		}
@@ -2853,14 +2853,14 @@ public class Accessible {
 	}
 
 	/* IAccessible2::get_relations([in] maxRelations, [out] ppRelations, [out] pNRelations) */
-	int get_relations(int maxRelations, int /*long*/ ppRelations, int /*long*/ pNRelations) {
+	int get_relations(int maxRelations, long /*int*/ ppRelations, long /*int*/ pNRelations) {
 		int count = 0;
 		for (int type = 0; type < MAX_RELATION_TYPES; type++) {
 			if (count == maxRelations) break;
 			Relation relation = (Relation)relations[type];
 			if (relation != null) {
 				relation.AddRef();
-				COM.MoveMemory(ppRelations + count * OS.PTR_SIZEOF, new int /*long*/[] { relation.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(ppRelations + count * OS.PTR_SIZEOF, new long /*int*/[] { relation.getAddress() }, OS.PTR_SIZEOF);
 				count++;
 			}
 		}
@@ -2870,7 +2870,7 @@ public class Accessible {
 	}
 
 	/* IAccessible2::get_role([out] pRole) */
-	int get_role(int /*long*/ pRole) {
+	int get_role(long /*int*/ pRole) {
 		int role = getRole();
 		if (role == 0) role = getDefaultRole();
 		if (DEBUG) print(this + ".IAccessible2::get_role() returning " + getRoleString(role) + hresult(COM.S_OK));
@@ -2893,7 +2893,7 @@ public class Accessible {
 	}
 
 	/* IAccessible2::get_groupPosition([out] pGroupLevel, [out] pSimilarItemsInGroup, [out] pPositionInGroup) */
-	int get_groupPosition(int /*long*/ pGroupLevel, int /*long*/ pSimilarItemsInGroup, int /*long*/ pPositionInGroup) {
+	int get_groupPosition(long /*int*/ pGroupLevel, long /*int*/ pSimilarItemsInGroup, long /*int*/ pPositionInGroup) {
 		// TODO: handle where possible - maybe add AccessibleGroup later
 		//get the role
 		//if it has role tree, then the level is the value else 0 (for N/A)
@@ -2925,7 +2925,7 @@ public class Accessible {
 	}
 
 	/* IAccessible2::get_states([out] pStates) */
-	int get_states(int /*long*/ pStates) {
+	int get_states(long /*int*/ pStates) {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = ACC.CHILDID_SELF;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
@@ -2954,28 +2954,28 @@ public class Accessible {
 	}
 
 	/* IAccessible2::get_extendedRole([out] pbstrExtendedRole) */
-	int get_extendedRole(int /*long*/ pbstrExtendedRole) {
+	int get_extendedRole(long /*int*/ pbstrExtendedRole) {
 		/* This feature is not supported. */
 		setString(pbstrExtendedRole, null);
 		return COM.S_FALSE;
 	}
 
 	/* IAccessible2::get_localizedExtendedRole([out] pbstrLocalizedExtendedRole) */
-	int get_localizedExtendedRole(int /*long*/ pbstrLocalizedExtendedRole) {
+	int get_localizedExtendedRole(long /*int*/ pbstrLocalizedExtendedRole) {
 		/* This feature is not supported. */
 		setString(pbstrLocalizedExtendedRole, null);
 		return COM.S_FALSE;
 	}
 
 	/* IAccessible2::get_nExtendedStates([out] pNExtendedStates) */
-	int get_nExtendedStates(int /*long*/ pNExtendedStates) {
+	int get_nExtendedStates(long /*int*/ pNExtendedStates) {
 		/* This feature is not supported. */
 		COM.MoveMemory(pNExtendedStates, new int [] { 0 }, 4);
 		return COM.S_OK;
 	}
 
 	/* IAccessible2::get_extendedStates([in] maxExtendedStates, [out] ppbstrExtendedStates, [out] pNExtendedStates) */
-	int get_extendedStates(int maxExtendedStates, int /*long*/ ppbstrExtendedStates, int /*long*/ pNExtendedStates) {
+	int get_extendedStates(int maxExtendedStates, long /*int*/ ppbstrExtendedStates, long /*int*/ pNExtendedStates) {
 		/* This feature is not supported. */
 		setString(ppbstrExtendedStates, null);
 		COM.MoveMemory(pNExtendedStates, new int [] { 0 }, 4);
@@ -2983,7 +2983,7 @@ public class Accessible {
 	}
 
 	/* IAccessible2::get_localizedExtendedStates([in] maxLocalizedExtendedStates, [out] ppbstrLocalizedExtendedStates, [out] pNLocalizedExtendedStates) */
-	int get_localizedExtendedStates(int maxLocalizedExtendedStates, int /*long*/ ppbstrLocalizedExtendedStates, int /*long*/ pNLocalizedExtendedStates) {
+	int get_localizedExtendedStates(int maxLocalizedExtendedStates, long /*int*/ ppbstrLocalizedExtendedStates, long /*int*/ pNLocalizedExtendedStates) {
 		/* This feature is not supported. */
 		setString(ppbstrLocalizedExtendedStates, null);
 		COM.MoveMemory(pNLocalizedExtendedStates, new int [] { 0 }, 4);
@@ -2991,22 +2991,22 @@ public class Accessible {
 	}
 
 	/* IAccessible2::get_uniqueID([out] pUniqueID) */
-	int get_uniqueID(int /*long*/ pUniqueID) {
+	int get_uniqueID(long /*int*/ pUniqueID) {
 		if (uniqueID == -1) uniqueID = UniqueID--;
 		if (DEBUG) print(this + ".IAccessible2::get_uniqueID returning " + uniqueID + hresult(COM.S_OK));
-		COM.MoveMemory(pUniqueID, new int /*long*/ [] { uniqueID }, 4);
+		COM.MoveMemory(pUniqueID, new long /*int*/ [] { uniqueID }, 4);
 		return COM.S_OK;
 	}
 
 	/* IAccessible2::get_windowHandle([out] pWindowHandle) */
-	int get_windowHandle(int /*long*/ pWindowHandle) {
+	int get_windowHandle(long /*int*/ pWindowHandle) {
 		if (DEBUG) print(this + ".IAccessible2::get_windowHandle returning " + control.handle + hresult(COM.S_OK));
-		COM.MoveMemory(pWindowHandle, new int /*long*/ [] { control.handle }, OS.PTR_SIZEOF);
+		COM.MoveMemory(pWindowHandle, new long /*int*/ [] { control.handle }, OS.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
 	/* IAccessible2::get_indexInParent([out] pIndexInParent) */
-	int get_indexInParent(int /*long*/ pIndexInParent) {
+	int get_indexInParent(long /*int*/ pIndexInParent) {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = ACC.CHILDID_CHILD_INDEX;
 		event.detail = -1;
@@ -3024,20 +3024,20 @@ public class Accessible {
 //			 */
 //			// TODO: finish this. See also get_groupPosition
 			// this won't work because VARIANT.sizeof isn't big enough on 64-bit machines.
-			// just create an  int /*long*/ [] ppdispParent - it's not a variant anyhow... 
-//			int /*long*/ ppdispParent = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
+			// just create an  long /*int*/ [] ppdispParent - it's not a variant anyhow... 
+//			long /*int*/ ppdispParent = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
 //			int code = get_accParent(ppdispParent);
 //			if (code == COM.S_OK) {
 //				VARIANT v = getVARIANT(ppdispParent);
 //				if (v.vt == COM.VT_DISPATCH) {
 //					IAccessible accParent = new IAccessible(v.lVal);
-//					int /*long*/ pcountChildren = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, 4);
+//					long /*int*/ pcountChildren = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, 4);
 //					code = accParent.get_accChildCount(pcountChildren);
 //					if (code == COM.S_OK) {
 //						int [] childCount = new int[1];
 //						OS.MoveMemory(childCount, pcountChildren, 4);
 //						int[] pcObtained = new int[1];
-//						int /*long*/ rgVarChildren = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof * childCount[0]);
+//						long /*int*/ rgVarChildren = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof * childCount[0]);
 //						System.out.println("Asking for AccessibleChildren");
 //						code = COM.AccessibleChildren(accParent.getAddress(), 0, childCount[0], rgVarChildren, pcObtained);
 //						if (code == COM.S_OK) {
@@ -3066,28 +3066,28 @@ public class Accessible {
 	}
 
 	/* IAccessible2::get_locale([out] pLocale) */
-	int get_locale(int /*long*/ pLocale) {
+	int get_locale(long /*int*/ pLocale) {
 		/* Return the default locale for the JVM. */
 		Locale locale = Locale.getDefault();
 		
 		char[] data = (locale.getLanguage()+"\0").toCharArray();
-		int /*long*/ ptr = COM.SysAllocString(data);
-		COM.MoveMemory(pLocale, new int /*long*/[] {ptr}, OS.PTR_SIZEOF);
+		long /*int*/ ptr = COM.SysAllocString(data);
+		COM.MoveMemory(pLocale, new long /*int*/[] {ptr}, OS.PTR_SIZEOF);
 
 		data = (locale.getCountry()+"\0").toCharArray();
 		ptr = COM.SysAllocString(data);
-		COM.MoveMemory(pLocale + OS.PTR_SIZEOF, new int /*long*/[] {ptr}, OS.PTR_SIZEOF);
+		COM.MoveMemory(pLocale + OS.PTR_SIZEOF, new long /*int*/[] {ptr}, OS.PTR_SIZEOF);
 
 		data = (locale.getVariant()+"\0").toCharArray();
 		ptr = COM.SysAllocString(data);
-		COM.MoveMemory(pLocale + 2 * OS.PTR_SIZEOF, new int /*long*/[] {ptr}, OS.PTR_SIZEOF);
+		COM.MoveMemory(pLocale + 2 * OS.PTR_SIZEOF, new long /*int*/[] {ptr}, OS.PTR_SIZEOF);
 		
 		if (DEBUG) print(this + ".IAccessible2::get_locale() returning" + hresult(COM.S_OK));
 		return COM.S_OK;
 	}
 
 	/* IAccessible2::get_attributes([out] pbstrAttributes) */
-	int get_attributes(int /*long*/ pbstrAttributes) {
+	int get_attributes(long /*int*/ pbstrAttributes) {
 		AccessibleAttributeEvent event = new AccessibleAttributeEvent(this);
 		for (int i = 0; i < accessibleAttributeListeners.size(); i++) {
 			AccessibleAttributeListener listener = (AccessibleAttributeListener) accessibleAttributeListeners.elementAt(i);
@@ -3123,7 +3123,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleAction::get_nActions([out] pNActions) */
-	int get_nActions(int /*long*/ pNActions) {
+	int get_nActions(long /*int*/ pNActions) {
 		AccessibleActionEvent event = new AccessibleActionEvent(this);
 		for (int i = 0; i < accessibleActionListeners.size(); i++) {
 			AccessibleActionListener listener = (AccessibleActionListener) accessibleActionListeners.elementAt(i);
@@ -3148,7 +3148,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleAction::get_description([in] actionIndex, [out] pbstrDescription) */
-	int get_description(int actionIndex, int /*long*/ pbstrDescription) {
+	int get_description(int actionIndex, long /*int*/ pbstrDescription) {
 		AccessibleActionEvent event = new AccessibleActionEvent(this);
 		event.index = actionIndex;
 		for (int i = 0; i < accessibleActionListeners.size(); i++) {
@@ -3162,7 +3162,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleAction::get_keyBinding([in] actionIndex, [in] nMaxBindings, [out] ppbstrKeyBindings, [out] pNBindings) */
-	int get_keyBinding(int actionIndex, int nMaxBindings, int /*long*/ ppbstrKeyBindings, int /*long*/ pNBindings) {
+	int get_keyBinding(int actionIndex, int nMaxBindings, long /*int*/ ppbstrKeyBindings, long /*int*/ pNBindings) {
 		AccessibleActionEvent event = new AccessibleActionEvent(this);
 		event.index = actionIndex;
 		for (int i = 0; i < accessibleActionListeners.size(); i++) {
@@ -3194,7 +3194,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleAction::get_name([in] actionIndex, [out] pbstrName) */
-	int get_name(int actionIndex, int /*long*/ pbstrName) {
+	int get_name(int actionIndex, long /*int*/ pbstrName) {
 		AccessibleActionEvent event = new AccessibleActionEvent(this);
 		event.index = actionIndex;
 		event.localized = false;
@@ -3212,7 +3212,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleAction::get_localizedName([in] actionIndex, [out] pbstrLocalizedName) */
-	int get_localizedName(int actionIndex, int /*long*/ pbstrLocalizedName) {
+	int get_localizedName(int actionIndex, long /*int*/ pbstrLocalizedName) {
 		AccessibleActionEvent event = new AccessibleActionEvent(this);
 		event.index = actionIndex;
 		event.localized = true;
@@ -3230,7 +3230,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleApplication::get_appName([out] pbstrName) */
-	int get_appName(int /*long*/ pbstrName) {
+	int get_appName(long /*int*/ pbstrName) {
 		String appName = Display.getAppName();
 		if (DEBUG) print(this + ".IAccessibleApplication::get_appName() returning " + appName + hresult(appName == null || appName.length() == 0 ? COM.S_FALSE : COM.S_OK));
 		if (appName == null || appName.length() == 0) {
@@ -3242,7 +3242,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleApplication::get_appVersion([out] pbstrVersion) */
-	int get_appVersion(int /*long*/ pbstrVersion) {
+	int get_appVersion(long /*int*/ pbstrVersion) {
 		String appVersion = Display.getAppVersion();
 		if (DEBUG) print(this + ".IAccessibleApplication::get_appVersion() returning" + appVersion + hresult(appVersion == null || appVersion.length() == 0 ? COM.S_FALSE : COM.S_OK));
 		if (appVersion == null || appVersion.length() == 0) {
@@ -3254,7 +3254,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleApplication::get_toolkitName([out] pbstrName) */
-	int get_toolkitName(int /*long*/ pbstrName) {
+	int get_toolkitName(long /*int*/ pbstrName) {
 		String toolkitName = "SWT";
 		if (DEBUG) print(this + ".IAccessibleApplication::get_toolkitName() returning" + toolkitName + hresult(COM.S_OK));
 		setString(pbstrName, toolkitName);
@@ -3262,7 +3262,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleApplication::get_toolkitVersion([out] pbstrVersion) */
-	int get_toolkitVersion(int /*long*/ pbstrVersion) {
+	int get_toolkitVersion(long /*int*/ pbstrVersion) {
 		String toolkitVersion = "" + SWT.getVersion(); //$NON-NLS-1$
 		if (DEBUG) print(this + ".IAccessibleApplication::get_toolkitVersion() returning" + toolkitVersion + hresult(COM.S_OK));
 		setString(pbstrVersion, toolkitVersion);
@@ -3271,7 +3271,7 @@ public class Accessible {
 
 	// The following 3 method are intentionally commented. We are not providing IAccessibleComponent at this time.
 //	/* IAccessibleComponent::get_locationInParent([out] pX, [out] pY) */
-//	int get_locationInParent(int /*long*/ pX, int /*long*/ pY) {
+//	int get_locationInParent(long /*int*/ pX, long /*int*/ pY) {
 //		if (DEBUG) print(this + ".IAccessibleComponent::get_locationInParent");
 //		// TO DO: support transparently (hard for lightweight parents - screen vs. parent coords)
 //		AccessibleControlEvent event = new AccessibleControlEvent(this);
@@ -3285,7 +3285,7 @@ public class Accessible {
 //	}
 //
 //	/* IAccessibleComponent::get_foreground([out] pForeground) */
-//	int get_foreground(int /*long*/ pForeground) {
+//	int get_foreground(long /*int*/ pForeground) {
 //		Color color = control.getForeground();
 //		if (DEBUG) print(this + ".IAccessibleComponent::get_foreground returning " + color.handle);
 //		COM.MoveMemory(pForeground, new int [] { color.handle }, 4);
@@ -3293,7 +3293,7 @@ public class Accessible {
 //	}
 //
 //	/* IAccessibleComponent::get_background([out] pBackground) */
-//	int get_background(int /*long*/ pBackground) {
+//	int get_background(long /*int*/ pBackground) {
 //		Color color = control.getBackground();
 //		if (DEBUG) print(this + ".IAccessibleComponent::get_background returning " + color.handle);
 //		COM.MoveMemory(pBackground, new int [] { color.handle }, 4);
@@ -3330,7 +3330,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleEditableText::insertText([in] offset, [in] pbstrText) */
-	int insertText(int offset, int /*long*/ pbstrText) {
+	int insertText(int offset, long /*int*/ pbstrText) {
 		if (DEBUG) print(this + ".IAccessibleEditableText::insertText, offset=" + offset + ", pbstrText=" + pbstrText);
 		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
 		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : offset;
@@ -3373,7 +3373,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleEditableText::replaceText([in] startOffset, [in] endOffset, [in] pbstrText) */
-	int replaceText(int startOffset, int endOffset, int /*long*/ pbstrText) {
+	int replaceText(int startOffset, int endOffset, long /*int*/ pbstrText) {
 		if (DEBUG) print(this + ".IAccessibleEditableText::replaceText, start=" + startOffset + ", end=" + endOffset + ", pbstrText=" + pbstrText);
 		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
 		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
@@ -3388,7 +3388,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleEditableText::setAttributes([in] startOffset, [in] endOffset, [in] pbstrAttributes) */
-	int setAttributes(int startOffset, int endOffset, int /*long*/ pbstrAttributes) {
+	int setAttributes(int startOffset, int endOffset, long /*int*/ pbstrAttributes) {
 		if (DEBUG) print(this + ".IAccessibleEditableText::setAttributes, start=" + startOffset + ", end=" + endOffset + ", pbstrAttributes=" + pbstrAttributes);
 		AccessibleTextAttributeEvent event = new AccessibleTextAttributeEvent(this);
 		String string = getString(pbstrAttributes);
@@ -3496,7 +3496,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleHyperlink::get_anchor([in] index, [out] pAnchor) */
-	int get_anchor(int index, int /*long*/ pAnchor) {
+	int get_anchor(int index, long /*int*/ pAnchor) {
 		if (DEBUG) print(this + ".IAccessibleHyperlink::get_anchor");
 		AccessibleHyperlinkEvent event = new AccessibleHyperlinkEvent(this);
 		event.index = index;
@@ -3516,7 +3516,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleHyperlink::get_anchorTarget([in] index, [out] pAnchorTarget) */
-	int get_anchorTarget(int index, int /*long*/ pAnchorTarget) {
+	int get_anchorTarget(int index, long /*int*/ pAnchorTarget) {
 		if (DEBUG) print(this + ".IAccessibleHyperlink::get_anchorTarget");
 		AccessibleHyperlinkEvent event = new AccessibleHyperlinkEvent(this);
 		event.index = index;
@@ -3536,7 +3536,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleHyperlink::get_startIndex([out] pIndex) */
-	int get_startIndex(int /*long*/ pIndex) {
+	int get_startIndex(long /*int*/ pIndex) {
 		if (DEBUG) print(this + ".IAccessibleHyperlink::get_startIndex");
 		AccessibleHyperlinkEvent event = new AccessibleHyperlinkEvent(this);
 		for (int i = 0; i < accessibleHyperlinkListeners.size(); i++) {
@@ -3548,7 +3548,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleHyperlink::get_endIndex([out] pIndex) */
-	int get_endIndex(int /*long*/ pIndex) {
+	int get_endIndex(long /*int*/ pIndex) {
 		if (DEBUG) print(this + ".IAccessibleHyperlink::get_endIndex");
 		AccessibleHyperlinkEvent event = new AccessibleHyperlinkEvent(this);
 		for (int i = 0; i < accessibleHyperlinkListeners.size(); i++) {
@@ -3560,13 +3560,13 @@ public class Accessible {
 	}
 
 	/* IAccessibleHyperlink::get_valid([out] pValid) */
-	int get_valid(int /*long*/ pValid) {
+	int get_valid(long /*int*/ pValid) {
 		/* Deprecated. */
 		return COM.E_NOTIMPL;
 	}
 
 	/* IAccessibleHypertext::get_nHyperlinks([out] pHyperlinkCount) */
-	int get_nHyperlinks(int /*long*/ pHyperlinkCount) {
+	int get_nHyperlinks(long /*int*/ pHyperlinkCount) {
 		if (DEBUG) print(this + ".IAccessibleHypertext::get_nHyperlinks");
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
@@ -3578,7 +3578,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleHypertext::get_hyperlink([in] index, [out] ppHyperlink) */
-	int get_hyperlink(int index, int /*long*/ ppHyperlink) {
+	int get_hyperlink(int index, long /*int*/ ppHyperlink) {
 		if (DEBUG) print(this + ".IAccessibleHypertext::get_hyperlink");
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.index = index;
@@ -3592,12 +3592,12 @@ public class Accessible {
 			return COM.E_INVALIDARG;
 		}
 		accessible.AddRef();
-		COM.MoveMemory(ppHyperlink, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+		COM.MoveMemory(ppHyperlink, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
 	/* IAccessibleHypertext::get_hyperlinkIndex([in] charIndex, [out] pHyperlinkIndex) */
-	int get_hyperlinkIndex(int charIndex, int /*long*/ pHyperlinkIndex) {
+	int get_hyperlinkIndex(int charIndex, long /*int*/ pHyperlinkIndex) {
 		if (DEBUG) print(this + ".IAccessibleHypertext::get_hyperlinkIndex");
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.offset = charIndex;
@@ -3613,7 +3613,7 @@ public class Accessible {
 
 	// The following 3 method are intentionally commented. We are not providing IAccessibleImage at this time.
 //	/* IAccessibleImage::get_description([out] pbstrDescription) */
-//	int get_description(int /*long*/ pbstrDescription) {
+//	int get_description(long /*int*/ pbstrDescription) {
 //		if (DEBUG) print(this + ".IAccessibleImage::get_description");
 //		// TO DO: Does it make sense to just reuse description?
 //		AccessibleEvent event = new AccessibleEvent(this);
@@ -3628,7 +3628,7 @@ public class Accessible {
 //	}
 //
 //	/* IAccessibleImage::get_imagePosition([in] coordinateType, [out] pX, [out] pY) */
-//	int get_imagePosition(int coordinateType, int /*long*/ pX, int /*long*/ pY) {
+//	int get_imagePosition(int coordinateType, long /*int*/ pX, long /*int*/ pY) {
 //		if (DEBUG) print(this + ".IAccessibleImage::get_imagePosition");
 //		// TO DO: does it make sense to just reuse getLocation?
 //		AccessibleControlEvent event = new AccessibleControlEvent(this);
@@ -3643,7 +3643,7 @@ public class Accessible {
 //	}
 //
 //	/* IAccessibleImage::get_imageSize([out] pHeight, [out] pWidth) */
-//	int get_imageSize(int /*long*/ pHeight, int /*long*/ pWidth) {
+//	int get_imageSize(long /*int*/ pHeight, long /*int*/ pWidth) {
 //		if (DEBUG) print(this + ".IAccessibleImage::get_imageSize");
 //		// TO DO: does it make sense to just reuse getLocation?
 //		AccessibleControlEvent event = new AccessibleControlEvent(this);
@@ -3657,7 +3657,7 @@ public class Accessible {
 //	}
 
 	/* IAccessibleTable2::get_cellAt([in] row, [in] column, [out] ppCell) */
-	int get_cellAt(int row, int column, int /*long*/ ppCell) {
+	int get_cellAt(int row, int column, long /*int*/ ppCell) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.row = row;
 		event.column = column;
@@ -3669,12 +3669,12 @@ public class Accessible {
 		if (DEBUG) print(this + ".IAccessibleTable2::get_cellAt(row=" + row + ", column=" + column + ") returning " + accessible);
 		if (accessible == null) return COM.E_INVALIDARG;
 		accessible.AddRef();
-		COM.MoveMemory(ppCell, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+		COM.MoveMemory(ppCell, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
 	/* IAccessibleTable2::get_caption([out] ppAccessible) */
-	int get_caption(int /*long*/ ppAccessible) {
+	int get_caption(long /*int*/ ppAccessible) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
@@ -3683,16 +3683,16 @@ public class Accessible {
 		Accessible accessible = event.accessible;
 		if (DEBUG) print(this + ".IAccessibleTable2::get_caption() returning " + accessible);
 		if (accessible == null) {
-			COM.MoveMemory(ppAccessible, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppAccessible, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
 			return COM.S_FALSE;
 		}
 		accessible.AddRef();
-		COM.MoveMemory(ppAccessible, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+		COM.MoveMemory(ppAccessible, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
 	/* IAccessibleTable2::get_columnDescription([in] column, [out] pbstrDescription) */
-	int get_columnDescription(int column, int /*long*/ pbstrDescription) {
+	int get_columnDescription(int column, long /*int*/ pbstrDescription) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.column = column;
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
@@ -3706,7 +3706,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTable2::get_nColumns([out] pColumnCount) */
-	int get_nColumns(int /*long*/ pColumnCount) {
+	int get_nColumns(long /*int*/ pColumnCount) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
@@ -3718,7 +3718,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTable2::get_nRows([out] pRowCount) */
-	int get_nRows(int /*long*/ pRowCount) {
+	int get_nRows(long /*int*/ pRowCount) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
@@ -3730,7 +3730,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTable2::get_nSelectedCells([out] pCellCount) */
-	int get_nSelectedCells(int /*long*/ pCellCount) {
+	int get_nSelectedCells(long /*int*/ pCellCount) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
@@ -3742,7 +3742,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTable2::get_nSelectedColumns([out] pColumnCount) */
-	int get_nSelectedColumns(int /*long*/ pColumnCount) {
+	int get_nSelectedColumns(long /*int*/ pColumnCount) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
@@ -3754,7 +3754,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTable2::get_nSelectedRows([out] pRowCount) */
-	int get_nSelectedRows(int /*long*/ pRowCount) {
+	int get_nSelectedRows(long /*int*/ pRowCount) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
@@ -3766,7 +3766,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTable2::get_rowDescription([in] row, [out] pbstrDescription) */
-	int get_rowDescription(int row, int /*long*/ pbstrDescription) {
+	int get_rowDescription(int row, long /*int*/ pbstrDescription) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.row = row;
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
@@ -3780,7 +3780,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTable2::get_selectedCells([out] ppCells, [out] pNSelectedCells) */
-	int get_selectedCells(int /*long*/ ppCells, int /*long*/ pNSelectedCells) {
+	int get_selectedCells(long /*int*/ ppCells, long /*int*/ pNSelectedCells) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
@@ -3788,28 +3788,28 @@ public class Accessible {
 		}
 		if (DEBUG) print(this + ".IAccessibleTable2::get_selectedCells() returning " + (event.accessibles == null ? "null" : "accessibles[" + event.accessibles.length + "]"));
 		if (event.accessibles == null || event.accessibles.length == 0) {
-			COM.MoveMemory(ppCells, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppCells, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
 			COM.MoveMemory(pNSelectedCells, new int [] { 0 }, 4);
 			return COM.S_FALSE;
 		}
 		int length = event.accessibles.length;
-		int /*long*/ pv = COM.CoTaskMemAlloc(length * OS.PTR_SIZEOF);
+		long /*int*/ pv = COM.CoTaskMemAlloc(length * OS.PTR_SIZEOF);
 		int count = 0;
 		for (int i = 0; i < length; i++) {
 			Accessible accessible = event.accessibles[i];
 			if (accessible != null) {
 				accessible.AddRef();
-				COM.MoveMemory(pv + i * OS.PTR_SIZEOF, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(pv + i * OS.PTR_SIZEOF, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
 				count++;
 			}
 		}
-		COM.MoveMemory(ppCells, new int /*long*/ [] { pv }, OS.PTR_SIZEOF);
+		COM.MoveMemory(ppCells, new long /*int*/ [] { pv }, OS.PTR_SIZEOF);
 		COM.MoveMemory(pNSelectedCells, new int [] { count }, 4);
 		return COM.S_OK;
 	}
 
 	/* IAccessibleTable2::get_selectedColumns([out] ppSelectedColumns, [out] pNColumns) */
-	int get_selectedColumns(int /*long*/ ppSelectedColumns, int /*long*/ pNColumns) {
+	int get_selectedColumns(long /*int*/ ppSelectedColumns, long /*int*/ pNColumns) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
@@ -3818,19 +3818,19 @@ public class Accessible {
 		int count = event.selected == null ? 0 : event.selected.length;
 		if (DEBUG) print(this + ".IAccessibleTable2::get_selectedColumns() returning " + (count == 0 ? "null" : "selected[" + count + "]"));
 		if (count == 0) {
-			COM.MoveMemory(ppSelectedColumns, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppSelectedColumns, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
 			COM.MoveMemory(pNColumns, new int [] { 0 }, 4);
 			return COM.S_FALSE;
 		}
-		int /*long*/ pv = COM.CoTaskMemAlloc(count * 4);
+		long /*int*/ pv = COM.CoTaskMemAlloc(count * 4);
 		COM.MoveMemory(pv, event.selected, count * 4);
-		COM.MoveMemory(ppSelectedColumns, new int /*long*/ [] { pv }, OS.PTR_SIZEOF);
+		COM.MoveMemory(ppSelectedColumns, new long /*int*/ [] { pv }, OS.PTR_SIZEOF);
 		COM.MoveMemory(pNColumns, new int [] { count }, 4);
 		return COM.S_OK;
 	}
 
 	/* IAccessibleTable2::get_selectedRows([out] ppSelectedRows, [out] pNRows) */
-	int get_selectedRows(int /*long*/ ppSelectedRows, int /*long*/ pNRows) {
+	int get_selectedRows(long /*int*/ ppSelectedRows, long /*int*/ pNRows) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
@@ -3839,19 +3839,19 @@ public class Accessible {
 		int count = event.selected == null ? 0 : event.selected.length;
 		if (DEBUG) print(this + ".IAccessibleTable2::get_selectedRows() returning " + (count == 0 ? "null" : "selected[" + count + "]"));
 		if (count == 0) {
-			COM.MoveMemory(ppSelectedRows, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppSelectedRows, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
 			COM.MoveMemory(pNRows, new int [] { 0 }, 4);
 			return COM.S_FALSE;
 		}
-		int /*long*/ pv = COM.CoTaskMemAlloc(count * 4);
+		long /*int*/ pv = COM.CoTaskMemAlloc(count * 4);
 		COM.MoveMemory(pv, event.selected, count * 4);
-		COM.MoveMemory(ppSelectedRows, new int /*long*/ [] { pv }, OS.PTR_SIZEOF);
+		COM.MoveMemory(ppSelectedRows, new long /*int*/ [] { pv }, OS.PTR_SIZEOF);
 		COM.MoveMemory(pNRows, new int [] { count }, 4);
 		return COM.S_OK;
 	}
 
 	/* IAccessibleTable2::get_summary([out] ppAccessible) */
-	int get_summary(int /*long*/ ppAccessible) {
+	int get_summary(long /*int*/ ppAccessible) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
 			AccessibleTableListener listener = (AccessibleTableListener) accessibleTableListeners.elementAt(i);
@@ -3860,16 +3860,16 @@ public class Accessible {
 		Accessible accessible = event.accessible;
 		if (DEBUG) print(this + ".IAccessibleTable2::get_summary() returning " + accessible);
 		if (accessible == null) {
-			COM.MoveMemory(ppAccessible, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppAccessible, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
 			return COM.S_FALSE;
 		}
 		accessible.AddRef();
-		COM.MoveMemory(ppAccessible, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+		COM.MoveMemory(ppAccessible, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
 	/* IAccessibleTable2::get_isColumnSelected([in] column, [out] pIsSelected) */
-	int get_isColumnSelected(int column, int /*long*/ pIsSelected) {
+	int get_isColumnSelected(int column, long /*int*/ pIsSelected) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.column = column;
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
@@ -3882,7 +3882,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTable2::get_isRowSelected([in] row, [out] pIsSelected) */
-	int get_isRowSelected(int row, int /*long*/ pIsSelected) {
+	int get_isRowSelected(int row, long /*int*/ pIsSelected) {
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.row = row;
 		for (int i = 0; i < accessibleTableListeners.size(); i++) {
@@ -3947,10 +3947,10 @@ public class Accessible {
 	}
 
 	/* IAccessibleTable2::get_modelChange([out] pModelChange) */
-	int get_modelChange(int /*long*/ pModelChange) {
+	int get_modelChange(long /*int*/ pModelChange) {
 		if (DEBUG) print(this + ".IAccessibleTable2::get_modelChange() returning " + (tableChange == null ? "null" : "tableChange=" + tableChange[0] + ", " + tableChange[1] + ", " + tableChange[2] + ", " + tableChange[3]));
 		if (tableChange == null) {
-			COM.MoveMemory(pModelChange, new int /*long*/ [] { 0 }, OS.PTR_SIZEOF);
+			COM.MoveMemory(pModelChange, new long /*int*/ [] { 0 }, OS.PTR_SIZEOF);
 			return COM.S_FALSE;
 		}
 		COM.MoveMemory(pModelChange, tableChange, tableChange.length * 4);
@@ -3958,7 +3958,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTableCell::get_columnExtent([out] pNColumnsSpanned) */
-	int get_columnExtent(int /*long*/ pNColumnsSpanned) {
+	int get_columnExtent(long /*int*/ pNColumnsSpanned) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListeners.size(); i++) {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
@@ -3970,7 +3970,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTableCell::get_columnHeaderCells([out] ppCellAccessibles, [out] pNColumnHeaderCells) */
-	int get_columnHeaderCells(int /*long*/ ppCellAccessibles, int /*long*/ pNColumnHeaderCells) {
+	int get_columnHeaderCells(long /*int*/ ppCellAccessibles, long /*int*/ pNColumnHeaderCells) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListeners.size(); i++) {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
@@ -3978,28 +3978,28 @@ public class Accessible {
 		}
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_columnHeaderCells() returning " + (event.accessibles == null ? "null" : "accessibles[" + event.accessibles.length + "]"));
 		if (event.accessibles == null || event.accessibles.length == 0) {
-			COM.MoveMemory(ppCellAccessibles, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppCellAccessibles, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
 			COM.MoveMemory(pNColumnHeaderCells, new int [] { 0 }, 4);
 			return COM.S_FALSE;
 		}
 		int length = event.accessibles.length;
-		int /*long*/ pv = COM.CoTaskMemAlloc(length * OS.PTR_SIZEOF);
+		long /*int*/ pv = COM.CoTaskMemAlloc(length * OS.PTR_SIZEOF);
 		int count = 0;
 		for (int i = 0; i < length; i++) {
 			Accessible accessible = event.accessibles[i];
 			if (accessible != null) {
 				accessible.AddRef();
-				COM.MoveMemory(pv + i * OS.PTR_SIZEOF, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(pv + i * OS.PTR_SIZEOF, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
 				count++;
 			}
 		}
-		COM.MoveMemory(ppCellAccessibles, new int /*long*/ [] { pv }, OS.PTR_SIZEOF);
+		COM.MoveMemory(ppCellAccessibles, new long /*int*/ [] { pv }, OS.PTR_SIZEOF);
 		COM.MoveMemory(pNColumnHeaderCells, new int [] { count }, 4);
 		return COM.S_OK;
 	}
 
 	/* IAccessibleTableCell::get_columnIndex([out] pColumnIndex) */
-	int get_columnIndex(int /*long*/ pColumnIndex) {
+	int get_columnIndex(long /*int*/ pColumnIndex) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListeners.size(); i++) {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
@@ -4011,7 +4011,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTableCell::get_rowExtent([out] pNRowsSpanned) */
-	int get_rowExtent(int /*long*/ pNRowsSpanned) {
+	int get_rowExtent(long /*int*/ pNRowsSpanned) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListeners.size(); i++) {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
@@ -4023,7 +4023,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTableCell::get_rowHeaderCells([out] ppCellAccessibles, [out] pNRowHeaderCells) */
-	int get_rowHeaderCells(int /*long*/ ppCellAccessibles, int /*long*/ pNRowHeaderCells) {
+	int get_rowHeaderCells(long /*int*/ ppCellAccessibles, long /*int*/ pNRowHeaderCells) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListeners.size(); i++) {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
@@ -4031,28 +4031,28 @@ public class Accessible {
 		}
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_rowHeaderCells() returning " + (event.accessibles == null ? "null" : "accessibles[" + event.accessibles.length + "]"));
 		if (event.accessibles == null || event.accessibles.length == 0) {
-			COM.MoveMemory(ppCellAccessibles, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppCellAccessibles, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
 			COM.MoveMemory(pNRowHeaderCells, new int [] { 0 }, 4);
 			return COM.S_FALSE;
 		}
 		int length = event.accessibles.length;
-		int /*long*/ pv = COM.CoTaskMemAlloc(length * OS.PTR_SIZEOF);
+		long /*int*/ pv = COM.CoTaskMemAlloc(length * OS.PTR_SIZEOF);
 		int count = 0;
 		for (int i = 0; i < length; i++) {
 			Accessible accessible = event.accessibles[i];
 			if (accessible != null) {
 				accessible.AddRef();
-				COM.MoveMemory(pv + i * OS.PTR_SIZEOF, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+				COM.MoveMemory(pv + i * OS.PTR_SIZEOF, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
 				count++;
 			}
 		}
-		COM.MoveMemory(ppCellAccessibles, new int /*long*/ [] { pv }, OS.PTR_SIZEOF);
+		COM.MoveMemory(ppCellAccessibles, new long /*int*/ [] { pv }, OS.PTR_SIZEOF);
 		COM.MoveMemory(pNRowHeaderCells, new int [] { count }, 4);
 		return COM.S_OK;
 	}
 
 	/* IAccessibleTableCell::get_rowIndex([out] pRowIndex) */
-	int get_rowIndex(int /*long*/ pRowIndex) {
+	int get_rowIndex(long /*int*/ pRowIndex) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListeners.size(); i++) {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
@@ -4064,7 +4064,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTableCell::get_isSelected([out] pIsSelected) */
-	int get_isSelected(int /*long*/ pIsSelected) {
+	int get_isSelected(long /*int*/ pIsSelected) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListeners.size(); i++) {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
@@ -4076,7 +4076,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTableCell::get_rowColumnExtents([out] pRow, [out] pColumn, [out] pRowExtents, [out] pColumnExtents, [out] pIsSelected) */
-	int get_rowColumnExtents(int /*long*/ pRow, int /*long*/ pColumn, int /*long*/ pRowExtents, int /*long*/ pColumnExtents, int /*long*/ pIsSelected) {
+	int get_rowColumnExtents(long /*int*/ pRow, long /*int*/ pColumn, long /*int*/ pRowExtents, long /*int*/ pColumnExtents, long /*int*/ pIsSelected) {
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_rowColumnExtents");
 		// TODO: should we implement this? It is just a convenience function.
 		return COM.DISP_E_MEMBERNOTFOUND;
@@ -4093,7 +4093,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleTableCell::get_table([out] ppTable) */
-	int get_table(int /*long*/ ppTable) {
+	int get_table(long /*int*/ ppTable) {
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListeners.size(); i++) {
 			AccessibleTableCellListener listener = (AccessibleTableCellListener) accessibleTableCellListeners.elementAt(i);
@@ -4103,11 +4103,11 @@ public class Accessible {
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_table() returning " + accessible);
 		if (accessible == null) {
 			// TODO: This is not supposed to return S_FALSE. We need to lookup the table role parent and return that.
-			COM.MoveMemory(ppTable, new int /*long*/[] { 0 }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppTable, new long /*int*/[] { 0 }, OS.PTR_SIZEOF);
 			return COM.S_FALSE;
 		}
 		accessible.AddRef();
-		COM.MoveMemory(ppTable, new int /*long*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
+		COM.MoveMemory(ppTable, new long /*int*/[] { accessible.getAddress() }, OS.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
@@ -4126,7 +4126,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleText::get_attributes([in] offset, [out] pStartOffset, [out] pEndOffset, [out] pbstrTextAttributes) */
-	int get_attributes(int offset, int /*long*/ pStartOffset, int /*long*/ pEndOffset, int /*long*/ pbstrTextAttributes) {
+	int get_attributes(int offset, long /*int*/ pStartOffset, long /*int*/ pEndOffset, long /*int*/ pbstrTextAttributes) {
 		AccessibleTextAttributeEvent event = new AccessibleTextAttributeEvent(this);
 		event.offset = offset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : offset;
 		for (int i = 0; i < accessibleAttributeListeners.size(); i++) {
@@ -4187,7 +4187,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleText::get_caretOffset([out] pOffset) */
-	int get_caretOffset(int /*long*/ pOffset) {
+	int get_caretOffset(long /*int*/ pOffset) {
 		int offset = getCaretOffset();
 		if (DEBUG) print(this + ".IAccessibleText::get_caretOffset returning " + offset + hresult(offset == -1 ? COM.S_FALSE : COM.S_OK));
 		COM.MoveMemory(pOffset, new int [] { offset }, 4);
@@ -4196,7 +4196,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleText::get_characterExtents([in] offset, [in] coordType, [out] pX, [out] pY, [out] pWidth, [out] pHeight) */
-	int get_characterExtents(int offset, int coordType, int /*long*/ pX, int /*long*/ pY, int /*long*/ pWidth, int /*long*/ pHeight) {
+	int get_characterExtents(int offset, int coordType, long /*int*/ pX, long /*int*/ pY, long /*int*/ pWidth, long /*int*/ pHeight) {
 		int length = getCharacterCount();
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? length : offset < 0 ? 0 : offset;
@@ -4216,7 +4216,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleText::get_nSelections([out] pNSelections) */
-	int get_nSelections(int /*long*/ pNSelections) {
+	int get_nSelections(long /*int*/ pNSelections) {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.count = -1;
 		for (int i = 0; i < accessibleTextExtendedListeners.size(); i++) {
@@ -4239,7 +4239,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleText::get_offsetAtPoint([in] x, [in] y, [in] coordType, [out] pOffset) */
-	int get_offsetAtPoint(int x, int y, int coordType, int /*long*/ pOffset) {
+	int get_offsetAtPoint(int x, int y, int coordType, long /*int*/ pOffset) {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.x = x;
 		event.y = y;
@@ -4259,7 +4259,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleText::get_selection([in] selectionIndex, [out] pStartOffset, [out] pEndOffset) */
-	int get_selection(int selectionIndex, int /*long*/ pStartOffset, int /*long*/ pEndOffset) {
+	int get_selection(int selectionIndex, long /*int*/ pStartOffset, long /*int*/ pEndOffset) {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.index = selectionIndex;
 		event.start = -1;
@@ -4291,7 +4291,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleText::get_text([in] startOffset, [in] endOffset, [out] pbstrText) */
-	int get_text(int startOffset, int endOffset, int /*long*/ pbstrText) {
+	int get_text(int startOffset, int endOffset, long /*int*/ pbstrText) {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
 		event.end = endOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : endOffset;
@@ -4327,7 +4327,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleText::get_textBeforeOffset([in] offset, [in] boundaryType, [out] pStartOffset, [out] pEndOffset, [out] pbstrText) */
-	int get_textBeforeOffset(int offset, int boundaryType, int /*long*/ pStartOffset, int /*long*/ pEndOffset, int /*long*/ pbstrText) {
+	int get_textBeforeOffset(int offset, int boundaryType, long /*int*/ pStartOffset, long /*int*/ pEndOffset, long /*int*/ pbstrText) {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		int charCount = getCharacterCount();
 		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? charCount : offset == COM.IA2_TEXT_OFFSET_CARET ? getCaretOffset() : offset;
@@ -4380,7 +4380,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleText::get_textAfterOffset([in] offset, [in] boundaryType, [out] pStartOffset, [out] pEndOffset, [out] pbstrText) */
-	int get_textAfterOffset(int offset, int boundaryType, int /*long*/ pStartOffset, int /*long*/ pEndOffset, int /*long*/ pbstrText) {
+	int get_textAfterOffset(int offset, int boundaryType, long /*int*/ pStartOffset, long /*int*/ pEndOffset, long /*int*/ pbstrText) {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		int charCount = getCharacterCount();
 		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? charCount : offset == COM.IA2_TEXT_OFFSET_CARET ? getCaretOffset() : offset;
@@ -4433,7 +4433,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleText::get_textAtOffset([in] offset, [in] boundaryType, [out] pStartOffset, [out] pEndOffset, [out] pbstrText) */
-	int get_textAtOffset(int offset, int boundaryType, int /*long*/ pStartOffset, int /*long*/ pEndOffset, int /*long*/ pbstrText) {
+	int get_textAtOffset(int offset, int boundaryType, long /*int*/ pStartOffset, long /*int*/ pEndOffset, long /*int*/ pbstrText) {
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		int charCount = getCharacterCount();
 		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? charCount : offset == COM.IA2_TEXT_OFFSET_CARET ? getCaretOffset() : offset;
@@ -4534,7 +4534,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleText::get_nCharacters([out] pNCharacters) */
-	int get_nCharacters(int /*long*/ pNCharacters) {
+	int get_nCharacters(long /*int*/ pNCharacters) {
 		int count = getCharacterCount();
 		COM.MoveMemory(pNCharacters, new int [] { count }, 4);
 		if (DEBUG) print(this + ".IAccessibleText::get_nCharacters returning " + count);
@@ -4582,7 +4582,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleText::get_newText([out] pNewText) */
-	int get_newText(int /*long*/ pNewText) {
+	int get_newText(long /*int*/ pNewText) {
 		if (DEBUG) print(this + ".IAccessibleText::get_newText");
 		String text = null;
 		int start = 0;
@@ -4600,7 +4600,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleText::get_oldText([out] pOldText) */
-	int get_oldText(int /*long*/ pOldText) {
+	int get_oldText(long /*int*/ pOldText) {
 		if (DEBUG) print(this + ".IAccessibleText::get_oldText");
 		String text = null;
 		int start = 0;
@@ -4618,7 +4618,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleValue::get_currentValue([out] pCurrentValue) */
-	int get_currentValue(int /*long*/ pCurrentValue) {
+	int get_currentValue(long /*int*/ pCurrentValue) {
 		AccessibleValueEvent event = new AccessibleValueEvent(this);
 		for (int i = 0; i < accessibleValueListeners.size(); i++) {
 			AccessibleValueListener listener = (AccessibleValueListener) accessibleValueListeners.elementAt(i);
@@ -4630,7 +4630,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleValue::setCurrentValue([in] value) */
-	int setCurrentValue(int /*long*/ value) {
+	int setCurrentValue(long /*int*/ value) {
 		if (DEBUG) print(this + ".IAccessibleValue::setCurrentValue");
 		AccessibleValueEvent event = new AccessibleValueEvent(this);
 		event.value = getNumberVARIANT(value);
@@ -4643,7 +4643,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleValue::get_maximumValue([out] pMaximumValue) */
-	int get_maximumValue(int /*long*/ pMaximumValue) {
+	int get_maximumValue(long /*int*/ pMaximumValue) {
 		AccessibleValueEvent event = new AccessibleValueEvent(this);
 		for (int i = 0; i < accessibleValueListeners.size(); i++) {
 			AccessibleValueListener listener = (AccessibleValueListener) accessibleValueListeners.elementAt(i);
@@ -4655,7 +4655,7 @@ public class Accessible {
 	}
 
 	/* IAccessibleValue::get_minimumValue([out] pMinimumValue) */
-	int get_minimumValue(int /*long*/ pMinimumValue) {
+	int get_minimumValue(long /*int*/ pMinimumValue) {
 		AccessibleValueEvent event = new AccessibleValueEvent(this);
 		for (int i = 0; i < accessibleValueListeners.size(); i++) {
 			AccessibleValueListener listener = (AccessibleValueListener) accessibleValueListeners.elementAt(i);
@@ -4953,9 +4953,9 @@ public class Accessible {
 		role = COM.ROLE_SYSTEM_CLIENT;
 		if (iaccessible != null) {
 			/* Get the default role from the OS. */
-			int /*long*/ varChild = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
+			long /*int*/ varChild = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
 			setIntVARIANT(varChild, COM.VT_I4, COM.CHILDID_SELF);
-			int /*long*/ pvarRole = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
+			long /*int*/ pvarRole = OS.GlobalAlloc (OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
 			int code = iaccessible.get_accRole(varChild, pvarRole);
 			if (code == COM.S_OK) {
 				VARIANT v = getVARIANT(pvarRole);
@@ -4967,8 +4967,8 @@ public class Accessible {
 		return role;
 	}
 
-	String getString(int /*long*/ psz) {
-		int /*long*/ [] ptr = new int /*long*/ [1];
+	String getString(long /*int*/ psz) {
+		long /*int*/ [] ptr = new long /*int*/ [1];
 		OS.MoveMemory (ptr, psz, OS.PTR_SIZEOF);
 		int size = COM.SysStringByteLen(ptr [0]);
 		if (size == 0) return "";
@@ -4977,34 +4977,34 @@ public class Accessible {
 		return new String (buffer);
 	}
 	
-	VARIANT getVARIANT(int /*long*/ variant) {
+	VARIANT getVARIANT(long /*int*/ variant) {
 		VARIANT v = new VARIANT();
 		COM.MoveMemory(v, variant, VARIANT.sizeof);
 		return v;
 	}
 	
-	Number getNumberVARIANT(int /*long*/ variant) {
+	Number getNumberVARIANT(long /*int*/ variant) {
 		VARIANT v = new VARIANT();
 		COM.MoveMemory(v, variant, VARIANT.sizeof);
 		if (v.vt == COM.VT_I8) return new Long(v.lVal); // TODO: Fix this - v.lVal is an int - don't use struct
 		return new Integer(v.lVal);
 	}
 
-	void setIntVARIANT(int /*long*/ variant, short vt, int lVal) {
+	void setIntVARIANT(long /*int*/ variant, short vt, int lVal) {
 		if (vt == COM.VT_I4 || vt == COM.VT_EMPTY) {
 			COM.MoveMemory(variant, new short[] { vt }, 2);
 			COM.MoveMemory(variant + 8, new int[] { lVal }, 4);
 		}
 	}
 
-	void setPtrVARIANT(int /*long*/ variant, short vt, int /*long*/ lVal) {
+	void setPtrVARIANT(long /*int*/ variant, short vt, long /*int*/ lVal) {
 		if (vt == COM.VT_DISPATCH || vt == COM.VT_UNKNOWN) {
 			COM.MoveMemory(variant, new short[] { vt }, 2);
-			COM.MoveMemory(variant + 8, new int /*long*/ [] { lVal }, OS.PTR_SIZEOF);
+			COM.MoveMemory(variant + 8, new long /*int*/ [] { lVal }, OS.PTR_SIZEOF);
 		}
 	}
 	
-	void setNumberVARIANT(int /*long*/ variant, Number number) {
+	void setNumberVARIANT(long /*int*/ variant, Number number) {
 		if (number == null) {
 			COM.MoveMemory(variant, new short[] { COM.VT_EMPTY }, 2);
 			COM.MoveMemory(variant + 8, new int[] { 0 }, 4);
@@ -5023,23 +5023,23 @@ public class Accessible {
 		}
 	}
 
-	void setString(int /*long*/ psz, String string) {
-		int /*long*/ ptr = 0;
+	void setString(long /*int*/ psz, String string) {
+		long /*int*/ ptr = 0;
 		if (string != null) {
 			char[] data = (string + "\0").toCharArray();
 			ptr = COM.SysAllocString(data);
 		}
-		COM.MoveMemory(psz, new int /*long*/ [] { ptr }, OS.PTR_SIZEOF);
+		COM.MoveMemory(psz, new long /*int*/ [] { ptr }, OS.PTR_SIZEOF);
 	}
 	
-	void setStringVARIANT(int /*long*/ variant, String string) {
-		int /*long*/ ptr = 0;
+	void setStringVARIANT(long /*int*/ variant, String string) {
+		long /*int*/ ptr = 0;
 		if (string != null) {
 			char[] data = (string + "\0").toCharArray();
 			ptr = COM.SysAllocString(data);
 		}
 		COM.MoveMemory(variant, new short[] { ptr == 0 ? COM.VT_EMPTY : COM.VT_BSTR }, 2);
-		COM.MoveMemory(variant + 8, new int /*long*/ [] { ptr }, OS.PTR_SIZEOF);
+		COM.MoveMemory(variant + 8, new long /*int*/ [] { ptr }, OS.PTR_SIZEOF);
 	}
 	
 	/* checkWidget was copied from Widget, and rewritten to work in this package */

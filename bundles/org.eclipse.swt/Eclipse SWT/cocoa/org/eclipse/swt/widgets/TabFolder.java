@@ -211,7 +211,7 @@ void destroyItem (TabItem item) {
 	((NSTabView)view).removeTabViewItem(item.nsItem);
 }
 
-void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	fillBackground (view, context, rect, -1);
 }
@@ -502,7 +502,7 @@ void setFont (NSFont font) {
 	}
 }
 
-void setForeground (float /*double*/ [] color) {
+void setForeground (double /*float*/ [] color) {
 	super.setForeground(color);
 	int index = getSelectionIndex();
 	for (int i = 0; i < itemCount; i++) {
@@ -632,7 +632,7 @@ boolean traversePage (boolean next) {
 	return index == getSelectionIndex ();
 }
 
-void tabView_willSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*/ tabView, int /*long*/ tabViewItem) {
+void tabView_willSelectTabViewItem(long /*int*/ id, long /*int*/ sel, long /*int*/ tabView, long /*int*/ tabViewItem) {
 	if (tabViewItem == 0) return;
 	for (int i = 0; i < itemCount; i++) {
 		TabItem item = items [i];
@@ -658,7 +658,7 @@ void tabView_willSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long
 	}
 }
 
-void tabView_didSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*/ tabView, int /*long*/ tabViewItem) {
+void tabView_didSelectTabViewItem(long /*int*/ id, long /*int*/ sel, long /*int*/ tabView, long /*int*/ tabViewItem) {
 	if (tabViewItem == 0) return;
 	for (int i = 0; i < itemCount; i++) {
 		TabItem item = items [i];

@@ -94,7 +94,7 @@ OleAutomation(IDispatch idispatch) {
 	objIDispatch = idispatch;
 	objIDispatch.AddRef();
 	
-	int /*long*/[] ppv = new int /*long*/[1];
+	long /*int*/[] ppv = new long /*int*/[1];
 	/* GetTypeInfo([in] iTInfo, [in] lcid, [out] ppTInfo) 
 	 * AddRef has already been called on ppTInfo by the callee and must be released by the caller. 
 	 */
@@ -117,7 +117,7 @@ public OleAutomation(OleClientSite clientSite) {
 	if (clientSite == null) OLE.error(OLE.ERROR_INVALID_INTERFACE_ADDRESS);
 	objIDispatch = clientSite.getAutomationObject();
 
-	int /*long*/[] ppv = new int /*long*/[1];
+	long /*int*/[] ppv = new long /*int*/[1];
 	/* GetTypeInfo([in] iTInfo, [in] lcid, [out] ppTInfo) 
 	 * AddRef has already been called on ppTInfo by the callee and must be released by the caller. 
 	 */
@@ -152,7 +152,7 @@ public OleAutomation(String progId) {
 		}
 		int flags = COM.CLSCTX_INPROC_SERVER;
 		if (progId.startsWith("Excel")) flags |= COM.CLSCTX_LOCAL_SERVER; //$NON-NLS-1$
-		int /*long*/[] ppvObject = new int /*long*/[1];
+		long /*int*/[] ppvObject = new long /*int*/[1];
 		int result = COM.CoCreateInstance(appClsid, 0, flags, COM.IIDIUnknown, ppvObject); 
 		if (result != COM.S_OK) {
 			OS.OleUninitialize();
@@ -199,7 +199,7 @@ public void dispose() {
 	}
 	objIUnknown = null;
 }
-int /*long*/ getAddress() {	
+long /*int*/ getAddress() {	
 	return objIDispatch.getAddress();
 }
 GUID getClassID(String clientName) {
@@ -254,7 +254,7 @@ public String getDocumentation(int dispId) {
  */
 public OlePropertyDescription getPropertyDescription(int index) {
 	if (objITypeInfo == null) return null;
-	int /*long*/[] ppVarDesc = new int /*long*/[1];
+	long /*int*/[] ppVarDesc = new long /*int*/[1];
 	int rc = objITypeInfo.GetVarDesc(index, ppVarDesc);
 	if (rc != OLE.S_OK) return null;
 	VARDESC vardesc = new VARDESC();
@@ -285,7 +285,7 @@ public OlePropertyDescription getPropertyDescription(int index) {
  */
 public OleFunctionDescription getFunctionDescription(int index) {
 	if (objITypeInfo == null) return null;
-	int /*long*/[] ppFuncDesc = new int /*long*/[1];
+	long /*int*/[] ppFuncDesc = new long /*int*/[1];
 	int rc = objITypeInfo.GetFuncDesc(index, ppFuncDesc);
 	if (rc != OLE.S_OK) return null;
 	FUNCDESC funcdesc = new FUNCDESC();
@@ -316,7 +316,7 @@ public OleFunctionDescription getFunctionDescription(int index) {
 		short[] vt = new short[1];	
 		COM.MoveMemory(vt, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof() + OS.PTR_SIZEOF, 2);				
 		if (vt[0] == OLE.VT_PTR) {
-			int /*long*/ [] pTypedesc = new int /*long*/ [1];
+			long /*int*/ [] pTypedesc = new long /*int*/ [1];
 			COM.MoveMemory(pTypedesc, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof(), OS.PTR_SIZEOF);
 			short[] vt2 = new short[1];
 			COM.MoveMemory(vt2, pTypedesc[0] + OS.PTR_SIZEOF, 2);
@@ -347,7 +347,7 @@ public OleFunctionDescription getFunctionDescription(int index) {
  */
 public TYPEATTR getTypeInfoAttributes() {
 	if (objITypeInfo == null) return null;
-	int /*long*/ [] ppTypeAttr = new int /*long*/ [1];
+	long /*int*/ [] ppTypeAttr = new long /*int*/ [1];
 	int rc = objITypeInfo.GetTypeAttr(ppTypeAttr);
 	if (rc != OLE.S_OK) return null;
 	TYPEATTR typeattr = new TYPEATTR();
@@ -476,8 +476,8 @@ public boolean equals(Object object) {
 		if (objIDispatch == null) return false;
 		OleAutomation oleAutomation = ((OleAutomation) object); 
 		if (oleAutomation.objIDispatch == null) return false;
-		int /*long*/ address1 = objIDispatch.getAddress();
-		int /*long*/ address2 = oleAutomation.objIDispatch.getAddress();
+		long /*int*/ address1 = objIDispatch.getAddress();
+		long /*int*/ address2 = oleAutomation.objIDispatch.getAddress();
 		return address1 == address2;
 	}
 	return false;
@@ -566,7 +566,7 @@ private int invoke(int dispIdMember, int wFlags, Variant[] rgvarg, int[] rgdispi
 	// invoke the method
 	EXCEPINFO excepInfo = new EXCEPINFO();
 	int[] pArgErr = new int[1];
-	int /*long*/ pVarResultAddress = 0;
+	long /*int*/ pVarResultAddress = 0;
 	if (pVarResult != null)	pVarResultAddress = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
 	int result = objIDispatch.Invoke(dispIdMember, new GUID(), COM.LOCALE_USER_DEFAULT, wFlags, pDispParams, pVarResultAddress, excepInfo, pArgErr);
 

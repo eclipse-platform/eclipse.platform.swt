@@ -16,7 +16,7 @@ public NSDatePicker() {
 	super();
 }
 
-public NSDatePicker(int /*long*/ id) {
+public NSDatePicker(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,7 +25,7 @@ public NSDatePicker(id id) {
 }
 
 public NSDate dateValue() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_dateValue);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_dateValue);
 	return result != 0 ? new NSDate(result) : null;
 }
 
@@ -41,11 +41,11 @@ public void setBordered(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setBordered_, flag);
 }
 
-public void setDatePickerElements(int /*long*/ elementFlags) {
+public void setDatePickerElements(long /*int*/ elementFlags) {
 	OS.objc_msgSend(this.id, OS.sel_setDatePickerElements_, elementFlags);
 }
 
-public void setDatePickerStyle(int /*long*/ newStyle) {
+public void setDatePickerStyle(long /*int*/ newStyle) {
 	OS.objc_msgSend(this.id, OS.sel_setDatePickerStyle_, newStyle);
 }
 
@@ -61,11 +61,11 @@ public void setTextColor(NSColor color) {
 	OS.objc_msgSend(this.id, OS.sel_setTextColor_, color != null ? color.id : 0);
 }
 
-public static int /*long*/ cellClass() {
+public static long /*int*/ cellClass() {
 	return OS.objc_msgSend(OS.class_NSDatePicker, OS.sel_cellClass);
 }
 
-public static void setCellClass(int /*long*/ factoryId) {
+public static void setCellClass(long /*int*/ factoryId) {
 	OS.objc_msgSend(OS.class_NSDatePicker, OS.sel_setCellClass_, factoryId);
 }
 

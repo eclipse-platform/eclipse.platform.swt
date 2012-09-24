@@ -29,7 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsDynamicFunctionLoad {
     /** @field cast=(const char *) */
-	public int /*long*/ functionName;
+	public long /*int*/ functionName;
 	/** @field cast=(NSFuncPtr  *) */
-	public int /*long*/ function;
+	public long /*int*/ function;
 }

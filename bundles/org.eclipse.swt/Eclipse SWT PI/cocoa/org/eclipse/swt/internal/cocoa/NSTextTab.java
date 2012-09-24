@@ -16,7 +16,7 @@ public NSTextTab() {
 	super();
 }
 
-public NSTextTab(int /*long*/ id) {
+public NSTextTab(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,16 +24,16 @@ public NSTextTab(id id) {
 	super(id);
 }
 
-public NSTextTab initWithType(int /*long*/ type, float /*double*/ loc) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithType_location_, type, loc);
+public NSTextTab initWithType(long /*int*/ type, double /*float*/ loc) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithType_location_, type, loc);
 	return result == this.id ? this : (result != 0 ? new NSTextTab(result) : null);
 }
 
-public float /*double*/ location() {
-	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_location);
+public double /*float*/ location() {
+	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_location);
 }
 
-public int /*long*/ tabStopType() {
+public long /*int*/ tabStopType() {
 	return OS.objc_msgSend(this.id, OS.sel_tabStopType);
 }
 

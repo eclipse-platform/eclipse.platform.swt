@@ -16,7 +16,7 @@ public class SAFEARRAY {
 	public int cbElements;
 	public int cLocks;
 	/** @field cast=(PVOID) */
-	public int /*long*/ pvData;
+	public long /*int*/ pvData;
 	/** @field accessor=rgsabound[0] */
 	public SAFEARRAYBOUND rgsabound;
 

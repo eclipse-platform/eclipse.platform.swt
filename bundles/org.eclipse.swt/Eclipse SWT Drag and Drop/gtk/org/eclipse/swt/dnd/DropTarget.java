@@ -245,33 +245,33 @@ static int checkStyle (int style) {
 	return style;
 }
 
-static int /*long*/ Drag_Data_Received ( int /*long*/ widget, int /*long*/ context, int /*long*/ x, int /*long*/ y, int /*long*/ data, int /*long*/ info, int /*long*/ time){
+static long /*int*/ Drag_Data_Received ( long /*int*/ widget, long /*int*/ context, long /*int*/ x, long /*int*/ y, long /*int*/ data, long /*int*/ info, long /*int*/ time){
 	DropTarget target = FindDropTarget(widget);
 	if (target == null) return 0;
 	target.drag_data_received (widget, context, (int)/*64*/x, (int)/*64*/y, data, (int)/*64*/info, (int)/*64*/time);
 	return 0;
 }
 
-static int /*long*/ Drag_Drop(int /*long*/ widget, int /*long*/ context, int /*long*/ x, int /*long*/ y, int /*long*/ time) {
+static long /*int*/ Drag_Drop(long /*int*/ widget, long /*int*/ context, long /*int*/ x, long /*int*/ y, long /*int*/ time) {
 	DropTarget target = FindDropTarget(widget);
 	if (target == null) return 0;
 	return target.drag_drop (widget, context, (int)/*64*/x, (int)/*64*/y, (int)/*64*/time) ? 1 : 0;
 }
 
-static int /*long*/ Drag_Leave ( int /*long*/ widget, int /*long*/ context, int /*long*/ time){
+static long /*int*/ Drag_Leave ( long /*int*/ widget, long /*int*/ context, long /*int*/ time){
 	DropTarget target = FindDropTarget(widget);
 	if (target == null) return 0;
 	target.drag_leave (widget, context, (int)/*64*/time);
 	return 0;
 }
 
-static int /*long*/ Drag_Motion ( int /*long*/ widget, int /*long*/ context, int /*long*/ x, int /*long*/ y, int /*long*/ time){
+static long /*int*/ Drag_Motion ( long /*int*/ widget, long /*int*/ context, long /*int*/ x, long /*int*/ y, long /*int*/ time){
 	DropTarget target = FindDropTarget(widget);
 	if (target == null) return 0;
 	return target.drag_motion (widget, context, (int)/*64*/x, (int)/*64*/y, (int)/*64*/time) ? 1 : 0;
 }
 	
-static DropTarget FindDropTarget(int /*long*/ handle) {
+static DropTarget FindDropTarget(long /*int*/ handle) {
 	Display display = Display.findDisplay(Thread.currentThread());
 	if (display == null || display.isDisposed()) return null;
 	Widget widget = display.findWidget(handle);
@@ -332,7 +332,7 @@ protected void checkSubclass () {
 	}
 }
 
-void drag_data_received ( int /*long*/ widget, int /*long*/ context, int x, int y, int /*long*/ data, int info, int time){
+void drag_data_received ( long /*int*/ widget, long /*int*/ context, int x, int y, long /*int*/ data, int info, int time){
 	DNDEvent event = new DNDEvent();
 	if (data == 0 || !setEventData(context, x, y, time, event)) {
 		keyOperation = -1;
@@ -380,7 +380,7 @@ void drag_data_received ( int /*long*/ widget, int /*long*/ context, int x, int 
 	return;	
 }
 
-boolean drag_drop(int /*long*/ widget, int /*long*/ context, int x, int y, int time) {
+boolean drag_drop(long /*int*/ widget, long /*int*/ context, int x, int y, int time) {
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(context, x, y, time, event)) {
 		keyOperation = -1;
@@ -417,7 +417,7 @@ boolean drag_drop(int /*long*/ widget, int /*long*/ context, int x, int y, int t
 	return true;
 }
 
-void drag_leave ( int /*long*/ widget, int /*long*/ context, int time){
+void drag_leave ( long /*int*/ widget, long /*int*/ context, int time){
 	updateDragOverHover(0, null);
 	
 	if (keyOperation == -1) return;
@@ -430,7 +430,7 @@ void drag_leave ( int /*long*/ widget, int /*long*/ context, int time){
 	notifyListeners(DND.DragLeave, event);
 }
 
-boolean drag_motion ( int /*long*/ widget, int /*long*/ context, int x, int y, int time){
+boolean drag_motion ( long /*int*/ widget, long /*int*/ context, int x, int y, int time){
 	int oldKeyOperation = keyOperation;
 	
 	/*
@@ -694,7 +694,7 @@ public void setTransfer(Transfer[] transferAgents){
 		}
 	}
 	
-	int /*long*/ pTargets = OS.g_malloc(targets.length * GtkTargetEntry.sizeof);
+	long /*int*/ pTargets = OS.g_malloc(targets.length * GtkTargetEntry.sizeof);
 	for (int i = 0; i < targets.length; i++) {
 		OS.memmove(pTargets + i*GtkTargetEntry.sizeof, targets[i], GtkTargetEntry.sizeof);		
 	}			
@@ -702,7 +702,7 @@ public void setTransfer(Transfer[] transferAgents){
 	int actions = opToOsOp(getStyle());
 	if (control instanceof Combo) {
 		if ((control.getStyle() & SWT.READ_ONLY) == 0) {
-			int /*long*/ entryHandle = OS.gtk_bin_get_child (control.handle);
+			long /*int*/ entryHandle = OS.gtk_bin_get_child (control.handle);
 			if (entryHandle != 0) {
 				OS.gtk_drag_dest_unset(entryHandle);
 			}
@@ -728,7 +728,7 @@ public void setDropTargetEffect(DropTargetEffect effect) {
 	dropEffect = effect;
 }
 
-boolean setEventData(int /*long*/ context, int x, int y, int time, DNDEvent event) {
+boolean setEventData(long /*int*/ context, int x, int y, int time, DNDEvent event) {
 	if (context == 0) return false;
 	GdkDragContext dragContext = new GdkDragContext();
 	OS.memmove(dragContext, context, GdkDragContext.sizeof);
@@ -754,7 +754,7 @@ boolean setEventData(int /*long*/ context, int x, int y, int time, DNDEvent even
 	int length = OS.g_list_length(dragContext.targets);
 	TransferData[] dataTypes = new TransferData[0];
 	for (int i = 0; i < length; i++) {
-		int /*long*/ pData = OS.g_list_nth(dragContext.targets, i);
+		long /*int*/ pData = OS.g_list_nth(dragContext.targets, i);
 		GtkTargetPair gtkTargetPair = new GtkTargetPair();
 		OS.memmove(gtkTargetPair, pData, GtkTargetPair.sizeof);
 		TransferData data = new TransferData();
@@ -771,7 +771,7 @@ boolean setEventData(int /*long*/ context, int x, int y, int time, DNDEvent even
 		}
 	}
 	if (dataTypes.length == 0) return false;
-	int /*long*/ window;
+	long /*int*/ window;
 	if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
 		window = OS.gtk_widget_get_window (control.handle);
 	} else {

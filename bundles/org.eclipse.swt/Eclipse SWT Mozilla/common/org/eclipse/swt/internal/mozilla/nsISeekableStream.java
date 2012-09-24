@@ -37,7 +37,7 @@ public class nsISeekableStream extends nsISupports {
 	public static final nsID NS_ISEEKABLESTREAM_IID =
 		new nsID(NS_ISEEKABLESTREAM_IID_STR);
 
-	public nsISeekableStream(int /*long*/ address) {
+	public nsISeekableStream(long /*int*/ address) {
 		super(address);
 	}
 

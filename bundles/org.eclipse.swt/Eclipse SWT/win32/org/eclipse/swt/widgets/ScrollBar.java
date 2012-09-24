@@ -182,7 +182,7 @@ void createWidget () {
 }
 
 void destroyWidget () {
-	int /*long*/ hwnd = hwndScrollBar ();
+	long /*int*/ hwnd = hwndScrollBar ();
 	int type = scrollBarType ();
 	if (OS.IsWinCE) {
 		SCROLLINFO info = new SCROLLINFO ();
@@ -271,7 +271,7 @@ public int getMaximum () {
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_RANGE;
-	int /*long*/ hwnd = hwndScrollBar ();
+	long /*int*/ hwnd = hwndScrollBar ();
 	int type = scrollBarType ();
 	OS.GetScrollInfo (hwnd, type, info);
 	return info.nMax;
@@ -292,7 +292,7 @@ public int getMinimum () {
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_RANGE;
-	int /*long*/ hwnd = hwndScrollBar ();
+	long /*int*/ hwnd = hwndScrollBar ();
 	int type = scrollBarType ();
 	OS.GetScrollInfo (hwnd, type, info);
 	return info.nMin;
@@ -345,7 +345,7 @@ public int getSelection () {
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_POS;
-	int /*long*/ hwnd = hwndScrollBar ();
+	long /*int*/ hwnd = hwndScrollBar ();
 	int type = scrollBarType ();
 	OS.GetScrollInfo (hwnd, type, info);
 	return info.nPos;
@@ -397,7 +397,7 @@ public int getThumb () {
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_PAGE;
-	int /*long*/ hwnd = hwndScrollBar ();
+	long /*int*/ hwnd = hwndScrollBar ();
 	int type = scrollBarType ();
 	OS.GetScrollInfo (hwnd, type, info);
 	if (info.nPage != 0) --info.nPage;
@@ -530,7 +530,7 @@ public boolean getVisible () {
 	return (state & HIDDEN) == 0;
 }
 
-int /*long*/ hwndScrollBar () {
+long /*int*/ hwndScrollBar () {
 	return parent.scrolledHandle ();
 }
 
@@ -634,7 +634,7 @@ public void setEnabled (boolean enabled) {
 	*/
 //	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 	if (!OS.IsWinCE) {
-		int /*long*/ hwnd = hwndScrollBar ();
+		long /*int*/ hwnd = hwndScrollBar ();
 		int type = scrollBarType ();
 		int flags = enabled ? OS.ESB_ENABLE_BOTH : OS.ESB_DISABLE_BOTH;
 		OS.EnableScrollBar (hwnd, type, flags);
@@ -683,7 +683,7 @@ public void setMaximum (int value) {
 	if (value < 0) return;
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
-	int /*long*/ hwnd = hwndScrollBar ();
+	long /*int*/ hwnd = hwndScrollBar ();
 	int type = scrollBarType ();
 	info.fMask = OS.SIF_RANGE | OS.SIF_DISABLENOSCROLL;
 	OS.GetScrollInfo (hwnd, type, info);
@@ -710,7 +710,7 @@ public void setMinimum (int value) {
 	if (value < 0) return;
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
-	int /*long*/ hwnd = hwndScrollBar ();
+	long /*int*/ hwnd = hwndScrollBar ();
 	int type = scrollBarType ();
 	info.fMask = OS.SIF_RANGE | OS.SIF_DISABLENOSCROLL;
 	OS.GetScrollInfo (hwnd, type, info);
@@ -738,7 +738,7 @@ public void setPageIncrement (int value) {
 	pageIncrement = value;
 }
 
-boolean SetScrollInfo (int /*long*/ hwnd, int flags, SCROLLINFO info, boolean fRedraw) {
+boolean SetScrollInfo (long /*int*/ hwnd, int flags, SCROLLINFO info, boolean fRedraw) {
 	/*
 	* Bug in Windows.  For some reason, when SetScrollInfo()
 	* is used with SIF_POS and the scroll bar is hidden,
@@ -844,7 +844,7 @@ public void setSelection (int selection) {
 	checkWidget();
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
-	int /*long*/ hwnd = hwndScrollBar ();
+	long /*int*/ hwnd = hwndScrollBar ();
 	int type = scrollBarType ();
 	info.fMask = OS.SIF_POS;
 	info.nPos = selection;
@@ -873,7 +873,7 @@ public void setThumb (int value) {
 	if (value < 1) return;
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
-	int /*long*/ hwnd = hwndScrollBar ();
+	long /*int*/ hwnd = hwndScrollBar ();
 	int type = scrollBarType ();
 	info.fMask = OS.SIF_PAGE | OS.SIF_RANGE | OS.SIF_DISABLENOSCROLL;
 	OS.GetScrollInfo (hwnd, type, info);
@@ -920,7 +920,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	info.nMax = maximum;
 	info.nPage = thumb;
 	if (info.nPage != 0) info.nPage++;
-	int /*long*/ hwnd = hwndScrollBar ();
+	long /*int*/ hwnd = hwndScrollBar ();
 	int type = scrollBarType ();
 	SetScrollInfo (hwnd, type, info, true);
 }
@@ -953,7 +953,7 @@ public void setVisible (boolean visible) {
 	if (OS.IsWinCE) {
 		SCROLLINFO info = new SCROLLINFO ();
 		info.cbSize = SCROLLINFO.sizeof;
-		int /*long*/ hwnd = hwndScrollBar ();
+		long /*int*/ hwnd = hwndScrollBar ();
 		int type = scrollBarType ();
 		info.fMask = OS.SIF_RANGE | OS.SIF_PAGE;
 		if (visible) info.fMask |= OS.SIF_DISABLENOSCROLL;
@@ -990,7 +990,7 @@ public void setVisible (boolean visible) {
 	* of the scroll bar will get the correct value.
 	*/
 	state = visible ? state & ~HIDDEN : state | HIDDEN;
-	int /*long*/ hwnd = hwndScrollBar ();
+	long /*int*/ hwnd = hwndScrollBar ();
 	int type = scrollBarType ();
 	if (OS.ShowScrollBar (hwnd, type, visible)) {
 		/*
@@ -1020,7 +1020,7 @@ public void setVisible (boolean visible) {
 	}
 }
 
-LRESULT wmScrollChild (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmScrollChild (long /*int*/ wParam, long /*int*/ lParam) {
 
 	/* Do nothing when scrolling is ending */
 	int code = OS.LOWORD (wParam);

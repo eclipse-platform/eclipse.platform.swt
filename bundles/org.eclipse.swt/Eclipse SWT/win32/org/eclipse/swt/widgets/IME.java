@@ -165,7 +165,7 @@ public int getCompositionOffset () {
 }
 
 TF_DISPLAYATTRIBUTE getDisplayAttribute (short langid, int attInfo) {
-	int /*long*/ [] pProfiles = new int /*long*/ [1];
+	long /*int*/ [] pProfiles = new long /*int*/ [1];
 	int hr = OS.CoCreateInstance (CLSID_TF_InputProcessorProfiles, 0, OS.CLSCTX_INPROC_SERVER, IID_ITfInputProcessorProfiles, pProfiles);
 	TF_DISPLAYATTRIBUTE pda = null;
 	if (hr == OS.S_OK) {
@@ -174,14 +174,14 @@ TF_DISPLAYATTRIBUTE getDisplayAttribute (short langid, int attInfo) {
 		/* pProfiles.GetDefaultLanguageProfile () */
 		hr = OS.VtblCall (8, pProfiles [0], langid, GUID_TFCAT_TIP_KEYBOARD, pclsid, pguidProfile);
 		if (hr == OS.S_OK) {
-			int /*long*/ [] pProvider = new int /*long*/ [1];
+			long /*int*/ [] pProvider = new long /*int*/ [1];
 			hr = OS.CoCreateInstance (pclsid, 0, OS.CLSCTX_INPROC_SERVER, IID_ITfDisplayAttributeProvider, pProvider);
 			if (hr == OS.S_OK) {
-				int /*long*/ [] pEnum = new int /*long*/ [1];
+				long /*int*/ [] pEnum = new long /*int*/ [1];
 				/* pProvider.EnumDisplayAttributeInfo () */
 				hr = OS.VtblCall (3, pProvider [0], pEnum);
 				if (hr == OS.S_OK) {
-					int /*long*/ [] pDispInfo = new int /*long*/ [1];
+					long /*int*/ [] pDispInfo = new long /*int*/ [1];
 					TF_DISPLAYATTRIBUTE tempPda = new TF_DISPLAYATTRIBUTE ();
 					/* pEnum.Next () */
 					while ((hr = OS.VtblCall (4, pEnum [0], 1, pDispInfo, (int[])null)) == OS.S_OK) {
@@ -310,7 +310,7 @@ public String getText () {
  */
 public boolean getWideCaret() {
 	checkWidget ();
-	int /*long*/ layout = OS.GetKeyboardLayout (0);
+	long /*int*/ layout = OS.GetKeyboardLayout (0);
 	short langID = (short)OS.LOWORD (layout);
 	return OS.PRIMARYLANGID (langID) == OS.LANG_KOREAN; 
 }
@@ -357,13 +357,13 @@ public void setCompositionOffset (int offset) {
 	}
 }
 
-LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_IME_COMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
 	if (!isInlineEnabled ()) return null;
 	ranges = null;
 	styles = null;
 	caretOffset = commitCount = 0;
-	int /*long*/ hwnd = parent.handle;
-	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
+	long /*int*/ hwnd = parent.handle;
+	long /*int*/ hIMC = OS.ImmGetContext (hwnd);
 	int codePage = parent.getCodePage ();
 	if (hIMC != 0) {
 		TCHAR buffer = null;
@@ -430,7 +430,7 @@ LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 						length = clauses.length - 1;
 						ranges = new int [length * 2];
 						styles = new TextStyle [length];
-						int /*long*/ layout = OS.GetKeyboardLayout (0);
+						long /*int*/ layout = OS.GetKeyboardLayout (0);
 						short langID = (short)OS.LOWORD (layout);
 						TF_DISPLAYATTRIBUTE attr = null; 
 						TextStyle style = null;
@@ -512,18 +512,18 @@ LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 	return LRESULT.ONE;
 }
 
-LRESULT WM_IME_COMPOSITION_START (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_IME_COMPOSITION_START (long /*int*/ wParam, long /*int*/ lParam) {
 	return isInlineEnabled () ? LRESULT.ONE : null;
 }
 
-LRESULT WM_IME_ENDCOMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_IME_ENDCOMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
 	return isInlineEnabled () ? LRESULT.ONE : null;
 }
 
-LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	if (!isInlineEnabled ()) return null;
-	int /*long*/ hwnd = parent.handle;
-	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
+	long /*int*/ hwnd = parent.handle;
+	long /*int*/ hIMC = OS.ImmGetContext (hwnd);
 	if (hIMC != 0) {
 		if (OS.ImmGetOpenStatus (hIMC)) {
 			OS.ImmNotifyIME (hIMC, OS.NI_COMPOSITIONSTR, OS.CPS_COMPLETE, 0);
@@ -533,10 +533,10 @@ LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	if (!isInlineEnabled ()) return null;
-	int /*long*/ hwnd = parent.handle;
-	int /*long*/ hIMC = OS.ImmGetContext (hwnd);
+	long /*int*/ hwnd = parent.handle;
+	long /*int*/ hIMC = OS.ImmGetContext (hwnd);
 	if (hIMC != 0) {
 		if (OS.ImmGetOpenStatus (hIMC)) {
 			if (OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, (TCHAR)null, 0) > 0) {
@@ -548,10 +548,10 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 				int offset = event.index;
 				int length = text.length();
 				if (offset != -1 && startOffset != -1 && startOffset <= offset && offset < startOffset + length) {
-					int /*long*/ imeWnd = OS.ImmGetDefaultIMEWnd (hwnd);
+					long /*int*/ imeWnd = OS.ImmGetDefaultIMEWnd (hwnd);
 					offset = event.index + event.count - startOffset;
 					int trailing = event.count > 0 ? 1 : 2;
-					int /*long*/ param = OS.MAKEWPARAM (OS.MAKEWORD (OS.IMEMOUSE_LDOWN, trailing), offset);
+					long /*int*/ param = OS.MAKEWPARAM (OS.MAKEWORD (OS.IMEMOUSE_LDOWN, trailing), offset);
 					OS.SendMessage (imeWnd, WM_MSIME_MOUSE, param, hIMC);
 				} else {
 					OS.ImmNotifyIME (hIMC, OS.NI_COMPOSITIONSTR, OS.CPS_COMPLETE, 0);

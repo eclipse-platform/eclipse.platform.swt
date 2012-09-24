@@ -16,7 +16,7 @@ public NSMutableArray() {
 	super();
 }
 
-public NSMutableArray(int /*long*/ id) {
+public NSMutableArray(long /*int*/ id) {
 	super(id);
 }
 
@@ -32,13 +32,13 @@ public void addObjectsFromArray(NSArray otherArray) {
 	OS.objc_msgSend(this.id, OS.sel_addObjectsFromArray_, otherArray != null ? otherArray.id : 0);
 }
 
-public static NSMutableArray arrayWithCapacity(int /*long*/ numItems) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableArray, OS.sel_arrayWithCapacity_, numItems);
+public static NSMutableArray arrayWithCapacity(long /*int*/ numItems) {
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSMutableArray, OS.sel_arrayWithCapacity_, numItems);
 	return result != 0 ? new NSMutableArray(result) : null;
 }
 
-public NSMutableArray initWithCapacity(int /*long*/ numItems) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithCapacity_, numItems);
+public NSMutableArray initWithCapacity(long /*int*/ numItems) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithCapacity_, numItems);
 	return result == this.id ? this : (result != 0 ? new NSMutableArray(result) : null);
 }
 
@@ -50,7 +50,7 @@ public void removeObject(id anObject) {
 	OS.objc_msgSend(this.id, OS.sel_removeObject_, anObject != null ? anObject.id : 0);
 }
 
-public void removeObjectAtIndex(int /*long*/ index) {
+public void removeObjectAtIndex(long /*int*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_removeObjectAtIndex_, index);
 }
 
@@ -59,12 +59,12 @@ public void removeObjectIdenticalTo(id anObject) {
 }
 
 public static NSArray array() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableArray, OS.sel_array);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSMutableArray, OS.sel_array);
 	return result != 0 ? new NSArray(result) : null;
 }
 
 public static NSArray arrayWithObject(id anObject) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableArray, OS.sel_arrayWithObject_, anObject != null ? anObject.id : 0);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSMutableArray, OS.sel_arrayWithObject_, anObject != null ? anObject.id : 0);
 	return result != 0 ? new NSMutableArray(result) : null;
 }
 

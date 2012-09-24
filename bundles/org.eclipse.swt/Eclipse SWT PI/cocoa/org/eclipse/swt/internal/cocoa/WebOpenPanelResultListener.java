@@ -16,7 +16,7 @@ public WebOpenPanelResultListener() {
 	super();
 }
 
-public WebOpenPanelResultListener(int /*long*/ id) {
+public WebOpenPanelResultListener(long /*int*/ id) {
 	super(id);
 }
 

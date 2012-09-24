@@ -42,7 +42,7 @@ public final class Region extends Resource {
 	 * 
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public int /*long*/ handle;
+	public long /*int*/ handle;
 
 /**
  * Constructs a new empty region.
@@ -112,7 +112,7 @@ public void add (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-	int /*long*/ polyRgn = OS.CreatePolygonRgn(pointArray, pointArray.length / 2, OS.ALTERNATE);
+	long /*int*/ polyRgn = OS.CreatePolygonRgn(pointArray, pointArray.length / 2, OS.ALTERNATE);
 	OS.CombineRgn (handle, handle, polyRgn, OS.RGN_OR);
 	OS.DeleteObject (polyRgn);
 }
@@ -158,7 +158,7 @@ public void add (Rectangle rect) {
 public void add (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int /*long*/ rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
+	long /*int*/ rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
 	OS.CombineRgn (handle, handle, rectRgn, OS.RGN_OR);
 	OS.DeleteObject (rectRgn);
 }
@@ -323,7 +323,7 @@ public void intersect (Rectangle rect) {
 public void intersect (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int /*long*/ rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
+	long /*int*/ rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
 	OS.CombineRgn (handle, handle, rectRgn, OS.RGN_AND);
 	OS.DeleteObject (rectRgn);
 }
@@ -451,7 +451,7 @@ public void subtract (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-	int /*long*/ polyRgn = OS.CreatePolygonRgn(pointArray, pointArray.length / 2, OS.ALTERNATE);
+	long /*int*/ polyRgn = OS.CreatePolygonRgn(pointArray, pointArray.length / 2, OS.ALTERNATE);
 	OS.CombineRgn (handle, handle, polyRgn, OS.RGN_DIFF);
 	OS.DeleteObject (polyRgn);
 }
@@ -499,7 +499,7 @@ public void subtract (Rectangle rect) {
 public void subtract (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);	
-	int /*long*/ rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
+	long /*int*/ rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
 	OS.CombineRgn (handle, handle, rectRgn, OS.RGN_DIFF);
 	OS.DeleteObject (rectRgn);
 }

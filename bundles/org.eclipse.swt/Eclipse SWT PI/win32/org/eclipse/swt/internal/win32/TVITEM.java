@@ -13,15 +13,15 @@ package org.eclipse.swt.internal.win32;
 public class TVITEM {
 	public int mask;
 	/** @field cast=(HTREEITEM) */
-	public int /*long*/ hItem;
+	public long /*int*/ hItem;
 	public int state;
 	public int stateMask;
 	/** @field cast=(LPTSTR) */
-	public int /*long*/ pszText;
+	public long /*int*/ pszText;
   	public int cchTextMax;
   	public int iImage;
   	public int iSelectedImage;
 	public int cChildren;
-	public int /*long*/ lParam;
+	public long /*int*/ lParam;
 	public static final int sizeof = OS.TVITEM_sizeof ();
 }

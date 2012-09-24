@@ -230,7 +230,7 @@ public Image(Device device, Image srcImage, int flag) {
 		int width = (int)size.width;
 		int height = (int)size.height;
 		NSBitmapImageRep srcRep = srcImage.getRepresentation();
-		int /*long*/ bpr = srcRep.bytesPerRow();
+		long /*int*/ bpr = srcRep.bytesPerRow();
 
 		/* Copy transparent pixel and alpha data when necessary */
 		transparentPixel = srcImage.transparentPixel;
@@ -240,9 +240,9 @@ public Image(Device device, Image srcImage, int flag) {
 			System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
 		}
 		
-		int /*long*/ srcData = srcRep.bitmapData();
-		int /*long*/ format = srcRep.bitmapFormat();
-		int /*long*/ bpp = srcRep.bitsPerPixel();
+		long /*int*/ srcData = srcRep.bitmapData();
+		long /*int*/ format = srcRep.bitmapFormat();
+		long /*int*/ bpp = srcRep.bitsPerPixel();
 
 		/* Create the image */
 		handle = (NSImage)new NSImage().alloc();
@@ -253,7 +253,7 @@ public Image(Device device, Image srcImage, int flag) {
 		rep.release();
 		handle.setCacheMode(OS.NSImageCacheNever);
 
-		int /*long*/ data = rep.bitmapData();
+		long /*int*/ data = rep.bitmapData();
 		OS.memmove(data, srcData, width * height * 4);
 		if (flag != SWT.IMAGE_COPY) {
 			final int redOffset, greenOffset, blueOffset;
@@ -553,11 +553,11 @@ void createAlpha () {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSBitmapImageRep imageRep = getRepresentation();
-		int /*long*/ height = imageRep.pixelsHigh();
-		int /*long*/ bpr = imageRep.bytesPerRow();
-		int /*long*/ bitmapData = imageRep.bitmapData();
-		int /*long*/ format = imageRep.bitmapFormat();
-		int /*long*/ dataSize = height * bpr;
+		long /*int*/ height = imageRep.pixelsHigh();
+		long /*int*/ bpr = imageRep.bytesPerRow();
+		long /*int*/ bitmapData = imageRep.bitmapData();
+		long /*int*/ format = imageRep.bitmapFormat();
+		long /*int*/ dataSize = height * bpr;
 		byte[] srcData = new byte[(int)/*64*/dataSize];
 		OS.memmove(srcData, bitmapData, dataSize);
 		if (transparentPixel != -1) {
@@ -578,7 +578,7 @@ void createAlpha () {
 				srcData[i] = a;				
 			}
 		} else {
-			int /*long*/ width = imageRep.pixelsWide();
+			long /*int*/ width = imageRep.pixelsWide();
 			int offset = 0, alphaOffset = (format & OS.NSAlphaFirstBitmapFormat) != 0 ? 0 : 3;
 			for (int y = 0; y<height; y++) {
 				for (int x = 0; x<width; x++) {
@@ -647,7 +647,7 @@ public Color getBackground() {
 	int red = (transparentPixel >> 16) & 0xFF;
 	int green = (transparentPixel >> 8) & 0xFF;
 	int blue = (transparentPixel >> 0) & 0xFF;
-	return Color.cocoa_new(device, new float /*double*/ []{red / 255f, green / 255f, blue / 255f, 1});
+	return Color.cocoa_new(device, new double /*float*/ []{red / 255f, green / 255f, blue / 255f, 1});
 }
 
 /**
@@ -697,13 +697,13 @@ public ImageData getImageData() {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSBitmapImageRep imageRep = getRepresentation();
-		int /*long*/ width = imageRep.pixelsWide();
-		int /*long*/ height = imageRep.pixelsHigh();
-		int /*long*/ bpr = imageRep.bytesPerRow();
-		int /*long*/ bpp = imageRep.bitsPerPixel();
-		int /*long*/ bitmapData = imageRep.bitmapData();
-		int /*long*/ bitmapFormat = imageRep.bitmapFormat();
-		int /*long*/ dataSize = height * bpr;
+		long /*int*/ width = imageRep.pixelsWide();
+		long /*int*/ height = imageRep.pixelsHigh();
+		long /*int*/ bpr = imageRep.bytesPerRow();
+		long /*int*/ bpp = imageRep.bitsPerPixel();
+		long /*int*/ bitmapData = imageRep.bitmapData();
+		long /*int*/ bitmapFormat = imageRep.bitmapFormat();
+		long /*int*/ dataSize = height * bpr;
 		byte[] srcData = new byte[(int)/*64*/dataSize];
 		OS.memmove(srcData, bitmapData, dataSize);
 		
@@ -727,7 +727,7 @@ public ImageData getImageData() {
 			if (transparentPixel == -1 && type == SWT.ICON) {
 				/* Get the icon mask data */
 				int maskPad = 2;
-				int /*long*/ maskBpl = (((width + 7) / 8) + (maskPad - 1)) / maskPad * maskPad;
+				long /*int*/ maskBpl = (((width + 7) / 8) + (maskPad - 1)) / maskPad * maskPad;
 				byte[] maskData = new byte[(int)/*64*/(height * maskBpl)];
 				int offset = 0, maskOffset = 0;
 				for (int y = 0; y<height; y++) {
@@ -792,7 +792,7 @@ NSBitmapImageRep getRepresentation () {
 	}
 	NSArray reps = handle.representations();
 	NSSize size = handle.size();
-	int /*long*/ count = reps.count();
+	long /*int*/ count = reps.count();
 	NSBitmapImageRep bestRep = null;
 	for (int i = 0; i < count; i++) {
 		rep = new NSBitmapImageRep(reps.objectAtIndex(i));
@@ -1008,8 +1008,8 @@ void initNative(String filename) {
 		rect.height = height;
 
 		/* Compute the pixels */
-		int /*long*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
-		int /*long*/ ctx = OS.CGBitmapContextCreate(rep.bitmapData(), width, height, 8, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst);
+		long /*int*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
+		long /*int*/ ctx = OS.CGBitmapContextCreate(rep.bitmapData(), width, height, 8, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst);
 		OS.CGColorSpaceRelease(colorspace);
 		NSGraphicsContext.static_saveGraphicsState();
 		NSGraphicsContext.setCurrentContext(NSGraphicsContext.graphicsContextWithGraphicsPort(ctx, false));
@@ -1019,10 +1019,10 @@ void initNative(String filename) {
 		
 		if (hasAlpha) {
 			/* Compute the alpha values */
-			int /*long*/ bitmapBytesPerRow = width;
-			int /*long*/ bitmapByteCount = bitmapBytesPerRow * height;
-			int /*long*/ alphaBitmapData = OS.malloc(bitmapByteCount);
-			int /*long*/ alphaBitmapCtx = OS.CGBitmapContextCreate(alphaBitmapData, width, height, 8, bitmapBytesPerRow, 0, OS.kCGImageAlphaOnly);
+			long /*int*/ bitmapBytesPerRow = width;
+			long /*int*/ bitmapByteCount = bitmapBytesPerRow * height;
+			long /*int*/ alphaBitmapData = OS.malloc(bitmapByteCount);
+			long /*int*/ alphaBitmapCtx = OS.CGBitmapContextCreate(alphaBitmapData, width, height, 8, bitmapBytesPerRow, 0, OS.kCGImageAlphaOnly);
 			NSGraphicsContext.static_saveGraphicsState();
 			NSGraphicsContext.setCurrentContext(NSGraphicsContext.graphicsContextWithGraphicsPort(alphaBitmapCtx, false));
 			nativeRep.drawInRect(rect);
@@ -1108,7 +1108,7 @@ void initNative(String filename) {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public int /*long*/ internal_new_GC (GCData data) {
+public long /*int*/ internal_new_GC (GCData data) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (type != SWT.BITMAP || memGC != null) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1166,8 +1166,8 @@ public int /*long*/ internal_new_GC (GCData data) {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public void internal_dispose_GC (int /*long*/ hDC, GCData data) {
-	int /*long*/ context = hDC;
+public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
+	long /*int*/ context = hDC;
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
@@ -1244,10 +1244,10 @@ public void setBackground(Color color) {
 		byte newGreen = (byte)((int)(color.handle[1] * 255) & 0xFF);
 		byte newBlue = (byte)((int)(color.handle[2] * 255) & 0xFF);
 		NSBitmapImageRep imageRep = getRepresentation();
-		int /*long*/ bpr = imageRep.bytesPerRow();
-		int /*long*/ data = imageRep.bitmapData();
-		int /*long*/ format = imageRep.bitmapFormat();
-		int /*long*/ bpp = imageRep.bitsPerPixel();
+		long /*int*/ bpr = imageRep.bytesPerRow();
+		long /*int*/ data = imageRep.bitmapData();
+		long /*int*/ format = imageRep.bitmapFormat();
+		long /*int*/ bpp = imageRep.bitsPerPixel();
 		final int redOffset, greenOffset, blueOffset;
 		if (bpp == 32 && (format & OS.NSAlphaFirstBitmapFormat) == 0) {
 			redOffset = 0;

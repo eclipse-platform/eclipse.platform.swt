@@ -62,7 +62,7 @@ public class SWT_AWT {
 
 static boolean loaded, swingInitialized;
 
-static native final int /*long*/ getAWTHandle (Canvas canvas);
+static native final long /*int*/ getAWTHandle (Canvas canvas);
 
 static synchronized void loadLibrary () {
 	if (loaded) return;
@@ -140,7 +140,7 @@ public static Frame new_Frame (final Composite parent) {
 	if ((parent.getStyle () & SWT.EMBEDDED) == 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	final int /*long*/ handle = parent.handle;
+	final long /*int*/ handle = parent.handle;
 	final Frame[] result = new Frame[1];
 	final Throwable[] exception = new Throwable[1];
 	Runnable runnable = new Runnable () {
@@ -365,7 +365,7 @@ public static Frame new_Frame (final Composite parent) {
 public static Shell new_Shell (final Display display, final Canvas parent) {
 	if (display == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int /*long*/ handle = 0;
+	long /*int*/ handle = 0;
 	try {
 		loadLibrary ();
 		handle = getAWTHandle (parent);

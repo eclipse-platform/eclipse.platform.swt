@@ -69,7 +69,7 @@ public void javaToNative (Object object, TransferData transferData){
 		char[] chars = new char[charCount+1];
 		url.getChars (0, charCount, chars, 0);
 		int byteCount = chars.length * 2;
-		int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, byteCount);
+		long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, byteCount);
 		OS.MoveMemory(newPtr, chars, byteCount);
 		transferData.stgmedium = new STGMEDIUM();
 		transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
@@ -87,7 +87,7 @@ public void javaToNative (Object object, TransferData transferData){
 			transferData.result = COM.DV_E_STGMEDIUM;
 			return;
 		}
-		int /*long*/ lpMultiByteStr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, cchMultiByte);
+		long /*int*/ lpMultiByteStr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, cchMultiByte);
 		OS.WideCharToMultiByte(codePage, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
 		transferData.stgmedium = new STGMEDIUM();
 		transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
@@ -117,14 +117,14 @@ public Object nativeToJava(TransferData transferData){
 	transferData.result = getData(data, formatetc, stgmedium);
 	data.Release();	
 	if (transferData.result != COM.S_OK) return null;
-	int /*long*/ hMem = stgmedium.unionField;
+	long /*int*/ hMem = stgmedium.unionField;
 	try {
 		if (transferData.type == CFSTR_INETURLIDW) {
 			/* Ensure byteCount is a multiple of 2 bytes */
 			int size = OS.GlobalSize(hMem) / 2 * 2;
 			if (size == 0) return null;
 			char[] chars = new char[size/2];
-			int /*long*/ ptr = OS.GlobalLock(hMem);
+			long /*int*/ ptr = OS.GlobalLock(hMem);
 			if (ptr == 0) return null;
 			try {
 				OS.MoveMemory(chars, ptr, size);
@@ -140,7 +140,7 @@ public Object nativeToJava(TransferData transferData){
 				OS.GlobalUnlock(hMem);	
 			}
 		} else if (transferData.type == CFSTR_INETURLID) {
-			int /*long*/ lpMultiByteStr = OS.GlobalLock(hMem);
+			long /*int*/ lpMultiByteStr = OS.GlobalLock(hMem);
 			if (lpMultiByteStr == 0) return null;
 			try {
 				int codePage = OS.GetACP();

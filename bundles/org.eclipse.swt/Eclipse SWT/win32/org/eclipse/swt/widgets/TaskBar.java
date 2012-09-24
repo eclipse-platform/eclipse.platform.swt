@@ -36,7 +36,7 @@ import org.eclipse.swt.*;
 public class TaskBar extends Widget {
 	int itemCount;
 	TaskItem [] items = new TaskItem [4];
-	int /*long*/ mTaskbarList3;
+	long /*int*/ mTaskbarList3;
 	
 	static final char [] EXE_PATH;
 	static final char [] ICO_DIR = {'i','c','o','_','d','i','r','\0'};
@@ -98,7 +98,7 @@ TaskBar (Display display, int style) {
 }
 
 void createHandle () {
-	int /*long*/[] ppv = new int /*long*/ [1];
+	long /*int*/[] ppv = new long /*int*/ [1];
 	int hr = OS.CoCreateInstance (CLSID_TaskbarList, 0, OS.CLSCTX_INPROC_SERVER, IID_ITaskbarList3, ppv);
 	if (hr != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
 	mTaskbarList3 = ppv [0];
@@ -124,17 +124,17 @@ void createItems () {
 	getItem (null);
 }
 
-int /*long*/ createShellLink (MenuItem item, String directory) {
+long /*int*/ createShellLink (MenuItem item, String directory) {
 	int style = item.getStyle ();
 	if ((style & SWT.CASCADE) != 0) return 0;
-	int /*long*/ [] ppv = new int /*long*/ [1];
+	long /*int*/ [] ppv = new long /*int*/ [1];
 	int hr = OS.CoCreateInstance (CLSID_ShellLink, 0, OS.CLSCTX_INPROC_SERVER, IID_IShellLinkW, ppv);
 	if (hr != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
-	int /*long*/ pLink = ppv [0];
+	long /*int*/ pLink = ppv [0];
 
-	int /*long*/ hHeap = OS.GetProcessHeap ();
-	int /*long*/ pv = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, OS.PROPVARIANT_sizeof());
-	int /*long*/ titlePtr = 0;
+	long /*int*/ hHeap = OS.GetProcessHeap ();
+	long /*int*/ pv = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, OS.PROPVARIANT_sizeof());
+	long /*int*/ titlePtr = 0;
 	PROPERTYKEY key;
 	if ((style & SWT.SEPARATOR) != 0) {
 		OS.MoveMemory (pv, new short [] {OS.VT_BOOL}, 2);
@@ -148,7 +148,7 @@ int /*long*/ createShellLink (MenuItem item, String directory) {
 		titlePtr = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length * 2);
 		OS.MoveMemory (titlePtr, buffer, buffer.length * 2);
 		OS.MoveMemory (pv, new short [] {OS.VT_LPWSTR}, 2);
-		OS.MoveMemory (pv + 8, new int /*long*/ [] {titlePtr}, OS.PTR_SIZEOF);
+		OS.MoveMemory (pv + 8, new long /*int*/ [] {titlePtr}, OS.PTR_SIZEOF);
 		key = PKEY_Title;
 		
 		/*IShellLink::SetPath*/
@@ -217,7 +217,7 @@ int /*long*/ createShellLink (MenuItem item, String directory) {
 	/*IUnknown::QueryInterface*/
 	hr = OS.VtblCall (0, pLink, IID_IPropertyStore, ppv);
 	if (hr != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
-	int /*long*/ pPropStore = ppv [0];
+	long /*int*/ pPropStore = ppv [0];
 	/*IPropertyStore::SetValue*/
 	hr = OS.VtblCall (6, pPropStore, key, pv);
 	if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
@@ -231,15 +231,15 @@ int /*long*/ createShellLink (MenuItem item, String directory) {
 	return pLink;
 }
 
-int /*long*/ createShellLinkArray (MenuItem [] items, String directory) {
+long /*int*/ createShellLinkArray (MenuItem [] items, String directory) {
 	if (items == null) return 0;
 	if (items.length == 0) return 0;
-	int /*long*/ [] ppv = new int /*long*/ [1];
+	long /*int*/ [] ppv = new long /*int*/ [1];
 	int hr = OS.CoCreateInstance (CLSID_EnumerableObjectCollection, 0, OS.CLSCTX_INPROC_SERVER, IID_IObjectCollection, ppv);
 	if (hr != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
-	int /*long*/ pObjColl = ppv [0];
+	long /*int*/ pObjColl = ppv [0];
 	for (int i = 0; i < items.length; i++) {
-		int /*long*/ pLink = createShellLink (items[i], directory);
+		long /*int*/ pLink = createShellLink (items[i], directory);
 		if (pLink != 0) {
 			/*IObjectCollection::AddObject*/
 			hr = OS.VtblCall (5, pObjColl, pLink);
@@ -251,7 +251,7 @@ int /*long*/ createShellLinkArray (MenuItem [] items, String directory) {
 	/*IUnknown::QueryInterface*/
 	hr = OS.VtblCall (0, pObjColl, IID_IObjectArray, ppv);
 	if (hr != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
-	int /*long*/ poa = ppv [0];
+	long /*int*/ poa = ppv [0];
 	/*IUnknown::Release*/
 	OS.VtblCall (2, pObjColl);
 	return poa;
@@ -289,24 +289,24 @@ String getDirectory (char[] appName) {
 		}
 	}
 	String result = null;
-	int /*long*/ [] ppv = new int /*long*/ [1];
+	long /*int*/ [] ppv = new long /*int*/ [1];
 	int hr = OS.SHCreateItemInKnownFolder (FOLDERID_LocalAppData, 0, null, IID_IShellItem, ppv);
 	if (hr == OS.S_OK) {
-		int /*long*/ psiRoot = ppv [0];
+		long /*int*/ psiRoot = ppv [0];
 		hr = OS.CoCreateInstance (CLSID_FileOperation, 0, OS.CLSCTX_INPROC_SERVER, IID_IFileOperation, ppv);
 		if (hr == OS.S_OK) {
-			int /*long*/ pfo = ppv [0];
+			long /*int*/ pfo = ppv [0];
 			/*IFileOperation.SetOperationFlags*/
 			hr = OS.VtblCall (5, pfo, OS.FOF_NO_UI);
 			if (hr == OS.S_OK) {
-				int /*long*/ psiAppDir = getDirectory (psiRoot, pfo, appDir, false);
+				long /*int*/ psiAppDir = getDirectory (psiRoot, pfo, appDir, false);
 				if (psiAppDir != 0) {
-					int /*long*/ psiIcoDir = getDirectory (psiAppDir, pfo, ICO_DIR, true);
+					long /*int*/ psiIcoDir = getDirectory (psiAppDir, pfo, ICO_DIR, true);
 					if (psiIcoDir != 0) {
 						/*IShellItem::GetDisplayName*/
 						hr = OS.VtblCall (5, psiIcoDir, OS.SIGDN_FILESYSPATH, ppv);
 						if (hr == OS.S_OK) {
-							int /*long*/ wstr = ppv [0]; 
+							long /*int*/ wstr = ppv [0]; 
 							int length = OS.wcslen (wstr);
 							char [] buffer = new char [length];
 							OS.MoveMemory (buffer, wstr, length * 2);
@@ -329,8 +329,8 @@ String getDirectory (char[] appName) {
 	return result;
 }
 
-int /*long*/ getDirectory (int /*long*/ parent, int /*long*/ pfo, char [] name, boolean delete) {
-	int /*long*/ [] ppv = new int /*long*/ [1];
+long /*int*/ getDirectory (long /*int*/ parent, long /*int*/ pfo, char [] name, boolean delete) {
+	long /*int*/ [] ppv = new long /*int*/ [1];
 	int hr = OS.SHCreateItemFromRelativeName (parent, name, 0, IID_IShellItem, ppv);
 	if (hr == OS.S_OK) {
 		if (delete) {
@@ -497,10 +497,10 @@ void reskinChildren (int flags) {
 }
 
 void setMenu (Menu menu) {
-	int /*long*/ [] ppv = new int /*long*/ [1];
+	long /*int*/ [] ppv = new long /*int*/ [1];
 	int hr = OS.CoCreateInstance (CLSID_DestinationList, 0, OS.CLSCTX_INPROC_SERVER, IID_ICustomDestinationList, ppv);
 	if (hr != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
-	int /*long*/ pDestList = ppv[0];
+	long /*int*/ pDestList = ppv[0];
 	String appName = Display.APP_NAME;
 	char [] buffer = {'S', 'W', 'T', '\0'};
 	if (appName != null && appName.length () > 0) {
@@ -519,7 +519,7 @@ void setMenu (Menu menu) {
 				break;
 			}
 		}
-		int /*long*/ poa = createShellLinkArray (items, directory);
+		long /*int*/ poa = createShellLinkArray (items, directory);
 		if (poa != 0) {
 			
 			/*ICustomDestinationList::SetAppID*/
@@ -530,7 +530,7 @@ void setMenu (Menu menu) {
 			int [] cMaxSlots = new int [1];
 			OS.VtblCall (4, pDestList, cMaxSlots, IID_IObjectArray, ppv);
 			if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
-			int /*long*/ pRemovedItems = ppv [0];
+			long /*int*/ pRemovedItems = ppv [0];
 			
 			int [] count = new int [1];
 			/*IObjectArray::GetCount*/
@@ -556,7 +556,7 @@ void setMenu (Menu menu) {
 								}
 							}
 						}
-						int /*long*/ poa2 = createShellLinkArray (subItems, directory);
+						long /*int*/ poa2 = createShellLinkArray (subItems, directory);
 						if (poa2 != 0) {
 							/*IObjectArray::GetCount*/
 							OS.VtblCall (3, poa2, count);

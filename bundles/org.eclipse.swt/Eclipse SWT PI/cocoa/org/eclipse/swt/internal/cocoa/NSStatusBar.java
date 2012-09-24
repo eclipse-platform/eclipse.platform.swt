@@ -16,7 +16,7 @@ public NSStatusBar() {
 	super();
 }
 
-public NSStatusBar(int /*long*/ id) {
+public NSStatusBar(long /*int*/ id) {
 	super(id);
 }
 
@@ -28,18 +28,18 @@ public void removeStatusItem(NSStatusItem item) {
 	OS.objc_msgSend(this.id, OS.sel_removeStatusItem_, item != null ? item.id : 0);
 }
 
-public NSStatusItem statusItemWithLength(float /*double*/ length) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_statusItemWithLength_, length);
+public NSStatusItem statusItemWithLength(double /*float*/ length) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_statusItemWithLength_, length);
 	return result != 0 ? new NSStatusItem(result) : null;
 }
 
 public static NSStatusBar systemStatusBar() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSStatusBar, OS.sel_systemStatusBar);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSStatusBar, OS.sel_systemStatusBar);
 	return result != 0 ? new NSStatusBar(result) : null;
 }
 
-public float /*double*/ thickness() {
-	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_thickness);
+public double /*float*/ thickness() {
+	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_thickness);
 }
 
 }

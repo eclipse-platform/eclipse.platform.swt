@@ -55,7 +55,7 @@ public class OleControlSite extends OleClientSite
 	// supporting Event Sink attributes
 	private OleEventSink[] oleEventSink = new OleEventSink[0];
 	private GUID[] oleEventSinkGUID = new GUID[0];
-	private int /*long*/[] oleEventSinkIUnknown = new int /*long*/[0];
+	private long /*int*/[] oleEventSinkIUnknown = new long /*int*/[0];
 		
 	// supporting information for the Control COM object
 	private CONTROLINFO currentControlInfo;
@@ -129,21 +129,21 @@ public OleControlSite(Composite parent, int style, String progId) {
 		appClsid = getClassID(progId);
 		if (appClsid == null) OLE.error(OLE.ERROR_INVALID_CLASSID);
 	
-		int /*long*/ licinfo = getLicenseInfo(appClsid);
+		long /*int*/ licinfo = getLicenseInfo(appClsid);
 		if (licinfo == 0) {
 			
 			// Open a storage object
 			tempStorage = createTempStorage();
 	
 			// Create ole object with storage object
-			int /*long*/[] address = new int /*long*/[1];
+			long /*int*/[] address = new long /*int*/[1];
 			/*
 			* Bug in ICA Client 2.7. The creation of the IOleObject fails if the client
 			* site is provided to OleCreate().  The fix is to detect that the program
 			* id is an ICA Client and do not pass a client site to OleCreate().
 			* IOleObject.SetClientSite() is called later on.  
 			*/
-			int /*long*/ clientSite = isICAClient() ? 0 : iOleClientSite.getAddress();
+			long /*int*/ clientSite = isICAClient() ? 0 : iOleClientSite.getAddress();
 			int result = COM.OleCreate(appClsid, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, clientSite, tempStorage.getAddress(), address);
 			if (result != COM.S_OK)
 				OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
@@ -152,7 +152,7 @@ public OleControlSite(Composite parent, int style, String progId) {
 			
 		} else {
 			// Prepare the ClassFactory
-			int /*long*/[] ppvObject = new int /*long*/[1];
+			long /*int*/[] ppvObject = new long /*int*/[1];
 			try {
 				int result = COM.CoGetClassObject(appClsid, COM.CLSCTX_INPROC_HANDLER | COM.CLSCTX_INPROC_SERVER, 0, COM.IIDIClassFactory2, ppvObject);
 				if (result != COM.S_OK) {
@@ -160,7 +160,7 @@ public OleControlSite(Composite parent, int style, String progId) {
 				}
 				IClassFactory2 classFactory = new IClassFactory2(ppvObject[0]);
 				// Create Com Object
-				ppvObject = new int /*long*/[1];
+				ppvObject = new long /*int*/[1];
 				result = classFactory.CreateInstanceLic(0, 0, COM.IIDIUnknown, licinfo, ppvObject);
 				classFactory.Release();
 				if (result != COM.S_OK)
@@ -172,7 +172,7 @@ public OleControlSite(Composite parent, int style, String progId) {
 			objIUnknown = new IUnknown(ppvObject[0]);
 	
 			// Prepare a storage medium
-			ppvObject = new int /*long*/[1];
+			ppvObject = new long /*int*/[1];
 			if (objIUnknown.QueryInterface(COM.IIDIPersistStorage, ppvObject) == COM.S_OK) {
 				IPersistStorage persist = new IPersistStorage(ppvObject[0]);
 				tempStorage = createTempStorage();
@@ -256,7 +256,7 @@ public void addEventListener(int eventID, OleListener listener) {
 }
 static GUID getDefaultEventSinkGUID(IUnknown unknown) {
 	// get Event Sink I/F from IProvideClassInfo2
-	int /*long*/[] ppvObject = new int /*long*/[1];
+	long /*int*/[] ppvObject = new long /*int*/[1];
 	if (unknown.QueryInterface(COM.IIDIProvideClassInfo2, ppvObject) == COM.S_OK) {
 		IProvideClassInfo2 pci2 = new IProvideClassInfo2(ppvObject[0]);
 		GUID riid = new GUID();
@@ -268,14 +268,14 @@ static GUID getDefaultEventSinkGUID(IUnknown unknown) {
 	// get Event Sink I/F from IProvideClassInfo
 	if (unknown.QueryInterface(COM.IIDIProvideClassInfo, ppvObject) == COM.S_OK) {
 		IProvideClassInfo pci = new IProvideClassInfo(ppvObject[0]);
-		int /*long*/[] ppTI = new int /*long*/[1];
-		int /*long*/[] ppEI = new int /*long*/[1];
+		long /*int*/[] ppTI = new long /*int*/[1];
+		long /*int*/[] ppEI = new long /*int*/[1];
 		int result = pci.GetClassInfo(ppTI);
 		pci.Release();
 		
 		if (result == COM.S_OK && ppTI[0] != 0) {		
 			ITypeInfo classInfo = new ITypeInfo(ppTI[0]);
-			int /*long*/[] ppTypeAttr = new int /*long*/[1];
+			long /*int*/[] ppTypeAttr = new long /*int*/[1];
 			result = classInfo.GetTypeAttr(ppTypeAttr);
 			if (result == COM.S_OK  && ppTypeAttr[0] != 0) {
 				TYPEATTR typeAttribute = new TYPEATTR();
@@ -300,7 +300,7 @@ static GUID getDefaultEventSinkGUID(IUnknown unknown) {
 	
 			if (ppEI[0] != 0) {
 				ITypeInfo eventInfo = new ITypeInfo(ppEI[0]);
-				ppTypeAttr = new int /*long*/[1];
+				ppTypeAttr = new long /*int*/[1];
 				result = eventInfo.GetTypeAttr(ppTypeAttr);
 				GUID riid = null;
 				if (result == COM.S_OK && ppTypeAttr[0] != 0) {
@@ -331,7 +331,7 @@ static GUID getDefaultEventSinkGUID(IUnknown unknown) {
  */
 public void addEventListener(OleAutomation automation, int eventID, OleListener listener) {
 	if (listener == null || automation == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
-	int /*long*/ address = automation.getAddress();
+	long /*int*/ address = automation.getAddress();
 	IUnknown unknown = new IUnknown(address);
 	GUID riid = getDefaultEventSinkGUID(unknown);
 	if (riid != null) {
@@ -355,7 +355,7 @@ public void addEventListener(OleAutomation automation, int eventID, OleListener 
  */
 public void addEventListener(OleAutomation automation, String eventSinkId, int eventID, OleListener listener) {
 	if (listener == null || automation == null || eventSinkId == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
-	int /*long*/ address = automation.getAddress();
+	long /*int*/ address = automation.getAddress();
 	if (address == 0) return;
 	char[] buffer = (eventSinkId +"\0").toCharArray();
 	GUID guid = new GUID();
@@ -363,7 +363,7 @@ public void addEventListener(OleAutomation automation, String eventSinkId, int e
 	addEventListener(address, guid, eventID, listener);
 }
 
-void addEventListener(int /*long*/ iunknown, GUID guid, int eventID, OleListener listener) {
+void addEventListener(long /*int*/ iunknown, GUID guid, int eventID, OleListener listener) {
 	if (listener == null || iunknown == 0 || guid == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
 	// have we connected to this kind of event sink before?
 	int index = -1;
@@ -381,7 +381,7 @@ void addEventListener(int /*long*/ iunknown, GUID guid, int eventID, OleListener
 		int oldLength = oleEventSink.length;
 		OleEventSink[] newOleEventSink = new OleEventSink[oldLength + 1];
 		GUID[] newOleEventSinkGUID = new GUID[oldLength + 1];
-		int /*long*/[] newOleEventSinkIUnknown = new int /*long*/[oldLength + 1];
+		long /*int*/[] newOleEventSinkIUnknown = new long /*int*/[oldLength + 1];
 		System.arraycopy(oleEventSink, 0, newOleEventSink, 0, oldLength);
 		System.arraycopy(oleEventSinkGUID, 0, newOleEventSinkGUID, 0, oldLength);
 		System.arraycopy(oleEventSinkIUnknown, 0, newOleEventSinkIUnknown, 0, oldLength);
@@ -406,7 +406,7 @@ protected void addObjectReferences() {
 	connectPropertyChangeSink();
 
 	// Get access to the Control object
-	int /*long*/[] ppvObject = new int /*long*/[1];
+	long /*int*/[] ppvObject = new long /*int*/[1];
 	if (objIUnknown.QueryInterface(COM.IIDIOleControl, ppvObject) == COM.S_OK) {
 		IOleControl objIOleControl = new IOleControl(ppvObject[0]);
 		// ask the control for its info in case users
@@ -441,26 +441,26 @@ protected void createCOMInterfaces () {
 	
 	// register each of the interfaces that this object implements
 	iOleControlSite = new COMObject(new int[]{2, 0, 0, 0, 1, 1, 3, 2, 1, 0}){
-		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-		public int /*long*/ method2(int /*long*/[] args) {return Release();}
-		public int /*long*/ method3(int /*long*/[] args) {return OnControlInfoChanged();}
+		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		public long /*int*/ method3(long /*int*/[] args) {return OnControlInfoChanged();}
 		// method4 LockInPlaceActive - not implemented
 		// method5 GetExtendedControl - not implemented
 		// method6 TransformCoords - not implemented
 		// method7 Translate Accelerator - not implemented
-		public int /*long*/ method8(int /*long*/[] args) {return OnFocus((int)/*64*/args[0]);}
+		public long /*int*/ method8(long /*int*/[] args) {return OnFocus((int)/*64*/args[0]);}
 		// method9 ShowPropertyFrame - not implemented
 	};
 	
 	iDispatch = new COMObject(new int[]{2, 0, 0, 1, 3, 5, 8}){
-		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		public long /*int*/ method2(long /*int*/[] args) {return Release();}
 		// method3 GetTypeInfoCount - not implemented
 		// method4 GetTypeInfo - not implemented
 		// method5 GetIDsOfNames - not implemented
-		public int /*long*/ method6(int /*long*/[] args) {return Invoke((int)/*64*/args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7]);}
+		public long /*int*/ method6(long /*int*/[] args) {return Invoke((int)/*64*/args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7]);}
 	};
 }
 private void disconnectEventSinks() {
@@ -472,7 +472,7 @@ private void disconnectEventSinks() {
 	}
 	oleEventSink = new OleEventSink[0];
 	oleEventSinkGUID = new GUID[0];
-	oleEventSinkIUnknown = new int /*long*/[0];
+	oleEventSinkIUnknown = new long /*int*/[0];
 }
 private void disconnectPropertyChangeSink() {
 
@@ -556,19 +556,19 @@ public Color getForeground () {
 		
 	return super.getForeground();
 }
-protected int /*long*/ getLicenseInfo(GUID clsid) {
-	int /*long*/[] ppvObject = new int /*long*/[1];
+protected long /*int*/ getLicenseInfo(GUID clsid) {
+	long /*int*/[] ppvObject = new long /*int*/[1];
 	if (COM.CoGetClassObject(clsid, COM.CLSCTX_INPROC_HANDLER
 				| COM.CLSCTX_INPROC_SERVER, 0, COM.IIDIClassFactory, ppvObject) != COM.S_OK) {
 		return 0;
 	}
-	int /*long*/ result = 0;
+	long /*int*/ result = 0;
 	IUnknown unknown = new IUnknown(ppvObject[0]);
 	if (unknown.QueryInterface(COM.IIDIClassFactory2, ppvObject) == COM.S_OK) {
 		IClassFactory2 classFactory = new IClassFactory2(ppvObject[0]);
 		LICINFO licinfo = new LICINFO();
 		if (classFactory.GetLicInfo(licinfo) == COM.S_OK) {
-			int /*long*/[] pBstrKey = new int /*long*/[1];
+			long /*int*/[] pBstrKey = new long /*int*/[1];
 			if (licinfo != null && licinfo.fRuntimeKeyAvail) {
 				if (classFactory.RequestLicKey(0, pBstrKey) == COM.S_OK) {
 					result = pBstrKey[0];
@@ -599,22 +599,22 @@ public Variant getSiteProperty(int dispId){
 	}
 	return null;
 }
-protected int GetWindow(int /*long*/ phwnd) {
+protected int GetWindow(long /*int*/ phwnd) {
 
 	if (phwnd == 0)
 		return COM.E_INVALIDARG;
 	if (frame == null) {
-		COM.MoveMemory(phwnd, new int /*long*/[] {0}, OS.PTR_SIZEOF);
+		COM.MoveMemory(phwnd, new long /*int*/[] {0}, OS.PTR_SIZEOF);
 		return COM.E_NOTIMPL;
 	}
 	
 	// Copy the Window's handle into the memory passed in
-	COM.MoveMemory(phwnd, new int /*long*/[] {handle}, OS.PTR_SIZEOF);
+	COM.MoveMemory(phwnd, new long /*int*/[] {handle}, OS.PTR_SIZEOF);
 	return COM.S_OK;
 }
-private int Invoke(int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*long*/ pDispParams, int /*long*/ pVarResult, int /*long*/ pExcepInfo, int /*long*/ pArgErr) {
+private int Invoke(int dispIdMember, long /*int*/ riid, int lcid, int dwFlags, long /*int*/ pDispParams, long /*int*/ pVarResult, long /*int*/ pExcepInfo, long /*int*/ pArgErr) {
 	if (pVarResult == 0 || dwFlags != COM.DISPATCH_PROPERTYGET) {
-		if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new int /*long*/ [] {0}, OS.PTR_SIZEOF);
+		if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new long /*int*/ [] {0}, OS.PTR_SIZEOF);
 		if (pArgErr != 0) COM.MoveMemory(pArgErr, new int[] {0}, 4);
 		return COM.DISP_E_MEMBERNOTFOUND;
 	}
@@ -628,8 +628,8 @@ private int Invoke(int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, i
 		case COM.DISPID_AMBIENT_SUPPORTSMNEMONICS :
 		case COM.DISPID_AMBIENT_SHOWGRABHANDLES :
 		case COM.DISPID_AMBIENT_SHOWHATCHING :
-			if (pVarResult != 0) COM.MoveMemory(pVarResult, new int /*long*/ [] {0}, OS.PTR_SIZEOF);
-			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new int /*long*/ [] {0}, OS.PTR_SIZEOF);
+			if (pVarResult != 0) COM.MoveMemory(pVarResult, new long /*int*/ [] {0}, OS.PTR_SIZEOF);
+			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new long /*int*/ [] {0}, OS.PTR_SIZEOF);
 			if (pArgErr != 0) COM.MoveMemory(pArgErr, new int[] {0}, 4);
 			return COM.S_FALSE;
 
@@ -641,20 +641,20 @@ private int Invoke(int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, i
 		case COM.DISPID_AMBIENT_LOCALEID :
 		case COM.DISPID_AMBIENT_SILENT :
 		case COM.DISPID_AMBIENT_MESSAGEREFLECT :
-			if (pVarResult != 0) COM.MoveMemory(pVarResult, new int /*long*/ [] {0}, OS.PTR_SIZEOF);
-			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new int /*long*/ [] {0}, OS.PTR_SIZEOF);
+			if (pVarResult != 0) COM.MoveMemory(pVarResult, new long /*int*/ [] {0}, OS.PTR_SIZEOF);
+			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo, new long /*int*/ [] {0}, OS.PTR_SIZEOF);
 			if (pArgErr != 0) COM.MoveMemory(pArgErr, new int[] {0}, 4);
 			return COM.E_NOTIMPL;
 			
 		default :
-			if (pVarResult != 0) COM.MoveMemory(pVarResult, new int /*long*/ [] {0}, OS.PTR_SIZEOF);
-			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo,new int /*long*/ [] {0}, OS.PTR_SIZEOF);
+			if (pVarResult != 0) COM.MoveMemory(pVarResult, new long /*int*/ [] {0}, OS.PTR_SIZEOF);
+			if (pExcepInfo != 0) COM.MoveMemory(pExcepInfo,new long /*int*/ [] {0}, OS.PTR_SIZEOF);
 			if (pArgErr != 0) COM.MoveMemory(pArgErr, new int[] {0}, 4);
 			return COM.DISP_E_MEMBERNOTFOUND;
 	}
 }
 private int OnControlInfoChanged() {
-	int /*long*/[] ppvObject = new int /*long*/[1];
+	long /*int*/[] ppvObject = new long /*int*/[1];
 	if (objIUnknown.QueryInterface(COM.IIDIOleControl, ppvObject) == COM.S_OK) {
 		IOleControl objIOleControl = new IOleControl(ppvObject[0]);
 		// ask the control for its info in case users
@@ -678,7 +678,7 @@ void onFocusIn(Event e) {
 	if (objIOleInPlaceObject == null) return;
 	if (!isActivated) doVerb(OLE.OLEIVERB_UIACTIVATE);
 	if (isFocusControl()) return;
-	int /*long*/[] phwnd = new int /*long*/[1];
+	long /*int*/[] phwnd = new long /*int*/[1];
 	objIOleInPlaceObject.GetWindow(phwnd);
 	if (phwnd[0] == 0) return;
 	OS.SetFocus(phwnd[0]);
@@ -737,7 +737,7 @@ void onFocusOut(Event e) {
 private int OnFocus(int fGotFocus) {
 	return COM.S_OK;
 }
-protected int QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
+protected int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 	int result = super.QueryInterface(riid, ppvObject);
 	if (result == COM.S_OK)
 		return result;
@@ -746,16 +746,16 @@ protected int QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	if (COM.IsEqualGUID(guid, COM.IIDIOleControlSite)) {
-		COM.MoveMemory(ppvObject, new int /*long*/[] {iOleControlSite.getAddress()}, OS.PTR_SIZEOF);
+		COM.MoveMemory(ppvObject, new long /*int*/[] {iOleControlSite.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID(guid, COM.IIDIDispatch)) {
-		COM.MoveMemory(ppvObject, new int /*long*/[] {iDispatch.getAddress()}, OS.PTR_SIZEOF);
+		COM.MoveMemory(ppvObject, new long /*int*/[] {iDispatch.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
-	COM.MoveMemory(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
+	COM.MoveMemory(ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 protected int Release() {
@@ -836,14 +836,14 @@ public void removeEventListener(OleAutomation automation, GUID guid, int eventID
 public void removeEventListener(OleAutomation automation, int eventID, OleListener listener) {
 	checkWidget();
 	if (automation == null || listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int /*long*/ address = automation.getAddress();
+	long /*int*/ address = automation.getAddress();
 	IUnknown unknown = new IUnknown(address);
 	GUID riid = getDefaultEventSinkGUID(unknown);
 	if (riid != null) {
 		removeEventListener(address, riid, eventID, listener);
 	}
 }
-void removeEventListener(int /*long*/ iunknown, GUID guid, int eventID, OleListener listener) {
+void removeEventListener(long /*int*/ iunknown, GUID guid, int eventID, OleListener listener) {
 	if (listener == null || guid == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	for (int i = 0; i < oleEventSink.length; i++) {
 		if (COM.IsEqualGUID(oleEventSinkGUID[i], guid)) {
@@ -857,7 +857,7 @@ void removeEventListener(int /*long*/ iunknown, GUID guid, int eventID, OleListe
 					if (oldLength == 1) {
 						oleEventSink = new OleEventSink[0];
 						oleEventSinkGUID = new GUID[0];
-						oleEventSinkIUnknown = new int /*long*/[0];
+						oleEventSinkIUnknown = new long /*int*/[0];
 					} else {
 						OleEventSink[] newOleEventSink = new OleEventSink[oldLength - 1];
 						System.arraycopy(oleEventSink, 0, newOleEventSink, 0, i);
@@ -869,7 +869,7 @@ void removeEventListener(int /*long*/ iunknown, GUID guid, int eventID, OleListe
 						System.arraycopy(oleEventSinkGUID, i + 1, newOleEventSinkGUID, i, oldLength - i - 1);
 						oleEventSinkGUID = newOleEventSinkGUID;
 						
-						int /*long*/[] newOleEventSinkIUnknown = new int /*long*/[oldLength - 1];
+						long /*int*/[] newOleEventSinkIUnknown = new long /*int*/[oldLength - 1];
 						System.arraycopy(oleEventSinkIUnknown, 0, newOleEventSinkIUnknown, 0, i);
 						System.arraycopy(oleEventSinkIUnknown, i + 1, newOleEventSinkIUnknown, i, oldLength - i - 1);
 						oleEventSinkIUnknown = newOleEventSinkIUnknown;

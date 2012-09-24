@@ -109,7 +109,7 @@ public final class Image extends Resource implements Drawable {
 	 */
 	public int mask;
 
-	int /*long*/ surface;
+	long /*int*/ surface;
 	
 	/**
 	 * specifies the transparent pixel

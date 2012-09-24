@@ -17,29 +17,29 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 public class AtkComponentIface {
 	/** @field cast=(guint (*)()) */
-	public int /*long*/ add_focus_handler;
+	public long /*int*/ add_focus_handler;
 	/** @field cast=(gboolean (*)()) */
-	public int /*long*/ contains;
+	public long /*int*/ contains;
 	/** @field cast=(AtkObject *(*)()) */
-	public int /*long*/ ref_accessible_at_point;
+	public long /*int*/ ref_accessible_at_point;
 	/** @field cast=(void (*)()) */
-	public int /*long*/ get_extents;
+	public long /*int*/ get_extents;
 	/** @field cast=(void (*)()) */
-	public int /*long*/ get_position;
+	public long /*int*/ get_position;
 	/** @field cast=(void (*)()) */
-	public int /*long*/ get_size;
+	public long /*int*/ get_size;
 	/** @field cast=(gboolean (*)()) */
-	public int /*long*/ grab_focus;
+	public long /*int*/ grab_focus;
 	/** @field cast=(void (*)()) */
-	public int /*long*/ remove_focus_handler;
+	public long /*int*/ remove_focus_handler;
 	/** @field cast=(gboolean (*)()) */
-	public int /*long*/ set_extents;
+	public long /*int*/ set_extents;
 	/** @field cast=(gboolean (*)()) */
-	public int /*long*/ set_position;
+	public long /*int*/ set_position;
 	/** @field cast=(gboolean (*)()) */
-	public int /*long*/ set_size;
+	public long /*int*/ set_size;
 	/** @field cast=(AtkLayer (*)()) */
-	public int /*long*/ get_layer;
+	public long /*int*/ get_layer;
 	/** @field cast=(gint (*)()) */
-	public int /*long*/ get_mdi_zorder;
+	public long /*int*/ get_mdi_zorder;
 }

@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.ole.win32;
 
 public class IEnumFORMATETC extends IEnum {
-public IEnumFORMATETC(int /*long*/ address) {
+public IEnumFORMATETC(long /*int*/ address) {
 	super(address);
 }
 }

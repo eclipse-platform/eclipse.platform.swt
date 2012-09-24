@@ -37,11 +37,11 @@ public class nsIInterfaceRequestor extends nsISupports {
 	public static final nsID NS_IINTERFACEREQUESTOR_IID =
 		new nsID(NS_IINTERFACEREQUESTOR_IID_STR);
 
-	public nsIInterfaceRequestor(int /*long*/ address) {
+	public nsIInterfaceRequestor(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetInterface(nsID uuid, int /*long*/[] result) {
+	public int GetInterface(nsID uuid, long /*int*/[] result) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), uuid, result);
 	}
 }

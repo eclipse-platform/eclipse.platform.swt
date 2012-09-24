@@ -30,7 +30,7 @@ MozillaDelegate (Browser browser) {
 	this.browser = browser;
 }
 
-static Browser findBrowser (int /*long*/ handle) {
+static Browser findBrowser (long /*int*/ handle) {
 	Display display = Display.getCurrent ();
 	return (Browser)display.findWidget (handle);
 }
@@ -142,11 +142,11 @@ int createBaseWindow (nsIBaseWindow baseWindow) {
 	return rc;
 }
 
-int /*long*/ getHandle () {
+long /*int*/ getHandle () {
 	return browser.view.id;
 }
 
-int /*long*/ getSiteWindow () {
+long /*int*/ getSiteWindow () {
 	return browser.view.id;
 }
 
@@ -188,7 +188,7 @@ boolean hookEnterExit () {
 void init () {
 }
 
-void onDispose (int /*long*/ embedHandle) {
+void onDispose (long /*int*/ embedHandle) {
 	if (listener != null) {
 		eventShell.getDisplay ().removeFilter (SWT.FocusIn, listener);
 		eventShell.removeListener (SWT.Deactivate, listener);
@@ -206,7 +206,7 @@ boolean sendTraverse () {
 	return true;
 }
 
-void setSize (int /*long*/ embedHandle, int width, int height) {
+void setSize (long /*int*/ embedHandle, int width, int height) {
 	// TODO
 }
 

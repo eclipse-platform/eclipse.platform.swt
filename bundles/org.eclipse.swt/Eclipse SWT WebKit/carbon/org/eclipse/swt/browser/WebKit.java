@@ -1020,7 +1020,7 @@ void createPanelDidEnd(int sheet, int returnCode, int contextInfo) {
 	Cocoa.objc_msgSend(contextInfo, Cocoa.S_autorelease);
 	if (returnCode != Cocoa.NSFileHandlingPanelOKButton) return;	/* nothing more to do */
 
-	int /*long*/ method = Cocoa.class_getClassMethod(Cocoa.C_NSURLRequest, Cocoa.S_setAllowsAnyHTTPSCertificate);
+	long /*int*/ method = Cocoa.class_getClassMethod(Cocoa.C_NSURLRequest, Cocoa.S_setAllowsAnyHTTPSCertificate);
 	if (method != 0) {
 		int host = Cocoa.objc_msgSend(contextInfo, Cocoa.S_host);
 		int urlString = Cocoa.objc_msgSend(contextInfo, Cocoa.S_absoluteString);
@@ -1621,7 +1621,7 @@ void webViewFocus() {
 void webViewUnfocus() {
 }
 
-int callRunBeforeUnloadConfirmPanelWithMessage(int /*long*/ messageID, int /*long*/ arg) {
+int callRunBeforeUnloadConfirmPanelWithMessage(long /*int*/ messageID, long /*int*/ arg) {
 	int result = runBeforeUnloadConfirmPanelWithMessage (messageID, 0);
 	return Cocoa.objc_msgSend (Cocoa.C_NSNumber, Cocoa.S_numberWithBool, result);
 }
@@ -2165,7 +2165,7 @@ int convertToJS (Object value) {
 	return 0;
 }
 
-int /*long*/ callJava (int /*long*/ index, int /*long*/ token, int /*long*/ args, int /*long*/ arg1) {
+long /*int*/ callJava (long /*int*/ index, long /*int*/ token, long /*int*/ args, long /*int*/ arg1) {
 	Object returnValue = null;
 	if (Cocoa.objc_msgSend (index, Cocoa.S_isKindOfClass, Cocoa.C_NSNumber) != 0) {
 		int functionIndex = Cocoa.objc_msgSend (index, Cocoa.S_intValue);

@@ -183,7 +183,7 @@ void checkGC (int mask) {
 	if ((state & mask) == mask) return;
 	state = (state ^ mask) & mask;	
 	data.state |= mask;
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		if ((state & (BACKGROUND | FOREGROUND)) != 0) {
 			XColor color;
@@ -346,7 +346,7 @@ void checkGC (int mask) {
 	}
 }
 int convertRgn(int rgn, double[] matrix) {
-	int /*long*/ newRgn = OS.XCreateRegion();
+	long /*int*/ newRgn = OS.XCreateRegion();
 	//TODO - get rectangles from region instead of clip box
 	XRectangle rect = new XRectangle();
 	OS.XClipBox(rgn, rect);
@@ -372,7 +372,7 @@ int convertRgn(int rgn, double[] matrix) {
 	Cairo.cairo_matrix_transform_point(matrix, x, y);
 	pointArray[6] = (short)x[0];
 	pointArray[7] = (short)Math.round(y[0]);
-	int /*long*/ polyRgn = OS.XPolygonRegion(pointArray, pointArray.length / 2, OS.EvenOddRule);
+	long /*int*/ polyRgn = OS.XPolygonRegion(pointArray, pointArray.length / 2, OS.EvenOddRule);
 	OS.XUnionRegion(newRgn, polyRgn, newRgn);
 	OS.XDestroyRegion(polyRgn);
 	return newRgn;
@@ -475,7 +475,7 @@ public void copyArea(Image image, int x, int y) {
 	OS.XFreeGC(xDisplay, xGC);
 }
 void destroy() {
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) Cairo.cairo_destroy(cairo);
 	data.cairo = 0;
 
@@ -550,7 +550,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 		height = -height;
 	}
 	if (width == 0 || height == 0 || arcAngle == 0) return;
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
 		if (width == height) {
@@ -722,7 +722,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
  	}
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		if (data.alpha != 0) {
 			srcImage.createSurface();
@@ -740,7 +740,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 				case SWT.LOW: filter = Cairo.CAIRO_FILTER_FAST; break;
 				case SWT.HIGH: filter = Cairo.CAIRO_FILTER_BEST; break;
 			}
-			int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface(srcImage.surface);
+			long /*int*/ pattern = Cairo.cairo_pattern_create_for_surface(srcImage.surface);
 			if (pattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			if (srcWidth != destWidth || srcHeight != destHeight) {
 				/*
@@ -759,8 +759,8 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 				* the image that was created or the edges are still faded.
 				*/
 				if (Cairo.cairo_version () >= Cairo.CAIRO_VERSION_ENCODE(1, 4, 2)) {
-					int /*long*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, imgWidth * 3, imgHeight * 3);
-					int /*long*/ cr = Cairo.cairo_create(surface);
+					long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, imgWidth * 3, imgHeight * 3);
+					long /*int*/ cr = Cairo.cairo_create(surface);
 					Cairo.cairo_set_source_surface(cr, srcImage.surface, imgWidth, imgHeight);
 					Cairo.cairo_paint(cr);
 					Cairo.cairo_scale(cr, -1, -1);
@@ -783,7 +783,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 					Cairo.cairo_set_source_surface(cr, srcImage.surface, imgWidth, -imgHeight * 3);
 					Cairo.cairo_paint(cr);
 					Cairo.cairo_destroy(cr);
-					int /*long*/ newPattern = Cairo.cairo_pattern_create_for_surface(surface);
+					long /*int*/ newPattern = Cairo.cairo_pattern_create_for_surface(surface);
 					Cairo.cairo_surface_destroy(surface);
 					if (newPattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 					Cairo.cairo_pattern_destroy(pattern);
@@ -1151,7 +1151,7 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 public void drawLine (int x1, int y1, int x2, int y2) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(DRAW);
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
 		Cairo.cairo_move_to(cairo, x1 + xOffset, y1 + yOffset);
@@ -1193,7 +1193,7 @@ public void drawOval(int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
 		if (width == height) {
@@ -1239,11 +1239,11 @@ public void drawPath(Path path) {
 	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initCairo();
 	checkGC(DRAW);
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	Cairo.cairo_save(cairo);
 	double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
 	Cairo.cairo_translate(cairo, xOffset, yOffset);
-	int /*long*/ copy = Cairo.cairo_copy_path(path.handle);
+	long /*int*/ copy = Cairo.cairo_copy_path(path.handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_append_path(cairo, copy);
 	Cairo.cairo_path_destroy(copy);
@@ -1270,7 +1270,7 @@ public void drawPath(Path path) {
 public void drawPoint (int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(DRAW);
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		Cairo.cairo_rectangle(cairo, x, y, 1, 1);
 		Cairo.cairo_fill(cairo);
@@ -1299,7 +1299,7 @@ public void drawPolygon(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(DRAW);
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		drawPolyline(cairo, pointArray, true);
 		Cairo.cairo_stroke(cairo);
@@ -1365,7 +1365,7 @@ public void drawPolyline(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(DRAW);
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		drawPolyline(cairo, pointArray, false);
 		Cairo.cairo_stroke(cairo);
@@ -1377,7 +1377,7 @@ public void drawPolyline(int[] pointArray) {
 	}
 	OS.XDrawLines(data.display,data.drawable,handle,xPoints,xPoints.length / 2, OS.CoordModeOrigin);
 }
-void drawPolyline(int /*long*/ cairo, int[] pointArray, boolean close) {
+void drawPolyline(long /*int*/ cairo, int[] pointArray, boolean close) {
 	int count = pointArray.length / 2;
 	if (count == 0) return;
 	double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
@@ -1413,7 +1413,7 @@ public void drawRectangle (int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
 		Cairo.cairo_rectangle(cairo, x + xOffset, y + yOffset, width, height);
@@ -1482,7 +1482,7 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 	}
 	if (naw < 0) naw = 0 - naw;
 	if (nah < 0) nah = 0 - nah;
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
 		if (naw == 0 || nah == 0) {
@@ -1582,7 +1582,7 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length() == 0) return;
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		//TODO - honor isTransparent
 		checkGC(FOREGROUND | FONT);
@@ -1735,7 +1735,7 @@ public void drawText (String string, int x, int y, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length() == 0) return;
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		//TODO - honor flags
 		checkGC(FOREGROUND | FONT);
@@ -1824,7 +1824,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 		height = -height;
 	}
 	if (width == 0 || height == 0 || arcAngle == 0) return;
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		if (width == height) {
             if (arcAngle >= 0) {
@@ -1916,9 +1916,9 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 	// this is not always the case.
 	//final boolean directColor = (visual.c_class == OS.TrueColor) || (visual.c_class == OS.DirectColor);
 
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
-		int /*long*/ pattern;
+		long /*int*/ pattern;
 		if (vertical) {
 			pattern = Cairo.cairo_pattern_create_linear (0.0, 0.0, 0.0, 1.0);
 		} else {
@@ -1990,7 +1990,7 @@ public void fillOval (int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		if (width == height) {
 			Cairo.cairo_arc_negative(cairo, x + width / 2f, y + height / 2f, width / 2f, 0, 2 * (float)Compatibility.PI);
@@ -2035,8 +2035,8 @@ public void fillPath (Path path) {
 	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initCairo();
 	checkGC(FILL);
-	int /*long*/ cairo = data.cairo;
-	int /*long*/ copy = Cairo.cairo_copy_path(path.handle);
+	long /*int*/ cairo = data.cairo;
+	long /*int*/ copy = Cairo.cairo_copy_path(path.handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_append_path(cairo, copy);
 	Cairo.cairo_path_destroy(copy);
@@ -2065,7 +2065,7 @@ public void fillPolygon(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(FILL);
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		drawPolyline(cairo, pointArray, true);
 		Cairo.cairo_fill(cairo);
@@ -2103,7 +2103,7 @@ public void fillRectangle (int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	int /*long*/ cairo = data.cairo; 
+	long /*int*/ cairo = data.cairo; 
 	if (cairo != 0) {
 		Cairo.cairo_rectangle(cairo, x, y, width, height);
 		Cairo.cairo_fill(cairo);
@@ -2166,7 +2166,7 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 	}
 	if (naw < 0) naw = 0 - naw;
 	if (nah < 0) nah = 0 - nah;
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		if (naw == 0 || nah == 0) {
 			Cairo.cairo_rectangle(cairo, x, y, width, height);
@@ -2742,7 +2742,7 @@ public void getClipping(Region region) {
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int clipping = region.handle;
 	OS.XSubtractRegion (clipping, clipping, clipping);
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	int clipRgn = data.clipRgn;
 	if (clipRgn == 0) {
 		int[] width = new int[1], height = new int[1], unused = new int[1];
@@ -3276,7 +3276,7 @@ public int getStyle () {
 public int getTextAntialias() {
     if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
     if (data.cairo == 0) return SWT.DEFAULT;
-    int /*long*/ options = Cairo.cairo_font_options_create();
+    long /*int*/ options = Cairo.cairo_font_options_create();
     Cairo.cairo_get_font_options(data.cairo, options);
     int antialias = Cairo.cairo_font_options_get_antialias(options);
     Cairo.cairo_font_options_destroy(options);
@@ -3310,7 +3310,7 @@ public void getTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		Cairo.cairo_get_matrix(cairo, transform.handle);
 	} else {
@@ -3374,14 +3374,14 @@ void init(Drawable drawable, GCData data, int xGC) {
 }
 void initCairo() {
 	data.device.checkCairo();
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) return;
 	int xDisplay = data.display;
 	int xDrawable = data.drawable;
 	int xVisual = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
 	int[] width = new int[1], height = new int[1], unused = new int[1];
 	OS.XGetGeometry(xDisplay, xDrawable, unused, unused, unused, width, height, unused, unused);
-	int /*long*/ surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width[0], height[0]);
+	long /*int*/ surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width[0], height[0]);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.cairo = cairo = Cairo.cairo_create(surface);
 	Cairo.cairo_surface_destroy(surface);
@@ -3475,7 +3475,7 @@ public void setAdvanced(boolean advanced) {
 			initCairo();
 		} catch (SWTException e) {}
 	} else {
-		int /*long*/ cairo = data.cairo;
+		long /*int*/ cairo = data.cairo;
 		if (cairo != 0) Cairo.cairo_destroy(cairo);
 		data.cairo = 0;
 		data.interpolation = SWT.DEFAULT;
@@ -3552,7 +3552,7 @@ public void setAntialias(int antialias) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
     initCairo();
-    int /*long*/ cairo = data.cairo;
+    long /*int*/ cairo = data.cairo;
     Cairo.cairo_set_antialias(cairo, mode);
 }
 /**	 
@@ -3659,7 +3659,7 @@ public void setBackgroundPattern(Pattern pattern) {
 	data.backgroundPattern = pattern;
 	data.state &= ~BACKGROUND;
 }
-static void setCairoFont(int /*long*/ cairo, Font font) {
+static void setCairoFont(long /*int*/ cairo, Font font) {
 	//TODO - use X font instead of loading new one???
 	FontData[] fds = font.getFontData();
 	FontData fd = fds[0];
@@ -3675,13 +3675,13 @@ static void setCairoFont(int /*long*/ cairo, Font font) {
 	Cairo.cairo_select_font_face(cairo, buffer, slant, weight);
 	Cairo.cairo_set_font_size(cairo, fd.getHeight());
 }
-static void setCairoRegion(int /*long*/ cairo, int /*long*/ rgn) {
+static void setCairoRegion(long /*int*/ cairo, long /*int*/ rgn) {
 	//TODO - get rectangles from region instead of clip box
 	XRectangle rect = new XRectangle();
 	OS.XClipBox(rgn, rect);
 	Cairo.cairo_rectangle(cairo, rect.x, rect.y, rect.width, rect.height);
 }
-static void setCairoPatternColor(int /*long*/ pattern, int offset, Color c, int alpha) {
+static void setCairoPatternColor(long /*int*/ pattern, int offset, Color c, int alpha) {
 	XColor color = c.handle;
 	double aa = (alpha & 0xFF) / (double)0xFF;
 	double red = ((color.red & 0xFFFF) / (double)0xFFFF);
@@ -3689,8 +3689,8 @@ static void setCairoPatternColor(int /*long*/ pattern, int offset, Color c, int 
 	double blue = ((color.blue & 0xFFFF) / (double)0xFFFF);
 	Cairo.cairo_pattern_add_color_stop_rgba(pattern, offset, red, green, blue, aa);
 }
-void setCairoClip(int /*long*/ damageRgn, int /*long*/ clipRgn) {
-	int /*long*/ cairo = data.cairo;
+void setCairoClip(long /*int*/ damageRgn, long /*int*/ clipRgn) {
+	long /*int*/ cairo = data.cairo;
 	Cairo.cairo_reset_clip(cairo);
 	if (damageRgn != 0) {
 		double[] matrix = new double[6];
@@ -3706,7 +3706,7 @@ void setCairoClip(int /*long*/ damageRgn, int /*long*/ clipRgn) {
 	}
 }
 void setClipping(int clipRgn) {
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (clipRgn == 0) {
 		if (data.clipRgn != 0) {
 			OS.XDestroyRegion (data.clipRgn);
@@ -3808,8 +3808,8 @@ public void setClipping(Path path) {
 	setClipping(0);
 	if (path != null) {
 		initCairo();
-		int /*long*/ cairo = data.cairo;
-		int /*long*/ copy = Cairo.cairo_copy_path(path.handle);
+		long /*int*/ cairo = data.cairo;
+		long /*int*/ copy = Cairo.cairo_copy_path(path.handle);
 		if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		Cairo.cairo_append_path(cairo, copy);
 		Cairo.cairo_path_destroy(copy);
@@ -3887,7 +3887,7 @@ public void setFillRule(int rule) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	OS.XSetFillRule(data.display, handle, mode);
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		Cairo.cairo_set_fill_rule(cairo, cairo_mode);
 	}
@@ -4364,7 +4364,7 @@ public void setTextAntialias(int antialias) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
     initCairo();
-    int /*long*/ options = Cairo.cairo_font_options_create();
+    long /*int*/ options = Cairo.cairo_font_options_create();
     Cairo.cairo_font_options_set_antialias(options, mode);
     Cairo.cairo_set_font_options(data.cairo, options);
     Cairo.cairo_font_options_destroy(options);
@@ -4400,7 +4400,7 @@ public void setTransform(Transform transform) {
 	if (transform != null && transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (data.cairo == 0 && transform == null) return;
 	initCairo();
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (transform != null) {
 		Cairo.cairo_set_matrix(cairo, transform.handle);
 	} else {
@@ -4455,7 +4455,7 @@ public void setXORMode(boolean xor) {
 public Point stringExtent(String string) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		checkGC(FONT);
 		byte[] buffer = Converter.wcsToMbcs(null, string, true);
@@ -4536,7 +4536,7 @@ public Point textExtent(String string) {
 public Point textExtent(String string, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		//TODO - honor flags
 		checkGC(FONT);

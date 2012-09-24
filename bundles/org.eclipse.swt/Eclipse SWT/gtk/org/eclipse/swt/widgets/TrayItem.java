@@ -40,8 +40,8 @@ public class TrayItem extends Item {
 	Tray parent;
 	ToolTip toolTip;
 	String toolTipText;
-	int /*long*/ imageHandle;
-	int /*long*/ tooltipsHandle;
+	long /*int*/ imageHandle;
+	long /*int*/ tooltipsHandle;
 	ImageList imageList;
 	Image highlightImage;
 
@@ -165,20 +165,20 @@ void createHandle (int index) {
 		OS.gtk_container_add (handle, imageHandle);
 		OS.gtk_widget_show (handle);
 		OS.gtk_widget_show (imageHandle);
-		int /*long*/ id = OS.gtk_plug_get_id (handle);
+		long /*int*/ id = OS.gtk_plug_get_id (handle);
 		int monitor = 0;
-		int /*long*/ screen = OS.gdk_screen_get_default ();
+		long /*int*/ screen = OS.gdk_screen_get_default ();
 		if (screen != 0) {
 			monitor = OS.gdk_screen_get_number (screen);
 		}
 		byte [] trayBuffer = Converter.wcsToMbcs (null, "_NET_SYSTEM_TRAY_S" + monitor, true);
-		int /*long*/ trayAtom = OS.gdk_atom_intern (trayBuffer, true);
-		int /*long*/ xTrayAtom = OS.gdk_x11_atom_to_xatom (trayAtom);
-		int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
-		int /*long*/ trayWindow = OS.XGetSelectionOwner (xDisplay, xTrayAtom);
+		long /*int*/ trayAtom = OS.gdk_atom_intern (trayBuffer, true);
+		long /*int*/ xTrayAtom = OS.gdk_x11_atom_to_xatom (trayAtom);
+		long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
+		long /*int*/ trayWindow = OS.XGetSelectionOwner (xDisplay, xTrayAtom);
 		byte [] messageBuffer = Converter.wcsToMbcs (null, "_NET_SYSTEM_TRAY_OPCODE", true);
-		int /*long*/ messageAtom = OS.gdk_atom_intern (messageBuffer, true);
-		int /*long*/ xMessageAtom = OS.gdk_x11_atom_to_xatom (messageAtom);
+		long /*int*/ messageAtom = OS.gdk_atom_intern (messageBuffer, true);
+		long /*int*/ xMessageAtom = OS.gdk_x11_atom_to_xatom (messageAtom);
 		XClientMessageEvent event = new XClientMessageEvent ();
 		event.type = OS.ClientMessage;
 		event.window = trayWindow;
@@ -187,7 +187,7 @@ void createHandle (int index) {
 		event.data [0] = OS.GDK_CURRENT_TIME;
 		event.data [1] = OS.SYSTEM_TRAY_REQUEST_DOCK;
 		event.data [2] = id;
-		int /*long*/ clientEvent = OS.g_malloc (XClientMessageEvent.sizeof);
+		long /*int*/ clientEvent = OS.g_malloc (XClientMessageEvent.sizeof);
 		OS.memmove (clientEvent, event, XClientMessageEvent.sizeof);
 		OS.XSendEvent (xDisplay, trayWindow, false, OS.NoEventMask, clientEvent);
 		OS.g_free (clientEvent);
@@ -273,7 +273,7 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
-int /*long*/ gtk_activate (int /*long*/ widget) {
+long /*int*/ gtk_activate (long /*int*/ widget) {
 	sendSelectionEvent (SWT.Selection);
 	/*
 	* Feature in GTK. GTK will generate a single-click event before sending 
@@ -281,10 +281,10 @@ int /*long*/ gtk_activate (int /*long*/ widget) {
 	* the single-click as the current event and for the double-click in the
 	* event queue.
 	*/
-	int /*long*/ nextEvent = OS.gdk_event_peek ();
+	long /*int*/ nextEvent = OS.gdk_event_peek ();
 	if (nextEvent != 0) {
 		int nextEventType = OS.GDK_EVENT_TYPE (nextEvent);
-		int /*long*/ currEvent = OS.gtk_get_current_event ();
+		long /*int*/ currEvent = OS.gtk_get_current_event ();
 		int currEventType = 0;
 		if (currEvent != 0) {
 			currEventType = OS.GDK_EVENT_TYPE (currEvent);
@@ -298,7 +298,7 @@ int /*long*/ gtk_activate (int /*long*/ widget) {
 	return 0;
 }
 
-int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
+long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
 	if (gdkEvent.type == OS.GDK_3BUTTON_PRESS) return 0;
@@ -314,7 +314,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr)
 	return 0;
 }
 
-int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
+long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	if (image != null && image.mask != 0) {
 		if (OS.gdk_drawable_get_depth (image.mask) == 1) {
 			GtkAllocation widgetAllocation = new GtkAllocation ();
@@ -322,7 +322,7 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 			int xoffset = (int) Math.floor (widgetAllocation.x + ((widgetAllocation.width -OS.GTK_WIDGET_REQUISITION_WIDTH (widget)) * 0.5) + 0.5);
 			int yoffset = (int) Math.floor (widgetAllocation.y + ((widgetAllocation.height - OS.GTK_WIDGET_REQUISITION_HEIGHT (widget)) * 0.5) + 0.5);
 			Rectangle b = image.getBounds();
-			int /*long*/ gdkImagePtr = OS.gdk_drawable_get_image (image.mask, 0, 0, b.width, b.height);
+			long /*int*/ gdkImagePtr = OS.gdk_drawable_get_image (image.mask, 0, 0, b.width, b.height);
 			if (gdkImagePtr == 0) error(SWT.ERROR_NO_HANDLES);
 			GdkImage gdkImage = new GdkImage();
 			OS.memmove (gdkImage, gdkImagePtr);
@@ -341,7 +341,7 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 				}
 			}
 			OS.gtk_widget_realize (handle);
-			int /*long*/ window = gtk_widget_get_window (handle);
+			long /*int*/ window = gtk_widget_get_window (handle);
 			OS.gdk_window_shape_combine_region (window, region.handle, 0, 0);
 			region.dispose ();
 		}
@@ -349,7 +349,7 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 	return 0;
 }
 
-int /*long*/ gtk_status_icon_popup_menu (int /*long*/ widget, int /*long*/ button, int /*long*/ activate_time) {
+long /*int*/ gtk_status_icon_popup_menu (long /*int*/ widget, long /*int*/ button, long /*int*/ activate_time) {
 	/*
 	* GTK provides a MenuPositionFunc for GtkStatusIcon in order
 	* to set the popup-menu aligned to the tray.
@@ -519,7 +519,7 @@ public void setImage (Image image) {
 		} else {
 			imageList.put (imageIndex, image);
 		}
-		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
+		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
 		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
 			OS.gtk_status_icon_set_from_pixbuf (handle, pixbuf);
 			OS.gtk_status_icon_set_visible (handle, true);

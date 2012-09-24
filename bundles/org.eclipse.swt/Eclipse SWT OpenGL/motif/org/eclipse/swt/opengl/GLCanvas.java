@@ -117,7 +117,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	vinfo = new XVisualInfo ();
 	GLX.memmove (vinfo, infoPtr, XVisualInfo.sizeof);
 	OS.XFree (infoPtr);
-	int /*long*/ share = data.shareContext != null ? data.shareContext.context : 0;
+	long /*int*/ share = data.shareContext != null ? data.shareContext.context : 0;
 	context = GLX.glXCreateContext (xDisplay, vinfo, share, true);
 	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 

@@ -12,7 +12,7 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IProvideClassInfo2 extends IProvideClassInfo
 {
-public IProvideClassInfo2(int /*long*/ address) {
+public IProvideClassInfo2(long /*int*/ address) {
 	super(address);
 }
 public int GetGUID(int dwGuidKind, GUID pGUID) {

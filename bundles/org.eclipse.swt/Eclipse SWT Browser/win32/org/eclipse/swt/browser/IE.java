@@ -34,7 +34,7 @@ class IE extends WebBrowser {
 	Point location;
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
-	int /*long*/ globalDispatch;
+	long /*int*/ globalDispatch;
 	String html, lastNavigateURL, uncRedirect;
 	Object[] pendingText, pendingUrl;
 	int style, lastKeyCode, lastCharCode;
@@ -193,7 +193,7 @@ class IE extends WebBrowser {
 		* features that can be enabled.
 		*/
 		TCHAR key = new TCHAR (0, "Software\\Microsoft\\Internet Explorer", true);	//$NON-NLS-1$
-		int /*long*/ [] phkResult = new int /*long*/ [1];
+		long /*int*/ [] phkResult = new long /*int*/ [1];
 		if (OS.RegOpenKeyEx (OS.HKEY_LOCAL_MACHINE, key, 0, OS.KEY_READ, phkResult) == 0) {
 			int [] lpcbData = new int [1];
 			TCHAR buffer = new TCHAR (0, "Version", true); //$NON-NLS-1$
@@ -229,7 +229,7 @@ class IE extends WebBrowser {
 		* will be embedded to explicitly specify Shell.Explorer.2.
 		*/
 		key = new TCHAR (0, "Shell.Explorer\\CLSID", true);	//$NON-NLS-1$
-		phkResult = new int /*long*/ [1];
+		phkResult = new long /*int*/ [1];
 		if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) == 0) {
 			int [] lpcbData = new int [1];
 			int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, (TCHAR) null, lpcbData);
@@ -241,7 +241,7 @@ class IE extends WebBrowser {
 					if (clsid.equals (CLSID_SHELLEXPLORER1)) {
 						/* Shell.Explorer.1 is the default, ensure that Shell.Explorer.2 is available */
 						key = new TCHAR (0, "Shell.Explorer.2", true);	//$NON-NLS-1$
-						int /*long*/ [] phkResult2 = new int /*long*/ [1];
+						long /*int*/ [] phkResult2 = new long /*int*/ [1];
 						if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult2) == 0) {
 							/* specify that Shell.Explorer.2 is to be used */
 							OS.RegCloseKey (phkResult2 [0]);
@@ -297,7 +297,7 @@ public void create(Composite parent, int style) {
 		}
 
 		if (version != -1) {
-			int /*long*/[] key = new int /*long*/[1];
+			long /*int*/[] key = new long /*int*/[1];
 			final TCHAR subkey = new TCHAR(0, "Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION", true);	//$NON-NLS-1$
 			if (OS.RegCreateKeyEx(OS.HKEY_CURRENT_USER, subkey, 0, null, OS.REG_OPTION_VOLATILE, OS.KEY_WRITE | OS.KEY_QUERY_VALUE, 0, key, null) == 0) {
 				TCHAR lpszFile = new TCHAR(0, OS.MAX_PATH);
@@ -310,7 +310,7 @@ public void create(Composite parent, int style) {
 					if (OS.RegSetValueEx(key[0], lpValueName, 0, OS.REG_DWORD, new int[] {version}, 4) == 0) {
 						parent.getDisplay().addListener(SWT.Dispose, new Listener() {			
 							public void handleEvent(Event event) {
-								int /*long*/[] key = new int /*long*/[1];
+								long /*int*/[] key = new long /*int*/[1];
 								if (OS.RegOpenKeyEx(OS.HKEY_CURRENT_USER, subkey, 0, OS.KEY_WRITE, key) == 0) {
 									OS.RegDeleteValue(key[0], lpValueName);
 								}
@@ -457,7 +457,7 @@ public void create(Composite parent, int style) {
 							if (uncRedirect.equals(url) || (uncRedirect.startsWith(url) && uncRedirect.indexOf('\\', 2) == url.length())) {
 								Variant cancel = event.arguments[6];
 								if (cancel != null) {
-									int /*long*/ pCancel = cancel.getByRef();
+									long /*int*/ pCancel = cancel.getByRef();
 									COM.MoveMemory(pCancel, new short[] {COM.VARIANT_FALSE}, 2);
 								}
 								break;
@@ -491,7 +491,7 @@ public void create(Composite parent, int style) {
 						if (url.startsWith(PROTOCOL_FILE) && _getUrl().startsWith(ABOUT_BLANK) && untrustedText) {
 							Variant cancel = event.arguments[6];
 							if (cancel != null) {
-								int /*long*/ pCancel = cancel.getByRef();
+								long /*int*/ pCancel = cancel.getByRef();
 								COM.MoveMemory(pCancel, new short[] {COM.VARIANT_TRUE}, 2);
 							}
 							break;
@@ -508,7 +508,7 @@ public void create(Composite parent, int style) {
 						boolean doit = newEvent.doit && !browser.isDisposed(); 
 						Variant cancel = event.arguments[6];
 						if (cancel != null) {
-							int /*long*/ pCancel = cancel.getByRef();
+							long /*int*/ pCancel = cancel.getByRef();
 							COM.MoveMemory(pCancel, new short[] {doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
 						}
 						if (doit) {
@@ -769,7 +769,7 @@ public void create(Composite parent, int style) {
 									final String host = url.substring(0, index);
 									Variant cancel = event.arguments[4];
 									if (cancel != null) {
-										int /*long*/ pCancel = cancel.getByRef();
+										long /*int*/ pCancel = cancel.getByRef();
 										COM.MoveMemory(pCancel, new short[] {COM.VARIANT_TRUE}, 2);
 									}
 									browser.getDisplay().asyncExec(new Runnable() {
@@ -796,7 +796,7 @@ public void create(Composite parent, int style) {
 					}
 					case NewWindow2: {
 						Variant cancel = event.arguments[1];
-						int /*long*/ pCancel = cancel.getByRef();
+						long /*int*/ pCancel = cancel.getByRef();
 						WindowEvent newEvent = new WindowEvent(browser);
 						newEvent.display = browser.getDisplay();
 						newEvent.widget = browser;
@@ -821,8 +821,8 @@ public void create(Composite parent, int style) {
 							Variant variant = new Variant(browser.auto);
 							IDispatch iDispatch = variant.getDispatch();
 							Variant ppDisp = event.arguments[0];
-							int /*long*/ byref = ppDisp.getByRef();
-							if (byref != 0) COM.MoveMemory(byref, new int /*long*/[] {iDispatch.getAddress()}, OS.PTR_SIZEOF);
+							long /*int*/ byref = ppDisp.getByRef();
+							if (byref != 0) COM.MoveMemory(byref, new long /*int*/[] {iDispatch.getAddress()}, OS.PTR_SIZEOF);
 							/*
 							* This code is intentionally commented.  A Variant constructed from an
 							* OleAutomation object does not increase its reference count.  The IDispatch
@@ -978,7 +978,7 @@ public void create(Composite parent, int style) {
 							}
 						});
 						Variant cancel = event.arguments[1];
-						int /*long*/ pCancel = cancel.getByRef();
+						long /*int*/ pCancel = cancel.getByRef();
 						Variant arg1 = event.arguments[0];
 						boolean isChildWindow = arg1.getBoolean();
 						COM.MoveMemory(pCancel, new short[]{isChildWindow ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
@@ -1112,12 +1112,12 @@ static Variant createSafeArray(String string) {
 	/* Create a pointer and copy the data into it */
 	byte[] bytes = string.getBytes();
 	int length = bytes.length;
-	int /*long*/ pvData = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, length);
+	long /*int*/ pvData = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, length);
 	C.memmove(pvData, bytes, length);
 	int cElements1 = length;
 
 	/* Create a SAFEARRAY in memory */
-	int /*long*/ pSafeArray = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, SAFEARRAY.sizeof);
+	long /*int*/ pSafeArray = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, SAFEARRAY.sizeof);
 	SAFEARRAY safeArray = new SAFEARRAY();
 	safeArray.cDims = 1;
 	safeArray.fFeatures = OS.FADF_FIXEDSIZE;
@@ -1129,10 +1129,10 @@ static Variant createSafeArray(String string) {
 	OS.MoveMemory (pSafeArray, safeArray, SAFEARRAY.sizeof);
 
 	/* Return a Variant that holds the SAFEARRAY */
-	int /*long*/ pVariant = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, Variant.sizeof);
+	long /*int*/ pVariant = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, Variant.sizeof);
 	short vt = (short)(OLE.VT_ARRAY | OLE.VT_UI1);
 	OS.MoveMemory(pVariant, new short[] {vt}, 2);
-	OS.MoveMemory(pVariant + 8, new int /*long*/[] {pSafeArray}, C.PTR_SIZEOF);
+	OS.MoveMemory(pVariant + 8, new long /*int*/[] {pSafeArray}, C.PTR_SIZEOF);
 	return new Variant(pVariant, (short)(OLE.VT_BYREF | OLE.VT_VARIANT));
 }
 
@@ -1356,11 +1356,11 @@ void setHTML (String string) {
 	* prepend the UTF-8 Byte Order Mark signature to the data.
 	*/
 	byte[] UTF8BOM = {(byte)0xEF, (byte)0xBB, (byte)0xBF};
-	int /*long*/ hGlobal = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, UTF8BOM.length + byteCount);
+	long /*int*/ hGlobal = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, UTF8BOM.length + byteCount);
 	if (hGlobal != 0) {
 		OS.MoveMemory(hGlobal, UTF8BOM, UTF8BOM.length);
 		OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, charCount, hGlobal + UTF8BOM.length, byteCount, null, null);							
-		int /*long*/ [] ppstm = new int /*long*/ [1];
+		long /*int*/ [] ppstm = new long /*int*/ [1];
 		/* 
 		* CreateStreamOnHGlobal is called with the flag fDeleteOnRelease.
 		* If the call succeeds the buffer hGlobal is freed automatically
@@ -1371,7 +1371,7 @@ void setHTML (String string) {
 			int[] rgdispid = auto.getIDsOfNames(new String[] {PROPERTY_DOCUMENT});
 			Variant pVarResult = auto.getProperty(rgdispid[0]);
 			IDispatch dispatchDocument = pVarResult.getDispatch();
-			int /*long*/ [] ppvObject = new int /*long*/ [1];
+			long /*int*/ [] ppvObject = new long /*int*/ [1];
 			int result = dispatchDocument.QueryInterface(COM.IIDIPersistStreamInit, ppvObject);
 			if (result == OS.S_OK) {
 				IPersistStreamInit persistStreamInit = new IPersistStreamInit(ppvObject[0]);

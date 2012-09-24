@@ -16,7 +16,7 @@ public DOMMouseEvent() {
 	super();
 }
 
-public DOMMouseEvent(int /*long*/ id) {
+public DOMMouseEvent(long /*int*/ id) {
 	super(id);
 }
 

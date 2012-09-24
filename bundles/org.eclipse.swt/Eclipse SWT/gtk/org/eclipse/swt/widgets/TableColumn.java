@@ -36,7 +36,7 @@ import org.eclipse.swt.events.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class TableColumn extends Item {
-	int /*long*/ labelHandle, imageHandle, buttonHandle;
+	long /*int*/ labelHandle, imageHandle, buttonHandle;
 	Table parent;
 	int modelIndex, lastButton, lastTime, lastX, lastWidth;
 	boolean customDraw, useFixedWidth;
@@ -324,7 +324,7 @@ public int getWidth () {
 	return OS.gtk_tree_view_column_get_width (handle);
 }
 
-int /*long*/ gtk_clicked (int /*long*/ widget) {
+long /*int*/ gtk_clicked (long /*int*/ widget) {
 	/*
 	* There is no API to get a double click on a table column.  Normally, when
 	* the mouse is double clicked, this is indicated by GDK_2BUTTON_PRESS
@@ -334,7 +334,7 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 	*/
 	boolean doubleClick = false;
 	boolean postEvent = true;
-	int /*long*/ eventPtr = OS.gtk_get_current_event ();
+	long /*int*/ eventPtr = OS.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		GdkEventButton gdkEvent = new GdkEventButton ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
@@ -366,7 +366,7 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 	return 0;
 }
 
-int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
+long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	GdkEvent event = new GdkEvent ();
 	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
 	switch (event.type) {
@@ -382,11 +382,11 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 	return 0;
 }
 
-int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
+long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
 	return parent.gtk_mnemonic_activate (widget, arg1);
 }
 
-int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
+long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	useFixedWidth = false;
 	GtkAllocation widgetAllocation = new GtkAllocation ();
 	gtk_widget_get_allocation (widget, widgetAllocation);
@@ -440,7 +440,7 @@ public void pack () {
 			}
 		}
 	} else {
-		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+		long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 		if (OS.gtk_tree_model_get_iter_first (parent.modelHandle, iter)) {
 			do {
 				width = Math.max (width, parent.calculateWidth (handle, iter));
@@ -547,7 +547,7 @@ public void setAlignment (int alignment) {
 	parent.createRenderers (handle, modelIndex, index == 0, style);
 }
 
-void setFontDescription (int /*long*/ font) {
+void setFontDescription (long /*int*/ font) {
 	OS.gtk_widget_modify_font (labelHandle, font);
 	OS.gtk_widget_modify_font (imageHandle, font);
 }
@@ -562,7 +562,7 @@ public void setImage (Image image) {
 		}
 		int imageIndex = headerImageList.indexOf (image);
 		if (imageIndex == -1) imageIndex = headerImageList.add (image);
-		int /*long*/ pixbuf = headerImageList.getPixbuf (imageIndex);
+		long /*int*/ pixbuf = headerImageList.getPixbuf (imageIndex);
 		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
 		OS.gtk_widget_show (imageHandle);
 	} else {
@@ -708,14 +708,14 @@ public void setWidth (int width) {
 	 */
 	if (width != 0) {
 		if (buttonHandle != 0) {
-			int /*long*/ window = OS.gtk_widget_get_parent_window (buttonHandle);
+			long /*int*/ window = OS.gtk_widget_get_parent_window (buttonHandle);
 			if (window != 0) {
-				int /*long*/ windowList = OS.gdk_window_get_children (window);
+				long /*int*/ windowList = OS.gdk_window_get_children (window);
 				if (windowList != 0) {
-					int /*long*/ windows = windowList;
-					int /*long*/ [] userData = new int /*long*/ [1];
+					long /*int*/ windows = windowList;
+					long /*int*/ [] userData = new long /*int*/ [1];
 					while (windows != 0) {
-						int /*long*/ child = OS.g_list_data (windows);
+						long /*int*/ child = OS.g_list_data (windows);
 						OS.gdk_window_get_user_data (child, userData);
 						if (userData[0] == buttonHandle) {
 							OS.gdk_window_lower (child);

@@ -37,19 +37,19 @@ public class nsIHelperAppLauncherDialog extends nsISupports {
 	public static final nsID NS_IHELPERAPPLAUNCHERDIALOG_IID =
 		new nsID(NS_IHELPERAPPLAUNCHERDIALOG_IID_STR);
 
-	public nsIHelperAppLauncherDialog(int /*long*/ address) {
+	public nsIHelperAppLauncherDialog(long /*int*/ address) {
 		super(address);
 	}
 
-	public int Show(int /*long*/ aLauncher, int /*long*/ aContext) {
+	public int Show(long /*int*/ aLauncher, long /*int*/ aContext) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aLauncher, aContext);
 	}
 
-	public int PromptForSaveToFile(int /*long*/ aWindowContext, char[] aDefaultFile, char[] aSuggestedFileExtension, int /*long*/[] _retval) {
+	public int PromptForSaveToFile(long /*int*/ aWindowContext, char[] aDefaultFile, char[] aSuggestedFileExtension, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aWindowContext, aDefaultFile, aSuggestedFileExtension, _retval);
 	}
 
-	public int ShowProgressDialog(int /*long*/ aLauncher, int /*long*/ aContext) {
+	public int ShowProgressDialog(long /*int*/ aLauncher, long /*int*/ aContext) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aLauncher, aContext);
 	}
 }

@@ -2049,7 +2049,7 @@ public static final native int CGDisplayBytesPerRow (int display);
  * @method flags=dynamic
  * @param displayID cast=(CGDirectDisplayID)
  */
-public static final native int /*long*/ CGDisplayCreateImage(int displayID);
+public static final native long /*int*/ CGDisplayCreateImage(int displayID);
 /** @param display cast=(CGDirectDisplayID) */
 public static final native int CGDisplayPixelsHigh (int display);
 /** @param display cast=(CGDirectDisplayID) */

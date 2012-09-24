@@ -37,7 +37,7 @@ public class nsIDataType extends nsISupports {
 	public static final nsID NS_IDATATYPE_IID =
 		new nsID(NS_IDATATYPE_IID_STR);
 
-	public nsIDataType(int /*long*/ address) {
+	public nsIDataType(long /*int*/ address) {
 		super(address);
 	}
 

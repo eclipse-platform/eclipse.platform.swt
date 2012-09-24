@@ -132,11 +132,11 @@ void _setText (int index, String string) {
 			if (j < i) string = new String (text, 0, j);
 		}
 	}
-	int /*long*/ hwnd = parent.handle;
-	int /*long*/ hHeap = OS.GetProcessHeap ();
+	long /*int*/ hwnd = parent.handle;
+	long /*int*/ hHeap = OS.GetProcessHeap ();
 	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
 	int byteCount = buffer.length () * TCHAR.sizeof;
-	int /*long*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (pszText, buffer, byteCount); 
 	TCITEM tcItem = new TCITEM ();
 	tcItem.mask = OS.TCIF_TEXT;
@@ -302,7 +302,7 @@ public void setImage (Image image) {
 	if (OS.COMCTL32_MAJOR >= 6) {
 		if (text.indexOf ('&') != -1) _setText (index, text);
 	}
-	int /*long*/ hwnd = parent.handle;
+	long /*int*/ hwnd = parent.handle;
 	TCITEM tcItem = new TCITEM ();
 	tcItem.mask = OS.TCIF_IMAGE;
 	tcItem.iImage = parent.imageIndex (image);

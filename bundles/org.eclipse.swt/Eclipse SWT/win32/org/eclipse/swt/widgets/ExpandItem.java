@@ -116,16 +116,16 @@ static ExpandBar checkNull (ExpandBar control) {
 	return control;	
 }
 
-private void drawChevron (int /*long*/ hDC, RECT rect) {
-	int /*long*/ oldBrush = OS.SelectObject (hDC, OS.GetSysColorBrush (OS.COLOR_BTNFACE));
+private void drawChevron (long /*int*/ hDC, RECT rect) {
+	long /*int*/ oldBrush = OS.SelectObject (hDC, OS.GetSysColorBrush (OS.COLOR_BTNFACE));
 	OS.PatBlt (hDC, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
 	OS.SelectObject (hDC, oldBrush);
 	rect.left += 4;
 	rect.top += 4;
 	rect.right -= 4;
 	rect.bottom -= 4;
-	int /*long*/ hPen = OS.CreatePen (OS.PS_SOLID, 1, parent.getForegroundPixel ());
-	int /*long*/ oldPen = OS.SelectObject (hDC, hPen);
+	long /*int*/ hPen = OS.CreatePen (OS.PS_SOLID, 1, parent.getForegroundPixel ());
+	long /*int*/ oldPen = OS.SelectObject (hDC, hPen);
 	int [] polyline1, polyline2;
 	if (expanded) {
 		int px = rect.left + 5;
@@ -151,8 +151,8 @@ private void drawChevron (int /*long*/ hDC, RECT rect) {
 	OS.Polyline (hDC, polyline1, polyline1.length / 2);
 	OS.Polyline (hDC, polyline2, polyline2.length / 2);
 	if (hover) {
-		int /*long*/ whitePen = OS.CreatePen (OS.PS_SOLID, 1, OS.GetSysColor (OS.COLOR_3DHILIGHT));
-		int /*long*/ darkGrayPen = OS.CreatePen (OS.PS_SOLID, 1, OS.GetSysColor (OS.COLOR_3DSHADOW));
+		long /*int*/ whitePen = OS.CreatePen (OS.PS_SOLID, 1, OS.GetSysColor (OS.COLOR_3DHILIGHT));
+		long /*int*/ darkGrayPen = OS.CreatePen (OS.PS_SOLID, 1, OS.GetSysColor (OS.COLOR_3DSHADOW));
 		OS.SelectObject (hDC, whitePen);
 		int [] points1 = {
 				rect.left, rect.bottom,
@@ -174,15 +174,15 @@ private void drawChevron (int /*long*/ hDC, RECT rect) {
 	OS.DeleteObject (hPen);
 }
 
-void drawItem (GC gc, int /*long*/ hTheme, RECT clipRect, boolean drawFocus) {
-	int /*long*/ hDC = gc.handle;
+void drawItem (GC gc, long /*int*/ hTheme, RECT clipRect, boolean drawFocus) {
+	long /*int*/ hDC = gc.handle;
 	int headerHeight = parent.getBandHeight ();
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + headerHeight);
 	if (hTheme != 0) {
 		OS.DrawThemeBackground (hTheme, hDC, OS.EBP_NORMALGROUPHEAD, 0, rect, clipRect);
 	} else {
-		int /*long*/ oldBrush = OS.SelectObject (hDC, OS.GetSysColorBrush (OS.COLOR_BTNFACE));
+		long /*int*/ oldBrush = OS.SelectObject (hDC, OS.GetSysColorBrush (OS.COLOR_BTNFACE));
 		OS.PatBlt (hDC, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
 		OS.SelectObject (hDC, oldBrush);		
 	}
@@ -223,8 +223,8 @@ void drawItem (GC gc, int /*long*/ hTheme, RECT clipRect, boolean drawFocus) {
 	}
 	if (expanded) {
 		if (!parent.isAppThemed ()) {
-			int /*long*/ pen = OS.CreatePen (OS.PS_SOLID, 1, OS.GetSysColor (OS.COLOR_BTNFACE));
-			int /*long*/ oldPen = OS.SelectObject (hDC, pen);
+			long /*int*/ pen = OS.CreatePen (OS.PS_SOLID, 1, OS.GetSysColor (OS.COLOR_BTNFACE));
+			long /*int*/ oldPen = OS.SelectObject (hDC, pen);
 			int [] points = {
 					x, y + headerHeight, 
 					x, y + headerHeight + height, 
@@ -319,7 +319,7 @@ public ExpandBar getParent () {
 	return parent;
 }
 
-int getPreferredWidth (int /*long*/ hTheme, int /*long*/ hDC) {
+int getPreferredWidth (long /*int*/ hTheme, long /*int*/ hDC) {
 	int width = ExpandItem.TEXT_INSET * 2 + ExpandItem.CHEVRON_SIZE;
 	if (image != null) {
 		width += ExpandItem.TEXT_INSET + imageWidth;
@@ -343,7 +343,7 @@ boolean isHover (int x, int y) {
 }
 
 void redraw (boolean all) {
-	int /*long*/ parentHandle = parent.handle;
+	long /*int*/ parentHandle = parent.handle;
 	int headerHeight = parent.getBandHeight ();
 	RECT rect = new RECT ();
 	int left = all ? x : x + width - headerHeight;

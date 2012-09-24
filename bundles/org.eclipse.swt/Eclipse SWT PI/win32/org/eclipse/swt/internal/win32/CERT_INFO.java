@@ -24,7 +24,7 @@ public class CERT_INFO {
 	public CRYPT_BIT_BLOB SubjectUniqueId = new CRYPT_BIT_BLOB ();
 	public int cExtension;
 	/** @field cast=(PCERT_EXTENSION) */
-	public int /*long*/ rgExtension;
+	public long /*int*/ rgExtension;
 
 	public static final int sizeof = OS.CERT_INFO_sizeof ();
 }

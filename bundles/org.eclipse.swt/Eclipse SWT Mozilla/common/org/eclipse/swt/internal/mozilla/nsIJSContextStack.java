@@ -37,7 +37,7 @@ public class nsIJSContextStack extends nsISupports {
 	public static final nsID NS_IJSCONTEXTSTACK_IID =
 		new nsID(NS_IJSCONTEXTSTACK_IID_STR);
 
-	public nsIJSContextStack(int /*long*/ address) {
+	public nsIJSContextStack(long /*int*/ address) {
 		super(address);
 	}
 
@@ -45,15 +45,15 @@ public class nsIJSContextStack extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aCount);
 	}
 
-	public int Peek(int /*long*/[] _retval) {
+	public int Peek(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
 	}
 
-	public int Pop(int /*long*/[] _retval) {
+	public int Pop(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), _retval);
 	}
 
-	public int Push(int /*long*/ cx) {
+	public int Push(long /*int*/ cx) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), cx);
 	}
 }

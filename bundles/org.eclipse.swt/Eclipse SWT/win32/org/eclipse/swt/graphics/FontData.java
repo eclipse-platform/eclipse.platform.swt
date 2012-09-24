@@ -321,7 +321,7 @@ public boolean equals (Object object) {
 		getName().equals(fd.getName());
 }
 
-int /*long*/ EnumLocalesProc(int /*long*/ lpLocaleString) {
+long /*int*/ EnumLocalesProc(long /*int*/ lpLocaleString) {
 	
 	/* Get the locale ID */
 	int length = 8;
@@ -531,7 +531,7 @@ public void setLocale(String locale) {
 		data.lfCharSet = (byte)OS.DEFAULT_CHARSET;
 	} else {
 		Callback callback = new Callback (this, "EnumLocalesProc", 1); //$NON-NLS-1$
-		int /*long*/ lpEnumLocalesProc = callback.getAddress ();	
+		long /*int*/ lpEnumLocalesProc = callback.getAddress ();	
 		if (lpEnumLocalesProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		OS.EnumSystemLocales(lpEnumLocalesProc, OS.LCID_SUPPORTED);
 		callback.dispose ();

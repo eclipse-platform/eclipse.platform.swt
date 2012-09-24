@@ -97,14 +97,14 @@ void createWidget (int index) {
 boolean drawCaret () {
 	if (parent == null) return false;
 	if (parent.isDisposed ()) return false;
-	int /*long*/ window = parent.paintWindow ();
+	long /*int*/ window = parent.paintWindow ();
 	if (OS.USE_CAIRO) {
-		int /*long*/ cairo = OS.gdk_cairo_create(window);
+		long /*int*/ cairo = OS.gdk_cairo_create(window);
 		if (cairo == 0) error(SWT.ERROR_NO_HANDLES);
 		Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
 		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);
 		if (image != null && !image.isDisposed() && image.mask == 0) {
-			int /*long*/ surface = Cairo.cairo_get_target(cairo);
+			long /*int*/ surface = Cairo.cairo_get_target(cairo);
 			int nWidth = 0;
 			switch (Cairo.cairo_surface_get_type(surface)) {
 				case Cairo.CAIRO_SURFACE_TYPE_IMAGE:
@@ -130,12 +130,12 @@ boolean drawCaret () {
 		Cairo.cairo_destroy(cairo);
 		return true;
 	}
-	int /*long*/ gc = OS.gdk_gc_new (window);
+	long /*int*/ gc = OS.gdk_gc_new (window);
 	GdkColor color = new GdkColor ();
 	color.red = (short) 0xffff;
 	color.green = (short) 0xffff;
 	color.blue = (short) 0xffff;
-	int /*long*/ colormap = OS.gdk_colormap_get_system ();
+	long /*int*/ colormap = OS.gdk_colormap_get_system ();
 	OS.gdk_colormap_alloc_color (colormap, color, true, true);
 	OS.gdk_gc_set_foreground (gc, color);
 	OS.gdk_gc_set_function (gc, OS.GDK_XOR);

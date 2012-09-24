@@ -37,11 +37,11 @@ public class nsIWindowCreator extends nsISupports {
 	public static final nsID NS_IWINDOWCREATOR_IID =
 		new nsID(NS_IWINDOWCREATOR_IID_STR);
 
-	public nsIWindowCreator(int /*long*/ address) {
+	public nsIWindowCreator(long /*int*/ address) {
 		super(address);
 	}
 
-	public int CreateChromeWindow(int /*long*/ parent, int chromeFlags, int /*long*/[] _retval) {
+	public int CreateChromeWindow(long /*int*/ parent, int chromeFlags, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), parent, chromeFlags, _retval);
 	}
 }

@@ -37,7 +37,7 @@ public class nsIAuthInformation extends nsISupports {
 	public static final nsID NS_IAUTHINFORMATION_IID =
 		new nsID(NS_IAUTHINFORMATION_IID_STR);
 
-	public nsIAuthInformation(int /*long*/ address) {
+	public nsIAuthInformation(long /*int*/ address) {
 		super(address);
 	}
 
@@ -50,35 +50,35 @@ public class nsIAuthInformation extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aFlags);
 	}
 
-	public int GetRealm(int /*long*/ aRealm) {
+	public int GetRealm(long /*int*/ aRealm) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aRealm);
 	}
 
-	public int GetAuthenticationScheme(int /*long*/ aAuthenticationScheme) {
+	public int GetAuthenticationScheme(long /*int*/ aAuthenticationScheme) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aAuthenticationScheme);
 	}
 
-	public int GetUsername(int /*long*/ aUsername) {
+	public int GetUsername(long /*int*/ aUsername) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aUsername);
 	}
 
-	public int SetUsername(int /*long*/ aUsername) {
+	public int SetUsername(long /*int*/ aUsername) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aUsername);
 	}
 
-	public int GetPassword(int /*long*/ aPassword) {
+	public int GetPassword(long /*int*/ aPassword) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aPassword);
 	}
 
-	public int SetPassword(int /*long*/ aPassword) {
+	public int SetPassword(long /*int*/ aPassword) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aPassword);
 	}
 
-	public int GetDomain(int /*long*/ aDomain) {
+	public int GetDomain(long /*int*/ aDomain) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aDomain);
 	}
 
-	public int SetDomain(int /*long*/ aDomain) {
+	public int SetDomain(long /*int*/ aDomain) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aDomain);
 	}
 }

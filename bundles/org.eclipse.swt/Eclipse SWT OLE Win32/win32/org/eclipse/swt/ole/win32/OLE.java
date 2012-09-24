@@ -390,7 +390,7 @@ public static String findProgramID (String extension) {
 	return ""; //$NON-NLS-1$
 }
 static String getKeyValue (TCHAR key) {
-	int /*long*/ [] phkResult = new int /*long*/ [1];
+	long /*int*/ [] phkResult = new long /*int*/ [1];
 	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
 		return null;
 	}
@@ -413,7 +413,7 @@ static String getKeyValue (TCHAR key) {
 	return result;
 }
 private static boolean getKeyExists (TCHAR key) {
-	int /*long*/ [] phkResult = new int /*long*/ [1];
+	long /*int*/ [] phkResult = new long /*int*/ [1];
 	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
 		return false;
 	}

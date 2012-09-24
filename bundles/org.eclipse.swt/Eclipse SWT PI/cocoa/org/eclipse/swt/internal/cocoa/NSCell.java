@@ -16,7 +16,7 @@ public NSCell() {
 	super();
 }
 
-public NSCell(int /*long*/ id) {
+public NSCell(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,7 +25,7 @@ public NSCell(id id) {
 }
 
 public NSAttributedString attributedStringValue() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_attributedStringValue);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_attributedStringValue);
 	return result != 0 ? new NSAttributedString(result) : null;
 }
 
@@ -41,7 +41,7 @@ public NSSize cellSizeForBounds(NSRect aRect) {
 	return result;
 }
 
-public int /*long*/ controlSize() {
+public long /*int*/ controlSize() {
 	return OS.objc_msgSend(this.id, OS.sel_controlSize);
 }
 
@@ -66,21 +66,21 @@ public NSRect expansionFrameWithFrame(NSRect cellFrame, NSView view) {
 }
 
 public NSFont font() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_font);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_font);
 	return result != 0 ? new NSFont(result) : null;
 }
 
 public NSColor highlightColorWithFrame(NSRect cellFrame, NSView controlView) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_highlightColorWithFrame_inView_, cellFrame, controlView != null ? controlView.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_highlightColorWithFrame_inView_, cellFrame, controlView != null ? controlView.id : 0);
 	return result != 0 ? new NSColor(result) : null;
 }
 
-public int /*long*/ hitTestForEvent(NSEvent event, NSRect cellFrame, NSView controlView) {
+public long /*int*/ hitTestForEvent(NSEvent event, NSRect cellFrame, NSView controlView) {
 	return OS.objc_msgSend(this.id, OS.sel_hitTestForEvent_inRect_ofView_, event != null ? event.id : 0, cellFrame, controlView != null ? controlView.id : 0);
 }
 
 public NSImage image() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_image);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_image);
 	return result != 0 ? new NSImage(result) : null;
 }
 
@@ -98,11 +98,11 @@ public boolean isHighlighted() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isHighlighted);
 }
 
-public int /*long*/ nextState() {
+public long /*int*/ nextState() {
 	return OS.objc_msgSend(this.id, OS.sel_nextState);
 }
 
-public void setAlignment(int /*long*/ mode) {
+public void setAlignment(long /*int*/ mode) {
 	OS.objc_msgSend(this.id, OS.sel_setAlignment_, mode);
 }
 
@@ -114,15 +114,15 @@ public void setAttributedStringValue(NSAttributedString obj) {
 	OS.objc_msgSend(this.id, OS.sel_setAttributedStringValue_, obj != null ? obj.id : 0);
 }
 
-public void setBackgroundStyle(int /*long*/ style) {
+public void setBackgroundStyle(long /*int*/ style) {
 	OS.objc_msgSend(this.id, OS.sel_setBackgroundStyle_, style);
 }
 
-public void setBaseWritingDirection(int /*long*/ writingDirection) {
+public void setBaseWritingDirection(long /*int*/ writingDirection) {
 	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, writingDirection);
 }
 
-public void setControlSize(int /*long*/ size) {
+public void setControlSize(long /*int*/ size) {
 	OS.objc_msgSend(this.id, OS.sel_setControlSize_, size);
 }
 
@@ -146,7 +146,7 @@ public void setImage(NSImage image) {
 	OS.objc_msgSend(this.id, OS.sel_setImage_, image != null ? image.id : 0);
 }
 
-public void setLineBreakMode(int /*long*/ mode) {
+public void setLineBreakMode(long /*int*/ mode) {
 	OS.objc_msgSend(this.id, OS.sel_setLineBreakMode_, mode);
 }
 
@@ -167,7 +167,7 @@ public void setWraps(boolean flag) {
 }
 
 public NSString title() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_title);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_title);
 	return result != 0 ? new NSString(result) : null;
 }
 

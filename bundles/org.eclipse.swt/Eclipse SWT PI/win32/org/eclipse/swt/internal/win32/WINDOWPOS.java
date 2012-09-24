@@ -12,9 +12,9 @@ package org.eclipse.swt.internal.win32;
 
 public class WINDOWPOS {
 	/** @field cast=(HWND) */
-	public int /*long*/ hwnd;
+	public long /*int*/ hwnd;
 	/** @field cast=(HWND) */
-	public int /*long*/ hwndInsertAfter;
+	public long /*int*/ hwndInsertAfter;
 	public int x;
 	public int y;
 	public int cx;

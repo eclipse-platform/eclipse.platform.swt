@@ -15,23 +15,23 @@ import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebFrame extends IUnknown {
 
-public IWebFrame (int /*long*/ address) {
+public IWebFrame (long /*int*/ address) {
 	super (address);
 }
 
-public int loadRequest (int /*long*/ request) {
+public int loadRequest (long /*int*/ request) {
 	return COM.VtblCall (8, getAddress (), request);
 }
 
-public int loadHTMLString (int /*long*/ string, int /*long*/ baseURL) {
+public int loadHTMLString (long /*int*/ string, long /*int*/ baseURL) {
 	return COM.VtblCall (10, getAddress (), string, baseURL);
 }
 
-public int dataSource (int /*long*/[] source) {
+public int dataSource (long /*int*/[] source) {
 	return COM.VtblCall (13, getAddress (), source);
 }
 
-public int /*long*/ globalContext () {
+public long /*int*/ globalContext () {
 	return COM.VtblCall (23, getAddress ());
 }
 

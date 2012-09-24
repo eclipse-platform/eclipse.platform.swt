@@ -88,27 +88,27 @@ public class TableDragSourceEffect extends DragSourceEffect {
 		* in versions smaller than 2.2.4 if the model is NULL.  The fix is
 		* to give a valid pointer instead.
 		*/
-		int /*long*/ handle = table.handle;
-		int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
-		int /*long*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new int /*long*/ [1] : null;
-		int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
+		long /*int*/ handle = table.handle;
+		long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+		long /*int*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new long /*int*/ [1] : null;
+		long /*int*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
 		if (list == 0) return null;
 		int count = Math.min(10, OS.g_list_length (list));
 
 		Display display = table.getDisplay();
 		if (count == 1) {
-			int /*long*/ path = OS.g_list_nth_data (list, 0);
-			int /*long*/ pixmap = OS.gtk_tree_view_create_row_drag_icon(handle, path);
+			long /*int*/ path = OS.g_list_nth_data (list, 0);
+			long /*int*/ pixmap = OS.gtk_tree_view_create_row_drag_icon(handle, path);
 			dragSourceImage =  Image.gtk_new(display, SWT.ICON, pixmap, 0);
 			OS.gtk_tree_path_free (path);
 		} else {
 			int width = 0, height = 0;
 			int[] w = new int[1], h = new int[1];
 			int[] yy = new int[count], hh = new int[count];
-			int /*long*/ [] pixmaps = new int /*long*/ [count];
+			long /*int*/ [] pixmaps = new long /*int*/ [count];
 			GdkRectangle rect = new GdkRectangle ();
 			for (int i=0; i<count; i++) {
-				int /*long*/ path = OS.g_list_nth_data (list, i);
+				long /*int*/ path = OS.g_list_nth_data (list, i);
 				OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
 				pixmaps[i] = OS.gtk_tree_view_create_row_drag_icon(handle, path);
 				if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
@@ -122,10 +122,10 @@ public class TableDragSourceEffect extends DragSourceEffect {
 				hh[i] = h[0];
 				OS.gtk_tree_path_free (path);
 			}
-			int /*long*/ source = OS.gdk_pixmap_new(OS.gdk_get_default_root_window(), width, height, -1);
-			int /*long*/ gcSource = OS.gdk_gc_new(source);
-			int /*long*/ mask = OS.gdk_pixmap_new(OS.gdk_get_default_root_window(), width, height, 1);
-			int /*long*/ gcMask = OS.gdk_gc_new(mask);
+			long /*int*/ source = OS.gdk_pixmap_new(OS.gdk_get_default_root_window(), width, height, -1);
+			long /*int*/ gcSource = OS.gdk_gc_new(source);
+			long /*int*/ mask = OS.gdk_pixmap_new(OS.gdk_get_default_root_window(), width, height, 1);
+			long /*int*/ gcMask = OS.gdk_gc_new(mask);
 			GdkColor color = new GdkColor();
 			color.pixel = 0;
 			OS.gdk_gc_set_foreground(gcMask, color);

@@ -16,7 +16,7 @@ public NSComboBoxCell() {
 	super();
 }
 
-public NSComboBoxCell(int /*long*/ id) {
+public NSComboBoxCell(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,7 +25,7 @@ public NSComboBoxCell(id id) {
 }
 
 public NSArray objectValues() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_objectValues);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_objectValues);
 	return result != 0 ? new NSArray(result) : null;
 }
 

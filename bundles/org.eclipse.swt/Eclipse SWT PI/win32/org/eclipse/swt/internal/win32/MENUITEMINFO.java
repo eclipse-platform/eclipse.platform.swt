@@ -17,17 +17,17 @@ public class MENUITEMINFO {
 	public int fState;
 	public int wID;
 	/** @field cast=(HMENU) */
-	public int /*long*/ hSubMenu;
+	public long /*int*/ hSubMenu;
 	/** @field cast=(HBITMAP) */
-	public int /*long*/ hbmpChecked;
+	public long /*int*/ hbmpChecked;
 	/** @field cast=(HBITMAP) */
-	public int /*long*/ hbmpUnchecked;
-	public int /*long*/ dwItemData;
+	public long /*int*/ hbmpUnchecked;
+	public long /*int*/ dwItemData;
 	/** @field cast=(LPTSTR) */
-	public int /*long*/ dwTypeData;
+	public long /*int*/ dwTypeData;
 	public int cch;
 	/** @field cast=(HBITMAP),flags=no_wince */
-	public int /*long*/ hbmpItem;
+	public long /*int*/ hbmpItem;
 	/*
 	* Feature in Windows.  The hbmpItem field requires Windows 4.10
 	* or greater.  On Windows NT 4.0, passing in a larger struct size

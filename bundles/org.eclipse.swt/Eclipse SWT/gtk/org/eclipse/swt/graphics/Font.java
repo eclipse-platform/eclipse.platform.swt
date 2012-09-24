@@ -44,7 +44,7 @@ public final class Font extends Resource {
 	 * 
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public int /*long*/ handle;
+	public long /*int*/ handle;
 	
 Font(Device device) {
 	super(device);
@@ -180,7 +180,7 @@ public boolean equals(Object object) {
 public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 
-	int /*long*/ family = OS.pango_font_description_get_family(handle);
+	long /*int*/ family = OS.pango_font_description_get_family(handle);
 	int length = OS.strlen(family);
 	byte[] buffer = new byte[length];
 	OS.memmove(buffer, family, length);
@@ -194,7 +194,7 @@ public FontData[] getFontData() {
 	if (pangoStyle == OS.PANGO_STYLE_ITALIC) style |= SWT.ITALIC;
 	if (pangoStyle == OS.PANGO_STYLE_OBLIQUE) style |= SWT.ROMAN;
 	if (pangoWeight >= OS.PANGO_WEIGHT_BOLD) style |= SWT.BOLD;
-	int /*long*/ fontString = OS.pango_font_description_to_string (handle);
+	long /*int*/ fontString = OS.pango_font_description_to_string (handle);
 	length = OS.strlen (fontString);
 	buffer = new byte [length + 1];
 	OS.memmove (buffer, fontString, length);	
@@ -219,7 +219,7 @@ public FontData[] getFontData() {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public static Font gtk_new(Device device, int /*long*/ handle) {
+public static Font gtk_new(Device device, long /*int*/ handle) {
 	Font font = new Font(device);
 	font.handle = handle;
 	return font;

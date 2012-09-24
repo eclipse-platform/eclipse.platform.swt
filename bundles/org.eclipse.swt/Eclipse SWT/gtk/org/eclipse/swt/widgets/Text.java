@@ -57,9 +57,9 @@ import org.eclipse.swt.events.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Text extends Scrollable {
-	int /*long*/ bufferHandle;
+	long /*int*/ bufferHandle;
 	int tabs = 8, lastEventTime = 0;
-	int /*long*/ gdkEventKey = 0;
+	long /*int*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
 	boolean doubleClick;
 	String message = "";
@@ -392,7 +392,7 @@ public void append (String string) {
 		OS.gtk_text_buffer_get_end_iter (bufferHandle, position);
 		OS.gtk_text_buffer_insert (bufferHandle, position, buffer, buffer.length);
 		OS.gtk_text_buffer_place_cursor (bufferHandle, position);
-		int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
+		long /*int*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 	}
 	applySegments ();
@@ -429,7 +429,7 @@ void applySegments () {
 				separator [0] = segmentsChars [i];
 			}
 			byte [] buffer = Converter.wcsToMbcs (null, separator, false);
-			int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+			long /*int*/ ptr = OS.gtk_entry_get_text (handle);
 			pos [0] = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, pos [0]);
 			OS.gtk_editable_insert_text (handle, buffer, buffer.length, pos);
 		}
@@ -443,7 +443,7 @@ void applySegments () {
 		byte [] endIter =  new byte [ITER_SIZEOF];
 		for (int i = 0; i < nSegments; i++) {
 			OS.gtk_text_buffer_get_bounds (bufferHandle, startIter, endIter);
-			int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
+			long /*int*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
 			OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, pos, (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, segments[i] + i));
 			OS.g_free (ptr);
 			if (segmentsChars != null && segmentsChars.length > i) {
@@ -466,7 +466,7 @@ void clearSegments (boolean applyText) {
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		if (applyText) {
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
-			int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+			long /*int*/ ptr = OS.gtk_entry_get_text (handle);
 			int start, end;
 			for (int i = 0; i < nSegments; i++) {
 				start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, segments[i]);
@@ -485,7 +485,7 @@ void clearSegments (boolean applyText) {
 		byte [] startIter =  new byte [ITER_SIZEOF], endIter =  new byte [ITER_SIZEOF];
 		for (int i = 0; i < nSegments; i++) {
 			OS.gtk_text_buffer_get_bounds (bufferHandle, startIter, endIter);
-			int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
+			long /*int*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
 			OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, start, (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, segments[i]));
 			OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, end, (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, segments[i] + 1));
 			OS.gtk_text_buffer_delete (bufferHandle, start, end);
@@ -512,8 +512,8 @@ public void clearSelection () {
 		OS.gtk_editable_select_region (handle, position, position);
 	} else {
 		byte [] position = new byte [ITER_SIZEOF];
-		int /*long*/ insertMark = OS.gtk_text_buffer_get_insert (bufferHandle);
-		int /*long*/ selectionMark = OS.gtk_text_buffer_get_selection_bound (bufferHandle);
+		long /*int*/ insertMark = OS.gtk_text_buffer_get_insert (bufferHandle);
+		long /*int*/ selectionMark = OS.gtk_text_buffer_get_selection_bound (bufferHandle);
 		OS.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, insertMark);
 		OS.gtk_text_buffer_move_mark (bufferHandle, selectionMark, position);
 		OS.gtk_text_buffer_move_mark (bufferHandle, insertMark, position);
@@ -527,13 +527,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int[] w = new int [1], h = new int [1];
 	if ((style & SWT.SINGLE) != 0) {
 		OS.gtk_widget_realize (handle);
-		int /*long*/ layout = OS.gtk_entry_get_layout (handle);
+		long /*int*/ layout = OS.gtk_entry_get_layout (handle);
 		OS.pango_layout_get_size (layout, w, h);
 	} else {
 		byte [] start =  new byte [ITER_SIZEOF], end  =  new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_bounds (bufferHandle, start, end);
-		int /*long*/ text = OS.gtk_text_buffer_get_text (bufferHandle, start, end, true);
-		int /*long*/ layout = OS.gtk_widget_create_pango_layout (handle, text);
+		long /*int*/ text = OS.gtk_text_buffer_get_text (bufferHandle, start, end, true);
+		long /*int*/ layout = OS.gtk_widget_create_pango_layout (handle, text);
 		OS.g_free (text);
 		OS.pango_layout_set_width (layout, wHint * OS.PANGO_SCALE);
 		OS.pango_layout_get_size (layout, w, h);
@@ -543,7 +543,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int height = OS.PANGO_PIXELS (h [0]);
 	if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, message, true);
-		int /*long*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
+		long /*int*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
 		OS.pango_layout_get_size (layout, w, h);
 		OS.g_object_unref (layout);
 		width = Math.max (width, OS.PANGO_PIXELS (w [0]));
@@ -562,7 +562,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int xborder = 0, yborder = 0;
 	if ((style & SWT.SINGLE) != 0) {
 		if ((style & SWT.BORDER) != 0) {
-			int /*long*/ style = OS.gtk_widget_get_style (handle);
+			long /*int*/ style = OS.gtk_widget_get_style (handle);
 			xborder += OS.gtk_style_get_xthickness (style);
 			yborder += OS.gtk_style_get_ythickness (style);
 		}
@@ -607,7 +607,7 @@ public void copy () {
 	if ((style & SWT.SINGLE) != 0) {
 		OS.gtk_editable_copy_clipboard (handle);
 	} else {
-		int /*long*/ clipboard = OS.gtk_clipboard_get (OS.GDK_NONE);
+		long /*int*/ clipboard = OS.gtk_clipboard_get (OS.GDK_NONE);
 		clearSegments (true);
 		OS.gtk_text_buffer_copy_clipboard (bufferHandle, clipboard);
 		applySegments ();
@@ -631,7 +631,7 @@ public void cut () {
 	if ((style & SWT.SINGLE) != 0) {
 		OS.gtk_editable_cut_clipboard (handle);
 	} else {
-		int /*long*/ clipboard = OS.gtk_clipboard_get (OS.GDK_NONE);
+		long /*int*/ clipboard = OS.gtk_clipboard_get (OS.GDK_NONE);
 		clearSegments (true);
 		OS.gtk_text_buffer_cut_clipboard (bufferHandle, clipboard, OS.gtk_text_view_get_editable (handle));
 		applySegments ();
@@ -670,7 +670,7 @@ char [] deprocessText (char [] text, int start, int end) {
 void deregister () {
 	super.deregister ();
 	if (bufferHandle != 0) display.removeWidget (bufferHandle);
-	int /*long*/ imContext = imContext ();
+	long /*int*/ imContext = imContext ();
 	if (imContext != 0) display.removeWidget (imContext);
 }
 
@@ -698,9 +698,9 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 			if ((style & SWT.SINGLE) != 0) {
 				int [] index = new int [1];
 				int [] trailing = new int [1];
-				int /*long*/ layout = OS.gtk_entry_get_layout (handle);
+				long /*int*/ layout = OS.gtk_entry_get_layout (handle);
 				OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
-				int /*long*/ ptr = OS.pango_layout_get_text (layout);
+				long /*int*/ ptr = OS.pango_layout_get_text (layout);
 				position = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
 			} else {
 				byte [] p = new byte [ITER_SIZEOF];
@@ -719,15 +719,15 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 	return super.dragDetect (x, y, filter, dragOnTimeout, consume);
 }
 
-int /*long*/ eventWindow () {
+long /*int*/ eventWindow () {
 	return paintWindow ();
 }
 
-boolean filterKey (int keyval, int /*long*/ event) {
+boolean filterKey (int keyval, long /*int*/ event) {
 	int time = OS.gdk_event_get_time (event);
 	if (time != lastEventTime) {
 		lastEventTime = time;
-		int /*long*/ imContext = imContext ();
+		long /*int*/ imContext = imContext ();
 		if (imContext != 0) {
 			return OS.gtk_im_context_filter_keypress (imContext, event);
 		}
@@ -746,7 +746,7 @@ void fixIM () {
 	*  filter has to be called by SWT.
 	*/
 	if (gdkEventKey != 0 && gdkEventKey != -1) {
-		int /*long*/ imContext = imContext ();
+		long /*int*/ imContext = imContext ();
 		if (imContext != 0) {
 			OS.gtk_im_context_filter_keypress (imContext, gdkEventKey);
 			gdkEventKey = -1;
@@ -763,7 +763,7 @@ GdkColor getBackgroundColor () {
 public int getBorderWidth () {
 	checkWidget();
 	if ((style & SWT.MULTI) != 0) return super.getBorderWidth ();
-	int /*long*/ style = OS.gtk_widget_get_style (handle);
+	long /*int*/ style = OS.gtk_widget_get_style (handle);
 	if ((this.style & SWT.BORDER) != 0) {
 		 return OS.gtk_style_get_xthickness (style);
 	}
@@ -787,7 +787,7 @@ public int getCaretLineNumber () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return 0;
 	byte [] position = new byte [ITER_SIZEOF];
-	int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
+	long /*int*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 	OS.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, mark);
 	return OS.gtk_text_iter_get_line (position);
 }
@@ -812,7 +812,7 @@ public Point getCaretLocation () {
 		}
 		int [] offset_x = new int [1], offset_y = new int [1];
 		OS.gtk_entry_get_layout_offsets (handle, offset_x, offset_y);
-		int /*long*/ layout = OS.gtk_entry_get_layout (handle);
+		long /*int*/ layout = OS.gtk_entry_get_layout (handle);
 		PangoRectangle pos = new PangoRectangle ();
 		OS.pango_layout_index_to_pos (layout, index, pos);
 		int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidth ();
@@ -820,7 +820,7 @@ public Point getCaretLocation () {
 		return new Point (x, y);
 	}
 	byte [] position = new byte [ITER_SIZEOF];
-	int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
+	long /*int*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 	OS.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, mark);
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_text_view_get_iter_location (handle, position, rect);
@@ -847,15 +847,15 @@ public int getCaretPosition () {
 	checkWidget ();
 	int result;
 	if ((style & SWT.SINGLE) != 0)  {
-		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+		long /*int*/ ptr = OS.gtk_entry_get_text (handle);
 		result = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, OS.gtk_editable_get_position (handle));
 	} else {
 		byte [] position = new byte [ITER_SIZEOF];
-		int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
+		long /*int*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 		OS.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, mark);
 		byte [] zero = new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_iter_at_offset(bufferHandle, zero, 0);
-		int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, zero, position, true);
+		long /*int*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, zero, position, true);
 		result = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, OS.gtk_text_iter_get_offset (position));
 		OS.g_free (ptr);
 	}
@@ -876,13 +876,13 @@ public int getCharCount () {
 	checkWidget ();
 	int result;
 	if ((style & SWT.SINGLE) != 0) {
-		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+		long /*int*/ ptr = OS.gtk_entry_get_text (handle);
 		result = (int)/*64*/OS.g_utf16_strlen (ptr, -1);
 	} else {
 		byte [] startIter =  new byte [ITER_SIZEOF];
 		byte [] endIter =  new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_bounds (bufferHandle, startIter, endIter);
-		int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
+		long /*int*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
 		result = (int)/*64*/OS.g_utf16_strlen(ptr, -1);
 		OS.g_free (ptr);
 	}
@@ -1051,16 +1051,16 @@ public int getOrientation () {
 	if ((style & SWT.SINGLE) != 0) {
 		int [] index = new int [1];
 		int [] trailing = new int [1];
-		int /*long*/ layout = OS.gtk_entry_get_layout (handle);
+		long /*int*/ layout = OS.gtk_entry_get_layout (handle);
 		OS.pango_layout_xy_to_index (layout, point.x * OS.PANGO_SCALE, point.y * OS.PANGO_SCALE, index, trailing);
-		int /*long*/ ptr = OS.pango_layout_get_text (layout);
+		long /*int*/ ptr = OS.pango_layout_get_text (layout);
 		position = (int)/*64*/OS.g_utf16_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
 	} else {
 		byte [] p = new byte [ITER_SIZEOF];
 		OS.gtk_text_view_get_iter_at_location (handle, p, point.x, point.y);
 		byte [] zero = new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_iter_at_offset(bufferHandle, zero, 0);
-		int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, zero, p, true);
+		long /*int*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, zero, p, true);
 		position = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, OS.gtk_text_iter_get_offset (p));
 		OS.g_free (ptr);
 	}
@@ -1092,7 +1092,7 @@ public Point getSelection () {
 		int [] start = new int [1];
 		int [] end = new int [1];
 		OS.gtk_editable_get_selection_bounds (handle, start, end);
-		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+		long /*int*/ ptr = OS.gtk_entry_get_text (handle);
 		start[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start[0]);
 		end[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end[0]);
 		selection = new Point (start [0], end [0]);
@@ -1102,7 +1102,7 @@ public Point getSelection () {
 		OS.gtk_text_buffer_get_selection_bounds (bufferHandle, startIter, endIter);
 		byte [] zero = new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_iter_at_offset(bufferHandle, zero, 0);
-		int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, zero, endIter, true);
+		long /*int*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, zero, endIter, true);
 		int start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, OS.gtk_text_iter_get_offset (startIter));
 		int end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, OS.gtk_text_iter_get_offset (endIter));
 		OS.g_free (ptr);
@@ -1167,7 +1167,7 @@ public int getTabs () {
 
 int getTabWidth (int tabs) {
 	byte[] buffer = Converter.wcsToMbcs(null, " ", true);
-	int /*long*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
+	long /*int*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
 	int [] width = new int [1];
 	int [] height = new int [1];
 	OS.pango_layout_get_size (layout, width, height);
@@ -1247,7 +1247,7 @@ public String getText (int start, int end) {
  */
 public char [] getTextChars () {
 	checkWidget ();
-	int /*long*/ address;
+	long /*int*/ address;
 	if ((style & SWT.SINGLE) != 0) {
 		address = OS.gtk_entry_get_text (handle);
 	} else {
@@ -1345,13 +1345,13 @@ public int getTopPixel () {
 	return lineTop [0];
 }
 
-int /*long*/ gtk_activate (int /*long*/ widget) {
+long /*int*/ gtk_activate (long /*int*/ widget) {
 	sendSelectionEvent (SWT.DefaultSelection);
 	return 0;
 }
 
-int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_button_press_event (widget, event);
+long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
+	long /*int*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
@@ -1366,7 +1366,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 
-int /*long*/ gtk_changed (int /*long*/ widget) {
+long /*int*/ gtk_changed (long /*int*/ widget) {
 	/*
 	* Feature in GTK.  When the user types, GTK positions
 	* the caret after sending the changed signal.  This
@@ -1375,7 +1375,7 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 	* is to post the modify event when the user is typing.
 	*/
 	boolean keyPress = false;
-	int /*long*/ eventPtr = OS.gtk_get_current_event ();
+	long /*int*/ eventPtr = OS.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
@@ -1393,14 +1393,14 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 	}
 	if ((style & SWT.SEARCH) != 0) {
 		if ((style & SWT.ICON_CANCEL) != 0) {
-			int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+			long /*int*/ ptr = OS.gtk_entry_get_text (handle);
 			OS.gtk_entry_set_icon_sensitive (handle, OS.GTK_ENTRY_ICON_SECONDARY, OS.g_utf16_strlen (ptr, -1) > 0);
 		}
 	}
 	return 0;
 }
 
-int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
+long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	if (text == 0) return 0;
 	if ((style & SWT.SINGLE) != 0) {
 		if (!OS.gtk_editable_get_editable (handle)) return 0;
@@ -1442,7 +1442,7 @@ int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
 	return 0;
 }
 
-int /*long*/ gtk_delete_range (int /*long*/ widget, int /*long*/ iter1, int /*long*/ iter2) {
+long /*int*/ gtk_delete_range (long /*int*/ widget, long /*int*/ iter1, long /*int*/ iter2) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	byte [] startIter = new byte [ITER_SIZEOF];
 	byte [] endIter = new byte [ITER_SIZEOF];
@@ -1452,7 +1452,7 @@ int /*long*/ gtk_delete_range (int /*long*/ widget, int /*long*/ iter1, int /*lo
 	int end = OS.gtk_text_iter_get_offset (endIter);
 	byte [] zero = new byte [ITER_SIZEOF];
 	OS.gtk_text_buffer_get_iter_at_offset(bufferHandle, zero, 0);
-	int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, zero, endIter, true);
+	long /*int*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, zero, endIter, true);
 	start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start);
 	end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end);
 	OS.g_free (ptr);
@@ -1484,9 +1484,9 @@ int /*long*/ gtk_delete_range (int /*long*/ widget, int /*long*/ iter1, int /*lo
 	return 0;
 }
 
-int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /*long*/ end_pos) {
+long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long /*int*/ end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
-	int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+	long /*int*/ ptr = OS.gtk_entry_get_text (handle);
 	if (end_pos == -1) end_pos = OS.g_utf8_strlen (ptr, -1);
 	int start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start_pos);
 	int end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end_pos);
@@ -1516,7 +1516,7 @@ int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /
 	return 0;
 }
 
-int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
+long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	if (cursor != null) setCursor (cursor.handle);
 	/*
 	* Feature in GTK.  The gtk-entry-select-on-focus property is a global
@@ -1532,7 +1532,7 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 				GdkEventFocus gdkEventFocus = new GdkEventFocus ();
 				OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
 				if (gdkEventFocus.in == 0) {
-					int /*long*/ settings = OS.gtk_settings_get_default ();
+					long /*int*/ settings = OS.gtk_settings_get_default ();
 					OS.g_object_set (settings, OS.gtk_entry_select_on_focus, true, 0);
 				}
 				break;
@@ -1541,29 +1541,29 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 	return super.gtk_event_after (widget, gdkEvent);
 }
 
-int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 	if ((state & OBSCURED) != 0) return 0;
-	int /*long*/ result = super.gtk_expose_event (widget, event);
+	long /*int*/ result = super.gtk_expose_event (widget, event);
 	if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
-		int /*long*/ str = OS.gtk_entry_get_text (handle);
+		long /*int*/ str = OS.gtk_entry_get_text (handle);
 		if (!gtk_widget_has_focus (handle) && OS.strlen (str) == 0) {
 			GdkEventExpose gdkEvent = new GdkEventExpose ();
 			OS.memmove (gdkEvent, event, GdkEventExpose.sizeof);
-			int /*long*/ window = paintWindow ();
+			long /*int*/ window = paintWindow ();
 			int [] w = new int [1], h = new int [1];
 			gdk_window_get_size (window, w, h);
 			GtkBorder innerBorder = Display.getEntryInnerBorder (handle);
 			int width = w [0] - innerBorder.left - innerBorder.right;
 			int height = h [0] - innerBorder.top - innerBorder.bottom;
-			int /*long*/ context = OS.gtk_widget_get_pango_context (handle);
-			int /*long*/ lang = OS.pango_context_get_language (context);
-			int /*long*/ metrics = OS.pango_context_get_metrics (context, getFontDescription (), lang);
+			long /*int*/ context = OS.gtk_widget_get_pango_context (handle);
+			long /*int*/ lang = OS.pango_context_get_language (context);
+			long /*int*/ metrics = OS.pango_context_get_metrics (context, getFontDescription (), lang);
 			int ascent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_ascent (metrics));
 			int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
 			OS.pango_font_metrics_unref (metrics);
 			byte [] buffer = Converter.wcsToMbcs (null, message, true);
-			int /*long*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
-			int /*long*/ line = OS.pango_layout_get_line (layout, 0);
+			long /*int*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
+			long /*int*/ line = OS.pango_layout_get_line (layout, 0);
 			PangoRectangle rect = new PangoRectangle ();
 			OS.pango_layout_line_get_extents (line, null, rect);
 			rect.y = OS.PANGO_PIXELS (rect.y);
@@ -1586,19 +1586,19 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
 				case SWT.CENTER: x = (width - rect.width) / 2; break;
 				case SWT.RIGHT: x = rtl ? innerBorder.left : width - rect.width; break;
 			}
-			int /*long*/ style = OS.gtk_widget_get_style (handle);	
+			long /*int*/ style = OS.gtk_widget_get_style (handle);	
 			GdkColor textColor = new GdkColor ();
 			OS.gtk_style_get_text (style, OS.GTK_STATE_INSENSITIVE, textColor);
 			GdkColor baseColor = new GdkColor ();
 			OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, baseColor);
 			if (OS.USE_CAIRO) {
-				int /*long*/ cairo = OS.gdk_cairo_create(window);
+				long /*int*/ cairo = OS.gdk_cairo_create(window);
 				Cairo.cairo_set_source_rgba(cairo, (textColor.red & 0xFFFF) / (float)0xFFFF, (textColor.green & 0xFFFF) / (float)0xFFFF, (textColor.blue & 0xFFFF) / (float)0xFFFF, 1);
 				Cairo.cairo_move_to(cairo, x, y);
 				OS.pango_cairo_show_layout(cairo, layout);
 				Cairo.cairo_destroy(cairo);
 			} else {
-				int /*long*/ gc = OS.gdk_gc_new	(window);
+				long /*int*/ gc = OS.gdk_gc_new	(window);
 				OS.gdk_draw_layout_with_colors (window, gc, x, y, layout, textColor, baseColor);
 				OS.g_object_unref (gc);
 			}
@@ -1608,13 +1608,13 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
 	return result;
 }
 
-int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	fixIM ();
 	return super.gtk_focus_out_event (widget, event);
 }
 
-int /*long*/ gtk_grab_focus (int /*long*/ widget) {
-	int /*long*/ result = super.gtk_grab_focus (widget);
+long /*int*/ gtk_grab_focus (long /*int*/ widget) {
+	long /*int*/ result = super.gtk_grab_focus (widget);
 	/*
 	* Feature in GTK.  GtkEntry widgets select their text on focus in,
 	* clearing the previous selection.  This behavior is controlled by
@@ -1623,13 +1623,13 @@ int /*long*/ gtk_grab_focus (int /*long*/ widget) {
 	* the entry has done focus in processing.
 	*/
 	if ((style & SWT.SINGLE) != 0 && display.entrySelectOnFocus) {
-		int /*long*/ settings = OS.gtk_settings_get_default ();
+		long /*int*/ settings = OS.gtk_settings_get_default ();
 		OS.g_object_set (settings, OS.gtk_entry_select_on_focus, false, 0);
 	}
 	return result;
 }
 
-int /*long*/ gtk_icon_release (int /*long*/ widget, int /*long*/ icon_pos, int /*long*/ event) {
+long /*int*/ gtk_icon_release (long /*int*/ widget, long /*int*/ icon_pos, long /*int*/ event) {
 	Event e = new Event();
 	if (icon_pos == OS.GTK_ENTRY_ICON_PRIMARY) {
 		e.detail = SWT.ICON_SEARCH;
@@ -1641,7 +1641,7 @@ int /*long*/ gtk_icon_release (int /*long*/ widget, int /*long*/ icon_pos, int /
 	return 0;
 }
 
-int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*long*/ new_text_length, int /*long*/ position) {
+long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /*int*/ new_text_length, long /*int*/ position) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	if (new_text == 0 || new_text_length == 0) return 0;
 	byte [] buffer = new byte [(int)/*64*/new_text_length];
@@ -1649,7 +1649,7 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 	String oldText = new String (Converter.mbcsToWcs (null, buffer));
 	int [] pos = new int [1];
 	OS.memmove (pos, position, 4);
-	int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+	long /*int*/ ptr = OS.gtk_entry_get_text (handle);
 	if (pos [0] == -1) pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
 	/* Use the selection when the text was deleted */
 	int start = pos [0], end = pos [0];
@@ -1689,7 +1689,7 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 	return 0;
 }
 
-int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	boolean handleSegments = false, segmentsCleared = false;
 	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
 		GdkEventKey gdkEvent = new GdkEventKey ();
@@ -1702,7 +1702,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 			}
 		}
 	}
-	int /*long*/ result = super.gtk_key_press_event (widget, event);
+	long /*int*/ result = super.gtk_key_press_event (widget, event);
 	if (result != 0) fixIM ();
 	if (gdkEventKey == -1) result = 1;
 	gdkEventKey = 0;
@@ -1712,7 +1712,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	return result;
 }
 
-int /*long*/ gtk_populate_popup (int /*long*/ widget, int /*long*/ menu) {
+long /*int*/ gtk_populate_popup (long /*int*/ widget, long /*int*/ menu) {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.gtk_widget_set_direction (menu, OS.GTK_TEXT_DIR_RTL);
 		OS.gtk_container_forall (menu, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
@@ -1720,7 +1720,7 @@ int /*long*/ gtk_populate_popup (int /*long*/ widget, int /*long*/ menu) {
 	return 0;
 }
 
-int /*long*/ gtk_text_buffer_insert_text (int /*long*/ widget, int /*long*/ iter, int /*long*/ text, int /*long*/ length) {
+long /*int*/ gtk_text_buffer_insert_text (long /*int*/ widget, long /*int*/ iter, long /*int*/ text, long /*int*/ length) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	byte [] position = new byte [ITER_SIZEOF];
 	OS.memmove (position, iter, position.length);
@@ -1733,7 +1733,7 @@ int /*long*/ gtk_text_buffer_insert_text (int /*long*/ widget, int /*long*/ iter
 	}
 	byte [] zero = new byte [ITER_SIZEOF];
 	OS.gtk_text_buffer_get_iter_at_offset(bufferHandle, zero, 0);
-	int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, zero, position, true);
+	long /*int*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, zero, position, true);
 	start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start);
 	end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end);
 	OS.g_free(ptr);
@@ -1773,7 +1773,7 @@ void hookEvents () {
 		OS.g_signal_connect_closure (bufferHandle, OS.delete_range, display.closures [DELETE_RANGE], false);
 		OS.g_signal_connect_closure (handle, OS.populate_popup, display.closures [POPULATE_POPUP], false);
 	}
-	int /*long*/ imContext = imContext ();
+	long /*int*/ imContext = imContext ();
 	if (imContext != 0) {
 		OS.g_signal_connect_closure (imContext, OS.commit, display.closures [COMMIT], false);
 		int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
@@ -1795,7 +1795,7 @@ void hookEvents () {
 	OS.g_signal_connect_closure (handle, OS.direction_changed, display.closures [DIRECTION_CHANGED], true);
 }
 
-int /*long*/ imContext () {
+long /*int*/ imContext () {
 	if ((style & SWT.SINGLE) != 0) {
 		return OS.gtk_editable_get_editable (handle) ? OS.GTK_ENTRY_IM_CONTEXT (handle) : 0;
 	} 
@@ -1837,16 +1837,16 @@ public void insert (String string) {
 		}
 		OS.gtk_text_buffer_insert (bufferHandle, start, buffer, buffer.length);
 		OS.gtk_text_buffer_place_cursor (bufferHandle, start);
-		int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
+		long /*int*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 	}
 	applySegments ();
 }
 
-int /*long*/ paintWindow () {
+long /*int*/ paintWindow () {
 	if ((style & SWT.SINGLE) != 0) {
-		int /*long*/ window = super.paintWindow ();
-		int /*long*/ children = OS.gdk_window_get_children (window);
+		long /*int*/ window = super.paintWindow ();
+		long /*int*/ children = OS.gdk_window_get_children (window);
 		if (children != 0) {
 			/*
 			* When search or cancel icons are added to Text, those
@@ -1882,7 +1882,7 @@ public void paste () {
 	if ((style & SWT.SINGLE) != 0) {
 		OS.gtk_editable_paste_clipboard (handle);
 	} else {
-		int /*long*/ clipboard = OS.gtk_clipboard_get (OS.GDK_NONE);
+		long /*int*/ clipboard = OS.gtk_clipboard_get (OS.GDK_NONE);
 		clearSegments (true);
 		OS.gtk_text_buffer_paste_clipboard (bufferHandle, clipboard, null, OS.gtk_text_view_get_editable (handle));
 		applySegments ();
@@ -1892,7 +1892,7 @@ public void paste () {
 void register () {
 	super.register ();
 	if (bufferHandle != 0) display.addWidget (bufferHandle, this);
-	int /*long*/ imContext = imContext ();
+	long /*int*/ imContext = imContext ();
 	if (imContext != 0) display.addWidget (imContext, this);
 }
 
@@ -1907,7 +1907,7 @@ void releaseWidget () {
 		* it around until ownership of the clipboard is lost.
 		*/
 		if ((style & SWT.MULTI) != 0) {
-			int /*long*/ clipboard = OS.gtk_clipboard_get (OS.GDK_NONE);
+			long /*int*/ clipboard = OS.gtk_clipboard_get (OS.GDK_NONE);
 			OS.gtk_text_buffer_paste_clipboard (bufferHandle, clipboard, null, OS.gtk_text_view_get_editable (handle));
 		}
 	}
@@ -2034,8 +2034,8 @@ public void selectAll () {
 		byte [] end =  new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, start, 0);
 		OS.gtk_text_buffer_get_end_iter (bufferHandle, end);
-		int /*long*/ insertMark = OS.gtk_text_buffer_get_insert (bufferHandle);
-		int /*long*/ selectionMark = OS.gtk_text_buffer_get_selection_bound (bufferHandle);
+		long /*int*/ insertMark = OS.gtk_text_buffer_get_insert (bufferHandle);
+		long /*int*/ selectionMark = OS.gtk_text_buffer_get_selection_bound (bufferHandle);
 		OS.gtk_text_buffer_move_mark (bufferHandle, selectionMark, start);
 		OS.gtk_text_buffer_move_mark (bufferHandle, insertMark, end);
 	}
@@ -2046,8 +2046,8 @@ void setBackgroundColor (GdkColor color) {
 	OS.gtk_widget_modify_base (handle, 0, color);
 }
 
-void setCursor (int /*long*/ cursor) {
-	int /*long*/ defaultCursor = 0;
+void setCursor (long /*int*/ cursor) {
+	long /*int*/ defaultCursor = 0;
 	if (cursor == 0) defaultCursor = OS.gdk_cursor_new (OS.GDK_XTERM);
 	super.setCursor (cursor != 0 ? cursor : defaultCursor);
 	if (cursor == 0) OS.gdk_cursor_unref (defaultCursor);
@@ -2126,7 +2126,7 @@ public void setEditable (boolean editable) {
 	}
 }
 
-void setFontDescription (int /*long*/ font) {
+void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	setTabStops (tabs);
 }
@@ -2205,19 +2205,19 @@ public void setSelection (int start) {
 	checkWidget ();
 	start = translateOffset (start);
 	if ((style & SWT.SINGLE) != 0) {
-		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+		long /*int*/ ptr = OS.gtk_entry_get_text (handle);
 		start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, start);
 		OS.gtk_editable_set_position (handle, start);
 	} else {
 		byte [] startIter =  new byte [ITER_SIZEOF];
 		byte [] endIter =  new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_bounds (bufferHandle, startIter, endIter);
-		int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
+		long /*int*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
 		start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, start);
 		OS.g_free (ptr);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, startIter, start);
 		OS.gtk_text_buffer_place_cursor (bufferHandle, startIter);
-		int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
+		long /*int*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 	}
 }
@@ -2252,7 +2252,7 @@ public void setSelection (int start, int end) {
 	start = translateOffset (start);
 	end = translateOffset (end);
 	if ((style & SWT.SINGLE) != 0) {
-		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+		long /*int*/ ptr = OS.gtk_entry_get_text (handle);
 		start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, start);
 		end = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, end);
 		OS.gtk_editable_set_position (handle, start);
@@ -2261,14 +2261,14 @@ public void setSelection (int start, int end) {
 		byte [] startIter =  new byte [ITER_SIZEOF];
 		byte [] endIter =  new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_bounds (bufferHandle, startIter, endIter);
-		int /*long*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
+		long /*int*/ ptr = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
 		start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, start);
 		end = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, end);
 		OS.g_free (ptr);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, startIter, start);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, endIter, end);
-		int /*long*/ insertMark = OS.gtk_text_buffer_get_insert (bufferHandle);
-		int /*long*/ selectionMark = OS.gtk_text_buffer_get_selection_bound (bufferHandle);
+		long /*int*/ insertMark = OS.gtk_text_buffer_get_insert (bufferHandle);
+		long /*int*/ selectionMark = OS.gtk_text_buffer_get_selection_bound (bufferHandle);
 		OS.gtk_text_buffer_move_mark (bufferHandle, selectionMark, startIter);
 		OS.gtk_text_buffer_move_mark (bufferHandle, insertMark, endIter);
 	}
@@ -2334,7 +2334,7 @@ public void setTabs (int tabs) {
 void setTabStops (int tabs) {
 	if ((style & SWT.SINGLE) != 0) return;
 	int tabWidth = getTabWidth (tabs);
-	int /*long*/ tabArray = OS.pango_tab_array_new (1, false);
+	long /*int*/ tabArray = OS.pango_tab_array_new (1, false);
 	OS.pango_tab_array_set_tab (tabArray, 0, OS.PANGO_TAB_LEFT, tabWidth);
 	OS.gtk_text_view_set_tabs (handle, tabArray);
 	OS.pango_tab_array_free (tabArray);
@@ -2431,7 +2431,7 @@ void setText (char [] text) {
 		OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEXT_BUFFER_INSERT_TEXT);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, position, 0);
 		OS.gtk_text_buffer_place_cursor (bufferHandle, position);
-		int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
+		long /*int*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 		OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 	}
 	sendEvent (SWT.Modify);
@@ -2511,7 +2511,7 @@ public void setTopIndex (int index) {
 public void showSelection () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
-	int /*long*/ mark = OS.gtk_text_buffer_get_selection_bound (bufferHandle);
+	long /*int*/ mark = OS.gtk_text_buffer_get_selection_bound (bufferHandle);
 	OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 	mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 	OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
@@ -2530,9 +2530,9 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 	switch (key) {
 		case OS.GDK_KP_Enter:
 		case OS.GDK_Return: {
-			int /*long*/ imContext =  imContext ();
+			long /*int*/ imContext =  imContext ();
 			if (imContext != 0) {
-				int /*long*/ [] preeditString = new int /*long*/ [1];
+				long /*int*/ [] preeditString = new long /*int*/ [1];
 				OS.gtk_im_context_get_preedit_string (imContext, preeditString, null, null);
 				if (preeditString [0] != 0) {
 					int length = OS.strlen (preeditString [0]);
@@ -2574,7 +2574,7 @@ String verifyText (String string, int start, int end) {
 	event.text = string;
 	event.start = start;
 	event.end = end;
-	int /*long*/ eventPtr = OS.gtk_get_current_event ();
+	long /*int*/ eventPtr = OS.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
@@ -2596,7 +2596,7 @@ String verifyText (String string, int start, int end) {
 	return event.text;
 }
 
-int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
+long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {
 	if (hooks (SWT.Segments) || filters (SWT.Segments) || segments != null) {
 		switch ((int)/*64*/user_data) {
 			case BACKSPACE:
@@ -2618,7 +2618,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
 	return super.windowProc (handle, user_data);
 }
 
-int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
+long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	if (hooks (SWT.Segments) || filters (SWT.Segments) || segments != null) {
 		switch ((int)/*64*/user_data) {
 			case DIRECTION_CHANGED: {
@@ -2631,7 +2631,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ us
 	return super.windowProc (handle, arg0, user_data);
 }
 
-int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ user_data) {
+long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ user_data) {
 	if (hooks (SWT.Segments) || filters (SWT.Segments) || segments != null) {
 		switch ((int)/*64*/user_data) {
 			case DELETE_FROM_CURSOR: {
@@ -2647,7 +2647,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ ar
 	return super.windowProc (handle, arg0, arg1, user_data);
 }
 
-int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ user_data) {
+long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ user_data) {
 	if (hooks (SWT.Segments) || filters (SWT.Segments) || segments != null) {
 		switch ((int)/*64*/user_data) {
 			case MOVE_CURSOR: {

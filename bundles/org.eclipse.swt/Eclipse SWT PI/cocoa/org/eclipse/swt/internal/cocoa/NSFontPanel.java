@@ -16,7 +16,7 @@ public NSFontPanel() {
 	super();
 }
 
-public NSFontPanel(int /*long*/ id) {
+public NSFontPanel(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,7 +25,7 @@ public NSFontPanel(id id) {
 }
 
 public NSFont panelConvertFont(NSFont fontObj) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_panelConvertFont_, fontObj != null ? fontObj.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_panelConvertFont_, fontObj != null ? fontObj.id : 0);
 	return result != 0 ? new NSFont(result) : null;
 }
 
@@ -34,15 +34,15 @@ public void setPanelFont(NSFont fontObj, boolean flag) {
 }
 
 public static NSFontPanel sharedFontPanel() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSFontPanel, OS.sel_sharedFontPanel);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSFontPanel, OS.sel_sharedFontPanel);
 	return result != 0 ? new NSFontPanel(result) : null;
 }
 
-public static float /*double*/ minFrameWidthWithTitle(NSString aTitle, int /*long*/ aStyle) {
-	return (float /*double*/)OS.objc_msgSend_fpret(OS.class_NSFontPanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
+public static double /*float*/ minFrameWidthWithTitle(NSString aTitle, long /*int*/ aStyle) {
+	return (double /*float*/)OS.objc_msgSend_fpret(OS.class_NSFontPanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
 }
 
-public static int /*long*/ windowNumberAtPoint(NSPoint point, int /*long*/ windowNumber) {
+public static long /*int*/ windowNumberAtPoint(NSPoint point, long /*int*/ windowNumber) {
 	return OS.objc_msgSend(OS.class_NSFontPanel, OS.sel_windowNumberAtPoint_belowWindowWithWindowNumber_, point, windowNumber);
 }
 

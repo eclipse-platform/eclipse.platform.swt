@@ -16,7 +16,7 @@ public NSNumberFormatter() {
 	super();
 }
 
-public NSNumberFormatter(int /*long*/ id) {
+public NSNumberFormatter(long /*int*/ id) {
 	super(id);
 }
 
@@ -33,25 +33,25 @@ public boolean alwaysShowsDecimalSeparator() {
 }
 
 public NSString decimalSeparator() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_decimalSeparator);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_decimalSeparator);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public NSNumber maximum() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_maximum);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_maximum);
 	return result != 0 ? new NSNumber(result) : null;
 }
 
-public int /*long*/ maximumFractionDigits() {
+public long /*int*/ maximumFractionDigits() {
 	return OS.objc_msgSend(this.id, OS.sel_maximumFractionDigits);
 }
 
-public int /*long*/ maximumIntegerDigits() {
+public long /*int*/ maximumIntegerDigits() {
 	return OS.objc_msgSend(this.id, OS.sel_maximumIntegerDigits);
 }
 
 public NSNumber minimum() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_minimum);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_minimum);
 	return result != 0 ? new NSNumber(result) : null;
 }
 
@@ -63,11 +63,11 @@ public void setMaximum(NSNumber number) {
 	OS.objc_msgSend(this.id, OS.sel_setMaximum_, number != null ? number.id : 0);
 }
 
-public void setMaximumFractionDigits(int /*long*/ number) {
+public void setMaximumFractionDigits(long /*int*/ number) {
 	OS.objc_msgSend(this.id, OS.sel_setMaximumFractionDigits_, number);
 }
 
-public void setMaximumIntegerDigits(int /*long*/ number) {
+public void setMaximumIntegerDigits(long /*int*/ number) {
 	OS.objc_msgSend(this.id, OS.sel_setMaximumIntegerDigits_, number);
 }
 
@@ -75,15 +75,15 @@ public void setMinimum(NSNumber number) {
 	OS.objc_msgSend(this.id, OS.sel_setMinimum_, number != null ? number.id : 0);
 }
 
-public void setMinimumFractionDigits(int /*long*/ number) {
+public void setMinimumFractionDigits(long /*int*/ number) {
 	OS.objc_msgSend(this.id, OS.sel_setMinimumFractionDigits_, number);
 }
 
-public void setMinimumIntegerDigits(int /*long*/ number) {
+public void setMinimumIntegerDigits(long /*int*/ number) {
 	OS.objc_msgSend(this.id, OS.sel_setMinimumIntegerDigits_, number);
 }
 
-public void setNumberStyle(int /*long*/ style) {
+public void setNumberStyle(long /*int*/ style) {
 	OS.objc_msgSend(this.id, OS.sel_setNumberStyle_, style);
 }
 

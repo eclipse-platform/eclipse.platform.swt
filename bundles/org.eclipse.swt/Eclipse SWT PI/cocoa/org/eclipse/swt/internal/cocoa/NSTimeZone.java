@@ -16,7 +16,7 @@ public NSTimeZone() {
 	super();
 }
 
-public NSTimeZone(int /*long*/ id) {
+public NSTimeZone(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,7 +25,7 @@ public NSTimeZone(id id) {
 }
 
 public static NSTimeZone defaultTimeZone() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSTimeZone, OS.sel_defaultTimeZone);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSTimeZone, OS.sel_defaultTimeZone);
 	return result != 0 ? new NSTimeZone(result) : null;
 }
 

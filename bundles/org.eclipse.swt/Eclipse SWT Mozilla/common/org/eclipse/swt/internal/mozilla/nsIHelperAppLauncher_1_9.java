@@ -37,31 +37,31 @@ public class nsIHelperAppLauncher_1_9 extends nsICancelable {
 	public static final nsID NS_IHELPERAPPLAUNCHER_IID =
 		new nsID(NS_IHELPERAPPLAUNCHER_IID_STR);
 
-	public nsIHelperAppLauncher_1_9(int /*long*/ address) {
+	public nsIHelperAppLauncher_1_9(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetMIMEInfo(int /*long*/[] aMIMEInfo) {
+	public int GetMIMEInfo(long /*int*/[] aMIMEInfo) {
 		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 1, getAddress(), aMIMEInfo);
 	}
 
-	public int GetSource(int /*long*/[] aSource) {
+	public int GetSource(long /*int*/[] aSource) {
 		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 2, getAddress(), aSource);
 	}
 
-	public int GetSuggestedFileName(int /*long*/ aSuggestedFileName) {
+	public int GetSuggestedFileName(long /*int*/ aSuggestedFileName) {
 		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 3, getAddress(), aSuggestedFileName);
 	}
 
-	public int SaveToDisk(int /*long*/ aNewFileLocation, int aRememberThisPreference) {
+	public int SaveToDisk(long /*int*/ aNewFileLocation, int aRememberThisPreference) {
 		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 4, getAddress(), aNewFileLocation, aRememberThisPreference);
 	}
 
-	public int LaunchWithApplication(int /*long*/ aApplication, int aRememberThisPreference) {
+	public int LaunchWithApplication(long /*int*/ aApplication, int aRememberThisPreference) {
 		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 5, getAddress(), aApplication, aRememberThisPreference);
 	}
 
-	public int SetWebProgressListener(int /*long*/ aWebProgressListener) {
+	public int SetWebProgressListener(long /*int*/ aWebProgressListener) {
 		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 6, getAddress(), aWebProgressListener);
 	}
 
@@ -69,7 +69,7 @@ public class nsIHelperAppLauncher_1_9 extends nsICancelable {
 		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 7, getAddress());
 	}
 
-	public int GetTargetFile(int /*long*/[] aTargetFile) {
+	public int GetTargetFile(long /*int*/[] aTargetFile) {
 		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 8, getAddress(), aTargetFile);
 	}
 
@@ -77,7 +77,7 @@ public class nsIHelperAppLauncher_1_9 extends nsICancelable {
 		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 9, getAddress(), aTargetFileIsExecutable);
 	}
 
-	public int GetTimeDownloadStarted(int /*long*/ aTimeDownloadStarted) {
+	public int GetTimeDownloadStarted(long /*int*/ aTimeDownloadStarted) {
 		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 10, getAddress(), aTimeDownloadStarted);
 	}
 }

@@ -38,7 +38,7 @@ import org.eclipse.swt.events.*;
 
 public class MenuItem extends Item {
 	Menu parent, menu;
-	int /*long*/ hBitmap;
+	long /*int*/ hBitmap;
 	int id, accelerator, userId;
 	/*
 	* Feature in Windows.  On Windows 98, it is necessary
@@ -335,7 +335,7 @@ public int getAccelerator () {
 		if (shell.menuBar != parent) {
 			return new Rectangle (0, 0, 0, 0);
 		}
-		int /*long*/ hwndShell = shell.handle;
+		long /*int*/ hwndShell = shell.handle;
 		MENUBARINFO info1 = new MENUBARINFO ();
 		info1.cbSize = MENUBARINFO.sizeof;
 		if (!OS.GetMenuBarInfo (hwndShell, OS.OBJID_MENU, 1, info1)) {
@@ -352,7 +352,7 @@ public int getAccelerator () {
 		int height = info2.bottom - info2.top;
 		return new Rectangle (x, y, width, height);
 	} else {
-		int /*long*/ hMenu = parent.handle;
+		long /*int*/ hMenu = parent.handle;
 		RECT rect1 = new RECT ();
 		if (!OS.GetMenuItemRect (0, hMenu, 0, rect1)) {
 			return new Rectangle (0, 0, 0, 0);
@@ -387,7 +387,7 @@ public int getAccelerator () {
 public boolean getEnabled () {
 	checkWidget ();
 	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
-		int /*long*/ hwndCB = parent.hwndCB;
+		long /*int*/ hwndCB = parent.hwndCB;
 		TBBUTTONINFO info = new TBBUTTONINFO ();
 		info.cbSize = TBBUTTONINFO.sizeof;
 		info.dwMask = OS.TBIF_STATE;
@@ -403,7 +403,7 @@ public boolean getEnabled () {
 	if ((style & SWT.SEPARATOR) != 0) {
 		return (state & DISABLED) == 0;
 	}
-	int /*long*/ hMenu = parent.handle;
+	long /*int*/ hMenu = parent.handle;
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_STATE;
@@ -493,7 +493,7 @@ public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
 	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) return false;
-	int /*long*/ hMenu = parent.handle;
+	long /*int*/ hMenu = parent.handle;
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_STATE;
@@ -681,7 +681,7 @@ public void setAccelerator (int accelerator) {
 public void setEnabled (boolean enabled) {
 	checkWidget ();
 	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
-		int /*long*/ hwndCB = parent.hwndCB;
+		long /*int*/ hwndCB = parent.hwndCB;
 		TBBUTTONINFO info = new TBBUTTONINFO ();
 		info.cbSize = TBBUTTONINFO.sizeof;
 		info.dwMask = OS.TBIF_STATE;
@@ -703,7 +703,7 @@ public void setEnabled (boolean enabled) {
 				state |= DISABLED;
 			}
 		}
-		int /*long*/ hMenu = parent.handle;
+		long /*int*/ hMenu = parent.handle;
 		if (OS.IsWinCE) {
 			int index = parent.indexOf (this);
 			if (index == -1) return;
@@ -792,7 +792,7 @@ public void setImage (Image image) {
 	super.setImage (image);
 	if (OS.IsWinCE) {
 		if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
-			int /*long*/ hwndCB = parent.hwndCB;
+			long /*int*/ hwndCB = parent.hwndCB;
 			TBBUTTONINFO info = new TBBUTTONINFO ();
 			info.cbSize = TBBUTTONINFO.sizeof;
 			info.dwMask = OS.TBIF_IMAGE;
@@ -815,7 +815,7 @@ public void setImage (Image image) {
 			info.hbmpItem = image != null ? OS.HBMMENU_CALLBACK : 0;
 		}
 	}
-	int /*long*/ hMenu = parent.handle;
+	long /*int*/ hMenu = parent.handle;
 	OS.SetMenuItemInfo (hMenu, id, false, info);
 	parent.redraw ();
 }
@@ -875,13 +875,13 @@ void setMenu (Menu menu, boolean dispose) {
 	/* Assign the new menu in the OS */		
 	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
 		if (OS.IsPPC) {
-			int /*long*/ hwndCB = parent.hwndCB;
-			int /*long*/ hMenu = menu == null ? 0 : menu.handle;
+			long /*int*/ hwndCB = parent.hwndCB;
+			long /*int*/ hMenu = menu == null ? 0 : menu.handle;
 			OS.SendMessage (hwndCB, OS.SHCMBM_SETSUBMENU, id, hMenu);
 		}
 		if (OS.IsSP) error (SWT.ERROR_CANNOT_SET_MENU);
 	} else {
-		int /*long*/ hMenu = parent.handle;
+		long /*int*/ hMenu = parent.handle;
 		MENUITEMINFO info = new MENUITEMINFO ();
 		info.cbSize = MENUITEMINFO.sizeof;
 		info.fMask = OS.MIIM_DATA;
@@ -892,9 +892,9 @@ void setMenu (Menu menu, boolean dispose) {
 		}
 		if (info.dwItemData != id) return;
 		int cch = 128;
-		int /*long*/ hHeap = OS.GetProcessHeap ();
+		long /*int*/ hHeap = OS.GetProcessHeap ();
 		int byteCount = cch * TCHAR.sizeof;
-		int /*long*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 		info.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_DATA;
 		/*
 		* Bug in Windows.  When GetMenuItemInfo() is used to get the text,
@@ -925,7 +925,7 @@ void setMenu (Menu menu, boolean dispose) {
 			* the item, SetMenuItemInfo() to set the string and EnableMenuItem()
 			* and CheckMenuItem() to set the state.
 			*/
-			int /*long*/ uIDNewItem = id;
+			long /*int*/ uIDNewItem = id;
 			int uFlags = OS.MF_BYPOSITION;
 			if (menu != null) {
 				uFlags |= OS.MF_POPUP;
@@ -978,7 +978,7 @@ boolean setRadioSelection (boolean value) {
 }
 
 void setOrientation (int orientation) {
-    int /*long*/ hMenu = parent.handle;
+    long /*int*/ hMenu = parent.handle;
     MENUITEMINFO info = new MENUITEMINFO ();
     info.cbSize = MENUITEMINFO.sizeof;
     info.fMask = OS.MIIM_FTYPE;
@@ -1004,7 +1004,7 @@ public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) return;
-	int /*long*/ hMenu = parent.handle;
+	long /*int*/ hMenu = parent.handle;
 	if (OS.IsWinCE) {
 		int index = parent.indexOf (this);
 		if (index == -1) return;
@@ -1082,8 +1082,8 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (text.equals (string)) return;
 	super.setText (string);
-	int /*long*/ hHeap = OS.GetProcessHeap ();
-	int /*long*/ pszText = 0;
+	long /*int*/ hHeap = OS.GetProcessHeap ();
+	long /*int*/ pszText = 0;
 	boolean success = false;
 	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
 		/*
@@ -1107,7 +1107,7 @@ public void setText (String string) {
 		int byteCount = buffer.length () * TCHAR.sizeof;
 		pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 		OS.MoveMemory (pszText, buffer, byteCount);	
-		int /*long*/ hwndCB = parent.hwndCB;
+		long /*int*/ hwndCB = parent.hwndCB;
 		TBBUTTONINFO info2 = new TBBUTTONINFO ();
 		info2.cbSize = TBBUTTONINFO.sizeof;
 		info2.dwMask = OS.TBIF_TEXT;
@@ -1116,7 +1116,7 @@ public void setText (String string) {
 	} else {
 		MENUITEMINFO info = new MENUITEMINFO ();
 		info.cbSize = MENUITEMINFO.sizeof;
-		int /*long*/ hMenu = parent.handle;
+		long /*int*/ hMenu = parent.handle;
 		
 		/* Use the character encoding for the default locale */
 		TCHAR buffer = new TCHAR (0, string, true);
@@ -1162,7 +1162,7 @@ int widgetStyle () {
 	return bits | OS.MFT_STRING;
 }
 
-LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 	if ((style & SWT.CHECK) != 0) {
 		setSelection (!getSelection ());
 	} else {
@@ -1178,7 +1178,7 @@ LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT wmDrawChild (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmDrawChild (long /*int*/ wParam, long /*int*/ lParam) {
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
 	if (image != null) {
@@ -1201,7 +1201,7 @@ LRESULT wmDrawChild (int /*long*/ wParam, int /*long*/ lParam) {
 	return null;
 }
 
-LRESULT wmMeasureChild (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmMeasureChild (long /*int*/ wParam, long /*int*/ lParam) {
 	MEASUREITEMSTRUCT struct = new MEASUREITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, MEASUREITEMSTRUCT.sizeof);
 	int width = 0, height = 0;
@@ -1223,7 +1223,7 @@ LRESULT wmMeasureChild (int /*long*/ wParam, int /*long*/ lParam) {
 		MENUINFO lpcmi = new MENUINFO ();
 		lpcmi.cbSize = MENUINFO.sizeof;
 		lpcmi.fMask = OS.MIM_STYLE;
-		int /*long*/ hMenu = parent.handle;
+		long /*int*/ hMenu = parent.handle;
 		OS.GetMenuInfo (hMenu, lpcmi);
 		if ((lpcmi.dwStyle & OS.MNS_CHECKORBMP) == 0) {
 			MenuItem [] items = parent.getItems ();

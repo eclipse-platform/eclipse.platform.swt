@@ -46,17 +46,17 @@ public class nsISupports {
 	public static final nsID NS_ISUPPORTS_IID =
 		new nsID(NS_ISUPPORTS_IID_STR);
 
-	int /*long*/ address;
+	long /*int*/ address;
 
-	public nsISupports(int /*long*/ address) {
+	public nsISupports(long /*int*/ address) {
 		this.address = address;
 	}
 
-	public int /*long*/ getAddress() {
+	public long /*int*/ getAddress() {
 		return this.address;
 	}
 
-	public int QueryInterface(nsID uuid, int /*long*/[] result) {
+	public int QueryInterface(nsID uuid, long /*int*/[] result) {
 		return XPCOM.VtblCall(FIRST_METHOD_ID, getAddress(), uuid, result);
 	}
 

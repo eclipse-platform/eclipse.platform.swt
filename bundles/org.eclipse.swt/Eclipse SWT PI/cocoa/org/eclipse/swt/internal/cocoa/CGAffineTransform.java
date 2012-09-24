@@ -11,11 +11,11 @@
 package org.eclipse.swt.internal.cocoa;
 
 public class CGAffineTransform {
-	public float /*double*/ a;
-	public float /*double*/ b;
-	public float /*double*/ c;
-	public float /*double*/ d;
-	public float /*double*/ tx;
-	public float /*double*/ ty;
+	public double /*float*/ a;
+	public double /*float*/ b;
+	public double /*float*/ c;
+	public double /*float*/ d;
+	public double /*float*/ tx;
+	public double /*float*/ ty;
 	public static int sizeof = OS.CGAffineTransform_sizeof();
 }

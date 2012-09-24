@@ -69,11 +69,11 @@ static int getDesktop(final Display display) {
 	int desktop = DESKTOP_UNKNOWN;
 
 	/* Get the list of properties on the root window. */
-	int /*long*/ xDisplay = display.xDisplay;
-	int /*long*/ rootWindow = OS.XDefaultRootWindow(xDisplay);
+	long /*int*/ xDisplay = display.xDisplay;
+	long /*int*/ rootWindow = OS.XDefaultRootWindow(xDisplay);
 	int[] numProp = new int[1];
-	int /*long*/ propList = OS.XListProperties(xDisplay, rootWindow, numProp);
-	int /*long*/ [] property = new int /*long*/ [numProp[0]];
+	long /*int*/ propList = OS.XListProperties(xDisplay, rootWindow, numProp);
+	long /*int*/ [] property = new long /*int*/ [numProp[0]];
 	if (propList != 0) {
 		OS.memmove(property, propList, (property.length * OS.PTR_SIZEOF));
 		OS.XFree(propList);
@@ -92,10 +92,10 @@ static int getDesktop(final Display display) {
 	 */
 	if (desktop == DESKTOP_UNKNOWN) {
 		byte[] gnomeName = Converter.wcsToMbcs(null, "_NET_SUPPORTING_WM_CHECK", true);
-		int /*long*/ gnome = OS.XInternAtom(xDisplay, gnomeName, true);
+		long /*int*/ gnome = OS.XInternAtom(xDisplay, gnomeName, true);
 		if (gnome != OS.None && gnome_init()) {
 			desktop = DESKTOP_GNOME;
-			int /*long*/ icon_theme = GNOME.gnome_icon_theme_new();
+			long /*int*/ icon_theme = GNOME.gnome_icon_theme_new();
 			display.setData(ICON_THEME_DATA, new Integer(icon_theme));
 			display.addListener(SWT.Dispose, new Listener() {
 				public void handleEvent(Event event) {
@@ -112,10 +112,10 @@ static int getDesktop(final Display display) {
 			});
 			/* Check for libgnomevfs-2 version 2.4 */
 			byte[] buffer = Converter.wcsToMbcs(null, "libgnomevfs-2.so.0", true);
-			int /*long*/ libgnomevfs = OS.dlopen(buffer, OS.RTLD_LAZY);
+			long /*int*/ libgnomevfs = OS.dlopen(buffer, OS.RTLD_LAZY);
 			if (libgnomevfs != 0) {
 				buffer = Converter.wcsToMbcs(null, "gnome_vfs_url_show", true);
-				int /*long*/ gnome_vfs_url_show = OS.dlsym(libgnomevfs, buffer);
+				long /*int*/ gnome_vfs_url_show = OS.dlsym(libgnomevfs, buffer);
 				if (gnome_vfs_url_show != 0) {
 					desktop = DESKTOP_GNOME_24;
 				}
@@ -131,7 +131,7 @@ static int getDesktop(final Display display) {
 	*/
 	if (desktop == DESKTOP_UNKNOWN) {
 		byte[] cdeName = Converter.wcsToMbcs(null, "_DT_SM_PREFERENCES", true);
-		int /*long*/ cde = OS.XInternAtom(xDisplay, cdeName, true);
+		long /*int*/ cde = OS.XInternAtom(xDisplay, cdeName, true);
 		for (int index = 0; desktop == DESKTOP_UNKNOWN && index < property.length; index++) {
 			if (property[index] == OS.None) continue; /* do not match atoms that do not exist */
 			if (property[index] == cde && cde_init(display)) desktop = DESKTOP_CDE;
@@ -185,7 +185,7 @@ static String cde_getAttribute(String dataType, String attrName) {
 	byte[] dataTypeBuf = Converter.wcsToMbcs(null, dataType, true);
 	byte[] attrNameBuf = Converter.wcsToMbcs(null, attrName, true);
 	byte[] optNameBuf = null;
-	int /*long*/ attrValue = CDE.DtDtsDataTypeToAttributeValue(dataTypeBuf, attrNameBuf, optNameBuf);
+	long /*int*/ attrValue = CDE.DtDtsDataTypeToAttributeValue(dataTypeBuf, attrNameBuf, optNameBuf);
 	if (attrValue == 0) return null;
 	int length = OS.strlen(attrValue);
 	byte[] attrValueBuf = new byte[length];
@@ -198,11 +198,11 @@ static String cde_getAttribute(String dataType, String attrName) {
 static Hashtable cde_getDataTypeInfo() {
 	Hashtable dataTypeInfo = new Hashtable();
 	int index;
-	int /*long*/ dataTypeList = CDE.DtDtsDataTypeNames();
+	long /*int*/ dataTypeList = CDE.DtDtsDataTypeNames();
 	if (dataTypeList != 0) {
 		/* For each data type name in the list */
 		index = 0; 
-		int /*long*/ [] dataType = new int /*long*/ [1];
+		long /*int*/ [] dataType = new long /*int*/ [1];
 		OS.memmove(dataType, dataTypeList + (index++ * 4), 4);
 		while (dataType[0] != 0) {
 			int length = OS.strlen(dataType[0]);
@@ -382,10 +382,10 @@ static String[] parseCommand(String cmd) {
  */
 boolean gnome_24_execute(String fileName) {
 	byte[] mimeTypeBuffer = Converter.wcsToMbcs(null, name, true);
-	int /*long*/ ptr = GNOME.gnome_vfs_mime_get_default_application(mimeTypeBuffer);
+	long /*int*/ ptr = GNOME.gnome_vfs_mime_get_default_application(mimeTypeBuffer);
 	byte[] fileNameBuffer = Converter.wcsToMbcs(null, fileName, true);
-	int /*long*/ uri = GNOME.gnome_vfs_make_uri_from_input_with_dirs(fileNameBuffer, GNOME.GNOME_VFS_MAKE_URI_DIR_CURRENT);
-	int /*long*/ list = GNOME.g_list_append(0, uri);
+	long /*int*/ uri = GNOME.gnome_vfs_make_uri_from_input_with_dirs(fileNameBuffer, GNOME.GNOME_VFS_MAKE_URI_DIR_CURRENT);
+	long /*int*/ list = GNOME.g_list_append(0, uri);
 	int result = GNOME.gnome_vfs_mime_application_launch(ptr, list);
 	GNOME.gnome_vfs_mime_application_free(ptr);
 	GNOME.g_free(uri);
@@ -398,7 +398,7 @@ boolean gnome_24_execute(String fileName) {
  */
 static boolean gnome_24_launch(String fileName) {
 	byte[] fileNameBuffer = Converter.wcsToMbcs(null, fileName, true);
-	int /*long*/ uri = GNOME.gnome_vfs_make_uri_from_input_with_dirs(fileNameBuffer, GNOME.GNOME_VFS_MAKE_URI_DIR_CURRENT);
+	long /*int*/ uri = GNOME.gnome_vfs_make_uri_from_input_with_dirs(fileNameBuffer, GNOME.GNOME_VFS_MAKE_URI_DIR_CURRENT);
 	int result = GNOME.gnome_vfs_url_show(uri);
 	GNOME.g_free(uri);
 	return (result == GNOME.GNOME_VFS_OK);
@@ -411,7 +411,7 @@ boolean gnome_execute(String fileName) {
 	if (gnomeExpectUri) {
 		/* Convert the given path into a URL */
 		byte[] fileNameBuffer = Converter.wcsToMbcs(null, fileName, true);
-		int /*long*/ uri = GNOME.gnome_vfs_make_uri_from_input(fileNameBuffer);
+		long /*int*/ uri = GNOME.gnome_vfs_make_uri_from_input(fileNameBuffer);
 		if (uri != 0) {
 			int length = OS.strlen(uri);
 			if (length > 0) {
@@ -475,24 +475,24 @@ ImageData gnome_getImageData() {
  */
 static Hashtable gnome_getMimeInfo() {
 	Hashtable mimeInfo = new Hashtable();
-	int /*long*/[] mimeData = new int /*long*/[1];
-	int /*long*/[] extensionData = new int /*long*/[1];
-	int /*long*/ mimeList = GNOME.gnome_vfs_get_registered_mime_types();
-	int /*long*/ mimeElement = mimeList;
+	long /*int*/[] mimeData = new long /*int*/[1];
+	long /*int*/[] extensionData = new long /*int*/[1];
+	long /*int*/ mimeList = GNOME.gnome_vfs_get_registered_mime_types();
+	long /*int*/ mimeElement = mimeList;
 	while (mimeElement != 0) {
 		OS.memmove (mimeData, mimeElement, OS.PTR_SIZEOF);
-		int /*long*/ mimePtr = mimeData[0];
+		long /*int*/ mimePtr = mimeData[0];
 		int mimeLength = OS.strlen(mimePtr);
 		byte[] mimeTypeBuffer = new byte[mimeLength];
 		OS.memmove(mimeTypeBuffer, mimePtr, mimeLength);
 		String mimeType = new String(Converter.mbcsToWcs(null, mimeTypeBuffer));
-		int /*long*/ extensionList = GNOME.gnome_vfs_mime_get_extensions_list(mimePtr);
+		long /*int*/ extensionList = GNOME.gnome_vfs_mime_get_extensions_list(mimePtr);
 		if (extensionList != 0) {
 			Vector extensions = new Vector();
-			int /*long*/ extensionElement = extensionList;
+			long /*int*/ extensionElement = extensionList;
 			while (extensionElement != 0) {
 				OS.memmove(extensionData, extensionElement, OS.PTR_SIZEOF);
-				int /*long*/ extensionPtr = extensionData[0];
+				long /*int*/ extensionPtr = extensionData[0];
 				int extensionLength = OS.strlen(extensionPtr);
 				byte[] extensionBuffer = new byte[extensionLength];
 				OS.memmove(extensionBuffer, extensionPtr, extensionLength);
@@ -514,7 +514,7 @@ static String gnome_getMimeType(String extension) {
 	String mimeType = null;
 	String fileName = "swt" + extension;
 	byte[] extensionBuffer = Converter.wcsToMbcs(null, fileName, true);
-	int /*long*/ typeName = GNOME.gnome_vfs_mime_type_from_name(extensionBuffer);
+	long /*int*/ typeName = GNOME.gnome_vfs_mime_type_from_name(extensionBuffer);
 	if (typeName != 0) {
 		int length = OS.strlen(typeName);
 		if (length > 0) {
@@ -529,7 +529,7 @@ static String gnome_getMimeType(String extension) {
 static Program gnome_getProgram(Display display, String mimeType) {
 	Program program = null;
 	byte[] mimeTypeBuffer = Converter.wcsToMbcs(null, mimeType, true);
-	int /*long*/ ptr = GNOME.gnome_vfs_mime_get_default_application(mimeTypeBuffer);
+	long /*int*/ ptr = GNOME.gnome_vfs_mime_get_default_application(mimeTypeBuffer);
 	if (ptr != 0) {
 		program = new Program();
 		program.display = display;
@@ -547,9 +547,9 @@ static Program gnome_getProgram(Display display, String mimeType) {
 		OS.memmove(buffer, application.id, length);
 		Integer gnomeIconTheme = (Integer)display.getData(ICON_THEME_DATA);
 		int iconThemeValue = gnomeIconTheme.intValue();
-		int /*long*/ icon_name = GNOME.gnome_icon_lookup(iconThemeValue, 0, null, buffer, 0, mimeTypeBuffer, 
+		long /*int*/ icon_name = GNOME.gnome_icon_lookup(iconThemeValue, 0, null, buffer, 0, mimeTypeBuffer, 
 				GNOME.GNOME_ICON_LOOKUP_FLAGS_NONE, null);
-		int /*long*/ path = 0;
+		long /*int*/ path = 0;
 		if (icon_name != 0) path = GNOME.gnome_icon_theme_lookup_icon(iconThemeValue, icon_name, PREFERRED_ICON_SIZE, null, null);
 		if (path != 0) {
 			length = OS.strlen(path);
@@ -580,8 +580,8 @@ static boolean gnome_isExecutable(String fileName) {
 	if (!GNOME.gnome_vfs_is_executable_command_string(fileNameBuffer)) return false;
 	
 	/* check if the mime type is executable */
-	int /*long*/ uri = GNOME.gnome_vfs_make_uri_from_input(fileNameBuffer);
-	int /*long*/ mimeType = GNOME.gnome_vfs_get_mime_type(uri);
+	long /*int*/ uri = GNOME.gnome_vfs_make_uri_from_input(fileNameBuffer);
+	long /*int*/ mimeType = GNOME.gnome_vfs_get_mime_type(uri);
 	GNOME.g_free(uri);
 	
 	byte[] exeType = Converter.wcsToMbcs (null, "application/x-executable", true); //$NON-NLS-1$

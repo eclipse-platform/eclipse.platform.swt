@@ -15,7 +15,7 @@ import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebDownload extends IUnknown {
 
-public IWebDownload (int /*long*/ address) {
+public IWebDownload (long /*int*/ address) {
 	super (address);
 }
 
@@ -27,7 +27,7 @@ public int setDeletesFileUponFailure (int deletesFileUponFailure) {
 	return COM.VtblCall (12, getAddress (), deletesFileUponFailure);
 }
 
-public int setDestination (int /*long*/ path, int allowOverwrite) {
+public int setDestination (long /*int*/ path, int allowOverwrite) {
 	return COM.VtblCall (13, getAddress(), path, allowOverwrite);
 }
 

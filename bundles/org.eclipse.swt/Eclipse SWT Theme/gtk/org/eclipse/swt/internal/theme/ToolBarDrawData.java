@@ -21,9 +21,9 @@ public ToolBarDrawData() {
 }
 
 void draw(Theme theme, GC gc, Rectangle bounds) {
-	int /*long*/ toolbarHandle = theme.toolbarHandle;
-	int /*long*/ gtkStyle = OS.gtk_widget_get_style (toolbarHandle);
-	int /*long*/ drawable = gc.getGCData().drawable;
+	long /*int*/ toolbarHandle = theme.toolbarHandle;
+	long /*int*/ gtkStyle = OS.gtk_widget_get_style (toolbarHandle);
+	long /*int*/ drawable = gc.getGCData().drawable;
 	theme.transferClipping(gc, gtkStyle);
 	int x = bounds.x, y = bounds.y, width = bounds.width, height = bounds.height;
 	byte[] detail = Converter.wcsToMbcs(null, "toolbar", true);

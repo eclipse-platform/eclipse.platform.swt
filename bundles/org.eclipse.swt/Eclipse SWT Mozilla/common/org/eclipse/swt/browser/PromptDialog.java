@@ -141,7 +141,7 @@ class PromptDialog extends Dialog {
 		viewCertButton.setText(Compatibility.getMessage("SWT_ViewCertificate")); //$NON-NLS-1$
 		viewCertButton.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
-				int /*long*/[] result = new int /*long*/[1];
+				long /*int*/[] result = new long /*int*/[1];
 				int rc = XPCOM.NS_GetServiceManager (result);
 				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 				if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);

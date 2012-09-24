@@ -190,7 +190,7 @@ public int open () {
 	* anyway and not rely on MB_MODAL to work by making the
 	* parent be temporarily modal. 
 	*/
-	int /*long*/ hwndOwner = parent != null ? parent.handle : 0;
+	long /*int*/ hwndOwner = parent != null ? parent.handle : 0;
 	Dialog oldModal = null;
 	Display display = null;
 	if ((bits & OS.MB_TASKMODAL) != 0) {

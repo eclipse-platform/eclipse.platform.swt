@@ -12,10 +12,10 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IConnectionPoint extends IUnknown
 {
-public IConnectionPoint(int /*long*/ address) {
+public IConnectionPoint(long /*int*/ address) {
 	super(address);
 }
-public int Advise(int /*long*/ pUnk, int[] pdwCookie) {
+public int Advise(long /*int*/ pUnk, int[] pdwCookie) {
 	return COM.VtblCall(5, address, pUnk, pdwCookie);
 }
 public int Unadvise(int dwCookie) {

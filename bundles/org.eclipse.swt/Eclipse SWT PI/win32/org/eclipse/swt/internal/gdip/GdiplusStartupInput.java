@@ -14,7 +14,7 @@ package org.eclipse.swt.internal.gdip;
 public class GdiplusStartupInput {
 	public int GdiplusVersion;
 	/** @field cast=(DebugEventProc) */
-	public int /*long*/ DebugEventCallback;
+	public long /*int*/ DebugEventCallback;
 	/** @field cast=(BOOL) */
 	public boolean SuppressBackgroundThread;
 	/** @field cast=(BOOL) */

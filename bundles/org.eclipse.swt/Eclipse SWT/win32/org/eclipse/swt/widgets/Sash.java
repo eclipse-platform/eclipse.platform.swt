@@ -110,7 +110,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
@@ -140,12 +140,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void drawBand (int x, int y, int width, int height) {
 	if ((style & SWT.SMOOTH) != 0) return;
-	int /*long*/ hwndTrack = parent.handle;
+	long /*int*/ hwndTrack = parent.handle;
 	byte [] bits = {-86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0};
-	int /*long*/ stippleBitmap = OS.CreateBitmap (8, 8, 1, 1, bits);
-	int /*long*/ stippleBrush = OS.CreatePatternBrush (stippleBitmap);
-	int /*long*/ hDC = OS.GetDCEx (hwndTrack, 0, OS.DCX_CACHE);
-	int /*long*/ oldBrush = OS.SelectObject (hDC, stippleBrush);
+	long /*int*/ stippleBitmap = OS.CreateBitmap (8, 8, 1, 1, bits);
+	long /*int*/ stippleBrush = OS.CreatePatternBrush (stippleBitmap);
+	long /*int*/ hDC = OS.GetDCEx (hwndTrack, 0, OS.DCX_CACHE);
+	long /*int*/ oldBrush = OS.SelectObject (hDC, stippleBrush);
 	OS.PatBlt (hDC, x, y, width, height, OS.PATINVERT);
 	OS.SelectObject (hDC, oldBrush);
 	OS.ReleaseDC (hwndTrack, hDC);
@@ -182,17 +182,17 @@ TCHAR windowClass () {
 	return display.windowClass;
 }
 
-int /*long*/ windowProc () {
+long /*int*/ windowProc () {
 	return display.windowProc;
 }
 
-LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	super.WM_ERASEBKGND (wParam, lParam);
 	drawBackground (wParam);
 	return LRESULT.ONE;
 }
 
-LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
 	switch ((int)/*64*/wParam) {
@@ -216,7 +216,7 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 			OS.GetWindowRect (handle, rect);
 			int width = rect.right - rect.left;
 			int height = rect.bottom - rect.top;
-			int /*long*/ hwndTrack = parent.handle;
+			long /*int*/ hwndTrack = parent.handle;
 			RECT clientRect = new RECT ();
 			OS.GetClientRect (hwndTrack, clientRect);
 			int clientWidth = clientRect.right - clientRect.left;
@@ -254,16 +254,16 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	return new LRESULT (OS.DLGC_STATIC);
 }
 
-LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 
 	/* Compute the banding rectangle */
-	int /*long*/ hwndTrack = parent.handle;
+	long /*int*/ hwndTrack = parent.handle;
 	POINT pt = new POINT ();
 	OS.POINTSTOPOINT (pt, lParam);
 	RECT rect = new RECT ();
@@ -311,7 +311,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 
@@ -341,7 +341,7 @@ LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (result != null) return result;
 	if (!dragging || (wParam & OS.MK_LBUTTON) == 0) return result;
@@ -349,7 +349,7 @@ LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
 	/* Compute the banding rectangle */
 	POINT pt = new POINT ();
 	OS.POINTSTOPOINT (pt, lParam);
-	int /*long*/ hwndTrack = parent.handle;
+	long /*int*/ hwndTrack = parent.handle;
 	OS.MapWindowPoints (handle, hwndTrack, pt, 1);
 	RECT rect = new RECT (), clientRect = new RECT ();
 	OS.GetWindowRect (handle, rect);
@@ -396,12 +396,12 @@ LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_SETCURSOR (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_SETCURSOR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
 	if (result != null) return result;
 	int hitTest = (short) OS.LOWORD (lParam);
  	if (hitTest == OS.HTCLIENT) {
-	 	int /*long*/ hCursor = 0;
+	 	long /*int*/ hCursor = 0;
 	 	if ((style & SWT.HORIZONTAL) != 0) {
 			hCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
 	 	} else {

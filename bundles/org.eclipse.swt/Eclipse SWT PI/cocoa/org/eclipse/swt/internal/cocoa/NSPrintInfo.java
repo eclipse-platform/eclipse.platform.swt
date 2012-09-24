@@ -16,7 +16,7 @@ public NSPrintInfo() {
 	super();
 }
 
-public NSPrintInfo(int /*long*/ id) {
+public NSPrintInfo(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,21 +24,21 @@ public NSPrintInfo(id id) {
 	super(id);
 }
 
-public int /*long*/ PMPrintSession() {
+public long /*int*/ PMPrintSession() {
 	return OS.objc_msgSend(this.id, OS.sel_PMPrintSession);
 }
 
-public int /*long*/ PMPrintSettings() {
+public long /*int*/ PMPrintSettings() {
 	return OS.objc_msgSend(this.id, OS.sel_PMPrintSettings);
 }
 
 public static NSPrinter defaultPrinter() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSPrintInfo, OS.sel_defaultPrinter);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSPrintInfo, OS.sel_defaultPrinter);
 	return result != 0 ? new NSPrinter(result) : null;
 }
 
 public NSMutableDictionary dictionary() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_dictionary);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_dictionary);
 	return result != 0 ? new NSMutableDictionary(result) : null;
 }
 
@@ -49,12 +49,12 @@ public NSRect imageablePageBounds() {
 }
 
 public NSPrintInfo initWithDictionary(NSDictionary attributes) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithDictionary_, attributes != null ? attributes.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithDictionary_, attributes != null ? attributes.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSPrintInfo(result) : null);
 }
 
 public NSString jobDisposition() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_jobDisposition);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_jobDisposition);
 	return result != 0 ? new NSString(result) : null;
 }
 
@@ -65,12 +65,12 @@ public NSSize paperSize() {
 }
 
 public NSMutableDictionary printSettings() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_printSettings);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_printSettings);
 	return result != 0 ? new NSMutableDictionary(result) : null;
 }
 
 public NSPrinter printer() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_printer);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_printer);
 	return result != 0 ? new NSPrinter(result) : null;
 }
 
@@ -87,7 +87,7 @@ public void setUpPrintOperationDefaultValues() {
 }
 
 public static NSPrintInfo sharedPrintInfo() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSPrintInfo, OS.sel_sharedPrintInfo);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSPrintInfo, OS.sel_sharedPrintInfo);
 	return result != 0 ? new NSPrintInfo(result) : null;
 }
 

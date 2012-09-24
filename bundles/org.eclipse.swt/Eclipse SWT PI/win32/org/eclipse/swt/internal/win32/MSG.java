@@ -12,10 +12,10 @@ package org.eclipse.swt.internal.win32;
 
 public class MSG {
 	/** @field cast=(HWND) */
-	public int /*long*/ hwnd;
+	public long /*int*/ hwnd;
 	public int message; 
-	public int /*long*/ wParam; 
-	public int /*long*/ lParam; 
+	public long /*int*/ wParam; 
+	public long /*int*/ lParam; 
 	public int time; 
 //	POINT pt;
 	/** @field accessor=pt.x */

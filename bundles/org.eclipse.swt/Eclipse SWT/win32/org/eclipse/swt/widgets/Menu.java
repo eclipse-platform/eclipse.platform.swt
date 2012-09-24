@@ -53,10 +53,10 @@ public class Menu extends Widget {
 	 * 
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public int /*long*/ handle;
+	public long /*int*/ handle;
 	
 	int x, y; 
-	int /*long*/ hBrush, hwndCB;
+	long /*int*/ hBrush, hwndCB;
 	int id0, id1;
 	int foreground = -1, background = -1;
 	Image backgroundImage;	
@@ -201,7 +201,7 @@ public Menu (MenuItem parentItem) {
 	this (checkNull (parentItem).parent);
 }
 
-Menu (Decorations parent, int style, int /*long*/ handle) {
+Menu (Decorations parent, int style, long /*int*/ handle) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	this.handle = handle;
@@ -225,7 +225,7 @@ Menu (Decorations parent, int style, int /*long*/ handle) {
 
 void _setVisible (boolean visible) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-	int /*long*/ hwndParent = parent.handle;
+	long /*int*/ hwndParent = parent.handle;
 	if (visible) {
 		int flags = OS.TPM_LEFTBUTTON;
 		if (OS.GetKeyState (OS.VK_LBUTTON) >= 0) flags |= OS.TPM_RIGHTBUTTON;
@@ -266,7 +266,7 @@ void _setVisible (boolean visible) {
 	* is not returned to the focus control.  This causes confusion for AT users.
 	* The fix is to explicitly set the accessibility focus back to the focus control.
 	*/
-	int /*long*/ hFocus = OS.GetFocus();
+	long /*int*/ hFocus = OS.GetFocus();
 	if (hFocus != 0) {
 		OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, hFocus, OS.OBJID_CLIENT, 0);
 	}
@@ -348,7 +348,7 @@ void createHandle () {
 	if (handle != 0) return;
 	if ((style & SWT.BAR) != 0) {
 		if (OS.IsPPC) {
-			int /*long*/ hwndShell = parent.handle;
+			long /*int*/ hwndShell = parent.handle;
 			SHMENUBARINFO mbi = new SHMENUBARINFO ();
 			mbi.cbSize = SHMENUBARINFO.sizeof;
 			mbi.hwndParent = hwndShell;
@@ -405,7 +405,7 @@ void createHandle () {
 			
 			/* Set first item */
 			if (nToolBarId == ID_SPMM || nToolBarId == ID_SPMB) {
-				int /*long*/ hMenu = OS.SendMessage (hwndCB, OS.SHCMBM_GETSUBMENU, 0, ID_SPSOFTKEY0);
+				long /*int*/ hMenu = OS.SendMessage (hwndCB, OS.SHCMBM_GETSUBMENU, 0, ID_SPSOFTKEY0);
 				/* Remove the item from the resource file */
 				OS.RemoveMenu (hMenu, 0, OS.MF_BYPOSITION);
 				Menu menu = new Menu (parent, SWT.DROP_DOWN, hMenu);
@@ -418,7 +418,7 @@ void createHandle () {
 
 			/* Set second item */
 			if (nToolBarId == ID_SPMM || nToolBarId == ID_SPBM) {
-				int /*long*/ hMenu = OS.SendMessage (hwndCB, OS.SHCMBM_GETSUBMENU, 0, ID_SPSOFTKEY1);
+				long /*int*/ hMenu = OS.SendMessage (hwndCB, OS.SHCMBM_GETSUBMENU, 0, ID_SPSOFTKEY1);
 				OS.RemoveMenu (hMenu, 0, OS.MF_BYPOSITION);
 				Menu menu = new Menu (parent, SWT.DROP_DOWN, hMenu);
 				item = new MenuItem (this, menu, SWT.CASCADE, 1);
@@ -434,14 +434,14 @@ void createHandle () {
 			* a result, Shell on WinCE SP must use the class Dialog.
 			*/
 			int dwMask = OS.SHMBOF_NODEFAULT | OS.SHMBOF_NOTIFY;
-			int /*long*/ lParam = OS.MAKELPARAM (dwMask, dwMask);
+			long /*int*/ lParam = OS.MAKELPARAM (dwMask, dwMask);
 			OS.SendMessage (hwndCB, OS.SHCMBM_OVERRIDEKEY, OS.VK_ESCAPE, lParam);
 			return;
 		}
 		handle = OS.CreateMenu ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		if (OS.IsHPC) {
-			int /*long*/ hwndShell = parent.handle;
+			long /*int*/ hwndShell = parent.handle;
 			hwndCB = OS.CommandBar_Create (OS.GetModuleHandle (null), hwndShell, 1);
 			if (hwndCB == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.CommandBar_Show (hwndCB, false);
@@ -505,10 +505,10 @@ void createItem (MenuItem item, int index) {
 			* becomes unexpectedly disabled.  The fix is to insert a
 			* space.
 			*/
-			int /*long*/ hHeap = OS.GetProcessHeap ();
+			long /*int*/ hHeap = OS.GetProcessHeap ();
 			TCHAR buffer = new TCHAR (0, " ", true);
 			int byteCount = buffer.length () * TCHAR.sizeof;
-			int /*long*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+			long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 			OS.MoveMemory (pszText, buffer, byteCount);	
 			MENUITEMINFO info = new MENUITEMINFO ();
 			info.cbSize = MENUITEMINFO.sizeof;
@@ -605,7 +605,7 @@ void destroyItem (MenuItem item) {
 
 void destroyWidget () {
 	MenuItem cascade = this.cascade;
-	int /*long*/ hMenu = handle, hCB = hwndCB;
+	long /*int*/ hMenu = handle, hCB = hwndCB;
 	releaseHandle ();
 	if (OS.IsWinCE && hCB != 0) {
 		OS.CommandBar_Destroy (hCB);
@@ -689,7 +689,7 @@ void fixMenus (Decorations newParent) {
 		if (parent.menuBar != this) {
 			return new Rectangle (0, 0, 0, 0);
 		}
-		int /*long*/ hwndShell = parent.handle;
+		long /*int*/ hwndShell = parent.handle;
 		MENUBARINFO info = new MENUBARINFO ();
 		info.cbSize = MENUBARINFO.sizeof;
 		if (OS.GetMenuBarInfo (hwndShell, OS.OBJID_MENU, 0, info)) {
@@ -797,7 +797,7 @@ public MenuItem getItem (int index) {
 	if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
 		if (OS.IsPPC) {
 			TBBUTTON lpButton = new TBBUTTON ();
-			int /*long*/ result = OS.SendMessage (hwndCB, OS.TB_GETBUTTON, index, lpButton);
+			long /*int*/ result = OS.SendMessage (hwndCB, OS.TB_GETBUTTON, index, lpButton);
 			if (result == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 			id = lpButton.idCommand;
 		}
@@ -892,7 +892,7 @@ public MenuItem [] getItems () {
 	return result;
 }
 
-int GetMenuItemCount (int /*long*/ handle) {
+int GetMenuItemCount (long /*int*/ handle) {
 	if (OS.IsWinCE) {
 		if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
 			return OS.IsSP ? 2 : (int)/*64*/OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
@@ -1050,7 +1050,7 @@ int imageIndex (Image image) {
 		Rectangle bounds = image.getBounds ();
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
 		int index = imageList.add (image);
-		int /*long*/ hImageList = imageList.getHandle ();
+		long /*int*/ hImageList = imageList.getHandle ();
 		OS.SendMessage (hwndCB, OS.TB_SETIMAGELIST, 0, hImageList);
 		return index;
 	}

@@ -121,7 +121,7 @@ void destroy() {
 	 * If the reference count reaches 0, the slot may
 	 * be reused when another color is allocated.
 	 */
-	int /*long*/ hPal = device.hPalette;
+	long /*int*/ hPal = device.hPalette;
 	if (hPal != 0) {
 		int index = OS.GetNearestPaletteIndex(hPal, handle);
 		int[] colorRefCount = device.colorRefCount;
@@ -241,7 +241,7 @@ void init(int red, int green, int blue) {
 	handle = (red & 0xFF) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 16);
 	
 	/* If this is not a palette-based device, return */
-	int /*long*/ hPal = device.hPalette;
+	long /*int*/ hPal = device.hPalette;
 	if (hPal == 0) return;
 	
 	int[] colorRefCount = device.colorRefCount;

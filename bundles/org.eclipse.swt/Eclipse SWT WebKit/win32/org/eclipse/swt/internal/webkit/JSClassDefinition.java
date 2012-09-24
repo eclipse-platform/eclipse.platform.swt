@@ -17,35 +17,35 @@ public class JSClassDefinition {
     /** @field cast=(JSClassAttributes) */
     public int attributes;
     /** @field cast=(const char*) */
-    public int /*long*/ className;
+    public long /*int*/ className;
     /** @field cast=(JSClassRef) */
-    public int /*long*/ parentClass;
+    public long /*int*/ parentClass;
     /** @field cast=(const JSStaticValue*) */
-    public int /*long*/ staticValues;
+    public long /*int*/ staticValues;
     /** @field cast=(const JSStaticFunction*) */
-    public int /*long*/ staticFunctions;
+    public long /*int*/ staticFunctions;
     /** @field cast=(JSObjectInitializeCallback) */
-    public int /*long*/ initialize;
+    public long /*int*/ initialize;
     /** @field cast=(JSObjectFinalizeCallback) */
-    public int /*long*/ finalize;
+    public long /*int*/ finalize;
     /** @field cast=(JSObjectHasPropertyCallback) */
-    public int /*long*/ hasProperty;
+    public long /*int*/ hasProperty;
     /** @field cast=(JSObjectGetPropertyCallback) */
-    public int /*long*/ getProperty;
+    public long /*int*/ getProperty;
     /** @field cast=(JSObjectSetPropertyCallback) */
-    public int /*long*/ setProperty;
+    public long /*int*/ setProperty;
     /** @field cast=(JSObjectDeletePropertyCallback) */
-    public int /*long*/ deleteProperty;
+    public long /*int*/ deleteProperty;
     /** @field cast=(JSObjectGetPropertyNamesCallback) */
-    public int /*long*/ getPropertyNames;
+    public long /*int*/ getPropertyNames;
     /** @field cast=(JSObjectCallAsFunctionCallback) */
-    public int /*long*/ callAsFunction;
+    public long /*int*/ callAsFunction;
     /** @field cast=(JSObjectCallAsConstructorCallback) */
-    public int /*long*/ callAsConstructor;
+    public long /*int*/ callAsConstructor;
     /** @field cast=(JSObjectHasInstanceCallback) */
-    public int /*long*/ hasInstance;
+    public long /*int*/ hasInstance;
     /** @field cast=(JSObjectConvertToTypeCallback) */
-    public int /*long*/ convertToType;
+    public long /*int*/ convertToType;
 
     public static final int sizeof = WebKit_win32.JSClassDefinition_sizeof();
 }

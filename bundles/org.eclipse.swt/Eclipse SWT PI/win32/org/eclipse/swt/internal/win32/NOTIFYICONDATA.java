@@ -13,12 +13,12 @@ package org.eclipse.swt.internal.win32;
 public abstract class NOTIFYICONDATA {
 	public int cbSize;
 	/** @field cast=(HWND) */
-	public int /*long*/ hWnd;
+	public long /*int*/ hWnd;
 	public int uID;
 	public int uFlags;
 	public int uCallbackMessage;
 	/** @field cast=(HICON) */
-	public int /*long*/ hIcon;
+	public long /*int*/ hIcon;
 	/** @field flags=no_wince */
 	public int dwState;
 	/** @field flags=no_wince */

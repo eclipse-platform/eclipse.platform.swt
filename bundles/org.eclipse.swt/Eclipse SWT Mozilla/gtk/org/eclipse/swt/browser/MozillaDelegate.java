@@ -22,11 +22,11 @@ import org.eclipse.swt.widgets.*;
 class MozillaDelegate {
 	Browser browser;
 	Shell eventShell;
-	int /*long*/ mozillaHandle, embedHandle;
+	long /*int*/ mozillaHandle, embedHandle;
 	boolean hasFocus;
 	Listener listener;
 	static Callback eventCallback;
-	static int /*long*/ eventProc;
+	static long /*int*/ eventProc;
 	static final int STOP_PROPOGATE = 1;
 
 	static boolean IsSparc;
@@ -50,8 +50,8 @@ MozillaDelegate (Browser browser) {
 	this.browser = browser;
 }
 
-static int /*long*/ eventProc (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/ pointer) {
-	int /*long*/ parent = OS.gtk_widget_get_parent (handle);
+static long /*int*/ eventProc (long /*int*/ handle, long /*int*/ gdkEvent, long /*int*/ pointer) {
+	long /*int*/ parent = OS.gtk_widget_get_parent (handle);
 	parent = OS.gtk_widget_get_parent (parent);
 	if (parent == 0) return 0;
 	Widget widget = Display.getCurrent ().findWidget (parent);
@@ -61,12 +61,12 @@ static int /*long*/ eventProc (int /*long*/ handle, int /*long*/ gdkEvent, int /
 	return 0;
 }
 
-static Browser findBrowser (int /*long*/ handle) {
+static Browser findBrowser (long /*int*/ handle) {
 	/*
 	* Note.  On GTK, Mozilla is embedded into a GtkHBox handle
 	* and not directly into the parent Composite handle.
 	*/
-	int /*long*/ parent = OS.gtk_widget_get_parent (handle);
+	long /*int*/ parent = OS.gtk_widget_get_parent (handle);
 	Display display = Display.getCurrent ();
 	return (Browser)display.findWidget (parent); 
 }
@@ -96,7 +96,7 @@ static String getProfilePath () {
 	 * then attempt to read the value from the environment directly.
 	 */
 	if (baseDir.equals ("?")) { //$NON-NLS-1$
-		int /*long*/ ptr = C.getenv (wcsToMbcs (null, "HOME", true)); //$NON-NLS-1$
+		long /*int*/ ptr = C.getenv (wcsToMbcs (null, "HOME", true)); //$NON-NLS-1$
 		if (ptr != 0) {
 			int length = C.strlen (ptr);
 			byte[] bytes = new byte[length];
@@ -167,7 +167,7 @@ int createBaseWindow (nsIBaseWindow baseWindow) {
 	return baseWindow.Create ();
 }
 
-int /*long*/ getHandle () {
+long /*int*/ getHandle () {
 	/*
 	* Bug in Mozilla Linux GTK.  Embedding Mozilla into a GtkFixed
 	* handle causes problems with some Mozilla plug-ins.  For some
@@ -189,11 +189,11 @@ int /*long*/ getHandle () {
 	return embedHandle;
 }
 
-int /*long*/ getSiteWindow () {
+long /*int*/ getSiteWindow () {
 	return embedHandle;
 }
 
-int /*long*/ gtk_event (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/ pointer) {
+long /*int*/ gtk_event (long /*int*/ handle, long /*int*/ gdkEvent, long /*int*/ pointer) {
 	GdkEvent event = new GdkEvent ();
 	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
 	if (event.type == OS.GDK_BUTTON_PRESS) {
@@ -265,7 +265,7 @@ void init () {
 	* forward the event to the parent embedder before Mozilla received and consumed
 	* them.
 	*/
-	int /*long*/ list = OS.gtk_container_get_children (embedHandle);
+	long /*int*/ list = OS.gtk_container_get_children (embedHandle);
 	if (list != 0) {
 		mozillaHandle = OS.g_list_data (list);
 		OS.g_list_free (list);
@@ -287,7 +287,7 @@ void init () {
 	}
 }
 
-void onDispose (int /*long*/ embedHandle) {
+void onDispose (long /*int*/ embedHandle) {
 	if (listener != null) {
 		eventShell.getDisplay ().removeFilter (SWT.FocusIn, listener);
 		eventShell.removeListener (SWT.Deactivate, listener);
@@ -305,7 +305,7 @@ boolean sendTraverse () {
 	return true;
 }
 
-void setSize (int /*long*/ embedHandle, int width, int height) {
+void setSize (long /*int*/ embedHandle, int width, int height) {
 	OS.gtk_widget_set_size_request (embedHandle, width, height);
 }
 

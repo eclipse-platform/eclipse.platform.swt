@@ -51,9 +51,9 @@ public class DateTime extends Composite {
 	boolean doubleClick, ignoreSelection;
 	SYSTEMTIME lastSystemTime;
 	SYSTEMTIME time = new SYSTEMTIME (); // only used in calendar mode
-	static final int /*long*/ DateTimeProc;
+	static final long /*int*/ DateTimeProc;
 	static final TCHAR DateTimeClass = new TCHAR (0, OS.DATETIMEPICK_CLASS, true);
-	static final int /*long*/ CalendarProc;
+	static final long /*int*/ CalendarProc;
 	static final TCHAR CalendarClass = new TCHAR (0, OS.MONTHCAL_CLASS, true);
 	static {
 		INITCOMMONCONTROLSEX icex = new INITCOMMONCONTROLSEX ();
@@ -82,13 +82,13 @@ public class DateTime extends Composite {
 		* code, other than SWT, could create a control with
 		* this class name, and fail unexpectedly.
 		*/
-		int /*long*/ hInstance = OS.GetModuleHandle (null);
-		int /*long*/ hHeap = OS.GetProcessHeap ();
+		long /*int*/ hInstance = OS.GetModuleHandle (null);
+		long /*int*/ hHeap = OS.GetProcessHeap ();
 		lpWndClass.hInstance = hInstance;
 		lpWndClass.style &= ~OS.CS_GLOBALCLASS;
 		lpWndClass.style |= OS.CS_DBLCLKS;
 		int byteCount = DateTimeClass.length () * TCHAR.sizeof;
-		int /*long*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		long /*int*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 		OS.MoveMemory (lpszClassName, DateTimeClass, byteCount);
 		lpWndClass.lpszClassName = lpszClassName;
 		OS.RegisterClass (lpWndClass);
@@ -115,13 +115,13 @@ public class DateTime extends Composite {
 		* code, other than SWT, could create a control with
 		* this class name, and fail unexpectedly.
 		*/
-		int /*long*/ hInstance = OS.GetModuleHandle (null);
-		int /*long*/ hHeap = OS.GetProcessHeap ();
+		long /*int*/ hInstance = OS.GetModuleHandle (null);
+		long /*int*/ hHeap = OS.GetProcessHeap ();
 		lpWndClass.hInstance = hInstance;
 		lpWndClass.style &= ~OS.CS_GLOBALCLASS;
 		lpWndClass.style |= OS.CS_DBLCLKS;
 		int byteCount = CalendarClass.length () * TCHAR.sizeof;
-		int /*long*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		long /*int*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 		OS.MoveMemory (lpszClassName, CalendarClass, byteCount);
 		lpWndClass.lpszClassName = lpszClassName;
 		OS.RegisterClass (lpWndClass);
@@ -222,7 +222,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
-int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (windowProc (), hwnd, msg, wParam, lParam);
 }
@@ -263,8 +263,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				width = size.cx;
 				height = size.cy;
 			} else {
-				int /*long*/ newFont, oldFont = 0;
-				int /*long*/ hDC = OS.GetDC (handle);
+				long /*int*/ newFont, oldFont = 0;
+				long /*int*/ hDC = OS.GetDC (handle);
 				newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 				if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 				RECT rect = new RECT ();
@@ -783,11 +783,11 @@ TCHAR windowClass () {
 	return (style & SWT.CALENDAR) != 0 ? CalendarClass : DateTimeClass;
 }
 
-int /*long*/ windowProc () {
+long /*int*/ windowProc () {
 	return (style & SWT.CALENDAR) != 0 ? CalendarProc : DateTimeProc;
 }
 
-LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	switch (hdr.code) {
 		case OS.DTN_CLOSEUP: {
 			/*
@@ -822,7 +822,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
-LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -841,7 +841,7 @@ LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_LBUTTONDBLCLK (int /*long*/ wParam, int /*long*/ lParam) {	
+LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {	
 	LRESULT result = super.WM_LBUTTONDBLCLK (wParam, lParam);
 	if (isDisposed ()) return LRESULT.ZERO;
 	if ((style & SWT.CALENDAR) != 0) {
@@ -851,13 +851,13 @@ LRESULT WM_LBUTTONDBLCLK (int /*long*/ wParam, int /*long*/ lParam) {
 		pt.x = OS.GET_X_LPARAM (lParam);
 		pt.y = OS.GET_Y_LPARAM (lParam);
 		pMCHitTest.pt = pt;
-		int /*long*/ code = OS.SendMessage (handle, OS.MCM_HITTEST, 0, pMCHitTest);
+		long /*int*/ code = OS.SendMessage (handle, OS.MCM_HITTEST, 0, pMCHitTest);
 		if ((code & OS.MCHT_CALENDARDATE) == OS.MCHT_CALENDARDATE) doubleClick = true;
 	}
 	return result;
 }
 
-LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 	doubleClick = false;
@@ -872,7 +872,7 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {	
+LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {	
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (isDisposed ()) return LRESULT.ZERO;
 	if (doubleClick) sendSelectionEvent (SWT.DefaultSelection);
@@ -880,7 +880,7 @@ LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_TIMER (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_TIMER (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_TIMER (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -889,7 +889,7 @@ LRESULT WM_TIMER (int /*long*/ wParam, int /*long*/ lParam) {
 	* to ignore MCN_SELCHANGE during WM_TIMER.
 	*/
 	ignoreSelection = true;
-	int /*long*/ code = callWindowProc(handle, OS.WM_TIMER, wParam, lParam);
+	long /*int*/ code = callWindowProc(handle, OS.WM_TIMER, wParam, lParam);
 	ignoreSelection = false;
 	return code == 0 ? LRESULT.ZERO : new LRESULT(code);
 }

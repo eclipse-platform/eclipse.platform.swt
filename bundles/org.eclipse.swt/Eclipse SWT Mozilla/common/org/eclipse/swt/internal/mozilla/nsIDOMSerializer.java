@@ -37,15 +37,15 @@ public class nsIDOMSerializer extends nsISupports {
 	public static final nsID NS_IDOMSERIALIZER_IID =
 		new nsID(NS_IDOMSERIALIZER_IID_STR);
 
-	public nsIDOMSerializer(int /*long*/ address) {
+	public nsIDOMSerializer(long /*int*/ address) {
 		super(address);
 	}
 
-	public int SerializeToString(int /*long*/ root, int /*long*/[] _retval) {
+	public int SerializeToString(long /*int*/ root, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), root, _retval);
 	}
 
-	public int SerializeToStream(int /*long*/ root, int /*long*/ stream, byte[] charset) {
+	public int SerializeToStream(long /*int*/ root, long /*int*/ stream, byte[] charset) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), root, stream, charset);
 	}
 }

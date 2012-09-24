@@ -16,7 +16,7 @@ public NSScroller() {
 	super();
 }
 
-public NSScroller(int /*long*/ id) {
+public NSScroller(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,49 +24,49 @@ public NSScroller(id id) {
 	super(id);
 }
 
-public int /*long*/ controlSize() {
+public long /*int*/ controlSize() {
 	return OS.objc_msgSend(this.id, OS.sel_controlSize);
 }
 
-public int /*long*/ hitPart() {
+public long /*int*/ hitPart() {
 	return OS.objc_msgSend(this.id, OS.sel_hitPart);
 }
 
-public float /*double*/ knobProportion() {
-	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_knobProportion);
+public double /*float*/ knobProportion() {
+	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_knobProportion);
 }
 
-public NSRect rectForPart(int /*long*/ partCode) {
+public NSRect rectForPart(long /*int*/ partCode) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_rectForPart_, partCode);
 	return result;
 }
 
-public static float /*double*/ scrollerWidth() {
-	return (float /*double*/)OS.objc_msgSend_fpret(OS.class_NSScroller, OS.sel_scrollerWidth);
+public static double /*float*/ scrollerWidth() {
+	return (double /*float*/)OS.objc_msgSend_fpret(OS.class_NSScroller, OS.sel_scrollerWidth);
 }
 
-public static float /*double*/ scrollerWidthForControlSize(int /*long*/ controlSize) {
-	return (float /*double*/)OS.objc_msgSend_fpret(OS.class_NSScroller, OS.sel_scrollerWidthForControlSize_, controlSize);
+public static double /*float*/ scrollerWidthForControlSize(long /*int*/ controlSize) {
+	return (double /*float*/)OS.objc_msgSend_fpret(OS.class_NSScroller, OS.sel_scrollerWidthForControlSize_, controlSize);
 }
 
-public void setControlSize(int /*long*/ controlSize) {
+public void setControlSize(long /*int*/ controlSize) {
 	OS.objc_msgSend(this.id, OS.sel_setControlSize_, controlSize);
 }
 
-public void setKnobProportion(float /*double*/ proportion) {
+public void setKnobProportion(double /*float*/ proportion) {
 	OS.objc_msgSend(this.id, OS.sel_setKnobProportion_, proportion);
 }
 
-public int /*long*/ testPart(NSPoint thePoint) {
+public long /*int*/ testPart(NSPoint thePoint) {
 	return OS.objc_msgSend(this.id, OS.sel_testPart_, thePoint);
 }
 
-public static int /*long*/ cellClass() {
+public static long /*int*/ cellClass() {
 	return OS.objc_msgSend(OS.class_NSScroller, OS.sel_cellClass);
 }
 
-public static void setCellClass(int /*long*/ factoryId) {
+public static void setCellClass(long /*int*/ factoryId) {
 	OS.objc_msgSend(OS.class_NSScroller, OS.sel_setCellClass_, factoryId);
 }
 

@@ -58,12 +58,12 @@ public class OUTLINETEXTMETRIC {
     public int otmsUnderscoreSize;
     public int otmsUnderscorePosition;
     /** @field cast=(PSTR) */
-	public int /*long*/ otmpFamilyName;
+	public long /*int*/ otmpFamilyName;
     /** @field cast=(PSTR) */
-	public int /*long*/ otmpFaceName;
+	public long /*int*/ otmpFaceName;
     /** @field cast=(PSTR) */
-	public int /*long*/ otmpStyleName;
+	public long /*int*/ otmpStyleName;
     /** @field cast=(PSTR) */
-	public int /*long*/ otmpFullName;
+	public long /*int*/ otmpFullName;
     public static final int sizeof = OS.IsUnicode ? OS.OUTLINETEXTMETRICW_sizeof ():  OS.OUTLINETEXTMETRICA_sizeof ();
 }

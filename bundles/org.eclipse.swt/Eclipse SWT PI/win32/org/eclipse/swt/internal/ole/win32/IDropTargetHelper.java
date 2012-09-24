@@ -13,10 +13,10 @@ package org.eclipse.swt.internal.ole.win32;
 import org.eclipse.swt.internal.win32.*;
 
 public class IDropTargetHelper extends IUnknown {
-public IDropTargetHelper(int /*long*/ address) {
+public IDropTargetHelper(long /*int*/ address) {
 	super(address);
 }
-public int DragEnter(int /*long*/ hwndTarget, int /*long*/ pDataObject, POINT ppt, int dwEffect) {
+public int DragEnter(long /*int*/ hwndTarget, long /*int*/ pDataObject, POINT ppt, int dwEffect) {
 	return COM.VtblCall(3, address, hwndTarget, pDataObject, ppt, dwEffect);
 }
 public int DragLeave() {
@@ -25,7 +25,7 @@ public int DragLeave() {
 public int DragOver(POINT ppt, int dwEffect) {
 	return COM.VtblCall(5, address, ppt, dwEffect);
 }
-public int Drop(int /*long*/ pDataObject, POINT ppt, int dwEffect) {
+public int Drop(long /*int*/ pDataObject, POINT ppt, int dwEffect) {
 	return COM.VtblCall(6, address, pDataObject, ppt, dwEffect);
 }
 public int Show(boolean fShow) {

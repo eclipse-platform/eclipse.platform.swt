@@ -29,8 +29,8 @@ import org.eclipse.swt.internal.cocoa.*;
 public final class GCData {
 	public Device device;
 	public int style, state = -1;
-	public float /*double*/ [] foreground;
-	public float /*double*/ [] background;
+	public double /*float*/ [] foreground;
+	public double /*float*/ [] background;
 	public Pattern foregroundPattern;
 	public Pattern backgroundPattern;
 	public Font font;
@@ -52,12 +52,12 @@ public final class GCData {
 	public NSLayoutManager layoutManager;
 	public NSTextContainer textContainer;
 	public NSColor fg, bg;
-	public float /*double*/ drawXOffset, drawYOffset;
+	public double /*float*/ drawXOffset, drawYOffset;
 	public NSRect paintRect;
 	public NSBezierPath path;
 	public NSAffineTransform transform, inverseTransform;
 	public NSBezierPath clipPath, visiblePath;
-	public int /*long*/ visibleRgn;
+	public long /*int*/ visibleRgn;
 	public NSView view;
 	public NSSize size;
 	public Thread thread;

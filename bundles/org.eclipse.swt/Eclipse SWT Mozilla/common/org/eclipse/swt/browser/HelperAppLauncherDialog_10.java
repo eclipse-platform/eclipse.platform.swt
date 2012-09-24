@@ -32,12 +32,12 @@ HelperAppLauncherDialog_10 () {
 
 /* nsIHelperAppLauncherDialog */
 
-int Show (int /*long*/ aLauncher, int /*long*/ aContext, int aReason) {
+int Show (long /*int*/ aLauncher, long /*int*/ aContext, int aReason) {
 	nsIHelperAppLauncher_8 helperAppLauncher = new nsIHelperAppLauncher_8 (aLauncher);
 	return helperAppLauncher.SaveToDisk (0, 0);
 }
 
-int PromptForSaveToFile (int /*long*/ aLauncher, int /*long*/ aWindowContext, int /*long*/ aDefaultFileName, int /*long*/ aSuggestedFileExtension, int aForcePrompt, int /*long*/ _retval) {
+int PromptForSaveToFile (long /*int*/ aLauncher, long /*int*/ aWindowContext, long /*int*/ aDefaultFileName, long /*int*/ aSuggestedFileExtension, int aForcePrompt, long /*int*/ _retval) {
 	int length = XPCOM.strlen_PRUnichar (aDefaultFileName);
 	char[] dest = new char[length];
 	XPCOM.memmove (dest, aDefaultFileName, length * 2);
@@ -61,7 +61,7 @@ int PromptForSaveToFile (int /*long*/ aLauncher, int /*long*/ aWindowContext, in
 		return XPCOM.NS_ERROR_FAILURE;
 	}
 	nsEmbedString path = new nsEmbedString (name);
-	int /*long*/[] result = new int /*long*/[1];
+	long /*int*/[] result = new long /*int*/[1];
 	int rc = XPCOM.NS_NewLocalFile (path.getAddress (), 1, result);
 	path.dispose ();
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);

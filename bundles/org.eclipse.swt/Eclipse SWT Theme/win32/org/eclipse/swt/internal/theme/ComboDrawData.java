@@ -21,7 +21,7 @@ public ComboDrawData() {
 
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		int /*long*/ hTheme = OS.OpenThemeData(0, EDIT);
+		long /*int*/ hTheme = OS.OpenThemeData(0, EDIT);
 		RECT rect = new RECT ();
 		rect.left = bounds.x;
 		rect.right = bounds.x + bounds.width;
@@ -81,7 +81,7 @@ int[] getPartId(int part) {
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!(OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ())) return DrawData.WIDGET_NOWHERE;
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;
-	int /*long*/ hTheme = OS.OpenThemeData(0, EDIT);
+	long /*int*/ hTheme = OS.OpenThemeData(0, EDIT);
 	int[] part = getPartId(DrawData.WIDGET_WHOLE);
 	int iPartId = part[0];
 	int iStateId = part[1];

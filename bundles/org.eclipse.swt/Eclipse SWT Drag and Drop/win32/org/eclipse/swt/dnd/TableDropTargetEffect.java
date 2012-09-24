@@ -106,7 +106,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	 */
 	public void dragLeave(DropTargetEvent event) {
 		Table table = (Table) control;
-		int /*long*/ handle = table.handle;
+		long /*int*/ handle = table.handle;
 		if (dropHighlight != null) {
 			LVITEM lvItem = new LVITEM ();
 			lvItem.stateMask = OS.LVIS_DROPHILITED;
@@ -146,7 +146,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	public void dragOver(DropTargetEvent event) {
 		Table table = (Table) getControl();
 		int effect = checkEffect(event.feedback);
-		int /*long*/ handle = table.handle;
+		long /*int*/ handle = table.handle;
 		Point coordinates = new Point(event.x, event.y);
 		coordinates = table.toControl(coordinates);
 		LVHITTESTINFO pinfo = new LVHITTESTINFO();

@@ -12,13 +12,13 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IEnum extends IUnknown
 {
-public IEnum(int /*long*/ address) {
+public IEnum(long /*int*/ address) {
 	super(address);
 }
-public int Clone( int /*long*/[] ppenum  ){
+public int Clone( long /*int*/[] ppenum  ){
 	return COM.VtblCall(6, address, ppenum);
 }
-public int Next(int celt, int /*long*/ rgelt, int[] pceltFetched  ){
+public int Next(int celt, long /*int*/ rgelt, int[] pceltFetched  ){
 	return COM.VtblCall(3, address, celt, rgelt, pceltFetched);
 }
 public int Reset() {

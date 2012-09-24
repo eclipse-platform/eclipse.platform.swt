@@ -16,7 +16,7 @@ public NSKeyedUnarchiver() {
 	super();
 }
 
-public NSKeyedUnarchiver(int /*long*/ id) {
+public NSKeyedUnarchiver(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,7 +25,7 @@ public NSKeyedUnarchiver(id id) {
 }
 
 public static id unarchiveObjectWithData(NSData data) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSKeyedUnarchiver, OS.sel_unarchiveObjectWithData_, data != null ? data.id : 0);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSKeyedUnarchiver, OS.sel_unarchiveObjectWithData_, data != null ? data.id : 0);
 	return result != 0 ? new id(result) : null;
 }
 

@@ -264,7 +264,7 @@ void _setVisible (boolean visible) {
 			NSView topView = window.contentView();
 			Point shellCoord = display.map(null, shell, new Point(x,y));
 			location = new NSPoint ();
-			float /*double*/ scaleFactor = window.userSpaceScaleFactor();
+			double /*float*/ scaleFactor = window.userSpaceScaleFactor();
 			location.x = shellCoord.x * scaleFactor;
 			location.y = (topView.frame().height - shellCoord.y) * scaleFactor;
 		} else {
@@ -345,8 +345,8 @@ void createHandle () {
 		nsMenu = widget;	
 	} else {
 		nsMenu.retain();
-		int /*long*/ cls = OS.object_getClass(nsMenu.id);
-		int /*long*/ dynNSMenu_class = display.createMenuSubclass(cls, "SWTSystemMenu", true);
+		long /*int*/ cls = OS.object_getClass(nsMenu.id);
+		long /*int*/ dynNSMenu_class = display.createMenuSubclass(cls, "SWTSystemMenu", true);
 		if (cls != dynNSMenu_class) {
 			OS.object_setClass(nsMenu.id, dynNSMenu_class);
 		}
@@ -371,8 +371,8 @@ void createItem (MenuItem item, int index) {
 		}
 		item.nsItem = nsItem;
 	} else {
-		int /*long*/ cls = OS.object_getClass(nsItem.id);
-		int /*long*/ dynNSMenuItem_class = display.createMenuItemSubclass(cls, "SWTSystemMenuItem", true);
+		long /*int*/ cls = OS.object_getClass(nsItem.id);
+		long /*int*/ dynNSMenuItem_class = display.createMenuItemSubclass(cls, "SWTSystemMenuItem", true);
 		if (cls != dynNSMenuItem_class) {
 			OS.object_setClass(nsItem.id, dynNSMenuItem_class);
 		}
@@ -394,9 +394,9 @@ void createItem (MenuItem item, int index) {
 		// Sync native key equivalent to MenuItem's accelerator.
 		// The system menu on OS X only uses command and option, so it's
 		// safe to just check for those two key masks.
-		int /*long*/ keyMask = nsItem.keyEquivalentModifierMask();
+		long /*int*/ keyMask = nsItem.keyEquivalentModifierMask();
 		NSString keyEquivString = nsItem.keyEquivalent();
-		int /*long*/ keyEquiv = 0;
+		long /*int*/ keyEquiv = 0;
 		if (keyEquivString != null) {
 			keyEquiv = keyEquivString.characterAtIndex(0);
 			if ((keyMask & OS.NSCommandKeyMask) != 0) keyEquiv |= SWT.COMMAND;
@@ -788,7 +788,7 @@ public boolean isVisible () {
 	return getVisible ();
 }
 
-void menu_willHighlightItem(int /*long*/ id, int /*long*/ sel, int /*long*/ menu, int /*long*/ itemID) {
+void menu_willHighlightItem(long /*int*/ id, long /*int*/ sel, long /*int*/ menu, long /*int*/ itemID) {
 	Widget widget = display.getWidget(itemID);
 	if (widget instanceof MenuItem) {
 		MenuItem item = (MenuItem)widget;
@@ -796,23 +796,23 @@ void menu_willHighlightItem(int /*long*/ id, int /*long*/ sel, int /*long*/ menu
 	}
 }
 
-void menuNeedsUpdate(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
+void menuNeedsUpdate(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 	//This code is intentionally commented
 	//sendEvent (SWT.Show);
 }
 
-void menuWillOpen(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
+void menuWillOpen(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 	visible = true;
 	sendEvent (SWT.Show);
 	if (isDisposed()) return;
-	float /*double*/ width = 0;
+	double /*float*/ width = 0;
 	NSAttributedString[] strs = new NSAttributedString[itemCount];
 	for (int i=0; i<itemCount; i++) {
 		MenuItem item = items [i];
 		NSMenuItem nsItem = item.nsItem;
 		strs[i] = nsItem.attributedTitle();
 		NSImage nsImage = nsItem.image();
-		float /*double*/ w = GAP;
+		double /*float*/ w = GAP;
 		if (strs[i] != null) {
 			w += strs[i].size().width;
 		}
@@ -832,7 +832,7 @@ void menuWillOpen(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 			if (length > 1) {
 				NSMenuItem nsItem = item.nsItem;
 				NSImage nsImage = nsItem.image();
-				float /*double*/ tab = width;
+				double /*float*/ tab = width;
 				if (nsImage != null) {
 					tab -= (nsImage.size().width + GAP);
 				}
@@ -868,7 +868,7 @@ void menuWillOpen(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
 	}
 }
 
-void menuDidClose(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
+void menuDidClose(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 	sendEvent (SWT.Hide);
 	if (isDisposed()) return;
 	visible = false;

@@ -91,7 +91,7 @@ public ColorDialog(Shell parent, int style) {
 	checkSubclass ();
 }
 
-void changeColor(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
+void changeColor(long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
 	selected = true;
 }
 
@@ -167,7 +167,7 @@ public RGB open() {
 		}
 	}
 	SWTPanelDelegate delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
-	int /*long*/ jniRef = OS.NewGlobalRef(this);
+	long /*int*/ jniRef = OS.NewGlobalRef(this);
 	if (jniRef == 0) error(SWT.ERROR_NO_HANDLES);
 	OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
 	panel.setDelegate(delegate);
@@ -183,7 +183,7 @@ public RGB open() {
 	if (selected) {
 		NSColor color = panel.color();
 		if (color != null) {
-			float /*double*/ [] handle = display.getNSColorRGB(color);
+			double /*float*/ [] handle = display.getNSColorRGB(color);
 			rgb = new RGB((int)(handle[0] * 255), (int)(handle[1] * 255), (int)(handle[2] * 255));
 		}
 	}
@@ -192,7 +192,7 @@ public RGB open() {
 	rgbs = new RGB[length];
 	for (int i=0; i<length; i++) {
 		NSString key = new NSString(keys.objectAtIndex(i));
-		float /*double*/ [] handle = display.getNSColorRGB(colorList.colorWithKey(key));
+		double /*float*/ [] handle = display.getNSColorRGB(colorList.colorWithKey(key));
 		rgbs[i] = new RGB((int)(handle[0] * 255), (int)(handle[1] * 255), (int)(handle[2] * 255));
 	}
 	colorList.release();
@@ -228,7 +228,7 @@ public void setRGBs(RGB[] rgbs) {
 	this.rgbs = rgbs;
 }
 
-void windowWillClose(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
+void windowWillClose(long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
 	NSApplication.sharedApplication().stop(null);
 }
 }

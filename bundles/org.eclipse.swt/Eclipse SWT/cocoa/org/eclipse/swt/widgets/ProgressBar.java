@@ -110,7 +110,7 @@ NSFont defaultNSFont () {
 	return display.progressIndicatorFont;
 }
 
-void _drawThemeProgressArea (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+void _drawThemeProgressArea (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	/*
 	* Bug in Cocoa.  When the threaded animation is turned off by calling
 	* setUsesThreadedAnimation(), _drawThemeProgressArea() attempts to
@@ -128,7 +128,7 @@ void _drawThemeProgressArea (int /*long*/ id, int /*long*/ sel, int /*long*/ arg
 	* region of the progress bar before calling super.
 	*/	
 	if (visiblePath == null) {
-		int /*long*/ visibleRegion = getVisibleRegion();
+		long /*int*/ visibleRegion = getVisibleRegion();
 		visiblePath = getPath(visibleRegion);
 		OS.DisposeRgn(visibleRegion);
 	}
@@ -319,7 +319,7 @@ void resetVisibleRegion () {
 	visiblePath = null;
 }
 
-void viewDidMoveToWindow(int /*long*/ id, int /*long*/ sel) {
+void viewDidMoveToWindow(long /*int*/ id, long /*int*/ sel) {
 	/*
 	 * Bug in Cocoa. An indeterminate progress indicator doesn't start animating until it is in
 	 * a visible window.  Workaround is to catch when the bar has been added to a window and start

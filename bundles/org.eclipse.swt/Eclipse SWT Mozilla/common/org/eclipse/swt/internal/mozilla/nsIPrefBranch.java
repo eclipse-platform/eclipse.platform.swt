@@ -43,7 +43,7 @@ public class nsIPrefBranch extends nsISupports {
 	public static final nsID NS_IPREFBRANCH_10_IID =
 		new nsID(NS_IPREFBRANCH_10_IID_STR);
 	
-	public nsIPrefBranch(int /*long*/ address) {
+	public nsIPrefBranch(long /*int*/ address) {
 		super(address);
 	}
 
@@ -52,7 +52,7 @@ public class nsIPrefBranch extends nsISupports {
 	public static final int PREF_INT = 64;
 	public static final int PREF_BOOL = 128;
 
-	public int GetRoot(int /*long*/[] aRoot) {
+	public int GetRoot(long /*int*/[] aRoot) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aRoot);
 	}
 
@@ -68,7 +68,7 @@ public class nsIPrefBranch extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aPrefName, aValue);
 	}
 
-	public int GetCharPref(byte[] aPrefName, int /*long*/[] _retval) {
+	public int GetCharPref(byte[] aPrefName, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aPrefName, _retval);
 	}
 
@@ -84,11 +84,11 @@ public class nsIPrefBranch extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aPrefName, aValue);
 	}
 
-	public int GetComplexValue(byte[] aPrefName, nsID aType, int /*long*/[] aValue) {
+	public int GetComplexValue(byte[] aPrefName, nsID aType, long /*int*/[] aValue) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aPrefName, aType, aValue);
 	}
 
-	public int SetComplexValue(byte[] aPrefName, nsID aType, int /*long*/ aValue) {
+	public int SetComplexValue(byte[] aPrefName, nsID aType, long /*int*/ aValue) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aPrefName, aType, aValue);
 	}
 
@@ -116,7 +116,7 @@ public class nsIPrefBranch extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 16, getAddress(), aStartingAt);
 	}
 
-	public int GetChildList(byte[] aStartingAt, int[] aCount, int /*long*/[] aChildArray) {
+	public int GetChildList(byte[] aStartingAt, int[] aCount, long /*int*/[] aChildArray) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 17, getAddress(), aStartingAt, aCount, aChildArray);
 	}
 

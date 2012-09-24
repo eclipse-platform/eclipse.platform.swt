@@ -15,23 +15,23 @@ import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebIBActions extends IUnknown {
 
-public IWebIBActions (int /*long*/ address) {
+public IWebIBActions (long /*int*/ address) {
 	super (address);
 }
 
-public int stopLoading (int /*long*/ sender) {
+public int stopLoading (long /*int*/ sender) {
 	return COM.VtblCall (4, getAddress (), sender);
 }
 
-public int reload (int /*long*/ sender) {
+public int reload (long /*int*/ sender) {
 	return COM.VtblCall (5, getAddress (), sender);
 }
 
-public int canGoBack (int /*long*/ sender, int[] result) {
+public int canGoBack (long /*int*/ sender, int[] result) {
 	return COM.VtblCall (6, getAddress (), sender, result);
 }
 
-public int canGoForward (int /*long*/ sender, int[] result) {
+public int canGoForward (long /*int*/ sender, int[] result) {
 	return COM.VtblCall (8, getAddress (), sender, result);
 }
 

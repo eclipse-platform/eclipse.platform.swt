@@ -16,7 +16,7 @@ public NSStatusItem() {
 	super();
 }
 
-public NSStatusItem(int /*long*/ id) {
+public NSStatusItem(long /*int*/ id) {
 	super(id);
 }
 
@@ -36,7 +36,7 @@ public void setHighlightMode(boolean highlightMode) {
 	OS.objc_msgSend(this.id, OS.sel_setHighlightMode_, highlightMode);
 }
 
-public void setLength(float /*double*/ length) {
+public void setLength(double /*float*/ length) {
 	OS.objc_msgSend(this.id, OS.sel_setLength_, length);
 }
 

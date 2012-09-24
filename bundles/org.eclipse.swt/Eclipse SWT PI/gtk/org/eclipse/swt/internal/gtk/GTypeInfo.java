@@ -19,22 +19,22 @@ public class GTypeInfo {
 	/** @field cast=(guint16) */
 	public short class_size;
 	/** @field cast=(GBaseInitFunc) */
-	public int /*long*/ base_init;
+	public long /*int*/ base_init;
 	/** @field cast=(GBaseFinalizeFunc) */
-	public int /*long*/ base_finalize;
+	public long /*int*/ base_finalize;
 	/** @field cast=(GClassInitFunc) */
-	public int /*long*/ class_init;
+	public long /*int*/ class_init;
 	/** @field cast=(GClassFinalizeFunc) */
-	public int /*long*/ class_finalize;
+	public long /*int*/ class_finalize;
 	/** @field cast=(gconstpointer) */
-	public int /*long*/ class_data;
+	public long /*int*/ class_data;
 	/** @field cast=(guint16) */
 	public short instance_size;
 	/** @field cast=(guint16) */
 	public short n_preallocs;
 	/** @field cast=(GInstanceInitFunc) */
-	public int /*long*/ instance_init;
+	public long /*int*/ instance_init;
 	/** @field cast=(GTypeValueTable *) */
-	public int /*long*/ value_table;
+	public long /*int*/ value_table;
 	public static final int sizeof = OS.GTypeInfo_sizeof();	
 }

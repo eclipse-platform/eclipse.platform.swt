@@ -15,11 +15,11 @@ import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebMutableURLRequestPrivate extends IUnknown {
 
-public IWebMutableURLRequestPrivate (int /*long*/ address) {
+public IWebMutableURLRequestPrivate (long /*int*/ address) {
 	super (address);
 }
 
-//public int setClientCertificate (int /*long*/ cert) {
+//public int setClientCertificate (long /*int*/ cert) {
 //return COM.VtblCall (3, getAddress (), cert);
 //}
 

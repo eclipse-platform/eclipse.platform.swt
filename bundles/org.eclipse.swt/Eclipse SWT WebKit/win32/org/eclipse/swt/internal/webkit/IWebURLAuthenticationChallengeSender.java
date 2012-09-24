@@ -15,15 +15,15 @@ import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebURLAuthenticationChallengeSender extends IUnknown {
 
-public IWebURLAuthenticationChallengeSender (int /*long*/ address) {
+public IWebURLAuthenticationChallengeSender (long /*int*/ address) {
 	super (address);
 }
 
-public int cancelAuthenticationChallenge (int /*long*/ challenge) {
+public int cancelAuthenticationChallenge (long /*int*/ challenge) {
 	return COM.VtblCall (3, getAddress (), challenge);
 }
 
-public int useCredential (int /*long*/ credential, int /*long*/ challenge) {
+public int useCredential (long /*int*/ credential, long /*int*/ challenge) {
 	return COM.VtblCall (5, getAddress (), credential, challenge);
 }
 

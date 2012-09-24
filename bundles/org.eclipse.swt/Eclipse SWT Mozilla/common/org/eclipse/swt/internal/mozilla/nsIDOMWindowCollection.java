@@ -37,7 +37,7 @@ public class nsIDOMWindowCollection extends nsISupports {
 	public static final nsID NS_IDOMWINDOWCOLLECTION_IID =
 		new nsID(NS_IDOMWINDOWCOLLECTION_IID_STR);
 
-	public nsIDOMWindowCollection(int /*long*/ address) {
+	public nsIDOMWindowCollection(long /*int*/ address) {
 		super(address);
 	}
 
@@ -45,11 +45,11 @@ public class nsIDOMWindowCollection extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aLength);
 	}
 
-	public int Item(int index, int /*long*/[] _retval) {
+	public int Item(int index, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), index, _retval);
 	}
 
-	public int NamedItem(int /*long*/ name, int /*long*/[] _retval) {
+	public int NamedItem(long /*int*/ name, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), name, _retval);
 	}
 }

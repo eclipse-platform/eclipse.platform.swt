@@ -61,7 +61,7 @@ public class Text extends Scrollable {
 	String message;
 	NSRange selectionRange;
 	id targetSearch, targetCancel;
-	int /*long*/ actionSearch, actionCancel;
+	long /*int*/ actionSearch, actionCancel;
 	
 	/**
 	* The maximum number of characters that can be entered
@@ -337,7 +337,7 @@ public void append (String string) {
 	if (string.length () != 0) sendEvent (SWT.Modify);
 }
 
-boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
+boolean becomeFirstResponder (long /*int*/ id, long /*int*/ sel) {
 	receivingFocus = true;
 	boolean result = super.becomeFirstResponder (id, sel);
 	receivingFocus = false;
@@ -575,9 +575,9 @@ void createWidget () {
 	super.createWidget ();
 	if ((style & SWT.PASSWORD) != 0) {
 		NSText fieldEditor = view.window().fieldEditor(true, view);
-		int /*long*/ nsSecureTextViewClass = OS.objc_lookUpClass("NSSecureTextView");
+		long /*int*/ nsSecureTextViewClass = OS.objc_lookUpClass("NSSecureTextView");
 		if (fieldEditor != null && nsSecureTextViewClass != 0 && fieldEditor.isKindOfClass(nsSecureTextViewClass)) {
-			int /*long*/ editorClass = OS.objc_getClass("SWTSecureEditorView");
+			long /*int*/ editorClass = OS.objc_getClass("SWTSecureEditorView");
 			OS.object_setClass(fieldEditor.id, editorClass);
 		}
 	}
@@ -657,7 +657,7 @@ void deregister() {
 	}
 }
 
-void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if ((style & SWT.SINGLE) != 0) {
 		if (backgroundImage == null) return;
 		if (new NSView(id).isKindOfClass(OS.class_NSText)) {
@@ -684,7 +684,7 @@ void drawInteriorWithFrame_inView(int id, int sel, NSRect cellFrame, int viewid)
 boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 	Point selection = getSelection ();
 	if (selection.x != selection.y) {
-		int /*long*/ position = getPosition (x, y);
+		long /*int*/ position = getPosition (x, y);
 		if (selection.x <= position && position < selection.y) {
 			if (super.dragDetect (x, y, filter, consume)) {
 				if (consume != null) consume [0] = true;
@@ -727,7 +727,7 @@ public int getCaretLineNumber () {
     return (getTopPixel () + getCaretLocation ().y) / getLineHeight ();
 }
 
-boolean acceptsFirstResponder(int /*long*/ id, int /*long*/ sel) {
+boolean acceptsFirstResponder(long /*int*/ id, long /*int*/ sel) {
 	if ((style & SWT.READ_ONLY) != 0) return true;
 	return super.acceptsFirstResponder(id, sel);
 }
@@ -757,8 +757,8 @@ public Point getCaretLocation () {
 	NSLayoutManager layoutManager = widget.layoutManager();
 	NSTextContainer container = widget.textContainer();
 	NSRange range = widget.selectedRange();
-	int /*long*/ [] rectCount = new int /*long*/ [1];
-	int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, container, rectCount);
+	long /*int*/ [] rectCount = new long /*int*/ [1];
+	long /*int*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, container, rectCount);
 	NSRect rect = new NSRect();
 	if (rectCount[0] > 0) OS.memmove(rect, pArray, NSRect.sizeof);
 	return new Point((int)rect.x, (int)rect.y);
@@ -939,7 +939,7 @@ public int getLineCount () {
 	NSTextStorage storage = ((NSTextView) view).textStorage ();
 	int count = (int)/*64*/storage.paragraphs ().count ();
 	NSString string = storage.string();
-	int /*long*/ length = string.length(), c;
+	long /*int*/ length = string.length(), c;
 	if (length == 0 || (c = string.characterAtIndex(length - 1)) == '\n' || c == '\r') {
 		count++;
 	}
@@ -1028,7 +1028,7 @@ public String getMessage () {
 	return message;
 }
 
-int /*long*/ getPosition (int /*long*/ x, int /*long*/ y) {
+long /*int*/ getPosition (long /*int*/ x, long /*int*/ y) {
 //	checkWidget ();
 	if ((style & SWT.MULTI) != 0) {
 		NSTextView widget = (NSTextView) view;
@@ -1374,7 +1374,7 @@ void insertEditText (String string) {
 	}
 }
 
-boolean isEventView (int /*long*/ id) {
+boolean isEventView (long /*int*/ id) {
 	if ((style & SWT.MULTI) != 0) return super.isEventView (id);
 	return true;
 }
@@ -1595,7 +1595,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	boolean result = super.sendKeyEvent (nsEvent, type);
 	if (!result) return result;
 	if (type != SWT.KeyDown) return result;
-	int /*long*/ modifierFlags = nsEvent.modifierFlags();
+	long /*int*/ modifierFlags = nsEvent.modifierFlags();
 	if ((modifierFlags & OS.NSCommandKeyMask) != 0) {
 		short keyCode = nsEvent.keyCode ();
 		switch (keyCode) {
@@ -1792,7 +1792,7 @@ void setEditText (char[] text) {
 	selectionRange = null;
 }
 
-void setFrameSize(int /*long*/ id, int /*long*/ sel, NSSize size) {
+void setFrameSize(long /*int*/ id, long /*int*/ sel, NSSize size) {
 	super.setFrameSize (id, sel, size);
 	/*
 	* Bug in Cocoa.  When a search field is resized while having
@@ -1820,13 +1820,13 @@ void setFont(NSFont font) {
 	super.setFont (font);
 }
 
-void setForeground (float /*double*/ [] color) {
+void setForeground (double /*float*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
 		nsColor = NSColor.textColor ();
 		if ((style & SWT.MULTI) != 0 && !isEnabled()) nsColor = NSColor.disabledControlTextColor();
 	} else {
-		float /*double*/ alpha = 1;
+		double /*float*/ alpha = 1;
 		if ((style & SWT.MULTI) != 0 && !isEnabled()) alpha = 0.5f;
 		nsColor = NSColor.colorWithDeviceRed (color [0], color [1], color [2], alpha);
 	}
@@ -2036,7 +2036,7 @@ public void setTabs (int tabs) {
 	if (this.tabs == tabs) return;
 	this.tabs = tabs;
 	if ((style & SWT.SINGLE) != 0) return;
-	float /*double*/ size = textExtent("s").width * tabs;
+	double /*float*/ size = textExtent("s").width * tabs;
 	NSTextView widget = (NSTextView)view;
 	NSParagraphStyle defaultStyle = widget.defaultParagraphStyle();
 	NSMutableParagraphStyle paragraphStyle = new NSMutableParagraphStyle(defaultStyle.mutableCopy());
@@ -2189,7 +2189,7 @@ public void setTopIndex (int index) {
 	view.scrollPoint(pt);
 }
 
-boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ sel, int /*long*/ affectedCharRange, int /*long*/ replacementString) {
+boolean shouldChangeTextInRange_replacementString(long /*int*/ id, long /*int*/ sel, long /*int*/ affectedCharRange, long /*int*/ replacementString) {
 	NSRange range = new NSRange();
 	OS.memmove(range, affectedCharRange, NSRange.sizeof);
 	boolean result = callSuperBoolean(id, sel, range, replacementString);
@@ -2204,7 +2204,7 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 	String newText = text;
 	if (hooks (SWT.Verify)) {
 		NSEvent currentEvent = display.application.currentEvent();
-		int /*long*/ type = currentEvent.type();
+		long /*int*/ type = currentEvent.type();
 		if (type != OS.NSKeyDown && type != OS.NSKeyUp) currentEvent = null;
 		newText = verifyText(text, (int)/*64*/range.location, (int)/*64*/(range.location+range.length),  currentEvent);
 	}
@@ -2256,18 +2256,18 @@ public void showSelection () {
 	}
 }
 
-void textViewDidChangeSelection(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+void textViewDidChangeSelection(long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	NSNotification notification = new NSNotification (aNotification);
 	NSText editor = new NSText (notification.object ().id);
 	selectionRange = editor.selectedRange ();
 }
 
-void textDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+void textDidChange (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	if ((style & SWT.SINGLE) != 0) super.textDidChange (id, sel, aNotification);
 	postEvent (SWT.Modify);
 }
 
-NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange (int /*long*/ id, int /*long*/ sel, int /*long*/ aTextView, int /*long*/ oldSelectedCharRange, int /*long*/ newSelectedCharRange) {
+NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange (long /*int*/ id, long /*int*/ sel, long /*int*/ aTextView, long /*int*/ oldSelectedCharRange, long /*int*/ newSelectedCharRange) {
 	/*
 	* If the selection is changing as a result of the receiver getting focus
 	* then return the receiver's last selection range, otherwise the full
@@ -2287,7 +2287,7 @@ int traversalCode (int key, NSEvent theEvent) {
 	if ((style & SWT.MULTI) != 0) {
 		bits &= ~SWT.TRAVERSE_RETURN;
 		if (key == 48 /* Tab */ && theEvent != null) {
-			int /*long*/ modifiers = theEvent.modifierFlags ();
+			long /*int*/ modifiers = theEvent.modifierFlags ();
 			boolean next = (modifiers & OS.NSShiftKeyMask) == 0;
 			if (next && (modifiers & OS.NSControlKeyMask) == 0) {
 				bits &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);

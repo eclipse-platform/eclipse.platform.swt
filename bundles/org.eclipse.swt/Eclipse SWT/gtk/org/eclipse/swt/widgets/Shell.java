@@ -118,7 +118,7 @@ import org.eclipse.swt.events.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Shell extends Decorations {
-	int /*long*/ shellHandle, tooltipsHandle, tooltipWindow, group, modalGroup;
+	long /*int*/ shellHandle, tooltipsHandle, tooltipWindow, group, modalGroup;
 	boolean mapped, moved, resized, opened, fullScreen, showWithParent, modified, center;
 	int oldX, oldY, oldWidth, oldHeight;
 	int minWidth, minHeight;
@@ -254,7 +254,7 @@ public Shell (Display display, int style) {
 	this (display, null, style, 0, false);
 }
 
-Shell (Display display, Shell parent, int style, int /*long*/ handle, boolean embedded) {
+Shell (Display display, Shell parent, int style, long /*int*/ handle, boolean embedded) {
 	super ();
 	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
@@ -359,7 +359,7 @@ public Shell (Shell parent, int style) {
 	this (parent != null ? parent.display : null, parent, style, 0, false);
 }
 
-public static Shell gtk_new (Display display, int /*long*/ handle) {
+public static Shell gtk_new (Display display, long /*int*/ handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, true);
 }
 
@@ -382,7 +382,7 @@ public static Shell gtk_new (Display display, int /*long*/ handle) {
  * 
  * @since 3.3
  */
-public static Shell internal_new (Display display, int /*long*/ handle) {
+public static Shell internal_new (Display display, long /*int*/ handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, false);
 }
 
@@ -455,7 +455,7 @@ void adjustTrim () {
 	gtk_widget_get_allocation (shellHandle, allocation);
 	int width = allocation.width;
 	int height = allocation.height;
-	int /*long*/ window = gtk_widget_get_window (shellHandle);
+	long /*int*/ window = gtk_widget_get_window (shellHandle);
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gdk_window_get_frame_extents (window, rect);
 	int trimWidth = Math.max (0, rect.width - width);
@@ -510,7 +510,7 @@ void bringToTop (boolean force) {
 	if (!force) {
 		if (activeShell == null) return;
 		if (!display.activePending) {
-			int /*long*/ focusHandle = OS.gtk_window_get_focus (activeShell.shellHandle);
+			long /*int*/ focusHandle = OS.gtk_window_get_focus (activeShell.shellHandle);
 			if (focusHandle != 0 && !gtk_widget_has_focus (focusHandle)) return;
 		}
 	}
@@ -538,10 +538,10 @@ void bringToTop (boolean force) {
 	* window.  The fix is to use XSetInputFocus() to force
 	* the focus.
 	*/
-	int /*long*/ window = gtk_widget_get_window (shellHandle);
+	long /*int*/ window = gtk_widget_get_window (shellHandle);
 	if ((xFocus || (style & SWT.ON_TOP) != 0) && OS.GDK_WINDOWING_X11 ()) {
-		int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
-		int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (window);
+		long /*int*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
+		long /*int*/ xWindow = OS.gdk_x11_drawable_get_xid (window);
 		OS.gdk_error_trap_push ();
 		/* Use CurrentTime instead of the last event time to ensure that the shell becomes active */
 		OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
@@ -591,7 +591,7 @@ void checkOpen () {
 	if (!opened) resized = false;
 }
 
-int /*long*/ childStyle () {
+long /*int*/ childStyle () {
 	return 0;
 }
 
@@ -695,7 +695,7 @@ void createHandle (int index) {
 	} else {
 		vboxHandle = OS.gtk_bin_get_child (shellHandle);
 		if (vboxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		int /*long*/ children = OS.gtk_container_get_children (vboxHandle);
+		long /*int*/ children = OS.gtk_container_get_children (vboxHandle);
 		if (OS.g_list_length (children) > 0) {
 			scrolledHandle = OS.g_list_data (children);
 		}
@@ -715,7 +715,7 @@ void createHandle (int index) {
 	OS.gtk_widget_realize (shellHandle);
 }
 
-int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*/ data2) {
+long /*int*/ filterProc (long /*int*/ xEvent, long /*int*/ gdkEvent, long /*int*/ data2) {
 	int eventType = OS.X_EVENT_TYPE (xEvent);
 	if (eventType != OS.FocusOut && eventType != OS.FocusIn) return 0;
 	XFocusChangeEvent xFocusEvent = new XFocusChangeEvent();
@@ -812,7 +812,7 @@ void hookEvents () {
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MAP_EVENT], 0, display.shellMapProcClosure, false);
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
 	OS.g_signal_connect_closure (shellHandle, OS.move_focus, display.closures [MOVE_FOCUS], false);
-	int /*long*/ window = gtk_widget_get_window (shellHandle);
+	long /*int*/ window = gtk_widget_get_window (shellHandle);
 	OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
 	if (isCustomResize ()) {
 		int mask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK | OS.GDK_BUTTON_PRESS_MASK |  OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK;
@@ -853,7 +853,7 @@ void releaseParent () {
 	/* Do nothing */
 }
 
-int /*long*/ topHandle () {
+long /*int*/ topHandle () {
 	return shellHandle;
 }
 
@@ -884,15 +884,15 @@ void fixShell (Shell newShell, Control control) {
 	}
 }
 
-int /*long*/ fixedSizeAllocateProc(int /*long*/ widget, int /*long*/ allocationPtr) {
+long /*int*/ fixedSizeAllocateProc(long /*int*/ widget, long /*int*/ allocationPtr) {
 	int clientWidth = 0;
 	if ((style & SWT.MIRRORED) != 0) clientWidth = getClientWidth ();
-	int /*long*/ result = super.fixedSizeAllocateProc (widget, allocationPtr);
+	long /*int*/ result = super.fixedSizeAllocateProc (widget, allocationPtr);
 	if ((style & SWT.MIRRORED) != 0) moveChildren (clientWidth);
 	return result;
 }
 
-void fixStyle (int /*long*/ handle) {
+void fixStyle (long /*int*/ handle) {
 }
 
 void forceResize () {
@@ -1160,7 +1160,7 @@ public Shell [] getShells () {
 	return result;
 }
 
-int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
 			if ((style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0) {
@@ -1186,7 +1186,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	return super.gtk_button_press_event (widget, event);
 }
 
-int /*long*/ gtk_configure_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_configure_event (long /*int*/ widget, long /*int*/ event) {
 	int [] x = new int [1], y = new int [1];
 	OS.gtk_window_get_position (shellHandle, x, y);
 	if (!moved || oldX != x [0] || oldY != y [0]) {
@@ -1199,25 +1199,25 @@ int /*long*/ gtk_configure_event (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
 
-int /*long*/ gtk_delete_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_delete_event (long /*int*/ widget, long /*int*/ event) {
 	if (isEnabled()) closeWidget ();
 	return 1;
 }
 
-int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget != shellHandle) {
 		return super.gtk_enter_notify_event (widget, event);
 	}
 	return 0;
 }
 
-int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
 			GdkEventExpose gdkEventExpose = new GdkEventExpose ();
 			OS.memmove (gdkEventExpose, event, GdkEventExpose.sizeof);
-			int /*long*/ style = OS.gtk_widget_get_style (widget);
-			int /*long*/ window = gtk_widget_get_window (widget);
+			long /*int*/ style = OS.gtk_widget_get_style (widget);
+			long /*int*/ window = gtk_widget_get_window (widget);
 			int [] width = new int [1];
 			int [] height = new int [1];
 			gdk_window_get_size (window, width, height);
@@ -1241,7 +1241,7 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
 	return super.gtk_expose_event (widget, event);
 }
 
-int /*long*/ gtk_focus (int /*long*/ widget, int /*long*/ directionType) {
+long /*int*/ gtk_focus (long /*int*/ widget, long /*int*/ directionType) {
 	switch ((int)/*64*/directionType) {
 		case OS.GTK_DIR_TAB_FORWARD:
 		case OS.GTK_DIR_TAB_BACKWARD:
@@ -1258,13 +1258,13 @@ int /*long*/ gtk_focus (int /*long*/ widget, int /*long*/ directionType) {
 	return super.gtk_focus (widget, directionType);
 }
 
-int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
 			GdkEventCrossing gdkEvent = new GdkEventCrossing ();
 			OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
 			if ((gdkEvent.state & OS.GDK_BUTTON1_MASK) == 0) {
-				int /*long*/ window = gtk_widget_get_window (shellHandle);
+				long /*int*/ window = gtk_widget_get_window (shellHandle);
 				OS.gdk_window_set_cursor (window, 0);
 				display.resizeMode = 0;
 			}
@@ -1274,17 +1274,17 @@ int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
 	return super.gtk_leave_notify_event (widget, event);
 }
 
-int /*long*/ gtk_move_focus (int /*long*/ widget, int /*long*/ directionType) {
+long /*int*/ gtk_move_focus (long /*int*/ widget, long /*int*/ directionType) {
 	Control control = display.getFocusControl ();
 	if (control != null) {
-		int /*long*/ focusHandle = control.focusHandle ();
+		long /*int*/ focusHandle = control.focusHandle ();
 		OS.gtk_widget_child_focus (focusHandle, (int)/*64*/directionType);
 	}
 	OS.g_signal_stop_emission_by_name (shellHandle, OS.move_focus);
 	return 1;
 }
 
-int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
 			GdkEventMotion gdkEvent = new GdkEventMotion ();
@@ -1343,8 +1343,8 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 			} else {
 				int mode = getResizeMode (gdkEvent.x, gdkEvent.y);
 				if (mode != display.resizeMode) {
-					int /*long*/ window = gtk_widget_get_window (shellHandle);
-					int /*long*/ cursor = OS.gdk_cursor_new (mode);
+					long /*int*/ window = gtk_widget_get_window (shellHandle);
+					long /*int*/ cursor = OS.gdk_cursor_new (mode);
 					OS.gdk_window_set_cursor (window, cursor);
 					OS.gdk_cursor_unref (cursor);
 					display.resizeMode = mode;
@@ -1356,7 +1356,7 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 	return super.gtk_motion_notify_event (widget, event);
 }
 
-int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget == shellHandle) {
 		/* Stop menu mnemonics when the shell is disabled */
 		if ((state & DISABLED) != 0) return 1;
@@ -1364,8 +1364,8 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 		if (menuBar != null && !menuBar.isDisposed ()) {
 			Control focusControl = display.getFocusControl ();
 			if (focusControl != null && (focusControl.hooks (SWT.KeyDown) || focusControl.filters (SWT.KeyDown))) {
-				int /*long*/ [] accel = new int /*long*/ [1];
-				int /*long*/ setting = OS.gtk_settings_get_default ();
+				long /*int*/ [] accel = new long /*int*/ [1];
+				long /*int*/ setting = OS.gtk_settings_get_default ();
 				OS.g_object_get (setting, OS.gtk_menu_bar_accel, accel, 0);
 				if (accel [0] != 0) {
 					int [] keyval = new int [1];
@@ -1388,7 +1388,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	return super.gtk_key_press_event (widget, event);
 }
 
-int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
+long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	GtkAllocation widgetAllocation = new GtkAllocation ();
 	gtk_widget_get_allocation (shellHandle, widgetAllocation);
 	int width = widgetAllocation.width;
@@ -1401,9 +1401,9 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 	return 0;
 }
 
-int /*long*/ gtk_realize (int /*long*/ widget) {
-	int /*long*/ result = super.gtk_realize (widget);
-	int /*long*/ window = gtk_widget_get_window (shellHandle);
+long /*int*/ gtk_realize (long /*int*/ widget) {
+	long /*int*/ result = super.gtk_realize (widget);
+	long /*int*/ window = gtk_widget_get_window (shellHandle);
 	if ((style & SWT.SHELL_TRIM) != SWT.SHELL_TRIM) {
 		int decorations = 0;
 		if ((style & SWT.NO_TRIM) == 0) {
@@ -1429,7 +1429,7 @@ int /*long*/ gtk_realize (int /*long*/ widget) {
 	return result;
 }
 
-int /*long*/ gtk_window_state_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_window_state_event (long /*int*/ widget, long /*int*/ event) {
 	GdkEventWindowState gdkEvent = new GdkEventWindowState ();
 	OS.memmove (gdkEvent, event, GdkEventWindowState.sizeof);
 	minimized = (gdkEvent.new_window_state & OS.GDK_WINDOW_STATE_ICONIFIED) != 0;
@@ -1697,13 +1697,13 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	return result;
 }
 
-void setCursor (int /*long*/ cursor) {
+void setCursor (long /*int*/ cursor) {
 	if (enableWindow != 0) {
 		OS.gdk_window_set_cursor (enableWindow, cursor);
 		if (!OS.GDK_WINDOWING_X11 ()) {
 			OS.gdk_flush ();
 		} else {
-			int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
+			long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 			OS.XFlush (xDisplay);
 		}
 	}
@@ -1736,9 +1736,9 @@ public void setEnabled (boolean enabled) {
 			enableWindow = 0;
 		}
 	} else {
-		int /*long*/ parentHandle = shellHandle;
+		long /*int*/ parentHandle = shellHandle;
 		OS.gtk_widget_realize (parentHandle);
-		int /*long*/ window = gtk_widget_get_window (parentHandle);
+		long /*int*/ window = gtk_widget_get_window (parentHandle);
 		Rectangle rect = getBounds ();
 		GdkWindowAttr attributes = new GdkWindowAttr ();
 		attributes.width = rect.width;
@@ -1753,7 +1753,7 @@ public void setEnabled (boolean enabled) {
 				if (!OS.GDK_WINDOWING_X11 ()) {
 					OS.gdk_flush ();
 				} else {
-					int /*long*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
+					long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
 					OS.XFlush (xDisplay);
 				}
 			}
@@ -1827,7 +1827,7 @@ void setInitialBounds () {
 	if ((state & FOREIGN_HANDLE) != 0) return;
 	int width = OS.gdk_screen_width () * 5 / 8;
 	int height = OS.gdk_screen_height () * 5 / 8;
-	int /*long*/ screen = OS.gdk_screen_get_default ();
+	long /*int*/ screen = OS.gdk_screen_get_default ();
 	if (screen != 0) {
 		if (OS.gdk_screen_get_n_monitors (screen) > 1) {
 			int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, paintWindow ());
@@ -1862,13 +1862,13 @@ public void setMenuBar (Menu menu) {
 		if (menu.parent != this) error (SWT.ERROR_INVALID_PARENT);
 	}
 	if (menuBar != null) {
-		int /*long*/ menuHandle = menuBar.handle;
+		long /*int*/ menuHandle = menuBar.handle;
 		OS.gtk_widget_hide (menuHandle);
 		destroyAccelGroup ();
 	}
 	menuBar = menu;
 	if (menuBar != null) {
-		int /*long*/ menuHandle = menu.handle;
+		long /*int*/ menuHandle = menu.handle;
 		OS.gtk_widget_show (menuHandle);
 		createAccelGroup ();
 		menuBar.addAccelerators (accelGroup);
@@ -2125,7 +2125,7 @@ void setZOrder (Control sibling, boolean above, boolean fixRelations) {
 	if (mapped) setZOrder (sibling, above, false, false);
 }
 
-int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
+long /*int*/ shellMapProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	mapped = true;
 	display.dispatchEvents = null;
 	return 0;
@@ -2150,12 +2150,12 @@ void showWidget () {
 	if (vboxHandle != 0) OS.gtk_widget_show (vboxHandle);
 }
 
-int /*long*/ sizeAllocateProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
+long /*int*/ sizeAllocateProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	int offset = 16;
 	int [] x = new int [1], y = new int [1];
 	OS.gdk_window_get_pointer (0, x, y, null);
 	y [0] += offset;
-	int /*long*/ screen = OS.gdk_screen_get_default ();
+	long /*int*/ screen = OS.gdk_screen_get_default ();
 	if (screen != 0) {
 		int monitorNumber = OS.gdk_screen_get_monitor_at_point (screen, x[0], y[0]);
 		GdkRectangle dest = new GdkRectangle ();
@@ -2175,7 +2175,7 @@ int /*long*/ sizeAllocateProc (int /*long*/ handle, int /*long*/ arg0, int /*lon
 	return 0;
 }
 
-int /*long*/ sizeRequestProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
+long /*int*/ sizeRequestProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	OS.gtk_widget_hide (handle);
 	return 0;
 }
@@ -2222,7 +2222,7 @@ int trimWidth () {
 
 void updateModal () {
 	if (OS.GTK_IS_PLUG (shellHandle)) return;
-	int /*long*/ group = 0;
+	long /*int*/ group = 0;
 	boolean isModalShell = false;
 	if (display.getModalDialog () == null) {
 		Shell modal = getModalShell ();
@@ -2400,23 +2400,23 @@ void releaseWidget () {
 	tooltipsHandle = 0;
 	if (group != 0) OS.g_object_unref (group);
 	group = modalGroup = 0;
-	int /*long*/ window = gtk_widget_get_window (shellHandle);
+	long /*int*/ window = gtk_widget_get_window (shellHandle);
 	OS.gdk_window_remove_filter(window, display.filterProc, shellHandle);
 	lastActive = null;
 }
 
-void setToolTipText (int /*long*/ tipWidget, String string) {
+void setToolTipText (long /*int*/ tipWidget, String string) {
 	setToolTipText (tipWidget, tipWidget, string);
 }
 
-void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String string) {
+void setToolTipText (long /*int*/ rootWidget, long /*int*/ tipWidget, String string) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 12, 0)) {
 		byte [] buffer = null;
 		if (string != null && string.length () > 0) {
 			char [] chars = fixMnemonic (string, false);
 			buffer = Converter.wcsToMbcs (null, chars, true);
 		}
-		int /*long*/ oldTooltip = OS.gtk_widget_get_tooltip_text (rootWidget);
+		long /*int*/ oldTooltip = OS.gtk_widget_get_tooltip_text (rootWidget);
 		boolean same = false;
 		if (buffer == null && oldTooltip == 0) {
 			same = true;
@@ -2434,12 +2434,12 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 		* 2 fake GDK_MOTION_NOTIFY events (to mimic the GTK call) which 
 		* contain the proper x and y coordinates.
 		*/
-		int /*long*/ eventPtr = 0;
-		int /*long*/ tipWindow = gtk_widget_get_window (rootWidget);
+		long /*int*/ eventPtr = 0;
+		long /*int*/ tipWindow = gtk_widget_get_window (rootWidget);
 		if (tipWindow != 0) {
 			int [] x = new int [1], y = new int [1];
-			int /*long*/ window = OS.gdk_window_at_pointer (x, y);
-			int /*long*/ [] user_data = new int /*long*/ [1];
+			long /*int*/ window = OS.gdk_window_at_pointer (x, y);
+			long /*int*/ [] user_data = new long /*int*/ [1];
 			if (window != 0) OS.gdk_window_get_user_data (window, user_data);
 			if (tipWidget == user_data [0]) {
 				eventPtr = OS.gdk_event_new (OS.GDK_MOTION_NOTIFY);
@@ -2466,9 +2466,9 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 			char [] chars = fixMnemonic (string, false);
 			buffer = Converter.wcsToMbcs (null, chars, true);
 		}
-		int /*long*/ tipData = OS.gtk_tooltips_data_get(tipWidget);
+		long /*int*/ tipData = OS.gtk_tooltips_data_get(tipWidget);
 		if (tipData != 0) {
-			int /*long*/ oldTooltip = OS.GTK_TOOLTIPS_GET_TIP_TEXT(tipData);
+			long /*int*/ oldTooltip = OS.GTK_TOOLTIPS_GET_TIP_TEXT(tipData);
 			if (string == null && oldTooltip == 0) {
 				return;
 			} else if (string != null && oldTooltip != 0) {
@@ -2496,7 +2496,7 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 		* where it's deprecated.
 		*/
 		OS.gtk_tooltips_force_window (tooltipsHandle);
-		int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (tooltipsHandle);
+		long /*int*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (tooltipsHandle);
 		if (tipWindow != 0 && tipWindow != tooltipWindow) {
 			OS.g_signal_connect (tipWindow, OS.size_allocate, display.sizeAllocateProc, shellHandle);
 			tooltipWindow = tipWindow;
@@ -2512,9 +2512,9 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 		if (tipWindow != 0) {
 			if (gtk_widget_get_visible (tipWidget) || gtk_widget_get_realized (tipWidget)) {
 				int [] x = new int [1], y = new int [1];
-				int /*long*/ window = OS.gdk_window_at_pointer (x, y);
+				long /*int*/ window = OS.gdk_window_at_pointer (x, y);
 				if (window != 0) {
-					int /*long*/ [] user_data = new int /*long*/ [1];
+					long /*int*/ [] user_data = new long /*int*/ [1];
 					OS.gdk_window_get_user_data (window, user_data);
 					if (tipWidget == user_data [0]) {
 						/* 
@@ -2528,7 +2528,7 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 						int handler_id = OS.g_signal_connect (tipWindow, OS.size_request, display.sizeRequestProc, shellHandle);
 						OS.gtk_tooltips_set_tip (tooltipsHandle, tipWidget, buffer, null);
 						OS.gtk_widget_hide (tipWindow);
-						int /*long*/ data = OS.gtk_tooltips_data_get (tipWidget);
+						long /*int*/ data = OS.gtk_tooltips_data_get (tipWidget);
 						OS.GTK_TOOLTIPS_SET_ACTIVE (tooltipsHandle, data);
 						OS.gtk_tooltips_set_tip (tooltipsHandle, tipWidget, buffer, null);
 						if (handler_id != 0) OS.g_signal_handler_disconnect (tipWindow, handler_id);

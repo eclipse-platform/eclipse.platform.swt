@@ -16,7 +16,7 @@ public NSImageRep() {
 	super();
 }
 
-public NSImageRep(int /*long*/ id) {
+public NSImageRep(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,12 +24,12 @@ public NSImageRep(id id) {
 	super(id);
 }
 
-public int /*long*/ bitsPerSample() {
+public long /*int*/ bitsPerSample() {
 	return OS.objc_msgSend(this.id, OS.sel_bitsPerSample);
 }
 
 public NSString colorSpaceName() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_colorSpaceName);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_colorSpaceName);
 	return result != 0 ? new NSString(result) : null;
 }
 
@@ -41,11 +41,11 @@ public boolean hasAlpha() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_hasAlpha);
 }
 
-public int /*long*/ pixelsHigh() {
+public long /*int*/ pixelsHigh() {
 	return OS.objc_msgSend(this.id, OS.sel_pixelsHigh);
 }
 
-public int /*long*/ pixelsWide() {
+public long /*int*/ pixelsWide() {
 	return OS.objc_msgSend(this.id, OS.sel_pixelsWide);
 }
 

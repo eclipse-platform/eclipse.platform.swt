@@ -19,127 +19,127 @@ public class GtkWidgetClass extends GObjectClass {
 	public int activate_signal;
 	public int set_scroll_adjustments_signal;	
 	/** @field cast=(void(*)()) */
-	public int /*long*/ dispatch_child_properties_changed;
+	public long /*int*/ dispatch_child_properties_changed;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ show;
+	public long /*int*/ show;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ show_all;
+	public long /*int*/ show_all;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ hide;
+	public long /*int*/ hide;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ hide_all;
+	public long /*int*/ hide_all;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ map;
+	public long /*int*/ map;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ unmap;
+	public long /*int*/ unmap;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ realize;
+	public long /*int*/ realize;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ unrealize;
+	public long /*int*/ unrealize;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ size_request;
+	public long /*int*/ size_request;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ size_allocate;
+	public long /*int*/ size_allocate;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ state_changed; 
+	public long /*int*/ state_changed; 
 	/** @field cast=(void(*)()) */
-	public int /*long*/ parent_set;
+	public long /*int*/ parent_set;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ hierarchy_changed;
+	public long /*int*/ hierarchy_changed;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ style_set;
+	public long /*int*/ style_set;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ direction_changed;
+	public long /*int*/ direction_changed;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ grab_notify;
+	public long /*int*/ grab_notify;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ child_notify;	
+	public long /*int*/ child_notify;	
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ mnemonic_activate;
+	public long /*int*/ mnemonic_activate;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ grab_focus;
+	public long /*int*/ grab_focus;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ focus;
+	public long /*int*/ focus;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ event;
+	public long /*int*/ event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ button_press_event;
+	public long /*int*/ button_press_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ button_release_event;
+	public long /*int*/ button_release_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ scroll_event;
+	public long /*int*/ scroll_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ motion_notify_event;
+	public long /*int*/ motion_notify_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ delete_event;
+	public long /*int*/ delete_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ destroy_event;
+	public long /*int*/ destroy_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ expose_event;
+	public long /*int*/ expose_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ key_press_event;
+	public long /*int*/ key_press_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ key_release_event;
+	public long /*int*/ key_release_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ enter_notify_event;
+	public long /*int*/ enter_notify_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ leave_notify_event;
+	public long /*int*/ leave_notify_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ configure_event;
+	public long /*int*/ configure_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ focus_in_event;
+	public long /*int*/ focus_in_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ focus_out_event;
+	public long /*int*/ focus_out_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ map_event;
+	public long /*int*/ map_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ unmap_event;
+	public long /*int*/ unmap_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ property_notify_event;
+	public long /*int*/ property_notify_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ selection_clear_event;
+	public long /*int*/ selection_clear_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ selection_request_event;
+	public long /*int*/ selection_request_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ selection_notify_event;
+	public long /*int*/ selection_notify_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ proximity_in_event;
+	public long /*int*/ proximity_in_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ proximity_out_event;
+	public long /*int*/ proximity_out_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ visibility_notify_event;
+	public long /*int*/ visibility_notify_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ client_event;
+	public long /*int*/ client_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ no_expose_event;
+	public long /*int*/ no_expose_event;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ window_state_event;
+	public long /*int*/ window_state_event;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ selection_get;
+	public long /*int*/ selection_get;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ selection_received;
+	public long /*int*/ selection_received;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ drag_begin;
+	public long /*int*/ drag_begin;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ drag_end;
+	public long /*int*/ drag_end;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ drag_data_get;
+	public long /*int*/ drag_data_get;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ drag_data_delete;
+	public long /*int*/ drag_data_delete;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ drag_leave;
+	public long /*int*/ drag_leave;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ drag_motion;
+	public long /*int*/ drag_motion;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ drag_drop;
+	public long /*int*/ drag_drop;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ drag_data_received;
+	public long /*int*/ drag_data_received;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ popup_menu;
+	public long /*int*/ popup_menu;
 	/** @field cast=(gboolean(*)()) */
-	public int /*long*/ show_help;
+	public long /*int*/ show_help;
 	/** @field cast=(AtkObject*(*)()) */
-	public int /*long*/ get_accessible;
+	public long /*int*/ get_accessible;
 	/** @field cast=(void(*)()) */
-	public int /*long*/ screen_changed;
+	public long /*int*/ screen_changed;
 }

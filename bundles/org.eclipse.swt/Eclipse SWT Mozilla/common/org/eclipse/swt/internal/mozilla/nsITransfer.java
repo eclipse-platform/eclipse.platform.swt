@@ -37,11 +37,11 @@ public class nsITransfer extends nsIWebProgressListener2 {
 	public static final nsID NS_ITRANSFER_IID =
 		new nsID(NS_ITRANSFER_IID_STR);
 
-	public nsITransfer(int /*long*/ address) {
+	public nsITransfer(long /*int*/ address) {
 		super(address);
 	}
 
-	public int Init(int /*long*/ aSource, int /*long*/ aTarget, int /*long*/ aDisplayName, int /*long*/ aMIMEInfo, long startTime, int /*long*/ aTempFile, int /*long*/ aCancelable) {
+	public int Init(long /*int*/ aSource, long /*int*/ aTarget, long /*int*/ aDisplayName, long /*int*/ aMIMEInfo, long startTime, long /*int*/ aTempFile, long /*int*/ aCancelable) {
 		return XPCOM.VtblCall(nsIWebProgressListener2.LAST_METHOD_ID + 1, getAddress(), aSource, aTarget, aDisplayName, aMIMEInfo, startTime, aTempFile, aCancelable);
 	}
 }

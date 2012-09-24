@@ -136,7 +136,7 @@ public void add (String string) {
 	NSAttributedString str = createString(string);
 	if ((style & SWT.READ_ONLY) != 0) {
 		NSPopUpButton widget = (NSPopUpButton)view;
-		int /*long*/ selection = widget.indexOfSelectedItem();
+		long /*int*/ selection = widget.indexOfSelectedItem();
 		NSMenu nsMenu = widget.menu();
 		NSMenuItem nsItem = (NSMenuItem)new NSMenuItem().alloc();
 		NSString empty = NSString.string();
@@ -181,7 +181,7 @@ public void add (String string, int index) {
 	NSAttributedString str = createString(string);
 	if ((style & SWT.READ_ONLY) != 0) {
 		NSPopUpButton widget = (NSPopUpButton)view;
-		int /*long*/ selection = widget.indexOfSelectedItem();
+		long /*int*/ selection = widget.indexOfSelectedItem();
 		NSMenu nsMenu = widget.menu();
 		NSMenuItem nsItem = (NSMenuItem)new NSMenuItem().alloc();
 		NSString empty = NSString.string();
@@ -281,7 +281,7 @@ public void addVerifyListener (VerifyListener listener) {
 	addListener (SWT.Verify, typedListener);
 }
 
-boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
+boolean becomeFirstResponder (long /*int*/ id, long /*int*/ sel) {
 	receivingFocus = true;
 	boolean result = super.becomeFirstResponder (id, sel);
 	receivingFocus = false;
@@ -346,13 +346,13 @@ public void clearSelection () {
 	}
 }
 
-void setObjectValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+void setObjectValue(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	super.setObjectValue(id, sel, ignoreSetObject ? arg0 : createString(text).id);
 }
 
-void comboBoxSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void comboBoxSelectionDidChange(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	NSComboBox widget = (NSComboBox)view;
-	int /*long*/ tableSelection = widget.indexOfSelectedItem();
+	long /*int*/ tableSelection = widget.indexOfSelectedItem();
 	widget.selectItemAtIndex(tableSelection);
 	NSAttributedString attStr = new NSAttributedString (widget.itemObjectValueAtIndex(tableSelection));
 	NSString nsString = attStr.string();
@@ -456,12 +456,12 @@ void createWidget() {
 	}
 }
 
-void comboBoxWillDismiss(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void comboBoxWillDismiss(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	display.comboPoppedUp = false;
 	listVisible = false;
 }
 
-void comboBoxWillPopUp(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void comboBoxWillPopUp(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	display.comboPoppedUp = true;
 	listVisible = true;
 }
@@ -568,7 +568,7 @@ public void deselectAll () {
 		sendEvent (SWT.Modify);
 	} else {
 		NSComboBox widget = (NSComboBox)view;
-		int /*long*/ index = widget.indexOfSelectedItem();
+		long /*int*/ index = widget.indexOfSelectedItem();
 		if (index != -1) widget.deselectItemAtIndex(index);
 	}
 }
@@ -583,7 +583,7 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 				NSPoint textViewMouse = new NSPoint();
 				textViewMouse.x = x;
 				textViewMouse.y = y;
-				int /*long*/ charPosition = feAsTextView.characterIndexForInsertionAtPoint(textViewMouse);
+				long /*int*/ charPosition = feAsTextView.characterIndexForInsertionAtPoint(textViewMouse);
 				if (charPosition != OS.NSNotFound && charPosition >= selectedRange.location && charPosition < (selectedRange.location + selectedRange.length)) {
 					if (super.dragDetect(x, y, filter, consume)) {
 						if (consume != null) consume[0] = true;
@@ -646,8 +646,8 @@ public Point getCaretLocation() {
 	NSLayoutManager layoutManager = widget.layoutManager();
 	NSTextContainer container = widget.textContainer();
 	NSRange range = widget.selectedRange();
-	int /*long*/ [] rectCount = new int /*long*/ [1];
-	int /*long*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, container, rectCount);
+	long /*int*/ [] rectCount = new long /*int*/ [1];
+	long /*int*/ pArray = layoutManager.rectArrayForCharacterRange(range, range, container, rectCount);
 	NSRect rect = new NSRect();
 	if (rectCount[0] > 0) OS.memmove(rect, pArray, NSRect.sizeof);
 	NSPoint pt = new NSPoint();
@@ -888,7 +888,7 @@ char [] getText (int start, int end) {
 	NSRange range = new NSRange ();
 	range.location = start;
 	if (end == -1) {
-		int /*long*/ length = str.length();
+		long /*int*/ length = str.length();
 		range.length = length - start;
 	} else {
 		range.length = end - start;
@@ -1018,19 +1018,19 @@ public int indexOf (String string, int start) {
 	return -1;
 }
 
-boolean isEventView (int /*long*/ id) {
+boolean isEventView (long /*int*/ id) {
 	return true;
 }
 
-void menuWillOpen(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
+void menuWillOpen(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 	listVisible = true;
 }
 
-void menuDidClose(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
+void menuDidClose(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 	listVisible = false;
 }
 
-void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	// If this is a combo box with an editor field and the control is disposed
 	// while the view's cell editor is open we crash while tearing down the
 	// popup window. Fix is to retain the view before letting Cocoa track
@@ -1311,7 +1311,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 	boolean result = super.sendKeyEvent (nsEvent, type);
 	if (!result) return result;
 	int stateMask = 0;
-	int /*long*/ modifierFlags = nsEvent.modifierFlags();
+	long /*int*/ modifierFlags = nsEvent.modifierFlags();
 	if ((modifierFlags & OS.NSAlternateKeyMask) != 0) stateMask |= SWT.ALT;
 	if ((modifierFlags & OS.NSShiftKeyMask) != 0) stateMask |= SWT.SHIFT;
 	if ((modifierFlags & OS.NSControlKeyMask) != 0) stateMask |= SWT.CONTROL;
@@ -1377,7 +1377,7 @@ void setFont (NSFont font) {
 	updateItems();
 }
 
-void setForeground (float /*double*/ [] color) {
+void setForeground (double /*float*/ [] color) {
 	super.setForeground(color);
 	updateItems();
 	if ((style & SWT.READ_ONLY) == 0) {
@@ -1664,14 +1664,14 @@ public void setVisibleItemCount (int count) {
 	}
 }
 
-boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ sel, int /*long*/ affectedCharRange, int /*long*/ replacementString) {
+boolean shouldChangeTextInRange_replacementString(long /*int*/ id, long /*int*/ sel, long /*int*/ affectedCharRange, long /*int*/ replacementString) {
 	NSRange range = new NSRange();
 	OS.memmove(range, affectedCharRange, NSRange.sizeof);
 	boolean result = callSuperBoolean(id, sel, range, replacementString);
 	if (hooks (SWT.Verify)) {
 		String string = new NSString(replacementString).getString();
 		NSEvent currentEvent = display.application.currentEvent();
-		int /*long*/ type = currentEvent.type();
+		long /*int*/ type = currentEvent.type();
 		if (type != OS.NSKeyDown && type != OS.NSKeyUp) currentEvent = null;
 		String newText = verifyText(string, (int)/*64*/range.location, (int)/*64*/(range.location+range.length), currentEvent);
 		if (newText == null) return false;
@@ -1705,18 +1705,18 @@ boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ 
 	return result;
 }
 
-void textViewDidChangeSelection(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+void textViewDidChangeSelection(long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	NSNotification notification = new NSNotification(aNotification);
 	NSText editor = new NSText(notification.object().id);
 	selectionRange = editor.selectedRange();
 }
 
-void textDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+void textDidChange (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	super.textDidChange (id, sel, aNotification);
 	postEvent (SWT.Modify);
 }
 
-NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int /*long*/ id, int /*long*/ sel, int /*long*/ aTextView, int /*long*/ oldSelectedCharRange, int /*long*/ newSelectedCharRange) {
+NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(long /*int*/ id, long /*int*/ sel, long /*int*/ aTextView, long /*int*/ oldSelectedCharRange, long /*int*/ newSelectedCharRange) {
 	/*
 	* If the selection is changing as a result of the receiver getting focus
 	* then return the receiver's last selection range, otherwise the full

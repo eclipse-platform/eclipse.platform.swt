@@ -22,9 +22,9 @@ public class MENUBARINFO {
 	/** @field accessor=rcBar.bottom */
 	public int bottom;
 	/** @field cast=(HMENU) */
-	public int /*long*/ hMenu;
+	public long /*int*/ hMenu;
 	/** @field cast=(HWND) */
-	public int /*long*/ hwndMenu;
+	public long /*int*/ hwndMenu;
 	public boolean fBarFocused;
 	public boolean fFocused;
 	public static final int sizeof = OS.MENUBARINFO_sizeof ();

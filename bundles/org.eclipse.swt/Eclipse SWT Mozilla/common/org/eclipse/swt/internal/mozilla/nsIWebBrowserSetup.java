@@ -37,7 +37,7 @@ public class nsIWebBrowserSetup extends nsISupports {
 	public static final nsID NS_IWEBBROWSERSETUP_IID =
 		new nsID(NS_IWEBBROWSERSETUP_IID_STR);
 
-	public nsIWebBrowserSetup(int /*long*/ address) {
+	public nsIWebBrowserSetup(long /*int*/ address) {
 		super(address);
 	}
 

@@ -37,19 +37,19 @@ public class nsILocalFile extends nsIFile {
 	public static final nsID NS_ILOCALFILE_IID =
 		new nsID(NS_ILOCALFILE_IID_STR);
 
-	public nsILocalFile(int /*long*/ address) {
+	public nsILocalFile(long /*int*/ address) {
 		super(address);
 	}
 
-	public int InitWithPath(int /*long*/ filePath) {
+	public int InitWithPath(long /*int*/ filePath) {
 		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 1, getAddress(), filePath);
 	}
 
-	public int InitWithNativePath(int /*long*/ filePath) {
+	public int InitWithNativePath(long /*int*/ filePath) {
 		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 2, getAddress(), filePath);
 	}
 
-	public int InitWithFile(int /*long*/ aFile) {
+	public int InitWithFile(long /*int*/ aFile) {
 		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 3, getAddress(), aFile);
 	}
 
@@ -61,15 +61,15 @@ public class nsILocalFile extends nsIFile {
 		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 5, getAddress(), aFollowLinks);
 	}
 
-	public int OpenNSPRFileDesc(int flags, int mode, int /*long*/[] _retval) {
+	public int OpenNSPRFileDesc(int flags, int mode, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 6, getAddress(), flags, mode, _retval);
 	}
 
-	public int OpenANSIFileDesc(byte[] mode, int /*long*/[] _retval) {
+	public int OpenANSIFileDesc(byte[] mode, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 7, getAddress(), mode, _retval);
 	}
 
-	public int Load(int /*long*/[] _retval) {
+	public int Load(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 8, getAddress(), _retval);
 	}
 
@@ -77,19 +77,19 @@ public class nsILocalFile extends nsIFile {
 		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 9, getAddress(), aDiskSpaceAvailable);
 	}
 
-	public int AppendRelativePath(int /*long*/ relativeFilePath) {
+	public int AppendRelativePath(long /*int*/ relativeFilePath) {
 		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 10, getAddress(), relativeFilePath);
 	}
 
-	public int AppendRelativeNativePath(int /*long*/ relativeFilePath) {
+	public int AppendRelativeNativePath(long /*int*/ relativeFilePath) {
 		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 11, getAddress(), relativeFilePath);
 	}
 
-	public int GetPersistentDescriptor(int /*long*/ aPersistentDescriptor) {
+	public int GetPersistentDescriptor(long /*int*/ aPersistentDescriptor) {
 		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 12, getAddress(), aPersistentDescriptor);
 	}
 
-	public int SetPersistentDescriptor(int /*long*/ aPersistentDescriptor) {
+	public int SetPersistentDescriptor(long /*int*/ aPersistentDescriptor) {
 		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 13, getAddress(), aPersistentDescriptor);
 	}
 
@@ -101,11 +101,11 @@ public class nsILocalFile extends nsIFile {
 		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 15, getAddress());
 	}
 
-	public int GetRelativeDescriptor(int /*long*/ fromFile, int /*long*/ _retval) {
+	public int GetRelativeDescriptor(long /*int*/ fromFile, long /*int*/ _retval) {
 		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 16, getAddress(), fromFile, _retval);
 	}
 
-	public int SetRelativeDescriptor(int /*long*/ fromFile, int /*long*/ relativeDesc) {
+	public int SetRelativeDescriptor(long /*int*/ fromFile, long /*int*/ relativeDesc) {
 		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 17, getAddress(), fromFile, relativeDesc);
 	}
 }

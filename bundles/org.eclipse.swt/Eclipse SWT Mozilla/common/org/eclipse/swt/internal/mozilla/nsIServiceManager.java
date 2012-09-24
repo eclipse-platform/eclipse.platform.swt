@@ -37,15 +37,15 @@ public class nsIServiceManager extends nsISupports {
 	public static final nsID NS_ISERVICEMANAGER_IID =
 		new nsID(NS_ISERVICEMANAGER_IID_STR);
 
-	public nsIServiceManager(int /*long*/ address) {
+	public nsIServiceManager(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetService(nsID aClass, nsID aIID, int /*long*/[] result) {
+	public int GetService(nsID aClass, nsID aIID, long /*int*/[] result) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aClass, aIID, result);
 	}
 
-	public int GetServiceByContractID(byte[] aContractID, nsID aIID, int /*long*/[] result) {
+	public int GetServiceByContractID(byte[] aContractID, nsID aIID, long /*int*/[] result) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aContractID, aIID, result);
 	}
 

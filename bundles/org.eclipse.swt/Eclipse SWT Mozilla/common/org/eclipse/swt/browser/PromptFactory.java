@@ -30,16 +30,16 @@ int AddRef () {
 void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject (new int[] {2, 0, 0}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
-		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
+		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
 	
 	factory = new XPCOMObject (new int[] {2, 0, 0, 3, 1}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
-		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return GetPrompt (args[0], args[1], args[2]);}
+		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		public long /*int*/ method3 (long /*int*/[] args) {return GetPrompt (args[0], args[1], args[2]);}
 	};
 }
 
@@ -54,27 +54,27 @@ void disposeCOMInterfaces () {
 	}
 }
 
-int /*long*/ getAddress () {
+long /*int*/ getAddress () {
 	return factory.getAddress ();
 }
 
-int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
+int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
 	
 	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
-		XPCOM.memmove (ppvObject, new int /*long*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
+		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals (nsIPromptFactory.NS_IPROMPTFACTORY_IID)) {
-		XPCOM.memmove (ppvObject, new int /*long*/[] {factory.getAddress ()}, C.PTR_SIZEOF);
+		XPCOM.memmove (ppvObject, new long /*int*/[] {factory.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
 	
-	XPCOM.memmove (ppvObject, new int /*long*/[] {0}, C.PTR_SIZEOF);
+	XPCOM.memmove (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
         	
@@ -86,7 +86,7 @@ int Release () {
 	
 /* nsIPromptFactory */
 
-int GetPrompt (int /*long*/ aParent, int /*long*/ iid, int /*long*/ result) {
+int GetPrompt (long /*int*/ aParent, long /*int*/ iid, long /*int*/ result) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, iid, nsID.sizeof);
 	
@@ -94,7 +94,7 @@ int GetPrompt (int /*long*/ aParent, int /*long*/ iid, int /*long*/ result) {
 		Prompter prompter = new Prompter ();
 		prompter.AddRef ();
 		prompter.setParent (aParent);
-		XPCOM.memmove (result, new int /*long*/[] {prompter.getAddress ()}, C.PTR_SIZEOF);
+		XPCOM.memmove (result, new long /*int*/[] {prompter.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
@@ -102,7 +102,7 @@ int GetPrompt (int /*long*/ aParent, int /*long*/ iid, int /*long*/ result) {
 		PromptAuth2 promptAuth = new PromptAuth2();
 		promptAuth.AddRef ();
 		promptAuth.setParent (aParent);
-		XPCOM.memmove (result, new int /*long*/[] {promptAuth.getAddress ()}, C.PTR_SIZEOF);
+		XPCOM.memmove (result, new long /*int*/[] {promptAuth.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}

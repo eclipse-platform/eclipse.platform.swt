@@ -54,7 +54,7 @@ public final class Cursor extends Resource {
 	 * 
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public int /*long*/ handle;
+	public long /*int*/ handle;
 
 	static final byte[] APPSTARTING_SRC = {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00,
@@ -290,15 +290,15 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int /*long*/ display = 0;
+	long /*int*/ display = 0;
 	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0) && OS.gdk_display_supports_cursor_color(display = OS.gdk_display_get_default ())) {
 		int width = source.width;
 		int height = source.height;
 		PaletteData palette = source.palette;	
-		int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, width, height);
+		long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, width, height);
 		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-		int /*long*/ data = OS.gdk_pixbuf_get_pixels(pixbuf);
+		long /*int*/ data = OS.gdk_pixbuf_get_pixels(pixbuf);
 		byte[] buffer = source.data;
 		if (!palette.isDirect || source.depth != 24 || stride != source.bytesPerLine || palette.redMask != 0xFF000000 || palette.greenMask != 0xFF0000 || palette.blueMask != 0xFF00) {
 			buffer = new byte[source.width * source.height * 4];
@@ -432,10 +432,10 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	init();
 }
 
-int /*long*/ createCursor(byte[] sourceData, byte[] maskData, int width, int height, int hotspotX, int hotspotY, boolean reverse) {
-	int /*long*/ sourcePixmap = OS.gdk_bitmap_create_from_data(0, sourceData, width, height);
-	int /*long*/ maskPixmap = OS.gdk_bitmap_create_from_data(0, maskData, width, height);
-	int /*long*/ cursor = 0;
+long /*int*/ createCursor(byte[] sourceData, byte[] maskData, int width, int height, int hotspotX, int hotspotY, boolean reverse) {
+	long /*int*/ sourcePixmap = OS.gdk_bitmap_create_from_data(0, sourceData, width, height);
+	long /*int*/ maskPixmap = OS.gdk_bitmap_create_from_data(0, maskData, width, height);
+	long /*int*/ cursor = 0;
 	if (sourcePixmap != 0 && maskPixmap != 0) {
 		GdkColor foreground = new GdkColor();
 		if (!reverse) foreground.red = foreground.green = foreground.blue = (short)0xFFFF;
@@ -485,7 +485,7 @@ public boolean equals(Object object) {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public static Cursor gtk_new(Device device, int /*long*/ handle) {
+public static Cursor gtk_new(Device device, long /*int*/ handle) {
 	Cursor cursor = new Cursor(device);
 	cursor.handle = handle;
 	return cursor;

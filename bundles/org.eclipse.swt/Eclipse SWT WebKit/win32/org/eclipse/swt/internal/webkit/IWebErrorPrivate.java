@@ -15,11 +15,11 @@ import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebErrorPrivate extends IUnknown {
 
-public IWebErrorPrivate (int /*long*/ address) {
+public IWebErrorPrivate (long /*int*/ address) {
 	super (address);
 }
 
-public int sslPeerCertificate (int /*long*/[] result) {
+public int sslPeerCertificate (long /*int*/[] result) {
 	return COM.VtblCall (3, getAddress (), result);
 }
 

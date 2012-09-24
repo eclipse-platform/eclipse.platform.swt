@@ -14,12 +14,12 @@ public class TOUCHINPUT {
 	public int x;
 	public int y;
 	/** @field cast=(HWND) */
-	public int /*long*/    hSource;
+	public long /*int*/    hSource;
 	public int dwID;
 	public int dwFlags;
 	public int dwMask;
 	public int dwTime;
-	public int /*long*/ dwExtraInfo;
+	public long /*int*/ dwExtraInfo;
 	public int cxContact;
 	public int cyContact;
 	public static final int sizeof = OS.TOUCHINPUT_sizeof();

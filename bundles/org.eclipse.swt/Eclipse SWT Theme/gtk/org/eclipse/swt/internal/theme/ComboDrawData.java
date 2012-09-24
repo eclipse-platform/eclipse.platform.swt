@@ -24,9 +24,9 @@ public ComboDrawData() {
 }
 
 void draw(Theme theme, GC gc, Rectangle bounds) {
-	int /*long*/ buttonHandle = theme.buttonHandle;
-	int /*long*/ gtkStyle = OS.gtk_widget_get_style(buttonHandle);
-	int /*long*/ drawable = gc.getGCData().drawable;
+	long /*int*/ buttonHandle = theme.buttonHandle;
+	long /*int*/ gtkStyle = OS.gtk_widget_get_style(buttonHandle);
+	long /*int*/ drawable = gc.getGCData().drawable;
 	theme.transferClipping(gc, gtkStyle);
 	
 	int x = bounds.x;
@@ -61,10 +61,10 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		OS.gtk_paint_box(gtkStyle, drawable, state_type, shadow_type, null, buttonHandle, detail, arrow_button_x, y, arrow_button_width, height);
 	}		
 	byte[] arrow_detail = Converter.wcsToMbcs(null, "arrow", true);
-	int /*long*/ arrowHandle = theme.arrowHandle;
+	long /*int*/ arrowHandle = theme.arrowHandle;
 	OS.gtk_paint_arrow(gtkStyle, drawable, state_type, OS.GTK_SHADOW_OUT, null, arrowHandle, arrow_detail, OS.GTK_ARROW_DOWN, true, arrow_x, arrow_y, arrow_width, arrow_height);
 	
-	int /*long*/ entryHandle = theme.entryHandle;
+	long /*int*/ entryHandle = theme.entryHandle;
 	gtkStyle = OS.gtk_widget_get_style(entryHandle);
 	theme.transferClipping(gc, gtkStyle);
 	state_type = getStateType(DrawData.WIDGET_WHOLE);
@@ -100,8 +100,8 @@ int getStateType(int part) {
 
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;
-	int /*long*/ buttonHandle = theme.buttonHandle;
-	int /*long*/ gtkStyle = OS.gtk_widget_get_style(buttonHandle);
+	long /*int*/ buttonHandle = theme.buttonHandle;
+	long /*int*/ gtkStyle = OS.gtk_widget_get_style(buttonHandle);
 	int interior_focus = theme.getWidgetProperty(buttonHandle, "interior-focus");
 	int focus_line_width = theme.getWidgetProperty(buttonHandle, "focus-line-width");
 	int focus_padding = theme.getWidgetProperty(buttonHandle, "focus-padding");

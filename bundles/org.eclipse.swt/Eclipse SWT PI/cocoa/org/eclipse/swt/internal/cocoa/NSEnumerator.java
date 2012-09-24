@@ -16,7 +16,7 @@ public NSEnumerator() {
 	super();
 }
 
-public NSEnumerator(int /*long*/ id) {
+public NSEnumerator(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,7 +25,7 @@ public NSEnumerator(id id) {
 }
 
 public id nextObject() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_nextObject);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_nextObject);
 	return result != 0 ? new id(result) : null;
 }
 

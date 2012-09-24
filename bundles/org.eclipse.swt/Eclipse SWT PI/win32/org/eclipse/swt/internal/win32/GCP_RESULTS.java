@@ -13,17 +13,17 @@ package org.eclipse.swt.internal.win32;
 public class GCP_RESULTS {
 	public int lStructSize;
 	/** @field cast=(LPTSTR) */
-	public int /*long*/ lpOutString;
+	public long /*int*/ lpOutString;
 	/** @field cast=(UINT  *) */
-	public int /*long*/ lpOrder;
+	public long /*int*/ lpOrder;
 	/** @field cast=(int  *) */
-	public int /*long*/ lpDx;
+	public long /*int*/ lpDx;
 	/** @field cast=(int  *) */
-	public int /*long*/ lpCaretPos;
+	public long /*int*/ lpCaretPos;
 	/** @field cast=(LPSTR) */
-	public int /*long*/ lpClass;
+	public long /*int*/ lpClass;
 	/** @field cast=(LPWSTR) */
-	public int /*long*/ lpGlyphs;
+	public long /*int*/ lpGlyphs;
 	public int nGlyphs;
 	public int nMaxFit;
 	public static final int sizeof = OS.GCP_RESULTS_sizeof ();

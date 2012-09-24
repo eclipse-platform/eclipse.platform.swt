@@ -89,7 +89,7 @@ public class ScrollBar extends Widget {
 	int increment = 1;
 	int pageIncrement = 10;
 	id target;
-	int /*long*/ actionSelector;
+	long /*int*/ actionSelector;
 
 ScrollBar () {
 	/* Do nothing */
@@ -730,7 +730,7 @@ void updateBar (int selection, int minimum, int maximum, int thumb) {
 	float fraction = range <= 0 ? 1 : (float) (selection - minimum) / range;
 	float knob = range <= 0 ? 1 : (float) thumb / (maximum - minimum);
 	double oldFraction = widget.doubleValue();
-	float /*double*/ oldKnob = widget.knobProportion();
+	double /*float*/ oldKnob = widget.knobProportion();
 	widget.setDoubleValue(fraction);
 	widget.setKnobProportion(knob);
 	widget.setEnabled (range > 0);

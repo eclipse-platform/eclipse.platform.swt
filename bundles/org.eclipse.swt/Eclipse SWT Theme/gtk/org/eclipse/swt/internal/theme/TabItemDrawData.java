@@ -27,8 +27,8 @@ public TabItemDrawData() {
 }
 
 Rectangle computeTrim(Theme theme, GC gc) {
-	int /*long*/ notebookHandle = theme.notebookHandle;
-	int /*long*/ gtkStyle = OS.gtk_widget_get_style(notebookHandle);
+	long /*int*/ notebookHandle = theme.notebookHandle;
+	long /*int*/ gtkStyle = OS.gtk_widget_get_style(notebookHandle);
 	int hborder, vborder;
 	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
 		hborder = theme.getWidgetProperty(notebookHandle, "tab-hborder");
@@ -50,9 +50,9 @@ Rectangle computeTrim(Theme theme, GC gc) {
 }
 
 void draw(Theme theme, GC gc, Rectangle bounds) {
-	int /*long*/ notebookHandle = theme.notebookHandle;
-	int /*long*/ gtkStyle = OS.gtk_widget_get_style (notebookHandle);
-	int /*long*/ drawable = gc.getGCData().drawable;
+	long /*int*/ notebookHandle = theme.notebookHandle;
+	long /*int*/ gtkStyle = OS.gtk_widget_get_style (notebookHandle);
+	long /*int*/ drawable = gc.getGCData().drawable;
 	theme.transferClipping(gc, gtkStyle);
 	int x = bounds.x, y = bounds.y, width = bounds.width, height = bounds.height;
 	if ((state[DrawData.WIDGET_WHOLE] & DrawData.SELECTED) == 0) {

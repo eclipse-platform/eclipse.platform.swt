@@ -16,7 +16,7 @@ public NSDirectoryEnumerator() {
 	super();
 }
 
-public NSDirectoryEnumerator(int /*long*/ id) {
+public NSDirectoryEnumerator(long /*int*/ id) {
 	super(id);
 }
 

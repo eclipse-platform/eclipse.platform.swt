@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.cocoa;
 
 public class NSAffineTransformStruct {
-	public float /*double*/ m11, m12, m21, m22;
-	public float /*double*/ tX, tY;
+	public double /*float*/ m11, m12, m21, m22;
+	public double /*float*/ tX, tY;
 	public static final int sizeof = OS.NSAffineTransformStruct_sizeof();
 }

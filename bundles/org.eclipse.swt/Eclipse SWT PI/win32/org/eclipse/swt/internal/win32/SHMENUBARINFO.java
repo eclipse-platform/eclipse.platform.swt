@@ -13,14 +13,14 @@ package org.eclipse.swt.internal.win32;
 public class SHMENUBARINFO {
 	public int cbSize;
 	/** @field cast=(HWND) */
-	public int /*long*/ hwndParent;
+	public long /*int*/ hwndParent;
 	public int dwFlags;
 	public int nToolBarId;
 	/** @field cast=(HINSTANCE) */
-	public int /*long*/ hInstRes;
+	public long /*int*/ hInstRes;
 	public int nBmpId;
 	public int cBmpImages;
 	/** @field cast=(HWND) */
-	public int /*long*/ hwndMB;
+	public long /*int*/ hwndMB;
 	public static final int sizeof = OS.IsSP ? 36 : OS.SHMENUBARINFO_sizeof ();
 }

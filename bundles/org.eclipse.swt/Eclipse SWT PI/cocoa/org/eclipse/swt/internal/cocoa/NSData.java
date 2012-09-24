@@ -16,7 +16,7 @@ public NSData() {
 	super();
 }
 
-public NSData(int /*long*/ id) {
+public NSData(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,12 +24,12 @@ public NSData(id id) {
 	super(id);
 }
 
-public int /*long*/ bytes() {
+public long /*int*/ bytes() {
 	return OS.objc_msgSend(this.id, OS.sel_bytes);
 }
 
-public static NSData dataWithBytes(byte[] bytes, int /*long*/ length) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSData, OS.sel_dataWithBytes_length_, bytes, length);
+public static NSData dataWithBytes(byte[] bytes, long /*int*/ length) {
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSData, OS.sel_dataWithBytes_length_, bytes, length);
 	return result != 0 ? new NSData(result) : null;
 }
 
@@ -37,11 +37,11 @@ public void getBytes(byte[] buffer) {
 	OS.objc_msgSend(this.id, OS.sel_getBytes_, buffer);
 }
 
-public void getBytes(int /*long*/ buffer, int /*long*/ length) {
+public void getBytes(long /*int*/ buffer, long /*int*/ length) {
 	OS.objc_msgSend(this.id, OS.sel_getBytes_length_, buffer, length);
 }
 
-public int /*long*/ length() {
+public long /*int*/ length() {
 	return OS.objc_msgSend(this.id, OS.sel_length);
 }
 

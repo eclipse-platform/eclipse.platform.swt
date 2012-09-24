@@ -231,8 +231,8 @@ public static final void glViewport(int x, int y, int width, int height) {
 	}
 }
 /** @param dpy cast=(Display *) */
-public static final native int /*long*/ _glXChooseVisual(int /*long*/ dpy, int screen, int[] attribList);
-public static final int /*long*/ glXChooseVisual(int /*long*/ dpy, int screen, int[] attribList) {
+public static final native long /*int*/ _glXChooseVisual(long /*int*/ dpy, int screen, int[] attribList);
+public static final long /*int*/ glXChooseVisual(long /*int*/ dpy, int screen, int[] attribList) {
 	lock.lock();
 	try {
 		return _glXChooseVisual(dpy, screen, attribList);
@@ -245,8 +245,8 @@ public static final int /*long*/ glXChooseVisual(int /*long*/ dpy, int screen, i
  * @param src cast=(GLXContext)
  * @param dst cast=(GLXContext)
  */
-public static final native void _glXCopyContext(int /*long*/ dpy, int /*long*/ src, int /*long*/ dst, int mask);
-public static final void glXCopyContext(int /*long*/ dpy, int /*long*/ src, int /*long*/ dst, int mask) {
+public static final native void _glXCopyContext(long /*int*/ dpy, long /*int*/ src, long /*int*/ dst, int mask);
+public static final void glXCopyContext(long /*int*/ dpy, long /*int*/ src, long /*int*/ dst, int mask) {
 	lock.lock();
 	try {
 		_glXCopyContext(dpy, src, dst, mask);
@@ -258,8 +258,8 @@ public static final void glXCopyContext(int /*long*/ dpy, int /*long*/ src, int 
  * @param dpy cast=(Display *)
  * @param shareList cast=(GLXContext)
  */
-public static final native int /*long*/ _glXCreateContext(int /*long*/ dpy, XVisualInfo vis, int /*long*/ shareList, boolean direct);
-public static final int /*long*/ glXCreateContext(int /*long*/ dpy, XVisualInfo vis, int /*long*/ shareList, boolean direct) {
+public static final native long /*int*/ _glXCreateContext(long /*int*/ dpy, XVisualInfo vis, long /*int*/ shareList, boolean direct);
+public static final long /*int*/ glXCreateContext(long /*int*/ dpy, XVisualInfo vis, long /*int*/ shareList, boolean direct) {
 	lock.lock();
 	try {
 		return _glXCreateContext(dpy, vis, shareList, direct);
@@ -271,8 +271,8 @@ public static final int /*long*/ glXCreateContext(int /*long*/ dpy, XVisualInfo 
  * @param dpy cast=(Display *)
  * @param pixmap cast=(Pixmap)
  */
-public static final native int /*long*/ _glXCreateGLXPixmap(int /*long*/ dpy, XVisualInfo vis, int /*long*/ pixmap);
-public static final int /*long*/ glXCreateGLXPixmap(int /*long*/ dpy, XVisualInfo vis, int /*long*/ pixmap) {
+public static final native long /*int*/ _glXCreateGLXPixmap(long /*int*/ dpy, XVisualInfo vis, long /*int*/ pixmap);
+public static final long /*int*/ glXCreateGLXPixmap(long /*int*/ dpy, XVisualInfo vis, long /*int*/ pixmap) {
 	lock.lock();
 	try {
 		return _glXCreateGLXPixmap(dpy, vis, pixmap);
@@ -284,8 +284,8 @@ public static final int /*long*/ glXCreateGLXPixmap(int /*long*/ dpy, XVisualInf
  * @param dpy cast=(Display *)
  * @param ctx cast=(GLXContext)
  */
-public static final native void _glXDestroyContext(int /*long*/ dpy, int /*long*/ ctx);
-public static final void glXDestroyContext(int /*long*/ dpy, int /*long*/ ctx) {
+public static final native void _glXDestroyContext(long /*int*/ dpy, long /*int*/ ctx);
+public static final void glXDestroyContext(long /*int*/ dpy, long /*int*/ ctx) {
 	lock.lock();
 	try {
 		_glXDestroyContext(dpy, ctx);
@@ -297,8 +297,8 @@ public static final void glXDestroyContext(int /*long*/ dpy, int /*long*/ ctx) {
  * @param dpy cast=(Display *)
  * @param pix cast=(GLXPixmap)
  */
-public static final native void _glXDestroyGLXPixmap(int /*long*/ dpy, int /*long*/ pix);
-public static final void glXDestroyGLXPixmap(int /*long*/ dpy, int /*long*/ pix) {
+public static final native void _glXDestroyGLXPixmap(long /*int*/ dpy, long /*int*/ pix);
+public static final void glXDestroyGLXPixmap(long /*int*/ dpy, long /*int*/ pix) {
 	lock.lock();
 	try {
 		_glXDestroyGLXPixmap(dpy, pix);
@@ -307,8 +307,8 @@ public static final void glXDestroyGLXPixmap(int /*long*/ dpy, int /*long*/ pix)
 	}
 }
 /** @param dpy cast=(Display *) */
-public static final native int /*long*/ _glXGetClientString(int /*long*/ dpy, int name);
-public static final int /*long*/ glXGetClientString(int /*long*/ dpy, int name) {
+public static final native long /*int*/ _glXGetClientString(long /*int*/ dpy, int name);
+public static final long /*int*/ glXGetClientString(long /*int*/ dpy, int name) {
 	lock.lock();
 	try {
 		return _glXGetClientString(dpy, name);
@@ -317,8 +317,8 @@ public static final int /*long*/ glXGetClientString(int /*long*/ dpy, int name) 
 	}
 }
 /** @param dpy cast=(Display *) */
-public static final native int _glXGetConfig(int /*long*/ dpy, XVisualInfo vis, int attrib, int[] value);
-public static final int glXGetConfig(int /*long*/ dpy, XVisualInfo vis, int attrib, int[] value) {
+public static final native int _glXGetConfig(long /*int*/ dpy, XVisualInfo vis, int attrib, int[] value);
+public static final int glXGetConfig(long /*int*/ dpy, XVisualInfo vis, int attrib, int[] value) {
 	lock.lock();
 	try {
 		return _glXGetConfig(dpy, vis, attrib, value);
@@ -326,8 +326,8 @@ public static final int glXGetConfig(int /*long*/ dpy, XVisualInfo vis, int attr
 		lock.unlock();
 	}
 }
-public static final native int /*long*/ _glXGetCurrentContext();
-public static final int /*long*/ glXGetCurrentContext() {
+public static final native long /*int*/ _glXGetCurrentContext();
+public static final long /*int*/ glXGetCurrentContext() {
 	lock.lock();
 	try {
 		return _glXGetCurrentContext();
@@ -335,8 +335,8 @@ public static final int /*long*/ glXGetCurrentContext() {
 		lock.unlock();
 	}
 }
-public static final native int /*long*/ _glXGetCurrentDrawable();
-public static final int /*long*/ glXGetCurrentDrawable() {
+public static final native long /*int*/ _glXGetCurrentDrawable();
+public static final long /*int*/ glXGetCurrentDrawable() {
 	lock.lock();
 	try {
 		return _glXGetCurrentDrawable();
@@ -348,8 +348,8 @@ public static final int /*long*/ glXGetCurrentDrawable() {
  * @param dpy cast=(Display *)
  * @param ctx cast=(GLXContext)
  */
-public static final native boolean _glXIsDirect(int /*long*/ dpy, int /*long*/ ctx);
-public static final boolean glXIsDirect(int /*long*/ dpy, int /*long*/ ctx) {
+public static final native boolean _glXIsDirect(long /*int*/ dpy, long /*int*/ ctx);
+public static final boolean glXIsDirect(long /*int*/ dpy, long /*int*/ ctx) {
 	lock.lock();
 	try {
 		return _glXIsDirect(dpy, ctx);
@@ -362,8 +362,8 @@ public static final boolean glXIsDirect(int /*long*/ dpy, int /*long*/ ctx) {
  * @param drawable cast=(GLXDrawable)
  * @param ctx cast=(GLXContext)
  */
-public static final native boolean _glXMakeCurrent(int /*long*/ dpy, int /*long*/ drawable, int /*long*/ ctx);
-public static final boolean glXMakeCurrent(int /*long*/ dpy, int /*long*/ drawable, int /*long*/ ctx) {
+public static final native boolean _glXMakeCurrent(long /*int*/ dpy, long /*int*/ drawable, long /*int*/ ctx);
+public static final boolean glXMakeCurrent(long /*int*/ dpy, long /*int*/ drawable, long /*int*/ ctx) {
 	lock.lock();
 	try {
 		return _glXMakeCurrent(dpy, drawable, ctx);
@@ -372,8 +372,8 @@ public static final boolean glXMakeCurrent(int /*long*/ dpy, int /*long*/ drawab
 	}
 }
 /** @param dpy cast=(Display *) */
-public static final native boolean _glXQueryExtension(int /*long*/ dpy, int[] errorBase, int[] eventBase);
-public static final boolean glXQueryExtension(int /*long*/ dpy, int[] errorBase, int[] eventBase) {
+public static final native boolean _glXQueryExtension(long /*int*/ dpy, int[] errorBase, int[] eventBase);
+public static final boolean glXQueryExtension(long /*int*/ dpy, int[] errorBase, int[] eventBase) {
 	lock.lock();
 	try {
 		return _glXQueryExtension(dpy, errorBase, eventBase);
@@ -382,8 +382,8 @@ public static final boolean glXQueryExtension(int /*long*/ dpy, int[] errorBase,
 	}
 }
 /** @param dpy cast=(Display *) */
-public static final native int /*long*/ _glXQueryExtensionsString(int /*long*/ dpy, int screen);
-public static final int /*long*/ glXQueryExtensionsString(int /*long*/ dpy, int screen) {
+public static final native long /*int*/ _glXQueryExtensionsString(long /*int*/ dpy, int screen);
+public static final long /*int*/ glXQueryExtensionsString(long /*int*/ dpy, int screen) {
 	lock.lock();
 	try {
 		return _glXQueryExtensionsString(dpy, screen);
@@ -392,8 +392,8 @@ public static final int /*long*/ glXQueryExtensionsString(int /*long*/ dpy, int 
 	}
 }
 /** @param dpy cast=(Display *) */
-public static final native int /*long*/ _glXQueryServerString(int /*long*/ dpy, int screen, int name);
-public static final int /*long*/ glXQueryServerString(int /*long*/ dpy, int screen, int name) {
+public static final native long /*int*/ _glXQueryServerString(long /*int*/ dpy, int screen, int name);
+public static final long /*int*/ glXQueryServerString(long /*int*/ dpy, int screen, int name) {
 	lock.lock();
 	try {
 		return _glXQueryServerString(dpy, screen, name);
@@ -406,8 +406,8 @@ public static final int /*long*/ glXQueryServerString(int /*long*/ dpy, int scre
  * @param major flags=no_in
  * @param minor flags=no_in
  */
-public static final native boolean _glXQueryVersion(int /*long*/ dpy, int[] major, int[] minor);
-public static final boolean glXQueryVersion(int /*long*/ dpy, int[] major, int[] minor) {
+public static final native boolean _glXQueryVersion(long /*int*/ dpy, int[] major, int[] minor);
+public static final boolean glXQueryVersion(long /*int*/ dpy, int[] major, int[] minor) {
 	lock.lock();
 	try {
 		return _glXQueryVersion(dpy, major, minor);
@@ -419,8 +419,8 @@ public static final boolean glXQueryVersion(int /*long*/ dpy, int[] major, int[]
  * @param dpy cast=(Display *)
  * @param drawable cast=(GLXDrawable)
  */
-public static final native void _glXSwapBuffers(int /*long*/ dpy, int /*long*/ drawable);
-public static final void glXSwapBuffers(int /*long*/ dpy, int /*long*/ drawable) {
+public static final native void _glXSwapBuffers(long /*int*/ dpy, long /*int*/ drawable);
+public static final void glXSwapBuffers(long /*int*/ dpy, long /*int*/ drawable) {
 	lock.lock();
 	try {
 		_glXSwapBuffers(dpy, drawable);
@@ -450,5 +450,5 @@ public static final void glXWaitX() {
  * @param src cast=(const void *)
  * @param size cast=(size_t)
  */
-public static final native void memmove(XVisualInfo dest, int /*long*/ src, int size);
+public static final native void memmove(XVisualInfo dest, long /*int*/ src, int size);
 }

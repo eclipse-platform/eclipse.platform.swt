@@ -41,7 +41,7 @@ import org.eclipse.swt.events.*;
 
 public class Scale extends Control {
 	boolean ignoreResize, ignoreSelection;
-	static final int /*long*/ TrackBarProc;
+	static final long /*int*/ TrackBarProc;
 	static final TCHAR TrackBarClass = new TCHAR (0, OS.TRACKBAR_CLASS, true);
 	boolean createdAsRTL;
 	static {
@@ -65,13 +65,13 @@ public class Scale extends Control {
 		* code, other than SWT, could create a control with
 		* this class name, and fail unexpectedly.
 		*/
-		int /*long*/ hInstance = OS.GetModuleHandle (null);
-		int /*long*/ hHeap = OS.GetProcessHeap ();
+		long /*int*/ hInstance = OS.GetModuleHandle (null);
+		long /*int*/ hHeap = OS.GetProcessHeap ();
 		lpWndClass.hInstance = hInstance;
 		lpWndClass.style &= ~OS.CS_GLOBALCLASS;
 		lpWndClass.style |= OS.CS_DBLCLKS;
 		int byteCount = TrackBarClass.length () * TCHAR.sizeof;
-		int /*long*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		long /*int*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 		OS.MoveMemory (lpszClassName, TrackBarClass, byteCount);
 		lpWndClass.lpszClassName = lpszClassName;
 		OS.RegisterClass (lpWndClass);
@@ -142,7 +142,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (TrackBarProc, hwnd, msg, wParam, lParam);
 }
@@ -288,7 +288,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-void setBackgroundImage (int /*long*/ hImage) {
+void setBackgroundImage (long /*int*/ hImage) {
 	super.setBackgroundImage (hImage);
 	/*
 	* Bug in Windows.  Changing the background color of the Scale
@@ -454,11 +454,11 @@ TCHAR windowClass () {
 	return TrackBarClass;
 }
 
-int /*long*/ windowProc () {
+long /*int*/ windowProc () {
 	return TrackBarProc;
 }
 
-LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
 	switch ((int)/*64*/wParam) {
@@ -473,7 +473,7 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 		    */
 			boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 			if (isRTL != createdAsRTL) {
-				int /*long*/ code = callWindowProc (handle, OS.WM_KEYDOWN, wParam == OS.VK_RIGHT ? OS.VK_LEFT : OS.VK_RIGHT, lParam);
+				long /*int*/ code = callWindowProc (handle, OS.WM_KEYDOWN, wParam == OS.VK_RIGHT ? OS.VK_LEFT : OS.VK_RIGHT, lParam);
 				return new LRESULT (code);
 			}
 			break;
@@ -481,7 +481,7 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_MOUSEWHEEL (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_MOUSEWHEEL (wParam, lParam);
 	if (result != null) return result;	
 	/*
@@ -494,7 +494,7 @@ LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
 	*/
 	int oldPosition = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
 	ignoreSelection = true;
-	int /*long*/ code = callWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
+	long /*int*/ code = callWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
 	ignoreSelection = false;
 	int newPosition = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
 	if (oldPosition != newPosition) {
@@ -509,7 +509,7 @@ LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
 	return new LRESULT (code);
 }
 
-LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Bug in Windows.  For some reason, when WM_CTLCOLORSTATIC
 	* is used to implement transparency and returns a NULL brush,
@@ -541,12 +541,12 @@ LRESULT WM_PAINT (int /*long*/ wParam, int /*long*/ lParam) {
 	return super.WM_PAINT (wParam, lParam);
 }
 
-LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreResize) return null;
 	return super.WM_SIZE (wParam, lParam);
 }
 
-LRESULT wmScrollChild (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmScrollChild (long /*int*/ wParam, long /*int*/ lParam) {
 	
 	/* Do nothing when scrolling is ending */
 	int code = OS.LOWORD (wParam);

@@ -17,7 +17,7 @@ public class BitmapData {
 	/** @field cast=(PixelFormat) */
 	public int PixelFormat;
 	/** @field cast=(void*) */
-	public int /*long*/ Scan0;
+	public long /*int*/ Scan0;
 	/** @field cast=(UINT_PTR) */
-	public int /*long*/ Reserved;
+	public long /*int*/ Reserved;
 }

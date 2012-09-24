@@ -84,38 +84,38 @@ int AddRef () {
 
 void createCOMInterfaces () {
 	iWebFrameLoadDelegate = new COMObject (new int[] {2, 0, 0, 2, 2, 3, 2, 3, 3, 2, 3, 2, 5, 2, 2, 3, 4}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
-		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return didStartProvisionalLoadForFrame (args[0], args[1]);}
-		public int /*long*/ method4 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method5 (int /*long*/[] args) {return didFailProvisionalLoadWithError (args[0], args[1], args[2]);}
-		public int /*long*/ method6 (int /*long*/[] args) {return didCommitLoadForFrame (args[0], args[1]);}
-		public int /*long*/ method7 (int /*long*/[] args) {return didReceiveTitle (args[0], args[1], args[2]);}
-		public int /*long*/ method8 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method9 (int /*long*/[] args) {return didFinishLoadForFrame (args[0], args[1]);}
-		public int /*long*/ method10 (int /*long*/[] args){return COM.E_NOTIMPL;}
-		public int /*long*/ method11 (int /*long*/[] args){return didChangeLocationWithinPageForFrame (args[0], args[1]);}
-		public int /*long*/ method12 (int /*long*/[] args){return COM.S_OK;}
-		public int /*long*/ method13 (int /*long*/[] args){return COM.E_NOTIMPL;}
-		public int /*long*/ method14 (int /*long*/[] args){return COM.S_OK;}
-		public int /*long*/ method15 (int /*long*/[] args){return COM.S_OK;}
-		public int /*long*/ method16 (int /*long*/[] args){return didClearWindowObject (args[0], args[1], args[2], args[3]);}
+		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		public long /*int*/ method3 (long /*int*/[] args) {return didStartProvisionalLoadForFrame (args[0], args[1]);}
+		public long /*int*/ method4 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method5 (long /*int*/[] args) {return didFailProvisionalLoadWithError (args[0], args[1], args[2]);}
+		public long /*int*/ method6 (long /*int*/[] args) {return didCommitLoadForFrame (args[0], args[1]);}
+		public long /*int*/ method7 (long /*int*/[] args) {return didReceiveTitle (args[0], args[1], args[2]);}
+		public long /*int*/ method8 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method9 (long /*int*/[] args) {return didFinishLoadForFrame (args[0], args[1]);}
+		public long /*int*/ method10 (long /*int*/[] args){return COM.E_NOTIMPL;}
+		public long /*int*/ method11 (long /*int*/[] args){return didChangeLocationWithinPageForFrame (args[0], args[1]);}
+		public long /*int*/ method12 (long /*int*/[] args){return COM.S_OK;}
+		public long /*int*/ method13 (long /*int*/[] args){return COM.E_NOTIMPL;}
+		public long /*int*/ method14 (long /*int*/[] args){return COM.S_OK;}
+		public long /*int*/ method15 (long /*int*/[] args){return COM.S_OK;}
+		public long /*int*/ method16 (long /*int*/[] args){return didClearWindowObject (args[0], args[1], args[2], args[3]);}
 	};
 
 	/* Callbacks that take double parameters require custom callbacks that instead pass pointers to the doubles. */
-	int /*long*/ ppVtable = iWebFrameLoadDelegate.ppVtable;
-	int /*long*/[] pVtable = new int /*long*/[1];
+	long /*int*/ ppVtable = iWebFrameLoadDelegate.ppVtable;
+	long /*int*/[] pVtable = new long /*int*/[1];
 	COM.MoveMemory (pVtable, ppVtable, OS.PTR_SIZEOF);
-	int /*long*/[] funcs = new int /*long*/[17];
+	long /*int*/[] funcs = new long /*int*/[17];
 	COM.MoveMemory (funcs, pVtable[0], OS.PTR_SIZEOF * funcs.length);
 	funcs[12] = WebKit_win32.willPerformClientRedirectToURL_CALLBACK (funcs[12]);
 	COM.MoveMemory (pVtable[0], funcs, OS.PTR_SIZEOF * funcs.length);
 }
 
-int didChangeLocationWithinPageForFrame (int /*long*/ webView, int /*long*/ frame) {
+int didChangeLocationWithinPageForFrame (long /*int*/ webView, long /*int*/ frame) {
 	IWebFrame iwebframe = new IWebFrame (frame);
-	int /*long*/[] result = new int /*long*/[1];
+	long /*int*/[] result = new long /*int*/[1];
 	int hr = iwebframe.dataSource (result);
 	if (hr != COM.S_OK || result[0] == 0) {
 		return COM.S_OK;
@@ -181,18 +181,18 @@ int didChangeLocationWithinPageForFrame (int /*long*/ webView, int /*long*/ fram
 	return COM.S_OK;
 }
 
-int didClearWindowObject (int /*long*/ webView, int /*long*/ context, int /*long*/ windowScriptObject, int /*long*/ frame) {
+int didClearWindowObject (long /*int*/ webView, long /*int*/ context, long /*int*/ windowScriptObject, long /*int*/ frame) {
 	WebKit_win32.JSGlobalContextRetain (context);
-	int /*long*/ globalObject = WebKit_win32.JSContextGetGlobalObject (context);
-	int /*long*/ privateData = ((WebKit)browser.webBrowser).webViewData;
-	int /*long*/ externalObject = WebKit_win32.JSObjectMake (context, WebKit.ExternalClass, privateData);
+	long /*int*/ globalObject = WebKit_win32.JSContextGetGlobalObject (context);
+	long /*int*/ privateData = ((WebKit)browser.webBrowser).webViewData;
+	long /*int*/ externalObject = WebKit_win32.JSObjectMake (context, WebKit.ExternalClass, privateData);
 	byte[] bytes = null;
 	try {
 		bytes = (OBJECTNAME_EXTERNAL + '\0').getBytes (WebKit.CHARSET_UTF8);
 	} catch (UnsupportedEncodingException e) {
 		bytes = (OBJECTNAME_EXTERNAL + '\0').getBytes ();
 	} 
-	int /*long*/ name = WebKit_win32.JSStringCreateWithUTF8CString (bytes);
+	long /*int*/ name = WebKit_win32.JSStringCreateWithUTF8CString (bytes);
 	WebKit_win32.JSObjectSetProperty (context, globalObject, name, externalObject, 0, null);
 	WebKit_win32.JSStringRelease (name);
 
@@ -203,7 +203,7 @@ int didClearWindowObject (int /*long*/ webView, int /*long*/ context, int /*long
 	}
 
 	IWebView iwebView = new IWebView (webView);
-	int /*long*/[] mainFrame = new int /*long*/[1];
+	long /*int*/[] mainFrame = new long /*int*/[1];
 	iwebView.mainFrame (mainFrame);
 	boolean top = mainFrame[0] == frame;
 	new IWebFrame (mainFrame[0]).Release ();
@@ -211,9 +211,9 @@ int didClearWindowObject (int /*long*/ webView, int /*long*/ context, int /*long
 	return COM.S_OK;
 }
 
-int didCommitLoadForFrame (int /*long*/ webview, int /*long*/ frame) {
+int didCommitLoadForFrame (long /*int*/ webview, long /*int*/ frame) {
 	IWebFrame iWebFrame = new IWebFrame (frame);
-	int /*long*/[] result = new int /*long*/[1];
+	long /*int*/[] result = new long /*int*/[1];
 	int hr = iWebFrame.dataSource (result);
 	if (hr != COM.S_OK || result[0] == 0) {
 		return COM.S_OK;
@@ -309,14 +309,14 @@ int didCommitLoadForFrame (int /*long*/ webview, int /*long*/ frame) {
 	return COM.S_OK;
 }
 
-int didFailProvisionalLoadWithError (int /*long*/ webView, int /*long*/ error, int /*long*/ frame) {
+int didFailProvisionalLoadWithError (long /*int*/ webView, long /*int*/ error, long /*int*/ frame) {
 	IWebError iweberror = new IWebError (error);
 	int[] errorCode = new int[1];
 	int hr = iweberror.code (errorCode);
 	if (WebKit_win32.WebURLErrorBadURL < errorCode[0]) return COM.S_OK;
 
 	String failingURLString = null;
-	int /*long*/[] failingURL = new int /*long*/[1];
+	long /*int*/[] failingURL = new long /*int*/[1];
 	hr = iweberror.failingURL (failingURL);
 	if (hr == COM.S_OK && failingURL[0] != 0) {
 		failingURLString = WebKit.extractBSTR (failingURL[0]);
@@ -324,7 +324,7 @@ int didFailProvisionalLoadWithError (int /*long*/ webView, int /*long*/ error, i
 	}
 	if (failingURLString != null && WebKit_win32.WebURLErrorServerCertificateNotYetValid <= errorCode[0] && errorCode[0] <= WebKit_win32.WebURLErrorSecureConnectionFailed) {
 		/* handle invalid certificate error */
-		int /*long*/[] result = new int /*long*/[1];
+		long /*int*/[] result = new long /*int*/[1];
 		hr = iweberror.localizedDescription (result);
 		if (hr != COM.S_OK || result[0] == 0) {
 			return COM.S_OK;
@@ -340,7 +340,7 @@ int didFailProvisionalLoadWithError (int /*long*/ webView, int /*long*/ error, i
 
 		IWebErrorPrivate webErrorPrivate = new IWebErrorPrivate (result[0]);
 		result[0] = 0;
-		int /*long*/[] certificate = new int /*long*/[1];
+		long /*int*/[] certificate = new long /*int*/[1];
 		hr = webErrorPrivate.sslPeerCertificate (certificate);
 		webErrorPrivate.Release ();
 		if (hr != COM.S_OK || certificate[0] == 0) {
@@ -364,7 +364,7 @@ int didFailProvisionalLoadWithError (int /*long*/ webView, int /*long*/ error, i
 	}
 
 	/* handle other types of errors */
-	int /*long*/[] result = new int /*long*/[1];
+	long /*int*/[] result = new long /*int*/[1];
 	hr = iweberror.localizedDescription (result);
 	if (hr != COM.S_OK || result[0] == 0) {
 		return COM.S_OK;
@@ -381,9 +381,9 @@ int didFailProvisionalLoadWithError (int /*long*/ webView, int /*long*/ error, i
 	return COM.S_OK;
 }
 
-int didFinishLoadForFrame (int /*long*/ webview, int /*long*/ frame) {
+int didFinishLoadForFrame (long /*int*/ webview, long /*int*/ frame) {
 	IWebView iWebView = new IWebView (webview);
-	int /*long*/[] iWebFrame = new int /*long*/[1];
+	long /*int*/[] iWebFrame = new long /*int*/[1];
 	int hr = iWebView.mainFrame (iWebFrame);
 	if (hr != COM.S_OK || iWebFrame[0] == 0) {
 		return COM.S_OK;
@@ -399,8 +399,8 @@ int didFinishLoadForFrame (int /*long*/ webview, int /*long*/ frame) {
 	if (html != null) {
 		if (getUrl ().startsWith (WebKit.ABOUT_BLANK)) {
 			((WebKit)browser.webBrowser).loadingText = true;
-			int /*long*/ string = WebKit.createBSTR (html);
-			int /*long*/ URLString;
+			long /*int*/ string = WebKit.createBSTR (html);
+			long /*int*/ URLString;
 			if (((WebKit)browser.webBrowser).untrustedText) {
 				URLString = WebKit.createBSTR (WebKit.ABOUT_BLANK);
 			} else {
@@ -428,7 +428,7 @@ int didFinishLoadForFrame (int /*long*/ webview, int /*long*/ frame) {
 		*/
 		Display display = browser.getDisplay ();
 		IWebFrame mainFrame = new IWebFrame (frame);
-		int /*long*/[] result = new int /*long*/[1];
+		long /*int*/[] result = new long /*int*/[1];
 		hr = mainFrame.dataSource (result);
 		if (hr != COM.S_OK || result[0] == 0) {
 			return COM.S_OK;
@@ -472,8 +472,8 @@ int didFinishLoadForFrame (int /*long*/ webview, int /*long*/ frame) {
 	return COM.S_OK;
 }
 
-int didReceiveTitle (int /*long*/ webView, int /*long*/ title, int /*long*/ frame) {
-	int /*long*/[] mainFrame = new int /*long*/[1];
+int didReceiveTitle (long /*int*/ webView, long /*int*/ title, long /*int*/ frame) {
+	long /*int*/[] mainFrame = new long /*int*/[1];
 	IWebView iWebView = new IWebView (webView);
 	int hr = iWebView.mainFrame (mainFrame);
 	if (hr != COM.S_OK || frame == 0) {
@@ -494,7 +494,7 @@ int didReceiveTitle (int /*long*/ webView, int /*long*/ title, int /*long*/ fram
 	return COM.S_OK;
 }
 
-int didStartProvisionalLoadForFrame (int /*long*/ webView, int /*long*/ frame) {
+int didStartProvisionalLoadForFrame (long /*int*/ webView, long /*int*/ frame) {
 	return COM.S_OK;
 }
 
@@ -505,7 +505,7 @@ void disposeCOMInterfaces () {
 	}	
 }
 
-int /*long*/ getAddress () {
+long /*int*/ getAddress () {
 	return iWebFrameLoadDelegate.getAddress ();
 }
 
@@ -515,23 +515,23 @@ String getUrl () {
 	return url;
 }
 
-int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
+int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return COM.E_INVALIDARG;
 	GUID guid = new GUID ();
 	COM.MoveMemory (guid, riid, GUID.sizeof);
 
 	if (COM.IsEqualGUID (guid, COM.IIDIUnknown)) {
-		COM.MoveMemory (ppvObject, new int /*long*/[] {iWebFrameLoadDelegate.getAddress ()}, OS.PTR_SIZEOF);
+		COM.MoveMemory (ppvObject, new long /*int*/[] {iWebFrameLoadDelegate.getAddress ()}, OS.PTR_SIZEOF);
 		new IUnknown (iWebFrameLoadDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID (guid, WebKit_win32.IID_IWebFrameLoadDelegate)) {
-		COM.MoveMemory (ppvObject, new int /*long*/[] {iWebFrameLoadDelegate.getAddress ()}, OS.PTR_SIZEOF);
+		COM.MoveMemory (ppvObject, new long /*int*/[] {iWebFrameLoadDelegate.getAddress ()}, OS.PTR_SIZEOF);
 		new IUnknown (iWebFrameLoadDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
 
-	COM.MoveMemory (ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
+	COM.MoveMemory (ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 
@@ -543,7 +543,7 @@ int Release () {
 	return refCount;
 }
 
-boolean showCertificateDialog (int /*long*/ webView, final String failingUrlString, final String description, final int /*long*/ certificate) {
+boolean showCertificateDialog (long /*int*/ webView, final String failingUrlString, final String description, final long /*int*/ certificate) {
 	Shell parent = browser.getShell ();
 	final Shell shell = new Shell (parent, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
 	shell.setText (Compatibility.getMessage ("SWT_InvalidCert_Title")); //$NON-NLS-1$
@@ -621,7 +621,7 @@ boolean showCertificateDialog (int /*long*/ webView, final String failingUrlStri
 	return result[0];
 }
 
-void showCertificate (Shell parent, int /*long*/ certificate) {
+void showCertificate (Shell parent, long /*int*/ certificate) {
 	CERT_CONTEXT context = new CERT_CONTEXT ();
 	OS.MoveMemory (context, certificate, CERT_CONTEXT.sizeof);
 	CERT_INFO info = new CERT_INFO ();

@@ -45,7 +45,7 @@ public class FileDialog extends Dialog {
 	int filterIndex = -1;
 	boolean overwrite = false;
 	boolean uriMode;
-	int /*long*/ handle;
+	long /*int*/ handle;
 	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
 	static final char EXTENSION_SEPARATOR = ';';
 	static final char FILE_EXTENSION_SEPARATOR = '.';
@@ -102,7 +102,7 @@ String computeResultChooserDialog () {
 	/* MULTI is only valid if the native dialog's action is Open */
 	fullPath = null;
 	if ((style & SWT.MULTI) != 0) {
-		int /*long*/ list = 0;
+		long /*int*/ list = 0;
 		if (uriMode) {
 			list = OS.gtk_file_chooser_get_uris (handle);
 		} else {
@@ -110,11 +110,11 @@ String computeResultChooserDialog () {
 		}
 		int listLength = OS.g_slist_length (list);
 		fileNames = new String [listLength];
-		int /*long*/ current = list;
+		long /*int*/ current = list;
 		int writePos = 0;
 		for (int i = 0; i < listLength; i++) {
-			int /*long*/ name = OS.g_slist_data (current);
-			int /*long*/ utf8Ptr = 0;
+			long /*int*/ name = OS.g_slist_data (current);
+			long /*int*/ utf8Ptr = 0;
 			if (uriMode) {
 				utf8Ptr = name;
 			} else {
@@ -123,8 +123,8 @@ String computeResultChooserDialog () {
 			}
 			if (name != utf8Ptr) OS.g_free (name);
 			if (utf8Ptr != 0) {
-				int /*long*/ [] items_written = new int /*long*/ [1];
-				int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
+				long /*int*/ [] items_written = new long /*int*/ [1];
+				long /*int*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
 				OS.g_free (utf8Ptr);
 				if (utf16Ptr != 0) {
 					int clength = (int)/*64*/items_written [0];
@@ -144,11 +144,11 @@ String computeResultChooserDialog () {
 		}
 		OS.g_slist_free (list);
 	} else {
-		int /*long*/ utf8Ptr = 0;
+		long /*int*/ utf8Ptr = 0;
 		if (uriMode) {
 			utf8Ptr = OS.gtk_file_chooser_get_uri (handle);
 		} else {
-			int /*long*/ path = OS.gtk_file_chooser_get_filename (handle);
+			long /*int*/ path = OS.gtk_file_chooser_get_filename (handle);
 			if (path != 0) {
 				utf8Ptr = OS.g_filename_to_utf8 (path, -1, null, null, null);
 				if (utf8Ptr == 0) utf8Ptr = OS.g_filename_display_name (path);
@@ -156,8 +156,8 @@ String computeResultChooserDialog () {
 			}
 		}
 		if (utf8Ptr != 0) {
-			int /*long*/ [] items_written = new int /*long*/ [1];
-			int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
+			long /*int*/ [] items_written = new long /*int*/ [1];
+			long /*int*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
 			OS.g_free (utf8Ptr);
 			if (utf16Ptr != 0) {
 				int clength = (int)/*64*/items_written [0];
@@ -171,9 +171,9 @@ String computeResultChooserDialog () {
 		}
 	}
 	filterIndex = -1;
-	int /*long*/ filter = OS.gtk_file_chooser_get_filter (handle);
+	long /*int*/ filter = OS.gtk_file_chooser_get_filter (handle);
 	if (filter != 0) {
-		int /*long*/ filterNamePtr = OS.gtk_file_filter_get_name (filter);
+		long /*int*/ filterNamePtr = OS.gtk_file_filter_get_name (filter);
 		if (filterNamePtr != 0) {
 			int length = OS.strlen (filterNamePtr);
 			byte[] buffer = new byte [length];
@@ -317,7 +317,7 @@ String openChooserDialog () {
 	int action = (style & SWT.SAVE) != 0 ?
 		OS.GTK_FILE_CHOOSER_ACTION_SAVE :
 		OS.GTK_FILE_CHOOSER_ACTION_OPEN;
-	int /*long*/ shellHandle = parent.topHandle ();
+	long /*int*/ shellHandle = parent.topHandle ();
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	if (display.getDismissalAlignment() == SWT.RIGHT) {
 		handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, 0);
@@ -327,10 +327,10 @@ String openChooserDialog () {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_window_set_modal (handle, true);
 	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-		int /*long*/ group = OS.gtk_window_get_group(0);
+		long /*int*/ group = OS.gtk_window_get_group(0);
 		OS.gtk_window_group_add_window (group, handle);
 	}
-	int /*long*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
+	long /*int*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
 	if (pixbufs != 0) {
 		OS.gtk_window_set_icon_list (handle, pixbufs);
 		OS.g_list_free (pixbufs);
@@ -347,7 +347,7 @@ String openChooserDialog () {
 		display.setModalDialog (this);
 	}
 	int signalId = 0;
-	int /*long*/ hookId = 0;
+	long /*int*/ hookId = 0;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
@@ -394,7 +394,7 @@ void presetChooserDialog () {
 				* when setting a file name that is not a true canonical path. 
 				* The fix is to use the canonical path.
 				*/
-				int /*long*/ ptr = OS.realpath (buffer, null);
+				long /*int*/ ptr = OS.realpath (buffer, null);
 				OS.gtk_file_chooser_set_current_folder (handle, ptr);
 				OS.g_free (ptr);
 			}
@@ -425,7 +425,7 @@ void presetChooserDialog () {
 			* when setting a file name that is not a true canonical path. 
 			* The fix is to use the canonical path.
 			*/
-			int /*long*/ ptr = OS.realpath (buffer, null);
+			long /*int*/ ptr = OS.realpath (buffer, null);
 			if (ptr != 0) {
 				if (fileName.length() > 0) {
 					OS.gtk_file_chooser_set_filename (handle, ptr);
@@ -447,10 +447,10 @@ void presetChooserDialog () {
 	/* Set the extension filters */
 	if (filterNames == null) filterNames = new String [0];
 	if (filterExtensions == null) filterExtensions = new String [0];
-	int /*long*/ initialFilter = 0;
+	long /*int*/ initialFilter = 0;
 	for (int i = 0; i < filterExtensions.length; i++) {
 		if (filterExtensions [i] != null) {
-			int /*long*/ filter = OS.gtk_file_filter_new ();
+			long /*int*/ filter = OS.gtk_file_filter_new ();
 			if (filterNames.length > i && filterNames [i] != null) {
 				byte [] name = Converter.wcsToMbcs (null, filterNames [i], true);
 				OS.gtk_file_filter_set_name (filter, name);

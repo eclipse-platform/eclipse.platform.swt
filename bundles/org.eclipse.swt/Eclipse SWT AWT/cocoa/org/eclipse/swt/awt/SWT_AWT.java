@@ -52,7 +52,7 @@ public class SWT_AWT {
 	
 	static boolean loaded, swingInitialized;
 	
-	static native final int /*long*/ getAWTHandle (Canvas canvas);
+	static native final long /*int*/ getAWTHandle (Canvas canvas);
 	
 	static synchronized void loadLibrary () {
 		if (loaded) return;
@@ -131,7 +131,7 @@ public static Frame new_Frame(final Composite parent) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	
-	final int /*long*/ handle = parent.view.id;
+	final long /*int*/ handle = parent.view.id;
 	
 	Class clazz = null;
 	try {
@@ -279,7 +279,7 @@ public static Frame new_Frame(final Composite parent) {
 public static Shell new_Shell(final Display display, final Canvas parent) {
 	if (display == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int /*long*/ handle = 0;
+	long /*int*/ handle = 0;
 	
 	try {
 		loadLibrary ();

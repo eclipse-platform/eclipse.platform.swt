@@ -16,7 +16,7 @@ public DOMWheelEvent() {
 	super();
 }
 
-public DOMWheelEvent(int /*long*/ id) {
+public DOMWheelEvent(long /*int*/ id) {
 	super(id);
 }
 

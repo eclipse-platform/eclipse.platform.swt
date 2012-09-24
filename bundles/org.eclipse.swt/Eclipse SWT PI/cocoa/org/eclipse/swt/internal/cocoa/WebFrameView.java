@@ -16,7 +16,7 @@ public WebFrameView() {
 	super();
 }
 
-public WebFrameView(int /*long*/ id) {
+public WebFrameView(long /*int*/ id) {
 	super(id);
 }
 
@@ -33,7 +33,7 @@ public void printDocumentView() {
 }
 
 public NSPrintOperation printOperationWithPrintInfo(NSPrintInfo printInfo) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_printOperationWithPrintInfo_, printInfo != null ? printInfo.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_printOperationWithPrintInfo_, printInfo != null ? printInfo.id : 0);
 	return result != 0 ? new NSPrintOperation(result) : null;
 }
 

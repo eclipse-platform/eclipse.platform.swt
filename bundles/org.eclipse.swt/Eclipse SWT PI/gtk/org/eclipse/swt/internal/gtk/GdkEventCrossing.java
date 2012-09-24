@@ -17,11 +17,11 @@ package org.eclipse.swt.internal.gtk;
 
 public class GdkEventCrossing extends GdkEvent {
 	/** @field cast=(GdkWindow *) */
-	public int /*long*/ window;
+	public long /*int*/ window;
 	/** @field cast=(gint8) */
 	public byte send_event;
 	/** @field cast=(GdkWindow *) */
-	public int /*long*/ subwindow;
+	public long /*int*/ subwindow;
 	public int time;
 	public double x;
 	public double y;

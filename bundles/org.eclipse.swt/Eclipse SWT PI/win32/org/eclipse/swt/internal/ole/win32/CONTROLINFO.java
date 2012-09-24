@@ -13,7 +13,7 @@ package org.eclipse.swt.internal.ole.win32;
 public final class CONTROLINFO {
 	public int cb;
 	/** @field cast=(HACCEL) */
-	public int /*long*/ hAccel;
+	public long /*int*/ hAccel;
 	public short cAccel;
 	public int dwFlags;
 	public static final int sizeof = COM.CONTROLINFO_sizeof ();

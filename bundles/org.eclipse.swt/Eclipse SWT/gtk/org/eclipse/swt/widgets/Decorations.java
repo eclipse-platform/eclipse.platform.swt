@@ -103,7 +103,7 @@ public class Decorations extends Canvas {
 	Menu [] menus;
 	Control savedFocus;
 	Button defaultButton, saveDefault;
-	int /*long*/ accelGroup, vboxHandle;
+	long /*int*/ accelGroup, vboxHandle;
 	
 Decorations () {
 	/* Do nothing */
@@ -172,17 +172,17 @@ void _setImages (Image [] images) {
 		sort (bestImages);
 		images = bestImages;
 	}
-	int /*long*/ pixbufs = 0;
+	long /*int*/ pixbufs = 0;
 	if (images != null) {
 		for (int i = 0; i < images.length; i++) {
 			Image image = images [i];
-			int /*long*/ pixbuf = ImageList.createPixbuf (image);
+			long /*int*/ pixbuf = ImageList.createPixbuf (image);
 			pixbufs = OS.g_list_append (pixbufs, pixbuf);			
 		}
 	}
 	OS.gtk_window_set_icon_list (topHandle (), pixbufs);
-	int /*long*/ [] data = new int /*long*/ [1];
-	int /*long*/ temp = pixbufs;
+	long /*int*/ [] data = new long /*int*/ [1];
+	long /*int*/ temp = pixbufs;
 	while (temp != 0) {
 		OS.memmove (data, temp, OS.PTR_SIZEOF);
 		OS.g_object_unref (data [0]);
@@ -233,7 +233,7 @@ void createAccelGroup () {
 	accelGroup = OS.gtk_accel_group_new ();
 	if (accelGroup == 0) error (SWT.ERROR_NO_HANDLES);
 	//FIXME - what should we do for Decorations
-	int /*long*/ shellHandle = topHandle ();
+	long /*int*/ shellHandle = topHandle ();
 	OS.gtk_window_add_accel_group (shellHandle, accelGroup);
 }
 
@@ -244,7 +244,7 @@ void createWidget (int index) {
 
 void destroyAccelGroup () {
 	if (accelGroup == 0) return;
-	int /*long*/ shellHandle = topHandle ();
+	long /*int*/ shellHandle = topHandle ();
 	OS.gtk_window_remove_accel_group (shellHandle, accelGroup);
 	//TEMPORARY CODE
 //	OS.g_object_unref (accelGroup);
@@ -547,7 +547,7 @@ boolean restoreFocus () {
  */
 public void setDefaultButton (Button button) {
 	checkWidget();
-	int /*long*/ buttonHandle = 0;
+	long /*int*/ buttonHandle = 0;
 	if (button != null) {
 		if (button.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (button.menuShell () != this) error (SWT.ERROR_INVALID_PARENT);
@@ -766,7 +766,7 @@ boolean traverseReturn () {
 	* key.
 	*/
 	if (!button.isVisible () || !button.isEnabled ()) return true;
-	int /*long*/ shellHandle = _getShell ().topHandle ();
+	long /*int*/ shellHandle = _getShell ().topHandle ();
 	return OS.gtk_window_activate_default (shellHandle);
 }
 

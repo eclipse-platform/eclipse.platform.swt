@@ -18,7 +18,7 @@ import org.eclipse.swt.internal.gtk.*;
 public class Theme {
 	Device device;
 	
-	int /*long*/ shellHandle, fixedHandle, buttonHandle, arrowHandle,
+	long /*int*/ shellHandle, fixedHandle, buttonHandle, arrowHandle,
 		frameHandle, entryHandle, checkButtonHandle, radioButtonHandle, 
 		notebookHandle, treeHandle, progressHandle, toolbarHandle,
 		labelHandle, separatorHandle;
@@ -165,7 +165,7 @@ public Rectangle measureText(GC gc, Rectangle bounds, DrawData data, String text
 	return data.measureText(this, text, flags, gc, bounds);
 }
 
-int getWidgetProperty(int /*long*/ handle, String name) {
+int getWidgetProperty(long /*int*/ handle, String name) {
 	byte[] propertyName = Converter.wcsToMbcs(null, name, true);
 	int[] result = new int[1];
 	OS.gtk_widget_style_get(handle, propertyName, result, 0);
@@ -173,18 +173,18 @@ int getWidgetProperty(int /*long*/ handle, String name) {
 }
 
 
-int /*long*/ getBorderProperty(int /*long*/ handle, String name) {
+long /*int*/ getBorderProperty(long /*int*/ handle, String name) {
 	byte[] propertyName = Converter.wcsToMbcs(null, name, true);
-	int /*long*/ [] result = new int /*long*/[1];
+	long /*int*/ [] result = new long /*int*/[1];
 	OS.gtk_widget_style_get(handle, propertyName, result, 0);
 	return result[0];
 }
 
-void transferClipping(GC gc, int /*long*/ style) {
+void transferClipping(GC gc, long /*int*/ style) {
 	GCData data = gc.getGCData();
-	int /*long*/ clipRgn = data.clipRgn;
-	int /*long*/ damageRgn = data.damageRgn;
-	int /*long*/ clipping = clipRgn;
+	long /*int*/ clipRgn = data.clipRgn;
+	long /*int*/ damageRgn = data.damageRgn;
+	long /*int*/ clipping = clipRgn;
 	if (damageRgn != 0) {
 		if (clipping != 0) {
 			clipping = OS.gdk_region_new();
@@ -194,7 +194,7 @@ void transferClipping(GC gc, int /*long*/ style) {
 			clipping = damageRgn;
 		}
 	}
-	int /*long*/ [] curGC = new int /*long*/ [1];
+	long /*int*/ [] curGC = new long /*int*/ [1];
 	for (int i = 0; i < 5; i++) {
 		OS.gtk_style_get_fg_gc (style, i, curGC);
 		if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);

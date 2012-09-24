@@ -17,5 +17,5 @@ package org.eclipse.swt.internal.gtk;
 
 public class GtkFixed {
 	/** @field cast=(GList *) */
-	public int /*long*/ children;
+	public long /*int*/ children;
 }

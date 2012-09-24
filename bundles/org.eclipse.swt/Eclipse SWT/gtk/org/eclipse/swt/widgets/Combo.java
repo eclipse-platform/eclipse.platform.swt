@@ -57,9 +57,9 @@ import org.eclipse.swt.events.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Combo extends Composite {
-	int /*long*/ buttonHandle, entryHandle, textRenderer, cellHandle, popupHandle, menuHandle;
+	long /*int*/ buttonHandle, entryHandle, textRenderer, cellHandle, popupHandle, menuHandle;
 	int lastEventTime, visibleCount = 10;
-	int /*long*/ gdkEventKey = 0;
+	long /*int*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
 	String [] items = new String [0];
 	boolean selectionAdded;
@@ -323,9 +323,9 @@ void clearText () {
 	if ((style & SWT.READ_ONLY) != 0) {
 		int index = OS.gtk_combo_box_get_active (handle);
 		if (index != -1) {
-			int /*long*/ modelHandle = OS.gtk_combo_box_get_model (handle);
-			int /*long*/ [] ptr = new int /*long*/ [1];
-			int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+			long /*int*/ modelHandle = OS.gtk_combo_box_get_model (handle);
+			long /*int*/ [] ptr = new long /*int*/ [1];
+			long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 			OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 			OS.gtk_tree_model_get (modelHandle, iter, 0, ptr, -1);
 			OS.g_free (iter);
@@ -348,10 +348,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	int[] w = new int [1], h = new int [1];
 	OS.gtk_widget_realize (entryHandle);
-	int /*long*/ layout = OS.gtk_entry_get_layout (entryHandle);
+	long /*int*/ layout = OS.gtk_entry_get_layout (entryHandle);
 	OS.pango_layout_get_size (layout, w, h);
 	int xborder = Display.INNER_BORDER, yborder = Display.INNER_BORDER;
-	int /*long*/ style = OS.gtk_widget_get_style (entryHandle);
+	long /*int*/ style = OS.gtk_widget_get_style (entryHandle);
 	xborder += OS.gtk_style_get_xthickness (style);
 	yborder += OS.gtk_style_get_ythickness (style);
 	int [] property = new int [1];
@@ -366,7 +366,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	GtkRequisition arrowRequesition = new GtkRequisition ();
 	OS.gtk_widget_size_request (buttonHandle, arrowRequesition);
 	GtkRequisition listRequesition = new GtkRequisition ();
-	int /*long*/ listParent = OS.gtk_bin_get_child(popupHandle);
+	long /*int*/ listParent = OS.gtk_bin_get_child(popupHandle);
 	OS.gtk_widget_size_request (listParent, listRequesition);
 	width = Math.max (listRequesition.width, width) + arrowRequesition.width;
 	width = wHint == SWT.DEFAULT ? width : wHint;
@@ -397,7 +397,7 @@ void createHandle (int index) {
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	gtk_widget_set_has_window (fixedHandle, true);
-	int /*long*/ oldList = OS.gtk_window_list_toplevels ();  
+	long /*int*/ oldList = OS.gtk_window_list_toplevels ();  
 	if ((style & SWT.READ_ONLY) != 0) {
 		handle = OS.gtk_combo_box_new_text ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -481,15 +481,15 @@ void deregister () {
 	if (entryHandle != 0) display.removeWidget (entryHandle);
 	if (popupHandle != 0) display.removeWidget (popupHandle);
 	if (menuHandle != 0) display.removeWidget (menuHandle);
-	int /*long*/ imContext = imContext ();
+	long /*int*/ imContext = imContext ();
 	if (imContext != 0) display.removeWidget (imContext);
 }
 
-boolean filterKey (int keyval, int /*long*/ event) {
+boolean filterKey (int keyval, long /*int*/ event) {
 	int time = OS.gdk_event_get_time (event);
 	if (time != lastEventTime) {
 		lastEventTime = time;
-		int /*long*/ imContext = imContext ();
+		long /*int*/ imContext = imContext ();
 		if (imContext != 0) {
 			return OS.gtk_im_context_filter_keypress (imContext, event);
 		}
@@ -498,18 +498,18 @@ boolean filterKey (int keyval, int /*long*/ event) {
 	return false;
 }
 
-int /*long*/ findPopupHandle (int /*long*/ oldList) {
-	int /*long*/ result = 0;
-	int /*long*/ currentList = OS.gtk_window_list_toplevels();
-	int /*long*/ oldFromList = oldList;
-	int /*long*/ newFromList = OS.g_list_last(currentList);
+long /*int*/ findPopupHandle (long /*int*/ oldList) {
+	long /*int*/ result = 0;
+	long /*int*/ currentList = OS.gtk_window_list_toplevels();
+	long /*int*/ oldFromList = oldList;
+	long /*int*/ newFromList = OS.g_list_last(currentList);
 	boolean isFound;
 	while (newFromList != 0) {
-		int /*long*/ newToplevel = OS.g_list_data(newFromList);
+		long /*int*/ newToplevel = OS.g_list_data(newFromList);
 		isFound = false;
 		oldFromList = oldList;
 		while (oldFromList != 0) {
-			int /*long*/ oldToplevel = OS.g_list_data(oldFromList);
+			long /*int*/ oldToplevel = OS.g_list_data(oldFromList);
 			if (newToplevel == oldToplevel) {
 				isFound = true;
 				break;
@@ -527,7 +527,7 @@ int /*long*/ findPopupHandle (int /*long*/ oldList) {
 	return result;
 }
 
-int /*long*/ findButtonHandle() {
+long /*int*/ findButtonHandle() {
 	/*
 	* Feature in GTK.  There is no API to query the button
 	* handle from a combo box although it is possible to get the
@@ -535,12 +535,12 @@ int /*long*/ findButtonHandle() {
 	* fix is to walk the combo tree and find the first child that is 
 	* an instance of button.
 	*/
-	int /*long*/ result = 0;
+	long /*int*/ result = 0;
 	OS.gtk_container_forall (handle, display.allChildrenProc, 0);
 	if (display.allChildren != 0) {
-		int /*long*/ list = display.allChildren;
+		long /*int*/ list = display.allChildren;
 		while (list != 0) {
-			int /*long*/ widget = OS.g_list_data (list);
+			long /*int*/ widget = OS.g_list_data (list);
 			if (OS.GTK_IS_BUTTON (widget)) {
 				result = widget;
 				break;
@@ -552,14 +552,14 @@ int /*long*/ findButtonHandle() {
 	return result;
 }
 
-int /*long*/ findMenuHandle() {
+long /*int*/ findMenuHandle() {
 	if (popupHandle == 0) return 0;
-	int /*long*/ result = 0;
+	long /*int*/ result = 0;
 	OS.gtk_container_forall (popupHandle, display.allChildrenProc, 0);
 	if (display.allChildren != 0) {
-	    int /*long*/ list = display.allChildren;
+	    long /*int*/ list = display.allChildren;
 		while (list != 0) {
-			int /*long*/ widget = OS.g_list_data (list);
+			long /*int*/ widget = OS.g_list_data (list);
 			if (OS.G_OBJECT_TYPE (widget) == OS.GTK_TYPE_MENU ()) {
 				result = widget;
 				break;
@@ -572,7 +572,7 @@ int /*long*/ findMenuHandle() {
 	return result;
 }
 	
-void fixModal (int /*long*/ group, int /*long*/ modalGroup) {
+void fixModal (long /*int*/ group, long /*int*/ modalGroup) {
 	if (popupHandle != 0) {
 		if (group != 0) {
 			OS.gtk_window_group_add_window (group, popupHandle);
@@ -594,7 +594,7 @@ void fixIM () {
 	*  filter has to be called by SWT.
 	*/	
 	if (gdkEventKey != 0 && gdkEventKey != -1) {
-		int /*long*/ imContext = imContext ();
+		long /*int*/ imContext = imContext ();
 		if (imContext != 0) {
 			OS.gtk_im_context_filter_keypress (imContext, gdkEventKey);
 			gdkEventKey = -1;
@@ -604,12 +604,12 @@ void fixIM () {
 	gdkEventKey = 0;
 }
 
-int /*long*/ fontHandle () {
+long /*int*/ fontHandle () {
 	if (entryHandle != 0) return entryHandle;
 	return super.fontHandle ();
 }
 
-int /*long*/ focusHandle () {
+long /*int*/ focusHandle () {
 	if (entryHandle != 0) return entryHandle;
 	return super.focusHandle ();
 }
@@ -632,9 +632,9 @@ void hookEvents () {
 		OS.g_signal_connect_closure (entryHandle, OS.populate_popup, display.closures [POPULATE_POPUP], false);
 	}
 
-	hookEvents(new int /*long*/ [] {buttonHandle, entryHandle, menuHandle});
+	hookEvents(new long /*int*/ [] {buttonHandle, entryHandle, menuHandle});
 
-	int /*long*/ imContext = imContext ();
+	long /*int*/ imContext = imContext ();
 	if (imContext != 0) {
 		OS.g_signal_connect_closure (imContext, OS.commit, display.closures [COMMIT], false);
 		int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
@@ -643,10 +643,10 @@ void hookEvents () {
 	}
 }
 
-void hookEvents(int /*long*/ [] handles) {
+void hookEvents(long /*int*/ [] handles) {
 	int eventMask =	OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK;
 	for (int i=0; i<handles.length; i++) {
-		int /*long*/ eventHandle = handles [i];
+		long /*int*/ eventHandle = handles [i];
 		if (eventHandle != 0) {
 			/* Connect the mouse signals */
 			OS.gtk_widget_add_events (eventHandle, eventMask);
@@ -675,7 +675,7 @@ void hookEvents(int /*long*/ [] handles) {
 	}
 }
 
-int /*long*/ imContext () {
+long /*int*/ imContext () {
 	return entryHandle != 0 ? OS.GTK_ENTRY_IM_CONTEXT (entryHandle) : 0;
 }
 
@@ -722,9 +722,9 @@ boolean dragDetect(int x, int y, boolean filter, boolean dragOnTimeout, boolean[
 	if (filter && entryHandle != 0) {
 		int [] index = new int [1];
 		int [] trailing = new int [1];
-		int /*long*/ layout = OS.gtk_entry_get_layout (entryHandle);
+		long /*int*/ layout = OS.gtk_entry_get_layout (entryHandle);
 		OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
-		int /*long*/ ptr = OS.pango_layout_get_text (layout);
+		long /*int*/ ptr = OS.pango_layout_get_text (layout);
 		int position = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
 		int [] start = new int [1];
 		int [] end = new int [1];
@@ -740,11 +740,11 @@ boolean dragDetect(int x, int y, boolean filter, boolean dragOnTimeout, boolean[
 	return super.dragDetect (x, y, filter, dragOnTimeout, consume);
 }
 
-int /*long*/ enterExitHandle () {
+long /*int*/ enterExitHandle () {
 	return fixedHandle;
 }
 
-int /*long*/ eventWindow () {
+long /*int*/ eventWindow () {
 	return paintWindow ();
 }
 
@@ -776,7 +776,7 @@ public Point getCaretLocation () {
 	}
 	int [] offset_x = new int [1], offset_y = new int [1];
 	OS.gtk_entry_get_layout_offsets (entryHandle, offset_x, offset_y);
-	int /*long*/ layout = OS.gtk_entry_get_layout (entryHandle);
+	long /*int*/ layout = OS.gtk_entry_get_layout (entryHandle);
 	PangoRectangle pos = new PangoRectangle ();
 	OS.pango_layout_index_to_pos (layout, index, pos);
 	int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidth ();
@@ -804,7 +804,7 @@ public int getCaretPosition () {
 	if ((style & SWT.READ_ONLY) != 0) {
 		return 0;
 	}
-	int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
+	long /*int*/ ptr = OS.gtk_entry_get_text (entryHandle);
 	return (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, OS.gtk_editable_get_position (entryHandle));
 }
 
@@ -965,7 +965,7 @@ public Point getSelection () {
 	int [] end = new int [1];
 	if (entryHandle != 0) {
 		OS.gtk_editable_get_selection_bounds (entryHandle, start, end);
-		int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
+		long /*int*/ ptr = OS.gtk_entry_get_text (entryHandle);
 		start[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start[0]);
 		end[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end[0]);
 	}
@@ -1003,7 +1003,7 @@ public int getSelectionIndex () {
 public String getText () {
 	checkWidget();
 	if (entryHandle != 0) {
-		int /*long*/ str = OS.gtk_entry_get_text (entryHandle);
+		long /*int*/ str = OS.gtk_entry_get_text (entryHandle);
 		if (str == 0) return "";
 		int length = OS.strlen (str);
 		byte [] buffer = new byte [length];
@@ -1084,12 +1084,12 @@ public int getVisibleItemCount () {
 	return visibleCount;
 }
 
-int /*long*/ gtk_activate (int /*long*/ widget) {
+long /*int*/ gtk_activate (long /*int*/ widget) {
 	sendSelectionEvent (SWT.DefaultSelection);
 	return 0;
 }
 
-int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	/*
 	* Feature in GTK. Depending on where the user clicks, GTK prevents 
 	* the left mouse button event from being propagated. The fix is to
@@ -1103,7 +1103,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	return super.gtk_button_press_event (widget, event);
 }
 
-int /*long*/ gtk_changed (int /*long*/ widget) {
+long /*int*/ gtk_changed (long /*int*/ widget) {
 	if (widget == handle) {
 		if (entryHandle == 0) {
 			sendEvent(SWT.Modify);
@@ -1133,7 +1133,7 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 	* is to post the modify event when the user is typing.
 	*/
 	boolean keyPress = false;
-	int /*long*/ eventPtr = OS.gtk_get_current_event ();
+	long /*int*/ eventPtr = OS.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
@@ -1152,7 +1152,7 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 	return 0;
 }
 
-int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
+long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	if (text == 0) return 0;
 	if (!OS.gtk_editable_get_editable (entryHandle)) return 0;
 	int length = OS.strlen (text);
@@ -1190,9 +1190,9 @@ int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
 	return 0;
 }
 
-int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /*long*/ end_pos) {
+long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long /*int*/ end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
-	int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
+	long /*int*/ ptr = OS.gtk_entry_get_text (entryHandle);
 	if (end_pos == -1) end_pos = OS.g_utf8_strlen (ptr, -1);
 	int start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start_pos);
 	int end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end_pos);
@@ -1215,7 +1215,7 @@ int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /
 	return 0;
 }
 
-int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent)  {
+long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent)  {
 	/*
 	* Feature in GTK. Depending on where the user clicks, GTK prevents 
 	* the left mouse button event from being propagated. The fix is to
@@ -1265,12 +1265,12 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent)  {
 	return super.gtk_event_after(widget, gdkEvent);
 }
 
-int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	fixIM ();
 	return super.gtk_focus_out_event (widget, event);
 }
 
-int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*long*/ new_text_length, int /*long*/ position) {
+long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /*int*/ new_text_length, long /*int*/ position) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;	
 	if (new_text == 0 || new_text_length == 0) return 0;
 	byte [] buffer = new byte [(int)/*64*/new_text_length];
@@ -1278,7 +1278,7 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 	String oldText = new String (Converter.mbcsToWcs (null, buffer));
 	int [] pos = new int [1];
 	OS.memmove (pos, position, 4);
-	int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
+	long /*int*/ ptr = OS.gtk_entry_get_text (entryHandle);
 	if (pos [0] == -1) pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
 	int start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, pos [0]);
 	String newText = verifyText (oldText, start, start);
@@ -1310,8 +1310,8 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 	return 0;
 }
 
-int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_key_press_event (widget, event);
+long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
+	long /*int*/ result = super.gtk_key_press_event (widget, event);
 	if (result != 0) {
 	    gdkEventKey = 0;
 	    fixIM ();
@@ -1361,7 +1361,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	return result;
 }
 
-int /*long*/ gtk_populate_popup (int /*long*/ widget, int /*long*/ menu) {
+long /*int*/ gtk_populate_popup (long /*int*/ widget, long /*int*/ menu) {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.gtk_widget_set_direction (menu, OS.GTK_TEXT_DIR_RTL);
 		OS.gtk_container_forall (menu, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
@@ -1369,7 +1369,7 @@ int /*long*/ gtk_populate_popup (int /*long*/ widget, int /*long*/ menu) {
 	return 0;
 }
 
-int /*long*/ gtk_selection_done(int /*long*/ menushell) {
+long /*int*/ gtk_selection_done(long /*int*/ menushell) {
 	int index = OS.gtk_combo_box_get_active (handle);
 	if (indexSelected == -1){
 		indexSelected = index;
@@ -1380,7 +1380,7 @@ int /*long*/ gtk_selection_done(int /*long*/ menushell) {
 	return 0;
 }
 
-int /*long*/ gtk_style_set (int /*long*/ widget, int /*long*/ previousStyle) {
+long /*int*/ gtk_style_set (long /*int*/ widget, long /*int*/ previousStyle) {
 	setButtonHandle (findButtonHandle ());
 	setMenuHandle (findMenuHandle ());
 	return super.gtk_style_set (widget, previousStyle);
@@ -1443,12 +1443,12 @@ boolean isFocusHandle(int widget) {
 	return super.isFocusHandle (widget);
 }
 
-int /*long*/ paintWindow () {
-	int /*long*/ childHandle =  entryHandle != 0 ? entryHandle : handle;	
+long /*int*/ paintWindow () {
+	long /*int*/ childHandle =  entryHandle != 0 ? entryHandle : handle;	
 	OS.gtk_widget_realize (childHandle);
-	int /*long*/ window = gtk_widget_get_window (childHandle);
+	long /*int*/ window = gtk_widget_get_window (childHandle);
 	if ((style & SWT.READ_ONLY) != 0) return window;
-	int /*long*/ children = OS.gdk_window_get_children (window);
+	long /*int*/ children = OS.gdk_window_get_children (window);
 	if (children != 0) window = OS.g_list_data (children);
 	OS.g_list_free (children);
 	return window;
@@ -1473,7 +1473,7 @@ public void paste () {
 	if (entryHandle != 0) OS.gtk_editable_paste_clipboard (entryHandle);
 }
 
-int /*long*/ parentingHandle() {
+long /*int*/ parentingHandle() {
 	return fixedHandle;
 }
 
@@ -1483,7 +1483,7 @@ void register () {
 	if (entryHandle != 0) display.addWidget (entryHandle, this);
 	if (popupHandle != 0) display.addWidget (popupHandle, this);
 	if (menuHandle != 0) display.addWidget (menuHandle, this);
-	int /*long*/ imContext = imContext ();
+	long /*int*/ imContext = imContext ();
 	if (imContext != 0) display.addWidget (imContext, this);
 }
 
@@ -1726,7 +1726,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	return super.setBounds (x, y, width, newHeight, move, resize);
 }
 
-void setButtonHandle (int /*long*/ widget) {
+void setButtonHandle (long /*int*/ widget) {
 	if (buttonHandle == widget) return;
 	if (buttonHandle != 0) {
 		display.removeWidget (buttonHandle);
@@ -1736,11 +1736,11 @@ void setButtonHandle (int /*long*/ widget) {
 	if (buttonHandle != 0) {
 		OS.g_object_ref (buttonHandle);
 		display.addWidget (buttonHandle, this);
-		hookEvents (new int /*long*/[]{buttonHandle});
+		hookEvents (new long /*int*/[]{buttonHandle});
 	}
 }
 
-void setMenuHandle (int /*long*/ widget) {
+void setMenuHandle (long /*int*/ widget) {
 	if (menuHandle == widget) return;
 	if (menuHandle != 0) {
 		display.removeWidget (menuHandle);
@@ -1750,11 +1750,11 @@ void setMenuHandle (int /*long*/ widget) {
 	if (menuHandle != 0) {
 		OS.g_object_ref (menuHandle);
 		display.addWidget (menuHandle, this);
-		hookEvents (new int /*long*/[]{menuHandle});
+		hookEvents (new long /*int*/[]{menuHandle});
 	}
 }
 
-void setFontDescription (int /*long*/ font) {
+void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	if (entryHandle != 0) OS.gtk_widget_modify_font (entryHandle, font);
 	OS.g_object_set (textRenderer, OS.font_desc, font, 0);
@@ -1924,7 +1924,7 @@ public void setSelection (Point selection) {
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.READ_ONLY) != 0) return;
 	if (entryHandle != 0) {
-		int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
+		long /*int*/ ptr = OS.gtk_entry_get_text (entryHandle);
 		int start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, selection.x);
 		int end = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, selection.y);
 		OS.gtk_editable_set_position (entryHandle, start);
@@ -1972,7 +1972,7 @@ public void setText (String string) {
 	* fix is to block the firing of these events and fire them ourselves in a consistent manner. 
 	*/
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-		int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
+		long /*int*/ ptr = OS.gtk_entry_get_text (entryHandle);
 		string = verifyText (string, 0, (int)/*64*/OS.g_utf16_strlen (ptr, -1));
 		if (string == null) return;
 	}
@@ -2052,9 +2052,9 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 	switch (key) {
 		case OS.GDK_KP_Enter:
 		case OS.GDK_Return: {
-			int /*long*/ imContext = imContext (); 
+			long /*int*/ imContext = imContext (); 
 			if (imContext != 0) {
-				int /*long*/ [] preeditString = new int /*long*/ [1];
+				long /*int*/ [] preeditString = new long /*int*/ [1];
 				OS.gtk_im_context_get_preedit_string (imContext, preeditString, null, null);
 				if (preeditString [0] != 0) {
 					int length = OS.strlen (preeditString [0]);
@@ -2073,7 +2073,7 @@ String verifyText (String string, int start, int end) {
 	event.text = string;
 	event.start = start;
 	event.end = end;
-	int /*long*/ eventPtr = OS.gtk_get_current_event ();
+	long /*int*/ eventPtr = OS.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);

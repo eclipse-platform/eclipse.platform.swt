@@ -15,11 +15,11 @@ import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebDocumentRepresentation extends IUnknown {
 
-public IWebDocumentRepresentation (int /*long*/ address) {
+public IWebDocumentRepresentation (long /*int*/ address) {
 	super (address);
 }
 
-public int documentSource (int /*long*/[] source) {
+public int documentSource (long /*int*/[] source) {
 	return COM.VtblCall (8, getAddress (), source);
 }
 

@@ -451,8 +451,8 @@ public void copyArea(Image image, int x, int y) {
 		for (int i = 0; i < count[0]; i++) {
 			int display = displays[i];
 			OS.CGDisplayBounds(display, rect);
-			int /*long*/ srcImage = 0;
-			int /*long*/ address = OS.VERSION >= 0x1070 ? 0 : OS.CGDisplayBaseAddress(display);
+			long /*int*/ srcImage = 0;
+			long /*int*/ address = OS.VERSION >= 0x1070 ? 0 : OS.CGDisplayBaseAddress(display);
 			if (address != 0) {
 				int width = OS.CGDisplayPixelsWide(display);
 				int height = OS.CGDisplayPixelsHigh(display);

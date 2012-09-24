@@ -45,7 +45,7 @@ import org.eclipse.swt.events.*;
 public class Spinner extends Composite {
 	static final int MIN_ARROW_WIDTH = 6;
 	int lastEventTime = 0;
-	int /*long*/ gdkEventKey = 0;
+	long /*int*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
 	double climbRate = 1;
 	
@@ -203,8 +203,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	int[] w = new int [1], h = new int [1];
 	OS.gtk_widget_realize (handle);
-	int /*long*/ layout = OS.gtk_entry_get_layout (handle);
-	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	long /*int*/ layout = OS.gtk_entry_get_layout (handle);
+	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	int digits = OS.gtk_spin_button_get_digits (handle);
@@ -222,7 +222,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		string = buffer.toString ();
 	}
 	byte [] buffer1 = Converter.wcsToMbcs (null, string, false);
-	int /*long*/ ptr = OS.pango_layout_get_text (layout);
+	long /*int*/ ptr = OS.pango_layout_get_text (layout);
 	int length = OS.strlen (ptr);
 	byte [] buffer2 = new byte [length];
 	OS.memmove (buffer2, ptr, length);	
@@ -240,7 +240,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	int xborder = 0, yborder = 0;
-	int /*long*/ style = OS.gtk_widget_get_style (handle);
+	long /*int*/ style = OS.gtk_widget_get_style (handle);
 	if ((this.style & SWT.BORDER) != 0) {
 		xborder += OS.gtk_style_get_xthickness (style);
 		yborder += OS.gtk_style_get_ythickness (style);
@@ -252,7 +252,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		xborder += property [0];
 		yborder += property [0];
 	}
-	int /*long*/ fontDesc = OS.gtk_style_get_font_desc (style);
+	long /*int*/ fontDesc = OS.gtk_style_get_font_desc (style);
 	int fontSize = OS.pango_font_description_get_size (fontDesc);
 	int arrowSize = Math.max (OS.PANGO_PIXELS (fontSize), MIN_ARROW_WIDTH);
 	arrowSize = arrowSize - arrowSize % 2;	
@@ -291,7 +291,7 @@ void createHandle (int index) {
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	gtk_widget_set_has_window (fixedHandle, true);
-	int /*long*/ adjustment = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
+	long /*int*/ adjustment = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
 	if (adjustment == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = OS.gtk_spin_button_new (adjustment, climbRate, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -320,23 +320,23 @@ public void cut () {
 
 void deregister () {
 	super.deregister ();
-	int /*long*/ imContext = imContext ();
+	long /*int*/ imContext = imContext ();
 	if (imContext != 0) display.removeWidget (imContext);
 }
 
-int /*long*/ eventWindow () {
+long /*int*/ eventWindow () {
 	return paintWindow ();
 }
 
-int /*long*/ enterExitHandle () {
+long /*int*/ enterExitHandle () {
 	return fixedHandle;
 }
 
-boolean filterKey (int keyval, int /*long*/ event) {
+boolean filterKey (int keyval, long /*int*/ event) {
 	int time = OS.gdk_event_get_time (event);
 	if (time != lastEventTime) {
 		lastEventTime = time;
-		int /*long*/ imContext = imContext ();
+		long /*int*/ imContext = imContext ();
 		if (imContext != 0) {
 			return OS.gtk_im_context_filter_keypress (imContext, event);
 		}
@@ -355,7 +355,7 @@ void fixIM () {
 	*  filter has to be called by SWT.
 	*/	
 	if (gdkEventKey != 0 && gdkEventKey != -1) {
-		int /*long*/ imContext = imContext ();
+		long /*int*/ imContext = imContext ();
 		if (imContext != 0) {
 			OS.gtk_im_context_filter_keypress (imContext, gdkEventKey);
 			gdkEventKey = -1;
@@ -371,7 +371,7 @@ GdkColor getBackgroundColor () {
 
 public int getBorderWidth () {
 	checkWidget();
-	int /*long*/ style = OS.gtk_widget_get_style (handle);
+	long /*int*/ style = OS.gtk_widget_get_style (handle);
 	if ((this.style & SWT.BORDER) != 0) {
 		 return OS.gtk_style_get_xthickness (style);
 	}
@@ -395,7 +395,7 @@ GdkColor getForegroundColor () {
  */
 public int getIncrement () {
 	checkWidget ();
-	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	int digits = OS.gtk_spin_button_get_digits (handle);
@@ -416,7 +416,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget ();
-	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	int digits = OS.gtk_spin_button_get_digits (handle);
@@ -437,7 +437,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	int digits = OS.gtk_spin_button_get_digits (handle);
@@ -459,7 +459,7 @@ public int getMinimum () {
  */
 public int getPageIncrement () {
 	checkWidget ();
-	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	int digits = OS.gtk_spin_button_get_digits (handle);
@@ -480,7 +480,7 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget ();	
-	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	int digits = OS.gtk_spin_button_get_digits (handle);
@@ -505,7 +505,7 @@ public int getSelection () {
  */
 public String getText () {
 	checkWidget ();
-	int /*long*/ str = OS.gtk_entry_get_text (handle);
+	long /*int*/ str = OS.gtk_entry_get_text (handle);
 	if (str == 0) return "";
 	int length = OS.strlen (str);
 	byte [] buffer = new byte [length];
@@ -552,26 +552,26 @@ public int getDigits () {
 }
 
 String getDecimalSeparator () {
-	int /*long*/ ptr = OS.localeconv_decimal_point ();
+	long /*int*/ ptr = OS.localeconv_decimal_point ();
 	int length = OS.strlen (ptr);
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, ptr, length);	
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
-int /*long*/ gtk_activate (int /*long*/ widget) {
+long /*int*/ gtk_activate (long /*int*/ widget) {
 	sendSelectionEvent (SWT.DefaultSelection);
 	return 0;
 }
 
-int /*long*/ gtk_changed (int /*long*/ widget) {
-	int /*long*/ str = OS.gtk_entry_get_text (handle);
+long /*int*/ gtk_changed (long /*int*/ widget) {
+	long /*int*/ str = OS.gtk_entry_get_text (handle);
 	int length = OS.strlen (str);
 	if (length > 0) {
-		int /*long*/ [] endptr = new int /*long*/ [1];
+		long /*int*/ [] endptr = new long /*int*/ [1];
 		double value = OS.g_strtod (str, endptr);
 		if (endptr [0] == str + length) {
-			int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+			long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 			GtkAdjustment adjustment = new GtkAdjustment ();
 			OS.memmove (adjustment, hAdjustment);
 			if (value != adjustment.value && adjustment.lower <= value && value <= adjustment.upper) {
@@ -588,7 +588,7 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 	* is to post the modify event when the user is typing.
 	*/
 	boolean keyPress = false;
-	int /*long*/ eventPtr = OS.gtk_get_current_event ();
+	long /*int*/ eventPtr = OS.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
@@ -607,7 +607,7 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 	return 0;
 }
 
-int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
+long /*int*/ gtk_commit (long /*int*/ imContext, long /*int*/ text) {
 	if (text == 0) return 0;
 	if (!OS.gtk_editable_get_editable (handle)) return 0;
 	int length = OS.strlen (text);
@@ -645,9 +645,9 @@ int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
 	return 0;
 }
 
-int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /*long*/ end_pos) {
+long /*int*/ gtk_delete_text (long /*int*/ widget, long /*int*/ start_pos, long /*int*/ end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
-	int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+	long /*int*/ ptr = OS.gtk_entry_get_text (handle);
 	if (end_pos == -1) end_pos = OS.g_utf8_strlen (ptr, -1);
 	int start = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start_pos);
 	int end = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end_pos);
@@ -670,17 +670,17 @@ int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /
 	return 0;
 }
 
-int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
+long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	if (cursor != null) setCursor (cursor.handle);
 	return super.gtk_event_after (widget, gdkEvent);
 }
 
-int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	fixIM ();
 	return super.gtk_focus_out_event (widget, event);
 }
 
-int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*long*/ new_text_length, int /*long*/ position) {
+long /*int*/ gtk_insert_text (long /*int*/ widget, long /*int*/ new_text, long /*int*/ new_text_length, long /*int*/ position) {
 //	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	if (new_text == 0 || new_text_length == 0) return 0;
 	byte [] buffer = new byte [(int)/*64*/new_text_length];
@@ -688,7 +688,7 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 	String oldText = new String (Converter.mbcsToWcs (null, buffer));
 	int [] pos = new int [1];
 	OS.memmove (pos, position, 4);
-	int /*long*/ ptr = OS.gtk_entry_get_text (handle);
+	long /*int*/ ptr = OS.gtk_entry_get_text (handle);
 	if (pos [0] == -1) pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
 	int start = (int)/*64*/OS.g_utf16_pointer_to_offset (ptr, pos [0]);
 	String newText = verifyText (oldText, start, start);
@@ -720,15 +720,15 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 	return 0;
 }
 
-int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_key_press_event (widget, event);
+long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
+	long /*int*/ result = super.gtk_key_press_event (widget, event);
 	if (result != 0) fixIM ();
 	if (gdkEventKey == -1) result = 1;
 	gdkEventKey = 0;
 	return result;
 }
 
-int /*long*/ gtk_populate_popup (int /*long*/ widget, int /*long*/ menu) {
+long /*int*/ gtk_populate_popup (long /*int*/ widget, long /*int*/ menu) {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.gtk_widget_set_direction (menu, OS.GTK_TEXT_DIR_RTL);
 		OS.gtk_container_forall (menu, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);
@@ -736,7 +736,7 @@ int /*long*/ gtk_populate_popup (int /*long*/ widget, int /*long*/ menu) {
 	return 0;
 }
 
-int /*long*/ gtk_value_changed (int /*long*/ widget) {
+long /*int*/ gtk_value_changed (long /*int*/ widget) {
 	sendSelectionEvent (SWT.Selection);
 	return 0;
 }
@@ -749,7 +749,7 @@ void hookEvents () {
 	OS.g_signal_connect_closure (handle, OS.value_changed, display.closures [VALUE_CHANGED], false);
 	OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE], false);
 	OS.g_signal_connect_closure (handle, OS.populate_popup, display.closures [POPULATE_POPUP], false);
-	int /*long*/ imContext = imContext ();
+	long /*int*/ imContext = imContext ();
 	if (imContext != 0) {
 		OS.g_signal_connect_closure (imContext, OS.commit, display.closures [COMMIT], false);
 		int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
@@ -758,13 +758,13 @@ void hookEvents () {
 	}
 }
 
-int /*long*/ imContext () {
+long /*int*/ imContext () {
 	return OS.GTK_ENTRY_IM_CONTEXT (handle);
 }
 
-int /*long*/ paintWindow () {
-	int /*long*/ window = super.paintWindow ();
-	int /*long*/ children = OS.gdk_window_get_children (window);
+long /*int*/ paintWindow () {
+	long /*int*/ window = super.paintWindow ();
+	long /*int*/ children = OS.gdk_window_get_children (window);
 	if (children != 0) window = OS.g_list_data (children);
 	OS.g_list_free (children);
 	return window;
@@ -789,7 +789,7 @@ public void paste () {
 
 void register () {
 	super.register ();
-	int /*long*/ imContext = imContext ();
+	long /*int*/ imContext = imContext ();
 	if (imContext != 0) display.addWidget (imContext, this);
 }
 
@@ -876,14 +876,14 @@ void setBackgroundColor (GdkColor color) {
 	OS.gtk_widget_modify_base (handle, 0, color);
 }
 
-void setCursor (int /*long*/ cursor) {
-	int /*long*/ defaultCursor = 0;
+void setCursor (long /*int*/ cursor) {
+	long /*int*/ defaultCursor = 0;
 	if (cursor == 0) defaultCursor = OS.gdk_cursor_new (OS.GDK_XTERM);
 	super.setCursor (cursor != 0 ? cursor : defaultCursor);
 	if (cursor == 0) OS.gdk_cursor_unref (defaultCursor);
 }
 
-void setFontDescription (int /*long*/ font) {
+void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 }
 
@@ -902,7 +902,7 @@ void setFontDescription (int /*long*/ font) {
 public void setIncrement (int value) {
 	checkWidget ();
 	if (value < 1) return;
-	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	double newValue = value;
@@ -928,7 +928,7 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	double newValue = value;
@@ -955,7 +955,7 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
-	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	double newValue = value;
@@ -982,7 +982,7 @@ public void setMinimum (int value) {
 public void setPageIncrement (int value) {
 	checkWidget ();
 	if (value < 1) return;
-	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	double newValue = value;
@@ -1069,7 +1069,7 @@ public void setDigits (int value) {
 	if (value < 0) error (SWT.ERROR_INVALID_ARGUMENT);
 	int digits = OS.gtk_spin_button_get_digits (handle);
 	if (value == digits) return;
-	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	int diff = Math.abs (value - digits);
@@ -1139,7 +1139,7 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 	* depending upon the value of digits.
 	*/
 	climbRate = 1.0 / factor;
-	int /*long*/ adjustment = OS.gtk_spin_button_get_adjustment(handle);
+	long /*int*/ adjustment = OS.gtk_spin_button_get_adjustment(handle);
 	OS.gtk_spin_button_configure (handle, adjustment, climbRate, digits);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
@@ -1153,9 +1153,9 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 	switch (key) {
 		case OS.GDK_KP_Enter:
 		case OS.GDK_Return: {
-			int /*long*/ imContext =  imContext ();
+			long /*int*/ imContext =  imContext ();
 			if (imContext != 0) {
-				int /*long*/ [] preeditString = new int /*long*/ [1];
+				long /*int*/ [] preeditString = new long /*int*/ [1];
 				OS.gtk_im_context_get_preedit_string (imContext, preeditString, null, null);
 				if (preeditString [0] != 0) {
 					int length = OS.strlen (preeditString [0]);
@@ -1174,7 +1174,7 @@ String verifyText (String string, int start, int end) {
 	event.text = string;
 	event.start = start;
 	event.end = end;
-	int /*long*/ eventPtr = OS.gtk_get_current_event ();
+	long /*int*/ eventPtr = OS.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
@@ -1195,7 +1195,7 @@ String verifyText (String string, int start, int end) {
 		index = 0;
 	}
 	if (string.length () > 0) {
-		int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+		long /*int*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 		GtkAdjustment adjustment = new GtkAdjustment ();
 		OS.memmove (adjustment, hAdjustment);
 		if (adjustment.lower < 0 && string.charAt (0) == '-') index++;

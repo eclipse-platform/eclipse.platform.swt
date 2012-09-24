@@ -36,8 +36,8 @@ public abstract class Device implements Drawable {
 	 * 
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	protected int /*long*/ xDisplay;
-	int /*long*/ shellHandle;
+	protected long /*int*/ xDisplay;
+	long /*int*/ shellHandle;
 
 	/* Debugging */
 	public static boolean DEBUG;
@@ -55,7 +55,7 @@ public abstract class Device implements Drawable {
 	boolean disposed;
 	
 	/* Warning and Error Handlers */
-	int /*long*/ logProc;
+	long /*int*/ logProc;
 	Callback logCallback;
 	//NOT DONE - get list of valid names
 	String [] log_domains = {"GLib-GObject", "GLib", "GObject", "Pango", "ATK", "GdkPixbuf", "Gdk", "Gtk", "GnomeVFS", "GIO"};
@@ -64,7 +64,7 @@ public abstract class Device implements Drawable {
 	
 	/* X Warning and Error Handlers */
 	static Callback XErrorCallback, XIOErrorCallback;
-	static int /*long*/ XErrorProc, XIOErrorProc, XNullErrorProc, XNullIOErrorProc;
+	static long /*int*/ XErrorProc, XIOErrorProc, XNullErrorProc, XNullIOErrorProc;
 	static Device[] Devices = new Device[4];
 
 	/*
@@ -82,7 +82,7 @@ public abstract class Device implements Drawable {
 	/* Device dpi */
 	Point dpi;
 	
-	int /*long*/ emptyTab;
+	long /*int*/ emptyTab;
 
 	boolean useXRender;
 	static boolean CAIRO_LOADED;
@@ -173,7 +173,7 @@ void checkCairo() {
 		} else {
 			buffer =  Converter.wcsToMbcs(null, "libcairo.so.2", true);
 		}
-		int /*long*/ libcairo = OS.dlopen(buffer, flags);
+		long /*int*/ libcairo = OS.dlopen(buffer, flags);
 		if (libcairo != 0) {
 			OS.dlclose(libcairo);
 		} else {
@@ -272,7 +272,7 @@ void dispose_Object (Object object) {
 	}
 }
 
-static synchronized Device findDevice (int /*long*/ xDisplay) {
+static synchronized Device findDevice (long /*int*/ xDisplay) {
 	for (int i=0; i<Devices.length; i++) {
 		Device device = Devices [i];
 		if (device != null && device.xDisplay == xDisplay) {
@@ -427,13 +427,13 @@ public Point getDPI () {
 public FontData[] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
 	if (!scalable) return new FontData[0];
-	int /*long*/[] family = new int /*long*/[1];
-	int /*long*/[] face = new int /*long*/[1];
-	int /*long*/[] families = new int /*long*/[1];
+	long /*int*/[] family = new long /*int*/[1];
+	long /*int*/[] face = new long /*int*/[1];
+	long /*int*/[] families = new long /*int*/[1];
 	int[] n_families = new int[1];
-	int /*long*/[] faces = new int /*long*/[1];
+	long /*int*/[] faces = new long /*int*/[1];
 	int[] n_faces = new int[1];
-	int /*long*/ context = OS.gdk_pango_context_get();
+	long /*int*/ context = OS.gdk_pango_context_get();
 	OS.pango_context_list_families(context, families, n_families);
 	int nFds = 0;
 	FontData[] fds = new FontData[faceName != null ? 4 : n_families[0]];
@@ -441,7 +441,7 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 		OS.memmove(family, families[0] + i * OS.PTR_SIZEOF, OS.PTR_SIZEOF);
 		boolean match = true;
 		if (faceName != null) {
-			int /*long*/ familyName = OS.pango_font_family_get_name(family[0]);
+			long /*int*/ familyName = OS.pango_font_family_get_name(family[0]);
 			int length = OS.strlen(familyName);
 			byte[] buffer = new byte[length];
 			OS.memmove(buffer, familyName, length);
@@ -452,7 +452,7 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 		    OS.pango_font_family_list_faces(family[0], faces, n_faces);
 		    for (int j=0; j<n_faces[0]; j++) {
 		        OS.memmove(face, faces[0] + j * OS.PTR_SIZEOF, OS.PTR_SIZEOF);
-		        int /*long*/ fontDesc = OS.pango_font_face_describe(face[0]);
+		        long /*int*/ fontDesc = OS.pango_font_face_describe(face[0]);
 		        Font font = Font.gtk_new(this, fontDesc);
 		        FontData data = font.getFontData()[0];
 				if (nFds == fds.length) {
@@ -677,7 +677,7 @@ protected void init () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public abstract int /*long*/ internal_new_GC (GCData data);
+public abstract long /*int*/ internal_new_GC (GCData data);
 
 /**	 
  * Invokes platform specific functionality to dispose a GC handle.
@@ -694,7 +694,7 @@ public abstract int /*long*/ internal_new_GC (GCData data);
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public abstract void internal_dispose_GC (int /*long*/ hDC, GCData data);
+public abstract void internal_dispose_GC (long /*int*/ hDC, GCData data);
 
 /**
  * Returns <code>true</code> if the device has been disposed,
@@ -735,7 +735,7 @@ public boolean loadFont (String path) {
 	return OS.FcConfigAppFontAddFile (0, buffer);
 }
 
-int /*long*/ logProc (int /*long*/ log_domain, int /*long*/ log_level, int /*long*/ message, int /*long*/ user_data) {
+long /*int*/ logProc (long /*int*/ log_domain, long /*int*/ log_level, long /*int*/ message, long /*int*/ user_data) {
 	if (warningLevel == 0) {
 		if (DEBUG || debug) {
 			new Error ().printStackTrace ();
@@ -806,7 +806,7 @@ protected void release () {
 	shellHandle = 0;
 
 	if (gdkColors != null) {
-		int /*long*/ colormap = OS.gdk_colormap_get_system();
+		long /*int*/ colormap = OS.gdk_colormap_get_system();
 		for (int i = 0; i < gdkColors.length; i++) {
 			GdkColor color = gdkColors [i];
 			if (color != null) {
@@ -899,7 +899,7 @@ public void setWarnings (boolean warnings) {
 	}
 }
 
-static int /*long*/ XErrorProc (int /*long*/ xDisplay, int /*long*/ xErrorEvent) {
+static long /*int*/ XErrorProc (long /*int*/ xDisplay, long /*int*/ xErrorEvent) {
 	Device device = findDevice (xDisplay);
 	if (device != null) {
 		if (device.warningLevel == 0) {
@@ -917,7 +917,7 @@ static int /*long*/ XErrorProc (int /*long*/ xDisplay, int /*long*/ xErrorEvent)
 	return 0;
 }
 
-static int /*long*/ XIOErrorProc (int /*long*/ xDisplay) {
+static long /*int*/ XIOErrorProc (long /*int*/ xDisplay) {
 	Device device = findDevice (xDisplay);
 	if (device != null) {
 		if (DEBUG || device.debug) {

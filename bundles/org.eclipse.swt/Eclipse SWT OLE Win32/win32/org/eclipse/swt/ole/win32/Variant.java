@@ -37,7 +37,7 @@ public final class Variant {
 	private float   floatData;
 	private double  doubleData;
 	private String  stringData;
-	private int /*long*/     byRefPtr;
+	private long /*int*/     byRefPtr;
 	private IDispatch dispatchData;
 	private IUnknown unknownData;
 
@@ -70,7 +70,7 @@ public final class Variant {
  *
  * @since 3.3
  */
-public static void win32_copy (int /*long*/ pVarDest, Variant varSrc) {
+public static void win32_copy (long /*int*/ pVarDest, Variant varSrc) {
 	varSrc.getData (pVarDest);
 }
 
@@ -93,7 +93,7 @@ public static void win32_copy (int /*long*/ pVarDest, Variant varSrc) {
  *
  * @since 3.3
  */
-public static Variant win32_new (int /*long*/ pVariant) {
+public static Variant win32_new (long /*int*/ pVariant) {
 	Variant variant = new Variant ();
 	variant.setData (pVariant);
 	return variant;
@@ -150,7 +150,7 @@ public Variant(double val) {
  * @param byRefType the type of the data being transferred such as OLE.VT_BSTR | OLE.VT_BYREF
  *
  */
-public Variant(int /*long*/ ptr, short byRefType) {
+public Variant(long /*int*/ ptr, short byRefType) {
 	type = byRefType;
 	byRefPtr = ptr;
 }
@@ -277,8 +277,8 @@ public OleAutomation getAutomation() {
 		return new OleAutomation(dispatchData);
 	}
 	// try to coerce the value to the desired type
-	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_DISPATCH);
@@ -320,8 +320,8 @@ public IDispatch getDispatch() {
 		return dispatchData;
 	}
 	// try to coerce the value to the desired type
-	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_DISPATCH);
@@ -362,8 +362,8 @@ public boolean getBoolean() {
 	}
 
 	// try to coerce the value to the desired type
-	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_BOOL);
@@ -387,7 +387,7 @@ public boolean getBoolean() {
  * @return a pointer to the referenced data represented by this Variant or 0
  *
  */
-public int /*long*/ getByRef() {
+public long /*int*/ getByRef() {
 	if (type == COM.VT_EMPTY) {
 		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
 	}
@@ -420,8 +420,8 @@ public byte getByte() {
 	}
 		
 	// try to coerce the value to the desired type
-	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_I1);
@@ -460,8 +460,8 @@ public char getChar() {
 	}
 		
 	// try to coerce the value to the desired type
-	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_UI2);
@@ -477,7 +477,7 @@ public char getChar() {
 		OS.GlobalFree(newPtr);
 	}
 }
-void getData(int /*long*/ pData){
+void getData(long /*int*/ pData){
 	if (pData == 0) OLE.error(OLE.ERROR_OUT_OF_MEMORY);
 	
 	COM.VariantInit(pData);
@@ -485,7 +485,7 @@ void getData(int /*long*/ pData){
 	if ((type & COM.VT_BYREF) == COM.VT_BYREF) {
 		//TODO - use VARIANT structure
 		COM.MoveMemory(pData, new short[] {type}, 2);
-		COM.MoveMemory(pData + 8, new int /*long*/[]{byRefPtr}, OS.PTR_SIZEOF);
+		COM.MoveMemory(pData + 8, new long /*int*/[]{byRefPtr}, OS.PTR_SIZEOF);
 		return;
 	}
 
@@ -529,18 +529,18 @@ void getData(int /*long*/ pData){
 		case COM.VT_DISPATCH :
 			dispatchData.AddRef();
 			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new int /*long*/[]{dispatchData.getAddress()}, OS.PTR_SIZEOF);
+			COM.MoveMemory(pData + 8, new long /*int*/[]{dispatchData.getAddress()}, OS.PTR_SIZEOF);
 			break;
 		case COM.VT_UNKNOWN :
 			unknownData.AddRef();
 			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new int /*long*/[]{unknownData.getAddress()}, OS.PTR_SIZEOF);
+			COM.MoveMemory(pData + 8, new long /*int*/[]{unknownData.getAddress()}, OS.PTR_SIZEOF);
 			break;
 		case COM.VT_BSTR :
 			COM.MoveMemory(pData, new short[] {type}, 2);
 			char[] data = (stringData+"\0").toCharArray();
-			int /*long*/ ptr = COM.SysAllocString(data);
-			COM.MoveMemory(pData + 8, new int /*long*/[] {ptr}, OS.PTR_SIZEOF);
+			long /*int*/ ptr = COM.SysAllocString(data);
+			COM.MoveMemory(pData + 8, new long /*int*/[] {ptr}, OS.PTR_SIZEOF);
 			break;
 	
 		default :
@@ -570,8 +570,8 @@ public double getDouble() {
     }
     
     // try to coerce the value to the desired type
-    int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-    int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+    long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+    long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
     try {
         getData(oldPtr);
         int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_R8);
@@ -609,8 +609,8 @@ public float getFloat() {
 	}
 
 	// try to coerce the value to the desired type
-	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_R4);
@@ -648,8 +648,8 @@ public int getInt() {
 	}
 		
 	// try to coerce the value to the desired type
-	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_I4);
@@ -688,8 +688,8 @@ public long getLong() {
 	}
 		
 	// try to coerce the value to the desired type
-	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_I8);
@@ -726,8 +726,8 @@ public short getShort() {
 	}
 		
 	// try to coerce the value to the desired type
-	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_I2);
@@ -765,8 +765,8 @@ public String getString() {
 	}
 
 	// try to coerce the value to the desired type
-	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_BSTR);
@@ -819,8 +819,8 @@ public IUnknown getUnknown() {
 	}
 
 	// try to coerce the value to the desired type
-	int /*long*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-	int /*long*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	try {
 		getData(oldPtr);
 		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_UNKNOWN);
@@ -886,11 +886,11 @@ public void setByRef(float val) {
  *
  * @since 2.1
  */
-public void setByRef(int /*long*/ val) {
+public void setByRef(long /*int*/ val) {
 	if ((type & COM.VT_BYREF) == 0 || (type & COM.VT_I4) == 0) {
 		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE);
 	}
-	COM.MoveMemory(byRefPtr, new int /*long*/[]{val}, OS.PTR_SIZEOF);
+	COM.MoveMemory(byRefPtr, new long /*int*/[]{val}, OS.PTR_SIZEOF);
 }
 /**
  * Update the by reference value of this variant with a new short value.
@@ -909,7 +909,7 @@ public void setByRef(short val) {
 	}
 	COM.MoveMemory(byRefPtr, new short[]{val}, 2);
 }
-void setData(int /*long*/ pData){
+void setData(long /*int*/ pData){
 	if (pData == 0) OLE.error(OLE.ERROR_INVALID_ARGUMENT);
 
 	//TODO - use VARIANT structure
@@ -918,7 +918,7 @@ void setData(int /*long*/ pData){
 	type = dataType[0];
 
 	if ((type & COM.VT_BYREF) == COM.VT_BYREF) {
-		int /*long*/[] newByRefPtr = new int /*long*/[1];
+		long /*int*/[] newByRefPtr = new long /*int*/[1];
 		OS.MoveMemory(newByRefPtr, pData + 8, OS.PTR_SIZEOF);
 		byRefPtr = newByRefPtr[0];
 		return;
@@ -969,7 +969,7 @@ void setData(int /*long*/ pData){
  			doubleData = newDoubleData[0];
 			break;
 		case COM.VT_DISPATCH : {
-			int /*long*/[] ppvObject = new int /*long*/[1];
+			long /*int*/[] ppvObject = new long /*int*/[1];
 			OS.MoveMemory(ppvObject, pData + 8, OS.PTR_SIZEOF);
 			if (ppvObject[0] == 0) {
 				type = COM.VT_EMPTY;
@@ -980,7 +980,7 @@ void setData(int /*long*/ pData){
 			break;
 		}
 		case COM.VT_UNKNOWN : {
-			int /*long*/[] ppvObject = new int /*long*/[1];
+			long /*int*/[] ppvObject = new long /*int*/[1];
 			OS.MoveMemory(ppvObject, pData + 8, OS.PTR_SIZEOF);
 			if (ppvObject[0] == 0) {
 				type = COM.VT_EMPTY;
@@ -992,7 +992,7 @@ void setData(int /*long*/ pData){
 		}
 		case COM.VT_BSTR :
 			// get the address of the memory in which the string resides
-			int /*long*/[] hMem = new int /*long*/[1];
+			long /*int*/[] hMem = new long /*int*/[1];
 			OS.MoveMemory(hMem, pData + 8, OS.PTR_SIZEOF);
 			if (hMem[0] == 0) {
 				type = COM.VT_EMPTY;
@@ -1013,7 +1013,7 @@ void setData(int /*long*/ pData){
 	
 		default :
 			// try coercing it into one of the known forms
-			int /*long*/ newPData = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, sizeof);
+			long /*int*/ newPData = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, sizeof);
 			if (COM.VariantChangeType(newPData, pData, (short) 0, COM.VT_R4) == COM.S_OK) {
 				setData(newPData);
 			} else if (COM.VariantChangeType(newPData, pData, (short) 0, COM.VT_I4) == COM.S_OK) {

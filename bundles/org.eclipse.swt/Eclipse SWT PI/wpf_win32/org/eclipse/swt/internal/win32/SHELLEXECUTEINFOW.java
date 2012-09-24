@@ -14,34 +14,34 @@ public class SHELLEXECUTEINFOW {
 	public int cbSize;
 	public int fMask; 
 	/** @field cast=(HWND) */
-	public int /*long*/ hwnd;
+	public long /*int*/ hwnd;
 	/** @field cast=(LPWSTR) */
-	public int /*long*/ lpVerb;
+	public long /*int*/ lpVerb;
 	/** @field cast=(LPWSTR) */
 	public int lpFile;
 	/** @field cast=(LPWSTR) */
-	public int /*long*/ lpParameters;
+	public long /*int*/ lpParameters;
 	/** @field cast=(LPWSTR) */
-	public int /*long*/ lpDirectory;
+	public long /*int*/ lpDirectory;
 	public int nShow; 
 	/** @field cast=(HINSTANCE) */
-	public int /*long*/ hInstApp;
+	public long /*int*/ hInstApp;
 	// Optional members
 	/** @field cast=(LPVOID) */
-	public int /*long*/ lpIDList; 
+	public long /*int*/ lpIDList; 
 	/** @field cast=(LPWSTR) */
-	public int /*long*/ lpClass;
+	public long /*int*/ lpClass;
 	/** @field cast=(HKEY) */
-	public int /*long*/ hkeyClass;
+	public long /*int*/ hkeyClass;
 	public int dwHotKey;
 //	union {
 //		HANDLE hIcon;		
 //		HANDLE hMonitor;
 //	};
 	/** @field cast=(HANDLE) */
-	public int /*long*/ hIcon;
+	public long /*int*/ hIcon;
 	/** @field cast=(HANDLE) */
-	public int /*long*/ hProcess; 
+	public long /*int*/ hProcess; 
 	public static final int sizeof = Win32.SHELLEXECUTEINFOW_sizeof ();
 }
 

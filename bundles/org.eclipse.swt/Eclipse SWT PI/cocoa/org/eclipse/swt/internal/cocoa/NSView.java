@@ -16,7 +16,7 @@ public NSView() {
 	super();
 }
 
-public NSView(int /*long*/ id) {
+public NSView(long /*int*/ id) {
 	super(id);
 }
 
@@ -32,11 +32,11 @@ public void addSubview(NSView aView) {
 	OS.objc_msgSend(this.id, OS.sel_addSubview_, aView != null ? aView.id : 0);
 }
 
-public void addSubview(NSView aView, int /*long*/ place, NSView otherView) {
+public void addSubview(NSView aView, long /*int*/ place, NSView otherView) {
 	OS.objc_msgSend(this.id, OS.sel_addSubview_positioned_relativeTo_, aView != null ? aView.id : 0, place, otherView != null ? otherView.id : 0);
 }
 
-public int /*long*/ addToolTipRect(NSRect aRect, id anObject, int /*long*/ data) {
+public long /*int*/ addToolTipRect(NSRect aRect, id anObject, long /*int*/ data) {
 	return OS.objc_msgSend(this.id, OS.sel_addToolTipRect_owner_userData_, aRect, anObject != null ? anObject.id : 0, data);
 }
 
@@ -169,12 +169,12 @@ public NSRect frame() {
 }
 
 public NSView hitTest(NSPoint aPoint) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_hitTest_, aPoint);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_hitTest_, aPoint);
 	return result == this.id ? this : (result != 0 ? new NSView(result) : null);
 }
 
 public NSView initWithFrame(NSRect frameRect) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_, frameRect);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_, frameRect);
 	return result == this.id ? this : (result != 0 ? new NSView(result) : null);
 }
 
@@ -199,7 +199,7 @@ public void lockFocus() {
 }
 
 public NSMenu menuForEvent(NSEvent event) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_menuForEvent_, event != null ? event.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_menuForEvent_, event != null ? event.id : 0);
 	return result != 0 ? new NSMenu(result) : null;
 }
 
@@ -223,7 +223,7 @@ public void removeFromSuperview() {
 	OS.objc_msgSend(this.id, OS.sel_removeFromSuperview);
 }
 
-public void removeToolTip(int /*long*/ tag) {
+public void removeToolTip(long /*int*/ tag) {
 	OS.objc_msgSend(this.id, OS.sel_removeToolTip_, tag);
 }
 
@@ -255,15 +255,15 @@ public void setAutoresizesSubviews(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setAutoresizesSubviews_, flag);
 }
 
-public void setAutoresizingMask(int /*long*/ mask) {
+public void setAutoresizingMask(long /*int*/ mask) {
 	OS.objc_msgSend(this.id, OS.sel_setAutoresizingMask_, mask);
 }
 
-public void setBoundsRotation(float /*double*/ angle) {
+public void setBoundsRotation(double /*float*/ angle) {
 	OS.objc_msgSend(this.id, OS.sel_setBoundsRotation_, angle);
 }
 
-public void setFocusRingType(int /*long*/ focusRingType) {
+public void setFocusRingType(long /*int*/ focusRingType) {
 	OS.objc_msgSend(this.id, OS.sel_setFocusRingType_, focusRingType);
 }
 
@@ -304,17 +304,17 @@ public boolean shouldDelayWindowOrderingForEvent(NSEvent theEvent) {
 }
 
 public NSArray subviews() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_subviews);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_subviews);
 	return result != 0 ? new NSArray(result) : null;
 }
 
 public NSView superview() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_superview);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_superview);
 	return result == this.id ? this : (result != 0 ? new NSView(result) : null);
 }
 
 public NSArray trackingAreas() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_trackingAreas);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_trackingAreas);
 	return result != 0 ? new NSArray(result) : null;
 }
 
@@ -345,7 +345,7 @@ public NSRect visibleRect() {
 }
 
 public NSWindow window() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_window);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_window);
 	return result != 0 ? new NSWindow(result) : null;
 }
 

@@ -15,9 +15,9 @@ public class TCITEM {
 	public int dwState;
 	public int dwStateMask;
 	/** @field cast=(LPTSTR) */
-	public int /*long*/ pszText;
+	public long /*int*/ pszText;
 	public int cchTextMax;
 	public int iImage;
-	public int /*long*/ lParam;
+	public long /*int*/ lParam;
 	public static final int sizeof = OS.TCITEM_sizeof ();
 }

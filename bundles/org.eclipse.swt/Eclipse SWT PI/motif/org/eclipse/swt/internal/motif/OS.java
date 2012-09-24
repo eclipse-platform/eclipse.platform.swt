@@ -656,8 +656,8 @@ public static final int PictOpOver = 3;
 
 public static final native int XRenderPictureAttributes_sizeof();
 /** @method flags=dynamic */
-public static final native boolean _XRenderQueryExtension(int /*long*/ display, int[] event_basep, int[] error_basep);
-public static final boolean XRenderQueryExtension(int /*long*/ display, int[] event_basep, int[] error_basep) {
+public static final native boolean _XRenderQueryExtension(long /*int*/ display, int[] event_basep, int[] error_basep);
+public static final boolean XRenderQueryExtension(long /*int*/ display, int[] event_basep, int[] error_basep) {
 	lock.lock();
 	try {
 		return _XRenderQueryExtension(display, event_basep, error_basep);
@@ -666,8 +666,8 @@ public static final boolean XRenderQueryExtension(int /*long*/ display, int[] ev
 	}
 }
 /** @method flags=dynamic */
-public static final native int _XRenderQueryVersion(int /*long*/ display, int[] major_versionp, int[] minor_versionp);
-public static final int XRenderQueryVersion(int /*long*/ display, int[] major_versionp, int[] minor_versionp) {
+public static final native int _XRenderQueryVersion(long /*int*/ display, int[] major_versionp, int[] minor_versionp);
+public static final int XRenderQueryVersion(long /*int*/ display, int[] major_versionp, int[] minor_versionp) {
 	lock.lock();
 	try {
 		return _XRenderQueryVersion(display, major_versionp, minor_versionp);
@@ -676,8 +676,8 @@ public static final int XRenderQueryVersion(int /*long*/ display, int[] major_ve
 	}
 }
 /** @method flags=dynamic */
-public static final native int /*long*/ _XRenderCreatePicture(int /*long*/ display, int /*long*/ drawable, int /*long*/ format, int /*long*/ valuemask, XRenderPictureAttributes attributes);
-public static final int /*long*/ XRenderCreatePicture(int /*long*/ display, int /*long*/ drawable, int /*long*/ format, int /*long*/ valuemask, XRenderPictureAttributes attributes) {
+public static final native long /*int*/ _XRenderCreatePicture(long /*int*/ display, long /*int*/ drawable, long /*int*/ format, long /*int*/ valuemask, XRenderPictureAttributes attributes);
+public static final long /*int*/ XRenderCreatePicture(long /*int*/ display, long /*int*/ drawable, long /*int*/ format, long /*int*/ valuemask, XRenderPictureAttributes attributes) {
 	lock.lock();
 	try {
 		return _XRenderCreatePicture(display, drawable, format, valuemask, attributes);
@@ -686,8 +686,8 @@ public static final int /*long*/ XRenderCreatePicture(int /*long*/ display, int 
 	}
 }
 /** @method flags=dynamic */
-public static final native void _XRenderSetPictureClipRegion(int /*long*/ display, int /*long*/ picture, int /*long*/ region);
-public static final void XRenderSetPictureClipRegion(int /*long*/ display, int /*long*/ picture, int /*long*/ region) {
+public static final native void _XRenderSetPictureClipRegion(long /*int*/ display, long /*int*/ picture, long /*int*/ region);
+public static final void XRenderSetPictureClipRegion(long /*int*/ display, long /*int*/ picture, long /*int*/ region) {
 	lock.lock();
 	try {
 		_XRenderSetPictureClipRegion(display, picture, region);
@@ -697,8 +697,8 @@ public static final void XRenderSetPictureClipRegion(int /*long*/ display, int /
 }
 
 /** @method flags=dynamic */
-public static final native void _XRenderSetPictureClipRectangles(int /*long*/ display, int /*long*/ picture, int xOrigin, int yOrigin, short[] rects, int count);
-public static final void XRenderSetPictureClipRectangles(int /*long*/ display, int /*long*/ picture, int xOrigin, int yOrigin, short[] rects, int count) {
+public static final native void _XRenderSetPictureClipRectangles(long /*int*/ display, long /*int*/ picture, int xOrigin, int yOrigin, short[] rects, int count);
+public static final void XRenderSetPictureClipRectangles(long /*int*/ display, long /*int*/ picture, int xOrigin, int yOrigin, short[] rects, int count) {
 	lock.lock();
 	try {
 		_XRenderSetPictureClipRectangles(display, picture, xOrigin, yOrigin, rects, count);
@@ -707,8 +707,8 @@ public static final void XRenderSetPictureClipRectangles(int /*long*/ display, i
 	}
 }
 /** @method flags=dynamic */
-public static final native void _XRenderSetPictureTransform(int /*long*/ display, int /*long*/ picture, int[] transform);
-public static final void XRenderSetPictureTransform(int /*long*/ display, int /*long*/ picture, int[] transform) {
+public static final native void _XRenderSetPictureTransform(long /*int*/ display, long /*int*/ picture, int[] transform);
+public static final void XRenderSetPictureTransform(long /*int*/ display, long /*int*/ picture, int[] transform) {
 	lock.lock();
 	try {
 		_XRenderSetPictureTransform(display, picture, transform);
@@ -717,8 +717,8 @@ public static final void XRenderSetPictureTransform(int /*long*/ display, int /*
 	}
 }
 /** @method flags=dynamic */
-public static final native void _XRenderFreePicture(int /*long*/ display, int /*long*/ picture);
-public static final void XRenderFreePicture(int /*long*/ display, int /*long*/ picture) {
+public static final native void _XRenderFreePicture(long /*int*/ display, long /*int*/ picture);
+public static final void XRenderFreePicture(long /*int*/ display, long /*int*/ picture) {
 	lock.lock();
 	try {
 		_XRenderFreePicture(display, picture);
@@ -727,8 +727,8 @@ public static final void XRenderFreePicture(int /*long*/ display, int /*long*/ p
 	}
 }
 /** @method flags=dynamic */
-public static final native void _XRenderComposite(int /*long*/ display, int op, int /*long*/ src, int /*long*/ mask, int /*long*/ dst, int src_x, int src_y, int mask_x, int mask_y, int dst_x, int dst_y, int width, int height);
-public static final void XRenderComposite(int /*long*/ display, int op, int /*long*/ src, int /*long*/ mask, int /*long*/ dst, int src_x, int src_y, int mask_x, int mask_y, int dst_x, int dst_y, int width, int height) {
+public static final native void _XRenderComposite(long /*int*/ display, int op, long /*int*/ src, long /*int*/ mask, long /*int*/ dst, int src_x, int src_y, int mask_x, int mask_y, int dst_x, int dst_y, int width, int height);
+public static final void XRenderComposite(long /*int*/ display, int op, long /*int*/ src, long /*int*/ mask, long /*int*/ dst, int src_x, int src_y, int mask_x, int mask_y, int dst_x, int dst_y, int width, int height) {
 	lock.lock();
 	try {
 		_XRenderComposite(display, op, src, mask, dst, src_x, src_y, mask_x, mask_y, dst_x, dst_y, width, height);
@@ -737,8 +737,8 @@ public static final void XRenderComposite(int /*long*/ display, int op, int /*lo
 	}
 }
 /** @method flags=dynamic */
-public static final native int /*long*/ _XRenderFindStandardFormat(int /*long*/ display, int format);
-public static final int /*long*/ XRenderFindStandardFormat(int /*long*/ display, int format) {
+public static final native long /*int*/ _XRenderFindStandardFormat(long /*int*/ display, int format);
+public static final long /*int*/ XRenderFindStandardFormat(long /*int*/ display, int format) {
 	lock.lock();
 	try {
 		return _XRenderFindStandardFormat(display, format);
@@ -747,8 +747,8 @@ public static final int /*long*/ XRenderFindStandardFormat(int /*long*/ display,
 	}
 }
 /** @method flags=dynamic */
-public static final native int /*long*/ _XRenderFindVisualFormat(int /*long*/ display, int /*long*/ visual);
-public static final int /*long*/ XRenderFindVisualFormat(int /*long*/ display, int /*long*/ visual) {
+public static final native long /*int*/ _XRenderFindVisualFormat(long /*int*/ display, long /*int*/ visual);
+public static final long /*int*/ XRenderFindVisualFormat(long /*int*/ display, long /*int*/ visual) {
 	lock.lock();
 	try {
 		return _XRenderFindVisualFormat(display, visual);
@@ -758,8 +758,8 @@ public static final int /*long*/ XRenderFindVisualFormat(int /*long*/ display, i
 }
 
 /** @param handle cast=(void *) */
-public static final native int _dlclose(int /*long*/ handle);
-public static final int dlclose(int /*long*/ handle) {
+public static final native int _dlclose(long /*int*/ handle);
+public static final int dlclose(long /*int*/ handle) {
 	lock.lock();
 	try {
 		return _dlclose(handle);
@@ -768,8 +768,8 @@ public static final int dlclose(int /*long*/ handle) {
 	}
 }
 /** @param filename cast=(const char *) */
-public static final native int /*long*/ _dlopen(byte[] filename, int flag);
-public static final int /*long*/ dlopen(byte[] filename, int flag) {
+public static final native long /*int*/ _dlopen(byte[] filename, int flag);
+public static final long /*int*/ dlopen(byte[] filename, int flag) {
 	lock.lock();
 	try {
 		return _dlopen(filename, flag);
@@ -781,8 +781,8 @@ public static final int /*long*/ dlopen(byte[] filename, int flag) {
  * @param handle cast=(void *)
  * @param symbol cast=(const char *)
  */
-public static final native int /*long*/ _dlsym(int /*long*/ handle, byte[] symbol);
-public static final int /*long*/ dlsym(int /*long*/ handle, byte[] symbol) {
+public static final native long /*int*/ _dlsym(long /*int*/ handle, byte[] symbol);
+public static final long /*int*/ dlsym(long /*int*/ handle, byte[] symbol) {
 	lock.lock();
 	try {
 		return _dlsym(handle, symbol);

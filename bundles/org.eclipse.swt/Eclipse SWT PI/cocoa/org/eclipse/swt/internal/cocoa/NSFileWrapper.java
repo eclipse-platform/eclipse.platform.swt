@@ -16,7 +16,7 @@ public NSFileWrapper() {
 	super();
 }
 
-public NSFileWrapper(int /*long*/ id) {
+public NSFileWrapper(long /*int*/ id) {
 	super(id);
 }
 

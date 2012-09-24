@@ -72,9 +72,9 @@ public void javaToNative (Object object, TransferData transferData) {
 	String string = (String)object;
 	byte[] utf8 = Converter.wcsToMbcs (null, string, true);
 	if  (transferData.type ==  COMPOUND_TEXT_ID) {
-		int /*long*/[] encoding = new int /*long*/[1];
+		long /*int*/[] encoding = new long /*int*/[1];
 		int[] format = new int[1];
-		int /*long*/[] ctext = new int /*long*/[1];
+		long /*int*/[] ctext = new long /*int*/[1];
 		int[] length = new int[1];
 		boolean result;
 		if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
@@ -90,7 +90,7 @@ public void javaToNative (Object object, TransferData transferData) {
 		transferData.result = 1;
 	} 
 	if (transferData.type == UTF8_STRING_ID) {
-		int /*long*/ pValue = OS.g_malloc(utf8.length);
+		long /*int*/ pValue = OS.g_malloc(utf8.length);
 		if (pValue ==  0) return;
 		OS.memmove(pValue, utf8, utf8.length);
 		transferData.type = UTF8_STRING_ID;
@@ -100,7 +100,7 @@ public void javaToNative (Object object, TransferData transferData) {
 		transferData.result = 1;
 	}
 	if (transferData.type == STRING_ID) {
-		int /*long*/ string_target = OS.gdk_utf8_to_string_target(utf8);
+		long /*int*/ string_target = OS.gdk_utf8_to_string_target(utf8);
 		if (string_target ==  0) return;
 		transferData.type = STRING_ID;
 		transferData.format = 8;
@@ -121,10 +121,10 @@ public void javaToNative (Object object, TransferData transferData) {
  */
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) ||  transferData.pValue == 0) return null;
-	int /*long*/[] list = new int /*long*/[1];
+	long /*int*/[] list = new long /*int*/[1];
 	int count = OS.gdk_text_property_to_utf8_list_for_display(OS.gdk_display_get_default(), transferData.type, transferData.format, transferData.pValue, transferData.length, list);
 	if (count == 0) return null;
-	int /*long*/[] ptr = new int /*long*/[1];
+	long /*int*/[] ptr = new long /*int*/[1];
 	OS.memmove(ptr, list[0], OS.PTR_SIZEOF);
 	int length = OS.strlen(ptr[0]);
 	byte[] utf8 = new byte[length];

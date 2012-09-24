@@ -39,22 +39,22 @@ int AddRef () {
 
 void createCOMInterfaces () {
 	iWebResourceLoadDelegate = new COMObject (new int[] {2, 0, 0, 4, 6, 4, 4, 4, 4, 3, 4, 3}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
-		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return identifierForInitialRequest (args[0], args[1], args[2], args[3]);}
-		public int /*long*/ method4 (int /*long*/[] args) {return willSendRequest (args[0], args[1], args[2], args[3], args[4], args[5]);}
-		public int /*long*/ method5 (int /*long*/[] args) {return didReceiveAuthenticationChallenge (args[0], args[1], args[2], args[3]);}
-		public int /*long*/ method6 (int /*long*/[] args) {return COM.E_NOTIMPL;}
-		public int /*long*/ method7 (int /*long*/[] args) {return COM.S_OK;}
-		public int /*long*/ method8 (int /*long*/[] args) {return COM.S_OK;}
-		public int /*long*/ method9 (int /*long*/[] args) {return COM.S_OK;}
-		public int /*long*/ method10 (int /*long*/[] args) {return COM.S_OK;}
-		public int /*long*/ method11 (int /*long*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		public long /*int*/ method3 (long /*int*/[] args) {return identifierForInitialRequest (args[0], args[1], args[2], args[3]);}
+		public long /*int*/ method4 (long /*int*/[] args) {return willSendRequest (args[0], args[1], args[2], args[3], args[4], args[5]);}
+		public long /*int*/ method5 (long /*int*/[] args) {return didReceiveAuthenticationChallenge (args[0], args[1], args[2], args[3]);}
+		public long /*int*/ method6 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long /*int*/ method7 (long /*int*/[] args) {return COM.S_OK;}
+		public long /*int*/ method8 (long /*int*/[] args) {return COM.S_OK;}
+		public long /*int*/ method9 (long /*int*/[] args) {return COM.S_OK;}
+		public long /*int*/ method10 (long /*int*/[] args) {return COM.S_OK;}
+		public long /*int*/ method11 (long /*int*/[] args) {return COM.E_NOTIMPL;}
 	};
 }
 
-int didReceiveAuthenticationChallenge (int /*long*/ webView, int /*long*/ identifier, int /*long*/ challenge, int /*long*/ dataSource) {
+int didReceiveAuthenticationChallenge (long /*int*/ webView, long /*int*/ identifier, long /*int*/ challenge, long /*int*/ dataSource) {
 	IWebURLAuthenticationChallenge authenticationChallenge = new IWebURLAuthenticationChallenge (challenge);
 	/*
 	 * Do not invoke the listeners if this challenge has been failed too many
@@ -63,7 +63,7 @@ int didReceiveAuthenticationChallenge (int /*long*/ webView, int /*long*/ identi
 	 */
 	int[] count = new int[1];
 	int hr = authenticationChallenge.previousFailureCount (count);
-	int /*long*/[] result = new int /*long*/[1];
+	long /*int*/[] result = new long /*int*/[1];
 	if (hr == COM.S_OK && count[0] < 3) {
 		AuthenticationListener[] authenticationListeners = browser.webBrowser.authenticationListeners;
 		for (int i = 0; i < authenticationListeners.length; i++) {
@@ -89,8 +89,8 @@ int didReceiveAuthenticationChallenge (int /*long*/ webView, int /*long*/ identi
 				hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebURLCredential, 0, WebKit_win32.IID_IWebURLCredential, result);
 				if (hr == COM.S_OK && result[0] != 0) {
 					IWebURLCredential credential = new IWebURLCredential (result[0]);
-					int /*long*/ user = WebKit.createBSTR (event.user);
-					int /*long*/ password = WebKit.createBSTR (event.password);
+					long /*int*/ user = WebKit.createBSTR (event.user);
+					long /*int*/ password = WebKit.createBSTR (event.password);
 					credential.initWithUser (user, password, WebKit_win32.WebURLCredentialPersistenceForSession);
 					challengeSender.useCredential (credential.getAddress (), challenge);
 					credential.Release ();
@@ -167,8 +167,8 @@ int didReceiveAuthenticationChallenge (int /*long*/ webView, int /*long*/ identi
 	hr = WebKit_win32.WebKitCreateInstance (WebKit_win32.CLSID_WebURLCredential, 0, WebKit_win32.IID_IWebURLCredential, result);
 	if (hr == COM.S_OK && result[0] != 0) {
 		IWebURLCredential credential = new IWebURLCredential (result[0]);
-		int /*long*/ user = WebKit.createBSTR (userReturn[0]);
-		int /*long*/ password = WebKit.createBSTR (passwordReturn[0]);
+		long /*int*/ user = WebKit.createBSTR (userReturn[0]);
+		long /*int*/ password = WebKit.createBSTR (passwordReturn[0]);
 		credential.initWithUser (user, password, WebKit_win32.WebURLCredentialPersistenceForSession);
 		challengeSender.useCredential (credential.getAddress (), challenge);
 		credential.Release ();
@@ -184,23 +184,23 @@ void disposeCOMInterfaces () {
 	}	
 }
 
-int /*long*/ getAddress () {
+long /*int*/ getAddress () {
 	return iWebResourceLoadDelegate.getAddress ();
 }
 
-int identifierForInitialRequest (int /*long*/ webView, int /*long*/ request, int /*long*/ dataSource, int /*long*/ identifier) {
+int identifierForInitialRequest (long /*int*/ webView, long /*int*/ request, long /*int*/ dataSource, long /*int*/ identifier) {
 	if (browser.isDisposed ()) return COM.S_OK;
 
 	/* send progress event iff request is for top-level frame */
 
 	IWebDataSource source = new IWebDataSource (dataSource);
-	int /*long*/[] frame = new int /*long*/[1];
+	long /*int*/[] frame = new long /*int*/[1];
 	int hr = source.webFrame (frame);
 	if (hr != COM.S_OK || frame[0] == 0) {
     	return COM.S_OK;
     }
 	new IWebFrame (frame[0]).Release ();
-	int /*long*/[] mainFrame = new int /*long*/[1];
+	long /*int*/[] mainFrame = new long /*int*/[1];
 	IWebView iWebView = new IWebView (webView);
 	hr = iWebView.mainFrame (mainFrame);
 	if (hr != COM.S_OK || mainFrame[0] == 0) {
@@ -208,7 +208,7 @@ int identifierForInitialRequest (int /*long*/ webView, int /*long*/ request, int
     }
 	new IWebFrame (mainFrame[0]).Release ();
 	if (frame[0] == mainFrame[0]) {
-		int /*long*/ ptr = OS.malloc (8);
+		long /*int*/ ptr = OS.malloc (8);
 		iWebView.estimatedProgress (ptr);
 		double[] estimate = new double[1];
 		OS.MoveMemory (estimate, ptr, 8);
@@ -228,23 +228,23 @@ int identifierForInitialRequest (int /*long*/ webView, int /*long*/ request, int
 	return COM.S_OK;
 }
 
-int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
+int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return COM.E_INVALIDARG;
 	GUID guid = new GUID ();
 	COM.MoveMemory (guid, riid, GUID.sizeof);
 
 	if (COM.IsEqualGUID (guid, COM.IIDIUnknown)) {
-		COM.MoveMemory (ppvObject, new int /*long*/[] {iWebResourceLoadDelegate.getAddress ()}, OS.PTR_SIZEOF);
+		COM.MoveMemory (ppvObject, new long /*int*/[] {iWebResourceLoadDelegate.getAddress ()}, OS.PTR_SIZEOF);
 		new IUnknown (iWebResourceLoadDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID (guid, WebKit_win32.IID_IWebResourceLoadDelegate)) {
-		COM.MoveMemory (ppvObject, new int /*long*/[] {iWebResourceLoadDelegate.getAddress ()}, OS.PTR_SIZEOF);
+		COM.MoveMemory (ppvObject, new long /*int*/[] {iWebResourceLoadDelegate.getAddress ()}, OS.PTR_SIZEOF);
 		new IUnknown (iWebResourceLoadDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
 
-	COM.MoveMemory (ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
+	COM.MoveMemory (ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 
@@ -335,9 +335,9 @@ boolean showAuthenticationDialog (final String[] user, final String[] password, 
 	return result[0];
 }
 
-int willSendRequest (int /*long*/ webView, int /*long*/ identifier, int /*long*/ request, int /*long*/ redirectResponse, int /*long*/ dataSource, int /*long*/ newRequest) {
+int willSendRequest (long /*int*/ webView, long /*int*/ identifier, long /*int*/ request, long /*int*/ redirectResponse, long /*int*/ dataSource, long /*int*/ newRequest) {
 	IWebURLRequest req = new IWebURLRequest (request);
-	int /*long*/[] result = new int /*long*/ [1];
+	long /*int*/[] result = new long /*int*/ [1];
 	int hr = req.URL (result);
 	if (hr == COM.S_OK && result[0] != 0) {
 		String url = WebKit.extractBSTR (result[0]);
@@ -354,15 +354,15 @@ int willSendRequest (int /*long*/ webView, int /*long*/ identifier, int /*long*/
 			hr = req.mutableCopy (result);
 			if (hr == COM.S_OK && result[0] != 0) {
 				IWebMutableURLRequest mReq = new IWebMutableURLRequest (result[0]);
-				int /*long*/ urlString = WebKit.createBSTR (url);
+				long /*int*/ urlString = WebKit.createBSTR (url);
 				mReq.setURL (urlString);
-				OS.MoveMemory (newRequest, new int /*long*/[] {mReq.getAddress ()}, C.PTR_SIZEOF);
+				OS.MoveMemory (newRequest, new long /*int*/[] {mReq.getAddress ()}, C.PTR_SIZEOF);
 				return COM.S_OK;
 			}
 		}
 	}
 	req.AddRef ();
-	OS.MoveMemory (newRequest, new int /*long*/[] {request}, C.PTR_SIZEOF);
+	OS.MoveMemory (newRequest, new long /*int*/[] {request}, C.PTR_SIZEOF);
 	return COM.S_OK;
 }
 

@@ -126,19 +126,19 @@ public RGB[] getRGBs() {
  */
 public RGB open () {
 	byte [] buffer = Converter.wcsToMbcs (null, title, true);
-	int /*long*/ handle = OS.gtk_color_selection_dialog_new (buffer);
+	long /*int*/ handle = OS.gtk_color_selection_dialog_new (buffer);
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	if (parent != null) {
-		int /*long*/ shellHandle = parent.topHandle ();
+		long /*int*/ shellHandle = parent.topHandle ();
 		OS.gtk_window_set_transient_for (handle, shellHandle);
-		int /*long*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
+		long /*int*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
 		if (pixbufs != 0) {
 			OS.gtk_window_set_icon_list (handle, pixbufs);
 			OS.g_list_free (pixbufs);
 		}
 	}
 	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-		int /*long*/ group = OS.gtk_window_get_group(0);
+		long /*int*/ group = OS.gtk_window_get_group(0);
 		OS.gtk_window_group_add_window (group, handle);
 	}
 	OS.gtk_window_set_modal (handle, true);
@@ -153,7 +153,7 @@ public RGB open () {
 	}
 	OS.gtk_color_selection_set_has_palette (dialog.colorsel, true);
 	if (rgbs != null) {
-		int /*long*/ colors = OS.g_malloc(GdkColor.sizeof * rgbs.length);
+		long /*int*/ colors = OS.g_malloc(GdkColor.sizeof * rgbs.length);
 		for (int i=0; i<rgbs.length; i++) {
 			RGB rgb = rgbs[i];
 			if (rgb != null) {
@@ -163,14 +163,14 @@ public RGB open () {
 				OS.memmove (colors + i * GdkColor.sizeof, color, GdkColor.sizeof);
 			}
 		}
-		int /*long*/ strPtr = OS.gtk_color_selection_palette_to_string(colors, rgbs.length);
+		long /*int*/ strPtr = OS.gtk_color_selection_palette_to_string(colors, rgbs.length);
 		int length = OS.strlen (strPtr);
 		buffer = new byte [length];
 		OS.memmove (buffer, strPtr, length);
 		String paletteString = new String (Converter.mbcsToWcs (null, buffer));
 		buffer = Converter.wcsToMbcs (null, paletteString, true);
 		OS.g_free (colors);
-		int /*long*/ settings = OS.gtk_settings_get_default ();
+		long /*int*/ settings = OS.gtk_settings_get_default ();
 		if (settings != 0) {
 			OS.gtk_settings_set_string_property(settings, OS.gtk_color_palette, buffer, Converter.wcsToMbcs (null, "gtk_color_selection_palette_to_string", true));
 		}
@@ -182,7 +182,7 @@ public RGB open () {
 		display.setModalDialog (this);
 	}
 	int signalId = 0;
-	int /*long*/ hookId = 0;
+	long /*int*/ hookId = 0;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
@@ -209,9 +209,9 @@ public RGB open () {
 		int blue = (color.blue >> 8) & 0xFF;
 		rgb = new RGB (red, green, blue);
 	}
-	int /*long*/ settings = OS.gtk_settings_get_default ();
+	long /*int*/ settings = OS.gtk_settings_get_default ();
 	if (settings != 0) {
-		int /*long*/ [] ptr = new int /*long*/ [1];
+		long /*int*/ [] ptr = new long /*int*/ [1];
 		OS.g_object_get (settings, OS.gtk_color_palette, ptr, 0);
 		if (ptr [0] != 0) {
 			int length = OS.strlen (ptr [0]);

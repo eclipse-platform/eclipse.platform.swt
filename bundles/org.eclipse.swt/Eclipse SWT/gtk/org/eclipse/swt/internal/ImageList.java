@@ -17,24 +17,24 @@ import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 
 public class ImageList {
-	int /*long*/ [] pixbufs;
+	long /*int*/ [] pixbufs;
 	int width = -1, height = -1;
 	Image [] images;
 	
 public ImageList() {
 	images = new Image [4];
-	pixbufs = new int /*long*/ [4];
+	pixbufs = new long /*int*/ [4];
 }
 
-public static int /*long*/ convertSurface(Image image) {
-	int /*long*/ newSurface = image.surface;
+public static long /*int*/ convertSurface(Image image) {
+	long /*int*/ newSurface = image.surface;
 	int type = Cairo.cairo_surface_get_type(newSurface);
 	if (type != Cairo.CAIRO_SURFACE_TYPE_IMAGE) {
 		Rectangle bounds = image.getBounds();
 		int format = Cairo.cairo_surface_get_content(newSurface) == Cairo.CAIRO_CONTENT_COLOR ? Cairo.CAIRO_FORMAT_RGB24 : Cairo.CAIRO_FORMAT_ARGB32;
 		newSurface = Cairo.cairo_image_surface_create(format, bounds.width, bounds.height);
 		if (newSurface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int /*long*/ cairo = Cairo.cairo_create(newSurface);
+		long /*int*/ cairo = Cairo.cairo_create(newSurface);
 		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
 		Cairo.cairo_set_source_surface (cairo, image.surface, 0, 0);
@@ -46,10 +46,10 @@ public static int /*long*/ convertSurface(Image image) {
 	return newSurface;
 }
 
-public static int /*long*/ createPixbuf(Image image) {
-	int /*long*/ pixbuf;
+public static long /*int*/ createPixbuf(Image image) {
+	long /*int*/ pixbuf;
 	if (OS.USE_CAIRO) {
-		int /*long*/ surface = convertSurface(image);
+		long /*int*/ surface = convertSurface(image);
 		int format = Cairo.cairo_image_surface_get_format(surface);
 		int width = Cairo.cairo_image_surface_get_width(surface);
 		int height = Cairo.cairo_image_surface_get_height(surface);
@@ -57,7 +57,7 @@ public static int /*long*/ createPixbuf(Image image) {
 		pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, hasAlpha, 8, width, height);
 		if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 		int stride = OS.gdk_pixbuf_get_rowstride (pixbuf);
-		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels (pixbuf);
+		long /*int*/ pixels = OS.gdk_pixbuf_get_pixels (pixbuf);
 		int oa, or, og, ob;
 		if (OS.BIG_ENDIAN) {
 			oa = 0; or = 1; og = 2; ob = 3;
@@ -65,7 +65,7 @@ public static int /*long*/ createPixbuf(Image image) {
 			oa = 3; or = 2; og = 1; ob = 0;
 		}
 		byte[] line = new byte[stride];
-		int /*long*/ surfaceData = Cairo.cairo_image_surface_get_data(surface);
+		long /*int*/ surfaceData = Cairo.cairo_image_surface_get_data(surface);
 		if (hasAlpha) {
 			for (int y = 0; y < height; y++) {
 				OS.memmove (line, surfaceData + (y * stride), stride);
@@ -107,25 +107,25 @@ public static int /*long*/ createPixbuf(Image image) {
 		} else {
 			OS.gdk_drawable_get_size (image.pixmap, w, h);
 		}
-		int /*long*/ colormap = OS.gdk_colormap_get_system ();
+		long /*int*/ colormap = OS.gdk_colormap_get_system ();
 		boolean hasMask = image.mask != 0 && OS.gdk_drawable_get_depth (image.mask) == 1;
 		if (hasMask) {
 			pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, true, 8, w [0], h [0]);
 			if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 			OS.gdk_pixbuf_get_from_drawable (pixbuf, image.pixmap, colormap, 0, 0, 0, 0, w [0], h [0]);
-			int /*long*/ maskPixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, w [0], h [0]);
+			long /*int*/ maskPixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, w [0], h [0]);
 			if (maskPixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 			OS.gdk_pixbuf_get_from_drawable(maskPixbuf, image.mask, 0, 0, 0, 0, 0, w [0], h [0]);
 			int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-			int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
+			long /*int*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
 			byte[] line = new byte[stride];
 			int maskStride = OS.gdk_pixbuf_get_rowstride(maskPixbuf);
-			int /*long*/ maskPixels = OS.gdk_pixbuf_get_pixels(maskPixbuf);
+			long /*int*/ maskPixels = OS.gdk_pixbuf_get_pixels(maskPixbuf);
 			byte[] maskLine = new byte[maskStride];
 			for (int y=0; y<h[0]; y++) {
-				int /*long*/ offset = pixels + (y * stride);
+				long /*int*/ offset = pixels + (y * stride);
 				OS.memmove(line, offset, stride);
-				int /*long*/ maskOffset = maskPixels + (y * maskStride);
+				long /*int*/ maskOffset = maskPixels + (y * maskStride);
 				OS.memmove(maskLine, maskOffset, maskStride);
 				for (int x=0; x<w[0]; x++) {
 					if (maskLine[x * 3] == 0) {
@@ -144,10 +144,10 @@ public static int /*long*/ createPixbuf(Image image) {
 			if (hasAlpha) {
 				byte [] alpha = data.alphaData;
 				int stride = OS.gdk_pixbuf_get_rowstride (pixbuf);
-				int /*long*/ pixels = OS.gdk_pixbuf_get_pixels (pixbuf);
+				long /*int*/ pixels = OS.gdk_pixbuf_get_pixels (pixbuf);
 				byte [] line = new byte [stride];
 				for (int y = 0; y < h [0]; y++) {
-					int /*long*/ offset = pixels + (y * stride);
+					long /*int*/ offset = pixels + (y * stride);
 					OS.memmove (line, offset, stride);
 					for (int x = 0; x < w [0]; x++) {
 						line [x*4+3] = alpha [y*w [0]+x];
@@ -177,7 +177,7 @@ public int add (Image image) {
 		Image [] newImages = new Image [images.length + 4];
 		System.arraycopy (images, 0, newImages, 0, images.length);
 		images = newImages;
-		int /*long*/ [] newPixbufs = new int /*long*/ [pixbufs.length + 4];
+		long /*int*/ [] newPixbufs = new long /*int*/ [pixbufs.length + 4];
 		System.arraycopy (pixbufs, 0, newPixbufs, 0, pixbufs.length);
 		pixbufs = newPixbufs;
 	}
@@ -198,7 +198,7 @@ public Image get (int index) {
 	return images [index];
 }
 
-public int /*long*/ getPixbuf (int index) {
+public long /*int*/ getPixbuf (int index) {
 	return pixbufs [index];
 }
 
@@ -210,7 +210,7 @@ public int indexOf (Image image) {
 	return -1;
 }
 
-public int indexOf (int /*long*/ pixbuf) {
+public int indexOf (long /*int*/ pixbuf) {
 	if (pixbuf == 0) return -1;
 	for (int index=0; index<images.length; index++) {
 		if (pixbuf == pixbufs [index]) return index;
@@ -246,7 +246,7 @@ public void remove (Image image) {
 }
 
 void set (int index, Image image) {
-	int /*long*/ pixbuf = createPixbuf (image);
+	long /*int*/ pixbuf = createPixbuf (image);
 	int w = OS.gdk_pixbuf_get_width(pixbuf);
 	int h = OS.gdk_pixbuf_get_height(pixbuf);
 	if (width == -1 || height == -1) {
@@ -254,11 +254,11 @@ void set (int index, Image image) {
 		height = h;
 	}
 	if (w != width || h != height) {
-		int /*long*/ scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, width, height, OS.GDK_INTERP_BILINEAR);
+		long /*int*/ scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, width, height, OS.GDK_INTERP_BILINEAR);
 		OS.g_object_unref (pixbuf);
 		pixbuf = scaledPixbuf;
 	}
-	int /*long*/ oldPixbuf = pixbufs [index];
+	long /*int*/ oldPixbuf = pixbufs [index];
 	if (oldPixbuf != 0) {
 		if (images [index] == image) {
 			OS.gdk_pixbuf_copy_area (pixbuf, 0, 0, width, height, oldPixbuf, 0, 0);

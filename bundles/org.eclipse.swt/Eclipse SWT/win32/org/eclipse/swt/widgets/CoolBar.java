@@ -49,7 +49,7 @@ public class CoolBar extends Composite {
 	CoolItem [] originalItems;
 	boolean locked;
 	boolean ignoreResize;
-	static final int /*long*/ ReBarProc;
+	static final long /*int*/ ReBarProc;
 	static final TCHAR ReBarClass = new TCHAR (0, OS.REBARCLASSNAME, true);
 	static {
 		INITCOMMONCONTROLSEX icex = new INITCOMMONCONTROLSEX ();
@@ -118,7 +118,7 @@ public CoolBar (Composite parent, int style) {
 	}
 }
 
-int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (ReBarProc, hwnd, msg, wParam, lParam);
 }
@@ -224,7 +224,7 @@ void createHandle () {
 	* The control will not destroy a font that it did not
 	* create.
 	*/
-	int /*long*/ hFont = OS.GetStockObject (OS.SYSTEM_FONT);
+	long /*int*/ hFont = OS.GetStockObject (OS.SYSTEM_FONT);
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 }
 
@@ -238,8 +238,8 @@ void createItem (CoolItem item, int index) {
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
-	int /*long*/ hHeap = OS.GetProcessHeap ();
-	int /*long*/ lpText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
+	long /*int*/ hHeap = OS.GetProcessHeap ();
+	long /*int*/ lpText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_TEXT | OS.RBBIM_STYLE | OS.RBBIM_ID;
@@ -368,7 +368,7 @@ void destroyItem (CoolItem item) {
 	originalItems = newOriginals;
 }
 
-void drawThemeBackground (int /*long*/ hDC, int /*long*/ hwnd, RECT rect) {
+void drawThemeBackground (long /*int*/ hDC, long /*int*/ hwnd, RECT rect) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		if (background == -1 && (style & SWT.FLAT) != 0) {
 			Control control = findBackgroundControl ();
@@ -992,11 +992,11 @@ TCHAR windowClass () {
 	return ReBarClass;
 }
 
-int /*long*/ windowProc () {
+long /*int*/ windowProc () {
 	return ReBarProc;
 }
 
-LRESULT WM_COMMAND (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_COMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  When the coolbar window
 	* proc processes WM_COMMAND, it forwards this
@@ -1020,7 +1020,7 @@ LRESULT WM_COMMAND (int /*long*/ wParam, int /*long*/ lParam) {
 	return LRESULT.ZERO;
 }
 
-LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	/*
 	* Feature in Windows.  For some reason, Windows
@@ -1042,7 +1042,7 @@ LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_NOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_NOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  When the cool bar window
 	* proc processes WM_NOTIFY, it forwards this
@@ -1066,7 +1066,7 @@ LRESULT WM_NOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
 	return LRESULT.ZERO;
 }
 
-LRESULT WM_SETREDRAW (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_SETREDRAW (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETREDRAW (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -1090,7 +1090,7 @@ LRESULT WM_SETREDRAW (int /*long*/ wParam, int /*long*/ lParam) {
 	*/
 	if (OS.COMCTL32_MAJOR >= 6) return LRESULT.ZERO;
 	Rectangle rect = getBounds ();		
-	int /*long*/ code = callWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
+	long /*int*/ code = callWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
 	OS.DefWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
 	if (!rect.equals (getBounds ())) {
 		parent.redraw (rect.x, rect.y, rect.width, rect.height, true);
@@ -1098,9 +1098,9 @@ LRESULT WM_SETREDRAW (int /*long*/ wParam, int /*long*/ lParam) {
 	return new LRESULT (code);
 }
 
-LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreResize) {
-		int /*long*/ code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
+		long /*int*/ code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
 		if (code == 0) return LRESULT.ZERO;
 		return new LRESULT (code);
 	}
@@ -1113,7 +1113,7 @@ LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	return super.WM_SIZE (wParam, lParam);
 }
 
-LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	switch (hdr.code) {
 		case OS.RBN_BEGINDRAG: {
 			int pos = OS.GetMessagePos ();

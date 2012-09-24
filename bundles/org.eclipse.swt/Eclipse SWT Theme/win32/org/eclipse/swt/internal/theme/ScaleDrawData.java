@@ -32,7 +32,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		int maximum = this.maximum;
 		int selection = this.selection;
 		int pageIncrement = this.pageIncrement;
-		int /*long*/ hTheme = OS.OpenThemeData(0, getClassId());
+		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
 		RECT rect = new RECT ();
 		rect.left = bounds.x;
 		rect.right = rect.left + bounds.width;

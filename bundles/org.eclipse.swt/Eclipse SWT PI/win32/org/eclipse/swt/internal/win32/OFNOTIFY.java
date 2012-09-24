@@ -12,8 +12,8 @@ package org.eclipse.swt.internal.win32;
 
 public class OFNOTIFY extends NMHDR {
 	/** @field cast=(LPOPENFILENAME) */
-	public int /*long*/ lpOFN;
+	public long /*int*/ lpOFN;
 	/** @field cast=(LPTSTR) */
-	public int /*long*/ pszFile;
+	public long /*int*/ pszFile;
 	public static int sizeof = OS.OFNOTIFY_sizeof ();
 }

@@ -13,11 +13,11 @@ package org.eclipse.swt.internal.win32;
 public class DOCINFO {
 	public int cbSize; 
 	/** @field cast=(LPCTSTR) */
-	public int /*long*/ lpszDocName; // LPCTSTR
+	public long /*int*/ lpszDocName; // LPCTSTR
 	/** @field cast=(LPCTSTR) */
-	public int /*long*/ lpszOutput; // LPCTSTR
+	public long /*int*/ lpszOutput; // LPCTSTR
 	/** @field cast=(LPCTSTR) */
-	public int /*long*/ lpszDatatype;// LPCTSTR
+	public long /*int*/ lpszDatatype;// LPCTSTR
 	public int fwType; // DWORD
 	public static final int sizeof = OS.DOCINFO_sizeof ();
 }

@@ -120,9 +120,9 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Shell extends Decorations {
 	NSWindow window;
 	SWTWindowDelegate windowDelegate;
-	int /*long*/ hostWindowClass;
+	long /*int*/ hostWindowClass;
 	NSWindow hostWindow;
-	int /*long*/ tooltipOwner, tooltipTag, tooltipUserData;
+	long /*int*/ tooltipOwner, tooltipTag, tooltipUserData;
 	int glContextCount;
 	boolean opened, moved, resized, fullScreen, center, deferFlushing, scrolling, isPopup;
 	Control lastActive;
@@ -264,7 +264,7 @@ public Shell (Display display, int style) {
 	this (display, null, style, 0, false);
 }
 
-Shell (Display display, Shell parent, int style, int /*long*/handle, boolean embedded) {
+Shell (Display display, Shell parent, int style, long /*int*/handle, boolean embedded) {
 	super ();
 	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
@@ -390,7 +390,7 @@ public Shell (Shell parent, int style) {
  * 
  * @since 3.3
  */
-public static Shell internal_new (Display display, int /*long*/ handle) {
+public static Shell internal_new (Display display, long /*int*/ handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, false);
 }
 
@@ -414,7 +414,7 @@ public static Shell internal_new (Display display, int /*long*/ handle) {
  * 
  * @since 3.5
  */
-public static Shell cocoa_new (Display display, int /*long*/ handle) {
+public static Shell cocoa_new (Display display, long /*int*/ handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, true);
 }
 
@@ -444,7 +444,7 @@ static int checkStyle (Shell parent, int style) {
 	return bits;
 }
 
-boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
+boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
 	// The content view of a shell is always ignored.
 	if (id == view.id) return true;
 	return super.accessibilityIsIgnored(id, sel);
@@ -482,12 +482,12 @@ public void addShellListener(ShellListener listener) {
 
 void attachObserversToWindow(NSWindow newWindow) {
 	if (newWindow == null || newWindow.id == 0) return;
-	int /*long*/ newHostWindowClass = OS.object_getClass(newWindow.id);
-	int /*long*/ sendEventImpl = OS.class_getMethodImplementation(newHostWindowClass, OS.sel_sendEvent_);
+	long /*int*/ newHostWindowClass = OS.object_getClass(newWindow.id);
+	long /*int*/ sendEventImpl = OS.class_getMethodImplementation(newHostWindowClass, OS.sel_sendEvent_);
 	if (sendEventImpl == Display.windowCallback3.getAddress()) return;
 	hostWindow = newWindow;
 	hostWindow.retain();
-	int /*long*/ embeddedSubclass = display.createWindowSubclass(newHostWindowClass, "SWTAWTWindow", true);
+	long /*int*/ embeddedSubclass = display.createWindowSubclass(newHostWindowClass, "SWTAWTWindow", true);
 	OS.object_setClass(hostWindow.id, embeddedSubclass);
 	display.addWidget (hostWindow, this);
 	hostWindowClass = newHostWindowClass;
@@ -512,7 +512,7 @@ void attachObserversToWindow(NSWindow newWindow) {
 	defaultCenter.addObserver(windowDelegate, OS.sel_windowWillClose_, OS.NSWindowWillCloseNotification, hostWindow);
 }
 
-void becomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
+void becomeKeyWindow (long /*int*/ id, long /*int*/ sel) {
 	Shell modal = getModalShell();
 	if (modal != null && modal.window != null) {
 		modal.window.makeKeyAndOrderFront(null);
@@ -534,7 +534,7 @@ void bringToTop (boolean force) {
 	}
 }
 
-boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
+boolean canBecomeKeyWindow (long /*int*/ id, long /*int*/ sel) {
 	if (isPopup) return false;
 	// Only answer if SWT created the window.
 	if (window != null) {
@@ -548,7 +548,7 @@ boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
 				}
 			}
 		}
-		int /*long*/ styleMask = window.styleMask();
+		long /*int*/ styleMask = window.styleMask();
 		if (styleMask == OS.NSBorderlessWindowMask || (styleMask & (OS.NSNonactivatingPanelMask | OS.NSDocModalWindowMask | OS.NSResizableWindowMask)) != 0) return true;
 	}
 	return super.canBecomeKeyWindow (id, sel);
@@ -578,7 +578,7 @@ void center () {
 	setLocation (x, y);
 }
 
-void clearDeferFlushing (int /*long*/ id, int /*long*/ sel) {
+void clearDeferFlushing (long /*int*/ id, long /*int*/ sel) {
 	deferFlushing = false;
 	scrolling = false;
 	if (window != null) window.flushWindowIfNeeded();
@@ -632,7 +632,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	rect.height = trim.height;
 	if (window != null) {
 		if (!_getFullScreen() && !fixResize()) {
-			float /*double*/ h = rect.height;
+			double /*float*/ h = rect.height;
 			rect = window.frameRectForContentRect(rect);
 			rect.y += h-rect.height;
 		}
@@ -692,7 +692,7 @@ void createHandle () {
 		}
 		display.cascadeWindow(window, screen);
 		NSRect screenFrame = screen.frame();
-		float /*double*/ width = screenFrame.width * 5 / 8, height = screenFrame.height * 5 / 8;;
+		double /*float*/ width = screenFrame.width * 5 / 8, height = screenFrame.height * 5 / 8;;
 		NSRect frame = window.frame();
 		NSRect primaryFrame = primaryScreen.frame();
 		frame.y = primaryFrame.height - ((primaryFrame.height - (frame.y + frame.height)) + height);
@@ -806,7 +806,7 @@ void destroyWidget () {
 	}
 }
 
-void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	if (regionPath != null && background == null) {
 		context.saveGraphicsState();
@@ -905,9 +905,9 @@ public Rectangle getBounds () {
 	checkWidget();
 	if (window != null) {
 		NSRect frame = window.frame();
-		float /*double*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
+		double /*float*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
 		Rectangle rectangle = new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
-		float /*double*/ scaleFactor = view.window().userSpaceScaleFactor();
+		double /*float*/ scaleFactor = view.window().userSpaceScaleFactor();
 		rectangle.x /= scaleFactor;
 		rectangle.y /= scaleFactor;
 		rectangle.width /= scaleFactor;
@@ -935,7 +935,7 @@ public Rectangle getClientArea () {
 		if (!fixResize ()) {
 			rect = window.contentView().frame();
 		} else {
-			float /*double*/ scaleFactor = window.userSpaceScaleFactor();
+			double /*float*/ scaleFactor = window.userSpaceScaleFactor();
 			rect = window.frame();
 			rect.width /= scaleFactor;
 			rect.height /= scaleFactor;
@@ -1008,9 +1008,9 @@ public Point getLocation () {
 	
 	if (window != null) {
 		NSRect frame = window.frame();
-		float /*double*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
+		double /*float*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
 		Point point = new Point ((int)frame.x, (int)y);
-		float /*double*/ scaleFactor = view.window().userSpaceScaleFactor();
+		double /*float*/ scaleFactor = view.window().userSpaceScaleFactor();
 		point.x /= scaleFactor;
 		point.y /= scaleFactor;
 		return point;
@@ -1024,7 +1024,7 @@ public Point getLocation () {
 		pt = view.convertPoint_toView_(pt, null);
 		pt = view.window().convertBaseToScreen(pt);
 		pt.y = primaryFrame.height - pt.y;
-		float /*double*/ scaleFactor = view.window().userSpaceScaleFactor();
+		double /*float*/ scaleFactor = view.window().userSpaceScaleFactor();
 		pt.x /= scaleFactor;
 		pt.y /= scaleFactor;
 		return new Point((int)pt.x, (int)pt.y);
@@ -1176,7 +1176,7 @@ public Point getSize () {
 	checkWidget();
 	NSRect frame = (window != null ? window.frame() : view.frame());
 	Point point = new Point ((int) frame.width, (int) frame.height);
-	float /*double*/ scaleFactor = view.window().userSpaceScaleFactor();
+	double /*float*/ scaleFactor = view.window().userSpaceScaleFactor();
 	point.x /= scaleFactor;
 	point.y /= scaleFactor;
 	return point;
@@ -1218,7 +1218,7 @@ boolean hasRegion () {
 	return region != null;
 }
 
-void helpRequested(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void helpRequested(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	Control control = display.getFocusControl();
 	while (control != null) {
 		if (control.hooks (SWT.Help)) {
@@ -1261,7 +1261,7 @@ public boolean isVisible () {
 	return getVisible ();
 }
 
-boolean makeFirstResponder (int /*long*/ id, int /*long*/ sel, int /*long*/ responder) {
+boolean makeFirstResponder (long /*int*/ id, long /*int*/ sel, long /*int*/ responder) {
 	Display display = this.display;
 	boolean result = super.makeFirstResponder(id, sel, responder);
 	if (!display.isDisposed()) display.checkFocus();
@@ -1285,7 +1285,7 @@ void makeKeyAndOrderFront() {
 	window.makeKeyAndOrderFront (null);
 }
 
-void mouseMoved(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void mouseMoved(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	super.mouseMoved(id, sel, theEvent);
 
 	/**
@@ -1300,7 +1300,7 @@ void mouseMoved(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	}
 }
 
-void noResponderFor(int /*long*/ id, int /*long*/ sel, int /*long*/ selector) {
+void noResponderFor(long /*int*/ id, long /*int*/ sel, long /*int*/ selector) {
 	/**
 	 * Feature in Cocoa.  If the selector is keyDown and nothing has handled the event
 	 * a system beep is generated.  There's no need to beep, as many keystrokes in the SWT
@@ -1490,7 +1490,7 @@ void sendToolTipEvent (boolean enter) {
 			if (userInfo != null) {
 				tooltipUserData = userInfo.id;
 			} else {
-				int /*long*/ [] value = new int /*long*/ [1];
+				long /*int*/ [] value = new long /*int*/ [1];
 				OS.object_getInstanceVariable(tooltipTag, new byte[]{'_','u', 's', 'e', 'r', 'I', 'n', 'f', 'o'}, value);
 				tooltipUserData = value[0];
 			}
@@ -1607,7 +1607,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	boolean sheet = window.isSheet();
 	if (sheet && move && !resize) return;
 	int screenHeight = (int) display.getPrimaryFrame().height;
-	float /*double*/ scaleFactor = window.userSpaceScaleFactor();
+	double /*float*/ scaleFactor = window.userSpaceScaleFactor();
 	x *= scaleFactor;
 	y *= scaleFactor;
 	width *= scaleFactor;
@@ -1709,7 +1709,7 @@ public void setFullScreen (boolean fullScreen) {
 		fullScreenFrame = NSScreen.mainScreen().frame();
 		if (getMonitor().equals(display.getPrimaryMonitor ())) {
 			if (menuBar != null) {
-				float /*double*/ menuBarHt = NSStatusBar.systemStatusBar().thickness();
+				double /*float*/ menuBarHt = NSStatusBar.systemStatusBar().thickness();
 				fullScreenFrame.height -= menuBarHt;
 				OS.SetSystemUIMode(OS.kUIModeContentHidden, 0);
 			} 
@@ -2023,7 +2023,7 @@ void setZOrder () {
 	if (fixResize ()) {
 		NSRect rect = window.frame();
 		rect.x = rect.y = 0;
-		float /*double*/ scaleFactor = window.userSpaceScaleFactor();
+		double /*float*/ scaleFactor = window.userSpaceScaleFactor();
 		rect.width /= scaleFactor;
 		rect.height /= scaleFactor;
 		window.contentView().setFrame(rect);
@@ -2112,7 +2112,7 @@ void updateSystemUIMode () {
 	if (fullScreen)	window.setFrame(fullScreenFrame, true);
 }
 
-int /*long*/ view_stringForToolTip_point_userData (int /*long*/ id, int /*long*/ sel, int /*long*/ view, int /*long*/ tag, int /*long*/ point, int /*long*/ userData) {
+long /*int*/ view_stringForToolTip_point_userData (long /*int*/ id, long /*int*/ sel, long /*int*/ view, long /*int*/ tag, long /*int*/ point, long /*int*/ userData) {
 	NSPoint pt = new NSPoint();
 	OS.memmove (pt, point, NSPoint.sizeof);
 	Control control = display.findControl (false);
@@ -2126,9 +2126,9 @@ int /*long*/ view_stringForToolTip_point_userData (int /*long*/ id, int /*long*/
 	return NSString.stringWithCharacters (chars, length).id;
 }
 
-void viewWillMoveToWindow(int /*long*/ id, int /*long*/ sel, int /*long*/ newWindow) {
+void viewWillMoveToWindow(long /*int*/ id, long /*int*/ sel, long /*int*/ newWindow) {
 	if (window == null) {
-		int /*long*/ currentWindow = hostWindow != null ? hostWindow.id : 0;
+		long /*int*/ currentWindow = hostWindow != null ? hostWindow.id : 0;
 		if (currentWindow != 0) {
 			removeObserversFromWindow();
 		}
@@ -2138,7 +2138,7 @@ void viewWillMoveToWindow(int /*long*/ id, int /*long*/ sel, int /*long*/ newWin
 	}
 }
 
-void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void windowDidBecomeKey(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	if (window != null) {
 		Display display = this.display;
 		display.setMenuBar (menuBar);
@@ -2163,22 +2163,22 @@ void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 	}
 }
 
-void windowDidDeminiturize(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void windowDidDeminiturize(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	minimized = false;
 	sendEvent(SWT.Deiconify);
 }
 
-void windowDidMiniturize(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void windowDidMiniturize(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	minimized = true;
 	sendEvent(SWT.Iconify);
 }
 
-void windowDidMove(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void windowDidMove(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	moved = true;
 	sendEvent(SWT.Move);
 }
 
-void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void windowDidResize(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	if (((window.collectionBehavior() & OS.NSWindowCollectionBehaviorFullScreenPrimary) == 0) && fullScreen) {
 		window.setFrame(fullScreenFrame, true);
 		NSRect contentViewFrame = new NSRect();
@@ -2189,7 +2189,7 @@ void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notificatio
 	if (fixResize ()) {
 		NSRect rect = window.frame ();
 		rect.x = rect.y = 0;
-		float /*double*/ scaleFactor = window.userSpaceScaleFactor();
+		double /*float*/ scaleFactor = window.userSpaceScaleFactor();
 		rect.width /= scaleFactor;
 		rect.height /= scaleFactor;
 		window.contentView ().setFrame (rect);
@@ -2203,7 +2203,7 @@ void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notificatio
 	}
 }
 
-void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void windowDidResignKey(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	if (display.isDisposed()) return;
 	sendEvent (SWT.Deactivate);
 	if (isDisposed ()) return;
@@ -2212,7 +2212,7 @@ void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notifica
 	saveFocus();
 }
 
-void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+void windowSendEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	NSEvent nsEvent = new NSEvent (event);
 	int type = (int)/*64*/nsEvent.type ();
 	switch (type) {
@@ -2307,12 +2307,12 @@ void windowSendEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
 	super.windowSendEvent (id, sel, event);
 }
 
-boolean windowShouldClose(int /*long*/ id, int /*long*/ sel, int /*long*/ window) {
+boolean windowShouldClose(long /*int*/ id, long /*int*/ sel, long /*int*/ window) {
 	if (isEnabled()) closeWidget (false);
 	return false;
 }
 
-void windowWillClose(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void windowWillClose(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	closeWidget(true);
 }
 

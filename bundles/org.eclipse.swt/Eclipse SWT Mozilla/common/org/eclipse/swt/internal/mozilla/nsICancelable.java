@@ -37,7 +37,7 @@ public class nsICancelable extends nsISupports {
 	public static final nsID NS_ICANCELABLE_IID =
 		new nsID(NS_ICANCELABLE_IID_STR);
 
-	public nsICancelable(int /*long*/ address) {
+	public nsICancelable(long /*int*/ address) {
 		super(address);
 	}
 

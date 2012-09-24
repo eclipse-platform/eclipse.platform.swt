@@ -13,23 +13,23 @@ package org.eclipse.swt.internal.win32;
 public class CHOOSEFONT {
 	public int lStructSize;
 	/** @field cast=(HWND) */
-	public int /*long*/ hwndOwner;
+	public long /*int*/ hwndOwner;
 	/** @field cast=(HDC) */
-	public int /*long*/ hDC;
+	public long /*int*/ hDC;
 	/** @field cast=(LPLOGFONT) */
-	public int /*long*/ lpLogFont;
+	public long /*int*/ lpLogFont;
 	public int iPointSize;
 	public int Flags;
 	public int rgbColors;
-	public int /*long*/ lCustData;
+	public long /*int*/ lCustData;
 	/** @field cast=(LPCFHOOKPROC) */
-	public int /*long*/ lpfnHook;
+	public long /*int*/ lpfnHook;
 	/** @field cast=(LPCTSTR) */
-	public int /*long*/ lpTemplateName;
+	public long /*int*/ lpTemplateName;
 	/** @field cast=(HINSTANCE) */
-	public int /*long*/ hInstance;
+	public long /*int*/ hInstance;
 	/** @field cast=(LPTSTR) */
-	public int /*long*/ lpszStyle;
+	public long /*int*/ lpszStyle;
 	public short nFontType;
 	public int nSizeMin;
 	public int nSizeMax;

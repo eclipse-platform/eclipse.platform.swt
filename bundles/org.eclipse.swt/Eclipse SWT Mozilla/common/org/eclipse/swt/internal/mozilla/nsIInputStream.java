@@ -37,7 +37,7 @@ public class nsIInputStream extends nsISupports {
 	public static final nsID NS_IINPUTSTREAM_IID =
 		new nsID(NS_IINPUTSTREAM_IID_STR);
 
-	public nsIInputStream(int /*long*/ address) {
+	public nsIInputStream(long /*int*/ address) {
 		super(address);
 	}
 
@@ -53,7 +53,7 @@ public class nsIInputStream extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aBuf, aCount, _retval);
 	}
 
-	public int ReadSegments(int /*long*/ aWriter, int /*long*/ aClosure, int aCount, int[] _retval) {
+	public int ReadSegments(long /*int*/ aWriter, long /*int*/ aClosure, int aCount, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aWriter, aClosure, aCount, _retval);
 	}
 

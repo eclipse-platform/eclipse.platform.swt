@@ -16,7 +16,7 @@ public NSBox() {
 	super();
 }
 
-public NSBox(int /*long*/ id) {
+public NSBox(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,12 +24,12 @@ public NSBox(id id) {
 	super(id);
 }
 
-public float /*double*/ borderWidth() {
-	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_borderWidth);
+public double /*float*/ borderWidth() {
+	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_borderWidth);
 }
 
 public NSView contentView() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_contentView);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_contentView);
 	return result != 0 ? new NSView(result) : null;
 }
 
@@ -39,15 +39,15 @@ public NSSize contentViewMargins() {
 	return result;
 }
 
-public void setBorderType(int /*long*/ aType) {
+public void setBorderType(long /*int*/ aType) {
 	OS.objc_msgSend(this.id, OS.sel_setBorderType_, aType);
 }
 
-public void setBorderWidth(float /*double*/ borderWidth) {
+public void setBorderWidth(double /*float*/ borderWidth) {
 	OS.objc_msgSend(this.id, OS.sel_setBorderWidth_, borderWidth);
 }
 
-public void setBoxType(int /*long*/ boxType) {
+public void setBoxType(long /*int*/ boxType) {
 	OS.objc_msgSend(this.id, OS.sel_setBoxType_, boxType);
 }
 
@@ -75,7 +75,7 @@ public void setTitleFont(NSFont fontObj) {
 	OS.objc_msgSend(this.id, OS.sel_setTitleFont_, fontObj != null ? fontObj.id : 0);
 }
 
-public void setTitlePosition(int /*long*/ aPosition) {
+public void setTitlePosition(long /*int*/ aPosition) {
 	OS.objc_msgSend(this.id, OS.sel_setTitlePosition_, aPosition);
 }
 
@@ -84,12 +84,12 @@ public void sizeToFit() {
 }
 
 public NSCell titleCell() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_titleCell);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_titleCell);
 	return result != 0 ? new NSCell(result) : null;
 }
 
 public NSFont titleFont() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_titleFont);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_titleFont);
 	return result != 0 ? new NSFont(result) : null;
 }
 

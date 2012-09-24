@@ -37,11 +37,11 @@ public class nsIIOService extends nsISupports {
 	public static final nsID NS_IIOSERVICE_IID =
 		new nsID(NS_IIOSERVICE_IID_STR);
 
-	public nsIIOService(int /*long*/ address) {
+	public nsIIOService(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetProtocolHandler(byte[] aScheme, int /*long*/[] _retval) {
+	public int GetProtocolHandler(byte[] aScheme, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aScheme, _retval);
 	}
 
@@ -49,19 +49,19 @@ public class nsIIOService extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aScheme, _retval);
 	}
 
-	public int NewURI(int /*long*/ aSpec, byte[] aOriginCharset, int /*long*/ aBaseURI, int /*long*/[] _retval) {
+	public int NewURI(long /*int*/ aSpec, byte[] aOriginCharset, long /*int*/ aBaseURI, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aSpec, aOriginCharset, aBaseURI, _retval);
 	}
 
-	public int NewFileURI(int /*long*/ aFile, int /*long*/[] _retval) {
+	public int NewFileURI(long /*int*/ aFile, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aFile, _retval);
 	}
 
-	public int NewChannelFromURI(int /*long*/ aURI, int /*long*/[] _retval) {
+	public int NewChannelFromURI(long /*int*/ aURI, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aURI, _retval);
 	}
 
-	public int NewChannel(int /*long*/ aSpec, byte[] aOriginCharset, int /*long*/ aBaseURI, int /*long*/[] _retval) {
+	public int NewChannel(long /*int*/ aSpec, byte[] aOriginCharset, long /*int*/ aBaseURI, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aSpec, aOriginCharset, aBaseURI, _retval);
 	}
 
@@ -77,7 +77,7 @@ public class nsIIOService extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aPort, aScheme, _retval);
 	}
 
-	public int ExtractScheme(int /*long*/ urlString, int /*long*/ _retval) {
+	public int ExtractScheme(long /*int*/ urlString, long /*int*/ _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), urlString, _retval);
 	}
 }

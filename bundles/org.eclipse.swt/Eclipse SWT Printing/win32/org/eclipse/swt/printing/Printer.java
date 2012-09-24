@@ -50,7 +50,7 @@ public final class Printer extends Device {
 	 * 
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public int /*long*/ handle;
+	public long /*int*/ handle;
 
 	/**
 	 * the printer data describing this printer
@@ -214,16 +214,16 @@ protected void create(DeviceData deviceData) {
 	/* Use the character encoding for the default locale */
 	TCHAR driver = new TCHAR(0, data.driver, true);
 	TCHAR device = new TCHAR(0, data.name, true);
-	int /*long*/ lpInitData = 0;
+	long /*int*/ lpInitData = 0;
 	byte devmodeData [] = data.otherData;
-	int /*long*/ hHeap = OS.GetProcessHeap();
+	long /*int*/ hHeap = OS.GetProcessHeap();
 	if (devmodeData != null && devmodeData.length != 0) {
 		/* If user setup info from a print dialog was specified, restore the DEVMODE struct. */
 		lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, devmodeData.length);
 		OS.MoveMemory(lpInitData, devmodeData, devmodeData.length);
 	} else {
 		if (!OS.IsWinCE) {
-			int /*long*/ [] hPrinter = new int /*long*/ [1];
+			long /*int*/ [] hPrinter = new long /*int*/ [1];
 			OS.OpenPrinter(device, hPrinter, 0);
 			if (hPrinter[0] != 0) {
 				int dwNeeded = OS.DocumentProperties(0, hPrinter[0], device, 0, 0, 0);
@@ -284,7 +284,7 @@ protected void create(DeviceData deviceData) {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public int /*long*/ internal_new_GC(GCData data) {
+public long /*int*/ internal_new_GC(GCData data) {
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (data != null) {
 		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -316,7 +316,7 @@ public int /*long*/ internal_new_GC(GCData data) {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public void internal_dispose_GC(int /*long*/ hDC, GCData data) {
+public void internal_dispose_GC(long /*int*/ hDC, GCData data) {
 	if (data != null) isGCCreated = false;
 }
 
@@ -345,8 +345,8 @@ public boolean startJob(String jobName) {
 	checkDevice();
 	DOCINFO di = new DOCINFO();
 	di.cbSize = DOCINFO.sizeof;
-	int /*long*/ hHeap = OS.GetProcessHeap();
-	int /*long*/ lpszDocName = 0;
+	long /*int*/ hHeap = OS.GetProcessHeap();
+	long /*int*/ lpszDocName = 0;
 	if (jobName != null && jobName.length() != 0) {
 		/* Use the character encoding for the default locale */
 		TCHAR buffer = new TCHAR(0, jobName, true);
@@ -355,7 +355,7 @@ public boolean startJob(String jobName) {
 		OS.MoveMemory(lpszDocName, buffer, byteCount);
 		di.lpszDocName = lpszDocName;
 	}
-	int /*long*/ lpszOutput = 0;
+	long /*int*/ lpszOutput = 0;
 	if (data.printToFile) {
 		if (data.fileName == null) {
 			/* Prompt the user for a file name. */

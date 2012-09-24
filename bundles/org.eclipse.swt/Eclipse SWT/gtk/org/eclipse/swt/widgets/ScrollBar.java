@@ -84,7 +84,7 @@ import org.eclipse.swt.events.*;
  */
 public class ScrollBar extends Widget {
 	Scrollable parent;
-	int /*long*/ adjustmentHandle;
+	long /*int*/ adjustmentHandle;
 	int detail;
 	boolean dragSent;
 	
@@ -357,7 +357,7 @@ public Rectangle getThumbBounds () {
 	}
 	Rectangle rect = new Rectangle(x, y, width, height);
 	int [] origin_x = new int [1], origin_y = new int [1];
-	int /*long*/ window = gtk_widget_get_window (parent.scrolledHandle);
+	long /*int*/ window = gtk_widget_get_window (parent.scrolledHandle);
 	if (window != 0) OS.gdk_window_get_origin (window, origin_x, origin_y);
 	rect.x += origin_x [0];
 	rect.y += origin_y [0];
@@ -429,7 +429,7 @@ public Rectangle getThumbTrackBounds () {
 	}
 	Rectangle rect = new Rectangle(x, y, width, height);
 	int [] origin_x = new int [1], origin_y = new int [1];
-	int /*long*/ window = gtk_widget_get_window (parent.scrolledHandle);
+	long /*int*/ window = gtk_widget_get_window (parent.scrolledHandle);
 	if (window != 0) OS.gdk_window_get_origin (window, origin_x, origin_y);
 	rect.x += origin_x [0];
 	rect.y += origin_y [0];
@@ -459,7 +459,7 @@ public Rectangle getThumbTrackBounds () {
  */
 public boolean getVisible () {
 	checkWidget ();
-	int /*long*/ scrolledHandle = parent.scrolledHandle;
+	long /*int*/ scrolledHandle = parent.scrolledHandle;
 	int [] hsp = new int [1], vsp = new int [1];
 	OS.gtk_scrolled_window_get_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.HORIZONTAL) != 0) {
@@ -469,20 +469,20 @@ public boolean getVisible () {
 	}
 }
 
-int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
-	int /*long*/ result = super.gtk_button_press_event (widget, eventPtr);
+long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
+	long /*int*/ result = super.gtk_button_press_event (widget, eventPtr);
 	if (result != 0) return result;
 	detail = OS.GTK_SCROLL_NONE;
 	dragSent = false;	
 	return result;
 }
 
-int /*long*/ gtk_change_value (int /*long*/ widget, int /*long*/ scroll, int /*long*/ value1, int /*long*/ value2) {
+long /*int*/ gtk_change_value (long /*int*/ widget, long /*int*/ scroll, long /*int*/ value1, long /*int*/ value2) {
 	detail = (int)/*64*/scroll;
 	return 0;
 }
 
-void gtk_range_get_slider_range (int /*long*/ widget, int [] slider_start, int [] slider_end) {
+void gtk_range_get_slider_range (long /*int*/ widget, int [] slider_start, int [] slider_end) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 20, 0)) {
 		OS.gtk_range_get_slider_range (widget, slider_start, slider_end);
 	} else {
@@ -491,7 +491,7 @@ void gtk_range_get_slider_range (int /*long*/ widget, int [] slider_start, int [
 	}
 }
 
-int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
+long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
 	Event event = new Event ();
 	dragSent = detail == OS.GTK_SCROLL_JUMP;
 	switch (detail) {
@@ -518,7 +518,7 @@ int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
 	return 0;
 }
 
-int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
+long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	GdkEvent gtkEvent = new GdkEvent ();
 	OS.memmove (gtkEvent, gdkEvent, GdkEvent.sizeof);
 	switch (gtkEvent.type) {

@@ -245,7 +245,7 @@ public boolean getVisible () {
 	return visible;
 }
 
-int /*long*/ messageProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+long /*int*/ messageProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  When the user clicks on the tray
 	* icon, another application may be the foreground window.
@@ -439,7 +439,7 @@ public void setImage (Image image) {
 	super.setImage (image);
 	if (image2 != null) image2.dispose ();
 	image2 = null;
-	int /*long*/ hIcon = 0;
+	long /*int*/ hIcon = 0;
 	Image icon = image;
 	if (icon != null) {
 		switch (icon.type) {

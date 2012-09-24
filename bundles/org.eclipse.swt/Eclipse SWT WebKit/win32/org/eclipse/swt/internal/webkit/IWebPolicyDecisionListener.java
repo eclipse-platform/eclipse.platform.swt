@@ -15,7 +15,7 @@ import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebPolicyDecisionListener extends IUnknown{
 
-public IWebPolicyDecisionListener (int /*long*/ address) {
+public IWebPolicyDecisionListener (long /*int*/ address) {
 	super (address);
 }
 

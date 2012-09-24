@@ -17,7 +17,7 @@ package org.eclipse.swt.internal.gtk;
 
 public class GdkEventVisibility extends GdkEvent {
 	/** @field cast=(GdkWindow *) */
-	public int /*long*/ window;
+	public long /*int*/ window;
 	/** @field cast=(gint8) */
 	public byte send_event; 
 	/** @field cast=(GdkVisibilityState) */

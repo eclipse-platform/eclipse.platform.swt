@@ -16,7 +16,7 @@ public NSControl() {
 	super();
 }
 
-public NSControl(int /*long*/ id) {
+public NSControl(long /*int*/ id) {
 	super(id);
 }
 
@@ -28,21 +28,21 @@ public boolean abortEditing() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_abortEditing);
 }
 
-public int /*long*/ action() {
+public long /*int*/ action() {
 	return OS.objc_msgSend(this.id, OS.sel_action);
 }
 
 public NSCell cell() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_cell);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_cell);
 	return result != 0 ? new NSCell(result) : null;
 }
 
-public static int /*long*/ cellClass() {
+public static long /*int*/ cellClass() {
 	return OS.objc_msgSend(OS.class_NSControl, OS.sel_cellClass);
 }
 
 public NSText currentEditor() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_currentEditor);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_currentEditor);
 	return result != 0 ? new NSText(result) : null;
 }
 
@@ -51,7 +51,7 @@ public double doubleValue() {
 }
 
 public NSFont font() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_font);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_font);
 	return result != 0 ? new NSFont(result) : null;
 }
 
@@ -59,19 +59,19 @@ public boolean isEnabled() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isEnabled);
 }
 
-public boolean sendAction(int /*long*/ theAction, id theTarget) {
+public boolean sendAction(long /*int*/ theAction, id theTarget) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_sendAction_to_, theAction, theTarget != null ? theTarget.id : 0);
 }
 
-public void setAction(int /*long*/ aSelector) {
+public void setAction(long /*int*/ aSelector) {
 	OS.objc_msgSend(this.id, OS.sel_setAction_, aSelector);
 }
 
-public void setAlignment(int /*long*/ mode) {
+public void setAlignment(long /*int*/ mode) {
 	OS.objc_msgSend(this.id, OS.sel_setAlignment_, mode);
 }
 
-public void setBaseWritingDirection(int /*long*/ writingDirection) {
+public void setBaseWritingDirection(long /*int*/ writingDirection) {
 	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, writingDirection);
 }
 
@@ -79,7 +79,7 @@ public void setCell(NSCell aCell) {
 	OS.objc_msgSend(this.id, OS.sel_setCell_, aCell != null ? aCell.id : 0);
 }
 
-public static void setCellClass(int /*long*/ factoryId) {
+public static void setCellClass(long /*int*/ factoryId) {
 	OS.objc_msgSend(OS.class_NSControl, OS.sel_setCellClass_, factoryId);
 }
 
@@ -112,12 +112,12 @@ public void sizeToFit() {
 }
 
 public NSString stringValue() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_stringValue);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_stringValue);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public id target() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_target);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_target);
 	return result != 0 ? new id(result) : null;
 }
 

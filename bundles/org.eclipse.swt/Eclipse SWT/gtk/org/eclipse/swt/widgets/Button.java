@@ -45,7 +45,7 @@ import org.eclipse.swt.events.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Button extends Control {
-	int /*long*/ boxHandle, labelHandle, imageHandle, arrowHandle, groupHandle;
+	long /*int*/ boxHandle, labelHandle, imageHandle, arrowHandle, groupHandle;
 	boolean selected, grayed;
 	ImageList imageList;
 	Image image;
@@ -111,9 +111,9 @@ static int checkStyle (int style) {
 	return style;
 }
 
-static GtkBorder getBorder (byte[] border, int /*long*/ handle, int defaultBorder) {
+static GtkBorder getBorder (byte[] border, long /*int*/ handle, int defaultBorder) {
     GtkBorder gtkBorder = new GtkBorder();
-    int /*long*/ []  borderPtr = new int /*long*/ [1];
+    long /*int*/ []  borderPtr = new long /*int*/ [1];
     OS.gtk_widget_style_get (handle, border, borderPtr,0);
     if (borderPtr[0] != 0) {
         OS.memmove (gtkBorder, borderPtr[0], GtkBorder.sizeof);
@@ -201,7 +201,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			indicatorHeight = indicatorSize [0] + 2 * indicatorSpacing [0];
 			trimWidth += indicatorHeight + indicatorSpacing [0];
 		} else {
-			int /*long*/ style = OS.gtk_widget_get_style (handle);
+			long /*int*/ style = OS.gtk_widget_get_style (handle);
 			trimWidth += OS.gtk_style_get_xthickness (style) * 2;
 			trimHeight += OS.gtk_style_get_ythickness (style) * 2;
 			GtkBorder innerBorder = getBorder (OS.inner_border, handle, INNER_BORDER);
@@ -223,7 +223,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			OS.g_object_get (boxHandle, OS.spacing, spacing, 0);
 			imageWidth += spacing [0];
 		}
-		int /*long*/ labelLayout = OS.gtk_label_get_layout (labelHandle);
+		long /*int*/ labelLayout = OS.gtk_label_get_layout (labelHandle);
 		int pangoWidth = OS.pango_layout_get_width (labelLayout);
 		if (wHint != SWT.DEFAULT) {
 			OS.pango_layout_set_width (labelLayout, Math.max (1, (wHint - imageWidth - trimWidth)) * OS.PANGO_SCALE);
@@ -343,7 +343,7 @@ void deregister () {
 	if (arrowHandle != 0) display.removeWidget (arrowHandle);
 }
 
-int /*long*/ fontHandle () {
+long /*int*/ fontHandle () {
 	if (labelHandle != 0) return labelHandle;
 	return super.fontHandle ();
 }
@@ -459,14 +459,14 @@ public String getText () {
 	return text;
 }
 
-int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_button_press_event (widget, event);
+long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
+	long /*int*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
 	if ((style & SWT.RADIO) != 0) selected  = getSelection ();
 	return result;
 }
 
-int /*long*/ gtk_clicked (int /*long*/ widget) {
+long /*int*/ gtk_clicked (long /*int*/ widget) {
 	if ((style & SWT.RADIO) != 0) {
 		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) != 0) {
 			setSelection (!selected);
@@ -488,8 +488,8 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 	return 0;
 }
 
-int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_focus_in_event (widget, event);
+long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
+	long /*int*/ result = super.gtk_focus_in_event (widget, event);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) { 
@@ -506,8 +506,8 @@ int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
 	return result;
 }
 
-int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_focus_out_event (widget, event);
+long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
+	long /*int*/ result = super.gtk_focus_out_event (widget, event);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) != 0) {
@@ -519,8 +519,8 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 	return result;
 }
 
-int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_key_press_event (widget, event);
+long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
+	long /*int*/ result = super.gtk_key_press_event (widget, event);
 	if (result != 0) return result;
 	if ((style & SWT.RADIO) != 0) selected  = getSelection ();
 	return result;
@@ -756,7 +756,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		gtk_widget_get_allocation (boxHandle, allocation);
 		int boxWidth = allocation.width;
 		int boxHeight = allocation.height;
-		int /*long*/ labelLayout = OS.gtk_label_get_layout (labelHandle);
+		long /*int*/ labelLayout = OS.gtk_label_get_layout (labelHandle);
 		int pangoWidth = OS.pango_layout_get_width (labelLayout);
 		OS.pango_layout_set_width (labelLayout, -1);
 		int [] w = new int [1], h = new int [1];
@@ -785,7 +785,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	return result;
 }
 
-void setFontDescription (int /*long*/ font) {
+void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
 	if (imageHandle != 0) OS.gtk_widget_modify_font (imageHandle, font);
@@ -860,7 +860,7 @@ public void setImage (Image image) {
 		if (image.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 		imageList = new ImageList ();
 		int imageIndex = imageList.add (image);
-		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
+		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
 		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
 		if (text.length () == 0) OS.gtk_widget_hide (labelHandle);
 		OS.gtk_widget_show (imageHandle);

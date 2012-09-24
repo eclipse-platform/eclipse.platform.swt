@@ -13,17 +13,17 @@ package org.eclipse.swt.internal.gtk;
  
 public class XRenderPictureAttributes {
 	public boolean repeat;
-	public int /*long*/ alpha_map;
+	public long /*int*/ alpha_map;
 	public int alpha_x_origin;
 	public int alpha_y_origin;
 	public int clip_x_origin;
 	public int clip_y_origin;
-	public int /*long*/ clip_mask;
+	public long /*int*/ clip_mask;
 	public boolean graphics_exposures;
 	public int subwindow_mode;
 	public int poly_edge;
 	public int poly_mode;
-	public int /*long*/ dither;
+	public long /*int*/ dither;
 	public boolean component_alpha;
 	public static final int sizeof = OS.XRenderPictureAttributes_sizeof();
 }

@@ -17,22 +17,22 @@ public class REBARBANDINFO {
 	public int clrFore;
 	public int clrBack;
 	/** @field cast=(LPTSTR) */
-	public int /*long*/ lpText;
+	public long /*int*/ lpText;
 	public int cch;
 	public int iImage;
 	/** @field cast=(HWND) */
-	public int /*long*/ hwndChild;
+	public long /*int*/ hwndChild;
 	public int cxMinChild;
 	public int cyMinChild;
 	public int cx;
 	/** @field cast=(HBITMAP) */
-	public int /*long*/ hbmBack;
+	public long /*int*/ hbmBack;
 	public int wID;
 	public int cyChild;  
 	public int cyMaxChild;
 	public int cyIntegral;
 	public int cxIdeal;
-	public int /*long*/ lParam;
+	public long /*int*/ lParam;
 	/** @field flags=no_wince */
 	public int cxHeader;
 	/* Note in WinCE.  The field cxHeader is not defined. */ 

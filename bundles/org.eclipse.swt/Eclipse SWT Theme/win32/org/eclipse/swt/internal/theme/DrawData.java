@@ -89,7 +89,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 
 void drawImage(Theme theme, Image image, GC gc, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-//		int /*long*/ hTheme = OS.OpenThemeData(0, getClassId());
+//		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
 //		RECT rect = new RECT ();
 //		rect.left = bounds.x;
 //		rect.right = bounds.x + bounds.width;
@@ -109,7 +109,7 @@ void drawImage(Theme theme, Image image, GC gc, Rectangle bounds) {
 
 void drawText(Theme theme, String text, int flags, GC gc, Rectangle bounds) { 
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		int /*long*/ hTheme = OS.OpenThemeData(0, getClassId());
+		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
 		char[] chars = new char[text.length()];
 		text.getChars(0, chars.length, chars, 0);
 		int textFlags = OS.DT_SINGLELINE;
@@ -150,7 +150,7 @@ int hit(Theme theme, Point position, Rectangle bounds) {
 
 Rectangle measureText(Theme theme, String text, int flags, GC gc, Rectangle bounds) {
 	if (!(OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ())) return new Rectangle(0, 0, 0, 0);
-	int /*long*/ hTheme = OS.OpenThemeData(0, getClassId());
+	long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
 	char[] chars = new char[text.length()];
 	text.getChars(0, chars.length, chars, 0);
 	//TODO - constant for VCENTER and flags

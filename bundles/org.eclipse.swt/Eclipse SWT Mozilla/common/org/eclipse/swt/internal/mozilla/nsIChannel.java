@@ -43,55 +43,55 @@ public class nsIChannel extends nsIRequest {
 	public static final nsID NS_ICHANNEL_10_IID =
 		new nsID(NS_ICHANNEL_10_IID_STR);
 
-	public nsIChannel(int /*long*/ address) {
+	public nsIChannel(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetOriginalURI(int /*long*/[] aOriginalURI) {
+	public int GetOriginalURI(long /*int*/[] aOriginalURI) {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 1, getAddress(), aOriginalURI);
 	}
 
-	public int SetOriginalURI(int /*long*/ aOriginalURI) {
+	public int SetOriginalURI(long /*int*/ aOriginalURI) {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 2, getAddress(), aOriginalURI);
 	}
 
-	public int GetURI(int /*long*/[] aURI) {
+	public int GetURI(long /*int*/[] aURI) {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 3, getAddress(), aURI);
 	}
 
-	public int GetOwner(int /*long*/[] aOwner) {
+	public int GetOwner(long /*int*/[] aOwner) {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 4, getAddress(), aOwner);
 	}
 
-	public int SetOwner(int /*long*/ aOwner) {
+	public int SetOwner(long /*int*/ aOwner) {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 5, getAddress(), aOwner);
 	}
 
-	public int GetNotificationCallbacks(int /*long*/[] aNotificationCallbacks) {
+	public int GetNotificationCallbacks(long /*int*/[] aNotificationCallbacks) {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 6, getAddress(), aNotificationCallbacks);
 	}
 
-	public int SetNotificationCallbacks(int /*long*/ aNotificationCallbacks) {
+	public int SetNotificationCallbacks(long /*int*/ aNotificationCallbacks) {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 7, getAddress(), aNotificationCallbacks);
 	}
 
-	public int GetSecurityInfo(int /*long*/[] aSecurityInfo) {
+	public int GetSecurityInfo(long /*int*/[] aSecurityInfo) {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 8, getAddress(), aSecurityInfo);
 	}
 
-	public int GetContentType(int /*long*/ aContentType) {
+	public int GetContentType(long /*int*/ aContentType) {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 9, getAddress(), aContentType);
 	}
 
-	public int SetContentType(int /*long*/ aContentType) {
+	public int SetContentType(long /*int*/ aContentType) {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 10, getAddress(), aContentType);
 	}
 
-	public int GetContentCharset(int /*long*/ aContentCharset) {
+	public int GetContentCharset(long /*int*/ aContentCharset) {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 11, getAddress(), aContentCharset);
 	}
 
-	public int SetContentCharset(int /*long*/ aContentCharset) {
+	public int SetContentCharset(long /*int*/ aContentCharset) {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 12, getAddress(), aContentCharset);
 	}
 
@@ -103,11 +103,11 @@ public class nsIChannel extends nsIRequest {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 14, getAddress(), aContentLength);
 	}
 
-	public int Open(int /*long*/[] _retval) {
+	public int Open(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 15, getAddress(), _retval);
 	}
 
-	public int AsyncOpen(int /*long*/ aListener, int /*long*/ aContext) {
+	public int AsyncOpen(long /*int*/ aListener, long /*int*/ aContext) {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 16, getAddress(), aListener, aContext);
 	}
 
@@ -116,12 +116,12 @@ public class nsIChannel extends nsIRequest {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 17, getAddress(), aContentDisposition);
 	}
 
-	public int GetContentDispositionFilename(int /*long*/ aContentDispositionFilename) {
+	public int GetContentDispositionFilename(long /*int*/ aContentDispositionFilename) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 18, getAddress(), aContentDispositionFilename);
 	}
 
-	public int GetContentDispositionHeader(int /*long*/ aContentDispositionHeader) {
+	public int GetContentDispositionHeader(long /*int*/ aContentDispositionHeader) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 19, getAddress(), aContentDispositionHeader);
 	}

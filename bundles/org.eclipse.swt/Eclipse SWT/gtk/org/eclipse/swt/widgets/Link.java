@@ -284,8 +284,8 @@ public String getText () {
 	return text;
 }
 
-int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_button_press_event (widget, event);	
+long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
+	long /*int*/ result = super.gtk_button_press_event (widget, event);	
 	if (result != 0) return result;
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
@@ -323,8 +323,8 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	return result;
 }
 
-int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_button_release_event (widget, event);
+long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ event) {
+	long /*int*/ result = super.gtk_button_release_event (widget, event);
 	if (result != 0) return result;
 	if (focusIndex == -1) return result;
 	GdkEventButton gdkEvent = new GdkEventButton ();
@@ -347,8 +347,8 @@ int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) 
 	return result;
 }
 
-int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
-	int /*long*/ result = super.gtk_event_after (widget, gdkEvent);
+long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
+	long /*int*/ result = super.gtk_event_after (widget, gdkEvent);
 	GdkEvent event = new GdkEvent ();
 	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
 	switch (event.type) {
@@ -359,7 +359,7 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 	return result;
 }
 
-int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
+long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	if ((state & OBSCURED) != 0) return 0;
 	GdkEventExpose gdkEvent = new GdkEventExpose ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventExpose.sizeof);
@@ -399,8 +399,8 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	return 0;
 }
 
-int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
-	int /*long*/ result = super.gtk_key_press_event (widget, eventPtr);
+long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
+	long /*int*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
 	if (focusIndex == -1) return result;
 	GdkEventKey gdkEvent = new GdkEventKey ();
@@ -429,8 +429,8 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	return result;
 }
 
-int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_motion_notify_event (widget, event);
+long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
+	long /*int*/ result = super.gtk_motion_notify_event (widget, event);
 	if (result != 0) return result;
 	GdkEventMotion gdkEvent = new GdkEventMotion ();
 	OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
@@ -695,7 +695,7 @@ int setBounds(int x, int y, int width, int height, boolean move, boolean resize)
 	return result;
 }
 
-void setFontDescription (int /*long*/ font) {
+void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	layout.setFont (Font.gtk_new (display, font));
 }

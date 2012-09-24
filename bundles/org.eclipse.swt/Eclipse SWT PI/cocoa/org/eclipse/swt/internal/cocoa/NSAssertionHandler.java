@@ -16,7 +16,7 @@ public NSAssertionHandler() {
 	super();
 }
 
-public NSAssertionHandler(int /*long*/ id) {
+public NSAssertionHandler(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,15 +25,15 @@ public NSAssertionHandler(id id) {
 }
 
 public static NSAssertionHandler currentHandler() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSAssertionHandler, OS.sel_currentHandler);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSAssertionHandler, OS.sel_currentHandler);
 	return result != 0 ? new NSAssertionHandler(result) : null;
 }
 
-public void handleFailureInFunction(NSString functionName, NSString fileName, int /*long*/ line, NSString format) {
+public void handleFailureInFunction(NSString functionName, NSString fileName, long /*int*/ line, NSString format) {
 	OS.objc_msgSend(this.id, OS.sel_handleFailureInFunction_file_lineNumber_description_, functionName != null ? functionName.id : 0, fileName != null ? fileName.id : 0, line, format != null ? format.id : 0);
 }
 
-public void handleFailureInMethod(int /*long*/ selector, id object, NSString fileName, int /*long*/ line, NSString format) {
+public void handleFailureInMethod(long /*int*/ selector, id object, NSString fileName, long /*int*/ line, NSString format) {
 	OS.objc_msgSend(this.id, OS.sel_handleFailureInMethod_object_file_lineNumber_description_, selector, object != null ? object.id : 0, fileName != null ? fileName.id : 0, line, format != null ? format.id : 0);
 }
 

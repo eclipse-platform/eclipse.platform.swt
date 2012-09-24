@@ -37,19 +37,19 @@ public class nsIMemory extends nsISupports {
 	public static final nsID NS_IMEMORY_IID =
 		new nsID(NS_IMEMORY_IID_STR);
 
-	public nsIMemory(int /*long*/ address) {
+	public nsIMemory(long /*int*/ address) {
 		super(address);
 	}
 
-	public int /*long*/ Alloc(int size) {
+	public long /*int*/ Alloc(int size) {
 		return XPCOM.nsIMemory_Alloc(getAddress(), size);
 	}
 
-	public int /*long*/ Realloc(int /*long*/ ptr, int newSize) {
+	public long /*int*/ Realloc(long /*int*/ ptr, int newSize) {
 		return XPCOM.nsIMemory_Realloc(getAddress(), ptr, newSize);
 	}
 
-	public int Free(int /*long*/ ptr) {
+	public int Free(long /*int*/ ptr) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), ptr);
 	}
 

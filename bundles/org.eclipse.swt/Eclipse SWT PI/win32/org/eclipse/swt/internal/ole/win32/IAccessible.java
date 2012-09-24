@@ -13,71 +13,71 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IAccessible extends IDispatch {
 
-public IAccessible(int /*long*/ address) {
+public IAccessible(long /*int*/ address) {
 	super(address);
 }
 
-public int get_accParent(int /*long*/ ppdispParent) {
+public int get_accParent(long /*int*/ ppdispParent) {
 	return COM.VtblCall(7, address, ppdispParent);
 }
-public int get_accChildCount(int /*long*/ pcountChildren) {
+public int get_accChildCount(long /*int*/ pcountChildren) {
 	return COM.VtblCall(8, address, pcountChildren);
 }
-public int get_accChild(int /*long*/ variant, int /*long*/ ppdispChild) {
+public int get_accChild(long /*int*/ variant, long /*int*/ ppdispChild) {
 	return COM.VtblCall_VARIANTP(9, address, variant, ppdispChild);
 }
-public int get_accName(int /*long*/ variant, int /*long*/ pszName) {
+public int get_accName(long /*int*/ variant, long /*int*/ pszName) {
 	return COM.VtblCall_VARIANTP(10, address, variant, pszName);
 }
-public int get_accValue(int /*long*/ variant, int /*long*/ pszValue) {
+public int get_accValue(long /*int*/ variant, long /*int*/ pszValue) {
 	return COM.VtblCall_VARIANTP(11, address, variant, pszValue);
 }
-public int get_accDescription(int /*long*/ variant, int /*long*/ pszDescription) {
+public int get_accDescription(long /*int*/ variant, long /*int*/ pszDescription) {
 	return COM.VtblCall_VARIANTP(12, address, variant, pszDescription);
 }
-public int get_accRole(int /*long*/ variant, int /*long*/ pvarRole) {
+public int get_accRole(long /*int*/ variant, long /*int*/ pvarRole) {
 	return COM.VtblCall_VARIANTP(13, address, variant, pvarRole);
 }
-public int get_accState(int /*long*/ variant, int /*long*/ pvarState) {
+public int get_accState(long /*int*/ variant, long /*int*/ pvarState) {
 	return COM.VtblCall_VARIANTP(14, address, variant, pvarState);
 }
-public int get_accHelp(int /*long*/ variant, int /*long*/ pszHelp) {
+public int get_accHelp(long /*int*/ variant, long /*int*/ pszHelp) {
 	return COM.VtblCall_VARIANTP(15, address, variant, pszHelp);
 }
-public int get_accHelpTopic(int /*long*/ pszHelpFile, int /*long*/ variant, int /*long*/ pidTopic) {
+public int get_accHelpTopic(long /*int*/ pszHelpFile, long /*int*/ variant, long /*int*/ pidTopic) {
 	return COM.VtblCall_PVARIANTP(16, address, pszHelpFile, variant, pidTopic);
 }
-public int get_accKeyboardShortcut(int /*long*/ variant, int /*long*/ pszKeyboardShortcut) {
+public int get_accKeyboardShortcut(long /*int*/ variant, long /*int*/ pszKeyboardShortcut) {
 	return COM.VtblCall_VARIANTP(17, address, variant, pszKeyboardShortcut);
 }
-public int get_accFocus(int /*long*/ pvarChild) {
+public int get_accFocus(long /*int*/ pvarChild) {
 	return COM.VtblCall(18, address, pvarChild);
 }
-public int get_accSelection(int /*long*/ pvarChildren) {
+public int get_accSelection(long /*int*/ pvarChildren) {
 	return COM.VtblCall(19, address, pvarChildren);
 }
-public int get_accDefaultAction(int /*long*/ variant, int /*long*/ pszDefaultAction) {
+public int get_accDefaultAction(long /*int*/ variant, long /*int*/ pszDefaultAction) {
 	return COM.VtblCall_VARIANTP(20, address, variant, pszDefaultAction);
 }
-public int accSelect(int flagsSelect, int /*long*/ variant) {
+public int accSelect(int flagsSelect, long /*int*/ variant) {
 	return COM.VtblCall_IVARIANT(21, address, flagsSelect, variant);
 }
-public int accLocation(int /*long*/ pxLeft, int /*long*/ pyTop, int /*long*/ pcxWidth, int /*long*/ pcyHeight, int /*long*/ variant) {
+public int accLocation(long /*int*/ pxLeft, long /*int*/ pyTop, long /*int*/ pcxWidth, long /*int*/ pcyHeight, long /*int*/ variant) {
 	return COM.VtblCall_PPPPVARIANT(22, address, pxLeft, pyTop, pcxWidth, pcyHeight, variant);
 }
-public int accNavigate(int navDir, int /*long*/ variant, int /*long*/ pvarEndUpAt) {
+public int accNavigate(int navDir, long /*int*/ variant, long /*int*/ pvarEndUpAt) {
 	return COM.VtblCall_IVARIANTP(23, address, navDir, variant, pvarEndUpAt);
 }
-public int accHitTest(int xLeft, int yTop, int /*long*/ pvarChild) {
+public int accHitTest(int xLeft, int yTop, long /*int*/ pvarChild) {
 	return COM.VtblCall(24, address, xLeft, yTop, pvarChild);
 }
-public int accDoDefaultAction(int /*long*/ variant) {
+public int accDoDefaultAction(long /*int*/ variant) {
 	return COM.VtblCall_VARIANT(25, address, variant);
 }
-public int put_accName(int /*long*/ variant, int /*long*/ szName) {
+public int put_accName(long /*int*/ variant, long /*int*/ szName) {
 	return COM.VtblCall_VARIANTP(26, address, variant, szName);
 }
-public int put_accValue(int /*long*/ variant, int /*long*/ szValue) {
+public int put_accValue(long /*int*/ variant, long /*int*/ szValue) {
 	return COM.VtblCall_VARIANTP(27, address, variant, szValue);
 }
 }

@@ -13,6 +13,6 @@ package org.eclipse.swt.internal.win32;
 public class LOGBRUSH {
 	public int lbStyle;
 	public int lbColor;
-	public int /*long*/ lbHatch;
+	public long /*int*/ lbHatch;
 	public static final int sizeof = OS.LOGBRUSH_sizeof ();
 }

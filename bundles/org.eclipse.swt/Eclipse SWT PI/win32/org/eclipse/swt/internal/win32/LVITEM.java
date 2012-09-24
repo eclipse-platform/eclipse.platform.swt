@@ -17,16 +17,16 @@ public class LVITEM {
 	public int state;
 	public int stateMask;
 	/** @field cast=(LPTSTR) */
-	public int /*long*/ pszText;
+	public long /*int*/ pszText;
 	public int cchTextMax;
 	public int iImage;
-	public int /*long*/ lParam;
+	public long /*int*/ lParam;
 	public int iIndent;
 	/** @field flags=no_wince */
 	public int iGroupId;
 	/** @field flags=no_wince */
 	public int cColumns;
 	/** @field cast=(PUINT),flags=no_wince */
-	public int /*long*/ puColumns;
+	public long /*int*/ puColumns;
 	public static final int sizeof = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1) ? OS.LVITEM_sizeof () : 40;
 }

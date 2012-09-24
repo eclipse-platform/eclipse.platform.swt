@@ -40,7 +40,7 @@ public class ProgressBar extends Control {
 	static final int DELAY = 100;
 	static final int TIMER_ID = 100;
 	static final int MINIMUM_WIDTH = 100;
-	static final int /*long*/ ProgressBarProc;
+	static final long /*int*/ ProgressBarProc;
 	static final TCHAR ProgressBarClass = new TCHAR (0, OS.PROGRESS_CLASS, true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
@@ -63,13 +63,13 @@ public class ProgressBar extends Control {
 		* code, other than SWT, could create a control with
 		* this class name, and fail unexpectedly.
 		*/
-		int /*long*/ hInstance = OS.GetModuleHandle (null);
-		int /*long*/ hHeap = OS.GetProcessHeap ();
+		long /*int*/ hInstance = OS.GetModuleHandle (null);
+		long /*int*/ hHeap = OS.GetProcessHeap ();
 		lpWndClass.hInstance = hInstance;
 		lpWndClass.style &= ~OS.CS_GLOBALCLASS;
 		lpWndClass.style |= OS.CS_DBLCLKS;
 		int byteCount = ProgressBarClass.length () * TCHAR.sizeof;
-		int /*long*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		long /*int*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 		OS.MoveMemory (lpszClassName, ProgressBarClass, byteCount);
 		lpWndClass.lpszClassName = lpszClassName;
 		OS.RegisterClass (lpWndClass);
@@ -111,7 +111,7 @@ public ProgressBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (ProgressBarProc, hwnd, msg, wParam, lParam);
 }
@@ -323,7 +323,7 @@ public void setSelection (int value) {
 	* a second time.
 	*/
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-		int /*long*/ state = OS.SendMessage (handle, OS.PBM_GETSTATE, 0, 0);
+		long /*int*/ state = OS.SendMessage (handle, OS.PBM_GETSTATE, 0, 0);
 		if (state != OS.PBST_NORMAL) {
 			OS.SendMessage (handle, OS.PBM_SETPOS, value, 0);
 		}
@@ -380,11 +380,11 @@ TCHAR windowClass () {
 	return ProgressBarClass;
 }
 
-int /*long*/ windowProc () {
+long /*int*/ windowProc () {
 	return ProgressBarProc;
 }
 
-LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -399,7 +399,7 @@ LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
 	return new LRESULT (OS.DLGC_STATIC);
 }
 
-LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -435,7 +435,7 @@ LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_TIMER (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_TIMER (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_TIMER (wParam, lParam);
 	if (result != null) return result;
 	if ((style & SWT.INDETERMINATE) != 0) {

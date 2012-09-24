@@ -17,7 +17,7 @@ public class XWindowChanges {
 	public int width;
 	public int height;
 	public int border_width;
-	public int /*long*/ sibling;
+	public long /*int*/ sibling;
 	public int stack_mode;
 	public static final int sizeof = OS.XWindowChanges_sizeof();
 }

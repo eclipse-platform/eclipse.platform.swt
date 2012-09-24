@@ -155,8 +155,8 @@ public FontData open () {
 	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 	
 	/* Get the owner HWND for the dialog */
-	int /*long*/ hwndOwner = parent.handle;
-	int /*long*/ hwndParent = parent.handle;
+	long /*int*/ hwndOwner = parent.handle;
+	long /*int*/ hwndParent = parent.handle;
 	
 	/*
 	* Feature in Windows.  There is no API to set the orientation of a
@@ -187,7 +187,7 @@ public FontData open () {
 	}
 		
 	/* Open the dialog */
-	int /*long*/ hHeap = OS.GetProcessHeap ();
+	long /*int*/ hHeap = OS.GetProcessHeap ();
 	CHOOSEFONT lpcf = new CHOOSEFONT ();
 	lpcf.lStructSize = CHOOSEFONT.sizeof;
 	lpcf.hwndOwner = hwndOwner;
@@ -196,11 +196,11 @@ public FontData open () {
 		lpcf.Flags |= OS.CF_EFFECTS;
 	}
 
-	int /*long*/ lpLogFont = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, LOGFONT.sizeof);
+	long /*int*/ lpLogFont = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, LOGFONT.sizeof);
 	if (fontData != null && fontData.data != null) {
 		LOGFONT logFont = fontData.data;
 		int lfHeight = logFont.lfHeight;
-		int /*long*/ hDC = OS.GetDC (0);
+		long /*int*/ hDC = OS.GetDC (0);
 		int pixels = -(int)(0.5f + (fontData.height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY) / 72));
 		OS.ReleaseDC (0, hDC);
 		logFont.lfHeight = pixels;
@@ -242,7 +242,7 @@ public FontData open () {
 		 * This will not work on multiple screens or
 		 * for printing. Should use DC for the proper device.
 		 */
-		int /*long*/ hDC = OS.GetDC(0);
+		long /*int*/ hDC = OS.GetDC(0);
 		int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
 		int pixels = 0; 
 		if (logFont.lfHeight > 0) {
@@ -254,8 +254,8 @@ public FontData open () {
 			 * we must subtract the internal leading, which requires a TEXTMETRIC,
 			 * which in turn requires font creation.
 			 */
-			int /*long*/ hFont = OS.CreateFontIndirect(logFont);
-			int /*long*/ oldFont = OS.SelectObject(hDC, hFont);
+			long /*int*/ hFont = OS.CreateFontIndirect(logFont);
+			long /*int*/ oldFont = OS.SelectObject(hDC, hFont);
 			TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 			OS.GetTextMetrics(hDC, lptm);
 			OS.SelectObject(hDC, oldFont);

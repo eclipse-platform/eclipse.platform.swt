@@ -37,13 +37,13 @@ public class nsIWindowCreator2 extends nsIWindowCreator {
 	public static final nsID NS_IWINDOWCREATOR2_IID =
 		new nsID(NS_IWINDOWCREATOR2_IID_STR);
 
-	public nsIWindowCreator2(int /*long*/ address) {
+	public nsIWindowCreator2(long /*int*/ address) {
 		super(address);
 	}
 
 	public static final int PARENT_IS_LOADING_OR_RUNNING_TIMEOUT = 1;
 
-	public int CreateChromeWindow2(int /*long*/ parent, int chromeFlags, int contextFlags, int /*long*/ uri, int[] cancel, int /*long*/[] _retval) {
+	public int CreateChromeWindow2(long /*int*/ parent, int chromeFlags, int contextFlags, long /*int*/ uri, int[] cancel, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIWindowCreator.LAST_METHOD_ID + 1, getAddress(), parent, chromeFlags, contextFlags, uri, cancel, _retval);
 	}
 }

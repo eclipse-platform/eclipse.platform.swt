@@ -37,18 +37,18 @@ public class nsIFile extends nsISupports {
 	public static final nsID NS_IFILE_IID =
 		new nsID(NS_IFILE_IID_STR);
 
-	public nsIFile(int /*long*/ address) {
+	public nsIFile(long /*int*/ address) {
 		super(address);
 	}
 
 	public static final int NORMAL_FILE_TYPE = 0;
 	public static final int DIRECTORY_TYPE = 1;
 
-	public int Append(int /*long*/ node) {
+	public int Append(long /*int*/ node) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), node);
 	}
 
-	public int AppendNative(int /*long*/ node) {
+	public int AppendNative(long /*int*/ node) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), node);
 	}
 
@@ -60,43 +60,43 @@ public class nsIFile extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), type, permissions);
 	}
 
-	public int GetLeafName(int /*long*/ aLeafName) {
+	public int GetLeafName(long /*int*/ aLeafName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aLeafName);
 	}
 
-	public int SetLeafName(int /*long*/ aLeafName) {
+	public int SetLeafName(long /*int*/ aLeafName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aLeafName);
 	}
 
-	public int GetNativeLeafName(int /*long*/ aNativeLeafName) {
+	public int GetNativeLeafName(long /*int*/ aNativeLeafName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aNativeLeafName);
 	}
 
-	public int SetNativeLeafName(int /*long*/ aNativeLeafName) {
+	public int SetNativeLeafName(long /*int*/ aNativeLeafName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aNativeLeafName);
 	}
 
-	public int CopyTo(int /*long*/ newParentDir, int /*long*/ newName) {
+	public int CopyTo(long /*int*/ newParentDir, long /*int*/ newName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), newParentDir, newName);
 	}
 
-	public int CopyToNative(int /*long*/ newParentDir, int /*long*/ newName) {
+	public int CopyToNative(long /*int*/ newParentDir, long /*int*/ newName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), newParentDir, newName);
 	}
 
-	public int CopyToFollowingLinks(int /*long*/ newParentDir, int /*long*/ newName) {
+	public int CopyToFollowingLinks(long /*int*/ newParentDir, long /*int*/ newName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), newParentDir, newName);
 	}
 
-	public int CopyToFollowingLinksNative(int /*long*/ newParentDir, int /*long*/ newName) {
+	public int CopyToFollowingLinksNative(long /*int*/ newParentDir, long /*int*/ newName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), newParentDir, newName);
 	}
 
-	public int MoveTo(int /*long*/ newParentDir, int /*long*/ newName) {
+	public int MoveTo(long /*int*/ newParentDir, long /*int*/ newName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), newParentDir, newName);
 	}
 
-	public int MoveToNative(int /*long*/ newParentDir, int /*long*/ newName) {
+	public int MoveToNative(long /*int*/ newParentDir, long /*int*/ newName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), newParentDir, newName);
 	}
 
@@ -148,19 +148,19 @@ public class nsIFile extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 26, getAddress(), aFileSizeOfLink);
 	}
 
-	public int GetTarget(int /*long*/ aTarget) {
+	public int GetTarget(long /*int*/ aTarget) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 27, getAddress(), aTarget);
 	}
 
-	public int GetNativeTarget(int /*long*/ aNativeTarget) {
+	public int GetNativeTarget(long /*int*/ aNativeTarget) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 28, getAddress(), aNativeTarget);
 	}
 
-	public int GetPath(int /*long*/ aPath) {
+	public int GetPath(long /*int*/ aPath) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 29, getAddress(), aPath);
 	}
 
-	public int GetNativePath(int /*long*/ aNativePath) {
+	public int GetNativePath(long /*int*/ aNativePath) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 30, getAddress(), aNativePath);
 	}
 
@@ -204,23 +204,23 @@ public class nsIFile extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 40, getAddress(), type, permissions);
 	}
 
-	public int Clone(int /*long*/[] _retval) {
+	public int Clone(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 41, getAddress(), _retval);
 	}
 
-	public int Equals(int /*long*/ inFile, int[] _retval) {
+	public int Equals(long /*int*/ inFile, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 42, getAddress(), inFile, _retval);
 	}
 
-	public int Contains(int /*long*/ inFile, int recur, int[] _retval) {
+	public int Contains(long /*int*/ inFile, int recur, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 43, getAddress(), inFile, recur, _retval);
 	}
 
-	public int GetParent(int /*long*/[] aParent) {
+	public int GetParent(long /*int*/[] aParent) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 44, getAddress(), aParent);
 	}
 
-	public int GetDirectoryEntries(int /*long*/[] aDirectoryEntries) {
+	public int GetDirectoryEntries(long /*int*/[] aDirectoryEntries) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 45, getAddress(), aDirectoryEntries);
 	}
 }

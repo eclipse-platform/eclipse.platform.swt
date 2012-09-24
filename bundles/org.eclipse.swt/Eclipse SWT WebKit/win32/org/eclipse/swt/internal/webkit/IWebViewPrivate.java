@@ -15,11 +15,11 @@ import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebViewPrivate extends IUnknown {
 
-public IWebViewPrivate (int /*long*/ address) {
+public IWebViewPrivate (long /*int*/ address) {
 	super (address);
 }
 
-public int viewWindow (int /*long*/[] window) {
+public int viewWindow (long /*int*/[] window) {
 	return COM.VtblCall (5, getAddress (), window);
 }
 

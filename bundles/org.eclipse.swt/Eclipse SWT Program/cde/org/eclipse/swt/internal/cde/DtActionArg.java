@@ -14,6 +14,6 @@ package org.eclipse.swt.internal.cde;
 public class DtActionArg {
 	public int argClass;
 	/** @field accessor=u.file.name,cast=(char *) */
-	public int /*long*/ name;
+	public long /*int*/ name;
 	public static final int sizeof = CDE.DtActionArg_sizeof();
 }

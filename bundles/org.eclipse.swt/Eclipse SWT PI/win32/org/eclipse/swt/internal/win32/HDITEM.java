@@ -14,17 +14,17 @@ public class HDITEM {
 	public int mask;
 	public int cxy;
 	/** @field cast=(LPTSTR) */
-	public int /*long*/ pszText;
+	public long /*int*/ pszText;
 	/** @field cast=(HBITMAP) */
-	public int /*long*/ hbm;
+	public long /*int*/ hbm;
 	public int cchTextMax;
 	public int fmt;
-	public int /*long*/ lParam; 
+	public long /*int*/ lParam; 
 	public int iImage;
 	public int iOrder;
 	/** @field flags=no_wince */
 	public int type;
 	/** @field cast=(void *),flags=no_wince */
-	public int /*long*/ pvFilter; 
+	public long /*int*/ pvFilter; 
 	public static int sizeof = OS.HDITEM_sizeof ();
 }

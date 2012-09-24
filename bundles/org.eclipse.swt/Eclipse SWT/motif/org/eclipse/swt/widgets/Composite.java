@@ -337,7 +337,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height, int offs
 	Control control = findBackgroundControl ();
 	if (control != null) {
 		GCData data = gc.getGCData ();
-		int /*long*/ cairo = data.cairo;
+		long /*int*/ cairo = data.cairo;
 		if (cairo != 0) {
 			Cairo.cairo_save (cairo);
 			if (control.backgroundImage != null) {
@@ -354,9 +354,9 @@ public void drawBackground (GC gc, int x, int y, int width, int height, int offs
 				int xDrawable = control.backgroundImage.pixmap;				
 				int [] unused = new int [1];  int [] w = new int [1];  int [] h = new int [1];
 			 	OS.XGetGeometry (xDisplay, xDrawable, unused, unused, unused, w, h, unused, unused);
-				int /*long*/ surface = Cairo.cairo_xlib_surface_create (xDisplay, xDrawable, xVisual, w [0], h [0]);
+				long /*int*/ surface = Cairo.cairo_xlib_surface_create (xDisplay, xDrawable, xVisual, w [0], h [0]);
 				if (surface == 0) error (SWT.ERROR_NO_HANDLES);
-				int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface (surface);
+				long /*int*/ pattern = Cairo.cairo_pattern_create_for_surface (surface);
 				if (pattern == 0) error (SWT.ERROR_NO_HANDLES);
 				Cairo.cairo_pattern_set_extend (pattern, Cairo.CAIRO_EXTEND_REPEAT);
 				Cairo.cairo_set_source (cairo, pattern);

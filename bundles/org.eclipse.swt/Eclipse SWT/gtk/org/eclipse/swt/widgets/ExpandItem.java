@@ -39,7 +39,7 @@ public class ExpandItem extends Item {
 	ExpandBar parent;
 	Control control;
 	ImageList imageList;
-	int /*long*/ clientHandle, boxHandle, labelHandle, imageHandle;
+	long /*int*/ clientHandle, boxHandle, labelHandle, imageHandle;
 	boolean expanded;
 	int x, y, width, height;
 	int imageHeight, imageWidth;
@@ -311,7 +311,7 @@ int getPreferredWidth (GC gc) {
 	return width;
 }
 
-int /*long*/ gtk_activate (int /*long*/ widget) {
+long /*int*/ gtk_activate (long /*int*/ widget) {
 	Event event = new Event ();
 	event.item = this;
 	int type = OS.gtk_expander_get_expanded (handle) ? SWT.Collapse : SWT.Expand;
@@ -319,23 +319,23 @@ int /*long*/ gtk_activate (int /*long*/ widget) {
 	return 0;
 }
 
-int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	setFocus ();
 	return 0;
 }
 
-int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 	gtk_widget_set_can_focus (handle, false);
 	parent.lastFocus = this;
 	return 0;
 }
 
-int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
+long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	parent.layoutItems (0, false);
 	return 0;
 }
 
-int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	parent.gtk_enter_notify_event(widget, event);
 	return 0;
 }
@@ -495,7 +495,7 @@ boolean setFocus () {
 	return result;
 }
 
-void setFontDescription (int /*long*/ font) {
+void setFontDescription (long /*int*/ font) {
 	OS.gtk_widget_modify_font (handle, font);
 	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
 	if (imageHandle != 0) OS.gtk_widget_modify_font (imageHandle, font);
@@ -534,7 +534,7 @@ public void setImage (Image image) {
 		if (image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		imageList = new ImageList ();
 		int imageIndex = imageList.add (image);
-		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
+		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
 		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
 		if (text.length () == 0) OS.gtk_widget_hide (labelHandle);
 		OS.gtk_widget_show (imageHandle);
@@ -569,7 +569,7 @@ void showWidget (int index) {
 	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
 }
 
-int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
+long /*int*/ windowProc (long /*int*/ handle, long /*int*/ user_data) {
 	switch ((int)/*64*/user_data) {
 		case ACTIVATE_INVERSE: {
 			expanded = OS.gtk_expander_get_expanded (handle);

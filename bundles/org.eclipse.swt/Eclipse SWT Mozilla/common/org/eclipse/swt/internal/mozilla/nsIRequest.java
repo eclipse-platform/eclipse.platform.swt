@@ -37,11 +37,11 @@ public class nsIRequest extends nsISupports {
 	public static final nsID NS_IREQUEST_IID =
 		new nsID(NS_IREQUEST_IID_STR);
 
-	public nsIRequest(int /*long*/ address) {
+	public nsIRequest(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetName(int /*long*/ aName) {
+	public int GetName(long /*int*/ aName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aName);
 	}
 
@@ -49,7 +49,7 @@ public class nsIRequest extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
 	}
 
-	public int GetStatus(int /*long*/[] aStatus) {
+	public int GetStatus(long /*int*/[] aStatus) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aStatus);
 	}
 
@@ -65,15 +65,15 @@ public class nsIRequest extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress());
 	}
 
-	public int GetLoadGroup(int /*long*/[] aLoadGroup) {
+	public int GetLoadGroup(long /*int*/[] aLoadGroup) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aLoadGroup);
 	}
 
-	public int SetLoadGroup(int /*long*/ aLoadGroup) {
+	public int SetLoadGroup(long /*int*/ aLoadGroup) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aLoadGroup);
 	}
 
-	public int GetLoadFlags(int /*long*/[] aLoadFlags) {
+	public int GetLoadFlags(long /*int*/[] aLoadFlags) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aLoadFlags);
 	}
 

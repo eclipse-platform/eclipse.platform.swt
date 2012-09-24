@@ -16,7 +16,7 @@ public NSTableColumn() {
 	super();
 }
 
-public NSTableColumn(int /*long*/ id) {
+public NSTableColumn(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,21 +25,21 @@ public NSTableColumn(id id) {
 }
 
 public NSCell dataCell() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_dataCell);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_dataCell);
 	return result != 0 ? new NSCell(result) : null;
 }
 
 public NSTableHeaderCell headerCell() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_headerCell);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_headerCell);
 	return result != 0 ? new NSTableHeaderCell(result) : null;
 }
 
 public NSTableColumn initWithIdentifier(NSString identifier) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIdentifier_, identifier != null ? identifier.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIdentifier_, identifier != null ? identifier.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSTableColumn(result) : null);
 }
 
-public int /*long*/ resizingMask() {
+public long /*int*/ resizingMask() {
 	return OS.objc_msgSend(this.id, OS.sel_resizingMask);
 }
 
@@ -59,20 +59,20 @@ public void setIdentifier(NSString identifier) {
 	OS.objc_msgSend(this.id, OS.sel_setIdentifier_, identifier != null ? identifier.id : 0);
 }
 
-public void setMinWidth(float /*double*/ minWidth) {
+public void setMinWidth(double /*float*/ minWidth) {
 	OS.objc_msgSend(this.id, OS.sel_setMinWidth_, minWidth);
 }
 
-public void setResizingMask(int /*long*/ resizingMask) {
+public void setResizingMask(long /*int*/ resizingMask) {
 	OS.objc_msgSend(this.id, OS.sel_setResizingMask_, resizingMask);
 }
 
-public void setWidth(float /*double*/ width) {
+public void setWidth(double /*float*/ width) {
 	OS.objc_msgSend(this.id, OS.sel_setWidth_, width);
 }
 
-public float /*double*/ width() {
-	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_width);
+public double /*float*/ width() {
+	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_width);
 }
 
 }

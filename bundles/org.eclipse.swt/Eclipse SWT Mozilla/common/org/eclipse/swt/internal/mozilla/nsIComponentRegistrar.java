@@ -37,31 +37,31 @@ public class nsIComponentRegistrar extends nsISupports {
 	public static final nsID NS_ICOMPONENTREGISTRAR_IID =
 		new nsID(NS_ICOMPONENTREGISTRAR_IID_STR);
 
-	public nsIComponentRegistrar(int /*long*/ address) {
+	public nsIComponentRegistrar(long /*int*/ address) {
 		super(address);
 	}
 
-	public int AutoRegister(int /*long*/ aSpec) {
+	public int AutoRegister(long /*int*/ aSpec) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aSpec);
 	}
 
-	public int AutoUnregister(int /*long*/ aSpec) {
+	public int AutoUnregister(long /*int*/ aSpec) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aSpec);
 	}
 
-	public int RegisterFactory(nsID aClass, byte[] aClassName, byte[] aContractID, int /*long*/ aFactory) {
+	public int RegisterFactory(nsID aClass, byte[] aClassName, byte[] aContractID, long /*int*/ aFactory) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aClass, aClassName, aContractID, aFactory);
 	}
 
-	public int UnregisterFactory(nsID aClass, int /*long*/ aFactory) {
+	public int UnregisterFactory(nsID aClass, long /*int*/ aFactory) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aClass, aFactory);
 	}
 
-	public int RegisterFactoryLocation(nsID aClass, byte[] aClassName, byte[] aContractID, int /*long*/ aFile, byte[] aLoaderStr, byte[] aType) {
+	public int RegisterFactoryLocation(nsID aClass, byte[] aClassName, byte[] aContractID, long /*int*/ aFile, byte[] aLoaderStr, byte[] aType) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aClass, aClassName, aContractID, aFile, aLoaderStr, aType);
 	}
 
-	public int UnregisterFactoryLocation(nsID aClass, int /*long*/ aFile) {
+	public int UnregisterFactoryLocation(nsID aClass, long /*int*/ aFile) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aClass, aFile);
 	}
 
@@ -73,19 +73,19 @@ public class nsIComponentRegistrar extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aContractID, _retval);
 	}
 
-	public int EnumerateCIDs(int /*long*/[] _retval) {
+	public int EnumerateCIDs(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), _retval);
 	}
 
-	public int EnumerateContractIDs(int /*long*/[] _retval) {
+	public int EnumerateContractIDs(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), _retval);
 	}
 
-	public int CIDToContractID(nsID aClass, int /*long*/[] _retval) {
+	public int CIDToContractID(nsID aClass, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aClass, _retval);
 	}
 
-	public int ContractIDToCID(byte[] aContractID, int /*long*/ _retval) {
+	public int ContractIDToCID(byte[] aContractID, long /*int*/ _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), aContractID, _retval);
 	}
 }

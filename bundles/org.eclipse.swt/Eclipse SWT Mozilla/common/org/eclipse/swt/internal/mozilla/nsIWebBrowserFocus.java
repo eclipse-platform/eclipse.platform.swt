@@ -37,7 +37,7 @@ public class nsIWebBrowserFocus extends nsISupports {
 	public static final nsID NS_IWEBBROWSERFOCUS_IID =
 		new nsID(NS_IWEBBROWSERFOCUS_IID_STR);
 
-	public nsIWebBrowserFocus(int /*long*/ address) {
+	public nsIWebBrowserFocus(long /*int*/ address) {
 		super(address);
 	}
 
@@ -57,19 +57,19 @@ public class nsIWebBrowserFocus extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress());
 	}
 
-	public int GetFocusedWindow(int /*long*/[] aFocusedWindow) {
+	public int GetFocusedWindow(long /*int*/[] aFocusedWindow) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aFocusedWindow);
 	}
 
-	public int SetFocusedWindow(int /*long*/ aFocusedWindow) {
+	public int SetFocusedWindow(long /*int*/ aFocusedWindow) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aFocusedWindow);
 	}
 
-	public int GetFocusedElement(int /*long*/[] aFocusedElement) {
+	public int GetFocusedElement(long /*int*/[] aFocusedElement) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aFocusedElement);
 	}
 
-	public int SetFocusedElement(int /*long*/ aFocusedElement) {
+	public int SetFocusedElement(long /*int*/ aFocusedElement) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aFocusedElement);
 	}
 }

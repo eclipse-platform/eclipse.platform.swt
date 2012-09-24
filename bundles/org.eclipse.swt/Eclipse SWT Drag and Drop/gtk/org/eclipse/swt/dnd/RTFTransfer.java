@@ -65,7 +65,7 @@ public void javaToNative (Object object, TransferData transferData){
 	}
 	String string = (String)object;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	int /*long*/ pValue = OS.g_malloc(buffer.length);
+	long /*int*/ pValue = OS.g_malloc(buffer.length);
 	if (pValue == 0) return;
 	OS.memmove(pValue, buffer, buffer.length);
 	transferData.length = buffer.length - 1;

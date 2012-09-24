@@ -12,11 +12,11 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IPersistStreamInit extends IPersist
 {
-public IPersistStreamInit(int /*long*/ address) {
+public IPersistStreamInit(long /*int*/ address) {
 	super(address);
 }
 
-public int Load(int /*long*/ pStm) {
+public int Load(long /*int*/ pStm) {
 	return COM.VtblCall(5, address, pStm);
 }
 

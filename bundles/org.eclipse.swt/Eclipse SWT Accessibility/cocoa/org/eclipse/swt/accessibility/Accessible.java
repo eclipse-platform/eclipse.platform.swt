@@ -143,7 +143,7 @@ public class Accessible {
 		if (accessible.delegate != null) return accessible.delegate;
 		if (accessible.control != null) {
 			NSView view = accessible.control.view;
-			int /*long*/ handle = OS.objc_msgSend(view.id, OS.sel_accessibleHandle);
+			long /*int*/ handle = OS.objc_msgSend(view.id, OS.sel_accessibleHandle);
 			return new id(handle);
 		}
 		return null;
@@ -426,9 +426,9 @@ public class Accessible {
 		accessibleAttributeListeners.addElement(listener);
 	}
 
-	void addCGColor(float /*double*/ [] comps, NSMutableAttributedString inAttribString, NSString inAttribute, NSRange inRange) {
-		int /*long*/ cgColorSpace = OS.CGColorSpaceCreateDeviceRGB();
-		int /*long*/ cgColor = OS.CGColorCreate(cgColorSpace, comps);
+	void addCGColor(double /*float*/ [] comps, NSMutableAttributedString inAttribString, NSString inAttribute, NSRange inRange) {
+		long /*int*/ cgColorSpace = OS.CGColorSpaceCreateDeviceRGB();
+		long /*int*/ cgColor = OS.CGColorCreate(cgColorSpace, comps);
 		OS.CGColorSpaceRelease(cgColorSpace);
 		inAttribString.addAttribute(inAttribute, new id(cgColor), inRange);
 	    OS.CGColorRelease(cgColor);
@@ -1592,7 +1592,7 @@ public class Accessible {
 					fontInfoDict.setValue(familyName, OS.NSAccessibilityFontFamilyKey);
 					NSString displayName = fontUsed.displayName();
 					fontInfoDict.setValue(displayName, OS.NSAccessibilityVisibleNameKey);
-					float /*double*/ fontSize = fontUsed.pointSize();
+					double /*float*/ fontSize = fontUsed.pointSize();
 					fontInfoDict.setValue(NSNumber.numberWithDouble(fontSize), OS.NSAccessibilityFontSizeKey);
 
 					attribString.addAttribute(OS.NSAccessibilityFontTextAttribute, fontInfoDict, attributeRange);
@@ -3481,7 +3481,7 @@ public class Accessible {
 	 * 
 	 * @noreference This method is not intended to be referenced by clients.
 	 */
-	public int /*long*/ internal_addRelationAttributes(int /*long*/ defaultAttributes) {
+	public long /*int*/ internal_addRelationAttributes(long /*int*/ defaultAttributes) {
 		NSArray attributes = new NSArray(defaultAttributes);
 		NSMutableArray returnArray = NSMutableArray.arrayWithCapacity(attributes.count());
 		returnArray.addObjectsFromArray(attributes);

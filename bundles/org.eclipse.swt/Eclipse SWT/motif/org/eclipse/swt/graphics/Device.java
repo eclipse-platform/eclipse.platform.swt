@@ -205,7 +205,7 @@ void checkCairo() {
 	try {
 		/* Check if cairo is available on the system */
 		byte[] buffer = Converter.wcsToMbcs(null, "libcairo.so.2", true);
-		int /*long*/ libcairo = OS.dlopen(buffer, OS.RTLD_LAZY);
+		long /*int*/ libcairo = OS.dlopen(buffer, OS.RTLD_LAZY);
 		if (libcairo != 0) {
 			OS.dlclose(libcairo);
 		} else {

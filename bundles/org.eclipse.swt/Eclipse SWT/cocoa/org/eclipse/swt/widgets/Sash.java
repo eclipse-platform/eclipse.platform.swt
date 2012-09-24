@@ -81,7 +81,7 @@ public Sash (Composite parent, int style) {
 	sizeCursor = new Cursor (display, cursorStyle);
 }
 
-int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
+long /*int*/ accessibilityAttributeNames(long /*int*/ id, long /*int*/ sel) {
 	if (accessibilityAttributes == null) {
 		NSMutableArray ourAttributes = NSMutableArray.arrayWithCapacity(10);
 		ourAttributes.addObject(OS.NSAccessibilityRoleAttribute);
@@ -124,8 +124,8 @@ int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
 	return accessibilityAttributes.id;
 }
 
-int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
-	int /*long*/ returnValue = 0;
+long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
+	long /*int*/ returnValue = 0;
 	NSString attributeName = new NSString(arg0);
 	
 	if (accessible != null) {
@@ -155,7 +155,7 @@ int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int 
 		return NSNumber.numberWithInt(value).id;
 	} else if (attributeName.isEqualToString (OS.NSAccessibilityMaxValueAttribute)) {
 		NSRect parentFrame = parent.topView().frame();
-		float /*double*/ maxValue = (style & SWT.VERTICAL) != 0 ?
+		double /*float*/ maxValue = (style & SWT.VERTICAL) != 0 ?
 							parentFrame.width :
 							parentFrame.height;
 		return NSNumber.numberWithDouble(maxValue).id;
@@ -198,7 +198,7 @@ int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int 
 	return super.accessibilityAttributeValue(id, sel, arg0);
 }
 
-boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
+boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
 	return false;	
 }
 
@@ -243,7 +243,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
+boolean becomeFirstResponder (long /*int*/ id, long /*int*/ sel) {
 	boolean result = super.becomeFirstResponder(id, sel);
 	NSRect frame = view.frame();
 	lastX = (int)frame.x;
@@ -271,7 +271,7 @@ void createHandle () {
 	view = widget;
 }
 
-void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	fillBackground (view, context, rect, -1);
 }
@@ -296,7 +296,7 @@ boolean sendKeyEvent(NSEvent nsEvent, int type) {
 			case 124: /* Right arrow */ {
 				int xChange = 0, yChange = 0;
 				int stepSize = PAGE_INCREMENT;
-				int /*long*/ modifiers = nsEvent.modifierFlags();
+				long /*int*/ modifiers = nsEvent.modifierFlags();
 				if ((modifiers & OS.NSControlKeyMask) != 0) stepSize = INCREMENT;
 				if ((style & SWT.VERTICAL) != 0) {
 					if (keyCode == 126 || keyCode == 125) break;
@@ -346,7 +346,7 @@ boolean sendKeyEvent(NSEvent nsEvent, int type) {
 	return true;
 }
 
-void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	//TODO use sendMouseEvent
 	super.mouseDown(id, sel, theEvent);
 	if (isDisposed()) return;
@@ -372,12 +372,12 @@ void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	}
 }
 
-boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, int type) {
+boolean mouseEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent, int type) {
 	super.mouseEvent (id, sel, theEvent, type);
 	return new NSEvent (theEvent).type () != OS.NSLeftMouseDown;
 }
 
-void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void mouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	//TODO use sendMouseEvent
 	super.mouseDragged(id, sel, theEvent);
 	if (isDisposed()) return;
@@ -408,7 +408,7 @@ void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	}
 }
 
-void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	//TODO use sendMouseEvent
 	super.mouseUp(id, sel, theEvent);
 	if (isDisposed()) return;
@@ -464,10 +464,10 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.DefaultSelection,listener);
 }
 
-void superKeyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void superKeyDown (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
-void superKeyUp (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void superKeyUp (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
 int traversalCode (int key, NSEvent theEvent) {

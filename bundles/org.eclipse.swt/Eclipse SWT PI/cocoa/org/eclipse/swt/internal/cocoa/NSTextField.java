@@ -16,7 +16,7 @@ public NSTextField() {
 	super();
 }
 
-public NSTextField(int /*long*/ id) {
+public NSTextField(long /*int*/ id) {
 	super(id);
 }
 
@@ -56,11 +56,11 @@ public void setTextColor(NSColor color) {
 	OS.objc_msgSend(this.id, OS.sel_setTextColor_, color != null ? color.id : 0);
 }
 
-public static int /*long*/ cellClass() {
+public static long /*int*/ cellClass() {
 	return OS.objc_msgSend(OS.class_NSTextField, OS.sel_cellClass);
 }
 
-public static void setCellClass(int /*long*/ factoryId) {
+public static void setCellClass(long /*int*/ factoryId) {
 	OS.objc_msgSend(OS.class_NSTextField, OS.sel_setCellClass_, factoryId);
 }
 

@@ -50,7 +50,7 @@ import org.eclipse.swt.events.*;
 public class TabFolder extends Composite {
 	TabItem [] items;
 	ImageList imageList;
-	static final int /*long*/ TabFolderProc;
+	static final long /*int*/ TabFolderProc;
 	static final TCHAR TabFolderClass = new TCHAR (0, OS.WC_TABCONTROL, true);
 	boolean createdAsRTL;
 	
@@ -84,12 +84,12 @@ public class TabFolder extends Composite {
 		* code, other than SWT, could create a control with
 		* this class name, and fail unexpectedly.
 		*/
-		int /*long*/ hInstance = OS.GetModuleHandle (null);
-		int /*long*/ hHeap = OS.GetProcessHeap ();
+		long /*int*/ hInstance = OS.GetModuleHandle (null);
+		long /*int*/ hHeap = OS.GetProcessHeap ();
 		lpWndClass.hInstance = hInstance;
 		lpWndClass.style &= ~(OS.CS_HREDRAW | OS.CS_VREDRAW | OS.CS_GLOBALCLASS);
 		int byteCount = TabFolderClass.length () * TCHAR.sizeof;
-		int /*long*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		long /*int*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 		OS.MoveMemory (lpszClassName, TabFolderClass, byteCount);
 		lpWndClass.lpszClassName = lpszClassName;
 		OS.RegisterClass (lpWndClass);
@@ -162,7 +162,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.DefaultSelection,typedListener);
 }
 
-int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (TabFolderProc, hwnd, msg, wParam, lParam);
 }
@@ -269,7 +269,7 @@ void createHandle () {
 	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
 	* a large value.
 	*/
-	int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
+	long /*int*/ hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
 	OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);	
 	
 	createdAsRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
@@ -307,7 +307,7 @@ void destroyItem (TabItem item) {
 	}
 }
 
-void drawThemeBackground (int /*long*/ hDC, int /*long*/ hwnd, RECT rect) {
+void drawThemeBackground (long /*int*/ hDC, long /*int*/ hwnd, RECT rect) {
 	RECT rect2 = new RECT ();
 	OS.GetClientRect (handle, rect2);
 	OS.MapWindowPoints (handle, hwnd, rect2, 2);
@@ -467,7 +467,7 @@ int imageIndex (Image image) {
 		Rectangle bounds = image.getBounds ();
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
 		int index = imageList.add (image);
-		int /*long*/ hImageList = imageList.getHandle ();
+		long /*int*/ hImageList = imageList.getHandle ();
 		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, hImageList);
 		return index;
 	}
@@ -750,7 +750,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 		return null;
 	}
 	int index = (int)/*64*/hdr.idFrom;
-	int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
+	long /*int*/ hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom) {
 		/*
 		* Bug in Windows. For some reason the reading order
@@ -793,7 +793,7 @@ boolean traversePage (boolean next) {
 
 void updateOrientation () {
 	super.updateOrientation ();
-	int /*long*/ hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
+	long /*int*/ hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
 	while (hwndChild != 0) {
 		TCHAR buffer = new TCHAR (0, 128);
 		OS.GetClassName (hwndChild, buffer, buffer.length ());
@@ -820,7 +820,7 @@ void updateOrientation () {
 		Point size = imageList.getImageSize ();
 		display.releaseImageList (imageList);
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y);
-		int /*long*/ hImageList = imageList.getHandle ();
+		long /*int*/ hImageList = imageList.getHandle ();
 		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, hImageList);
 		TCITEM tcItem = new TCITEM ();
 		tcItem.mask = OS.TCIF_IMAGE;
@@ -854,11 +854,11 @@ TCHAR windowClass () {
 	return TabFolderClass;
 }
 
-int /*long*/ windowProc () {
+long /*int*/ windowProc () {
 	return TabFolderProc;
 }
 
-LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	/*
 	* Return DLGC_BUTTON so that mnemonics will be
@@ -869,7 +869,7 @@ LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
 	return new LRESULT (OS.DLGC_BUTTON | OS.DLGC_WANTARROWS);
 }
 
-LRESULT WM_GETOBJECT (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_GETOBJECT (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Ensure that there is an accessible object created for this
 	* control because support for publishing the keyboard shortcut
@@ -879,7 +879,7 @@ LRESULT WM_GETOBJECT (int /*long*/ wParam, int /*long*/ lParam) {
 	return super.WM_GETOBJECT (wParam, lParam);
 }
 
-LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
 	switch ((int)/*64*/wParam) {
@@ -894,7 +894,7 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 		    */
 			boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 			if (isRTL != createdAsRTL) {
-				int /*long*/ code = callWindowProc (handle, OS.WM_KEYDOWN, wParam == OS.VK_RIGHT ? OS.VK_LEFT : OS.VK_RIGHT, lParam);
+				long /*int*/ code = callWindowProc (handle, OS.WM_KEYDOWN, wParam == OS.VK_RIGHT ? OS.VK_LEFT : OS.VK_RIGHT, lParam);
 				return new LRESULT (code);
 			}
 			break;
@@ -902,7 +902,7 @@ LRESULT WM_KEYDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_MOUSELEAVE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_MOUSELEAVE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_MOUSELEAVE (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -919,7 +919,7 @@ LRESULT WM_MOUSELEAVE (int /*long*/ wParam, int /*long*/ lParam) {
 	if (OS.COMCTL32_MAJOR >= 6) {
 		TOOLINFO lpti = new TOOLINFO ();
 		lpti.cbSize = TOOLINFO.sizeof;
-		int /*long*/ hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
+		long /*int*/ hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
 		if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
 			if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
 				OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, lpti);
@@ -930,7 +930,7 @@ LRESULT WM_MOUSELEAVE (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_NCHITTEST (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -945,11 +945,11 @@ LRESULT WM_NCHITTEST (int /*long*/ wParam, int /*long*/ lParam) {
 	* default window proc that returns HTCLIENT when
 	* the mouse is in the client area.	
 	*/
-	int /*long*/ hittest = OS.DefWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
+	long /*int*/ hittest = OS.DefWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
 	return new LRESULT (hittest);
 }
 
-LRESULT WM_NOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_NOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows.  When the tab folder window
 	* proc processes WM_NOTIFY, it forwards this
@@ -973,7 +973,7 @@ LRESULT WM_NOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
 	return LRESULT.ZERO;
 }
 
-LRESULT WM_PARENTNOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_PARENTNOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_PARENTNOTIFY (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -992,7 +992,7 @@ LRESULT WM_PARENTNOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
 		switch (code) {
 			case OS.WM_CREATE: {
 				int id = OS.HIWORD (wParam);
- 				int /*long*/ hwnd = lParam;
+ 				long /*int*/ hwnd = lParam;
 				if (id == ID_UPDOWN) {
 					int bits = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 					OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE,	bits | OS.WS_EX_LAYOUTRTL);
@@ -1004,7 +1004,7 @@ LRESULT WM_PARENTNOTIFY (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	/*
 	* It is possible (but unlikely), that application
@@ -1025,7 +1025,7 @@ LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;
 	if (!OS.IsWindowVisible (handle)) return result;
@@ -1074,7 +1074,7 @@ LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT wmNotifyChild (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 	int code = hdr.code;
 	switch (code) {
 		case OS.TCN_SELCHANGE: 

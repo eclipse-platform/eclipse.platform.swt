@@ -16,7 +16,7 @@ public WebDataSource() {
 	super();
 }
 
-public WebDataSource(int /*long*/ id) {
+public WebDataSource(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,22 +25,22 @@ public WebDataSource(id id) {
 }
 
 public NSString pageTitle() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_pageTitle);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_pageTitle);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public WebDocumentRepresentation representation() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_representation);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_representation);
 	return result != 0 ? new WebDocumentRepresentation(result) : null;
 }
 
 public NSMutableURLRequest request() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_request);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_request);
 	return result != 0 ? new NSMutableURLRequest(result) : null;
 }
 
 public WebFrame webFrame() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_webFrame);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_webFrame);
 	return result != 0 ? new WebFrame(result) : null;
 }
 

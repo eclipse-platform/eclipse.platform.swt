@@ -16,7 +16,7 @@ public NSResponder() {
 	super();
 }
 
-public NSResponder(int /*long*/ id) {
+public NSResponder(long /*int*/ id) {
 	super(id);
 }
 
@@ -44,7 +44,7 @@ public void cursorUpdate(NSEvent event) {
 	OS.objc_msgSend(this.id, OS.sel_cursorUpdate_, event != null ? event.id : 0);
 }
 
-public void doCommandBySelector(int /*long*/ aSelector) {
+public void doCommandBySelector(long /*int*/ aSelector) {
 	OS.objc_msgSend(this.id, OS.sel_doCommandBySelector_, aSelector);
 }
 
@@ -116,7 +116,7 @@ public void moveUp(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_moveUp_, sender != null ? sender.id : 0);
 }
 
-public void noResponderFor(int /*long*/ eventSelector) {
+public void noResponderFor(long /*int*/ eventSelector) {
 	OS.objc_msgSend(this.id, OS.sel_noResponderFor_, eventSelector);
 }
 
@@ -189,12 +189,12 @@ public void touchesMovedWithEvent(NSEvent event) {
 }
 
 public NSUndoManager undoManager() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_undoManager);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_undoManager);
 	return result != 0 ? new NSUndoManager(result) : null;
 }
 
 public id validRequestorForSendType(NSString sendType, NSString returnType) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_validRequestorForSendType_returnType_, sendType != null ? sendType.id : 0, returnType != null ? returnType.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_validRequestorForSendType_returnType_, sendType != null ? sendType.id : 0, returnType != null ? returnType.id : 0);
 	return result != 0 ? new id(result) : null;
 }
 

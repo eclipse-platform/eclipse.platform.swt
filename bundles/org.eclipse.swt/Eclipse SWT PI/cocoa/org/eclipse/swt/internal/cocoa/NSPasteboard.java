@@ -16,7 +16,7 @@ public NSPasteboard() {
 	super();
 }
 
-public NSPasteboard(int /*long*/ id) {
+public NSPasteboard(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,36 +24,36 @@ public NSPasteboard(id id) {
 	super(id);
 }
 
-public int /*long*/ addTypes(NSArray newTypes, id newOwner) {
+public long /*int*/ addTypes(NSArray newTypes, id newOwner) {
 	return OS.objc_msgSend(this.id, OS.sel_addTypes_owner_, newTypes != null ? newTypes.id : 0, newOwner != null ? newOwner.id : 0);
 }
 
 public NSString availableTypeFromArray(NSArray types) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_availableTypeFromArray_, types != null ? types.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_availableTypeFromArray_, types != null ? types.id : 0);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public NSData dataForType(NSString dataType) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_dataForType_, dataType != null ? dataType.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_dataForType_, dataType != null ? dataType.id : 0);
 	return result != 0 ? new NSData(result) : null;
 }
 
-public int /*long*/ declareTypes(NSArray newTypes, id newOwner) {
+public long /*int*/ declareTypes(NSArray newTypes, id newOwner) {
 	return OS.objc_msgSend(this.id, OS.sel_declareTypes_owner_, newTypes != null ? newTypes.id : 0, newOwner != null ? newOwner.id : 0);
 }
 
 public static NSPasteboard generalPasteboard() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSPasteboard, OS.sel_generalPasteboard);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSPasteboard, OS.sel_generalPasteboard);
 	return result != 0 ? new NSPasteboard(result) : null;
 }
 
 public static NSPasteboard pasteboardWithName(NSString name) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSPasteboard, OS.sel_pasteboardWithName_, name != null ? name.id : 0);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSPasteboard, OS.sel_pasteboardWithName_, name != null ? name.id : 0);
 	return result != 0 ? new NSPasteboard(result) : null;
 }
 
 public id propertyListForType(NSString dataType) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_propertyListForType_, dataType != null ? dataType.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_propertyListForType_, dataType != null ? dataType.id : 0);
 	return result != 0 ? new id(result) : null;
 }
 
@@ -70,12 +70,12 @@ public boolean setString(NSString string, NSString dataType) {
 }
 
 public NSString stringForType(NSString dataType) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_stringForType_, dataType != null ? dataType.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_stringForType_, dataType != null ? dataType.id : 0);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public NSArray types() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_types);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_types);
 	return result != 0 ? new NSArray(result) : null;
 }
 

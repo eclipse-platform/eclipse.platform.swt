@@ -37,7 +37,7 @@ public class nsIXPCSecurityManager extends nsISupports {
 	public static final nsID NS_IXPCSECURITYMANAGER_IID =
 		new nsID(NS_IXPCSECURITYMANAGER_IID_STR);
 
-	public nsIXPCSecurityManager(int /*long*/ address) {
+	public nsIXPCSecurityManager(long /*int*/ address) {
 		super(address);
 	}
 
@@ -55,15 +55,15 @@ public class nsIXPCSecurityManager extends nsISupports {
 
 	public static final int HOOK_ALL = 63;
 
-	public int CanCreateWrapper(int /*long*/ aJSContext, nsID aIID, int /*long*/ aObj, int /*long*/ aClassInfo, int /*long*/[] aPolicy) {
+	public int CanCreateWrapper(long /*int*/ aJSContext, nsID aIID, long /*int*/ aObj, long /*int*/ aClassInfo, long /*int*/[] aPolicy) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aJSContext, aIID, aObj, aClassInfo, aPolicy);
 	}
 
-	public int CanCreateInstance(int /*long*/ aJSContext, nsID aCID) {
+	public int CanCreateInstance(long /*int*/ aJSContext, nsID aCID) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aJSContext, aCID);
 	}
 
-	public int CanGetService(int /*long*/ aJSContext, nsID aCID) {
+	public int CanGetService(long /*int*/ aJSContext, nsID aCID) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aJSContext, aCID);
 	}
 
@@ -73,7 +73,7 @@ public class nsIXPCSecurityManager extends nsISupports {
 
 	public static final int ACCESS_SET_PROPERTY = 2;
 
-	public int CanAccess(int aAction, int /*long*/ aCallContext, int /*long*/ aJSContext, int /*long*/ aJSObject, int /*long*/ aObj, int /*long*/ aClassInfo, int /*long*/ aName, int /*long*/[] aPolicy) {
+	public int CanAccess(int aAction, long /*int*/ aCallContext, long /*int*/ aJSContext, long /*int*/ aJSObject, long /*int*/ aObj, long /*int*/ aClassInfo, long /*int*/ aName, long /*int*/[] aPolicy) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aAction, aCallContext, aJSContext, aJSObject, aObj, aClassInfo, aName, aPolicy);
 	}
 }

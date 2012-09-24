@@ -17,17 +17,17 @@ package org.eclipse.swt.internal.gnome;
  
 public class GnomeVFSMimeApplication {
 	/** @field cast=(char *) */
-	public int /*long*/ id;
+	public long /*int*/ id;
 	/** @field cast=(char *) */
-	public int /*long*/ name;
+	public long /*int*/ name;
 	/** @field cast=(char *) */
-	public int /*long*/ command;
+	public long /*int*/ command;
 	/** @field cast=(gboolean) */
 	public boolean can_open_multiple_files;
 	/** @field cast=(GnomeVFSMimeApplicationArgumentType) */
 	public int expects_uris;
 	/** @field cast=(GList *) */
-	public int /*long*/ supported_uri_schemes;
+	public long /*int*/ supported_uri_schemes;
 	/** @field cast=(gboolean) */
 	public boolean requires_terminal;
 	public static final int sizeof = GNOME.GnomeVFSMimeApplication_sizeof();

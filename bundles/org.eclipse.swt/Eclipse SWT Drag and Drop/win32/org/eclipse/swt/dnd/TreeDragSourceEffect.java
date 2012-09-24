@@ -87,7 +87,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 					event.offsetX = shdi.ptOffset.x;
 				}
 				event.offsetY = shdi.ptOffset.y;
-				int /*long*/ hImage = shdi.hbmpDragImage;
+				long /*int*/ hImage = shdi.hbmpDragImage;
 				if (hImage != 0) {
 					BITMAP bm = new BITMAP ();
 					OS.GetObject (hImage, BITMAP.sizeof, bm);
@@ -95,10 +95,10 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 					int srcHeight = bm.bmHeight;
 					
 					/* Create resources */
-					int /*long*/ hdc = OS.GetDC (0);
-					int /*long*/ srcHdc = OS.CreateCompatibleDC (hdc);
-					int /*long*/ oldSrcBitmap = OS.SelectObject (srcHdc, hImage);
-					int /*long*/ memHdc = OS.CreateCompatibleDC (hdc);
+					long /*int*/ hdc = OS.GetDC (0);
+					long /*int*/ srcHdc = OS.CreateCompatibleDC (hdc);
+					long /*int*/ oldSrcBitmap = OS.SelectObject (srcHdc, hImage);
+					long /*int*/ memHdc = OS.CreateCompatibleDC (hdc);
 					BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER ();
 					bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
 					bmiHeader.biWidth = srcWidth;
@@ -108,10 +108,10 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 					bmiHeader.biCompression = OS.BI_RGB;
 					byte []	bmi = new byte[BITMAPINFOHEADER.sizeof];
 					OS.MoveMemory (bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
-					int /*long*/ [] pBits = new int /*long*/ [1];
-					int /*long*/ memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
+					long /*int*/ [] pBits = new long /*int*/ [1];
+					long /*int*/ memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 					if (memDib == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-					int /*long*/ oldMemBitmap = OS.SelectObject (memHdc, memDib);
+					long /*int*/ oldMemBitmap = OS.SelectObject (memHdc, memDib);
 
 					BITMAP dibBM = new BITMAP ();
 					OS.GetObject (memDib, BITMAP.sizeof, dibBM);
@@ -158,26 +158,26 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 		if (tree.isListening (SWT.EraseItem) || tree.isListening (SWT.PaintItem)) return null;
 		TreeItem[] selection = tree.getSelection();
 		if (selection.length == 0) return null;
-		int /*long*/ treeImageList = OS.SendMessage (tree.handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
+		long /*int*/ treeImageList = OS.SendMessage (tree.handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
 		if (treeImageList != 0) {
 			int count = Math.min(selection.length, 10);
 			Rectangle bounds = selection[0].getBounds(0);
 			for (int i = 1; i < count; i++) {
 				bounds = bounds.union(selection[i].getBounds(0));
 			}
-			int /*long*/ hDC = OS.GetDC(tree.handle);
-			int /*long*/ hDC1 = OS.CreateCompatibleDC(hDC);
-			int /*long*/ bitmap = OS.CreateCompatibleBitmap(hDC, bounds.width, bounds.height);
-			int /*long*/ hOldBitmap = OS.SelectObject(hDC1, bitmap);
+			long /*int*/ hDC = OS.GetDC(tree.handle);
+			long /*int*/ hDC1 = OS.CreateCompatibleDC(hDC);
+			long /*int*/ bitmap = OS.CreateCompatibleBitmap(hDC, bounds.width, bounds.height);
+			long /*int*/ hOldBitmap = OS.SelectObject(hDC1, bitmap);
 			RECT rect = new RECT();
 			rect.right = bounds.width;
 			rect.bottom = bounds.height;
-			int /*long*/ hBrush = OS.GetStockObject(OS.WHITE_BRUSH);
+			long /*int*/ hBrush = OS.GetStockObject(OS.WHITE_BRUSH);
 			OS.FillRect(hDC1, rect, hBrush);
 			for (int i = 0; i < count; i++) {
 				TreeItem selected = selection[i];
 				Rectangle cell = selected.getBounds(0);
-				int /*long*/ imageList = OS.SendMessage(tree.handle, OS.TVM_CREATEDRAGIMAGE, 0, selected.handle);
+				long /*int*/ imageList = OS.SendMessage(tree.handle, OS.TVM_CREATEDRAGIMAGE, 0, selected.handle);
 				OS.ImageList_Draw(imageList, 0, hDC1, cell.x - bounds.x, cell.y - bounds.y, OS.ILD_SELECTED);
 				OS.ImageList_Destroy(imageList);
 			}

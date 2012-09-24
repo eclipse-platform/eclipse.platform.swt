@@ -16,7 +16,7 @@ public NSUserDefaults() {
 	super();
 }
 
-public NSUserDefaults(int /*long*/ id) {
+public NSUserDefaults(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,12 +25,12 @@ public NSUserDefaults(id id) {
 }
 
 public id objectForKey(NSString defaultName) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_objectForKey_, defaultName != null ? defaultName.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_objectForKey_, defaultName != null ? defaultName.id : 0);
 	return result != 0 ? new id(result) : null;
 }
 
 public static NSUserDefaults standardUserDefaults() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSUserDefaults, OS.sel_standardUserDefaults);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSUserDefaults, OS.sel_standardUserDefaults);
 	return result != 0 ? new NSUserDefaults(result) : null;
 }
 

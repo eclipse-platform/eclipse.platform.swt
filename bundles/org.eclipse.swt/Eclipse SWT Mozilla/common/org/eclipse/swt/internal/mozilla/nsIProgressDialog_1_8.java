@@ -37,11 +37,11 @@ public class nsIProgressDialog_1_8 extends nsIDownload_1_8 {
 	public static final nsID NS_IPROGRESSDIALOG_IID =
 		new nsID(NS_IPROGRESSDIALOG_IID_STR);
 
-	public nsIProgressDialog_1_8(int /*long*/ address) {
+	public nsIProgressDialog_1_8(long /*int*/ address) {
 		super(address);
 	}
 
-	public int Open(int /*long*/ aParent) {
+	public int Open(long /*int*/ aParent) {
 		return XPCOM.VtblCall(nsIDownload_1_8.LAST_METHOD_ID + 1, getAddress(), aParent);
 	}
 
@@ -53,19 +53,19 @@ public class nsIProgressDialog_1_8 extends nsIDownload_1_8 {
 		return XPCOM.VtblCall(nsIDownload_1_8.LAST_METHOD_ID + 3, getAddress(), aCancelDownloadOnClose);
 	}
 
-	public int GetObserver(int /*long*/[] aObserver) {
+	public int GetObserver(long /*int*/[] aObserver) {
 		return XPCOM.VtblCall(nsIDownload_1_8.LAST_METHOD_ID + 4, getAddress(), aObserver);
 	}
 
-	public int SetObserver(int /*long*/ aObserver) {
+	public int SetObserver(long /*int*/ aObserver) {
 		return XPCOM.VtblCall(nsIDownload_1_8.LAST_METHOD_ID + 5, getAddress(), aObserver);
 	}
 
-	public int GetDialog(int /*long*/[] aDialog) {
+	public int GetDialog(long /*int*/[] aDialog) {
 		return XPCOM.VtblCall(nsIDownload_1_8.LAST_METHOD_ID + 6, getAddress(), aDialog);
 	}
 
-	public int SetDialog(int /*long*/ aDialog) {
+	public int SetDialog(long /*int*/ aDialog) {
 		return XPCOM.VtblCall(nsIDownload_1_8.LAST_METHOD_ID + 7, getAddress(), aDialog);
 	}
 }

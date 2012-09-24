@@ -16,7 +16,7 @@ public NSTextContainer() {
 	super();
 }
 
-public NSTextContainer(int /*long*/ id) {
+public NSTextContainer(long /*int*/ id) {
 	super(id);
 }
 
@@ -31,7 +31,7 @@ public NSSize containerSize() {
 }
 
 public NSTextContainer initWithContainerSize(NSSize size) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithContainerSize_, size);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithContainerSize_, size);
 	return result == this.id ? this : (result != 0 ? new NSTextContainer(result) : null);
 }
 
@@ -39,7 +39,7 @@ public void setContainerSize(NSSize size) {
 	OS.objc_msgSend(this.id, OS.sel_setContainerSize_, size);
 }
 
-public void setLineFragmentPadding(float /*double*/ pad) {
+public void setLineFragmentPadding(double /*float*/ pad) {
 	OS.objc_msgSend(this.id, OS.sel_setLineFragmentPadding_, pad);
 }
 

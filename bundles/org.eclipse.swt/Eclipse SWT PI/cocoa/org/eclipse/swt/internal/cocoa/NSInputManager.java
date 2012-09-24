@@ -16,7 +16,7 @@ public NSInputManager() {
 	super();
 }
 
-public NSInputManager(int /*long*/ id) {
+public NSInputManager(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,7 +25,7 @@ public NSInputManager(id id) {
 }
 
 public static NSInputManager currentInputManager() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSInputManager, OS.sel_currentInputManager);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSInputManager, OS.sel_currentInputManager);
 	return result != 0 ? new NSInputManager(result) : null;
 }
 

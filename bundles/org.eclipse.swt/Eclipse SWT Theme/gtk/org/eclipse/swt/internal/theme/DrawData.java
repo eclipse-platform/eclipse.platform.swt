@@ -79,21 +79,21 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 }
 
 void drawImage(Theme theme, Image image, GC gc, Rectangle bounds) {
-	int /*long*/ drawable = gc.getGCData().drawable;
+	long /*int*/ drawable = gc.getGCData().drawable;
 	Rectangle rect = image.getBounds();
 	int state_type = getStateType(DrawData.WIDGET_WHOLE);
 	if (state_type == OS.GTK_STATE_NORMAL) {
 		gc.drawImage(image, 0, 0, rect.width, rect.height, bounds.x, bounds.y, bounds.width, bounds.height);
 	} else {
-		int /*long*/ pixbuf = ImageList.createPixbuf(image);
-		int /*long*/ source = OS.gtk_icon_source_new();
+		long /*int*/ pixbuf = ImageList.createPixbuf(image);
+		long /*int*/ source = OS.gtk_icon_source_new();
 		if (source != 0) {
 			OS.gtk_icon_source_set_pixbuf(source, pixbuf);
 			//TODO - always uses buttonHandle
-			int /*long*/ buttonHandle = theme.buttonHandle;
-			int /*long*/ gtkStyle = OS.gtk_widget_get_style (buttonHandle);
+			long /*int*/ buttonHandle = theme.buttonHandle;
+			long /*int*/ gtkStyle = OS.gtk_widget_get_style (buttonHandle);
 			theme.transferClipping(gc, gtkStyle);
-			int /*long*/ rendered = OS.gtk_style_render_icon(gtkStyle, source, OS.GTK_TEXT_DIR_NONE, state_type, -1, buttonHandle, null);
+			long /*int*/ rendered = OS.gtk_style_render_icon(gtkStyle, source, OS.GTK_TEXT_DIR_NONE, state_type, -1, buttonHandle, null);
 			OS.g_object_unref(pixbuf);
 			//TODO - stretching
 			if (rendered != 0) {
@@ -106,12 +106,12 @@ void drawImage(Theme theme, Image image, GC gc, Rectangle bounds) {
 }
 
 void drawText(Theme theme, String text, int flags, GC gc, Rectangle bounds) {
-	int /*long*/ widget = getTextHandle(theme);
-	int /*long*/ gtkStyle = OS.gtk_widget_get_style(widget);
-	int /*long*/ drawable = gc.getGCData().drawable;
+	long /*int*/ widget = getTextHandle(theme);
+	long /*int*/ gtkStyle = OS.gtk_widget_get_style(widget);
+	long /*int*/ drawable = gc.getGCData().drawable;
 	theme.transferClipping (gc, gtkStyle);
 	byte[] buffer = Converter.wcsToMbcs(null, text, true);
-	int /*long*/ layout = OS.gtk_widget_create_pango_layout(widget, buffer);
+	long /*int*/ layout = OS.gtk_widget_create_pango_layout(widget, buffer);
 	int[] width = new int[1], height = new int[1];
 	OS.pango_layout_get_size(layout, width, height);
 	OS.pango_layout_set_width(layout, bounds.width * OS.PANGO_SCALE);
@@ -160,7 +160,7 @@ int getStateType(int part) {
 	return state_type;
 }
 
-int /*long*/ getTextHandle(Theme theme) {
+long /*int*/ getTextHandle(Theme theme) {
 	return theme.labelHandle;
 }
 
@@ -169,9 +169,9 @@ int hit(Theme theme, Point position, Rectangle bounds) {
 }
 
 Rectangle measureText(Theme theme, String text, int flags, GC gc, Rectangle bounds) {
-	int /*long*/ widget = getTextHandle(theme);
+	long /*int*/ widget = getTextHandle(theme);
 	byte[] buffer = Converter.wcsToMbcs(null, text, true);
-	int /*long*/ layout = OS.gtk_widget_create_pango_layout(widget, buffer);
+	long /*int*/ layout = OS.gtk_widget_create_pango_layout(widget, buffer);
 	if (bounds != null) OS.pango_layout_set_width(layout, bounds.width);
 	if ((flags & DrawData.DRAW_LEFT) != 0) {
 		OS.pango_layout_set_alignment(layout, OS.PANGO_ALIGN_LEFT);

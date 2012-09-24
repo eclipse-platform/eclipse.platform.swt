@@ -16,7 +16,7 @@ public NSSavePanel() {
 	super();
 }
 
-public NSSavePanel(int /*long*/ id) {
+public NSSavePanel(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,20 +25,20 @@ public NSSavePanel(id id) {
 }
 
 public NSString filename() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_filename);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_filename);
 	return result != 0 ? new NSString(result) : null;
 }
 
-public int /*long*/ runModal() {
+public long /*int*/ runModal() {
 	return OS.objc_msgSend(this.id, OS.sel_runModal);
 }
 
-public int /*long*/ runModalForDirectory(NSString path, NSString name) {
+public long /*int*/ runModalForDirectory(NSString path, NSString name) {
 	return OS.objc_msgSend(this.id, OS.sel_runModalForDirectory_file_, path != null ? path.id : 0, name != null ? name.id : 0);
 }
 
 public static NSSavePanel savePanel() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSSavePanel, OS.sel_savePanel);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSSavePanel, OS.sel_savePanel);
 	return result != 0 ? new NSSavePanel(result) : null;
 }
 
@@ -66,11 +66,11 @@ public void validateVisibleColumns() {
 	OS.objc_msgSend(this.id, OS.sel_validateVisibleColumns);
 }
 
-public static float /*double*/ minFrameWidthWithTitle(NSString aTitle, int /*long*/ aStyle) {
-	return (float /*double*/)OS.objc_msgSend_fpret(OS.class_NSSavePanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
+public static double /*float*/ minFrameWidthWithTitle(NSString aTitle, long /*int*/ aStyle) {
+	return (double /*float*/)OS.objc_msgSend_fpret(OS.class_NSSavePanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
 }
 
-public static int /*long*/ windowNumberAtPoint(NSPoint point, int /*long*/ windowNumber) {
+public static long /*int*/ windowNumberAtPoint(NSPoint point, long /*int*/ windowNumber) {
 	return OS.objc_msgSend(OS.class_NSSavePanel, OS.sel_windowNumberAtPoint_belowWindowWithWindowNumber_, point, windowNumber);
 }
 

@@ -37,11 +37,11 @@ public class nsIFactory extends nsISupports {
 	public static final nsID NS_IFACTORY_IID =
 		new nsID(NS_IFACTORY_IID_STR);
 
-	public nsIFactory(int /*long*/ address) {
+	public nsIFactory(long /*int*/ address) {
 		super(address);
 	}
 
-	public int CreateInstance(int /*long*/ aOuter, nsID iid, int /*long*/[] result) {
+	public int CreateInstance(long /*int*/ aOuter, nsID iid, long /*int*/[] result) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aOuter, iid, result);
 	}
 

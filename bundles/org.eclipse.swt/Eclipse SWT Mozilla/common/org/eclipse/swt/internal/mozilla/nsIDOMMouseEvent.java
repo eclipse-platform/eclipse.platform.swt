@@ -43,7 +43,7 @@ public class nsIDOMMouseEvent extends nsIDOMUIEvent {
 	public static final nsID NS_IDOMMOUSEEVENT_10_IID =
 		new nsID(NS_IDOMMOUSEEVENT_10_IID_STR);
 
-	public nsIDOMMouseEvent(int /*long*/ address) {
+	public nsIDOMMouseEvent(long /*int*/ address) {
 		super(address);
 	}
 
@@ -83,11 +83,11 @@ public class nsIDOMMouseEvent extends nsIDOMUIEvent {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 9, getAddress(), aButton);
 	}
 
-	public int GetRelatedTarget(int /*long*/[] aRelatedTarget) {
+	public int GetRelatedTarget(long /*int*/[] aRelatedTarget) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 10, getAddress(), aRelatedTarget);
 	}
 
-	public int InitMouseEvent(int /*long*/ typeArg, int canBubbleArg, int cancelableArg, int /*long*/ viewArg, int detailArg, int screenXArg, int screenYArg, int clientXArg, int clientYArg, int ctrlKeyArg, int altKeyArg, int shiftKeyArg, int metaKeyArg, short buttonArg, int /*long*/ relatedTargetArg) {
+	public int InitMouseEvent(long /*int*/ typeArg, int canBubbleArg, int cancelableArg, long /*int*/ viewArg, int detailArg, int screenXArg, int screenYArg, int clientXArg, int clientYArg, int ctrlKeyArg, int altKeyArg, int shiftKeyArg, int metaKeyArg, short buttonArg, long /*int*/ relatedTargetArg) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 11, getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, detailArg, screenXArg, screenYArg, clientXArg, clientYArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, buttonArg, relatedTargetArg);
 	}
 
@@ -110,7 +110,7 @@ public class nsIDOMMouseEvent extends nsIDOMUIEvent {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 13, getAddress(), aMozInputSource);
 	}
 
-	public int InitNSMouseEvent(int /*long*/ typeArg, int canBubbleArg, int cancelableArg, int /*long*/ viewArg, int detailArg, int screenXArg, int screenYArg, int clientXArg, int clientYArg, int ctrlKeyArg, int altKeyArg, int shiftKeyArg, int metaKeyArg, short buttonArg, int /*long*/ relatedTargetArg, float pressure, short inputSourceArg) {
+	public int InitNSMouseEvent(long /*int*/ typeArg, int canBubbleArg, int cancelableArg, long /*int*/ viewArg, int detailArg, int screenXArg, int screenYArg, int clientXArg, int clientYArg, int ctrlKeyArg, int altKeyArg, int shiftKeyArg, int metaKeyArg, short buttonArg, long /*int*/ relatedTargetArg, float pressure, short inputSourceArg) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 14, getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, detailArg, screenXArg, screenYArg, clientXArg, clientYArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, buttonArg, relatedTargetArg, pressure, inputSourceArg);
 	}

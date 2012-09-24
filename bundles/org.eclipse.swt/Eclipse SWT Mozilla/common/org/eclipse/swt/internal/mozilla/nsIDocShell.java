@@ -49,23 +49,23 @@ public class nsIDocShell extends nsISupports {
 	public static final nsID NS_IDOCSHELL_10_IID =
 		new nsID(NS_IDOCSHELL_10_IID_STR);
 
-	public nsIDocShell(int /*long*/ address) {
+	public nsIDocShell(long /*int*/ address) {
 		super(address);
 	}
 
-	public int LoadURI(int /*long*/ uri, int /*long*/ loadInfo, int aLoadFlags, int firstParty) {
+	public int LoadURI(long /*int*/ uri, long /*int*/ loadInfo, int aLoadFlags, int firstParty) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), uri, loadInfo, aLoadFlags, firstParty);
 	}
 
-	public int LoadStream(int /*long*/ aStream, int /*long*/ aURI, int /*long*/ aContentType, int /*long*/ aContentCharset, int /*long*/ aLoadInfo) {
+	public int LoadStream(long /*int*/ aStream, long /*int*/ aURI, long /*int*/ aContentType, long /*int*/ aContentCharset, long /*int*/ aLoadInfo) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aStream, aURI, aContentType, aContentCharset, aLoadInfo);
 	}
 
-	public int InternalLoad(int /*long*/ aURI, int /*long*/ aReferrer, int /*long*/ aOwner, int aInheritOwner, char[] aWindowTarget, int /*long*/ aPostDataStream, int /*long*/ aHeadersStream, int aLoadFlags, int /*long*/ aSHEntry, int firstParty, int /*long*/[] aDocShell, int /*long*/[] aRequest) {
+	public int InternalLoad(long /*int*/ aURI, long /*int*/ aReferrer, long /*int*/ aOwner, int aInheritOwner, char[] aWindowTarget, long /*int*/ aPostDataStream, long /*int*/ aHeadersStream, int aLoadFlags, long /*int*/ aSHEntry, int firstParty, long /*int*/[] aDocShell, long /*int*/[] aRequest) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aURI, aReferrer, aOwner, aInheritOwner, aWindowTarget, aPostDataStream, aHeadersStream, aLoadFlags, aSHEntry, firstParty, aDocShell, aRequest);
 	}
 
-	public int CreateLoadInfo(int /*long*/[] loadInfo) {
+	public int CreateLoadInfo(long /*int*/[] loadInfo) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), loadInfo);
 	}
 
@@ -73,7 +73,7 @@ public class nsIDocShell extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress());
 	}
 
-	public int SetCurrentURI(int /*long*/ aURI) {
+	public int SetCurrentURI(long /*int*/ aURI) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aURI);
 	}
 
@@ -81,43 +81,43 @@ public class nsIDocShell extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress());
 	}
 
-	public int GetPresContext(int /*long*/[] aPresContext) {
+	public int GetPresContext(long /*int*/[] aPresContext) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aPresContext);
 	}
 
-	public int GetPresShell(int /*long*/[] aPresShell) {
+	public int GetPresShell(long /*int*/[] aPresShell) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aPresShell);
 	}
 
-	public int GetEldestPresShell(int /*long*/[] aEldestPresShell) {
+	public int GetEldestPresShell(long /*int*/[] aEldestPresShell) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aEldestPresShell);
 	}
 
-	public int GetContentViewer(int /*long*/[] aContentViewer) {
+	public int GetContentViewer(long /*int*/[] aContentViewer) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aContentViewer);
 	}
 
-	public int GetChromeEventHandler(int /*long*/[] aChromeEventHandler) {
+	public int GetChromeEventHandler(long /*int*/[] aChromeEventHandler) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), aChromeEventHandler);
 	}
 
-	public int SetChromeEventHandler(int /*long*/ aChromeEventHandler) {
+	public int SetChromeEventHandler(long /*int*/ aChromeEventHandler) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), aChromeEventHandler);
 	}
 
-	public int GetParentURIContentListener(int /*long*/[] aParentURIContentListener) {
+	public int GetParentURIContentListener(long /*int*/[] aParentURIContentListener) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), aParentURIContentListener);
 	}
 
-	public int SetParentURIContentListener(int /*long*/ aParentURIContentListener) {
+	public int SetParentURIContentListener(long /*int*/ aParentURIContentListener) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 15, getAddress(), aParentURIContentListener);
 	}
 
-	public int GetDocumentCharsetInfo(int /*long*/[] aDocumentCharsetInfo) {
+	public int GetDocumentCharsetInfo(long /*int*/[] aDocumentCharsetInfo) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 16, getAddress(), aDocumentCharsetInfo);
 	}
 
-	public int SetDocumentCharsetInfo(int /*long*/ aDocumentCharsetInfo) {
+	public int SetDocumentCharsetInfo(long /*int*/ aDocumentCharsetInfo) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 17, getAddress(), aDocumentCharsetInfo);
 	}
 
@@ -165,7 +165,7 @@ public class nsIDocShell extends nsISupports {
 
 	public static final int ENUMERATE_BACKWARDS = 1;
 
-	public int GetDocShellEnumerator(int aItemType, int aDirection, int /*long*/[] _retval) {
+	public int GetDocShellEnumerator(int aItemType, int aDirection, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 28, getAddress(), aItemType, aDirection, _retval);
 	}
 
@@ -261,11 +261,11 @@ public class nsIDocShell extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 48, getAddress(), aIsExecutingOnLoadHandler);
 	}
 
-	public int GetLayoutHistoryState(int /*long*/[] aLayoutHistoryState) {
+	public int GetLayoutHistoryState(long /*int*/[] aLayoutHistoryState) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 49, getAddress(), aLayoutHistoryState);
 	}
 
-	public int SetLayoutHistoryState(int /*long*/ aLayoutHistoryState) {
+	public int SetLayoutHistoryState(long /*int*/ aLayoutHistoryState) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 50, getAddress(), aLayoutHistoryState);
 	}
 

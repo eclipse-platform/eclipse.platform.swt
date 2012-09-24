@@ -37,11 +37,11 @@ public class nsIPrefService extends nsISupports {
 	public static final nsID NS_IPREFSERVICE_IID =
 		new nsID(NS_IPREFSERVICE_IID_STR);
 
-	public nsIPrefService(int /*long*/ address) {
+	public nsIPrefService(long /*int*/ address) {
 		super(address);
 	}
 
-	public int ReadUserPrefs(int /*long*/ aFile) {
+	public int ReadUserPrefs(long /*int*/ aFile) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aFile);
 	}
 
@@ -53,15 +53,15 @@ public class nsIPrefService extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
 	}
 
-	public int SavePrefFile(int /*long*/ aFile) {
+	public int SavePrefFile(long /*int*/ aFile) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aFile);
 	}
 
-	public int GetBranch(byte[] aPrefRoot, int /*long*/[] _retval) {
+	public int GetBranch(byte[] aPrefRoot, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aPrefRoot, _retval);
 	}
 
-	public int GetDefaultBranch(byte[] aPrefRoot, int /*long*/[] _retval) {
+	public int GetDefaultBranch(byte[] aPrefRoot, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aPrefRoot, _retval);
 	}
 }

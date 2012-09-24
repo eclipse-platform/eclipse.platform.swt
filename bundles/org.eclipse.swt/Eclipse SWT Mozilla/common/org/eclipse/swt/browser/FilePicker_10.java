@@ -17,32 +17,32 @@ class FilePicker_10 extends FilePicker_1_8 {
 void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject (new int[] {2, 0, 0}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
-		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
+		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
 
 	filePicker = new XPCOMObject (new int[] {2, 0, 0, 3, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
-		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return Init (args[0], args[1], (short)args[2]);}
-		public int /*long*/ method4 (int /*long*/[] args) {return AppendFilters ((int)/*64*/args[0]);}
-		public int /*long*/ method5 (int /*long*/[] args) {return AppendFilter (args[0], args[1]);}
-		public int /*long*/ method6 (int /*long*/[] args) {return GetDefaultString (args[0]);}
-		public int /*long*/ method7 (int /*long*/[] args) {return SetDefaultString (args[0]);}
-		public int /*long*/ method8 (int /*long*/[] args) {return GetDefaultExtension (args[0]);}
-		public int /*long*/ method9 (int /*long*/[] args) {return SetDefaultExtension (args[0]);}
-		public int /*long*/ method10 (int /*long*/[] args) {return GetFilterIndex (args[0]);}
-		public int /*long*/ method11 (int /*long*/[] args) {return SetFilterIndex ((int)/*64*/args[0]);}
-		public int /*long*/ method12 (int /*long*/[] args) {return GetDisplayDirectory (args[0]);}
-		public int /*long*/ method13 (int /*long*/[] args) {return SetDisplayDirectory (args[0]);}
-		public int /*long*/ method14 (int /*long*/[] args) {return GetFile (args[0]);}
-		public int /*long*/ method15 (int /*long*/[] args) {return GetFileURL (args[0]);}
-		public int /*long*/ method16 (int /*long*/[] args) {return GetFiles (args[0]);}
-		public int /*long*/ method17 (int /*long*/[] args) {return XPCOM.NS_ERROR_NOT_IMPLEMENTED;}
-		public int /*long*/ method18 (int /*long*/[] args) {return XPCOM.NS_ERROR_NOT_IMPLEMENTED;}
-		public int /*long*/ method19 (int /*long*/[] args) {return Show (args[0]);}
+		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		public long /*int*/ method3 (long /*int*/[] args) {return Init (args[0], args[1], (short)args[2]);}
+		public long /*int*/ method4 (long /*int*/[] args) {return AppendFilters ((int)/*64*/args[0]);}
+		public long /*int*/ method5 (long /*int*/[] args) {return AppendFilter (args[0], args[1]);}
+		public long /*int*/ method6 (long /*int*/[] args) {return GetDefaultString (args[0]);}
+		public long /*int*/ method7 (long /*int*/[] args) {return SetDefaultString (args[0]);}
+		public long /*int*/ method8 (long /*int*/[] args) {return GetDefaultExtension (args[0]);}
+		public long /*int*/ method9 (long /*int*/[] args) {return SetDefaultExtension (args[0]);}
+		public long /*int*/ method10 (long /*int*/[] args) {return GetFilterIndex (args[0]);}
+		public long /*int*/ method11 (long /*int*/[] args) {return SetFilterIndex ((int)/*64*/args[0]);}
+		public long /*int*/ method12 (long /*int*/[] args) {return GetDisplayDirectory (args[0]);}
+		public long /*int*/ method13 (long /*int*/[] args) {return SetDisplayDirectory (args[0]);}
+		public long /*int*/ method14 (long /*int*/[] args) {return GetFile (args[0]);}
+		public long /*int*/ method15 (long /*int*/[] args) {return GetFileURL (args[0]);}
+		public long /*int*/ method16 (long /*int*/[] args) {return GetFiles (args[0]);}
+		public long /*int*/ method17 (long /*int*/[] args) {return XPCOM.NS_ERROR_NOT_IMPLEMENTED;}
+		public long /*int*/ method18 (long /*int*/[] args) {return XPCOM.NS_ERROR_NOT_IMPLEMENTED;}
+		public long /*int*/ method19 (long /*int*/[] args) {return Show (args[0]);}
 	};
 }
 

@@ -47,7 +47,7 @@ AppFileLocProvider (String mozillaPath, String profilePath, String cacheParentPa
 	this.cacheParentPath = cacheParentPath;
 	this.isXULRunner = isXULRunner;
 	if (!Compatibility.fileExists (profilePath, "")) { //$NON-NLS-1$
-		int /*long*/[] result = new int /*long*/[1];
+		long /*int*/[] result = new long /*int*/[1];
 		nsEmbedString pathString = new nsEmbedString (profilePath);
 		int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), 1, result);
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
@@ -70,24 +70,24 @@ int AddRef () {
 void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject (new int[] {2, 0, 0}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
-		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
+		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
 	
 	directoryServiceProvider = new XPCOMObject (new int[] {2, 0, 0, 3}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
-		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return getFile (args[0], args[1], args[2]);}
+		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		public long /*int*/ method3 (long /*int*/[] args) {return getFile (args[0], args[1], args[2]);}
 	};
 		
 	directoryServiceProvider2 = new XPCOMObject (new int[] {2, 0, 0, 3, 2}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
-		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return getFile (args[0], args[1], args[2]);}
-		public int /*long*/ method4 (int /*long*/[] args) {return getFiles (args[0], args[1]);}
+		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		public long /*int*/ method3 (long /*int*/[] args) {return getFile (args[0], args[1], args[2]);}
+		public long /*int*/ method4 (long /*int*/[] args) {return getFiles (args[0], args[1]);}
 	};
 }
 
@@ -106,32 +106,32 @@ void disposeCOMInterfaces () {
 	}	
 }
 
-int /*long*/ getAddress () {
+long /*int*/ getAddress () {
 	return directoryServiceProvider.getAddress ();
 }
 
-int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
+int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
 	
 	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
-		XPCOM.memmove (ppvObject, new int /*long*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
+		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals (nsIDirectoryServiceProvider.NS_IDIRECTORYSERVICEPROVIDER_IID)) {
-		XPCOM.memmove (ppvObject, new int /*long*/[] {directoryServiceProvider.getAddress ()}, C.PTR_SIZEOF);
+		XPCOM.memmove (ppvObject, new long /*int*/[] {directoryServiceProvider.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals (nsIDirectoryServiceProvider2.NS_IDIRECTORYSERVICEPROVIDER2_IID)) {
-		XPCOM.memmove (ppvObject, new int /*long*/[] {directoryServiceProvider2.getAddress ()}, C.PTR_SIZEOF);
+		XPCOM.memmove (ppvObject, new long /*int*/[] {directoryServiceProvider2.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
 	
-	XPCOM.memmove (ppvObject, new int /*long*/[] {0}, C.PTR_SIZEOF);
+	XPCOM.memmove (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
 
@@ -143,7 +143,7 @@ int Release () {
 
 /* nsIDirectoryServiceProvider2 */
 
-int getFiles (int /*long*/ prop, int /*long*/ _retval) {
+int getFiles (long /*int*/ prop, long /*int*/ _retval) {
 	int size = XPCOM.strlen (prop);
 	byte[] bytes = new byte[size];
 	XPCOM.memmove (bytes, prop, size);
@@ -154,7 +154,7 @@ int getFiles (int /*long*/ prop, int /*long*/ _retval) {
 		if (pluginDirs == null) {
 			int index = 0;
 			/* set the first value(s) to the MOZ_PLUGIN_PATH environment variable value if it's defined */
-			int /*long*/ ptr = C.getenv (MozillaDelegate.wcsToMbcs (null, XPCOM.MOZILLA_PLUGIN_PATH, true));
+			long /*int*/ ptr = C.getenv (MozillaDelegate.wcsToMbcs (null, XPCOM.MOZILLA_PLUGIN_PATH, true));
 			if (ptr != 0) {
 				int length = C.strlen (ptr);
 				byte[] buffer = new byte[length];
@@ -205,9 +205,9 @@ int getFiles (int /*long*/ prop, int /*long*/ _retval) {
 		propertyValues = pluginDirs;
 	}
 
-	XPCOM.memmove(_retval, new int /*long*/[] {0}, C.PTR_SIZEOF);
+	XPCOM.memmove(_retval, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	if (propertyValues != null) {
-		int /*long*/[] result = new int /*long*/[1];
+		long /*int*/[] result = new long /*int*/[1];
 		nsISupports[] files = new nsISupports [propertyValues.length];
 		int index = 0;
 		for (int i = 0; i < propertyValues.length; i++) {
@@ -241,7 +241,7 @@ int getFiles (int /*long*/ prop, int /*long*/ _retval) {
 
 		SimpleEnumerator enumerator = new SimpleEnumerator (files);
 		enumerator.AddRef ();
-		XPCOM.memmove (_retval, new int /*long*/[] {enumerator.getAddress ()}, C.PTR_SIZEOF);
+		XPCOM.memmove (_retval, new long /*int*/[] {enumerator.getAddress ()}, C.PTR_SIZEOF);
 		return XPCOM.NS_OK;
 	}
 
@@ -250,7 +250,7 @@ int getFiles (int /*long*/ prop, int /*long*/ _retval) {
 	
 /* nsIDirectoryServiceProvider implementation */
 
-int getFile(int /*long*/ prop, int /*long*/ persistent, int /*long*/ _retval) {
+int getFile(long /*int*/ prop, long /*int*/ persistent, long /*int*/ _retval) {
 	int size = XPCOM.strlen (prop);
 	byte[] bytes = new byte[size];
 	XPCOM.memmove (bytes, prop, size);
@@ -304,9 +304,9 @@ int getFile(int /*long*/ prop, int /*long*/ persistent, int /*long*/ _retval) {
 	}
 
 	XPCOM.memmove (persistent, new boolean[] {true});
-	XPCOM.memmove (_retval, new int /*long*/[] {0}, C.PTR_SIZEOF);
+	XPCOM.memmove (_retval, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	if (propertyValue != null && propertyValue.length () > 0) {
-		int /*long*/[] result = new int /*long*/[1];
+		long /*int*/[] result = new long /*int*/[1];
 		nsEmbedString pathString = new nsEmbedString (propertyValue);
 		int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), 1, result);
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
@@ -319,7 +319,7 @@ int getFile(int /*long*/ prop, int /*long*/ persistent, int /*long*/ _retval) {
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
 
-		XPCOM.memmove (_retval, new int /*long*/[] {result[0]}, C.PTR_SIZEOF);
+		XPCOM.memmove (_retval, new long /*int*/[] {result[0]}, C.PTR_SIZEOF);
 		localFile.Release ();
 		return XPCOM.NS_OK;
 	}

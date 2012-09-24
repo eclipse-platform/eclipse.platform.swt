@@ -62,7 +62,7 @@ class Relation {
 		AddRef();
 	}
 	
-	int /*long*/ getAddress() {
+	long /*int*/ getAddress() {
 		/* The address of a Relation is the address of its IAccessibleRelation COMObject. */
 		if (objIAccessibleRelation == null) createIAccessibleRelation();
 		return objIAccessibleRelation.getAddress();
@@ -70,14 +70,14 @@ class Relation {
 	
 	void createIAccessibleRelation() {
 		objIAccessibleRelation = new COMObject(new int[] {2,0,0,1,1,1,2,3}) {
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-			public int /*long*/ method2(int /*long*/[] args) {return Release();}
-			public int /*long*/ method3(int /*long*/[] args) {return get_relationType(args[0]);}
-			public int /*long*/ method4(int /*long*/[] args) {return get_localizedRelationType(args[0]);}
-			public int /*long*/ method5(int /*long*/[] args) {return get_nTargets(args[0]);}
-			public int /*long*/ method6(int /*long*/[] args) {return get_target((int)/*64*/args[0], args[1]);}
-			public int /*long*/ method7(int /*long*/[] args) {return get_targets((int)/*64*/args[0], args[1], args[2]);}
+			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			public long /*int*/ method2(long /*int*/[] args) {return Release();}
+			public long /*int*/ method3(long /*int*/[] args) {return get_relationType(args[0]);}
+			public long /*int*/ method4(long /*int*/[] args) {return get_localizedRelationType(args[0]);}
+			public long /*int*/ method5(long /*int*/[] args) {return get_nTargets(args[0]);}
+			public long /*int*/ method6(long /*int*/[] args) {return get_target((int)/*64*/args[0], args[1]);}
+			public long /*int*/ method7(long /*int*/[] args) {return get_targets((int)/*64*/args[0], args[1], args[2]);}
 		};
 	}
 
@@ -85,12 +85,12 @@ class Relation {
 	 * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
 	 * must be incremented before returning.  Caller is responsible for releasing ppvObject.
 	 */
-	int QueryInterface(int /*long*/ iid, int /*long*/ ppvObject) {
+	int QueryInterface(long /*int*/ iid, long /*int*/ ppvObject) {
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, iid, GUID.sizeof);
 
 		if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIAccessibleRelation)) {
-			COM.MoveMemory(ppvObject, new int /*long*/[] { getAddress() }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppvObject, new long /*int*/[] { getAddress() }, OS.PTR_SIZEOF);
 			AddRef();
 			return COM.S_OK;
 		}
@@ -115,39 +115,39 @@ class Relation {
 	}
 
 	/* IAccessibleRelation::get_relationType([out] pbstrRelationType) */
-	int get_relationType(int /*long*/ pbstrRelationType) {
+	int get_relationType(long /*int*/ pbstrRelationType) {
 		setString(pbstrRelationType, relationTypeString[type]);
 		return COM.S_OK;
 	}
 
 	/* IAccessibleRelation::get_localizedRelationType([out] pbstrLocalizedRelationType) */
-	int get_localizedRelationType(int /*long*/ pbstrLocalizedRelationType) {
+	int get_localizedRelationType(long /*int*/ pbstrLocalizedRelationType) {
 		setString(pbstrLocalizedRelationType, localizedRelationTypeString[type]);
 		return COM.S_OK;
 	}
 
 	/* IAccessibleRelation::get_nTargets([out] pNTargets) */
-	int get_nTargets(int /*long*/ pNTargets) {
+	int get_nTargets(long /*int*/ pNTargets) {
 		COM.MoveMemory(pNTargets, new int [] { targets.length }, 4);
 		return COM.S_OK;
 	}
 
 	/* IAccessibleRelation::get_target([in] targetIndex, [out] ppTarget) */
-	int get_target(int targetIndex, int /*long*/ ppTarget) {
+	int get_target(int targetIndex, long /*int*/ ppTarget) {
 		if (targetIndex < 0 || targetIndex >= targets.length) return COM.E_INVALIDARG;
 		Accessible target = targets[targetIndex];
 		target.AddRef();
-		COM.MoveMemory(ppTarget, new int /*long*/[] { target.getAddress() }, OS.PTR_SIZEOF);
+		COM.MoveMemory(ppTarget, new long /*int*/[] { target.getAddress() }, OS.PTR_SIZEOF);
 		return COM.S_OK;
 	}
 
 	/* IAccessibleRelation::get_targets([in] maxTargets, [out] ppTargets, [out] pNTargets) */
-	int get_targets(int maxTargets, int /*long*/ ppTargets, int /*long*/ pNTargets) {
+	int get_targets(int maxTargets, long /*int*/ ppTargets, long /*int*/ pNTargets) {
 		int count = Math.min(targets.length, maxTargets);
 		for (int i = 0; i < count; i++) {
 			Accessible target = targets[i];
 			target.AddRef();
-			COM.MoveMemory(ppTargets + i * OS.PTR_SIZEOF, new int /*long*/[] { target.getAddress() }, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppTargets + i * OS.PTR_SIZEOF, new long /*int*/[] { target.getAddress() }, OS.PTR_SIZEOF);
 		}
 		COM.MoveMemory(pNTargets, new int [] { count }, 4);
 		return COM.S_OK;
@@ -185,9 +185,9 @@ class Relation {
 	}
 
 	// setString copied from Accessible class
-	void setString(int /*long*/ psz, String string) {
+	void setString(long /*int*/ psz, String string) {
 		char[] data = (string + "\0").toCharArray();
-		int /*long*/ ptr = COM.SysAllocString(data);
-		COM.MoveMemory(psz, new int /*long*/ [] { ptr }, OS.PTR_SIZEOF);
+		long /*int*/ ptr = COM.SysAllocString(data);
+		COM.MoveMemory(psz, new long /*int*/ [] { ptr }, OS.PTR_SIZEOF);
 	}
 }

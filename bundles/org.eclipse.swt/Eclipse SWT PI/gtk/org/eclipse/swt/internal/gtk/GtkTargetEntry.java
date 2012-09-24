@@ -17,7 +17,7 @@ package org.eclipse.swt.internal.gtk;
 
 public class GtkTargetEntry {
 	/** @field cast=(gchar *) */
-	public int /*long*/ target;
+	public long /*int*/ target;
 	/** @field cast=(guint) */
 	public int flags;
 	/** @field cast=(guint) */

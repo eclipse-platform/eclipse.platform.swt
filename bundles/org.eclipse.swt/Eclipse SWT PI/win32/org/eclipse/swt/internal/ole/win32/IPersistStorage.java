@@ -12,22 +12,22 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IPersistStorage extends IPersist
 {
-public IPersistStorage(int /*long*/ address) {
+public IPersistStorage(long /*int*/ address) {
 	super(address);
 }
 public int IsDirty() {
 	return COM.VtblCall(4, address);
 }
-public int InitNew(int /*long*/ pStg) {
+public int InitNew(long /*int*/ pStg) {
 	return COM.VtblCall(5, address, pStg);
 }
-public int Load(int /*long*/ pStg) {
+public int Load(long /*int*/ pStg) {
 	return COM.VtblCall(6, address, pStg);
 }
-public int Save(int /*long*/ pStgSave, boolean fSameAsLoad) {
+public int Save(long /*int*/ pStgSave, boolean fSameAsLoad) {
 	return COM.VtblCall(7, address, pStgSave, fSameAsLoad);
 }
-public int SaveCompleted(int /*long*/ pStgNew) {
+public int SaveCompleted(long /*int*/ pStgNew) {
 	return COM.VtblCall(8, address, pStgNew);
 }
 public int HandsOffStorage(){

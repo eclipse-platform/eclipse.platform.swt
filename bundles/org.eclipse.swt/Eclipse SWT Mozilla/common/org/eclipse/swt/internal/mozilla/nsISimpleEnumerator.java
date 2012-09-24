@@ -37,7 +37,7 @@ public class nsISimpleEnumerator extends nsISupports {
 	public static final nsID NS_ISIMPLEENUMERATOR_IID =
 		new nsID(NS_ISIMPLEENUMERATOR_IID_STR);
 
-	public nsISimpleEnumerator(int /*long*/ address) {
+	public nsISimpleEnumerator(long /*int*/ address) {
 		super(address);
 	}
 
@@ -45,7 +45,7 @@ public class nsISimpleEnumerator extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), _retval);
 	}
 
-	public int GetNext(int /*long*/[] _retval) {
+	public int GetNext(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
 	}
 }

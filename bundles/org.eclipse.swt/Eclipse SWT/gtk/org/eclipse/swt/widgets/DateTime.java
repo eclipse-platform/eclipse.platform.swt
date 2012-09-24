@@ -435,7 +435,7 @@ void dropDownCalendar(boolean drop) {
 	display.addFilter(SWT.MouseDown, clickListener);
 }
 	
-int /*long*/ focusHandle () {
+long /*int*/ focusHandle () {
 	if (text != null) return text.handle;
 	return super.focusHandle ();
 }
@@ -687,17 +687,17 @@ public int getYear () {
 	}
 }
 
-int /*long*/ gtk_day_selected (int /*long*/ widget) {
+long /*int*/ gtk_day_selected (long /*int*/ widget) {
 	sendSelectionEvent ();
 	return 0;
 }
 
-int /*long*/ gtk_day_selected_double_click (int /*long*/ widget) {
+long /*int*/ gtk_day_selected_double_click (long /*int*/ widget) {
 	sendSelectionEvent (SWT.DefaultSelection);
 	return 0;
 }
 
-int /*long*/ gtk_month_changed (int /*long*/ widget) {
+long /*int*/ gtk_month_changed (long /*int*/ widget) {
 	/*
 	* Feature in GTK. "month-changed" signal is emitted when the
 	* calendar is displayed though the day/month is not changed.

@@ -297,7 +297,7 @@ public static final native int HICocoaViewCreate(int nsview, int options, int[] 
  * @param aClass cast=(Class)
  * @param aSelector cast=(SEL)
  */
-public static final native int /*long*/ class_getClassMethod(int /*long*/ aClass, int /*long*/ aSelector);
+public static final native long /*int*/ class_getClassMethod(long /*int*/ aClass, long /*int*/ aSelector);
 /** @param className cast=(const char *) */
 public static final native int objc_getClass(byte[] className);
 /** @param className cast=(const char *) */
@@ -416,7 +416,7 @@ public static final native int objc_msgSend(int object, int selector, int arg0, 
  */
 public static final native int objc_msgSend(int object, int selector, int[] arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10);
 /** @method flags=cast */
-public static final native double objc_msgSend_fpret(int /*long*/ id, int /*long*/ sel);
+public static final native double objc_msgSend_fpret(long /*int*/ id, long /*int*/ sel);
 /**
  * @param result cast=(void *)
  * @param object cast=(void *)
@@ -424,7 +424,7 @@ public static final native double objc_msgSend_fpret(int /*long*/ id, int /*long
  */
 public static final native void objc_msgSend_stret(NSRect result, int object, int selector);
 /** @method flags=cast */
-public static final native void objc_msgSend_stret(NSPoint result, int /*long*/ id, int /*long*/ sel);
+public static final native void objc_msgSend_stret(NSPoint result, long /*int*/ id, long /*int*/ sel);
 /**
  * @param result cast=(void *)
  * @param object cast=(void *)

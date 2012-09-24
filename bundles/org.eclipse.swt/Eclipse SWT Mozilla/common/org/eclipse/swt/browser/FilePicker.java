@@ -21,7 +21,7 @@ class FilePicker {
 
 	int refCount = 0;
 	short mode;
-	int /*long*/ parentHandle;
+	long /*int*/ parentHandle;
 	String[] files, masks;
 	String defaultFilename, directory, title;
 
@@ -39,30 +39,30 @@ int AddRef () {
 void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject (new int[] {2, 0, 0}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
-		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
+		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
 
 	filePicker = new XPCOMObject (new int[] {2, 0, 0, 3, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
-		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return Init (args[0], args[1], (short)args[2]);}
-		public int /*long*/ method4 (int /*long*/[] args) {return AppendFilters ((int)/*64*/args[0]);}
-		public int /*long*/ method5 (int /*long*/[] args) {return AppendFilter (args[0], args[1]);}
-		public int /*long*/ method6 (int /*long*/[] args) {return GetDefaultString (args[0]);}
-		public int /*long*/ method7 (int /*long*/[] args) {return SetDefaultString (args[0]);}
-		public int /*long*/ method8 (int /*long*/[] args) {return GetDefaultExtension (args[0]);}
-		public int /*long*/ method9 (int /*long*/[] args) {return SetDefaultExtension (args[0]);}
-		public int /*long*/ method10 (int /*long*/[] args) {return GetFilterIndex (args[0]);}
-		public int /*long*/ method11 (int /*long*/[] args) {return SetFilterIndex ((int)/*64*/args[0]);}
-		public int /*long*/ method12 (int /*long*/[] args) {return GetDisplayDirectory (args[0]);}
-		public int /*long*/ method13 (int /*long*/[] args) {return SetDisplayDirectory (args[0]);}
-		public int /*long*/ method14 (int /*long*/[] args) {return GetFile (args[0]);}
-		public int /*long*/ method15 (int /*long*/[] args) {return GetFileURL (args[0]);}
-		public int /*long*/ method16 (int /*long*/[] args) {return GetFiles (args[0]);}
-		public int /*long*/ method17 (int /*long*/[] args) {return Show (args[0]);}
+		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		public long /*int*/ method3 (long /*int*/[] args) {return Init (args[0], args[1], (short)args[2]);}
+		public long /*int*/ method4 (long /*int*/[] args) {return AppendFilters ((int)/*64*/args[0]);}
+		public long /*int*/ method5 (long /*int*/[] args) {return AppendFilter (args[0], args[1]);}
+		public long /*int*/ method6 (long /*int*/[] args) {return GetDefaultString (args[0]);}
+		public long /*int*/ method7 (long /*int*/[] args) {return SetDefaultString (args[0]);}
+		public long /*int*/ method8 (long /*int*/[] args) {return GetDefaultExtension (args[0]);}
+		public long /*int*/ method9 (long /*int*/[] args) {return SetDefaultExtension (args[0]);}
+		public long /*int*/ method10 (long /*int*/[] args) {return GetFilterIndex (args[0]);}
+		public long /*int*/ method11 (long /*int*/[] args) {return SetFilterIndex ((int)/*64*/args[0]);}
+		public long /*int*/ method12 (long /*int*/[] args) {return GetDisplayDirectory (args[0]);}
+		public long /*int*/ method13 (long /*int*/[] args) {return SetDisplayDirectory (args[0]);}
+		public long /*int*/ method14 (long /*int*/[] args) {return GetFile (args[0]);}
+		public long /*int*/ method15 (long /*int*/[] args) {return GetFileURL (args[0]);}
+		public long /*int*/ method16 (long /*int*/[] args) {return GetFiles (args[0]);}
+		public long /*int*/ method17 (long /*int*/[] args) {return Show (args[0]);}
 	};
 }
 
@@ -77,37 +77,37 @@ void disposeCOMInterfaces () {
 	}
 }
 
-int /*long*/ getAddress () {
+long /*int*/ getAddress () {
 	return filePicker.getAddress ();
 }
 
-int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
+int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
 	
 	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
-		XPCOM.memmove (ppvObject, new int /*long*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
+		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals (nsIFilePicker.NS_IFILEPICKER_IID)) {
-		XPCOM.memmove(ppvObject, new int /*long*/[] {filePicker.getAddress ()}, C.PTR_SIZEOF);
+		XPCOM.memmove(ppvObject, new long /*int*/[] {filePicker.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals (nsIFilePicker_1_8.NS_IFILEPICKER_IID)) {
-		XPCOM.memmove(ppvObject, new int /*long*/[] {filePicker.getAddress ()}, C.PTR_SIZEOF);
+		XPCOM.memmove(ppvObject, new long /*int*/[] {filePicker.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals (nsIFilePicker_1_8.NS_IFILEPICKER_10_IID)) {
-		XPCOM.memmove(ppvObject, new int /*long*/[] {filePicker.getAddress ()}, C.PTR_SIZEOF);
+		XPCOM.memmove(ppvObject, new long /*int*/[] {filePicker.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
 
-	XPCOM.memmove (ppvObject, new int /*long*/[] {0}, C.PTR_SIZEOF);
+	XPCOM.memmove (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
 
@@ -117,7 +117,7 @@ int Release () {
 	return refCount;
 }
 
-Browser getBrowser (int /*long*/ aDOMWindow) {
+Browser getBrowser (long /*int*/ aDOMWindow) {
 	if (aDOMWindow == 0) return null;
 	return Mozilla.getBrowser (aDOMWindow);
 }
@@ -127,20 +127,20 @@ Browser getBrowser (int /*long*/ aDOMWindow) {
  * answers a java string based on the type of string that is appropriate for the Mozilla
  * version being used.
  */
-String parseAString (int /*long*/ string) {
+String parseAString (long /*int*/ string) {
 	return null;
 }
 
 /* nsIFilePicker */
 
-int Init (int /*long*/ parent, int /*long*/ title, short mode) {
+int Init (long /*int*/ parent, long /*int*/ title, short mode) {
 	parentHandle = parent;
 	this.mode = mode;
 	this.title = parseAString (title);
 	return XPCOM.NS_OK;
 }
 
-int Show (int /*long*/ _retval) {
+int Show (long /*int*/ _retval) {
 	if (mode == nsIFilePicker.modeGetFolder) {
 		/* picking a directory */
 		int result = showDirectoryPicker ();
@@ -190,20 +190,20 @@ int showDirectoryPicker () {
 	return directory == null ? nsIFilePicker.returnCancel : nsIFilePicker.returnOK;
 }
 
-int GetFiles (int /*long*/ aFiles) {
+int GetFiles (long /*int*/ aFiles) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int GetFileURL (int /*long*/ aFileURL) {
+int GetFileURL (long /*int*/ aFileURL) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int GetFile (int /*long*/ aFile) {
+int GetFile (long /*int*/ aFile) {
 	String filename = "";	//$NON-NLS-1$
 	if (directory != null) filename += directory + SEPARATOR;
 	if (files != null && files.length > 0) filename += files[0];
 	nsEmbedString path = new nsEmbedString (filename);
-	int /*long*/[] file = new int /*long*/[1];
+	long /*int*/[] file = new long /*int*/[1];
 	int rc = XPCOM.NS_NewLocalFile (path.getAddress (), 1, file);
 	path.dispose ();
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
@@ -212,14 +212,14 @@ int GetFile (int /*long*/ aFile) {
 	return XPCOM.NS_OK;
 }
 
-int SetDisplayDirectory (int /*long*/ aDisplayDirectory) {
+int SetDisplayDirectory (long /*int*/ aDisplayDirectory) {
 	if (aDisplayDirectory == 0) return XPCOM.NS_OK;
 	nsILocalFile file = new nsILocalFile (aDisplayDirectory);
-	int /*long*/ pathname = XPCOM.nsEmbedString_new ();
+	long /*int*/ pathname = XPCOM.nsEmbedString_new ();
 	int rc = file.GetPath (pathname);
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	int length = XPCOM.nsEmbedString_Length (pathname);
-	int /*long*/ buffer = XPCOM.nsEmbedString_get (pathname);
+	long /*int*/ buffer = XPCOM.nsEmbedString_get (pathname);
 	char[] chars = new char[length];
 	XPCOM.memmove (chars, buffer, length * 2);
 	XPCOM.nsEmbedString_delete (pathname);
@@ -227,10 +227,10 @@ int SetDisplayDirectory (int /*long*/ aDisplayDirectory) {
 	return XPCOM.NS_OK;
 }
 
-int GetDisplayDirectory (int /*long*/ aDisplayDirectory) {
+int GetDisplayDirectory (long /*int*/ aDisplayDirectory) {
 	String directoryName = directory != null ? directory : "";	//$NON-NLS-1$
 	nsEmbedString path = new nsEmbedString (directoryName);
-	int /*long*/[] file = new int /*long*/[1];
+	long /*int*/[] file = new long /*int*/[1];
 	int rc = XPCOM.NS_NewLocalFile (path.getAddress (), 1, file);
 	path.dispose ();
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
@@ -243,31 +243,31 @@ int SetFilterIndex (int aFilterIndex) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int GetFilterIndex (int /*long*/ aFilterIndex) {
+int GetFilterIndex (long /*int*/ aFilterIndex) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int SetDefaultExtension (int /*long*/ aDefaultExtension) {
+int SetDefaultExtension (long /*int*/ aDefaultExtension) {
 	/* note that the type of argument 1 changed as of Mozilla 1.8 */
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int GetDefaultExtension (int /*long*/ aDefaultExtension) {
+int GetDefaultExtension (long /*int*/ aDefaultExtension) {
 	/* note that the type of argument 1 changed as of Mozilla 1.8 */
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int SetDefaultString (int /*long*/ aDefaultString) {
+int SetDefaultString (long /*int*/ aDefaultString) {
 	defaultFilename = parseAString (aDefaultString);
 	return XPCOM.NS_OK;
 }
 
-int GetDefaultString (int /*long*/ aDefaultString) {
+int GetDefaultString (long /*int*/ aDefaultString) {
 	/* note that the type of argument 1 changed as of Mozilla 1.8 */
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int AppendFilter (int /*long*/ title, int /*long*/ filter) {
+int AppendFilter (long /*int*/ title, long /*int*/ filter) {
 	/* note that the type of arguments 1 and 2 changed as of Mozilla 1.8 */
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }

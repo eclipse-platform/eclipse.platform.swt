@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.*;
 public class PrintDialog extends Dialog {
 	PrinterData printerData = new PrinterData();
 
-	int /*long*/ handle;
+	long /*int*/ handle;
 	int index;
 	byte [] settingsData;
 	
@@ -292,7 +292,7 @@ public PrinterData open() {
 		return Printer.getDefaultPrinterData();
 	} else {
 		byte [] titleBytes = Converter.wcsToMbcs (null, getText(), true);
-		int /*long*/ topHandle = getParent().handle;
+		long /*int*/ topHandle = getParent().handle;
 		while (topHandle != 0 && !OS.GTK_IS_WINDOW(topHandle)) {
 			topHandle = OS.gtk_widget_get_parent(topHandle);
 		}
@@ -305,8 +305,8 @@ public PrinterData open() {
 			OS.GTK_PRINT_CAPABILITY_COLLATE | OS.GTK_PRINT_CAPABILITY_COPIES | OS.GTK_PRINT_CAPABILITY_PAGE_SET);
 		
 		/* Set state into print dialog settings. */
-		int /*long*/ settings = OS.gtk_print_settings_new();
-		int /*long*/ page_setup = OS.gtk_page_setup_new();
+		long /*int*/ settings = OS.gtk_print_settings_new();
+		long /*int*/ page_setup = OS.gtk_page_setup_new();
 		
 		if (printerData.otherData != null) {
 			Printer.restore(printerData.otherData, settings, page_setup);
@@ -316,7 +316,7 @@ public PrinterData open() {
 		String printerName = printerData.name;
 		if (printerName == null && printerData.printToFile) {
 			/* Find the printer name corresponding to the file backend. */
-			int /*long*/ printer = Printer.gtkPrinterFromPrinterData(printerData);
+			long /*int*/ printer = Printer.gtkPrinterFromPrinterData(printerData);
 			if (printer != 0) {
 				PrinterData data = Printer.printerDataFromGtkPrinter(printer);
 				printerName = data.name;
@@ -377,7 +377,7 @@ public PrinterData open() {
 		}
 		OS.g_object_unref(settings);
 		OS.g_object_unref(page_setup);
-		int /*long*/ group = OS.gtk_window_get_group(0);
+		long /*int*/ group = OS.gtk_window_get_group(0);
 		OS.gtk_window_group_add_window (group, handle);
 		OS.gtk_window_set_modal(handle, true);
 		PrinterData data = null;
@@ -385,7 +385,7 @@ public PrinterData open() {
 		Display display = getParent() != null ? getParent().getDisplay (): Display.getCurrent ();
 		
 		int signalId = 0;
-		int /*long*/ hookId = 0;
+		long /*int*/ hookId = 0;
 		if ((getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
 			signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
 			hookId = OS.g_signal_add_emission_hook (signalId, 0, ((LONG) display.getData (GET_EMISSION_PROC_KEY)).value, handle, 0);
@@ -411,7 +411,7 @@ public PrinterData open() {
 			OS.g_signal_remove_emission_hook (signalId, hookId);
 		}
 		if (response == OS.GTK_RESPONSE_OK) {
-			int /*long*/ printer = OS.gtk_print_unix_dialog_get_selected_printer(handle);
+			long /*int*/ printer = OS.gtk_print_unix_dialog_get_selected_printer(handle);
 			if (printer != 0) {
 				/* Get state from print dialog. */
 				settings = OS.gtk_print_unix_dialog_get_settings(handle); // must unref
@@ -425,7 +425,7 @@ public PrinterData open() {
 					case OS.GTK_PRINT_PAGES_RANGES:
 						data.scope = PrinterData.PAGE_RANGE;
 						int[] num_ranges = new int[1];
-						int /*long*/ page_ranges = OS.gtk_print_settings_get_page_ranges(settings, num_ranges);
+						long /*int*/ page_ranges = OS.gtk_print_settings_get_page_ranges(settings, num_ranges);
 						int [] pageRange = new int[2];
 						int length = num_ranges[0];
 						int min = Integer.MAX_VALUE, max = 0;
@@ -447,7 +447,7 @@ public PrinterData open() {
 				
 				data.printToFile = Printer.GTK_FILE_BACKEND.equals(data.driver); // TODO: GTK_FILE_BACKEND is not GTK API (see gtk bug 345590)
 				if (data.printToFile) {
-					int /*long*/ address = OS.gtk_print_settings_get(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI);
+					long /*int*/ address = OS.gtk_print_settings_get(settings, OS.GTK_PRINT_SETTINGS_OUTPUT_URI);
 					int length = OS.strlen (address);
 					byte [] buffer = new byte [length];
 					OS.memmove (buffer, address, length);
@@ -464,7 +464,7 @@ public PrinterData open() {
 
 				/* Save other print_settings data as key/value pairs in otherData. */
 				Callback printSettingsCallback = new Callback(this, "GtkPrintSettingsFunc", 3); //$NON-NLS-1$
-				int /*long*/ GtkPrintSettingsFunc = printSettingsCallback.getAddress();
+				long /*int*/ GtkPrintSettingsFunc = printSettingsCallback.getAddress();
 				if (GtkPrintSettingsFunc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 				index = 0;
 				settingsData = new byte[1024];
@@ -480,7 +480,7 @@ public PrinterData open() {
 				store("bottom_margin", OS.gtk_page_setup_get_bottom_margin(page_setup, OS.GTK_UNIT_MM)); //$NON-NLS-1$
 				store("left_margin", OS.gtk_page_setup_get_left_margin(page_setup, OS.GTK_UNIT_MM)); //$NON-NLS-1$
 				store("right_margin", OS.gtk_page_setup_get_right_margin(page_setup, OS.GTK_UNIT_MM)); //$NON-NLS-1$
-				int /*long*/ paper_size = OS.gtk_page_setup_get_paper_size(page_setup); //$NON-NLS-1$
+				long /*int*/ paper_size = OS.gtk_page_setup_get_paper_size(page_setup); //$NON-NLS-1$
 				storeBytes("paper_size_name", OS.gtk_paper_size_get_name(paper_size)); //$NON-NLS-1$
 				storeBytes("paper_size_display_name", OS.gtk_paper_size_get_display_name(paper_size)); //$NON-NLS-1$
 				storeBytes("paper_size_ppd_name", OS.gtk_paper_size_get_ppd_name(paper_size)); //$NON-NLS-1$
@@ -498,7 +498,7 @@ public PrinterData open() {
 	}
 }
 
-int /*long*/ GtkPrintSettingsFunc (int /*long*/ key, int /*long*/ value, int /*long*/ data) {
+long /*int*/ GtkPrintSettingsFunc (long /*int*/ key, long /*int*/ value, long /*int*/ data) {
 	int length = OS.strlen (key);
 	byte [] keyBuffer = new byte [length];
 	OS.memmove (keyBuffer, key, length);
@@ -521,7 +521,7 @@ void store(String key, boolean value) {
 	store(key, String.valueOf(value));
 }
 
-void storeBytes(String key, int /*long*/ value) {
+void storeBytes(String key, long /*int*/ value) {
 	int length = OS.strlen (value);
 	byte [] valueBuffer = new byte [length];
 	OS.memmove (valueBuffer, value, length);

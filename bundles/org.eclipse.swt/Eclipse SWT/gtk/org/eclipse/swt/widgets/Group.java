@@ -41,7 +41,7 @@ import org.eclipse.swt.graphics.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Group extends Composite {
-	int /*long*/ clientHandle, labelHandle;
+	long /*int*/ clientHandle, labelHandle;
 	String text = "";
 
 /**
@@ -96,7 +96,7 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-int /*long*/ clientHandle () {
+long /*int*/ clientHandle () {
 	return clientHandle;
 }
 
@@ -159,7 +159,7 @@ void enableWidget (boolean enabled) {
 	OS.gtk_widget_set_sensitive (labelHandle, enabled);
 }
 
-int /*long*/ eventHandle () {
+long /*int*/ eventHandle () {
 	return fixedHandle;
 }
 
@@ -203,7 +203,7 @@ boolean mnemonicMatch (char key) {
 	return mnemonicMatch (labelHandle, key);
 }
 
-int /*long*/ parentingHandle() {
+long /*int*/ parentingHandle() {
 	return fixedHandle;
 }
 
@@ -229,7 +229,7 @@ void setBackgroundColor (GdkColor color) {
 	setBackgroundColor(fixedHandle, color);
 }
 
-void setFontDescription (int /*long*/ font) {
+void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	OS.gtk_widget_modify_font (labelHandle, font);
 }

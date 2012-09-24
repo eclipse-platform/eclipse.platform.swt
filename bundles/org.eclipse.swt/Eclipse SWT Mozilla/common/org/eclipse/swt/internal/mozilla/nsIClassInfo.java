@@ -37,27 +37,27 @@ public class nsIClassInfo extends nsISupports {
 	public static final nsID NS_ICLASSINFO_IID =
 		new nsID(NS_ICLASSINFO_IID_STR);
 
-	public nsIClassInfo(int /*long*/ address) {
+	public nsIClassInfo(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetInterfaces(int[] count, int /*long*/[] array) {
+	public int GetInterfaces(int[] count, long /*int*/[] array) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), count, array);
 	}
 
-	public int GetHelperForLanguage(int language, int /*long*/[] _retval) {
+	public int GetHelperForLanguage(int language, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), language, _retval);
 	}
 
-	public int GetContractID(int /*long*/[] aContractID) {
+	public int GetContractID(long /*int*/[] aContractID) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aContractID);
 	}
 
-	public int GetClassDescription(int /*long*/[] aClassDescription) {
+	public int GetClassDescription(long /*int*/[] aClassDescription) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aClassDescription);
 	}
 
-	public int GetClassID(int /*long*/ aClassID) {
+	public int GetClassID(long /*int*/ aClassID) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aClassID);
 	}
 
@@ -78,7 +78,7 @@ public class nsIClassInfo extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aFlags);
 	}
 
-	public int GetClassIDNoAlloc(int /*long*/ aClassIDNoAlloc) {
+	public int GetClassIDNoAlloc(long /*int*/ aClassIDNoAlloc) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aClassIDNoAlloc);
 	}
 }

@@ -43,15 +43,15 @@ public class nsISSLStatus extends nsISupports {
 	public static final nsID NS_ISSLSTATUS_10_IID =
 		new nsID(NS_ISSLSTATUS_10_IID_STR);
 
-	public nsISSLStatus(int /*long*/ address) {
+	public nsISSLStatus(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetServerCert(int /*long*/[] aServerCert) {
+	public int GetServerCert(long /*int*/[] aServerCert) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aServerCert);
 	}
 
-	public int GetCipherName(int /*long*/[] aCipherName) {
+	public int GetCipherName(long /*int*/[] aCipherName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aCipherName);
 	}
 

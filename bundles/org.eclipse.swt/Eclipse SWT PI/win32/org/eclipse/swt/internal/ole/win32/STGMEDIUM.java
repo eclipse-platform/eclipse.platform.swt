@@ -13,8 +13,8 @@ package org.eclipse.swt.internal.ole.win32;
 public final class STGMEDIUM {
 	public int tymed;
 	/** @field accessor=hGlobal,cast=(HGLOBAL) */
-	public int /*long*/ unionField;
+	public long /*int*/ unionField;
 	/** @field cast=(IUnknown *) */
-	public int /*long*/ pUnkForRelease;
+	public long /*int*/ pUnkForRelease;
 	public static final int sizeof = COM.STGMEDIUM_sizeof ();
 }

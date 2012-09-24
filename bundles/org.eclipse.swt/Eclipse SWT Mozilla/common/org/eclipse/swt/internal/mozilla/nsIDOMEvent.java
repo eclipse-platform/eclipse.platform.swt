@@ -43,7 +43,7 @@ public class nsIDOMEvent extends nsISupports {
 	public static final nsID NS_IDOMEVENT_10_IID =
 		new nsID(NS_IDOMEVENT_10_IID_STR);
 
-	public nsIDOMEvent(int /*long*/ address) {
+	public nsIDOMEvent(long /*int*/ address) {
 		super(address);
 	}
 
@@ -51,15 +51,15 @@ public class nsIDOMEvent extends nsISupports {
 	public static final int AT_TARGET = 2;
 	public static final int BUBBLING_PHASE = 3;
 
-	public int GetType(int /*long*/ aType) {
+	public int GetType(long /*int*/ aType) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aType);
 	}
 
-	public int GetTarget(int /*long*/[] aTarget) {
+	public int GetTarget(long /*int*/[] aTarget) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aTarget);
 	}
 
-	public int GetCurrentTarget(int /*long*/[] aCurrentTarget) {
+	public int GetCurrentTarget(long /*int*/[] aCurrentTarget) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aCurrentTarget);
 	}
 
@@ -75,7 +75,7 @@ public class nsIDOMEvent extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aCancelable);
 	}
 
-	public int GetTimeStamp(int /*long*/ aTimeStamp) {
+	public int GetTimeStamp(long /*int*/ aTimeStamp) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aTimeStamp);
 	}
 
@@ -87,7 +87,7 @@ public class nsIDOMEvent extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress());
 	}
 
-	public int InitEvent(int /*long*/ eventTypeArg, int canBubbleArg, int cancelableArg) {
+	public int InitEvent(long /*int*/ eventTypeArg, int canBubbleArg, int cancelableArg) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), eventTypeArg, canBubbleArg, cancelableArg);
 	}
 	

@@ -16,11 +16,11 @@ package org.eclipse.swt.internal.gtk;
 
 public class GdkEventProperty extends GdkEvent {
 	/** @field cast=(GdkWindow *) */
-	public int /*long*/ window;
+	public long /*int*/ window;
 	/** @field cast=(gint8) */
 	public byte send_event;
 	/** @field cast=(GdkAtom) */
-	public int /*long*/ atom;
+	public long /*int*/ atom;
 	/** @field cast=(guint32) */
 	public int time;
 	/** @field cast=(guint) */

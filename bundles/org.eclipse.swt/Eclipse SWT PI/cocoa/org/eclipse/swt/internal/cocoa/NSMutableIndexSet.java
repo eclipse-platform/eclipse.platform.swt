@@ -16,7 +16,7 @@ public NSMutableIndexSet() {
 	super();
 }
 
-public NSMutableIndexSet(int /*long*/ id) {
+public NSMutableIndexSet(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,16 +24,16 @@ public NSMutableIndexSet(id id) {
 	super(id);
 }
 
-public void addIndex(int /*long*/ value) {
+public void addIndex(long /*int*/ value) {
 	OS.objc_msgSend(this.id, OS.sel_addIndex_, value);
 }
 
-public void removeIndex(int /*long*/ value) {
+public void removeIndex(long /*int*/ value) {
 	OS.objc_msgSend(this.id, OS.sel_removeIndex_, value);
 }
 
-public static id indexSetWithIndex(int /*long*/ value) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableIndexSet, OS.sel_indexSetWithIndex_, value);
+public static id indexSetWithIndex(long /*int*/ value) {
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSMutableIndexSet, OS.sel_indexSetWithIndex_, value);
 	return result != 0 ? new id(result) : null;
 }
 

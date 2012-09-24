@@ -106,7 +106,7 @@ public class DragSource extends Widget {
 	Transfer[] transferAgents = new Transfer[0];
 	DragSourceEffect dragEffect;
 
-	int /*long*/ targetList;
+	long /*int*/ targetList;
 	
 	//workaround - remember action performed for DragEnd
 	boolean moveData = false;
@@ -207,28 +207,28 @@ static int checkStyle (int style) {
 	return style;
 }
 
-static int /*long*/ DragDataDelete(int /*long*/ widget, int /*long*/ context){
+static long /*int*/ DragDataDelete(long /*int*/ widget, long /*int*/ context){
 	DragSource source = FindDragSource(widget);
 	if (source == null) return 0;
 	source.dragDataDelete(widget, context);
 	return 0;
 }
 
-static int /*long*/ DragEnd(int /*long*/ widget, int /*long*/ context){
+static long /*int*/ DragEnd(long /*int*/ widget, long /*int*/ context){
 	DragSource source = FindDragSource(widget);
 	if (source == null) return 0;
 	source.dragEnd(widget, context);
 	return 0;
 }
 	
-static int /*long*/ DragGetData(int /*long*/ widget, int /*long*/ context, int /*long*/ selection_data,  int /*long*/ info, int /*long*/ time){
+static long /*int*/ DragGetData(long /*int*/ widget, long /*int*/ context, long /*int*/ selection_data,  long /*int*/ info, long /*int*/ time){
 	DragSource source = FindDragSource(widget);
 	if (source == null) return 0;
 	source.dragGetData(widget, context, selection_data, (int)/*64*/info, (int)/*64*/time);
 	return 0;
 }
 
-static DragSource FindDragSource(int /*long*/ handle) {
+static DragSource FindDragSource(long /*int*/ handle) {
 	Display display = Display.findDisplay(Thread.currentThread());
 	if (display == null || display.isDisposed()) return null;
 	Widget widget = display.findWidget(handle);
@@ -297,15 +297,15 @@ void drag(Event dragEvent) {
 	
 	int actions = opToOsOp(getStyle());
 	Image image = event.image; 
-	int /*long*/ context = OS.gtk_drag_begin(control.handle, targetList, actions, 1, 0);
+	long /*int*/ context = OS.gtk_drag_begin(control.handle, targetList, actions, 1, 0);
 	if (context != 0 && image != null) {
-		int /*long*/ pixbuf = ImageList.createPixbuf(image);
+		long /*int*/ pixbuf = ImageList.createPixbuf(image);
 		OS.gtk_drag_set_icon_pixbuf(context, pixbuf, 0, 0);
 		OS.g_object_unref(pixbuf);
 	}
 }
 
-void dragEnd(int /*long*/ widget, int /*long*/ context){
+void dragEnd(long /*int*/ widget, long /*int*/ context){
 	/*
 	 * Bug in GTK.  If a drag is initiated using gtk_drag_begin and the 
 	 * mouse is released immediately, the mouse and keyboard remain
@@ -341,7 +341,7 @@ void dragEnd(int /*long*/ widget, int /*long*/ context){
 	moveData = false;	
 }	
 
-void dragGetData(int /*long*/ widget, int /*long*/ context, int /*long*/ selection_data,  int info, int time){
+void dragGetData(long /*int*/ widget, long /*int*/ context, long /*int*/ selection_data,  int info, int time){
 	if (selection_data == 0) return;	
 	GtkSelectionData gtkSelectionData = new GtkSelectionData();
 	OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
@@ -376,7 +376,7 @@ void dragGetData(int /*long*/ widget, int /*long*/ context, int /*long*/ selecti
 	return;	
 }
 
-void dragDataDelete(int /*long*/ widget, int /*long*/ context){
+void dragDataDelete(long /*int*/ widget, long /*int*/ context){
 	moveData = true;
 }
 
@@ -564,7 +564,7 @@ public void setTransfer(Transfer[] transferAgents){
 		}
 	}
 	
-	int /*long*/ pTargets = OS.g_malloc(targets.length * GtkTargetEntry.sizeof);
+	long /*int*/ pTargets = OS.g_malloc(targets.length * GtkTargetEntry.sizeof);
 	for (int i = 0; i < targets.length; i++) {
 		OS.memmove(pTargets + i*GtkTargetEntry.sizeof, targets[i], GtkTargetEntry.sizeof);		
 	}			

@@ -114,7 +114,7 @@ public TabItem (TabFolder parent, int style, int index) {
 	parent.createItem (this, index);
 }
 
-int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	
 	if (id == nsItem.id) {
 		NSString nsAttributeName = new NSString(arg0);
@@ -147,7 +147,7 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
-void drawLabelInRect(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLabel, NSRect rect) {
+void drawLabelInRect(long /*int*/ id, long /*int*/ sel, boolean shouldTruncateLabel, NSRect rect) {
 	if (image != null && !image.isDisposed()) {
 		NSSize imageSize = image.handle.size();
 		NSRect destRect = new NSRect();
@@ -188,8 +188,8 @@ public Rectangle getBounds() {
 	checkWidget();
 	Rectangle result = new Rectangle (0, 0, 0, 0);
 	if (nsItem.respondsToSelector (OS.sel_accessibilityAttributeValue_)) {
-		int /*long*/ posValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_, OS.NSAccessibilityPositionAttribute ());
-		int /*long*/ sizeValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_, OS.NSAccessibilitySizeAttribute ());		
+		long /*int*/ posValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_, OS.NSAccessibilityPositionAttribute ());
+		long /*int*/ sizeValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_, OS.NSAccessibilitySizeAttribute ());		
 		NSValue val = new NSValue (posValue);
 		NSPoint pt = val.pointValue ();
 		NSWindow window = parent.view.window ();
@@ -416,7 +416,7 @@ public void setToolTipText (String string) {
 	parent.checkToolTip (this);
 }
 
-NSSize sizeOfLabel(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLabel) {
+NSSize sizeOfLabel(long /*int*/ id, long /*int*/ sel, boolean shouldTruncateLabel) {
 	NSSize size = super.sizeOfLabel(id, sel, shouldTruncateLabel);
 	if (image != null && !image.isDisposed()) {
 		NSSize imageSize = image.handle.size();
@@ -442,7 +442,7 @@ void updateText (boolean selected) {
 	if (attriStr != null) {
 		attriStr.release();
 	}
-	float /*double*/ [] foreground = parent.foreground;
+	double /*float*/ [] foreground = parent.foreground;
 	if (foreground == null && selected && OS.VERSION >= 0x1070) {
 		foreground = display.getNSColorRGB(NSColor.alternateSelectedControlTextColor());
 	}

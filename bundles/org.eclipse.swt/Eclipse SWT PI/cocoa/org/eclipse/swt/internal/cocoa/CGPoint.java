@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.cocoa;
 
 public class CGPoint {
-	public float /*double*/ x;
-	public float /*double*/ y;
+	public double /*float*/ x;
+	public double /*float*/ y;
 	public static final int sizeof = OS.CGPoint_sizeof();
 }

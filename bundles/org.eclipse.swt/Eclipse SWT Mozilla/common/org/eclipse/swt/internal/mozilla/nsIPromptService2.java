@@ -37,15 +37,15 @@ public class nsIPromptService2 extends nsIPromptService {
 	public static final nsID NS_IPROMPTSERVICE2_IID =
 		new nsID(NS_IPROMPTSERVICE2_IID_STR);
 
-	public nsIPromptService2(int /*long*/ address) {
+	public nsIPromptService2(long /*int*/ address) {
 		super(address);
 	}
 
-	public int PromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int level, int /*long*/ authInfo, char[] checkboxLabel, int[] checkValue, int[] _retval) {
+	public int PromptAuth(long /*int*/ aParent, long /*int*/ aChannel, int level, long /*int*/ authInfo, char[] checkboxLabel, int[] checkValue, int[] _retval) {
 		return XPCOM.VtblCall(nsIPromptService.LAST_METHOD_ID + 1, getAddress(), aParent, aChannel, level, authInfo, checkboxLabel, checkValue, _retval);
 	}
 
-	public int AsyncPromptAuth(int /*long*/ aParent, int /*long*/ aChannel, int /*long*/ aCallback, int /*long*/ aContext, int level, int /*long*/ authInfo, char[] checkboxLabel, int[] checkValue, int /*long*/[] _retval) {
+	public int AsyncPromptAuth(long /*int*/ aParent, long /*int*/ aChannel, long /*int*/ aCallback, long /*int*/ aContext, int level, long /*int*/ authInfo, char[] checkboxLabel, int[] checkValue, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIPromptService.LAST_METHOD_ID + 2, getAddress(), aParent, aChannel, aCallback, aContext, level, authInfo, checkboxLabel, checkValue, _retval);
 	}
 }

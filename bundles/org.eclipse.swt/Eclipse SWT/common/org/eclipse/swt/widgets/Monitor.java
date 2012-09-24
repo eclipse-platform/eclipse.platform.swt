@@ -22,7 +22,7 @@ import org.eclipse.swt.graphics.*;
  * @since 3.0
  */
 public final class Monitor {
-	int /*long*/ handle;
+	long /*int*/ handle;
 	int x, y, width, height;
 	int clientX, clientY, clientWidth, clientHeight;
 	

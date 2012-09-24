@@ -37,7 +37,7 @@ public class nsIWebNavigationInfo extends nsISupports {
 	public static final nsID NS_IWEBNAVIGATIONINFO_IID =
 		new nsID(NS_IWEBNAVIGATIONINFO_IID_STR);
 
-	public nsIWebNavigationInfo(int /*long*/ address) {
+	public nsIWebNavigationInfo(long /*int*/ address) {
 		super(address);
 	}
 
@@ -46,7 +46,7 @@ public class nsIWebNavigationInfo extends nsISupports {
 	public static final int PLUGIN = 2;
 	public static final int OTHER = 32768;
 
-	public int IsTypeSupported(int /*long*/ aType, int /*long*/ aWebNav, int[] _retval) {
+	public int IsTypeSupported(long /*int*/ aType, long /*int*/ aWebNav, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aType, aWebNav, _retval);
 	}
 }

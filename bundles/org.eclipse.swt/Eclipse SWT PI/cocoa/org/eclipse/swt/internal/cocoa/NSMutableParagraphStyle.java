@@ -16,7 +16,7 @@ public NSMutableParagraphStyle() {
 	super();
 }
 
-public NSMutableParagraphStyle(int /*long*/ id) {
+public NSMutableParagraphStyle(long /*int*/ id) {
 	super(id);
 }
 
@@ -28,31 +28,31 @@ public void addTabStop(NSTextTab anObject) {
 	OS.objc_msgSend(this.id, OS.sel_addTabStop_, anObject != null ? anObject.id : 0);
 }
 
-public void setAlignment(int /*long*/ alignment) {
+public void setAlignment(long /*int*/ alignment) {
 	OS.objc_msgSend(this.id, OS.sel_setAlignment_, alignment);
 }
 
-public void setBaseWritingDirection(int /*long*/ writingDirection) {
+public void setBaseWritingDirection(long /*int*/ writingDirection) {
 	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, writingDirection);
 }
 
-public void setDefaultTabInterval(float /*double*/ aFloat) {
+public void setDefaultTabInterval(double /*float*/ aFloat) {
 	OS.objc_msgSend(this.id, OS.sel_setDefaultTabInterval_, aFloat);
 }
 
-public void setFirstLineHeadIndent(float /*double*/ aFloat) {
+public void setFirstLineHeadIndent(double /*float*/ aFloat) {
 	OS.objc_msgSend(this.id, OS.sel_setFirstLineHeadIndent_, aFloat);
 }
 
-public void setHeadIndent(float /*double*/ aFloat) {
+public void setHeadIndent(double /*float*/ aFloat) {
 	OS.objc_msgSend(this.id, OS.sel_setHeadIndent_, aFloat);
 }
 
-public void setLineBreakMode(int /*long*/ mode) {
+public void setLineBreakMode(long /*int*/ mode) {
 	OS.objc_msgSend(this.id, OS.sel_setLineBreakMode_, mode);
 }
 
-public void setLineSpacing(float /*double*/ aFloat) {
+public void setLineSpacing(double /*float*/ aFloat) {
 	OS.objc_msgSend(this.id, OS.sel_setLineSpacing_, aFloat);
 }
 

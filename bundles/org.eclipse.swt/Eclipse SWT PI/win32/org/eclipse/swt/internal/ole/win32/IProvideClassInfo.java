@@ -12,10 +12,10 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IProvideClassInfo extends IUnknown
 {
-public IProvideClassInfo(int /*long*/ address) {
+public IProvideClassInfo(long /*int*/ address) {
 	super(address);
 }
-public int GetClassInfo(int /*long*/[] ppTI) {
+public int GetClassInfo(long /*int*/[] ppTI) {
 	return COM.VtblCall(3, address, ppTI);
 }
 }

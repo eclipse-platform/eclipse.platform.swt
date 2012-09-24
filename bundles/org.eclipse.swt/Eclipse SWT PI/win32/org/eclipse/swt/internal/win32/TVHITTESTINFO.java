@@ -18,6 +18,6 @@ public class TVHITTESTINFO {
 	public int y;
 	public int flags;
 	/** @field cast=(HTREEITEM) */
-	public int /*long*/ hItem;
+	public long /*int*/ hItem;
 	public static int sizeof = OS.TVHITTESTINFO_sizeof ();
 }

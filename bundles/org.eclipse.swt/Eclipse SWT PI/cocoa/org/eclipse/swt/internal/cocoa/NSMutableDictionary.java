@@ -16,7 +16,7 @@ public NSMutableDictionary() {
 	super();
 }
 
-public NSMutableDictionary(int /*long*/ id) {
+public NSMutableDictionary(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,13 +24,13 @@ public NSMutableDictionary(id id) {
 	super(id);
 }
 
-public static NSMutableDictionary dictionaryWithCapacity(int /*long*/ numItems) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableDictionary, OS.sel_dictionaryWithCapacity_, numItems);
+public static NSMutableDictionary dictionaryWithCapacity(long /*int*/ numItems) {
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSMutableDictionary, OS.sel_dictionaryWithCapacity_, numItems);
 	return result != 0 ? new NSMutableDictionary(result) : null;
 }
 
-public NSMutableDictionary initWithCapacity(int /*long*/ numItems) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithCapacity_, numItems);
+public NSMutableDictionary initWithCapacity(long /*int*/ numItems) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithCapacity_, numItems);
 	return result == this.id ? this : (result != 0 ? new NSMutableDictionary(result) : null);
 }
 
@@ -51,7 +51,7 @@ public void setValue(id value, NSString key) {
 }
 
 public static NSDictionary dictionaryWithObject(id object, id key) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSMutableDictionary, OS.sel_dictionaryWithObject_forKey_, object != null ? object.id : 0, key != null ? key.id : 0);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSMutableDictionary, OS.sel_dictionaryWithObject_forKey_, object != null ? object.id : 0, key != null ? key.id : 0);
 	return result != 0 ? new NSMutableDictionary(result) : null;
 }
 

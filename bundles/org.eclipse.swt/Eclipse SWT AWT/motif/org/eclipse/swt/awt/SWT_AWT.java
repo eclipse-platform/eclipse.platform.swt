@@ -64,7 +64,7 @@ public class SWT_AWT {
 
 static boolean loaded, swingInitialized;
 
-static native final int /*long*/ getAWTHandle (Object canvas);
+static native final long /*int*/ getAWTHandle (Object canvas);
 static native final void setDebug (Frame canvas, boolean debug);
 
 static synchronized void loadLibrary () {
@@ -142,7 +142,7 @@ public static Frame new_Frame (final Composite parent) {
 	if ((parent.getStyle () & SWT.EMBEDDED) == 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int /*long*/ handle = parent.embeddedHandle;
+	long /*int*/ handle = parent.embeddedHandle;
 	/*
 	 * Some JREs have implemented the embedded frame constructor to take an integer
 	 * and other JREs take a long.  To handle this binary incompatability, use
@@ -292,7 +292,7 @@ public static Frame new_Frame (final Composite parent) {
 public static Shell new_Shell (final Display display, final Canvas parent) {
 	if (display == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int /*long*/ handle = 0;
+	long /*int*/ handle = 0;
 	try {
 		loadLibrary ();
 		handle = getAWTHandle (parent);

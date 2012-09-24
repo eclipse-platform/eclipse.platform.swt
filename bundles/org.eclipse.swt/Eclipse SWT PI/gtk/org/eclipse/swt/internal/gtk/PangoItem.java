@@ -19,16 +19,16 @@ public class PangoItem {
 	public int length;
 	public int num_chars;
 	/** @field accessor=analysis.shape_engine,cast=(PangoEngineShape *) */
-	public int /*long*/ analysis_shape_engine;
+	public long /*int*/ analysis_shape_engine;
 	/** @field accessor=analysis.lang_engine,cast=(PangoEngineLang *) */
-	public int /*long*/ analysis_lang_engine;
+	public long /*int*/ analysis_lang_engine;
 	/** @field accessor=analysis.font,cast=(PangoFont *) */
-	public int /*long*/ analysis_font;
+	public long /*int*/ analysis_font;
 	/** @field accessor=analysis.level */
 	public byte analysis_level;
 	/** @field accessor=analysis.language,cast=(PangoLanguage *) */
-	public int /*long*/ analysis_language;
+	public long /*int*/ analysis_language;
 	/** @field accessor=analysis.extra_attrs,cast=(GSList *) */
-	public int /*long*/ analysis_extra_attrs;
+	public long /*int*/ analysis_extra_attrs;
 	public static final int sizeof = OS.PangoItem_sizeof();
 }

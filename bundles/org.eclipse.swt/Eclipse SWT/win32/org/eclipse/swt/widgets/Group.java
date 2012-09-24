@@ -43,7 +43,7 @@ import org.eclipse.swt.graphics.*;
 public class Group extends Composite {
 	String text = "";
 	static final int CLIENT_INSET = 3;
-	static final int /*long*/ GroupProc;
+	static final long /*int*/ GroupProc;
 	static final TCHAR GroupClass = new TCHAR (0, OS.IsWinCE ? "BUTTON" : "SWT_GROUP", true);
 	static {
 		/*
@@ -67,13 +67,13 @@ public class Group extends Composite {
 			TCHAR WC_BUTTON = new TCHAR (0, "BUTTON", true);
 			OS.GetClassInfo (0, WC_BUTTON, lpWndClass);
 			GroupProc = lpWndClass.lpfnWndProc;
-			int /*long*/ hInstance = OS.GetModuleHandle (null);
+			long /*int*/ hInstance = OS.GetModuleHandle (null);
 			if (!OS.GetClassInfo (hInstance, GroupClass, lpWndClass)) {
-				int /*long*/ hHeap = OS.GetProcessHeap ();
+				long /*int*/ hHeap = OS.GetProcessHeap ();
 				lpWndClass.hInstance = hInstance;
 				lpWndClass.style &= ~(OS.CS_HREDRAW | OS.CS_VREDRAW);
 				int byteCount = GroupClass.length () * TCHAR.sizeof;
-				int /*long*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+				long /*int*/ lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 				OS.MoveMemory (lpszClassName, GroupClass, byteCount);
 				lpWndClass.lpszClassName = lpszClassName;
 				OS.RegisterClass (lpWndClass);
@@ -118,7 +118,7 @@ public Group (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	/*
 	* Feature in Windows.  When the user clicks on the group
@@ -172,8 +172,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		* client area, pad the width so the text is not clipped.
 		*/
 		TCHAR buffer = new TCHAR (getCodePage (), string, true);
-		int /*long*/ newFont, oldFont = 0;
-		int /*long*/ hDC = OS.GetDC (handle);
+		long /*int*/ newFont, oldFont = 0;
+		long /*int*/ hDC = OS.GetDC (handle);
 		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 		RECT rect = new RECT ();
@@ -190,8 +190,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	Rectangle trim = super.computeTrim (x, y, width, height);
-	int /*long*/ newFont, oldFont = 0;
-	int /*long*/ hDC = OS.GetDC (handle);
+	long /*int*/ newFont, oldFont = 0;
+	long /*int*/ hDC = OS.GetDC (handle);
 	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
@@ -244,8 +244,8 @@ public Rectangle getClientArea () {
 	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetClientRect (handle, rect);
-	int /*long*/ newFont, oldFont = 0;
-	int /*long*/ hDC = OS.GetDC (handle);
+	long /*int*/ newFont, oldFont = 0;
+	long /*int*/ hDC = OS.GetDC (handle);
 	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
@@ -290,7 +290,7 @@ boolean mnemonicMatch (char key) {
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
 
-void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
+void printWidget (long /*int*/ hwnd, long /*int*/ hdc, GC gc) {
 	/*
 	* Bug in Windows.  For some reason, PrintWindow()
 	* returns success but does nothing when it is called
@@ -339,7 +339,7 @@ void printWidget (int /*long*/ hwnd, int /*long*/ hdc, GC gc) {
 			} else {
 				OS.SetWindowOrgEx (hdc, -location.x, -location.y, null);
 			}
-			int /*long*/ topHandle = children [i].topHandle();
+			long /*int*/ topHandle = children [i].topHandle();
 			int bits = OS.GetWindowLong (topHandle, OS.GWL_STYLE);
 			if ((bits & OS.WS_VISIBLE) != 0) {
 				children [i].printWidget (topHandle, hdc, gc);
@@ -429,11 +429,11 @@ TCHAR windowClass () {
 	return GroupClass;
 }
 
-int /*long*/ windowProc () {
+long /*int*/ windowProc () {
 	return GroupProc;
 }
 
-LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -445,7 +445,7 @@ LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 	return LRESULT.ONE;
 }
 
-LRESULT WM_NCHITTEST (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -457,12 +457,12 @@ LRESULT WM_NCHITTEST (int /*long*/ wParam, int /*long*/ lParam) {
 	* allow children, answer HTCLIENT to allow mouse messages
 	* to be delivered to the children.
 	*/
-	int /*long*/ code = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
+	long /*int*/ code = callWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
 	if (code == OS.HTTRANSPARENT) code = OS.HTCLIENT;
 	return new LRESULT (code);
 }
 
-LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -474,7 +474,7 @@ LRESULT WM_MOUSEMOVE (int /*long*/ wParam, int /*long*/ lParam) {
 	return LRESULT.ZERO;
 }
 
-LRESULT WM_PRINTCLIENT (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_PRINTCLIENT (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -489,14 +489,14 @@ LRESULT WM_PRINTCLIENT (int /*long*/ wParam, int /*long*/ lParam) {
 	*/
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		int nSavedDC = OS.SaveDC (wParam);
-		int /*long*/ code = callWindowProc (handle, OS.WM_PRINTCLIENT, wParam, lParam);
+		long /*int*/ code = callWindowProc (handle, OS.WM_PRINTCLIENT, wParam, lParam);
 		OS.RestoreDC (wParam, nSavedDC);
 		return new LRESULT (code);
 	}
 	return result;
 }
 
-LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -518,13 +518,13 @@ LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
 	}
 	if (redraw) {
 		OS.InvalidateRect (handle, null, false);
-		int /*long*/ code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
+		long /*int*/ code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
 		return new LRESULT (code);
 	}
 	return result;
 }
 
-LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;
 	/*

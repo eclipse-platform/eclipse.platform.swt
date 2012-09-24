@@ -16,7 +16,7 @@ public NSTableHeaderCell() {
 	super();
 }
 
-public NSTableHeaderCell(int /*long*/ id) {
+public NSTableHeaderCell(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,7 +24,7 @@ public NSTableHeaderCell(id id) {
 	super(id);
 }
 
-public void drawSortIndicatorWithFrame(NSRect cellFrame, NSView controlView, boolean ascending, int /*long*/ priority) {
+public void drawSortIndicatorWithFrame(NSRect cellFrame, NSView controlView, boolean ascending, long /*int*/ priority) {
 	OS.objc_msgSend(this.id, OS.sel_drawSortIndicatorWithFrame_inView_ascending_priority_, cellFrame, controlView != null ? controlView.id : 0, ascending, priority);
 }
 

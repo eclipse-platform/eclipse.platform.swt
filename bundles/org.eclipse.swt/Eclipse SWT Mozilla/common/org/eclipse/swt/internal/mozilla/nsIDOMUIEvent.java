@@ -43,11 +43,11 @@ public class nsIDOMUIEvent extends nsIDOMEvent {
 	public static final nsID NS_IDOMUIEVENT_10_IID =
 		new nsID(NS_IDOMUIEVENT_10_IID_STR);
 
-	public nsIDOMUIEvent(int /*long*/ address) {
+	public nsIDOMUIEvent(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetView(int /*long*/[] aView) {
+	public int GetView(long /*int*/[] aView) {
 		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 1, getAddress(), aView);
 	}
 
@@ -55,7 +55,7 @@ public class nsIDOMUIEvent extends nsIDOMEvent {
 		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 2, getAddress(), aDetail);
 	}
 
-	public int InitUIEvent(int /*long*/ typeArg, int canBubbleArg, int cancelableArg, int /*long*/ viewArg, int detailArg) {
+	public int InitUIEvent(long /*int*/ typeArg, int canBubbleArg, int cancelableArg, long /*int*/ viewArg, int detailArg) {
 		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 3, getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, detailArg);
 	}
 	
@@ -88,7 +88,7 @@ public class nsIDOMUIEvent extends nsIDOMEvent {
 		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 8, getAddress(), aWhich);
 	}
 
-	public int GetRangeParent(int /*long*/[] aRangeParent) {
+	public int GetRangeParent(long /*int*/[] aRangeParent) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsIDOMEvent.LAST_METHOD_ID + 9, getAddress(), aRangeParent);
 	}

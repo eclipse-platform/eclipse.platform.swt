@@ -38,17 +38,17 @@ int AddRef () {
 void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject (new int[] {2, 0, 0}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
-		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
+		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
 	
 	helperAppLauncherDialog = new XPCOMObject (new int[] {2, 0, 0, 3, 5}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
-		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return Show (args[0], args[1], (int)/*64*/args[2]);}
-		public int /*long*/ method4 (int /*long*/[] args) {return PromptForSaveToFile (args[0], args[1], args[2], args[3], args[4]);}
+		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		public long /*int*/ method3 (long /*int*/[] args) {return Show (args[0], args[1], (int)/*64*/args[2]);}
+		public long /*int*/ method4 (long /*int*/[] args) {return PromptForSaveToFile (args[0], args[1], args[2], args[3], args[4]);}
 	};		
 }
 
@@ -63,27 +63,27 @@ void disposeCOMInterfaces () {
 	}
 }
 
-int /*long*/ getAddress () {
+long /*int*/ getAddress () {
 	return helperAppLauncherDialog.getAddress ();
 }
 
-int QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
+int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
 	
 	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
-		XPCOM.memmove (ppvObject, new int /*long*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
+		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals (nsIHelperAppLauncherDialog.NS_IHELPERAPPLAUNCHERDIALOG_IID)) {
-		XPCOM.memmove (ppvObject, new int /*long*/[] {helperAppLauncherDialog.getAddress ()}, C.PTR_SIZEOF);
+		XPCOM.memmove (ppvObject, new long /*int*/[] {helperAppLauncherDialog.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
 	
-	XPCOM.memmove (ppvObject, new int /*long*/[] {0}, C.PTR_SIZEOF);
+	XPCOM.memmove (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
         	
@@ -102,14 +102,14 @@ int Release () {
 
 /* nsIHelperAppLauncherDialog */
 
-int Show (int /*long*/ aLauncher, int /*long*/ aContext, int aReason) {
+int Show (long /*int*/ aLauncher, long /*int*/ aContext, int aReason) {
 	/*
 	 * The interface for nsIHelperAppLauncher changed as of mozilla 1.8.  Query the received
 	 * nsIHelperAppLauncher for the new interface, and if it is not found then fall back to
 	 * the old interface. 
 	 */
 	nsISupports supports = new nsISupports (aLauncher);
-	int /*long*/[] result = new int /*long*/[1];
+	long /*int*/[] result = new long /*int*/[1];
 	int rc = supports.QueryInterface (nsIHelperAppLauncher_1_8.NS_IHELPERAPPLAUNCHER_IID, result);
 	if (rc == XPCOM.NS_OK) {	/* >= 1.8 */
 		nsIHelperAppLauncher_1_8 helperAppLauncher = new nsIHelperAppLauncher_1_8 (aLauncher);
@@ -121,8 +121,8 @@ int Show (int /*long*/ aLauncher, int /*long*/ aContext, int aReason) {
 	return helperAppLauncher.SaveToDisk (0, 0);
 }
 
-int PromptForSaveToFile (int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4) {
-	int /*long*/ aDefaultFile, aSuggestedFileExtension, _retval;
+int PromptForSaveToFile (long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4) {
+	long /*int*/ aDefaultFile, aSuggestedFileExtension, _retval;
 	boolean hasLauncher = false;
 
 	/*
@@ -140,7 +140,7 @@ int PromptForSaveToFile (int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2
 	 */
  	boolean using_1_8 = false;
 	nsISupports support = new nsISupports (arg0);
-	int /*long*/[] result = new int /*long*/[1];
+	long /*int*/[] result = new long /*int*/[1];
 	int rc = support.QueryInterface (nsIHelperAppLauncher_1_8.NS_IHELPERAPPLAUNCHER_IID, result);
 	if (rc == XPCOM.NS_OK) {
 		using_1_8 = true;

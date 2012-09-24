@@ -138,7 +138,7 @@ void createHandle (int index) {
 		OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, OS.GTK_POLICY_AUTOMATIC);
 		OS.gtk_container_add (fixedHandle, scrolledHandle);
 		OS.gtk_scrolled_window_add_with_viewport (scrolledHandle, handle);
-		int /*long*/ viewport = OS.gtk_bin_get_child (scrolledHandle);
+		long /*int*/ viewport = OS.gtk_bin_get_child (scrolledHandle);
 		OS.gtk_viewport_set_shadow_type (viewport, OS.GTK_SHADOW_NONE);
 	} else {
 		OS.gtk_container_add (fixedHandle, handle);
@@ -178,11 +178,11 @@ void destroyItem (ExpandItem item) {
 	layoutItems (index, true);
 }
 
-int /*long*/ eventHandle () {
+long /*int*/ eventHandle () {
 	return fixedHandle;
 }
 
-boolean forceFocus (int /*long*/ focusHandle) {
+boolean forceFocus (long /*int*/ focusHandle) {
 	if (lastFocus != null && lastFocus.setFocus ()) return true;
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items [i];
@@ -288,9 +288,9 @@ public int getSpacing () {
 	return spacing;
 }
 
-int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 	if (!hasFocus ()) return 0;
-	int /*long*/ result = super.gtk_key_press_event (widget, event);
+	long /*int*/ result = super.gtk_key_press_event (widget, event);
 	if (result != 0) return result;
 	int index = 0;
 	while (index < itemCount) {
@@ -349,13 +349,13 @@ void layoutItems (int index, boolean setScrollbar) {
 	}
 }
 
-int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
-	int /*long*/ result = super.gtk_size_allocate (widget, allocation);
+long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
+	long /*int*/ result = super.gtk_size_allocate (widget, allocation);
 	layoutItems (0, false);
 	return result;
 }
 
-int /*long*/ parentingHandle () {
+long /*int*/ parentingHandle () {
 	return fixedHandle;
 }
 
@@ -404,7 +404,7 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
-void setFontDescription (int /*long*/ font) {
+void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	for (int i = 0; i < itemCount; i++) {
 		items[i].setFontDescription (font);
@@ -435,7 +435,7 @@ void setScrollbar () {
 	ExpandItem item = items [itemCount - 1];
 	int maxHeight = item.y + getBandHeight () + spacing;
 	if (item.expanded) maxHeight += item.height;
-	int /*long*/ adjustmentHandle = OS.gtk_scrolled_window_get_vadjustment (scrolledHandle);
+	long /*int*/ adjustmentHandle = OS.gtk_scrolled_window_get_vadjustment (scrolledHandle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, adjustmentHandle);
 	yCurrentScroll = (int)adjustment.value;
@@ -457,7 +457,7 @@ void setScrollbar () {
 	gtk_widget_get_allocation (fixedHandle, allocation);
 	int width = allocation.width - spacing * 2;
 	if (policy == OS.GTK_POLICY_ALWAYS) {
-		int /*long*/ vHandle = 0;
+		long /*int*/ vHandle = 0;
 		if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
 			vHandle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (scrolledHandle);
 		} else {

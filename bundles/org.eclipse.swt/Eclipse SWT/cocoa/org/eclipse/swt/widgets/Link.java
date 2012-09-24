@@ -110,7 +110,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
-boolean textView_clickOnLink_atIndex(int /*long*/ id, int /*long*/ sel, int /*long*/ textView, int /*long*/ link, int /*long*/ charIndex) {
+boolean textView_clickOnLink_atIndex(long /*int*/ id, long /*int*/ sel, long /*int*/ textView, long /*int*/ link, long /*int*/ charIndex) {
 	NSString str = new NSString (link);
 	Event event = new Event ();
 	event.text = str.getString();
@@ -237,7 +237,7 @@ void deregister () {
 	if (scrollView != null) display.removeWidget (scrollView);
 }
 
-void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rectangle) {
+void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rectangle) {
 	fillBackground (view, context, rectangle, -1);
 	if (!hasFocus() || focusIndex == -1) return;
 	int [] outMetric = new int [1];
@@ -308,13 +308,13 @@ NSRect[] getRectangles(int linkIndex) {
 	range.length = offsets[linkIndex].y - offsets[linkIndex].x + 1;
 	NSRange glyphRange = layoutManager.glyphRangeForCharacterRange(range, 0);
 
-	int /*long*/ rangePtr = OS.malloc(NSRange.sizeof);
+	long /*int*/ rangePtr = OS.malloc(NSRange.sizeof);
 	NSRange lineRange = new NSRange();
 	
 	/* compute number of lines in the link */
 	int numberOfLines = 0;
-	int /*long*/ index = glyphRange.location;
-	int /*long*/ glyphEndIndex = glyphRange.location + glyphRange.length;
+	long /*int*/ index = glyphRange.location;
+	long /*int*/ glyphEndIndex = glyphRange.location + glyphRange.length;
 	while (index < glyphEndIndex) {
 		numberOfLines++;
 		layoutManager.lineFragmentUsedRectForGlyphAtIndex(index, rangePtr, true);
@@ -364,7 +364,7 @@ public String getText () {
 	return text;
 }
 
-void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	/*
 	 * Feature in Cocoa: Link click notices are sent on mouseDown, but for some reason, Cocoa
 	 * re-sends the mouseUp that follows the click on a link. Fix is to ignore the next mouseUp
@@ -377,7 +377,7 @@ void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	super.mouseUp(id, sel, theEvent);
 }
 
-boolean shouldDrawInsertionPoint(int /*long*/ id, int /*long*/ sel) {
+boolean shouldDrawInsertionPoint(long /*int*/ id, long /*int*/ sel) {
 	return false;
 }
 
@@ -638,7 +638,7 @@ void setFont(NSFont font) {
 	((NSTextView) view).setFont(font);
 }
 
-void setForeground (float /*double*/ [] color) {
+void setForeground (double /*float*/ [] color) {
 	if (!getEnabled ()) return;
 	NSColor nsColor;
 	if (color == null) {
@@ -724,7 +724,7 @@ int traversalCode (int key, NSEvent theEvent) {
 	if (offsets.length == 0) return  0;
 	int bits = super.traversalCode (key, theEvent);
 	if (key == 48 /* Tab */ && theEvent != null) {
-		int /*long*/ modifierFlags = theEvent.modifierFlags();
+		long /*int*/ modifierFlags = theEvent.modifierFlags();
 		boolean next = (modifierFlags & OS.NSShiftKeyMask) == 0;
 		if (next && focusIndex < offsets.length - 1) {
 			return bits & ~ SWT.TRAVERSE_TAB_NEXT;

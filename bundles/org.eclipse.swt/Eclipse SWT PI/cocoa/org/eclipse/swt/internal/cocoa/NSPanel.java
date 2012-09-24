@@ -16,7 +16,7 @@ public NSPanel() {
 	super();
 }
 
-public NSPanel(int /*long*/ id) {
+public NSPanel(long /*int*/ id) {
 	super(id);
 }
 
@@ -40,11 +40,11 @@ public boolean worksWhenModal() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_worksWhenModal);
 }
 
-public static float /*double*/ minFrameWidthWithTitle(NSString aTitle, int /*long*/ aStyle) {
-	return (float /*double*/)OS.objc_msgSend_fpret(OS.class_NSPanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
+public static double /*float*/ minFrameWidthWithTitle(NSString aTitle, long /*int*/ aStyle) {
+	return (double /*float*/)OS.objc_msgSend_fpret(OS.class_NSPanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
 }
 
-public static int /*long*/ windowNumberAtPoint(NSPoint point, int /*long*/ windowNumber) {
+public static long /*int*/ windowNumberAtPoint(NSPoint point, long /*int*/ windowNumber) {
 	return OS.objc_msgSend(OS.class_NSPanel, OS.sel_windowNumberAtPoint_belowWindowWithWindowNumber_, point, windowNumber);
 }
 

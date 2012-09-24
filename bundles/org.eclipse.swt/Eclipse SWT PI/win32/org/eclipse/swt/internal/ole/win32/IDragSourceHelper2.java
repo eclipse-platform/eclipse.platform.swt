@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.ole.win32;
 
 public class IDragSourceHelper2 extends IDragSourceHelper {
-public IDragSourceHelper2(int /*long*/ address) {
+public IDragSourceHelper2(long /*int*/ address) {
 	super(address);
 }
 public int SetFlags(int dwFlags) {

@@ -75,7 +75,7 @@ public Scrollable (Composite parent, int style) {
 	super (parent, style);
 }
 
-int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
@@ -109,7 +109,7 @@ int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, in
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	int /*long*/ scrolledHandle = scrolledHandle ();
+	long /*int*/ scrolledHandle = scrolledHandle ();
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
 	int bits1 = OS.GetWindowLong (scrolledHandle, OS.GWL_STYLE);
@@ -137,7 +137,7 @@ void createWidget () {
 }
 
 void destroyScrollBar (int type) {
-	int /*long*/ hwnd = scrolledHandle ();
+	long /*int*/ hwnd = scrolledHandle ();
 	int bits = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
 	if ((type & SWT.HORIZONTAL) != 0) {
 		style &= ~SWT.H_SCROLL;
@@ -168,7 +168,7 @@ public Rectangle getClientArea () {
 	checkWidget ();
 	forceResize ();
 	RECT rect = new RECT ();
-	int /*long*/ scrolledHandle = scrolledHandle ();
+	long /*int*/ scrolledHandle = scrolledHandle ();
 	OS.GetClientRect (scrolledHandle, rect);
 	int x = rect.left, y = rect.top;
 	int width = rect.right - rect.left;
@@ -258,7 +258,7 @@ void reskinChildren (int flags) {
 	super.reskinChildren (flags);
 }
 
-int /*long*/ scrolledHandle () {
+long /*int*/ scrolledHandle () {
 	return handle;
 }
 
@@ -287,11 +287,11 @@ TCHAR windowClass () {
 	return display.windowClass;
 }
 
-int /*long*/ windowProc () {
+long /*int*/ windowProc () {
 	return display.windowProc;
 }
 
-LRESULT WM_HSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_HSCROLL (wParam, lParam);
 	if (result != null) return result;
 	
@@ -308,19 +308,19 @@ LRESULT WM_HSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_MOUSEWHEEL (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_MOUSEWHEEL (long /*int*/ wParam, long /*int*/ lParam) {
 	return wmScrollWheel ((state & CANVAS) != 0, wParam, lParam);
 }
 
-LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
-	int /*long*/ code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
+LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
+	long /*int*/ code = callWindowProc (handle, OS.WM_SIZE, wParam, lParam);
 	super.WM_SIZE (wParam, lParam);
 	// widget may be disposed at this point
 	if (code == 0) return LRESULT.ZERO;
 	return new LRESULT (code);
 }
 
-LRESULT WM_VSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_VSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_VSCROLL (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -336,7 +336,7 @@ LRESULT WM_VSCROLL (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmNCPaint (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.wmNCPaint (hwnd, wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -374,11 +374,11 @@ LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 					cornerRect.left = cornerRect.right - (hVisible ? OS.GetSystemMetrics (OS.SM_CXVSCROLL) : 0);
 				}
 				if (cornerRect.left != cornerRect.right && cornerRect.top != cornerRect.bottom) {
-					int /*long*/ hDC = OS.GetWindowDC (hwnd);
+					long /*int*/ hDC = OS.GetWindowDC (hwnd);
 					OS.FillRect (hDC, cornerRect, OS.COLOR_BTNFACE + 1);
 					Decorations shell = menuShell ();
 					if ((shell.style & SWT.RESIZE) != 0) {
-						int /*long*/ hwndScroll = shell.scrolledHandle ();
+						long /*int*/ hwndScroll = shell.scrolledHandle ();
 						boolean drawGripper = hwnd == hwndScroll;
 						if (!drawGripper) {
 							RECT shellRect = new RECT ();
@@ -398,7 +398,7 @@ LRESULT wmNCPaint (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 	return result;
 }
 
-LRESULT wmScrollWheel (boolean update, int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmScrollWheel (boolean update, long /*int*/ wParam, long /*int*/ lParam) {
 	int scrollRemainder = display.scrollRemainder;
 	LRESULT result = super.WM_MOUSEWHEEL (wParam, lParam);
 	if (result != null) return result;
@@ -457,7 +457,7 @@ LRESULT wmScrollWheel (boolean update, int /*long*/ wParam, int /*long*/ lParam)
 	*/
 	int vPosition = verticalBar == null ? 0 : verticalBar.getSelection ();
 	int hPosition = horizontalBar == null ? 0 : horizontalBar.getSelection ();
-	int /*long*/ code = callWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
+	long /*int*/ code = callWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
 	if (verticalBar != null) {
 		int position = verticalBar.getSelection ();
 		if (position != vPosition) {
@@ -477,7 +477,7 @@ LRESULT wmScrollWheel (boolean update, int /*long*/ wParam, int /*long*/ lParam)
 	return new LRESULT (code);
 }
 
-LRESULT wmScroll (ScrollBar bar, boolean update, int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmScroll (ScrollBar bar, boolean update, long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = null;
 	if (update) {
 		int type = msg == OS.WM_HSCROLL ? OS.SB_HORZ : OS.SB_VERT;
@@ -522,7 +522,7 @@ LRESULT wmScroll (ScrollBar bar, boolean update, int /*long*/ hwnd, int msg, int
 		}
 		OS.SetScrollInfo (hwnd, type, info, true);
 	} else {
-		int /*long*/ code = callWindowProc (hwnd, msg, wParam, lParam);
+		long /*int*/ code = callWindowProc (hwnd, msg, wParam, lParam);
 		result = code == 0 ? LRESULT.ZERO : new LRESULT (code);
 	}
 	bar.wmScrollChild (wParam, lParam);

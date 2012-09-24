@@ -37,7 +37,7 @@ public class nsIDirectoryService extends nsISupports {
 	public static final nsID NS_IDIRECTORYSERVICE_IID =
 		new nsID(NS_IDIRECTORYSERVICE_IID_STR);
 
-	public nsIDirectoryService(int /*long*/ address) {
+	public nsIDirectoryService(long /*int*/ address) {
 		super(address);
 	}
 
@@ -45,11 +45,11 @@ public class nsIDirectoryService extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress());
 	}
 
-	public int RegisterProvider(int /*long*/ prov) {
+	public int RegisterProvider(long /*int*/ prov) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), prov);
 	}
 
-	public int UnregisterProvider(int /*long*/ prov) {
+	public int UnregisterProvider(long /*int*/ prov) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), prov);
 	}
 }

@@ -13,37 +13,37 @@ package org.eclipse.swt.internal.win32;
 public class OPENFILENAME {
 	public int lStructSize;
 	/** @field cast=(HWND) */
-	public int /*long*/ hwndOwner;
+	public long /*int*/ hwndOwner;
 	/** @field cast=(HINSTANCE) */
-	public int /*long*/ hInstance;
+	public long /*int*/ hInstance;
 	/** @field cast=(LPCTSTR) */
-	public int /*long*/ lpstrFilter;
+	public long /*int*/ lpstrFilter;
 	/** @field cast=(LPTSTR) */
-	public int /*long*/ lpstrCustomFilter;
+	public long /*int*/ lpstrCustomFilter;
 	public int nMaxCustFilter;
 	public int nFilterIndex;
 	/** @field cast=(LPTSTR) */
-	public int /*long*/ lpstrFile;
+	public long /*int*/ lpstrFile;
 	public int nMaxFile;
 	/** @field cast=(LPTSTR) */
-	public int /*long*/ lpstrFileTitle;
+	public long /*int*/ lpstrFileTitle;
 	public int nMaxFileTitle;
 	/** @field cast=(LPCTSTR) */
-	public int /*long*/ lpstrInitialDir;
+	public long /*int*/ lpstrInitialDir;
 	/** @field cast=(LPCTSTR) */
-	public int /*long*/ lpstrTitle;
+	public long /*int*/ lpstrTitle;
 	public int Flags;
 	public short nFileOffset;
 	public short nFileExtension;
 	/** @field cast=(LPCTSTR) */
-	public int /*long*/ lpstrDefExt;
-	public int /*long*/ lCustData;
+	public long /*int*/ lpstrDefExt;
+	public long /*int*/ lCustData;
 	/** @field cast=(LPOFNHOOKPROC) */
-	public int /*long*/ lpfnHook;
+	public long /*int*/ lpfnHook;
 	/** @field cast=(LPCTSTR) */
-	public int /*long*/ lpTemplateName;
+	public long /*int*/ lpTemplateName;
 	/** @field cast=(void *),flags=no_wince */
-	public int /*long*/ pvReserved;
+	public long /*int*/ pvReserved;
 	/** @field flags=no_wince */
 	public int dwReserved;
 	/** @field flags=no_wince */

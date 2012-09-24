@@ -513,7 +513,7 @@ boolean shouldShowMenu (NSEvent event) {
 	return false;
 }
 
-void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	NSEvent nsEvent = new NSEvent(theEvent);
 	highlight = true;
 	updateImage();
@@ -524,7 +524,7 @@ void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	}
 }
 
-void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void mouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSRect frame = view.frame();
 	boolean oldHighlight = highlight;
@@ -539,7 +539,7 @@ void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	}
 }
 
-void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (highlight) {
 		NSEvent nsEvent = new NSEvent(theEvent);
 		if (nsEvent.type() == OS.NSLeftMouseUp) {
@@ -551,25 +551,25 @@ void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	view.setNeedsDisplay(true);
 }
 
-void rightMouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void rightMouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	mouseDown(id, sel, theEvent);
 }
 
-void rightMouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void rightMouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	mouseUp(id, sel, theEvent);
 }
 
-void rightMouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void rightMouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	mouseDragged(id, sel, theEvent);
 }
 
-void drawRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {
+void drawRect(long /*int*/ id, long /*int*/ sel, NSRect rect) {
 	item.drawStatusBarBackgroundInRect(rect, highlight);
 	super.drawRect(id, sel, rect);
 }
 
 void updateImage () {
-	float /*double*/ width = 0;
+	double /*float*/ width = 0;
 	Image image = this.image;
 	if (highlight && highlightImage != null) image = highlightImage;
 	if (image == null) {

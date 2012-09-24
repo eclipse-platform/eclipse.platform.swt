@@ -45,11 +45,11 @@ public class Tracker extends Widget {
 	boolean tracking, cancelled, stippled;
 	Rectangle [] rectangles = new Rectangle [0], proportions = rectangles;
 	Rectangle bounds;
-	int /*long*/ resizeCursor;
+	long /*int*/ resizeCursor;
 	Cursor clientCursor;
 	int cursorOrientation = SWT.NONE;
 	boolean inEvent = false;
-	int /*long*/ hwndTransparent, hwndOpaque, oldTransparentProc, oldOpaqueProc;
+	long /*int*/ hwndTransparent, hwndOpaque, oldTransparentProc, oldOpaqueProc;
 	int oldX, oldY;
 	
 	static boolean IsVista = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0);
@@ -248,7 +248,7 @@ Point adjustResizeCursor () {
 	* the appropriate resize cursor.
 	*/
 	if (clientCursor == null) {
-		int /*long*/ newCursor = 0;
+		long /*int*/ newCursor = 0;
 		switch (cursorOrientation) {
 			case SWT.UP:
 				newCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
@@ -371,9 +371,9 @@ void drawRectangles (Rectangle [] rects, boolean stippled) {
 		return;
 	}
 	int bandWidth = 1;
-	int /*long*/ hwndTrack = parent == null ? OS.GetDesktopWindow () : parent.handle;
-	int /*long*/ hDC = OS.GetDCEx (hwndTrack, 0, OS.DCX_CACHE);
-	int /*long*/ hBitmap = 0, hBrush = 0, oldBrush = 0;
+	long /*int*/ hwndTrack = parent == null ? OS.GetDesktopWindow () : parent.handle;
+	long /*int*/ hDC = OS.GetDCEx (hwndTrack, 0, OS.DCX_CACHE);
+	long /*int*/ hBitmap = 0, hBrush = 0, oldBrush = 0;
 	if (stippled) {
 		bandWidth = 3;
 		byte [] bits = {-86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0};
@@ -513,7 +513,7 @@ public boolean open () {
 			null);
 		OS.SetLayeredWindowAttributes (hwndOpaque, 0xFFFFFF, (byte)0xFF, OS.LWA_COLORKEY | OS.LWA_ALPHA);		
 		newProc = new Callback (this, "transparentProc", 4); //$NON-NLS-1$
-		int /*long*/ newProcAddress = newProc.getAddress ();
+		long /*int*/ newProcAddress = newProc.getAddress ();
 		if (newProcAddress == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		oldTransparentProc = OS.GetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC);
 		OS.SetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC, newProcAddress);
@@ -542,7 +542,7 @@ public boolean open () {
 				OS.GetModuleHandle (null),
 				null);
 			newProc = new Callback (this, "transparentProc", 4); //$NON-NLS-1$
-			int /*long*/ newProcAddress = newProc.getAddress ();
+			long /*int*/ newProcAddress = newProc.getAddress ();
 			if (newProcAddress == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 			oldTransparentProc = OS.GetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC);
 			OS.SetWindowLongPtr (hwndTransparent, OS.GWLP_WNDPROC, newProcAddress);
@@ -869,7 +869,7 @@ public void setStippled (boolean stippled) {
 	this.stippled = stippled;
 }
 
-int /*long*/ transparentProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ wParam, int /*long*/ lParam) {
+long /*int*/ transparentProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wParam, long /*int*/ lParam) {
 	switch ((int)/*64*/msg) {
 		/*
 		* We typically do not want to answer that the transparent window is
@@ -896,9 +896,9 @@ int /*long*/ transparentProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ 
 		case OS.WM_PAINT:
 			if (hwndOpaque == hwnd) {
 				PAINTSTRUCT ps = new PAINTSTRUCT();
-				int /*long*/ hDC = OS.BeginPaint (hwnd, ps);
-				int /*long*/ hBitmap = 0, hBrush = 0, oldBrush = 0;			
-				int /*long*/ transparentBrush = OS.CreateSolidBrush(0xFFFFFF);
+				long /*int*/ hDC = OS.BeginPaint (hwnd, ps);
+				long /*int*/ hBitmap = 0, hBrush = 0, oldBrush = 0;			
+				long /*int*/ transparentBrush = OS.CreateSolidBrush(0xFFFFFF);
 				oldBrush = OS.SelectObject (hDC, transparentBrush);
 				OS.PatBlt (hDC, ps.left, ps.top, ps.right - ps.left, ps.bottom - ps.top, OS.PATCOPY);
 				OS.SelectObject (hDC, oldBrush);
@@ -953,7 +953,7 @@ void update () {
 	}
 }
 
-LRESULT wmKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
 	if (result != null) return result;
 	boolean isMirrored = parent != null && (parent.style & SWT.MIRRORED) != 0;
@@ -1087,7 +1087,7 @@ LRESULT wmKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) 
 	return result;
 }
 
-LRESULT wmSysKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmSysKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.wmSysKeyDown (hwnd, wParam, lParam);
 	if (result != null) return result;
 	cancelled = true;			
@@ -1095,7 +1095,7 @@ LRESULT wmSysKeyDown (int /*long*/ hwnd, int /*long*/ wParam, int /*long*/ lPara
 	return result;
 }
 
-LRESULT wmMouse (int message, int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmMouse (int message, long /*int*/ wParam, long /*int*/ lParam) {
 	boolean isMirrored = parent != null && (parent.style & SWT.MIRRORED) != 0;
 	int newPos = OS.GetMessagePos ();
 	int newX = OS.GET_X_LPARAM (newPos);

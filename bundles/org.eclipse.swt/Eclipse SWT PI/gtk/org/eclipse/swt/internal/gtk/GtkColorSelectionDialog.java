@@ -17,11 +17,11 @@ package org.eclipse.swt.internal.gtk;
 
 public class GtkColorSelectionDialog {
 	/** @field cast=(GtkWidget *) */
-	public int /*long*/ colorsel;
+	public long /*int*/ colorsel;
 	/** @field cast=(GtkWidget *) */
-	public int /*long*/ ok_button;
+	public long /*int*/ ok_button;
 	/** @field cast=(GtkWidget *) */
-	public int /*long*/ cancel_button;
+	public long /*int*/ cancel_button;
 	/** @field cast=(GtkWidget *) */
-	public int /*long*/ help_button;
+	public long /*int*/ help_button;
 }

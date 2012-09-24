@@ -126,7 +126,7 @@ void createHandle (int index) {
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	gtk_widget_set_has_window (fixedHandle, true);
-	int /*long*/ hAdjustment = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
+	long /*int*/ hAdjustment = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
 	if (hAdjustment == 0) error (SWT.ERROR_NO_HANDLES);	
 	if ((style & SWT.HORIZONTAL) != 0) {
 		handle = gtk_scale_new (OS.GTK_ORIENTATION_HORIZONTAL, hAdjustment);
@@ -158,7 +158,7 @@ void hookEvents () {
  */
 public int getIncrement () {
 	checkWidget ();
-	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
+	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.step_increment;
@@ -176,7 +176,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget ();
-	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
+	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.upper;
@@ -194,7 +194,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
+	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.lower;
@@ -214,7 +214,7 @@ public int getMinimum () {
  */
 public int getPageIncrement () {
 	checkWidget ();
-	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
+	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.page_increment;
@@ -232,13 +232,13 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget ();
-	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
+	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.value;
 }
 
-int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
+long /*int*/ gtk_value_changed (long /*int*/ adjustment) {
 	sendSelectionEvent  (SWT.Selection);
 	return 0;
 }
@@ -373,8 +373,8 @@ public void setSelection (int value) {
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
-int /*long*/ gtk_scale_new (int orientation, int /*long*/ adjustment) {
-	int /*long*/ scale = 0;
+long /*int*/ gtk_scale_new (int orientation, long /*int*/ adjustment) {
+	long /*int*/ scale = 0;
 	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0))	{
 		scale = OS.gtk_scale_new (orientation, adjustment);
 	} else {

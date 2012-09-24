@@ -196,7 +196,7 @@ public boolean getOverwrite () {
 	return overwrite;
 }
 
-int /*long*/ OFNHookProc (int /*long*/ hdlg, int /*long*/ uiMsg, int /*long*/ wParam, int /*long*/ lParam) {
+long /*int*/ OFNHookProc (long /*int*/ hdlg, long /*int*/ uiMsg, long /*int*/ wParam, long /*int*/ lParam) {
 	switch ((int)/*64*/uiMsg) {
 		case OS.WM_NOTIFY:
 			OFNOTIFY ofn = new OFNOTIFY ();
@@ -208,8 +208,8 @@ int /*long*/ OFNHookProc (int /*long*/ hdlg, int /*long*/ uiMsg, int /*long*/ wP
 					OPENFILENAME lpofn = new OPENFILENAME ();
 					OS.MoveMemory (lpofn, ofn.lpOFN, OPENFILENAME.sizeof);
 					if (lpofn.nMaxFile < lResult) {
-						int /*long*/ hHeap = OS.GetProcessHeap ();
-						int /*long*/ lpstrFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, lResult * TCHAR.sizeof);
+						long /*int*/ hHeap = OS.GetProcessHeap ();
+						long /*int*/ lpstrFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, lResult * TCHAR.sizeof);
 						if (lpstrFile != 0) {
 							if (lpofn.lpstrFile != 0) OS.HeapFree (hHeap, 0, lpofn.lpstrFile);
 							lpofn.lpstrFile = lpstrFile;
@@ -237,11 +237,11 @@ int /*long*/ OFNHookProc (int /*long*/ hdlg, int /*long*/ uiMsg, int /*long*/ wP
  * </ul>
  */
 public String open () {
-	int /*long*/ hHeap = OS.GetProcessHeap ();
+	long /*int*/ hHeap = OS.GetProcessHeap ();
 	
 	/* Get the owner HWND for the dialog */
-	int /*long*/ hwndOwner = parent.handle;
-	int /*long*/ hwndParent = parent.handle;
+	long /*int*/ hwndOwner = parent.handle;
+	long /*int*/ hwndParent = parent.handle;
 	
 	/*
 	* Feature in Windows.  There is no API to set the orientation of a
@@ -276,7 +276,7 @@ public String open () {
 	/* Use the character encoding for the default locale */
 	TCHAR buffer3 = new TCHAR (0, title, true);
 	int byteCount3 = buffer3.length () * TCHAR.sizeof;
-	int /*long*/ lpstrTitle = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount3);
+	long /*int*/ lpstrTitle = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount3);
 	OS.MoveMemory (lpstrTitle, buffer3, byteCount3); 
 
 	/* Compute filters and copy into lpstrFilter */
@@ -294,7 +294,7 @@ public String open () {
 	/* Use the character encoding for the default locale */
 	TCHAR buffer4 = new TCHAR (0, strFilter, true);
 	int byteCount4 = buffer4.length () * TCHAR.sizeof;
-	int /*long*/ lpstrFilter = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount4);
+	long /*int*/ lpstrFilter = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount4);
 	OS.MoveMemory (lpstrFilter, buffer4, byteCount4);
 	
 	/* Convert the fileName and filterName to C strings */
@@ -309,7 +309,7 @@ public String open () {
 	int nMaxFile = OS.MAX_PATH;
 	if ((style & SWT.MULTI) != 0) nMaxFile = Math.max (nMaxFile, BUFFER_SIZE);
 	int byteCount = nMaxFile * TCHAR.sizeof;
-	int /*long*/ lpstrFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	long /*int*/ lpstrFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	int byteCountFile = Math.min (name.length () * TCHAR.sizeof, byteCount - TCHAR.sizeof);
 	OS.MoveMemory (lpstrFile, name, byteCountFile);
 
@@ -321,7 +321,7 @@ public String open () {
 	/* Use the character encoding for the default locale */
 	TCHAR path = new TCHAR (0, filterPath.replace ('/', '\\'), true);
 	int byteCount5 = OS.MAX_PATH * TCHAR.sizeof;
-	int /*long*/ lpstrInitialDir = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount5);
+	long /*int*/ lpstrInitialDir = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount5);
 	int byteCountDir = Math.min (path.length () * TCHAR.sizeof, byteCount5 - TCHAR.sizeof);
 	OS.MoveMemory (lpstrInitialDir, path, byteCountDir);
 
@@ -336,7 +336,7 @@ public String open () {
 		struct.Flags |= OS.OFN_ALLOWMULTISELECT | OS.OFN_EXPLORER | OS.OFN_ENABLESIZING;
 		if (!OS.IsWinCE && USE_HOOK) {
 			callback = new Callback (this, "OFNHookProc", 4); //$NON-NLS-1$
-			int /*long*/ lpfnHook = callback.getAddress ();
+			long /*int*/ lpfnHook = callback.getAddress ();
 			if (lpfnHook == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 			struct.lpfnHook = lpfnHook;
 			struct.Flags |= OS.OFN_ENABLEHOOK;
@@ -356,7 +356,7 @@ public String open () {
 	* empty, Windows uses the current value of the filter
 	* extension at the time that the dialog is closed.
 	*/
-	int /*long*/ lpstrDefExt = 0;
+	long /*int*/ lpstrDefExt = 0;
 	if (save) {
 		lpstrDefExt = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
 		struct.lpstrDefExt = lpstrDefExt;

@@ -127,7 +127,7 @@ static Table checkNull (Table control) {
 }
 
 Color _getBackground () {
-	int /*long*/ [] ptr = new int /*long*/ [1];
+	long /*int*/ [] ptr = new long /*int*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.BACKGROUND_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getBackground ();
 	GdkColor gdkColor = new GdkColor ();
@@ -139,7 +139,7 @@ Color _getBackground () {
 Color _getBackground (int index) {
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return _getBackground ();
-	int /*long*/ [] ptr = new int /*long*/ [1];
+	long /*int*/ [] ptr = new long /*int*/ [1];
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Table.CELL_BACKGROUND, ptr, -1);
 	if (ptr [0] == 0) return _getBackground ();
@@ -156,7 +156,7 @@ boolean _getChecked () {
 }
 
 Color _getForeground () {
-	int /*long*/ [] ptr = new int /*long*/ [1];
+	long /*int*/ [] ptr = new long /*int*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.FOREGROUND_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getForeground ();
 	GdkColor gdkColor = new GdkColor ();
@@ -168,7 +168,7 @@ Color _getForeground () {
 Color _getForeground (int index) {
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return _getForeground ();
-	int /*long*/ [] ptr = new int /*long*/ [1];
+	long /*int*/ [] ptr = new long /*int*/ [1];
 	int modelIndex =  parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Table.CELL_FOREGROUND, ptr, -1);
 	if (ptr [0] == 0) return _getForeground ();
@@ -181,7 +181,7 @@ Color _getForeground (int index) {
 Image _getImage (int index) {
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return null;
-	int /*long*/ [] ptr = new int /*long*/ [1];
+	long /*int*/ [] ptr = new long /*int*/ [1];
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Table.CELL_PIXBUF, ptr, -1);
 	if (ptr [0] == 0) return null;
@@ -195,7 +195,7 @@ Image _getImage (int index) {
 String _getText (int index) {
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return "";
-	int /*long*/ [] ptr = new int /*long*/ [1];
+	long /*int*/ [] ptr = new long /*int*/ [1];
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Table.CELL_TEXT, ptr, -1);
 	if (ptr [0] == 0) return "";
@@ -219,7 +219,7 @@ void clear () {
 			OS.gtk_list_store_set (parent.modelHandle, handle, i, 0, -1);
 		}
 		for (int i=Table.FOREGROUND_COLUMN; i<columnCount; i++) {
-			OS.gtk_list_store_set (parent.modelHandle, handle, i, (int /*long*/)0, -1);
+			OS.gtk_list_store_set (parent.modelHandle, handle, i, (long /*int*/)0, -1);
 		}
 		/*
 		* Bug in GTK.  When using fixed-height-mode,
@@ -278,14 +278,14 @@ public Rectangle getBounds () {
 	// shifted a bit too far right on later versions of GTK - however, old Tree also had this problem
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int /*long*/ parentHandle = parent.handle;
-	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, 0);
+	long /*int*/ parentHandle = parent.handle;
+	long /*int*/ column = OS.gtk_tree_view_get_column (parentHandle, 0);
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
-	int /*long*/ textRenderer = parent.getTextRenderer (column);
-	int /*long*/ pixbufRenderer = parent.getPixbufRenderer (column);
+	long /*int*/ textRenderer = parent.getTextRenderer (column);
+	long /*int*/ pixbufRenderer = parent.getPixbufRenderer (column);
 	if (textRenderer == 0 || pixbufRenderer == 0)  return new Rectangle (0, 0, 0, 0);
 
-	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	long /*int*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	OS.gtk_widget_realize (parentHandle);
 	
 	boolean isExpander = OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle) > 0;
@@ -358,15 +358,15 @@ public Color getBackground (int index) {
 public Rectangle getBounds (int index) {
 	checkWidget();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int /*long*/ parentHandle = parent.handle;
-	int /*long*/ column = 0;
+	long /*int*/ parentHandle = parent.handle;
+	long /*int*/ column = 0;
 	if (index >= 0 && index < parent.columnCount) {
 		column = parent.columns [index].handle;
 	} else {
 		column = OS.gtk_tree_view_get_column (parentHandle, index);
 	}
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
-	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	long /*int*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	OS.gtk_widget_realize (parentHandle);
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
@@ -541,18 +541,18 @@ public Image getImage (int index) {
 public Rectangle getImageBounds (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int /*long*/ parentHandle = parent.handle;
-	int /*long*/ column = 0;
+	long /*int*/ parentHandle = parent.handle;
+	long /*int*/ column = 0;
 	if (index >= 0 && index < parent.columnCount) {
 		column = parent.columns [index].handle;
 	} else {
 		column = OS.gtk_tree_view_get_column (parentHandle, index);
 	}
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
-	int /*long*/ pixbufRenderer = parent.getPixbufRenderer (column);
+	long /*int*/ pixbufRenderer = parent.getPixbufRenderer (column);
 	if (pixbufRenderer == 0)  return new Rectangle (0, 0, 0, 0);
 	GdkRectangle rect = new GdkRectangle ();
-	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	long /*int*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
@@ -651,19 +651,19 @@ public Rectangle getTextBounds (int index) {
 	if (0 > index || index > count - 1) return new Rectangle (0, 0, 0, 0);
 	// TODO fully test on early and later versions of GTK
 	// shifted a bit too far right on later versions of GTK - however, old Tree also had this problem
-	int /*long*/ parentHandle = parent.handle;
-	int /*long*/ column = 0;
+	long /*int*/ parentHandle = parent.handle;
+	long /*int*/ column = 0;
 	if (index >= 0 && index < parent.columnCount) {
 		column = parent.columns [index].handle;
 	} else {
 		column = OS.gtk_tree_view_get_column (parentHandle, index);
 	}
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
-	int /*long*/ textRenderer = parent.getTextRenderer (column);
-	int /*long*/ pixbufRenderer = parent.getPixbufRenderer (column);
+	long /*int*/ textRenderer = parent.getTextRenderer (column);
+	long /*int*/ pixbufRenderer = parent.getPixbufRenderer (column);
 	if (textRenderer == 0 || pixbufRenderer == 0)  return new Rectangle (0, 0, 0, 0);
 
-	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	long /*int*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	OS.gtk_widget_realize (parentHandle);
 	
 	boolean isExpander = OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle) > 0;
@@ -702,12 +702,12 @@ public Rectangle getTextBounds (int index) {
 
 void redraw () {
 	if (gtk_widget_get_realized (parent.handle)) {
-		int /*long*/ parentHandle = parent.handle;
-		int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+		long /*int*/ parentHandle = parent.handle;
+		long /*int*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 		GdkRectangle rect = new GdkRectangle ();
 		OS.gtk_tree_view_get_cell_area (parentHandle, path, 0, rect);
 		OS.gtk_tree_path_free (path);
-		int /*long*/ window = OS.gtk_tree_view_get_bin_window (parentHandle);
+		long /*int*/ window = OS.gtk_tree_view_get_bin_window (parentHandle);
 		rect.x = 0;
 		int [] w = new int [1], h = new int [1];
 		gdk_window_get_size (window, w, h);
@@ -812,16 +812,16 @@ public void setBackground (int index, Color color) {
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
 		if (!customDraw) {
 			if ((parent.style & SWT.VIRTUAL) == 0) {
-				int /*long*/ parentHandle = parent.handle;
-				int /*long*/ column = 0;
+				long /*int*/ parentHandle = parent.handle;
+				long /*int*/ column = 0;
 				if (parent.columnCount > 0) {
 					column = parent.columns [index].handle;
 				} else {
 					column = OS.gtk_tree_view_get_column (parentHandle, index);
 				}
 				if (column == 0) return;
-				int /*long*/ textRenderer = parent.getTextRenderer (column);
-				int /*long*/ imageRenderer = parent.getPixbufRenderer (column);
+				long /*int*/ textRenderer = parent.getTextRenderer (column);
+				long /*int*/ imageRenderer = parent.getPixbufRenderer (column);
 				OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.cellDataProc, parentHandle, 0);
 				OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.cellDataProc, parentHandle, 0);
 			}
@@ -885,7 +885,7 @@ public void setFont (Font font){
 	if (oldFont == font) return;
 	this.font = font;
 	if (oldFont != null && oldFont.equals (font)) return;
-	int /*long*/ fontHandle = font != null ? font.handle : 0;
+	long /*int*/ fontHandle = font != null ? font.handle : 0;
 	OS.gtk_list_store_set (parent.modelHandle, handle, Table.FONT_COLUMN, fontHandle, -1);
 	/*
 	* Bug in GTK.  When using fixed-height-mode,
@@ -936,7 +936,7 @@ public void setFont (int index, Font font) {
 	if (oldFont != null && oldFont.equals (font)) return;
 
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	int /*long*/ fontHandle  = font != null ? font.handle : 0;
+	long /*int*/ fontHandle  = font != null ? font.handle : 0;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_FONT, fontHandle, -1);
 	/*
 	* Bug in GTK.  When using fixed-height-mode,
@@ -954,16 +954,16 @@ public void setFont (int index, Font font) {
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
 		if (!customDraw) {
 			if ((parent.style & SWT.VIRTUAL) == 0) {
-				int /*long*/ parentHandle = parent.handle;
-				int /*long*/ column = 0;
+				long /*int*/ parentHandle = parent.handle;
+				long /*int*/ column = 0;
 				if (parent.columnCount > 0) {
 					column = parent.columns [index].handle;
 				} else {
 					column = OS.gtk_tree_view_get_column (parentHandle, index);
 				}
 				if (column == 0) return;
-				int /*long*/ textRenderer = parent.getTextRenderer (column);
-				int /*long*/ imageRenderer = parent.getPixbufRenderer (column);
+				long /*int*/ textRenderer = parent.getTextRenderer (column);
+				long /*int*/ imageRenderer = parent.getPixbufRenderer (column);
 				OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.cellDataProc, parentHandle, 0);
 				OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.cellDataProc, parentHandle, 0);
 			}
@@ -1059,16 +1059,16 @@ public void setForeground (int index, Color color){
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
 		if (!customDraw) {
 			if ((parent.style & SWT.VIRTUAL) == 0) {
-				int /*long*/ parentHandle = parent.handle;
-				int /*long*/ column = 0;
+				long /*int*/ parentHandle = parent.handle;
+				long /*int*/ column = 0;
 				if (parent.columnCount > 0) {
 					column = parent.columns [index].handle;
 				} else {
 					column = OS.gtk_tree_view_get_column (parentHandle, index);
 				}
 				if (column == 0) return;
-				int /*long*/ textRenderer = parent.getTextRenderer (column);
-				int /*long*/ imageRenderer = parent.getPixbufRenderer (column);
+				long /*int*/ textRenderer = parent.getTextRenderer (column);
+				long /*int*/ imageRenderer = parent.getPixbufRenderer (column);
 				OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.cellDataProc, parentHandle, 0);
 				OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.cellDataProc, parentHandle, 0);
 			}
@@ -1131,7 +1131,7 @@ public void setImage (int index, Image image) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	int /*long*/ pixbuf = 0;
+	long /*int*/ pixbuf = 0;
 	if (image != null) {
 		ImageList imageList = parent.imageList;
 		if (imageList == null) imageList = parent.imageList = new ImageList ();
@@ -1158,10 +1158,10 @@ public void setImage (int index, Image image) {
 	 */
 	if ((parent.style & SWT.VIRTUAL) != 0 && parent.currentItem == null) {
 		if (image != null) {
-			int /*long*/parentHandle = parent.handle;
-			int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
+			long /*int*/parentHandle = parent.handle;
+			long /*int*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 			int [] w = new int [1];
-			int /*long*/ pixbufRenderer = parent.getPixbufRenderer(column);
+			long /*int*/ pixbufRenderer = parent.getPixbufRenderer(column);
 			OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, null, w);
 			if (w[0] < image.getBounds().width) {
 				/*
@@ -1169,7 +1169,7 @@ public void setImage (int index, Image image) {
 				* are relying on the fact that it is done as part of modifying
 				* the style.
 				*/
-				int /*long*/ style = OS.gtk_widget_get_modifier_style (parentHandle);
+				long /*int*/ style = OS.gtk_widget_get_modifier_style (parentHandle);
 				parent.modifyStyle (parentHandle, style);
 			}
 		} 

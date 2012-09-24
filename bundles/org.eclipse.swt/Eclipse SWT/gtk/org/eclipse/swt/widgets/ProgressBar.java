@@ -161,8 +161,8 @@ public int getState () {
 	return SWT.NORMAL;
 }
 
-int /*long*/ gtk_realize (int /*long*/ widget) {
-	int /*long*/ result = super.gtk_realize (widget);
+long /*int*/ gtk_realize (long /*int*/ widget) {
+	long /*int*/ result = super.gtk_realize (widget);
 	if (result != 0) return result;
 	/*
 	* Bug in GTK.  When a progress bar has been unrealized after being
@@ -275,7 +275,7 @@ public void setState (int state) {
 	//NOT IMPLEMENTED
 }
 
-int /*long*/ timerProc (int /*long*/ widget) {
+long /*int*/ timerProc (long /*int*/ widget) {
 	if (isVisible ()) OS.gtk_progress_bar_pulse (handle);
 	return 1;
 }
@@ -298,7 +298,7 @@ void updateBar (int selection, int minimum, int maximum) {
 	* but unexpected.  The fix is to force all
 	* outstanding redraws to be delivered.
 	*/
-	int /*long*/ window = paintWindow ();
+	long /*int*/ window = paintWindow ();
 	OS.gdk_window_process_updates (window, false);
 	OS.gdk_flush ();
 }

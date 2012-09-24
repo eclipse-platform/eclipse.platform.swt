@@ -43,67 +43,67 @@ public class nsIURI extends nsISupports {
 	public static final nsID NS_IURI_10_IID =
 			new nsID(NS_IURI_10_IID_STR);
 
-	public nsIURI(int /*long*/ address) {
+	public nsIURI(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetSpec(int /*long*/ aSpec) {
+	public int GetSpec(long /*int*/ aSpec) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aSpec);
 	}
 
-	public int SetSpec(int /*long*/ aSpec) {
+	public int SetSpec(long /*int*/ aSpec) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aSpec);
 	}
 
-	public int GetPrePath(int /*long*/ aPrePath) {
+	public int GetPrePath(long /*int*/ aPrePath) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aPrePath);
 	}
 
-	public int GetScheme(int /*long*/ aScheme) {
+	public int GetScheme(long /*int*/ aScheme) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aScheme);
 	}
 
-	public int SetScheme(int /*long*/ aScheme) {
+	public int SetScheme(long /*int*/ aScheme) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aScheme);
 	}
 
-	public int GetUserPass(int /*long*/ aUserPass) {
+	public int GetUserPass(long /*int*/ aUserPass) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aUserPass);
 	}
 
-	public int SetUserPass(int /*long*/ aUserPass) {
+	public int SetUserPass(long /*int*/ aUserPass) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aUserPass);
 	}
 
-	public int GetUsername(int /*long*/ aUsername) {
+	public int GetUsername(long /*int*/ aUsername) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aUsername);
 	}
 
-	public int SetUsername(int /*long*/ aUsername) {
+	public int SetUsername(long /*int*/ aUsername) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aUsername);
 	}
 
-	public int GetPassword(int /*long*/ aPassword) {
+	public int GetPassword(long /*int*/ aPassword) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aPassword);
 	}
 
-	public int SetPassword(int /*long*/ aPassword) {
+	public int SetPassword(long /*int*/ aPassword) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aPassword);
 	}
 
-	public int GetHostPort(int /*long*/ aHostPort) {
+	public int GetHostPort(long /*int*/ aHostPort) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), aHostPort);
 	}
 
-	public int SetHostPort(int /*long*/ aHostPort) {
+	public int SetHostPort(long /*int*/ aHostPort) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), aHostPort);
 	}
 
-	public int GetHost(int /*long*/ aHost) {
+	public int GetHost(long /*int*/ aHost) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), aHost);
 	}
 
-	public int SetHost(int /*long*/ aHost) {
+	public int SetHost(long /*int*/ aHost) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 15, getAddress(), aHost);
 	}
 
@@ -115,15 +115,15 @@ public class nsIURI extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 17, getAddress(), aPort);
 	}
 
-	public int GetPath(int /*long*/ aPath) {
+	public int GetPath(long /*int*/ aPath) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 18, getAddress(), aPath);
 	}
 
-	public int SetPath(int /*long*/ aPath) {
+	public int SetPath(long /*int*/ aPath) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 19, getAddress(), aPath);
 	}
 
-	public int Equals(int /*long*/ other, int[] _retval) {
+	public int Equals(long /*int*/ other, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 20, getAddress(), other, _retval);
 	}
 
@@ -131,47 +131,47 @@ public class nsIURI extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 21, getAddress(), scheme, _retval);
 	}
 
-	public int Clone(int /*long*/[] _retval) {
+	public int Clone(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 22, getAddress(), _retval);
 	}
 
-	public int Resolve(int /*long*/ relativePath, int /*long*/ _retval) {
+	public int Resolve(long /*int*/ relativePath, long /*int*/ _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 23, getAddress(), relativePath, _retval);
 	}
 
-	public int GetAsciiSpec(int /*long*/ aAsciiSpec) {
+	public int GetAsciiSpec(long /*int*/ aAsciiSpec) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 24, getAddress(), aAsciiSpec);
 	}
 
-	public int GetAsciiHost(int /*long*/ aAsciiHost) {
+	public int GetAsciiHost(long /*int*/ aAsciiHost) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 25, getAddress(), aAsciiHost);
 	}
 
-	public int GetOriginCharset(int /*long*/ aOriginCharset) {
+	public int GetOriginCharset(long /*int*/ aOriginCharset) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 26, getAddress(), aOriginCharset);
 	}
 	
-	public int GetRef(int /*long*/ aRef) {
+	public int GetRef(long /*int*/ aRef) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 27, getAddress(), aRef);
 	}
 
-	public int SetRef(int /*long*/ aRef) {
+	public int SetRef(long /*int*/ aRef) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 28, getAddress(), aRef);
 	}
 
-	public int EqualsExceptRef(int /*long*/ other, int[] _retval) {
+	public int EqualsExceptRef(long /*int*/ other, int[] _retval) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 29, getAddress(), other, _retval);
 	}
 
-	public int CloneIgnoringRef(int /*long*/[] _retval) {
+	public int CloneIgnoringRef(long /*int*/[] _retval) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 30, getAddress(), _retval);
 	}
 
-	public int GetSpecIgnoringRef(int /*long*/ aSpecIgnoringRef) {
+	public int GetSpecIgnoringRef(long /*int*/ aSpecIgnoringRef) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 31, getAddress(), aSpecIgnoringRef);
 	}

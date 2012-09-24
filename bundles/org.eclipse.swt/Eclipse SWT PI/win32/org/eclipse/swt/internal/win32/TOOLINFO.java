@@ -14,8 +14,8 @@ public class TOOLINFO {
 	public int cbSize; 
 	public int uFlags;
 	/** @field cast=(HWND) */
-	public int /*long*/ hwnd; 
-	public int /*long*/ uId; 
+	public long /*int*/ hwnd; 
+	public long /*int*/ uId; 
 //	public RECT rect;
 	/** @field accessor=rect.left */
 	public int left; 
@@ -26,11 +26,11 @@ public class TOOLINFO {
 	/** @field accessor=rect.bottom */
 	public int bottom;
 	/** @field cast=(HINSTANCE) */
-	public int /*long*/ hinst; 
+	public long /*int*/ hinst; 
 	/** @field cast=(LPTSTR) */
-	public int /*long*/ lpszText;
-	public int /*long*/ lParam;
+	public long /*int*/ lpszText;
+	public long /*int*/ lParam;
 	/** @field cast=(void *) */
-	public int /*long*/ lpReserved;
+	public long /*int*/ lpReserved;
 	public static int sizeof = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1) ? OS.TOOLINFO_sizeof () : 44;
 }

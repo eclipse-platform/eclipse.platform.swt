@@ -204,11 +204,11 @@ Widget [] computeTabList () {
 	return result;
 }
 
-int /*long*/ eventHandle () {
+long /*int*/ eventHandle () {
 	return fixedHandle;
 }
 
-int /*long*/ enterExitHandle() {
+long /*int*/ enterExitHandle() {
 	return handle;
 }
 
@@ -226,10 +226,10 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 	}
 }
 
-boolean forceFocus (int /*long*/ focusHandle) {
+boolean forceFocus (long /*int*/ focusHandle) {
 	int dir = OS.GTK_DIR_TAB_FORWARD;
 	if ((style & SWT.MIRRORED) != 0) dir = OS.GTK_DIR_TAB_BACKWARD;
-	int /*long*/ childHandle = handle;
+	long /*int*/ childHandle = handle;
 	if (currentFocusItem != null)  childHandle = currentFocusItem.handle;
 	/*
 	 * Feature in GTK. GtkToolBar takes care of navigating through
@@ -298,7 +298,7 @@ public ToolItem getItem (Point point) {
  */
 public int getItemCount () {
 	checkWidget();
-	int /*long*/ list = OS.gtk_container_get_children (handle);
+	long /*int*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) return 0;
 	int itemCount = OS.g_list_length (list);
 	OS.g_list_free (list);
@@ -327,13 +327,13 @@ public ToolItem [] getItems () {
 }
 
 ToolItem [] _getItems () {
-	int /*long*/ list = OS.gtk_container_get_children (handle);
+	long /*int*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) return new ToolItem [0];
 	int count = OS.g_list_length (list);
 	ToolItem [] items = new ToolItem [count];
 	int index = 0;
 	for (int i=0; i<count; i++) {
-		int /*long*/ data = OS.g_list_nth_data (list, i);
+		long /*int*/ data = OS.g_list_nth_data (list, i);
 		Widget widget = display.getWidget (data);
 		if (widget != null) items [index++] = (ToolItem) widget;
 	}
@@ -383,9 +383,9 @@ ToolItem [] _getTabItemList () {
 	return tabItemList;
 }
 
-int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
+long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	if (!hasFocus ()) return 0;
-	int /*long*/ result = super.gtk_key_press_event (widget, eventPtr);
+	long /*int*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
 	GdkEventKey gdkEvent = new GdkEventKey ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
@@ -394,7 +394,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 			if (OS.GTK_VERSION < OS.VERSION (2, 6, 0) && (currentFocusItem != null) && (currentFocusItem.style & SWT.DROP_DOWN) != 0) {
 				Event event = new Event ();
 				event.detail = SWT.ARROW;
-				int /*long*/ topHandle = currentFocusItem.topHandle ();
+				long /*int*/ topHandle = currentFocusItem.topHandle ();
 				GtkAllocation allocation = new GtkAllocation ();
 				gtk_widget_get_allocation (topHandle, allocation);
 				event.x = allocation.x;
@@ -412,7 +412,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	}
 }
 
-int /*long*/ gtk_focus (int /*long*/ widget, int /*long*/ directionType) {
+long /*int*/ gtk_focus (long /*int*/ widget, long /*int*/ directionType) {
 	return 0;
 }
 
@@ -449,7 +449,7 @@ public int indexOf (ToolItem item) {
 	return -1;
 }
 
-static int /*long*/ MenuItemSelectedProc (int /*long*/ widget, int /*long*/	user_data) {
+static long /*int*/ MenuItemSelectedProc (long /*int*/ widget, long /*int*/	user_data) {
 	Display display = Display.getCurrent ();
 	ToolItem item = (ToolItem) display.getWidget (user_data);
 	if (item != null) {
@@ -458,7 +458,7 @@ static int /*long*/ MenuItemSelectedProc (int /*long*/ widget, int /*long*/	user
 	return 0;
 }
 
-int /*long*/ menuItemSelected (int /*long*/ widget, ToolItem item) {
+long /*int*/ menuItemSelected (long /*int*/ widget, ToolItem item) {
 	Event event = new Event ();
 	switch (item.style) {
 		case SWT.DROP_DOWN :
@@ -490,7 +490,7 @@ int /*long*/ menuItemSelected (int /*long*/ widget, ToolItem item) {
 boolean mnemonicHit (char key) {
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
-		int /*long*/ labelHandle = items [i].labelHandle;
+		long /*int*/ labelHandle = items [i].labelHandle;
 		if (labelHandle != 0 && mnemonicHit (labelHandle, key)) return true;
 	}
 	return false;
@@ -499,7 +499,7 @@ boolean mnemonicHit (char key) {
 boolean mnemonicMatch (char key) {
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
-		int /*long*/ labelHandle = items [i].labelHandle;
+		long /*int*/ labelHandle = items [i].labelHandle;
 		if (labelHandle != 0 && mnemonicMatch (labelHandle, key)) return true;
 	}
 	return false;
@@ -576,7 +576,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	return result;
 }
 
-void setFontDescription (int /*long*/ font) {
+void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 	ToolItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {

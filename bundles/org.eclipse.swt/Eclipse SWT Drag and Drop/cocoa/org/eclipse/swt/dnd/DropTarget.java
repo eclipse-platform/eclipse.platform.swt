@@ -77,7 +77,7 @@ import org.eclipse.swt.widgets.*;
 public class DropTarget extends Widget {
 
 	static Callback dropTarget2Args, dropTarget3Args, dropTarget6Args;
-	static int /*long*/ proc2Args, proc3Args, proc6Args;
+	static long /*int*/ proc2Args, proc3Args, proc6Args;
 
 	static {
 		Class clazz = DropTarget.class;
@@ -119,27 +119,27 @@ void addDragHandlers() {
 	// the types with the Control's NSView and AppKit will call the methods in the protocol
 	// when a drag goes over the view. 
 
-	int /*long*/ cls = OS.object_getClass(control.view.id);
+	long /*int*/ cls = OS.object_getClass(control.view.id);
 
 	if (cls == 0) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	}
 
 	// If we already added it, no need to do it again.
-	int /*long*/ procPtr = OS.class_getMethodImplementation(cls, OS.sel_draggingEntered_);
+	long /*int*/ procPtr = OS.class_getMethodImplementation(cls, OS.sel_draggingEntered_);
 	if (procPtr == proc3Args) return;
 	addDragHandlers(cls);
 	
 	// If the content view can be image view, then add the dragging methods to image view too.
 	// This is used by Label so that dragging can work even when the Label has an image set on it.
-	int /*long*/ imageView = 0;
+	long /*int*/ imageView = 0;
 	if ((imageView = OS.objc_msgSend(control.view.id, OS.sel_getImageView)) != 0) {
 		cls = OS.object_getClass(imageView);
 		addDragHandlers(cls);
 	}
 }
 
-void addDragHandlers (int /*long*/ cls) {
+void addDragHandlers (long /*int*/ cls) {
 	// Add the NSDraggingDestination callbacks
 	OS.class_addMethod(cls, OS.sel_draggingEntered_, proc3Args, "@:@");
 	OS.class_addMethod(cls, OS.sel_draggingUpdated_, proc3Args, "@:@");
@@ -201,7 +201,7 @@ public void addDropListener(DropTargetListener listener) {
 	addListener (DND.DropAccept, typedListener);
 }
 
-int /*long*/ dndCallSuper (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+long /*int*/ dndCallSuper (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
@@ -221,7 +221,7 @@ protected void checkSubclass () {
 	}
 }
 
-int draggingEntered(int /*long*/ id, int /*long*/ sel, NSObject sender) {
+int draggingEntered(long /*int*/ id, long /*int*/ sel, NSObject sender) {
 	if (sender == null) return OS.NSDragOperationNone;	
 	
 	DNDEvent event = new DNDEvent();
@@ -272,7 +272,7 @@ int draggingEntered(int /*long*/ id, int /*long*/ sel, NSObject sender) {
 	return opToOsOp(selectedOperation);
 }
 
-void draggingExited(int /*long*/ id, int /*long*/ sel, NSObject sender) {
+void draggingExited(long /*int*/ id, long /*int*/ sel, NSObject sender) {
 	clearDropNotAllowed();
 	if (keyOperation == -1) return;
 	keyOperation = -1;
@@ -288,7 +288,7 @@ void draggingExited(int /*long*/ id, int /*long*/ sel, NSObject sender) {
 	}
 }
 
-int draggingUpdated(int /*long*/ id, int /*long*/ sel, NSObject sender) {
+int draggingUpdated(long /*int*/ id, long /*int*/ sel, NSObject sender) {
 	if (sender == null) return OS.NSDragOperationNone;	
 	int oldKeyOperation = keyOperation;
 	
@@ -417,7 +417,7 @@ public DropTarget(Control control, int style) {
 	addDragHandlers();	
 }
 
-static int /*long*/ dropTargetProc(int /*long*/ id, int /*long*/ sel) {
+static long /*int*/ dropTargetProc(long /*int*/ id, long /*int*/ sel) {
 	Display display = Display.findDisplay(Thread.currentThread());
 	if (display == null || display.isDisposed()) return 0;
 	Widget widget = display.findWidget(id);
@@ -432,7 +432,7 @@ static int /*long*/ dropTargetProc(int /*long*/ id, int /*long*/ sel) {
 	return 0;
 }
 
-static int /*long*/ dropTargetProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+static long /*int*/ dropTargetProc(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	Display display = Display.findDisplay(Thread.currentThread());
 	if (display == null || display.isDisposed()) return 0;
 	Widget widget = display.findWidget(id);
@@ -457,7 +457,7 @@ static int /*long*/ dropTargetProc(int /*long*/ id, int /*long*/ sel, int /*long
 	return 0;
 }
 
-static int /*long*/ dropTargetProc(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3) {
+static long /*int*/ dropTargetProc(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3) {
 	Display display = Display.findDisplay(Thread.currentThread());
 	if (display == null || display.isDisposed()) return 0;
 	Widget widget = display.findWidget(id);
@@ -549,7 +549,7 @@ int getOperationFromKeyState() {
 	// correct Cocoa behavior.  Control + Option or Command is NSDragOperationGeneric,
 	// or DND.DROP_DEFAULT in the SWT.
 	NSEvent currEvent = NSApplication.sharedApplication().currentEvent();
-	int /*long*/ modifiers = currEvent.modifierFlags();
+	long /*int*/ modifiers = currEvent.modifierFlags();
 	boolean option = (modifiers & OS.NSAlternateKeyMask) == OS.NSAlternateKeyMask;
 	boolean control = (modifiers & OS.NSControlKeyMask) == OS.NSControlKeyMask;
 	if (control && option) return DND.DROP_DEFAULT;
@@ -598,7 +598,7 @@ int opToOsOp(int operation) {
 	return osOperation;
 }
 
-int osOpToOp(int /*long*/ osOperation){
+int osOpToOp(long /*int*/ osOperation){
 	int operation = 0;
 	if ((osOperation & OS.NSDragOperationCopy) != 0){
 		operation |= DND.DROP_COPY;
@@ -732,7 +732,7 @@ boolean drop(NSObject sender) {
 	return (selectedOperation != DND.DROP_NONE);
 }
 
-boolean performDragOperation(int /*long*/ id, int /*long*/ sel, NSObject sender) {
+boolean performDragOperation(long /*int*/ id, long /*int*/ sel, NSObject sender) {
 	if (new NSObject(id).isKindOfClass(OS.class_NSTableView)) {
 		return dndCallSuper(id, sel, sender.id) != 0;
 	}
@@ -740,11 +740,11 @@ boolean performDragOperation(int /*long*/ id, int /*long*/ sel, NSObject sender)
 	return drop (sender);
 }
 
-boolean outlineView_acceptDrop_item_childIndex(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ info, int /*long*/ item, int /*long*/ index) {
+boolean outlineView_acceptDrop_item_childIndex(long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ info, long /*int*/ item, long /*int*/ index) {
 	return drop(new NSObject(info));
 }
 
-int /*long*/ outlineView_validateDrop_proposedItem_proposedChildIndex(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ info, int /*long*/ item, int /*long*/ index) {
+long /*int*/ outlineView_validateDrop_proposedItem_proposedChildIndex(long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ info, long /*int*/ item, long /*int*/ index) {
 	//TODO expansion animation and auto collapse not working because of outlineView:shouldExpandItem:
 	NSOutlineView widget = new NSOutlineView(outlineView);
 	NSObject sender = new NSObject(info);
@@ -825,7 +825,7 @@ boolean setEventData(NSObject draggingState, DNDEvent event) {
 	
 	// get allowed operations
 	int style = getStyle();
-	int /*long*/ allowedActions = draggingState.draggingSourceOperationMask();
+	long /*int*/ allowedActions = draggingState.draggingSourceOperationMask();
 	int operations = osOpToOp(allowedActions) & style;
 	if (operations == DND.DROP_NONE) return false;
 
@@ -846,7 +846,7 @@ boolean setEventData(NSObject draggingState, DNDEvent event) {
 	NSArray draggedTypes = dragPBoard.types();
 	if (draggedTypes == null) return false;
 	
-	int /*long*/ draggedTypeCount = draggedTypes.count();
+	long /*int*/ draggedTypeCount = draggedTypes.count();
 	
 	TransferData[] dataTypes = new TransferData[(int)draggedTypeCount];
 	int index = -1;
@@ -952,16 +952,16 @@ void clearDropNotAllowed() {
 	}
 }
 
-boolean tableView_acceptDrop_row_dropOperation(int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ info, int /*long*/ row, int /*long*/ operation) {
+boolean tableView_acceptDrop_row_dropOperation(long /*int*/ id, long /*int*/ sel, long /*int*/ tableView, long /*int*/ info, long /*int*/ row, long /*int*/ operation) {
 	return drop(new NSObject(info));
 }
 
-int tableView_validateDrop_proposedRow_proposedDropOperation(int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ info, int /*long*/ row, int /*long*/ operation) {
+int tableView_validateDrop_proposedRow_proposedDropOperation(long /*int*/ id, long /*int*/ sel, long /*int*/ tableView, long /*int*/ info, long /*int*/ row, long /*int*/ operation) {
 	NSTableView widget = new NSTableView(tableView);
 	NSObject sender = new NSObject(info);
 	NSPoint pt = sender.draggingLocation();
 	pt = widget.convertPoint_fromView_(pt, null);
-	int /*long*/ hitRow = widget.rowAtPoint(pt);
+	long /*int*/ hitRow = widget.rowAtPoint(pt);
 	if (0 <= hitRow && hitRow < widget.numberOfRows()) {
 		if (feedback == 0) {
 			widget.setDropRow(-1, OS.NSTableViewDropOn);		
@@ -982,7 +982,7 @@ int tableView_validateDrop_proposedRow_proposedDropOperation(int /*long*/ id, in
 }
 
 // By returning true we get draggingUpdated messages even when the mouse isn't moving.
-boolean wantsPeriodicDraggingUpdates(int /*long*/ id, int /*long*/ sel) {
+boolean wantsPeriodicDraggingUpdates(long /*int*/ id, long /*int*/ sel) {
 	return true;
 }
 

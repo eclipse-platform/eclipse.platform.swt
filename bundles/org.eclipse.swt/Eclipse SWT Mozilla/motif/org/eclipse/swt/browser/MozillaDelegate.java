@@ -152,7 +152,7 @@ int getHandle() {
 	return embedHandle;
 }
 
-int /*long*/ getSiteWindow () {
+long /*int*/ getSiteWindow () {
 	return embedHandle;
 }
 

@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.cocoa;
 
 public class CFRange {
-	public int /*long*/ location;
-	public int /*long*/ length;
+	public long /*int*/ location;
+	public long /*int*/ length;
 	public static int sizeof = OS.CFRange_sizeof();
 }

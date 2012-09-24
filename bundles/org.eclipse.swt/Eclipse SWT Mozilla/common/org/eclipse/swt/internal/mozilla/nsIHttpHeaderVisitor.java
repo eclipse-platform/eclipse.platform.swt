@@ -37,11 +37,11 @@ public class nsIHttpHeaderVisitor extends nsISupports {
 	public static final nsID NS_IHTTPHEADERVISITOR_IID =
 		new nsID(NS_IHTTPHEADERVISITOR_IID_STR);
 
-	public nsIHttpHeaderVisitor(int /*long*/ address) {
+	public nsIHttpHeaderVisitor(long /*int*/ address) {
 		super(address);
 	}
 
-	public int VisitHeader(int /*long*/ aHeader, int /*long*/ aValue) {
+	public int VisitHeader(long /*int*/ aHeader, long /*int*/ aValue) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aHeader, aValue);
 	}
 }

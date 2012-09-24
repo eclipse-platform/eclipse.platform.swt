@@ -68,26 +68,26 @@ static GUID IIDFromString (String lpsz) {
 /** 
  * @param theArray cast=(CFArrayRef)
  */
-public static final native int CFArrayGetCount (int /*long*/ theArray);
+public static final native int CFArrayGetCount (long /*int*/ theArray);
 /**
  * @param theArray cast=(CFArrayRef)
  * @param idx cast=(CFIndex)
  */
-public static final native int /*long*/ CFArrayGetValueAtIndex (int /*long*/ theArray, int idx);
+public static final native long /*int*/ CFArrayGetValueAtIndex (long /*int*/ theArray, int idx);
 /**
  * @param allocator cast=(CFAllocatorRef)
  * @param bytes cast=(const UInt8 *)
  * @param length cast=(CFIndex)
  */
-public static final native int /*long*/ CFDataCreate (int /*long*/ allocator, byte [] bytes, int length);
+public static final native long /*int*/ CFDataCreate (long /*int*/ allocator, byte [] bytes, int length);
 /**
  * @param theData cast=(CFDataRef)
  */
-public static final native int /*long*/ CFDataGetBytePtr (int /*long*/ theData);
+public static final native long /*int*/ CFDataGetBytePtr (long /*int*/ theData);
 /**
  * @param theData cast=(CFDataRef)
  */
-public static final native int CFDataGetLength (int /*long*/ theData);
+public static final native int CFDataGetLength (long /*int*/ theData);
 /**
  * @param allocator	cast=(CFAllocatorRef)
  * @param keys cast=(const void **)
@@ -96,106 +96,106 @@ public static final native int CFDataGetLength (int /*long*/ theData);
  * @param keyCallBacks cast=(const CFDictionaryKeyCallBacks *)
  * @param valueCallBacks cast=(const CFDictionaryValueCallBacks *)
  */
-public static final native int /*long*/ CFDictionaryCreate (int /*long*/ allocator, int /*long*/[] keys, int /*long*/[] values, int numValues, int /*long*/ keyCallBacks, int /*long*/ valueCallBacks);
+public static final native long /*int*/ CFDictionaryCreate (long /*int*/ allocator, long /*int*/[] keys, long /*int*/[] values, int numValues, long /*int*/ keyCallBacks, long /*int*/ valueCallBacks);
 /**
  * @param inAllocator cast=(CFAllocatorRef)
  * @param headerFields cast=(CFDictionaryRef)
  * @param inURL	cast=(CFURLRef)
  */
-public static final native int /*long*/ CFHTTPCookieCreateWithResponseHeaderFields (int /*long*/ inAllocator, int /*long*/ headerFields, int /*long*/ inURL);
+public static final native long /*int*/ CFHTTPCookieCreateWithResponseHeaderFields (long /*int*/ inAllocator, long /*int*/ headerFields, long /*int*/ inURL);
 /**
  * @param inCookie cast=(CFHTTPCookieRef)
  */
-public static final native int CFHTTPCookieGetFlags (int /*long*/ inCookie);
+public static final native int CFHTTPCookieGetFlags (long /*int*/ inCookie);
 /**
  * @param inCookie cast=(CFHTTPCookieRef)
  */
-public static final native int /*long*/ CFHTTPCookieGetName (int /*long*/ inCookie);
+public static final native long /*int*/ CFHTTPCookieGetName (long /*int*/ inCookie);
 /**
  * @param inCookie cast=(CFHTTPCookieRef)
  */
-public static final native int /*long*/ CFHTTPCookieGetValue (int /*long*/ inCookie);
+public static final native long /*int*/ CFHTTPCookieGetValue (long /*int*/ inCookie);
 /**
  * @param inCookieStorage cast=(CFHTTPCookieStorageRef)
  */
-public static final native int /*long*/ CFHTTPCookieStorageCopyCookies (int /*long*/ inCookieStorage);
+public static final native long /*int*/ CFHTTPCookieStorageCopyCookies (long /*int*/ inCookieStorage);
 /**
  * @param inCookieStorage cast=(CFHTTPCookieStorageRef)
  * @param inURL cast=(CFURLRef)
  * @param sendSecureCookies cast=(Boolean)
  */
-public static final native int /*long*/ CFHTTPCookieStorageCopyCookiesForURL (int /*long*/ inCookieStorage, int /*long*/ inURL, boolean sendSecureCookies);
+public static final native long /*int*/ CFHTTPCookieStorageCopyCookiesForURL (long /*int*/ inCookieStorage, long /*int*/ inURL, boolean sendSecureCookies);
 /**
  * @param inCookieStorage cast=(CFHTTPCookieStorageRef)
  * @param inCookie cast=(CFHTTPCookieRef)
  */
-public static final native void CFHTTPCookieStorageDeleteCookie (int /*long*/ inCookieStorage, int /*long*/ inCookie);
+public static final native void CFHTTPCookieStorageDeleteCookie (long /*int*/ inCookieStorage, long /*int*/ inCookie);
 /**
  * @param inCookieStorage cast=(CFHTTPCookieStorageRef)
  * @param inCookie cast=(CFHTTPCookieRef)
  */
-public static final native void CFHTTPCookieStorageSetCookie (int /*long*/ inCookieStorage, int /*long*/ inCookie);
+public static final native void CFHTTPCookieStorageSetCookie (long /*int*/ inCookieStorage, long /*int*/ inCookie);
 /**
  * @param cf cast=(CFTypeRef)
  */
-public static final native void CFRelease (int /*long*/ cf);
+public static final native void CFRelease (long /*int*/ cf);
 /**
  * @param alloc cast=(CFAllocatorRef)
  * @param chars cast=(const UniChar *)
  * @param numChars cast=(CFIndex)
  */
-public static final native int CFStringCreateWithCharacters (int /*long*/ alloc, char[] chars, int numChars);
+public static final native int CFStringCreateWithCharacters (long /*int*/ alloc, char[] chars, int numChars);
 /**
  * @param theString cast=(CFStringRef)
  * @param idx cast=(CFIndex)
  */
-public static final native char CFStringGetCharacterAtIndex (int /*long*/ theString, int idx);
+public static final native char CFStringGetCharacterAtIndex (long /*int*/ theString, int idx);
 /**
  * @param theString cast=(CFStringRef)
  */
-public static final native int /*long*/ CFStringGetCharactersPtr (int /*long*/ theString);
+public static final native long /*int*/ CFStringGetCharactersPtr (long /*int*/ theString);
 /**
  * @param theString cast=(CFStringRef)
  */
-public static final native int CFStringGetLength (int /*long*/ theString);
+public static final native int CFStringGetLength (long /*int*/ theString);
 /**
  * @param allocator cast=(CFAllocatorRef)
  * @param URLString cast=(CFStringRef)
  * @param baseURL cast=(CFURLRef)
  */
-public static final native int /*long*/ CFURLCreateWithString (int /*long*/ allocator, int /*long*/ URLString, int /*long*/ baseURL);
+public static final native long /*int*/ CFURLCreateWithString (long /*int*/ allocator, long /*int*/ URLString, long /*int*/ baseURL);
 /**
  * @param alloc cast=(CFAllocatorRef)
  * @param origRequest cast=(CFURLRequestRef)
  */
-public static final native int /*long*/ CFURLRequestCreateMutableCopy (int /*long*/	alloc, int /*long*/ origRequest);
+public static final native long /*int*/ CFURLRequestCreateMutableCopy (long /*int*/	alloc, long /*int*/ origRequest);
 /**
  * @param request cast=(CFURLRequestRef)
  */
-public static final native int /*long*/ CFURLRequestCopyHTTPRequestBody (int /*long*/ request);
+public static final native long /*int*/ CFURLRequestCopyHTTPRequestBody (long /*int*/ request);
 /**
  * @param mutableHTTPRequest cast=(CFMutableURLRequestRef)
  * @param httpBody cast=(CFDataRef)
  */
-public static final native void CFURLRequestSetHTTPRequestBody (int /*long*/ mutableHTTPRequest, int /*long*/ httpBody);
+public static final native void CFURLRequestSetHTTPRequestBody (long /*int*/ mutableHTTPRequest, long /*int*/ httpBody);
 /**
  * @param mutableRequest cast=(CFMutableURLRequestRef)
  * @param url cast=(CFURLRef)
  */
-public static final native void CFURLRequestSetURL (int /*long*/ mutableRequest, int /*long*/ url);
+public static final native void CFURLRequestSetURL (long /*int*/ mutableRequest, long /*int*/ url);
 
 /**
  * @param definition cast=(const JSClassDefinition*)
  */
-public static final native int /*long*/ JSClassCreate (int /*long*/ definition);
+public static final native long /*int*/ JSClassCreate (long /*int*/ definition);
 /**
  * @param jsClass cast=(JSClassRef)
  */
-public static final native int /*long*/ JSClassRetain (int /*long*/ jsClass);
+public static final native long /*int*/ JSClassRetain (long /*int*/ jsClass);
 /**
  * @param ctx cast=(JSContextRef)
  */
-public static final native int /*long*/ JSContextGetGlobalObject (int /*long*/ ctx);
+public static final native long /*int*/ JSContextGetGlobalObject (long /*int*/ ctx);
 /**
  * @param ctx cast=(JSContextRef)
  * @param script cast=(JSStringRef)
@@ -203,48 +203,48 @@ public static final native int /*long*/ JSContextGetGlobalObject (int /*long*/ c
  * @param sourceURL cast=(JSStringRef)
  * @param exception cast=(JSValueRef *)
  */
-public static final native int /*long*/ JSEvaluateScript (int /*long*/ ctx, int /*long*/ script, int /*long*/ thisObject, int /*long*/ sourceURL, int startingLineNumber, int /*long*/[] exception);
+public static final native long /*int*/ JSEvaluateScript (long /*int*/ ctx, long /*int*/ script, long /*int*/ thisObject, long /*int*/ sourceURL, int startingLineNumber, long /*int*/[] exception);
 /**
  * @param ctx cast=(JSGlobalContextRef)
  */
-public static final native int JSGlobalContextRetain (int /*long*/ ctx);
+public static final native int JSGlobalContextRetain (long /*int*/ ctx);
 /**
  * @param object cast=(JSObjectRef)
  */
-public static final native int /*long*/ JSObjectGetPrivate (int /*long*/ object);
+public static final native long /*int*/ JSObjectGetPrivate (long /*int*/ object);
 /**
  * @param ctx cast=(JSContextRef)
  * @param object cast=(JSObjectRef)
  * @param propertyName cast=(JSStringRef)
  * @param exception cast=(JSValueRef*)
  */
-public static final native int /*long*/ JSObjectGetProperty (int /*long*/ ctx, int /*long*/ object, int /*long*/ propertyName, int /*long*/[] exception);
+public static final native long /*int*/ JSObjectGetProperty (long /*int*/ ctx, long /*int*/ object, long /*int*/ propertyName, long /*int*/[] exception);
 /**
  * @param ctx cast=(JSContextRef)
  * @param object cast=(JSObjectRef)
  * @param propertyIndex cast=(unsigned)
  * @param exception cast=(JSValueRef*)
  */
-public static final native int /*long*/ JSObjectGetPropertyAtIndex (int /*long*/ ctx, int /*long*/ object, int propertyIndex, int /*long*/[] exception); 
+public static final native long /*int*/ JSObjectGetPropertyAtIndex (long /*int*/ ctx, long /*int*/ object, int propertyIndex, long /*int*/[] exception); 
 /**
  * @param ctx cast=(JSContextRef)
  * @param jsClass cast=(JSClassRef)
  * @param data cast=(void *)
  */
-public static final native int JSObjectMake (int /*long*/ ctx, int /*long*/ jsClass, int /*long*/ data);
+public static final native int JSObjectMake (long /*int*/ ctx, long /*int*/ jsClass, long /*int*/ data);
 /**
  * @param ctx cast=(JSContextRef)
  * @param argumentCount cast=(size_t)
  * @param arguments cast=(const struct OpaqueJSValue * const*)
  * @param exception cast=(JSValueRef*)
  */
-public static final native int /*long*/ JSObjectMakeArray (int /*long*/ ctx, int /*long*/ argumentCount, int /*long*/[] arguments, int /*long*/[] exception);
+public static final native long /*int*/ JSObjectMakeArray (long /*int*/ ctx, long /*int*/ argumentCount, long /*int*/[] arguments, long /*int*/[] exception);
 /**
  * @param ctx cast=(JSContextRef)
  * @param name cast=(JSStringRef)
  * @param callAsFunction cast=(JSObjectCallAsFunctionCallback)
  */
-public static final native int JSObjectMakeFunctionWithCallback (int /*long*/ ctx, int /*long*/ name, int /*long*/ callAsFunction);
+public static final native int JSObjectMakeFunctionWithCallback (long /*int*/ ctx, long /*int*/ name, long /*int*/ callAsFunction);
 /**
  * @param ctx cast=(JSContextRef)
  * @param object cast=(JSObjectRef)
@@ -253,84 +253,84 @@ public static final native int JSObjectMakeFunctionWithCallback (int /*long*/ ct
  * @param attributes cast=(JSPropertyAttributes)
  * @param exception cast=(JSValueRef *)
  */
-public static final native void JSObjectSetProperty (int /*long*/ ctx, int /*long*/ object, int /*long*/ propertyName, int /*long*/ value, int /*long*/ attributes, int /*long*/[] exception);
+public static final native void JSObjectSetProperty (long /*int*/ ctx, long /*int*/ object, long /*int*/ propertyName, long /*int*/ value, long /*int*/ attributes, long /*int*/[] exception);
 /**
  * @param string cast=(const char*)
  */
-public static final native int /*long*/ JSStringCreateWithUTF8CString (byte[] string);
+public static final native long /*int*/ JSStringCreateWithUTF8CString (byte[] string);
 /** 
  * @param string cast=(JSStringRef) 
  */
-public static final native int JSStringGetLength (int /*long*/ string);	
+public static final native int JSStringGetLength (long /*int*/ string);	
 /**
  * @param string cast=(JSStringRef)
  */
-public static final native int /*long*/ JSStringGetMaximumUTF8CStringSize (int /*long*/ string);
+public static final native long /*int*/ JSStringGetMaximumUTF8CStringSize (long /*int*/ string);
 /**
  * @param string cast=(JSStringRef)
  * @param buffer cast=(char *)
  * @param bufferSize cast=(size_t)
  */
-public static final native int JSStringGetUTF8CString (int /*long*/ string, byte[] buffer, int /*long*/ bufferSize);
+public static final native int JSStringGetUTF8CString (long /*int*/ string, byte[] buffer, long /*int*/ bufferSize);
 /**
  * @param a cast=(JSStringRef)
  * @param b	cast=(const char *)
  */
-public static final native int JSStringIsEqualToUTF8CString (int /*long*/ a, byte[] b);
+public static final native int JSStringIsEqualToUTF8CString (long /*int*/ a, byte[] b);
 /** 
  * @param string cast=(JSStringRef) 
  */
-public static final native void JSStringRelease (int /*long*/ string);
+public static final native void JSStringRelease (long /*int*/ string);
 /**
  * @param ctx cast=(JSContextRef)
  * @param value cast=(JSValueRef)
  */
-public static final native int JSValueGetType (int /*long*/ ctx, int /*long*/ value);
+public static final native int JSValueGetType (long /*int*/ ctx, long /*int*/ value);
 /**
  * @param ctx cast=(JSContextRef)
  * @param value	cast=(JSValueRef)
  * @param jsClass	cast=(JSClassRef)
  */
-public static final native int JSValueIsObjectOfClass (int /*long*/ ctx, int /*long*/ value, int /*long*/ jsClass);
+public static final native int JSValueIsObjectOfClass (long /*int*/ ctx, long /*int*/ value, long /*int*/ jsClass);
 /**
  * @param ctx cast=(JSContextRef)
  * @param b cast=(bool)
  */
-public static final native int /*long*/ JSValueMakeBoolean (int /*long*/ ctx, int /*long*/ b);
+public static final native long /*int*/ JSValueMakeBoolean (long /*int*/ ctx, long /*int*/ b);
 /**
  * @param ctx cast=(JSContextRef)
  */
-public static final native int /*long*/ JSValueMakeNull (int /*long*/ ctx);
+public static final native long /*int*/ JSValueMakeNull (long /*int*/ ctx);
 /**
  * @param ctx cast=(JSContextRef)
  * @param number cast=(double)
  */
-public static final native int /*long*/ JSValueMakeNumber (int /*long*/ ctx, double number);
+public static final native long /*int*/ JSValueMakeNumber (long /*int*/ ctx, double number);
 /**
  * @param ctx cast=(JSContextRef)
  * @param string cast=(JSStringRef)
  */
-public static final native int /*long*/ JSValueMakeString (int /*long*/ ctx, int /*long*/ string);
+public static final native long /*int*/ JSValueMakeString (long /*int*/ ctx, long /*int*/ string);
 /**
  * @param ctx cast=(JSContextRef)
  */
-public static final native int /*long*/ JSValueMakeUndefined (int /*long*/ ctx);
-/**
- * @param ctx cast=(JSContextRef)
- * @param value cast=(JSValueRef)
- * @param exception cast=(JSValueRef*)
- */
-public static final native double JSValueToNumber (int /*long*/ ctx, int /*long*/ value, int /*long*/[] exception);
+public static final native long /*int*/ JSValueMakeUndefined (long /*int*/ ctx);
 /**
  * @param ctx cast=(JSContextRef)
  * @param value cast=(JSValueRef)
  * @param exception cast=(JSValueRef*)
  */
-public static final native int /*long*/ JSValueToStringCopy (int /*long*/ ctx, int /*long*/ value, int /*long*/[] exception);
+public static final native double JSValueToNumber (long /*int*/ ctx, long /*int*/ value, long /*int*/[] exception);
+/**
+ * @param ctx cast=(JSContextRef)
+ * @param value cast=(JSValueRef)
+ * @param exception cast=(JSValueRef*)
+ */
+public static final native long /*int*/ JSValueToStringCopy (long /*int*/ ctx, long /*int*/ value, long /*int*/[] exception);
 /** @method flags=const address*/
-public static final native int /*long*/ kCFCopyStringDictionaryKeyCallBacks ();
+public static final native long /*int*/ kCFCopyStringDictionaryKeyCallBacks ();
 /** @method flags=const address*/
-public static final native int /*long*/ kCFTypeDictionaryValueCallBacks ();
+public static final native long /*int*/ kCFTypeDictionaryValueCallBacks ();
 
 public static final native int JSClassDefinition_sizeof ();
 /**
@@ -338,10 +338,10 @@ public static final native int JSClassDefinition_sizeof ();
  * @param src cast=(const void *),flags=no_out
  * @param size cast=(size_t)
  */
-public static final native void memmove (int /*long*/ dest, JSClassDefinition src, int /*long*/ size);
+public static final native void memmove (long /*int*/ dest, JSClassDefinition src, long /*int*/ size);
 /** @method flags=no_gen */
-public static final native int WebKitCreateInstance (byte[] rclsid, int /*long*/ pUnkOuter, byte[] refiid, int /*long*/[] ppvObject);
-public static final int WebKitCreateInstance (GUID clsid, int /*long*/ pUnkOuter, GUID iid, int /*long*/[] ppvObject) {
+public static final native int WebKitCreateInstance (byte[] rclsid, long /*int*/ pUnkOuter, byte[] refiid, long /*int*/[] ppvObject);
+public static final int WebKitCreateInstance (GUID clsid, long /*int*/ pUnkOuter, GUID iid, long /*int*/[] ppvObject) {
 	byte[] rclsid = new byte[GUID.sizeof];
 	OS.IIDFromString ((clsid.toString () + '\0').toCharArray (), rclsid);
 	byte[] refiid = new byte[GUID.sizeof];
@@ -350,12 +350,12 @@ public static final int WebKitCreateInstance (GUID clsid, int /*long*/ pUnkOuter
 }
 
 /** @method flags=no_gen */
-public static final native int /*long*/ JSObjectCallAsFunctionProc_CALLBACK (int /*long*/ func);
+public static final native long /*int*/ JSObjectCallAsFunctionProc_CALLBACK (long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ JSObjectGetPropertyProc_CALLBACK (int /*long*/ func); 
+public static final native long /*int*/ JSObjectGetPropertyProc_CALLBACK (long /*int*/ func); 
 /** @method flags=no_gen */
-public static final native int /*long*/ JSObjectHasPropertyProc_CALLBACK (int /*long*/ func);
+public static final native long /*int*/ JSObjectHasPropertyProc_CALLBACK (long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ willPerformClientRedirectToURL_CALLBACK (int /*long*/ func);
+public static final native long /*int*/ willPerformClientRedirectToURL_CALLBACK (long /*int*/ func);
 
 }

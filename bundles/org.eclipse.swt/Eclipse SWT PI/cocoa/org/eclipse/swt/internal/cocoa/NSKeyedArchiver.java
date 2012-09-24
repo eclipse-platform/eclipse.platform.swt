@@ -16,7 +16,7 @@ public NSKeyedArchiver() {
 	super();
 }
 
-public NSKeyedArchiver(int /*long*/ id) {
+public NSKeyedArchiver(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,7 +25,7 @@ public NSKeyedArchiver(id id) {
 }
 
 public static NSData archivedDataWithRootObject(id rootObject) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSKeyedArchiver, OS.sel_archivedDataWithRootObject_, rootObject != null ? rootObject.id : 0);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSKeyedArchiver, OS.sel_archivedDataWithRootObject_, rootObject != null ? rootObject.id : 0);
 	return result != 0 ? new NSData(result) : null;
 }
 

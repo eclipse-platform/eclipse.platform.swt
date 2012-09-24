@@ -16,7 +16,7 @@ public NSTextFieldCell() {
 	super();
 }
 
-public NSTextFieldCell(int /*long*/ id) {
+public NSTextFieldCell(long /*int*/ id) {
 	super(id);
 }
 
@@ -33,7 +33,7 @@ public void setTextColor(NSColor color) {
 }
 
 public NSColor textColor() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_textColor);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_textColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 

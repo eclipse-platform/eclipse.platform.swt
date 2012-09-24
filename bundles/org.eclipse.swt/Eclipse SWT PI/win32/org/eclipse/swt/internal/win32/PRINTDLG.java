@@ -13,13 +13,13 @@ package org.eclipse.swt.internal.win32;
 public class PRINTDLG {
 	public int lStructSize; // DWORD
 	/** @field cast=(HWND) */
-	public int /*long*/ hwndOwner; // HWND
+	public long /*int*/ hwndOwner; // HWND
 	/** @field cast=(HGLOBAL) */
-	public int /*long*/ hDevMode; // HGLOBAL
+	public long /*int*/ hDevMode; // HGLOBAL
 	/** @field cast=(HGLOBAL) */
-	public int /*long*/ hDevNames; // HGLOBAL
+	public long /*int*/ hDevNames; // HGLOBAL
 	/** @field cast=(HDC) */
-	public int /*long*/ hDC; // HDC
+	public long /*int*/ hDC; // HDC
 	public int Flags; // DWORD
 	public short nFromPage; // WORD
 	public short nToPage; // WORD
@@ -27,19 +27,19 @@ public class PRINTDLG {
 	public short nMaxPage; // WORD
 	public short nCopies; // WORD
 	/** @field cast=(HINSTANCE) */
-	public int /*long*/ hInstance; // HINSTANCE
-	public int /*long*/ lCustData; // LPARAM
+	public long /*int*/ hInstance; // HINSTANCE
+	public long /*int*/ lCustData; // LPARAM
 	/** @field cast=(LPPRINTHOOKPROC) */
-	public int /*long*/ lpfnPrintHook; // LPPRINTHOOKPROC
+	public long /*int*/ lpfnPrintHook; // LPPRINTHOOKPROC
 	/** @field cast=(LPPRINTHOOKPROC) */
-	public int /*long*/ lpfnSetupHook; // LPSETUPHOOKPROC
+	public long /*int*/ lpfnSetupHook; // LPSETUPHOOKPROC
 	/** @field cast=(LPCTSTR) */
-	public int /*long*/ lpPrintTemplateName; // LPCTSTR
+	public long /*int*/ lpPrintTemplateName; // LPCTSTR
 	/** @field cast=(LPCTSTR) */
-	public int /*long*/ lpSetupTemplateName; // LPCTSTR
+	public long /*int*/ lpSetupTemplateName; // LPCTSTR
 	/** @field cast=(HGLOBAL) */
-	public int /*long*/ hPrintTemplate; // HGLOBAL
+	public long /*int*/ hPrintTemplate; // HGLOBAL
 	/** @field cast=(HGLOBAL) */
-	public int /*long*/ hSetupTemplate; // HGLOBAL
+	public long /*int*/ hSetupTemplate; // HGLOBAL
 	public static final int sizeof = OS.PRINTDLG_sizeof ();
 }

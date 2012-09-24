@@ -17,9 +17,9 @@ public class DRAWITEMSTRUCT {
 	public int itemAction;
 	public int itemState;
 	/** @field cast=(HWND) */
-	public int /*long*/ hwndItem;
+	public long /*int*/ hwndItem;
 	/** @field cast=(HDC) */
-	public int /*long*/ hDC;
+	public long /*int*/ hDC;
 // 	RECT rcItem;
 	/** @field accessor=rcItem.left */
 	public int left;
@@ -29,6 +29,6 @@ public class DRAWITEMSTRUCT {
 	public int bottom;
 	/** @field accessor=rcItem.right */
 	public int right;
-	public int /*long*/ itemData;
+	public long /*int*/ itemData;
 	public static final int sizeof = OS.DRAWITEMSTRUCT_sizeof ();
 }

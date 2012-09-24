@@ -54,7 +54,7 @@ public final class TextLayout extends Resource {
 	int[] tabs;
 	StyleItem[] styles;
 	int stylesCount;
-	int /*long*/ layout, context, attrList, selAttrList;
+	long /*int*/ layout, context, attrList, selAttrList;
 	int[] invalidOffsets;
 	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F', ZWS = '\u200B', ZWNBS = '\uFEFF';
 
@@ -110,7 +110,7 @@ void computeRuns () {
 	byte[] buffer = Converter.wcsToMbcs(null, segmentsText, false);
 	OS.pango_layout_set_text (layout, buffer, buffer.length);
 	if (stylesCount == 2 && styles[0].style == null && ascent == -1 && descent == -1 && segments == null) return;
-	int /*long*/ ptr = OS.pango_layout_get_text(layout);
+	long /*int*/ ptr = OS.pango_layout_get_text(layout);
 	attrList = OS.pango_attr_list_new();	
 	selAttrList = OS.pango_attr_list_new();
 	PangoAttribute attribute = new PangoAttribute();
@@ -129,12 +129,12 @@ void computeRuns () {
 		int oldPos = 0, lineIndex = 0;
 		PangoLayoutLine line = new PangoLayoutLine();
 		while (lineIndex < lineCount) {
-			int /*long*/ linePtr = OS.pango_layout_get_line(layout, lineIndex);
+			long /*int*/ linePtr = OS.pango_layout_get_line(layout, lineIndex);
 			OS.memmove(line, linePtr, PangoLayoutLine.sizeof);
 			int bytePos = line.start_index;
 			/* Note: The length in bytes of ZWS and ZWNBS are both equals to 3 */
 			int offset = lineIndex * 6;
-			int /*long*/ attr = OS.pango_attr_shape_new (rect, rect);
+			long /*int*/ attr = OS.pango_attr_shape_new (rect, rect);
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = bytePos + offset;
 			attribute.end_index = bytePos + offset + 3;
@@ -196,7 +196,7 @@ void computeRuns () {
 		byteEnd = Math.min(byteEnd, strlen);
 		Font font = style.font;
 		if (font != null && !font.isDisposed() && !defaultFont.equals(font)) {
-			int /*long*/ attr = OS.pango_attr_font_desc_new (font.handle);
+			long /*int*/ attr = OS.pango_attr_font_desc_new (font.handle);
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
 			attribute.end_index = byteEnd;
@@ -219,7 +219,7 @@ void computeRuns () {
 					break;
 				case SWT.UNDERLINE_LINK: {
 					if (style.foreground == null) {
-						int /*long*/ attr = OS.pango_attr_foreground_new((short)0, (short)0x3333, (short)0x9999);
+						long /*int*/ attr = OS.pango_attr_foreground_new((short)0, (short)0x3333, (short)0x9999);
 						OS.memmove (attribute, attr, PangoAttribute.sizeof);
 						attribute.start_index = byteStart;
 						attribute.end_index = byteEnd;
@@ -230,7 +230,7 @@ void computeRuns () {
 					break;
 				}
 			}
-			int /*long*/ attr = OS.pango_attr_underline_new(underlineStyle);
+			long /*int*/ attr = OS.pango_attr_underline_new(underlineStyle);
 			OS.memmove(attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
 			attribute.end_index = byteEnd;
@@ -251,7 +251,7 @@ void computeRuns () {
 			}
 		}
 		if (style.strikeout) {
-			int /*long*/ attr = OS.pango_attr_strikethrough_new(true);
+			long /*int*/ attr = OS.pango_attr_strikethrough_new(true);
 			OS.memmove(attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
 			attribute.end_index = byteEnd;
@@ -274,7 +274,7 @@ void computeRuns () {
 		Color foreground = style.foreground;
 		if (foreground != null && !foreground.isDisposed()) {
 			GdkColor fg = foreground.handle;
-			int /*long*/ attr = OS.pango_attr_foreground_new(fg.red, fg.green, fg.blue);
+			long /*int*/ attr = OS.pango_attr_foreground_new(fg.red, fg.green, fg.blue);
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
 			attribute.end_index = byteEnd;
@@ -284,7 +284,7 @@ void computeRuns () {
 		Color background = style.background;
 		if (background != null && !background.isDisposed()) {
 			GdkColor bg = background.handle;
-			int /*long*/ attr = OS.pango_attr_background_new(bg.red, bg.green, bg.blue);
+			long /*int*/ attr = OS.pango_attr_background_new(bg.red, bg.green, bg.blue);
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
 			attribute.end_index = byteEnd;
@@ -297,7 +297,7 @@ void computeRuns () {
 			rect.y =  -(metrics.ascent * OS.PANGO_SCALE);
 			rect.height = (metrics.ascent + metrics.descent) * OS.PANGO_SCALE;
 			rect.width = metrics.width * OS.PANGO_SCALE;
-			int /*long*/ attr = OS.pango_attr_shape_new (rect, rect);
+			long /*int*/ attr = OS.pango_attr_shape_new (rect, rect);
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
 			attribute.end_index = byteEnd;
@@ -307,7 +307,7 @@ void computeRuns () {
 		}
 		int rise = style.rise;
 		if (rise != 0) {
-			int /*long*/ attr = OS.pango_attr_rise_new (rise * OS.PANGO_SCALE);
+			long /*int*/ attr = OS.pango_attr_rise_new (rise * OS.PANGO_SCALE);
 			OS.memmove (attribute, attr, PangoAttribute.sizeof);
 			attribute.start_index = byteStart;
 			attribute.end_index = byteEnd;
@@ -436,15 +436,15 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	x += Math.min (indent, wrapIndent);
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	GCData data = gc.data;
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	if ((flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
-		int /*long*/[] attrs = new int /*long*/[1];
+		long /*int*/[] attrs = new long /*int*/[1];
 		int[] nAttrs = new int[1];
 		PangoLogAttr logAttr = new PangoLogAttr();
 		PangoRectangle rect = new PangoRectangle();
 		int lineCount = OS.pango_layout_get_line_count(layout);
-		int /*long*/ ptr = OS.pango_layout_get_text(layout);
-		int /*long*/ iter = OS.pango_layout_get_iter(layout);
+		long /*int*/ ptr = OS.pango_layout_get_text(layout);
+		long /*int*/ iter = OS.pango_layout_get_iter(layout);
 		if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
 		if (cairo != 0) {
 			Cairo.cairo_save(cairo);
@@ -531,7 +531,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		boolean fullSelection = selectionStart == 0 && selectionEnd == length - 1;
 		if (fullSelection) {
 			if (cairo != 0) {
-				int /*long*/ ptr = OS.pango_layout_get_text(layout);
+				long /*int*/ ptr = OS.pango_layout_get_text(layout);
 				if ((data.style & SWT.MIRRORED) != 0) {
 					Cairo.cairo_save(cairo);
 					Cairo.cairo_scale(cairo, -1,  1);
@@ -546,7 +546,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 				drawBorder(gc, x, y, selectionForeground.handle);
 			}
 		} else {
-			int /*long*/ ptr = OS.pango_layout_get_text(layout);
+			long /*int*/ ptr = OS.pango_layout_get_text(layout);
 			int byteSelStart = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, selectionStart) - ptr);
 			int byteSelEnd = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, selectionEnd + 1) - ptr);
 			int strlen = OS.strlen(ptr);
@@ -568,7 +568,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 				OS.gdk_draw_layout(data.drawable, gc.handle, x, y, layout);
 				drawBorder(gc, x, y, null);
 				int[] ranges = new int[]{byteSelStart, byteSelEnd};
-				int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
+				long /*int*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
 				if (rgn != 0) {
 					OS.gdk_gc_set_clip_region(gc.handle, rgn);
 					OS.gdk_region_destroy(rgn);
@@ -587,7 +587,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 
 void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelection, GdkColor fg, GdkColor bg) {
 	GCData data = gc.data;
-	int /*long*/ cairo = data.cairo;
+	long /*int*/ cairo = data.cairo;
 	Cairo.cairo_save(cairo);
 	if (!fullSelection) {
 		Cairo.cairo_move_to(cairo, x, y);
@@ -595,7 +595,7 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelectio
 		drawBorder(gc, x, y, null);
 	}
 	int[] ranges = new int[]{start, end};
-	int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
+	long /*int*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
 	if (rgn != 0) {
 		OS.gdk_cairo_region(cairo, rgn);
 		Cairo.cairo_clip(cairo);
@@ -614,9 +614,9 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelectio
 
 void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 	GCData data = gc.data;
-	int /*long*/ cairo = data.cairo;
-	int /*long*/ gdkGC = gc.handle;
-	int /*long*/ ptr = OS.pango_layout_get_text(layout);
+	long /*int*/ cairo = data.cairo;
+	long /*int*/ gdkGC = gc.handle;
+	long /*int*/ ptr = OS.pango_layout_get_text(layout);
 	GdkGCValues gcValues = null;
 	if (cairo != 0) {
 		Cairo.cairo_save(cairo);
@@ -636,10 +636,10 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 			int byteStart = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, start) - ptr);
 			int byteEnd = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, end + 1) - ptr);
 			int[] ranges = new int[]{byteStart, byteEnd};
-			int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
+			long /*int*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
 			if (rgn != 0) {
 				int[] nRects = new int[1];
-				int /*long*/[] rects = new int /*long*/[1];
+				long /*int*/[] rects = new long /*int*/[1];
 				OS.gdk_region_get_rectangles(rgn, rects, nRects);
 				GdkRectangle rect = new GdkRectangle();
 				GdkColor color = null;
@@ -818,14 +818,14 @@ public Rectangle getBounds(int start, int end) {
 	end = Math.min(Math.max(0, end), length - 1);
 	start = translateOffset(start);
 	end = translateOffset(end);
-	int /*long*/ ptr = OS.pango_layout_get_text(layout);
+	long /*int*/ ptr = OS.pango_layout_get_text(layout);
 	int byteStart = (int)/*64*/(OS.g_utf16_offset_to_pointer (ptr, start) - ptr);
 	int byteEnd = (int)/*64*/(OS.g_utf16_offset_to_pointer (ptr, end + 1) - ptr);
 	int strlen = OS.strlen(ptr);
 	byteStart = Math.min(byteStart, strlen);
 	byteEnd = Math.min(byteEnd, strlen);
 	int[] ranges = new int[]{byteStart, byteEnd};
-	int /*long*/ clipRegion = OS.gdk_pango_layout_get_clip_region(layout, 0, 0, ranges, 1);
+	long /*int*/ clipRegion = OS.gdk_pango_layout_get_clip_region(layout, 0, 0, ranges, 1);
 	if (clipRegion == 0) return new Rectangle(0, 0, 0, 0);
 	GdkRectangle rect = new GdkRectangle();
 	
@@ -835,9 +835,9 @@ public Rectangle getBounds(int start, int end) {
 	* is to subtract these areas from the clip region.
 	*/
 	PangoRectangle pangoRect = new PangoRectangle();
-	int /*long*/ iter = OS.pango_layout_get_iter(layout);
+	long /*int*/ iter = OS.pango_layout_get_iter(layout);
 	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int /*long*/ linesRegion = OS.gdk_region_new();
+	long /*int*/ linesRegion = OS.gdk_region_new();
 	if (linesRegion == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int lineEnd = 0;
 	do {
@@ -953,17 +953,17 @@ public int getLevel(int offset) {
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	offset = translateOffset(offset);
-	int /*long*/ iter = OS.pango_layout_get_iter(layout);
+	long /*int*/ iter = OS.pango_layout_get_iter(layout);
 	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int level = 0;
 	PangoItem item = new PangoItem();
 	PangoLayoutRun run = new PangoLayoutRun();
-	int /*long*/ ptr = OS.pango_layout_get_text(layout);
-	int /*long*/ byteOffset = OS.g_utf16_offset_to_pointer(ptr, offset) - ptr;
+	long /*int*/ ptr = OS.pango_layout_get_text(layout);
+	long /*int*/ byteOffset = OS.g_utf16_offset_to_pointer(ptr, offset) - ptr;
 	int strlen = OS.strlen(ptr);
 	byteOffset = Math.min(byteOffset, strlen);
 	do {
-		int /*long*/ runPtr = OS.pango_layout_iter_get_run(iter);
+		long /*int*/ runPtr = OS.pango_layout_iter_get_run(iter);
 		if (runPtr != 0) {
 			OS.memmove(run, runPtr, PangoLayoutRun.sizeof);
 			OS.memmove(item, run.item, PangoItem.sizeof);
@@ -995,7 +995,7 @@ public Rectangle getLineBounds(int lineIndex) {
 	computeRuns();
 	int lineCount = OS.pango_layout_get_line_count(layout);
 	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	int /*long*/ iter = OS.pango_layout_get_iter(layout);
+	long /*int*/ iter = OS.pango_layout_get_iter(layout);
 	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	for (int i = 0; i < lineIndex; i++) OS.pango_layout_iter_next_line(iter);
 	PangoRectangle rect = new PangoRectangle();
@@ -1052,11 +1052,11 @@ public int getLineIndex(int offset) {
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	offset = translateOffset(offset);
 	int line = 0;
-	int /*long*/ ptr = OS.pango_layout_get_text(layout);
-	int /*long*/ byteOffset = OS.g_utf16_offset_to_pointer(ptr,offset) - ptr;
+	long /*int*/ ptr = OS.pango_layout_get_text(layout);
+	long /*int*/ byteOffset = OS.g_utf16_offset_to_pointer(ptr,offset) - ptr;
 	int strlen = OS.strlen(ptr);
 	byteOffset = Math.min(byteOffset, strlen);
-	int /*long*/ iter = OS.pango_layout_get_iter(layout);
+	long /*int*/ iter = OS.pango_layout_get_iter(layout);
 	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	while (OS.pango_layout_iter_next_line(iter)) {
 		if (OS.pango_layout_iter_get_index(iter) > byteOffset) break;
@@ -1088,9 +1088,9 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	PangoLayoutLine line = new PangoLayoutLine();
 	OS.memmove(line, OS.pango_layout_get_line(layout, lineIndex), PangoLayoutLine.sizeof);
 	if (line.runs == 0) {
-		int /*long*/ font = this.font != null ? this.font.handle : device.systemFont.handle;
-		int /*long*/ lang = OS.pango_context_get_language(context);
-		int /*long*/ metrics = OS.pango_context_get_metrics(context, font, lang);
+		long /*int*/ font = this.font != null ? this.font.handle : device.systemFont.handle;
+		long /*int*/ lang = OS.pango_context_get_language(context);
+		long /*int*/ metrics = OS.pango_context_get_metrics(context, font, lang);
 		ascent = OS.pango_font_metrics_get_ascent(metrics);
 		descent = OS.pango_font_metrics_get_descent(metrics);
 		OS.pango_font_metrics_unref(metrics);
@@ -1121,10 +1121,10 @@ public int[] getLineOffsets() {
 	computeRuns();
 	int lineCount = OS.pango_layout_get_line_count(layout);
 	int[] offsets = new int [lineCount + 1];
-	int /*long*/ ptr = OS.pango_layout_get_text(layout);
+	long /*int*/ ptr = OS.pango_layout_get_text(layout);
 	PangoLayoutLine line = new PangoLayoutLine();
 	for (int i = 0; i < lineCount; i++) {
-		int /*long*/ linePtr = OS.pango_layout_get_line(layout, i);
+		long /*int*/ linePtr = OS.pango_layout_get_line(layout, i);
 		OS.memmove(line, linePtr, PangoLayoutLine.sizeof);
 		int pos = (int)/*64*/OS.g_utf16_pointer_to_offset(ptr, ptr + line.start_index);
 		offsets[i] = untranslateOffset(pos);
@@ -1155,7 +1155,7 @@ public Point getLocation(int offset, boolean trailing) {
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	offset = translateOffset(offset);
-	int /*long*/ ptr = OS.pango_layout_get_text(layout);
+	long /*int*/ ptr = OS.pango_layout_get_text(layout);
 	int byteOffset = (int)/*64*/(OS.g_utf16_offset_to_pointer(ptr, offset) - ptr);
 	int strlen = OS.strlen(ptr);
 	byteOffset = Math.min(byteOffset, strlen);
@@ -1206,12 +1206,12 @@ int _getOffset (int offset, int movement, boolean forward) {
 	}
 	int step = forward ? 1 : -1;
 	if ((movement & SWT.MOVEMENT_CHAR) != 0) return offset + step;
-	int /*long*/[] attrs = new int /*long*/[1];
+	long /*int*/[] attrs = new long /*int*/[1];
 	int[] nAttrs = new int[1];
 	OS.pango_layout_get_log_attrs(layout, attrs, nAttrs);
 	if (attrs[0] == 0) return offset + step;
 	
-	int /*long*/ ptr = OS.pango_layout_get_text(layout);
+	long /*int*/ ptr = OS.pango_layout_get_text(layout);
 	int utf8Offset = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, translateOffset(offset));
 	int utf8Length = (int)/*64*/OS.g_utf8_strlen(ptr, -1);
 	utf8Offset += step;
@@ -1329,7 +1329,7 @@ public int getOffset(int x, int y, int[] trailing) {
 	* visual offset. The fix is to clamp the coordinates inside the  
 	* line bounds.
 	*/
-	int /*long*/ iter = OS.pango_layout_get_iter(layout);
+	long /*int*/ iter = OS.pango_layout_get_iter(layout);
 	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	PangoRectangle rect = new PangoRectangle();
 	do {
@@ -1349,7 +1349,7 @@ public int getOffset(int x, int y, int[] trailing) {
 	int[] index = new int[1];
 	int[] piTrailing = new int[1];
 	OS.pango_layout_xy_to_index(layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, piTrailing);
-	int /*long*/ ptr = OS.pango_layout_get_text(layout);
+	long /*int*/ ptr = OS.pango_layout_get_text(layout);
 	int offset = (int)/*64*/OS.g_utf16_pointer_to_offset(ptr, ptr + index[0]);
 	if (trailing != null) {
 		trailing[0] = piTrailing[0];
@@ -2049,7 +2049,7 @@ public void setTabs(int[] tabs) {
 	if (tabs == null) {
 		OS.pango_layout_set_tabs(layout, device.emptyTab);
 	} else {
-		int /*long*/ tabArray = OS.pango_tab_array_new(tabs.length, true);
+		long /*int*/ tabArray = OS.pango_tab_array_new(tabs.length, true);
 		if (tabArray != 0) {
 			for (int i = 0; i < tabs.length; i++) {
 				OS.pango_tab_array_set_tab(tabArray, i, OS.PANGO_TAB_LEFT, tabs[i]);

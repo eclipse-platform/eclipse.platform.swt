@@ -16,7 +16,7 @@ public WebFrame() {
 	super();
 }
 
-public WebFrame(int /*long*/ id) {
+public WebFrame(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,16 +25,16 @@ public WebFrame(id id) {
 }
 
 public DOMDocument DOMDocument() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_DOMDocument);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_DOMDocument);
 	return result != 0 ? new DOMDocument(result) : null;
 }
 
 public WebDataSource dataSource() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_dataSource);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_dataSource);
 	return result != 0 ? new WebDataSource(result) : null;
 }
 
-public int /*long*/ globalContext() {
+public long /*int*/ globalContext() {
 	return OS.objc_msgSend(this.id, OS.sel_globalContext);
 }
 

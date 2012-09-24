@@ -37,7 +37,7 @@ public class nsIWritableVariant extends nsIVariant {
 	public static final nsID NS_IWRITABLEVARIANT_IID =
 		new nsID(NS_IWRITABLEVARIANT_IID_STR);
 
-	public nsIWritableVariant(int /*long*/ address) {
+	public nsIWritableVariant(long /*int*/ address) {
 		super(address);
 	}
 
@@ -101,23 +101,23 @@ public class nsIWritableVariant extends nsIVariant {
 //		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 15, getAddress(), aValue);
 //	}
 
-	public int SetAsID(int /*long*/ aValue) {
+	public int SetAsID(long /*int*/ aValue) {
 		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 16, getAddress(), aValue);
 	}
 
-	public int SetAsAString(int /*long*/ aValue) {
+	public int SetAsAString(long /*int*/ aValue) {
 		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 17, getAddress(), aValue);
 	}
 
-	public int SetAsDOMString(int /*long*/ aValue) {
+	public int SetAsDOMString(long /*int*/ aValue) {
 		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 18, getAddress(), aValue);
 	}
 
-	public int SetAsACString(int /*long*/ aValue) {
+	public int SetAsACString(long /*int*/ aValue) {
 		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 19, getAddress(), aValue);
 	}
 
-	public int SetAsAUTF8String(int /*long*/ aValue) {
+	public int SetAsAUTF8String(long /*int*/ aValue) {
 		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 20, getAddress(), aValue);
 	}
 
@@ -129,15 +129,15 @@ public class nsIWritableVariant extends nsIVariant {
 		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 22, getAddress(), aValue);
 	}
 
-	public int SetAsISupports(int /*long*/ aValue) {
+	public int SetAsISupports(long /*int*/ aValue) {
 		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 23, getAddress(), aValue);
 	}
 
-	public int SetAsInterface(nsID iid, int /*long*/ iface) {
+	public int SetAsInterface(nsID iid, long /*int*/ iface) {
 		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 24, getAddress(), iid, iface);
 	}
 
-	public int SetAsArray(short type, int /*long*/ iid, int count, int /*long*/ ptr) {
+	public int SetAsArray(short type, long /*int*/ iid, int count, long /*int*/ ptr) {
 		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 25, getAddress(), type, iid, count, ptr);
 	}
 
@@ -161,7 +161,7 @@ public class nsIWritableVariant extends nsIVariant {
 		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 30, getAddress());
 	}
 
-	public int SetFromVariant(int /*long*/ aValue) {
+	public int SetFromVariant(long /*int*/ aValue) {
 		return XPCOM.VtblCall(nsIVariant.LAST_METHOD_ID + 31, getAddress(), aValue);
 	}
 }

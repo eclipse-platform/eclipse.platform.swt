@@ -84,7 +84,7 @@ void clearArea (int x, int y, int width, int height) {
 	if (OS.IsWindowVisible (handle)) {
 		RECT rect = new RECT ();
 		OS.SetRect (rect, x, y, x + width, y + height);
-		int /*long*/ hDC = OS.GetDCEx (handle, 0, OS.DCX_CACHE | OS.DCX_CLIPCHILDREN | OS.DCX_CLIPSIBLINGS);
+		long /*int*/ hDC = OS.GetDCEx (handle, 0, OS.DCX_CACHE | OS.DCX_CLIPCHILDREN | OS.DCX_CLIPSIBLINGS);
 		drawBackground (hDC, rect);
 		OS.ReleaseDC (handle, hDC);
 	}
@@ -328,7 +328,7 @@ TCHAR windowClass () {
 	return super.windowClass ();
 }
 
-int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (msg == Display.SWT_RESTORECARET) {
 		if ((state & CANVAS) != 0) {
 			if (caret != null) {
@@ -341,7 +341,7 @@ int /*long*/ windowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
-LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
 	if (caret != null) {
@@ -363,7 +363,7 @@ LRESULT WM_CHAR (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_IME_COMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ime != null) {
 		LRESULT result = ime.WM_IME_COMPOSITION (wParam, lParam);
 		if (result != null) return result;
@@ -389,7 +389,7 @@ LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 						lpCompForm.dwStyle = OS.CFS_POINT;
 						lpCompForm.x = ptCurrentPos.x;
 						lpCompForm.y = ptCurrentPos.y;
-						int /*long*/ hIMC = OS.ImmGetContext (handle);
+						long /*int*/ hIMC = OS.ImmGetContext (handle);
 						OS.ImmSetCompositionWindow (hIMC, lpCompForm);
 						OS.ImmReleaseContext (handle, hIMC);
 					}
@@ -400,7 +400,7 @@ LRESULT WM_IME_COMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 	return super.WM_IME_COMPOSITION (wParam, lParam);
 }
 
-LRESULT WM_IME_COMPOSITION_START (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_IME_COMPOSITION_START (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ime != null) {
 		LRESULT result = ime.WM_IME_COMPOSITION_START (wParam, lParam);
 		if (result != null) return result;
@@ -408,7 +408,7 @@ LRESULT WM_IME_COMPOSITION_START (int /*long*/ wParam, int /*long*/ lParam) {
 	return super.WM_IME_COMPOSITION_START (wParam, lParam);
 }
 
-LRESULT WM_IME_ENDCOMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_IME_ENDCOMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ime != null) {
 		LRESULT result = ime.WM_IME_ENDCOMPOSITION (wParam, lParam);
 		if (result != null) return result;
@@ -416,7 +416,7 @@ LRESULT WM_IME_ENDCOMPOSITION (int /*long*/ wParam, int /*long*/ lParam) {
 	return super.WM_IME_ENDCOMPOSITION (wParam, lParam);
 }
 
-LRESULT WM_INPUTLANGCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_INPUTLANGCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result  = super.WM_INPUTLANGCHANGE (wParam, lParam);
 	if (caret != null && caret.isFocusCaret ()) {
 		caret.setIMEFont ();
@@ -425,7 +425,7 @@ LRESULT WM_INPUTLANGCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ime != null) {
 		LRESULT result = ime.WM_KILLFOCUS (wParam, lParam);
 		if (result != null) return result;
@@ -436,7 +436,7 @@ LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ime != null) {
 		LRESULT result = ime.WM_LBUTTONDOWN (wParam, lParam);
 		if (result != null) return result;
@@ -444,19 +444,19 @@ LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
 	return super.WM_LBUTTONDOWN (wParam, lParam);
 }
 
-LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result  = super.WM_SETFOCUS (wParam, lParam);
 	if (caret != null && caret.isFocusCaret ()) caret.setFocus ();
 	return result;
 }
 
-LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result  = super.WM_SIZE (wParam, lParam);
 	if (caret != null && caret.isFocusCaret ()) caret.resizeIME ();
 	return result;
 }
 
-LRESULT WM_WINDOWPOSCHANGED (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_WINDOWPOSCHANGED (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result  = super.WM_WINDOWPOSCHANGED (wParam, lParam);
 	//if (result != null) return result;
 	/*
@@ -471,7 +471,7 @@ LRESULT WM_WINDOWPOSCHANGED (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_WINDOWPOSCHANGING (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result  = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;
 	/*

@@ -40,7 +40,7 @@ public class TransferData {
 	 * 
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public int /*long*/ type;
+	public long /*int*/ type;
 	
 	/**
 	 * Specifies the number of units in pValue.
@@ -86,7 +86,7 @@ public class TransferData {
 	 * 
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public int /*long*/ pValue;
+	public long /*int*/ pValue;
 
 	/**
 	 * The result field contains the result of converting a

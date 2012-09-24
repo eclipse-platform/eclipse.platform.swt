@@ -37,7 +37,7 @@ public class nsIWebBrowserChromeFocus extends nsISupports {
 	public static final nsID NS_IWEBBROWSERCHROMEFOCUS_IID =
 		new nsID(NS_IWEBBROWSERCHROMEFOCUS_IID_STR);
 
-	public nsIWebBrowserChromeFocus(int /*long*/ address) {
+	public nsIWebBrowserChromeFocus(long /*int*/ address) {
 		super(address);
 	}
 

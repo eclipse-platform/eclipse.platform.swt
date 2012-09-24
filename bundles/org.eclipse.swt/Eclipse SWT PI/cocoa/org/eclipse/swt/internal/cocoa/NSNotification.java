@@ -16,7 +16,7 @@ public NSNotification() {
 	super();
 }
 
-public NSNotification(int /*long*/ id) {
+public NSNotification(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,12 +25,12 @@ public NSNotification(id id) {
 }
 
 public id object() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_object);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_object);
 	return result != 0 ? new id(result) : null;
 }
 
 public NSDictionary userInfo() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_userInfo);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_userInfo);
 	return result != 0 ? new NSDictionary(result) : null;
 }
 

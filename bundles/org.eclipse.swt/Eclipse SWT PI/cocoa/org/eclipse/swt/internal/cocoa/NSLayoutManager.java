@@ -16,7 +16,7 @@ public NSLayoutManager() {
 	super();
 }
 
-public NSLayoutManager(int /*long*/ id) {
+public NSLayoutManager(long /*int*/ id) {
 	super(id);
 }
 
@@ -38,16 +38,16 @@ public NSRect boundingRectForGlyphRange(NSRange glyphRange, NSTextContainer cont
 	return result;
 }
 
-public int /*long*/ characterIndexForGlyphAtIndex(int /*long*/ glyphIndex) {
+public long /*int*/ characterIndexForGlyphAtIndex(long /*int*/ glyphIndex) {
 	return OS.objc_msgSend(this.id, OS.sel_characterIndexForGlyphAtIndex_, glyphIndex);
 }
 
-public float /*double*/ defaultBaselineOffsetForFont(NSFont theFont) {
-	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_defaultBaselineOffsetForFont_, theFont != null ? theFont.id : 0);
+public double /*float*/ defaultBaselineOffsetForFont(NSFont theFont) {
+	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_defaultBaselineOffsetForFont_, theFont != null ? theFont.id : 0);
 }
 
-public float /*double*/ defaultLineHeightForFont(NSFont theFont) {
-	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_defaultLineHeightForFont_, theFont != null ? theFont.id : 0);
+public double /*float*/ defaultLineHeightForFont(NSFont theFont) {
+	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_defaultLineHeightForFont_, theFont != null ? theFont.id : 0);
 }
 
 public void drawBackgroundForGlyphRange(NSRange glyphsToShow, NSPoint origin) {
@@ -58,23 +58,23 @@ public void drawGlyphsForGlyphRange(NSRange glyphsToShow, NSPoint origin) {
 	OS.objc_msgSend(this.id, OS.sel_drawGlyphsForGlyphRange_atPoint_, glyphsToShow, origin);
 }
 
-public int /*long*/ getGlyphs(int /*long*/ glyphArray, NSRange glyphRange) {
+public long /*int*/ getGlyphs(long /*int*/ glyphArray, NSRange glyphRange) {
 	return OS.objc_msgSend(this.id, OS.sel_getGlyphs_range_, glyphArray, glyphRange);
 }
 
-public int /*long*/ getGlyphsInRange(NSRange glyphRange, int /*long*/ glyphBuffer, int /*long*/ charIndexBuffer, int /*long*/ inscribeBuffer, int /*long*/ elasticBuffer, byte[] bidiLevelBuffer) {
+public long /*int*/ getGlyphsInRange(NSRange glyphRange, long /*int*/ glyphBuffer, long /*int*/ charIndexBuffer, long /*int*/ inscribeBuffer, long /*int*/ elasticBuffer, byte[] bidiLevelBuffer) {
 	return OS.objc_msgSend(this.id, OS.sel_getGlyphsInRange_glyphs_characterIndexes_glyphInscriptions_elasticBits_bidiLevels_, glyphRange, glyphBuffer, charIndexBuffer, inscribeBuffer, elasticBuffer, bidiLevelBuffer);
 }
 
-public int /*long*/ glyphIndexForCharacterAtIndex(int /*long*/ charIndex) {
+public long /*int*/ glyphIndexForCharacterAtIndex(long /*int*/ charIndex) {
 	return OS.objc_msgSend(this.id, OS.sel_glyphIndexForCharacterAtIndex_, charIndex);
 }
 
-public int /*long*/ glyphIndexForPoint(NSPoint point, NSTextContainer container, float[] /*double[]*/ partialFraction) {
+public long /*int*/ glyphIndexForPoint(NSPoint point, NSTextContainer container, double[] /*float[]*/ partialFraction) {
 	return OS.objc_msgSend(this.id, OS.sel_glyphIndexForPoint_inTextContainer_fractionOfDistanceThroughGlyph_, point, container != null ? container.id : 0, partialFraction);
 }
 
-public NSRange glyphRangeForCharacterRange(NSRange charRange, int /*long*/ actualCharRange) {
+public NSRange glyphRangeForCharacterRange(NSRange charRange, long /*int*/ actualCharRange) {
 	NSRange result = new NSRange();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_glyphRangeForCharacterRange_actualCharacterRange_, charRange, actualCharRange);
 	return result;
@@ -86,33 +86,33 @@ public NSRange glyphRangeForTextContainer(NSTextContainer container) {
 	return result;
 }
 
-public NSRect lineFragmentUsedRectForGlyphAtIndex(int /*long*/ glyphIndex, int /*long*/ effectiveGlyphRange) {
+public NSRect lineFragmentUsedRectForGlyphAtIndex(long /*int*/ glyphIndex, long /*int*/ effectiveGlyphRange) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_lineFragmentUsedRectForGlyphAtIndex_effectiveRange_, glyphIndex, effectiveGlyphRange);
 	return result;
 }
 
-public NSRect lineFragmentUsedRectForGlyphAtIndex(int /*long*/ glyphIndex, int /*long*/ effectiveGlyphRange, boolean flag) {
+public NSRect lineFragmentUsedRectForGlyphAtIndex(long /*int*/ glyphIndex, long /*int*/ effectiveGlyphRange, boolean flag) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_lineFragmentUsedRectForGlyphAtIndex_effectiveRange_withoutAdditionalLayout_, glyphIndex, effectiveGlyphRange, flag);
 	return result;
 }
 
-public NSPoint locationForGlyphAtIndex(int /*long*/ glyphIndex) {
+public NSPoint locationForGlyphAtIndex(long /*int*/ glyphIndex) {
 	NSPoint result = new NSPoint();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_locationForGlyphAtIndex_, glyphIndex);
 	return result;
 }
 
-public int /*long*/ numberOfGlyphs() {
+public long /*int*/ numberOfGlyphs() {
 	return OS.objc_msgSend(this.id, OS.sel_numberOfGlyphs);
 }
 
-public int /*long*/ rectArrayForCharacterRange(NSRange charRange, NSRange selCharRange, NSTextContainer container, int[] /*long[]*/ rectCount) {
+public long /*int*/ rectArrayForCharacterRange(NSRange charRange, NSRange selCharRange, NSTextContainer container, long[] /*int[]*/ rectCount) {
 	return OS.objc_msgSend(this.id, OS.sel_rectArrayForCharacterRange_withinSelectedCharacterRange_inTextContainer_rectCount_, charRange, selCharRange, container != null ? container.id : 0, rectCount);
 }
 
-public int /*long*/ rectArrayForGlyphRange(NSRange glyphRange, NSRange selGlyphRange, NSTextContainer container, int[] /*long[]*/ rectCount) {
+public long /*int*/ rectArrayForGlyphRange(NSRange glyphRange, NSRange selGlyphRange, NSTextContainer container, long[] /*int[]*/ rectCount) {
 	return OS.objc_msgSend(this.id, OS.sel_rectArrayForGlyphRange_withinSelectedGlyphRange_inTextContainer_rectCount_, glyphRange, selGlyphRange, container != null ? container.id : 0, rectCount);
 }
 
@@ -137,7 +137,7 @@ public void setUsesScreenFonts(boolean flag) {
 }
 
 public NSTypesetter typesetter() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_typesetter);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_typesetter);
 	return result != 0 ? new NSTypesetter(result) : null;
 }
 

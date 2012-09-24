@@ -37,11 +37,11 @@ public class nsIDirectoryServiceProvider2 extends nsIDirectoryServiceProvider {
 	public static final nsID NS_IDIRECTORYSERVICEPROVIDER2_IID =
 		new nsID(NS_IDIRECTORYSERVICEPROVIDER2_IID_STRING);
 
-	public nsIDirectoryServiceProvider2(int /*long*/ address) {
+	public nsIDirectoryServiceProvider2(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetFiles(byte[] prop, int /*long*/[] _retval) {
+	public int GetFiles(byte[] prop, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsIDirectoryServiceProvider.LAST_METHOD_ID + 1, getAddress(), prop, _retval);
 	}
 }

@@ -203,7 +203,7 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
-void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cellRect, int /*long*/ view) {
+void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellRect, long /*int*/ view) {
 	/*
 	 * Feature in Cocoa.  When the last column in a tree does not reach the
 	 * rightmost edge of the tree view, the cell that draws the rightmost-

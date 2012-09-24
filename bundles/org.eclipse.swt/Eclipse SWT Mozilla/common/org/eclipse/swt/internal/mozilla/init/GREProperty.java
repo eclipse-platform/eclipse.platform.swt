@@ -30,8 +30,8 @@ package org.eclipse.swt.internal.mozilla.init;
 /** @jniclass flags=cpp */
 public class GREProperty {
 	/** @field cast=(const char *) */
-	public int /*long*/ property;
+	public long /*int*/ property;
 	/** @field cast=(const char *) */
-	public int /*long*/ value;
+	public long /*int*/ value;
     public static final int sizeof = XPCOMInit.GREProperty_sizeof ();
 }

@@ -16,7 +16,7 @@ public NSEvent() {
 	super();
 }
 
-public NSEvent(int /*long*/ id) {
+public NSEvent(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,38 +24,38 @@ public NSEvent(id id) {
 	super(id);
 }
 
-public int /*long*/ CGEvent() {
+public long /*int*/ CGEvent() {
 	return OS.objc_msgSend(this.id, OS.sel_CGEvent);
 }
 
-public int /*long*/ buttonNumber() {
+public long /*int*/ buttonNumber() {
 	return OS.objc_msgSend(this.id, OS.sel_buttonNumber);
 }
 
 public NSString characters() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_characters);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_characters);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public NSString charactersIgnoringModifiers() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_charactersIgnoringModifiers);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_charactersIgnoringModifiers);
 	return result != 0 ? new NSString(result) : null;
 }
 
-public int /*long*/ clickCount() {
+public long /*int*/ clickCount() {
 	return OS.objc_msgSend(this.id, OS.sel_clickCount);
 }
 
-public float /*double*/ deltaX() {
-	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_deltaX);
+public double /*float*/ deltaX() {
+	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_deltaX);
 }
 
-public float /*double*/ deltaY() {
-	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_deltaY);
+public double /*float*/ deltaY() {
+	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_deltaY);
 }
 
-public static NSEvent enterExitEventWithType(int /*long*/ type, NSPoint location, int /*long*/ flags, double time, int /*long*/ wNum, NSGraphicsContext context, int /*long*/ eNum, int /*long*/ tNum, int /*long*/ data) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSEvent, OS.sel_enterExitEventWithType_location_modifierFlags_timestamp_windowNumber_context_eventNumber_trackingNumber_userData_, type, location, flags, time, wNum, context != null ? context.id : 0, eNum, tNum, data);
+public static NSEvent enterExitEventWithType(long /*int*/ type, NSPoint location, long /*int*/ flags, double time, long /*int*/ wNum, NSGraphicsContext context, long /*int*/ eNum, long /*int*/ tNum, long /*int*/ data) {
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSEvent, OS.sel_enterExitEventWithType_location_modifierFlags_timestamp_windowNumber_context_eventNumber_trackingNumber_userData_, type, location, flags, time, wNum, context != null ? context.id : 0, eNum, tNum, data);
 	return result != 0 ? new NSEvent(result) : null;
 }
 
@@ -69,11 +69,11 @@ public NSPoint locationInWindow() {
 	return result;
 }
 
-public float /*double*/ magnification() {
-	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_magnification);
+public double /*float*/ magnification() {
+	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_magnification);
 }
 
-public int /*long*/ modifierFlags() {
+public long /*int*/ modifierFlags() {
 	return OS.objc_msgSend(this.id, OS.sel_modifierFlags);
 }
 
@@ -83,8 +83,8 @@ public static NSPoint mouseLocation() {
 	return result;
 }
 
-public static NSEvent otherEventWithType(int /*long*/ type, NSPoint location, int /*long*/ flags, double time, int /*long*/ wNum, NSGraphicsContext context, short subtype, int /*long*/ d1, int /*long*/ d2) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSEvent, OS.sel_otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_, type, location, flags, time, wNum, context != null ? context.id : 0, subtype, d1, d2);
+public static NSEvent otherEventWithType(long /*int*/ type, NSPoint location, long /*int*/ flags, double time, long /*int*/ wNum, NSGraphicsContext context, short subtype, long /*int*/ d1, long /*int*/ d2) {
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSEvent, OS.sel_otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_, type, location, flags, time, wNum, context != null ? context.id : 0, subtype, d1, d2);
 	return result != 0 ? new NSEvent(result) : null;
 }
 
@@ -96,17 +96,17 @@ public double timestamp() {
 	return OS.objc_msgSend_fpret(this.id, OS.sel_timestamp);
 }
 
-public NSSet touchesMatchingPhase(int /*long*/ phase, NSView view) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_touchesMatchingPhase_inView_, phase, view != null ? view.id : 0);
+public NSSet touchesMatchingPhase(long /*int*/ phase, NSView view) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_touchesMatchingPhase_inView_, phase, view != null ? view.id : 0);
 	return result != 0 ? new NSSet(result) : null;
 }
 
-public int /*long*/ type() {
+public long /*int*/ type() {
 	return OS.objc_msgSend(this.id, OS.sel_type);
 }
 
 public NSWindow window() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_window);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_window);
 	return result != 0 ? new NSWindow(result) : null;
 }
 

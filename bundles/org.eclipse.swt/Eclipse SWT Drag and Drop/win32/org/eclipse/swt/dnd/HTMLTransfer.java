@@ -107,7 +107,7 @@ public void javaToNative (Object object, TransferData transferData){
 	chars = new char[count + 1];
 	buffer.getChars(0, count, chars, 0);
 	cchMultiByte = OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, -1, null, 0, null, null);
-	int /*long*/ lpMultiByteStr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, cchMultiByte);
+	long /*int*/ lpMultiByteStr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, cchMultiByte);
 	OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
 	transferData.stgmedium = new STGMEDIUM();
 	transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
@@ -137,10 +137,10 @@ public Object nativeToJava(TransferData transferData){
 	transferData.result = getData(data, formatetc, stgmedium);
 	data.Release();	
 	if (transferData.result != COM.S_OK) return null;
-	int /*long*/ hMem = stgmedium.unionField;
+	long /*int*/ hMem = stgmedium.unionField;
 	
 	try {
-		int /*long*/ lpMultiByteStr = OS.GlobalLock(hMem);
+		long /*int*/ lpMultiByteStr = OS.GlobalLock(hMem);
 		if (lpMultiByteStr == 0) return null;
 		try {
 			/* NOTE: CF_HTML uses UTF-8 encoding. 

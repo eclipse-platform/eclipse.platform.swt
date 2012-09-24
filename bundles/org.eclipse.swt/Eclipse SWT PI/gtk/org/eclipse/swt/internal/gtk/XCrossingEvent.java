@@ -13,9 +13,9 @@ package org.eclipse.swt.internal.gtk;
  
 public class XCrossingEvent extends XAnyEvent {
 	/** @field cast=(Window) */
-	public int /*long*/ root;
+	public long /*int*/ root;
 	/** @field cast=(Window) */
-	public int /*long*/ subwindow;
+	public long /*int*/ subwindow;
 	/** @field cast=(Time) */
 	public int time;
 	public int x;

@@ -135,7 +135,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.DefaultSelection,typedListener);
 }
 
-NSSize cellSizeForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) {
+NSSize cellSizeForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
 	NSSize size = super.cellSizeForBounds(id, sel, cellFrame);
 	if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
 		NSSize imageSize = image.handle.size();
@@ -161,7 +161,7 @@ NSSize cellSizeForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) {
 		NSAttributedString attribStr = createString(text, null, foreground, style, true, true, true);
 		NSRect rect = attribStr.boundingRectWithSize(wrapSize, OS.NSStringDrawingUsesLineFragmentOrigin);
 		attribStr.release();
-		float /*double*/ trimHeight = size.height - titleRect.height;
+		double /*float*/ trimHeight = size.height - titleRect.height;
 		size.height = rect.height;
 		if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
 			NSSize imageSize = image.handle.size();
@@ -294,7 +294,7 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 	return dragging;
 }
 
-void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ image, NSRect rect, int /*long*/ view) {
+void drawImageWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ image, NSRect rect, long /*int*/ view) {
 	/*
 	* Feature in Cocoa.  Images touch the edge of rounded buttons
 	* when set to small size. The fix to subclass the button cell
@@ -310,7 +310,7 @@ void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ i
 	super.drawImageWithFrameInView(id, sel, image, rect, view);
 }
 
-void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cellRect, int /*long*/ viewid) {
+void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellRect, long /*int*/ viewid) {
 	if ((style & (SWT.CHECK|SWT.RADIO)) != 0 && backgroundImage != null) {
 		fillBackground (new NSView(viewid), NSGraphicsContext.currentContext(), cellRect, -1);
 	}
@@ -318,8 +318,8 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cel
 	if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
 		NSSize imageSize = image.handle.size();
 		NSCell nsCell = new NSCell(id);
-		float /*double*/ x = 0;
-		float /*double*/ y = (imageSize.height - cellRect.height)/2f;
+		double /*float*/ x = 0;
+		double /*float*/ y = (imageSize.height - cellRect.height)/2f;
 		NSRect imageRect = nsCell.imageRectForBounds(cellRect);
 		NSSize stringSize = ((NSButton)view).attributedTitle().size();
 		switch (style & (SWT.LEFT|SWT.RIGHT|SWT.CENTER)) {
@@ -349,7 +349,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cel
 
 }
 
-NSRect drawTitleWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ title, NSRect titleRect, int /*long*/ view) {
+NSRect drawTitleWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ title, NSRect titleRect, long /*int*/ view) {
 	boolean wrap = (style & SWT.WRAP) != 0 && text.length() != 0;
 	if (wrap) {
 		NSSize wrapSize = new NSSize();
@@ -380,7 +380,7 @@ boolean drawsBackground() {
 	return background != null || backgroundImage != null;
 }
 
-void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+void drawWidget (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if ((style & SWT.ARROW) != 0) {	
 		NSRect frame = view.frame();
 		int arrowSize = Math.min((int)frame.height, (int)frame.width) / 2;
@@ -541,7 +541,7 @@ boolean isDescribedByLabel () {
  * This will cause the on state to momentarily appear while clicking on the checkbox. To avoid this, we override [NSCell nextState]
  * to go directly to the desired state if we have a grayed checkbox.
  */
-int /*long*/ nextState(int /*long*/ id, int /*long*/ sel) {
+long /*int*/ nextState(long /*int*/ id, long /*int*/ sel) {
 	if ((style & SWT.CHECK) != 0 && grayed) {
 		return ((NSButton)view).state() == OS.NSMixedState ? OS.NSOffState : OS.NSMixedState;
 	}
@@ -706,7 +706,7 @@ void setFont (NSFont font) {
 	}
 }
 
-void setForeground (float /*double*/ [] color) {
+void setForeground (double /*float*/ [] color) {
 	((NSButton)view).setAttributedTitle(createString());
 }
 
@@ -872,7 +872,7 @@ public void setText (String string) {
 	updateAlignment ();
 }
 
-NSRect titleRectForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) {
+NSRect titleRectForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
 	NSRect rect = super.titleRectForBounds(id, sel, cellFrame);
 	if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
 		NSSize imageSize = image.handle.size();

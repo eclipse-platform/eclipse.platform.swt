@@ -27,8 +27,8 @@ public ToolItemDrawData() {
 }
 
 Rectangle computeTrim(Theme theme, GC gc) {
-	int /*long*/ buttonHandle = theme.buttonHandle;
-	int /*long*/ gtkStyle = OS.gtk_widget_get_style(buttonHandle);
+	long /*int*/ buttonHandle = theme.buttonHandle;
+	long /*int*/ gtkStyle = OS.gtk_widget_get_style(buttonHandle);
 	int focus_width = theme.getWidgetProperty(buttonHandle, "focus-line-width");
 	int focus_padding = theme.getWidgetProperty(buttonHandle, "focus-padding");
 	int xthickness = OS.gtk_style_get_xthickness(gtkStyle);
@@ -47,13 +47,13 @@ Rectangle computeTrim(Theme theme, GC gc) {
 
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	int state = this.state[DrawData.WIDGET_WHOLE];
-	int /*long*/ drawable = gc.getGCData().drawable;
+	long /*int*/ drawable = gc.getGCData().drawable;
 
 	if ((style & SWT.SEPARATOR) != 0) {
 		int state_type = getStateType(DrawData.WIDGET_WHOLE);
-		int /*long*/ separatorHandle = theme.separatorHandle;
+		long /*int*/ separatorHandle = theme.separatorHandle;
 		byte[] detail = Converter.wcsToMbcs(null, "vseparator", true);
-		int /*long*/ gtkStyle = OS.gtk_widget_get_style (separatorHandle);
+		long /*int*/ gtkStyle = OS.gtk_widget_get_style (separatorHandle);
 		theme.transferClipping(gc, gtkStyle);
 		if ((parent.style & SWT.VERTICAL) != 0) {
 			OS.gtk_paint_hline(gtkStyle, drawable, state_type, null, separatorHandle, detail, bounds.x, bounds.x + bounds.width, bounds.y + bounds.height / 2);
@@ -63,8 +63,8 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		return;
 	}
 
-	int /*long*/ buttonHandle = theme.buttonHandle;
-	int /*long*/ gtkStyle = OS.gtk_widget_get_style (buttonHandle);
+	long /*int*/ buttonHandle = theme.buttonHandle;
+	long /*int*/ gtkStyle = OS.gtk_widget_get_style (buttonHandle);
 	theme.transferClipping (gc, gtkStyle);
 	int focus_line_width = theme.getWidgetProperty(buttonHandle, "focus-line-width");
 	int focus_padding = theme.getWidgetProperty(buttonHandle, "focus-padding");
@@ -83,7 +83,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}
 	
 	int[] relief = new int[1];
-	int /*long*/ toolbarHandle = theme.toolbarHandle;
+	long /*int*/ toolbarHandle = theme.toolbarHandle;
 	OS.gtk_widget_style_get(toolbarHandle, OS.button_relief, relief, 0);
 
 	int shadow_type = OS.GTK_SHADOW_OUT;
@@ -149,8 +149,8 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 int hit(Theme theme, Point position, Rectangle bounds) {
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;
 	if ((style & SWT.DROP_DOWN) != 0) {
-		int /*long*/ buttonHandle = theme.buttonHandle;
-		int /*long*/ gtkStyle = OS.gtk_widget_get_style (buttonHandle);
+		long /*int*/ buttonHandle = theme.buttonHandle;
+		long /*int*/ gtkStyle = OS.gtk_widget_get_style (buttonHandle);
 		int xthickness = OS.gtk_style_get_xthickness(gtkStyle);
 		int interior_focus = theme.getWidgetProperty(buttonHandle, "interior-focus");
 		int focus_line_width = theme.getWidgetProperty(buttonHandle, "focus-line-width");

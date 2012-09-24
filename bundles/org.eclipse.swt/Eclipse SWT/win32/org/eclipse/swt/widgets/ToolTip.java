@@ -215,7 +215,7 @@ public boolean getVisible () {
 	checkWidget();
 	if (OS.IsWinCE) return false;
 	if (item != null) return visible;
-	int /*long*/ hwndToolTip = hwndToolTip ();
+	long /*int*/ hwndToolTip = hwndToolTip ();
 	if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
 		TOOLINFO lpti = new TOOLINFO ();
 		lpti.cbSize = TOOLINFO.sizeof;
@@ -226,7 +226,7 @@ public boolean getVisible () {
 	return false;
 }
 
-int /*long*/ hwndToolTip () {
+long /*int*/ hwndToolTip () {
 	return (style & SWT.BALLOON) != 0 ? parent.balloonTipHandle () : parent.toolTipHandle ();
 }
 
@@ -261,7 +261,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (item == null) {
 		if (autoHide) {
-			int /*long*/ hwndToolTip = hwndToolTip ();
+			long /*int*/ hwndToolTip = hwndToolTip ();
 			if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
 				TOOLINFO lpti = new TOOLINFO ();
 				lpti.cbSize = TOOLINFO.sizeof;
@@ -443,12 +443,12 @@ public void setVisible (boolean visible) {
 	if (OS.IsWinCE) return;
 	if (visible == getVisible ()) return;
 	if (item == null) {
-		int /*long*/ hwnd = parent.handle;
+		long /*int*/ hwnd = parent.handle;
 		TOOLINFO lpti = new TOOLINFO ();
 		lpti.cbSize = TOOLINFO.sizeof;
 		lpti.uId = id;
 		lpti.hwnd = hwnd;
-		int /*long*/ hwndToolTip = hwndToolTip ();
+		long /*int*/ hwndToolTip = hwndToolTip ();
 		Shell shell = parent.getShell ();
 		if (text.length () != 0) {
 			int icon = OS.TTI_NONE;
@@ -465,7 +465,7 @@ public void setVisible (boolean visible) {
 			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
 			maxWidth = (rect.right - rect.left) / 4;
 		} else {
-			int /*long*/ hmonitor = OS.MonitorFromWindow (hwnd, OS.MONITOR_DEFAULTTONEAREST);
+			long /*int*/ hmonitor = OS.MonitorFromWindow (hwnd, OS.MONITOR_DEFAULTTONEAREST);
 			MONITORINFO lpmi = new MONITORINFO ();
 			lpmi.cbSize = MONITORINFO.sizeof;
 			OS.GetMonitorInfo (hmonitor, lpmi);
@@ -481,7 +481,7 @@ public void setVisible (boolean visible) {
 					nY = pt.y;
 				}
 			}
-			int /*long*/ lParam = OS.MAKELPARAM (nX, nY);
+			long /*int*/ lParam = OS.MAKELPARAM (nX, nY);
 			OS.SendMessage (hwndToolTip, OS.TTM_TRACKPOSITION, 0, lParam);
 			
 			/*
@@ -497,7 +497,7 @@ public void setVisible (boolean visible) {
 			OS.GetClientRect (hwnd, rect);
 			OS.MapWindowPoints (hwnd, 0, rect, 2);
 			if (!OS.PtInRect (rect, pt)) {
-				int /*long*/ hCursor = OS.GetCursor ();
+				long /*int*/ hCursor = OS.GetCursor ();
 				OS.SetCursor (0);
 				OS.SetCursorPos (rect.left, rect.top);
 				OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 1, lpti);

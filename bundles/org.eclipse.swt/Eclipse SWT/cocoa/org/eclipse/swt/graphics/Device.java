@@ -243,7 +243,7 @@ public Rectangle getBounds () {
 	checkDevice ();
 	NSScreen screen = getPrimaryScreen();
 	NSRect frame = screen.frame();
-	float /*double*/ scaleFactor = screen.userSpaceScaleFactor();
+	double /*float*/ scaleFactor = screen.userSpaceScaleFactor();
 	frame.x /= scaleFactor;
 	frame.y /= scaleFactor;
 	frame.width /= scaleFactor;
@@ -368,7 +368,7 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	NSArray families = NSFontManager.sharedFontManager().availableFontFamilies();
 	FontData[] fds = new FontData[100];
 	if (families != null) {
-		int /*long*/ familyCount = families.count();
+		long /*int*/ familyCount = families.count();
 		for (int i = 0; i < familyCount; i++) {
 			NSString nsFamily = new NSString(families.objectAtIndex(i));
 			String name = nsFamily.getString();
@@ -379,8 +379,8 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 				for (int j = 0; j < fontCount; j++) {
 					NSArray fontDetails = new NSArray(fonts.objectAtIndex(j));
 					String nsName = new NSString(fontDetails.objectAtIndex(0)).getString();
-					int /*long*/ weight = new NSNumber(fontDetails.objectAtIndex(2)).integerValue();
-					int /*long*/ traits = new NSNumber(fontDetails.objectAtIndex(3)).integerValue();
+					long /*int*/ weight = new NSNumber(fontDetails.objectAtIndex(2)).integerValue();
+					long /*int*/ traits = new NSNumber(fontDetails.objectAtIndex(3)).integerValue();
 					int style = SWT.NORMAL;
 					if ((traits & OS.NSItalicFontMask) != 0) style |= SWT.ITALIC;
 					if (weight == 9) style |= SWT.BOLD;
@@ -533,7 +533,7 @@ protected void init () {
 	
 	/* Initialize the system font slot */
 	boolean smallFonts = System.getProperty("org.eclipse.swt.internal.carbon.smallFonts") != null;
-	float /*double*/ systemFontSize = smallFonts ? NSFont.smallSystemFontSize() : NSFont.systemFontSize();		
+	double /*float*/ systemFontSize = smallFonts ? NSFont.smallSystemFontSize() : NSFont.systemFontSize();		
 	Point dpi = this.dpi = getDPI(), screenDPI = getScreenDPI();
 	NSFont font = NSFont.systemFontOfSize(systemFontSize * dpi.y / screenDPI.y);
 	font.retain();
@@ -555,7 +555,7 @@ protected void init () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public abstract int /*long*/ internal_new_GC (GCData data);
+public abstract long /*int*/ internal_new_GC (GCData data);
 
 /**	 
  * Invokes platform specific functionality to dispose a GC handle.
@@ -572,7 +572,7 @@ public abstract int /*long*/ internal_new_GC (GCData data);
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public abstract void internal_dispose_GC (int /*long*/ hDC, GCData data);
+public abstract void internal_dispose_GC (long /*int*/ hDC, GCData data);
 
 /**
  * Returns <code>true</code> if the device has been disposed,
@@ -611,7 +611,7 @@ public boolean loadFont (String path) {
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	boolean result = false;
 	NSString nsPath = NSString.stringWith(path);
-	int /*long*/ fsRepresentation = nsPath.fileSystemRepresentation();
+	long /*int*/ fsRepresentation = nsPath.fileSystemRepresentation();
 	
 	if (fsRepresentation != 0) {
 		byte [] fsRef = new byte [80];

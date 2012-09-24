@@ -15,13 +15,13 @@ public class NMTVDISPINFO extends NMHDR {
 	/** @field accessor=item.mask */
 	public int mask;
 	/** @field accessor=item.hItem,cast=(HTREEITEM) */
-	public int /*long*/ hItem;
+	public long /*int*/ hItem;
 	/** @field accessor=item.state */
 	public int state;
 	/** @field accessor=item.stateMask */
 	public int stateMask;
 	/** @field accessor=item.pszText,cast=(LPTSTR) */
-	public int /*long*/ pszText;
+	public long /*int*/ pszText;
   	/** @field accessor=item.cchTextMax */
 	public int cchTextMax;
   	/** @field accessor=item.iImage */
@@ -31,6 +31,6 @@ public class NMTVDISPINFO extends NMHDR {
 	/** @field accessor=item.cChildren */
 	public int cChildren;
 	/** @field accessor=item.lParam */
-	public int /*long*/ lParam;
+	public long /*int*/ lParam;
 	public static final int sizeof = OS.NMTVDISPINFO_sizeof ();
 }

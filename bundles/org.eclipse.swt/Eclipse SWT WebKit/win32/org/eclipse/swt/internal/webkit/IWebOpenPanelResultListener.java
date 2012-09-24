@@ -14,11 +14,11 @@ import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebOpenPanelResultListener extends IUnknown {
 
-public IWebOpenPanelResultListener (int /*long*/ address) {
+public IWebOpenPanelResultListener (long /*int*/ address) {
 	super (address);
 }
 
-public int chooseFilename (int /*long*/ fileName) {
+public int chooseFilename (long /*int*/ fileName) {
 	return COM.VtblCall (3, getAddress (), fileName);
 }
 

@@ -19,7 +19,7 @@ public class GdkImage {
 	/** @field cast=(GdkImageType) */
 	public int type;
 	/** @field cast=(GdkVisual *) */
-	public int /*long*/ visual;
+	public long /*int*/ visual;
 	/** @field cast=(GdkByteOrder) */
 	public int byte_order;
 	/** @field cast=(gint) */
@@ -35,9 +35,9 @@ public class GdkImage {
 	/** @field cast=(guint16) */
 	public short bits_per_pixel;
 	/** @field cast=(gpointer) */
-	public int /*long*/ mem;
+	public long /*int*/ mem;
 	/** @field cast=(GdkColormap *) */
-	public int /*long*/ colormap;
+	public long /*int*/ colormap;
 	/** @field cast=(gpointer) */
-	public int /*long*/ windowing_data;
+	public long /*int*/ windowing_data;
 }

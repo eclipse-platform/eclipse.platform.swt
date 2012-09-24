@@ -24,118 +24,118 @@ public class C extends Platform {
 	public static final int PTR_SIZEOF = PTR_sizeof ();
 
 /** @param ptr cast=(void *) */
-public static final native void free (int /*long*/ ptr);
+public static final native void free (long /*int*/ ptr);
 /** @param env cast=(const char *) */
-public static final native int /*long*/ getenv (byte[] env);
-public static final native int /*long*/ malloc (int /*long*/ size);
+public static final native long /*int*/ getenv (byte[] env);
+public static final native long /*int*/ malloc (long /*int*/ size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out critical
  * @param size cast=(size_t)
  */
-public static final native void memmove (int /*long*/ dest, byte[] src, int /*long*/ size);
+public static final native void memmove (long /*int*/ dest, byte[] src, long /*int*/ size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out critical
  * @param size cast=(size_t)
  */
-public static final native void memmove (int /*long*/ dest, char[] src, int /*long*/ size);
+public static final native void memmove (long /*int*/ dest, char[] src, long /*int*/ size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out critical
  * @param size cast=(size_t)
  */
-public static final native void memmove (int /*long*/ dest, double[] src, int /*long*/ size);
+public static final native void memmove (long /*int*/ dest, double[] src, long /*int*/ size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out critical
  * @param size cast=(size_t)
  */
-public static final native void memmove (int /*long*/ dest, float[] src, int /*long*/ size);
+public static final native void memmove (long /*int*/ dest, float[] src, long /*int*/ size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out critical
  * @param size cast=(size_t)
  */
-public static final native void memmove (int /*long*/ dest, int[] src, int /*long*/ size);
+public static final native void memmove (long /*int*/ dest, int[] src, long /*int*/ size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out critical
  * @param size cast=(size_t)
  */
-public static final native void memmove (int /*long*/ dest, long[] src, int /*long*/ size);
+public static final native void memmove (long /*int*/ dest, long[] src, long /*int*/ size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out critical
  * @param size cast=(size_t)
  */
-public static final native void memmove (int /*long*/ dest, short[] src, int /*long*/ size);
+public static final native void memmove (long /*int*/ dest, short[] src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in critical
  * @param src cast=(const void *),flags=no_out critical
  * @param size cast=(size_t)
  */
-public static final native void memmove (byte[] dest, char[] src, int /*long*/ size);
+public static final native void memmove (byte[] dest, char[] src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in critical
  * @param src cast=(const void *)
  * @param size cast=(size_t)
  */
-public static final native void memmove (byte[] dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove (byte[] dest, long /*int*/ src, long /*int*/ size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *)
  * @param size cast=(size_t)
  */
-public static final native void memmove (int /*long*/ dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove (long /*int*/ dest, long /*int*/ src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in critical
  * @param src cast=(const void *)
  * @param size cast=(size_t)
  */
-public static final native void memmove (char[] dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove (char[] dest, long /*int*/ src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in critical
  * @param src cast=(const void *)
  * @param size cast=(size_t)
  */
-public static final native void memmove (double[] dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove (double[] dest, long /*int*/ src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in critical
  * @param src cast=(const void *)
  * @param size cast=(size_t)
  */
-public static final native void memmove (float[] dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove (float[] dest, long /*int*/ src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in critical
  * @param src cast=(const void *)
  * @param size cast=(size_t)
  */
-public static final native void memmove (int[] dest, byte[] src, int /*long*/ size);
+public static final native void memmove (int[] dest, byte[] src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in critical
  * @param src cast=(const void *)
  * @param size cast=(size_t)
  */
-public static final native void memmove (short[] dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove (short[] dest, long /*int*/ src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in critical
  * @param src cast=(const void *)
  * @param size cast=(size_t)
  */
-public static final native void memmove (int[] dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove (int[] dest, long /*int*/ src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in critical
  * @param src cast=(const void *)
  * @param size cast=(size_t)
  */
-public static final native void memmove (long[] dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove (long[] dest, long /*int*/ src, long /*int*/ size);
 /**
  * @param buffer cast=(void *),flags=critical
  * @param num cast=(size_t)
  */
-public static final native int /*long*/ memset (int /*long*/ buffer, int c, int /*long*/ num);
+public static final native long /*int*/ memset (long /*int*/ buffer, int c, long /*int*/ num);
 public static final native int PTR_sizeof ();
 /** @param s cast=(char *) */
-public static final native int strlen (int /*long*/ s);
+public static final native int strlen (long /*int*/ s);
 }

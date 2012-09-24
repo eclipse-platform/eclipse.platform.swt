@@ -52,7 +52,7 @@ public final class GCData {
 	public Image image;
 	public int display;
 	public int drawable;
-	public int /*long*/ cairo;
+	public long /*int*/ cairo;
 	public double cairoXoffset, cairoYoffset;
 	public double[] clippingTransform;
 	public String string;

@@ -37,11 +37,11 @@ public class nsIBadCertListener2 extends nsISupports {
 	public static final nsID NS_IBADCERTLISTENER2_IID =
 		new nsID(NS_IBADCERTLISTENER2_IID_STR);
 
-	public nsIBadCertListener2(int /*long*/ address) {
+	public nsIBadCertListener2(long /*int*/ address) {
 		super(address);
 	}
 
-	public int NotifyCertProblem(int /*long*/ socketInfo, int /*long*/ status, int /*long*/ targetSite, int[] _retval) {
+	public int NotifyCertProblem(long /*int*/ socketInfo, long /*int*/ status, long /*int*/ targetSite, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), socketInfo, status, targetSite, _retval);
 	}
 }

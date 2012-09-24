@@ -37,7 +37,7 @@ public class nsIHelperAppLauncherDialog_1_9 extends nsISupports {
 	public static final nsID NS_IHELPERAPPLAUNCHERDIALOG_IID =
 		new nsID(NS_IHELPERAPPLAUNCHERDIALOG_IID_STR);
 
-	public nsIHelperAppLauncherDialog_1_9(int /*long*/ address) {
+	public nsIHelperAppLauncherDialog_1_9(long /*int*/ address) {
 		super(address);
 	}
 
@@ -45,11 +45,11 @@ public class nsIHelperAppLauncherDialog_1_9 extends nsISupports {
 	public static final int REASON_SERVERREQUEST = 1;
 	public static final int REASON_TYPESNIFFED = 2;
 
-	public int Show(int /*long*/ aLauncher, int /*long*/ aWindowContext, int aReason) {
+	public int Show(long /*int*/ aLauncher, long /*int*/ aWindowContext, int aReason) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aLauncher, aWindowContext, aReason);
 	}
 
-	public int PromptForSaveToFile(int /*long*/ aLauncher, int /*long*/ aWindowContext, char[] aDefaultFileName, char[] aSuggestedFileExtension, int aForcePrompt, int /*long*/[] _retval) {
+	public int PromptForSaveToFile(long /*int*/ aLauncher, long /*int*/ aWindowContext, char[] aDefaultFileName, char[] aSuggestedFileExtension, int aForcePrompt, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aLauncher, aWindowContext, aDefaultFileName, aSuggestedFileExtension, aForcePrompt, _retval);
 	}
 }

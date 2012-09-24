@@ -38,7 +38,7 @@ import org.eclipse.swt.events.*;
  */
 public class MenuItem extends Item {
 	Menu parent, menu;
-	int /*long*/ groupHandle;
+	long /*int*/ groupHandle;
 	int accelerator, userId;
 	
 /**
@@ -127,11 +127,11 @@ public MenuItem (Menu parent, int style, int index) {
 	createWidget (index);
 }
 
-void addAccelerator (int /*long*/ accelGroup) {
+void addAccelerator (long /*int*/ accelGroup) {
 	updateAccelerator (accelGroup, true);
 }
 
-void addAccelerators (int /*long*/ accelGroup) {
+void addAccelerators (long /*int*/ accelGroup) {
 	addAccelerator (accelGroup);
 	if (menu != null) menu.addAccelerators (accelGroup);
 }
@@ -258,7 +258,7 @@ void createHandle (int index) {
 			if (groupHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.g_object_ref (groupHandle);
 			g_object_ref_sink (groupHandle);
-			int /*long*/ group = OS.gtk_radio_menu_item_get_group (groupHandle);
+			long /*int*/ group = OS.gtk_radio_menu_item_get_group (groupHandle);
 			handle = OS.gtk_radio_menu_item_new_with_label (group, buffer);
 			break;
 		case SWT.CHECK:
@@ -271,10 +271,10 @@ void createHandle (int index) {
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.SEPARATOR) == 0) {
-		int /*long*/ label = OS.gtk_bin_get_child (handle);
+		long /*int*/ label = OS.gtk_bin_get_child (handle);
 		OS.gtk_accel_label_set_accel_widget (label, 0);
 	}
-	int /*long*/ parentHandle = parent.handle;
+	long /*int*/ parentHandle = parent.handle;
 	boolean enabled = gtk_widget_get_sensitive (parentHandle);
 	if (!enabled) OS.gtk_widget_set_sensitive (parentHandle, true);
 	OS.gtk_menu_shell_insert (parentHandle, handle, index);
@@ -306,7 +306,7 @@ public int getAccelerator () {
 	return accelerator;
 }
 
-int /*long*/ getAccelGroup () {
+long /*int*/ getAccelGroup () {
 	Menu menu = parent;
 	while (menu != null && menu.cascade != null) {
 		menu = menu.cascade.parent;
@@ -427,7 +427,7 @@ public boolean getSelection () {
 	return OS.gtk_check_menu_item_get_active(handle);
 }
 
-int /*long*/ gtk_activate (int /*long*/ widget) {
+long /*int*/ gtk_activate (long /*int*/ widget) {
 	if ((style & SWT.CASCADE) != 0 && menu != null) return 0;
 	/*
 	* Bug in GTK.  When an ancestor menu is disabled and
@@ -446,13 +446,13 @@ int /*long*/ gtk_activate (int /*long*/ widget) {
 	return 0;
 }
 
-int /*long*/ gtk_select (int /*long*/ item) {
+long /*int*/ gtk_select (long /*int*/ item) {
 	parent.selectedItem = this;
 	sendEvent (SWT.Arm);
 	return 0;
 }
 
-int /*long*/ gtk_show_help (int /*long*/ widget, int /*long*/ helpType) {
+long /*int*/ gtk_show_help (long /*int*/ widget, long /*int*/ helpType) {
 	boolean handled = hooks (SWT.Help);
 	if (handled) {
 		postEvent (SWT.Help);
@@ -511,7 +511,7 @@ void releaseParent () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	int /*long*/ accelGroup = getAccelGroup ();
+	long /*int*/ accelGroup = getAccelGroup ();
 	if (accelGroup != 0) removeAccelerator (accelGroup);
 	if (groupHandle != 0) OS.g_object_unref (groupHandle);
 	groupHandle = 0;
@@ -519,11 +519,11 @@ void releaseWidget () {
 	parent = null;
 }
 
-void removeAccelerator (int /*long*/ accelGroup) {
+void removeAccelerator (long /*int*/ accelGroup) {
 	updateAccelerator (accelGroup, false);
 }
 
-void removeAccelerators (int /*long*/ accelGroup) {
+void removeAccelerators (long /*int*/ accelGroup) {
 	removeAccelerator (accelGroup);
 	if (menu != null) menu.removeAccelerators (accelGroup);
 }
@@ -635,7 +635,7 @@ void selectRadio () {
 public void setAccelerator (int accelerator) {
 	checkWidget();
 	if (this.accelerator == accelerator) return;
-	int /*long*/ accelGroup = getAccelGroup ();
+	long /*int*/ accelGroup = getAccelGroup ();
 	if (accelGroup != 0) removeAccelerator (accelGroup);
 	this.accelerator = accelerator;
 	if (accelGroup != 0) addAccelerator (accelGroup);
@@ -657,7 +657,7 @@ public void setAccelerator (int accelerator) {
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	if (gtk_widget_get_sensitive (handle) == enabled) return;
-	int /*long*/ accelGroup = getAccelGroup ();
+	long /*int*/ accelGroup = getAccelGroup ();
 	if (accelGroup != 0) removeAccelerator (accelGroup);
 	OS.gtk_widget_set_sensitive (handle, enabled);
 	if (accelGroup != 0) addAccelerator (accelGroup);
@@ -713,8 +713,8 @@ public void setImage (Image image) {
 		} else {
 			imageList.put (imageIndex, image);
 		}
-		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
-		int /*long*/ imageHandle = OS.gtk_image_new_from_pixbuf (pixbuf);
+		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
+		long /*int*/ imageHandle = OS.gtk_image_new_from_pixbuf (pixbuf);
 		OS.gtk_image_menu_item_set_image (handle, imageHandle);
 		OS.gtk_widget_show (imageHandle);
 	} else {
@@ -766,7 +766,7 @@ public void setMenu (Menu menu) {
 	/* Assign the new menu */
 	Menu oldMenu = this.menu;
 	if (oldMenu == menu) return;
-	int /*long*/ accelGroup = getAccelGroup ();
+	long /*int*/ accelGroup = getAccelGroup ();
 	if (accelGroup != 0) removeAccelerators (accelGroup);
 	if (oldMenu != null) {
 		oldMenu.cascade = null;
@@ -881,15 +881,15 @@ public void setText (String string) {
 	}
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
-	int /*long*/ label = OS.gtk_bin_get_child (handle);
+	long /*int*/ label = OS.gtk_bin_get_child (handle);
 	if (label != 0 && OS.GTK_IS_LABEL(label)) {
 		OS.gtk_label_set_text_with_mnemonic (label, buffer);
 		if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
 			if (OS.GTK_IS_ACCEL_LABEL(label)) {
 				buffer = Converter.wcsToMbcs (null, accelString, true);
-				int /*long*/ ptr = OS.g_malloc (buffer.length);
+				long /*int*/ ptr = OS.g_malloc (buffer.length);
 				OS.memmove (ptr, buffer, buffer.length);
-				int /*long*/ oldPtr = OS.GTK_ACCEL_LABEL_GET_ACCEL_STRING (label);
+				long /*int*/ oldPtr = OS.GTK_ACCEL_LABEL_GET_ACCEL_STRING (label);
 				OS.GTK_ACCEL_LABEL_SET_ACCEL_STRING (label, ptr);
 				if (oldPtr != 0) OS.g_free (oldPtr);
 			}
@@ -897,7 +897,7 @@ public void setText (String string) {
 	}
 }
 
-void updateAccelerator (int /*long*/ accelGroup, boolean add) {
+void updateAccelerator (long /*int*/ accelGroup, boolean add) {
 	if (accelerator == 0 || !getEnabled ()) return;
 	if ((accelerator & SWT.COMMAND) != 0) return;
 	int mask = 0;
@@ -975,7 +975,7 @@ boolean updateAcceleratorText (boolean show) {
 		}
 	}
 	if (keysym != 0) {
-		int /*long*/ accelGroup = getAccelGroup ();
+		long /*int*/ accelGroup = getAccelGroup ();
 		if (show) {
 			OS.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, keysym, mask, OS.GTK_ACCEL_VISIBLE);
 		} else {

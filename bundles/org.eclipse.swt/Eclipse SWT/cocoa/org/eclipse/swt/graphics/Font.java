@@ -248,7 +248,7 @@ public FontData[] getFontData() {
 		NSString str = handle.fontName();
 		String nsName = str.getString();
 		NSFontManager manager = NSFontManager.sharedFontManager();
-		int /*long*/ traits = manager.traitsOfFont(handle);
+		long /*int*/ traits = manager.traitsOfFont(handle);
 		int style = SWT.NORMAL;
 		if ((traits & OS.NSItalicFontMask) != 0) style |= SWT.ITALIC;
 		if ((traits & OS.NSBoldFontMask) != 0) style |= SWT.BOLD;

@@ -127,14 +127,14 @@ Control [] _getTabList () {
 	return tabList;
 }
 
-boolean acceptsFirstMouse (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+boolean acceptsFirstMouse (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if ((state & CANVAS) != 0) {
 		return true;
 	}
 	return super.acceptsFirstMouse (id, sel, theEvent);
 }
 
-boolean acceptsFirstResponder (int /*long*/ id, int /*long*/ sel) {
+boolean acceptsFirstResponder (long /*int*/ id, long /*int*/ sel) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
 			if (contentView().subviews().count() == 0) return true;
@@ -144,9 +144,9 @@ boolean acceptsFirstResponder (int /*long*/ id, int /*long*/ sel) {
 	return super.acceptsFirstResponder (id, sel);
 }
 
-int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	NSString nsAttributeName = new NSString(arg0);
-	int /*long*/ superValue = super.accessibilityAttributeValue(id, sel, arg0);
+	long /*int*/ superValue = super.accessibilityAttributeValue(id, sel, arg0);
 
 	if ((state & CANVAS) != 0) {
 		// If this Composite has an Accessible that defined a role, return that, unless the
@@ -177,7 +177,7 @@ int /*long*/ accessibilityAttributeValue (int /*long*/ id, int /*long*/ sel, int
 }
 
 
-boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {	
+boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {	
 	if (id == accessibleHandle()) {
 		// If a Composite or subclass has an Accessible it should not be ignored.
 		if (accessible != null) return accessible.internal_accessibilityIsIgnored(ACC.CHILDID_SELF);
@@ -357,7 +357,7 @@ public void drawBackground(GC gc, int x, int y, int width, int height, int offse
 	}
 }
 
-void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_BACKGROUND) == 0) {
@@ -570,7 +570,7 @@ public boolean isLayoutDeferred () {
 	return findDeferredControl () != null;
 }
 
-boolean isOpaque (int /*long*/ id, int /*long*/ sel) {
+boolean isOpaque (long /*int*/ id, long /*int*/ sel) {
 	if ((state & CANVAS) != 0) {
 		if (id == view.id) {
 			return region == null && background != null && background[3] == 1 && !isObscured ();
@@ -584,7 +584,7 @@ boolean isTabGroup () {
 	return super.isTabGroup ();
 }
 
-void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void keyDown (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if (hasFocus()) {
 		if ((state & CANVAS) != 0) {
 			Shell s = this.getShell();
@@ -882,22 +882,22 @@ Point minimumSize (int wHint, int Hint, boolean changed) {
 	return new Point (width, height);
 }
 
-boolean mouseEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent, int type) {
+boolean mouseEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent, int type) {
 	boolean result = super.mouseEvent (id, sel, theEvent, type);
 	return (state & CANVAS) == 0 ? result : new NSEvent (theEvent).type () != OS.NSLeftMouseDown;
 }
 
-void pageDown(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
+void pageDown(long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
 	if ((state & CANVAS) != 0) return;
 	super.pageDown(id, sel, sender);
 }
 
-void pageUp(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
+void pageUp(long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
 	if ((state & CANVAS) != 0) return;
 	super.pageUp(id, sel, sender);
 }
 
-void reflectScrolledClipView (int /*long*/ id, int /*long*/ sel, int /*long*/ aClipView) {
+void reflectScrolledClipView (long /*int*/ id, long /*int*/ sel, long /*int*/ aClipView) {
 	if ((state & CANVAS) != 0) return;
 	super.reflectScrolledClipView (id, sel, aClipView);
 }
@@ -941,15 +941,15 @@ void resized () {
 	}
 }
 
-void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void scrollWheel (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if ((state & CANVAS) != 0) {
 		NSView view = scrollView != null ? scrollView : this.view;
 		if (id == view.id) {
 			getShell().deferFlushing();
 			NSEvent nsEvent = new NSEvent(theEvent);
 			boolean handled = false;
-			float /*double*/ deltaY = nsEvent.deltaY();
-			float /*double*/ deltaX = nsEvent.deltaX ();
+			double /*float*/ deltaY = nsEvent.deltaY();
+			double /*float*/ deltaX = nsEvent.deltaX ();
 			if ((hooks(SWT.Gesture) || filters (SWT.Gesture))) {
 				if (deltaX != 0 || deltaY != 0) {
 					if (!gestureEvent(id, theEvent, SWT.GESTURE_PAN)) {

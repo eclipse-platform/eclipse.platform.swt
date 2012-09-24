@@ -12,7 +12,7 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class ISpecifyPropertyPages extends IUnknown {
 
-public ISpecifyPropertyPages(int /*long*/ address) {
+public ISpecifyPropertyPages(long /*int*/ address) {
 	super(address);
 }
 public int GetPages(CAUUID pPages){

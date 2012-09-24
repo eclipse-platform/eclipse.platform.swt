@@ -235,25 +235,25 @@ void createCOMInterfaces() {
 	// register each of the interfaces that this object implements
 	boolean is32 = C.PTR_SIZEOF == 4;
 	iDropTarget = new COMObject(new int[]{2, 0, 0, is32 ? 5 : 4, is32 ? 4 : 3, 0, is32 ? 5 : 4}){
-		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-		public int /*long*/ method2(int /*long*/[] args) {return Release();}
-		public int /*long*/ method3(int /*long*/[] args) {
+		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		public long /*int*/ method3(long /*int*/[] args) {
 			if (args.length == 5) {
 				return DragEnter(args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4]);
 			} else {
 				return DragEnter_64(args[0], (int)/*64*/args[1], args[2], args[3]);
 			}
 		}
-		public int /*long*/ method4(int /*long*/[] args) {
+		public long /*int*/ method4(long /*int*/[] args) {
 			if (args.length == 4) {
 				return DragOver((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], args[3]);
 			} else {
 				return DragOver_64((int)/*64*/args[0], args[1], args[2]);
 			}
 		}
-		public int /*long*/ method5(int /*long*/[] args) {return DragLeave();}
-		public int /*long*/ method6(int /*long*/[] args) {
+		public long /*int*/ method5(long /*int*/[] args) {return DragLeave();}
+		public long /*int*/ method6(long /*int*/[] args) {
 			if (args.length == 5) {
 				return Drop(args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4]);
 			} else {
@@ -269,13 +269,13 @@ void disposeCOMInterfaces() {
 	iDropTarget = null;
 }
 
-int DragEnter_64(int /*long*/ pDataObject, int grfKeyState, long pt, int /*long*/ pdwEffect) {
+int DragEnter_64(long /*int*/ pDataObject, int grfKeyState, long pt, long /*int*/ pdwEffect) {
 	POINT point = new POINT();
 	OS.MoveMemory(point, new long[]{pt}, 8);
 	return DragEnter(pDataObject, grfKeyState, point.x, point.y, pdwEffect);
 }
 
-int DragEnter(int /*long*/ pDataObject, int grfKeyState, int pt_x, int pt_y, int /*long*/ pdwEffect) {
+int DragEnter(long /*int*/ pDataObject, int grfKeyState, int pt_x, int pt_y, long /*int*/ pdwEffect) {
 	selectedDataType = null;
 	selectedOperation = DND.DROP_NONE;
 	if (iDataObject != null) iDataObject.Release();
@@ -334,13 +334,13 @@ int DragLeave() {
 	return COM.S_OK;
 }
 
-int DragOver_64(int grfKeyState, long pt, int /*long*/ pdwEffect) {
+int DragOver_64(int grfKeyState, long pt, long /*int*/ pdwEffect) {
 	POINT point = new POINT();
 	OS.MoveMemory(point, new long[]{pt}, 8);
 	return DragOver(grfKeyState, point.x, point.y, pdwEffect);
 }
 
-int DragOver(int grfKeyState, int pt_x, int pt_y, int /*long*/ pdwEffect) {
+int DragOver(int grfKeyState, int pt_x, int pt_y, long /*int*/ pdwEffect) {
 	if (iDataObject == null) return COM.S_FALSE;
 	int oldKeyOperation = keyOperation;
 	
@@ -386,13 +386,13 @@ int DragOver(int grfKeyState, int pt_x, int pt_y, int /*long*/ pdwEffect) {
 	return COM.S_OK;
 }
 
-int Drop_64(int /*long*/ pDataObject, int grfKeyState, long pt, int /*long*/ pdwEffect) {
+int Drop_64(long /*int*/ pDataObject, int grfKeyState, long pt, long /*int*/ pdwEffect) {
 	POINT point = new POINT();
 	OS.MoveMemory(point, new long[]{pt}, 8);
 	return Drop(pDataObject, grfKeyState, point.x, point.y, pdwEffect);
 }
 
-int Drop(int /*long*/ pDataObject, int grfKeyState, int pt_x, int pt_y, int /*long*/ pdwEffect) {
+int Drop(long /*int*/ pDataObject, int grfKeyState, int pt_x, int pt_y, long /*int*/ pdwEffect) {
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = OS.GetMessageTime();
@@ -608,19 +608,19 @@ int osToOp(int osOperation){
  * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
  * must be incremented before returning.  Caller is responsible for releasing ppvObject.
  */
-int QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
+int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 	
 	if (riid == 0 || ppvObject == 0)
 		return COM.E_INVALIDARG;
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDropTarget)) {
-        COM.MoveMemory(ppvObject, new int /*long*/[] {iDropTarget.getAddress()}, OS.PTR_SIZEOF);
+        COM.MoveMemory(ppvObject, new long /*int*/[] {iDropTarget.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 
-    COM.MoveMemory(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
+    COM.MoveMemory(ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 
@@ -639,7 +639,7 @@ int Release() {
 
 void refresh() {
 	if (control == null || control.isDisposed()) return;
-	int /*long*/ handle = control.handle;
+	long /*int*/ handle = control.handle;
 	RECT lpRect = new RECT();
 	if (OS.GetUpdateRect(handle, lpRect, false)) {
 		OS.ImageList_DragShowNolock(false);
@@ -689,7 +689,7 @@ public void setDropTargetEffect(DropTargetEffect effect) {
 	dropEffect = effect;
 }
 
-boolean setEventData(DNDEvent event, int /*long*/ pDataObject, int grfKeyState, int pt_x, int pt_y, int /*long*/ pdwEffect) {	
+boolean setEventData(DNDEvent event, long /*int*/ pDataObject, int grfKeyState, int pt_x, int pt_y, long /*int*/ pdwEffect) {	
 	if (pDataObject == 0 || pdwEffect == 0) return false;
 	
 	// get allowed operations
@@ -715,14 +715,14 @@ boolean setEventData(DNDEvent event, int /*long*/ pDataObject, int grfKeyState, 
 	IDataObject dataObject = new IDataObject(pDataObject);
 	dataObject.AddRef();
 	try {
-        int /*long*/[] address = new int /*long*/[1];
+        long /*int*/[] address = new long /*int*/[1];
 		if (dataObject.EnumFormatEtc(COM.DATADIR_GET, address) != COM.S_OK) {
 			return false;
 		}
 		IEnumFORMATETC enumFormatetc = new IEnumFORMATETC(address[0]);
 		try {
 			// Loop over enumerator and save any types that match what we are looking for
-            int /*long*/ rgelt = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, FORMATETC.sizeof);
+            long /*int*/ rgelt = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, FORMATETC.sizeof);
 			try {
 				int[] pceltFetched = new int[1];
 				enumFormatetc.Reset();

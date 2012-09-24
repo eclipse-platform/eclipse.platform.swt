@@ -30,7 +30,7 @@ class ClipboardProxy {
 	Object[] primaryClipboardData;
 	Transfer[] primaryClipboardDataTypes;
 
-	int /*long*/ clipboardOwner = OS.gtk_window_new(0);
+	long /*int*/ clipboardOwner = OS.gtk_window_new(0);
 	Display display;
 	Clipboard activeClipboard = null;
 	Clipboard activePrimaryClipboard = null;
@@ -72,7 +72,7 @@ void clear (Clipboard owner, int clipboards) {
 	}
 }
 
-int /*long*/ clearFunc(int /*long*/ clipboard,int /*long*/ user_data_or_owner){
+long /*int*/ clearFunc(long /*int*/ clipboard,long /*int*/ user_data_or_owner){
 	if (clipboard == Clipboard.GTKCLIPBOARD) {
 		activeClipboard = null;
 		clipboardData = null;
@@ -119,7 +119,7 @@ void dispose () {
  * This function provides the data to the clipboard on request.
  * When this clipboard is disposed, the data will no longer be available.
  */
-int /*long*/ getFunc(int /*long*/ clipboard, int /*long*/ selection_data, int /*long*/ info, int /*long*/ user_data_or_owner){
+long /*int*/ getFunc(long /*int*/ clipboard, long /*int*/ selection_data, long /*int*/ info, long /*int*/ user_data_or_owner){
 	if (selection_data == 0) return 0;
 	GtkSelectionData selectionData = new GtkSelectionData();
 	OS.memmove(selectionData, selection_data, GtkSelectionData.sizeof);
@@ -146,7 +146,7 @@ int /*long*/ getFunc(int /*long*/ clipboard, int /*long*/ selection_data, int /*
 
 boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipboards) {	
 	GtkTargetEntry[] entries = new  GtkTargetEntry [0];
-	int /*long*/ pTargetsList = 0;
+	long /*int*/ pTargetsList = 0;
 	try {
 		for (int i = 0; i < dataTypes.length; i++) {
 			Transfer transfer = dataTypes[i];
@@ -156,7 +156,7 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 				GtkTargetEntry	entry = new GtkTargetEntry();						
 				entry.info = typeIds[j];
 				byte[] buffer = Converter.wcsToMbcs(null, typeNames[j], true);
-				int /*long*/ pName = OS.g_malloc(buffer.length);
+				long /*int*/ pName = OS.g_malloc(buffer.length);
 				OS.memmove(pName, buffer, buffer.length);
 				entry.target = pName;
 				GtkTargetEntry[] tmp = new GtkTargetEntry [entries.length + 1];
@@ -175,8 +175,8 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 		if ((clipboards & DND.CLIPBOARD) != 0) {
 			clipboardData = data;
 			clipboardDataTypes = dataTypes;
-			int /*long*/ getFuncProc = getFunc.getAddress();
-			int /*long*/ clearFuncProc = clearFunc.getAddress();
+			long /*int*/ getFuncProc = getFunc.getAddress();
+			long /*int*/ clearFuncProc = clearFunc.getAddress();
 			/*
 			* Feature in GTK. When the contents are set again, clipboard_set_with_data() 
 			* invokes clearFunc and then, getFunc is not sequentially called. 
@@ -198,8 +198,8 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 		if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
 			primaryClipboardData = data;
 			primaryClipboardDataTypes = dataTypes;
-			int /*long*/ getFuncProc = getFunc.getAddress();
-			int /*long*/ clearFuncProc = clearFunc.getAddress();
+			long /*int*/ getFuncProc = getFunc.getAddress();
+			long /*int*/ clearFuncProc = clearFunc.getAddress();
 			if (!OS.gtk_clipboard_set_with_owner (Clipboard.GTKPRIMARYCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, clipboardOwner)) {
 				return false;
 			}

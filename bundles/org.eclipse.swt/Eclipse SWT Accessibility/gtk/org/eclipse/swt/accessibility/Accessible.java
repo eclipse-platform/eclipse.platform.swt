@@ -468,14 +468,14 @@ public class Accessible {
 		return accessibleObject;
 	}
 
-	int /*long*/ getControlHandle () {
-		int /*long*/ result = control.handle;
+	long /*int*/ getControlHandle () {
+		long /*int*/ result = control.handle;
 		if (control instanceof Label) {
-			int /*long*/ list = OS.gtk_container_get_children (result);
+			long /*int*/ list = OS.gtk_container_get_children (result);
 			if (list != 0) {
-				int /*long*/ temp = list;
+				long /*int*/ temp = list;
 				while (temp != 0) {
-					int /*long*/ widget = OS.g_list_data( temp);
+					long /*int*/ widget = OS.g_list_data( temp);
 					if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0) ? OS.gtk_widget_get_visible (widget) : OS.GTK_WIDGET_VISIBLE (widget)) {
 						result = widget;
 						break;

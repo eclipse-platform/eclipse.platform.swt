@@ -442,25 +442,25 @@ public static final native int CLSIDFromString(char[] lpsz, GUID pclsid);
  * @param pUnkOuter cast=(LPUNKNOWN)
  * @param ppv cast=(LPVOID *)
  */
-public static final native int CoCreateInstance(GUID rclsid, int /*long*/ pUnkOuter, int dwClsContext, GUID riid, int /*long*/[] ppv); 
+public static final native int CoCreateInstance(GUID rclsid, long /*int*/ pUnkOuter, int dwClsContext, GUID riid, long /*int*/[] ppv); 
 public static final native void CoFreeUnusedLibraries();
 /**
  * @param pServerInfo cast=(COSERVERINFO *)
  * @param ppv cast=(LPVOID *)
  */
-public static final native int CoGetClassObject(GUID rclsid, int dwClsContext, int /*long*/ pServerInfo, GUID riid, int /*long*/[] ppv);
+public static final native int CoGetClassObject(GUID rclsid, int dwClsContext, long /*int*/ pServerInfo, GUID riid, long /*int*/[] ppv);
 /**
  * @param pUnk cast=(IUnknown *)
  * @param fLock cast=(BOOL)
  * @param fLastUnlockReleases cast=(BOOL)
  */
-public static final native int CoLockObjectExternal(int /*long*/ pUnk, boolean fLock, boolean fLastUnlockReleases);
+public static final native int CoLockObjectExternal(long /*int*/ pUnk, boolean fLock, boolean fLastUnlockReleases);
 /**
  * @param pDataObject cast=(IDataObject *)
  * @param pDropSource cast=(IDropSource *)
  * @param pdwEffect cast=(LPDWORD)
  */
-public static final native int DoDragDrop(int /*long*/ pDataObject, int /*long*/ pDropSource, int dwOKEffect, int[] pdwEffect);
+public static final native int DoDragDrop(long /*int*/ pDataObject, long /*int*/ pDropSource, int dwOKEffect, int[] pdwEffect);
 /** @param szFileName cast=(LPCWSTR) */
 public static final native int GetClassFile(char[] szFileName, GUID clsid);
 /** @param lpsz cast=(LPOLESTR) */
@@ -470,90 +470,90 @@ public static final native boolean IsEqualGUID(GUID rguid1, GUID rguid2);
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory(int /*long*/ Destination, FORMATETC Source, int Length);
+public static final native void MoveMemory(long /*int*/ Destination, FORMATETC Source, int Length);
 /**
  * @param DestinationPtr cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory(int /*long*/ DestinationPtr, GUID Source, int Length);
+public static final native void MoveMemory(long /*int*/ DestinationPtr, GUID Source, int Length);
 /**
  * @param DestinationPtr cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory(int /*long*/ DestinationPtr, OLEINPLACEFRAMEINFO Source, int Length);
+public static final native void MoveMemory(long /*int*/ DestinationPtr, OLEINPLACEFRAMEINFO Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory(int /*long*/ Destination, STATSTG Source, int Length);
+public static final native void MoveMemory(long /*int*/ Destination, STATSTG Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory(int /*long*/ Destination, STGMEDIUM Source, int Length);
+public static final native void MoveMemory(long /*int*/ Destination, STGMEDIUM Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param SourcePtr cast=(CONST VOID *)
  */
-public static final native void MoveMemory(STGMEDIUM Destination, int /*long*/ SourcePtr, int Length);
+public static final native void MoveMemory(STGMEDIUM Destination, long /*int*/ SourcePtr, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param SourcePtr cast=(CONST VOID *)
  */
-public static final native void MoveMemory(DISPPARAMS Destination, int /*long*/ SourcePtr, int Length);
+public static final native void MoveMemory(DISPPARAMS Destination, long /*int*/ SourcePtr, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory(FORMATETC Destination, int /*long*/ Source, int Length);
+public static final native void MoveMemory(FORMATETC Destination, long /*int*/ Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param SourcePtr cast=(CONST VOID *)
  */
-public static final native void MoveMemory(GUID Destination, int /*long*/ SourcePtr, int Length);
+public static final native void MoveMemory(GUID Destination, long /*int*/ SourcePtr, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory(STATSTG Destination, int /*long*/ Source, int Length);
+public static final native void MoveMemory(STATSTG Destination, long /*int*/ Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param SourcePtr cast=(CONST VOID *)
  */
-public static final native void MoveMemory(TYPEATTR Destination, int /*long*/ SourcePtr, int Length);
+public static final native void MoveMemory(TYPEATTR Destination, long /*int*/ SourcePtr, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory(RECT Destination, int /*long*/ Source, int Length);
+public static final native void MoveMemory(RECT Destination, long /*int*/ Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory(FUNCDESC Destination, int /*long*/ Source, int Length);
+public static final native void MoveMemory(FUNCDESC Destination, long /*int*/ Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory(VARDESC Destination, int /*long*/ Source, int Length);
+public static final native void MoveMemory(VARDESC Destination, long /*int*/ Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory(VARIANT Destination, int /*long*/ Source, int Length);
+public static final native void MoveMemory(VARIANT Destination, long /*int*/ Source, int Length);
 /**
  * @param pClientSite cast=(IOleClientSite *)
  * @param pStg cast=(IStorage *)
  * @param ppvObject cast=(void **)
  */
-public static final native int OleCreate(GUID rclsid, GUID riid, int renderopt, FORMATETC pFormatEtc, int /*long*/ pClientSite, int /*long*/ pStg, int /*long*/[] ppvObject);
+public static final native int OleCreate(GUID rclsid, GUID riid, int renderopt, FORMATETC pFormatEtc, long /*int*/ pClientSite, long /*int*/ pStg, long /*int*/[] ppvObject);
 /**
  * @param lpszFileName cast=(LPCOLESTR)
  * @param pClientSite cast=(LPOLECLIENTSITE)
  * @param pStg cast=(LPSTORAGE)
  * @param ppvObj cast=(LPVOID *)
  */
-public static final native int OleCreateFromFile(GUID rclsid, char[] lpszFileName, GUID riid, int renderopt, FORMATETC pFormatEtc, int /*long*/ pClientSite, int /*long*/ pStg, int /*long*/[] ppvObj); 
+public static final native int OleCreateFromFile(GUID rclsid, char[] lpszFileName, GUID riid, int renderopt, FORMATETC pFormatEtc, long /*int*/ pClientSite, long /*int*/ pStg, long /*int*/[] ppvObj); 
 /**
  * @param hwndOwner cast=(HWND)
  * @param lpszCaption cast=(LPCOLESTR)
@@ -562,38 +562,38 @@ public static final native int OleCreateFromFile(GUID rclsid, char[] lpszFileNam
  * @param lcid cast=(LCID)
  * @param lpvReserved cast=(LPVOID)
  */
-public static final native int OleCreatePropertyFrame(int /*long*/ hwndOwner,int x, int y, char[] lpszCaption, int cObjects, int /*long*/[] lplpUnk, int cPages, int /*long*/ lpPageClsID, int lcid, int dwReserved, int /*long*/ lpvReserved);
+public static final native int OleCreatePropertyFrame(long /*int*/ hwndOwner,int x, int y, char[] lpszCaption, int cObjects, long /*int*/[] lplpUnk, int cPages, long /*int*/ lpPageClsID, int lcid, int dwReserved, long /*int*/ lpvReserved);
 /**
  * @param pUnk cast=(LPUNKNOWN)
  * @param dwAspect cast=(DWORD)
  * @param hdcDraw cast=(HDC)
  * @param lprcBounds cast=(LPRECT)
  */
-public static final native int OleDraw(int /*long*/ pUnk, int dwAspect, int /*long*/ hdcDraw, int /*long*/ lprcBounds);
+public static final native int OleDraw(long /*int*/ pUnk, int dwAspect, long /*int*/ hdcDraw, long /*int*/ lprcBounds);
 public static final native int OleFlushClipboard();
 /** @param ppDataObject cast=(IDataObject **) */
-public static final native int OleGetClipboard(int /*long*/[] ppDataObject);
+public static final native int OleGetClipboard(long /*int*/[] ppDataObject);
 /** @param pDataObject cast=(IDataObject *) */
-public static final native int OleIsCurrentClipboard(int /*long*/ pDataObject);
+public static final native int OleIsCurrentClipboard(long /*int*/ pDataObject);
 /** @param pObject cast=(LPOLEOBJECT) */
-public static final native boolean OleIsRunning(int /*long*/ pObject);
+public static final native boolean OleIsRunning(long /*int*/ pObject);
 /**
  * @param pStg cast=(IStorage *)
  * @param pClientSite cast=(IOleClientSite *)
  * @param ppvObj cast=(LPVOID *)
  */
-public static final native int OleLoad(int /*long*/ pStg, GUID riid, int /*long*/ pClientSite, int /*long*/[] ppvObj);
+public static final native int OleLoad(long /*int*/ pStg, GUID riid, long /*int*/ pClientSite, long /*int*/[] ppvObj);
 /** @param pUnknown cast=(LPUNKNOWN) */
-public static final native int OleRun(int /*long*/ pUnknown);
+public static final native int OleRun(long /*int*/ pUnknown);
 /**
  * @param pPS cast=(IPersistStorage *)
  * @param pStg cast=(IStorage *)
  */
-public static final native int OleSave(int /*long*/ pPS, int /*long*/ pStg, boolean fSameAsLoad);
+public static final native int OleSave(long /*int*/ pPS, long /*int*/ pStg, boolean fSameAsLoad);
 /** @param pDataObject cast=(IDataObject *) */
-public static final native int OleSetClipboard(int /*long*/ pDataObject);
+public static final native int OleSetClipboard(long /*int*/ pDataObject);
 /** @param pUnk cast=(LPUNKNOWN) */
-public static final native int OleSetContainedObject(int /*long*/ pUnk, boolean fContained);
+public static final native int OleSetContainedObject(long /*int*/ pUnk, boolean fContained);
 /**
  * @method flags=trycatch
  * @param holemenu cast=(HOLEMENU)
@@ -602,33 +602,33 @@ public static final native int OleSetContainedObject(int /*long*/ pUnk, boolean 
  * @param lpFrame cast=(LPOLEINPLACEFRAME)
  * @param lpActiveObj cast=(LPOLEINPLACEACTIVEOBJECT)
  */
-public static final native int OleSetMenuDescriptor(int /*long*/ holemenu, int /*long*/ hwndFrame, int /*long*/ hwndActiveObject, int /*long*/ lpFrame, int /*long*/ lpActiveObj);
+public static final native int OleSetMenuDescriptor(long /*int*/ holemenu, long /*int*/ hwndFrame, long /*int*/ hwndActiveObject, long /*int*/ lpFrame, long /*int*/ lpActiveObj);
 /**
  * @param clr cast=(OLE_COLOR)
  * @param hpal cast=(HPALETTE)
  * @param pcolorref cast=(COLORREF *)
  */
-public static final native int OleTranslateColor(int clr, int /*long*/ hpal, int[] pcolorref);
+public static final native int OleTranslateColor(int clr, long /*int*/ hpal, int[] pcolorref);
 /** @param lplpszProgID cast=(LPOLESTR *) */
-public static final native int ProgIDFromCLSID(GUID clsid, int /*long*/[] lplpszProgID);
+public static final native int ProgIDFromCLSID(GUID clsid, long /*int*/[] lplpszProgID);
 /**
  * @param hwnd cast=(HWND)
  * @param pDropTarget cast=(IDropTarget *)
  */
-public static final native int RegisterDragDrop(int /*long*/ hwnd, int /*long*/ pDropTarget);
+public static final native int RegisterDragDrop(long /*int*/ hwnd, long /*int*/ pDropTarget);
 /** @param pmedium cast=(STGMEDIUM *) */
-public static final native void ReleaseStgMedium(int /*long*/ pmedium); 
+public static final native void ReleaseStgMedium(long /*int*/ pmedium); 
 /** @param hwnd cast=(HWND) */
-public static final native int RevokeDragDrop(int /*long*/ hwnd);
+public static final native int RevokeDragDrop(long /*int*/ hwnd);
 /**
  * @param hwnd cast=(HWND)
  * @param pDataObject cast=(IDataObject *)
  * @param pDropSource cast=(IDropSource *)
  * @param pdwEffect cast=(DWORD *)
  */
-public static final native int SHDoDragDrop(int /*long*/ hwnd, int /*long*/ pDataObject, int /*long*/ pDropSource, int dwOKEffect, int[] pdwEffect);
+public static final native int SHDoDragDrop(long /*int*/ hwnd, long /*int*/ pDataObject, long /*int*/ pDropSource, int dwOKEffect, int[] pdwEffect);
 /** @param ppstgOpen cast=(IStorage **) */
-public static final native int StgCreateDocfile(char[] pwcsName, int grfMode, int reserved, int /*long*/[] ppstgOpen);
+public static final native int StgCreateDocfile(char[] pwcsName, int grfMode, int reserved, long /*int*/[] ppstgOpen);
 /** @param pwcsName cast=(const WCHAR *) */
 public static final native int StgIsStorageFile(char[] pwcsName);
 /**
@@ -637,144 +637,144 @@ public static final native int StgIsStorageFile(char[] pwcsName);
  * @param snbExclude cast=(SNB)
  * @param ppstgOpen cast=(IStorage **)
  */
-public static final native int StgOpenStorage(char[] pwcsName, int /*long*/ pstgPriority, int grfMode, int /*long*/ snbExclude, int reserved, int /*long*/[] ppstgOpen);
+public static final native int StgOpenStorage(char[] pwcsName, long /*int*/ pstgPriority, int grfMode, long /*int*/ snbExclude, int reserved, long /*int*/[] ppstgOpen);
 /** @param ppsz cast=(LPOLESTR *) */
-public static final native int StringFromCLSID(GUID rclsid, int /*long*/[] ppsz); 
+public static final native int StringFromCLSID(GUID rclsid, long /*int*/[] ppsz); 
 /** @param sz cast=(OLECHAR *) */
-public static final native int /*long*/ SysAllocString(char [] sz);
+public static final native long /*int*/ SysAllocString(char [] sz);
 /** @param bstr cast=(BSTR) */
-public static final native void SysFreeString(int /*long*/ bstr);
+public static final native void SysFreeString(long /*int*/ bstr);
 /** @param bstr cast=(BSTR) */
-public static final native int SysStringByteLen(int /*long*/ bstr);
+public static final native int SysStringByteLen(long /*int*/ bstr);
 /** @param bstr cast=(BSTR) */
-public static final native int SysStringLen(int /*long*/ bstr);
+public static final native int SysStringLen(long /*int*/ bstr);
 /**
  * @param pvargDest cast=(VARIANTARG FAR* )
  * @param pvarSrc cast=(VARIANTARG FAR* )
  * @param vt cast=(VARTYPE)
  */
-public static final native int VariantChangeType(int /*long*/ pvargDest, int /*long*/ pvarSrc, short wFlags, short vt);
+public static final native int VariantChangeType(long /*int*/ pvargDest, long /*int*/ pvarSrc, short wFlags, short vt);
 /** @param pvarg cast=(VARIANTARG FAR* ) */
-public static final native int VariantClear(int /*long*/ pvarg);
+public static final native int VariantClear(long /*int*/ pvarg);
 /** @param pvarg cast=(VARIANTARG FAR* ) */
-public static final native void VariantInit(int /*long*/ pvarg);
+public static final native void VariantInit(long /*int*/ pvarg);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, char[] arg1);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, char[] arg0, char[] arg1);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, POINT arg2, int arg3);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, POINT arg2, int arg3);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, POINT arg1, int arg2);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, POINT arg1, long arg2);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, POINT arg0, int arg1);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, SHDRAGIMAGE arg0, int arg1);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, SHDRAGIMAGE arg0, long arg1);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, int arg1, POINT arg2, int arg3);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, long arg0, long arg1, POINT arg2, int arg3);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, POINT arg1, int arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, long arg0, POINT arg1, long arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, POINT arg0, int arg1);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, SHDRAGIMAGE arg0, int arg1);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, SHDRAGIMAGE arg0, long arg1);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, int arg1, int arg2, int arg3, int[] arg4);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, int arg1, int arg2, int arg3, long[] arg4);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, long arg1, int arg2, int arg3, long[] arg4);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, char[] arg0, int arg1, int arg2, int arg3, int[] arg4);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, char[] arg0, int arg1, int arg2, int arg3, long[] arg4);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, char[] arg0, long arg1, int arg2, int arg3, long[] arg4);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, int arg1, int arg2, int arg3, int arg4, int [] arg5);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, long arg1, int arg2, int arg3, int arg4, long[] arg5);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, char[] arg0, int arg1, int arg2, int arg3, int arg4, int [] arg5);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, char[] arg0, long arg1, int arg2, int arg3, int arg4, long[] arg5);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long[] arg1);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, long arg0, long[] arg1);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int[] arg2);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, long[] arg2);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, long[] arg2);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, long[] arg2);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, long arg1, int[] arg2);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, int arg1, int[] arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, int arg1, int[] arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, long arg0, int arg1, long[] arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, long arg0, long arg1, long[] arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, int arg1, long[] arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, long arg1, int[] arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, long arg0, int arg1, int[] arg2);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, long arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, int arg1, long arg2);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, DVTARGETDEVICE arg2, SIZE arg3);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, int arg1, DVTARGETDEVICE arg2, SIZE arg3);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, GUID arg2, int arg3, int [] arg4);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, long arg1, GUID arg2, long arg3, long [] arg4);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, int arg1, GUID arg2, int arg3, int [] arg4);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, long arg0, long arg1, GUID arg2, long arg3, long [] arg4);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, FORMATETC arg1, int [] arg2);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, FORMATETC arg1, long[] arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, FORMATETC arg1, int [] arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, long arg0, FORMATETC arg1, long[] arg2);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, GUID arg1);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, GUID arg1);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, GUID arg1, int arg2, int arg3);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, GUID arg1, long arg2, long arg3);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, GUID arg1, int arg2, int arg3);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, GUID arg1, long arg2, long arg3);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, GUID arg1, int arg2, int arg3, DISPPARAMS arg4, int arg5, EXCEPINFO arg6, int[] arg7);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, GUID arg1, int arg2, int arg3, DISPPARAMS arg4, long arg5, EXCEPINFO arg6, int[] arg7);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, GUID arg1, int arg2, int arg3, DISPPARAMS arg4, int arg5, EXCEPINFO arg6, int[] arg7);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, GUID arg1, int arg2, int arg3, DISPPARAMS arg4, long arg5, EXCEPINFO arg6, int[] arg7);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, STATSTG arg1, int [] arg2);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, STATSTG arg1, long[] arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, STATSTG arg1, int [] arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, long arg0, STATSTG arg1, long[] arg2);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, MSG arg0);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, MSG arg0);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, MSG arg1, int arg2, int arg3, int arg4, RECT arg5);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, MSG arg1, long arg2, int arg3, long arg4, RECT arg5);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, MSG arg1, int arg2, int arg3, int arg4, RECT arg5);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, MSG arg1, long arg2, int arg3, long arg4, RECT arg5);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, SIZE arg1);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, SIZE arg1);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, boolean arg1);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long arg0, boolean arg1);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, boolean arg1);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, long arg0, boolean arg1);
 
-public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, boolean arg0);
-public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, boolean arg0, int arg1);
-public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, boolean arg0, long arg1);
+public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, boolean arg0);
+public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, boolean arg0, int arg1);
+public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, boolean arg0, long arg1);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, CAUUID arg0);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, CONTROLINFO arg0);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, FORMATETC arg0);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, FORMATETC arg0, STGMEDIUM arg1);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, FORMATETC arg0, STGMEDIUM arg1, boolean arg2);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, CAUUID arg0);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, CONTROLINFO arg0);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, FORMATETC arg0);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, FORMATETC arg0, STGMEDIUM arg1);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, FORMATETC arg0, STGMEDIUM arg1, boolean arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, GUID arg0);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, int[] arg1);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, long[] arg1);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, GUID arg0, int[] arg1);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, GUID arg0, long[] arg1);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, GUID arg1, int[] arg2);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, GUID arg1, long[] arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, GUID arg0, GUID arg1, int[] arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, GUID arg0, GUID arg1, long[] arg2);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, int arg1, int arg2, int arg3, int[] arg4);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, long arg1, int arg2, int arg3, int[] arg4);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, GUID arg0, int arg1, int arg2, int arg3, int[] arg4);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, GUID arg0, long arg1, int arg2, int arg3, int[] arg4);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, int arg1, int arg2, int arg3, int arg4);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, int arg1, int arg2, long arg3, long arg4);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, GUID arg0, int arg1, int arg2, int arg3, int arg4);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, GUID arg0, int arg1, int arg2, long arg3, long arg4);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, int arg1, OLECMD arg2, OLECMDTEXT arg3);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, GUID arg0, int arg1, OLECMD arg2, OLECMDTEXT arg3);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, LICINFO arg0);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, LICINFO arg0);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0, int arg1, boolean arg2);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0, long arg1, boolean arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, RECT arg0, int arg1, boolean arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, RECT arg0, long arg1, boolean arg2);
 
 /**
  * @param arg0 flags=struct
  */
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0, int arg1, int arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, RECT arg0, int arg1, int arg2);
 /**
  * @param arg0 flags=struct
  */
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0, long arg1, long arg2);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, RECT arg0, long arg1, long arg2);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0, RECT arg1);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, RECT arg0);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, RECT arg0, RECT arg1);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, RECT arg0);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int [] arg1, int [] arg2, int[] arg3, int [] arg4);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, long[] arg1, long[] arg2, int[] arg3, long[] arg4);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, int [] arg1, int [] arg2, int[] arg3, int [] arg4);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, long[] arg1, long[] arg2, int[] arg3, long[] arg4);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int [] arg1, int arg2, int[] arg3);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, long[] arg1, int arg2, int[] arg3);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, int [] arg1, int arg2, int[] arg3);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, long[] arg1, int arg2, int[] arg3);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, DISPPARAMS arg3, int arg4, EXCEPINFO arg5, int arg6);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, DISPPARAMS arg3, long arg4, EXCEPINFO arg5, long arg6);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, int arg1, int arg2, DISPPARAMS arg3, int arg4, EXCEPINFO arg5, int arg6);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, int arg1, int arg2, DISPPARAMS arg3, long arg4, EXCEPINFO arg5, long arg6);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] pszPropName, int[] pVar, int[] pErrorLog);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] pszPropName, int pVar, int[] pErrorLog);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, char[] pszPropName, int[] pVar, int[] pErrorLog);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, char[] pszPropName, int pVar, int[] pErrorLog);
 
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int type, int listener, boolean useCapture);
-public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, long type, long listener, boolean useCapture);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int type, int listener, boolean useCapture);
+public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, long type, long listener, boolean useCapture);
 
 /** @param pStg cast=(IStorage *) */
-public static final native int WriteClassStg(int /*long*/ pStg, GUID rclsid);
+public static final native int WriteClassStg(long /*int*/ pStg, GUID rclsid);
 
 /** Accessibility constants */
 public static final int CHILDID_SELF = 0;
@@ -950,18 +950,18 @@ public static final int IA2_SCROLL_TYPE_ANYWHERE = 			6;
  * @param dwObjectID cast=(DWORD)
  * @param ppvObject cast=(LPVOID *)
  */
-public static final native int AccessibleObjectFromWindow (int /*long*/ hwnd, int dwObjectID, GUID riid, int /*long*/[] ppvObject);
+public static final native int AccessibleObjectFromWindow (long /*int*/ hwnd, int dwObjectID, GUID riid, long /*int*/[] ppvObject);
 /**
  * @method flags=dynamic
  * @param hwnd cast=(HWND)
  * @param ppvObject cast=(LPVOID *)
  */
-public static final native int CreateStdAccessibleObject (int /*long*/ hwnd, int idObject, GUID riidInterface, int /*long*/[] ppvObject);
+public static final native int CreateStdAccessibleObject (long /*int*/ hwnd, int idObject, GUID riidInterface, long /*int*/[] ppvObject);
 /**
  * @method flags=dynamic
  * @param pAcc cast=(LPUNKNOWN)
  */
-public static final native int /*long*/ LresultFromObject (GUID riid, int /*long*/ wParam, int /*long*/ pAcc);
+public static final native long /*int*/ LresultFromObject (GUID riid, long /*int*/ wParam, long /*int*/ pAcc);
 /**
  * @method flags=dynamic
  * @param paccContainer cast=(IAccessible *)
@@ -970,63 +970,63 @@ public static final native int /*long*/ LresultFromObject (GUID riid, int /*long
  * @param rgvarChildren cast=(VARIANT *)
  * @param pcObtained cast=(LONG *)
  */
-public static final native int AccessibleChildren(int /*long*/ paccContainer, int iChildStart, int cChildren, int /*long*/ rgvarChildren, int [] pcObtained);
+public static final native int AccessibleChildren(long /*int*/ paccContainer, int iChildStart, int cChildren, long /*int*/ rgvarChildren, int [] pcObtained);
 
-/*USED*/public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int arg3);
-/*USED*/public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4);
+/*USED*/public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, int arg1, int arg2, int arg3);
+/*USED*/public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4);
 /*USED,NEW*/public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, int arg1, int arg2, int arg3, long arg4);
-/*USED*/public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4, int /*long*/ arg5);
-/*USED,NEW*/public static final native int VtblCall(int fnNumber, long ppVtbl, long arg0, int arg1, int arg2, int arg3, int arg4, int /*long*/ arg5);
-/*USED*/public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int arg4, int arg5, int arg6, int arg7);
+/*USED*/public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4, long /*int*/ arg5);
+/*USED,NEW*/public static final native int VtblCall(int fnNumber, long ppVtbl, long arg0, int arg1, int arg2, int arg3, int arg4, long /*int*/ arg5);
+/*USED*/public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, int arg4, int arg5, int arg6, int arg7);
 
 /** Custom accessibility natives */
 
 /** @method flags=no_gen */
-public static final native int VtblCall_VARIANT(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0);
+public static final native int VtblCall_VARIANT(int fnNumber, long /*int*/ ppVtbl, long /*int*/ arg0);
 /** @method flags=no_gen */
-public static final native int VtblCall_VARIANTP(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1);
+public static final native int VtblCall_VARIANTP(int fnNumber, long /*int*/ ppVtbl, long /*int*/ arg0, long /*int*/ arg1);
 /** @method flags=no_gen */
-public static final native int VtblCall_IVARIANT(int fnNumber, int /*long*/ ppVtbl, int arg0, int /*long*/ arg1);
+public static final native int VtblCall_IVARIANT(int fnNumber, long /*int*/ ppVtbl, int arg0, long /*int*/ arg1);
 /** @method flags=no_gen */
-public static final native int VtblCall_IVARIANTP(int fnNumber, int /*long*/ ppVtbl, int arg0, int /*long*/ arg1, int /*long*/ arg2);
+public static final native int VtblCall_IVARIANTP(int fnNumber, long /*int*/ ppVtbl, int arg0, long /*int*/ arg1, long /*int*/ arg2);
 /** @method flags=no_gen */
-public static final native int VtblCall_PVARIANTP(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2);
+public static final native int VtblCall_PVARIANTP(int fnNumber, long /*int*/ ppVtbl, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2);
 /** @method flags=no_gen */
-public static final native int VtblCall_PPPPVARIANT(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4);
+public static final native int VtblCall_PPPPVARIANT(int fnNumber, long /*int*/ ppVtbl, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4);
 /** @method flags=no_gen */
-public static final native int /*long*/ get_accChild_CALLBACK(int /*long*/ func);
+public static final native long /*int*/ get_accChild_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ get_accName_CALLBACK(int /*long*/ func);
+public static final native long /*int*/ get_accName_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ get_accValue_CALLBACK(int /*long*/ func);
+public static final native long /*int*/ get_accValue_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ get_accDescription_CALLBACK(int /*long*/ func);
+public static final native long /*int*/ get_accDescription_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ get_accRole_CALLBACK(int /*long*/ func);
+public static final native long /*int*/ get_accRole_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ get_accState_CALLBACK(int /*long*/ func);
+public static final native long /*int*/ get_accState_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ get_accHelp_CALLBACK(int /*long*/ func);
+public static final native long /*int*/ get_accHelp_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ get_accHelpTopic_CALLBACK(int /*long*/ func);
+public static final native long /*int*/ get_accHelpTopic_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ get_accKeyboardShortcut_CALLBACK(int /*long*/ func);
+public static final native long /*int*/ get_accKeyboardShortcut_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ get_accDefaultAction_CALLBACK(int /*long*/ func);
+public static final native long /*int*/ get_accDefaultAction_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ accSelect_CALLBACK(int /*long*/ func);
+public static final native long /*int*/ accSelect_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ accLocation_CALLBACK(int /*long*/ func);
+public static final native long /*int*/ accLocation_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ accNavigate_CALLBACK(int /*long*/ func);
+public static final native long /*int*/ accNavigate_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ accDoDefaultAction_CALLBACK(int /*long*/ func);
+public static final native long /*int*/ accDoDefaultAction_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ put_accName_CALLBACK(int /*long*/ func);
+public static final native long /*int*/ put_accName_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen */
-public static final native int /*long*/ put_accValue_CALLBACK(int /*long*/ func);
+public static final native long /*int*/ put_accValue_CALLBACK(long /*int*/ func);
 /** @method flags=no_gen,callback_types=HRESULT;VARIANT;,callback_flags=none;struct; */
-public static final native int /*long*/ CALLBACK_setCurrentValue(int /*long*/ func);
+public static final native long /*int*/ CALLBACK_setCurrentValue(long /*int*/ func);
 
 /* sizeof's */
 public static final native int CAUUID_sizeof();

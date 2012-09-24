@@ -157,7 +157,7 @@ void createProblems(IJavaProject project, String root) throws CoreException {
 							if (resource != null) {
 								int start = Integer.parseInt(node.getAttribute("charStart"));
 								int end = Integer.parseInt(node.getAttribute("charEnd"));
-								String message = "[64] " + ((Element)node.getElementsByTagName("message").item(0)).getAttribute("value");
+								String message = "[32/64] " + ((Element)node.getElementsByTagName("message").item(0)).getAttribute("value");
 								IMarker marker = resource.createMarker(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER);
 								int severity = IMarker.SEVERITY_ERROR;
 								marker.setAttributes(
@@ -189,15 +189,15 @@ boolean replace(char[] source, char[] src, char[] dest) {
 
 boolean replace(char[] source) {
 	boolean changed = false;
-	changed |= replace(source, INT_LONG, LONG_INT);
-	changed |= replace(source, INT_LONG_ARRAY, LONG_INT_ARRAY);
-	changed |= replace(source, FLOAT_DOUBLE, DOUBLE_FLOAT);
-	changed |= replace(source, FLOAT_DOUBLE_ARRAY, DOUBLE_FLOAT_ARRAY);
+	changed |= replace(source, LONG_INT, INT_LONG);
+	changed |= replace(source, LONG_INT_ARRAY, INT_LONG_ARRAY);
+	changed |= replace(source, DOUBLE_FLOAT, FLOAT_DOUBLE);
+	changed |= replace(source, DOUBLE_FLOAT_ARRAY, FLOAT_DOUBLE_ARRAY);
 	if (!changed) {
-		changed |= replace(source, LONG_INT, INT_LONG);
-		changed |= replace(source, LONG_INT_ARRAY, INT_LONG_ARRAY);
-		changed |= replace(source, DOUBLE_FLOAT, FLOAT_DOUBLE);
-		changed |= replace(source, DOUBLE_FLOAT_ARRAY, FLOAT_DOUBLE_ARRAY);
+		changed |= replace(source, INT_LONG, LONG_INT);
+		changed |= replace(source, INT_LONG_ARRAY, LONG_INT_ARRAY);
+		changed |= replace(source, FLOAT_DOUBLE, DOUBLE_FLOAT);
+		changed |= replace(source, FLOAT_DOUBLE_ARRAY, DOUBLE_FLOAT_ARRAY);
 	}
 	return changed;
 }

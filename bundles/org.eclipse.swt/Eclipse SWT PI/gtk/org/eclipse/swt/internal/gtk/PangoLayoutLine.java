@@ -16,11 +16,11 @@ package org.eclipse.swt.internal.gtk;
 
 public class PangoLayoutLine {
 	/** @field cast=(PangoLayout *) */
-	public int /*long*/ layout;
+	public long /*int*/ layout;
 	public int start_index;
 	public int length;
 	/** @field cast=(GSList *) */
-	public int /*long*/ runs;
+	public long /*int*/ runs;
 //	public boolean is_paragraph_start;
 //	public byte resolved_dir;
 	public static final int sizeof = OS.PangoLayoutLine_sizeof();

@@ -46,9 +46,9 @@ public nsID(String id) {
 }
 
 public boolean Equals(nsID other) {
-	int /*long*/ ptr = XPCOM.nsID_new ();
+	long /*int*/ ptr = XPCOM.nsID_new ();
 	XPCOM.memmove (ptr, this, nsID.sizeof);
-	int /*long*/ otherPtr = XPCOM.nsID_new ();
+	long /*int*/ otherPtr = XPCOM.nsID_new ();
 	XPCOM.memmove (otherPtr, other, nsID.sizeof);
 	boolean result = XPCOM.nsID_Equals (ptr, otherPtr) != 0;
 	XPCOM.nsID_delete (ptr);

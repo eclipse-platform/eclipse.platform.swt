@@ -12,7 +12,7 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IOleControl extends IUnknown
 {
-public IOleControl(int /*long*/ address) {
+public IOleControl(long /*int*/ address) {
 	super(address);
 }
 public int GetControlInfo(CONTROLINFO pCI) {

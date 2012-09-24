@@ -37,11 +37,11 @@ public class nsIAppShell extends nsISupports {
 	public static final nsID NS_IAPPSHELL_IID =
 		new nsID(NS_IAPPSHELL_IID_STR);
 
-	public nsIAppShell(int /*long*/ address) {
+	public nsIAppShell(long /*int*/ address) {
 		super(address);
 	}
 
-	public int Create(int /*long*/ argc, int /*long*/[] argv) {
+	public int Create(long /*int*/ argc, long /*int*/[] argv) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), argc, argv);
 	}
 
@@ -57,15 +57,15 @@ public class nsIAppShell extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress());
 	}
 
-	public int ListenToEventQueue(int /*long*/ aQueue, int aListen) {
+	public int ListenToEventQueue(long /*int*/ aQueue, int aListen) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aQueue, aListen);
 	}
 
-	public int GetNativeEvent(int /*long*/ aRealEvent, int /*long*/[] aEvent) {
+	public int GetNativeEvent(long /*int*/ aRealEvent, long /*int*/[] aEvent) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aRealEvent, aEvent);
 	}
 
-	public int DispatchNativeEvent(int aRealEvent, int /*long*/ aEvent) {
+	public int DispatchNativeEvent(int aRealEvent, long /*int*/ aEvent) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aRealEvent, aEvent);
 	}
 

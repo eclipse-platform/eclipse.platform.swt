@@ -41,7 +41,7 @@ import org.eclipse.swt.internal.gtk.*;
 public class MessageBox extends Dialog {
 
 	String message = "";
-	int /*long*/ handle;
+	long /*int*/ handle;
 /**
  * Constructs a new instance of this class given only its parent.
  *
@@ -140,7 +140,7 @@ public void setMessage (String string) {
  * </ul>
  */
 public int open () {
-	int /*long*/ parentHandle = (parent != null) ? parent.topHandle() : 0;
+	long /*int*/ parentHandle = (parent != null) ? parent.topHandle() : 0;
 	int dialogFlags = OS.GTK_DIALOG_DESTROY_WITH_PARENT;
 	if ((style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 		dialogFlags |= OS.GTK_DIALOG_MODAL;
@@ -154,7 +154,7 @@ public int open () {
 	handle = OS.gtk_message_dialog_new(parentHandle, dialogFlags, messageType, 0, buffer);
 	if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 	if (parentHandle != 0) {
-		int /*long*/ pixbufs = OS.gtk_window_get_icon_list (parentHandle);
+		long /*int*/ pixbufs = OS.gtk_window_get_icon_list (parentHandle);
 		if (pixbufs != 0) {
 			OS.gtk_window_set_icon_list (handle, pixbufs);
 			OS.g_list_free (pixbufs);
@@ -172,7 +172,7 @@ public int open () {
 	* dialog to the same window group as of the shells.
 	*/
 	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-		int /*long*/ group = OS.gtk_window_get_group(0);
+		long /*int*/ group = OS.gtk_window_get_group(0);
 		OS.gtk_window_group_add_window (group, handle);
 	}
 	
@@ -181,7 +181,7 @@ public int open () {
 		display.setModalDialog (this);
 	}
 	int signalId = 0;
-	int /*long*/ hookId = 0;
+	long /*int*/ hookId = 0;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		signalId = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);

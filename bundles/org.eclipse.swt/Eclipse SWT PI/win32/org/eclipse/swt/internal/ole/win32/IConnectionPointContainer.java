@@ -12,10 +12,10 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IConnectionPointContainer extends IUnknown
 {
-public IConnectionPointContainer(int /*long*/ address) {
+public IConnectionPointContainer(long /*int*/ address) {
 	super(address);
 }
-public int FindConnectionPoint(GUID riid, int /*long*/[] ppCP) {
+public int FindConnectionPoint(GUID riid, long /*int*/[] ppCP) {
 	return COM.VtblCall(4, address, riid, ppCP);
 }
 }

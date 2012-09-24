@@ -16,7 +16,7 @@ public NSFontManager() {
 	super();
 }
 
-public NSFontManager(int /*long*/ id) {
+public NSFontManager(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,40 +25,40 @@ public NSFontManager(id id) {
 }
 
 public NSArray availableFontFamilies() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_availableFontFamilies);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_availableFontFamilies);
 	return result != 0 ? new NSArray(result) : null;
 }
 
 public NSArray availableFonts() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_availableFonts);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_availableFonts);
 	return result != 0 ? new NSArray(result) : null;
 }
 
 public NSArray availableMembersOfFontFamily(NSString fam) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_availableMembersOfFontFamily_, fam != null ? fam.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_availableMembersOfFontFamily_, fam != null ? fam.id : 0);
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public NSFont convertFont(NSFont fontObj, int /*long*/ trait) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_convertFont_toHaveTrait_, fontObj != null ? fontObj.id : 0, trait);
+public NSFont convertFont(NSFont fontObj, long /*int*/ trait) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_convertFont_toHaveTrait_, fontObj != null ? fontObj.id : 0, trait);
 	return result != 0 ? new NSFont(result) : null;
 }
 
-public NSFont fontWithFamily(NSString family, int /*long*/ traits, int /*long*/ weight, float /*double*/ size) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_fontWithFamily_traits_weight_size_, family != null ? family.id : 0, traits, weight, size);
+public NSFont fontWithFamily(NSString family, long /*int*/ traits, long /*int*/ weight, double /*float*/ size) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_fontWithFamily_traits_weight_size_, family != null ? family.id : 0, traits, weight, size);
 	return result != 0 ? new NSFont(result) : null;
 }
 
 public static NSFontManager sharedFontManager() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSFontManager, OS.sel_sharedFontManager);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSFontManager, OS.sel_sharedFontManager);
 	return result != 0 ? new NSFontManager(result) : null;
 }
 
-public int /*long*/ traitsOfFont(NSFont fontObj) {
+public long /*int*/ traitsOfFont(NSFont fontObj) {
 	return OS.objc_msgSend(this.id, OS.sel_traitsOfFont_, fontObj != null ? fontObj.id : 0);
 }
 
-public int /*long*/ weightOfFont(NSFont fontObj) {
+public long /*int*/ weightOfFont(NSFont fontObj) {
 	return OS.objc_msgSend(this.id, OS.sel_weightOfFont_, fontObj != null ? fontObj.id : 0);
 }
 

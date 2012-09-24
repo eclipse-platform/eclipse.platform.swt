@@ -12,9 +12,9 @@ package org.eclipse.swt.internal.win32;
 
 public class PROCESS_INFORMATION {
 	/** @field cast=(HANDLE) */
-	public int /*long*/ hProcess;
+	public long /*int*/ hProcess;
 	/** @field cast=(HANDLE) */
-	public int /*long*/ hThread;
+	public long /*int*/ hThread;
 	public int dwProcessId;
 	public int dwThreadId;
 	public static int sizeof = OS.PROCESS_INFORMATION_sizeof ();

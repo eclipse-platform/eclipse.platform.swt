@@ -16,7 +16,7 @@ public NSActionCell() {
 	super();
 }
 
-public NSActionCell(int /*long*/ id) {
+public NSActionCell(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,11 +24,11 @@ public NSActionCell(id id) {
 	super(id);
 }
 
-public int /*long*/ action() {
+public long /*int*/ action() {
 	return OS.objc_msgSend(this.id, OS.sel_action);
 }
 
-public void setAction(int /*long*/ aSelector) {
+public void setAction(long /*int*/ aSelector) {
 	OS.objc_msgSend(this.id, OS.sel_setAction_, aSelector);
 }
 
@@ -37,7 +37,7 @@ public void setTarget(id anObject) {
 }
 
 public id target() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_target);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_target);
 	return result != 0 ? new id(result) : null;
 }
 

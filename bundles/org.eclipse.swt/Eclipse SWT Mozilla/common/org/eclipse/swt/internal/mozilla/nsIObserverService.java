@@ -37,23 +37,23 @@ public class nsIObserverService extends nsISupports {
 	public static final nsID NS_IOBSERVERSERVICE_IID =
 		new nsID(NS_IOBSERVERSERVICE_IID_STR);
 
-	public nsIObserverService(int /*long*/ address) {
+	public nsIObserverService(long /*int*/ address) {
 		super(address);
 	}
 
-	public int AddObserver(int /*long*/ anObserver, byte[] aTopic, int ownsWeak) {
+	public int AddObserver(long /*int*/ anObserver, byte[] aTopic, int ownsWeak) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), anObserver, aTopic, ownsWeak);
 	}
 
-	public int RemoveObserver(int /*long*/ anObserver, byte[] aTopic) {
+	public int RemoveObserver(long /*int*/ anObserver, byte[] aTopic) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), anObserver, aTopic);
 	}
 
-	public int NotifyObservers(int /*long*/ aSubject, byte[] aTopic, char[] someData) {
+	public int NotifyObservers(long /*int*/ aSubject, byte[] aTopic, char[] someData) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aSubject, aTopic, someData);
 	}
 
-	public int EnumerateObservers(byte[] aTopic, int /*long*/[] _retval) {
+	public int EnumerateObservers(byte[] aTopic, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aTopic, _retval);
 	}
 }

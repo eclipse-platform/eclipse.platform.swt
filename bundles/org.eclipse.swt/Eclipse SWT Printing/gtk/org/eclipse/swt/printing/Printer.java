@@ -44,16 +44,16 @@ import org.eclipse.swt.printing.PrinterData;
  */
 public final class Printer extends Device {
 	static PrinterData [] printerList;
-	static int /*long*/ findPrinter;
+	static long /*int*/ findPrinter;
 	static PrinterData findData;
 	
 	PrinterData data;
-	int /*long*/ printer;
-	int /*long*/ printJob;
-	int /*long*/ settings;
-	int /*long*/ pageSetup;
-	int /*long*/ surface;
-	int /*long*/ cairo;
+	long /*int*/ printer;
+	long /*int*/ printJob;
+	long /*int*/ settings;
+	long /*int*/ pageSetup;
+	long /*int*/ surface;
+	long /*int*/ cairo;
 	
 	/**
 	 * whether or not a GC was created for this printer
@@ -76,7 +76,7 @@ static void gtk_init() {
 	if (OS.GTK_VERSION < OS.VERSION(2, 24, 0)) {
 	    OS.gtk_set_locale();
 	}
-	if (!OS.gtk_init_check (new int /*long*/ [] {0}, null)) {
+	if (!OS.gtk_init_check (new long /*int*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]");
 	}
 }
@@ -95,7 +95,7 @@ public static PrinterData[] getPrinterList() {
 	}
 	gtk_init();
 	Callback printerCallback = new Callback(Printer.class, "GtkPrinterFunc_List", 2); //$NON-NLS-1$
-	int /*long*/ GtkPrinterFunc_List = printerCallback.getAddress();
+	long /*int*/ GtkPrinterFunc_List = printerCallback.getAddress();
 	if (GtkPrinterFunc_List == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.gtk_enumerate_printers(GtkPrinterFunc_List, 0, 0, true);
 	/*
@@ -109,7 +109,7 @@ public static PrinterData[] getPrinterList() {
 	return printerList;
 }
 
-static int /*long*/ GtkPrinterFunc_List (int /*long*/ printer, int /*long*/ user_data) {
+static long /*int*/ GtkPrinterFunc_List (long /*int*/ printer, long /*int*/ user_data) {
 	int length = printerList.length;
 	PrinterData [] newList = new PrinterData [length + 1];
 	System.arraycopy (printerList, 0, newList, 0, length);
@@ -143,7 +143,7 @@ public static PrinterData getDefaultPrinterData() {
 	}
 	gtk_init();
 	Callback printerCallback = new Callback(Printer.class, "GtkPrinterFunc_Default", 2); //$NON-NLS-1$
-	int /*long*/ GtkPrinterFunc_Default = printerCallback.getAddress();
+	long /*int*/ GtkPrinterFunc_Default = printerCallback.getAddress();
 	if (GtkPrinterFunc_Default == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.gtk_enumerate_printers(GtkPrinterFunc_Default, 0, 0, true);
 	/*
@@ -157,7 +157,7 @@ public static PrinterData getDefaultPrinterData() {
 	return findData;
 }
 
-static int /*long*/ GtkPrinterFunc_Default (int /*long*/ printer, int /*long*/ user_data) {
+static long /*int*/ GtkPrinterFunc_Default (long /*int*/ printer, long /*int*/ user_data) {
 	if (OS.gtk_printer_is_default(printer)) {
 		findData = printerDataFromGtkPrinter(printer);
 		return 1;
@@ -167,10 +167,10 @@ static int /*long*/ GtkPrinterFunc_Default (int /*long*/ printer, int /*long*/ u
 	return 0;
 }
 
-static int /*long*/ gtkPrinterFromPrinterData(PrinterData data) {
+static long /*int*/ gtkPrinterFromPrinterData(PrinterData data) {
 	gtk_init();
 	Callback printerCallback = new Callback(Printer.class, "GtkPrinterFunc_FindNamedPrinter", 2); //$NON-NLS-1$
-	int /*long*/ GtkPrinterFunc_FindNamedPrinter = printerCallback.getAddress();
+	long /*int*/ GtkPrinterFunc_FindNamedPrinter = printerCallback.getAddress();
 	if (GtkPrinterFunc_FindNamedPrinter == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	findPrinter = 0;
 	findData = data;
@@ -186,7 +186,7 @@ static int /*long*/ gtkPrinterFromPrinterData(PrinterData data) {
 	return findPrinter;
 }
 
-static int /*long*/ GtkPrinterFunc_FindNamedPrinter (int /*long*/ printer, int /*long*/ user_data) {
+static long /*int*/ GtkPrinterFunc_FindNamedPrinter (long /*int*/ printer, long /*int*/ user_data) {
 	PrinterData pd = printerDataFromGtkPrinter(printer);
 	if ((pd.driver.equals(findData.driver) && pd.name.equals(findData.name))
 			|| (pd.driver.equals(GTK_FILE_BACKEND)) && findData.printToFile && findData.driver == null && findData.name == null) {
@@ -200,9 +200,9 @@ static int /*long*/ GtkPrinterFunc_FindNamedPrinter (int /*long*/ printer, int /
 	return 0;
 }
 
-static PrinterData printerDataFromGtkPrinter(int /*long*/ printer) {
-	int /*long*/ backend = OS.gtk_printer_get_backend(printer);
-	int /*long*/ address = OS.G_OBJECT_TYPE_NAME(backend);
+static PrinterData printerDataFromGtkPrinter(long /*int*/ printer) {
+	long /*int*/ backend = OS.gtk_printer_get_backend(printer);
+	long /*int*/ address = OS.G_OBJECT_TYPE_NAME(backend);
 	int length = OS.strlen (address);
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, address, length);
@@ -220,7 +220,7 @@ static PrinterData printerDataFromGtkPrinter(int /*long*/ printer) {
 /* 
 * Restore printer settings and page_setup data from data.
 */
-static void restore(byte [] data, int /*long*/ settings, int /*long*/ page_setup) {
+static void restore(byte [] data, long /*int*/ settings, long /*int*/ page_setup) {
 	settingsData = data;
 	start = end = 0;
 	while (end < settingsData.length && settingsData[end] != 0) {
@@ -253,7 +253,7 @@ static void restore(byte [] data, int /*long*/ settings, int /*long*/ page_setup
 	double width = restoreDouble("paper_size_width"); //$NON-NLS-1$
 	double height = restoreDouble("paper_size_height"); //$NON-NLS-1$
 	boolean custom = restoreBoolean("paper_size_is_custom"); //$NON-NLS-1$
-	int /*long*/ paper_size = 0;
+	long /*int*/ paper_size = 0;
 	if (custom) {
 		if (ppd_name.length > 0) {
 			paper_size = OS.gtk_paper_size_new_from_ppd(ppd_name, display_name, width, height);
@@ -273,13 +273,13 @@ static byte [] uriFromFilename(String filename) {
 	if (length == 0) return null;
 	char[] chars = new char[length];
 	filename.getChars(0, length, chars, 0);		
-	int /*long*/[] error = new int /*long*/[1];
-	int /*long*/ utf8Ptr = OS.g_utf16_to_utf8(chars, chars.length, null, null, error);
+	long /*int*/[] error = new long /*int*/[1];
+	long /*int*/ utf8Ptr = OS.g_utf16_to_utf8(chars, chars.length, null, null, error);
 	if (error[0] != 0 || utf8Ptr == 0) return null;
-	int /*long*/ localePtr = OS.g_filename_from_utf8(utf8Ptr, -1, null, null, error);
+	long /*int*/ localePtr = OS.g_filename_from_utf8(utf8Ptr, -1, null, null, error);
 	OS.g_free(utf8Ptr);
 	if (error[0] != 0 || localePtr == 0) return null;
-	int /*long*/ uriPtr = OS.g_filename_to_uri(localePtr, 0, error);
+	long /*int*/ uriPtr = OS.g_filename_to_uri(localePtr, 0, error);
 	OS.g_free(localePtr);
 	if (error[0] != 0 || uriPtr == 0) return null;
 	length = OS.strlen(uriPtr);
@@ -294,7 +294,7 @@ static DeviceData checkNull (PrinterData data) {
 	if (data.driver == null || data.name == null) {
 		PrinterData defaultData = null;
 		if (data.printToFile) {
-			int /*long*/ filePrinter = gtkPrinterFromPrinterData(data);
+			long /*int*/ filePrinter = gtkPrinterFromPrinterData(data);
 			if (filePrinter != 0) {
 				defaultData = printerDataFromGtkPrinter(filePrinter);
 				OS.g_object_unref(filePrinter);
@@ -410,8 +410,8 @@ static byte [] restoreBytes(String key, boolean nullTerminate) {
 public Font getSystemFont () {
 	checkDevice ();
 	if (systemFont != null) return systemFont;
-	int /*long*/ style = OS.gtk_widget_get_default_style();	
-	int /*long*/ defaultFont = OS.pango_font_description_copy (OS.gtk_style_get_font_desc (style));
+	long /*int*/ style = OS.gtk_widget_get_default_style();	
+	long /*int*/ defaultFont = OS.pango_font_description_copy (OS.gtk_style_get_font_desc (style));
 	int size = OS.pango_font_description_get_size(defaultFont);
 	Point dpi = getDPI(), screenDPI = super.getDPI();
 	OS.pango_font_description_set_size(defaultFont, size * dpi.y / screenDPI.y);
@@ -433,8 +433,8 @@ public Font getSystemFont () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public int /*long*/ internal_new_GC(GCData data) {
-	int /*long*/ gc, drawable = 0;
+public long /*int*/ internal_new_GC(GCData data) {
+	long /*int*/ gc, drawable = 0;
 	if (OS.USE_CAIRO) {
 		gc = cairo;
 	} else {
@@ -488,8 +488,8 @@ public int /*long*/ internal_new_GC(GCData data) {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public void internal_dispose_GC(int /*long*/ hDC, GCData data) {
-	int /*long*/ gc = hDC;
+public void internal_dispose_GC(long /*int*/ hDC, GCData data) {
+	long /*int*/ gc = hDC;
 	if (data != null) isGCCreated = false;
 	if (OS.USE_CAIRO) return;
 	OS.g_object_unref (gc);

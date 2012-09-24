@@ -34,7 +34,7 @@ public final class GCData {
 	public Font font;
 	public Pattern foregroundPattern;
 	public Pattern backgroundPattern;
-	public int /*long*/ clipRgn;
+	public long /*int*/ clipRgn;
 	public float lineWidth;
 	public int lineStyle = SWT.LINE_SOLID;
 	public float[] lineDashes;
@@ -46,12 +46,12 @@ public final class GCData {
 	public int alpha = 0xFF;
 	public int interpolation = SWT.DEFAULT;
 
-	public int /*long*/ context;
-	public int /*long*/ layout;
-	public int /*long*/ damageRgn;
+	public long /*int*/ context;
+	public long /*int*/ layout;
+	public long /*int*/ damageRgn;
 	public Image image;
-	public int /*long*/ drawable;	
-	public int /*long*/ cairo;
+	public long /*int*/ drawable;	
+	public long /*int*/ cairo;
 	public double cairoXoffset, cairoYoffset;
 	public boolean disposeCairo;
 	public double[] identity, clippingTransform;

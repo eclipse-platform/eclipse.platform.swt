@@ -12,10 +12,10 @@ package org.eclipse.swt.internal.win32;
 
 public abstract class NMTTDISPINFO extends NMHDR {
 	/** @field cast=(void *) */
-	public int /*long*/ lpszText;
+	public long /*int*/ lpszText;
 	/** @field cast=(HINSTANCE) */
-	public int /*long*/ hinst;   
+	public long /*int*/ hinst;   
 	public int uFlags;
-	public int /*long*/ lParam;
+	public long /*int*/ lParam;
 	public static final int sizeof = OS.IsUnicode ? OS.NMTTDISPINFOW_sizeof () : OS.NMTTDISPINFOA_sizeof ();
 }

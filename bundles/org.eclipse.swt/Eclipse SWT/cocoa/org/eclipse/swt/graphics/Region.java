@@ -41,7 +41,7 @@ public final class Region extends Resource {
 	 * 
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public int /*long*/ handle;
+	public long /*int*/ handle;
 
 /**
  * Constructs a new empty region.
@@ -86,18 +86,18 @@ public Region(Device device) {
 	}
 }
 
-Region(Device device, int /*long*/ handle) {
+Region(Device device, long /*int*/ handle) {
 	super(device);
 	this.handle = handle;
 }
 
-public static Region cocoa_new(Device device, int /*long*/ handle) {
+public static Region cocoa_new(Device device, long /*int*/ handle) {
 	return new Region(device, handle);
 }
 
-static int /*long*/ polyToRgn(int[] poly, int length) {
+static long /*int*/ polyToRgn(int[] poly, int length) {
 	short[] r = new short[4];
-	int /*long*/ polyRgn = OS.NewRgn(), rectRgn = OS.NewRgn();
+	long /*int*/ polyRgn = OS.NewRgn(), rectRgn = OS.NewRgn();
 	int minY = poly[1], maxY = poly[1];
 	for (int y = 3; y < length; y += 2) {
 		if (poly[y] < minY) minY = poly[y];
@@ -140,11 +140,11 @@ static int /*long*/ polyToRgn(int[] poly, int length) {
 	return polyRgn;
 }
 
-static int /*long*/ polyRgn(int[] pointArray, int count) {
+static long /*int*/ polyRgn(int[] pointArray, int count) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		int /*long*/ polyRgn;
+		long /*int*/ polyRgn;
 		if (C.PTR_SIZEOF == 4) {
 			polyRgn = OS.NewRgn();
 			OS.OpenRgn();
@@ -197,7 +197,7 @@ void add(int[] pointArray, int count) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		int /*long*/ polyRgn = polyRgn(pointArray, count);
+		long /*int*/ polyRgn = polyRgn(pointArray, count);
 		OS.UnionRgn(handle, polyRgn, handle);
 		OS.DisposeRgn(polyRgn);
 	} finally {
@@ -256,7 +256,7 @@ public void add(int x, int y, int width, int height) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		int /*long*/ rectRgn = OS.NewRgn();
+		long /*int*/ rectRgn = OS.NewRgn();
 		short[] r = new short[4];
 		OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
 		OS.RectRgn(rectRgn, r);
@@ -342,9 +342,9 @@ public boolean contains(Point pt) {
 
 NSAffineTransform transform;
 void convertRgn(NSAffineTransform transform) {
-	int /*long*/ newRgn = OS.NewRgn();
+	long /*int*/ newRgn = OS.NewRgn();
 	Callback callback = new Callback(this, "convertRgn", 4);
-	int /*long*/ proc = callback.getAddress();
+	long /*int*/ proc = callback.getAddress();
 	if (proc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	this.transform = transform;
 	OS.QDRegionToRects(handle, OS.kQDParseRegionFromTopLeft, proc, newRgn);
@@ -354,7 +354,7 @@ void convertRgn(NSAffineTransform transform) {
 	OS.DisposeRgn(newRgn);
 }
 
-int /*long*/ convertRgn(int /*long*/ message, int /*long*/ rgn, int /*long*/ r, int /*long*/ newRgn) {
+long /*int*/ convertRgn(long /*int*/ message, long /*int*/ rgn, long /*int*/ r, long /*int*/ newRgn) {
 	if (message == OS.kQDRegionToRectsMsgParse) {
 		short[] rect = new short[4];
 		OS.memmove(rect, r, rect.length * 2);
@@ -384,7 +384,7 @@ int /*long*/ convertRgn(int /*long*/ message, int /*long*/ rgn, int /*long*/ r, 
 		points[i++] = (short)Math.round(point.y);
 		points[i++] = startX;
 		points[i++] = startY;
-		int /*long*/ polyRgn = polyRgn(points, points.length);
+		long /*int*/ polyRgn = polyRgn(points, points.length);
 		OS.UnionRgn(newRgn, polyRgn, newRgn);
 		OS.DisposeRgn(polyRgn);
 	}
@@ -454,7 +454,7 @@ NSBezierPath getPath() {
 
 NSPoint pt = new NSPoint();
 short[] rect = new short[4];
-int /*long*/ regionToRects(int /*long*/ message, int /*long*/ rgn, int /*long*/ r, int /*long*/ path) {
+long /*int*/ regionToRects(long /*int*/ message, long /*int*/ rgn, long /*int*/ r, long /*int*/ path) {
 	if (message == OS.kQDRegionToRectsMsgParse) {
 		OS.memmove(rect, r, rect.length * 2);
 		pt.x = rect[1];
@@ -532,7 +532,7 @@ public void intersect(int x, int y, int width, int height) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		int /*long*/ rectRgn = OS.NewRgn();
+		long /*int*/ rectRgn = OS.NewRgn();
 		short[] r = new short[4];
 		OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
 		OS.RectRgn(rectRgn, r);
@@ -683,7 +683,7 @@ public void subtract (int[] pointArray) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		int /*long*/ polyRgn = polyRgn(pointArray, pointArray.length);
+		long /*int*/ polyRgn = polyRgn(pointArray, pointArray.length);
 		OS.DiffRgn(handle, polyRgn, handle);
 		OS.DisposeRgn(polyRgn);
 	} finally {
@@ -737,7 +737,7 @@ public void subtract(int x, int y, int width, int height) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		int /*long*/ rectRgn = OS.NewRgn();
+		long /*int*/ rectRgn = OS.NewRgn();
 		short[] r = new short[4];
 		OS.SetRect(r, (short)x, (short)y, (short)(x + width),(short)(y + height));
 		OS.RectRgn(rectRgn, r);

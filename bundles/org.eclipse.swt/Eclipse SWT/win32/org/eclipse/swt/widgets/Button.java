@@ -54,10 +54,10 @@ public class Button extends Control {
 	static final int CHECK_WIDTH, CHECK_HEIGHT;
 	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
 	static /*final*/ boolean COMMAND_LINK = false;
-	static final int /*long*/ ButtonProc;
+	static final long /*int*/ ButtonProc;
 	static final TCHAR ButtonClass = new TCHAR (0, "BUTTON", true);
 	static {
-		int /*long*/ hBitmap = OS.LoadBitmap (0, OS.OBM_CHECKBOXES);
+		long /*int*/ hBitmap = OS.LoadBitmap (0, OS.OBM_CHECKBOXES);
 		if (hBitmap == 0) {
 			CHECK_WIDTH = OS.GetSystemMetrics (OS.IsWinCE ? OS.SM_CXSMICON : OS.SM_CXVSCROLL);
 			CHECK_HEIGHT = OS.GetSystemMetrics (OS.IsWinCE ? OS.SM_CYSMICON : OS.SM_CYVSCROLL);
@@ -164,7 +164,7 @@ void _setImage (Image image) {
 	} else {
 		if (image2 != null) image2.dispose ();
 		image2 = null;
-		int /*long*/ hImage = 0;
+		long /*int*/ hImage = 0;
 		int imageBits = 0, fImageType = 0;
 		if (image != null) {
 			switch (image.type) {
@@ -215,14 +215,14 @@ void _setImage (Image image) {
 			if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 					Rectangle rect = image.getBounds ();
-					int /*long*/ hDC = OS.GetDC (handle);
-					int /*long*/ dstHdc = OS.CreateCompatibleDC (hDC);
-					int /*long*/ hBitmap = OS.CreateCompatibleBitmap (hDC, rect.width, rect.height);
-					int /*long*/ oldBitmap = OS.SelectObject (dstHdc, hBitmap);
+					long /*int*/ hDC = OS.GetDC (handle);
+					long /*int*/ dstHdc = OS.CreateCompatibleDC (hDC);
+					long /*int*/ hBitmap = OS.CreateCompatibleBitmap (hDC, rect.width, rect.height);
+					long /*int*/ oldBitmap = OS.SelectObject (dstHdc, hBitmap);
 					OS.SetLayout (dstHdc, OS.LAYOUT_RTL);
 					if (fImageType == OS.IMAGE_BITMAP) {
-						int /*long*/ srcHdc = OS.CreateCompatibleDC (hDC);
-						int /*long*/ oldSrcBitmap = OS.SelectObject (srcHdc, hImage);
+						long /*int*/ srcHdc = OS.CreateCompatibleDC (hDC);
+						long /*int*/ oldSrcBitmap = OS.SelectObject (srcHdc, hImage);
 						OS.SetLayout (dstHdc, 0);
 						OS.BitBlt (dstHdc, 0, 0, rect.width, rect.height, srcHdc, 0, 0, OS.SRCCOPY);
 						OS.SelectObject (srcHdc, oldSrcBitmap);
@@ -230,8 +230,8 @@ void _setImage (Image image) {
 					} else {
 						Control control = findBackgroundControl ();
 						if (control == null) control = this;
-						int /*long*/ newBrush = OS.CreateSolidBrush (control.getBackgroundPixel ());
-						int /*long*/ oldBrush = OS.SelectObject (dstHdc, newBrush);
+						long /*int*/ newBrush = OS.CreateSolidBrush (control.getBackgroundPixel ());
+						long /*int*/ oldBrush = OS.SelectObject (dstHdc, newBrush);
 						OS.PatBlt (dstHdc, 0, 0, rect.width, rect.height, OS.PATCOPY);
 						OS.DrawIconEx (dstHdc, 0, 0, hImage, 0, 0, 0, 0, OS.DI_NORMAL);
 						OS.SelectObject (dstHdc, oldBrush);
@@ -338,7 +338,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-int /*long*/ callWindowProc (int /*long*/ hwnd, int msg, int /*long*/ wParam, int /*long*/ lParam) {
+long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (ButtonProc, hwnd, msg, wParam, lParam);
 }
@@ -377,9 +377,9 @@ int computeLeftMargin () {
 	if (image != null && text.length () != 0) {
 		Rectangle bounds = image.getBounds ();
 		margin += bounds.width + MARGIN * 2;
-		int /*long*/ oldFont = 0;
-		int /*long*/ hDC = OS.GetDC (handle);
-		int /*long*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		long /*int*/ oldFont = 0;
+		long /*int*/ hDC = OS.GetDC (handle);
+		long /*int*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 		TCHAR buffer = new TCHAR (getCodePage (), text, true);
 		RECT rect = new RECT ();
@@ -446,9 +446,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				}
 			}
 			if (hasText) {
-				int /*long*/ oldFont = 0;
-				int /*long*/ hDC = OS.GetDC (handle);
-				int /*long*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+				long /*int*/ oldFont = 0;
+				long /*int*/ hDC = OS.GetDC (handle);
+				long /*int*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 				if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 				TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 				OS.GetTextMetrics (hDC, lptm);
@@ -720,7 +720,7 @@ String getNameText () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
-	int /*long*/ flags = OS.SendMessage (handle, OS.BM_GETCHECK, 0, 0);
+	long /*int*/ flags = OS.SendMessage (handle, OS.BM_GETCHECK, 0, 0);
 	return flags != OS.BST_UNCHECKED;
 }
 
@@ -886,7 +886,7 @@ public void setAlignment (int alignment) {
 
 void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
-	int /*long*/ hwndShell = menuShell ().handle;
+	long /*int*/ hwndShell = menuShell ().handle;
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if (value) {
 		bits |= OS.BS_DEFPUSHBUTTON;
@@ -961,7 +961,7 @@ public void setGrayed (boolean grayed) {
 	checkWidget ();
 	if ((style & SWT.CHECK) == 0) return;
 	this.grayed = grayed;
-	int /*long*/ flags = OS.SendMessage (handle, OS.BM_GETCHECK, 0, 0);
+	long /*int*/ flags = OS.SendMessage (handle, OS.BM_GETCHECK, 0, 0);
 	if (grayed) {
 		if (flags == OS.BST_CHECKED) updateSelection (OS.BST_INDETERMINATE);
 	} else {
@@ -1179,12 +1179,12 @@ TCHAR windowClass () {
 	return ButtonClass;
 }
 
-int /*long*/ windowProc () {
+long /*int*/ windowProc () {
 	return ButtonProc;
 }
 
 
-LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -1206,7 +1206,7 @@ LRESULT WM_ERASEBKGND (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
 	if ((style & SWT.ARROW) != 0) {
@@ -1215,7 +1215,7 @@ LRESULT WM_GETDLGCODE (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_GETOBJECT (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_GETOBJECT (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Ensure that there is an accessible object created for this
 	* control because support for radio button position in group
@@ -1227,7 +1227,7 @@ LRESULT WM_GETOBJECT (int /*long*/ wParam, int /*long*/ lParam) {
 	return super.WM_GETOBJECT (wParam, lParam);
 }
 
-LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
 	if ((style & SWT.PUSH) != 0 && getDefault ()) {
 		menuShell ().setDefaultButton (null, false);
@@ -1235,17 +1235,17 @@ LRESULT WM_KILLFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_LBUTTONDOWN (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreMouse) return null;
 	return super.WM_LBUTTONDOWN (wParam, lParam);
 }
 
-LRESULT WM_LBUTTONUP (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ignoreMouse) return null;
 	return super.WM_LBUTTONUP (wParam, lParam);
 }
 
-LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Feature in Windows. When Windows sets focus to
 	* a radio button, it sets the WS_TABSTOP style.
@@ -1266,7 +1266,7 @@ LRESULT WM_SETFOCUS (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (result != null) return result;
 	if (OS.COMCTL32_MAJOR >= 6) {
@@ -1284,14 +1284,14 @@ LRESULT WM_SIZE (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT WM_SYSCOLORCHANGE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_SYSCOLORCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
 	if (image2 != null) _setImage (image);
 	return result;
 }
 
-LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -1318,7 +1318,7 @@ LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
 			}
 			if (redraw) {
 				OS.InvalidateRect (handle, null, false);
-				int /*long*/ code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
+				long /*int*/ code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
 				return new LRESULT (code);
 			}
 		}
@@ -1336,7 +1336,7 @@ LRESULT WM_UPDATEUISTATE (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 	int code = OS.HIWORD (wParam);
 	switch (code) {
 		case OS.BN_CLICKED:
@@ -1357,7 +1357,7 @@ LRESULT wmCommandChild (int /*long*/ wParam, int /*long*/ lParam) {
 	return super.wmCommandChild (wParam, lParam);
 }
 
-LRESULT wmColorChild (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
 	/*
 	* Bug in Windows.  For some reason, the HBRUSH that
 	* is returned from WM_CTRLCOLOR is misaligned when
@@ -1378,7 +1378,7 @@ LRESULT wmColorChild (int /*long*/ wParam, int /*long*/ lParam) {
 	return result;
 }
 
-LRESULT wmDrawChild (int /*long*/ wParam, int /*long*/ lParam) {
+LRESULT wmDrawChild (long /*int*/ wParam, long /*int*/ lParam) {
 	if ((style & SWT.ARROW) == 0) return super.wmDrawChild (wParam, lParam);
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);

@@ -138,7 +138,7 @@ public String open () {
 	}
 	display.setModalDialog(this);
 	NSString dir = (filterPath != null && filterPath.length() > 0) ? NSString.stringWith(filterPath) : null;
-	int /*long*/ response = panel.runModalForDirectory(dir, null);
+	long /*int*/ response = panel.runModalForDirectory(dir, null);
 	if (parent != null && (style & SWT.SHEET) != 0) {
 		application.endSheet(panel, 0);
 	}

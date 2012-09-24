@@ -37,15 +37,15 @@ public class nsIUploadChannel extends nsISupports {
 	public static final nsID NS_IUPLOADCHANNEL_IID =
 		new nsID(NS_IUPLOADCHANNEL_IID_STR);
 
-	public nsIUploadChannel(int /*long*/ address) {
+	public nsIUploadChannel(long /*int*/ address) {
 		super(address);
 	}
 
-	public int SetUploadStream(int /*long*/ aStream, int /*long*/ aContentType, int aContentLength) {
+	public int SetUploadStream(long /*int*/ aStream, long /*int*/ aContentType, int aContentLength) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aStream, aContentType, aContentLength);
 	}
 
-	public int GetUploadStream(int /*long*/[] aUploadStream) {
+	public int GetUploadStream(long /*int*/[] aUploadStream) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aUploadStream);
 	}
 }

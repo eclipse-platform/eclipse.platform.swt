@@ -22,9 +22,9 @@ public ProgressBarDrawData() {
 }
 
 void draw(Theme theme, GC gc, Rectangle bounds) {
-	int /*long*/ progressHandle = theme.progressHandle;
-	int /*long*/ gtkStyle = OS.gtk_widget_get_style (progressHandle);
-	int /*long*/ drawable = gc.getGCData().drawable;
+	long /*int*/ progressHandle = theme.progressHandle;
+	long /*int*/ gtkStyle = OS.gtk_widget_get_style (progressHandle);
+	long /*int*/ drawable = gc.getGCData().drawable;
 	theme.transferClipping(gc, gtkStyle);
 	byte[] detail = Converter.wcsToMbcs(null, "trough", true);
 	int x = bounds.x, y = bounds.y, width = bounds.width, height = bounds.height;

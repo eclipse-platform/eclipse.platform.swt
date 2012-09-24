@@ -48,7 +48,7 @@ public abstract class Widget {
 	EventTable eventTable;
 	Object data;
 
-	int /*long*/ jniRef;
+	long /*int*/ jniRef;
 
 	/* Global state flags */
 	static final int DISPOSED         = 1 << 0;
@@ -135,61 +135,61 @@ public Widget (Widget parent, int style) {
 	reskinWidget ();
 }
 
-int /*long*/ accessibleHandle() {
+long /*int*/ accessibleHandle() {
 	return 0;
 }
 
-int /*long*/ accessibilityActionDescription(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+long /*int*/ accessibilityActionDescription(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	return callSuperObject(id, sel, arg0);
 }
 
-int /*long*/ accessibilityActionNames(int /*long*/ id, int /*long*/ sel) {
+long /*int*/ accessibilityActionNames(long /*int*/ id, long /*int*/ sel) {
 	return callSuperObject(id, sel);
 }
 
-int /*long*/ accessibilityAttributeNames(int /*long*/ id, int /*long*/ sel) {
+long /*int*/ accessibilityAttributeNames(long /*int*/ id, long /*int*/ sel) {
 	return callSuperObject(id, sel);
 }
 
-int /*long*/ accessibilityAttributeValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	return callSuperObject(id, sel, arg0);
 }
 
-int /*long*/ accessibilityAttributeValue_forParameter(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+long /*int*/ accessibilityAttributeValue_forParameter(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel, arg0, arg1);
 }
 
-int /*long*/ accessibilityFocusedUIElement(int /*long*/ id, int /*long*/ sel) {
+long /*int*/ accessibilityFocusedUIElement(long /*int*/ id, long /*int*/ sel) {
 	return callSuperObject(id, sel);
 }
 
-int /*long*/ accessibilityHitTest(int /*long*/ id, int /*long*/ sel, NSPoint point) {
+long /*int*/ accessibilityHitTest(long /*int*/ id, long /*int*/ sel, NSPoint point) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel, point);
 }
 
-boolean accessibilityIsAttributeSettable(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+boolean accessibilityIsAttributeSettable(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	return callSuperBoolean(id, sel, arg0);
 }
 
-boolean accessibilityIsIgnored(int /*long*/ id, int /*long*/ sel) {
+boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
 	return callSuperBoolean(id, sel);
 }
 
-int /*long*/ accessibilityParameterizedAttributeNames(int /*long*/ id, int /*long*/ sel) {
+long /*int*/ accessibilityParameterizedAttributeNames(long /*int*/ id, long /*int*/ sel) {
 	return callSuperObject(id, sel);
 }
 
-void accessibilityPerformAction(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+void accessibilityPerformAction(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	callSuper(id, sel, arg0);
 }
 
-void accessibilitySetValue_forAttribute(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+void accessibilitySetValue_forAttribute(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
 	callSuper(id, sel, arg0, arg1);
 }
 
@@ -203,71 +203,71 @@ String getClipboardText () {
 void setClipRegion (NSView view) {
 }
 
-int /*long*/ attributedSubstringFromRange (int /*long*/ id, int /*long*/ sel, int /*long*/ range) {
+long /*int*/ attributedSubstringFromRange (long /*int*/ id, long /*int*/ sel, long /*int*/ range) {
 	return 0;
 }
 
-void callSuper(int /*long*/ id, int /*long*/ sel) {
+void callSuper(long /*int*/ id, long /*int*/ sel) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel);
 }
 
-void callSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+void callSuper(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, arg0);
 }
 
-void callSuper(int /*long*/ id, int /*long*/ sel, NSRect arg0) {
+void callSuper(long /*int*/ id, long /*int*/ sel, NSRect arg0) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, arg0);
 }
 
-void callSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+void callSuper(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, arg0, arg1);
 }
 
-void callSuper(int /*long*/ id, int /*long*/ sel, NSRect arg0, int /*long*/ arg1) {
+void callSuper(long /*int*/ id, long /*int*/ sel, NSRect arg0, long /*int*/ arg1) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, arg0, arg1);
 }
 
-int /*long*/ callSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, NSRect arg1, int /*long*/ arg2) {
+long /*int*/ callSuper(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, NSRect arg1, long /*int*/ arg2) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel, arg0, arg1, arg2);
 }
 
-boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel) {
+boolean callSuperBoolean(long /*int*/ id, long /*int*/ sel) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel) != 0;
 }
 
-boolean canBecomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
+boolean canBecomeKeyWindow (long /*int*/ id, long /*int*/ sel) {
 	return callSuperBoolean (id, sel);
 }
 
-boolean needsPanelToBecomeKey (int /*long*/ id, int /*long*/ sel) {
+boolean needsPanelToBecomeKey (long /*int*/ id, long /*int*/ sel) {
 	return callSuperBoolean (id, sel);
 }
 
-void cancelOperation(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+void cancelOperation(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 }
 
-NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
+NSSize cellSize (long /*int*/ id, long /*int*/ sel) {
 	NSSize result = new NSSize();
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
@@ -276,7 +276,7 @@ NSSize cellSize (int /*long*/ id, int /*long*/ sel) {
 	return result;
 }
 
-NSSize cellSizeForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) {
+NSSize cellSizeForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
@@ -285,42 +285,42 @@ NSSize cellSizeForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) {
 	return result;
 }
 
-boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+boolean callSuperBoolean(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel, arg0) != 0;
 }
 
-boolean callSuperBoolean(int /*long*/ id, int /*long*/ sel, NSRange range, int /*long*/ arg1) {
+boolean callSuperBoolean(long /*int*/ id, long /*int*/ sel, NSRange range, long /*int*/ arg1) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper_bool(super_struct, sel, range, arg1);
 }
 
-int /*long*/ callSuperObject(int /*long*/ id, int /*long*/ sel) {
+long /*int*/ callSuperObject(long /*int*/ id, long /*int*/ sel) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel);
 }
 
-int /*long*/ callSuperObject(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+long /*int*/ callSuperObject(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel, arg0);
 }
 
-int /*long*/ callSuperObject(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+long /*int*/ callSuperObject(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel, arg0, arg1);
 }
 
-NSRect callSuperRect(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+NSRect callSuperRect(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
@@ -329,40 +329,40 @@ NSRect callSuperRect(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
 	return result;
 }
 
-boolean canDragRowsWithIndexes_atPoint(int /*long*/ id, int /*long*/ sel, int /*long*/ rowIndexes, NSPoint mouseDownPoint) {
+boolean canDragRowsWithIndexes_atPoint(long /*int*/ id, long /*int*/ sel, long /*int*/ rowIndexes, NSPoint mouseDownPoint) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper_bool(super_struct, sel, rowIndexes, mouseDownPoint);
 }
 
-int /*long*/ characterIndexForPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ point) {
+long /*int*/ characterIndexForPoint (long /*int*/ id, long /*int*/ sel, long /*int*/ point) {
 	return OS.NSNotFound;
 }
 
-int /*long*/ columnAtPoint(int /*long*/ id, int /*long*/ sel, NSPoint point) {
+long /*int*/ columnAtPoint(long /*int*/ id, long /*int*/ sel, NSPoint point) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel, point);
 }
 
-boolean acceptsFirstMouse (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+boolean acceptsFirstMouse (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel, theEvent) != 0;
 }
 
-boolean acceptsFirstResponder (int /*long*/ id, int /*long*/ sel) {
+boolean acceptsFirstResponder (long /*int*/ id, long /*int*/ sel) {
 	return callSuperBoolean(id, sel);
 }
 
-boolean becomeFirstResponder (int /*long*/ id, int /*long*/ sel) {
+boolean becomeFirstResponder (long /*int*/ id, long /*int*/ sel) {
 	return callSuperBoolean(id, sel);
 }
 
-void becomeKeyWindow (int /*long*/ id, int /*long*/ sel) {
+void becomeKeyWindow (long /*int*/ id, long /*int*/ sel) {
 	callSuper(id, sel);
 }
 
@@ -410,7 +410,7 @@ void reskinWidget() {
 	}
 }
 
-boolean resignFirstResponder (int /*long*/ id, int /*long*/ sel) {
+boolean resignFirstResponder (long /*int*/ id, long /*int*/ sel) {
 	return callSuperBoolean(id, sel);
 }
 
@@ -475,7 +475,7 @@ public void addDisposeListener (DisposeListener listener) {
 	addListener (SWT.Dispose, typedListener);
 }
 
-boolean canBecomeKeyView(int /*long*/ id, int /*long*/ sel) {
+boolean canBecomeKeyView(long /*int*/ id, long /*int*/ sel) {
 	return true;
 }
 
@@ -575,14 +575,14 @@ protected void checkWidget () {
 	if ((state & DISPOSED) != 0) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
-void clearDeferFlushing (int /*long*/ id, int /*long*/ sel) {
+void clearDeferFlushing (long /*int*/ id, long /*int*/ sel) {
 }
 
-boolean textView_clickOnLink_atIndex(int /*long*/ id, int /*long*/ sel, int /*long*/ textView, int /*long*/ link, int /*long*/ charIndex) {
+boolean textView_clickOnLink_atIndex(long /*int*/ id, long /*int*/ sel, long /*int*/ textView, long /*int*/ link, long /*int*/ charIndex) {
 	return true;
 }
 
-void collapseItem_collapseChildren (int /*long*/ id, int /*long*/ sel, int /*long*/ item, boolean children) {
+void collapseItem_collapseChildren (long /*int*/ id, long /*int*/ sel, long /*int*/ item, boolean children) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
@@ -612,13 +612,13 @@ void createWidget () {
 	register ();
 }
 	
-void comboBoxSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void comboBoxSelectionDidChange(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 }
 
-void comboBoxWillDismiss(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void comboBoxWillDismiss(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 }
 
-void comboBoxWillPopUp(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void comboBoxWillPopUp(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 }
 
 void deregister () {
@@ -667,35 +667,35 @@ public void dispose () {
 	release (true);
 }
 
-void deselectAll(int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
+void deselectAll(long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
 	callSuper(id, sel, sender);
 }
 
-void deselectRow(int /*long*/ id, int /*long*/ sel, int /*long*/ index) {
+void deselectRow(long /*int*/ id, long /*int*/ sel, long /*int*/ index) {
 	callSuper(id, sel, index);
 }
 
-void doCommandBySelector (int /*long*/ id, int /*long*/ sel, int /*long*/ aSelector) {
+void doCommandBySelector (long /*int*/ id, long /*int*/ sel, long /*int*/ aSelector) {
 	callSuper (id, sel, aSelector);
 }
 
-boolean dragSelectionWithEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
+boolean dragSelectionWithEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2) {
 	return false;
 }
 
-void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	/* Do nothing */
 }
 
-void drawBackgroundInClipRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {
+void drawBackgroundInClipRect(long /*int*/ id, long /*int*/ sel, NSRect rect) {
 	callSuper(id, sel, rect);
 }
 
-void drawImageWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ image, NSRect rect, int /*long*/ view) {
+void drawImageWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ image, NSRect rect, long /*int*/ view) {
 	callSuper(id, sel, image, rect, view);
 }
 
-NSRect drawTitleWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/ title, NSRect rect, int /*long*/ view) {
+NSRect drawTitleWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ title, NSRect rect, long /*int*/ view) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
@@ -704,26 +704,26 @@ NSRect drawTitleWithFrameInView (int /*long*/ id, int /*long*/ sel, int /*long*/
 	return result;
 }
 
-void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cellFrame, int /*long*/ view) {
+void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ view) {
 	callSuper(id, sel, cellFrame, view);
 }
 
-void drawLabelInRect(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLabel, NSRect rect) {
+void drawLabelInRect(long /*int*/ id, long /*int*/ sel, boolean shouldTruncateLabel, NSRect rect) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, shouldTruncateLabel, rect);
 }
 
-void drawViewBackgroundInRect(int /*long*/ id, int /*long*/ sel, NSRect rect) {
+void drawViewBackgroundInRect(long /*int*/ id, long /*int*/ sel, NSRect rect) {
 	callSuper(id, sel, rect);
 }
 
-void drawWithExpansionFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect cellFrame, int /*long*/ view) {
+void drawWithExpansionFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ view) {
 	callSuper(id, sel, cellFrame, view);
 }
 
-void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
+void drawRect (long /*int*/ id, long /*int*/ sel, NSRect rect) {
 	if (!isDrawing()) return;
 	Display display = this.display;
 	NSView view = new NSView(id);
@@ -748,17 +748,17 @@ void drawRect (int /*long*/ id, int /*long*/ sel, NSRect rect) {
 	display.isPainting.removeObjectIdenticalTo(view);
 }
 
-void _drawThemeProgressArea (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+void _drawThemeProgressArea (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, arg0);
 }
 
-void drawWidget (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+void drawWidget (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 }
 
-int /*long*/ imageView () {
+long /*int*/ imageView () {
 	return 0;
 }
 
@@ -766,7 +766,7 @@ void redrawWidget (NSView view, boolean children) {
 	view.setNeedsDisplay(true);
 }
 
-void redrawWidget (NSView view, int /*long*/ x, int /*long*/ y, int /*long*/ width, int /*long*/ height, boolean children) {
+void redrawWidget (NSView view, long /*int*/ x, long /*int*/ y, long /*int*/ width, long /*int*/ height, boolean children) {
 	NSRect rect = new NSRect();
 	rect.x = x;
 	rect.y = y;
@@ -779,14 +779,14 @@ void error (int code) {
 	SWT.error(code);
 }
 
-void expandItem_expandChildren (int /*long*/ id, int /*long*/ sel, int /*long*/ item, boolean children) {
+void expandItem_expandChildren (long /*int*/ id, long /*int*/ sel, long /*int*/ item, boolean children) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, item, children);
 }
 
-NSRect expansionFrameWithFrame_inView(int /*long*/ id, int /*long*/ sel, NSRect cellRect, int /*long*/ view) {
+NSRect expansionFrameWithFrame_inView(long /*int*/ id, long /*int*/ sel, NSRect cellRect, long /*int*/ view) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
@@ -799,7 +799,7 @@ boolean filters (int eventType) {
 	return display.filters (eventType);
 }
 
-NSRect firstRectForCharacterRange(int /*long*/ id, int /*long*/ sel, int /*long*/ range) {
+NSRect firstRectForCharacterRange(long /*int*/ id, long /*int*/ sel, long /*int*/ range) {
 	return new NSRect ();
 }
 
@@ -967,28 +967,28 @@ public int getStyle () {
 	return style;
 }
 
-boolean hasMarkedText (int /*long*/ id, int /*long*/ sel) {
+boolean hasMarkedText (long /*int*/ id, long /*int*/ sel) {
 	return false;
 }
 
-NSRect headerRectOfColumn (int /*long*/ id, int /*long*/ sel, int /*long*/ column) {
+NSRect headerRectOfColumn (long /*int*/ id, long /*int*/ sel, long /*int*/ column) {
 	return callSuperRect(id, sel, column);
 }
 
-void helpRequested(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void helpRequested(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
-void highlightSelectionInClipRect(int /*long*/ id, int /*long*/ sel, int /*long*/ rect) {	
+void highlightSelectionInClipRect(long /*int*/ id, long /*int*/ sel, long /*int*/ rect) {	
 }
 
-int /*long*/ hitTest (int /*long*/ id, int /*long*/ sel, NSPoint point) {
+long /*int*/ hitTest (long /*int*/ id, long /*int*/ sel, NSPoint point) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel, point);
 }
 
-int /*long*/ hitTestForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event, NSRect rect, int /*long*/ controlView) {
+long /*int*/ hitTestForEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event, NSRect rect, long /*int*/ controlView) {
 	return 0;
 }
 
@@ -997,15 +997,15 @@ boolean hooks (int eventType) {
 	return eventTable.hooks (eventType);
 }
 
-int /*long*/ image (int /*long*/ id, int /*long*/ sel) {
+long /*int*/ image (long /*int*/ id, long /*int*/ sel) {
 	return 0;
 }
 
-NSRect imageRectForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) {
+NSRect imageRectForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
 	return new NSRect();
 }
 
-boolean insertText (int /*long*/ id, int /*long*/ sel, int /*long*/ string) {
+boolean insertText (long /*int*/ id, long /*int*/ sel, long /*int*/ string) {
 	callSuper (id, sel, string);
 	return true;
 }
@@ -1033,7 +1033,7 @@ boolean isDrawing () {
 	return true;
 }
 
-boolean isFlipped(int /*long*/ id, int /*long*/ sel) {
+boolean isFlipped(long /*int*/ id, long /*int*/ sel) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
@@ -1061,7 +1061,7 @@ public boolean isListening (int eventType) {
 	return hooks (eventType);
 }
 
-boolean isOpaque(int /*long*/ id, int /*long*/ sel) {
+boolean isOpaque(long /*int*/ id, long /*int*/ sel) {
 	return false;
 }
 
@@ -1073,178 +1073,178 @@ boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
 
-void flagsChanged (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void flagsChanged (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper (id, sel, theEvent);
 }
 
-void keyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void keyDown (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	superKeyDown(id, sel, theEvent);
 }
 
-void keyUp (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void keyUp (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	superKeyUp(id, sel, theEvent);
 }
 
-void mouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	mouseDownSuper(id, sel, theEvent);
 }
 
-boolean mouseDownCanMoveWindow(int /*long*/ id, int /*long*/ sel) {
+boolean mouseDownCanMoveWindow(long /*int*/ id, long /*int*/ sel) {
 	return callSuperBoolean(id, sel);
 }
 
-void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void mouseDownSuper(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-void mouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-void mouseMoved(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void mouseMoved(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-void mouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void mouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-void mouseEntered(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void mouseEntered(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-void mouseExited(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void mouseExited(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-void cursorUpdate(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void cursorUpdate(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-void rightMouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void rightMouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-void rightMouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void rightMouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-void rightMouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void rightMouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-void otherMouseDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void otherMouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-void otherMouseUp(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void otherMouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-void otherMouseDragged(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void otherMouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-boolean shouldDelayWindowOrderingForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+boolean shouldDelayWindowOrderingForEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel, theEvent) != 0;
 }
 
-boolean menuHasKeyEquivalent_forEvent_target_action(int /*long*/ id, int /*long*/ sel, int /*long*/ menu, int /*long*/ event, int /*long*/ target, int /*long*/ action) {
+boolean menuHasKeyEquivalent_forEvent_target_action(long /*int*/ id, long /*int*/ sel, long /*int*/ menu, long /*int*/ event, long /*int*/ target, long /*int*/ action) {
 	return true;
 }
 
-int /*long*/ menuForEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+long /*int*/ menuForEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	return OS.objc_msgSendSuper(super_struct, sel, theEvent);
 }
 
-void menuNeedsUpdate(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
+void menuNeedsUpdate(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 }
 
-boolean makeFirstResponder(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+boolean makeFirstResponder(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 	return callSuperBoolean(id, sel, notification);
 }
 
-NSRange markedRange (int /*long*/ id, int /*long*/ sel) {
+NSRange markedRange (long /*int*/ id, long /*int*/ sel) {
 	return new NSRange ();
 }
 
-void menu_willHighlightItem(int /*long*/ id, int /*long*/ sel, int /*long*/ menu, int /*long*/ item) {
+void menu_willHighlightItem(long /*int*/ id, long /*int*/ sel, long /*int*/ menu, long /*int*/ item) {
 }
 
-void menuDidClose(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
+void menuDidClose(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 }
 
-void menuWillOpen(int /*long*/ id, int /*long*/ sel, int /*long*/ menu) {
+void menuWillOpen(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 }
 
-void noResponderFor(int /*long*/ id, int /*long*/ sel, int /*long*/ selector) {
+void noResponderFor(long /*int*/ id, long /*int*/ sel, long /*int*/ selector) {
 	callSuper(id, sel, selector);
 }
 
-int /*long*/ numberOfRowsInTableView(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView) {
+long /*int*/ numberOfRowsInTableView(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView) {
 	return 0;
 }
 
-int /*long*/ outlineView_child_ofItem(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ index, int /*long*/ item) {
+long /*int*/ outlineView_child_ofItem(long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ index, long /*int*/ item) {
 	return 0;
 }
 
-void outlineView_didClickTableColumn(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ tableColumn) {
+void outlineView_didClickTableColumn(long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ tableColumn) {
 }
 
-int /*long*/ outlineView_objectValueForTableColumn_byItem(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ tableColumn, int /*long*/ item) {
+long /*int*/ outlineView_objectValueForTableColumn_byItem(long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ tableColumn, long /*int*/ item) {
 	return 0;
 }
 
-boolean outlineView_isItemExpandable(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ item) {
+boolean outlineView_isItemExpandable(long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ item) {
 	return false;
 }
 
-int /*long*/ outlineView_numberOfChildrenOfItem(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ item) {
+long /*int*/ outlineView_numberOfChildrenOfItem(long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ item) {
 	return 0;
 }
 
-boolean outlineView_shouldExpandItem_item(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ item) {
+boolean outlineView_shouldExpandItem_item(long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ item) {
 	return true;
 }
 
-boolean outlineView_shouldReorderColumn_toColumn(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ columnIndex, int /*long*/ newColumnIndex) {
+boolean outlineView_shouldReorderColumn_toColumn(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ columnIndex, long /*int*/ newColumnIndex) {
 	return true;
 }
 
-boolean outlineView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ item) {
+boolean outlineView_shouldEditTableColumn_row(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ aTableColumn, long /*int*/ item) {
 	return false;
 }
 
-boolean outlineView_shouldTrackCell_forTableColumn_item(int /*long*/ id, int /*long*/ sel, int /*long*/ table, int /*long*/ cell, int /*long*/ tableColumn, int /*long*/ item) {
+boolean outlineView_shouldTrackCell_forTableColumn_item(long /*int*/ id, long /*int*/ sel, long /*int*/ table, long /*int*/ cell, long /*int*/ tableColumn, long /*int*/ item) {
 	return true;
 }
 
-void outlineView_willDisplayCell_forTableColumn_item(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ cell, int /*long*/ tableColumn, int /*long*/ item) {
+void outlineView_willDisplayCell_forTableColumn_item(long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ cell, long /*int*/ tableColumn, long /*int*/ item) {
 }
 
-void outlineViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+void outlineViewColumnDidMove (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 }
 
-void outlineViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+void outlineViewColumnDidResize (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 }
 
-void outlineViewSelectionDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void outlineViewSelectionDidChange(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 }
 
-void outlineViewSelectionIsChanging(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void outlineViewSelectionIsChanging(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 }
 
-void outlineView_setObjectValue_forTableColumn_byItem(int /*long*/ id, int /*long*/ sel, int /*long*/ outlineView, int /*long*/ object, int /*long*/ tableColumn, int /*long*/ item) {
+void outlineView_setObjectValue_forTableColumn_byItem(long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ object, long /*int*/ tableColumn, long /*int*/ item) {
 }
 
-boolean outlineView_writeItems_toPasteboard(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
+boolean outlineView_writeItems_toPasteboard(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2) {
 	return false;
 }
 
@@ -1275,11 +1275,11 @@ public void notifyListeners (int eventType, Event event) {
 	sendEvent (eventType, event);
 }
 
-void pageDown (int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
+void pageDown (long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
 	callSuper(id, sel, sender);
 }
 
-void pageUp (int /*long*/ id, int /*long*/ sel, int /*long*/ sender) {
+void pageUp (long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
 	callSuper(id, sel, sender);
 }
 
@@ -1291,7 +1291,7 @@ void postEvent (int eventType, Event event) {
 	sendEvent (eventType, event, false);
 }
 
-void reflectScrolledClipView (int /*long*/ id, int /*long*/ sel, int /*long*/ aClipView) {
+void reflectScrolledClipView (long /*int*/ id, long /*int*/ sel, long /*int*/ aClipView) {
 	callSuper (id, sel, aClipView);
 }
 
@@ -1425,33 +1425,33 @@ public void removeDisposeListener (DisposeListener listener) {
 	eventTable.unhook (SWT.Dispose, listener);
 }
 
-void scrollClipViewToPoint (int /*long*/ id, int /*long*/ sel, int /*long*/ clipView, NSPoint point) {
+void scrollClipViewToPoint (long /*int*/ id, long /*int*/ sel, long /*int*/ clipView, NSPoint point) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, clipView, point);
 }
 
-void selectRowIndexes_byExtendingSelection (int /*long*/ id, int /*long*/ sel, int /*long*/ indexes, boolean extend) {
+void selectRowIndexes_byExtendingSelection (long /*int*/ id, long /*int*/ sel, long /*int*/ indexes, boolean extend) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, indexes, extend);
 }
 
-void scrollWheel (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void scrollWheel (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper(id, sel, theEvent);
 }
 
-NSRange selectedRange (int /*long*/ id, int /*long*/ sel) {
+NSRange selectedRange (long /*int*/ id, long /*int*/ sel) {
 	return new NSRange ();
 }
 
-int /*long*/ nextValidKeyView (int /*long*/ id, int /*long*/ sel) {
+long /*int*/ nextValidKeyView (long /*int*/ id, long /*int*/ sel) {
 	return callSuperObject(id, sel);
 }
 
-int /*long*/ previousValidKeyView (int /*long*/ id, int /*long*/ sel) {
+long /*int*/ previousValidKeyView (long /*int*/ id, long /*int*/ sel) {
 	return callSuperObject(id, sel);
 }
 
@@ -1653,21 +1653,21 @@ void setOpenGLContext(Object value) {
 void setOrientation () {
 }
 
-void setFrameOrigin (int /*long*/ id, int /*long*/ sel, NSPoint point) {
+void setFrameOrigin (long /*int*/ id, long /*int*/ sel, NSPoint point) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, point);
 }
 
-void setFrameSize (int /*long*/ id, int /*long*/ sel, NSSize size) {
+void setFrameSize (long /*int*/ id, long /*int*/ sel, NSSize size) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 	OS.objc_msgSendSuper(super_struct, sel, size);
 }
 
-void setImage (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+void setImage (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 }
 
 boolean setInputState (Event event, NSEvent nsEvent, int type) {
@@ -1675,7 +1675,7 @@ boolean setInputState (Event event, NSEvent nsEvent, int type) {
 		nsEvent = NSApplication.sharedApplication().currentEvent();
 		if (nsEvent == null) return true;
 	}
-	int /*long*/ modifierFlags = nsEvent.modifierFlags();
+	long /*int*/ modifierFlags = nsEvent.modifierFlags();
 	if ((modifierFlags & OS.NSAlternateKeyMask) != 0) event.stateMask |= SWT.ALT;
 	if ((modifierFlags & OS.NSShiftKeyMask) != 0) event.stateMask |= SWT.SHIFT;
 	if ((modifierFlags & OS.NSControlKeyMask) != 0) event.stateMask |= SWT.CONTROL;
@@ -1748,15 +1748,15 @@ boolean setKeyState (Event event, int type, NSEvent nsEvent) {
 				if (chars != null && chars.length() > 0) event.character = (char)chars.characterAtIndex (0);
 			}
 			if (event.keyCode == 0) {
-				int /*long*/ uchrPtr = 0;
-				int /*long*/ currentKbd = OS.TISCopyCurrentKeyboardInputSource();
-				int /*long*/ uchrCFData = OS.TISGetInputSourceProperty(currentKbd, OS.kTISPropertyUnicodeKeyLayoutData());
+				long /*int*/ uchrPtr = 0;
+				long /*int*/ currentKbd = OS.TISCopyCurrentKeyboardInputSource();
+				long /*int*/ uchrCFData = OS.TISGetInputSourceProperty(currentKbd, OS.kTISPropertyUnicodeKeyLayoutData());
 				
 				if (uchrCFData != 0) {
 					uchrPtr = OS.CFDataGetBytePtr(uchrCFData);
 					
 					if (uchrPtr != 0 && OS.CFDataGetLength(uchrCFData) > 0) {
-						int /*long*/ cgEvent = nsEvent.CGEvent();
+						long /*int*/ cgEvent = nsEvent.CGEvent();
 						long keyboardType = OS.CGEventGetIntegerValueField(cgEvent, OS.kCGKeyboardEventKeyboardType);
 						
 						int maxStringLength = 256;
@@ -1825,11 +1825,11 @@ void setLocationMask (Event event, NSEvent nsEvent) {
 	}
 }
 
-boolean setMarkedText_selectedRange (int /*long*/ id, int /*long*/ sel, int /*long*/ string, int /*long*/ range) {
+boolean setMarkedText_selectedRange (long /*int*/ id, long /*int*/ sel, long /*int*/ string, long /*int*/ range) {
 	return true;
 }
 
-void setNeedsDisplay (int /*long*/ id, int /*long*/ sel, boolean flag) {
+void setNeedsDisplay (long /*int*/ id, long /*int*/ sel, boolean flag) {
 	if (flag && !isDrawing()) return;
 	NSView view = new NSView(id);
 	if (flag && display.isPainting.containsObject(view)) {
@@ -1847,7 +1847,7 @@ void setNeedsDisplay (int /*long*/ id, int /*long*/ sel, boolean flag) {
 	OS.objc_msgSendSuper(super_struct, sel, flag);
 }
 
-void setNeedsDisplayInRect (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+void setNeedsDisplayInRect (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	if (!isDrawing()) return;
 	NSRect rect = new NSRect();
 	OS.memmove(rect, arg0, NSRect.sizeof);
@@ -1868,14 +1868,14 @@ void setNeedsDisplayInRect (int /*long*/ id, int /*long*/ sel, int /*long*/ arg0
 	OS.objc_msgSendSuper(super_struct, sel, rect);
 }
 
-void setObjectValue(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {
+void setObjectValue(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
 	callSuper(id, sel, arg0);
 }
 
-void setShouldExpandItem(int /*long*/ id, int /*long*/ sel, boolean shouldExpand) {
+void setShouldExpandItem(long /*int*/ id, long /*int*/ sel, boolean shouldExpand) {
 }
 
-void setShouldScrollClipView(int /*long*/ id, int /*long*/ sel, boolean shouldScroll) {
+void setShouldScrollClipView(long /*int*/ id, long /*int*/ sel, boolean shouldScroll) {
 }
 
 boolean setTabGroupFocus () {
@@ -1886,11 +1886,11 @@ boolean setTabItemFocus () {
 	return false;
 }
 
-boolean shouldChangeTextInRange_replacementString(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1) {
+boolean shouldChangeTextInRange_replacementString(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
 	return true;
 }
 
-NSSize sizeOfLabel(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLabel) {
+NSSize sizeOfLabel(long /*int*/ id, long /*int*/ sel, boolean shouldTruncateLabel) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
@@ -1899,71 +1899,71 @@ NSSize sizeOfLabel(int /*long*/ id, int /*long*/ sel, boolean shouldTruncateLabe
 	return result;
 }
 
-void superKeyDown (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void superKeyDown (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper (id, sel, theEvent);
 }
 
-void superKeyUp (int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void superKeyUp (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	callSuper (id, sel, theEvent);
 }
 
-void tableViewColumnDidMove (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+void tableViewColumnDidMove (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 }
 
-void tableViewColumnDidResize (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+void tableViewColumnDidResize (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 }
 
-void tableViewSelectionDidChange (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+void tableViewSelectionDidChange (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 }
 
-void tableViewSelectionIsChanging (int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+void tableViewSelectionIsChanging (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 }
 
-void tableView_didClickTableColumn(int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ tableColumn) {
+void tableView_didClickTableColumn(long /*int*/ id, long /*int*/ sel, long /*int*/ tableView, long /*int*/ tableColumn) {
 }
 
-int /*long*/ tableView_objectValueForTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
+long /*int*/ tableView_objectValueForTableColumn_row(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ aTableColumn, long /*int*/ rowIndex) {
 	return 0;
 }
 
-boolean tableView_shouldSelectRow(int /*long*/ id, int /*long*/ sel, int /*long*/ tableView, int /*long*/ index) {
+boolean tableView_shouldSelectRow(long /*int*/ id, long /*int*/ sel, long /*int*/ tableView, long /*int*/ index) {
 	return true;
 }
 
-void tableView_setObjectValue_forTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ anObject, int /*long*/ aTableColumn, int /*long*/ rowIndex) {	
+void tableView_setObjectValue_forTableColumn_row(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ anObject, long /*int*/ aTableColumn, long /*int*/ rowIndex) {	
 }
 
-boolean tableView_shouldReorderColumn_toColumn(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ columnIndex, int /*long*/ newColumnIndex) {
+boolean tableView_shouldReorderColumn_toColumn(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ columnIndex, long /*int*/ newColumnIndex) {
 	return true;
 }
 
-boolean tableView_shouldEditTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
+boolean tableView_shouldEditTableColumn_row(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ aTableColumn, long /*int*/ rowIndex) {
 	return false;
 }
 
-boolean tableView_shouldTrackCell_forTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ table, int /*long*/ cell, /*long*/ int /*long*/ tableColumn, int /*long*/ rowIndex) {
+boolean tableView_shouldTrackCell_forTableColumn_row(long /*int*/ id, long /*int*/ sel, long /*int*/ table, long /*int*/ cell, /*long*/ long /*int*/ tableColumn, long /*int*/ rowIndex) {
 	return true;
 }
 
-void tableView_willDisplayCell_forTableColumn_row(int /*long*/ id, int /*long*/ sel, int /*long*/ aTableView, int /*long*/ aCell, int /*long*/ aTableColumn, int /*long*/ rowIndex) {
+void tableView_willDisplayCell_forTableColumn_row(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ aCell, long /*int*/ aTableColumn, long /*int*/ rowIndex) {
 }
 
-void textViewDidChangeSelection(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+void textViewDidChangeSelection(long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 }
 
-void textDidChange(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+void textDidChange(long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	callSuper (id, sel, aNotification);
 }
 
-void textDidEndEditing(int /*long*/ id, int /*long*/ sel, int /*long*/ aNotification) {
+void textDidEndEditing(long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
 	callSuper(id, sel, aNotification);
 }
 
-NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(int /*long*/ id, int /*long*/ sel, int /*long*/ aTextView, int /*long*/ oldSelectedCharRange, int /*long*/ newSelectedCharRange) {
+NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange(long /*int*/ id, long /*int*/ sel, long /*int*/ aTextView, long /*int*/ oldSelectedCharRange, long /*int*/ newSelectedCharRange) {
 	return new NSRange();
 }
 
-NSRect titleRectForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) {
+NSRect titleRectForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
 	objc_super super_struct = new objc_super();
 	super_struct.receiver = id;
 	super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
@@ -1972,19 +1972,19 @@ NSRect titleRectForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) 
 	return result;
 }
 
-int /*long*/ toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(int /*long*/ id, int /*long*/ sel, int /*long*/ toolbar, int /*long*/ itemID, boolean flag) {
+long /*int*/ toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(long /*int*/ id, long /*int*/ sel, long /*int*/ toolbar, long /*int*/ itemID, boolean flag) {
 	return 0;
 }
 
-int /*long*/ toolbarAllowedItemIdentifiers(int /*long*/ id, int /*long*/ sel, int /*long*/ toolbar) {
+long /*int*/ toolbarAllowedItemIdentifiers(long /*int*/ id, long /*int*/ sel, long /*int*/ toolbar) {
 	return 0;
 }
 
-int /*long*/ toolbarDefaultItemIdentifiers(int /*long*/ id, int /*long*/ sel, int /*long*/ toolbar) {
+long /*int*/ toolbarDefaultItemIdentifiers(long /*int*/ id, long /*int*/ sel, long /*int*/ toolbar) {
 	return 0;
 }
 
-int /*long*/ toolbarSelectableItemIdentifiers(int /*long*/ id, int /*long*/ sel, int /*long*/ toolbar) {
+long /*int*/ toolbarSelectableItemIdentifiers(long /*int*/ id, long /*int*/ sel, long /*int*/ toolbar) {
 	return 0;
 }
 String tooltipText () {
@@ -2006,127 +2006,127 @@ public String toString () {
 	return getName () + " {" + string + "}";
 }
 
-void touchesBeganWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+void touchesBeganWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	callSuper(id, sel, event);	
 }
 
-void touchesCancelledWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+void touchesCancelledWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	callSuper(id, sel, event);	
 }
 
-void touchesEndedWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+void touchesEndedWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	callSuper(id, sel, event);	
 }
 
-void touchesMovedWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+void touchesMovedWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	callSuper(id, sel, event);	
 }
 
-void beginGestureWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+void beginGestureWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	callSuper(id, sel, event);	
 }
 
-void endGestureWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+void endGestureWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	callSuper(id, sel, event);	
 }
 
-void magnifyWithEvent (int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+void magnifyWithEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	callSuper(id, sel, event);	
 }
 
-void rotateWithEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+void rotateWithEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	callSuper(id, sel, event);	
 }
 
-void swipeWithEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+void swipeWithEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	callSuper(id, sel, event);	
 }
 
-void resetCursorRects (int /*long*/ id, int /*long*/ sel) {
+void resetCursorRects (long /*int*/ id, long /*int*/ sel) {
 	callSuper (id, sel);
 }
 
-void updateTrackingAreas (int /*long*/ id, int /*long*/ sel) {
+void updateTrackingAreas (long /*int*/ id, long /*int*/ sel) {
 	callSuper (id, sel);
 }
 
-int /*long*/ validAttributesForMarkedText (int /*long*/ id, int /*long*/ sel) {
+long /*int*/ validAttributesForMarkedText (long /*int*/ id, long /*int*/ sel) {
 	return 0;
 }
 
-void tabView_didSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*/ tabView, int /*long*/ tabViewItem) {
+void tabView_didSelectTabViewItem(long /*int*/ id, long /*int*/ sel, long /*int*/ tabView, long /*int*/ tabViewItem) {
 }
 
-void tabView_willSelectTabViewItem(int /*long*/ id, int /*long*/ sel, int /*long*/ tabView, int /*long*/ tabViewItem) {
+void tabView_willSelectTabViewItem(long /*int*/ id, long /*int*/ sel, long /*int*/ tabView, long /*int*/ tabViewItem) {
 }
 
-boolean tableView_writeRowsWithIndexes_toPasteboard(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
+boolean tableView_writeRowsWithIndexes_toPasteboard(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2) {
 	return false;
 }
 
-boolean validateMenuItem(int /*long*/ id, int /*long*/ sel, int /*long*/ menuItem) {
+boolean validateMenuItem(long /*int*/ id, long /*int*/ sel, long /*int*/ menuItem) {
 	return true;
 }
 
-int /*long*/ view_stringForToolTip_point_userData (int /*long*/ id, int /*long*/ sel, int /*long*/ view, int /*long*/ tag, int /*long*/ point, int /*long*/ userData) {
+long /*int*/ view_stringForToolTip_point_userData (long /*int*/ id, long /*int*/ sel, long /*int*/ view, long /*int*/ tag, long /*int*/ point, long /*int*/ userData) {
 	return 0;
 }
 
-void viewDidMoveToWindow(int /*long*/ id, int /*long*/ sel) {	
+void viewDidMoveToWindow(long /*int*/ id, long /*int*/ sel) {	
 }
 
-void viewWillMoveToWindow(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0) {	
+void viewWillMoveToWindow(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {	
 }
 
-void windowDidMove(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void windowDidMove(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 }
 
-void windowDidResize(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void windowDidResize(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 }
 
-void windowDidResignKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void windowDidResignKey(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 }
 
-void windowDidBecomeKey(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void windowDidBecomeKey(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 }
 
-void windowDidMiniturize(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void windowDidMiniturize(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 }
 
-void windowDidDeminiturize(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void windowDidDeminiturize(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 }
 
-void windowSendEvent(int /*long*/ id, int /*long*/ sel, int /*long*/ event) {
+void windowSendEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 	callSuper(id, sel, event);
 }
 
-boolean windowShouldClose(int /*long*/ id, int /*long*/ sel, int /*long*/ window) {
+boolean windowShouldClose(long /*int*/ id, long /*int*/ sel, long /*int*/ window) {
 	return false;
 }
 
-void windowWillClose(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void windowWillClose(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 }
 
-int /*long*/ nextState(int /*long*/ id, int /*long*/ sel) {
+long /*int*/ nextState(long /*int*/ id, long /*int*/ sel) {
 	return callSuperObject(id, sel);
 }
 
-void updateOpenGLContext(int /*long*/ id, int /*long*/ sel, int /*long*/ notification) {
+void updateOpenGLContext(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 }
 
-boolean shouldDrawInsertionPoint(int /*long*/ id, int /*long*/ sel) {
+boolean shouldDrawInsertionPoint(long /*int*/ id, long /*int*/ sel) {
 	return callSuperBoolean(id, sel);
 }
 
-boolean readSelectionFromPasteboard(int /*long*/ id, int /*long*/ sel, int /*long*/ pasteboard) {
+boolean readSelectionFromPasteboard(long /*int*/ id, long /*int*/ sel, long /*int*/ pasteboard) {
 	return false;
 }
 
-int /*long*/ validRequestorForSendType(int /*long*/ id, int /*long*/ sel, int /*long*/ sendType, int /*long*/ returnType) {
+long /*int*/ validRequestorForSendType(long /*int*/ id, long /*int*/ sel, long /*int*/ sendType, long /*int*/ returnType) {
 	return callSuperObject(id, sel, sendType, returnType);
 }
 
-boolean writeSelectionToPasteboard(int /*long*/ id, int /*long*/ sel, int /*long*/ pasteboard, int /*long*/ types) {
+boolean writeSelectionToPasteboard(long /*int*/ id, long /*int*/ sel, long /*int*/ pasteboard, long /*int*/ types) {
 	return false;
 }
 

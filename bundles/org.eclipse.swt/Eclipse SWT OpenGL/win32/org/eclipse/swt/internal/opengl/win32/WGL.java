@@ -99,53 +99,53 @@ public class WGL extends Platform {
 	public static final int PFD_STEREO_DONTCARE         = 0x80000000;
 
 /** @param hdc cast=(HDC) */
-public static final native int ChoosePixelFormat(int /*long*/ hdc, PIXELFORMATDESCRIPTOR ppfd);
+public static final native int ChoosePixelFormat(long /*int*/ hdc, PIXELFORMATDESCRIPTOR ppfd);
 /** @param hdc cast=(HDC) */
-public static final native int DescribePixelFormat(int /*long*/ hdc, int iPixelFormat, int nBytes, PIXELFORMATDESCRIPTOR ppfd);
+public static final native int DescribePixelFormat(long /*int*/ hdc, int iPixelFormat, int nBytes, PIXELFORMATDESCRIPTOR ppfd);
 /** @param hdc cast=(HDC) */
-public static final native int GetPixelFormat(int /*long*/ hdc);
+public static final native int GetPixelFormat(long /*int*/ hdc);
 /** @param hdc cast=(HDC) */
-public static final native boolean SetPixelFormat(int /*long*/ hdc, int iPixelFormat, PIXELFORMATDESCRIPTOR ppfd);
+public static final native boolean SetPixelFormat(long /*int*/ hdc, int iPixelFormat, PIXELFORMATDESCRIPTOR ppfd);
 /** @param hdc cast=(HDC) */
-public static final native boolean SwapBuffers(int /*long*/ hdc);
+public static final native boolean SwapBuffers(long /*int*/ hdc);
 /**
  * @param hglrcSrc cast=(HGLRC)
  * @param hglrcDst cast=(HGLRC)
  */
-public static final native boolean wglCopyContext(int /*long*/ hglrcSrc, int /*long*/ hglrcDst, int mask);
+public static final native boolean wglCopyContext(long /*int*/ hglrcSrc, long /*int*/ hglrcDst, int mask);
 /** @param hdc cast=(HDC) */
-public static final native int /*long*/ wglCreateContext(int /*long*/ hdc);
+public static final native long /*int*/ wglCreateContext(long /*int*/ hdc);
 /** @param hdc cast=(HDC) */
-public static final native int /*long*/ wglCreateLayerContext(int /*long*/ hdc, int iLayerPlane);
+public static final native long /*int*/ wglCreateLayerContext(long /*int*/ hdc, int iLayerPlane);
 /** @param hglrc cast=(HGLRC) */
-public static final native boolean wglDeleteContext(int /*long*/ hglrc);
-public static final native int /*long*/ wglGetCurrentContext();
-public static final native int /*long*/ wglGetCurrentDC();
-public static final native int /*long*/ wglGetProcAddress(byte[] lpszProc);
+public static final native boolean wglDeleteContext(long /*int*/ hglrc);
+public static final native long /*int*/ wglGetCurrentContext();
+public static final native long /*int*/ wglGetCurrentDC();
+public static final native long /*int*/ wglGetProcAddress(byte[] lpszProc);
 /**
  * @param hdc cast=(HDC)
  * @param hglrc cast=(HGLRC)
  */
-public static final native boolean wglMakeCurrent(int /*long*/ hdc, int /*long*/ hglrc);
+public static final native boolean wglMakeCurrent(long /*int*/ hdc, long /*int*/ hglrc);
 /**
  * @param hglrc1 cast=(HGLRC)
  * @param hglrc2 cast=(HGLRC)
  */
-public static final native boolean wglShareLists(int /*long*/ hglrc1, int /*long*/ hglrc2);
+public static final native boolean wglShareLists(long /*int*/ hglrc1, long /*int*/ hglrc2);
 /** @param hdc cast=(HDC) */
-public static final native boolean wglDescribeLayerPlane(int /*long*/ hdc, int iPixelFormat, int iLayerPlane, int nBytes, LAYERPLANEDESCRIPTOR plpd);
+public static final native boolean wglDescribeLayerPlane(long /*int*/ hdc, int iPixelFormat, int iLayerPlane, int nBytes, LAYERPLANEDESCRIPTOR plpd);
 /**
  * @param hdc cast=(HDC)
  * @param pcr cast=(COLORREF *)
  */
-public static final native int wglSetLayerPaletteEntries(int /*long*/ hdc, int iLayerPlane, int iStart, int cEntries, int[] pcr);
+public static final native int wglSetLayerPaletteEntries(long /*int*/ hdc, int iLayerPlane, int iStart, int cEntries, int[] pcr);
 /**
  * @param hdc cast=(HDC)
  * @param pcr cast=(COLORREF *)
  */
-public static final native int wglGetLayerPaletteEntries(int /*long*/ hdc, int iLayerPlane, int iStart, int cEntries, int[] pcr);
+public static final native int wglGetLayerPaletteEntries(long /*int*/ hdc, int iLayerPlane, int iStart, int cEntries, int[] pcr);
 /** @param hdc cast=(HDC) */
-public static final native boolean wglRealizeLayerPalette(int /*long*/ hdc, int iLayerPlane, boolean bRealize);
+public static final native boolean wglRealizeLayerPalette(long /*int*/ hdc, int iLayerPlane, boolean bRealize);
 /** @param hdc cast=(HDC) */
-public static final native boolean wglSwapLayerBuffers(int /*long*/ hdc, int fuPlanes);
+public static final native boolean wglSwapLayerBuffers(long /*int*/ hdc, int fuPlanes);
 }

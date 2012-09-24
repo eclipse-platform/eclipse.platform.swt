@@ -315,7 +315,7 @@ public Object getContents(Transfer transfer, int clipboards) {
 	* the clipboard, use PeekMessage() to enable cross thread
 	* message sends.
 	*/
-	int /*long*/[] ppv = new int /*long*/[1];
+	long /*int*/[] ppv = new long /*int*/[1];
 	int retryCount = 0;
 	/* OleGetClipboard([out] ppDataObject).
 	 * AddRef has already been called on ppDataObject by the callee and must be released by the caller.
@@ -517,15 +517,15 @@ private int AddRef() {
 private void createCOMInterfaces() {
 	// register each of the interfaces that this object implements
 	iDataObject = new COMObject(new int[]{2, 0, 0, 2, 2, 1, 2, 3, 2, 4, 1, 1}){
-		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-		public int /*long*/ method2(int /*long*/[] args) {return Release();}
-		public int /*long*/ method3(int /*long*/[] args) {return GetData(args[0], args[1]);}
+		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		public long /*int*/ method3(long /*int*/[] args) {return GetData(args[0], args[1]);}
 		// method4 GetDataHere - not implemented 
-		public int /*long*/ method5(int /*long*/[] args) {return QueryGetData(args[0]);}
+		public long /*int*/ method5(long /*int*/[] args) {return QueryGetData(args[0]);}
 		// method6 GetCanonicalFormatEtc - not implemented
 		// method7 SetData - not implemented
-		public int /*long*/ method8(int /*long*/[] args) {return EnumFormatEtc((int)/*64*/args[0], args[1]);}
+		public long /*int*/ method8(long /*int*/[] args) {return EnumFormatEtc((int)/*64*/args[0], args[1]);}
 		// method9 DAdvise - not implemented
 		// method10 DUnadvise - not implemented
 		// method11 EnumDAdvise - not implemented
@@ -541,7 +541,7 @@ private void disposeCOMInterfaces() {
  * Ownership of ppenumFormatetc transfers from callee to caller so reference count on ppenumFormatetc 
  * must be incremented before returning.  Caller is responsible for releasing ppenumFormatetc.
  */
-private int EnumFormatEtc(int dwDirection, int /*long*/ ppenumFormatetc) {
+private int EnumFormatEtc(int dwDirection, long /*int*/ ppenumFormatetc) {
 	// only allow getting of data - SetData is not currently supported
 	if (dwDirection == COM.DATADIR_SET) return COM.E_NOTIMPL;
 	// what types have been registered?
@@ -567,10 +567,10 @@ private int EnumFormatEtc(int dwDirection, int /*long*/ ppenumFormatetc) {
 	dropeffect.tymed = COM.TYMED_HGLOBAL;
 	formats[formats.length -1] = dropeffect;
 	enumFORMATETC.setFormats(formats);	
-	OS.MoveMemory(ppenumFormatetc, new int /*long*/[] {enumFORMATETC.getAddress()}, OS.PTR_SIZEOF);
+	OS.MoveMemory(ppenumFormatetc, new long /*int*/[] {enumFORMATETC.getAddress()}, OS.PTR_SIZEOF);
 	return COM.S_OK;
 }
-private int GetData(int /*long*/ pFormatetc, int /*long*/ pmedium) {
+private int GetData(long /*int*/ pFormatetc, long /*int*/ pmedium) {
 	/* Called by a data consumer to obtain data from a source data object. 
 	   The GetData method renders the data described in the specified FORMATETC 
 	   structure and transfers it through the specified STGMEDIUM structure. 
@@ -612,7 +612,7 @@ private int GetData(int /*long*/ pFormatetc, int /*long*/ pmedium) {
 	return transferData.result;
 }
 
-private int QueryGetData(int /*long*/ pFormatetc) {
+private int QueryGetData(long /*int*/ pFormatetc) {
 	if (transferAgents == null) return COM.E_FAIL;
 	TransferData transferData = new TransferData();
 	transferData.formatetc = new FORMATETC();
@@ -631,16 +631,16 @@ private int QueryGetData(int /*long*/ pFormatetc) {
  * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
  * must be incremented before returning.  Caller is responsible for releasing ppvObject.
  */
-private int QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
+private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return COM.E_INVALIDARG;
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDataObject) ) {
-		OS.MoveMemory(ppvObject, new int /*long*/[] {iDataObject.getAddress()}, OS.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long /*int*/[] {iDataObject.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
-	OS.MoveMemory(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
+	OS.MoveMemory(ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 private int Release() {
@@ -765,13 +765,13 @@ public String[] getAvailableTypeNames() {
 
 private FORMATETC[] _getAvailableTypes() {
 	FORMATETC[] types = new FORMATETC[0];
-	int /*long*/[] ppv = new int /*long*/[1];
+	long /*int*/[] ppv = new long /*int*/[1];
 	/* OleGetClipboard([out] ppDataObject).
 	 * AddRef has already been called on ppDataObject by the callee and must be released by the caller.
 	 */
 	if (COM.OleGetClipboard(ppv) != COM.S_OK) return types;
 	IDataObject dataObject = new IDataObject(ppv[0]);
-	int /*long*/[] ppFormatetc = new int /*long*/[1];
+	long /*int*/[] ppFormatetc = new long /*int*/[1];
 	/* EnumFormatEtc([in] dwDirection, [out] ppenumFormatetc) 
 	 * AddRef has already been called on ppenumFormatetc by the callee and must be released by the caller. 
 	 */
@@ -780,7 +780,7 @@ private FORMATETC[] _getAvailableTypes() {
 	if (rc != COM.S_OK)return types;
 	IEnumFORMATETC enumFormatetc = new IEnumFORMATETC(ppFormatetc[0]);
 	// Loop over enumerator and save any types that match what we are looking for
-	int /*long*/ rgelt = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, FORMATETC.sizeof);
+	long /*int*/ rgelt = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, FORMATETC.sizeof);
 	int[] pceltFetched = new int[1];
 	enumFormatetc.Reset();
 	while (enumFormatetc.Next(1, rgelt, pceltFetched) == COM.S_OK && pceltFetched[0] == 1) {

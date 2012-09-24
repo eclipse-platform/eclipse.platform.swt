@@ -16,7 +16,7 @@ public NSLocale() {
 	super();
 }
 
-public NSLocale(int /*long*/ id) {
+public NSLocale(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,12 +25,12 @@ public NSLocale(id id) {
 }
 
 public NSString displayNameForKey(id key, id value) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_displayNameForKey_value_, key != null ? key.id : 0, value != null ? value.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_displayNameForKey_value_, key != null ? key.id : 0, value != null ? value.id : 0);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public id initWithLocaleIdentifier(NSString string) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithLocaleIdentifier_, string != null ? string.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithLocaleIdentifier_, string != null ? string.id : 0);
 	return result != 0 ? new id(result) : null;
 }
 

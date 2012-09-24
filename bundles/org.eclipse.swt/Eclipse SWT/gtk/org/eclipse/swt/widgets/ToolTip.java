@@ -47,7 +47,7 @@ public class ToolTip extends Widget {
 	String text, message;
 	TrayItem item;
 	int x, y, timerId;
-	int /*long*/ layoutText = 0, layoutMessage = 0;
+	long /*int*/ layoutText = 0, layoutMessage = 0;
 	int [] borderPolygon;
 	boolean spikeAbove, autohide;
 	
@@ -135,7 +135,7 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 void configure () {
-	int /*long*/ screen = OS.gdk_screen_get_default ();
+	long /*int*/ screen = OS.gdk_screen_get_default ();
 	OS.gtk_widget_realize (handle);
 	int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, gtk_widget_get_window (handle));
 	GdkRectangle dest = new GdkRectangle ();
@@ -249,9 +249,9 @@ void configure () {
 			OS.gtk_window_move (handle, Math.min(dest.width - w, x - w + 17), y - h - TIP_HEIGHT);
 		}
 	}
-	int /*long*/ rgn = OS.gdk_region_polygon (polyline, polyline.length / 2, OS.GDK_EVEN_ODD_RULE);
+	long /*int*/ rgn = OS.gdk_region_polygon (polyline, polyline.length / 2, OS.GDK_EVEN_ODD_RULE);
 	OS.gtk_widget_realize (handle);
-	int /*long*/ window = gtk_widget_get_window (handle);
+	long /*int*/ window = gtk_widget_get_window (handle);
 	OS.gdk_window_shape_combine_region (window, rgn, 0, 0);
 	OS.gdk_region_destroy (rgn);
 }
@@ -297,14 +297,14 @@ void deregister () {
 	super.deregister ();
 	if ((style & SWT.BALLOON) == 0) {
 		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
-			int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
+			long /*int*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
 			if (tipWindow != 0) display.removeWidget (tipWindow);
 		}
 	}
 }
 
 void destroyWidget () {
-	int /*long*/ topHandle = topHandle ();
+	long /*int*/ topHandle = topHandle ();
 	if (parent != null) parent.removeTooTip (this);
 	releaseHandle ();
 	if (topHandle != 0 && (state & HANDLE) != 0) {
@@ -337,7 +337,7 @@ Point getLocation () {
 	int x = this.x;
 	int y = this.y;
 	if (item != null) {
-		int /*long*/ itemHandle = item.handle; 
+		long /*int*/ itemHandle = item.handle; 
 		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
 			GdkRectangle area = new GdkRectangle ();
 			OS.gtk_status_icon_get_geometry (itemHandle, 0, area, 0);
@@ -345,7 +345,7 @@ Point getLocation () {
 			y = area.y + area.height / 2;
 		} else {
 			OS.gtk_widget_realize (itemHandle);
-			int /*long*/ window = gtk_widget_get_window (itemHandle);
+			long /*int*/ window = gtk_widget_get_window (itemHandle);
 			int [] px = new int [1], py = new int [1];
 			OS.gdk_window_get_origin (window, px, py);
 			GtkAllocation allocation = new GtkAllocation ();
@@ -468,25 +468,25 @@ public boolean getVisible () {
 	checkWidget ();
 	if ((style & SWT.BALLOON) != 0) return gtk_widget_get_visible (handle);
 	if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
-		int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
+		long /*int*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
 		return OS.GTK_WIDGET_VISIBLE (tipWindow);
 	}
 	return false;
 }
 
-int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	sendSelectionEvent (SWT.Selection, null, true);
 	setVisible (false);
 	return 0;
 }
 
-int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
+long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	if ((state & OBSCURED) != 0) return 0;
-	int /*long*/ window = gtk_widget_get_window (handle);
+	long /*int*/ window = gtk_widget_get_window (handle);
 	int x = BORDER + PADDING;
 	int y = BORDER + PADDING;
 	if (OS.USE_CAIRO) {
-		int /*long*/ cairo = OS.gdk_cairo_create(window);
+		long /*int*/ cairo = OS.gdk_cairo_create(window);
 		if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
 		int count = borderPolygon.length / 2;
 		if (count == 0) return 0;
@@ -507,8 +507,8 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 				case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs (null, "gtk-dialog-warning", true); break;
 			}
 			if (buffer != null) {
-				int /*long*/ style = OS.gtk_widget_get_default_style ();
-				int /*long*/ pixbuf = OS.gtk_icon_set_render_icon (
+				long /*int*/ style = OS.gtk_widget_get_default_style ();
+				long /*int*/ pixbuf = OS.gtk_icon_set_render_icon (
 				OS.gtk_icon_factory_lookup_default (buffer), 
 							style,
 							OS.GTK_TEXT_DIR_NONE, 
@@ -540,7 +540,7 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		Cairo.cairo_destroy(cairo);
 		return 0;
 	}
-	int /*long*/ gdkGC = OS.gdk_gc_new (window);
+	long /*int*/ gdkGC = OS.gdk_gc_new (window);
 	OS.gdk_draw_polygon (window, gdkGC, 0, borderPolygon, borderPolygon.length / 2);
 	if (spikeAbove) y += TIP_HEIGHT;
 	if (layoutText != 0) {
@@ -552,8 +552,8 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 			case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs (null, "gtk-dialog-warning", true); break;
 		}
 		if (buffer != null) {
-			int /*long*/ style = OS.gtk_widget_get_default_style ();
-			int /*long*/ pixbuf = OS.gtk_icon_set_render_icon (
+			long /*int*/ style = OS.gtk_widget_get_default_style ();
+			long /*int*/ pixbuf = OS.gtk_icon_set_render_icon (
 				OS.gtk_icon_factory_lookup_default (buffer), 
 				style,
 				OS.GTK_TEXT_DIR_NONE, 
@@ -583,11 +583,11 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	return 0;
 }
 
-int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
+long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 	Point point = getLocation (); 
 	int x = point.x;
 	int y = point.y;
-	int /*long*/ screen = OS.gdk_screen_get_default ();
+	long /*int*/ screen = OS.gdk_screen_get_default ();
 	OS.gtk_widget_realize (widget);
 	int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, gtk_widget_get_window (widget));
 	GdkRectangle dest = new GdkRectangle ();
@@ -609,7 +609,7 @@ void hookEvents () {
 		OS.g_signal_connect_closure (handle, OS.button_press_event, display.closures [BUTTON_PRESS_EVENT], false);
 	} else {
 		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
-			int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
+			long /*int*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
 			if (tipWindow != 0) {
 				OS.g_signal_connect_closure (tipWindow, OS.size_allocate, display.closures [SIZE_ALLOCATE], false);
 				OS.gtk_widget_add_events (tipWindow, OS.GDK_BUTTON_PRESS_MASK);
@@ -642,7 +642,7 @@ void register () {
 	super.register ();
 	if ((style & SWT.BALLOON) == 0) {
 		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
-			int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
+			long /*int*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
 			if (tipWindow != 0) display.addWidget (tipWindow, this);
 		}
 	}
@@ -732,7 +732,7 @@ public void setLocation (int x, int y) {
 		if (gtk_widget_get_visible (handle)) configure ();
 	} else {
 		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
-			int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
+			long /*int*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
 			if (gtk_widget_get_visible (tipWindow)) {
 				OS.gtk_window_move (tipWindow, x, y);
 			}
@@ -825,13 +825,13 @@ public void setText (String string) {
 		if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 			OS.pango_layout_set_auto_dir (layoutText, false);
 		}
-		int /*long*/ boldAttr = OS.pango_attr_weight_new (OS.PANGO_WEIGHT_BOLD);
+		long /*int*/ boldAttr = OS.pango_attr_weight_new (OS.PANGO_WEIGHT_BOLD);
 		PangoAttribute attribute = new PangoAttribute ();
 		OS.memmove (attribute, boldAttr, PangoAttribute.sizeof);
 		attribute.start_index = 0;
 		attribute.end_index = buffer.length;
 		OS.memmove (boldAttr, attribute, PangoAttribute.sizeof);
-		int /*long*/ attrList = OS.pango_attr_list_new ();
+		long /*int*/ attrList = OS.pango_attr_list_new ();
 		OS.pango_attr_list_insert (attrList, boldAttr);
 		OS.pango_layout_set_attributes (layoutText, attrList);
 		OS.pango_attr_list_unref (attrList);
@@ -865,7 +865,7 @@ public void setVisible (boolean visible) {
 			configure ();
 			OS.gtk_widget_show (handle);
 		} else {
-			int /*long*/ vboxHandle = parent.vboxHandle;
+			long /*int*/ vboxHandle = parent.vboxHandle;
 			StringBuffer string = new StringBuffer (text);
 			if (text.length () > 0) string.append ("\n\n");
 			string.append (message);
@@ -874,7 +874,7 @@ public void setVisible (boolean visible) {
 				OS.gtk_widget_set_tooltip_text(vboxHandle, buffer);
 			} else {
 				OS.gtk_tooltips_set_tip (handle, vboxHandle, buffer, null);
-				int /*long*/ data = OS.gtk_tooltips_data_get (vboxHandle);
+				long /*int*/ data = OS.gtk_tooltips_data_get (vboxHandle);
 				OS.GTK_TOOLTIPS_SET_ACTIVE (handle, data);
 				OS.gtk_tooltips_set_tip (handle, vboxHandle, buffer, null);
 			}
@@ -884,7 +884,7 @@ public void setVisible (boolean visible) {
 		if ((style & SWT.BALLOON) != 0) {
 			OS.gtk_widget_hide (handle);
 		} else {
-			int /*long*/ vboxHandle = parent.vboxHandle;
+			long /*int*/ vboxHandle = parent.vboxHandle;
 			byte[] buffer = Converter.wcsToMbcs(null, "", true);
 			if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
 				OS.gtk_widget_set_tooltip_text(vboxHandle, buffer);
@@ -895,12 +895,12 @@ public void setVisible (boolean visible) {
 	}
 }
 
-int /*long*/ timerProc (int /*long*/ widget) {
+long /*int*/ timerProc (long /*int*/ widget) {
 	if ((style & SWT.BALLOON) != 0) {
 		OS.gtk_widget_hide (handle);
 	} else {
 		if (OS.GTK_VERSION < OS.VERSION (2, 12, 0)) {
-			int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
+			long /*int*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
 			OS.gtk_widget_hide (tipWindow);
 		}
 	}

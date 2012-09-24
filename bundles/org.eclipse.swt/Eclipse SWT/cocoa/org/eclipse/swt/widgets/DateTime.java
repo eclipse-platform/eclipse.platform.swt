@@ -279,7 +279,7 @@ void disposePopupShell() {
 	popupCalendar = null;
 }
 
-void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	fillBackground (view, context, rect, -1);
 }
@@ -457,16 +457,16 @@ boolean isDropped () {
 	return popupShell.getVisible ();
 }
 
-boolean isEventView (int /*long*/ id) {
+boolean isEventView (long /*int*/ id) {
 	return true;
 }
 
-boolean isFlipped (int /*long*/ id, int /*long*/ sel) {
+boolean isFlipped (long /*int*/ id, long /*int*/ sel) {
 	if ((style & SWT.CALENDAR) != 0) return super.isFlipped (id, sel);
 	return true;
 }
 
-void keyDown(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
+void keyDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 	if ((style & SWT.DROP_DOWN) != 0) {
 		NSEvent nsEvent = new NSEvent (theEvent);
 		int keyCode = Display.translateKey (nsEvent.keyCode ());
@@ -651,7 +651,7 @@ public void setDay (int day) {
 	}
 }
 
-void setForeground (float /*double*/ [] color) {
+void setForeground (double /*float*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
 		if ((style & SWT.CALENDAR) != 0) {

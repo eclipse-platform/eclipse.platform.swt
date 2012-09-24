@@ -16,7 +16,7 @@ public NSSearchFieldCell() {
 	super();
 }
 
-public NSSearchFieldCell(int /*long*/ id) {
+public NSSearchFieldCell(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,12 +25,12 @@ public NSSearchFieldCell(id id) {
 }
 
 public NSButtonCell cancelButtonCell() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_cancelButtonCell);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_cancelButtonCell);
 	return result != 0 ? new NSButtonCell(result) : null;
 }
 
 public NSButtonCell searchButtonCell() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_searchButtonCell);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_searchButtonCell);
 	return result != 0 ? new NSButtonCell(result) : null;
 }
 

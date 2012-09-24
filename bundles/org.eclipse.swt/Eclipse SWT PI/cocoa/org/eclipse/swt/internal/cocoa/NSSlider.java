@@ -16,7 +16,7 @@ public NSSlider() {
 	super();
 }
 
-public NSSlider(int /*long*/ id) {
+public NSSlider(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,8 +24,8 @@ public NSSlider(id id) {
 	super(id);
 }
 
-public float /*double*/ knobThickness() {
-	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_knobThickness);
+public double /*float*/ knobThickness() {
+	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_knobThickness);
 }
 
 public double maxValue() {
@@ -44,11 +44,11 @@ public void setMinValue(double aDouble) {
 	OS.objc_msgSend(this.id, OS.sel_setMinValue_, aDouble);
 }
 
-public static int /*long*/ cellClass() {
+public static long /*int*/ cellClass() {
 	return OS.objc_msgSend(OS.class_NSSlider, OS.sel_cellClass);
 }
 
-public static void setCellClass(int /*long*/ factoryId) {
+public static void setCellClass(long /*int*/ factoryId) {
 	OS.objc_msgSend(OS.class_NSSlider, OS.sel_setCellClass_, factoryId);
 }
 

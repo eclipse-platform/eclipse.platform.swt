@@ -16,7 +16,7 @@ public NSCalendarDate() {
 	super();
 }
 
-public NSCalendarDate(int /*long*/ id) {
+public NSCalendarDate(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,51 +25,51 @@ public NSCalendarDate(id id) {
 }
 
 public static NSCalendarDate calendarDate() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSCalendarDate, OS.sel_calendarDate);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSCalendarDate, OS.sel_calendarDate);
 	return result != 0 ? new NSCalendarDate(result) : null;
 }
 
-public static NSCalendarDate dateWithYear(int /*long*/ year, int /*long*/ month, int /*long*/ day, int /*long*/ hour, int /*long*/ minute, int /*long*/ second, NSTimeZone aTimeZone) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSCalendarDate, OS.sel_dateWithYear_month_day_hour_minute_second_timeZone_, year, month, day, hour, minute, second, aTimeZone != null ? aTimeZone.id : 0);
+public static NSCalendarDate dateWithYear(long /*int*/ year, long /*int*/ month, long /*int*/ day, long /*int*/ hour, long /*int*/ minute, long /*int*/ second, NSTimeZone aTimeZone) {
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSCalendarDate, OS.sel_dateWithYear_month_day_hour_minute_second_timeZone_, year, month, day, hour, minute, second, aTimeZone != null ? aTimeZone.id : 0);
 	return result != 0 ? new NSCalendarDate(result) : null;
 }
 
-public int /*long*/ dayOfMonth() {
+public long /*int*/ dayOfMonth() {
 	return OS.objc_msgSend(this.id, OS.sel_dayOfMonth);
 }
 
-public int /*long*/ hourOfDay() {
+public long /*int*/ hourOfDay() {
 	return OS.objc_msgSend(this.id, OS.sel_hourOfDay);
 }
 
-public int /*long*/ minuteOfHour() {
+public long /*int*/ minuteOfHour() {
 	return OS.objc_msgSend(this.id, OS.sel_minuteOfHour);
 }
 
-public int /*long*/ monthOfYear() {
+public long /*int*/ monthOfYear() {
 	return OS.objc_msgSend(this.id, OS.sel_monthOfYear);
 }
 
-public int /*long*/ secondOfMinute() {
+public long /*int*/ secondOfMinute() {
 	return OS.objc_msgSend(this.id, OS.sel_secondOfMinute);
 }
 
 public NSTimeZone timeZone() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_timeZone);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_timeZone);
 	return result != 0 ? new NSTimeZone(result) : null;
 }
 
-public int /*long*/ yearOfCommonEra() {
+public long /*int*/ yearOfCommonEra() {
 	return OS.objc_msgSend(this.id, OS.sel_yearOfCommonEra);
 }
 
 public static NSDate dateWithTimeIntervalSinceNow(double secs) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSCalendarDate, OS.sel_dateWithTimeIntervalSinceNow_, secs);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSCalendarDate, OS.sel_dateWithTimeIntervalSinceNow_, secs);
 	return result != 0 ? new NSCalendarDate(result) : null;
 }
 
 public static NSDate distantFuture() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSCalendarDate, OS.sel_distantFuture);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSCalendarDate, OS.sel_distantFuture);
 	return result != 0 ? new NSCalendarDate(result) : null;
 }
 

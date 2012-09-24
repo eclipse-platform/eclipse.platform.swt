@@ -28,7 +28,7 @@ public class Callback {
 	Object object;
 	String method, signature;
 	int argCount;
-	int /*long*/ address, errorResult;
+	long /*int*/ address, errorResult;
 	boolean isStatic, isArrayBased;
 
 	static final String PTR_SIGNATURE = C.PTR_SIZEOF == 4 ? "I" : "J"; //$NON-NLS-1$  //$NON-NLS-2$
@@ -88,7 +88,7 @@ public Callback (Object object, String method, int argCount, boolean isArrayBase
  * @param isArrayBased <code>true</code> if the arguments should be passed in an array and false otherwise
  * @param errorResult the return value if the java code throws an exception
  */
-public Callback (Object object, String method, int argCount, boolean isArrayBased, int /*long*/ errorResult) {
+public Callback (Object object, String method, int argCount, boolean isArrayBased, long /*int*/ errorResult) {
 
 	/* Set the callback fields */
 	this.object = object;
@@ -131,7 +131,7 @@ public Callback (Object object, String method, int argCount, boolean isArrayBase
  * @param isArrayBased whether the callback's method is array based
  * @param errorResult the callback's error result
  */
-static native synchronized int /*long*/ bind (Callback callback, Object object, String method, String signature, int argCount, boolean isStatic, boolean isArrayBased, int /*long*/ errorResult);
+static native synchronized long /*int*/ bind (Callback callback, Object object, String method, String signature, int argCount, boolean isStatic, boolean isArrayBased, long /*int*/ errorResult);
 
 /**
  * Releases the native level resources associated with the callback,
@@ -152,7 +152,7 @@ public void dispose () {
  *
  * @return the callback address
  */
-public int /*long*/ getAddress () {
+public long /*int*/ getAddress () {
 	return address;
 }
 

@@ -40,7 +40,7 @@ import org.eclipse.swt.events.*;
 public class Sash extends Control {
 	boolean dragging;
 	int startX, startY, lastX, lastY;
-	int /*long*/ defaultCursor;
+	long /*int*/ defaultCursor;
 
 	private final static int INCREMENT = 1;
 	private final static int PAGE_INCREMENT = 9;
@@ -145,12 +145,12 @@ void createHandle (int index) {
 void drawBand (int x, int y, int width, int height) {
 	if ((style & SWT.SMOOTH) != 0) return;
 	//TODO: Use Cairo
-	int /*long*/ window = gtk_widget_get_window (parent.paintHandle());
+	long /*int*/ window = gtk_widget_get_window (parent.paintHandle());
 	if (window == 0) return;
 	byte [] bits = {-86, 85, -86, 85, -86, 85, -86, 85};
-	int /*long*/ stipplePixmap = OS.gdk_bitmap_create_from_data (window, bits, 8, 8);
-	int /*long*/ gc = OS.gdk_gc_new (window);
-	int /*long*/ colormap = OS.gdk_colormap_get_system();
+	long /*int*/ stipplePixmap = OS.gdk_bitmap_create_from_data (window, bits, 8, 8);
+	long /*int*/ gc = OS.gdk_gc_new (window);
+	long /*int*/ colormap = OS.gdk_colormap_get_system();
 	GdkColor color = new GdkColor ();
 	OS.gdk_color_white (colormap, color);
 	OS.gdk_gc_set_foreground (gc, color);	
@@ -163,8 +163,8 @@ void drawBand (int x, int y, int width, int height) {
 	OS.g_object_unref (gc);
 }
 
-int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
-	int /*long*/ result = super.gtk_button_press_event (widget, eventPtr);
+long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
+	long /*int*/ result = super.gtk_button_press_event (widget, eventPtr);
 	if (result != 0) return result;
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
@@ -172,7 +172,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr)
 	if (button != 1) return 0;
 	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) return 0;
 	if (gdkEvent.type == OS.GDK_3BUTTON_PRESS) return 0;
-	int /*long*/ window = gtk_widget_get_window (widget);
+	long /*int*/ window = gtk_widget_get_window (widget);
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
 	startX = (int) (gdkEvent.x_root - origin_x [0]);
@@ -212,8 +212,8 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr)
 	return result;	
 }
 
-int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ eventPtr) {
-	int /*long*/ result = super.gtk_button_release_event (widget, eventPtr);
+long /*int*/ gtk_button_release_event (long /*int*/ widget, long /*int*/ eventPtr) {
+	long /*int*/ result = super.gtk_button_release_event (widget, eventPtr);
 	if (result != 0) return result;
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
@@ -244,8 +244,8 @@ int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ eventPt
 	return result;
 }
 
-int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_focus_in_event (widget, event);
+long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
+	long /*int*/ result = super.gtk_focus_in_event (widget, event);
 	if (result != 0) return result;
 	// widget could be disposed at this point
 	if (handle != 0) {
@@ -257,8 +257,8 @@ int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
 
-int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
-	int /*long*/ result = super.gtk_key_press_event (widget, eventPtr);
+long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
+	long /*int*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
 	GdkEventKey gdkEvent = new GdkEventKey ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
@@ -295,9 +295,9 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 			if (newX == lastX && newY == lastY) return result;
 			
 			/* Ensure that the pointer image does not change */
-			int /*long*/ window = gtk_widget_get_window (handle);
+			long /*int*/ window = gtk_widget_get_window (handle);
 			int grabMask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK;
-			int /*long*/ gdkCursor = cursor != null ? cursor.handle : defaultCursor;
+			long /*int*/ gdkCursor = cursor != null ? cursor.handle : defaultCursor;
 			int ptrGrabResult = gdk_pointer_grab (window, OS.GDK_OWNERSHIP_NONE, false, grabMask, window, gdkCursor, OS.GDK_CURRENT_TIME);
 
 			/* The event must be sent because its doit flag is used. */
@@ -334,8 +334,8 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	return result;
 }
 
-int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr) {
-	int /*long*/ result = super.gtk_motion_notify_event (widget, eventPtr);
+long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr) {
+	long /*int*/ result = super.gtk_motion_notify_event (widget, eventPtr);
 	if (result != 0) return result;
 	if (!dragging) return 0;
 	GdkEventMotion gdkEvent = new GdkEventMotion ();
@@ -400,7 +400,7 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr
 	return result;
 }
 
-int /*long*/ gtk_realize (int /*long*/ widget) {
+long /*int*/ gtk_realize (long /*int*/ widget) {
 	setCursor (cursor != null ? cursor.handle : 0);
 	return super.gtk_realize (widget);
 }
@@ -441,7 +441,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-void setCursor (int /*long*/ cursor) {
+void setCursor (long /*int*/ cursor) {
 	super.setCursor (cursor != 0 ? cursor : defaultCursor);
 }
 

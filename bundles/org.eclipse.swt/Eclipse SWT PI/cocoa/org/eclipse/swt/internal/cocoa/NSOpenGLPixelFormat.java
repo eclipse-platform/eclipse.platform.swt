@@ -16,7 +16,7 @@ public NSOpenGLPixelFormat() {
 	super();
 }
 
-public NSOpenGLPixelFormat(int /*long*/ id) {
+public NSOpenGLPixelFormat(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,12 +24,12 @@ public NSOpenGLPixelFormat(id id) {
 	super(id);
 }
 
-public void getValues(int[] /*long[]*/ vals, int attrib, int screen) {
+public void getValues(long[] /*int[]*/ vals, int attrib, int screen) {
 	OS.objc_msgSend(this.id, OS.sel_getValues_forAttribute_forVirtualScreen_, vals, attrib, screen);
 }
 
 public id initWithAttributes(int[] attribs) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithAttributes_, attribs);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithAttributes_, attribs);
 	return result != 0 ? new id(result) : null;
 }
 

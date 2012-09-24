@@ -43,7 +43,7 @@ public class nsIFilePicker_1_8 extends nsISupports {
 	public static final nsID NS_IFILEPICKER_10_IID =
 		new nsID(NS_IFILEPICKER_10_IID_STR);
 	
-	public nsIFilePicker_1_8(int /*long*/ address) {
+	public nsIFilePicker_1_8(long /*int*/ address) {
 		super(address);
 	}
 
@@ -67,7 +67,7 @@ public class nsIFilePicker_1_8 extends nsISupports {
 	public static final int filterAudio = 256;
 	public static final int filterVideo = 512;
 
-	public int Init(int /*long*/ parent, int /*long*/ title, short mode) {
+	public int Init(long /*int*/ parent, long /*int*/ title, short mode) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), parent, title, mode);
 	}
 
@@ -75,23 +75,23 @@ public class nsIFilePicker_1_8 extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), filterMask);
 	}
 
-	public int AppendFilter(int /*long*/ title, int /*long*/ filter) {
+	public int AppendFilter(long /*int*/ title, long /*int*/ filter) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), title, filter);
 	}
 
-	public int GetDefaultString(int /*long*/ aDefaultString) {
+	public int GetDefaultString(long /*int*/ aDefaultString) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aDefaultString);
 	}
 
-	public int SetDefaultString(int /*long*/ aDefaultString) {
+	public int SetDefaultString(long /*int*/ aDefaultString) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aDefaultString);
 	}
 
-	public int GetDefaultExtension(int /*long*/ aDefaultExtension) {
+	public int GetDefaultExtension(long /*int*/ aDefaultExtension) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aDefaultExtension);
 	}
 
-	public int SetDefaultExtension(int /*long*/ aDefaultExtension) {
+	public int SetDefaultExtension(long /*int*/ aDefaultExtension) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aDefaultExtension);
 	}
 
@@ -103,27 +103,27 @@ public class nsIFilePicker_1_8 extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aFilterIndex);
 	}
 
-	public int GetDisplayDirectory(int /*long*/[] aDisplayDirectory) {
+	public int GetDisplayDirectory(long /*int*/[] aDisplayDirectory) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aDisplayDirectory);
 	}
 
-	public int SetDisplayDirectory(int /*long*/ aDisplayDirectory) {
+	public int SetDisplayDirectory(long /*int*/ aDisplayDirectory) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aDisplayDirectory);
 	}
 
-	public int GetFile(int /*long*/[] aFile) {
+	public int GetFile(long /*int*/[] aFile) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), aFile);
 	}
 
-	public int GetFileURL(int /*long*/[] aFileURL) {
+	public int GetFileURL(long /*int*/[] aFileURL) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), aFileURL);
 	}
 
-	public int GetFiles(int /*long*/[] aFiles) {
+	public int GetFiles(long /*int*/[] aFiles) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), aFiles);
 	}
 
-	public int Show(int /*long*/ _retval) {
+	public int Show(long /*int*/ _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 17 : 15), getAddress(), _retval);
 	}
 	

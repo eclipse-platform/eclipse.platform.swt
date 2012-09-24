@@ -43,7 +43,7 @@ public class nsIVariant extends nsISupports {
 	public static final nsID NS_IVARIANT_10_IID =
 		new nsID(NS_IVARIANT_10_IID_STR);
 
-	public nsIVariant(int /*long*/ address) {
+	public nsIVariant(long /*int*/ address) {
 		super(address);
 	}
 
@@ -51,11 +51,11 @@ public class nsIVariant extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aDataType);
 	}
 
-	public int GetAsInt8(int /*long*/ _retval) {
+	public int GetAsInt8(long /*int*/ _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
 	}
 
-	public int GetAsInt16(int /*long*/ _retval) {
+	public int GetAsInt16(long /*int*/ _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), _retval);
 	}
 
@@ -67,7 +67,7 @@ public class nsIVariant extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), _retval);
 	}
 
-	public int GetAsUint8(int /*long*/ _retval) {
+	public int GetAsUint8(long /*int*/ _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), _retval);
 	}
 
@@ -79,7 +79,7 @@ public class nsIVariant extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), _retval);
 	}
 
-	public int GetAsUint64(int /*long*/ _retval) {
+	public int GetAsUint64(long /*int*/ _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), _retval);
 	}
 
@@ -87,7 +87,7 @@ public class nsIVariant extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), _retval);
 	}
 
-	public int GetAsDouble(int /*long*/ _retval) {
+	public int GetAsDouble(long /*int*/ _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), _retval);
 	}
 
@@ -103,56 +103,56 @@ public class nsIVariant extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), _retval);
 	}
 
-	public int GetAsID(int /*long*/ retval) {
+	public int GetAsID(long /*int*/ retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 15, getAddress(), retval);
 	}
 
-	public int GetAsAString(int /*long*/ _retval) {
+	public int GetAsAString(long /*int*/ _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 16, getAddress(), _retval);
 	}
 
-	public int GetAsDOMString(int /*long*/ _retval) {
+	public int GetAsDOMString(long /*int*/ _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 17, getAddress(), _retval);
 	}
 
-	public int GetAsACString(int /*long*/ _retval) {
+	public int GetAsACString(long /*int*/ _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 18, getAddress(), _retval);
 	}
 
-	public int GetAsAUTF8String(int /*long*/ _retval) {
+	public int GetAsAUTF8String(long /*int*/ _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 19, getAddress(), _retval);
 	}
 
-	public int GetAsString(int /*long*/[] _retval) {
+	public int GetAsString(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 20, getAddress(), _retval);
 	}
 
-	public int GetAsWString(int /*long*/[] _retval) {
+	public int GetAsWString(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 21, getAddress(), _retval);
 	}
 
-	public int GetAsISupports(int /*long*/[] _retval) {
+	public int GetAsISupports(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 22, getAddress(), _retval);
 	}
 
-	public int GetAsJSVal(int /*long*/[] _retval) {
+	public int GetAsJSVal(long /*int*/[] _retval) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 23, getAddress(), _retval);
 	}
 
-	public int GetAsInterface(int /*long*/[] iid, int /*long*/[] iface) {
+	public int GetAsInterface(long /*int*/[] iid, long /*int*/[] iface) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 24 : 23), getAddress(), iid, iface);
 	}
 
-	public int GetAsArray(short[] type, int /*long*/ iid, int[] count, int /*long*/[] ptr) {
+	public int GetAsArray(short[] type, long /*int*/ iid, int[] count, long /*int*/[] ptr) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 25 : 24), getAddress(), type, iid, count, ptr);
 	}
 
-	public int GetAsStringWithSize(int[] size, int /*long*/[] str) {
+	public int GetAsStringWithSize(int[] size, long /*int*/[] str) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 26 : 25), getAddress(), size, str);
 	}
 
-	public int GetAsWStringWithSize(int[] size, int /*long*/[] str) {
+	public int GetAsWStringWithSize(int[] size, long /*int*/[] str) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 27 : 26), getAddress(), size, str);
 	}
 }

@@ -41,8 +41,8 @@ public static final native int GREVersionRange_sizeof ();
  * @param properties cast=(const GREProperty *)
  * @param buffer cast=(char *)
  */
-public static final native int _GRE_GetGREPathWithProperties (GREVersionRange versions, int versionsLength, GREProperty properties, int propertiesLength, int /*long*/ buffer, int buflen);
-public static final int GRE_GetGREPathWithProperties (GREVersionRange versions, int versionsLength, GREProperty properties, int propertiesLength, int /*long*/ buffer, int buflen) {
+public static final native int _GRE_GetGREPathWithProperties (GREVersionRange versions, int versionsLength, GREProperty properties, int propertiesLength, long /*int*/ buffer, int buflen);
+public static final int GRE_GetGREPathWithProperties (GREVersionRange versions, int versionsLength, GREProperty properties, int propertiesLength, long /*int*/ buffer, int buflen) {
 	lock.lock();
 	try {
 		return _GRE_GetGREPathWithProperties(versions, versionsLength, properties, propertiesLength, buffer, buflen);

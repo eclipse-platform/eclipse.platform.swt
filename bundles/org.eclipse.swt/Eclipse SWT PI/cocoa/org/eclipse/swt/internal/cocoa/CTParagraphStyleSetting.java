@@ -14,8 +14,8 @@ package org.eclipse.swt.internal.cocoa;
 public class CTParagraphStyleSetting {
 	/** @field cast=(CTParagraphStyleSpecifier) */
 	public int spec;
-	public int /*long*/ valueSize;
+	public long /*int*/ valueSize;
 	/** @field cast=(void *) */
-	public int /*long*/ value;
+	public long /*int*/ value;
 	public static final int sizeof = OS.CTParagraphStyleSetting_sizeof();
 }

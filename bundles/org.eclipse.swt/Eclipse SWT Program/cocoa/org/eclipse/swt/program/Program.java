@@ -72,7 +72,7 @@ public static Program findProgram (String extension) {
 		if (ext != null) {
 			byte[] fsRef = new byte[80];
 			if (OS.LSGetApplicationForInfo(OS.kLSUnknownType, OS.kLSUnknownCreator, ext.id, OS.kLSRolesAll, fsRef, null) == OS.noErr) {
-				int /*long*/ url = OS.CFURLCreateFromFSRef(OS.kCFAllocatorDefault(), fsRef);
+				long /*int*/ url = OS.CFURLCreateFromFSRef(OS.kCFAllocatorDefault(), fsRef);
 				if (url != 0) {
 					NSString bundlePath = new NSURL(url).path();
 					NSBundle bundle = NSBundle.bundleWithPath(bundlePath);
@@ -224,7 +224,7 @@ static NSURL getURL (String fileName) {
 	if (NSFileManager.defaultManager().fileExistsAtPath(fullPath)) {
 		fullPath = NSURL.fileURLWithPath(fullPath).absoluteString();
 	}
-	int /*long*/ ptr = OS.CFURLCreateStringByAddingPercentEscapes(0, fullPath.id, unescapedStr.id, 0, OS.kCFStringEncodingUTF8);
+	long /*int*/ ptr = OS.CFURLCreateStringByAddingPercentEscapes(0, fullPath.id, unescapedStr.id, 0, OS.kCFStringEncodingUTF8);
 	NSString escapedString = new NSString(ptr);
 	NSURL url = NSURL.URLWithString(escapedString);
 	OS.CFRelease(ptr);
@@ -232,7 +232,7 @@ static NSURL getURL (String fileName) {
 }
 
 static boolean isExecutable (String fileName) {
-	int /*long*/ ptr = OS.malloc(1);
+	long /*int*/ ptr = OS.malloc(1);
 	NSString path = NSString.stringWith(fileName);
 	boolean result = false;
 	NSFileManager manager = NSFileManager.defaultManager();

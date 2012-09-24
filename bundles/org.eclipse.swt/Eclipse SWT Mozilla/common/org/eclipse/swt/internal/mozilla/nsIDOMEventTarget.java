@@ -43,25 +43,25 @@ public class nsIDOMEventTarget extends nsISupports {
 	public static final nsID NS_IDOMEVENTTARGET_10_IID =
 		new nsID(NS_IDOMEVENTTARGET_10_IID_STR);
 
-	public nsIDOMEventTarget(int /*long*/ address) {
+	public nsIDOMEventTarget(long /*int*/ address) {
 		super(address);
 	}
 
-	public int AddEventListener(int /*long*/ type, int /*long*/ listener, int useCapture) {
+	public int AddEventListener(long /*int*/ type, long /*int*/ listener, int useCapture) {
 		if (IsXULRunner10) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), type, listener, useCapture);
 	}
 
-	public int AddEventListener(int /*long*/ type, int /*long*/ listener, int useCapture, int wantsUntrusted, int _argc) {
+	public int AddEventListener(long /*int*/ type, long /*int*/ listener, int useCapture, int wantsUntrusted, int _argc) {
 		if (!IsXULRunner10) return AddEventListener(type, listener, useCapture);
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), type, listener, useCapture, wantsUntrusted, _argc);
 	}
 
-	public int RemoveEventListener(int /*long*/ type, int /*long*/ listener, int useCapture) {
+	public int RemoveEventListener(long /*int*/ type, long /*int*/ listener, int useCapture) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), type, listener, useCapture);
 	}
 
-	public int DispatchEvent(int /*long*/ evt, int[] _retval) {
+	public int DispatchEvent(long /*int*/ evt, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), evt, _retval);
 	}
 }

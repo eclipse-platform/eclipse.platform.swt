@@ -37,15 +37,15 @@ public class nsICategoryManager extends nsISupports {
 	public static final nsID NS_ICATEGORYMANAGER_IID =
 		new nsID(NS_ICATEGORYMANAGER_IID_STR);
 
-	public nsICategoryManager(int /*long*/ address) {
+	public nsICategoryManager(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetCategoryEntry(byte[] aCategory, byte[] aEntry, int /*long*/[] _retval) {
+	public int GetCategoryEntry(byte[] aCategory, byte[] aEntry, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aCategory, aEntry, _retval);
 	}
 
-	public int AddCategoryEntry(byte[] aCategory, byte[] aEntry, byte[] aValue, int aPersist, int aReplace, int /*long*/[] _retval) {
+	public int AddCategoryEntry(byte[] aCategory, byte[] aEntry, byte[] aValue, int aPersist, int aReplace, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aCategory, aEntry, aValue, aPersist, aReplace, _retval);
 	}
 
@@ -57,11 +57,11 @@ public class nsICategoryManager extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aCategory);
 	}
 
-	public int EnumerateCategory(byte[] aCategory, int /*long*/[] _retval) {
+	public int EnumerateCategory(byte[] aCategory, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aCategory, _retval);
 	}
 
-	public int EnumerateCategories(int /*long*/[] _retval) {
+	public int EnumerateCategories(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), _retval);
 	}
 }

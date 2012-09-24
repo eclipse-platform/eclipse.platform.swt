@@ -47,7 +47,7 @@ public class Pattern extends Resource {
 	 * 
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public int /*long*/ handle;
+	public long /*int*/ handle;
 
 /**
  * Constructs a new Pattern given an image. Drawing with the resulting
@@ -79,14 +79,14 @@ public Pattern(Device device, Image image) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device.checkGDIP();
-	int /*long*/[] gdipImage = image.createGdipImage();
-	int /*long*/ img = gdipImage[0];
+	long /*int*/[] gdipImage = image.createGdipImage();
+	long /*int*/ img = gdipImage[0];
 	int width = Gdip.Image_GetWidth(img);
 	int height = Gdip.Image_GetHeight(img);
 	handle = Gdip.TextureBrush_new(img, Gdip.WrapModeTile, 0, 0, width, height);	
 	Gdip.Bitmap_delete(img);
 	if (gdipImage[1] != 0) {
-		int /*long*/ hHeap = OS.GetProcessHeap ();
+		long /*int*/ hHeap = OS.GetProcessHeap ();
 		OS.HeapFree(hHeap, 0, gdipImage[1]);
 	}
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -174,14 +174,14 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	this.device.checkGDIP();
 	int colorRef1 = color1.handle;
 	int rgb = ((colorRef1 >> 16) & 0xFF) | (colorRef1 & 0xFF00) | ((colorRef1 & 0xFF) << 16);
-	int /*long*/ foreColor = Gdip.Color_new((alpha1 & 0xFF) << 24 | rgb);
+	long /*int*/ foreColor = Gdip.Color_new((alpha1 & 0xFF) << 24 | rgb);
 	if (x1 == x2 && y1 == y2) {
 		handle = Gdip.SolidBrush_new(foreColor);
 		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	} else {
 		int colorRef2 = color2.handle;
 		rgb = ((colorRef2 >> 16) & 0xFF) | (colorRef2 & 0xFF00) | ((colorRef2 & 0xFF) << 16);
-		int /*long*/ backColor = Gdip.Color_new((alpha2 & 0xFF) << 24 | rgb);
+		long /*int*/ backColor = Gdip.Color_new((alpha2 & 0xFF) << 24 | rgb);
 		PointF p1 = new PointF();
 		p1.X = x1;
 		p1.Y = y1;
@@ -195,8 +195,8 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 			int r = (int)(((colorRef1 & 0xFF) >> 0) * 0.5f + ((colorRef2 & 0xFF) >> 0) * 0.5f);
 			int g = (int)(((colorRef1 & 0xFF00) >> 8) * 0.5f + ((colorRef2 & 0xFF00) >> 8) * 0.5f);
 			int b = (int)(((colorRef1 & 0xFF0000) >> 16) * 0.5f + ((colorRef2 & 0xFF0000) >> 16) * 0.5f);
-			int /*long*/ midColor = Gdip.Color_new(a << 24 | r << 16 | g << 8 | b);
-			Gdip.LinearGradientBrush_SetInterpolationColors(handle, new int /*long*/ []{foreColor, midColor, backColor}, new float[]{0, 0.5f, 1}, 3);
+			long /*int*/ midColor = Gdip.Color_new(a << 24 | r << 16 | g << 8 | b);
+			Gdip.LinearGradientBrush_SetInterpolationColors(handle, new long /*int*/ []{foreColor, midColor, backColor}, new float[]{0, 0.5f, 1}, 3);
 			Gdip.Color_delete(midColor);
 		}
 		Gdip.Color_delete(backColor);

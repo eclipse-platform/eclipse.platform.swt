@@ -37,7 +37,7 @@ public class nsITooltipListener extends nsISupports {
 	public static final nsID NS_ITOOLTIPLISTENER_IID =
 		new nsID(NS_ITOOLTIPLISTENER_IID_STR);
 
-	public nsITooltipListener(int /*long*/ address) {
+	public nsITooltipListener(long /*int*/ address) {
 		super(address);
 	}
 

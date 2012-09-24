@@ -16,7 +16,7 @@ public NSAutoreleasePool() {
 	super();
 }
 
-public NSAutoreleasePool(int /*long*/ id) {
+public NSAutoreleasePool(long /*int*/ id) {
 	super(id);
 }
 

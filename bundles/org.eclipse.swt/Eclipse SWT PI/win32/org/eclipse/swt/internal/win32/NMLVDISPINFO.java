@@ -23,13 +23,13 @@ public class NMLVDISPINFO extends NMHDR {
 	/** @field accessor=item.stateMask */
 	public int stateMask;
 	/** @field accessor=item.pszText,cast=(LPTSTR) */
-	public int /*long*/ pszText;
+	public long /*int*/ pszText;
 	/** @field accessor=item.cchTextMax */
 	public int cchTextMax;
 	/** @field accessor=item.iImage */
 	public int iImage;
 	/** @field accessor=item.lParam */
-	public int /*long*/ lParam;
+	public long /*int*/ lParam;
 	/** @field accessor=item.iIndent */
 	public int iIndent;
 	/** @field accessor=item.iGroupId,flags=no_wince */
@@ -37,6 +37,6 @@ public class NMLVDISPINFO extends NMHDR {
 	/** @field accessor=item.cColumns,flags=no_wince */
 	public int cColumns;
 	/** @field accessor=item.puColumns,cast=(PUINT),flags=no_wince */
-	public int /*long*/ puColumns;
+	public long /*int*/ puColumns;
 	public static final int sizeof = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1) ? OS.NMLVDISPINFO_sizeof () : 52;
 }

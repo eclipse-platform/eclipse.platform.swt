@@ -37,15 +37,15 @@ public class nsICookie extends nsISupports {
 	public static final nsID NS_ICOOKIE_IID =
 		new nsID(NS_ICOOKIE_IID_STR);
 
-	public nsICookie(int /*long*/ address) {
+	public nsICookie(long /*int*/ address) {
 		super(address);
 	}
 
-	public int GetName(int /*long*/ aName) {
+	public int GetName(long /*int*/ aName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aName);
 	}
 
-	public int GetValue(int /*long*/ aValue) {
+	public int GetValue(long /*int*/ aValue) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aValue);
 	}
 
@@ -53,11 +53,11 @@ public class nsICookie extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aIsDomain);
 	}
 
-	public int GetHost(int /*long*/ aHost) {
+	public int GetHost(long /*int*/ aHost) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aHost);
 	}
 
-	public int GetPath(int /*long*/ aPath) {
+	public int GetPath(long /*int*/ aPath) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aPath);
 	}
 
@@ -75,7 +75,7 @@ public class nsICookie extends nsISupports {
 	public static final int STATUS_FLAGGED = 3;
 	public static final int STATUS_REJECTED = 4;
 
-	public int GetStatus(int /*long*/ aStatus) {
+	public int GetStatus(long /*int*/ aStatus) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aStatus);
 	}
 
@@ -86,7 +86,7 @@ public class nsICookie extends nsISupports {
 	public static final int POLICY_EXPLICIT_CONSENT = 4;
 	public static final int POLICY_NO_II = 5;
 
-	public int GetPolicy(int /*long*/ aPolicy) {
+	public int GetPolicy(long /*int*/ aPolicy) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aPolicy);
 	}
 }

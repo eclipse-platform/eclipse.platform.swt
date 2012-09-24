@@ -37,31 +37,31 @@ public class nsICertificateDialogs extends nsISupports {
 	public static final nsID NS_ICERTIFICATEDIALOGS_IID =
 		new nsID(NS_ICERTIFICATEDIALOGS_IID_STR);
 
-	public nsICertificateDialogs(int /*long*/ address) {
+	public nsICertificateDialogs(long /*int*/ address) {
 		super(address);
 	}
 
-	public int ConfirmDownloadCACert(int /*long*/ ctx, int /*long*/ cert, int[] trust, int[] _retval) {
+	public int ConfirmDownloadCACert(long /*int*/ ctx, long /*int*/ cert, int[] trust, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), ctx, cert, trust, _retval);
 	}
 
-	public int NotifyCACertExists(int /*long*/ ctx) {
+	public int NotifyCACertExists(long /*int*/ ctx) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), ctx);
 	}
 
-	public int SetPKCS12FilePassword(int /*long*/ ctx, int /*long*/ password, int[] _retval) {
+	public int SetPKCS12FilePassword(long /*int*/ ctx, long /*int*/ password, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), ctx, password, _retval);
 	}
 
-	public int GetPKCS12FilePassword(int /*long*/ ctx, int /*long*/ password, int[] _retval) {
+	public int GetPKCS12FilePassword(long /*int*/ ctx, long /*int*/ password, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), ctx, password, _retval);
 	}
 
-	public int ViewCert(int /*long*/ ctx, int /*long*/ cert) {
+	public int ViewCert(long /*int*/ ctx, long /*int*/ cert) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), ctx, cert);
 	}
 
-	public int CrlImportStatusDialog(int /*long*/ ctx, int /*long*/ crl) {
+	public int CrlImportStatusDialog(long /*int*/ ctx, long /*int*/ crl) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), ctx, crl);
 	}
 }

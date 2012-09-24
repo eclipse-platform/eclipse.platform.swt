@@ -40,7 +40,7 @@ public final class Region extends Resource {
 	 * 
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public int /*long*/ handle;
+	public long /*int*/ handle;
 
 /**
  * Constructs a new empty region.
@@ -79,7 +79,7 @@ public Region(Device device) {
 	init();
 }
 
-Region(Device device, int /*long*/ handle) {
+Region(Device device, long /*int*/ handle) {
 	super(device);
 	this.handle = handle;
 }
@@ -109,7 +109,7 @@ public void add (int[] pointArray) {
 	* with enough points for a polygon.
 	*/
 	if (pointArray.length < 6) return;
-	int /*long*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
+	long /*int*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
 	OS.gdk_region_union(handle, polyRgn);
 	OS.gdk_region_destroy(polyRgn);
 }
@@ -265,7 +265,7 @@ public Rectangle getBounds() {
 	return new Rectangle(gdkRect.x, gdkRect.y, gdkRect.width, gdkRect.height);
 }
 
-public static Region gtk_new(Device device, int /*long*/ handle) {
+public static Region gtk_new(Device device, long /*int*/ handle) {
 	return new Region(device, handle);
 }
 
@@ -331,7 +331,7 @@ public void intersect(int x, int y, int width, int height) {
 	gdkRect.y = y;
 	gdkRect.width = width;
 	gdkRect.height = height;
-	int /*long*/ rectRgn = OS.gdk_region_rectangle(gdkRect);
+	long /*int*/ rectRgn = OS.gdk_region_rectangle(gdkRect);
 	OS.gdk_region_intersect(handle, rectRgn);
 	OS.gdk_region_destroy(rectRgn);
 }
@@ -462,7 +462,7 @@ public void subtract (int[] pointArray) {
 	* with enough points for a polygon.
 	*/
 	if (pointArray.length < 6) return;
-	int /*long*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
+	long /*int*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
 	OS.gdk_region_subtract(handle, polyRgn);
 	OS.gdk_region_destroy(polyRgn);
 }
@@ -515,7 +515,7 @@ public void subtract(int x, int y, int width, int height) {
 	gdkRect.y = y;
 	gdkRect.width = width;
 	gdkRect.height = height;
-	int /*long*/ rectRgn = OS.gdk_region_rectangle(gdkRect);
+	long /*int*/ rectRgn = OS.gdk_region_rectangle(gdkRect);
 	OS.gdk_region_subtract(handle, rectRgn);
 	OS.gdk_region_destroy(rectRgn);
 }

@@ -46,7 +46,7 @@ public abstract class Device implements Drawable {
 	 * 
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public int /*long*/ hPalette = 0;
+	public long /*int*/ hPalette = 0;
 	int [] colorRefCount;
 	
 	/* System Font */
@@ -59,11 +59,11 @@ public abstract class Device implements Drawable {
 	int[] pixels;
 
 	/* Scripts */
-	int /*long*/ [] scripts;
+	long /*int*/ [] scripts;
 
 	/* Advanced Graphics */
-	int /*long*/ [] gdipToken;
-	int /*long*/ fontCollection;
+	long /*int*/ [] gdipToken;
+	long /*int*/ fontCollection;
 	String[] loadedFonts;
 
 	boolean disposed;
@@ -186,7 +186,7 @@ void checkGDIP() {
     int oldErrorMode = 0;
     if (!OS.IsWinCE) oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
 	try {
-		int /*long*/ [] token = new int /*long*/ [1];
+		long /*int*/ [] token = new long /*int*/ [1];
 		GdiplusStartupInput input = new GdiplusStartupInput ();
 		input.GdiplusVersion = 1;
 		if (Gdip.GdiplusStartup (token, input, 0) == 0) {
@@ -231,14 +231,14 @@ protected void create (DeviceData data) {
 }
 
 int computePixels(float height) {
-	int /*long*/ hDC = internal_new_GC (null);
+	long /*int*/ hDC = internal_new_GC (null);
 	int pixels = -(int)(0.5f + (height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY) / 72f));
 	internal_dispose_GC (hDC, null);
 	return pixels;
 }
 
-float computePoints(LOGFONT logFont, int /*long*/ hFont) {
-	int /*long*/ hDC = internal_new_GC (null);
+float computePoints(LOGFONT logFont, long /*int*/ hFont) {
+	long /*int*/ hDC = internal_new_GC (null);
 	int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
 	int pixels = 0; 
 	if (logFont.lfHeight > 0) {
@@ -249,7 +249,7 @@ float computePoints(LOGFONT logFont, int /*long*/ hFont) {
 		 * height of a font in points does not include the internal leading,
 		 * we must subtract the internal leading, which requires a TEXTMETRIC.
 		 */
-		int /*long*/ oldFont = OS.SelectObject(hDC, hFont);
+		long /*int*/ oldFont = OS.SelectObject(hDC, hFont);
 		TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 		OS.GetTextMetrics(hDC, lptm);
 		OS.SelectObject(hDC, oldFont);
@@ -318,7 +318,7 @@ void dispose_Object (Object object) {
 	}
 }
 
-int /*long*/ EnumFontFamProc (int /*long*/ lpelfe, int /*long*/ lpntme, int /*long*/ FontType, int /*long*/ lParam) {
+long /*int*/ EnumFontFamProc (long /*int*/ lpelfe, long /*int*/ lpntme, long /*int*/ FontType, long /*int*/ lParam) {
 	boolean isScalable = ((int)/*64*/FontType & OS.RASTER_FONTTYPE) == 0;
 	boolean scalable = lParam == 1;
 	if (isScalable == scalable) {
@@ -365,7 +365,7 @@ int /*long*/ EnumFontFamProc (int /*long*/ lpelfe, int /*long*/ lpntme, int /*lo
  */
 public Rectangle getBounds () {
 	checkDevice ();
-	int /*long*/ hDC = internal_new_GC (null);
+	long /*int*/ hDC = internal_new_GC (null);
 	int width = OS.GetDeviceCaps (hDC, OS.HORZRES);
 	int height = OS.GetDeviceCaps (hDC, OS.VERTRES);
 	internal_dispose_GC (hDC, null);
@@ -444,7 +444,7 @@ public Rectangle getClientArea () {
  */
 public int getDepth () {
 	checkDevice ();
-	int /*long*/ hDC = internal_new_GC (null);
+	long /*int*/ hDC = internal_new_GC (null);
 	int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
 	int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
 	internal_dispose_GC (hDC, null);
@@ -464,7 +464,7 @@ public int getDepth () {
  */
 public Point getDPI () {
 	checkDevice ();
-	int /*long*/ hDC = internal_new_GC (null);
+	long /*int*/ hDC = internal_new_GC (null);
 	int dpiX = OS.GetDeviceCaps (hDC, OS.LOGPIXELSX);
 	int dpiY = OS.GetDeviceCaps (hDC, OS.LOGPIXELSY);
 	internal_dispose_GC (hDC, null);
@@ -489,7 +489,7 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 	
 	/* Create the callback */
 	Callback callback = new Callback (this, "EnumFontFamProc", 4); //$NON-NLS-1$
-	int /*long*/ lpEnumFontFamProc = callback.getAddress ();
+	long /*int*/ lpEnumFontFamProc = callback.getAddress ();
 	if (lpEnumFontFamProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	/* Initialize the instance variables */
@@ -503,7 +503,7 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 
 	/* Enumerate */
 	int offset = 0;
-	int /*long*/ hDC = internal_new_GC (null);
+	long /*int*/ hDC = internal_new_GC (null);
 	if (faceName == null) {	
 		/* The user did not specify a face name, so they want all versions of all available face names */
 		OS.EnumFontFamilies (hDC, null, lpEnumFontFamProc, scalable ? 1 : 0);
@@ -574,7 +574,7 @@ String getLastError () {
 String getLastErrorText () {
 	int error = OS.GetLastError();
 	if (error == 0) return ""; //$NON-NLS-1$
-	int /*long*/ [] buffer = new int /*long*/ [1];
+	long /*int*/ [] buffer = new long /*int*/ [1];
 	int dwFlags = OS.FORMAT_MESSAGE_ALLOCATE_BUFFER | OS.FORMAT_MESSAGE_FROM_SYSTEM | OS.FORMAT_MESSAGE_IGNORE_INSERTS;
 	int length = OS.FormatMessage(dwFlags, 0, error, OS.LANG_USER_DEFAULT, buffer, 0, 0);
 	if (length == 0) return " [GetLastError=0x" + Integer.toHexString(error) + "]"; //$NON-NLS-1$ //$NON-NLS-2$
@@ -648,7 +648,7 @@ public Color getSystemColor (int id) {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	int /*long*/ hFont = OS.GetStockObject (OS.SYSTEM_FONT);
+	long /*int*/ hFont = OS.GetStockObject (OS.SYSTEM_FONT);
 	return Font.win32_new (this, hFont);
 }
 
@@ -690,10 +690,10 @@ protected void init () {
 
 	/* Initialize scripts list */
 	if (!OS.IsWinCE) {
-		int /*long*/ [] ppSp = new int /*long*/ [1];
+		long /*int*/ [] ppSp = new long /*int*/ [1];
 		int [] piNumScripts = new int [1];
 		OS.ScriptGetProperties (ppSp, piNumScripts);
-		scripts = new int /*long*/ [piNumScripts [0]];
+		scripts = new long /*int*/ [piNumScripts [0]];
 		OS.MoveMemory (scripts, ppSp [0], scripts.length * OS.PTR_SIZEOF);
 	}
 	
@@ -701,7 +701,7 @@ protected void init () {
 	 * If we're not on a device which supports palettes,
 	 * don't create one.
 	 */
-	int /*long*/ hDC = internal_new_GC (null);
+	long /*int*/ hDC = internal_new_GC (null);
 	int rc = OS.GetDeviceCaps (hDC, OS.RASTERCAPS);
 	int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
 	int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
@@ -775,7 +775,7 @@ protected void init () {
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public abstract int /*long*/ internal_new_GC (GCData data);
+public abstract long /*int*/ internal_new_GC (GCData data);
 
 /**	 
  * Invokes platform specific functionality to dispose a GC handle.
@@ -792,7 +792,7 @@ public abstract int /*long*/ internal_new_GC (GCData data);
  * 
  * @noreference This method is not intended to be referenced by clients.
  */
-public abstract void /*long*/ internal_dispose_GC (int /*long*/ hDC, GCData data);
+public abstract void /*long*/ internal_dispose_GC (long /*int*/ hDC, GCData data);
 
 /**
  * Returns <code>true</code> if the device has been disposed,

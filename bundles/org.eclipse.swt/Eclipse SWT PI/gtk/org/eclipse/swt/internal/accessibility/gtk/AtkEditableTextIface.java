@@ -16,17 +16,17 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 public class AtkEditableTextIface {
 	/** @field cast=(gboolean (*)()) */
-	public int /*long*/ set_run_attributes;
+	public long /*int*/ set_run_attributes;
 	/** @field cast=(void (*)()) */
-	public int /*long*/ set_text_contents;
+	public long /*int*/ set_text_contents;
 	/** @field cast=(void (*)()) */
-	public int /*long*/ insert_text;
+	public long /*int*/ insert_text;
 	/** @field cast=(void (*)()) */
-	public int /*long*/ copy_text;
+	public long /*int*/ copy_text;
 	/** @field cast=(void (*)()) */
-	public int /*long*/ cut_text;
+	public long /*int*/ cut_text;
 	/** @field cast=(void (*)()) */
-	public int /*long*/ delete_text;
+	public long /*int*/ delete_text;
 	/** @field cast=(void (*)()) */
-	public int /*long*/ paste_text;
+	public long /*int*/ paste_text;
 }

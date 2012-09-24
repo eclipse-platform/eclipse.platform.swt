@@ -15,10 +15,10 @@ import org.eclipse.swt.internal.win32.RECT;
  
 public class IOleDocumentView extends IUnknown
 {
-public IOleDocumentView(int /*long*/ address) {
+public IOleDocumentView(long /*int*/ address) {
 	super(address);
 }
-public int SetInPlaceSite(int /*long*/ pIPSite) {
+public int SetInPlaceSite(long /*int*/ pIPSite) {
 	return COM.VtblCall(3, address, pIPSite);
 }
 public int SetRect(RECT prcView) {

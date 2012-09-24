@@ -33,17 +33,17 @@ public class GdkGCValues {
 	/** @field accessor=background.blue,cast=(guint16) */
 	public short background_blue;
 	/** @field cast=(GdkFont *) */
-	public int /*long*/ font;
+	public long /*int*/ font;
 	/** @field cast=(GdkFunction) */
-	public int /*long*/ function;
+	public long /*int*/ function;
 	/** @field cast=(GdkFill) */
 	public int fill;
 	/** @field cast=(GdkPixmap *) */
-	public int /*long*/ tile;
+	public long /*int*/ tile;
 	/** @field cast=(GdkPixmap *) */
-	public int /*long*/ stipple;
+	public long /*int*/ stipple;
 	/** @field cast=(GdkPixmap *) */
-	public int /*long*/ clip_mask;
+	public long /*int*/ clip_mask;
 	/** @field cast=(GdkSubwindowMode) */
 	public int subwindow_mode;
 	/** @field cast=(gint) */

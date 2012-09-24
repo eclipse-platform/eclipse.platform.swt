@@ -16,7 +16,7 @@ public NSOutlineView() {
 	super();
 }
 
-public NSOutlineView(int /*long*/ id) {
+public NSOutlineView(long /*int*/ id) {
 	super(id);
 }
 
@@ -40,31 +40,31 @@ public void expandItem(id item, boolean expandChildren) {
 	OS.objc_msgSend(this.id, OS.sel_expandItem_expandChildren_, item != null ? item.id : 0, expandChildren);
 }
 
-public NSRect frameOfOutlineCellAtRow(int /*long*/ row) {
+public NSRect frameOfOutlineCellAtRow(long /*int*/ row) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_frameOfOutlineCellAtRow_, row);
 	return result;
 }
 
-public float /*double*/ indentationPerLevel() {
-	return (float /*double*/)OS.objc_msgSend_fpret(this.id, OS.sel_indentationPerLevel);
+public double /*float*/ indentationPerLevel() {
+	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_indentationPerLevel);
 }
 
 public boolean isItemExpanded(id item) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isItemExpanded_, item != null ? item.id : 0);
 }
 
-public id itemAtRow(int /*long*/ row) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_itemAtRow_, row);
+public id itemAtRow(long /*int*/ row) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_itemAtRow_, row);
 	return result != 0 ? new id(result) : null;
 }
 
-public int /*long*/ levelForItem(id item) {
+public long /*int*/ levelForItem(id item) {
 	return OS.objc_msgSend(this.id, OS.sel_levelForItem_, item != null ? item.id : 0);
 }
 
 public NSTableColumn outlineTableColumn() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_outlineTableColumn);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_outlineTableColumn);
 	return result != 0 ? new NSTableColumn(result) : null;
 }
 
@@ -72,7 +72,7 @@ public void reloadItem(id item, boolean reloadChildren) {
 	OS.objc_msgSend(this.id, OS.sel_reloadItem_reloadChildren_, item != null ? item.id : 0, reloadChildren);
 }
 
-public int /*long*/ rowForItem(id item) {
+public long /*int*/ rowForItem(id item) {
 	return OS.objc_msgSend(this.id, OS.sel_rowForItem_, item != null ? item.id : 0);
 }
 
@@ -84,7 +84,7 @@ public void setAutosaveExpandedItems(boolean save) {
 	OS.objc_msgSend(this.id, OS.sel_setAutosaveExpandedItems_, save);
 }
 
-public void setDropItem(id item, int /*long*/ index) {
+public void setDropItem(id item, long /*int*/ index) {
 	OS.objc_msgSend(this.id, OS.sel_setDropItem_dropChildIndex_, item != null ? item.id : 0, index);
 }
 
@@ -92,11 +92,11 @@ public void setOutlineTableColumn(NSTableColumn outlineTableColumn) {
 	OS.objc_msgSend(this.id, OS.sel_setOutlineTableColumn_, outlineTableColumn != null ? outlineTableColumn.id : 0);
 }
 
-public static int /*long*/ cellClass() {
+public static long /*int*/ cellClass() {
 	return OS.objc_msgSend(OS.class_NSOutlineView, OS.sel_cellClass);
 }
 
-public static void setCellClass(int /*long*/ factoryId) {
+public static void setCellClass(long /*int*/ factoryId) {
 	OS.objc_msgSend(OS.class_NSOutlineView, OS.sel_setCellClass_, factoryId);
 }
 

@@ -13,7 +13,7 @@ package org.eclipse.swt.internal.win32;
 public class SHRGINFO {
 	public int cbSize;
 	/** @field cast=(HWND) */
-	public int /*long*/ hwndClient;
+	public long /*int*/ hwndClient;
 //	POINT ptDown
 	/** @field accessor=ptDown.x */
 	public int ptDown_x;

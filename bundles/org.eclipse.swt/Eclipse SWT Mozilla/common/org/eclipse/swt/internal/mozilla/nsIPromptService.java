@@ -37,23 +37,23 @@ public class nsIPromptService extends nsISupports {
 	public static final nsID NS_IPROMPTSERVICE_IID =
 		new nsID(NS_IPROMPTSERVICE_IID_STR);
 
-	public nsIPromptService(int /*long*/ address) {
+	public nsIPromptService(long /*int*/ address) {
 		super(address);
 	}
 
-	public int Alert(int /*long*/ aParent, char[] aDialogTitle, char[] aText) {
+	public int Alert(long /*int*/ aParent, char[] aDialogTitle, char[] aText) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aParent, aDialogTitle, aText);
 	}
 
-	public int AlertCheck(int /*long*/ aParent, char[] aDialogTitle, char[] aText, char[] aCheckMsg, int[] aCheckState) {
+	public int AlertCheck(long /*int*/ aParent, char[] aDialogTitle, char[] aText, char[] aCheckMsg, int[] aCheckState) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aParent, aDialogTitle, aText, aCheckMsg, aCheckState);
 	}
 
-	public int Confirm(int /*long*/ aParent, char[] aDialogTitle, char[] aText, int[] _retval) {
+	public int Confirm(long /*int*/ aParent, char[] aDialogTitle, char[] aText, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aParent, aDialogTitle, aText, _retval);
 	}
 
-	public int ConfirmCheck(int /*long*/ aParent, char[] aDialogTitle, char[] aText, char[] aCheckMsg, int[] aCheckState, int[] _retval) {
+	public int ConfirmCheck(long /*int*/ aParent, char[] aDialogTitle, char[] aText, char[] aCheckMsg, int[] aCheckState, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aParent, aDialogTitle, aText, aCheckMsg, aCheckState, _retval);
 	}
 
@@ -75,23 +75,23 @@ public class nsIPromptService extends nsISupports {
 	public static final int STD_OK_CANCEL_BUTTONS = 513;
 	public static final int STD_YES_NO_BUTTONS = 1027;
 	
-	public int ConfirmEx(int /*long*/ aParent, char[] aDialogTitle, char[] aText, int aButtonFlags, char[] aButton0Title, char[] aButton1Title, char[] aButton2Title, char[] aCheckMsg, int[] aCheckState, int[] _retval) {
+	public int ConfirmEx(long /*int*/ aParent, char[] aDialogTitle, char[] aText, int aButtonFlags, char[] aButton0Title, char[] aButton1Title, char[] aButton2Title, char[] aCheckMsg, int[] aCheckState, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aParent, aDialogTitle, aText, aButtonFlags, aButton0Title, aButton1Title, aButton2Title, aCheckMsg, aCheckState, _retval);
 	}
 
-	public int Prompt(int /*long*/ aParent, char[] aDialogTitle, char[] aText, int /*long*/[] aValue, char[] aCheckMsg, int[] aCheckState, int[] _retval) {
+	public int Prompt(long /*int*/ aParent, char[] aDialogTitle, char[] aText, long /*int*/[] aValue, char[] aCheckMsg, int[] aCheckState, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aParent, aDialogTitle, aText, aValue, aCheckMsg, aCheckState, _retval);
 	}
 
-	public int PromptUsernameAndPassword(int /*long*/ aParent, char[] aDialogTitle, char[] aText, int /*long*/[] aUsername, int /*long*/[] aPassword, char[] aCheckMsg, int[] aCheckState, int[] _retval) {
+	public int PromptUsernameAndPassword(long /*int*/ aParent, char[] aDialogTitle, char[] aText, long /*int*/[] aUsername, long /*int*/[] aPassword, char[] aCheckMsg, int[] aCheckState, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aParent, aDialogTitle, aText, aUsername, aPassword, aCheckMsg, aCheckState, _retval);
 	}
 
-	public int PromptPassword(int /*long*/ aParent, char[] aDialogTitle, char[] aText, int /*long*/[] aPassword, char[] aCheckMsg, int[] aCheckState, int[] _retval) {
+	public int PromptPassword(long /*int*/ aParent, char[] aDialogTitle, char[] aText, long /*int*/[] aPassword, char[] aCheckMsg, int[] aCheckState, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aParent, aDialogTitle, aText, aPassword, aCheckMsg, aCheckState, _retval);
 	}
 
-	public int Select(int /*long*/ aParent, char[] aDialogTitle, char[] aText, int aCount, int /*long*/[] aSelectList, int[] aOutSelection, int[] _retval) {
+	public int Select(long /*int*/ aParent, char[] aDialogTitle, char[] aText, int aCount, long /*int*/[] aSelectList, int[] aOutSelection, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aParent, aDialogTitle, aText, aCount, aSelectList, aOutSelection, _retval);
 	}
 }

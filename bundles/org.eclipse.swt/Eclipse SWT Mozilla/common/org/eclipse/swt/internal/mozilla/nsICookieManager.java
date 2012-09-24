@@ -37,7 +37,7 @@ public class nsICookieManager extends nsISupports {
 	public static final nsID NS_ICOOKIEMANAGER_IID =
 		new nsID(NS_ICOOKIEMANAGER_IID_STR);
 
-	public nsICookieManager(int /*long*/ address) {
+	public nsICookieManager(long /*int*/ address) {
 		super(address);
 	}
 
@@ -45,11 +45,11 @@ public class nsICookieManager extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress());
 	}
 
-	public int GetEnumerator(int /*long*/[] aEnumerator) {
+	public int GetEnumerator(long /*int*/[] aEnumerator) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aEnumerator);
 	}
 
-	public int Remove(int /*long*/ aDomain, int /*long*/ aName, int /*long*/ aPath, int aBlocked) {
+	public int Remove(long /*int*/ aDomain, long /*int*/ aName, long /*int*/ aPath, int aBlocked) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aDomain, aName, aPath, aBlocked);
 	}
 }

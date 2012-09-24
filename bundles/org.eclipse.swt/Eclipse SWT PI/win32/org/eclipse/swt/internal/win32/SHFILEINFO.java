@@ -12,7 +12,7 @@ package org.eclipse.swt.internal.win32;
 
 public class SHFILEINFO {
 	/** @field cast=(HICON) */
-	public int /*long*/ hIcon;
+	public long /*int*/ hIcon;
 	public int iIcon;
 	public int dwAttributes;
 	public static int sizeof = OS.IsUnicode ? OS.SHFILEINFOW_sizeof ():  OS.SHFILEINFOA_sizeof ();

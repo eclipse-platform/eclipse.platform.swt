@@ -28,7 +28,7 @@ public TabItemDrawData() {
 
 Rectangle computeTrim(Theme theme, GC gc) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		int /*long*/ hTheme = OS.OpenThemeData(0, getClassId());
+		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
 		int x = clientArea.x, y = clientArea.y, width = clientArea.width, height = clientArea.height;
 		if ((style & SWT.LEFT) != 0) {
 			x -= TABITEM_INSET;
@@ -56,7 +56,7 @@ Rectangle computeTrim(Theme theme, GC gc) {
 void draw(Theme theme, GC gc, Rectangle bounds) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		int state = this.state[DrawData.WIDGET_WHOLE];
-		int /*long*/ hTheme = OS.OpenThemeData(0, getClassId());
+		long /*int*/ hTheme = OS.OpenThemeData(0, getClassId());
 		int x = bounds.x, y = bounds.y, width = bounds.width, height = bounds.height;
 		if ((position & SWT.LEFT) != 0) {
 			x += TABITEM_INSET;

@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.ole.win32;
 
 public class IEnumSTATSTG extends IEnum {
-public IEnumSTATSTG(int /*long*/ address) {
+public IEnumSTATSTG(long /*int*/ address) {
 	super(address);
 }
 }

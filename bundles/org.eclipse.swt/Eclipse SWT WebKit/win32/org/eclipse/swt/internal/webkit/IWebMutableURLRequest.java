@@ -15,15 +15,15 @@ import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebMutableURLRequest extends IWebURLRequest {
 
-public IWebMutableURLRequest (int /*long*/ address) {
+public IWebMutableURLRequest (long /*int*/ address) {
 	super (address);
 }
 
-//public int setHTTPBody (int /*long*/ data) {
+//public int setHTTPBody (long /*int*/ data) {
 //	return COM.VtblCall (21, getAddress (), data);
 //}
 
-//public int setHTTPBodyStream (int /*long*/ data) {
+//public int setHTTPBodyStream (long /*int*/ data) {
 //	return COM.VtblCall (22, getAddress (), data);
 //}
 
@@ -31,11 +31,11 @@ public int setHTTPMethod (int post) {
 	return COM.VtblCall (23, getAddress (), post);
 }
 
-public int setURL (int /*long*/ theUrl) {
+public int setURL (long /*int*/ theUrl) {
 	return COM.VtblCall (27, getAddress (), theUrl);
 }
 
-public int setValue (int /*long*/ value, int /*long*/ field) {
+public int setValue (long /*int*/ value, long /*int*/ field) {
 	return COM.VtblCall (28, getAddress (), value, field);
 }
 

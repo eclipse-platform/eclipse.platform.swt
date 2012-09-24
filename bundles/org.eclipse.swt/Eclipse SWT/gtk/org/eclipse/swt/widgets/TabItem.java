@@ -34,7 +34,7 @@ import org.eclipse.swt.graphics.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class TabItem extends Item {
-	int /*long*/ labelHandle, imageHandle, pageHandle;
+	long /*int*/ labelHandle, imageHandle, pageHandle;
 	Control control;
 	TabFolder parent;
 	String toolTipText;
@@ -208,12 +208,12 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
-int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
+long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	parent.gtk_enter_notify_event (widget, event);
 	return 0;
 }
 
-int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
+long /*int*/ gtk_mnemonic_activate (long /*int*/ widget, long /*int*/ arg1) {
 	return parent.gtk_mnemonic_activate (widget, arg1);
 }
 
@@ -283,7 +283,7 @@ public void setControl (Control control) {
 	if (oldControl != null) oldControl.setVisible (false);
 }
 
-void setFontDescription (int /*long*/ font) {
+void setFontDescription (long /*int*/ font) {
 	OS.gtk_widget_modify_font (labelHandle, font);
 	OS.gtk_widget_modify_font (imageHandle, font);
 }
@@ -306,7 +306,7 @@ public void setImage (Image image) {
 		} else {
 			imageList.put (imageIndex, image);
 		}
-		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
+		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
 		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
 		OS.gtk_widget_show (imageHandle);
 	} else {

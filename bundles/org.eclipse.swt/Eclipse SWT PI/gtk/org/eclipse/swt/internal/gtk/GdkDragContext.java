@@ -21,11 +21,11 @@ public class GdkDragContext {
    /** @field cast=(gboolean) */
 	public boolean is_source;
    /** @field cast=(GdkWindow *) */
-	public int /*long*/ source_window;
+	public long /*int*/ source_window;
    /** @field cast=(GdkWindow *) */
-	public int /*long*/ dest_window;
+	public long /*int*/ dest_window;
    /** @field cast=(GList *) */
-	public int /*long*/ targets;
+	public long /*int*/ targets;
    /** @field cast=(GdkDragAction) */
 	public int actions;
    /** @field cast=(GdkDragAction) */

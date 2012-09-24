@@ -16,7 +16,7 @@ public NSIndexSet() {
 	super();
 }
 
-public NSIndexSet(int /*long*/ id) {
+public NSIndexSet(long /*int*/ id) {
 	super(id);
 }
 
@@ -24,39 +24,39 @@ public NSIndexSet(id id) {
 	super(id);
 }
 
-public boolean containsIndex(int /*long*/ value) {
+public boolean containsIndex(long /*int*/ value) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_containsIndex_, value);
 }
 
-public int /*long*/ count() {
+public long /*int*/ count() {
 	return OS.objc_msgSend(this.id, OS.sel_count);
 }
 
-public int /*long*/ firstIndex() {
+public long /*int*/ firstIndex() {
 	return OS.objc_msgSend(this.id, OS.sel_firstIndex);
 }
 
-public int /*long*/ getIndexes(int[] /*long[]*/ indexBuffer, int /*long*/ bufferSize, int /*long*/ range) {
+public long /*int*/ getIndexes(long[] /*int[]*/ indexBuffer, long /*int*/ bufferSize, long /*int*/ range) {
 	return OS.objc_msgSend(this.id, OS.sel_getIndexes_maxCount_inIndexRange_, indexBuffer, bufferSize, range);
 }
 
-public static id indexSetWithIndex(int /*long*/ value) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSIndexSet, OS.sel_indexSetWithIndex_, value);
+public static id indexSetWithIndex(long /*int*/ value) {
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSIndexSet, OS.sel_indexSetWithIndex_, value);
 	return result != 0 ? new id(result) : null;
 }
 
-public NSIndexSet initWithIndex(int /*long*/ value) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIndex_, value);
+public NSIndexSet initWithIndex(long /*int*/ value) {
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIndex_, value);
 	return result == this.id ? this : (result != 0 ? new NSIndexSet(result) : null);
 }
 
 public id initWithIndexSet(NSIndexSet indexSet) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIndexSet_, indexSet != null ? indexSet.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIndexSet_, indexSet != null ? indexSet.id : 0);
 	return result != 0 ? new id(result) : null;
 }
 
 public NSIndexSet initWithIndexesInRange(NSRange range) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIndexesInRange_, range);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIndexesInRange_, range);
 	return result == this.id ? this : (result != 0 ? new NSIndexSet(result) : null);
 }
 

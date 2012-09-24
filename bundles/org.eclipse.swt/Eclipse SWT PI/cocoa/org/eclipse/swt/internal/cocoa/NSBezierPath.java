@@ -16,7 +16,7 @@ public NSBezierPath() {
 	super();
 }
 
-public NSBezierPath(int /*long*/ id) {
+public NSBezierPath(long /*int*/ id) {
 	super(id);
 }
 
@@ -32,15 +32,15 @@ public void appendBezierPath(NSBezierPath path) {
 	OS.objc_msgSend(this.id, OS.sel_appendBezierPath_, path != null ? path.id : 0);
 }
 
-public void appendBezierPathWithArcWithCenter(NSPoint center, float /*double*/ radius, float /*double*/ startAngle, float /*double*/ endAngle) {
+public void appendBezierPathWithArcWithCenter(NSPoint center, double /*float*/ radius, double /*float*/ startAngle, double /*float*/ endAngle) {
 	OS.objc_msgSend(this.id, OS.sel_appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_, center, radius, startAngle, endAngle);
 }
 
-public void appendBezierPathWithArcWithCenter(NSPoint center, float /*double*/ radius, float /*double*/ startAngle, float /*double*/ endAngle, boolean clockwise) {
+public void appendBezierPathWithArcWithCenter(NSPoint center, double /*float*/ radius, double /*float*/ startAngle, double /*float*/ endAngle, boolean clockwise) {
 	OS.objc_msgSend(this.id, OS.sel_appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_clockwise_, center, radius, startAngle, endAngle, clockwise);
 }
 
-public void appendBezierPathWithGlyphs(int /*long*/ glyphs, int /*long*/ count, NSFont font) {
+public void appendBezierPathWithGlyphs(long /*int*/ glyphs, long /*int*/ count, NSFont font) {
 	OS.objc_msgSend(this.id, OS.sel_appendBezierPathWithGlyphs_count_inFont_, glyphs, count, font != null ? font.id : 0);
 }
 
@@ -52,22 +52,22 @@ public void appendBezierPathWithRect(NSRect rect) {
 	OS.objc_msgSend(this.id, OS.sel_appendBezierPathWithRect_, rect);
 }
 
-public void appendBezierPathWithRoundedRect(NSRect rect, float /*double*/ xRadius, float /*double*/ yRadius) {
+public void appendBezierPathWithRoundedRect(NSRect rect, double /*float*/ xRadius, double /*float*/ yRadius) {
 	OS.objc_msgSend(this.id, OS.sel_appendBezierPathWithRoundedRect_xRadius_yRadius_, rect, xRadius, yRadius);
 }
 
 public static NSBezierPath bezierPath() {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSBezierPath, OS.sel_bezierPath);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSBezierPath, OS.sel_bezierPath);
 	return result != 0 ? new NSBezierPath(result) : null;
 }
 
 public NSBezierPath bezierPathByFlatteningPath() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_bezierPathByFlatteningPath);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_bezierPathByFlatteningPath);
 	return result == this.id ? this : (result != 0 ? new NSBezierPath(result) : null);
 }
 
 public static NSBezierPath bezierPathWithRect(NSRect rect) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSBezierPath, OS.sel_bezierPathWithRect_, rect);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSBezierPath, OS.sel_bezierPathWithRect_, rect);
 	return result != 0 ? new NSBezierPath(result) : null;
 }
 
@@ -101,15 +101,15 @@ public void curveToPoint(NSPoint endPoint, NSPoint controlPoint1, NSPoint contro
 	OS.objc_msgSend(this.id, OS.sel_curveToPoint_controlPoint1_controlPoint2_, endPoint, controlPoint1, controlPoint2);
 }
 
-public static float /*double*/ defaultFlatness() {
-	return (float /*double*/)OS.objc_msgSend_fpret(OS.class_NSBezierPath, OS.sel_defaultFlatness);
+public static double /*float*/ defaultFlatness() {
+	return (double /*float*/)OS.objc_msgSend_fpret(OS.class_NSBezierPath, OS.sel_defaultFlatness);
 }
 
-public int /*long*/ elementAtIndex(int /*long*/ index, int /*long*/ points) {
+public long /*int*/ elementAtIndex(long /*int*/ index, long /*int*/ points) {
 	return OS.objc_msgSend(this.id, OS.sel_elementAtIndex_associatedPoints_, index, points);
 }
 
-public int /*long*/ elementCount() {
+public long /*int*/ elementCount() {
 	return OS.objc_msgSend(this.id, OS.sel_elementCount);
 }
 
@@ -141,31 +141,31 @@ public void setClip() {
 	OS.objc_msgSend(this.id, OS.sel_setClip);
 }
 
-public static void setDefaultFlatness(float /*double*/ flatness) {
+public static void setDefaultFlatness(double /*float*/ flatness) {
 	OS.objc_msgSend(OS.class_NSBezierPath, OS.sel_setDefaultFlatness_, flatness);
 }
 
-public void setLineCapStyle(int /*long*/ lineCapStyle) {
+public void setLineCapStyle(long /*int*/ lineCapStyle) {
 	OS.objc_msgSend(this.id, OS.sel_setLineCapStyle_, lineCapStyle);
 }
 
-public void setLineDash(float[] /*double[]*/ pattern, int /*long*/ count, float /*double*/ phase) {
+public void setLineDash(double[] /*float[]*/ pattern, long /*int*/ count, double /*float*/ phase) {
 	OS.objc_msgSend(this.id, OS.sel_setLineDash_count_phase_, pattern, count, phase);
 }
 
-public void setLineJoinStyle(int /*long*/ lineJoinStyle) {
+public void setLineJoinStyle(long /*int*/ lineJoinStyle) {
 	OS.objc_msgSend(this.id, OS.sel_setLineJoinStyle_, lineJoinStyle);
 }
 
-public void setLineWidth(float /*double*/ lineWidth) {
+public void setLineWidth(double /*float*/ lineWidth) {
 	OS.objc_msgSend(this.id, OS.sel_setLineWidth_, lineWidth);
 }
 
-public void setMiterLimit(float /*double*/ miterLimit) {
+public void setMiterLimit(double /*float*/ miterLimit) {
 	OS.objc_msgSend(this.id, OS.sel_setMiterLimit_, miterLimit);
 }
 
-public void setWindingRule(int /*long*/ windingRule) {
+public void setWindingRule(long /*int*/ windingRule) {
 	OS.objc_msgSend(this.id, OS.sel_setWindingRule_, windingRule);
 }
 

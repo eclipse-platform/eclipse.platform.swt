@@ -16,7 +16,7 @@ public NSColorList() {
 	super();
 }
 
-public NSColorList(int /*long*/ id) {
+public NSColorList(long /*int*/ id) {
 	super(id);
 }
 
@@ -25,26 +25,26 @@ public NSColorList(id id) {
 }
 
 public NSArray allKeys() {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_allKeys);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_allKeys);
 	return result != 0 ? new NSArray(result) : null;
 }
 
 public static NSColorList colorListNamed(NSString name) {
-	int /*long*/ result = OS.objc_msgSend(OS.class_NSColorList, OS.sel_colorListNamed_, name != null ? name.id : 0);
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSColorList, OS.sel_colorListNamed_, name != null ? name.id : 0);
 	return result != 0 ? new NSColorList(result) : null;
 }
 
 public NSColor colorWithKey(NSString key) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_colorWithKey_, key != null ? key.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_colorWithKey_, key != null ? key.id : 0);
 	return result != 0 ? new NSColor(result) : null;
 }
 
 public id initWithName(NSString name) {
-	int /*long*/ result = OS.objc_msgSend(this.id, OS.sel_initWithName_, name != null ? name.id : 0);
+	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithName_, name != null ? name.id : 0);
 	return result != 0 ? new id(result) : null;
 }
 
-public void insertColor(NSColor color, NSString key, int /*long*/ loc) {
+public void insertColor(NSColor color, NSString key, long /*int*/ loc) {
 	OS.objc_msgSend(this.id, OS.sel_insertColor_key_atIndex_, color != null ? color.id : 0, key != null ? key.id : 0, loc);
 }
 

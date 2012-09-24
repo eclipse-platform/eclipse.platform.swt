@@ -17,9 +17,9 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 public class AtkAttribute {
 	/** @field cast=(char *) */
-	public int /*long*/ name;
+	public long /*int*/ name;
 	/** @field cast=(char *) */
-	public int /*long*/ value;
+	public long /*int*/ value;
 	public static final int sizeof = ATK.AtkAttribute_sizeof ();
 }
 

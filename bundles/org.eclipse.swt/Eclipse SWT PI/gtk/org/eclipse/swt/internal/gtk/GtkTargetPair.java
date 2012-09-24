@@ -17,7 +17,7 @@ package org.eclipse.swt.internal.gtk;
 
 public class GtkTargetPair {
 	/** @field cast=(GdkAtom) */
-	public int /*long*/ target;
+	public long /*int*/ target;
 	/** @field cast=(guint) */
 	public int flags;
 	/** @field cast=(guint) */

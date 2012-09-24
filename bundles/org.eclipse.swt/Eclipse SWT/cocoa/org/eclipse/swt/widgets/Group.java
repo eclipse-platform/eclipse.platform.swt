@@ -151,7 +151,7 @@ void deregister () {
 	display.removeWidget (box.titleCell());
 }
 
-void drawBackground (int /*long*/ id, NSGraphicsContext context, NSRect rect) {
+void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	fillBackground (view, context, rect, -1);
 }
@@ -217,7 +217,7 @@ void setFont(NSFont font) {
 	((NSBox) view).setTitleFont(font);
 }
 
-void setForeground (float /*double*/ [] color) {
+void setForeground (double /*float*/ [] color) {
 	NSColor nsColor;
 	if (color == null) {
 		nsColor = NSColor.textColor ();

@@ -43,7 +43,7 @@ public class nsIDOMKeyEvent extends nsIDOMUIEvent {
 	public static final nsID NS_IDOMKEYEVENT_10_IID =
 		new nsID(NS_IDOMKEYEVENT_10_IID_STR);
 	
-	public nsIDOMKeyEvent(int /*long*/ address) {
+	public nsIDOMKeyEvent(long /*int*/ address) {
 		super(address);
 	}
 
@@ -204,7 +204,7 @@ public class nsIDOMKeyEvent extends nsIDOMUIEvent {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 6, getAddress(), aMetaKey);
 	}
 
-	public int InitKeyEvent(int /*long*/ typeArg, int canBubbleArg, int cancelableArg, int /*long*/ viewArg, int ctrlKeyArg, int altKeyArg, int shiftKeyArg, int metaKeyArg, int keyCodeArg, int charCodeArg) {
+	public int InitKeyEvent(long /*int*/ typeArg, int canBubbleArg, int cancelableArg, long /*int*/ viewArg, int ctrlKeyArg, int altKeyArg, int shiftKeyArg, int metaKeyArg, int keyCodeArg, int charCodeArg) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 7, getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, keyCodeArg, charCodeArg);
 	}
 }

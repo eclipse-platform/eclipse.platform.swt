@@ -16,39 +16,39 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IWebView extends IUnknown {
 
-public IWebView (int /*long*/ address) {
+public IWebView (long /*int*/ address) {
 	super (address);
 }
 
-public int canShowMIMEType (int /*long*/ mimeType, int[] canShow) {
+public int canShowMIMEType (long /*int*/ mimeType, int[] canShow) {
 	return COM.VtblCall (3, getAddress (), mimeType, canShow);
 }
 
-public int initWithFrame (RECT frame, int /*long*/ frameName, int /*long*/ groupName) {
+public int initWithFrame (RECT frame, long /*int*/ frameName, long /*int*/ groupName) {
 	return COM.VtblCall (9, getAddress(), frame, frameName, groupName);
 }
 
-public int setUIDelegate (int /*long*/ delegate) {
+public int setUIDelegate (long /*int*/ delegate) {
 	return COM.VtblCall (10, getAddress (), delegate);
 }
 
-public int setResourceLoadDelegate (int /*long*/ delegate) {
+public int setResourceLoadDelegate (long /*int*/ delegate) {
 	return COM.VtblCall (12, getAddress (), delegate);
 }
 
-public int setDownloadDelegate (int /*long*/ delegate) {
+public int setDownloadDelegate (long /*int*/ delegate) {
 	return COM.VtblCall (14, getAddress (), delegate);
 }
 
-public int setFrameLoadDelegate (int /*long*/ delegate) {
+public int setFrameLoadDelegate (long /*int*/ delegate) {
 	return COM.VtblCall (16, getAddress (), delegate);
 }
 
-public int setPolicyDelegate (int /*long*/ delegate) {
+public int setPolicyDelegate (long /*int*/ delegate) {
 	return COM.VtblCall (18, getAddress (), delegate);
 }
 
-public int mainFrame (int /*long*/[] frame) {
+public int mainFrame (long /*int*/[] frame) {
 	return COM.VtblCall (20, getAddress (), frame);
 }
 
@@ -60,27 +60,27 @@ public int goForward (int[] succeeded) {
 	return COM.VtblCall (25, getAddress(), succeeded);
 }
 
-public int setCustomUserAgent (int /*long*/ valueString) {
+public int setCustomUserAgent (long /*int*/ valueString) {
 	return COM.VtblCall (31, getAddress (), valueString);
 }
 
-public int setPreferences (int /*long*/ prefs) {
+public int setPreferences (long /*int*/ prefs) {
 	return COM.VtblCall (41, getAddress (), prefs);
 }
 
-public int preferences (int /*long*/[] prefs) {
+public int preferences (long /*int*/[] prefs) {
 	return COM.VtblCall (42, getAddress (), prefs);
 }
 
-public int setHostWindow (int /*long*/ window) {
+public int setHostWindow (long /*int*/ window) {
 	return COM.VtblCall (45, getAddress (), window);
 }
 
-public int hostWindow (int /*long*/[] window) {
+public int hostWindow (long /*int*/[] window) {
 	return COM.VtblCall (46, getAddress (), window);
 }
 
-public int estimatedProgress (int /*long*/ estimatedProgress) {
+public int estimatedProgress (long /*int*/ estimatedProgress) {
 	return COM.VtblCall (51, getAddress (), estimatedProgress);
 }
 
