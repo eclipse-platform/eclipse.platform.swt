@@ -113,6 +113,9 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 static int checkStyle (int style) {
+	if (OS.USE_CAIRO) {
+		style |= SWT.SMOOTH;
+	}
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
@@ -144,7 +147,6 @@ void createHandle (int index) {
 
 void drawBand (int x, int y, int width, int height) {
 	if ((style & SWT.SMOOTH) != 0) return;
-	//TODO: Use Cairo
 	long /*int*/ window = gtk_widget_get_window (parent.paintHandle());
 	if (window == 0) return;
 	byte [] bits = {-86, 85, -86, 85, -86, 85, -86, 85};
