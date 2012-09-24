@@ -887,7 +887,9 @@ public void setByRef(float val) {
  * @since 2.1
  */
 public void setByRef(long /*int*/ val) {
-	if ((type & COM.VT_BYREF) == 0 || (type & COM.VT_I4) == 0) {
+	if ((type & COM.VT_BYREF) == 0 
+			|| (OS.PTR_SIZEOF == 4 && (type & COM.VT_I4) == 0) 
+			|| (OS.PTR_SIZEOF == 8 && (type & COM.VT_I8) == 0)) {
 		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE);
 	}
 	COM.MoveMemory(byRefPtr, new long /*int*/[]{val}, OS.PTR_SIZEOF);

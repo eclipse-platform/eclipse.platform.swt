@@ -45,19 +45,17 @@ public final class GCData {
 	public int alpha = 0xFF;
 
 	public Image image;
-	public long /*int*/ hPen, hOldPen;
-	public long /*int*/ hBrush, hOldBrush;
-	public long /*int*/ hNullBitmap;
-	public long /*int*/ hwnd;
+	/**
+	 * @noreference This field is not intended to be referenced by clients.
+	 */
 	public PAINTSTRUCT ps;
 	public int layout = -1;
-	public long /*int*/ gdipGraphics;
-	public long /*int*/ gdipPen;
-	public long /*int*/ gdipBrush;
-	public long /*int*/ gdipFgBrush;
-	public long /*int*/ gdipBgBrush;
-	public long /*int*/ gdipFont;
-	public long /*int*/ hGDIFont;
+	/**
+	 * @noreference This field is not intended to be referenced by clients.
+	 */
+	public long /*int*/ hPen, hOldPen, hBrush, hOldBrush, hNullBitmap,
+		hwnd, gdipGraphics, gdipPen, gdipBrush, gdipFgBrush, gdipBgBrush,
+		gdipFont, hGDIFont;
 	public float gdipXOffset, gdipYOffset;
 	public int uiState = 0;
 	public boolean focusDrawn;
