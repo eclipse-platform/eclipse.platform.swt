@@ -83,7 +83,8 @@ public class Tree extends Composite {
 	TreeColumn sortColumn;
 	int columnCount;
 	int sortDirection;
-	boolean ignoreExpand, ignoreSelect, ignoreRedraw, reloadPending, drawExpansion, didSelect, preventSelect;
+	int selectedRowIndex = -1;
+	boolean ignoreExpand, ignoreSelect, ignoreRedraw, reloadPending, drawExpansion, didSelect, preventSelect, dragDetected;
 	Rectangle imageBounds;
 	TreeItem insertItem;
 	boolean insertBefore;
@@ -2036,17 +2037,7 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 			if (!OS.NSPointInRect(pt, rect)) {
 				Widget item = itemID != null ? display.getWidget (itemID.id) : null;
 				if (item != null && item instanceof TreeItem) {
-					Event event = new Event ();
-					event.item = item;
-					sendSelectionEvent (SWT.Selection, event, false);
-
-					// Feature in Cocoa: This code path handles the case of an unmodified click on an already-selected row.
-					// If other rows are selected they will de-select and fire a outlineViewSelectionDidChange message.
-					// To keep the order of events correct, send the selection event here and ignore the next
-					// outlineViewSelectionDidChange message.  We'll reset the flag when the message is received.
-					if (widget.selectedRowIndexes().count() > 1) {
-						ignoreSelect = true;
-					}
+					selectedRowIndex = this.indexOf ((TreeItem)item);
 				}
 			}
 		}
@@ -2635,6 +2626,34 @@ void sendMeasureItem (TreeItem item, boolean selected, int columnIndex, NSSize s
 			}
 		}
 	}
+}
+
+boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
+	if (type == SWT.DragDetect) {
+		dragDetected = true;
+	} else if (type == SWT.MouseUp) {
+		if (!dragDetected && selectedRowIndex != -1) {
+			NSTableView widget = (NSTableView)view;
+			NSIndexSet selectedRows = widget.selectedRowIndexes ();
+			int count = (int)/*64*/selectedRows.count();
+			int /*long*/ [] indexBuffer = new int /*long*/ [count];
+			selectedRows.getIndexes(indexBuffer, count, 0);
+			for (int i = 0; i < count; i++) {
+				if (indexBuffer[i] == selectedRowIndex) continue;
+				ignoreSelect = true;
+				widget.deselectRow (indexBuffer[i]);
+				ignoreSelect = false;
+			}
+			
+			Event event = new Event ();
+			event.item = _getItem (null, selectedRowIndex, true);
+			selectedRowIndex = -1;
+			sendSelectionEvent (SWT.Selection, event, false);
+		}
+		dragDetected = false;
+	}
+	
+	return super.sendMouseEvent (nsEvent, type, send);
 }
 
 void selectItems (TreeItem[] items, boolean ignoreDisposed) {

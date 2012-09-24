@@ -74,8 +74,8 @@ public class Table extends Composite {
 	NSTableColumn firstColumn, checkColumn;
 	NSTextFieldCell dataCell;
 	NSButtonCell buttonCell;
-	int columnCount, itemCount, lastIndexOf, sortDirection;
-	boolean ignoreSelect, fixScrollWidth, drawExpansion, didSelect, preventSelect;
+	int columnCount, itemCount, lastIndexOf, sortDirection, selectedRowIndex = -1;
+	boolean ignoreSelect, fixScrollWidth, drawExpansion, didSelect, preventSelect, dragDetected;
 	Rectangle imageBounds;
 	
 	/* Used to control drop feedback when FEEDBACK_SCROLL is set/not set */
@@ -1990,17 +1990,7 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	if (!check && row != -1 && (nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == 0 && nsEvent.clickCount() == 1) {
 		if (widget.isRowSelected(row)) {
 			if (0 <= row && row < itemCount) {
-				Event event = new Event ();
-				event.item = _getItem ((int)/*64*/row);
-				sendSelectionEvent (SWT.Selection, event, false);
-				
-				// Feature in Cocoa: This code path handles the case of an unmodified click on an already-selected row.
-				// If other rows are selected they will de-select and fire a tableViewSelectionDidChange message.
-				// To keep the order of events correct, send the selection event here and ignore the next
-				// tableViewSelectionDidChange message.  We'll reset the flag when the message is received.
-				if (widget.selectedRowIndexes().count() > 1) {
-					ignoreSelect = true;
-				}
+				selectedRowIndex = row;
 			}
 		}
 	}
@@ -3338,6 +3328,34 @@ void tableView_willDisplayCell_forTableColumn_row (int /*long*/ id, int /*long*/
 
 boolean tableView_writeRowsWithIndexes_toPasteboard(int /*long*/ id, int /*long*/ sel, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2) {
 	return sendMouseEvent(NSApplication.sharedApplication().currentEvent(), SWT.DragDetect, true);
+}
+
+boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
+	if (type == SWT.DragDetect) {
+		dragDetected = true;
+	} else if (type == SWT.MouseUp) {
+		if (!dragDetected && selectedRowIndex != -1) {
+			NSTableView widget = (NSTableView)view;
+			NSIndexSet selectedRows = widget.selectedRowIndexes ();
+			int count = (int)/*64*/selectedRows.count();
+			int /*long*/ [] indexBuffer = new int /*long*/ [count];
+			selectedRows.getIndexes(indexBuffer, count, 0);
+			for (int i = 0; i < count; i++) {
+				if (indexBuffer[i] == selectedRowIndex) continue;
+				ignoreSelect = true;
+				widget.deselectRow (indexBuffer[i]);
+				ignoreSelect = false;
+			}
+			
+			Event event = new Event ();
+			event.item = _getItem ((int)/*64*/selectedRowIndex);
+			selectedRowIndex = -1;
+			sendSelectionEvent (SWT.Selection, event, false);
+		}
+		dragDetected = false;
+	}
+	
+	return super.sendMouseEvent (nsEvent, type, send);
 }
 
 NSRect titleRectForBounds (int /*long*/ id, int /*long*/ sel, NSRect cellFrame) {
