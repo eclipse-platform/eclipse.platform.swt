@@ -91,6 +91,22 @@ Region(Device device, long /*int*/ handle) {
 	this.handle = handle;
 }
 
+/**	 
+ * Invokes platform specific functionality to allocate a new region.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Region</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param device the device on which to allocate the region
+ * @param handle the handle for the region
+ * @return a new region object containing the specified device and handle
+ * 
+ * @noreference This method is not intended to be referenced by clients.
+ */
 public static Region cocoa_new(Device device, long /*int*/ handle) {
 	return new Region(device, handle);
 }

@@ -29,8 +29,10 @@ import org.eclipse.swt.internal.cocoa.*;
 public final class GCData {
 	public Device device;
 	public int style, state = -1;
-	public double /*float*/ [] foreground;
-	public double /*float*/ [] background;
+	/**
+	 * @noreference This field is not intended to be referenced by clients.
+	 */
+	public double /*float*/ [] foreground, background;
 	public Pattern foregroundPattern;
 	public Pattern backgroundPattern;
 	public Font font;
@@ -52,11 +54,17 @@ public final class GCData {
 	public NSLayoutManager layoutManager;
 	public NSTextContainer textContainer;
 	public NSColor fg, bg;
+	/**
+	 * @noreference This field is not intended to be referenced by clients.
+	 */
 	public double /*float*/ drawXOffset, drawYOffset;
 	public NSRect paintRect;
 	public NSBezierPath path;
 	public NSAffineTransform transform, inverseTransform;
 	public NSBezierPath clipPath, visiblePath;
+	/**
+	 * @noreference This field is not intended to be referenced by clients.
+	 */
 	public long /*int*/ visibleRgn;
 	public NSView view;
 	public NSSize size;

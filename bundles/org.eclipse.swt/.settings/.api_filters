@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.eclipse.swt" version="2">
     <resource path="Eclipse SWT Accessibility/cocoa/org/eclipse/swt/accessibility/Accessible.java" type="org.eclipse.swt.accessibility.Accessible">
         <filter id="643842064">
@@ -576,6 +576,36 @@
         </filter>
     </resource>
     <resource path="Eclipse SWT/cocoa/org/eclipse/swt/graphics/GCData.java" type="org.eclipse.swt.graphics.GCData">
+        <filter id="338940029">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GCData"/>
+                <message_argument value="background"/>
+            </message_arguments>
+        </filter>
+        <filter id="338940029">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GCData"/>
+                <message_argument value="drawXOffset"/>
+            </message_arguments>
+        </filter>
+        <filter id="338940029">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GCData"/>
+                <message_argument value="drawYOffset"/>
+            </message_arguments>
+        </filter>
+        <filter id="338940029">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GCData"/>
+                <message_argument value="foreground"/>
+            </message_arguments>
+        </filter>
+        <filter id="338940029">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GCData"/>
+                <message_argument value="visibleRgn"/>
+            </message_arguments>
+        </filter>
         <filter id="627060751">
             <message_arguments>
                 <message_argument value="NSAffineTransform"/>
@@ -672,6 +702,29 @@
                 <message_argument value="NSView"/>
                 <message_argument value="GCData"/>
                 <message_argument value="view"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/cocoa/org/eclipse/swt/graphics/Region.java" type="org.eclipse.swt.graphics.Region">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Region"/>
+                <message_argument value="cocoa_new(Device, int)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/cocoa/org/eclipse/swt/widgets/Display.java" type="org.eclipse.swt.widgets.Display">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.Display"/>
+                <message_argument value="findWidget(Widget, int)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1141899266">
+            <message_arguments>
+                <message_argument value="3.3"/>
+                <message_argument value="3.101"/>
+                <message_argument value="findWidget(Widget, long)"/>
             </message_arguments>
         </filter>
     </resource>
