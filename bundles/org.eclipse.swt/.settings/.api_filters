@@ -1099,6 +1099,12 @@
         </filter>
     </resource>
     <resource path="Eclipse SWT/gtk/org/eclipse/swt/widgets/Composite.java" type="org.eclipse.swt.widgets.Composite">
+        <filter id="338940029">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.Composite"/>
+                <message_argument value="embeddedHandle"/>
+            </message_arguments>
+        </filter>
         <filter id="388161617">
             <message_arguments>
                 <message_argument value="org.eclipse.swt.widgets.Composite"/>
