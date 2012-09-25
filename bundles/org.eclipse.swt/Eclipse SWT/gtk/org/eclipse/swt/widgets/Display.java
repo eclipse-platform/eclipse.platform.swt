@@ -1268,6 +1268,8 @@ public Widget findWidget (long /*int*/ handle, long /*int*/ id) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
+ * @noreference This method is not intended to be referenced by clients.
+ * 
  * @since 3.3
  */
 public Widget findWidget (Widget widget, long /*int*/ id) {

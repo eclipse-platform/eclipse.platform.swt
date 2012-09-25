@@ -29,12 +29,13 @@ import org.eclipse.swt.*;
 public final class GCData {
 	public Device device;
 	public int style, state = -1;
-	public GdkColor foreground;
-	public GdkColor background;
+	/**
+	 * @noreference This field is not intended to be referenced by clients.
+	 */
+	public GdkColor foreground, background;
 	public Font font;
 	public Pattern foregroundPattern;
 	public Pattern backgroundPattern;
-	public long /*int*/ clipRgn;
 	public float lineWidth;
 	public int lineStyle = SWT.LINE_SOLID;
 	public float[] lineDashes;
@@ -45,13 +46,12 @@ public final class GCData {
 	public boolean xorMode;
 	public int alpha = 0xFF;
 	public int interpolation = SWT.DEFAULT;
-
-	public long /*int*/ context;
-	public long /*int*/ layout;
-	public long /*int*/ damageRgn;
 	public Image image;
-	public long /*int*/ drawable;	
-	public long /*int*/ cairo;
+
+	/**
+	 * @noreference This field is not intended to be referenced by clients.
+	 */
+	public long /*int*/ clipRgn, context, layout, damageRgn, drawable, cairo;
 	public double cairoXoffset, cairoYoffset;
 	public boolean disposeCairo;
 	public double[] identity, clippingTransform;

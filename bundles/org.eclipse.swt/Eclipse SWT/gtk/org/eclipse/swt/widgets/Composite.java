@@ -47,6 +47,18 @@ import org.eclipse.swt.graphics.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class Composite extends Scrollable {
+	/**
+	 * the handle to the OS resource 
+	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 * 
+	 * @noreference This field is not intended to be referenced by clients.
+	 */
 	public long /*int*/  embeddedHandle;
 	long /*int*/ imHandle, socketHandle;
 	Layout layout;

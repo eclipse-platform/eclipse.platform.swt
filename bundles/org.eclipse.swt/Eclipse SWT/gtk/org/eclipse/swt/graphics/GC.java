@@ -194,6 +194,23 @@ static int checkStyle (int style) {
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
+/**	 
+ * Invokes platform specific functionality to wrap a graphics context.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>GC</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param handle the handle to the OS device context
+ * @param data the data for the receiver.
+ *
+ * @return a new <code>GC</code>
+ * 
+ * @noreference This method is not intended to be referenced by clients.
+ */
 public static GC gtk_new(long /*int*/ handle, GCData data) {
 	GC gc = new GC();
 	gc.device = data.device;
@@ -201,6 +218,23 @@ public static GC gtk_new(long /*int*/ handle, GCData data) {
 	return gc;
 }
 
+/**	 
+ * Invokes platform specific functionality to allocate a new graphics context.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>GC</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param drawable the Drawable for the receiver.
+ * @param data the data for the receiver.
+ *
+ * @return a new <code>GC</code>
+ * 
+ * @noreference This method is not intended to be referenced by clients.
+ */
 public static GC gtk_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
 	long /*int*/ gdkGC = drawable.internal_new_GC(data);

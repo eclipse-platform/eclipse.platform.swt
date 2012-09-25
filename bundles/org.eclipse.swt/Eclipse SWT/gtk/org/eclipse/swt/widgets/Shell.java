@@ -359,6 +359,23 @@ public Shell (Shell parent, int style) {
 	this (parent != null ? parent.display : null, parent, style, 0, false);
 }
 
+/**	 
+ * Invokes platform specific functionality to allocate a new shell
+ * that is embedded.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Shell</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param display the display for the shell
+ * @param handle the handle for the shell
+ * @return a new shell object containing the specified display and handle
+ * 
+ * @noreference This method is not intended to be referenced by clients.
+ */
 public static Shell gtk_new (Display display, long /*int*/ handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, true);
 }

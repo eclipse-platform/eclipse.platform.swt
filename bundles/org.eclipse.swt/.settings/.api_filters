@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><component id="org.eclipse.swt" version="2">
+<?xml version="1.0" encoding="UTF-8"?>
+<component id="org.eclipse.swt" version="2">
     <resource path="Eclipse SWT Accessibility/cocoa/org/eclipse/swt/accessibility/Accessible.java" type="org.eclipse.swt.accessibility.Accessible">
         <filter id="643842064">
             <message_arguments>
@@ -1022,6 +1023,102 @@
                 <message_argument value="SWTEventListener"/>
                 <message_argument value="TypedListener"/>
                 <message_argument value="getEventListener()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/gtk/org/eclipse/swt/graphics/GC.java" type="org.eclipse.swt.graphics.GC">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GC"/>
+                <message_argument value="gtk_new(int, GCData)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GC"/>
+                <message_argument value="gtk_new(Drawable, GCData)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/gtk/org/eclipse/swt/graphics/GCData.java" type="org.eclipse.swt.graphics.GCData">
+        <filter id="338940029">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GCData"/>
+                <message_argument value="background"/>
+            </message_arguments>
+        </filter>
+        <filter id="338940029">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GCData"/>
+                <message_argument value="cairo"/>
+            </message_arguments>
+        </filter>
+        <filter id="338940029">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GCData"/>
+                <message_argument value="clipRgn"/>
+            </message_arguments>
+        </filter>
+        <filter id="338940029">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GCData"/>
+                <message_argument value="context"/>
+            </message_arguments>
+        </filter>
+        <filter id="338940029">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GCData"/>
+                <message_argument value="damageRgn"/>
+            </message_arguments>
+        </filter>
+        <filter id="338940029">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GCData"/>
+                <message_argument value="drawable"/>
+            </message_arguments>
+        </filter>
+        <filter id="338940029">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GCData"/>
+                <message_argument value="foreground"/>
+            </message_arguments>
+        </filter>
+        <filter id="338940029">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GCData"/>
+                <message_argument value="layout"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/gtk/org/eclipse/swt/graphics/Region.java" type="org.eclipse.swt.graphics.Region">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Region"/>
+                <message_argument value="gtk_new(Device, int)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/gtk/org/eclipse/swt/widgets/Composite.java" type="org.eclipse.swt.widgets.Composite">
+        <filter id="388161617">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.Composite"/>
+                <message_argument value="embeddedHandle"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/gtk/org/eclipse/swt/widgets/Display.java" type="org.eclipse.swt.widgets.Display">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.Display"/>
+                <message_argument value="findWidget(Widget, int)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="Eclipse SWT/gtk/org/eclipse/swt/widgets/Shell.java" type="org.eclipse.swt.widgets.Shell">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.widgets.Shell"/>
+                <message_argument value="gtk_new(Display, int)"/>
             </message_arguments>
         </filter>
     </resource>
