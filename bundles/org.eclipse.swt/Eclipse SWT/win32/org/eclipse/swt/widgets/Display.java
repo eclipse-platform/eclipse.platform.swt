@@ -1346,7 +1346,6 @@ public Widget findWidget (long /*int*/ handle) {
  */
 public Widget findWidget (long /*int*/ handle, long /*int*/ id) {
 	checkDevice ();
-	//TODO - should ids be long
 	Control control = getControl (handle);
 	return control != null ? control.findItem (id) : null;
 }
@@ -1372,7 +1371,6 @@ public Widget findWidget (long /*int*/ handle, long /*int*/ id) {
  */
 public Widget findWidget (Widget widget, long /*int*/ id) {
 	checkDevice ();
-	//TODO - should ids be long
 	if (widget instanceof Control) {
 		return findWidget (((Control) widget).handle, id);
 	}

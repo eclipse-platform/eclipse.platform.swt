@@ -1132,7 +1132,7 @@ public Widget findWidget (long /*int*/ handle) {
  * 
  * @since 3.1
  */
-public Widget findWidget (long /*int*/ handle, int id) {
+public Widget findWidget (long /*int*/ handle, long /*int*/ id) {
 	checkDevice ();
 	return getWidget (handle);
 }
@@ -1154,7 +1154,7 @@ public Widget findWidget (long /*int*/ handle, int id) {
  * 
  * @since 3.3
  */
-public Widget findWidget (Widget widget, int id) {
+public Widget findWidget (Widget widget, long /*int*/ id) {
 	checkDevice ();
 	return null;
 }
