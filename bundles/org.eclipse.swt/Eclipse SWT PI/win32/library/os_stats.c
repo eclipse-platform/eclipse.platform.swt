@@ -1093,6 +1093,11 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_RECT_2_3JI",
 #endif
 #ifndef JNI64
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_SAFEARRAY_2II",
+#else
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_SAFEARRAY_2JI",
+#endif
+#ifndef JNI64
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II",
 #else
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2JI",

@@ -127,7 +127,7 @@ static String readSafeArray(Variant variantByRef) {
 	// Read a safearray that contains data of 
 	// type VT_UI1 (unsigned shorts) which contains
 	// a text stream.
-    int pPostData = variantByRef.getByRef();
+    long /*int*/ pPostData = variantByRef.getByRef();
     short[] vt_type = new short[1];
     OS.MoveMemory(vt_type, pPostData, 2);
     String result = null;
@@ -137,21 +137,15 @@ static String readSafeArray(Variant variantByRef) {
         vt_type = new short[1];
         OS.MoveMemory(vt_type, pVariant[0], 2);
         if (vt_type[0] == (short)(OLE.VT_ARRAY | OLE.VT_UI1)) {
-            int[] pSafearray = new int[1];
-            OS.MoveMemory(pSafearray, pVariant[0] + 8, 4);
-            short[] cDims = new short[1];
-            OS.MoveMemory(cDims, pSafearray[0], 2);
-            int[] pvData = new int[1];
-            OS.MoveMemory(pvData, pSafearray[0] + 12, 4);
-            int safearrayboundOffset = 0;
-            for (int i = 0; i < cDims[0]; i++) {
-                int[] cElements = new int[1];
-                OS.MoveMemory(cElements, pSafearray[0] + 16 + safearrayboundOffset, 4);
-                safearrayboundOffset += 8;
-                int cchWideChar = OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED,  pvData[0], -1, null, 0);
+            long /*int*/ [] pSafearray = new long /*int*/[1];
+            OS.MoveMemory(pSafearray, pVariant[0] + 8, OS.PTR_SIZEOF);
+            SAFEARRAY safeArray = new SAFEARRAY();
+            OS.MoveMemory(safeArray, pSafearray[0], SAFEARRAY.sizeof);
+            for (int i = 0; i < safeArray.cDims; i++) {
+                int cchWideChar = OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED,  safeArray.pvData, -1, null, 0);
 				if (cchWideChar == 0) return null;
 				char[] lpWideCharStr = new char [cchWideChar - 1];
-				OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED,  pvData[0], -1, lpWideCharStr, lpWideCharStr.length);
+				OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED,  safeArray.pvData, -1, lpWideCharStr, lpWideCharStr.length);
 				result = new String(lpWideCharStr);
             }
         }
@@ -175,28 +169,27 @@ static Variant writeSafeArray (String string) {
 	string.getChars(0, count, chars, 0);
 	int cchMultiByte = OS.WideCharToMultiByte(CodePage, 0, chars, -1, null, 0, null, null);
 	if (cchMultiByte == 0) return null;
-	int pvData = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, cchMultiByte);
+	long /*int*/ pvData = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, cchMultiByte);
 	OS.WideCharToMultiByte(CodePage, 0, chars, -1, pvData, cchMultiByte, null, null);
 	int cElements1 = cchMultiByte;
 	int lLbound1 = 0;
 	// Create a safearray in memory
-	// 12 bytes for cDims, fFeatures and cbElements + 4 bytes for pvData + number of dimensions * (size of safearraybound)
-	int sizeofSafeArray = 12 + 4 + 1*8;
-	int pSafeArray = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, sizeofSafeArray);
-	// Copy the data into the safe array
-	int offset = 0;
-	OS.MoveMemory(pSafeArray + offset, new short[] {cDims}, 2); offset += 2;
-	OS.MoveMemory(pSafeArray + offset, new short[] {fFeatures}, 2); offset += 2;
-	OS.MoveMemory(pSafeArray + offset, new int[] {cbElements}, 4); offset += 4;
-	OS.MoveMemory(pSafeArray + offset, new int[] {0}, 4); offset += 4;
-	OS.MoveMemory(pSafeArray + offset, new int[] {pvData}, 4); offset += 4;
-	OS.MoveMemory(pSafeArray + offset, new int[] {cElements1}, 4); offset += 4;
-	OS.MoveMemory(pSafeArray + offset, new int[] {lLbound1}, 4); offset += 4;
+	long /*int*/ pSafeArray = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, SAFEARRAY.sizeof);
+	SAFEARRAY safeArray = new SAFEARRAY();
+	safeArray.cDims = cDims;
+	safeArray.fFeatures = fFeatures;
+	safeArray.cbElements = cbElements;
+	safeArray.pvData = pvData;
+	SAFEARRAYBOUND safeArrayBound = new SAFEARRAYBOUND(); 
+	safeArray.rgsabound = safeArrayBound;
+	safeArrayBound.cElements = cElements1;
+	safeArrayBound.lLbound = lLbound1;
+	OS.MoveMemory (pSafeArray, safeArray, SAFEARRAY.sizeof);
 	// Create a variant in memory to hold the safearray
-	int pVariant = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, Variant.sizeof);
+	long /*int*/ pVariant = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, Variant.sizeof);
 	short vt = (short)(OLE.VT_ARRAY | OLE.VT_UI1);
 	OS.MoveMemory(pVariant, new short[] {vt}, 2);
-	OS.MoveMemory(pVariant + 8, new int[]{pSafeArray}, 4);
+	OS.MoveMemory(pVariant + 8, new long /*int*/[]{pSafeArray}, OS.PTR_SIZEOF);
 	// Create a by ref variant
 	Variant variantByRef = new Variant(pVariant, (short)(OLE.VT_BYREF | OLE.VT_VARIANT));
 	return variantByRef;

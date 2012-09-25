@@ -5338,6 +5338,11 @@ public static final native void MoveMemory (long /*int*/ Destination, SAFEARRAY 
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
+public static final native void MoveMemory (SAFEARRAY Destination, long /*int*/ Source, int Length);
+/**
+ * @param Destination cast=(PVOID)
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
 public static final native void MoveMemory (long /*int*/ Destination, TRIVERTEX Source, int Length);
 /**
  * @param Destination cast=(PVOID)

@@ -11107,6 +11107,31 @@ fail:
 }
 #endif
 
+#if (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SAFEARRAY_2II) && !defined(JNI64)) || (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SAFEARRAY_2JI) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_SAFEARRAY_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jint arg2)
+#else
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_SAFEARRAY_2JI)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jint arg2)
+#endif
+{
+	SAFEARRAY _arg0, *lparg0=NULL;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_SAFEARRAY_2II_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_SAFEARRAY_2JI_FUNC);
+#endif
+	if (arg0) if ((lparg0 = getSAFEARRAYFields(env, arg0, &_arg0)) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setSAFEARRAYFields(env, arg0, lparg0);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_SAFEARRAY_2II_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_SAFEARRAY_2JI_FUNC);
+#endif
+}
+#endif
+
 #if (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II) && !defined(JNI64)) || (!defined(NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2JI) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jint arg2)

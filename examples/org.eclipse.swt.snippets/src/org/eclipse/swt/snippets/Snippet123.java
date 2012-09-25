@@ -129,18 +129,18 @@ class EventDispatch {
 		this.eventID = eventID;
 		createCOMInterfaces();
 	}
-	int /*long*/ getAddress() {
+	long /*int*/ getAddress() {
 		return iDispatch.getAddress();
 	}
 	private void createCOMInterfaces() {
 		iDispatch = new COMObject(new int[]{2, 0, 0, 1, 3, 4, 8}){
-			public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-			public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-			public int /*long*/ method2(int /*long*/[] args) {return Release();}
+			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			public long /*int*/ method2(long /*int*/[] args) {return Release();}
 			// method3 GetTypeInfoCount - not implemented
 			// method4 GetTypeInfo - not implemented
 			// method5 GetIDsOfNames - not implemented
-			public int /*long*/ method6(int /*long*/[] args) {return Invoke((int)/*64*/args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7]);}
+			public long /*int*/ method6(long /*int*/[] args) {return Invoke((int)/*64*/args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7]);}
 		};
 	}
 	private void disposeCOMInterfaces() {
@@ -153,7 +153,7 @@ class EventDispatch {
 		refCount++;
 		return refCount;
 	}
-	private int Invoke(int dispIdMember, int /*long*/ riid, int lcid, int dwFlags, int /*long*/ pDispParams, int /*long*/ pVarResult, int /*long*/ pExcepInfo, int /*long*/ pArgErr)	{
+	private int Invoke(int dispIdMember, long /*int*/ riid, int lcid, int dwFlags, long /*int*/ pDispParams, long /*int*/ pVarResult, long /*int*/ pExcepInfo, long /*int*/ pArgErr)	{
 		switch (eventID) {
 			case onhelp: System.out.println("onhelp"); break;
 			case onclick: System.out.println("onclick"); break;
@@ -175,17 +175,17 @@ class EventDispatch {
 		}
 		return COM.S_OK;
 	}
-	private int QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
+	private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 		if (riid == 0 || ppvObject == 0) return COM.E_INVALIDARG;
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, riid, GUID.sizeof);
 	
 		if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDispatch)) {
-			COM.MoveMemory(ppvObject, new int /*long*/[] {iDispatch.getAddress()}, OS.PTR_SIZEOF);
+			COM.MoveMemory(ppvObject, new long /*int*/[] {iDispatch.getAddress()}, OS.PTR_SIZEOF);
 			AddRef();
 			return COM.S_OK;
 		}
-		COM.MoveMemory(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
+		COM.MoveMemory(ppvObject, new long /*int*/[] {0}, OS.PTR_SIZEOF);
 		return COM.E_NOINTERFACE;
 	}
 	int Release() {
