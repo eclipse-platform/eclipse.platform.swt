@@ -1558,6 +1558,7 @@ void onDispose(Event event) {
 		}
 	}
 
+	gradientColors = null;
 	
 	selectionGradientColors = null;
 	selectionGradientPercents = null;
@@ -1590,6 +1591,16 @@ void onDispose(Event event) {
 	
 	if (renderer != null) renderer.dispose();
 	renderer = null;
+
+	minItem = null;
+	maxItem = null;
+	minMaxTb = null;
+	
+	chevronItem = null;
+	chevronTb = null;
+	
+	folderListeners = null;
+	tabListeners = null;
 }
 void onDragDetect(Event event) {
 	boolean consume = false;
