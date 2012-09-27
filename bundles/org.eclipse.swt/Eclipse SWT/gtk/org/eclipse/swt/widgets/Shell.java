@@ -2100,7 +2100,7 @@ public void setVisible (boolean visible) {
 		mapped = true;
 
 		if ((style & mask) != 0) {
-			gdk_pointer_ungrab(shellHandle,OS.GDK_CURRENT_TIME);
+			gdk_pointer_ungrab (shellHandle, OS.GDK_CURRENT_TIME);
 		}
 		opened = true;
 		if (!moved) {

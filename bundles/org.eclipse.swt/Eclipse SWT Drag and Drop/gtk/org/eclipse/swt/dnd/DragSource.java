@@ -316,9 +316,9 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 	 * a drag is finished.
 	 */
 	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		long /*int*/ display = OS.gdk_window_get_display (OS.gtk_widget_get_window(widget));
-		long /*int*/ device_manager = OS.gdk_display_get_device_manager (display);
-		long /*int*/ pointer = OS.gdk_device_manager_get_client_pointer (device_manager);
+		long /*int*/ display = OS.gdk_window_get_display(OS.gtk_widget_get_window(widget));
+		long /*int*/ device_manager = OS.gdk_display_get_device_manager(display);
+		long /*int*/ pointer = OS.gdk_device_manager_get_client_pointer(device_manager);
 		OS.gdk_device_ungrab(pointer, OS.GDK_CURRENT_TIME);
 	} else {
 		OS.gdk_pointer_ungrab(OS.GDK_CURRENT_TIME);

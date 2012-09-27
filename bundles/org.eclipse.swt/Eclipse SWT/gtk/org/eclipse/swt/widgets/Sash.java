@@ -311,7 +311,7 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 			event.height = height;
 			if ((parent.style & SWT.MIRRORED) != 0) event.x = parent.getClientWidth () - width  - event.x;
 			sendSelectionEvent (SWT.Selection, event, true);
-			if (ptrGrabResult == OS.GDK_GRAB_SUCCESS)  gdk_pointer_ungrab (window, OS.GDK_CURRENT_TIME);
+			if (ptrGrabResult == OS.GDK_GRAB_SUCCESS) gdk_pointer_ungrab (window, OS.GDK_CURRENT_TIME);
 			if (isDisposed ()) break;
 			
 			if (event.doit) {

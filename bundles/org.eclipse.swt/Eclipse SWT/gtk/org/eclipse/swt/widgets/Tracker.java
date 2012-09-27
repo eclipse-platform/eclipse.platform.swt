@@ -988,7 +988,7 @@ public void setStippled (boolean stippled) {
 }
 
 void ungrab () {
-	if (grabbed) gdk_pointer_ungrab(window, OS.GDK_CURRENT_TIME);
+	if (grabbed) gdk_pointer_ungrab (window, OS.GDK_CURRENT_TIME);
 }
 
 void update () {
