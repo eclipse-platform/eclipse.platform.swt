@@ -22,13 +22,22 @@ public class MacGenerator {
 	Document[] documents;
 	String outputDir, outputLibDir, extrasDir, mainClassName;
 	String delimiter = System.getProperty("line.separator");
-
-	PrintStream out;
+	boolean generate64Code;
+	PrintWriter out;
 	
 	public static boolean BUILD_C_SOURCE = true;
 	public static boolean GENERATE_ALLOC = true;
 	public static boolean GENERATE_STRUCTS = false;
 	public static boolean USE_SYSTEM_BRIDGE_FILES = false;
+
+	static final char[] INT_LONG = "int /*long*/".toCharArray();
+	static final char[] INT_LONG_ARRAY = "int[] /*long[]*/".toCharArray();
+	static final char[] FLOAT_DOUBLE = "float /*double*/".toCharArray();
+	static final char[] FLOAT_DOUBLE_ARRAY = "float[] /*double[]*/".toCharArray();
+	static final char[] LONG_INT = "long /*int*/".toCharArray();
+	static final char[] LONG_INT_ARRAY = "long[] /*int[]*/".toCharArray();
+	static final char[] DOUBLE_FLOAT = "double /*float*/".toCharArray();
+	static final char[] DOUBLE_FLOAT_ARRAY = "double[] /*float[]*/".toCharArray();
 
 public MacGenerator() {
 }
@@ -47,6 +56,67 @@ static void list(File path, ArrayList list) {
 				list.add(xml);
 			}
 		}
+	}
+}
+
+static int indexOf(final char[] toBeFound, final char[] array, final int start) {
+	final int arrayLength = array.length;
+	final int toBeFoundLength = toBeFound.length;
+	if (toBeFoundLength > arrayLength || start < 0) return -1;
+	if (toBeFoundLength == 0) return 0;
+	if (toBeFoundLength == arrayLength) {
+		for (int i = start; i < arrayLength; i++) {
+			if (array[i] != toBeFound[i]) return -1;
+		}
+		return 0;
+	}
+	arrayLoop: for (int i = start, max = arrayLength - toBeFoundLength + 1; i < max; i++) {
+		if (array[i] == toBeFound[0]) {
+			for (int j = 1; j < toBeFoundLength; j++) {
+				if (array[i + j] != toBeFound[j]) continue arrayLoop;
+			}
+			return i;
+		}
+	}
+	return -1;
+}
+
+static boolean replace(char[] source, char[] src, char[] dest) {
+	boolean changed = false;
+	int start = 0;
+	while (start < source.length) {
+		int index = indexOf(src, source, start);
+		if (index == -1) break;
+		changed |= true;
+		System.arraycopy(dest, 0, source, index, dest.length);
+		start = index + 1;
+	}
+	return changed;
+}
+
+void output(String fileName, char[] source) {
+	try {
+		if (source.length > 0) {
+			if (generate64Code) {
+				replace(source, INT_LONG, LONG_INT);
+				replace(source, INT_LONG_ARRAY, LONG_INT_ARRAY);
+				replace(source, FLOAT_DOUBLE, DOUBLE_FLOAT);
+				replace(source, FLOAT_DOUBLE_ARRAY, DOUBLE_FLOAT_ARRAY);
+			} else {
+				replace(source, LONG_INT, INT_LONG);
+				replace(source, LONG_INT_ARRAY, INT_LONG_ARRAY);
+				replace(source, DOUBLE_FLOAT, FLOAT_DOUBLE);
+				replace(source, DOUBLE_FLOAT_ARRAY, FLOAT_DOUBLE_ARRAY);
+			}
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			PrintStream stream = new PrintStream(out);
+			stream.print(source);
+			stream.flush();
+			JNIGenerator.output(out.toByteArray(), fileName);
+		}
+	} catch (Exception e) {
+		System.out.println("Problem");
+		e.printStackTrace(System.out);
 	}
 }
 
@@ -608,8 +678,8 @@ void generateClasses() {
 	
 	Set classNames = classes.keySet();
 	for (Iterator iterator = classNames.iterator(); iterator.hasNext();) {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		this.out = new PrintStream(out);
+		CharArrayWriter out = new CharArrayWriter();
+		this.out = new PrintWriter(out);
 
 		out(fixDelimiter(metaData.getCopyright()));
 
@@ -636,14 +706,9 @@ void generateClasses() {
 		outln();
 		
 		String fileName = outputDir + packageName.replace('.', '/') + "/" + className + ".java";
-		try {
-			out.flush();
-			if (out.size() > 0) JNIGenerator.output(out.toByteArray(), fileName);
-		} catch (Exception e) {
-			System.out.println("Problem");
-			e.printStackTrace(System.out);
-		}
-		out = null;
+		this.out.flush();
+		output(fileName, out.toCharArray());
+		this.out = null;
 	}
 }
 
@@ -653,14 +718,13 @@ void generateStructs() {
 
 	Set structNames = structs.keySet();
 	for (Iterator iterator = structNames.iterator(); iterator.hasNext();) {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		this.out = new PrintStream(out);
+		CharArrayWriter out = new CharArrayWriter();
+		this.out = new PrintWriter(out);
 
 		out(fixDelimiter(metaData.getCopyright()));
 
 		String className = (String) iterator.next();
 		Object[] clazz = (Object[])structs.get(className);
-		Node node = (Node)clazz[0];
 		ArrayList methods = (ArrayList)clazz[1];
 		out("package ");
 		String packageName = getPackageName(mainClassName);
@@ -678,14 +742,9 @@ void generateStructs() {
 		outln();
 		
 		String fileName = outputDir + packageName.replace('.', '/') + "/" + className + ".java";
-		try {
-			out.flush();
-			if (out.size() > 0) JNIGenerator.output(out.toByteArray(), fileName);
-		} catch (Exception e) {
-			System.out.println("Problem");
-			e.printStackTrace(System.out);
-		}
-		out = null;
+		this.out.flush();
+		output(fileName, out.toCharArray());
+		this.out = null;
 	}
 }
 
@@ -699,8 +758,8 @@ void generateExtraAttributes() {
 }
 
 void generateMainClass() {
-	ByteArrayOutputStream out = new ByteArrayOutputStream();
-	this.out = new PrintStream(out);
+	CharArrayWriter out = new CharArrayWriter();
+	this.out = new PrintWriter(out);
 
 	String header = "", footer = "";
 	String fileName = outputDir + mainClassName.replace('.', '/') + ".java";
@@ -718,6 +777,8 @@ void generateMainClass() {
 		int end = str.indexOf(section, start);
 		header = str.substring(0, start);
 		footer = end == -1 ? "\n}" : str.substring(end);
+		generate64Code = str.indexOf("long /*int*/") != -1;
+		input.close();
 	} catch (IOException e) {
 	} finally {
 		try {
@@ -770,13 +831,9 @@ void generateMainClass() {
 	
 	outln();
 	out(footer);
-	try {
-		out.flush();
-		if (out.size() > 0) JNIGenerator.output(out.toByteArray(), fileName);
-	} catch (Exception e) {
-		System.out.println("Problem");
-		e.printStackTrace(System.out);
-	}
+	this.out.flush();
+	output(fileName, out.toCharArray());
+	this.out = null;
 }
 
 public Document[] getDocuments() {
@@ -1015,14 +1072,12 @@ void merge(Node node, HashMap extras, HashMap docLookup) {
 
 	
 void out(String str) {
-	PrintStream out = this.out;
-	if (out == null) out = System.out;
+	PrintWriter out = this.out;
 	out.print(str);
 }
 
 void outln() {
-	PrintStream out = this.out;
-	if (out == null) out = System.out;
+	PrintWriter out = this.out;
 	out.println();
 }
 
