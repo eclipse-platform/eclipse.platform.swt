@@ -7794,6 +7794,14 @@ void reset() {
 	if (horizontalBar != null) {
 		horizontalBar.setSelection(0);	
 	}
+	if (ime != null) {
+		String text = ime.getText();
+		if (text != null && text.length() > 0 && ime.getCompositionOffset() != -1) {
+			ime.setCompositionOffset(0);
+			content.replaceTextRange(0, 0, text);
+			setCaretOffset(ime.getCaretOffset(), SWT.DEFAULT);
+		}
+	}
 	resetCache(0, 0);
 	setCaretLocation();
 	super.redraw();
