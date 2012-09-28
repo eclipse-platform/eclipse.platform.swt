@@ -535,6 +535,10 @@ public static final native long /*int*/ kCFTypeDictionaryKeyCallBacks();
 /** @method flags=const address*/
 public static final native long /*int*/ kCFTypeDictionaryValueCallBacks();
 
+/** @method flags=const */
+public static final native long /*int*/ kUTTypeURL();
+public static final NSString kUTTypeURL = new NSString(kUTTypeURL());
+
 /** Objective-C runtime */
 
 /**

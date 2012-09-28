@@ -291,7 +291,7 @@ public Object getContents(Transfer transfer, int clipboards) {
 			tdata.data = pasteboard.stringForType(type);
 		} else if (type.isEqual(OS.NSFilenamesPboardType)) {
 			tdata.data = new NSArray(pasteboard.propertyListForType(type).id);
-		} else if (type.isEqual(OS.NSURLPboardType) || type.getString().equals("public.url")) {
+		} else if (type.isEqual(OS.NSURLPboardType) || type.isEqual(OS.kUTTypeURL)) {
 			tdata.data = NSURL.URLFromPasteboard(pasteboard);
 		} else {
 			tdata.data = pasteboard.dataForType(type);
@@ -459,7 +459,7 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 					dataType.isEqual(OS.NSRTFPboardType) ||
 					dataType.isEqual(OS.NSHTMLPboardType)) {
 				pasteboard.setString((NSString) tdata, dataType);
-			} else if (dataType.isEqual(OS.NSURLPboardType) || dataType.getString().equals("public.url")) {
+			} else if (dataType.isEqual(OS.NSURLPboardType) || dataType.isEqual(OS.kUTTypeURL)) {
 				NSURL url = (NSURL) tdata;
 				url.writeToPasteboard(pasteboard);
 			} else if (dataType.isEqual(OS.NSFilenamesPboardType)) {

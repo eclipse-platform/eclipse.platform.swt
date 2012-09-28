@@ -751,7 +751,7 @@ void pasteboard_provideDataForType(long /*int*/ id, long /*int*/ sel, long /*int
 			dataType.isEqual(OS.NSHTMLPboardType) || 
 			dataType.isEqual(OS.NSRTFPboardType)) {
 		pasteboard.setString((NSString) tdata, dataType);
-	} else if (dataType.isEqual(OS.NSURLPboardType) || dataType.getString().equals("public.url")) {
+	} else if (dataType.isEqual(OS.NSURLPboardType) || dataType.isEqual(OS.kUTTypeURL)) {
 		NSURL url = (NSURL) tdata;
 		url.writeToPasteboard(pasteboard);
 	} else if (dataType.isEqual(OS.NSFilenamesPboardType)) {

@@ -30,7 +30,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class URLTransfer extends ByteArrayTransfer {
 
 	static URLTransfer _instance = new URLTransfer();
-	static final String URL = OS.VERSION >= 0x1060 ? "public.url" /* kUTTypeURL */ : OS.NSURLPboardType.getString();
+	static final String URL = (OS.VERSION >= 0x1060 ? OS.kUTTypeURL : OS.NSURLPboardType).getString();
 	static final int URL_ID = registerType(URL);
 
 private URLTransfer() {}

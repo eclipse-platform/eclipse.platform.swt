@@ -475,6 +475,7 @@ typedef enum {
 	kCTForegroundColorAttributeName_FUNC,
 	kCTParagraphStyleAttributeName_FUNC,
 	kTISPropertyUnicodeKeyLayoutData_FUNC,
+	kUTTypeURL_FUNC,
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_cocoa_CFRange_2I_FUNC,
 #else

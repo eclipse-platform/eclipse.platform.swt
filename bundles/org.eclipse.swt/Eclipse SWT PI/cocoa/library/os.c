@@ -6276,6 +6276,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(kCTParagraphStyleAttributeName)
 }
 #endif
 
+#ifndef NO_kUTTypeURL
+JNIEXPORT jintLong JNICALL OS_NATIVE(kUTTypeURL)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, kUTTypeURL_FUNC);
+	rc = (jintLong)kUTTypeURL;
+	OS_NATIVE_EXIT(env, that, kUTTypeURL_FUNC);
+	return rc;
+}
+#endif
+
 #if (!defined(NO_memmove__ILorg_eclipse_swt_internal_cocoa_CFRange_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_cocoa_CFRange_2J) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_cocoa_CFRange_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
