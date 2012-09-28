@@ -176,7 +176,7 @@ public class Display extends Device {
 	long /*int*/ oldCursorSetProc;
 	Callback cursorSetCallback;
 
-	boolean comboPoppedUp = false;
+	Combo currentCombo;
 	boolean mozillaRunning;
 	static final String MOZILLA_RUNNING = "org.eclipse.swt.internal.mozillaRunning"; //$NON-NLS-1$
 
@@ -4892,10 +4892,15 @@ long /*int*/ applicationNextEventMatchingMask (long /*int*/ id, long /*int*/ sel
 		 * workaround is to detect this case and to not return the event that would trigger
 		 * this to happen.
 		 */
-		if (comboPoppedUp && mozillaRunning && dequeue != 0) {
-			NSEvent event = new NSEvent(result);
-			if (event.type() == OS.NSApplicationDefined) {
-				return 0;
+		if (dequeue != 0 && currentCombo != null && !currentCombo.isDisposed()) {
+			NSEvent nsEvent = new NSEvent(result);
+			if (mozillaRunning) {
+				if (nsEvent.type() == OS.NSApplicationDefined) {
+					return 0;
+				}
+			}
+			if (nsEvent.type() == OS.NSKeyDown) {
+				currentCombo.sendTrackingKeyEvent(nsEvent, SWT.KeyDown);
 			}
 		}
 		if (dequeue != 0 && trackingControl != null && !trackingControl.isDisposed()) {

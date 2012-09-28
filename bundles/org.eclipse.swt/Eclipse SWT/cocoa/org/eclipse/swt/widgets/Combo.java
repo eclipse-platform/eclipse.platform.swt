@@ -457,12 +457,12 @@ void createWidget() {
 }
 
 void comboBoxWillDismiss(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
-	display.comboPoppedUp = false;
+	display.currentCombo = null;
 	listVisible = false;
 }
 
 void comboBoxWillPopUp(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
-	display.comboPoppedUp = true;
+	display.currentCombo = this;
 	listVisible = true;
 }
 
@@ -1089,6 +1089,9 @@ void register() {
 }
 
 void releaseWidget () {
+	if (display.currentCombo == this) {
+		display.currentCombo = null;
+	}
 	super.releaseWidget ();
 	if ((style & SWT.READ_ONLY) == 0) {
 		((NSControl)view).abortEditing();
@@ -1342,6 +1345,26 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 		sendSelectionEvent (SWT.DefaultSelection);
 	}
 	return result;
+}
+
+boolean sendTrackingKeyEvent (NSEvent nsEvent, int type) {
+	/*
+	* Feature in Cocoa.  Combo does not send arrow down/up
+	* key down events while the list is showing.  The fix is
+	* to send these events when the event is removed from the
+	* queue.
+	*/
+	long /*int*/ modifiers = nsEvent.modifierFlags();
+	if ((modifiers & OS.NSShiftKeyMask) == 0) {
+		short keyCode = nsEvent.keyCode ();
+		switch (keyCode) {
+			case 125: /* Arrow Down */
+			case 126: /* Arrow Up */
+				sendKeyEvent(nsEvent, type);
+				return true;
+		}
+	}
+	return false;
 }
 
 void setBackgroundColor(NSColor nsColor) {
