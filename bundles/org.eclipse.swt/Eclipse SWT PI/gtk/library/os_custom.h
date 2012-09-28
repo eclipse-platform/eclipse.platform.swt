@@ -184,6 +184,7 @@
 #define gdk_draw_image_LIB LIB_GDK
 #define gdk_drawable_get_size_LIB LIB_GDK
 #define gdk_gc_set_background_LIB LIB_GDK
+#define gdk_gc_set_stipple_LIB LIB_GDK
 #define gdk_gc_set_clip_mask_LIB LIB_GDK
 #define gdk_gc_set_clip_origin_LIB LIB_GDK
 #define gdk_gc_set_dashes_LIB LIB_GDK

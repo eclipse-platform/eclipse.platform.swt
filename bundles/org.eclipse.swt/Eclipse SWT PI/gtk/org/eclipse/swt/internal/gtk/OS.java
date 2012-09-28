@@ -4259,10 +4259,7 @@ public static final void gdk_gc_set_line_attributes(long /*int*/ gc, int line_wi
 		lock.unlock();
 	}
 }
-/**
- * @param gc cast=(GdkGC *)
- * @param stipple cast=(GdkPixmap *)
- */
+/** @method flags=dynamic */
 public static final native void _gdk_gc_set_stipple(long /*int*/ gc, long /*int*/ stipple);
 public static final void gdk_gc_set_stipple(long /*int*/ gc, long /*int*/ stipple) {
 	lock.lock();
