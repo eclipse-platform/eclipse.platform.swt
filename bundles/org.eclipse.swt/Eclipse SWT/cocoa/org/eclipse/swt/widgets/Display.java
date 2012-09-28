@@ -2605,6 +2605,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_drawBackgroundInClipRect_, drawBackgroundInClipRectProc, "@:{NSRect}");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_needsPanelToBecomeKey, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_canBecomeKeyView, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -2786,6 +2787,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_drawBackgroundInClipRect_, drawBackgroundInClipRectProc, "@:{NSRect}");
 	OS.class_addMethod(cls, OS.sel_acceptsFirstResponder, proc2, "@:");
 	OS.class_addMethod(cls, OS.sel_needsPanelToBecomeKey, proc2, "@:");
+	OS.class_addMethod(cls, OS.sel_canBecomeKeyView, proc2, "@:");
 	addEventMethods(cls, proc2, proc3, drawRectProc, hitTestProc, setNeedsDisplayInRectProc);
 	addAccessibilityMethods(cls, proc2, proc3, proc4, accessibilityHitTestProc);
 	OS.objc_registerClassPair(cls);
@@ -5378,6 +5380,8 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel) {
 		return widget.canBecomeKeyView(id,sel) ? 1 : 0;
 	} else if (sel == OS.sel_needsPanelToBecomeKey) {
 		return widget.needsPanelToBecomeKey(id,sel) ? 1 : 0;
+	} else if (sel == OS.sel_canBecomeKeyView) {
+		return widget.canBecomeKeyView(id,sel) ? 1 : 0;
 	} else if (sel == OS.sel_becomeKeyWindow) {
 		widget.becomeKeyWindow(id, sel);
 	} else if (sel == OS.sel_unmarkText) {
