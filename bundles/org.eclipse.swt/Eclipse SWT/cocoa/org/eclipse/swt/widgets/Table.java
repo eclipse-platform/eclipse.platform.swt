@@ -1167,7 +1167,7 @@ void drawWithExpansionFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect ce
 	drawExpansion = false;
 }
 
-void drawRect(int id, int sel, NSRect rect) {
+void drawRect(long /*int*/ id, long /*int*/ sel, NSRect rect) {
 	fixScrollWidth = false;
 	super.drawRect(id, sel, rect);
 	if (isDisposed ()) return;

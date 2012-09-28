@@ -17,7 +17,7 @@ public SWTCanvasView() {
 	super(0);
 }
 	
-public SWTCanvasView(int id) {
+public SWTCanvasView(long /*int*/ id) {
 	super(id);
 }
 

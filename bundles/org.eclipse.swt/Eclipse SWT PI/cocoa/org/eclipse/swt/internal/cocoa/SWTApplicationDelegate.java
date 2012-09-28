@@ -15,7 +15,7 @@ public class SWTApplicationDelegate extends NSObject {
 		super(0);
 	}
 		
-	public SWTApplicationDelegate(int id) {
+	public SWTApplicationDelegate(long /*int*/ id) {
 		super(id);
 	}
 }

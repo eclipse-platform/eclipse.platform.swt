@@ -344,7 +344,7 @@ void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 	fillBackground (view, context, rect, -1);
 }
 
-void drawInteriorWithFrame_inView(int id, int sel, NSRect cellFrame, int viewid) {
+void drawInteriorWithFrame_inView(long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ viewid) {
 	Control control = findBackgroundControl();
 	if (control == null) control = this;
 	Image image = control.backgroundImage;

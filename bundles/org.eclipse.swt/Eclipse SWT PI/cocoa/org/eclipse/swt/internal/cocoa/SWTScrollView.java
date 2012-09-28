@@ -16,7 +16,7 @@ public SWTScrollView() {
 	super(0);
 }
 	
-public SWTScrollView(int id) {
+public SWTScrollView(long /*int*/ id) {
 	super(id);
 }
 

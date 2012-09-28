@@ -297,7 +297,7 @@ void redrawBackgroundImage () {
 	}
 }
 
-void reflectScrolledClipView(int id, int sel, int aClipView) {
+void reflectScrolledClipView(long /*int*/ id, long /*int*/ sel, long /*int*/ aClipView) {
 	super.reflectScrolledClipView(id, sel, aClipView);
 	redrawBackgroundImage();
 }

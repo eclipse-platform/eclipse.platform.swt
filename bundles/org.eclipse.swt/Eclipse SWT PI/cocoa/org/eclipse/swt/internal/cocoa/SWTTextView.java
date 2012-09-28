@@ -16,7 +16,7 @@ public SWTTextView() {
 	super(0);
 }
 
-public SWTTextView(int id) {
+public SWTTextView(long /*int*/ id) {
 	super(id);
 }
 

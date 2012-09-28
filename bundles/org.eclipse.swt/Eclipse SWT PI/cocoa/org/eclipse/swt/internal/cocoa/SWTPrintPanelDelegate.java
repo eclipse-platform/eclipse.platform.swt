@@ -16,7 +16,7 @@ public SWTPrintPanelDelegate() {
 	super(0);
 }
 	
-public SWTPrintPanelDelegate(int id) {
+public SWTPrintPanelDelegate(long /*int*/ id) {
 	super(id);
 }
 

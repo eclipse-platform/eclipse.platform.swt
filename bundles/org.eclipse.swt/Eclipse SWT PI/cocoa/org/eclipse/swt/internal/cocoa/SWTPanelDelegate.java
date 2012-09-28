@@ -16,7 +16,7 @@ public SWTPanelDelegate() {
 	super(0);
 }
 	
-public SWTPanelDelegate(int id) {
+public SWTPanelDelegate(long /*int*/ id) {
 	super(id);
 }
 
