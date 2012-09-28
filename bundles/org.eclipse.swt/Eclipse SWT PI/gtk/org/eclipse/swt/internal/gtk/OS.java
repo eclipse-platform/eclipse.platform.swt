@@ -4703,7 +4703,10 @@ public static final void  gdk_device_ungrab(long /*int*/ device, int time_) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** 
+ * @method flags=dynamic
+ * @param device cast=(GdkDevice *)
+ */
 public static final native long /*int*/ _gdk_device_get_associated_device(long /*int*/ device);
 public static final long /*int*/  gdk_device_get_associated_device(long /*int*/ device) {
 	lock.lock();

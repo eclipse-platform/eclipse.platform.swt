@@ -319,7 +319,7 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 		long /*int*/ display = OS.gdk_window_get_display(OS.gtk_widget_get_window(widget));
 		long /*int*/ device_manager = OS.gdk_display_get_device_manager(display);
 		long /*int*/ pointer = OS.gdk_device_manager_get_client_pointer(device_manager);
-		long /*int*/ keyboard = OS.gdk_device_get_associated_device (pointer);
+		long /*int*/ keyboard = OS.gdk_device_get_associated_device(pointer);
 		OS.gdk_device_ungrab(pointer, OS.GDK_CURRENT_TIME);
 		OS.gdk_device_ungrab(keyboard, OS.GDK_CURRENT_TIME);
 	} else {

@@ -4883,12 +4883,12 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1device_1get_1associated_1device)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1device_1get_1associated_1device_FUNC);
 /*
-	rc = (jintLong)gdk_device_get_associated_device(arg0);
+	rc = (jintLong)gdk_device_get_associated_device((GdkDevice *)arg0);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gdk_device_get_associated_device)
 		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkDevice *))fp)((GdkDevice *)arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1device_1get_1associated_1device_FUNC);
