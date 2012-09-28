@@ -465,6 +465,7 @@ char * OS_nativeFunctionNames[] = {
 	"kCTForegroundColorAttributeName",
 	"kCTParagraphStyleAttributeName",
 	"kTISPropertyUnicodeKeyLayoutData",
+	"kUTTypeFileURL",
 	"kUTTypeURL",
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_cocoa_CFRange_2I",

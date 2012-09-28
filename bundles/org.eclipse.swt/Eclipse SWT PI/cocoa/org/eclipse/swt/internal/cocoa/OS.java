@@ -536,6 +536,9 @@ public static final native long /*int*/ kCFTypeDictionaryKeyCallBacks();
 public static final native long /*int*/ kCFTypeDictionaryValueCallBacks();
 
 /** @method flags=const */
+public static final native long /*int*/ kUTTypeFileURL();
+public static final NSString kUTTypeFileURL = new NSString(kUTTypeFileURL());
+/** @method flags=const */
 public static final native long /*int*/ kUTTypeURL();
 public static final NSString kUTTypeURL = new NSString(kUTTypeURL());
 

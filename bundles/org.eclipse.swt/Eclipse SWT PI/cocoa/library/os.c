@@ -6276,6 +6276,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(kCTParagraphStyleAttributeName)
 }
 #endif
 
+#ifndef NO_kUTTypeFileURL
+JNIEXPORT jintLong JNICALL OS_NATIVE(kUTTypeFileURL)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, kUTTypeFileURL_FUNC);
+	rc = (jintLong)kUTTypeFileURL;
+	OS_NATIVE_EXIT(env, that, kUTTypeFileURL_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_kUTTypeURL
 JNIEXPORT jintLong JNICALL OS_NATIVE(kUTTypeURL)
 	(JNIEnv *env, jclass that)

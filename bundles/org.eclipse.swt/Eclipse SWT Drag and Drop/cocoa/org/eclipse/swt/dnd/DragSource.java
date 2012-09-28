@@ -754,7 +754,7 @@ void pasteboard_provideDataForType(long /*int*/ id, long /*int*/ sel, long /*int
 	} else if (dataType.isEqual(OS.NSURLPboardType) || dataType.isEqual(OS.kUTTypeURL)) {
 		NSURL url = (NSURL) tdata;
 		url.writeToPasteboard(pasteboard);
-	} else if (dataType.isEqual(OS.NSFilenamesPboardType) || dataType.getString().equals("public.file-url")) {
+	} else if (dataType.isEqual(OS.NSFilenamesPboardType) || dataType.isEqual(OS.kUTTypeFileURL)) {
 		NSArray array = (NSArray) transferData.data;
 		int count = (int) /*64*/ array.count();
 		paths = new String[count];

@@ -38,7 +38,7 @@ public class FileTransfer extends ByteArrayTransfer {
 	static FileTransfer _instance = new FileTransfer();
 	static final String ID_NAME = OS.NSFilenamesPboardType.getString();
 	static final int ID = registerType(ID_NAME);
-	static final String ID1_NAME = "public.file-url";
+	static final String ID1_NAME = OS.kUTTypeFileURL.getString();
 	static final int ID1 = registerType(ID1_NAME);
 	
 FileTransfer() {}
