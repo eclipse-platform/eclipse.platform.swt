@@ -107,7 +107,7 @@ public class DragSource extends Widget {
 	static final byte[] SWT_OBJECT = {'S', 'W', 'T', '_', 'O', 'B', 'J', 'E', 'C', 'T', '\0'};
 	static long /*int*/ proc2 = 0, proc3 = 0, proc4 = 0, proc5 = 0, proc6 = 0;
 	
-	NSString paths[];
+	String paths[];
 	boolean exist[];
 	
 	static {
@@ -421,11 +421,11 @@ void draggedImage_beganAt(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, 
 
 void draggedImage_endedAt_operation(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, NSPoint arg1, long /*int*/ arg2) {
 	int swtOperation = osOpToOp(arg2);
-	NSFileManager fileManager = NSFileManager.defaultManager();
 	if (paths != null) {
+		NSFileManager fileManager = NSFileManager.defaultManager();
 		for (int i = 0; i < paths.length; i++) {
 			if (paths[i] != null && exist[i]) {
-				if (!fileManager.fileExistsAtPath(paths[i])) {
+				if (!fileManager.fileExistsAtPath(NSString.stringWith(paths[i]))) {
 					swtOperation &= ~DND.DROP_MOVE;
 					swtOperation |= DND.DROP_TARGET_MOVE;
 				}
@@ -754,8 +754,18 @@ void pasteboard_provideDataForType(long /*int*/ id, long /*int*/ sel, long /*int
 	} else if (dataType.isEqual(OS.NSURLPboardType) || dataType.isEqual(OS.kUTTypeURL)) {
 		NSURL url = (NSURL) tdata;
 		url.writeToPasteboard(pasteboard);
-	} else if (dataType.isEqual(OS.NSFilenamesPboardType)) {
-		pasteboard.setPropertyList((NSArray) tdata, dataType);
+	} else if (dataType.isEqual(OS.NSFilenamesPboardType) || dataType.getString().equals("public.file-url")) {
+		NSArray array = (NSArray) transferData.data;
+		int count = (int) /*64*/ array.count();
+		paths = new String[count];
+		exist = new boolean[count];
+		NSFileManager fileManager = NSFileManager.defaultManager();
+		for (int i = 0; i < count; i++) {
+			NSString filePath = new NSString(array.objectAtIndex(i));
+			paths[i] = filePath.getString();
+			exist[i] = fileManager.fileExistsAtPath(filePath);
+		}
+		pasteboard.setPropertyList((NSArray) tdata, OS.NSFilenamesPboardType);
 	} else {
 		pasteboard.setData((NSData) tdata, dataType);
 	}
@@ -821,7 +831,6 @@ DNDEvent startDrag(Event dragEvent) {
 	
 	NSPasteboard dragBoard = NSPasteboard.pasteboardWithName(OS.NSDragPboard);
 	NSMutableArray nativeTypeArray = NSMutableArray.arrayWithCapacity(10);
-	Transfer fileTrans = null;
 	
 	for (int i = 0; i < transferAgents.length; i++) {
 		Transfer transfer = transferAgents[i];
@@ -831,55 +840,9 @@ DNDEvent startDrag(Event dragEvent) {
 			for (int j = 0; j < typeNames.length; j++) {
 				nativeTypeArray.addObject(NSString.stringWith(typeNames[j]));
 			}	
-
-			if (transfer instanceof FileTransfer) {
-				fileTrans = transfer;
-			}			
 		}		
 	}
-
-	if (nativeTypeArray != null)
-		dragBoard.declareTypes(nativeTypeArray, dragSourceDelegate);
-
-	if (fileTrans != null) {
-		NSFileManager fileManager = NSFileManager.defaultManager();
-		int index = 0;
-		paths = new NSString[4];
-		exist = new boolean[4];
-		int[] types = fileTrans.getTypeIds();
-		TransferData transferData = new TransferData();
-		transferData.type = types[0];
-		DNDEvent event2 = new DNDEvent();
-		event2.widget = this;
-		event2.time = (int)System.currentTimeMillis(); 
-		event2.dataType = transferData; 
-		notifyListeners(DND.DragSetData, event2);
-		if (event2.data != null) {
-			for (int j = 0; j < types.length; j++) {
-				transferData.type = types[j];
-				fileTrans.javaToNative(event2.data, transferData);
-				if (transferData.data != null) {
-					NSArray array = (NSArray) transferData.data;
-					int count = (int) /*64*/ array.count();
-					for (int i = 0; i < count; i++) {
-						if (index == paths.length) {
-							NSString newPaths [] = new NSString[paths.length + 4];
-							System.arraycopy(paths, 0, newPaths, 0, index);
-							paths = newPaths;
-							boolean newExists[] = new boolean [paths.length];
-							System.arraycopy(exist, 0, newExists, 0, index);
-							exist = newExists;
-						}
-						NSString filePath = new NSString(array.objectAtIndex(i));
-						paths[index] = filePath;
-						exist[index] = fileManager.fileExistsAtPath(filePath);
-						index++;
-					}
-					dragBoard.setPropertyList(transferData.data, OS.NSFilenamesPboardType);
-				}
-			}
-		}
-	}
+	dragBoard.declareTypes(nativeTypeArray, dragSourceDelegate);
 
 	// Save off the drag operations -- AppKit will call back to us to request them during the drag.
 	dragOperations = opToOsOp(getStyle());	

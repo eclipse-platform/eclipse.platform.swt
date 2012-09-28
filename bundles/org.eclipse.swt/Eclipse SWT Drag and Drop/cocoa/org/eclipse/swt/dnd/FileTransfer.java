@@ -38,6 +38,8 @@ public class FileTransfer extends ByteArrayTransfer {
 	static FileTransfer _instance = new FileTransfer();
 	static final String ID_NAME = OS.NSFilenamesPboardType.getString();
 	static final int ID = registerType(ID_NAME);
+	static final String ID1_NAME = "public.file-url";
+	static final int ID1 = registerType(ID1_NAME);
 	
 FileTransfer() {}
 
@@ -101,11 +103,19 @@ public Object nativeToJava(TransferData transferData) {
 }
 
 protected int[] getTypeIds(){
-	return new int[] {ID};
+	if (OS.VERSION >= 0x1060) {
+		return new int[] {ID, ID1};
+	} else {
+		return new int[] {ID};
+	}
 }
 
 protected String[] getTypeNames(){
-	return new String[] {ID_NAME};
+	if (OS.VERSION >= 0x1060) {
+		return new String[] {ID_NAME, ID1_NAME};
+	} else {
+		return new String[] {ID_NAME};
+	}
 }
 
 boolean checkFile(Object object) {

@@ -694,8 +694,8 @@ boolean drop(NSObject sender) {
 			tdata.data = pasteboard.stringForType(type);
 		} else if (type.isEqual(OS.NSURLPboardType) || type.isEqual(OS.kUTTypeURL)) {
 			tdata.data = NSURL.URLFromPasteboard(pasteboard);
-		} else if (type.isEqual(OS.NSFilenamesPboardType)) {
-			tdata.data = new NSArray(pasteboard.propertyListForType(type).id);
+		} else if (type.isEqual(OS.NSFilenamesPboardType) || type.getString().equals("public.file-url")) {
+			tdata.data = new NSArray(pasteboard.propertyListForType(OS.NSFilenamesPboardType).id);
 		} else {
 			tdata.data = pasteboard.dataForType(type);
 		}
