@@ -4208,10 +4208,7 @@ public static final void gdk_gc_set_exposures(long /*int*/ gc, boolean exposures
 		lock.unlock();
 	}
 }
-/**
- * @param gc cast=(GdkGC *)
- * @param fill cast=(GdkFill)
- */
+/** @method flags=dynamic */
 public static final native void _gdk_gc_set_fill(long /*int*/ gc, int fill);
 public static final void gdk_gc_set_fill(long /*int*/ gc, int fill) {
 	lock.lock();
