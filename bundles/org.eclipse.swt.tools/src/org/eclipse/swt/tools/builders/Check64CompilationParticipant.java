@@ -12,15 +12,21 @@ package org.eclipse.swt.tools.builders;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -42,6 +48,13 @@ import org.eclipse.jdt.core.compiler.BuildContext;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.compiler.CompilationParticipant;
 import org.eclipse.jdt.core.compiler.batch.BatchCompiler;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.swt.tools.Activator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -64,7 +77,25 @@ public class Check64CompilationParticipant extends CompilationParticipant {
 	static final String plugin = "org.eclipse.swt";
 	static final String SOURCE_ID = "JNI";
 	static final String CHECK_64_ENABLED = Activator.PLUGIN_ID + "CHECK_64_ENABLED";
-	
+
+static String loadFile (String file) {
+	if (file == null) return null;
+	try {
+		FileReader fr = new FileReader(file);
+		BufferedReader br = new BufferedReader(fr);
+		StringBuffer str = new StringBuffer();
+		char[] buffer = new char[1024];
+		int read;
+		while ((read = br.read(buffer)) != -1) {
+			str.append(buffer, 0, read);
+		}
+		fr.close();
+		return str.toString();
+	} catch (IOException e) {
+		throw new RuntimeException("File not found:" + file, e);
+	}
+}
+
 void build(IJavaProject project, String root) throws CoreException {
 	PrintWriter writer = null;
 	try {
@@ -97,7 +128,6 @@ void build(IJavaProject project, String root) throws CoreException {
 			"-sourcepath", sourcePath.toString(),
 		}));
 		args.addAll(sources);
-		sources = null;
 		writer = new PrintWriter(new BufferedOutputStream(new FileOutputStream(root + "/out.txt")));
 		BatchCompiler.compile((String[])args.toArray(new String[args.size()]), writer, writer, null);
 		writer.close();
@@ -119,36 +149,49 @@ void create(IContainer file) throws CoreException {
 	}
 }
 
+IResource getResourceWithoutErrors(IProject proj, String path, boolean deleteJNI) throws CoreException {
+	path = path.replaceAll(buildDir, "/");
+	String projPath = proj.getLocation().toPortableString();
+	if (path.startsWith(projPath)) {
+		path = path.substring(projPath.length());
+	}
+	IResource resource = proj.findMember(new Path(path));
+	boolean hasProblems = false;
+	IMarker[] markers = resource.findMarkers(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER, true, IResource.DEPTH_INFINITE);
+	for (int m = 0; m < markers.length; m++) {
+		IMarker marker = markers[m];
+		if (SOURCE_ID.equals(marker.getAttribute(IMarker.SOURCE_ID))) {
+			if (deleteJNI) marker.delete();
+		} else {
+			Object severity = marker.getAttribute(IMarker.SEVERITY);
+			hasProblems |= severity != null && ((Integer)severity).intValue() == IMarker.SEVERITY_ERROR;
+		}
+	}
+	return hasProblems ? null : resource;
+}
+
+void createProblem(IResource resource, String message, int start, int end) throws CoreException {
+	IMarker marker = resource.createMarker(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER);
+	int severity = IMarker.SEVERITY_ERROR;
+	marker.setAttributes(
+		new String[] {IMarker.MESSAGE, IMarker.SEVERITY, IMarker.CHAR_START, IMarker.CHAR_END, IMarker.SOURCE_ID},
+		new Object[] {"[32/64] " + message, new Integer(severity), new Integer(start), new Integer(end), SOURCE_ID});
+}
+
 void createProblems(IJavaProject project, String root) throws CoreException {
 	try {
 		InputStream is = new BufferedInputStream(new FileInputStream(root + "/log.xml"));
 		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(is));
 		is.close();
 		IProject proj = project.getProject();	
-		String projPath = proj.getLocation().toPortableString();
 		NodeList sources = doc.getDocumentElement().getElementsByTagName("sources");
 		for (int i = 0; i < sources.getLength(); i++) {
 			NodeList src = ((Element)sources.item(i)).getElementsByTagName("source");
 			for (int j = 0; j < src.getLength(); j++) {
 				Element source = (Element)src.item(j);
 				String path = source.getAttribute("path").replace('\\', '/');
-				path = path.replaceAll(buildDir, "/");
-				if (path.startsWith(projPath)) {
-					path = path.substring(projPath.length());
-				}
-				IResource resource = proj.findMember(new Path(path));
-				boolean hasProblems = false;
-				IMarker[] markers = resource.findMarkers(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER, true, IResource.DEPTH_INFINITE);
-				for (int m = 0; m < markers.length; m++) {
-					IMarker marker = markers[m];
-					if (SOURCE_ID.equals(marker.getAttribute(IMarker.SOURCE_ID))) {
-						marker.delete();
-					} else {
-						Object severity = marker.getAttribute(IMarker.SEVERITY);
-						hasProblems |= severity != null && ((Integer)severity).intValue() == IMarker.SEVERITY_ERROR;
-					}
-				}
-				if (!hasProblems) {
+				IResource resource = getResourceWithoutErrors(proj, path, true);
+				if (resource != null) {
 					NodeList problems = source.getElementsByTagName("problems");
 					for (int k = 0; k < problems.getLength(); k++) {
 						NodeList problem = ((Element)problems.item(k)).getElementsByTagName("problem");
@@ -157,12 +200,8 @@ void createProblems(IJavaProject project, String root) throws CoreException {
 							if (resource != null) {
 								int start = Integer.parseInt(node.getAttribute("charStart"));
 								int end = Integer.parseInt(node.getAttribute("charEnd"));
-								String message = "[32/64] " + ((Element)node.getElementsByTagName("message").item(0)).getAttribute("value");
-								IMarker marker = resource.createMarker(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER);
-								int severity = IMarker.SEVERITY_ERROR;
-								marker.setAttributes(
-									new String[] {IMarker.MESSAGE, IMarker.SEVERITY, IMarker.CHAR_START, IMarker.CHAR_END, IMarker.SOURCE_ID},
-									new Object[] {message, new Integer(severity), new Integer(start), new Integer(end), SOURCE_ID});
+								String message = ((Element)node.getElementsByTagName("message").item(0)).getAttribute("value");
+								createProblem(resource, message, start, end);
 							}
 						}
 					}
@@ -171,6 +210,82 @@ void createProblems(IJavaProject project, String root) throws CoreException {
 		}
 	} catch (Exception e) {
 		throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Problem creating 64-bit problems", e));
+	}
+}
+
+String resolvePath(String sourcePath, String simpleName) {
+	String basePath = sourcePath.substring(0, sourcePath.lastIndexOf("/"));
+	File file = new File(basePath + "/" + simpleName + ".java");
+	if (file.exists()) {
+		return file.getAbsolutePath();
+	}
+//	System.out.println("failed=" + simpleName + " " + sourcePath);
+	return null;
+}
+
+TypeDeclaration loadType(HashMap cache, String path) {
+	if (path == null) return null;
+	Object value = cache.get(path);
+	if (value != null) return (TypeDeclaration)value;
+	ASTParser parser = ASTParser.newParser(AST.JLS3);
+	parser.setSource(loadFile(path).toCharArray());
+	CompilationUnit unit = (CompilationUnit)parser.createAST(null);
+	TypeDeclaration type = (TypeDeclaration)unit.types().get(0);
+	cache.put(path, type);
+	return type;
+}
+
+boolean is64Type(String type) {
+	return type.equals("int") || type.equals("long") || type.equals("float") || type.equals("double") || 
+			type.equals("int[]") || type.equals("long[]") || type.equals("float[]") || type.equals("double[]");
+}
+
+void createBadOverwrittenMethodProblems(IJavaProject project, String root) throws CoreException {
+	if (sources == null) return;
+	IProject proj = project.getProject();
+	HashMap cache = new HashMap();
+	for (Iterator iterator = sources.iterator(); iterator.hasNext();) {
+		String path = (String) iterator.next();
+		IResource resource = getResourceWithoutErrors(proj, path, false);
+		if (resource == null) continue;
+		TypeDeclaration type = loadType(cache, path);
+		MethodDeclaration[] methods = type.getMethods();
+		List superclasses = new ArrayList();
+		TypeDeclaration temp = type;
+		while (true) {
+			Type supertype = temp.getSuperclassType();
+			if (supertype == null) break;
+			TypeDeclaration stype = loadType(cache, resolvePath(path, supertype.toString()));
+			if (stype == null) break;
+			superclasses.add(stype);
+			temp = stype;
+		}
+		for (int i = 0; i < methods.length; i++) {
+			MethodDeclaration method = methods[i];
+			for (Iterator iterator2 = superclasses.iterator(); iterator2.hasNext();) {
+				TypeDeclaration supertype = (TypeDeclaration) iterator2.next();
+				MethodDeclaration[] supermethods = supertype.getMethods();
+				for (int j = 0; j < supermethods.length; j++) {
+					MethodDeclaration supermethod = supermethods[j];
+					if (method.getName().getIdentifier().equals(supermethod.getName().getIdentifier()) && method.parameters().size() == supermethod.parameters().size()) {
+						List mParams = method.parameters();
+						List sParams = supermethod.parameters();
+						for (int k=0; k<sParams.size(); k++) {
+							SingleVariableDeclaration p1 = (SingleVariableDeclaration) mParams.get(k);
+							SingleVariableDeclaration p2 = (SingleVariableDeclaration) sParams.get(k);
+							String r1 = p1.getType().toString();
+							String r2 = p2.getType().toString();
+							if (is64Type(r1) && is64Type(r2)) {
+								if (!r1.equals(r2) && p1.getName().getIdentifier().equals(p2.getName().getIdentifier())) {
+									String message = "\"" + p1.getName().getIdentifier() + "\" parameter type does not match super declaration";
+									createProblem(resource, message, p1.getStartPosition(), p1.getStartPosition() + p1.toString().length());
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -217,7 +332,6 @@ boolean is64bit(IJavaProject project) {
 			IClasspathEntry entry = entries[i];
 			if (entry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
 				String path = entry.getPath().toPortableString();
-				System.out.println(path);
 				if (path.equals(pluginDir + "Eclipse SWT PI/win32") || 
 					path.equals(pluginDir + "Eclipse SWT PI/cocoa") || 
 					path.equals(pluginDir + "Eclipse SWT PI/gtk")
@@ -239,6 +353,8 @@ public void buildFinished(IJavaProject project) {
 		String root = project.getProject().getLocation().toPortableString() + buildDir;
 		build(project, root);		
 		createProblems(project, root);
+		createBadOverwrittenMethodProblems(project, root);
+		sources = null;
 //		System.out.println("compiling time=" + (System.currentTimeMillis() - time));
 	} catch (Exception e) {
 		e.printStackTrace();
