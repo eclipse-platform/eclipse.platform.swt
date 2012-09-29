@@ -1437,7 +1437,7 @@ public int indexOf (String string, int start) {
 	return -1;
 }
 
-boolean isFocusHandle(int widget) {
+boolean isFocusHandle(long /*int*/ widget) {
 	if (buttonHandle != 0 && widget == buttonHandle) return true;
 	if (entryHandle != 0 && widget == entryHandle) return true;
 	return super.isFocusHandle (widget);
