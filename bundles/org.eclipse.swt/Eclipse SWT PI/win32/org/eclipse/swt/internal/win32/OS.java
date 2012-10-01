@@ -6946,13 +6946,13 @@ public static final native boolean UnregisterTouchWindow (long /*int*/ hwnd);
 /** @param hWnd cast=(HWND) */
 public static final native boolean UpdateWindow (long /*int*/ hWnd);
 /**
- * @param pszPath cast=(LPCTSTR)
- * @param pszURL cast=(LPCTSTR)
+ * @param pszPath cast=(LPCSTR)
+ * @param pszURL cast=(LPSTR)
  */
 public static final native int UrlCreateFromPathA (byte[] pszPath, byte[] pszURL, int[] pcchUrl, int flags);
 /**
  * @param pszPath cast=(LPCWSTR)
- * @param pszURL cast=(LPCWSTR)
+ * @param pszURL cast=(LPWSTR)
  */
 public static final native int UrlCreateFromPathW (char[] pszPath, char[] pszURL, int[] pcchUrl, int flags);
 /** @param hWnd cast=(HWND) */

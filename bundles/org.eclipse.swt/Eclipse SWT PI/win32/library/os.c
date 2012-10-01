@@ -18136,7 +18136,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(UrlCreateFromPathA)
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jint)UrlCreateFromPathA((LPCTSTR)lparg0, (LPCTSTR)lparg1, lparg2, arg3);
+	rc = (jint)UrlCreateFromPathA((LPCSTR)lparg0, (LPSTR)lparg1, lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
@@ -18158,7 +18158,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(UrlCreateFromPathW)
 	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jint)UrlCreateFromPathW((LPCWSTR)lparg0, (LPCWSTR)lparg1, lparg2, arg3);
+	rc = (jint)UrlCreateFromPathW((LPCWSTR)lparg0, (LPWSTR)lparg1, lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
