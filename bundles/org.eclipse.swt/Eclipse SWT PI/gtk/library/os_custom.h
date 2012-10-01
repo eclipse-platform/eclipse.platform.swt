@@ -158,7 +158,7 @@
 #define gtk_tree_selection_get_selected_rows_LIB LIB_GTK
 #define gtk_tree_view_column_get_cell_renderers_LIB LIB_GTK
 #define gtk_tree_view_column_cell_get_position_LIB LIB_GTK
-#define gtk_tree_view_convert_widget_to_bin_window_coords_LIB LIB_GTK
+#define gtk_tree_view_convert_bin_window_to_tree_coords_LIB LIB_GTK
 #define gtk_tree_view_set_grid_lines_LIB LIB_GTK
 #define gtk_tree_view_widget_to_tree_coords_LIB LIB_GTK
 #define gtk_entry_set_alignment_LIB LIB_GTK
