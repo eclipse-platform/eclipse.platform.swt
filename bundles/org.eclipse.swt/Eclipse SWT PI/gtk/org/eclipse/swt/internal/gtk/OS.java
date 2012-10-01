@@ -12776,11 +12776,11 @@ public static final void gtk_tree_view_widget_to_tree_coords(int /*long*/ tree_v
  * @method flags=dynamic
  * @param tree_view cast=(GtkTreeView *) 
  */
-public static final native void _gtk_tree_view_convert_widget_to_bin_window_coords(int /*long*/ tree_view, int wx, int wy, int[] tx, int[] ty);
-public static final void gtk_tree_view_convert_widget_to_bin_window_coords(int /*long*/ tree_view, int wx, int wy, int[] tx, int[] ty) {
+public static final native void _gtk_tree_view_convert_bin_window_to_tree_coords(long /*int*/ tree_view, int bx, int by, int[] tx, int[] ty);
+public static final void gtk_tree_view_convert_bin_window_to_tree_coords(long /*int*/ tree_view, int bx, int by, int[] tx, int[] ty) {
 	lock.lock();
 	try {
-		_gtk_tree_view_convert_widget_to_bin_window_coords(tree_view, wx, wy, tx, ty);
+		_gtk_tree_view_convert_bin_window_to_tree_coords(tree_view, bx, by, tx, ty);
 	} finally {
 		lock.unlock();
 	}
