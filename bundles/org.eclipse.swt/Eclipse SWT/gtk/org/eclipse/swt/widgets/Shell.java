@@ -558,7 +558,12 @@ void bringToTop (boolean force) {
 	long /*int*/ window = gtk_widget_get_window (shellHandle);
 	if ((xFocus || (style & SWT.ON_TOP) != 0) && OS.GDK_WINDOWING_X11 ()) {
 		long /*int*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
-		long /*int*/ xWindow = OS.gdk_x11_drawable_get_xid (window);
+		long /*int*/ xWindow;
+		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+			xWindow = OS.gdk_x11_window_get_xid (window);
+		} else {
+			xWindow = OS.gdk_x11_drawable_get_xid (window);
+		}
 		OS.gdk_error_trap_push ();
 		/* Use CurrentTime instead of the last event time to ensure that the shell becomes active */
 		OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);

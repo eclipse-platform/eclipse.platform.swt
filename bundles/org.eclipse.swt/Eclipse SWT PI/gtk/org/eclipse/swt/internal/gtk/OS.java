@@ -1162,7 +1162,7 @@ public static final long /*int*/ gdk_x11_drawable_get_xdisplay(long /*int*/ draw
 		lock.unlock();
 	}
 }
-/** @param drawable cast=(GdkDrawable *) */
+/** @method flags=dynamic */
 public static final native long /*int*/ _gdk_x11_drawable_get_xid(long /*int*/ drawable);
 public static final long /*int*/ gdk_x11_drawable_get_xid(long /*int*/ drawable) {
 	lock.lock();
@@ -1205,6 +1205,19 @@ public static final long /*int*/ gdk_x11_visual_get_xvisual(long /*int*/ visual)
 	lock.lock();
 	try {
 		return _gdk_x11_visual_get_xvisual(visual);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+* @method flags=dynamic
+* @param gdkwindow cast=(GdkWindow *)
+*/
+public static final native long /*int*/ _gdk_x11_window_get_xid(long /*int*/ gdkwindow);
+public static final long /*int*/ gdk_x11_window_get_xid(long /*int*/ gdkwindow) {
+	lock.lock();
+	try {
+		return _gdk_x11_window_get_xid(gdkwindow);
 	} finally {
 		lock.unlock();
 	}

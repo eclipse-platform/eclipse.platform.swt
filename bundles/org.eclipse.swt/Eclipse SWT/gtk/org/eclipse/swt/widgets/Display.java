@@ -1012,7 +1012,9 @@ void createDisplay (DeviceData data) {
 
 	if (OS.GDK_WINDOWING_X11 ()) {
 		long /*int*/ xWindow;
-		if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
+		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+			xWindow = OS.gdk_x11_window_get_xid (OS.gtk_widget_get_window (shellHandle));
+		} else if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
 			xWindow = OS.gdk_x11_drawable_get_xid (OS.gtk_widget_get_window	(shellHandle));
 		} else {
 			xWindow = OS.gdk_x11_drawable_get_xid (OS.GTK_WIDGET_WINDOW (shellHandle));
@@ -4228,7 +4230,9 @@ long /*int*/ signalProc (long /*int*/ gobject, long /*int*/ arg1, long /*int*/ u
 				long /*int*/ atom = OS.gdk_x11_atom_to_xatom (OS.gdk_atom_intern (name, true));
 				if (atom == OS.gdk_x11_atom_to_xatom (gdkEvent.atom)) {
 					long /*int*/ xWindow; 
-					if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
+					if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+						xWindow = OS.gdk_x11_window_get_xid (OS.gtk_widget_get_window (shellHandle));
+					} else if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
 						xWindow = OS.gdk_x11_drawable_get_xid (OS.gtk_widget_get_window( shellHandle));
 					} else {
 						xWindow = OS.gdk_x11_drawable_get_xid (OS.GTK_WIDGET_WINDOW( shellHandle));

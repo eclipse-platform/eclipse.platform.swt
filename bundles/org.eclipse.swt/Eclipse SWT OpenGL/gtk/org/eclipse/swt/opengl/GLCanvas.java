@@ -138,7 +138,11 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	glWindow = OS.gdk_window_new (window, attrs, OS.GDK_WA_VISUAL);
 	OS.gdk_window_set_user_data (glWindow, handle);
 	if ((style & SWT.NO_BACKGROUND) != 0) OS.gdk_window_set_back_pixmap (window, 0, false);
-	xWindow = OS.gdk_x11_drawable_get_xid (glWindow);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		xWindow = OS.gdk_x11_window_get_xid (glWindow);
+	} else {
+		xWindow = OS.gdk_x11_drawable_get_xid (glWindow);
+	}
 	OS.gdk_window_show (glWindow);
 
 	Listener listener = new Listener () {
