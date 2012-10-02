@@ -7081,7 +7081,7 @@ public static final void gtk_widget_set_has_window(long /*int*/ widget, boolean 
 		lock.unlock();
 	}
 }
-/** @param fsd cast=(GtkFontSelectionDialog *) */
+/** @method flags=dynamic */
 public static final native long /*int*/ _gtk_font_selection_dialog_get_font_name(long /*int*/ fsd);
 public static final long /*int*/ gtk_font_selection_dialog_get_font_name(long /*int*/ fsd) {
 	lock.lock();
@@ -7091,7 +7091,47 @@ public static final long /*int*/ gtk_font_selection_dialog_get_font_name(long /*
 		lock.unlock();
 	}
 }
-/** @param title cast=(const gchar *) */
+/**
+ * @method flags=dynamic
+ * @param title cast=(const gchar *)
+ * @param parent cast=(GtkWindow *)
+ */
+public static final native long /*int*/ _gtk_font_chooser_dialog_new(byte[] title, long /*int*/ parent);
+public static final long /*int*/ gtk_font_chooser_dialog_new(byte[] title, long /*int*/ parent) {
+	lock.lock();
+	try {
+		return _gtk_font_chooser_dialog_new(title, parent);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native long /*int*/ _gtk_font_chooser_get_font(long /*int*/ fontchooser);
+public static final long /*int*/ gtk_font_chooser_get_font(long /*int*/ fontchooser) {
+	lock.lock();
+	try {
+		return _gtk_font_chooser_get_font(fontchooser);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param fontname cast=(const gchar *)
+ */
+public static final native void _gtk_font_chooser_set_font(long /*int*/ fsd, byte[] fontname);
+public static final void gtk_font_chooser_set_font(long /*int*/ fsd, byte[] fontname) {
+	lock.lock();
+	try {
+		_gtk_font_chooser_set_font(fsd, fontname);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param title cast=(const gchar *)
+ */
 public static final native long /*int*/ _gtk_font_selection_dialog_new(byte[] title);
 public static final long /*int*/ gtk_font_selection_dialog_new(byte[] title) {
 	lock.lock();
@@ -7102,7 +7142,7 @@ public static final long /*int*/ gtk_font_selection_dialog_new(byte[] title) {
 	}
 }
 /**
- * @param fsd cast=(GtkFontSelectionDialog *)
+ * @method flags=dynamic
  * @param fontname cast=(const gchar *)
  */
 public static final native boolean _gtk_font_selection_dialog_set_font_name(long /*int*/ fsd, byte[] fontname);

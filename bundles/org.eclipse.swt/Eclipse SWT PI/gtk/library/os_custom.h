@@ -102,6 +102,12 @@
 #define gtk_combo_box_popdown_LIB LIB_GTK
 #define gtk_entry_text_index_to_layout_index_LIB LIB_GTK
 #define gtk_entry_get_inner_border_LIB LIB_GTK
+#define gtk_font_chooser_dialog_new_LIB LIB_GTK
+#define gtk_font_chooser_get_font_LIB LIB_GTK
+#define gtk_font_chooser_set_font_LIB LIB_GTK
+#define gtk_font_selection_dialog_get_font_name_LIB LIB_GTK
+#define gtk_font_selection_dialog_set_font_name_LIB LIB_GTK
+#define gtk_font_selection_dialog_new_LIB LIB_GTK
 #define gtk_file_chooser_add_filter_LIB LIB_GTK
 #define gtk_file_chooser_dialog_new_LIB LIB_GTK
 #define gtk_file_chooser_get_current_folder_LIB LIB_GTK
