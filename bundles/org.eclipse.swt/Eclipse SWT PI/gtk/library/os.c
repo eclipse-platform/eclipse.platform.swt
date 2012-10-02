@@ -4871,7 +4871,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cursor_1unref)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1cursor_1unref_FUNC);
-	gdk_cursor_unref((GdkCursor *)arg0);
+/*
+	gdk_cursor_unref(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_cursor_unref)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1cursor_1unref_FUNC);
 }
 #endif

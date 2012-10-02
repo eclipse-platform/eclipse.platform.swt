@@ -880,7 +880,7 @@ void setCursor (long /*int*/ cursor) {
 	long /*int*/ defaultCursor = 0;
 	if (cursor == 0) defaultCursor = OS.gdk_cursor_new (OS.GDK_XTERM);
 	super.setCursor (cursor != 0 ? cursor : defaultCursor);
-	if (cursor == 0) OS.gdk_cursor_unref (defaultCursor);
+	if (cursor == 0) gdk_cursor_unref (defaultCursor);
 }
 
 void setFontDescription (long /*int*/ font) {

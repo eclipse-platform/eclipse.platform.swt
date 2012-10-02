@@ -3612,7 +3612,7 @@ public static final long /*int*/ gdk_colormap_get_system() {
 		lock.unlock();
 	}
 }
-/** @param cursor cast=(GdkCursor *) */
+/** @method flags=dynamic */
 public static final native void _gdk_cursor_unref(long /*int*/ cursor);
 public static final void gdk_cursor_unref(long /*int*/ cursor) {
 	lock.lock();

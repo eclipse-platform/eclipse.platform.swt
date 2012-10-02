@@ -2006,4 +2006,12 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ ar
 	}
 }
 
+void gdk_cursor_unref (long /*int*/ cursor) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		OS.g_object_unref (cursor);
+	} else {
+		OS.gdk_cursor_unref(cursor);
+	}
+}
+
 }
