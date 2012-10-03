@@ -5236,6 +5236,23 @@ public static final int gdk_window_get_origin(long /*int*/ window, int[] x, int[
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ * @param window cast=(GdkWindow *)
+ * @param device cast=(GdkDevice *)
+ * @param x cast=(gint *)
+ * @param y cast=(gint *)
+ * @param mask cast=(GdkModifierType *)
+ */
+public static final native long /*int*/ _gdk_window_get_device_position(long /*int*/ window, long /*int*/ device, int[] x, int[] y, int[] mask);
+public static final long /*int*/ gdk_window_get_device_position(long /*int*/ window, long /*int*/ device, int[] x, int[] y, int[] mask) {
+	lock.lock();
+	try {
+		return _gdk_window_get_device_position(window, device, x, y, mask);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param window cast=(GdkWindow *) */
 public static final native long /*int*/ _gdk_window_get_parent(long /*int*/ window);
 public static final long /*int*/ gdk_window_get_parent(long /*int*/ window) {
@@ -5247,6 +5264,7 @@ public static final long /*int*/ gdk_window_get_parent(long /*int*/ window) {
 	}
 }
 /**
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param x cast=(gint *)
  * @param y cast=(gint *)

@@ -336,7 +336,7 @@ void hookEvents () {
 
 long /*int*/ hoverProc (long /*int*/ widget) {
 	int [] x = new int [1], y = new int [1], mask = new int [1];
-	OS.gdk_window_get_pointer (0, x, y, mask);
+	gdk_window_get_device_position (0, x, y, mask);
 	sendMouseEvent (SWT.MouseHover, 0, /*time*/0, x [0], y [0], false, mask [0]);
 	/* Always return zero in order to cancel the hover timer */
 	return 0;
@@ -2248,7 +2248,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 					quit = true;
 				}
 				int [] newX = new int [1], newY = new int [1];
-				OS.gdk_window_get_pointer (gdkMotionEvent.window, newX, newY, null);
+				gdk_window_get_device_position (gdkMotionEvent.window, newX, newY, null);
 				break;
 			}
 			case OS.GDK_KEY_PRESS:
@@ -3105,7 +3105,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	if (gdkEvent.is_hint != 0) {
 		int [] pointer_x = new int [1], pointer_y = new int [1], mask = new int [1];
 		long /*int*/ window = eventWindow ();
-		OS.gdk_window_get_pointer (window, pointer_x, pointer_y, mask);
+		gdk_window_get_device_position (window, pointer_x, pointer_y, mask);
 		x = pointer_x [0];
 		y = pointer_y [0];
 		state = mask [0];
@@ -3117,7 +3117,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 long /*int*/ gtk_popup_menu (long /*int*/ widget) {
 	if (!hasFocus()) return 0;
 	int [] x = new int [1], y = new int [1];
-	OS.gdk_window_get_pointer (0, x, y, null);
+	gdk_window_get_device_position (0, x, y, null);
 	return showMenu (x [0], y [0], SWT.MENU_KEYBOARD) ? 1 : 0;
 }
 

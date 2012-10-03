@@ -356,7 +356,7 @@ Point getLocation () {
 	}
 	if (x == -1 || y == -1) {
 		int [] px = new int [1], py = new int [1];
-		OS.gdk_window_get_pointer (0, px, py, null);
+		gdk_window_get_device_position (0, px, py, null);
 		x = px [0];
 		y = py [0];
 	}

@@ -229,6 +229,8 @@
 #define gdk_window_create_similar_surface_LIB LIB_GDK
 #define gdk_window_lookup_LIB LIB_GDK
 #define gdk_window_restack_LIB LIB_GDK
+#define gdk_window_get_device_position_LIB LIB_GDK
+#define gdk_window_get_pointer_LIB LIB_GDK
 #define gdk_window_get_height_LIB LIB_GDK
 #define gdk_window_get_width_LIB LIB_GDK
 #define gdk_pixmap_get_size_LIB LIB_GDK

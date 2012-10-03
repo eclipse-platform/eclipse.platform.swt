@@ -6840,6 +6840,36 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1window_1get_1children)
 }
 #endif
 
+#ifndef NO__1gdk_1window_1get_1device_1position
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1window_1get_1device_1position)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintArray arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1window_1get_1device_1position_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)gdk_window_get_device_position((GdkWindow *)arg0, (GdkDevice *)arg1, (gint *)lparg2, (gint *)lparg3, (GdkModifierType *)lparg4);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_window_get_device_position)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkWindow *, GdkDevice *, gint *, gint *, GdkModifierType *))fp)((GdkWindow *)arg0, (GdkDevice *)arg1, (gint *)lparg2, (gint *)lparg3, (GdkModifierType *)lparg4);
+		}
+	}
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1window_1get_1device_1position_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1window_1get_1display
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1window_1get_1display)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -6969,7 +6999,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1window_1get_1pointer)
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+/*
 	rc = (jintLong)gdk_window_get_pointer((GdkWindow *)arg0, (gint *)lparg1, (gint *)lparg2, (GdkModifierType *)lparg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_window_get_pointer)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkWindow *, gint *, gint *, GdkModifierType *))fp)((GdkWindow *)arg0, (gint *)lparg1, (gint *)lparg2, (GdkModifierType *)lparg3);
+		}
+	}
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);

@@ -569,7 +569,7 @@ public DropTargetEffect getDropTargetEffect() {
 
 int getOperationFromKeyState() {
 	int[] state = new int[1];
-	OS.gdk_window_get_pointer(0, null, null, state);
+	gdk_window_get_device_position (0, null, null, state);
 	boolean ctrl = (state[0] & OS.GDK_CONTROL_MASK) != 0;
 	boolean shift = (state[0] & OS.GDK_SHIFT_MASK) != 0;
 	if (ctrl && shift) return DND.DROP_LINK;
@@ -811,6 +811,23 @@ void updateDragOverHover(long delay, DNDEvent event) {
 	dragOverEvent.dataTypes  = dataTypes;
 	dragOverEvent.operations = event.operations;
 	dragOverEvent.time = event.time;
+}
+
+long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[] y, int[] mask) {
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		long /*int*/ display = 0;
+		if( window != 0) {
+			display = OS.gdk_window_get_display (window);
+		} else {
+			window = OS.gdk_get_default_root_window ();
+			display = OS.gdk_window_get_display (window);
+		}
+		long /*int*/ device_manager = OS.gdk_display_get_device_manager (display);
+		long /*int*/ pointer = OS.gdk_device_manager_get_client_pointer (device_manager);
+		return OS.gdk_window_get_device_position(window, pointer, x, y, mask);
+	} else {
+		return OS.gdk_window_get_pointer (window, x, y, mask);
+	}
 }
 
 }

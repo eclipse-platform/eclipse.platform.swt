@@ -957,7 +957,7 @@ public void setEnabled (boolean enabled) {
 		* button if the pointer is within its bounds.
 		*/
 		int [] x = new int [1], y = new int [1];
-		OS.gdk_window_get_pointer (parent.paintWindow (), x, y, null);
+		gdk_window_get_device_position (parent.paintWindow (), x, y, null);
 		if (getBounds ().contains (x [0], y [0])) {
 			OS.gtk_widget_hide (handle);
 			OS.gtk_widget_show (handle);

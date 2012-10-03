@@ -203,7 +203,7 @@ Point adjustMoveCursor () {
 	 * actual location of the pointer after it has been moved.
 	 */
 	int [] actualX = new int [1], actualY = new int [1], state = new int [1];
-	OS.gdk_window_get_pointer (window, actualX, actualY, state);
+	gdk_window_get_device_position (window, actualX, actualY, state);
 	return new Point (actualX [0], actualY [0]);
 }
 
@@ -236,7 +236,7 @@ Point adjustResizeCursor () {
 	 * actual location of the pointer after it has been moved.
 	 */
 	int [] actualX = new int [1], actualY = new int [1], state = new int [1];
-	OS.gdk_window_get_pointer (window, actualX, actualY, state);
+	gdk_window_get_device_position (window, actualX, actualY, state);
 	return new Point (actualX [0], actualY [0]);
 }
 
@@ -523,7 +523,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr
 
 long /*int*/ gtk_mouse (int eventType, long /*int*/ widget, long /*int*/ eventPtr) {
 	int [] newX = new int [1], newY = new int [1];
-	OS.gdk_window_get_pointer (window, newX, newY, null);
+	gdk_window_get_device_position (window, newX, newY, null);
 	if (oldX != newX [0] || oldY != newY [0]) {
 		Rectangle [] oldRectangles = rectangles;
 		Rectangle [] rectsToErase = new Rectangle [rectangles.length];
@@ -672,7 +672,7 @@ public boolean open () {
 	update ();
 	drawRectangles (rectangles);
 	int [] oldX = new int [1], oldY = new int [1], state = new int [1];
-	OS.gdk_window_get_pointer (window, oldX, oldY, state);
+	gdk_window_get_device_position (window, oldX, oldY, state);
 
 	/*
 	* if exactly one of UP/DOWN is specified as a style then set the cursor

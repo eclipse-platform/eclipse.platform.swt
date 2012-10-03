@@ -540,6 +540,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1window_1end_1paint",
 	"_1gdk_1window_1focus",
 	"_1gdk_1window_1get_1children",
+	"_1gdk_1window_1get_1device_1position",
 	"_1gdk_1window_1get_1display",
 	"_1gdk_1window_1get_1events",
 	"_1gdk_1window_1get_1frame_1extents",

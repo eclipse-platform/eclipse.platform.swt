@@ -2180,7 +2180,7 @@ void showWidget () {
 long /*int*/ sizeAllocateProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	int offset = 16;
 	int [] x = new int [1], y = new int [1];
-	OS.gdk_window_get_pointer (0, x, y, null);
+	gdk_window_get_device_position (0, x, y, null);
 	y [0] += offset;
 	long /*int*/ screen = OS.gdk_screen_get_default ();
 	if (screen != 0) {

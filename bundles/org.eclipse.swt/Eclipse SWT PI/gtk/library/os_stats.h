@@ -550,6 +550,7 @@ typedef enum {
 	_1gdk_1window_1end_1paint_FUNC,
 	_1gdk_1window_1focus_FUNC,
 	_1gdk_1window_1get_1children_FUNC,
+	_1gdk_1window_1get_1device_1position_FUNC,
 	_1gdk_1window_1get_1display_FUNC,
 	_1gdk_1window_1get_1events_FUNC,
 	_1gdk_1window_1get_1frame_1extents_FUNC,

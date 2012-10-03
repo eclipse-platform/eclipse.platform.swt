@@ -1518,7 +1518,7 @@ long /*int*/ filterProc (long /*int*/ xEvent, long /*int*/ gdkEvent, long /*int*
 public Point getCursorLocation () {
 	checkDevice ();
 	int [] x = new int [1], y = new int [1];
-	OS.gdk_window_get_pointer (0, x, y, null);
+	gdk_window_get_device_position (0, x, y, null);
 	return new Point (x [0], y [0]);
 }
 
@@ -4401,6 +4401,23 @@ long /*int*/ windowTimerProc (long /*int*/ handle) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.timerProc (handle);
+}
+
+long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[] y, int[] mask) {
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		long /*int*/ display = 0;
+		if( window != 0) {
+			display = OS.gdk_window_get_display (window);
+		} else {
+			window = OS.gdk_get_default_root_window ();
+			display = OS.gdk_window_get_display (window);
+		}
+		long /*int*/ device_manager = OS.gdk_display_get_device_manager (display);
+		long /*int*/ pointer = OS.gdk_device_manager_get_client_pointer (device_manager);
+		return OS.gdk_window_get_device_position(window, pointer, x, y, mask);
+	} else {
+		return OS.gdk_window_get_pointer (window, x, y, mask);
+	}
 }
 
 }

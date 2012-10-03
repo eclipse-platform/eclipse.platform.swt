@@ -345,7 +345,7 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ eventPtr
 	int eventX, eventY, eventState;
 	if (gdkEvent.is_hint != 0) {
 		int [] pointer_x = new int [1], pointer_y = new int [1], mask = new int [1];
-		OS.gdk_window_get_pointer (gdkEvent.window, pointer_x, pointer_y, mask);
+		gdk_window_get_device_position (gdkEvent.window, pointer_x, pointer_y, mask);
 		eventX = pointer_x [0];
 		eventY = pointer_y [0];
 		eventState = mask [0];
