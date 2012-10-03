@@ -929,6 +929,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1progress_1bar_1new",
 	"_1gtk_1progress_1bar_1pulse",
 	"_1gtk_1progress_1bar_1set_1fraction",
+	"_1gtk_1progress_1bar_1set_1inverted",
 	"_1gtk_1progress_1bar_1set_1orientation",
 	"_1gtk_1radio_1button_1get_1group",
 	"_1gtk_1radio_1button_1new",

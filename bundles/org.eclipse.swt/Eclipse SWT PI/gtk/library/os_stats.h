@@ -939,6 +939,7 @@ typedef enum {
 	_1gtk_1progress_1bar_1new_FUNC,
 	_1gtk_1progress_1bar_1pulse_FUNC,
 	_1gtk_1progress_1bar_1set_1fraction_FUNC,
+	_1gtk_1progress_1bar_1set_1inverted_FUNC,
 	_1gtk_1progress_1bar_1set_1orientation_FUNC,
 	_1gtk_1radio_1button_1get_1group_FUNC,
 	_1gtk_1radio_1button_1new_FUNC,

@@ -12431,12 +12431,38 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1progress_1bar_1set_1fraction)
 }
 #endif
 
+#ifndef NO__1gtk_1progress_1bar_1set_1inverted
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1progress_1bar_1set_1inverted)
+	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1progress_1bar_1set_1inverted_FUNC);
+/*
+	gtk_progress_bar_set_inverted((GtkProgressBar *)arg0, (gboolean)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_progress_bar_set_inverted)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkProgressBar *, gboolean))fp)((GtkProgressBar *)arg0, (gboolean)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1progress_1bar_1set_1inverted_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1progress_1bar_1set_1orientation
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1progress_1bar_1set_1orientation)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1progress_1bar_1set_1orientation_FUNC);
-	gtk_progress_bar_set_orientation((GtkProgressBar *)arg0, (GtkProgressBarOrientation)arg1);
+/*
+	gtk_progress_bar_set_orientation((GtkProgressBar *)arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_progress_bar_set_orientation)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkProgressBar *, jint))fp)((GtkProgressBar *)arg0, arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1progress_1bar_1set_1orientation_FUNC);
 }
 #endif

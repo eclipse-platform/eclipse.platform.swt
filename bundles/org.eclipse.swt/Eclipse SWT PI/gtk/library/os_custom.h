@@ -367,6 +367,8 @@
 #define gtk_printer_get_backend_LIB LIB_GTK
 #define gtk_printer_get_name_LIB LIB_GTK
 #define gtk_printer_is_default_LIB LIB_GTK
+#define gtk_progress_bar_set_inverted_LIB LIB_GTK
+#define gtk_progress_bar_set_orientation_LIB LIB_GTK
 #define ubuntu_menu_proxy_get_LIB LIB_GTK
 #define FcConfigAppFontAddFile_LIB LIB_FONTCONFIG
 

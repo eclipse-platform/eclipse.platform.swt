@@ -9267,8 +9267,22 @@ public static final void gtk_progress_bar_set_fraction(long /*int*/ pbar, double
 	}
 }
 /**
+ * @method flags=dynamic
  * @param pbar cast=(GtkProgressBar *)
- * @param orientation cast=(GtkProgressBarOrientation)
+ * @param inverted cast=(gboolean)
+ */
+public static final native void _gtk_progress_bar_set_inverted(long /*int*/ pbar, boolean inverted);
+public static final void gtk_progress_bar_set_inverted(long /*int*/ pbar, boolean inverted) {
+	lock.lock();
+	try {
+		_gtk_progress_bar_set_inverted(pbar, inverted);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param pbar cast=(GtkProgressBar *)
  */
 public static final native void _gtk_progress_bar_set_orientation(long /*int*/ pbar, int orientation);
 public static final void gtk_progress_bar_set_orientation(long /*int*/ pbar, int orientation) {
