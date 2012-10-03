@@ -1152,7 +1152,7 @@ public static final long /*int*/ gdk_x11_display_get_xdisplay (long /*int*/ gdkd
 		lock.unlock();
 	}
 }
-/** @param drawable cast=(GdkDrawable *) */
+/** @method flags=dynamic */
 public static final native long /*int*/ _gdk_x11_drawable_get_xdisplay(long /*int*/ drawable);
 public static final long /*int*/ gdk_x11_drawable_get_xdisplay(long /*int*/ drawable) {
 	lock.lock();

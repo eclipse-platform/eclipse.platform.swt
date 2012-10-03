@@ -171,7 +171,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 				} else {
 					window = OS.GTK_WIDGET_WINDOW (handle);
 				}
-				long /*int*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
+				long /*int*/ xDisplay = gdk_x11_display_get_xdisplay (window);
 				if (context != 0) {
 					if (GLX.glXGetCurrentContext () == context) {
 						GLX.glXMakeCurrent (xDisplay, 0, 0);
@@ -209,7 +209,7 @@ public GLData getGLData () {
 	} else {
 		window = OS.GTK_WIDGET_WINDOW (handle);
 	}
-	long /*int*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
+	long /*int*/ xDisplay = gdk_x11_display_get_xdisplay (window);
 	GLData data = new GLData ();
 	int [] value = new int [1];
 	GLX.glXGetConfig (xDisplay, vinfo, GLX.GLX_DOUBLEBUFFER, value);
@@ -272,7 +272,7 @@ public void setCurrent () {
 	checkWidget ();
 	if (GLX.glXGetCurrentContext () == context) return;
 	long /*int*/ window = OS.GTK_WIDGET_WINDOW (handle);
-	long /*int*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
+	long /*int*/ xDisplay = gdk_x11_display_get_xdisplay (window);
 	GLX.glXMakeCurrent (xDisplay, xWindow, context);
 }
 
@@ -287,7 +287,17 @@ public void setCurrent () {
 public void swapBuffers () {
 	checkWidget ();
 	long /*int*/ window = OS.GTK_WIDGET_WINDOW (handle);
-	long /*int*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
+	long /*int*/ xDisplay = gdk_x11_display_get_xdisplay (window);
 	GLX.glXSwapBuffers (xDisplay, xWindow);
+}
+
+private long /*int*/ gdk_x11_display_get_xdisplay(long /*int*/ window) {
+	long /*int*/ xdisplay;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
+		xdisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_window_get_display(window));
+	} else {
+		xdisplay = OS.gdk_x11_drawable_get_xdisplay (window);
+	}
+	return xdisplay;
 }
 }

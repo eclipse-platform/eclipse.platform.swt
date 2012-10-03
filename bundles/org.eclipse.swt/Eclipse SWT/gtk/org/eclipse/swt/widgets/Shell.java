@@ -557,7 +557,12 @@ void bringToTop (boolean force) {
 	*/
 	long /*int*/ window = gtk_widget_get_window (shellHandle);
 	if ((xFocus || (style & SWT.ON_TOP) != 0) && OS.GDK_WINDOWING_X11 ()) {
-		long /*int*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
+		long /*int*/ xDisplay;
+		if (OS.GTK_VERSION >= OS.VERSION(2, 24, 0)) {
+			xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_window_get_display(window));
+		} else {
+			xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
+		}
 		long /*int*/ xWindow;
 		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
 			xWindow = OS.gdk_x11_window_get_xid (window);
