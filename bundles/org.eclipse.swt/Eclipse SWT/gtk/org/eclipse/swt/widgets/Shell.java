@@ -2540,7 +2540,7 @@ void setToolTipText (long /*int*/ rootWidget, long /*int*/ tipWidget, String str
 		if (tipWindow != 0) {
 			if (gtk_widget_get_visible (tipWidget) || gtk_widget_get_realized (tipWidget)) {
 				int [] x = new int [1], y = new int [1];
-				long /*int*/ window = OS.gdk_window_at_pointer (x, y);
+				long /*int*/ window = gdk_device_get_window_at_position (x, y);
 				if (window != 0) {
 					long /*int*/ [] user_data = new long /*int*/ [1];
 					OS.gdk_window_get_user_data (window, user_data);
@@ -2578,6 +2578,16 @@ void gtk_render_box (long /*int*/ style, long /*int*/ window, int state_type, in
 		Cairo.cairo_destroy (cairo);
 	} else {
 		OS.gtk_paint_box (style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
+	}
+}
+long /*int*/ gdk_device_get_window_at_position (int[] win_x, int[] win_y) {
+	if (OS.GTK_VERSION >= OS.VERSION(3,0,0)) {
+		long /*int*/ display = OS.gdk_display_get_default ();
+		long /*int*/ device_manager = OS.gdk_display_get_device_manager (display);
+		long /*int*/ device = OS.gdk_device_manager_get_client_pointer (device_manager);
+		return OS.gdk_device_get_window_at_position (device, win_x, win_y);
+	} else {
+		return OS.gdk_window_at_pointer (win_x, win_y);
 	}
 }
 }

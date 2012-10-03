@@ -1418,7 +1418,7 @@ public Control getCursorControl () {
 	int[] x = new int[1], y = new int[1];
 	long /*int*/ handle = 0;
 	long /*int*/ [] user_data = new long /*int*/ [1];
-	long /*int*/ window = OS.gdk_window_at_pointer (x,y);
+	long /*int*/ window = gdk_device_get_window_at_position (x,y);
 	if (window != 0) {
 		OS.gdk_window_get_user_data (window, user_data);
 		handle = user_data [0];
@@ -4417,6 +4417,17 @@ long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[]
 		return OS.gdk_window_get_device_position(window, pointer, x, y, mask);
 	} else {
 		return OS.gdk_window_get_pointer (window, x, y, mask);
+	}
+}
+
+long /*int*/ gdk_device_get_window_at_position (int[] win_x, int[] win_y) {
+	if (OS.GTK_VERSION >= OS.VERSION(3,0,0)) {
+		long /*int*/ display = OS.gdk_display_get_default ();
+		long /*int*/ device_manager = OS.gdk_display_get_device_manager (display);
+		long /*int*/ device = OS.gdk_device_manager_get_client_pointer (device_manager);
+		return OS.gdk_device_get_window_at_position (device, win_x, win_y);
+	} else {
+		return OS.gdk_window_at_pointer (win_x, win_y);
 	}
 }
 

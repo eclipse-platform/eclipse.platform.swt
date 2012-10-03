@@ -174,6 +174,7 @@
 #define gdk_cursor_new_from_pixbuf_LIB LIB_GDK
 #define gdk_cursor_unref_LIB LIB_GDK
 #define gdk_device_manager_get_client_pointer_LIB LIB_GDK
+#define gdk_device_get_window_at_position_LIB LIB_GDK
 #define gdk_device_grab_LIB LIB_GDK
 #define gdk_device_ungrab_LIB LIB_GDK
 #define gdk_display_get_device_manager_LIB LIB_GDK
@@ -231,6 +232,7 @@
 #define gdk_window_restack_LIB LIB_GDK
 #define gdk_window_get_device_position_LIB LIB_GDK
 #define gdk_window_get_pointer_LIB LIB_GDK
+#define gdk_window_at_pointer_LIB LIB_GDK
 #define gdk_window_get_height_LIB LIB_GDK
 #define gdk_window_get_width_LIB LIB_GDK
 #define gdk_pixmap_get_size_LIB LIB_GDK

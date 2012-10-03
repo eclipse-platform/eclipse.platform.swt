@@ -4904,6 +4904,33 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1device_1get_1associated_1device)
 }
 #endif
 
+#ifndef NO__1gdk_1device_1get_1window_1at_1position
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1device_1get_1window_1at_1position)
+	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1device_1get_1window_1at_1position_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)gdk_device_get_window_at_position(arg0, (gint *)lparg1, (gint *)lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_device_get_window_at_position)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, gint *, gint *))fp)(arg0, (gint *)lparg1, (gint *)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1device_1get_1window_1at_1position_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1device_1grab
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1device_1grab)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jboolean arg3, jint arg4, jintLong arg5, jint arg6)
@@ -6756,7 +6783,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1window_1at_1pointer)
 	OS_NATIVE_ENTER(env, that, _1gdk_1window_1at_1pointer_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
 	rc = (jintLong)gdk_window_at_pointer((gint *)lparg0, (gint *)lparg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_window_at_pointer)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(gint *, gint *))fp)((gint *)lparg0, (gint *)lparg1);
+		}
+	}
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);

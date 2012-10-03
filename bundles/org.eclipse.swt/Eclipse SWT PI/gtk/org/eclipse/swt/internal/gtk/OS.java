@@ -3718,6 +3718,20 @@ public static final long /*int*/ gdk_device_manager_get_client_pointer(long /*in
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ * @param win_x cast=(gint *)
+ * @param win_y cast=(gint *)
+ */
+public static final native long /*int*/ _gdk_device_get_window_at_position(long /*int*/ device, int[] win_x, int[] win_y);
+public static final long /*int*/ gdk_device_get_window_at_position(long /*int*/ device, int[] win_x, int[] win_y) {
+	lock.lock();
+	try {
+		return _gdk_device_get_window_at_position(device, win_x, win_y);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @method flags=dynamic */
 public static final native boolean _gdk_display_supports_cursor_color(long /*int*/ display);
 public static final boolean gdk_display_supports_cursor_color(long /*int*/ display) {
@@ -5106,6 +5120,7 @@ public static final long /*int*/ gdk_visual_get_system() {
 	}
 }
 /**
+ * @method flags=dynamic
  * @param win_x cast=(gint *)
  * @param win_y cast=(gint *)
  */
