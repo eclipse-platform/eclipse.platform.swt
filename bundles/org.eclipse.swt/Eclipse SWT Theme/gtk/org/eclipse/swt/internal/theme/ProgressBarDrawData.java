@@ -28,7 +28,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	theme.transferClipping(gc, gtkStyle);
 	byte[] detail = Converter.wcsToMbcs(null, "trough", true);
 	int x = bounds.x, y = bounds.y, width = bounds.width, height = bounds.height;
-	OS.gtk_paint_box(gtkStyle, drawable, getStateType(DrawData.WIDGET_WHOLE), OS.GTK_SHADOW_IN, null, progressHandle, detail, x, y, width, height);
+	gtk_render_box (gtkStyle, drawable, getStateType(DrawData.WIDGET_WHOLE), OS.GTK_SHADOW_IN, null, progressHandle, detail, x, y, width, height);
 	int xthichness = OS.gtk_style_get_xthickness(gtkStyle);
 	int ythichness = OS.gtk_style_get_ythickness(gtkStyle);
 	if ((style & SWT.VERTICAL) != 0) {
@@ -47,7 +47,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		width *= selection / (float)Math.max(1, maximum - minimum);
 	}
 	detail = Converter.wcsToMbcs(null, "bar", true);
-	OS.gtk_paint_box(gtkStyle, drawable, OS.GTK_STATE_PRELIGHT, OS.GTK_SHADOW_OUT, null, progressHandle, detail, x, y, width, height);
+	gtk_render_box (gtkStyle, drawable, OS.GTK_STATE_PRELIGHT, OS.GTK_SHADOW_OUT, null, progressHandle, detail, x, y, width, height);
 }
 
 int getStateType(int part) {

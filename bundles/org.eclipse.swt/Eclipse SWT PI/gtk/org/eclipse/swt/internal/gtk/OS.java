@@ -8555,6 +8555,23 @@ public static final void gtk_render_frame(long /*int*/ context, long /*int*/ cr,
 }
 /**
  * @method flags=dynamic
+ * @param cr cast=(cairo_t *)
+ * @param x cast=(gdouble)
+ * @param y cast=(gdouble)
+ * @param width cast=(gdouble)
+ * @param height cast=(gdouble)
+ */
+public static final native void _gtk_render_background(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height);
+public static final void gtk_render_background(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height) {
+	lock.lock();
+	try {
+		_gtk_render_background(context, cr, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)
@@ -8616,7 +8633,7 @@ public static final void gtk_paint_arrow(long /*int*/ style, long /*int*/ window
 }
 
 /**
- * @param style cast=(GtkStyle *)
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)

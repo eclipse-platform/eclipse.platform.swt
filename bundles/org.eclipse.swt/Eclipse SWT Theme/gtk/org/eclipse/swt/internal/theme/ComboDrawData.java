@@ -58,7 +58,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	int arrow_y = y + (height - arrow_height) / 2 + 1;
 	if (relief != OS.GTK_RELIEF_NONE || ((state[DrawData.COMBO_ARROW] & (DrawData.PRESSED | DrawData.HOT)) != 0)) {
 		byte[] detail = Converter.wcsToMbcs(null, "button", true);
-		OS.gtk_paint_box(gtkStyle, drawable, state_type, shadow_type, null, buttonHandle, detail, arrow_button_x, y, arrow_button_width, height);
+		gtk_render_box (gtkStyle, drawable, state_type, shadow_type, null, buttonHandle, detail, arrow_button_x, y, arrow_button_width, height);
 	}		
 	byte[] arrow_detail = Converter.wcsToMbcs(null, "arrow", true);
 	long /*int*/ arrowHandle = theme.arrowHandle;

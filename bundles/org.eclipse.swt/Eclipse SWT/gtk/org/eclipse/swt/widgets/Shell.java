@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.Cairo;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
@@ -1260,7 +1261,7 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 			gtk_render_frame (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, 0, height [0] - border, width [0], border);
 			gtk_render_frame (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, 0, border, border, height [0] - border - border);
 			gtk_render_frame (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, width [0] - border, border, border, height [0] - border - border);
-			gtk_render_frame (style, window, state, OS.GTK_SHADOW_OUT, area, widget, detail, 0, 0, width [0], height [0]);
+			gtk_render_box (style, window, state, OS.GTK_SHADOW_OUT, area, widget, detail, 0, 0, width [0], height [0]);
 			return 1;
 		}
 		return 0;
@@ -2566,5 +2567,17 @@ void setToolTipText (long /*int*/ rootWidget, long /*int*/ tipWidget, String str
 		if (set) OS.gtk_tooltips_set_tip (tooltipsHandle, tipWidget, buffer, null);
 	}
 		
+}
+
+void gtk_render_box (long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		long /*int*/ cairo = OS.gdk_cairo_create (window);
+		long /*int*/ context = OS.gtk_widget_get_style_context (style);
+		OS.gtk_render_frame (context, cairo, x, y, width, height);
+		OS.gtk_render_background (context, cairo, x, y, width, height);
+		Cairo.cairo_destroy (cairo);
+	} else {
+		OS.gtk_paint_box (style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
+	}
 }
 }

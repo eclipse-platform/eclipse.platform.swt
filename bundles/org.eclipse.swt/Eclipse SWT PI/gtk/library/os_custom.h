@@ -301,6 +301,7 @@
 #define gtk_enumerate_printers_LIB LIB_GTK
 #define gtk_object_sink_LIB LIB_GTK
 #define gtk_orientable_set_orientation_LIB LIB_GTK
+#define gtk_paint_box_LIB LIB_GTK
 #define gtk_paint_handle_LIB LIB_GTK
 #define gtk_paint_hline_LIB LIB_GTK
 #define gtk_paint_vline_LIB LIB_GTK
@@ -377,6 +378,7 @@
 #define gtk_render_handle_LIB LIB_GTK
 #define gtk_render_line_LIB LIB_GTK
 #define gtk_render_frame_LIB LIB_GTK
+#define gtk_render_background_LIB LIB_GTK
 #define gtk_progress_bar_set_inverted_LIB LIB_GTK
 #define gtk_progress_bar_set_orientation_LIB LIB_GTK
 #define ubuntu_menu_proxy_get_LIB LIB_GTK

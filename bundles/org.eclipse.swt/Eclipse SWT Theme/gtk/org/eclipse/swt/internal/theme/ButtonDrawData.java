@@ -155,7 +155,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		int relief = OS.gtk_button_get_relief(buttonHandle);
 		byte[] detail = Converter.wcsToMbcs(null, (state & DrawData.DEFAULTED) != 0 ? "buttondefault" : "button", true);
 		if ((state & DrawData.DEFAULTED) != 0 && relief == OS.GTK_RELIEF_NORMAL) {
-            OS.gtk_paint_box(gtkStyle, drawable, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_IN, null, buttonHandle, detail, x, y, width, height);
+			gtk_render_box (gtkStyle, drawable, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_IN, null, buttonHandle, detail, x, y, width, height);
             x += default_border.left;
             y += default_border.top;
             width -= default_border.left + default_border.right;
@@ -172,7 +172,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		int state_type = getStateType(DrawData.WIDGET_WHOLE);
 
 		if (relief != OS.GTK_RELIEF_NONE || ((state & (DrawData.PRESSED | DrawData.HOT)) != 0)) {
-			OS.gtk_paint_box(gtkStyle, drawable, state_type, shadow_type, null, buttonHandle, detail, x, y, width, height);
+			gtk_render_box (gtkStyle, drawable, state_type, shadow_type, null, buttonHandle, detail, x, y, width, height);
 		}
 		
 	    if ((state & DrawData.FOCUSED) != 0) {

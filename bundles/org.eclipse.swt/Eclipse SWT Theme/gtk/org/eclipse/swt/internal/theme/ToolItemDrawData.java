@@ -106,7 +106,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	int state_type = getStateType(DrawData.WIDGET_WHOLE);
 		
 	if (relief[0] != OS.GTK_RELIEF_NONE || ((state & (DrawData.PRESSED | DrawData.HOT | DrawData.SELECTED)) != 0)) {
-		OS.gtk_paint_box(gtkStyle, drawable, state_type, shadow_type, null, buttonHandle, detail, x, y, width, height);
+		gtk_render_box(gtkStyle, drawable, state_type, shadow_type, null, buttonHandle, detail, x, y, width, height);
 	}
 
 	if (clientArea != null) {
