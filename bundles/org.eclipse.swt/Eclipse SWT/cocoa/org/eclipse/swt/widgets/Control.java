@@ -3526,6 +3526,13 @@ public void setBounds (int x, int y, int width, int height) {
 }
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	/*
+	* Bug in Cocoa. On Mac 10.8, a text control loses and gains focus
+	* when its bounds changes.  The fix is to ignore these events.
+	*/
+	Display display = this.display;
+	boolean oldIgnoreFocus = display.ignoreFocus;
+	display.ignoreFocus = true;
 	NSView topView = topView();
 	if (move && resize) {
 		NSRect rect = new NSRect();
@@ -3545,6 +3552,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 		size.height = height;
 		topView.setFrameSize(size);
 	}
+	display.ignoreFocus = oldIgnoreFocus;
 }
 
 /**
