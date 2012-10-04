@@ -126,6 +126,7 @@ public class Display extends Device {
 
 	Caret currentCaret;
 	
+	boolean ignoreFocus;
 	boolean sendEvent;
 	int clickCountButton, clickCount;
 
@@ -638,6 +639,7 @@ void checkEnterExit (Control control, NSEvent nsEvent, boolean send) {
 }
 
 void checkFocus () {
+	if (ignoreFocus) return;
 	Control oldControl = currentFocusControl;
 	Control newControl = getFocusControl ();
 	if (oldControl != newControl) {
