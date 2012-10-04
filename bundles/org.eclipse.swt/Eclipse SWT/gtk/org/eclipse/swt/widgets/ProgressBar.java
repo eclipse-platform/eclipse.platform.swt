@@ -306,14 +306,14 @@ void updateBar (int selection, int minimum, int maximum) {
 void gtk_orientable_set_orientation (long /*int*/ pbar, int orientation) {
 	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
 		switch (orientation) {
-		case OS.GTK_PROGRESS_BOTTOM_TO_TOP:
-			OS.gtk_orientable_set_orientation(pbar, OS.GTK_ORIENTATION_VERTICAL);
-			OS.gtk_progress_bar_set_inverted(pbar, true);
-			break;
-		case OS.GTK_PROGRESS_LEFT_TO_RIGHT:
-			OS.gtk_orientable_set_orientation(pbar, OS.GTK_ORIENTATION_HORIZONTAL);
-			OS.gtk_progress_bar_set_inverted(pbar, false);
-			break;
+			case OS.GTK_PROGRESS_BOTTOM_TO_TOP:
+				OS.gtk_orientable_set_orientation(pbar, OS.GTK_ORIENTATION_VERTICAL);
+				OS.gtk_progress_bar_set_inverted(pbar, true);
+				break;
+			case OS.GTK_PROGRESS_LEFT_TO_RIGHT:
+				OS.gtk_orientable_set_orientation(pbar, OS.GTK_ORIENTATION_HORIZONTAL);
+				OS.gtk_progress_bar_set_inverted(pbar, false);
+				break;
 		}
 	} else {
 		OS.gtk_progress_bar_set_orientation(pbar, orientation);
