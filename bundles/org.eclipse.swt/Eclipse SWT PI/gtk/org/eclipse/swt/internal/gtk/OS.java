@@ -8674,7 +8674,7 @@ public static final void gtk_paint_extension(long /*int*/ style, long /*int*/ wi
 	}
 }
 /**
- * @param style cast=(GtkStyle *)
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)
@@ -8735,7 +8735,7 @@ public static final void gtk_paint_shadow(long /*int*/ style, long /*int*/ windo
 	}
 }
 /**
- * @param style cast=(GtkStyle *)
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)
@@ -8745,6 +8745,23 @@ public static final void gtk_paint_vline(long /*int*/ style, long /*int*/ window
 	lock.lock();
 	try {
 		_gtk_paint_vline(style, window, state_type, area, widget, detail, y1, y2, x);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param cr cast=(cairo_t *)
+ * @param x0 cast=(gdouble)
+ * @param y0 cast=(gdouble)
+ * @param x1 cast=(gdouble)
+ * @param y1 cast=(gdouble)
+ */
+public static final native void _gtk_render_line(long /*int*/ context, long /*int*/ cr, double x0, double y0, double x1, double y1);
+public static final void gtk_render_line(long /*int*/ context, long /*int*/ cr, double x0, double y0, double x1, double y1) {
+	lock.lock();
+	try {
+		_gtk_render_line(context, cr, x0, y0, x1, y1);
 	} finally {
 		lock.unlock();
 	}

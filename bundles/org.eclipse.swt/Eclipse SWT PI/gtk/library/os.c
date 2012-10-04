@@ -11447,7 +11447,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1hline)
 	OS_NATIVE_ENTER(env, that, _1gtk_1paint_1hline_FUNC);
 	if (arg3) if ((lparg3 = getGdkRectangleFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	gtk_paint_hline((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, lparg3, (GtkWidget *)arg4, (const gchar *)lparg5, arg6, arg7, arg8);
+/*
+	gtk_paint_hline(arg0, (GdkWindow *)arg1, arg2, lparg3, (GtkWidget *)arg4, (const gchar *)lparg5, arg6, arg7, arg8);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_paint_hline)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GdkWindow *, jint, GdkRectangle *, GtkWidget *, const gchar *, jint, jint, jint))fp)(arg0, (GdkWindow *)arg1, arg2, lparg3, (GtkWidget *)arg4, (const gchar *)lparg5, arg6, arg7, arg8);
+		}
+	}
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
 	if (arg3 && lparg3) setGdkRectangleFields(env, arg3, lparg3);
@@ -11532,7 +11540,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1vline)
 	OS_NATIVE_ENTER(env, that, _1gtk_1paint_1vline_FUNC);
 	if (arg3) if ((lparg3 = getGdkRectangleFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	gtk_paint_vline((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, lparg3, (GtkWidget *)arg4, (const gchar *)lparg5, arg6, arg7, arg8);
+/*
+	gtk_paint_vline(arg0, (GdkWindow *)arg1, arg2, lparg3, (GtkWidget *)arg4, (const gchar *)lparg5, arg6, arg7, arg8);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_paint_vline)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GdkWindow *, jint, GdkRectangle *, GtkWidget *, const gchar *, jint, jint, jint))fp)(arg0, (GdkWindow *)arg1, arg2, lparg3, (GtkWidget *)arg4, (const gchar *)lparg5, arg6, arg7, arg8);
+		}
+	}
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
 	if (arg3 && lparg3) setGdkRectangleFields(env, arg3, lparg3);
@@ -12766,6 +12782,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1handle)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1render_1handle_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1render_1line
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1line)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1render_1line_FUNC);
+/*
+	gtk_render_line(arg0, (cairo_t *)arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_render_line)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, cairo_t *, gdouble, gdouble, gdouble, gdouble))fp)(arg0, (cairo_t *)arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1render_1line_FUNC);
 }
 #endif
 
