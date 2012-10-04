@@ -1256,11 +1256,11 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 			byte [] detail = Converter.wcsToMbcs (null, "base", true); //$NON-NLS-1$
 			int border = OS.gtk_container_get_border_width (widget);
 			int state = display.activeShell == this ? OS.GTK_STATE_SELECTED : OS.GTK_STATE_PRELIGHT;
-			OS.gtk_paint_flat_box (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, 0, 0, width [0], border);
-			OS.gtk_paint_flat_box (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, 0, height [0] - border, width [0], border);
-			OS.gtk_paint_flat_box (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, 0, border, border, height [0] - border - border);
-			OS.gtk_paint_flat_box (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, width [0] - border, border, border, height [0] - border - border);
-			OS.gtk_paint_box (style, window, state, OS.GTK_SHADOW_OUT, area, widget, detail, 0, 0, width [0], height [0]);
+			gtk_render_frame (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, 0, 0, width [0], border);
+			gtk_render_frame (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, 0, height [0] - border, width [0], border);
+			gtk_render_frame (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, 0, border, border, height [0] - border - border);
+			gtk_render_frame (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, width [0] - border, border, border, height [0] - border - border);
+			gtk_render_frame (style, window, state, OS.GTK_SHADOW_OUT, area, widget, detail, 0, 0, width [0], height [0]);
 			return 1;
 		}
 		return 0;

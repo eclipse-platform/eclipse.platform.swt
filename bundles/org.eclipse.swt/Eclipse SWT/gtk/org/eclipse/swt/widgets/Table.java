@@ -2630,7 +2630,7 @@ long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*
 					long /*int*/ style = OS.gtk_widget_get_style (widget);					
 					//TODO - parity and sorted
 					byte[] detail = Converter.wcsToMbcs (null, "cell_odd", true);
-					OS.gtk_paint_flat_box (style, window, OS.GTK_STATE_SELECTED, OS.GTK_SHADOW_NONE, rect, widget, detail, rect.x, rect.y, rect.width, rect.height);
+					gtk_render_frame (style, window, OS.GTK_STATE_SELECTED, OS.GTK_SHADOW_NONE, rect, widget, detail, rect.x, rect.y, rect.width, rect.height);
 				} else {
 					if (wasSelected) drawForeground = gc.getForeground ().handle;
 				}

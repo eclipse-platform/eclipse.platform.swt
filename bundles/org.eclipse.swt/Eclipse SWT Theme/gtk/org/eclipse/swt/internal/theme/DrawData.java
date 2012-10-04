@@ -12,6 +12,7 @@ package org.eclipse.swt.internal.theme;
 
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.Cairo;
 import org.eclipse.swt.internal.gtk.*;
 
 public class DrawData {
@@ -186,6 +187,17 @@ Rectangle measureText(Theme theme, String text, int flags, GC gc, Rectangle boun
 	OS.pango_layout_get_size(layout, width, height);
 	OS.g_object_unref(layout);
 	return new Rectangle(0, 0, OS.PANGO_PIXELS(width[0]), OS.PANGO_PIXELS(height[0]));
+}
+
+void gtk_render_frame (long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		long /*int*/ cairo = OS.gdk_cairo_create (window);
+		long /*int*/ context = OS.gtk_widget_get_style_context (style);
+		OS.gtk_render_frame (context, cairo, context, y, width, height);
+		Cairo.cairo_destroy (cairo);
+	} else {
+		OS.gtk_paint_flat_box (style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
+	}
 }
 
 }

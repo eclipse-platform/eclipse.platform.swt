@@ -8537,7 +8537,24 @@ public static final void gtk_paint_handle(long /*int*/ style, long /*int*/ windo
 	}
 }
 /**
- * @param style cast=(GtkStyle *)
+ * @method flags=dynamic
+ * @param cr cast=(cairo_t *)
+ * @param x cast=(gdouble)
+ * @param y cast=(gdouble)
+ * @param width cast=(gdouble)
+ * @param height cast=(gdouble)
+ */
+public static final native void _gtk_render_frame(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height);
+public static final void gtk_render_frame(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height) {
+	lock.lock();
+	try {
+		_gtk_render_frame(context, cr, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)

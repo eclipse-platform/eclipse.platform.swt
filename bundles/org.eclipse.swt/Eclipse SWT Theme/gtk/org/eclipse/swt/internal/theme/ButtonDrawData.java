@@ -60,7 +60,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 			prelight_y = bounds.y + border_width;
 			prelight_width = bounds.width - (2 * border_width);
 			prelight_height = bounds.height - (2 * border_width);
-			OS.gtk_paint_flat_box(gtkStyle, drawable, OS.GTK_STATE_PRELIGHT, OS.GTK_SHADOW_ETCHED_OUT, null, radioButtonHandle, detail, prelight_x, prelight_y, prelight_width, prelight_height);
+			gtk_render_frame (gtkStyle, drawable, OS.GTK_STATE_PRELIGHT, OS.GTK_SHADOW_ETCHED_OUT, null, radioButtonHandle, detail, prelight_x, prelight_y, prelight_width, prelight_height);
 		}
 		int state_type = getStateType(DrawData.WIDGET_WHOLE);
 		OS.gtk_paint_option(gtkStyle, drawable, state_type, shadow_type, null, radioButtonHandle, detail, x, y, indicator_size, indicator_size);
@@ -107,7 +107,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 			prelight_y = bounds.y + border_width;
 			prelight_width = bounds.width - (2 * border_width);
 			prelight_height = bounds.height - (2 * border_width);
-			OS.gtk_paint_flat_box(gtkStyle, drawable, OS.GTK_STATE_PRELIGHT, OS.GTK_SHADOW_ETCHED_OUT, null, checkButtonHandle, detail, prelight_x, prelight_y, prelight_width, prelight_height);
+			gtk_render_frame (gtkStyle, drawable, OS.GTK_STATE_PRELIGHT, OS.GTK_SHADOW_ETCHED_OUT, null, checkButtonHandle, detail, prelight_x, prelight_y, prelight_width, prelight_height);
 		}
 		int state_type = getStateType(DrawData.WIDGET_WHOLE);
 		OS.gtk_paint_check(gtkStyle, drawable, state_type, shadow_type, null, checkButtonHandle, detail, x, y, indicator_size, indicator_size);

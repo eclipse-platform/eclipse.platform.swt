@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.Cairo;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.events.*;
 
@@ -2028,6 +2029,17 @@ long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[]
 		return OS.gdk_window_get_device_position(window, pointer, x, y, mask);
 	} else {
 		return OS.gdk_window_get_pointer (window, x, y, mask);
+	}
+}
+
+void gtk_render_frame (long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		long /*int*/ cairo = OS.gdk_cairo_create (window);
+		long /*int*/ context = OS.gtk_widget_get_style_context (style);
+		OS.gtk_render_frame (context, cairo, context, y, width, height);
+		Cairo.cairo_destroy (cairo);
+	} else {
+		OS.gtk_paint_flat_box (style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
 	}
 }
 

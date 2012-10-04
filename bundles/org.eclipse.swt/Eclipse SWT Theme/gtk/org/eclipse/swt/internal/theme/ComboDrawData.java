@@ -77,7 +77,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	width -= 2 * xthickness;
 	height -= 2 * ythickness;
 	detail = Converter.wcsToMbcs(null, "entry_bg", true);
-	OS.gtk_paint_flat_box(gtkStyle, drawable, state_type, OS.GTK_SHADOW_NONE, null, entryHandle, detail, x, y, width - arrow_button_width, height);
+	gtk_render_frame (gtkStyle, drawable, state_type, OS.GTK_SHADOW_NONE, null, entryHandle, detail, x, y, width - arrow_button_width, height);
 		
 	if (clientArea != null) {
 		clientArea.x = x;
