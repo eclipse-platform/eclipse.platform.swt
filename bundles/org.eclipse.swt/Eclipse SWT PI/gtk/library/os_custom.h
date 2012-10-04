@@ -241,6 +241,7 @@
 #define gtk_window_set_skip_taskbar_hint_LIB LIB_GTK
 #define gtk_widget_is_composited_LIB LIB_GTK
 #define gtk_widget_get_allocation_LIB LIB_GTK
+#define gtk_widget_get_style_context_LIB LIB_GTK
 #define gtk_widget_get_tooltip_text_LIB LIB_GTK
 #define gtk_widget_get_visible_LIB LIB_GTK
 #define gtk_widget_has_focus_LIB LIB_GTK
@@ -300,6 +301,7 @@
 #define gtk_enumerate_printers_LIB LIB_GTK
 #define gtk_object_sink_LIB LIB_GTK
 #define gtk_orientable_set_orientation_LIB LIB_GTK
+#define gtk_paint_handle_LIB LIB_GTK
 #define gtk_page_setup_get_bottom_margin_LIB LIB_GTK
 #define gtk_page_setup_get_left_margin_LIB LIB_GTK
 #define gtk_page_setup_get_orientation_LIB LIB_GTK
@@ -369,6 +371,7 @@
 #define gtk_printer_get_backend_LIB LIB_GTK
 #define gtk_printer_get_name_LIB LIB_GTK
 #define gtk_printer_is_default_LIB LIB_GTK
+#define gtk_render_handle_LIB LIB_GTK
 #define gtk_progress_bar_set_inverted_LIB LIB_GTK
 #define gtk_progress_bar_set_orientation_LIB LIB_GTK
 #define ubuntu_menu_proxy_get_LIB LIB_GTK

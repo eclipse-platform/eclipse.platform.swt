@@ -8521,7 +8521,7 @@ public static final double gtk_page_setup_get_page_height(long /*int*/ setup, in
 	}
 }
 /**
- * @param style cast=(GtkStyle *)
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param area flags=no_out
  * @param widget cast=(GtkWidget *)
@@ -12571,6 +12571,36 @@ public static final void gtk_widget_get_allocation (long /*int*/ widget, GtkAllo
 	lock.lock();
 	try {
 		_gtk_widget_get_allocation(widget, allocation);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param cr cast=(cairo_t *)
+ * @param x cast=(gdouble)
+ * @param y cast=(gdouble)
+ * @param width cast=(gdouble)
+ * @param height cast=(gdouble)
+ */
+public static final native void _gtk_render_handle(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height);
+public static final void gtk_render_handle(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height) {
+	lock.lock();
+	try {
+		gtk_render_handle(context,cr, x ,y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param widget cast=(GtkWidget *)
+ */
+public static final native long /*int*/ _gtk_widget_get_style_context(long /*int*/ widget);
+public static final long /*int*/ gtk_widget_get_style_context(long /*int*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_widget_get_style_context(widget);
 	} finally {
 		lock.unlock();
 	}
