@@ -8553,7 +8553,6 @@ public static final void gtk_paint_handle(long /*int*/ style, long /*int*/ windo
 }
 /**
  * @method flags=dynamic
- * @param cr cast=(cairo_t *)
  * @param x cast=(gdouble)
  * @param y cast=(gdouble)
  * @param width cast=(gdouble)
@@ -8570,7 +8569,6 @@ public static final void gtk_render_frame(long /*int*/ context, long /*int*/ cr,
 }
 /**
  * @method flags=dynamic
- * @param cr cast=(cairo_t *)
  * @param x cast=(gdouble)
  * @param y cast=(gdouble)
  * @param width cast=(gdouble)
@@ -8800,7 +8798,6 @@ public static final void gtk_paint_vline(long /*int*/ style, long /*int*/ window
 }
 /**
  * @method flags=dynamic
- * @param cr cast=(cairo_t *)
  * @param x0 cast=(gdouble)
  * @param y0 cast=(gdouble)
  * @param x1 cast=(gdouble)
@@ -12643,7 +12640,6 @@ public static final void gtk_widget_get_allocation (long /*int*/ widget, GtkAllo
 }
 /**
  * @method flags=dynamic
- * @param cr cast=(cairo_t *)
  * @param x cast=(gdouble)
  * @param y cast=(gdouble)
  * @param width cast=(gdouble)

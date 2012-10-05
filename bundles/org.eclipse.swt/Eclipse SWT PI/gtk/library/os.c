@@ -12824,12 +12824,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1background)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1render_1background_FUNC);
 /*
-	gtk_render_background(arg0, (cairo_t *)arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
+	gtk_render_background(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gtk_render_background)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, cairo_t *, gdouble, gdouble, gdouble, gdouble))fp)(arg0, (cairo_t *)arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, gdouble, gdouble, gdouble, gdouble))fp)(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1render_1background_FUNC);
@@ -12842,12 +12842,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1frame)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1render_1frame_FUNC);
 /*
-	gtk_render_frame(arg0, (cairo_t *)arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
+	gtk_render_frame(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gtk_render_frame)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, cairo_t *, gdouble, gdouble, gdouble, gdouble))fp)(arg0, (cairo_t *)arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, gdouble, gdouble, gdouble, gdouble))fp)(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1render_1frame_FUNC);
@@ -12860,12 +12860,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1handle)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1render_1handle_FUNC);
 /*
-	gtk_render_handle(arg0, (cairo_t *)arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
+	gtk_render_handle(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gtk_render_handle)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, cairo_t *, gdouble, gdouble, gdouble, gdouble))fp)(arg0, (cairo_t *)arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, gdouble, gdouble, gdouble, gdouble))fp)(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1render_1handle_FUNC);
@@ -12878,12 +12878,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1line)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1render_1line_FUNC);
 /*
-	gtk_render_line(arg0, (cairo_t *)arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
+	gtk_render_line(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gtk_render_line)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, cairo_t *, gdouble, gdouble, gdouble, gdouble))fp)(arg0, (cairo_t *)arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, gdouble, gdouble, gdouble, gdouble))fp)(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1render_1line_FUNC);
