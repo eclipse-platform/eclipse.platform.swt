@@ -276,7 +276,7 @@ case $SWT_OS.$SWT_ARCH in
 #		fi
 		;;
 	"solaris.sparc")
-		PATH="/opt/csw/bin:/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/bin:$PATH"
+		PATH="/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/bin:$PATH"
 		if [ "${CC}" = "" ]; then
 			CC="cc"
 		fi
@@ -290,7 +290,7 @@ case $SWT_OS.$SWT_ARCH in
 			JAVA_HOME="/usr/j2se"
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			PKG_CONFIG_PATH="/opt/csw/lib/pkgconfig"
+			PKG_CONFIG_PATH="/usr/local/cairo-1.4.10/lib/pkgconfig/"
 		fi
 		if [ "${MOZILLA_SDK}" = "" ]; then
 			MOZILLA_SDK="/bluebird/teamswt/swt-builddir/geckoSDK/1.4/gecko-sdk"
