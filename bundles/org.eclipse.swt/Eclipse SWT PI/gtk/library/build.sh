@@ -400,8 +400,8 @@ case $SWT_OS.$SWT_ARCH in
 		if [ "${JAVA_HOME}" = "" ]; then
 			export JAVA_HOME="/opt/java1.5"
 		fi
-		if [ "${AWT_HOME}" = "" ]; then
-			export AWT_HOME="/opt/java1.5/jre/lib/IA64W/"
+		if [ "${AWT_LIB_PATH}" = "" ]; then
+			export AWT_LIB_PATH="/opt/java1.5/jre/lib/IA64W/"
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
 			export PKG_CONFIG_PATH="/opt/gtk_64bit/lib/hpux64/pkgconfig"
