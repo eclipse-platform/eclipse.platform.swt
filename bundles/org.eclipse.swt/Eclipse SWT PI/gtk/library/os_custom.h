@@ -216,6 +216,9 @@
 #define gtk_scrolled_window_get_hscrollbar_LIB LIB_GTK
 #define gtk_scrolled_window_get_vscrollbar_LIB LIB_GTK
 #define gtk_scale_new_LIB LIB_GTK
+#define gtk_style_context_restore_LIB LIB_GTK
+#define gtk_style_context_save_LIB LIB_GTK
+#define gtk_style_context_set_state_LIB LIB_GTK
 #define gtk_hscale_new_LIB LIB_GTK
 #define gtk_vscale_new_LIB LIB_GTK
 #define gtk_status_icon_get_geometry_LIB LIB_GTK
@@ -246,6 +249,7 @@
 #define gtk_widget_get_style_context_LIB LIB_GTK
 #define gtk_widget_get_tooltip_text_LIB LIB_GTK
 #define gtk_widget_get_visible_LIB LIB_GTK
+#define gtk_widget_get_state_flags_LIB LIB_GTK
 #define gtk_widget_has_focus_LIB LIB_GTK
 #define gtk_widget_has_default_LIB LIB_GTK
 #define gtk_widget_set_tooltip_text_LIB LIB_GTK
@@ -306,6 +310,7 @@
 #define gtk_paint_box_LIB LIB_GTK
 #define gtk_paint_box_gap_LIB LIB_GTK
 #define gtk_paint_handle_LIB LIB_GTK
+#define gtk_paint_focus_LIB LIB_GTK
 #define gtk_paint_hline_LIB LIB_GTK
 #define gtk_paint_vline_LIB LIB_GTK
 #define gtk_paint_flat_box_LIB LIB_GTK
@@ -382,6 +387,7 @@
 #define gtk_printer_is_default_LIB LIB_GTK
 #define gtk_render_handle_LIB LIB_GTK
 #define gtk_render_line_LIB LIB_GTK
+#define gtk_render_focus_LIB LIB_GTK
 #define gtk_render_frame_LIB LIB_GTK
 #define gtk_render_frame_gap_LIB LIB_GTK
 #define gtk_render_background_LIB LIB_GTK

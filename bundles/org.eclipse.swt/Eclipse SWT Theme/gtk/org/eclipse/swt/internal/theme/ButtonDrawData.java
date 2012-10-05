@@ -204,7 +204,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	              y += child_displacement_y;
 	    	}
 	    	
-	        OS.gtk_paint_focus(gtkStyle, drawable, state_type, null, buttonHandle, detail, x, y, width, height);
+	    	gtk_render_focus (gtkStyle, drawable, state_type, null, buttonHandle, detail, x, y, width, height);
 	    }
 		if (clientArea != null) {
 			clientArea.x = bounds.x + border_width;

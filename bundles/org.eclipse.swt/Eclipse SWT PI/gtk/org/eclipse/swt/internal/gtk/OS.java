@@ -8648,7 +8648,7 @@ public static final void gtk_paint_flat_box(long /*int*/ style, long /*int*/ win
 	}
 }
 /**
- * @param style cast=(GtkStyle *)
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param area flags=no_out
  * @param widget cast=(GtkWidget *)
@@ -8659,6 +8659,22 @@ public static final void gtk_paint_focus(long /*int*/ style, long /*int*/ window
 	lock.lock();
 	try {
 		_gtk_paint_focus(style, window, state_type, area, widget, detail, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+* @method flags=dynamic
+* @param x cast=(gdouble)
+* @param y cast=(gdouble)
+* @param width cast=(gdouble)
+* @param height cast=(gdouble)
+*/
+public static final native void _gtk_render_focus(long /*int*/ context, long /*int*/ cr,  double x , double y, double width, double height);
+public static final void gtk_render_focus(long /*int*/ context, long /*int*/ cr,  double x , double y, double width, double height) {
+	lock.lock();
+	try {
+		_gtk_render_focus(context, cr,  x, y, width, height);
 	} finally {
 		lock.unlock();
 	}
@@ -10075,6 +10091,48 @@ public static final void gtk_style_get_base(long /*int*/ style, int index, GdkCo
 	lock.lock();
 	try {
 		_gtk_style_get_base(style, index, color);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_style_context_save(long /*int*/ self);
+public static final void gtk_style_context_save(long /*int*/ self) {
+	lock.lock();
+	try {
+		_gtk_style_context_save(self);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_style_context_restore(long /*int*/ context);
+public static final void gtk_style_context_restore(long /*int*/ context) {
+	lock.lock();
+	try {
+		_gtk_style_context_restore(context);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic
+ *  @param self cast=(GtkWidget *)
+ *  */
+public static final native long /*int*/ _gtk_widget_get_state_flags(long /*int*/ self);
+public static final long /*int*/ gtk_widget_get_state_flags(long /*int*/ self) {
+	lock.lock();
+	try {
+		return _gtk_widget_get_state_flags(self);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_style_context_set_state(long /*int*/ context, long /*int*/ flags);
+public static final void gtk_style_context_set_state(long /*int*/ context, long /*int*/ flags) {
+	lock.lock();
+	try {
+		_gtk_style_context_set_state(context,flags);
 	} finally {
 		lock.unlock();
 	}
