@@ -393,6 +393,7 @@ case $SWT_OS.$SWT_ARCH in
 		fi
 		;;
 	"hpux.ia64")
+		export PATH="/opt/hp-gcc/bin:/opt/gtk_64bit/bin:/opt/${PATH}"
 		if [ "${CC}" = "" ]; then
 			export CC=gcc
 		fi
