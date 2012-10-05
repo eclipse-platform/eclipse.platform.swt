@@ -276,7 +276,7 @@ case $SWT_OS.$SWT_ARCH in
 #		fi
 		;;
 	"solaris.sparc")
-		PATH="/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/bin:$PATH"
+		PATH="/opt/csw/bin:/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/bin:$PATH"
 		if [ "${CC}" = "" ]; then
 			CC="cc"
 		fi
