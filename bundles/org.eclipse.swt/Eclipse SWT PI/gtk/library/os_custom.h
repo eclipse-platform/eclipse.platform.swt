@@ -304,6 +304,7 @@
 #define gtk_object_sink_LIB LIB_GTK
 #define gtk_orientable_set_orientation_LIB LIB_GTK
 #define gtk_paint_box_LIB LIB_GTK
+#define gtk_paint_box_gap_LIB LIB_GTK
 #define gtk_paint_handle_LIB LIB_GTK
 #define gtk_paint_hline_LIB LIB_GTK
 #define gtk_paint_vline_LIB LIB_GTK
@@ -382,6 +383,7 @@
 #define gtk_render_handle_LIB LIB_GTK
 #define gtk_render_line_LIB LIB_GTK
 #define gtk_render_frame_LIB LIB_GTK
+#define gtk_render_frame_gap_LIB LIB_GTK
 #define gtk_render_background_LIB LIB_GTK
 #define gtk_render_option_LIB LIB_GTK LIB_GTK
 #define gtk_render_layout_LIB LIB_GTK

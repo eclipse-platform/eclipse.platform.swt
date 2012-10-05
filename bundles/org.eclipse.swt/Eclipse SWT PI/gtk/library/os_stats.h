@@ -964,6 +964,7 @@ typedef enum {
 	_1gtk_1rc_1style_1set_1text_FUNC,
 	_1gtk_1render_1background_FUNC,
 	_1gtk_1render_1frame_FUNC,
+	_1gtk_1render_1frame_1gap_FUNC,
 	_1gtk_1render_1handle_FUNC,
 	_1gtk_1render_1layout_FUNC,
 	_1gtk_1render_1line_FUNC,
