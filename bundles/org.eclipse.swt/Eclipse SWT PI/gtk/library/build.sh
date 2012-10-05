@@ -393,7 +393,6 @@ case $SWT_OS.$SWT_ARCH in
 		fi
 		;;
 	"hpux.ia64")
-#		export PATH="/bluebird/teamswt/bog/gtk/hpux/bin:${PATH}"
 		if [ "${CC}" = "" ]; then
 			export CC=gcc
 		fi
@@ -404,7 +403,7 @@ case $SWT_OS.$SWT_ARCH in
 			export AWT_HOME="/opt/java1.5/jre/lib/IA64W/"
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			export PKG_CONFIG_PATH="/bluebird/teamswt/bog/gtk/hpux/lib/pkgconfig"
+			export PKG_CONFIG_PATH="/opt/gtk_64bit/lib/hpux64/pkgconfig"
 		fi
 		;;
 esac	
