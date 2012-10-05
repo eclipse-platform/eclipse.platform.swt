@@ -135,7 +135,7 @@ void drawText(Theme theme, String text, int flags, GC gc, Rectangle bounds) {
 	}
 	int state_type = getStateType(DrawData.WIDGET_WHOLE);
 	byte[] detail = Converter.wcsToMbcs(null, "label", true);
-	OS.gtk_paint_layout(gtkStyle, drawable, state_type, false, null, widget, detail, x, y, layout);
+	gtk_render_layout(gtkStyle, drawable, state_type, false, null, widget, detail, x, y, layout);
 	OS.g_object_unref(layout);
 }
 
@@ -209,6 +209,18 @@ void gtk_render_box (long /*int*/ style, long /*int*/ window, int state_type, in
 		Cairo.cairo_destroy (cairo);
 	} else {
 		OS.gtk_paint_box (style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
+	}
+}
+
+
+void gtk_render_layout (long /*int*/ style, long /*int*/ window, int state_type, boolean use_text, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, long /*int*/ layout) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		long /*int*/ cairo = OS.gdk_cairo_create (window);
+		long /*int*/ context = OS.gtk_widget_get_style_context (style);
+		OS.gtk_render_layout (context, cairo, x, y, layout);
+		Cairo.cairo_destroy (cairo);
+	} else {
+		OS.gtk_paint_layout (style, window, state_type, use_text, area, widget, detail, x , y, layout);
 	}
 }
 

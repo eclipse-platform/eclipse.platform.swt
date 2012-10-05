@@ -309,6 +309,7 @@
 #define gtk_paint_vline_LIB LIB_GTK
 #define gtk_paint_flat_box_LIB LIB_GTK
 #define gtk_paint_option_LIB LIB_GTK LIB_GTK
+#define gtk_paint_layout_LIB LIB_GTK
 #define gtk_page_setup_get_bottom_margin_LIB LIB_GTK
 #define gtk_page_setup_get_left_margin_LIB LIB_GTK
 #define gtk_page_setup_get_orientation_LIB LIB_GTK
@@ -383,6 +384,7 @@
 #define gtk_render_frame_LIB LIB_GTK
 #define gtk_render_background_LIB LIB_GTK
 #define gtk_render_option_LIB LIB_GTK LIB_GTK
+#define gtk_render_layout_LIB LIB_GTK
 #define gtk_progress_bar_set_inverted_LIB LIB_GTK
 #define gtk_progress_bar_set_orientation_LIB LIB_GTK
 #define ubuntu_menu_proxy_get_LIB LIB_GTK

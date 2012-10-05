@@ -11523,7 +11523,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1layout)
 	OS_NATIVE_ENTER(env, that, _1gtk_1paint_1layout_FUNC);
 	if (arg4) if ((lparg4 = getGdkRectangleFields(env, arg4, &_arg4)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	gtk_paint_layout((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (const gchar *)lparg6, arg7, arg8, (PangoLayout *)arg9);
+/*
+	gtk_paint_layout(arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (const gchar *)lparg6, arg7, arg8, (PangoLayout *)arg9);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_paint_layout)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GdkWindow *, jint, jboolean, GdkRectangle *, GtkWidget *, const gchar *, jint, jint, PangoLayout *))fp)(arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (const gchar *)lparg6, arg7, arg8, (PangoLayout *)arg9);
+		}
+	}
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
 	if (arg4 && lparg4) setGdkRectangleFields(env, arg4, lparg4);
@@ -12877,6 +12885,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1handle)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1render_1handle_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1render_1layout
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1layout)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jdouble arg2, jdouble arg3, jintLong arg4)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1render_1layout_FUNC);
+/*
+	gtk_render_layout(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (PangoLayout *)arg4);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_render_layout)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, gdouble, gdouble, PangoLayout *))fp)(arg0, arg1, (gdouble)arg2, (gdouble)arg3, (PangoLayout *)arg4);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1render_1layout_FUNC);
 }
 #endif
 
