@@ -8741,7 +8741,7 @@ public static final void gtk_paint_box_gap(long /*int*/ style, long /*int*/ wind
 	}
 }
 /**
- * @param style cast=(GtkStyle *)
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)
@@ -8751,6 +8751,22 @@ public static final void gtk_paint_check(long /*int*/ style, long /*int*/ window
 	lock.lock();
 	try {
 		_gtk_paint_check(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param x cast=(gdouble)
+ * @param y cast=(gdouble)
+ * @param width cast=(gdouble)
+ * @param height cast=(gdouble)
+ */
+public static final native void _gtk_render_check(long /*int*/ context, long /*int*/ cairo,  double x , double y, double width, double height);
+public static final void gtk_render_check(long /*int*/ context, long /*int*/ cairo,  double x , double y, double width, double height) {
+	lock.lock();
+	try {
+		_gtk_render_check(context,cairo,x,y,width,height);
 	} finally {
 		lock.unlock();
 	}

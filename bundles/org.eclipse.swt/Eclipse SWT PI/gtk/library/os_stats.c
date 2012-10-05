@@ -953,6 +953,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1rc_1style_1set_1fg",
 	"_1gtk_1rc_1style_1set_1text",
 	"_1gtk_1render_1background",
+	"_1gtk_1render_1check",
 	"_1gtk_1render_1focus",
 	"_1gtk_1render_1frame",
 	"_1gtk_1render_1frame_1gap",

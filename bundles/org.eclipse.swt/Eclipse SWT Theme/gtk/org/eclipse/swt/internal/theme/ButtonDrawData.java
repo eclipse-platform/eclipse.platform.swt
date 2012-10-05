@@ -111,7 +111,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 			gtk_render_frame (gtkStyle, drawable, OS.GTK_STATE_PRELIGHT, OS.GTK_SHADOW_ETCHED_OUT, null, checkButtonHandle, detail, prelight_x, prelight_y, prelight_width, prelight_height);
 		}
 		int state_type = getStateType(DrawData.WIDGET_WHOLE);
-		OS.gtk_paint_check(gtkStyle, drawable, state_type, shadow_type, null, checkButtonHandle, detail, x, y, indicator_size, indicator_size);
+		gtk_render_check (gtkStyle, drawable, state_type, shadow_type, checkButtonHandle, detail, x, y, indicator_size, indicator_size);
 		if (clientArea != null) {
 			clientArea.x = bounds.x + 2 * indicator_spacing + border_width + indicator_size;
 			clientArea.y = bounds.y + border_width;
@@ -228,6 +228,17 @@ void gtk_render_option (long /*int*/ style, long /*int*/ window, int state_type,
 		Cairo.cairo_destroy (cairo);
 	} else {
 		OS.gtk_paint_option (style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
+	}
+}
+
+void gtk_render_check(long /*int*/ style, long /*int*/ window, int state_type, int shadow_type,  long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		long /*int*/ cairo = OS.gdk_cairo_create(window);
+		long /*int*/ context = OS.gtk_widget_get_style_context (style);
+		OS.gtk_render_check(context, cairo, context, y, width, height);
+		Cairo.cairo_destroy (cairo);
+	} else {
+		OS.gtk_paint_check(style, window, state_type, shadow_type, null, widget, detail, x, y, width, height);
 	}
 }
 
