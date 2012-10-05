@@ -956,6 +956,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1render_1frame",
 	"_1gtk_1render_1handle",
 	"_1gtk_1render_1line",
+	"_1gtk_1render_1option",
 	"_1gtk_1scale_1new",
 	"_1gtk_1scale_1set_1digits",
 	"_1gtk_1scale_1set_1draw_1value",

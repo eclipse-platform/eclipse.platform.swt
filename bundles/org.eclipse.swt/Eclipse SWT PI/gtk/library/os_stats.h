@@ -966,6 +966,7 @@ typedef enum {
 	_1gtk_1render_1frame_FUNC,
 	_1gtk_1render_1handle_FUNC,
 	_1gtk_1render_1line_FUNC,
+	_1gtk_1render_1option_FUNC,
 	_1gtk_1scale_1new_FUNC,
 	_1gtk_1scale_1set_1digits_FUNC,
 	_1gtk_1scale_1set_1draw_1value_FUNC,
