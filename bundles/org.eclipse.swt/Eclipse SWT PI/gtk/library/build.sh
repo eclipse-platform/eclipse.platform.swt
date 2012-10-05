@@ -140,7 +140,7 @@ case $SWT_OS.$SWT_ARCH in
 			export JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/x86_64/jdk1.5.0"
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig:/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_x86_64/lib/pkgconfig"
+			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig"
 		fi
 		if [ "${MOZILLA_SDK}" = "" ]; then
 			export MOZILLA_SDK="/bluebird/teamswt/swt-builddir/mozilla/1.7/amd64/mozilla/dist/sdk"
@@ -216,7 +216,7 @@ case $SWT_OS.$SWT_ARCH in
 			export XULRUNNER_LIBS="-m64 -L${XULRUNNER_SDK}/lib -lxpcomglue"
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig/:/bluebird/teamswt/swt-builddir/cairo_1.0.2/linux_ppc64/lib/pkgconfig/:/usr/local/GNOME/lib/pkgconfig:/usr/local/gtk2.4/lib/pkgconfig/"
+			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig/"
 		fi
 		;;
 	"solaris.x86")
@@ -290,7 +290,7 @@ case $SWT_OS.$SWT_ARCH in
 			JAVA_HOME="/usr/j2se"
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			PKG_CONFIG_PATH="/usr/local/cairo-1.4.10/lib/pkgconfig/"
+			PKG_CONFIG_PATH="/usr/local/lib/pkgconfig/"
 		fi
 		if [ "${MOZILLA_SDK}" = "" ]; then
 			MOZILLA_SDK="/bluebird/teamswt/swt-builddir/geckoSDK/1.4/gecko-sdk"
