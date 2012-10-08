@@ -558,7 +558,9 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 		switch (keyCode) {
 			case 76: /* KP Enter */
 			case 36: /* Return */
-				hideCalendar();
+				if ((style & SWT.DROP_DOWN) != 0) {
+					hideCalendar ();
+				}
 				sendSelectionEvent (SWT.DefaultSelection);
 		}
 	}
