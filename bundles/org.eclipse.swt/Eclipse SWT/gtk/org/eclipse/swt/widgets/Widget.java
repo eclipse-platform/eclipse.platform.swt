@@ -2036,7 +2036,7 @@ void gtk_render_frame (long /*int*/ style, long /*int*/ window, int state_type, 
 	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
 		long /*int*/ cairo = OS.gdk_cairo_create (window);
 		long /*int*/ context = OS.gtk_widget_get_style_context (style);
-		OS.gtk_render_frame (context, cairo, context, y, width, height);
+		OS.gtk_render_frame (context, cairo, x, y, width, height);
 		Cairo.cairo_destroy (cairo);
 	} else {
 		OS.gtk_paint_flat_box (style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
