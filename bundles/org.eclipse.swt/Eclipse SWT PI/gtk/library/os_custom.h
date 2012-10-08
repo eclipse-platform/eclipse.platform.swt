@@ -221,6 +221,11 @@
 #define gtk_style_context_set_state_LIB LIB_GTK
 #define gtk_hscale_new_LIB LIB_GTK
 #define gtk_vscale_new_LIB LIB_GTK
+#define gtk_selection_data_get_data_LIB LIB_GTK
+#define gtk_selection_data_get_data_type_LIB LIB_GTK
+#define gtk_selection_data_get_format_LIB LIB_GTK
+#define gtk_selection_data_get_length_LIB LIB_GTK
+#define gtk_selection_data_get_target_LIB LIB_GTK
 #define gtk_status_icon_get_geometry_LIB LIB_GTK
 #define gtk_status_icon_get_visible_LIB LIB_GTK
 #define gtk_status_icon_new_LIB LIB_GTK

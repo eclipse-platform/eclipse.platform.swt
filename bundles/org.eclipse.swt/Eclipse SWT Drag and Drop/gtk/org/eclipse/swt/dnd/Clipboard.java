@@ -313,13 +313,20 @@ public Object getContents(Transfer transfer, int clipboards) {
 		}
 	}
 	if (selection_data == 0) return null;
-	GtkSelectionData gtkSelectionData = new GtkSelectionData();
-	OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
 	TransferData tdata = new TransferData();
-	tdata.type = gtkSelectionData.type;
-	tdata.pValue = gtkSelectionData.data;
-	tdata.length = gtkSelectionData.length;
-	tdata.format = gtkSelectionData.format;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)) {
+		tdata.type = OS.gtk_selection_data_get_data_type(selection_data);
+		tdata.pValue = OS.gtk_selection_data_get_data(selection_data);
+		tdata.length = OS.gtk_selection_data_get_length(selection_data);
+		tdata.format = OS.gtk_selection_data_get_format(selection_data);
+	} else {
+		GtkSelectionData gtkSelectionData = new GtkSelectionData();
+		OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
+		tdata.type = gtkSelectionData.type;
+		tdata.pValue = gtkSelectionData.data;
+		tdata.length = gtkSelectionData.length;
+		tdata.format = gtkSelectionData.format;
+	}
 	Object result = transfer.nativeToJava(tdata);
 	OS.gtk_selection_data_free(selection_data);
 	return result;
@@ -602,11 +609,23 @@ private  int[] getAvailablePrimaryTypes() {
 	OS.gdk_threads_leave();
 	if (selection_data != 0) {
 		try {
-			GtkSelectionData gtkSelectionData = new GtkSelectionData();
-			OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
-			if (gtkSelectionData.length != 0) {
-				types = new int[gtkSelectionData.length * 8 / gtkSelectionData.format];
-				OS.memmove(types, gtkSelectionData.data, gtkSelectionData.length);
+			int length;
+			int format;
+			long /*int*/ data;
+			if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)) {
+				length = OS.gtk_selection_data_get_length(selection_data);
+				format = OS.gtk_selection_data_get_format(selection_data);
+				data = OS.gtk_selection_data_get_data(selection_data);
+			} else {
+				GtkSelectionData gtkSelectionData = new GtkSelectionData();
+				OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
+				length = gtkSelectionData.length;
+				format = gtkSelectionData.format;
+				data = gtkSelectionData.data;
+			}
+			if (length != 0) {
+				types = new int[length * 8 / format];
+				OS.memmove(types, data, length);
 			}
 		} finally {
 			OS.gtk_selection_data_free(selection_data);
@@ -626,11 +645,23 @@ private int[] getAvailableClipboardTypes () {
 	OS.gdk_threads_leave();
 	if (selection_data != 0) {
 		try {
-			GtkSelectionData gtkSelectionData = new GtkSelectionData();
-			OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
-			if (gtkSelectionData.length != 0) {
-				types = new int[gtkSelectionData.length * 8 / gtkSelectionData.format];
-				OS.memmove(types, gtkSelectionData.data, gtkSelectionData.length);
+			int length;
+			int format;
+			long /*int*/ data;
+			if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)) {
+				length = OS.gtk_selection_data_get_length(selection_data);
+				format = OS.gtk_selection_data_get_format(selection_data);
+				data = OS.gtk_selection_data_get_data(selection_data);
+			} else {
+				GtkSelectionData gtkSelectionData = new GtkSelectionData();
+				OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
+				length = gtkSelectionData.length;
+				format = gtkSelectionData.format;
+				data = gtkSelectionData.data;
+			}
+			if (length != 0) {
+				types = new int[length * 8 / format];
+				OS.memmove(types, data, length);
 			}
 		} finally {
 			OS.gtk_selection_data_free(selection_data);

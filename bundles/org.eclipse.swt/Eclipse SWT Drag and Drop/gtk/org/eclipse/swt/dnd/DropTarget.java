@@ -332,9 +332,9 @@ protected void checkSubclass () {
 	}
 }
 
-void drag_data_received ( long /*int*/ widget, long /*int*/ context, int x, int y, long /*int*/ data, int info, int time){
+void drag_data_received ( long /*int*/ widget, long /*int*/ context, int x, int y, long /*int*/ selection_data, int info, int time){
 	DNDEvent event = new DNDEvent();
-	if (data == 0 || !setEventData(context, x, y, time, event)) {
+	if (selection_data == 0 || !setEventData(context, x, y, time, event)) {
 		keyOperation = -1;
 		return;
 	}
@@ -345,13 +345,28 @@ void drag_data_received ( long /*int*/ widget, long /*int*/ context, int x, int 
 	// Get data in a Java format	
 	Object object = null;
 	TransferData transferData = new TransferData();
-	GtkSelectionData selectionData = new GtkSelectionData(); 
-	OS.memmove(selectionData, data, GtkSelectionData.sizeof);
-	if (selectionData.data != 0) {
-		transferData.type = selectionData.type;
-		transferData.length = selectionData.length;
-		transferData.pValue = selectionData.data;
-		transferData.format = selectionData.format;
+	int length;
+	int format;
+	long /*int*/ data;
+	long /*int*/ type;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)) {
+		length = OS.gtk_selection_data_get_length(selection_data);
+		format = OS.gtk_selection_data_get_format(selection_data);
+		data = OS.gtk_selection_data_get_data(selection_data);
+		type = OS.gtk_selection_data_get_data_type(selection_data);
+	} else {
+		GtkSelectionData gtkSelectionData = new GtkSelectionData();
+		OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
+		length = gtkSelectionData.length;
+		format = gtkSelectionData.format;
+		data = gtkSelectionData.data;
+		type = gtkSelectionData.type;
+	}
+	if (data != 0) {
+		transferData.type = type;
+		transferData.length = length;
+		transferData.pValue = data;
+		transferData.format = format;
 		for (int i = 0; i < transferAgents.length; i++) {
 			Transfer transfer = transferAgents[i];
 			if (transfer != null && transfer.isSupportedType(transferData)) {
