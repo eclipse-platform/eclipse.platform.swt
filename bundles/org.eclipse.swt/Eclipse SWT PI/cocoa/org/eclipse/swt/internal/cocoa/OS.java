@@ -2045,6 +2045,7 @@ public static final long /*int*/ sel_setUpPrintOperationDefaultValues = sel_regi
 public static final long /*int*/ sel_setUsesAlternatingRowBackgroundColors_ = sel_registerName("setUsesAlternatingRowBackgroundColors:");
 public static final long /*int*/ sel_setUsesFontPanel_ = sel_registerName("setUsesFontPanel:");
 public static final long /*int*/ sel_setUsesScreenFonts_ = sel_registerName("setUsesScreenFonts:");
+public static final long /*int*/sel_setUsesSingleLineMode_ = sel_registerName ("setUsesSingleLineMode:");
 public static final long /*int*/ sel_setUsesThreadedAnimation_ = sel_registerName("setUsesThreadedAnimation:");
 public static final long /*int*/ sel_setValue_forHTTPHeaderField_ = sel_registerName("setValue:forHTTPHeaderField:");
 public static final long /*int*/ sel_setValue_forKey_ = sel_registerName("setValue:forKey:");

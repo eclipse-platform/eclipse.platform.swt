@@ -385,6 +385,22 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			cell.release ();
 		}
 		ignoreSetObject = false;
+		
+		/*
+		 * Attempting to create an NSComboBox with a height > 27 spews a
+		 * very long warning message to stdout and draws the combo incorrectly.
+		 * Limit height to frame height when combo has multiline text.
+		 */
+		NSString nsStr = widget.stringValue();
+		if (nsStr != null ){
+			String str = nsStr.getString();
+			if (str != null && (str.indexOf('\n') >= 0 || str.indexOf('\r') >= 0)){
+				int frameHeight = (int) view.frame().height;
+				if (frameHeight > 0){
+					height = frameHeight;
+				}
+			}
+		}
 	}
 
 	/*
@@ -434,6 +450,10 @@ void createHandle () {
 		NSComboBox widget = (NSComboBox)new SWTComboBox().alloc();
 		widget.init();
 		widget.setDelegate(widget);
+		NSCell cell = widget.cell();
+		if (OS.VERSION >= 0x1060 && cell != null){
+			cell.setUsesSingleLineMode(true);
+		}
 		view = widget;
 	}
 }
@@ -1383,14 +1403,29 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	/*
 	 * Feature in Cocoa.  Attempting to create an NSComboBox with a
 	 * height > 27 spews a very long warning message to stdout and
-	 * often draws the combo incorrectly.  The workaround is to limit
-	 * the height of editable Combos to the height that is required
-	 * to display their text.
+	 * often draws the combo incorrectly.
+	 * The workaround is to limit the height of editable Combos to the
+	 * height that is required to display their text. For multiline text,
+	 * limit the height to frame height.
 	 */
 	if ((style & SWT.READ_ONLY) == 0) {
 		NSControl widget = (NSControl)view;
-		NSSize size = widget.cell ().cellSize ();
-		height = Math.min (height, (int)Math.ceil (size.height));
+		int hLimit = 0;
+		NSString nsStr = widget.stringValue();
+		if (nsStr != null ){
+			String str = nsStr.getString();
+			if (str != null && (str.indexOf('\n') >= 0 || str.indexOf('\r') >= 0)) {
+				int frameHeight = (int) view.frame().height;
+				if (frameHeight > 0) {
+					hLimit = frameHeight;
+				}
+			}
+		}
+		if (hLimit == 0) {
+			NSSize size = widget.cell ().cellSize ();
+			hLimit = (int)Math.ceil (size.height);
+		}
+		height = Math.min (height, hLimit);
 	}
 	super.setBounds (x, y, width, height, move, resize);
 }

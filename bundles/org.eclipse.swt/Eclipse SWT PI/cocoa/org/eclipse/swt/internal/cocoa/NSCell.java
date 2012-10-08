@@ -162,6 +162,10 @@ public void setTitle(NSString aString) {
 	OS.objc_msgSend(this.id, OS.sel_setTitle_, aString != null ? aString.id : 0);
 }
 
+public void setUsesSingleLineMode(boolean flag) {
+	OS.objc_msgSend(this.id, OS.sel_setUsesSingleLineMode_, flag);
+}
+
 public void setWraps(boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_setWraps_, flag);
 }
