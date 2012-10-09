@@ -542,6 +542,7 @@ typedef enum {
 	_1gdk_1unicode_1to_1keyval_FUNC,
 	_1gdk_1utf8_1to_1compound_1text_FUNC,
 	_1gdk_1utf8_1to_1string_1target_FUNC,
+	_1gdk_1visual_1get_1depth_FUNC,
 	_1gdk_1visual_1get_1system_FUNC,
 	_1gdk_1window_1add_1filter_FUNC,
 	_1gdk_1window_1at_1pointer_FUNC,

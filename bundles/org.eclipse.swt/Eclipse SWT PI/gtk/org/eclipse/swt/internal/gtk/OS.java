@@ -5110,6 +5110,19 @@ public static final  int gdk_unicode_to_keyval(int wc) {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ * @param visual cast=(GdkVisual *)
+ */
+public static final native int _gdk_visual_get_depth(long /*int*/ visual);
+public static final int gdk_visual_get_depth(long /*int*/ visual) {
+	lock.lock();
+	try {
+		return _gdk_visual_get_depth(visual);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native long /*int*/ _gdk_visual_get_system();
 public static final long /*int*/ gdk_visual_get_system() {
 	lock.lock();

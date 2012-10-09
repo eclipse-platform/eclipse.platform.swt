@@ -532,6 +532,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1unicode_1to_1keyval",
 	"_1gdk_1utf8_1to_1compound_1text",
 	"_1gdk_1utf8_1to_1string_1target",
+	"_1gdk_1visual_1get_1depth",
 	"_1gdk_1visual_1get_1system",
 	"_1gdk_1window_1add_1filter",
 	"_1gdk_1window_1at_1pointer",

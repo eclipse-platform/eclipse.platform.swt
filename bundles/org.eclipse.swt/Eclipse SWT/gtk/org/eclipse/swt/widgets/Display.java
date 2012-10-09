@@ -1770,9 +1770,13 @@ public boolean getHighContrast () {
 
 public int getDepth () {
 	checkDevice ();
-	GdkVisual visual = new GdkVisual ();
-	OS.memmove (visual, OS.gdk_visual_get_system());
-	return visual.depth;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 22, 0)) {
+		return OS.gdk_visual_get_depth(OS.gdk_visual_get_system());
+	} else {
+		GdkVisual visual = new GdkVisual ();
+		OS.memmove (visual, OS.gdk_visual_get_system());
+		return visual.depth;
+	}
 }
 
 /**

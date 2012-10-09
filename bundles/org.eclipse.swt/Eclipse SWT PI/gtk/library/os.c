@@ -6751,6 +6751,26 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1visual_1get_1depth
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1visual_1get_1depth)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1visual_1get_1depth_FUNC);
+/*
+	rc = (jint)gdk_visual_get_depth((GdkVisual *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_visual_get_depth)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(GdkVisual *))fp)((GdkVisual *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1visual_1get_1depth_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1visual_1get_1system
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1visual_1get_1system)
 	(JNIEnv *env, jclass that)
