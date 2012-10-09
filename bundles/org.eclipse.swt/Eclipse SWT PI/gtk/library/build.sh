@@ -329,7 +329,7 @@ case $SWT_OS.$SWT_ARCH in
 			export XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"
+			export PKG_CONFIG_PATH="/usr/lib/pkgconfig"
 		fi
 		;;
 	"linux.s390x")
@@ -358,7 +358,7 @@ case $SWT_OS.$SWT_ARCH in
 			export XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			export PKG_CONFIG_PATH="/usr/local/cairo64/lib/pkgconfig"
+			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig"
 		fi
 		;;
 	"aix.ppc")
