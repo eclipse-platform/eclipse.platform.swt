@@ -99,6 +99,9 @@
 #define NO_GdkDragContext
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2JJ
+#define NO_GtkSelectionData
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II
+#define NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2JJ
 #endif
 
 #include "os_custom.h"
