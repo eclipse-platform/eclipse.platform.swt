@@ -81,7 +81,6 @@ char * OS_nativeFunctionNames[] = {
 	"GdkEvent_1sizeof",
 	"GdkGCValues_1sizeof",
 	"GdkGeometry_1sizeof",
-	"GdkImage_1sizeof",
 	"GdkRectangle_1sizeof",
 	"GdkVisual_1sizeof",
 	"GdkWindowAttr_1sizeof",
