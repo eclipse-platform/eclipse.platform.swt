@@ -476,7 +476,7 @@ public int getRowCount () {
 	return layout (rect.width, rect.height, false) [0];
 }
 
-boolean hasKeyboardFocus(long /*int*/ inId) {
+boolean hasKeyboardFocus(int /*long*/ inId) {
 	return hasFocus();
 }
 
