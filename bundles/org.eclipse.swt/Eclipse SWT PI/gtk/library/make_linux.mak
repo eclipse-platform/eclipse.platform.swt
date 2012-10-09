@@ -80,7 +80,7 @@ MOZILLACFLAGS = -O \
 	-I$(JAVA_HOME)/include \
 	-I$(JAVA_HOME)/include/linux \
 	${SWT_PTR_CFLAGS}
-MOZILLALFLAGS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic
+MOZILLALFLAGS = -shared ${SWT_LFLAGS} -Wl,--version-script=mozilla_exports -Bsymbolic
 MOZILLAEXCLUDES = -DNO__1XPCOMGlueShutdown \
 	-DNO__1XPCOMGlueStartup \
 	-DNO__1XPCOMGlueLoadXULFunctions \
