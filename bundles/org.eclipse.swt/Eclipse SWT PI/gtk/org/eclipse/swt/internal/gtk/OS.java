@@ -3740,6 +3740,58 @@ public static final boolean gdk_display_supports_cursor_color(long /*int*/ displ
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param context cast=(GdkDragContext *)
+ */
+public static final native int _gdk_drag_context_get_actions(long /*int*/ context);
+public static final int gdk_drag_context_get_actions(long /*int*/ context) {
+	lock.lock();
+	try {
+		return _gdk_drag_context_get_actions(context);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param context cast=(GdkDragContext *)
+ */
+public static final native long /*int*/ _gdk_drag_context_get_dest_window(long /*int*/ context);
+public static final long /*int*/ gdk_drag_context_get_dest_window(long /*int*/ context) {
+	lock.lock();
+	try {
+		return _gdk_drag_context_get_dest_window(context);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param context cast=(GdkDragContext *)
+ */
+public static final native int _gdk_drag_context_get_selected_action(long /*int*/ context);
+public static final int gdk_drag_context_get_selected_action(long /*int*/ context) {
+	lock.lock();
+	try {
+		return _gdk_drag_context_get_selected_action(context);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param context cast=(GdkDragContext *)
+ */
+public static final native long /*int*/ _gdk_drag_context_list_targets(long /*int*/ context);
+public static final long /*int*/ gdk_drag_context_list_targets(long /*int*/ context) {
+	lock.lock();
+	try {
+		return _gdk_drag_context_list_targets(context);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param context cast=(GdkDragContext *)
  * @param action cast=(GdkDragAction)
  * @param time cast=(guint32)

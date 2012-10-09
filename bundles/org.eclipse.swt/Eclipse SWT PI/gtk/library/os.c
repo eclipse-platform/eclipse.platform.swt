@@ -5013,6 +5013,86 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1display_1supports_1cursor_1color)
 }
 #endif
 
+#ifndef NO__1gdk_1drag_1context_1get_1actions
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1drag_1context_1get_1actions)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1drag_1context_1get_1actions_FUNC);
+/*
+	rc = (jint)gdk_drag_context_get_actions((GdkDragContext *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_drag_context_get_actions)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(GdkDragContext *))fp)((GdkDragContext *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1drag_1context_1get_1actions_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1drag_1context_1get_1dest_1window
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1drag_1context_1get_1dest_1window)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1drag_1context_1get_1dest_1window_FUNC);
+/*
+	rc = (jintLong)gdk_drag_context_get_dest_window((GdkDragContext *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_drag_context_get_dest_window)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkDragContext *))fp)((GdkDragContext *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1drag_1context_1get_1dest_1window_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1drag_1context_1get_1selected_1action
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1drag_1context_1get_1selected_1action)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1drag_1context_1get_1selected_1action_FUNC);
+/*
+	rc = (jint)gdk_drag_context_get_selected_action((GdkDragContext *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_drag_context_get_selected_action)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(GdkDragContext *))fp)((GdkDragContext *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1drag_1context_1get_1selected_1action_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1drag_1context_1list_1targets
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1drag_1context_1list_1targets)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1drag_1context_1list_1targets_FUNC);
+/*
+	rc = (jintLong)gdk_drag_context_list_targets((GdkDragContext *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_drag_context_list_targets)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkDragContext *))fp)((GdkDragContext *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1drag_1context_1list_1targets_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1drag_1status
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1drag_1status)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)

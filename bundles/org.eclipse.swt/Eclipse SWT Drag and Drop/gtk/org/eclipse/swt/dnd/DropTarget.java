@@ -745,13 +745,22 @@ public void setDropTargetEffect(DropTargetEffect effect) {
 
 boolean setEventData(long /*int*/ context, int x, int y, int time, DNDEvent event) {
 	if (context == 0) return false;
-	GdkDragContext dragContext = new GdkDragContext();
-	OS.memmove(dragContext, context, GdkDragContext.sizeof);
-	if (dragContext.targets == 0) return false;
+	long /*int*/ targets = 0;
+	int actions = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		targets = OS.gdk_drag_context_list_targets(context);
+		actions = OS.gdk_drag_context_get_actions(context);
+	} else {
+		GdkDragContext dragContext = new GdkDragContext();
+		OS.memmove(dragContext, context, GdkDragContext.sizeof);
+		targets = dragContext.targets;
+		actions = dragContext.actions;
+	}
+	if (targets == 0) return false;
 	
 	// get allowed operations
 	int style = getStyle();
-	int operations = osOpToOp(dragContext.actions) & style;
+	int operations = osOpToOp(actions) & style;
 	if (operations == DND.DROP_NONE) return false;
 	
 	// get current operation
@@ -766,10 +775,10 @@ boolean setEventData(long /*int*/ context, int x, int y, int time, DNDEvent even
 	}
 
 	// Get allowed transfer types
-	int length = OS.g_list_length(dragContext.targets);
+	int length = OS.g_list_length(targets);
 	TransferData[] dataTypes = new TransferData[0];
 	for (int i = 0; i < length; i++) {
-		long /*int*/ pData = OS.g_list_nth(dragContext.targets, i);
+		long /*int*/ pData = OS.g_list_nth(targets, i);
 		GtkTargetPair gtkTargetPair = new GtkTargetPair();
 		OS.memmove(gtkTargetPair, pData, GtkTargetPair.sizeof);
 		TransferData data = new TransferData();

@@ -181,6 +181,10 @@
 #define gdk_device_get_associated_device_LIB LIB_GDK
 #define gdk_display_get_default_LIB LIB_GDK
 #define gdk_display_supports_cursor_color_LIB LIB_GDK
+#define gdk_drag_context_get_actions_LIB LIB_GDK
+#define gdk_drag_context_get_dest_window_LIB LIB_GDK
+#define gdk_drag_context_get_selected_action_LIB LIB_GDK
+#define gdk_drag_context_list_targets_LIB LIB_GDK
 #define gdk_draw_arc_LIB LIB_GDK
 #define gdk_draw_layout_LIB LIB_GDK
 #define gdk_draw_layout_with_colors_LIB LIB_GDK

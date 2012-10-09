@@ -329,13 +329,22 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 	
 	int operation = DND.DROP_NONE;
 	if (context != 0) {
-		GdkDragContext gdkDragContext = new GdkDragContext ();
-		OS.memmove(gdkDragContext, context, GdkDragContext.sizeof);
-		if (gdkDragContext.dest_window != 0) { //NOTE: if dest_window is 0, drag was aborted
+		long /*int*/ dest_window = 0;
+		int action = 0;
+		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+			dest_window = OS.gdk_drag_context_get_dest_window(context);
+			action = OS.gdk_drag_context_get_selected_action(context);
+		} else {
+			GdkDragContext gdkDragContext = new GdkDragContext ();
+			OS.memmove(gdkDragContext, context, GdkDragContext.sizeof);
+			dest_window = gdkDragContext.dest_window;
+			action = gdkDragContext.action;
+		}
+		if (dest_window != 0) { //NOTE: if dest_window is 0, drag was aborted
 			if (moveData) {
 				operation = DND.DROP_MOVE;
 			} else {
-				operation = osOpToOp(gdkDragContext.action);
+				operation = osOpToOp(action);
 				if (operation == DND.DROP_MOVE) operation = DND.DROP_NONE;
 			}
 		}
