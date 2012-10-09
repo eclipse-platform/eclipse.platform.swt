@@ -638,7 +638,6 @@ public static final native int GdkEventWindowState_sizeof();
 public static final native int GdkGCValues_sizeof();
 public static final native int GdkGeometry_sizeof();
 public static final native int GdkRectangle_sizeof();
-public static final native int GdkVisual_sizeof();
 public static final native int GdkWindowAttr_sizeof();
 public static final native int GtkAdjustment_sizeof();
 public static final native int GtkAllocation_sizeof();

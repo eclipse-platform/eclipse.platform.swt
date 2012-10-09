@@ -681,18 +681,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GdkRectangle_1sizeof)
 }
 #endif
 
-#ifndef NO_GdkVisual_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(GdkVisual_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GdkVisual_1sizeof_FUNC);
-	rc = (jint)GdkVisual_sizeof();
-	OS_NATIVE_EXIT(env, that, GdkVisual_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GdkWindowAttr_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GdkWindowAttr_1sizeof)
 	(JNIEnv *env, jclass that)
