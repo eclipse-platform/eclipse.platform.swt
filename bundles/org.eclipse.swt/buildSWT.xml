@@ -421,6 +421,24 @@
 		</exec>
 	</target>
 	
+	<target name="check_preprocessing">
+		<property name="projectDir" value="${repo.src}/bundles/org.eclipse.swt"/>
+		<fileset id="badfilesid" dir="${projectDir}" includes="**/*.java" excludes="**/.build64/**/*.java">
+			<or>
+			    <contains text="int /*long*/" casesensitive="yes"/>
+			    <contains text="float /*double*/" casesensitive="yes"/>
+			    <contains text="int[] /*long[]*/" casesensitive="yes"/>
+			    <contains text="float[] /*double[]*/" casesensitive="yes"/>
+			</or>
+		</fileset>
+		<property name="badfiles" refid="badfilesid"/>
+		<echo>${badfiles}</echo>
+		<condition property="failbadfiles">
+			<length string="${badfiles}" trim="true" when="greater" length="0"/>
+		</condition>
+		<fail if="failbadfiles" message="There are files with the wrong long /*int*/ preprocessing."/>
+	</target>
+	
 	<target name="check_compilation" depends="check_source_changed" if="source_changed">
 		<property name="tmpdir" value="${tmphome}/check.compile.${TAG}"/>
 		<property name="projectDir" value="${repo.src}/bundles/org.eclipse.swt"/>
@@ -433,6 +451,8 @@
 		<propertyfile file="${sha1_file}">
 			<entry key="SHA1" value="${HEAD_TAG}"/>
 		</propertyfile>
+		
+		<antcall target="check_preprocessing"/>
 
 		<!-- 64 bit -->
 		<antcall target="build_classes">
