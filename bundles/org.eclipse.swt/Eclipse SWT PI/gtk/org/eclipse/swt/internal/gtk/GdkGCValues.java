@@ -64,5 +64,4 @@ public class GdkGCValues {
 	public int cap_style;
 	/** @field cast=(GdkJoinStyle) */
 	public int join_style;
-	public static final int sizeof = OS.GdkGCValues_sizeof();
 }

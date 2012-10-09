@@ -89,7 +89,6 @@ typedef enum {
 	GdkEventVisibility_1sizeof_FUNC,
 	GdkEventWindowState_1sizeof_FUNC,
 	GdkEvent_1sizeof_FUNC,
-	GdkGCValues_1sizeof_FUNC,
 	GdkGeometry_1sizeof_FUNC,
 	GdkRectangle_1sizeof_FUNC,
 	GdkWindowAttr_1sizeof_FUNC,

@@ -645,18 +645,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GdkEvent_1sizeof)
 }
 #endif
 
-#ifndef NO_GdkGCValues_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(GdkGCValues_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GdkGCValues_1sizeof_FUNC);
-	rc = (jint)GdkGCValues_sizeof();
-	OS_NATIVE_EXIT(env, that, GdkGCValues_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GdkGeometry_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GdkGeometry_1sizeof)
 	(JNIEnv *env, jclass that)
