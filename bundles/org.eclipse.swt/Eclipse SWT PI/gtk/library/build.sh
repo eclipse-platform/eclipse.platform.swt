@@ -308,7 +308,7 @@ case $SWT_OS.$SWT_ARCH in
 			export CC=gcc
 		fi
 		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/home/swtbuild/java5/ibm-java2-s390-50"
+			export JAVA_HOME="/home/swtbuild/java5/s390/ibm-java2-s390-50"
 		fi
 		if [ "${MOZILLA_SDK}" = "" ]; then
 			export MOZILLA_SDK="/home/swtbuild/mozilla-1.7.13/mozilla/dist/sdk"
@@ -337,7 +337,7 @@ case $SWT_OS.$SWT_ARCH in
 			export CC=gcc
 		fi
 		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/home/swtbuild/java5/ibm-java2-s390x-50"
+			export JAVA_HOME="/home/swtbuild/java5/s390x/ibm-java2-s390x-50"
 		fi
 		if [ "${MOZILLA_SDK}" = "" ]; then
 			export MOZILLA_SDK="/home/swtbuild/mozilla1.7.13/mozilla/dist/sdk"
