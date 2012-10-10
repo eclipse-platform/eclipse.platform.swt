@@ -475,6 +475,12 @@ public void copyArea(Image image, int x, int y) {
 		if (handle.isDrawingToScreen()) {
 			NSImage imageHandle = image.handle;
 			NSSize size = imageHandle.size();
+			NSArray screens = null;
+			NSString key = null;
+			if (OS.VERSION >= 0x1070) {
+				screens = NSScreen.screens();
+				key = NSString.stringWith("NSScreenNumber");
+			}
 			CGRect rect = new CGRect();
 			rect.origin.x = x;
 			rect.origin.y = y;
@@ -488,6 +494,16 @@ public void copyArea(Image image, int x, int y) {
 			for (int i = 0; i < count[0]; i++) {
 				OS.memmove(display, displays + (i * 4), 4);
 				OS.CGDisplayBounds(display[0], rect);
+				double /*float*/ scaling = 1;
+				if (OS.VERSION >= 0x1070) {
+					for (int j = 0; j < screens.count(); j++) {
+						NSScreen screen = new NSScreen(screens.objectAtIndex(j));
+						if (display[0] == new NSNumber(screen.deviceDescription().objectForKey(key)).intValue()) {
+							scaling = screen.backingScaleFactor();
+							break;
+						}
+					}
+				}
 				long /*int*/ srcImage = 0;
 				long /*int*/ address = OS.VERSION >= 0x1070 ? 0 : OS.CGDisplayBaseAddress(display[0]);
 				if (address != 0) {
@@ -518,7 +534,7 @@ public void copyArea(Image image, int x, int y) {
 					if (OS.VERSION >= 0x1060) srcImage = OS.CGDisplayCreateImage(display[0]);
 				}
 				if (srcImage != 0) {
-					copyArea(image, x - (int)rect.origin.x, y - (int)rect.origin.y, srcImage);
+					copyArea(image, (int)(x * scaling - rect.origin.x), (int)(y * scaling - rect.origin.y), srcImage, scaling);
 					OS.CGImageRelease(srcImage);
 				}
 			}
@@ -530,7 +546,7 @@ public void copyArea(Image image, int x, int y) {
 	}
 }
 
-void copyArea (Image image, int x, int y, long /*int*/ srcImage) {
+void copyArea (Image image, int x, int y, long /*int*/ srcImage, double /*float*/ scaling) {
 	if (srcImage == 0) return;
 	NSBitmapImageRep rep = image.getRepresentation();
 	long /*int*/ bpc = rep.bitsPerSample();
@@ -550,10 +566,10 @@ void copyArea (Image image, int x, int y, long /*int*/ srcImage) {
 	OS.CGColorSpaceRelease(colorspace);
 	if (context != 0) {
 	 	CGRect rect = new CGRect();
-	 	rect.origin.x = -x;
-	 	rect.origin.y = y;
-	 	rect.size.width = OS.CGImageGetWidth(srcImage);
-		rect.size.height = OS.CGImageGetHeight(srcImage);
+	 	rect.origin.x = -x / scaling;
+	 	rect.origin.y = y / scaling;
+	 	rect.size.width = OS.CGImageGetWidth(srcImage) / scaling;
+		rect.size.height = OS.CGImageGetHeight(srcImage) / scaling;
 		OS.CGContextTranslateCTM(context, 0, -(rect.size.height - height));
 		OS.CGContextDrawImage(context, rect, srcImage);
 		OS.CGContextRelease(context);

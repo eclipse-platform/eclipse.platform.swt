@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,6 +22,10 @@ public NSScreen(long /*int*/ id) {
 
 public NSScreen(id id) {
 	super(id);
+}
+
+public double /*float*/ backingScaleFactor() {
+	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_backingScaleFactor);
 }
 
 public int depth() {

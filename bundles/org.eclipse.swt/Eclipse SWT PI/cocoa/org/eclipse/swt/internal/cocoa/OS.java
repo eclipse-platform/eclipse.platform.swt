@@ -1020,6 +1020,7 @@ public static final long /*int*/ sel_availableFonts = sel_registerName("availabl
 public static final long /*int*/ sel_availableMembersOfFontFamily_ = sel_registerName("availableMembersOfFontFamily:");
 public static final long /*int*/ sel_availableTypeFromArray_ = sel_registerName("availableTypeFromArray:");
 public static final long /*int*/ sel_backgroundColor = sel_registerName("backgroundColor");
+public static final long /*int*/ sel_backingScaleFactor = sel_registerName("backingScaleFactor");
 public static final long /*int*/ sel_badgeLabel = sel_registerName("badgeLabel");
 public static final long /*int*/ sel_baselineOffsetInLayoutManager_glyphIndex_ = sel_registerName("baselineOffsetInLayoutManager:glyphIndex:");
 public static final long /*int*/ sel_becomeFirstResponder = sel_registerName("becomeFirstResponder");

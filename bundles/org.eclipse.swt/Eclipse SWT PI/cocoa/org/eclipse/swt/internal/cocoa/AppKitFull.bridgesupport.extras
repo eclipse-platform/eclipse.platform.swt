@@ -2748,6 +2748,9 @@
 		</method>
 	</class>
 	<class name="NSScreen" swt_gen="mixed">
+		<method selector="backingScaleFactor" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="depth" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
