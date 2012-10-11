@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -1651,43 +1651,6 @@ void setGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpSt
 	(*env)->SetIntLongField(env, lpObject, GtkTargetEntryFc.target, (jintLong)lpStruct->target);
 	(*env)->SetIntField(env, lpObject, GtkTargetEntryFc.flags, (jint)lpStruct->flags);
 	(*env)->SetIntField(env, lpObject, GtkTargetEntryFc.info, (jint)lpStruct->info);
-}
-#endif
-
-#ifndef NO_GtkTargetPair
-typedef struct GtkTargetPair_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID target, flags, info;
-} GtkTargetPair_FID_CACHE;
-
-GtkTargetPair_FID_CACHE GtkTargetPairFc;
-
-void cacheGtkTargetPairFields(JNIEnv *env, jobject lpObject)
-{
-	if (GtkTargetPairFc.cached) return;
-	GtkTargetPairFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GtkTargetPairFc.target = (*env)->GetFieldID(env, GtkTargetPairFc.clazz, "target", I_J);
-	GtkTargetPairFc.flags = (*env)->GetFieldID(env, GtkTargetPairFc.clazz, "flags", "I");
-	GtkTargetPairFc.info = (*env)->GetFieldID(env, GtkTargetPairFc.clazz, "info", "I");
-	GtkTargetPairFc.cached = 1;
-}
-
-GtkTargetPair *getGtkTargetPairFields(JNIEnv *env, jobject lpObject, GtkTargetPair *lpStruct)
-{
-	if (!GtkTargetPairFc.cached) cacheGtkTargetPairFields(env, lpObject);
-	lpStruct->target = (GdkAtom)(*env)->GetIntLongField(env, lpObject, GtkTargetPairFc.target);
-	lpStruct->flags = (guint)(*env)->GetIntField(env, lpObject, GtkTargetPairFc.flags);
-	lpStruct->info = (guint)(*env)->GetIntField(env, lpObject, GtkTargetPairFc.info);
-	return lpStruct;
-}
-
-void setGtkTargetPairFields(JNIEnv *env, jobject lpObject, GtkTargetPair *lpStruct)
-{
-	if (!GtkTargetPairFc.cached) cacheGtkTargetPairFields(env, lpObject);
-	(*env)->SetIntLongField(env, lpObject, GtkTargetPairFc.target, (jintLong)lpStruct->target);
-	(*env)->SetIntField(env, lpObject, GtkTargetPairFc.flags, (jint)lpStruct->flags);
-	(*env)->SetIntField(env, lpObject, GtkTargetPairFc.info, (jint)lpStruct->info);
 }
 #endif
 

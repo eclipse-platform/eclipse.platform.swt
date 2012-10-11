@@ -97,7 +97,6 @@ char * OS_nativeFunctionNames[] = {
 	"GtkRequisition_1sizeof",
 	"GtkSelectionData_1sizeof",
 	"GtkTargetEntry_1sizeof",
-	"GtkTargetPair_1sizeof",
 	"GtkTextIter_1sizeof",
 	"GtkTreeIter_1sizeof",
 	"PangoAttrColor_1sizeof",
@@ -1691,11 +1690,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2JJ",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkWidgetClass_2I",

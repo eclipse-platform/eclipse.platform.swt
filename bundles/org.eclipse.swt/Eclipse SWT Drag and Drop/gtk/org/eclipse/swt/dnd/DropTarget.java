@@ -778,11 +778,9 @@ boolean setEventData(long /*int*/ context, int x, int y, int time, DNDEvent even
 	int length = OS.g_list_length(targets);
 	TransferData[] dataTypes = new TransferData[0];
 	for (int i = 0; i < length; i++) {
-		long /*int*/ pData = OS.g_list_nth(targets, i);
-		GtkTargetPair gtkTargetPair = new GtkTargetPair();
-		OS.memmove(gtkTargetPair, pData, GtkTargetPair.sizeof);
+		long /*int*/ pData = OS.g_list_nth_data(targets, i);
 		TransferData data = new TransferData();
-		data.type = gtkTargetPair.target;
+		data.type = pData;
 		for (int j = 0; j < transferAgents.length; j++) {
 			Transfer transfer = transferAgents[j];
 			if (transfer != null && transfer.isSupportedType(data)) {

@@ -107,7 +107,6 @@ typedef enum {
 	GtkRequisition_1sizeof_FUNC,
 	GtkSelectionData_1sizeof_FUNC,
 	GtkTargetEntry_1sizeof_FUNC,
-	GtkTargetPair_1sizeof_FUNC,
 	GtkTextIter_1sizeof_FUNC,
 	GtkTreeIter_1sizeof_FUNC,
 	PangoAttrColor_1sizeof_FUNC,
@@ -1701,11 +1700,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2JJ_FUNC,
-#endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2JJ_FUNC,
 #endif
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkWidgetClass_2I_FUNC,
