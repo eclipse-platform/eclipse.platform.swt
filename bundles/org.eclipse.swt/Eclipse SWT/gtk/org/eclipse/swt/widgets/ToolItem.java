@@ -1192,6 +1192,7 @@ public void setToolTipText (String string) {
 }
 
 void setToolTipText (Shell shell, String newString) {
+	if (toolTipText == newString || (toolTipText != null && toolTipText.equals(newString))) return;
 	long /*int*/ child = OS.gtk_bin_get_child (handle);
 	if ((style & SWT.DROP_DOWN) != 0) {
 		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
