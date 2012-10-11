@@ -364,6 +364,7 @@ long /*int*/ panel_shouldShowFilename (long /*int*/ id, long /*int*/ sel, long /
 					int index = extensions.indexOf (EXTENSION_SEPARATOR, start);
 					if (index == -1) index = length;
 					String filter = extensions.substring (start, index).trim ();
+					if (filter.equalsIgnoreCase (fileName)) return 1;
 					if (filter.equals ("*") || filter.equals ("*.*")) return 1;
 					if (filter.startsWith ("*.")) filter = filter.substring (2);
 					if ((fileName.toLowerCase ()).endsWith("." + filter.toLowerCase ())) return 1;
