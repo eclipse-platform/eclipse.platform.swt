@@ -290,7 +290,7 @@ case $SWT_OS.$SWT_ARCH in
 			JAVA_HOME="/usr/j2se"
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
-			PKG_CONFIG_PATH="/usr/local/cairo-1.4.10/lib/pkgconfig/"
+			PKG_CONFIG_PATH="/usr/local/lib/pkgconfig/"
 		fi
 		if [ "${MOZILLA_SDK}" = "" ]; then
 			MOZILLA_SDK="/bluebird/teamswt/swt-builddir/geckoSDK/1.4/gecko-sdk"
