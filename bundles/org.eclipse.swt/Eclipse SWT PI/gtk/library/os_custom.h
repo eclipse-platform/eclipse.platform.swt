@@ -213,6 +213,20 @@
 #define gdk_pixbuf_render_pixmap_and_mask_LIB LIB_GDK
 #define gdk_pointer_grab_LIB LIB_GDK
 #define gdk_pointer_ungrab_LIB LIB_GDK
+#define gdk_region_new_LIB LIB_GDK
+#define gdk_region_rectangle_LIB LIB_GDK
+#define gdk_region_destroy_LIB LIB_GDK
+#define gdk_region_empty_LIB LIB_GDK
+#define gdk_region_subtract_LIB LIB_GDK
+#define gdk_region_offset_LIB LIB_GDK
+#define gdk_region_union_LIB LIB_GDK
+#define gdk_region_intersect_LIB LIB_GDK
+#define gdk_region_rect_in_LIB LIB_GDK
+#define gdk_region_get_clipbox_LIB LIB_GDK
+#define gdk_region_union_with_rect_LIB LIB_GDK
+#define gdk_region_point_in_LIB LIB_GDK
+#define gdk_region_polygon_LIB LIB_GDK
+#define gdk_region_get_rectangles_LIB LIB_GDK
 #define gdk_screen_get_default_LIB LIB_GDK
 #define gdk_screen_get_monitor_at_point_LIB LIB_GDK
 #define gdk_screen_get_monitor_at_window_LIB LIB_GDK
@@ -246,6 +260,7 @@
 #define gdk_window_create_similar_surface_LIB LIB_GDK
 #define gdk_window_lookup_LIB LIB_GDK
 #define gdk_window_restack_LIB LIB_GDK
+#define gdk_window_begin_paint_region_LIB LIB_GDK
 #define gdk_window_get_device_position_LIB LIB_GDK
 #define gdk_window_get_pointer_LIB LIB_GDK
 #define gdk_window_at_pointer_LIB LIB_GDK
@@ -281,6 +296,7 @@
 #define gtk_widget_set_sensitive_LIB LIB_GTK
 #define gtk_widget_set_receives_default_LIB LIB_GTK
 #define gtk_widget_set_visible_LIB LIB_GTK
+#define gtk_widget_shape_combine_region_LIB LIB_GTK
 #define gtk_range_get_slider_range_LIB LIB_GTK
 #define gdk_pango_context_set_colormap_LIB LIB_GDK
 #define gdk_x11_screen_get_window_manager_name_LIB LIB_GDK
@@ -315,6 +331,7 @@
 #define gdk_cairo_set_source_pixbuf_LIB LIB_GDK
 #define gdk_cairo_set_source_color_LIB LIB_GDK
 #define gdk_cairo_set_source_window_LIB LIB_GDK
+#define gdk_cairo_region_create_from_surface_LIB LIB_GDK
 #define gdk_cairo_region_LIB LIB_GDK
 #define gdk_cairo_create_LIB LIB_GDK
 #define gtk_enumerate_printers_LIB LIB_GTK

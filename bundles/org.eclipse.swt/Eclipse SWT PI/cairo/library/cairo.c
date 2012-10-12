@@ -1179,6 +1179,294 @@ JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1reference)
 }
 #endif
 
+#ifndef NO__1cairo_1region_1contains_1point
+JNIEXPORT jboolean JNICALL Cairo_NATIVE(_1cairo_1region_1contains_1point)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
+{
+	jboolean rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1region_1contains_1point_FUNC);
+/*
+	rc = (jboolean)cairo_region_contains_point(arg0, arg1, arg2);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_region_contains_point)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, jint, jint))fp)(arg0, arg1, arg2);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1region_1contains_1point_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1cairo_1region_1contains_1rectangle
+JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1region_1contains_1rectangle)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	cairo_rectangle_int_t _arg1, *lparg1=NULL;
+	jintLong rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1region_1contains_1rectangle_FUNC);
+	if (arg1) if ((lparg1 = getcairo_rectangle_int_tFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	rc = (jintLong)cairo_region_contains_rectangle(arg0, lparg1);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_region_contains_rectangle)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, cairo_rectangle_int_t *))fp)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setcairo_rectangle_int_tFields(env, arg1, lparg1);
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1region_1contains_1rectangle_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1cairo_1region_1create
+JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1region_1create)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1region_1create_FUNC);
+/*
+	rc = (jintLong)cairo_region_create();
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_region_create)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1region_1create_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1cairo_1region_1create_1rectangle
+JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1region_1create_1rectangle)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	cairo_rectangle_int_t _arg0, *lparg0=NULL;
+	jintLong rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1region_1create_1rectangle_FUNC);
+	if (arg0) if ((lparg0 = getcairo_rectangle_int_tFields(env, arg0, &_arg0)) == NULL) goto fail;
+/*
+	rc = (jintLong)cairo_region_create_rectangle(lparg0);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_region_create_rectangle)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(cairo_rectangle_int_t *))fp)(lparg0);
+		}
+	}
+fail:
+	if (arg0 && lparg0) setcairo_rectangle_int_tFields(env, arg0, lparg0);
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1region_1create_1rectangle_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1cairo_1region_1destroy
+JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1region_1destroy)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1region_1destroy_FUNC);
+/*
+	cairo_region_destroy(arg0);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_region_destroy)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1region_1destroy_FUNC);
+}
+#endif
+
+#ifndef NO__1cairo_1region_1get_1extents
+JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1region_1get_1extents)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	cairo_rectangle_int_t _arg1, *lparg1=NULL;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1region_1get_1extents_FUNC);
+	if (arg1) if ((lparg1 = getcairo_rectangle_int_tFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	cairo_region_get_extents(arg0, lparg1);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_region_get_extents)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, cairo_rectangle_int_t *))fp)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setcairo_rectangle_int_tFields(env, arg1, lparg1);
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1region_1get_1extents_FUNC);
+}
+#endif
+
+#ifndef NO__1cairo_1region_1get_1rectangle
+JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1region_1get_1rectangle)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintLong arg2)
+{
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1region_1get_1rectangle_FUNC);
+/*
+	cairo_region_get_rectangle(arg0, arg1, arg2);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_region_get_rectangle)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, jintLong))fp)(arg0, arg1, arg2);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1region_1get_1rectangle_FUNC);
+}
+#endif
+
+#ifndef NO__1cairo_1region_1intersect
+JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1region_1intersect)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1region_1intersect_FUNC);
+/*
+	rc = (jintLong)cairo_region_intersect(arg0, arg1);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_region_intersect)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1region_1intersect_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1cairo_1region_1is_1empty
+JNIEXPORT jboolean JNICALL Cairo_NATIVE(_1cairo_1region_1is_1empty)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jboolean rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1region_1is_1empty_FUNC);
+/*
+	rc = (jboolean)cairo_region_is_empty(arg0);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_region_is_empty)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1region_1is_1empty_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1cairo_1region_1num_1rectangles
+JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1region_1num_1rectangles)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1region_1num_1rectangles_FUNC);
+/*
+	rc = (jint)cairo_region_num_rectangles(arg0);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_region_num_rectangles)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1region_1num_1rectangles_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1cairo_1region_1subtract
+JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1region_1subtract)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1region_1subtract_FUNC);
+/*
+	rc = (jintLong)cairo_region_subtract(arg0, arg1);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_region_subtract)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1region_1subtract_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1cairo_1region_1translate
+JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1region_1translate)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
+{
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1region_1translate_FUNC);
+/*
+	cairo_region_translate(arg0, arg1, arg2);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_region_translate)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, jint))fp)(arg0, arg1, arg2);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1region_1translate_FUNC);
+}
+#endif
+
+#ifndef NO__1cairo_1region_1union
+JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1region_1union)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	jintLong rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1region_1union_FUNC);
+/*
+	rc = (jintLong)cairo_region_union(arg0, arg1);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_region_union)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1region_1union_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1cairo_1region_1union_1rectangle
+JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1region_1union_1rectangle)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	cairo_rectangle_int_t _arg1, *lparg1=NULL;
+	jintLong rc = 0;
+	Cairo_NATIVE_ENTER(env, that, _1cairo_1region_1union_1rectangle_FUNC);
+	if (arg1) if ((lparg1 = getcairo_rectangle_int_tFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	rc = (jintLong)cairo_region_union_rectangle(arg0, lparg1);
+*/
+	{
+		Cairo_LOAD_FUNCTION(fp, cairo_region_union_rectangle)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, cairo_rectangle_int_t *))fp)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setcairo_rectangle_int_tFields(env, arg1, lparg1);
+	Cairo_NATIVE_EXIT(env, that, _1cairo_1region_1union_1rectangle_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1cairo_1rel_1curve_1to
 JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1rel_1curve_1to)
 	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5, jdouble arg6)
@@ -1939,6 +2227,18 @@ JNIEXPORT jint JNICALL Cairo_NATIVE(cairo_1path_1t_1sizeof)
 }
 #endif
 
+#ifndef NO_cairo_1rectangle_1int_1t_1sizeof
+JNIEXPORT jint JNICALL Cairo_NATIVE(cairo_1rectangle_1int_1t_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	Cairo_NATIVE_ENTER(env, that, cairo_1rectangle_1int_1t_1sizeof_FUNC);
+	rc = (jint)cairo_rectangle_int_t_sizeof();
+	Cairo_NATIVE_EXIT(env, that, cairo_1rectangle_1int_1t_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_cairo_1text_1extents_1t_1sizeof
 JNIEXPORT jint JNICALL Cairo_NATIVE(cairo_1text_1extents_1t_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -2009,6 +2309,31 @@ fail:
 	Cairo_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1t_2II_FUNC);
 #else
 	Cairo_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1t_2JJ_FUNC);
+#endif
+}
+#endif
+
+#if (!defined(NO_memmove__Lorg_eclipse_swt_internal_cairo_cairo_1rectangle_1int_1t_2II) && !defined(JNI64)) || (!defined(NO_memmove__Lorg_eclipse_swt_internal_cairo_cairo_1rectangle_1int_1t_2JJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT void JNICALL Cairo_NATIVE(memmove__Lorg_eclipse_swt_internal_cairo_cairo_1rectangle_1int_1t_2II)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
+#else
+JNIEXPORT void JNICALL Cairo_NATIVE(memmove__Lorg_eclipse_swt_internal_cairo_cairo_1rectangle_1int_1t_2JJ)(JNIEnv *env, jclass that, jobject arg0, jintLong arg1, jintLong arg2)
+#endif
+{
+	cairo_rectangle_int_t _arg0, *lparg0=NULL;
+#ifndef JNI64
+	Cairo_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cairo_cairo_1rectangle_1int_1t_2II_FUNC);
+#else
+	Cairo_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_cairo_cairo_1rectangle_1int_1t_2JJ_FUNC);
+#endif
+	if (arg0) if ((lparg0 = getcairo_rectangle_int_tFields(env, arg0, &_arg0)) == NULL) goto fail;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+fail:
+	if (arg0 && lparg0) setcairo_rectangle_int_tFields(env, arg0, lparg0);
+#ifndef JNI64
+	Cairo_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cairo_cairo_1rectangle_1int_1t_2II_FUNC);
+#else
+	Cairo_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_cairo_cairo_1rectangle_1int_1t_2JJ_FUNC);
 #endif
 }
 #endif

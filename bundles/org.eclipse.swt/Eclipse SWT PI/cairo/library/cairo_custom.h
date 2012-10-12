@@ -42,3 +42,17 @@
 #define cairo_surface_get_content_LIB LIB_CAIRO
 #define cairo_push_group_LIB LIB_CAIRO
 #define cairo_pop_group_to_source_LIB LIB_CAIRO
+#define cairo_region_create_LIB LIB_CAIRO
+#define cairo_region_destroy_LIB LIB_CAIRO
+#define cairo_region_is_empty_LIB LIB_CAIRO
+#define cairo_region_subtract_LIB LIB_CAIRO
+#define cairo_region_translate_LIB LIB_CAIRO
+#define cairo_region_union_LIB LIB_CAIRO
+#define cairo_region_intersect_LIB LIB_CAIRO
+#define cairo_region_create_rectangle_LIB LIB_CAIRO
+#define cairo_region_contains_rectangle_LIB LIB_CAIRO
+#define cairo_region_union_rectangle_LIB LIB_CAIRO
+#define cairo_region_get_extents_LIB LIB_CAIRO
+#define cairo_region_contains_point_LIB LIB_CAIRO
+#define cairo_region_num_rectangles_LIB LIB_CAIRO
+#define cairo_region_get_rectangle_LIB LIB_CAIRO

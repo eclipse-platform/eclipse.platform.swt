@@ -730,25 +730,51 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	OS.memmove(gdkEvent, eventPtr, GdkEventExpose.sizeof);
 	long /*int*/ [] rectangles = new long /*int*/ [1];
 	int [] n_rectangles = new int [1];
-	OS.gdk_region_get_rectangles (gdkEvent.region, rectangles, n_rectangles);
-	GdkRectangle rect = new GdkRectangle ();
-	for (int i=0; i<n_rectangles[0]; i++) {
-		Event event = new Event ();
-		OS.memmove (rect, rectangles [0] + i * GdkRectangle.sizeof, GdkRectangle.sizeof);
-		event.x = rect.x;
-		event.y = rect.y;
-		event.width = rect.width;
-		event.height = rect.height;
-		if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.width - event.x;
-		long /*int*/ damageRgn = OS.gdk_region_new ();
-		OS.gdk_region_union_with_rect (damageRgn, rect);
-		GCData data = new GCData ();
-		data.damageRgn = damageRgn;
-		GC gc = event.gc = GC.gtk_new (this, data);
-		sendEvent (SWT.Paint, event);
-		gc.dispose ();
-		OS.gdk_region_destroy (damageRgn);
-		event.gc = null;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		 int num = Cairo.cairo_region_num_rectangles (gdkEvent.region);
+		 for (int n = 0; n < num; n++) {
+			 Cairo.cairo_region_get_rectangle (gdkEvent.region, n, rectangles[n]);
+		 }
+		cairo_rectangle_int_t rect = new cairo_rectangle_int_t ();
+		for (int i=0; i<n_rectangles[0]; i++) {
+			Event event = new Event ();
+			Cairo.memmove (rect, rectangles [0] + i * cairo_rectangle_int_t.sizeof, cairo_rectangle_int_t.sizeof);
+			event.x = rect.x;
+			event.y = rect.y;
+			event.width = rect.width;
+			event.height = rect.height;
+			if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.width - event.x;
+			long /*int*/ damageRgn = Cairo.cairo_region_create ();
+			Cairo.cairo_region_union_rectangle (damageRgn, rect);
+			GCData data = new GCData ();
+			data.damageRgn = damageRgn;
+			GC gc = event.gc = GC.gtk_new (this, data);
+			sendEvent (SWT.Paint, event);
+			gc.dispose ();
+			Cairo.cairo_region_destroy (damageRgn);
+			event.gc = null;
+		}
+	} else {
+		OS.gdk_region_get_rectangles (gdkEvent.region, rectangles, n_rectangles);
+		GdkRectangle rect = new GdkRectangle ();
+		for (int i=0; i<n_rectangles[0]; i++) {
+			Event event = new Event ();
+			OS.memmove (rect, rectangles [0] + i * GdkRectangle.sizeof, GdkRectangle.sizeof);
+			event.x = rect.x;
+			event.y = rect.y;
+			event.width = rect.width;
+			event.height = rect.height;
+			if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.width - event.x;
+			long /*int*/ damageRgn = OS.gdk_region_new ();
+			OS.gdk_region_union_with_rect (damageRgn, rect);
+			GCData data = new GCData ();
+			data.damageRgn = damageRgn;
+			GC gc = event.gc = GC.gtk_new (this, data);
+			sendEvent (SWT.Paint, event);
+			gc.dispose ();
+			OS.gdk_region_destroy (damageRgn);
+			event.gc = null;
+		}	
 	}
 	OS.g_free (rectangles [0]);
 	return 0;

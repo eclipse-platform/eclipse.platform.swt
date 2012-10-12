@@ -4799,7 +4799,7 @@ public static final boolean gdk_property_get(long /*int*/ window, long /*int*/ p
 		lock.unlock();
 	}
 }
-/** @param region cast=(GdkRegion *) */
+/** @method flags=dynamic */
 public static final native void _gdk_region_destroy(long /*int*/ region);
 public static final void gdk_region_destroy(long /*int*/ region) {
 	lock.lock();
@@ -4809,7 +4809,7 @@ public static final void gdk_region_destroy(long /*int*/ region) {
 		lock.unlock();
 	}
 }
-/** @param region cast=(GdkRegion *) */
+/** @method flags=dynamic */
 public static final native boolean _gdk_region_empty(long /*int*/ region);
 public static final boolean gdk_region_empty(long /*int*/ region) {
 	lock.lock();
@@ -4819,10 +4819,7 @@ public static final boolean gdk_region_empty(long /*int*/ region) {
 		lock.unlock();
 	}
 }
-/**
- * @param region cast=(GdkRegion *)
- * @param rectangle cast=(GdkRectangle *),flags=no_in
- */
+/** @method flags=dynamic */
 public static final native void _gdk_region_get_clipbox(long /*int*/ region, GdkRectangle rectangle);
 public static final void gdk_region_get_clipbox(long /*int*/ region, GdkRectangle rectangle) {
 	lock.lock();
@@ -4833,8 +4830,7 @@ public static final void gdk_region_get_clipbox(long /*int*/ region, GdkRectangl
 	}
 }
 /**
- * @param region cast=(GdkRegion *)
- * @param rectangles cast=(GdkRectangle **)
+ * @method flags=dynamic
  * @param n_rectangles cast=(gint *)
  */
 public static final native void _gdk_region_get_rectangles(long /*int*/ region, long /*int*/[] rectangles, int[] n_rectangles);
@@ -4846,10 +4842,7 @@ public static final void gdk_region_get_rectangles(long /*int*/ region, long /*i
 		lock.unlock();
 	}
 }
-/**
- * @param source1 cast=(GdkRegion *)
- * @param source2 cast=(GdkRegion *)
- */
+/** @method flags=dynamic */
 public static final native void _gdk_region_intersect(long /*int*/ source1, long /*int*/ source2);
 public static final void gdk_region_intersect(long /*int*/ source1, long /*int*/ source2) {
 	lock.lock();
@@ -4859,6 +4852,27 @@ public static final void gdk_region_intersect(long /*int*/ source1, long /*int*/
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native long /*int*/ _gdk_cairo_region_create_from_surface(long /*int*/ surface);
+public static final long /*int*/ gdk_cairo_region_create_from_surface(long /*int*/ surface) {
+	lock.lock();
+	try {
+		return _gdk_cairo_region_create_from_surface(surface);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_widget_shape_combine_region(long /*int*/ widget, long /*int*/ region);
+public static final void gtk_widget_shape_combine_region(long /*int*/ widget, long /*int*/ region) {
+	lock.lock();
+	try {
+		_gtk_widget_shape_combine_region(widget,region);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
 public static final native long /*int*/ _gdk_region_new();
 public static final long /*int*/ gdk_region_new() {
 	lock.lock();
@@ -4869,7 +4883,7 @@ public static final long /*int*/ gdk_region_new() {
 	}
 }
 /**
- * @param region cast=(GdkRegion *)
+ * @method flags=dynamic
  * @param dx cast=(gint)
  * @param dy cast=(gint)
  */
@@ -4883,7 +4897,7 @@ public static final void gdk_region_offset(long /*int*/ region, int dx, int dy) 
 	}
 }
 /**
- * @param region cast=(GdkRegion *)
+ * @method flags=dynamic
  * @param x cast=(gint)
  * @param y cast=(gint)
  */
@@ -4896,10 +4910,7 @@ public static final boolean gdk_region_point_in(long /*int*/ region, int x, int 
 		lock.unlock();
 	}
 }
-/**
- * @param points cast=(GdkPoint *)
- * @param fill_rule cast=(GdkFillRule)
- */
+/** @method flags=dynamic */
 public static final native long /*int*/ _gdk_region_polygon(int[] points, int npoints, int fill_rule);
 public static final long /*int*/ gdk_region_polygon(int[] points, int npoints, int fill_rule) {
 	lock.lock();
@@ -4909,7 +4920,7 @@ public static final long /*int*/ gdk_region_polygon(int[] points, int npoints, i
 		lock.unlock();
 	}
 }
-/** @param rectangle flags=no_out */
+/** @method flags=dynamic */
 public static final native long /*int*/ _gdk_region_rectangle(GdkRectangle rectangle);
 public static final long /*int*/ gdk_region_rectangle(GdkRectangle rectangle) {
 	lock.lock();
@@ -4920,7 +4931,7 @@ public static final long /*int*/ gdk_region_rectangle(GdkRectangle rectangle) {
 	}
 }
 /**
- * @param region cast=(GdkRegion *)
+ * @method flags=dynamic
  * @param rect cast=(GdkRectangle *),flags=no_out
  */
 public static final native long /*int*/ _gdk_region_rect_in(long /*int*/ region, GdkRectangle rect);
@@ -4932,10 +4943,7 @@ public static final long /*int*/ gdk_region_rect_in(long /*int*/ region, GdkRect
 		lock.unlock();
 	}
 }
-/**
- * @param source1 cast=(GdkRegion *)
- * @param source2 cast=(GdkRegion *)
- */
+/** @method flags=dynamic */
 public static final native void _gdk_region_subtract(long /*int*/ source1, long /*int*/ source2);
 public static final void gdk_region_subtract(long /*int*/ source1, long /*int*/ source2) {
 	lock.lock();
@@ -4945,10 +4953,7 @@ public static final void gdk_region_subtract(long /*int*/ source1, long /*int*/ 
 		lock.unlock();
 	}
 }
-/**
- * @param source1 cast=(GdkRegion *)
- * @param source2 cast=(GdkRegion *)
- */
+/** @method flags=dynamic */
 public static final native void _gdk_region_union(long /*int*/ source1, long /*int*/ source2);
 public static final void gdk_region_union(long /*int*/ source1, long /*int*/ source2) {
 	lock.lock();
@@ -4959,7 +4964,7 @@ public static final void gdk_region_union(long /*int*/ source1, long /*int*/ sou
 	}
 }
 /**
- * @param region cast=(GdkRegion *)
+ * @method flags=dynamic
  * @param rect cast=(GdkRectangle *),flags=no_out
  */
 public static final native void _gdk_region_union_with_rect(long /*int*/ region, GdkRectangle rect);
@@ -5199,6 +5204,19 @@ public static final void gdk_window_begin_paint_rect(long /*int*/ window, GdkRec
 	lock.lock();
 	try {
 		_gdk_window_begin_paint_rect(window, rectangle);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param window cast=(GdkWindow *)
+ */
+public static final native void _gdk_window_begin_paint_region(long /*int*/ window, long /*int*/ region);
+public static final void gdk_window_begin_paint_region(long /*int*/ window, long /*int*/ region) {
+	lock.lock();
+	try {
+		_gdk_window_begin_paint_region(window, region);
 	} finally {
 		lock.unlock();
 	}

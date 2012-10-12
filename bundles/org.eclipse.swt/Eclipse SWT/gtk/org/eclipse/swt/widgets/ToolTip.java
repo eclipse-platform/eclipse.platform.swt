@@ -249,11 +249,33 @@ void configure () {
 			OS.gtk_window_move (handle, Math.min(dest.width - w, x - w + 17), y - h - TIP_HEIGHT);
 		}
 	}
-	long /*int*/ rgn = OS.gdk_region_polygon (polyline, polyline.length / 2, OS.GDK_EVEN_ODD_RULE);
-	OS.gtk_widget_realize (handle);
-	long /*int*/ window = gtk_widget_get_window (handle);
-	OS.gdk_window_shape_combine_region (window, rgn, 0, 0);
-	OS.gdk_region_destroy (rgn);
+	OS.gtk_widget_realize(handle);
+	long /*ing*/ window = gtk_widget_get_window (handle);
+	/*
+	 As methods required to replicate gdk_window_shape_combine_region ()
+	 are available starting from GTK+ 3, Cairo implementation that replicates
+	 gdk_region_polygon () should be also available to GTK+ 3.0 and higher.
+	 */
+	 if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		 long /*ing*/ cairo = OS.gdk_cairo_create(window);
+		 int count = polyline.length / 2;
+		 if (count == 0) return;
+		 Cairo.cairo_move_to(cairo, polyline[0], polyline[1]);
+		 for (int i=1,j=2; i<count; i++,j+=2) {
+			 Cairo.cairo_move_to(cairo, polyline[j]+0.5, polyline[j+1]+0.5);
+		 }
+		 Cairo.cairo_close_path(cairo);
+		 Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
+		 Cairo.cairo_fill(cairo);
+		 long /*ing*/ surface = Cairo.cairo_get_target(cairo);
+		 long /*int*/ region = OS.gdk_cairo_region_create_from_surface(surface);
+		 OS.gtk_widget_shape_combine_region (window, region);
+		 Cairo.cairo_destroy(cairo);
+	 } else {
+		 long /*int*/ rgn = OS.gdk_region_polygon (polyline, polyline.length / 2, OS.GDK_EVEN_ODD_RULE);
+		 OS.gdk_window_shape_combine_region (window, rgn, 0, 0);
+		 OS.gdk_region_destroy (rgn);
+	 }
 }
 
 void createHandle (int index) {

@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
 
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
 
@@ -74,7 +75,7 @@ public Region() {
  */
 public Region(Device device) {
 	super(device);
-	handle = OS.gdk_region_new();
+	handle = cairo_region_create ();
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	init();
 }
@@ -109,9 +110,27 @@ public void add (int[] pointArray) {
 	* with enough points for a polygon.
 	*/
 	if (pointArray.length < 6) return;
-	long /*int*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
-	OS.gdk_region_union(handle, polyRgn);
-	OS.gdk_region_destroy(polyRgn);
+	 if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		 long /*ing*/ cairo = OS.gdk_cairo_create(handle);
+		 int count = pointArray.length / 2;
+		 if (count == 0) return;
+		 Cairo.cairo_move_to(cairo, pointArray[0], pointArray[1]);
+		 for (int i=1,j=2; i<count; i++,j+=2) {
+			 Cairo.cairo_move_to(cairo, pointArray[j]+0.5, pointArray[j+1]+0.5);
+		 }
+		 Cairo.cairo_close_path(cairo);
+		 Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
+		 Cairo.cairo_fill(cairo);
+		 long /*ing*/ surface = Cairo.cairo_get_target(cairo);
+		 long /*int*/ polyRgn = OS.gdk_cairo_region_create_from_surface(surface);
+		 Cairo.cairo_region_union (handle, polyRgn);
+		 Cairo.cairo_destroy(cairo);
+	 } else {
+		 long /*int*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
+			OS.gdk_region_union(handle, polyRgn);
+			OS.gdk_region_destroy(polyRgn);
+	 }
+	
 }
 
 /**
@@ -155,12 +174,21 @@ public void add(Rectangle rect) {
 public void add(int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	GdkRectangle gdkRect = new GdkRectangle();
-	gdkRect.x = x;
-	gdkRect.y = y;
-	gdkRect.width = width;
-	gdkRect.height = height;
-	OS.gdk_region_union_with_rect(handle, gdkRect);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		cairo_rectangle_int_t cairoRect = new cairo_rectangle_int_t();
+		cairoRect.x = x;
+		cairoRect.y = y;
+		cairoRect.width = width;
+		cairoRect.height = height;
+		Cairo.cairo_region_union_rectangle (handle, cairoRect);
+	} else {
+		GdkRectangle gdkRect = new GdkRectangle();
+		gdkRect.x = x;
+		gdkRect.y = y;
+		gdkRect.width = width;
+		gdkRect.height = height;
+		OS.gdk_region_union_with_rect(handle, gdkRect);	
+	}
 }
 
 /**
@@ -182,7 +210,7 @@ public void add(Region region) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	OS.gdk_region_union(handle, region.handle);
+	cairo_region_union (handle, region.handle);
 }
 
 /**
@@ -200,7 +228,11 @@ public void add(Region region) {
  */
 public boolean contains(int x, int y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return OS.gdk_region_point_in(handle, x, y);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		return Cairo.cairo_region_contains_point (handle, x, y);
+	} else {
+		return OS.gdk_region_point_in(handle, x, y);	
+	}
 }
 
 /**
@@ -224,7 +256,7 @@ public boolean contains(Point pt) {
 }
 
 void destroy() {
-	OS.gdk_region_destroy(handle);
+	cairo_region_destroy (handle);
 	handle = 0;
 }
 
@@ -260,9 +292,15 @@ public boolean equals(Object object) {
  */
 public Rectangle getBounds() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	GdkRectangle gdkRect = new GdkRectangle();
-	OS.gdk_region_get_clipbox(handle, gdkRect);
-	return new Rectangle(gdkRect.x, gdkRect.y, gdkRect.width, gdkRect.height);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		cairo_rectangle_int_t cairoRect = new cairo_rectangle_int_t ();
+		Cairo.cairo_region_get_extents (handle, cairoRect);
+		return new Rectangle(cairoRect.x, cairoRect.y, cairoRect.width, cairoRect.height);
+	} else {
+		GdkRectangle gdkRect = new GdkRectangle();
+		OS.gdk_region_get_clipbox(handle, gdkRect);	
+		return new Rectangle(gdkRect.x, gdkRect.y, gdkRect.width, gdkRect.height);
+	}
 }
 
 /**	 
@@ -342,14 +380,25 @@ public void intersect(Rectangle rect) {
 public void intersect(int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	GdkRectangle gdkRect = new GdkRectangle();
-	gdkRect.x = x;
-	gdkRect.y = y;
-	gdkRect.width = width;
-	gdkRect.height = height;
-	long /*int*/ rectRgn = OS.gdk_region_rectangle(gdkRect);
-	OS.gdk_region_intersect(handle, rectRgn);
-	OS.gdk_region_destroy(rectRgn);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		cairo_rectangle_int_t cairoRect = new cairo_rectangle_int_t ();
+		cairoRect.x = x;
+		cairoRect.y = y;
+		cairoRect.width = width;
+		cairoRect.height = height;
+		long /*int*/ rectRgn = Cairo.cairo_region_create_rectangle (cairoRect);
+		Cairo.cairo_region_intersect (handle, rectRgn);
+		Cairo.cairo_region_destroy (rectRgn);
+	} else {
+		GdkRectangle gdkRect = new GdkRectangle();
+		gdkRect.x = x;
+		gdkRect.y = y;
+		gdkRect.width = width;
+		gdkRect.height = height;
+		long /*int*/ rectRgn = OS.gdk_region_rectangle(gdkRect);
+		OS.gdk_region_intersect (handle, rectRgn);
+		OS.gdk_region_destroy (rectRgn);
+	}
 }
 
 /**
@@ -373,7 +422,7 @@ public void intersect(Region region) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	OS.gdk_region_intersect(handle, region.handle);
+	cairo_region_intersect (handle, region.handle);
 }
 
 /**
@@ -395,12 +444,21 @@ public void intersect(Region region) {
  */
 public boolean intersects (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	GdkRectangle gdkRect = new GdkRectangle();
-	gdkRect.x = x;
-	gdkRect.y = y;
-	gdkRect.width = width;
-	gdkRect.height = height;
-	return OS.gdk_region_rect_in(handle, gdkRect) != OS.GDK_OVERLAP_RECTANGLE_OUT;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		cairo_rectangle_int_t cairoRect = new cairo_rectangle_int_t ();
+		cairoRect.x = x;
+		cairoRect.y = y;
+		cairoRect.width = width;
+		cairoRect.height = height;
+		return Cairo.cairo_region_contains_rectangle (handle, cairoRect) != OS.GDK_OVERLAP_RECTANGLE_OUT;	
+	} else {
+		GdkRectangle gdkRect = new GdkRectangle();
+		gdkRect.x = x;
+		gdkRect.y = y;
+		gdkRect.width = width;
+		gdkRect.height = height;
+		return OS.gdk_region_rect_in(handle, gdkRect) != OS.GDK_OVERLAP_RECTANGLE_OUT;
+	}
 }
 /**
  * Returns <code>true</code> if the given rectangle intersects
@@ -451,7 +509,11 @@ public boolean isDisposed() {
  */
 public boolean isEmpty() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return OS.gdk_region_empty(handle);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		return Cairo.cairo_region_is_empty(handle);	
+	} else {
+		return OS.gdk_region_empty(handle);	
+	}
 }
 
 /**
@@ -478,9 +540,26 @@ public void subtract (int[] pointArray) {
 	* with enough points for a polygon.
 	*/
 	if (pointArray.length < 6) return;
-	long /*int*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
-	OS.gdk_region_subtract(handle, polyRgn);
-	OS.gdk_region_destroy(polyRgn);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		 long /*ing*/ cairo = OS.gdk_cairo_create(handle);
+		 int count = pointArray.length / 2;
+		 if (count == 0) return;
+		 Cairo.cairo_move_to(cairo, pointArray[0], pointArray[1]);
+		 for (int i=1,j=2; i<count; i++,j+=2) {
+			 Cairo.cairo_move_to(cairo, pointArray[j]+0.5, pointArray[j+1]+0.5);
+		 }
+		 Cairo.cairo_close_path(cairo);
+		 Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
+		 Cairo.cairo_fill(cairo);
+		 long /*ing*/ surface = Cairo.cairo_get_target(cairo);
+		 long /*int*/ polyRgn = OS.gdk_cairo_region_create_from_surface(surface);
+		 Cairo.cairo_region_subtract(handle, polyRgn);
+		 Cairo.cairo_destroy(cairo);
+	 } else {
+		long /*int*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
+		OS.gdk_region_subtract(handle, polyRgn);
+		OS.gdk_region_destroy(polyRgn);
+	 }
 }
 
 /**
@@ -526,14 +605,25 @@ public void subtract(Rectangle rect) {
 public void subtract(int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	GdkRectangle gdkRect = new GdkRectangle();
-	gdkRect.x = x;
-	gdkRect.y = y;
-	gdkRect.width = width;
-	gdkRect.height = height;
-	long /*int*/ rectRgn = OS.gdk_region_rectangle(gdkRect);
-	OS.gdk_region_subtract(handle, rectRgn);
-	OS.gdk_region_destroy(rectRgn);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		cairo_rectangle_int_t cairoRect = new cairo_rectangle_int_t ();
+		cairoRect.x = x;
+		cairoRect.y = y;
+		cairoRect.width = width;
+		cairoRect.height = height;
+		long /*int*/ rectRgn = Cairo.cairo_region_create_rectangle (cairoRect);
+		Cairo.cairo_region_subtract (handle, rectRgn);
+		Cairo.cairo_region_destroy (rectRgn);
+	} else {
+		GdkRectangle gdkRect = new GdkRectangle();
+		gdkRect.x = x;
+		gdkRect.y = y;
+		gdkRect.width = width;
+		gdkRect.height = height;
+		long /*int*/ rectRgn = OS.gdk_region_rectangle(gdkRect);
+		OS.gdk_region_subtract (handle, rectRgn);
+		OS.gdk_region_destroy (rectRgn);
+	}
 }
 
 /**
@@ -557,7 +647,7 @@ public void subtract(Region region) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	OS.gdk_region_subtract(handle, region.handle);
+	cairo_region_subtract (handle, region.handle);
 }
 
 /**
@@ -575,7 +665,7 @@ public void subtract(Region region) {
  */
 public void translate (int x, int y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	OS.gdk_region_offset (handle, x, y);
+	cairo_region_translate (handle, x, y);
 }
 
 /**
@@ -608,5 +698,53 @@ public void translate (Point pt) {
 public String toString () {
 	if (isDisposed()) return "Region {*DISPOSED*}";
 	return "Region {" + handle + "}";
+}
+
+long /*int*/ cairo_region_create () {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		return Cairo.cairo_region_create ();
+	} else {
+		return OS.gdk_region_new ();
+	}
+}
+
+void cairo_region_translate (long /*int*/ region, int dx, int dy) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		Cairo.cairo_region_translate (region, dx, dy);
+	} else {
+		OS.gdk_region_offset (region, dx, dy);
+	}
+}
+
+void cairo_region_subtract (long /*int*/ dst, long /*int*/ other) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		Cairo.cairo_region_subtract (dst, other);
+	} else {
+		OS.gdk_region_subtract (dst, other);
+	}
+}
+
+void cairo_region_union (long /*int*/ dst, long /*int*/ other) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		Cairo.cairo_region_union (dst, other);
+	} else {
+		OS.gdk_region_union (dst, other);
+	}
+}
+
+void cairo_region_intersect (long /*int*/ dst, long /*int*/ other) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		Cairo.cairo_region_intersect (dst, other);
+	} else {
+		OS.gdk_region_intersect (dst, other);
+	}
+}
+
+void cairo_region_destroy (long /*int*/ region) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		Cairo.cairo_region_destroy ( region);
+	} else {
+		OS.gdk_region_destroy (region);
+	}
 }
 }
