@@ -13,6 +13,7 @@ package org.eclipse.swt.internal.theme;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.Cairo;
 import org.eclipse.swt.internal.gtk.*;
 
 public class ExpanderDrawData extends DrawData {
@@ -33,7 +34,14 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	int expander_size = theme.getWidgetProperty(treeHandle, "expander-size");
 	int x = bounds.x + expander_size / 2;
 	int y = bounds.y + expander_size / 2;
-	OS.gtk_paint_expander(gtkStyle, drawable, state_type, null, treeHandle, detail, x, y, expander_style);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		long /*int*/ cairo = OS.gdk_cairo_create (drawable);
+		long /*int*/ context = OS.gtk_widget_get_style_context (gtkStyle);
+		OS.gtk_render_expander (context, cairo, bounds.x, bounds.y, expander_size, expander_size);
+		Cairo.cairo_destroy (cairo);
+	} else {
+		OS.gtk_paint_expander(gtkStyle, drawable, state_type, null, treeHandle, detail, x, y, expander_style);	
+	}
 }
 
 int hit(Theme theme, Point position, Rectangle bounds) {

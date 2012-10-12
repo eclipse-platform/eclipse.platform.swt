@@ -8635,6 +8635,22 @@ public static final void gtk_render_frame(long /*int*/ context, long /*int*/ cr,
  * @param y cast=(gdouble)
  * @param width cast=(gdouble)
  * @param height cast=(gdouble)
+ */
+public static final native void _gtk_render_expander(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height);
+public static final void gtk_render_expander(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height) {
+	lock.lock();
+	try {
+		_gtk_render_expander(context, cr, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param x cast=(gdouble)
+ * @param y cast=(gdouble)
+ * @param width cast=(gdouble)
+ * @param height cast=(gdouble)
  * @param xy0_gap cast=(gdouble)
  * @param xy1_gap cast=(gdouble)
  */
@@ -8834,7 +8850,7 @@ public static final void gtk_render_check(long /*int*/ context, long /*int*/ cai
 	}
 }
 /**
- * @param style cast=(GtkStyle *)
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(const gchar *)
