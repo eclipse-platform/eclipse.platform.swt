@@ -371,7 +371,7 @@ NSObject createString(int index) {
 	return NSString.stringWith(text != null ? text : "");
 }
 
-void dealloc (int /*long*/ id, int /*long*/ sel) {
+void dealloc (long /*int*/ id, long /*int*/ sel) {
 	super.dealloc(id, sel);
 	OS.object_setInstanceVariable(id, Display.SWT_OBJECT, 0);
 	super.destroyJNIRef();
