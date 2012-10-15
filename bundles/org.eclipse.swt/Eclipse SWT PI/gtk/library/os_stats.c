@@ -954,6 +954,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1rc_1style_1set_1color_1flags",
 	"_1gtk_1rc_1style_1set_1fg",
 	"_1gtk_1rc_1style_1set_1text",
+	"_1gtk_1render_1arrow",
 	"_1gtk_1render_1background",
 	"_1gtk_1render_1check",
 	"_1gtk_1render_1expander",

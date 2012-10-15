@@ -62,7 +62,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	}		
 	byte[] arrow_detail = Converter.wcsToMbcs(null, "arrow", true);
 	long /*int*/ arrowHandle = theme.arrowHandle;
-	OS.gtk_paint_arrow(gtkStyle, drawable, state_type, OS.GTK_SHADOW_OUT, null, arrowHandle, arrow_detail, OS.GTK_ARROW_DOWN, true, arrow_x, arrow_y, arrow_width, arrow_height);
+	gtk_render_arrow (gtkStyle, drawable, state_type, OS.GTK_SHADOW_OUT, null, arrowHandle, arrow_detail, OS.GTK_ARROW_DOWN, true, arrow_x, arrow_y, arrow_width, arrow_height);
 	
 	long /*int*/ entryHandle = theme.entryHandle;
 	gtkStyle = OS.gtk_widget_get_style(entryHandle);

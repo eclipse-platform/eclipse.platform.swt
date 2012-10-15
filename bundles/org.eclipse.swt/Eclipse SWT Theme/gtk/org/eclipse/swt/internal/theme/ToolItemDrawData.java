@@ -125,7 +125,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		if (interior_focus == 0) arrow_x -= focus_line_width;
 		int arrow_y = y + (height - arrow_height) / 2;
 		byte[] arrow_detail = Converter.wcsToMbcs(null, "arrow", true);
-		OS.gtk_paint_arrow(gtkStyle, drawable, state_type, OS.GTK_SHADOW_NONE, null, theme.arrowHandle, arrow_detail, OS.GTK_ARROW_DOWN, true, arrow_x, arrow_y, arrow_width, arrow_height);
+		gtk_render_arrow (gtkStyle, drawable, state_type, OS.GTK_SHADOW_NONE, null, theme.arrowHandle, arrow_detail, OS.GTK_ARROW_DOWN, true, arrow_x, arrow_y, arrow_width, arrow_height);
 		if (clientArea != null) {
 			clientArea.width -= bounds.x + bounds.width - arrow_x;
 		}

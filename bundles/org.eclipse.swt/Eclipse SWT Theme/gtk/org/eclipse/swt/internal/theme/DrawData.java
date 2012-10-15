@@ -241,4 +241,38 @@ void gtk_render_focus (long /*int*/ style, long /*int*/ window, int state_type, 
 	}
 }
 
+void gtk_render_arrow(long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int arrow_type, boolean fill, int x, int y, int width, int height) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		double angle = 0;
+		double size = 0;
+		switch (arrow_type) {
+			case OS.GTK_ARROW_UP:
+				angle = 0;
+				size = width;
+				break;
+			case OS.GTK_ARROW_RIGHT:
+				angle = Math.PI/2;
+				size = height;
+				break;
+			case OS.GTK_ARROW_DOWN:
+				angle = Math.PI;
+				size = width;
+				break;
+			case OS.GTK_ARROW_LEFT:
+				angle = (3 * Math.PI)/2;
+				size = height;
+				break;
+		}
+		long /*int*/ cairo = OS.gdk_cairo_create (window);
+		long /*int*/  context = OS.gtk_widget_get_style_context (style);
+		OS.gtk_style_context_set_state(context, state_type);
+		OS.gtk_render_background(context, cairo, x, y, width, height);
+		OS.gtk_render_frame (context, cairo, x, y, width, height);
+		OS.gtk_render_arrow(context, cairo, angle, x, y, size);
+		Cairo.cairo_destroy(cairo);
+	} else {
+		OS.gtk_paint_arrow(style, window, state_type, shadow_type, area, widget, detail, arrow_type, fill, x, y, width, height);
+	}
+}
+
 }

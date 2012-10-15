@@ -319,6 +319,7 @@
 #define gtk_enumerate_printers_LIB LIB_GTK
 #define gtk_object_sink_LIB LIB_GTK
 #define gtk_orientable_set_orientation_LIB LIB_GTK
+#define gtk_paint_arrow_LIB LIB_GTK
 #define gtk_paint_box_LIB LIB_GTK
 #define gtk_paint_box_gap_LIB LIB_GTK
 #define gtk_paint_handle_LIB LIB_GTK
@@ -404,6 +405,7 @@
 #define gtk_render_extension_LIB LIB_GTK
 #define gtk_render_expander_LIB LIB_GTK
 #define gtk_render_handle_LIB LIB_GTK
+#define gtk_render_arrow_LIB LIB_GTK
 #define gtk_render_line_LIB LIB_GTK
 #define gtk_render_focus_LIB LIB_GTK
 #define gtk_render_frame_LIB LIB_GTK
