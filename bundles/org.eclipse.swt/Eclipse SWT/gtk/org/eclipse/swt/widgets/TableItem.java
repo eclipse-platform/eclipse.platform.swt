@@ -300,7 +300,7 @@ public Rectangle getBounds () {
 
 	int [] x = new int [1], w = new int [1];
 	parent.ignoreSize = true;
-	OS.gtk_cell_renderer_get_size (textRenderer, parentHandle, null, null, null, w, null);
+	gtk_cell_renderer_get_preferred_size (textRenderer, parentHandle, w, null);
 	parent.ignoreSize = false;
 	rect.width = w [0];
 	int [] buffer = new int [1];
@@ -678,7 +678,7 @@ public Rectangle getTextBounds (int index) {
 
 	int [] x = new int [1], w = new int [1];
 	parent.ignoreSize = true;
-	OS.gtk_cell_renderer_get_size (textRenderer, parentHandle, null, null, null, w, null);
+	gtk_cell_renderer_get_preferred_size (textRenderer, parentHandle, w, null);
 	parent.ignoreSize = false;
 	int [] buffer = new int [1];
 	if (OS.gtk_tree_view_get_expander_column (parentHandle) == column) {

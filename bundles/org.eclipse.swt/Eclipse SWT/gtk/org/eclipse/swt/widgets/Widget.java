@@ -2043,4 +2043,14 @@ void gtk_render_frame (long /*int*/ style, long /*int*/ window, int state_type, 
 	}
 }
 
+void gtk_cell_renderer_get_preferred_size (long /*int*/ cell, long /*int*/ widget,  int[] width, int[] height) {
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		GtkRequisition minimum_size = new GtkRequisition ();
+		OS.gtk_cell_renderer_get_preferred_size (cell, widget, minimum_size, null);
+		if (width != null) width [0] = minimum_size.width;
+		if (height != null) height[0] = minimum_size.height;
+	} else {
+		OS.gtk_cell_renderer_get_size (cell, widget, null, null, null, width, height);
+	}
+}
 }

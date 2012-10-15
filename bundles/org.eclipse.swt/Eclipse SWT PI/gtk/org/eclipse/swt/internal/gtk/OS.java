@@ -5992,6 +5992,7 @@ public static final void gtk_cell_layout_pack_start(long /*int*/ cell_layout, lo
 	}
 }
 /**
+ * @method flags=dynamic
  * @param cell cast=(GtkCellRenderer *)
  * @param widget cast=(GtkWidget *)
  * @param area cast=(GdkRectangle *),flags=no_in
@@ -6005,6 +6006,22 @@ public static final void gtk_cell_renderer_get_size(long /*int*/ cell, long /*in
 	lock.lock();
 	try {
 		_gtk_cell_renderer_get_size(cell, widget, area, x_offset, y_offset, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param cell cast=(GtkCellRenderer *)
+ * @param widget cast=(GtkWidget *)
+ * @param minimum_size cast=(GtkRequisition *)
+ * @param natural_size cast=(GtkRequisition *)
+ */
+public static final native void _gtk_cell_renderer_get_preferred_size(long /*int*/ cell, long /*int*/ widget, GtkRequisition minimum_size, GtkRequisition natural_size);
+public static final void gtk_cell_renderer_get_preferred_size(long /*int*/ cell, long /*int*/ widget, GtkRequisition minimum_size, GtkRequisition natural_size) {
+	lock.lock();
+	try {
+		_gtk_cell_renderer_get_preferred_size(cell, widget, minimum_size, natural_size);
 	} finally {
 		lock.unlock();
 	}

@@ -334,7 +334,7 @@ int calculateWidth (long /*int*/ column, long /*int*/ iter) {
 	while (temp != 0) {
 		long /*int*/ renderer = OS.g_list_data (temp);
 		if (renderer != 0) {
-			OS.gtk_cell_renderer_get_size (renderer, handle, null, null, null, w, null);
+			gtk_cell_renderer_get_preferred_size (renderer, handle, w, null);
 			width += w [0];
 		}
 		temp = OS.g_list_next (temp);
@@ -2590,7 +2590,7 @@ long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*
 
 			//send out measure before erase
 			long /*int*/ textRenderer =  getTextRenderer (columnHandle);
-			if (textRenderer != 0) OS.gtk_cell_renderer_get_size (textRenderer, handle, null, null, null, null, null);
+			if (textRenderer != 0) gtk_cell_renderer_get_preferred_size (textRenderer, handle, null, null);
 			
 
 			if (hooks (SWT.EraseItem)) {
@@ -2664,8 +2664,8 @@ long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*
 				OS.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
 				OS.gtk_tree_path_free (path);
 				ignoreSize = true;
-				int [] contentX = new int [1], contentWidth = new int [1];
-				OS.gtk_cell_renderer_get_size (cell, handle, null, null, null, contentWidth, null);
+				int [] contentX = new int [1], contentWidth = new int [1];	
+				gtk_cell_renderer_get_preferred_size (cell, handle, contentWidth, null);
 				OS.gtk_tree_view_column_cell_get_position (columnHandle, cell, contentX, null);
 				ignoreSize = false;
 				Image image = item.getImage (columnIndex);

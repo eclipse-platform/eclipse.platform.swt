@@ -8096,6 +8096,31 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1pack_1start)
 }
 #endif
 
+#ifndef NO__1gtk_1cell_1renderer_1get_1preferred_1size
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1renderer_1get_1preferred_1size)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2, jobject arg3)
+{
+	GtkRequisition _arg2, *lparg2=NULL;
+	GtkRequisition _arg3, *lparg3=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1renderer_1get_1preferred_1size_FUNC);
+	if (arg2) if ((lparg2 = getGtkRequisitionFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getGtkRequisitionFields(env, arg3, &_arg3)) == NULL) goto fail;
+/*
+	gtk_cell_renderer_get_preferred_size((GtkCellRenderer *)arg0, (GtkWidget *)arg1, (GtkRequisition *)lparg2, (GtkRequisition *)lparg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_cell_renderer_get_preferred_size)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCellRenderer *, GtkWidget *, GtkRequisition *, GtkRequisition *))fp)((GtkCellRenderer *)arg0, (GtkWidget *)arg1, (GtkRequisition *)lparg2, (GtkRequisition *)lparg3);
+		}
+	}
+fail:
+	if (arg3 && lparg3) setGtkRequisitionFields(env, arg3, lparg3);
+	if (arg2 && lparg2) setGtkRequisitionFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1renderer_1get_1preferred_1size_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1cell_1renderer_1get_1size
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1renderer_1get_1size)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6)
@@ -8111,7 +8136,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1renderer_1get_1size)
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
+/*
 	gtk_cell_renderer_get_size((GtkCellRenderer *)arg0, (GtkWidget *)arg1, (GdkRectangle *)lparg2, (gint *)lparg3, (gint *)lparg4, (gint *)lparg5, (gint *)lparg6);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_cell_renderer_get_size)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCellRenderer *, GtkWidget *, GdkRectangle *, gint *, gint *, gint *, gint *))fp)((GtkCellRenderer *)arg0, (GtkWidget *)arg1, (GdkRectangle *)lparg2, (gint *)lparg3, (gint *)lparg4, (gint *)lparg5, (gint *)lparg6);
+		}
+	}
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
