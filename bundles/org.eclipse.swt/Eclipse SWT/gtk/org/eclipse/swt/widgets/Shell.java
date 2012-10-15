@@ -2453,34 +2453,37 @@ void setToolTipText (long /*int*/ rootWidget, long /*int*/ tipWidget, String str
 		}
 		if (oldTooltip != 0) OS.g_free(oldTooltip);
 		if (same) return;
-		OS.gtk_widget_set_tooltip_text (rootWidget, null);
-		/*
-		* Bug in GTK. In GTK 2.12, due to a miscalculation of window
-		* coordinates, using gtk_tooltip_trigger_tooltip_query ()
-		* to update an existing a tooltip will result in the tooltip 
-		* being displayed at a wrong position. The fix is to send out 
-		* 2 fake GDK_MOTION_NOTIFY events (to mimic the GTK call) which 
-		* contain the proper x and y coordinates.
-		*/
+		
 		long /*int*/ eventPtr = 0;
-		long /*int*/ tipWindow = gtk_widget_get_window (rootWidget);
-		if (tipWindow != 0) {
-			int [] x = new int [1], y = new int [1];
-			long /*int*/ window = OS.gdk_window_at_pointer (x, y);
-			long /*int*/ [] user_data = new long /*int*/ [1];
-			if (window != 0) OS.gdk_window_get_user_data (window, user_data);
-			if (tipWidget == user_data [0]) {
-				eventPtr = OS.gdk_event_new (OS.GDK_MOTION_NOTIFY);
-				GdkEventMotion event = new GdkEventMotion ();
-				event.type = OS.GDK_MOTION_NOTIFY;
-				event.window = OS.g_object_ref (tipWindow);
-				event.x = x [0];
-				event.y = y [0];
-				OS.gdk_window_get_origin (window, x, y);
-				event.x_root = event.x + x [0];
-				event.y_root = event.y + y [0];
-				OS.memmove (eventPtr, event, GdkEventMotion.sizeof);
-				OS.gtk_main_do_event (eventPtr);
+		if (OS.GTK_VERSION < OS.VERSION (2, 18, 0)) {
+			OS.gtk_widget_set_tooltip_text (rootWidget, null);
+			/*
+			 * Bug in GTK. In GTK 2.12, due to a miscalculation of window
+			 * coordinates, using gtk_tooltip_trigger_tooltip_query ()
+			 * to update an existing a toboltip will result in the tooltip 
+			 * being displayed at a wrong position. The fix is to send out 
+			 * 2 fake GDK_MOTION_NOTIFY events (to mimic the GTK call) which 
+			 * contain the proper x and y coordinates.
+			 */
+			long /*int*/ tipWindow = gtk_widget_get_window (rootWidget);
+			if (tipWindow != 0) {
+				int [] x = new int [1], y = new int [1];
+				long /*int*/ window = OS.gdk_window_at_pointer (x, y);
+				long /*int*/ [] user_data = new long /*int*/ [1];
+				if (window != 0) OS.gdk_window_get_user_data (window, user_data);
+				if (tipWidget == user_data [0]) {
+					eventPtr = OS.gdk_event_new (OS.GDK_MOTION_NOTIFY);
+					GdkEventMotion event = new GdkEventMotion ();
+					event.type = OS.GDK_MOTION_NOTIFY;
+					event.window = OS.g_object_ref (tipWindow);
+					event.x = x [0];
+					event.y = y [0];
+					OS.gdk_window_get_origin (window, x, y);
+					event.x_root = event.x + x [0];
+					event.y_root = event.y + y [0];
+					OS.memmove (eventPtr, event, GdkEventMotion.sizeof);
+					OS.gtk_main_do_event (eventPtr);
+				}
 			}
 		}
 		OS.gtk_widget_set_tooltip_text (rootWidget, buffer);
