@@ -2849,6 +2849,7 @@ void initClasses () {
 	className = "SWTTreeItem";
 	cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_dealloc, proc2, "@:");
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTView";
@@ -5358,6 +5359,8 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel) {
 	if (widget == null) return 0;
 	if (sel == OS.sel_sendSelection) {
 		widget.sendSelection();
+	} else if (sel == OS.sel_dealloc) {
+		widget.dealloc(id, sel);
 	} else if (sel == OS.sel_sendDoubleSelection) {
 		widget.sendDoubleSelection();
 	} else if (sel == OS.sel_sendVerticalSelection) {

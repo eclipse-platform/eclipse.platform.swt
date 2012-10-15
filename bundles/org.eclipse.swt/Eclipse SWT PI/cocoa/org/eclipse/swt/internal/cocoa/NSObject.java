@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -119,6 +119,10 @@ public boolean conformsToProtocol(Protocol aProtocol) {
 public id copy() {
 	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_copy);
 	return result != 0 ? new id(result) : null;
+}
+
+public void dealloc () {
+	OS.objc_msgSend (this.id, OS.sel_dealloc);
 }
 
 public NSString description() {

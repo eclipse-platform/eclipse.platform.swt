@@ -621,6 +621,10 @@ void comboBoxWillDismiss(long /*int*/ id, long /*int*/ sel, long /*int*/ notific
 void comboBoxWillPopUp(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
 }
 
+void dealloc (long /*int*/id, long /*int*/sel) {
+	callSuper (id, sel);
+}
+
 void deregister () {
 }
 

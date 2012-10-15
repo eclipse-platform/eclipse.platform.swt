@@ -371,9 +371,20 @@ NSObject createString(int index) {
 	return NSString.stringWith(text != null ? text : "");
 }
 
+void dealloc (int /*long*/ id, int /*long*/ sel) {
+	super.dealloc(id, sel);
+	OS.object_setInstanceVariable(id, Display.SWT_OBJECT, 0);
+	super.destroyJNIRef();
+}
+
 void deregister () {
 	super.deregister ();
-	display.removeWidget (handle);
+	//This is done in #dealloc
+//	display.removeWidget (handle);
+}
+
+void destroyJNIRef () {
+	//Do nothing - see #dealloc
 }
 
 void destroyWidget () {
@@ -986,7 +997,7 @@ void releaseChildren (boolean destroy) {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	if (handle != null) handle.release ();
+	if (handle != null) handle.autorelease ();
 	handle = null;
 	parentItem = null;
 	parent = null;
