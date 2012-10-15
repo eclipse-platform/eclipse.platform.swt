@@ -4205,17 +4205,16 @@ public String toString () {
 }
 
 void gtk_render_focus (long /*int*/ style, long /*int*/ window, int state_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 2, 0)) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
 		long /*int*/ cairo = OS.gdk_cairo_create (window);
-		long /*int*/  context = OS.gtk_widget_get_style_context (style);
+		long /*int*/ context = OS.gtk_widget_get_style_context (style);
 		OS.gtk_style_context_save (context);
 		OS.gtk_style_context_set_state (context, OS.gtk_widget_get_state_flags (widget));
 		Cairo.cairo_save (cairo);
-		OS.gtk_render_focus(context, cairo, x, y, width, height);
+		OS.gtk_render_focus (context, cairo, x, y, width, height);
 		Cairo.cairo_restore (cairo);
 		OS.gtk_style_context_restore (context);
-		Cairo.cairo_destroy(cairo);
-		
+		Cairo.cairo_destroy (cairo);
 	} else {
 		OS.gtk_paint_focus (style, window, state_type, area, widget, detail, x, y, width, height);
 	}
