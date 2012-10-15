@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.events;
 
-import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.*;
 
 /**
  * This event is sent to SegmentListeners when a text content is to be modified.
@@ -54,7 +54,7 @@ import org.eclipse.swt.widgets.Event;
  * </pre>
  * 
  * <p>
- * The segments and segementsChars fields can be used together to obtain different
+ * The segments and segmentsChars fields can be used together to obtain different
  * types of bidi reordering and text display. The application can use these two fields
  * to insert Unicode Control Characters in specific offsets in the text, the character
  * at segmentsChars[i] is inserted at the offset specified by segments[i]. When both fields 
