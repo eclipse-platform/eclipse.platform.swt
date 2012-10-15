@@ -11706,7 +11706,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1shadow)
 	OS_NATIVE_ENTER(env, that, _1gtk_1paint_1shadow_FUNC);
 	if (arg4) if ((lparg4 = getGdkRectangleFields(env, arg4, &_arg4)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	gtk_paint_shadow((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (gchar *)lparg6, arg7, arg8, arg9, arg10);
+/*
+	gtk_paint_shadow(arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (gchar *)lparg6, arg7, arg8, arg9, arg10);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_paint_shadow)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GdkWindow *, jint, jint, GdkRectangle *, GtkWidget *, gchar *, jint, jint, jint, jint))fp)(arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (gchar *)lparg6, arg7, arg8, arg9, arg10);
+		}
+	}
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
 	if (arg4 && lparg4) setGdkRectangleFields(env, arg4, lparg4);
@@ -11723,7 +11731,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1shadow_1gap)
 	OS_NATIVE_ENTER(env, that, _1gtk_1paint_1shadow_1gap_FUNC);
 	if (arg4) if ((lparg4 = getGdkRectangleFields(env, arg4, &_arg4)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	gtk_paint_shadow_gap((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (gchar *)lparg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13);
+/*
+	gtk_paint_shadow_gap(arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (gchar *)lparg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_paint_shadow_gap)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GdkWindow *, jint, jint, GdkRectangle *, GtkWidget *, gchar *, jint, jint, jint, jint, jint, jint, jint))fp)(arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (gchar *)lparg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13);
+		}
+	}
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
 	if (arg4 && lparg4) setGdkRectangleFields(env, arg4, lparg4);

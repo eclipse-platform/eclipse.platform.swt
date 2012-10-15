@@ -330,6 +330,8 @@
 #define gtk_paint_vline_LIB LIB_GTK
 #define gtk_paint_flat_box_LIB LIB_GTK
 #define gtk_paint_check_LIB LIB_GTK
+#define gtk_paint_shadow_LIB LIB_GTK
+#define gtk_paint_shadow_gap_LIB LIB_GTK
 #define gtk_paint_option_LIB LIB_GTK
 #define gtk_paint_layout_LIB LIB_GTK
 #define gtk_page_setup_get_bottom_margin_LIB LIB_GTK

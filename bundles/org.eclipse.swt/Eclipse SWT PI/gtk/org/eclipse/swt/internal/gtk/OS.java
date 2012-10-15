@@ -8959,7 +8959,7 @@ public static final void gtk_paint_layout(long /*int*/ style, long /*int*/ windo
 	}
 }
 /**
- * @param style cast=(GtkStyle *)
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(gchar *)
@@ -8974,7 +8974,7 @@ public static final void gtk_paint_shadow_gap(long /*int*/ style, long /*int*/ w
 	}
 }
 /**
- * @param style cast=(GtkStyle *)
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(gchar *)
