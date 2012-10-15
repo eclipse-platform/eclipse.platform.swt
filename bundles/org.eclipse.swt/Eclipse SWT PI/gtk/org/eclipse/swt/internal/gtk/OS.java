@@ -8683,6 +8683,23 @@ public static final void gtk_render_frame_gap(long /*int*/ context, long /*int*/
  * @method flags=dynamic
  * @param x cast=(gdouble)
  * @param y cast=(gdouble)
+ * @param width cast=(gdouble)
+ * @param height cast=(gdouble)
+ * @param gap_side cast=(GtkPositionType)
+ */
+public static final native void _gtk_render_extension(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height, int gap_side);
+public static final void gtk_render_extension(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height, int gap_side) {
+	lock.lock();
+	try {
+		_gtk_render_extension(context, cr, x, y, width, height, gap_side);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param x cast=(gdouble)
+ * @param y cast=(gdouble)
  * @param layout cast=(PangoLayout *)
  */
 public static final native void _gtk_render_layout(long /*int*/ context, long /*int*/ cr, double x , double y, long /*int*/ layout);
@@ -8881,7 +8898,7 @@ public static final void gtk_paint_expander(long /*int*/ style, long /*int*/ win
 	}
 }
 /**
- * @param style cast=(GtkStyle *)
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param widget cast=(GtkWidget *)
  * @param detail cast=(gchar *)

@@ -324,6 +324,7 @@
 #define gtk_paint_handle_LIB LIB_GTK
 #define gtk_paint_focus_LIB LIB_GTK
 #define gtk_paint_expander_LIB LIB_GTK
+#define gtk_paint_extension_LIB LIB_GTK
 #define gtk_paint_hline_LIB LIB_GTK
 #define gtk_paint_vline_LIB LIB_GTK
 #define gtk_paint_flat_box_LIB LIB_GTK
@@ -400,6 +401,7 @@
 #define gtk_printer_get_name_LIB LIB_GTK
 #define gtk_printer_is_default_LIB LIB_GTK
 #define gtk_render_check_LIB LIB_GTK
+#define gtk_render_extension_LIB LIB_GTK
 #define gtk_render_expander_LIB LIB_GTK
 #define gtk_render_handle_LIB LIB_GTK
 #define gtk_render_line_LIB LIB_GTK
