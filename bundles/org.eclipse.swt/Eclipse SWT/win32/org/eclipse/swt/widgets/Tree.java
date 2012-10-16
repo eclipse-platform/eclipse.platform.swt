@@ -3350,6 +3350,7 @@ public TreeItem getParentItem () {
 
 int getSelection (long /*int*/ hItem, TVITEM tvItem, TreeItem [] selection, int index, int count, boolean bigSelection, boolean all) {
 	while (hItem != 0) {
+		boolean expanded = true;
 		if (OS.IsWinCE || bigSelection) {
 			tvItem.hItem = hItem;
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
@@ -3359,8 +3360,9 @@ int getSelection (long /*int*/ hItem, TVITEM tvItem, TreeItem [] selection, int 
 				}
 				index++;
 			}
+			expanded = (tvItem.state & OS.TVIS_EXPANDED) != 0;
 		} else {
-			int state = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+			int state = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED | OS.TVIS_EXPANDED);
 			if ((state & OS.TVIS_SELECTED) != 0) {
 				if (tvItem != null && selection != null && index < selection.length) {
 					tvItem.hItem = hItem;
@@ -3369,12 +3371,15 @@ int getSelection (long /*int*/ hItem, TVITEM tvItem, TreeItem [] selection, int 
 				}
 				index++;
 			}
+			expanded = (state & OS.TVIS_EXPANDED) != 0;
 		}
 		if (index == count) break;
 		if (all) {
-			long /*int*/ hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
-			if ((index = getSelection (hFirstItem, tvItem, selection, index, count, bigSelection, all)) == count) {
-				break;
+			if (expanded) {
+				long /*int*/ hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+				if ((index = getSelection (hFirstItem, tvItem, selection, index, count, bigSelection, all)) == count) {
+					break;
+				}
 			}
 			hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 		} else {
