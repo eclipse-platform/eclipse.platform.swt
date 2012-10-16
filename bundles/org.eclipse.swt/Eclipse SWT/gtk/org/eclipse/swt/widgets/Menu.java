@@ -1030,7 +1030,6 @@ public void setOrientation (int orientation) {
 }
 
 void _setOrientation (int orientation) {
-    if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) return;
     int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
     if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
     style &= ~flags;

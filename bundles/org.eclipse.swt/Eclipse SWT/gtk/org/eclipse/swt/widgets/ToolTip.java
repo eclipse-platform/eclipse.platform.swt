@@ -269,16 +269,7 @@ void createHandle (int index) {
 			state |= HANDLE;
 			handle = OS.gtk_tooltips_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			/*
-			* Bug in Solaris-GTK.  Invoking gtk_tooltips_force_window()
-			* can cause a crash in older versions of GTK.  The fix is
-			* to avoid this call if the GTK version is older than 2.2.x.
-			* The call is to be avoided on GTK versions newer than 2.12.0
-			* where it's deprecated.
-			*/
-			if (OS.GTK_VERSION >= OS.VERSION (2, 2, 1)) { 
-				OS.gtk_tooltips_force_window (handle);
-			}
+			OS.gtk_tooltips_force_window (handle);
 			OS.g_object_ref (handle);
 			g_object_ref_sink (handle);
 		}
@@ -791,9 +782,7 @@ public void setMessage (String string) {
 	if (message.length () != 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, message, true);
 		layoutMessage = OS.gtk_widget_create_pango_layout (handle, buffer);
-		if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-			OS.pango_layout_set_auto_dir (layoutMessage, false);
-		}
+		OS.pango_layout_set_auto_dir (layoutMessage, false);
 		OS.pango_layout_set_wrap (layoutMessage, OS.PANGO_WRAP_WORD_CHAR);
 	}
 	if (gtk_widget_get_visible (handle)) configure ();
@@ -822,9 +811,7 @@ public void setText (String string) {
 	if (text.length () != 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, text, true);
 		layoutText = OS.gtk_widget_create_pango_layout (handle, buffer);
-		if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-			OS.pango_layout_set_auto_dir (layoutText, false);
-		}
+		OS.pango_layout_set_auto_dir (layoutText, false);
 		long /*int*/ boldAttr = OS.pango_attr_weight_new (OS.PANGO_WEIGHT_BOLD);
 		PangoAttribute attribute = new PangoAttribute ();
 		OS.memmove (attribute, boldAttr, PangoAttribute.sizeof);

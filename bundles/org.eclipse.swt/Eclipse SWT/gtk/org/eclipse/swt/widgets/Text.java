@@ -217,7 +217,7 @@ void createHandle (int index) {
 		OS.gtk_container_add (fixedHandle, scrolledHandle);
 		OS.gtk_container_add (scrolledHandle, handle);
 		OS.gtk_text_view_set_editable (handle, (style & SWT.READ_ONLY) == 0);
-		if ((style & SWT.WRAP) != 0) OS.gtk_text_view_set_wrap_mode (handle, OS.GTK_VERSION < OS.VERSION (2, 4, 0) ? OS.GTK_WRAP_WORD : OS.GTK_WRAP_WORD_CHAR);
+		if ((style & SWT.WRAP) != 0) OS.gtk_text_view_set_wrap_mode (handle, OS.GTK_WRAP_WORD_CHAR);
 		int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 		int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 		OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);

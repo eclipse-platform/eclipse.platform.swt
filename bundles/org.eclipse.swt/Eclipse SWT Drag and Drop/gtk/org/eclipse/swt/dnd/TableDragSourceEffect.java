@@ -80,7 +80,6 @@ public class TableDragSourceEffect extends DragSourceEffect {
 		dragSourceImage = null;		
 		
 		Table table = (Table) control;
-		if (OS.GTK_VERSION < OS.VERSION (2, 2, 0)) return null;
 		//TEMPORARY CODE
 		if (table.isListening(SWT.EraseItem) || table.isListening (SWT.PaintItem)) return null;
 		/*
@@ -90,7 +89,7 @@ public class TableDragSourceEffect extends DragSourceEffect {
 		*/
 		long /*int*/ handle = table.handle;
 		long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
-		long /*int*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new long /*int*/ [1] : null;
+		long /*int*/ [] model = null;
 		long /*int*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
 		if (list == 0) return null;
 		int count = Math.min(10, OS.g_list_length (list));

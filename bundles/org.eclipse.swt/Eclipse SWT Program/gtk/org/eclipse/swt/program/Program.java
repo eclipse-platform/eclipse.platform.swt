@@ -122,7 +122,7 @@ static int getDesktop(final Display display) {
 				OS.dlclose(libgio);
 			}
 			
-			if (desktop == DESKTOP_UNKNOWN && (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) && gnome_init()) {
+			if (desktop == DESKTOP_UNKNOWN && gnome_init()) {
 				desktop = DESKTOP_GNOME;
 				long /*int*/ icon_theme = GNOME.gnome_icon_theme_new();
 				display.setData(ICON_THEME_DATA, new LONG(icon_theme));

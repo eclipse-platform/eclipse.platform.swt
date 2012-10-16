@@ -652,9 +652,7 @@ void createLayout() {
 	if (OS.GTK_VERSION < OS.VERSION(2, 6, 0)) {
 	    OS.gdk_pango_context_set_colormap(context, OS.gdk_colormap_get_system());	
 	}
-	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
-		OS.pango_layout_set_auto_dir(layout, false);
-	}
+	OS.pango_layout_set_auto_dir(layout, false);
 }
 
 void disposeLayout() {

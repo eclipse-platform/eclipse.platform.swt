@@ -30,14 +30,8 @@ public TabItemDrawData() {
 Rectangle computeTrim(Theme theme, GC gc) {
 	long /*int*/ notebookHandle = theme.notebookHandle;
 	long /*int*/ gtkStyle = OS.gtk_widget_get_style(notebookHandle);
-	int hborder, vborder;
-	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
-		hborder = theme.getWidgetProperty(notebookHandle, "tab-hborder");
-		vborder = theme.getWidgetProperty(notebookHandle, "tab-vborder");
-	} else {
-		hborder = 2;
-		vborder = 2;
-	}
+	int	hborder = theme.getWidgetProperty(notebookHandle, "tab-hborder");
+	int	vborder = theme.getWidgetProperty(notebookHandle, "tab-vborder");
 	int focus_width = theme.getWidgetProperty(notebookHandle, "focus-line-width");
 	int xthickness = OS.gtk_style_get_xthickness(gtkStyle);
 	int ythickness = OS.gtk_style_get_ythickness(gtkStyle);
@@ -70,14 +64,8 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	byte[] detail = Converter.wcsToMbcs(null, "tab", true);
 	gtk_render_extension (gtkStyle, drawable, state_type, OS.GTK_SHADOW_OUT, null, notebookHandle, detail, x, y, width, height, gap_side);
 	if (clientArea != null) {
-		int hborder, vborder;
-		if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
-			hborder = theme.getWidgetProperty(notebookHandle, "tab-hborder");
-			vborder = theme.getWidgetProperty(notebookHandle, "tab-vborder");
-		} else {
-			hborder = 2;
-			vborder = 2;
-		}
+		int	hborder = theme.getWidgetProperty(notebookHandle, "tab-hborder");
+		int	vborder = theme.getWidgetProperty(notebookHandle, "tab-vborder");
 		int focus_line_width = theme.getWidgetProperty(notebookHandle, "focus-line-width");
 		int xthickness = OS.gtk_style_get_xthickness(gtkStyle);
 		int ythickness = OS.gtk_style_get_ythickness(gtkStyle);

@@ -84,8 +84,6 @@ public void javaToNative(Object object, TransferData transferData) {
 	if (!checkImage(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
-	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) return;
-	
 	ImageData imgData = (ImageData)object;
 	if (imgData == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	Image image = new Image(Display.getCurrent(), imgData);	

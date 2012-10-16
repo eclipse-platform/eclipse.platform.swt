@@ -291,7 +291,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	long /*int*/ display = 0;
-	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0) && OS.gdk_display_supports_cursor_color(display = OS.gdk_display_get_default ())) {
+	if (OS.gdk_display_supports_cursor_color(display = OS.gdk_display_get_default ())) {
 		int width = source.width;
 		int height = source.height;
 		PaletteData palette = source.palette;	

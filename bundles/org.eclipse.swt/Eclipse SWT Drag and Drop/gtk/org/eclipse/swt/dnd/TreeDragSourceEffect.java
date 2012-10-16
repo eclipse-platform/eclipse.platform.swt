@@ -79,7 +79,6 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 		dragSourceImage = null;		
 		
 		Tree tree = (Tree) control;
-		if (OS.GTK_VERSION < OS.VERSION (2, 2, 0)) return null;
 		//TEMPORARY CODE
 		if (tree.isListening(SWT.EraseItem) || tree.isListening (SWT.PaintItem)) return null;
 		/*
@@ -89,7 +88,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 		*/
 		long /*int*/ handle = tree.handle;
 		long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
-		long /*int*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new long /*int*/ [1] : null;
+		long /*int*/ [] model =  null;
 		long /*int*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
 		if (list == 0) return null;
 		int count = Math.min(10, OS.g_list_length (list));
