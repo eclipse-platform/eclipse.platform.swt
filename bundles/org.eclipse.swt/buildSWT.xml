@@ -521,7 +521,7 @@
 		
 		<antcall target="replace64"></antcall>
 				
-		<javac srcdir="${buildDir}"></javac>
+		<javac includeantruntime="false" srcdir="${buildDir}"></javac>
 	</target>
 
 	<!-- common build tasks -->
