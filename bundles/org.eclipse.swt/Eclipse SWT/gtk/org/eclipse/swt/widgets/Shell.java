@@ -2417,7 +2417,7 @@ void setToolTipText (int /*long*/ rootWidget, int /*long*/ tipWidget, String str
 			 * 2 fake GDK_MOTION_NOTIFY events (to mimic the GTK call) which 
 			 * contain the proper x and y coordinates.
 			 */
-			int /*long*/ tipWindow = gtk_widget_get_window (rootWidget);
+			int /*long*/ tipWindow = OS.GTK_WIDGET_WINDOW (rootWidget);
 			if (tipWindow != 0) {
 				int [] x = new int [1], y = new int [1];
 				int /*long*/ window = OS.gdk_window_at_pointer (x, y);
