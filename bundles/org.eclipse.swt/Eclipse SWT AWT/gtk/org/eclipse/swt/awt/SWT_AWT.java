@@ -187,8 +187,8 @@ public static Frame new_Frame (final Composite parent) {
 	}
 	try {
 		/* Call registerListeners() to make XEmbed focus traversal work */
-		Method method = clazz.getMethod("registerListeners", null);
-		if (method != null) method.invoke(value, null);
+		Method method = clazz.getMethod("registerListeners", (Class[])null);
+		if (method != null) method.invoke(value, (Object[])null);
 	} catch (Throwable e) {}
 	final AWTEventListener awtListener = new AWTEventListener() {
 		public void eventDispatched(AWTEvent event) {
