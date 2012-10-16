@@ -741,7 +741,11 @@ void createHandle () {
 		if (parent != null) behavior |= OS.NSWindowCollectionBehaviorMoveToActiveSpace;
 		if (OS.VERSION >= 0x1070) {
 			if (parent == null) {
-				behavior = OS.NSWindowCollectionBehaviorFullScreenPrimary;
+				if ((style & SWT.TOOL) != 0) {
+					behavior = OS.NSWindowCollectionBehaviorFullScreenAuxiliary;
+				} else {
+					behavior = OS.NSWindowCollectionBehaviorFullScreenPrimary;
+				}
 			}
 		}
 		if (behavior != 0) window.setCollectionBehavior(behavior);
