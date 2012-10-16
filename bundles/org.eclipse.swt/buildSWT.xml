@@ -27,7 +27,7 @@
  -->
 
 <project name="swtbuild" basedir=".">
-	<property name="gitroot" value="fheidric@dev.eclipse.org:/gitroot/platform/"/>
+	<property name="gitroot" value="gheorghe@dev.eclipse.org:/gitroot/platform/"/>
 	<property name="keyfile" value="C:\BUILD\ssh\swtbuild_dsa_private" /> 
 	<property name="TAG" value="master"/>
 	<property name="tmphome" value="../../../tmp"/>
