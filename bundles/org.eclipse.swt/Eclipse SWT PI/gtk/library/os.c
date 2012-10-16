@@ -6162,7 +6162,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1pixbuf_1render_1pixmap_1and_1mask)
 	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1render_1pixmap_1and_1mask_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	gdk_pixbuf_render_pixmap_and_mask((GdkPixbuf *)arg0, (GdkDrawable **)lparg1, (GdkBitmap **)lparg2, arg3);
+/*
+	gdk_pixbuf_render_pixmap_and_mask(arg0, lparg1, lparg2, arg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_pixbuf_render_pixmap_and_mask)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong *, jintLong *, jint))fp)(arg0, lparg1, lparg2, arg3);
+		}
+	}
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);

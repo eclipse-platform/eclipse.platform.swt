@@ -4648,11 +4648,7 @@ public static final void gdk_pixbuf_render_to_drawable(long /*int*/ pixbuf, long
 		lock.unlock();
 	}
 }
-/**
- * @param pixbuf cast=(GdkPixbuf *)
- * @param pixmap_return cast=(GdkDrawable **)
- * @param mask_return cast=(GdkBitmap **)
- */
+/** @method flags=dynamic */
 public static final native void _gdk_pixbuf_render_pixmap_and_mask(long /*int*/ pixbuf, long /*int*/[] pixmap_return, long /*int*/[] mask_return, int alpha_threshold);
 public static final void gdk_pixbuf_render_pixmap_and_mask(long /*int*/ pixbuf, long /*int*/[] pixmap_return, long /*int*/[] mask_return, int alpha_threshold) {
 	lock.lock();
