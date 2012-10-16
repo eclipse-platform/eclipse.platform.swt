@@ -94,7 +94,7 @@
 #include <X11/extensions/Xrender.h>
 #endif
 
-/* Disable memmove/sizeof for sealed structs in GTK3 */
+/* Disable access to sealed structs in GTK3 */
 #if GTK_CHECK_VERSION(3,0,0)
 #define NO_GdkDragContext
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II
@@ -102,6 +102,15 @@
 #define NO_GtkSelectionData
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2JJ
+#define NO__1gtk_1style_1get_1bg_1gc
+#define NO__1gtk_1style_1get_1black_1gc
+#define NO__1gtk_1style_1get_1dark_1gc
+#define NO__1gtk_1style_1get_1fg_1gc
+#define NO__1gtk_1style_1get_1light_1gc
+#define NO__1gtk_1style_1get_1mid_1gc
+#define NO__1gtk_1style_1get_1text_1aa_1gc
+#define NO__1gtk_1style_1get_1text_1gc
+#define NO__1gtk_1style_1get_1white_1gc
 #endif
 
 #include "os_custom.h"
