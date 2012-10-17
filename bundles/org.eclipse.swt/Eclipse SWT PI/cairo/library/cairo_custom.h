@@ -56,3 +56,10 @@
 #define cairo_region_contains_point_LIB LIB_CAIRO
 #define cairo_region_num_rectangles_LIB LIB_CAIRO
 #define cairo_region_get_rectangle_LIB LIB_CAIRO
+
+#if (CAIRO_VERSION < CAIRO_VERSION_ENCODE(1,10,0))
+typedef struct {
+    int x, y;
+    int width, height;
+} cairo_rectangle_int_t;
+#endif
