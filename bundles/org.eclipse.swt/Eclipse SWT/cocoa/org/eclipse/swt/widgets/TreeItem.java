@@ -372,9 +372,9 @@ NSObject createString(int index) {
 }
 
 void dealloc (long /*int*/ id, long /*int*/ sel) {
-	super.dealloc(id, sel);
 	OS.object_setInstanceVariable(id, Display.SWT_OBJECT, 0);
 	super.destroyJNIRef();
+	super.dealloc(id, sel);
 }
 
 void deregister () {
