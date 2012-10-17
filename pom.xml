@@ -27,6 +27,10 @@
   <version>3.8.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <properties>
+    <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/platform/eclipse.platform.swt.git</tycho.scmUrl>
+  </properties>
+
   <modules>
     <module>bundles/org.eclipse.swt</module>
     <module>bundles/org.eclipse.swt.opengl</module>
