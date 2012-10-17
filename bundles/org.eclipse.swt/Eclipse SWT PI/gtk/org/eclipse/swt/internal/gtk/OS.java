@@ -4513,15 +4513,31 @@ public static final void gdk_pixbuf_copy_area(long /*int*/ src_pixbuf, int src_x
 	}
 }
 /**
+ * @method flags=dynamic
  * @param dest cast=(GdkPixbuf *)
- * @param src cast=(GdkDrawable *)
- * @param cmap cast=(GdkColormap *)
  */
 public static final native long /*int*/ _gdk_pixbuf_get_from_drawable(long /*int*/ dest, long /*int*/ src, long /*int*/ cmap, int src_x, int src_y, int dest_x, int dest_y, int width, int height);
 public static final long /*int*/ gdk_pixbuf_get_from_drawable(long /*int*/ dest, long /*int*/ src, long /*int*/ cmap, int src_x, int src_y, int dest_x, int dest_y, int width, int height) {
 	lock.lock();
 	try {
 		return _gdk_pixbuf_get_from_drawable(dest, src, cmap, src_x, src_y, dest_x, dest_y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param window cast=(GdkWindow *)
+ * @param src_x cast=(gint)
+ * @param src_y cast=(gint)
+ * @param width cast=(gint)
+ * @param height cast=(gint)
+ */
+public static final native long /*int*/ _gdk_pixbuf_get_from_window(long /*int*/ window, int src_x, int src_y, int width, int height);
+public static final long /*int*/ gdk_pixbuf_get_from_window(long /*int*/ window, int src_x, int src_y, int width, int height) {
+	lock.lock();
+	try {
+		return _gdk_pixbuf_get_from_window(window, src_x, src_y, width, height);
 	} finally {
 		lock.unlock();
 	}

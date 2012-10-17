@@ -211,6 +211,8 @@
 #define gdk_gc_set_values_LIB LIB_GDK
 #define gdk_gc_get_values_LIB LIB_GDK
 #define gdk_pixbuf_save_to_bufferv_LIB LIB_GDK
+#define gdk_pixbuf_get_from_drawable_LIB LIB_GDK
+#define gdk_pixbuf_get_from_window_LIB LIB_GDK
 #define gdk_pixbuf_render_pixmap_and_mask_LIB LIB_GDK
 #define gdk_pointer_grab_LIB LIB_GDK
 #define gdk_pointer_ungrab_LIB LIB_GDK

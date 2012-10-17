@@ -495,6 +495,7 @@ typedef enum {
 	_1gdk_1pango_1layout_1get_1clip_1region_FUNC,
 	_1gdk_1pixbuf_1copy_1area_FUNC,
 	_1gdk_1pixbuf_1get_1from_1drawable_FUNC,
+	_1gdk_1pixbuf_1get_1from_1window_FUNC,
 	_1gdk_1pixbuf_1get_1has_1alpha_FUNC,
 	_1gdk_1pixbuf_1get_1height_FUNC,
 	_1gdk_1pixbuf_1get_1pixels_FUNC,

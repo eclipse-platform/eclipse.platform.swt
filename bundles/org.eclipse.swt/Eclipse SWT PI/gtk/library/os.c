@@ -6028,8 +6028,36 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1pixbuf_1get_1from_1drawable)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1get_1from_1drawable_FUNC);
-	rc = (jintLong)gdk_pixbuf_get_from_drawable((GdkPixbuf *)arg0, (GdkDrawable *)arg1, (GdkColormap *)arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+/*
+	rc = (jintLong)gdk_pixbuf_get_from_drawable((GdkPixbuf *)arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_pixbuf_get_from_drawable)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkPixbuf *, jintLong, jintLong, jint, jint, jint, jint, jint, jint))fp)((GdkPixbuf *)arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1get_1from_1drawable_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1get_1from_1window
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1pixbuf_1get_1from_1window)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1get_1from_1window_FUNC);
+/*
+	rc = (jintLong)gdk_pixbuf_get_from_window((GdkWindow *)arg0, (gint)arg1, (gint)arg2, (gint)arg3, (gint)arg4);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_pixbuf_get_from_window)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkWindow *, gint, gint, gint, gint))fp)((GdkWindow *)arg0, (gint)arg1, (gint)arg2, (gint)arg3, (gint)arg4);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1get_1from_1window_FUNC);
 	return rc;
 }
 #endif

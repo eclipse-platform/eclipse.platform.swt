@@ -485,6 +485,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1pango_1layout_1get_1clip_1region",
 	"_1gdk_1pixbuf_1copy_1area",
 	"_1gdk_1pixbuf_1get_1from_1drawable",
+	"_1gdk_1pixbuf_1get_1from_1window",
 	"_1gdk_1pixbuf_1get_1has_1alpha",
 	"_1gdk_1pixbuf_1get_1height",
 	"_1gdk_1pixbuf_1get_1pixels",

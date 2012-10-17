@@ -1066,7 +1066,7 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 	long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, srcWidth, srcHeight);
 	if (pixbuf == 0) return;
 	long /*int*/ colormap = OS.gdk_colormap_get_system();
-	OS.gdk_pixbuf_get_from_drawable(pixbuf, srcImage.pixmap, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
+	gdk_pixbuf_get_from_window (pixbuf, srcImage.pixmap, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
 	int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
 	long /*int*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
 	byte[] line = new byte[stride];
@@ -1103,10 +1103,10 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 			long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, srcWidth, srcHeight);
 			if (pixbuf != 0) {
 				long /*int*/ colormap = OS.gdk_colormap_get_system();
-				OS.gdk_pixbuf_get_from_drawable(pixbuf, colorPixmap, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
+				gdk_pixbuf_get_from_window (pixbuf, colorPixmap, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
 				long /*int*/ maskPixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, srcWidth, srcHeight);
 				if (maskPixbuf != 0) {
-					OS.gdk_pixbuf_get_from_drawable(maskPixbuf, maskPixmap, 0, srcX, srcY, 0, 0, srcWidth, srcHeight);
+					gdk_pixbuf_get_from_window (maskPixbuf, maskPixmap, 0, srcX, srcY, 0, 0, srcWidth, srcHeight);
 					int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
 					long /*int*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
 					byte[] line = new byte[stride];
@@ -1258,7 +1258,7 @@ long /*int*/ scale(long /*int*/ src, int srcX, int srcY, int srcWidth, int srcHe
 	long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, srcWidth, srcHeight);
 	if (pixbuf == 0) return 0;
 	long /*int*/ colormap = OS.gdk_colormap_get_system();
-	OS.gdk_pixbuf_get_from_drawable(pixbuf, src, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
+	gdk_pixbuf_get_from_window (pixbuf, src, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
 	long /*int*/ scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
 	OS.g_object_unref(pixbuf);
 	return scaledPixbuf;
@@ -4371,6 +4371,14 @@ void cairo_region_get_rectangles (long /*int*/ region, long /*int*/[] rectangles
 		 }
 	} else {
 		OS.gdk_region_get_rectangles (region, rectangles, n_rectangles);
+	}
+}
+
+long /*int*/ gdk_pixbuf_get_from_window(long /*int*/ dest, long /*int*/ src, long /*int*/ cmap, int src_x, int src_y, int dest_x, int dest_y, int width, int height) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		return OS.gdk_pixbuf_get_from_window (dest, src_x, src_y, width, height);
+	} else {
+		return OS.gdk_pixbuf_get_from_drawable (dest, src, cmap, src_x, src_y, dest_x, dest_y, width, height);
 	}
 }
 }
