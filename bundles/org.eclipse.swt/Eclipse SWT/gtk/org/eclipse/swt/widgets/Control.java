@@ -3246,7 +3246,7 @@ void gtk_widget_set_has_window (long /*int*/ fixedHandle, boolean value) {
 }
 
 void gtk_widget_size_request (long /*int*/ widget, GtkRequisition requisition) {
-	OS.gtk_widget_size_request (widget, requisition);	
+	gtk_widget_get_preferred_size (widget, requisition);
 }
 
 /**	 

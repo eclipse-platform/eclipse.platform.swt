@@ -464,7 +464,7 @@ void setScrollbar () {
 			vHandle = OS.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
 		}
 		GtkRequisition requisition = new GtkRequisition ();
-		OS.gtk_widget_size_request (vHandle, requisition);
+		gtk_widget_get_preferred_size (vHandle, requisition);
 		width -= requisition.width;
 	}
 	width = Math.max (0,  width);

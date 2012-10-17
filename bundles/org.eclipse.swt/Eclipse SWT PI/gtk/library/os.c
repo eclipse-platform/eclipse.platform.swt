@@ -16997,6 +16997,31 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1parent_1window)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1get_1preferred_1size
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1get_1preferred_1size)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jobject arg2)
+{
+	GtkRequisition _arg1, *lparg1=NULL;
+	GtkRequisition _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1preferred_1size_FUNC);
+	if (arg1) if ((lparg1 = getGtkRequisitionFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getGtkRequisitionFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
+	gtk_widget_get_preferred_size((GtkWidget *)arg0, (GtkRequisition *)lparg1, (GtkRequisition *)lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_get_preferred_size)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, GtkRequisition *, GtkRequisition *))fp)((GtkWidget *)arg0, (GtkRequisition *)lparg1, (GtkRequisition *)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) setGtkRequisitionFields(env, arg2, lparg2);
+	if (arg1 && lparg1) setGtkRequisitionFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1preferred_1size_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1get_1realized
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1widget_1get_1realized)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -17695,7 +17720,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1size_1request)
 	GtkRequisition _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1size_1request_FUNC);
 	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+/*
 	gtk_widget_size_request((GtkWidget *)arg0, (GtkRequisition *)lparg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_size_request)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, GtkRequisition *))fp)((GtkWidget *)arg0, (GtkRequisition *)lparg1);
+		}
+	}
 fail:
 	if (arg1 && lparg1) setGtkRequisitionFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1size_1request_FUNC);

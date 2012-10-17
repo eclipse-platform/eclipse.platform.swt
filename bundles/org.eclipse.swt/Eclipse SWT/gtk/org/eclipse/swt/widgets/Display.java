@@ -3978,7 +3978,11 @@ void showIMWindow (Control control) {
 		Point point = control.toDisplay (control.getIMCaretPos ());
 		OS.gtk_window_move (preeditWindow, point.x, point.y);		
 		GtkRequisition requisition = new GtkRequisition ();
-		OS.gtk_widget_size_request (preeditLabel, requisition);
+		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+			OS.gtk_widget_get_preferred_size (preeditLabel, requisition, null);
+		} else {
+			OS.gtk_widget_size_request (preeditLabel, requisition);
+		}
 		OS.gtk_window_resize (preeditWindow, requisition.width, requisition.height);
 		OS.gtk_widget_show (preeditWindow);
 	} else {

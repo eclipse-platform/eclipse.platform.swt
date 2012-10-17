@@ -6046,6 +6046,21 @@ public static final void gtk_cell_renderer_get_preferred_size(long /*int*/ cell,
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ * @param widget cast=(GtkWidget *)
+ * @param minimum_size cast=(GtkRequisition *)
+ * @param natural_size cast=(GtkRequisition *)
+ */
+public static final native void _gtk_widget_get_preferred_size(long /*int*/ widget, GtkRequisition minimum_size, GtkRequisition natural_size);
+public static final void gtk_widget_get_preferred_size(long /*int*/ widget, GtkRequisition minimum_size, GtkRequisition natural_size) {
+	lock.lock();
+	try {
+		_gtk_widget_get_preferred_size(widget, minimum_size, natural_size);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native long /*int*/ _gtk_cell_renderer_pixbuf_new();
 public static final long /*int*/ gtk_cell_renderer_pixbuf_new() {
 	lock.lock();
@@ -13422,6 +13437,7 @@ public static final void gtk_widget_size_allocate(long /*int*/ widget, GtkAlloca
 	}
 }
 /**
+ * @method flags=dynamic
  * @param widget cast=(GtkWidget *)
  * @param requisition cast=(GtkRequisition *),flags=no_in
  */

@@ -364,10 +364,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int width = OS.PANGO_PIXELS (w [0]) + xborder * 2;
 	int height = OS.PANGO_PIXELS (h [0]) + yborder * 2;
 	GtkRequisition arrowRequesition = new GtkRequisition ();
-	OS.gtk_widget_size_request (buttonHandle, arrowRequesition);
+	gtk_widget_get_preferred_size (buttonHandle, arrowRequesition);
 	GtkRequisition listRequesition = new GtkRequisition ();
 	long /*int*/ listParent = OS.gtk_bin_get_child(popupHandle);
-	OS.gtk_widget_size_request (listParent, listRequesition);
+	gtk_widget_get_preferred_size (listParent, listRequesition);
 	width = Math.max (listRequesition.width, width) + arrowRequesition.width;
 	width = wHint == SWT.DEFAULT ? width : wHint;
 	height = hHint == SWT.DEFAULT ? height : hHint;
@@ -439,7 +439,7 @@ void createHandle (int index) {
 	* for those versions of GTK that defer the creation. 
 	*/
 	if (OS.GTK_VERSION < OS.VERSION (2, 8, 0)) {
-		OS.gtk_widget_size_request(handle, new GtkRequisition());
+		gtk_widget_get_preferred_size (handle, new GtkRequisition());
 	}
 	menuHandle = findMenuHandle ();
 	if (menuHandle != 0) OS.g_object_ref (menuHandle);

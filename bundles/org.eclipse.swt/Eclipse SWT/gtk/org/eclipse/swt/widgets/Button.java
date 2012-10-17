@@ -216,7 +216,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int imageWidth = 0, imageHeight = 0;
 		if (gtk_widget_get_visible (imageHandle)) {
 			GtkRequisition requisition = new GtkRequisition ();
-			OS.gtk_widget_size_request (imageHandle, requisition);
+			gtk_widget_get_preferred_size (imageHandle, requisition);
 			imageWidth = requisition.width;
 			imageHeight = requisition.height;
 			int [] spacing = new int [1];
@@ -765,7 +765,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		int imageWidth = 0;
 		if (gtk_widget_get_visible (imageHandle)) {
 			GtkRequisition requisition = new GtkRequisition ();
-			OS.gtk_widget_size_request (imageHandle, requisition);
+			gtk_widget_get_preferred_size (imageHandle, requisition);
 			imageWidth = requisition.width;
 			int [] spacing = new int [1];
 			OS.g_object_get (boxHandle, OS.spacing, spacing, 0);
@@ -777,7 +777,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		* layout, but it does not.  The fix is to resize the label directly. 
 		*/
 		GtkRequisition requisition = new GtkRequisition ();
-		OS.gtk_widget_size_request (boxHandle, requisition);
+		gtk_widget_get_preferred_size (boxHandle, requisition);
 		allocation.width = boxWidth;
 		allocation.height = boxHeight;
 		OS.gtk_widget_size_allocate (boxHandle, allocation);

@@ -301,7 +301,7 @@ public Point getSize () {
 	checkWidget ();
 	if (handle == 0) return new Point (0,0);
 	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (handle, requisition);
+	gtk_widget_get_preferred_size (handle, requisition);
 	return new Point (requisition.width, requisition.height);
 }
 

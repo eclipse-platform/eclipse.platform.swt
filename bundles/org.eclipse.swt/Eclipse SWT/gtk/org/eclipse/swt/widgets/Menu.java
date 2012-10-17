@@ -783,7 +783,7 @@ long /*int*/ menuPositionProc (long /*int*/ menu, long /*int*/ x, long /*int*/ y
 	* NOTE: This code doesn't work for multiple monitors.
 	*/
     GtkRequisition requisition = new GtkRequisition ();
-    OS.gtk_widget_size_request (menu, requisition);
+    gtk_widget_get_preferred_size (menu, requisition);
     int screenHeight = OS.gdk_screen_height ();
 	int reqy = this.y;
 	if (reqy + requisition.height > screenHeight) {

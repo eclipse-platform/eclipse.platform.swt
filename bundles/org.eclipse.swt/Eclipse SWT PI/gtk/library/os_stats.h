@@ -1286,6 +1286,7 @@ typedef enum {
 	_1gtk_1widget_1get_1pango_1context_FUNC,
 	_1gtk_1widget_1get_1parent_FUNC,
 	_1gtk_1widget_1get_1parent_1window_FUNC,
+	_1gtk_1widget_1get_1preferred_1size_FUNC,
 	_1gtk_1widget_1get_1realized_FUNC,
 	_1gtk_1widget_1get_1sensitive_FUNC,
 	_1gtk_1widget_1get_1size_1request_FUNC,

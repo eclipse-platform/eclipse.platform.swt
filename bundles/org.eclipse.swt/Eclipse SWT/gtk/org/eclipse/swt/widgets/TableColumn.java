@@ -429,7 +429,7 @@ public void pack () {
 	int width = 0;
 	if (buttonHandle != 0) {
 		GtkRequisition requisition = new GtkRequisition ();
-		OS.gtk_widget_size_request (buttonHandle, requisition);
+		gtk_widget_get_preferred_size (buttonHandle, requisition);
 		width = requisition.width;
 	}
 	if ((parent.style & SWT.VIRTUAL) != 0) {

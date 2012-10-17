@@ -475,7 +475,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		* layout, but it does not.  The fix is to resize the label directly. 
 		*/
 		GtkRequisition requisition = new GtkRequisition ();
-		OS.gtk_widget_size_request (labelHandle, requisition);
+		gtk_widget_get_preferred_size (labelHandle, requisition);
 		gtk_widget_get_allocation(labelHandle, allocation);
 		allocation.width = labelWidth;
 		allocation.height = labelHeight;

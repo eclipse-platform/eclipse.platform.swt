@@ -2053,4 +2053,12 @@ void gtk_cell_renderer_get_preferred_size (long /*int*/ cell, long /*int*/ widge
 		OS.gtk_cell_renderer_get_size (cell, widget, null, null, null, width, height);
 	}
 }
+
+void gtk_widget_get_preferred_size (long /*int*/ widget, GtkRequisition requisition){
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		OS.gtk_widget_get_preferred_size (widget, requisition, null);
+	} else {
+		OS.gtk_widget_size_request (widget, requisition);
+	}
+}
 }

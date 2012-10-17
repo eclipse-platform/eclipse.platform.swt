@@ -931,7 +931,7 @@ void forceResize () {
 
 void forceResize (int width, int height) {
 	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (vboxHandle, requisition);
+	gtk_widget_get_preferred_size (vboxHandle, requisition);
 	GtkAllocation allocation = new GtkAllocation ();
 	int border = OS.gtk_container_get_border_width (shellHandle);
 	allocation.x = border;

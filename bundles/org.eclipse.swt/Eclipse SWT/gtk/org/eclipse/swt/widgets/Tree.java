@@ -1367,7 +1367,7 @@ public int getHeaderHeight () {
 		for (int i=0; i<columnCount; i++) {
 			long /*int*/ buttonHandle = columns [i].buttonHandle;
 			if (buttonHandle != 0) {
-				OS.gtk_widget_size_request (buttonHandle, requisition);
+				gtk_widget_get_preferred_size (buttonHandle, requisition);
 				height = Math.max (height, requisition.height);
 			}
 		}
