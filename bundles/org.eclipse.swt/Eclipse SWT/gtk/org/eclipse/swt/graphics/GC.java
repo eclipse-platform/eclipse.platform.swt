@@ -454,26 +454,27 @@ long /*int*/ convertRgn(long /*int*/ rgn, double[] matrix) {
 		Cairo.cairo_matrix_transform_point(matrix, x, y);
 		pointArray[6] = (int)x[0];
 		pointArray[7] = (int)Math.round(y[0]);
-		 if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-			 long /*ing*/ cairo = OS.gdk_cairo_create(newRgn);
-			 int count = pointArray.length / 2;
-			 if (count == 0) return 0;
-			 Cairo.cairo_move_to(cairo, pointArray[0], pointArray[1]);
-			 for (int n=1,j=2; n<count; n++,j+=2) {
-				 Cairo.cairo_move_to(cairo, pointArray[j]+0.5, pointArray[j+1]+0.5);
-			 }
-			 Cairo.cairo_close_path(cairo);
-			 Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
-			 Cairo.cairo_fill(cairo);
-			 long /*ing*/ surface = Cairo.cairo_get_target(cairo);
-			 long /*int*/ polyRgn = OS.gdk_cairo_region_create_from_surface(surface);
-			 Cairo.cairo_region_union(newRgn, polyRgn);
-			 Cairo.cairo_destroy(cairo);
-		 } else {
+		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+			int count = pointArray.length / 2;
+			if (count != 0) {
+				long /*ing*/ cairo = OS.gdk_cairo_create(newRgn);
+				Cairo.cairo_move_to(cairo, pointArray[0], pointArray[1]);
+				for (int n=1,j=2; n<count; n++,j+=2) {
+					Cairo.cairo_move_to(cairo, pointArray[j]+0.5, pointArray[j+1]+0.5);
+				}
+				Cairo.cairo_close_path(cairo);
+				Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
+				Cairo.cairo_fill(cairo);
+				long /*ing*/ surface = Cairo.cairo_get_target(cairo);
+				long /*int*/ polyRgn = OS.gdk_cairo_region_create_from_surface(surface);
+				Cairo.cairo_region_union(newRgn, polyRgn);
+				Cairo.cairo_destroy(cairo);
+			}
+		} else {
 			long /*int*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
 			OS.gdk_region_union(newRgn, polyRgn);
 			OS.gdk_region_destroy(polyRgn);
-		 }
+		}
 	}
 	if (rects[0] != 0) OS.g_free(rects[0]);
 	return newRgn;
@@ -1230,40 +1231,20 @@ void drawImageXRender(Image srcImage, int srcX, int srcY, int srcWidth, int srcH
 	if (clipping != 0) {
 		int[] nRects = new int[1];
 		long /*int*/[] rects = new long /*int*/[1];
-		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-			 int num = Cairo.cairo_region_num_rectangles (clipping);
-			 for (int n = 0; n < num; n++) {
-				 Cairo.cairo_region_get_rectangle (clipping, n, nRects[n]);
-			 }
-			cairo_rectangle_int_t rect = new cairo_rectangle_int_t ();
-			short[] xRects = new short[nRects[0] * 4];
-			for (int i=0, j=0; i<nRects[0]; i++, j+=4) {
-				Cairo.memmove(rect, rects[0] + (i * cairo_rectangle_int_t.sizeof), cairo_rectangle_int_t.sizeof);
-				xRects[j] = (short)(translateX + rect.x);
-				xRects[j+1] = (short)(translateY + rect.y);
-				xRects[j+2] = (short)rect.width;
-				xRects[j+3] = (short)rect.height;
-			}
-			OS.XRenderSetPictureClipRectangles(xDisplay, destPict, 0, 0, xRects, nRects[0]);
-			if (clipping != data.clipRgn && clipping != data.damageRgn) {
-				Cairo.cairo_region_destroy(clipping);
-			}	
-		} else {
-			OS.gdk_region_get_rectangles(clipping, rects, nRects);
-			GdkRectangle rect = new GdkRectangle();
-			short[] xRects = new short[nRects[0] * 4];
-			for (int i=0, j=0; i<nRects[0]; i++, j+=4) {
-				OS.memmove(rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
-				xRects[j] = (short)(translateX + rect.x);
-				xRects[j+1] = (short)(translateY + rect.y);
-				xRects[j+2] = (short)rect.width;
-				xRects[j+3] = (short)rect.height;
-			}
-			OS.XRenderSetPictureClipRectangles(xDisplay, destPict, 0, 0, xRects, nRects[0]);
-			if (clipping != data.clipRgn && clipping != data.damageRgn) {
-				OS.gdk_region_destroy(clipping);
-			}	
+		cairo_region_get_rectangles(clipping, rects, nRects);
+		GdkRectangle rect = new GdkRectangle();
+		short[] xRects = new short[nRects[0] * 4];
+		for (int i=0, j=0; i<nRects[0]; i++, j+=4) {
+			OS.memmove(rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
+			xRects[j] = (short)(translateX + rect.x);
+			xRects[j+1] = (short)(translateY + rect.y);
+			xRects[j+2] = (short)rect.width;
+			xRects[j+3] = (short)rect.height;
 		}
+		OS.XRenderSetPictureClipRectangles(xDisplay, destPict, 0, 0, xRects, nRects[0]);
+		if (clipping != data.clipRgn && clipping != data.damageRgn) {
+			cairo_region_destroy(clipping);
+		}	
 		if (rects[0] != 0) OS.g_free(rects[0]);
 	}
 	OS.XRenderComposite(xDisplay, maskPict != 0 ? OS.PictOpOver : OS.PictOpSrc, srcPict, maskPict, destPict, srcX, srcY, srcX, srcY, destX + translateX, destY + translateY, destWidth, destHeight);

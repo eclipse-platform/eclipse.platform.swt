@@ -4819,7 +4819,10 @@ public static final boolean gdk_region_empty(long /*int*/ region) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @method flags=dynamic
+ * @param rectangle cast=(GdkRectangle *),flags=no_in
+ */
 public static final native void _gdk_region_get_clipbox(long /*int*/ region, GdkRectangle rectangle);
 public static final void gdk_region_get_clipbox(long /*int*/ region, GdkRectangle rectangle) {
 	lock.lock();
@@ -4920,7 +4923,10 @@ public static final long /*int*/ gdk_region_polygon(int[] points, int npoints, i
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @method flags=dynamic
+ * @param rectangle flags=no_out 
+ */
 public static final native long /*int*/ _gdk_region_rectangle(GdkRectangle rectangle);
 public static final long /*int*/ gdk_region_rectangle(GdkRectangle rectangle) {
 	lock.lock();
