@@ -125,6 +125,7 @@ static Composite checkParent (Composite parent) {
 }
 
 static int checkStyle(int style) {
+	String platform = SWT.getPlatform ();
 	if (DefaultType == SWT.DEFAULT) {
 		/*
 		* Some Browser clients that explicitly specify the native renderer to use
@@ -154,11 +155,26 @@ static int checkStyle(int style) {
 
 		String value = System.getProperty (PROPERTY_DEFAULTTYPE);
 		if (value != null) {
-			if (value.equalsIgnoreCase ("mozilla")) { //$NON-NLS-1$
-				DefaultType = SWT.MOZILLA;
-			} else if (value.equalsIgnoreCase ("webkit")) { //$NON-NLS-1$
-				DefaultType = SWT.WEBKIT;
-			}
+			int index = 0;
+			int length = value.length();
+			do {
+				int newIndex = value.indexOf(',', index);
+				if (newIndex == -1) {
+					newIndex = length;
+				}
+				String current = value.substring(index, newIndex).trim();
+				if (current.equalsIgnoreCase ("mozilla")) { //$NON-NLS-1$
+					DefaultType = SWT.MOZILLA;
+					break;
+				} else if (current.equalsIgnoreCase ("webkit")) { //$NON-NLS-1$
+					DefaultType = SWT.WEBKIT;
+					break;
+				} else if (current.equalsIgnoreCase ("ie") && "win32".equals (platform)) { //$NON-NLS-1$ //$NON-NLS-2$
+					DefaultType = SWT.NONE;
+					break;
+				}
+				index = newIndex + 1;
+			} while (index < length);
 		}
 		if (DefaultType == SWT.DEFAULT) {
 			DefaultType = SWT.NONE;
@@ -172,7 +188,6 @@ static int checkStyle(int style) {
 	if ((style & (SWT.MOZILLA | SWT.WEBKIT)) == (SWT.MOZILLA | SWT.WEBKIT)) {
 		style &= ~SWT.WEBKIT;
 	}
-	String platform = SWT.getPlatform ();
 	if ((style & SWT.MOZILLA) != 0 || (style & SWT.WEBKIT) != 0) {
 		if ("carbon".equals (platform)) return style | SWT.EMBEDDED; //$NON-NLS-1$
 		if ("motif".equals (platform)) return style | SWT.EMBEDDED; //$NON-NLS-1$
