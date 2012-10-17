@@ -3506,6 +3506,19 @@ public static final int gdk_window_get_width(long /*int*/ window) {
 		lock.unlock();
 	}
 }
+/** 
+ * @param window cast=(GdkWindow *) 
+ * @method flags=dynamic 
+ */
+public static final native long /*int*/ _gdk_window_get_visible_region(long /*int*/ window);
+public static final long /*int*/ gdk_window_get_visible_region(long /*int*/ window) {
+	lock.lock();
+	try {
+		return _gdk_window_get_visible_region(window);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  *  @param window cast=(GdkWindow *)
  *  @method flags=dynamic  
@@ -4036,7 +4049,7 @@ public static final void gdk_drawable_get_size(long /*int*/ drawable, int[] widt
 		lock.unlock();
 	}
 }
-/** @param drawable cast=(GdkDrawable *) */
+/** @method flags=dynamic */
 public static final native long /*int*/ _gdk_drawable_get_visible_region(long /*int*/ drawable);
 public static final long /*int*/ gdk_drawable_get_visible_region(long /*int*/ drawable) {
 	lock.lock();

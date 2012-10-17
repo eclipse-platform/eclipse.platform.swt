@@ -5405,7 +5405,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1drawable_1get_1visible_1region)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1drawable_1get_1visible_1region_FUNC);
-	rc = (jintLong)gdk_drawable_get_visible_region((GdkDrawable *)arg0);
+/*
+	rc = (jintLong)gdk_drawable_get_visible_region(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_drawable_get_visible_region)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1drawable_1get_1visible_1region_FUNC);
 	return rc;
 }
@@ -7290,6 +7298,26 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1get_1user_1data)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gdk_1window_1get_1user_1data_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1window_1get_1visible_1region
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1window_1get_1visible_1region)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1window_1get_1visible_1region_FUNC);
+/*
+	rc = (jintLong)gdk_window_get_visible_region((GdkWindow *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_window_get_visible_region)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkWindow *))fp)((GdkWindow *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1window_1get_1visible_1region_FUNC);
+	return rc;
 }
 #endif
 

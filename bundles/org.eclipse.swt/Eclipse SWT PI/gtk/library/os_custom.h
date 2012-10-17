@@ -197,6 +197,7 @@
 #define gdk_draw_polygon_LIB LIB_GDK
 #define gdk_draw_image_LIB LIB_GDK
 #define gdk_drawable_get_size_LIB LIB_GDK
+#define gdk_drawable_get_visible_region_LIB LIB_GDK
 #define gdk_gc_set_background_LIB LIB_GDK
 #define gdk_gc_set_stipple_LIB LIB_GDK
 #define gdk_gc_set_clip_mask_LIB LIB_GDK
@@ -268,6 +269,7 @@
 #define gdk_window_get_width_LIB LIB_GDK
 #define gdk_pixmap_get_size_LIB LIB_GDK
 #define gdk_window_get_display_LIB LIB_GDK
+#define gdk_window_get_visible_region_LIB LIB_GDK
 #define gdk_window_set_keep_above_LIB LIB_GDK
 #define gdk_window_set_accept_focus_LIB LIB_GDK
 #define gtk_window_set_opacity_LIB LIB_GTK

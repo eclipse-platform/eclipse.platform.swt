@@ -598,8 +598,9 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 			Cairo.cairo_paint(handle);
 			Cairo.cairo_restore(handle);
 			if (paint) {
-				long /*int*/ visibleRegion = OS.gdk_drawable_get_visible_region (drawable);
+				long /*int*/ visibleRegion = 0;
 				if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+					visibleRegion = OS.gdk_window_get_visible_region (drawable);
 					cairo_rectangle_int_t srcRect = new cairo_rectangle_int_t ();
 					srcRect.x = srcX;
 					srcRect.y = srcY;
@@ -615,6 +616,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 					Cairo.cairo_region_destroy (copyRegion);
 					Cairo.cairo_region_destroy (invalidateRegion);
 				} else {
+					visibleRegion = OS.gdk_drawable_get_visible_region (drawable);
 					GdkRectangle srcRect = new GdkRectangle ();
 					srcRect.x = srcX;
 					srcRect.y = srcY;
