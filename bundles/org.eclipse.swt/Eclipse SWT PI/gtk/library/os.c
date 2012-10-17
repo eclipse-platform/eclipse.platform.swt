@@ -6427,14 +6427,14 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1region_1get_1clipbox)
 {
 	GdkRectangle _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gdk_1region_1get_1clipbox_FUNC);
-	if (arg1) if ((lparg1 = getGdkRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
 /*
-	gdk_region_get_clipbox(arg0, lparg1);
+	gdk_region_get_clipbox(arg0, (GdkRectangle *)lparg1);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gdk_region_get_clipbox)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GdkRectangle *))fp)(arg0, lparg1);
+			((void (CALLING_CONVENTION*)(jintLong, GdkRectangle *))fp)(arg0, (GdkRectangle *)lparg1);
 		}
 	}
 fail:
@@ -6609,7 +6609,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1region_1rectangle)
 		}
 	}
 fail:
-	if (arg0 && lparg0) setGdkRectangleFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, _1gdk_1region_1rectangle_FUNC);
 	return rc;
 }
