@@ -111,7 +111,7 @@ public void add (int[] pointArray) {
 	*/
 	if (pointArray.length < 6) return;
 	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		long /*ing*/ cairo = OS.gdk_cairo_create(handle);
+		long /*int*/ cairo = OS.gdk_cairo_create(handle);
 		int count = pointArray.length / 2;
 		Cairo.cairo_move_to(cairo, pointArray[0], pointArray[1]);
 		for (int i=1,j=2; i<count; i++,j+=2) {
@@ -120,7 +120,7 @@ public void add (int[] pointArray) {
 		Cairo.cairo_close_path(cairo);
 		Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
 		Cairo.cairo_fill(cairo);
-		long /*ing*/ surface = Cairo.cairo_get_target(cairo);
+		long /*int*/ surface = Cairo.cairo_get_target(cairo);
 		long /*int*/ polyRgn = OS.gdk_cairo_region_create_from_surface(surface);
 		Cairo.cairo_region_union (handle, polyRgn);
 		Cairo.cairo_destroy(cairo);
@@ -539,7 +539,7 @@ public void subtract (int[] pointArray) {
 	*/
 	if (pointArray.length < 6) return;
 	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		long /*ing*/ cairo = OS.gdk_cairo_create(handle);
+		long /*int*/ cairo = OS.gdk_cairo_create(handle);
 		int count = pointArray.length / 2;
 		Cairo.cairo_move_to(cairo, pointArray[0], pointArray[1]);
 		for (int i=1,j=2; i<count; i++,j+=2) {
@@ -548,7 +548,7 @@ public void subtract (int[] pointArray) {
 		Cairo.cairo_close_path(cairo);
 		Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
 		Cairo.cairo_fill(cairo);
-		long /*ing*/ surface = Cairo.cairo_get_target(cairo);
+		long /*int*/ surface = Cairo.cairo_get_target(cairo);
 		long /*int*/ polyRgn = OS.gdk_cairo_region_create_from_surface(surface);
 		Cairo.cairo_region_subtract(handle, polyRgn);
 		Cairo.cairo_destroy(cairo);
