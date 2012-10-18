@@ -778,13 +778,13 @@
 		
 		<!-- Check for changes -->
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="diffs">
+			<arg line="diff ${SHA1} ${library_src}"/>
+		</exec>
+		<condition property="natives_changed">
 			<or>
 				<length string="${SHA1}" trim="true" when="equal" length="0"/>
 				<length string="${diffs}" trim="true" when="greater" length="0"/>
 			</or>
-		</exec>
-		<condition property="natives_changed">
-			<length string="${diffs}" trim="true" when="greater" length="0"/>
 		</condition>
 		<echo>Has native changes: ${natives_changed}, compared against:</echo>
 		<exec dir="${repo.src}" executable="git" failonerror="true">
