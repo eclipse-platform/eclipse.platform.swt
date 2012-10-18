@@ -199,6 +199,7 @@
 #define gdk_draw_polygon_LIB LIB_GDK
 #define gdk_draw_image_LIB LIB_GDK
 #define gdk_drawable_get_size_LIB LIB_GDK
+#define gdk_drawable_get_image_LIB LIB_GDK
 #define gdk_drawable_get_visible_region_LIB LIB_GDK
 #define gdk_gc_set_background_LIB LIB_GDK
 #define gdk_gc_set_stipple_LIB LIB_GDK

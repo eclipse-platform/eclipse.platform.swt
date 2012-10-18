@@ -4023,7 +4023,7 @@ public static final void gdk_pixmap_get_size(long /*int*/ pixmap, int[] width, i
 	}
 }
 /**
- * @param drawable cast=(GdkDrawable *)
+ * @method flags=dynamic
  * @param x cast=(gint)
  * @param y cast=(gint)
  * @param width cast=(gint)

@@ -5344,7 +5344,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1drawable_1get_1image)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1drawable_1get_1image_FUNC);
-	rc = (jintLong)gdk_drawable_get_image((GdkDrawable *)arg0, (gint)arg1, (gint)arg2, (gint)arg3, (gint)arg4);
+/*
+	rc = (jintLong)gdk_drawable_get_image(arg0, (gint)arg1, (gint)arg2, (gint)arg3, (gint)arg4);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_drawable_get_image)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, gint, gint, gint, gint))fp)(arg0, (gint)arg1, (gint)arg2, (gint)arg3, (gint)arg4);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1drawable_1get_1image_FUNC);
 	return rc;
 }
