@@ -478,9 +478,23 @@ void applySegments () {
 			error (SWT.ERROR_INVALID_ARGUMENT);
 		}
 	}
+	char [] segmentsChars = event.segmentsChars;
+	char [] segmentsCharsCrLf = segmentsChars == null ? null : Display.withCrLf(segmentsChars);
+	if (segmentsChars != segmentsCharsCrLf) {
+		int [] segmentsCrLf = new int [nSegments + Math.min (nSegments, segmentsCharsCrLf.length - segmentsChars.length)];
+		for (int i = 0, c = 0; i < segmentsChars.length && i < nSegments; i++) {
+			if (segmentsChars [i] == '\n' && segmentsCharsCrLf [i + c] == '\r') {
+				segmentsCrLf [i + c++] = segments [i];
+			}
+			segmentsCrLf [i + c] = segments [i];
+		}
+		segments = segmentsCrLf;
+		nSegments = segments.length;
+		segmentsChars = segmentsCharsCrLf;
+	}
+
 	int/*64*/ limit = (int/*64*/)OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7fffffff;
 	OS.SendMessage (handle, OS.EM_SETLIMITTEXT, limit + Math.min (nSegments, LIMIT - limit), 0);
-	char [] segmentsChars = event.segmentsChars;
 	length += nSegments;
 	char [] newChars = new char [length + 1];
 	int charCount = 0, segmentCount = 0;
