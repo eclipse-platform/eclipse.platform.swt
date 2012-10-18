@@ -4779,8 +4779,9 @@ StyledTextEvent getBidiSegments(int lineOffset, String line) {
 	if (segments[0] > lineLength) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	boolean hasSegmentsChars = event.segmentsChars != null;
 	for (int i = 1; i < segments.length; i++) {
-		if (segments[i] <= segments[i - 1] || segments[i] > lineLength) {
+		if ((hasSegmentsChars ? segments[i] < segments[i - 1] : segments[i] <= segments[i - 1]) || segments[i] > lineLength) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
 	}
