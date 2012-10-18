@@ -1558,20 +1558,15 @@ public void setData (String key, Object value) {
 void setForegroundColor (long /*int*/ handle, GdkColor color) {
 	long /*int*/ style = OS.gtk_widget_get_modifier_style (handle);
 	OS.gtk_rc_style_set_fg (style, OS.GTK_STATE_NORMAL, color);
-	OS.gtk_rc_style_set_fg (style, OS.GTK_STATE_ACTIVE, color);
 	OS.gtk_rc_style_set_fg (style, OS.GTK_STATE_PRELIGHT, color);
 	int flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_NORMAL);
 	flags = (color == null) ? flags & ~OS.GTK_RC_FG: flags | OS.GTK_RC_FG;
 	OS.gtk_rc_style_set_color_flags (style, OS.GTK_STATE_NORMAL, flags);
-	flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_ACTIVE);
-	flags = (color == null) ? flags & ~OS.GTK_RC_FG: flags | OS.GTK_RC_FG;
-	OS.gtk_rc_style_set_color_flags (style, OS.GTK_STATE_ACTIVE, flags);
 	flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_PRELIGHT);
 	flags = (color == null) ? flags & ~OS.GTK_RC_FG: flags | OS.GTK_RC_FG;
 	OS.gtk_rc_style_set_color_flags (style, OS.GTK_STATE_PRELIGHT, flags);
 
 	OS.gtk_rc_style_set_text (style, OS.GTK_STATE_NORMAL, color);
-	OS.gtk_rc_style_set_text (style, OS.GTK_STATE_ACTIVE, color);
 	OS.gtk_rc_style_set_text (style, OS.GTK_STATE_PRELIGHT, color);
 	flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_NORMAL);
 	flags = (color == null) ? flags & ~OS.GTK_RC_TEXT: flags | OS.GTK_RC_TEXT;
@@ -1579,9 +1574,6 @@ void setForegroundColor (long /*int*/ handle, GdkColor color) {
 	flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_PRELIGHT);	
 	flags = (color == null) ? flags & ~OS.GTK_RC_TEXT: flags | OS.GTK_RC_TEXT;
 	OS.gtk_rc_style_set_color_flags (style, OS.GTK_STATE_PRELIGHT, flags);	
-	flags = OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_ACTIVE);
-	flags = (color == null) ? flags & ~OS.GTK_RC_TEXT: flags | OS.GTK_RC_TEXT;
-	OS.gtk_rc_style_set_color_flags (style, OS.GTK_STATE_ACTIVE, flags);
 	modifyStyle (handle, style);	
 }
 
