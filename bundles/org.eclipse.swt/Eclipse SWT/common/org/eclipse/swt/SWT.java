@@ -2266,19 +2266,19 @@ public class SWT {
 	public static final int MODIFIER_MASK;
 	
 	/**
-	 * Keyboard and/or mouse event mask indicating that mouse button one
+	 * Keyboard and/or mouse event mask indicating that mouse button one (usually 'left')
 	 * was pushed when the event was generated. (value is 1&lt;&lt;19).
 	 */
 	public static final int BUTTON1 = 1 << 19;
 
 	/**
-	 * Keyboard and/or mouse event mask indicating that mouse button two
+	 * Keyboard and/or mouse event mask indicating that mouse button two (usually 'middle')
 	 * was pushed when the event was generated. (value is 1&lt;&lt;20).
 	 */
 	public static final int BUTTON2 = 1 << 20;
 
 	/**
-	 * Keyboard and/or mouse event mask indicating that mouse button three
+	 * Keyboard and/or mouse event mask indicating that mouse button three (usually 'right')
 	 * was pushed when the event was generated. (value is 1&lt;&lt;21).
 	 */
 	public static final int BUTTON3 = 1 << 21;
@@ -2320,6 +2320,9 @@ public class SWT {
 	 * was pushed on the keyboard when the event was generated.
 	 * 
 	 * This is the primary keyboard modifier for the platform.
+	 * <p>
+	 * {@link #CTRL} on most platforms ({@link #COMMAND} on the Mac).
+	 * </p>
 	 * 
 	 * @since 2.1
 	 */
@@ -2330,6 +2333,9 @@ public class SWT {
 	 * was pushed on the keyboard when the event was generated.
 	 * 
 	 * This is the secondary keyboard modifier for the platform.
+	 * <p>
+	 * {@link #SHIFT} on most platforms.
+	 * </p>
 	 * 
 	 * @since 2.1
 	 */
@@ -2338,6 +2344,9 @@ public class SWT {
 	/**
 	 * Keyboard and/or mouse event mask indicating that the MOD3 key
 	 * was pushed on the keyboard when the event was generated.
+	 * <p>
+	 * {@link #ALT} on most platforms.
+	 * </p>
 	 * 
 	 * @since 2.1
 	 */
@@ -2346,6 +2355,9 @@ public class SWT {
 	/**
 	 * Keyboard and/or mouse event mask indicating that the MOD4 key
 	 * was pushed on the keyboard when the event was generated.
+	 * <p>
+	 * Undefined on most platforms ({@link #CTRL} on the Mac).
+	 * </p>
 	 * 
 	 * @since 2.1
 	 */

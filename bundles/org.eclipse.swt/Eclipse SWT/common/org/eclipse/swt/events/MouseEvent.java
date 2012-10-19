@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,7 @@
 package org.eclipse.swt.events;
 
 
-import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class are sent whenever mouse
@@ -33,9 +33,12 @@ import org.eclipse.swt.widgets.Event;
 public class MouseEvent extends TypedEvent {
 	
 	/**
-	 * the button that was pressed or released; 1 for the
-	 * first button, 2 for the second button, and 3 for the
-	 * third button, etc.
+	 * the button that was pressed or released;
+	 * <ul>
+	 * <li>1 for the first button (usually 'left')</li>
+	 * <li>2 for the second button (usually 'middle')</li>
+	 * <li>3 for the third button (usually 'right')</li>
+	 * <li>etc.</li>
 	 */
 	public int button;
 	
