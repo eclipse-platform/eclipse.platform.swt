@@ -1289,6 +1289,7 @@ public boolean execute (String script) {
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
+		boolean isXULRunner190x = false;
 		nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 		result[0] = 0;
 		byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_SCRIPTSECURITYMANAGER_CONTRACTID, true);
@@ -1299,6 +1300,9 @@ public boolean execute (String script) {
 			if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
 				result[0] = 0;
 				rc = serviceManager.GetServiceByContractID (aContractID, nsIScriptSecurityManager.NS_ISCRIPTSECURITYMANAGER_IID, result);
+				if (rc == XPCOM.NS_OK && result[0] != 0) {
+					isXULRunner190x = true;
+				}
 			}
 		}
 
@@ -1384,7 +1388,7 @@ public boolean execute (String script) {
 												if (rc != XPCOM.NS_OK) {
 													stack.Release ();
 												} else {
-													boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals (jsLibPath, nativeContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result) != 0;
+													boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals (jsLibPath, nativeContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, isXULRunner190x ? result : null) != 0;
 													result[0] = 0;
 													rc = stack.Pop (result);
 													stack.Release ();
