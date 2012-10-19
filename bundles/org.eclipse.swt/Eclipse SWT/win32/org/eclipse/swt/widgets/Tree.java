@@ -2213,6 +2213,14 @@ void createItemToolTips () {
 		null);
 	if (itemToolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.SendMessage (itemToolTipHandle, OS.TTM_SETDELAYTIME, OS.TTDT_INITIAL, 0);
+	/*
+	* Feature in Windows.  Despite the fact that the
+	* tool tip text contains \r\n, the tooltip will
+	* not honour the new line unless TTM_SETMAXTIPWIDTH
+	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
+	* a large value.
+	*/
+	OS.SendMessage (itemToolTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
 	TOOLINFO lpti = new TOOLINFO ();
 	lpti.cbSize = TOOLINFO.sizeof;
 	lpti.hwnd = handle;

@@ -13,11 +13,11 @@ package org.eclipse.swt.widgets;
 
 //import java.util.*;
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 
 /** 
  * Instances of this class implement a selectable user interface
@@ -6794,6 +6794,25 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 						buffer = display.tableBuffer = new char [plvfi.cchTextMax];
 					}
 					string.getChars (0, length, buffer, 0);
+					if (tipRequested) {
+						/*
+						 * Bug in Windows. The tooltip is only displayed up to
+						 * the first line delimiter. The fix is to remove all
+						 * line delimiter characters.
+						 */
+						int shift = 0;
+						for (int i = 0; i < length; i++) {
+							switch (buffer [i]) {
+								case '\r':
+								case '\n':
+									shift++;
+									break;
+								default:
+									if (shift != 0) buffer [i - shift] = buffer [i];
+							}
+						}
+						length -= shift;
+					}
 					buffer [length++] = 0;
 					if (OS.IsUnicode) {
 						OS.MoveMemory (plvfi.pszText, buffer, length * 2);
