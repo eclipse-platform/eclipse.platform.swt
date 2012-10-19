@@ -401,6 +401,19 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				}
 			}
 		}
+	} else {
+		/* 
+		 * In a SWT.READ_ONLY Combo with single item, but no selection, 
+		 * the width of the cell returned by cellSize() is smaller than expected.
+		 * Get the correct width by setting and resetting the selected item.
+		 */
+		NSPopUpButton nsPopUpButton = (NSPopUpButton)view;
+		if ((nsPopUpButton.numberOfItems () == 1) && (nsPopUpButton.indexOfSelectedItem () == -1)) {
+			nsPopUpButton.selectItemAtIndex (0);
+			size = viewCell.cellSize ();
+			width = Math.max (width, (int)Math.ceil (size.width));
+			nsPopUpButton.selectItemAtIndex (-1);
+		}
 	}
 
 	/*
