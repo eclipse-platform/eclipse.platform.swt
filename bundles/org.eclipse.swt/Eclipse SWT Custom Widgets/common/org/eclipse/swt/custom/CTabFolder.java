@@ -1599,8 +1599,8 @@ void onDispose(Event event) {
 	chevronItem = null;
 	chevronTb = null;
 	
-	folderListeners = null;
-	tabListeners = null;
+	if (folderListeners.length != 0) folderListeners = new CTabFolder2Listener[0];
+	if (tabListeners.length != 0) tabListeners = new CTabFolderListener[0];
 }
 void onDragDetect(Event event) {
 	boolean consume = false;
