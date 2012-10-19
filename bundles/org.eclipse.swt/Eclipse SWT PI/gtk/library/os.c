@@ -4732,7 +4732,15 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1colormap_1alloc_1color)
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1colormap_1alloc_1color_FUNC);
 	if (arg1) if ((lparg1 = getGdkColorFields(env, arg1, &_arg1)) == NULL) goto fail;
-	rc = (jboolean)gdk_colormap_alloc_color((GdkColormap *)arg0, (GdkColor *)lparg1, (gboolean)arg2, (gboolean)arg3);
+/*
+	rc = (jboolean)gdk_colormap_alloc_color(arg0, (GdkColor *)lparg1, (gboolean)arg2, (gboolean)arg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_colormap_alloc_color)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, GdkColor *, gboolean, gboolean))fp)(arg0, (GdkColor *)lparg1, (gboolean)arg2, (gboolean)arg3);
+		}
+	}
 fail:
 	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gdk_1colormap_1alloc_1color_FUNC);
@@ -4747,7 +4755,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1colormap_1free_1colors)
 	GdkColor _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gdk_1colormap_1free_1colors_FUNC);
 	if (arg1) if ((lparg1 = getGdkColorFields(env, arg1, &_arg1)) == NULL) goto fail;
-	gdk_colormap_free_colors((GdkColormap *)arg0, (GdkColor *)lparg1, (gint)arg2);
+/*
+	gdk_colormap_free_colors(arg0, (GdkColor *)lparg1, (gint)arg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_colormap_free_colors)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GdkColor *, gint))fp)(arg0, (GdkColor *)lparg1, (gint)arg2);
+		}
+	}
 fail:
 	OS_NATIVE_EXIT(env, that, _1gdk_1colormap_1free_1colors_FUNC);
 }

@@ -340,6 +340,8 @@
 #define gdk_cairo_region_create_from_surface_LIB LIB_GDK
 #define gdk_cairo_region_LIB LIB_GDK
 #define gdk_cairo_create_LIB LIB_GDK
+#define gdk_colormap_alloc_color_LIB LIB_GDK
+#define gdk_colormap_free_colors_LIB LIB_GDK
 #define gtk_enumerate_printers_LIB LIB_GTK
 #define gtk_object_sink_LIB LIB_GTK
 #define gtk_orientable_set_orientation_LIB LIB_GTK

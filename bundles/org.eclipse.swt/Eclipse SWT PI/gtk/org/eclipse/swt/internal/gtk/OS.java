@@ -3595,7 +3595,7 @@ public static final boolean gdk_color_white(long /*int*/ colormap, GdkColor colo
 	}
 }
 /**
- * @param colormap cast=(GdkColormap *)
+ *  @method flags=dynamic
  * @param color cast=(GdkColor *)
  * @param writeable cast=(gboolean)
  * @param best_match cast=(gboolean)
@@ -3610,7 +3610,7 @@ public static final boolean gdk_colormap_alloc_color(long /*int*/ colormap, GdkC
 	}
 }
 /**
- * @param colormap cast=(GdkColormap *)
+ * @method flags=dynamic
  * @param colors cast=(GdkColor *),flags=no_out
  * @param ncolors cast=(gint)
  */
