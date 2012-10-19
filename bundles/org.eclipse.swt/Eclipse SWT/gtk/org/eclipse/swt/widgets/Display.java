@@ -935,10 +935,15 @@ void createDisplay (DeviceData data) {
 		fixedSizeAllocateCallback = new Callback (getClass (), "fixedSizeAllocateProc", 2); //$NON-NLS-1$
 		fixedSizeAllocateProc = fixedSizeAllocateCallback.getAddress ();
 		if (fixedSizeAllocateProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		long /*int*/ queryPtr = OS.g_malloc (GTypeQuery.sizeof);
+		OS.g_type_query (OS.GTK_TYPE_FIXED(), queryPtr);
+		GTypeQuery query = new GTypeQuery ();
+		OS.memmove (query, queryPtr, GTypeQuery.sizeof);
+		OS.g_free (queryPtr);
 		GTypeInfo fixed_info = new GTypeInfo ();
-		fixed_info.class_size = (short) OS.GtkFixedClass_sizeof ();
+		fixed_info.class_size = (short) query.class_size;
 		fixed_info.class_init = fixedClassInitProc;
-		fixed_info.instance_size = (short) OS.GtkFixed_sizeof ();
+		fixed_info.instance_size = (short) query.instance_size;
 		fixed_info_ptr = OS.g_malloc (GTypeInfo.sizeof);
 		OS.memmove (fixed_info_ptr, fixed_info, GTypeInfo.sizeof);
 		fixed_type = OS.g_type_register_static (OS.GTK_TYPE_FIXED (), type_name, fixed_info_ptr, 0);

@@ -102,8 +102,6 @@ typedef enum {
 	GtkCellRendererToggleClass_1sizeof_FUNC,
 	GtkCellRendererToggle_1sizeof_FUNC,
 	GtkColorSelectionDialog_1sizeof_FUNC,
-	GtkFixedClass_1sizeof_FUNC,
-	GtkFixed_1sizeof_FUNC,
 	GtkRequisition_1sizeof_FUNC,
 	GtkSelectionData_1sizeof_FUNC,
 	GtkTargetEntry_1sizeof_FUNC,

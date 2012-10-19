@@ -801,30 +801,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GtkColorSelectionDialog_1sizeof)
 }
 #endif
 
-#ifndef NO_GtkFixedClass_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(GtkFixedClass_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GtkFixedClass_1sizeof_FUNC);
-	rc = (jint)GtkFixedClass_sizeof();
-	OS_NATIVE_EXIT(env, that, GtkFixedClass_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GtkFixed_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(GtkFixed_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GtkFixed_1sizeof_FUNC);
-	rc = (jint)GtkFixed_sizeof();
-	OS_NATIVE_EXIT(env, that, GtkFixed_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GtkRequisition_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GtkRequisition_1sizeof)
 	(JNIEnv *env, jclass that)

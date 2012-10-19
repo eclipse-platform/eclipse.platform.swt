@@ -642,8 +642,6 @@ public static final native int GtkAdjustment_sizeof();
 public static final native int GtkAllocation_sizeof();
 public static final native int GtkBorder_sizeof();
 public static final native int GtkColorSelectionDialog_sizeof();
-public static final native int GtkFixed_sizeof();
-public static final native int GtkFixedClass_sizeof();
 public static final native int GtkRequisition_sizeof();
 public static final native int GtkSelectionData_sizeof();
 public static final native int GtkTargetEntry_sizeof();

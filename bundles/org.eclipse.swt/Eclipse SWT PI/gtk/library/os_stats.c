@@ -92,8 +92,6 @@ char * OS_nativeFunctionNames[] = {
 	"GtkCellRendererToggleClass_1sizeof",
 	"GtkCellRendererToggle_1sizeof",
 	"GtkColorSelectionDialog_1sizeof",
-	"GtkFixedClass_1sizeof",
-	"GtkFixed_1sizeof",
 	"GtkRequisition_1sizeof",
 	"GtkSelectionData_1sizeof",
 	"GtkTargetEntry_1sizeof",
