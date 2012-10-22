@@ -3066,19 +3066,18 @@ long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
+	if (!hasFocus ()) return 0;
 	GdkEventKey gdkEvent = new GdkEventKey ();
 	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
-
-	if (filterKey (gdkEvent.keyval, event)) return 1;
-	// widget could be disposed at this point
-	if (isDisposed ()) return 0;	
-	
-	if (!hasFocus ()) return 0;
 	
 	if (translateMnemonic (gdkEvent.keyval, gdkEvent)) return 1;
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
 	
+	if (filterKey (gdkEvent.keyval, event)) return 1;
+	// widget could be disposed at this point
+	if (isDisposed ()) return 0;	
+
 	if (translateTraversal (gdkEvent)) return 1;
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
