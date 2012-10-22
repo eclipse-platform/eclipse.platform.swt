@@ -113,6 +113,7 @@
 #define NO__1gtk_1style_1get_1white_1gc
 #define NO_GdkVisual
 #define NO_GtkColorSelectionDialog
+#define NO_GdkGCValues
 #endif
 
 #include "os_custom.h"
