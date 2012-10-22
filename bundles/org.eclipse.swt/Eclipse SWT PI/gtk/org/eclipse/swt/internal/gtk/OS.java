@@ -5751,6 +5751,19 @@ public static final void gtk_accel_label_set_accel_widget(long /*int*/ accel_lab
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ * @param accessible cast=(GtkAccessible *)
+ */
+public static final native long /*int*/ _gtk_accessible_get_widget(long /*int*/ accessible);
+public static final long /*int*/ gtk_accessible_get_widget(long /*int*/ accessible) {
+	lock.lock();
+	try {
+		return _gtk_accessible_get_widget(accessible);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param adjustment cast=(GtkAdjustment *) */
 public static final native void _gtk_adjustment_changed(long /*int*/ adjustment);
 public static final void gtk_adjustment_changed(long /*int*/ adjustment) {

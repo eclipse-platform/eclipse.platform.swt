@@ -114,6 +114,7 @@
 #define NO_GdkVisual
 #define NO_GtkColorSelectionDialog
 #define NO_GdkGCValues
+#define NO_GtkAccessible
 #endif
 
 #include "os_custom.h"

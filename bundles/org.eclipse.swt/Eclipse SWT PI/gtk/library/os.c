@@ -7938,6 +7938,26 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1accessible_1get_1widget
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1accessible_1get_1widget)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1accessible_1get_1widget_FUNC);
+/*
+	rc = (jintLong)gtk_accessible_get_widget((GtkAccessible *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_accessible_get_widget)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkAccessible *))fp)((GtkAccessible *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1accessible_1get_1widget_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1adjustment_1changed
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1adjustment_1changed)
 	(JNIEnv *env, jclass that, jintLong arg0)
