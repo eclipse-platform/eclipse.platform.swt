@@ -2987,6 +2987,10 @@ void setFontDescription (long /*int*/ font) {
 	}
 }
 
+void setForegroundColor (GdkColor color) {
+	setForegroundColor (handle, color, true);
+}
+
 /**
  * Marks the receiver's header as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
