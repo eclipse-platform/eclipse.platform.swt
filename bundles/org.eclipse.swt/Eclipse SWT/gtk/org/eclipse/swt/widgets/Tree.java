@@ -2988,7 +2988,7 @@ void setFontDescription (long /*int*/ font) {
 }
 
 void setForegroundColor (GdkColor color) {
-	setForegroundColor (handle, color, true);
+	setForegroundColor (handle, color, false);
 }
 
 /**
