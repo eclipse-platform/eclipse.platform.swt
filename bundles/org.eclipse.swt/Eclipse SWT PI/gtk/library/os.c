@@ -8541,6 +8541,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1clipboard_1wait_1for_1contents)
 }
 #endif
 
+#ifndef NO__1gtk_1color_1selection_1dialog_1get_1color_1selection
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1color_1selection_1dialog_1get_1color_1selection)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1color_1selection_1dialog_1get_1color_1selection_FUNC);
+/*
+	rc = (jintLong)gtk_color_selection_dialog_get_color_selection((GtkColorSelectionDialog *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_color_selection_dialog_get_color_selection)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkColorSelectionDialog *))fp)((GtkColorSelectionDialog *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1color_1selection_1dialog_1get_1color_1selection_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1color_1selection_1dialog_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1color_1selection_1dialog_1new)
 	(JNIEnv *env, jclass that, jbyteArray arg0)

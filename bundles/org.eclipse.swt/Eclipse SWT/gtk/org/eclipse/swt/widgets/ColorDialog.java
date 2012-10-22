@@ -142,16 +142,23 @@ public RGB open () {
 		OS.gtk_window_group_add_window (group, handle);
 	}
 	OS.gtk_window_set_modal (handle, true);
-	GtkColorSelectionDialog dialog = new GtkColorSelectionDialog ();
-	OS.memmove (dialog, handle);
+	long /*int*/ colorsel;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)) {
+		colorsel = OS.gtk_color_selection_dialog_get_color_selection(handle);
+	} else{
+		GtkColorSelectionDialog dialog = new GtkColorSelectionDialog ();
+		OS.memmove (dialog, handle);
+		colorsel = dialog.colorsel;
+	}
+	
 	GdkColor color = new GdkColor();
 	if (rgb != null) {
 		color.red = (short)((rgb.red & 0xFF) | ((rgb.red & 0xFF) << 8));
 		color.green = (short)((rgb.green & 0xFF) | ((rgb.green & 0xFF) << 8));
 		color.blue = (short)((rgb.blue & 0xFF) | ((rgb.blue & 0xFF) << 8));
-		OS.gtk_color_selection_set_current_color (dialog.colorsel, color);
+		OS.gtk_color_selection_set_current_color (colorsel, color);
 	}
-	OS.gtk_color_selection_set_has_palette (dialog.colorsel, true);
+	OS.gtk_color_selection_set_has_palette (colorsel, true);
 	if (rgbs != null) {
 		long /*int*/ colors = OS.g_malloc(GdkColor.sizeof * rgbs.length);
 		for (int i=0; i<rgbs.length; i++) {
@@ -203,7 +210,7 @@ public RGB open () {
 	}
 	boolean success = response == OS.GTK_RESPONSE_OK; 
 	if (success) {
-		OS.gtk_color_selection_get_current_color (dialog.colorsel, color);
+		OS.gtk_color_selection_get_current_color (colorsel, color);
 		int red = (color.red >> 8) & 0xFF;
 		int green = (color.green >> 8) & 0xFF;
 		int blue = (color.blue >> 8) & 0xFF;

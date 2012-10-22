@@ -92,6 +92,7 @@
 #define gtk_cell_layout_pack_start_LIB LIB_GTK
 #define gtk_cell_renderer_get_preferred_size_LIB LIB_GTK
 #define gtk_cell_renderer_get_size_LIB LIB_GTK
+#define gtk_color_selection_dialog_get_color_selection_LIB LIB_GTK
 #define gtk_combo_box_entry_new_text_LIB LIB_GTK
 #define gtk_combo_box_new_text_LIB LIB_GTK
 #define gtk_combo_box_insert_text_LIB LIB_GTK

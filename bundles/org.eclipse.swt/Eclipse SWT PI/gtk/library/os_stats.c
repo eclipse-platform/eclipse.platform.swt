@@ -641,6 +641,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1clipboard_1set_1with_1owner",
 	"_1gtk_1clipboard_1store",
 	"_1gtk_1clipboard_1wait_1for_1contents",
+	"_1gtk_1color_1selection_1dialog_1get_1color_1selection",
 	"_1gtk_1color_1selection_1dialog_1new",
 	"_1gtk_1color_1selection_1get_1current_1color",
 	"_1gtk_1color_1selection_1palette_1to_1string",

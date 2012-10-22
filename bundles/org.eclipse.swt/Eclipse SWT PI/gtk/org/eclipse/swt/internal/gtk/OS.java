@@ -6255,6 +6255,19 @@ public static final long /*int*/ gtk_color_selection_dialog_new(byte[] title) {
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param color_dialog cast=(GtkColorSelectionDialog *)
+ */
+public static final native long /*int*/ _gtk_color_selection_dialog_get_color_selection(long /*int*/ color_dialog);
+public static final long /*int*/ gtk_color_selection_dialog_get_color_selection(long /*int*/ color_dialog) {
+	lock.lock();
+	try {
+		return _gtk_color_selection_dialog_get_color_selection(color_dialog);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param colorsel cast=(GtkColorSelection *)
  * @param color cast=(GdkColor *),flags=no_in
  */
