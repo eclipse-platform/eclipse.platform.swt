@@ -9521,7 +9521,11 @@ void setSelection(int start, int length, boolean sendEvent, boolean doBlock) {
 		(length > 0 && selectionAnchor != selection.x) || 
 		(length < 0 && selectionAnchor != selection.y)) {
 		if (blockSelection && doBlock) {
-			setBlockSelectionOffset(start, end, sendEvent);
+			if (length < 0) {
+				setBlockSelectionOffset(end, start, sendEvent);
+			} else {
+				setBlockSelectionOffset(start, end, sendEvent);
+			}
 		} else {
 			clearSelection(sendEvent);
 			if (length < 0) {
