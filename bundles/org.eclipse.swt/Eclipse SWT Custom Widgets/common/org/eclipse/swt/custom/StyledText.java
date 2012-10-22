@@ -2306,6 +2306,12 @@ void doBlockColumn(boolean next) {
 		showLocation(rect, true);
 	}
 }
+void doBlockContentStartEnd(boolean end) {
+	if (blockXLocation == -1) setBlockSelectionOffset(caretOffset, false);
+	int offset = end ? content.getCharCount() : 0;
+	setBlockSelectionOffset(offset, true);
+	showCaret();
+}
 void doBlockWord(boolean next) {
 	if (blockXLocation == -1) setBlockSelectionOffset(caretOffset, false);
 	int x = blockXLocation - horizontalScrollOffset;
@@ -7054,10 +7060,14 @@ boolean invokeBlockAction(int action) {
 			return true;
 		case ST.SELECT_ALL:
 			return false;
+		case ST.SELECT_TEXT_START:
+			doBlockContentStartEnd(false);
+			break;
+		case ST.SELECT_TEXT_END:
+			doBlockContentStartEnd(true);
+			break;
 		case ST.SELECT_PAGE_UP:
 		case ST.SELECT_PAGE_DOWN:
-		case ST.SELECT_TEXT_START:
-		case ST.SELECT_TEXT_END:
 		case ST.SELECT_WINDOW_START:
 		case ST.SELECT_WINDOW_END:
 			//blocked actions
