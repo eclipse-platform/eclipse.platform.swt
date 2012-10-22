@@ -111,6 +111,8 @@
 #define NO__1gtk_1style_1get_1text_1aa_1gc
 #define NO__1gtk_1style_1get_1text_1gc
 #define NO__1gtk_1style_1get_1white_1gc
+#define NO_GdkVisual
+#define NO_GtkColorSelectionDialog
 #endif
 
 #include "os_custom.h"
