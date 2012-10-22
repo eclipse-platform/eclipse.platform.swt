@@ -7739,6 +7739,26 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1x11_1drawable_1get_1xid)
 }
 #endif
 
+#ifndef NO__1gdk_1x11_1get_1default_1xdisplay
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1x11_1get_1default_1xdisplay)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1x11_1get_1default_1xdisplay_FUNC);
+/*
+	rc = (jintLong)gdk_x11_get_default_xdisplay();
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_x11_get_default_xdisplay)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1x11_1get_1default_1xdisplay_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1x11_1screen_1get_1window_1manager_1name
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1x11_1screen_1get_1window_1manager_1name)
 	(JNIEnv *env, jclass that, jintLong arg0)

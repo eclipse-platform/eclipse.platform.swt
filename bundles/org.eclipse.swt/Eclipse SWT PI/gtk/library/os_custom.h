@@ -312,6 +312,7 @@
 #define gdk_x11_display_utf8_to_compound_text_LIB LIB_GDK
 #define gdk_x11_drawable_get_xdisplay_LIB LIB_GDK
 #define gdk_x11_drawable_get_xid_LIB LIB_GDK
+#define gdk_x11_get_default_xdisplay_LIB LIB_GDK
 #define gdk_x11_window_get_xid_LIB LIB_GDK
 #define gdk_utf8_to_compound_text_LIB LIB_GDK
 #define gdk_threads_set_lock_functions_LIB LIB_GDK

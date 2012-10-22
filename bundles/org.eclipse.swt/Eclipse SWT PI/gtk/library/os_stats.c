@@ -586,6 +586,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1x11_1display_1utf8_1to_1compound_1text",
 	"_1gdk_1x11_1drawable_1get_1xdisplay",
 	"_1gdk_1x11_1drawable_1get_1xid",
+	"_1gdk_1x11_1get_1default_1xdisplay",
 	"_1gdk_1x11_1screen_1get_1window_1manager_1name",
 	"_1gdk_1x11_1screen_1lookup_1visual",
 	"_1gdk_1x11_1visual_1get_1xvisual",
