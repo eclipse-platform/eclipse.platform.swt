@@ -205,6 +205,10 @@ public void addModifyListener (ModifyListener listener) {
  * After SegmentListener is added, user may call <code>setText(String)</code>
  * for segments to take effect.
  * </p>
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows and GTK.
+ * <code>SegmentEvent</code>s won't be sent on Cocoa.
+ * </p>
  *
  * @param listener the listener which should be notified
  *

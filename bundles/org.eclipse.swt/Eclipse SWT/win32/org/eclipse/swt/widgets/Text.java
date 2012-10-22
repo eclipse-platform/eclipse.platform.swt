@@ -11,10 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -321,6 +321,10 @@ public void addModifyListener (ModifyListener listener) {
  * <br>
  * After SegmentListener is added, user may call <code>setText(String)</code>
  * for segments to take effect.
+ * </p>
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows and GTK.
+ * <code>SegmentEvent</code>s won't be sent on Cocoa.
  * </p>
  *
  * @param listener the listener which should be notified
