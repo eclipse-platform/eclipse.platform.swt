@@ -1289,12 +1289,12 @@ public void addExtendedModifyListener(ExtendedModifyListener extendedModifyListe
  * Adds a bidirectional segment listener.
  * <p>
  * A BidiSegmentEvent is sent 
- * whenever a line of text is measured or rendered. The user can 
+ * whenever a line of text is measured or rendered. You can 
  * specify text ranges in the line that should be treated as if they 
  * had a different direction than the surrounding text.
  * This may be used when adjacent segments of right-to-left text should
  * not be reordered relative to each other. 
- * E.g., Multiple Java string literals in a right-to-left language
+ * E.g., multiple Java string literals in a right-to-left language
  * should generally remain in logical order to each other, that is, the
  * way they are stored. 
  * </p>
@@ -1314,6 +1314,9 @@ public void addBidiSegmentListener(BidiSegmentListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	addListener(ST.LineGetSegments, new StyledTextListener(listener));
+	resetCache(0, content.getLineCount());
+	setCaretLocation();
+	super.redraw();
 }
 /**
  * Adds a caret listener. CaretEvent is sent when the caret offset changes.
@@ -7500,6 +7503,9 @@ public void removeBidiSegmentListener(BidiSegmentListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	removeListener(ST.LineGetSegments, listener);	
+	resetCache(0, content.getLineCount());
+	setCaretLocation();
+	super.redraw();
 }
 /**
  * Removes the specified caret listener.
