@@ -1166,7 +1166,6 @@ public static final long /*int*/ gdk_x11_drawable_get_xid(long /*int*/ drawable)
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
 public static final native long /*int*/ _gdk_x11_get_default_xdisplay();
 public static final long /*int*/ gdk_x11_get_default_xdisplay () {
 	lock.lock();

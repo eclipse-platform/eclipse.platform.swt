@@ -913,13 +913,7 @@ void createDisplay (DeviceData data) {
 	if (!OS.gtk_init_check (new long /*int*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
 	}
-	if (OS.GDK_WINDOWING_X11 ()) {
-		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-			xDisplay = OS.gdk_x11_get_default_xdisplay();
-		} else {
-			xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
-		}
-	}
+	if (OS.GDK_WINDOWING_X11 ()) xDisplay = OS.gdk_x11_get_default_xdisplay();
 	long /*int*/ ptr = OS.gtk_check_version (MAJOR, MINOR, MICRO);
 	if (ptr != 0) {
 		int length = OS.strlen (ptr);
