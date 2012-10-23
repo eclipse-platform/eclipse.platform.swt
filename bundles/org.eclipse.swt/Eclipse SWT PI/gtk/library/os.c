@@ -5250,12 +5250,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1pixbuf)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1draw_1pixbuf_FUNC);
 /*
-	gdk_draw_pixbuf((GdkDrawable *)arg0, (GdkGC *)arg1, (GdkPixbuf *)arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6, (gint)arg7, (gint)arg8, (GdkRgbDither)arg9, (gint)arg10, (gint)arg11);
+	gdk_draw_pixbuf(arg0, arg1, arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6, (gint)arg7, (gint)arg8, arg9, (gint)arg10, (gint)arg11);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gdk_draw_pixbuf)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkDrawable *, GdkGC *, GdkPixbuf *, gint, gint, gint, gint, gint, gint, GdkRgbDither, gint, gint))fp)((GdkDrawable *)arg0, (GdkGC *)arg1, (GdkPixbuf *)arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6, (gint)arg7, (gint)arg8, (GdkRgbDither)arg9, (gint)arg10, (gint)arg11);
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, jintLong, gint, gint, gint, gint, gint, gint, jint, gint, gint))fp)(arg0, arg1, arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6, (gint)arg7, (gint)arg8, arg9, (gint)arg10, (gint)arg11);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1pixbuf_FUNC);

@@ -3936,16 +3936,12 @@ public static final void gdk_draw_lines(long /*int*/ drawable, long /*int*/ gc, 
 }
 /**
  * @method flags=dynamic
- * @param drawable cast=(GdkDrawable *)
- * @param gc cast=(GdkGC *)
- * @param pixbuf cast=(GdkPixbuf *)
  * @param xsrc cast=(gint)
  * @param ysrc cast=(gint)
  * @param xdest cast=(gint)
  * @param ydest cast=(gint)
  * @param width cast=(gint)
  * @param height cast=(gint)
- * @param dither cast=(GdkRgbDither)
  * @param x_dither cast=(gint)
  * @param y_dither cast=(gint)
  */
