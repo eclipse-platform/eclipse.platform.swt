@@ -3066,7 +3066,20 @@ long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
 }
 
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
-	if (!hasFocus ()) return 0;
+	if (!hasFocus ()) {
+		/*
+		* Feature in GTK.  On AIX, the IME window deactivates the current shell and even
+		* though the widget receiving the key event is not in focus, it should filter the input in
+		* order to get it committed.  The fix is to detect that the widget shell is not active
+		* and call filterKey() only.
+		*/
+		if (display.getActiveShell () == null) {
+			GdkEventKey gdkEvent = new GdkEventKey ();
+			OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
+			if (filterKey (gdkEvent.keyval, event)) return 1;
+		}
+		return 0;
+	}
 	GdkEventKey gdkEvent = new GdkEventKey ();
 	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
 	
