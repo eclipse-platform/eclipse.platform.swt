@@ -806,13 +806,15 @@ protected void release () {
 	shellHandle = 0;
 
 	if (gdkColors != null) {
-		long /*int*/ colormap = OS.gdk_colormap_get_system();
-		for (int i = 0; i < gdkColors.length; i++) {
-			GdkColor color = gdkColors [i];
-			if (color != null) {
-				while (colorRefCount [i] > 0) {
-					OS.gdk_colormap_free_colors(colormap, color, 1);
-					--colorRefCount [i];
+		if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+			long /*int*/ colormap = OS.gdk_colormap_get_system();
+			for (int i = 0; i < gdkColors.length; i++) {
+				GdkColor color = gdkColors [i];
+				if (color != null) {
+					while (colorRefCount [i] > 0) {
+						OS.gdk_colormap_free_colors(colormap, color, 1);
+						--colorRefCount [i];
+					}
 				}
 			}
 		}

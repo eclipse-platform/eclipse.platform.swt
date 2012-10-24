@@ -3591,8 +3591,8 @@ public static final boolean gdk_color_parse(byte[] spec, GdkColor color) {
 	}
 }
 /**
- * @param colormap cast=(GdkColormap *)
- * @param color cast=(GdkColor *),flags=no_in
+ * @method flags=dynamic
+ * @param color flags=no_in
  */
 public static final native boolean _gdk_color_white(long /*int*/ colormap, GdkColor color);
 public static final boolean gdk_color_white(long /*int*/ colormap, GdkColor color) {

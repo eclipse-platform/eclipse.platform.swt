@@ -4716,7 +4716,15 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1color_1white)
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1color_1white_FUNC);
 	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
-	rc = (jboolean)gdk_color_white((GdkColormap *)arg0, (GdkColor *)lparg1);
+/*
+	rc = (jboolean)gdk_color_white(arg0, lparg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_color_white)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, GdkColor *))fp)(arg0, lparg1);
+		}
+	}
 fail:
 	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gdk_1color_1white_FUNC);
