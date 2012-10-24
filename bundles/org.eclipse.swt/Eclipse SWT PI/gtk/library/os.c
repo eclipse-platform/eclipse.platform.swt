@@ -5910,12 +5910,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1values)
 	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1values_FUNC);
 	if (arg1) if ((lparg1 = getGdkGCValuesFields(env, arg1, &_arg1)) == NULL) goto fail;
 /*
-	gdk_gc_set_values(arg0, (GdkGCValues *)lparg1, arg2);
+	gdk_gc_set_values(arg0, lparg1, arg2);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gdk_gc_set_values)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GdkGCValues *, jint))fp)(arg0, (GdkGCValues *)lparg1, arg2);
+			((void (CALLING_CONVENTION*)(jintLong, GdkGCValues *, jint))fp)(arg0, lparg1, arg2);
 		}
 	}
 fail:
