@@ -214,6 +214,7 @@
 #define gdk_colormap_get_system_LIB LIB_GDK
 #define gdk_bitmap_create_from_data_LIB LIB_GDK
 #define gdk_cursor_new_from_pixmap_LIB LIB_GDK
+#define gdk_window_get_internal_paint_info_LIB LIB_GDK
 #define gdk_gc_set_background_LIB LIB_GDK
 #define gdk_gc_set_stipple_LIB LIB_GDK
 #define gdk_gc_set_clip_mask_LIB LIB_GDK

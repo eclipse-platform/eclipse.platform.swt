@@ -5332,8 +5332,8 @@ public static final void gdk_window_get_frame_extents(long /*int*/ window, GdkRe
 	}
 }
 /**
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
- * @param real_drawable cast=(GdkDrawable **)
  * @param x_offset cast=(gint *)
  * @param y_offset cast=(gint *)
  */

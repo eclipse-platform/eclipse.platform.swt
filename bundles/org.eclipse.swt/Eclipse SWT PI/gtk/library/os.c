@@ -7332,7 +7332,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1get_1internal_1paint_1info)
 	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	gdk_window_get_internal_paint_info((GdkWindow *)arg0, (GdkDrawable **)lparg1, (gint *)lparg2, (gint *)lparg3);
+/*
+	gdk_window_get_internal_paint_info((GdkWindow *)arg0, lparg1, (gint *)lparg2, (gint *)lparg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_window_get_internal_paint_info)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GdkWindow *, jintLong *, gint *, gint *))fp)((GdkWindow *)arg0, lparg1, (gint *)lparg2, (gint *)lparg3);
+		}
+	}
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
