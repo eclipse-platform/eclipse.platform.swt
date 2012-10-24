@@ -2074,7 +2074,8 @@ void updateParent (boolean visible) {
 	if (window != null) {
 		if (visible) {
 			if (parent != null && parent.getVisible ()) {
-				parentWindow ().addChildWindow (window, OS.NSWindowAbove);
+				NSWindow parentWindow = display.modalPanel != null ? display.modalPanel : parentWindow ();
+				parentWindow.addChildWindow (window, OS.NSWindowAbove);
 				
 				/**
 				 * Feature in Cocoa: When a window is added as a child window,

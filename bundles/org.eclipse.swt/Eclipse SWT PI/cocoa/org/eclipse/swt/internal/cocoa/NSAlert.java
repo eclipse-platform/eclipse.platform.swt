@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,9 +45,9 @@ public void setMessageText(NSString messageText) {
 	OS.objc_msgSend(this.id, OS.sel_setMessageText_, messageText != null ? messageText.id : 0);
 }
 
-public NSWindow window() {
+public NSPanel window() {
 	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_window);
-	return result != 0 ? new NSWindow(result) : null;
+	return result != 0 ? new NSPanel(result) : null;
 }
 
 }

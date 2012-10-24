@@ -2189,7 +2189,13 @@ void invalidateVisibleRegion () {
 }
 
 boolean isActive () {
-	return getShell().getModalShell () == null && display.getModalDialog () == null;
+	if (getShell().getModalShell () != null) return false;
+	Dialog dialog = display.getModalDialog();
+	if (dialog == null) return true;
+	NSPanel panel = display.getModalPanel();
+	if (panel == null) return false;
+	NSWindow parentWindow = view.window().parentWindow();
+	return parentWindow == null || parentWindow.id == panel.id;
 }
 
 /*

@@ -202,7 +202,8 @@ public int open () {
 			break;
 	}
 	title = NSString.stringWith(this.title != null ? this.title : "");
-	alert.window().setTitle(title);
+	NSPanel panel = alert.window();
+	panel.setTitle(title);
 	NSString message = NSString.stringWith(this.message != null ? this.message : "");
 	alert.setMessageText(message);
 	int response = 0;
@@ -215,7 +216,7 @@ public int open () {
 		if (jniRef == 0) error(SWT.ERROR_NO_HANDLES);
 		OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
 		alert.beginSheetModalForWindow(parent.view.window (), delegate, OS.sel_panelDidEnd_returnCode_contextInfo_, 0);
-		display.setModalDialog(this);
+		display.setModalDialog(this, panel);
 		if ((style & SWT.APPLICATION_MODAL) != 0) {
 			response = (int)/*64*/alert.runModal();
 		} else {
@@ -227,7 +228,7 @@ public int open () {
 			response = this.returnCode;
 		}
 	} else {
-		display.setModalDialog(this);
+		display.setModalDialog(this, panel);
 		response = (int)/*64*/alert.runModal();
 	}
 	display.setModalDialog(null);

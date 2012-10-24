@@ -147,6 +147,7 @@ public class Display extends Device {
 
 	Shell [] modalShells;
 	Dialog modalDialog;
+	NSPanel modalPanel;
 	
 	Menu menuBar;
 	Menu[] menus, popups;
@@ -1633,6 +1634,10 @@ int getMessageCount () {
 
 Dialog getModalDialog () {
 	return modalDialog;
+}
+
+NSPanel getModalPanel () {
+	return modalPanel;
 }
 
 /**
@@ -4380,11 +4385,7 @@ public void setData (String key, Object value) {
 	}
 	
 	if (key.equals(SET_MODAL_DIALOG)) {
-		if (value == null) {
-			this.modalDialog = null;
-		} else {
-			this.modalDialog = (Dialog) value;
-		}
+		setModalDialog (value != null ? (Dialog) value : null);
 	}
 	
 	if (key.equals (MOZILLA_RUNNING)) {
@@ -4479,7 +4480,12 @@ void setMenuBar (Menu menu) {
 }
 
 void setModalDialog (Dialog modalDialog) {
+	setModalDialog(modalDialog, null);
+}
+
+void setModalDialog (Dialog modalDialog, NSPanel panel) {
 	this.modalDialog = modalDialog;
+	this.modalPanel = panel;
 }
 
 void setModalShell (Shell shell) {

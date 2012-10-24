@@ -50,7 +50,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="window" swt_gen="true">
-			<retval swt_gen="true" swt_java_type="NSWindow"></retval>
+			<retval swt_gen="true" swt_java_type="NSPanel"></retval>
 		</method>
 	</class>
 	<class name="NSApplication" swt_gen="mixed" swt_superclass="NSResponder">
