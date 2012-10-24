@@ -5604,7 +5604,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1gc_1new)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1new_FUNC);
-	rc = (jintLong)gdk_gc_new((GdkDrawable *)arg0);
+/*
+	rc = (jintLong)gdk_gc_new(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_gc_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1new_FUNC);
 	return rc;
 }

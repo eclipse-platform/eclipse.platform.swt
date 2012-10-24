@@ -4210,7 +4210,7 @@ public static final void gdk_gc_get_values(long /*int*/ gc, GdkGCValues values) 
 		lock.unlock();
 	}
 }
-/** @param window cast=(GdkDrawable *) */
+/** @method flags=dynamic */
 public static final native long /*int*/ _gdk_gc_new(long /*int*/ window);
 public static final long /*int*/ gdk_gc_new(long /*int*/ window) {
 	lock.lock();
