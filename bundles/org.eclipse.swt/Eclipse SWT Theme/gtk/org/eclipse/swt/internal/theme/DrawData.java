@@ -98,7 +98,15 @@ void drawImage(Theme theme, Image image, GC gc, Rectangle bounds) {
 			OS.g_object_unref(pixbuf);
 			//TODO - stretching
 			if (rendered != 0) {
-				OS.gdk_draw_pixbuf(drawable, gc.handle, rendered, 0, 0, bounds.x, bounds.y, bounds.width, bounds.height, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
+				if (OS.USE_CAIRO) {
+					long /*int*/ cairo = OS.gdk_cairo_create (drawable);
+					OS.gdk_cairo_set_source_pixbuf (cairo, gc.handle, 0, 0);
+					Cairo.cairo_rectangle (cairo,bounds.x,bounds.y,bounds.width,bounds.height);
+					Cairo.cairo_fill(cairo);
+					Cairo.cairo_destroy(cairo);
+				} else {
+					OS.gdk_draw_pixbuf(drawable, gc.handle, rendered, 0, 0, bounds.x, bounds.y, bounds.width, bounds.height, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
+				}
 				OS.g_object_unref(rendered);
 			}
 			OS.gtk_icon_source_free(source);
