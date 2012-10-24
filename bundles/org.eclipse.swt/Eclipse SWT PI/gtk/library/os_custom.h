@@ -217,6 +217,7 @@
 #define gdk_window_get_internal_paint_info_LIB LIB_GDK
 #define gdk_window_invalidate_region_LIB LIB_GDK
 #define gdk_window_shape_combine_region_LIB LIB_GDK
+#define gdk_window_set_back_pixmap_LIB LIB_GDK
 #define gdk_gc_set_background_LIB LIB_GDK
 #define gdk_gc_set_stipple_LIB LIB_GDK
 #define gdk_gc_set_clip_mask_LIB LIB_GDK

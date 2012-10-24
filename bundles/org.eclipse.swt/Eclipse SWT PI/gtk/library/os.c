@@ -7672,7 +7672,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1set_1back_1pixmap)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jboolean arg2)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1window_1set_1back_1pixmap_FUNC);
-	gdk_window_set_back_pixmap((GdkWindow *)arg0, (GdkPixmap *)arg1, (gboolean)arg2);
+/*
+	gdk_window_set_back_pixmap((GdkWindow *)arg0, arg1, (gboolean)arg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_window_set_back_pixmap)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GdkWindow *, jintLong, gboolean))fp)((GdkWindow *)arg0, arg1, (gboolean)arg2);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1window_1set_1back_1pixmap_FUNC);
 }
 #endif

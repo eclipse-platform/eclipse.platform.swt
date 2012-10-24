@@ -5579,8 +5579,8 @@ public static final void gdk_window_restack(long /*int*/ window, long /*int*/ si
 	}
 }
 /**
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
- * @param pixmap cast=(GdkPixmap *)
  * @param parent_relative cast=(gboolean)
  */
 public static final native void _gdk_window_set_back_pixmap(long /*int*/ window, long /*int*/ pixmap, boolean parent_relative);
