@@ -5455,8 +5455,8 @@ public static final void gdk_window_invalidate_rect(long /*int*/ window, GdkRect
 	}
 }
 /**
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
- * @param region cast=(GdkRegion *)
  * @param invalidate_children cast=(gboolean)
  */
 public static final native void _gdk_window_invalidate_region(long /*int*/ window, long /*int*/ region, boolean invalidate_children);

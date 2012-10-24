@@ -7509,7 +7509,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1invalidate_1region)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jboolean arg2)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1window_1invalidate_1region_FUNC);
-	gdk_window_invalidate_region((GdkWindow *)arg0, (GdkRegion *)arg1, (gboolean)arg2);
+/*
+	gdk_window_invalidate_region((GdkWindow *)arg0, arg1, (gboolean)arg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_window_invalidate_region)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GdkWindow *, jintLong, gboolean))fp)((GdkWindow *)arg0, arg1, (gboolean)arg2);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1window_1invalidate_1region_FUNC);
 }
 #endif
