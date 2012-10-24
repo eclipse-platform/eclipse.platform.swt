@@ -7742,7 +7742,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1shape_1combine_1region)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1window_1shape_1combine_1region_FUNC);
-	gdk_window_shape_combine_region((GdkWindow *)arg0, (GdkRegion *)arg1, arg2, arg3);
+/*
+	gdk_window_shape_combine_region((GdkWindow *)arg0, arg1, arg2, arg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_window_shape_combine_region)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GdkWindow *, jintLong, jint, jint))fp)((GdkWindow *)arg0, arg1, arg2, arg3);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1window_1shape_1combine_1region_FUNC);
 }
 #endif

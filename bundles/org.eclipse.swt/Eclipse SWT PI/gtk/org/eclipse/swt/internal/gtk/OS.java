@@ -5665,8 +5665,8 @@ public static final void gdk_window_set_user_data(long /*int*/ window, long /*in
 	}
 }
 /**
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
- * @param shape_region cast=(GdkRegion *)
  */
 public static final native void _gdk_window_shape_combine_region (long /*int*/ window, long /*int*/  shape_region, int offset_x,  int offset_y);
 public static final void gdk_window_shape_combine_region (long /*int*/ window, long /*int*/  shape_region, int offset_x,  int offset_y) {
