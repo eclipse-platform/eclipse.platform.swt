@@ -4259,8 +4259,7 @@ public static final void gdk_gc_set_clip_origin(long /*int*/ gc, int x, int y) {
 	}
 }
 /**
- * @param gc cast=(GdkGC *)
- * @param region cast=(GdkRegion *)
+ * @method flags=dynamic
  */
 public static final native void _gdk_gc_set_clip_region(long /*int*/ gc, long /*int*/ region);
 public static final void gdk_gc_set_clip_region(long /*int*/ gc, long /*int*/ region) {

@@ -201,27 +201,30 @@ void transferClipping(GC gc, long /*int*/ style) {
 			clipping = damageRgn;
 		}
 	}
-	long /*int*/ [] curGC = new long /*int*/ [1];
-	for (int i = 0; i < 5; i++) {
-		OS.gtk_style_get_fg_gc (style, i, curGC);
+	//TODO implement for GTK3
+	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+		long /*int*/ [] curGC = new long /*int*/ [1];
+		for (int i = 0; i < 5; i++) {
+			OS.gtk_style_get_fg_gc (style, i, curGC);
+			if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
+			OS.gtk_style_get_bg_gc (style, i, curGC);
+			if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
+			OS.gtk_style_get_light_gc (style, i, curGC);
+			if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
+			OS.gtk_style_get_dark_gc (style, i, curGC);
+			if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
+			OS.gtk_style_get_mid_gc (style, i, curGC);
+			if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
+			OS.gtk_style_get_text_gc (style, i, curGC);
+			if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
+			OS.gtk_style_get_text_aa_gc (style, i, curGC);
+			if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
+		}
+		OS.gtk_style_get_black_gc (style, curGC);
 		if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
-		OS.gtk_style_get_bg_gc (style, i, curGC);
-		if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
-		OS.gtk_style_get_light_gc (style, i, curGC);
-		if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
-		OS.gtk_style_get_dark_gc (style, i, curGC);
-		if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
-		OS.gtk_style_get_mid_gc (style, i, curGC);
-		if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
-		OS.gtk_style_get_text_gc (style, i, curGC);
-		if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
-		OS.gtk_style_get_text_aa_gc (style, i, curGC);
+		OS.gtk_style_get_white_gc (style, curGC);
 		if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
 	}
-	OS.gtk_style_get_black_gc (style, curGC);
-	if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
-	OS.gtk_style_get_white_gc (style, curGC);
-	if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
 	if (clipping != clipRgn && clipping != damageRgn) {
 		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
 			Cairo.cairo_region_destroy ( clipping);

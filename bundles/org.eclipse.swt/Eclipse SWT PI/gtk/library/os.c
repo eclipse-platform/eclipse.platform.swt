@@ -5688,7 +5688,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1clip_1region)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1clip_1region_FUNC);
-	gdk_gc_set_clip_region((GdkGC *)arg0, (GdkRegion *)arg1);
+/*
+	gdk_gc_set_clip_region(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_gc_set_clip_region)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1clip_1region_FUNC);
 }
 #endif
