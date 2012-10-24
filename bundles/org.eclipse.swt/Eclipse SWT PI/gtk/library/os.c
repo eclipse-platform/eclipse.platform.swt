@@ -5780,7 +5780,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1foreground)
 	GdkColor _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1foreground_FUNC);
 	if (arg1) if ((lparg1 = getGdkColorFields(env, arg1, &_arg1)) == NULL) goto fail;
-	gdk_gc_set_foreground((GdkGC *)arg0, (GdkColor *)lparg1);
+/*
+	gdk_gc_set_foreground(arg0, lparg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_gc_set_foreground)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GdkColor *))fp)(arg0, lparg1);
+		}
+	}
 fail:
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1foreground_FUNC);
 }

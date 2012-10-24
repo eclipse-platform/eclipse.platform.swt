@@ -4308,8 +4308,8 @@ public static final void gdk_gc_set_fill(long /*int*/ gc, int fill) {
 	}
 }
 /**
- * @param gc cast=(GdkGC *)
- * @param color cast=(GdkColor *),flags=no_out
+ * @method flags=dynamic
+ * @param color flags=no_out
  */
 public static final native void _gdk_gc_set_foreground(long /*int*/ gc, GdkColor color);
 public static final void gdk_gc_set_foreground(long /*int*/ gc, GdkColor color) {
