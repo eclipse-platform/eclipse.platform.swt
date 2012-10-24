@@ -5321,7 +5321,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1rectangle)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1draw_1rectangle_FUNC);
-	gdk_draw_rectangle((GdkDrawable *)arg0, (GdkGC *)arg1, (gint)arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6);
+/*
+	gdk_draw_rectangle(arg0, arg1, (gint)arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_draw_rectangle)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, gint, gint, gint, gint, gint))fp)(arg0, arg1, (gint)arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1rectangle_FUNC);
 }
 #endif

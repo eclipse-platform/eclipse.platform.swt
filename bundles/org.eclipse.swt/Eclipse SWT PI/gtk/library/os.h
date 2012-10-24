@@ -113,6 +113,7 @@
 #define NO__1gtk_1style_1get_1white_1gc
 #define NO__1gdk_1gc_1get_1values
 #define NO__1gdk_1gc_1new
+#define NO__1gdk_1draw_1rectangle
 #define NO_GdkVisual
 #define NO_GtkColorSelectionDialog
 #define NO_GdkGCValues

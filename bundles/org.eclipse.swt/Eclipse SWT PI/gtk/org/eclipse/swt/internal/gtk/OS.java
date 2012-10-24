@@ -3980,8 +3980,7 @@ public static final void gdk_draw_polygon(long /*int*/ drawable, long /*int*/ gc
 	}
 }
 /**
- * @param drawable cast=(GdkDrawable *)
- * @param gc cast=(GdkGC *)
+ * @method flags=dynamic
  * @param filled cast=(gint)
  * @param x cast=(gint)
  * @param y cast=(gint)
