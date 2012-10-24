@@ -4530,7 +4530,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1bitmap_1create_1from_1data)
 	{
 		if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	}
+/*
 	rc = (jintLong)gdk_bitmap_create_from_data((GdkWindow *)arg0, (const gchar *)lparg1, (gint)arg2, (gint)arg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_bitmap_create_from_data)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkWindow *, const gchar *, gint, gint))fp)((GdkWindow *)arg0, (const gchar *)lparg1, (gint)arg2, (gint)arg3);
+		}
+	}
 fail:
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
@@ -4839,7 +4847,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1cursor_1new_1from_1pixmap)
 	OS_NATIVE_ENTER(env, that, _1gdk_1cursor_1new_1from_1pixmap_FUNC);
 	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getGdkColorFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jintLong)gdk_cursor_new_from_pixmap((GdkPixmap *)arg0, (GdkPixmap *)arg1, (GdkColor *)lparg2, (GdkColor *)lparg3, (gint)arg4, (gint)arg5);
+/*
+	rc = (jintLong)gdk_cursor_new_from_pixmap(arg0, arg1, (GdkColor *)lparg2, (GdkColor *)lparg3, (gint)arg4, (gint)arg5);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_cursor_new_from_pixmap)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, GdkColor *, GdkColor *, gint, gint))fp)(arg0, arg1, (GdkColor *)lparg2, (GdkColor *)lparg3, (gint)arg4, (gint)arg5);
+		}
+	}
 fail:
 	OS_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1pixmap_FUNC);
 	return rc;

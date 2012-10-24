@@ -3446,6 +3446,7 @@ public static final void gdk_beep() {
 	}
 }
 /**
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param data cast=(const gchar *),flags=no_out critical
  * @param width cast=(gint)
@@ -3663,8 +3664,7 @@ public static final long /*int*/ gdk_cursor_new(long /*int*/ cursor_type) {
 	}
 }
 /**
- * @param source cast=(GdkPixmap *)
- * @param mask cast=(GdkPixmap *)
+ * @method flags=dynamic
  * @param fg cast=(GdkColor *),flags=no_out
  * @param bg cast=(GdkColor *),flags=no_out
  * @param x cast=(gint)
