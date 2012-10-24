@@ -5799,7 +5799,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1function)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1function_FUNC);
-	gdk_gc_set_function((GdkGC *)arg0, (GdkFunction)arg1);
+/*
+	gdk_gc_set_function(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_gc_set_function)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1function_FUNC);
 }
 #endif

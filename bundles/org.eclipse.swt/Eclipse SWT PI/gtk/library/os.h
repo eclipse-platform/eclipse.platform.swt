@@ -116,6 +116,7 @@
 #define NO__1gdk_1draw_1rectangle
 #define NO__1gdk_1gc_1set_1clip_1region
 #define NO__1gdk_1gc_1set_1foreground
+#define NO__1gdk_1gc_1set_1function
 #define NO_GdkVisual
 #define NO_GtkColorSelectionDialog
 #define NO_GdkGCValues

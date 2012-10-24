@@ -4321,8 +4321,7 @@ public static final void gdk_gc_set_foreground(long /*int*/ gc, GdkColor color) 
 	}
 }
 /**
- * @param gc cast=(GdkGC *)
- * @param function cast=(GdkFunction)
+ * @method flags=dynamic
  */
 public static final native void _gdk_gc_set_function(long /*int*/ gc, long /*int*/ function);
 public static final void gdk_gc_set_function(long /*int*/ gc, long /*int*/ function) {
