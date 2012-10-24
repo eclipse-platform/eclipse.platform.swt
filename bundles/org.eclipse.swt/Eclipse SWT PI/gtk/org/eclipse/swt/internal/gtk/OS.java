@@ -4355,8 +4355,7 @@ public static final void gdk_gc_set_stipple(long /*int*/ gc, long /*int*/ stippl
 	}
 }
 /**
- * @param gc cast=(GdkGC *)
- * @param mode cast=(GdkSubwindowMode)
+ * @method flags=dynamic
  */
 public static final native void _gdk_gc_set_subwindow(long /*int*/ gc, long /*int*/ mode);
 public static final void gdk_gc_set_subwindow(long /*int*/ gc, long /*int*/ mode) {

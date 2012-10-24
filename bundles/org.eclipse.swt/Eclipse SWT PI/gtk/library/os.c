@@ -5853,7 +5853,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1subwindow)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1subwindow_FUNC);
-	gdk_gc_set_subwindow((GdkGC *)arg0, (GdkSubwindowMode)arg1);
+/*
+	gdk_gc_set_subwindow(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_gc_set_subwindow)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1subwindow_FUNC);
 }
 #endif
