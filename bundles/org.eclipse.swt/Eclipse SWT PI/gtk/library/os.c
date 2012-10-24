@@ -4783,7 +4783,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1colormap_1get_1system)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1colormap_1get_1system_FUNC);
+/*
 	rc = (jintLong)gdk_colormap_get_system();
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_colormap_get_system)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1colormap_1get_1system_FUNC);
 	return rc;
 }

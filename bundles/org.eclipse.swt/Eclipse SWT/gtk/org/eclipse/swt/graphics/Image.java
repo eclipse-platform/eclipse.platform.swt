@@ -870,6 +870,8 @@ long /*int*/ createMask(ImageData image, boolean copy) {
 
 void createSurface() {
 	if (surface != 0) return;
+	/* There is no pixmaps in GTK 3. */
+	if ((OS.GTK_VERSION >= OS.VERSION(3, 0, 0))) return;
 	/* Generate the mask if necessary. */
 	if (transparentPixel != -1) createMask();
 	int[] w = new int[1], h = new int[1];

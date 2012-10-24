@@ -211,6 +211,7 @@
 #define gdk_drawable_get_depth_LIB LIB_GDK
 #define gdk_pixmap_new_LIB LIB_GDK
 #define gdk_color_white_LIB LIB_GDK
+#define gdk_colormap_get_system_LIB LIB_GDK
 #define gdk_gc_set_background_LIB LIB_GDK
 #define gdk_gc_set_stipple_LIB LIB_GDK
 #define gdk_gc_set_clip_mask_LIB LIB_GDK

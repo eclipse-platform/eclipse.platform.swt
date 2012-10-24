@@ -3632,6 +3632,7 @@ public static final void gdk_colormap_free_colors(long /*int*/ colormap, GdkColo
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
 public static final native long /*int*/ _gdk_colormap_get_system();
 public static final long /*int*/ gdk_colormap_get_system() {
 	lock.lock();
