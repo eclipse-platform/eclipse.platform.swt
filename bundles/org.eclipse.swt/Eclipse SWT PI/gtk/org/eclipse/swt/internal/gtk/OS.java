@@ -4717,6 +4717,7 @@ public static final long /*int*/ gdk_pixbuf_scale_simple(long /*int*/ src, int d
 	}
 }
 /**
+ * @method flags=dynamic
  * @param window cast=(GdkWindow *)
  * @param width cast=(gint)
  * @param height cast=(gint)

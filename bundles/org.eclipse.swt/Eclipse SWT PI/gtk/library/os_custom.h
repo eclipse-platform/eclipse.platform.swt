@@ -208,6 +208,7 @@
 #define gdk_gc_set_function_LIB LIB_GDK
 #define gdk_gc_set_subwindow_LIB LIB_GDK
 #define gdk_draw_drawable_LIB LIB_GDK
+#define gdk_pixmap_new_LIB LIB_GDK
 #define gdk_gc_set_background_LIB LIB_GDK
 #define gdk_gc_set_stipple_LIB LIB_GDK
 #define gdk_gc_set_clip_mask_LIB LIB_GDK

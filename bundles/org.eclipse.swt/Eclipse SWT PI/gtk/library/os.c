@@ -6406,7 +6406,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1pixmap_1new)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1pixmap_1new_FUNC);
+/*
 	rc = (jintLong)gdk_pixmap_new((GdkWindow *)arg0, (gint)arg1, (gint)arg2, (gint)arg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_pixmap_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkWindow *, gint, gint, gint))fp)((GdkWindow *)arg0, (gint)arg1, (gint)arg2, (gint)arg3);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1pixmap_1new_FUNC);
 	return rc;
 }

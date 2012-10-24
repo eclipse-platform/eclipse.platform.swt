@@ -120,6 +120,8 @@
 #define NO__1gdk_1gc_1set_1subwindow
 #define NO__1gdk_1gc_1set_1values
 #define NO__1gdk_1draw_1drawable
+#define NO__1gdk_1pixmap_1new
+#define NO__1GDK_1PIXMAP_1XID
 #define NO_GdkImage
 #define NO_GdkVisual
 #define NO_GtkColorSelectionDialog
