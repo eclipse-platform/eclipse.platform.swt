@@ -5348,7 +5348,15 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1drawable_1get_1depth)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1drawable_1get_1depth_FUNC);
-	rc = (jint)gdk_drawable_get_depth((GdkDrawable *)arg0);
+/*
+	rc = (jint)gdk_drawable_get_depth(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_drawable_get_depth)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1drawable_1get_1depth_FUNC);
 	return rc;
 }
@@ -6377,12 +6385,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1pixmap_1get_1size)
 		if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	}
 /*
-	gdk_pixmap_get_size((GdkPixmap *)arg0, (gint *)lparg1, (gint *)lparg2);
+	gdk_pixmap_get_size(arg0, (gint *)lparg1, (gint *)lparg2);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gdk_pixmap_get_size)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkPixmap *, gint *, gint *))fp)((GdkPixmap *)arg0, (gint *)lparg1, (gint *)lparg2);
+			((void (CALLING_CONVENTION*)(jintLong, gint *, gint *))fp)(arg0, (gint *)lparg1, (gint *)lparg2);
 		}
 	}
 fail:

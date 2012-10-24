@@ -3994,7 +3994,7 @@ public static final void gdk_draw_rectangle(long /*int*/ drawable, long /*int*/ 
 		lock.unlock();
 	}
 }
-/** @param drawable cast=(GdkDrawable *) */
+/** @method flags=dynamic */
 public static final native int _gdk_drawable_get_depth(long /*int*/ drawable);
 public static final int gdk_drawable_get_depth(long /*int*/ drawable) {
 	lock.lock();
@@ -4005,7 +4005,7 @@ public static final int gdk_drawable_get_depth(long /*int*/ drawable) {
 	}
 }
 /** 
- * @param pixmap cast=(GdkPixmap *)
+ * @method flags=dynamic
  * @param width cast=(gint *),flags=no_in critical
  * @param height cast=(gint *),flags=no_in critical
  * @method flags=dynamic
