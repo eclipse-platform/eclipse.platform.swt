@@ -3844,9 +3844,7 @@ public static final void gdk_draw_arc(long /*int*/ drawable, long /*int*/ gc, in
 	}
 }
 /**
- * @param drawable cast=(GdkDrawable *)
- * @param gc cast=(GdkGC *)
- * @param src cast=(GdkDrawable *)
+ * @method flags=dynamic
  * @param xsrc cast=(gint)
  * @param ysrc cast=(gint)
  * @param xdest cast=(gint)

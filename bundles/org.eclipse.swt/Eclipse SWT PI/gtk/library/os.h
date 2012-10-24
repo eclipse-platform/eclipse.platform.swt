@@ -119,6 +119,7 @@
 #define NO__1gdk_1gc_1set_1function
 #define NO__1gdk_1gc_1set_1subwindow
 #define NO__1gdk_1gc_1set_1values
+#define NO__1gdk_1draw_1drawable
 #define NO_GdkVisual
 #define NO_GtkColorSelectionDialog
 #define NO_GdkGCValues
