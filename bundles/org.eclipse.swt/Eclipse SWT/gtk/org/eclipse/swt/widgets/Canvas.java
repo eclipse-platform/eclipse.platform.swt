@@ -351,19 +351,10 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 //			GC gc = new GC (this);
 //			gc.copyArea (x, y, width, height, destX, destY);
 //			gc.dispose ();
-			if (OS.USE_CAIRO) {
-				OS.gdk_window_invalidate_region (window, copyRegion, true);
-				long /*int*/ cairo = OS.gdk_cairo_create (window);
-				OS.gdk_cairo_set_source_window (cairo, window, 0, 0);
-				Cairo.cairo_rectangle (cairo, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
-				Cairo.cairo_fill (cairo);
-				Cairo.cairo_destroy (cairo);
-			} else {
-				long /*int*/ gdkGC = OS.gdk_gc_new (window);
-				OS.gdk_gc_set_exposures (gdkGC, true);
-				OS.gdk_draw_drawable (window, gdkGC, window, copyRect.x, copyRect.y, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
-				OS.g_object_unref (gdkGC);
-			}
+			long /*int*/ gdkGC = OS.gdk_gc_new (window);
+			OS.gdk_gc_set_exposures (gdkGC, true);
+			OS.gdk_draw_drawable (window, gdkGC, window, copyRect.x, copyRect.y, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
+			OS.g_object_unref (gdkGC);
 			boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
 			if (disjoint) {
 				GdkRectangle rect = new GdkRectangle ();
