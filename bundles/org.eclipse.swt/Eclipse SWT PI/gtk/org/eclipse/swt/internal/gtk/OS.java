@@ -19,7 +19,16 @@ import org.eclipse.swt.internal.*;
 
 public class OS extends C {
 	static {
-		Library.loadLibrary("swt-pi");
+		boolean loaded = false;
+		if (System.getProperty("org.eclipse.swt.gtk3") != null) {
+			try {
+				Library.loadLibrary("swt-pi3");
+				loaded = true;
+			} catch (Throwable e) {}
+		}
+		if (!loaded) {
+			Library.loadLibrary("swt-pi");
+		}
 	}
 	
 	/** OS Constants */
