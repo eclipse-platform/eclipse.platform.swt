@@ -399,7 +399,11 @@ void createHandle (int index) {
 	gtk_widget_set_has_window (fixedHandle, true);
 	long /*int*/ oldList = OS.gtk_window_list_toplevels ();  
 	if ((style & SWT.READ_ONLY) != 0) {
-		handle = OS.gtk_combo_box_new_text ();
+		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+			handle = OS.gtk_combo_box_text_new ();
+		} else {
+			handle = OS.gtk_combo_box_new_text ();
+		}
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		cellHandle = OS.gtk_bin_get_child (handle);
 		if (cellHandle == 0) error (SWT.ERROR_NO_HANDLES);
