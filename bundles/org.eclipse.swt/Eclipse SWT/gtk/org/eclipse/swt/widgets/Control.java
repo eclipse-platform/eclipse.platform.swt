@@ -693,8 +693,13 @@ Point computeNativeSize (long /*int*/ h, int wHint, int hHint, boolean changed) 
 	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
 		GtkRequisition requisition = new GtkRequisition ();
 		gtk_widget_size_request (h, requisition);
-		width = OS.GTK_WIDGET_REQUISITION_WIDTH (h);
-		height = OS.GTK_WIDGET_REQUISITION_HEIGHT (h);
+		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+			width = requisition.width;
+			height = requisition.height;
+		} else {
+			width = OS.GTK_WIDGET_REQUISITION_WIDTH (h);
+			height = OS.GTK_WIDGET_REQUISITION_HEIGHT (h);
+		}
 	} else if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
 		int [] reqWidth = new int [1], reqHeight = new int [1];
 		OS.gtk_widget_get_size_request (h, reqWidth, reqHeight);
