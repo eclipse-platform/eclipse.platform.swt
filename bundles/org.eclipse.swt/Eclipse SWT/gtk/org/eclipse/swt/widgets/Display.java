@@ -422,9 +422,12 @@ public class Display extends Device {
 //	}
 
 	/* GTK Version */
-	static final int MAJOR = 2;
-	static final int MINOR = 6;
-	static final int MICRO = 0;
+	static final int GTK3_MAJOR = 3;
+	static final int GTK3_MINOR = 0;
+	static final int GTK3_MICRO = 0;
+	static final int GTK2_MAJOR = 2;
+	static final int GTK2_MINOR = 6;
+	static final int GTK2_MICRO = 0;
 
 	/* Display Data */
 	Object data;
@@ -914,14 +917,20 @@ void createDisplay (DeviceData data) {
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
 	}
 	if (OS.GDK_WINDOWING_X11 ()) xDisplay = OS.gdk_x11_get_default_xdisplay();
-	long /*int*/ ptr = OS.gtk_check_version (MAJOR, MINOR, MICRO);
+	int major = OS.gtk_major_version ();
+	long /*int*/ ptr;
+	if (major == GTK3_MAJOR) {
+		ptr = OS.gtk_check_version (GTK3_MAJOR, GTK3_MINOR, GTK3_MICRO);
+	} else {
+		ptr = OS.gtk_check_version (GTK2_MAJOR, GTK2_MINOR, GTK2_MICRO);
+	}
 	if (ptr != 0) {
 		int length = OS.strlen (ptr);
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, ptr, length);
 		System.out.println ("***WARNING: " + new String (Converter.mbcsToWcs (null, buffer))); //$NON-NLS-1$
-		System.out.println ("***WARNING: SWT requires GTK " + MAJOR+ "." + MINOR + "." + MICRO); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		int major = OS.gtk_major_version (), minor = OS.gtk_minor_version (), micro = OS.gtk_micro_version ();
+		System.out.println ("***WARNING: SWT requires GTK " + GTK2_MAJOR+ "." + GTK2_MINOR + "." + GTK2_MICRO); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		int minor = OS.gtk_minor_version (), micro = OS.gtk_micro_version ();
 		System.out.println ("***WARNING: Detected: " + major + "." + minor + "." + micro); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 	if (fixed_type == 0) {
