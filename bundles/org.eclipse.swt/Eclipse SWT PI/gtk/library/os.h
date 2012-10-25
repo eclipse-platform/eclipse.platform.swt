@@ -135,7 +135,6 @@
 #define NO_GdkWindowAttr
 #define NO_GtkAdjustment
 #define NO_GtkFixed
-#define NO_GtkWidgetClass
 
 #endif
 
