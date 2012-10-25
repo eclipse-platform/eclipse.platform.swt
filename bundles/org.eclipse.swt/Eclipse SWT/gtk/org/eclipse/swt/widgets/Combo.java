@@ -1046,7 +1046,11 @@ public int getTextHeight () {
 	checkWidget();
 	GtkRequisition requisition = new GtkRequisition ();
 	gtk_widget_size_request (handle, requisition);
-	return OS.GTK_WIDGET_REQUISITION_HEIGHT (handle);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		return requisition.height;
+	} else {
+		return OS.GTK_WIDGET_REQUISITION_HEIGHT (handle);
+	}
 }
 
 /**
