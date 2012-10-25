@@ -2626,6 +2626,11 @@ boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 	if (type == SWT.DragDetect) {
 		dragDetected = true;
 	} else if (type == SWT.MouseUp) {
+		/* 
+		 * This code path handles the case of an unmodified click on an already-selected row.
+		 * To keep the order of events correct, deselect the other selected items and send the
+		 * selection event before MouseUp is sent. Ignore the next selection event.
+		 */
 		if (!dragDetected && selectedRowIndex != -1) {
 			NSTableView widget = (NSTableView)view;
 			NSIndexSet selectedRows = widget.selectedRowIndexes ();
@@ -2643,6 +2648,7 @@ boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 			event.item = _getItem (null, selectedRowIndex, true);
 			selectedRowIndex = -1;
 			sendSelectionEvent (SWT.Selection, event, false);
+			ignoreSelect = true;
 		}
 		dragDetected = false;
 	}
