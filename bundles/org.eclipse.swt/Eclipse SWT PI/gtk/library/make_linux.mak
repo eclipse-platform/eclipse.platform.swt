@@ -21,7 +21,11 @@ WS_PREFIX = gtk
 SWT_PREFIX = swt
 CDE_PREFIX = swt-cde
 AWT_PREFIX = swt-awt
+ifeq ($(GTK_VERSION), 3.0)
+SWTPI_PREFIX = swt-pi3
+else
 SWTPI_PREFIX = swt-pi
+endif
 CAIRO_PREFIX = swt-cairo
 ATK_PREFIX = swt-atk
 GNOME_PREFIX = swt-gnome
@@ -49,7 +53,11 @@ CAIROLIBS = `pkg-config --libs-only-L cairo` -lcairo
 
 # Do not use pkg-config to get libs because it includes unnecessary dependencies (i.e. pangoxft-1.0)
 GTKCFLAGS = `pkg-config --cflags gtk+-$(GTK_VERSION)`
+ifeq ($(GTK_VERSION), 3.0)
+GTKLIBS = `pkg-config --libs gtk+-$(GTK_VERSION) gthread-2.0` $(XLIB64) -L/usr/X11R6/lib -lXtst
+else
 GTKLIBS = `pkg-config --libs-only-L gtk+-$(GTK_VERSION) gthread-2.0` $(XLIB64) -L/usr/X11R6/lib -lgtk-x11-$(GTK_VERSION) -lgthread-2.0 -lXtst
+endif
 
 CDE_LIBS = -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lXt -lX11 -lDtSvc
 
@@ -57,7 +65,7 @@ AWT_LFLAGS = -shared ${SWT_LFLAGS}
 AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt
 
 ATKCFLAGS = `pkg-config --cflags atk gtk+-$(GTK_VERSION)`
-ATKLIBS = `pkg-config --libs-only-L atk gtk+-$(GTK_VERSION)` -latk-1.0 -lgtk-x11-$(GTK_VERSION)
+ATKLIBS = `pkg-config --libs-only-L atk` -latk-1.0 
 
 GNOMECFLAGS = `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 GNOMELIBS = `pkg-config --libs-only-L gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0` -lgnomevfs-2 -lgnome-2 -lgnomeui-2
