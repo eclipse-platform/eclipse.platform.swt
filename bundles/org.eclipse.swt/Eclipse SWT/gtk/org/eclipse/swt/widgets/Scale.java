@@ -159,9 +159,7 @@ void hookEvents () {
 public int getIncrement () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment ();
-	OS.memmove (adjustment, hAdjustment);
-	return (int) adjustment.step_increment;
+	return (int) gtk_adjustment_get_step_increment (hAdjustment);
 }
 
 /**
@@ -177,9 +175,7 @@ public int getIncrement () {
 public int getMaximum () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment ();
-	OS.memmove (adjustment, hAdjustment);
-	return (int) adjustment.upper;
+	return (int) gtk_adjustment_get_upper (hAdjustment);
 }
 
 /**
@@ -195,9 +191,7 @@ public int getMaximum () {
 public int getMinimum () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment ();
-	OS.memmove (adjustment, hAdjustment);
-	return (int) adjustment.lower;
+	return (int) gtk_adjustment_get_lower (hAdjustment);
 }
 
 /**
@@ -215,9 +209,7 @@ public int getMinimum () {
 public int getPageIncrement () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment ();
-	OS.memmove (adjustment, hAdjustment);
-	return (int) adjustment.page_increment;
+	return (int) gtk_adjustment_get_page_increment (hAdjustment);
 }
 
 /**
@@ -233,9 +225,7 @@ public int getPageIncrement () {
 public int getSelection () {
 	checkWidget ();
 	long /*int*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment ();
-	OS.memmove (adjustment, hAdjustment);
-	return (int) adjustment.value;
+	return (int) gtk_adjustment_get_value (hAdjustment);
 }
 
 long /*int*/ gtk_value_changed (long /*int*/ adjustment) {

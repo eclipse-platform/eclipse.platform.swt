@@ -5789,6 +5789,19 @@ public static final void gtk_adjustment_changed(long /*int*/ adjustment) {
 	}
 }
 /**
+ * @method flags=dynamic 
+ * @param adjustment cast=(GtkAdjustment *)
+ */
+public static final native void _gtk_adjustment_configure(long /*int*/ adjustment, double value, double lower, double upper, double step_increment, double page_increment, double page_size);
+public static final void gtk_adjustment_configure(long /*int*/ adjustment, double value, double lower, double upper, double step_increment, double page_increment, double page_size) {
+	lock.lock();
+	try {
+		_gtk_adjustment_configure(adjustment, value, lower, upper, step_increment, page_increment, page_size);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param value cast=(gdouble)
  * @param lower cast=(gdouble)
  * @param upper cast=(gdouble)
@@ -5805,6 +5818,84 @@ public static final long /*int*/ gtk_adjustment_new(double value, double lower, 
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param adjustment cast=(GtkAdjustment *)
+ */
+public static final native double _gtk_adjustment_get_lower(long /*int*/ adjustment);
+public static final double gtk_adjustment_get_lower(long /*int*/ adjustment) {
+	lock.lock();
+	try {
+		return _gtk_adjustment_get_lower(adjustment);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param adjustment cast=(GtkAdjustment *)
+ */
+public static final native double _gtk_adjustment_get_page_increment(long /*int*/ adjustment);
+public static final double gtk_adjustment_get_page_increment(long /*int*/ adjustment) {
+	lock.lock();
+	try {
+		return _gtk_adjustment_get_page_increment(adjustment);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param adjustment cast=(GtkAdjustment *)
+ */
+public static final native double _gtk_adjustment_get_page_size(long /*int*/ adjustment);
+public static final double gtk_adjustment_get_page_size(long /*int*/ adjustment) {
+	lock.lock();
+	try {
+		return _gtk_adjustment_get_page_size(adjustment);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param adjustment cast=(GtkAdjustment *)
+ */
+public static final native double _gtk_adjustment_get_step_increment(long /*int*/ adjustment);
+public static final double gtk_adjustment_get_step_increment(long /*int*/ adjustment) {
+	lock.lock();
+	try {
+		return _gtk_adjustment_get_step_increment(adjustment);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param adjustment cast=(GtkAdjustment *)
+ */
+public static final native double _gtk_adjustment_get_upper(long /*int*/ adjustment);
+public static final double gtk_adjustment_get_upper(long /*int*/ adjustment) {
+	lock.lock();
+	try {
+		return _gtk_adjustment_get_upper(adjustment);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param adjustment cast=(GtkAdjustment *)
+ */
+public static final native double _gtk_adjustment_get_value(long /*int*/ adjustment);
+public static final double gtk_adjustment_get_value(long /*int*/ adjustment) {
+	lock.lock();
+	try {
+		return _gtk_adjustment_get_value(adjustment);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param adjustment cast=(GtkAdjustment *)
  * @param value cast=(gdouble)
  */
@@ -5813,6 +5904,34 @@ public static final void gtk_adjustment_set_value(long /*int*/ adjustment, doubl
 	lock.lock();
 	try {
 		_gtk_adjustment_set_value(adjustment, value);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param adjustment cast=(GtkAdjustment *)
+ * @param value cast=(gdouble)
+ */
+public static final native void _gtk_adjustment_set_step_increment(long /*int*/ adjustment, double value);
+public static final void gtk_adjustment_set_step_increment(long /*int*/ adjustment, double value) {
+	lock.lock();
+	try {
+		_gtk_adjustment_set_step_increment(adjustment, value);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param adjustment cast=(GtkAdjustment *)
+ * @param value cast=(gdouble)
+ */
+public static final native void _gtk_adjustment_set_page_increment(long /*int*/ adjustment, double value);
+public static final void gtk_adjustment_set_page_increment(long /*int*/ adjustment, double value) {
+	lock.lock();
+	try {
+		_gtk_adjustment_set_page_increment(adjustment, value);
 	} finally {
 		lock.unlock();
 	}

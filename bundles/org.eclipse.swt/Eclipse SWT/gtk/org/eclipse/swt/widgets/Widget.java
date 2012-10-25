@@ -639,6 +639,82 @@ long /*int*/ gtk_activate (long /*int*/ widget) {
 	return 0;
 }
 
+void gtk_adjustment_get (long /*int*/ hAdjustment, GtkAdjustment adjustment) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
+		adjustment.lower = OS.gtk_adjustment_get_lower (hAdjustment);
+		adjustment.upper = OS.gtk_adjustment_get_upper (hAdjustment);
+		adjustment.page_increment = OS.gtk_adjustment_get_page_increment (hAdjustment);
+		adjustment.step_increment = OS.gtk_adjustment_get_step_increment (hAdjustment);
+		adjustment.page_size = OS.gtk_adjustment_get_page_size (hAdjustment);
+		adjustment.value = OS.gtk_adjustment_get_value (hAdjustment);
+	} else {
+		OS.memmove(adjustment, hAdjustment);
+	}
+}
+
+double gtk_adjustment_get_step_increment (long /*int*/ hAdjustment) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
+		return (int) OS.gtk_adjustment_get_step_increment (hAdjustment);
+	}
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
+	return (int) adjustment.step_increment;
+}
+
+double gtk_adjustment_get_page_increment (long /*int*/ hAdjustment) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
+		return (int) OS.gtk_adjustment_get_page_increment (hAdjustment);
+	}
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
+	return (int) adjustment.page_increment;
+}
+
+double gtk_adjustment_get_lower (long /*int*/ hAdjustment) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
+		return (int) OS.gtk_adjustment_get_lower (hAdjustment);
+	}
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
+	return (int) adjustment.lower;
+}
+
+double gtk_adjustment_get_upper (long /*int*/ hAdjustment) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
+		return (int) OS.gtk_adjustment_get_upper (hAdjustment);
+	}
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
+	return (int) adjustment.upper;
+}
+
+double gtk_adjustment_get_page_size (long /*int*/ hAdjustment) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
+		return (int) OS.gtk_adjustment_get_page_size (hAdjustment);
+	}
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
+	return (int) adjustment.page_size;
+}
+
+double gtk_adjustment_get_value (long /*int*/ hAdjustment) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
+		return (int) OS.gtk_adjustment_get_value (hAdjustment);
+	}
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
+	return (int) adjustment.value;
+}
+
+void gtk_adjustment_configure (long /*int*/ hAdjustment, GtkAdjustment a) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
+		OS.gtk_adjustment_configure(hAdjustment, a.value, a.lower, a.upper, a.step_increment, a.page_increment, a.page_size);
+	} else {
+		OS.memmove (hAdjustment, a);
+		OS.gtk_adjustment_changed (hAdjustment);
+	}
+}
+
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }

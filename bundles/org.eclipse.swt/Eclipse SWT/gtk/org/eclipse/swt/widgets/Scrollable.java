@@ -287,7 +287,7 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 		}
 		if (scrollBar != null && !gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
 			GtkAdjustment adjustment = new GtkAdjustment ();
-			OS.memmove (adjustment, scrollBar.adjustmentHandle);
+			gtk_adjustment_get (scrollBar.adjustmentHandle, adjustment);
 			/* Calculate wheel delta to match GTK+ 2.4 and higher */
 			int wheel_delta = (int) Math.pow(adjustment.page_size, 2.0 / 3.0);
 			if (gdkEvent.direction == OS.GDK_SCROLL_UP || gdkEvent.direction == OS.GDK_SCROLL_LEFT)

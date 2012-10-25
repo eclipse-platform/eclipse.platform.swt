@@ -77,6 +77,15 @@
 #define XRenderSetPictureTransform_LIB LIB_XRENDER
 #define g_filename_display_name_LIB LIB_GLIB
 #define gtk_widget_set_allocation_LIB LIB_GTK
+#define gtk_adjustment_configure_LIB LIB_GTK
+#define gtk_adjustment_get_lower_LIB LIB_GTK
+#define gtk_adjustment_get_page_increment_LIB LIB_GTK
+#define gtk_adjustment_get_page_size_LIB LIB_GTK
+#define gtk_adjustment_get_step_increment_LIB LIB_GTK
+#define gtk_adjustment_get_upper_LIB LIB_GTK
+#define gtk_adjustment_get_value_LIB LIB_GTK
+#define gtk_adjustment_set_page_increment_LIB LIB_GTK
+#define gtk_adjustment_set_step_increment_LIB LIB_GTK
 #define gtk_box_new_LIB LIB_GTK
 #define gtk_box_set_homogeneous_LIB LIB_GTK
 #define gtk_hbox_new_LIB LIB_GTK
