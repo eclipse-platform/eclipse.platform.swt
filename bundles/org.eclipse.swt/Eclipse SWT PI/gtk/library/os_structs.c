@@ -529,7 +529,7 @@ GdkEventExpose *getGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEventE
 	lpStruct->area.y = (*env)->GetIntField(env, lpObject, GdkEventExposeFc.area_y);
 	lpStruct->area.width = (*env)->GetIntField(env, lpObject, GdkEventExposeFc.area_width);
 	lpStruct->area.height = (*env)->GetIntField(env, lpObject, GdkEventExposeFc.area_height);
-	lpStruct->region = (GdkRegion *)(*env)->GetIntLongField(env, lpObject, GdkEventExposeFc.region);
+	lpStruct->region = (void *)(*env)->GetIntLongField(env, lpObject, GdkEventExposeFc.region);
 	lpStruct->count = (gint)(*env)->GetIntField(env, lpObject, GdkEventExposeFc.count);
 	return lpStruct;
 }

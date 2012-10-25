@@ -28,7 +28,7 @@ public class GdkEventExpose extends GdkEvent {
 	public int area_width;
 	/** @field accessor=area.height */
 	public int area_height;
-	/** @field cast=(GdkRegion *) */
+	/** @field cast=(void *) */
 	public long /*int*/ region;
 	/** @field cast=(gint) */
 	public int count;

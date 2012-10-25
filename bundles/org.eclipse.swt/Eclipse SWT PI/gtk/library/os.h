@@ -132,7 +132,6 @@
 #define NO_GTK_1TEXTVIEW_1IM_1CONTEXT
 #define NO_GTK_1WIDGET_1REQUISITION_1HEIGHT
 #define NO_GTK_1WIDGET_1REQUISITION_1WIDTH
-#define NO_GdkEventExpose
 #define NO_GdkWindowAttr
 #define NO_GtkAdjustment
 #define NO_GtkFixed
