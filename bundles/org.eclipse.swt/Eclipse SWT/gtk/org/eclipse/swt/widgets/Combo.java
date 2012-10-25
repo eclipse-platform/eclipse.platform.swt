@@ -408,7 +408,11 @@ void createHandle (int index) {
 		cellHandle = OS.gtk_bin_get_child (handle);
 		if (cellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	} else {
-		handle = OS.gtk_combo_box_entry_new_text ();
+		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+			handle = OS.gtk_combo_box_text_new_with_entry();
+		} else {
+			handle = OS.gtk_combo_box_entry_new_text ();
+		}
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		entryHandle = OS.gtk_bin_get_child (handle);
 		if (entryHandle == 0) error (SWT.ERROR_NO_HANDLES);

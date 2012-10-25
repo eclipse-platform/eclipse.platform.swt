@@ -6371,6 +6371,16 @@ public static final long /*int*/ gtk_combo_box_text_new() {
 	}
 }
 /** @method flags=dynamic */
+public static final native long /*int*/ _gtk_combo_box_text_new_with_entry();
+public static final long /*int*/ gtk_combo_box_text_new_with_entry() {
+	lock.lock();
+	try {
+		return _gtk_combo_box_text_new_with_entry();
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
 public static final native void _gtk_combo_box_insert_text(long /*int*/ combo_box, int position, byte[] text);
 public static final void gtk_combo_box_insert_text(long /*int*/ combo_box, int position, byte[] text) {
 	lock.lock();

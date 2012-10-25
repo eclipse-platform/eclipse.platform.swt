@@ -110,6 +110,7 @@
 #define gtk_combo_box_popup_LIB LIB_GTK
 #define gtk_combo_box_popdown_LIB LIB_GTK
 #define gtk_combo_box_text_new_LIB LIB_GTK
+#define gtk_combo_box_text_new_with_entry_LIB LIB_GTK
 #define gtk_entry_text_index_to_layout_index_LIB LIB_GTK
 #define gtk_entry_get_inner_border_LIB LIB_GTK
 #define gtk_font_chooser_dialog_new_LIB LIB_GTK
