@@ -49,8 +49,13 @@
 #define LIB_FONTCONFIG "libfontconfig.so"
 #else
 #define LIB_XRENDER "libXrender.so"
+#if GTK_CHECK_VERSION(3,0,0)
+#define LIB_GTK "libgtk-3.so.0"
+#define LIB_GDK "libgdk-3.so.0"
+#else
 #define LIB_GTK "libgtk-x11-2.0.so.0"
 #define LIB_GDK "libgdk-x11-2.0.so.0"
+#endif
 #define LIB_GLIB "libglib-2.0.so.0"
 #define LIB_GOBJECT "libgobject-2.0.so.0"
 #define LIB_ATK "libatk-1.0.so.0"
