@@ -130,9 +130,9 @@
 #define NO_GtkColorSelectionDialog
 #define NO_GdkGCValues
 #define NO_GtkAccessible
-
 #define NO_GTK_1ENTRY_1IM_1CONTEXT
 #define NO_GTK_1TEXTVIEW_1IM_1CONTEXT
+
 #define NO_GTK_1WIDGET_1REQUISITION_1HEIGHT
 #define NO_GTK_1WIDGET_1REQUISITION_1WIDTH
 #define NO_GtkAdjustment

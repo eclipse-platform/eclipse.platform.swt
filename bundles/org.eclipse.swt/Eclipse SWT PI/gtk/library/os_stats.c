@@ -145,6 +145,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1GTK_1TYPE_1CELL_1RENDERER_1TEXT",
 	"_1GTK_1TYPE_1CELL_1RENDERER_1TOGGLE",
 	"_1GTK_1TYPE_1FIXED",
+	"_1GTK_1TYPE_1IM_1MULTICONTEXT",
 	"_1GTK_1TYPE_1MENU",
 	"_1GTK_1TYPE_1WIDGET",
 	"_1GTK_1WIDGET_1FLAGS",
@@ -1502,6 +1503,8 @@ char * OS_nativeFunctionNames[] = {
 	"gdk_1threads_1init",
 	"gdk_1threads_1leave",
 	"gdk_1threads_1set_1lock_1functions",
+	"imContextLast",
+	"imContextNewProc_1CALLBACK",
 	"localeconv_1decimal_1point",
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I",

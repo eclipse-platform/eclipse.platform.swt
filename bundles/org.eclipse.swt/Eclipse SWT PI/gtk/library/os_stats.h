@@ -155,6 +155,7 @@ typedef enum {
 	_1GTK_1TYPE_1CELL_1RENDERER_1TEXT_FUNC,
 	_1GTK_1TYPE_1CELL_1RENDERER_1TOGGLE_FUNC,
 	_1GTK_1TYPE_1FIXED_FUNC,
+	_1GTK_1TYPE_1IM_1MULTICONTEXT_FUNC,
 	_1GTK_1TYPE_1MENU_FUNC,
 	_1GTK_1TYPE_1WIDGET_FUNC,
 	_1GTK_1WIDGET_1FLAGS_FUNC,
@@ -1512,6 +1513,8 @@ typedef enum {
 	gdk_1threads_1init_FUNC,
 	gdk_1threads_1leave_FUNC,
 	gdk_1threads_1set_1lock_1functions_FUNC,
+	imContextLast_FUNC,
+	imContextNewProc_1CALLBACK_FUNC,
 	localeconv_1decimal_1point_FUNC,
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I_FUNC,

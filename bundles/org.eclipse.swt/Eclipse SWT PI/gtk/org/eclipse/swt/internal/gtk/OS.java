@@ -1433,6 +1433,10 @@ public static final long /*int*/ XRenderFindVisualFormat(long /*int*/ display, l
 
 /** @method flags=no_gen */
 public static final native long /*int*/ pangoLayoutNewProc_CALLBACK(long /*int*/ func);
+/** @method flags=no_gen */
+public static final native long /*int*/ imContextNewProc_CALLBACK(long /*int*/ func);
+/** @method flags=no_gen */
+public static final native long /*int*/ imContextLast();
 
 
 /** Natives */
@@ -1621,6 +1625,16 @@ public static final long /*int*/ GTK_TYPE_CELL_RENDERER_TOGGLE() {
 	lock.lock();
 	try {
 		return _GTK_TYPE_CELL_RENDERER_TOGGLE();
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=const */
+public static final native long /*int*/ _GTK_TYPE_IM_MULTICONTEXT();
+public static final long /*int*/ GTK_TYPE_IM_MULTICONTEXT() {
+	lock.lock();
+	try {
+		return _GTK_TYPE_IM_MULTICONTEXT();
 	} finally {
 		lock.unlock();
 	}

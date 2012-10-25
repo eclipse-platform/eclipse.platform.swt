@@ -59,6 +59,7 @@ import org.eclipse.swt.events.*;
 public class Combo extends Composite {
 	long /*int*/ buttonHandle, entryHandle, textRenderer, cellHandle, popupHandle, menuHandle;
 	int lastEventTime, visibleCount = 10;
+	long /*int*/ imContext;
 	long /*int*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
 	String [] items = new String [0];
@@ -416,6 +417,9 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		entryHandle = OS.gtk_bin_get_child (handle);
 		if (entryHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+			imContext = OS.imContextLast();
+		}
 	}
 	popupHandle = findPopupHandle (oldList);    
 	OS.gtk_container_add (fixedHandle, handle);
@@ -684,6 +688,7 @@ void hookEvents(long /*int*/ [] handles) {
 }
 
 long /*int*/ imContext () {
+	if (imContext != 0) return imContext; 
 	return entryHandle != 0 ? OS.GTK_ENTRY_IM_CONTEXT (entryHandle) : 0;
 }
 

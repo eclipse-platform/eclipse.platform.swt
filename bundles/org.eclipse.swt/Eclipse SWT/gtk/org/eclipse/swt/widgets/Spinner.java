@@ -45,6 +45,7 @@ import org.eclipse.swt.events.*;
 public class Spinner extends Composite {
 	static final int MIN_ARROW_WIDTH = 6;
 	int lastEventTime = 0;
+	long /*int*/ imContext;
 	long /*int*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
 	double climbRate = 1;
@@ -299,6 +300,9 @@ void createHandle (int index) {
 	OS.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
 	OS.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) != 0);
 	OS.gtk_spin_button_set_wrap (handle, (style & SWT.WRAP) != 0);
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		imContext = OS.imContextLast();
+	}
 }
 
 /**
@@ -759,6 +763,7 @@ void hookEvents () {
 }
 
 long /*int*/ imContext () {
+	if (imContext != 0) return imContext; 
 	return OS.GTK_ENTRY_IM_CONTEXT (handle);
 }
 

@@ -58,6 +58,7 @@ import org.eclipse.swt.events.*;
  */
 public class Text extends Scrollable {
 	long /*int*/ bufferHandle;
+	long /*int*/ imContext;
 	int tabs = 8, lastEventTime = 0;
 	long /*int*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
@@ -228,6 +229,9 @@ void createHandle (int index) {
 		if ((style & SWT.CENTER) != 0) just = OS.GTK_JUSTIFY_CENTER; 
 		if ((style & SWT.RIGHT) != 0) just = OS.GTK_JUSTIFY_RIGHT;
 		OS.gtk_text_view_set_justification (handle, just);
+	}
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		imContext = OS.imContextLast();
 	}
 }
 
@@ -1800,7 +1804,7 @@ void hookEvents () {
 }
 
 long /*int*/ imContext () {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) return 0; 
+	if (imContext != 0) return imContext; 
 	if ((style & SWT.SINGLE) != 0) {
 		return OS.gtk_editable_get_editable (handle) ? OS.GTK_ENTRY_IM_CONTEXT (handle) : 0;
 	} 

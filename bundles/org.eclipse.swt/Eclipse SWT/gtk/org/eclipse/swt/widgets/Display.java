@@ -288,6 +288,9 @@ public class Display extends Device {
 	/* Pango layout constructor */
 	long /*int*/ pangoLayoutNewProc;
 	
+	/* IM Context constructor */
+	long /*int*/ imContextNewProc;
+	
 	/* Custom Resize */
 	double resizeLocationX, resizeLocationY;
 	int resizeBoundsX, resizeBoundsY, resizeBoundsWidth, resizeBoundsHeight;
@@ -2635,6 +2638,14 @@ void initializeSubclasses () {
 	pangoLayoutNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (pangoLayoutClass);
 	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, OS.pangoLayoutNewProc_CALLBACK(pangoLayoutNewProc));
 	OS.g_type_class_unref (pangoLayoutClass);
+
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		long /*int*/ imContextType = OS.GTK_TYPE_IM_MULTICONTEXT ();
+		long /*int*/ imContextClass = OS.g_type_class_ref (imContextType);
+		imContextNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (imContextClass);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, OS.imContextNewProc_CALLBACK(imContextNewProc));
+		OS.g_type_class_unref (imContextClass);
+	}
 }
 
 void initializeSystemSettings () {
@@ -3424,6 +3435,13 @@ void releaseDisplay () {
 	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, pangoLayoutNewProc);
 	OS.g_type_class_unref (pangoLayoutClass);
 	pangoLayoutNewProc = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		long /*int*/ imContextType = OS.PANGO_TYPE_LAYOUT ();
+		long /*int*/ imContextClass = OS.g_type_class_ref (imContextType);
+		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, imContextNewProc);
+		OS.g_type_class_unref (imContextClass);
+		imContextNewProc = 0;
+	}
 	
 	/* Release the sleep resources */
 	max_priority = timeout = null;

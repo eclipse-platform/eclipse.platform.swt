@@ -68,6 +68,38 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GDK_1WINDOWING_1X11)
 }
 #endif
 
+#ifndef NO_imContextNewProc_1CALLBACK
+static jintLong superIMContextNewProc;
+static GtkIMContext* lastIMContext;
+static GtkIMContext* imContextNewProc (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties) {
+	GtkIMContext* context = ((GtkIMContext * (*)(GType, guint, GObjectConstructParam *))superIMContextNewProc)(type, n_construct_properties, construct_properties);
+	lastIMContext = context;
+	return context;
+}
+#ifndef NO_imContextLast
+JNIEXPORT jintLong JNICALL OS_NATIVE(imContextLast)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, imContextLast_FUNC);
+	rc = (jintLong)lastIMContext;
+	OS_NATIVE_EXIT(env, that, imContextLast_FUNC);
+	return rc;
+}
+#endif
+
+JNIEXPORT jintLong JNICALL OS_NATIVE(imContextNewProc_1CALLBACK)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, imContextNewProc_1CALLBACK_FUNC);
+	superIMContextNewProc = arg0;
+	rc = (jintLong)imContextNewProc;
+	OS_NATIVE_EXIT(env, that, imContextNewProc_1CALLBACK_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_pangoLayoutNewProc_1CALLBACK
 static jintLong superPangoLayoutNewProc;
 static PangoLayout * pangoLayoutNewProc (GType type, guint n_construct_properties, GObjectConstructParam * construct_properties) {
