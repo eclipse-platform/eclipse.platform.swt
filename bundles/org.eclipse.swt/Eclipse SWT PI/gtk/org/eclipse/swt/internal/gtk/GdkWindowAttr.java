@@ -25,7 +25,7 @@ public class GdkWindowAttr {
 	public int wclass;
 	/** @field cast=(GdkVisual *) */
 	public long /*int*/ visual;
-	/** @field cast=(GdkColormap *) */
+	/** @field cast=(GdkColormap *),exclude=#ifndef GTK3 */
 	public long /*int*/ colormap;
 	public int window_type;
 	/** @field cast=(GdkCursor *) */

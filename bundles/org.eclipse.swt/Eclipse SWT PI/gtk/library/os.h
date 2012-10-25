@@ -96,6 +96,9 @@
 
 /* Disable access to sealed structs in GTK3 */
 #if GTK_CHECK_VERSION(3,0,0)
+
+#define GTK3 1
+
 #define NO_GdkDragContext
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2JJ
@@ -132,7 +135,6 @@
 #define NO_GTK_1TEXTVIEW_1IM_1CONTEXT
 #define NO_GTK_1WIDGET_1REQUISITION_1HEIGHT
 #define NO_GTK_1WIDGET_1REQUISITION_1WIDTH
-#define NO_GdkWindowAttr
 #define NO_GtkAdjustment
 #define NO_GtkFixed
 
