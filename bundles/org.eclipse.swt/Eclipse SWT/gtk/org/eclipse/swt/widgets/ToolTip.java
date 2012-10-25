@@ -617,7 +617,9 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 
 void hookEvents () {
 	if ((style & SWT.BALLOON) != 0) {
-		OS.g_signal_connect_closure (handle, OS.expose_event, display.closures [EXPOSE_EVENT], false);
+		if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+			OS.g_signal_connect_closure (handle, OS.expose_event, display.closures [EXPOSE_EVENT], false);
+		}
 		OS.gtk_widget_add_events (handle, OS.GDK_BUTTON_PRESS_MASK);
 		OS.g_signal_connect_closure (handle, OS.button_press_event, display.closures [BUTTON_PRESS_EVENT], false);
 	} else {

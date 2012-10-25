@@ -2425,7 +2425,9 @@ void initializeCallbacks () {
 	signalIds [Widget.ENTER_NOTIFY_EVENT] = OS.g_signal_lookup (OS.enter_notify_event, OS.GTK_TYPE_WIDGET ());
 	signalIds [Widget.EVENT] = OS.g_signal_lookup (OS.event, OS.GTK_TYPE_WIDGET ());
 	signalIds [Widget.EVENT_AFTER] = OS.g_signal_lookup (OS.event_after, OS.GTK_TYPE_WIDGET ());
-	signalIds [Widget.EXPOSE_EVENT] = OS.g_signal_lookup (OS.expose_event, OS.GTK_TYPE_WIDGET ());
+	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+		signalIds [Widget.EXPOSE_EVENT] = OS.g_signal_lookup (OS.expose_event, OS.GTK_TYPE_WIDGET ());
+	}
 	signalIds [Widget.FOCUS] = OS.g_signal_lookup (OS.focus, OS.GTK_TYPE_WIDGET ());
 	signalIds [Widget.FOCUS_IN_EVENT] = OS.g_signal_lookup (OS.focus_in_event, OS.GTK_TYPE_WIDGET ());
 	signalIds [Widget.FOCUS_OUT_EVENT] = OS.g_signal_lookup (OS.focus_out_event, OS.GTK_TYPE_WIDGET ());

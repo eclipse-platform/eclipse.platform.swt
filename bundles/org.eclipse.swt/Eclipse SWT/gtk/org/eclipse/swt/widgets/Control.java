@@ -315,7 +315,9 @@ void hookEvents () {
 	long /*int*/ paintHandle = paintHandle ();
 	int paintMask = OS.GDK_EXPOSURE_MASK | OS.GDK_VISIBILITY_NOTIFY_MASK;
 	OS.gtk_widget_add_events (paintHandle, paintMask);
-	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT_INVERSE], false);
+	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT_INVERSE], false);
+	}
 	/*
 	* As of GTK 2.17.11, obscured controls no longer send expose 
 	* events. It is no longer necessary to track visiblity notify
@@ -324,7 +326,9 @@ void hookEvents () {
 	if (OS.GTK_VERSION < OS.VERSION (2, 17, 11)) {
 		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [VISIBILITY_NOTIFY_EVENT], 0, display.closures [VISIBILITY_NOTIFY_EVENT], false);
 	}
-	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT], true);
+	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT], true);
+	}
 
 	/* Connect the Input Method signals */
 	OS.g_signal_connect_closure_by_id (handle, display.signalIds [REALIZE], 0, display.closures [REALIZE], true);
