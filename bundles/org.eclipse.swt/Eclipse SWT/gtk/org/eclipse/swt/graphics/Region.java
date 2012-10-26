@@ -205,8 +205,8 @@ static long /*int*/ cairoPolygonRgn(int[] pointArray) {
 	//TODO this does not perform well and could fail if the polygon is too big
 	int minX = pointArray[0], maxX = minX;
 	int minY = pointArray[1], maxY = minY;
-	int length = pointArray.length / 2 * 2;
-	for (int i=2; i<length; i+=2) {
+	int count = pointArray.length / 2 * 2;
+	for (int i=2; i<count; i+=2) {
 		int x = pointArray[i], y = pointArray[i + 1];
 		if (x < minX) minX = x;
 		if (x > maxX) maxX = x;
@@ -218,9 +218,8 @@ static long /*int*/ cairoPolygonRgn(int[] pointArray) {
 	long /*int*/ cairo = Cairo.cairo_create(surface);
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_move_to(cairo, pointArray[0] - minX, pointArray[1] - minY);
-	int count = pointArray.length / 2;
-	for (int i=1,j=2; i<count; i++,j+=2) {
-		Cairo.cairo_line_to(cairo, pointArray[j]- minX, pointArray[j+1] - minY);
+	for (int i=2; i<count; i+=2) {
+		Cairo.cairo_line_to(cairo, pointArray[i]- minX, pointArray[i+1] - minY);
 	}
 	Cairo.cairo_close_path(cairo);
 	Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
