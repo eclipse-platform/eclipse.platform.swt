@@ -126,6 +126,7 @@ public abstract class Widget {
 	static final int EVENT_AFTER = 16;
 	static final int EXPAND_COLLAPSE_CURSOR_ROW = 17;
 	static final int EXPOSE_EVENT = 18;
+	static final int DRAW = EXPOSE_EVENT;
 	static final int EXPOSE_EVENT_INVERSE = 19;
 	static final int FOCUS = 20;
 	static final int FOCUS_IN_EVENT = 21;
@@ -780,6 +781,10 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ event) {
 }
 
 long /*int*/ gtk_expand_collapse_cursor_row (long /*int*/ widget, long /*int*/ logical, long /*int*/ expand, long /*int*/ open_all) {
+	return 0;
+}
+
+long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
 	return 0;
 }
 
@@ -2046,7 +2051,13 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 		case ENTER_NOTIFY_EVENT: return gtk_enter_notify_event (handle, arg0);
 		case EVENT: return gtk_event (handle, arg0);
 		case EVENT_AFTER: return gtk_event_after (handle, arg0);
-		case EXPOSE_EVENT: return gtk_expose_event (handle, arg0);
+		case EXPOSE_EVENT: {
+			if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+				return gtk_draw (handle, arg0);
+			} else {
+				return gtk_expose_event (handle, arg0);
+			}
+		}
 		case FOCUS: return gtk_focus (handle, arg0);
 		case FOCUS_IN_EVENT: return gtk_focus_in_event (handle, arg0);
 		case FOCUS_OUT_EVENT: return gtk_focus_out_event (handle, arg0);

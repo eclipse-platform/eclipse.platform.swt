@@ -399,6 +399,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1beep",
 	"_1gdk_1bitmap_1create_1from_1data",
 	"_1gdk_1cairo_1create",
+	"_1gdk_1cairo_1get_1clip_1rectangle",
 	"_1gdk_1cairo_1region",
 	"_1gdk_1cairo_1region_1create_1from_1surface",
 	"_1gdk_1cairo_1reset_1clip",

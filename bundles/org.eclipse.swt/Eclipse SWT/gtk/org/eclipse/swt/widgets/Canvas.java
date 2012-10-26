@@ -162,6 +162,15 @@ long /*int*/ gtk_commit (long /*int*/ imcontext, long /*int*/ text) {
 	return super.gtk_commit (imcontext, text);
 }
 
+long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
+	if ((state & OBSCURED) != 0) return 0;
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
+	long /*int*/ result = super.gtk_draw (widget, cairo);
+	if (isFocus) caret.setFocus ();
+	return result;
+}
+
 long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 	if ((state & OBSCURED) != 0) return 0;
 	boolean isFocus = caret != null && caret.isFocusCaret ();

@@ -495,6 +495,7 @@ public class OS extends C {
 	public static final byte[] drag_end = ascii("drag_end");
 	public static final byte[] drag_leave = ascii("drag_leave");
 	public static final byte[] drag_motion = ascii("drag_motion");
+	public static final byte[] draw = ascii("draw");
 	public static final byte[] enter_notify_event = ascii("enter-notify-event");
 	public static final byte[] event = ascii("event");
 	public static final byte[] event_after = ascii("event-after");
@@ -3490,6 +3491,16 @@ public static final long /*int*/ gdk_cairo_create(long /*int*/ drawable) {
 	lock.lock();
 	try {
 		return _gdk_cairo_create(drawable);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native boolean _gdk_cairo_get_clip_rectangle(long /*int*/ cr, GdkRectangle rect);
+public static final boolean gdk_cairo_get_clip_rectangle(long /*int*/ cr, GdkRectangle rect) {
+	lock.lock();
+	try {
+		return _gdk_cairo_get_clip_rectangle(cr, rect);
 	} finally {
 		lock.unlock();
 	}

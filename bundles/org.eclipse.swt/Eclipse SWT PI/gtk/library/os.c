@@ -4585,6 +4585,30 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1cairo_1create)
 }
 #endif
 
+#ifndef NO__1gdk_1cairo_1get_1clip_1rectangle
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1cairo_1get_1clip_1rectangle)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
+{
+	GdkRectangle _arg1, *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1cairo_1get_1clip_1rectangle_FUNC);
+	if (arg1) if ((lparg1 = getGdkRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	rc = (jboolean)gdk_cairo_get_clip_rectangle(arg0, lparg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_cairo_get_clip_rectangle)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, GdkRectangle *))fp)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, _1gdk_1cairo_1get_1clip_1rectangle_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1cairo_1region
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1region)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)

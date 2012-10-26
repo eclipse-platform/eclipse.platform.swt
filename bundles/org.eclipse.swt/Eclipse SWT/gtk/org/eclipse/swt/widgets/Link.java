@@ -164,6 +164,26 @@ void createWidget (int index) {
 	initAccessible ();
 }
 
+void drawWidget(GC gc) {
+	int selStart = selection.x;
+	int selEnd = selection.y;
+	if (selStart > selEnd) {
+		selStart = selection.y;
+		selEnd = selection.x;
+	}
+	// temporary code to disable text selection
+	selStart = selEnd = -1;
+	if ((state & DISABLED) != 0) gc.setForeground (disabledColor);
+	layout.draw (gc, 0, 0, selStart, selEnd, null, null);
+	if (hasFocus () && focusIndex != -1) {
+		Rectangle [] rects = getRectangles (focusIndex);
+		for (int i = 0; i < rects.length; i++) {
+			Rectangle rect = rects [i];
+			gc.drawFocus (rect.x, rect.y, rect.width, rect.height);					
+		}
+	}
+}
+
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	if (isDisposed ()) return;
@@ -359,46 +379,6 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	return result;
 }
 
-long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
-	if ((state & OBSCURED) != 0) return 0;
-	GdkEventExpose gdkEvent = new GdkEventExpose ();
-	OS.memmove (gdkEvent, eventPtr, GdkEventExpose.sizeof);
-	GCData data = new GCData ();
-	data.damageRgn = gdkEvent.region;
-	GC gc = GC.gtk_new (this, data);
-	int selStart = selection.x;
-	int selEnd = selection.y;
-	if (selStart > selEnd) {
-		selStart = selection.y;
-		selEnd = selection.x;
-	}
-	// temporary code to disable text selection
-	selStart = selEnd = -1;
-	if ((state & DISABLED) != 0) gc.setForeground (disabledColor);
-	layout.draw (gc, 0, 0, selStart, selEnd, null, null);
-	if (hasFocus () && focusIndex != -1) {
-		Rectangle [] rects = getRectangles (focusIndex);
-		for (int i = 0; i < rects.length; i++) {
-			Rectangle rect = rects [i];
-			gc.drawFocus (rect.x, rect.y, rect.width, rect.height);					
-		}
-	}
-	if (hooks (SWT.Paint) || filters (SWT.Paint)) {
-		Event event = new Event ();
-		event.count = gdkEvent.count;
-		event.x = gdkEvent.area_x;
-		event.y = gdkEvent.area_y;
-		event.width = gdkEvent.area_width;
-		event.height = gdkEvent.area_height;
-		if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.width - event.x;
-		event.gc = gc;
-		sendEvent (SWT.Paint, event);
-		event.gc = null;
-	}
-	gc.dispose ();
-	return 0;
-}
-
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	long /*int*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
@@ -464,6 +444,10 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 		setCursor (null);
 	}
 	return result;
+}
+
+boolean hooksPaint () {
+	return true;
 }
 
 boolean mnemonicHit (char key) {

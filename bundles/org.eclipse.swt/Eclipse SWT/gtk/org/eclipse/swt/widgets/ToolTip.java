@@ -493,23 +493,23 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }
 
-long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
-	if ((state & OBSCURED) != 0) return 0;
+void drawTooltip (long /*int*/ cr) {
 	long /*int*/ window = gtk_widget_get_window (handle);
 	int x = BORDER + PADDING;
 	int y = BORDER + PADDING;
 	if (OS.USE_CAIRO) {
-		long /*int*/ cairo = OS.gdk_cairo_create(window);
+		long /*int*/ cairo = cr != 0 ? cr : OS.gdk_cairo_create(window);
 		if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
 		int count = borderPolygon.length / 2;
-		if (count == 0) return 0;
-		Cairo.cairo_set_line_width(cairo, 1);
-		Cairo.cairo_move_to(cairo, borderPolygon[0], borderPolygon[1]);
-		for (int i=1,j=2; i<count; i++,j+=2) {
-			Cairo.cairo_line_to(cairo, borderPolygon[j]+0.5, borderPolygon[j+1]+0.5);
+		if (count != 0) {
+			Cairo.cairo_set_line_width(cairo, 1);
+			Cairo.cairo_move_to(cairo, borderPolygon[0], borderPolygon[1]);
+			for (int i=1,j=2; i<count; i++,j+=2) {
+				Cairo.cairo_line_to(cairo, borderPolygon[j]+0.5, borderPolygon[j+1]+0.5);
+			}
+			Cairo.cairo_close_path(cairo);
+			Cairo.cairo_stroke(cairo);
 		}
-		Cairo.cairo_close_path(cairo);
-		Cairo.cairo_stroke(cairo);
 		if (spikeAbove) y += TIP_HEIGHT;
 		if (layoutText != 0) {
 			byte[] buffer = null;
@@ -550,8 +550,8 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
 			Cairo.cairo_move_to(cairo, x, y);
 			OS.pango_cairo_show_layout(cairo, layoutMessage);
 		}
-		Cairo.cairo_destroy(cairo);
-		return 0;
+		if (cairo != cr) Cairo.cairo_destroy(cairo);
+		return;
 	}
 	long /*int*/ gdkGC = OS.gdk_gc_new (window);
 	OS.gdk_draw_polygon (window, gdkGC, 0, borderPolygon, borderPolygon.length / 2);
@@ -593,6 +593,17 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
 		OS.gdk_draw_layout (window, gdkGC, x, y, layoutMessage);
 	}
 	OS.g_object_unref (gdkGC);
+}
+
+long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
+	if ((state & OBSCURED) != 0) return 0;
+	drawTooltip (cairo);
+	return 0;
+}
+
+long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
+	if ((state & OBSCURED) != 0) return 0;
+	drawTooltip (0);
 	return 0;
 }
 
@@ -617,9 +628,7 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 
 void hookEvents () {
 	if ((style & SWT.BALLOON) != 0) {
-		if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
-			OS.g_signal_connect_closure (handle, OS.expose_event, display.closures [EXPOSE_EVENT], false);
-		}
+		OS.g_signal_connect_closure_by_id (handle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT], true);
 		OS.gtk_widget_add_events (handle, OS.GDK_BUTTON_PRESS_MASK);
 		OS.g_signal_connect_closure (handle, OS.button_press_event, display.closures [BUTTON_PRESS_EVENT], false);
 	} else {

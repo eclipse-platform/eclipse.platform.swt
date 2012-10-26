@@ -172,6 +172,9 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return true;
 }
 
+void drawWidget (GC gc) {
+}
+
 void enableWidget (boolean enabled) {
 	OS.gtk_widget_set_sensitive (handle, enabled);
 }
@@ -315,9 +318,11 @@ void hookEvents () {
 	long /*int*/ paintHandle = paintHandle ();
 	int paintMask = OS.GDK_EXPOSURE_MASK | OS.GDK_VISIBILITY_NOTIFY_MASK;
 	OS.gtk_widget_add_events (paintHandle, paintMask);
-	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+
+	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
 		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT_INVERSE], false);
 	}
+
 	/*
 	* As of GTK 2.17.11, obscured controls no longer send expose 
 	* events. It is no longer necessary to track visiblity notify
@@ -326,9 +331,7 @@ void hookEvents () {
 	if (OS.GTK_VERSION < OS.VERSION (2, 17, 11)) {
 		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [VISIBILITY_NOTIFY_EVENT], 0, display.closures [VISIBILITY_NOTIFY_EVENT], false);
 	}
-	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
-		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT], true);
-	}
+	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT], true);
 
 	/* Connect the Input Method signals */
 	OS.g_signal_connect_closure_by_id (handle, display.signalIds [REALIZE], 0, display.closures [REALIZE], true);
@@ -343,6 +346,10 @@ void hookEvents () {
    
 	long /*int*/ topHandle = topHandle ();
 	OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.closures [MAP], true);
+}
+
+boolean hooksPaint () {
+	return hooks (SWT.Paint) || filters (SWT.Paint);
 }
 
 long /*int*/ hoverProc (long /*int*/ widget) {
@@ -3017,9 +3024,32 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	return 0;
 }
 
+long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
+	if ((state & OBSCURED) != 0) return 0;
+	if (!hooksPaint ()) return 0;
+	GdkRectangle rect = new GdkRectangle ();
+	OS.gdk_cairo_get_clip_rectangle (cairo, rect);
+	Event event = new Event ();
+	event.count = 1;
+	event.x = rect.x;
+	event.y = rect.y;
+	event.width = rect.width;
+	event.height = rect.height;
+	if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth () - event.width - event.x;
+	GCData data = new GCData ();
+//	data.damageRgn = gdkEvent.region;
+	data.cairo = cairo;
+	GC gc = event.gc = GC.gtk_new (this, data);
+	drawWidget (gc);
+	sendEvent (SWT.Paint, event);
+	gc.dispose ();
+	event.gc = null;
+	return 0;
+}
+
 long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	if ((state & OBSCURED) != 0) return 0;
-	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
+	if (!hooksPaint ()) return 0;
 	GdkEventExpose gdkEvent = new GdkEventExpose ();
 	OS.memmove(gdkEvent, eventPtr, GdkEventExpose.sizeof);
 	Event event = new Event ();
@@ -3032,6 +3062,7 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	GCData data = new GCData ();
 	data.damageRgn = gdkEvent.region;
 	GC gc = event.gc = GC.gtk_new (this, data);
+	drawWidget (gc);
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
 	event.gc = null;
@@ -3289,11 +3320,15 @@ public long /*int*/ internal_new_GC (GCData data) {
 	checkWidget ();
 	long /*int*/ window = paintWindow ();
 	if (window == 0) error (SWT.ERROR_NO_HANDLES);
-	long /*int*/ gc;
-	if (OS.USE_CAIRO) {
-		gc = OS.gdk_cairo_create (window);
+	long /*int*/ gc = data.cairo;
+	if (gc != 0) {
+		Cairo.cairo_reference (gc);
 	} else {
-		gc = OS.gdk_gc_new (window);
+		if (OS.USE_CAIRO) {
+			gc = OS.gdk_cairo_create (window);
+		} else {
+			gc = OS.gdk_gc_new (window);
+		}
 	}
 	if (gc == 0) error (SWT.ERROR_NO_HANDLES);	
 	if (data != null) {

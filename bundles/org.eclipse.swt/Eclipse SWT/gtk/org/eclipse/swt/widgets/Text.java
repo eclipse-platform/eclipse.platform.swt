@@ -1549,14 +1549,10 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	return super.gtk_event_after (widget, gdkEvent);
 }
 
-long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
-	if ((state & OBSCURED) != 0) return 0;
-	long /*int*/ result = super.gtk_expose_event (widget, event);
+void drawMessage (long /*int*/ cr) {
 	if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
 		long /*int*/ str = OS.gtk_entry_get_text (handle);
 		if (!gtk_widget_has_focus (handle) && OS.strlen (str) == 0) {
-			GdkEventExpose gdkEvent = new GdkEventExpose ();
-			OS.memmove (gdkEvent, event, GdkEventExpose.sizeof);
 			long /*int*/ window = paintWindow ();
 			int [] w = new int [1], h = new int [1];
 			gdk_window_get_size (window, w, h);
@@ -1600,11 +1596,11 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 			GdkColor baseColor = new GdkColor ();
 			OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, baseColor);
 			if (OS.USE_CAIRO) {
-				long /*int*/ cairo = OS.gdk_cairo_create(window);
+				long /*int*/ cairo = cr != 0 ? cr : OS.gdk_cairo_create(window);
 				Cairo.cairo_set_source_rgba(cairo, (textColor.red & 0xFFFF) / (float)0xFFFF, (textColor.green & 0xFFFF) / (float)0xFFFF, (textColor.blue & 0xFFFF) / (float)0xFFFF, 1);
 				Cairo.cairo_move_to(cairo, x, y);
 				OS.pango_cairo_show_layout(cairo, layout);
-				Cairo.cairo_destroy(cairo);
+				if (cr != cairo) Cairo.cairo_destroy(cairo);
 			} else {
 				long /*int*/ gc = OS.gdk_gc_new	(window);
 				OS.gdk_draw_layout_with_colors (window, gc, x, y, layout, textColor, baseColor);
@@ -1613,6 +1609,19 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 			OS.g_object_unref (layout);
 		}
 	}
+}
+
+long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
+	if ((state & OBSCURED) != 0) return 0;
+	long /*int*/ result = super.gtk_draw (widget, cairo);
+	drawMessage (cairo);
+	return result;
+}
+
+long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
+	if ((state & OBSCURED) != 0) return 0;
+	long /*int*/ result = super.gtk_expose_event (widget, event);
+	drawMessage (0);
 	return result;
 }
 
