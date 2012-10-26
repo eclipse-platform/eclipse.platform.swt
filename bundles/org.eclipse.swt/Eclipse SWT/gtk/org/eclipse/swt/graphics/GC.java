@@ -455,21 +455,9 @@ long /*int*/ convertRgn(long /*int*/ rgn, double[] matrix) {
 		pointArray[6] = (int)x[0];
 		pointArray[7] = (int)Math.round(y[0]);
 		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-			int count = pointArray.length / 2;
-			if (count != 0) {
-				long /*int*/ cairo = OS.gdk_cairo_create(newRgn);
-				Cairo.cairo_move_to(cairo, pointArray[0], pointArray[1]);
-				for (int n=1,j=2; n<count; n++,j+=2) {
-					Cairo.cairo_move_to(cairo, pointArray[j]+0.5, pointArray[j+1]+0.5);
-				}
-				Cairo.cairo_close_path(cairo);
-				Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
-				Cairo.cairo_fill(cairo);
-				long /*int*/ surface = Cairo.cairo_get_target(cairo);
-				long /*int*/ polyRgn = OS.gdk_cairo_region_create_from_surface(surface);
-				Cairo.cairo_region_union(newRgn, polyRgn);
-				Cairo.cairo_destroy(cairo);
-			}
+			long /*int*/ polyRgn = Region.cairoPolygonRgn(pointArray);
+			Cairo.cairo_region_union(newRgn, polyRgn);
+			Cairo.cairo_region_destroy(polyRgn);
 		} else {
 			long /*int*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
 			OS.gdk_region_union(newRgn, polyRgn);

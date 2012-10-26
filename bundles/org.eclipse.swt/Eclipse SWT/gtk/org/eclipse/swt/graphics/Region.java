@@ -201,7 +201,7 @@ public void add(Region region) {
 	cairo_region_union (handle, region.handle);
 }
 
-long /*int*/ cairoPolygonRgn(int[] pointArray) {
+static long /*int*/ cairoPolygonRgn(int[] pointArray) {
 	//TODO this does not perform well and could fail if the polygon is too big
 	int minX = pointArray[0], maxX = minX;
 	int minY = pointArray[1], maxY = minY;
