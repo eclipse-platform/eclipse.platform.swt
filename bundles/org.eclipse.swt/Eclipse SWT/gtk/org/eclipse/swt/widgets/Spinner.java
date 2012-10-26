@@ -881,6 +881,10 @@ void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
 }
 
+void setForegroundColor (GdkColor color) {
+	setForegroundColor (handle, color, false);
+}
+
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down arrows are pressed to

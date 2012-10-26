@@ -2147,6 +2147,10 @@ void setFontDescription (long /*int*/ font) {
 	setTabStops (tabs);
 }
 
+void setForegroundColor (GdkColor color) {
+	setForegroundColor (handle, color, false);
+}
+
 /**
  * Sets the widget message. The message text is displayed
  * as a hint for the user, indicating the purpose of the field.

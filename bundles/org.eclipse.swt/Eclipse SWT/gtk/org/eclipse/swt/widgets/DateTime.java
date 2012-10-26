@@ -1098,6 +1098,10 @@ public void setFont(Font font) {
 	redraw();
 }
 
+void setForegroundColor (GdkColor color) {
+	setForegroundColor (handle, color, false);
+}
+
 public void setForeground(Color color) {
 	super.setForeground(color);
 	fg = color;
