@@ -9204,6 +9204,31 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1set_1focus_1on_1click)
 }
 #endif
 
+#ifndef NO__1gtk_1combo_1box_1text_1insert
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1text_1insert)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jbyteArray arg2, jbyteArray arg3)
+{
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1text_1insert_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+/*
+	gtk_combo_box_text_insert(arg0, arg1, lparg2, lparg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_combo_box_text_insert)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, jbyte *, jbyte *))fp)(arg0, arg1, lparg2, lparg3);
+		}
+	}
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1text_1insert_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1combo_1box_1text_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1combo_1box_1text_1new)
 	(JNIEnv *env, jclass that)

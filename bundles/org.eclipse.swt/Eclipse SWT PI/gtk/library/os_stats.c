@@ -670,6 +670,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1combo_1box_1remove_1text",
 	"_1gtk_1combo_1box_1set_1active",
 	"_1gtk_1combo_1box_1set_1focus_1on_1click",
+	"_1gtk_1combo_1box_1text_1insert",
 	"_1gtk_1combo_1box_1text_1new",
 	"_1gtk_1combo_1box_1text_1new_1with_1entry",
 	"_1gtk_1container_1add",

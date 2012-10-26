@@ -170,7 +170,11 @@ public void add (String string, int index) {
 	System.arraycopy (items, index, newItems, index + 1, items.length - index);
 	items = newItems;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	OS.gtk_combo_box_insert_text (handle, index, buffer);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		OS.gtk_combo_box_text_insert (handle, index, null, buffer);
+	} else {
+		OS.gtk_combo_box_insert_text (handle, index, buffer);
+	}
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
 		OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);    
 	}
@@ -1820,7 +1824,11 @@ public void setItem (int index, String string) {
 	items [index] = string;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	OS.gtk_combo_box_remove_text (handle, index);
-	OS.gtk_combo_box_insert_text (handle, index, buffer);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		OS.gtk_combo_box_text_insert (handle, index, null, buffer);
+	} else {
+		OS.gtk_combo_box_insert_text (handle, index, buffer);
+	}
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
 		OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);    
 	}
@@ -1856,7 +1864,11 @@ public void setItems (String [] items) {
 	for (int i = 0; i < items.length; i++) {
 		String string = items [i];
 		byte [] buffer = Converter.wcsToMbcs (null, string, true);
-		OS.gtk_combo_box_insert_text (handle, i, buffer);
+		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+			OS.gtk_combo_box_text_insert (handle, i, null, buffer);
+		} else {
+			OS.gtk_combo_box_insert_text (handle, i, buffer);
+		}
 		if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
 			OS.gtk_container_forall (popupHandle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);    
 		}

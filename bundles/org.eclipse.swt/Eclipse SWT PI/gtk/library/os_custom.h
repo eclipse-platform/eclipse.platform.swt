@@ -110,6 +110,7 @@
 #define gtk_color_selection_dialog_get_color_selection_LIB LIB_GTK
 #define gtk_combo_box_entry_new_text_LIB LIB_GTK
 #define gtk_combo_box_new_text_LIB LIB_GTK
+#define gtk_combo_box_text_insert_LIB LIB_GTK
 #define gtk_combo_box_insert_text_LIB LIB_GTK
 #define gtk_combo_box_remove_text_LIB LIB_GTK
 #define gtk_combo_box_get_active_LIB LIB_GTK

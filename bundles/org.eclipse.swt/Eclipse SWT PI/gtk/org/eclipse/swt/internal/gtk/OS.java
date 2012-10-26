@@ -6534,6 +6534,16 @@ public static final long /*int*/ gtk_combo_box_text_new_with_entry() {
 	}
 }
 /** @method flags=dynamic */
+public static final native void _gtk_combo_box_text_insert(long /*int*/ combo_box, int position, byte[] id, byte[] text);
+public static final void gtk_combo_box_text_insert(long /*int*/ combo_box, int position, byte[] id, byte[] text) {
+	lock.lock();
+	try {
+		_gtk_combo_box_text_insert(combo_box, position, id, text);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
 public static final native void _gtk_combo_box_insert_text(long /*int*/ combo_box, int position, byte[] text);
 public static final void gtk_combo_box_insert_text(long /*int*/ combo_box, int position, byte[] text) {
 	lock.lock();
