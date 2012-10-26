@@ -111,19 +111,9 @@ public void add (int[] pointArray) {
 	*/
 	if (pointArray.length < 6) return;
 	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		long /*int*/ cairo = OS.gdk_cairo_create(handle);
-		int count = pointArray.length / 2;
-		Cairo.cairo_move_to(cairo, pointArray[0], pointArray[1]);
-		for (int i=1,j=2; i<count; i++,j+=2) {
-			Cairo.cairo_move_to(cairo, pointArray[j]+0.5, pointArray[j+1]+0.5);
-		}
-		Cairo.cairo_close_path(cairo);
-		Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
-		Cairo.cairo_fill(cairo);
-		long /*int*/ surface = Cairo.cairo_get_target(cairo);
-		long /*int*/ polyRgn = OS.gdk_cairo_region_create_from_surface(surface);
-		Cairo.cairo_region_union (handle, polyRgn);
-		Cairo.cairo_destroy(cairo);
+		long /*int*/ polyRgn = cairoPolygonRgn(pointArray);
+		Cairo.cairo_region_union(handle, polyRgn);
+		Cairo.cairo_region_destroy(polyRgn);
 	} else {
 		long /*int*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
 		OS.gdk_region_union(handle, polyRgn);
@@ -209,6 +199,38 @@ public void add(Region region) {
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	cairo_region_union (handle, region.handle);
+}
+
+long /*int*/ cairoPolygonRgn(int[] pointArray) {
+	//TODO this does not perform well and could fail if the polygon is too big
+	int minX = pointArray[0], maxX = minX;
+	int minY = pointArray[1], maxY = minY;
+	int length = pointArray.length / 2 * 2;
+	for (int i=2; i<length; i+=2) {
+		int x = pointArray[i], y = pointArray[i + 1];
+		if (x < minX) minX = x;
+		if (x > maxX) maxX = x;
+		if (y < minY) minY = y;
+		if (y > maxY) maxY = y;
+	}
+	long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_A1, maxX - minX, maxY - minY);
+	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	long /*int*/ cairo = Cairo.cairo_create(surface);
+	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	Cairo.cairo_move_to(cairo, pointArray[0] - minX, pointArray[1] - minY);
+	int count = pointArray.length / 2;
+	for (int i=1,j=2; i<count; i++,j+=2) {
+		Cairo.cairo_line_to(cairo, pointArray[j]- minX, pointArray[j+1] - minY);
+	}
+	Cairo.cairo_close_path(cairo);
+	Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
+	Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
+	Cairo.cairo_fill(cairo);
+	Cairo.cairo_destroy(cairo);
+	long /*int*/ polyRgn = OS.gdk_cairo_region_create_from_surface(surface);
+	Cairo.cairo_region_translate (polyRgn, minX, minY);
+	Cairo.cairo_surface_destroy(surface);
+	return polyRgn;
 }
 
 /**
@@ -539,19 +561,9 @@ public void subtract (int[] pointArray) {
 	*/
 	if (pointArray.length < 6) return;
 	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		long /*int*/ cairo = OS.gdk_cairo_create(handle);
-		int count = pointArray.length / 2;
-		Cairo.cairo_move_to(cairo, pointArray[0], pointArray[1]);
-		for (int i=1,j=2; i<count; i++,j+=2) {
-			Cairo.cairo_move_to(cairo, pointArray[j]+0.5, pointArray[j+1]+0.5);
-		}
-		Cairo.cairo_close_path(cairo);
-		Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
-		Cairo.cairo_fill(cairo);
-		long /*int*/ surface = Cairo.cairo_get_target(cairo);
-		long /*int*/ polyRgn = OS.gdk_cairo_region_create_from_surface(surface);
+		long /*int*/ polyRgn = cairoPolygonRgn(pointArray);
 		Cairo.cairo_region_subtract(handle, polyRgn);
-		Cairo.cairo_destroy(cairo);
+		Cairo.cairo_region_destroy(polyRgn);
 	} else {
 		long /*int*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
 		OS.gdk_region_subtract(handle, polyRgn);
