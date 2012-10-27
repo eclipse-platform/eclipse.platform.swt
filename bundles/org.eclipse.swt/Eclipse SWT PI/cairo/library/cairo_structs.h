@@ -57,18 +57,6 @@ void setcairo_path_tFields(JNIEnv *env, jobject lpObject, cairo_path_t *lpStruct
 #define cairo_path_t_sizeof() 0
 #endif
 
-#ifndef NO_cairo_rectangle_int_t
-void cachecairo_rectangle_int_tFields(JNIEnv *env, jobject lpObject);
-cairo_rectangle_int_t *getcairo_rectangle_int_tFields(JNIEnv *env, jobject lpObject, cairo_rectangle_int_t *lpStruct);
-void setcairo_rectangle_int_tFields(JNIEnv *env, jobject lpObject, cairo_rectangle_int_t *lpStruct);
-#define cairo_rectangle_int_t_sizeof() sizeof(cairo_rectangle_int_t)
-#else
-#define cachecairo_rectangle_int_tFields(a,b)
-#define getcairo_rectangle_int_tFields(a,b,c) NULL
-#define setcairo_rectangle_int_tFields(a,b,c)
-#define cairo_rectangle_int_t_sizeof() 0
-#endif
-
 #ifndef NO_cairo_text_extents_t
 void cachecairo_text_extents_tFields(JNIEnv *env, jobject lpObject);
 cairo_text_extents_t *getcairo_text_extents_tFields(JNIEnv *env, jobject lpObject, cairo_text_extents_t *lpStruct);

@@ -136,46 +136,6 @@ void setcairo_path_tFields(JNIEnv *env, jobject lpObject, cairo_path_t *lpStruct
 }
 #endif
 
-#ifndef NO_cairo_rectangle_int_t
-typedef struct cairo_rectangle_int_t_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID x, y, width, height;
-} cairo_rectangle_int_t_FID_CACHE;
-
-cairo_rectangle_int_t_FID_CACHE cairo_rectangle_int_tFc;
-
-void cachecairo_rectangle_int_tFields(JNIEnv *env, jobject lpObject)
-{
-	if (cairo_rectangle_int_tFc.cached) return;
-	cairo_rectangle_int_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	cairo_rectangle_int_tFc.x = (*env)->GetFieldID(env, cairo_rectangle_int_tFc.clazz, "x", "I");
-	cairo_rectangle_int_tFc.y = (*env)->GetFieldID(env, cairo_rectangle_int_tFc.clazz, "y", "I");
-	cairo_rectangle_int_tFc.width = (*env)->GetFieldID(env, cairo_rectangle_int_tFc.clazz, "width", "I");
-	cairo_rectangle_int_tFc.height = (*env)->GetFieldID(env, cairo_rectangle_int_tFc.clazz, "height", "I");
-	cairo_rectangle_int_tFc.cached = 1;
-}
-
-cairo_rectangle_int_t *getcairo_rectangle_int_tFields(JNIEnv *env, jobject lpObject, cairo_rectangle_int_t *lpStruct)
-{
-	if (!cairo_rectangle_int_tFc.cached) cachecairo_rectangle_int_tFields(env, lpObject);
-	lpStruct->x = (*env)->GetIntField(env, lpObject, cairo_rectangle_int_tFc.x);
-	lpStruct->y = (*env)->GetIntField(env, lpObject, cairo_rectangle_int_tFc.y);
-	lpStruct->width = (*env)->GetIntField(env, lpObject, cairo_rectangle_int_tFc.width);
-	lpStruct->height = (*env)->GetIntField(env, lpObject, cairo_rectangle_int_tFc.height);
-	return lpStruct;
-}
-
-void setcairo_rectangle_int_tFields(JNIEnv *env, jobject lpObject, cairo_rectangle_int_t *lpStruct)
-{
-	if (!cairo_rectangle_int_tFc.cached) cachecairo_rectangle_int_tFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, cairo_rectangle_int_tFc.x, (jint)lpStruct->x);
-	(*env)->SetIntField(env, lpObject, cairo_rectangle_int_tFc.y, (jint)lpStruct->y);
-	(*env)->SetIntField(env, lpObject, cairo_rectangle_int_tFc.width, (jint)lpStruct->width);
-	(*env)->SetIntField(env, lpObject, cairo_rectangle_int_tFc.height, (jint)lpStruct->height);
-}
-#endif
-
 #ifndef NO_cairo_text_extents_t
 typedef struct cairo_text_extents_t_FID_CACHE {
 	int cached;

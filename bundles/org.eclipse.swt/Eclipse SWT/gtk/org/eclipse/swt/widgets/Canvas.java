@@ -13,7 +13,6 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cairo.Cairo;
-import org.eclipse.swt.internal.cairo.cairo_rectangle_int_t;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
 
@@ -261,143 +260,77 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	long /*int*/ window = paintWindow ();
-	long /*int*/ visibleRegion = 0;
-	if(OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		visibleRegion = OS.gdk_window_get_visible_region (window);
-		cairo_rectangle_int_t srcRect = new cairo_rectangle_int_t();
-		srcRect.x = x;
-		srcRect.y = y;
-		srcRect.width = width;
-		srcRect.height = height;
-		long /*int*/ copyRegion = Cairo.cairo_region_create_rectangle (srcRect);
-		Cairo.cairo_region_intersect (copyRegion, visibleRegion);
-		long /*int*/ invalidateRegion = Cairo.cairo_region_create_rectangle (srcRect);	
-		Cairo.cairo_region_subtract (invalidateRegion, visibleRegion);
-		Cairo.cairo_region_translate (invalidateRegion, deltaX, deltaY);
-		cairo_rectangle_int_t copyRect = new cairo_rectangle_int_t ();
-		Cairo.cairo_region_get_extents (copyRegion, copyRect);
-		if (copyRect.width != 0 && copyRect.height != 0) {
-			update ();
-		}
-		Control control = findBackgroundControl ();
-		if (control == null) control = this;
-		if (control.backgroundImage != null) {
-			redrawWidget (x, y, width, height, false, false, false);
-			redrawWidget (destX, destY, width, height, false, false, false);
-		} else {
-	//		GC gc = new GC (this);
-	//		gc.copyArea (x, y, width, height, destX, destY);
-	//		gc.dispose ();
-			if (OS.USE_CAIRO) {
-				OS.gdk_window_invalidate_region (window, copyRegion, true);
-				long /*int*/ cairo = OS.gdk_cairo_create (window);
-				OS.gdk_cairo_set_source_window (cairo, window, 0, 0);
-				Cairo.cairo_rectangle (cairo, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
-				Cairo.cairo_fill (cairo);
-				Cairo.cairo_destroy (cairo);
-			} else {
-				long /*int*/ gdkGC = OS.gdk_gc_new (window);
-				OS.gdk_gc_set_exposures (gdkGC, true);
-				OS.gdk_draw_drawable (window, gdkGC, window, copyRect.x, copyRect.y, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
-				OS.g_object_unref (gdkGC);
-			}
-			boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
-			if (disjoint) {
-				cairo_rectangle_int_t rect = new cairo_rectangle_int_t ();
-				rect.x = x;
-				rect.y = y;
-				rect.width = width;
-				rect.height = height;
-				Cairo.cairo_region_union_rectangle (invalidateRegion, rect);
-			} else {
-				cairo_rectangle_int_t rect = new cairo_rectangle_int_t ();
-				if (deltaX != 0) {
-					int newX = destX - deltaX;
-					if (deltaX < 0) newX = destX + width;
-					rect.x = newX;
-					rect.y = y;
-					rect.width = Math.abs(deltaX);
-					rect.height = height;
-					Cairo.cairo_region_union_rectangle (invalidateRegion, rect);
-				}
-				if (deltaY != 0) {
-					int newY = destY - deltaY;
-					if (deltaY < 0) newY = destY + height;
-					rect.x = x;
-					rect.y = newY;
-					rect.width = width;
-					rect.height = Math.abs(deltaY);
-					Cairo.cairo_region_union_rectangle (invalidateRegion, rect);
-				}
-			}	
-			Cairo.cairo_region_destroy (visibleRegion);
-			Cairo.cairo_region_destroy (copyRegion);
-			Cairo.cairo_region_destroy (invalidateRegion);
-		}
+	long /*int*/ visibleRegion = OS.gdk_drawable_get_visible_region (window);
+	GdkRectangle srcRect = new GdkRectangle ();
+	srcRect.x = x;
+	srcRect.y = y;
+	srcRect.width = width;
+	srcRect.height = height;
+	long /*int*/ copyRegion = OS.gdk_region_rectangle (srcRect);
+	OS.gdk_region_intersect(copyRegion, visibleRegion);
+	long /*int*/ invalidateRegion = OS.gdk_region_rectangle (srcRect);	
+	OS.gdk_region_subtract (invalidateRegion, visibleRegion);
+	OS.gdk_region_offset (invalidateRegion, deltaX, deltaY);
+	GdkRectangle copyRect = new GdkRectangle();
+	OS.gdk_region_get_clipbox (copyRegion, copyRect);
+	if (copyRect.width != 0 && copyRect.height != 0) {
+		update ();
+	}
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	if (control.backgroundImage != null) {
+		redrawWidget (x, y, width, height, false, false, false);
+		redrawWidget (destX, destY, width, height, false, false, false);
 	} else {
-			visibleRegion = OS.gdk_drawable_get_visible_region (window);
-			GdkRectangle srcRect = new GdkRectangle ();
-			srcRect.x = x;
-			srcRect.y = y;
-			srcRect.width = width;
-			srcRect.height = height;
-			long /*int*/ copyRegion = OS.gdk_region_rectangle (srcRect);
-			OS.gdk_region_intersect(copyRegion, visibleRegion);
-			long /*int*/ invalidateRegion = OS.gdk_region_rectangle (srcRect);	
-			OS.gdk_region_subtract (invalidateRegion, visibleRegion);
-			OS.gdk_region_offset (invalidateRegion, deltaX, deltaY);
-			GdkRectangle copyRect = new GdkRectangle();
-			OS.gdk_region_get_clipbox (copyRegion, copyRect);
-			if (copyRect.width != 0 && copyRect.height != 0) {
-				update ();
-			}
-			Control control = findBackgroundControl ();
-			if (control == null) control = this;
-			if (control.backgroundImage != null) {
-				redrawWidget (x, y, width, height, false, false, false);
-				redrawWidget (destX, destY, width, height, false, false, false);
-			} else {
-//			GC gc = new GC (this);
-//			gc.copyArea (x, y, width, height, destX, destY);
-//			gc.dispose ();
+//		GC gc = new GC (this);
+//		gc.copyArea (x, y, width, height, destX, destY);
+//		gc.dispose ();
+		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+			OS.gdk_window_invalidate_rect (window, copyRect, true);
+			long /*int*/ cairo = OS.gdk_cairo_create (window);
+			OS.gdk_cairo_set_source_window (cairo, window, 0, 0);
+			Cairo.cairo_rectangle (cairo, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
+			Cairo.cairo_fill (cairo);
+			Cairo.cairo_destroy (cairo);
+		} else {
 			long /*int*/ gdkGC = OS.gdk_gc_new (window);
 			OS.gdk_gc_set_exposures (gdkGC, true);
 			OS.gdk_draw_drawable (window, gdkGC, window, copyRect.x, copyRect.y, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
 			OS.g_object_unref (gdkGC);
-			boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
-			if (disjoint) {
-				GdkRectangle rect = new GdkRectangle ();
-				rect.x = x;
+		}
+		boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
+		if (disjoint) {
+			GdkRectangle rect = new GdkRectangle ();
+			rect.x = x;
+			rect.y = y;
+			rect.width = width;
+			rect.height = height;
+			OS.gdk_region_union_with_rect (invalidateRegion, rect);
+		} else {
+			GdkRectangle rect = new GdkRectangle ();
+			if (deltaX != 0) {
+				int newX = destX - deltaX;
+				if (deltaX < 0) newX = destX + width;
+				rect.x = newX;
 				rect.y = y;
-				rect.width = width;
+				rect.width = Math.abs(deltaX);
 				rect.height = height;
 				OS.gdk_region_union_with_rect (invalidateRegion, rect);
-			} else {
-				GdkRectangle rect = new GdkRectangle ();
-				if (deltaX != 0) {
-					int newX = destX - deltaX;
-					if (deltaX < 0) newX = destX + width;
-					rect.x = newX;
-					rect.y = y;
-					rect.width = Math.abs(deltaX);
-					rect.height = height;
-					OS.gdk_region_union_with_rect (invalidateRegion, rect);
-				}
-				if (deltaY != 0) {
-					int newY = destY - deltaY;
-					if (deltaY < 0) newY = destY + height;
-					rect.x = x;
-					rect.y = newY;
-					rect.width = width;
-					rect.height = Math.abs(deltaY);
-					OS.gdk_region_union_with_rect (invalidateRegion, rect);
-				}
-			}	
-			OS.gdk_window_invalidate_region(window, invalidateRegion, all);
-			OS.gdk_region_destroy (visibleRegion);
-			OS.gdk_region_destroy (copyRegion);
-			OS.gdk_region_destroy (invalidateRegion);
-		}
+			}
+			if (deltaY != 0) {
+				int newY = destY - deltaY;
+				if (deltaY < 0) newY = destY + height;
+				rect.x = x;
+				rect.y = newY;
+				rect.width = width;
+				rect.height = Math.abs(deltaY);
+				OS.gdk_region_union_with_rect (invalidateRegion, rect);
+			}
+		}	
+		OS.gdk_window_invalidate_region(window, invalidateRegion, all);
+		OS.gdk_region_destroy (visibleRegion);
+		OS.gdk_region_destroy (copyRegion);
+		OS.gdk_region_destroy (invalidateRegion);
 	}
 	if (all) {
 		Control [] children = _getChildren ();

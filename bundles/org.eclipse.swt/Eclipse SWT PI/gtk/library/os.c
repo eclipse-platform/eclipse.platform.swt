@@ -6564,15 +6564,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1region_1destroy)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1region_1destroy_FUNC);
-/*
-	gdk_region_destroy(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_region_destroy)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
+	gdk_region_destroy((GdkRegion *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gdk_1region_1destroy_FUNC);
 }
 #endif
@@ -6583,15 +6575,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1region_1empty)
 {
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1region_1empty_FUNC);
-/*
-	rc = (jboolean)gdk_region_empty(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_region_empty)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
+	rc = (jboolean)gdk_region_empty((GdkRegion *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gdk_1region_1empty_FUNC);
 	return rc;
 }
@@ -6604,15 +6588,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1region_1get_1clipbox)
 	GdkRectangle _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gdk_1region_1get_1clipbox_FUNC);
 	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
-/*
-	gdk_region_get_clipbox(arg0, (GdkRectangle *)lparg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_region_get_clipbox)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GdkRectangle *))fp)(arg0, (GdkRectangle *)lparg1);
-		}
-	}
+	gdk_region_get_clipbox((GdkRegion *)arg0, (GdkRectangle *)lparg1);
 fail:
 	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gdk_1region_1get_1clipbox_FUNC);
@@ -6649,15 +6625,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1region_1intersect)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1region_1intersect_FUNC);
-/*
-	gdk_region_intersect(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_region_intersect)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
+	gdk_region_intersect((GdkRegion *)arg0, (GdkRegion *)arg1);
 	OS_NATIVE_EXIT(env, that, _1gdk_1region_1intersect_FUNC);
 }
 #endif
@@ -6668,15 +6636,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1region_1new)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1region_1new_FUNC);
-/*
 	rc = (jintLong)gdk_region_new();
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_region_new)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
-		}
-	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1region_1new_FUNC);
 	return rc;
 }
@@ -6687,15 +6647,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1region_1offset)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1region_1offset_FUNC);
-/*
-	gdk_region_offset(arg0, (gint)arg1, (gint)arg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_region_offset)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, gint, gint))fp)(arg0, (gint)arg1, (gint)arg2);
-		}
-	}
+	gdk_region_offset((GdkRegion *)arg0, (gint)arg1, (gint)arg2);
 	OS_NATIVE_EXIT(env, that, _1gdk_1region_1offset_FUNC);
 }
 #endif
@@ -6706,15 +6658,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1region_1point_1in)
 {
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1region_1point_1in_FUNC);
-/*
-	rc = (jboolean)gdk_region_point_in(arg0, (gint)arg1, (gint)arg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_region_point_in)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, gint, gint))fp)(arg0, (gint)arg1, (gint)arg2);
-		}
-	}
+	rc = (jboolean)gdk_region_point_in((GdkRegion *)arg0, (gint)arg1, (gint)arg2);
 	OS_NATIVE_EXIT(env, that, _1gdk_1region_1point_1in_FUNC);
 	return rc;
 }
@@ -6752,15 +6696,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1region_1rect_1in)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1region_1rect_1in_FUNC);
 	if (arg1) if ((lparg1 = getGdkRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
-/*
-	rc = (jintLong)gdk_region_rect_in(arg0, (GdkRectangle *)lparg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_region_rect_in)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, GdkRectangle *))fp)(arg0, (GdkRectangle *)lparg1);
-		}
-	}
+	rc = (jintLong)gdk_region_rect_in((GdkRegion *)arg0, (GdkRectangle *)lparg1);
 fail:
 	OS_NATIVE_EXIT(env, that, _1gdk_1region_1rect_1in_FUNC);
 	return rc;
@@ -6775,15 +6711,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1region_1rectangle)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gdk_1region_1rectangle_FUNC);
 	if (arg0) if ((lparg0 = getGdkRectangleFields(env, arg0, &_arg0)) == NULL) goto fail;
-/*
 	rc = (jintLong)gdk_region_rectangle(lparg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_region_rectangle)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GdkRectangle *))fp)(lparg0);
-		}
-	}
 fail:
 	OS_NATIVE_EXIT(env, that, _1gdk_1region_1rectangle_FUNC);
 	return rc;
@@ -6795,15 +6723,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1region_1subtract)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1region_1subtract_FUNC);
-/*
-	gdk_region_subtract(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_region_subtract)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
+	gdk_region_subtract((GdkRegion *)arg0, (GdkRegion *)arg1);
 	OS_NATIVE_EXIT(env, that, _1gdk_1region_1subtract_FUNC);
 }
 #endif
@@ -6813,15 +6733,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1region_1union)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gdk_1region_1union_FUNC);
-/*
-	gdk_region_union(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_region_union)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
-		}
-	}
+	gdk_region_union((GdkRegion *)arg0, (GdkRegion *)arg1);
 	OS_NATIVE_EXIT(env, that, _1gdk_1region_1union_FUNC);
 }
 #endif
@@ -6833,15 +6745,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1region_1union_1with_1rect)
 	GdkRectangle _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gdk_1region_1union_1with_1rect_FUNC);
 	if (arg1) if ((lparg1 = getGdkRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
-/*
-	gdk_region_union_with_rect(arg0, (GdkRectangle *)lparg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_region_union_with_rect)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, GdkRectangle *))fp)(arg0, (GdkRectangle *)lparg1);
-		}
-	}
+	gdk_region_union_with_rect((GdkRegion *)arg0, (GdkRectangle *)lparg1);
 fail:
 	OS_NATIVE_EXIT(env, that, _1gdk_1region_1union_1with_1rect_FUNC);
 }

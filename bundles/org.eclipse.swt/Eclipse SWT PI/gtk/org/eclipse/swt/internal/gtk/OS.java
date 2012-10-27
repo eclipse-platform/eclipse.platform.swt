@@ -4861,7 +4861,7 @@ public static final boolean gdk_property_get(long /*int*/ window, long /*int*/ p
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param region cast=(GdkRegion *) */
 public static final native void _gdk_region_destroy(long /*int*/ region);
 public static final void gdk_region_destroy(long /*int*/ region) {
 	lock.lock();
@@ -4871,7 +4871,7 @@ public static final void gdk_region_destroy(long /*int*/ region) {
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/** @param region cast=(GdkRegion *) */
 public static final native boolean _gdk_region_empty(long /*int*/ region);
 public static final boolean gdk_region_empty(long /*int*/ region) {
 	lock.lock();
@@ -4882,7 +4882,7 @@ public static final boolean gdk_region_empty(long /*int*/ region) {
 	}
 }
 /**
- * @method flags=dynamic
+ * @param region cast=(GdkRegion *)
  * @param rectangle cast=(GdkRectangle *),flags=no_in
  */
 public static final native void _gdk_region_get_clipbox(long /*int*/ region, GdkRectangle rectangle);
@@ -4907,7 +4907,10 @@ public static final void gdk_region_get_rectangles(long /*int*/ region, long /*i
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param source1 cast=(GdkRegion *)
+ * @param source2 cast=(GdkRegion *)
+ */
 public static final native void _gdk_region_intersect(long /*int*/ source1, long /*int*/ source2);
 public static final void gdk_region_intersect(long /*int*/ source1, long /*int*/ source2) {
 	lock.lock();
@@ -4937,7 +4940,6 @@ public static final void gtk_widget_shape_combine_region(long /*int*/ widget, lo
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
 public static final native long /*int*/ _gdk_region_new();
 public static final long /*int*/ gdk_region_new() {
 	lock.lock();
@@ -4948,7 +4950,7 @@ public static final long /*int*/ gdk_region_new() {
 	}
 }
 /**
- * @method flags=dynamic
+ * @param region cast=(GdkRegion *)
  * @param dx cast=(gint)
  * @param dy cast=(gint)
  */
@@ -4962,7 +4964,7 @@ public static final void gdk_region_offset(long /*int*/ region, int dx, int dy) 
 	}
 }
 /**
- * @method flags=dynamic
+ * @param region cast=(GdkRegion *)
  * @param x cast=(gint)
  * @param y cast=(gint)
  */
@@ -4986,7 +4988,6 @@ public static final long /*int*/ gdk_region_polygon(int[] points, int npoints, i
 	}
 }
 /**
- * @method flags=dynamic
  * @param rectangle flags=no_out 
  */
 public static final native long /*int*/ _gdk_region_rectangle(GdkRectangle rectangle);
@@ -4999,7 +5000,7 @@ public static final long /*int*/ gdk_region_rectangle(GdkRectangle rectangle) {
 	}
 }
 /**
- * @method flags=dynamic
+ * @param region cast=(GdkRegion *)
  * @param rect cast=(GdkRectangle *),flags=no_out
  */
 public static final native long /*int*/ _gdk_region_rect_in(long /*int*/ region, GdkRectangle rect);
@@ -5011,7 +5012,10 @@ public static final long /*int*/ gdk_region_rect_in(long /*int*/ region, GdkRect
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param source1 cast=(GdkRegion *)
+ * @param source2 cast=(GdkRegion *)
+ */
 public static final native void _gdk_region_subtract(long /*int*/ source1, long /*int*/ source2);
 public static final void gdk_region_subtract(long /*int*/ source1, long /*int*/ source2) {
 	lock.lock();
@@ -5021,7 +5025,10 @@ public static final void gdk_region_subtract(long /*int*/ source1, long /*int*/ 
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
+/**
+ * @param source1 cast=(GdkRegion *)
+ * @param source2 cast=(GdkRegion *)
+ */
 public static final native void _gdk_region_union(long /*int*/ source1, long /*int*/ source2);
 public static final void gdk_region_union(long /*int*/ source1, long /*int*/ source2) {
 	lock.lock();
@@ -5032,7 +5039,7 @@ public static final void gdk_region_union(long /*int*/ source1, long /*int*/ sou
 	}
 }
 /**
- * @method flags=dynamic
+ * @param region cast=(GdkRegion *)
  * @param rect cast=(GdkRectangle *),flags=no_out
  */
 public static final native void _gdk_region_union_with_rect(long /*int*/ region, GdkRectangle rect);

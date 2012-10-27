@@ -424,60 +424,31 @@ void printWidget (GC gc, long /*int*/ drawable, int depth, int x, int y) {
 
 void printWindow (boolean first, Control control, GC gc, long /*int*/ drawable, int depth, long /*int*/ window, int x, int y) {
 	if (OS.gdk_drawable_get_depth (window) != depth) return;
+	GdkRectangle rect = new GdkRectangle ();
+	int [] width = new int [1], height = new int [1];
+	gdk_window_get_size (window, width, height);
+	rect.width = width [0];
+	rect.height = height [0];
+	OS.gdk_window_begin_paint_rect (window, rect);
 	long /*int*/ [] real_drawable = new long /*int*/ [1];
 	int [] x_offset = new int [1], y_offset = new int [1];
-	int [] width = new int [1], height = new int [1];
-	int srcX, srcY, destX, destY, destWidth, destHeight;
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		cairo_rectangle_int_t rect = new cairo_rectangle_int_t ();
-		gdk_window_get_size (window, width, height);
-		rect.width = width [0];
-		rect.height = height [0];
-		long /*int*/ cr = Cairo.cairo_region_create_rectangle (rect);
-		OS.gdk_window_begin_paint_region(window, cr);
-		OS.gdk_window_get_internal_paint_info (window, real_drawable, x_offset, y_offset);	
-		long /*int*/ [] userData = new long /*int*/ [1];
-		OS.gdk_window_get_user_data (window, userData);
-		if (userData [0] != 0) {
-			long /*int*/ eventPtr = OS.gdk_event_new (OS.GDK_EXPOSE);
-			GdkEventExpose event = new GdkEventExpose ();
-			event.type = OS.GDK_EXPOSE;
-			event.window = OS.g_object_ref (window);
-			event.area_width = rect.width;
-			event.area_height = rect.height;
-			event.region = Cairo.cairo_region_create_rectangle (rect);
-			OS.memmove (eventPtr, event, GdkEventExpose.sizeof);
-			OS.gtk_widget_send_expose (userData [0], eventPtr);
-			OS.gdk_event_free (eventPtr);
-		}	
-	} else {
-		GdkRectangle rect = new GdkRectangle ();
-		gdk_window_get_size (window, width, height);
-		rect.width = width [0];
-		rect.height = height [0];
-		OS.gdk_window_begin_paint_rect (window, rect);
-		OS.gdk_window_get_internal_paint_info (window, real_drawable, x_offset, y_offset);	
-		long /*int*/ [] userData = new long /*int*/ [1];
-		OS.gdk_window_get_user_data (window, userData);
-		if (userData [0] != 0) {
-			long /*int*/ eventPtr = OS.gdk_event_new (OS.GDK_EXPOSE);
-			GdkEventExpose event = new GdkEventExpose ();
-			event.type = OS.GDK_EXPOSE;
-			event.window = OS.g_object_ref (window);
-			event.area_width = rect.width;
-			event.area_height = rect.height;
-			event.region = OS.gdk_region_rectangle (rect);
-			OS.memmove (eventPtr, event, GdkEventExpose.sizeof);
-			OS.gtk_widget_send_expose (userData [0], eventPtr);
-			OS.gdk_event_free (eventPtr);
-		}
+	OS.gdk_window_get_internal_paint_info (window, real_drawable, x_offset, y_offset);	
+	long /*int*/ [] userData = new long /*int*/ [1];
+	OS.gdk_window_get_user_data (window, userData);
+	if (userData [0] != 0) {
+		long /*int*/ eventPtr = OS.gdk_event_new (OS.GDK_EXPOSE);
+		GdkEventExpose event = new GdkEventExpose ();
+		event.type = OS.GDK_EXPOSE;
+		event.window = OS.g_object_ref (window);
+		event.area_width = rect.width;
+		event.area_height = rect.height;
+		event.region = OS.gdk_region_rectangle (rect);
+		OS.memmove (eventPtr, event, GdkEventExpose.sizeof);
+		OS.gtk_widget_send_expose (userData [0], eventPtr);
+		OS.gdk_event_free (eventPtr);
 	}
-	srcX = x_offset [0];
-	srcY = y_offset [0];
-	destX = x;
-	destY = y;
-	destWidth = width [0];
-	destHeight = height [0];
+	int srcX = x_offset [0], srcY = y_offset [0];
+	int destX = x, destY = y, destWidth = width [0], destHeight = height [0];
 	if (!first) {
 		int [] cX = new int [1], cY = new int [1];
 		OS.gdk_window_get_position (window, cX, cY);

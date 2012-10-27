@@ -125,20 +125,8 @@ typedef enum {
 	_1cairo_1push_1group_FUNC,
 	_1cairo_1rectangle_FUNC,
 	_1cairo_1reference_FUNC,
-	_1cairo_1region_1contains_1point_FUNC,
-	_1cairo_1region_1contains_1rectangle_FUNC,
-	_1cairo_1region_1create_FUNC,
-	_1cairo_1region_1create_1rectangle_FUNC,
-	_1cairo_1region_1destroy_FUNC,
-	_1cairo_1region_1get_1extents_FUNC,
 	_1cairo_1region_1get_1rectangle_FUNC,
-	_1cairo_1region_1intersect_FUNC,
-	_1cairo_1region_1is_1empty_FUNC,
 	_1cairo_1region_1num_1rectangles_FUNC,
-	_1cairo_1region_1subtract_FUNC,
-	_1cairo_1region_1translate_FUNC,
-	_1cairo_1region_1union_FUNC,
-	_1cairo_1region_1union_1rectangle_FUNC,
 	_1cairo_1rel_1curve_1to_FUNC,
 	_1cairo_1rel_1line_1to_FUNC,
 	_1cairo_1rel_1move_1to_FUNC,
@@ -201,7 +189,6 @@ typedef enum {
 	cairo_1font_1extents_1t_1sizeof_FUNC,
 	cairo_1path_1data_1t_1sizeof_FUNC,
 	cairo_1path_1t_1sizeof_FUNC,
-	cairo_1rectangle_1int_1t_1sizeof_FUNC,
 	cairo_1text_1extents_1t_1sizeof_FUNC,
 	cairo_1version_FUNC,
 #ifndef JNI64
@@ -213,11 +200,6 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1t_2II_FUNC,
 #else
 	memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1t_2JJ_FUNC,
-#endif
-#ifndef JNI64
-	memmove__Lorg_eclipse_swt_internal_cairo_cairo_1rectangle_1int_1t_2II_FUNC,
-#else
-	memmove__Lorg_eclipse_swt_internal_cairo_cairo_1rectangle_1int_1t_2JJ_FUNC,
 #endif
 #ifndef JNI64
 	memmove___3DII_FUNC,

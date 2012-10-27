@@ -250,17 +250,15 @@ void configure () {
 		}
 	}
 	OS.gtk_widget_realize(handle);
+	Region region = new Region (display);
+	region.add(polyline);
 	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		Region region = new Region (display);
-		region.add(polyline);
 		OS.gtk_widget_shape_combine_region (handle, region.handle);
-		region.dispose ();
 	} else {
 		long /*int*/ window = gtk_widget_get_window (handle);
-		long /*int*/ rgn = OS.gdk_region_polygon (polyline, polyline.length / 2, OS.GDK_EVEN_ODD_RULE);
-		OS.gdk_window_shape_combine_region (window, rgn, 0, 0);
-		OS.gdk_region_destroy (rgn);
+		OS.gdk_window_shape_combine_region (window, region.handle, 0, 0);
 	 }
+	region.dispose ();
 }
 
 void createHandle (int index) {
