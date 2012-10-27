@@ -571,7 +571,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 				long /*int*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
 				if (rgn != 0) {
 					OS.gdk_gc_set_clip_region(gc.handle, rgn);
-					cairo_region_destroy (rgn);
+					OS.gdk_region_destroy (rgn);
 				}
 				OS.gdk_draw_layout_with_colors(data.drawable, gc.handle, x, y, layout, selectionForeground.handle, selectionBackground.handle);
 				drawBorder(gc, x, y, selectionForeground.handle);
@@ -601,7 +601,7 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelectio
 		Cairo.cairo_clip(cairo);
 		Cairo.cairo_set_source_rgba(cairo, (bg.red & 0xFFFF) / (float)0xFFFF, (bg.green & 0xFFFF) / (float)0xFFFF, (bg.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
 		Cairo.cairo_paint(cairo);
-		cairo_region_destroy (rgn);
+		Region.cairo_region_destroy (rgn);
 	}
 	Cairo.cairo_set_source_rgba(cairo, (fg.red & 0xFFFF) / (float)0xFFFF, (fg.green & 0xFFFF) / (float)0xFFFF, (fg.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
 	Cairo.cairo_move_to(cairo, x, y);
@@ -640,7 +640,7 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 			if (rgn != 0) {
 				int[] nRects = new int[1];
 				long /*int*/[] rects = new long /*int*/[1];
-				cairo_region_get_rectangles (rgn, rects, nRects);
+				Region.cairo_region_get_rectangles (rgn, rects, nRects);
 				GdkRectangle rect = new GdkRectangle();
 				GdkColor color = null;
 				if (color == null && style.borderColor != null) color = style.borderColor.handle;
@@ -697,7 +697,7 @@ void drawBorder(GC gc, int x, int y, GdkColor selectionColor) {
 					}
 				}
 				if (rects[0] != 0) OS.g_free(rects[0]);
-				cairo_region_destroy (rgn);
+				Region.cairo_region_destroy (rgn);
 			}
 		}
 	}
@@ -2261,25 +2261,6 @@ int width () {
 	int[] w = new int[1], h = new int[1];
 	OS.pango_layout_get_size(layout, w, h);
 	return OS.PANGO_PIXELS(w[0]);
-}
-
-void cairo_region_get_rectangles (long /*int*/ region, long /*int*/[] rectangles, int[] n_rectangles) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		 int num = Cairo.cairo_region_num_rectangles (region);
-		 for (int n = 0; n < num; n++) {
-			 Cairo.cairo_region_get_rectangle (region, n, rectangles[n]);
-		 }
-	} else {
-		OS.gdk_region_get_rectangles (region, rectangles, n_rectangles);
-	}
-}
-
-void cairo_region_destroy (long /*int*/ region) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		Cairo.cairo_region_destroy ( region);
-	} else {
-		OS.gdk_region_destroy (region);
-	}
 }
 
 } 

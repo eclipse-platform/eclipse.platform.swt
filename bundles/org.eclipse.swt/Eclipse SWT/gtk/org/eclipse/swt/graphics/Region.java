@@ -85,6 +85,66 @@ Region(Device device, long /*int*/ handle) {
 	this.handle = handle;
 }
 
+static long /*int*/ cairo_region_create () {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		return Cairo.cairo_region_create ();
+	} else {
+		return OS.gdk_region_new ();
+	}
+}
+
+static void cairo_region_translate (long /*int*/ region, int dx, int dy) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		Cairo.cairo_region_translate (region, dx, dy);
+	} else {
+		OS.gdk_region_offset (region, dx, dy);
+	}
+}
+
+static void cairo_region_subtract (long /*int*/ dst, long /*int*/ other) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		Cairo.cairo_region_subtract (dst, other);
+	} else {
+		OS.gdk_region_subtract (dst, other);
+	}
+}
+
+static void cairo_region_union (long /*int*/ dst, long /*int*/ other) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		Cairo.cairo_region_union (dst, other);
+	} else {
+		OS.gdk_region_union (dst, other);
+	}
+}
+
+static void cairo_region_intersect (long /*int*/ dst, long /*int*/ other) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		Cairo.cairo_region_intersect (dst, other);
+	} else {
+		OS.gdk_region_intersect (dst, other);
+	}
+}
+
+static void cairo_region_get_rectangles (long /*int*/ region, long /*int*/[] rectangles, int[] n_rectangles) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		int num = Cairo.cairo_region_num_rectangles (region);
+		rectangles[0] = OS.g_malloc(GdkRectangle.sizeof * num);
+		for (int n = 0; n < num; n++) {
+			Cairo.cairo_region_get_rectangle (region, n, rectangles[0] + (n * GdkRectangle.sizeof));
+		}
+	} else {
+		OS.gdk_region_get_rectangles (region, rectangles, n_rectangles);
+	}
+}
+
+static void cairo_region_destroy (long /*int*/ region) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		Cairo.cairo_region_destroy ( region);
+	} else {
+		OS.gdk_region_destroy (region);
+	}
+}
+
 /**
  * Adds the given polygon to the collection of polygons
  * the receiver maintains to describe its area.
@@ -706,53 +766,5 @@ public void translate (Point pt) {
 public String toString () {
 	if (isDisposed()) return "Region {*DISPOSED*}";
 	return "Region {" + handle + "}";
-}
-
-long /*int*/ cairo_region_create () {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		return Cairo.cairo_region_create ();
-	} else {
-		return OS.gdk_region_new ();
-	}
-}
-
-void cairo_region_translate (long /*int*/ region, int dx, int dy) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		Cairo.cairo_region_translate (region, dx, dy);
-	} else {
-		OS.gdk_region_offset (region, dx, dy);
-	}
-}
-
-void cairo_region_subtract (long /*int*/ dst, long /*int*/ other) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		Cairo.cairo_region_subtract (dst, other);
-	} else {
-		OS.gdk_region_subtract (dst, other);
-	}
-}
-
-void cairo_region_union (long /*int*/ dst, long /*int*/ other) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		Cairo.cairo_region_union (dst, other);
-	} else {
-		OS.gdk_region_union (dst, other);
-	}
-}
-
-void cairo_region_intersect (long /*int*/ dst, long /*int*/ other) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		Cairo.cairo_region_intersect (dst, other);
-	} else {
-		OS.gdk_region_intersect (dst, other);
-	}
-}
-
-void cairo_region_destroy (long /*int*/ region) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		Cairo.cairo_region_destroy ( region);
-	} else {
-		OS.gdk_region_destroy (region);
-	}
 }
 }
