@@ -110,7 +110,11 @@ static long /*int*/ gdk_region_polygon(int[] pointArray, int npoints, int fill_r
 	}
 	Cairo.cairo_close_path(cairo);
 	Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
-	Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
+	int cairo_rule = Cairo.CAIRO_FILL_RULE_WINDING;
+	if (fill_rule == OS.GDK_EVEN_ODD_RULE) {
+		cairo_rule = Cairo.CAIRO_FILL_RULE_EVEN_ODD;
+	}
+	Cairo.cairo_set_fill_rule(cairo, cairo_rule);
 	Cairo.cairo_fill(cairo);
 	Cairo.cairo_destroy(cairo);
 	long /*int*/ polyRgn = OS.gdk_cairo_region_create_from_surface(surface);
