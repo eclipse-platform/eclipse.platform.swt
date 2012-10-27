@@ -260,7 +260,12 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	long /*int*/ window = paintWindow ();
-	long /*int*/ visibleRegion = OS.gdk_drawable_get_visible_region (window);
+	long /*int*/ visibleRegion;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		visibleRegion = OS.gdk_window_get_visible_region (window);
+	} else {
+		visibleRegion = OS.gdk_drawable_get_visible_region (window);
+	}
 	GdkRectangle srcRect = new GdkRectangle ();
 	srcRect.x = x;
 	srcRect.y = y;
