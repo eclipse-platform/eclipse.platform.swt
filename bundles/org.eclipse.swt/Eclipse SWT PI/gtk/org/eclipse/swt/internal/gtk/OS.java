@@ -13235,7 +13235,7 @@ public static final native void _gtk_render_handle(long /*int*/ context, long /*
 public static final void gtk_render_handle(long /*int*/ context, long /*int*/ cr, double x , double y, double width, double height) {
 	lock.lock();
 	try {
-		gtk_render_handle(context,cr, x ,y, width, height);
+		_gtk_render_handle(context,cr, x ,y, width, height);
 	} finally {
 		lock.unlock();
 	}
