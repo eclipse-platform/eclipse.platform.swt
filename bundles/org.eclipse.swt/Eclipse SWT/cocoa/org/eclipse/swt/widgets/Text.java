@@ -1615,26 +1615,6 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 			case 0: /* A */
 				NSApplication.sharedApplication().sendAction(OS.sel_selectAll_, null, NSApplication.sharedApplication());
 				return false;
-			case 6: /* Z */
-				NSUndoManager undoManager = view.undoManager();
-				if (undoManager == null && (style & SWT.SINGLE) != 0) {
-					NSText fieldEditor = ((NSTextField) view).currentEditor ();
-					undoManager = fieldEditor.undoManager();
-				}
-				if (undoManager != null) {
-					if ((modifierFlags & OS.NSShiftKeyMask) != 0) {
-						if (undoManager.canRedo()) {
-							undoManager.redo();
-							return false;
-						}
-					} else {
-						if (undoManager.canUndo()) {
-							undoManager.undo();
-							return false;
-						}
-					}
-				}
-				break;
 		}
 	}
 	if (isDisposed()) return false;
@@ -1646,6 +1626,38 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 				sendSelectionEvent (SWT.DefaultSelection);
 		}
 	}
+	return result;
+}
+
+boolean sendKeyEvent (int type, Event event) {
+	boolean result = super.sendKeyEvent (type, event);
+	if (!result) return result;
+	if (type != SWT.KeyDown) return result;
+	if ((event.stateMask & SWT.COMMAND) != 0) {
+		switch (event.keyCode) {
+			case 'z': 
+				NSUndoManager undoManager = view.undoManager();
+				if (undoManager == null && (style & SWT.SINGLE) != 0) {
+					NSText fieldEditor = ((NSTextField) view).currentEditor ();
+					undoManager = fieldEditor.undoManager();
+				}
+				if (undoManager != null) {
+					if ((event.stateMask & SWT.SHIFT) != 0) {
+						if (undoManager.canRedo()) {
+							undoManager.redo();
+							return false;
+						}
+					} else {
+						if (undoManager.canUndo()) {
+							undoManager.undo();
+							return false;
+						}
+					}
+				}
+				return false;
+		}
+	}
+	if (isDisposed()) return false;
 	return result;
 }
 
