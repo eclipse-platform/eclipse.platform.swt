@@ -840,8 +840,13 @@ void hookEvents () {
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MAP_EVENT], 0, display.shellMapProcClosure, false);
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
 	OS.g_signal_connect_closure (shellHandle, OS.move_focus, display.closures [MOVE_FOCUS], false);
-	long /*int*/ window = gtk_widget_get_window (shellHandle);
-	OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
+	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+		long /*int*/ window = gtk_widget_get_window (shellHandle);
+		OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
+	} else {
+		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.closures [FOCUS_IN_EVENT], false);
+		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.closures [FOCUS_OUT_EVENT], false);
+	}
 	if (isCustomResize ()) {
 		int mask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK | OS.GDK_BUTTON_PRESS_MASK |  OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK;
 		OS.gtk_widget_add_events (shellHandle, mask);
@@ -1284,6 +1289,30 @@ long /*int*/ gtk_focus (long /*int*/ widget, long /*int*/ directionType) {
 			break;
 	}
 	return super.gtk_focus (widget, directionType);
+}
+
+long /*int*/ gtk_focus_in_event (long /*int*/ widget, long /*int*/ event) {
+	if (widget != shellHandle) {
+		return super.gtk_focus_in_event (widget, event);
+	}
+	display.activeShell = this;
+	display.activePending = false;
+	sendEvent (SWT.Activate);
+	return 0;
+}
+
+long /*int*/ gtk_focus_out_event (long /*int*/ widget, long /*int*/ event) {
+	if (widget != shellHandle) {
+		return super.gtk_focus_out_event (widget, event);
+	}
+	Display display = this.display;
+	sendEvent (SWT.Deactivate);
+	setActiveControl (null);
+	if (display.activeShell == this) {
+		display.activeShell = null;
+		display.activePending = false;
+	}
+	return 0;
 }
 
 long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
@@ -2428,8 +2457,10 @@ void releaseWidget () {
 	tooltipsHandle = 0;
 	if (group != 0) OS.g_object_unref (group);
 	group = modalGroup = 0;
-	long /*int*/ window = gtk_widget_get_window (shellHandle);
-	OS.gdk_window_remove_filter(window, display.filterProc, shellHandle);
+	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+		long /*int*/ window = gtk_widget_get_window (shellHandle);
+		OS.gdk_window_remove_filter(window, display.filterProc, shellHandle);
+	}
 	lastActive = null;
 }
 
