@@ -843,15 +843,20 @@ void moveHandle (int x, int y) {
 	/*
 	* Feature in GTK.  Calling gtk_fixed_move() to move a child causes
 	* the whole parent to redraw.  This is a performance problem. The
-	* fix is temporarily make the parent not visible during the move.
+	* fix is temporarily mark the parent not visible during the move.
 	* 
 	* NOTE: Because every widget in SWT has an X window, the new and
 	* old bounds of the child are correctly redrawn.
+	* 
+	* NOTE: There is no API in GTK 3 to only set the GTK_VISIBLE bit.
 	*/
-	boolean visible = gtk_widget_get_visible (parentHandle);
-	gtk_widget_set_visible (parentHandle, false);
+	boolean reset = false;
+	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+		reset = gtk_widget_get_visible (parentHandle);
+		gtk_widget_set_visible (parentHandle, false);
+	}
 	OS.gtk_fixed_move (parentHandle, topHandle, x, y);
-	if (visible) {
+	if (reset) {
 		gtk_widget_set_visible (parentHandle, true);
 	}
 }
