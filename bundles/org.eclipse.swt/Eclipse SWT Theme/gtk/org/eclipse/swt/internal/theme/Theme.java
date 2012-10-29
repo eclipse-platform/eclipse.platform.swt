@@ -13,7 +13,6 @@ package org.eclipse.swt.internal.theme;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.cairo.Cairo;
 import org.eclipse.swt.internal.gtk.*;
 
 public class Theme {
@@ -188,15 +187,9 @@ void transferClipping(GC gc, long /*int*/ style) {
 	long /*int*/ clipping = clipRgn;
 	if (damageRgn != 0) {
 		if (clipping != 0) {
-		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {	
-			clipping = Cairo.cairo_region_create ();
-			Cairo.cairo_region_union (clipping, clipRgn);
-			Cairo.cairo_region_intersect (clipping, damageRgn);
-		} else {
 			clipping = OS.gdk_region_new();
 			OS.gdk_region_union (clipping, clipRgn);
 			OS.gdk_region_intersect (clipping, damageRgn);
-		}
 		} else {
 			clipping = damageRgn;
 		}
@@ -226,11 +219,7 @@ void transferClipping(GC gc, long /*int*/ style) {
 		if (curGC[0] != 0) OS.gdk_gc_set_clip_region (curGC[0], clipping);
 	}
 	if (clipping != clipRgn && clipping != damageRgn) {
-		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-			Cairo.cairo_region_destroy ( clipping);
-		} else {
 			OS.gdk_region_destroy (clipping);
-		}
 	}
 }
 }
