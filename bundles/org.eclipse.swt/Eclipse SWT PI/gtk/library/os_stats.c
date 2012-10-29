@@ -1280,6 +1280,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1create_1pango_1layout__J_3B",
 #endif
 	"_1gtk_1widget_1destroy",
+	"_1gtk_1widget_1draw",
 	"_1gtk_1widget_1event",
 	"_1gtk_1widget_1get_1accessible",
 	"_1gtk_1widget_1get_1allocation",

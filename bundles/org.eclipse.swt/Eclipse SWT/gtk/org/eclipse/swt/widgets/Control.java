@@ -404,6 +404,10 @@ public boolean print (GC gc) {
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	long /*int*/ topHandle = topHandle ();
 	OS.gtk_widget_realize (topHandle);
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		OS.gtk_widget_draw(topHandle, gc.handle);
+		return true;
+	}
 	long /*int*/ window = gtk_widget_get_window (topHandle);
 	GCData data = gc.getGCData ();
 	OS.gdk_window_process_updates (window, true);

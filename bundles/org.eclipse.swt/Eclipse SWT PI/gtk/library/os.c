@@ -17230,6 +17230,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1destroy)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1draw
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1draw)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1draw_FUNC);
+/*
+	gtk_widget_draw(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_draw)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1draw_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1event
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1widget_1event)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)

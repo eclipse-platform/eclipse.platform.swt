@@ -506,6 +506,9 @@
 #define g_file_query_info_LIB LIB_GIO
 #define g_object_ref_sink_LIB LIB_GOBJECT
 
+// GTK3 only
+#define gtk_widget_draw_LIB LIB_GTK
+
 /* Field accessors */
 #if GTK_CHECK_VERSION(3,0,0)
 #define GTK_WIDGET_FLAGS(arg0) 0

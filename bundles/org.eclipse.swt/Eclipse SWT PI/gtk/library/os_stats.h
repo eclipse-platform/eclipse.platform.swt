@@ -1290,6 +1290,7 @@ typedef enum {
 	_1gtk_1widget_1create_1pango_1layout__J_3B_FUNC,
 #endif
 	_1gtk_1widget_1destroy_FUNC,
+	_1gtk_1widget_1draw_FUNC,
 	_1gtk_1widget_1event_FUNC,
 	_1gtk_1widget_1get_1accessible_FUNC,
 	_1gtk_1widget_1get_1allocation_FUNC,

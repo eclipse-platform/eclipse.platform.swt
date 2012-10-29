@@ -13065,6 +13065,16 @@ public static final void gtk_widget_destroy(long /*int*/ widget) {
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native void _gtk_widget_draw(long /*int*/ widget, long /*int*/ cr);
+public static final void gtk_widget_draw(long /*int*/ widget, long /*int*/ cr) {
+	lock.lock();
+	try {
+		_gtk_widget_draw(widget, cr);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @param widget cast=(GtkWidget *)
  * @param event cast=(GdkEvent *)
