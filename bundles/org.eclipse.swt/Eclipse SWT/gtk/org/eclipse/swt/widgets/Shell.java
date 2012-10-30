@@ -713,9 +713,13 @@ void createHandle (int index) {
 		OS.gtk_window_set_title (shellHandle, new byte [1]);
 		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
 			OS.gtk_container_set_border_width (shellHandle, 1);
-			GdkColor color = new GdkColor ();
-			OS.gtk_style_get_black (OS.gtk_widget_get_style (shellHandle), color);
-			OS.gtk_widget_modify_bg (shellHandle,  OS.GTK_STATE_NORMAL, color);
+			if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+				OS.gtk_widget_override_background_color (shellHandle, OS.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
+			} else {
+				GdkColor color = new GdkColor ();
+				OS.gtk_style_get_black (OS.gtk_widget_get_style (shellHandle), color);
+				OS.gtk_widget_modify_bg (shellHandle, OS.GTK_STATE_NORMAL, color);
+			}
 		}
 		if (isCustomResize ()) {
 			OS.gtk_container_set_border_width (shellHandle, BORDER);
@@ -1244,6 +1248,30 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 	return 0;
 }
 
+long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
+	if (widget == shellHandle) {
+		if (isCustomResize ()) {
+			int [] width = new int [1];
+			int [] height = new int [1];
+			long /*int*/ window = gtk_widget_get_window (widget);
+			gdk_window_get_size (window, width, height);
+			int border = OS.gtk_container_get_border_width (widget);
+			long /*int*/ context = OS.gtk_widget_get_style_context (shellHandle);
+			//TODO draw shell frame on GTK3
+			OS.gtk_style_context_save (context);
+			OS.gtk_render_frame (context, cairo, 0, 0, width [0], border);
+			OS.gtk_render_frame (context, cairo, 0, height [0] - border, width [0], border);
+			OS.gtk_render_frame (context, cairo, 0, border, border, height [0] - border - border);
+			OS.gtk_render_frame (context, cairo, width [0] - border, border, border, height [0] - border - border);
+			OS.gtk_render_frame (context, cairo, 0 + 10, 0 + 10, width [0] - 20, height [0] - 20);
+			OS.gtk_style_context_restore (context);
+			return 1;
+		}
+		return 0;
+	}
+	return super.gtk_draw (widget, cairo);
+}
+
 long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
@@ -1262,11 +1290,11 @@ long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ event) {
 			byte [] detail = Converter.wcsToMbcs (null, "base", true); //$NON-NLS-1$
 			int border = OS.gtk_container_get_border_width (widget);
 			int state = display.activeShell == this ? OS.GTK_STATE_SELECTED : OS.GTK_STATE_PRELIGHT;
-			gtk_render_frame (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, 0, 0, width [0], border);
-			gtk_render_frame (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, 0, height [0] - border, width [0], border);
-			gtk_render_frame (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, 0, border, border, height [0] - border - border);
-			gtk_render_frame (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, width [0] - border, border, border, height [0] - border - border);
-			gtk_render_box (style, window, state, OS.GTK_SHADOW_OUT, area, widget, detail, 0, 0, width [0], height [0]);
+			OS.gtk_paint_flat_box (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, 0, 0, width [0], border);
+			OS.gtk_paint_flat_box (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, 0, height [0] - border, width [0], border);
+			OS.gtk_paint_flat_box (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, 0, border, border, height [0] - border - border);
+			OS.gtk_paint_flat_box (style, window, state, OS.GTK_SHADOW_NONE, area, widget, detail, width [0] - border, border, border, height [0] - border - border);
+			OS.gtk_paint_box (style, window, state, OS.GTK_SHADOW_OUT, area, widget, detail, 0, 0, width [0], height [0]);
 			return 1;
 		}
 		return 0;

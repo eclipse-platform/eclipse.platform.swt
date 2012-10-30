@@ -156,6 +156,23 @@
 #define NO_GTK_1WIDGET_1REQUISITION_1WIDTH
 #define NO_GtkFixed
 
+#else
+
+#define NO_GdkRGBA
+#define NO__1gtk_1widget_1draw
+#define NO__1gtk_1widget_1override_1color
+#define NO__1gtk_1widget_1override_1background_1color
+#define NO__1gtk_1widget_1override_1font
+#define NO__1gtk_1style_1context_1get_1font
+#define NO__1gtk_1style_1context_1get_1color
+#define NO__1gtk_1style_1context_1get_1background_1color
+#define NO__1gtk_1style_1context_1add_1class
+#define NO__1gtk_1style_1context_1get_1border_1color
+#define NO__1gtk_1style_1context_1get_1padding
+#define NO__1gtk_1style_1context_1restore
+#define NO__1gtk_1style_1context_1save
+#define NO__1gtk_1style_1context_1set_1state
+
 #endif
 
 #include "os_custom.h"

@@ -378,6 +378,14 @@ public class OS extends C {
 	public static final int GTK_STATE_NORMAL = 0x0;
 	public static final int GTK_STATE_PRELIGHT = 0x2;
 	public static final int GTK_STATE_SELECTED = 0x3;
+	public static final int GTK_STATE_FLAG_NORMAL = 0;
+	public static final int GTK_STATE_FLAG_ACTIVE = 1 << 0;
+	public static final int GTK_STATE_FLAG_PRELIGHT = 1 << 1;
+	public static final int GTK_STATE_FLAG_SELECTED = 1 << 2;
+	public static final int GTK_STATE_FLAG_INSENSITIVE = 1 << 3;
+	public static final int GTK_STATE_FLAG_INCONSISTENT = 1 << 4;
+	public static final int GTK_STATE_FLAG_FOCUSED = 1 << 5;
+	public static final int GTK_STATE_FLAG_BACKDROP  = 1 << 6;
 	public static final int GTK_TEXT_DIR_LTR = 1;
 	public static final int GTK_TEXT_DIR_NONE = 0 ;
 	public static final int GTK_TEXT_DIR_RTL = 2;
@@ -551,6 +559,10 @@ public class OS extends C {
 	public static final byte[] visibility_notify_event = ascii("visibility-notify-event");
 	public static final byte[] window_state_event = ascii("window-state-event");
 	
+	public static final byte[] GTK_STYLE_CLASS_TOOLTIP = ascii("tooltip");
+	public static final byte[] GTK_STYLE_CLASS_VIEW = ascii("view");
+	public static final byte[] GTK_STYLE_CLASS_CELL = ascii("cell");
+	
 	/** Properties */
 	public static final byte[] active = ascii("active");
 	public static final byte[] background_gdk = ascii("background-gdk");
@@ -632,6 +644,7 @@ public static final native int GPollFD_sizeof ();
 public static final native int GTypeInfo_sizeof ();
 public static final native int GTypeQuery_sizeof ();
 public static final native int GdkColor_sizeof();
+public static final native int GdkRGBA_sizeof();
 public static final native int GdkDragContext_sizeof();
 public static final native int GdkEvent_sizeof();
 public static final native int GdkEventAny_sizeof();
@@ -10582,6 +10595,66 @@ public static final void gtk_style_get_base(long /*int*/ style, int index, GdkCo
 	}
 }
 /** @method flags=dynamic */
+public static final native void _gtk_style_context_add_class(long /*int*/ context, byte[] class_name);
+public static final void gtk_style_context_add_class(long /*int*/ context, byte[] class_name) {
+	lock.lock();
+	try {
+		_gtk_style_context_add_class(context, class_name);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_style_context_get_background_color(long /*int*/ context, int state, GdkRGBA color);
+public static final void gtk_style_context_get_background_color(long /*int*/ context, int state, GdkRGBA color) {
+	lock.lock();
+	try {
+		_gtk_style_context_get_background_color(context, state, color);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_style_context_get_border_color(long /*int*/ context, int state, GdkRGBA color);
+public static final void gtk_style_context_get_border_color(long /*int*/ context, int state, GdkRGBA color) {
+	lock.lock();
+	try {
+		_gtk_style_context_get_border_color(context, state, color);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_style_context_get_color(long /*int*/ context, int state, GdkRGBA color);
+public static final void gtk_style_context_get_color(long /*int*/ context, int state, GdkRGBA color) {
+	lock.lock();
+	try {
+		_gtk_style_context_get_color(context, state, color);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native long /*int*/ _gtk_style_context_get_font(long /*int*/ context, int state);
+public static final long /*int*/ gtk_style_context_get_font(long /*int*/ context, int state) {
+	lock.lock();
+	try {
+		return _gtk_style_context_get_font(context, state);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_style_context_get_padding(long /*int*/ context, int state, GtkBorder padding);
+public static final void gtk_style_context_get_padding(long /*int*/ context, int state, GtkBorder padding) {
+	lock.lock();
+	try {
+		_gtk_style_context_get_padding(context, state, padding);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
 public static final native void _gtk_style_context_save(long /*int*/ self);
 public static final void gtk_style_context_save(long /*int*/ self) {
 	lock.lock();
@@ -10849,10 +10922,7 @@ public static final int gtk_style_get_ythickness(long /*int*/ style) {
 	}
 }
 /**
- * @param style cast=(GtkStyle *)
- * @param source cast=(GtkIconSource *)
- * @param widget cast=(GtkWidget *)
- * @param detail cast=(const gchar *)
+ * @method flags=dynamic
  */
 public static final native long /*int*/ _gtk_style_render_icon(long /*int*/ style, long /*int*/ source, int direction, int state, int size, long /*int*/ widget, byte[] detail);
 public static final long /*int*/ gtk_style_render_icon(long /*int*/ style, long /*int*/ source, int direction, int state, int size, long /*int*/ widget, byte[] detail) {
@@ -13440,6 +13510,42 @@ public static final void gtk_widget_modify_style(long /*int*/ widget, long /*int
 	lock.lock();
 	try {
 		_gtk_widget_modify_style(widget, style);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_widget_override_color(long /*int*/ widget, int state, GdkRGBA color);
+public static final void gtk_widget_override_color(long /*int*/ widget, int state, GdkRGBA color) {
+	lock.lock();
+	try {
+		_gtk_widget_override_color(widget, state, color);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_widget_override_background_color(long /*int*/ widget, int state, GdkRGBA color);
+public static final void gtk_widget_override_background_color(long /*int*/ widget, int state, GdkRGBA color) {
+	lock.lock();
+	try {
+		_gtk_widget_override_background_color(widget, state, color);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_widget_override_font(long /*int*/ widget, long /*int*/ font);
+public static final void gtk_widget_override_font(long /*int*/ widget, long /*int*/ font) {
+	lock.lock();
+	try {
+		_gtk_widget_override_font(widget, font);
 	} finally {
 		lock.unlock();
 	}

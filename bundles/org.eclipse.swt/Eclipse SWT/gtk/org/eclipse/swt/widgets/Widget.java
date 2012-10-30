@@ -1636,11 +1636,32 @@ public void setData (String key, Object value) {
 	if (key.equals(SWT.SKIN_CLASS) || key.equals(SWT.SKIN_ID)) this.reskin(SWT.ALL);
 }
 
+void setFontDescription (long /*int*/ widget, long /*int*/ font) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		OS.gtk_widget_override_font (widget, font);
+	} else {
+		OS.gtk_widget_modify_font (widget, font);
+	}
+}
+
 void setForegroundColor (long /*int*/ handle, GdkColor color) {
 	setForegroundColor (handle, color, true);
 }
 
 void setForegroundColor (long /*int*/ handle, GdkColor color, boolean setStateActive) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		GdkRGBA rgba = null;
+		if (color != null) {
+			rgba = new GdkRGBA();
+			rgba.alpha = 1;
+			rgba.red = (color.red & 0xFFFF) / (float)0xFFFF;
+			rgba.green = (color.green & 0xFFFF) / (float)0xFFFF;
+			rgba.blue = (color.blue & 0xFFFF) / (float)0xFFFF;
+		}
+		OS.gtk_widget_override_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		return;
+	}
+	
 	/*
 	 * Feature in GTK. When the widget doesn't have focus, then
 	 * gtk_default_draw_flat_box () changes the background color state_type
@@ -2131,17 +2152,6 @@ long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[]
 		return OS.gdk_window_get_device_position(window, pointer, x, y, mask);
 	} else {
 		return OS.gdk_window_get_pointer (window, x, y, mask);
-	}
-}
-
-void gtk_render_frame (long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
-		long /*int*/ cairo = OS.gdk_cairo_create (window);
-		long /*int*/ context = OS.gtk_widget_get_style_context (style);
-		OS.gtk_render_frame (context, cairo, x, y, width, height);
-		Cairo.cairo_destroy (cairo);
-	} else {
-		OS.gtk_paint_flat_box (style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
 	}
 }
 

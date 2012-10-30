@@ -226,11 +226,13 @@ void fixStyle (long /*int*/ handle) {
 	*/
 	if ((state & BACKGROUND) != 0) return;
 	if ((state & THEME_BACKGROUND) == 0) return;
-	long /*int*/ childStyle = parent.childStyle ();
-	if (childStyle != 0) {
-		GdkColor color = new GdkColor();
-		OS.gtk_style_get_bg (childStyle, 0, color);
-		setBackgroundColor (color);
+	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+		long /*int*/ childStyle = parent.childStyle ();
+		if (childStyle != 0) {
+			GdkColor color = new GdkColor();
+			OS.gtk_style_get_bg (childStyle, 0, color);
+			setBackgroundColor (color);
+		}
 	}
 }
 
@@ -2444,7 +2446,36 @@ public Image getBackgroundImage () {
 	return control.backgroundImage;
 }
 
+GdkColor getContextBackground () {
+	long /*int*/ fontHandle = fontHandle ();
+	OS.gtk_widget_realize (fontHandle);
+	long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
+	GdkRGBA rgba = new GdkRGBA ();
+	OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+	GdkColor color = new GdkColor ();
+	color.red = (short)(rgba.red * 0xFFFF);
+	color.green = (short)(rgba.green * 0xFFFF);
+	color.blue = (short)(rgba.blue * 0xFFFF);
+	return color;
+}
+
+GdkColor getContextColor () {
+	long /*int*/ fontHandle = fontHandle ();
+	OS.gtk_widget_realize (fontHandle);
+	long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
+	GdkRGBA rgba = new GdkRGBA ();
+	OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+	GdkColor color = new GdkColor ();
+	color.red = (short)(rgba.red * 0xFFFF);
+	color.green = (short)(rgba.green * 0xFFFF);
+	color.blue = (short)(rgba.blue * 0xFFFF);
+	return color;
+}
+
 GdkColor getBgColor () {
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		return getContextBackground ();
+	}
 	long /*int*/ fontHandle = fontHandle ();
 	OS.gtk_widget_realize (fontHandle);
 	GdkColor color = new GdkColor ();
@@ -2453,6 +2484,9 @@ GdkColor getBgColor () {
 }
 
 GdkColor getBaseColor () {
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		return getContextBackground ();
+	}
 	long /*int*/ fontHandle = fontHandle ();
 	OS.gtk_widget_realize (fontHandle);
 	GdkColor color = new GdkColor ();
@@ -2556,6 +2590,10 @@ public Font getFont () {
 long /*int*/ getFontDescription () {
 	long /*int*/ fontHandle = fontHandle ();
 	OS.gtk_widget_realize (fontHandle);
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);	
+		return OS.gtk_style_context_get_font(context, OS.GTK_STATE_FLAG_NORMAL);
+	}
 	return OS.gtk_style_get_font_desc (OS.gtk_widget_get_style (fontHandle));
 }
 
@@ -2579,6 +2617,9 @@ GdkColor getForegroundColor () {
 }
 
 GdkColor getFgColor () {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		return getContextColor ();
+	}
 	long /*int*/ fontHandle = fontHandle ();
 	OS.gtk_widget_realize (fontHandle);
 	GdkColor color = new GdkColor ();
@@ -2591,6 +2632,9 @@ Point getIMCaretPos () {
 }
 
 GdkColor getTextColor () {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		return getContextColor ();
+	}
 	long /*int*/ fontHandle = fontHandle ();
 	OS.gtk_widget_realize (fontHandle);
 	GdkColor color = new GdkColor ();
@@ -2815,6 +2859,17 @@ public boolean getTouchEnabled() {
 public boolean getVisible () {
 	checkWidget();
 	return (state & HIDDEN) == 0;
+}
+
+Point getThickness (long /*int*/ widget) {
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		GtkBorder padding = new GtkBorder();
+		long /*int*/ context = OS.gtk_widget_get_style_context (widget);
+		OS.gtk_style_context_get_padding (context, OS.GTK_STATE_FLAG_NORMAL, padding);
+		return new Point (padding.left, padding.top);
+	}
+	long /*int*/ style = OS.gtk_widget_get_style (widget);
+	return new Point (OS.gtk_style_get_xthickness (style), OS.gtk_style_get_ythickness (style));
 }
 
 long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
@@ -3804,12 +3859,16 @@ public void setBackground (Color color) {
 		gdkColor = color.handle;
 	}
 	boolean set = false;
-	if (gdkColor == null) {
-		long /*int*/ style = OS.gtk_widget_get_modifier_style (handle);
-		set = (OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_NORMAL) & OS.GTK_RC_BG) != 0;
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		set = !getBackground().equals(color);
 	} else {
-		GdkColor oldColor = getBackgroundColor ();
-		set = oldColor.pixel != gdkColor.pixel;
+		if (gdkColor == null) {
+			long /*int*/ style = OS.gtk_widget_get_modifier_style (handle);
+			set = (OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_NORMAL) & OS.GTK_RC_BG) != 0;
+		} else {
+			GdkColor oldColor = getBackgroundColor ();
+			set = oldColor.pixel != gdkColor.pixel;
+		}
 	}
 	if (set) {
 		if (color == null) {
@@ -3823,6 +3882,18 @@ public void setBackground (Color color) {
 }
 
 void setBackgroundColor (long /*int*/ handle, GdkColor color) {
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		GdkRGBA rgba = null;
+		if (color != null) {
+			rgba = new GdkRGBA ();
+			rgba.alpha = 1;
+			rgba.red = (color.red & 0xFFFF) / (float)0xFFFF;
+			rgba.green = (color.green & 0xFFFF) / (float)0xFFFF;
+			rgba.blue = (color.blue & 0xFFFF) / (float)0xFFFF;
+		}
+		OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		return;
+	}
 	int index = OS.GTK_STATE_NORMAL;
 	long /*int*/ style = OS.gtk_widget_get_modifier_style (handle);
 	long /*int*/ ptr = OS.gtk_rc_style_get_bg_pixmap_name (style, index);
@@ -4125,7 +4196,7 @@ public void setFont (Font font) {
 }
 	
 void setFontDescription (long /*int*/ font) {
-	OS.gtk_widget_modify_font (handle, font);
+	setFontDescription (handle, font);
 }
 
 /**
@@ -4154,12 +4225,16 @@ public void setForeground (Color color) {
 		gdkColor = color.handle;
 	}
 	boolean set = false;
-	if (gdkColor == null) {
-		long /*int*/ style = OS.gtk_widget_get_modifier_style (handle);
-		set = (OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_NORMAL) & OS.GTK_RC_FG) != 0;
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		set = !getForeground().equals(color);
 	} else {
-		GdkColor oldColor = getForegroundColor ();
-		set = oldColor.pixel != gdkColor.pixel;
+		if (gdkColor == null) {
+			long /*int*/ style = OS.gtk_widget_get_modifier_style (handle);
+			set = (OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_NORMAL) & OS.GTK_RC_FG) != 0;
+		} else {
+			GdkColor oldColor = getForegroundColor ();
+			set = oldColor.pixel != gdkColor.pixel;
+		}
 	}
 	if (set) {
 		if (color == null) {

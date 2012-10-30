@@ -258,7 +258,6 @@ public class Display extends Device {
 	long /*int*/ [] flushData = new long /*int*/ [1];
 
 	/* System Resources */
-	Font systemFont;
 	Image errorImage, infoImage, questionImage, warningImage;
 	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
 	Resource [] resources;
@@ -2205,7 +2204,87 @@ public Menu getSystemMenu () {
 	return null;
 }
 
+GdkColor toGdkColor (GdkRGBA rgba) {
+	GdkColor gdkColor = new GdkColor();
+	gdkColor.red = (short)(rgba.red * 0xFFFF);
+	gdkColor.green = (short)(rgba.green * 0xFFFF);
+	gdkColor.blue = (short)(rgba.blue * 0xFFFF);
+	return gdkColor;
+}
+
+GdkColor toGdkColor (GdkRGBA rgba, float m1, float m2) {
+	RGB rgb = new RGB((int)(rgba.red * 0xFF), (int)(rgba.green * 0xFF), (int)(rgba.blue * 0xFF));
+	float[] hsb = rgb.getHSB();
+	hsb[1] = (float)Math.max(0f, Math.min(1f, hsb[1] * m1));
+	hsb[2] = (float)Math.max(0f, Math.min(1f, hsb[2] * m2));
+	rgb = new RGB(hsb[0], hsb[1], hsb[2]);
+	GdkColor gdkColor = new GdkColor();
+	gdkColor.red = (short)((rgb.red & 0xFF) | ((rgb.red & 0xFF) << 8));
+	gdkColor.green = (short)((rgb.green & 0xFF) | ((rgb.green & 0xFF) << 8));
+	gdkColor.blue = (short)((rgb.blue & 0xFF) | ((rgb.blue & 0xFF) << 8));
+	return gdkColor;
+}
+
 void initializeSystemColors () {
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		long /*int*/ tooltipShellHandle = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
+		if (tooltipShellHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		byte[] gtk_tooltip = Converter.wcsToMbcs (null, "gtk-tooltip", true); //$NON-NLS-1$
+		OS.gtk_widget_set_name (tooltipShellHandle, gtk_tooltip);
+		OS.gtk_widget_realize (tooltipShellHandle);
+		long /*int*/ context = OS.gtk_widget_get_style_context (tooltipShellHandle);
+		OS.gtk_style_context_add_class (context, OS.GTK_STYLE_CLASS_TOOLTIP);
+		GdkRGBA rgba = new GdkRGBA();
+		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		COLOR_INFO_FOREGROUND = toGdkColor (rgba);
+		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		COLOR_INFO_BACKGROUND = toGdkColor (rgba);
+		OS.gtk_widget_destroy (tooltipShellHandle);	
+
+		context = OS.gtk_widget_get_style_context (shellHandle);
+		
+		COLOR_WIDGET_DARK_SHADOW = toGdkColor (new GdkRGBA());
+		OS.gtk_style_context_get_border_color (context, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
+		COLOR_WIDGET_NORMAL_SHADOW = toGdkColor (rgba);
+		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
+		COLOR_WIDGET_LIGHT_SHADOW = toGdkColor (rgba);
+		rgba.red = rgba.green = rgba.blue = 1;
+		COLOR_WIDGET_HIGHLIGHT_SHADOW = toGdkColor (rgba);
+		
+		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		COLOR_WIDGET_FOREGROUND = toGdkColor (rgba);
+		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		COLOR_WIDGET_BACKGROUND = toGdkColor (rgba);
+		
+		OS.gtk_style_context_save (context);
+		OS.gtk_style_context_add_class(context, OS.GTK_STYLE_CLASS_CELL);
+		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		COLOR_LIST_FOREGROUND = toGdkColor (rgba);
+		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		COLOR_LIST_BACKGROUND = toGdkColor (rgba);
+		OS.gtk_style_context_restore (context);
+		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_SELECTED, rgba);
+		COLOR_LIST_SELECTION_TEXT = toGdkColor (rgba);
+		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_SELECTED, rgba);
+		COLOR_LIST_SELECTION = toGdkColor (rgba);
+		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_ACTIVE, rgba);
+		COLOR_LIST_SELECTION_TEXT_INACTIVE = toGdkColor (rgba);
+		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_ACTIVE, rgba);
+		COLOR_LIST_SELECTION_INACTIVE = toGdkColor (rgba);
+		
+		COLOR_TITLE_FOREGROUND = COLOR_LIST_SELECTION_TEXT;
+		COLOR_TITLE_BACKGROUND = COLOR_LIST_SELECTION;
+		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_SELECTED, rgba);
+		COLOR_TITLE_BACKGROUND_GRADIENT = toGdkColor (rgba, 0.66f, 1);
+		
+		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
+		COLOR_TITLE_INACTIVE_FOREGROUND = toGdkColor (rgba);
+		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
+		COLOR_TITLE_INACTIVE_BACKGROUND = toGdkColor (rgba);
+		COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = toGdkColor (rgba, 1, 2f);
+		return;
+	}
+
 	GdkColor gdkColor;
 	
 	/* Get Tooltip resources */
@@ -2285,35 +2364,6 @@ void initializeSystemColors () {
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_light (style, OS.GTK_STATE_INSENSITIVE, gdkColor);
 	COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = gdkColor;
-}
-
-/**
- * Returns a reasonable font for applications to use.
- * On some platforms, this will match the "default font"
- * or "system font" if such can be found.  This font
- * should not be free'd because it was allocated by the
- * system, not the application.
- * <p>
- * Typically, applications which want the default look
- * should simply not set the font on the widgets they
- * create. Widgets are always created with the correct
- * default font for the class of user-interface component
- * they represent.
- * </p>
- *
- * @return a font
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public Font getSystemFont () {
-	checkDevice ();
-	if (systemFont != null) return systemFont;
-	long /*int*/ style = OS.gtk_widget_get_style (shellHandle);	
-	long /*int*/ defaultFont = OS.pango_font_description_copy (OS.gtk_style_get_font_desc (style));
-	return systemFont = Font.gtk_new (this, defaultFont);
 }
 
 /**
@@ -3381,10 +3431,6 @@ void releaseDisplay () {
 	mouseHoverCallback.dispose ();
 	mouseHoverCallback = null;
 	
-	/* Dispose the default font */
-	if (systemFont != null) systemFont.dispose ();
-	systemFont = null;
-	
 	/* Dispose the System Images */
 	if (errorImage != null) errorImage.dispose();
 	if (infoImage != null) infoImage.dispose();
@@ -4010,9 +4056,14 @@ void showIMWindow (Control control) {
 	if (preeditString [0] != 0 && OS.strlen (preeditString [0]) > 0) {
 		Control widget = control.findBackgroundControl ();
 		if (widget == null) widget = control;
-		OS.gtk_widget_modify_bg (preeditWindow,  OS.GTK_STATE_NORMAL, widget.getBackgroundColor ());
+		GdkColor color = widget.getBackgroundColor ();
+		if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+			widget.setBackgroundColor (preeditWindow, color);
+		} else {
+			OS.gtk_widget_modify_bg (preeditWindow,  OS.GTK_STATE_NORMAL, color);
+		}
 		widget.setForegroundColor (preeditLabel, control.getForegroundColor());
-		OS.gtk_widget_modify_font (preeditLabel, control.getFontDescription ());
+		widget.setFontDescription (preeditLabel, control.getFontDescription ());
 		if (pangoAttrs [0] != 0) OS.gtk_label_set_attributes (preeditLabel, pangoAttrs[0]);
 		OS.gtk_label_set_text (preeditLabel, preeditString [0]);
 		Point point = control.toDisplay (control.getIMCaretPos ());
@@ -4216,10 +4267,6 @@ void saveResources () {
 		Resource [] newResources = new Resource [resourceCount + RESOURCE_SIZE];
 		System.arraycopy (resources, 0, newResources, 0, resourceCount);
 		resources = newResources;
-	}
-	if (systemFont != null) {
-		resources [resourceCount++] = systemFont;
-		systemFont = null;
 	}
 	if (errorImage != null) resources [resourceCount++] = errorImage;
 	if (infoImage != null) resources [resourceCount++] = infoImage;

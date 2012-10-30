@@ -657,6 +657,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GdkGeometry_1sizeof)
 }
 #endif
 
+#ifndef NO_GdkRGBA_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkRGBA_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GdkRGBA_1sizeof_FUNC);
+	rc = (jint)GdkRGBA_sizeof();
+	OS_NATIVE_EXIT(env, that, GdkRGBA_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GdkRectangle_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GdkRectangle_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -14465,6 +14477,136 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1status_1icon_1set_1visible)
 }
 #endif
 
+#ifndef NO__1gtk_1style_1context_1add_1class
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1add_1class)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1context_1add_1class_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	gtk_style_context_add_class(arg0, lparg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_style_context_add_class)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jbyte *))fp)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1context_1add_1class_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1style_1context_1get_1background_1color
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1get_1background_1color)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+{
+	GdkRGBA _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1background_1color_FUNC);
+	if (arg2) if ((lparg2 = getGdkRGBAFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
+	gtk_style_context_get_background_color(arg0, arg1, lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_style_context_get_background_color)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, GdkRGBA *))fp)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) setGdkRGBAFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1background_1color_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1style_1context_1get_1border_1color
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1get_1border_1color)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+{
+	GdkRGBA _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1border_1color_FUNC);
+	if (arg2) if ((lparg2 = getGdkRGBAFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
+	gtk_style_context_get_border_color(arg0, arg1, lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_style_context_get_border_color)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, GdkRGBA *))fp)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) setGdkRGBAFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1border_1color_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1style_1context_1get_1color
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1get_1color)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+{
+	GdkRGBA _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1color_FUNC);
+	if (arg2) if ((lparg2 = getGdkRGBAFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
+	gtk_style_context_get_color(arg0, arg1, lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_style_context_get_color)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, GdkRGBA *))fp)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) setGdkRGBAFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1color_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1style_1context_1get_1font
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1style_1context_1get_1font)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1font_FUNC);
+/*
+	rc = (jintLong)gtk_style_context_get_font(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_style_context_get_font)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1font_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1style_1context_1get_1padding
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1get_1padding)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+{
+	GtkBorder _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1padding_FUNC);
+	if (arg2) if ((lparg2 = getGtkBorderFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
+	gtk_style_context_get_padding(arg0, arg1, lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_style_context_get_padding)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, GtkBorder *))fp)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) setGtkBorderFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1padding_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1style_1context_1restore
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1restore)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -14787,7 +14929,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1style_1render_1icon)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1style_1render_1icon_FUNC);
 	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	rc = (jintLong)gtk_style_render_icon((GtkStyle *)arg0, (GtkIconSource *)arg1, arg2, arg3, arg4, (GtkWidget *)arg5, (const gchar *)lparg6);
+/*
+	rc = (jintLong)gtk_style_render_icon(arg0, arg1, arg2, arg3, arg4, arg5, lparg6);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_style_render_icon)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jint, jint, jint, jintLong, jbyte *))fp)(arg0, arg1, arg2, arg3, arg4, arg5, lparg6);
+		}
+	}
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1style_1render_1icon_FUNC);
@@ -17801,6 +17951,68 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1modify_1style)
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1modify_1style_FUNC);
 	gtk_widget_modify_style((GtkWidget *)arg0, (GtkRcStyle *)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1modify_1style_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1override_1background_1color
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1override_1background_1color)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+{
+	GdkRGBA _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1override_1background_1color_FUNC);
+	if (arg2) if ((lparg2 = getGdkRGBAFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
+	gtk_widget_override_background_color(arg0, arg1, lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_override_background_color)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, GdkRGBA *))fp)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) setGdkRGBAFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1override_1background_1color_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1override_1color
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1override_1color)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+{
+	GdkRGBA _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1override_1color_FUNC);
+	if (arg2) if ((lparg2 = getGdkRGBAFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
+	gtk_widget_override_color(arg0, arg1, lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_override_color)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, GdkRGBA *))fp)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) setGdkRGBAFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1override_1color_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1override_1font
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1override_1font)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1override_1font_FUNC);
+/*
+	gtk_widget_override_font(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_override_font)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1override_1font_FUNC);
 }
 #endif
 

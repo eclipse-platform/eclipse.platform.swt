@@ -269,6 +269,7 @@
 #define gtk_style_context_restore_LIB LIB_GTK
 #define gtk_style_context_save_LIB LIB_GTK
 #define gtk_style_context_set_state_LIB LIB_GTK
+#define gtk_style_render_icon_LIB LIB_GTK
 #define gtk_hscale_new_LIB LIB_GTK
 #define gtk_vscale_new_LIB LIB_GTK
 #define gtk_selection_data_get_data_LIB LIB_GTK
@@ -508,6 +509,15 @@
 
 // GTK3 only
 #define gtk_widget_draw_LIB LIB_GTK
+#define gtk_widget_override_color_LIB LIB_GTK
+#define gtk_widget_override_background_color_LIB LIB_GTK
+#define gtk_widget_override_font_LIB LIB_GTK
+#define gtk_style_context_get_font_LIB LIB_GTK
+#define gtk_style_context_get_color_LIB LIB_GTK
+#define gtk_style_context_get_background_color_LIB LIB_GTK
+#define gtk_style_context_add_class_LIB LIB_GTK
+#define gtk_style_context_get_border_color_LIB LIB_GTK
+#define gtk_style_context_get_padding_LIB LIB_GTK
 
 /* Field accessors */
 #if GTK_CHECK_VERSION(3,0,0)

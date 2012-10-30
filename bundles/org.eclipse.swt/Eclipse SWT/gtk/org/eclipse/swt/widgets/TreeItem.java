@@ -1608,8 +1608,10 @@ public void setImage (int index, Image image) {
 				 * are relying on the fact that it is done as part of modifying
 				 * the style.
 				 */
-				long /*int*/ style = OS.gtk_widget_get_modifier_style (parentHandle);
-				parent.modifyStyle (parentHandle, style);
+				if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+					long /*int*/ style = OS.gtk_widget_get_modifier_style (parentHandle);
+					parent.modifyStyle (parentHandle, style);
+				}
 			}
 		} 
 	}

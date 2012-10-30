@@ -659,7 +659,21 @@ protected void init () {
 	OS.gtk_widget_realize(shellHandle);
 
 	/* Initialize the system font slot */
-	systemFont = getSystemFont ();
+	long /*int*/ defaultFont;
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		long /*int*/ context = OS.gtk_widget_get_style_context (shellHandle);	
+		defaultFont = OS.gtk_style_context_get_font (context, OS.GTK_STATE_FLAG_NORMAL);
+	} else {
+		long /*int*/ style = OS.gtk_widget_get_style (shellHandle);	
+		defaultFont = OS.gtk_style_get_font_desc (style);
+	}	
+	defaultFont = OS.pango_font_description_copy (defaultFont);
+	Point dpi = getDPI(), screenDPI = getScreenDPI();
+	if (dpi.y != screenDPI.y) {
+		int size = OS.pango_font_description_get_size(defaultFont);
+		OS.pango_font_description_set_size(defaultFont, size * dpi.y / screenDPI.y);
+	}
+	systemFont = Font.gtk_new (this, defaultFont);
 }
 
 /**	 
@@ -804,6 +818,10 @@ static synchronized void register (Device device) {
 protected void release () {
 	if (shellHandle != 0) OS.gtk_widget_destroy(shellHandle);
 	shellHandle = 0;
+	
+	/* Dispose the default font */
+	if (systemFont != null) systemFont.dispose ();
+	systemFont = null;
 
 	if (gdkColors != null) {
 		if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {

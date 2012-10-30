@@ -1225,7 +1225,9 @@ void selectFocusIndex (int index) {
 
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	OS.gtk_widget_modify_base (handle, 0, color);
+	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+		OS.gtk_widget_modify_base (handle, 0, color);
+	}
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {

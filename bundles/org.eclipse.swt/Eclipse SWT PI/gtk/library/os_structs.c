@@ -1126,6 +1126,46 @@ void setGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpStruct)
 }
 #endif
 
+#ifndef NO_GdkRGBA
+typedef struct GdkRGBA_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID red, green, blue, alpha;
+} GdkRGBA_FID_CACHE;
+
+GdkRGBA_FID_CACHE GdkRGBAFc;
+
+void cacheGdkRGBAFields(JNIEnv *env, jobject lpObject)
+{
+	if (GdkRGBAFc.cached) return;
+	GdkRGBAFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GdkRGBAFc.red = (*env)->GetFieldID(env, GdkRGBAFc.clazz, "red", "D");
+	GdkRGBAFc.green = (*env)->GetFieldID(env, GdkRGBAFc.clazz, "green", "D");
+	GdkRGBAFc.blue = (*env)->GetFieldID(env, GdkRGBAFc.clazz, "blue", "D");
+	GdkRGBAFc.alpha = (*env)->GetFieldID(env, GdkRGBAFc.clazz, "alpha", "D");
+	GdkRGBAFc.cached = 1;
+}
+
+GdkRGBA *getGdkRGBAFields(JNIEnv *env, jobject lpObject, GdkRGBA *lpStruct)
+{
+	if (!GdkRGBAFc.cached) cacheGdkRGBAFields(env, lpObject);
+	lpStruct->red = (*env)->GetDoubleField(env, lpObject, GdkRGBAFc.red);
+	lpStruct->green = (*env)->GetDoubleField(env, lpObject, GdkRGBAFc.green);
+	lpStruct->blue = (*env)->GetDoubleField(env, lpObject, GdkRGBAFc.blue);
+	lpStruct->alpha = (*env)->GetDoubleField(env, lpObject, GdkRGBAFc.alpha);
+	return lpStruct;
+}
+
+void setGdkRGBAFields(JNIEnv *env, jobject lpObject, GdkRGBA *lpStruct)
+{
+	if (!GdkRGBAFc.cached) cacheGdkRGBAFields(env, lpObject);
+	(*env)->SetDoubleField(env, lpObject, GdkRGBAFc.red, (jdouble)lpStruct->red);
+	(*env)->SetDoubleField(env, lpObject, GdkRGBAFc.green, (jdouble)lpStruct->green);
+	(*env)->SetDoubleField(env, lpObject, GdkRGBAFc.blue, (jdouble)lpStruct->blue);
+	(*env)->SetDoubleField(env, lpObject, GdkRGBAFc.alpha, (jdouble)lpStruct->alpha);
+}
+#endif
+
 #ifndef NO_GdkRectangle
 typedef struct GdkRectangle_FID_CACHE {
 	int cached;

@@ -189,8 +189,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.g_object_get (labelHandle, OS.ypad, buffer, 0);
 		fontHeight += 2 * buffer [0];
 		if (frameHandle != 0) {
-			long /*int*/ style = OS.gtk_widget_get_style (frameHandle);
-			fontHeight += 2 * OS.gtk_style_get_ythickness (style);
+			fontHeight += 2 * getThickness (frameHandle).y;
 			fontHeight += 2 * OS.gtk_container_get_border_width (frameHandle);
 		}
 		size.y = Math.max (size.y, fontHeight);
@@ -281,7 +280,7 @@ public int getAlignment () {
 public int getBorderWidth () {
 	checkWidget();
 	if (frameHandle != 0) {
-		return OS.gtk_style_get_xthickness (OS.gtk_widget_get_style (frameHandle));
+		return getThickness (frameHandle).x;
 	}
 	return 0;
 }
@@ -486,8 +485,8 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
-	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
-	if (imageHandle != 0) OS.gtk_widget_modify_font (imageHandle, font);
+	if (labelHandle != 0) setFontDescription (labelHandle, font);
+	if (imageHandle != 0) setFontDescription (imageHandle, font);
 }
 
 void setForegroundColor (GdkColor color) {

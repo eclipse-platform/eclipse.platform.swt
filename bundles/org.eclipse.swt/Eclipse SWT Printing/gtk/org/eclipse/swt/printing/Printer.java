@@ -59,7 +59,6 @@ public final class Printer extends Device {
 	 * whether or not a GC was created for this printer
 	 */
 	boolean isGCCreated = false;
-	Font systemFont;
 
 	static byte [] settingsData;
 	static int start, end;
@@ -386,38 +385,6 @@ static byte [] restoreBytes(String key, boolean nullTerminate) {
 	return valueBuffer;
 }
 
-/**
- * Returns a reasonable font for applications to use.
- * On some platforms, this will match the "default font"
- * or "system font" if such can be found.  This font
- * should not be free'd because it was allocated by the
- * system, not the application.
- * <p>
- * Typically, applications which want the default look
- * should simply not set the font on the widgets they
- * create. Widgets are always created with the correct
- * default font for the class of user-interface component
- * they represent.
- * </p>
- *
- * @return a font
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public Font getSystemFont () {
-	checkDevice ();
-	if (systemFont != null) return systemFont;
-	long /*int*/ style = OS.gtk_widget_get_default_style();	
-	long /*int*/ defaultFont = OS.pango_font_description_copy (OS.gtk_style_get_font_desc (style));
-	int size = OS.pango_font_description_get_size(defaultFont);
-	Point dpi = getDPI(), screenDPI = super.getDPI();
-	OS.pango_font_description_set_size(defaultFont, size * dpi.y / screenDPI.y);
-	return systemFont = Font.gtk_new (this, defaultFont);
-}
-
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
@@ -506,10 +473,6 @@ public void internal_dispose_GC(long /*int*/ hDC, GCData data) {
  */
 protected void release () {
 	super.release();
-	
-	/* Dispose the default font */
-	if (systemFont != null) systemFont.dispose ();
-	systemFont = null;
 }
 
 /**

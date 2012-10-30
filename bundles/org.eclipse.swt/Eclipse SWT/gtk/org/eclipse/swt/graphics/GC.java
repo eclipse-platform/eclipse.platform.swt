@@ -783,6 +783,27 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
  */
 public void drawFocus(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	long /*int*/ cairo = data.cairo;
+	if (cairo != 0) {
+		checkGC(FOREGROUND);
+		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+			long /*int*/  context = OS.gtk_widget_get_style_context(data.device.shellHandle);
+			OS.gtk_render_focus(context, cairo, x, y, width, height);
+		} else {
+			int[] lineWidth = new int[1];
+			OS.gtk_widget_style_get(data.device.shellHandle, OS.focus_line_width, lineWidth, 0);
+			Cairo.cairo_save(cairo);		
+			Cairo.cairo_set_line_width(cairo, lineWidth[0]);
+			double[] dashes = new double[]{1, 1};
+			double dash_offset = -lineWidth[0] / 2f;
+			while (dash_offset < 0) dash_offset += 2;
+			Cairo.cairo_set_dash(cairo, dashes, dashes.length, dash_offset);
+			Cairo.cairo_rectangle(cairo, x + lineWidth[0] / 2f, y + lineWidth[0] / 2f, width, height);
+			Cairo.cairo_stroke(cairo);
+			Cairo.cairo_restore(cairo);
+		}
+		return;
+	}
 	/*
 	* Feature in GTK.  The function gtk_widget_get_default_style() 
 	* can't be used here because gtk_paint_focus() uses GCs, which
@@ -790,23 +811,7 @@ public void drawFocus(int x, int y, int width, int height) {
 	* from a widget.
 	*/
 	long /*int*/ style = OS.gtk_widget_get_style(data.device.shellHandle);
-	long /*int*/ cairo = data.cairo;
-	if (cairo != 0) {
-		checkGC(FOREGROUND);
-		int[] lineWidth = new int[1];
-		OS.gtk_widget_style_get(data.device.shellHandle, OS.focus_line_width, lineWidth, 0);
-		Cairo.cairo_save(cairo);		
-		Cairo.cairo_set_line_width(cairo, lineWidth[0]);
-		double[] dashes = new double[]{1, 1};
-		double dash_offset = -lineWidth[0] / 2f;
-		while (dash_offset < 0) dash_offset += 2;
-		Cairo.cairo_set_dash(cairo, dashes, dashes.length, dash_offset);
-		Cairo.cairo_rectangle(cairo, x + lineWidth[0] / 2f, y + lineWidth[0] / 2f, width, height);
-		Cairo.cairo_stroke(cairo);
-		Cairo.cairo_restore(cairo);
-		return;
-	}
-	gtk_render_focus (style, data.drawable, OS.GTK_STATE_NORMAL, null, data.device.shellHandle, new byte[1], x, y, width, height);
+	OS.gtk_paint_focus(style, data.drawable, OS.GTK_STATE_NORMAL, null, data.device.shellHandle, new byte[1], x, y, width, height);
 }
 
 /**
@@ -4202,22 +4207,6 @@ public Point textExtent(String string, int flags) {
 public String toString () {
 	if (isDisposed()) return "GC {*DISPOSED*}";
 	return "GC {" + handle + "}";
-}
-
-void gtk_render_focus (long /*int*/ style, long /*int*/ window, int state_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-		long /*int*/ cairo = OS.gdk_cairo_create (window);
-		long /*int*/ context = OS.gtk_widget_get_style_context (style);
-		OS.gtk_style_context_save (context);
-		OS.gtk_style_context_set_state (context, OS.gtk_widget_get_state_flags (widget));
-		Cairo.cairo_save (cairo);
-		OS.gtk_render_focus (context, cairo, x, y, width, height);
-		Cairo.cairo_restore (cairo);
-		OS.gtk_style_context_restore (context);
-		Cairo.cairo_destroy (cairo);
-	} else {
-		OS.gtk_paint_focus (style, window, state_type, area, widget, detail, x, y, width, height);
-	}
 }
 
 long /*int*/ gdk_pixbuf_get_from_window(long /*int*/ dest, long /*int*/ src,  int src_x, int src_y, int dest_x, int dest_y, int width, int height) {

@@ -201,9 +201,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			indicatorHeight = indicatorSize [0] + 2 * indicatorSpacing [0];
 			trimWidth += indicatorHeight + indicatorSpacing [0];
 		} else {
-			long /*int*/ style = OS.gtk_widget_get_style (handle);
-			trimWidth += OS.gtk_style_get_xthickness (style) * 2;
-			trimHeight += OS.gtk_style_get_ythickness (style) * 2;
+			Point thickness = getThickness (handle);
+			trimWidth += thickness.x * 2;
+			trimHeight += thickness.y * 2;
 			GtkBorder innerBorder = getBorder (OS.inner_border, handle, INNER_BORDER);
 			trimWidth += innerBorder.left + innerBorder.right;
 			trimHeight += innerBorder.top + innerBorder.bottom;
@@ -787,8 +787,8 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
-	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
-	if (imageHandle != 0) OS.gtk_widget_modify_font (imageHandle, font);
+	if (labelHandle != 0) setFontDescription (labelHandle, font);
+	if (imageHandle != 0) setFontDescription (imageHandle, font);
 }
 
 boolean setRadioSelection (boolean value) {

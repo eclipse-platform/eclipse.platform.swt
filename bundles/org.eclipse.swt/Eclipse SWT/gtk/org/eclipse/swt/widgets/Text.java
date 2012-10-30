@@ -570,9 +570,9 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int xborder = 0, yborder = 0;
 	if ((style & SWT.SINGLE) != 0) {
 		if ((style & SWT.BORDER) != 0) {
-			long /*int*/ style = OS.gtk_widget_get_style (handle);
-			xborder += OS.gtk_style_get_xthickness (style);
-			yborder += OS.gtk_style_get_ythickness (style);
+			Point thickness = getThickness (handle);
+			xborder += thickness.x;
+			yborder += thickness.y;
 		}
 		GtkBorder innerBorder = Display.getEntryInnerBorder (handle);
 		trim.x -= innerBorder.left;
@@ -771,9 +771,8 @@ GdkColor getBackgroundColor () {
 public int getBorderWidth () {
 	checkWidget();
 	if ((style & SWT.MULTI) != 0) return super.getBorderWidth ();
-	long /*int*/ style = OS.gtk_widget_get_style (handle);
 	if ((this.style & SWT.BORDER) != 0) {
-		 return OS.gtk_style_get_xthickness (style);
+		 return getThickness (handle).x;
 	}
 	return 0;
 }
@@ -1590,11 +1589,23 @@ void drawMessage (long /*int*/ cr) {
 				case SWT.CENTER: x = (width - rect.width) / 2; break;
 				case SWT.RIGHT: x = rtl ? innerBorder.left : width - rect.width; break;
 			}
-			long /*int*/ style = OS.gtk_widget_get_style (handle);	
 			GdkColor textColor = new GdkColor ();
-			OS.gtk_style_get_text (style, OS.GTK_STATE_INSENSITIVE, textColor);
 			GdkColor baseColor = new GdkColor ();
-			OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, baseColor);
+			if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+				long /*int*/ styleContext = OS.gtk_widget_get_style_context (handle);
+				GdkRGBA rgba = new GdkRGBA ();
+				OS.gtk_style_context_get_color (styleContext, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
+				textColor.red = (short)(rgba.red * 0xFFFF);
+				textColor.green = (short)(rgba.green * 0xFFFF);
+				textColor.blue = (short)(rgba.blue * 0xFFFF);
+				Point thickness = getThickness (handle);
+				x += thickness.x;
+				y += thickness.y;
+			} else {
+				long /*int*/ style = OS.gtk_widget_get_style (handle);	
+				OS.gtk_style_get_text (style, OS.GTK_STATE_INSENSITIVE, textColor);
+				OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, baseColor);
+			}
 			if (OS.USE_CAIRO) {
 				long /*int*/ cairo = cr != 0 ? cr : OS.gdk_cairo_create(window);
 				Cairo.cairo_set_source_rgba(cairo, (textColor.red & 0xFFFF) / (float)0xFFFF, (textColor.green & 0xFFFF) / (float)0xFFFF, (textColor.blue & 0xFFFF) / (float)0xFFFF, 1);
@@ -2059,7 +2070,9 @@ public void selectAll () {
 
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	OS.gtk_widget_modify_base (handle, 0, color);
+	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+		OS.gtk_widget_modify_base (handle, 0, color);
+	}
 }
 
 void setCursor (long /*int*/ cursor) {

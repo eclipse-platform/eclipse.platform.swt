@@ -2627,10 +2627,14 @@ long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*
 				if ((drawState & SWT.SELECTED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_SELECTED;
 				if ((drawState & SWT.FOCUSED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_FOCUSED;
 				if ((drawState & SWT.SELECTED) != 0) {
-					long /*int*/ style = OS.gtk_widget_get_style (widget);					
-					//TODO - parity and sorted
-					byte[] detail = Converter.wcsToMbcs (null, "cell_odd", true);
-					gtk_render_frame (style, window, OS.GTK_STATE_SELECTED, OS.GTK_SHADOW_NONE, rect, widget, detail, rect.x, rect.y, rect.width, rect.height);
+					if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+						//TODO draw selection on GTK3
+					} else {
+						long /*int*/ style = OS.gtk_widget_get_style (widget);					
+						//TODO - parity and sorted
+						byte[] detail = Converter.wcsToMbcs (null, "cell_odd", true);
+						OS.gtk_paint_flat_box (style, window, OS.GTK_STATE_SELECTED, OS.GTK_SHADOW_NONE, rect, widget, detail, rect.x, rect.y, rect.width, rect.height);
+					}
 				} else {
 					if (wasSelected) drawForeground = gc.getForeground ().handle;
 				}
@@ -2932,7 +2936,9 @@ void selectFocusIndex (int index) {
 
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	OS.gtk_widget_modify_base (handle, 0, color);
+	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+		OS.gtk_widget_modify_base (handle, 0, color);
+	}
 }
 
 void setBackgroundPixmap (Image image) {

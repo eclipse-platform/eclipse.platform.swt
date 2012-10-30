@@ -1065,9 +1065,6 @@ void sendSelectionEvent () {
 
 public void setBackground(Color color) {
 	super.setBackground(color);
-	if (((style & SWT.CALENDAR) != 0) && color == null) {
-		OS.gtk_widget_modify_base(handle, 0, null);
-	}
 	bg = color;
 	if (text != null) text.setBackground(color);
 	if (popupCalendar != null) popupCalendar.setBackground(color);
@@ -1075,7 +1072,9 @@ public void setBackground(Color color) {
 
 void setBackgroundColor (GdkColor color) {
 	if ((style & SWT.CALENDAR) != 0) {
-		OS.gtk_widget_modify_base(handle, 0, color);
+		if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+			OS.gtk_widget_modify_base(handle, 0, color);
+		}
 	} else {
 		super.setBackgroundColor (color);
 	}

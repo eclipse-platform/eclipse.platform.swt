@@ -231,7 +231,7 @@ void setBackgroundColor (GdkColor color) {
 
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
-	OS.gtk_widget_modify_font (labelHandle, font);
+	setFontDescription (labelHandle, font);
 }
 
 void setForegroundColor (GdkColor color) {

@@ -356,9 +356,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	long /*int*/ layout = OS.gtk_entry_get_layout (entryHandle);
 	OS.pango_layout_get_size (layout, w, h);
 	int xborder = Display.INNER_BORDER, yborder = Display.INNER_BORDER;
-	long /*int*/ style = OS.gtk_widget_get_style (entryHandle);
-	xborder += OS.gtk_style_get_xthickness (style);
-	yborder += OS.gtk_style_get_ythickness (style);
+	Point thickness = getThickness (entryHandle);
+	xborder += thickness.x;
+	yborder += thickness.y;
 	int [] property = new int [1];
 	OS.gtk_widget_style_get (entryHandle, OS.interior_focus, property, 0);
 	if (property [0] == 0) {
@@ -1736,9 +1736,11 @@ public void select (int index) {
 
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	if (entryHandle != 0) OS.gtk_widget_modify_base (entryHandle, 0, color);
-	if (cellHandle != 0) OS.g_object_set (cellHandle, OS.background_gdk, color, 0);
-	OS.g_object_set (textRenderer, OS.background_gdk, color, 0);
+	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+		if (entryHandle != 0) OS.gtk_widget_modify_base (entryHandle, 0, color);
+		if (cellHandle != 0) OS.g_object_set (cellHandle, OS.background_gdk, color, 0);
+		OS.g_object_set (textRenderer, OS.background_gdk, color, 0);
+	}
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
@@ -1777,7 +1779,7 @@ void setMenuHandle (long /*int*/ widget) {
 
 void setFontDescription (long /*int*/ font) {
 	super.setFontDescription (font);
-	if (entryHandle != 0) OS.gtk_widget_modify_font (entryHandle, font);
+	if (entryHandle != 0) setFontDescription (entryHandle, font);
 	OS.g_object_set (textRenderer, OS.font_desc, font, 0);
 	if ((style & SWT.READ_ONLY) != 0) {
 		/*

@@ -284,8 +284,8 @@ public void setControl (Control control) {
 }
 
 void setFontDescription (long /*int*/ font) {
-	OS.gtk_widget_modify_font (labelHandle, font);
-	OS.gtk_widget_modify_font (imageHandle, font);
+	setFontDescription (labelHandle, font);
+	setFontDescription (imageHandle, font);
 }
 
 void setForegroundColor (GdkColor color) {

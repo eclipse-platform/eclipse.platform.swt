@@ -496,9 +496,9 @@ boolean setFocus () {
 }
 
 void setFontDescription (long /*int*/ font) {
-	OS.gtk_widget_modify_font (handle, font);
-	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
-	if (imageHandle != 0) OS.gtk_widget_modify_font (imageHandle, font);
+	setFontDescription (handle, font);
+	if (labelHandle != 0) setFontDescription (labelHandle, font);
+	if (imageHandle != 0) setFontDescription (imageHandle, font);
 }
 
 void setForegroundColor (GdkColor color) {

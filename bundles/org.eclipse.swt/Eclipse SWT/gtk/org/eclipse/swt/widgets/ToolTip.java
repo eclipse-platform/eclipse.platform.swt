@@ -266,7 +266,17 @@ void createHandle (int index) {
 		state |= HANDLE;
 		handle = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
 		Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
-		OS.gtk_widget_modify_bg (handle, OS.GTK_STATE_NORMAL, background.handle);
+		if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+			GdkColor color = background.handle;
+			GdkRGBA rgba = new GdkRGBA();
+			rgba.alpha = 1;
+			rgba.red = (color.red & 0xFFFF) / (float)0xFFFF;
+			rgba.green = (color.green & 0xFFFF) / (float)0xFFFF;
+			rgba.blue = (color.blue & 0xFFFF) / (float)0xFFFF;
+			OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		} else {
+			OS.gtk_widget_modify_bg (handle, OS.GTK_STATE_NORMAL, background.handle);
+		}
 		OS.gtk_widget_set_app_paintable (handle, true);
 		OS.gtk_window_set_type_hint (handle, OS.GDK_WINDOW_TYPE_HINT_TOOLTIP);
 	} else {

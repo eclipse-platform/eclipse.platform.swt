@@ -116,9 +116,9 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	trimWidth  += vScrollBarWidth ();
 	if (scrolledHandle != 0) {
 		if (OS.gtk_scrolled_window_get_shadow_type (scrolledHandle) != OS.GTK_SHADOW_NONE) {
-			long /*int*/ style = OS.gtk_widget_get_style (scrolledHandle);
-			int xthickness = OS.gtk_style_get_xthickness (style);
-			int ythickness = OS.gtk_style_get_ythickness (style);
+			Point thickness = getThickness (scrolledHandle);
+			int xthickness = thickness.x;
+			int ythickness = thickness.y;
 			trimX -= xthickness;
 			trimY -= ythickness;
 			trimWidth += xthickness * 2;
@@ -180,7 +180,7 @@ public int getBorderWidth () {
 	if (scrolledHandle != 0) {
 		border += OS.gtk_container_get_border_width (scrolledHandle);
 		if (OS.gtk_scrolled_window_get_shadow_type (scrolledHandle) != OS.GTK_SHADOW_NONE) {
-			border += OS.gtk_style_get_xthickness (OS.gtk_widget_get_style (scrolledHandle));
+			border += getThickness (scrolledHandle).x;
 		}
 	}
 	return border;

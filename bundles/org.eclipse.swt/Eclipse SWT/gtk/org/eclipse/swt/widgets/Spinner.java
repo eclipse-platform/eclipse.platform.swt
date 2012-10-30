@@ -240,10 +240,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	int xborder = 0, yborder = 0;
-	long /*int*/ style = OS.gtk_widget_get_style (handle);
+	Point thickness = getThickness (handle);
 	if ((this.style & SWT.BORDER) != 0) {
-		xborder += OS.gtk_style_get_xthickness (style);
-		yborder += OS.gtk_style_get_ythickness (style);
+		xborder += thickness.x;
+		yborder += thickness.y;
 	}
 	int [] property = new int [1];
 	OS.gtk_widget_style_get (handle, OS.interior_focus, property, 0);
@@ -252,7 +252,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		xborder += property [0];
 		yborder += property [0];
 	}
-	long /*int*/ fontDesc = OS.gtk_style_get_font_desc (style);
+	long /*int*/ fontDesc = getFontDescription ();
 	int fontSize = OS.pango_font_description_get_size (fontDesc);
 	int arrowSize = Math.max (OS.PANGO_PIXELS (fontSize), MIN_ARROW_WIDTH);
 	arrowSize = arrowSize - arrowSize % 2;	
@@ -261,7 +261,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	trim.y -= yborder;
 	trim.width += 2 * xborder;
 	trim.height += 2 * yborder;
-	trim.width += arrowSize + (2 * OS.gtk_style_get_xthickness (style));
+	trim.width += arrowSize + (2 * thickness.x);
 	GtkBorder innerBorder = Display.getEntryInnerBorder (handle);
 	trim.x -= innerBorder.left;
 	trim.y -= innerBorder.top;
@@ -374,9 +374,8 @@ GdkColor getBackgroundColor () {
 
 public int getBorderWidth () {
 	checkWidget();
-	long /*int*/ style = OS.gtk_widget_get_style (handle);
 	if ((this.style & SWT.BORDER) != 0) {
-		 return OS.gtk_style_get_xthickness (style);
+		return getThickness (handle).x;
 	}
 	return 0;
 }
@@ -867,7 +866,9 @@ void removeVerifyListener (VerifyListener listener) {
 
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	OS.gtk_widget_modify_base (handle, 0, color);
+	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+		OS.gtk_widget_modify_base (handle, 0, color);
+	}
 }
 
 void setCursor (long /*int*/ cursor) {

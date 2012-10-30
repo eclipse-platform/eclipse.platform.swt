@@ -267,6 +267,18 @@ void setGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpStruct);
 #define GdkImage_sizeof() 0
 #endif
 
+#ifndef NO_GdkRGBA
+void cacheGdkRGBAFields(JNIEnv *env, jobject lpObject);
+GdkRGBA *getGdkRGBAFields(JNIEnv *env, jobject lpObject, GdkRGBA *lpStruct);
+void setGdkRGBAFields(JNIEnv *env, jobject lpObject, GdkRGBA *lpStruct);
+#define GdkRGBA_sizeof() sizeof(GdkRGBA)
+#else
+#define cacheGdkRGBAFields(a,b)
+#define getGdkRGBAFields(a,b,c) NULL
+#define setGdkRGBAFields(a,b,c)
+#define GdkRGBA_sizeof() 0
+#endif
+
 #ifndef NO_GdkRectangle
 void cacheGdkRectangleFields(JNIEnv *env, jobject lpObject);
 GdkRectangle *getGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpStruct);
