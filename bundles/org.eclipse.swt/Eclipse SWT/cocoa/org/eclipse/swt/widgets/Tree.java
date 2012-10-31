@@ -422,6 +422,7 @@ void clearCachedWidth (TreeItem[] items) {
 
 void collapseItem_collapseChildren (int /*long*/ id, int /*long*/ sel, int /*long*/ itemID, boolean children) {
 	TreeItem item = (TreeItem)display.getWidget(itemID);
+	if (item == null) return;
 	if (!ignoreExpand) item.sendExpand (false, children);
 	ignoreExpand = true;
 	super.collapseItem_collapseChildren (id, sel, itemID, children);
@@ -922,6 +923,7 @@ void drawInteriorWithFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect rec
 	int /*long*/ [] outValue = new int /*long*/ [1];
 	OS.object_getInstanceVariable(id, Display.SWT_ROW, outValue);
 	TreeItem item = (TreeItem) display.getWidget (outValue [0]);
+	if (item == null) return;
 	int /*long*/ rowIndex = widget.rowForItem(item.handle);
 	OS.object_getInstanceVariable(id, Display.SWT_COLUMN, outValue);
 	int /*long*/ tableColumn = outValue[0];
@@ -1183,6 +1185,7 @@ void drawWithExpansionFrame_inView (int /*long*/ id, int /*long*/ sel, NSRect ce
 
 void expandItem_expandChildren (int /*long*/ id, int /*long*/ sel, int /*long*/ itemID, boolean children) {
 	TreeItem item = (TreeItem)display.getWidget(itemID);
+	if (item == null) return;
 	if (!ignoreExpand) item.sendExpand (true, children);
 	ignoreExpand = true;
 	super.expandItem_expandChildren (id, sel, itemID, children);
@@ -1948,11 +1951,12 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
 	int row = (int)/*64*/widget.rowAtPoint(pt);
+	NSObject itemID = null;
+	if (row != -1) itemID = new NSObject(widget.itemAtRow(row));
 	if (row != -1 && (nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == 0) {
 		if (widget.isRowSelected(row)) {
 			NSRect rect = widget.frameOfOutlineCellAtRow(row);
 			if (!OS.NSPointInRect(pt, rect)) {
-				id itemID = widget.itemAtRow(row);
 				Widget item = itemID != null ? display.getWidget (itemID.id) : null;
 				if (item != null && item instanceof TreeItem) {
 					Event event = new Event ();
@@ -1972,7 +1976,9 @@ void mouseDownSuper(int /*long*/ id, int /*long*/ sel, int /*long*/ theEvent) {
 	}
 	display.trackedButtonRow = -1;
 	didSelect = false;
+	if (itemID != null) itemID.retain();
 	super.mouseDownSuper(id, sel, theEvent);
+	if (itemID != null) itemID.release();
 	didSelect = false;
 }
 
