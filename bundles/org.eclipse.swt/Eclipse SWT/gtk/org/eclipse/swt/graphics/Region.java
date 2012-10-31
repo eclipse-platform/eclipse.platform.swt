@@ -129,6 +129,7 @@ static void gdk_region_get_rectangles(long /*int*/ region, long /*int*/[] rectan
 		return;
 	}
 	int num = Cairo.cairo_region_num_rectangles (region);
+	if (n_rectangles != null) n_rectangles[0] = num;
 	rectangles[0] = OS.g_malloc(GdkRectangle.sizeof * num);
 	for (int n = 0; n < num; n++) {
 		Cairo.cairo_region_get_rectangle (region, n, rectangles[0] + (n * GdkRectangle.sizeof));
