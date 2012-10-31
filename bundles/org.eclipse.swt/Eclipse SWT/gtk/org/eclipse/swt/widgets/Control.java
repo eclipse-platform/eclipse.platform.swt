@@ -109,8 +109,12 @@ void deregister () {
 }
 
 void drawBackground (Control control, long /*int*/ window, long /*int*/ region, int x, int y, int width, int height) {
+	drawBackground(control, window, 0, region, x, y, width, height);
+}
+
+void drawBackground (Control control, long /*int*/ window, long /*int*/ cr, long /*int*/ region, int x, int y, int width, int height) {
 	if (OS.USE_CAIRO) {
-		long /*int*/ cairo = OS.gdk_cairo_create(window);
+		long /*int*/ cairo = cr != 0 ? cr : OS.gdk_cairo_create(window);
 		if (cairo == 0) error (SWT.ERROR_NO_HANDLES);
 		if (region != 0) {
 			OS.gdk_cairo_region(cairo, region);
@@ -136,7 +140,7 @@ void drawBackground (Control control, long /*int*/ window, long /*int*/ region, 
 		}
 		Cairo.cairo_rectangle (cairo, x, y, width, height);
 		Cairo.cairo_fill (cairo);
-		Cairo.cairo_destroy(cairo);
+		if (cairo != cr) Cairo.cairo_destroy(cairo);
 		return;
 	}
 	long /*int*/ gdkGC = OS.gdk_gc_new (window);

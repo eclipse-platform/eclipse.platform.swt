@@ -211,7 +211,16 @@ typedef enum {
 	_1access_FUNC,
 	_1atk_1object_1add_1relationship_FUNC,
 	_1atk_1object_1remove_1relationship_FUNC,
-	_1call_FUNC,
+#ifndef JNI64
+	_1call__IIIIIII_FUNC,
+#else
+	_1call__JJJJJJJ_FUNC,
+#endif
+#ifndef JNI64
+	_1call__IIIIIIII_FUNC,
+#else
+	_1call__JJJJJJJJ_FUNC,
+#endif
 	_1call_1get_1size_FUNC,
 	_1dlclose_FUNC,
 	_1dlopen_FUNC,

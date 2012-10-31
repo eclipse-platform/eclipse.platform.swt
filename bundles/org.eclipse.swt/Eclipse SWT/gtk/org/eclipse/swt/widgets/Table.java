@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
@@ -1911,34 +1912,47 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 	return super.gtk_event_after (widget, gdkEvent);
 }
 
-long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
-	if ((state & OBSCURED) != 0) return 0;
+void drawInheritedBackground (long /*int*/ eventPtr, long /*int*/ cairo) {
 	if ((state & PARENT_BACKGROUND) != 0 || backgroundImage != null) {
 		Control control = findBackgroundControl ();
 		if (control != null) {
-			GdkEventExpose gdkEvent = new GdkEventExpose ();
-			OS.memmove (gdkEvent, eventPtr, GdkEventExpose.sizeof);
 			long /*int*/ window = OS.gtk_tree_view_get_bin_window (handle);
-			if (window == gdkEvent.window) {
-				int [] width = new int [1], height = new int [1];
-				gdk_window_get_size (window, width, height);
-				int bottom = 0;
-				if (itemCount != 0) {
-					long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-					OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, itemCount - 1);
-					long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
-					GdkRectangle rect = new GdkRectangle ();
-					OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
-					bottom = rect.y + rect.height;
-					OS.gtk_tree_path_free (path);
-					OS.g_free (iter);
-				}
-				if (height [0] > bottom) {
-					drawBackground (control, window, gdkEvent.region, 0, bottom, width [0], height [0] - bottom);
-				}
+			long /*int*/ rgn = 0;
+			if (eventPtr != 0) {
+				GdkEventExpose gdkEvent = new GdkEventExpose ();
+				OS.memmove (gdkEvent, eventPtr, GdkEventExpose.sizeof);
+				if (window != gdkEvent.window) return;
+				rgn = gdkEvent.region;
+			}
+			int [] width = new int [1], height = new int [1];
+			gdk_window_get_size (window, width, height);
+			int bottom = 0;
+			if (itemCount != 0) {
+				long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+				OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, itemCount - 1);
+				long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
+				GdkRectangle rect = new GdkRectangle ();
+				OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
+				bottom = rect.y + rect.height;
+				OS.gtk_tree_path_free (path);
+				OS.g_free (iter);
+			}
+			if (height [0] > bottom) {
+				drawBackground (control, window, cairo, rgn, 0, bottom, width [0], height [0] - bottom);
 			}
 		}
 	}
+}
+
+long /*int*/ gtk_draw (long /*int*/ widget, long /*int*/ cairo) {
+	if ((state & OBSCURED) != 0) return 0;
+	drawInheritedBackground (0, cairo);
+	return super.gtk_draw (widget, cairo);
+}
+
+long /*int*/ gtk_expose_event (long /*int*/ widget, long /*int*/ eventPtr) {
+	if ((state & OBSCURED) != 0) return 0;
+	drawInheritedBackground (eventPtr, 0);
 	return super.gtk_expose_event (widget, eventPtr);
 }
 
@@ -2536,7 +2550,17 @@ long /*int*/ rendererGetSizeProc (long /*int*/ cell, long /*int*/ widget, long /
 	return 0;
 }
 
+long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ cr, long /*int*/ widget, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ flags) {
+	rendererRender (cell, cr, 0, widget, background_area, cell_area, 0, flags);
+	return 0;
+}
+
 long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*int*/ widget, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ expose_area, long /*int*/ flags) {
+	rendererRender (cell, 0, window, widget, background_area, cell_area, expose_area, flags);
+	return 0;
+}
+
+void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, long /*int*/ widget, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ expose_area, long /*int*/ flags) {
 	TableItem item = null;
 	long /*int*/ iter = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX2);
 	if (iter != 0) {
@@ -2583,7 +2607,14 @@ long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*
 				if ((state & PARENT_BACKGROUND) != 0 || backgroundImage != null) {
 					Control control = findBackgroundControl ();
 					if (control != null) {
-						drawBackground (control, window, 0, rect.x, rect.y, rect.width, rect.height);
+						if (cr != 0) {
+							Cairo.cairo_save (cr);
+							Cairo.cairo_reset_clip (cr);
+						}
+						drawBackground (control, window, cr, 0, rect.x, rect.y, rect.width, rect.height);
+						if (cr != 0) {
+							Cairo.cairo_restore (cr);
+						}
 					}
 				}
 			}
@@ -2598,7 +2629,14 @@ long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*
 				if (wasSelected) {
 					Control control = findBackgroundControl ();
 					if (control == null) control = this;
-					drawBackground (control, window, 0, rect.x, rect.y, rect.width, rect.height);
+					if (cr != 0) {
+						Cairo.cairo_save (cr);
+						Cairo.cairo_reset_clip (cr);
+					}
+					drawBackground (control, window, cr, 0, rect.x, rect.y, rect.width, rect.height);
+					if (cr != 0) {
+						Cairo.cairo_restore (cr);
+					}
 				}
 				GC gc = new GC (this);
 				if ((drawState & SWT.SELECTED) != 0) {
@@ -2642,7 +2680,6 @@ long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*
 			}
 		}
 	}
-	long /*int*/ result = 0;
 	if ((drawState & SWT.BACKGROUND) != 0 && (drawState & SWT.SELECTED) == 0) {
 		GC gc = new GC (this);
 		gc.setBackground (item.getBackground (columnIndex));
@@ -2658,7 +2695,11 @@ long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*
 		if (drawForeground != null && OS.GTK_IS_CELL_RENDERER_TEXT (cell)) {
 			OS.g_object_set (cell, OS.foreground_gdk, drawForeground, 0);
 		}
-		result = OS.call (klass.render, cell, window, handle, background_area, cell_area, expose_area, drawFlags);
+		if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+			OS.call (klass.render, cell, cr, widget, background_area, cell_area, drawFlags);
+		} else {
+			OS.call (klass.render, cell, window, widget, background_area, cell_area, expose_area, drawFlags);
+		}
 	}
 	if (item != null) {
 		if (OS.GTK_IS_CELL_RENDERER_TEXT (cell)) {
@@ -2719,7 +2760,6 @@ long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*
 			}
 		}
 	}
-	return result;
 }
 
 void resetCustomDraw () {

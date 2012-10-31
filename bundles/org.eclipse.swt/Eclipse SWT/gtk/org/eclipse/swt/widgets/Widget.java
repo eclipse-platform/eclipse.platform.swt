@@ -1307,6 +1307,10 @@ long /*int*/ rendererGetSizeProc (long /*int*/ cell, long /*int*/ handle, long /
 	return 0;
 }
 
+long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ cr, long /*int*/ handle, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ flags) {
+	return 0;
+}
+
 long /*int*/ rendererRenderProc (long /*int*/ cell, long /*int*/ window, long /*int*/ handle, long /*int*/ background_area, long /*int*/ cell_area, long /*int*/ expose_area, long /*int*/ flags) {
 	return 0;
 }

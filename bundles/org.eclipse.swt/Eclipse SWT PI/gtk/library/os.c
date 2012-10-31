@@ -2265,14 +2265,48 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1atk_1object_1remove_1relationship)
 }
 #endif
 
-#ifndef NO__1call
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1call)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jintLong arg6, jintLong arg7)
+#if (!defined(NO__1call__IIIIIII) && !defined(JNI64)) || (!defined(NO__1call__JJJJJJJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1call__IIIIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jintLong arg6)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1call__JJJJJJJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jintLong arg6)
+#endif
 {
 	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1call_FUNC);
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, _1call__IIIIIII_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, _1call__JJJJJJJ_FUNC);
+#endif
+	rc = (jintLong)((jintLong (*)())arg0)(arg1, arg2, arg3, arg4, arg5, arg6);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, _1call__IIIIIII_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, _1call__JJJJJJJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO__1call__IIIIIIII) && !defined(JNI64)) || (!defined(NO__1call__JJJJJJJJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1call__IIIIIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jintLong arg6, jintLong arg7)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1call__JJJJJJJJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jintLong arg6, jintLong arg7)
+#endif
+{
+	jintLong rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, _1call__IIIIIIII_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, _1call__JJJJJJJJ_FUNC);
+#endif
 	rc = (jintLong)((jintLong (*)())arg0)(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-	OS_NATIVE_EXIT(env, that, _1call_FUNC);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, _1call__IIIIIIII_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, _1call__JJJJJJJJ_FUNC);
+#endif
 	return rc;
 }
 #endif

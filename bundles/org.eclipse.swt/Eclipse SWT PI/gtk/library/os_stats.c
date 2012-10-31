@@ -201,7 +201,16 @@ char * OS_nativeFunctionNames[] = {
 	"_1access",
 	"_1atk_1object_1add_1relationship",
 	"_1atk_1object_1remove_1relationship",
-	"_1call",
+#ifndef JNI64
+	"_1call__IIIIIII",
+#else
+	"_1call__JJJJJJJ",
+#endif
+#ifndef JNI64
+	"_1call__IIIIIIII",
+#else
+	"_1call__JJJJJJJJ",
+#endif
 	"_1call_1get_1size",
 	"_1dlclose",
 	"_1dlopen",
