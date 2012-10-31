@@ -3317,7 +3317,7 @@ static void setCairoPatternColor(long /*int*/ pattern, int offset, Color c, int 
 
 void setCairoClip(long /*int*/ damageRgn, long /*int*/ clipRgn) {
 	long /*int*/ cairo = data.cairo;
-	if (OS.GTK_VERSION >= OS.VERSION(2,18,0) && data.drawable != 0) {
+	if (OS.GTK_VERSION >= OS.VERSION(2,18,0) && data.drawable != 0 && OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
 		OS.gdk_cairo_reset_clip(cairo, data.drawable);
 	} else {
 		Cairo.cairo_reset_clip(cairo);
