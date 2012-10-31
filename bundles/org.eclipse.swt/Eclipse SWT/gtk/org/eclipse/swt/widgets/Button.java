@@ -686,6 +686,11 @@ void _setAlignment (int alignment) {
 		if (bothVisible) {
 			OS.gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, OS.GTK_PACK_START);
 			OS.gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, OS.GTK_PACK_START);
+		} else {
+			if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+				OS.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, OS.GTK_PACK_END);
+				OS.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, OS.GTK_PACK_START);
+			}
 		}
 		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.5f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
@@ -699,6 +704,10 @@ void _setAlignment (int alignment) {
 			OS.gtk_misc_set_alignment (labelHandle, 0f, 0.5f);
 			OS.gtk_misc_set_alignment (imageHandle, 1f, 0.5f);
 		} else {
+			if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+				OS.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, OS.GTK_PACK_END);
+				OS.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, OS.GTK_PACK_START);
+			}
 			OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.5f);
 			OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_CENTER);
 			OS.gtk_misc_set_alignment (imageHandle, 0.5f, 0.5f);
@@ -709,6 +718,11 @@ void _setAlignment (int alignment) {
 		if (bothVisible) {
 			OS.gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, OS.GTK_PACK_END);
 			OS.gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, OS.GTK_PACK_END);
+		} else {
+			if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+				OS.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, OS.GTK_PACK_END);
+				OS.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, OS.GTK_PACK_START);
+			}
 		}
 		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.5f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
