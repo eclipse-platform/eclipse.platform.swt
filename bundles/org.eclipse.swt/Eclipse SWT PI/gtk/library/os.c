@@ -7637,6 +7637,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1set_1back_1pixmap)
 }
 #endif
 
+#ifndef NO__1gdk_1window_1set_1background_1pattern
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1set_1background_1pattern)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1window_1set_1background_1pattern_FUNC);
+/*
+	gdk_window_set_background_pattern(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_window_set_background_pattern)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1window_1set_1background_1pattern_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1window_1set_1cursor
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1set_1cursor)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)

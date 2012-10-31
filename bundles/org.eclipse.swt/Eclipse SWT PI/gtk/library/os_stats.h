@@ -585,6 +585,7 @@ typedef enum {
 	_1gdk_1window_1resize_FUNC,
 	_1gdk_1window_1restack_FUNC,
 	_1gdk_1window_1set_1back_1pixmap_FUNC,
+	_1gdk_1window_1set_1background_1pattern_FUNC,
 	_1gdk_1window_1set_1cursor_FUNC,
 	_1gdk_1window_1set_1debug_1updates_FUNC,
 	_1gdk_1window_1set_1decorations_FUNC,

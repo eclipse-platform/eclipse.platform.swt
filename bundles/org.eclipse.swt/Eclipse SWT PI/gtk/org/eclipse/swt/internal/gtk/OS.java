@@ -5632,6 +5632,16 @@ public static final void gdk_window_restack(long /*int*/ window, long /*int*/ si
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native void _gdk_window_set_background_pattern(long /*int*/ window, long /*int*/ pattern);
+public static final void gdk_window_set_background_pattern(long /*int*/ window, long /*int*/ pattern) {
+	lock.lock();
+	try {
+		_gdk_window_set_background_pattern(window, pattern);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @method flags=dynamic
  * @param window cast=(GdkWindow *)

@@ -3884,6 +3884,11 @@ public void setBackground (Color color) {
 void setBackgroundColor (long /*int*/ handle, GdkColor color) {
 	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
 		GdkRGBA rgba = null;
+		if (color == null) {
+			if ((state & PARENT_BACKGROUND) != 0) {
+				rgba = new GdkRGBA();
+			}
+		}
 		if (color != null) {
 			rgba = new GdkRGBA ();
 			rgba.alpha = 1;
@@ -3969,6 +3974,13 @@ void setBackgroundPixmap (Image image) {
 		if (image.pixmap != 0) {
 			OS.gdk_window_set_back_pixmap (window, image.pixmap, false);
 		} else if (image.surface != 0) {
+			if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+				long /*int*/ pattern = Cairo.cairo_pattern_create_for_surface(image.surface);
+				if (pattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_REPEAT);
+				OS.gdk_window_set_background_pattern(window, pattern);
+				Cairo.cairo_pattern_destroy(pattern);
+			}
 			/*
 			* TODO This code code is commented because it does not work since the pixmap
 			* created with gdk_pixmap_foreign_new() does not have colormap. Another option
