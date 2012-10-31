@@ -2212,16 +2212,26 @@ GdkColor toGdkColor (GdkRGBA rgba) {
 	return gdkColor;
 }
 
-GdkColor toGdkColor (GdkRGBA rgba, float m1, float m2) {
-	RGB rgb = new RGB((int)(rgba.red * 0xFF), (int)(rgba.green * 0xFF), (int)(rgba.blue * 0xFF));
-	float[] hsb = rgb.getHSB();
-	hsb[1] = (float)Math.max(0f, Math.min(1f, hsb[1] * m1));
-	hsb[2] = (float)Math.max(0f, Math.min(1f, hsb[2] * m2));
-	rgb = new RGB(hsb[0], hsb[1], hsb[2]);
+GdkColor toGdkColor (GdkRGBA rgba, double m) {
+	double[] h = new double[1];
+	double[] s = new double[1];
+	double[] v = new double[1];
+	OS.gtk_rgb_to_hsv(rgba.red, rgba.green, rgba.blue, h, s, v);
+	double L = (2 - s[0]) * v[0];
+	double S = s[0] * v[0];
+	S /= (L <= 1) ? L : 2 - L;
+	L /= 2;
+	S = Math.max(0f, Math.min(1f, S * m));
+	L = Math.max(0f, Math.min(1f, L * m));
+	L *= 2;
+	S *= L <= 1 ? L : 2 - L;
+	v[0] = (L + S) / 2;
+	s[0] = (2 * S) / (L + S);
+	OS.gtk_hsv_to_rgb(h[0], s[0], v[0], h, s, v);
 	GdkColor gdkColor = new GdkColor();
-	gdkColor.red = (short)((rgb.red & 0xFF) | ((rgb.red & 0xFF) << 8));
-	gdkColor.green = (short)((rgb.green & 0xFF) | ((rgb.green & 0xFF) << 8));
-	gdkColor.blue = (short)((rgb.blue & 0xFF) | ((rgb.blue & 0xFF) << 8));
+	gdkColor.red = (short)(h[0] * 0xFFFF);
+	gdkColor.green = (short)(s[0] * 0xFFFF);
+	gdkColor.blue = (short)(v[0] * 0xFFFF);
 	return gdkColor;
 }
 
@@ -2244,12 +2254,10 @@ void initializeSystemColors () {
 		context = OS.gtk_widget_get_style_context (shellHandle);
 		
 		COLOR_WIDGET_DARK_SHADOW = toGdkColor (new GdkRGBA());
-		OS.gtk_style_context_get_border_color (context, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
-		COLOR_WIDGET_NORMAL_SHADOW = toGdkColor (rgba);
-		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
+		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_WIDGET_LIGHT_SHADOW = toGdkColor (rgba);
-		rgba.red = rgba.green = rgba.blue = 1;
-		COLOR_WIDGET_HIGHLIGHT_SHADOW = toGdkColor (rgba);
+		COLOR_WIDGET_NORMAL_SHADOW = toGdkColor (rgba, 0.7);
+		COLOR_WIDGET_HIGHLIGHT_SHADOW = toGdkColor (rgba, 1.3);
 		
 		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_WIDGET_FOREGROUND = toGdkColor (rgba);
@@ -2275,13 +2283,13 @@ void initializeSystemColors () {
 		COLOR_TITLE_FOREGROUND = COLOR_LIST_SELECTION_TEXT;
 		COLOR_TITLE_BACKGROUND = COLOR_LIST_SELECTION;
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_SELECTED, rgba);
-		COLOR_TITLE_BACKGROUND_GRADIENT = toGdkColor (rgba, 0.66f, 1);
+		COLOR_TITLE_BACKGROUND_GRADIENT = toGdkColor (rgba, 1.3);
 		
 		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
 		COLOR_TITLE_INACTIVE_FOREGROUND = toGdkColor (rgba);
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
 		COLOR_TITLE_INACTIVE_BACKGROUND = toGdkColor (rgba);
-		COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = toGdkColor (rgba, 1, 2f);
+		COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = toGdkColor (rgba, 1.3);
 		return;
 	}
 

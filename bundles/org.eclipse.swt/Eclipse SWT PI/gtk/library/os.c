@@ -10612,6 +10612,36 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1hseparator_1new)
 }
 #endif
 
+#ifndef NO__1gtk_1hsv_1to_1rgb
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1hsv_1to_1rgb)
+	(JNIEnv *env, jclass that, jdouble arg0, jdouble arg1, jdouble arg2, jdoubleArray arg3, jdoubleArray arg4, jdoubleArray arg5)
+{
+	jdouble *lparg3=NULL;
+	jdouble *lparg4=NULL;
+	jdouble *lparg5=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1hsv_1to_1rgb_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetDoubleArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetDoubleArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetDoubleArrayElements(env, arg5, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)gtk_hsv_to_rgb(arg0, arg1, arg2, lparg3, lparg4, lparg5);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_hsv_to_rgb)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jdouble, jdouble, jdouble, jdouble *, jdouble *, jdouble *))fp)(arg0, arg1, arg2, lparg3, lparg4, lparg5);
+		}
+	}
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseDoubleArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseDoubleArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseDoubleArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1hsv_1to_1rgb_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1icon_1factory_1lookup_1default
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1icon_1factory_1lookup_1default)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -13789,6 +13819,36 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1render_1option)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1render_1option_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1rgb_1to_1hsv
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1rgb_1to_1hsv)
+	(JNIEnv *env, jclass that, jdouble arg0, jdouble arg1, jdouble arg2, jdoubleArray arg3, jdoubleArray arg4, jdoubleArray arg5)
+{
+	jdouble *lparg3=NULL;
+	jdouble *lparg4=NULL;
+	jdouble *lparg5=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1rgb_1to_1hsv_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetDoubleArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetDoubleArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetDoubleArrayElements(env, arg5, NULL)) == NULL) goto fail;
+/*
+	rc = (jintLong)gtk_rgb_to_hsv(arg0, arg1, arg2, lparg3, lparg4, lparg5);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_rgb_to_hsv)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jdouble, jdouble, jdouble, jdouble *, jdouble *, jdouble *))fp)(arg0, arg1, arg2, lparg3, lparg4, lparg5);
+		}
+	}
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseDoubleArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseDoubleArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseDoubleArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1rgb_1to_1hsv_FUNC);
+	return rc;
 }
 #endif
 

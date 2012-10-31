@@ -518,6 +518,8 @@
 #define gtk_style_context_add_class_LIB LIB_GTK
 #define gtk_style_context_get_border_color_LIB LIB_GTK
 #define gtk_style_context_get_padding_LIB LIB_GTK
+#define gtk_hsv_to_rgb_LIB LIB_GTK
+#define gtk_rgb_to_hsv_LIB LIB_GTK
 
 /* Field accessors */
 #if GTK_CHECK_VERSION(3,0,0)

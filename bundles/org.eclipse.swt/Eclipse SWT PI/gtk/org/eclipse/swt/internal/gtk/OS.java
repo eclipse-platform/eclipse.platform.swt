@@ -7679,6 +7679,30 @@ public static final long /*int*/ gtk_hbox_new(boolean homogeneous, int spacing) 
 }
 /**
  * @method flags=dynamic
+ */
+public static final native long /*int*/ _gtk_hsv_to_rgb(double h, double s, double v, double[] r, double[] g, double[] b);
+public static final long /*int*/ gtk_hsv_to_rgb(double h, double s, double v, double[] r, double[] g, double[] b) {
+	lock.lock();
+	try {
+		return _gtk_hsv_to_rgb(h, s, v, r, g, b);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native long /*int*/ _gtk_rgb_to_hsv(double r, double g, double b, double[] h, double[] s, double[] v);
+public static final long /*int*/ gtk_rgb_to_hsv(double r, double g, double b, double[] h, double[] s, double[] v) {
+	lock.lock();
+	try {
+		return _gtk_rgb_to_hsv(r, g, b, h, s, v);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
  * @param orientation cast=(GtkOrientation)
  */
 public static final native long /*int*/ _gtk_box_new(int orientation, int spacing);
