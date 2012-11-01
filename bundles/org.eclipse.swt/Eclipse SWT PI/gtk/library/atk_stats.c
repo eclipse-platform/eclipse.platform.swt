@@ -88,11 +88,6 @@ char * ATK_nativeFunctionNames[] = {
 #else
 	"_1call__JJJJJJ",
 #endif
-#ifndef JNI64
-	"_1call__IIIIIII",
-#else
-	"_1call__JJJJJJJ",
-#endif
 	"g_1strdup",
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2",

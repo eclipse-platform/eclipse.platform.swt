@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -97,11 +97,6 @@ typedef enum {
 	_1call__IIIIII_FUNC,
 #else
 	_1call__JJJJJJ_FUNC,
-#endif
-#ifndef JNI64
-	_1call__IIIIIII_FUNC,
-#else
-	_1call__JJJJJJJ_FUNC,
 #endif
 	g_1strdup_FUNC,
 #ifndef JNI64

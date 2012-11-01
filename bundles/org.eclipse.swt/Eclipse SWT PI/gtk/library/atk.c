@@ -662,29 +662,6 @@ JNIEXPORT jintLong JNICALL ATK_NATIVE(_1call__JJJJJJ)(JNIEnv *env, jclass that, 
 }
 #endif
 
-#if (!defined(NO__1call__IIIIIII) && !defined(JNI64)) || (!defined(NO__1call__JJJJJJJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT jintLong JNICALL ATK_NATIVE(_1call__IIIIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jintLong arg6)
-#else
-JNIEXPORT jintLong JNICALL ATK_NATIVE(_1call__JJJJJJJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jintLong arg6)
-#endif
-{
-	jintLong rc = 0;
-#ifndef JNI64
-	ATK_NATIVE_ENTER(env, that, _1call__IIIIIII_FUNC);
-#else
-	ATK_NATIVE_ENTER(env, that, _1call__JJJJJJJ_FUNC);
-#endif
-	rc = (jintLong)((jintLong (*)())arg0)(arg1, arg2, arg3, arg4, arg5, arg6);
-#ifndef JNI64
-	ATK_NATIVE_EXIT(env, that, _1call__IIIIIII_FUNC);
-#else
-	ATK_NATIVE_EXIT(env, that, _1call__JJJJJJJ_FUNC);
-#endif
-	return rc;
-}
-#endif
-
 #ifndef NO_g_1strdup
 JNIEXPORT jintLong JNICALL ATK_NATIVE(g_1strdup)
 	(JNIEnv *env, jclass that, jintLong arg0)
