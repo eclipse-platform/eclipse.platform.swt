@@ -320,17 +320,17 @@ void drawRectangles (Rectangle [] rects) {
 			Rectangle r = parent != null ? display.map(parent, null, rects[i]) : rects[i];
 			rect.x = r.x;
 			rect.y = r.y;
-			rect.width = r.width;
+			rect.width = r.width + 1;
 			rect.height = 1;
 			OS.gdk_region_union_with_rect(region, rect);
 			rect.width = 1;
-			rect.height = r.height;
+			rect.height = r.height + 1;
 			OS.gdk_region_union_with_rect(region, rect);
 			rect.x = r.x + r.width;
 			OS.gdk_region_union_with_rect(region, rect);
 			rect.x = r.x;
 			rect.y = r.y + r.height;
-			rect.width = r.width;
+			rect.width = r.width + 1;
 			rect.height = 1;
 			OS.gdk_region_union_with_rect(region, rect);
 		}
