@@ -151,6 +151,8 @@ public class Display extends Device {
 	boolean activePending;
 	boolean ignoreActivate, ignoreFocus;
 	
+	Tracker tracker;
+
 	/* Input method resources */
 	Control imControl;
 	long /*int*/ preeditWindow, preeditLabel;
@@ -1216,7 +1218,11 @@ long /*int*/ eventProc (long /*int*/ event, long /*int*/ data) {
 		addGdkEvent (OS.gdk_event_copy (event));
 		return 0;
 	}
-	OS.gtk_main_do_event (event);
+	dispatch = true;
+	if (tracker != null) {
+		dispatch = tracker.processEvent (event);
+	}
+	if (dispatch) OS.gtk_main_do_event (event);
 	if (dispatchEvents == null) putGdkEvents ();
 	return 0;
 }
