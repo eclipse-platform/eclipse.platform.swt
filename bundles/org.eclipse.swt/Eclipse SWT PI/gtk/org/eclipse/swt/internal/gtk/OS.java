@@ -616,7 +616,7 @@ public class OS extends C {
 		if (!"false".equals(System.getProperty("org.eclipse.swt.internal.gtk.cairoGraphics"))) {
 			useCairo  = GTK_VERSION >= VERSION(2, 24, 0);
 		}
-		USE_CAIRO = useCairo;
+		USE_CAIRO = useCairo || OS.GTK3;
 		boolean initCairo = false;
 		if (!"false".equals(System.getProperty("org.eclipse.swt.internal.gtk.useCairo"))) {
 			initCairo  = GTK_VERSION >= VERSION(2, 17, 0);
