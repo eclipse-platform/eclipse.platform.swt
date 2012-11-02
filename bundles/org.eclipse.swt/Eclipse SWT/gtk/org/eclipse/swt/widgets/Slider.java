@@ -598,7 +598,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 
 long /*int*/ gtk_scrollbar_new (int orientation, long /*int*/ adjustment) {
 	long /*int*/ scrollbar = 0;
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		scrollbar = OS.gtk_scrollbar_new (orientation, adjustment);
 	} else {
 		if (orientation == OS.GTK_ORIENTATION_HORIZONTAL) {

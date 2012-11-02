@@ -170,7 +170,7 @@ public void add (String string, int index) {
 	System.arraycopy (items, index, newItems, index + 1, items.length - index);
 	items = newItems;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		OS.gtk_combo_box_text_insert (handle, index, null, buffer);
 	} else {
 		OS.gtk_combo_box_insert_text (handle, index, buffer);
@@ -346,7 +346,7 @@ void clearText () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	if ((style & SWT.READ_ONLY) != 0 || OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if ((style & SWT.READ_ONLY) != 0 || OS.GTK3) {
 		return computeNativeSize (handle, wHint, hHint, changed);
 	}
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -404,7 +404,7 @@ void createHandle (int index) {
 	gtk_widget_set_has_window (fixedHandle, true);
 	long /*int*/ oldList = OS.gtk_window_list_toplevels ();  
 	if ((style & SWT.READ_ONLY) != 0) {
-		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		if (OS.GTK3) {
 			handle = OS.gtk_combo_box_text_new ();
 		} else {
 			handle = OS.gtk_combo_box_new_text ();
@@ -413,7 +413,7 @@ void createHandle (int index) {
 		cellHandle = OS.gtk_bin_get_child (handle);
 		if (cellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	} else {
-		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		if (OS.GTK3) {
 			handle = OS.gtk_combo_box_text_new_with_entry();
 		} else {
 			handle = OS.gtk_combo_box_entry_new_text ();
@@ -421,7 +421,7 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		entryHandle = OS.gtk_bin_get_child (handle);
 		if (entryHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		if (OS.GTK3) {
 			imContext = OS.imContextLast();
 		}
 	}
@@ -1055,7 +1055,7 @@ public int getTextHeight () {
 	checkWidget();
 	GtkRequisition requisition = new GtkRequisition ();
 	gtk_widget_size_request (handle, requisition);
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		return requisition.height;
 	} else {
 		return OS.GTK_WIDGET_REQUISITION_HEIGHT (handle);
@@ -1736,7 +1736,7 @@ public void select (int index) {
 
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+	if (!OS.GTK3) {
 		if (entryHandle != 0) OS.gtk_widget_modify_base (entryHandle, 0, color);
 		if (cellHandle != 0) OS.g_object_set (cellHandle, OS.background_gdk, color, 0);
 		OS.g_object_set (textRenderer, OS.background_gdk, color, 0);
@@ -1826,7 +1826,7 @@ public void setItem (int index, String string) {
 	items [index] = string;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	OS.gtk_combo_box_remove_text (handle, index);
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		OS.gtk_combo_box_text_insert (handle, index, null, buffer);
 	} else {
 		OS.gtk_combo_box_insert_text (handle, index, buffer);
@@ -1866,7 +1866,7 @@ public void setItems (String [] items) {
 	for (int i = 0; i < items.length; i++) {
 		String string = items [i];
 		byte [] buffer = Converter.wcsToMbcs (null, string, true);
-		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		if (OS.GTK3) {
 			OS.gtk_combo_box_text_insert (handle, i, null, buffer);
 		} else {
 			OS.gtk_combo_box_insert_text (handle, i, buffer);

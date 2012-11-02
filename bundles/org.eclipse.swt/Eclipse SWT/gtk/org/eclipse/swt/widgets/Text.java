@@ -230,7 +230,7 @@ void createHandle (int index) {
 		if ((style & SWT.RIGHT) != 0) just = OS.GTK_JUSTIFY_RIGHT;
 		OS.gtk_text_view_set_justification (handle, just);
 	}
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		imContext = OS.imContextLast();
 	}
 }
@@ -1591,7 +1591,7 @@ void drawMessage (long /*int*/ cr) {
 			}
 			GdkColor textColor = new GdkColor ();
 			GdkColor baseColor = new GdkColor ();
-			if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+			if (OS.GTK3) {
 				long /*int*/ styleContext = OS.gtk_widget_get_style_context (handle);
 				GdkRGBA rgba = new GdkRGBA ();
 				OS.gtk_style_context_get_color (styleContext, OS.GTK_STATE_FLAG_INSENSITIVE, rgba);
@@ -2070,7 +2070,7 @@ public void selectAll () {
 
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+	if (!OS.GTK3) {
 		OS.gtk_widget_modify_base (handle, 0, color);
 	}
 }

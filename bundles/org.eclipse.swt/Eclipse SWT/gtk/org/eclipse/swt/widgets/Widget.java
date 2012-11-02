@@ -1641,7 +1641,7 @@ public void setData (String key, Object value) {
 }
 
 void setFontDescription (long /*int*/ widget, long /*int*/ font) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		OS.gtk_widget_override_font (widget, font);
 	} else {
 		OS.gtk_widget_modify_font (widget, font);
@@ -1653,7 +1653,7 @@ void setForegroundColor (long /*int*/ handle, GdkColor color) {
 }
 
 void setForegroundColor (long /*int*/ handle, GdkColor color, boolean setStateActive) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		GdkRGBA rgba = null;
 		if (color != null) {
 			rgba = new GdkRGBA();
@@ -1916,7 +1916,7 @@ void gtk_widget_set_mapped (long /*int*/ widget, boolean mapped) {
 }
 
 void gtk_widget_set_visible (long /*int*/ widget, boolean visible) {
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		OS.gtk_widget_set_visible (widget,visible);
 	} else {
 		if (visible) {
@@ -1958,7 +1958,7 @@ void gdk_window_get_size (long /*int*/ drawable, int[] width, int[] height) {
 
 long /*int*/ gtk_box_new (int orientation, boolean homogeneous, int spacing) {
 	long /*int*/ box = 0;
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		box = OS.gtk_box_new (orientation, spacing);
 		OS.gtk_box_set_homogeneous (box, homogeneous);
 	} else {
@@ -1972,7 +1972,7 @@ long /*int*/ gtk_box_new (int orientation, boolean homogeneous, int spacing) {
 }
 
 int gdk_pointer_grab (long /*int*/ window, int grab_ownership, boolean owner_events, int event_mask, long /*int*/ confine_to, long /*int*/ cursor, int time_) {
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ display = 0;
 		if( window != 0) {
 			display = OS.gdk_window_get_display (window);
@@ -1989,7 +1989,7 @@ int gdk_pointer_grab (long /*int*/ window, int grab_ownership, boolean owner_eve
 }
 
 void gdk_pointer_ungrab (long /*int*/ window, int time_) {
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ display = OS.gdk_window_get_display (window);
 		long /*int*/ device_manager = OS.gdk_display_get_device_manager (display);
 		long /*int*/ pointer = OS.gdk_device_manager_get_client_pointer (device_manager);
@@ -2077,7 +2077,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 		case EVENT: return gtk_event (handle, arg0);
 		case EVENT_AFTER: return gtk_event_after (handle, arg0);
 		case EXPOSE_EVENT: {
-			if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+			if (OS.GTK3) {
 				return gtk_draw (handle, arg0);
 			} else {
 				return gtk_expose_event (handle, arg0);
@@ -2135,7 +2135,7 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ ar
 }
 
 void gdk_cursor_unref (long /*int*/ cursor) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		OS.g_object_unref (cursor);
 	} else {
 		OS.gdk_cursor_unref(cursor);
@@ -2143,7 +2143,7 @@ void gdk_cursor_unref (long /*int*/ cursor) {
 }
 
 long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[] y, int[] mask) {
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ display = 0;
 		if( window != 0) {
 			display = OS.gdk_window_get_display (window);
@@ -2160,7 +2160,7 @@ long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[]
 }
 
 void gtk_cell_renderer_get_preferred_size (long /*int*/ cell, long /*int*/ widget,  int[] width, int[] height) {
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		GtkRequisition minimum_size = new GtkRequisition ();
 		OS.gtk_cell_renderer_get_preferred_size (cell, widget, minimum_size, null);
 		if (width != null) width [0] = minimum_size.width;
@@ -2171,7 +2171,7 @@ void gtk_cell_renderer_get_preferred_size (long /*int*/ cell, long /*int*/ widge
 }
 
 void gtk_widget_get_preferred_size (long /*int*/ widget, GtkRequisition requisition){
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		OS.gtk_widget_get_preferred_size (widget, requisition, null);
 	} else {
 		OS.gtk_widget_size_request (widget, requisition);

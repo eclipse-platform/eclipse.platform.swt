@@ -747,7 +747,7 @@ boolean setEventData(long /*int*/ context, int x, int y, int time, DNDEvent even
 	if (context == 0) return false;
 	long /*int*/ targets = 0;
 	int actions = 0;
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		targets = OS.gdk_drag_context_list_targets(context);
 		actions = OS.gdk_drag_context_get_actions(context);
 	} else {
@@ -836,7 +836,7 @@ void updateDragOverHover(long delay, DNDEvent event) {
 }
 
 long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[] y, int[] mask) {
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ display = 0;
 		if( window != 0) {
 			display = OS.gdk_window_get_display (window);

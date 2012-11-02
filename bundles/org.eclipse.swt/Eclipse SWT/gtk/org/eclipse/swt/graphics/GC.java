@@ -581,7 +581,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 			Cairo.cairo_restore(handle);
 			if (paint) {
 				long /*int*/ visibleRegion;
-				if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+				if (OS.GTK3) {
 					visibleRegion = OS.gdk_window_get_visible_region (drawable);
 				} else {
 					visibleRegion = OS.gdk_drawable_get_visible_region (drawable);
@@ -786,7 +786,7 @@ public void drawFocus(int x, int y, int width, int height) {
 	long /*int*/ cairo = data.cairo;
 	if (cairo != 0) {
 		checkGC(FOREGROUND);
-		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		if (OS.GTK3) {
 			long /*int*/  context = OS.gtk_widget_get_style_context(data.device.shellHandle);
 			OS.gtk_render_focus(context, cairo, x, y, width, height);
 		} else {
@@ -3317,7 +3317,7 @@ static void setCairoPatternColor(long /*int*/ pattern, int offset, Color c, int 
 
 void setCairoClip(long /*int*/ damageRgn, long /*int*/ clipRgn) {
 	long /*int*/ cairo = data.cairo;
-	if (OS.GTK_VERSION >= OS.VERSION(2,18,0) && data.drawable != 0 && OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+	if (OS.GTK_VERSION >= OS.VERSION(2,18,0) && data.drawable != 0 && !OS.GTK3) {
 		OS.gdk_cairo_reset_clip(cairo, data.drawable);
 	} else {
 		Cairo.cairo_reset_clip(cairo);
@@ -4210,7 +4210,7 @@ public String toString () {
 }
 
 long /*int*/ gdk_pixbuf_get_from_window(long /*int*/ dest, long /*int*/ src,  int src_x, int src_y, int dest_x, int dest_y, int width, int height) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		return OS.gdk_pixbuf_get_from_window (dest, src_x, src_y, width, height);
 	} else {
 		long /*int*/ cmap = OS.gdk_colormap_get_system();

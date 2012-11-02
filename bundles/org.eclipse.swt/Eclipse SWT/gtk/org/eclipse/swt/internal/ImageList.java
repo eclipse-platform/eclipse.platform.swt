@@ -288,7 +288,7 @@ public int size () {
 }
 
 static long /*int*/ gdk_pixbuf_get_from_window (long /*int*/ dest, long /*int*/ src, long /*int*/ cmap, int src_x, int src_y, int dest_x, int dest_y, int width, int height) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		return OS.gdk_pixbuf_get_from_window (dest, src_x, src_y, width, height);
 	} else {
 		return OS.gdk_pixbuf_get_from_drawable (dest, src, cmap, src_x, src_y, dest_x, dest_y, width, height);

@@ -299,7 +299,7 @@ void createHandle (int index) {
 	OS.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
 	OS.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) != 0);
 	OS.gtk_spin_button_set_wrap (handle, (style & SWT.WRAP) != 0);
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		imContext = OS.imContextLast();
 	}
 }
@@ -866,7 +866,7 @@ void removeVerifyListener (VerifyListener listener) {
 
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+	if (!OS.GTK3) {
 		OS.gtk_widget_modify_base (handle, 0, color);
 	}
 }

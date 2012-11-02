@@ -117,7 +117,7 @@ void destroy() {
 			device.gdkColors[pixel] = null;
 		}
 	}
-	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+	if (!OS.GTK3) {
 		long /*int*/ colormap = OS.gdk_colormap_get_system();
 		OS.gdk_colormap_free_colors(colormap, handle, 1);
 	}
@@ -246,7 +246,7 @@ void init(int red, int green, int blue) {
 	gdkColor.red = (short)((red & 0xFF) | ((red & 0xFF) << 8));
 	gdkColor.green = (short)((green & 0xFF) | ((green & 0xFF) << 8));
 	gdkColor.blue = (short)((blue & 0xFF) | ((blue & 0xFF) << 8));
-	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+	if (!OS.GTK3) {
 		long /*int*/ colormap = OS.gdk_colormap_get_system();
 		if (!OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true)) {
 			/* Allocate black. */

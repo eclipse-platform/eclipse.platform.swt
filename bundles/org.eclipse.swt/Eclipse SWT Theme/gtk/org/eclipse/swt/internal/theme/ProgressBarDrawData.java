@@ -59,7 +59,7 @@ int hit(Theme theme, Point position, Rectangle bounds) {
 }
 
 void gtk_orientable_set_orientation (long /*int*/ pbar, int orientation) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		switch (orientation) {
 			case OS.GTK_PROGRESS_BOTTOM_TO_TOP:
 				OS.gtk_orientable_set_orientation(pbar, OS.GTK_ORIENTATION_VERTICAL);

@@ -198,7 +198,7 @@ Rectangle measureText(Theme theme, String text, int flags, GC gc, Rectangle boun
 }
 
 void gtk_render_frame (long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ cairo = OS.gdk_cairo_create (window);
 		long /*int*/ context = OS.gtk_widget_get_style_context (style);
 		OS.gtk_render_frame (context, cairo, x, y, width, height);
@@ -209,7 +209,7 @@ void gtk_render_frame (long /*int*/ style, long /*int*/ window, int state_type, 
 }
 
 void gtk_render_box (long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ cairo = OS.gdk_cairo_create (window);
 		long /*int*/ context = OS.gtk_widget_get_style_context (style);
 		OS.gtk_render_frame (context, cairo, x, y, width, height);
@@ -222,7 +222,7 @@ void gtk_render_box (long /*int*/ style, long /*int*/ window, int state_type, in
 
 
 void gtk_render_layout (long /*int*/ style, long /*int*/ window, int state_type, boolean use_text, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, long /*int*/ layout) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ cairo = OS.gdk_cairo_create (window);
 		long /*int*/ context = OS.gtk_widget_get_style_context (style);
 		OS.gtk_render_layout (context, cairo, x, y, layout);
@@ -233,7 +233,7 @@ void gtk_render_layout (long /*int*/ style, long /*int*/ window, int state_type,
 }
 
 void gtk_render_focus (long /*int*/ style, long /*int*/ window, int state_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ cairo = OS.gdk_cairo_create (window);
 		long /*int*/  context = OS.gtk_widget_get_style_context (style);
 		OS.gtk_style_context_save (context);
@@ -250,7 +250,7 @@ void gtk_render_focus (long /*int*/ style, long /*int*/ window, int state_type, 
 }
 
 void gtk_render_arrow(long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int arrow_type, boolean fill, int x, int y, int width, int height) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		double angle = 0;
 		double size = 0;
 		switch (arrow_type) {

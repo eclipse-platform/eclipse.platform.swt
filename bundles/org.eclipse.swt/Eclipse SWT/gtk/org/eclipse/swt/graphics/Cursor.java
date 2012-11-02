@@ -437,7 +437,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 }
 
 long /*int*/ createCursor(byte[] sourceData, byte[] maskData, int width, int height, int hotspotX, int hotspotY, boolean reverse) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		for (int i = 0; i < sourceData.length; i++) {
 			byte s = sourceData[i];
 			sourceData[i] = (byte)(((s & 0x80) >> 7) |
@@ -593,7 +593,7 @@ public String toString () {
 }
 
 void gdk_cursor_unref (long /*int*/ cursor) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		OS.g_object_unref (cursor);
 	} else {
 		OS.gdk_cursor_unref(cursor);

@@ -1225,7 +1225,7 @@ void selectFocusIndex (int index) {
 
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+	if (!OS.GTK3) {
 		OS.gtk_widget_modify_base (handle, 0, color);
 	}
 }

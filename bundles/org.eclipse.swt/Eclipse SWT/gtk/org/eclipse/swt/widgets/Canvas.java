@@ -261,7 +261,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (isFocus) caret.killFocus ();
 	long /*int*/ window = paintWindow ();
 	long /*int*/ visibleRegion;
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		visibleRegion = OS.gdk_window_get_visible_region (window);
 	} else {
 		visibleRegion = OS.gdk_drawable_get_visible_region (window);
@@ -290,7 +290,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 //		GC gc = new GC (this);
 //		gc.copyArea (x, y, width, height, destX, destY);
 //		gc.dispose ();
-		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		if (OS.GTK3) {
 			OS.gdk_window_invalidate_rect (window, copyRect, true);
 			long /*int*/ cairo = OS.gdk_cairo_create (window);
 			OS.gdk_cairo_set_source_window (cairo, window, 0, 0);

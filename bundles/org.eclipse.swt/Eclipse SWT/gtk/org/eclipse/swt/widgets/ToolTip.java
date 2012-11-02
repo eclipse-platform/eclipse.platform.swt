@@ -252,7 +252,7 @@ void configure () {
 	OS.gtk_widget_realize(handle);
 	Region region = new Region (display);
 	region.add(polyline);
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		OS.gtk_widget_shape_combine_region (handle, region.handle);
 	} else {
 		long /*int*/ window = gtk_widget_get_window (handle);
@@ -266,7 +266,7 @@ void createHandle (int index) {
 		state |= HANDLE;
 		handle = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
 		Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
-		if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		if (OS.GTK3) {
 			GdkColor color = background.handle;
 			GdkRGBA rgba = new GdkRGBA();
 			rgba.alpha = 1;

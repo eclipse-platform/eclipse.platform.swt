@@ -37,7 +37,7 @@ public Theme(Device device) {
 	progressHandle = OS.gtk_progress_bar_new();
 	toolbarHandle = OS.gtk_toolbar_new();
 	treeHandle = OS.gtk_tree_view_new_with_model(0);
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		separatorHandle = OS.gtk_separator_new (OS.GTK_ORIENTATION_VERTICAL);
 	} else {
 		separatorHandle = OS.gtk_vseparator_new();
@@ -195,7 +195,7 @@ void transferClipping(GC gc, long /*int*/ style) {
 		}
 	}
 	//TODO implement for GTK3
-	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+	if (!OS.GTK3) {
 		long /*int*/ [] curGC = new long /*int*/ [1];
 		for (int i = 0; i < 5; i++) {
 			OS.gtk_style_get_fg_gc (style, i, curGC);

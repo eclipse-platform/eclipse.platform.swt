@@ -86,7 +86,7 @@ Region(Device device, long /*int*/ handle) {
 }
 
 static long /*int*/ gdk_region_polygon(int[] pointArray, int npoints, int fill_rule) {
-	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+	if (!OS.GTK3) {
 		return OS.gdk_region_polygon(pointArray, npoints, fill_rule);
 	}
 	//TODO this does not perform well and could fail if the polygon is too big
@@ -124,7 +124,7 @@ static long /*int*/ gdk_region_polygon(int[] pointArray, int npoints, int fill_r
 }
 
 static void gdk_region_get_rectangles(long /*int*/ region, long /*int*/[] rectangles, int[] n_rectangles) {
-	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+	if (!OS.GTK3) {
 		OS.gdk_region_get_rectangles (region, rectangles, n_rectangles);
 		return;
 	}

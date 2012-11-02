@@ -178,7 +178,7 @@ long /*int*/ getHandle () {
 	* causing the child of the GtkFixed handle to be resized to 1.
 	* The workaround is to embed Mozilla into a GtkHBox handle.
 	*/
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		embedHandle = OS.gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, 0);
 		OS.gtk_box_set_homogeneous (embedHandle, false);
 	} else {

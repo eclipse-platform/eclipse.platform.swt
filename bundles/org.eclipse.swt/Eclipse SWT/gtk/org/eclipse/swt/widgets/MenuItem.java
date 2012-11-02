@@ -884,7 +884,7 @@ public void setText (String string) {
 	long /*int*/ label = OS.gtk_bin_get_child (handle);
 	if (label != 0 && OS.GTK_IS_LABEL(label)) {
 		OS.gtk_label_set_text_with_mnemonic (label, buffer);
-		if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+		if (!OS.GTK3) {
 			if (OS.GTK_IS_ACCEL_LABEL(label)) {
 				buffer = Converter.wcsToMbcs (null, accelString, true);
 				long /*int*/ ptr = OS.g_malloc (buffer.length);

@@ -606,7 +606,7 @@ void resizeHandle (int width, int height) {
 	* alignment to fail. The fix is to set the child size to the size
 	* of the button.
 	*/
-	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+	if (!OS.GTK3) {
 		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 			OS.gtk_widget_set_size_request (boxHandle, width, -1);
 		}
@@ -689,7 +689,7 @@ void _setAlignment (int alignment) {
 			OS.gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, OS.GTK_PACK_START);
 			OS.gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, OS.GTK_PACK_START);
 		} else {
-			if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+			if (OS.GTK3) {
 				OS.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, OS.GTK_PACK_END);
 				OS.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, OS.GTK_PACK_START);
 			}
@@ -706,7 +706,7 @@ void _setAlignment (int alignment) {
 			OS.gtk_misc_set_alignment (labelHandle, 0f, 0.5f);
 			OS.gtk_misc_set_alignment (imageHandle, 1f, 0.5f);
 		} else {
-			if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+			if (OS.GTK3) {
 				OS.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, OS.GTK_PACK_END);
 				OS.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, OS.GTK_PACK_START);
 			}
@@ -721,7 +721,7 @@ void _setAlignment (int alignment) {
 			OS.gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, OS.GTK_PACK_END);
 			OS.gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, OS.GTK_PACK_END);
 		} else {
-			if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+			if (OS.GTK3) {
 				OS.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, OS.GTK_PACK_END);
 				OS.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, OS.GTK_PACK_START);
 			}

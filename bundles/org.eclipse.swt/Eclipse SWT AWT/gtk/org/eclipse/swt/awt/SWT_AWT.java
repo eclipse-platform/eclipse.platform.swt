@@ -203,7 +203,7 @@ public static Frame new_Frame (final Composite parent) {
 							long /*int*/ awtHandle = getAWTHandle(window);
 							if (awtHandle == 0) return;
 							long /*int*/ xWindow;
-							if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+							if (OS.GTK3) {
 								xWindow = OS.gdk_x11_window_get_xid (OS.gtk_widget_get_window (shell.handle));
 							} else if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
 								xWindow = OS.gdk_x11_drawable_get_xid(OS.gtk_widget_get_window(OS.gtk_widget_get_toplevel(shell.handle)));

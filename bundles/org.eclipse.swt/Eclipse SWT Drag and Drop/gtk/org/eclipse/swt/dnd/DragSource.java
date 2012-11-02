@@ -315,7 +315,7 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 	 * NOTE: We believe that it is never an error to ungrab when
 	 * a drag is finished.
 	 */
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ display = OS.gdk_window_get_display(OS.gtk_widget_get_window(widget));
 		long /*int*/ device_manager = OS.gdk_display_get_device_manager(display);
 		long /*int*/ pointer = OS.gdk_device_manager_get_client_pointer(device_manager);
@@ -331,7 +331,7 @@ void dragEnd(long /*int*/ widget, long /*int*/ context){
 	if (context != 0) {
 		long /*int*/ dest_window = 0;
 		int action = 0;
-		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		if (OS.GTK3) {
 			dest_window = OS.gdk_drag_context_get_dest_window(context);
 			action = OS.gdk_drag_context_get_selected_action(context);
 		} else {

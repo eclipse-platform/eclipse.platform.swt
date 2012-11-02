@@ -586,7 +586,7 @@ void showWidget () {
 
 long /*int*/ gtk_separator_new (int orientation) {
 	long /*int*/ separator = 0;
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		separator = OS.gtk_separator_new (orientation);
 	} else {
 		if (orientation == OS.GTK_ORIENTATION_HORIZONTAL) {

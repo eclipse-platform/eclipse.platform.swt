@@ -2655,7 +2655,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				if ((drawState & SWT.SELECTED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_SELECTED;
 				if ((drawState & SWT.FOCUSED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_FOCUSED;
 				if ((drawState & SWT.SELECTED) != 0) {
-					if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+					if (OS.GTK3) {
 						//TODO draw selection on GTK3
 					} else {
 						long /*int*/ style = OS.gtk_widget_get_style (widget);					
@@ -2685,7 +2685,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 		if (drawForeground != null && OS.GTK_IS_CELL_RENDERER_TEXT (cell)) {
 			OS.g_object_set (cell, OS.foreground_gdk, drawForeground, 0);
 		}
-		if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		if (OS.GTK3) {
 			OS.call (klass.render, cell, cr, widget, background_area, cell_area, drawFlags);
 		} else {
 			OS.call (klass.render, cell, window, widget, background_area, cell_area, expose_area, drawFlags);
@@ -2944,7 +2944,7 @@ public void selectAll () {
 
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+	if (!OS.GTK3) {
 		OS.gtk_widget_modify_base (handle, 0, color);
 	}
 }

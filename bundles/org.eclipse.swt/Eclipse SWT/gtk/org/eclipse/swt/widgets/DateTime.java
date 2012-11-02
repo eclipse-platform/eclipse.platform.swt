@@ -1072,7 +1072,7 @@ public void setBackground(Color color) {
 
 void setBackgroundColor (GdkColor color) {
 	if ((style & SWT.CALENDAR) != 0) {
-		if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+		if (!OS.GTK3) {
 			OS.gtk_widget_modify_base(handle, 0, color);
 		}
 	} else {

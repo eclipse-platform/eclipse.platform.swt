@@ -565,7 +565,7 @@ void bringToTop (boolean force) {
 			xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
 		}
 		long /*int*/ xWindow;
-		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		if (OS.GTK3) {
 			xWindow = OS.gdk_x11_window_get_xid (window);
 		} else {
 			xWindow = OS.gdk_x11_drawable_get_xid (window);
@@ -713,7 +713,7 @@ void createHandle (int index) {
 		OS.gtk_window_set_title (shellHandle, new byte [1]);
 		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
 			OS.gtk_container_set_border_width (shellHandle, 1);
-			if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+			if (OS.GTK3) {
 				OS.gtk_widget_override_background_color (shellHandle, OS.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
 			} else {
 				GdkColor color = new GdkColor ();
@@ -844,7 +844,7 @@ void hookEvents () {
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MAP_EVENT], 0, display.shellMapProcClosure, false);
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
 	OS.g_signal_connect_closure (shellHandle, OS.move_focus, display.closures [MOVE_FOCUS], false);
-	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+	if (!OS.GTK3) {
 		long /*int*/ window = gtk_widget_get_window (shellHandle);
 		OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
 	} else {
@@ -2485,7 +2485,7 @@ void releaseWidget () {
 	tooltipsHandle = 0;
 	if (group != 0) OS.g_object_unref (group);
 	group = modalGroup = 0;
-	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+	if (!OS.GTK3) {
 		long /*int*/ window = gtk_widget_get_window (shellHandle);
 		OS.gdk_window_remove_filter(window, display.filterProc, shellHandle);
 	}
@@ -2632,7 +2632,7 @@ void setToolTipText (long /*int*/ rootWidget, long /*int*/ tipWidget, String str
 }
 
 void gtk_render_box (long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ cairo = OS.gdk_cairo_create (window);
 		long /*int*/ context = OS.gtk_widget_get_style_context (style);
 		OS.gtk_render_frame (context, cairo, x, y, width, height);
@@ -2643,7 +2643,7 @@ void gtk_render_box (long /*int*/ style, long /*int*/ window, int state_type, in
 	}
 }
 long /*int*/ gdk_device_get_window_at_position (int[] win_x, int[] win_y) {
-	if (OS.GTK_VERSION >= OS.VERSION(3,0,0)) {
+	if (OS.GTK3) {
 		long /*int*/ display = OS.gdk_display_get_default ();
 		long /*int*/ device_manager = OS.gdk_display_get_device_manager (display);
 		long /*int*/ device = OS.gdk_device_manager_get_client_pointer (device_manager);

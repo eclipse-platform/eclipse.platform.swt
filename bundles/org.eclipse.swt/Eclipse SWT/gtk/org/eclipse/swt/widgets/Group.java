@@ -133,7 +133,7 @@ void createHandle(int index) {
 	g_object_ref_sink (labelHandle);
 	clientHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		OS.gtk_widget_override_background_color (clientHandle, 0, new GdkRGBA ());
 		long /*int*/ region = OS.gdk_region_new ();
 		OS.gtk_widget_input_shape_combine_region (clientHandle, region);

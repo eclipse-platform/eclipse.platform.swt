@@ -34,7 +34,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	int expander_size = theme.getWidgetProperty(treeHandle, "expander-size");
 	int x = bounds.x + expander_size / 2;
 	int y = bounds.y + expander_size / 2;
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ cairo = OS.gdk_cairo_create (drawable);
 		long /*int*/ context = OS.gtk_widget_get_style_context (gtkStyle);
 		OS.gtk_render_expander (context, cairo, bounds.x, bounds.y, expander_size, expander_size);

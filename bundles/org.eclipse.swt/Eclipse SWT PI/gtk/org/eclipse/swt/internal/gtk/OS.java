@@ -608,7 +608,8 @@ public class OS extends C {
 	public static final byte[] GTK_STOCK_CLEAR = ascii("gtk-clear");
 	
 	public static final int GTK_VERSION = VERSION(gtk_major_version(), gtk_minor_version(), gtk_micro_version()); 
-	public static final int GLIB_VERSION = VERSION(glib_major_version(), glib_minor_version(), glib_micro_version()); 
+	public static final int GLIB_VERSION = VERSION(glib_major_version(), glib_minor_version(), glib_micro_version());
+	public static final boolean GTK3 = GTK_VERSION >= VERSION(3, 0, 0);
 	public static final boolean USE_CAIRO, INIT_CAIRO;
 	static {
 		boolean useCairo = false;

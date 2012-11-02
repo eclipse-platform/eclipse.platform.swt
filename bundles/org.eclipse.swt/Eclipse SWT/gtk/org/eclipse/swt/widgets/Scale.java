@@ -365,7 +365,7 @@ public void setSelection (int value) {
 
 long /*int*/ gtk_scale_new (int orientation, long /*int*/ adjustment) {
 	long /*int*/ scale = 0;
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0))	{
+	if (OS.GTK3)	{
 		scale = OS.gtk_scale_new (orientation, adjustment);
 	} else {
 		if (orientation == OS.GTK_ORIENTATION_HORIZONTAL) {

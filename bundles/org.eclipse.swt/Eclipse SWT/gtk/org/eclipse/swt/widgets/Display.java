@@ -935,7 +935,7 @@ void createDisplay (DeviceData data) {
 		int minor = OS.gtk_minor_version (), micro = OS.gtk_micro_version ();
 		System.out.println ("***WARNING: Detected: " + major + "." + minor + "." + micro); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		fixed_type = OS.swt_fixed_get_type();
 	}
 	if (fixed_type == 0) {
@@ -968,7 +968,7 @@ void createDisplay (DeviceData data) {
 		if (rendererClassInitProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 	if (rendererRenderProc == 0) {
-		rendererRenderCallback = new Callback (getClass (), "rendererRenderProc", OS.GTK_VERSION >= OS.VERSION(3, 0, 0) ? 6 : 7); //$NON-NLS-1$
+		rendererRenderCallback = new Callback (getClass (), "rendererRenderProc", OS.GTK3 ? 6 : 7); //$NON-NLS-1$
 		rendererRenderProc = rendererRenderCallback.getAddress ();
 		if (rendererRenderProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
@@ -1032,7 +1032,7 @@ void createDisplay (DeviceData data) {
 
 	if (OS.GDK_WINDOWING_X11 ()) {
 		long /*int*/ xWindow;
-		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		if (OS.GTK3) {
 			xWindow = OS.gdk_x11_window_get_xid (OS.gtk_widget_get_window (shellHandle));
 		} else if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
 			xWindow = OS.gdk_x11_drawable_get_xid (OS.gtk_widget_get_window	(shellHandle));
@@ -2246,7 +2246,7 @@ GdkColor toGdkColor (GdkRGBA rgba, double m) {
 }
 
 void initializeSystemColors () {
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ tooltipShellHandle = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
 		if (tooltipShellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		byte[] gtk_tooltip = Converter.wcsToMbcs (null, "gtk-tooltip", true); //$NON-NLS-1$
@@ -2505,7 +2505,7 @@ void initializeCallbacks () {
 	signalIds [Widget.ENTER_NOTIFY_EVENT] = OS.g_signal_lookup (OS.enter_notify_event, OS.GTK_TYPE_WIDGET ());
 	signalIds [Widget.EVENT] = OS.g_signal_lookup (OS.event, OS.GTK_TYPE_WIDGET ());
 	signalIds [Widget.EVENT_AFTER] = OS.g_signal_lookup (OS.event_after, OS.GTK_TYPE_WIDGET ());
-	signalIds [Widget.EXPOSE_EVENT] = OS.g_signal_lookup (OS.GTK_VERSION >= OS.VERSION(3, 0, 0) ? OS.draw : OS.expose_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.EXPOSE_EVENT] = OS.g_signal_lookup (OS.GTK3 ? OS.draw : OS.expose_event, OS.GTK_TYPE_WIDGET ());
 	signalIds [Widget.FOCUS] = OS.g_signal_lookup (OS.focus, OS.GTK_TYPE_WIDGET ());
 	signalIds [Widget.FOCUS_IN_EVENT] = OS.g_signal_lookup (OS.focus_in_event, OS.GTK_TYPE_WIDGET ());
 	signalIds [Widget.FOCUS_OUT_EVENT] = OS.g_signal_lookup (OS.focus_out_event, OS.GTK_TYPE_WIDGET ());
@@ -2705,7 +2705,7 @@ void initializeSubclasses () {
 	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, OS.pangoLayoutNewProc_CALLBACK(pangoLayoutNewProc));
 	OS.g_type_class_unref (pangoLayoutClass);
 
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ imContextType = OS.GTK_TYPE_IM_MULTICONTEXT ();
 		long /*int*/ imContextClass = OS.g_type_class_ref (imContextType);
 		imContextNewProc = OS.G_OBJECT_CLASS_CONSTRUCTOR (imContextClass);
@@ -3497,7 +3497,7 @@ void releaseDisplay () {
 	OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (pangoLayoutClass, pangoLayoutNewProc);
 	OS.g_type_class_unref (pangoLayoutClass);
 	pangoLayoutNewProc = 0;
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ imContextType = OS.PANGO_TYPE_LAYOUT ();
 		long /*int*/ imContextClass = OS.g_type_class_ref (imContextType);
 		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, imContextNewProc);
@@ -4075,7 +4075,7 @@ void showIMWindow (Control control) {
 		Control widget = control.findBackgroundControl ();
 		if (widget == null) widget = control;
 		GdkColor color = widget.getBackgroundColor ();
-		if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		if (OS.GTK3) {
 			widget.setBackgroundColor (preeditWindow, color);
 		} else {
 			OS.gtk_widget_modify_bg (preeditWindow,  OS.GTK_STATE_NORMAL, color);
@@ -4087,7 +4087,7 @@ void showIMWindow (Control control) {
 		Point point = control.toDisplay (control.getIMCaretPos ());
 		OS.gtk_window_move (preeditWindow, point.x, point.y);		
 		GtkRequisition requisition = new GtkRequisition ();
-		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		if (OS.GTK3) {
 			OS.gtk_widget_get_preferred_size (preeditLabel, requisition, null);
 		} else {
 			OS.gtk_widget_size_request (preeditLabel, requisition);
@@ -4343,7 +4343,7 @@ long /*int*/ signalProc (long /*int*/ gobject, long /*int*/ arg1, long /*int*/ u
 				long /*int*/ atom = OS.gdk_x11_atom_to_xatom (OS.gdk_atom_intern (name, true));
 				if (atom == OS.gdk_x11_atom_to_xatom (gdkEvent.atom)) {
 					long /*int*/ xWindow; 
-					if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+					if (OS.GTK3) {
 						xWindow = OS.gdk_x11_window_get_xid (OS.gtk_widget_get_window (shellHandle));
 					} else if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)){
 						xWindow = OS.gdk_x11_drawable_get_xid (OS.gtk_widget_get_window( shellHandle));
@@ -4517,7 +4517,7 @@ long /*int*/ windowTimerProc (long /*int*/ handle) {
 }
 
 long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[] y, int[] mask) {
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ display = 0;
 		if( window != 0) {
 			display = OS.gdk_window_get_display (window);
@@ -4534,7 +4534,7 @@ long /*int*/ gdk_window_get_device_position (long /*int*/ window, int[] x, int[]
 }
 
 long /*int*/ gdk_device_get_window_at_position (int[] win_x, int[] win_y) {
-	if (OS.GTK_VERSION >= OS.VERSION(3,0,0)) {
+	if (OS.GTK3) {
 		long /*int*/ display = OS.gdk_display_get_default ();
 		long /*int*/ device_manager = OS.gdk_display_get_device_manager (display);
 		long /*int*/ device = OS.gdk_device_manager_get_client_pointer (device_manager);

@@ -57,7 +57,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 		long /*int*/ gtkStyle = OS.gtk_widget_get_style (separatorHandle);
 		theme.transferClipping(gc, gtkStyle);
 		if ((parent.style & SWT.VERTICAL) != 0) {
-			if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+			if (OS.GTK3) {
 				long /*int*/ cairo = OS.gdk_cairo_create (drawable);
 				long /*int*/ context = OS.gtk_widget_get_style_context (separatorHandle);
 				OS.gtk_render_line (context, cairo, bounds.x, bounds.y + bounds.height / 2, bounds.x + bounds.width, bounds.y + bounds.height / 2);
@@ -66,7 +66,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 				OS.gtk_paint_hline(gtkStyle, drawable, state_type, null, separatorHandle, detail, bounds.x, bounds.x + bounds.width, bounds.y + bounds.height / 2);
 			}	
 		} else {
-			if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+			if (OS.GTK3) {
 				long /*int*/ cairo = OS.gdk_cairo_create (drawable);
 				long /*int*/ context = OS.gtk_widget_get_style_context (separatorHandle);
 				OS.gtk_render_line (context, cairo, bounds.x + bounds.width / 2, bounds.y, bounds.x + bounds.width / 2, bounds.y + bounds.height);

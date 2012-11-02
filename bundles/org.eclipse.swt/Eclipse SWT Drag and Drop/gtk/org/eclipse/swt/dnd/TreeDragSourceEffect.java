@@ -82,7 +82,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 		//TEMPORARY CODE
 		if (tree.isListening(SWT.EraseItem) || tree.isListening (SWT.PaintItem)) return null;
 		
-		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) return null;
+		if (OS.GTK3) return null;
 		
 		/*
 		* Bug in GTK.  gtk_tree_selection_get_selected_rows() segmentation faults

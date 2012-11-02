@@ -660,7 +660,7 @@ protected void init () {
 
 	/* Initialize the system font slot */
 	long /*int*/ defaultFont;
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ context = OS.gtk_widget_get_style_context (shellHandle);	
 		defaultFont = OS.gtk_style_context_get_font (context, OS.GTK_STATE_FLAG_NORMAL);
 	} else {
@@ -824,7 +824,7 @@ protected void release () {
 	systemFont = null;
 
 	if (gdkColors != null) {
-		if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+		if (!OS.GTK3) {
 			long /*int*/ colormap = OS.gdk_colormap_get_system();
 			for (int i = 0; i < gdkColors.length; i++) {
 				GdkColor color = gdkColors [i];

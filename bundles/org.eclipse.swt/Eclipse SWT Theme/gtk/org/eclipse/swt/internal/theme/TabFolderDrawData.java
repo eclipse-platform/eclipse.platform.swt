@@ -66,7 +66,7 @@ int hit(Theme theme, Point position, Rectangle bounds) {
 }
 
 void gtk_render_frame_gap (long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height, int gap_side, int gap_x, int gap_width) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ cairo = OS.gdk_cairo_create (window);
 		long /*int*/ context = OS.gtk_widget_get_style_context (style);
 		OS.gtk_render_frame_gap (context, cairo, context, y, gap_width, height, gap_side, gap_x, gap_x + gap_width);

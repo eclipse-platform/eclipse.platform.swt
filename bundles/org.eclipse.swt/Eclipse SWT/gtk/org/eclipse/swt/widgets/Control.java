@@ -165,7 +165,7 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	if (window == 0) return false;
 	int orientation = vertical ? OS.GTK_ORIENTATION_HORIZONTAL : OS.GTK_ORIENTATION_VERTICAL;
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - width - x;
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ cairo = OS.gdk_cairo_create (window);
 		long /*int*/ context = OS.gtk_widget_get_style_context(paintHandle);
 		OS.gtk_render_handle(context, cairo, x, y, width, height);
@@ -230,7 +230,7 @@ void fixStyle (long /*int*/ handle) {
 	*/
 	if ((state & BACKGROUND) != 0) return;
 	if ((state & THEME_BACKGROUND) == 0) return;
-	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+	if (!OS.GTK3) {
 		long /*int*/ childStyle = parent.childStyle ();
 		if (childStyle != 0) {
 			GdkColor color = new GdkColor();
@@ -325,7 +325,7 @@ void hookEvents () {
 	int paintMask = OS.GDK_EXPOSURE_MASK | OS.GDK_VISIBILITY_NOTIFY_MASK;
 	OS.gtk_widget_add_events (paintHandle, paintMask);
 
-	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+	if (!OS.GTK3) {
 		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT_INVERSE], false);
 	}
 
@@ -410,7 +410,7 @@ public boolean print (GC gc) {
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	long /*int*/ topHandle = topHandle ();
 	OS.gtk_widget_realize (topHandle);
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		OS.gtk_widget_draw(topHandle, gc.handle);
 		return true;
 	}
@@ -682,7 +682,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 Point computeNativeSize (long /*int*/ h, int wHint, int hHint, boolean changed) {
 	int width = wHint, height = hHint;
-	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT && OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT && !OS.GTK3) {
 		GtkRequisition requisition = new GtkRequisition ();
 		gtk_widget_size_request (h, requisition);
 		width = OS.GTK_WIDGET_REQUISITION_WIDTH (h);
@@ -851,7 +851,7 @@ void moveHandle (int x, int y) {
 	* 
 	* NOTE: There is no API in GTK 3 to only set the GTK_VISIBLE bit.
 	*/
-	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+	if (!OS.GTK3) {
 		boolean reset = gtk_widget_get_visible (parentHandle);
 		gtk_widget_set_visible (parentHandle, false);
 		OS.gtk_fixed_move (parentHandle, topHandle, x, y);
@@ -2471,7 +2471,7 @@ GdkColor getContextColor () {
 }
 
 GdkColor getBgColor () {
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		return getContextBackground ();
 	}
 	long /*int*/ fontHandle = fontHandle ();
@@ -2482,7 +2482,7 @@ GdkColor getBgColor () {
 }
 
 GdkColor getBaseColor () {
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		return getContextBackground ();
 	}
 	long /*int*/ fontHandle = fontHandle ();
@@ -2588,7 +2588,7 @@ public Font getFont () {
 long /*int*/ getFontDescription () {
 	long /*int*/ fontHandle = fontHandle ();
 	OS.gtk_widget_realize (fontHandle);
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);	
 		return OS.gtk_style_context_get_font(context, OS.GTK_STATE_FLAG_NORMAL);
 	}
@@ -2615,7 +2615,7 @@ GdkColor getForegroundColor () {
 }
 
 GdkColor getFgColor () {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		return getContextColor ();
 	}
 	long /*int*/ fontHandle = fontHandle ();
@@ -2630,7 +2630,7 @@ Point getIMCaretPos () {
 }
 
 GdkColor getTextColor () {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		return getContextColor ();
 	}
 	long /*int*/ fontHandle = fontHandle ();
@@ -2860,7 +2860,7 @@ public boolean getVisible () {
 }
 
 Point getThickness (long /*int*/ widget) {
-	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+	if (OS.GTK3) {
 		GtkBorder padding = new GtkBorder();
 		long /*int*/ context = OS.gtk_widget_get_style_context (widget);
 		OS.gtk_style_context_get_padding (context, OS.GTK_STATE_FLAG_NORMAL, padding);
@@ -3857,7 +3857,7 @@ public void setBackground (Color color) {
 		gdkColor = color.handle;
 	}
 	boolean set = false;
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		set = !getBackground().equals(color);
 	} else {
 		if (gdkColor == null) {
@@ -3880,7 +3880,7 @@ public void setBackground (Color color) {
 }
 
 void setBackgroundColor (long /*int*/ handle, GdkColor color) {
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		GdkRGBA rgba = null;
 		double alpha = 1;
 		if (color == null) {
@@ -3976,7 +3976,7 @@ void setBackgroundPixmap (Image image) {
 		if (image.pixmap != 0) {
 			OS.gdk_window_set_back_pixmap (window, image.pixmap, false);
 		} else if (image.surface != 0) {
-			if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+			if (OS.GTK3) {
 				long /*int*/ pattern = Cairo.cairo_pattern_create_for_surface(image.surface);
 				if (pattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_REPEAT);
@@ -4239,7 +4239,7 @@ public void setForeground (Color color) {
 		gdkColor = color.handle;
 	}
 	boolean set = false;
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		set = !getForeground().equals(color);
 	} else {
 		if (gdkColor == null) {
@@ -4418,10 +4418,10 @@ public boolean setParent (Composite parent) {
 	}
 	long /*int*/ newParent = parent.parentingHandle();
 	OS.gtk_widget_reparent(topHandle, newParent);
-	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
-		OS.gtk_fixed_move (newParent, topHandle, x, y);
-	} else {
+	if (OS.GTK3) {
 		OS.swt_fixed_move (newParent, topHandle, x, y);
+	} else {
+		OS.gtk_fixed_move (newParent, topHandle, x, y);
 	}
 	/*
 	* Restore the original widget size since GTK does not keep it.

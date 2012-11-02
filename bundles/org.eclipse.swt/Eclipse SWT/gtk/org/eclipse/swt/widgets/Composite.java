@@ -1138,7 +1138,7 @@ void markLayout (boolean changed, boolean all) {
 void moveAbove (long /*int*/ child, long /*int*/ sibling) {
 	if (child == sibling) return;
 	long /*int*/ parentHandle = parentingHandle ();
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		OS.swt_fixed_restack (parentHandle, child, sibling, true);
 		return;
 	}
@@ -1183,7 +1183,7 @@ void moveBelow (long /*int*/ child, long /*int*/ sibling) {
 		moveAbove (child, scrolledHandle != 0  ? scrolledHandle : handle);
 		return;
 	}
-	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+	if (OS.GTK3) {
 		OS.swt_fixed_restack (parentHandle, child, sibling, false);
 		return;
 	}
