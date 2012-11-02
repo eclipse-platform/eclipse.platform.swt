@@ -3882,14 +3882,18 @@ public void setBackground (Color color) {
 void setBackgroundColor (long /*int*/ handle, GdkColor color) {
 	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
 		GdkRGBA rgba = null;
+		double alpha = 1;
 		if (color == null) {
 			if ((state & PARENT_BACKGROUND) != 0) {
-				rgba = new GdkRGBA();
+				alpha = 0;
+				Control control = findBackgroundControl();
+				if (control == null) control = this;
+				color = control.getBackgroundColor();
 			}
 		}
 		if (color != null) {
 			rgba = new GdkRGBA ();
-			rgba.alpha = 1;
+			rgba.alpha = alpha;
 			rgba.red = (color.red & 0xFFFF) / (float)0xFFFF;
 			rgba.green = (color.green & 0xFFFF) / (float)0xFFFF;
 			rgba.blue = (color.blue & 0xFFFF) / (float)0xFFFF;
