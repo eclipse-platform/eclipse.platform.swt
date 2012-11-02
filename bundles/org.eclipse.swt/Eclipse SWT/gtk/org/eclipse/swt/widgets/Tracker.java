@@ -321,15 +321,18 @@ void drawRectangles (Rectangle [] rects) {
 			rect.x = r.x;
 			rect.y = r.y;
 			rect.width = r.width;
+			rect.height = 1;
+			OS.gdk_region_union_with_rect(region, rect);
+			rect.width = 1;
 			rect.height = r.height;
 			OS.gdk_region_union_with_rect(region, rect);
-			rect.x++;
-			rect.y++;
-			rect.width -= 2;
-			rect.height -= 2;
-			long /*int*/ rgn = OS.gdk_region_rectangle(rect);
-			OS.gdk_region_subtract(region, rgn);
-			OS.gdk_region_destroy(rgn);
+			rect.x = r.x + r.width;
+			OS.gdk_region_union_with_rect(region, rect);
+			rect.x = r.x;
+			rect.y = r.y + r.height;
+			rect.width = r.width;
+			rect.height = 1;
+			OS.gdk_region_union_with_rect(region, rect);
 		}
 		OS.gtk_widget_shape_combine_region (overlay, region);
 		OS.gdk_region_destroy (region);
