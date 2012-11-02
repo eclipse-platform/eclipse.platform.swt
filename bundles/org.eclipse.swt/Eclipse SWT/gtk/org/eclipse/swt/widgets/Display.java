@@ -935,6 +935,9 @@ void createDisplay (DeviceData data) {
 		int minor = OS.gtk_minor_version (), micro = OS.gtk_micro_version ();
 		System.out.println ("***WARNING: Detected: " + major + "." + minor + "." + micro); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		fixed_type = OS.swt_fixed_get_type();
+	}
 	if (fixed_type == 0) {
 		byte [] type_name = Converter.wcsToMbcs (null, "SwtFixed", true); //$NON-NLS-1$
 		fixedClassInitCallback = new Callback (getClass (), "fixedClassInitProc", 2); //$NON-NLS-1$

@@ -13461,6 +13461,19 @@ public static final void gtk_widget_hide(long /*int*/ widget) {
  * @method flags=dynamic
  * @param widget cast=(GtkWidget *)
  */
+public static final native void _gtk_widget_input_shape_combine_region(long /*int*/ widget, long /*int*/ region);
+public static final void gtk_widget_input_shape_combine_region(long /*int*/ widget, long /*int*/ region) {
+	lock.lock();
+	try {
+		_gtk_widget_input_shape_combine_region(widget, region);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param widget cast=(GtkWidget *)
+ */
 public static final native boolean _gtk_widget_is_composited(long /*int*/ widget);
 public static final boolean gtk_widget_is_composited(long /*int*/ widget) {
 	lock.lock();
@@ -15843,4 +15856,41 @@ public static final int access (byte [] path, int amode) {
  * @param s2 cast=(const char*)
  */
 public static final native int strcmp (long /*int*/ s1, byte [] s2);
+
+public static final native long /*int*/ _swt_fixed_get_type();
+public static final long /*int*/ swt_fixed_get_type() {
+	lock.lock();
+	try {
+		return _swt_fixed_get_type();
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param fixed cast=(SwtFixed*)
+ * @param widget cast=(GtkWidget*)
+ * @param sibling cast=(GtkWidget*)
+ */
+public static final native void _swt_fixed_restack(long /*int*/ fixed, long /*int*/ widget, long /*int*/ sibling, boolean above);
+public static final void swt_fixed_restack(long /*int*/ fixed, long /*int*/ widget, long /*int*/ sibling, boolean above) {
+	lock.lock();
+	try {
+		_swt_fixed_restack(fixed, widget, sibling, above);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param fixed cast=(SwtFixed*)
+ * @param widget cast=(GtkWidget*)
+ */
+public static final native void _swt_fixed_move(long /*int*/ fixed, long /*int*/ widget, int x, int y);
+public static final void swt_fixed_move(long /*int*/ fixed, long /*int*/ widget, int x, int y) {
+	lock.lock();
+	try {
+		_swt_fixed_move(fixed, widget, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
 }

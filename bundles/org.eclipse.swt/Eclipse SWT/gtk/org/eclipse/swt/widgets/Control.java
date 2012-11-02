@@ -682,16 +682,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 Point computeNativeSize (long /*int*/ h, int wHint, int hHint, boolean changed) {
 	int width = wHint, height = hHint;
-	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
+	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT && OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
 		GtkRequisition requisition = new GtkRequisition ();
 		gtk_widget_size_request (h, requisition);
-		if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
-			width = requisition.width;
-			height = requisition.height;
-		} else {
-			width = OS.GTK_WIDGET_REQUISITION_WIDTH (h);
-			height = OS.GTK_WIDGET_REQUISITION_HEIGHT (h);
-		}
+		width = OS.GTK_WIDGET_REQUISITION_WIDTH (h);
+		height = OS.GTK_WIDGET_REQUISITION_HEIGHT (h);
 	} else if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
 		int [] reqWidth = new int [1], reqHeight = new int [1];
 		OS.gtk_widget_get_size_request (h, reqWidth, reqHeight);
@@ -856,14 +851,13 @@ void moveHandle (int x, int y) {
 	* 
 	* NOTE: There is no API in GTK 3 to only set the GTK_VISIBLE bit.
 	*/
-	boolean reset = false;
 	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
-		reset = gtk_widget_get_visible (parentHandle);
+		boolean reset = gtk_widget_get_visible (parentHandle);
 		gtk_widget_set_visible (parentHandle, false);
-	}
-	OS.gtk_fixed_move (parentHandle, topHandle, x, y);
-	if (reset) {
-		gtk_widget_set_visible (parentHandle, true);
+		OS.gtk_fixed_move (parentHandle, topHandle, x, y);
+		gtk_widget_set_visible (parentHandle, reset);
+	} else {
+		OS.swt_fixed_move (parentHandle, topHandle, x, y);
 	}
 }
 
@@ -4420,7 +4414,11 @@ public boolean setParent (Composite parent) {
 	}
 	long /*int*/ newParent = parent.parentingHandle();
 	OS.gtk_widget_reparent(topHandle, newParent);
-	OS.gtk_fixed_move (newParent, topHandle, x, y);
+	if (OS.GTK_VERSION < OS.VERSION(3, 0, 0)) {
+		OS.gtk_fixed_move (newParent, topHandle, x, y);
+	} else {
+		OS.swt_fixed_move (newParent, topHandle, x, y);
+	}
 	/*
 	* Restore the original widget size since GTK does not keep it.
 	*/

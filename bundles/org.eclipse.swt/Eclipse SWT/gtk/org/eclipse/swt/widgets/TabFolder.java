@@ -227,6 +227,12 @@ void createItem (TabItem item, int index) {
 	OS.gtk_container_add (boxHandle, labelHandle);
 	long /*int*/ pageHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (pageHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	if (OS.GTK_VERSION >= OS.VERSION(3, 0, 0)) {
+		OS.gtk_widget_override_background_color (pageHandle, 0, new GdkRGBA ());
+		long /*int*/ region = OS.gdk_region_new ();
+		OS.gtk_widget_input_shape_combine_region (pageHandle, region);
+		OS.gdk_region_destroy (region);
+	}
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	OS.gtk_notebook_insert_page (handle, pageHandle, boxHandle, index);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);

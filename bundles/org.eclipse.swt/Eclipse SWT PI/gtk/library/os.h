@@ -151,12 +151,21 @@
 #define NO_memmove__JLorg_eclipse_swt_internal_gtk_GtkAdjustment_2
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2I
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2J
+#define NO_GtkFixed
+#define NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkFixed_2
+#define NO_memmove__JLorg_eclipse_swt_internal_gtk_GtkFixed_2
 
 #define NO_GTK_1WIDGET_1REQUISITION_1HEIGHT
 #define NO_GTK_1WIDGET_1REQUISITION_1WIDTH
-#define NO_GtkFixed
+
 
 #else
+
+#define NO_SwtFixed
+#define NO__1swt_1fixed_1get_1type
+#define NO__1swt_1fixed_1move
+#define NO__1swt_1fixed_1restack
+#define NO__1gtk_1widget_1input_1shape_1combine_1region
 
 #define NO_GdkRGBA
 #define NO__1gtk_1widget_1draw

@@ -606,8 +606,10 @@ void resizeHandle (int width, int height) {
 	* alignment to fail. The fix is to set the child size to the size
 	* of the button.
 	*/
-	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		OS.gtk_widget_set_size_request (boxHandle, width, -1);
+	if (OS.GTK_VERSION < OS.VERSION (3, 0, 0)) {
+		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+			OS.gtk_widget_set_size_request (boxHandle, width, -1);
+		}
 	}
 }
 

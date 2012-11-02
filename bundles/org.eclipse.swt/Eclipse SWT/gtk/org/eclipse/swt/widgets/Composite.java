@@ -1138,6 +1138,10 @@ void markLayout (boolean changed, boolean all) {
 void moveAbove (long /*int*/ child, long /*int*/ sibling) {
 	if (child == sibling) return;
 	long /*int*/ parentHandle = parentingHandle ();
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		OS.swt_fixed_restack (parentHandle, child, sibling, true);
+		return;
+	}
 	GtkFixed fixed = new GtkFixed ();
 	OS.memmove (fixed, parentHandle);
 	long /*int*/ children = fixed.children;
@@ -1177,6 +1181,10 @@ void moveBelow (long /*int*/ child, long /*int*/ sibling) {
 	long /*int*/ parentHandle = parentingHandle ();
 	if (sibling == 0 && parentHandle == fixedHandle) {
 		moveAbove (child, scrolledHandle != 0  ? scrolledHandle : handle);
+		return;
+	}
+	if (OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
+		OS.swt_fixed_restack (parentHandle, child, sibling, false);
 		return;
 	}
 	GtkFixed fixed = new GtkFixed ();

@@ -17966,6 +17966,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1hide)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1input_1shape_1combine_1region
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1input_1shape_1combine_1region)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1input_1shape_1combine_1region_FUNC);
+/*
+	gtk_widget_input_shape_combine_region((GtkWidget *)arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_input_shape_combine_region)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, jintLong))fp)((GtkWidget *)arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1input_1shape_1combine_1region_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1is_1composited
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1widget_1is_1composited)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -20477,6 +20495,38 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1tab_1array_1set_1tab)
 	OS_NATIVE_ENTER(env, that, _1pango_1tab_1array_1set_1tab_FUNC);
 	pango_tab_array_set_tab((PangoTabArray *)arg0, (gint)arg1, (PangoTabAlign)arg2, (gint)arg3);
 	OS_NATIVE_EXIT(env, that, _1pango_1tab_1array_1set_1tab_FUNC);
+}
+#endif
+
+#ifndef NO__1swt_1fixed_1get_1type
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1swt_1fixed_1get_1type)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1swt_1fixed_1get_1type_FUNC);
+	rc = (jintLong)swt_fixed_get_type();
+	OS_NATIVE_EXIT(env, that, _1swt_1fixed_1get_1type_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1swt_1fixed_1move
+JNIEXPORT void JNICALL OS_NATIVE(_1swt_1fixed_1move)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
+{
+	OS_NATIVE_ENTER(env, that, _1swt_1fixed_1move_FUNC);
+	swt_fixed_move((SwtFixed*)arg0, (GtkWidget*)arg1, arg2, arg3);
+	OS_NATIVE_EXIT(env, that, _1swt_1fixed_1move_FUNC);
+}
+#endif
+
+#ifndef NO__1swt_1fixed_1restack
+JNIEXPORT void JNICALL OS_NATIVE(_1swt_1fixed_1restack)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jboolean arg3)
+{
+	OS_NATIVE_ENTER(env, that, _1swt_1fixed_1restack_FUNC);
+	swt_fixed_restack((SwtFixed*)arg0, (GtkWidget*)arg1, (GtkWidget*)arg2, arg3);
+	OS_NATIVE_EXIT(env, that, _1swt_1fixed_1restack_FUNC);
 }
 #endif
 

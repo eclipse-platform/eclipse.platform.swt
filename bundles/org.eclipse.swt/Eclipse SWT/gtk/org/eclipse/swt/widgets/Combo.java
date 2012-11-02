@@ -346,7 +346,7 @@ void clearText () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	if ((style & SWT.READ_ONLY) != 0) {
+	if ((style & SWT.READ_ONLY) != 0 || OS.GTK_VERSION >= OS.VERSION (3, 0, 0)) {
 		return computeNativeSize (handle, wHint, hHint, changed);
 	}
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;

@@ -521,6 +521,7 @@
 #define gtk_hsv_to_rgb_LIB LIB_GTK
 #define gtk_rgb_to_hsv_LIB LIB_GTK
 #define gdk_window_set_background_pattern_LIB LIB_GTK
+#define  gtk_widget_input_shape_combine_region_LIB LIB_GTK
 
 /* Field accessors */
 #if GTK_CHECK_VERSION(3,0,0)
@@ -673,3 +674,38 @@ gchar* g_utf16_offset_to_pointer(const gchar*, glong);
 glong g_utf16_strlen(const gchar*, glong max);
 glong g_utf16_offset_to_utf8_offset(const gchar*, glong);
 glong g_utf8_offset_to_utf16_offset(const gchar*, glong);
+
+#ifndef NO_SwtFixed
+
+#define SWT_TYPE_FIXED (swt_fixed_get_type ())
+#define SWT_FIXED(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), SWT_TYPE_FIXED, SwtFixed))
+#define SWT_FIXED_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), SWT_TYPE_FIXED, SwtFixedClass))
+#define SWT_IS_FIXED(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), SWT_TYPE_FIXED))
+#define SWT_IS_FIXED_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), SWT_TYPE_FIXED))
+#define SWT_FIXED_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), SWT_TYPE_FIXED, SwtFixedClass))
+
+
+typedef struct _SwtFixed SwtFixed;
+typedef struct _SwtFixedPrivate SwtFixedPrivate;
+typedef struct _SwtFixedClass SwtFixedClass;
+
+struct _SwtFixed
+{
+  GtkContainer container;
+
+  /*< private >*/
+  SwtFixedPrivate *priv;
+};
+
+struct _SwtFixedClass
+{
+  GtkContainerClass parent_class;
+};
+
+GType swt_fixed_get_type (void) G_GNUC_CONST;
+
+void swt_fixed_restack(SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, gboolean above);
+void swt_fixed_move(SwtFixed *fixed, GtkWidget *widget, gint x, gint y);
+
+#endif
+
