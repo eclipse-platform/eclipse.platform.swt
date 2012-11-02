@@ -4643,10 +4643,18 @@ public void setVisible (boolean visible) {
 		}
 		state |= HIDDEN;
 		if (fixFocus) {
-			gtk_widget_set_visible (topHandle, false);
+			if (OS.GTK3) {
+				gtk_widget_set_can_focus (topHandle, false);
+			} else {
+				gtk_widget_set_visible (topHandle, false);
+			}
 			fixFocus (control);
 			if (isDisposed ()) return;
-			gtk_widget_set_visible (topHandle, true);
+			if (OS.GTK3) {
+				gtk_widget_set_can_focus (topHandle, true);
+			} else {
+				gtk_widget_set_visible (topHandle, true);
+			}
 		}
 		OS.gtk_widget_hide (topHandle);
 		if (isDisposed ()) return;
