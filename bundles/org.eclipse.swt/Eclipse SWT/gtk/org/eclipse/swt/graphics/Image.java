@@ -411,7 +411,7 @@ public Image(Device device, Image srcImage, int flag) {
 		long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
 		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		long /*int*/ colormap = OS.gdk_colormap_get_system();
-		gdk_pixbuf_get_from_window (pixbuf, srcImage.pixmap, colormap, 0, 0, 0, 0, width, height);
+		OS.gdk_pixbuf_get_from_drawable(pixbuf, srcImage.pixmap, colormap, 0, 0, 0, 0, width, height);
 		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
 		long /*int*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
 	
@@ -887,7 +887,7 @@ void createSurface() {
 	 	long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, width, height);
 		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		long /*int*/ colormap = OS.gdk_colormap_get_system();
-		gdk_pixbuf_get_from_window (pixbuf, pixmap, colormap, 0, 0, 0, 0, width, height);
+		OS.gdk_pixbuf_get_from_drawable(pixbuf, pixmap, colormap, 0, 0, 0, 0, width, height);
 		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
 		long /*int*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);		
 		byte[] line = new byte[stride];
@@ -900,7 +900,7 @@ void createSurface() {
 		if (mask != 0 && OS.gdk_drawable_get_depth(mask) == 1) {
 			long /*int*/ maskPixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
 			if (maskPixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			gdk_pixbuf_get_from_window (maskPixbuf, mask, 0, 0, 0, 0, 0, width, height);
+			OS.gdk_pixbuf_get_from_drawable(maskPixbuf, mask, 0, 0, 0, 0, 0, width, height);
 			int maskStride = OS.gdk_pixbuf_get_rowstride(maskPixbuf);
 			long /*int*/ maskPixels = OS.gdk_pixbuf_get_pixels(maskPixbuf);
 			byte[] maskLine = new byte[maskStride];
@@ -1167,7 +1167,7 @@ public ImageData getImageData() {
  	long /*int*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
 	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	long /*int*/ colormap = OS.gdk_colormap_get_system();
-	gdk_pixbuf_get_from_window (pixbuf, pixmap, colormap, 0, 0, 0, 0, width, height);
+	OS.gdk_pixbuf_get_from_drawable(pixbuf, pixmap, colormap, 0, 0, 0, 0, width, height);
 	int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
 	long /*int*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
 	byte[] srcData = new byte[stride * height];
@@ -1689,11 +1689,4 @@ public String toString () {
 	}
 }
 
-long /*int*/ gdk_pixbuf_get_from_window(long /*int*/ dest, long /*int*/ src, long /*int*/ cmap, int src_x, int src_y, int dest_x, int dest_y, int width, int height) {
-	if (OS.GTK3) {
-		return OS.gdk_pixbuf_get_from_window (dest, src_x, src_y, width, height);
-	} else {
-		return OS.gdk_pixbuf_get_from_drawable (dest, src, cmap, src_x, src_y, dest_x, dest_y, width, height);
-	}
-}
 }
