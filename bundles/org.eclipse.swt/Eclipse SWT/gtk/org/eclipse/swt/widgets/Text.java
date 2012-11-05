@@ -1549,6 +1549,7 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 }
 
 void drawMessage (long /*int*/ cr) {
+	if (OS.GTK_VERSION >= OS.VERSION (3, 2, 0)) return;
 	if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
 		long /*int*/ str = OS.gtk_entry_get_text (handle);
 		if (!gtk_widget_has_focus (handle) && OS.strlen (str) == 0) {
@@ -2187,6 +2188,13 @@ public void setMessage (String message) {
 	checkWidget ();
 	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
 	this.message = message;
+	if (OS.GTK_VERSION >= OS.VERSION (3, 2, 0)) {
+		if ((style & SWT.SINGLE) != 0) {
+			byte [] buffer = Converter.wcsToMbcs (null, message, true);
+			OS.gtk_entry_set_placeholder_text (handle, buffer);
+			return;
+		}
+	}
 	redraw (false);
 }
 

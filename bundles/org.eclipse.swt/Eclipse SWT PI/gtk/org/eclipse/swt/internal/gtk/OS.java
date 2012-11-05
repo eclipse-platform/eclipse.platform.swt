@@ -7204,6 +7204,20 @@ public static final void gtk_entry_set_text(long /*int*/ entry, byte[] text) {
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param entry cast=(GtkEntry *)
+ * @param text cast=(const gchar *)
+ */
+public static final native void _gtk_entry_set_placeholder_text(long /*int*/ entry, byte[] text);
+public static final void gtk_entry_set_placeholder_text(long /*int*/ entry, byte[] text) {
+	lock.lock();
+	try {
+		_gtk_entry_set_placeholder_text(entry, text);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param entry cast=(GtkEntry *)
  * @param visible cast=(gboolean)
  */

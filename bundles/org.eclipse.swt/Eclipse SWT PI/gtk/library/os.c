@@ -9762,6 +9762,28 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1entry_1set_1max_1length)
 }
 #endif
 
+#ifndef NO__1gtk_1entry_1set_1placeholder_1text
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1entry_1set_1placeholder_1text)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1entry_1set_1placeholder_1text_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	gtk_entry_set_placeholder_text((GtkEntry *)arg0, (const gchar *)lparg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_entry_set_placeholder_text)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkEntry *, const gchar *))fp)((GtkEntry *)arg0, (const gchar *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1entry_1set_1placeholder_1text_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1entry_1set_1text
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1entry_1set_1text)
 	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
