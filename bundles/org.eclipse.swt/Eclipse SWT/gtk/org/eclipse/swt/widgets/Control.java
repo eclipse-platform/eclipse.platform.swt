@@ -2446,7 +2446,6 @@ public Image getBackgroundImage () {
 
 GdkColor getContextBackground () {
 	long /*int*/ fontHandle = fontHandle ();
-	OS.gtk_widget_realize (fontHandle);
 	long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
 	GdkRGBA rgba = new GdkRGBA ();
 	OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
@@ -2459,7 +2458,6 @@ GdkColor getContextBackground () {
 
 GdkColor getContextColor () {
 	long /*int*/ fontHandle = fontHandle ();
-	OS.gtk_widget_realize (fontHandle);
 	long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
 	GdkRGBA rgba = new GdkRGBA ();
 	OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
@@ -2587,11 +2585,11 @@ public Font getFont () {
 	
 long /*int*/ getFontDescription () {
 	long /*int*/ fontHandle = fontHandle ();
-	OS.gtk_widget_realize (fontHandle);
 	if (OS.GTK3) {
 		long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);	
 		return OS.gtk_style_context_get_font(context, OS.GTK_STATE_FLAG_NORMAL);
 	}
+	OS.gtk_widget_realize (fontHandle);
 	return OS.gtk_style_get_font_desc (OS.gtk_widget_get_style (fontHandle));
 }
 
