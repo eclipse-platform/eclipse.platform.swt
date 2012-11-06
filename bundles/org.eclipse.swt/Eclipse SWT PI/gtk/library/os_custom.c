@@ -475,7 +475,7 @@ static void swt_fixed_realize (GtkWidget *widget) {
 	attributes.height = allocation.height;
 	attributes.wclass = GDK_INPUT_OUTPUT;
 	attributes.visual = gtk_widget_get_visual (widget);
-	attributes.event_mask = GDK_EXPOSURE_MASK | GDK_SCROLL_MASK | GDK_SMOOTH_SCROLL_MASK | gtk_widget_get_events (widget);
+	attributes.event_mask = GDK_EXPOSURE_MASK | GDK_SCROLL_MASK | 1 << 23 /*GDK_SMOOTH_SCROLL_MASK*/ | gtk_widget_get_events (widget);
 	attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL;
 	window = gdk_window_new (gtk_widget_get_parent_window (widget), &attributes, attributes_mask);
 	gtk_widget_set_window (widget, window);
