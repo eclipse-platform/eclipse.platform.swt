@@ -1054,7 +1054,7 @@ void initAccessible() {
 	});
 }
 boolean isDropped () {
-	return popup != null && popup.getVisible ();
+	return !isDisposed() && popup.getVisible ();
 }
 public boolean isFocusControl () {
 	checkWidget();
