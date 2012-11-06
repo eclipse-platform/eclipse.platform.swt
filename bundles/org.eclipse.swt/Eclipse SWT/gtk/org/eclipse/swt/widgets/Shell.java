@@ -704,11 +704,6 @@ void createHandle (int index) {
 		} else {
 			OS.gtk_window_set_resizable (shellHandle, false);
 		}
-		vboxHandle = gtk_box_new (OS.GTK_ORIENTATION_VERTICAL, false, 0);
-		if (vboxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		createHandle (index, false, true);
-		OS.gtk_container_add (vboxHandle, scrolledHandle);
-		OS.gtk_box_set_child_packing (vboxHandle, scrolledHandle, true, true, 0, OS.GTK_PACK_END);
 		OS.gtk_window_set_title (shellHandle, new byte [1]);
 		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
 			OS.gtk_container_set_border_width (shellHandle, 1);
@@ -723,18 +718,12 @@ void createHandle (int index) {
 		if (isCustomResize ()) {
 			OS.gtk_container_set_border_width (shellHandle, BORDER);
 		} 
-	} else {
-		vboxHandle = OS.gtk_bin_get_child (shellHandle);
-		if (vboxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		long /*int*/ children = OS.gtk_container_get_children (vboxHandle);
-		if (OS.g_list_length (children) > 0) {
-			scrolledHandle = OS.g_list_data (children);
-		}
-		OS.g_list_free (children);
-		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		handle = OS.gtk_bin_get_child (scrolledHandle);
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
+	vboxHandle = gtk_box_new (OS.GTK_ORIENTATION_VERTICAL, false, 0);
+	if (vboxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	createHandle (index, false, true);
+	OS.gtk_container_add (vboxHandle, scrolledHandle);
+	OS.gtk_box_set_child_packing (vboxHandle, scrolledHandle, true, true, 0, OS.GTK_PACK_END);
 	group = OS.gtk_window_group_new ();
 	if (group == 0) error (SWT.ERROR_NO_HANDLES);
 	/*
@@ -1908,21 +1897,28 @@ public void setImeInputMode (int mode) {
 }
 
 void setInitialBounds () {
-	if ((state & FOREIGN_HANDLE) != 0) return;
-	int width = OS.gdk_screen_width () * 5 / 8;
-	int height = OS.gdk_screen_height () * 5 / 8;
-	long /*int*/ screen = OS.gdk_screen_get_default ();
-	if (screen != 0) {
-		if (OS.gdk_screen_get_n_monitors (screen) > 1) {
-			int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, paintWindow ());
-			GdkRectangle dest = new GdkRectangle ();
-			OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
-			width = dest.width * 5 / 8;
-			height = dest.height * 5 / 8;
+	int width, height;
+	if ((state & FOREIGN_HANDLE) != 0) {
+		GtkAllocation allocation = new GtkAllocation ();
+		OS.gtk_widget_get_allocation (shellHandle, allocation);
+		width = allocation.width;
+		height = allocation.height;
+	} else {
+		width = OS.gdk_screen_width () * 5 / 8;
+		height = OS.gdk_screen_height () * 5 / 8;
+		long /*int*/ screen = OS.gdk_screen_get_default ();
+		if (screen != 0) {
+			if (OS.gdk_screen_get_n_monitors (screen) > 1) {
+				int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, paintWindow ());
+				GdkRectangle dest = new GdkRectangle ();
+				OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
+				width = dest.width * 5 / 8;
+				height = dest.height * 5 / 8;
+			}
 		}
-	}
-	if ((style & SWT.RESIZE) != 0) {
-		OS.gtk_window_resize (shellHandle, width, height);
+		if ((style & SWT.RESIZE) != 0) {
+			OS.gtk_window_resize (shellHandle, width, height);
+		}
 	}
 	resizeBounds (width, height, false);
 }
@@ -2226,7 +2222,12 @@ void showWidget () {
 			display.activeShell = this;
 			display.activePending = true;
 		}
-		return;
+		long /*int*/ children = OS.gtk_container_get_children (shellHandle), list = children;
+		while (list != 0) {
+			OS.gtk_container_remove (shellHandle, OS.g_list_data (list));
+			list = OS.g_list_next(list);
+		}
+		OS.g_list_free (list);
 	}
 	OS.gtk_container_add (shellHandle, vboxHandle);
 	if (scrolledHandle != 0) OS.gtk_widget_show (scrolledHandle);
