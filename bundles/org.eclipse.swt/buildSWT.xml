@@ -962,31 +962,44 @@
 			<isset property="machine"/>
 		</condition>
 		<antcall target="init_build"/>
-		<antcall target="${build_task}"/>
+		<antcall target="${build_task}">
+			<param name="build_machine" value="${machine}"/>
+		</antcall>
+		<antcall target="build_gtk3"/>
 		<delete dir="${build_dir}" quiet="true"/>
 		<antcall target="refresh_fragment"/>
 	</target>
 	
+	<target name="build_gtk3" if="machine_gtk3">
+		<antcall target="${build_task}">
+			<param name="build_machine" value="${machine_gtk3}"/>
+			<param name="libs" value="*pi3*"/>
+			<param name="exports" value="export GTK_VERSION=3.0;"/>
+		</antcall>
+	</target>
+	
 	<target name="build_remote">
+		<property name="libs" value="*"/>
+		<property name="exports" value=""/>
 		<property name="remotebuilddir" value="~/build"/>
 		<property name="remotetmpdir" value="${remotebuilddir}/${fragment}.${TAG}"/>
 		<property name="lib_output" value="${remotetmpdir}/libs"/>
 		<property name="zip_file" value="${fragment}.${TAG}.zip"/>
-		<zip destfile="${build_dir}/${zip_file}" basedir="${build_dir}"/>
+		<zip destfile="${build_dir}/${zip_file}" basedir="${build_dir}" excludes="${zip_file}"/>
 		<scp file="${build_dir}/${zip_file}"
-			todir="swtbuild@${machine}:${remotebuilddir}" 
+			todir="swtbuild@${build_machine}:${remotebuilddir}" 
 			keyfile="${keyfile}"
 			trust="true"/>
-		<sshexec host="${machine}" 
+		<sshexec host="${build_machine}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
-	 		command="rm -rf ${remotetmpdir}; mkdir ${remotetmpdir}; mkdir ${lib_output}; cd ${remotetmpdir}; unzip -aa ${remotebuilddir}/${zip_file}; export MODEL=${swt.arch}; export OUTPUT_DIR=${lib_output}; if sh build.sh ${targets}; then cd; else cd; rm -rf ${remotetmpdir}; rm ${remotebuilddir}/${zip_file}; exit 1; fi"/>
-		<scp file="swtbuild@${machine}:${lib_output}/*"
+	 		command="rm -rf ${remotetmpdir}; mkdir ${remotetmpdir}; mkdir ${lib_output}; cd ${remotetmpdir}; unzip -aa ${remotebuilddir}/${zip_file}; ${exports} export MODEL=${swt.arch}; export OUTPUT_DIR=${lib_output}; if sh build.sh ${targets}; then cd; else cd; rm -rf ${remotetmpdir}; rm ${remotebuilddir}/${zip_file}; exit 1; fi"/>
+		<scp file="swtbuild@${build_machine}:${lib_output}/${libs}"
 			todir="${output_dir}"
 			keyfile="${keyfile}"
 			trust="true"/>
-		<sshexec host="${machine}" 
+		<sshexec host="${build_machine}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
