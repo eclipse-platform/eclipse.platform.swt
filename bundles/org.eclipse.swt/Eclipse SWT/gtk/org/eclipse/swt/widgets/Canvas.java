@@ -333,10 +333,10 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 			}
 		}	
 		OS.gdk_window_invalidate_region(window, invalidateRegion, all);
-		OS.gdk_region_destroy (visibleRegion);
-		OS.gdk_region_destroy (copyRegion);
-		OS.gdk_region_destroy (invalidateRegion);
 	}
+	OS.gdk_region_destroy (visibleRegion);
+	OS.gdk_region_destroy (copyRegion);
+	OS.gdk_region_destroy (invalidateRegion);
 	if (all) {
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {
