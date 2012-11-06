@@ -179,10 +179,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 	    if ((state & DrawData.FOCUSED) != 0) {
 	    	int child_displacement_y = theme.getWidgetProperty(buttonHandle, "child-displacement-y");
 	    	int child_displacement_x = theme.getWidgetProperty(buttonHandle, "child-displacement-x");
-	    	int displace_focus = 0;
-	    	if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
-	    		displace_focus = theme.getWidgetProperty(buttonHandle, "displace-focus");		    	
-	    	}
+	    	int displace_focus = theme.getWidgetProperty(buttonHandle, "displace-focus");		    	
 	    	int interior_focus = theme.getWidgetProperty(buttonHandle, "interior-focus");
 	    	
 	    	if (interior_focus != 0) {
