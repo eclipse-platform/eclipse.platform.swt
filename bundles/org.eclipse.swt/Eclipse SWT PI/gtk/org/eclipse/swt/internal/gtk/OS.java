@@ -5630,6 +5630,16 @@ public static final void gdk_window_restack(long /*int*/ window, long /*int*/ si
 		lock.unlock();
 	}
 }
+/** @param window cast=(GdkWindow *) */
+public static final native void _gdk_window_scroll(long /*int*/ window, int dx, int dy);
+public static final void gdk_window_scroll(long /*int*/ window, int dx, int dy) {
+	lock.lock();
+	try {
+		_gdk_window_scroll(window, dx, dy);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @method flags=dynamic */
 public static final native void _gdk_window_set_background_pattern(long /*int*/ window, long /*int*/ pattern);
 public static final void gdk_window_set_background_pattern(long /*int*/ window, long /*int*/ pattern) {

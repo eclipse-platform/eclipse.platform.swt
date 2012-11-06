@@ -582,6 +582,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1window_1remove_1filter",
 	"_1gdk_1window_1resize",
 	"_1gdk_1window_1restack",
+	"_1gdk_1window_1scroll",
 	"_1gdk_1window_1set_1back_1pixmap",
 	"_1gdk_1window_1set_1background_1pattern",
 	"_1gdk_1window_1set_1cursor",

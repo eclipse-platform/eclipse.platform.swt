@@ -7635,6 +7635,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1restack)
 }
 #endif
 
+#ifndef NO__1gdk_1window_1scroll
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1scroll)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1window_1scroll_FUNC);
+	gdk_window_scroll((GdkWindow *)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, _1gdk_1window_1scroll_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1window_1set_1back_1pixmap
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1set_1back_1pixmap)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jboolean arg2)
