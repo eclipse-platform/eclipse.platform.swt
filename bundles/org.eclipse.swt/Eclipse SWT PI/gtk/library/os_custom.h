@@ -330,7 +330,6 @@
 #define gtk_widget_set_visible_LIB LIB_GTK
 #define gtk_widget_shape_combine_region_LIB LIB_GTK
 #define gtk_range_get_slider_range_LIB LIB_GTK
-#define gdk_pango_context_set_colormap_LIB LIB_GDK
 #define gdk_x11_screen_get_window_manager_name_LIB LIB_GDK
 #define gdk_x11_screen_lookup_visual_LIB LIB_GDK
 #define gdk_x11_window_lookup_for_display_LIB LIB_GDK

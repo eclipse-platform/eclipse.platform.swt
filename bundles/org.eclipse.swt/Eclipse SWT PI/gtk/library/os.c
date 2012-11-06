@@ -6156,24 +6156,6 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1pango_1context_1get)
 }
 #endif
 
-#ifndef NO__1gdk_1pango_1context_1set_1colormap
-JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1pango_1context_1set_1colormap)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gdk_1pango_1context_1set_1colormap_FUNC);
-/*
-	gdk_pango_context_set_colormap((PangoContext *)arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_pango_context_set_colormap)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(PangoContext *, jintLong))fp)((PangoContext *)arg0, arg1);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gdk_1pango_1context_1set_1colormap_FUNC);
-}
-#endif
-
 #ifndef NO__1gdk_1pango_1layout_1get_1clip_1region
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gdk_1pango_1layout_1get_1clip_1region)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2, jintArray arg3, jint arg4)

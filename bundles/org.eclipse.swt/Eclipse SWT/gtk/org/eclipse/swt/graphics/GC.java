@@ -651,12 +651,6 @@ void createLayout() {
 	data.layout = layout;
 	OS.pango_context_set_language(context, OS.gtk_get_default_language());
 	OS.pango_context_set_base_dir(context, (data.style & SWT.MIRRORED) != 0 ? OS.PANGO_DIRECTION_RTL : OS.PANGO_DIRECTION_LTR);
-	/*
-	 * Colormap is automatically set for GTK 2.6.0 and newer.
-	 */
-	if (OS.GTK_VERSION < OS.VERSION(2, 6, 0)) {
-	    OS.gdk_pango_context_set_colormap(context, OS.gdk_colormap_get_system());	
-	}
 	OS.pango_layout_set_auto_dir(layout, false);
 }
 

@@ -501,7 +501,6 @@ typedef enum {
 	_1gdk_1keyval_1to_1lower_FUNC,
 	_1gdk_1keyval_1to_1unicode_FUNC,
 	_1gdk_1pango_1context_1get_FUNC,
-	_1gdk_1pango_1context_1set_1colormap_FUNC,
 	_1gdk_1pango_1layout_1get_1clip_1region_FUNC,
 	_1gdk_1pixbuf_1copy_1area_FUNC,
 	_1gdk_1pixbuf_1get_1from_1drawable_FUNC,

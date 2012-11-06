@@ -491,7 +491,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1keyval_1to_1lower",
 	"_1gdk_1keyval_1to_1unicode",
 	"_1gdk_1pango_1context_1get",
-	"_1gdk_1pango_1context_1set_1colormap",
 	"_1gdk_1pango_1layout_1get_1clip_1region",
 	"_1gdk_1pixbuf_1copy_1area",
 	"_1gdk_1pixbuf_1get_1from_1drawable",

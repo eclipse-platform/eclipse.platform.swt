@@ -4531,19 +4531,6 @@ public static final long /*int*/ gdk_pango_context_get() {
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic 
- * @param context cast=(PangoContext *)
- */
-public static final native void _gdk_pango_context_set_colormap(long /*int*/ context, long /*int*/ colormap);
-public static final void gdk_pango_context_set_colormap(long /*int*/ context, long /*int*/ colormap) {
-	lock.lock();
-	try {
-		_gdk_pango_context_set_colormap(context, colormap);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param layout cast=(PangoLayout *) */
 public static final native long /*int*/ _gdk_pango_layout_get_clip_region(long /*int*/ layout, int x_origin, int y_origin, int[] index_ranges, int n_ranges);
 public static final long /*int*/ gdk_pango_layout_get_clip_region(long /*int*/ layout, int x_origin, int y_origin, int[] index_ranges, int n_ranges) {
