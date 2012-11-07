@@ -20,7 +20,7 @@ import org.eclipse.swt.internal.*;
 public class OS extends C {
 	static {
 		boolean loaded = false;
-		String prop = "org.eclipse.swt.gtk3";
+		String prop = "SWT_GTK3";
 		if (System.getProperty(prop) != null || OS.getenv(ascii(prop)) != 0) {
 			try {
 				Library.loadLibrary("swt-pi3");
