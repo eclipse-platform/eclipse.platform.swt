@@ -16672,6 +16672,26 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1clear)
 }
 #endif
 
+#ifndef NO__1gtk_1tree_1view_1column_1get_1button
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1get_1button)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1column_1get_1button_FUNC);
+/*
+	rc = (jintLong)gtk_tree_view_column_get_button((GtkTreeViewColumn *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_tree_view_column_get_button)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkTreeViewColumn *))fp)((GtkTreeViewColumn *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1column_1get_1button_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1tree_1view_1column_1get_1cell_1renderers
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1get_1cell_1renderers)
 	(JNIEnv *env, jclass that, jintLong arg0)

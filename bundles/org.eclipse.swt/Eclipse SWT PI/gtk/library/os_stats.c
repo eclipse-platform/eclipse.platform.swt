@@ -1228,6 +1228,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1tree_1view_1column_1cell_1get_1size",
 	"_1gtk_1tree_1view_1column_1cell_1set_1cell_1data",
 	"_1gtk_1tree_1view_1column_1clear",
+	"_1gtk_1tree_1view_1column_1get_1button",
 	"_1gtk_1tree_1view_1column_1get_1cell_1renderers",
 	"_1gtk_1tree_1view_1column_1get_1fixed_1width",
 	"_1gtk_1tree_1view_1column_1get_1reorderable",

@@ -672,13 +672,17 @@ void createItem (TableColumn column, int index) {
 	column.labelHandle = labelHandle;
 	column.imageHandle = imageHandle;	
 	OS.gtk_tree_view_column_set_widget (column.handle, boxHandle);
-	long /*int*/ widget = OS.gtk_widget_get_parent (boxHandle);
-	while (widget != handle) {
-		if (OS.GTK_IS_BUTTON (widget)) {
-			column.buttonHandle = widget;
-			break;
+	if (OS.GTK3) {
+		column.buttonHandle = OS.gtk_tree_view_column_get_button(column.handle);
+	} else {
+		long /*int*/ widget = OS.gtk_widget_get_parent (boxHandle);
+		while (widget != handle) {
+			if (OS.GTK_IS_BUTTON (widget)) {
+				column.buttonHandle = widget;
+				break;
+			}
+			widget = OS.gtk_widget_get_parent (widget);
 		}
-		widget = OS.gtk_widget_get_parent (widget);
 	}
 	if (columnCount == columns.length) {
 		TableColumn [] newColumns = new TableColumn [columns.length + 4];

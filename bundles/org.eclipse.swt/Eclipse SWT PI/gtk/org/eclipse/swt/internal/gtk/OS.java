@@ -12408,6 +12408,19 @@ public static final void gtk_tree_view_column_clear(long /*int*/ tree_column) {
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic 
+ * @param column cast=(GtkTreeViewColumn *) 
+ */
+public static final native long /*int*/_gtk_tree_view_column_get_button(long /*int*/ column);
+public static final long /*int*/ gtk_tree_view_column_get_button(long /*int*/ column) {
+	lock.lock();
+	try {
+		return _gtk_tree_view_column_get_button(column);
+	} finally {
+		lock.unlock();
+	}
+}
 /** 
  * @method flags=dynamic
  * @param tree_column cast=(GtkTreeViewColumn *) 
