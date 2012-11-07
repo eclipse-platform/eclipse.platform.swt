@@ -1013,6 +1013,7 @@ public static final int /*long*/ sel_availableFonts = sel_registerName("availabl
 public static final int /*long*/ sel_availableMembersOfFontFamily_ = sel_registerName("availableMembersOfFontFamily:");
 public static final int /*long*/ sel_availableTypeFromArray_ = sel_registerName("availableTypeFromArray:");
 public static final int /*long*/ sel_backgroundColor = sel_registerName("backgroundColor");
+public static final int /*long*/ sel_backingScaleFactor = sel_registerName("backingScaleFactor");
 public static final int /*long*/ sel_badgeLabel = sel_registerName("badgeLabel");
 public static final int /*long*/ sel_baselineOffsetInLayoutManager_glyphIndex_ = sel_registerName("baselineOffsetInLayoutManager:glyphIndex:");
 public static final int /*long*/ sel_becomeFirstResponder = sel_registerName("becomeFirstResponder");
