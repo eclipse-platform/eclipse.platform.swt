@@ -668,12 +668,17 @@ void createColumn (TreeColumn column, int index) {
 		OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_GROW_ONLY);
 	} else {
 		OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
-		if (columnCount != 0) OS.gtk_tree_view_column_set_visible (columnHandle, false);
 	}
 	OS.gtk_tree_view_column_set_resizable (columnHandle, true);
 	OS.gtk_tree_view_column_set_clickable (columnHandle, true);
 	OS.gtk_tree_view_column_set_min_width (columnHandle, 0);
 	OS.gtk_tree_view_insert_column (handle, columnHandle, index);
+	/*
+	* Bug in GTK3.  The column header has the wrong CSS styling if it is hidden
+	* when inserting to the tree widget.  The fix is to hide the column only 
+	* after it is inserted.
+	*/
+	if (columnCount != 0) OS.gtk_tree_view_column_set_visible (columnHandle, false);
 	if (column != null) {
 		column.handle = columnHandle;
 		column.modelIndex = modelIndex;
