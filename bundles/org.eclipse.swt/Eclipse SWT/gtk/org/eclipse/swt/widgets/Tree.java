@@ -2677,8 +2677,21 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 				contentWidth [0] += imageWidth;
 				GC gc = new GC (this);
 				if ((drawState & SWT.SELECTED) != 0) {
-					gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
-					gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
+					Color background, foreground;
+					if (OS.GTK_WIDGET_HAS_FOCUS (handle)) {
+						background = display.getSystemColor (SWT.COLOR_LIST_SELECTION);
+						foreground = display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT);
+					} else {
+						/*
+						 * Feature in GTK. When the widget doesn't have focus, then
+						 * gtk_paint_flat_box () changes the background color state_type
+						 * to GTK_STATE_ACTIVE. The fix is to use the same values in the GC.
+						 */
+						background = Color.gtk_new (display, display.COLOR_LIST_SELECTION_INACTIVE);
+						foreground = Color.gtk_new (display, display.COLOR_LIST_SELECTION_TEXT_INACTIVE);
+					}
+					gc.setBackground (background);
+					gc.setForeground (foreground);
 				} else {
 					gc.setBackground (item.getBackground (columnIndex));
 					Color foreground = drawForeground != null ? Color.gtk_new (display, drawForeground) : item.getForeground (columnIndex);
@@ -2970,6 +2983,10 @@ void setFontDescription (int /*long*/ font) {
 			columns[i].setFontDescription (font);
 		}
 	}
+}
+
+void setForegroundColor (GdkColor color) {
+	setForegroundColor (handle, color, false);
 }
 
 /**

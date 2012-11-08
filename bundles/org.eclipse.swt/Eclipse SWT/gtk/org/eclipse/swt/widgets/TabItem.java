@@ -288,8 +288,8 @@ void setFontDescription (int /*long*/ font) {
 
 void setForegroundColor (GdkColor color) {
 	/* Don't set the color in vbox handle (it doesn't draw) */
-	setForegroundColor (labelHandle, color);
-	setForegroundColor (imageHandle, color);
+	setForegroundColor (labelHandle, color, false);
+	setForegroundColor (imageHandle, color, false);
 }
 
 public void setImage (Image image) {

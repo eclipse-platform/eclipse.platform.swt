@@ -1314,6 +1314,10 @@ public void setItems (String [] items) {
 	OS.g_free (iter);
 }
 
+void setForegroundColor (GdkColor color) {
+	setForegroundColor (handle, color, false);
+}
+
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains selected.
