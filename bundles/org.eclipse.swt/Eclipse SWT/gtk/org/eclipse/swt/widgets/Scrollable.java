@@ -280,22 +280,49 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 		ScrollBar scrollBar;
 		GdkEventScroll gdkEvent = new GdkEventScroll ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventScroll.sizeof);
-		if (gdkEvent.direction == OS.GDK_SCROLL_UP || gdkEvent.direction == OS.GDK_SCROLL_DOWN) {
-			scrollBar = verticalBar;
+		if (gdkEvent.direction == OS.GDK_SCROLL_SMOOTH) {
+			if (gdkEvent.delta_x != 0) {
+				scrollBar = horizontalBar;
+				if (scrollBar != null && !gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
+					GtkAdjustment adjustment = new GtkAdjustment ();
+					gtk_adjustment_get (scrollBar.adjustmentHandle, adjustment);
+					double delta = Math.pow(adjustment.page_size, 2.0 / 3.0) * gdkEvent.delta_x;
+					int value = (int) Math.max(adjustment.lower,
+							Math.min(adjustment.upper - adjustment.page_size, adjustment.value + delta));
+					OS.gtk_adjustment_set_value (scrollBar.adjustmentHandle, value);
+					result = 1;
+				}
+			}
+			if (gdkEvent.delta_y != 0) {
+				scrollBar = verticalBar;
+				if (scrollBar != null && !gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
+					GtkAdjustment adjustment = new GtkAdjustment ();
+					gtk_adjustment_get (scrollBar.adjustmentHandle, adjustment);
+					double delta = Math.pow(adjustment.page_size, 2.0 / 3.0) * gdkEvent.delta_y;
+					int value = (int) Math.max(adjustment.lower,
+							Math.min(adjustment.upper - adjustment.page_size, adjustment.value + delta));
+					OS.gtk_adjustment_set_value (scrollBar.adjustmentHandle, value);
+					result = 1;
+				}
+			}
 		} else {
-			scrollBar = horizontalBar;
-		}
-		if (scrollBar != null && !gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
-			GtkAdjustment adjustment = new GtkAdjustment ();
-			gtk_adjustment_get (scrollBar.adjustmentHandle, adjustment);
-			/* Calculate wheel delta to match GTK+ 2.4 and higher */
-			int wheel_delta = (int) Math.pow(adjustment.page_size, 2.0 / 3.0);
-			if (gdkEvent.direction == OS.GDK_SCROLL_UP || gdkEvent.direction == OS.GDK_SCROLL_LEFT)
-				wheel_delta = -wheel_delta;
-			int value = (int) Math.max(adjustment.lower,
-					Math.min(adjustment.upper - adjustment.page_size, adjustment.value + wheel_delta));
-			OS.gtk_adjustment_set_value (scrollBar.adjustmentHandle, value);
-			return 1;
+			if (gdkEvent.direction == OS.GDK_SCROLL_UP || gdkEvent.direction == OS.GDK_SCROLL_DOWN) {
+				scrollBar = verticalBar;
+			} else {
+				scrollBar = horizontalBar;
+			}
+			if (scrollBar != null && !gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
+				GtkAdjustment adjustment = new GtkAdjustment ();
+				gtk_adjustment_get (scrollBar.adjustmentHandle, adjustment);
+				/* Calculate wheel delta to match GTK+ 2.4 and higher */
+				int wheel_delta = (int) Math.pow(adjustment.page_size, 2.0 / 3.0);
+				if (gdkEvent.direction == OS.GDK_SCROLL_UP || gdkEvent.direction == OS.GDK_SCROLL_LEFT)
+					wheel_delta = -wheel_delta;
+				int value = (int) Math.max(adjustment.lower,
+						Math.min(adjustment.upper - adjustment.page_size, adjustment.value + wheel_delta));
+				OS.gtk_adjustment_set_value (scrollBar.adjustmentHandle, value);
+				return 1;
+			}
 		}
 	}
 	return result;

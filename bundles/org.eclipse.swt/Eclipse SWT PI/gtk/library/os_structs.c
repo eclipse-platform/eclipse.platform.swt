@@ -761,7 +761,7 @@ void setGdkEventPropertyFields(JNIEnv *env, jobject lpObject, GdkEventProperty *
 typedef struct GdkEventScroll_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID window, send_event, time, x, y, state, direction, device, x_root, y_root;
+	jfieldID window, send_event, time, x, y, state, direction, device, x_root, y_root, delta_x, delta_y;
 } GdkEventScroll_FID_CACHE;
 
 GdkEventScroll_FID_CACHE GdkEventScrollFc;
@@ -781,6 +781,8 @@ void cacheGdkEventScrollFields(JNIEnv *env, jobject lpObject)
 	GdkEventScrollFc.device = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "device", I_J);
 	GdkEventScrollFc.x_root = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "x_root", "D");
 	GdkEventScrollFc.y_root = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "y_root", "D");
+	GdkEventScrollFc.delta_x = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "delta_x", "D");
+	GdkEventScrollFc.delta_y = (*env)->GetFieldID(env, GdkEventScrollFc.clazz, "delta_y", "D");
 	GdkEventScrollFc.cached = 1;
 }
 
@@ -798,6 +800,12 @@ GdkEventScroll *getGdkEventScrollFields(JNIEnv *env, jobject lpObject, GdkEventS
 	lpStruct->device = (GdkDevice *)(*env)->GetIntLongField(env, lpObject, GdkEventScrollFc.device);
 	lpStruct->x_root = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventScrollFc.x_root);
 	lpStruct->y_root = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventScrollFc.y_root);
+#ifdef GTK3
+	lpStruct->delta_x = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventScrollFc.delta_x);
+#endif
+#ifdef GTK3
+	lpStruct->delta_y = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventScrollFc.delta_y);
+#endif
 	return lpStruct;
 }
 
@@ -815,6 +823,12 @@ void setGdkEventScrollFields(JNIEnv *env, jobject lpObject, GdkEventScroll *lpSt
 	(*env)->SetIntLongField(env, lpObject, GdkEventScrollFc.device, (jintLong)lpStruct->device);
 	(*env)->SetDoubleField(env, lpObject, GdkEventScrollFc.x_root, (jdouble)lpStruct->x_root);
 	(*env)->SetDoubleField(env, lpObject, GdkEventScrollFc.y_root, (jdouble)lpStruct->y_root);
+#ifdef GTK3
+	(*env)->SetDoubleField(env, lpObject, GdkEventScrollFc.delta_x, (jdouble)lpStruct->delta_x);
+#endif
+#ifdef GTK3
+	(*env)->SetDoubleField(env, lpObject, GdkEventScrollFc.delta_y, (jdouble)lpStruct->delta_y);
+#endif
 }
 #endif
 

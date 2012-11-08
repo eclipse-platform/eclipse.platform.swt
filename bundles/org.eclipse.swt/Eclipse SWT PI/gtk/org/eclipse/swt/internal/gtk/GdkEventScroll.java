@@ -36,5 +36,9 @@ public class GdkEventScroll extends GdkEvent {
 	public double x_root;
 	/** @field cast=(gdouble) */
 	public double y_root;
+	/** @field cast=(gdouble),exclude=#ifdef GTK3 */
+	public double delta_x;
+	/** @field cast=(gdouble),exclude=#ifdef GTK3 */
+	public double delta_y;
 	public static final int sizeof = OS.GdkEventScroll_sizeof();
 }
