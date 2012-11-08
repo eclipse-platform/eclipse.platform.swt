@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -113,6 +113,7 @@ public class ScrolledComposite extends Composite {
 	boolean expandVertical = false;
 	boolean alwaysShowScroll = false;
 	boolean showFocusedControl = false;
+	boolean showNextFocusedControl = true;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -173,9 +174,18 @@ public ScrolledComposite(Composite parent, int style) {
 	
 	filter = new Listener() {
 		public void handleEvent(Event event) {
-			if (event.widget instanceof Control) {
-				Control control = (Control) event.widget;
-				if (contains(control)) showControl(control);
+			if (event.type == SWT.FocusIn) {
+				if (!showNextFocusedControl) {
+					showNextFocusedControl = true;
+				} else if (event.widget instanceof Control) {
+					Control control = (Control) event.widget;
+					if (contains(control)) showControl(control);
+				}
+			} else {
+				Widget w = event.widget;
+				if (w instanceof Control) {
+					showNextFocusedControl = w.getDisplay().getActiveShell() == ((Control) w).getShell(); 
+				}
 			}
 		}
 	};
@@ -183,6 +193,7 @@ public ScrolledComposite(Composite parent, int style) {
 	addDisposeListener(new DisposeListener() {
 		public void widgetDisposed(DisposeEvent e) {
 			getDisplay().removeFilter(SWT.FocusIn, filter);
+			getDisplay().removeFilter(SWT.FocusOut, filter);
 		}
 	});
 }
@@ -645,9 +656,11 @@ public void setShowFocusedControl(boolean show) {
 	if (showFocusedControl == show) return;
 	Display display = getDisplay();
 	display.removeFilter(SWT.FocusIn, filter);
+	display.removeFilter(SWT.FocusOut, filter);
 	showFocusedControl = show;
 	if (!showFocusedControl) return;
 	display.addFilter(SWT.FocusIn, filter);
+	display.addFilter(SWT.FocusOut, filter);
 	Control control = display.getFocusControl();
 	if (contains(control)) showControl(control);
 }
