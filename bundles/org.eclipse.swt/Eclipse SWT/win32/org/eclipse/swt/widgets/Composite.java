@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,10 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class are controls which are capable
@@ -407,7 +407,7 @@ void fixTabList (Control control) {
  * will be one of the following constants defined in class
  * <code>SWT</code>:
  * <code>INHERIT_NONE</code>, <code>INHERIT_DEFAULT</code>,
- * <code>INHERTIT_FORCE</code>.
+ * <code>INHERIT_FORCE</code>.
  *
  * @return the background mode
  *
