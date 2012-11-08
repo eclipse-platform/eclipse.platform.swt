@@ -1736,8 +1736,8 @@ void setFontDescription (int /*long*/ font) {
 }
 
 void setForegroundColor (GdkColor color) {
-	super.setForegroundColor (color);
-	if (entryHandle != 0) setForegroundColor (entryHandle, color);
+	super.setForegroundColor (handle, color, false);
+	if (entryHandle != 0) setForegroundColor (entryHandle, color, false);
 	OS.g_object_set (textRenderer, OS.foreground_gdk, color, 0);
 }
 
