@@ -218,6 +218,8 @@ void createHandle (int index) {
 		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (handle, labelHandle);
 		OS.gtk_container_add (handle, imageHandle);
+		OS.gtk_box_set_child_packing(handle, labelHandle, true, true, 0, OS.GTK_PACK_START);
+		OS.gtk_box_set_child_packing(handle, imageHandle, true, true, 0, OS.GTK_PACK_START);
 	}
 	if ((style & SWT.BORDER) != 0) {
 		frameHandle = OS.gtk_frame_new (null);
