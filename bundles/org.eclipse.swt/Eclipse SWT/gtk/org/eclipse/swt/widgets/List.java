@@ -1241,14 +1241,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	* after it has been resized.
 	*/
 	OS.gtk_widget_realize (handle);
-	/*
-	* Bug in GTK.  An empty GtkTreeView fails to repaint the focus rectangle
-	* correctly when resized on versions before 2.6.0.  The fix is to force
-	* the widget to redraw.
-	*/
-	if (OS.GTK_VERSION < OS.VERSION (2, 6, 0) && OS.gtk_tree_model_iter_n_children (modelHandle, 0) == 0) {
-		redraw (false);
-	}
 	return result;
 }
 
