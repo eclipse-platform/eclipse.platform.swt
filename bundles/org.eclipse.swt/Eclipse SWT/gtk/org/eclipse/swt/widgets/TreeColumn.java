@@ -352,16 +352,6 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 				lastButton = eventButton;
 				break;
 			}
-			case OS.GDK_MOTION_NOTIFY: {
-				/*
-				* Bug in GTK.  Dragging a column in a GtkTreeView causes a clicked 
-				* signal to be emitted even though the mouse button was never released.
-				* The fix to ignore the signal if the current GDK event is a motion notify.
-				* The GTK bug was fixed in version 2.6
-				*/
-				if (OS.GTK_VERSION < OS.VERSION (2, 6, 0)) postEvent = false;
-				break;
-			}
 		}
 	}
 	if (postEvent) sendSelectionEvent (doubleClick ? SWT.DefaultSelection : SWT.Selection);
