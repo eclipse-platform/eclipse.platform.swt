@@ -4175,6 +4175,19 @@ public static final boolean gdk_event_get_state(long /*int*/ event, int[] pmod) 
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ * @param event cast=(GdkEvent *)
+ */
+public static final native boolean _gdk_event_get_scroll_deltas(long /*int*/ event, double[] delta_x, double[] delta_y);
+public static final boolean gdk_event_get_scroll_deltas(long /*int*/ event, double[] delta_x, double[] delta_y) {
+	lock.lock();
+	try {
+		return _gdk_event_get_scroll_deltas(event, delta_x, delta_y);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param event cast=(GdkEvent *) */
 public static final native int _gdk_event_get_time(long /*int*/ event);
 public static final int gdk_event_get_time(long /*int*/ event) {

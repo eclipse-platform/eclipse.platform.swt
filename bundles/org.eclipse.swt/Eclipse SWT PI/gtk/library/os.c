@@ -5632,6 +5632,33 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1event_1get_1scroll_1deltas
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1event_1get_1scroll_1deltas)
+	(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1, jdoubleArray arg2)
+{
+	jdouble *lparg1=NULL;
+	jdouble *lparg2=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1event_1get_1scroll_1deltas_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)gdk_event_get_scroll_deltas((GdkEvent *)arg0, lparg1, lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gdk_event_get_scroll_deltas)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GdkEvent *, jdouble *, jdouble *))fp)((GdkEvent *)arg0, lparg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1event_1get_1scroll_1deltas_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1event_1get_1state
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1event_1get_1state)
 	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1)

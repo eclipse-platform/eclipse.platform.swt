@@ -281,28 +281,31 @@ long /*int*/ gtk_scroll_event (long /*int*/ widget, long /*int*/ eventPtr) {
 		GdkEventScroll gdkEvent = new GdkEventScroll ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventScroll.sizeof);
 		if (gdkEvent.direction == OS.GDK_SCROLL_SMOOTH) {
-			if (gdkEvent.delta_x != 0) {
-				scrollBar = horizontalBar;
-				if (scrollBar != null && !gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
-					GtkAdjustment adjustment = new GtkAdjustment ();
-					gtk_adjustment_get (scrollBar.adjustmentHandle, adjustment);
-					double delta = Math.pow(adjustment.page_size, 2.0 / 3.0) * gdkEvent.delta_x;
-					int value = (int) Math.max(adjustment.lower,
-							Math.min(adjustment.upper - adjustment.page_size, adjustment.value + delta));
-					OS.gtk_adjustment_set_value (scrollBar.adjustmentHandle, value);
-					result = 1;
+			double[] delta_x = new double[1], delta_y = new double [1];
+			if (OS.gdk_event_get_scroll_deltas (eventPtr, delta_x, delta_y)) {
+				if (delta_x [0] != 0) {
+					scrollBar = horizontalBar;
+					if (scrollBar != null && !gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
+						GtkAdjustment adjustment = new GtkAdjustment ();
+						gtk_adjustment_get (scrollBar.adjustmentHandle, adjustment);
+						double delta = Math.pow(adjustment.page_size, 2.0 / 3.0) * delta_x [0];
+						int value = (int) Math.max(adjustment.lower,
+								Math.min(adjustment.upper - adjustment.page_size, adjustment.value + delta));
+						OS.gtk_adjustment_set_value (scrollBar.adjustmentHandle, value);
+						result = 1;
+					}
 				}
-			}
-			if (gdkEvent.delta_y != 0) {
-				scrollBar = verticalBar;
-				if (scrollBar != null && !gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
-					GtkAdjustment adjustment = new GtkAdjustment ();
-					gtk_adjustment_get (scrollBar.adjustmentHandle, adjustment);
-					double delta = Math.pow(adjustment.page_size, 2.0 / 3.0) * gdkEvent.delta_y;
-					int value = (int) Math.max(adjustment.lower,
-							Math.min(adjustment.upper - adjustment.page_size, adjustment.value + delta));
-					OS.gtk_adjustment_set_value (scrollBar.adjustmentHandle, value);
-					result = 1;
+				if (delta_y [0] != 0) {
+					scrollBar = verticalBar;
+					if (scrollBar != null && !gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {
+						GtkAdjustment adjustment = new GtkAdjustment ();
+						gtk_adjustment_get (scrollBar.adjustmentHandle, adjustment);
+						double delta = Math.pow(adjustment.page_size, 2.0 / 3.0) * delta_y [0];
+						int value = (int) Math.max(adjustment.lower,
+								Math.min(adjustment.upper - adjustment.page_size, adjustment.value + delta));
+						OS.gtk_adjustment_set_value (scrollBar.adjustmentHandle, value);
+						result = 1;
+					}
 				}
 			}
 		} else {

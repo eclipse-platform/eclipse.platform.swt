@@ -460,6 +460,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1event_1free",
 	"_1gdk_1event_1get",
 	"_1gdk_1event_1get_1coords",
+	"_1gdk_1event_1get_1scroll_1deltas",
 	"_1gdk_1event_1get_1state",
 	"_1gdk_1event_1get_1time",
 	"_1gdk_1event_1handler_1set",

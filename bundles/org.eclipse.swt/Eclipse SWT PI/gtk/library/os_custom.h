@@ -523,6 +523,7 @@
 #define gdk_window_set_background_pattern_LIB LIB_GTK
 #define gtk_widget_input_shape_combine_region_LIB LIB_GTK
 #define gtk_entry_set_placeholder_text_LIB LIB_GTK
+#define gdk_event_get_scroll_deltas_LIB LIB_GTK
 
 /* Field accessors */
 #if GTK_CHECK_VERSION(3,0,0)
