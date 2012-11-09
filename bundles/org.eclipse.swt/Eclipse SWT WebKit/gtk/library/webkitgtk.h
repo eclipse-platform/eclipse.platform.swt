@@ -18,15 +18,21 @@
 
 #include <dlfcn.h>
 #include <string.h>
+#include <stdlib.h>
 #include <glib-object.h>
 
 #define WebKitGTK_LOAD_FUNCTION(var, name) \
 	static int initialized = 0; \
 	static void *var = NULL; \
 	if (!initialized) { \
-		void* handle = dlopen("libwebkit-1.0.so.2", LOAD_FLAGS); /* webkitgtk 1.2.x lib */ \
-		if (!handle) { \
-			handle = dlopen("libwebkitgtk-1.0.so.0", LOAD_FLAGS); /* webkitgtk >= 1.4.x lib */ \
+		void* handle ; \
+		if (getenv("SWT_GTK3")) { \
+			handle = dlopen("libwebkitgtk-3.0.so.0", LOAD_FLAGS); /* webkitgtk >= 3.x lib */ \
+		} else { \
+    		handle = dlopen("libwebkit-1.0.so.2", LOAD_FLAGS); /* webkitgtk 1.2.x lib */ \
+	    	if (!handle) { \
+		    	handle = dlopen("libwebkitgtk-1.0.so.0", LOAD_FLAGS); /* webkitgtk >= 1.4.x lib */ \
+		    } \
 		} \
 		if (handle) { \
 			var = dlsym(handle, #name); \
