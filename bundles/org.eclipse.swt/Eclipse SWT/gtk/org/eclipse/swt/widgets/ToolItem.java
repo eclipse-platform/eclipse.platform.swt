@@ -38,7 +38,7 @@ import org.eclipse.swt.events.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class ToolItem extends Item {
-	long /*int*/ arrowHandle, arrowBoxHandle, labelHandle, imageHandle;
+	long /*int*/ arrowHandle, labelHandle, imageHandle;
 	long /*int*/ eventHandle, proxyMenuItem;
 	ToolBar parent;
 	Control control;
@@ -195,41 +195,18 @@ void createHandle (int index) {
 			OS.gtk_separator_tool_item_set_draw (handle, true);
 			break;
 		case SWT.DROP_DOWN:
-			if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
-				handle = OS.gtk_menu_tool_button_new (0, null);
-				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-				/*
-				 * Feature in GTK. The arrow button of DropDown tool-item is 
-				 * disabled when it does not contain menu. The fix is to
-				 * find the arrow button handle and enable it.
-				 */
-				long /*int*/ child = OS.gtk_bin_get_child (handle);
-				long /*int*/ list = OS.gtk_container_get_children (child);
-				arrowHandle = OS.g_list_nth_data (list, 1);
-				OS.gtk_widget_set_sensitive (arrowHandle, true);
-				OS.gtk_widget_set_size_request(OS.gtk_bin_get_child(arrowHandle), 8, 6);
-			} else {
-				/*
-				 * GTK does not support GtkMenuToolButton until 2.6.
-				 * So, we try to emulate it on the un-supported version.
-				 */
-				handle = OS.gtk_tool_button_new (0, null);
-				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-				arrowBoxHandle = gtk_box_new (OS.GTK_ORIENTATION_HORIZONTAL, false, 0);
-				if (arrowBoxHandle == 0) error(SWT.ERROR_NO_HANDLES);
-				arrowHandle = OS.gtk_arrow_new (OS.GTK_ARROW_DOWN, OS.GTK_SHADOW_NONE);
-				if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
-				OS.gtk_widget_set_size_request (arrowHandle, 8, 6);
-				OS.gtk_container_add (arrowBoxHandle, labelHandle);	
-				OS.gtk_container_add (arrowBoxHandle, arrowHandle);
-				/*
-				 * As we are try to emulate GtkMenuToolButton and in order
-				 * to display both the label and image, it is required
-				 * the set the toolitem as important. This will entitle
-				 * to display the label all the times.    
-				 */
-				OS.gtk_tool_item_set_is_important (handle, true);
-			}
+			handle = OS.gtk_menu_tool_button_new (0, null);
+			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			/*
+			 * Feature in GTK. The arrow button of DropDown tool-item is 
+			 * disabled when it does not contain menu. The fix is to
+			 * find the arrow button handle and enable it.
+			 */
+			long /*int*/ child = OS.gtk_bin_get_child (handle);
+			long /*int*/ list = OS.gtk_container_get_children (child);
+			arrowHandle = OS.g_list_nth_data (list, 1);
+			OS.gtk_widget_set_sensitive (arrowHandle, true);
+			OS.gtk_widget_set_size_request(OS.gtk_bin_get_child(arrowHandle), 8, 6);
 			break;
 		case SWT.RADIO:
 			/*
@@ -519,23 +496,7 @@ long /*int*/ gtk_clicked (long /*int*/ widget) {
 				case OS.GDK_2BUTTON_PRESS: 
 				case OS.GDK_BUTTON_RELEASE: {
 					boolean isArrow = false;
-					if (OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {
-						double [] x_win = new double [1];
-						double [] y_win = new double [1];
-						OS.gdk_event_get_coords (eventPtr, x_win, y_win);
-						int x = 0;
-						int width = 0;
-						GtkAllocation allocation = new GtkAllocation ();
-						gtk_widget_get_allocation (arrowHandle, allocation);
-						x = allocation.x;
-						width = allocation.width;
-						gtk_widget_get_allocation (handle, allocation);
-						x -= allocation.x;
-						if ((((parent.style & SWT.RIGHT_TO_LEFT) == 0) && x <= (int)x_win [0])
-								|| (((parent.style & SWT.RIGHT_TO_LEFT) != 0) && (int)x_win [0] <= x + width)) {
-							isArrow = true;
-						}
-					} else if (widget == arrowHandle) {
+					if (widget == arrowHandle) {
 						isArrow = true;
 						topHandle = widget;
 						/*
@@ -718,7 +679,7 @@ void hookEvents () {
 	 * the listener to child (GtkButton) of the tool-item.
 	 */
 	eventHandle = OS.gtk_bin_get_child(handle);
-	if ((style & SWT.DROP_DOWN) != 0 && OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
+	if ((style & SWT.DROP_DOWN) != 0) {
 		long /*int*/ list = OS.gtk_container_get_children(eventHandle);
 		eventHandle = OS.g_list_nth_data(list, 0);
 		if (arrowHandle != 0) OS.g_signal_connect_closure (arrowHandle, OS.clicked, display.closures [CLICKED], false);
@@ -1130,13 +1091,6 @@ public void setText (String string) {
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
-	if ((style & SWT.DROP_DOWN) != 0 && OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {
-		if (string.length () != 0) {
-			OS.gtk_widget_show (labelHandle);
-		} else {
-			OS.gtk_widget_hide (labelHandle);
-		}
-	}
 	/*
 	* If Text/Image of a tool-item changes, then it is 
 	* required to reset the proxy menu. Otherwise, the 
@@ -1195,10 +1149,8 @@ void setToolTipText (Shell shell, String newString) {
 	if (toolTipText == newString || (toolTipText != null && toolTipText.equals(newString))) return;
 	long /*int*/ child = OS.gtk_bin_get_child (handle);
 	if ((style & SWT.DROP_DOWN) != 0) {
-		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
-			long /*int*/ list = OS.gtk_container_get_children (child);
-			child = OS.g_list_nth_data (list, 0);
-		}
+		long /*int*/ list = OS.gtk_container_get_children (child);
+		child = OS.g_list_nth_data (list, 0);
 		if (arrowHandle != 0) shell.setToolTipText (arrowHandle, newString);
 	}
 	shell.setToolTipText (child != 0 ? child : handle, newString);
@@ -1233,10 +1185,6 @@ void showWidget (int index) {
 	if (handle != 0) OS.gtk_widget_show (handle);
 	if (labelHandle != 0) OS.gtk_widget_show (labelHandle);
 	if (imageHandle != 0) OS.gtk_widget_show (imageHandle);
-	if ((style & SWT.DROP_DOWN) != 0 && OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {
-		if (arrowBoxHandle != 0) OS.gtk_widget_show (arrowBoxHandle);
-		if (arrowHandle != 0) OS.gtk_widget_show (arrowHandle);
-	}
 	OS.gtk_toolbar_insert(parent.handle, handle, index);
 }
 }
