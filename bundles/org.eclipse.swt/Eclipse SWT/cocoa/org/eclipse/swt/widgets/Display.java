@@ -4967,7 +4967,7 @@ void applicationSendEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event
 	if (performKeyEquivalent(window, nsEvent)) return;
 	
 	int type = (int)/*64*/nsEvent.type ();
-	boolean down = false;
+	boolean activate = false, down = false;
 	switch (type) {
 		case OS.NSLeftMouseDown:
 		case OS.NSRightMouseDown:
@@ -4976,6 +4976,7 @@ void applicationSendEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event
 		case OS.NSLeftMouseUp:
 		case OS.NSRightMouseUp:
 		case OS.NSOtherMouseUp:
+			activate = true;
 		case OS.NSLeftMouseDragged:
 		case OS.NSRightMouseDragged:
 		case OS.NSOtherMouseDragged:
@@ -4991,13 +4992,17 @@ void applicationSendEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event
 				if (shell != null) {
 					Shell modalShell = shell.getModalShell ();
 					if (modalShell != null) {
-						if (down) {
-							if (!application.isActive()) {
+						if (activate) {
+							if (application.isActive()) {
+								modalShell.window.orderFrontRegardless();
+							} else {
 								application.activateIgnoringOtherApps(true);
 							}
-							NSRect rect = window.contentView().frame();
-							NSPoint pt = window.convertBaseToScreen(nsEvent.locationInWindow());
-							if (OS.NSPointInRect(pt, rect)) beep ();
+							if (down) {
+								NSRect rect = window.contentView().frame();
+								NSPoint pt = window.convertBaseToScreen(nsEvent.locationInWindow());
+								if (OS.NSPointInRect(pt, rect)) beep ();
+							}
 						}
 						return;
 					}
