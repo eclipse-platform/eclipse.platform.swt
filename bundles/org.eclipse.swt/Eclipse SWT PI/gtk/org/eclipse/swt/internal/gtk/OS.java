@@ -7080,6 +7080,19 @@ public static final int gtk_entry_text_index_to_layout_index (long /*int*/ entry
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ * @param entry cast=(GtkEntry *)
+ */
+public static final native int _gtk_entry_get_icon_area(long /*int*/ entry, int icon_pos, GdkRectangle icon_area);
+public static final int gtk_entry_get_icon_area(long /*int*/ entry, int icon_pos, GdkRectangle icon_area) {
+	lock.lock();
+	try {
+		return _gtk_entry_get_icon_area(entry, icon_pos, icon_area);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param entry cast=(GtkEntry *) */
 public static final native int _gtk_entry_get_max_length(long /*int*/ entry);
 public static final int gtk_entry_get_max_length(long /*int*/ entry) {
@@ -10720,6 +10733,16 @@ public static final void gtk_style_context_get_padding(long /*int*/ context, int
 	lock.lock();
 	try {
 		_gtk_style_context_get_padding(context, state, padding);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_style_context_get_border(long /*int*/ context, int state, GtkBorder padding);
+public static final void gtk_style_context_get_border(long /*int*/ context, int state, GtkBorder padding) {
+	lock.lock();
+	try {
+		_gtk_style_context_get_border(context, state, padding);
 	} finally {
 		lock.unlock();
 	}

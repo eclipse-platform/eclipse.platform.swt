@@ -518,11 +518,13 @@
 #define gtk_style_context_add_class_LIB LIB_GTK
 #define gtk_style_context_get_border_color_LIB LIB_GTK
 #define gtk_style_context_get_padding_LIB LIB_GTK
+#define gtk_style_context_get_border_LIB LIB_GTK
 #define gtk_hsv_to_rgb_LIB LIB_GTK
 #define gtk_rgb_to_hsv_LIB LIB_GTK
 #define gdk_window_set_background_pattern_LIB LIB_GTK
 #define gtk_widget_input_shape_combine_region_LIB LIB_GTK
 #define gtk_entry_set_placeholder_text_LIB LIB_GTK
+#define gtk_entry_get_icon_area_LIB LIB_GTK
 #define gdk_event_get_scroll_deltas_LIB LIB_GTK
 
 /* Field accessors */

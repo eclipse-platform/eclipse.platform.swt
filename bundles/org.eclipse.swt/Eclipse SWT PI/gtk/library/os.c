@@ -9584,6 +9584,30 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1editable_1set_1position)
 }
 #endif
 
+#ifndef NO__1gtk_1entry_1get_1icon_1area
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1entry_1get_1icon_1area)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+{
+	GdkRectangle _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1entry_1get_1icon_1area_FUNC);
+	if (arg2) if ((lparg2 = getGdkRectangleFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
+	rc = (jint)gtk_entry_get_icon_area((GtkEntry *)arg0, arg1, lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_entry_get_icon_area)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(GtkEntry *, jint, GdkRectangle *))fp)((GtkEntry *)arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) setGdkRectangleFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, _1gtk_1entry_1get_1icon_1area_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1entry_1get_1inner_1border
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1entry_1get_1inner_1border)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -14671,6 +14695,28 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1get_1background_1color)
 fail:
 	if (arg2 && lparg2) setGdkRGBAFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1background_1color_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1style_1context_1get_1border
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1get_1border)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jobject arg2)
+{
+	GtkBorder _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1context_1get_1border_FUNC);
+	if (arg2) if ((lparg2 = getGtkBorderFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
+	gtk_style_context_get_border(arg0, arg1, lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_style_context_get_border)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, GtkBorder *))fp)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) setGtkBorderFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1context_1get_1border_FUNC);
 }
 #endif
 

@@ -569,16 +569,39 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	Rectangle trim = super.computeTrim (x, y, width, height);
 	int xborder = 0, yborder = 0;
 	if ((style & SWT.SINGLE) != 0) {
-		if ((style & SWT.BORDER) != 0) {
-			Point thickness = getThickness (handle);
-			xborder += thickness.x;
-			yborder += thickness.y;
+		if (OS.GTK3) {
+			GtkBorder tmp = new GtkBorder();
+			long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+			OS.gtk_style_context_get_padding (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+			trim.x -= tmp.left;
+			trim.y -= tmp.top;
+			trim.width += tmp.left + tmp.right;
+			trim.height += tmp.top + tmp.bottom;
+			if ((style & SWT.BORDER) != 0) {
+				OS.gtk_style_context_get_border (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+				trim.x -= tmp.left;
+				trim.y -= tmp.top;
+				trim.width += tmp.left + tmp.right;
+				trim.height += tmp.top + tmp.bottom;
+			}
+			GdkRectangle icon_area = new GdkRectangle();
+			OS.gtk_entry_get_icon_area(handle, OS.GTK_ENTRY_ICON_PRIMARY, icon_area);
+			trim.x -= icon_area.width;
+			trim.width += icon_area.width;
+			OS.gtk_entry_get_icon_area(handle, OS.GTK_ENTRY_ICON_SECONDARY, icon_area);
+			trim.width += icon_area.width;
+		} else {
+			if ((style & SWT.BORDER) != 0) {
+				Point thickness = getThickness (handle);
+				xborder += thickness.x;
+				yborder += thickness.y;
+			}
+			GtkBorder innerBorder = Display.getEntryInnerBorder (handle);
+			trim.x -= innerBorder.left;
+			trim.y -= innerBorder.top;
+			trim.width += innerBorder.left + innerBorder.right;
+			trim.height += innerBorder.top + innerBorder.bottom;
 		}
-		GtkBorder innerBorder = Display.getEntryInnerBorder (handle);
-		trim.x -= innerBorder.left;
-		trim.y -= innerBorder.top;
-		trim.width += innerBorder.left + innerBorder.right;
-		trim.height += innerBorder.top + innerBorder.bottom;
 	} else {
 		int borderWidth = OS.gtk_container_get_border_width (handle);  
 		xborder += borderWidth;
