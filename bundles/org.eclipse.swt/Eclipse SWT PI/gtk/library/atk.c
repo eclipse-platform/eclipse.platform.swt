@@ -201,18 +201,6 @@ JNIEXPORT jint JNICALL ATK_NATIVE(AtkTextRectangle_1sizeof)
 }
 #endif
 
-#ifndef NO_GTK_1TYPE_1ACCESSIBLE
-JNIEXPORT jintLong JNICALL ATK_NATIVE(GTK_1TYPE_1ACCESSIBLE)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	ATK_NATIVE_ENTER(env, that, GTK_1TYPE_1ACCESSIBLE_FUNC);
-	rc = (jintLong)GTK_TYPE_ACCESSIBLE;
-	ATK_NATIVE_EXIT(env, that, GTK_1TYPE_1ACCESSIBLE_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1ATK_1ACTION_1GET_1IFACE
 JNIEXPORT jintLong JNICALL ATK_NATIVE(_1ATK_1ACTION_1GET_1IFACE)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -317,18 +305,6 @@ JNIEXPORT jintLong JNICALL ATK_NATIVE(_1ATK_1VALUE_1GET_1IFACE)
 	ATK_NATIVE_ENTER(env, that, _1ATK_1VALUE_1GET_1IFACE_FUNC);
 	rc = (jintLong)ATK_VALUE_GET_IFACE(arg0);
 	ATK_NATIVE_EXIT(env, that, _1ATK_1VALUE_1GET_1IFACE_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1GTK_1ACCESSIBLE
-JNIEXPORT jintLong JNICALL ATK_NATIVE(_1GTK_1ACCESSIBLE)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	ATK_NATIVE_ENTER(env, that, _1GTK_1ACCESSIBLE_FUNC);
-	rc = (jintLong)GTK_ACCESSIBLE(arg0);
-	ATK_NATIVE_EXIT(env, that, _1GTK_1ACCESSIBLE_FUNC);
 	return rc;
 }
 #endif

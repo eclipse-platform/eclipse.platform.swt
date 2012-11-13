@@ -255,6 +255,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(GTK_1TOOLTIPS_1TIP_1WINDOW)
 }
 #endif
 
+#ifndef NO_GTK_1TYPE_1ACCESSIBLE
+JNIEXPORT jintLong JNICALL OS_NATIVE(GTK_1TYPE_1ACCESSIBLE)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, GTK_1TYPE_1ACCESSIBLE_FUNC);
+	rc = (jintLong)GTK_TYPE_ACCESSIBLE;
+	OS_NATIVE_EXIT(env, that, GTK_1TYPE_1ACCESSIBLE_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GTK_1WIDGET_1HEIGHT
 JNIEXPORT jint JNICALL OS_NATIVE(GTK_1WIDGET_1HEIGHT)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1229,6 +1241,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1GString_1str)
 	OS_NATIVE_ENTER(env, that, _1GString_1str_FUNC);
 	rc = (jintLong)((GString *)arg0)->str;
 	OS_NATIVE_EXIT(env, that, _1GString_1str_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1GTK_1ACCESSIBLE
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1GTK_1ACCESSIBLE)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1ACCESSIBLE_FUNC);
+	rc = (jintLong)GTK_ACCESSIBLE(arg0);
+	OS_NATIVE_EXIT(env, that, _1GTK_1ACCESSIBLE_FUNC);
 	return rc;
 }
 #endif
