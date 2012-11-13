@@ -198,8 +198,6 @@ public static final native int AtkTextRectangle_sizeof ();
 /** Natives */
 
 /** @method flags=const */
-public static final native long /*int*/ GTK_TYPE_ACCESSIBLE ();
-/** @method flags=const */
 public static final native long /*int*/ ATK_TYPE_ACTION ();
 /** @method flags=const */
 public static final native long /*int*/ ATK_TYPE_COMPONENT ();
@@ -287,15 +285,6 @@ public static final long /*int*/ ATK_VALUE_GET_IFACE (long /*int*/ handle) {
 	lock.lock();
 	try {
 		return _ATK_VALUE_GET_IFACE(handle);
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native long /*int*/ _GTK_ACCESSIBLE (long /*int*/ handle);
-public static final long /*int*/ GTK_ACCESSIBLE (long /*int*/ handle) {
-	lock.lock();
-	try {
-		return _GTK_ACCESSIBLE(handle);
 	} finally {
 		lock.unlock();
 	}

@@ -1488,6 +1488,9 @@ public static final long /*int*/ GDK_TYPE_PIXBUF() {
 		lock.unlock();
 	}
 }
+/** @method flags=const */
+public static final native long /*int*/ GTK_TYPE_ACCESSIBLE ();
+public static final native long /*int*/ _GTK_ACCESSIBLE (long /*int*/ handle);
 public static final native boolean _GTK_IS_ACCEL_LABEL(long /*int*/ obj);
 public static final boolean GTK_IS_ACCEL_LABEL(long /*int*/ obj) {
 	lock.lock();
