@@ -354,7 +354,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int[] w = new int [1], h = new int [1];
 	OS.gtk_widget_realize (entryHandle);
 	long /*int*/ layout = OS.gtk_entry_get_layout (entryHandle);
-	OS.pango_layout_get_size (layout, w, h);
+	OS.pango_layout_get_pixel_size (layout, w, h);
 	int xborder = Display.INNER_BORDER, yborder = Display.INNER_BORDER;
 	Point thickness = getThickness (entryHandle);
 	xborder += thickness.x;
@@ -366,8 +366,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		xborder += property [0];
 		yborder += property [0];
 	}
-	int width = OS.PANGO_PIXELS (w [0]) + xborder * 2;
-	int height = OS.PANGO_PIXELS (h [0]) + yborder * 2;
+	int width = w [0] + xborder * 2;
+	int height = h [0] + yborder * 2;
 	GtkRequisition arrowRequesition = new GtkRequisition ();
 	gtk_widget_get_preferred_size (buttonHandle, arrowRequesition);
 	GtkRequisition listRequesition = new GtkRequisition ();

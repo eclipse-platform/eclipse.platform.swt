@@ -1496,6 +1496,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1pango_1layout_1get_1line",
 	"_1pango_1layout_1get_1line_1count",
 	"_1pango_1layout_1get_1log_1attrs",
+	"_1pango_1layout_1get_1pixel_1size",
 	"_1pango_1layout_1get_1size",
 	"_1pango_1layout_1get_1spacing",
 	"_1pango_1layout_1get_1tabs",

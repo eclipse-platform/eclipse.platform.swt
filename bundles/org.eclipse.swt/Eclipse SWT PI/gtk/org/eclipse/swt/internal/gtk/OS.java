@@ -15496,6 +15496,20 @@ public static final void pango_layout_get_size(long /*int*/ layout, int[] width,
 		lock.unlock();
 	}
 }
+/**
+ * @param layout cast=(PangoLayout *)
+ * @param width cast=(int *)
+ * @param height cast=(int *)
+ */
+public static final native void _pango_layout_get_pixel_size(long /*int*/ layout, int[] width, int[] height);
+public static final void pango_layout_get_pixel_size(long /*int*/ layout, int[] width, int[] height) {
+	lock.lock();
+	try {
+		_pango_layout_get_pixel_size(layout, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param layout cast=(PangoLayout*) */
 public static final native int _pango_layout_get_spacing(long /*int*/ layout);
 public static final int pango_layout_get_spacing(long /*int*/ layout) {

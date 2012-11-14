@@ -1506,6 +1506,7 @@ typedef enum {
 	_1pango_1layout_1get_1line_FUNC,
 	_1pango_1layout_1get_1line_1count_FUNC,
 	_1pango_1layout_1get_1log_1attrs_FUNC,
+	_1pango_1layout_1get_1pixel_1size_FUNC,
 	_1pango_1layout_1get_1size_FUNC,
 	_1pango_1layout_1get_1spacing_FUNC,
 	_1pango_1layout_1get_1tabs_FUNC,

@@ -140,7 +140,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			OS.pango_layout_set_width (labelLayout, -1);
 		}
 		int [] w = new int [1], h = new int [1];
-		OS.pango_layout_get_size (labelLayout, w, h);
+		OS.pango_layout_get_pixel_size (labelLayout, w, h);
 		OS.pango_layout_set_width (labelLayout, pangoWidth);
 		if (frameHandle != 0) {
 			int [] labelWidth = new int [1], labelHeight = new int [1];
@@ -153,8 +153,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		} else { 
 			size = new Point (0,0);
 		}
-		size.x += wHint == SWT.DEFAULT ? OS.PANGO_PIXELS(w [0]) : wHint;
-		size.y += hHint == SWT.DEFAULT ? OS.PANGO_PIXELS(h [0]) : hHint;
+		size.x += wHint == SWT.DEFAULT ? w [0] : wHint;
+		size.y += hHint == SWT.DEFAULT ? h [0] : hHint;
 	} else {
 		if (frameHandle != 0) {
 			int [] reqWidth = new int [1], reqHeight = new int [1];

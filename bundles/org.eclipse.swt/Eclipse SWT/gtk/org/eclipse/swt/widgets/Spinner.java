@@ -227,10 +227,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	byte [] buffer2 = new byte [length];
 	OS.memmove (buffer2, ptr, length);	
 	OS.pango_layout_set_text (layout, buffer1, buffer1.length);
-	OS.pango_layout_get_size (layout, w, h);
+	OS.pango_layout_get_pixel_size (layout, w, h);
 	OS.pango_layout_set_text (layout, buffer2, buffer2.length);
-	int width = OS.PANGO_PIXELS (w [0]);
-	int height = OS.PANGO_PIXELS (h [0]);
+	int width = w [0];
+	int height = h [0];
 	width = wHint == SWT.DEFAULT ? width : wHint;
 	height = hHint == SWT.DEFAULT ? height : hHint;
 	Rectangle trim = computeTrim (0, 0, width, height);

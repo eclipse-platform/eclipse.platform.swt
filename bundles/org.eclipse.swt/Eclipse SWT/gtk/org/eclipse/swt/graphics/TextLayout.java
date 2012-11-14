@@ -2213,8 +2213,8 @@ int width () {
 	int wrapWidth = OS.pango_layout_get_width(layout);
 	if (wrapWidth != -1) return OS.PANGO_PIXELS(wrapWidth); 
 	int[] w = new int[1], h = new int[1];
-	OS.pango_layout_get_size(layout, w, h);
-	return OS.PANGO_PIXELS(w[0]);
+	OS.pango_layout_get_pixel_size(layout, w, h);
+	return w[0];
 }
 
 } 

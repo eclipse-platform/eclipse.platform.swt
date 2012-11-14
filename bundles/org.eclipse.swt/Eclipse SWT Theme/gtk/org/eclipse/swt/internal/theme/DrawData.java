@@ -122,7 +122,7 @@ void drawText(Theme theme, String text, int flags, GC gc, Rectangle bounds) {
 	byte[] buffer = Converter.wcsToMbcs(null, text, true);
 	long /*int*/ layout = OS.gtk_widget_create_pango_layout(widget, buffer);
 	int[] width = new int[1], height = new int[1];
-	OS.pango_layout_get_size(layout, width, height);
+	OS.pango_layout_get_pixel_size(layout, width, height);
 	OS.pango_layout_set_width(layout, bounds.width * OS.PANGO_SCALE);
 	int x = bounds.x;
 	int y = bounds.y;
@@ -136,10 +136,10 @@ void drawText(Theme theme, String text, int flags, GC gc, Rectangle bounds) {
 		OS.pango_layout_set_alignment(layout, OS.PANGO_ALIGN_RIGHT);
 	}
 	if ((flags & DrawData.DRAW_VCENTER) != 0) {
-		y += (bounds.height - OS.PANGO_PIXELS(height[0])) / 2;
+		y += (bounds.height - height[0]) / 2;
 	}
 	if ((flags & DrawData.DRAW_BOTTOM) != 0) {
-		y += bounds.height - OS.PANGO_PIXELS(height[0]);
+		y += bounds.height - height[0];
 	}
 	int state_type = getStateType(DrawData.WIDGET_WHOLE);
 	byte[] detail = Converter.wcsToMbcs(null, "label", true);
@@ -192,9 +192,9 @@ Rectangle measureText(Theme theme, String text, int flags, GC gc, Rectangle boun
 		OS.pango_layout_set_alignment(layout, OS.PANGO_ALIGN_RIGHT);
 	}
 	int[] width = new int[1], height = new int[1];
-	OS.pango_layout_get_size(layout, width, height);
+	OS.pango_layout_get_pixel_size(layout, width, height);
 	OS.g_object_unref(layout);
-	return new Rectangle(0, 0, OS.PANGO_PIXELS(width[0]), OS.PANGO_PIXELS(height[0]));
+	return new Rectangle(0, 0, width[0], height[0]);
 }
 
 void gtk_render_frame (long /*int*/ style, long /*int*/ window, int state_type, int shadow_type, GdkRectangle area, long /*int*/ widget, byte[] detail, int x , int y, int width, int height) {

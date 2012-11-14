@@ -536,7 +536,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if ((style & SWT.SINGLE) != 0) {
 		OS.gtk_widget_realize (handle);
 		long /*int*/ layout = OS.gtk_entry_get_layout (handle);
-		OS.pango_layout_get_size (layout, w, h);
+		OS.pango_layout_get_pixel_size (layout, w, h);
 	} else {
 		byte [] start =  new byte [ITER_SIZEOF], end  =  new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_bounds (bufferHandle, start, end);
@@ -544,17 +544,17 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		long /*int*/ layout = OS.gtk_widget_create_pango_layout (handle, text);
 		OS.g_free (text);
 		OS.pango_layout_set_width (layout, wHint * OS.PANGO_SCALE);
-		OS.pango_layout_get_size (layout, w, h);
+		OS.pango_layout_get_pixel_size (layout, w, h);
 		OS.g_object_unref (layout);
 	}
-	int width = OS.PANGO_PIXELS (w [0]);
-	int height = OS.PANGO_PIXELS (h [0]);
+	int width = w [0];
+	int height = h [0];
 	if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, message, true);
 		long /*int*/ layout = OS.gtk_widget_create_pango_layout (handle, buffer);
-		OS.pango_layout_get_size (layout, w, h);
+		OS.pango_layout_get_pixel_size (layout, w, h);
 		OS.g_object_unref (layout);
-		width = Math.max (width, OS.PANGO_PIXELS (w [0]));
+		width = Math.max (width, w [0]);
 	}
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;

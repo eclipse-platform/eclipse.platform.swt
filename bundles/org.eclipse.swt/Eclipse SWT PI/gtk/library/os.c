@@ -20201,6 +20201,23 @@ fail:
 }
 #endif
 
+#ifndef NO__1pango_1layout_1get_1pixel_1size
+JNIEXPORT void JNICALL OS_NATIVE(_1pango_1layout_1get_1pixel_1size)
+	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1pango_1layout_1get_1pixel_1size_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	pango_layout_get_pixel_size((PangoLayout *)arg0, (int *)lparg1, (int *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1pango_1layout_1get_1pixel_1size_FUNC);
+}
+#endif
+
 #ifndef NO__1pango_1layout_1get_1size
 JNIEXPORT void JNICALL OS_NATIVE(_1pango_1layout_1get_1size)
 	(JNIEnv *env, jclass that, jintLong arg0, jintArray arg1, jintArray arg2)

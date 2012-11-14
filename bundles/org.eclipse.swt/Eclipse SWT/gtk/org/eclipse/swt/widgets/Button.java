@@ -231,11 +231,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			OS.pango_layout_set_width (labelLayout, -1);
 		}
 		int [] w = new int [1], h = new int [1];
-		OS.pango_layout_get_size (labelLayout, w, h);
+		OS.pango_layout_get_pixel_size (labelLayout, w, h);
 		OS.pango_layout_set_width (labelLayout, pangoWidth);
 		size = new Point(0, 0);
-		size.x += wHint == SWT.DEFAULT ? OS.PANGO_PIXELS(w [0]) + imageWidth + trimWidth : wHint;
-		size.y += hHint == SWT.DEFAULT ? Math.max(Math.max(imageHeight, indicatorHeight), OS.PANGO_PIXELS(h [0])) + trimHeight : hHint;
+		size.x += wHint == SWT.DEFAULT ? w [0] + imageWidth + trimWidth : wHint;
+		size.y += hHint == SWT.DEFAULT ? Math.max(Math.max(imageHeight, indicatorHeight), h [0]) + trimHeight : hHint;
 	} else {
 		size = computeNativeSize (handle, wHint, hHint, changed);
 	}
@@ -776,7 +776,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		int pangoWidth = OS.pango_layout_get_width (labelLayout);
 		OS.pango_layout_set_width (labelLayout, -1);
 		int [] w = new int [1], h = new int [1];
-		OS.pango_layout_get_size (labelLayout, w, h);
+		OS.pango_layout_get_pixel_size (labelLayout, w, h);
 		OS.pango_layout_set_width (labelLayout, pangoWidth);
 		int imageWidth = 0;
 		if (gtk_widget_get_visible (imageHandle)) {
@@ -787,7 +787,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			OS.g_object_get (boxHandle, OS.spacing, spacing, 0);
 			imageWidth += spacing [0];
 		}
-		OS.gtk_widget_set_size_request (labelHandle, Math.min(OS.PANGO_PIXELS(w [0]), boxWidth - imageWidth), -1);
+		OS.gtk_widget_set_size_request (labelHandle, Math.min(w [0], boxWidth - imageWidth), -1);
 		/*
 		* Bug in GTK.  Setting the size request should invalidate the label's
 		* layout, but it does not.  The fix is to resize the label directly. 

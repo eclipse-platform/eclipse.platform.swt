@@ -409,13 +409,13 @@ Point getSize (int maxWidth) {
 	int [] w = new int [1], h = new int [1];
 	if (layoutText != 0) {
 		OS.pango_layout_set_width (layoutText, -1);
-		OS.pango_layout_get_size (layoutText, w, h);
-		textWidth = OS.PANGO_PIXELS (w [0]);
+		OS.pango_layout_get_pixel_size (layoutText, w, h);
+		textWidth = w [0];
 	}
 	if (layoutMessage != 0) {
 		OS.pango_layout_set_width (layoutMessage, -1);
-		OS.pango_layout_get_size (layoutMessage, w, h);
-		messageWidth = OS.PANGO_PIXELS (w [0]);
+		OS.pango_layout_get_pixel_size (layoutMessage, w, h);
+		messageWidth = w [0];
 	}
 	int messageTrim = 2 * INSET + 2 * BORDER + 2 * PADDING;
 	boolean hasImage = layoutText != 0 && (style & (SWT.ICON_ERROR | SWT.ICON_INFORMATION | SWT.ICON_WARNING)) != 0;
@@ -424,13 +424,13 @@ Point getSize (int maxWidth) {
 	int textHeight = 0, messageHeight = 0;
 	if (layoutText != 0) {
 		OS.pango_layout_set_width (layoutText, (maxWidth - textTrim) * OS.PANGO_SCALE);
-		OS.pango_layout_get_size (layoutText, w, h);
-		textHeight = OS.PANGO_PIXELS (h [0]);
+		OS.pango_layout_get_pixel_size (layoutText, w, h);
+		textHeight = h [0];
 	}
 	if (layoutMessage != 0) {
 		OS.pango_layout_set_width (layoutMessage, (maxWidth - messageTrim) * OS.PANGO_SCALE);
-		OS.pango_layout_get_size (layoutMessage, w, h);
-		messageHeight = OS.PANGO_PIXELS (h [0]);
+		OS.pango_layout_get_pixel_size (layoutMessage, w, h);
+		messageHeight = h [0];
 	}
 	int height = 2 * BORDER + 2 * PADDING + messageHeight;
 	if (layoutText != 0) height += Math.max (IMAGE_SIZE, textHeight) + 2 * PADDING;
@@ -533,8 +533,8 @@ void drawTooltip (long /*int*/ cr) {
 			OS.gdk_cairo_set_source_color(cairo,foreground.handle);
 			Cairo.cairo_move_to(cairo, x,y );
 			OS.pango_cairo_show_layout(cairo, layoutText);
-			OS.pango_layout_get_size (layoutText, w, h);
-			y += 2 * PADDING + Math.max (IMAGE_SIZE, OS.PANGO_PIXELS (h [0]));
+			OS.pango_layout_get_pixel_size (layoutText, w, h);
+			y += 2 * PADDING + Math.max (IMAGE_SIZE, h [0]);
 		}
 		if (layoutMessage != 0) {
 			x = BORDER + PADDING + INSET;
@@ -576,8 +576,8 @@ void drawTooltip (long /*int*/ cr) {
 		OS.gdk_gc_set_foreground (gdkGC, foreground.handle);
 		OS.gdk_draw_layout (window, gdkGC, x, y, layoutText);
 		int [] w = new int [1], h = new int [1];
-		OS.pango_layout_get_size (layoutText, w, h);
-		y += 2 * PADDING + Math.max (IMAGE_SIZE, OS.PANGO_PIXELS (h [0]));
+		OS.pango_layout_get_pixel_size (layoutText, w, h);
+		y += 2 * PADDING + Math.max (IMAGE_SIZE, h [0]);
 	}
 	if (layoutMessage != 0) {
 		x = BORDER + PADDING + INSET;
