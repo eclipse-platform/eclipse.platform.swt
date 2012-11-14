@@ -4972,7 +4972,7 @@ void applicationSendEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event
 		case OS.NSLeftMouseDown:
 		case OS.NSRightMouseDown:
 		case OS.NSOtherMouseDown:
-			down = true;
+			activate = down = true;
 		case OS.NSLeftMouseUp:
 		case OS.NSRightMouseUp:
 		case OS.NSOtherMouseUp:
