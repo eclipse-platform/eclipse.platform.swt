@@ -140,11 +140,15 @@ void createHandle (int index) {
 	}
 	/*
 	* Bug in GTK.  GTK will segment fault if gtk_widget_reparent() is called
-	* on a toolbar or on a widget hierarchy containing a toolbar when the icon
+	* on a tool bar or on a widget hierarchy containing a tool bar when the icon
 	* size is not GTK_ICON_SIZE_LARGE_TOOLBAR.  The fix is to set the icon
 	* size to GTK_ICON_SIZE_LARGE_TOOLBAR.
+	* 
+	* Note that the segmentation fault does not happen on GTK 3, but the 
+	* tool bar preferred size is too big with GTK_ICON_SIZE_LARGE_TOOLBAR
+	* when the tool bar item has no image or text.
 	*/
-	OS.gtk_toolbar_set_icon_size (handle, OS.GTK_ICON_SIZE_LARGE_TOOLBAR);
+	OS.gtk_toolbar_set_icon_size (handle, OS.GTK3 ? OS.GTK_ICON_SIZE_SMALL_TOOLBAR : OS.GTK_ICON_SIZE_LARGE_TOOLBAR);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
