@@ -612,6 +612,17 @@ void checkBackground () {
 	} while (true);
 }
 
+void checkForeground () {
+	/*
+	* Feature in GTK 3. The widget foreground is inherited from the immediate
+	* parent. This is not the expected behavior for SWT. The fix is to avoid
+	* the inheritance by explicitly setting the default foreground on the widget.
+	*/
+	if (OS.GTK3) {
+		setForegroundColor (topHandle (), display.COLOR_WIDGET_FOREGROUND);
+	}
+}
+
 void checkBorder () {
 	if (getBorderWidth () == 0) style &= ~SWT.BORDER;
 }
@@ -629,6 +640,7 @@ void createWidget (int index) {
 	checkOrientation (parent);
 	super.createWidget (index);
 	checkBackground ();
+	checkForeground ();
 	if ((state & PARENT_BACKGROUND) != 0) setParentBackground ();
 	checkBuffered ();
 	showWidget ();
