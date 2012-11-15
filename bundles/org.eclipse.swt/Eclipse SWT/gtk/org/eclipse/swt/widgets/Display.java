@@ -2281,6 +2281,7 @@ void initializeSystemColors () {
 		COLOR_WIDGET_BACKGROUND = toGdkColor (rgba);
 		
 		OS.gtk_style_context_save (context);
+		OS.gtk_style_context_add_class(context, OS.GTK_STYLE_CLASS_VIEW);
 		OS.gtk_style_context_add_class(context, OS.GTK_STYLE_CLASS_CELL);
 		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_LIST_FOREGROUND = toGdkColor (rgba);
