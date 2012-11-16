@@ -706,6 +706,9 @@ public void create (Composite parent, int style) {
 			LocationProvider = new AppFileLocProvider (MozillaPath, profilePath, cacheParentPath, IsXULRunner);
 			LocationProvider.AddRef ();
 
+			/* write external.xpt to the file system if needed */
+			initExternal (LocationProvider.profilePath);
+
 			/* invoke appropriate Init function (based on mozilla version) */
 			initXPCOM (MozillaPath, IsXULRunner);
 		}
@@ -904,9 +907,6 @@ public void create (Composite parent, int style) {
 		result[0] = 0;
 		interfaceRequestor.Release ();
 		componentRegistrar.Release ();
-
-		/* write external.xpt to the file system if needed */
-		initExternal (LocationProvider.profilePath);
 
 		if (!factoriesRegistered) {
 			HelperAppLauncherDialogFactory dialogFactory = new HelperAppLauncherDialogFactory ();
@@ -1761,13 +1761,6 @@ static String InitDiscoverXULRunner () {
 }
 
 void initExternal (String profilePath) {
-	/*
-	 * external.xpt does not need to be written to the file system if the
-	 * XULRunner version is >= 4 since External.java handles this case
-	 * differently than for earlier XULRunner releases.
-	 */
-	if (!IsPre_4) return;
-
 	File componentsDir = new File (profilePath, AppFileLocProvider.COMPONENTS_DIR);
 	java.io.InputStream is = Library.class.getResourceAsStream ("/external.xpt"); //$NON-NLS-1$
 	if (is != null) {
