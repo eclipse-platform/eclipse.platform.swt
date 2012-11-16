@@ -204,6 +204,11 @@ char * OS_nativeFunctionNames[] = {
 	"_1atk_1object_1add_1relationship",
 	"_1atk_1object_1remove_1relationship",
 #ifndef JNI64
+	"_1call__IIIII",
+#else
+	"_1call__JJJJJ",
+#endif
+#ifndef JNI64
 	"_1call__IIIIIII",
 #else
 	"_1call__JJJJJJJ",
@@ -652,9 +657,11 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1cell_1layout_1get_1cells",
 	"_1gtk_1cell_1layout_1pack_1start",
 	"_1gtk_1cell_1layout_1set_1attributes",
+	"_1gtk_1cell_1renderer_1get_1preferred_1height_1for_1width",
 	"_1gtk_1cell_1renderer_1get_1preferred_1size",
 	"_1gtk_1cell_1renderer_1get_1size",
 	"_1gtk_1cell_1renderer_1pixbuf_1new",
+	"_1gtk_1cell_1renderer_1set_1fixed_1size",
 	"_1gtk_1cell_1renderer_1text_1new",
 	"_1gtk_1cell_1renderer_1toggle_1new",
 	"_1gtk_1check_1button_1new",

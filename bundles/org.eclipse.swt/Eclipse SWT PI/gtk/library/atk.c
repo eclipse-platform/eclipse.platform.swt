@@ -592,29 +592,6 @@ JNIEXPORT jintLong JNICALL ATK_NATIVE(_1call__JJJJ)(JNIEnv *env, jclass that, ji
 }
 #endif
 
-#if (!defined(NO__1call__IIIII) && !defined(JNI64)) || (!defined(NO__1call__JJJJJ) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT jintLong JNICALL ATK_NATIVE(_1call__IIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4)
-#else
-JNIEXPORT jintLong JNICALL ATK_NATIVE(_1call__JJJJJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4)
-#endif
-{
-	jintLong rc = 0;
-#ifndef JNI64
-	ATK_NATIVE_ENTER(env, that, _1call__IIIII_FUNC);
-#else
-	ATK_NATIVE_ENTER(env, that, _1call__JJJJJ_FUNC);
-#endif
-	rc = (jintLong)((jintLong (*)())arg0)(arg1, arg2, arg3, arg4);
-#ifndef JNI64
-	ATK_NATIVE_EXIT(env, that, _1call__IIIII_FUNC);
-#else
-	ATK_NATIVE_EXIT(env, that, _1call__JJJJJ_FUNC);
-#endif
-	return rc;
-}
-#endif
-
 #if (!defined(NO__1call__IIIIII) && !defined(JNI64)) || (!defined(NO__1call__JJJJJJ) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jintLong JNICALL ATK_NATIVE(_1call__IIIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5)

@@ -526,6 +526,8 @@
 #define gtk_entry_set_placeholder_text_LIB LIB_GTK
 #define gtk_entry_get_icon_area_LIB LIB_GTK
 #define gdk_event_get_scroll_deltas_LIB LIB_GTK
+#define gtk_cell_renderer_set_fixed_size_LIB LIB_GTK
+#define gtk_cell_renderer_get_preferred_height_for_width_LIB LIB_GTK
 
 /* Field accessors */
 #if GTK_CHECK_VERSION(3,0,0)

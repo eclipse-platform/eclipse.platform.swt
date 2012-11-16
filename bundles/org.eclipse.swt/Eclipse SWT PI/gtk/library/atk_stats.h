@@ -87,11 +87,6 @@ typedef enum {
 	_1call__JJJJ_FUNC,
 #endif
 #ifndef JNI64
-	_1call__IIIII_FUNC,
-#else
-	_1call__JJJJJ_FUNC,
-#endif
-#ifndef JNI64
 	_1call__IIIIII_FUNC,
 #else
 	_1call__JJJJJJ_FUNC,

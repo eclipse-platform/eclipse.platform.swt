@@ -214,6 +214,11 @@ typedef enum {
 	_1atk_1object_1add_1relationship_FUNC,
 	_1atk_1object_1remove_1relationship_FUNC,
 #ifndef JNI64
+	_1call__IIIII_FUNC,
+#else
+	_1call__JJJJJ_FUNC,
+#endif
+#ifndef JNI64
 	_1call__IIIIIII_FUNC,
 #else
 	_1call__JJJJJJJ_FUNC,
@@ -662,9 +667,11 @@ typedef enum {
 	_1gtk_1cell_1layout_1get_1cells_FUNC,
 	_1gtk_1cell_1layout_1pack_1start_FUNC,
 	_1gtk_1cell_1layout_1set_1attributes_FUNC,
+	_1gtk_1cell_1renderer_1get_1preferred_1height_1for_1width_FUNC,
 	_1gtk_1cell_1renderer_1get_1preferred_1size_FUNC,
 	_1gtk_1cell_1renderer_1get_1size_FUNC,
 	_1gtk_1cell_1renderer_1pixbuf_1new_FUNC,
+	_1gtk_1cell_1renderer_1set_1fixed_1size_FUNC,
 	_1gtk_1cell_1renderer_1text_1new_FUNC,
 	_1gtk_1cell_1renderer_1toggle_1new_FUNC,
 	_1gtk_1check_1button_1new_FUNC,

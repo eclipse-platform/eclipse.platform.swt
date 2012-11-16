@@ -77,11 +77,6 @@ char * ATK_nativeFunctionNames[] = {
 	"_1call__JJJJ",
 #endif
 #ifndef JNI64
-	"_1call__IIIII",
-#else
-	"_1call__JJJJJ",
-#endif
-#ifndef JNI64
 	"_1call__IIIIII",
 #else
 	"_1call__JJJJJJ",

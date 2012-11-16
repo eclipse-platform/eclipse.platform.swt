@@ -307,7 +307,9 @@ public class Display extends Device {
 	static long /*int*/ text_renderer_type, pixbuf_renderer_type, toggle_renderer_type;
 	static long /*int*/ text_renderer_info_ptr, pixbuf_renderer_info_ptr, toggle_renderer_info_ptr;
 	static Callback rendererClassInitCallback, rendererRenderCallback, rendererGetSizeCallback;
+	static Callback rendererGetPreferredWidthCallback;
 	static long /*int*/ rendererClassInitProc, rendererRenderProc, rendererGetSizeProc;
+	static long /*int*/ rendererGetPreferredWidthProc;
 
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
@@ -974,10 +976,18 @@ void createDisplay (DeviceData data) {
 		rendererRenderProc = rendererRenderCallback.getAddress ();
 		if (rendererRenderProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
-	if (rendererGetSizeProc == 0) {
-		rendererGetSizeCallback = new Callback (getClass (), "rendererGetSizeProc", 7); //$NON-NLS-1$
-		rendererGetSizeProc = rendererGetSizeCallback.getAddress ();
-		if (rendererGetSizeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	if (OS.GTK3) {
+		if (rendererGetPreferredWidthProc == 0) {
+			rendererGetPreferredWidthCallback = new Callback (getClass (), "rendererGetPreferredWidthProc", 4); //$NON-NLS-1$
+			rendererGetPreferredWidthProc = rendererGetPreferredWidthCallback.getAddress ();
+			if (rendererGetPreferredWidthProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		}
+	} else {
+		if (rendererGetSizeProc == 0) {
+			rendererGetSizeCallback = new Callback (getClass (), "rendererGetSizeProc", 7); //$NON-NLS-1$
+			rendererGetSizeProc = rendererGetSizeCallback.getAddress ();
+			if (rendererGetSizeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		}
 	}
 	if (text_renderer_type == 0) {
 		GTypeInfo renderer_info = new GTypeInfo ();
@@ -1333,8 +1343,19 @@ static long /*int*/ rendererClassInitProc (long /*int*/ g_class, long /*int*/ cl
 	GtkCellRendererClass klass = new GtkCellRendererClass ();
 	OS.memmove (klass, g_class);
 	klass.render = rendererRenderProc;
-	klass.get_size = rendererGetSizeProc;
+	if (OS.GTK3) {
+		klass.get_preferred_width = rendererGetPreferredWidthProc;
+	} else {
+		klass.get_size = rendererGetSizeProc;
+	}
 	OS.memmove (g_class, klass);
+	return 0;
+}
+
+static long /*int*/ rendererGetPreferredWidthProc (long /*int*/ cell, long /*int*/ handle, long /*int*/ minimun_size, long /*int*/ natural_size) {
+	Display display = getCurrent ();
+	Widget widget = display.getWidget (handle);
+	if (widget != null) return widget.rendererGetPreferredWidthProc (cell, handle, minimun_size, natural_size);
 	return 0;
 }
 

@@ -2289,6 +2289,29 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1atk_1object_1remove_1relationship)
 }
 #endif
 
+#if (!defined(NO__1call__IIIII) && !defined(JNI64)) || (!defined(NO__1call__JJJJJ) && defined(JNI64))
+#ifndef JNI64
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1call__IIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4)
+#else
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1call__JJJJJ)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4)
+#endif
+{
+	jintLong rc = 0;
+#ifndef JNI64
+	OS_NATIVE_ENTER(env, that, _1call__IIIII_FUNC);
+#else
+	OS_NATIVE_ENTER(env, that, _1call__JJJJJ_FUNC);
+#endif
+	rc = (jintLong)((jintLong (*)())arg0)(arg1, arg2, arg3, arg4);
+#ifndef JNI64
+	OS_NATIVE_EXIT(env, that, _1call__IIIII_FUNC);
+#else
+	OS_NATIVE_EXIT(env, that, _1call__JJJJJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
 #if (!defined(NO__1call__IIIIIII) && !defined(JNI64)) || (!defined(NO__1call__JJJJJJJ) && defined(JNI64))
 #ifndef JNI64
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1call__IIIIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLong arg5, jintLong arg6)
@@ -8699,6 +8722,31 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1pack_1start)
 }
 #endif
 
+#ifndef NO__1gtk_1cell_1renderer_1get_1preferred_1height_1for_1width
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1renderer_1get_1preferred_1height_1for_1width)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1renderer_1get_1preferred_1height_1for_1width_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+/*
+	gtk_cell_renderer_get_preferred_height_for_width((GtkCellRenderer *)arg0, arg1, arg2, lparg3, lparg4);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_cell_renderer_get_preferred_height_for_width)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCellRenderer *, jintLong, jint, jint *, jint *))fp)((GtkCellRenderer *)arg0, arg1, arg2, lparg3, lparg4);
+		}
+	}
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1renderer_1get_1preferred_1height_1for_1width_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1cell_1renderer_1get_1preferred_1size
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1renderer_1get_1preferred_1size)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jobject arg2, jobject arg3)
@@ -8767,6 +8815,24 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1cell_1renderer_1pixbuf_1new)
 	rc = (jintLong)gtk_cell_renderer_pixbuf_new();
 	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1renderer_1pixbuf_1new_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1cell_1renderer_1set_1fixed_1size
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1renderer_1set_1fixed_1size)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1renderer_1set_1fixed_1size_FUNC);
+/*
+	gtk_cell_renderer_set_fixed_size((GtkCellRenderer *)arg0, arg1, arg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_cell_renderer_set_fixed_size)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCellRenderer *, jint, jint))fp)((GtkCellRenderer *)arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1renderer_1set_1fixed_1size_FUNC);
 }
 #endif
 

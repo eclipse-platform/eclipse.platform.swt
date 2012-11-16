@@ -1302,6 +1302,10 @@ protected void removeListener (int eventType, SWTEventListener handler) {
 	eventTable.unhook (eventType, handler);
 }
 
+long /*int*/ rendererGetPreferredWidthProc (long /*int*/ cell, long /*int*/ handle, long /*int*/ minimun_size, long /*int*/ natural_size) {
+	return 0;
+}
+
 long /*int*/ rendererGetSizeProc (long /*int*/ cell, long /*int*/ handle, long /*int*/ cell_area, long /*int*/ x_offset, long /*int*/ y_offset, long /*int*/ width, long /*int*/ height) {
 	return 0;
 }

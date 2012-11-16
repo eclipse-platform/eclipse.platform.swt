@@ -225,7 +225,11 @@ long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*i
 	TreeItem item = _getItem (iter);
 	if (item != null) OS.g_object_set_qdata (cell, Display.SWT_OBJECT_INDEX2, item.handle);
 	boolean isPixbuf = OS.GTK_IS_CELL_RENDERER_PIXBUF (cell);
-	if (!(isPixbuf || OS.GTK_IS_CELL_RENDERER_TEXT (cell))) return 0;
+	boolean isText = OS.GTK_IS_CELL_RENDERER_TEXT (cell);
+	if (isText && OS.GTK3) {
+		OS.gtk_cell_renderer_set_fixed_size (cell, -1, -1);
+	}
+	if (!(isPixbuf || isText)) return 0;
 	int modelIndex = -1;
 	boolean customDraw = false;
 	if (columnCount == 0) {
@@ -2500,12 +2504,8 @@ public void removeTreeListener(TreeListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);
 }
 
-long /*int*/ rendererGetSizeProc (long /*int*/ cell, long /*int*/ widget, long /*int*/ cell_area, long /*int*/ x_offset, long /*int*/ y_offset, long /*int*/ width, long /*int*/ height) {
-	long /*int*/ g_class = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (cell));
-	GtkCellRendererClass klass = new GtkCellRendererClass ();
-	OS.memmove (klass, g_class);
-	OS.call_get_size (klass.get_size, cell, handle, cell_area, x_offset, y_offset, width, height);
-	if (!ignoreSize && OS.GTK_IS_CELL_RENDERER_TEXT (cell)) {
+void sendMeasureEvent (long /*int*/ cell, long /*int*/ width, long /*int*/ height) {
+	if (!ignoreSize && OS.GTK_IS_CELL_RENDERER_TEXT (cell) && hooks (SWT.MeasureItem)) {
 		long /*int*/ iter = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX2);
 		TreeItem item = null;
 		if (iter != 0) item = _getItem (iter);
@@ -2520,40 +2520,61 @@ long /*int*/ rendererGetSizeProc (long /*int*/ cell, long /*int*/ widget, long /
 					}				
 				}
 			}
-			if (hooks (SWT.MeasureItem)) {
-				int [] contentWidth = new int [1], contentHeight = new int  [1];
-				if (width != 0) OS.memmove (contentWidth, width, 4);
-				if (height != 0) OS.memmove (contentHeight, height, 4);
-				Image image = item.getImage (columnIndex);
-				int imageWidth = 0;
-				if (image != null) {
-					Rectangle bounds = image.getBounds ();
-					imageWidth = bounds.width;
-				}
-				contentWidth [0] += imageWidth;
-				GC gc = new GC (this);
-				gc.setFont (item.getFont (columnIndex));
-				Event event = new Event ();
-				event.item = item;
-				event.index = columnIndex;
-				event.gc = gc;
-				event.width = contentWidth [0];
-				event.height = contentHeight [0];
-				long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
-				long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
-				if (OS.gtk_tree_selection_path_is_selected (selection, path)) {
-					event.detail = SWT.SELECTED;
-				}
-				OS.gtk_tree_path_free (path);
-				sendEvent (SWT.MeasureItem, event);
-				gc.dispose ();
-				contentWidth [0] = event.width - imageWidth;
-				if (contentHeight [0] < event.height) contentHeight [0] = event.height;
-				if (width != 0) OS.memmove (width, contentWidth, 4);
-				if (height != 0) OS.memmove (height, contentHeight, 4);
+			int [] contentWidth = new int [1], contentHeight = new int  [1];
+			if (width != 0) OS.memmove (contentWidth, width, 4);
+			if (height != 0) OS.memmove (contentHeight, height, 4);
+			if (OS.GTK3) {
+				OS.gtk_cell_renderer_get_preferred_height_for_width (cell, handle, contentWidth[0], contentHeight, null);
+			}
+			Image image = item.getImage (columnIndex);
+			int imageWidth = 0;
+			if (image != null) {
+				Rectangle bounds = image.getBounds ();
+				imageWidth = bounds.width;
+			}
+			contentWidth [0] += imageWidth;
+			GC gc = new GC (this);
+			gc.setFont (item.getFont (columnIndex));
+			Event event = new Event ();
+			event.item = item;
+			event.index = columnIndex;
+			event.gc = gc;
+			event.width = contentWidth [0];
+			event.height = contentHeight [0];
+			long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
+			long /*int*/ selection = OS.gtk_tree_view_get_selection (handle);
+			if (OS.gtk_tree_selection_path_is_selected (selection, path)) {
+				event.detail = SWT.SELECTED;
+			}
+			OS.gtk_tree_path_free (path);
+			sendEvent (SWT.MeasureItem, event);
+			gc.dispose ();
+			contentWidth [0] = event.width - imageWidth;
+			if (contentHeight [0] < event.height) contentHeight [0] = event.height;
+			if (width != 0) OS.memmove (width, contentWidth, 4);
+			if (height != 0) OS.memmove (height, contentHeight, 4);
+			if (OS.GTK3) { 
+				OS.gtk_cell_renderer_set_fixed_size (cell, contentWidth [0], contentHeight [0]);
 			}
 		}
 	}
+}
+
+long /*int*/ rendererGetPreferredWidthProc (long /*int*/ cell, long /*int*/ handle, long /*int*/ minimun_size, long /*int*/ natural_size) {
+	long /*int*/ g_class = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (cell));
+	GtkCellRendererClass klass = new GtkCellRendererClass ();
+	OS.memmove (klass, g_class);
+	OS.call (klass.get_preferred_width, cell, handle, minimun_size, natural_size);
+	sendMeasureEvent (cell, minimun_size, 0);
+	return 0;
+}
+
+long /*int*/ rendererGetSizeProc (long /*int*/ cell, long /*int*/ widget, long /*int*/ cell_area, long /*int*/ x_offset, long /*int*/ y_offset, long /*int*/ width, long /*int*/ height) {
+	long /*int*/ g_class = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (cell));
+	GtkCellRendererClass klass = new GtkCellRendererClass ();
+	OS.memmove (klass, g_class);
+	OS.call_get_size (klass.get_size, cell, handle, cell_area, x_offset, y_offset, width, height);
+	sendMeasureEvent (cell, width, height);
 	return 0;
 }
 
@@ -2665,7 +2686,15 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				if ((drawState & SWT.FOCUSED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_FOCUSED;
 				if ((drawState & SWT.SELECTED) != 0) {
 					if (OS.GTK3) {
-						//TODO draw selection on GTK3
+						Cairo.cairo_save (cr);
+						Cairo.cairo_reset_clip (cr);
+						long /*int*/ context = OS.gtk_widget_get_style_context (widget);
+						OS.gtk_style_context_save (context);
+						OS.gtk_style_context_add_class (context, OS.GTK_STYLE_CLASS_CELL);
+						OS.gtk_style_context_set_state (context, OS.GTK_STATE_FLAG_SELECTED);
+						OS.gtk_render_background(context, cr, rect.x, rect.y, rect.width, rect.height);
+						OS.gtk_style_context_restore (context);
+						Cairo.cairo_restore (cr);
 					} else {
 						long /*int*/ style = OS.gtk_widget_get_style (widget);					
 						//TODO - parity and sorted

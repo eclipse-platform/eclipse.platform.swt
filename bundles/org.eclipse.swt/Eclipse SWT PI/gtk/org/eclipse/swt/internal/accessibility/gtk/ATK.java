@@ -515,15 +515,6 @@ public static final long /*int*/ call (long /*int*/ function, long /*int*/ arg0,
 		lock.unlock();
 	}
 }
-public static final native long /*int*/ _call (long /*int*/ function, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3);
-public static final long /*int*/ call (long /*int*/ function, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3) {
-	lock.lock();
-	try {
-		return _call(function, arg0, arg1, arg2, arg3);
-	} finally {
-		lock.unlock();
-	}
-}
 public static final native long /*int*/ _call (long /*int*/ function, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4);
 public static final long /*int*/ call (long /*int*/ function, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4) {
 	lock.lock();

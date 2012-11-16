@@ -1480,7 +1480,7 @@ void setGtkBorderFields(JNIEnv *env, jobject lpObject, GtkBorder *lpStruct)
 typedef struct GtkCellRendererClass_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID render, get_size;
+	jfieldID render, get_size, get_preferred_width;
 } GtkCellRendererClass_FID_CACHE;
 
 GtkCellRendererClass_FID_CACHE GtkCellRendererClassFc;
@@ -1491,6 +1491,7 @@ void cacheGtkCellRendererClassFields(JNIEnv *env, jobject lpObject)
 	GtkCellRendererClassFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	GtkCellRendererClassFc.render = (*env)->GetFieldID(env, GtkCellRendererClassFc.clazz, "render", I_J);
 	GtkCellRendererClassFc.get_size = (*env)->GetFieldID(env, GtkCellRendererClassFc.clazz, "get_size", I_J);
+	GtkCellRendererClassFc.get_preferred_width = (*env)->GetFieldID(env, GtkCellRendererClassFc.clazz, "get_preferred_width", I_J);
 	GtkCellRendererClassFc.cached = 1;
 }
 
@@ -1498,7 +1499,12 @@ GtkCellRendererClass *getGtkCellRendererClassFields(JNIEnv *env, jobject lpObjec
 {
 	if (!GtkCellRendererClassFc.cached) cacheGtkCellRendererClassFields(env, lpObject);
 	lpStruct->render = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkCellRendererClassFc.render);
+#ifndef GTK3
 	lpStruct->get_size = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkCellRendererClassFc.get_size);
+#endif
+#ifdef GTK3
+	lpStruct->get_preferred_width = (void(*)())(*env)->GetIntLongField(env, lpObject, GtkCellRendererClassFc.get_preferred_width);
+#endif
 	return lpStruct;
 }
 
@@ -1506,7 +1512,12 @@ void setGtkCellRendererClassFields(JNIEnv *env, jobject lpObject, GtkCellRendere
 {
 	if (!GtkCellRendererClassFc.cached) cacheGtkCellRendererClassFields(env, lpObject);
 	(*env)->SetIntLongField(env, lpObject, GtkCellRendererClassFc.render, (jintLong)lpStruct->render);
+#ifndef GTK3
 	(*env)->SetIntLongField(env, lpObject, GtkCellRendererClassFc.get_size, (jintLong)lpStruct->get_size);
+#endif
+#ifdef GTK3
+	(*env)->SetIntLongField(env, lpObject, GtkCellRendererClassFc.get_preferred_width, (jintLong)lpStruct->get_preferred_width);
+#endif
 }
 #endif
 

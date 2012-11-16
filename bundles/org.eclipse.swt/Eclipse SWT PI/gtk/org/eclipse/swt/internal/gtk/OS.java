@@ -823,6 +823,15 @@ public static final long /*int*/ call (long /*int*/ function, long /*int*/ arg0,
 		lock.unlock();
 	}
 }
+public static final native long /*int*/ _call (long /*int*/ function, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3);
+public static final long /*int*/ call (long /*int*/ function, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3) {
+	lock.lock();
+	try {
+		return _call(function, arg0, arg1, arg2, arg3);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native long /*int*/ _call (long /*int*/ function, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4, long /*int*/ arg5);
 public static final long /*int*/ call (long /*int*/ function, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2, long /*int*/ arg3, long /*int*/ arg4, long /*int*/ arg5) {
 	lock.lock();
@@ -6291,6 +6300,32 @@ public static final void gtk_cell_renderer_get_preferred_size(long /*int*/ cell,
 	lock.lock();
 	try {
 		_gtk_cell_renderer_get_preferred_size(cell, widget, minimum_size, natural_size);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param cell cast=(GtkCellRenderer *)
+ */
+public static final native void _gtk_cell_renderer_get_preferred_height_for_width(long /*int*/ cell, long /*int*/ widget, int width, int[] minimum_height, int[] natural_height);
+public static final void gtk_cell_renderer_get_preferred_height_for_width(long /*int*/ cell, long /*int*/ widget, int width, int[] minimum_height, int[] natural_height) {
+	lock.lock();
+	try {
+		_gtk_cell_renderer_get_preferred_height_for_width(cell, widget, width, minimum_height, natural_height);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param cell cast=(GtkCellRenderer *)
+ */
+public static final native void _gtk_cell_renderer_set_fixed_size(long /*int*/ cell, int width, int height);
+public static final void gtk_cell_renderer_set_fixed_size (long /*int*/ cell, int width, int height) {
+	lock.lock();
+	try {
+		_gtk_cell_renderer_set_fixed_size(cell, width, height);
 	} finally {
 		lock.unlock();
 	}
