@@ -30,8 +30,10 @@ import org.eclipse.swt.internal.cocoa.*;
 public class URLTransfer extends ByteArrayTransfer {
 
 	static URLTransfer _instance = new URLTransfer();
-	static final String URL = (OS.VERSION >= 0x1060 ? OS.kUTTypeURL : OS.NSURLPboardType).getString();
+	static final String URL = OS.NSURLPboardType.getString();
+	static final String URL1 = OS.kUTTypeURL.getString();
 	static final int URL_ID = registerType(URL);
+	static final int URL_ID1 = registerType(URL1);
 
 private URLTransfer() {}
 
@@ -83,11 +85,19 @@ public Object nativeToJava(TransferData transferData){
 }
 
 protected int[] getTypeIds(){
-	return new int[] {URL_ID};
+	if (OS.VERSION >= 0x1060) {
+		return new int[] {URL_ID, URL_ID1};
+	} else {
+		return new int[] {URL_ID};
+	}
 }
 
 protected String[] getTypeNames(){
-	return new String[] {URL}; 
+	if (OS.VERSION >= 0x1060) {
+		return new String[] {URL, URL1};
+	} else {
+		return new String[] {URL};
+	}
 }
 
 boolean checkURL(Object object) {
