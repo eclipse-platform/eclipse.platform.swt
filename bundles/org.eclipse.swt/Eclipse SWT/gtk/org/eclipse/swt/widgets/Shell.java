@@ -1708,7 +1708,9 @@ void resizeBounds (int width, int height, boolean notify) {
 	int border = OS.gtk_container_get_border_width (shellHandle);
 	int boxWidth = width - 2*border;
 	int boxHeight = height - 2*border;
-	OS.gtk_widget_set_size_request (vboxHandle, boxWidth, boxHeight);
+	if (!OS.GTK3 || (style & SWT.RESIZE) == 0) {
+		OS.gtk_widget_set_size_request (vboxHandle, boxWidth, boxHeight);
+	}
 	forceResize (boxWidth, boxHeight);
 	if (notify) {
 		resized = true;
