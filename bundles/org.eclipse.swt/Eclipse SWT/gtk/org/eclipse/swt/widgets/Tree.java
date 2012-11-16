@@ -2617,7 +2617,9 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				OS.gdk_color_free(ptr[0]);
 			}
 			if ((flags & OS.GTK_CELL_RENDERER_SELECTED) != 0) drawState |= SWT.SELECTED;
-			if ((flags & OS.GTK_CELL_RENDERER_FOCUSED) != 0) drawState |= SWT.FOCUSED;			
+			if (!OS.GTK3 || (flags & OS.GTK_CELL_RENDERER_SELECTED) == 0) {
+				if ((flags & OS.GTK_CELL_RENDERER_FOCUSED) != 0) drawState |= SWT.FOCUSED;
+			}
 			
 			GdkRectangle rect = new GdkRectangle ();
 			long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
@@ -2763,7 +2765,7 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				GC gc = new GC (this);
 				if ((drawState & SWT.SELECTED) != 0) {
 					Color background, foreground;
-					if (gtk_widget_has_focus (handle)) {
+					if (gtk_widget_has_focus (handle) || OS.GTK3) {
 						background = display.getSystemColor (SWT.COLOR_LIST_SELECTION);
 						foreground = display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT);
 					} else {
