@@ -227,12 +227,20 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	byte [] buffer2 = new byte [length];
 	OS.memmove (buffer2, ptr, length);	
 	OS.pango_layout_set_text (layout, buffer1, buffer1.length);
-	OS.pango_layout_get_pixel_size (layout, w, h);
 	OS.pango_layout_set_text (layout, buffer2, buffer2.length);
-	int width = w [0];
-	int height = h [0];
-	width = wHint == SWT.DEFAULT ? width : wHint;
-	height = hHint == SWT.DEFAULT ? height : hHint;
+	int width, height = 0 ;
+	OS.gtk_widget_realize (handle);
+	if (OS.GTK3) {
+		OS.gtk_widget_set_size_request (handle, wHint, hHint);
+		GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_get_preferred_size (handle, requisition, null);
+		width = wHint == SWT.DEFAULT ? requisition.width : wHint;
+		height = hHint == SWT.DEFAULT ? requisition.height : hHint;	
+	} else {
+		OS.pango_layout_get_pixel_size (layout, w, h);
+		width = wHint == SWT.DEFAULT ? w [0] : wHint;
+		height = hHint == SWT.DEFAULT ? h [0] : hHint;
+	}
 	Rectangle trim = computeTrim (0, 0, width, height);
 	return new Point (trim.width, trim.height);
 }
@@ -240,10 +248,29 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	int xborder = 0, yborder = 0;
-	Point thickness = getThickness (handle);
-	if ((this.style & SWT.BORDER) != 0) {
-		xborder += thickness.x;
-		yborder += thickness.y;
+	Rectangle trim = super.computeTrim (x, y, width, height);
+	if (OS.GTK3) {
+		GtkBorder tmp = new GtkBorder();
+		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+		OS.gtk_style_context_get_padding (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+		if ((style & SWT.BORDER) != 0) {
+			OS.gtk_style_context_get_border (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+			trim.x -= tmp.left;
+			trim.y -= tmp.top;
+			trim.width += tmp.left + tmp.right;
+			trim.height += tmp.top + tmp.bottom;
+		}
+	}else {
+		Point thickness = getThickness (handle);
+		if ((this.style & SWT.BORDER) != 0) {
+			xborder += thickness.x;
+			yborder += thickness.y;
+		}
+		long /*int*/ fontDesc = getFontDescription ();
+		int fontSize = OS.pango_font_description_get_size (fontDesc);
+		int arrowSize = Math.max (OS.PANGO_PIXELS (fontSize), MIN_ARROW_WIDTH);
+		arrowSize = arrowSize - arrowSize % 2;		
+		trim.width += arrowSize + (2 * thickness.x);
 	}
 	int [] property = new int [1];
 	OS.gtk_widget_style_get (handle, OS.interior_focus, property, 0);
@@ -252,16 +279,10 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		xborder += property [0];
 		yborder += property [0];
 	}
-	long /*int*/ fontDesc = getFontDescription ();
-	int fontSize = OS.pango_font_description_get_size (fontDesc);
-	int arrowSize = Math.max (OS.PANGO_PIXELS (fontSize), MIN_ARROW_WIDTH);
-	arrowSize = arrowSize - arrowSize % 2;	
-	Rectangle trim = super.computeTrim (x, y, width, height);
 	trim.x -= xborder;
 	trim.y -= yborder;
 	trim.width += 2 * xborder;
 	trim.height += 2 * yborder;
-	trim.width += arrowSize + (2 * thickness.x);
 	GtkBorder innerBorder = Display.getEntryInnerBorder (handle);
 	trim.x -= innerBorder.left;
 	trim.y -= innerBorder.top;
