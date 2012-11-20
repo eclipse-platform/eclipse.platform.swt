@@ -1172,6 +1172,14 @@ public void internal_dispose_GC (int /*long*/ hDC, GCData data) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		if (context != 0) {
+			/*
+			* Bug in cocoa.  For some reason, there cases when the image pixels
+			* are not transfered from the underlining CGImage into the bitmap
+			* representation.   This only happens when bitmapData() is called.
+			*/
+			NSBitmapImageRep imageRep = getRepresentation();
+			imageRep.bitmapData();
+			
 			NSGraphicsContext contextObj = new NSGraphicsContext(context);
 			contextObj.release();
 		}
