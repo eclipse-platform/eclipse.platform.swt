@@ -557,7 +557,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width = Math.max (width, w [0]);
 	}
 	if (OS.GTK3) {
-		OS.gtk_widget_set_size_request(handle, wHint, hHint);
 		GtkRequisition requsition = new GtkRequisition();
 		OS.gtk_widget_get_preferred_size(handle, requsition, null);
 		if (width == 0) width = requsition.width;
