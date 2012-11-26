@@ -760,7 +760,7 @@ public boolean getBorderVisible() {
 }
 ToolBar getChevron() {
 	if (chevronTb == null) {
-		chevronTb = new ToolBar(this, SWT.FLAT | SWT.NO_FOCUS);
+		chevronTb = new ToolBar(this, SWT.FLAT);
 		initAccessibleChevronTb();
 		addTabControl(chevronTb, SWT.TRAIL, -1, false);
 	}
@@ -2366,7 +2366,7 @@ void setButtonBounds(GC gc) {
 	Display display = getDisplay();
 	if (showMax) {
 		if (minMaxTb == null) {
-			minMaxTb = new ToolBar(this, SWT.FLAT | SWT.NO_FOCUS);
+			minMaxTb = new ToolBar(this, SWT.FLAT);
 			initAccessibleMinMaxTb();
 			addTabControl(minMaxTb, SWT.TRAIL, 0, false);
 		}
@@ -2389,7 +2389,7 @@ void setButtonBounds(GC gc) {
 	// min button
 	if (showMin) {
 		if (minMaxTb == null) {
-			minMaxTb = new ToolBar(this, SWT.FLAT | SWT.NO_FOCUS);
+			minMaxTb = new ToolBar(this, SWT.FLAT);
 			initAccessibleMinMaxTb();
 			addTabControl(minMaxTb, SWT.TRAIL, 0, false);
 		}
@@ -2480,6 +2480,35 @@ void setButtonBounds(GC gc) {
 	ignoreResize = false;
 	controlRects = rects;
 	if (changed || hovering) updateBkImages();
+}
+public boolean setFocus () {
+	checkWidget ();
+	
+	/*
+	* Feature in SWT.  When a new tab item is selected
+	* and the previous tab item had focus, removing focus
+	* from the previous tab item causes fixFocus() to give
+	* focus to the first child, which is usually one of the
+	* toolbars. This is unexpected.
+	* The fix is to try to set focus on the first tab item
+	* if fixFocus() is called.
+	*/
+	Control focusControl = getDisplay().getFocusControl ();
+	boolean fixFocus = isAncestor (focusControl);
+	if (fixFocus) {
+		CTabItem item = getSelection();
+		if (item != null) {
+			if (item.setFocus ()) return true;
+		}
+	}
+	return super.setFocus ();
+}
+/* Copy of isFocusAncestor from Control. */
+boolean isAncestor (Control control) {
+	while (control != null && control != this && !(control instanceof Shell)) {
+		control = control.getParent();
+	}
+	return control == this;
 }
 public void setFont(Font font) {
 	checkWidget();

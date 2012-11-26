@@ -325,6 +325,9 @@ public void setDisabledImage (Image image) {
 	}
 	this.disabledImage = image;
 }
+boolean setFocus () {
+	return control != null && !control.isDisposed() && control.setFocus ();
+}
 /**
  * Sets the font that the receiver will use to paint textual information
  * for this item to the font specified by the argument, or to the default font
