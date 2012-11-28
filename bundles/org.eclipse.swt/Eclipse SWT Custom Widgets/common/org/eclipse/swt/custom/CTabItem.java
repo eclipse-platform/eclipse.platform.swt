@@ -297,7 +297,7 @@ public void setControl (Control control) {
 		    int selectedIndex = parent.getSelectionIndex();
 		    Control selectedControl = null;
 		    if (selectedIndex != -1) {
-		    	selectedControl = parent.getItem(selectedIndex).getControl();
+		    	selectedControl = parent.getItem(selectedIndex).control;
 		    }
 		    if (this.control != selectedControl) {
 		    	this.control.setVisible(false);

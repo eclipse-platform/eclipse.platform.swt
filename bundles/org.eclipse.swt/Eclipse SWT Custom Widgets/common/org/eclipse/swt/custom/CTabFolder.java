@@ -703,7 +703,7 @@ void destroyItem (CTabItem item) {
 		firstIndex = -1;
 		selectedIndex = -1;
 		
-		Control control = item.getControl();
+		Control control = item.control;
 		if (control != null && !control.isDisposed()) {
 			control.setVisible(false);
 		}
@@ -1355,7 +1355,7 @@ void initAccessible() {
 				location = getBounds();
 				pt = getParent().toDisplay(location.x, location.y);
 			} else {
-				if (childID >= 0 && childID < items.length && items[childID].isShowing()) {
+				if (childID >= 0 && childID < items.length && items[childID].showing) {
 					location = items[childID].getBounds();
 				}
 				if (location != null) {
@@ -1487,6 +1487,7 @@ void initAccessibleChevronTb() {
 	});
 }
 void onKeyDown (Event event) {
+	runUpdate();
 	switch (event.keyCode) {
 		case SWT.ARROW_LEFT:
 		case SWT.ARROW_RIGHT:
@@ -2060,6 +2061,7 @@ void onSelection(Event event) {
 }
 void onTraverse (Event event) {
 	if (ignoreTraverse) return;
+	runUpdate();
 	switch (event.detail) {
 		case SWT.TRAVERSE_ESCAPE:
 		case SWT.TRAVERSE_RETURN:
@@ -3487,7 +3489,7 @@ public void showItem (CTabItem item) {
 		newPriority[0] = index;
 		priority = newPriority;
 	}
-	if (item.isShowing()) return;
+	if (item.showing) return;
 	updateFolder(REDRAW_TABS);
 }
 void showList (Rectangle rect) {
@@ -3656,7 +3658,7 @@ void updateFolder (int flags) {
 			runUpdate();
 		}
 	};
-	this.getDisplay().asyncExec(updateRun);
+	getDisplay().asyncExec(updateRun);
 }
 
 void runUpdate() {
@@ -3664,8 +3666,8 @@ void runUpdate() {
 	int flags = updateFlags;
 	updateFlags = 0;
 	Rectangle rectBefore = getClientArea();
-	this.updateTabHeight(false);
-	this.updateItems(selectedIndex);
+	updateTabHeight(false);
+	updateItems(selectedIndex);
 	if ((flags & REDRAW) != 0) {
 		redraw();
 	} else if ((flags & REDRAW_TABS) != 0) {
@@ -3674,7 +3676,7 @@ void runUpdate() {
 	Rectangle rectAfter = getClientArea();
 	if (!rectBefore.equals(rectAfter)) {
 		notifyListeners(SWT.Resize, new Event());
-		this.layout();
+		layout();
 	}
 }
 

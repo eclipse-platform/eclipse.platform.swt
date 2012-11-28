@@ -83,7 +83,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	int controlH = 0;
 	// preferred size of controls in tab items
 	for (int i = 0; i < items.length; i++) {
-		Control control = items[i].getControl();
+		Control control = items[i].control;
 		if (control != null && !control.isDisposed()){
 			Point size = control.computeSize (wHint, hHint, flushCache);
 			controlW = Math.max (controlW, size.x);
@@ -108,7 +108,7 @@ protected void layout(Composite composite, boolean flushCache) {
 	CTabFolder folder = (CTabFolder)composite;
 	// resize content
 	if (folder.selectedIndex != -1) {
-		Control control = folder.items[folder.selectedIndex].getControl();
+		Control control = folder.items[folder.selectedIndex].control;
 		if (control != null && !control.isDisposed()) {
 			control.setBounds(folder.getClientArea());
 		}
