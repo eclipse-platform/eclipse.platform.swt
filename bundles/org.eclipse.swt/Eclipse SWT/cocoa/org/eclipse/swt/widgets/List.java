@@ -1104,14 +1104,21 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 }
 
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
-	if (type == SWT.MouseDown) {
-		mouseIsDown = true;
-	} else if (type == SWT.MouseUp || type == SWT.DragDetect) {
-		mouseIsDown = false;
-		
-		if (rowsChanged) {
-			rowsChanged = false;
-			((NSTableView)view).noteNumberOfRowsChanged();
+	boolean handleMouseDown = true;
+	if (nsEvent != null) {
+		int /*long*/ nsType = nsEvent.type();
+		handleMouseDown = nsType == OS.NSLeftMouseDown || nsType == OS.NSLeftMouseUp;
+	}
+	if (handleMouseDown) {
+		if (type == SWT.MouseDown) {
+			mouseIsDown = true;
+		} else if (type == SWT.MouseUp || type == SWT.DragDetect) {
+			mouseIsDown = false;
+			
+			if (rowsChanged) {
+				rowsChanged = false;
+				((NSTableView)view).noteNumberOfRowsChanged();
+			}
 		}
 	}
 	return super.sendMouseEvent(nsEvent, type, send);
