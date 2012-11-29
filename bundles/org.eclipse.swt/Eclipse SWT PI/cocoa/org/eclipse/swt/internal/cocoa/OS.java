@@ -1931,6 +1931,7 @@ public static final long /*int*/ sel_setImageScaling_ = sel_registerName("setIma
 public static final long /*int*/ sel_setIncrement_ = sel_registerName("setIncrement:");
 public static final long /*int*/ sel_setIndeterminate_ = sel_registerName("setIndeterminate:");
 public static final long /*int*/ sel_setIndicatorImage_inTableColumn_ = sel_registerName("setIndicatorImage:inTableColumn:");
+public static final long /*int*/ sel_setInteger_forKey_ = sel_registerName("setInteger:forKey:");
 public static final long /*int*/ sel_setIntercellSpacing_ = sel_registerName("setIntercellSpacing:");
 public static final long /*int*/ sel_setJavaEnabled_ = sel_registerName("setJavaEnabled:");
 public static final long /*int*/ sel_setJavaScriptEnabled_ = sel_registerName("setJavaScriptEnabled:");

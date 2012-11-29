@@ -29,6 +29,10 @@ public id objectForKey(NSString defaultName) {
 	return result != 0 ? new id(result) : null;
 }
 
+public void setInteger(long /*int*/ value, NSString defaultName) {
+	OS.objc_msgSend(this.id, OS.sel_setInteger_forKey_, value, defaultName != null ? defaultName.id : 0);
+}
+
 public static NSUserDefaults standardUserDefaults() {
 	long /*int*/ result = OS.objc_msgSend(OS.class_NSUserDefaults, OS.sel_standardUserDefaults);
 	return result != 0 ? new NSUserDefaults(result) : null;

@@ -2232,7 +2232,9 @@ protected void init () {
 	markedAttributes.retain ();
 	textView.release ();
 	
-	id blink = NSUserDefaults.standardUserDefaults().objectForKey(NSString.stringWith("NSTextInsertionPointBlinkPeriod"));
+	NSUserDefaults defaults = NSUserDefaults.standardUserDefaults();
+	defaults.setInteger(0, NSString.stringWith(OS.VERSION >= 0x1080 ? "NSScrollAnimationEnabled" : "AppleScrollAnimationEnabled"));
+	id blink = defaults.objectForKey(NSString.stringWith("NSTextInsertionPointBlinkPeriod"));
 	if (blink != null) blinkTime = (int)new NSNumber(blink).integerValue();
 	if (blinkTime == 0) blinkTime = 560;
 	
