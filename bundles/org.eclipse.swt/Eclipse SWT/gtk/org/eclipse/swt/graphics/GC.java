@@ -452,6 +452,7 @@ public void copyArea(Image image, int x, int y) {
 		int /*long*/ cairo = Cairo.cairo_create(image.surface);
 		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		Cairo.cairo_translate(cairo, -x, -y);
+		Cairo.cairo_push_group(cairo);
 		if (data.image != null) {
 			Cairo.cairo_set_source_surface(cairo, data.image.surface, 0, 0);
 		} else if (data.drawable != 0) {
@@ -468,9 +469,12 @@ public void copyArea(Image image, int x, int y) {
 				Cairo.cairo_set_source_surface(cairo, srcSurface, 0, 0);
 			}
 		} else {
+			Cairo.cairo_destroy(cairo);
 			return;
 		}
 		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
+		Cairo.cairo_paint(cairo);
+		Cairo.cairo_pop_group_to_source(cairo);
 		Cairo.cairo_paint(cairo);
 		Cairo.cairo_destroy(cairo);
         return;
