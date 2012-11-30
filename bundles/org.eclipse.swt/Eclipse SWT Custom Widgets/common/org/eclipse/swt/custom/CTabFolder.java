@@ -124,6 +124,7 @@ public class CTabFolder extends Composite {
 	boolean mru = false;
 	Listener listener;
 	boolean ignoreTraverse;
+	boolean useDefaultRenderer;
 	
 	/* External Listener management */
 	CTabFolder2Listener[] folderListeners = new CTabFolder2Listener[0];
@@ -257,6 +258,7 @@ void init(int style) {
 	selectionForeground = display.getSystemColor(SELECTION_FOREGROUND);
 	selectionBackground = display.getSystemColor(SELECTION_BACKGROUND);
 	renderer = new CTabFolderRenderer(this);
+	useDefaultRenderer = true;
 	controls = new Control[0];
 	controlAlignments = new int[0];
 	controlRects = new Rectangle[0];
@@ -2941,9 +2943,10 @@ public void setMRUVisible(boolean show) {
  */
 public void setRenderer(CTabFolderRenderer renderer) {
 	checkWidget();
-	if (this.renderer == renderer) return;
+	if (this.renderer == renderer || (useDefaultRenderer && renderer == null)) return;
 	if (this.renderer != null) this.renderer.dispose();
-	if (renderer == null) renderer = new CTabFolderRenderer(this);
+	useDefaultRenderer = renderer == null;
+	if (useDefaultRenderer) renderer = new CTabFolderRenderer(this);
 	this.renderer = renderer;
 	updateFolder(REDRAW);
 }
