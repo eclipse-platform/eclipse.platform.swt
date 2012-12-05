@@ -449,6 +449,11 @@ if [ ${MODEL} = 's390' ]; then
 	SWT_LFLAGS=-m31
 	export SWT_LFLAGS SWT_PTR_CFLAGS
 fi
+if [ ${MODEL} = 'x86' -a ${SWT_OS} = 'linux' ]; then
+	SWT_PTR_CFLAGS="-m32"	
+	SWT_LFLAGS=-m32
+	export SWT_LFLAGS SWT_PTR_CFLAGS
+fi
 
 if [ x`pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "xYES"  -a ${MODEL} != "sparc64" -a ${MODEL} != 'ia64' ]; then
 	echo "libgnomeui-2.0 found, compiling SWT program support using GNOME"
