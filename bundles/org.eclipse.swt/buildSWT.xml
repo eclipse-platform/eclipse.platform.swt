@@ -974,7 +974,7 @@
 	<target name="build_gtk3" if="machine_gtk3">
 		<antcall target="${build_task}">
 			<param name="build_machine" value="${machine_gtk3}"/>
-			<param name="build_targets" value="all"/>
+			<param name="build_targets" value="install"/>
 			<param name="libs" value="*pi3*"/>
 			<param name="exports" value="export GTK_VERSION=3.0;"/>
 		</antcall>
