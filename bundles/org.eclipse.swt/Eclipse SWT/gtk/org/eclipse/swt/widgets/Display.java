@@ -1024,8 +1024,10 @@ void createDisplay (DeviceData data) {
 	byte [] buffer = Converter.wcsToMbcs (null, APP_NAME, true);
 	OS.g_set_prgname (buffer);
 	OS.gdk_set_program_class (buffer);
-	byte [] flatStyle = Converter.wcsToMbcs (null, "style \"swt-flat\" { GtkToolbar::shadow-type = none } widget \"*.swt-toolbar-flat\" style : highest \"swt-flat\"", true); //$NON-NLS-1$
-	OS.gtk_rc_parse_string (flatStyle);
+	if (!OS.GTK3) {
+		byte [] flatStyle = Converter.wcsToMbcs (null, "style \"swt-flat\" { GtkToolbar::shadow-type = none } widget \"*.swt-toolbar-flat\" style : highest \"swt-flat\"", true); //$NON-NLS-1$
+		OS.gtk_rc_parse_string (flatStyle);
+	}
 
 	/* Initialize the hidden shell */
 	shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);

@@ -10126,7 +10126,10 @@ public static final void gtk_range_get_slider_range(long /*int*/ range, int[] sl
                 lock.unlock();
         }
 }
-/** @param rc_string cast=(const gchar *) */
+/**
+ * @method flags=dynamic
+ * @param rc_string cast=(const gchar *)
+ */
 public static final native void _gtk_rc_parse_string(byte[] rc_string);
 public static final void gtk_rc_parse_string(byte[] rc_string) {
 	lock.lock();

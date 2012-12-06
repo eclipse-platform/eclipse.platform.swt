@@ -13751,7 +13751,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1rc_1parse_1string)
 	jbyte *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1rc_1parse_1string_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
 	gtk_rc_parse_string((const gchar *)lparg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_rc_parse_string)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(const gchar *))fp)((const gchar *)lparg0);
+		}
+	}
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1rc_1parse_1string_FUNC);
