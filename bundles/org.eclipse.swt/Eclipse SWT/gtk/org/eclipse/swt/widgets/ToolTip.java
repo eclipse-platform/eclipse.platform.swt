@@ -513,15 +513,13 @@ void drawTooltip (long /*int*/ cr) {
 				case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs (null, "gtk-dialog-warning", true); break;
 			}
 			if (buffer != null) {
-				long /*int*/ style = OS.gtk_widget_get_default_style ();
-				long /*int*/ pixbuf = OS.gtk_icon_set_render_icon (
-				OS.gtk_icon_factory_lookup_default (buffer), 
-							style,
-							OS.GTK_TEXT_DIR_NONE, 
-							OS.GTK_STATE_NORMAL, 
-							OS.GTK_ICON_SIZE_MENU,
-							0, 
-							0);
+				long /*int*/ pixbuf, icon_set = OS.gtk_icon_factory_lookup_default (buffer);
+				if (OS.GTK3) {
+					pixbuf = OS.gtk_icon_set_render_icon_pixbuf(icon_set, OS.gtk_widget_get_style_context(handle), OS.GTK_ICON_SIZE_MENU);
+				} else {
+					long /*int*/ style = OS.gtk_widget_get_default_style ();
+					pixbuf = OS.gtk_icon_set_render_icon (icon_set, style, OS.GTK_TEXT_DIR_NONE, OS.GTK_STATE_NORMAL, OS.GTK_ICON_SIZE_MENU, 0, 0);
+				}
  				OS.gdk_cairo_set_source_pixbuf(cairo, pixbuf, x, y);
  				Cairo.cairo_paint (cairo);
 				OS.g_object_unref (pixbuf);

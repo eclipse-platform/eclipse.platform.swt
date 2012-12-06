@@ -805,6 +805,7 @@ typedef enum {
 	_1gtk_1icon_1info_1free_FUNC,
 	_1gtk_1icon_1info_1load_1icon_FUNC,
 	_1gtk_1icon_1set_1render_1icon_FUNC,
+	_1gtk_1icon_1set_1render_1icon_1pixbuf_FUNC,
 	_1gtk_1icon_1source_1free_FUNC,
 	_1gtk_1icon_1source_1new_FUNC,
 	_1gtk_1icon_1source_1set_1pixbuf_FUNC,

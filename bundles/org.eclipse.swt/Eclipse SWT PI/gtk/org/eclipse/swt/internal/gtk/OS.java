@@ -7965,6 +7965,7 @@ public static final void gtk_icon_source_set_pixbuf(long /*int*/ source, long /*
 	}
 }
 /**
+ * @method flags=dynamic
  * @param icon_set cast=(GtkIconSet *)
  * @param style cast=(GtkStyle *)
  * @param direction cast=(GtkTextDirection)
@@ -7978,6 +7979,19 @@ public static final long /*int*/ gtk_icon_set_render_icon(long /*int*/ icon_set,
 	lock.lock();
 	try {
 		return _gtk_icon_set_render_icon(icon_set, style, direction, state, size, widget, detail);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ */
+public static final native long /*int*/ _gtk_icon_set_render_icon_pixbuf(long /*int*/ icon_set, long /*int*/ context, int size);
+public static final long /*int*/ gtk_icon_set_render_icon_pixbuf(long /*int*/ icon_set, long /*int*/ context, int size) {
+	lock.lock();
+	try {
+		return _gtk_icon_set_render_icon_pixbuf(icon_set, context, size);
 	} finally {
 		lock.unlock();
 	}

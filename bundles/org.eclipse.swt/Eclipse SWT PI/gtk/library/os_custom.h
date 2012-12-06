@@ -160,6 +160,7 @@
 #define gtk_label_set_line_wrap_mode_LIB LIB_GTK
 #define gtk_icon_info_load_icon_LIB LIB_GTK
 #define gtk_icon_info_free_LIB LIB_GTK
+#define gtk_icon_set_render_icon_LIB LIB_GTK
 #define gtk_icon_theme_lookup_by_gicon_LIB LIB_GTK
 #define gdk_keyboard_ungrab_LIB LIB_GDK
 #define gtk_icon_theme_get_default_LIB LIB_GTK
@@ -528,6 +529,7 @@
 #define gdk_event_get_scroll_deltas_LIB LIB_GTK
 #define gtk_cell_renderer_set_fixed_size_LIB LIB_GTK
 #define gtk_cell_renderer_get_preferred_height_for_width_LIB LIB_GTK
+#define gtk_icon_set_render_icon_pixbuf_LIB LIB_GTK
 
 /* Field accessors */
 #if GTK_CHECK_VERSION(3,0,0)

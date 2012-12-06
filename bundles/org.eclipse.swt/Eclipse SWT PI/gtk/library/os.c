@@ -10913,8 +10913,36 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1icon_1set_1render_1icon)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1icon_1set_1render_1icon_FUNC);
+/*
 	rc = (jintLong)gtk_icon_set_render_icon((GtkIconSet *)arg0, (GtkStyle *)arg1, (GtkTextDirection)arg2, (GtkStateType)arg3, (GtkIconSize)arg4, (GtkWidget *)arg5, (const char *)arg6);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_icon_set_render_icon)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkIconSet *, GtkStyle *, GtkTextDirection, GtkStateType, GtkIconSize, GtkWidget *, const char *))fp)((GtkIconSet *)arg0, (GtkStyle *)arg1, (GtkTextDirection)arg2, (GtkStateType)arg3, (GtkIconSize)arg4, (GtkWidget *)arg5, (const char *)arg6);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1icon_1set_1render_1icon_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1icon_1set_1render_1icon_1pixbuf
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1icon_1set_1render_1icon_1pixbuf)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1icon_1set_1render_1icon_1pixbuf_FUNC);
+/*
+	rc = (jintLong)gtk_icon_set_render_icon_pixbuf(arg0, arg1, arg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_icon_set_render_icon_pixbuf)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jint))fp)(arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1icon_1set_1render_1icon_1pixbuf_FUNC);
 	return rc;
 }
 #endif
