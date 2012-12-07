@@ -53,6 +53,8 @@ public class Composite extends Scrollable {
 	Control [] tabList;
 	int layoutCount, backgroundMode;
 
+	static final int TOOLTIP_LIMIT = 4096;
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -1846,6 +1848,15 @@ LRESULT wmNotify (NMHDR hdr, int /*long*/ wParam, int /*long*/ lParam) {
 				if (string != null) {
 					Shell shell = getShell ();
 					string = Display.withCrLf (string);
+					/*
+					* Bug in Windows.  On Windows 7, tool tips hang when displaying large
+					* strings. The fix is to limit the tool tip string to 4Kb.
+					*/
+					if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+						if (string.length() > TOOLTIP_LIMIT) {
+							string = string.substring(0, TOOLTIP_LIMIT);
+						}
+					}
 					char [] chars = fixMnemonic (string);
 					
 					/*
