@@ -644,6 +644,15 @@ public void create (Composite parent, int style) {
 	* be changed.
 	*/
 	browser.setData (KEY_CHECK_SUBWINDOW, Boolean.FALSE);
+
+	int minor = WebKitGTK.webkit_minor_version ();
+	if (minor >= 10) {
+		Point size = browser.getSize();
+		size.x += 1; size.y += 1;
+		browser.setSize(size);
+		size.x -= 1; size.y += 1;
+		browser.setSize(size);
+	}
 }
 
 void addEventHandlers (long /*int*/ web_view, boolean top) {
