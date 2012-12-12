@@ -654,9 +654,9 @@ public void create (Composite parent, int style) {
 	int minor = WebKitGTK.webkit_minor_version ();
 	if (minor >= 10) {
 		Point size = browser.getSize();
-		size.x += 1; size.y += 1;
+		size.x += 2; size.y += 2;
 		browser.setSize(size);
-		size.x -= 1; size.y += 1;
+		size.x -= 2; size.y -= 2;
 		browser.setSize(size);
 	}
 }
