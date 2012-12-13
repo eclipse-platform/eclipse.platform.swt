@@ -7158,15 +7158,22 @@ public static final long /*int*/ gtk_entry_get_inner_border (long /*int*/ entry)
 		lock.unlock();
 	}
 }
-/** 
- * @param self cast=(GtkEntry *)
- * @param n_chars cast=(gint)
- */
-public static final native void  _gtk_entry_set_width_chars (long /*int*/ self, int n_chars);
-public static final void  gtk_entry_set_width_chars (long /*int*/ self, int n_chars) {
+/** @method flags=dynamic */
+public static final native int _gtk_entry_get_width_chars(long /*int*/ entry);
+public static final int gtk_entry_get_width_chars(long /*int*/ entry) {
 	lock.lock();
 	try {
-		_gtk_entry_set_width_chars(self, n_chars);
+		return _gtk_entry_get_width_chars(entry);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_entry_set_width_chars(long /*int*/ entry, int n_chars);
+public static final void gtk_entry_set_width_chars(long /*int*/ entry, int n_chars) {
+	lock.lock();
+	try {
+		_gtk_entry_set_width_chars(entry, n_chars);
 	} finally {
 		lock.unlock();
 	}
@@ -10712,6 +10719,19 @@ public static final void gtk_spin_button_configure(long /*int*/ spin_button, lon
 	lock.lock();
 	try {
 		_gtk_spin_button_configure(spin_button, adjustment, climb_rate, digits);
+	} finally {
+		lock.unlock();
+	}
+}
+/** 
+ * @method flags=dynamic
+ * @param spin_button cast=(GtkSpinButton*)
+ **/
+public static final native void _gtk_spin_button_set_numeric(long /*int*/ spin_button, boolean numeric);
+public static final void gtk_spin_button_set_numeric(long /*int*/ spin_button, boolean numeric) {
+	lock.lock();
+	try {
+		_gtk_spin_button_set_numeric(spin_button, numeric);
 	} finally {
 		lock.unlock();
 	}
