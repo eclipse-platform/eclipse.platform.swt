@@ -460,6 +460,7 @@ public void create(Composite parent, int style) {
 									long /*int*/ pCancel = cancel.getByRef();
 									COM.MoveMemory(pCancel, new short[] {COM.VARIANT_FALSE}, 2);
 								}
+								isAboutBlank = false;
 								break;
 							} else {
 								/*
@@ -512,7 +513,13 @@ public void create(Composite parent, int style) {
 							COM.MoveMemory(pCancel, new short[] {doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
 						}
 						if (doit) {
-							lastNavigateURL = url;
+							varResult = event.arguments[0];
+							IDispatch dispatch = varResult.getDispatch();
+							Variant variant = new Variant(auto); /* does not need to be disposed */
+							IDispatch top = variant.getDispatch();
+							if (top.getAddress() == dispatch.getAddress()) {
+								isAboutBlank = url.startsWith(ABOUT_BLANK);
+							}
 						}
 						break;
 					}
@@ -579,7 +586,7 @@ public void create(Composite parent, int style) {
 								html = null;
 							}
 						} else {
-							Variant variant = new Variant(auto);
+							Variant variant = new Variant(auto); /* does not need to be disposed */
 							IDispatch top = variant.getDispatch();
 							LocationEvent locationEvent = new LocationEvent(browser);
 							locationEvent.display = browser.getDisplay();
@@ -590,14 +597,7 @@ public void create(Composite parent, int style) {
 								locationListeners[i].changed(locationEvent);
 							}
 							if (browser.isDisposed()) return;
-							/*
-							 * This code is intentionally commented.  A Variant constructed from an
-							 * OleAutomation object does not increase its reference count.  The IDispatch
-							 * obtained from this Variant did not increase the reference count for the
-							 * OleAutomation instance either. 
-							 */
-							//top.Release();
-							//variant.dispose();
+
 							/*
 							 * Note.  The completion of the page loading is detected as
 							 * described in the MSDN article "Determine when a page is
@@ -626,13 +626,6 @@ public void create(Composite parent, int style) {
 								}
 							}
 						}
-												
-						/*
-						* This code is intentionally commented.  This IDispatch was received
-						* as an argument from the OleEvent and it will be disposed along with
-						* the other arguments.  
-						*/
-						//dispatch.Release();
 						break;
 					}
 					case DownloadComplete: {
@@ -672,7 +665,14 @@ public void create(Composite parent, int style) {
 						Variant varResult = event.arguments[1];
 						String url = varResult.getString();
 						if (!performingInitialNavigate) {
-							isAboutBlank = url.startsWith(ABOUT_BLANK);
+							varResult = event.arguments[0];
+							IDispatch dispatch = varResult.getDispatch();
+							Variant variant = new Variant(auto); /* does not need to be disposed */
+							IDispatch top = variant.getDispatch();
+							if (top.getAddress() == dispatch.getAddress()) {
+								isAboutBlank = url.startsWith(ABOUT_BLANK);
+								lastNavigateURL = url;
+							}
 						}
 
 						/*
@@ -725,7 +725,7 @@ public void create(Composite parent, int style) {
 						if (globalDispatch == 0) globalDispatch = dispatch.getAddress();
 	
 						OleAutomation webBrowser = varResult.getAutomation();
-						Variant variant = new Variant(auto);
+						Variant variant = new Variant(auto); /* does not need to be disposed */
 						IDispatch top = variant.getDispatch();
 						boolean isTop = top.getAddress() == dispatch.getAddress();
 						if (isTop) {
@@ -818,19 +818,11 @@ public void create(Composite parent, int style) {
 							*/
 							browser.installFunctionsOnDocumentComplete = true;
 
-							Variant variant = new Variant(browser.auto);
+							Variant variant = new Variant(browser.auto); /* does not need to be disposed */
 							IDispatch iDispatch = variant.getDispatch();
 							Variant ppDisp = event.arguments[0];
 							long /*int*/ byref = ppDisp.getByRef();
 							if (byref != 0) COM.MoveMemory(byref, new long /*int*/[] {iDispatch.getAddress()}, OS.PTR_SIZEOF);
-							/*
-							* This code is intentionally commented.  A Variant constructed from an
-							* OleAutomation object does not increase its reference count.  The IDispatch
-							* obtained from this Variant did not increase the reference count for the
-							* OleAutomation instance either. 
-							*/
-							//variant.dispose();
-							//iDispatch.Release();
 						}
 						if (newEvent.required) {
 							COM.MoveMemory(pCancel, new short[]{doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
@@ -1381,11 +1373,6 @@ void setHTML (String string) {
 				persistStreamInit.Release();
 			}
 			pVarResult.dispose();
-			/*
-			* This code is intentionally commented.  The IDispatch obtained from a Variant
-			* did not increase the reference count for the enclosed interface.
-			*/
-			//dispatchDocument.Release();
 			IUnknown stream = new IUnknown(ppstm[0]);
 			stream.Release();
 		} else {
@@ -1522,6 +1509,12 @@ public void stop() {
 	* invoke Stop if no content has been shown yet. 
 	*/
 	if (_getUrl().length() == 0) return;
+
+	/*
+	* Ensure that isAboutBlank is set accurately since Stop can be issued at
+	* any stage in the page load cycle.
+	*/
+	isAboutBlank = getUrl().startsWith(ABOUT_BLANK);
 
 	uncRedirect = null;
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
