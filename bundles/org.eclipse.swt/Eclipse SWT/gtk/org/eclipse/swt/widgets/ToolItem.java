@@ -1126,6 +1126,7 @@ public void setText (String string) {
  */
 public void setToolTipText (String string) {
 	checkWidget();
+	if (toolTipText == string || (toolTipText != null && toolTipText.equals(string))) return;
 	if (parent.toolTipText == null) {
 		Shell shell = parent._getShell ();
 		setToolTipText (shell, string);
@@ -1146,7 +1147,6 @@ public void setToolTipText (String string) {
 }
 
 void setToolTipText (Shell shell, String newString) {
-	if (toolTipText == newString || (toolTipText != null && toolTipText.equals(newString))) return;
 	long /*int*/ child = OS.gtk_bin_get_child (handle);
 	if ((style & SWT.DROP_DOWN) != 0) {
 		long /*int*/ list = OS.gtk_container_get_children (child);
