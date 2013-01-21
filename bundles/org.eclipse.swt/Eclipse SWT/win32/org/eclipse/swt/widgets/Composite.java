@@ -1167,6 +1167,15 @@ String toolTipText (NMTTDISPINFO hdr) {
 		if (toolTip != null) {
 			string = toolTip.message;
 			if (string == null || string.length () == 0) string = " ";
+			/*
+			* Bug in Windows.  On Windows 7, tool tips hang when displaying large
+			* unwrapped strings. The fix is to wrap the string ourselves.
+			*/
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				if (string.length () > TOOLTIP_LIMIT / 4) {
+					string = display.wrapText (string, handle, toolTip.getWidth ());
+				}
+			}
 		}
 		return string;
 	}

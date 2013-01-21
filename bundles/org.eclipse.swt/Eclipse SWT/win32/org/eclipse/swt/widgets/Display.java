@@ -4992,6 +4992,76 @@ long /*int*/ windowProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wPara
 	return OS.DefWindowProc (hwnd, (int)/*64*/msg, wParam, lParam);
 }
 
+int textWidth (String text, long /*int*/ handle) {
+	long /*int*/ oldFont = 0;
+	RECT rect = new RECT ();
+	long /*int*/ hDC = OS.GetDC (handle);
+	long /*int*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
+	TCHAR buffer = new TCHAR(0, text, false);
+	OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+	if (newFont != 0) OS.SelectObject (hDC, oldFont);
+	OS.ReleaseDC (handle, hDC);
+	return (rect.right - rect.left);
+}
+
+String wrapText (String text, long /*int*/ handle, int width) {
+	String Lf = "\r\n"; //$NON-NLS-1$
+	text = withCrLf (text);
+	int length = text.length ();
+	if (width <= 0 || length == 0 || length == 1) return text;
+	StringBuffer result = new StringBuffer ();
+	int lineStart = 0, lineEnd = 0;
+	while (lineStart < length) {
+		lineEnd = text.indexOf (Lf, lineStart);
+		boolean noLf = lineEnd == -1;
+		if (noLf) lineEnd = length;
+		int nextStart = lineEnd + Lf.length ();
+		while (lineEnd > lineStart + 1 && Compatibility.isWhitespace (text.charAt (lineEnd - 1))) {
+			lineEnd--;
+		}
+		int wordStart = lineStart, wordEnd = lineStart;
+		int i = lineStart;
+		while (i < lineEnd) {
+			int lastStart = wordStart, lastEnd = wordEnd;
+			wordStart = i;
+			while (i < lineEnd && !Compatibility.isWhitespace (text.charAt (i))) {
+				i++;
+			}
+			wordEnd = i - 1;
+			String line = text.substring (lineStart, wordEnd + 1);
+			int lineWidth = textWidth (line, handle);
+			while (i < lineEnd && Compatibility.isWhitespace (text.charAt (i))) {
+				i++;
+			}
+			if (lineWidth > width) {
+				if (lastStart == wordStart) {
+					while (wordStart < wordEnd) {
+						line = text.substring (lineStart, wordStart + 1);
+						lineWidth = textWidth (line, handle);
+						if (lineWidth >= width) break;
+						wordStart++;
+					}
+					if (wordStart == lastStart) wordStart++;
+					lastEnd = wordStart - 1;
+				}
+				line = text.substring (lineStart, lastEnd + 1);
+				result.append (line); result.append (Lf);
+				i = wordStart; lineStart = wordStart; wordEnd = wordStart;
+			}
+		}
+		if (lineStart < lineEnd) {
+			result.append (text.substring (lineStart, lineEnd));
+		}
+		if (!noLf) {
+			result.append (Lf);
+		}
+		lineStart = nextStart;
+	}
+	return result.toString ();
+}
+
 static String withCrLf (String string) {
 
 	/* If the string is empty, return the string. */

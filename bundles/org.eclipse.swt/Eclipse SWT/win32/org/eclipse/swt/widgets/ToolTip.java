@@ -226,6 +226,23 @@ public boolean getVisible () {
 	return false;
 }
 
+int getWidth () {
+	long /*int*/ hwnd = parent.handle;
+	int maxWidth = 0;
+	if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (4, 10)) {
+		RECT rect = new RECT ();
+		OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
+		maxWidth = rect.right - rect.left;
+	} else {
+		long /*int*/ hmonitor = OS.MonitorFromWindow (hwnd, OS.MONITOR_DEFAULTTONEAREST);
+		MONITORINFO lpmi = new MONITORINFO ();
+		lpmi.cbSize = MONITORINFO.sizeof;
+		OS.GetMonitorInfo (hmonitor, lpmi);
+		maxWidth = lpmi.rcWork_right - lpmi.rcWork_left;
+	}
+	return maxWidth /= 4;
+}
+
 long /*int*/ hwndToolTip () {
 	return (style & SWT.BALLOON) != 0 ? parent.balloonTipHandle () : parent.toolTipHandle ();
 }
@@ -459,19 +476,7 @@ public void setVisible (boolean visible) {
 		} else {
 			shell.setToolTipTitle (hwndToolTip, null, 0);
 		}
-		int maxWidth = 0;
-		if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (4, 10)) {
-			RECT rect = new RECT ();
-			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
-			maxWidth = (rect.right - rect.left) / 4;
-		} else {
-			long /*int*/ hmonitor = OS.MonitorFromWindow (hwnd, OS.MONITOR_DEFAULTTONEAREST);
-			MONITORINFO lpmi = new MONITORINFO ();
-			lpmi.cbSize = MONITORINFO.sizeof;
-			OS.GetMonitorInfo (hmonitor, lpmi);
-			maxWidth = (lpmi.rcWork_right - lpmi.rcWork_left) / 4;
-		}
-		OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, maxWidth);
+		OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, getWidth ());
 		if (visible) {
 			int nX = x, nY = y;
 			if (!hasLocation) {
