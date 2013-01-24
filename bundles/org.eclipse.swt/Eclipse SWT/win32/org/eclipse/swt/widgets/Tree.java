@@ -4325,6 +4325,7 @@ public void select (TreeItem item) {
 		}
 		return;
 	}
+	expandToItem(item);
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 	tvItem.stateMask = OS.TVIS_SELECTED;
@@ -4873,6 +4874,7 @@ void setSelection (long /*int*/ hItem, TVITEM tvItem, TreeItem [] selection) {
 			}
 		} else {
 			if (index != selection.length) {
+				expandToItem(_getItem(hItem));
 				tvItem.state = OS.TVIS_SELECTED;
 				OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 			}
@@ -5025,6 +5027,7 @@ public void setSelection (TreeItem [] items) {
 					}
 				} else {
 					if (index != length) {
+						expandToItem(item);
 						tvItem.state = OS.TVIS_SELECTED;
 						OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 					}
@@ -5033,6 +5036,14 @@ public void setSelection (TreeItem [] items) {
 		}
 	}
 	OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, oldProc);
+}
+
+void expandToItem(TreeItem item) {
+	TreeItem parentItem = item.getParentItem();
+	if (parentItem != null && !parentItem.getExpanded()) {
+		expandToItem(parentItem);
+		parentItem.setExpanded(true);
+	}
 }
 
 /**
