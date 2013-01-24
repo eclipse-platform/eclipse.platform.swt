@@ -108,6 +108,10 @@
 #define gtk_cell_renderer_get_preferred_size_LIB LIB_GTK
 #define gtk_cell_renderer_get_size_LIB LIB_GTK
 #define gtk_color_selection_dialog_get_color_selection_LIB LIB_GTK
+#define gtk_color_chooser_get_rgba_LIB LIB_GTK
+#define gtk_color_chooser_dialog_new_LIB LIB_GTK
+#define gtk_color_chooser_set_rgba_LIB LIB_GTK
+#define gtk_color_chooser_set_use_alpha_LIB LIB_GTK
 #define gtk_combo_box_entry_new_text_LIB LIB_GTK
 #define gtk_combo_box_new_text_LIB LIB_GTK
 #define gtk_combo_box_text_insert_LIB LIB_GTK

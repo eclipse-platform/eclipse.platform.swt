@@ -181,6 +181,8 @@
 #define NO__1gtk_1style_1context_1restore
 #define NO__1gtk_1style_1context_1save
 #define NO__1gtk_1style_1context_1set_1state
+#define NO__1gtk_1color_1chooser_1get_1rgba
+#define NO__1gtk_1color_1chooser_1set_1rgba
 
 #endif
 

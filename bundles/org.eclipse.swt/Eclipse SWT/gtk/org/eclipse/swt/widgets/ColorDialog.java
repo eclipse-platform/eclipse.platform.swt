@@ -126,39 +126,51 @@ public RGB[] getRGBs() {
  */
 public RGB open () {
 	byte [] buffer = Converter.wcsToMbcs (null, title, true);
-	long /*int*/ handle = OS.gtk_color_selection_dialog_new (buffer);
+	long /*int*/ handle = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(3, 4, 0)) {
+		handle = OS.gtk_color_chooser_dialog_new(buffer, parent.topHandle());
+	} else {
+		handle = OS.gtk_color_selection_dialog_new(buffer);
+	}
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
-	if (parent != null) {
-		long /*int*/ shellHandle = parent.topHandle ();
-		OS.gtk_window_set_transient_for (handle, shellHandle);
-		long /*int*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
-		if (pixbufs != 0) {
-			OS.gtk_window_set_icon_list (handle, pixbufs);
-			OS.g_list_free (pixbufs);
+	long /*int*/ colorsel = 0;
+	GdkColor color = new GdkColor();
+	GdkRGBA rgba = new GdkRGBA();
+	if (OS.GTK_VERSION <= OS.VERSION(3, 4, 0)){
+		if (parent != null) {
+			long /*int*/ shellHandle = parent.topHandle ();
+			OS.gtk_window_set_transient_for (handle, shellHandle);
+			long /*int*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
+			if (pixbufs != 0) {
+				OS.gtk_window_set_icon_list (handle, pixbufs);
+				OS.g_list_free (pixbufs);
+			}
 		}
-	}
-	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-		long /*int*/ group = OS.gtk_window_get_group(0);
-		OS.gtk_window_group_add_window (group, handle);
-	}
-	OS.gtk_window_set_modal (handle, true);
-	long /*int*/ colorsel;
-	if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)) {
-		colorsel = OS.gtk_color_selection_dialog_get_color_selection(handle);
-	} else{
-		GtkColorSelectionDialog dialog = new GtkColorSelectionDialog ();
-		OS.memmove (dialog, handle);
-		colorsel = dialog.colorsel;
+		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
+			long /*int*/ group = OS.gtk_window_get_group(0);
+			OS.gtk_window_group_add_window (group, handle);
+		}
+		OS.gtk_window_set_modal (handle, true);
+
+		if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)) {
+			colorsel = OS.gtk_color_selection_dialog_get_color_selection(handle);
+		} else{
+			GtkColorSelectionDialog dialog = new GtkColorSelectionDialog ();
+			OS.memmove (dialog, handle);
+			colorsel = dialog.colorsel;
+		}
+		if (rgb != null) {
+			color.red = (short)((rgb.red & 0xFF) | ((rgb.red & 0xFF) << 8));
+			color.green = (short)((rgb.green & 0xFF) | ((rgb.green & 0xFF) << 8));
+			color.blue = (short)((rgb.blue & 0xFF) | ((rgb.blue & 0xFF) << 8));
+			OS.gtk_color_selection_set_current_color (colorsel, color);
+		}
+		OS.gtk_color_selection_set_has_palette (colorsel, true);
+	} else {
+		OS.gtk_color_chooser_set_use_alpha(handle,false); 
+		OS.gtk_color_chooser_set_rgba(handle, rgba);
 	}
 	
-	GdkColor color = new GdkColor();
-	if (rgb != null) {
-		color.red = (short)((rgb.red & 0xFF) | ((rgb.red & 0xFF) << 8));
-		color.green = (short)((rgb.green & 0xFF) | ((rgb.green & 0xFF) << 8));
-		color.blue = (short)((rgb.blue & 0xFF) | ((rgb.blue & 0xFF) << 8));
-		OS.gtk_color_selection_set_current_color (colorsel, color);
-	}
-	OS.gtk_color_selection_set_has_palette (colorsel, true);
 	if (rgbs != null) {
 		long /*int*/ colors = OS.g_malloc(GdkColor.sizeof * rgbs.length);
 		for (int i=0; i<rgbs.length; i++) {
@@ -210,11 +222,23 @@ public RGB open () {
 	}
 	boolean success = response == OS.GTK_RESPONSE_OK; 
 	if (success) {
-		OS.gtk_color_selection_get_current_color (colorsel, color);
-		int red = (color.red >> 8) & 0xFF;
-		int green = (color.green >> 8) & 0xFF;
-		int blue = (color.blue >> 8) & 0xFF;
-		rgb = new RGB (red, green, blue);
+		int red = 0;
+		int green = 0;
+		int blue = 0;
+	  if (OS.GTK_VERSION >= OS.VERSION(3, 4, 0)){
+		  OS.gtk_color_chooser_get_rgba(handle, rgba);
+		  red =  (int) (rgba.red * 255);
+		  green = (int) (rgba.green * 255);
+		  blue =  (int) (rgba.blue *  255);
+	  } else {
+		  OS.gtk_color_selection_get_current_color (colorsel, color);
+		  red = (color.red >> 8) & 0xFF;
+		  green = (color.green >> 8) & 0xFF;
+		  blue = (color.blue >> 8) & 0xFF;
+
+	  }
+	  rgb = new RGB (red, green, blue); 
+		
 	}
 	long /*int*/ settings = OS.gtk_settings_get_default ();
 	if (settings != 0) {

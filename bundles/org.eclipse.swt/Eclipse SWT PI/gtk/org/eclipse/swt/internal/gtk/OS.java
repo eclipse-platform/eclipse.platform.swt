@@ -6511,6 +6511,32 @@ public static final long /*int*/ gtk_color_selection_dialog_new(byte[] title) {
 		lock.unlock();
 	}
 }
+/** 
+ * @method flags=dynamic
+ * @param title cast=(const gchar *)
+ * @param parent cast=(GtkWindow *)
+ */
+public static final native long /*int*/ _gtk_color_chooser_dialog_new (byte[] title, long /*int*/ parent);
+public static final long /*int*/  gtk_color_chooser_dialog_new (byte[] title, long /*int*/ parent) {
+	lock.lock();
+	try {
+		return _gtk_color_chooser_dialog_new (title, parent);
+	} finally {
+		lock.unlock();
+	}
+}
+/** 
+ * @method flags=dynamic
+ */
+public static final native void _gtk_color_chooser_set_use_alpha (long /*int*/ chooser, boolean use_alpha);
+public static final void  gtk_color_chooser_set_use_alpha (long /*int*/ chooser, boolean use_alpha) {
+	lock.lock();
+	try {
+		 _gtk_color_chooser_set_use_alpha (chooser, use_alpha);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @method flags=dynamic
  * @param color_dialog cast=(GtkColorSelectionDialog *)
@@ -6520,6 +6546,30 @@ public static final long /*int*/ gtk_color_selection_dialog_get_color_selection(
 	lock.lock();
 	try {
 		return _gtk_color_selection_dialog_get_color_selection(color_dialog);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_color_chooser_set_rgba(long /*int*/ chooser, GdkRGBA color);
+public static final void  gtk_color_chooser_get_rgba(long /*int*/ chooser, GdkRGBA color) {
+	lock.lock();
+	try {
+		 _gtk_color_chooser_get_rgba(chooser, color);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_color_chooser_get_rgba(long /*int*/ chooser, GdkRGBA color);
+public static final void  gtk_color_chooser_set_rgba(long /*int*/ chooser, GdkRGBA color) {
+	lock.lock();
+	try {
+		 _gtk_color_chooser_set_rgba(chooser, color);
 	} finally {
 		lock.unlock();
 	}
