@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -49,6 +49,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1VtblCall__II",
 #else
 	"_1VtblCall__IJ",
+#endif
+#ifndef JNI64
+	"_1VtblCall__IIB",
+#else
+	"_1VtblCall__IJB",
 #endif
 #ifndef JNI64
 	"_1VtblCall__IID",

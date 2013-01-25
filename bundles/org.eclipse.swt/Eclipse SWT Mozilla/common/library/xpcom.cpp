@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -208,6 +208,31 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IJ)(JNIEnv *env, jclass that, ji
 	XPCOM_NATIVE_EXIT(env, that, _1VtblCall__II_FUNC);
 #else
 	XPCOM_NATIVE_EXIT(env, that, _1VtblCall__IJ_FUNC);
+#endif
+	return rc;
+}
+#endif
+
+#if (!defined(NO__1VtblCall__IIB) && !defined(JNI64)) || (!defined(NO__1VtblCall__IJB) && defined(JNI64))
+#ifndef JNI64
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IIB)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jbyte arg2);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IIB)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jbyte arg2)
+#else
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IJB)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jbyte arg2);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1VtblCall__IJB)(JNIEnv *env, jclass that, jint arg0, jintLong arg1, jbyte arg2)
+#endif
+{
+	jint rc = 0;
+#ifndef JNI64
+	XPCOM_NATIVE_ENTER(env, that, _1VtblCall__IIB_FUNC);
+#else
+	XPCOM_NATIVE_ENTER(env, that, _1VtblCall__IJB_FUNC);
+#endif
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jbyte))(*(jintLong **)arg1)[arg0])(arg1, arg2);
+#ifndef JNI64
+	XPCOM_NATIVE_EXIT(env, that, _1VtblCall__IIB_FUNC);
+#else
+	XPCOM_NATIVE_EXIT(env, that, _1VtblCall__IJB_FUNC);
 #endif
 	return rc;
 }

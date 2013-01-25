@@ -92,6 +92,13 @@ public class nsIVariant extends nsISupports {
 	}
 
 	public int GetAsBool(int[] _retval) {
+		/* mozilla's representation of boolean changed from 4 bytes to 1 byte as of XULRunner 4.x */
+		if (nsISupports.IsXULRunner10) {
+			byte[] byteValue = new byte[1];
+			int rc = XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), byteValue);
+			_retval[0] = (int)byteValue[0];
+			return rc;
+		}
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), _retval);
 	}
 

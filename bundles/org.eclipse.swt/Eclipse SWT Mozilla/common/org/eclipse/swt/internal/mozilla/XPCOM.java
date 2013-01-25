@@ -643,6 +643,15 @@ static final int VtblCall(int fnNumber, long /*int*/ ppVtbl) {
 	}
 }
 
+static final native int _VtblCall(int fnNumber, long /*int*/ ppVtbl, byte arg0);
+static final int VtblCall(int fnNumber, long /*int*/ ppVtbl, byte arg0) {
+	lock.lock();
+	try {
+		return _VtblCall(fnNumber, ppVtbl, arg0);
+	} finally {
+		lock.unlock();
+	}
+}
 static final native int _VtblCall(int fnNumber, long /*int*/ ppVtbl, byte[] arg0);
 static final int VtblCall(int fnNumber, long /*int*/ ppVtbl, byte[] arg0) {
 	lock.lock();
