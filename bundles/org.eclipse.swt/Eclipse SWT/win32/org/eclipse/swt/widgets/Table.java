@@ -6474,8 +6474,11 @@ LRESULT WM_HSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 			boolean [] visible = new boolean [columnCount];
 			for (int i=0; i<columnCount; i++) {
 				visible [i] = true;
-				if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, headerRect) != 0) {
-					OS.MapWindowPoints (hwndHeader, handle, headerRect, 2);
+				headerRect.top = i;
+				headerRect.left = OS.LVIR_BOUNDS;
+				if (OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, 0, headerRect) != 0) {
+					headerRect.top = rect.top;
+					headerRect.bottom = rect.bottom;
 					visible [i] = OS.IntersectRect(headerRect, rect, headerRect);
 				}
 			}
@@ -6573,8 +6576,11 @@ LRESULT WM_VSCROLL (long /*int*/ wParam, long /*int*/ lParam) {
 			boolean [] visible = new boolean [columnCount];
 			for (int i=0; i<columnCount; i++) {
 				visible [i] = true;
-				if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, headerRect) != 0) {
-					OS.MapWindowPoints (hwndHeader, handle, headerRect, 2);
+				headerRect.top = i;
+				headerRect.left = OS.LVIR_BOUNDS;
+				if (OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, 0, headerRect) != 0) {
+					headerRect.top = rect.top;
+					headerRect.bottom = rect.bottom;
 					visible [i] = OS.IntersectRect(headerRect, rect, headerRect);
 				}
 			}
