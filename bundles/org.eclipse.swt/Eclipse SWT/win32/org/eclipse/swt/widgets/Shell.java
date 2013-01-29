@@ -2519,7 +2519,7 @@ LRESULT WM_SYSCOMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 	if (result != null) return result;
 	/*
 	* Feature in Windows.  When the last visible window in
-	* a process minimized, Windows swaps out the memory for
+	* a process is minimized, Windows swaps out the memory for
 	* the process.  The assumption is that the user can no
 	* longer interact with the window, so the memory can be
 	* released to other applications.  However, for programs
@@ -2538,6 +2538,15 @@ LRESULT WM_SYSCOMMAND (long /*int*/ wParam, long /*int*/ lParam) {
 		int cmd = (int)/*64*/wParam & 0xFFF0;
 		switch (cmd) {
 			case OS.SC_MINIMIZE:
+				Shell [] shells = display.getShells ();
+				int count = 0;
+				for (int i = 0; i < shells.length; i++) {
+					Shell shell = shells [i];
+					if (shell != null && shell.getVisible () && !shell.getMinimized ()) {
+						count++;
+					}
+				}
+				if (count > 1) break;
 				long memory = Runtime.getRuntime ().totalMemory ();
 				if (memory >= 32 * 1024 * 1024) {
 					OS.ShowWindow (handle, OS.SW_SHOWMINIMIZED);
