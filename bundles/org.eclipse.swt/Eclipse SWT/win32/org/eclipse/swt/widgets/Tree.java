@@ -5043,6 +5043,9 @@ void expandToItem(TreeItem item) {
 	if (parentItem != null && !parentItem.getExpanded()) {
 		expandToItem(parentItem);
 		parentItem.setExpanded(true);
+		Event event = new Event ();
+		event.item = parentItem;
+		sendEvent (SWT.Expand, event);
 	}
 }
 
