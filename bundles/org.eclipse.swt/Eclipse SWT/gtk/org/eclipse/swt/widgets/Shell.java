@@ -1902,7 +1902,7 @@ void setInitialBounds () {
 	int width, height;
 	if ((state & FOREIGN_HANDLE) != 0) {
 		GtkAllocation allocation = new GtkAllocation ();
-		OS.gtk_widget_get_allocation (shellHandle, allocation);
+		gtk_widget_get_allocation (shellHandle, allocation);
 		width = allocation.width;
 		height = allocation.height;
 	} else {
