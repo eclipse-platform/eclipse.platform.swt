@@ -3364,7 +3364,12 @@ int getSelection (long /*int*/ hItem, TVITEM tvItem, TreeItem [] selection, int 
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
 				if (selection != null && index < selection.length) {
-					selection [index] = _getItem (hItem, (int)/*64*/tvItem.lParam);
+					TreeItem item = _getItem (hItem, (int)/*64*/tvItem.lParam);
+					if (item != null) {
+						selection [index] = item;
+					} else {
+						index--;
+					}
 				}
 				index++;
 			}
@@ -3375,7 +3380,12 @@ int getSelection (long /*int*/ hItem, TVITEM tvItem, TreeItem [] selection, int 
 				if (tvItem != null && selection != null && index < selection.length) {
 					tvItem.hItem = hItem;
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-					selection [index] = _getItem (hItem, (int)/*64*/tvItem.lParam);
+					TreeItem item = _getItem (hItem, (int)/*64*/tvItem.lParam);
+					if (item != null) {
+						selection [index] = item;
+					} else {
+						index--;
+					}
 				}
 				index++;
 			}
@@ -3423,7 +3433,9 @@ public TreeItem [] getSelection () {
 		tvItem.hItem = hItem;
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 		if ((tvItem.state & OS.TVIS_SELECTED) == 0) return new TreeItem [0];
-		return new TreeItem [] {_getItem (tvItem.hItem, (int)/*64*/tvItem.lParam)};
+		TreeItem item = _getItem (tvItem.hItem, (int)/*64*/tvItem.lParam);
+		if (item == null) return new TreeItem [0];
+		return new TreeItem [] {item};
 	}
 	int count = 0;
 	TreeItem [] guess = new TreeItem [(style & SWT.VIRTUAL) != 0 ? 8 : 1];
