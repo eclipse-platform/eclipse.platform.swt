@@ -912,9 +912,11 @@ protected void create (DeviceData data) {
 }
 
 void createDisplay (DeviceData data) {
-	/* Required for g_main_context_wakeup */
-	if (!OS.g_thread_supported ()) {
-		OS.g_thread_init (0);
+	if (OS.GLIB_VERSION < OS.VERSION(2, 32, 0)) {
+		/* Required for g_main_context_wakeup */
+		if (!OS.g_thread_supported()) {
+			OS.g_thread_init(0);
+		}
 	}
 	if (OS.GTK_VERSION < OS.VERSION(2, 24, 0)) {
 	    OS.gtk_set_locale();

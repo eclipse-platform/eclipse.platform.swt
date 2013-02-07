@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -4145,7 +4145,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1thread_1init)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1g_1thread_1init_FUNC);
+/*
 	g_thread_init((GThreadFunctions *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, g_thread_init)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GThreadFunctions *))fp)((GThreadFunctions *)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1g_1thread_1init_FUNC);
 }
 #endif
@@ -4156,7 +4164,15 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1thread_1supported)
 {
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, _1g_1thread_1supported_FUNC);
+/*
 	rc = (jboolean)g_thread_supported();
+*/
+	{
+		OS_LOAD_FUNCTION(fp, g_thread_supported)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)())fp)();
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1g_1thread_1supported_FUNC);
 	return rc;
 }
