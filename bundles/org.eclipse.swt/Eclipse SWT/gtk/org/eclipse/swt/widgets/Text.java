@@ -232,6 +232,9 @@ void createHandle (int index) {
 	}
 	if (OS.GTK3) {
 		imContext = OS.imContextLast();
+		if ((style & SWT.SINGLE) != 0) {
+			OS.gtk_entry_set_width_chars(handle, 6);
+		}
 	}
 }
 

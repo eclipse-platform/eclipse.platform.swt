@@ -10027,6 +10027,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1entry_1set_1visibility)
 }
 #endif
 
+#ifndef NO__1gtk_1entry_1set_1width_1chars
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1entry_1set_1width_1chars)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1entry_1set_1width_1chars_FUNC);
+	gtk_entry_set_width_chars((GtkEntry *)arg0, (gint)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1entry_1set_1width_1chars_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1entry_1text_1index_1to_1layout_1index
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1entry_1text_1index_1to_1layout_1index)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)

@@ -755,6 +755,7 @@ typedef enum {
 	_1gtk_1entry_1set_1placeholder_1text_FUNC,
 	_1gtk_1entry_1set_1text_FUNC,
 	_1gtk_1entry_1set_1visibility_FUNC,
+	_1gtk_1entry_1set_1width_1chars_FUNC,
 	_1gtk_1entry_1text_1index_1to_1layout_1index_FUNC,
 	_1gtk_1enumerate_1printers_FUNC,
 	_1gtk_1expander_1get_1expanded_FUNC,
