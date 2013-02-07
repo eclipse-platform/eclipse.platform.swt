@@ -127,16 +127,16 @@ public RGB[] getRGBs() {
 public RGB open () {
 	byte [] buffer = Converter.wcsToMbcs (null, title, true);
 	long /*int*/ handle = 0;
-	if (OS.GTK_VERSION >= OS.VERSION(3, 4, 0)) {
-		handle = OS.gtk_color_chooser_dialog_new(buffer, parent.topHandle());
+	if (OS.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
+		handle = OS.gtk_color_chooser_dialog_new (buffer, parent.topHandle ());
 	} else {
-		handle = OS.gtk_color_selection_dialog_new(buffer);
+		handle = OS.gtk_color_selection_dialog_new (buffer);
 	}
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
 	long /*int*/ colorsel = 0;
-	GdkColor color = new GdkColor();
-	GdkRGBA rgba = new GdkRGBA();
-	if (OS.GTK_VERSION <= OS.VERSION(3, 4, 0)){
+	GdkColor color = new GdkColor ();
+	GdkRGBA rgba = new GdkRGBA ();
+	if (OS.GTK_VERSION <= OS.VERSION (3, 4, 0)) {
 		if (parent != null) {
 			long /*int*/ shellHandle = parent.topHandle ();
 			OS.gtk_window_set_transient_for (handle, shellHandle);
@@ -147,14 +147,14 @@ public RGB open () {
 			}
 		}
 		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-			long /*int*/ group = OS.gtk_window_get_group(0);
+			long /*int*/ group = OS.gtk_window_get_group (0);
 			OS.gtk_window_group_add_window (group, handle);
 		}
 		OS.gtk_window_set_modal (handle, true);
 
-		if (OS.GTK_VERSION >= OS.VERSION(2, 14, 0)) {
-			colorsel = OS.gtk_color_selection_dialog_get_color_selection(handle);
-		} else{
+		if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
+			colorsel = OS.gtk_color_selection_dialog_get_color_selection (handle);
+		} else {
 			GtkColorSelectionDialog dialog = new GtkColorSelectionDialog ();
 			OS.memmove (dialog, handle);
 			colorsel = dialog.colorsel;
@@ -167,8 +167,8 @@ public RGB open () {
 		}
 		OS.gtk_color_selection_set_has_palette (colorsel, true);
 	} else {
-		OS.gtk_color_chooser_set_use_alpha(handle,false); 
-		OS.gtk_color_chooser_set_rgba(handle, rgba);
+		OS.gtk_color_chooser_set_use_alpha (handle, false); 
+		OS.gtk_color_chooser_set_rgba (handle, rgba);
 	}
 	
 	if (rgbs != null) {
@@ -225,20 +225,18 @@ public RGB open () {
 		int red = 0;
 		int green = 0;
 		int blue = 0;
-	  if (OS.GTK_VERSION >= OS.VERSION(3, 4, 0)){
-		  OS.gtk_color_chooser_get_rgba(handle, rgba);
-		  red =  (int) (rgba.red * 255);
-		  green = (int) (rgba.green * 255);
-		  blue =  (int) (rgba.blue *  255);
-	  } else {
-		  OS.gtk_color_selection_get_current_color (colorsel, color);
-		  red = (color.red >> 8) & 0xFF;
-		  green = (color.green >> 8) & 0xFF;
-		  blue = (color.blue >> 8) & 0xFF;
-
-	  }
-	  rgb = new RGB (red, green, blue); 
-		
+		if (OS.GTK_VERSION >= OS.VERSION (3, 4, 0)) {
+			OS.gtk_color_chooser_get_rgba (handle, rgba);
+			red =  (int) (rgba.red * 255);
+			green = (int) (rgba.green * 255);
+			blue =  (int) (rgba.blue *  255);
+		} else {
+			OS.gtk_color_selection_get_current_color (colorsel, color);
+			red = (color.red >> 8) & 0xFF;
+			green = (color.green >> 8) & 0xFF;
+			blue = (color.blue >> 8) & 0xFF;
+		}
+		rgb = new RGB (red, green, blue); 
 	}
 	long /*int*/ settings = OS.gtk_settings_get_default ();
 	if (settings != 0) {
