@@ -167,7 +167,12 @@ public RGB open () {
 		}
 		OS.gtk_color_selection_set_has_palette (colorsel, true);
 	} else {
-		OS.gtk_color_chooser_set_use_alpha (handle, false); 
+		if (rgb != null) {
+			rgba.red = (double) rgb.red / 255;
+			rgba.green = (double) rgb.green / 255;
+			rgba.blue = (double) rgb.blue / 255;
+		}
+		OS.gtk_color_chooser_set_use_alpha (handle, false);
 		OS.gtk_color_chooser_set_rgba (handle, rgba);
 	}
 	
@@ -236,7 +241,7 @@ public RGB open () {
 			green = (color.green >> 8) & 0xFF;
 			blue = (color.blue >> 8) & 0xFF;
 		}
-		rgb = new RGB (red, green, blue); 
+		rgb = new RGB (red, green, blue);
 	}
 	long /*int*/ settings = OS.gtk_settings_get_default ();
 	if (settings != 0) {
