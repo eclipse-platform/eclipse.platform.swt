@@ -306,7 +306,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	state |= CANVAS;
-	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0 || findThemeControl () == parent) {
 		state |= THEME_BACKGROUND;
 	}
 	if ((style & SWT.TRANSPARENT) != 0) {
