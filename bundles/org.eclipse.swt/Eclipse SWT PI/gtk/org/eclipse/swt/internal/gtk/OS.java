@@ -7129,6 +7129,19 @@ public static final long /*int*/ gtk_entry_get_inner_border (long /*int*/ entry)
 		lock.unlock();
 	}
 }
+/** 
+ * @param self cast=(GtkEntry *)
+ * @param n_chars cast=(gint)
+ */
+public static final native void  _gtk_entry_set_width_chars (long /*int*/ self, int n_chars);
+public static final void  gtk_entry_set_width_chars (long /*int*/ self, int n_chars) {
+	lock.lock();
+	try {
+		_gtk_entry_set_width_chars(self, n_chars);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param entry cast=(GtkEntry *) */
 public static final native char _gtk_entry_get_invisible_char(long /*int*/ entry);
 public static final char gtk_entry_get_invisible_char(long /*int*/ entry) {

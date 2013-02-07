@@ -745,6 +745,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1entry_1set_1placeholder_1text",
 	"_1gtk_1entry_1set_1text",
 	"_1gtk_1entry_1set_1visibility",
+	"_1gtk_1entry_1set_1width_1chars",
 	"_1gtk_1entry_1text_1index_1to_1layout_1index",
 	"_1gtk_1enumerate_1printers",
 	"_1gtk_1expander_1get_1expanded",
