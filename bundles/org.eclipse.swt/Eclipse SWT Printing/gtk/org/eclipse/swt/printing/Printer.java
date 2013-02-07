@@ -69,8 +69,10 @@ public final class Printer extends Device {
 	static boolean disablePrinting = System.getProperty("org.eclipse.swt.internal.gtk.disablePrinting") != null; //$NON-NLS-1$
 	
 static void gtk_init() {
-	if (!OS.g_thread_supported ()) {
-		OS.g_thread_init (0);
+	if (OS.GLIB_VERSION < OS.VERSION(2, 32, 0)) {
+		if (!OS.g_thread_supported()) {
+			OS.g_thread_init(0);
+		}
 	}
 	if (OS.GTK_VERSION < OS.VERSION(2, 24, 0)) {
 	    OS.gtk_set_locale();
