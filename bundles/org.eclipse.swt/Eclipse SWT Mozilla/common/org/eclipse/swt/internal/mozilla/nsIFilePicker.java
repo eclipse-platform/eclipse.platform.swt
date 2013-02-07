@@ -29,13 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIFilePicker extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 15;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 18 :15);
 
 	public static final String NS_IFILEPICKER_IID_STR =
 		"c47de916-1dd1-11b2-8141-82507fa02b21";
+	
+	public static final String NS_IFILEPICKER_17_IID_STR =
+		"f2c0e216-5d07-4df4-bbcb-37683077ae7e";
 
 	public static final nsID NS_IFILEPICKER_IID =
 		new nsID(NS_IFILEPICKER_IID_STR);
+	
+	public static final nsID NS_IFILEPICKER_17_IID =
+		new nsID(NS_IFILEPICKER_17_IID_STR);
 
 	public nsIFilePicker(long /*int*/ address) {
 		super(address);
@@ -113,6 +119,6 @@ public class nsIFilePicker extends nsISupports {
 	}
 
 	public int Show(long /*int*/ _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 15, getAddress(), _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 17 : 15), getAddress(), _retval);
 	}
 }

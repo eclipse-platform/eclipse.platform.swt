@@ -34,8 +34,14 @@ public class nsIComponentManager extends nsISupports {
 	public static final String NS_ICOMPONENTMANAGER_IID_STR =
 		"a88e5a60-205a-4bb1-94e1-2628daf51eae";
 
+	public static final String NS_ICOMPONENTMANAGER_17_IID_STR =
+			"1d940426-5fe5-42c3-84ae-a300f2d9ebd5";
+
 	public static final nsID NS_ICOMPONENTMANAGER_IID =
-		new nsID(NS_ICOMPONENTMANAGER_IID_STR);
+			new nsID(NS_ICOMPONENTMANAGER_IID_STR);
+		
+	public static final nsID NS_ICOMPONENTMANAGER_17_IID =
+		new nsID(NS_ICOMPONENTMANAGER_17_IID_STR);
 
 	public nsIComponentManager(long /*int*/ address) {
 		super(address);

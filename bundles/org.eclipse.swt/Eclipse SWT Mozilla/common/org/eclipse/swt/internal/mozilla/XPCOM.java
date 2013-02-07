@@ -619,8 +619,8 @@ public static final int Call(long /*int*/ ptr, long /*int*/ aLibXULDirectory, lo
 
 /**
  * @param ptr cast=(SWT_XREInitEmbedding2)
- * @param aLibXULDirectory cast=(nsILocalFile *)
- * @param aAppDirectory cast=(nsILocalFile *)
+ * @param aLibXULDirectory cast=(nsIFile *)
+ * @param aAppDirectory cast=(nsIFile *)
  * @param aAppDirProvider cast=(nsIDirectoryServiceProvider *)
  */
 public static final native int _Call(long /*int*/ ptr, long /*int*/ aLibXULDirectory, long /*int*/ aAppDirectory, long /*int*/ aAppDirProvider);

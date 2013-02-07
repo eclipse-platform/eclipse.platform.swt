@@ -57,7 +57,7 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(_1Call__JJJJ)(JNIEnv *env, jclass that, jint
 #else
 	XPCOM_NATIVE_ENTER(env, that, _1Call__JJJJ_FUNC);
 #endif
-	rc = (jint)((SWT_XREInitEmbedding2)arg0)((nsILocalFile *)arg1, (nsILocalFile *)arg2, (nsIDirectoryServiceProvider *)arg3);
+	rc = (jint)((SWT_XREInitEmbedding2)arg0)((nsIFile *)arg1, (nsIFile *)arg2, (nsIDirectoryServiceProvider *)arg3);
 #ifndef JNI64
 	XPCOM_NATIVE_EXIT(env, that, _1Call__IIII_FUNC);
 #else

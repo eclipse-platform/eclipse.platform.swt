@@ -36,6 +36,12 @@ public class nsIWebBrowserChrome extends nsISupports {
 
 	public static final nsID NS_IWEBBROWSERCHROME_IID =
 		new nsID(NS_IWEBBROWSERCHROME_IID_STR);
+	
+	public static final String NS_IWEBBROWSERCHROME_17_IID_STR =
+		"e8c414c4-dc38-4ba3-ab4e-ec4cbbe22907";
+
+	public static final nsID NS_IWEBBROWSERCHROME_17_IID =
+		new nsID(NS_IWEBBROWSERCHROME_17_IID_STR);
 
 	public nsIWebBrowserChrome(long /*int*/ address) {
 		super(address);

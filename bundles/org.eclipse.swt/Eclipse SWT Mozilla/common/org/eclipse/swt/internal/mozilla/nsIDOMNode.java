@@ -29,19 +29,25 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMNode extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 36 : 25);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10 || IsXULRunner17) ? 36 : 25);
 
 	public static final String NS_IDOMNODE_IID_STR =
 		"a6cf907c-15b3-11d2-932e-00805f8add32";
 
 	public static final String NS_IDOMNODE_10_IID_STR =
 		"ce82fb71-60f2-4c38-be31-de5f2f90dada";
+	
+	public static final String NS_IDOMNODE_17_IID_STR =
+		"5e9bcec9-5928-4f77-8a9c-424ef01c20e1";
 
 	public static final nsID NS_IDOMNODE_IID =
 		new nsID(NS_IDOMNODE_IID_STR);
 
 	public static final nsID NS_IDOMNODE_10_IID =
 		new nsID(NS_IDOMNODE_10_IID_STR);
+
+	public static final nsID NS_IDOMNODE_17_IID =
+		new nsID(NS_IDOMNODE_17_IID_STR);
 
 	public nsIDOMNode(long /*int*/ address) {
 		super(address);

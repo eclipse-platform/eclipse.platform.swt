@@ -36,6 +36,12 @@ public class nsIAppShell extends nsISupports {
 
 	public static final nsID NS_IAPPSHELL_IID =
 		new nsID(NS_IAPPSHELL_IID_STR);
+	
+	public static final String NS_IAPPSHELL_IID_17_STR =
+			"2d10ca53-f143-439a-bb2e-c1fbc71f6a05";
+
+	public static final nsID NS_IAPPSHELL_17_IID =
+			new nsID(NS_IAPPSHELL_IID_17_STR);
 
 	public nsIAppShell(long /*int*/ address) {
 		super(address);

@@ -104,19 +104,19 @@ public class nsIBaseWindow extends nsISupports {
 	}
 
 	public int GetVisibility(int[] aVisibility) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 15, getAddress(), aVisibility);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 16 : 15), getAddress(), aVisibility);
 	}
 
 	public int SetVisibility(int aVisibility) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 16, getAddress(), aVisibility);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 17 : 16), getAddress(), aVisibility);
 	}
 
 	public int GetEnabled(int[] aEnabled) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 17, getAddress(), aEnabled);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 18 : 17), getAddress(), aEnabled);
 	}
 
 	public int SetEnabled(int aEnabled) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 18, getAddress(), aEnabled);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 19 : 18), getAddress(), aEnabled);
 	}
 
 	public int GetBlurSuppression(int[] aBlurSuppression) {
@@ -130,18 +130,18 @@ public class nsIBaseWindow extends nsISupports {
 	}
 
 	public int GetMainWidget(long /*int*/[] aMainWidget) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 19 : 21), getAddress(), aMainWidget);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 20 : (IsXULRunner10 ? 19 : 21)), getAddress(), aMainWidget);
 	}
 
 	public int SetFocus() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 20 : 22), getAddress());
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 21 : (IsXULRunner10 ? 20 : 22)), getAddress());
 	}
 
 	public int GetTitle(long /*int*/[] aTitle) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 21 : 23), getAddress(), aTitle);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 22 : (IsXULRunner10 ? 21 : 23)), getAddress(), aTitle);
 	}
 
 	public int SetTitle(char[] aTitle) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 22 : 24), getAddress(), aTitle);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 23 : (IsXULRunner10 ? 22 : 24)), getAddress(), aTitle);
 	}
 }

@@ -33,9 +33,15 @@ public class nsIInputStream extends nsISupports {
 
 	public static final String NS_IINPUTSTREAM_IID_STR =
 		"fa9c7f6c-61b3-11d4-9877-00c04fa0cf4a";
+	
+	public static final String NS_IINPUTSTREAM_17_IID_STR =
+		"53cdbc97-c2d7-4e30-b2c3-45b2ee79db18";
 
 	public static final nsID NS_IINPUTSTREAM_IID =
 		new nsID(NS_IINPUTSTREAM_IID_STR);
+	
+	public static final nsID NS_IINPUTSTREAM_17_IID =
+		new nsID(NS_IINPUTSTREAM_17_IID_STR);
 
 	public nsIInputStream(long /*int*/ address) {
 		super(address);

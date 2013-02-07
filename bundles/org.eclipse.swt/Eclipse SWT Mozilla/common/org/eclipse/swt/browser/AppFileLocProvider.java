@@ -220,7 +220,7 @@ int getFiles (long /*int*/ prop, long /*int*/ _retval) {
 
 				nsILocalFile localFile = new nsILocalFile (result[0]);
 				result[0] = 0;
-				rc = localFile.QueryInterface (nsIFile.NS_IFILE_IID, result); 
+				rc = localFile.QueryInterface (Mozilla.Is_17 ? nsIFile.NS_IFILE_17_IID : nsIFile.NS_IFILE_IID, result);
 				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 				if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
 				localFile.Release ();
@@ -315,7 +315,7 @@ int getFile(long /*int*/ prop, long /*int*/ persistent, long /*int*/ _retval) {
 		
 		nsILocalFile localFile = new nsILocalFile (result [0]);
 		result[0] = 0;
-	    rc = localFile.QueryInterface (nsIFile.NS_IFILE_IID, result); 
+	    rc = localFile.QueryInterface (Mozilla.Is_17 ? nsIFile.NS_IFILE_17_IID : nsIFile.NS_IFILE_IID, result); 
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
 

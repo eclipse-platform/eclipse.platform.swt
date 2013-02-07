@@ -29,19 +29,25 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMDocument extends nsIDOMNode {
 
-	static final int LAST_METHOD_ID = nsIDOMNode.LAST_METHOD_ID + (IsXULRunner10 ? 61 : 17);
+	static final int LAST_METHOD_ID = nsIDOMNode.LAST_METHOD_ID + (IsXULRunner17 ? 63 : (IsXULRunner10 ? 61 : 17));
 
 	public static final String NS_IDOMDOCUMENT_IID_STR =
 		"a6cf9075-15b3-11d2-932e-00805f8add32";
 
 	public static final String NS_IDOMDOCUMENT_10_IID_STR =
 		"5c3bff4d-ae7f-4c93-948c-519589672c30";
+	
+	public static final String NS_IDOMDOCUMENT_17_IID_STR =
+		"fdb92f4f-c6b4-4509-a29d-a309981e28ac";
 
 	public static final nsID NS_IDOMDOCUMENT_IID =
 		new nsID(NS_IDOMDOCUMENT_IID_STR);
 
 	public static final nsID NS_IDOMDOCUMENT_10_IID =
 		new nsID(NS_IDOMDOCUMENT_10_IID_STR);
+
+	public static final nsID NS_IDOMDOCUMENT_17_IID =
+		new nsID(NS_IDOMDOCUMENT_17_IID_STR);
 
 	public nsIDOMDocument(long /*int*/ address) {
 		super(address);
@@ -309,41 +315,41 @@ public class nsIDOMDocument extends nsIDOMNode {
 
 	public int GetOnreadystatechange(long /*int*/ cx, long /*int*/ aOnreadystatechange) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 54, getAddress(), cx, aOnreadystatechange);
+		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + (IsXULRunner17 ? 56 : 54), getAddress(), cx, aOnreadystatechange);
 	}
 
 	public int SetOnreadystatechange(long /*int*/ cx, long /*int*/ aOnreadystatechange) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 55, getAddress(), cx, aOnreadystatechange);
+		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + (IsXULRunner17 ? 57 : 55), getAddress(), cx, aOnreadystatechange);
 	}
 
 	public int GetOnmouseenter(long /*int*/ cx, long /*int*/ aOnmouseenter) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 56, getAddress(), cx, aOnmouseenter);
+		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + (IsXULRunner17 ? 58 : 56), getAddress(), cx, aOnmouseenter);
 	}
 
 	public int SetOnmouseenter(long /*int*/ cx, long /*int*/ aOnmouseenter) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 57, getAddress(), cx, aOnmouseenter);
+		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + (IsXULRunner17 ? 59 : 57), getAddress(), cx, aOnmouseenter);
 	}
 
 	public int GetOnmouseleave(long /*int*/ cx, long /*int*/ aOnmouseleave) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 58, getAddress(), cx, aOnmouseleave);
+		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + (IsXULRunner17 ? 60 : 58), getAddress(), cx, aOnmouseleave);
 	}
 
 	public int SetOnmouseleave(long /*int*/ cx, long /*int*/ aOnmouseleave) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 59, getAddress(), cx, aOnmouseleave);
+		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + (IsXULRunner17 ? 61 : 59), getAddress(), cx, aOnmouseleave);
 	}
 
 	public int GetMozHidden(int[] aMozHidden) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 60, getAddress(), aMozHidden);
+		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + (IsXULRunner17 ? 62 : 60), getAddress(), aMozHidden);
 	}
 
 	public int GetMozVisibilityState(long /*int*/ aMozVisibilityState) {
 		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + 61, getAddress(), aMozVisibilityState);
+		return XPCOM.VtblCall(nsIDOMNode.LAST_METHOD_ID + (IsXULRunner17 ? 63 : 61), getAddress(), aMozVisibilityState);
 	}
 }
