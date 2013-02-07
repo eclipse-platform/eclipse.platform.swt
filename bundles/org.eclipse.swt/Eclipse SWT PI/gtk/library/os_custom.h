@@ -76,6 +76,8 @@
 #define XRenderSetPictureClipRectangles_LIB LIB_XRENDER
 #define XRenderSetPictureTransform_LIB LIB_XRENDER
 #define g_filename_display_name_LIB LIB_GLIB
+#define g_thread_init_LIB LIB_GLIB
+#define g_thread_supported_LIB LIB_GLIB
 #define gtk_widget_set_allocation_LIB LIB_GTK
 #define gtk_adjustment_configure_LIB LIB_GTK
 #define gtk_adjustment_get_lower_LIB LIB_GTK
