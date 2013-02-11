@@ -1831,6 +1831,14 @@ double /*float*/ [] getWidgetColorRGB (int id) {
 		case SWT.COLOR_LIST_BACKGROUND: color = NSColor.textBackgroundColor(); break;
 		case SWT.COLOR_LIST_SELECTION_TEXT: color = NSColor.selectedTextColor(); break;
 		case SWT.COLOR_LIST_SELECTION: color = NSColor.selectedTextBackgroundColor(); break;
+		case SWT.COLOR_LINK_FOREGROUND: 
+			NSTextView textView = (NSTextView)new NSTextView().alloc();
+			textView.init ();
+			NSDictionary dict = textView.linkTextAttributes();
+			color = new NSColor(dict.valueForKey(OS.NSForegroundColorAttributeName));
+			textView.release ();
+			break;
+
 	}
 	return getNSColorRGB (color);
 }
@@ -2940,7 +2948,7 @@ NSFont getFont (long /*int*/ cls, long /*int*/ sel) {
 }
 
 void initColors () {
-	colors = new double /*float*/ [SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT + 1][];
+	colors = new double /*float*/ [SWT.COLOR_LINK_FOREGROUND + 1][];
 	colors[SWT.COLOR_INFO_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_INFO_FOREGROUND);
 	colors[SWT.COLOR_INFO_BACKGROUND] = getWidgetColorRGB(SWT.COLOR_INFO_BACKGROUND);
 	colors[SWT.COLOR_TITLE_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_TITLE_FOREGROUND);
@@ -2960,6 +2968,7 @@ void initColors () {
 	colors[SWT.COLOR_LIST_BACKGROUND] = getWidgetColorRGB(SWT.COLOR_LIST_BACKGROUND);
 	colors[SWT.COLOR_LIST_SELECTION_TEXT] = getWidgetColorRGB(SWT.COLOR_LIST_SELECTION_TEXT);
 	colors[SWT.COLOR_LIST_SELECTION] = getWidgetColorRGB(SWT.COLOR_LIST_SELECTION);
+	colors[SWT.COLOR_LINK_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_LINK_FOREGROUND);
 
 	alternateSelectedControlColor = getNSColorRGB(NSColor.alternateSelectedControlColor());
 	alternateSelectedControlTextColor = getNSColorRGB(NSColor.alternateSelectedControlTextColor());
