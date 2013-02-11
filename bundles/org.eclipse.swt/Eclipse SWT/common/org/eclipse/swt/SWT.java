@@ -3168,6 +3168,13 @@ public class SWT {
 	 * System color used to paint inactive title background gradient (value is 35).
 	 */
 	public static final int COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = 35;
+
+	/**
+	 * System color used to paint link text (value is 36).
+	 * 
+	 * @since 4.3
+	 */
+	public static final int COLOR_LINK_FOREGROUND = 36;
 	
 	/**
 	 * Draw constant indicating whether the drawing operation
