@@ -522,6 +522,7 @@ public class OS extends C {
 	public static final byte[] key_press_event = ascii("key-press-event");
 	public static final byte[] key_release_event = ascii("key-release-event");
 	public static final byte[] leave_notify_event = ascii("leave-notify-event");
+	public static final byte[] link_color = ascii("link-color");
 	public static final byte[] map = ascii("map");
 	public static final byte[] map_event = ascii("map-event");
 	public static final byte[] mnemonic_activate = ascii("mnemonic-activate");
