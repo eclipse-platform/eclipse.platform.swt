@@ -6504,7 +6504,10 @@ public static final long /*int*/ gtk_clipboard_wait_for_contents(long /*int*/ cl
 		lock.unlock();
 	}
 }
-/** @param title cast=(const gchar *) */
+/** 
+ * @method flags=dynamic
+ * @param title cast=(const gchar *) 
+ */
 public static final native long /*int*/ _gtk_color_selection_dialog_new(byte[] title);
 public static final long /*int*/ gtk_color_selection_dialog_new(byte[] title) {
 	lock.lock();
@@ -6577,9 +6580,9 @@ public static final void  gtk_color_chooser_set_rgba(long /*int*/ chooser, GdkRG
 		lock.unlock();
 	}
 }
-/**
- * @param colorsel cast=(GtkColorSelection *)
- * @param color cast=(GdkColor *),flags=no_in
+/** 
+ * @method flags=dynamic 
+ * @param color flags=no_in
  */
 public static final native void _gtk_color_selection_get_current_color(long /*int*/ colorsel, GdkColor color);
 public static final void gtk_color_selection_get_current_color(long /*int*/ colorsel, GdkColor color) {
@@ -6590,10 +6593,7 @@ public static final void gtk_color_selection_get_current_color(long /*int*/ colo
 		lock.unlock();
 	}
 }
-/**
- * @param colors cast=(GdkColor *)
- * @param n_colors cast=(gint)
- */
+/** @method flags=dynamic */
 public static final native long /*int*/ _gtk_color_selection_palette_to_string(long /*int*/ colors, int n_colors);
 public static final long /*int*/ gtk_color_selection_palette_to_string(long /*int*/ colors, int n_colors) {
 	lock.lock();
@@ -6603,9 +6603,9 @@ public static final long /*int*/ gtk_color_selection_palette_to_string(long /*in
 		lock.unlock();
 	}
 }
-/**
- * @param colorsel cast=(GtkColorSelection *)
- * @param color cast=(GdkColor *),flags=no_out
+/** 
+ * @method flags=dynamic 
+ * @param color flags=no_out
  */
 public static final native void _gtk_color_selection_set_current_color(long /*int*/ colorsel, GdkColor color);
 public static final void gtk_color_selection_set_current_color(long /*int*/ colorsel, GdkColor color) {
@@ -6616,7 +6616,7 @@ public static final void gtk_color_selection_set_current_color(long /*int*/ colo
 		lock.unlock();
 	}
 }
-/** @param colorsel cast=(GtkColorSelection *) */
+/** @method flags=dynamic */
 public static final native void _gtk_color_selection_set_has_palette(long /*int*/ colorsel, boolean has_palette);
 public static final void gtk_color_selection_set_has_palette(long /*int*/ colorsel, boolean has_palette) {
 	lock.lock();

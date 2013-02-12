@@ -9126,7 +9126,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1color_1selection_1dialog_1new)
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1color_1selection_1dialog_1new_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
 	rc = (jintLong)gtk_color_selection_dialog_new((const gchar *)lparg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_color_selection_dialog_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(const gchar *))fp)((const gchar *)lparg0);
+		}
+	}
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1color_1selection_1dialog_1new_FUNC);
@@ -9141,7 +9149,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1color_1selection_1get_1current_1color)
 	GdkColor _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1color_1selection_1get_1current_1color_FUNC);
 	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
-	gtk_color_selection_get_current_color((GtkColorSelection *)arg0, (GdkColor *)lparg1);
+/*
+	gtk_color_selection_get_current_color(arg0, lparg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_color_selection_get_current_color)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GdkColor *))fp)(arg0, lparg1);
+		}
+	}
 fail:
 	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1color_1selection_1get_1current_1color_FUNC);
@@ -9154,7 +9170,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1color_1selection_1palette_1to_1strin
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1color_1selection_1palette_1to_1string_FUNC);
-	rc = (jintLong)gtk_color_selection_palette_to_string((GdkColor *)arg0, (gint)arg1);
+/*
+	rc = (jintLong)gtk_color_selection_palette_to_string(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_color_selection_palette_to_string)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1color_1selection_1palette_1to_1string_FUNC);
 	return rc;
 }
@@ -9167,7 +9191,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1color_1selection_1set_1current_1color)
 	GdkColor _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1color_1selection_1set_1current_1color_FUNC);
 	if (arg1) if ((lparg1 = getGdkColorFields(env, arg1, &_arg1)) == NULL) goto fail;
-	gtk_color_selection_set_current_color((GtkColorSelection *)arg0, (GdkColor *)lparg1);
+/*
+	gtk_color_selection_set_current_color(arg0, lparg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_color_selection_set_current_color)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, GdkColor *))fp)(arg0, lparg1);
+		}
+	}
 fail:
 	OS_NATIVE_EXIT(env, that, _1gtk_1color_1selection_1set_1current_1color_FUNC);
 }
@@ -9178,7 +9210,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1color_1selection_1set_1has_1palette)
 	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1color_1selection_1set_1has_1palette_FUNC);
-	gtk_color_selection_set_has_palette((GtkColorSelection *)arg0, arg1);
+/*
+	gtk_color_selection_set_has_palette(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_color_selection_set_has_palette)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jboolean))fp)(arg0, arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1color_1selection_1set_1has_1palette_FUNC);
 }
 #endif

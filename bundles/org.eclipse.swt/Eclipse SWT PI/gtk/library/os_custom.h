@@ -112,6 +112,11 @@
 #define gtk_cell_renderer_get_preferred_size_LIB LIB_GTK
 #define gtk_cell_renderer_get_size_LIB LIB_GTK
 #define gtk_color_selection_dialog_get_color_selection_LIB LIB_GTK
+#define gtk_color_selection_dialog_new_LIB LIB_GTK
+#define gtk_color_selection_set_has_palette_LIB LIB_GTK
+#define gtk_color_selection_get_current_color_LIB LIB_GTK
+#define gtk_color_selection_set_current_color_LIB LIB_GTK
+#define gtk_color_selection_palette_to_string_LIB LIB_GTK
 #define gtk_color_chooser_get_rgba_LIB LIB_GTK
 #define gtk_color_chooser_dialog_new_LIB LIB_GTK
 #define gtk_color_chooser_set_rgba_LIB LIB_GTK
