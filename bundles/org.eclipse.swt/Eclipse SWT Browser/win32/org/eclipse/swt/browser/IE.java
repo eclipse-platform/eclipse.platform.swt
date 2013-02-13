@@ -404,11 +404,6 @@ public void create(Composite parent, int style) {
 						browser.traverse(SWT.TRAVERSE_TAB_PREVIOUS, e);
 						e.doit = false;
 					}
-					if (e.detail == SWT.TRAVERSE_TAB_NEXT && e.widget instanceof Browser) {
-						/* otherwise will traverse to the WebSite control */
-						site.traverse(SWT.TRAVERSE_TAB_NEXT, e);
-						e.doit = false;
-					}
 					/*
 					 * Return traversals can sometimes come through TranslateAccelerator,
 					 * depending on where focus is within the Browser.  Traversal
