@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -3172,7 +3172,7 @@ public class SWT {
 	/**
 	 * System color used to paint link text (value is 36).
 	 * 
-	 * @since 4.3
+	 * @since 3.101
 	 */
 	public static final int COLOR_LINK_FOREGROUND = 36;
 	
@@ -4115,7 +4115,7 @@ public class SWT {
 	 * 
 	 * @since 3.6
 	 */
-	public static final String SKIN_CLASS = "org.eclipse.swt.skin.class";
+	public static final String SKIN_CLASS = "org.eclipse.swt.skin.class"; //$NON-NLS-1$
 
 	/**
 	 * Key value for setting and getting the skin id of a widget.
@@ -4125,7 +4125,7 @@ public class SWT {
 	 * 
 	 * @since 3.6
 	 */
-	public static final String SKIN_ID = "org.eclipse.swt.skin.id";
+	public static final String SKIN_ID = "org.eclipse.swt.skin.id"; //$NON-NLS-1$
 	
 	/**
 	 * The <code>Scrollable</code> constant to indicate that
