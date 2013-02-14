@@ -3303,7 +3303,6 @@ public static final long /*int*/ g_type_register_static (long /*int*/ parent_typ
 	}
 }
 /** 
- * @method flags=dynamic
  * @param vtable cast=(GThreadFunctions *) 
  */
 public static final native void _g_thread_init(long /*int*/ vtable);
@@ -3315,9 +3314,6 @@ public static final void g_thread_init(long /*int*/ vtable) {
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- */
 public static final native boolean _g_thread_supported();
 public static final boolean g_thread_supported() {
 	lock.lock();
