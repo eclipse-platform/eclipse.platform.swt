@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import org.eclipse.swt.internal.SerializableCompatibility;
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class are descriptions of colors in
@@ -152,8 +152,13 @@ public RGB(float hue, float saturation, float brightness) {
 /**
  * Returns the hue, saturation, and brightness of the color.
  * 
- * @return color space values in float format (hue, saturation, brightness)
- *
+ * @return color space values in float format:<ul>
+ *             <li>hue (from 0 to 360)</li>
+ *             <li>saturation (from 0 to 1)</li>
+ *             <li>brightness (from 0 to 1)</li>
+ *             </ul>
+ * @see #RGB(float, float, float)
+ * 
  * @since 3.2
  */
 public float[] getHSB() {	
