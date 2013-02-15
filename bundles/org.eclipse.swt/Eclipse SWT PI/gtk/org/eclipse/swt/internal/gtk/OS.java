@@ -5257,8 +5257,6 @@ public static final int gdk_text_property_to_utf8_list_for_display  (long /*int*
 		lock.unlock();
 	}
 }
-public static final native void gdk_threads_init ();
-public static final native void gdk_threads_enter ();
 public static final native void gdk_threads_leave ();
 /**
  * @method flags=dynamic

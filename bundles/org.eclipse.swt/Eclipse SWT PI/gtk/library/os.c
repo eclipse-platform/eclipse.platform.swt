@@ -21006,26 +21006,6 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1value_1unset)
 }
 #endif
 
-#ifndef NO_gdk_1threads_1enter
-JNIEXPORT void JNICALL OS_NATIVE(gdk_1threads_1enter)
-	(JNIEnv *env, jclass that)
-{
-	OS_NATIVE_ENTER(env, that, gdk_1threads_1enter_FUNC);
-	gdk_threads_enter();
-	OS_NATIVE_EXIT(env, that, gdk_1threads_1enter_FUNC);
-}
-#endif
-
-#ifndef NO_gdk_1threads_1init
-JNIEXPORT void JNICALL OS_NATIVE(gdk_1threads_1init)
-	(JNIEnv *env, jclass that)
-{
-	OS_NATIVE_ENTER(env, that, gdk_1threads_1init_FUNC);
-	gdk_threads_init();
-	OS_NATIVE_EXIT(env, that, gdk_1threads_1init_FUNC);
-}
-#endif
-
 #ifndef NO_gdk_1threads_1leave
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1threads_1leave)
 	(JNIEnv *env, jclass that)
