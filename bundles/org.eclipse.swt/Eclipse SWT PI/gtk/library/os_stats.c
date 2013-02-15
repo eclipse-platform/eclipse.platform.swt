@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -1557,8 +1557,6 @@ char * OS_nativeFunctionNames[] = {
 	"g_1value_1set_1int",
 	"g_1value_1set_1int64",
 	"g_1value_1unset",
-	"gdk_1threads_1enter",
-	"gdk_1threads_1init",
 	"gdk_1threads_1leave",
 	"gdk_1threads_1set_1lock_1functions",
 	"imContextLast",
