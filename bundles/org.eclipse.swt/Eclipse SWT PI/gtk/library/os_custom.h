@@ -31,6 +31,7 @@
 #define LIB_GDK "libgdk-x11-2.0.a(libgdk-x11-2.0.so.0)"
 #define LIB_GLIB "libglib-2.0.a(libglib-2.0.so.0)"
 #define LIB_GOBJECT "libgobject-2.0.a(libgobject-2.0.so.0)"
+#define LIB_GTHREAD "libgthread-2.0.a(libgthread-2.0.so.0)"
 #define LIB_ATK "libatk-1.0.a(libatk-1.0.so.0)"
 #define LIB_PANGO "libpango-1.0.a(libpango-1.0.so.0)"
 #define LIB_PANGOCAIRO "libpangocairo-1.0.a(libpangocairo-1.0.so.0)"
@@ -42,6 +43,7 @@
 #define LIB_GDK "libgdk-x11-2.0.so"
 #define LIB_GLIB "libglib-2.0.so"
 #define LIB_GOBJECT "libgobject-2.0.so"
+#define LIB_GTHREAD "libgthread-2.0.so"
 #define LIB_ATK "libatk-1.0.so"
 #define LIB_PANGO "libpango-1.0.so"
 #define LIB_PANGOCAIRO "libpangocairo-1.0.so"
@@ -58,6 +60,7 @@
 #endif
 #define LIB_GLIB "libglib-2.0.so.0"
 #define LIB_GOBJECT "libgobject-2.0.so.0"
+#define LIB_GTHREAD "libgthread-2.0.so.0"
 #define LIB_ATK "libatk-1.0.so.0"
 #define LIB_PANGO "libpango-1.0.so.0"
 #define LIB_PANGOCAIRO "libpangocairo-1.0.so.0"
@@ -76,8 +79,7 @@
 #define XRenderSetPictureClipRectangles_LIB LIB_XRENDER
 #define XRenderSetPictureTransform_LIB LIB_XRENDER
 #define g_filename_display_name_LIB LIB_GLIB
-#define g_thread_init_LIB LIB_GLIB
-#define g_thread_supported_LIB LIB_GLIB
+#define g_thread_init_LIB LIB_GTHREAD
 #define gtk_widget_set_allocation_LIB LIB_GTK
 #define gtk_adjustment_configure_LIB LIB_GTK
 #define gtk_adjustment_get_lower_LIB LIB_GTK
@@ -540,6 +542,10 @@
 #define gtk_css_provider_load_from_data_LIB LIB_GTK
 #define gtk_css_provider_new_LIB LIB_GTK
 #define gtk_icon_set_render_icon_pixbuf_LIB LIB_GTK
+
+#if GLIB_CHECK_VERSION(2,32,0)
+#define g_thread_supported() 0
+#endif
 
 /* Field accessors */
 #if GTK_CHECK_VERSION(3,0,0)

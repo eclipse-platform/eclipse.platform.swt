@@ -4145,7 +4145,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1thread_1init)
 	(JNIEnv *env, jclass that, jintLong arg0)
 {
 	OS_NATIVE_ENTER(env, that, _1g_1thread_1init_FUNC);
+/*
 	g_thread_init((GThreadFunctions *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, g_thread_init)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GThreadFunctions *))fp)((GThreadFunctions *)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1g_1thread_1init_FUNC);
 }
 #endif
