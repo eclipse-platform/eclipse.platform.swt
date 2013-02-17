@@ -5932,6 +5932,7 @@ void handleKeyDown(Event event) {
 		clipboardSelection = new Point(selection.x, selection.y);
 	}
 	newOrientation = SWT.NONE;
+	event.stateMask &= SWT.MODIFIER_MASK;
 	
 	Event verifyEvent = new Event();
 	verifyEvent.character = event.character;
