@@ -275,6 +275,7 @@
 #define gtk_scrolled_window_get_hscrollbar_LIB LIB_GTK
 #define gtk_scrolled_window_get_vscrollbar_LIB LIB_GTK
 #define gtk_scale_new_LIB LIB_GTK
+#define gtk_style_context_add_provider_for_screen_LIB LIB_GTK
 #define gtk_style_context_restore_LIB LIB_GTK
 #define gtk_style_context_save_LIB LIB_GTK
 #define gtk_style_context_set_state_LIB LIB_GTK
@@ -536,6 +537,8 @@
 #define gdk_event_get_scroll_deltas_LIB LIB_GTK
 #define gtk_cell_renderer_set_fixed_size_LIB LIB_GTK
 #define gtk_cell_renderer_get_preferred_height_for_width_LIB LIB_GTK
+#define gtk_css_provider_load_from_data_LIB LIB_GTK
+#define gtk_css_provider_new_LIB LIB_GTK
 #define gtk_icon_set_render_icon_pixbuf_LIB LIB_GTK
 
 /* Field accessors */

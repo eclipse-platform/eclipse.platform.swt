@@ -410,6 +410,7 @@ public class OS extends C {
 	public static final int GTK_TREE_VIEW_GRID_LINES_HORIZONTAL = 1;
 	public static final int GTK_TREE_VIEW_GRID_LINES_VERTICAL = 2;
 	public static final int GTK_TREE_VIEW_GRID_LINES_BOTH = 3;
+	public static final int GTK_STYLE_PROVIDER_PRIORITY_APPLICATION = 600;
 	public static final int GDK_UNMAP = 15;
 	public static final int GTK_UNIT_PIXEL = 0;
 	public static final int GTK_UNIT_POINTS = 1;
@@ -8453,6 +8454,45 @@ public static final long /*int*/ gtk_list_store_newv(int numColumns, long /*int*
 	lock.lock();
 	try {
 		return _gtk_list_store_newv(numColumns, types);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param data cast=(const gchar *)
+ * @param length cast=(gssize)
+ * @param error cast=(GError **)
+ */
+public static final native boolean _gtk_css_provider_load_from_data(long /*int*/ css_provider, byte[] data, long /*int*/ length, long /*int*/ error[]);
+public static final boolean gtk_css_provider_load_from_data(long /*int*/ css_provider, byte[] data, long /*int*/ length, long /*int*/ error[] ) {
+	lock.lock();
+	try {
+		return _gtk_css_provider_load_from_data(css_provider, data, length, error);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native long /*int*/ _gtk_css_provider_new();
+public static final long /*int*/gtk_css_provider_new() {
+	lock.lock();
+	try {
+		return _gtk_css_provider_new();
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param screen cast=(GdkScreen *)
+ * @param priority cast=(guint)
+ */
+public static final native void _gtk_style_context_add_provider_for_screen (long /*int*/ screen, long /*int*/ provider, int priority);
+public static final void gtk_style_context_add_provider_for_screen(long /*int*/ screen, long /*int*/ provider, int priority) {
+	lock.lock();
+	try {
+		_gtk_style_context_add_provider_for_screen(screen, provider, priority);
 	} finally {
 		lock.unlock();
 	}
