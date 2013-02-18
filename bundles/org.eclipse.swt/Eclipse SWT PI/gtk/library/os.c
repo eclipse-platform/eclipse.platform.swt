@@ -9506,6 +9506,53 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1container_1set_1border_1width)
 }
 #endif
 
+#ifndef NO__1gtk_1css_1provider_1load_1from_1data
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1css_1provider_1load_1from_1data)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2, jintLongArray arg3)
+{
+	jbyte *lparg1=NULL;
+	jintLong *lparg3=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1css_1provider_1load_1from_1data_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)gtk_css_provider_load_from_data(arg0, (const gchar *)lparg1, (gssize)arg2, (GError **)lparg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_css_provider_load_from_data)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jintLong, const gchar *, gssize, GError **))fp)(arg0, (const gchar *)lparg1, (gssize)arg2, (GError **)lparg3);
+		}
+	}
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1css_1provider_1load_1from_1data_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1css_1provider_1new
+JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1css_1provider_1new)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1css_1provider_1new_FUNC);
+/*
+	rc = (jintLong)gtk_css_provider_new();
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_css_provider_new)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1css_1provider_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1dialog_1add_1button
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1dialog_1add_1button)
 	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jint arg2)
@@ -14895,6 +14942,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1add_1class)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1style_1context_1add_1class_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1style_1context_1add_1provider_1for_1screen
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1add_1provider_1for_1screen)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1context_1add_1provider_1for_1screen_FUNC);
+/*
+	gtk_style_context_add_provider_for_screen((GdkScreen *)arg0, arg1, (guint)arg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_style_context_add_provider_for_screen)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GdkScreen *, jintLong, guint))fp)((GdkScreen *)arg0, arg1, (guint)arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1context_1add_1provider_1for_1screen_FUNC);
 }
 #endif
 
