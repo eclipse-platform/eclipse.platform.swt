@@ -49,6 +49,9 @@ public class SWT_AWT {
 	static {
 		System.setProperty("apple.awt.usingSWT", "true");
 	}
+
+	static final String JDK16_FRAME = "apple.awt.CEmbeddedFrame";
+	static final String JDK17_FRAME = "sun.lwawt.macosx.CViewEmbeddedFrame";
 	
 	static boolean loaded, swingInitialized;
 	
@@ -135,14 +138,18 @@ public static Frame new_Frame(final Composite parent) {
 	
 	Class clazz = null;
 	try {
-		String className = embeddedFrameClass != null ? embeddedFrameClass : "apple.awt.CEmbeddedFrame";
+		String className = embeddedFrameClass != null ? embeddedFrameClass : JDK16_FRAME;
 		if (embeddedFrameClass == null) {
 			clazz = Class.forName(className, true, ClassLoader.getSystemClassLoader());
 		} else {
 			clazz = Class.forName(className);
 		}
 	} catch (ClassNotFoundException cne) {
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, cne);		
+		try {
+			clazz = Class.forName(JDK17_FRAME);
+		} catch (ClassNotFoundException cne1) {
+			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, cne1);
+		}
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_UNSPECIFIED , e, " [Error while starting AWT]");		
 	}
@@ -157,6 +164,7 @@ public static Frame new_Frame(final Composite parent) {
 		SWT.error(SWT.ERROR_NOT_IMPLEMENTED, e);
 	}
 	final Frame frame = (Frame) value;
+	final boolean isJDK17 = JDK17_FRAME.equals(frame.getClass().getName());
 	frame.addNotify();
 	
 	parent.setData(EMBEDDED_FRAME_KEY, frame);
@@ -186,6 +194,24 @@ public static Frame new_Frame(final Composite parent) {
 	shell.addListener (SWT.Deiconify, shellListener);
 	shell.addListener (SWT.Iconify, shellListener);
 	
+	/* When display is disposed the frame is disposed in AWT EventQueue.
+	 * Force main event loop to run to let the frame finish dispose.
+	 */
+	final Display display = parent.getDisplay();
+	display.addListener(SWT.Dispose, new Listener() {
+		public void handleEvent(Event event) {
+			while (frame.isDisplayable() && !display.isDisposed()) {
+				if (!display.readAndDispatch()) {
+					display.sleep();
+				}
+			}
+			//Frame finished dispose, the listener can be removed
+			if (!display.isDisposed()) {
+				display.removeListener(SWT.Dispose, this);
+			}
+		}
+	});
+	
 	/*
 	 * Generate the appropriate events to activate and deactivate
 	 * the embedded frame. This is needed in order to make keyboard
@@ -198,6 +224,10 @@ public static Frame new_Frame(final Composite parent) {
 					Shell shell = parent.getShell ();
 					shell.removeListener (SWT.Deiconify, shellListener);
 					shell.removeListener (SWT.Iconify, shellListener);
+					if (isJDK17) {
+						shell.removeListener (SWT.Activate, this);
+						shell.removeListener (SWT.Deactivate, this);
+					}
 					parent.setVisible(false);
 					EventQueue.invokeLater(new Runnable () {
 						public void run () {
@@ -207,6 +237,8 @@ public static Frame new_Frame(final Composite parent) {
 						}
 					});
 					break;
+				case SWT.Activate:
+					if (!parent.isFocusControl()) return;
 				case SWT.FocusIn:
 					EventQueue.invokeLater(new Runnable () {
 						public void run () {
@@ -220,6 +252,7 @@ public static Frame new_Frame(final Composite parent) {
 					});
 					break;
 				case SWT.Deactivate:
+				case SWT.FocusOut:
 					EventQueue.invokeLater(new Runnable () {
 						public void run () {
 							if (!frame.isActive()) return;
@@ -236,24 +269,38 @@ public static Frame new_Frame(final Composite parent) {
 	};
 	
 	parent.addListener (SWT.FocusIn, listener);
-	parent.addListener (SWT.Deactivate, listener);
+	if (isJDK17) {
+		parent.addListener(SWT.FocusOut, listener);
+		//To allow cross-app activation/deactivation
+		shell.addListener (SWT.Activate, listener);	
+		shell.addListener (SWT.Deactivate, listener);	
+	} else {
+		parent.addListener (SWT.Deactivate, listener);	
+	}
 	parent.addListener (SWT.Dispose, listener);
 	
-	parent.getDisplay().asyncExec(new Runnable() {
+	display.asyncExec(new Runnable() {
 		public void run () {
 			if (parent.isDisposed()) return;
 			final Rectangle clientArea = parent.getClientArea();
-			EventQueue.invokeLater(new Runnable () {
-				public void run () {
-					frame.setSize (clientArea.width, clientArea.height);
-					frame.validate();
-					
-					// Bug in Cocoa AWT? For some reason the frame isn't showing up on first draw.
-					// Toggling visibility seems to be the only thing that works.
-					frame.setVisible(false);
-					frame.setVisible(true);
-				}
-			});
+			if (isJDK17) {
+				try {
+					Method method = frame.getClass().getMethod("validateWithBounds", new Class[] {int.class, int.class, int.class, int.class});
+					if (method != null) method.invoke(frame, new Object[]{new Integer(clientArea.x), new Integer(clientArea.y), new Integer(clientArea.width), new Integer(clientArea.height)});
+				} catch (Throwable e) {e.printStackTrace();}
+			} else {
+				EventQueue.invokeLater(new Runnable () {
+					public void run () {
+						frame.setSize(clientArea.width, clientArea.height);
+						frame.validate();
+						
+						// Bug in Cocoa AWT? For some reason the frame isn't showing up on first draw.
+						// Toggling visibility seems to be the only thing that works.
+						frame.setVisible(false);
+						frame.setVisible(true);
+					}
+				});
+			}
 		}
 	});
 	
