@@ -686,7 +686,7 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 		outputln("if (STRUCT_SIZE_LIMIT == 0) {");
 		output("\t\t");
 	}
-	if (name.equalsIgnoreCase("call")) {
+	if (name.equalsIgnoreCase("call") || name.startsWith("callFunc")) {
 		output("(");
 		String cast = params[0].getCast(); 
 		if (cast.length() != 0 && !cast.equals("()")) {
