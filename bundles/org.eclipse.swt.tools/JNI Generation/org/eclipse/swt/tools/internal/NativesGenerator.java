@@ -694,7 +694,9 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 		} else {
 			output("(");
 			output(returnType.getTypeSignature2(!returnType.equals(returnType64)));
-			output(" (*)())");
+			output(" (");
+			output((String)method.getParam("convention"));
+			output("*)())");
 		}
 		output("arg0)");
 		paramStart = 1;
