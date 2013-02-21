@@ -13,6 +13,7 @@ package org.eclipse.swt.tools.internal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 public abstract class AbstractItem implements JNIItem {
 
@@ -27,7 +28,44 @@ void checkParams() {
 	parse(getMetaData());
 }
 
-public abstract String flatten();
+public String flatten() {
+	checkParams();
+	StringBuffer buffer = new StringBuffer();
+	Set set = params.keySet();
+	String[] keys = (String[])set.toArray(new String[set.size()]);
+	Arrays.sort(keys);
+	for (int j = 0; j < keys.length; j++) {
+		String key = keys[j];
+		Object value = params.get(key);
+		String valueStr = "";
+		if (value instanceof String) {
+			valueStr = (String)value;
+		} else if (value instanceof String[]) {
+			String[] values = (String[])value;
+			StringBuffer valueBuffer = new StringBuffer();
+			for (int i = 0; i < values.length; i++) {
+				if (i != 0) valueBuffer.append(" ");
+				valueBuffer.append(values[i]);
+			}
+			valueStr = valueBuffer.toString();
+		} else {
+			valueStr = value.toString();
+		}
+		if (valueStr.length() > 0) {
+			if (buffer.length() != 0) buffer.append(",");
+			buffer.append(key);
+			buffer.append("=");
+			String quote = "";
+			if (valueStr.indexOf(',') != -1) {
+				quote = valueStr.indexOf('"') != -1 ? "'" : "\""; 
+			}
+			buffer.append(quote);
+			buffer.append(valueStr);
+			buffer.append(quote);
+		}
+	}
+	return buffer.toString();
+}
 
 public String[] getFlags() {
 	Object flags = getParam("flags");
@@ -62,7 +100,38 @@ public void setFlags(String[] flags) {
 	setParam("flags", flags);
 }
 
-public abstract void parse(String str);
+public void parse(String str) {
+	this.params = new HashMap();
+	int length = str.length();
+	if (length == 0) return;
+	int index = 0;
+	while (index < length) {
+		int equals = str.indexOf('=', index);
+		if (equals ==  -1) {
+			System.out.println("Error: " + str + " index=" + index + " length=" + length);
+			break;
+		}
+		String key = str.substring(index, equals).trim();
+		equals++;
+		while (equals < length && Character.isWhitespace(str.charAt(equals))) equals++;
+		char c = str.charAt(equals), ending = ',';
+		switch (c) {
+			case '"':
+			case '\'':
+				equals++;
+				ending = c;
+				break;
+		}
+		int end = equals;
+		while (end < length && str.charAt(end) != ending) end++;
+		String value = str.substring(equals, end).trim();
+		setParam(key, value);
+		if (ending != ',') {
+			while (end < length && str.charAt(end) != ',') end++;
+		}
+		index = end + 1;
+	}
+}
 
 public void setFlag(String flag, boolean value) {
 	String[] flags = getFlags();

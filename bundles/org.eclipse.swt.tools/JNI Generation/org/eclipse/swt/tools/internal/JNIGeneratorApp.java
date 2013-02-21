@@ -73,7 +73,6 @@ public void generateAll() {
 					continue;
 				}
 			}
-			System.out.println("Generating \"" + className + "\"");
 			setMainClassName(className);
 			generate();
 		}
@@ -216,6 +215,7 @@ void generateEmbededMetaData(JNIClass[] classes) {
 }
 
 public void generate() {
+	System.out.println("Generating \"" + getMainClassName() + "\"");
 	generate(null);
 }
 
