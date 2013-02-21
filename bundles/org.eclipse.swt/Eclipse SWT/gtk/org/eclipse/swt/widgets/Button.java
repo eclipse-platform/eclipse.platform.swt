@@ -259,19 +259,6 @@ void createHandle (int index) {
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	gtk_widget_set_has_window (fixedHandle, true);
-//	if (OS.GTK3) {
-//		String button_css = ".button {\n" +
-//                "-GtkButton-default-border : 0px;\n" +
-//                "-GtkWidget-focus-line-width : 0px;\n" +
-//                "-GtkWidget-focus-padding : 0px;\n" +
-//                "padding-bottom: 0px;\n" +
-//                "}"	;
-//		byte[] data = Converter.wcsToMbcs (null, button_css, true);
-//		long /*int*/ provider = OS.gtk_css_provider_new();
-//		OS.gtk_css_provider_load_from_data(provider,  data, -1, null); 
-//		OS.gtk_style_context_add_provider_for_screen (OS.gdk_screen_get_default(), provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-//		OS.g_object_unref (provider);
-//	}
 	switch (style & bits) {
 		case SWT.ARROW:
 			int arrow_type = OS.GTK_ARROW_UP;
