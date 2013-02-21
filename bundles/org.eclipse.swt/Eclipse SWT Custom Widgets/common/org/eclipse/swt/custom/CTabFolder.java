@@ -1288,12 +1288,16 @@ void initAccessible() {
 	final Accessible accessible = getAccessible();
 	accessible.addAccessibleListener(new AccessibleAdapter() {
 		public void getName(AccessibleEvent e) {
-			String name = null;
+			CTabItem item = null;
 			int childID = e.childID;
-			if (childID >= 0 && childID < items.length) {
-				name = stripMnemonic(items[childID].getText());
+			if (childID == ACC.CHILDID_SELF) {
+				if (selectedIndex != -1) {
+					item = items[selectedIndex];
+				}
+			} else if (childID >= 0 && childID < items.length) {
+				item = items[childID];
 			}
-			e.result = name;
+			e.result = item == null ? null : stripMnemonic(item.getText());
 		}
 
 		public void getHelp(AccessibleEvent e) {
