@@ -33,7 +33,9 @@ public static void main(String[] args) {
 	shell.setLayout(new GridLayout());
 	shell.setText("Description Relation Example");
 	
-	final Label liveLabel = new Label(shell, SWT.BORDER);
+	// (works with either a Label or a READ_ONLY Text)
+	final Label liveLabel = new Label(shell, SWT.BORDER | SWT.READ_ONLY);
+//	final Text liveLabel = new Text(shell, SWT.BORDER | SWT.READ_ONLY);
 	liveLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 	liveLabel.setText("Live region messages go here");
 	
@@ -60,6 +62,12 @@ public static void main(String[] args) {
 		}
 	});
 	textField.getAccessible().addRelation(ACC.RELATION_DESCRIBED_BY, liveLabel.getAccessible());
+	liveLabel.getAccessible().addRelation(ACC.RELATION_DESCRIPTION_FOR, textField.getAccessible());
+	textField.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+		public void getDescription(AccessibleEvent event) {
+			event.result = liveLabel.getText();
+		}
+	});
 
 	shell.pack();
 	shell.open();
