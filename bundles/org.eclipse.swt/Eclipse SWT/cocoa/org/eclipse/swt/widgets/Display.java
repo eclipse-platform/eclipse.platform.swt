@@ -4474,6 +4474,17 @@ void setMenuBar (Menu menu) {
 		for (int i = 0; i < items.length; i++) {
 			MenuItem item = items[i];
 			NSMenuItem nsItem = item.nsItem;
+			
+			/*
+			* Bug in cocoa.  Cocoa does not seem to detect the help
+			* menu for languages other than english.  The fix is to detect
+			* it ourselves.
+			*/
+			NSMenu submenu = nsItem.submenu();
+			if (submenu != null && submenu.title().getString().equals(SWT.getMessage("SWT_Help"))) { 
+				application.setHelpMenu(submenu);
+			}
+			
 			nsItem.setMenu(null);
 			menubar.addItem(nsItem);
 			

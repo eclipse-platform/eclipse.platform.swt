@@ -1911,6 +1911,7 @@ public static final long /*int*/ sel_setHasVerticalScroller_ = sel_registerName(
 public static final long /*int*/ sel_setHeadIndent_ = sel_registerName("setHeadIndent:");
 public static final long /*int*/ sel_setHeaderCell_ = sel_registerName("setHeaderCell:");
 public static final long /*int*/ sel_setHeaderView_ = sel_registerName("setHeaderView:");
+public static final long /*int*/ sel_setHelpMenu_ = sel_registerName("setHelpMenu:");
 public static final long /*int*/ sel_setHidden_ = sel_registerName("setHidden:");
 public static final long /*int*/ sel_setHiddenUntilMouseMoves_ = sel_registerName("setHiddenUntilMouseMoves:");
 public static final long /*int*/ sel_setHidesOnDeactivate_ = sel_registerName("setHidesOnDeactivate:");
