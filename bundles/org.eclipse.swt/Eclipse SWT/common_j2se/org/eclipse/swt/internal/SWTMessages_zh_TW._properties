@@ -2,6 +2,7 @@
 SWT_Yes=\u662f
 SWT_No=\u5426
 SWT_OK=\u78ba\u5b9a
+SWT_Help=\u8f14\u52a9\u8aaa\u660e
 SWT_Cancel=\u53d6\u6d88
 SWT_Abort=\u4e2d\u6b62
 SWT_Retry=\u91cd\u8a66
