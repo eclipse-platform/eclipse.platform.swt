@@ -72,7 +72,13 @@ public class nsIWebProgressListener extends nsISupports {
 	}
 
 	public int OnLocationChange(long /*int*/ aWebProgress, long /*int*/ aRequest, long /*int*/ location) {
+		if (IsXULRunner17) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aWebProgress, aRequest, location);
+	}
+	
+	public int OnLocationChange(long /*int*/ aWebProgress, long /*int*/ aRequest, long /*int*/ location, int aFlags) {
+		if (!IsXULRunner17) return XPCOM.NS_COMFALSE;
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aWebProgress, aRequest, location, aFlags);
 	}
 
 	public int OnStatusChange(long /*int*/ aWebProgress, long /*int*/ aRequest, int aStatus, char[] aMessage) {

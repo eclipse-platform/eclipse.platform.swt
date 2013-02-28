@@ -29,7 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIBaseWindow extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 22 : 24);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 23 : (IsXULRunner10 ? 22 : 24));
 
 	public static final String NS_IBASEWINDOW_IID_STR =
 		"046bc8a0-8015-11d3-af70-00a024ffc08c";
