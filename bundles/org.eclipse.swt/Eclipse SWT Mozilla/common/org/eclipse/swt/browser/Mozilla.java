@@ -1338,16 +1338,21 @@ public boolean execute (String script) {
 
 				nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
 				result[0] = 0;
-				nsID scriptGlobalObjectNSID_10 = new nsID ("08f73284-26e3-4fa6-bf89-8326f92a94b3"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
-				rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_10, result);
+				nsID scriptGlobalObjectNSID_17 = new nsID ("92569431-6e6e-408a-a88c-45285c1c8573"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
+				rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_17, result);
 				if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
 					result[0] = 0;
-					nsID scriptGlobalObjectNSID_1_9_2 = new nsID ("e9f3f2c1-2d94-4722-bbd4-2bf6fdf42f48"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
-					rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_1_9_2, result);
+					nsID scriptGlobalObjectNSID_10 = new nsID ("08f73284-26e3-4fa6-bf89-8326f92a94b3"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
+					rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_10, result);
 					if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
 						result[0] = 0;
-						nsID scriptGlobalObjectNSID_1_9 = new nsID ("6afecd40-0b9a-4cfd-8c42-0f645cd91829"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
-						rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_1_9, result);
+						nsID scriptGlobalObjectNSID_1_9_2 = new nsID ("e9f3f2c1-2d94-4722-bbd4-2bf6fdf42f48"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
+						rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_1_9_2, result);
+						if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
+							result[0] = 0;
+							nsID scriptGlobalObjectNSID_1_9 = new nsID ("6afecd40-0b9a-4cfd-8c42-0f645cd91829"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
+							rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_1_9, result);
+						}
 					}
 				}
 				interfaceRequestor.Release ();
@@ -1365,16 +1370,21 @@ public boolean execute (String script) {
 						if (scriptContext != 0) {
 							/* ensure that the received nsIScriptContext implements the expected interface */
 							nsISupports supports = new nsISupports (scriptContext);
-							nsID scriptContextNSID_10 = new nsID ("2e583bf4-3c1f-432d-8283-8dee7eccc88b"); /* nsIScriptContext */ //$NON-NLS-1$					
-							rc = supports.QueryInterface (scriptContextNSID_10, result);
+							nsID scriptContextNSID_17 = new nsID ("d012cdb3-8f1e-4440-8cbd-327f981d37b4"); /* nsIScriptContext */ //$NON-NLS-1$	
+							rc = supports.QueryInterface (scriptContextNSID_17, result);
 							if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
 								result[0] = 0;
-								nsID scriptContextNSID_1_9_2 = new nsID ("87482b5e-e019-4df5-9bc2-b2a51b1f2d28"); /* nsIScriptContext */ //$NON-NLS-1$					
-								rc = supports.QueryInterface (scriptContextNSID_1_9_2, result);
+								nsID scriptContextNSID_10 = new nsID ("2e583bf4-3c1f-432d-8283-8dee7eccc88b"); /* nsIScriptContext */ //$NON-NLS-1$					
+								rc = supports.QueryInterface (scriptContextNSID_10, result);
 								if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
 									result[0] = 0;
-									nsID scriptContextNSID_1_9 = new nsID ("e7b9871d-3adc-4bf7-850d-7fb9554886bf"); /* nsIScriptContext */ //$NON-NLS-1$					
-									rc = supports.QueryInterface (scriptContextNSID_1_9, result);
+									nsID scriptContextNSID_1_9_2 = new nsID ("87482b5e-e019-4df5-9bc2-b2a51b1f2d28"); /* nsIScriptContext */ //$NON-NLS-1$					
+									rc = supports.QueryInterface (scriptContextNSID_1_9_2, result);
+									if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
+										result[0] = 0;
+										nsID scriptContextNSID_1_9 = new nsID ("e7b9871d-3adc-4bf7-850d-7fb9554886bf"); /* nsIScriptContext */ //$NON-NLS-1$					
+										rc = supports.QueryInterface (scriptContextNSID_1_9, result);
+									}
 								}
 							}
 
@@ -1419,6 +1429,23 @@ public boolean execute (String script) {
 									}
 								}
 							}
+							
+//						if (rc == XPCOM.NS_OK && result[0] != 0) {
+////					new nsISupports (result[0]).Release ();
+//						result[0] = 0;
+//
+//						nsEmbedString scriptString = new nsEmbedString(script);
+//						byte[] urlbytes = MozillaDelegate.wcsToMbcs (null, getUrl (), true);
+//
+//						boolean aIsUndefined [] = new boolean /*long*/[1];
+//						boolean success = XPCOM.nsIScriptContext_EvaluateStringWithValue (scriptContext, scriptString.getAddress(), 0, principal.getAddress(), urlbytes, 0, 150, result, aIsUndefined) == XPCOM.NS_OK;
+//						
+//						System.out.println("script executed " + success);
+//						// should principals be Release()d too?
+//						principal.Release ();
+//						serviceManager.Release ();
+//						return success;
+//						}
 						}
 					}
 				}
@@ -2781,10 +2808,10 @@ void navigate (long /*int*/ requestHandle) {
 				if (rc == XPCOM.NS_OK) {
 					rc = seekableStream.Seek (nsISeekableStream.NS_SEEK_SET, 0);
 					if (rc == XPCOM.NS_OK) {
-						int[] available = new int[1];
+						long[] available = new long[1]; // TODO: add xulr17 check
 						rc = inputStream.Available (available);
 						if (rc == XPCOM.NS_OK) {
-							int length = available[0];
+							int length = (int) available[0];
 							byte[] bytes = new byte[length];
 							int[] retVal = new int[1];
 							rc = inputStream.Read (bytes, length, retVal);

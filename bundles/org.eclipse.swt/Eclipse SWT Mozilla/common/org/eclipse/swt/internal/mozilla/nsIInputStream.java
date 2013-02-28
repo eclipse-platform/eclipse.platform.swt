@@ -52,6 +52,12 @@ public class nsIInputStream extends nsISupports {
 	}
 
 	public int Available(int[] _retval) {
+		if (IsXULRunner17) return XPCOM.NS_COMFALSE;
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
+	}
+	
+	public int Available(long[] _retval) {
+		if (!IsXULRunner17) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
 	}
 

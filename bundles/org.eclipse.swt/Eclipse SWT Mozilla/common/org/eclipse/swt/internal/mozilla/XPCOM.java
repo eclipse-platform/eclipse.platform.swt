@@ -224,6 +224,16 @@ public static final int JS_EvaluateUCScriptForPrincipals(byte[] mozillaPath, lon
 		lock.unlock();
 	}
 }
+///** @method flags=no_gen */
+//public static final native int _JS_EvaluateUCScript(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, char[] chars, int length, byte[] filename, int lineno, long /*int*/[] retVal);	
+//public static final int JS_EvaluateUCScript(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, char[] chars, int length, byte[] filename, int lineno, long /*int*/[] retVal) {
+//	lock.lock();
+//	try {
+//		return _JS_EvaluateUCScript(mozillaPath, cx, obj, chars, length, filename, lineno, retVal);
+//	} finally {
+//		lock.unlock();
+//	}
+//}
 /** @method flags=no_gen */
 public static final native long /*int*/ _JS_GetGlobalObject(byte[] mozillaPath, long /*int*/ cx);	
 public static final long /*int*/ JS_GetGlobalObject(byte[] mozillaPath, long /*int*/ cx) {
@@ -402,6 +412,24 @@ public static final long /*int*/ nsIScriptContext_GetNativeContext(long /*int*/ 
 		lock.unlock();
 	}
 }
+///**
+// * @method flags=cpp
+// * @param ptr cast=(nsIScriptContext *)
+// * @param aScript cast=(const nsAString&)
+// * @param aScopeObject cast=(JSObject *)
+// * @param aPrincipal cast=(nsIPrincipal *)
+// * @param aUrl cast=(const char *)
+// * @param retVal cast=(void *)
+// */
+//public static final native long /*int*/ _nsIScriptContext_EvaluateStringWithValue(long /*int*/ ptr, long /*int*/ aScript, int aScopeObject, int aPrincipal, byte [] aUrl, int aLineNumber, int aVersion, int [] retVal, boolean [] aIsUndefined);
+//public static final long /*int*/ nsIScriptContext_EvaluateStringWithValue(long /*int*/ ptr, long /*int*/ aScript, int aScopeObject, int aPrincipal, byte [] aUrl, int aLineNumber, int aVersion, int [] retVal, boolean [] aIsUndefined) {
+//	lock.lock();
+//	try {
+//		return _nsIScriptContext_EvaluateStringWithValue(ptr, aScript, aScopeObject, aPrincipal, aUrl, aLineNumber, aVersion, retVal, aIsUndefined);
+//	} finally {
+//		lock.unlock();
+//	}
+//}
 /**
  * @method flags=cpp
  * @param ptr cast=(nsEmbedCString *)

@@ -119,6 +119,12 @@ public class nsIFilePicker extends nsISupports {
 	}
 
 	public int Show(long /*int*/ _retval) {
+		if (IsXULRunner17) System.out.println("nsifilepicker.Show() is deprecated in xulr17");
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 17 : 15), getAddress(), _retval);
+	}
+	
+	public int Open(long /*int*/ aFilePickerShownCallback) {
+		if (!IsXULRunner17) return XPCOM.NS_COMFALSE;
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 18, getAddress(), aFilePickerShownCallback);
 	}
 }
