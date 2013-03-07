@@ -1123,7 +1123,10 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1nsID_1new",
 	"_1nsIMemory_1Alloc",
 	"_1nsIMemory_1Realloc",
+	"_1nsIScriptContext17_1GetNativeContext",
 	"_1nsIScriptContext_1GetNativeContext",
+	"_1nsIScriptGlobalObject17_1EnsureScriptEnvironment",
+	"_1nsIScriptGlobalObject17_1GetScriptContext",
 	"_1nsIScriptGlobalObject_1EnsureScriptEnvironment",
 	"_1nsIScriptGlobalObject_1GetScriptContext",
 #ifndef JNI64

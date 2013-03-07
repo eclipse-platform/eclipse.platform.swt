@@ -1331,7 +1331,7 @@ public boolean execute (String script) {
 	* exposed as of mozilla 1.9.
 	*/
 	long /*int*/[] result = new long /*int*/[1];
-	if (IsPre_17) //TODO: temporarily disable execute() code for xulr17
+	//if (IsPre_17) //TODO: temporarily disable execute() code for xulr17
 	if (!IsPre_1_9) {
 		int rc = XPCOM.NS_GetServiceManager (result);
 		if (rc != XPCOM.NS_OK) error (rc);
@@ -1395,11 +1395,20 @@ public boolean execute (String script) {
 				if (rc == XPCOM.NS_OK && result[0] != 0) {
 					long /*int*/ scriptGlobalObject = result[0];
 					result[0] = 0;
-					rc = (int/*64*/)XPCOM.nsIScriptGlobalObject_EnsureScriptEnvironment (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
+					if (IsPre_17) {
+						rc = (int/*64*/)XPCOM.nsIScriptGlobalObject_EnsureScriptEnvironment (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
+					} else {
+						rc = (int/*64*/)XPCOM.nsIScriptGlobalObject17_EnsureScriptEnvironment (scriptGlobalObject);
+					}
 					if (rc != XPCOM.NS_OK) {
 						new nsISupports (scriptGlobalObject).Release ();
 					} else {
-						long /*int*/ scriptContext = XPCOM.nsIScriptGlobalObject_GetScriptContext (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
+						long /*int*/ scriptContext;
+						if (IsPre_17) {
+							scriptContext = XPCOM.nsIScriptGlobalObject_GetScriptContext (scriptGlobalObject, 2); /* nsIProgrammingLanguage.JAVASCRIPT */
+						} else {
+							scriptContext = XPCOM.nsIScriptGlobalObject17_GetScriptContext (scriptGlobalObject);
+						}
 						new nsISupports (scriptGlobalObject).Release ();
 
 						if (scriptContext != 0) {
@@ -1427,7 +1436,12 @@ public boolean execute (String script) {
 								new nsISupports (result[0]).Release ();
 								result[0] = 0;
 
-								long /*int*/ nativeContext = XPCOM.nsIScriptContext_GetNativeContext (scriptContext);
+								long /*int*/ nativeContext;
+								if (IsPre_17) {
+									nativeContext = XPCOM.nsIScriptContext_GetNativeContext (scriptContext);
+								} else {
+									nativeContext = XPCOM.nsIScriptContext17_GetNativeContext (scriptContext);
+								}
 								if (nativeContext != 0) {
 									int length = script.length ();
 									char[] scriptChars = new char[length];

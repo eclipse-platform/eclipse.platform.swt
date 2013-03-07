@@ -1133,7 +1133,10 @@ typedef enum {
 	_1nsID_1new_FUNC,
 	_1nsIMemory_1Alloc_FUNC,
 	_1nsIMemory_1Realloc_FUNC,
+	_1nsIScriptContext17_1GetNativeContext_FUNC,
 	_1nsIScriptContext_1GetNativeContext_FUNC,
+	_1nsIScriptGlobalObject17_1EnsureScriptEnvironment_FUNC,
+	_1nsIScriptGlobalObject17_1GetScriptContext_FUNC,
 	_1nsIScriptGlobalObject_1EnsureScriptEnvironment_FUNC,
 	_1nsIScriptGlobalObject_1GetScriptContext_FUNC,
 #ifndef JNI64

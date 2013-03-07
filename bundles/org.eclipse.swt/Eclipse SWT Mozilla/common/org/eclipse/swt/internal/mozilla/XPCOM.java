@@ -388,6 +388,19 @@ public static final int nsIScriptGlobalObject_EnsureScriptEnvironment(long /*int
 }
 /**
  * @method flags=cpp
+ * @param ptr cast=(nsIScriptGlobalObject17 *)
+ */
+public static final native int _nsIScriptGlobalObject17_EnsureScriptEnvironment(long /*int*/ ptr);
+public static final int nsIScriptGlobalObject17_EnsureScriptEnvironment(long /*int*/ ptr) {
+	lock.lock();
+	try {
+		return _nsIScriptGlobalObject17_EnsureScriptEnvironment(ptr);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=cpp
  * @param ptr cast=(nsIScriptGlobalObject *)
  */
 public static final native long /*int*/ _nsIScriptGlobalObject_GetScriptContext(long /*int*/ ptr, int lang);
@@ -401,6 +414,19 @@ public static final long /*int*/ nsIScriptGlobalObject_GetScriptContext(long /*i
 }
 /**
  * @method flags=cpp
+ * @param ptr cast=(nsIScriptGlobalObject17 *)
+ */
+public static final native long /*int*/ _nsIScriptGlobalObject17_GetScriptContext(long /*int*/ ptr);
+public static final long /*int*/ nsIScriptGlobalObject17_GetScriptContext(long /*int*/ ptr) {
+	lock.lock();
+	try {
+		return _nsIScriptGlobalObject17_GetScriptContext(ptr);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=cpp
  * @param ptr cast=(nsIScriptContext *)
  */
 public static final native long /*int*/ _nsIScriptContext_GetNativeContext(long /*int*/ ptr);
@@ -408,6 +434,19 @@ public static final long /*int*/ nsIScriptContext_GetNativeContext(long /*int*/ 
 	lock.lock();
 	try {
 		return _nsIScriptContext_GetNativeContext(ptr);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=cpp
+ * @param ptr cast=(nsIScriptContext17 *)
+ */
+public static final native long /*int*/ _nsIScriptContext17_GetNativeContext(long /*int*/ ptr);
+public static final long /*int*/ nsIScriptContext17_GetNativeContext(long /*int*/ ptr) {
+	lock.lock();
+	try {
+		return _nsIScriptContext17_GetNativeContext(ptr);
 	} finally {
 		lock.unlock();
 	}
