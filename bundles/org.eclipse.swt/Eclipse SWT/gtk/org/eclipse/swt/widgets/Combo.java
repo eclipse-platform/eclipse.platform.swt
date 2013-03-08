@@ -436,7 +436,6 @@ void createHandle (int index) {
 	* fix is to set the pad to 1.
 	*/
 	int pad = 0;
-	if (OS.GTK_VERSION < OS.VERSION(2, 6, 0)) pad = 1;
 	OS.g_object_set (textRenderer, OS.ypad, pad, 0);
 	/*
 	* Feature in GTK.  In version 2.4.9 of GTK, a warning is issued
@@ -788,9 +787,7 @@ public Point getCaretLocation () {
 		return new Point (0, 0);
 	}
 	int index = OS.gtk_editable_get_position (entryHandle);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
-		index = OS.gtk_entry_text_index_to_layout_index (entryHandle, index);
-	}
+	index = OS.gtk_entry_text_index_to_layout_index (entryHandle, index);
 	int [] offset_x = new int [1], offset_y = new int [1];
 	OS.gtk_entry_get_layout_offsets (entryHandle, offset_x, offset_y);
 	long /*int*/ layout = OS.gtk_entry_get_layout (entryHandle);
@@ -1260,24 +1257,20 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent)  {
 				if (!sendMouseEvent (SWT.MouseDown, gdkEventButton.button, display.clickCount, 0, false, gdkEventButton.time, gdkEventButton.x_root, gdkEventButton.y_root, false, gdkEventButton.state)) {
 					return 1;
 				}
-				if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
-					if ((style & SWT.READ_ONLY) == 0 && widget == buttonHandle) {
-						OS.gtk_widget_grab_focus (entryHandle);
-					}
+				if ((style & SWT.READ_ONLY) == 0 && widget == buttonHandle) {
+					OS.gtk_widget_grab_focus (entryHandle);
 				}
 			}
 			break;
 		}
 		case OS.GDK_FOCUS_CHANGE: {
-			if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
-				if ((style & SWT.READ_ONLY) == 0) {
-					GdkEventFocus gdkEventFocus = new GdkEventFocus ();
-					OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
-					if (gdkEventFocus.in != 0) {
-						OS.gtk_combo_box_set_focus_on_click (handle, false);
-					} else {
-						OS.gtk_combo_box_set_focus_on_click (handle, true);
-					}
+			if ((style & SWT.READ_ONLY) == 0) {
+				GdkEventFocus gdkEventFocus = new GdkEventFocus ();
+				OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+				if (gdkEventFocus.in != 0) {
+					OS.gtk_combo_box_set_focus_on_click (handle, false);
+				} else {
+					OS.gtk_combo_box_set_focus_on_click (handle, true);
 				}
 			}
 			break;
