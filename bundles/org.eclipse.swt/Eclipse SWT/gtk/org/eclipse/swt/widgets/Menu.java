@@ -648,18 +648,7 @@ long /*int*/ gtk_hide (long /*int*/ widget) {
 	if ((style & SWT.POP_UP) != 0) {
 		if (display.activeShell != null) display.activeShell = getShell ();
 	}
-	if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
-		sendEvent (SWT.Hide);
-	} else {
-		/*
-		* Bug in GTK.  In GTK 2.4 and earlier
-		* a crash could occur if a menu item 
-		* was disposed within gtk_hide.  The
-		* workaroud is to post the event instead
-		* of send it on these platforms  
-		*/
-		postEvent (SWT.Hide);
-	}
+	sendEvent (SWT.Hide);
 	if (OS.ubuntu_menu_proxy_get() != 0) {
 		MenuItem[] items = getItems();
 		for (int i=0; i<items.length; i++) {

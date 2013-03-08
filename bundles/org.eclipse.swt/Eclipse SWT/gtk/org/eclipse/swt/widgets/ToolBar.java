@@ -390,30 +390,7 @@ ToolItem [] _getTabItemList () {
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	if (!hasFocus ()) return 0;
 	long /*int*/ result = super.gtk_key_press_event (widget, eventPtr);
-	if (result != 0) return result;
-	GdkEventKey gdkEvent = new GdkEventKey ();
-	OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
-	switch (gdkEvent.keyval) {
-		case OS.GDK_Down: {
-			if (OS.GTK_VERSION < OS.VERSION (2, 6, 0) && (currentFocusItem != null) && (currentFocusItem.style & SWT.DROP_DOWN) != 0) {
-				Event event = new Event ();
-				event.detail = SWT.ARROW;
-				long /*int*/ topHandle = currentFocusItem.topHandle ();
-				GtkAllocation allocation = new GtkAllocation ();
-				gtk_widget_get_allocation (topHandle, allocation);
-				event.x = allocation.x;
-				event.y = allocation.y + allocation.height;
-				if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth() - allocation.width - event.x;
-				currentFocusItem.sendSelectionEvent  (SWT.Selection, event, false);
-				/*
-				 * Stop GTK from processing the event further as key_down binding
-				 * will move the focus to the next item.
-				 */
-				return 1;
-			}
-		}
-		default: return result;
-	}
+	return result;
 }
 
 long /*int*/ gtk_focus (long /*int*/ widget, long /*int*/ directionType) {

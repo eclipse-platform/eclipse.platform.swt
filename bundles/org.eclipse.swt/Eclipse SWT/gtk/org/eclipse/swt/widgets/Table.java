@@ -2837,13 +2837,6 @@ void reskinChildren (int flags) {
 boolean searchEnabled () {
 	/* Disable searching when using VIRTUAL */
 	if ((style & SWT.VIRTUAL) != 0) return false;
-	if (OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {
-		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
-		Shell shell = getShell();
-		if ((shell.style & mask) != 0) {
-			return false;
-		}
-	}
 	return true;
 }
 
@@ -3038,12 +3031,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	* after it has been resized.
 	*/
 	OS.gtk_widget_realize (handle);
-	/*
-	* Bug in GTK.  An empty GtkTreeView fails to repaint the focus rectangle
-	* correctly when resized on versions before 2.6.0.  The fix is to force
-	* the widget to redraw.
-	*/
-	if (OS.GTK_VERSION < OS.VERSION (2, 6, 0) && itemCount == 0) redraw (false);
 	return result;
 }
 
