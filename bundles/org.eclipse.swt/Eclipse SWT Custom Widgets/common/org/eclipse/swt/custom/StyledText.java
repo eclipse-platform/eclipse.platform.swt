@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -247,7 +247,7 @@ public class StyledText extends Canvas {
 		fontData = styledText.getFont().getFontData()[0];
 		tabLength = styledText.tabLength;
 		int lineCount = printerRenderer.lineCount;
-		if (styledText.isListening(ST.LineGetBackground) || (styledText.isBidi() && styledText.isListening(ST.LineGetSegments)) || styledText.isListening(ST.LineGetStyle)) {
+		if (styledText.isListening(ST.LineGetBackground) || (styledText.isListening(ST.LineGetSegments)) || styledText.isListening(ST.LineGetStyle)) {
 			StyledTextContent content = printerRenderer.content;
 			for (int i = 0; i < lineCount; i++) {
 				String line = content.getLine(i);
@@ -256,12 +256,10 @@ public class StyledText extends Canvas {
 				if (event != null && event.lineBackground != null) {
 					printerRenderer.setLineBackground(i, 1, event.lineBackground);
 				}
-				if (styledText.isBidi()) {
-					event = styledText.getBidiSegments(lineOffset, line);
-					if (event != null) {
-						printerRenderer.setLineSegments(i, 1, event.segments);
-						printerRenderer.setLineSegmentChars(i, 1, event.segmentsChars);
-					}
+				event = styledText.getBidiSegments(lineOffset, line);
+				if (event != null) {
+					printerRenderer.setLineSegments(i, 1, event.segments);
+					printerRenderer.setLineSegmentChars(i, 1, event.segmentsChars);
 				}
 				event = styledText.getLineStyleData(lineOffset, line);
 				if (event != null) {
@@ -4775,7 +4773,6 @@ public String getSelectionText() {
 	return content.getTextRange(selection.x, selection.y - selection.x);
 }
 StyledTextEvent getBidiSegments(int lineOffset, String line) {
-	if (!isBidi()) return null;
 	if (!isListening(ST.LineGetSegments)) {
 		StyledTextEvent event = new StyledTextEvent(content);
 		event.segments = getBidiSegmentsCompatibility(line, lineOffset);
@@ -7094,12 +7091,6 @@ boolean invokeBlockAction(int action) {
 			return blockXLocation != -1;
 	}
 	return false;
-}
-/**
- * Temporary until SWT provides this
- */
-boolean isBidi() {
-	return IS_GTK || IS_MAC || BidiUtil.isBidiPlatform() || isMirrored();
 }
 boolean isBidiCaret() {
 	return BidiUtil.isBidiPlatform();
