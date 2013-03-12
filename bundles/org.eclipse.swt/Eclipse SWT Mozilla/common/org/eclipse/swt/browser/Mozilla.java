@@ -866,8 +866,8 @@ public void create (Composite parent, int style) {
 			new nsISupports (result[0]).Release ();
 		}
 		IsPre_1_9 = true;
-		IsPre_4 = true;
-		IsPre_17 = true;
+//		IsPre_4 = true;
+//		IsPre_17 = true;
 		result[0] = 0;
 
 		/*
@@ -899,22 +899,23 @@ public void create (Composite parent, int style) {
 				}
 			} else { /* >= 1.9 */
 				IsPre_1_9 = false;
-				result[0] = 0;
-				rc = interfaceRequestor.GetInterface(nsIDocShell.NS_IDOCSHELL_17_IID, result);
-				if (rc == XPCOM.NS_OK && result[0] != 0) { /* = 17.0.1 */
-					IsPre_17 = false;
-					new nsISupports (result[0]).Release();
-				} else {
-					if (result[0] != 0) {
-						new nsISupports (result[0]).Release();
-						result[0] = 0;
-					}
-					rc = interfaceRequestor.GetInterface(nsIDocShell.NS_IDOCSHELL_10_IID, result);
-					if (rc == XPCOM.NS_OK && result[0] != 0) { /* = 10.0 */
-						IsPre_4 = false;
-						new nsISupports (result[0]).Release();
-					}
-				}
+				/* IsPre_4 and IsPre_17 already set in initXPCOM() */
+//				result[0] = 0;
+//				rc = interfaceRequestor.GetInterface(nsIDocShell.NS_IDOCSHELL_17_IID, result);
+//				if (rc == XPCOM.NS_OK && result[0] != 0) { /* = 17.0.1 */
+//					IsPre_17 = false;
+//					new nsISupports (result[0]).Release();
+//				} else {
+//					if (result[0] != 0) {
+//						new nsISupports (result[0]).Release();
+//						result[0] = 0;
+//					}
+//					rc = interfaceRequestor.GetInterface(nsIDocShell.NS_IDOCSHELL_10_IID, result);
+//					if (rc == XPCOM.NS_OK && result[0] != 0) { /* = 10.0 */
+//						IsPre_4 = false;
+//						new nsISupports (result[0]).Release();
+//					}
+//				}
 			}
 		}
 		result[0] = 0;
@@ -2100,10 +2101,23 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 		C.memmove (functionLoad.function, new long /*int*/[] {0} , C.PTR_SIZEOF);
 		XPCOM.memmove (ptr, functionLoad, XPCOM.nsDynamicFunctionLoad_sizeof ());
 		rc = XPCOM.XPCOMGlueLoadXULFunctions (ptr);
-		if (rc == XPCOM.NS_OK) {
+		if (rc == XPCOM.NS_OK) { /* > 3.x */
 			IsPre_4 = false;
+			IsPre_17 = false;
 			nsISupports.IsXULRunner10 = true;
-			nsISupports.IsXULRunner17 = true;
+			result[0] = 0;
+			rc = localFile.QueryInterface(nsIFile.NS_IFILE_17_IID, result);
+			if (rc == XPCOM.NS_OK) { /* = 17.0.1 */
+				nsISupports.IsXULRunner17 = true;
+			} else { /* = 10.0 */
+				IsPre_17 = true;
+				rc = localFile.QueryInterface (nsILocalFile.NS_ILOCALFILE_IID, result);
+				if (rc != XPCOM.NS_OK) {
+					browser.dispose ();
+					error (rc);
+				}
+			}
+			if (result[0] != 0) new nsISupports (result[0]).Release();
 		} else {
 			/*
 			 * XRE_InitEmbedding2 was not found, so fall back to XRE_InitEmbedding, which is
