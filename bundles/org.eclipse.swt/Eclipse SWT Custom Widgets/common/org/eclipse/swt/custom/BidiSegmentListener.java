@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-import org.eclipse.swt.internal.SWTEventListener;
+import org.eclipse.swt.internal.*;
 
 /**
  * This listener interface may be implemented in order to receive
@@ -27,11 +27,10 @@ public interface BidiSegmentListener extends SWTEventListener {
  * <li>event.lineOffset line start offset (input)</li>
  * <li>event.lineText line text (input)</li>
  * <li>event.segments text segments that should be reordered separately (output)</li> 
- * <li>event.segmentsChars characters that should be inserted (output)</li>
+ * <li>event.segmentsChars characters that should be inserted (output, optional)</li>
  * </ul>
  *
  * @param event the given event
- *	separately. (output)
  * @see BidiSegmentEvent
  */
 public void lineGetSegments(BidiSegmentEvent event);
