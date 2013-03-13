@@ -1098,6 +1098,18 @@ boolean setTabItemFocus () {
 	return super.setTabItemFocus ();
 }
 
+boolean updateTextDirection(int textDirection) {
+	if (super.updateTextDirection(textDirection)) {
+		ToolItem [] items = _getItems ();
+		int i = items.length;
+		while (i-- > 0) {
+			items[i].updateTextDirection(style & SWT.FLIP_TEXT_DIRECTION);
+		}
+		return true;
+	}
+	return false;
+}
+
 String toolTipText (NMTTDISPINFO hdr) {
 	if ((hdr.uFlags & OS.TTF_IDISHWND) != 0) {
 		return null;
@@ -1120,7 +1132,8 @@ String toolTipText (NMTTDISPINFO hdr) {
 		* enters the control from the top edge.  The fix is
 		* to explicitly set TTF_RTLREADING.
 		*/
-		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		int flags = SWT.RIGHT_TO_LEFT | SWT.FLIP_TEXT_DIRECTION;
+		if ((style & flags) != 0 && (style & flags) != flags) {
 			hdr.uFlags |= OS.TTF_RTLREADING;
 		} else {
 			hdr.uFlags &= ~OS.TTF_RTLREADING;

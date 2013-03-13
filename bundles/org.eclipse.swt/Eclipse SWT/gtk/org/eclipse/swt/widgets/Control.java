@@ -266,6 +266,12 @@ public int getOrientation () {
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
+public int getTextDirection() {
+	checkWidget ();
+	/* return the widget orientation */
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
 boolean hasFocus () {
 	return this == display.getFocusControl();
 }
@@ -4544,6 +4550,10 @@ public void setRedraw (boolean redraw) {
 boolean setTabItemFocus (boolean next) {
 	if (!isShowing ()) return false;
 	return forceFocus ();
+}
+
+public void setTextDirection(int textDirection) {
+	checkWidget ();
 }
 
 /**

@@ -1159,6 +1159,23 @@ boolean setTabGroupFocus () {
 	return false;
 }
 
+boolean updateTextDirection(int textDirection) {
+	if (super.updateTextDirection(textDirection)) {
+		/* 
+		 * OS.WS_EX_RTLREADING doesn't propagate to children
+		 */
+		Control[] children = _getChildren ();
+		int i = children.length;
+		while (i-- > 0) {
+			if (children[i] != null && !children[i].isDisposed ()) {
+				children[i].updateTextDirection(textDirection);
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
 String toolTipText (NMTTDISPINFO hdr) {
 	Shell shell = getShell ();
 	if ((hdr.uFlags & OS.TTF_IDISHWND) == 0) {
@@ -1891,7 +1908,9 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 						}
 					}
 					if (widget != null) {
-						if ((widget.getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
+						int style = widget.getStyle();
+						int flags = SWT.RIGHT_TO_LEFT | SWT.FLIP_TEXT_DIRECTION;
+						if ((style & flags) != 0 && (style & flags) != flags) {
 							lpnmtdi.uFlags |= OS.TTF_RTLREADING;
 						} else {
 							lpnmtdi.uFlags &= ~OS.TTF_RTLREADING;

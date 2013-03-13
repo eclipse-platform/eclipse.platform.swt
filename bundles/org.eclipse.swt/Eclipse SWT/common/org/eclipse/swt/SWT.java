@@ -1784,6 +1784,18 @@ public class SWT {
 	public static final int TRANSPARENT = 1 << 30;
 	
 	/**
+	 * Style constant to indicate base text direction (value is 1&lt;&lt;31).
+	 * <p>
+	 * When the bit is set, text direction mismatches the widget orientation 
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Control</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.102
+	 */
+	public static final int FLIP_TEXT_DIRECTION = 1 << 31;
+
+	/**
 	 * Style constant for align up behavior (value is 1&lt;&lt;7,
 	 * since align UP and align TOP are considered the same).
 	 * <p><b>Used By:</b><ul>

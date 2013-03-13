@@ -567,6 +567,18 @@ public void setSpacing (int spacing) {
 	OS.InvalidateRect (handle, null, true);
 }
 
+boolean updateTextDirection(int textDirection) {
+	if (super.updateTextDirection(textDirection)) {
+		for (int i = 0, n = items.length; i < n; i++) {
+			if (items[i] != null) {
+				items[i].updateTextDirection(style & SWT.FLIP_TEXT_DIRECTION);
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
 void showItem (ExpandItem item) {
 	Control control = item.control;
 	if (control != null && !control.isDisposed ()) {

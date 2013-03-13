@@ -344,6 +344,22 @@ public void setText (String string) {
 	_setText (index, string);
 }
 
+boolean updateTextDirection(int textDirection) {
+	if (super.updateTextDirection(textDirection)) {
+		int index = parent.indexOf (this);
+		if (index != -1) {
+			if ((textDirection & SWT.RIGHT_TO_LEFT) != 0) {
+				_setText(index, RLE + text);
+				return true;
+			} else if ((textDirection & SWT.LEFT_TO_RIGHT) != 0) {
+				_setText(index, LRE + text);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 /**
  * Sets the receiver's tool tip text to the argument, which
  * may be null indicating that the default tool tip for the 

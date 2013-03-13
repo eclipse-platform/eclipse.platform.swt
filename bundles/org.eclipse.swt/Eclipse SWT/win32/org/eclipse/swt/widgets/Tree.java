@@ -5609,6 +5609,7 @@ void updateOrientation () {
 		} else {
 			bits &= ~OS.WS_EX_LAYOUTRTL;
 		}
+		bits &= ~OS.WS_EX_RTLREADING;
 		OS.SetWindowLong (hwndParent, OS.GWL_EXSTYLE, bits);
 		rect = new RECT ();
 		OS.GetWindowRect (hwndParent, rect);

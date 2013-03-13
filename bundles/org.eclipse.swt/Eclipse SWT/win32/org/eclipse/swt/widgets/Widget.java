@@ -97,6 +97,10 @@ public abstract class Widget {
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
 
+	/* Bidi UCC to enforce text orientation */
+	static final char LRE = '\u202a';
+	static final char RLE = '\u202b';
+
 	/* Check and initialize the Common Controls DLL */
 	static final int MAJOR = 5, MINOR = 80;
 	static {

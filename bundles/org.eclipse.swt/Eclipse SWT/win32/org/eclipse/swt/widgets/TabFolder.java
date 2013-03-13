@@ -745,6 +745,16 @@ void setSelection (int index, boolean notify) {
 	}
 }
 
+boolean updateTextDirection(int textDirection) {
+	if (super.updateTextDirection(textDirection)) {
+		for (int i = 0, n = items.length; i < n && items[i] != null; i++) {
+			items[i].updateTextDirection (textDirection);
+		}
+		return true;
+	}
+	return false;
+}
+
 String toolTipText (NMTTDISPINFO hdr) {
 	if ((hdr.uFlags & OS.TTF_IDISHWND) != 0) {
 		return null;
@@ -759,7 +769,8 @@ String toolTipText (NMTTDISPINFO hdr) {
 		* enters the control from the top edge.  The fix is
 		* to explicitly set TTF_RTLREADING.
 		*/
-		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		int flags = SWT.RIGHT_TO_LEFT | SWT.FLIP_TEXT_DIRECTION;
+		if ((style & flags) != 0 && (style & flags) != flags) {
 			hdr.uFlags |= OS.TTF_RTLREADING;
 		} else {
 			hdr.uFlags &= ~OS.TTF_RTLREADING;
@@ -805,6 +816,7 @@ void updateOrientation () {
 			} else {
 				bits &= ~OS.WS_EX_LAYOUTRTL;
 			}
+			bits &= ~OS.WS_EX_RTLREADING;
 			OS.SetWindowLong (hwndChild, OS.GWL_EXSTYLE, bits);
 			OS.InvalidateRect (hwndChild, null, true);
 			break;

@@ -154,24 +154,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	Point size = super.computeSize (wHint, hHint, changed);
 	int length = text.length ();
 	if (length != 0) {
-		/*
-		* Bug in Windows.  When a group control is right-to-left and
-		* is disabled, the first pixel of the text is clipped.  The
-		* fix is to add a space to both sides of the text.  Note that
-		* the work around must run all the time to stop the preferred
-		* size from changing when a group is enabled and disabled.
-		*/
-		String string = text;
-		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-			if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-				string = " " + string + " ";
-			}
-		}
+		String string = fixText (false);
+
 		/*
 		* If the group has text, and the text is wider than the
 		* client area, pad the width so the text is not clipped.
 		*/
-		TCHAR buffer = new TCHAR (getCodePage (), string, true);
+		TCHAR buffer = new TCHAR (getCodePage (), string == null ? text : string, true);
 		long /*int*/ newFont, oldFont = 0;
 		long /*int*/ hDC = OS.GetDC (handle);
 		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
@@ -230,13 +219,30 @@ void enableWidget (boolean enabled) {
 	* is disabled, the first pixel of the text is clipped.  The
 	* fix is to add a space to both sides of the text.
 	*/
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-			String string = enabled || text.length() == 0 ? text : " " + text + " ";
-			TCHAR buffer = new TCHAR (getCodePage (), string, true);
-			OS.SetWindowText (handle, buffer);
-		}
+	String string = fixText (enabled);
+	if (string != null) {
+		TCHAR buffer = new TCHAR (getCodePage (), string, true);
+		OS.SetWindowText (handle, buffer);
 	}
+}
+
+String fixText (boolean enabled) {
+	/*
+	* Bug in Windows.  When a group control is right-to-left and
+	* is disabled, the first pixel of the text is clipped.  The
+	* fix is to add a space to both sides of the text.
+	*/
+	if (text.length() == 0) return null;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		String string = null;
+		if (!enabled && (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ())) {
+			string = " " + text + " ";
+		}
+		return (style & SWT.FLIP_TEXT_DIRECTION) == 0 ? string : string != null ? LRE + string : LRE + text;
+	} else if ((style & SWT.FLIP_TEXT_DIRECTION) != 0) {
+		return RLE + text;
+	}
+	return null;
 }
 
 public Rectangle getClientArea () {
@@ -394,20 +400,21 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	text = string;
-	/*
-	* Bug in Windows.  When a group control is right-to-left and
-	* is disabled, the first pixel of the text is clipped.  The
-	* fix is to add a space to both sides of the text.
-	*/
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-			if (!OS.IsWindowEnabled (handle)) {
-				if (string.length() != 0) string = " " + string + " ";
-			}
-		}
-	}
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	string = fixText (OS.IsWindowEnabled (handle));
+	TCHAR buffer = new TCHAR (getCodePage (), string == null ? text : string, true);
 	OS.SetWindowText (handle, buffer);
+}
+
+boolean updateTextDirection(int textDirection) {
+	if (super.updateTextDirection(textDirection)) {
+		String string = fixText (OS.IsWindowEnabled (handle));
+		if (string != null) {
+			TCHAR buffer = new TCHAR (getCodePage (), string, true);
+			OS.SetWindowText (handle, buffer);
+		}
+		return true;
+	}
+	return false;
 }
 
 int widgetStyle () {

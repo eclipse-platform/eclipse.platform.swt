@@ -183,4 +183,13 @@ public void setText (String string) {
 	text = string;
 }
 
+boolean updateTextDirection(int textDirection) {
+	if (((style  & SWT.FLIP_TEXT_DIRECTION) ^ textDirection) != 0) {
+		style ^= SWT.FLIP_TEXT_DIRECTION;
+		return true;
+	}
+	return false;
+}
+
+
 }

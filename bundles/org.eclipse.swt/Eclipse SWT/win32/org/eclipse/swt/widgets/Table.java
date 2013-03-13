@@ -5654,6 +5654,7 @@ void updateOrientation () {
 		} else {
 			bits &= ~OS.WS_EX_LAYOUTRTL;
 		}
+		bits &= ~OS.WS_EX_RTLREADING;
 		OS.SetWindowLong (hwndHeader, OS.GWL_EXSTYLE, bits);
 		OS.InvalidateRect (hwndHeader, null, true);
 		RECT rect = new RECT ();

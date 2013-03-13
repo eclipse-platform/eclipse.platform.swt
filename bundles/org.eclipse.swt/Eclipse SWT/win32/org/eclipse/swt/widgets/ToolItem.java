@@ -778,6 +778,35 @@ boolean setTabItemFocus () {
 	return false;
 }
 
+void _setText (String string) {
+	long /*int*/ hwnd = parent.handle;
+	TBBUTTONINFO info = new TBBUTTONINFO ();
+	info.cbSize = TBBUTTONINFO.sizeof;
+	info.dwMask = OS.TBIF_TEXT | OS.TBIF_STYLE;
+	info.fsStyle = (byte) (widgetStyle () | OS.BTNS_AUTOSIZE);
+	long /*int*/ hHeap = OS.GetProcessHeap (), pszText = 0;
+	if (string.length () != 0) {
+		info.fsStyle |= OS.BTNS_SHOWTEXT;
+		TCHAR buffer;
+		if ((style & SWT.FLIP_TEXT_DIRECTION) != 0) {
+			int bits  = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
+			if ((bits & OS.WS_EX_LAYOUTRTL) != 0) {
+				buffer = new TCHAR (parent.getCodePage (), LRE + string, true);
+			} else {
+				buffer = new TCHAR (parent.getCodePage (), RLE + string, true);
+			}
+		} else {
+			buffer = new TCHAR(parent.getCodePage (), string, true);
+		}
+		int byteCount = buffer.length () * TCHAR.sizeof;
+		pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (pszText, buffer, byteCount); 
+		info.pszText = pszText;
+	}
+	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
+	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+}
+
 /**
  * Sets the receiver's text. The string may include
  * the mnemonic character.
@@ -809,22 +838,7 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (string.equals (text)) return;
 	super.setText (string);
-	long /*int*/ hwnd = parent.handle;
-	TBBUTTONINFO info = new TBBUTTONINFO ();
-	info.cbSize = TBBUTTONINFO.sizeof;
-	info.dwMask = OS.TBIF_TEXT | OS.TBIF_STYLE;
-	info.fsStyle = (byte) (widgetStyle () | OS.BTNS_AUTOSIZE);
-	long /*int*/ hHeap = OS.GetProcessHeap (), pszText = 0;
-	if (string.length () != 0) {
-		info.fsStyle |= OS.BTNS_SHOWTEXT;
-		TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
-		int byteCount = buffer.length () * TCHAR.sizeof;
-		pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-		OS.MoveMemory (pszText, buffer, byteCount); 
-		info.pszText = pszText;
-	}
-	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
-	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+	_setText (string);
 	
 	/*
 	* Bug in Windows.  For some reason, when the font is set
@@ -835,10 +849,19 @@ public void setText (String string) {
 	* the tool bar to redraw and layout.
 	*/
 	parent.setDropDownItems (false);
+	long /*int*/ hwnd = parent.handle;
 	long /*int*/ hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 	OS.SendMessage (hwnd, OS.WM_SETFONT, hFont, 0);
 	parent.setDropDownItems (true);
 	parent.layoutItems ();
+}
+
+boolean updateTextDirection(int textDirection) {
+	if (super.updateTextDirection(textDirection) && text.length() != 0) {
+		_setText (text);
+		return true;
+	}
+	return false;
 }
 
 /**

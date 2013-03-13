@@ -738,6 +738,19 @@ public void setText (String string) {
 	}
 }
 
+boolean updateTextDirection(int textDirection) {
+	if (super.updateTextDirection(textDirection)) {
+		int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
+		style &= ~SWT.MIRRORED;
+		style &= ~flags;
+		style |= textDirection & flags;
+		updateOrientation ();
+		checkMirrored ();
+		return true;
+	}
+	return false;
+}
+
 int widgetStyle () {
 	int bits = super.widgetStyle ();
 	return bits | OS.WS_TABSTOP;

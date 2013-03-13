@@ -1932,6 +1932,12 @@ public Point getSize () {
 	return new Point((int)rect.width, (int)rect.height);
 }
 
+public int getTextDirection() {
+	checkWidget ();
+	/* return the widget orientation */
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
 float getThemeAlpha () {
 	return 1 * parent.getThemeAlpha ();
 }
@@ -4112,6 +4118,10 @@ void setSmallSize () {
 boolean setTabItemFocus () {
 	if (!isShowing ()) return false;
 	return forceFocus ();
+}
+
+public void setTextDirection(int textDirection) {
+	checkWidget ();
 }
 
 /**

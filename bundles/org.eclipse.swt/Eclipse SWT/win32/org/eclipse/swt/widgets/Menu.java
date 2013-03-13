@@ -1488,6 +1488,7 @@ void _setOrientation (int orientation) {
    if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
    style &= ~flags;
    style |= orientation & flags;
+   style &= ~SWT.FLIP_TEXT_DIRECTION;
    MenuItem [] itms = getItems ();
    for (int i=0; i<itms.length; i++) {
        itms [i].setOrientation (orientation);

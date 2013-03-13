@@ -2067,6 +2067,7 @@ void updateOrientation () {
 	} else {
 		bits &= ~OS.WS_EX_LAYOUTRTL;
 	}
+	bits &= ~OS.WS_EX_RTLREADING;
 	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
 	long /*int*/ hwndText = 0, hwndList = 0;
 	COMBOBOXINFO pcbi = new COMBOBOXINFO ();
