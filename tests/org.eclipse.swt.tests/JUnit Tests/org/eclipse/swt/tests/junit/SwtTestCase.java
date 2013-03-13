@@ -231,7 +231,7 @@ protected boolean isReparentablePlatform() {
 }
 
 protected boolean isBidi() {
-	return  SWT.getPlatform().equals("gtk") || SWT.getPlatform().equals("carbon") ||  SWT.getPlatform().equals("cocoa") || BidiUtil.isBidiPlatform();// || isMirrored;
+	return true;
 }
 
 protected void setUp() {
