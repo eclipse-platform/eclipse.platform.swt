@@ -3486,7 +3486,12 @@ public TreeItem [] getSelection () {
 	int itemCount = (int)/*64*/OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
 	boolean bigSelection = result.length > itemCount / 2;
 	if (count != getSelection (hItem, tvItem, result, 0, count, bigSelection, false)) {
-		getSelection (hItem, tvItem, result, 0, count, bigSelection, true);
+		count = getSelection (hItem, tvItem, result, 0, count, bigSelection, true);
+	}
+	if (count != result.length) {
+		TreeItem[] newResult = new TreeItem[count];
+		System.arraycopy (result, 0, newResult, 0, count);
+		result = newResult;
 	}
 	OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, oldProc);
 	return result;
