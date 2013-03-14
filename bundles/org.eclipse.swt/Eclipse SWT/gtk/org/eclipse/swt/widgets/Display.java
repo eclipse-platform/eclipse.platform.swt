@@ -3544,7 +3544,7 @@ void releaseDisplay () {
 	OS.g_type_class_unref (pangoLayoutClass);
 	pangoLayoutNewProc = 0;
 	if (OS.GTK3) {
-		long /*int*/ imContextType = OS.PANGO_TYPE_LAYOUT ();
+		long /*int*/ imContextType = OS.GTK_TYPE_IM_MULTICONTEXT ();
 		long /*int*/ imContextClass = OS.g_type_class_ref (imContextType);
 		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, imContextNewProc);
 		OS.g_type_class_unref (imContextClass);
