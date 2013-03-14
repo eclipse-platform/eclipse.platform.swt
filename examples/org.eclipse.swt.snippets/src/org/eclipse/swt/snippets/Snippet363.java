@@ -13,6 +13,7 @@ package org.eclipse.swt.snippets;
 /*
  * Accessibility example snippet: Declare a message area to be a "live region",
  * and send "changed" events to a screen reader when the message area is updated.
+ * Note: This snippet will only work with Windows screen readers. 
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
