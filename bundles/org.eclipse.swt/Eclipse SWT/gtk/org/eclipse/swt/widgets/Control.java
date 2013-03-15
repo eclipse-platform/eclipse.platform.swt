@@ -3909,23 +3909,24 @@ public void setBackground (Color color) {
 
 void setBackgroundColor (long /*int*/ handle, GdkColor color) {
 	if (OS.GTK3) {
-		
+		GdkRGBA rgba = null;
+		double alpha = 1;
 		if (color == null) {
 			if ((state & PARENT_BACKGROUND) != 0) {
+				alpha = 0;
 				Control control = findBackgroundControl();
 				if (control == null) control = this;
 				color = control.getBackgroundColor();
 			}
 		}
-	    String css ="GtkWidget {\n" +
-	    " background-color: rgb("+((color.red >> 8) & 0xFF)+","+((color.green >> 8) & 0xFF)+","+((color.blue >> 8) & 0xFF)+");\n" +
-	    "}\n";
-	    byte[] css_data = Converter.wcsToMbcs (null, css, true);
-	    long /*int*/ context = OS.gtk_widget_get_style_context(handle);
-	    long /*int*/ provider = OS.gtk_css_provider_new ();
-	    OS.gtk_css_provider_load_from_data (provider, css_data, -1, null);
-	    OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	    OS.g_object_unref (provider);	
+		if (color != null) {
+			rgba = new GdkRGBA ();
+			rgba.alpha = alpha;
+			rgba.red = (color.red & 0xFFFF) / (float)0xFFFF;
+			rgba.green = (color.green & 0xFFFF) / (float)0xFFFF;
+			rgba.blue = (color.blue & 0xFFFF) / (float)0xFFFF;
+		}
+		OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		return;
 	}
 	int index = OS.GTK_STATE_NORMAL;
