@@ -8506,7 +8506,7 @@ public static final void gtk_style_context_add_provider_for_screen(long /*int*/ 
 */
 public static final native void _gtk_style_context_add_provider (long /*int*/ context, long /*int*/ provider, int priority);
 public static final void gtk_style_context_add_provider(
-	long /* int */context, long /* int */provider, int priority) {
+	long /*int*/context, long /*int*/provider, int priority) {
 	lock.lock();
 	try {
 		_gtk_style_context_add_provider(context, provider, priority);
