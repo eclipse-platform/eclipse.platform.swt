@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 IBM Corporation and others.
+ * Copyright (c) 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,16 +13,16 @@ package org.eclipse.swt.snippets;
 /*
  * BIDI example snippet: Set the text direction independent of the widget orientation.
  *
+ * Note: This snippet currently only works on Windows. 
+ * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet364 {
 
@@ -39,6 +39,8 @@ public class Snippet364 {
 		Button b2 = new Button(shell, SWT.PUSH | SWT.RIGHT_TO_LEFT);
 		b2.setText("Button RIGHT_TO_LEFT...");
 		b2.setImage(i);
+		
+		new Label(shell, SWT.NONE).setText("with FLIP_TEXT_DIRECTION:");
 
 		Button b3 = new Button(shell, SWT.PUSH | SWT.LEFT_TO_RIGHT | SWT.FLIP_TEXT_DIRECTION);
 		b3.setText("Button LEFT_TO_RIGHT...");
