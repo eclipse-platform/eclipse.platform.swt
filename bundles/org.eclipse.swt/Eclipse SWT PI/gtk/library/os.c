@@ -14953,6 +14953,24 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1style_1context_1add_1provider
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1add_1provider)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1context_1add_1provider_FUNC);
+/*
+	gtk_style_context_add_provider(arg0, arg1, (guint)arg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_style_context_add_provider)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong, guint))fp)(arg0, arg1, (guint)arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1context_1add_1provider_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1style_1context_1add_1provider_1for_1screen
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1add_1provider_1for_1screen)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2)

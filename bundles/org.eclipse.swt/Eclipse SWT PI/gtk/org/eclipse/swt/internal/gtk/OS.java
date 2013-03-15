@@ -8498,6 +8498,22 @@ public static final void gtk_style_context_add_provider_for_screen(long /*int*/ 
 		lock.unlock();
 	}
 }
+
+
+/**
+* @method flags=dynamic
+* @param priority cast=(guint)
+*/
+public static final native void _gtk_style_context_add_provider (long /*int*/ context, long /*int*/ provider, int priority);
+public static final void gtk_style_context_add_provider(
+	long /* int */context, long /* int */provider, int priority) {
+	lock.lock();
+	try {
+		_gtk_style_context_add_provider(context, provider, priority);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @param list_store cast=(GtkListStore *)
  * @param iter cast=(GtkTreeIter *)

@@ -1076,6 +1076,7 @@ typedef enum {
 	_1gtk_1status_1icon_1set_1tooltip_FUNC,
 	_1gtk_1status_1icon_1set_1visible_FUNC,
 	_1gtk_1style_1context_1add_1class_FUNC,
+	_1gtk_1style_1context_1add_1provider_FUNC,
 	_1gtk_1style_1context_1add_1provider_1for_1screen_FUNC,
 	_1gtk_1style_1context_1get_1background_1color_FUNC,
 	_1gtk_1style_1context_1get_1border_FUNC,

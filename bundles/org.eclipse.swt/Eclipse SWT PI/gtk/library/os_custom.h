@@ -278,6 +278,7 @@
 #define gtk_scrolled_window_get_vscrollbar_LIB LIB_GTK
 #define gtk_scale_new_LIB LIB_GTK
 #define gtk_style_context_add_provider_for_screen_LIB LIB_GTK
+#define gtk_style_context_add_provider_LIB LIB_GTK
 #define gtk_style_context_restore_LIB LIB_GTK
 #define gtk_style_context_save_LIB LIB_GTK
 #define gtk_style_context_set_state_LIB LIB_GTK
