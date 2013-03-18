@@ -1786,10 +1786,15 @@ public class SWT {
 	/**
 	 * Style constant to indicate base text direction (value is 1&lt;&lt;31).
 	 * <p>
-	 * When the bit is set, text direction mismatches the widget orientation 
+	 * When the bit is set, text direction mismatches the widget orientation.
+	 * <br>Note that this is a <em>HINT</em>.
+	 * </p>
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * </ul></p>
+	 * 
+	 * @see org.eclipse.swt.widgets.Control#setTextDirection(int)
+	 * @see org.eclipse.swt.widgets.Control#getTextDirection()
 	 * 
 	 * @since 3.102
 	 */
