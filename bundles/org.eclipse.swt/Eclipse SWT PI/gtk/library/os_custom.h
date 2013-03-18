@@ -544,7 +544,7 @@
 #define gtk_css_provider_new_LIB LIB_GTK
 #define gtk_icon_set_render_icon_pixbuf_LIB LIB_GTK
 
-#if GLIB_CHECK_VERSION(2,32,0)
+#ifndef g_thread_supported
 #define g_thread_supported() 0
 #endif
 
