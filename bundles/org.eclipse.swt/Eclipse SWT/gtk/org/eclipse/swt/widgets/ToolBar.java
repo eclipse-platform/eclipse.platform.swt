@@ -138,6 +138,18 @@ void createHandle (int index) {
 		byte [] swt_toolbar_flat = Converter.wcsToMbcs (null, "swt-toolbar-flat", true);
 		OS.gtk_widget_set_name (handle, swt_toolbar_flat);
 	}
+
+	/*
+	* Bug in GTK. For some reason, the toolbar style context does not read
+	* the CSS style sheet until the window containing the toolbar is shown.
+	* The fix is to call gtk_style_context_invalidate() which it seems to
+	* force the style sheet to be read. 
+	*/
+	if (OS.GTK3) { 
+		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+		OS.gtk_style_context_invalidate (context);
+	}
+	
 	/*
 	* Bug in GTK.  GTK will segment fault if gtk_widget_reparent() is called
 	* on a tool bar or on a widget hierarchy containing a tool bar when the icon

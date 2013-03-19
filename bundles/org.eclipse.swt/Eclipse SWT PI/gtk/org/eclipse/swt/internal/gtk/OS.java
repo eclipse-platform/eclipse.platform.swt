@@ -10924,6 +10924,16 @@ public static final void gtk_style_context_get_border(long /*int*/ context, int 
 	}
 }
 /** @method flags=dynamic */
+public static final native void _gtk_style_context_invalidate(long /*int*/ context);
+public static final void gtk_style_context_invalidate(long /*int*/ context) {
+	lock.lock();
+	try {
+		_gtk_style_context_invalidate(context);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
 public static final native void _gtk_style_context_save(long /*int*/ self);
 public static final void gtk_style_context_save(long /*int*/ self) {
 	lock.lock();

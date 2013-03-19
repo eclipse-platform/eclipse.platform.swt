@@ -15159,6 +15159,24 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1style_1context_1invalidate
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1invalidate)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1context_1invalidate_FUNC);
+/*
+	gtk_style_context_invalidate(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_style_context_invalidate)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1context_1invalidate_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1style_1context_1restore
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1context_1restore)
 	(JNIEnv *env, jclass that, jintLong arg0)
