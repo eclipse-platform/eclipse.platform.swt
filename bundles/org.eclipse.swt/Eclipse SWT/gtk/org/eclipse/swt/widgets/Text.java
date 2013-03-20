@@ -559,15 +559,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.g_object_unref (layout);
 		width = Math.max (width, w [0]);
 	}
-	if (OS.GTK3) {
-		GtkRequisition requsition = new GtkRequisition();
-		OS.gtk_widget_get_preferred_size(handle, requsition, null);
-		if (width == 0) width = requsition.width;
-		if (height == 0) height = requsition.height;
-	} else {
-		if (width == 0) width = DEFAULT_WIDTH;
-		if (height == 0) height = DEFAULT_HEIGHT;
-	}
+	if (width == 0) width = DEFAULT_WIDTH;
+	if (height == 0) height = DEFAULT_HEIGHT;
 	width = wHint == SWT.DEFAULT ? width : wHint;
 	height = hHint == SWT.DEFAULT ? height : hHint;
 	Rectangle trim = computeTrim (0, 0, width, height);
