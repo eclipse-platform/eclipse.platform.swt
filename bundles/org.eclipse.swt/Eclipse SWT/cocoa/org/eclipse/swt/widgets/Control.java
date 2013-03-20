@@ -1219,7 +1219,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 	return dragging;
 }
 
-boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
+boolean drawGripper (GC gc, int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 

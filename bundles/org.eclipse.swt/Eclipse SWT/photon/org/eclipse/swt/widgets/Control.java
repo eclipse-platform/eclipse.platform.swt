@@ -658,7 +658,7 @@ int defaultForeground () {
 	return display.WIDGET_FOREGROUND;
 }
 
-boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
+boolean drawGripper (GC gc, int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 

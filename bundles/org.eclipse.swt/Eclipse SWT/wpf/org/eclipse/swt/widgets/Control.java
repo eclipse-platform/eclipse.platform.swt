@@ -843,7 +843,7 @@ void enableWidget (boolean enabled) {
 	OS.UIElement_IsEnabled (handle, enabled);
 }
 
-boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
+boolean drawGripper (GC gc, int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 

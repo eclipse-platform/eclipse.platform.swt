@@ -566,6 +566,7 @@ public class OS extends C {
 	public static final byte[] GTK_STYLE_CLASS_TOOLTIP = ascii("tooltip");
 	public static final byte[] GTK_STYLE_CLASS_VIEW = ascii("view");
 	public static final byte[] GTK_STYLE_CLASS_CELL = ascii("cell");
+	public static final byte[] GTK_STYLE_CLASS_PANE_SEPARATOR = ascii("pane-separator");
 	
 	/** Properties */
 	public static final byte[] active = ascii("active");

@@ -787,7 +787,7 @@ boolean dragDetect (int button, int count, int stateMask, int x, int y) {
 boolean dragDetect (int x, int y, boolean force, boolean [] consume) {
 	return true;
 }
-boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
+boolean drawGripper (GC gc, int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 void enableWidget (boolean enabled) {

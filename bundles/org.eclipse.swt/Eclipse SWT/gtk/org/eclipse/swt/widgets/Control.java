@@ -159,17 +159,19 @@ void drawBackground (Control control, long /*int*/ window, long /*int*/ cr, long
 	OS.g_object_unref (gdkGC);
 }
 
-boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
+boolean drawGripper (GC gc, int x, int y, int width, int height, boolean vertical) {
 	long /*int*/ paintHandle = paintHandle ();
 	long /*int*/ window = gtk_widget_get_window (paintHandle);
 	if (window == 0) return false;
 	int orientation = vertical ? OS.GTK_ORIENTATION_HORIZONTAL : OS.GTK_ORIENTATION_VERTICAL;
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - width - x;
 	if (OS.GTK3) {
-		long /*int*/ cairo = OS.gdk_cairo_create (window);
-		long /*int*/ context = OS.gtk_widget_get_style_context(paintHandle);
-		OS.gtk_render_handle(context, cairo, x, y, width, height);
-		Cairo.cairo_destroy (cairo);
+		long /*int*/ context = OS.gtk_widget_get_style_context (paintHandle);
+		OS.gtk_style_context_save (context);
+		OS.gtk_style_context_add_class (context, OS.GTK_STYLE_CLASS_PANE_SEPARATOR);
+		OS.gtk_style_context_set_state (context, OS.GTK_STATE_FLAG_NORMAL);
+		OS.gtk_render_handle (context, gc.handle, x, y, width, height);
+		OS.gtk_style_context_restore (context);
 	} else {
 		OS.gtk_paint_handle (OS.gtk_widget_get_style (paintHandle), window, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_OUT, null, paintHandle, new byte [1], x, y, width, height, orientation);
 	}
