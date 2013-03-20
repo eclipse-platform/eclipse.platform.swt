@@ -3929,6 +3929,8 @@ void setBackgroundColor (long /*int*/ handle, GdkColor color) {
 			rgba.blue = (color.blue & 0xFFFF) / (float)0xFFFF;
 		}
 		OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+		OS.gtk_style_context_invalidate (context);
 		return;
 	}
 	int index = OS.GTK_STATE_NORMAL;

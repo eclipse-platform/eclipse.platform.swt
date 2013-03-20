@@ -1646,6 +1646,8 @@ public void setData (String key, Object value) {
 void setFontDescription (long /*int*/ widget, long /*int*/ font) {
 	if (OS.GTK3) {
 		OS.gtk_widget_override_font (widget, font);
+		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+		OS.gtk_style_context_invalidate (context);
 	} else {
 		OS.gtk_widget_modify_font (widget, font);
 	}
@@ -1666,6 +1668,8 @@ void setForegroundColor (long /*int*/ handle, GdkColor color, boolean setStateAc
 			rgba.blue = (color.blue & 0xFFFF) / (float)0xFFFF;
 		}
 		OS.gtk_widget_override_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+		OS.gtk_style_context_invalidate (context);
 		return;
 	}
 	
