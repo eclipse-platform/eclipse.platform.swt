@@ -519,6 +519,7 @@ static void swt_fixed_size_allocate (GtkWidget *widget, GtkAllocation *allocatio
 	GList *list;
 	GtkAllocation child_allocation;
 	GtkRequisition requisition;
+	gint w, h;
 
 	gtk_widget_set_allocation (widget, allocation);
 
@@ -542,9 +543,18 @@ static void swt_fixed_size_allocate (GtkWidget *widget, GtkAllocation *allocatio
           child_allocation.y += allocation->y;
         }
 
-		gtk_widget_get_preferred_size (child, &requisition, NULL);
-		child_allocation.width = requisition.width;
-		child_allocation.height = requisition.height;
+		/*
+		 * Use the requested size if it is set. This is the GTK 2 behavior of
+		 * gtk_widget_get_child_requisition().
+		 */
+		gtk_widget_get_size_request (child, &w, &h);
+		if (w == -1 || h == -1) {
+			gtk_widget_get_preferred_size (child, &requisition, NULL);
+			if (w == -1) w = requisition.width;
+			if (h == -1) h = requisition.height;
+		}
+		child_allocation.width = w;
+		child_allocation.height = h;
 		
 		gtk_widget_size_allocate (child, &child_allocation);
     }
