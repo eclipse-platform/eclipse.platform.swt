@@ -1449,53 +1449,36 @@ public boolean execute (String script) {
 									script.getChars(0, length, scriptChars, 0);
 									byte[] urlbytes = MozillaDelegate.wcsToMbcs (null, getUrl (), true);
 									rc = principal.GetJSPrincipals (nativeContext, result);
+									long /*int*/ principals = 0;
 									if (rc == XPCOM.NS_OK && result[0] != 0) {
-										long /*int*/ principals = result[0];
+										principals = result[0];
 										result[0] = 0;
-
-										byte[] jsLibPath = getJSLibPathBytes ();
-										long /*int*/ globalJSObject = XPCOM.JS_GetGlobalObject (jsLibPath, nativeContext);
-										if (globalJSObject != 0) {
-											aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CONTEXTSTACK_CONTRACTID, true);
-											rc = serviceManager.GetServiceByContractID (aContractID, nsIJSContextStack.NS_IJSCONTEXTSTACK_IID, result);
-											if (rc == XPCOM.NS_OK && result[0] != 0) {
-												nsIJSContextStack stack = new nsIJSContextStack (result[0]);
+									}
+									byte[] jsLibPath = getJSLibPathBytes ();
+									long /*int*/ globalJSObject = XPCOM.JS_GetGlobalObject (jsLibPath, nativeContext);
+									if (globalJSObject != 0) {
+										aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CONTEXTSTACK_CONTRACTID, true);
+										rc = serviceManager.GetServiceByContractID (aContractID, nsIJSContextStack.NS_IJSCONTEXTSTACK_IID, result);
+										if (rc == XPCOM.NS_OK && result[0] != 0) {
+											nsIJSContextStack stack = new nsIJSContextStack (result[0]);
+											result[0] = 0;
+											rc = stack.Push (nativeContext);
+											if (rc != XPCOM.NS_OK) {
+												stack.Release ();
+											} else {
+												boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals (jsLibPath, nativeContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, isXULRunner190x ? result : null) != 0;
 												result[0] = 0;
-												rc = stack.Push (nativeContext);
-												if (rc != XPCOM.NS_OK) {
-													stack.Release ();
-												} else {
-													boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals (jsLibPath, nativeContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, isXULRunner190x ? result : null) != 0;
-													result[0] = 0;
-													rc = stack.Pop (result);
-													stack.Release ();
-													// should principals be Release()d too?
-													principal.Release ();
-													serviceManager.Release ();
-													return success;
-												}
+												rc = stack.Pop (result);
+												stack.Release ();
+												// should principals be Release()d too?
+												principal.Release ();
+												serviceManager.Release ();
+												return success;
 											}
 										}
 									}
 								}
 							}
-							
-//						if (rc == XPCOM.NS_OK && result[0] != 0) {
-////					new nsISupports (result[0]).Release ();
-//						result[0] = 0;
-//
-//						nsEmbedString scriptString = new nsEmbedString(script);
-//						byte[] urlbytes = MozillaDelegate.wcsToMbcs (null, getUrl (), true);
-//
-//						boolean aIsUndefined [] = new boolean /*long*/[1];
-//						boolean success = XPCOM.nsIScriptContext_EvaluateStringWithValue (scriptContext, scriptString.getAddress(), 0, principal.getAddress(), urlbytes, 0, 150, result, aIsUndefined) == XPCOM.NS_OK;
-//						
-//						System.out.println("script executed " + success);
-//						// should principals be Release()d too?
-//						principal.Release ();
-//						serviceManager.Release ();
-//						return success;
-//						}
 						}
 					}
 				}

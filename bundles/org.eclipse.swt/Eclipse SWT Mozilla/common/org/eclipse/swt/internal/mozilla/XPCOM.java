@@ -451,24 +451,6 @@ public static final long /*int*/ nsIScriptContext17_GetNativeContext(long /*int*
 		lock.unlock();
 	}
 }
-///**
-// * @method flags=cpp
-// * @param ptr cast=(nsIScriptContext *)
-// * @param aScript cast=(const nsAString&)
-// * @param aScopeObject cast=(JSObject *)
-// * @param aPrincipal cast=(nsIPrincipal *)
-// * @param aUrl cast=(const char *)
-// * @param retVal cast=(void *)
-// */
-//public static final native long /*int*/ _nsIScriptContext_EvaluateStringWithValue(long /*int*/ ptr, long /*int*/ aScript, int aScopeObject, int aPrincipal, byte [] aUrl, int aLineNumber, int aVersion, int [] retVal, boolean [] aIsUndefined);
-//public static final long /*int*/ nsIScriptContext_EvaluateStringWithValue(long /*int*/ ptr, long /*int*/ aScript, int aScopeObject, int aPrincipal, byte [] aUrl, int aLineNumber, int aVersion, int [] retVal, boolean [] aIsUndefined) {
-//	lock.lock();
-//	try {
-//		return _nsIScriptContext_EvaluateStringWithValue(ptr, aScript, aScopeObject, aPrincipal, aUrl, aLineNumber, aVersion, retVal, aIsUndefined);
-//	} finally {
-//		lock.unlock();
-//	}
-//}
 /**
  * @method flags=cpp
  * @param ptr cast=(nsEmbedCString *)
