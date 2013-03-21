@@ -94,6 +94,10 @@ void createHandle (int index) {
 	}
 }
 
+long /*int*/ eventHandle () {
+	return OS.GTK3 ? fixedHandle : super.eventHandle ();
+}
+
 /**
  * Returns the maximum value which the receiver will allow.
  *
