@@ -2879,10 +2879,19 @@ public boolean getVisible () {
 
 Point getThickness (long /*int*/ widget) {
 	if (OS.GTK3) {
-		GtkBorder padding = new GtkBorder();
+		int xthickness = 0, ythickness = 0;
+		GtkBorder tmp = new GtkBorder();
 		long /*int*/ context = OS.gtk_widget_get_style_context (widget);
-		OS.gtk_style_context_get_padding (context, OS.GTK_STATE_FLAG_NORMAL, padding);
-		return new Point (padding.left, padding.top);
+		OS.gtk_style_context_save (context);
+		OS.gtk_style_context_add_class (context, OS.GTK_STYLE_CLASS_FRAME);
+		OS.gtk_style_context_get_padding (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+		xthickness += tmp.left;
+		ythickness += tmp.top;
+		OS.gtk_style_context_get_border (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+		xthickness += tmp.left;
+		ythickness += tmp.top;
+		OS.gtk_style_context_restore (context);
+		return new Point (xthickness, ythickness);
 	}
 	long /*int*/ style = OS.gtk_widget_get_style (widget);
 	return new Point (OS.gtk_style_get_xthickness (style), OS.gtk_style_get_ythickness (style));
