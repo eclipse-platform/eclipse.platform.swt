@@ -269,7 +269,7 @@ public class Display extends Device {
 	GdkColor COLOR_WIDGET_HIGHLIGHT_SHADOW, COLOR_WIDGET_BACKGROUND, COLOR_WIDGET_FOREGROUND, COLOR_WIDGET_BORDER;
 	GdkColor COLOR_LIST_FOREGROUND, COLOR_LIST_BACKGROUND, COLOR_LIST_SELECTION, COLOR_LIST_SELECTION_TEXT;
 	GdkColor COLOR_LIST_SELECTION_INACTIVE, COLOR_LIST_SELECTION_TEXT_INACTIVE;
-	GdkColor COLOR_INFO_BACKGROUND, COLOR_INFO_FOREGROUND;
+	GdkColor COLOR_INFO_BACKGROUND, COLOR_INFO_FOREGROUND, COLOR_LINK_FOREGROUND;
 	GdkColor COLOR_TITLE_FOREGROUND, COLOR_TITLE_BACKGROUND, COLOR_TITLE_BACKGROUND_GRADIENT;
 	GdkColor COLOR_TITLE_INACTIVE_FOREGROUND, COLOR_TITLE_INACTIVE_BACKGROUND, COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT;
 
@@ -2026,6 +2026,7 @@ public Color getSystemColor (int id) {
 	checkDevice ();
 	GdkColor gdkColor = null;
 	switch (id) {
+		case SWT.COLOR_LINK_FOREGROUND: 					gdkColor = COLOR_LINK_FOREGROUND; break;
 		case SWT.COLOR_INFO_FOREGROUND: 					gdkColor = COLOR_INFO_FOREGROUND; break;
 		case SWT.COLOR_INFO_BACKGROUND: 					gdkColor = COLOR_INFO_BACKGROUND; break;
 		case SWT.COLOR_TITLE_FOREGROUND:					gdkColor = COLOR_TITLE_FOREGROUND; break;
@@ -2176,14 +2177,30 @@ public Menu getSystemMenu () {
 }
 
 void initializeSystemColors () {
-	GdkColor gdkColor;
-	
 	/* Get Tooltip resources */
 	int /*long*/ tooltipShellHandle = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
 	if (tooltipShellHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	byte[] gtk_tooltips = Converter.wcsToMbcs (null, "gtk-tooltips", true); //$NON-NLS-1$
-	OS.gtk_widget_set_name (tooltipShellHandle, gtk_tooltips);
+	byte[] gtk_tooltip = Converter.wcsToMbcs (null, "gtk-tooltips", true); //$NON-NLS-1$
+	OS.gtk_widget_set_name (tooltipShellHandle, gtk_tooltip);
 	OS.gtk_widget_realize (tooltipShellHandle);
+	
+	/* Initialize link foreground */
+	int /*long*/ linkWidget = OS.gtk_label_new (new byte[1]);
+	if (linkWidget == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_container_add (tooltipShellHandle, linkWidget);
+	int /*long*/ [] linkColor = new int /*long*/ [1];
+	OS.gtk_widget_style_get (linkWidget, OS.link_color, linkColor, 0);
+	GdkColor gdkColor = new GdkColor();
+	if (linkColor [0] != 0) {
+		OS.memmove (gdkColor, linkColor[0], GdkColor.sizeof);
+		OS.gdk_color_free (linkColor [0]);
+	} else {
+		gdkColor.blue = (short)0xeeee;
+	}
+	int /*long*/ colormap = OS.gdk_colormap_get_system();
+	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+	COLOR_LINK_FOREGROUND = gdkColor;
+
 	int /*long*/ tooltipStyle = OS.gtk_widget_get_style (tooltipShellHandle);
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_fg (tooltipStyle, OS.GTK_STATE_NORMAL, gdkColor);
@@ -3375,7 +3392,7 @@ void releaseDisplay () {
 	COLOR_LIST_SELECTION_INACTIVE = COLOR_LIST_SELECTION_TEXT_INACTIVE =
 	COLOR_WIDGET_FOREGROUND = COLOR_TITLE_FOREGROUND = COLOR_TITLE_BACKGROUND = COLOR_TITLE_BACKGROUND_GRADIENT =
 	COLOR_TITLE_INACTIVE_FOREGROUND = COLOR_TITLE_INACTIVE_BACKGROUND = COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT =
-	COLOR_INFO_BACKGROUND = COLOR_INFO_FOREGROUND = null;
+	COLOR_INFO_BACKGROUND = COLOR_INFO_FOREGROUND = COLOR_LINK_FOREGROUND = null;
 
 	/* Dispose the event callback */
 	OS.gdk_event_handler_set (0, 0, 0);
