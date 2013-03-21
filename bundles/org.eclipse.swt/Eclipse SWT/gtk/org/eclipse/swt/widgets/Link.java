@@ -48,7 +48,6 @@ public class Link extends Control {
 	int [] mnemonics;
 	int focusIndex;
 	
-	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
 	static final RGB LINK_DISABLED_FOREGROUND = new RGB (172, 168, 153);
 	
 /**
@@ -148,7 +147,7 @@ void createHandle(int index) {
 	OS.gtk_fixed_set_has_window (handle, true);
 	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
 	layout = new TextLayout (display);
-	linkColor = new Color (display, LINK_FOREGROUND);
+	linkColor = display.getSystemColor(SWT.COLOR_LINK_FOREGROUND);
 	disabledColor = new Color (display, LINK_DISABLED_FOREGROUND);
 	offsets = new Point [0];
 	ids = new String [0];
@@ -499,7 +498,6 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (layout != null)	layout.dispose ();
 	layout = null;
-	if (linkColor != null)	linkColor.dispose ();
 	linkColor = null;
 	if (disabledColor != null) disabledColor.dispose ();
 	disabledColor = null;
