@@ -4103,7 +4103,7 @@ public class SWT {
 	 * 
 	 * @since 3.6
 	 */
-	public static final String SKIN_CLASS = "org.eclipse.swt.skin.class";
+	public static final String SKIN_CLASS = "org.eclipse.swt.skin.class";  //$NON-NLS-1$
 
 	/**
 	 * Key value for setting and getting the skin id of a widget.
@@ -4113,7 +4113,7 @@ public class SWT {
 	 * 
 	 * @since 3.6
 	 */
-	public static final String SKIN_ID = "org.eclipse.swt.skin.id";
+	public static final String SKIN_ID = "org.eclipse.swt.skin.id";  //$NON-NLS-1$
 	
 	/**
 	 * The <code>Scrollable</code> constant to indicate that
