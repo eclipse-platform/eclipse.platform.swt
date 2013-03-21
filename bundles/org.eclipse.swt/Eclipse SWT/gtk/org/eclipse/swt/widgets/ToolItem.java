@@ -930,8 +930,10 @@ public void setEnabled (boolean enabled) {
 		* whether the pointer is currently in the button is never updated.
 		* As a result, when it is re-enabled it automatically enters
 		* a PRELIGHT state. The fix is to set a NORMAL state.
+		* 
+		* Note that on GTK 3 this code causes the item to be re-enabled.
 		*/
-		if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0)) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 14, 0) && !OS.GTK3) {
 			OS.gtk_widget_set_state (topHandle, OS.GTK_STATE_NORMAL);
 		}
 	}
