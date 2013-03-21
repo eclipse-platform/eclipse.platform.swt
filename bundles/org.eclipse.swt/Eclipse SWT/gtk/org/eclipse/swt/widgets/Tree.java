@@ -1545,8 +1545,14 @@ public int getItemHeight () {
 		int [] w = new int [1], h = new int [1];
 		ignoreSize = true;
 		OS.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+		int height = h [0];
+		if (OS.GTK3) {
+			long /*int*/ textRenderer = getTextRenderer (column);
+			OS.gtk_cell_renderer_get_preferred_height_for_width (textRenderer, handle, 0, h, null);
+			height += h [0];
+		}
 		ignoreSize = false;
-		return h [0];
+		return height;
 	} else {
 		int height = 0;
 		long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());

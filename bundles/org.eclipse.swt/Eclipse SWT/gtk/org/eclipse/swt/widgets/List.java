@@ -491,7 +491,13 @@ public int getItemHeight () {
 	if (itemCount == 0) {
 		int [] w = new int [1], h = new int [1];
 		OS.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
-		return h [0];
+		int height = h [0];
+		if (OS.GTK3) {
+			long /*int*/ textRenderer = getTextRenderer (column);
+			OS.gtk_cell_renderer_get_preferred_height_for_width (textRenderer, handle, 0, h, null);
+			height += h [0];
+		}
+		return height;
 	} else {
 		long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 		OS.gtk_tree_model_get_iter_first (modelHandle, iter);
@@ -660,6 +666,29 @@ public int [] getSelectionIndices () {
 		return result;
 	}
 	return new int [0];
+}
+
+long /*int*/ getTextRenderer (long /*int*/ column) {
+	long /*int*/ list = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 12, 0)) {
+		list = OS.gtk_cell_layout_get_cells(column);
+	} else {
+		list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	}
+	if (list == 0) return 0;
+	int count = OS.g_list_length (list);
+	long /*int*/ textRenderer = 0;
+	int i = 0;
+	while (i < count) {
+		long /*int*/ renderer = OS.g_list_nth_data (list, i);
+		 if (OS.GTK_IS_CELL_RENDERER_TEXT (renderer)) {
+			textRenderer = renderer;
+			break;
+		}
+		i++;
+	}
+	OS.g_list_free (list);
+	return textRenderer;
 }
 
 /**
