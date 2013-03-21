@@ -58,7 +58,7 @@ public abstract class Device implements Drawable {
 	long /*int*/ logProc;
 	Callback logCallback;
 	//NOT DONE - get list of valid names
-	String [] log_domains = {"GLib-GObject", "GLib", "GObject", "Pango", "ATK", "GdkPixbuf", "Gdk", "Gtk", "GnomeVFS", "GIO"};
+	String [] log_domains = {"", "GLib-GObject", "GLib", "GObject", "Pango", "ATK", "GdkPixbuf", "Gdk", "Gtk", "GnomeVFS", "GIO"};
 	int [] handler_ids = new int [log_domains.length];
 	int warningLevel;
 	
@@ -750,6 +750,9 @@ public boolean loadFont (String path) {
 }
 
 long /*int*/ logProc (long /*int*/ log_domain, long /*int*/ log_level, long /*int*/ message, long /*int*/ user_data) {
+	if (DEBUG) {
+		new Error ().printStackTrace ();
+	}
 	if (warningLevel == 0) {
 		if (DEBUG || debug) {
 			new Error ().printStackTrace ();
