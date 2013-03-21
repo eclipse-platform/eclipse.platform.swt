@@ -241,6 +241,8 @@ public class OS extends C {
 	public static final int GDK_SCROLL_LEFT = 2;
 	public static final int GDK_SCROLL_RIGHT = 3;
 	public static final int GDK_SCROLL_SMOOTH = 4;
+	public static final int GDK_SCROLL_MASK = 1 << 21;
+	public static final int GDK_SMOOTH_SCROLL_MASK = 1 << 23;
 	public static final int GDK_SELECTION_CLEAR = 17;
 	public static final int GDK_SELECTION_NOTIFY = 19;
 	public static final int GDK_SELECTION_REQUEST = 18;
