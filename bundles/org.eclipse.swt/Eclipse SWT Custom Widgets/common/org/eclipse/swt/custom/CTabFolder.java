@@ -1003,7 +1003,11 @@ void initAccessible() {
 		public void getName(AccessibleEvent e) {
 			String name = null;
 			int childID = e.childID;
-			if (childID >= 0 && childID < items.length) {
+			if (childID == ACC.CHILDID_SELF) {
+				if (selectedIndex != -1) {
+					name = stripMnemonic(items[selectedIndex].getText());
+				}
+			} else if (childID >= 0 && childID < items.length) {
 				name = stripMnemonic(items[childID].getText());
 			} else if (childID == items.length + CHEVRON_CHILD_ID) {
 				name = SWT.getMessage("SWT_ShowList"); //$NON-NLS-1$
