@@ -3160,7 +3160,7 @@ public class SWT {
 	/**
 	 * System color used to paint link text (value is 36).
 	 * 
-	 * @since 3.100
+	 * @since 3.102
 	 */
 	public static final int COLOR_LINK_FOREGROUND = 36;
 	
