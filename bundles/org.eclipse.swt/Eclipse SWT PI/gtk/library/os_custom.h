@@ -529,6 +529,8 @@
 #define gtk_widget_override_color_LIB LIB_GTK
 #define gtk_widget_override_background_color_LIB LIB_GTK
 #define gtk_widget_override_font_LIB LIB_GTK
+#define gtk_widget_get_preferred_height_for_width_LIB LIB_GTK
+#define gtk_widget_get_preferred_width_for_height_LIB LIB_GTK
 #define gtk_style_context_get_font_LIB LIB_GTK
 #define gtk_style_context_get_color_LIB LIB_GTK
 #define gtk_style_context_get_background_color_LIB LIB_GTK
@@ -737,6 +739,7 @@ GType swt_fixed_get_type (void) G_GNUC_CONST;
 
 void swt_fixed_restack(SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, gboolean above);
 void swt_fixed_move(SwtFixed *fixed, GtkWidget *widget, gint x, gint y);
+void swt_fixed_resize(SwtFixed *fixed, GtkWidget *widget, gint width, gint height);
 
 #endif
 

@@ -539,11 +539,8 @@ static void swt_fixed_size_allocate (GtkWidget *widget, GtkAllocation *allocatio
           child_allocation.y += allocation->y;
         }
 
-		/*
-		 * Use the requested size if it is set. This is the GTK 2 behavior of
-		 * gtk_widget_get_child_requisition().
-		 */
-		gtk_widget_get_size_request (child, &w, &h);
+		w = child_data->width;
+		h = child_data->height;
 		if (w == -1 || h == -1) {
 			gtk_widget_get_preferred_size (child, &requisition, NULL);
 			if (w == -1) w = requisition.width;
@@ -573,6 +570,23 @@ void swt_fixed_move (SwtFixed *fixed, GtkWidget *widget, gint x, gint y) {
 	}
 }
 
+void swt_fixed_resize (SwtFixed *fixed, GtkWidget *widget, gint width, gint height) {
+	SwtFixedPrivate *priv = fixed->priv;
+	GList *list;
+
+	list = priv->children;
+	while (list) {
+		SwtFixedChild *child_data = list->data;
+		GtkWidget *child = child_data->widget;
+		if (child == widget) {
+			child_data->width = width;
+			child_data->height = height;
+			break;
+		}
+		list = list->next;
+	}
+}
+
 static void swt_fixed_add (GtkContainer *container, GtkWidget *child) {
 	GtkWidget *widget = GTK_WIDGET (container);
 	SwtFixed *fixed = SWT_FIXED (container);
@@ -582,6 +596,7 @@ static void swt_fixed_add (GtkContainer *container, GtkWidget *child) {
 	child_data = g_new (SwtFixedChild, 1);
 	child_data->widget = child;
   	child_data->x = child_data->y = 0;
+  	child_data->width = child_data->height = -1;
   
 	priv->children = g_list_append (priv->children, child_data);
 	gtk_widget_set_parent (child, widget);

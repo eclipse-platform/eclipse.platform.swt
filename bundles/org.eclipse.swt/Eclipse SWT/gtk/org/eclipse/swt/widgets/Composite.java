@@ -1356,7 +1356,13 @@ void reskinChildren (int flags) {
 
 void resizeHandle (int width, int height) {
 	super.resizeHandle (width, height);
-	if (socketHandle != 0) OS.gtk_widget_set_size_request (socketHandle, width, height);
+	if (socketHandle != 0) {
+		if (OS.GTK3) {
+			OS.swt_fixed_resize (handle, socketHandle, width, height);
+		} else {
+			OS.gtk_widget_set_size_request (socketHandle, width, height);
+		}
+	}
 }
 
 /**

@@ -384,8 +384,14 @@ void releaseWidget () {
 }
 
 void resizeHandle (int width, int height) {
-	OS.gtk_widget_set_size_request (fixedHandle, width, height);
-	OS.gtk_widget_set_size_request (frameHandle != 0 ? frameHandle : handle, width, height);
+	if (OS.GTK3) {
+		OS.swt_fixed_resize (OS.gtk_widget_get_parent (fixedHandle), fixedHandle, width, height);
+		long /*int*/ child = frameHandle != 0 ? frameHandle : handle;
+		OS.swt_fixed_resize (OS.gtk_widget_get_parent (child), child, width, height);
+	} else {
+		OS.gtk_widget_set_size_request (fixedHandle, width, height);
+		OS.gtk_widget_set_size_request (frameHandle != 0 ? frameHandle : handle, width, height);
+	}
 }
 
 /**

@@ -18178,6 +18178,31 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1parent_1window)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1get_1preferred_1height_1for_1width
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1get_1preferred_1height_1for_1width)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintArray arg2, jintArray arg3)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1preferred_1height_1for_1width_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+/*
+	gtk_widget_get_preferred_height_for_width(arg0, arg1, lparg2, lparg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_get_preferred_height_for_width)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, jint *, jint *))fp)(arg0, arg1, lparg2, lparg3);
+		}
+	}
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1preferred_1height_1for_1width_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1get_1preferred_1size
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1get_1preferred_1size)
 	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jobject arg2)
@@ -18200,6 +18225,31 @@ fail:
 	if (arg2 && lparg2) setGtkRequisitionFields(env, arg2, lparg2);
 	if (arg1 && lparg1) setGtkRequisitionFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1preferred_1size_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1get_1preferred_1width_1for_1height
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1get_1preferred_1width_1for_1height)
+	(JNIEnv *env, jclass that, jintLong arg0, jint arg1, jintArray arg2, jintArray arg3)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1preferred_1width_1for_1height_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+/*
+	gtk_widget_get_preferred_width_for_height(arg0, arg1, lparg2, lparg3);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_get_preferred_width_for_height)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jint, jint *, jint *))fp)(arg0, arg1, lparg2, lparg3);
+		}
+	}
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1preferred_1width_1for_1height_FUNC);
 }
 #endif
 
@@ -21012,6 +21062,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1swt_1fixed_1move)
 	OS_NATIVE_ENTER(env, that, _1swt_1fixed_1move_FUNC);
 	swt_fixed_move((SwtFixed*)arg0, (GtkWidget*)arg1, arg2, arg3);
 	OS_NATIVE_EXIT(env, that, _1swt_1fixed_1move_FUNC);
+}
+#endif
+
+#ifndef NO__1swt_1fixed_1resize
+JNIEXPORT void JNICALL OS_NATIVE(_1swt_1fixed_1resize)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jint arg3)
+{
+	OS_NATIVE_ENTER(env, that, _1swt_1fixed_1resize_FUNC);
+	swt_fixed_resize((SwtFixed*)arg0, (GtkWidget*)arg1, arg2, arg3);
+	OS_NATIVE_EXIT(env, that, _1swt_1fixed_1resize_FUNC);
 }
 #endif
 

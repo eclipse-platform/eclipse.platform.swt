@@ -6352,6 +6352,30 @@ public static final void gtk_widget_get_preferred_size(long /*int*/ widget, GtkR
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_widget_get_preferred_height_for_width(long /*int*/ widget, int width, int[] minimum_size, int[] natural_size);
+public static final void gtk_widget_get_preferred_height_for_width(long /*int*/ widget, int width, int[] minimum_size, int[] natural_size) {
+	lock.lock();
+	try {
+		_gtk_widget_get_preferred_height_for_width(widget, width, minimum_size, natural_size);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_widget_get_preferred_width_for_height(long /*int*/ widget, int height, int[] minimum_size, int[] natural_size);
+public static final void gtk_widget_get_preferred_width_for_height(long /*int*/ widget, int height, int[] minimum_size, int[] natural_size) {
+	lock.lock();
+	try {
+		_gtk_widget_get_preferred_width_for_height(widget, height, minimum_size, natural_size);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native long /*int*/ _gtk_cell_renderer_pixbuf_new();
 public static final long /*int*/ gtk_cell_renderer_pixbuf_new() {
 	lock.lock();
@@ -16156,6 +16180,19 @@ public static final void swt_fixed_move(long /*int*/ fixed, long /*int*/ widget,
 	lock.lock();
 	try {
 		_swt_fixed_move(fixed, widget, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param fixed cast=(SwtFixed*)
+ * @param widget cast=(GtkWidget*)
+ */
+public static final native void _swt_fixed_resize(long /*int*/ fixed, long /*int*/ widget, int width, int height);
+public static final void swt_fixed_resize(long /*int*/ fixed, long /*int*/ widget, int width, int height) {
+	lock.lock();
+	try {
+		_swt_fixed_resize(fixed, widget, width, height);
 	} finally {
 		lock.unlock();
 	}

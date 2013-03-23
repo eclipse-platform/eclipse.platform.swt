@@ -702,7 +702,25 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 Point computeNativeSize (long /*int*/ h, int wHint, int hHint, boolean changed) {
 	int width = wHint, height = hHint;
-	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT && !OS.GTK3) {
+	if (OS.GTK3){
+		if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
+			GtkRequisition requisition = new GtkRequisition ();
+			OS.gtk_widget_get_preferred_size (h, requisition, null);
+			width = requisition.width;
+			height = requisition.height;
+		} else if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+			int [] minimum_size = new int [1];
+			if (wHint == SWT.DEFAULT) {
+				OS.gtk_widget_get_preferred_width_for_height (h, height, minimum_size, null);
+				width = minimum_size [0];
+			} else {
+				OS.gtk_widget_get_preferred_height_for_width (h, width, minimum_size, null);
+				height = minimum_size [0];
+			}
+		}
+		return new Point(width, height);
+	}
+	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
 		GtkRequisition requisition = new GtkRequisition ();
 		gtk_widget_size_request (h, requisition);
 		width = OS.GTK_WIDGET_REQUISITION_WIDTH (h);
@@ -861,30 +879,37 @@ void modifyStyle (long /*int*/ handle, long /*int*/ style) {
 void moveHandle (int x, int y) {
 	long /*int*/ topHandle = topHandle ();
 	long /*int*/ parentHandle = parent.parentingHandle ();
-	/*
-	* Feature in GTK.  Calling gtk_fixed_move() to move a child causes
-	* the whole parent to redraw.  This is a performance problem. The
-	* fix is temporarily mark the parent not visible during the move.
-	* 
-	* NOTE: Because every widget in SWT has an X window, the new and
-	* old bounds of the child are correctly redrawn.
-	* 
-	* NOTE: There is no API in GTK 3 to only set the GTK_VISIBLE bit.
-	*/
-	if (!OS.GTK3) {
+	if (OS.GTK3) {
+		OS.swt_fixed_move (parentHandle, topHandle, x, y);
+	} else {
+		/*
+		* Feature in GTK.  Calling gtk_fixed_move() to move a child causes
+		* the whole parent to redraw.  This is a performance problem. The
+		* fix is temporarily mark the parent not visible during the move.
+		* 
+		* NOTE: Because every widget in SWT has an X window, the new and
+		* old bounds of the child are correctly redrawn.
+		* 
+		* NOTE: There is no API in GTK 3 to only set the GTK_VISIBLE bit.
+		*/
 		boolean reset = gtk_widget_get_visible (parentHandle);
 		gtk_widget_set_visible (parentHandle, false);
 		OS.gtk_fixed_move (parentHandle, topHandle, x, y);
 		gtk_widget_set_visible (parentHandle, reset);
-	} else {
-		OS.swt_fixed_move (parentHandle, topHandle, x, y);
 	}
 }
 
 void resizeHandle (int width, int height) {
 	long /*int*/ topHandle = topHandle ();
-	OS.gtk_widget_set_size_request (topHandle, width, height);
-	if (topHandle != handle) OS.gtk_widget_set_size_request (handle, width, height);
+	if (OS.GTK3) {
+		OS.swt_fixed_resize (OS.gtk_widget_get_parent (topHandle), topHandle, width, height);
+		if (topHandle != handle) {
+			OS.swt_fixed_resize (OS.gtk_widget_get_parent (handle), handle, width, height);
+		}
+	} else {
+		OS.gtk_widget_set_size_request (topHandle, width, height);
+		if (topHandle != handle) OS.gtk_widget_set_size_request (handle, width, height);
+	}
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
