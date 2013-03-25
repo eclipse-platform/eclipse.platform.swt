@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<component id="org.eclipse.swt" version="2">
+<?xml version="1.0" encoding="UTF-8"?><component id="org.eclipse.swt" version="2">
     <resource path="Eclipse SWT Accessibility/cocoa/org/eclipse/swt/accessibility/Accessible.java" type="org.eclipse.swt.accessibility.Accessible">
         <filter id="643842064">
             <message_arguments>
@@ -562,7 +561,7 @@
         <filter id="1141899266">
             <message_arguments>
                 <message_argument value="2.1"/>
-                <message_argument value="3.101"/>
+                <message_argument value="3.102"/>
                 <message_argument value="setByRef(long)"/>
             </message_arguments>
         </filter>
