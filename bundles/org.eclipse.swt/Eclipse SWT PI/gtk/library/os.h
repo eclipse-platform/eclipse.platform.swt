@@ -164,6 +164,7 @@
 #define NO_SwtFixed
 #define NO__1swt_1fixed_1get_1type
 #define NO__1swt_1fixed_1move
+#define NO__1swt_1fixed_1resize
 #define NO__1swt_1fixed_1restack
 #define NO__1gtk_1widget_1input_1shape_1combine_1region
 
