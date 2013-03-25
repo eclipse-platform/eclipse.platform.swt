@@ -179,7 +179,7 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 			boolean doubleBuffer = findImageControl () != null;
 			boolean drawMessage = false;
 			if ((style & SWT.SINGLE) != 0 && message.length () > 0) {
-				if (!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+				if ((!OS.IsWinCE && OS.WIN32_VERSION < OS.VERSION (6, 0)) || (style & SWT.READ_ONLY) != 0) {
 					drawMessage = hwnd != OS.GetFocus () && OS.GetWindowTextLength (handle) == 0;
 				}
 			}
