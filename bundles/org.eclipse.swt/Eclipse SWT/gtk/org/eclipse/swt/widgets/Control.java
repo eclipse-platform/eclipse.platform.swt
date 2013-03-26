@@ -3283,6 +3283,16 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 		y = pointer_y [0];
 		state = mask [0];
 	}
+	if (OS.GTK3 && this != display.currentControl) {
+		if (display.currentControl != null && !display.currentControl.isDisposed ()) {
+			display.removeMouseHoverTimeout (display.currentControl.handle);
+			display.currentControl.sendMouseEvent (SWT.MouseExit,  0, gdkEvent.time, x, y, false, state);
+		}
+		if (!isDisposed ()) {
+			display.currentControl = this;
+			sendMouseEvent (SWT.MouseEnter, 0, gdkEvent.time, x, y, false, state);
+		}
+	}
 	int result = sendMouseEvent (SWT.MouseMove, 0, gdkEvent.time, x, y, gdkEvent.is_hint != 0, state) ? 0 : 1;
 	return result;
 }
