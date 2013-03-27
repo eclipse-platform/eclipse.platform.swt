@@ -732,8 +732,7 @@ void onFocusOut(Event e) {
 				OS.ShowCaret (lpgui1.hwndCaret);
 			}
 		}
-	}
-	if (lpgui1.hwndFocus != 0 && lpgui1.hwndFocus == OS.GetFocus()) {
+	} else if (lpgui1.hwndFocus != 0 && lpgui1.hwndFocus == OS.GetFocus()) {
 		OS.SendMessage (lpgui1.hwndFocus, SWT_RESTORECARET, 0, 0);
 	}
 }
