@@ -9,27 +9,37 @@
   Contributors:
      Igor Fedorenko - initial implementation
 -->
-
-<project
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.eclipse</groupId>
     <artifactId>eclipse-platform-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
     <relativePath>../eclipse-platform-parent</relativePath>
   </parent>
 
   <groupId>eclipse.platform.swt</groupId>
   <artifactId>eclipse.platform.swt</artifactId>
-  <version>3.8.0-SNAPSHOT</version>
+  <version>4.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
     <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/platform/eclipse.platform.swt.git</tycho.scmUrl>
   </properties>
+
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <id>eclipse-hosted</id>
+      <url>https://repo.eclipse.org/content/repositories/eclipse/</url>
+    </repository>
+  </repositories>
 
   <modules>
     <module>bundles/org.eclipse.swt</module>
