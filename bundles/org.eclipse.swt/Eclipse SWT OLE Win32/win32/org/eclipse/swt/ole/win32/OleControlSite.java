@@ -710,14 +710,14 @@ void onFocusOut(Event e) {
 	lpgui1.cbSize = GUITHREADINFO.sizeof;
 	OS.GetGUIThreadInfo(threadId, lpgui1);
 	objIOleInPlaceObject.UIDeactivate();
+	if (SWT_RESTORECARET == 0) {
+		SWT_RESTORECARET = OS.RegisterWindowMessage (new TCHAR (0, "SWT_RESTORECARET", true));
+	}
 	if (lpgui1.hwndCaret != 0) {
 		GUITHREADINFO lpgui2 = new GUITHREADINFO();
 		lpgui2.cbSize = GUITHREADINFO.sizeof;
 		OS.GetGUIThreadInfo(threadId, lpgui2);
 		if (lpgui2.hwndCaret == 0 && lpgui1.hwndCaret == OS.GetFocus()) {
-			if (SWT_RESTORECARET == 0) {
-				SWT_RESTORECARET = OS.RegisterWindowMessage (new TCHAR (0, "SWT_RESTORECARET", true));
-			}
 			/*
 			* If the caret was not restored by SWT, put it back using
 			* the information from GUITHREADINFO.  Note that this will
@@ -732,6 +732,9 @@ void onFocusOut(Event e) {
 				OS.ShowCaret (lpgui1.hwndCaret);
 			}
 		}
+	}
+	if (lpgui1.hwndFocus != 0 && lpgui1.hwndFocus == OS.GetFocus()) {
+		OS.SendMessage (lpgui1.hwndFocus, SWT_RESTORECARET, 0, 0);
 	}
 }
 private int OnFocus(int fGotFocus) {
