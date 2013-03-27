@@ -2279,6 +2279,29 @@ GdkColor toGdkColor (GdkRGBA rgba, double m) {
 	return gdkColor;
 }
 
+void getBackgroundColor (long /*int*/ context, int state, GdkRGBA rgba) {
+	/*
+	* Draw the context background to an offset screen surface and get the color
+	* in the middle of the surface. 
+	*/
+	OS.gtk_style_context_save (context);
+	OS.gtk_style_context_set_state (context, state);
+	long /*int*/ surface = Cairo.cairo_image_surface_create (Cairo.CAIRO_FORMAT_RGB24, 1, 1);
+	long /*int*/ cairo = Cairo.cairo_create (surface);
+	OS.gtk_render_background (context, cairo, -50, -50, 100, 100);
+	Cairo.cairo_fill (cairo);
+	Cairo.cairo_surface_flush (surface);
+	byte[] buffer = new byte[3];
+	OS.memmove (buffer, Cairo.cairo_image_surface_get_data(surface), buffer.length);
+	rgba.red = buffer[2] / 255f;
+	rgba.green = buffer[1] / 255f;
+	rgba.blue = buffer[0] / 255f;
+	rgba.alpha = 1;
+	Cairo.cairo_surface_destroy (surface);
+	Cairo.cairo_destroy (cairo);
+	OS.gtk_style_context_restore (context);
+}
+
 void initializeSystemColors () {
 	long /*int*/ tooltipShellHandle = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
 	if (tooltipShellHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -2309,7 +2332,7 @@ void initializeSystemColors () {
 		GdkRGBA rgba = new GdkRGBA();
 		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_INFO_FOREGROUND = toGdkColor (rgba);
-		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		getBackgroundColor (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_INFO_BACKGROUND = toGdkColor (rgba);
 		OS.gtk_widget_destroy (tooltipShellHandle);	
 
