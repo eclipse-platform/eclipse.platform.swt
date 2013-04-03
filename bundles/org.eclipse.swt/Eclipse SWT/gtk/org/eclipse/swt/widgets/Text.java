@@ -2088,6 +2088,14 @@ void setBackgroundColor (GdkColor color) {
 	}
 }
 
+void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	if ((style & SWT.MULTI) != 0) {
+		super.setBackgroundColor (context, handle, rgba);
+		return;
+	}
+	setBackgroundColorGradient (context, handle, rgba);
+}
+
 void setCursor (long /*int*/ cursor) {
 	long /*int*/ defaultCursor = 0;
 	if (cursor == 0) defaultCursor = OS.gdk_cursor_new (OS.GDK_XTERM);

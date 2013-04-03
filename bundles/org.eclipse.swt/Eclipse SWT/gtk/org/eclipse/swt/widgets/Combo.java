@@ -1727,6 +1727,14 @@ public void select (int index) {
 	}
 }
 
+void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	if (entryHandle == 0 || (style & SWT.READ_ONLY) != 0) {
+		super.setBackgroundColor (context, handle, rgba);
+		return;
+	}
+	setBackgroundColorGradient (OS.gtk_widget_get_style_context (entryHandle), handle, rgba);
+}
+
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	if (!OS.GTK3) {

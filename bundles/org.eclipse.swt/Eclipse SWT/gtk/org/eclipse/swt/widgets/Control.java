@@ -45,7 +45,7 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public abstract class Control extends Widget implements Drawable {
 	long /*int*/ fixedHandle;
-	long /*int*/ redrawWindow, enableWindow;
+	long /*int*/ redrawWindow, enableWindow, provider;
 	int drawCount;
 	Composite parent;
 	Cursor cursor;
@@ -3954,6 +3954,25 @@ public void setBackground (Color color) {
 	}
 }
 
+void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+}
+
+void setBackgroundColorGradient (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	String css ="* {\n";
+	if (rgba != null) {
+		String color = "rgba(" + (int)(rgba.red * 255) + "," + (int)(rgba.green * 255) + "," + (int)(rgba.blue * 255) + "," + (int)(rgba.alpha * 255) + ")";
+		css += "background-image: -gtk-gradient (linear, 0 0, 0 1, color-stop(0, " + color + "), color-stop(1, " + color + "));\n";
+	}
+	css += "}\n";
+	if (provider == 0) {
+		provider = OS.gtk_css_provider_new ();
+		OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		OS.g_object_unref (provider);
+	}
+	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
+}
+
 void setBackgroundColor (long /*int*/ handle, GdkColor color) {
 	if (OS.GTK3) {
 		GdkRGBA rgba = null;
@@ -3973,8 +3992,8 @@ void setBackgroundColor (long /*int*/ handle, GdkColor color) {
 			rgba.green = (color.green & 0xFFFF) / (float)0xFFFF;
 			rgba.blue = (color.blue & 0xFFFF) / (float)0xFFFF;
 		}
-		OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+		setBackgroundColor (context, handle, rgba);
 		OS.gtk_style_context_invalidate (context);
 		return;
 	}
