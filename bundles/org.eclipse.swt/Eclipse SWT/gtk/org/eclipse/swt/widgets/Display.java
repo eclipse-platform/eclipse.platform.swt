@@ -2329,6 +2329,7 @@ void initializeSystemColors () {
 	if (OS.GTK3) {
 		long /*int*/ context = OS.gtk_widget_get_style_context (tooltipShellHandle);
 		OS.gtk_style_context_add_class (context, OS.GTK_STYLE_CLASS_TOOLTIP);
+		OS.gtk_style_context_invalidate(context);
 		GdkRGBA rgba = new GdkRGBA();
 		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_INFO_FOREGROUND = toGdkColor (rgba);
@@ -2352,6 +2353,7 @@ void initializeSystemColors () {
 		OS.gtk_style_context_save (context);
 		OS.gtk_style_context_add_class(context, OS.GTK_STYLE_CLASS_VIEW);
 		OS.gtk_style_context_add_class(context, OS.GTK_STYLE_CLASS_CELL);
+		OS.gtk_style_context_invalidate(context);
 		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_LIST_FOREGROUND = toGdkColor (rgba);
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
