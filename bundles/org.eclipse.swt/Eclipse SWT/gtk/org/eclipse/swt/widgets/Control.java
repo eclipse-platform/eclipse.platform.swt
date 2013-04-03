@@ -333,9 +333,7 @@ void hookEvents () {
 	int paintMask = OS.GDK_EXPOSURE_MASK | OS.GDK_VISIBILITY_NOTIFY_MASK;
 	OS.gtk_widget_add_events (paintHandle, paintMask);
 
-	if (!OS.GTK3) {
-		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT_INVERSE], false);
-	}
+	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT_INVERSE], false);
 
 	/*
 	* As of GTK 2.17.11, obscured controls no longer send expose 
@@ -2494,6 +2492,9 @@ GdkColor getContextBackground () {
 	long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
 	GdkRGBA rgba = new GdkRGBA ();
 	OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+	if (rgba.alpha == 0) {
+		return display.COLOR_WIDGET_BACKGROUND;
+	}
 	GdkColor color = new GdkColor ();
 	color.red = (short)(rgba.red * 0xFFFF);
 	color.green = (short)(rgba.green * 0xFFFF);
@@ -5358,13 +5359,28 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 			if ((state & OBSCURED) != 0) break;
 			if (OS.USE_CAIRO) {
 				Control control = findBackgroundControl ();
-				if (control != null && control.backgroundImage != null) {
-					GdkEventExpose gdkEvent = new GdkEventExpose ();
-					OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
-					long /*int*/ paintWindow = paintWindow();
-					long /*int*/ window = gdkEvent.window;
-					if (window != paintWindow) break;
-					drawBackground(control, window, gdkEvent.region, gdkEvent.area_x, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
+				boolean draw = control != null && control.backgroundImage != null;
+				if (OS.GTK3 && !draw && (state & CANVAS) != 0) {
+					GdkRGBA rgba = new GdkRGBA();
+					long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+					OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+					draw = rgba.alpha == 0;
+				}
+				if (draw) {
+					if (OS.GTK3) {
+						long /*int*/ cairo = arg0;
+						GdkRectangle rect = new GdkRectangle ();
+						OS.gdk_cairo_get_clip_rectangle (cairo, rect);
+						if (control == null) control = this;
+						drawBackground (control, 0, cairo, 0, rect.x, rect.y, rect.width, rect.height);
+					} else {
+						GdkEventExpose gdkEvent = new GdkEventExpose ();
+						OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
+						long /*int*/ paintWindow = paintWindow();
+						long /*int*/ window = gdkEvent.window;
+						if (window != paintWindow) break;
+						drawBackground(control, window, gdkEvent.region, gdkEvent.area_x, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
+					}
 				}
 			}
 			if (OS.GTK_VERSION <  OS.VERSION (2, 8, 0)) {
