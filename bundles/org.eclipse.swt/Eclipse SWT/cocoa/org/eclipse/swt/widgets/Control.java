@@ -3382,7 +3382,7 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	} else {
 		postEvent (type, event);
 	}
-	if (shell != null) shell.setActiveControl(this);
+	if (shell != null) shell.setActiveControl(this, SWT.MouseDown);
 	return event.doit;
 }
 
