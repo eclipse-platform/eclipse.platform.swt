@@ -1524,6 +1524,10 @@ public void setActive () {
 }
 
 void setActiveControl (Control control) {
+	setActiveControl (control, SWT.None);
+}
+
+void setActiveControl (Control control, int type) {
 	if (control != null && control.isDisposed ()) control = null;
 	if (lastActive != null && lastActive.isDisposed ()) lastActive = null;
 	if (lastActive == control) return;
@@ -1555,7 +1559,9 @@ void setActiveControl (Control control) {
 	}
 	for (int i=activate.length-1; i>=index; --i) {
 		if (!activate [i].isDisposed ()) {
-			activate [i].sendEvent (SWT.Activate);
+			Event event = new Event ();
+			event.detail = type;
+			activate [i].sendEvent (SWT.Activate, event);
 		}
 	}
 }
