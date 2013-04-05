@@ -2988,7 +2988,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 		result = sendMouseEvent (SWT.MouseDoubleClick, gdkEvent.button, display.clickCount, 0, false, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
 		if (isDisposed ()) return 1;
 	}
-	if (!shell.isDisposed ()) shell.setActiveControl (this);
+	if (!shell.isDisposed ()) shell.setActiveControl (this, SWT.MouseDown);
 	return result;
 }
 
