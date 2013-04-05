@@ -2076,6 +2076,7 @@ public class OS extends C {
 	public static final int VT_LPWSTR = 31;
 	public static final short VARIANT_TRUE = -1;
 	public static final short VARIANT_FALSE = 0;
+	public static final short WA_CLICKACTIVE = 2;
 	public static final String WC_HEADER = "SysHeader32"; //$NON-NLS-1$
 	public static final String WC_LINK = "SysLink"; //$NON-NLS-1$
 	public static final String WC_LISTVIEW = "SysListView32"; //$NON-NLS-1$
