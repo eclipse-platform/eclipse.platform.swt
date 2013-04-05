@@ -1650,7 +1650,8 @@ LRESULT WM_ACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {
 			return LRESULT.ZERO;
 		}
 	}
-	if (OS.LOWORD (wParam) != 0) {
+	int loWord = OS.LOWORD (wParam);
+	if (loWord != 0) {
 		/*
 		* When the high word of wParam is non-zero, the activation
 		* state of the window is being changed while the window is
@@ -1661,7 +1662,9 @@ LRESULT WM_ACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {
 		Control control = display.findControl (lParam);
 		if (control == null || control instanceof Shell) {
 			if (this instanceof Shell) {
-				sendEvent (SWT.Activate);
+				Event event = new Event ();
+				event.detail = loWord == OS.WA_CLICKACTIVE ? SWT.MouseDown : SWT.None;
+				sendEvent (SWT.Activate, event);
 				if (isDisposed ()) return LRESULT.ZERO;
 			}
 		}
