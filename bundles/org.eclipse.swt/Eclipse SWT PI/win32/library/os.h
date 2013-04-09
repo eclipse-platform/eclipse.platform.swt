@@ -382,6 +382,7 @@
 #define NO_HitTestThemeBackground
 #define NO_IIDFromString
 #define NO_ImmDisableTextFrameService
+#define NO_ImmEscapeA
 #define NO_ImmGetCompositionFontA
 #define NO_ImmGetCompositionStringA__II_3BI
 #define NO_ImmGetCompositionStringA__JI_3BI
