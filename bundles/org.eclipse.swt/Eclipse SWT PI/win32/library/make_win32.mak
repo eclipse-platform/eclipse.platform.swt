@@ -54,16 +54,17 @@ WGL_OBJS   = wgl.obj wgl_structs.obj wgl_stats.obj
 
 XULRUNNER_PREFIX = swt-xulrunner
 XULRUNNER_LIB = $(XULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
-XULRUNNER_LIBS = Advapi32.lib $(XULRUNNER_SDK)\lib\xpcomglue.lib
-XULRUNNER_OBJS = xpcom.obj xpcom_custom.obj xpcom_structs.obj xpcom_stats.obj xpcominit.obj xpcominit_structs.obj xpcominit_stats.obj
+XULRUNNER_LIBS = Advapi32.lib $(XULRUNNER_SDK)\sdk\lib\xpcomglue.lib
+XULRUNNER_OBJS = xpcom.obj xpcom_custom.obj xpcom_structs.obj xpcom_stats.obj
 
 MOZILLACFLAGS = -c \
 	-O1 \
+	-DJNI64 \
 	-DSWT_VERSION=$(SWT_VERSION) \
 	$(NATIVE_STATS) \
-	-MD \
 	-DMOZILLA_STRICT_API=1 \
 	-W3 \
+	-MD \
 	-I. \
 	-I"$(JAVA_HOME)/include" \
 	-I"$(JAVA_HOME)/include/win32" \
@@ -84,7 +85,7 @@ CFLAGS = -O1 -DNDEBUG $(cflags) $(cvarsmt) $(CFLAGS) \
 	/I"$(JAVA_HOME)\include" /I"$(JAVA_HOME)\include\win32" /I.
 RCFLAGS = $(rcflags) $(rcvars) $(RCFLAGS) -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
 
-all: make_swt make_awt make_gdip make_wgl
+all: make_xulrunner
 
 webkit_win32_custom.obj: webkit_win32_custom.cpp
 	cl $(WEBKITCFLAGS) webkit_win32_custom.cpp

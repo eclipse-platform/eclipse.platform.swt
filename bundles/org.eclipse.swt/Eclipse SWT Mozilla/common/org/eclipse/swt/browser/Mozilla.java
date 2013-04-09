@@ -2036,7 +2036,7 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 			error (XPCOM.NS_ERROR_NULL_POINTER);
 		}
 		if (IsPre_4) {
-			rc = XPCOM.Call (functionPtr, localFile.getAddress (), localFile.getAddress (), LocationProvider.getAddress (), 0, 0);
+//			rc = XPCOM.Call (functionPtr, localFile.getAddress (), localFile.getAddress (), LocationProvider.getAddress (), 0, 0);
 		} else {
 			rc = XPCOM.Call (functionPtr, localFile.getAddress (), localFile.getAddress (), LocationProvider.getAddress ());
 		}

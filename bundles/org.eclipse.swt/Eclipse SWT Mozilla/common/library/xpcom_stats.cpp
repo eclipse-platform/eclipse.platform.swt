@@ -27,11 +27,6 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1Call__JJJJ",
 #endif
 #ifndef JNI64
-	"_1Call__IIIIII",
-#else
-	"_1Call__JJJJJI",
-#endif
-#ifndef JNI64
 	"_1Call__III_3BII_3I",
 #else
 	"_1Call__JJJ_3BII_3I",
