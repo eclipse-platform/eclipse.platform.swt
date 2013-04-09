@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7406,6 +7406,38 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImmDisableTextFrameService)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, ImmDisableTextFrameService_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ImmEscapeA
+JNIEXPORT jintLong JNICALL OS_NATIVE(ImmEscapeA)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintLongArray arg3)
+{
+	jintLong *lparg3=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, ImmEscapeA_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jintLong)ImmEscapeA((HKL)arg0, (HIMC)arg1, arg2, (LPVOID)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, ImmEscapeA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ImmEscapeW
+JNIEXPORT jintLong JNICALL OS_NATIVE(ImmEscapeW)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintLongArray arg3)
+{
+	jintLong *lparg3=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, ImmEscapeW_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jintLong)ImmEscapeW((HKL)arg0, (HIMC)arg1, arg2, (LPVOID)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, ImmEscapeW_FUNC);
 	return rc;
 }
 #endif

@@ -5773,9 +5773,20 @@ void handleCompositionOffset (Event event) {
 	event.count = trailing[0];
 }
 void handleCompositionSelection (Event event) {
-	event.start = selection.x;
-	event.end = selection.y;
-	event.text = getSelectionText();
+	if (event.start != event.end) {
+		int charCount = getCharCount();
+		event.start = Math.max(0, Math.min(event.start, charCount));
+		event.end = Math.max(0, Math.min(event.end, charCount));
+		if (event.text != null) {
+			setSelection(event.start, event.end);
+		} else {
+			event.text = getTextRange(event.start, event.end - event.start);
+		}
+	} else {
+		event.start = selection.x;
+		event.end = selection.y;
+		event.text = getSelectionText();
+	}
 }
 void handleCompositionChanged(Event event) {
 	String text = event.text;

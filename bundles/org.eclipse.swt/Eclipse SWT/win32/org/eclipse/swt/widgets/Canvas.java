@@ -424,6 +424,16 @@ LRESULT WM_INPUTLANGCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
 	return result;
 }
 
+
+LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
+	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
+	if (result != null) return result;
+	if (ime != null) {
+		ime.WM_KEYDOWN (wParam, lParam);
+	}
+	return result;
+}
+
 LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	if (ime != null) {
 		LRESULT result = ime.WM_KILLFOCUS (wParam, lParam);

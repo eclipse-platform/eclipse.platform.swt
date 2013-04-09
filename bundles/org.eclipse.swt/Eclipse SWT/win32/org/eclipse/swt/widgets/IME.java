@@ -520,6 +520,39 @@ LRESULT WM_IME_ENDCOMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
 	return isInlineEnabled () ? LRESULT.ONE : null;
 }
 
+LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
+	if (wParam == OS.VK_HANJA) {
+		long /*int*/ hKL = OS.GetKeyboardLayout (0);
+		short langID = (short)OS.LOWORD (hKL);
+		if (OS.PRIMARYLANGID (langID) == OS.LANG_KOREAN) { 
+			Event event = new Event ();
+			event.detail = SWT.COMPOSITION_SELECTION;
+			sendEvent (SWT.ImeComposition, event);
+			if (event.start == event.end) { 
+				event.text = null;
+				event.end = event.start + 1;
+				sendEvent (SWT.ImeComposition, event);
+			}
+			if (event.text != null && event.text.length() > 0) {
+				long /*int*/ hwnd = parent.handle;
+				long /*int*/ hIMC = OS.ImmGetContext (hwnd);
+				long /*int*/ hHeap = OS.GetProcessHeap ();
+				TCHAR buffer = new TCHAR (0, event.text, true);
+				int byteCount = buffer.length () * TCHAR.sizeof;
+				long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+				OS.MoveMemory (pszText, buffer, byteCount);
+				long /*int*/ [] lpData = new long /*int*/ []{pszText};
+				long /*int*/ rc = OS.ImmEscape(hKL, hIMC, OS.IME_ESC_HANJA_MODE, lpData); 
+				if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+				if (rc != 0) {
+					sendEvent (SWT.ImeComposition, event);
+				}
+			}
+		}
+	}
+	return null;
+}
+
 LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	if (!isInlineEnabled ()) return null;
 	long /*int*/ hwnd = parent.handle;

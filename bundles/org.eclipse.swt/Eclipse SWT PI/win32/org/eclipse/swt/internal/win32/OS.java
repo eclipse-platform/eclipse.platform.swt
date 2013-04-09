@@ -903,6 +903,7 @@ public class OS extends C {
 	public static final int IME_CMODE_KATAKANA = 0x2;
 	public static final int IME_CMODE_NATIVE = 0x1;
 	public static final int IME_CMODE_ROMAN = 0x10;
+	public static final int IME_ESC_HANJA_MODE = 0x1008;
 	public static final int IMEMOUSE_LDOWN = 1;
 	public static final int INFINITE = 0xffffffff;
 	public static final int INPUT_KEYBOARD = 1;
@@ -2022,6 +2023,7 @@ public class OS extends C {
 	public static final int VK_F7 = 0x76;
 	public static final int VK_F8 = 0x77;
 	public static final int VK_F9 = 0x78;
+	public static final int VK_HANJA = 0x19;
 	public static final int VK_HOME = 0x24;
 	public static final int VK_INSERT = 0x2d;
 	public static final int VK_L = 0x4c;
@@ -2920,6 +2922,13 @@ public static final int ImmGetCompositionString (long /*int*/ hIMC, int dwIndex,
 		return ImmGetCompositionStringW (hIMC, dwIndex, lpBuf, dwBufLen);
 	}
 	return ImmGetCompositionStringA (hIMC, dwIndex, lpBuf, dwBufLen);
+}
+
+public static final long /*int*/ ImmEscape (long /*int*/ hKL,long /*int*/ hIMC, int uEscape, long /*int*/ [] lpData) {
+	if (IsUnicode) {
+		return ImmEscapeW (hKL, hIMC, uEscape, lpData);
+	}
+	return ImmEscapeA (hKL, hIMC, uEscape, lpData);
 }
 
 public static final int ImmGetCompositionString (long /*int*/ hIMC, int dwIndex, int [] lpBuf, int dwBufLen) {
@@ -4923,6 +4932,18 @@ public static final native long /*int*/ ImmCreateContext ();
 public static final native boolean ImmDestroyContext (long /*int*/ hIMC);
 /** @method flags=dynamic */
 public static final native boolean ImmDisableTextFrameService (int idThread);
+/**
+ * @param hKL cast=(HKL) 
+ * @param hIMC cast=(HIMC) 
+ * @param lpData cast=(LPVOID) 
+ */
+public static final native long /*int*/ ImmEscapeW(long /*int*/ hKL, long /*int*/ hIMC, int uEscape, long /*int*/ [] lpData);
+/**
+ * @param hKL cast=(HKL) 
+ * @param hIMC cast=(HIMC) 
+ * @param lpData cast=(LPVOID) 
+ */
+public static final native long /*int*/ ImmEscapeA(long /*int*/ hKL, long /*int*/ hIMC, int uEscape, long /*int*/ [] lpData);
 /** @param hIMC cast=(HIMC) */
 public static final native boolean ImmGetCompositionFontW (long /*int*/ hIMC, LOGFONTW lplf);
 /** @param hIMC cast=(HIMC) */
