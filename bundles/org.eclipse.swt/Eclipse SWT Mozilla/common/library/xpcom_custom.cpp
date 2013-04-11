@@ -246,7 +246,7 @@ fail:
 #ifndef NO_CALLBACK_1JSNative
 extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(CALLBACK_1JSNative)(JNIEnv *env, jclass that, jintLong arg0);
 static jintLong CALLBACK_1JSNative;
-static jint proc_CALLBACK_1JSNative(jintLong arg0, jint arg1, jintLong arg2) {
+static jintLong proc_CALLBACK_1JSNative(jintLong arg0, jint arg1, jintLong arg2) {
 	return ((jintLong (CALLING_CONVENTION*)(jintLong, jintLong, jintLong))CALLBACK_1JSNative)(arg0, arg1, arg2);
 }
 static jintLong CALLBACK_JSNative(jintLong func) {

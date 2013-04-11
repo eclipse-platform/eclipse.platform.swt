@@ -147,7 +147,7 @@
 			<param name="fragment" value="org.eclipse.swt.win32.win32.x86"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="4"/>
+			<param name="library_count" value="5"/>
 			<param name="fragment" value="org.eclipse.swt.win32.win32.x86_64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
@@ -165,7 +165,7 @@
 	<target name="check_fragment_libraries" depends="get_version">
 		<echo>Checking ${fragment}</echo>
 		<property name="checkdir" value="~/build/check_libraries"/>
-		<property name="library_count" value="127"/>
+		<property name="library_count" value="128"/>
 		<property name="fragment" value=""/>
 		<fileset id="match" dir="${repo.bin}/bundles/${fragment}">
 			<filename regex="[0-9][0-9][0-9][0-9]."/>
@@ -1031,21 +1031,14 @@
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
 		</exec>
-		<condition property="should_build_xulrunner" value="true">
-			<and>
-				<equals arg1="${swt.ws}" arg2="win32"/>
-				<equals arg1="${swt.arch}" arg2="x86"/>
-			</and>
+		<condition property="xulrunner_target" value="make_xulrunner64" else="make_xulrunner">
+			<equals arg1="${swt.arch}" arg2="x86_64"/>
 		</condition>
-		<antcall target="build_local_win_xulrunner"/>
-	</target>
-
-	<target name="build_local_win_xulrunner" if="should_build_xulrunner">
 		<exec dir="${build_dir}" executable="cmd" failonerror="true">
 			<env key="JAVA_HOME" value=""/>
 			<env key="BUILD_XULRUNNER" value="true"/>
 			<env key="OUTPUT_DIR" value="${win_output_dir}"/>
-			<arg line="/c '${build_dir}/${build_file}' x86 make_xulrunner install ${clean}"/>
+			<arg line="/c '${build_dir}/${build_file}' ${swt.arch} ${xulrunner_target} install ${clean}"/>
 		</exec>
 	</target>
 

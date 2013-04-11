@@ -14,7 +14,7 @@
 IF EXIST C:\BUILD\swt-builddir set SWT_BUILDDIR=C:\BUILD\swt-builddir
 IF x.%SWT_BUILDDIR%==x. set SWT_BUILDDIR=S:\swt-builddir
 echo SWT build dir: %SWT_BUILDDIR%
-IF x.%MSSDK%==x. set MSSDK="%SWT_BUILDDIR%\MSSDKs\Microsoft SDK 6.0 Vista"
+IF x.%MSSDK%==x. set MSSDK="%SWT_BUILDDIR%\MSSDKs\Windows Server 2003 SP1 SDK"
 
 IF x.%1==x.x86 GOTO X86
 IF x.%1==x.x86_64 GOTO X86_64
@@ -40,11 +40,19 @@ GOTO MAKE
 
 :X86_64
 
-call %MSSDK%\setenv /X64 /RETAIL
 IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86_64
 IF x.%JAVA_HOME%==x. set JAVA_HOME=%SWT_BUILDDIR%\ibm-sdk50-x86_64
-IF x.%XULRUNNER_SDK%==x. set XULRUNNER_SDK=C:\xulrunner-10-64\xulrunner-sdk
 set CFLAGS=-DJNI64
+IF x.%BUILD_XULRUNNER%==x.true GOTO XULRUNNER64
+call %MSSDK%\setenv /X64 /RETAIL
+shift
+GOTO MAKE
+
+:XULRUNNER64
+set MSSDK="%SWT_BUILDDIR%\MSSDKs\Windows 7 SDK v7.1"
+call %MSSDK%\bin\setenv /x64 /Release
+IF x.%XULRUNNER_SDK%==x. set XULRUNNER_SDK=%SWT_BUILDDIR%\gecko10-sdk-x86_64
+set MOZILLACFLAGS=-DJNI64
 shift
 GOTO MAKE
 

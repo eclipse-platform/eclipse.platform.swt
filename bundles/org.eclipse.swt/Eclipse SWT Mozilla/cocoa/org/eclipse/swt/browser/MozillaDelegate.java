@@ -47,8 +47,8 @@ static String getCacheParentPath () {
 	return baseDir + "/Library/Caches/eclipse"; //$NON-NLS-1$
 }
 
-static String getJSLibraryName () {
-	return "libxpcom.dylib"; //$NON-NLS-1$
+static String[] getJSLibraryNames () {
+	return new String[] {"libxpcom.dylib"}; //$NON-NLS-1$
 }
 
 static String getJSLibraryName_Pre4 () {

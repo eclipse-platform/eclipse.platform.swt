@@ -67,6 +67,31 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(_1Call__JJJJ)(JNIEnv *env, jclass that, jint
 }
 #endif
 
+#if (!defined(NO__1Call__IIIIII) && !defined(JNI64)) || (!defined(NO__1Call__JJJJJI) && defined(JNI64))
+#ifndef JNI64
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1Call__IIIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jint arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1Call__IIIIII)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jint arg5)
+#else
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1Call__JJJJJI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jint arg5);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1Call__JJJJJI)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jint arg5)
+#endif
+{
+	jint rc = 0;
+#ifndef JNI64
+	XPCOM_NATIVE_ENTER(env, that, _1Call__IIIIII_FUNC);
+#else
+	XPCOM_NATIVE_ENTER(env, that, _1Call__JJJJJI_FUNC);
+#endif
+	rc = (jint)((SWT_XREInitEmbedding)arg0)((nsILocalFile *)arg1, (nsILocalFile *)arg2, (nsIDirectoryServiceProvider *)arg3, (nsStaticModuleInfo const *)arg4, arg5);
+#ifndef JNI64
+	XPCOM_NATIVE_EXIT(env, that, _1Call__IIIIII_FUNC);
+#else
+	XPCOM_NATIVE_EXIT(env, that, _1Call__JJJJJI_FUNC);
+#endif
+	return rc;
+}
+#endif
+
 #if (!defined(NO__1Call__III_3BII_3I) && !defined(JNI64)) || (!defined(NO__1Call__JJJ_3BII_3I) && defined(JNI64))
 #ifndef JNI64
 extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1Call__III_3BII_3I)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jbyteArray arg3, jint arg4, jint arg5, jintArray arg6);

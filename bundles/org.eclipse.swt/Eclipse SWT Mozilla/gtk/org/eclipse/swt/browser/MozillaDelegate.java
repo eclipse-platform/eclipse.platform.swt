@@ -75,8 +75,8 @@ static String getCacheParentPath () {
 	return getProfilePath ();
 }
 
-static String getJSLibraryName () {
-	return "libxul.so"; //$NON-NLS-1$
+static String[] getJSLibraryNames () {
+	return new String[] {"libxul.so"}; //$NON-NLS-1$
 }
 
 static String getJSLibraryName_Pre4() {

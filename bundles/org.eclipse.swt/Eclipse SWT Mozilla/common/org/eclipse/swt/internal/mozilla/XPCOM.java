@@ -607,15 +607,15 @@ public static final long /*int*/ Call(long /*int*/ ptr, long /*int*/ aInStream, 
  * @param aAppDirProvider cast=(nsIDirectoryServiceProvider *)
  * @param aStaticComponents cast=(nsStaticModuleInfo const *)
  */
-//public static final native int _Call(long /*int*/ ptr, long /*int*/ aLibXULDirectory, long /*int*/ aAppDirectory, long /*int*/ aAppDirProvider, long /*int*/ aStaticComponents, int aStaticComponentsCount);
-//public static final int Call(long /*int*/ ptr, long /*int*/ aLibXULDirectory, long /*int*/ aAppDirectory, long /*int*/ aAppDirProvider, long /*int*/ aStaticComponents, int aStaticComponentsCount) {
-//	lock.lock();
-//	try {
-//		return _Call(ptr, aLibXULDirectory, aAppDirectory, aAppDirProvider, aStaticComponents, aStaticComponentsCount);
-//	} finally {
-//		lock.unlock();
-//	}
-//}
+public static final native int _Call(long /*int*/ ptr, long /*int*/ aLibXULDirectory, long /*int*/ aAppDirectory, long /*int*/ aAppDirProvider, long /*int*/ aStaticComponents, int aStaticComponentsCount);
+public static final int Call(long /*int*/ ptr, long /*int*/ aLibXULDirectory, long /*int*/ aAppDirectory, long /*int*/ aAppDirProvider, long /*int*/ aStaticComponents, int aStaticComponentsCount) {
+	lock.lock();
+	try {
+		return _Call(ptr, aLibXULDirectory, aAppDirectory, aAppDirProvider, aStaticComponents, aStaticComponentsCount);
+	} finally {
+		lock.unlock();
+	}
+}
 
 /**
  * @param ptr cast=(SWT_XREInitEmbedding2)

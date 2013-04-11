@@ -14,7 +14,7 @@ import java.util.*;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.internal.Callback;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
@@ -44,8 +44,8 @@ static String getCacheParentPath () {
 	return getProfilePath ();
 }
 
-static String getJSLibraryName () {
-	return "mozjs.dll"; //$NON-NLS-1$
+static String[] getJSLibraryNames () {
+	return new String[] {"mozjs.dll", "xul.dll"}; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 static String getJSLibraryName_Pre4 () {

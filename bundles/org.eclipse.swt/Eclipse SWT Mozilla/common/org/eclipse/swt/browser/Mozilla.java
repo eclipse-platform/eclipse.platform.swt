@@ -1500,12 +1500,18 @@ public String getBrowserType () {
 
 static byte[] getJSLibPathBytes () {
 	if (jsLibPathBytes == null) {
-		String jsLibraryName = IsPre_4 ? MozillaDelegate.getJSLibraryName_Pre4 () : MozillaDelegate.getJSLibraryName ();
-		String mozillaPath = getMozillaPath () + jsLibraryName + '\0';
-		try {
-			jsLibPathBytes = mozillaPath.getBytes ("UTF-8"); //$NON-NLS-1$
-		} catch (UnsupportedEncodingException e) {
-			jsLibPathBytes = mozillaPath.getBytes ();
+		String[] names = IsPre_4 ? new String[] {MozillaDelegate.getJSLibraryName_Pre4 ()} : MozillaDelegate.getJSLibraryNames ();
+		for (int i = 0; i < names.length; i++) {
+			File file = new File (getMozillaPath (), names[i]);
+			if (file.exists ()) {
+				String pathString = file.getAbsolutePath () + '\0';
+				try {
+					jsLibPathBytes = pathString.getBytes ("UTF-8"); //$NON-NLS-1$
+				} catch (UnsupportedEncodingException e) {
+					jsLibPathBytes = pathString.getBytes ();
+				}
+				break;
+			}
 		}
 	}
 	return jsLibPathBytes;
@@ -2036,7 +2042,7 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 			error (XPCOM.NS_ERROR_NULL_POINTER);
 		}
 		if (IsPre_4) {
-//			rc = XPCOM.Call (functionPtr, localFile.getAddress (), localFile.getAddress (), LocationProvider.getAddress (), 0, 0);
+			rc = XPCOM.Call (functionPtr, localFile.getAddress (), localFile.getAddress (), LocationProvider.getAddress (), 0, 0);
 		} else {
 			rc = XPCOM.Call (functionPtr, localFile.getAddress (), localFile.getAddress (), LocationProvider.getAddress ());
 		}

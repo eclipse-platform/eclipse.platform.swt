@@ -86,8 +86,8 @@ static String getLibraryName () {
 	return "libxpcom.so"; //$NON-NLS-1$
 }
 
-static String getJSLibraryName () {
-	return "libmozjs.so"; //$NON-NLS-1$
+static String[] getJSLibraryNames () {
+	return new String[] {"libmozjs.so"}; //$NON-NLS-1$
 }
 
 static String getJSLibraryName_Pre4() {
