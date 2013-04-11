@@ -1031,6 +1031,16 @@
 			<arg line="${targets}"/>
 			<arg line="${clean}"/>
 		</exec>
+		<condition property="should_build_xulrunner" value="true">
+			<or>
+				<equals arg1="${swt.arch}" arg2="x86"/>
+				<equals arg1="${swt.arch}" arg2="x86_64"/>
+			</or>
+		</condition>
+		<antcall target="build_local_win_xulrunner"/>
+	</target>
+
+	<target name="build_local_win_xulrunner" if="should_build_xulrunner">
 		<condition property="xulrunner_target" value="make_xulrunner64" else="make_xulrunner">
 			<equals arg1="${swt.arch}" arg2="x86_64"/>
 		</condition>
