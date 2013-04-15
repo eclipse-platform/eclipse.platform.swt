@@ -73,11 +73,9 @@ public class Snippet199 {
 	OleListener listener = new OleListener() {
 		public void handleEvent (OleEvent e) {
 			System.out.println("selection has changed");
-			// two arguments which must be released (row and column)
 			Variant[] args = e.arguments;
 			for (int i = 0; i < args.length; i++) {
 				System.out.println(args[i]);
-				args [i].dispose();
 			}
 		}
 	};

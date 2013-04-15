@@ -58,9 +58,6 @@ public class Snippet305 {
 					int column = pVarResult.getInt();
 					range.dispose();
 					System.out.println("row=" + row + " column=" + column);
-					for (int i = 0; i < args.length; i++) {
-						args[i].dispose();
-					}
 				}
 			};
 			controlSite.addEventListener(application, IID_AppEvents, SheetSelectionChange, listener);
