@@ -56,17 +56,17 @@ public class Accessible {
 		objIAccessibleHypertext, /*objIAccessibleImage,*/ objIAccessibleTable2, objIAccessibleTableCell,
 		objIAccessibleText, objIAccessibleValue; /* objIAccessibleRelation is defined in Relation class */
 	IAccessible iaccessible;
-	Vector accessibleListeners = new Vector();
-	Vector accessibleControlListeners = new Vector();
-	Vector accessibleTextListeners = new Vector ();
-	Vector accessibleActionListeners = new Vector();
-	Vector accessibleEditableTextListeners = new Vector();
-	Vector accessibleHyperlinkListeners = new Vector();
-	Vector accessibleTableListeners = new Vector();
-	Vector accessibleTableCellListeners = new Vector();
-	Vector accessibleTextExtendedListeners = new Vector();
-	Vector accessibleValueListeners = new Vector();
-	Vector accessibleAttributeListeners = new Vector();
+	Vector accessibleListeners;
+	Vector accessibleControlListeners;
+	Vector accessibleTextListeners;
+	Vector accessibleActionListeners;
+	Vector accessibleEditableTextListeners;
+	Vector accessibleHyperlinkListeners;
+	Vector accessibleTableListeners;
+	Vector accessibleTableCellListeners;
+	Vector accessibleTextExtendedListeners;
+	Vector accessibleValueListeners;
+	Vector accessibleAttributeListeners;
 	Relation relations[] = new Relation[MAX_RELATION_TYPES];
 	Object[] variants;
 	Accessible parent;
@@ -559,6 +559,7 @@ public class Accessible {
 	public void addAccessibleListener(AccessibleListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		if (accessibleListeners == null) accessibleListeners = new Vector();
 		accessibleListeners.addElement(listener);
 	}
 	
@@ -586,6 +587,7 @@ public class Accessible {
 	public void addAccessibleControlListener(AccessibleControlListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		if (accessibleControlListeners == null) accessibleControlListeners = new Vector();
 		accessibleControlListeners.addElement(listener);
 	}
 
@@ -617,8 +619,10 @@ public class Accessible {
 		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if (listener instanceof AccessibleTextExtendedListener) {
+			if (accessibleTextExtendedListeners == null) accessibleTextExtendedListeners = new Vector();
 			accessibleTextExtendedListeners.addElement (listener);		
 		} else {
+			if (accessibleTextListeners == null) accessibleTextListeners = new Vector();
 			accessibleTextListeners.addElement (listener);
 		}
 	}
@@ -647,6 +651,7 @@ public class Accessible {
 	public void addAccessibleActionListener(AccessibleActionListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		if (accessibleActionListeners == null) accessibleActionListeners = new Vector();
 		accessibleActionListeners.addElement(listener);
 	}
 
@@ -674,6 +679,7 @@ public class Accessible {
 	public void addAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
 	    checkWidget();
 	    if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		if (accessibleEditableTextListeners == null) accessibleEditableTextListeners = new Vector();
 	    accessibleEditableTextListeners.addElement(listener);
 	}
 
@@ -701,6 +707,7 @@ public class Accessible {
 	public void addAccessibleHyperlinkListener(AccessibleHyperlinkListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		if (accessibleHyperlinkListeners == null) accessibleHyperlinkListeners = new Vector();
 		accessibleHyperlinkListeners.addElement(listener);
 	}
 
@@ -728,6 +735,7 @@ public class Accessible {
 	public void addAccessibleTableListener(AccessibleTableListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		if (accessibleTableListeners == null) accessibleTableListeners = new Vector();
 		accessibleTableListeners.addElement(listener);
 	}
 
@@ -755,6 +763,7 @@ public class Accessible {
 	public void addAccessibleTableCellListener(AccessibleTableCellListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		if (accessibleTableCellListeners == null) accessibleTableCellListeners = new Vector();
 		accessibleTableCellListeners.addElement(listener);
 	}
 
@@ -782,6 +791,7 @@ public class Accessible {
 	public void addAccessibleValueListener(AccessibleValueListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		if (accessibleValueListeners == null) accessibleValueListeners = new Vector();
 		accessibleValueListeners.addElement(listener);
 	}
 
@@ -809,6 +819,7 @@ public class Accessible {
 	public void addAccessibleAttributeListener(AccessibleAttributeListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		if (accessibleAttributeListeners == null) accessibleAttributeListeners = new Vector();
 		accessibleAttributeListeners.addElement(listener);
 	}
 
@@ -938,7 +949,8 @@ public class Accessible {
 	public void removeAccessibleListener(AccessibleListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		accessibleListeners.removeElement(listener);
+		if (accessibleListeners != null) accessibleListeners.removeElement(listener);
+		if (accessibleListeners.isEmpty()) accessibleListeners = null;
 	}
 
 	/**
@@ -963,7 +975,8 @@ public class Accessible {
 	public void removeAccessibleControlListener(AccessibleControlListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		accessibleControlListeners.removeElement(listener);
+		if (accessibleControlListeners != null) accessibleControlListeners.removeElement(listener);
+		if (accessibleControlListeners.isEmpty()) accessibleControlListeners = null;
 	}
 
 	/**
@@ -992,9 +1005,11 @@ public class Accessible {
 		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if (listener instanceof AccessibleTextExtendedListener) {
-			accessibleTextExtendedListeners.removeElement (listener);
+			if (accessibleTextExtendedListeners != null) accessibleTextExtendedListeners.removeElement (listener);
+			if (accessibleTextExtendedListeners.isEmpty()) accessibleTextExtendedListeners = null;
 		} else {
-			accessibleTextListeners.removeElement (listener);
+			if (accessibleTextListeners != null) accessibleTextListeners.removeElement (listener);
+			if (accessibleTextListeners.isEmpty()) accessibleTextListeners = null;
 		}
 	}
 
@@ -1022,7 +1037,8 @@ public class Accessible {
 	public void removeAccessibleActionListener(AccessibleActionListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		accessibleActionListeners.removeElement(listener);
+		if (accessibleActionListeners != null) accessibleActionListeners.removeElement(listener);
+		if (accessibleActionListeners.isEmpty()) accessibleActionListeners = null;
 	}
 
 	/**
@@ -1049,7 +1065,8 @@ public class Accessible {
 	public void removeAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
 	    checkWidget();
 	    if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	    accessibleEditableTextListeners.removeElement(listener);
+	    if (accessibleEditableTextListeners != null) accessibleEditableTextListeners.removeElement(listener);
+		if (accessibleEditableTextListeners.isEmpty()) accessibleEditableTextListeners = null;
 	}
 	
 	/**
@@ -1076,7 +1093,8 @@ public class Accessible {
 	public void removeAccessibleHyperlinkListener(AccessibleHyperlinkListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		accessibleHyperlinkListeners.removeElement(listener);
+		if (accessibleHyperlinkListeners != null) accessibleHyperlinkListeners.removeElement(listener);
+		if (accessibleHyperlinkListeners.isEmpty()) accessibleHyperlinkListeners = null;
 	}
 
 	/**
@@ -1103,7 +1121,8 @@ public class Accessible {
 	public void removeAccessibleTableListener(AccessibleTableListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		accessibleTableListeners.removeElement(listener);
+		if (accessibleTableListeners != null) accessibleTableListeners.removeElement(listener);
+		if (accessibleTableListeners.isEmpty()) accessibleTableListeners = null;
 	}
 
 	/**
@@ -1130,7 +1149,8 @@ public class Accessible {
 	public void removeAccessibleTableCellListener(AccessibleTableCellListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		accessibleTableCellListeners.removeElement(listener);
+		if (accessibleTableCellListeners != null) accessibleTableCellListeners.removeElement(listener);
+		if (accessibleTableCellListeners.isEmpty()) accessibleTableCellListeners = null;
 	}
 
 	/**
@@ -1157,7 +1177,8 @@ public class Accessible {
 	public void removeAccessibleValueListener(AccessibleValueListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		accessibleValueListeners.removeElement(listener);
+		if (accessibleValueListeners != null) accessibleValueListeners.removeElement(listener);
+		if (accessibleValueListeners.isEmpty()) accessibleValueListeners = null;
 	}
 
 	/**
@@ -1184,7 +1205,8 @@ public class Accessible {
 	public void removeAccessibleAttributeListener(AccessibleAttributeListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		accessibleAttributeListeners.removeElement(listener);
+		if (accessibleAttributeListeners != null) accessibleAttributeListeners.removeElement(listener);
+		if (accessibleAttributeListeners.isEmpty()) accessibleAttributeListeners = null;
 	}
 
 	/**
