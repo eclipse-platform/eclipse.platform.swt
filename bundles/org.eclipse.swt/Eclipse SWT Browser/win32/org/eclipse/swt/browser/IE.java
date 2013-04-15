@@ -997,13 +997,6 @@ public void create(Composite parent, int style) {
 					}
 				}
 			}
-			/*
-			* Dispose all arguments passed in the OleEvent.  This must be
-			* done to properly release any IDispatch reference that was
-			* automatically addRef'ed when constructing the OleEvent.  
-			*/
-			Variant[] arguments = event.arguments;
-			for (int i = 0; i < arguments.length; i++) arguments[i].dispose();
 		}
 	};
 	site.addEventListener(BeforeNavigate2, oleListener);
@@ -1870,7 +1863,10 @@ void handleDOMEvent (OleEvent e) {
 		* Feature in IE.  Spurious and redundant mousemove events are often received.  The workaround
 		* is to not fire MouseMove events whose x and y values match the last MouseMove.  
 		*/
-		if (newEvent.x == lastMouseMoveX && newEvent.y == lastMouseMoveY) return;
+		if (newEvent.x == lastMouseMoveX && newEvent.y == lastMouseMoveY) {
+			event.dispose();
+			return;
+		}
 		newEvent.type = SWT.MouseMove;
 		lastMouseMoveX = newEvent.x; lastMouseMoveY = newEvent.y;
 	} else if (eventType.equals(EVENT_MOUSEOVER)) {

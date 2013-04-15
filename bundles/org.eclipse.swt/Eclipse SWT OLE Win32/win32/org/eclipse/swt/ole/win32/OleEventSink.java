@@ -114,10 +114,17 @@ private int Invoke(int dispIdMember, long /*int*/ riid, int lcid, int dwFlags, l
 			offset = offset - size;
 		}
 	}
-		
+
 	OleEvent event = new OleEvent();
 	event.arguments = eventInfo;
 	notifyListener(dispIdMember,event);
+
+	if (eventInfo != null) {
+		for (int j = 0; j < eventInfo.length; j++){ 
+			eventInfo[j].dispose(); 
+		} 
+	}
+
 	return COM.S_OK;
 }
 /**
