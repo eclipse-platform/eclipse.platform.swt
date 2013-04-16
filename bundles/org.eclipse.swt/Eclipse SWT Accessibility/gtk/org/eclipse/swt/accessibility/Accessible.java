@@ -40,17 +40,9 @@ import org.eclipse.swt.internal.gtk.*;
  * @since 2.0
  */
 public class Accessible {
-	Vector accessibleListeners;
-	Vector accessibleControlListeners;
-	Vector accessibleTextListeners;
-	Vector accessibleActionListeners;
-	Vector accessibleEditableTextListeners;
-	Vector accessibleHyperlinkListeners;
-	Vector accessibleTableListeners;
-	Vector accessibleTableCellListeners;
-	Vector accessibleTextExtendedListeners;
-	Vector accessibleValueListeners;
-	Vector accessibleAttributeListeners;
+	Vector accessibleListeners, accessibleControlListeners, accessibleTextListeners, accessibleActionListeners,
+		accessibleEditableTextListeners, accessibleHyperlinkListeners, accessibleTableListeners, accessibleTableCellListeners,
+		accessibleTextExtendedListeners, accessibleValueListeners, accessibleAttributeListeners;
 	Accessible parent;
 	AccessibleObject accessibleObject;
 	Control control;

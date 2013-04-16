@@ -56,17 +56,9 @@ public class Accessible {
 		objIAccessibleHypertext, /*objIAccessibleImage,*/ objIAccessibleTable2, objIAccessibleTableCell,
 		objIAccessibleText, objIAccessibleValue; /* objIAccessibleRelation is defined in Relation class */
 	IAccessible iaccessible;
-	Vector accessibleListeners;
-	Vector accessibleControlListeners;
-	Vector accessibleTextListeners;
-	Vector accessibleActionListeners;
-	Vector accessibleEditableTextListeners;
-	Vector accessibleHyperlinkListeners;
-	Vector accessibleTableListeners;
-	Vector accessibleTableCellListeners;
-	Vector accessibleTextExtendedListeners;
-	Vector accessibleValueListeners;
-	Vector accessibleAttributeListeners;
+	Vector accessibleListeners, accessibleControlListeners, accessibleTextListeners, accessibleActionListeners,
+		accessibleEditableTextListeners, accessibleHyperlinkListeners, accessibleTableListeners, accessibleTableCellListeners,
+		accessibleTextExtendedListeners, accessibleValueListeners, accessibleAttributeListeners;
 	Relation relations[] = new Relation[MAX_RELATION_TYPES];
 	Object[] variants;
 	Accessible parent;
