@@ -2924,11 +2924,13 @@ public static final int ImmGetCompositionString (long /*int*/ hIMC, int dwIndex,
 	return ImmGetCompositionStringA (hIMC, dwIndex, lpBuf, dwBufLen);
 }
 
-public static final long /*int*/ ImmEscape (long /*int*/ hKL,long /*int*/ hIMC, int uEscape, long /*int*/ [] lpData) {
+public static final long /*int*/ ImmEscape (long /*int*/ hKL,long /*int*/ hIMC, int uEscape, TCHAR lpData) {
 	if (IsUnicode) {
-		return ImmEscapeW (hKL, hIMC, uEscape, lpData);
+		char [] lpData1 = lpData == null ? null : lpData.chars;
+		return ImmEscapeW (hKL, hIMC, uEscape, lpData1);
 	}
-	return ImmEscapeA (hKL, hIMC, uEscape, lpData);
+	byte [] lpData1 = lpData == null ? null : lpData.bytes;
+	return ImmEscapeA (hKL, hIMC, uEscape, lpData1);
 }
 
 public static final int ImmGetCompositionString (long /*int*/ hIMC, int dwIndex, int [] lpBuf, int dwBufLen) {
@@ -4937,13 +4939,13 @@ public static final native boolean ImmDisableTextFrameService (int idThread);
  * @param hIMC cast=(HIMC) 
  * @param lpData cast=(LPVOID) 
  */
-public static final native long /*int*/ ImmEscapeW(long /*int*/ hKL, long /*int*/ hIMC, int uEscape, long /*int*/ [] lpData);
+public static final native long /*int*/ ImmEscapeW(long /*int*/ hKL, long /*int*/ hIMC, int uEscape, char[] lpData);
 /**
  * @param hKL cast=(HKL) 
  * @param hIMC cast=(HIMC) 
  * @param lpData cast=(LPVOID) 
  */
-public static final native long /*int*/ ImmEscapeA(long /*int*/ hKL, long /*int*/ hIMC, int uEscape, long /*int*/ [] lpData);
+public static final native long /*int*/ ImmEscapeA(long /*int*/ hKL, long /*int*/ hIMC, int uEscape, byte[] lpData);
 /** @param hIMC cast=(HIMC) */
 public static final native boolean ImmGetCompositionFontW (long /*int*/ hIMC, LOGFONTW lplf);
 /** @param hIMC cast=(HIMC) */

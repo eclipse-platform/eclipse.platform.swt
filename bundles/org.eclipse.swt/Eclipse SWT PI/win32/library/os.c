@@ -7412,15 +7412,15 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImmDisableTextFrameService)
 
 #ifndef NO_ImmEscapeA
 JNIEXPORT jintLong JNICALL OS_NATIVE(ImmEscapeA)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintLongArray arg3)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jbyteArray arg3)
 {
-	jintLong *lparg3=NULL;
+	jbyte *lparg3=NULL;
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, ImmEscapeA_FUNC);
-	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jintLong)ImmEscapeA((HKL)arg0, (HIMC)arg1, arg2, (LPVOID)lparg3);
 fail:
-	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, ImmEscapeA_FUNC);
 	return rc;
 }
@@ -7428,15 +7428,15 @@ fail:
 
 #ifndef NO_ImmEscapeW
 JNIEXPORT jintLong JNICALL OS_NATIVE(ImmEscapeW)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintLongArray arg3)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jcharArray arg3)
 {
-	jintLong *lparg3=NULL;
+	jchar *lparg3=NULL;
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, ImmEscapeW_FUNC);
-	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jintLong)ImmEscapeW((HKL)arg0, (HIMC)arg1, arg2, (LPVOID)lparg3);
 fail:
-	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
+	if (arg3 && lparg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, ImmEscapeW_FUNC);
 	return rc;
 }
