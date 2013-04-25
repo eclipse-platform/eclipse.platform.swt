@@ -597,9 +597,13 @@ public void create (Composite parent, int style) {
 	*/
 	int /*long*/ session = WebKitGTK.webkit_get_default_session ();
 	int /*long*/ originalAuth = WebKitGTK.soup_session_get_feature (session, WebKitGTK.webkit_soup_auth_dialog_get_type ());
-	WebKitGTK.soup_session_feature_detach (originalAuth, session);
+	if (originalAuth != 0) {
+		WebKitGTK.soup_session_feature_detach (originalAuth, session);
+	}
 	OS.g_signal_connect (session, WebKitGTK.authenticate, Proc5.getAddress (), webView);
-	WebKitGTK.soup_session_feature_attach (originalAuth, session);
+	if (originalAuth != 0) {
+		WebKitGTK.soup_session_feature_attach (originalAuth, session);
+	}
 
 	/*
 	* Check for proxy values set as documented java properties and update the
