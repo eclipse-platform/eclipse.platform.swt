@@ -534,6 +534,10 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 				sendEvent (SWT.ImeComposition, event);
 			}
 			if (event.text != null && event.text.length() > 0) {
+				int length = event.text.length();
+	            if (length > 1) {
+	            	event.end = event.start + 1;
+	            }
 				long /*int*/ hwnd = parent.handle;
 				long /*int*/ hIMC = OS.ImmGetContext (hwnd);
 				TCHAR buffer = new TCHAR (0, event.text, true);
