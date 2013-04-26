@@ -68,7 +68,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIPromptFactory.NS_IPROMPTFACTORY_IID)) {
+	if (guid.Equals (XPCOM.NS_IPROMPTFACTORY_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {factory.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -98,7 +98,7 @@ int GetPrompt (long /*int*/ aParent, long /*int*/ iid, long /*int*/ result) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIAuthPrompt2.NS_IAUTHPROMPT2_IID)) {
+	if (guid.Equals (XPCOM.NS_IAUTHPROMPT2_IID)) {
 		PromptAuth2 promptAuth = new PromptAuth2();
 		promptAuth.AddRef ();
 		promptAuth.setParent (aParent);

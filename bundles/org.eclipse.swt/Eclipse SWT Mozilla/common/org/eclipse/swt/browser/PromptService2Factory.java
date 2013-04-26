@@ -69,7 +69,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIFactory.NS_IFACTORY_IID)) {
+	if (guid.Equals (XPCOM.NS_IFACTORY_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {factory.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -90,13 +90,13 @@ int Release () {
 int CreateInstance (long /*int*/ aOuter, long /*int*/ iid, long /*int*/ result) {
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, iid, nsID.sizeof);
-	if (guid.Equals (nsIPromptService2.NS_IPROMPTSERVICE2_IID) || guid.Equals(nsIPromptService.NS_IPROMPTSERVICE_IID)) {
+	if (guid.Equals (XPCOM.NS_IPROMPTSERVICE2_IID) || guid.Equals(nsIPromptService.NS_IPROMPTSERVICE_IID)) {
 		PromptService2 promptService = new PromptService2 ();
 		promptService.AddRef ();
 		XPCOM.memmove (result, new long /*int*/[] {promptService.getAddress ()}, C.PTR_SIZEOF);
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIPromptFactory.NS_IPROMPTFACTORY_IID)) {
+	if (guid.Equals (XPCOM.NS_IPROMPTFACTORY_IID)) {
 		PromptFactory promptFactory = new PromptFactory();
 		promptFactory.AddRef ();
 		XPCOM.memmove (result, new long /*int*/[] {promptFactory.getAddress ()}, C.PTR_SIZEOF);

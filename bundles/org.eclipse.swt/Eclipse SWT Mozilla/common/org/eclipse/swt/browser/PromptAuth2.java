@@ -72,7 +72,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIAuthPrompt2.NS_IAUTHPROMPT2_IID)) {
+	if (guid.Equals (XPCOM.NS_IAUTHPROMPT2_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {promptAuth.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;

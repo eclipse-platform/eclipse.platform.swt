@@ -145,64 +145,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1JS_1EvaluateUCScript
-JNIEXPORT jint JNICALL XPCOM_NATIVE(_1JS_1EvaluateUCScript)
-	(JNIEnv *env, jclass that, jbyteArray mozillaPath, jintLong arg0, jintLong arg1, jcharArray arg2, jint arg3, jbyteArray arg4, jint arg5, jintLongArray arg6)
-{
-	jbyte *lpmozillaPath=NULL;
-	jchar *lparg2=NULL;
-	jbyte *lparg4=NULL;
-	jintLong *lparg6=NULL;
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, _1JS_1EvaluateUCScriptForPrincipals_FUNC);
-	if (mozillaPath) if ((lpmozillaPath = env->GetByteArrayElements(mozillaPath, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = env->GetCharArrayElements(arg2, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = env->GetByteArrayElements(arg4, NULL)) == NULL) goto fail;
-	if (arg6) if ((lparg6 = env->GetIntLongArrayElements(arg6, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)JS_EvaluateUCScript(arg0, arg1, arg2, lparg3, arg4, lparg5, arg6, lparg7);
-*/
-	{
-	
-#ifdef _WIN32
-		static int initialized = 0;
-		static FARPROC fp = NULL;
-		if (!initialized) {
-			HMODULE hm = LoadLibrary((const char *)lpmozillaPath);
-			if (hm) {
-				fp = GetProcAddress(hm, "JS_EvaluateUCScript");
-			}
-			initialized = 1;
-		}
-		if (fp) {
-			rc = (jint)((jint (*)(jintLong, jintLong, jchar *, jint, jbyte *, jint, jintLong *))fp)(arg0, arg1, lparg2, arg3, lparg4, arg5, lparg6);
-		}
-#else
-#define CALLING_CONVENTION
-		static int initialized = 0;
-		static void *fp = NULL;
-		if (!initialized) {
-			void* handle = dlopen((const char *)lpmozillaPath, RTLD_LAZY);
-			if (handle) {
-				fp = dlsym(handle, "JS_EvaluateUCScript");
-			}
-			initialized = 1;
-		}
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jchar *, jint, jbyte *, jint, jintLong *))fp)(arg0, arg1, lparg2, arg3, lparg4, arg5, lparg6);
-		}
-#endif /* _WIN32 */
-	}
-fail:
-	if (arg6 && lparg6) env->ReleaseIntLongArrayElements(arg6, lparg6, 0);
-	if (arg4 && lparg4) env->ReleaseByteArrayElements(arg4, lparg4, 0);
-	if (arg2 && lparg2) env->ReleaseCharArrayElements(arg2, lparg2, 0);
-	if (mozillaPath && lpmozillaPath) env->ReleaseByteArrayElements(mozillaPath, lpmozillaPath, 0);
-	XPCOM_NATIVE_EXIT(env, that, _1JS_1EvaluateUCScript_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1JS_1GetGlobalObject
 JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1GetGlobalObject)
 	(JNIEnv *env, jclass that, jbyteArray mozillaPath, jintLong arg0)

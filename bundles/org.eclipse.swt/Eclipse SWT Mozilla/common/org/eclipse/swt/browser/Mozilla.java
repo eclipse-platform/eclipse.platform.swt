@@ -1592,12 +1592,12 @@ static String getMozillaPath () {
 	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 	result[0] = 0;
 	byte[] buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_DIRECTORYSERVICE_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (buffer, nsIDirectoryService.NS_IDIRECTORYSERVICE_IID, result);
+	rc = serviceManager.GetServiceByContractID (buffer, XPCOM.NS_IDIRECTORYSERVICE_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 	serviceManager.Release();
 
-	nsIDirectoryService directoryService = new nsIDirectoryService (result[0]);
+	nsISupports directoryService = new nsISupports (result[0]);
 	result[0] = 0;
 	rc = directoryService.QueryInterface (nsIProperties.NS_IPROPERTIES_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -3429,7 +3429,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIWeakReference.NS_IWEAKREFERENCE_IID)) {
+	if (guid.Equals (XPCOM.NS_IWEAKREFERENCE_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {weakReference.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -3449,7 +3449,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIWebBrowserChromeFocus.NS_IWEBBROWSERCHROMEFOCUS_IID)) {
+	if (guid.Equals (XPCOM.NS_IWEBBROWSERCHROMEFOCUS_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {webBrowserChromeFocus.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -3469,27 +3469,27 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsISupportsWeakReference.NS_ISUPPORTSWEAKREFERENCE_IID)) {
+	if (guid.Equals (XPCOM.NS_ISUPPORTSWEAKREFERENCE_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supportsWeakReference.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIContextMenuListener.NS_ICONTEXTMENULISTENER_IID)) {
+	if (guid.Equals (XPCOM.NS_ICONTEXTMENULISTENER_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {contextMenuListener.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIURIContentListener.NS_IURICONTENTLISTENER_IID)) {
+	if (guid.Equals (XPCOM.NS_IURICONTENTLISTENER_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {uriContentListener.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsITooltipListener.NS_ITOOLTIPLISTENER_IID)) {
+	if (guid.Equals (XPCOM.NS_ITOOLTIPLISTENER_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {tooltipListener.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIBadCertListener2.NS_IBADCERTLISTENER2_IID)) {
+	if (guid.Equals (XPCOM.NS_IBADCERTLISTENER2_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {badCertListener.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;

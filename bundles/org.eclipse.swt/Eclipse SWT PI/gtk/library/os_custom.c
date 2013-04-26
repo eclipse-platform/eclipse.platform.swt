@@ -342,10 +342,6 @@ void swt_fixed_restack (SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, 
 	priv->children = g_list_remove_link (priv->children, list);
 	g_list_free_1 (list);
 	
-//	fprintf(stdout, "here1 c=%ld %s\n", child->widget, g_type_name(G_OBJECT_TYPE(child->widget)));
-//	fflush(stdout);
-	
-	
 	list = NULL;
 	if (sibling) {
 		list = priv->children;

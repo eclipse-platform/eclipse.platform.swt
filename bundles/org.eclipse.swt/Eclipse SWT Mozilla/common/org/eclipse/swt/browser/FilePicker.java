@@ -85,7 +85,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID ();
 	XPCOM.memmove (guid, riid, nsID.sizeof);
-	
+
 	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
@@ -96,17 +96,17 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
+	if (guid.Equals (nsIFilePicker.NS_IFILEPICKER_10_IID)) {
+		XPCOM.memmove(ppvObject, new long /*int*/[] {filePicker.getAddress ()}, C.PTR_SIZEOF);
+		AddRef ();
+		return XPCOM.NS_OK;
+	}
+	if (guid.Equals (nsIFilePicker.NS_IFILEPICKER_1_8_IID)) {
+		XPCOM.memmove(ppvObject, new long /*int*/[] {filePicker.getAddress ()}, C.PTR_SIZEOF);
+		AddRef ();
+		return XPCOM.NS_OK;
+	}
 	if (guid.Equals (nsIFilePicker.NS_IFILEPICKER_IID)) {
-		XPCOM.memmove(ppvObject, new long /*int*/[] {filePicker.getAddress ()}, C.PTR_SIZEOF);
-		AddRef ();
-		return XPCOM.NS_OK;
-	}
-	if (guid.Equals (nsIFilePicker_1_8.NS_IFILEPICKER_IID)) {
-		XPCOM.memmove(ppvObject, new long /*int*/[] {filePicker.getAddress ()}, C.PTR_SIZEOF);
-		AddRef ();
-		return XPCOM.NS_OK;
-	}
-	if (guid.Equals (nsIFilePicker_1_8.NS_IFILEPICKER_10_IID)) {
 		XPCOM.memmove(ppvObject, new long /*int*/[] {filePicker.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
