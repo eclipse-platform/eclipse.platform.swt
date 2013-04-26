@@ -139,7 +139,8 @@ public class ACC {
 	 * 
 	 * @see AccessibleControlListener#getChild
 	 * 
-	 * @since 3.6 */
+	 * @since 3.6
+	 */
 	public static final int CHILDID_CHILD_AT_INDEX = -4;
 	
 	/**
@@ -147,7 +148,8 @@ public class ACC {
 	 * 
 	 * @see AccessibleControlListener#getChild
 	 * 
-	 * @since 3.6 */
+	 * @since 3.6
+	 */
 	public static final int CHILDID_CHILD_INDEX = -5;
 	
 	/**

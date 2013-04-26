@@ -2894,32 +2894,34 @@ public class Accessible {
 
 	/* IAccessible2::get_groupPosition([out] pGroupLevel, [out] pSimilarItemsInGroup, [out] pPositionInGroup) */
 	int get_groupPosition(int /*long*/ pGroupLevel, int /*long*/ pSimilarItemsInGroup, int /*long*/ pPositionInGroup) {
-		// TODO: handle where possible - maybe add AccessibleGroup later
-		//get the role
-		//if it has role tree, then the level is the value else 0 (for N/A)
-		int groupLevel = 0;
-		COM.MoveMemory(pGroupLevel, new int [] { groupLevel }, 4);
-		//get the children of the parent
-		//count all children with the same role, if none, then 0 (for N/A)
-		//find this control's 1-based index in the same-type children of the parent (0 for N/A)
-		int similarItemsInGroup = 0;
-		int positionInGroup = 0;
-		if (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0)) {
-			/* We currently only determine position and count for radio buttons. */
-			Control [] children = control.getParent().getChildren();
-			positionInGroup = 1;
-			similarItemsInGroup = 1;
-			for (int i = 0; i < children.length; i++) {
-				Control child = children[i];
-				if (child instanceof Button && ((child.getStyle() & SWT.RADIO) != 0)) {
-					if (child == control) positionInGroup = similarItemsInGroup;
-					else similarItemsInGroup++;
+		AccessibleAttributeEvent event = new AccessibleAttributeEvent(this);
+		event.groupLevel = event.groupCount = event.groupIndex = -1;
+		for (int i = 0; i < accessibleAttributeListeners.size(); i++) {
+			AccessibleAttributeListener listener = (AccessibleAttributeListener) accessibleAttributeListeners.elementAt(i);
+			listener.getAttributes(event);
+		}
+		int groupLevel = (event.groupLevel != -1) ? event.groupLevel : 0;
+		int similarItemsInGroup = (event.groupCount != -1) ? event.groupCount : 0;
+		int positionInGroup = (event.groupIndex != -1) ? event.groupIndex : 0;
+		if (similarItemsInGroup == 0 && positionInGroup == 0) {
+			/* Determine position and count for radio buttons. */
+			if (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0)) {
+				Control [] children = control.getParent().getChildren();
+				positionInGroup = 1;
+				similarItemsInGroup = 1;
+				for (int i = 0; i < children.length; i++) {
+					Control child = children[i];
+					if (child instanceof Button && ((child.getStyle() & SWT.RADIO) != 0)) {
+						if (child == control) positionInGroup = similarItemsInGroup;
+						else similarItemsInGroup++;
+					}
 				}
 			}
 		}
+		COM.MoveMemory(pGroupLevel, new int [] { groupLevel }, 4);
 		COM.MoveMemory(pSimilarItemsInGroup, new int [] { similarItemsInGroup }, 4);
 		COM.MoveMemory(pPositionInGroup, new int [] { positionInGroup }, 4);
-		if (DEBUG) print(this + ".IAccessible2::get_groupPosition() returning" + hresult(groupLevel == 0 && similarItemsInGroup == 0 && positionInGroup == 0 ? COM.S_FALSE : COM.S_OK));
+		if (DEBUG) print(this + ".IAccessible2::get_groupPosition() returning level=" + groupLevel + ", count=" + similarItemsInGroup + ", index=" + positionInGroup + hresult(groupLevel == 0 && similarItemsInGroup == 0 && positionInGroup == 0 ? COM.S_FALSE : COM.S_OK));
 		if (groupLevel == 0 && similarItemsInGroup == 0 && positionInGroup == 0) return COM.S_FALSE;
 		return COM.S_OK;
 	}
