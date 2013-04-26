@@ -875,7 +875,8 @@ class AccessibleObject {
 			int length = listeners.size();
 			if (length > 0) {
 				AccessibleAttributeEvent event = new AccessibleAttributeEvent (accessible);
-				event.topMargin = event.bottomMargin = event.leftMargin = event.rightMargin = event.alignment = event.indent = -1;
+				event.topMargin = event.bottomMargin = event.leftMargin = event.rightMargin = event.alignment
+						= event.indent = event.groupLevel = event.groupCount = event.groupIndex = -1;
 				for (int i = 0; i < length; i++) {
 					AccessibleAttributeListener listener = (AccessibleAttributeListener)listeners.elementAt (i);
 					listener.getAttributes (event);
@@ -936,6 +937,49 @@ class AccessibleObject {
 					parentResult = OS.g_slist_append(parentResult, attrPtr);
 				}
 				//TODO - tabStops
+				
+				/* Check for group attributes. */
+				int level = (event.groupLevel != -1) ? event.groupLevel : 0;
+				int setsize = (event.groupCount != -1) ? event.groupCount : 0;
+				int posinset = (event.groupIndex != -1) ? event.groupIndex : 0;
+				if (setsize == 0 && posinset == 0) {
+					/* Determine position and count for radio buttons. */
+					Control control = accessible.control;
+					if (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0)) {
+						Control [] children = control.getParent().getChildren();
+						posinset = 1;
+						setsize = 1;
+						for (int i = 0; i < children.length; i++) {
+							Control child = children[i];
+							if (child instanceof Button && ((child.getStyle() & SWT.RADIO) != 0)) {
+								if (child == control) posinset = setsize;
+								else setsize++;
+							}
+						}
+					}
+				}
+				if (level != 0) {
+					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					attr.name = getStringPtr ("level"); //$NON-NLS-1$
+					attr.value = getStringPtr (String.valueOf(level));
+					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
+					parentResult = OS.g_slist_append(parentResult, attrPtr);
+				}
+				if (setsize != 0) {
+					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					attr.name = getStringPtr ("setsize"); //$NON-NLS-1$
+					attr.value = getStringPtr (String.valueOf(setsize));
+					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
+					parentResult = OS.g_slist_append(parentResult, attrPtr);
+				}
+				if (posinset != 0) {
+					int /*long*/ attrPtr = OS.g_malloc(AtkAttribute.sizeof);
+					attr.name = getStringPtr ("posinset"); //$NON-NLS-1$
+					attr.value = getStringPtr (String.valueOf(posinset));
+					ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
+					parentResult = OS.g_slist_append(parentResult, attrPtr);
+				}
+				
 				if (event.attributes != null) {
 					int end = event.attributes.length / 2 * 2;
 					for (int i = 0; i < end; i+= 2) {

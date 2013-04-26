@@ -128,6 +128,29 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="Eclipse SWT Accessibility/common/org/eclipse/swt/accessibility/AccessibleAttributeEvent.java" type="org.eclipse.swt.accessibility.AccessibleAttributeEvent">
+        <filter id="1141899266">
+            <message_arguments>
+                <message_argument value="3.102"/>
+                <message_argument value="3.100"/>
+                <message_argument value="groupCount"/>
+            </message_arguments>
+        </filter>
+        <filter id="1141899266">
+            <message_arguments>
+                <message_argument value="3.102"/>
+                <message_argument value="3.100"/>
+                <message_argument value="groupIndex"/>
+            </message_arguments>
+        </filter>
+        <filter id="1141899266">
+            <message_arguments>
+                <message_argument value="3.102"/>
+                <message_argument value="3.100"/>
+                <message_argument value="groupLevel"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="Eclipse SWT Accessibility/common/org/eclipse/swt/accessibility/AccessibleAttributeListener.java" type="org.eclipse.swt.accessibility.AccessibleAttributeListener">
         <filter id="576720909">
             <message_arguments>
