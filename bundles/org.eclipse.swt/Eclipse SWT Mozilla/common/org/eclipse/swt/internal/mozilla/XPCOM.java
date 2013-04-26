@@ -64,9 +64,17 @@ public class XPCOM extends C {
 	public static final nsID NS_IWEBBROWSER_CID = new nsID ("F1EAC761-87E9-11d3-AF80-00A024FFC08C"); //$NON-NLS-1$
 	public static final nsID NS_IXPCONNECT_CID = new nsID ("CB6593E0-F9B2-11d2-BDD6-000064657374"); //$NON-NLS-1$
 
+	public static final nsID NS_ISCRIPTCONTEXT_1_9_IID = new nsID ("e7b9871d-3adc-4bf7-850d-7fb9554886bf"); //$NON-NLS-1$
+	public static final nsID NS_ISCRIPTCONTEXT_1_9_2_IID = new nsID ("87482b5e-e019-4df5-9bc2-b2a51b1f2d28"); //$NON-NLS-1$
+	public static final nsID NS_ISCRIPTCONTEXT_10_IID = new nsID ("2e583bf4-3c1f-432d-8283-8dee7eccc88b"); //$NON-NLS-1$
+	public static final nsID NS_ISCRIPTCONTEXT_17_IID = new nsID ("d012cdb3-8f1e-4440-8cbd-327f981d37b4"); //$NON-NLS-1$
+	public static final nsID NS_ISCRIPTGLOBALOBJECT_1_9_2_IID = new nsID ("e9f3f2c1-2d94-4722-bbd4-2bf6fdf42f48"); //$NON-NLS-1$
+	public static final nsID NS_ISCRIPTGLOBALOBJECT_10_IID = new nsID ("08f73284-26e3-4fa6-bf89-8326f92a94b3"); //$NON-NLS-1$
+	public static final nsID NS_ISCRIPTGLOBALOBJECT_17_IID = new nsID ("92569431-6e6e-408a-a88c-45285c1c8573"); //$NON-NLS-1$
+	public static final nsID NS_ISCRIPTGLOBALOBJECT_1_9_IID = new nsID ("6afecd40-0b9a-4cfd-8c42-0f645cd91829"); //$NON-NLS-1$
 	public static final nsID NS_ISCRIPTOBJECTOWNER_IID = new nsID ("8f6bca7e-ce42-11d1-b724-00600891d8c9"); //$NON-NLS-1$
 	public static final nsID NS_ISECURITYCHECKEDCOMPONENT_IID = new nsID ("0dad9e8c-a12d-4dcb-9a6f-7d09839356e1"); //$NON-NLS-1$
-
+	
 	public static final String EXTERNAL_CONTRACTID = "@eclipse.org/external;1"; //$NON-NLS-1$
 	public static final String NS_AUTHPROMPTER_CONTRACTID = "@mozilla.org/passwordmanager/authpromptfactory;1"; //$NON-NLS-1$
 	public static final String NS_CERTOVERRIDE_CONTRACTID = "@mozilla.org/security/certoverride;1"; //$NON-NLS-1$
@@ -204,6 +212,16 @@ public static final native int strlen_PRUnichar(long /*int*/ s);
 /** @method flags=no_gen */
 public static final native long /*int*/ CALLBACK_JSNative(long /*int*/ func);
 
+///** @method flags=no_gen */
+//public static final native long /*int*/ _JS_CallFunctionName(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, byte[] name, int argc, long /*int*/ argv, long /*int*/ rval);	
+//public static final long /*int*/ JS_CallFunctionName(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, byte[] name, int argc, long /*int*/ argv, long /*int*/ rval) {
+//	lock.lock();
+//	try {
+//		return _JS_CallFunctionName(mozillaPath, cx, obj, name, argc, argv, rval);
+//	} finally {
+//		lock.unlock();
+//	}
+//}
 /** @method flags=no_gen */
 public static final native long /*int*/ _JS_DefineFunction(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, byte[] name, long /*int*/ call, int nargs, int flags);	
 public static final long /*int*/ JS_DefineFunction(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, byte[] name, long /*int*/ call, int nargs, int flags) {

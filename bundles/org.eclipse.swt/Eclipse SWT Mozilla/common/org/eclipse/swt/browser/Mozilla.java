@@ -1374,20 +1374,16 @@ public boolean execute (String script) {
 
 				nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
 				result[0] = 0;
-				nsID scriptGlobalObjectNSID_17 = new nsID ("92569431-6e6e-408a-a88c-45285c1c8573"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
-				rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_17, result);
+				rc = interfaceRequestor.GetInterface (XPCOM.NS_ISCRIPTGLOBALOBJECT_17_IID, result);
 				if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
 					result[0] = 0;
-					nsID scriptGlobalObjectNSID_10 = new nsID ("08f73284-26e3-4fa6-bf89-8326f92a94b3"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
-					rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_10, result);
+					rc = interfaceRequestor.GetInterface (XPCOM.NS_ISCRIPTGLOBALOBJECT_10_IID, result);
 					if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
 						result[0] = 0;
-						nsID scriptGlobalObjectNSID_1_9_2 = new nsID ("e9f3f2c1-2d94-4722-bbd4-2bf6fdf42f48"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
-						rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_1_9_2, result);
+						rc = interfaceRequestor.GetInterface (XPCOM.NS_ISCRIPTGLOBALOBJECT_1_9_2_IID, result);
 						if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
 							result[0] = 0;
-							nsID scriptGlobalObjectNSID_1_9 = new nsID ("6afecd40-0b9a-4cfd-8c42-0f645cd91829"); /* nsIScriptGlobalObject */ //$NON-NLS-1$
-							rc = interfaceRequestor.GetInterface (scriptGlobalObjectNSID_1_9, result);
+							rc = interfaceRequestor.GetInterface (XPCOM.NS_ISCRIPTGLOBALOBJECT_1_9_IID, result);
 						}
 					}
 				}
@@ -1415,20 +1411,16 @@ public boolean execute (String script) {
 						if (scriptContext != 0) {
 							/* ensure that the received nsIScriptContext implements the expected interface */
 							nsISupports supports = new nsISupports (scriptContext);
-							nsID scriptContextNSID_17 = new nsID ("d012cdb3-8f1e-4440-8cbd-327f981d37b4"); /* nsIScriptContext */ //$NON-NLS-1$	
-							rc = supports.QueryInterface (scriptContextNSID_17, result);
+							rc = supports.QueryInterface (XPCOM.NS_ISCRIPTCONTEXT_17_IID, result);
 							if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
 								result[0] = 0;
-								nsID scriptContextNSID_10 = new nsID ("2e583bf4-3c1f-432d-8283-8dee7eccc88b"); /* nsIScriptContext */ //$NON-NLS-1$					
-								rc = supports.QueryInterface (scriptContextNSID_10, result);
+								rc = supports.QueryInterface (XPCOM.NS_ISCRIPTCONTEXT_10_IID, result);
 								if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
 									result[0] = 0;
-									nsID scriptContextNSID_1_9_2 = new nsID ("87482b5e-e019-4df5-9bc2-b2a51b1f2d28"); /* nsIScriptContext */ //$NON-NLS-1$					
-									rc = supports.QueryInterface (scriptContextNSID_1_9_2, result);
+									rc = supports.QueryInterface (XPCOM.NS_ISCRIPTCONTEXT_1_9_2_IID, result);
 									if (!(rc == XPCOM.NS_OK && result[0] != 0)) {
 										result[0] = 0;
-										nsID scriptContextNSID_1_9 = new nsID ("e7b9871d-3adc-4bf7-850d-7fb9554886bf"); /* nsIScriptContext */ //$NON-NLS-1$					
-										rc = supports.QueryInterface (scriptContextNSID_1_9, result);
+										rc = supports.QueryInterface (XPCOM.NS_ISCRIPTCONTEXT_1_9_IID, result);
 									}
 								}
 							}
@@ -1437,36 +1429,36 @@ public boolean execute (String script) {
 								new nsISupports (result[0]).Release ();
 								result[0] = 0;
 
-								long /*int*/ nativeContext;
+								long /*int*/ jsContext;
 								if (IsPre_17) {
-									nativeContext = XPCOM.nsIScriptContext_GetNativeContext (scriptContext);
+									jsContext = XPCOM.nsIScriptContext_GetNativeContext (scriptContext);
 								} else {
-									nativeContext = XPCOM.nsIScriptContext17_GetNativeContext (scriptContext);
+									jsContext = XPCOM.nsIScriptContext17_GetNativeContext (scriptContext);
 								}
-								if (nativeContext != 0) {
+								if (jsContext != 0) {
 									int length = script.length ();
 									char[] scriptChars = new char[length];
 									script.getChars(0, length, scriptChars, 0);
 									byte[] urlbytes = MozillaDelegate.wcsToMbcs (null, getUrl (), true);
-									rc = principal.GetJSPrincipals (nativeContext, result);
+									rc = principal.GetJSPrincipals (jsContext, result);
 									long /*int*/ principals = 0;
 									if (rc == XPCOM.NS_OK && result[0] != 0) {
 										principals = result[0];
 										result[0] = 0;
 									}
 									byte[] jsLibPath = getJSLibPathBytes ();
-									long /*int*/ globalJSObject = XPCOM.JS_GetGlobalObject (jsLibPath, nativeContext);
+									long /*int*/ globalJSObject = XPCOM.JS_GetGlobalObject (jsLibPath, jsContext);
 									if (globalJSObject != 0) {
 										aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CONTEXTSTACK_CONTRACTID, true);
 										rc = serviceManager.GetServiceByContractID (aContractID, nsIJSContextStack.NS_IJSCONTEXTSTACK_IID, result);
 										if (rc == XPCOM.NS_OK && result[0] != 0) {
 											nsIJSContextStack stack = new nsIJSContextStack (result[0]);
 											result[0] = 0;
-											rc = stack.Push (nativeContext);
+											rc = stack.Push (jsContext);
 											if (rc != XPCOM.NS_OK) {
 												stack.Release ();
 											} else {
-												boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals (jsLibPath, nativeContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, isXULRunner190x ? result : null) != 0;
+												boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals (jsLibPath, jsContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, isXULRunner190x ? result : null) != 0;
 												result[0] = 0;
 												rc = stack.Pop (result);
 												stack.Release ();
