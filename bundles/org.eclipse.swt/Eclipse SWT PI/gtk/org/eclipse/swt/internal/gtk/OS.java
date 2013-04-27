@@ -3309,7 +3309,6 @@ public static final long /*int*/ g_type_register_static (long /*int*/ parent_typ
 }
 /** 
  * @method flags=dynamic
- * @param vtable cast=(GThreadFunctions *) 
  */
 public static final native void _g_thread_init(long /*int*/ vtable);
 public static final void g_thread_init(long /*int*/ vtable) {
