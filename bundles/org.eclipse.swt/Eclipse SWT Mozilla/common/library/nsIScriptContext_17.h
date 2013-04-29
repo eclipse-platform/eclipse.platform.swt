@@ -13,6 +13,7 @@
 #ifndef nsIScriptContext17_h__ //SWT-20130307
 #define nsIScriptContext17_h__ //SWT-20130307
 
+#define int32_t int //SWT-20130307
 #define uint32_t unsigned int //SWT-20130307
 #include "nscore.h"
 //#include "nptypes.h" //SWT-20130307
