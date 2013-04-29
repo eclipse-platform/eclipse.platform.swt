@@ -29,7 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMKeyEvent extends nsIDOMUIEvent {
 
-	static final int LAST_METHOD_ID = nsIDOMUIEvent.LAST_METHOD_ID + 7;
+	static final int LAST_METHOD_ID = nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 9 : 7);
 
 	public static final String NS_IDOMKEYEVENT_IID_STR =
 		"028e0e6e-8b01-11d3-aae7-0010838a3123";
@@ -37,12 +37,18 @@ public class nsIDOMKeyEvent extends nsIDOMUIEvent {
 	public static final String NS_IDOMKEYEVENT_10_IID_STR =
 		"def974c3-b491-481b-bc67-29174af4b26a";
 	
+	public static final String NS_IDOMKEYEVENT_17_IID_STR =
+		"5d116380-8432-48cb-a717-200f04c39d2f";
+		
 	public static final nsID NS_IDOMKEYEVENT_IID =
 		new nsID(NS_IDOMKEYEVENT_IID_STR);
 
 	public static final nsID NS_IDOMKEYEVENT_10_IID =
 		new nsID(NS_IDOMKEYEVENT_10_IID_STR);
 	
+	public static final nsID NS_IDOMKEYEVENT_17_IID =
+		new nsID(NS_IDOMKEYEVENT_17_IID_STR);
+		
 	public nsIDOMKeyEvent(long /*int*/ address) {
 		super(address);
 	}
@@ -179,7 +185,6 @@ public class nsIDOMKeyEvent extends nsIDOMUIEvent {
 	public static final int DOM_VK_CONTEXT_MENU = 93;
 	public static final int DOM_VK_SLEEP = 95;
 
-
 	public int GetCharCode(int[] aCharCode) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 1, getAddress(), aCharCode);
 	}
@@ -202,9 +207,5 @@ public class nsIDOMKeyEvent extends nsIDOMUIEvent {
 
 	public int GetMetaKey(int[] aMetaKey) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 6, getAddress(), aMetaKey);
-	}
-
-	public int InitKeyEvent(long /*int*/ typeArg, int canBubbleArg, int cancelableArg, long /*int*/ viewArg, int ctrlKeyArg, int altKeyArg, int shiftKeyArg, int metaKeyArg, int keyCodeArg, int charCodeArg) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 7, getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, keyCodeArg, charCodeArg);
 	}
 }

@@ -36,7 +36,7 @@ public class nsIAppShell extends nsISupports {
 
 	public static final nsID NS_IAPPSHELL_IID =
 		new nsID(NS_IAPPSHELL_IID_STR);
-
+	
 	public nsIAppShell(long /*int*/ address) {
 		super(address);
 	}

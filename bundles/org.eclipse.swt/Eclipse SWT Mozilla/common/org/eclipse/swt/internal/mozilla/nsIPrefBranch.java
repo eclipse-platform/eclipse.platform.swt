@@ -29,7 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIPrefBranch extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 18;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 20 : 18);
 
 	public static final String NS_IPREFBRANCH_IID_STR =
 		"56c35506-f14b-11d3-99d3-ddbfac2ccf65";
@@ -37,11 +37,17 @@ public class nsIPrefBranch extends nsISupports {
 	public static final String NS_IPREFBRANCH_10_IID_STR =
 		"e162bfa0-01bd-4e9f-9843-8fb2efcd6d1f";
 	
+	public static final String NS_IPREFBRANCH_17_IID_STR =
+		"7df46a54-d8b0-448e-903c-4341a1b2499c";
+	
 	public static final nsID NS_IPREFBRANCH_IID =
 		new nsID(NS_IPREFBRANCH_IID_STR);
 
 	public static final nsID NS_IPREFBRANCH_10_IID =
 		new nsID(NS_IPREFBRANCH_10_IID_STR);
+
+	public static final nsID NS_IPREFBRANCH_17_IID =
+		new nsID(NS_IPREFBRANCH_17_IID_STR);
 	
 	public nsIPrefBranch(long /*int*/ address) {
 		super(address);
@@ -52,28 +58,8 @@ public class nsIPrefBranch extends nsISupports {
 	public static final int PREF_INT = 64;
 	public static final int PREF_BOOL = 128;
 
-	public int GetRoot(long /*int*/[] aRoot) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aRoot);
-	}
-
-	public int GetPrefType(byte[] aPrefName, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aPrefName, _retval);
-	}
-
-	public int GetBoolPref(byte[] aPrefName, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aPrefName, _retval);
-	}
-
 	public int SetBoolPref(byte[] aPrefName, int aValue) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aPrefName, aValue);
-	}
-
-	public int GetCharPref(byte[] aPrefName, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aPrefName, _retval);
-	}
-
-	public int SetCharPref(byte[] aPrefName, byte[] aValue) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aPrefName, aValue);
 	}
 
 	public int GetIntPref(byte[] aPrefName, int[] _retval) {
@@ -94,33 +80,5 @@ public class nsIPrefBranch extends nsISupports {
 
 	public int ClearUserPref(byte[] aPrefName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aPrefName);
-	}
-
-	public int LockPref(byte[] aPrefName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), aPrefName);
-	}
-
-	public int PrefHasUserValue(byte[] aPrefName, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), aPrefName, _retval);
-	}
-
-	public int PrefIsLocked(byte[] aPrefName, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), aPrefName, _retval);
-	}
-
-	public int UnlockPref(byte[] aPrefName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 15, getAddress(), aPrefName);
-	}
-
-	public int DeleteBranch(byte[] aStartingAt) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 16, getAddress(), aStartingAt);
-	}
-
-	public int GetChildList(byte[] aStartingAt, int[] aCount, long /*int*/[] aChildArray) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 17, getAddress(), aStartingAt, aCount, aChildArray);
-	}
-
-	public int ResetBranch(byte[] aStartingAt) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 18, getAddress(), aStartingAt);
 	}
 }

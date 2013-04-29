@@ -22,26 +22,24 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2011 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2012 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIWindowCreator extends nsISupports {
+public class nsIFilePickerShownCallback extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 1;
+	public static final String NS_IFILEPICKER_IID_STR =
+		"0d79adad-b244-49A5-9997-2a8cad93fc44";
 
-	public static final String NS_IWINDOWCREATOR_IID_STR =
-		"30465632-a777-44cc-90f9-8145475ef999";
+	public static final nsID NS_IFILEPICKER_IID =
+		new nsID (NS_IFILEPICKER_IID_STR);
 
-	public static final nsID NS_IWINDOWCREATOR_IID =
-		new nsID(NS_IWINDOWCREATOR_IID_STR);
-
-	public nsIWindowCreator(long /*int*/ address) {
-		super(address);
+	public nsIFilePickerShownCallback (long /*int*/ address) {
+		super (address);
 	}
 
-	public int CreateChromeWindow(long /*int*/ parent, int chromeFlags, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), parent, chromeFlags, _retval);
+	public int Done (int aResult) {
+		return XPCOM.VtblCall (nsISupports.LAST_METHOD_ID + 1, getAddress(), aResult);
 	}
 }

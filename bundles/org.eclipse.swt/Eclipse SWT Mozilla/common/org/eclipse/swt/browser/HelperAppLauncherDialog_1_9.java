@@ -77,7 +77,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIHelperAppLauncherDialog_1_9.NS_IHELPERAPPLAUNCHERDIALOG_IID)) {
+	if (guid.Equals (XPCOM.NS_IHELPERAPPLAUNCHERDIALOG_1_9_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {helperAppLauncherDialog.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;

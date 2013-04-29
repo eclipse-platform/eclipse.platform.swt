@@ -29,13 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIFile extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 45;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 62 : 45);
 
 	public static final String NS_IFILE_IID_STR =
 		"c8c0a080-0868-11d3-915f-d9d889d48e3c";
+	
+	public static final String NS_IFILE_17_IID_STR =
+		"272a5020-64f5-485c-a8c4-44b2882ae0a2";
 
 	public static final nsID NS_IFILE_IID =
 		new nsID(NS_IFILE_IID_STR);
+
+	public static final nsID NS_IFILE_17_IID =
+		new nsID(NS_IFILE_17_IID_STR);
 
 	public nsIFile(long /*int*/ address) {
 		super(address);
@@ -43,18 +49,6 @@ public class nsIFile extends nsISupports {
 
 	public static final int NORMAL_FILE_TYPE = 0;
 	public static final int DIRECTORY_TYPE = 1;
-
-	public int Append(long /*int*/ node) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), node);
-	}
-
-	public int AppendNative(long /*int*/ node) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), node);
-	}
-
-	public int Normalize() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
-	}
 
 	public int Create(int type, int permissions) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), type, permissions);
@@ -64,163 +58,7 @@ public class nsIFile extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aLeafName);
 	}
 
-	public int SetLeafName(long /*int*/ aLeafName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aLeafName);
-	}
-
-	public int GetNativeLeafName(long /*int*/ aNativeLeafName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aNativeLeafName);
-	}
-
-	public int SetNativeLeafName(long /*int*/ aNativeLeafName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aNativeLeafName);
-	}
-
-	public int CopyTo(long /*int*/ newParentDir, long /*int*/ newName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), newParentDir, newName);
-	}
-
-	public int CopyToNative(long /*int*/ newParentDir, long /*int*/ newName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), newParentDir, newName);
-	}
-
-	public int CopyToFollowingLinks(long /*int*/ newParentDir, long /*int*/ newName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), newParentDir, newName);
-	}
-
-	public int CopyToFollowingLinksNative(long /*int*/ newParentDir, long /*int*/ newName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), newParentDir, newName);
-	}
-
-	public int MoveTo(long /*int*/ newParentDir, long /*int*/ newName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), newParentDir, newName);
-	}
-
-	public int MoveToNative(long /*int*/ newParentDir, long /*int*/ newName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), newParentDir, newName);
-	}
-
-	public int Remove(int recursive) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 15, getAddress(), recursive);
-	}
-
-	public int GetPermissions(int[] aPermissions) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 16, getAddress(), aPermissions);
-	}
-
-	public int SetPermissions(int aPermissions) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 17, getAddress(), aPermissions);
-	}
-
-	public int GetPermissionsOfLink(int[] aPermissionsOfLink) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 18, getAddress(), aPermissionsOfLink);
-	}
-
-	public int SetPermissionsOfLink(int aPermissionsOfLink) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 19, getAddress(), aPermissionsOfLink);
-	}
-
-	public int GetLastModifiedTime(long[] aLastModifiedTime) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 20, getAddress(), aLastModifiedTime);
-	}
-
-	public int SetLastModifiedTime(long aLastModifiedTime) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 21, getAddress(), aLastModifiedTime);
-	}
-
-	public int GetLastModifiedTimeOfLink(long[] aLastModifiedTimeOfLink) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 22, getAddress(), aLastModifiedTimeOfLink);
-	}
-
-	public int SetLastModifiedTimeOfLink(long aLastModifiedTimeOfLink) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 23, getAddress(), aLastModifiedTimeOfLink);
-	}
-
-	public int GetFileSize(long[] aFileSize) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 24, getAddress(), aFileSize);
-	}
-
-	public int SetFileSize(long aFileSize) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 25, getAddress(), aFileSize);
-	}
-
-	public int GetFileSizeOfLink(long[] aFileSizeOfLink) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 26, getAddress(), aFileSizeOfLink);
-	}
-
-	public int GetTarget(long /*int*/ aTarget) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 27, getAddress(), aTarget);
-	}
-
-	public int GetNativeTarget(long /*int*/ aNativeTarget) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 28, getAddress(), aNativeTarget);
-	}
-
 	public int GetPath(long /*int*/ aPath) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 29, getAddress(), aPath);
-	}
-
-	public int GetNativePath(long /*int*/ aNativePath) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 30, getAddress(), aNativePath);
-	}
-
-	public int Exists(int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 31, getAddress(), _retval);
-	}
-
-	public int IsWritable(int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 32, getAddress(), _retval);
-	}
-
-	public int IsReadable(int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 33, getAddress(), _retval);
-	}
-
-	public int IsExecutable(int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 34, getAddress(), _retval);
-	}
-
-	public int IsHidden(int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 35, getAddress(), _retval);
-	}
-
-	public int IsDirectory(int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 36, getAddress(), _retval);
-	}
-
-	public int IsFile(int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 37, getAddress(), _retval);
-	}
-
-	public int IsSymlink(int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 38, getAddress(), _retval);
-	}
-
-	public int IsSpecial(int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 39, getAddress(), _retval);
-	}
-
-	public int CreateUnique(int type, int permissions) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 40, getAddress(), type, permissions);
-	}
-
-	public int Clone(long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 41, getAddress(), _retval);
-	}
-
-	public int Equals(long /*int*/ inFile, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 42, getAddress(), inFile, _retval);
-	}
-
-	public int Contains(long /*int*/ inFile, int recur, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 43, getAddress(), inFile, recur, _retval);
-	}
-
-	public int GetParent(long /*int*/[] aParent) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 44, getAddress(), aParent);
-	}
-
-	public int GetDirectoryEntries(long /*int*/[] aDirectoryEntries) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 45, getAddress(), aDirectoryEntries);
 	}
 }

@@ -26,6 +26,8 @@
 #ifndef nsIScriptContext_h__
 #include "nsIScriptContext.h"
 #include "nsIScriptGlobalObject.h"
+#include "nsIScriptContext_17.h"
+#include "nsIScriptGlobalObject_17.h"
 #endif /* nsIScriptContext_h__ */
 
 #define XPCOM_LOAD_FUNCTION LOAD_FUNCTION
@@ -43,7 +45,7 @@
 #endif /* __APPLE__ */
 #endif /* _WIN32 */
 
-#define SWT_XREInitEmbedding2 nsresult (*)(nsILocalFile *,nsILocalFile *,nsIDirectoryServiceProvider *)
+#define SWT_XREInitEmbedding2 nsresult (*)(nsIFile *,nsIFile *,nsIDirectoryServiceProvider *)
 #define SWT_XREInitEmbedding nsresult (*)(nsILocalFile *,nsILocalFile *,nsIDirectoryServiceProvider *,nsStaticModuleInfo const *,PRUint32)
 
 #endif /* INC_xpcom_H */

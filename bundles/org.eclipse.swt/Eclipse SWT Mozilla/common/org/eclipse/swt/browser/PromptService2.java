@@ -105,7 +105,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIPromptService2.NS_IPROMPTSERVICE2_IID)) {
+	if (guid.Equals (XPCOM.NS_IPROMPTSERVICE2_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {promptService2.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;

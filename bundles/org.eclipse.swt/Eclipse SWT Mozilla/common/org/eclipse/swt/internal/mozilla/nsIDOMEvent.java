@@ -29,19 +29,25 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMEvent extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 12 : 10);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 25 : (IsXULRunner10 ? 12 : 10));
 
 	public static final String NS_IDOMEVENT_IID_STR =
 		"a66b7b80-ff46-bd97-0080-5f8ae38add32";
 
 	public static final String NS_IDOMEVENT_10_IID_STR =
 		"e85cff74-951f-45c1-be0c-89442ea2f500";
+	
+	public static final String NS_IDOMEVENT_17_IID_STR =
+		"270c945b-8a65-4170-bc0b-4ec1443cd39f";
 
 	public static final nsID NS_IDOMEVENT_IID =
 		new nsID(NS_IDOMEVENT_IID_STR);
 
 	public static final nsID NS_IDOMEVENT_10_IID =
 		new nsID(NS_IDOMEVENT_10_IID_STR);
+
+	public static final nsID NS_IDOMEVENT_17_IID =
+		new nsID(NS_IDOMEVENT_17_IID_STR);
 
 	public nsIDOMEvent(long /*int*/ address) {
 		super(address);
@@ -55,49 +61,11 @@ public class nsIDOMEvent extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aType);
 	}
 
-	public int GetTarget(long /*int*/[] aTarget) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aTarget);
-	}
-
 	public int GetCurrentTarget(long /*int*/[] aCurrentTarget) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aCurrentTarget);
 	}
 
-	public int GetEventPhase(short[] aEventPhase) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aEventPhase);
-	}
-
-	public int GetBubbles(int[] aBubbles) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aBubbles);
-	}
-
-	public int GetCancelable(int[] aCancelable) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aCancelable);
-	}
-
-	public int GetTimeStamp(long /*int*/ aTimeStamp) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aTimeStamp);
-	}
-
-	public int StopPropagation() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress());
-	}
-
 	public int PreventDefault() {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress());
-	}
-
-	public int InitEvent(long /*int*/ eventTypeArg, int canBubbleArg, int cancelableArg) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), eventTypeArg, canBubbleArg, cancelableArg);
-	}
-	
-	public int GetDefaultPrevented(int[] aDefaultPrevented) {
-		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aDefaultPrevented);
-	}
-
-	public int StopImmediatePropagation() {
-		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress());
 	}
 }

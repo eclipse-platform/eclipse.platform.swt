@@ -187,7 +187,7 @@ public:
 //virtual nsresult HandleScriptError(nsScriptErrorEvent *aErrorEvent, //SWT-20090407
 //                                   nsEventStatus *aEventStatus) { //SWT-20090407
 //  return NS_HandleScriptError(this, aErrorEvent, aEventStatus); //SWT-20090407
-//}
+//} //SWT-20090407
 };
 
 //NS_DEFINE_STATIC_IID_ACCESSOR(nsIScriptGlobalObject, //SWT-20090407

@@ -64,9 +64,37 @@ public class XPCOM extends C {
 	public static final nsID NS_IWEBBROWSER_CID = new nsID ("F1EAC761-87E9-11d3-AF80-00A024FFC08C"); //$NON-NLS-1$
 	public static final nsID NS_IXPCONNECT_CID = new nsID ("CB6593E0-F9B2-11d2-BDD6-000064657374"); //$NON-NLS-1$
 
+	/* IID constants */
+	public static final nsID NS_IAUTHPROMPT2_IID = new nsID ("651395eb-8612-4876-8ac0-a88d4dce9e1e"); //$NON-NLS-1$
+	public static final nsID NS_IBADCERTLISTENER2_IID = new nsID ("2c3d268c-ad82-49f3-99aa-e9ffddd7a0dc"); //$NON-NLS-1$
+	public static final nsID NS_ICONTEXTMENULISTENER_IID = new nsID ("3478b6b0-3875-11d4-94ef-0020183bf181"); //$NON-NLS-1$
+	public static final nsID NS_IDIRECTORYSERVICE_IID = new nsID ("57a66a60-d43a-11d3-8cc2-00609792278c"); //$NON-NLS-1$
+	public static final nsID NS_IDIRECTORYSERVICEPROVIDER_IID = new nsID ("bbf8cab0-d43a-11d3-8cc2-00609792278c"); //$NON-NLS-1$
+	public static final nsID NS_IDIRECTORYSERVICEPROVIDER2_IID = new nsID ("2f977d4b-5485-11d4-87e2-0010a4e75ef2"); //$NON-NLS-1$
+	public static final nsID NS_IFACTORY_IID = new nsID ("00000001-0000-0000-c000-000000000046"); //$NON-NLS-1$
+	public static final nsID NS_IHELPERAPPLAUNCHERDIALOG_IID = new nsID ("d7ebddf0-4c84-11d4-807a-00600811a9c3"); //$NON-NLS-1$
+	public static final nsID NS_IHELPERAPPLAUNCHERDIALOG_1_9_IID = new nsID ("f3704fdc-8ae6-4eba-a3c3-f02958ac0649"); //$NON-NLS-1$
+	public static final nsID NS_IPROMPTFACTORY_IID = new nsID ("2532b748-75db-4732-9173-78d3bf34f694"); //$NON-NLS-1$
+	public static final nsID NS_IPROMPTSERVICE2_IID = new nsID ("cf86d196-dbee-4482-9dfa-3477aa128319"); //$NON-NLS-1$
+	public static final nsID NS_ISCRIPTCONTEXT_1_9_IID = new nsID ("e7b9871d-3adc-4bf7-850d-7fb9554886bf"); //$NON-NLS-1$
+	public static final nsID NS_ISCRIPTCONTEXT_1_9_2_IID = new nsID ("87482b5e-e019-4df5-9bc2-b2a51b1f2d28"); //$NON-NLS-1$
+	public static final nsID NS_ISCRIPTCONTEXT_10_IID = new nsID ("2e583bf4-3c1f-432d-8283-8dee7eccc88b"); //$NON-NLS-1$
+	public static final nsID NS_ISCRIPTCONTEXT_17_IID = new nsID ("d012cdb3-8f1e-4440-8cbd-327f981d37b4"); //$NON-NLS-1$
+	public static final nsID NS_ISCRIPTGLOBALOBJECT_1_9_2_IID = new nsID ("e9f3f2c1-2d94-4722-bbd4-2bf6fdf42f48"); //$NON-NLS-1$
+	public static final nsID NS_ISCRIPTGLOBALOBJECT_10_IID = new nsID ("08f73284-26e3-4fa6-bf89-8326f92a94b3"); //$NON-NLS-1$
+	public static final nsID NS_ISCRIPTGLOBALOBJECT_17_IID = new nsID ("92569431-6e6e-408a-a88c-45285c1c8573"); //$NON-NLS-1$
+	public static final nsID NS_ISCRIPTGLOBALOBJECT_1_9_IID = new nsID ("6afecd40-0b9a-4cfd-8c42-0f645cd91829"); //$NON-NLS-1$
 	public static final nsID NS_ISCRIPTOBJECTOWNER_IID = new nsID ("8f6bca7e-ce42-11d1-b724-00600891d8c9"); //$NON-NLS-1$
 	public static final nsID NS_ISECURITYCHECKEDCOMPONENT_IID = new nsID ("0dad9e8c-a12d-4dcb-9a6f-7d09839356e1"); //$NON-NLS-1$
+	public static final nsID NS_ISUPPORTSWEAKREFERENCE_IID = new nsID ("9188bc86-f92e-11d2-81ef-0060083a0bcf"); //$NON-NLS-1$
+	public static final nsID NS_ITOOLTIPLISTENER_IID = new nsID ("44b78386-1dd2-11b2-9ad2-e4eee2ca1916"); //$NON-NLS-1$
+	public static final nsID NS_IURICONTENTLISTENER_IID = new nsID ("94928ab3-8b63-11d3-989d-001083010e9b"); //$NON-NLS-1$
+	public static final nsID NS_IWEAKREFERENCE_IID = new nsID ("9188bc85-f92e-11d2-81ef-0060083a0bcf"); //$NON-NLS-1$
+	public static final nsID NS_IWEBBROWSERCHROMEFOCUS_IID = new nsID ("d2206418-1dd1-11b2-8e55-acddcd2bcfb8"); //$NON-NLS-1$
+	public static final nsID NS_IWINDOWCREATOR_IID = new nsID ("30465632-a777-44cc-90f9-8145475ef999"); //$NON-NLS-1$
+	public static final nsID NS_IWINDOWCREATOR2_IID = new nsID ("f673ec81-a4b0-11d6-964b-eb5a2bf216fc"); //$NON-NLS-1$
 
+	/* contract ID constants */
 	public static final String EXTERNAL_CONTRACTID = "@eclipse.org/external;1"; //$NON-NLS-1$
 	public static final String NS_AUTHPROMPTER_CONTRACTID = "@mozilla.org/passwordmanager/authpromptfactory;1"; //$NON-NLS-1$
 	public static final String NS_CERTOVERRIDE_CONTRACTID = "@mozilla.org/security/certoverride;1"; //$NON-NLS-1$
@@ -161,7 +189,7 @@ public class XPCOM extends C {
 public static final native int nsDynamicFunctionLoad_sizeof ();
 
 public static void memmove(long /*int*/ dest, boolean[] src) {
-	if (nsISupports.IsXULRunner10) { // TODO change this reference
+	if (nsISupports.IsXULRunner10 || nsISupports.IsXULRunner17) { // TODO change this reference
 		memmove (dest, new byte[] {src[0] ? (byte)1 : 0}, 1);
 	} else {
 		memmove (dest, new int[] {src[0] ? 1 : 0}, 4);
@@ -169,7 +197,7 @@ public static void memmove(long /*int*/ dest, boolean[] src) {
 }
 
 public static void memmove(boolean[] dest, long /*int*/ src) {
-	if (nsISupports.IsXULRunner10) { // TODO change this reference
+	if (nsISupports.IsXULRunner10 || nsISupports.IsXULRunner17) { // TODO change this reference
 		byte[] result = new byte[1];
 		memmove (result, src, 1);
 		dest[0] = result[0] != 0;
@@ -378,6 +406,19 @@ public static final int nsIScriptGlobalObject_EnsureScriptEnvironment(long /*int
 }
 /**
  * @method flags=cpp
+ * @param ptr cast=(nsIScriptGlobalObject17 *)
+ */
+public static final native int _nsIScriptGlobalObject17_EnsureScriptEnvironment(long /*int*/ ptr);
+public static final int nsIScriptGlobalObject17_EnsureScriptEnvironment(long /*int*/ ptr) {
+	lock.lock();
+	try {
+		return _nsIScriptGlobalObject17_EnsureScriptEnvironment(ptr);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=cpp
  * @param ptr cast=(nsIScriptGlobalObject *)
  */
 public static final native long /*int*/ _nsIScriptGlobalObject_GetScriptContext(long /*int*/ ptr, int lang);
@@ -391,6 +432,19 @@ public static final long /*int*/ nsIScriptGlobalObject_GetScriptContext(long /*i
 }
 /**
  * @method flags=cpp
+ * @param ptr cast=(nsIScriptGlobalObject17 *)
+ */
+public static final native long /*int*/ _nsIScriptGlobalObject17_GetScriptContext(long /*int*/ ptr);
+public static final long /*int*/ nsIScriptGlobalObject17_GetScriptContext(long /*int*/ ptr) {
+	lock.lock();
+	try {
+		return _nsIScriptGlobalObject17_GetScriptContext(ptr);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=cpp
  * @param ptr cast=(nsIScriptContext *)
  */
 public static final native long /*int*/ _nsIScriptContext_GetNativeContext(long /*int*/ ptr);
@@ -398,6 +452,19 @@ public static final long /*int*/ nsIScriptContext_GetNativeContext(long /*int*/ 
 	lock.lock();
 	try {
 		return _nsIScriptContext_GetNativeContext(ptr);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=cpp
+ * @param ptr cast=(nsIScriptContext17 *)
+ */
+public static final native long /*int*/ _nsIScriptContext17_GetNativeContext(long /*int*/ ptr);
+public static final long /*int*/ nsIScriptContext17_GetNativeContext(long /*int*/ ptr) {
+	lock.lock();
+	try {
+		return _nsIScriptContext17_GetNativeContext(ptr);
 	} finally {
 		lock.unlock();
 	}
@@ -619,8 +686,8 @@ public static final int Call(long /*int*/ ptr, long /*int*/ aLibXULDirectory, lo
 
 /**
  * @param ptr cast=(SWT_XREInitEmbedding2)
- * @param aLibXULDirectory cast=(nsILocalFile *)
- * @param aAppDirectory cast=(nsILocalFile *)
+ * @param aLibXULDirectory cast=(nsIFile *)
+ * @param aAppDirectory cast=(nsIFile *)
  * @param aAppDirProvider cast=(nsIDirectoryServiceProvider *)
  */
 public static final native int _Call(long /*int*/ ptr, long /*int*/ aLibXULDirectory, long /*int*/ aAppDirectory, long /*int*/ aAppDirProvider);

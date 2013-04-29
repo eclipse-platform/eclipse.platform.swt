@@ -27,35 +27,13 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIPromptService extends nsISupports {
-
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 9;
+public class nsIPromptService {
 
 	public static final String NS_IPROMPTSERVICE_IID_STR =
 		"1630c61a-325e-49ca-8759-a31b16c47aa5";
 
 	public static final nsID NS_IPROMPTSERVICE_IID =
 		new nsID(NS_IPROMPTSERVICE_IID_STR);
-
-	public nsIPromptService(long /*int*/ address) {
-		super(address);
-	}
-
-	public int Alert(long /*int*/ aParent, char[] aDialogTitle, char[] aText) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aParent, aDialogTitle, aText);
-	}
-
-	public int AlertCheck(long /*int*/ aParent, char[] aDialogTitle, char[] aText, char[] aCheckMsg, int[] aCheckState) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aParent, aDialogTitle, aText, aCheckMsg, aCheckState);
-	}
-
-	public int Confirm(long /*int*/ aParent, char[] aDialogTitle, char[] aText, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aParent, aDialogTitle, aText, _retval);
-	}
-
-	public int ConfirmCheck(long /*int*/ aParent, char[] aDialogTitle, char[] aText, char[] aCheckMsg, int[] aCheckState, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aParent, aDialogTitle, aText, aCheckMsg, aCheckState, _retval);
-	}
 
 	public static final int BUTTON_POS_0 = 1;
 	public static final int BUTTON_POS_1 = 256;
@@ -74,24 +52,6 @@ public class nsIPromptService extends nsISupports {
 	public static final int BUTTON_DELAY_ENABLE = 67108864;
 	public static final int STD_OK_CANCEL_BUTTONS = 513;
 	public static final int STD_YES_NO_BUTTONS = 1027;
-	
-	public int ConfirmEx(long /*int*/ aParent, char[] aDialogTitle, char[] aText, int aButtonFlags, char[] aButton0Title, char[] aButton1Title, char[] aButton2Title, char[] aCheckMsg, int[] aCheckState, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aParent, aDialogTitle, aText, aButtonFlags, aButton0Title, aButton1Title, aButton2Title, aCheckMsg, aCheckState, _retval);
-	}
 
-	public int Prompt(long /*int*/ aParent, char[] aDialogTitle, char[] aText, long /*int*/[] aValue, char[] aCheckMsg, int[] aCheckState, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aParent, aDialogTitle, aText, aValue, aCheckMsg, aCheckState, _retval);
-	}
-
-	public int PromptUsernameAndPassword(long /*int*/ aParent, char[] aDialogTitle, char[] aText, long /*int*/[] aUsername, long /*int*/[] aPassword, char[] aCheckMsg, int[] aCheckState, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aParent, aDialogTitle, aText, aUsername, aPassword, aCheckMsg, aCheckState, _retval);
-	}
-
-	public int PromptPassword(long /*int*/ aParent, char[] aDialogTitle, char[] aText, long /*int*/[] aPassword, char[] aCheckMsg, int[] aCheckState, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aParent, aDialogTitle, aText, aPassword, aCheckMsg, aCheckState, _retval);
-	}
-
-	public int Select(long /*int*/ aParent, char[] aDialogTitle, char[] aText, int aCount, long /*int*/[] aSelectList, int[] aOutSelection, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aParent, aDialogTitle, aText, aCount, aSelectList, aOutSelection, _retval);
-	}
+	/* outgoing functions removed because this is an implemented interface */
 }

@@ -57,7 +57,7 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(_1Call__JJJJ)(JNIEnv *env, jclass that, jint
 #else
 	XPCOM_NATIVE_ENTER(env, that, _1Call__JJJJ_FUNC);
 #endif
-	rc = (jint)((SWT_XREInitEmbedding2)arg0)((nsILocalFile *)arg1, (nsILocalFile *)arg2, (nsIDirectoryServiceProvider *)arg3);
+	rc = (jint)((SWT_XREInitEmbedding2)arg0)((nsIFile *)arg1, (nsIFile *)arg2, (nsIDirectoryServiceProvider *)arg3);
 #ifndef JNI64
 	XPCOM_NATIVE_EXIT(env, that, _1Call__IIII_FUNC);
 #else
@@ -7078,6 +7078,19 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIMemory_1Realloc)
 }
 #endif
 
+#ifndef NO__1nsIScriptContext17_1GetNativeContext
+extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptContext17_1GetNativeContext)(JNIEnv *env, jclass that, jintLong arg0);
+JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptContext17_1GetNativeContext)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, _1nsIScriptContext17_1GetNativeContext_FUNC);
+	rc = (jintLong)((nsIScriptContext17 *)arg0)->GetNativeContext();
+	XPCOM_NATIVE_EXIT(env, that, _1nsIScriptContext17_1GetNativeContext_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1nsIScriptContext_1GetNativeContext
 extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptContext_1GetNativeContext)(JNIEnv *env, jclass that, jintLong arg0);
 JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptContext_1GetNativeContext)
@@ -7087,6 +7100,32 @@ JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptContext_1GetNativeContext)
 	XPCOM_NATIVE_ENTER(env, that, _1nsIScriptContext_1GetNativeContext_FUNC);
 	rc = (jintLong)((nsIScriptContext *)arg0)->GetNativeContext();
 	XPCOM_NATIVE_EXIT(env, that, _1nsIScriptContext_1GetNativeContext_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1nsIScriptGlobalObject17_1EnsureScriptEnvironment
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1nsIScriptGlobalObject17_1EnsureScriptEnvironment)(JNIEnv *env, jclass that, jintLong arg0);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(_1nsIScriptGlobalObject17_1EnsureScriptEnvironment)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, _1nsIScriptGlobalObject17_1EnsureScriptEnvironment_FUNC);
+	rc = (jint)((nsIScriptGlobalObject17 *)arg0)->EnsureScriptEnvironment();
+	XPCOM_NATIVE_EXIT(env, that, _1nsIScriptGlobalObject17_1EnsureScriptEnvironment_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1nsIScriptGlobalObject17_1GetScriptContext
+extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptGlobalObject17_1GetScriptContext)(JNIEnv *env, jclass that, jintLong arg0);
+JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptGlobalObject17_1GetScriptContext)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, _1nsIScriptGlobalObject17_1GetScriptContext_FUNC);
+	rc = (jintLong)((nsIScriptGlobalObject17 *)arg0)->GetScriptContext();
+	XPCOM_NATIVE_EXIT(env, that, _1nsIScriptGlobalObject17_1GetScriptContext_FUNC);
 	return rc;
 }
 #endif

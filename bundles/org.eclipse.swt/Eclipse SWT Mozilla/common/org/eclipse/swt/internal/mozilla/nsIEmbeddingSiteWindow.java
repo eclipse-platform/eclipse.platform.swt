@@ -29,13 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIEmbeddingSiteWindow extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 8;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 9 : 8);
 
 	public static final String NS_IEMBEDDINGSITEWINDOW_IID_STR =
 		"3e5432cd-9568-4bd1-8cbe-d50aba110743";
 
 	public static final nsID NS_IEMBEDDINGSITEWINDOW_IID =
 		new nsID(NS_IEMBEDDINGSITEWINDOW_IID_STR);
+	
+	public static final String NS_IEMBEDDINGSITEWINDOW_17_IID_STR =
+		"0b976267-4aaa-4f36-a2d4-27b5ca8d73bb";
+
+	public static final nsID NS_IEMBEDDINGSITEWINDOW_17_IID =
+		new nsID(NS_IEMBEDDINGSITEWINDOW_17_IID_STR);
 
 	public nsIEmbeddingSiteWindow(long /*int*/ address) {
 		super(address);
@@ -44,34 +50,6 @@ public class nsIEmbeddingSiteWindow extends nsISupports {
 	public static final int DIM_FLAGS_POSITION = 1;
 	public static final int DIM_FLAGS_SIZE_INNER = 2;
 	public static final int DIM_FLAGS_SIZE_OUTER = 4;
-
-	public int SetDimensions(int flags, int x, int y, int cx, int cy) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), flags, x, y, cx, cy);
-	}
-
-	public int GetDimensions(int flags, int[] x, int[] y, int[] cx, int[] cy) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), flags, x, y, cx, cy);
-	}
-
-	public int SetFocus() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
-	}
-
-	public int GetVisibility(int[] aVisibility) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aVisibility);
-	}
-
-	public int SetVisibility(int aVisibility) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aVisibility);
-	}
-
-	public int GetTitle(long /*int*/[] aTitle) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aTitle);
-	}
-
-	public int SetTitle(char[] aTitle) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aTitle);
-	}
 
 	public int GetSiteWindow(long /*int*/[] aSiteWindow) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aSiteWindow);

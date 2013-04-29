@@ -69,7 +69,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIFactory.NS_IFACTORY_IID)) {
+	if (guid.Equals (XPCOM.NS_IFACTORY_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {factory.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;

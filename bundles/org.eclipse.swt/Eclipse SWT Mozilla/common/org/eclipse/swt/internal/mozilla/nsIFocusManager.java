@@ -29,7 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIFocusManager extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 18 : 17);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10 || IsXULRunner17) ? 18 : 17);
 
 	public static final String NS_IFOCUSMANAGER_IID_STR =
 			"cd6040a8-243f-412a-8a16-0bf2aa1083b9";
@@ -131,7 +131,7 @@ public class nsIFocusManager extends nsISupports {
 	}
 	
 	public int FocusPlugin(long /*int*/ aPlugin) {
-		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		if (!(IsXULRunner10 || IsXULRunner17)) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 18, getAddress(), aPlugin);
 	}
 }

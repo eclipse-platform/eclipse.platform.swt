@@ -27,19 +27,31 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIFilePicker extends nsISupports {
-
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 15;
+public class nsIFilePicker {
 
 	public static final String NS_IFILEPICKER_IID_STR =
 		"c47de916-1dd1-11b2-8141-82507fa02b21";
 
+	public static final String NS_IFILEPICKER_1_8_IID_STR =
+		"80faf095-c807-4558-a2cc-185ed70754ea";
+
+	public static final String NS_IFILEPICKER_10_IID_STR =
+		"f2c0e216-5d07-4df4-bbcb-37683077ae7e";
+
+	public static final String NS_IFILEPICKER_17_IID_STR =
+		"60e2dfb6-3fc7-4a2c-8137-16bef44536fc";
+
 	public static final nsID NS_IFILEPICKER_IID =
 		new nsID(NS_IFILEPICKER_IID_STR);
 
-	public nsIFilePicker(long /*int*/ address) {
-		super(address);
-	}
+	public static final nsID NS_IFILEPICKER_1_8_IID =
+		new nsID(NS_IFILEPICKER_1_8_IID_STR);
+
+	public static final nsID NS_IFILEPICKER_10_IID =
+		new nsID(NS_IFILEPICKER_10_IID_STR);
+
+	public static final nsID NS_IFILEPICKER_17_IID =
+		new nsID(NS_IFILEPICKER_17_IID_STR);
 
 	public static final int modeOpen = 0;
 	public static final int modeSave = 1;
@@ -56,63 +68,10 @@ public class nsIFilePicker extends nsISupports {
 	public static final int filterXUL = 32;
 	public static final int filterApps = 64;
 
-	public int Init(long /*int*/ parent, char[] title, int mode) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), parent, title, mode);
-	}
+	/* the following constants are available as of mozilla 10 */
+	public static final int filterAllowURLs = 128;
+	public static final int filterAudio = 256;
+	public static final int filterVideo = 512;
 
-	public int AppendFilters(int filterMask) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), filterMask);
-	}
-
-	public int AppendFilter(char[] title, char[] filter) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), title, filter);
-	}
-
-	public int GetDefaultString(long /*int*/[] aDefaultString) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aDefaultString);
-	}
-
-	public int SetDefaultString(char[] aDefaultString) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aDefaultString);
-	}
-
-	public int GetDefaultExtension(long /*int*/[] aDefaultExtension) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aDefaultExtension);
-	}
-
-	public int SetDefaultExtension(char[] aDefaultExtension) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aDefaultExtension);
-	}
-
-	public int GetFilterIndex(int[] aFilterIndex) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aFilterIndex);
-	}
-
-	public int SetFilterIndex(int aFilterIndex) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aFilterIndex);
-	}
-
-	public int GetDisplayDirectory(long /*int*/[] aDisplayDirectory) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aDisplayDirectory);
-	}
-
-	public int SetDisplayDirectory(long /*int*/ aDisplayDirectory) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aDisplayDirectory);
-	}
-
-	public int GetFile(long /*int*/[] aFile) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), aFile);
-	}
-
-	public int GetFileURL(long /*int*/[] aFileURL) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), aFileURL);
-	}
-
-	public int GetFiles(long /*int*/[] aFiles) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), aFiles);
-	}
-
-	public int Show(long /*int*/ _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 15, getAddress(), _retval);
-	}
+	/* outgoing functions removed because this is an implemented interface */
 }

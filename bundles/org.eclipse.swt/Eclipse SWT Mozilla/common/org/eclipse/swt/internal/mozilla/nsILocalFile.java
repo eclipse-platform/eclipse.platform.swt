@@ -29,83 +29,21 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsILocalFile extends nsIFile {
 
-	static final int LAST_METHOD_ID = nsIFile.LAST_METHOD_ID + 17;
+	static final int LAST_METHOD_ID = nsIFile.LAST_METHOD_ID + (IsXULRunner17 ? 0 : 17);
 
 	public static final String NS_ILOCALFILE_IID_STR =
 		"aa610f20-a889-11d3-8c81-000064657374";
+	
+	public static final String NS_ILOCALFILE_17_IID_STR =
+		"ce4ef184-7660-445e-9e59-6731bdc65505";
 
 	public static final nsID NS_ILOCALFILE_IID =
 		new nsID(NS_ILOCALFILE_IID_STR);
+	
+	public static final nsID NS_ILOCALFILE_17_IID =
+		new nsID(NS_ILOCALFILE_17_IID_STR);
 
 	public nsILocalFile(long /*int*/ address) {
 		super(address);
-	}
-
-	public int InitWithPath(long /*int*/ filePath) {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 1, getAddress(), filePath);
-	}
-
-	public int InitWithNativePath(long /*int*/ filePath) {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 2, getAddress(), filePath);
-	}
-
-	public int InitWithFile(long /*int*/ aFile) {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 3, getAddress(), aFile);
-	}
-
-	public int GetFollowLinks(int[] aFollowLinks) {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 4, getAddress(), aFollowLinks);
-	}
-
-	public int SetFollowLinks(int aFollowLinks) {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 5, getAddress(), aFollowLinks);
-	}
-
-	public int OpenNSPRFileDesc(int flags, int mode, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 6, getAddress(), flags, mode, _retval);
-	}
-
-	public int OpenANSIFileDesc(byte[] mode, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 7, getAddress(), mode, _retval);
-	}
-
-	public int Load(long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 8, getAddress(), _retval);
-	}
-
-	public int GetDiskSpaceAvailable(long[] aDiskSpaceAvailable) {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 9, getAddress(), aDiskSpaceAvailable);
-	}
-
-	public int AppendRelativePath(long /*int*/ relativeFilePath) {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 10, getAddress(), relativeFilePath);
-	}
-
-	public int AppendRelativeNativePath(long /*int*/ relativeFilePath) {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 11, getAddress(), relativeFilePath);
-	}
-
-	public int GetPersistentDescriptor(long /*int*/ aPersistentDescriptor) {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 12, getAddress(), aPersistentDescriptor);
-	}
-
-	public int SetPersistentDescriptor(long /*int*/ aPersistentDescriptor) {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 13, getAddress(), aPersistentDescriptor);
-	}
-
-	public int Reveal() {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 14, getAddress());
-	}
-
-	public int Launch() {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 15, getAddress());
-	}
-
-	public int GetRelativeDescriptor(long /*int*/ fromFile, long /*int*/ _retval) {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 16, getAddress(), fromFile, _retval);
-	}
-
-	public int SetRelativeDescriptor(long /*int*/ fromFile, long /*int*/ relativeDesc) {
-		return XPCOM.VtblCall(nsIFile.LAST_METHOD_ID + 17, getAddress(), fromFile, relativeDesc);
 	}
 }
