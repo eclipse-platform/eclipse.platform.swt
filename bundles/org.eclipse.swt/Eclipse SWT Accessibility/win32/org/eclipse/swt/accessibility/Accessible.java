@@ -2204,7 +2204,6 @@ public class Accessible {
 	
 	/* IAccessible::get_accDescription([in] varChild, [out] pszDescription) */
 	int get_accDescription(long /*int*/ varChild, long /*int*/ pszDescription) {
-		if (DEBUG) print(this + ".IAccessible::get_accDescription");
 		/* 
 		 * MSAA: "The accDescription property is not supported in the transition to
 		 * UI Automation. MSAA servers and applications should not use it."
@@ -2224,7 +2223,10 @@ public class Accessible {
 			code = iaccessible.get_accDescription(varChild, pszDescription);
 			if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
 			// TEMPORARY CODE - process tree even if there are no apps listening
-			if (accessibleListenersSize() == 0 && !(control instanceof Tree)) return code;
+			if (accessibleListenersSize() == 0 && !(control instanceof Tree)) {
+				if (DEBUG) print(this + ".IAccessible::get_accDescription(" + v.lVal + ") returning super" + hresult(code));
+				return code;
+			}
 			if (code == COM.S_OK) {
 				long /*int*/[] pDescription = new long /*int*/[1];
 				COM.MoveMemory(pDescription, pszDescription, OS.PTR_SIZEOF);
@@ -2272,6 +2274,7 @@ public class Accessible {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
 			listener.getDescription(event);
 		}
+		if (DEBUG) print(this + ".IAccessible::get_accDescription(" + v.lVal + ") returning " + event.result + hresult(event.result == null ? code : event.result.length() == 0 ? COM.S_FALSE : COM.S_OK));
 		if (event.result == null) return code;
 		if (event.result.length() == 0) return COM.S_FALSE;
 		setString(pszDescription, event.result);
