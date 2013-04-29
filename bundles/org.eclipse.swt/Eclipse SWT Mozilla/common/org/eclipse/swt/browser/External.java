@@ -252,7 +252,7 @@ static Object convertToJava (nsIVariant variant, short type) {
 						arrayReturn = new Object[count[0]];
 						for (int i = 0; i < count[0]; i++) {
 							/* mozilla's representation of boolean changed from 4 bytes to 1 byte as of XULRunner 4.x */
-							if (nsISupports.IsXULRunner10) {
+							if (nsISupports.IsXULRunner10 || nsISupports.IsXULRunner17) {
 								byte[] byteValue = new byte[1];
 								C.memmove (byteValue, ptr[0] + i, 1);
 								arrayReturn[i] = new Boolean (byteValue[0] != 0);

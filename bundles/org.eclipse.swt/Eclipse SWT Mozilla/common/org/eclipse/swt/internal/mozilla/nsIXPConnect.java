@@ -38,10 +38,10 @@ public class nsIXPConnect extends nsISupports {
 		new nsID(NS_IXPCONNECT_IID_STR);
 	
 	public static final String NS_IXPCONNECT_17_IID_STR =
-			"bd300b18-1c34-4589-8285-23a12cc580ea";
+		"bd300b18-1c34-4589-8285-23a12cc580ea";
 
 	public static final nsID NS_IXPCONNECT_17_IID =
-			new nsID(NS_IXPCONNECT_17_IID_STR);
+		new nsID(NS_IXPCONNECT_17_IID_STR);
 
 	public nsIXPConnect(long /*int*/ address) {
 		super(address);

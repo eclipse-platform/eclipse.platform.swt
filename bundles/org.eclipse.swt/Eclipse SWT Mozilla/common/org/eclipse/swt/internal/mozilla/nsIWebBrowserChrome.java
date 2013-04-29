@@ -51,16 +51,8 @@ public class nsIWebBrowserChrome extends nsISupports {
 	public static final int STATUS_SCRIPT_DEFAULT = 2;
 	public static final int STATUS_LINK = 3;
 
-	public int SetStatus(int statusType, char[] status) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), statusType, status);
-	}
-
 	public int GetWebBrowser(long /*int*/[] aWebBrowser) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aWebBrowser);
-	}
-
-	public int SetWebBrowser(long /*int*/ aWebBrowser) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aWebBrowser);
 	}
 
 	public static final int CHROME_DEFAULT = 1;
@@ -88,31 +80,7 @@ public class nsIWebBrowserChrome extends nsISupports {
 	public static final int CHROME_OPENAS_CHROME = -2147483648;
 	public static final int CHROME_ALL = 4094;
 
-	public int GetChromeFlags(int[] aChromeFlags) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aChromeFlags);
-	}
-
 	public int SetChromeFlags(int aChromeFlags) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aChromeFlags);
-	}
-
-	public int DestroyBrowserWindow() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress());
-	}
-
-	public int SizeBrowserTo(int aCX, int aCY) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aCX, aCY);
-	}
-
-	public int ShowAsModal() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress());
-	}
-
-	public int IsWindowModal(int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), _retval);
-	}
-
-	public int ExitModalEventLoop(int aStatus) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aStatus);
 	}
 }

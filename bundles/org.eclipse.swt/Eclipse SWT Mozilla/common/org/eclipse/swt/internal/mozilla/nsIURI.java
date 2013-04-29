@@ -29,7 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIURI extends nsISupports {
 	
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 32 : 26);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10 || IsXULRunner17) ? 32 : 26);
 
 	public static final String NS_IURI_IID_STR =
 		"07a22cc0-0ce5-11d3-9331-00104ba0fd40";
@@ -152,32 +152,32 @@ public class nsIURI extends nsISupports {
 	}
 	
 	public int GetRef(long /*int*/ aRef) {
-		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		if (!(IsXULRunner10 || IsXULRunner17)) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 27, getAddress(), aRef);
 	}
 
 	public int SetRef(long /*int*/ aRef) {
-		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		if (!(IsXULRunner10 || IsXULRunner17)) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 28, getAddress(), aRef);
 	}
 
 	public int EqualsExceptRef(long /*int*/ other, int[] _retval) {
-		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		if (!(IsXULRunner10 || IsXULRunner17)) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 29, getAddress(), other, _retval);
 	}
 
 	public int CloneIgnoringRef(long /*int*/[] _retval) {
-		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		if (!(IsXULRunner10 || IsXULRunner17)) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 30, getAddress(), _retval);
 	}
 
 	public int GetSpecIgnoringRef(long /*int*/ aSpecIgnoringRef) {
-		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		if (!(IsXULRunner10 || IsXULRunner17)) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 31, getAddress(), aSpecIgnoringRef);
 	}
 
 	public int GetHasRef(int[] aHasRef) {
-		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
+		if (!(IsXULRunner10 || IsXULRunner17)) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 32, getAddress(), aHasRef);
 	}
 }

@@ -45,7 +45,7 @@ public class nsIFilePicker {
 		new nsID(NS_IFILEPICKER_IID_STR);
 
 	public static final nsID NS_IFILEPICKER_1_8_IID =
-			new nsID(NS_IFILEPICKER_1_8_IID_STR);
+		new nsID(NS_IFILEPICKER_1_8_IID_STR);
 
 	public static final nsID NS_IFILEPICKER_10_IID =
 		new nsID(NS_IFILEPICKER_10_IID_STR);
@@ -68,7 +68,7 @@ public class nsIFilePicker {
 	public static final int filterXUL = 32;
 	public static final int filterApps = 64;
 
-	/* the following constants are defined as of mozilla 8 */
+	/* the following constants are available as of mozilla 10 */
 	public static final int filterAllowURLs = 128;
 	public static final int filterAudio = 256;
 	public static final int filterVideo = 512;

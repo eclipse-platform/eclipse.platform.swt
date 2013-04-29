@@ -59,89 +59,19 @@ public class nsIBaseWindow extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
 	}
 
-	public int SetPosition(int x, int y) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), x, y);
-	}
-
-	public int GetPosition(int[] x, int[] y) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), x, y);
-	}
-
-	public int SetSize(int cx, int cy, int fRepaint) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), cx, cy, fRepaint);
-	}
-
-	public int GetSize(int[] cx, int[] cy) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), cx, cy);
-	}
-
 	public int SetPositionAndSize(int x, int y, int cx, int cy, int fRepaint) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), x, y, cx, cy, fRepaint);
-	}
-
-	public int GetPositionAndSize(int[] x, int[] y, int[] cx, int[] cy) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), x, y, cx, cy);
-	}
-
-	public int Repaint(int force) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), force);
-	}
-
-	public int GetParentWidget(long /*int*/[] aParentWidget) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aParentWidget);
-	}
-
-	public int SetParentWidget(long /*int*/ aParentWidget) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), aParentWidget);
 	}
 
 	public int GetParentNativeWindow(long /*int*/[] aParentNativeWindow) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), aParentNativeWindow);
 	}
 
-	public int SetParentNativeWindow(long /*int*/ aParentNativeWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), aParentNativeWindow);
-	}
-
-	public int GetVisibility(int[] aVisibility) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 16 : 15), getAddress(), aVisibility);
-	}
-
 	public int SetVisibility(int aVisibility) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 17 : 16), getAddress(), aVisibility);
 	}
 
-	public int GetEnabled(int[] aEnabled) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 18 : 17), getAddress(), aEnabled);
-	}
-
-	public int SetEnabled(int aEnabled) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 19 : 18), getAddress(), aEnabled);
-	}
-
-	public int GetBlurSuppression(int[] aBlurSuppression) {
-		if (IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 19, getAddress(), aBlurSuppression);
-	}
-
-	public int SetBlurSuppression(int aBlurSuppression) {
-		if (IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 20, getAddress(), aBlurSuppression);
-	}
-
-	public int GetMainWidget(long /*int*/[] aMainWidget) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 20 : (IsXULRunner10 ? 19 : 21)), getAddress(), aMainWidget);
-	}
-
 	public int SetFocus() {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 21 : (IsXULRunner10 ? 20 : 22)), getAddress());
-	}
-
-	public int GetTitle(long /*int*/[] aTitle) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 22 : (IsXULRunner10 ? 21 : 23)), getAddress(), aTitle);
-	}
-
-	public int SetTitle(char[] aTitle) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 23 : (IsXULRunner10 ? 22 : 24)), getAddress(), aTitle);
 	}
 }

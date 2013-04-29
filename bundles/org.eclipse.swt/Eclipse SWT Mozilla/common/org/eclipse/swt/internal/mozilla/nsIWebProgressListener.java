@@ -62,30 +62,4 @@ public class nsIWebProgressListener extends nsISupports {
 	public static final int STATE_SECURE_HIGH = 262144;
 	public static final int STATE_SECURE_MED = 65536;
 	public static final int STATE_SECURE_LOW = 131072;
-
-	public int OnStateChange(long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateFlags, int aStatus) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aWebProgress, aRequest, aStateFlags, aStatus);
-	}
-
-	public int OnProgressChange(long /*int*/ aWebProgress, long /*int*/ aRequest, int aCurSelfProgress, int aMaxSelfProgress, int aCurTotalProgress, int aMaxTotalProgress) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress);
-	}
-
-	public int OnLocationChange(long /*int*/ aWebProgress, long /*int*/ aRequest, long /*int*/ location) {
-		if (IsXULRunner17) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aWebProgress, aRequest, location);
-	}
-	
-	public int OnLocationChange(long /*int*/ aWebProgress, long /*int*/ aRequest, long /*int*/ location, int aFlags) {
-		if (!IsXULRunner17) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aWebProgress, aRequest, location, aFlags);
-	}
-
-	public int OnStatusChange(long /*int*/ aWebProgress, long /*int*/ aRequest, int aStatus, char[] aMessage) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aWebProgress, aRequest, aStatus, aMessage);
-	}
-
-	public int OnSecurityChange(long /*int*/ aWebProgress, long /*int*/ aRequest, int state) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aWebProgress, aRequest, state);
-	}
 }

@@ -189,7 +189,7 @@ public class XPCOM extends C {
 public static final native int nsDynamicFunctionLoad_sizeof ();
 
 public static void memmove(long /*int*/ dest, boolean[] src) {
-	if (nsISupports.IsXULRunner10) { // TODO change this reference
+	if (nsISupports.IsXULRunner10 || nsISupports.IsXULRunner17) { // TODO change this reference
 		memmove (dest, new byte[] {src[0] ? (byte)1 : 0}, 1);
 	} else {
 		memmove (dest, new int[] {src[0] ? 1 : 0}, 4);
@@ -197,7 +197,7 @@ public static void memmove(long /*int*/ dest, boolean[] src) {
 }
 
 public static void memmove(boolean[] dest, long /*int*/ src) {
-	if (nsISupports.IsXULRunner10) { // TODO change this reference
+	if (nsISupports.IsXULRunner10 || nsISupports.IsXULRunner17) { // TODO change this reference
 		byte[] result = new byte[1];
 		memmove (result, src, 1);
 		dest[0] = result[0] != 0;

@@ -185,7 +185,6 @@ public class nsIDOMKeyEvent extends nsIDOMUIEvent {
 	public static final int DOM_VK_CONTEXT_MENU = 93;
 	public static final int DOM_VK_SLEEP = 95;
 
-
 	public int GetCharCode(int[] aCharCode) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 1, getAddress(), aCharCode);
 	}
@@ -208,9 +207,5 @@ public class nsIDOMKeyEvent extends nsIDOMUIEvent {
 
 	public int GetMetaKey(int[] aMetaKey) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 6, getAddress(), aMetaKey);
-	}
-
-	public int InitKeyEvent(long /*int*/ typeArg, int canBubbleArg, int cancelableArg, long /*int*/ viewArg, int ctrlKeyArg, int altKeyArg, int shiftKeyArg, int metaKeyArg, int keyCodeArg, int charCodeArg) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 7, getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, keyCodeArg, charCodeArg);
 	}
 }

@@ -55,8 +55,7 @@ int Open (long /*int*/ aFilePickerShownCallback) {
 		/* picking a directory */
 		int result = showDirectoryPicker ();
 		if (aFilePickerShownCallback != 0) {
-			nsIFilePickerShownCallback callback = new nsIFilePickerShownCallback (aFilePickerShownCallback);
-			callback.Done (result);
+			new nsIFilePickerShownCallback (aFilePickerShownCallback).Done (result);
 		}
 		return XPCOM.NS_OK;
 	}
@@ -83,8 +82,7 @@ int Open (long /*int*/ aFilePickerShownCallback) {
 	masks = null;
 	int result = filename == null ? nsIFilePicker.returnCancel : nsIFilePicker.returnOK; 
 	if (aFilePickerShownCallback != 0) {
-		nsIFilePickerShownCallback callback = new nsIFilePickerShownCallback (aFilePickerShownCallback);
-		callback.Done (result);
+		new nsIFilePickerShownCallback (aFilePickerShownCallback).Done (result);
 	}
 	return XPCOM.NS_OK;
 }

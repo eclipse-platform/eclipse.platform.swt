@@ -47,10 +47,6 @@ public class nsIInputStream extends nsISupports {
 		super(address);
 	}
 
-	public int Close() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress());
-	}
-
 	public int Available(int[] _retval) {
 		if (IsXULRunner17) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
@@ -63,13 +59,5 @@ public class nsIInputStream extends nsISupports {
 
 	public int Read(byte[] aBuf, int aCount, int[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aBuf, aCount, _retval);
-	}
-
-	public int ReadSegments(long /*int*/ aWriter, long /*int*/ aClosure, int aCount, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aWriter, aClosure, aCount, _retval);
-	}
-
-	public int IsNonBlocking(int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), _retval);
 	}
 }

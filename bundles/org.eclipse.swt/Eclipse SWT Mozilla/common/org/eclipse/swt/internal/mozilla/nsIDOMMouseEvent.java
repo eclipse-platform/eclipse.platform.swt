@@ -29,7 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMMouseEvent extends nsIDOMUIEvent {
 
-	static final int LAST_METHOD_ID = nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 18 :(IsXULRunner10 ? 14 : 11));
+	static final int LAST_METHOD_ID = nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 18 : (IsXULRunner10 ? 14 : 11));
 
 	public static final String NS_IDOMMOUSEEVENT_IID_STR =
 		"ff751edc-8b02-aae7-0010-8301838a3123";
@@ -61,14 +61,6 @@ public class nsIDOMMouseEvent extends nsIDOMUIEvent {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + 2, getAddress(), aScreenY);
 	}
 
-	public int GetClientX(int[] aClientX) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 5 : 3), getAddress(), aClientX);
-	}
-
-	public int GetClientY(int[] aClientY) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 6 : 4), getAddress(), aClientY);
-	}
-
 	public int GetCtrlKey(int[] aCtrlKey) {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 7 : 5), getAddress(), aCtrlKey);
 	}
@@ -93,10 +85,6 @@ public class nsIDOMMouseEvent extends nsIDOMUIEvent {
 		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 13 : 10), getAddress(), aRelatedTarget);
 	}
 
-	public int InitMouseEvent(long /*int*/ typeArg, int canBubbleArg, int cancelableArg, long /*int*/ viewArg, int detailArg, int screenXArg, int screenYArg, int clientXArg, int clientYArg, int ctrlKeyArg, int altKeyArg, int shiftKeyArg, int metaKeyArg, short buttonArg, long /*int*/ relatedTargetArg) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 14 : 11), getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, detailArg, screenXArg, screenYArg, clientXArg, clientYArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, buttonArg, relatedTargetArg);
-	}
-
 	/* the following constants are defined in Mozilla 10 */
 	public static final int MOZ_SOURCE_UNKNOWN = 0;
 	public static final int MOZ_SOURCE_MOUSE = 1;
@@ -105,20 +93,4 @@ public class nsIDOMMouseEvent extends nsIDOMUIEvent {
 	public static final int MOZ_SOURCE_CURSOR = 4;
 	public static final int MOZ_SOURCE_TOUCH = 5;
 	public static final int MOZ_SOURCE_KEYBOARD = 6;
-
-	public int GetMozPressure(float[] aMozPressure) {
-		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 15 : 12), getAddress(), aMozPressure);
-	}
-
-	public int GetMozInputSource(short[] aMozInputSource) {
-		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 16 : 13), getAddress(), aMozInputSource);
-	}
-
-	public int InitNSMouseEvent(long /*int*/ typeArg, int canBubbleArg, int cancelableArg, long /*int*/ viewArg, int detailArg, int screenXArg, int screenYArg, int clientXArg, int clientYArg, int ctrlKeyArg, int altKeyArg, int shiftKeyArg, int metaKeyArg, short buttonArg, long /*int*/ relatedTargetArg, float pressure, short inputSourceArg) {
-		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 17 : 14), getAddress(), typeArg, canBubbleArg, cancelableArg, viewArg, detailArg, screenXArg, screenYArg, clientXArg, clientYArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, buttonArg, relatedTargetArg, pressure, inputSourceArg);
-	}
-
 }

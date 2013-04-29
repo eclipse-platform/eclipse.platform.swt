@@ -824,6 +824,7 @@ public void create (Composite parent, int style) {
 	initWebBrowserWindows ();
 
 	if (!PerformedVersionCheck) {
+		/* IsPre_4 and IsPre_17 are already determined in initXPCOM() */
 		PerformedVersionCheck = true;
 
 		rc = componentManager.QueryInterface (nsIComponentRegistrar.NS_ICOMPONENTREGISTRAR_IID, result);
@@ -866,8 +867,6 @@ public void create (Composite parent, int style) {
 			new nsISupports (result[0]).Release ();
 		}
 		IsPre_1_9 = true;
-//		IsPre_4 = true;
-//		IsPre_17 = true;
 		result[0] = 0;
 
 		/*
@@ -881,7 +880,7 @@ public void create (Composite parent, int style) {
 		*/
 		if (!IsPre_1_8) {
 			rc = interfaceRequestor.GetInterface (nsIDocShell.NS_IDOCSHELL_1_8_IID, result);
-			if (rc == XPCOM.NS_OK && result[0] != 0) { /* 1.8 */
+			if (rc == XPCOM.NS_OK && result[0] != 0) { /* 1.8.x */
 				new nsISupports (result[0]).Release ();
 				result[0] = 0;
 
@@ -897,25 +896,8 @@ public void create (Composite parent, int style) {
 					}
 					downloadFactory_1_8.Release ();
 				}
-			} else { /* >= 1.9 */
+			} else { /* >= 1.9.x */
 				IsPre_1_9 = false;
-				/* IsPre_4 and IsPre_17 already set in initXPCOM() */
-//				result[0] = 0;
-//				rc = interfaceRequestor.GetInterface(nsIDocShell.NS_IDOCSHELL_17_IID, result);
-//				if (rc == XPCOM.NS_OK && result[0] != 0) { /* = 17.0.1 */
-//					IsPre_17 = false;
-//					new nsISupports (result[0]).Release();
-//				} else {
-//					if (result[0] != 0) {
-//						new nsISupports (result[0]).Release();
-//						result[0] = 0;
-//					}
-//					rc = interfaceRequestor.GetInterface(nsIDocShell.NS_IDOCSHELL_10_IID, result);
-//					if (rc == XPCOM.NS_OK && result[0] != 0) { /* = 10.0 */
-//						IsPre_4 = false;
-//						new nsISupports (result[0]).Release();
-//					}
-//				}
 			}
 		}
 		result[0] = 0;
@@ -1018,10 +1000,9 @@ public void create (Composite parent, int style) {
 										rc = domDocument.GetDocumentElement (result);
 										domDocument.Release ();
 										if (rc == XPCOM.NS_OK && result[0] != 0) {
-											nsIDOMElement domElement = new nsIDOMElement (result[0]);
+											rc = focusManager.SetFocus (result[0], nsIFocusManager.FLAG_BYKEY);
+											new nsISupports(result[0]).Release ();
 											result[0] = 0;
-											rc = focusManager.SetFocus (domElement.getAddress (), nsIFocusManager.FLAG_BYKEY);
-											domElement.Release ();
 										}
 									}
 								}
@@ -1136,7 +1117,7 @@ void createCOMInterfaces () {
 		public long /*int*/ method6 (long /*int*/[] args) {return OnStatusChange (args[0], args[1], (int)/*64*/args[2], args[3]);}
 		public long /*int*/ method7 (long /*int*/[] args) {return OnSecurityChange (args[0], args[1], (int)/*64*/args[2]);}
 	};
-	
+
 	webBrowserChrome = new XPCOMObject (new int[] {2, 0, 0, 2, 1, 1, 1, 1, 0, 2, 0, 1, 1}) {
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
@@ -1161,7 +1142,21 @@ void createCOMInterfaces () {
 		public long /*int*/ method4 (long /*int*/[] args) {return FocusPrevElement ();}
 	};
 		
-	embeddingSiteWindow = new XPCOMObject (new int[] {2, 0, 0, 5, 5, 0, 1, 1, 1, 1, 1, 0}) {
+	embeddingSiteWindow = new XPCOMObject (new int[] {2, 0, 0, 5, 5, 0, 1, 1, 1, 1, 1}) {
+		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		public long /*int*/ method3 (long /*int*/[] args) {return SetDimensions ((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4]);}
+		public long /*int*/ method4 (long /*int*/[] args) {return GetDimensions ((int)/*64*/args[0], args[1], args[2], args[3], args[4]);}
+		public long /*int*/ method5 (long /*int*/[] args) {return SetFocus ();}
+		public long /*int*/ method6 (long /*int*/[] args) {return GetVisibility (args[0]);}
+		public long /*int*/ method7 (long /*int*/[] args) {return SetVisibility ((int)/*64*/args[0]);}
+		public long /*int*/ method8 (long /*int*/[] args) {return GetTitle (args[0]);}
+		public long /*int*/ method9 (long /*int*/[] args) {return SetTitle (args[0]);}
+		public long /*int*/ method10 (long /*int*/[] args) {return GetSiteWindow (args[0]);}
+	};
+	
+	embeddingSiteWindow_17 = new XPCOMObject (new int[] {2, 0, 0, 5, 5, 0, 1, 1, 1, 1, 1, 0}) {
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
@@ -1175,21 +1170,7 @@ void createCOMInterfaces () {
 		public long /*int*/ method10 (long /*int*/[] args) {return GetSiteWindow (args[0]);}
 		public long /*int*/ method11 (long /*int*/[] args) {return Blur ();}
 	};
-	
-	embeddingSiteWindow_17 = new XPCOMObject (new int[] {2, 0, 0, 5, 5, 0, 1, 1, 1, 1, 1}) {
-		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
-		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
-		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
-		public long /*int*/ method3 (long /*int*/[] args) {return SetDimensions ((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4]);}
-		public long /*int*/ method4 (long /*int*/[] args) {return GetDimensions ((int)/*64*/args[0], args[1], args[2], args[3], args[4]);}
-		public long /*int*/ method5 (long /*int*/[] args) {return SetFocus ();}
-		public long /*int*/ method6 (long /*int*/[] args) {return GetVisibility (args[0]);}
-		public long /*int*/ method7 (long /*int*/[] args) {return SetVisibility ((int)/*64*/args[0]);}
-		public long /*int*/ method8 (long /*int*/[] args) {return GetTitle (args[0]);}
-		public long /*int*/ method9 (long /*int*/[] args) {return SetTitle (args[0]);}
-		public long /*int*/ method10 (long /*int*/[] args) {return GetSiteWindow (args[0]);}
-	};
-	
+
 	interfaceRequestor = new XPCOMObject (new int[] {2, 0, 0, 2} ){
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
@@ -1332,7 +1313,6 @@ public boolean execute (String script) {
 	* exposed as of mozilla 1.9.
 	*/
 	long /*int*/[] result = new long /*int*/[1];
-	//if (IsPre_17) //TODO: temporarily disable execute() code for xulr17
 	if (!IsPre_1_9) {
 		int rc = XPCOM.NS_GetServiceManager (result);
 		if (rc != XPCOM.NS_OK) error (rc);
@@ -1607,7 +1587,7 @@ static String getMozillaPath () {
 	nsIProperties properties = new nsIProperties (result[0]);
 	result[0] = 0;
 	buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_GRE_DIR, true);
-	rc = properties.Get (buffer, nsIFile.NS_IFILE_17_IID, result);
+	rc = properties.Get (buffer, IsPre_17 ? nsIFile.NS_IFILE_IID : nsIFile.NS_IFILE_17_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 	properties.Release ();
@@ -1867,7 +1847,9 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 	
 	nsIComponentRegistrar componentRegistrar = new nsIComponentRegistrar (result[0]);
 	result[0] = 0;
-//	componentRegistrar.AutoRegister (0);	 /* detect the External component */ 
+	if (IsPre_17) {
+		componentRegistrar.AutoRegister (0);	 /* detect the External component */
+	}
 
 	PromptService2Factory factory = new PromptService2Factory ();
 	factory.AddRef ();
@@ -2041,7 +2023,6 @@ String initMozilla (String mozillaPath) {
 }
 
 void initXPCOM (String mozillaPath, boolean isXULRunner) {
-	System.out.println("in xpcom");
 	long /*int*/[] result = new long /*int*/[1];
 
 	nsEmbedString pathString = new nsEmbedString (mozillaPath);
@@ -2077,22 +2058,21 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 		XPCOM.memmove (ptr, functionLoad, XPCOM.nsDynamicFunctionLoad_sizeof ());
 		rc = XPCOM.XPCOMGlueLoadXULFunctions (ptr);
 		if (rc == XPCOM.NS_OK) { /* > 3.x */
-			IsPre_4 = false;
-			IsPre_17 = false;
-			nsISupports.IsXULRunner10 = true;
 			result[0] = 0;
 			rc = localFile.QueryInterface(nsIFile.NS_IFILE_17_IID, result);
-			if (rc == XPCOM.NS_OK) { /* = 17.0.1 */
+			if (rc == XPCOM.NS_OK) { /* 17.x */
 				nsISupports.IsXULRunner17 = true;
-			} else { /* = 10.0 */
-				IsPre_17 = true;
+			} else { /* 10.x */
 				rc = localFile.QueryInterface (nsILocalFile.NS_ILOCALFILE_IID, result);
 				if (rc != XPCOM.NS_OK) {
 					browser.dispose ();
 					error (rc);
 				}
+				IsPre_17 = true;
+				nsISupports.IsXULRunner10 = true;
 			}
 			if (result[0] != 0) new nsISupports (result[0]).Release();
+			result[0] = 0;
 		} else {
 			/*
 			 * XRE_InitEmbedding2 was not found, so fall back to XRE_InitEmbedding, which is
@@ -2103,10 +2083,7 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 			functionLoad.functionName = C.malloc (bytes.length);
 			C.memmove (functionLoad.functionName, bytes, bytes.length);
 			rc = XPCOM.XPCOMGlueLoadXULFunctions (ptr);
-			if (rc == XPCOM.NS_OK) {
-				IsPre_4 = true;
-				nsISupports.IsXULRunner10 = false;
-			}
+			IsPre_4 = IsPre_17 = true;
 		}
 
 		C.memmove (result, functionLoad.function, C.PTR_SIZEOF);
@@ -2846,10 +2823,18 @@ void navigate (long /*int*/ requestHandle) {
 				if (rc == XPCOM.NS_OK) {
 					rc = seekableStream.Seek (nsISeekableStream.NS_SEEK_SET, 0);
 					if (rc == XPCOM.NS_OK) {
-						long[] available = new long[1]; // TODO: add xulr17 check
-						rc = inputStream.Available (available);
+						long available;
+						if (IsPre_17) {
+							int[] _retval = new int[1];
+							rc = inputStream.Available (_retval);
+							available = _retval[0];
+						} else {
+							long[] _retval = new long[1];
+							rc = inputStream.Available (_retval);
+							available = _retval[0];
+						}
 						if (rc == XPCOM.NS_OK) {
-							int length = (int) available[0];
+							int length = (int)available;
 							byte[] bytes = new byte[length];
 							int[] retVal = new int[1];
 							rc = inputStream.Read (bytes, length, retVal);
@@ -3140,7 +3125,7 @@ public boolean setText (String html, boolean trusted) {
 		InputStream inputStream = new InputStream (data);
 		inputStream.AddRef ();
 
-		rc = interfaceRequestor.GetInterface (IsPre_17 ? nsIDocShell.NS_IDOCSHELL_IID : nsIDocShell.NS_IDOCSHELL_17_IID, result);
+		rc = interfaceRequestor.GetInterface (nsIDocShell.NS_IDOCSHELL_IID, result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 		nsIDocShell docShell = new nsIDocShell (result[0]);
@@ -3976,11 +3961,11 @@ int OnProgressChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aCur
 	return XPCOM.NS_OK;
 }
 
-int OnLocationChange (long /*int*/ aWebProgress, long /*int*/ aRequest, long /*int*/ aLocation, int aFlags) {
-	return OnLocationChange(aWebProgress, aRequest, aLocation);
+int OnLocationChange (long /*int*/ aWebProgress, long /*int*/ aRequest, long /*int*/ aLocation) {
+	return OnLocationChange(aWebProgress, aRequest, aLocation, 0);
 }
 
-int OnLocationChange (long /*int*/ aWebProgress, long /*int*/ aRequest, long /*int*/ aLocation) {
+int OnLocationChange (long /*int*/ aWebProgress, long /*int*/ aRequest, long /*int*/ aLocation, int aFlags) {
 	/*
 	* Feature in Mozilla.  When a page is loaded via setText before a previous
 	* setText page load has completed, the expected OnStateChange STATE_STOP for the
@@ -4106,7 +4091,7 @@ int SetWebBrowser (long /*int*/ aWebBrowser) {
 int GetChromeFlags (long /*int*/ aChromeFlags) {
 	int[] ret = new int[1];
 	ret[0] = chromeFlags;
-	XPCOM.memmove (aChromeFlags, ret, 4); /* PRUint32 */ //TODO: its uint32 in xulr17
+	XPCOM.memmove (aChromeFlags, ret, 4); /* PRUint32 */
 	return XPCOM.NS_OK;
 }
 
@@ -4208,7 +4193,7 @@ int SetDimensions (int flags, int x, int y, int cx, int cy) {
 }
 
 int GetDimensions (int flags, long /*int*/ x, long /*int*/ y, long /*int*/ cx, long /*int*/ cy) {
-	if ((flags & nsIEmbeddingSiteWindow.DIM_FLAGS_POSITION) != 0) { //TODO:x,y,cx,cy are not print32 but only int32 in xulr17
+	if ((flags & nsIEmbeddingSiteWindow.DIM_FLAGS_POSITION) != 0) {
 		Point location = browser.getShell ().getLocation ();
 		if (x != 0) C.memmove (x, new int[] {location.x}, 4); /* PRInt32 */
 		if (y != 0) C.memmove (y, new int[] {location.y}, 4); /* PRInt32 */
@@ -4335,7 +4320,7 @@ int GetSiteWindow (long /*int*/ aSiteWindow) {
 int Blur () {
 	return XPCOM.NS_OK;
 }
- 
+
 /* nsIWebBrowserChromeFocus */
 
 int FocusNextElement () {
@@ -4760,11 +4745,10 @@ int HandleEvent (long /*int*/ event) {
 		if (rc != XPCOM.NS_OK) error (rc);
 		rc = domKeyEvent.GetMetaKey (aMetaKey);
 		if (rc != XPCOM.NS_OK) error (rc);
-		domKeyEvent.Release ();
-
 		int[] aCharCode = new int[1]; /* PRUint32 */
 		rc = domKeyEvent.GetCharCode (aCharCode);
 		if (rc != XPCOM.NS_OK) error (rc);
+		domKeyEvent.Release ();
 		lastCharCode = aCharCode[0];
 		if (lastCharCode == 0) {
 			switch (lastKeyCode) {
