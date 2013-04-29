@@ -4385,6 +4385,9 @@ void setInitialBounds () {
 		}
 		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
 			allocation.y = 0;
+			if (OS.GTK3) {
+				OS.gtk_widget_set_visible(topHandle, true);
+			}
 			OS.gtk_widget_set_allocation(topHandle, allocation);
 		} else {
 			OS.GTK_WIDGET_SET_Y (topHandle, 0);
