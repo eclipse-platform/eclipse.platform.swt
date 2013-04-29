@@ -48,7 +48,7 @@
 #include "nscore.h"
 //#include "nsStringGlue.h" //SWT-20090407
 #include "nsISupports.h"
-#include "nsCOMPtr.h"
+//#include "nsCOMPtr.h" //SWT-20090407
 #include "nsIProgrammingLanguage.h"
 
 class nsIScriptGlobalObject;

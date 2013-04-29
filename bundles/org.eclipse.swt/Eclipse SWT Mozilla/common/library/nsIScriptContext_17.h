@@ -15,10 +15,10 @@
 
 #define uint32_t unsigned int //SWT-20130307
 #include "nscore.h"
-#include "nptypes.h" //SWT-20130307
+//#include "nptypes.h" //SWT-20130307
 //#include "nsStringGlue.h" //SWT-20130307
 #include "nsISupports.h"
-#include "nsCOMPtr.h"
+//#include "nsCOMPtr.h" //SWT-20130307
 #include "nsIProgrammingLanguage.h"
 //#include "jsfriendapi.h" //SWT-20130307
 //#include "jspubtd.h" //SWT-20130307
