@@ -288,20 +288,20 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		redrawWidget (destX, destY, width, height, false, false, false);
 	} else {
 		if (OS.GTK3) {
-//			OS.gdk_window_scroll (window, deltaX, deltaY);
-			long /*int*/ cairo = OS.gdk_cairo_create(window);
-			Cairo.cairo_rectangle(cairo, destX, destY, width, height);
-			Cairo.cairo_clip(cairo);
-			Cairo.cairo_translate(cairo, deltaX, deltaY);
-			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
-			Cairo.cairo_push_group(cairo);
-			OS.gdk_cairo_set_source_window(cairo, window, 0, 0);
-			Cairo.cairo_paint(cairo);
-			Cairo.cairo_pop_group_to_source(cairo);
-			Cairo.cairo_rectangle(cairo, destX - deltaX, destY - deltaY, width, height);
-			Cairo.cairo_clip(cairo);
-			Cairo.cairo_paint(cairo);
-			Cairo.cairo_destroy(cairo);
+			OS.gdk_window_scroll (window, deltaX, deltaY);
+//			long /*int*/ cairo = OS.gdk_cairo_create(window);
+//			Cairo.cairo_rectangle(cairo, destX, destY, width, height);
+//			Cairo.cairo_clip(cairo);
+//			Cairo.cairo_translate(cairo, deltaX, deltaY);
+//			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
+//			Cairo.cairo_push_group(cairo);
+//			OS.gdk_cairo_set_source_window(cairo, window, 0, 0);
+//			Cairo.cairo_paint(cairo);
+//			Cairo.cairo_pop_group_to_source(cairo);
+//			Cairo.cairo_rectangle(cairo, destX - deltaX, destY - deltaY, width, height);
+//			Cairo.cairo_clip(cairo);
+//			Cairo.cairo_paint(cairo);
+//			Cairo.cairo_destroy(cairo);
 		} else {
 			long /*int*/ gdkGC = OS.gdk_gc_new (window);
 			OS.gdk_gc_set_exposures (gdkGC, true);
