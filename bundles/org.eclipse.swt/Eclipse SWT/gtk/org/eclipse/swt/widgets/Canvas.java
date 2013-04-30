@@ -288,20 +288,21 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		redrawWidget (destX, destY, width, height, false, false, false);
 	} else {
 		if (OS.GTK3) {
-			OS.gdk_window_scroll (window, deltaX, deltaY);
-//			long /*int*/ cairo = OS.gdk_cairo_create(window);
-//			Cairo.cairo_rectangle(cairo, destX, destY, width, height);
-//			Cairo.cairo_clip(cairo);
-//			Cairo.cairo_translate(cairo, deltaX, deltaY);
-//			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
-//			Cairo.cairo_push_group(cairo);
-//			OS.gdk_cairo_set_source_window(cairo, window, 0, 0);
-//			Cairo.cairo_paint(cairo);
-//			Cairo.cairo_pop_group_to_source(cairo);
-//			Cairo.cairo_rectangle(cairo, destX - deltaX, destY - deltaY, width, height);
-//			Cairo.cairo_clip(cairo);
-//			Cairo.cairo_paint(cairo);
-//			Cairo.cairo_destroy(cairo);
+			long /*int*/ cairo = OS.gdk_cairo_create(window);
+			if (Cairo.cairo_version() < Cairo.CAIRO_VERSION_ENCODE(1, 12, 0)) {
+				OS.gdk_cairo_set_source_window(cairo, window, 0, 0);
+			} else {
+				Cairo.cairo_push_group(cairo);
+				OS.gdk_cairo_set_source_window(cairo, window, 0, 0);
+				Cairo.cairo_paint(cairo);
+				Cairo.cairo_pop_group_to_source(cairo);
+			}
+			double[] matrix = {1, 0, 0, 1, -deltaX, -deltaY};
+			Cairo.cairo_pattern_set_matrix(Cairo.cairo_get_source(cairo), matrix);
+			Cairo.cairo_rectangle(cairo, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
+			Cairo.cairo_clip(cairo);
+			Cairo.cairo_paint(cairo);
+			Cairo.cairo_destroy(cairo);
 		} else {
 			long /*int*/ gdkGC = OS.gdk_gc_new (window);
 			OS.gdk_gc_set_exposures (gdkGC, true);
