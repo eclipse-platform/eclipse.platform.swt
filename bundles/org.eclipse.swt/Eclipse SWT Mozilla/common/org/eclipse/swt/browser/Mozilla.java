@@ -2088,6 +2088,7 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 			bytes = MozillaDelegate.wcsToMbcs (null, "XRE_InitEmbedding", true); //$NON-NLS-1$
 			functionLoad.functionName = C.malloc (bytes.length);
 			C.memmove (functionLoad.functionName, bytes, bytes.length);
+			XPCOM.memmove (ptr, functionLoad, XPCOM.nsDynamicFunctionLoad_sizeof ());
 			rc = XPCOM.XPCOMGlueLoadXULFunctions (ptr);
 			IsPre_4 = IsPre_17 = true;
 		}

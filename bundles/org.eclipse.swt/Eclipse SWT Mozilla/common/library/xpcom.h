@@ -34,7 +34,7 @@
 
 #ifdef _WIN32
 #if !(defined(__i386__) || defined(_M_IX86) || defined(_X86_))
-#define NO__1Call__JJJJJI	/* exclude on 64-bit win32 due to use of XULRunner 10 SDK */
+#define nsStaticModuleInfo void /* define on 64-bit win32 due to use of XULRunner 10 SDK */
 #endif
 #define STDMETHODCALLTYPE __stdcall
 #define NO__1NS_1InitXPCOM2
