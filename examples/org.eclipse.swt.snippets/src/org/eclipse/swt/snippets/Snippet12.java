@@ -11,7 +11,8 @@
 package org.eclipse.swt.snippets;
  
 /*
- * Text example snippet: set the selection (start, end)
+ * Text example snippet: set the selection (start, end),
+ * and then scroll the selection to the top of the client area
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -33,7 +34,9 @@ public static void main (String [] args) {
 	}
 	shell.open ();
 	text.setSelection (30, 38);
+	text.setTopIndex(30);
 	System.out.println ("selection=" + text.getSelection ());
+	System.out.println ("selection text=" + text.getSelectionText ());
 	System.out.println ("caret position=" + text.getCaretPosition ());
 	System.out.println ("caret location=" + text.getCaretLocation ());
 	while (!shell.isDisposed ()) {
