@@ -3725,7 +3725,9 @@ void updateBkImages() {
 				} else {
 					if (control instanceof Composite) ((Composite) control).setBackgroundMode(SWT.INHERIT_DEFAULT);
 					Rectangle bounds = control.getBounds();
-					if (bounds.y > getTabHeight() || gradientColors == null) {
+					int tabHeight = getTabHeight();
+					boolean wrapped = onBottom ? bounds.y > this.getSize().y - tabHeight : bounds.y > tabHeight; 
+					if (wrapped || gradientColors == null) {
 						control.setBackgroundImage(null);
 						control.setBackground(getBackground());
 					} else {
