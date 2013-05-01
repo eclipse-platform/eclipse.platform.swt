@@ -17,7 +17,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.accessibility.*;
-import org.eclipse.swt.internal.Converter;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -56,13 +55,13 @@ public class DateTime extends Composite {
 	Calendar calendar;
 	DateFormatSymbols formatSymbols;
 	Button down, up;
+	Text text;
 	String format;
 	Point[] fieldIndices;
 	int[] fieldNames;
 	int fieldCount, currentField = 0, characterCount = 0;
 	boolean ignoreVerify = false;
-	String dateTimeString;
-	boolean firstTime = true;
+	
 	/* DROP_DOWN calendar fields for DATE */
 	Color fg, bg;
 	boolean hasFocus, monthChanged, calendarDisplayed;
@@ -79,7 +78,6 @@ public class DateTime extends Composite {
 	static final String DEFAULT_LONG_TIME_FORMAT = "HH:MM:SS AM";
 	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752
 	static final int MAX_YEAR = 9999;
-	static final int SPACE_FOR_CURSOR = 1;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -127,24 +125,61 @@ public DateTime (Composite parent, int style) {
 void createText(boolean dropDown) {
 	calendar = Calendar.getInstance();
 	formatSymbols = new DateFormatSymbols();
+	text = new Text(this, SWT.SINGLE);
+	/* disable the native drag and drop for the date/time text field */
+	OS.gtk_drag_dest_unset(text.handle);
 	if ((style & SWT.DATE) != 0) {
 		setFormat((style & SWT.SHORT) != 0 ? DEFAULT_SHORT_DATE_FORMAT : (style & SWT.LONG) != 0 ? DEFAULT_LONG_DATE_FORMAT : DEFAULT_MEDIUM_DATE_FORMAT);
 	} else { /* SWT.TIME */
 		setFormat((style & SWT.SHORT) != 0 ? DEFAULT_SHORT_TIME_FORMAT : (style & SWT.LONG) != 0 ? DEFAULT_LONG_TIME_FORMAT : DEFAULT_MEDIUM_TIME_FORMAT);
 	}
-	dateTimeString = getFormattedString(style);
-	OS.gtk_widget_realize(handle);
-	if ((style & SWT.DATE) != 0 && dropDown) { /* SWT.DROP_DOWN */
-		addListener(SWT.Resize, new Listener() {
-			public void handleEvent(Event event) {
-				onResize(event);
+	text.setText(getFormattedString(style));
+	
+	addListener(SWT.Resize, new Listener() {
+		public void handleEvent(Event event) {
+			onResize(event);
+		}
+	});
+	Listener listener = new Listener() {
+		public void handleEvent(Event event) {
+			switch(event.type) {
+				case SWT.KeyDown: onTextKeyDown(event); break;
+				case SWT.FocusIn: onTextFocusIn(event); break;
+				case SWT.FocusOut: onTextFocusOut(event); break;
+				case SWT.MouseDown: // Fall through
+				case SWT.MouseUp: onTextMouseClick(event); break;
+				case SWT.MenuDetect: notifyListeners(SWT.MenuDetect, event); break;
+				case SWT.Verify: onTextVerify(event); break;
 			}
-		});
+		}
+	};
+	int [] listeners = new int [] {SWT.KeyDown, SWT.FocusIn, SWT.FocusOut, SWT.MouseDown, SWT.MouseUp, SWT.MenuDetect, SWT.Verify};
+	for (int i = 0; i < listeners.length; i++) {
+		text.addListener(listeners [i], listener);
+	}
+	
+	if ((style & SWT.DATE) != 0 && dropDown) {
 		createDropDownButton();
 		createPopupShell(-1, -1, -1);
-	} 
-	if (dateTimeString != null) {
-		setText(dateTimeString);
+	} else {
+		up = new Button(this, SWT.ARROW | SWT.UP);
+		gtk_widget_set_can_focus (up.handle, false);
+		//up.setToolTipText(SWT.getMessage ("SWT_Up")); //$NON-NLS-1$
+		down = new Button(this, SWT.ARROW | SWT.DOWN);
+		gtk_widget_set_can_focus (down.handle, false);
+		//down.setToolTipText(SWT.getMessage ("SWT_Down")); //$NON-NLS-1$
+		up.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				incrementField(+1);
+				text.setFocus();
+			}
+		});
+		down.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				incrementField(-1);
+				text.setFocus();
+			}
+		});
 	}
 }
 
@@ -281,18 +316,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			Point size = computeNativeSize(handle, wHint, hHint, changed);
 			width = size.x;
 			height = size.y;
-		} else { /* SWT.DROP_DOWN */
-			if ((style & SWT.DROP_DOWN) != 0) {
-				Point textSize = computeNativeSize(handle, wHint, hHint, changed);
-				Rectangle trim = computeTrim(0,0, textSize.x,textSize.y);
-				Point buttonSize = down.computeSize(SWT.DEFAULT, SWT.DEFAULT, changed);
-				width = trim.width + buttonSize.x;
-				height = Math.max(trim.height, buttonSize.y);
-			} else { /* SWT.DATE and SWT.TIME */
-				Point size = computeNativeSize(handle, wHint, hHint, changed);
-				width = size.x;
-				height = size.y;
-			}
+		} else { /* SWT.DATE and SWT.TIME */
+			GC gc = new GC(text);
+			Point textSize = gc.stringExtent(getComputeSizeString(style));
+			gc.dispose();
+			Rectangle trim = text.computeTrim(0, 0, textSize.x, textSize.y);
+			Point buttonSize = down.computeSize(SWT.DEFAULT, SWT.DEFAULT, changed);
+			width = trim.width + buttonSize.x;
+			height = Math.max(trim.height, buttonSize.y);
 		}
 	}
 	if (width == 0) width = DEFAULT_WIDTH;
@@ -301,51 +332,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) height = hHint;
 	int borderWidth = getBorderWidth ();
 	return new Point (width + 2*borderWidth, height+ 2*borderWidth);
-}
-
-public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget ();
-	Rectangle trim = super.computeTrim (x, y, width, height);
-	int xborder = 0, yborder = 0;
-		if (OS.GTK3) {
-			GtkBorder tmp = new GtkBorder();
-			long /*int*/ context = OS.gtk_widget_get_style_context (handle);
-			OS.gtk_style_context_get_padding (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
-			trim.x -= tmp.left;
-			trim.y -= tmp.top;
-			trim.width += tmp.left + tmp.right;
-			trim.height += tmp.top + tmp.bottom;
-			if ((style & SWT.BORDER) != 0) {
-				OS.gtk_style_context_get_border (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
-				trim.x -= tmp.left;
-				trim.y -= tmp.top;
-				trim.width += tmp.left + tmp.right;
-				trim.height += tmp.top + tmp.bottom;
-			}
-			GdkRectangle icon_area = new GdkRectangle();
-			OS.gtk_entry_get_icon_area(handle, OS.GTK_ENTRY_ICON_PRIMARY, icon_area);
-			trim.x -= icon_area.width;
-			trim.width += icon_area.width;
-			OS.gtk_entry_get_icon_area(handle, OS.GTK_ENTRY_ICON_SECONDARY, icon_area);
-			trim.width += icon_area.width;
-		}else {
-			if ((style & SWT.BORDER) != 0) {
-				Point thickness = getThickness (handle);
-				xborder += thickness.x;
-				yborder += thickness.y;
-			}
-			GtkBorder innerBorder = Display.getEntryInnerBorder (handle);
-			trim.x -= innerBorder.left;
-			trim.y -= innerBorder.top;
-			trim.width += innerBorder.left + innerBorder.right;
-			trim.height += innerBorder.top + innerBorder.bottom;
-		}
-		trim.x -= xborder;
-		trim.y -= yborder;
-		trim.width += 2 * xborder;
-		trim.height += 2 * yborder;
-		trim.width += SPACE_FOR_CURSOR;
-		return new Rectangle (trim.x, trim.y, trim.width, trim.height);
 }
 
 void createHandle (int index) {
@@ -359,24 +345,7 @@ void createHandle (int index) {
 		OS.gtk_container_add (fixedHandle, handle);
 		OS.gtk_calendar_set_display_options(handle, OS.GTK_CALENDAR_SHOW_HEADING | OS.GTK_CALENDAR_SHOW_DAY_NAMES);
 	} else {
-		fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
-		if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		gtk_widget_set_has_window (fixedHandle, true);
-		if ((style & SWT.DROP_DOWN) != 0 && (style & SWT.DATE) != 0) {
-			handle = OS.gtk_entry_new();
-			OS.gtk_container_add(fixedHandle, handle);
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		} else {
-			long /*int*/ adjusment = OS.gtk_adjustment_new(0, -9999, 9999, 1, 0, 0);
-			handle = OS.gtk_spin_button_new(adjusment, 1, 0);
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.gtk_spin_button_set_numeric (handle, false);
-			OS.gtk_container_add(fixedHandle, handle);
-			OS.gtk_spin_button_set_wrap (handle, (style & SWT.WRAP) != 0);
-		}
-		OS.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
-		OS.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) != 0);
-		
+		super.createHandle(index);
 	}
 }
 
@@ -391,6 +360,20 @@ void createWidget (int index) {
 	}
 }
 
+void commitCurrentField() {
+	if (characterCount > 0) {
+		characterCount = 0;
+		int fieldName = fieldNames[currentField];
+		int start = fieldIndices[currentField].x;
+		int end = fieldIndices[currentField].y;
+		String value = text.getText(start, end - 1);
+		int s = value.lastIndexOf(' ');
+		if (s != -1) value = value.substring(s + 1);
+		int newValue = unformattedIntValue(fieldName, value, characterCount == 0, calendar.getActualMaximum(fieldName));
+		if (newValue != -1) setTextField(fieldName, newValue, true, true);
+	}
+}
+
 void onDispose (Event event) {
 	if (popupShell != null && !popupShell.isDisposed ()) {
 		popupCalendar.removeListener (SWT.Dispose, popupListener);
@@ -401,9 +384,10 @@ void onDispose (Event event) {
 	Display display = getDisplay ();
 	display.removeFilter (SWT.FocusIn, popupFilter);
 	popupShell = null;  
+	text = null;  
 	popupCalendar = null;  
 	down = null;
-	dateTimeString = null;
+	up = null;
 }
 
 void dropDownCalendar(boolean drop) {
@@ -452,7 +436,7 @@ void dropDownCalendar(boolean drop) {
 }
 	
 long /*int*/ focusHandle () {
-	if (handle != 0) return handle;
+	if (text != null) return text.handle;
 	return super.focusHandle ();
 }
 
@@ -729,22 +713,19 @@ long /*int*/ gtk_month_changed (long /*int*/ widget) {
 	return 0;
 }
 
+boolean hasFocus () {
+	if (super.hasFocus ()) return true;
+	Control focusControl = display.getFocusControl();
+	if (focusControl != null && focusControl == text) return true;
+	return false;
+}
+
 void hookEvents () {
 	super.hookEvents();
 	if ((style & SWT.CALENDAR) != 0) {
 		OS.g_signal_connect_closure (handle, OS.day_selected, display.closures [DAY_SELECTED], false);
 		OS.g_signal_connect_closure (handle, OS.day_selected_double_click, display.closures [DAY_SELECTED_DOUBLE_CLICK], false);
 		OS.g_signal_connect_closure (handle, OS.month_changed, display.closures [MONTH_CHANGED], false);
-	} else { // FOR SPINNER
-		int eventMask =	OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK;
-		OS.gtk_widget_add_events (handle, eventMask);
-		if ((style & SWT.DROP_DOWN) == 0 ) { 
-			OS.g_signal_connect_closure (handle, OS.output, display.closures [OUTPUT], true);
-			OS.g_signal_connect_closure (handle, OS.focus_in_event, display.closures [FOCUS_IN_EVENT], true);
-		}
-		if (OS.G_OBJECT_TYPE (handle) == OS.GTK_TYPE_MENU ()) {
-			OS.g_signal_connect_closure(handle, OS.selection_done, display.closures[SELECTION_DONE], true);
-		}
 	}
 }
 
@@ -766,6 +747,14 @@ void incrementField(int amount) {
 
 boolean isDropped () {
 	return popupShell.getVisible ();
+}
+
+public boolean isFocusControl () {
+	checkWidget();
+	if ((style & SWT.DROP_DOWN) != 0 && (text.isFocusControl () || popupShell.isFocusControl () || popupCalendar.isFocusControl())) {
+		return true;
+	} 
+	return super.isFocusControl ();
 }
 
 void initAccessible() {
@@ -902,7 +891,7 @@ void popupCalendarEvent (Event event) {
 					break;
 				case SWT.TRAVERSE_TAB_NEXT:
 				case SWT.TRAVERSE_TAB_PREVIOUS:
-//					event.doit = text.traverse(event.detail);
+					event.doit = text.traverse(event.detail);
 					event.detail = SWT.TRAVERSE_NONE;
 					if (event.doit) dropDownCalendar (false);
 					return;
@@ -963,7 +952,7 @@ void handleFocus (int type) {
 	switch (type) {
 		case SWT.FocusIn: {
 			if (hasFocus) return;
-			selectAll ();
+			text.selectAll ();
 			hasFocus = true;
 			Shell shell = getShell ();
 			shell.removeListener (SWT.Deactivate, popupListener);
@@ -978,7 +967,7 @@ void handleFocus (int type) {
 		case SWT.FocusOut: {
 			if (!hasFocus) return;
 			Control focusControl = getDisplay ().getFocusControl ();
-			if (focusControl == down || focusControl == popupCalendar ) return;
+			if (focusControl == down || focusControl == popupCalendar || focusControl == text) return;
 			hasFocus = false;
 			Shell shell = getShell ();
 			shell.removeListener(SWT.Deactivate, popupListener);
@@ -1042,17 +1031,17 @@ void selectField(int index) {
 	}
 	final int start = fieldIndices[index].x;
 	final int end = fieldIndices[index].y;
-	Point pt = getSelection();
+	Point pt = text.getSelection();
 	if (index == currentField && start == pt.x && end == pt.y) return;
 	currentField = index;
 	display.asyncExec(new Runnable() {
 		public void run() {
-			if (handle != 0) {
-				String value = getText(getText(),start, end - 1);
+			if (!text.isDisposed()) {
+				String value = text.getText(start, end - 1);
 				int s = value.lastIndexOf(' ');
 				if (s == -1) s = start;
 				else s = start + s + 1;
-				setSelection(s, end);
+				text.setSelection(s, end);
 			}
 		}
 	});	
@@ -1082,6 +1071,7 @@ public void setBackground(Color color) {
 		}
 	}
 	bg = color;
+	if (text != null) text.setBackground(color);
 	if (popupCalendar != null) popupCalendar.setBackground(color);
 }
 
@@ -1095,13 +1085,17 @@ void setBackgroundColor (GdkColor color) {
 
 public void setEnabled (boolean enabled){
 	super.setEnabled(enabled);
-	if ((style & SWT.DROP_DOWN) != 0)
+	if ((style & SWT.CALENDAR) == 0) {
+		text.setEnabled(enabled);
 		down.setEnabled(enabled);
+		if (up != null) up.setEnabled(enabled);
+	}
 }
 
 public void setFont(Font font) {
 	super.setFont(font);
 	this.font = font;
+	if (text != null) text.setFont(font);
 	if (popupCalendar != null) popupCalendar.setFont(font);
 	redraw();
 }
@@ -1113,6 +1107,7 @@ void setForegroundColor (GdkColor color) {
 public void setForeground(Color color) {
 	super.setForeground(color);
 	fg = color;
+	if (text != null) text.setForeground(color);
 	if (popupCalendar != null) popupCalendar.setForeground(color);
 }
 
@@ -1157,6 +1152,48 @@ void setField(int fieldName, int value) {
 	}
 	calendar.set(fieldName, value);
 	sendSelectionEvent (SWT.Selection);
+}
+
+void setTextField(int fieldName, int value, boolean commit, boolean adjust) {
+	if (commit) {
+		int max = calendar.getActualMaximum(fieldName);
+		int min = calendar.getActualMinimum(fieldName);
+		if (fieldName == Calendar.YEAR) {
+			max = MAX_YEAR;
+			min = MIN_YEAR;
+			/* Special case: convert 1 or 2-digit years into reasonable 4-digit years. */
+			int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+			int currentCentury = (currentYear / 100) * 100;
+			if (value < (currentYear + 30) % 100) value += currentCentury;
+			else if (value < 100) value += currentCentury - 100;
+		}
+		if (value > max) value = min; // wrap
+		if (value < min) value = max; // wrap
+	}
+	int start = fieldIndices[currentField].x;
+	int end = fieldIndices[currentField].y;
+	text.setSelection(start, end);
+	String newValue = formattedStringValue(fieldName, value, adjust);
+	StringBuffer buffer = new StringBuffer(newValue);
+	/* Convert leading 0's into spaces. */
+	int prependCount = end - start - buffer.length();
+	for (int i = 0; i < prependCount; i++) {
+		switch (fieldName) {
+			case Calendar.MINUTE:
+			case Calendar.SECOND:
+				buffer.insert(0, 0);
+				break;
+			default:
+				buffer.insert(0, ' ');
+				break;
+		}
+	}		
+	newValue = buffer.toString();
+	ignoreVerify = true;
+	text.insert(newValue);
+	ignoreVerify = false;
+	selectField(currentField);
+	if (commit) setField(fieldName, value);
 }
 
 /**
@@ -1248,6 +1285,7 @@ public void setMenu (Menu menu) {
 	super.setMenu(menu);
 	if (up != null) up.setMenu(menu);
 	if (down != null) down.setMenu(menu);
+	if (text != null) text.setMenu(menu);
 }
 
 /**
@@ -1385,11 +1423,106 @@ public void setYear (int year) {
 	}
 }
 
+void onTextFocusIn(Event event) {
+	selectField(currentField);
+	if ((style & SWT.DROP_DOWN) == 0) {
+		sendFocusEvent(SWT.FocusIn);
+	} else {
+		handleFocus(SWT.FocusIn);
+	}
+}
+
+void onTextFocusOut(Event event) {
+	commitCurrentField();
+	if ((style & SWT.DROP_DOWN) == 0) {
+		sendFocusEvent(SWT.FocusOut);
+	} else {
+		handleFocus(SWT.FocusOut);
+	}
+}
+
+void onTextKeyDown(Event event) {
+	if ((style & SWT.DROP_DOWN) != 0 && (event.stateMask & SWT.ALT) != 0 && (event.keyCode == SWT.ARROW_UP || event.keyCode == SWT.ARROW_DOWN)) {
+		boolean dropped = isDropped ();
+		if (!dropped) {
+			popupCalendar.calendarDisplayed = true;
+			setFocus ();
+		}
+		dropDownCalendar(!dropped);
+		return;
+	}
+	int fieldName;
+	switch (event.keyCode) {
+		case SWT.ARROW_RIGHT:
+		case SWT.KEYPAD_DIVIDE:
+			/* A right arrow or a valid separator navigates to the field on the right, with wraping */
+			selectField((currentField + 1) % fieldCount);
+			sendEvent(SWT.Traverse);
+			break;
+		case SWT.ARROW_LEFT:
+			/* Navigate to the field on the left, with wrapping */
+			int index = currentField - 1;
+			selectField(index < 0 ? fieldCount - 1 : index);
+			sendEvent(SWT.Traverse);
+			break;
+		case SWT.ARROW_UP:
+		case SWT.KEYPAD_ADD:
+			/* Set the value of the current field to value + 1, with wrapping */
+			commitCurrentField();
+			incrementField(+1);
+			break;
+		case SWT.ARROW_DOWN:
+		case SWT.KEYPAD_SUBTRACT:
+			/* Set the value of the current field to value - 1, with wrapping */
+			commitCurrentField();
+			incrementField(-1);
+			break;
+		case SWT.HOME:
+			/* Set the value of the current field to its minimum */
+			fieldName = fieldNames[currentField];
+			setTextField(fieldName, calendar.getActualMinimum(fieldName), true, true);
+			break;
+		case SWT.END:
+			/* Set the value of the current field to its maximum */
+			fieldName = fieldNames[currentField];
+			setTextField(fieldName, calendar.getActualMaximum(fieldName), true, true);
+			break;
+		default:
+			switch (event.character) {
+				case '/':
+				case ':':
+				case '-':
+				case '.':
+					/* A valid separator navigates to the field on the right, with wraping */
+					selectField((currentField + 1) % fieldCount);
+					sendEvent(SWT.Traverse);
+					break;
+				case SWT.CR:
+					/* Enter causes default selection */
+					postEvent (SWT.DefaultSelection);
+					break;
+			}
+	}
+}
+
+void onTextMouseClick(Event event) {
+	if (event.button != 1) return;
+	Point sel = text.getSelection();
+	for (int i = 0; i < fieldCount; i++) {
+		if (sel.x >= fieldIndices[i].x && sel.x <= fieldIndices[i].y) {
+			currentField = i;
+			break;
+		}
+	}
+	selectField(currentField);
+}
+
 void onResize(Event event) {
 	Rectangle rect = getClientArea ();
 	int width = rect.width;
 	int height = rect.height;
 	Point buttonSize = down.computeSize(SWT.DEFAULT, height);
+	text.setBounds(0, 0, width - buttonSize.x, height);
 	if ((style & SWT.DROP_DOWN) != 0) {
 		down.setBounds(width - buttonSize.x, 0, buttonSize.x, height);
 	} else {
@@ -1399,14 +1532,14 @@ void onResize(Event event) {
 	}
 }
 
-boolean onTextVerify(int key) {
-	if (ignoreVerify) return true;
+void onTextVerify(Event event) {
+	if (ignoreVerify) return;
+	event.doit = false;
 	int fieldName = fieldNames[currentField];
 	int start = fieldIndices[currentField].x;
 	int end = fieldIndices[currentField].y;
 	int length = end - start;
-	char keyChar = (char) key;
-	String newText =""+ keyChar;
+	String newText = event.text;
 	if (fieldName == Calendar.AM_PM) {
 		String[] ampm = formatSymbols.getAmPmStrings();
 		if (newText.equalsIgnoreCase(ampm[Calendar.AM].substring(0, 1)) || newText.equalsIgnoreCase(ampm[Calendar.AM])) {
@@ -1414,15 +1547,15 @@ boolean onTextVerify(int key) {
 		} else if (newText.equalsIgnoreCase(ampm[Calendar.PM].substring(0, 1)) || newText.equalsIgnoreCase(ampm[Calendar.PM])) {
 			setTextField(fieldName, Calendar.PM, true, false);
 		}
-		return false;
+		return;
 	}
 	if (characterCount > 0) {
 		try {
 			Integer.parseInt(newText);
 		} catch (NumberFormatException ex) {
-			return false;
+			return;
 		}
-		String value = getText(start, end - 1);
+		String value = text.getText(start, end - 1);
 		int s = value.lastIndexOf(' ');
 		if (s != -1) value = value.substring(s + 1);
 		newText = "" + value + newText;
@@ -1435,7 +1568,7 @@ boolean onTextVerify(int key) {
 	int newValue = unformattedIntValue(fieldName, newText, characterCount == 0, max);
 	if (newValue == -1) {
 		characterCount = 0;
-		return false;
+		return;
 	}
 	if (first && newValue == 0 && length > 1) {
 		setTextField(fieldName, newValue, false, false);
@@ -1453,7 +1586,6 @@ boolean onTextVerify(int key) {
 			}
 		}
 	}
-	return false;
 }
 
 int unformattedIntValue(int fieldName, String newText, boolean adjust, int max) {
@@ -1474,327 +1606,12 @@ int unformattedIntValue(int fieldName, String newText, boolean adjust, int max) 
 }
 
 void updateControl() {
-	if (((style & SWT.CALENDAR) == 0) && handle != 0) {
+	if (text != null) {
 		String string = getFormattedString(style);
 		ignoreVerify = true;
-		setText(string);
+		text.setText(string);
 		ignoreVerify = false;
 	}
 	redraw();	
-}
-void deregister () {
-	super.deregister ();
-	if (handle != 0) display.removeWidget (handle);
-	if (fixedHandle != 0) display.removeWidget (fixedHandle);
-}
-
-void register () {
-	super.register ();
-	if (handle != 0) display.addWidget (handle, this);
-}
-
-int getArrow (long /*int*/ widget) {
-	int adj_value = (int) OS.gtk_adjustment_get_value(OS.gtk_spin_button_get_adjustment(widget));
-	int new_value = 0;
-		if ((style & SWT.DATE) != 0) {
-			// getMonth() return 0 as first month and 11 as last one, whereas adjusment does not, so adding one makes them comaprable
-			new_value = getMonth()+1;
-		} else if ((style & SWT.TIME) != 0) {
-		// as getHours() has 24h format but spinner 12h format, new_value needs to be converted to 12h format
-			if (getHours() > 12 ){
-				new_value = getHours() - 12;  
-			} else {
-				new_value = getHours();
-				// This fix does not compares adj_value to new_value when getArrow is called on widget creation
-			
-			}
-			if (new_value == 0) new_value = 12; 	
-		}
-		if (adj_value == 0 && firstTime)
-			return 0;
-		firstTime = false;
-		if ( adj_value == new_value) return 0;
-	return adj_value > new_value ? SWT.ARROW_UP : SWT.ARROW_DOWN;
-}
-
-/**
- * Calculates appropriate width of GtkEntry and
- * adds Date/Time string to the Date/Time Spinner
- */
-void setText (String text) {
-	if ((style & SWT.DROP_DOWN) == 0 ) { // Drop down button implemention is not based on GtkSpinButton
-		OS.gtk_spin_button_set_numeric (handle, false);
-	}
-	if (text != null){ 
-		byte [] dateTimeString = Converter.wcsToMbcs (null, text , true);		
-		OS.gtk_entry_set_width_chars(handle, dateTimeString.length);
-		OS.gtk_entry_set_text(handle, dateTimeString);
-	}
-}
-
-long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
-	long /*int*/ result = super.gtk_key_press_event (widget, event);
-	int fieldName;
-	if ((style & SWT.READ_ONLY) == 0 && (style & SWT.CALENDAR) == 0) {
-		GdkEventKey keyEvent = new GdkEventKey ();
-		OS.memmove (keyEvent, event, GdkEventKey.sizeof);
-		int key = keyEvent.keyval;
-		switch (key) {
-			case OS.GDK_Up:
-				/* As drop_down  cannot be hooked to gtk_output, it is hooked to gtk_key_press. 
-				   Only drop_down option should be hooked to keys, thus spinner is not called twice
-				   on key_press and on gtk_output*/
-				if((style & SWT.DROP_DOWN) != 0) {
-					incrementField(+1);
-					commitCurrentField();
-				}
-				break;
-			case OS.GDK_Down:
-				/* As drop_down  cannot be hooked to gtk_output, it is hooked to gtk_key_press. 
-				   Only drop_down should be hooked to keys, thus when spinner is used up is not called twice
-				   on key_press and on gtk_output*/
-				if((style & SWT.DROP_DOWN) != 0) {
-					incrementField(-1);
-					commitCurrentField();
-				}
-				break;
-			case OS.GDK_Right:
-				selectField((currentField + 1) % fieldCount);
-				sendEvent(SWT.Traverse);
-				break;
-			case OS.GDK_Left:
-				int index = currentField - 1;
-				selectField(index < 0 ? fieldCount - 1 : index);
-				sendEvent(SWT.Traverse);
-				break;
-			case OS.GDK_Home:
-				/* Set the value of the current field to its minimum */
-				fieldName = fieldNames[currentField];
-				setTextField(fieldName, calendar.getActualMinimum(fieldName), true, true);
-				break;
-			case OS.GDK_End:
-				/* Set the value of the current field to its maximum */
-				fieldName = fieldNames[currentField];
-				setTextField(fieldName, calendar.getActualMaximum(fieldName), true, true);
-				break;
-			default:
-				if (!onTextVerify(key))
-					return 1;
-					
-		}
-	}	
-	return result;
-}
-
-void commitCurrentField() {
-	if (characterCount > 0) {
-		characterCount = 0;
-		int fieldName = fieldNames[currentField];
-		int start = fieldIndices[currentField].x;
-		int end = fieldIndices[currentField].y;
-		String value = getText(getText(),start, end - 1);
-		int s = value.lastIndexOf(' ');
-		if (s != -1) value = value.substring(s + 1);
-		int newValue = unformattedIntValue(fieldName, value, characterCount == 0, calendar.getActualMaximum(fieldName));
-		if (newValue != -1) setTextField(fieldName, newValue, true, true);
-	}
-}
-/** returns selected text **/
-Point getSelection () {
-	checkWidget ();
-	Point selection;
-	int [] start = new int [1];
-	int [] end = new int [1];
-	OS.gtk_editable_get_selection_bounds (handle, start, end);
-	long /*int*/ ptr = OS.gtk_entry_get_text (handle);
-	start[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, start[0]);
-	end[0] = (int)/*64*/OS.g_utf8_offset_to_utf16_offset (ptr, end[0]);
-	selection = new Point (start [0], end [0]);
-	return selection;
-
-}
-
-/**
- * Returns a string containing a copy of the contents of the
- * receiver's text field, or an empty string if there are no
- * contents.
- *
- * @return Spinner's text
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-String getText () {
-	checkWidget();
-	if (handle != 0) {
-		long /*int*/ str = OS.gtk_entry_get_text (handle);
-		if (str == 0) return "";
-		int length = OS.strlen (str);
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, str, length);
-		return new String (Converter.mbcsToWcs (null, buffer));
-	}
-		return "";
-}
-
-/** 
- * returns GtkEntry starting from index and ending with index
- * provided by the user 
- */
-String getText (String str,int start, int end) {
-	checkWidget ();
-	if (!(start <= end && 0 <= end)) return "";
-	int length = str.length ();
-	end = Math.min (end, length - 1);
-	if (start > end) return "";
-	start = Math.max (0, start);
-	/*
-	* NOTE: The current implementation uses substring ()
-	* which can reference a potentially large character
-	* array.
-	*/
-	return str.substring (start, end + 1);
-}
-
-void setSelection (int start, int end) {
-	checkWidget ();
-	long /*int*/ ptr = OS.gtk_entry_get_text (handle);
-	start = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, start);
-	end = (int)/*64*/OS.g_utf16_offset_to_utf8_offset (ptr, end);
-	OS.gtk_editable_set_position (handle, start);
-	OS.gtk_editable_select_region (handle, start, end);
-}
-
-void setTextField(int fieldName, int value, boolean commit, boolean adjust) {
-	if (commit) {
-		int max = calendar.getActualMaximum(fieldName);
-		int min = calendar.getActualMinimum(fieldName);
-		if (fieldName == Calendar.YEAR) {
-			max = MAX_YEAR;
-			min = MIN_YEAR;
-			/* Special case: convert 1 or 2-digit years into reasonable 4-digit years. */
-			int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-			int currentCentury = (currentYear / 100) * 100;
-			if (value < (currentYear + 30) % 100) value += currentCentury;
-			else if (value < 100) value += currentCentury - 100;
-		}
-		if (value > max) value = min; // wrap
-		if (value < min) value = max; // wrap
-	}
-	int start = fieldIndices[currentField].x;
-	int end = fieldIndices[currentField].y;
-	setSelection(start, end);
-	String newValue = formattedStringValue(fieldName, value, adjust);
-	StringBuffer buffer = new StringBuffer(newValue);
-	/* Convert leading 0's into spaces. */
-	int prependCount = end - start - buffer.length();
-	for (int i = 0; i < prependCount; i++) {
-		switch (fieldName) {
-			case Calendar.MINUTE:
-			case Calendar.SECOND:
-				buffer.insert(0, 0);
-				break;
-			default:
-				buffer.insert(0, ' ');
-				break;
-		}
-	}		
-	newValue = buffer.toString();
-	ignoreVerify = true;
-	insert(newValue);
-	ignoreVerify = false;
-	selectField(currentField);
-	if (commit) setField(fieldName, value);
-}
-
-long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
-	if ((style & SWT.CALENDAR) == 0 ){
-		GdkEventButton gdkEvent = new GdkEventButton ();
-		OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-		if (gdkEvent.type == OS.GDK_BUTTON_PRESS && gdkEvent.button == 1) {
-			onTextMouseClick(gdkEvent);
-			return gtk_button_press_event(widget, event, false);
-		}
-	}
-	return super.gtk_button_press_event (widget, event);
-}
-
-/**
- * Output signal is called when Spinner's arrow buttons are triggered.
- * On every click output is called twice presenting current and previous value.
- * This method compares two values and determines if Up or down arrow was called.
- */
-long gtk_output (long /*int*/ widget) {
-	int arrowType = getArrow(handle);
-		switch (arrowType) {
-			case SWT.ARROW_UP:
-				commitCurrentField();
-				incrementField(+1);
-				break;
-			case SWT.ARROW_DOWN:
-				commitCurrentField();
-				incrementField(-1);
-				break;
-	}	
-	return 1;
-}
-
-void insert (String string) {
-	checkWidget ();
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, string, false);
-	int [] start = new int [1], end = new int [1];
-	OS.gtk_editable_get_selection_bounds (handle, start, end);
-	OS.gtk_editable_delete_selection (handle);
-	OS.gtk_editable_insert_text (handle, buffer, buffer.length, start);
-	OS.gtk_editable_set_position (handle, start [0]);
-}
-
-void onTextMouseClick(GdkEventButton event) {
-	Point sel = getSelection();
-	for (int i = 0; i < fieldCount; i++) {
-		if (sel.x >= fieldIndices[i].x && sel.x <= fieldIndices[i].y) {
-			currentField = i;
-			break;
-		}
-	}
-	selectField(currentField);
-}
-
-String getText (int start, int end) {
-	checkWidget ();
-	if (!(start <= end && 0 <= end)) return "";
-	String str = getText ();
-	int length = str.length ();
-	end = Math.min (end, length - 1);
-	if (start > end) return "";
-	start = Math.max (0, start);
-	/*
-	* NOTE: The current implementation uses substring ()
-	* which can reference a potentially large character
-	* array.
-	*/
-	return str.substring (start, end + 1);
-}
-
-public void selectAll () {
-	checkWidget ();
-	if (handle != 0)
-		OS.gtk_editable_select_region (handle, 0, -1);
-}
-
-
-void hideDateTime () {
-	if ((style & SWT.CALENDAR) == 0){
-		OS.gtk_widget_hide (fixedHandle);
-	}
-}
-
-void releaseWidget () {
-	super.releaseWidget();
-	if (fixedHandle != 0)
-		hideDateTime();
 }
 }

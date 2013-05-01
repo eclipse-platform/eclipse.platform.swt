@@ -183,9 +183,6 @@
 #define gtk_window_set_keep_below_LIB LIB_GTK
 #define gtk_set_locale_LIB LIB_GTK
 #define gtk_scrollbar_new_LIB LIB_GTK
-#define gtk_spin_button_set_numeric_LIB LIB_GTK
-#define gtk_entry_get_width_chars_LIB LIB_GTK
-#define gtk_entry_set_width_chars_LIB LIB_GTK
 #define gtk_hscrollbar_new_LIB LIB_GTK
 #define gtk_vscrollbar_new_LIB LIB_GTK
 #define gtk_separator_new_LIB LIB_GTK

@@ -9994,26 +9994,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1entry_1get_1visibility)
 }
 #endif
 
-#ifndef NO__1gtk_1entry_1get_1width_1chars
-JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1entry_1get_1width_1chars)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1entry_1get_1width_1chars_FUNC);
-/*
-	rc = (jint)gtk_entry_get_width_chars(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_entry_get_width_chars)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1entry_1get_1width_1chars_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gtk_1entry_1new
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1entry_1new)
 	(JNIEnv *env, jclass that)
@@ -10165,15 +10145,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1entry_1set_1width_1chars)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1entry_1set_1width_1chars_FUNC);
-/*
-	gtk_entry_set_width_chars(arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_entry_set_width_chars)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong, jint))fp)(arg0, arg1);
-		}
-	}
+	gtk_entry_set_width_chars((GtkEntry *)arg0, (gint)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1entry_1set_1width_1chars_FUNC);
 }
 #endif
@@ -14840,24 +14812,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1spin_1button_1set_1increments)
 	OS_NATIVE_ENTER(env, that, _1gtk_1spin_1button_1set_1increments_FUNC);
 	gtk_spin_button_set_increments((GtkSpinButton*)arg0, arg1, arg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1spin_1button_1set_1increments_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1spin_1button_1set_1numeric
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1spin_1button_1set_1numeric)
-	(JNIEnv *env, jclass that, jintLong arg0, jboolean arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1spin_1button_1set_1numeric_FUNC);
-/*
-	gtk_spin_button_set_numeric((GtkSpinButton*)arg0, arg1);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_spin_button_set_numeric)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkSpinButton*, jboolean))fp)((GtkSpinButton*)arg0, arg1);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1spin_1button_1set_1numeric_FUNC);
 }
 #endif
 
