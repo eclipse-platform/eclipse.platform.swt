@@ -727,6 +727,7 @@ typedef enum {
 	_1gtk_1drag_1finish_FUNC,
 	_1gtk_1drag_1get_1data_FUNC,
 	_1gtk_1drag_1set_1icon_1pixbuf_FUNC,
+	_1gtk_1drag_1set_1icon_1surface_FUNC,
 	_1gtk_1editable_1copy_1clipboard_FUNC,
 	_1gtk_1editable_1cut_1clipboard_FUNC,
 	_1gtk_1editable_1delete_1selection_FUNC,

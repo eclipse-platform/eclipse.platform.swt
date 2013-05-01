@@ -717,6 +717,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1drag_1finish",
 	"_1gtk_1drag_1get_1data",
 	"_1gtk_1drag_1set_1icon_1pixbuf",
+	"_1gtk_1drag_1set_1icon_1surface",
 	"_1gtk_1editable_1copy_1clipboard",
 	"_1gtk_1editable_1cut_1clipboard",
 	"_1gtk_1editable_1delete_1selection",

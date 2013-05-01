@@ -7005,6 +7005,16 @@ public static final void gtk_drag_set_icon_pixbuf(long /*int*/ context, long /*i
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
+public static final native void _gtk_drag_set_icon_surface(long /*int*/ context, long /*int*/ surface);
+public static final void gtk_drag_set_icon_surface(long /*int*/ context, long /*int*/ surface) {
+	lock.lock();
+	try {
+		_gtk_drag_set_icon_surface(context, surface);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param editable cast=(GtkEditable *) */
 public static final native void _gtk_editable_copy_clipboard(long /*int*/ editable);
 public static final void gtk_editable_copy_clipboard(long /*int*/ editable) {

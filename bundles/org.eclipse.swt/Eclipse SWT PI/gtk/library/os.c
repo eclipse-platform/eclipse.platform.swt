@@ -9715,6 +9715,24 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1drag_1set_1icon_1pixbuf)
 }
 #endif
 
+#ifndef NO__1gtk_1drag_1set_1icon_1surface
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1drag_1set_1icon_1surface)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1drag_1set_1icon_1surface_FUNC);
+/*
+	gtk_drag_set_icon_surface(arg0, arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_drag_set_icon_surface)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1drag_1set_1icon_1surface_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1editable_1copy_1clipboard
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1editable_1copy_1clipboard)
 	(JNIEnv *env, jclass that, jintLong arg0)

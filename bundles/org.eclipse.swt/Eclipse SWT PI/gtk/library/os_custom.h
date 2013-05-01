@@ -554,6 +554,7 @@
 #define gtk_css_provider_load_from_data_LIB LIB_GTK
 #define gtk_css_provider_new_LIB LIB_GTK
 #define gtk_icon_set_render_icon_pixbuf_LIB LIB_GTK
+#define gtk_drag_set_icon_surface_LIB LIB_GTK
 
 #ifndef g_thread_supported
 #define g_thread_supported() 0
