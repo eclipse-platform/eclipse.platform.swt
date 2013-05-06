@@ -5792,6 +5792,9 @@ void handleCompositionChanged(Event event) {
 	String text = event.text;
 	int start = event.start;
 	int end = event.end;
+	int charCount = content.getCharCount();
+	start = Math.min(start, charCount);
+	end = Math.min(end, charCount);
 	int length = text.length();
 	if (length == ime.getCommitCount()) {
 		content.replaceTextRange(start, end - start, "");
@@ -7813,14 +7816,6 @@ void reset() {
 	}
 	if (horizontalBar != null) {
 		horizontalBar.setSelection(0);	
-	}
-	if (ime != null) {
-		String text = ime.getText();
-		if (text != null && text.length() > 0 && ime.getCompositionOffset() != -1) {
-			ime.setCompositionOffset(0);
-			content.replaceTextRange(0, 0, text);
-			setCaretOffset(ime.getCaretOffset(), SWT.DEFAULT);
-		}
 	}
 	resetCache(0, 0);
 	setCaretLocation();
