@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -49,6 +49,7 @@ public class Tracker extends Widget {
 	Cursor clientCursor;
 	int cursorOrientation = SWT.NONE;
 	boolean inEvent = false;
+	boolean drawn;
 	int /*long*/ hwndTransparent, hwndOpaque, oldTransparentProc, oldOpaqueProc;
 	int oldX, oldY;
 	
@@ -511,7 +512,8 @@ public boolean open () {
 			0,
 			OS.GetModuleHandle (null),
 			null);
-		OS.SetLayeredWindowAttributes (hwndOpaque, 0xFFFFFF, (byte)0xFF, OS.LWA_COLORKEY | OS.LWA_ALPHA);		
+		OS.SetLayeredWindowAttributes (hwndOpaque, 0xFFFFFF, (byte)0, OS.LWA_COLORKEY | OS.LWA_ALPHA);
+		drawn = false;
 		newProc = new Callback (this, "transparentProc", 4); //$NON-NLS-1$
 		int /*long*/ newProcAddress = newProc.getAddress ();
 		if (newProcAddress == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -936,6 +938,10 @@ int /*long*/ transparentProc (int /*long*/ hwnd, int /*long*/ msg, int /*long*/ 
 					OS.DeleteObject (hBitmap);
 				}
 				OS.EndPaint (hwnd, ps);
+				if (!drawn) {
+					OS.SetLayeredWindowAttributes (hwndOpaque, 0xFFFFFF, (byte)0xFF, OS.LWA_COLORKEY | OS.LWA_ALPHA);
+					drawn = true;
+				}
 				return 0;
 			}
 	}
