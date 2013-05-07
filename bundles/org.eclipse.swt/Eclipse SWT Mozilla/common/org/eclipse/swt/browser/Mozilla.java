@@ -2112,6 +2112,7 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 			System.setProperty (XULRUNNER_PATH, mozillaPath);
 		}
 	} else {
+		IsPre_4 = IsPre_17 = true;
 		rc = XPCOM.NS_InitXPCOM2 (0, localFile.getAddress(), LocationProvider.getAddress ());
 	}
 	localFile.Release ();
