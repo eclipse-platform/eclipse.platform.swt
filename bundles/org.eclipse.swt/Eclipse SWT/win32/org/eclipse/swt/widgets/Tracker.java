@@ -490,7 +490,7 @@ public boolean open () {
 	if (IsVista && parent == null) {
 		Rectangle bounds = display.getBounds();
 		hwndTransparent = OS.CreateWindowEx (
-			OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE,
+			OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE | OS.WS_EX_TOOLWINDOW,
 			display.windowClass,
 			null,
 			OS.WS_POPUP,
@@ -502,7 +502,7 @@ public boolean open () {
 			null);
 		OS.SetLayeredWindowAttributes (hwndTransparent, 0, (byte)0x01, OS.LWA_ALPHA);
 		hwndOpaque = OS.CreateWindowEx (
-			OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE,
+			OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE | OS.WS_EX_TOOLWINDOW,
 			display.windowClass,
 			null,
 			OS.WS_POPUP,
