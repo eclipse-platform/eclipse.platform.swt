@@ -812,10 +812,13 @@
 		</script>
 	</target>
 	
-	<!-- Params: swt.ws, swt.os, swt.arch -->
-	<target name="build_fragment" depends="init_fragment,check_sha1_changed" if="natives_changed">
+	<!-- Params: swt.ws, swt.os, swt.arch
+	Note that the build.sha1 file is updated even if the libraries are not built to ensure there is a change
+	in the GIT repo (see bug#407624).
+	-->
+	<target name="build_fragment" depends="init_fragment,check_sha1_changed">
 		<!-- Build natives -->
-		<antcall target="build_libraries"/>
+		<antcall target="build_fragment_libraries"/>
 		
 		<!-- Update build.sha1 file -->
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
@@ -824,6 +827,9 @@
 		<propertyfile file="${fragment_dir}/build.sha1">
 			<entry key="SHA1" value="${HEAD_TAG}"/>
 		</propertyfile>
+	</target>
+	<target name="build_fragment_libraries" if="natives_changed">
+		<antcall target="build_libraries"/>
 	</target>
 
 	<!-- Params: fragment, swt_version -->
