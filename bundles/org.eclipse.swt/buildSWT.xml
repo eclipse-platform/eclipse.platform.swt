@@ -824,9 +824,7 @@
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
 			<arg line="rev-list ${TAG} -1"/>
 		</exec>
-		<propertyfile file="${fragment_dir}/build.sha1">
-			<entry key="SHA1" value="${HEAD_TAG}"/>
-		</propertyfile>
+		<echo file="${fragment_dir}/build.sha1" append="false">SHA1=${HEAD_TAG}</echo>
 	</target>
 	<target name="build_fragment_libraries" if="natives_changed">
 		<antcall target="build_libraries"/>
