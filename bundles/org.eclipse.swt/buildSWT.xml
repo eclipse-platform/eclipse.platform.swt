@@ -957,10 +957,15 @@
 		<delete dir="${build_dir}" quiet="true"/>
 		<antcall target="copy.library.src"/>
 		<condition property="build_task" value="build_local_win">
-			<or>
-				<equals arg1="${swt.ws}" arg2="win32"/>
-				<equals arg1="${swt.ws}" arg2="wpf"/>
-			</or>
+			<and>
+				<not>
+					<isset property="machine"/>
+				</not>
+				<or>
+					<equals arg1="${swt.ws}" arg2="win32"/>
+					<equals arg1="${swt.ws}" arg2="wpf"/>
+				</or>
+			</and>
 		</condition>
 		<condition property="build_task" value="build_remote" else="build_local">
 			<isset property="machine"/>
@@ -987,7 +992,38 @@
 	<target name="build_remote">
 		<property name="libs" value="*"/>
 		<property name="exports" value=""/>
-		<property name="remotebuilddir" value="~/build"/>
+		
+		<condition property="remotebuilddir" value="c:/build" else="~/build/">
+			<or>
+				<equals arg1="${swt.os}" arg2="win32"/>
+				<equals arg1="${swt.os}" arg2="wce_ppc"/>
+			</or>
+		</condition>
+		<condition property="exit_cmd" value="exit;" else="">
+			<or>
+				<equals arg1="${swt.os}" arg2="win32"/>
+				<equals arg1="${swt.os}" arg2="wce_ppc"/>
+			</or>
+		</condition>
+		<condition property="xulrunner_target" value="make_xulrunner64" else="make_xulrunner">
+			<equals arg1="${swt.arch}" arg2="x86_64"/>
+		</condition>
+		<condition property="xul_cmd" value="cmd /c build.bat ${swt.arch} ${xulrunner_target} install;" else="">
+			<and>
+				<equals arg1="${swt.os}" arg2="win32"/>
+				<or>
+					<equals arg1="${swt.arch}" arg2="x86"/>
+					<equals arg1="${swt.arch}" arg2="x86_64"/>
+				</or>
+			</and>
+		</condition>
+		<condition property="build_cmd" value="unix2dos *; if cmd /c build-ce.bat ${build_targets};">
+			<equals arg1="${swt.os}" arg2="wce_ppc"/>
+		</condition>
+		<condition property="build_cmd" value="unix2dos *; if cmd /c build.bat ${build_targets}; ${xul_cmd}" else="if sh build.sh ${build_targets};">
+			<equals arg1="${swt.os}" arg2="win32"/>
+		</condition>
+		
 		<property name="remotetmpdir" value="${remotebuilddir}/${fragment}.${TAG}"/>
 		<property name="lib_output" value="${remotetmpdir}/libs"/>
 		<property name="zip_file" value="${fragment}.${TAG}.zip"/>
@@ -1000,7 +1036,7 @@
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
-	 		command="rm -rf ${remotetmpdir}; mkdir ${remotetmpdir}; mkdir ${lib_output}; cd ${remotetmpdir}; unzip -aa ${remotebuilddir}/${zip_file}; ${exports} export MODEL=${swt.arch}; export OUTPUT_DIR=${lib_output}; if sh build.sh ${build_targets}; then cd; else cd; rm -rf ${remotetmpdir}; rm ${remotebuilddir}/${zip_file}; exit 1; fi"/>
+	 		command="rm -rf ${remotetmpdir}; mkdir ${remotetmpdir}; mkdir ${lib_output}; cd ${remotetmpdir}; unzip -aa ${remotebuilddir}/${zip_file}; ${exports} export MODEL=${swt.arch}; export OUTPUT_DIR=${lib_output}; ${build_cmd} then ${exit_cmd} cd; else ${exit_cmd} cd; rm -rf ${remotetmpdir}; rm ${remotebuilddir}/${zip_file}; exit 1; fi"/>
 		<scp file="swtbuild@${build_machine}:${lib_output}/${libs}"
 			todir="${output_dir}"
 			keyfile="${keyfile}"
