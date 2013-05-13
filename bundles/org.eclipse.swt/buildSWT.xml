@@ -28,7 +28,6 @@
 
 <project name="swtbuild" basedir=".">
 	<property name="gitroot" value="silenio@dev.eclipse.org:/gitroot/platform/"/>
-	<property name="keyfile" value="C:\BUILD\ssh\swtbuild_dsa_private" /> 
 	<property name="TAG" value="master"/>
 	<property name="tmphome" value="../../../tmp"/>
 	
@@ -51,6 +50,12 @@
 	<property name="file_version" value="bundles/org.eclipse.swt/Eclipse SWT/common/version.txt"/>
 	<property name="file_build_notes" value="bundles/org.eclipse.swt/buildnotes_swt.html"/>
 	<property name="file_swt_map" value="org.eclipse.releng/maps/swt.map"/>
+
+	<target name="init_keyfile">
+		<condition property="keyfile" value="C:\BUILD\ssh\swtbuild_dsa_private" else="/var/lib/hudson/swt/swtbuild_dsa_private">
+			<os family="windows"/>
+		</condition>
+	</target>
 
 	<target name="check_libraries" depends="get_version">
 		<!-- Carbon is not being built
@@ -211,7 +216,7 @@
 		<echo>Success</echo>
 	</target>	
 	
-	<target name="check_machines">
+	<target name="check_machines" depends="init_keyfile">
 		<parallel>
 		<sshexec host="${m_linux_x86}" 
 			username="swtbuild" 
@@ -353,7 +358,7 @@
 		<fail if="m_fail" message="Failed"/>
 	</target>
 
-	<target name="check_s390_machines">
+	<target name="check_s390_machines" depends="init_keyfile">
 		<parallel>
 		<sshexec host="${m_linux_s390}" 
 			username="swtbuild" 
@@ -989,7 +994,7 @@
 		</antcall>
 	</target>
 	
-	<target name="build_remote">
+	<target name="build_remote" depends="init_keyfile">
 		<property name="libs" value="*"/>
 		<property name="exports" value=""/>
 		
