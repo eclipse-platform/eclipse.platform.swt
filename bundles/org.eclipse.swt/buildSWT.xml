@@ -27,8 +27,7 @@
  -->
 
 <project name="swtbuild" basedir=".">
-	<property name="gitroot" value="gheorghe@dev.eclipse.org:/gitroot/platform/"/>
-	<property name="keyfile" value="C:\BUILD\ssh\swtbuild_dsa_private" /> 
+	<property name="gitroot" value="silenio@dev.eclipse.org:/gitroot/platform/"/>
 	<property name="TAG" value="master"/>
 	<property name="tmphome" value="../../../tmp"/>
 	
@@ -51,6 +50,12 @@
 	<property name="file_version" value="bundles/org.eclipse.swt/Eclipse SWT/common/version.txt"/>
 	<property name="file_build_notes" value="bundles/org.eclipse.swt/buildnotes_swt.html"/>
 	<property name="file_swt_map" value="org.eclipse.releng/maps/swt.map"/>
+
+	<target name="init_keyfile">
+		<condition property="keyfile" value="C:\BUILD\ssh\swtbuild_dsa_private" else="/var/lib/hudson/swt/swtbuild_dsa_private">
+			<os family="windows"/>
+		</condition>
+	</target>
 
 	<target name="check_libraries" depends="get_version">
 		<!-- Carbon is not being built
@@ -209,7 +214,7 @@
 		<echo>Success</echo>
 	</target>	
 	
-	<target name="check_machines">
+	<target name="check_machines" depends="init_keyfile">
 		<parallel>
 		<sshexec host="${m_linux_x86}" 
 			username="swtbuild" 
@@ -351,7 +356,7 @@
 		<fail if="m_fail" message="Failed"/>
 	</target>
 
-	<target name="check_s390_machines">
+	<target name="check_s390_machines" depends="init_keyfile">
 		<parallel>
 		<sshexec host="${m_linux_s390}" 
 			username="swtbuild" 
@@ -522,7 +527,7 @@
 		
 		<antcall target="replace64"></antcall>
 				
-		<javac srcdir="${buildDir}"></javac>
+		<javac includeantruntime="false" srcdir="${buildDir}"></javac>
 	</target>
 
 	<!-- common build tasks -->
@@ -810,18 +815,22 @@
 		</script>
 	</target>
 	
-	<!-- Params: swt.ws, swt.os, swt.arch -->
-	<target name="build_fragment" depends="init_fragment,check_sha1_changed" if="natives_changed">
+	<!-- Params: swt.ws, swt.os, swt.arch
+	Note that the build.sha1 file is updated even if the libraries are not built to ensure there is a change
+	in the GIT repo (see bug#407624).
+	-->
+	<target name="build_fragment" depends="init_fragment,check_sha1_changed">
 		<!-- Build natives -->
-		<antcall target="build_libraries"/>
+		<antcall target="build_fragment_libraries"/>
 		
 		<!-- Update build.sha1 file -->
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
 			<arg line="rev-list ${TAG} -1"/>
 		</exec>
-		<propertyfile file="${fragment_dir}/build.sha1">
-			<entry key="SHA1" value="${HEAD_TAG}"/>
-		</propertyfile>
+		<echo file="${fragment_dir}/build.sha1" append="false">SHA1=${HEAD_TAG}</echo>
+	</target>
+	<target name="build_fragment_libraries" if="natives_changed">
+		<antcall target="build_libraries"/>
 	</target>
 
 	<!-- Params: fragment, swt_version -->
@@ -953,40 +962,90 @@
 		<delete dir="${build_dir}" quiet="true"/>
 		<antcall target="copy.library.src"/>
 		<condition property="build_task" value="build_local_win">
-			<or>
-				<equals arg1="${swt.ws}" arg2="win32"/>
-				<equals arg1="${swt.ws}" arg2="wpf"/>
-			</or>
+			<and>
+				<not>
+					<isset property="machine"/>
+				</not>
+				<or>
+					<equals arg1="${swt.ws}" arg2="win32"/>
+					<equals arg1="${swt.ws}" arg2="wpf"/>
+				</or>
+			</and>
 		</condition>
 		<condition property="build_task" value="build_remote" else="build_local">
 			<isset property="machine"/>
 		</condition>
 		<antcall target="init_build"/>
-		<antcall target="${build_task}"/>
+		<antcall target="${build_task}">
+			<param name="build_targets" value="${targets}"/>
+			<param name="build_machine" value="${machine}"/>
+		</antcall>
+		<antcall target="build_gtk3"/>
 		<delete dir="${build_dir}" quiet="true"/>
 		<antcall target="refresh_fragment"/>
 	</target>
 	
-	<target name="build_remote">
-		<property name="remotebuilddir" value="~/build"/>
+	<target name="build_gtk3" if="machine_gtk3">
+		<antcall target="${build_task}">
+			<param name="build_machine" value="${machine_gtk3}"/>
+			<param name="build_targets" value="install"/>
+			<param name="libs" value="*pi3*"/>
+			<param name="exports" value="export GTK_VERSION=3.0;"/>
+		</antcall>
+	</target>
+	
+	<target name="build_remote" depends="init_keyfile">
+		<property name="libs" value="*"/>
+		<property name="exports" value=""/>
+		
+		<condition property="remotebuilddir" value="c:/build" else="~/build/">
+			<or>
+				<equals arg1="${swt.os}" arg2="win32"/>
+				<equals arg1="${swt.os}" arg2="wce_ppc"/>
+			</or>
+		</condition>
+		<condition property="exit_cmd" value="exit;" else="">
+			<or>
+				<equals arg1="${swt.os}" arg2="win32"/>
+				<equals arg1="${swt.os}" arg2="wce_ppc"/>
+			</or>
+		</condition>
+		<condition property="xulrunner_target" value="make_xulrunner64" else="make_xulrunner">
+			<equals arg1="${swt.arch}" arg2="x86_64"/>
+		</condition>
+		<condition property="xul_cmd" value="cmd /c build.bat ${swt.arch} ${xulrunner_target} install;" else="">
+			<and>
+				<equals arg1="${swt.os}" arg2="win32"/>
+				<or>
+					<equals arg1="${swt.arch}" arg2="x86"/>
+				</or>
+			</and>
+		</condition>
+		<condition property="build_cmd" value="unix2dos *; if cmd /c build-ce.bat ${build_targets};">
+			<equals arg1="${swt.os}" arg2="wce_ppc"/>
+		</condition>
+		<condition property="build_cmd" value="unix2dos *; if cmd /c build.bat ${build_targets}; ${xul_cmd}" else="if sh build.sh ${build_targets};">
+			<equals arg1="${swt.os}" arg2="win32"/>
+		</condition>
+		
 		<property name="remotetmpdir" value="${remotebuilddir}/${fragment}.${TAG}"/>
 		<property name="lib_output" value="${remotetmpdir}/libs"/>
 		<property name="zip_file" value="${fragment}.${TAG}.zip"/>
-		<zip destfile="${build_dir}/${zip_file}" basedir="${build_dir}"/>
+		<zip destfile="${build_dir}/${zip_file}" basedir="${build_dir}" excludes="${zip_file}"/>
 		<scp file="${build_dir}/${zip_file}"
-			todir="swtbuild@${machine}:${remotebuilddir}" 
+			todir="swtbuild@${build_machine}:${remotebuilddir}" 
 			keyfile="${keyfile}"
 			trust="true"/>
-		<sshexec host="${machine}" 
+		<sshexec host="${build_machine}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
-	 		command="rm -rf ${remotetmpdir}; mkdir ${remotetmpdir}; mkdir ${lib_output}; cd ${remotetmpdir}; unzip -aa ${remotebuilddir}/${zip_file}; export MODEL=${swt.arch}; export OUTPUT_DIR=${lib_output}; if sh build.sh ${targets}; then cd; else cd; rm -rf ${remotetmpdir}; rm ${remotebuilddir}/${zip_file}; exit 1; fi"/>
-		<scp file="swtbuild@${machine}:${lib_output}/*"
+	 		command="rm -rf ${remotetmpdir}; mkdir ${remotetmpdir}; mkdir ${lib_output}; cd ${remotetmpdir}; unzip -aa ${remotebuilddir}/${zip_file}; ${exports} export MODEL=${swt.arch}; export OUTPUT_DIR=${lib_output}; ${build_cmd} then ${exit_cmd} cd; else ${exit_cmd} cd; rm -rf ${remotetmpdir}; rm ${remotebuilddir}/${zip_file}; exit 1; fi"/>
+		<scp file="swtbuild@${build_machine}:${lib_output}/${libs}"
 			todir="${output_dir}"
 			keyfile="${keyfile}"
 			trust="true"/>
-		<sshexec host="${machine}" 
+		<sshexec host="${build_machine}" 
 			username="swtbuild" 
 			keyfile="${keyfile}" 
 			trust="true"
@@ -1017,20 +1076,22 @@
 			<arg line="${clean}"/>
 		</exec>
 		<condition property="should_build_xulrunner" value="true">
-			<and>
-				<equals arg1="${swt.ws}" arg2="win32"/>
+			<or>
 				<equals arg1="${swt.arch}" arg2="x86"/>
-			</and>
+			</or>
 		</condition>
 		<antcall target="build_local_win_xulrunner"/>
 	</target>
 
 	<target name="build_local_win_xulrunner" if="should_build_xulrunner">
+		<condition property="xulrunner_target" value="make_xulrunner64" else="make_xulrunner">
+			<equals arg1="${swt.arch}" arg2="x86_64"/>
+		</condition>
 		<exec dir="${build_dir}" executable="cmd" failonerror="true">
 			<env key="JAVA_HOME" value=""/>
 			<env key="BUILD_XULRUNNER" value="true"/>
 			<env key="OUTPUT_DIR" value="${win_output_dir}"/>
-			<arg line="/c '${build_dir}/${build_file}' x86 make_xulrunner install ${clean}"/>
+			<arg line="/c '${build_dir}/${build_file}' ${swt.arch} ${xulrunner_target} install ${clean}"/>
 		</exec>
 	</target>
 
