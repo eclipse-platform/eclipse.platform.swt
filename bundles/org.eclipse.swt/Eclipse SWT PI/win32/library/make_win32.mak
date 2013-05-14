@@ -37,8 +37,8 @@ AWT_LIB    = $(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 AWT_LIBS   = "$(JAVA_HOME)\jre\bin\jawt.lib"
 AWT_OBJS   = swt_awt.obj
 
-WEBKIT_DIR 	  = S:\swt-builddir\webkit\WebKit-r72896
-WEBKIT_SUPPORT_DIR = S:\swt-builddir\webkit\WebKitSupportLibrary
+WEBKIT_DIR 	  = $(WEBKIT_HOME)\WebKit-r72896
+WEBKIT_SUPPORT_DIR = $(WEBKIT_HOME)\WebKitSupportLibrary
 WEBKIT_PREFIX = swt-webkit
 WEBKIT_LIB    = $(WEBKIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 WEBKIT_LIBS   = $(WEBKIT_DIR)\lib\webkit.lib $(WEBKIT_SUPPORT_DIR)\win\lib\CFNetwork.lib $(WEBKIT_SUPPORT_DIR)\win\lib\CoreFoundation.lib
