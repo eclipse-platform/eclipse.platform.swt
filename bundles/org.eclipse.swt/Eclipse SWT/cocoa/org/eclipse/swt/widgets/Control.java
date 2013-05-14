@@ -4899,7 +4899,12 @@ public void update () {
 
 void update (boolean all) {
 //	checkWidget();
-	if (display.isPainting.containsObject(view)) return;
+	NSArray isPainting = display.isPainting;
+	if (isPainting.containsObject(view)) return;
+	for (int i = 0, length = (int)/*64*/isPainting.count(); i < length; i++) {
+		NSView view = new NSView(isPainting.objectAtIndex(i));
+		if (view.isDescendantOf(this.view)) return;
+	}
 	if (isResizing()) return;
 	Shell shell = getShell();
 	NSWindow window = shell.deferFlushing && shell.scrolling ? view.window() : null;
