@@ -991,7 +991,7 @@ boolean handleEventFromFunction (Object[] arguments) {
 		((Double)arguments[1]).intValue (),
 		((Double)arguments[2]).intValue (),
 		((Double)arguments[3]).intValue (),
-		((Double)arguments[4]).intValue () + 1,
+		(arguments[4] != null ? ((Double)arguments[4]).intValue () : 0) + 1,
 		((Boolean)arguments[5]).booleanValue (),
 		((Boolean)arguments[6]).booleanValue (),
 		((Boolean)arguments[7]).booleanValue (),
