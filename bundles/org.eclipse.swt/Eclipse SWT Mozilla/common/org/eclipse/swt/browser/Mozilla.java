@@ -2103,6 +2103,12 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 			browser.dispose ();
 			error (XPCOM.NS_ERROR_NULL_POINTER);
 		}
+
+		if (nsISupports.IsXULRunner17 && !MozillaDelegate.supportsXULRunner17 ()) {
+			browser.dispose ();
+			SWT.error (SWT.ERROR_NO_HANDLES, null, " [XULRunner 17 is not supported on this platform]"); //$NON-NLS-1$
+		}
+
 		if (IsPre_4) {
 			rc = XPCOM.Call (functionPtr, localFile.getAddress (), localFile.getAddress (), LocationProvider.getAddress (), 0, 0);
 		} else {

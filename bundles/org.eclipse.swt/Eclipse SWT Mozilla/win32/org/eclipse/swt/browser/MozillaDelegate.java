@@ -89,6 +89,10 @@ static boolean needsSpinup () {
 	return false;
 }
 
+static boolean supportsXULRunner17 () {
+	return true;
+}
+
 static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 	int byteCount;
 	char[] chars = new char[string.length()];
