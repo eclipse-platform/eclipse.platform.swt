@@ -5274,7 +5274,9 @@ static long /*int*/ applicationProc(long /*int*/ id, long /*int*/ sel, long /*in
 		}
 		new NSApplication(arg0).replyToOpenOrPrint(OS.NSApplicationDelegateReplySuccess);
 	}  else if (sel == OS.sel_applicationShouldHandleReopen_hasVisibleWindows_) {
-		return 1;
+		final Event event = new Event();
+		display.sendEvent(SWT.Activate, event);
+		return event.doit ? 1 : 0;
 	}
 	return 0;
 }
