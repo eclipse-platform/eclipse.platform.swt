@@ -931,13 +931,25 @@ boolean handleDOMEvent (long /*int*/ event, int type) {
 	}
 
 	/* key event */
+	int keyEventState = 0;
+	long /*int*/ eventPtr = OS.gtk_get_current_event ();
+	if (eventPtr != 0) {
+		GdkEventKey gdkEvent = new GdkEventKey ();
+		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
+		switch (gdkEvent.type) {
+			case OS.GDK_KEY_PRESS:
+			case OS.GDK_KEY_RELEASE:
+				keyEventState = gdkEvent.state;
+				break;
+		}
+		OS.gdk_event_free (eventPtr);
+	}
 	int keyCode = (int)WebKitGTK.webkit_dom_ui_event_get_key_code (event);
 	int charCode = (int)WebKitGTK.webkit_dom_ui_event_get_char_code (event);
-	boolean altKey = WebKitGTK.webkit_dom_mouse_event_get_alt_key (event) != 0;
-	boolean ctrlKey = WebKitGTK.webkit_dom_mouse_event_get_ctrl_key (event) != 0;
-	boolean shiftKey = WebKitGTK.webkit_dom_mouse_event_get_shift_key (event) != 0;
-	boolean metaKey = WebKitGTK.webkit_dom_mouse_event_get_meta_key (event) != 0;
-	return handleKeyEvent(typeString, keyCode, charCode, altKey, ctrlKey, shiftKey, metaKey);
+	boolean altKey = (keyEventState & OS.GDK_MOD1_MASK) != 0;
+	boolean ctrlKey = (keyEventState & OS.GDK_CONTROL_MASK) != 0;
+	boolean shiftKey = (keyEventState & OS.GDK_SHIFT_MASK) != 0;
+	return handleKeyEvent(typeString, keyCode, charCode, altKey, ctrlKey, shiftKey, false);
 }
 
 boolean handleEventFromFunction (Object[] arguments) {
