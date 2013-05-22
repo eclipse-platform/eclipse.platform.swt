@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,12 +10,23 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.DeviceData;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Monitor;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Synchronizer;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Display
@@ -720,8 +731,8 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 		// Test key events (down/up)
 		event = new Event();
 		event.type = SWT.KeyDown;
-		event.keyCode = -1;  				// bogus key code
-		assertTrue(display.post(event));	// uses default 0 character
+		event.keyCode = -1;  // bogus key code; default 0 character
+		assertTrue("Display#post failed, probably because screen is not rendered (bug 407862)", display.post(event));  //$NON-NLS-1$
 		// don't test KeyDown/KeyUp with a character to avoid sending to 
 		// random window if test shell looses focus
 		
