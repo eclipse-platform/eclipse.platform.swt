@@ -1381,6 +1381,7 @@ public char[] getTextChars () {
 	if (segments != null) buffer = deprocessText (buffer, 0, -1, false);
 	char [] chars = new char [length];
 	System.arraycopy (buffer.chars, 0, chars, 0, length);
+	for (int i = 0; i < buffer.chars.length; i++) buffer.chars [i] = '\0';
 	return chars;
 }
 
