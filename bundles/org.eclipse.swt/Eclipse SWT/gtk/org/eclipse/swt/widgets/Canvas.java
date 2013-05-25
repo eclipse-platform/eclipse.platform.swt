@@ -68,7 +68,6 @@ Canvas () {}
  * </ul>
  *
  * @see SWT
- * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
 public Canvas (Composite parent, int style) {

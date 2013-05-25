@@ -553,7 +553,7 @@ boolean forceFocus (long /*int*/ focusHandle) {
  * will be one of the following constants defined in class
  * <code>SWT</code>:
  * <code>INHERIT_NONE</code>, <code>INHERIT_DEFAULT</code>,
- * <code>INHERTIT_FORCE</code>.
+ * <code>INHERIT_FORCE</code>.
  *
  * @return the background mode
  *

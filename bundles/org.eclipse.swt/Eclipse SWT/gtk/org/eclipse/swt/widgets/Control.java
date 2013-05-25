@@ -25,7 +25,7 @@ import org.eclipse.swt.internal.gtk.*;
  * <dl>
  * <dt><b>Styles:</b>
  * <dd>BORDER</dd>
- * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
+ * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT, FLIP_TEXT_DIRECTION</dd>
  * <dt><b>Events:</b>
  * <dd>DragDetect, FocusIn, FocusOut, Help, KeyDown, KeyUp, MenuDetect, MouseDoubleClick, MouseDown, MouseEnter,
  *     MouseExit, MouseHover, MouseUp, MouseMove, MouseWheel, MouseHorizontalWheel, MouseVerticalWheel, Move,
@@ -268,6 +268,19 @@ public int getOrientation () {
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
+/**
+ * Returns the text direction of the receiver, which will be one of the
+ * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
+ *
+ * @return the text direction style
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.102
+ */
 public int getTextDirection() {
 	checkWidget ();
 	/* return the widget orientation */
@@ -4623,6 +4636,30 @@ boolean setTabItemFocus (boolean next) {
 	return forceFocus ();
 }
 
+/**
+ * Sets the base text direction (a.k.a. "paragraph direction") of the receiver,
+ * which must be one of the constants <code>SWT.LEFT_TO_RIGHT</code> or
+ * <code>SWT.RIGHT_TO_LEFT</code>.
+ * <p>
+ * <code>setOrientation</code> would override this value with the text direction
+ * that is consistent with the new orientation.
+ * </p>
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows.
+ * It doesn't set the base text direction on GTK and Cocoa.
+ * </p>
+ *
+ * @param textDirection the base text direction style
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#FLIP_TEXT_DIRECTION
+ * 
+ * @since 3.102
+ */
 public void setTextDirection(int textDirection) {
 	checkWidget ();
 }

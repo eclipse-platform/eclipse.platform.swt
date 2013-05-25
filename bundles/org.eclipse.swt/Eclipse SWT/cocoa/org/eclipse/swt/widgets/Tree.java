@@ -2988,7 +2988,7 @@ void setShouldScrollClipView (long /*int*/ id, long /*int*/ sel, boolean shouldS
 /**
  * Sets the receiver's selection to the given item.
  * The current selection is cleared before the new item is selected,
- * and if necessary, the receiver is scrolled to make the new selection visible.
+ * and if necessary the receiver is scrolled to make the new selection visible.
  * <p>
  * If the item is not in the receiver, then it is ignored.
  * </p>
@@ -3015,7 +3015,7 @@ public void setSelection (TreeItem item) {
 /**
  * Sets the receiver's selection to be the given array of items.
  * The current selection is cleared before the new items are selected,
- * and if necessary, the receiver is scrolled to make the new selection visible.
+ * and if necessary the receiver is scrolled to make the new selection visible.
  * <p>
  * Items that are not in the receiver are ignored.
  * If the receiver is single-select and multiple items are specified,

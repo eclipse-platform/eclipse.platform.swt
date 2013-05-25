@@ -45,14 +45,8 @@ public final class GCData {
 	public int alpha = 0xFF;
 
 	public Image image;
-	/**
-	 * @noreference This field is not intended to be referenced by clients.
-	 */
 	public PAINTSTRUCT ps;
 	public int layout = -1;
-	/**
-	 * @noreference This field is not intended to be referenced by clients.
-	 */
 	public long /*int*/ hPen, hOldPen, hBrush, hOldBrush, hNullBitmap,
 		hwnd, gdipGraphics, gdipPen, gdipBrush, gdipFgBrush, gdipBgBrush,
 		gdipFont, hGDIFont;

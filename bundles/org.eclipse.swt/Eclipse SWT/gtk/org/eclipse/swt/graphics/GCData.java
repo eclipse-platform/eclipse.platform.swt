@@ -24,15 +24,15 @@ import org.eclipse.swt.*;
  * platforms, and should never be called from application code.
  * </p>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @noinstantiate This class is not intended to be instantiated by clients.
+ * @noreference This class is not intended to be referenced by clients
  */
 public final class GCData {
 	public Device device;
 	public int style, state = -1;
-	/**
-	 * @noreference This field is not intended to be referenced by clients.
-	 */
-	public GdkColor foreground, background;
+
+	public GdkColor foreground;
+
+	public GdkColor background;
 	public Font font;
 	public Pattern foregroundPattern;
 	public Pattern backgroundPattern;
@@ -48,9 +48,6 @@ public final class GCData {
 	public int interpolation = SWT.DEFAULT;
 	public Image image;
 
-	/**
-	 * @noreference This field is not intended to be referenced by clients.
-	 */
 	public long /*int*/ clipRgn, context, layout, damageRgn, drawable, cairo;
 	public double cairoXoffset, cairoYoffset;
 	public boolean disposeCairo;
