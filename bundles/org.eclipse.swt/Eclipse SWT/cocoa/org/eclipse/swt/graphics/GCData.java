@@ -30,9 +30,7 @@ public final class GCData {
 	public Device device;
 	public int style, state = -1;
 
-	public double[] /*float*/ [] foreground;
-
-	public double[] background;
+	public double /*float*/ [] foreground, background;
 	public Pattern foregroundPattern;
 	public Pattern backgroundPattern;
 	public Font font;

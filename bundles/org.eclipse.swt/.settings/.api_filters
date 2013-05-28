@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><component id="org.eclipse.swt" version="2">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.swt" version="2">
     <resource path="Eclipse SWT Accessibility/cocoa/org/eclipse/swt/accessibility/Accessible.java" type="org.eclipse.swt.accessibility.Accessible">
         <filter id="643842064">
             <message_arguments>
@@ -605,6 +606,12 @@
                 <message_argument value="visibleRgn"/>
             </message_arguments>
         </filter>
+        <filter id="338948223">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GCData"/>
+                <message_argument value="GCData()"/>
+            </message_arguments>
+        </filter>
         <filter id="627060751">
             <message_arguments>
                 <message_argument value="NSAffineTransform"/>
@@ -709,6 +716,12 @@
             <message_arguments>
                 <message_argument value="org.eclipse.swt.graphics.Region"/>
                 <message_argument value="cocoa_new(Device, int)"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.Region"/>
+                <message_argument value="cocoa_new(Device, long)"/>
             </message_arguments>
         </filter>
     </resource>
