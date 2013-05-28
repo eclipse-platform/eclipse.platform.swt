@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2012 IBM Corporation and others.
+ * Copyright (c) 2010, 2015 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -650,18 +650,20 @@ public void create (Composite parent, int style) {
 	browser.setData (KEY_CHECK_SUBWINDOW, Boolean.FALSE);
 
 	/*
-	 * Bug in WebKitGTK.  In WebKitGTK releases >= 1.10 a crash can occur if an
-	 * attempt is made to show a browser before a size has been set on it.  The
-	 * workaround is to temporarily give it a size in order to force the native
-	 * resize events to fire. 
+	 * Bug in WebKitGTK.  In WebKitGTK 1.10.x a crash can occur if an
+	 * attempt is made to show a browser before a size has been set on
+	 * it.  The workaround is to temporarily give it a size that forces
+	 * the native resize events to fire.
 	 */
+	int major = WebKitGTK.webkit_major_version ();
 	int minor = WebKitGTK.webkit_minor_version ();
-	if (minor >= 10) {
-		Point size = browser.getSize();
-		size.x += 2; size.y += 2;
-		browser.setSize(size);
-		size.x -= 2; size.y -= 2;
-		browser.setSize(size);
+	if (major == 1 && minor >= 10) {
+		Rectangle minSize = browser.computeTrim (0, 0, 2, 2);
+		Point size = browser.getSize ();
+		size.x += minSize.width; size.y += minSize.height;
+		browser.setSize (size);
+		size.x -= minSize.width; size.y -= minSize.height;
+		browser.setSize (size);
 	}
 }
 
