@@ -452,14 +452,6 @@
 		<property name="projectDir" value="${repo.src}/bundles/org.eclipse.swt"/>
 		<property name="buildDir" value="${tmpdir}/build"/>
 		
-		<!-- Update build.sha1 file -->
-		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
-			<arg line="rev-list ${TAG} -1"/>
-		</exec>
-		<propertyfile file="${sha1_file}">
-			<entry key="SHA1" value="${HEAD_TAG}"/>
-		</propertyfile>
-		
 		<antcall target="check_preprocessing"/>
 
 		<!-- 64 bit -->
@@ -507,6 +499,14 @@
 		</antcall>
 		-->
 		
+		<!-- Update build.sha1 file -->
+		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
+			<arg line="rev-list ${TAG} -1"/>
+		</exec>
+		<propertyfile file="${sha1_file}">
+			<entry key="SHA1" value="${HEAD_TAG}"/>
+		</propertyfile>
+
 		<delete dir="${tmpdir}" quiet="true"/>
 	</target>
 	
