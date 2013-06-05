@@ -96,13 +96,77 @@ public class CTabFolderRenderer {
 	static final String ELLIPSIS = "..."; //$NON-NLS-1$ 
 	
 	//Part constants
+	/**
+	 * Part constant indicating the body of the tab folder. The body is the
+	 * underlying container for all of the tab folder and all other parts are
+	 * drawn on top of it. (value is -1).
+	 *
+	 * @see #computeSize(int, int, GC, int, int)
+	 * @see #computeTrim(int, int, int, int, int, int)
+	 * @see #draw(int, int, Rectangle, GC)
+	 */
 	public static final int PART_BODY = -1;
+	/**
+	 * Part constant indicating the tab header of the folder (value is -2). The
+	 * header is drawn on top of the body and provides an area for the tabs and
+	 * other tab folder buttons to be rendered.
+	 *
+	 * @see #computeSize(int, int, GC, int, int)
+	 * @see #computeTrim(int, int, int, int, int, int)
+	 * @see #draw(int, int, Rectangle, GC)
+	 */
 	public static final int PART_HEADER = -2;
+	/**
+	 * Part constant indicating the border of the tab folder. (value is -3). The
+	 * border is drawn around the body and is part of the body trim.
+	 *
+	 * @see #computeSize(int, int, GC, int, int)
+	 * @see #computeTrim(int, int, int, int, int, int)
+	 * @see #draw(int, int, Rectangle, GC)
+	 */
 	public static final int PART_BORDER = -3;
+	/**
+	 * Part constant indicating the background of the tab folder. (value is -4).
+	 *
+	 * @see #computeSize(int, int, GC, int, int)
+	 * @see #computeTrim(int, int, int, int, int, int)
+	 * @see #draw(int, int, Rectangle, GC)
+	 */
 	public static final int PART_BACKGROUND = -4;
+	/**
+	 * Part constant indicating the maximize button of the tab folder. (value is
+	 * -5).
+	 *
+	 * @see #computeSize(int, int, GC, int, int)
+	 * @see #computeTrim(int, int, int, int, int, int)
+	 * @see #draw(int, int, Rectangle, GC)
+	 */
 	public static final int PART_MAX_BUTTON = -5;
+	/**
+	 * Part constant indicating the minimize button of the tab folder. (value is
+	 * -6).
+	 *
+	 * @see #computeSize(int, int, GC, int, int)
+	 * @see #computeTrim(int, int, int, int, int, int)
+	 * @see #draw(int, int, Rectangle, GC)
+	 */
 	public static final int PART_MIN_BUTTON = -6;
+	/**
+	 * Part constant indicating the chevron button of the tab folder. (value is
+	 * -7).
+	 *
+	 * @see #computeSize(int, int, GC, int, int)
+	 * @see #computeTrim(int, int, int, int, int, int)
+	 * @see #draw(int, int, Rectangle, GC)
+	 */
 	public static final int PART_CHEVRON_BUTTON = -7;
+	/**
+	 * Part constant indicating the close button of a tab item. (value is -8).
+	 *
+	 * @see #computeSize(int, int, GC, int, int)
+	 * @see #computeTrim(int, int, int, int, int, int)
+	 * @see #draw(int, int, Rectangle, GC)
+	 */
 	public static final int PART_CLOSE_BUTTON = -8;
 
 	public static final int MINIMUM_SIZE = 1 << 24; //TODO: Should this be a state?
