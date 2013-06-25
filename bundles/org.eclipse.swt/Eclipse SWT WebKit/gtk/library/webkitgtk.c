@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2012 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2013 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -1460,6 +1460,24 @@ JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1download_1start)
 }
 #endif
 
+#ifndef NO__1webkit_1favicon_1database_1set_1path
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1favicon_1database_1set_1path)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+{
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1favicon_1database_1set_1path_FUNC);
+/*
+	webkit_favicon_database_set_path(arg0, arg1);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_favicon_database_set_path)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong, jintLong))fp)(arg0, arg1);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1favicon_1database_1set_1path_FUNC);
+}
+#endif
+
 #ifndef NO__1webkit_1get_1default_1session
 JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1get_1default_1session)
 	(JNIEnv *env, jclass that)
@@ -1476,6 +1494,26 @@ JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1get_1default_1session)
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1get_1default_1session_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1webkit_1get_1favicon_1database
+JNIEXPORT jintLong JNICALL WebKitGTK_NATIVE(_1webkit_1get_1favicon_1database)
+	(JNIEnv *env, jclass that)
+{
+	jintLong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1get_1favicon_1database_FUNC);
+/*
+	rc = (jintLong)webkit_get_favicon_database();
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_get_favicon_database)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1get_1favicon_1database_FUNC);
 	return rc;
 }
 #endif

@@ -831,11 +831,33 @@ public static final void webkit_download_start (long /*int*/ download) {
 }
 
 /** @method flags=dynamic */
+public static final native void _webkit_favicon_database_set_path (long /*int*/ database, long /*int*/ path);
+public static final void webkit_favicon_database_set_path (long /*int*/ database, long /*int*/ path) {
+	lock.lock();
+	try {
+		_webkit_favicon_database_set_path (database, path);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native long /*int*/ _webkit_get_default_session ();
 public static final long /*int*/ webkit_get_default_session () {
 	lock.lock();
 	try {
 		return _webkit_get_default_session ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long /*int*/ _webkit_get_favicon_database ();
+public static final long /*int*/ webkit_get_favicon_database () {
+	lock.lock();
+	try {
+		return _webkit_get_favicon_database ();
 	} finally {
 		lock.unlock();
 	}

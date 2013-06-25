@@ -665,6 +665,17 @@ public void create (Composite parent, int style) {
 		size.x -= minSize.width; size.y -= minSize.height;
 		browser.setSize (size);
 	}
+
+	/*
+	* WebKitGTK version 1.10.x, and possibly other versions as well, crash
+	* sporadically in webkitWebViewRegisterForIconNotification().  Work
+	* around this crash by disabling WebKit's icon database, which is fine
+	* to do since the Browser does not make use of it in any way.
+	*/
+	long /*int*/ database = WebKitGTK.webkit_get_favicon_database ();
+	if (database != 0) {
+		WebKitGTK.webkit_favicon_database_set_path (database, 0);
+	}
 }
 
 void addEventHandlers (long /*int*/ web_view, boolean top) {

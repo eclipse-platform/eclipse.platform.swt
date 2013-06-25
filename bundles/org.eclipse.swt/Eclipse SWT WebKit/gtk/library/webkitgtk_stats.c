@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2012 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2013 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -91,7 +91,9 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1download_1new",
 	"_1webkit_1download_1set_1destination_1uri",
 	"_1webkit_1download_1start",
+	"_1webkit_1favicon_1database_1set_1path",
 	"_1webkit_1get_1default_1session",
+	"_1webkit_1get_1favicon_1database",
 	"_1webkit_1major_1version",
 	"_1webkit_1micro_1version",
 	"_1webkit_1minor_1version",
