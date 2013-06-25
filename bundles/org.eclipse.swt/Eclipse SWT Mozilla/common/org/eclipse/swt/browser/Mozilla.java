@@ -3023,6 +3023,61 @@ void registerFunction (BrowserFunction function) {
 	AllFunctions.put (new Integer (function.index), function);
 }
 
+boolean sendChangingEvent (String url) {
+	isViewingErrorPage = url.indexOf ("netError.xhtml") != -1; //$NON-NLS-1$
+
+	boolean doit = true;
+	if (request == 0) {
+		/* 
+		 * listeners should not be notified of internal transitions like "javascript:..."
+		 * because this is an implementation side-effect, not a true navigate
+		 */
+		if (!url.startsWith (PREFIX_JAVASCRIPT)) {
+			if (locationListeners.length > 0) {
+				LocationEvent event = new LocationEvent (browser);
+				event.display = browser.getDisplay();
+				event.widget = browser;
+				event.location = url;
+				/*
+				 * If the URI indicates that the page is being rendered from memory
+				 * (via setText()) then set it to about:blank to be consistent with IE.
+				 */
+				if (event.location.equals (URI_FILEROOT)) {
+					event.location = ABOUT_BLANK;
+				} else {
+					int length = URI_FILEROOT.length ();
+					if (event.location.startsWith (URI_FILEROOT) && event.location.charAt (length) == '#') {
+						event.location = ABOUT_BLANK + event.location.substring (length);
+					}
+				}
+				event.doit = doit;
+				for (int i = 0; i < locationListeners.length; i++) {
+					locationListeners[i].changing (event);
+				}
+				doit = event.doit && !browser.isDisposed();
+			}
+
+			if (doit) {
+				if (jsEnabled != jsEnabledOnNextPage) {
+					jsEnabled = jsEnabledOnNextPage;
+					long /*int*/[] result = new long /*int*/[1];
+					int rc = webBrowser.QueryInterface (nsIWebBrowserSetup.NS_IWEBBROWSERSETUP_IID, result);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+	
+					nsIWebBrowserSetup setup = new nsIWebBrowserSetup (result[0]);
+					result[0] = 0;
+					rc = setup.SetProperty (nsIWebBrowserSetup.SETUP_ALLOW_JAVASCRIPT, jsEnabled ? 1 : 0);
+					if (rc != XPCOM.NS_OK) error (rc);
+					setup.Release ();
+				}
+				if (!isViewingErrorPage) lastNavigateURL = url;
+			}
+		}
+	}
+	return doit;
+}
+
 public boolean setText (String html, boolean trusted) {
 	/*
 	*  Feature in Mozilla.  The focus memory of Mozilla must be 
@@ -3552,16 +3607,15 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 	}
 
 	/*
-	* Feature of Mozilla.  When a redirect occurs to a site with an invalid
-	* certificate, no STATE_IS_DOCUMENT state transitions are received for the
-	* new location, and an immediate attempt is made to show the invalid
-	* certificate error.  However our invalid certificate handler must know
-	* the site with the invalid certificate, not the site that redirected to
-	* it.  The only opportunity to get this site before our invalid certificate
-	* handler is invoked is in the subsequent STATE_START | STATE_IS_REQUEST
-	* transition.  When this comes, if the request's name appears to be a
-	* url then take this to be the new site, in case our invalid certificate
-	* handler is about to be invoked.
+	* Feature of Mozilla.  When a redirect occurs, no STATE_IS_DOCUMENT state
+	* transitions or OnStartURIOpen() callbacks are received for the new
+	* location.  As a result, lastNavigateURL is left with the value of the old
+	* url (that was redirected from), and the client does not get an opportunity
+	* to veto the redirect.  The only opportunity to work around these omissions
+	* is in the subsequent STATE_START | STATE_IS_REQUEST state transition.
+	* When this comes, if the request's name appears to be a url then take it to
+	* be the new site (update lastNavigateURL), and send a "changing" LocationEvent
+	* to allow the redirect to be vetoed.
 	* 
 	* Note that updateLastNavigateUrl is not reset to false here so that in
 	* typical contexts where a redirect occurs without an accompanying invalid
@@ -3578,7 +3632,14 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 			byte[] bytes = new byte[length];
 			XPCOM.memmove (bytes, buffer, length);
 			String value = new String (bytes);
-			if (value.indexOf (":/") != -1) lastNavigateURL = value;	//$NON-NLS-1$
+			if (value.indexOf (":/") != -1) { //$NON-NLS-1$
+				boolean doit = sendChangingEvent (value);
+				if (doit) {
+					lastNavigateURL = value;
+				} else {
+					stop ();
+				}
+			}
 		}
 		XPCOM.nsEmbedCString_delete (name);
 	}
@@ -4430,57 +4491,7 @@ int OnStartURIOpen (long /*int*/ aURI, long /*int*/ retval) {
 		setUrl (lastNavigateURL, (byte[])null, null);
 		return XPCOM.NS_OK;
 	}
-	isViewingErrorPage = value.indexOf ("netError.xhtml") != -1; //$NON-NLS-1$
-
-	boolean doit = true;
-	if (request == 0) {
-		/* 
-		 * listeners should not be notified of internal transitions like "javascript:..."
-		 * because this is an implementation side-effect, not a true navigate
-		 */
-		if (!value.startsWith (PREFIX_JAVASCRIPT)) {
-			if (locationListeners.length > 0) {
-				LocationEvent event = new LocationEvent (browser);
-				event.display = browser.getDisplay();
-				event.widget = browser;
-				event.location = value;
-				/*
-				 * If the URI indicates that the page is being rendered from memory
-				 * (via setText()) then set it to about:blank to be consistent with IE.
-				 */
-				if (event.location.equals (URI_FILEROOT)) {
-					event.location = ABOUT_BLANK;
-				} else {
-					length = URI_FILEROOT.length ();
-					if (event.location.startsWith (URI_FILEROOT) && event.location.charAt (length) == '#') {
-						event.location = ABOUT_BLANK + event.location.substring (length);
-					}
-				}
-				event.doit = doit;
-				for (int i = 0; i < locationListeners.length; i++) {
-					locationListeners[i].changing (event);
-				}
-				doit = event.doit && !browser.isDisposed();
-			}
-
-			if (doit) {
-				if (jsEnabled != jsEnabledOnNextPage) {
-					jsEnabled = jsEnabledOnNextPage;
-					long /*int*/[] result = new long /*int*/[1];
-					int rc = webBrowser.QueryInterface (nsIWebBrowserSetup.NS_IWEBBROWSERSETUP_IID, result);
-					if (rc != XPCOM.NS_OK) error (rc);
-					if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-	
-					nsIWebBrowserSetup setup = new nsIWebBrowserSetup (result[0]);
-					result[0] = 0;
-					rc = setup.SetProperty (nsIWebBrowserSetup.SETUP_ALLOW_JAVASCRIPT, jsEnabled ? 1 : 0);
-					if (rc != XPCOM.NS_OK) error (rc);
-					setup.Release ();
-				}
-				if (!isViewingErrorPage) lastNavigateURL = value;
-			}
-		}
-	}
+	boolean doit = sendChangingEvent (value);
 	XPCOM.memmove (retval, new boolean[] {!doit});
 	return XPCOM.NS_OK;
 }
