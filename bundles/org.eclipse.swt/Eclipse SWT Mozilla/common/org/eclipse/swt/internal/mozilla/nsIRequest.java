@@ -45,42 +45,6 @@ public class nsIRequest extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aName);
 	}
 
-	public int IsPending(int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
-	}
-
-	public int GetStatus(long /*int*/[] aStatus) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aStatus);
-	}
-
-	public int Cancel(int aStatus) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aStatus);
-	}
-
-	public int Suspend() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress());
-	}
-
-	public int Resume() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress());
-	}
-
-	public int GetLoadGroup(long /*int*/[] aLoadGroup) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aLoadGroup);
-	}
-
-	public int SetLoadGroup(long /*int*/ aLoadGroup) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aLoadGroup);
-	}
-
-	public int GetLoadFlags(long /*int*/[] aLoadFlags) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aLoadFlags);
-	}
-
-	public int SetLoadFlags(int aLoadFlags) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aLoadFlags);
-	}
-
 	public static final int LOAD_NORMAL = 0;
 	public static final int LOAD_BACKGROUND = 1;
 	public static final int INHIBIT_CACHING = 128;

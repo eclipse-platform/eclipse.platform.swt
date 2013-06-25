@@ -40,8 +40,4 @@ public class nsIWebProgressListener2 extends nsIWebProgressListener {
 	public nsIWebProgressListener2(long /*int*/ address) {
 		super(address);
 	}
-
-	public int OnProgressChange64(long /*int*/ aWebProgress, long /*int*/ aRequest, long aCurSelfProgress, long aMaxSelfProgress, long aCurTotalProgress, long aMaxTotalProgress) {
-		return XPCOM.VtblCall(nsIWebProgressListener.LAST_METHOD_ID + 1, getAddress(), aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress);
-	}
 }

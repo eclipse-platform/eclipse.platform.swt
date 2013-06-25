@@ -40,40 +40,4 @@ public class nsIXPCSecurityManager extends nsISupports {
 	public nsIXPCSecurityManager(long /*int*/ address) {
 		super(address);
 	}
-
-	public static final int HOOK_CREATE_WRAPPER = 1;
-
-	public static final int HOOK_CREATE_INSTANCE = 2;
-
-	public static final int HOOK_GET_SERVICE = 4;
-
-	public static final int HOOK_CALL_METHOD = 8;
-
-	public static final int HOOK_GET_PROPERTY = 16;
-
-	public static final int HOOK_SET_PROPERTY = 32;
-
-	public static final int HOOK_ALL = 63;
-
-	public int CanCreateWrapper(long /*int*/ aJSContext, nsID aIID, long /*int*/ aObj, long /*int*/ aClassInfo, long /*int*/[] aPolicy) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aJSContext, aIID, aObj, aClassInfo, aPolicy);
-	}
-
-	public int CanCreateInstance(long /*int*/ aJSContext, nsID aCID) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aJSContext, aCID);
-	}
-
-	public int CanGetService(long /*int*/ aJSContext, nsID aCID) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aJSContext, aCID);
-	}
-
-	public static final int ACCESS_CALL_METHOD = 0;
-
-	public static final int ACCESS_GET_PROPERTY = 1;
-
-	public static final int ACCESS_SET_PROPERTY = 2;
-
-	public int CanAccess(int aAction, long /*int*/ aCallContext, long /*int*/ aJSContext, long /*int*/ aJSObject, long /*int*/ aObj, long /*int*/ aClassInfo, long /*int*/ aName, long /*int*/[] aPolicy) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aAction, aCallContext, aJSContext, aJSObject, aObj, aClassInfo, aName, aPolicy);
-	}
 }

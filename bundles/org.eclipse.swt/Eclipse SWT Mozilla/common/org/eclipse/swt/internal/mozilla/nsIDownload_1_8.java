@@ -40,44 +40,4 @@ public class nsIDownload_1_8 extends nsITransfer {
 	public nsIDownload_1_8(long /*int*/ address) {
 		super(address);
 	}
-
-	public int GetTargetFile(long /*int*/[] aTargetFile) {
-		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 1, getAddress(), aTargetFile);
-	}
-
-	public int GetPercentComplete(int[] aPercentComplete) {
-		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 2, getAddress(), aPercentComplete);
-	}
-
-	public int GetAmountTransferred(long /*int*/ aAmountTransferred) {
-		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 3, getAddress(), aAmountTransferred);
-	}
-
-	public int GetSize(long /*int*/ aSize) {
-		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 4, getAddress(), aSize);
-	}
-
-	public int GetSource(long /*int*/[] aSource) {
-		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 5, getAddress(), aSource);
-	}
-
-	public int GetTarget(long /*int*/[] aTarget) {
-		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 6, getAddress(), aTarget);
-	}
-
-	public int GetCancelable(long /*int*/[] aCancelable) {
-		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 7, getAddress(), aCancelable);
-	}
-
-	public int GetDisplayName(long /*int*/[] aDisplayName) {
-		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 8, getAddress(), aDisplayName);
-	}
-
-	public int GetStartTime(long[] aStartTime) {
-		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 9, getAddress(), aStartTime);
-	}
-
-	public int GetMIMEInfo(long /*int*/[] aMIMEInfo) {
-		return XPCOM.VtblCall(nsITransfer.LAST_METHOD_ID + 10, getAddress(), aMIMEInfo);
-	}
 }

@@ -41,14 +41,6 @@ public class nsIJSContextStack extends nsISupports {
 		super(address);
 	}
 
-	public int GetCount(int[] aCount) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aCount);
-	}
-
-	public int Peek(long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
-	}
-
 	public int Pop(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), _retval);
 	}

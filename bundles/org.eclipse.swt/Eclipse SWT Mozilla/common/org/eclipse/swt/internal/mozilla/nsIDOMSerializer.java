@@ -44,8 +44,4 @@ public class nsIDOMSerializer extends nsISupports {
 	public int SerializeToString(long /*int*/ root, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), root, _retval);
 	}
-
-	public int SerializeToStream(long /*int*/ root, long /*int*/ stream, byte[] charset) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), root, stream, charset);
-	}
 }

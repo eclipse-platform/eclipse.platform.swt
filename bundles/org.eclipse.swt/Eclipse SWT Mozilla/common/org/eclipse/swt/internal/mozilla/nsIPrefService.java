@@ -41,27 +41,11 @@ public class nsIPrefService extends nsISupports {
 		super(address);
 	}
 
-	public int ReadUserPrefs(long /*int*/ aFile) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aFile);
-	}
-
-	public int ResetPrefs() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress());
-	}
-
-	public int ResetUserPrefs() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
-	}
-
 	public int SavePrefFile(long /*int*/ aFile) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aFile);
 	}
 
 	public int GetBranch(byte[] aPrefRoot, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aPrefRoot, _retval);
-	}
-
-	public int GetDefaultBranch(byte[] aPrefRoot, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aPrefRoot, _retval);
 	}
 }

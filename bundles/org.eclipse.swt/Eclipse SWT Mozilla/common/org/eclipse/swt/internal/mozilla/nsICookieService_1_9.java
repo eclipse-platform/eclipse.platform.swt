@@ -45,15 +45,7 @@ public class nsICookieService_1_9 extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aURI, aChannel, _retval);
 	}
 
-	public int GetCookieStringFromHttp(long /*int*/ aURI, long /*int*/ aFirstURI, long /*int*/ aChannel, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aURI, aFirstURI, aChannel, _retval);
-	}
-
 	public int SetCookieString(long /*int*/ aURI, long /*int*/ aPrompt, byte[] aCookie, long /*int*/ aChannel) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aURI, aPrompt, aCookie, aChannel);
-	}
-
-	public int SetCookieStringFromHttp(long /*int*/ aURI, long /*int*/ aFirstURI, long /*int*/ aPrompt, byte[] aCookie, byte[] aServerTime, long /*int*/ aChannel) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aURI, aFirstURI, aPrompt, aCookie, aServerTime, aChannel);
 	}
 }

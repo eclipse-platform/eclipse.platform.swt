@@ -40,12 +40,4 @@ public class nsISerializable extends nsISupports {
 	public nsISerializable(long /*int*/ address) {
 		super(address);
 	}
-
-	public int Read(long /*int*/ aInputStream) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aInputStream);
-	}
-
-	public int Write(long /*int*/ aOutputStream) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aOutputStream);
-	}
 }

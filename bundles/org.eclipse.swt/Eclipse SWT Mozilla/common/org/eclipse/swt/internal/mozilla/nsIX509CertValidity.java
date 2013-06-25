@@ -41,32 +41,8 @@ public class nsIX509CertValidity extends nsISupports {
 		super(address);
 	}
 
-	public int GetNotBefore(long /*int*/ aNotBefore) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aNotBefore);
-	}
-
-	public int GetNotBeforeLocalTime(long /*int*/ aNotBeforeLocalTime) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aNotBeforeLocalTime);
-	}
-
-	public int GetNotBeforeLocalDay(long /*int*/ aNotBeforeLocalDay) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aNotBeforeLocalDay);
-	}
-
 	public int GetNotBeforeGMT(long /*int*/ aNotBeforeGMT) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aNotBeforeGMT);
-	}
-
-	public int GetNotAfter(long /*int*/ aNotAfter) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aNotAfter);
-	}
-
-	public int GetNotAfterLocalTime(long /*int*/ aNotAfterLocalTime) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aNotAfterLocalTime);
-	}
-
-	public int GetNotAfterLocalDay(long /*int*/ aNotAfterLocalDay) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aNotAfterLocalDay);
 	}
 
 	public int GetNotAfterGMT(long /*int*/ aNotAfterGMT) {

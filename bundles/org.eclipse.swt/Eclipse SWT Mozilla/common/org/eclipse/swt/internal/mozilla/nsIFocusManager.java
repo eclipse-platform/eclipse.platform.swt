@@ -47,48 +47,12 @@ public class nsIFocusManager extends nsISupports {
 		super(address);
 	}
 
-	public int GetActiveWindow(long /*int*/[] aActiveWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aActiveWindow);
-	}
-
-	public int SetActiveWindow(long /*int*/ aActiveWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aActiveWindow);
-	}
-
-	public int GetFocusedWindow(long /*int*/[] aFocusedWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aFocusedWindow);
-	}
-
-	public int SetFocusedWindow(long /*int*/ aFocusedWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aFocusedWindow);
-	}
-
 	public int GetFocusedElement(long /*int*/[] aFocusedElement) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aFocusedElement);
 	}
 
-	public int GetLastFocusMethod(long /*int*/ window, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), window, _retval);
-	}
-
 	public int SetFocus(long /*int*/ aElement, int aFlags) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aElement, aFlags);
-	}
-
-	public int MoveFocus(long /*int*/ aWindow, long /*int*/ aStartElement, int aType, int aFlags, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aWindow, aStartElement, aType, aFlags, _retval);
-	}
-
-	public int ClearFocus(long /*int*/ aWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aWindow);
-	}
-
-	public int GetFocusedElementForWindow(long /*int*/ aWindow, int aDeep, long /*int*/[] aFocusedWindow, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aWindow, aDeep, aFocusedWindow, _retval);
-	}
-
-	public int MoveCaretToFocus(long /*int*/ aWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aWindow);
 	}
 
 	public static final int FLAG_RAISE = 1;
@@ -105,33 +69,4 @@ public class nsIFocusManager extends nsISupports {
 	public static final int MOVEFOCUS_LAST = 6;
 	public static final int MOVEFOCUS_ROOT = 7;
 	public static final int MOVEFOCUS_CARET = 8;
-
-	public int WindowRaised(long /*int*/ aWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), aWindow);
-	}
-
-	public int WindowLowered(long /*int*/ aWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), aWindow);
-	}
-
-	public int ContentRemoved(long /*int*/ aDocument, long /*int*/ aElement) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 14, getAddress(), aDocument, aElement);
-	}
-
-	public int WindowShown(long /*int*/ aWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 15, getAddress(), aWindow);
-	}
-
-	public int WindowHidden(long /*int*/ aWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 16, getAddress(), aWindow);
-	}
-
-	public int FireDelayedEvents(long /*int*/ aDocument) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 17, getAddress(), aDocument);
-	}
-	
-	public int FocusPlugin(long /*int*/ aPlugin) {
-		if (!(IsXULRunner10 || IsXULRunner17)) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 18, getAddress(), aPlugin);
-	}
 }

@@ -51,18 +51,6 @@ public class nsISSLStatus extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aServerCert);
 	}
 
-	public int GetCipherName(long /*int*/[] aCipherName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aCipherName);
-	}
-
-	public int GetKeyLength(int[] aKeyLength) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aKeyLength);
-	}
-
-	public int GetSecretKeyLength(int[] aSecretKeyLength) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aSecretKeyLength);
-	}
-
 	public int GetIsDomainMismatch(int[] aIsDomainMismatch) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aIsDomainMismatch);
 	}
@@ -73,10 +61,5 @@ public class nsISSLStatus extends nsISupports {
 
 	public int GetIsUntrusted(int[] aIsUntrusted) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aIsUntrusted);
-	}
-	
-	public int GetIsExtendedValidation(int[] aIsExtendedValidation) {
-		if (!(IsXULRunner10 || IsXULRunner17)) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aIsExtendedValidation);
 	}
 }

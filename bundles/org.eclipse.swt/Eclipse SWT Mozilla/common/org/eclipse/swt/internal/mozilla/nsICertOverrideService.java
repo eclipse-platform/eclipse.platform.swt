@@ -48,24 +48,4 @@ public class nsICertOverrideService extends nsISupports {
 	public int RememberValidityOverride(long /*int*/ aHostName, int aPort, long /*int*/ aCert, int aOverrideBits, int aTemporary) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aHostName, aPort, aCert, aOverrideBits, aTemporary);
 	}
-
-	public int HasMatchingOverride(long /*int*/ aHostName, int aPort, long /*int*/ aCert, int[] aOverrideBits, int[] aIsTemporary, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aHostName, aPort, aCert, aOverrideBits, aIsTemporary, _retval);
-	}
-
-	public int GetValidityOverride(long /*int*/ aHostName, int aPort, long /*int*/ aHashAlg, long /*int*/ aFingerprint, int[] aOverrideBits, int[] aIsTemporary, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aHostName, aPort, aHashAlg, aFingerprint, aOverrideBits, aIsTemporary, _retval);
-	}
-
-	public int ClearValidityOverride(long /*int*/ aHostName, int aPort) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aHostName, aPort);
-	}
-
-	public int GetAllOverrideHostsWithPorts(int[] aCount, long /*int*/[] aHostsWithPortsArray) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aCount, aHostsWithPortsArray);
-	}
-
-	public int IsCertUsedForOverrides(long /*int*/ aCert, int aCheckTemporaries, int aCheckPermanents, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aCert, aCheckTemporaries, aCheckPermanents, _retval);
-	}
 }

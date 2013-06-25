@@ -48,28 +48,4 @@ public class nsIWebBrowserFocus extends nsISupports {
 	public int Deactivate() {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress());
 	}
-
-	public int SetFocusAtFirstElement() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
-	}
-
-	public int SetFocusAtLastElement() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress());
-	}
-
-	public int GetFocusedWindow(long /*int*/[] aFocusedWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aFocusedWindow);
-	}
-
-	public int SetFocusedWindow(long /*int*/ aFocusedWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aFocusedWindow);
-	}
-
-	public int GetFocusedElement(long /*int*/[] aFocusedElement) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aFocusedElement);
-	}
-
-	public int SetFocusedElement(long /*int*/ aFocusedElement) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aFocusedElement);
-	}
 }

@@ -45,19 +45,7 @@ public class nsIMemory extends nsISupports {
 		return XPCOM.nsIMemory_Alloc(getAddress(), size);
 	}
 
-	public long /*int*/ Realloc(long /*int*/ ptr, int newSize) {
-		return XPCOM.nsIMemory_Realloc(getAddress(), ptr, newSize);
-	}
-
 	public int Free(long /*int*/ ptr) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), ptr);
-	}
-
-	public int HeapMinimize(int immediate) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), immediate);
-	}
-
-	public int IsLowMemory(int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), _retval);
 	}
 }

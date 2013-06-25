@@ -48,20 +48,4 @@ public class nsICategoryManager extends nsISupports {
 	public int AddCategoryEntry(byte[] aCategory, byte[] aEntry, byte[] aValue, int aPersist, int aReplace, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aCategory, aEntry, aValue, aPersist, aReplace, _retval);
 	}
-
-	public int DeleteCategoryEntry(byte[] aCategory, byte[] aEntry, int aPersist) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aCategory, aEntry, aPersist);
-	}
-
-	public int DeleteCategory(byte[] aCategory) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aCategory);
-	}
-
-	public int EnumerateCategory(byte[] aCategory, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aCategory, _retval);
-	}
-
-	public int EnumerateCategories(long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), _retval);
-	}
 }

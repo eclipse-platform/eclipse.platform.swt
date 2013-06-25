@@ -41,79 +41,7 @@ public class nsIHttpChannel extends nsIChannel {
 		super(address);
 	}
 
-	public int GetRequestMethod(long /*int*/ aRequestMethod) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 1, getAddress(), aRequestMethod);
-	}
-
-	public int SetRequestMethod(long /*int*/ aRequestMethod) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 2, getAddress(), aRequestMethod);
-	}
-
-	public int GetReferrer(long /*int*/[] aReferrer) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 3, getAddress(), aReferrer);
-	}
-
-	public int SetReferrer(long /*int*/ aReferrer) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 4, getAddress(), aReferrer);
-	}
-
-	public int GetRequestHeader(long /*int*/ aHeader, long /*int*/ _retval) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 5, getAddress(), aHeader, _retval);
-	}
-
-	public int SetRequestHeader(long /*int*/ aHeader, long /*int*/ aValue, int aMerge) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 6, getAddress(), aHeader, aValue, aMerge);
-	}
-
 	public int VisitRequestHeaders(long /*int*/ aVisitor) {
 		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 7, getAddress(), aVisitor);
-	}
-
-	public int GetAllowPipelining(int[] aAllowPipelining) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 8, getAddress(), aAllowPipelining);
-	}
-
-	public int SetAllowPipelining(int aAllowPipelining) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 9, getAddress(), aAllowPipelining);
-	}
-
-	public int GetRedirectionLimit(int[] aRedirectionLimit) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 10, getAddress(), aRedirectionLimit);
-	}
-
-	public int SetRedirectionLimit(int aRedirectionLimit) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 11, getAddress(), aRedirectionLimit);
-	}
-
-	public int GetResponseStatus(int[] aResponseStatus) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 12, getAddress(), aResponseStatus);
-	}
-
-	public int GetResponseStatusText(long /*int*/ aResponseStatusText) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 13, getAddress(), aResponseStatusText);
-	}
-
-	public int GetRequestSucceeded(int[] aRequestSucceeded) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 14, getAddress(), aRequestSucceeded);
-	}
-
-	public int GetResponseHeader(long /*int*/ header, long /*int*/ _retval) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 15, getAddress(), header, _retval);
-	}
-
-	public int SetResponseHeader(long /*int*/ header, long /*int*/ value, int merge) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 16, getAddress(), header, value, merge);
-	}
-
-	public int VisitResponseHeaders(long /*int*/ aVisitor) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 17, getAddress(), aVisitor);
-	}
-
-	public int IsNoStoreResponse(int[] _retval) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 18, getAddress(), _retval);
-	}
-
-	public int IsNoCacheResponse(int[] _retval) {
-		return XPCOM.VtblCall(nsIChannel.LAST_METHOD_ID + 19, getAddress(), _retval);
 	}
 }

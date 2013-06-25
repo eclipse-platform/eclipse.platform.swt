@@ -41,14 +41,6 @@ public class nsIPrefLocalizedString extends nsISupports {
 		super(address);
 	}
 
-	public int GetData(long /*int*/[] aData) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aData);
-	}
-
-	public int SetData(char[] aData) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aData);
-	}
-
 	public int ToString(long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), _retval);
 	}

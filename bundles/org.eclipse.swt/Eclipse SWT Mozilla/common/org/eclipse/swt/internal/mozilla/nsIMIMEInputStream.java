@@ -41,10 +41,6 @@ public class nsIMIMEInputStream extends nsIInputStream {
 		super(address);
 	}
 
-	public int GetAddContentLength(int[] aAddContentLength) {
-		return XPCOM.VtblCall(nsIInputStream.LAST_METHOD_ID + 1, getAddress(), aAddContentLength);
-	}
-
 	public int SetAddContentLength(int aAddContentLength) {
 		return XPCOM.VtblCall(nsIInputStream.LAST_METHOD_ID + 2, getAddress(), aAddContentLength);
 	}

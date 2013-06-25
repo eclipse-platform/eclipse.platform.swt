@@ -41,30 +41,6 @@ public class nsIClassInfo extends nsISupports {
 		super(address);
 	}
 
-	public int GetInterfaces(int[] count, long /*int*/[] array) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), count, array);
-	}
-
-	public int GetHelperForLanguage(int language, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), language, _retval);
-	}
-
-	public int GetContractID(long /*int*/[] aContractID) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aContractID);
-	}
-
-	public int GetClassDescription(long /*int*/[] aClassDescription) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aClassDescription);
-	}
-
-	public int GetClassID(long /*int*/ aClassID) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aClassID);
-	}
-
-	public int GetImplementationLanguage(int[] aImplementationLanguage) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aImplementationLanguage);
-	}
-
 	public static final int SINGLETON = 1;
 	public static final int THREADSAFE = 2;
 	public static final int MAIN_THREAD_ONLY = 4;
@@ -73,12 +49,4 @@ public class nsIClassInfo extends nsISupports {
 	public static final int EAGER_CLASSINFO = 32;
 	public static final int CONTENT_NODE = 64;
 //	public static final int RESERVED = 2147483648;
-
-	public int GetFlags(int[] aFlags) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aFlags);
-	}
-
-	public int GetClassIDNoAlloc(long /*int*/ aClassIDNoAlloc) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aClassIDNoAlloc);
-	}
 }

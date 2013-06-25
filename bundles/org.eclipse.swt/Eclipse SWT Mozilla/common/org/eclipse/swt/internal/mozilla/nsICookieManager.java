@@ -41,10 +41,6 @@ public class nsICookieManager extends nsISupports {
 		super(address);
 	}
 
-	public int RemoveAll() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress());
-	}
-
 	public int GetEnumerator(long /*int*/[] aEnumerator) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aEnumerator);
 	}

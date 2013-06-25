@@ -52,6 +52,4 @@ public class nsIPromptService {
 	public static final int BUTTON_DELAY_ENABLE = 67108864;
 	public static final int STD_OK_CANCEL_BUTTONS = 513;
 	public static final int STD_YES_NO_BUTTONS = 1027;
-
-	/* outgoing functions removed because this is an implemented interface */
 }

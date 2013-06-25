@@ -48,8 +48,4 @@ public class nsIDOMWindowCollection extends nsISupports {
 	public int Item(int index, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), index, _retval);
 	}
-
-	public int NamedItem(long /*int*/ name, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), name, _retval);
-	}
 }

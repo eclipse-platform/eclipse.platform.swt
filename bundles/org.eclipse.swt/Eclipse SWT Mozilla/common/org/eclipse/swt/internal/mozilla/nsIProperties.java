@@ -44,20 +44,4 @@ public class nsIProperties extends nsISupports {
 	public int Get(byte[] prop, nsID iid, long /*int*/[] result) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), prop, iid, result);
 	}
-
-	public int Set(byte[] prop, long /*int*/ value) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), prop, value);
-	}
-
-	public int Has(byte[] prop, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), prop, _retval);
-	}
-
-	public int Undefine(byte[] prop) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), prop);
-	}
-
-	public int GetKeys(int[] count, long /*int*/[] keys) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), count, keys);
-	}
 }

@@ -180,7 +180,7 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIProgressDialog_1_8.NS_IPROGRESSDIALOG_IID)) {
+	if (guid.Equals (XPCOM.NS_IPROGRESSDIALOG_1_8_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {progressDialog.getAddress ()}, C.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;

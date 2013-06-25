@@ -52,8 +52,4 @@ public class nsISeekableStream extends nsISupports {
 	public int Tell(long[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
 	}
-
-	public int SetEOF() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
-	}
 }

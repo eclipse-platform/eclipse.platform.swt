@@ -47,83 +47,12 @@ public class nsIChannel extends nsIRequest {
 		super(address);
 	}
 
-	public int GetOriginalURI(long /*int*/[] aOriginalURI) {
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 1, getAddress(), aOriginalURI);
-	}
-
-	public int SetOriginalURI(long /*int*/ aOriginalURI) {
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 2, getAddress(), aOriginalURI);
-	}
-
 	public int GetURI(long /*int*/[] aURI) {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 3, getAddress(), aURI);
 	}
 
-	public int GetOwner(long /*int*/[] aOwner) {
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 4, getAddress(), aOwner);
-	}
-
-	public int SetOwner(long /*int*/ aOwner) {
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 5, getAddress(), aOwner);
-	}
-
-	public int GetNotificationCallbacks(long /*int*/[] aNotificationCallbacks) {
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 6, getAddress(), aNotificationCallbacks);
-	}
-
 	public int SetNotificationCallbacks(long /*int*/ aNotificationCallbacks) {
 		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 7, getAddress(), aNotificationCallbacks);
-	}
-
-	public int GetSecurityInfo(long /*int*/[] aSecurityInfo) {
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 8, getAddress(), aSecurityInfo);
-	}
-
-	public int GetContentType(long /*int*/ aContentType) {
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 9, getAddress(), aContentType);
-	}
-
-	public int SetContentType(long /*int*/ aContentType) {
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 10, getAddress(), aContentType);
-	}
-
-	public int GetContentCharset(long /*int*/ aContentCharset) {
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 11, getAddress(), aContentCharset);
-	}
-
-	public int SetContentCharset(long /*int*/ aContentCharset) {
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 12, getAddress(), aContentCharset);
-	}
-
-	public int GetContentLength(int[] aContentLength) {
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 13, getAddress(), aContentLength);
-	}
-
-	public int SetContentLength(int aContentLength) {
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 14, getAddress(), aContentLength);
-	}
-
-	public int Open(long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 15, getAddress(), _retval);
-	}
-
-	public int AsyncOpen(long /*int*/ aListener, long /*int*/ aContext) {
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 16, getAddress(), aListener, aContext);
-	}
-
-	public int GetContentDisposition(int[] aContentDisposition) {
-		if (!(IsXULRunner10 || IsXULRunner17)) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 17, getAddress(), aContentDisposition);
-	}
-
-	public int GetContentDispositionFilename(long /*int*/ aContentDispositionFilename) {
-		if (!(IsXULRunner10 || IsXULRunner17)) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 18, getAddress(), aContentDispositionFilename);
-	}
-
-	public int GetContentDispositionHeader(long /*int*/ aContentDispositionHeader) {
-		if (!(IsXULRunner10 || IsXULRunner17)) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsIRequest.LAST_METHOD_ID + 19, getAddress(), aContentDispositionHeader);
 	}
 
 	public static final int LOAD_DOCUMENT_URI = 65536;

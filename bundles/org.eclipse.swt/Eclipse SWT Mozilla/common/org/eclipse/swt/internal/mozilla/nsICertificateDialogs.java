@@ -41,27 +41,7 @@ public class nsICertificateDialogs extends nsISupports {
 		super(address);
 	}
 
-	public int ConfirmDownloadCACert(long /*int*/ ctx, long /*int*/ cert, int[] trust, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), ctx, cert, trust, _retval);
-	}
-
-	public int NotifyCACertExists(long /*int*/ ctx) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), ctx);
-	}
-
-	public int SetPKCS12FilePassword(long /*int*/ ctx, long /*int*/ password, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), ctx, password, _retval);
-	}
-
-	public int GetPKCS12FilePassword(long /*int*/ ctx, long /*int*/ password, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), ctx, password, _retval);
-	}
-
 	public int ViewCert(long /*int*/ ctx, long /*int*/ cert) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), ctx, cert);
-	}
-
-	public int CrlImportStatusDialog(long /*int*/ ctx, long /*int*/ crl) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), ctx, crl);
 	}
 }

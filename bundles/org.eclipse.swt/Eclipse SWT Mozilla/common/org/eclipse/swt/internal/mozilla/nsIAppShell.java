@@ -45,31 +45,7 @@ public class nsIAppShell extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), argc, argv);
 	}
 
-	public int Run() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress());
-	}
-
 	public int Spinup() {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
-	}
-
-	public int Spindown() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress());
-	}
-
-	public int ListenToEventQueue(long /*int*/ aQueue, int aListen) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aQueue, aListen);
-	}
-
-	public int GetNativeEvent(long /*int*/ aRealEvent, long /*int*/[] aEvent) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aRealEvent, aEvent);
-	}
-
-	public int DispatchNativeEvent(int aRealEvent, long /*int*/ aEvent) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aRealEvent, aEvent);
-	}
-
-	public int Exit() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress());
 	}
 }

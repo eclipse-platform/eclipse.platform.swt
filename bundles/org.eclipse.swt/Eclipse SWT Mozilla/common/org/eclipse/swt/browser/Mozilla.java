@@ -2892,7 +2892,7 @@ void navigate (long /*int*/ requestHandle) {
 			if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 			nsID guid = new nsID ();
 			XPCOM.memmove (guid, riid, nsID.sizeof);
-			if (guid.Equals (nsISupports.NS_ISUPPORTS_IID) || guid.Equals (nsIHttpHeaderVisitor.NS_IHTTPHEADERVISITOR_IID)) {
+			if (guid.Equals (nsISupports.NS_ISUPPORTS_IID) || guid.Equals (XPCOM.NS_IHTTPHEADERVISITOR_IID)) {
 				XPCOM.memmove (ppvObject, new long /*int*/[] {getAddress ()}, C.PTR_SIZEOF);
 				refCount++;
 				return XPCOM.NS_OK;
