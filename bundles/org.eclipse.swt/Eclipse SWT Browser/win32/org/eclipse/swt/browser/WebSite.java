@@ -223,7 +223,7 @@ int GetExternal(long /*int*/ ppDispatch) {
 }
 
 int GetHostInfo(long /*int*/ pInfo) {
-	int info = IE.DOCHOSTUIFLAG_THEME;
+	int info = IE.DOCHOSTUIFLAG_THEME | IE.DOCHOSTUIFLAG_ENABLE_REDIRECT_NOTIFICATION;
 	IE browser = (IE)((Browser)getParent().getParent()).webBrowser;
 	if ((browser.style & SWT.BORDER) == 0) info |= IE.DOCHOSTUIFLAG_NO3DOUTERBORDER;
 	DOCHOSTUIINFO uiInfo = new DOCHOSTUIINFO ();
