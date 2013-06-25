@@ -381,7 +381,7 @@ void fixMenus (Decorations newParent) {
 	GtkAllocation allocation = new GtkAllocation ();
 	gtk_widget_get_allocation (handle, allocation);
 	int x = origin_x [0] + allocation.x;
-	int y = origin_x [0] + allocation.y;
+	int y = origin_y [0] + allocation.y;
 	int width = allocation.width;
 	int height = allocation.height;
 	return new Rectangle (x, y, width, height);
