@@ -89,6 +89,8 @@ class Mozilla extends WebBrowser {
 	static final String HEADER_CONTENTLENGTH = "content-length"; //$NON-NLS-1
 	static final String HEADER_CONTENTTYPE = "content-type"; //$NON-NLS-1
 	static final String MIMETYPE_FORMURLENCODED = "application/x-www-form-urlencoded"; //$NON-NLS-1$
+	static final String MOZILLA_FIVE_HOME = "MOZILLA_FIVE_HOME"; //$NON-NLS-1$
+	static final String MOZILLA_PROFILE_PATH = "MOZ_PROFILE_PATH"; //$NON-NLS-1$
 	static final String PREFIX_JAVASCRIPT = "javascript:"; //$NON-NLS-1$
 	static final String PREFERENCE_CHARSET = "intl.charset.default"; //$NON-NLS-1$
 	static final String PREFERENCE_DISABLEOPENDURINGLOAD = "dom.disable_open_during_load"; //$NON-NLS-1$
@@ -633,7 +635,7 @@ static void LoadLibraries () {
 				if (Device.DEBUG) System.out.println ("cannot use detected XULRunner: " + MozillaPath); //$NON-NLS-1$
 
 				/* attempt to XPCOMGlueStartup the GRE pointed at by MOZILLA_FIVE_HOME */
-				long /*int*/ ptr = C.getenv (MozillaDelegate.wcsToMbcs (null, XPCOM.MOZILLA_FIVE_HOME, true));
+				long /*int*/ ptr = C.getenv (MozillaDelegate.wcsToMbcs (null, MOZILLA_FIVE_HOME, true));
 				if (ptr == 0) {
 					IsXULRunner = false;
 				} else {
@@ -703,7 +705,17 @@ public void create (Composite parent, int style) {
 
 		if (!Initialized) {
 			/* create LocationProvider, which tells mozilla where to find things on the file system */
-			String profilePath = MozillaDelegate.getProfilePath ();
+			String profilePath = System.getProperty (MOZILLA_PROFILE_PATH);
+			if (profilePath != null && profilePath.length() > 0) {
+				/* ensure that client-supplied path is using correct separators */
+				if (SEPARATOR_OS == '/') {
+					profilePath = profilePath.replace ('\\', SEPARATOR_OS);
+				} else {
+					profilePath = profilePath.replace ('/', SEPARATOR_OS);
+				}
+			} else {
+				profilePath = MozillaDelegate.getProfilePath ();
+			}
 			String cacheParentPath = MozillaDelegate.getCacheParentPath ();
 			LocationProvider = new AppFileLocProvider (MozillaPath, profilePath, cacheParentPath, IsXULRunner);
 			LocationProvider.AddRef ();
@@ -1975,7 +1987,7 @@ void initJavaXPCOM (String mozillaPath) {
 
 String initMozilla (String mozillaPath) {
 	/* attempt to use the GRE pointed at by MOZILLA_FIVE_HOME */
-	long /*int*/ ptr = C.getenv (MozillaDelegate.wcsToMbcs (null, XPCOM.MOZILLA_FIVE_HOME, true));
+	long /*int*/ ptr = C.getenv (MozillaDelegate.wcsToMbcs (null, MOZILLA_FIVE_HOME, true));
 	if (ptr != 0) {
 		int length = C.strlen (ptr);
 		byte[] buffer = new byte[length];

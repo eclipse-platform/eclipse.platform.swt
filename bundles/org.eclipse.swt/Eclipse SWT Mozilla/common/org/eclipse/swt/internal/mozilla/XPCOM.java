@@ -31,8 +31,6 @@ import org.eclipse.swt.internal.*;
 
 /** @jniclass flags=cpp */
 public class XPCOM extends C {
-	public static final String MOZILLA_FIVE_HOME = "MOZILLA_FIVE_HOME"; //$NON-NLS-1$
-	public static final String MOZILLA_PLUGIN_PATH = "MOZ_PLUGIN_PATH"; //$NON-NLS-1$
 	public static final String CONTENT_MAYBETEXT = "application/x-vnd.mozilla.maybe-text"; //$NON-NLS-1$
 	public static final String CONTENT_MULTIPART = "multipart/x-mixed-replace"; //$NON-NLS-1$
 	public static final String DOMEVENT_FOCUS = "focus"; //$NON-NLS-1$
