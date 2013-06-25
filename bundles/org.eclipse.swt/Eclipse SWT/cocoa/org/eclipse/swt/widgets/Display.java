@@ -4482,11 +4482,13 @@ void setMenuBar (Menu menu) {
 			* menu for languages other than english.  The fix is to detect
 			* it ourselves.
 			*/
-			NSMenu submenu = nsItem.submenu();
-			if (submenu != null && submenu.title().getString().equals(SWT.getMessage("SWT_Help"))) { 
-				application.setHelpMenu(submenu);
+			if (OS.VERSION >= 0x1060) {
+				NSMenu submenu = nsItem.submenu();
+				if (submenu != null && submenu.title().getString().equals(SWT.getMessage("SWT_Help"))) { 
+					application.setHelpMenu(submenu);
+				}
 			}
-			
+
 			nsItem.setMenu(null);
 			menubar.addItem(nsItem);
 			
