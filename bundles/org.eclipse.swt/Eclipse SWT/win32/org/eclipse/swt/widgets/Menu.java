@@ -1196,7 +1196,7 @@ void releaseParent () {
 void releaseWidget () {
 	super.releaseWidget ();
 	backgroundImage = null;
-	if (hBrush == 0) OS.DeleteObject (hBrush);
+	if (hBrush != 0) OS.DeleteObject (hBrush);
 	hBrush = 0;
 	if (OS.IsPPC && hwndCB != 0) {
 		if (imageList != null) {
@@ -1613,7 +1613,7 @@ void update () {
 }
 
 void updateBackground () {
-	if (hBrush == 0) OS.DeleteObject (hBrush);
+	if (hBrush != 0) OS.DeleteObject (hBrush);
 	hBrush = 0;
 	if (backgroundImage != null) {
 		hBrush = OS.CreatePatternBrush (backgroundImage.handle);
