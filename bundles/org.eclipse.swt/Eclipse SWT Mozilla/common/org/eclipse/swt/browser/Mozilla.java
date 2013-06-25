@@ -90,7 +90,6 @@ class Mozilla extends WebBrowser {
 	static final String HEADER_CONTENTTYPE = "content-type"; //$NON-NLS-1
 	static final String MIMETYPE_FORMURLENCODED = "application/x-www-form-urlencoded"; //$NON-NLS-1$
 	static final String MOZILLA_FIVE_HOME = "MOZILLA_FIVE_HOME"; //$NON-NLS-1$
-	static final String MOZILLA_PROFILE_PATH = "MOZ_PROFILE_PATH"; //$NON-NLS-1$
 	static final String PREFIX_JAVASCRIPT = "javascript:"; //$NON-NLS-1$
 	static final String PREFERENCE_CHARSET = "intl.charset.default"; //$NON-NLS-1$
 	static final String PREFERENCE_DISABLEOPENDURINGLOAD = "dom.disable_open_during_load"; //$NON-NLS-1$
@@ -117,6 +116,7 @@ class Mozilla extends WebBrowser {
 	static final String TOKENIZER_LOCALE = ","; //$NON-NLS-1$
 	static final String TRUE = "true"; //$NON-NLS-1$
 	static final String URI_FILEROOT = "file:///"; //$NON-NLS-1$
+	static final String MOZILLA_PROFILE_PATH = "org.eclipse.swt.browser.MOZ_PROFILE_PATH"; //$NON-NLS-1$
 	static final String XULRUNNER_PATH = "org.eclipse.swt.browser.XULRunnerPath"; //$NON-NLS-1$
 
 	// TEMPORARY CODE
