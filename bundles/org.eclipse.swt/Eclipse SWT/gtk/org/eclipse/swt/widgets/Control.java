@@ -987,7 +987,17 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			allocation.width = width;
 			allocation.height = height;
 		}
-		OS.gtk_widget_size_allocate (topHandle, allocation);
+		/*
+		 * The widget needs to be shown before its size is allocated
+		 * in GTK 3.8 otherwise its allocation return 0
+		 */
+		if (OS.GTK_VERSION >= OS.VERSION (3, 8, 0) && !OS.gtk_widget_get_visible(handle))  {
+			OS.gtk_widget_show(handle);
+			OS.gtk_widget_size_allocate (topHandle, allocation);
+			OS.gtk_widget_hide(handle);
+		} else {
+			OS.gtk_widget_size_allocate (topHandle, allocation);
+		}
 	}
 	/*
 	* Bug in GTK.  Widgets cannot be sized smaller than 1x1.
