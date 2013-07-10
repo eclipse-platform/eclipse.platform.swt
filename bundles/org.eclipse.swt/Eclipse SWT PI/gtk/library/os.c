@@ -14369,7 +14369,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1scrolled_1window_1add_1with_1viewport)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1scrolled_1window_1add_1with_1viewport_FUNC);
+/*
 	gtk_scrolled_window_add_with_viewport((GtkScrolledWindow *)arg0, (GtkWidget *)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_scrolled_window_add_with_viewport)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkScrolledWindow *, GtkWidget *))fp)((GtkScrolledWindow *)arg0, (GtkWidget *)arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1scrolled_1window_1add_1with_1viewport_FUNC);
 }
 #endif

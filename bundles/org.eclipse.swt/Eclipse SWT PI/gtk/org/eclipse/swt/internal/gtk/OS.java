@@ -10406,6 +10406,7 @@ public static final void gtk_rc_style_set_text(long /*int*/ style, int index, Gd
 	}
 }
 /**
+ * @method flags=dynamic
  * @param scrolled_window cast=(GtkScrolledWindow *)
  * @param child cast=(GtkWidget *)
  */
