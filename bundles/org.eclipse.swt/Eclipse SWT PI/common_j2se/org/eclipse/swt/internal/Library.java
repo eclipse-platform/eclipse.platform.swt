@@ -176,12 +176,12 @@ static boolean isLoadable () {
 	} catch (MalformedURLException e) {
 		/* should never happen since url's initial path value must be valid */
 	}
-	String path = url.getPath ();
-	int index = path.indexOf ('!');
-	File file = new File (path.substring (0, index));
 
 	Attributes attributes = null;
 	try {
+		String path = URLDecoder.decode(url.getPath (), "UTF-8");
+		int index = path.indexOf ('!');
+		File file = new File (path.substring (0, index));
 		JarFile jar = new JarFile (file);
 		attributes = jar.getManifest ().getMainAttributes ();
 	} catch (IOException e) {
