@@ -1294,6 +1294,7 @@ public class Accessible {
 	 */
 	public void sendEvent(int event, Object eventData) {
 		checkWidget();
+		if (refCount <= 1) return;
 		if (!UseIA2) return;
 		if (DEBUG) print(this + ".NotifyWinEvent " + getEventString(event) + " hwnd=" + control.handle + " childID=" + eventChildID());
 		switch (event) {
@@ -1417,6 +1418,7 @@ public class Accessible {
 	 */
 	public void sendEvent(int event, Object eventData, int childID) {
 		checkWidget();
+		if (refCount <= 1) return;
 		if (!UseIA2) return;
 		int osChildID = childID == ACC.CHILDID_SELF ? eventChildID() : childIDToOs(childID);
 		if (DEBUG) print(this + ".NotifyWinEvent " + getEventString(event) + " hwnd=" + control.handle + " childID=" + osChildID);
@@ -1452,6 +1454,7 @@ public class Accessible {
 	 */
 	public void selectionChanged () {
 		checkWidget();
+		if (refCount <= 1) return;
 		if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_SELECTIONWITHIN hwnd=" + control.handle + " childID=" + eventChildID());
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_SELECTIONWITHIN, control.handle, COM.OBJID_CLIENT, eventChildID());
 	}
@@ -1469,6 +1472,7 @@ public class Accessible {
 	 */
 	public void setFocus(int childID) {
 		checkWidget();
+		if (refCount <= 1) return;
 		int osChildID = childID == ACC.CHILDID_SELF ? eventChildID() : childIDToOs(childID);
 		if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_FOCUS hwnd=" + control.handle + " childID=" + osChildID);
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_CLIENT, osChildID);
@@ -1489,6 +1493,7 @@ public class Accessible {
 	 */
 	public void textCaretMoved (int index) {
 		checkWidget();
+		if (refCount <= 1) return;
 		if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_LOCATIONCHANGE hwnd=" + control.handle + " childID=" + eventChildID());
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_LOCATIONCHANGE, control.handle, COM.OBJID_CARET, eventChildID());
 		if (!UseIA2) return;
@@ -1517,6 +1522,7 @@ public class Accessible {
 	 */
 	public void textChanged (int type, int startIndex, int length) {
 		checkWidget();
+		if (refCount <= 1) return;
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.start = startIndex;
 		event.end = startIndex + length;
@@ -1552,6 +1558,7 @@ public class Accessible {
 	 */
 	public void textSelectionChanged () {
 		checkWidget();
+		if (refCount <= 1) return;
 		if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_VALUECHANGE hwnd=" + control.handle + " childID=" + eventChildID());
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_VALUECHANGE, control.handle, COM.OBJID_CLIENT, eventChildID());
 	}
