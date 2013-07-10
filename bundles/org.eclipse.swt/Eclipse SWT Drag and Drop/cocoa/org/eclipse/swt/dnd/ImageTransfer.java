@@ -87,6 +87,23 @@ public Object nativeToJava(TransferData transferData) {
 	if (data.length() == 0) return null;
 	NSImage nsImage = (NSImage) new NSImage().alloc();
 	nsImage.initWithData(data);
+	
+	NSSize size = nsImage.size();
+	NSImageRep rep = nsImage.bestRepresentationForDevice(null);
+	if (size.width != rep.pixelsWide() || size.height != rep.pixelsHigh()) {
+		size.width /= (rep.pixelsWide() / size.width);
+		size.height /= (rep.pixelsHigh() / size.height);
+		NSImage newImage = ((NSImage)new NSImage().alloc()).initWithSize(size);
+		newImage.lockFocus();
+		NSRect rect = new NSRect();
+		rect.width = size.width;
+		rect.height = size.height;
+		nsImage.drawInRect(rect, new NSRect(), OS.NSCompositeCopy, 1);
+		newImage.unlockFocus();
+		nsImage.release();
+		nsImage = newImage;
+	}
+	
 	//TODO: Image representation wrong???
 	Image image = Image.cocoa_new(Display.getCurrent(), SWT.BITMAP, nsImage);
 	ImageData imageData = image.getImageData();
