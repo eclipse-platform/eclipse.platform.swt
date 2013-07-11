@@ -1124,9 +1124,9 @@ char * OS_nativeFunctionNames[] = {
 #else
 	"_1gtk_1text_1buffer_1insert__J_3B_3BI",
 #endif
-	"_1gtk_1text_1buffer_1move_1mark",
 	"_1gtk_1text_1buffer_1paste_1clipboard",
 	"_1gtk_1text_1buffer_1place_1cursor",
+	"_1gtk_1text_1buffer_1select_1range",
 	"_1gtk_1text_1buffer_1set_1text",
 	"_1gtk_1text_1iter_1get_1line",
 	"_1gtk_1text_1iter_1get_1offset",

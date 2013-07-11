@@ -1134,9 +1134,9 @@ typedef enum {
 #else
 	_1gtk_1text_1buffer_1insert__J_3B_3BI_FUNC,
 #endif
-	_1gtk_1text_1buffer_1move_1mark_FUNC,
 	_1gtk_1text_1buffer_1paste_1clipboard_FUNC,
 	_1gtk_1text_1buffer_1place_1cursor_FUNC,
+	_1gtk_1text_1buffer_1select_1range_FUNC,
 	_1gtk_1text_1buffer_1set_1text_FUNC,
 	_1gtk_1text_1iter_1get_1line_FUNC,
 	_1gtk_1text_1iter_1get_1offset_FUNC,

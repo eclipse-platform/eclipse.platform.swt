@@ -11474,14 +11474,14 @@ public static final void gtk_text_buffer_insert(long /*int*/ buffer, long /*int*
 }
 /**
  * @param buffer cast=(GtkTextBuffer *)
- * @param mark cast=(GtkTextMark *)
- * @param where cast=(const GtkTextIter *)
+ * @param ins cast=(const GtkTextIter *)
+ * @param bound cast=(const GtkTextIter *)
  */
-public static final native void _gtk_text_buffer_move_mark(long /*int*/ buffer, long /*int*/ mark, byte[] where);
-public static final void gtk_text_buffer_move_mark(long /*int*/ buffer, long /*int*/ mark, byte[] where) {
+public static final native void _gtk_text_buffer_select_range (long /*int*/ buffer, byte[] ins, byte[] bound);
+public static final void gtk_text_buffer_select_range (long /*int*/ buffer, byte[] ins, byte[] bound) {
 	lock.lock();
 	try {
-		_gtk_text_buffer_move_mark(buffer, mark, where);
+		_gtk_text_buffer_select_range(buffer, ins, bound);
 	} finally {
 		lock.unlock();
 	}

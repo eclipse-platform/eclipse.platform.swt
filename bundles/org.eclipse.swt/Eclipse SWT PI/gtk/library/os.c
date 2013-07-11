@@ -15800,20 +15800,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1text_1buffer_1move_1mark
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1text_1buffer_1move_1mark)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jbyteArray arg2)
-{
-	jbyte *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1text_1buffer_1move_1mark_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	gtk_text_buffer_move_mark((GtkTextBuffer *)arg0, (GtkTextMark *)arg1, (const GtkTextIter *)lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1text_1buffer_1move_1mark_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1text_1buffer_1paste_1clipboard
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1text_1buffer_1paste_1clipboard)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jbyteArray arg2, jboolean arg3)
@@ -15839,6 +15825,23 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1text_1buffer_1place_1cursor)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1text_1buffer_1place_1cursor_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1text_1buffer_1select_1range
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1text_1buffer_1select_1range)
+	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jbyteArray arg2)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1text_1buffer_1select_1range_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_text_buffer_select_range((GtkTextBuffer *)arg0, (const GtkTextIter *)lparg1, (const GtkTextIter *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1text_1buffer_1select_1range_FUNC);
 }
 #endif
 

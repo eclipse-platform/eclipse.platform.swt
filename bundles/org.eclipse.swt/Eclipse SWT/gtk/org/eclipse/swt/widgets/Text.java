@@ -524,10 +524,8 @@ public void clearSelection () {
 	} else {
 		byte [] position = new byte [ITER_SIZEOF];
 		long /*int*/ insertMark = OS.gtk_text_buffer_get_insert (bufferHandle);
-		long /*int*/ selectionMark = OS.gtk_text_buffer_get_selection_bound (bufferHandle);
 		OS.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, insertMark);
-		OS.gtk_text_buffer_move_mark (bufferHandle, selectionMark, position);
-		OS.gtk_text_buffer_move_mark (bufferHandle, insertMark, position);
+		OS.gtk_text_buffer_select_range(bufferHandle, position, position);
 	}
 }
 
@@ -2079,10 +2077,7 @@ public void selectAll () {
 		byte [] end =  new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, start, 0);
 		OS.gtk_text_buffer_get_end_iter (bufferHandle, end);
-		long /*int*/ insertMark = OS.gtk_text_buffer_get_insert (bufferHandle);
-		long /*int*/ selectionMark = OS.gtk_text_buffer_get_selection_bound (bufferHandle);
-		OS.gtk_text_buffer_move_mark (bufferHandle, selectionMark, start);
-		OS.gtk_text_buffer_move_mark (bufferHandle, insertMark, end);
+		OS.gtk_text_buffer_select_range(bufferHandle, start, end);
 	}
 }
 
@@ -2333,10 +2328,7 @@ public void setSelection (int start, int end) {
 		OS.g_free (ptr);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, startIter, start);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, endIter, end);
-		long /*int*/ insertMark = OS.gtk_text_buffer_get_insert (bufferHandle);
-		long /*int*/ selectionMark = OS.gtk_text_buffer_get_selection_bound (bufferHandle);
-		OS.gtk_text_buffer_move_mark (bufferHandle, selectionMark, startIter);
-		OS.gtk_text_buffer_move_mark (bufferHandle, insertMark, endIter);
+		OS.gtk_text_buffer_select_range(bufferHandle, startIter, endIter);
 	}
 }
 
