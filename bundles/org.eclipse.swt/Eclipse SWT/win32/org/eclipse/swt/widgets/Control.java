@@ -5170,6 +5170,7 @@ LRESULT WM_NOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
+	if ((state & DISPOSE_SENT) != 0) return LRESULT.ZERO;
 	return wmPaint (handle, wParam, lParam);
 }
 

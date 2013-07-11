@@ -550,6 +550,8 @@ LRESULT wmColorChild (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
+	if ((state & DISPOSE_SENT) != 0) return LRESULT.ZERO;
+
 	if (OS.IsWinCE) {
 		boolean drawImage = image != null;
 		boolean drawSeparator = (style & SWT.SEPARATOR) != 0 && (style & SWT.SHADOW_NONE) == 0;

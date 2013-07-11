@@ -990,9 +990,11 @@ LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
+	if ((state & DISPOSE_SENT) != 0) return LRESULT.ZERO;
 	if (OS.COMCTL32_MAJOR >= 6) {
 		return super.WM_PAINT (wParam, lParam);
 	}
+
 	PAINTSTRUCT ps = new PAINTSTRUCT ();
 	GCData data = new GCData ();
 	data.ps = ps;

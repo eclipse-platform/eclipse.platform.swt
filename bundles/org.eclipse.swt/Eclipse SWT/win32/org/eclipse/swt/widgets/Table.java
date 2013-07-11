@@ -6184,6 +6184,8 @@ LRESULT WM_MOUSEHOVER (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
+	if ((state & DISPOSE_SENT) != 0) return LRESULT.ZERO;
+
 	_checkShrink();
 	if (fixScrollWidth) setScrollWidth (null, true);
 	if (!OS.IsWinCE && OS.COMCTL32_MAJOR < 6) {

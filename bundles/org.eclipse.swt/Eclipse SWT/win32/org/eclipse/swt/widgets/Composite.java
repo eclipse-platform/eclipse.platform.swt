@@ -1430,6 +1430,7 @@ LRESULT WM_PARENTNOTIFY (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
+	if ((state & DISPOSE_SENT) != 0) return LRESULT.ZERO;
 	if ((state & CANVAS) == 0 || (state & FOREIGN_HANDLE) != 0) {
 		return super.WM_PAINT (wParam, lParam);
 	}

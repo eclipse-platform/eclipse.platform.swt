@@ -510,6 +510,8 @@ LRESULT WM_MOUSEWHEEL (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
+	if ((state & DISPOSE_SENT) != 0) return LRESULT.ZERO;
+
 	/*
 	* Bug in Windows.  For some reason, when WM_CTLCOLORSTATIC
 	* is used to implement transparency and returns a NULL brush,

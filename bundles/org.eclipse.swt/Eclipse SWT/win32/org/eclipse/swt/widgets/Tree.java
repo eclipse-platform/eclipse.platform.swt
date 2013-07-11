@@ -6962,6 +6962,8 @@ LRESULT WM_RBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
+	if ((state & DISPOSE_SENT) != 0) return LRESULT.ZERO;
+
 	if (shrink && !ignoreShrink) {
 		/* Resize the item array to fit the last item */
 		int count = items.length - 1;
