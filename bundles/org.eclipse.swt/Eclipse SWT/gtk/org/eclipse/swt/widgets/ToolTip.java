@@ -344,21 +344,10 @@ Point getLocation () {
 	int y = this.y;
 	if (item != null) {
 		long /*int*/ itemHandle = item.handle; 
-		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-			GdkRectangle area = new GdkRectangle ();
-			OS.gtk_status_icon_get_geometry (itemHandle, 0, area, 0);
-			x = area.x + area.width / 2;
-			y = area.y + area.height / 2;
-		} else {
-			OS.gtk_widget_realize (itemHandle);
-			long /*int*/ window = gtk_widget_get_window (itemHandle);
-			int [] px = new int [1], py = new int [1];
-			OS.gdk_window_get_origin (window, px, py);
-			GtkAllocation allocation = new GtkAllocation ();
-			gtk_widget_get_allocation (itemHandle, allocation);
-			x = px [0] + allocation.width / 2;
-			y = py [0] + allocation.height / 2;
-		}
+		GdkRectangle area = new GdkRectangle ();
+		OS.gtk_status_icon_get_geometry (itemHandle, 0, area, 0);
+		x = area.x + area.width / 2;
+		y = area.y + area.height / 2;
 	}
 	if (x == -1 || y == -1) {
 		int [] px = new int [1], py = new int [1];
