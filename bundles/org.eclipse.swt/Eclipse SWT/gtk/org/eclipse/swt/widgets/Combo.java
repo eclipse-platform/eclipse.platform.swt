@@ -453,9 +453,6 @@ void createHandle (int index) {
 	* fix is to call size_request() to force the creation of the button 
 	* for those versions of GTK that defer the creation. 
 	*/
-	if (OS.GTK_VERSION < OS.VERSION (2, 8, 0)) {
-		gtk_widget_get_preferred_size (handle, new GtkRequisition());
-	}
 	menuHandle = findMenuHandle ();
 	if (menuHandle != 0) OS.g_object_ref (menuHandle);
 	buttonHandle = findButtonHandle ();
