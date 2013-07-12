@@ -1029,18 +1029,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(XAnyEvent_1sizeof)
 }
 #endif
 
-#ifndef NO_XClientMessageEvent_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(XClientMessageEvent_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XClientMessageEvent_1sizeof_FUNC);
-	rc = (jint)XClientMessageEvent_sizeof();
-	OS_NATIVE_EXIT(env, that, XClientMessageEvent_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_XCrossingEvent_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(XCrossingEvent_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -2104,18 +2092,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XRenderSetPictureTransform)
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, _1XRenderSetPictureTransform_FUNC);
-}
-#endif
-
-#ifndef NO__1XSendEvent
-JNIEXPORT jint JNICALL OS_NATIVE(_1XSendEvent)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jboolean arg2, jintLong arg3, jintLong arg4)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1XSendEvent_FUNC);
-	rc = (jint)XSendEvent((Display *)arg0, (Window)arg1, arg2, arg3, (XEvent *)arg4);
-	OS_NATIVE_EXIT(env, that, _1XSendEvent_FUNC);
-	return rc;
 }
 #endif
 
@@ -6951,26 +6927,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1get_1n_1monitors)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1n_1monitors_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gdk_1screen_1get_1number
-JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1get_1number)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1number_FUNC);
-/*
-	rc = (jint)gdk_screen_get_number((GdkScreen *)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gdk_screen_get_number)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GdkScreen *))fp)((GdkScreen *)arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1number_FUNC);
 	return rc;
 }
 #endif
@@ -13025,18 +12981,6 @@ fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1paper_1size_1new_1from_1ppd_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1plug_1get_1id
-JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1plug_1get_1id)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1plug_1get_1id_FUNC);
-	rc = (jintLong)gtk_plug_get_id((GtkPlug *)arg0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1plug_1get_1id_FUNC);
 	return rc;
 }
 #endif
@@ -21551,30 +21495,6 @@ fail:
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_PangoAttribute_2I_FUNC);
 #else
 	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_gtk_PangoAttribute_2J_FUNC);
-#endif
-}
-#endif
-
-#if (!defined(NO_memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I) && !defined(JNI64)) || (!defined(NO_memmove__JLorg_eclipse_swt_internal_gtk_XClientMessageEvent_2J) && defined(JNI64))
-#ifndef JNI64
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
-#else
-JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_gtk_XClientMessageEvent_2J)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
-#endif
-{
-	XClientMessageEvent _arg1, *lparg1=NULL;
-#ifndef JNI64
-	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I_FUNC);
-#else
-	OS_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_gtk_XClientMessageEvent_2J_FUNC);
-#endif
-	if (arg1) if ((lparg1 = getXClientMessageEventFields(env, arg1, &_arg1)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-#ifndef JNI64
-	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I_FUNC);
-#else
-	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_gtk_XClientMessageEvent_2J_FUNC);
 #endif
 }
 #endif

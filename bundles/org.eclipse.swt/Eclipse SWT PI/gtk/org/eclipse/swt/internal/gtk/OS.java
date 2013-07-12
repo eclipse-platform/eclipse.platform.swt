@@ -694,7 +694,6 @@ public static final native int PangoLayoutRun_sizeof();
 public static final native int PangoLogAttr_sizeof();
 public static final native int PangoRectangle_sizeof();
 public static final native int XAnyEvent_sizeof();
-public static final native int XClientMessageEvent_sizeof();
 public static final native int XEvent_sizeof();
 public static final native int XCrossingEvent_sizeof();
 public static final native int XExposeEvent_sizeof();
@@ -783,7 +782,6 @@ public static final native long /*int*/ X_EVENT_WINDOW(long /*int*/ xevent);
 public static final int Above = 0;
 public static final int Below = 1;
 public static final int ButtonRelease = 5;
-public static final int ClientMessage = 33;
 public static final int CurrentTime = 0;
 public static final int CWSibling = 0x20;
 public static final int CWStackMode = 0x40;
@@ -810,7 +808,6 @@ public static final int RevertToParent = 2;
 public static final int VisibilityChangeMask = 1 << 16;
 public static final int VisibilityFullyObscured = 2;
 public static final int VisibilityNotify = 15;
-public static final int SYSTEM_TRAY_REQUEST_DOCK = 0;
 public static final native int _Call(long /*int*/ proc, long /*int*/ arg1, long /*int*/ arg2);
 public static final int Call(long /*int*/ proc, long /*int*/ arg1, long /*int*/ arg2) {
 	lock.lock();
@@ -1046,20 +1043,6 @@ public static final int XReconfigureWMWindow(long /*int*/ display, long /*int*/ 
 	lock.lock();
 	try {
 		return _XReconfigureWMWindow(display, window, screen, valueMask, values);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param display cast=(Display *)
- * @param w cast=(Window)
- * @param event_send cast=(XEvent *)
- */
-public static final native int _XSendEvent(long /*int*/ display, long /*int*/ w, boolean propogate, long /*int*/ event_mask, long /*int*/ event_send);
-public static final int XSendEvent(long /*int*/ display, long /*int*/ w, boolean propogate, long /*int*/ event_mask, long /*int*/ event_send) {
-	lock.lock();
-	try {
-		return _XSendEvent(display, w, propogate, event_mask, event_send);
 	} finally {
 		lock.unlock();
 	}
@@ -1328,12 +1311,6 @@ public static final void gdk_window_remove_filter(long /*int*/ window, long /*in
 		lock.unlock();
 	}
 }
-/**
- * @param dest cast=(void *)
- * @param src cast=(const void *),flags=no_out
- * @param size cast=(size_t)
- */
-public static final native void memmove(long /*int*/ dest, XClientMessageEvent src, long /*int*/ size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out
@@ -5158,19 +5135,6 @@ public static final int gdk_screen_get_n_monitors(long /*int*/ screen) {
 	lock.lock();
 	try {
 		return _gdk_screen_get_n_monitors(screen);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @method flags=dynamic
- * @param screen cast=(GdkScreen *)
- */
-public static final native int _gdk_screen_get_number(long /*int*/ screen);
-public static final int gdk_screen_get_number(long /*int*/ screen) {
-	lock.lock();
-	try {
-		return _gdk_screen_get_number(screen);
 	} finally {
 		lock.unlock();
 	}
@@ -9692,16 +9656,6 @@ public static final boolean gtk_paper_size_is_custom(long /*int*/ size) {
 	lock.lock();
 	try {
 		return _gtk_paper_size_is_custom(size);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param plug cast=(GtkPlug *) */
-public static final native long /*int*/ _gtk_plug_get_id(long /*int*/ plug);
-public static final long /*int*/ gtk_plug_get_id(long /*int*/ plug) {
-	lock.lock();
-	try {
-		return _gtk_plug_get_id(plug);
 	} finally {
 		lock.unlock();
 	}

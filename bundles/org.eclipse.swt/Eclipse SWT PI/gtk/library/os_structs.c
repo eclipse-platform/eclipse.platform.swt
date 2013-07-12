@@ -2127,64 +2127,6 @@ void setXAnyEventFields(JNIEnv *env, jobject lpObject, XAnyEvent *lpStruct)
 }
 #endif
 
-#ifndef NO_XClientMessageEvent
-typedef struct XClientMessageEvent_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID type, serial, send_event, display, window, message_type, format, data;
-} XClientMessageEvent_FID_CACHE;
-
-XClientMessageEvent_FID_CACHE XClientMessageEventFc;
-
-void cacheXClientMessageEventFields(JNIEnv *env, jobject lpObject)
-{
-	if (XClientMessageEventFc.cached) return;
-	XClientMessageEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	XClientMessageEventFc.type = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "type", "I");
-	XClientMessageEventFc.serial = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "serial", I_J);
-	XClientMessageEventFc.send_event = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "send_event", "Z");
-	XClientMessageEventFc.display = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "display", I_J);
-	XClientMessageEventFc.window = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "window", I_J);
-	XClientMessageEventFc.message_type = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "message_type", I_J);
-	XClientMessageEventFc.format = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "format", "I");
-	XClientMessageEventFc.data = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "data", I_JArray);
-	XClientMessageEventFc.cached = 1;
-}
-
-XClientMessageEvent *getXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageEvent *lpStruct)
-{
-	if (!XClientMessageEventFc.cached) cacheXClientMessageEventFields(env, lpObject);
-	lpStruct->type = (*env)->GetIntField(env, lpObject, XClientMessageEventFc.type);
-	lpStruct->serial = (*env)->GetIntLongField(env, lpObject, XClientMessageEventFc.serial);
-	lpStruct->send_event = (*env)->GetBooleanField(env, lpObject, XClientMessageEventFc.send_event);
-	lpStruct->display = (Display *)(*env)->GetIntLongField(env, lpObject, XClientMessageEventFc.display);
-	lpStruct->window = (Window)(*env)->GetIntLongField(env, lpObject, XClientMessageEventFc.window);
-	lpStruct->message_type = (Atom)(*env)->GetIntLongField(env, lpObject, XClientMessageEventFc.message_type);
-	lpStruct->format = (*env)->GetIntField(env, lpObject, XClientMessageEventFc.format);
-	{
-	jintLongArray lpObject1 = (jintLongArray)(*env)->GetObjectField(env, lpObject, XClientMessageEventFc.data);
-	(*env)->GetIntLongArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / sizeof(jintLong), (jintLong *)lpStruct->data.l);
-	}
-	return lpStruct;
-}
-
-void setXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageEvent *lpStruct)
-{
-	if (!XClientMessageEventFc.cached) cacheXClientMessageEventFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, XClientMessageEventFc.type, (jint)lpStruct->type);
-	(*env)->SetIntLongField(env, lpObject, XClientMessageEventFc.serial, (jintLong)lpStruct->serial);
-	(*env)->SetBooleanField(env, lpObject, XClientMessageEventFc.send_event, (jboolean)lpStruct->send_event);
-	(*env)->SetIntLongField(env, lpObject, XClientMessageEventFc.display, (jintLong)lpStruct->display);
-	(*env)->SetIntLongField(env, lpObject, XClientMessageEventFc.window, (jintLong)lpStruct->window);
-	(*env)->SetIntLongField(env, lpObject, XClientMessageEventFc.message_type, (jintLong)lpStruct->message_type);
-	(*env)->SetIntField(env, lpObject, XClientMessageEventFc.format, (jint)lpStruct->format);
-	{
-	jintLongArray lpObject1 = (jintLongArray)(*env)->GetObjectField(env, lpObject, XClientMessageEventFc.data);
-	(*env)->SetIntLongArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / sizeof(jintLong), (jintLong *)lpStruct->data.l);
-	}
-}
-#endif
-
 #ifndef NO_XCrossingEvent
 typedef struct XCrossingEvent_FID_CACHE {
 	int cached;

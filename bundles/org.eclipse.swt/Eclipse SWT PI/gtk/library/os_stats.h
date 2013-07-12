@@ -121,7 +121,6 @@ typedef enum {
 	RTLD_1LAZY_FUNC,
 	RTLD_1NOW_FUNC,
 	XAnyEvent_1sizeof_FUNC,
-	XClientMessageEvent_1sizeof_FUNC,
 	XCrossingEvent_1sizeof_FUNC,
 	XEvent_1sizeof_FUNC,
 	XExposeEvent_1sizeof_FUNC,
@@ -199,7 +198,6 @@ typedef enum {
 	_1XRenderQueryVersion_FUNC,
 	_1XRenderSetPictureClipRectangles_FUNC,
 	_1XRenderSetPictureTransform_FUNC,
-	_1XSendEvent_FUNC,
 	_1XSetErrorHandler_FUNC,
 	_1XSetIOErrorHandler_FUNC,
 	_1XSetInputFocus_FUNC,
@@ -552,7 +550,6 @@ typedef enum {
 	_1gdk_1screen_1get_1monitor_1at_1window_FUNC,
 	_1gdk_1screen_1get_1monitor_1geometry_FUNC,
 	_1gdk_1screen_1get_1n_1monitors_FUNC,
-	_1gdk_1screen_1get_1number_FUNC,
 	_1gdk_1screen_1height_FUNC,
 	_1gdk_1screen_1width_FUNC,
 	_1gdk_1screen_1width_1mm_FUNC,
@@ -956,7 +953,6 @@ typedef enum {
 	_1gtk_1paper_1size_1new_FUNC,
 	_1gtk_1paper_1size_1new_1custom_FUNC,
 	_1gtk_1paper_1size_1new_1from_1ppd_FUNC,
-	_1gtk_1plug_1get_1id_FUNC,
 	_1gtk_1plug_1new_FUNC,
 	_1gtk_1print_1job_1get_1surface_FUNC,
 	_1gtk_1print_1job_1new_FUNC,
@@ -1644,11 +1640,6 @@ typedef enum {
 	memmove__ILorg_eclipse_swt_internal_gtk_PangoAttribute_2I_FUNC,
 #else
 	memmove__JLorg_eclipse_swt_internal_gtk_PangoAttribute_2J_FUNC,
-#endif
-#ifndef JNI64
-	memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I_FUNC,
-#else
-	memmove__JLorg_eclipse_swt_internal_gtk_XClientMessageEvent_2J_FUNC,
 #endif
 #ifndef JNI64
 	memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I_FUNC,

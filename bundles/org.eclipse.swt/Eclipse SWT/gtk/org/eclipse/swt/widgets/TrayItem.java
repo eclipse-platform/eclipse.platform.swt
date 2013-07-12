@@ -152,46 +152,10 @@ void createWidget (int index) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-		handle = OS.gtk_status_icon_new ();
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		imageHandle = OS.gtk_image_new ();
-		OS.gtk_status_icon_set_visible (handle,true);
-	} else {
-		handle = OS.gtk_plug_new (0);
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		imageHandle = OS.gtk_image_new ();
-		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gtk_container_add (handle, imageHandle);
-		OS.gtk_widget_show (handle);
-		OS.gtk_widget_show (imageHandle);
-		long /*int*/ id = OS.gtk_plug_get_id (handle);
-		int monitor = 0;
-		long /*int*/ screen = OS.gdk_screen_get_default ();
-		if (screen != 0) {
-			monitor = OS.gdk_screen_get_number (screen);
-		}
-		byte [] trayBuffer = Converter.wcsToMbcs (null, "_NET_SYSTEM_TRAY_S" + monitor, true);
-		long /*int*/ trayAtom = OS.gdk_atom_intern (trayBuffer, true);
-		long /*int*/ xTrayAtom = OS.gdk_x11_atom_to_xatom (trayAtom);
-		long /*int*/ xDisplay = OS.gdk_x11_display_get_xdisplay(OS.gdk_display_get_default());
-		long /*int*/ trayWindow = OS.XGetSelectionOwner (xDisplay, xTrayAtom);
-		byte [] messageBuffer = Converter.wcsToMbcs (null, "_NET_SYSTEM_TRAY_OPCODE", true);
-		long /*int*/ messageAtom = OS.gdk_atom_intern (messageBuffer, true);
-		long /*int*/ xMessageAtom = OS.gdk_x11_atom_to_xatom (messageAtom);
-		XClientMessageEvent event = new XClientMessageEvent ();
-		event.type = OS.ClientMessage;
-		event.window = trayWindow;
-		event.message_type = xMessageAtom;
-		event.format = 32;
-		event.data [0] = OS.GDK_CURRENT_TIME;
-		event.data [1] = OS.SYSTEM_TRAY_REQUEST_DOCK;
-		event.data [2] = id;
-		long /*int*/ clientEvent = OS.g_malloc (XClientMessageEvent.sizeof);
-		OS.memmove (clientEvent, event, XClientMessageEvent.sizeof);
-		OS.XSendEvent (xDisplay, trayWindow, false, OS.NoEventMask, clientEvent);
-		OS.g_free (clientEvent);
-	}
+	handle = OS.gtk_status_icon_new ();
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	imageHandle = OS.gtk_image_new ();
+	OS.gtk_status_icon_set_visible (handle,true);
 }
 
 void deregister () {
@@ -363,15 +327,8 @@ long /*int*/ gtk_status_icon_popup_menu (long /*int*/ widget, long /*int*/ butto
 }
 
 void hookEvents () {
-	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-		OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE], false);
-		OS.g_signal_connect_closure (handle, OS.popup_menu, display.closures [STATUS_ICON_POPUP_MENU], false);
-	} else {
-		int eventMask = OS.GDK_BUTTON_PRESS_MASK;
-		OS.gtk_widget_add_events (handle, eventMask);
-		OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
-		OS.g_signal_connect_closure_by_id (imageHandle, display.signalIds [SIZE_ALLOCATE], 0, display.closures [SIZE_ALLOCATE], false);
-	}
+	OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE], false);
+	OS.g_signal_connect_closure (handle, OS.popup_menu, display.closures [STATUS_ICON_POPUP_MENU], false);
 }
 
 /**
@@ -387,10 +344,7 @@ void hookEvents () {
  */
 public boolean getVisible () {
 	checkWidget ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-		return OS.gtk_status_icon_get_visible (handle);
-	}
-	return gtk_widget_get_visible (handle);
+	return OS.gtk_status_icon_get_visible (handle);
 }
 
 void register () {
@@ -400,11 +354,7 @@ void register () {
 
 void releaseHandle () {
 	if (handle != 0) {
-		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-			OS.g_object_unref (handle);
-		} else {
-			OS.gtk_widget_destroy (handle);
-		}
+		OS.g_object_unref (handle);
 	}
 	handle = imageHandle = 0;
 	super.releaseHandle ();
@@ -520,24 +470,12 @@ public void setImage (Image image) {
 			imageList.put (imageIndex, image);
 		}
 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
-		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-			OS.gtk_status_icon_set_from_pixbuf (handle, pixbuf);
-			OS.gtk_status_icon_set_visible (handle, true);
-		} else {
-			Rectangle rect = image.getBounds ();
-			OS.gtk_widget_set_size_request (handle, rect.width, rect.height);
-			OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
-			OS.gtk_widget_show (imageHandle);
-		}
+		OS.gtk_status_icon_set_from_pixbuf (handle, pixbuf);
+		OS.gtk_status_icon_set_visible (handle, true);
 	} else {
 		OS.gtk_widget_set_size_request (handle, 1, 1);
-		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-			OS.gtk_status_icon_set_from_pixbuf (handle, 0);
-			OS.gtk_status_icon_set_visible (handle, false);
-		} else {
-			OS.gtk_image_set_from_pixbuf (imageHandle, 0);
-			OS.gtk_widget_hide (imageHandle);
-		}
+		OS.gtk_status_icon_set_from_pixbuf (handle, 0);
+		OS.gtk_status_icon_set_visible (handle, false);
 	}
 }
 
@@ -589,17 +527,7 @@ public void setToolTipText (String string) {
 	if (string != null && string.length () > 0) {
 		buffer = Converter.wcsToMbcs (null, string, true);
 	}
-	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-		OS.gtk_status_icon_set_tooltip (handle, buffer);
-	} else {
-		if (tooltipsHandle == 0) {
-			tooltipsHandle = OS.gtk_tooltips_new ();
-			if (tooltipsHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.g_object_ref (tooltipsHandle);
-			OS.g_object_ref_sink (tooltipsHandle);
-		}
-		OS.gtk_tooltips_set_tip (tooltipsHandle, handle, buffer, null);
-	}
+	OS.gtk_status_icon_set_tooltip (handle, buffer);
 }
 
 /**
@@ -615,11 +543,7 @@ public void setToolTipText (String string) {
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-		if(OS.gtk_status_icon_get_visible (handle) == visible) return;	
-	} else {
-		if (gtk_widget_get_visible (handle) == visible) return;
-	}
+	if(OS.gtk_status_icon_get_visible (handle) == visible) return;	
 	if (visible) {
 		/*
 		* It is possible (but unlikely), that application
@@ -628,15 +552,9 @@ public void setVisible (boolean visible) {
 		*/
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
-		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-			OS.gtk_status_icon_set_visible (handle, visible);
-		} else
-			OS.gtk_widget_show (handle);
+		OS.gtk_status_icon_set_visible (handle, visible);
 	} else {
-		if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-			OS.gtk_status_icon_set_visible (handle, visible);
-		} else
-			OS.gtk_widget_hide (handle);
+		OS.gtk_status_icon_set_visible (handle, visible);
 		sendEvent (SWT.Hide);
 	}
 }

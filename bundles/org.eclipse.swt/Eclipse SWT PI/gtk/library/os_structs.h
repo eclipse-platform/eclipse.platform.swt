@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -541,18 +541,6 @@ void setXAnyEventFields(JNIEnv *env, jobject lpObject, XAnyEvent *lpStruct);
 #define getXAnyEventFields(a,b,c) NULL
 #define setXAnyEventFields(a,b,c)
 #define XAnyEvent_sizeof() 0
-#endif
-
-#ifndef NO_XClientMessageEvent
-void cacheXClientMessageEventFields(JNIEnv *env, jobject lpObject);
-XClientMessageEvent *getXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageEvent *lpStruct);
-void setXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageEvent *lpStruct);
-#define XClientMessageEvent_sizeof() sizeof(XClientMessageEvent)
-#else
-#define cacheXClientMessageEventFields(a,b)
-#define getXClientMessageEventFields(a,b,c) NULL
-#define setXClientMessageEventFields(a,b,c)
-#define XClientMessageEvent_sizeof() 0
 #endif
 
 #ifndef NO_XCrossingEvent

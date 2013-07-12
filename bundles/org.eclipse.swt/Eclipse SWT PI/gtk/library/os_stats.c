@@ -111,7 +111,6 @@ char * OS_nativeFunctionNames[] = {
 	"RTLD_1LAZY",
 	"RTLD_1NOW",
 	"XAnyEvent_1sizeof",
-	"XClientMessageEvent_1sizeof",
 	"XCrossingEvent_1sizeof",
 	"XEvent_1sizeof",
 	"XExposeEvent_1sizeof",
@@ -189,7 +188,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1XRenderQueryVersion",
 	"_1XRenderSetPictureClipRectangles",
 	"_1XRenderSetPictureTransform",
-	"_1XSendEvent",
 	"_1XSetErrorHandler",
 	"_1XSetIOErrorHandler",
 	"_1XSetInputFocus",
@@ -542,7 +540,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1screen_1get_1monitor_1at_1window",
 	"_1gdk_1screen_1get_1monitor_1geometry",
 	"_1gdk_1screen_1get_1n_1monitors",
-	"_1gdk_1screen_1get_1number",
 	"_1gdk_1screen_1height",
 	"_1gdk_1screen_1width",
 	"_1gdk_1screen_1width_1mm",
@@ -946,7 +943,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1paper_1size_1new",
 	"_1gtk_1paper_1size_1new_1custom",
 	"_1gtk_1paper_1size_1new_1from_1ppd",
-	"_1gtk_1plug_1get_1id",
 	"_1gtk_1plug_1new",
 	"_1gtk_1print_1job_1get_1surface",
 	"_1gtk_1print_1job_1new",
@@ -1634,11 +1630,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_gtk_PangoAttribute_2I",
 #else
 	"memmove__JLorg_eclipse_swt_internal_gtk_PangoAttribute_2J",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_gtk_XClientMessageEvent_2J",
 #endif
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I",
