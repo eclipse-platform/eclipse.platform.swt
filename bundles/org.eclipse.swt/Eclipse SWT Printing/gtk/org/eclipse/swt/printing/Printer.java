@@ -91,7 +91,7 @@ static void gtk_init() {
  */
 public static PrinterData[] getPrinterList() {
 	printerList = new PrinterData [0];
-	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0) || disablePrinting) {
+	if (disablePrinting) {
 		return printerList;
 	}
 	gtk_init();
@@ -139,7 +139,7 @@ static long /*int*/ GtkPrinterFunc_List (long /*int*/ printer, long /*int*/ user
  */
 public static PrinterData getDefaultPrinterData() {
 	findData = null;
-	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0) || disablePrinting) {
+	if (disablePrinting) {
 		return null;
 	}
 	gtk_init();
@@ -748,7 +748,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
  */
 protected void create(DeviceData deviceData) {
 	this.data = (PrinterData)deviceData;
-	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0) || disablePrinting) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (disablePrinting) SWT.error(SWT.ERROR_NO_HANDLES);
 	printer = gtkPrinterFromPrinterData(data);
 	if (printer == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
