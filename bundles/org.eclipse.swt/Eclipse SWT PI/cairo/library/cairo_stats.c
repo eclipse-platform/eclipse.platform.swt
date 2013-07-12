@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2012 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2013 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -43,7 +43,6 @@ char * Cairo_nativeFunctionNames[] = {
 	"_1cairo_1fill",
 	"_1cairo_1fill_1extents",
 	"_1cairo_1fill_1preserve",
-	"_1cairo_1font_1extents",
 	"_1cairo_1font_1options_1create",
 	"_1cairo_1font_1options_1destroy",
 	"_1cairo_1font_1options_1get_1antialias",
@@ -54,7 +53,6 @@ char * Cairo_nativeFunctionNames[] = {
 	"_1cairo_1get_1fill_1rule",
 	"_1cairo_1get_1font_1face",
 	"_1cairo_1get_1font_1matrix",
-	"_1cairo_1get_1font_1options",
 	"_1cairo_1get_1line_1cap",
 	"_1cairo_1get_1line_1join",
 	"_1cairo_1get_1line_1width",
@@ -146,7 +144,6 @@ char * Cairo_nativeFunctionNames[] = {
 	"_1cairo_1set_1tolerance",
 	"_1cairo_1show_1glyphs",
 	"_1cairo_1show_1page",
-	"_1cairo_1show_1text",
 	"_1cairo_1status",
 	"_1cairo_1status_1to_1string",
 	"_1cairo_1stroke",
@@ -164,8 +161,6 @@ char * Cairo_nativeFunctionNames[] = {
 	"_1cairo_1surface_1set_1device_1offset",
 	"_1cairo_1surface_1set_1fallback_1resolution",
 	"_1cairo_1surface_1set_1user_1data",
-	"_1cairo_1text_1extents",
-	"_1cairo_1text_1path",
 	"_1cairo_1transform",
 	"_1cairo_1translate",
 	"_1cairo_1user_1to_1device",
@@ -176,10 +171,8 @@ char * Cairo_nativeFunctionNames[] = {
 	"_1cairo_1xlib_1surface_1get_1height",
 	"_1cairo_1xlib_1surface_1get_1width",
 	"_1cairo_1xlib_1surface_1set_1size",
-	"cairo_1font_1extents_1t_1sizeof",
 	"cairo_1path_1data_1t_1sizeof",
 	"cairo_1path_1t_1sizeof",
-	"cairo_1text_1extents_1t_1sizeof",
 	"cairo_1version",
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1data_1t_2II",

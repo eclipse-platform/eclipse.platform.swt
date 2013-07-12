@@ -167,26 +167,17 @@ public GC(Drawable drawable, int style) {
 
 static void addCairoString(long /*int*/ cairo, String string, float x, float y, Font font) {
 	byte[] buffer = Converter.wcsToMbcs(null, string, true);
-	if (OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
-		long /*int*/ layout = OS.pango_cairo_create_layout(cairo);
-		if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		OS.pango_layout_set_text(layout, buffer, -1);
-		OS.pango_layout_set_font_description(layout, font.handle);
-		double[] currentX = new double[1], currentY = new double[1];
-		Cairo.cairo_get_current_point(cairo, currentX, currentY);
-		if (currentX[0] != x || currentY[0] != y) {
-			Cairo.cairo_move_to(cairo, x, y);
-		}
-		OS.pango_cairo_layout_path(cairo, layout);
-		OS.g_object_unref(layout);
-	} else {
-		GC.setCairoFont(cairo, font);
-		cairo_font_extents_t extents = new cairo_font_extents_t();
-		Cairo.cairo_font_extents(cairo, extents);
-		double baseline = y + extents.ascent;
-		Cairo.cairo_move_to(cairo, x, baseline);
-		Cairo.cairo_text_path(cairo, buffer);
+	long /*int*/ layout = OS.pango_cairo_create_layout(cairo);
+	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.pango_layout_set_text(layout, buffer, -1);
+	OS.pango_layout_set_font_description(layout, font.handle);
+	double[] currentX = new double[1], currentY = new double[1];
+	Cairo.cairo_get_current_point(cairo, currentX, currentY);
+	if (currentX[0] != x || currentY[0] != y) {
+		Cairo.cairo_move_to(cairo, x, y);
 	}
+	OS.pango_cairo_layout_path(cairo, layout);
+	OS.g_object_unref(layout);
 }
 
 static int checkStyle (int style) {
@@ -282,9 +273,6 @@ void checkGC (int mask) {
 			if (data.layout != 0) {
 				Font font = data.font;
 				OS.pango_layout_set_font_description(data.layout, font.handle);
-			}
-			if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
-				setCairoFont(cairo, data.font);
 			}
 		}
 		if ((state & LINE_CAP) != 0) {
@@ -1736,20 +1724,6 @@ public void drawText (String string, int x, int y, int flags) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length() == 0) return;
 	long /*int*/ cairo = data.cairo;
-	if (cairo != 0) {
-		if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
-			//TODO - honor flags
-			checkGC(FOREGROUND | FONT);
-			cairo_font_extents_t extents = new cairo_font_extents_t();
-			Cairo.cairo_font_extents(cairo, extents);
-			double baseline = y + extents.ascent;
-			Cairo.cairo_move_to(cairo, x, baseline);
-			byte[] buffer = Converter.wcsToMbcs(null, string, true);
-			Cairo.cairo_show_text(cairo, buffer);
-			Cairo.cairo_new_path(cairo);
-			return;
-		}
-	}
 	setString(string, flags);
 	if (cairo != 0) {
 		checkGC(FONT);
@@ -2831,17 +2805,10 @@ public int getTextAntialias() {
     if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
     if (data.cairo == 0) return SWT.DEFAULT;
     int antialias = Cairo.CAIRO_ANTIALIAS_DEFAULT;
-    if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
-    	long /*int*/ options = Cairo.cairo_font_options_create();
-    	Cairo.cairo_get_font_options(data.cairo, options);
-    	antialias = Cairo.cairo_font_options_get_antialias(options);
-    	Cairo.cairo_font_options_destroy(options);
-    } else {
-    	if (data.context != 0) {
-    		long /*int*/ options = OS.pango_cairo_context_get_font_options(data.context);
-    		if (options != 0) antialias = Cairo.cairo_font_options_get_antialias(options);
-    	}
-    }
+	if (data.context != 0) {
+		long /*int*/ options = OS.pango_cairo_context_get_font_options(data.context);
+		if (options != 0) antialias = Cairo.cairo_font_options_get_antialias(options);
+	}
 	switch (antialias) {
 		case Cairo.CAIRO_ANTIALIAS_DEFAULT: return SWT.DEFAULT;
 		case Cairo.CAIRO_ANTIALIAS_NONE: return SWT.OFF;
@@ -3292,19 +3259,7 @@ static void setCairoFont(long /*int*/ cairo, long /*int*/ font) {
 }
 
 static void setCairoRegion(long /*int*/ cairo, long /*int*/ rgn) {
-	if (OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
-		OS.gdk_cairo_region(cairo, rgn);
-	} else {
-		int[] nRects = new int[1];
-		long /*int*/[] rects = new long /*int*/[1];
-		OS.gdk_region_get_rectangles(rgn, rects, nRects);
-		GdkRectangle rect = new GdkRectangle();
-		for (int i=0; i<nRects[0]; i++) {
-			OS.memmove(rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
-			Cairo.cairo_rectangle(cairo, rect.x, rect.y, rect.width, rect.height);
-		}
-		if (rects[0] != 0) OS.g_free(rects[0]);
-	}
+	OS.gdk_cairo_region(cairo, rgn);
 }
 
 static void setCairoPatternColor(long /*int*/ pattern, int offset, Color c, int alpha) {
@@ -4014,12 +3969,8 @@ public void setTextAntialias(int antialias) {
     initCairo();
     long /*int*/ options = Cairo.cairo_font_options_create();
     Cairo.cairo_font_options_set_antialias(options, mode);
-    if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
-    	Cairo.cairo_set_font_options(data.cairo, options);
-    } else {
-    	if (data.context == 0) createLayout();
-    	OS.pango_cairo_context_set_font_options(data.context, options);
-    }
+	if (data.context == 0) createLayout();
+	OS.pango_cairo_context_set_font_options(data.context, options);
     Cairo.cairo_font_options_destroy(options);
 }
 
@@ -4178,19 +4129,6 @@ public Point textExtent(String string) {
 public Point textExtent(String string, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	long /*int*/ cairo = data.cairo;
-	if (cairo != 0) {
-		if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
-			//TODO - honor flags
-			checkGC(FONT);
-			byte[] buffer = Converter.wcsToMbcs(null, string, true);
-			cairo_font_extents_t font_extents = new cairo_font_extents_t();
-			Cairo.cairo_font_extents(cairo, font_extents);
-			cairo_text_extents_t extents = new cairo_text_extents_t();
-			Cairo.cairo_text_extents(cairo, buffer, extents);
-			return new Point((int)extents.width, (int)font_extents.height);
-		}
-	}
 	setString(string, flags);
 	checkGC(FONT);
 	if (data.stringWidth == -1) {

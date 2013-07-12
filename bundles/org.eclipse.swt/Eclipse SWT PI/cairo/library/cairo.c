@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2012 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2013 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -242,20 +242,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1fill_1preserve)
 }
 #endif
 
-#ifndef NO__1cairo_1font_1extents
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1font_1extents)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1)
-{
-	cairo_font_extents_t _arg1, *lparg1=NULL;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1font_1extents_FUNC);
-	if (arg1) if ((lparg1 = getcairo_font_extents_tFields(env, arg1, &_arg1)) == NULL) goto fail;
-	cairo_font_extents((cairo_t *)arg0, lparg1);
-fail:
-	if (arg1 && lparg1) setcairo_font_extents_tFields(env, arg1, lparg1);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1font_1extents_FUNC);
-}
-#endif
-
 #ifndef NO__1cairo_1font_1options_1create
 JNIEXPORT jintLong JNICALL Cairo_NATIVE(_1cairo_1font_1options_1create)
 	(JNIEnv *env, jclass that)
@@ -384,16 +370,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1get_1font_1matrix)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
 	Cairo_NATIVE_EXIT(env, that, _1cairo_1get_1font_1matrix_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1get_1font_1options
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1get_1font_1options)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1get_1font_1options_FUNC);
-	cairo_get_font_options((cairo_t *)arg0, (cairo_font_options_t *)arg1);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1get_1font_1options_FUNC);
 }
 #endif
 
@@ -1523,20 +1499,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1show_1page)
 }
 #endif
 
-#ifndef NO__1cairo_1show_1text
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1show_1text)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
-{
-	jbyte *lparg1=NULL;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1show_1text_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	cairo_show_text((cairo_t *)arg0, (const char *)lparg1);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1show_1text_FUNC);
-}
-#endif
-
 #ifndef NO__1cairo_1status
 JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1status)
 	(JNIEnv *env, jclass that, jintLong arg0)
@@ -1758,37 +1720,6 @@ JNIEXPORT jint JNICALL Cairo_NATIVE(_1cairo_1surface_1set_1user_1data)
 }
 #endif
 
-#ifndef NO__1cairo_1text_1extents
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1text_1extents)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jobject arg2)
-{
-	jbyte *lparg1=NULL;
-	cairo_text_extents_t _arg2, *lparg2=NULL;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1text_1extents_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = getcairo_text_extents_tFields(env, arg2, &_arg2)) == NULL) goto fail;
-	cairo_text_extents((cairo_t *)arg0, (const char *)lparg1, (cairo_text_extents_t *)lparg2);
-fail:
-	if (arg2 && lparg2) setcairo_text_extents_tFields(env, arg2, lparg2);
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1text_1extents_FUNC);
-}
-#endif
-
-#ifndef NO__1cairo_1text_1path
-JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1text_1path)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
-{
-	jbyte *lparg1=NULL;
-	Cairo_NATIVE_ENTER(env, that, _1cairo_1text_1path_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	cairo_text_path((cairo_t *)arg0, (const char *)lparg1);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	Cairo_NATIVE_EXIT(env, that, _1cairo_1text_1path_FUNC);
-}
-#endif
-
 #ifndef NO__1cairo_1transform
 JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1transform)
 	(JNIEnv *env, jclass that, jintLong arg0, jdoubleArray arg1)
@@ -1941,18 +1872,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(_1cairo_1xlib_1surface_1set_1size)
 }
 #endif
 
-#ifndef NO_cairo_1font_1extents_1t_1sizeof
-JNIEXPORT jint JNICALL Cairo_NATIVE(cairo_1font_1extents_1t_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	Cairo_NATIVE_ENTER(env, that, cairo_1font_1extents_1t_1sizeof_FUNC);
-	rc = (jint)cairo_font_extents_t_sizeof();
-	Cairo_NATIVE_EXIT(env, that, cairo_1font_1extents_1t_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_cairo_1path_1data_1t_1sizeof
 JNIEXPORT jint JNICALL Cairo_NATIVE(cairo_1path_1data_1t_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -1973,18 +1892,6 @@ JNIEXPORT jint JNICALL Cairo_NATIVE(cairo_1path_1t_1sizeof)
 	Cairo_NATIVE_ENTER(env, that, cairo_1path_1t_1sizeof_FUNC);
 	rc = (jint)cairo_path_t_sizeof();
 	Cairo_NATIVE_EXIT(env, that, cairo_1path_1t_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_cairo_1text_1extents_1t_1sizeof
-JNIEXPORT jint JNICALL Cairo_NATIVE(cairo_1text_1extents_1t_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	Cairo_NATIVE_ENTER(env, that, cairo_1text_1extents_1t_1sizeof_FUNC);
-	rc = (jint)cairo_text_extents_t_sizeof();
-	Cairo_NATIVE_EXIT(env, that, cairo_1text_1extents_1t_1sizeof_FUNC);
 	return rc;
 }
 #endif

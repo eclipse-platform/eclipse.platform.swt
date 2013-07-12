@@ -90,10 +90,8 @@ public class Cairo extends Platform {
 	public static final int CAIRO_PATH_CLOSE_PATH = 3;
 	
 /** 64*/
-public static final native int cairo_font_extents_t_sizeof ();
 public static final native int cairo_path_data_t_sizeof ();
 public static final native int cairo_path_t_sizeof ();
-public static final native int cairo_text_extents_t_sizeof ();
 	
 /** Natives */
 public static final native int CAIRO_VERSION_ENCODE(int major, int minor, int micro);
@@ -270,16 +268,6 @@ public static final void cairo_fill_preserve(long /*int*/ cr) {
 		lock.unlock();
 	}
 }
-/** @param cr cast=(cairo_t *) */
-public static final native void _cairo_font_extents(long /*int*/ cr, cairo_font_extents_t extents);
-public static final void cairo_font_extents(long /*int*/ cr, cairo_font_extents_t extents) {
-	lock.lock();
-	try {
-		_cairo_font_extents(cr, extents);
-	} finally {
-		lock.unlock();
-	}
-}
 public static final native long /*int*/ _cairo_font_options_create();
 public static final long /*int*/ cairo_font_options_create() {
 	lock.lock();
@@ -378,19 +366,6 @@ public static final void cairo_get_font_matrix(long /*int*/ cr, double[] matrix)
 	lock.lock();
 	try {
 		_cairo_get_font_matrix(cr, matrix);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param cr cast=(cairo_t *)
- * @param options cast=(cairo_font_options_t *)
- */
-public static final native void _cairo_get_font_options(long /*int*/ cr, long /*int*/ options);
-public static final void cairo_get_font_options(long /*int*/ cr, long /*int*/ options) {
-	lock.lock();
-	try {
-		_cairo_get_font_options(cr, options);
 	} finally {
 		lock.unlock();
 	}
@@ -1353,19 +1328,6 @@ public static final void cairo_show_page(long /*int*/ cr) {
 		lock.unlock();
 	}
 }
-/**
- * @param cr cast=(cairo_t *)
- * @param utf8 cast=(const char *)
- */
-public static final native void _cairo_show_text(long /*int*/ cr, byte[] utf8);
-public static final void cairo_show_text(long /*int*/ cr, byte[] utf8) {
-	lock.lock();
-	try {
-		_cairo_show_text(cr, utf8);
-	} finally {
-		lock.unlock();
-	}
-}
 /** @param cr cast=(cairo_t *) */
 public static final native int _cairo_status(long /*int*/ cr);
 public static final int cairo_status(long /*int*/ cr) {
@@ -1545,33 +1507,6 @@ public static final int cairo_surface_set_user_data(long /*int*/ surface, long /
 	lock.lock();
 	try {
 		return _cairo_surface_set_user_data(surface, key, user_data, destroy);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param cr cast=(cairo_t *)
- * @param utf8 cast=(const char *)
- * @param extents cast=(cairo_text_extents_t *)
- */
-public static final native void _cairo_text_extents(long /*int*/ cr, byte[] utf8, cairo_text_extents_t extents);
-public static final void cairo_text_extents(long /*int*/ cr, byte[] utf8, cairo_text_extents_t extents) {
-	lock.lock();
-	try {
-		_cairo_text_extents(cr, utf8, extents);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param cr cast=(cairo_t *)
- * @param utf8 cast=(const char *)
- */
-public static final native void _cairo_text_path(long /*int*/ cr, byte[] utf8);
-public static final void cairo_text_path(long /*int*/ cr, byte[] utf8) {
-	lock.lock();
-	try {
-		_cairo_text_path(cr, utf8);
 	} finally {
 		lock.unlock();
 	}

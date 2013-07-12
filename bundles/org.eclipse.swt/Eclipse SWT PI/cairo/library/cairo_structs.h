@@ -15,23 +15,11 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2012 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2013 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
 #include "cairo.h"
-
-#ifndef NO_cairo_font_extents_t
-void cachecairo_font_extents_tFields(JNIEnv *env, jobject lpObject);
-cairo_font_extents_t *getcairo_font_extents_tFields(JNIEnv *env, jobject lpObject, cairo_font_extents_t *lpStruct);
-void setcairo_font_extents_tFields(JNIEnv *env, jobject lpObject, cairo_font_extents_t *lpStruct);
-#define cairo_font_extents_t_sizeof() sizeof(cairo_font_extents_t)
-#else
-#define cachecairo_font_extents_tFields(a,b)
-#define getcairo_font_extents_tFields(a,b,c) NULL
-#define setcairo_font_extents_tFields(a,b,c)
-#define cairo_font_extents_t_sizeof() 0
-#endif
 
 #ifndef NO_cairo_path_data_t
 void cachecairo_path_data_tFields(JNIEnv *env, jobject lpObject);
@@ -55,17 +43,5 @@ void setcairo_path_tFields(JNIEnv *env, jobject lpObject, cairo_path_t *lpStruct
 #define getcairo_path_tFields(a,b,c) NULL
 #define setcairo_path_tFields(a,b,c)
 #define cairo_path_t_sizeof() 0
-#endif
-
-#ifndef NO_cairo_text_extents_t
-void cachecairo_text_extents_tFields(JNIEnv *env, jobject lpObject);
-cairo_text_extents_t *getcairo_text_extents_tFields(JNIEnv *env, jobject lpObject, cairo_text_extents_t *lpStruct);
-void setcairo_text_extents_tFields(JNIEnv *env, jobject lpObject, cairo_text_extents_t *lpStruct);
-#define cairo_text_extents_t_sizeof() sizeof(cairo_text_extents_t)
-#else
-#define cachecairo_text_extents_tFields(a,b)
-#define getcairo_text_extents_tFields(a,b,c) NULL
-#define setcairo_text_extents_tFields(a,b,c)
-#define cairo_text_extents_t_sizeof() 0
 #endif
 

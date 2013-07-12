@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2012 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2013 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -53,7 +53,6 @@ typedef enum {
 	_1cairo_1fill_FUNC,
 	_1cairo_1fill_1extents_FUNC,
 	_1cairo_1fill_1preserve_FUNC,
-	_1cairo_1font_1extents_FUNC,
 	_1cairo_1font_1options_1create_FUNC,
 	_1cairo_1font_1options_1destroy_FUNC,
 	_1cairo_1font_1options_1get_1antialias_FUNC,
@@ -64,7 +63,6 @@ typedef enum {
 	_1cairo_1get_1fill_1rule_FUNC,
 	_1cairo_1get_1font_1face_FUNC,
 	_1cairo_1get_1font_1matrix_FUNC,
-	_1cairo_1get_1font_1options_FUNC,
 	_1cairo_1get_1line_1cap_FUNC,
 	_1cairo_1get_1line_1join_FUNC,
 	_1cairo_1get_1line_1width_FUNC,
@@ -156,7 +154,6 @@ typedef enum {
 	_1cairo_1set_1tolerance_FUNC,
 	_1cairo_1show_1glyphs_FUNC,
 	_1cairo_1show_1page_FUNC,
-	_1cairo_1show_1text_FUNC,
 	_1cairo_1status_FUNC,
 	_1cairo_1status_1to_1string_FUNC,
 	_1cairo_1stroke_FUNC,
@@ -174,8 +171,6 @@ typedef enum {
 	_1cairo_1surface_1set_1device_1offset_FUNC,
 	_1cairo_1surface_1set_1fallback_1resolution_FUNC,
 	_1cairo_1surface_1set_1user_1data_FUNC,
-	_1cairo_1text_1extents_FUNC,
-	_1cairo_1text_1path_FUNC,
 	_1cairo_1transform_FUNC,
 	_1cairo_1translate_FUNC,
 	_1cairo_1user_1to_1device_FUNC,
@@ -186,10 +181,8 @@ typedef enum {
 	_1cairo_1xlib_1surface_1get_1height_FUNC,
 	_1cairo_1xlib_1surface_1get_1width_FUNC,
 	_1cairo_1xlib_1surface_1set_1size_FUNC,
-	cairo_1font_1extents_1t_1sizeof_FUNC,
 	cairo_1path_1data_1t_1sizeof_FUNC,
 	cairo_1path_1t_1sizeof_FUNC,
-	cairo_1text_1extents_1t_1sizeof_FUNC,
 	cairo_1version_FUNC,
 #ifndef JNI64
 	memmove__Lorg_eclipse_swt_internal_cairo_cairo_1path_1data_1t_2II_FUNC,
