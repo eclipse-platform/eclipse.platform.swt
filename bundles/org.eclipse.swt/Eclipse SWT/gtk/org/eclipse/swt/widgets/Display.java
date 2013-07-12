@@ -432,7 +432,7 @@ public class Display extends Device {
 	static final int GTK3_MINOR = 0;
 	static final int GTK3_MICRO = 0;
 	static final int GTK2_MAJOR = 2;
-	static final int GTK2_MINOR = 6;
+	static final int GTK2_MINOR = 10;
 	static final int GTK2_MICRO = 0;
 
 	/* Display Data */
