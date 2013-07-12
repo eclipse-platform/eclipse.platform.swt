@@ -8998,17 +8998,9 @@ public static final void gtk_notebook_set_tab_pos(long /*int*/ notebook, int pos
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
-public static final native void _gtk_object_sink(long /*int*/ object);
-public static final void gtk_object_sink(long /*int*/ object) {
-	lock.lock();
-	try {
-		_gtk_object_sink(object);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
+/** 
+ * @param object cast=(GObject *)
+ */
 public static final native long /*int*/ _g_object_ref_sink(long /*int*/ object);
 public static final long /*int*/ g_object_ref_sink(long /*int*/ object) {
 	lock.lock();

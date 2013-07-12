@@ -3551,15 +3551,7 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1object_1ref_1sink)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1g_1object_1ref_1sink_FUNC);
-/*
-	rc = (jintLong)g_object_ref_sink(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, g_object_ref_sink)
-		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
+	rc = (jintLong)g_object_ref_sink((GObject *)arg0);
 	OS_NATIVE_EXIT(env, that, _1g_1object_1ref_1sink_FUNC);
 	return rc;
 }
@@ -12099,24 +12091,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1notebook_1set_1tab_1pos)
 	OS_NATIVE_ENTER(env, that, _1gtk_1notebook_1set_1tab_1pos_FUNC);
 	gtk_notebook_set_tab_pos((GtkNotebook *)arg0, (GtkPositionType)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1notebook_1set_1tab_1pos_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1object_1sink
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1object_1sink)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1object_1sink_FUNC);
-/*
-	gtk_object_sink(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, gtk_object_sink)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1object_1sink_FUNC);
 }
 #endif
 

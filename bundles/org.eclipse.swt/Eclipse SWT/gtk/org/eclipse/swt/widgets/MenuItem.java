@@ -257,7 +257,7 @@ void createHandle (int index) {
 			groupHandle = OS.gtk_radio_menu_item_new (0);
 			if (groupHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.g_object_ref (groupHandle);
-			g_object_ref_sink (groupHandle);
+			OS.g_object_ref_sink (groupHandle);
 			long /*int*/ group = OS.gtk_radio_menu_item_get_group (groupHandle);
 			handle = OS.gtk_radio_menu_item_new_with_label (group, buffer);
 			break;

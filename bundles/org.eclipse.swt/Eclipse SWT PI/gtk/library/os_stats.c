@@ -903,7 +903,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1notebook_1set_1scrollable",
 	"_1gtk_1notebook_1set_1show_1tabs",
 	"_1gtk_1notebook_1set_1tab_1pos",
-	"_1gtk_1object_1sink",
 	"_1gtk_1orientable_1set_1orientation",
 	"_1gtk_1page_1setup_1get_1bottom_1margin",
 	"_1gtk_1page_1setup_1get_1left_1margin",

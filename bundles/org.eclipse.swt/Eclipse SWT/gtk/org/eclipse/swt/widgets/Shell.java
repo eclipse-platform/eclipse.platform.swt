@@ -2579,7 +2579,7 @@ void setToolTipText (long /*int*/ rootWidget, long /*int*/ tipWidget, String str
 			tooltipsHandle = OS.gtk_tooltips_new ();
 			if (tooltipsHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.g_object_ref (tooltipsHandle);
-			g_object_ref_sink (tooltipsHandle);
+			OS.g_object_ref_sink (tooltipsHandle);
 		}
 	
 		/*

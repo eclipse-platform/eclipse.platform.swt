@@ -389,7 +389,6 @@
 #define gdk_colormap_alloc_color_LIB LIB_GDK
 #define gdk_colormap_free_colors_LIB LIB_GDK
 #define gtk_enumerate_printers_LIB LIB_GTK
-#define gtk_object_sink_LIB LIB_GTK
 #define gtk_orientable_set_orientation_LIB LIB_GTK
 #define gtk_paint_arrow_LIB LIB_GTK
 #define gtk_paint_box_LIB LIB_GTK
@@ -523,7 +522,6 @@
 #define g_icon_to_string_LIB LIB_GIO
 #define g_icon_new_for_string_LIB LIB_GIO
 #define g_file_query_info_LIB LIB_GIO
-#define g_object_ref_sink_LIB LIB_GOBJECT
 
 // GTK3 only
 #define gtk_widget_draw_LIB LIB_GTK

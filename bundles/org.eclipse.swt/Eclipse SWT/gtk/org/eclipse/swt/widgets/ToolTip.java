@@ -286,7 +286,7 @@ void createHandle (int index) {
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.gtk_tooltips_force_window (handle);
 			OS.g_object_ref (handle);
-			g_object_ref_sink (handle);
+			OS.g_object_ref_sink (handle);
 		}
 	}
 }
