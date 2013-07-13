@@ -1443,14 +1443,8 @@ public TreeItem getItem (Point point) {
 	if (OS.gtk_tree_model_get_iter (modelHandle, iter, path [0])) {
 		boolean overExpander = false;
 		if (OS.gtk_tree_view_get_expander_column (handle) == columnHandle [0]) {
-			int [] buffer = new int [1];
 			GdkRectangle rect = new GdkRectangle ();
 			OS.gtk_tree_view_get_cell_area (handle, path [0], columnHandle [0], rect);
-			if (OS.GTK_VERSION < OS.VERSION (2, 8, 18)) {
-				OS.gtk_widget_style_get (handle, OS.expander_size, buffer, 0);
-				int expanderSize = buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-				rect.x += expanderSize;
-			}
 			if ((style & SWT.MIRRORED) != 0) {
 				overExpander = x > rect.x + rect.width;
 			} else {
@@ -2676,15 +2670,6 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				OS.gtk_tree_view_get_cell_area (handle, path, columnHandle, rect);
 				OS.gtk_tree_view_get_background_area (handle, path, columnHandle, clipRect);
 				OS.gtk_tree_path_free (path);
-				if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (handle) == columnHandle) {
-					int [] buffer = new int [1];
-					OS.gtk_widget_style_get (handle, OS.expander_size, buffer, 0);
-					rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-					rect.width -= buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-					//OS.gtk_widget_style_get (handle, OS.horizontal_separator, buffer, 0);
-					//rect.x += buffer[0];
-					//rect.width -= buffer [0]; // TODO Is this required for some versions?
-				}
 				ignoreSize = true;
 				int [] contentX = new int [1], contentWidth = new int [1];
 				gtk_cell_renderer_get_preferred_size (cell, handle, contentWidth, null);
@@ -3253,23 +3238,6 @@ public void setTopItem (TreeItem item) {
 	long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
 	showItem (path, false);
 	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0f, 0f);
-	if (OS.GTK_VERSION < OS.VERSION (2, 8, 0)) {
-		/*
-		* Bug in GTK.  According to the documentation, gtk_tree_view_scroll_to_cell
-		* should vertically scroll the cell to the top if use_align is true and row_align is 0.
-		* However, prior to version 2.8 it does not scroll at all.  The fix is to determine
-		* the new location and use gtk_tree_view_scroll_to_point.
-		* If the widget is a pinhead, calling gtk_tree_view_scroll_to_point
-		* will have no effect. Therefore, it is still neccessary to call 
-		* gtk_tree_view_scroll_to_cell.
-		*/
-		OS.gtk_widget_realize (handle);
-		GdkRectangle cellRect = new GdkRectangle ();
-		OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
-		int[] tx = new int[1], ty = new int[1];
-		OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
-		OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
-	}
 	OS.gtk_tree_path_free (path);
 }
 

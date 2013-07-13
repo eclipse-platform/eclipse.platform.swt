@@ -302,16 +302,6 @@ void clear () {
 		for (int i=Tree.FOREGROUND_COLUMN; i<columnCount; i++) {
 			OS.gtk_tree_store_set (parent.modelHandle, handle, i, (long /*int*/)0, -1);
 		}
-		/*
-		* Bug in GTK.  When using fixed-height-mode,
-		* row changes do not cause the row to be repainted.  The fix is to
-		* invalidate the row when it is cleared.
-		*/
-		if ((parent.style & SWT.VIRTUAL) != 0) {
-			if (OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
-				redraw ();
-			}
-		}
 	}
 	cached = false;
 	font = null;
@@ -446,26 +436,6 @@ public Rectangle getBounds (int index) {
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
 	
-	if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
-		int [] buffer = new int [1];
-		OS.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
-		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-		rect.width -= buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-		OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
-		rect.x += buffer [0];
-		//rect.width -= buffer [0]; // TODO Is this required for some versions?
-	}
-	/*
-	* Bug in GTK. In GTK 2.8.x, the cell area is left aligned even
-	* when the widget is mirrored. The fix is to sum up the indentation
-	* of the expanders. 
-	*/
-	if ((parent.getStyle () & SWT.MIRRORED) != 0 && (OS.GTK_VERSION < OS.VERSION (2, 10, 0))) {
-		int depth = OS.gtk_tree_path_get_depth (path);
-		int [] expanderSize = new int [1];
-		OS.gtk_widget_style_get (parentHandle, OS.expander_size, expanderSize, 0);
-		rect.x += depth * (expanderSize[0] + TreeItem.EXPANDER_EXTRA_PADDING);  
-	}
 	OS.gtk_tree_path_free (path);
 	
 	if (index == 0 && (parent.style & SWT.CHECK) != 0) {
@@ -519,21 +489,6 @@ public Rectangle getBounds () {
 	parent.ignoreSize = false;
 	rect.width = w [0];
 	int [] buffer = new int [1];
-	if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
-		OS.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
-		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-	}
-	/*
-	* Bug in GTK. In GTK 2.8.x, the cell area is left aligned even
-	* when the widget is mirrored. The fix is to sum up the indentation
-	* of the expanders. 
-	*/
-	if ((parent.getStyle () & SWT.MIRRORED) != 0 && (OS.GTK_VERSION < OS.VERSION (2, 10, 0))) {
-		int depth = OS.gtk_tree_path_get_depth (path);
-		int [] expanderSize = new int [1];
-		OS.gtk_widget_style_get (parentHandle, OS.expander_size, expanderSize, 0);
-		rect.x += depth * (expanderSize[0] + TreeItem.EXPANDER_EXTRA_PADDING); 
-	}
 	OS.gtk_tree_path_free (path);
 	
 	OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
@@ -752,26 +707,6 @@ public Rectangle getImageBounds (int index) {
 	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
-	if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
-		int [] buffer = new int [1];
-		OS.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
-		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-		rect.width -= buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-		//OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
-		//int horizontalSeparator = buffer[0];
-		//rect.x += horizontalSeparator;
-	}
-	/*
-	* Bug in GTK. In GTK 2.8.x, the cell area is left aligned even
-	* when the widget is mirrored. The fix is to sum up the indentation
-	* of the expanders. 
-	*/
-	if ((parent.getStyle () & SWT.MIRRORED) != 0 && (OS.GTK_VERSION < OS.VERSION (2, 10, 0))) {
-		int depth = OS.gtk_tree_path_get_depth (path);
-		int [] expanderSize = new int [1];
-		OS.gtk_widget_style_get (parentHandle, OS.expander_size, expanderSize, 0);
-		rect.x += depth * (expanderSize[0] + TreeItem.EXPANDER_EXTRA_PADDING);  
-	}
 	OS.gtk_tree_path_free (path);
 	
 	int [] x = new int [1], w = new int[1];
@@ -975,21 +910,6 @@ public Rectangle getTextBounds (int index) {
 	gtk_cell_renderer_get_preferred_size (textRenderer, parentHandle, w, null);
 	parent.ignoreSize = false;
 	int [] buffer = new int [1];
-	if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
-		OS.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
-		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-	}
-	/*
-	* Bug in GTK. In GTK 2.8.x, the cell area is left aligned even
-	* when the widget is mirrored. The fix is to sum up the indentation
-	* of the expanders. 
-	*/
-	if ((parent.getStyle () & SWT.MIRRORED) != 0 && (OS.GTK_VERSION < OS.VERSION (2, 10, 0))) {
-		int depth = OS.gtk_tree_path_get_depth (path);
-		int [] expanderSize = new int [1];
-		OS.gtk_widget_style_get (parentHandle, OS.expander_size, expanderSize, 0);
-		rect.x += depth * (expanderSize[0] + TreeItem.EXPANDER_EXTRA_PADDING);  
-	}
 	OS.gtk_tree_path_free (path);
 	
 	OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
@@ -1052,22 +972,6 @@ public int indexOf (TreeItem item) {
 	}
 	OS.gtk_tree_path_free (path);
 	return index;
-}
-
-void redraw () {
-	long /*int*/ parentHandle = parent.handle;
-	if (gtk_widget_get_realized (parentHandle)) {
-		long /*int*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
-		GdkRectangle rect = new GdkRectangle ();
-		OS.gtk_tree_view_get_cell_area (parentHandle, path, 0, rect);
-		OS.gtk_tree_path_free (path);
-		long /*int*/ window = OS.gtk_tree_view_get_bin_window (parentHandle);
-		rect.x = 0;
-		int [] w = new int [1], h = new int [1];
-		gdk_window_get_size (window, w, h);
-		rect.width = w [0];
-		OS.gdk_window_invalidate_rect (window, rect, false);
-	}
 }
 
 void releaseChildren (boolean destroy) {
@@ -1156,16 +1060,6 @@ public void setBackground (Color color) {
 	if (_getBackground ().equals (color)) return;
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.BACKGROUND_COLUMN, gdkColor, -1);
-	/*
-	* Bug in GTK.  When using fixed-height-mode,
-	* row changes do not cause the row to be repainted.  The fix is to
-	* invalidate the row when it is cleared.
-	*/
-	if ((parent.style & SWT.VIRTUAL) != 0) {
-		if (OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
-			redraw ();
-		}
-	}
 	cached = true;
 }
 
@@ -1199,16 +1093,6 @@ public void setBackground (int index, Color color) {
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_BACKGROUND, gdkColor, -1);
-	/*
-	* Bug in GTK.  When using fixed-height-mode,
-	* row changes do not cause the row to be repainted.  The fix is to
-	* invalidate the row when it is cleared.
-	*/
-	if ((parent.style & SWT.VIRTUAL) != 0) {
-		if (OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
-			redraw ();
-		}
-	}
 	cached = true;
 	
 	if (color != null) {
@@ -1320,16 +1204,6 @@ public void setFont (Font font){
 	if (oldFont != null && oldFont.equals (font)) return;
 	long /*int*/ fontHandle = font != null ? font.handle : 0;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.FONT_COLUMN, fontHandle, -1);
-	/*
-	* Bug in GTK.  When using fixed-height-mode,
-	* row changes do not cause the row to be repainted.  The fix is to
-	* invalidate the row when it is cleared.
-	*/
-	if ((parent.style & SWT.VIRTUAL) != 0) {
-		if (OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
-			redraw ();
-		}
-	}
 	cached = true;
 }
 
@@ -1371,16 +1245,6 @@ public void setFont (int index, Font font) {
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	long /*int*/ fontHandle  = font != null ? font.handle : 0;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_FONT, fontHandle, -1);
-	/*
-	* Bug in GTK.  When using fixed-height-mode,
-	* row changes do not cause the row to be repainted.  The fix is to
-	* invalidate the row when it is cleared.
-	*/
-	if ((parent.style & SWT.VIRTUAL) != 0) {
-		if (OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
-			redraw ();
-		}
-	}
 	cached = true;
 	
 	if (font != null) {
@@ -1435,16 +1299,6 @@ public void setForeground (Color color){
 	if (_getForeground ().equals (color)) return;
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.FOREGROUND_COLUMN, gdkColor, -1);
-	/*
-	* Bug in GTK.  When using fixed-height-mode,
-	* row changes do not cause the row to be repainted.  The fix is to
-	* invalidate the row when it is cleared.
-	*/
-	if ((parent.style & SWT.VIRTUAL) != 0) {
-		if (OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
-			redraw ();
-		}
-	}
 	cached = true;
 }
 
@@ -1478,16 +1332,6 @@ public void setForeground (int index, Color color){
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_FOREGROUND, gdkColor, -1);
-	/*
-	* Bug in GTK.  When using fixed-height-mode,
-	* row changes do not cause the row to be repainted.  The fix is to
-	* invalidate the row when it is cleared.
-	*/
-	if ((parent.style & SWT.VIRTUAL) != 0) {
-		if (OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
-			redraw ();
-		}
-	}
 	cached = true;
 	
 	if (color != null) {
@@ -1578,18 +1422,6 @@ public void setImage (int index, Image image) {
 	}
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_PIXBUF, pixbuf, -1);
-	/*
-	* Bug in GTK.  When using fixed-height-mode,
-	* row changes do not cause the row to be repainted.  The fix is to
-	* invalidate the row when the image changes.
-	*/
-	if ((parent.style & SWT.VIRTUAL) != 0) {
-		if (OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
-			if (parent.columnCount == 0) {
-				redraw ();
-			}
-		}
-	}
 	/*
 	* Bug in GTK.  When using fixed-height-mode, GTK does not recalculate the cell renderer width
 	* when the image is changed in the model.  The fix is to force it to recalculate the width if
@@ -1690,16 +1522,6 @@ public void setText (int index, String string) {
 	byte[] buffer = Converter.wcsToMbcs (null, string, true);
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_TEXT, buffer, -1);
-	/*
-	* Bug in GTK.  When using fixed-height-mode,
-	* row changes do not cause the row to be repainted.  The fix is to
-	* invalidate the row when the text changes.
-	*/
-	if ((parent.style & SWT.VIRTUAL) != 0) {
-		if (OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
-			redraw ();
-		}
-	}
 	cached = true;
 }
 
