@@ -3737,12 +3737,6 @@ void updateBkImages() {
 							bounds.y = -bounds.y;
 							bounds.height -= 2*bounds.y - 1;
 						} else {
-							Rectangle trim = renderer.computeTrim(CTabFolderRenderer.PART_BORDER, SWT.NONE, 0, 0, 0, 0);
-							int borderRight = trim.width + trim.x;
-							int borderLeft = -trim.x;
-							int borderBottom = trim.height + trim.y;
-							int borderTop = -trim.y;
-							int origY = bounds.y + bounds.height;
 							bounds.height += height - (bounds.y + bounds.height);
 							bounds.y = -1; 
 						}
