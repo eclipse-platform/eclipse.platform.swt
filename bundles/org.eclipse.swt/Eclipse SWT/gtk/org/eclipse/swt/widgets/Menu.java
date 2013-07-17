@@ -197,33 +197,29 @@ void _setVisible (boolean visible) {
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {
-			if ((OS.GTK_VERSION >=  OS.VERSION (2, 8, 0))) {
-				/*
-				* Feature in GTK. ON_TOP shells will send out 
-				* SWT.Deactivate whenever a context menu is shown.
-				* The fix is to prevent the menu from taking focus
-				* when it is being shown in an ON_TOP shell.
-				*/
-				if ((parent._getShell ().style & SWT.ON_TOP) != 0) {
-					OS.gtk_menu_shell_set_take_focus (handle, false);
-				}
+			/*
+			* Feature in GTK. ON_TOP shells will send out 
+			* SWT.Deactivate whenever a context menu is shown.
+			* The fix is to prevent the menu from taking focus
+			* when it is being shown in an ON_TOP shell.
+			*/
+			if ((parent._getShell ().style & SWT.ON_TOP) != 0) {
+				OS.gtk_menu_shell_set_take_focus (handle, false);
 			}
 			long /*int*/ address = hasLocation ? display.menuPositionProc: 0;
 			hasLocation = false;
 			long /*int*/ data = 0;
-			if ((OS.GTK_VERSION >=  OS.VERSION (2, 10, 0))) {
-				/*
-				* Popup-menu to the status icon should be aligned to  
-				* Tray rather than to cursor position. There is a 
-				* possibility (unlikely) that TrayItem might have  
-				* been disposed in the listener, for which case  
-				* the menu should be shown in the cursor position. 
-				*/
-				TrayItem item = display.currentTrayItem;
-				if (item != null && !item.isDisposed()) {
-					 data = item.handle;
-					 address = OS.gtk_status_icon_position_menu_func ();
-				}
+			/*
+			* Popup-menu to the status icon should be aligned to  
+			* Tray rather than to cursor position. There is a 
+			* possibility (unlikely) that TrayItem might have  
+			* been disposed in the listener, for which case  
+			* the menu should be shown in the cursor position. 
+			*/
+			TrayItem item = display.currentTrayItem;
+			if (item != null && !item.isDisposed()) {
+				 data = item.handle;
+				 address = OS.gtk_status_icon_position_menu_func ();
 			}
 			/*
 			* Bug in GTK.  The timestamp passed into gtk_menu_popup is used
