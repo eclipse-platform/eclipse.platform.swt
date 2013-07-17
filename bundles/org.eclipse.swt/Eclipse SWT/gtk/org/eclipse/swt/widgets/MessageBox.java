@@ -171,10 +171,8 @@ public int open () {
 	* parent shells, it is required to assign the 
 	* dialog to the same window group as of the shells.
 	*/
-	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-		long /*int*/ group = OS.gtk_window_get_group(0);
-		OS.gtk_window_group_add_window (group, handle);
-	}
+	long /*int*/ group = OS.gtk_window_get_group(0);
+	OS.gtk_window_group_add_window (group, handle);
 	
 	if (OS.gtk_window_get_modal (handle)) {
 		oldModal = display.getModalDialog ();
