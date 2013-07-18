@@ -11,11 +11,11 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 
 /**
  * This class is the abstract superclass of all user interface objects.  
@@ -953,6 +953,7 @@ public void removeListener (int eventType, Listener listener) {
  * @see #addListener
  * 
  * @noreference This method is not intended to be referenced by clients.
+ * @nooverride This method is not intended to be re-implemented or extended by clients.
  */
 protected void removeListener (int eventType, SWTEventListener listener) {
 	checkWidget();
