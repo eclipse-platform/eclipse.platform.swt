@@ -1529,19 +1529,17 @@ public Control getCursorControl () {
 
 static GtkBorder getEntryInnerBorder (long /*int*/ handle) {
     GtkBorder gtkBorder = new GtkBorder();
-    if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-	    long /*int*/ border = OS.gtk_entry_get_inner_border (handle);
-	    if (border != 0) {
-	    	OS.memmove (gtkBorder, border, GtkBorder.sizeof);
-	    	return gtkBorder;
-	    }
-	    long /*int*/ []  borderPtr = new long /*int*/ [1];
-	    OS.gtk_widget_style_get (handle, OS.inner_border, borderPtr,0);
-	    if (borderPtr[0] != 0) {
-	        OS.memmove (gtkBorder, borderPtr[0], GtkBorder.sizeof);
-	        OS.gtk_border_free(borderPtr[0]);
-	        return gtkBorder;
-	    }
+    long /*int*/ border = OS.gtk_entry_get_inner_border (handle);
+    if (border != 0) {
+    	OS.memmove (gtkBorder, border, GtkBorder.sizeof);
+    	return gtkBorder;
+    }
+    long /*int*/ []  borderPtr = new long /*int*/ [1];
+    OS.gtk_widget_style_get (handle, OS.inner_border, borderPtr,0);
+    if (borderPtr[0] != 0) {
+        OS.memmove (gtkBorder, borderPtr[0], GtkBorder.sizeof);
+        OS.gtk_border_free(borderPtr[0]);
+        return gtkBorder;
     }
     gtkBorder.left = INNER_BORDER;
     gtkBorder.top = INNER_BORDER;
