@@ -543,9 +543,6 @@ void bringToTop (boolean force) {
 	*/
 	boolean xFocus = false;
 	if (activeShell != null) {
-		if (OS.GTK_VERSION < OS.VERSION (2, 6, 8)) {
-			xFocus = activeShell.isUndecorated ();
-		}
 		display.activeShell = null;
 		display.activePending = true;
 	}
@@ -2357,7 +2354,7 @@ void updateModal () {
 		*/
 		if (group == 0 && topModalShell != null) group = topModalShell.getShell ().group;
 	}
-	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0) && group == 0) { 
+	if (group == 0) { 
 		/*
 		* Feature in GTK. Starting with GTK version 2.10, GTK
 		* doesn't assign windows to a default group. The fix is to
