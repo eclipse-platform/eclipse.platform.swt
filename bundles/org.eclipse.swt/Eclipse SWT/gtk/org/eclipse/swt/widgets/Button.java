@@ -319,9 +319,7 @@ void createHandle (int index) {
 		OS.gtk_container_add (boxHandle, labelHandle);
 		if ((style & SWT.WRAP) != 0) {
 			OS.gtk_label_set_line_wrap (labelHandle, true);
-			if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-				OS.gtk_label_set_line_wrap_mode (labelHandle, OS.PANGO_WRAP_WORD_CHAR);
-			}
+			OS.gtk_label_set_line_wrap_mode (labelHandle, OS.PANGO_WRAP_WORD_CHAR);
 		}
 	}
 	OS.gtk_container_add (fixedHandle, handle);
