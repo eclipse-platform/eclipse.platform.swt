@@ -578,17 +578,7 @@
 #else
 #define GTK_RANGE_SLIDER_END(arg0) (arg0)->slider_end
 #endif
-#if GTK_CHECK_VERSION(2,8,0)
-#define GTK_SCROLLED_WINDOW_HSCROLLBAR(arg0) 0
-#else
-#define GTK_SCROLLED_WINDOW_HSCROLLBAR(arg0) (arg0)->hscrollbar
-#endif
-#define GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(arg0) (GTK_SCROLLED_WINDOW_GET_CLASS (arg0)->scrollbar_spacing >= 0 ? GTK_SCROLLED_WINDOW_GET_CLASS (arg0)->scrollbar_spacing : 3)		
-#if GTK_CHECK_VERSION(2,8,0)
-#define GTK_SCROLLED_WINDOW_VSCROLLBAR(arg0) 0
-#else
-#define GTK_SCROLLED_WINDOW_VSCROLLBAR(arg0) (arg0)->vscrollbar
-#endif
+#define GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(arg0) (GTK_SCROLLED_WINDOW_GET_CLASS (arg0)->scrollbar_spacing >= 0 ? GTK_SCROLLED_WINDOW_GET_CLASS (arg0)->scrollbar_spacing : 3)
 #ifndef GTK_WIDGET_HAS_DEFAULT
 #define GTK_WIDGET_HAS_DEFAULT(arg0) 0
 #endif

@@ -734,10 +734,6 @@ public static final native int GTK_RANGE_SLIDER_START(long /*int*/ widget);
 /** @param widget cast=(GtkRange *) */
 public static final native int GTK_RANGE_SLIDER_END(long /*int*/ widget);
 /** @param widget cast=(GtkScrolledWindow *) */
-public static final native long /*int*/ GTK_SCROLLED_WINDOW_HSCROLLBAR(long /*int*/ widget);
-/** @param widget cast=(GtkScrolledWindow *) */
-public static final native long /*int*/ GTK_SCROLLED_WINDOW_VSCROLLBAR(long /*int*/ widget);
-/** @param widget cast=(GtkScrolledWindow *) */
 public static final native int GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(long /*int*/ widget);
 /**
  * @param acce_label cast=(GtkAccelLabel *)
