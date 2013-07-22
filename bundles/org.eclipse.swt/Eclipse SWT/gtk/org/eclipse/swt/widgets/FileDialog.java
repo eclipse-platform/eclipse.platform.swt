@@ -326,10 +326,8 @@ String openChooserDialog () {
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_window_set_modal (handle, true);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-		long /*int*/ group = OS.gtk_window_get_group(0);
-		OS.gtk_window_group_add_window (group, handle);
-	}
+	long /*int*/ group = OS.gtk_window_get_group(0);
+	OS.gtk_window_group_add_window (group, handle);
 	long /*int*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
 	if (pixbufs != 0) {
 		OS.gtk_window_set_icon_list (handle, pixbufs);
@@ -439,9 +437,7 @@ void presetChooserDialog () {
 	
 	/* Set overwrite mode */
 	if ((style & SWT.SAVE) != 0) {
-		if (OS.GTK_VERSION >= OS.VERSION (2, 8, 0)) {
-			OS.gtk_file_chooser_set_do_overwrite_confirmation (handle, overwrite);
-		}
+		OS.gtk_file_chooser_set_do_overwrite_confirmation (handle, overwrite);
 	}
 
 	/* Set the extension filters */
