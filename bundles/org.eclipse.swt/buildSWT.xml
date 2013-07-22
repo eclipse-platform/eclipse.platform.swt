@@ -47,8 +47,6 @@
 	<property name="file_library_j2me" value="bundles/org.eclipse.swt/Eclipse SWT PI/common_j2me/org/eclipse/swt/internal/Library.java"/>
 	<property name="file_make_common" value="bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak"/>
 	<property name="file_version" value="bundles/org.eclipse.swt/Eclipse SWT/common/version.txt"/>
-	<property name="file_build_notes" value="bundles/org.eclipse.swt/buildnotes_swt.html"/>
-	<property name="file_swt_map" value="org.eclipse.releng/maps/swt.map"/>
 
 	<target name="init_keyfile">
 		<condition property="keyfile" value="C:\BUILD\ssh\swtbuild_dsa_private" else="/var/lib/hudson/swt/swtbuild_dsa_private">
@@ -596,19 +594,15 @@
 		<replace file="${repo.src}/${file_make_common}" token="comma_ver=${comma_ver}" value="comma_ver=${new_comma_ver}"/>
 	</target>
 
-	<!-- Set swt_tag to the current tag in the swt map file -->
-	<target name="get_tag" unless="swt_tag" depends="get_version">
+	<!-- Set the last swt_tag -->
+	<target name="get_tag" unless="swt_tag">
 		<exec dir="${repo.bin}" executable="git" failonerror="true" outputproperty="tags">
-			<arg line="tag -l v${swt_version}*"/>
+			<arg line="tag -l v[0-9][0-9][0-9][0-9]*"/>
 		</exec>
 		<script language="javascript">
 			<![CDATA[
 				tags = project.getProperty("tags").split("\n");
-				if (tags.length > 1) {
-					project.setProperty("swt_tag", tags[tags.length - 1]);
-				} else {
-					project.setProperty("swt_tag", "v" + project.getProperty("swt_version"));
-				}
+				project.setProperty("swt_tag", tags[tags.length - 1]);
 	   	 	]]>
 		</script>
 		<echo>Current tag=${swt_tag}.</echo>
