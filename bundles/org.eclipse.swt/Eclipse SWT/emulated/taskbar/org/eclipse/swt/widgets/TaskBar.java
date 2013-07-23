@@ -163,11 +163,6 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
-void releaseParent () {
-	super.releaseParent ();
-//	if (display.taskBar == this) display.taskBar = null;
-}
-
 void reskinChildren (int flags) {	
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {

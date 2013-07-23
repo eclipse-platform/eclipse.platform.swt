@@ -468,15 +468,6 @@ public void internal_dispose_GC(long /*int*/ hDC, GCData data) {
 	}
 }
 
-/**	 
- * Releases any internal state prior to destroying this printer.
- * This method is called internally by the dispose
- * mechanism of the <code>Device</code> class.
- */
-protected void release () {
-	super.release();
-}
-
 /**
  * Starts a print job and returns true if the job started successfully
  * and false otherwise.

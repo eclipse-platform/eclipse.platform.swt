@@ -592,11 +592,6 @@ void releaseParent () {
 	if (parent.verticalBar == this) parent.verticalBar = null;
 }
 
-void releaseWidget () {
-	super.releaseWidget ();
-	//parent = null;
-}
-
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the user changes the receiver's value.

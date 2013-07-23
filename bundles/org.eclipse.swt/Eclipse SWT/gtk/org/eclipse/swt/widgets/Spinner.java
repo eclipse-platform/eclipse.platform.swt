@@ -903,10 +903,6 @@ void setCursor (long /*int*/ cursor) {
 	if (cursor == 0) gdk_cursor_unref (defaultCursor);
 }
 
-void setFontDescription (long /*int*/ font) {
-	super.setFontDescription (font);
-}
-
 void setForegroundColor (GdkColor color) {
 	setForegroundColor (handle, color, false);
 }
