@@ -11321,6 +11321,24 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1image_1new_1from_1pixbuf)
 }
 #endif
 
+#ifndef NO__1gtk_1image_1set_1from_1gicon
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1image_1set_1from_1gicon)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1image_1set_1from_1gicon_FUNC);
+/*
+	gtk_image_set_from_gicon((GtkImage *)arg0, (GIcon *)arg1, (GtkIconSize)arg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_image_set_from_gicon)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkImage *, GIcon *, GtkIconSize))fp)((GtkImage *)arg0, (GIcon *)arg1, (GtkIconSize)arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1image_1set_1from_1gicon_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1image_1set_1from_1pixbuf
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1image_1set_1from_1pixbuf)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)

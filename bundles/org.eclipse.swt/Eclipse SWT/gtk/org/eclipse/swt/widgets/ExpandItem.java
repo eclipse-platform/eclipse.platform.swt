@@ -535,11 +535,11 @@ public void setImage (Image image) {
 		imageList = new ImageList ();
 		int imageIndex = imageList.add (image);
 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
-		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
+		gtk_image_set_from_pixbuf (imageHandle, pixbuf);
 		if (text.length () == 0) OS.gtk_widget_hide (labelHandle);
 		OS.gtk_widget_show (imageHandle);
 	} else {
-		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
+		gtk_image_set_from_pixbuf (imageHandle, 0);
 		OS.gtk_widget_show (labelHandle);
 		OS.gtk_widget_hide (imageHandle);
 	}

@@ -2171,4 +2171,13 @@ void gtk_widget_get_preferred_size (long /*int*/ widget, GtkRequisition requisit
 		OS.gtk_widget_size_request (widget, requisition);
 	}
 }
+
+void gtk_image_set_from_pixbuf (long /*int*/ imageHandle, long /*int*/ pixbuf){
+	if (OS.GTK3) {
+		OS.gtk_image_set_from_gicon(imageHandle, pixbuf, OS.GTK_ICON_SIZE_SMALL_TOOLBAR);
+	} else {
+		OS.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+	}
+}
+
 }
