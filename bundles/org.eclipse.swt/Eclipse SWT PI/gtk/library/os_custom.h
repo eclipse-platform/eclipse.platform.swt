@@ -177,6 +177,7 @@
 #define gtk_icon_info_free_LIB LIB_GTK
 #define gtk_icon_set_render_icon_LIB LIB_GTK
 #define gtk_icon_theme_lookup_by_gicon_LIB LIB_GTK
+#define gtk_image_set_from_gicon_LIB LIB_GTK
 #define gdk_keyboard_ungrab_LIB LIB_GDK
 #define gtk_icon_theme_get_default_LIB LIB_GTK
 #define gtk_menu_item_remove_submenu_LIB LIB_GTK

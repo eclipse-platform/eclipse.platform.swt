@@ -825,6 +825,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1image_1menu_1item_1set_1image",
 	"_1gtk_1image_1new",
 	"_1gtk_1image_1new_1from_1pixbuf",
+	"_1gtk_1image_1set_1from_1gicon",
 	"_1gtk_1image_1set_1from_1pixbuf",
 	"_1gtk_1init_1check",
 	"_1gtk_1label_1get_1layout",
