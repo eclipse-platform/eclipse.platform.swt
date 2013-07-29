@@ -607,6 +607,7 @@ public class OS extends C {
 	public static final byte[] model = ascii("model");
 	public static final byte[] spacing = ascii("spacing");
 	public static final byte[] pixbuf = ascii("pixbuf");
+	public static final byte[] gicon = ascii("gicon");
 	public static final byte[] text = ascii("text");
 	public static final byte[] xalign = ascii("xalign");
 	public static final byte[] ypad = ascii("ypad");
