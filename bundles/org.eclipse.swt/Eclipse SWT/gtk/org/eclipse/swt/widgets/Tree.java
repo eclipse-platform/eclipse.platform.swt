@@ -255,7 +255,7 @@ long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*i
 		if (isPixbuf) {
 			ptr [0] = 0;
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
-			OS.g_object_set (cell, OS.pixbuf, ptr[0], 0);
+			OS.g_object_set (cell, OS.GTK3 ? OS.gicon : OS.pixbuf, ptr [0], 0);
 			if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
 		} else {
 			ptr [0] = 0;
@@ -872,7 +872,7 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 	}
 
 	/* Add attributes */
-	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.pixbuf, modelIndex + CELL_PIXBUF);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.GTK3 ? OS.gicon : OS.pixbuf, modelIndex + CELL_PIXBUF);
 	if (!ownerDraw) {
 		OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
 		OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
