@@ -690,13 +690,13 @@ static Hashtable gio_getMimeInfo() {
 				mimeTable = new Hashtable();
 				modTime = modTimestamp[0];
 				long /*int*/ reader = OS.g_data_input_stream_new (fileInputStream);
-				int[] length = new int[1];
+				long[] length = new long[1];
 				
 				if (reader != 0) {
 					long /*int*/ linePtr = OS.g_data_input_stream_read_line (reader, length, 0, 0);
 					while (linePtr != 0) {
-						byte[] lineBytes = new byte[length[0]];
-						OS.memmove(lineBytes, linePtr, length[0]);
+						byte[] lineBytes = new byte[(int) length[0]];
+						OS.memmove(lineBytes, linePtr, (int) length[0]);
 						String line = new String (Converter.mbcsToWcs (null, lineBytes));
 			
 						int separatorIndex = line.indexOf (':');
