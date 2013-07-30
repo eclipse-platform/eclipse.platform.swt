@@ -11439,12 +11439,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1image_1set_1from_1gicon)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1image_1set_1from_1gicon_FUNC);
 /*
-	gtk_image_set_from_gicon((GtkImage *)arg0, (GIcon *)arg1, (GtkIconSize)arg2);
+	gtk_image_set_from_gicon((GtkImage *)arg0, arg1, (GtkIconSize)arg2);
 */
 	{
 		OS_LOAD_FUNCTION(fp, gtk_image_set_from_gicon)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkImage *, GIcon *, GtkIconSize))fp)((GtkImage *)arg0, (GIcon *)arg1, (GtkIconSize)arg2);
+			((void (CALLING_CONVENTION*)(GtkImage *, jintLong, GtkIconSize))fp)((GtkImage *)arg0, arg1, (GtkIconSize)arg2);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1image_1set_1from_1gicon_FUNC);
