@@ -2017,8 +2017,8 @@ public static final long /*int*/ g_data_input_stream_new(long /*int*/ input_stre
 	}
 }
 /** @method flags=dynamic */
-public static final native long /*int*/ _g_data_input_stream_read_line(long /*int*/ stream, int[] count, long /*int*/ cancellable, long /*int*/ error);
-public static final long /*int*/ g_data_input_stream_read_line(long /*int*/ stream, int[] count, long /*int*/ cancellable, long /*int*/ error) {
+public static final native long /*int*/ _g_data_input_stream_read_line(long /*int*/ stream, long[] count, long /*int*/ cancellable, long /*int*/ error);
+public static final long /*int*/ g_data_input_stream_read_line(long /*int*/ stream, long[] count, long /*int*/ cancellable, long /*int*/ error) {
 	lock.lock();
 	try {
 		return _g_data_input_stream_read_line(stream, count, cancellable, error);
