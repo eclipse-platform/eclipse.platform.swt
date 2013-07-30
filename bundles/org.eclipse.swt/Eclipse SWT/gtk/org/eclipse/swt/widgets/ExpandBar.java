@@ -137,7 +137,7 @@ void createHandle (int index) {
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, OS.GTK_POLICY_AUTOMATIC);
 		OS.gtk_container_add (fixedHandle, scrolledHandle);
-		if (OS.VERSION(3, 8, 0) >= OS.GTK_VERSION) {
+		if (OS.GTK_VERSION < OS.VERSION(3, 8, 0)) {
 			OS.gtk_scrolled_window_add_with_viewport (scrolledHandle, handle);
 		} else {
 			OS.gtk_container_add(scrolledHandle, handle);
