@@ -8268,7 +8268,6 @@ public static final void gtk_image_set_from_pixbuf(long /*int*/ image, long /*in
 /**
  * @method flags=dynamic
  * @param image cast=(GtkImage *)
- * @param gicon cast=(GIcon *)
  * @param size cast=(GtkIconSize)
  */
 public static final native void _gtk_image_set_from_gicon(long /*int*/ image, long /*int*/ gicon, int size);
