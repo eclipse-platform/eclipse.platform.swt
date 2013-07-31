@@ -2717,23 +2717,23 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1data_1input_1stream_1new)
 
 #ifndef NO__1g_1data_1input_1stream_1read_1line
 JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1data_1input_1stream_1read_1line)
-	(JNIEnv *env, jclass that, jintLong arg0, jlongArray arg1, jintLong arg2, jintLong arg3)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1, jintLong arg2, jintLong arg3)
 {
-	jlong *lparg1=NULL;
+	jintLong *lparg1=NULL;
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1g_1data_1input_1stream_1read_1line_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetIntLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
 /*
 	rc = (jintLong)g_data_input_stream_read_line(arg0, lparg1, arg2, arg3);
 */
 	{
 		OS_LOAD_FUNCTION(fp, g_data_input_stream_read_line)
 		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jlong *, jintLong, jintLong))fp)(arg0, lparg1, arg2, arg3);
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(jintLong, jintLong *, jintLong, jintLong))fp)(arg0, lparg1, arg2, arg3);
 		}
 	}
 fail:
-	if (arg1 && lparg1) (*env)->ReleaseLongArrayElements(env, arg1, lparg1, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntLongArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1g_1data_1input_1stream_1read_1line_FUNC);
 	return rc;
 }

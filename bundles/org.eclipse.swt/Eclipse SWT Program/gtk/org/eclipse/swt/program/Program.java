@@ -690,7 +690,7 @@ static Hashtable gio_getMimeInfo() {
 				mimeTable = new Hashtable();
 				modTime = modTimestamp[0];
 				long /*int*/ reader = OS.g_data_input_stream_new (fileInputStream);
-				long[] length = new long[1];
+				long /*int*/ [] length = new long /*int*/ [1];
 				
 				if (reader != 0) {
 					long /*int*/ linePtr = OS.g_data_input_stream_read_line (reader, length, 0, 0);
