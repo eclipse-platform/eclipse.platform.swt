@@ -1005,18 +1005,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(XAnyEvent_1sizeof)
 }
 #endif
 
-#ifndef NO_XCrossingEvent_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(XCrossingEvent_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XCrossingEvent_1sizeof_FUNC);
-	rc = (jint)XCrossingEvent_sizeof();
-	OS_NATIVE_EXIT(env, that, XCrossingEvent_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_XEvent_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(XEvent_1sizeof)
 	(JNIEnv *env, jclass that)

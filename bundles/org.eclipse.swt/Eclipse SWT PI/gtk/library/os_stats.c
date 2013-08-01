@@ -109,7 +109,6 @@ char * OS_nativeFunctionNames[] = {
 	"RTLD_1LAZY",
 	"RTLD_1NOW",
 	"XAnyEvent_1sizeof",
-	"XCrossingEvent_1sizeof",
 	"XEvent_1sizeof",
 	"XExposeEvent_1sizeof",
 	"XFocusChangeEvent_1sizeof",

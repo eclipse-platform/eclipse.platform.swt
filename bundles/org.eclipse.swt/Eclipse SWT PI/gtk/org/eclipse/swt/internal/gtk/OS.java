@@ -696,7 +696,6 @@ public static final native int PangoLogAttr_sizeof();
 public static final native int PangoRectangle_sizeof();
 public static final native int XAnyEvent_sizeof();
 public static final native int XEvent_sizeof();
-public static final native int XCrossingEvent_sizeof();
 public static final native int XExposeEvent_sizeof();
 public static final native int XFocusChangeEvent_sizeof();
 public static final native int XVisibilityEvent_sizeof();

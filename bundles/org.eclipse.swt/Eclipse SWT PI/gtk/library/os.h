@@ -46,7 +46,6 @@
 
 /* X Structures */
 #define NO_XClientMessageEvent
-#define NO_XCrossingEvent
 #define NO_XExposeEvent
 #define NO_XFocusChangeEvent
 #define NO_XVisibilityEvent
@@ -80,10 +79,8 @@
 #define NO__1gdk_window_lookup
 #define NO__1gdk_window_add_filter
 #define NO_memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I
-#define NO_memmove__ILorg_eclipse_swt_internal_gtk_XCrossingEvent_2I
 #define NO_memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I
 #define NO_memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I
-#define NO_memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II

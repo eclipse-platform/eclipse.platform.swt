@@ -119,7 +119,6 @@ typedef enum {
 	RTLD_1LAZY_FUNC,
 	RTLD_1NOW_FUNC,
 	XAnyEvent_1sizeof_FUNC,
-	XCrossingEvent_1sizeof_FUNC,
 	XEvent_1sizeof_FUNC,
 	XExposeEvent_1sizeof_FUNC,
 	XFocusChangeEvent_1sizeof_FUNC,
