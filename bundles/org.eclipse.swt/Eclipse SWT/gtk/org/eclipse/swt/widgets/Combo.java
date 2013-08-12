@@ -1540,7 +1540,11 @@ public void remove (int index) {
 	System.arraycopy (oldItems, index + 1, newItems, index, oldItems.length - index - 1);
 	items = newItems;
 	if (OS.gtk_combo_box_get_active (handle) == index) clearText ();
-	OS.gtk_combo_box_remove_text (handle, index);
+	if (OS.GTK3) {
+		OS.gtk_combo_box_text_remove(handle, index);
+	} else {
+		OS.gtk_combo_box_remove_text (handle, index);
+	}
 }
 
 /**
@@ -1573,7 +1577,11 @@ public void remove (int start, int end) {
 	int index = OS.gtk_combo_box_get_active (handle);
 	if (start <= index && index <= end) clearText();
 	for (int i = end; i >= start; i--) {
-		OS.gtk_combo_box_remove_text (handle, i);
+		if (OS.GTK3) {
+			OS.gtk_combo_box_text_remove(handle, index);
+		} else {
+			OS.gtk_combo_box_remove_text (handle, i);
+		}
 	}
 }
 
@@ -1615,8 +1623,12 @@ public void removeAll () {
 	int count = items.length;
 	items = new String[0];
 	clearText ();
-	for (int i = count - 1; i >= 0; i--) {
-		OS.gtk_combo_box_remove_text (handle, i);
+	if (OS.GTK3) {
+		OS.gtk_combo_box_text_remove_all(handle);
+	} else {
+		for (int i = count - 1; i >= 0; i--) {
+			OS.gtk_combo_box_remove_text (handle, i);
+		}
 	}
 }
 
@@ -1823,10 +1835,11 @@ public void setItem (int index, String string) {
 	}
 	items [index] = string;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	OS.gtk_combo_box_remove_text (handle, index);
 	if (OS.GTK3) {
+		OS.gtk_combo_box_text_remove (handle, index);
 		OS.gtk_combo_box_text_insert (handle, index, null, buffer);
 	} else {
+		OS.gtk_combo_box_remove_text (handle, index);
 		OS.gtk_combo_box_insert_text (handle, index, buffer);
 	}
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
