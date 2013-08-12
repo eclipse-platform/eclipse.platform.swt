@@ -4380,7 +4380,32 @@ void sendEvent (int eventType, Event event) {
 	event.type = eventType;
 	if (event.time == 0) event.time = getLastEventTime ();
 	if (!filterEvent (event)) {
-		if (eventTable != null) eventTable.sendEvent (event);
+		if (eventTable != null) sendEvent(eventTable, event);
+	}
+}
+
+void sendEvent(EventTable eventTable, Event event) {
+	sendPreEvent(event);
+	try {
+		eventTable.sendEvent (event);
+	} finally {
+		sendPostEvent(event);
+	}
+}
+
+void sendPreEvent(Event event) {
+	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent)) {
+		if (this.eventTable != null && this.eventTable.hooks(SWT.PreEvent)) {
+			sendEvent(SWT.PreEvent, null);
+		}
+	}
+}
+
+void sendPostEvent(Event event) {
+	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent)) {
+		if (this.eventTable != null && this.eventTable.hooks(SWT.PostEvent)) {
+			sendEvent(SWT.PostEvent, null);
+		}
 	}
 }
 

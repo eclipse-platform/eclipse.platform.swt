@@ -4164,10 +4164,33 @@ void sendEvent (EventTable table, Event event) {
 	try {
 		sendEventCount++;
 		if (!filterEvent (event)) {
-			if (table != null) table.sendEvent (event);
+			if (table != null) {
+				sendPreEvent(event);
+				try {
+					table.sendEvent (event);
+				} finally {
+					sendPostEvent(event);
+				}
+			}
 		}
 	} finally {
 		sendEventCount--;
+	}
+}
+
+void sendPreEvent(Event event) {
+	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent)) {
+		if (this.eventTable != null && this.eventTable.hooks(SWT.PreEvent)) {
+			sendEvent(SWT.PreEvent, null);
+		}
+	}
+}
+
+void sendPostEvent(Event event) {
+	if (event == null || (event.type != SWT.PreEvent && event.type != SWT.PostEvent)) {
+		if (this.eventTable != null && this.eventTable.hooks(SWT.PostEvent)) {
+			sendEvent(SWT.PostEvent, null);
+		}
 	}
 }
 

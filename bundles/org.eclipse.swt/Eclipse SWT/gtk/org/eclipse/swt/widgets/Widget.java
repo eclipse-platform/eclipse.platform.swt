@@ -1384,7 +1384,7 @@ public void removeDisposeListener (DisposeListener listener) {
 void sendEvent (Event event) {
 	Display display = event.display;
 	if (!display.filterEvent (event)) {
-		if (eventTable != null) eventTable.sendEvent (event);
+		if (eventTable != null) display.sendEvent(eventTable, event);
 	}
 }
 

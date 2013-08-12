@@ -770,6 +770,28 @@ public class SWT {
      * @since 3.8
 	 */
 	public static final int Segments = 49;
+	
+	/**
+	 * The PreEvent event type (value is 50).
+	 * 
+	 * <p>
+	 * This event is sent before an event is dispatched.
+	 * </p>
+     * 
+     * @since 3.103
+	 */
+	public static final int PreEvent = 50;
+	
+	/**
+	 * The PostEvent event type (value is 51).
+	 * 
+	 * <p>
+	 * This event is sent after an event is dispatched.
+	 * </p>
+	 *  
+     * @since 3.103
+	 */
+	public static final int PostEvent = 51;
 
 	/* Event Details */
 	

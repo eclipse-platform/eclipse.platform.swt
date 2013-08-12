@@ -23,6 +23,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.ILongEventWatchdog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
@@ -794,6 +795,62 @@ public void test_readAndDispatch() {
 	//    test_postLorg_eclipse_swt_widgets_Event()
 }
 
+public void test_LongEventWatchdog() {
+	final int DURATION_MILLIS = 10;
+	Display display = new Display();
+	
+	try {
+		final boolean[] beginCalled = {false};
+		final boolean[] eventSent = {false};
+		final boolean[] endCalled = {false};
+		final boolean[] eventHasRun = {false};
+
+		ILongEventWatchdog callback = new ILongEventWatchdog() {
+			public void beginEvent(int depth) {
+				beginCalled[0] = true;
+			}
+
+			public void onLongEvent(LongEventInfo event) {
+				eventSent[0] = true;
+			}
+
+			public void endEvent(int depth) {
+				endCalled[0] = true;
+			}
+		};
+
+		display.getSynchronizer().registerLongDispatchWatchdogCallback(callback, DURATION_MILLIS);
+
+		display.asyncExec(new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(DURATION_MILLIS);
+				} catch (InterruptedException e) {
+					fail();
+				}
+				eventHasRun[0] = true;
+			}
+		});
+
+		// Detect falling edge of readAndDispatch's return value. It must always go high at least
+		// once for the runnable this test asyncExec'd.
+		boolean prevMoreToDispatch = false;
+		boolean moreToDispatch = false;
+
+		while (!eventHasRun[0] && !(prevMoreToDispatch && !moreToDispatch)) {
+			prevMoreToDispatch = moreToDispatch;
+			moreToDispatch = display.readAndDispatch();
+			assertTrue(beginCalled[0] == endCalled[0]);
+			assertTrue(!eventHasRun[0] || eventSent[0]); // eventHasRun[0] -> eventSent[0]
+		}
+
+		display.getSynchronizer().unregisterLongDispatchWatchdogCallback(callback);
+		assertTrue(beginCalled[0] && endCalled[0] && eventHasRun[0]);
+	} finally {
+		display.dispose();
+	}
+}
+
 public void test_removeFilterILorg_eclipse_swt_widgets_Listener() {
 	final int CLOSE_CALLBACK = 0;
 	final int DISPOSE_CALLBACK = 1;
@@ -1142,6 +1199,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_timerExecILjava_lang_Runnable");
 	methodNames.addElement("test_update");
 	methodNames.addElement("test_wake");
+	methodNames.addElement("test_LongEventWatchdog");
 	methodNames.addAll(Test_org_eclipse_swt_graphics_Device.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -1185,6 +1243,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Rectangle")) test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_graphics_Rectangle();
 	else if (getName().equals("test_postLorg_eclipse_swt_widgets_Event")) test_postLorg_eclipse_swt_widgets_Event();
 	else if (getName().equals("test_readAndDispatch")) test_readAndDispatch();
+	else if (getName().equals("test_LongEventWatchdog")) test_LongEventWatchdog();
 	else if (getName().equals("test_removeFilterILorg_eclipse_swt_widgets_Listener")) test_removeFilterILorg_eclipse_swt_widgets_Listener();
 	else if (getName().equals("test_removeListenerILorg_eclipse_swt_widgets_Listener")) test_removeListenerILorg_eclipse_swt_widgets_Listener();
 	else if (getName().equals("test_setAppNameLjava_lang_String")) test_setAppNameLjava_lang_String();

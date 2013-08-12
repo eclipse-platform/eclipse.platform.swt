@@ -14,7 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.Compatibility;
- 
+
 /**
  * Instances of this class provide synchronization support
  * for displays. A default instance is created automatically
@@ -25,7 +25,7 @@ import org.eclipse.swt.internal.Compatibility;
  * needs to deal with this class. It is provided only to
  * allow applications which require non-standard
  * synchronization behavior to plug in the support they
- * require. <em>Subclasses which override the methods in 
+ * require. <em>Subclasses which override the methods in
  * this class must ensure that the superclass methods are
  * invoked in their implementations</em>
  * </p>
@@ -49,13 +49,13 @@ public class Synchronizer {
 
 /**
  * Constructs a new instance of this class.
- * 
+ *
  * @param display the display to create the synchronizer on
  */
 public Synchronizer (Display display) {
 	this.display = display;
 }
-	
+
 void addLast (RunnableLock lock) {
 	boolean wake = false;
 	synchronized (messageLock) {
@@ -67,14 +67,14 @@ void addLast (RunnableLock lock) {
 		}
 		messages [messageCount++] = lock;
 		wake = messageCount == 1;
-	}	
+	}
 	if (wake) display.wakeThread ();
 }
 
 /**
  * Causes the <code>run()</code> method of the runnable to
- * be invoked by the user-interface thread at the next 
- * reasonable opportunity. The caller of this method continues 
+ * be invoked by the user-interface thread at the next
+ * reasonable opportunity. The caller of this method continues
  * to run in parallel, and is not notified when the
  * runnable has completed.
  *
@@ -131,12 +131,14 @@ boolean runAsyncMessages (boolean all) {
 		run = true;
 		synchronized (lock) {
 			syncThread = lock.thread;
+			display.sendPreEvent(null);
 			try {
-				lock.run ();
+				lock.run();
 			} catch (Throwable t) {
 				lock.throwable = t;
 				SWT.error (SWT.ERROR_FAILED_EXEC, t);
 			} finally {
+				display.sendPostEvent(null);
 				syncThread = null;
 				lock.notifyAll ();
 			}
@@ -147,7 +149,7 @@ boolean runAsyncMessages (boolean all) {
 
 /**
  * Causes the <code>run()</code> method of the runnable to
- * be invoked by the user-interface thread at the next 
+ * be invoked by the user-interface thread at the next
  * reasonable opportunity. The thread which calls this method
  * is suspended until the runnable completes.
  *
@@ -177,7 +179,14 @@ protected void syncExec (Runnable runnable) {
 		}
 	}
 	if (lock == null) {
-		if (runnable != null) runnable.run ();
+		if (runnable != null) {
+			display.sendPreEvent(null);
+			try {
+				runnable.run();
+			} finally {
+				display.sendPostEvent(null);
+			}
+		}
 		return;
 	}
 	synchronized (lock) {
