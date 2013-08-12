@@ -126,6 +126,7 @@
 #define gtk_combo_box_text_insert_LIB LIB_GTK
 #define gtk_combo_box_insert_text_LIB LIB_GTK
 #define gtk_combo_box_remove_text_LIB LIB_GTK
+#define gtk_combo_box_text_remove_all_LIB LIB_GTK
 #define gtk_combo_box_get_active_LIB LIB_GTK
 #define gtk_combo_box_get_model_LIB LIB_GTK
 #define gtk_combo_box_set_active_LIB LIB_GTK
