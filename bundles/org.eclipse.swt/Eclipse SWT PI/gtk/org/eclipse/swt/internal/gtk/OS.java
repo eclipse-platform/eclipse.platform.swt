@@ -6734,6 +6734,16 @@ public static final void gtk_combo_box_remove_text(long /*int*/ combo_box, int p
 	}
 }
 /** @method flags=dynamic */
+public static final native void _gtk_combo_box_text_remove_all(long /*int*/ combo_box);
+public static final void gtk_combo_box_text_remove_all(long /*int*/ combo_box) {
+	lock.lock();
+	try {
+		_gtk_combo_box_text_remove_all(combo_box);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
 public static final native int _gtk_combo_box_get_active(long /*int*/ combo_box);
 public static final int gtk_combo_box_get_active(long /*int*/ combo_box) {
 	lock.lock();

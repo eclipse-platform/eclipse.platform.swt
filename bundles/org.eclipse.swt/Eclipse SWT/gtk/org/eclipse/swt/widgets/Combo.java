@@ -1861,8 +1861,12 @@ public void setItems (String [] items) {
 	this.items = new String [items.length];
 	System.arraycopy (items, 0, this.items, 0, items.length);
 	clearText ();
-	for (int i = count - 1; i >= 0; i--) {
-		OS.gtk_combo_box_remove_text (handle, i);
+	if (OS.GTK3) {
+		OS.gtk_combo_box_text_remove_all(handle);
+	} else {
+		for (int i = count - 1; i >= 0; i--) {
+			OS.gtk_combo_box_remove_text (handle, i);
+		}
 	}
 	for (int i = 0; i < items.length; i++) {
 		String string = items [i];

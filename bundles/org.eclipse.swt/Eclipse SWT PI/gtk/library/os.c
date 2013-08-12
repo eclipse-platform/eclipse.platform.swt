@@ -9480,6 +9480,24 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1combo_1box_1text_1new_1with_1entry)
 }
 #endif
 
+#ifndef NO__1gtk_1combo_1box_1text_1remove_1all
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1text_1remove_1all)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1text_1remove_1all_FUNC);
+/*
+	gtk_combo_box_text_remove_all(arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_combo_box_text_remove_all)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jintLong))fp)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1text_1remove_1all_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1container_1add
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1container_1add)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
