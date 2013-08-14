@@ -505,6 +505,19 @@ public void create (Composite parent, int style) {
 		bytes = Converter.wcsToMbcs (null, "POST", true); //$NON-NLS-1$
 		PostString = C.malloc (bytes.length);
 		C.memmove (PostString, bytes, bytes.length);
+
+		/*
+		* WebKitGTK version 1.8.x and newer can crash sporadically in
+		* webkitWebViewRegisterForIconNotification().  The root issue appears
+		* to be WebKitGTK accessing its icon database from a background
+		* thread.  Work around this crash by disabling the use of WebKitGTK's
+		* icon database, which should not affect the Browser in any way.
+		*/
+		long /*int*/ database = WebKitGTK.webkit_get_favicon_database ();
+		if (database != 0) {
+			/* WebKitGTK version is >= 1.8.x */
+			WebKitGTK.webkit_favicon_database_set_path (database, 0);
+		}
 	}
 
 	scrolledWindow = OS.gtk_scrolled_window_new (0, 0);
@@ -664,17 +677,6 @@ public void create (Composite parent, int style) {
 		browser.setSize (size);
 		size.x -= minSize.width; size.y -= minSize.height;
 		browser.setSize (size);
-	}
-
-	/*
-	* WebKitGTK version 1.10.x, and possibly other versions as well, crash
-	* sporadically in webkitWebViewRegisterForIconNotification().  Work
-	* around this crash by disabling WebKit's icon database, which is fine
-	* to do since the Browser does not make use of it in any way.
-	*/
-	long /*int*/ database = WebKitGTK.webkit_get_favicon_database ();
-	if (database != 0) {
-		WebKitGTK.webkit_favicon_database_set_path (database, 0);
 	}
 }
 
