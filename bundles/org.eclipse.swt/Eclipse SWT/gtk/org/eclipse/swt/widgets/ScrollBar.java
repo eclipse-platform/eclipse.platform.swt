@@ -11,10 +11,18 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.gtk.GdkEvent;
+import org.eclipse.swt.internal.gtk.GdkEventButton;
+import org.eclipse.swt.internal.gtk.GtkAdjustment;
+import org.eclipse.swt.internal.gtk.GtkAllocation;
+import org.eclipse.swt.internal.gtk.GtkRequisition;
+import org.eclipse.swt.internal.gtk.OS;
 
 /**
  * Instances of this class are selectable user interface
@@ -375,24 +383,24 @@ public Rectangle getThumbTrackBounds () {
 	int x = 0, y = 0, width, height;
 	int[] has_stepper = new int[1];
 	OS.gtk_widget_style_get (handle, OS.has_backward_stepper, has_stepper, 0);
-	boolean hasA = has_stepper[0] != 0;
-	OS.gtk_widget_style_get (handle, OS.has_secondary_backward_stepper, has_stepper, 0);
 	boolean hasB = has_stepper[0] != 0;
+	OS.gtk_widget_style_get (handle, OS.has_secondary_backward_stepper, has_stepper, 0);
+	boolean hasB2 = has_stepper[0] != 0;
 	OS.gtk_widget_style_get (handle, OS.has_forward_stepper, has_stepper, 0);
-	boolean hasC = has_stepper[0] != 0;
+	boolean hasF = has_stepper[0] != 0;
 	OS.gtk_widget_style_get (handle, OS.has_secondary_forward_stepper, has_stepper, 0);
-	boolean hasD = has_stepper[0] != 0;
+	boolean hasF2 = has_stepper[0] != 0;
 	GtkAllocation allocation = new GtkAllocation ();
 	gtk_widget_get_allocation (handle, allocation);
 	if ((style & SWT.VERTICAL) != 0) {
 		int stepperSize = allocation.width;
 		x = allocation.x;
-		if (hasA) y += stepperSize;
 		if (hasB) y += stepperSize;
+		if (hasF2) y += stepperSize;
 		width = allocation.width;
 		height = allocation.height - y;	
-		if (hasC) height -= stepperSize;
-		if (hasD) height -= stepperSize;
+		if (hasB2) height -= stepperSize;
+		if (hasF) height -= stepperSize;
 		if (height < 0) {
 			int [] slider_start = new int [1], slider_end = new int [1];
 			gtk_range_get_slider_range (handle, slider_start, slider_end);
@@ -401,12 +409,12 @@ public Rectangle getThumbTrackBounds () {
 		}
 	} else {
 		int stepperSize = allocation.height;
-		if (hasA) x += stepperSize;
 		if (hasB) x += stepperSize;
+		if (hasF2) x += stepperSize;
 		y = allocation.y;
 		width = allocation.width -x;
-		if (hasC) width -= stepperSize;
-		if (hasD) width -= stepperSize;
+		if (hasB2) width -= stepperSize;
+		if (hasF) width -= stepperSize;
 		height = allocation.height;
 		if (width < 0) {
 			int [] slider_start = new int [1], slider_end = new int [1];
