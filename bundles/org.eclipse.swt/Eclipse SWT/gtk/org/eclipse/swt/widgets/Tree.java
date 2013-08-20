@@ -2369,7 +2369,14 @@ public void removeAll () {
 	if (fixAccessibility ()) {
 		ignoreAccessibility = true;
 	}
+	/**
+	 * Hack for GTK3 in order to not get cellDataFunc while clearing as it calls it for each row-deleted
+	 * and this causes AAIOB in getId as items are already cleared but the model is not yet.
+	 * By disconnecting the model from the handle while clearing no intermediate signals are emitted.
+	 */
+	OS.gtk_tree_view_set_model(handle, 0);
 	OS.gtk_tree_store_clear (modelHandle);
+	OS.gtk_tree_view_set_model(handle, modelHandle);
 	if (fixAccessibility ()) {
 		ignoreAccessibility = false;
 		OS.g_object_notify (handle, OS.model);
