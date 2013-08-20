@@ -597,7 +597,7 @@
 	<!-- Set the last swt_tag -->
 	<target name="get_tag" unless="swt_tag">
 		<exec dir="${repo.bin}" executable="git" failonerror="true" outputproperty="tags">
-			<arg line="tag -l v[0-9][0-9][0-9][0-9]*"/>
+			<arg line="describe --abbrev=0 --tags --match v[0-9][0-9][0-9][0-9]*"/>
 		</exec>
 		<script language="javascript">
 			<![CDATA[
