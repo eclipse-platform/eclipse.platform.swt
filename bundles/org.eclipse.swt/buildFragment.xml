@@ -48,6 +48,7 @@
 		<condition property="p2.publish.parts" value="true">
 			<istrue value="${p2.gathering}" />
 		</condition>
+		<mkdir dir="target"/>
 	</target>
 
 	<target name="properties" if="eclipse.running">
@@ -529,6 +530,7 @@
 		<zip zipfile="${destination}/${zipfilename}">
 			<zipfileset dir="${temp.folder}/swtdownload/" />
 		</zip>
+		<copy file="${zipfilename}" todir="target" />
 		<delete dir="${temp.folder}" />
 	</target>
 
