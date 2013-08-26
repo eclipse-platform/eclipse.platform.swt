@@ -455,14 +455,12 @@ if [ ${MODEL} = 'x86' -a ${SWT_OS} = 'linux' ]; then
 	export SWT_LFLAGS SWT_PTR_CFLAGS
 fi
 
-if [ x`pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "xYES"  -a ${MODEL} != "sparc64" -a ${MODEL} != 'ia64' -a ${GTK_VERSION} != '3.0' ]; then
+if [ x`pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "xYES"  -a ${MODEL} != "sparc64" -a ${MODEL} != 'ia64' ]; then
 	echo "libgnomeui-2.0 found, compiling SWT program support using GNOME"
 	MAKE_GNOME=make_gnome
 else
-	if [ ${GTK_VERSION} != '3.0' ]; then
-		echo "libgnome-2.0 and libgnomeui-2.0 not found:"
-		echo "    *** SWT Program support for GNOME will not be compiled."
-	fi
+	echo "libgnome-2.0 and libgnomeui-2.0 not found:"
+	echo "    *** SWT Program support for GNOME will not be compiled."
 fi
 
 if [ x`pkg-config --exists cairo && echo YES` = "xYES" ]; then

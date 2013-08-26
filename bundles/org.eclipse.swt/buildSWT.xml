@@ -938,7 +938,6 @@
 			<param name="build_targets" value="install"/>
 			<param name="libs" value="*pi3*"/>
 			<param name="exports" value="export GTK_VERSION=3.0;"/>
-			<param name="gtk_version" value="3.0"/>
 		</antcall>
 	</target>
 	
@@ -1002,10 +1001,8 @@
 	</target>
 	
 	<target name="build_local">
-		<property name="gtk_version" value="2.0" />
 		<exec dir="${build_dir}" executable="sh" failonerror="true">
 			<arg line="build.sh"/>
-			<env key="GTK_VERSION" value="${gtk_version}"/>
 			<env key="MODEL" value="${swt.arch}"/>
 			<env key="OUTPUT_DIR" value="${output_dir}"/>
 			<arg line="${targets}"/>
