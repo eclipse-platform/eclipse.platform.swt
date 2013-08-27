@@ -15,6 +15,10 @@
 cd `dirname $0`
 
 MAKE_TYPE=make
+if [ "${GTK_VERSION}" = "" ]; then
+	GTK_VERSION=2.0
+	export GTK_VERSION
+fi
 
 # Check if we have to compile external.xpt from external.idl
 COMPONENTS_DIR=`pwd`/../../components
