@@ -274,6 +274,7 @@ void init(int style) {
 				case SWT.FocusIn:          onFocus(event);	break;
 				case SWT.FocusOut:         onFocus(event);	break;
 				case SWT.KeyDown:          onKeyDown(event); break;
+				case SWT.MenuDetect:       onMenuDetect(event); break;
 				case SWT.MouseDoubleClick: onMouseDoubleClick(event); break;
 				case SWT.MouseDown:        onMouse(event);	break;
 				case SWT.MouseEnter:       onMouse(event);	break;
@@ -295,6 +296,7 @@ void init(int style) {
 		SWT.FocusIn, 
 		SWT.FocusOut, 
 		SWT.KeyDown,
+		SWT.MenuDetect,
 		SWT.MouseDoubleClick, 
 		SWT.MouseDown,
 		SWT.MouseEnter, 
@@ -1646,6 +1648,23 @@ boolean onMnemonic (Event event, boolean doit) {
 		}
 	}
 	return false;
+}
+void onMenuDetect(Event event) {
+	if (event.detail == SWT.MENU_KEYBOARD) {
+		if (selectedIndex != -1) {
+			CTabItem item = items[selectedIndex];
+			Rectangle rect = getDisplay().map(this, null, item.getBounds());
+			if (!rect.contains(event.x, event.y)) {
+				/* If the mouse is not in the currently-selected tab,
+				 * then pop up the menu near the top-right corner of the current tab.
+				 */
+				Rectangle itemTrim = renderer.computeTrim(selectedIndex, SWT.NONE, 0, 0, 0, 0);
+				Rectangle closeTrim = renderer.computeTrim(CTabFolderRenderer.PART_CLOSE_BUTTON, SWT.NONE, 0, 0, 0, 0);
+				event.x = rect.x + rect.width - item.closeRect.width + itemTrim.x - closeTrim.width;
+				event.y = rect.y - itemTrim.y - closeTrim.y;
+			}
+		}
+	}
 }
 void onMouseDoubleClick(Event event) {	
 	if (event.button != 1 || 
