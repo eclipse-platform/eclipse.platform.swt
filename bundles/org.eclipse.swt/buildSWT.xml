@@ -1076,11 +1076,6 @@
 	</target>
 
 	<target name="pull_remote">
-		<delete includeemptydirs="true">
-			<fileset dir="${repo.bin}" defaultexcludes="false">
-				<include name="bundles/*/tmp*/**"/>
-			</fileset>
-		</delete>
 		<antcall target="init_repo">
 			<param name="repo" value="eclipse.platform.swt"/>
 			<param name="repo.exists" value="repo.src.exists"/>
@@ -1092,6 +1087,9 @@
 		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true" timeout="900000">
 			<arg line="reset --hard origin/${TAG}"/>
 		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true" timeout="900000">
+			<arg line="clean -fd"/>
+		</exec>
 		<antcall target="init_repo">
 			<param name="repo" value="eclipse.platform.swt.binaries"/>
 			<param name="repo.exists" value="repo.bin.exists"/>
@@ -1102,6 +1100,9 @@
 		</exec>
 		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true" timeout="900000">
 			<arg line="reset --hard origin/${TAG}"/>
+		</exec>
+		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true" timeout="900000">
+			<arg line="clean -fd"/>
 		</exec>
 	</target>
 
