@@ -78,6 +78,7 @@ public class DropTarget extends Widget {
 
 	static Callback dropTarget2Args, dropTarget3Args, dropTarget6Args;
 	static long /*int*/ proc2Args, proc3Args, proc6Args;
+	static final String LOCK_CURSOR = "org.eclipse.swt.internal.lockCursor"; //$NON-NLS-1$
 
 	static {
 		Class clazz = DropTarget.class;
@@ -256,7 +257,7 @@ int draggingEntered(long /*int*/ id, long /*int*/ sel, NSObject sender) {
 		selectedOperation = event.detail;
 	}
 	
-	if ((selectedOperation == DND.DROP_NONE) && (OS.PTR_SIZEOF == 4)) {
+	if (selectedOperation == DND.DROP_NONE) {
 		setDropNotAllowed();
 	} else {
 		if(((Boolean)control.getData(IS_ACTIVE)).booleanValue() == false) {
@@ -332,7 +333,7 @@ int draggingUpdated(long /*int*/ id, long /*int*/ sel, NSObject sender) {
 		selectedOperation = event.detail;
 	}
 	
-	if ((selectedOperation == DND.DROP_NONE) && (OS.PTR_SIZEOF == 4)) {
+	if (selectedOperation == DND.DROP_NONE) {
 		setDropNotAllowed();
 	} else {
 		if(((Boolean)control.getData(IS_ACTIVE)).booleanValue() == false) {
@@ -940,13 +941,20 @@ public void setTransfer(Transfer[] transferAgents){
 void setDropNotAllowed() {
 	if (!dropNotAllowed) {
 		NSCursor.currentCursor().push();
-		if (OS.PTR_SIZEOF == 4) OS.SetThemeCursor(OS.kThemeNotAllowedCursor);	
+		Display display = getDisplay();
+		display.setData (LOCK_CURSOR, Boolean.FALSE);
+		NSCursor.operationNotAllowedCursor().push();
+		display.setData (LOCK_CURSOR, Boolean.TRUE);
 		dropNotAllowed = true;
 	}
 }
 
 void clearDropNotAllowed() {
 	if (dropNotAllowed) {
+		Display display = getDisplay();
+		display.setData (LOCK_CURSOR, Boolean.FALSE);
+		NSCursor.pop();
+		display.setData (LOCK_CURSOR, Boolean.TRUE);
 		NSCursor.pop();
 		dropNotAllowed = false;
 	}

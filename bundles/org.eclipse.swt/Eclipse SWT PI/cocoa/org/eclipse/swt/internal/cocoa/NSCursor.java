@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -53,6 +53,11 @@ public NSPoint hotSpot() {
 public NSCursor initWithImage(NSImage newImage, NSPoint aPoint) {
 	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithImage_hotSpot_, newImage != null ? newImage.id : 0, aPoint);
 	return result == this.id ? this : (result != 0 ? new NSCursor(result) : null);
+}
+
+public static NSCursor operationNotAllowedCursor() {
+	long /*int*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_operationNotAllowedCursor);
+	return result != 0 ? new NSCursor(result) : null;
 }
 
 public static NSCursor pointingHandCursor() {

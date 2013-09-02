@@ -1591,6 +1591,7 @@ public static final long /*int*/ sel_openFile_withApplication_ = sel_registerNam
 public static final long /*int*/ sel_openPanel = sel_registerName("openPanel");
 public static final long /*int*/ sel_openURL_ = sel_registerName("openURL:");
 public static final long /*int*/ sel_openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers_ = sel_registerName("openURLs:withAppBundleIdentifier:options:additionalEventParamDescriptor:launchIdentifiers:");
+public static final long /*int*/ sel_operationNotAllowedCursor = sel_registerName("operationNotAllowedCursor");
 public static final long /*int*/ sel_options = sel_registerName("options");
 public static final long /*int*/ sel_orderBack_ = sel_registerName("orderBack:");
 public static final long /*int*/ sel_orderFront_ = sel_registerName("orderFront:");

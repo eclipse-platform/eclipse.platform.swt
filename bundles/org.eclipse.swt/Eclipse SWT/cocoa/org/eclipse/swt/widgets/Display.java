@@ -175,6 +175,7 @@ public class Display extends Device {
 	Callback observerCallback;
 	
 	boolean lockCursor = true;
+	static final String LOCK_CURSOR = "org.eclipse.swt.internal.lockCursor"; //$NON-NLS-1$
 	long /*int*/ oldCursorSetProc;
 	Callback cursorSetCallback;
 
@@ -4403,6 +4404,10 @@ public void setData (String key, Object value) {
 	
 	if (key.equals (MOZILLA_RUNNING)) {
 		mozillaRunning = ((Boolean)value).booleanValue ();
+	}
+	
+	if (key.equals (LOCK_CURSOR)) {
+		lockCursor = ((Boolean)value).booleanValue ();
 	}
 
 	/* Remove the key/value pair */

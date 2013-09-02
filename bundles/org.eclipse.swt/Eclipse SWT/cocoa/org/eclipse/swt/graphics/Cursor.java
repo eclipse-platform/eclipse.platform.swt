@@ -176,7 +176,7 @@ public Cursor(Device device, int style) {
 			case SWT.CURSOR_SIZENW: 		handle = NSCursor.crosshairCursor(); break;
 			case SWT.CURSOR_UPARROW: 		handle = NSCursor.crosshairCursor(); break;
 			case SWT.CURSOR_IBEAM: 			shouldCreateCursor = true; break;
-			case SWT.CURSOR_NO: 			handle = NSCursor.crosshairCursor(); break;
+			case SWT.CURSOR_NO: 			handle = NSCursor.operationNotAllowedCursor(); break;
 			default:
 				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
