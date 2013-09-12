@@ -134,7 +134,11 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1TransformPoints__I_3FI)
 	PointF *points=NULL;
 	jfloat *lparg1=NULL;
 	jint rc = 0;
+#ifdef JNI64
+	Gdip_NATIVE_ENTER(env, that, Matrix_1TransformPoints__J_3FI_FUNC);
+#else
 	Gdip_NATIVE_ENTER(env, that, Matrix_1TransformPoints__I_3FI_FUNC);
+#endif
 	if (arg1) if ((lparg1 = env->GetFloatArrayElements(arg1, NULL)) == NULL) goto fail;
 	if (lparg1) {
 		points = new PointF[arg2];
