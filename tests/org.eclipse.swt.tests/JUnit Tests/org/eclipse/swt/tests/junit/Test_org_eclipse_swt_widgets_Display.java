@@ -23,7 +23,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.ILongEventWatchdog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
@@ -801,26 +800,24 @@ public void test_LongEventWatchdog() {
 	
 	try {
 		final boolean[] beginCalled = {false};
-		final boolean[] eventSent = {false};
 		final boolean[] endCalled = {false};
 		final boolean[] eventHasRun = {false};
 
-		ILongEventWatchdog callback = new ILongEventWatchdog() {
-			public void beginEvent(int depth) {
+		Listener preListener = new Listener() {
+			public void handleEvent(Event event) {
 				beginCalled[0] = true;
 			}
-
-			public void onLongEvent(LongEventInfo event) {
-				eventSent[0] = true;
-			}
-
-			public void endEvent(int depth) {
+		};
+		
+		Listener postListener = new Listener() {
+			public void handleEvent(Event event) {
 				endCalled[0] = true;
 			}
 		};
-
-		display.getSynchronizer().registerLongDispatchWatchdogCallback(callback, DURATION_MILLIS);
-
+		
+		display.addListener(SWT.PreEvent, preListener);
+		display.addListener(SWT.PostEvent, postListener);
+		
 		display.asyncExec(new Runnable() {
 			public void run() {
 				try {
@@ -832,19 +829,13 @@ public void test_LongEventWatchdog() {
 			}
 		});
 
-		// Detect falling edge of readAndDispatch's return value. It must always go high at least
-		// once for the runnable this test asyncExec'd.
-		boolean prevMoreToDispatch = false;
-		boolean moreToDispatch = false;
-
-		while (!eventHasRun[0] && !(prevMoreToDispatch && !moreToDispatch)) {
-			prevMoreToDispatch = moreToDispatch;
-			moreToDispatch = display.readAndDispatch();
-			assertTrue(beginCalled[0] == endCalled[0]);
-			assertTrue(!eventHasRun[0] || eventSent[0]); // eventHasRun[0] -> eventSent[0]
+		while (display.readAndDispatch()) {
 		}
-
-		display.getSynchronizer().unregisterLongDispatchWatchdogCallback(callback);
+		
+		display.removeListener(SWT.PreEvent, preListener);
+		display.removeListener(SWT.PostEvent, preListener);
+		
+		
 		assertTrue(beginCalled[0] && endCalled[0] && eventHasRun[0]);
 	} finally {
 		display.dispose();
