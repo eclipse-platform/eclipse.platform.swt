@@ -149,20 +149,29 @@ case $SWT_OS.$SWT_ARCH in
 		if [ "${MOZILLA_SDK}" = "" ]; then
 			export MOZILLA_SDK="/bluebird/teamswt/swt-builddir/mozilla/1.7/amd64/mozilla/dist/sdk"
 		fi
-		if [ "${XULRUNNER_SDK}" = "" ]; then
-			export XULRUNNER_SDK="/bluebird/teamswt/swt-builddir/xulrunner/1.8.0.1/amd64/mozilla/dist/sdk/"
-		fi
 		if [ "${MOZILLA_INCLUDES}" = "" ]; then
 			export MOZILLA_INCLUDES="-include ${MOZILLA_SDK}/include/mozilla-config.h -I${MOZILLA_SDK}/include"
 		fi
 		if [ "${MOZILLA_LIBS}" = "" ]; then
 			export MOZILLA_LIBS="-L${MOZILLA_SDK}/lib -L${MOZILLA_SDK}/bin -lxpcom -lnspr4 -lplds4 -lplc4"
 		fi
+		if [ "${XULRUNNER_SDK}" = "" ]; then
+			export XULRUNNER_SDK="/bluebird/teamswt/swt-builddir/xulrunner/1.8.0.1/amd64/mozilla/dist/sdk"
+		fi
 		if [ "${XULRUNNER_INCLUDES}" = "" ]; then
 			export XULRUNNER_INCLUDES="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"
 		fi
 		if [ "${XULRUNNER_LIBS}" = "" ]; then
 			export XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
+		fi
+		if [ "${XULRUNNER_24_SDK}" = "" ]; then
+			export XULRUNNER_24_SDK="/bluebird/teamswt/swt-builddir/geckoSDK/24/x86_64"
+		fi
+		if [ "${XULRUNNER_FIX24_INCLUDES}" = "" ]; then
+			export XULRUNNER_FIX24_INCLUDES="-include ${XULRUNNER_24_SDK}/include/mozilla-config.h -I${XULRUNNER_24_SDK}/include -I${XULRUNNER_24_SDK}/include/nspr"
+		fi
+		if [ "${XULRUNNER_FIX24_LIBS}" = "" ]; then
+			export XULRUNNER_FIX24_LIBS="-L${XULRUNNER_24_SDK}/lib -lxpcomglue -Wl,--whole-archive -lmozglue -Wl,--no-whole-archive"
 		fi
 		;;
 	"linux.ppc")

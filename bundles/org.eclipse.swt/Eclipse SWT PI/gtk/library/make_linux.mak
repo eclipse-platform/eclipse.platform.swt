@@ -44,6 +44,7 @@ ATK_LIB = lib$(ATK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_LIB = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 XULRUNNER_LIB = lib$(XULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+XULRUNNER_FIX24_LIB = libswt-xulrunner-custom24.so
 XPCOMINIT_LIB = lib$(XPCOMINIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 WEBKIT_LIB = lib$(WEBKIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GLX_LIB = lib$(GLX_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -110,7 +111,8 @@ CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
 ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
 GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
-XULRUNNER_OBJECTS = swt.o xpcomxul.o xpcomxul_custom.o xpcomxul_structs.o xpcomxul_stats.o
+XULRUNNER_OBJECTS = swt.o xpcomxul.o xpcom_custom.o xpcomxul_structs.o xpcomxul_stats.o
+XULRUNNER_FIX24_OBJECTS = swt.o xpcom_custom_fix24.o
 XPCOMINIT_OBJECTS = swt.o xpcominit.o xpcominit_structs.o xpcominit_stats.o
 WEBKIT_OBJECTS = swt.o webkit.o webkit_structs.o webkit_stats.o
 GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
@@ -250,7 +252,8 @@ xpcom_stats.o: xpcom_stats.cpp
 make_xulrunner:$(XULRUNNER_LIB)
 
 $(XULRUNNER_LIB): $(XULRUNNER_OBJECTS)
-	echo -e "#include<stdlib.h>\nsize_t je_malloc_usable_size_in_advance(size_t n) {\nreturn n;\n}" | gcc  $(LFLAGS) $(CFLAGS) -xc - -o libswt-xulrunner-fix.so
+	echo -e "#include<stdlib.h>\nsize_t je_malloc_usable_size_in_advance(size_t n) {\nreturn n;\n}" | $(CXX) $(LFLAGS) $(CFLAGS) -xc - -o libswt-xulrunner-fix10.so
+	echo -e "#include<stdlib.h>\nsize_t je_malloc_usable_size_in_advance(size_t n) {\nreturn n;\n}" | $(CXX) $(LFLAGS) $(CFLAGS) -L${XULRUNNER_24_SDK}/lib -Wl,--whole-archive -lmozglue -Wl,--no-whole-archive -xc - -o libswt-xulrunner-fix24.so
 	$(CXX) -o $(XULRUNNER_LIB) $(XULRUNNER_OBJECTS) $(MOZILLALFLAGS) ${XULRUNNER_LIBS}
 
 xpcomxul.o: xpcom.cpp
@@ -259,11 +262,22 @@ xpcomxul.o: xpcom.cpp
 xpcomxul_structs.o: xpcom_structs.cpp
 	$(CXX) -o xpcomxul_structs.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_structs.cpp
 	
-xpcomxul_custom.o: xpcom_custom.cpp
-	$(CXX) -o xpcomxul_custom.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_custom.cpp
+xpcom_custom.o: xpcom_custom.cpp
+	$(CXX) -o xpcom_custom.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_custom.cpp
 
 xpcomxul_stats.o: xpcom_stats.cpp
 	$(CXX) -o xpcomxul_stats.o $(MOZILLACFLAGS) $(XULRUNNEREXCLUDES) ${XULRUNNER_INCLUDES} -c xpcom_stats.cpp
+
+#
+# XULRunner 24 fix lib
+#
+make_xulrunner_fix24:$(XULRUNNER_FIX24_LIB)
+
+$(XULRUNNER_FIX24_LIB): xpcom_custom_fix24.o
+	$(CXX) -o $(XULRUNNER_FIX24_LIB) $(XULRUNNER_FIX24_OBJECTS) $(MOZILLALFLAGS) ${XULRUNNER_FIX24_LIBS}
+
+xpcom_custom_fix24.o: xpcom_custom_fix24.cpp
+	$(CXX) -std=c++0x -fpermissive $(MOZILLACFLAGS) ${XULRUNNER_FIX24_INCLUDES} -c xpcom_custom_fix24.cpp
 
 #
 # XPCOMInit lib
