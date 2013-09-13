@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -309,16 +309,6 @@ JNIEXPORT jintLong JNICALL ATK_NATIVE(_1ATK_1VALUE_1GET_1IFACE)
 }
 #endif
 
-#ifndef NO__1atk_1focus_1tracker_1notify
-JNIEXPORT void JNICALL ATK_NATIVE(_1atk_1focus_1tracker_1notify)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	ATK_NATIVE_ENTER(env, that, _1atk_1focus_1tracker_1notify_FUNC);
-	atk_focus_tracker_notify((AtkObject *)arg0);
-	ATK_NATIVE_EXIT(env, that, _1atk_1focus_1tracker_1notify_FUNC);
-}
-#endif
-
 #ifndef NO__1atk_1get_1default_1registry
 JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1get_1default_1registry)
 	(JNIEnv *env, jclass that)
@@ -327,18 +317,6 @@ JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1get_1default_1registry)
 	ATK_NATIVE_ENTER(env, that, _1atk_1get_1default_1registry_FUNC);
 	rc = (jintLong)atk_get_default_registry();
 	ATK_NATIVE_EXIT(env, that, _1atk_1get_1default_1registry_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1atk_1object_1factory_1create_1accessible
-JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1object_1factory_1create_1accessible)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	jintLong rc = 0;
-	ATK_NATIVE_ENTER(env, that, _1atk_1object_1factory_1create_1accessible_FUNC);
-	rc = (jintLong)atk_object_factory_create_accessible((AtkObjectFactory *)arg0, (GObject *)arg1);
-	ATK_NATIVE_EXIT(env, that, _1atk_1object_1factory_1create_1accessible_FUNC);
 	return rc;
 }
 #endif
@@ -375,18 +353,6 @@ JNIEXPORT void JNICALL ATK_NATIVE(_1atk_1object_1notify_1state_1change)
 }
 #endif
 
-#ifndef NO__1atk_1object_1ref_1relation_1set
-JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1object_1ref_1relation_1set)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jintLong rc = 0;
-	ATK_NATIVE_ENTER(env, that, _1atk_1object_1ref_1relation_1set_FUNC);
-	rc = (jintLong)atk_object_ref_relation_set((AtkObject *)arg0);
-	ATK_NATIVE_EXIT(env, that, _1atk_1object_1ref_1relation_1set_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1atk_1registry_1get_1factory
 JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1registry_1get_1factory)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
@@ -406,40 +372,6 @@ JNIEXPORT void JNICALL ATK_NATIVE(_1atk_1registry_1set_1factory_1type)
 	ATK_NATIVE_ENTER(env, that, _1atk_1registry_1set_1factory_1type_FUNC);
 	atk_registry_set_factory_type((AtkRegistry *)arg0, (GType)arg1, (GType)arg2);
 	ATK_NATIVE_EXIT(env, that, _1atk_1registry_1set_1factory_1type_FUNC);
-}
-#endif
-
-#ifndef NO__1atk_1relation_1set_1get_1n_1relations
-JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1relation_1set_1get_1n_1relations)
-	(JNIEnv *env, jclass that, jintLong arg0)
-{
-	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, _1atk_1relation_1set_1get_1n_1relations_FUNC);
-	rc = (jint)atk_relation_set_get_n_relations((AtkRelationSet *)arg0);
-	ATK_NATIVE_EXIT(env, that, _1atk_1relation_1set_1get_1n_1relations_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1atk_1relation_1set_1get_1relation
-JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1relation_1set_1get_1relation)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
-{
-	jintLong rc = 0;
-	ATK_NATIVE_ENTER(env, that, _1atk_1relation_1set_1get_1relation_FUNC);
-	rc = (jintLong)atk_relation_set_get_relation((AtkRelationSet *)arg0, arg1);
-	ATK_NATIVE_EXIT(env, that, _1atk_1relation_1set_1get_1relation_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1atk_1relation_1set_1remove
-JNIEXPORT void JNICALL ATK_NATIVE(_1atk_1relation_1set_1remove)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
-{
-	ATK_NATIVE_ENTER(env, that, _1atk_1relation_1set_1remove_FUNC);
-	atk_relation_set_remove((AtkRelationSet *)arg0, (AtkRelation *)arg1);
-	ATK_NATIVE_EXIT(env, that, _1atk_1relation_1set_1remove_FUNC);
 }
 #endif
 
@@ -471,18 +403,6 @@ JNIEXPORT jboolean JNICALL ATK_NATIVE(_1atk_1state_1set_1add_1state)
 }
 #endif
 
-#ifndef NO__1atk_1state_1set_1new
-JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1state_1set_1new)
-	(JNIEnv *env, jclass that)
-{
-	jintLong rc = 0;
-	ATK_NATIVE_ENTER(env, that, _1atk_1state_1set_1new_FUNC);
-	rc = (jintLong)atk_state_set_new();
-	ATK_NATIVE_EXIT(env, that, _1atk_1state_1set_1new_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1atk_1text_1attribute_1get_1name
 JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1text_1attribute_1get_1name)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -503,22 +423,6 @@ JNIEXPORT jintLong JNICALL ATK_NATIVE(_1atk_1text_1attribute_1get_1value)
 	ATK_NATIVE_ENTER(env, that, _1atk_1text_1attribute_1get_1value_FUNC);
 	rc = (jintLong)atk_text_attribute_get_value(arg0, arg1);
 	ATK_NATIVE_EXIT(env, that, _1atk_1text_1attribute_1get_1value_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1atk_1text_1attribute_1register
-JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1text_1attribute_1register)
-	(JNIEnv *env, jclass that, jbyteArray arg0)
-{
-	jbyte *lparg0=NULL;
-	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, _1atk_1text_1attribute_1register_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jint)atk_text_attribute_register((const gchar *)lparg0);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	ATK_NATIVE_EXIT(env, that, _1atk_1text_1attribute_1register_FUNC);
 	return rc;
 }
 #endif

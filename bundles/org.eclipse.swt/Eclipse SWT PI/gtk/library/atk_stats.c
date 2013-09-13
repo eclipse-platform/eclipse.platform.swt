@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -43,24 +43,16 @@ char * ATK_nativeFunctionNames[] = {
 	"_1ATK_1TABLE_1GET_1IFACE",
 	"_1ATK_1TEXT_1GET_1IFACE",
 	"_1ATK_1VALUE_1GET_1IFACE",
-	"_1atk_1focus_1tracker_1notify",
 	"_1atk_1get_1default_1registry",
-	"_1atk_1object_1factory_1create_1accessible",
 	"_1atk_1object_1factory_1get_1accessible_1type",
 	"_1atk_1object_1initialize",
 	"_1atk_1object_1notify_1state_1change",
-	"_1atk_1object_1ref_1relation_1set",
 	"_1atk_1registry_1get_1factory",
 	"_1atk_1registry_1set_1factory_1type",
-	"_1atk_1relation_1set_1get_1n_1relations",
-	"_1atk_1relation_1set_1get_1relation",
-	"_1atk_1relation_1set_1remove",
 	"_1atk_1role_1register",
 	"_1atk_1state_1set_1add_1state",
-	"_1atk_1state_1set_1new",
 	"_1atk_1text_1attribute_1get_1name",
 	"_1atk_1text_1attribute_1get_1value",
-	"_1atk_1text_1attribute_1register",
 #ifndef JNI64
 	"_1call__II",
 #else
