@@ -13514,6 +13514,7 @@ public static final boolean gtk_widget_get_child_visible (long /*int*/ widget) {
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
 public static final native long /*int*/ _gtk_widget_get_default_style();
 public static final long /*int*/ gtk_widget_get_default_style() {
 	lock.lock();
@@ -13770,6 +13771,7 @@ public static final boolean gtk_widget_mnemonic_activate(long /*int*/ widget, bo
 	}
 }
 /**
+ * @method flags=dynamic
  * @param widget cast=(GtkWidget *)
  * @param state cast=(GtkStateType)
  * @param color cast=(GdkColor *),flags=no_out
@@ -13784,6 +13786,7 @@ public static final void gtk_widget_modify_base(long /*int*/ widget, int state, 
 	}
 }
 /**
+ * @method flags=dynamic
  * @param widget cast=(GtkWidget *)
  * @param state cast=(GtkStateType)
  * @param color cast=(GdkColor *),flags=no_out
@@ -13798,6 +13801,7 @@ public static final void gtk_widget_modify_bg(long /*int*/ widget, int state, Gd
 	}
 }
 /**
+ * @method flags=dynamic
  * @param widget cast=(GtkWidget *)
  * @param pango_font_descr cast=(PangoFontDescription *)
  */
@@ -13811,6 +13815,7 @@ public static final void gtk_widget_modify_font(long /*int*/ widget, long /*int*
 	}
 }
 /**
+ * @method flags=dynamic
  * @param widget cast=(GtkWidget *)
  * @param style cast=(GtkRcStyle *)
  */
@@ -14070,6 +14075,7 @@ public static final void gtk_widget_set_size_request(long /*int*/ widget, int wi
 	}
 }
 /**
+ * @method flags=dynamic
  * @param widget cast=(GtkWidget *)
  * @param state cast=(GtkStateType)
  */

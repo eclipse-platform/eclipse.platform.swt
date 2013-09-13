@@ -326,6 +326,7 @@
 #define gtk_widget_is_composited_LIB LIB_GTK
 #define gtk_widget_get_allocation_LIB LIB_GTK
 #define gtk_widget_size_request_LIB LIB_GTK
+#define gtk_widget_get_default_style_LIB LIB_GTK
 #define gtk_widget_get_preferred_size_LIB LIB_GTK
 #define gtk_widget_get_style_context_LIB LIB_GTK
 #define gtk_widget_get_tooltip_text_LIB LIB_GTK
@@ -349,7 +350,12 @@
 #define gtk_widget_set_sensitive_LIB LIB_GTK
 #define gtk_widget_set_receives_default_LIB LIB_GTK
 #define gtk_widget_set_visible_LIB LIB_GTK
+#define gtk_widget_set_state_LIB LIB_GTK
 #define gtk_widget_shape_combine_region_LIB LIB_GTK
+#define gtk_widget_modify_base_LIB LIB_GTK
+#define gtk_widget_modify_bg_LIB LIB_GTK
+#define gtk_widget_modify_font_LIB LIB_GTK
+#define gtk_widget_modify_style_LIB LIB_GTK
 #define gtk_range_get_slider_range_LIB LIB_GTK
 #define gdk_x11_screen_get_window_manager_name_LIB LIB_GDK
 #define gdk_x11_screen_lookup_visual_LIB LIB_GDK

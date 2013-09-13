@@ -18027,7 +18027,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1default_1style)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1default_1style_FUNC);
+/*
 	rc = (jintLong)gtk_widget_get_default_style();
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_get_default_style)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)())fp)();
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1default_1style_FUNC);
 	return rc;
 }
@@ -18528,7 +18536,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1modify_1base)
 	GdkColor _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1modify_1base_FUNC);
 	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
 	gtk_widget_modify_base((GtkWidget *)arg0, (GtkStateType)arg1, (GdkColor *)lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_modify_base)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, GtkStateType, GdkColor *))fp)((GtkWidget *)arg0, (GtkStateType)arg1, (GdkColor *)lparg2);
+		}
+	}
 fail:
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1modify_1base_FUNC);
 }
@@ -18541,7 +18557,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1modify_1bg)
 	GdkColor _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1modify_1bg_FUNC);
 	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
 	gtk_widget_modify_bg((GtkWidget *)arg0, (GtkStateType)arg1, (GdkColor *)lparg2);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_modify_bg)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, GtkStateType, GdkColor *))fp)((GtkWidget *)arg0, (GtkStateType)arg1, (GdkColor *)lparg2);
+		}
+	}
 fail:
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1modify_1bg_FUNC);
 }
@@ -18552,7 +18576,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1modify_1font)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1modify_1font_FUNC);
+/*
 	gtk_widget_modify_font((GtkWidget *)arg0, (PangoFontDescription *)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_modify_font)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, PangoFontDescription *))fp)((GtkWidget *)arg0, (PangoFontDescription *)arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1modify_1font_FUNC);
 }
 #endif
@@ -18562,7 +18594,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1modify_1style)
 	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1modify_1style_FUNC);
+/*
 	gtk_widget_modify_style((GtkWidget *)arg0, (GtkRcStyle *)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_modify_style)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, GtkRcStyle *))fp)((GtkWidget *)arg0, (GtkRcStyle *)arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1modify_1style_FUNC);
 }
 #endif
@@ -18893,7 +18933,15 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1state)
 	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1state_FUNC);
+/*
 	gtk_widget_set_state((GtkWidget *)arg0, (GtkStateType)arg1);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_set_state)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, GtkStateType))fp)((GtkWidget *)arg0, (GtkStateType)arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1state_FUNC);
 }
 #endif
