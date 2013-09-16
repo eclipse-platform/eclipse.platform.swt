@@ -35,7 +35,7 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(_1JS_1EvaluateUCScriptForPrincipals24)
 	if (arg3) if ((lparg3 = env->GetCharArrayElements(arg3, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = env->GetByteArrayElements(arg5, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = env->GetIntLongArrayElements(arg7, NULL)) == NULL) goto fail;
-	rc = (jint)JS_EvaluateUCScriptForPrincipals((JSContext*)arg0, (JSObject*)arg1, (JSPrincipals*)arg2, lparg3, arg4, lparg5, arg6, (jsval*)lparg7);
+	rc = (jint)JS_EvaluateUCScriptForPrincipals((JSContext*)arg0, (JSObject*)arg1, (JSPrincipals*)arg2, lparg3, arg4, (const char*)lparg5, arg6, (jsval*)lparg7);
 fail:
 	if (arg7 && lparg7) env->ReleaseIntLongArrayElements(arg7, lparg7, 0);
 	if (arg5 && lparg5) env->ReleaseByteArrayElements(arg5, lparg5, 0);

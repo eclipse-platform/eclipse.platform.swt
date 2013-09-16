@@ -12,6 +12,5 @@ EXPORTED {
   global:
     JNI_OnLoad;
     Java_org_eclipse_swt*;
-    *;
   local: *;
 };

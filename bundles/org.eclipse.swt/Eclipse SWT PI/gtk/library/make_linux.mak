@@ -278,7 +278,7 @@ $(XULRUNNER24_LIB): xpcom24_custom.o
 	$(CXX) -o $(XULRUNNER24_LIB) $(XULRUNNER24_OBJECTS) $(MOZILLALFLAGS) -L${XULRUNNER24_SDK}/lib -lxpcomglue
 
 xpcom24_custom.o: xpcom24_custom.cpp
-	$(CXX) -std=c++0x -fpermissive $(MOZILLACFLAGS) ${XULRUNNER24_INCLUDES} -c xpcom24_custom.cpp
+	$(CXX) -std=c++0x $(MOZILLACFLAGS) ${XULRUNNER24_INCLUDES} -c xpcom24_custom.cpp
 
 #
 # XPCOMInit lib
