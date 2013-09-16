@@ -186,8 +186,7 @@ static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 	}
 	if (file.exists ()) {
 		byte[] bytes = Converter.wcsToMbcs (null, file.getAbsolutePath (), true);
-		long /*int*/ result = OS.dlopen (bytes, OS.RTLD_NOW | OS.RTLD_GLOBAL);
-		System.out.println("dlopen result: " + result);
+		OS.dlopen (bytes, OS.RTLD_NOW | OS.RTLD_GLOBAL);
 	}
 }
 

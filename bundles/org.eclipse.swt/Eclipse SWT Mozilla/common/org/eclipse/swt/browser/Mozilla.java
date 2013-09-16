@@ -1470,7 +1470,7 @@ public boolean execute (String script) {
 												}
 											}
 										} else {
-											boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals24 (jsLibPath, jsContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result) != 0;
+											boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals24 (jsContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result) != 0;
 											new nsISupports (scriptGlobalObject).Release ();
 											// should principals be Release()d too?
 											principal.Release ();

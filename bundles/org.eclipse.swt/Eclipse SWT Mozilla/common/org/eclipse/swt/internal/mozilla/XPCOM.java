@@ -256,11 +256,11 @@ public static final int JS_EvaluateUCScriptForPrincipals(byte[] mozillaPath, lon
 	}
 }
 /** @method flags=no_gen */
-public static final native int _JS_EvaluateUCScriptForPrincipals24(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/[] retVal);	
-public static final int JS_EvaluateUCScriptForPrincipals24(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/[] retVal) {
+public static final native int _JS_EvaluateUCScriptForPrincipals24(long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/[] retVal);	
+public static final int JS_EvaluateUCScriptForPrincipals24(long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/[] retVal) {
 	lock.lock();
 	try {
-		return _JS_EvaluateUCScriptForPrincipals24(mozillaPath, cx, obj, principals, chars, length, filename, lineno, retVal);
+		return _JS_EvaluateUCScriptForPrincipals24(cx, obj, principals, chars, length, filename, lineno, retVal);
 	} finally {
 		lock.unlock();
 	}
