@@ -2143,8 +2143,11 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 			error (XPCOM.NS_ERROR_NULL_POINTER);
 		}
 
+		if (nsISupports.IsXULRunner24) {
+			Library.loadLibrary("swt-xulrunner24"); //$NON-NLS-1$
+		};
 		MozillaDelegate.loadAdditionalLibraries (mozillaPath, true);
-		
+
 		if (IsPre_4) {
 			rc = XPCOM.Call (functionPtr, localFile.getAddress (), localFile.getAddress (), LocationProvider.getAddress (), 0, 0);
 		} else {

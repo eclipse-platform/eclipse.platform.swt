@@ -29,8 +29,7 @@ class MozillaDelegate {
 	static long /*int*/ eventProc;
 	static final int STOP_PROPOGATE = 1;
 	static final String LIB_XPCOM = "libxpcom.so"; //$NON-NLS-1$
-	static final String LIB_FIX_XULRUNNER10 = "libswt-xulrunner10-fix.so"; //$NON-NLS-1$
-	static final String LIB_CUSTOM_XULRUNNER24 = "libswt-xulrunner-custom24.so"; //$NON-NLS-1$
+	static final String LIB_FIX_XULRUNNER10 = "libswt-xulrunner-fix10.so"; //$NON-NLS-1$
 	static final String LIB_FIX_XULRUNNER24 = "libswt-xulrunner-fix24.so"; //$NON-NLS-1$
 
 	static boolean IsSparc;
@@ -146,14 +145,7 @@ static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 		* This is the second invocation of loadAdditionalLibraries(), so the
 		* xulrunner runtime version is now known.
 		*/
-		if (nsISupports.IsXULRunner24) {
-			File libsDir = new File (getProfilePath () + "/libs/" + Mozilla.OS () + '/' + Mozilla.Arch ()); //$NON-NLS-1$
-			File file = new File (libsDir, LIB_CUSTOM_XULRUNNER24);
-			if (file.exists()) {
-				System.load (file.getAbsolutePath()); //$NON-NLS-1$
-			}
-			return;
-		} else if (nsISupports.IsXULRunner10) {
+		if (nsISupports.IsXULRunner10) {
 			/* works around https://bugzilla.mozilla.org/show_bug.cgi?id=720682 */
 			libName = LIB_FIX_XULRUNNER10;
 		}
