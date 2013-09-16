@@ -15,7 +15,9 @@ import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
-class FilePicker_17 extends FilePicker_1_8 {
+class FilePicker_24 extends FilePicker_1_8 {
+
+	boolean addToRecentDocs = true;
 
 void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */
@@ -25,7 +27,7 @@ void createCOMInterfaces () {
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
 	};
 
-	filePicker = new XPCOMObject (new int[] {2, 0, 0, 3, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}) {
+	filePicker = new XPCOMObject (new int[] {2, 0, 0, 3, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}) {
 		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
 		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
 		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
@@ -45,9 +47,21 @@ void createCOMInterfaces () {
 		public long /*int*/ method16 (long /*int*/[] args) {return GetFiles (args[0]);}
 		public long /*int*/ method17 (long /*int*/[] args) {return XPCOM.NS_ERROR_NOT_IMPLEMENTED;}
 		public long /*int*/ method18 (long /*int*/[] args) {return XPCOM.NS_ERROR_NOT_IMPLEMENTED;}
-		public long /*int*/ method19 (long /*int*/[] args) {return Show (args[0]);}
-		public long /*int*/ method20 (long /*int*/[] args) {return Open (args[0]);}
+		public long /*int*/ method19 (long /*int*/[] args) {return GetAddToRecentDocs (args[0]);}
+		public long /*int*/ method20 (long /*int*/[] args) {return SetAddToRecentDocs ((int)/*64*/args[0]);}
+		public long /*int*/ method21 (long /*int*/[] args) {return Show (args[0]);}
+		public long /*int*/ method22 (long /*int*/[] args) {return Open (args[0]);}
 	};
+}
+
+int GetAddToRecentDocs (long /*int*/ aAddToRecentDocs) {
+	XPCOM.memmove (aAddToRecentDocs, new boolean[] {addToRecentDocs});
+	return XPCOM.NS_OK;
+}
+
+int SetAddToRecentDocs (int aAddToRecentDocs) {
+	addToRecentDocs = aAddToRecentDocs != 0;
+	return XPCOM.NS_OK;
 }
 
 int Open (long /*int*/ aFilePickerShownCallback) {

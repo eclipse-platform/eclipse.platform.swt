@@ -38,6 +38,7 @@ char * XPCOM_nativeFunctionNames[] = {
 #endif
 	"_1JS_1DefineFunction",
 	"_1JS_1EvaluateUCScriptForPrincipals",
+	"_1JS_1EvaluateUCScriptForPrincipals24",
 	"_1JS_1GetGlobalObject",
 	"_1JS_1NewObject",
 	"_1NS_1Free",
@@ -1123,10 +1124,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1nsID_1new",
 	"_1nsIMemory_1Alloc",
 	"_1nsIMemory_1Realloc",
-	"_1nsIScriptContext17_1GetNativeContext",
+	"_1nsIScriptContext24_1GetNativeContext",
 	"_1nsIScriptContext_1GetNativeContext",
-	"_1nsIScriptGlobalObject17_1EnsureScriptEnvironment",
-	"_1nsIScriptGlobalObject17_1GetScriptContext",
+	"_1nsIScriptGlobalObject24_1EnsureScriptEnvironment",
+	"_1nsIScriptGlobalObject24_1GetGlobalJSObject",
+	"_1nsIScriptGlobalObject24_1GetScriptContext",
 	"_1nsIScriptGlobalObject_1EnsureScriptEnvironment",
 	"_1nsIScriptGlobalObject_1GetScriptContext",
 #ifndef JNI64

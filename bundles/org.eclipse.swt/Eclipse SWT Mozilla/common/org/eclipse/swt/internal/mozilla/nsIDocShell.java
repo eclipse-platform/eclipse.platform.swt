@@ -49,11 +49,11 @@ public class nsIDocShell extends nsISupports {
 	public static final nsID NS_IDOCSHELL_10_IID =
 		new nsID(NS_IDOCSHELL_10_IID_STR);
 	
-	public static final String NS_IDOCSHELL_17_IID_STR =
-		"9b283337-097d-4fa8-a2da-916318eaf828";
+	public static final String NS_IDOCSHELL_24_IID_STR =
+		"f453d2ee-bac7-46f9-a553-df918f0cc0d0";
 
-	public static final nsID NS_IDOCSHELL_17_IID =
-		new nsID(NS_IDOCSHELL_17_IID_STR);
+	public static final nsID NS_IDOCSHELL_24_IID =
+		new nsID(NS_IDOCSHELL_24_IID_STR);
 
 	public nsIDocShell(long /*int*/ address) {
 		super(address);

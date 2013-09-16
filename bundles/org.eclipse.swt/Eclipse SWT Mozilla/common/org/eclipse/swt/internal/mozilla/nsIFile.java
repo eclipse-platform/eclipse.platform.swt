@@ -29,19 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIFile extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 62 : 45);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 62 : 45);
 
 	public static final String NS_IFILE_IID_STR =
 		"c8c0a080-0868-11d3-915f-d9d889d48e3c";
 	
-	public static final String NS_IFILE_17_IID_STR =
+	public static final String NS_IFILE_24_IID_STR =
 		"272a5020-64f5-485c-a8c4-44b2882ae0a2";
 
 	public static final nsID NS_IFILE_IID =
 		new nsID(NS_IFILE_IID_STR);
 
-	public static final nsID NS_IFILE_17_IID =
-		new nsID(NS_IFILE_17_IID_STR);
+	public static final nsID NS_IFILE_24_IID =
+		new nsID(NS_IFILE_24_IID_STR);
 
 	public nsIFile(long /*int*/ address) {
 		super(address);

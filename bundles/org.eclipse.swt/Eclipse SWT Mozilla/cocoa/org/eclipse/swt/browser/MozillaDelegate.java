@@ -68,11 +68,13 @@ static String getSWTInitLibraryName () {
 	return "swt-xulrunner"; //$NON-NLS-1$
 }
 
-static void loadAdditionalLibraries (String mozillaPath) {
+static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 	// workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=727616
-	String utilsPath = mozillaPath + Mozilla.SEPARATOR_OS + "libmozutils.dylib"; //$NON-NLS-1$
-	byte[] bytes = MozillaDelegate.wcsToMbcs (null, utilsPath, true);
-	OS.NSAddImage (bytes, OS.NSADDIMAGE_OPTION_RETURN_ON_ERROR | OS.NSADDIMAGE_OPTION_MATCH_FILENAME_BY_INSTALLNAME);
+	if (isGlued) {
+		String utilsPath = mozillaPath + Mozilla.SEPARATOR_OS + "libmozutils.dylib"; //$NON-NLS-1$
+		byte[] bytes = MozillaDelegate.wcsToMbcs (null, utilsPath, true);
+		OS.NSAddImage (bytes, OS.NSADDIMAGE_OPTION_RETURN_ON_ERROR | OS.NSADDIMAGE_OPTION_MATCH_FILENAME_BY_INSTALLNAME);
+	}
 }
 
 static char[] mbcsToWcs (String codePage, byte [] buffer) {
@@ -96,10 +98,6 @@ static char[] mbcsToWcs (String codePage, byte [] buffer) {
 
 static boolean needsSpinup () {
 	return false;
-}
-
-static boolean supportsXULRunner17 () {
-	return true;
 }
 
 static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {

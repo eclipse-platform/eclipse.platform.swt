@@ -67,7 +67,9 @@ static String getSWTInitLibraryName () {
 	return "swt-xulrunner"; //$NON-NLS-1$
 }
 
-static void loadAdditionalLibraries (String mozillaPath) {
+static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
+	// the following is intentionally commented
+
 	// workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=727616
 //	String utilsPath = mozillaPath + Mozilla.SEPARATOR_OS + "libmozutils.dylib"; //$NON-NLS-1$
 //	byte[] bytes = MozillaDelegate.wcsToMbcs (null, utilsPath, true);
@@ -92,10 +94,6 @@ static char[] mbcsToWcs (String codePage, byte [] buffer) {
 }
 
 static boolean needsSpinup () {
-	return false;
-}
-
-static boolean supportsXULRunner17 () {
 	return false;
 }
 

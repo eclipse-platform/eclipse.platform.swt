@@ -28,6 +28,10 @@ class MozillaDelegate {
 	static Callback eventCallback;
 	static long /*int*/ eventProc;
 	static final int STOP_PROPOGATE = 1;
+	static final String LIB_XPCOM = "libxpcom.so"; //$NON-NLS-1$
+	static final String LIB_FIX_XULRUNNER10 = "libswt-xulrunner10-fix.so"; //$NON-NLS-1$
+	static final String LIB_CUSTOM_XULRUNNER24 = "libswt-xulrunner-custom24.so"; //$NON-NLS-1$
+	static final String LIB_FIX_XULRUNNER24 = "libswt-xulrunner-fix24.so"; //$NON-NLS-1$
 
 	static boolean IsSparc;
 	static {
@@ -84,7 +88,8 @@ static String getJSLibraryName_Pre4() {
 }
 
 static String getLibraryName () {
-	return "libxpcom.so"; //$NON-NLS-1$
+	//return "libxpcom.so"; //$NON-NLS-1$
+	return "libxul.so"; //$NON-NLS-1$
 }
 
 static String getProfilePath () {
@@ -112,16 +117,53 @@ static String getSWTInitLibraryName () {
 	return "swt-xpcominit"; //$NON-NLS-1$
 }
 
-static void loadAdditionalLibraries (String mozillaPath) {
-	if (Mozilla.IsPre_4) return;
-
+static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 	/*
-	* The use of the swt-xulrunner-fix library works around mozilla bug
-	* https://bugzilla.mozilla.org/show_bug.cgi?id=720682 (XULRunner 10).
-	*/
-	String libName = "libswt-xulrunner-fix.so"; //$NON-NLS-1$
-	File libsDir = new File (getProfilePath () + "/libs/" + Mozilla.OS() + '/' + Mozilla.Arch ()); //$NON-NLS-1$
+	 * To support XULRunner 24 the swt fix library must be loaded before attempting
+	 * to glue to the runtime.  However before gluing to the runtime there is not a
+	 * programmatic way of knowing its version.  So this function is invoked twice,
+	 * once before gluing (to support XULRunner 24) and once after gluing (to
+	 * support XULRunner 10).
+	 */
+
+	String libName = null;
+	if (!isGlued) {
+		/*
+		* XULRunner 24 can be detected by checking for the absence of libxpcom.so
+		* (XULRunner 24 is the only supported XULRunner release without this file).
+		* If XULRunner 24 is detected then load its swt fix library here, otherwise
+		* do nothing for now.
+		*/
+		if (!new File (mozillaPath, LIB_XPCOM).exists ()) {
+			/*
+			* Works around https://bugzilla.mozilla.org/show_bug.cgi?id=720682
+			* and https://bugzilla.mozilla.org/show_bug.cgi?id=763327.
+			*/
+			libName = LIB_FIX_XULRUNNER24;
+		}
+	} else {
+		/*
+		* This is the second invocation of loadAdditionalLibraries(), so the
+		* xulrunner runtime version is now known.
+		*/
+		if (nsISupports.IsXULRunner24) {
+			File libsDir = new File (getProfilePath () + "/libs/" + Mozilla.OS () + '/' + Mozilla.Arch ()); //$NON-NLS-1$
+			File file = new File (libsDir, LIB_CUSTOM_XULRUNNER24);
+			if (file.exists()) {
+				System.load (file.getAbsolutePath()); //$NON-NLS-1$
+			}
+			return;
+		} else if (nsISupports.IsXULRunner10) {
+			/* works around https://bugzilla.mozilla.org/show_bug.cgi?id=720682 */
+			libName = LIB_FIX_XULRUNNER10;
+		}
+	}
+
+	if (libName == null) return;
+
+	File libsDir = new File (getProfilePath () + "/libs/" + Mozilla.OS () + '/' + Mozilla.Arch ()); //$NON-NLS-1$
 	File file = new File (libsDir, libName);
+
 	if (!file.exists()) {
 		java.io.InputStream is = Library.class.getResourceAsStream ('/' + libName);
 		if (is != null) {
@@ -144,7 +186,8 @@ static void loadAdditionalLibraries (String mozillaPath) {
 	}
 	if (file.exists ()) {
 		byte[] bytes = Converter.wcsToMbcs (null, file.getAbsolutePath (), true);
-		OS.dlopen (bytes, OS.RTLD_NOW | OS.RTLD_GLOBAL);
+		long /*int*/ result = OS.dlopen (bytes, OS.RTLD_NOW | OS.RTLD_GLOBAL);
+		System.out.println("dlopen result: " + result);
 	}
 }
 
@@ -154,10 +197,6 @@ static char[] mbcsToWcs (String codePage, byte [] buffer) {
 
 static boolean needsSpinup () {
 	return true;
-}
-
-static boolean supportsXULRunner17 () {
-	return false;
 }
 
 static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {

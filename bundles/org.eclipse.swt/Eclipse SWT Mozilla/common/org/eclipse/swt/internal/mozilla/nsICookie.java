@@ -34,8 +34,14 @@ public class nsICookie extends nsISupports {
 	public static final String NS_ICOOKIE_IID_STR =
 		"e9fcb9a4-d376-458f-b720-e65e7df593bc";
 
+	public static final String NS_ICOOKIE_24_IID_STR =
+		"8684966b-1877-4f0f-8155-be4490b96bf7";
+
 	public static final nsID NS_ICOOKIE_IID =
 		new nsID(NS_ICOOKIE_IID_STR);
+
+	public static final nsID NS_ICOOKIE_24_IID =
+		new nsID(NS_ICOOKIE_24_IID_STR);
 
 	public nsICookie(long /*int*/ address) {
 		super(address);

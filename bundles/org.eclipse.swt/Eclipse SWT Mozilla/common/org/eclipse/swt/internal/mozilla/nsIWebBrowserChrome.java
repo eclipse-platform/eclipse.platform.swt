@@ -34,14 +34,14 @@ public class nsIWebBrowserChrome extends nsISupports {
 	public static final String NS_IWEBBROWSERCHROME_IID_STR =
 		"ba434c60-9d52-11d3-afb0-00a024ffc08c";
 
+	public static final String NS_IWEBBROWSERCHROME_24_IID_STR =
+		"e8c414c4-dc38-4ba3-ab4e-ec4cbbe22907";
+	
 	public static final nsID NS_IWEBBROWSERCHROME_IID =
 		new nsID(NS_IWEBBROWSERCHROME_IID_STR);
 	
-	public static final String NS_IWEBBROWSERCHROME_17_IID_STR =
-		"e8c414c4-dc38-4ba3-ab4e-ec4cbbe22907";
-
-	public static final nsID NS_IWEBBROWSERCHROME_17_IID =
-		new nsID(NS_IWEBBROWSERCHROME_17_IID_STR);
+	public static final nsID NS_IWEBBROWSERCHROME_24_IID =
+		new nsID(NS_IWEBBROWSERCHROME_24_IID_STR);
 
 	public nsIWebBrowserChrome(long /*int*/ address) {
 		super(address);

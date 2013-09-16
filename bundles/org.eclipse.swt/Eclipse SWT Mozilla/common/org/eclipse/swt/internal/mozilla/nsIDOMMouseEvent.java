@@ -29,7 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMMouseEvent extends nsIDOMUIEvent {
 
-	static final int LAST_METHOD_ID = nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 18 : (IsXULRunner10 ? 14 : 11));
+	static final int LAST_METHOD_ID = nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner24 ? 18 : (IsXULRunner10 ? 14 : 11));
 
 	public static final String NS_IDOMMOUSEEVENT_IID_STR =
 		"ff751edc-8b02-aae7-0010-8301838a3123";
@@ -37,8 +37,8 @@ public class nsIDOMMouseEvent extends nsIDOMUIEvent {
 	public static final String NS_IDOMMOUSEEVENT_10_IID_STR =
 		"7f57aa45-6792-4d8b-ba5b-201533cf0b2f";
 	
-	public static final String NS_IDOMMOUSEEVENT_17_IID_STR =
-		"796c3436-5f89-4145-be3a-49808c09fdc6";
+	public static final String NS_IDOMMOUSEEVENT_24_IID_STR =
+		"afb2e57b-2822-4969-b2a9-0cada6859534";
 
 	public static final nsID NS_IDOMMOUSEEVENT_IID =
 		new nsID(NS_IDOMMOUSEEVENT_IID_STR);
@@ -46,8 +46,8 @@ public class nsIDOMMouseEvent extends nsIDOMUIEvent {
 	public static final nsID NS_IDOMMOUSEEVENT_10_IID =
 		new nsID(NS_IDOMMOUSEEVENT_10_IID_STR);
 	
-	public static final nsID NS_IDOMMOUSEEVENT_17_IID =
-		new nsID(NS_IDOMMOUSEEVENT_17_IID_STR);
+	public static final nsID NS_IDOMMOUSEEVENT_24_IID =
+		new nsID(NS_IDOMMOUSEEVENT_24_IID_STR);
 
 	public nsIDOMMouseEvent(long /*int*/ address) {
 		super(address);
@@ -62,27 +62,27 @@ public class nsIDOMMouseEvent extends nsIDOMUIEvent {
 	}
 
 	public int GetCtrlKey(int[] aCtrlKey) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 7 : 5), getAddress(), aCtrlKey);
+		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner24 ? 7 : 5), getAddress(), aCtrlKey);
 	}
 
 	public int GetShiftKey(int[] aShiftKey) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 8 : 6), getAddress(), aShiftKey);
+		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner24 ? 8 : 6), getAddress(), aShiftKey);
 	}
 
 	public int GetAltKey(int[] aAltKey) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 9 : 7), getAddress(), aAltKey);
+		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner24 ? 9 : 7), getAddress(), aAltKey);
 	}
 
 	public int GetMetaKey(int[] aMetaKey) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 10 : 8), getAddress(), aMetaKey);
+		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner24 ? 10 : 8), getAddress(), aMetaKey);
 	}
 
 	public int GetButton(short[] aButton) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 11 : 9), getAddress(), aButton);
+		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner24 ? 11 : 9), getAddress(), aButton);
 	}
 
 	public int GetRelatedTarget(long /*int*/[] aRelatedTarget) {
-		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner17 ? 13 : 10), getAddress(), aRelatedTarget);
+		return XPCOM.VtblCall(nsIDOMUIEvent.LAST_METHOD_ID + (IsXULRunner24 ? 13 : 10), getAddress(), aRelatedTarget);
 	}
 
 	/* the following constants are defined in Mozilla 10 */

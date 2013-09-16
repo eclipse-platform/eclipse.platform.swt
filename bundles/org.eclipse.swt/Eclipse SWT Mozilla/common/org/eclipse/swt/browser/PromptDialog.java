@@ -149,7 +149,10 @@ class PromptDialog extends Dialog {
 				nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
 				result[0] = 0;
 				byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_CERTIFICATEDIALOGS_CONTRACTID, true);
-				rc = serviceManager.GetServiceByContractID (aContractID, nsICertificateDialogs.NS_ICERTIFICATEDIALOGS_IID, result);
+				rc = serviceManager.GetServiceByContractID (aContractID, nsICertificateDialogs.NS_ICERTIFICATEDIALOGS_24_IID, result);
+				if (rc != XPCOM.NS_OK) {
+					rc = serviceManager.GetServiceByContractID (aContractID, nsICertificateDialogs.NS_ICERTIFICATEDIALOGS_IID, result);
+				}
 				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 				if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
 				serviceManager.Release();

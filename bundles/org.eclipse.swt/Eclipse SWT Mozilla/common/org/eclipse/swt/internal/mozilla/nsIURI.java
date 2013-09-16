@@ -29,7 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIURI extends nsISupports {
 	
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10 || IsXULRunner17) ? 32 : 26);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10 || IsXULRunner24) ? 32 : 26);
 
 	public static final String NS_IURI_IID_STR =
 		"07a22cc0-0ce5-11d3-9331-00104ba0fd40";

@@ -103,7 +103,7 @@ static String getSWTInitLibraryName () {
 	return "swt-xpcominit"; //$NON-NLS-1$
 }
 
-static void loadAdditionalLibraries (String mozillaPath) {
+static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 // the following is intentionally commented
 
 //	if (!Mozilla.IsPre_4) {
@@ -119,10 +119,6 @@ static char[] mbcsToWcs (String codePage, byte [] buffer) {
 
 static boolean needsSpinup () {
 	return true;
-}
-
-static boolean supportsXULRunner17 () {
-	return false;
 }
 
 static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {

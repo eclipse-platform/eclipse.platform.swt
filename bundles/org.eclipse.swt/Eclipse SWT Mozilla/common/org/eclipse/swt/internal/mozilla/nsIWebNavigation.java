@@ -34,8 +34,14 @@ public class nsIWebNavigation extends nsISupports {
 	public static final String NS_IWEBNAVIGATION_IID_STR =
 		"f5d9e7b0-d930-11d3-b057-00a024ffc08c";
 
+	public static final String NS_IWEBNAVIGATION_24_IID_STR =
+		"28404f7e-0f17-4dc3-a21a-2074d8659b02";
+
 	public static final nsID NS_IWEBNAVIGATION_IID =
 		new nsID(NS_IWEBNAVIGATION_IID_STR);
+
+	public static final nsID NS_IWEBNAVIGATION_24_IID =
+		new nsID(NS_IWEBNAVIGATION_24_IID_STR);
 
 	public nsIWebNavigation(long /*int*/ address) {
 		super(address);

@@ -73,7 +73,7 @@ static String getSWTInitLibraryName () {
 	return "swt-xulrunner"; //$NON-NLS-1$
 }
 
-static void loadAdditionalLibraries (String mozillaPath) {
+static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 }
 
 static char[] mbcsToWcs (String codePage, byte[] buffer) {
@@ -87,10 +87,6 @@ static char[] mbcsToWcs (String codePage, byte[] buffer) {
 
 static boolean needsSpinup () {
 	return false;
-}
-
-static boolean supportsXULRunner17 () {
-	return true;
 }
 
 static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {

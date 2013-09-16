@@ -29,7 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDOMEventTarget extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 3;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 5 : 3);
 
 	public static final String NS_IDOMEVENTTARGET_IID_STR =
 		"1c773b30-d1cf-11d2-bd95-00805f8ae3f4";
@@ -37,8 +37,8 @@ public class nsIDOMEventTarget extends nsISupports {
 	public static final String NS_IDOMEVENTTARGET_10_IID_STR =
 		"1797d5a4-b12a-428d-9eef-a0e13839728c";
 	
-	public static final String NS_IDOMEVENTTARGET_17_IID_STR =
-		"8e375931-298d-4d0a-9cb4-5668f0cdc5a8";
+	public static final String NS_IDOMEVENTTARGET_24_IID_STR =
+		"31e92e56-4d23-4a4a-9cfe-a6d12cf434bc";
 	
 	public static final nsID NS_IDOMEVENTTARGET_IID =
 		new nsID(NS_IDOMEVENTTARGET_IID_STR);
@@ -46,24 +46,24 @@ public class nsIDOMEventTarget extends nsISupports {
 	public static final nsID NS_IDOMEVENTTARGET_10_IID =
 		new nsID(NS_IDOMEVENTTARGET_10_IID_STR);
 
-	public static final nsID NS_IDOMEVENTTARGET_17_IID =
-		new nsID(NS_IDOMEVENTTARGET_17_IID_STR);
+	public static final nsID NS_IDOMEVENTTARGET_24_IID =
+		new nsID(NS_IDOMEVENTTARGET_24_IID_STR);
 
 	public nsIDOMEventTarget(long /*int*/ address) {
 		super(address);
 	}
 
 	public int AddEventListener(long /*int*/ type, long /*int*/ listener, int useCapture) {
-		if (IsXULRunner10 || IsXULRunner17) return XPCOM.NS_COMFALSE;
+		if (IsXULRunner10 || IsXULRunner24) return XPCOM.NS_COMFALSE;
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), type, listener, useCapture);
 	}
 
 	public int AddEventListener(long /*int*/ type, long /*int*/ listener, int useCapture, int wantsUntrusted, int _argc) {
-		if (!(IsXULRunner10 || IsXULRunner17)) return AddEventListener(type, listener, useCapture);
+		if (!(IsXULRunner10 || IsXULRunner24)) return AddEventListener(type, listener, useCapture);
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), type, listener, useCapture, wantsUntrusted, _argc);
 	}
 
 	public int RemoveEventListener(long /*int*/ type, long /*int*/ listener, int useCapture) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner17 ? 3 : 2), getAddress(), type, listener, useCapture);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 3 : 2), getAddress(), type, listener, useCapture);
 	}
 }
