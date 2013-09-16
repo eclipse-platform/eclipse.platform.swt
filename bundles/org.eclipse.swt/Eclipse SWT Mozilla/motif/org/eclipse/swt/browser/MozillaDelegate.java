@@ -82,7 +82,7 @@ static String getCacheParentPath () {
 	return getProfilePath ();
 }
 
-static String getLibraryName () {
+static String getLibraryName (String mozillaPath) {
 	return "libxpcom.so"; //$NON-NLS-1$
 }
 

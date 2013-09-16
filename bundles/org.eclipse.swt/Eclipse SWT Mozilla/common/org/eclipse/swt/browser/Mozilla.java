@@ -458,7 +458,8 @@ class Mozilla extends WebBrowser {
 				 * then assume that an older mozilla is being used, and use C's free() instead. 
 				 */
 				if (pathBytes_NSFree == null) {
-					String mozillaPath = getMozillaPath () + MozillaDelegate.getLibraryName () + '\0';
+					String mozillaPath = getMozillaPath ();
+					mozillaPath += MozillaDelegate.getLibraryName (mozillaPath) + '\0';
 					try {
 						pathBytes_NSFree = mozillaPath.getBytes ("UTF-8"); //$NON-NLS-1$
 					} catch (UnsupportedEncodingException e) {
@@ -610,7 +611,8 @@ static void LoadLibraries () {
 			MozillaPath = MozillaPath.replace ('/', SEPARATOR_OS);
 		}
 
-		MozillaPath += SEPARATOR_OS + MozillaDelegate.getLibraryName ();
+		MozillaPath += SEPARATOR_OS;
+		MozillaPath += MozillaDelegate.getLibraryName (MozillaPath);
 		IsXULRunner = true;
 	}
 
@@ -650,7 +652,8 @@ static void LoadLibraries () {
 					if (MozillaPath.indexOf ("xulrunner") == -1) { //$NON-NLS-1$
 						IsXULRunner = false;	
 					} else {
-						MozillaPath += SEPARATOR_OS + MozillaDelegate.getLibraryName ();
+						MozillaPath += SEPARATOR_OS;
+						MozillaPath += MozillaDelegate.getLibraryName (MozillaPath);
 						bytes = MozillaDelegate.wcsToMbcs (null, MozillaPath, true);
 						rc = XPCOMInit.XPCOMGlueStartup (bytes);
 						if (rc == XPCOM.NS_OK) {

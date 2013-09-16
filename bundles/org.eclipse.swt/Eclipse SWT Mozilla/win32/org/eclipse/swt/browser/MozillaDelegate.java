@@ -53,7 +53,7 @@ static String getJSLibraryName_Pre4 () {
 	return "js3250.dll"; //$NON-NLS-1$
 }
 
-static String getLibraryName () {
+static String getLibraryName (String mozillaPath) {
 	return "xpcom.dll"; //$NON-NLS-1$
 }
 

@@ -55,7 +55,7 @@ static String getJSLibraryName_Pre4 () {
 	return "libmozjs.dylib"; //$NON-NLS-1$
 }
 
-static String getLibraryName () {
+static String getLibraryName (String mozillaPath) {
 	return "libxpcom.dylib"; //$NON-NLS-1$
 }
 

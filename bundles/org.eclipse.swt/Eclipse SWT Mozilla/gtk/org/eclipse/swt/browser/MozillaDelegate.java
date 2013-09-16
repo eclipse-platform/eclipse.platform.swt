@@ -27,10 +27,12 @@ class MozillaDelegate {
 	Listener listener;
 	static Callback eventCallback;
 	static long /*int*/ eventProc;
+	static Boolean IsXULRunner24;
 	static final int STOP_PROPOGATE = 1;
-	static final String LIB_XPCOM = "libxpcom.so"; //$NON-NLS-1$
 	static final String LIB_FIX_XULRUNNER10 = "libswt-xulrunner-fix10.so"; //$NON-NLS-1$
 	static final String LIB_FIX_XULRUNNER24 = "libswt-xulrunner-fix24.so"; //$NON-NLS-1$
+	static final String LIB_XPCOM = "libxpcom.so"; //$NON-NLS-1$
+	static final String LIB_XUL = "libxul.so"; //$NON-NLS-1$
 
 	static boolean IsSparc;
 	static {
@@ -86,9 +88,21 @@ static String getJSLibraryName_Pre4() {
 	return "libmozjs.so"; //$NON-NLS-1$
 }
 
-static String getLibraryName () {
-	//return "libxpcom.so"; //$NON-NLS-1$
-	return "libxul.so"; //$NON-NLS-1$
+static String getLibraryName (String mozillaPath) {
+	/*
+	 * The name of the Gecko library to glue to changed between the XULRunner 10 and
+	 * 24 releases.  However it's not possible to programmatically know the version
+	 * of a XULRunner that's being used before it has been glued.  To determine the
+	 * appropriate Gecko library name to return, look for the presence of an "xpcom"
+	 * library in the mozilla path, which is present in all supported XULRunner releases
+	 * prior to XULRunner 24.  If this library is there then return it, and if it's not
+	 * there then assume that XULRunner 24 is being used and return the new library name
+	 * instead ("xul").
+	 */
+	if (IsXULRunner24 == null) { /* IsXULRunner24 not yet initialized */
+		IsXULRunner24 = new File (mozillaPath, LIB_XPCOM).exists () ? Boolean.FALSE : Boolean.TRUE;
+	}
+	return IsXULRunner24.booleanValue () ? LIB_XUL : LIB_XPCOM;
 }
 
 static String getProfilePath () {
@@ -118,22 +132,13 @@ static String getSWTInitLibraryName () {
 
 static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 	/*
-	 * To support XULRunner 24 the swt fix library must be loaded before attempting
-	 * to glue to the runtime.  However before gluing to the runtime there is not a
-	 * programmatic way of knowing its version.  So this function is invoked twice,
-	 * once before gluing (to support XULRunner 24) and once after gluing (to
-	 * support XULRunner 10).
+	 * This function is invoked twice, once before gluing (the fix library for
+	 * XULRunner 24, if appropriate, must be loaded before attempting to glue),
+	 * and once after gluing (to load the XULRunner 10 fix library, if appropriate).
 	 */
-
 	String libName = null;
 	if (!isGlued) {
-		/*
-		* XULRunner 24 can be detected by checking for the absence of libxpcom.so
-		* (XULRunner 24 is the only supported XULRunner release without this file).
-		* If XULRunner 24 is detected then load its swt fix library here, otherwise
-		* do nothing for now.
-		*/
-		if (!new File (mozillaPath, LIB_XPCOM).exists ()) {
+		if (IsXULRunner24.booleanValue ()) {
 			/*
 			* Works around https://bugzilla.mozilla.org/show_bug.cgi?id=720682
 			* and https://bugzilla.mozilla.org/show_bug.cgi?id=763327.
@@ -143,7 +148,7 @@ static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 	} else {
 		/*
 		* This is the second invocation of loadAdditionalLibraries(), so the
-		* xulrunner runtime version is now known.
+		* specific xulrunner runtime version is now better known.
 		*/
 		if (nsISupports.IsXULRunner10) {
 			/* works around https://bugzilla.mozilla.org/show_bug.cgi?id=720682 */
