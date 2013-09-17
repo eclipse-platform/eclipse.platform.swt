@@ -1952,7 +1952,7 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 
 	/* register for mozilla versions >= 3.6.x */
 	category = MozillaDelegate.wcsToMbcs (null, "JavaScript-global-property", true); //$NON-NLS-1$
-//	rc = categoryManager.AddCategoryEntry (category, entry, aContractID, 0, 1, result);
+	rc = categoryManager.AddCategoryEntry (category, entry, aContractID, 0, 1, result);
 	result[0] = 0;
 
 	categoryManager.Release ();
