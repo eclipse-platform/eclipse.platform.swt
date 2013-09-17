@@ -8015,7 +8015,10 @@ public static final long /*int*/ gtk_icon_factory_lookup_default(byte[] stock_id
 		lock.unlock();
 	}
 }
-/** @param source cast=(GtkIconSource *) */
+/** 
+ * @method flags=dynamic
+ * @param source cast=(GtkIconSource *) 
+ */
 public static final native void _gtk_icon_source_free(long /*int*/ source);
 public static final void gtk_icon_source_free(long /*int*/ source) {
 	lock.lock();
@@ -8025,6 +8028,7 @@ public static final void gtk_icon_source_free(long /*int*/ source) {
 		lock.unlock();
 	}
 }
+/** @method flags=dynamic */
 public static final native long /*int*/ _gtk_icon_source_new();
 public static final long /*int*/ gtk_icon_source_new() {
 	lock.lock();
@@ -8035,6 +8039,7 @@ public static final long /*int*/ gtk_icon_source_new() {
 	}
 }
 /**
+ * @method flags=dynamic
  * @param source cast=(GtkIconSource *)
  * @param pixbuf cast=(GdkPixbuf *)
  */
