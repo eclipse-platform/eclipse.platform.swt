@@ -38,7 +38,7 @@ public class nsIXPConnect extends nsISupports {
 		new nsID(NS_IXPCONNECT_IID_STR);
 	
 	public static final String NS_IXPCONNECT_24_IID_STR =
-		"bd300b18-1c34-4589-8285-23a12cc580ea";
+		"3bc074e6-2102-40a4-8c84-38b002c9e2f1";
 
 	public static final nsID NS_IXPCONNECT_24_IID =
 		new nsID(NS_IXPCONNECT_24_IID_STR);
@@ -52,6 +52,6 @@ public class nsIXPConnect extends nsISupports {
 	}
 
 	public int VariantToJS(long /*int*/ ctx, long /*int*/ scope, long /*int*/ value, long /*int*/ _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 31 : 33), getAddress(), ctx, scope, value, _retval);
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + (IsXULRunner24 ? 24 : 33), getAddress(), ctx, scope, value, _retval);
 	}
 }
