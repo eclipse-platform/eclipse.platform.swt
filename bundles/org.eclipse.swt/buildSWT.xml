@@ -958,7 +958,7 @@
 				<equals arg1="${swt.os}" arg2="wce_ppc"/>
 			</or>
 		</condition>
-		<condition property="xulrunner_target" value="make_xulrunner64" else="make_xulrunner">
+		<condition property="xulrunner_target" value="make_xulrunner_64" else="make_xulrunner">
 			<equals arg1="${swt.arch}" arg2="x86_64"/>
 		</condition>
 		<condition property="xul_cmd" value="cmd /c build.bat ${swt.arch} ${xulrunner_target} install;" else="">
@@ -1036,7 +1036,7 @@
 	</target>
 
 	<target name="build_local_win_xulrunner" if="should_build_xulrunner">
-		<condition property="xulrunner_target" value="make_xulrunner64" else="make_xulrunner">
+		<condition property="xulrunner_target" value="make_xulrunner_64" else="make_xulrunner">
 			<equals arg1="${swt.arch}" arg2="x86_64"/>
 		</condition>
 		<exec dir="${build_dir}" executable="cmd" failonerror="true">
@@ -1045,6 +1045,16 @@
 			<env key="OUTPUT_DIR" value="${win_output_dir}"/>
 			<arg line="/c '${build_dir}/${build_file}' ${swt.arch} ${xulrunner_target} install ${clean}"/>
 		</exec>
+		<condition property="xulrunner24_target" value="make_xulrunner24_64" else="make_xulrunner24">
+			<equals arg1="${swt.arch}" arg2="x86_64"/>
+		</condition>
+		<exec dir="${build_dir}" executable="cmd" failonerror="true">
+			<env key="JAVA_HOME" value=""/>
+			<env key="BUILD_XULRUNNER" value="true"/>
+			<env key="OUTPUT_DIR" value="${win_output_dir}"/>
+			<arg line="/c '${build_dir}/${build_file}' ${swt.arch} ${xulrunner24_target} install ${clean}"/>
+		</exec>
+
 	</target>
 
 	<target name="check_repo">

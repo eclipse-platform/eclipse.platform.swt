@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.io.File;
 import java.util.*;
 
 import org.eclipse.swt.SWT;
@@ -26,6 +27,10 @@ class MozillaDelegate {
 	static Callback SubclassProc;
 	static Callback SubclassProc_UpdateUIState;
 	
+	static Boolean IsXULRunner24;
+	static final String LIB_XPCOM = "xpcom.dll"; //$NON-NLS-1$
+	static final String LIB_XUL = "xul.dll"; //$NON-NLS-1$
+
 MozillaDelegate (Browser browser) {
 	super ();
 	this.browser = browser;
@@ -54,7 +59,20 @@ static String getJSLibraryName_Pre4 () {
 }
 
 static String getLibraryName (String mozillaPath) {
-	return "xpcom.dll"; //$NON-NLS-1$
+	/*
+	 * The name of the Gecko library to glue to changed between the XULRunner 10 and
+	 * 24 releases.  However it's not possible to programmatically know the version
+	 * of a XULRunner that's being used before it has been glued.  To determine the
+	 * appropriate Gecko library name to return, look for the presence of an "xpcom"
+	 * library in the mozilla path, which is present in all supported XULRunner releases
+	 * prior to XULRunner 24.  If this library is there then return it, and if it's not
+	 * there then assume that XULRunner 24 is being used and return the new library name
+	 * instead ("xul").
+	 */
+	if (IsXULRunner24 == null) { /* IsXULRunner24 not yet initialized */
+		IsXULRunner24 = new File (mozillaPath, LIB_XPCOM).exists () ? Boolean.FALSE : Boolean.TRUE;
+	}
+	return IsXULRunner24.booleanValue () ? LIB_XUL : LIB_XPCOM;
 }
 
 static String getProfilePath () {
@@ -259,7 +277,7 @@ void onDispose (long /*int*/ embedHandle) {
 
 void removeWindowSubclass () {
 	long /*int*/ hwndChild = OS.GetWindow (browser.handle, OS.GW_CHILD);
-	if (Mozilla.IsPre_17) {
+	if (Mozilla.IsPre_24) {
 		if (SubclassProc != null) {
 			OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, MozillaProc);
 		}

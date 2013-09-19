@@ -26,6 +26,7 @@ IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x8
 IF x.%JAVA_HOME%==x. set JAVA_HOME=%SWT_BUILDDIR%\ibm-java2-sdk-50-win-i386
 IF x.%BUILD_XULRUNNER%==x.true GOTO XULRUNNER
 IF x.%2%==x.make_xulrunner GOTO XULRUNNER
+IF x.%2%==x.make_xulrunner24 GOTO XULRUNNER
 call "%SWT_BUILDDIR%\MSVCs\Microsoft Visual Studio 8\Common7\Tools\vsvars32.bat"
 call %MSSDK%\setenv /XP32 /RETAIL
 IF x.%1==x.x86 shift
@@ -37,6 +38,7 @@ set MSSDK="%SWT_BUILDDIR%\MSSDKs\feb2003"
 call %SWT_BUILDDIR%\MSVCs\msvc60\vc98\bin\vcvars32.bat
 call %MSSDK%\setenv /XP32 /RETAIL
 IF x.%XULRUNNER_SDK%==x. set XULRUNNER_SDK=%SWT_BUILDDIR%\gecko-sdk
+IF x.%XULRUNNER24_SDK%==x. set XULRUNNER24_SDK=%SWT_BUILDDIR%\gecko24-sdk
 IF x.%1==x.x86 shift
 GOTO MAKE
 
@@ -47,7 +49,8 @@ IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x8
 IF x.%JAVA_HOME%==x. set JAVA_HOME=%SWT_BUILDDIR%\ibm-sdk50-x86_64
 set CFLAGS=-DJNI64
 IF x.%BUILD_XULRUNNER%==x.true GOTO XULRUNNER64
-IF x.%2%==x.make_xulrunner64 GOTO XULRUNNER64
+IF x.%2%==x.make_xulrunner_64 GOTO XULRUNNER64
+IF x.%2%==x.make_xulrunner24_64 GOTO XULRUNNER64
 call %MSSDK%\setenv /X64 /RETAIL
 shift
 GOTO MAKE
@@ -56,6 +59,7 @@ GOTO MAKE
 set MSSDK="%SWT_BUILDDIR%\MSSDKs\Windows 7 SDK v7.1"
 call %MSSDK%\bin\setenv /x64 /Release
 IF x.%XULRUNNER_SDK%==x. set XULRUNNER_SDK=%SWT_BUILDDIR%\gecko10-sdk-x86_64
+IF x.%XULRUNNER64_SDK%==x. set XULRUNNER64_SDK=%SWT_BUILDDIR%\gecko24-sdk-x86_64
 set MOZILLACFLAGS=-DJNI64
 shift
 GOTO MAKE
