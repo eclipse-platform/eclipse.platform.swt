@@ -46,4 +46,6 @@ class JSAutoCompartment {
 	~JSAutoCompartment();
 };
 
+#else
+#include "nsCxPusher.h"
 #endif /* _WIN32 */
