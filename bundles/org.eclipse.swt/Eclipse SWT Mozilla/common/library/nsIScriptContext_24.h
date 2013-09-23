@@ -13,14 +13,14 @@
 #ifndef nsIScriptContext_h__
 #define nsIScriptContext_h__
 
-#include "nscore.h"
+//#include "nscore.h" //SWT-20130918
 //#include "nsStringGlue.h" //SWT-20130918
-#include "nsISupports.h"
+//#include "nsISupports.h" //SWT-20130918
 //#include "nsCOMPtr.h" //SWT-20130918
-#include "nsIProgrammingLanguage.h"
+//#include "nsIProgrammingLanguage.h" //SWT-20130918
 //#include "jsfriendapi.h" //SWT-20130918
-// #include "jspubtd.h" //SWT-20130918
-// #include "js/GCAPI.h" //SWT-20130918
+//#include "jspubtd.h" //SWT-20130918
+//#include "js/GCAPI.h" //SWT-20130918
 
 class nsIScriptGlobalObject;
 class nsIScriptSecurityManager;
@@ -42,15 +42,21 @@ class nsIURI;
    know what language we have is a little silly... */
 #define SCRIPTVERSION_DEFAULT JSVERSION_DEFAULT
 
+#define nsresult int //SWT-20130918
+
 /**
  * It is used by the application to initialize a runtime and run scripts.
  * A script runtime would implement this interface.
  */
-class nsIScriptContext : public nsISupports
+class nsIScriptContext /* : public nsISupports */ //SWT-20130918
 {
 public:
 //  NS_DECLARE_STATIC_IID_ACCESSOR(NS_ISCRIPTCONTEXT_IID) //SWT-20130918
 
+  virtual nsresult QueryInterface(/* const nsIID & uuid, void **result */) = 0; //SWT-20130918
+  virtual nsresult AddRef(void) = 0; //SWT-20130918
+  virtual nsresult Release(void) = 0; //SWT-20130918
+  
   /**
    * Compile and execute a script.
    *

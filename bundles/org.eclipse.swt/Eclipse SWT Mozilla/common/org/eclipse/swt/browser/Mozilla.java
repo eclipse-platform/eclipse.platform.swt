@@ -2147,7 +2147,7 @@ void initXPCOM (String mozillaPath, boolean isXULRunner) {
 		}
 
 		if (nsISupports.IsXULRunner24) {
-			Library.loadLibrary("swt-xulrunner24"); //$NON-NLS-1$
+//			Library.loadLibrary("swt-xulrunner24"); //$NON-NLS-1$
 		};
 		MozillaDelegate.loadAdditionalLibraries (mozillaPath, true);
 

@@ -14,8 +14,8 @@
 #ifndef nsIScriptGlobalObject_h__
 #define nsIScriptGlobalObject_h__
 
-#include "nsISupports.h"
-// #include "nsEvent.h" //SWT-20130918
+//#include "nsISupports.h" //SWT-20130918
+//#include "nsEvent.h" //SWT-20130918
 #include "nsIGlobalObject_24.h"  //SWT-20130918
 
 class nsIScriptContext;
@@ -33,10 +33,11 @@ class JSObject;
 //                     nsScriptErrorEvent *aErrorEvent, //SWT-20130918
 //                     nsEventStatus *aStatus); //SWT-20130918
 
-
 #define NS_ISCRIPTGLOBALOBJECT_IID \
 { 0xde24b30a, 0x12c6, 0x4e5f, \
   { 0xa8, 0x5e, 0x90, 0xcd, 0xfb, 0x6c, 0x54, 0x51 } }
+
+#define nsresult int //SWT-20130918
 
 /**
  * The global object which keeps a script context for each supported script

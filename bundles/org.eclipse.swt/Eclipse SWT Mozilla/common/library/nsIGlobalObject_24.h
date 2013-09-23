@@ -13,7 +13,7 @@
 #ifndef nsIGlobalObject_h__
 #define nsIGlobalObject_h__
 
-#include "nsISupports.h"
+//#include "nsISupports.h" //SWT-20130918
 //#include "nsIScriptObjectPrincipal.h" //SWT-20130918
 
 class JSObject;
@@ -22,10 +22,16 @@ class JSObject;
 { 0x8503e9a9, 0x530, 0x4b26,  \
 { 0xae, 0x24, 0x18, 0xca, 0x38, 0xe5, 0xed, 0x17 } }
 
-class nsIGlobalObject : public /*nsIScriptObjectPrincipal*/ nsISupports //SWT-20130918
+#define nsresult int //SWT-20130918
+
+class nsIGlobalObject /*: public nsIScriptObjectPrincipal*/ //SWT-20130918
 {
 public:
 //  NS_DECLARE_STATIC_IID_ACCESSOR(NS_IGLOBALOBJECT_IID) //SWT-20130918
+
+  virtual nsresult QueryInterface(/* const nsIID & uuid, void **result */) = 0; //SWT-20130918
+  virtual nsresult AddRef(void) = 0; //SWT-20130918
+  virtual nsresult Release(void) = 0; //SWT-20130918
 
   virtual nsIPrincipal* GetPrincipal() = 0; //SWT-20130918
 

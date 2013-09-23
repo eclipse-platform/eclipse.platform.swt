@@ -67,7 +67,7 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(_1JS_1EvaluateUCScriptForPrincipals24)
 		 * Compilation on Linux does not have the same symbol mismatch problem as Windows, so the
 		 * function call can just be made against its definition in the XULRunner 24 SDK.
 		 */
-		rc = (jint)JS_EvaluateUCScriptForPrincipals((JSContext*)arg0, (JSObject*)arg1, (JSPrincipals*)arg2, lparg3, arg4, (const char*)lparg5, arg6, (jsval*)lparg7);
+		rc = (jint)JS_EvaluateUCScriptForPrincipals((JSContext*)arg0, (JSObject*)arg1, (JSPrincipals*)arg2, (const jschar *)lparg3, arg4, (const char*)lparg5, arg6, (JS::Value*)lparg7);
 #endif /* _WIN32 */
 	}
 fail:
@@ -79,7 +79,6 @@ fail:
 	return rc;
 }
 #endif
-
 
 #ifndef NO__1nsIScriptContext24_1GetNativeContext
 extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1nsIScriptContext24_1GetNativeContext)(JNIEnv *env, jclass that, jintLong arg0);

@@ -21,17 +21,13 @@
 #define XPCOM_NATIVE_EXIT(env, that, func) 
 #endif
 
-#ifdef _WIN32
-#define XP_WIN
-#define UINT32_MAX  (0xffffffff)
-#include <windows.h>
-
+#ifdef LINUX
+#include "nsCxPusher.h"
+#else
 /*
-* This class is defined locally for win32 in order to avoid compiling against the XULRunner 24 SDK directly.
-* This is done because XULRuner 24  uses various C++ features that are not supported by VC++6.0, which SWT
-* uses for compilation of its xulrunner libraries.  SWT uses VC++6.0 for compiling its xulrunner libraries
-* because newer VC++ releases introduce runtime dependencies on the VS C++ runtime (eg.- msvcr80.dll), which
-* the user may not have installed.
+* This class is defined locally for win32 and cocoa in order to avoid compiling against the XULRunner 24 SDK directly.
+* XULRuner 24 uses various C++ features that are not supported by the VC++ and gcc versions used by SWT for compilation
+* of its xulrunner libraries on these platforms (to ensure that dependencies such as msvcr80.dll are not introduced).
 */
 struct JSContext;
 class JSObject;
@@ -45,7 +41,22 @@ class JSAutoCompartment {
 	JSAutoCompartment(JSContext *cx, JSScript *target);
 	~JSAutoCompartment();
 };
+#endif /* LINUX */
 
-#else
-#include "nsCxPusher.h"
+#ifdef _WIN32
+#define XP_WIN
+#define UINT32_MAX  (0xffffffff)
+#include <windows.h>
+#elif defined(COCOA)
+#include <stdint.h>
+class JSPrincipals;
+namespace JS {
+	class Value;
+};
+typedef uint16_t jschar;
+bool JS_EvaluateUCScriptForPrincipals(JSContext *cx, JSObject *obj,
+                                 JSPrincipals *principals,
+                                 const uint16_t *chars, unsigned length,
+                                 const char *filename, unsigned lineno,
+                                 JS::Value *rval);
 #endif /* _WIN32 */
