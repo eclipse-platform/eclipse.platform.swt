@@ -21,13 +21,10 @@
 #define XPCOM_NATIVE_EXIT(env, that, func) 
 #endif
 
-#ifdef LINUX
-#include "nsCxPusher.h"
-#else
 /*
-* This class is defined locally for win32 and cocoa in order to avoid compiling against the XULRunner 24 SDK directly.
-* XULRuner 24 uses various C++ features that are not supported by the VC++ and gcc versions used by SWT for compilation
-* of its xulrunner libraries on these platforms (to ensure that dependencies such as msvcr80.dll are not introduced).
+* This class is defined locally in order to avoid compiling against the XULRunner 24 SDK directly.  XULRunner
+* 24 uses various C++ features that are not supported by the VC++ and gcc versions used by SWT for compilation
+* of its xulrunner libraries (to ensure that dependencies such as msvcr80.dll are not introduced).
 */
 struct JSContext;
 class JSObject;
@@ -41,13 +38,12 @@ class JSAutoCompartment {
 	JSAutoCompartment(JSContext *cx, JSScript *target);
 	~JSAutoCompartment();
 };
-#endif /* LINUX */
 
 #ifdef _WIN32
 #define XP_WIN
 #define UINT32_MAX  (0xffffffff)
 #include <windows.h>
-#elif defined(COCOA)
+#else
 #include <stdint.h>
 class JSPrincipals;
 namespace JS {

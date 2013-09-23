@@ -47,8 +47,7 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(_1JS_1EvaluateUCScriptForPrincipals24)
 		/*
 		 * VC++6.0 cannot create a lookup symbol for JS_EvaluateUCScriptForPrincipals() that matches the symbol
 		 * exported by XULRunner 24's mozjs library because VC++6.0 does not define wchar_t as a native type.
-		 * The workaround is to dynamically look up the function's mangled name and invoke it directly, since
-		 * it is essentially a global function.
+		 * The workaround is to dynamically look up the function's mangled name and invoke it directly.
 		 */
 		static int initialized = 0;
 		static FARPROC fp = NULL;
@@ -63,10 +62,6 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(_1JS_1EvaluateUCScriptForPrincipals24)
 			rc = (jint)((jint (*)(jintLong, jintLong, jintLong, jchar *, jint, jbyte *, jint, jintLong *))fp)(arg0, arg1, arg2, lparg3, arg4, lparg5, arg6, lparg7);
 		}
 #else
-		/*
-		 * Compilation on Linux does not have the same symbol mismatch problem as Windows, so the
-		 * function call can just be made against its definition in the XULRunner 24 SDK.
-		 */
 		rc = (jint)JS_EvaluateUCScriptForPrincipals((JSContext*)arg0, (JSObject*)arg1, (JSPrincipals*)arg2, (const jschar *)lparg3, arg4, (const char*)lparg5, arg6, (JS::Value*)lparg7);
 #endif /* _WIN32 */
 	}

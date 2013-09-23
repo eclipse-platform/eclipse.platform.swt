@@ -24,7 +24,7 @@ if [ "x${MODEL}" = "xx86_64" ]; then
 		export XULRUNNER_LIBS="${XULRUNNER_SDK}/lib/libxpcomglue.a"
 	fi
 	if [ "x${XULRUNNER24_SDK}" = "x" ]; then
-		export XULRUNNER24_SDK="/Users/Shared/xulrunner24_64/xulrunner-sdk"
+		export XULRUNNER24_SDK="/Users/Shared/xulrunner/24-64/xulrunner-sdk/"
 	fi
 	if [ "x${XULRUNNER24_LIBS}" = "x" ]; then
 		export XULRUNNER24_LIBS="${XULRUNNER24_SDK}/lib/XUL"
@@ -41,10 +41,10 @@ else
 		export XULRUNNER_LIBS="${XULRUNNER_SDK}/lib/libxpcomglue.a ${XULRUNNER_SDK}/../../../ppc/dist/sdk/lib/libxpcomglue.a"
 	fi
 	if [ "x${XULRUNNER24_SDK}" = "x" ]; then
-		export XULRUNNER24_SDK="/Users/Shared/xulrunner24/xulrunner-sdk"
+		export XULRUNNER24_SDK="/Users/Shared/xulrunner/24/xulrunner-sdk"
 	fi
 	if [ "x${XULRUNNER24_LIBS}" = "x" ]; then
-		export XULRUNNER24_LIBS="${XULRUNNER24_SDK}/lib/libxpcomglue.a"
+		export XULRUNNER24_LIBS="${XULRUNNER24_SDK}/lib/XUL"
 	fi
 fi
 
