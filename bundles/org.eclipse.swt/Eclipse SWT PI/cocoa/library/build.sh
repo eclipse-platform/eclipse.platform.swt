@@ -31,6 +31,7 @@ if [ "x${MODEL}" = "xx86_64" ]; then
 	fi
 else
 	export ARCHS="-arch i386 -arch ppc"
+	export XULRUNNER24_ARCHS="-arch i386"
 	if [ "x${OUTPUT_DIR}" = "x" ]; then
 		export OUTPUT_DIR=../../../org.eclipse.swt.cocoa.macosx
 	fi

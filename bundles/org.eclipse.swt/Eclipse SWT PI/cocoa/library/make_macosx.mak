@@ -45,9 +45,9 @@ XULRUNNER24_OBJECTS = xpcom24_custom.o
 
 XULRUNNERCFLAGS = -c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA -I /System/Library/Frameworks/JavaVM.framework/Headers \
 	-Wno-non-virtual-dtor -include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include
-XULRUNNER24CFLAGS = -c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA -I /System/Library/Frameworks/JavaVM.framework/Headers -Wno-non-virtual-dtor
+XULRUNNER24CFLAGS = -c -Wall $(XULRUNNER24_ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA -I /System/Library/Frameworks/JavaVM.framework/Headers -Wno-non-virtual-dtor
 XULRUNNERLFLAGS = $(LFLAGS)
-XULRUNNER24LFLAGS = $(LFLAGS)
+XULRUNNER24LFLAGS = -bundle $(XULRUNNER24_ARCHS) -framework JavaVM
 
 all: $(SWT_LIB) $(SWTPI_LIB) $(AWT_LIB) $(XULRUNNER_LIB) $(XULRUNNER24_LIB)
 
