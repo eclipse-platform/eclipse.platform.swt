@@ -11,6 +11,8 @@
 package org.eclipse.swt.browser;
 
 
+import java.io.File;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.internal.cocoa.*;
@@ -23,6 +25,9 @@ class MozillaDelegate {
 	Listener listener;
 	boolean hasFocus;
 
+	static Boolean IsXULRunner24;
+	static final String LIB_XPCOM = "libxpcom.dylib"; //$NON-NLS-1$
+	static final String LIB_XUL = "XUL"; //$NON-NLS-1$
 	static final String MOZILLA_RUNNING = "org.eclipse.swt.internal.mozillaRunning"; //$NON-NLS-1$
 
 MozillaDelegate (Browser browser) {
@@ -56,7 +61,20 @@ static String getJSLibraryName_Pre4 () {
 }
 
 static String getLibraryName (String mozillaPath) {
-	return "libxpcom.dylib"; //$NON-NLS-1$
+	/*
+	 * The name of the Gecko library to glue to changed between the XULRunner 10 and
+	 * 24 releases.  However it's not possible to programmatically know the version
+	 * of a XULRunner that's being used before it has been glued.  To determine the
+	 * appropriate Gecko library name to return, look for the presence of an "xpcom"
+	 * library in the mozilla path, which is present in all supported XULRunner releases
+	 * prior to XULRunner 24.  If this library is there then return it, and if it's not
+	 * there then assume that XULRunner 24 is being used and return the new library name
+	 * instead ("XUL").
+	 */
+	if (IsXULRunner24 == null) { /* IsXULRunner24 not yet initialized */
+		IsXULRunner24 = new File (mozillaPath, LIB_XPCOM).exists () ? Boolean.FALSE : Boolean.TRUE;
+	}
+	return IsXULRunner24.booleanValue () ? LIB_XUL : LIB_XPCOM;
 }
 
 static String getProfilePath () {
@@ -70,7 +88,7 @@ static String getSWTInitLibraryName () {
 
 static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 	// workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=727616
-	if (isGlued) {
+	if (!isGlued) {
 		String utilsPath = mozillaPath + Mozilla.SEPARATOR_OS + "libmozutils.dylib"; //$NON-NLS-1$
 		byte[] bytes = MozillaDelegate.wcsToMbcs (null, utilsPath, true);
 		OS.NSAddImage (bytes, OS.NSADDIMAGE_OPTION_RETURN_ON_ERROR | OS.NSADDIMAGE_OPTION_MATCH_FILENAME_BY_INSTALLNAME);
