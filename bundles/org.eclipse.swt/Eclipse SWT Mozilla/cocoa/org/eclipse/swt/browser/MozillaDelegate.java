@@ -168,9 +168,12 @@ long /*int*/ getHandle () {
 }
 
 Point getNativeSize (int width, int height) {
-	NSScreen screen = browser.view.window ().screen ();
-	double /*float*/ scaling = screen.backingScaleFactor ();
-	return new Point ((int)(width * scaling), (int)(height * scaling));
+	if (IsXULRunner24.booleanValue ()) {
+		NSScreen screen = browser.view.window ().screen ();
+		double /*float*/ scaling = screen.backingScaleFactor ();
+		return new Point ((int)(width * scaling), (int)(height * scaling));
+	}
+	return new Point (width, height);
 }
 
 long /*int*/ getSiteWindow () {
