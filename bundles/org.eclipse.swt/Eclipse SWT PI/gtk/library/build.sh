@@ -135,6 +135,9 @@ case $SWT_OS.$SWT_ARCH in
 		if [ "${XULRUNNER_LIBS}" = "" ]; then
 			export XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
 		fi
+		if [ "${XULRUNNER24_SDK}" = "" ]; then
+			export XULRUNNER24_SDK="/bluebird/teamswt/swt-builddir/geckoSDK/24/x86"
+		fi
 		;;
 	"linux.x86_64")
 		if [ "${CC}" = "" ]; then
@@ -166,12 +169,6 @@ case $SWT_OS.$SWT_ARCH in
 		fi
 		if [ "${XULRUNNER24_SDK}" = "" ]; then
 			export XULRUNNER24_SDK="/bluebird/teamswt/swt-builddir/geckoSDK/24/x86_64"
-		fi
-		if [ "${XULRUNNER24_INCLUDES}" = "" ]; then
-			export XULRUNNER24_INCLUDES="-include ${XULRUNNER24_SDK}/include/mozilla-config.h -I${XULRUNNER24_SDK}/include -I${XULRUNNER24_SDK}/include/nspr"
-		fi
-		if [ "${XULRUNNER24_LIBS}" = "" ]; then
-			export XULRUNNER24_LIBS="-L${XULRUNNER24_SDK}/lib -lxpcomglue -Wl,--whole-archive -lmozglue -Wl,--no-whole-archive"
 		fi
 		;;
 	"linux.ppc")
