@@ -301,38 +301,72 @@
 		<property name="success_msg" value="Success"/>
 		<property name="fail_msg" value="*** Fail ***"/>
 		<condition property="m_linux_x86_test" value="${success_msg}" else="${fail_msg}">
+			<and>
+				<length string="${m_linux_x86_output}" when="greater" length="0"/>
+				<matches pattern="x${m_linux_x86_output}*" string="x${m_linux_x86}"/>
+			</and>
 			<matches pattern="${m_linux_x86}*" string="${m_linux_x86_output}"/>
 		</condition>
 		<condition property="m_linux_x86_64_test" value="${success_msg}" else="${fail_msg}">
-			<matches pattern="${m_linux_x86_64}*" string="${m_linux_x86_64_output}"/>
+			<and>
+				<length string="${m_linux_x86_64_output}" when="greater" length="0"/>
+				<matches pattern="x${m_linux_x86_64_output}*" string="x${m_linux_x86_64}"/>
+			</and>
 		</condition>
 		<!--condition property="m_linux_rh3_x86_test" value="${success_msg}" else="${fail_msg}">
-			<matches pattern="${m_linux_rh3_x86}*" string="${m_linux_rh3_x86_output}"/>
+			<and>
+				<length string="${m_linux_rh3_x86_output}" when="greater" length="0"/>
+				<matches pattern="x${m_linux_rh3_x86_output}*" string="x${m_linux_rh3_x86}"/>
+			</and>
 		</condition>
 		<condition property="m_linux_rh3_x86_64_test" value="${success_msg}" else="${fail_msg}">
-			<matches pattern="${m_linux_rh3_x86_64}*" string="${m_linux_rh3_x86_64_output}"/>
+			<and>
+				<length string="${m_linux_rh3_x86_64_output}" when="greater" length="0"/>
+				<matches pattern="x${m_linux_rh3_x86_64_output}*" string="x${m_linux_rh3_x86_64}"/>
+			</and>
 		</condition-->
 		
 		<condition property="m_linux_ppc_test" value="${success_msg}" else="${fail_msg}">
-			<matches pattern="${m_linux_ppc}*" string="${m_linux_ppc_output}"/>
+			<and>
+				<length string="${m_linux_ppc_output}" when="greater" length="0"/>
+				<matches pattern="x${m_linux_ppc_output}*" string="x${m_linux_ppc}"/>
+			</and>
 		</condition>
 		<condition property="m_linux_ppc64_test" value="${success_msg}" else="${fail_msg}">
-			<matches pattern="${m_linux_ppc64}*" string="${m_linux_ppc64_output}"/>
+			<and>
+				<length string="${m_linux_ppc64_output}" when="greater" length="0"/>
+				<matches pattern="x${m_linux_ppc64_output}*" string="x${m_linux_ppc64}"/>
+			</and>
 		</condition>
 		<condition property="m_solaris_sparc_test" value="${success_msg}" else="${fail_msg}">
-			<matches pattern="${m_solaris_sparc}*" string="${m_solaris_sparc_output}"/>
+			<and>
+				<length string="${m_solaris_sparc_output}" when="greater" length="0"/>
+				<matches pattern="x${m_solaris_sparc_output}*" string="x${m_solaris_sparc}"/>
+			</and>
 		</condition>
 		<condition property="m_solaris_x86_test" value="${success_msg}" else="${fail_msg}">
-			<matches pattern="${m_solaris_x86}*" string="${m_solaris_x86_output}"/>
+			<and>
+				<length string="${m_solaris_x86_output}" when="greater" length="0"/>
+				<matches pattern="x${m_solaris_x86_output}*" string="x${m_solaris_x86}"/>
+			</and>
 		</condition>
 		<condition property="m_aix_test" value="${success_msg}" else="${fail_msg}">
-			<matches pattern="${m_aix}*" string="${m_aix_output}"/>
+			<and>
+				<length string="${m_aix_output}" when="greater" length="0"/>
+				<matches pattern="x${m_aix_output}*" string="x${m_aix}"/>
+			</and>
 		</condition>
 		<condition property="m_hpux_test" value="${success_msg}" else="${fail_msg}">
-			<matches pattern="${m_hpux}*" string="${m_hpux_output}"/>
+			<and>
+				<length string="${m_hpux_output}" when="greater" length="0"/>
+				<matches pattern="x${m_hpux_output}*" string="x${m_hpux}"/>
+			</and>
 		</condition>
 		<condition property="m_mac_test" value="${success_msg}" else="${fail_msg}">
-			<matches pattern="${m_mac}*" string="${m_mac_output}"/>
+			<and>
+				<length string="${m_mac_output}" when="greater" length="0"/>
+				<matches pattern="x${m_mac_output}*" string="x${m_mac}"/>
+			</and>
 		</condition>
 		<echo>-------------------------</echo>
 		<echo>Status:</echo>
