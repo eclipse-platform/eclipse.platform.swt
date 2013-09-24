@@ -26,7 +26,6 @@ class MozillaDelegate {
 	Vector childWindows = new Vector (9);
 	static long /*int*/ MozillaProc;
 	static Callback SubclassProc;
-	static Callback SubclassProc_UpdateUIState;
 	
 	static Boolean IsXULRunner24;
 	static final String LIB_XPCOM = "xpcom.dll"; //$NON-NLS-1$
@@ -139,18 +138,6 @@ static long /*int*/ windowProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*
 			OS.GetClientRect (hwnd, rect);
 			OS.FillRect (wParam, rect, OS.GetSysColorBrush (OS.COLOR_WINDOW));
 			break;
-	}
-	return OS.CallWindowProc (MozillaProc, hwnd, (int)/*64*/msg, wParam, lParam);
-}
-
-static long /*int*/ windowProc1 (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wParam, long /*int*/ lParam) {
-	switch ((int)/*64*/msg) {
-		case OS.WM_UPDATEUISTATE:
-			/*
-			 * In XULRunner 17, calling the default windowProc for WM_UPDATEUISTATE message
-			 * terminates the program. Workaround is to prevent the call to default windowProc.
-			 */
-			return 0;
 	}
 	return OS.CallWindowProc (MozillaProc, hwnd, (int)/*64*/msg, wParam, lParam);
 }
@@ -273,7 +260,7 @@ void init () {
 }
 
 void onDispose (long /*int*/ embedHandle) {
-	if (SubclassProc == null && SubclassProc_UpdateUIState == null) return;
+	if (SubclassProc == null) return;
 	long /*int*/ hwndChild = OS.GetWindow (browser.handle, OS.GW_CHILD);
 	OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, MozillaProc);
 	childWindows = null;
@@ -282,15 +269,8 @@ void onDispose (long /*int*/ embedHandle) {
 
 void removeWindowSubclass () {
 	long /*int*/ hwndChild = OS.GetWindow (browser.handle, OS.GW_CHILD);
-	if (Mozilla.IsPre_24) {
-		if (SubclassProc != null) {
-			OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, MozillaProc);
-		}
-	} else {
-		if (SubclassProc_UpdateUIState == null) {
-			SubclassProc_UpdateUIState = new Callback (MozillaDelegate.class, "windowProc1", 4); //$NON-NLS-1$
-		}
-		OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, SubclassProc_UpdateUIState.getAddress ());
+	if (SubclassProc != null) {
+		OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, MozillaProc);
 	}
 }
 
