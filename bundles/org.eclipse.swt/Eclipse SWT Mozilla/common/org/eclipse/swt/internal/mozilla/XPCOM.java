@@ -256,8 +256,18 @@ public static final int JS_EvaluateUCScriptForPrincipals(byte[] mozillaPath, lon
 	}
 }
 /** @method flags=no_gen */
-public static final native int _JS_EvaluateUCScriptForPrincipals24(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/[] retVal);	
-public static final int JS_EvaluateUCScriptForPrincipals24(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/[] retVal) {
+public static final native int _JS_EvaluateUCScriptForPrincipals191(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/ retVal);	
+public static final int JS_EvaluateUCScriptForPrincipals191(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/ retVal) {
+	lock.lock();
+	try {
+		return _JS_EvaluateUCScriptForPrincipals191(mozillaPath, cx, obj, principals, chars, length, filename, lineno, retVal);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=no_gen */
+public static final native int _JS_EvaluateUCScriptForPrincipals24(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/ retVal);	
+public static final int JS_EvaluateUCScriptForPrincipals24(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/ retVal) {
 	lock.lock();
 	try {
 		return _JS_EvaluateUCScriptForPrincipals24(mozillaPath, cx, obj, principals, chars, length, filename, lineno, retVal);
@@ -265,7 +275,6 @@ public static final int JS_EvaluateUCScriptForPrincipals24(byte[] mozillaPath, l
 		lock.unlock();
 	}
 }
-
 /** @method flags=no_gen */
 public static final native long /*int*/ _JS_GetGlobalObject(byte[] mozillaPath, long /*int*/ cx);	
 public static final long /*int*/ JS_GetGlobalObject(byte[] mozillaPath, long /*int*/ cx) {

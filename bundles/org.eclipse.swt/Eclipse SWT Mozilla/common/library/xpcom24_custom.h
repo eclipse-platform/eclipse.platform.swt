@@ -40,8 +40,8 @@ class JSAutoCompartment {
 };
 
 #ifdef _WIN32
-#define XP_WIN
 #define UINT32_MAX  (0xffffffff)
+#define XP_WIN
 #include <windows.h>
 #else
 #include <stdint.h>
@@ -50,9 +50,6 @@ namespace JS {
 	class Value;
 };
 typedef uint16_t jschar;
-bool JS_EvaluateUCScriptForPrincipals(JSContext *cx, JSObject *obj,
-                                 JSPrincipals *principals,
-                                 const uint16_t *chars, unsigned length,
-                                 const char *filename, unsigned lineno,
-                                 JS::Value *rval);
+bool JS_EvaluateUCScriptForPrincipals(JSContext *cx, JSObject *obj, JSPrincipals *principals,
+	const uint16_t *chars, unsigned length, const char *filename, unsigned lineno, JS::Value *rval);
 #endif /* _WIN32 */

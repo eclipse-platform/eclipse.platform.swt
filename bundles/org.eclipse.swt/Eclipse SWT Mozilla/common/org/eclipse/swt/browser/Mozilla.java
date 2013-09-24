@@ -1461,7 +1461,12 @@ public boolean execute (String script) {
 												if (rc != XPCOM.NS_OK) {
 													stack.Release ();
 												} else {
-													boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals (jsLibPath, jsContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, !isXULRunner190x ? result : null) != 0;
+													boolean success;
+													if (isXULRunner190x) {
+														success = XPCOM.JS_EvaluateUCScriptForPrincipals (jsLibPath, jsContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result) != 0;
+													} else {
+														success = XPCOM.JS_EvaluateUCScriptForPrincipals191 (jsLibPath, jsContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, 0) != 0;
+													}
 													result[0] = 0;
 													rc = stack.Pop (result);
 													stack.Release ();
@@ -1473,7 +1478,7 @@ public boolean execute (String script) {
 												}
 											}
 										} else {
-											boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals24 (jsLibPath, jsContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, result) != 0;
+											boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals24 (jsLibPath, jsContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, 0) != 0;
 											new nsISupports (scriptGlobalObject).Release ();
 											// should principals be Release()d too?
 											principal.Release ();
