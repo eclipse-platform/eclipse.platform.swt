@@ -305,7 +305,6 @@
 				<length string="${m_linux_x86_output}" when="greater" length="0"/>
 				<matches pattern="x${m_linux_x86_output}*" string="x${m_linux_x86}"/>
 			</and>
-			<matches pattern="${m_linux_x86}*" string="${m_linux_x86_output}"/>
 		</condition>
 		<condition property="m_linux_x86_64_test" value="${success_msg}" else="${fail_msg}">
 			<and>
