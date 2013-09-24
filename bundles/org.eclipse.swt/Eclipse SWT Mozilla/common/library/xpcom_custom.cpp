@@ -187,7 +187,7 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(_1JS_1EvaluateUCScriptForPrincipals191)
 			initialized = 1;
 		}
 		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jintLong, jchar *, jint, jbyte *, jint, jintLong *))fp)(arg0, arg1, arg2, lparg3, arg4, lparg5, arg6, arg7);
+			rc = (jint)((jint (CALLING_CONVENTION*)(jintLong, jintLong, jintLong, jchar *, jint, jbyte *, jint, jintLong))fp)(arg0, arg1, arg2, lparg3, arg4, lparg5, arg6, arg7);
 		}
 #endif /* _WIN32 */
 	}
