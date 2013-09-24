@@ -14,6 +14,7 @@ import java.io.*;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.mozilla.*;
@@ -226,6 +227,10 @@ long /*int*/ getHandle () {
 	OS.gtk_container_add (browser.handle, embedHandle);
 	OS.gtk_widget_show (embedHandle);
 	return embedHandle;
+}
+
+Point getNativeSize (int width, int height) {
+	return new Point (width, height);
 }
 
 long /*int*/ getSiteWindow () {

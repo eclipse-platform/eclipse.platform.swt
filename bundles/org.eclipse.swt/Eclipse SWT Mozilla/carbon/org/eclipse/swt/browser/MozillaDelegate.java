@@ -14,6 +14,7 @@ import java.util.Hashtable;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -56,6 +57,10 @@ static String[] getJSLibraryNames () {
 
 static String getJSLibraryName_Pre4 () {
 	return "libmozjs.dylib"; //$NON-NLS-1$
+}
+
+Point getNativeSize (int width, int height) {
+	return new Point (width, height);
 }
 
 static String getProfilePath () {

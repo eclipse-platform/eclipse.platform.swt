@@ -15,6 +15,7 @@ import java.io.File;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.widgets.*;
@@ -164,6 +165,12 @@ int createBaseWindow (nsIBaseWindow baseWindow) {
 
 long /*int*/ getHandle () {
 	return browser.view.id;
+}
+
+Point getNativeSize (int width, int height) {
+	NSScreen screen = browser.view.window ().screen ();
+	double /*float*/ scaling = screen.backingScaleFactor ();
+	return new Point ((int)(width * scaling), (int)(height * scaling));
 }
 
 long /*int*/ getSiteWindow () {

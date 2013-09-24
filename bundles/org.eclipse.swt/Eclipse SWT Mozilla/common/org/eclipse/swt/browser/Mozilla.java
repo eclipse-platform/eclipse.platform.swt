@@ -3043,9 +3043,10 @@ void onResize () {
 	}
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
-	delegate.setSize (embedHandle, width, height);
+	Point size = delegate.getNativeSize (width, height);
+	delegate.setSize (embedHandle, size.x, size.y);
 	nsIBaseWindow baseWindow = new nsIBaseWindow (result[0]);
-	rc = baseWindow.SetPositionAndSize (0, 0, width, height, 1);
+	rc = baseWindow.SetPositionAndSize (0, 0, size.x, size.y, 1);
 	if (rc != XPCOM.NS_OK) error (rc);
 	baseWindow.Release ();
 }

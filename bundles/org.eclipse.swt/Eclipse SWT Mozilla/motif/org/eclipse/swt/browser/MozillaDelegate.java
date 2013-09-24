@@ -11,6 +11,7 @@
 package org.eclipse.swt.browser;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.GTK;
 import org.eclipse.swt.internal.mozilla.*;
@@ -150,6 +151,10 @@ int getHandle() {
 	embedHandle = GTK.gtk_plug_new (browser.embeddedHandle);
 	GTK.gtk_widget_show (embedHandle);
 	return embedHandle;
+}
+
+Point getNativeSize (int width, int height) {
+	return new Point (width, height);
 }
 
 long /*int*/ getSiteWindow () {
