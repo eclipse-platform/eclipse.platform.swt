@@ -445,6 +445,7 @@
 	</target>
 	
 	<target name="check_compilation" depends="check_source_changed" if="source_changed">
+		<mkdir dir="${tmphome}"/>
 		<property name="tmpdir" value="${tmphome}/check.compile.${TAG}"/>
 		<property name="projectDir" value="${repo.src}/bundles/org.eclipse.swt"/>
 		<property name="buildDir" value="${tmpdir}/build"/>
