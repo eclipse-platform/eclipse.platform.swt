@@ -1982,13 +1982,15 @@ void initFactories (nsIServiceManager serviceManager, nsIComponentManager compon
 		downloadFactory.Release ();
 	}
 
-	FilePickerFactory pickerFactory = new FilePickerFactory ();
-	pickerFactory.AddRef ();
-	aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FILEPICKER_CONTRACTID, true);
-	aClassName = MozillaDelegate.wcsToMbcs (null, "swtFilePicker", true); //$NON-NLS-1$
-	rc = componentRegistrar.RegisterFactory (XPCOM.NS_FILEPICKER_CID, aClassName, aContractID, pickerFactory.getAddress ());
-	/* a failure here is fine, it likely indicates that the OS has provided a default implementation */
-	pickerFactory.Release ();
+	if (!nsISupports.IsXULRunner24) {
+		FilePickerFactory pickerFactory = new FilePickerFactory ();
+		pickerFactory.AddRef ();
+		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FILEPICKER_CONTRACTID, true);
+		aClassName = MozillaDelegate.wcsToMbcs (null, "swtFilePicker", true); //$NON-NLS-1$
+		rc = componentRegistrar.RegisterFactory (XPCOM.NS_FILEPICKER_CID, aClassName, aContractID, pickerFactory.getAddress ());
+		/* a failure here is fine, it likely indicates that a default implementation is provided */
+		pickerFactory.Release ();
+	}
 
 	componentRegistrar.Release ();
 }
@@ -3774,7 +3776,6 @@ int OnStateChange (long /*int*/ aWebProgress, long /*int*/ aRequest, int aStateF
 		updateLastNavigateUrl = true;
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_STOP) != 0) {
 		if (isRetrievingBadCert) {
-			isRetrievingBadCert = false;
 			return XPCOM.NS_OK;
 		}
 
@@ -5218,6 +5219,7 @@ int NotifyCertProblem (long /*int*/ socketInfo, long /*int*/ status, long /*int*
 					XPCOM.nsEmbedCString_delete (hostString);
 					overrideService.Release ();
 				}
+				isRetrievingBadCert = false;
 			}
 			cert.Release ();
 			new nsISupports (badCertRequest).Release ();
