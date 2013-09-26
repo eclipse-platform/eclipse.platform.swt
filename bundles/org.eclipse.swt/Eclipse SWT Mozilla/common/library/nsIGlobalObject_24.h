@@ -6,7 +6,7 @@
 /*
  * This file is derived from the Original Code provided by mozilla.org,
  * whose Initial Developer is Netscape Communications Corporation.  Changes
- * to the original file were made by SWT on April 7, 2009 and are marked
+ * to the original file were made by SWT on September 18, 2013 and are marked
  * with trailing comment "//SWT-20130918".
  */
 
@@ -24,7 +24,7 @@ class JSObject;
 
 #define nsresult int //SWT-20130918
 
-class nsIGlobalObject /*: public nsIScriptObjectPrincipal*/ //SWT-20130918
+class nsIGlobalObject /* : public nsIScriptObjectPrincipal */ //SWT-20130918
 {
 public:
 //  NS_DECLARE_STATIC_IID_ACCESSOR(NS_IGLOBALOBJECT_IID) //SWT-20130918

@@ -161,7 +161,6 @@ static void loadAdditionalLibraries (String mozillaPath, boolean isGlued) {
 
 	File libsDir = new File (getProfilePath () + "/libs/" + Mozilla.OS () + '/' + Mozilla.Arch ()); //$NON-NLS-1$
 	File file = new File (libsDir, libName);
-
 	if (!file.exists()) {
 		java.io.InputStream is = Library.class.getResourceAsStream ('/' + libName);
 		if (is != null) {

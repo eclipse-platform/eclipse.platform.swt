@@ -48,6 +48,7 @@ typedef enum {
 #endif
 	_1JS_1DefineFunction_FUNC,
 	_1JS_1EvaluateUCScriptForPrincipals_FUNC,
+	_1JS_1EvaluateUCScriptForPrincipals191_FUNC,
 	_1JS_1EvaluateUCScriptForPrincipals24_FUNC,
 	_1JS_1GetGlobalObject_FUNC,
 	_1JS_1NewObject_FUNC,

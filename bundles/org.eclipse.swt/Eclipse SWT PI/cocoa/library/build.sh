@@ -26,9 +26,6 @@ if [ "x${MODEL}" = "xx86_64" ]; then
 	if [ "x${XULRUNNER24_SDK}" = "x" ]; then
 		export XULRUNNER24_SDK="/Users/Shared/xulrunner/24-64/xulrunner-sdk/"
 	fi
-	if [ "x${XULRUNNER24_LIBS}" = "x" ]; then
-		export XULRUNNER24_LIBS="${XULRUNNER24_SDK}/lib/XUL"
-	fi
 else
 	export ARCHS="-arch i386 -arch ppc"
 	export XULRUNNER24_ARCHS="-arch i386"
@@ -44,11 +41,12 @@ else
 	if [ "x${XULRUNNER24_SDK}" = "x" ]; then
 		export XULRUNNER24_SDK="/Users/Shared/xulrunner/24/xulrunner-sdk"
 	fi
-	if [ "x${XULRUNNER24_LIBS}" = "x" ]; then
-		export XULRUNNER24_LIBS="${XULRUNNER24_SDK}/lib/XUL"
-	fi
 fi
 
+if [ "x${XULRUNNER24_LIBS}" = "x" ]; then
+	export XULRUNNER24_LIBS="${XULRUNNER24_SDK}/lib/XUL"
+fi
+	
 export MACOSX_DEPLOYMENT_TARGET=10.5
 
 make -f make_macosx.mak $1 $2 $3 $4 $5 $6 $7 $8 $9

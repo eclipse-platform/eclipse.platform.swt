@@ -6,7 +6,7 @@
 /*
  * This file is derived from the Original Code provided by mozilla.org,
  * whose Initial Developer is Netscape Communications Corporation.  Changes
- * to the original file were made by SWT on April 7, 2009 and are marked
+ * to the original file were made by SWT on September 18, 2013 and are marked
  * with trailing comment "//SWT-20130918".
  */
 
@@ -71,11 +71,11 @@ public:
    *                  don't care about the result.  Note that asking for a
    *                  result will deoptimize your script somewhat in many cases.
    */
-  virtual nsresult EvaluateString(/*const nsAString& aScript, //SWT-20130918
+  virtual nsresult EvaluateString(/* const nsAString& aScript, //SWT-20130918
                                   JS::Handle<JSObject*> aScopeObject,
                                   JS::CompileOptions& aOptions,
                                   bool aCoerceToString,
-                                  JS::Value* aRetValue*/) = 0; //SWT-20130918
+                                  JS::Value* aRetValue */) = 0; //SWT-20130918
 
   /**
    * Compile a script.
@@ -93,14 +93,14 @@ public:
    * @return NS_OK if the script source was valid and got compiled.
    *
    **/
-  virtual nsresult CompileScript(/*const PRUnichar* aText, //SWT-20130918
+  virtual nsresult CompileScript(/* const PRUnichar* aText, //SWT-20130918
                                  int32_t aTextLength,
                                  nsIPrincipal* aPrincipal,
                                  const char* aURL,
                                  uint32_t aLineNo,
                                  uint32_t aVersion,
                                  JS::MutableHandle<JSScript*> aScriptObject,
-                                 bool aSaveSource = false*/) = 0; //SWT-20130918
+                                 bool aSaveSource = false */) = 0; //SWT-20130918
 
   /**
    * Execute a precompiled script object.
@@ -117,7 +117,7 @@ public:
    *
    */
   virtual nsresult ExecuteScript(/* JSScript* aScriptObject, //SWT-20130918
-                                 JSObject* aScopeObject*/) = 0; //SWT-20130918
+                                 JSObject* aScopeObject */) = 0; //SWT-20130918
 
   /**
    * Bind an already-compiled event handler function to the given
@@ -183,7 +183,7 @@ public:
    *
    * @return NS_OK if the method is successful
    */
-  virtual void GC(/*JS::gcreason::Reason aReason*/) = 0; //SWT-20130918
+  virtual void GC(/* JS::gcreason::Reason aReason */) = 0; //SWT-20130918
 
   /**
    * Inform the context that a script was evaluated.
@@ -198,13 +198,13 @@ public:
    */
   virtual void ScriptEvaluated(bool aTerminated) = 0;
 
-  virtual nsresult Serialize(/*nsIObjectOutputStream* aStream, //SWT-20130918
-                             JS::Handle<JSScript*> aScriptObject*/) = 0; //SWT-20130918
+  virtual nsresult Serialize(/* nsIObjectOutputStream* aStream, //SWT-20130918
+                             JS::Handle<JSScript*> aScriptObject */) = 0; //SWT-20130918
   
   /* Deserialize a script from a stream.
    */
-  virtual nsresult Deserialize(/*nsIObjectInputStream* aStream, //SWT-20130918
-                               JS::MutableHandle<JSScript*> aResult*/) = 0; //SWT-20130918
+  virtual nsresult Deserialize(/* nsIObjectInputStream* aStream, //SWT-20130918
+                               JS::MutableHandle<JSScript*> aResult */) = 0; //SWT-20130918
 
   /**
    * Called to disable/enable script execution in this context.
@@ -214,8 +214,8 @@ public:
 
   // SetProperty is suspect and jst believes should not be needed.  Currenly
   // used only for "arguments".
-  virtual nsresult SetProperty(/*JS::Handle<JSObject*> aTarget, //SWT-20130918
-                               const char* aPropName, nsISupports* aVal*/) = 0; //SWT-20130918
+  virtual nsresult SetProperty(/* JS::Handle<JSObject*> aTarget, //SWT-20130918
+                               const char* aPropName, nsISupports* aVal */) = 0; //SWT-20130918
   /** 
    * Called to set/get information if the script context is
    * currently processing a script tag
@@ -234,7 +234,7 @@ public:
    * call DidInitializeContext() when a context is fully
    * (successfully) initialized.
    */
-  virtual nsresult InitClasses(/*JS::Handle<JSObject*> aGlobalObj*/) = 0; //SWT-20130918
+  virtual nsresult InitClasses(/* JS::Handle<JSObject*> aGlobalObj */) = 0; //SWT-20130918
 
   /**
    * Tell the context we're about to be reinitialize it.

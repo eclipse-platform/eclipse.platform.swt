@@ -1479,8 +1479,8 @@ public boolean execute (String script) {
 											}
 										} else {
 											boolean success = XPCOM.JS_EvaluateUCScriptForPrincipals24 (jsLibPath, jsContext, globalJSObject, principals, scriptChars, length, urlbytes, 0, 0) != 0;
-											new nsISupports (scriptGlobalObject).Release ();
 											// should principals be Release()d too?
+											new nsISupports (scriptGlobalObject).Release ();
 											principal.Release ();
 											serviceManager.Release ();
 											return success;
@@ -2955,7 +2955,7 @@ void navigate (long /*int*/ requestHandle) {
 			if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 			nsID guid = new nsID ();
 			XPCOM.memmove (guid, riid, nsID.sizeof);
-			if (guid.Equals (nsISupports.NS_ISUPPORTS_IID) || guid.Equals (XPCOM.NS_IHTTPHEADERVISITOR_IID)) {
+			if (guid.Equals (nsISupports.NS_ISUPPORTS_IID) || guid.Equals (XPCOM.NS_IHTTPHEADERVISITOR_IID) || guid.Equals (XPCOM.NS_IHTTPHEADERVISITOR_10_IID)) {
 				XPCOM.memmove (ppvObject, new long /*int*/[] {getAddress ()}, C.PTR_SIZEOF);
 				refCount++;
 				return XPCOM.NS_OK;
@@ -2998,13 +2998,13 @@ void navigate (long /*int*/ requestHandle) {
 	rc = request.QueryInterface (nsIHttpChannel.NS_IHTTPCHANNEL_24_IID, result);
 	if (rc != XPCOM.NS_OK) {
 		rc = request.QueryInterface (nsIHttpChannel.NS_IHTTPCHANNEL_IID, result);
-		if (rc == XPCOM.NS_OK && result[0] != 0) {
-			nsIHttpChannel httpChannel = new nsIHttpChannel (result[0]);
-			httpChannel.VisitRequestHeaders (visitor.getAddress ());
-			httpChannel.Release ();
-		}
-		result[0] = 0;
 	}
+	if (rc == XPCOM.NS_OK && result[0] != 0) {
+		nsIHttpChannel httpChannel = new nsIHttpChannel (result[0]);
+		httpChannel.VisitRequestHeaders (visitor.getAddress ());
+		httpChannel.Release ();
+	}
+	result[0] = 0;
 	new nsISupports (visitor.getAddress ()).Release ();
 
 	String[] headersArray = null;

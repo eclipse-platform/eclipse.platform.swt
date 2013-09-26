@@ -60,7 +60,7 @@ XPCOMINIT_OBJS = xpcominit.obj xpcominit_structs.obj xpcominit_stats.obj
 
 XULRUNNER24_PREFIX = swt-xulrunner24
 XULRUNNER24_LIB = $(XULRUNNER24_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
-XULRUNNER24_LIBS = Advapi32.lib $(XULRUNNER24_SDK)\lib\xpcomglue.lib $(XULRUNNER24_SDK)\lib\mozjs.lib
+XULRUNNER24_LIBS = Advapi32.lib $(XULRUNNER24_SDK)\lib\mozjs.lib
 XULRUNNER24_OBJS = xpcom24_custom.obj
 
 MOZILLACFLAGS = -c \

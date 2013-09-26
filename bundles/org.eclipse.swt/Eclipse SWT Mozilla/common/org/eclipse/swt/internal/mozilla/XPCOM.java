@@ -75,6 +75,7 @@ public class XPCOM extends C {
 	public static final nsID NS_IHELPERAPPLAUNCHERDIALOG_IID = new nsID ("d7ebddf0-4c84-11d4-807a-00600811a9c3"); //$NON-NLS-1$
 	public static final nsID NS_IHELPERAPPLAUNCHERDIALOG_1_9_IID = new nsID ("f3704fdc-8ae6-4eba-a3c3-f02958ac0649"); //$NON-NLS-1$
 	public static final nsID NS_IHTTPHEADERVISITOR_IID = new nsID("0cf40717-d7c1-4a94-8c1e-d6c9734101bb"); //$NON-NLS-1$
+	public static final nsID NS_IHTTPHEADERVISITOR_10_IID = new nsID("35412859-b9d9-423c-8866-2d4559fdd2be"); //$NON-NLS-1$
 	public static final nsID NS_IPROGRESSDIALOG_IID = new nsID("88a478b3-af65-440a-94dc-ed9b154d2990"); //$NON-NLS-1$
 	public static final nsID NS_IPROGRESSDIALOG_1_8_IID = new nsID("20e790a2-76c6-462d-851a-22ab6cbbe48b"); //$NON-NLS-1$
 	public static final nsID NS_IPROMPTFACTORY_IID = new nsID ("2532b748-75db-4732-9173-78d3bf34f694"); //$NON-NLS-1$

@@ -88,11 +88,7 @@ int Release () {
 /* nsIFactory */
 
 int CreateInstance (long /*int*/ aOuter, long /*int*/ iid, long /*int*/ result) {
-	if (!Mozilla.IsPre_24) {
-		FilePicker_24 picker = new FilePicker_24 ();
-		picker.AddRef ();
-		XPCOM.memmove (result, new long /*int*/[] {picker.getAddress ()}, C.PTR_SIZEOF);
-	} else if (!Mozilla.IsPre_4) {
+	if (!Mozilla.IsPre_4) {
 		FilePicker_10 picker = new FilePicker_10 ();
 		picker.AddRef ();
 		XPCOM.memmove (result, new long /*int*/[] {picker.getAddress ()}, C.PTR_SIZEOF);
