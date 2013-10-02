@@ -247,6 +247,16 @@ public static final long /*int*/ JS_DefineFunction(byte[] mozillaPath, long /*in
 	}
 }
 /** @method flags=no_gen */
+public static final native long /*int*/ _JS_DefineFunction24(long /*int*/ cx, long /*int*/ obj, byte[] name, long /*int*/ call, int nargs, int flags);	
+public static final long /*int*/ JS_DefineFunction24(long /*int*/ cx, long /*int*/ obj, byte[] name, long /*int*/ call, int nargs, int flags) {
+	lock.lock();
+	try {
+		return _JS_DefineFunction24(cx, obj, name, call, nargs, flags);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=no_gen */
 public static final native int _JS_EvaluateUCScriptForPrincipals(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/[] retVal);	
 public static final int JS_EvaluateUCScriptForPrincipals(byte[] mozillaPath, long /*int*/ cx, long /*int*/ obj, long /*int*/ principals, char[] chars, int length, byte[] filename, int lineno, long /*int*/[] retVal) {
 	lock.lock();
@@ -272,6 +282,16 @@ public static final int JS_EvaluateUCScriptForPrincipals24(byte[] mozillaPath, l
 	lock.lock();
 	try {
 		return _JS_EvaluateUCScriptForPrincipals24(mozillaPath, cx, obj, principals, chars, length, filename, lineno, retVal);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=no_gen */
+public static final native long /*int*/ _JS_GetGlobalForScopeChain24(long /*int*/ cx);	
+public static final long /*int*/ JS_GetGlobalForScopeChain24(long /*int*/ cx) {
+	lock.lock();
+	try {
+		return _JS_GetGlobalForScopeChain24(cx);
 	} finally {
 		lock.unlock();
 	}

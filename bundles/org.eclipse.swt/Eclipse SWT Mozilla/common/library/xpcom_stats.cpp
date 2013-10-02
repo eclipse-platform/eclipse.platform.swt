@@ -37,9 +37,11 @@ char * XPCOM_nativeFunctionNames[] = {
 	"_1Call__JJJ_3BII_3I",
 #endif
 	"_1JS_1DefineFunction",
+	"_1JS_1DefineFunction24",
 	"_1JS_1EvaluateUCScriptForPrincipals",
 	"_1JS_1EvaluateUCScriptForPrincipals191",
 	"_1JS_1EvaluateUCScriptForPrincipals24",
+	"_1JS_1GetGlobalForScopeChain24",
 	"_1JS_1GetGlobalObject",
 	"_1JS_1NewObject",
 	"_1NS_1Free",

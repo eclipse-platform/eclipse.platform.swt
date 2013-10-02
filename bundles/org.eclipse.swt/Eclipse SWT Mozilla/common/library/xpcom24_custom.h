@@ -53,3 +53,8 @@ typedef uint16_t jschar;
 bool JS_EvaluateUCScriptForPrincipals(JSContext *cx, JSObject *obj, JSPrincipals *principals,
 	const uint16_t *chars, unsigned length, const char *filename, unsigned lineno, JS::Value *rval);
 #endif /* _WIN32 */
+
+class JSFunction;
+JSObject* JS_GetGlobalForScopeChain(JSContext *cx);
+typedef int (*JSNative)(JSContext*, unsigned, JS::Value*);
+JSFunction* JS_DefineFunction(JSContext *cx, JSObject *obj, const char *name, JSNative call, unsigned nargs, unsigned attrs);

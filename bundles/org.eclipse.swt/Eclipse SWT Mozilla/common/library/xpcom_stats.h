@@ -47,9 +47,11 @@ typedef enum {
 	_1Call__JJJ_3BII_3I_FUNC,
 #endif
 	_1JS_1DefineFunction_FUNC,
+	_1JS_1DefineFunction24_FUNC,
 	_1JS_1EvaluateUCScriptForPrincipals_FUNC,
 	_1JS_1EvaluateUCScriptForPrincipals191_FUNC,
 	_1JS_1EvaluateUCScriptForPrincipals24_FUNC,
+	_1JS_1GetGlobalForScopeChain24_FUNC,
 	_1JS_1GetGlobalObject_FUNC,
 	_1JS_1NewObject_FUNC,
 	_1NS_1Free_FUNC,

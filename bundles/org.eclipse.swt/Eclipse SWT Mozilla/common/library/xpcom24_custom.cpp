@@ -14,6 +14,23 @@
 
 #define XPCOM_NATIVE(func) Java_org_eclipse_swt_internal_mozilla_XPCOM_##func
 
+#ifndef NO__1JS_1DefineFunction24
+extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1DefineFunction24)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jbyteArray arg2, jintLong arg3, jint arg4, jint arg5);
+JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1DefineFunction24)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jbyteArray arg2, jintLong arg3, jint arg4, jint arg5)
+{
+	jbyte *lparg2=NULL;
+	jintLong result = 0;
+	XPCOM_NATIVE_ENTER(env, that, _1JS_1DefineFunction24_FUNC);
+	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
+	result = (jintLong)JS_DefineFunction((JSContext *)arg0, (JSObject *)arg1, (const char *)lparg2, (JSNative)arg3, arg4, arg5);
+fail:
+	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
+	XPCOM_NATIVE_EXIT(env, that, _1JS_1DefineFunction24_FUNC);
+	return result;
+}
+#endif
+
 #ifndef NO__1JS_1EvaluateUCScriptForPrincipals24
 extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(_1JS_1EvaluateUCScriptForPrincipals24) (JNIEnv *env, jclass that, jbyteArray mozillaPath, jintLong arg0, jintLong arg1, jintLong arg2, jcharArray arg3, jint arg4, jbyteArray arg5, jint arg6, jintLong arg7);
 JNIEXPORT jint JNICALL XPCOM_NATIVE(_1JS_1EvaluateUCScriptForPrincipals24)
@@ -69,6 +86,19 @@ fail:
 	if (mozillaPath && lpmozillaPath) env->ReleaseByteArrayElements(mozillaPath, lpmozillaPath, 0);
 	XPCOM_NATIVE_EXIT(env, that, _1JS_1EvaluateUCScriptForPrincipals_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1JS_1GetGlobalForScopeChain24
+extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1GetGlobalForScopeChain24) (JNIEnv *env, jclass that, jintLong arg0);
+JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1GetGlobalForScopeChain24)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong result = 0;
+	XPCOM_NATIVE_ENTER(env, that, _1JS_1GetGlobalForScopeChain24_FUNC);
+	result = (jintLong)JS_GetGlobalForScopeChain((JSContext*)arg0);
+	XPCOM_NATIVE_EXIT(env, that, _1JS_1GetGlobalForScopeChain24_FUNC);
+	return result;
 }
 #endif
 
