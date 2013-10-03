@@ -14,6 +14,27 @@
 
 #define XPCOM_NATIVE(func) Java_org_eclipse_swt_internal_mozilla_XPCOM_##func
 
+#ifndef NO_CALLBACK_1GetScriptableFlags24
+extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(CALLBACK_1GetScriptableFlags24)(JNIEnv *env, jclass that, jintLong arg0);
+static jintLong CALLBACK_1GetScriptableFlags24;
+static jint proc_CALLBACK_1GetScriptableFlags24() {
+	return ((jint (CALLING_CONVENTION*)())CALLBACK_1GetScriptableFlags24)();
+}
+static jintLong CALLBACK_GetScriptableFlags24(jintLong func) {
+	CALLBACK_1GetScriptableFlags24 = func;
+	return (jintLong)proc_CALLBACK_1GetScriptableFlags24;
+}
+JNIEXPORT jintLong JNICALL XPCOM_NATIVE(CALLBACK_1GetScriptableFlags24)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	jintLong rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, CALLBACK_1GetScriptableFlags24_FUNC);
+	rc = (jintLong)CALLBACK_GetScriptableFlags24(arg0);
+	XPCOM_NATIVE_EXIT(env, that, CALLBACK_1GetScriptableFlags24_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1JS_1DefineFunction24
 extern "C" JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1DefineFunction24)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jbyteArray arg2, jintLong arg3, jint arg4, jint arg5);
 JNIEXPORT jintLong JNICALL XPCOM_NATIVE(_1JS_1DefineFunction24)

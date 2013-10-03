@@ -237,6 +237,8 @@ public static final native void memmove(long /*int*/ dest, nsID src, int nbytes)
 public static final native int strlen_PRUnichar(long /*int*/ s);
 
 /** @method flags=no_gen */
+public static final native long /*int*/ CALLBACK_GetScriptableFlags24(long /*int*/ func);
+/** @method flags=no_gen */
 public static final native long /*int*/ CALLBACK_JSNative(long /*int*/ func);
 
 /** @method flags=no_gen */

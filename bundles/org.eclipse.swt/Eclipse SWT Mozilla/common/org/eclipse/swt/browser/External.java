@@ -32,10 +32,19 @@ class External {
 	
 	static final String CALLJAVA = "callJava"; //$NON-NLS-1$
 
-	static Callback CallJavaProc;
+	static Callback CallJavaProc, GetScriptableFlags24Proc = null;
 	static {
 		CallJavaProc = new Callback (External.class, CALLJAVA, 3);
 		if (CallJavaProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+		/*
+		 * On win32 a substitute callback is provided for nsIXPCScriptable.getScriptableFlags()
+		 * because it does not use the standard XPCOM calling convention.
+		 */
+		if (nsISupports.IsXULRunner24 && SWT.getPlatform ().equals ("win32")) { //$NON-NLS-1$
+			GetScriptableFlags24Proc = new Callback (External.class, "getScriptableFlags", 0); //$NON-NLS-1$
+			if (GetScriptableFlags24Proc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		}
 	}
 
 External () {
@@ -504,6 +513,16 @@ void createCOMInterfaces () {
 		public long /*int*/ method4 (long /*int*/[] args) {return getScriptableFlags ();}
 		public long /*int*/ method7 (long /*int*/[] args) {return postCreate (args[0], args[1], args[2]);}
 	};
+
+	if (GetScriptableFlags24Proc != null) {
+		long /*int*/ ppVtable = xpcScriptable.ppVtable;
+		long /*int*/[] pVtable = new long /*int*/[1];
+		C.memmove (pVtable, ppVtable, C.PTR_SIZEOF);
+		long /*int*/[] funcs = new long /*int*/[24];
+		C.memmove (funcs, pVtable[0], C.PTR_SIZEOF * funcs.length);
+		funcs[4] = XPCOM.CALLBACK_GetScriptableFlags24 (GetScriptableFlags24Proc.getAddress ());
+		C.memmove (pVtable[0], funcs, C.PTR_SIZEOF * funcs.length);
+	}
 }
 
 void disposeCOMInterfaces () {
@@ -851,7 +870,7 @@ long /*int*/ getClassName (long /*int*/ aClassName) {
 	return 0;
 }
 
-int getScriptableFlags () {
+static int getScriptableFlags () {
 	return XPCOM.WANT_POSTCREATE | XPCOM.USE_JSSTUB_FOR_ADDPROPERTY;
 }
 
