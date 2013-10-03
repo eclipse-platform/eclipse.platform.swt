@@ -39,22 +39,20 @@ class JSAutoCompartment {
 	~JSAutoCompartment();
 };
 
-#ifdef _WIN32
-#define UINT32_MAX  (0xffffffff)
-#define XP_WIN
-#include <windows.h>
-#else
-#include <stdint.h>
-class JSPrincipals;
 namespace JS {
 	class Value;
 };
-typedef uint16_t jschar;
-bool JS_EvaluateUCScriptForPrincipals(JSContext *cx, JSObject *obj, JSPrincipals *principals,
-	const uint16_t *chars, unsigned length, const char *filename, unsigned lineno, JS::Value *rval);
-#endif /* _WIN32 */
-
 class JSFunction;
 JSObject* JS_GetGlobalForScopeChain(JSContext *cx);
 typedef int (*JSNative)(JSContext*, unsigned, JS::Value*);
 JSFunction* JS_DefineFunction(JSContext *cx, JSObject *obj, const char *name, JSNative call, unsigned nargs, unsigned attrs);
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <stdint.h>
+class JSPrincipals;
+typedef uint16_t jschar;
+bool JS_EvaluateUCScriptForPrincipals(JSContext *cx, JSObject *obj, JSPrincipals *principals,
+	const jschar *chars, unsigned length, const char *filename, unsigned lineno, JS::Value *rval);
+#endif /* _WIN32 */
