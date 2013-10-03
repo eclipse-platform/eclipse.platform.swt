@@ -14,6 +14,7 @@ cd `dirname $0`
 
 if [ "x${MODEL}" = "xx86_64" ]; then
 	export ARCHS="-arch x86_64"
+	export XULRUNNER24_ARCHS="-arch x86_64"
 	if [ "x${OUTPUT_DIR}" = "x" ]; then
 		export OUTPUT_DIR=../../../org.eclipse.swt.cocoa.macosx.x86_64
 	fi
