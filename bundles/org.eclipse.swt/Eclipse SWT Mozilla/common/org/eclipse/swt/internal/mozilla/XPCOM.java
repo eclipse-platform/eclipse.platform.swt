@@ -97,6 +97,7 @@ public class XPCOM extends C {
 	public static final nsID NS_IWEBBROWSERCHROMEFOCUS_IID = new nsID ("d2206418-1dd1-11b2-8e55-acddcd2bcfb8"); //$NON-NLS-1$
 	public static final nsID NS_IWINDOWCREATOR_IID = new nsID ("30465632-a777-44cc-90f9-8145475ef999"); //$NON-NLS-1$
 	public static final nsID NS_IWINDOWCREATOR2_IID = new nsID ("f673ec81-a4b0-11d6-964b-eb5a2bf216fc"); //$NON-NLS-1$
+	public static final nsID NS_IXPCSCRIPTABLE_IID = new nsID ("155d1863-2b0b-4f5e-b800-05184944156b"); //$NON-NLS-1$
 
 	/* contract ID constants */
 	public static final String EXTERNAL_CONTRACTID = "@eclipse.org/external;1"; //$NON-NLS-1$
@@ -182,6 +183,8 @@ public class XPCOM extends C {
 	public static final int SEC_ERROR_UNTRUSTED_CERT = 0x805A1FEB;
 	public static final int SEC_ERROR_UNTRUSTED_ISSUER = 0x805A1FEC;
 	public static final int SSL_ERROR_BAD_CERT_DOMAIN = 0x805A2FF4;
+	public static final int USE_JSSTUB_FOR_ADDPROPERTY = 1 << 17;
+	public static final int WANT_POSTCREATE = 4;
 
 	/* JSAPI constants */
 	public static final int JSPROP_ENUMERATE = 0x1;
