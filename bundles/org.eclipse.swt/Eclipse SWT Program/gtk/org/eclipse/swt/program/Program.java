@@ -707,7 +707,6 @@ static Hashtable gio_getMimeInfo() {
 							int extensionIndex = extensionFormat.indexOf (".");
 							if (extensionIndex > 0) {
 								String extension = extensionFormat.substring (extensionIndex);
-								mimeTypes.add (mimeType);
 								if (mimeTable.containsKey (extension)) {
 									/*
 									 * If mimeType already exists, it is required to update
@@ -716,6 +715,7 @@ static Hashtable gio_getMimeInfo() {
 									Vector value = (Vector) mimeTable.get (extension);
 									mimeTypes.addAll (value);
 								}
+								mimeTypes.add (mimeType);
 								mimeTable.put (extension, mimeTypes);
 							}
 						}
