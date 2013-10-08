@@ -2460,7 +2460,16 @@ LRESULT wmChar (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) {
 		case SWT.CR:
 			if (!ignoreDefaultSelection) sendSelectionEvent (SWT.DefaultSelection);
 			ignoreDefaultSelection = false;
-			// FALL THROUGH
+			// when no value is selected in the dropdown
+			if (getSelectionIndex() == -1) {
+				if ((style & SWT.DROP_DOWN) != 0 && (style & SWT.READ_ONLY) == 0) {
+					// close the dropdown if open
+					if (OS.SendMessage(handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
+						OS.SendMessage(handle, OS.CB_SHOWDROPDOWN, 0, 0);
+					}
+					return LRESULT.ZERO;
+				}
+			}
 		case SWT.ESC:
 			if ((style & SWT.DROP_DOWN) != 0) {
 				if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) == 0) {
