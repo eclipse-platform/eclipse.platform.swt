@@ -2035,10 +2035,7 @@ void mouseDownSuper(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 		if (widget.isRowSelected(row)) {
 			NSRect rect = widget.frameOfOutlineCellAtRow(row);
 			if (!OS.NSPointInRect(pt, rect)) {
-				Widget item = itemID != null ? display.getWidget (itemID.id) : null;
-				if (item != null && item instanceof TreeItem) {
-					selectedRowIndex = this.indexOf ((TreeItem)item);
-				}
+				selectedRowIndex = row;
 			}
 		}
 	}
@@ -2632,7 +2629,7 @@ boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 		 * selection event before MouseUp is sent. Ignore the next selection event.
 		 */
 		if (!dragDetected && selectedRowIndex != -1) {
-			NSTableView widget = (NSTableView)view;
+			NSOutlineView widget = (NSOutlineView)view;
 			NSIndexSet selectedRows = widget.selectedRowIndexes ();
 			int count = (int)/*64*/selectedRows.count();
 			long /*int*/ [] indexBuffer = new long /*int*/ [count];
@@ -2645,9 +2642,15 @@ boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 			}
 			
 			Event event = new Event ();
-			event.item = _getItem (null, selectedRowIndex, true);
+			id itemID = widget.itemAtRow (selectedRowIndex);
+			if (itemID != null) {
+				Widget item = display.getWidget (itemID.id);
+				if (item != null && item instanceof TreeItem) {
+					event.item = display.getWidget (itemID.id);
+					sendSelectionEvent (SWT.Selection, event, false);
+				}
+			}
 			selectedRowIndex = -1;
-			sendSelectionEvent (SWT.Selection, event, false);
 			ignoreSelect = true;
 		}
 		dragDetected = false;
