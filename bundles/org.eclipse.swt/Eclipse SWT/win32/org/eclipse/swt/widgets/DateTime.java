@@ -44,7 +44,6 @@ import org.eclipse.swt.graphics.*;
  * @since 3.3
  * @noextend This class is not intended to be subclassed by clients.
  */
-
 public class DateTime extends Composite {
 	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752
 	static final int MAX_YEAR = 9999;

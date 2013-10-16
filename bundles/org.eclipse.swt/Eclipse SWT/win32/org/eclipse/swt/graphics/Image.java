@@ -67,7 +67,6 @@ import java.io.*;
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, ImageAnalyzer</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-
 public final class Image extends Resource implements Drawable {
 	
 	/**

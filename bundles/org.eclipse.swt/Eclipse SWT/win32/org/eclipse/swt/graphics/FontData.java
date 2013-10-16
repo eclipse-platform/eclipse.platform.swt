@@ -40,7 +40,6 @@ import org.eclipse.swt.*;
  * @see Font
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-
 public final class FontData {
 	
 	/**

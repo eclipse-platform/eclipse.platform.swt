@@ -40,7 +40,6 @@ import org.eclipse.swt.events.*;
  * @since 3.2
  * @noextend This class is not intended to be subclassed by clients.
  */
-
 public class ToolTip extends Widget {
 	Shell parent;
 	TrayItem item;

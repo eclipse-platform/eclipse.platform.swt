@@ -322,6 +322,18 @@ public long /*int*/ internal_new_GC(GCData data) {
 	}
 }
 
+/**
+ * Initializes any internal resources needed by the
+ * device.
+ * <p>
+ * This method is called after <code>create</code>.
+ * </p><p>
+ * If subclasses reimplement this method, they must
+ * call the <code>super</code> implementation.
+ * </p>
+ * 
+ * @see #create
+ */
 protected void init () {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();

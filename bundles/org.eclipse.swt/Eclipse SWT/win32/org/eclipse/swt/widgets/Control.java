@@ -43,7 +43,6 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-
 public abstract class Control extends Widget implements Drawable {
 
 	/**

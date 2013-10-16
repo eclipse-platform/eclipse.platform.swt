@@ -26,7 +26,6 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noreference This class is not intended to be referenced by clients
  */
-
 public final class GCData {
 	public Device device;
 	public int style, state = -1;

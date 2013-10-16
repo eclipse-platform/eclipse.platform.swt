@@ -33,7 +33,6 @@ import org.eclipse.swt.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-
 public class DirectoryDialog extends Dialog {
 	String message = "", filterPath = "";  //$NON-NLS-1$//$NON-NLS-2$
 	String directoryPath;

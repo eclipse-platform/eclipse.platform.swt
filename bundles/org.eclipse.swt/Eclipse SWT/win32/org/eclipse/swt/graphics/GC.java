@@ -56,7 +56,6 @@ import org.eclipse.swt.*;
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, PaintExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-
 public final class GC extends Resource {
 	
 	/**
@@ -822,7 +821,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
  * </ul>
  *
  * @see #drawRectangle(int, int, int, int)
- */	 
+ */
 public void drawFocus (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if ((data.uiState & OS.UISF_HIDEFOCUS) != 0) return;
@@ -1719,7 +1718,7 @@ public void drawLine (int x1, int y1, int x2, int y2) {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- */	 
+ */
 public void drawOval (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(DRAW);
@@ -2906,7 +2905,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
  * </ul>
  *
  * @see #drawOval
- */	 
+ */
 public void fillOval (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FILL);

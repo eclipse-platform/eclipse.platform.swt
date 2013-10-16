@@ -56,7 +56,6 @@ import org.eclipse.swt.events.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-
 public class Combo extends Composite {
 	boolean noSelection, ignoreDefaultSelection, ignoreCharacter, ignoreModify, ignoreResize, lockText;
 	int scrollWidth, visibleCount;

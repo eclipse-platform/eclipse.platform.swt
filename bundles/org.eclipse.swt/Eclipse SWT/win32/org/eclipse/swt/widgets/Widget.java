@@ -44,7 +44,6 @@ import org.eclipse.swt.internal.win32.*;
  * @see #checkSubclass
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-
 public abstract class Widget {
 	int style, state;
 	Display display;
