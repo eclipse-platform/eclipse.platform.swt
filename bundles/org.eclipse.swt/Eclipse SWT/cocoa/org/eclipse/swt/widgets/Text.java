@@ -2111,11 +2111,11 @@ public void setText (String string) {
  * has style <code>SWT.SINGLE</code> and the argument contains multiple lines of text
  * then the result of this operation is undefined and may vary between platforms.
  * <p>
- * Note: Use the API to protect the text, for example, when widget is used as
+ * Note: Use the API to protect the text, for example, when the widget is used as
  * a password field. However, the text can't be protected if Verify or
  * Segment listener is added to the widget.
  * </p>
- * 
+ *
  * @param text a character array that contains the new text
  *
  * @exception IllegalArgumentException <ul>

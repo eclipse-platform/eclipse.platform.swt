@@ -604,7 +604,7 @@ int getOperationFromKeyState() {
  * Returns a list of the data types that can be transferred to this DropTarget.
  *
  * @return a list of the data types that can be transferred to this DropTarget
- */ 
+ */
 public Transfer[] getTransfer() { 
 	return transferAgents; 
 }
