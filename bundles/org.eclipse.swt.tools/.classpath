@@ -8,6 +8,7 @@
 	<classpathentry kind="src" path="Mozilla Generation"/>
 	<classpathentry kind="src" path="NativeStats"/>
 	<classpathentry kind="src" path="Icon Exe"/>
+	<classpathentry kind="src" path="JavadocBasher"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
