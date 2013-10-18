@@ -1814,41 +1814,41 @@ long /*int*/ gtk_text_buffer_insert_text (long /*int*/ widget, long /*int*/ iter
 void hookEvents () {
 	super.hookEvents();
 	if ((style & SWT.SINGLE) != 0) {
-		OS.g_signal_connect_closure (handle, OS.changed, display.closures [CHANGED], true);
-		OS.g_signal_connect_closure (handle, OS.insert_text, display.closures [INSERT_TEXT], false);
-		OS.g_signal_connect_closure (handle, OS.delete_text, display.closures [DELETE_TEXT], false);
-		OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE], false);
-		OS.g_signal_connect_closure (handle, OS.grab_focus, display.closures [GRAB_FOCUS], false);
-		OS.g_signal_connect_closure (handle, OS.populate_popup, display.closures [POPULATE_POPUP], false);
+		OS.g_signal_connect_closure (handle, OS.changed, display.getClosure (CHANGED), true);
+		OS.g_signal_connect_closure (handle, OS.insert_text, display.getClosure (INSERT_TEXT), false);
+		OS.g_signal_connect_closure (handle, OS.delete_text, display.getClosure (DELETE_TEXT), false);
+		OS.g_signal_connect_closure (handle, OS.activate, display.getClosure (ACTIVATE), false);
+		OS.g_signal_connect_closure (handle, OS.grab_focus, display.getClosure (GRAB_FOCUS), false);
+		OS.g_signal_connect_closure (handle, OS.populate_popup, display.getClosure (POPULATE_POPUP), false);
 		if ((style & SWT.SEARCH) != 0 && OS.GTK_VERSION >= OS.VERSION (2, 16, 0)) {
-			OS.g_signal_connect_closure (handle, OS.icon_release, display.closures [ICON_RELEASE], false);
+			OS.g_signal_connect_closure (handle, OS.icon_release, display.getClosure (ICON_RELEASE), false);
 		}
 	} else {
-		OS.g_signal_connect_closure (bufferHandle, OS.changed, display.closures [CHANGED], false);
-		OS.g_signal_connect_closure (bufferHandle, OS.insert_text, display.closures [TEXT_BUFFER_INSERT_TEXT], false);
-		OS.g_signal_connect_closure (bufferHandle, OS.delete_range, display.closures [DELETE_RANGE], false);
-		OS.g_signal_connect_closure (handle, OS.populate_popup, display.closures [POPULATE_POPUP], false);
+		OS.g_signal_connect_closure (bufferHandle, OS.changed, display.getClosure (CHANGED), false);
+		OS.g_signal_connect_closure (bufferHandle, OS.insert_text, display.getClosure (TEXT_BUFFER_INSERT_TEXT), false);
+		OS.g_signal_connect_closure (bufferHandle, OS.delete_range, display.getClosure (DELETE_RANGE), false);
+		OS.g_signal_connect_closure (handle, OS.populate_popup, display.getClosure (POPULATE_POPUP), false);
 	}
 	long /*int*/ imContext = imContext ();
 	if (imContext != 0) {
-		OS.g_signal_connect_closure (imContext, OS.commit, display.closures [COMMIT], false);
+		OS.g_signal_connect_closure (imContext, OS.commit, display.getClosure (COMMIT), false);
 		int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
 		int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
 		OS.g_signal_handlers_block_matched (imContext, mask, id, 0, 0, 0, handle);
 	}
-	OS.g_signal_connect_closure (handle, OS.backspace, display.closures [BACKSPACE], false);
-	OS.g_signal_connect_closure (handle, OS.backspace, display.closures [BACKSPACE_INVERSE], true);
-	OS.g_signal_connect_closure (handle, OS.copy_clipboard, display.closures [COPY_CLIPBOARD], false);
-	OS.g_signal_connect_closure (handle, OS.copy_clipboard, display.closures [COPY_CLIPBOARD_INVERSE], true);
-	OS.g_signal_connect_closure (handle, OS.cut_clipboard, display.closures [CUT_CLIPBOARD], false);
-	OS.g_signal_connect_closure (handle, OS.cut_clipboard, display.closures [CUT_CLIPBOARD_INVERSE], true);
-	OS.g_signal_connect_closure (handle, OS.paste_clipboard, display.closures [PASTE_CLIPBOARD], false);
-	OS.g_signal_connect_closure (handle, OS.paste_clipboard, display.closures [PASTE_CLIPBOARD_INVERSE], true);
-	OS.g_signal_connect_closure (handle, OS.delete_from_cursor, display.closures [DELETE_FROM_CURSOR], false);
-	OS.g_signal_connect_closure (handle, OS.delete_from_cursor, display.closures [DELETE_FROM_CURSOR_INVERSE], true);
-	OS.g_signal_connect_closure (handle, OS.move_cursor, display.closures [MOVE_CURSOR], false);
-	OS.g_signal_connect_closure (handle, OS.move_cursor, display.closures [MOVE_CURSOR_INVERSE], true);
-	OS.g_signal_connect_closure (handle, OS.direction_changed, display.closures [DIRECTION_CHANGED], true);
+	OS.g_signal_connect_closure (handle, OS.backspace, display.getClosure (BACKSPACE), false);
+	OS.g_signal_connect_closure (handle, OS.backspace, display.getClosure (BACKSPACE_INVERSE), true);
+	OS.g_signal_connect_closure (handle, OS.copy_clipboard, display.getClosure (COPY_CLIPBOARD), false);
+	OS.g_signal_connect_closure (handle, OS.copy_clipboard, display.getClosure (COPY_CLIPBOARD_INVERSE), true);
+	OS.g_signal_connect_closure (handle, OS.cut_clipboard, display.getClosure (CUT_CLIPBOARD), false);
+	OS.g_signal_connect_closure (handle, OS.cut_clipboard, display.getClosure (CUT_CLIPBOARD_INVERSE), true);
+	OS.g_signal_connect_closure (handle, OS.paste_clipboard, display.getClosure (PASTE_CLIPBOARD), false);
+	OS.g_signal_connect_closure (handle, OS.paste_clipboard, display.getClosure (PASTE_CLIPBOARD_INVERSE), true);
+	OS.g_signal_connect_closure (handle, OS.delete_from_cursor, display.getClosure (DELETE_FROM_CURSOR), false);
+	OS.g_signal_connect_closure (handle, OS.delete_from_cursor, display.getClosure (DELETE_FROM_CURSOR_INVERSE), true);
+	OS.g_signal_connect_closure (handle, OS.move_cursor, display.getClosure (MOVE_CURSOR), false);
+	OS.g_signal_connect_closure (handle, OS.move_cursor, display.getClosure (MOVE_CURSOR_INVERSE), true);
+	OS.g_signal_connect_closure (handle, OS.direction_changed, display.getClosure (DIRECTION_CHANGED), true);
 }
 
 long /*int*/ imContext () {

@@ -327,8 +327,8 @@ long /*int*/ gtk_status_icon_popup_menu (long /*int*/ widget, long /*int*/ butto
 }
 
 void hookEvents () {
-	OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE], false);
-	OS.g_signal_connect_closure (handle, OS.popup_menu, display.closures [STATUS_ICON_POPUP_MENU], false);
+	OS.g_signal_connect_closure (handle, OS.activate, display.getClosure (ACTIVATE), false);
+	OS.g_signal_connect_closure (handle, OS.popup_menu, display.getClosure (STATUS_ICON_POPUP_MENU), false);
 }
 
 /**

@@ -346,12 +346,12 @@ boolean hasFocus () {
 
 void hookEvents () {
 	super.hookEvents ();
-	OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE], false);
-	OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE_INVERSE], true);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [FOCUS_OUT_EVENT], 0, display.closures [FOCUS_OUT_EVENT], false);
-	OS.g_signal_connect_closure (clientHandle, OS.size_allocate, display.closures [SIZE_ALLOCATE], true);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
+	OS.g_signal_connect_closure (handle, OS.activate, display.getClosure (ACTIVATE), false);
+	OS.g_signal_connect_closure (handle, OS.activate, display.getClosure (ACTIVATE_INVERSE), true);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
+	OS.g_signal_connect_closure (clientHandle, OS.size_allocate, display.getClosure (SIZE_ALLOCATE), true);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
 }
 
 void redraw () {

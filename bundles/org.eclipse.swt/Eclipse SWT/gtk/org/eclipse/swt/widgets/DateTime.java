@@ -723,9 +723,9 @@ boolean hasFocus () {
 void hookEvents () {
 	super.hookEvents();
 	if ((style & SWT.CALENDAR) != 0) {
-		OS.g_signal_connect_closure (handle, OS.day_selected, display.closures [DAY_SELECTED], false);
-		OS.g_signal_connect_closure (handle, OS.day_selected_double_click, display.closures [DAY_SELECTED_DOUBLE_CLICK], false);
-		OS.g_signal_connect_closure (handle, OS.month_changed, display.closures [MONTH_CHANGED], false);
+		OS.g_signal_connect_closure (handle, OS.day_selected, display.getClosure (DAY_SELECTED), false);
+		OS.g_signal_connect_closure (handle, OS.day_selected_double_click, display.getClosure (DAY_SELECTED_DOUBLE_CLICK), false);
+		OS.g_signal_connect_closure (handle, OS.month_changed, display.getClosure (MONTH_CHANGED), false);
 	}
 }
 

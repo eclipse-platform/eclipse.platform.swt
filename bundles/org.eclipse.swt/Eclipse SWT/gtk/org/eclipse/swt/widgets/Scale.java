@@ -141,7 +141,7 @@ void createHandle (int index) {
 
 void hookEvents () {
 	super.hookEvents ();
-	OS.g_signal_connect_closure (handle, OS.value_changed, display.closures [VALUE_CHANGED], false);
+	OS.g_signal_connect_closure (handle, OS.value_changed, display.getClosure (VALUE_CHANGED), false);
 }
 
 /**

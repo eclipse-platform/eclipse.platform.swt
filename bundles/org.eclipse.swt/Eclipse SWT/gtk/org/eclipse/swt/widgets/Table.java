@@ -2032,15 +2032,15 @@ void hideFirstColumn () {
 void hookEvents () {
 	super.hookEvents ();
 	long /*int*/ selection = OS.gtk_tree_view_get_selection(handle);
-	OS.g_signal_connect_closure (selection, OS.changed, display.closures [CHANGED], false);
-	OS.g_signal_connect_closure (handle, OS.row_activated, display.closures [ROW_ACTIVATED], false);
+	OS.g_signal_connect_closure (selection, OS.changed, display.getClosure (CHANGED), false);
+	OS.g_signal_connect_closure (handle, OS.row_activated, display.getClosure (ROW_ACTIVATED), false);
 	if (checkRenderer != 0) {
-		OS.g_signal_connect_closure (checkRenderer, OS.toggled, display.closures [TOGGLED], false);
+		OS.g_signal_connect_closure (checkRenderer, OS.toggled, display.getClosure (TOGGLED), false);
 	}
-	OS.g_signal_connect_closure (handle, OS.start_interactive_search, display.closures[START_INTERACTIVE_SEARCH], false);
+	OS.g_signal_connect_closure (handle, OS.start_interactive_search, display.getClosure (START_INTERACTIVE_SEARCH), false);
 	if (fixAccessibility ()) {
-		OS.g_signal_connect_closure (modelHandle, OS.row_inserted, display.closures [ROW_INSERTED], true);
-		OS.g_signal_connect_closure (modelHandle, OS.row_deleted, display.closures [ROW_DELETED], true);
+		OS.g_signal_connect_closure (modelHandle, OS.row_inserted, display.getClosure (ROW_INSERTED), true);
+		OS.g_signal_connect_closure (modelHandle, OS.row_deleted, display.getClosure (ROW_DELETED), true);
 	}
 }
 
@@ -2159,7 +2159,7 @@ void recreateRenderers () {
 		if (checkRenderer == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.g_object_ref (checkRenderer);
 		display.addWidget (checkRenderer, this);
-		OS.g_signal_connect_closure (checkRenderer, OS.toggled, display.closures [TOGGLED], false);
+		OS.g_signal_connect_closure (checkRenderer, OS.toggled, display.getClosure (TOGGLED), false);
 	}
 	if (columnCount == 0) {
 		createRenderers (OS.gtk_tree_view_get_column (handle, 0), Table.FIRST_COLUMN, true, 0);
@@ -3113,8 +3113,8 @@ void setModel (long /*int*/ newModel) {
 	modelHandle = newModel;
 	display.addWidget (modelHandle, this);
 	if (fixAccessibility ()) {
-		OS.g_signal_connect_closure (modelHandle, OS.row_inserted, display.closures [ROW_INSERTED], true);
-		OS.g_signal_connect_closure (modelHandle, OS.row_deleted, display.closures [ROW_DELETED], true);
+		OS.g_signal_connect_closure (modelHandle, OS.row_inserted, display.getClosure (ROW_INSERTED), true);
+		OS.g_signal_connect_closure (modelHandle, OS.row_deleted, display.getClosure (ROW_DELETED), true);
 	}
 }
 

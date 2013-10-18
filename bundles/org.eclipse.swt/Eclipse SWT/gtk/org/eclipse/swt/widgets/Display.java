@@ -115,7 +115,8 @@ public class Display extends Device {
 	static String APP_VERSION = ""; //$NON-NLS-1$
 	static final String DISPATCH_EVENT_KEY = "org.eclipse.swt.internal.gtk.dispatchEvent"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
-	long /*int*/ [] closures;
+	long /*int*/ [] closures, closuresProc;
+	int [] closuresCount;
 	int [] signalIds;
 	long /*int*/ shellMapProcClosure;
 
@@ -1463,6 +1464,15 @@ int getCaretBlinkTime () {
 	return buffer [0] / 2;
 }
 
+long /*int*/ getClosure (int id) {
+	if (OS.GLIB_VERSION >= OS.VERSION(2, 36, 0) && closuresCount [id]++ > 255) {
+		if (closures [id] != 0) OS.g_closure_unref (closures [id]);
+		closures [id] = OS.g_cclosure_new (closuresProc [id], id, 0);
+		closuresCount [id] = 0;
+	}
+	return closures [id];
+}
+
 /**
  * Returns the control which the on-screen pointer is currently
  * over top of, or null if it is not currently over one of the
@@ -2564,6 +2574,8 @@ protected void init () {
 
 void initializeCallbacks () {
 	closures = new long /*int*/ [Widget.LAST_SIGNAL];
+	closuresCount = new int[Widget.LAST_SIGNAL];
+	closuresProc = new long /*int*/ [Widget.LAST_SIGNAL];
 	signalIds = new int [Widget.LAST_SIGNAL];
 
 	/* Cache signals for GtkWidget */
@@ -2604,106 +2616,109 @@ void initializeCallbacks () {
 	windowProc2 = windowCallback2.getAddress ();
 	if (windowProc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-	closures [Widget.ACTIVATE] = OS.g_cclosure_new (windowProc2, Widget.ACTIVATE, 0);
-	closures [Widget.ACTIVATE_INVERSE] = OS.g_cclosure_new (windowProc2, Widget.ACTIVATE_INVERSE, 0);
-	closures [Widget.CHANGED] = OS.g_cclosure_new (windowProc2, Widget.CHANGED, 0);
-	closures [Widget.CLICKED] = OS.g_cclosure_new (windowProc2, Widget.CLICKED, 0);
-	closures [Widget.CREATE_MENU_PROXY] = OS.g_cclosure_new (windowProc2, Widget.CREATE_MENU_PROXY, 0);
-	closures [Widget.DAY_SELECTED] = OS.g_cclosure_new (windowProc2, Widget.DAY_SELECTED, 0);
-	closures [Widget.DAY_SELECTED_DOUBLE_CLICK] = OS.g_cclosure_new (windowProc2, Widget.DAY_SELECTED_DOUBLE_CLICK, 0);
-	closures [Widget.HIDE] = OS.g_cclosure_new (windowProc2, Widget.HIDE, 0);
-	closures [Widget.GRAB_FOCUS] = OS.g_cclosure_new (windowProc2, Widget.GRAB_FOCUS, 0);
-	closures [Widget.MAP] = OS.g_cclosure_new (windowProc2, Widget.MAP, 0);
-	closures [Widget.MONTH_CHANGED] = OS.g_cclosure_new (windowProc2, Widget.MONTH_CHANGED, 0);
-	closures [Widget.OUTPUT] = OS.g_cclosure_new (windowProc2, Widget.OUTPUT, 0);
-	closures [Widget.POPUP_MENU] = OS.g_cclosure_new (windowProc2, Widget.POPUP_MENU, 0);
-	closures [Widget.PREEDIT_CHANGED] = OS.g_cclosure_new (windowProc2, Widget.PREEDIT_CHANGED, 0);
-	closures [Widget.REALIZE] = OS.g_cclosure_new (windowProc2, Widget.REALIZE, 0);
-	closures [Widget.SELECT] = OS.g_cclosure_new (windowProc2, Widget.SELECT, 0);
-	closures [Widget.SELECTION_DONE] = OS.g_cclosure_new (windowProc2, Widget.SELECTION_DONE, 0);
-	closures [Widget.SHOW] = OS.g_cclosure_new (windowProc2, Widget.SHOW, 0);
-	closures [Widget.START_INTERACTIVE_SEARCH] = OS.g_cclosure_new (windowProc2, Widget.START_INTERACTIVE_SEARCH, 0);
-	closures [Widget.VALUE_CHANGED] = OS.g_cclosure_new (windowProc2, Widget.VALUE_CHANGED, 0);
-	closures [Widget.UNMAP] = OS.g_cclosure_new (windowProc2, Widget.UNMAP, 0);
-	closures [Widget.UNREALIZE] = OS.g_cclosure_new (windowProc2, Widget.UNREALIZE, 0);
-	closures [Widget.BACKSPACE] = OS.g_cclosure_new (windowProc2, Widget.BACKSPACE, 0);
-	closures [Widget.BACKSPACE_INVERSE] = OS.g_cclosure_new (windowProc2, Widget.BACKSPACE_INVERSE, 0);
-	closures [Widget.COPY_CLIPBOARD] = OS.g_cclosure_new (windowProc2, Widget.COPY_CLIPBOARD, 0);
-	closures [Widget.COPY_CLIPBOARD_INVERSE] = OS.g_cclosure_new (windowProc2, Widget.COPY_CLIPBOARD_INVERSE, 0);
-	closures [Widget.CUT_CLIPBOARD] = OS.g_cclosure_new (windowProc2, Widget.CUT_CLIPBOARD, 0);
-	closures [Widget.CUT_CLIPBOARD_INVERSE] = OS.g_cclosure_new (windowProc2, Widget.CUT_CLIPBOARD_INVERSE, 0);
-	closures [Widget.PASTE_CLIPBOARD] = OS.g_cclosure_new (windowProc2, Widget.PASTE_CLIPBOARD, 0);
-	closures [Widget.PASTE_CLIPBOARD_INVERSE] = OS.g_cclosure_new (windowProc2, Widget.PASTE_CLIPBOARD_INVERSE, 0);
+	closuresProc [Widget.ACTIVATE] = windowProc2;
+	closuresProc [Widget.ACTIVATE_INVERSE] = windowProc2;
+	closuresProc [Widget.CHANGED] = windowProc2;
+	closuresProc [Widget.CLICKED] = windowProc2;
+	closuresProc [Widget.CREATE_MENU_PROXY] = windowProc2;
+	closuresProc [Widget.DAY_SELECTED] = windowProc2;
+	closuresProc [Widget.DAY_SELECTED_DOUBLE_CLICK] = windowProc2;
+	closuresProc [Widget.HIDE] = windowProc2;
+	closuresProc [Widget.GRAB_FOCUS] = windowProc2;
+	closuresProc [Widget.MAP] = windowProc2;
+	closuresProc [Widget.MONTH_CHANGED] = windowProc2;
+	closuresProc [Widget.OUTPUT] = windowProc2;
+	closuresProc [Widget.POPUP_MENU] = windowProc2;
+	closuresProc [Widget.PREEDIT_CHANGED] = windowProc2;
+	closuresProc [Widget.REALIZE] = windowProc2;
+	closuresProc [Widget.SELECT] = windowProc2;
+	closuresProc [Widget.SELECTION_DONE] = windowProc2;
+	closuresProc [Widget.SHOW] = windowProc2;
+	closuresProc [Widget.START_INTERACTIVE_SEARCH] = windowProc2;
+	closuresProc [Widget.VALUE_CHANGED] = windowProc2;
+	closuresProc [Widget.UNMAP] = windowProc2;
+	closuresProc [Widget.UNREALIZE] = windowProc2;
+	closuresProc [Widget.BACKSPACE] = windowProc2;
+	closuresProc [Widget.BACKSPACE_INVERSE] = windowProc2;
+	closuresProc [Widget.COPY_CLIPBOARD] = windowProc2;
+	closuresProc [Widget.COPY_CLIPBOARD_INVERSE] = windowProc2;
+	closuresProc [Widget.CUT_CLIPBOARD] = windowProc2;
+	closuresProc [Widget.CUT_CLIPBOARD_INVERSE] = windowProc2;
+	closuresProc [Widget.PASTE_CLIPBOARD] = windowProc2;
+	closuresProc [Widget.PASTE_CLIPBOARD_INVERSE] = windowProc2;
 
 	windowCallback3 = new Callback (this, "windowProc", 3); //$NON-NLS-1$
 	windowProc3 = windowCallback3.getAddress ();
 	if (windowProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);	
 
-	closures [Widget.BUTTON_PRESS_EVENT] = OS.g_cclosure_new (windowProc3, Widget.BUTTON_PRESS_EVENT, 0);
-	closures [Widget.BUTTON_PRESS_EVENT_INVERSE] = OS.g_cclosure_new (windowProc3, Widget.BUTTON_PRESS_EVENT_INVERSE, 0);
-	closures [Widget.BUTTON_RELEASE_EVENT] = OS.g_cclosure_new (windowProc3, Widget.BUTTON_RELEASE_EVENT, 0);
-	closures [Widget.BUTTON_RELEASE_EVENT_INVERSE] = OS.g_cclosure_new (windowProc3, Widget.BUTTON_RELEASE_EVENT_INVERSE, 0);
-	closures [Widget.COMMIT] = OS.g_cclosure_new (windowProc3, Widget.COMMIT, 0);
-	closures [Widget.CONFIGURE_EVENT] = OS.g_cclosure_new (windowProc3, Widget.CONFIGURE_EVENT, 0);
-	closures [Widget.DELETE_EVENT] = OS.g_cclosure_new (windowProc3, Widget.DELETE_EVENT, 0);
-	closures [Widget.ENTER_NOTIFY_EVENT] = OS.g_cclosure_new (windowProc3, Widget.ENTER_NOTIFY_EVENT, 0);
-	closures [Widget.EVENT] = OS.g_cclosure_new (windowProc3, Widget.EVENT, 0);
-	closures [Widget.EVENT_AFTER] = OS.g_cclosure_new (windowProc3, Widget.EVENT_AFTER, 0);
-	closures [Widget.EXPOSE_EVENT] = OS.g_cclosure_new (windowProc3, Widget.EXPOSE_EVENT, 0);
-	closures [Widget.EXPOSE_EVENT_INVERSE] = OS.g_cclosure_new (windowProc3, Widget.EXPOSE_EVENT_INVERSE, 0);
-	closures [Widget.FOCUS] = OS.g_cclosure_new (windowProc3, Widget.FOCUS, 0);
-	closures [Widget.FOCUS_IN_EVENT] = OS.g_cclosure_new (windowProc3, Widget.FOCUS_IN_EVENT, 0);
-	closures [Widget.FOCUS_OUT_EVENT] = OS.g_cclosure_new (windowProc3, Widget.FOCUS_OUT_EVENT, 0);
-	closures [Widget.KEY_PRESS_EVENT] = OS.g_cclosure_new (windowProc3, Widget.KEY_PRESS_EVENT, 0);
-	closures [Widget.KEY_RELEASE_EVENT] = OS.g_cclosure_new (windowProc3, Widget.KEY_RELEASE_EVENT, 0);
-	closures [Widget.INPUT] = OS.g_cclosure_new (windowProc3, Widget.INPUT, 0);
-	closures [Widget.LEAVE_NOTIFY_EVENT] = OS.g_cclosure_new (windowProc3, Widget.LEAVE_NOTIFY_EVENT, 0);
-	closures [Widget.MAP_EVENT] = OS.g_cclosure_new (windowProc3, Widget.MAP_EVENT, 0);
-	closures [Widget.MNEMONIC_ACTIVATE] = OS.g_cclosure_new (windowProc3, Widget.MNEMONIC_ACTIVATE, 0);
-	closures [Widget.MOTION_NOTIFY_EVENT] = OS.g_cclosure_new (windowProc3, Widget.MOTION_NOTIFY_EVENT, 0);
-	closures [Widget.MOTION_NOTIFY_EVENT_INVERSE] = OS.g_cclosure_new (windowProc3, Widget.MOTION_NOTIFY_EVENT_INVERSE, 0);
-	closures [Widget.MOVE_FOCUS] = OS.g_cclosure_new (windowProc3, Widget.MOVE_FOCUS, 0);
-	closures [Widget.POPULATE_POPUP] = OS.g_cclosure_new (windowProc3, Widget.POPULATE_POPUP, 0);
-	closures [Widget.SCROLL_EVENT] = OS.g_cclosure_new (windowProc3, Widget.SCROLL_EVENT, 0);
-	closures [Widget.SHOW_HELP] = OS.g_cclosure_new (windowProc3, Widget.SHOW_HELP, 0);
-	closures [Widget.SIZE_ALLOCATE] = OS.g_cclosure_new (windowProc3, Widget.SIZE_ALLOCATE, 0);
-	closures [Widget.STYLE_SET] = OS.g_cclosure_new (windowProc3, Widget.STYLE_SET, 0);
-	closures [Widget.TOGGLED] = OS.g_cclosure_new (windowProc3, Widget.TOGGLED, 0);	
-	closures [Widget.UNMAP_EVENT] = OS.g_cclosure_new (windowProc3, Widget.UNMAP_EVENT, 0);
-	closures [Widget.VISIBILITY_NOTIFY_EVENT] = OS.g_cclosure_new (windowProc3, Widget.VISIBILITY_NOTIFY_EVENT, 0);
-	closures [Widget.WINDOW_STATE_EVENT] = OS.g_cclosure_new (windowProc3, Widget.WINDOW_STATE_EVENT, 0);
-	closures [Widget.ROW_DELETED] = OS.g_cclosure_new (windowProc3, Widget.ROW_DELETED, 0);
-	closures [Widget.DIRECTION_CHANGED] = OS.g_cclosure_new (windowProc3, Widget.DIRECTION_CHANGED, 0);
+	closuresProc [Widget.BUTTON_PRESS_EVENT] = windowProc3;
+	closuresProc [Widget.BUTTON_PRESS_EVENT_INVERSE] = windowProc3;
+	closuresProc [Widget.BUTTON_RELEASE_EVENT] = windowProc3;
+	closuresProc [Widget.BUTTON_RELEASE_EVENT_INVERSE] = windowProc3;
+	closuresProc [Widget.COMMIT] = windowProc3;
+	closuresProc [Widget.CONFIGURE_EVENT] = windowProc3;
+	closuresProc [Widget.DELETE_EVENT] = windowProc3;
+	closuresProc [Widget.ENTER_NOTIFY_EVENT] = windowProc3;
+	closuresProc [Widget.EVENT] = windowProc3;
+	closuresProc [Widget.EVENT_AFTER] = windowProc3;
+	closuresProc [Widget.EXPOSE_EVENT] = windowProc3;
+	closuresProc [Widget.EXPOSE_EVENT_INVERSE] = windowProc3;
+	closuresProc [Widget.FOCUS] = windowProc3;
+	closuresProc [Widget.FOCUS_IN_EVENT] = windowProc3;
+	closuresProc [Widget.FOCUS_OUT_EVENT] = windowProc3;
+	closuresProc [Widget.KEY_PRESS_EVENT] = windowProc3;
+	closuresProc [Widget.KEY_RELEASE_EVENT] = windowProc3;
+	closuresProc [Widget.INPUT] = windowProc3;
+	closuresProc [Widget.LEAVE_NOTIFY_EVENT] = windowProc3;
+	closuresProc [Widget.MAP_EVENT] = windowProc3;
+	closuresProc [Widget.MNEMONIC_ACTIVATE] = windowProc3;
+	closuresProc [Widget.MOTION_NOTIFY_EVENT] = windowProc3;
+	closuresProc [Widget.MOTION_NOTIFY_EVENT_INVERSE] = windowProc3;
+	closuresProc [Widget.MOVE_FOCUS] = windowProc3;
+	closuresProc [Widget.POPULATE_POPUP] = windowProc3;
+	closuresProc [Widget.SCROLL_EVENT] = windowProc3;
+	closuresProc [Widget.SHOW_HELP] = windowProc3;
+	closuresProc [Widget.SIZE_ALLOCATE] = windowProc3;
+	closuresProc [Widget.STYLE_SET] = windowProc3;
+	closuresProc [Widget.TOGGLED] = windowProc3;	
+	closuresProc [Widget.UNMAP_EVENT] = windowProc3;
+	closuresProc [Widget.VISIBILITY_NOTIFY_EVENT] = windowProc3;
+	closuresProc [Widget.WINDOW_STATE_EVENT] = windowProc3;
+	closuresProc [Widget.ROW_DELETED] = windowProc3;
+	closuresProc [Widget.DIRECTION_CHANGED] = windowProc3;
 
 	windowCallback4 = new Callback (this, "windowProc", 4); //$NON-NLS-1$
 	windowProc4 = windowCallback4.getAddress ();
 	if (windowProc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);	
 
-	closures [Widget.DELETE_RANGE] = OS.g_cclosure_new (windowProc4, Widget.DELETE_RANGE, 0);
-	closures [Widget.DELETE_TEXT] = OS.g_cclosure_new (windowProc4, Widget.DELETE_TEXT, 0);
-	closures [Widget.ICON_RELEASE] = OS.g_cclosure_new (windowProc4, Widget.ICON_RELEASE, 0);
-	closures [Widget.ROW_ACTIVATED] = OS.g_cclosure_new (windowProc4, Widget.ROW_ACTIVATED, 0);
-	closures [Widget.SCROLL_CHILD] = OS.g_cclosure_new (windowProc4, Widget.SCROLL_CHILD, 0);
-	closures [Widget.STATUS_ICON_POPUP_MENU] = OS.g_cclosure_new (windowProc4, Widget.STATUS_ICON_POPUP_MENU, 0);
-	closures [Widget.SWITCH_PAGE] = OS.g_cclosure_new (windowProc4, Widget.SWITCH_PAGE, 0);
-	closures [Widget.TEST_COLLAPSE_ROW] = OS.g_cclosure_new (windowProc4, Widget.TEST_COLLAPSE_ROW, 0);
-	closures [Widget.TEST_EXPAND_ROW] = OS.g_cclosure_new (windowProc4, Widget.TEST_EXPAND_ROW, 0);
-	closures [Widget.ROW_INSERTED] = OS.g_cclosure_new (windowProc4, Widget.ROW_INSERTED, 0);
-	closures [Widget.DELETE_FROM_CURSOR] = OS.g_cclosure_new (windowProc4, Widget.DELETE_FROM_CURSOR, 0);
-	closures [Widget.DELETE_FROM_CURSOR_INVERSE] = OS.g_cclosure_new (windowProc4, Widget.DELETE_FROM_CURSOR_INVERSE, 0);
+	closuresProc [Widget.DELETE_RANGE] = windowProc4;
+	closuresProc [Widget.DELETE_TEXT] = windowProc4;
+	closuresProc [Widget.ICON_RELEASE] = windowProc4;
+	closuresProc [Widget.ROW_ACTIVATED] = windowProc4;
+	closuresProc [Widget.SCROLL_CHILD] = windowProc4;
+	closuresProc [Widget.STATUS_ICON_POPUP_MENU] = windowProc4;
+	closuresProc [Widget.SWITCH_PAGE] = windowProc4;
+	closuresProc [Widget.TEST_COLLAPSE_ROW] = windowProc4;
+	closuresProc [Widget.TEST_EXPAND_ROW] = windowProc4;
+	closuresProc [Widget.ROW_INSERTED] = windowProc4;
+	closuresProc [Widget.DELETE_FROM_CURSOR] = windowProc4;
+	closuresProc [Widget.DELETE_FROM_CURSOR_INVERSE] = windowProc4;
 
 	windowCallback5 = new Callback (this, "windowProc", 5); //$NON-NLS-1$
 	windowProc5 = windowCallback5.getAddress ();
 	if (windowProc5 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-	closures [Widget.CHANGE_VALUE] = OS.g_cclosure_new (windowProc5, Widget.CHANGE_VALUE, 0);
-	closures [Widget.EXPAND_COLLAPSE_CURSOR_ROW] = OS.g_cclosure_new (windowProc5, Widget.EXPAND_COLLAPSE_CURSOR_ROW, 0);
-	closures [Widget.INSERT_TEXT] = OS.g_cclosure_new (windowProc5, Widget.INSERT_TEXT, 0);
-	closures [Widget.TEXT_BUFFER_INSERT_TEXT] = OS.g_cclosure_new (windowProc5, Widget.TEXT_BUFFER_INSERT_TEXT, 0);
-	closures [Widget.MOVE_CURSOR] = OS.g_cclosure_new (windowProc5, Widget.MOVE_CURSOR, 0);
-	closures [Widget.MOVE_CURSOR_INVERSE] = OS.g_cclosure_new (windowProc5, Widget.MOVE_CURSOR_INVERSE, 0);
+	closuresProc [Widget.CHANGE_VALUE] = windowProc5;
+	closuresProc [Widget.EXPAND_COLLAPSE_CURSOR_ROW] = windowProc5;
+	closuresProc [Widget.INSERT_TEXT] = windowProc5;
+	closuresProc [Widget.TEXT_BUFFER_INSERT_TEXT] = windowProc5;
+	closuresProc [Widget.MOVE_CURSOR] = windowProc5;
+	closuresProc [Widget.MOVE_CURSOR_INVERSE] = windowProc5;
 
 	for (int i = 0; i < Widget.LAST_SIGNAL; i++) {
+		if (closuresProc[i] != 0) {
+			closures [i] = OS.g_cclosure_new(closuresProc [i], i, 0);
+		}
 		if (closures [i] != 0) OS.g_closure_ref (closures [i]);
 	}
 

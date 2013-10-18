@@ -526,9 +526,9 @@ long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ event) {
 
 void hookEvents () {
 	super.hookEvents();
-	OS.g_signal_connect_closure (handle, OS.clicked, display.closures [CLICKED], false);
+	OS.g_signal_connect_closure (handle, OS.clicked, display.getClosure (CLICKED), false);
 	if (labelHandle != 0) {
-		OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.closures [MNEMONIC_ACTIVATE], false);
+		OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.getClosure (MNEMONIC_ACTIVATE), false);
 	}
 }
 

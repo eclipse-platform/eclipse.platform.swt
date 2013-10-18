@@ -206,7 +206,7 @@ boolean hasFocus () {
 void hookEvents () {
 	super.hookEvents ();
 	if (scrolledHandle != 0) {
-		OS.g_signal_connect_closure (scrolledHandle, OS.size_allocate, display.closures [SIZE_ALLOCATE], true);
+		OS.g_signal_connect_closure (scrolledHandle, OS.size_allocate, display.getClosure (SIZE_ALLOCATE), true);
 	}
 }
 

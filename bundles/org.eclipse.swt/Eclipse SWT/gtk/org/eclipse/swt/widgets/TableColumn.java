@@ -395,12 +395,12 @@ long /*int*/ gtk_size_allocate (long /*int*/ widget, long /*int*/ allocation) {
 
 void hookEvents () {
 	super.hookEvents ();
-	OS.g_signal_connect_closure (handle, OS.clicked, display.closures [CLICKED], false);
+	OS.g_signal_connect_closure (handle, OS.clicked, display.getClosure (CLICKED), false);
 	if (buttonHandle != 0) {
-		OS.g_signal_connect_closure_by_id (buttonHandle, display.signalIds [SIZE_ALLOCATE], 0, display.closures [SIZE_ALLOCATE], false);
-		OS.g_signal_connect_closure_by_id (buttonHandle, display.signalIds [EVENT_AFTER], 0, display.closures [EVENT_AFTER], false);
+		OS.g_signal_connect_closure_by_id (buttonHandle, display.signalIds [SIZE_ALLOCATE], 0, display.getClosure (SIZE_ALLOCATE), false);
+		OS.g_signal_connect_closure_by_id (buttonHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
 	}
-	if (labelHandle != 0) OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.closures [MNEMONIC_ACTIVATE], false);
+	if (labelHandle != 0) OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.getClosure (MNEMONIC_ACTIVATE), false);
 }
 
 /**

@@ -539,10 +539,10 @@ long /*int*/ gtk_event_after (long /*int*/ widget, long /*int*/ gdkEvent) {
 
 void hookEvents () {
 	super.hookEvents ();
-	OS.g_signal_connect_closure (handle, OS.change_value, display.closures [CHANGE_VALUE], false);
-	OS.g_signal_connect_closure (adjustmentHandle, OS.value_changed, display.closures [VALUE_CHANGED], false);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT_AFTER], 0, display.closures [EVENT_AFTER], false);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);	
+	OS.g_signal_connect_closure (handle, OS.change_value, display.getClosure (CHANGE_VALUE), false);
+	OS.g_signal_connect_closure (adjustmentHandle, OS.value_changed, display.getClosure (VALUE_CHANGED), false);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);	
 }
 
 /**

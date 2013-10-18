@@ -634,21 +634,21 @@ boolean hasFocus () {
 
 void hookEvents () {
 	super.hookEvents ();
-	OS.g_signal_connect_closure (handle, OS.changed, display.closures [CHANGED], true);
+	OS.g_signal_connect_closure (handle, OS.changed, display.getClosure (CHANGED), true);
 
 	if (entryHandle != 0) {
-		OS.g_signal_connect_closure (entryHandle, OS.changed, display.closures [CHANGED], true);
-		OS.g_signal_connect_closure (entryHandle, OS.insert_text, display.closures [INSERT_TEXT], false);
-		OS.g_signal_connect_closure (entryHandle, OS.delete_text, display.closures [DELETE_TEXT], false);
-		OS.g_signal_connect_closure (entryHandle, OS.activate, display.closures [ACTIVATE], false);
-		OS.g_signal_connect_closure (entryHandle, OS.populate_popup, display.closures [POPULATE_POPUP], false);
+		OS.g_signal_connect_closure (entryHandle, OS.changed, display.getClosure (CHANGED), true);
+		OS.g_signal_connect_closure (entryHandle, OS.insert_text, display.getClosure (INSERT_TEXT), false);
+		OS.g_signal_connect_closure (entryHandle, OS.delete_text, display.getClosure (DELETE_TEXT), false);
+		OS.g_signal_connect_closure (entryHandle, OS.activate, display.getClosure (ACTIVATE), false);
+		OS.g_signal_connect_closure (entryHandle, OS.populate_popup, display.getClosure (POPULATE_POPUP), false);
 	}
 
 	hookEvents(new long /*int*/ [] {buttonHandle, entryHandle, menuHandle});
 
 	long /*int*/ imContext = imContext ();
 	if (imContext != 0) {
-		OS.g_signal_connect_closure (imContext, OS.commit, display.closures [COMMIT], false);
+		OS.g_signal_connect_closure (imContext, OS.commit, display.getClosure (COMMIT), false);
 		int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
 		int blockMask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
 		OS.g_signal_handlers_block_matched (imContext, blockMask, id, 0, 0, 0, entryHandle);
@@ -662,9 +662,9 @@ void hookEvents(long /*int*/ [] handles) {
 		if (eventHandle != 0) {
 			/* Connect the mouse signals */
 			OS.gtk_widget_add_events (eventHandle, eventMask);
-			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
-			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT], false);
-			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.closures [MOTION_NOTIFY_EVENT], false);
+			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
+			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
+			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT), false);
 			/*
 			* Feature in GTK.  Events such as mouse move are propagated up
 			* the widget hierarchy and are seen by the parent.  This is the
@@ -672,16 +672,16 @@ void hookEvents(long /*int*/ [] handles) {
 			* hook a signal after and stop the propagation using a negative
 			* event number to distinguish this case.
 			*/
-			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT_INVERSE], true);
-			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT_INVERSE], true);
-			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.closures [MOTION_NOTIFY_EVENT_INVERSE], true);
+			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT_INVERSE), true);
+			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT_INVERSE), true);
+			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT_INVERSE), true);
 
 			/* Connect the event_after signal for both key and mouse */
 			if (eventHandle != focusHandle ()) {
-				OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.closures [EVENT_AFTER], false);
+				OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
 			}
 			if (OS.G_OBJECT_TYPE (eventHandle) == OS.GTK_TYPE_MENU ()) {
-				OS.g_signal_connect_closure(eventHandle, OS.selection_done, display.closures[SELECTION_DONE], true);
+				OS.g_signal_connect_closure(eventHandle, OS.selection_done, display.getClosure (SELECTION_DONE), true);
 			}
 		}
 	}

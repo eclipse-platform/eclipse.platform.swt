@@ -756,15 +756,15 @@ long /*int*/ gtk_value_changed (long /*int*/ widget) {
 
 void hookEvents () {
 	super.hookEvents();
-	OS.g_signal_connect_closure (handle, OS.changed, display.closures [CHANGED], true);
-	OS.g_signal_connect_closure (handle, OS.insert_text, display.closures [INSERT_TEXT], false);
-	OS.g_signal_connect_closure (handle, OS.delete_text, display.closures [DELETE_TEXT], false);
-	OS.g_signal_connect_closure (handle, OS.value_changed, display.closures [VALUE_CHANGED], false);
-	OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE], false);
-	OS.g_signal_connect_closure (handle, OS.populate_popup, display.closures [POPULATE_POPUP], false);
+	OS.g_signal_connect_closure (handle, OS.changed, display.getClosure (CHANGED), true);
+	OS.g_signal_connect_closure (handle, OS.insert_text, display.getClosure (INSERT_TEXT), false);
+	OS.g_signal_connect_closure (handle, OS.delete_text, display.getClosure (DELETE_TEXT), false);
+	OS.g_signal_connect_closure (handle, OS.value_changed, display.getClosure (VALUE_CHANGED), false);
+	OS.g_signal_connect_closure (handle, OS.activate, display.getClosure (ACTIVATE), false);
+	OS.g_signal_connect_closure (handle, OS.populate_popup, display.getClosure (POPULATE_POPUP), false);
 	long /*int*/ imContext = imContext ();
 	if (imContext != 0) {
-		OS.g_signal_connect_closure (imContext, OS.commit, display.closures [COMMIT], false);
+		OS.g_signal_connect_closure (imContext, OS.commit, display.getClosure (COMMIT), false);
 		int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
 		int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
 		OS.g_signal_handlers_block_matched (imContext, mask, id, 0, 0, 0, handle);

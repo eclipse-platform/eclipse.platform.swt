@@ -682,9 +682,9 @@ long /*int*/ gtk_show_help (long /*int*/ widget, long /*int*/ helpType) {
 
 void hookEvents () {
 	super.hookEvents ();
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW], 0, display.closures [SHOW], false);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [HIDE], 0, display.closures [HIDE], false);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW_HELP], 0, display.closures [SHOW_HELP], false);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW], 0, display.getClosure (SHOW), false);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [HIDE], 0, display.getClosure (HIDE), false);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW_HELP], 0, display.getClosure (SHOW_HELP), false);
 }
 
 /**
