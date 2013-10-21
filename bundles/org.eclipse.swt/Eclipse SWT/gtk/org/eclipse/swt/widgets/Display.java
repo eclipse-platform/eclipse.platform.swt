@@ -1465,9 +1465,11 @@ int getCaretBlinkTime () {
 }
 
 long /*int*/ getClosure (int id) {
-	if (OS.GLIB_VERSION >= OS.VERSION(2, 36, 0) && closuresCount [id]++ > 255) {
+	if (OS.GLIB_VERSION >= OS.VERSION(2, 36, 0) && ++closuresCount [id] >= 255) {
 		if (closures [id] != 0) OS.g_closure_unref (closures [id]);
 		closures [id] = OS.g_cclosure_new (closuresProc [id], id, 0);
+		OS.g_closure_ref (closures [id]);
+		OS.g_closure_sink (closures [id]);
 		closuresCount [id] = 0;
 	}
 	return closures [id];
@@ -2719,7 +2721,10 @@ void initializeCallbacks () {
 		if (closuresProc[i] != 0) {
 			closures [i] = OS.g_cclosure_new(closuresProc [i], i, 0);
 		}
-		if (closures [i] != 0) OS.g_closure_ref (closures [i]);
+		if (closures [i] != 0) {
+			OS.g_closure_ref (closures [i]);
+			OS.g_closure_sink (closures [i]);
+		}
 	}
 
 	timerCallback = new Callback (this, "timerProc", 1); //$NON-NLS-1$

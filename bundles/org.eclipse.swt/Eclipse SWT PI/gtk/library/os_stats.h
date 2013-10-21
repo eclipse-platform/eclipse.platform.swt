@@ -239,6 +239,7 @@ typedef enum {
 	_1g_1app_1info_1supports_1uris_FUNC,
 	_1g_1cclosure_1new_FUNC,
 	_1g_1closure_1ref_FUNC,
+	_1g_1closure_1sink_FUNC,
 	_1g_1closure_1unref_FUNC,
 	_1g_1content_1type_1equals_FUNC,
 	_1g_1content_1type_1is_1a_FUNC,

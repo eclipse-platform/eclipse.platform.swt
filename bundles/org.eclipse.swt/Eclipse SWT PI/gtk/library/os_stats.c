@@ -229,6 +229,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1app_1info_1supports_1uris",
 	"_1g_1cclosure_1new",
 	"_1g_1closure_1ref",
+	"_1g_1closure_1sink",
 	"_1g_1closure_1unref",
 	"_1g_1content_1type_1equals",
 	"_1g_1content_1type_1is_1a",

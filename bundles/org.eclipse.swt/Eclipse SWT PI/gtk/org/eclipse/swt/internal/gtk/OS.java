@@ -2211,6 +2211,16 @@ public static final long /*int*/ g_closure_ref(long /*int*/ closure) {
 	}
 }
 /** @param closure cast=(GClosure *) */
+public static final native void _g_closure_sink(long /*int*/ closure);
+public static final void g_closure_sink(long /*int*/ closure) {
+	lock.lock();
+	try {
+		_g_closure_sink(closure);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @param closure cast=(GClosure *) */
 public static final native void _g_closure_unref(long /*int*/ closure);
 public static final void g_closure_unref(long /*int*/ closure) {
 	lock.lock();

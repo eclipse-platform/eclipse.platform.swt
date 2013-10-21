@@ -2577,6 +2577,16 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1g_1closure_1ref)
 }
 #endif
 
+#ifndef NO__1g_1closure_1sink
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1closure_1sink)
+	(JNIEnv *env, jclass that, jintLong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1g_1closure_1sink_FUNC);
+	g_closure_sink((GClosure *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1closure_1sink_FUNC);
+}
+#endif
+
 #ifndef NO__1g_1closure_1unref
 JNIEXPORT void JNICALL OS_NATIVE(_1g_1closure_1unref)
 	(JNIEnv *env, jclass that, jintLong arg0)
