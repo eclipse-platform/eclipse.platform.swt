@@ -100,7 +100,7 @@ static long /*int*/ gdk_region_polygon(int[] pointArray, int npoints, int fill_r
 		if (y < minY) minY = y;
 		if (y > maxY) maxY = y;
 	}
-	long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_A1, maxX - minX, maxY - minY);
+	long /*int*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, maxX - minX, maxY - minY);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	long /*int*/ cairo = Cairo.cairo_create(surface);
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
