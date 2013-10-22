@@ -345,6 +345,7 @@ public class JavadocBasher {
 					String key = prefix + "." + node.getName().getFullyQualifiedName();
 					String newComment = (String)comments.get(key);
 					if (newComment != null) {
+						comments.remove(key);
 						if (javadoc != null) {
 							edits.add(new Edit(javadoc.getStartPosition(), getJavadocLength(targetDocument, javadoc), newComment));
 						} else {
@@ -366,6 +367,7 @@ public class JavadocBasher {
 					}
 					String newComment = (String)comments.get(key);
 					if (newComment != null) {
+						comments.remove(key);
 						if (javadoc != null) {
 							edits.add(new Edit(javadoc.getStartPosition(), getJavadocLength(targetDocument, javadoc), newComment));
 						} else {
@@ -383,6 +385,7 @@ public class JavadocBasher {
 					String key = prefix + "." + node.getName().getFullyQualifiedName();
 					String newComment = (String)comments.get(key);
 					if (newComment != null) {
+						comments.remove(key);
 						if (javadoc != null) {
 							edits.add(new Edit(javadoc.getStartPosition(), getJavadocLength(targetDocument, javadoc), newComment));
 						} else {
@@ -404,7 +407,76 @@ public class JavadocBasher {
 				e.printStackTrace();
 			}
 		}
-		
+		/* Rudimentary API consistency checker.
+		 * This assumes that:
+		 * a) the sourceSubdir (typically win32) API is correct
+		 * b) all sourceSubdir API classes, methods and fields do have a comment
+		 * c) names that are in the filter list are never API,
+		 * 		or they are old API that is defined in the super on some platforms
+		 */
+		if (comments.size() > 0) {
+			String [] filter = new String [] {
+				"Color.win32_newDeviceint",
+				"Cursor.win32_newDeviceint",
+				"Device.hPalette",
+				"Font.win32_newDevicelong",
+				"FontData.data",
+				"FontData.win32_newLOGFONTfloat",
+				"FontMetrics.handle",
+				"FontMetrics.win32_newTEXTMETRIC",
+				"GC.win32_newlongGCData",
+				"GC.win32_newDrawableGCData",
+				"Image.win32_newDeviceintlong",
+				"Pattern.handle",
+				"Region.win32_newDeviceint",
+				"Control.handle",
+				"Display.getSystemFont",
+				"Display.msg",
+				"Menu.handle",
+				"Shell.win32_newDisplaylong",	
+				"Accessible.internal_WM_GETOBJECTlonglong",
+				"TransferData.result",
+				"TransferData.stgmedium",
+				"TransferData.pIDataObject",
+				"TransferData.formatetc",
+				"Printer.handle",
+				"Printer.checkDevice",	
+				"TableDragSourceEffect.dragFinishedDragSourceEvent",
+				"TableDragSourceEffect.dragStartDragSourceEvent",
+				"TableDropTargetEffect.dragOverDropTargetEvent",
+				"TableDropTargetEffect.dragEnterDropTargetEvent",
+				"TableDropTargetEffect.dragLeaveDropTargetEvent",
+				"Transfer.validateObject",
+				"TransferData.result",
+				"TransferData.stgmedium",
+				"TransferData.pIDataObject",
+				"TransferData.formatetc",
+				"TreeDragSourceEffect.dragFinishedDragSourceEvent",
+				"TreeDragSourceEffect.dragStartDragSourceEvent",
+				"TreeDropTargetEffect.dragLeaveDropTargetEvent",
+				"TreeDropTargetEffect.dragEnterDropTargetEvent",
+				"TreeDropTargetEffect.dragOverDropTargetEvent",
+				"Printer.createDeviceData",
+				"Printer.internal_dispose_GClongGCData",
+				"Printer.release",
+				"Printer.destroy",
+				"Image.handle",
+				"Display.getClientArea",
+				"TreeItem.handle",
+			};
+			for (Iterator iterator = comments.keySet().iterator(); iterator.hasNext();) {
+				String name = (String) iterator.next();
+				if (((String) comments.get(name)).length() > 0){
+					int i = 0;
+					for (i = 0; i < filter.length; i++) {
+						if (name.equals(filter[i])) break;
+					}
+					if (i >= filter.length) {
+						System.err.println("***No target for " + name);
+					}
+				}
+			}
+		}
 		
 		String newContents = targetDocument.get();
 		if (!targetContents.equals(newContents)) {
