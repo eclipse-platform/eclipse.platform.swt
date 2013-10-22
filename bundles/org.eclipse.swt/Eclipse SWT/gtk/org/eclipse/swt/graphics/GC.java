@@ -414,6 +414,10 @@ void checkGC (int mask) {
 
 long /*int*/ convertRgn(long /*int*/ rgn, double[] matrix) {
 	long /*int*/ newRgn = OS.gdk_region_new();
+	if (isIdentity(matrix)) {
+		OS.gdk_region_union(newRgn, rgn);
+		return newRgn;
+	}
 	int[] nRects = new int[1];
 	long /*int*/[] rects = new long /*int*/[1];
 	Region.gdk_region_get_rectangles(rgn, rects, nRects);
