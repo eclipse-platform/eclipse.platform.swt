@@ -7140,6 +7140,26 @@ boolean isMirrored() {
 	return (getStyle() & SWT.MIRRORED) != 0;
 }
 /**
+ * Returns <code>true</code> if any text in the widget is selected,
+ * and <code>false</code> otherwise.
+ * 
+ * @return the text selection state
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 4.4
+ */
+public boolean isSelected() {
+	checkWidget();
+	if (blockSelection && blockXLocation != -1) {
+		Rectangle rect = getBlockSelectionPosition();
+		return !rect.isEmpty();
+	}
+	return selection.y != selection.x;
+}
+/**
  * Returns whether the widget can have only one line.
  *
  * @return true if widget can have only one line, false if widget can have 

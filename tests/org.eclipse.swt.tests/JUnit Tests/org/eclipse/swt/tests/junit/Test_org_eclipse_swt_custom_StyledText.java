@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -4413,6 +4413,34 @@ public void test_showSelection() {
 	text.showSelection();
 }
 
+public void test_isSelected() {
+	// Empty selection
+	text.setText("Sample Text Selection");
+	assertFalse(text.isSelected());
+	
+	// Set selection
+	text.setSelection(0, text.getCharCount());
+	assertTrue(text.isSelected());
+	
+	// Set block selection
+	StringBuilder buffer = new StringBuilder();
+	for (int i = 0; i < 500; i++) {
+		buffer.append("Sample Test Selection" + System.getProperty("line.separator"));
+	}
+	text.setText(buffer.toString());
+	text.setSize(100, 10000);
+	text.setBlockSelection(true);
+	text.setBlockSelectionBounds(0, 0, 100, 10000);
+	assertTrue(text.isSelected());
+	
+	// Set block selection on new line
+	text.setText(System.getProperty("line.separator"));
+	text.setSize(100, 100);
+	text.setBlockSelection(true);
+	text.setBlockSelectionBounds(0, 0, 100, 100);
+	assertTrue(text.isSelected());
+}
+
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
@@ -4480,6 +4508,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getWordWrap");
 	methodNames.addElement("test_insertLjava_lang_String");
 	methodNames.addElement("test_invokeActionI");
+	methodNames.addElement("test_isSelected");
 	methodNames.addElement("test_paste");
 	methodNames.addElement("test_print");
 	methodNames.addElement("test_printLorg_eclipse_swt_printing_Printer");
@@ -4592,6 +4621,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getWordWrap")) test_getWordWrap();
 	else if (getName().equals("test_insertLjava_lang_String")) test_insertLjava_lang_String();
 	else if (getName().equals("test_invokeActionI")) test_invokeActionI();
+	else if (getName().equals("test_isSelected")) test_isSelected();
 	else if (getName().equals("test_paste")) test_paste();
 	else if (getName().equals("test_print")) test_print();
 	else if (getName().equals("test_printLorg_eclipse_swt_printing_Printer")) test_printLorg_eclipse_swt_printing_Printer();
