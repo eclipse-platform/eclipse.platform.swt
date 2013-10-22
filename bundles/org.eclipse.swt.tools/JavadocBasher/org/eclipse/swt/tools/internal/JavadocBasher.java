@@ -4,7 +4,6 @@ import java.io.*;
 import java.util.*;
 
 import org.eclipse.jdt.core.dom.*;
-import org.eclipse.jdt.core.dom.rewrite.*;
 import org.eclipse.jface.text.*;
 
 /**
@@ -63,7 +62,6 @@ public class JavadocBasher {
 	List fBashed;
 	List fUnchanged;
 	List fSkipped;
-	private ASTRewrite rewriter;
 
 	public JavadocBasher() {
 		fBashed = new ArrayList();
