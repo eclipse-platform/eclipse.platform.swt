@@ -18133,7 +18133,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1modifier_1style)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1modifier_1style_FUNC);
+/*
 	rc = (jintLong)gtk_widget_get_modifier_style((GtkWidget *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_get_modifier_style)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkWidget *))fp)((GtkWidget *)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1modifier_1style_FUNC);
 	return rc;
 }
@@ -18333,7 +18341,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(_1gtk_1widget_1get_1style)
 {
 	jintLong rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1style_FUNC);
+/*
 	rc = (jintLong)gtk_widget_get_style((GtkWidget *)arg0);
+*/
+	{
+		OS_LOAD_FUNCTION(fp, gtk_widget_get_style)
+		if (fp) {
+			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(GtkWidget *))fp)((GtkWidget *)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1style_FUNC);
 	return rc;
 }

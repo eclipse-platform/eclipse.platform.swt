@@ -359,6 +359,8 @@
 #define gtk_widget_modify_bg_LIB LIB_GTK
 #define gtk_widget_modify_font_LIB LIB_GTK
 #define gtk_widget_modify_style_LIB LIB_GTK
+#define gtk_widget_get_style_LIB LIB_GTK
+#define gtk_widget_get_modifier_style_LIB LIB_GTK
 #define gtk_range_get_slider_range_LIB LIB_GTK
 #define gdk_x11_screen_get_window_manager_name_LIB LIB_GDK
 #define gdk_x11_screen_lookup_visual_LIB LIB_GDK

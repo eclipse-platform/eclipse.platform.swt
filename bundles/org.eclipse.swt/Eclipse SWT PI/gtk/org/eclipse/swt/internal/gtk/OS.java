@@ -13559,7 +13559,10 @@ public static final long /*int*/ gtk_widget_get_window (long /*int*/ widget) {
 		lock.unlock();
 	}
 }
-/** @param widget cast=(GtkWidget *) */
+/** 
+ * @method flags=dynamic
+ * @param widget cast=(GtkWidget *) 
+ */
 public static final native long /*int*/ _gtk_widget_get_modifier_style(long /*int*/ widget);
 public static final long /*int*/ gtk_widget_get_modifier_style(long /*int*/ widget) {
 	lock.lock();
@@ -13652,7 +13655,10 @@ public static final long /*int*/ gtk_widget_get_style_context(long /*int*/ widge
 		lock.unlock();
 	}
 }
-/** @param widget cast=(GtkWidget *) */
+/** 
+ * @method flags=dynamic
+ * @param widget cast=(GtkWidget *) 
+ */
 public static final native long /*int*/ _gtk_widget_get_style(long /*int*/ widget);
 public static final long /*int*/ gtk_widget_get_style(long /*int*/ widget) {
 	lock.lock();
