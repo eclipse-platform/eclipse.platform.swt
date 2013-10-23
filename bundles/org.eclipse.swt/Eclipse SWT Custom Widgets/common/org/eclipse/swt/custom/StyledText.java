@@ -7149,7 +7149,7 @@ boolean isMirrored() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @since 4.4
+ * @since 3.103
  */
 public boolean isSelected() {
 	checkWidget();
