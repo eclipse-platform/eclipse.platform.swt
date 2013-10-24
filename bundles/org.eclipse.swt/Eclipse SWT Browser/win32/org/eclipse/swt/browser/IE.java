@@ -189,16 +189,22 @@ class IE extends WebBrowser {
 		};
 
 		/*
-		* Registry entry HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\Version indicates
-		* which version of IE is installed.  Check this value in order to determine version-specific
-		* features that can be enabled.
+		* The installed version of IE can be determined by looking at registry entry
+		* HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\svcVersion, or
+		* HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\Version (for
+		* IE releases prior to IE10).  Check this value in order to determine
+		* version-specific features that can be enabled.
 		*/
 		TCHAR key = new TCHAR (0, "Software\\Microsoft\\Internet Explorer", true);	//$NON-NLS-1$
 		long /*int*/ [] phkResult = new long /*int*/ [1];
 		if (OS.RegOpenKeyEx (OS.HKEY_LOCAL_MACHINE, key, 0, OS.KEY_READ, phkResult) == 0) {
 			int [] lpcbData = new int [1];
-			TCHAR buffer = new TCHAR (0, "Version", true); //$NON-NLS-1$
+			TCHAR buffer = new TCHAR (0, "svcVersion", true); //$NON-NLS-1$
 			int result = OS.RegQueryValueEx (phkResult [0], buffer, 0, null, (TCHAR) null, lpcbData);
+			if (result != 0) {
+				buffer = new TCHAR (0, "Version", true); //$NON-NLS-1$
+				result = OS.RegQueryValueEx (phkResult [0], buffer, 0, null, (TCHAR) null, lpcbData);
+			}
 			if (result == 0) {
 				TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
 				result = OS.RegQueryValueEx (phkResult [0], buffer, 0, null, lpData, lpcbData);
