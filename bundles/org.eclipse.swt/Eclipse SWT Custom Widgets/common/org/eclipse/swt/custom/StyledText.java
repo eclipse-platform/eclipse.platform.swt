@@ -7151,7 +7151,7 @@ boolean isMirrored() {
  * 
  * @since 3.103
  */
-public boolean isSelected() {
+public boolean isTextSelected() {
 	checkWidget();
 	if (blockSelection && blockXLocation != -1) {
 		Rectangle rect = getBlockSelectionPosition();
