@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,19 +10,25 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.browser.ProgressListener;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.tests.junit.SwtJunit;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.browser.*;
-import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 public class Browser1 {
-	public static boolean verbose = false;
+	public static boolean verbose = true;
 	public static boolean passed = false;	
 	public static boolean locationChanging = false;
 	public static boolean locationChanged = false;
 	public static boolean progressCompleted = false;
 	public static boolean isMozilla = SwtJunit.isGTK || SwtJunit.isMotif;
+	public static boolean isMac = SwtJunit.isCocoa || SwtJunit.isCarbon;
 	
 	public static boolean test1(String url) {
 		if (verbose) System.out.println("URL Loading - args: "+url+" Expected Event Sequence: Location.changing > Location.changed (top true)> Progress.completed");
@@ -196,7 +202,7 @@ public class Browser1 {
 		int fail = 0;
 		String[] urls = {"http://www.google.com"};
 		// TEMPORARILY NOT RUN FOR MOZILLA
-		if (!isMozilla) {
+		if (!isMozilla && !isMac) { // timed out on Mac, see https://bugs.eclipse.org/420258
 			for (int i = 0; i < urls.length; i++) {
 				boolean result = test1(urls[i]); 
 				if (verbose) System.out.print(result ? "." : "E");
