@@ -15,20 +15,34 @@
 package org.eclipse.swt.internal.gtk;
 
 
-import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.C;
+import org.eclipse.swt.internal.Library;
 
 public class OS extends C {
 	static {
-		boolean loaded = false;
-		String prop = "SWT_GTK3";
-		if (System.getProperty(prop) != null || OS.getenv(ascii(prop)) != 0) {
+		String gtk3 = System.getProperty("SWT_GTK3");
+		if (gtk3 == null) {
+			long /*int*/ ptr = OS.getenv(ascii("SWT_GTK3"));
+			if (ptr != 0) {
+				int length = OS.strlen(ptr);
+				byte[] buffer = new byte[length];
+				OS.memmove(buffer, ptr, length);
+				char[] convertedChar = new char[buffer.length];
+				for (int i = 0; i < buffer.length; i++) {
+					convertedChar[i]=(char)buffer[i];
+				}
+				gtk3 = new String(convertedChar);
+			}
+		}
+		if (gtk3 != null && gtk3.equals("0")) {
+			Library.loadLibrary("swt-pi");
+		}
+		else {
 			try {
 				Library.loadLibrary("swt-pi3");
-				loaded = true;
-			} catch (Throwable e) {}
-		}
-		if (!loaded) {
-			Library.loadLibrary("swt-pi");
+			} catch (Throwable e) {
+				Library.loadLibrary("swt-pi");
+			}
 		}
 	}
 	
