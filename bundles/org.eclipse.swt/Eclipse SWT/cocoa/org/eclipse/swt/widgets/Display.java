@@ -4195,6 +4195,18 @@ void sendPostEvent(Event event) {
 	}
 }
 
+void sendSleepEvent() {
+  if (this.eventTable != null && this.eventTable.hooks(SWT.Sleep)) {
+    sendEvent(SWT.Sleep, null);
+  }
+}
+
+void sendWakeupEvent() {
+  if (this.eventTable != null && this.eventTable.hooks(SWT.Wakeup)) {
+    sendEvent(SWT.Wakeup, null);
+  }
+}
+
 static NSString getApplicationName() {
 	NSString name = null;
 	int pid = OS.getpid ();
@@ -4635,6 +4647,7 @@ public void setSynchronizer (Synchronizer synchronizer) {
 public boolean sleep () {
 	checkDevice ();
 	if (getMessageCount () != 0) return true;
+	sendSleepEvent();
 	try {
 		addPool();
 		allowTimers = runAsyncMessages = false;
@@ -4643,6 +4656,7 @@ public boolean sleep () {
 	} finally {
 		removePool();
 	}
+	sendWakeupEvent();
 	return true;
 }
 

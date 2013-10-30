@@ -773,25 +773,47 @@ public class SWT {
 	
 	/**
 	 * The PreEvent event type (value is 50).
-	 * 
+	 *
 	 * <p>
 	 * This event is sent before an event is dispatched.
 	 * </p>
-     * 
-     * @since 3.103
+	 *
+	 * @since 3.103
 	 */
 	public static final int PreEvent = 50;
-	
+
 	/**
 	 * The PostEvent event type (value is 51).
-	 * 
+	 *
 	 * <p>
 	 * This event is sent after an event is dispatched.
 	 * </p>
-	 *  
-     * @since 3.103
+	 *
+	 * @since 3.103
 	 */
 	public static final int PostEvent = 51;
+
+	/**
+	 * The Sleep event type (value is 52).
+	 *
+	 * <p>
+	 * This event is sent before Display.sleep goes into an interruptible sleep.
+	 * </p>
+	 *
+	 * @since 3.103
+	 */
+	public static final int Sleep = 52;
+
+	/**
+	 * The Wakeup event type (value is 53).
+	 *
+	 * <p>
+	 * This event is sent after Display.sleep wakes up from an interruptible sleep.
+	 * </p>
+	 *
+	 * @since 3.103
+	 */
+	public static final int Wakeup = 53;
 
 	/* Event Details */
 	

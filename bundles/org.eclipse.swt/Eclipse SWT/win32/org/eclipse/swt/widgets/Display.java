@@ -1380,6 +1380,7 @@ public Widget findWidget (Widget widget, long /*int*/ id) {
 long /*int*/ foregroundIdleProc (long /*int*/ code, long /*int*/ wParam, long /*int*/ lParam) {
 	if (code >= 0) {
 		if (runMessages && getMessageCount () != 0) {
+			sendWakeupEvent();
 			if (runMessagesInIdle) {
 				if (runMessagesInMessageProc) {
 					OS.PostMessage (hwndMessage, SWT_RUNASYNC, 0, 0);
@@ -1403,6 +1404,7 @@ long /*int*/ foregroundIdleProc (long /*int*/ code, long /*int*/ wParam, long /*
 			MSG msg = new MSG();
 			int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT;
 			if (!OS.PeekMessage (msg, 0, 0, 0, flags)) wakeThread ();
+			sendSleepEvent();
 		}
 	}
 	return OS.CallNextHookEx (idleHook, (int)/*64*/code, wParam, lParam);
@@ -4369,6 +4371,19 @@ void sendPostEvent(Event event) {
 		}
 	}
 }
+
+void sendSleepEvent() {
+  if (this.eventTable != null && this.eventTable.hooks(SWT.Sleep)) {
+    sendEvent(SWT.Sleep, null);
+  }
+}
+
+void sendWakeupEvent() {
+  if (this.eventTable != null && this.eventTable.hooks(SWT.Wakeup)) {
+    sendEvent(SWT.Wakeup, null);
+  }
+}
+
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
@@ -4674,11 +4689,15 @@ int shiftedKey (int key) {
 public boolean sleep () {
 	checkDevice ();
 	if (runMessages && getMessageCount () != 0) return true;
+	sendSleepEvent();
 	if (OS.IsWinCE) {
 		OS.MsgWaitForMultipleObjectsEx (0, 0, OS.INFINITE, OS.QS_ALLINPUT, OS.MWMO_INPUTAVAILABLE);
+		sendWakeupEvent();
 		return true;
 	}
-	return OS.WaitMessage ();
+	boolean result = OS.WaitMessage ();
+	sendWakeupEvent();
+	return result;
 }
 
 /**

@@ -742,52 +742,11 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 	}
 }
 
-public void test_LongEventWatchdog() {
-	final int DURATION_MILLIS = 10;
-	Display display = new Display();
-	
-	try {
-		final boolean[] beginCalled = {false};
-		final boolean[] endCalled = {false};
-		final boolean[] eventHasRun = {false};
-
-		Listener preListener = new Listener() {
-			public void handleEvent(Event event) {
-				beginCalled[0] = true;
-			}
-		};
-		
-		Listener postListener = new Listener() {
-			public void handleEvent(Event event) {
-				endCalled[0] = true;
-			}
-		};
-		
-		display.addListener(SWT.PreEvent, preListener);
-		display.addListener(SWT.PostEvent, postListener);
-		
-		display.asyncExec(new Runnable() {
-			public void run() {
-				try {
-					Thread.sleep(DURATION_MILLIS);
-				} catch (InterruptedException e) {
-					fail();
-				}
-				eventHasRun[0] = true;
-			}
-		});
-
-		while (display.readAndDispatch()) {
-		}
-		
-		display.removeListener(SWT.PreEvent, preListener);
-		display.removeListener(SWT.PostEvent, preListener);
-		
-		
-		assertTrue(beginCalled[0] && endCalled[0] && eventHasRun[0]);
-	} finally {
-		display.dispose();
-	}
+public void test_readAndDispatch() {
+	// The following tests rely on readAndDispatch in order to succeed,
+	// thus no test is needed here.
+	//    test_getSyncThread()
+	//    test_postLorg_eclipse_swt_widgets_Event()
 }
 
 public void test_removeFilterILorg_eclipse_swt_widgets_Listener() {
@@ -1070,6 +1029,9 @@ public void test_update() {
 	}
 }
 
+public void test_wake() {
+	// tested in sleep() method
+}
 
 /* custom */
 boolean disposeExecRan;

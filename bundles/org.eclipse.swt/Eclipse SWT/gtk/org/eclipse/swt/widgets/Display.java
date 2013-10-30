@@ -4227,6 +4227,7 @@ public boolean sleep () {
 		return false;
 	}
 	if (getMessageCount () != 0) return true;
+	sendSleepEvent();
 	if (fds == 0) {
 		allocated_nfds = 2;
 		fds = OS.g_malloc (OS.GPollFD_sizeof () * allocated_nfds);
@@ -4271,6 +4272,7 @@ public boolean sleep () {
 		}
 	} while (!result && getMessageCount () == 0 && !wake);
 	wake = false;
+	sendWakeupEvent();
 	return true;
 }
 
@@ -4438,6 +4440,18 @@ void sendPostEvent(Event event) {
 			sendEvent(SWT.PostEvent, null);
 		}
 	}
+}
+
+void sendSleepEvent() {
+  if (this.eventTable != null && this.eventTable.hooks(SWT.Sleep)) {
+    sendEvent(SWT.Sleep, null);
+  }
+}
+
+void sendWakeupEvent() {
+  if (this.eventTable != null && this.eventTable.hooks(SWT.Wakeup)) {
+    sendEvent(SWT.Wakeup, null);
+  }
 }
 
 void setCurrentCaret (Caret caret) {
