@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
@@ -164,16 +165,16 @@ public void test_toString() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Widget((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_widgets_Widget(e.nextElement()));
 	}
 	return suite;
 }
 
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_WidgetI");
 	methodNames.addElement("test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener");
 	methodNames.addElement("test_addListenerILorg_eclipse_swt_widgets_Listener");
@@ -223,17 +224,17 @@ protected void hookListeners(Widget w, int[] types, Listener listener) {
     }
 }
 
-protected String[] hookExpectedEvents(String type, final java.util.Vector events) {
+protected String[] hookExpectedEvents(String type, final java.util.Vector<String> events) {
     return hookExpectedEvents(widget, type, events);
 }
 
-protected String[] hookExpectedEvents(Widget w, String type, final java.util.Vector events) {
+protected String[] hookExpectedEvents(Widget w, String type, final java.util.Vector<String> events) {
     String[] expectedEvents = (String[])ConsistencyUtility.eventOrdering.get(type);
     hookExpectedEvents(w, expectedEvents, events);
     return expectedEvents;
 }
 
-protected void hookExpectedEvents(Widget w, String[] types, final java.util.Vector events) {
+protected void hookExpectedEvents(Widget w, String[] types, final java.util.Vector<String> events) {
     hookListeners(w, ConsistencyUtility.convertEventNames(types), 
 	        new Listener() {
 	            public void handleEvent(Event e) {

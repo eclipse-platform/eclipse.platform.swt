@@ -14,6 +14,7 @@ import java.util.Vector;
 
 import junit.framework.*;
 import junit.textui.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
@@ -678,15 +679,15 @@ public void test_showSelection() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Tree((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_widgets_Tree(e.nextElement()));
 	}
 	return suite;
 }
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_addTreeListenerLorg_eclipse_swt_events_TreeListener");
@@ -799,7 +800,7 @@ private void makeCleanEnvironment(boolean single) {
 	setWidget(tree);
 }
 
-private void createTree(Vector events) {
+private void createTree(Vector<String> events) {
     makeCleanEnvironment(true);
 	for (int i = 0; i < 3; i++) {
 		TreeItem item = new TreeItem(tree, SWT.NONE);
@@ -814,25 +815,25 @@ private void createTree(Vector events) {
 }
 
 public void test_consistency_KeySelection() {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTree(events);
     consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 public void test_consistency_MouseSelection() {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTree(events);
     consistencyEvent(30, 30, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_MouseExpand() {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTree(events);
     consistencyEvent(11, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_KeyExpand() {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTree(events);
     int code=SWT.ARROW_RIGHT;
     if(SwtJunit.isGTK)
@@ -841,7 +842,7 @@ public void test_consistency_KeyExpand() {
 }
 
 public void test_consistency_DoubleClick () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTree(events);
     consistencyPrePackShell();
     consistencyEvent(20, tree.getItemHeight()*2, 1, 0, 
@@ -849,25 +850,25 @@ public void test_consistency_DoubleClick () {
 }
 
 public void test_consistency_EnterSelection () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTree(events);
     consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 public void test_consistency_SpaceSelection () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTree(events);
     consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 public void test_consistency_MenuDetect () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTree(events);
     consistencyEvent(50, 25, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_DragDetect () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTree(events);
     consistencyEvent(30, 20, 50, 30, ConsistencyUtility.MOUSE_DRAG, events);
 }

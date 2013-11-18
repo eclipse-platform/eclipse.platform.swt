@@ -87,16 +87,16 @@ public void test_showPropertiesLjava_lang_String() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_ole_win32_OleClientSite((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_ole_win32_OleClientSite(e.nextElement()));
 	}
 	return suite;
 }
 
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeILjava_io_File");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeILjava_lang_String");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeILjava_lang_StringLjava_io_File");

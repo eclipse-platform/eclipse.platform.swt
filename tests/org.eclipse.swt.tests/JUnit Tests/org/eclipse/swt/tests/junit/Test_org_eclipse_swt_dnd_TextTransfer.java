@@ -43,15 +43,15 @@ public void test_nativeToJavaLorg_eclipse_swt_dnd_TransferData() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_dnd_TextTransfer((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_dnd_TextTransfer(e.nextElement()));
 	}
 	return suite;
 }
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_getInstance");
 	methodNames.addElement("test_javaToNativeLjava_lang_ObjectLorg_eclipse_swt_dnd_TransferData");
 	methodNames.addElement("test_nativeToJavaLorg_eclipse_swt_dnd_TransferData");

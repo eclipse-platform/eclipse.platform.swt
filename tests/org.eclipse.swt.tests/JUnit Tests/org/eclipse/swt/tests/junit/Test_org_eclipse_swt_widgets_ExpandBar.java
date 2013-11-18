@@ -14,6 +14,7 @@ import java.util.Vector;
 
 import junit.framework.*;
 import junit.textui.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.ExpandEvent;
 import org.eclipse.swt.events.ExpandListener;
@@ -185,16 +186,16 @@ public void test_setSpacingI() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_ExpandBar((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_widgets_ExpandBar(e.nextElement()));
 	}
 	return suite;
 }
 
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_addExpandListenerLorg_eclipse_swt_events_ExpandListener");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_getItemCount");
@@ -233,7 +234,7 @@ protected void runTest() throws Throwable {
 	else super.runTest();
 }
 
-private void createExpandBar(Vector events) {
+private void createExpandBar(Vector<String> events) {
 	expandBar = new ExpandBar(shell, SWT.V_SCROLL);
 	for (int i = 0; i < 3; i++) {
 		ExpandItem item = new ExpandItem(expandBar, SWT.NONE);
@@ -244,31 +245,31 @@ private void createExpandBar(Vector events) {
 }
 
 public void test_consistency_MouseSelection() {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createExpandBar(events);
     consistencyEvent(30, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_EnterSelection() {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createExpandBar(events);
     consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 public void test_consistency_SpaceSelection () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createExpandBar(events);
     consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 public void test_consistency_MenuDetect () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createExpandBar(events);
     consistencyEvent(50, 15, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_DragDetect () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createExpandBar(events);
     consistencyEvent(30, 20, 50, 20, ConsistencyUtility.MOUSE_DRAG, events);
 }

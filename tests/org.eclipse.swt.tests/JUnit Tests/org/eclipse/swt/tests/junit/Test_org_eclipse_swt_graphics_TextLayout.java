@@ -3,8 +3,10 @@ package org.eclipse.swt.tests.junit;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
+
 import junit.framework.*;
 import junit.textui.*;
+
 import java.util.*;
 
 
@@ -795,15 +797,15 @@ public void test_getTabs() {
 /*Test suite end*/
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	Vector methodNames = methodNames();
-	Enumeration e = methodNames.elements();
+	Vector<String> methodNames = methodNames();
+	Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_TextLayout((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_graphics_TextLayout(e.nextElement()));
 	}
 	return suite;
 }
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_getLevel");
 	methodNames.addElement("test_getLineOffsets");
 	methodNames.addElement("test_getLineIndex");

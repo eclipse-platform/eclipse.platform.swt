@@ -12,8 +12,10 @@ package org.eclipse.swt.tests.junit;
 
 
 import java.util.*;
+
 import junit.framework.*;
 import junit.textui.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.program.*;
 import org.eclipse.swt.widgets.*;
@@ -142,7 +144,7 @@ public void test_getPrograms() {
 	
 	assertNotNull(programs);
 	
-	Hashtable lookup = new Hashtable();
+	Hashtable<Integer, Program> lookup = new Hashtable<Integer, Program>();
 	for (int i=0; i<programs.length; i++) {
 		
 		// test non-null entry
@@ -197,15 +199,15 @@ public void test_toString() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_program_Program((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_program_Program(e.nextElement()));
 	}
 	return suite;
 }
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_equalsLjava_lang_Object");
 	methodNames.addElement("test_executeLjava_lang_String");
 	methodNames.addElement("test_getExtensions");

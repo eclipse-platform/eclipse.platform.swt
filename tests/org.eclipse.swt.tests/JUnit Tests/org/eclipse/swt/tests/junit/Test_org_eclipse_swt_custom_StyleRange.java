@@ -16,6 +16,7 @@ import java.util.*;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Color;
@@ -31,7 +32,7 @@ public class Test_org_eclipse_swt_custom_StyleRange extends SwtTestCase {
 	final static RGB RED = new RGB(255,0,0);
 	final static RGB BLUE = new RGB(0,0,255);
 	final static RGB GREEN = new RGB(0,255,0);
-	Hashtable colors = new Hashtable();
+	Hashtable<RGB, Color> colors = new Hashtable<RGB, Color>();
 public Test_org_eclipse_swt_custom_StyleRange(String name) {
 	super(name);
 }
@@ -40,7 +41,7 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 private Color getColor(RGB rgb) {
-	return (Color)colors.get(rgb);
+	return colors.get(rgb);
 }
 protected void initializeColors() {
 	Display display = Display.getDefault();
@@ -55,9 +56,9 @@ protected void setUp() {
 }
 
 protected void tearDown() {
-	Enumeration elements = colors.keys();
+	Enumeration<RGB> elements = colors.keys();
 	while (elements.hasMoreElements()) {
-		Color color = (Color)colors.get(elements.nextElement());
+		Color color = colors.get(elements.nextElement());
 		color.dispose();
 	}
 	super.tearDown();
@@ -113,7 +114,7 @@ public void test_equalsLjava_lang_Object() {
 }
 
 public void test_hashCode() {
-	Set set = new HashSet();
+	Set<StyleRange> set = new HashSet<StyleRange>();
 	Color testColor = new Color(Display.getDefault(), 0, 0, 0);
 	
 	//regression test for bug 30924
@@ -158,15 +159,15 @@ public void test_toString() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_StyleRange((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_custom_StyleRange(e.nextElement()));
 	}
 	return suite;
 }
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_Constructor");
 	methodNames.addElement("test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_ColorI");

@@ -43,16 +43,16 @@ public void test_mouseUpLorg_eclipse_swt_events_MouseEvent() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_events_MouseListener((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_events_MouseListener(e.nextElement()));
 	}
 	return suite;
 }
 
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_mouseDoubleClickLorg_eclipse_swt_events_MouseEvent");
 	methodNames.addElement("test_mouseDownLorg_eclipse_swt_events_MouseEvent");
 	methodNames.addElement("test_mouseUpLorg_eclipse_swt_events_MouseEvent");

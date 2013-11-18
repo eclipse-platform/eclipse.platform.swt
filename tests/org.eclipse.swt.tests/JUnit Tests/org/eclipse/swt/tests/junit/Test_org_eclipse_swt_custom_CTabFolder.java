@@ -168,15 +168,15 @@ public void test_showSelection() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_CTabFolder((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_custom_CTabFolder(e.nextElement()));
 	}
 	return suite;
 }
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_addCTabFolderListenerLorg_eclipse_swt_custom_CTabFolderListener");
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
@@ -267,7 +267,7 @@ private void makeCleanEnvironment() {
 	setWidget(ctabFolder);
 }
 
-private void createTabFolder(Vector events) {
+private void createTabFolder(Vector<String> events) {
 	makeCleanEnvironment();
 	for (int i = 0; i < 3; i++) {
 		CTabItem item = new CTabItem(ctabFolder, SWT.NONE);
@@ -283,40 +283,40 @@ private void createTabFolder(Vector events) {
 }
 
 public void test_consistency_KeySelection() {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTabFolder(events);
     consistencyEvent(0, SWT.ARROW_RIGHT, 0, 0, ConsistencyUtility.KEY_PRESS, events, false);
 }
 
 public void test_consistency_MouseSelection() {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTabFolder(events);
     consistencyPrePackShell();
     consistencyEvent(ctabFolder.getSize().x/2, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_PgdwnSelection () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTabFolder(events);
     consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_DOWN, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
 }
 
 public void test_consistency_PgupSelection () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTabFolder(events);
     ctabFolder.setSelection(2);
     consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_UP, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
 }
 
 public void test_consistency_MenuDetect () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTabFolder(events);
     ctabFolder.setSelection(1);
     consistencyEvent(50, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_DragDetect () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTabFolder(events);
     ctabFolder.setSelection(1);
     consistencyEvent(50, 5, 70, 10, ConsistencyUtility.MOUSE_DRAG, events);

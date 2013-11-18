@@ -11,8 +11,10 @@
 package org.eclipse.swt.tests.junit;
 
 import java.util.*;
+
 import junit.framework.*;
 import junit.textui.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -219,15 +221,15 @@ public void test_win32_newLorg_eclipse_swt_internal_win32_LOGFONTI() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_FontData((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_graphics_FontData(e.nextElement()));
 	}
 	return suite;
 }
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_Constructor");
 	methodNames.addElement("test_ConstructorLjava_lang_String");
 	methodNames.addElement("test_ConstructorLjava_lang_StringII");

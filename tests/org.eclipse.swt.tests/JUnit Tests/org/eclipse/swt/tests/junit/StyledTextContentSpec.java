@@ -34,7 +34,7 @@ public class StyledTextContentSpec implements TextChangeListener {
 	static String contentClassName;
 	static int failCount = 0;
 	static int errorCount = 0;
-	Class contentClass = null;
+	Class<?> contentClass = null;
 	StyledTextContent contentInstance = null;
 	int verify = 0;
 	Method currentMethod = null;
@@ -126,7 +126,7 @@ public void run() {
 		box.open();
 		return;
 	}
-	Class clazz;
+	Class<?> clazz;
 	clazz = this.getClass();
 	Method[] methods = clazz.getDeclaredMethods();
 	for (int i=0; i<methods.length; i++) {

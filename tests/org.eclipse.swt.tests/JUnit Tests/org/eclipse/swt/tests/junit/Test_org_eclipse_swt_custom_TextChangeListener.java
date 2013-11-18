@@ -14,6 +14,7 @@ package org.eclipse.swt.tests.junit;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.*;
+
 import junit.framework.*;
 import junit.textui.*;
 
@@ -542,16 +543,16 @@ public void test_textSetLorg_eclipse_swt_custom_TextChangedEvent() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_TextChangeListener((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_custom_TextChangeListener(e.nextElement()));
 	}
 	return suite;
 }
 
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_textChangedLorg_eclipse_swt_custom_TextChangedEvent");
 	methodNames.addElement("test_textChangingLorg_eclipse_swt_custom_TextChangingEvent");
 	methodNames.addElement("test_textSetLorg_eclipse_swt_custom_TextChangedEvent");

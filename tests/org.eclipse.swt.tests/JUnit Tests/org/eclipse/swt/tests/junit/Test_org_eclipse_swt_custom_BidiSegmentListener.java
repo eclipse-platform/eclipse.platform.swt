@@ -14,6 +14,7 @@ package org.eclipse.swt.tests.junit;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BidiSegmentEvent;
 import org.eclipse.swt.custom.BidiSegmentListener;
@@ -44,10 +45,10 @@ protected void setUp() {
 }
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_BidiSegmentListener((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_custom_BidiSegmentListener(e.nextElement()));
 	}
 	return suite;
 }
@@ -175,8 +176,8 @@ public void test_lineGetSegmentsLorg_eclipse_swt_custom_BidiSegmentEvent() {
 	testStyleRangeSegmenting(new int[] {0,5}, new int[] {10,2});
 }
 
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_lineGetSegmentsLorg_eclipse_swt_custom_BidiSegmentEvent");
 	return methodNames;
 }

@@ -15,6 +15,7 @@ import java.util.*;
 
 import junit.framework.*;
 import junit.textui.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.dnd.*;
@@ -39,7 +40,7 @@ final static RGB YELLOW = new RGB(255,255,0);
 final static RGB CYAN = new RGB(0,255,255);
 final static RGB PURPLE = new RGB(255,0,255);
 final static String PLATFORM_LINE_DELIMITER = System.getProperty("line.separator");
-Hashtable colors = new Hashtable();
+Hashtable<RGB, Color> colors = new Hashtable<RGB, Color>();
 private boolean listenerCalled;	
 private boolean listener2Called;
 
@@ -59,9 +60,9 @@ protected void setUp() {
 }
 
 protected void tearDown() {
-	Enumeration elements = colors.keys();
+	Enumeration<RGB> elements = colors.keys();
 	while (elements.hasMoreElements()) {
-		Color color = (Color)colors.get((RGB)elements.nextElement());
+		Color color = colors.get(elements.nextElement());
 		color.dispose();
 	}
 	super.tearDown();
@@ -101,7 +102,7 @@ private StyleRange getStyle(int start, int length, RGB fg, RGB bg) {
 }
 // this method must not be public so that the auto-gen tool keeps it
 private Color getColor(RGB rgb) {
-	return (Color)colors.get(rgb);
+	return colors.get(rgb);
 }
 // this method must not be public so that the auto-gen tool keeps it
 protected void initializeColors() {
@@ -4443,15 +4444,15 @@ public void test_isTextSelected() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_StyledText((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_custom_StyledText(e.nextElement()));
 	}
 	return suite;
 }
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_addBidiSegmentListenerLorg_eclipse_swt_custom_BidiSegmentListener");
 	methodNames.addElement("test_addExtendedModifyListenerLorg_eclipse_swt_custom_ExtendedModifyListener");

@@ -43,16 +43,16 @@ public void test_new_ShellLorg_eclipse_swt_widgets_DisplayLjava_awt_Canvas() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_awt_SWT_AWT((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_awt_SWT_AWT(e.nextElement()));
 	}
 	return suite;
 }
 
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_Constructor");
 	methodNames.addElement("test_new_FrameLorg_eclipse_swt_widgets_Composite");
 	methodNames.addElement("test_new_ShellLorg_eclipse_swt_widgets_DisplayLjava_awt_Canvas");

@@ -13,6 +13,7 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.browser.*;
 import org.eclipse.swt.widgets.*;
@@ -45,16 +46,16 @@ public void test_changedLorg_eclipse_swt_browser_TitleEvent() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_browser_TitleListener((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_browser_TitleListener(e.nextElement()));
 	}
 	return suite;
 }
 
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_changedLorg_eclipse_swt_browser_TitleEvent");
 	return methodNames;
 }

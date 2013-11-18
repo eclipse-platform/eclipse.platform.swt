@@ -55,16 +55,16 @@ public void test_shellIconifiedLorg_eclipse_swt_events_ShellEvent() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_events_ShellAdapter((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_events_ShellAdapter(e.nextElement()));
 	}
 	return suite;
 }
 
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_Constructor");
 	methodNames.addElement("test_shellActivatedLorg_eclipse_swt_events_ShellEvent");
 	methodNames.addElement("test_shellClosedLorg_eclipse_swt_events_ShellEvent");

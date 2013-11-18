@@ -20,8 +20,8 @@ import org.eclipse.swt.widgets.Event;
 
 public class ConsistencyUtility {
 
-    static HashMap eventOrdering = new HashMap();
-    static HashMap eventTypes = new HashMap();
+    static HashMap<String, String[]> eventOrdering = new HashMap<String, String[]>();
+    static HashMap<String, Integer> eventTypes = new HashMap<String, Integer>();
     static {
         
         eventOrdering.put("DoubleClick", 			new String[] {"MouseDown", "Selection:", "MouseUp", "MouseDown", "MouseDoubleClick", "DefaultSelection", "MouseUp"});

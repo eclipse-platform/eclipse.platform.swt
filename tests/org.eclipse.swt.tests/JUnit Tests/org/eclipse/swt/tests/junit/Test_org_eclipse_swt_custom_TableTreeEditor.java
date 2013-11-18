@@ -60,15 +60,15 @@ public void test_setItemLorg_eclipse_swt_custom_TableTreeItem() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_TableTreeEditor((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_custom_TableTreeEditor(e.nextElement()));
 	}
 	return suite;
 }
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_custom_TableTree");
 	methodNames.addElement("test_dispose");
 	methodNames.addElement("test_getColumn");

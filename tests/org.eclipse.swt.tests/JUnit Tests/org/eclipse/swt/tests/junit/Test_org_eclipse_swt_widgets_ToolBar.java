@@ -14,6 +14,7 @@ import java.util.Vector;
 
 import junit.framework.*;
 import junit.textui.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
@@ -154,15 +155,15 @@ public void test_indexOfLorg_eclipse_swt_widgets_ToolItem() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_ToolBar((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_widgets_ToolBar(e.nextElement()));
 	}
 	return suite;
 }
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_computeTrimIIII");
@@ -201,7 +202,7 @@ protected void runTest() throws Throwable {
 /* custom */
 protected ToolBar toolBar;
 
-private void createToolBar(Vector events) {
+private void createToolBar(Vector<String> events) {
 	toolBar = new ToolBar(shell, SWT.FLAT | SWT.HORIZONTAL);
 	for (int i = 0; i < 3; i++) {
 		ToolItem item = new ToolItem(toolBar, SWT.PUSH);
@@ -213,31 +214,31 @@ private void createToolBar(Vector events) {
 }
 
 public void test_consistency_MouseSelection() {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createToolBar(events);
     consistencyEvent(30, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_EnterSelection () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createToolBar(events);
     consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 public void test_consistency_SpaceSelection () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createToolBar(events);
     consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 public void test_consistency_MenuDetect () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createToolBar(events);
     consistencyEvent(50, 15, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_DragDetect () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createToolBar(events);
     consistencyEvent(30, 20, 50, 20, ConsistencyUtility.MOUSE_DRAG, events);
 }

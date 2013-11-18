@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import java.util.Enumeration;
+import java.util.Vector;
+
 import junit.framework.*;
 import junit.textui.*;
 
@@ -79,16 +82,16 @@ public void test_getValueLorg_eclipse_swt_accessibility_AccessibleControlEvent()
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	Vector<String> methodNames = methodNames();
+	Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
 		suite.addTest(new Test_org_eclipse_swt_accessibility_AccessibleControlAdapter((String)e.nextElement()));
 	}
 	return suite;
 }
 
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static Vector<String> methodNames() {
+	Vector<String> methodNames = new Vector<String>();
 	methodNames.addElement("test_Constructor");
 	methodNames.addElement("test_getChildAtPointLorg_eclipse_swt_accessibility_AccessibleControlEvent");
 	methodNames.addElement("test_getChildCountLorg_eclipse_swt_accessibility_AccessibleControlEvent");

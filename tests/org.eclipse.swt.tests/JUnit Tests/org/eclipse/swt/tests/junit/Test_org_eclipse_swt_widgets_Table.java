@@ -15,6 +15,7 @@ import java.util.Vector;
 
 import junit.framework.*;
 import junit.textui.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
@@ -1664,15 +1665,15 @@ public void test_showSelection() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Table((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_widgets_Table(e.nextElement()));
 	}
 	return suite;
 }
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_computeSizeIIZ");
@@ -1802,7 +1803,7 @@ private void makeCleanEnvironment(boolean single) {
 	setWidget(table);	
 }
 
-private void createTable(Vector events) {
+private void createTable(Vector<String> events) {
 	makeCleanEnvironment(false);
 	table.setHeaderVisible(true);
 	table.setLinesVisible(true);
@@ -1820,13 +1821,13 @@ private void createTable(Vector events) {
 }
 
 public void test_consistency_KeySelection() {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTable(events);
     consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 public void test_consistency_MouseSelection() {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTable(events);
     consistencyPrePackShell();
     consistencyEvent(20, table.getHeaderHeight() + table.getItemHeight()*2, 
@@ -1834,7 +1835,7 @@ public void test_consistency_MouseSelection() {
 }
 
 public void test_consistency_DoubleClick () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTable(events);
     consistencyPrePackShell();
     consistencyEvent(20, table.getHeaderHeight()+ table.getItemHeight() + 5, 1, 0, 
@@ -1842,19 +1843,19 @@ public void test_consistency_DoubleClick () {
 }
 
 public void test_consistency_EnterSelection () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTable(events);
     consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 public void test_consistency_MenuDetect () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTable(events);
     consistencyEvent(20, 25, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 public void test_consistency_DragDetect () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createTable(events);
     consistencyEvent(30, 20, 50, 30, ConsistencyUtility.MOUSE_DRAG, events);
 }

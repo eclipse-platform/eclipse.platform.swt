@@ -287,15 +287,15 @@ public void test_win32_newLorg_eclipse_swt_widgets_DisplayI() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Shell((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_widgets_Shell(e.nextElement()));
 	}
 	return suite;
 }
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	//these must be run before the shell tests because of pr 79504
 	methodNames.addElement("test_consistency_Iconify");
 	methodNames.addElement("test_consistency_Close");
@@ -574,7 +574,7 @@ public void test_consistency_Open() {
 	if (fTestConsistency) {
 	    createShell();
 	    final Display display = shell.getDisplay();
-	    Vector events = new Vector();
+	    Vector<String> events = new Vector<String>();
 	    String[] temp = hookExpectedEvents(testShell, getTestName(), events);
 	    shell.pack();
 	    shell.open();

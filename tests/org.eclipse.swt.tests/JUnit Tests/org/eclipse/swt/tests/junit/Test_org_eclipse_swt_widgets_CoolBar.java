@@ -99,15 +99,15 @@ public void test_setWrapIndices$I() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_CoolBar((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_widgets_CoolBar(e.nextElement()));
 	}
 	return suite;
 }
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_getItemCount");
@@ -156,7 +156,7 @@ protected void runTest() throws Throwable {
 CoolBar coolBar;
 
 
-private void createCoolBar(Vector events) {
+private void createCoolBar(Vector<String> events) {
     tearDown();
     super.setUp();
     String test = getTestName();
@@ -192,7 +192,7 @@ private void createCoolBar(Vector events) {
 }
 
 public void test_consistency_ChevronMenuDetect () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createCoolBar(events);
     consistencyPrePackShell();
     Point[] points = coolBar.getItemSizes();
@@ -201,7 +201,7 @@ public void test_consistency_ChevronMenuDetect () {
 }
 
 public void test_consistency_MenuDetect () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createCoolBar(events);
     consistencyPrePackShell();
     Point[] points = coolBar.getItemSizes();
@@ -209,7 +209,7 @@ public void test_consistency_MenuDetect () {
 }
 
 public void test_consistency_ChevronDragDetect () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createCoolBar(events);
     consistencyPrePackShell();
     Point[] points = coolBar.getItemSizes();
@@ -217,7 +217,7 @@ public void test_consistency_ChevronDragDetect () {
 }
 
 public void test_consistency_DragDetect () {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createCoolBar(events);
     consistencyPrePackShell();
     Point[] points = coolBar.getItemSizes();
@@ -225,7 +225,7 @@ public void test_consistency_DragDetect () {
 }
 
 public void test_consistency_ChevronMouseSelection() {
-    Vector events = new Vector();
+    Vector<String> events = new Vector<String>();
     createCoolBar(events);
     consistencyPrePackShell();
     Point[] points = coolBar.getItemSizes();

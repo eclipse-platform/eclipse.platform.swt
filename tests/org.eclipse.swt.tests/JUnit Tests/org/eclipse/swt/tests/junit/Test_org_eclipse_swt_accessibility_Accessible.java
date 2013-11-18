@@ -10,8 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import java.util.Enumeration;
+import java.util.Vector;
+
 import junit.framework.*;
 import junit.textui.*;
+
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.accessibility.*;
 
@@ -148,16 +152,16 @@ public void test_textSelectionChanged() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	Vector<String> methodNames = methodNames();
+	Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
 		suite.addTest(new Test_org_eclipse_swt_accessibility_Accessible((String)e.nextElement()));
 	}
 	return suite;
 }
 
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static Vector<String> methodNames() {
+	Vector<String> methodNames = new Vector<String>();
 	methodNames.addElement("test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener");
 	methodNames.addElement("test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener");
 	methodNames.addElement("test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener");
