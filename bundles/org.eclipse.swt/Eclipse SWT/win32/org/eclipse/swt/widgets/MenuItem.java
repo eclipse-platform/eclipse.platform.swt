@@ -268,11 +268,13 @@ boolean fillAccel (ACCEL accel) {
 				if (OS.IsWinCE) {
 					key = (int)/*64*/OS.CharUpper ((short) key);
 				} else {
-					vKey = OS.VkKeyScan ((short) key) & 0xFF;
+					vKey = OS.VkKeyScan ((short) key);
 					if (vKey == -1) {
-						fVirt = 0;
+						if (key != (int)/*64*/OS.CharUpper ((short) key)) {
+							fVirt = 0;
+						}
 					} else {
-						key = vKey;
+						key = vKey & 0xFF;
 					}
 				}
 			}

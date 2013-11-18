@@ -4967,6 +4967,7 @@ LRESULT WM_INITMENUPOPUP (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 LRESULT WM_INPUTLANGCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
+	menuShell().destroyAccelerators();
 	return null;
 }
 
