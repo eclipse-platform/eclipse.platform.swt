@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 
@@ -246,15 +247,15 @@ public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
+	java.util.Vector<String> methodNames = methodNames();
+	java.util.Enumeration<String> e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_Color((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_graphics_Color(e.nextElement()));
 	}
 	return suite;
 }
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
+public static java.util.Vector<String> methodNames() {
+	java.util.Vector<String> methodNames = new java.util.Vector<String>();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceIII");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGB");
 	methodNames.addElement("test_dispose");
