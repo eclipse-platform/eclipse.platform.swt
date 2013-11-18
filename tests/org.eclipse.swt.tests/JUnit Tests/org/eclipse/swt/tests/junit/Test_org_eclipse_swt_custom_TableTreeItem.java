@@ -21,6 +21,7 @@ import junit.textui.*;
  *
  * @see org.eclipse.swt.custom.TableTreeItem
  */
+@SuppressWarnings("deprecation")
 public class Test_org_eclipse_swt_custom_TableTreeItem extends Test_org_eclipse_swt_widgets_Item {
 
 	TableTree tableTree;

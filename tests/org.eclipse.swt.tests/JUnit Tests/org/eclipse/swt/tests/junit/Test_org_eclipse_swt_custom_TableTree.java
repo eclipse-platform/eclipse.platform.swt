@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.TableColumn;
  *
  * @see org.eclipse.swt.custom.TableTree
  */
+@SuppressWarnings("deprecation")
 public class Test_org_eclipse_swt_custom_TableTree extends Test_org_eclipse_swt_widgets_Composite {
 
 public Test_org_eclipse_swt_custom_TableTree(String name) {
