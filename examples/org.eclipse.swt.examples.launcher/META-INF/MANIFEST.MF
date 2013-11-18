@@ -20,4 +20,4 @@ Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.debug.core,
  org.eclipse.jdt.core
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

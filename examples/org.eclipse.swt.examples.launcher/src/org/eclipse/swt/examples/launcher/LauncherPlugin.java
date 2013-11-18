@@ -178,7 +178,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 		}
 		
 		/* Collect all launch categories -- coalesce those with same ID */
-		HashMap idMap = new HashMap();
+		HashMap<String, ItemTreeNode> idMap = new HashMap<String, ItemTreeNode>();
 		for (int i = 0; i < configurationElements.length; ++i) {
 			final IConfigurationElement ce = configurationElements[i];
 			final String ceName = ce.getName();
@@ -194,7 +194,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 		}
 		
 		/* Generate launch category hierarchy */
-		Set tempIdSet = new HashSet(); // used to prevent duplicates from being entered into the tree
+		Set<String> tempIdSet = new HashSet<String>(); // used to prevent duplicates from being entered into the tree
 		for (int i = 0; i < configurationElements.length; ++i) {
 			final IConfigurationElement ce = configurationElements[i];
 			final String ceName = ce.getName();
@@ -202,7 +202,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 			
 			if (tempIdSet.contains(attribId)) continue;
 			if (ceName.equalsIgnoreCase(LAUNCH_ITEMS_XML_CATEGORY)) {
-				final ItemTreeNode theNode = (ItemTreeNode) idMap.get(attribId);
+				final ItemTreeNode theNode = idMap.get(attribId);
 				addItemByCategory(ce, categoryTree, theNode, idMap);
 				tempIdSet.add(attribId);
 			}
@@ -238,13 +238,13 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	 * Adds an item to the category tree.
 	 */
 	private static void addItemByCategory(IConfigurationElement ce, ItemTreeNode root,
-		ItemTreeNode theNode, HashMap idMap) {
+		ItemTreeNode theNode, HashMap<String, ItemTreeNode> idMap) {
 		final String attribCategory = getItemAttribute(ce, LAUNCH_ITEMS_XML_ATTRIB_CATEGORY, null);
 				
 		// locate the parent node
 		ItemTreeNode parentNode = null;
 		if (attribCategory != null) {
-			parentNode = (ItemTreeNode) idMap.get(attribCategory);
+			parentNode = idMap.get(attribCategory);
 		}
 		if (parentNode == null) parentNode = root;
 				
