@@ -73,10 +73,8 @@ public static void main(String[] args) {
 			// sort the data based on column and direction
 			final int index = currentColumn == column1 ? 0 : 1;
 			final int direction = dir;
-			Arrays.sort(data, new Comparator() {
-				public int compare(Object arg0, Object arg1) {
-					int[] a = (int[]) arg0;
-					int[] b = (int[]) arg1;
+			Arrays.sort(data, new Comparator<int[]>() {
+				public int compare(int[] a, int[] b) {
 					if (a[index] == b[index]) return 0;
 					if (direction == SWT.UP) {
 						return a[index] < b[index] ? -1 : 1;

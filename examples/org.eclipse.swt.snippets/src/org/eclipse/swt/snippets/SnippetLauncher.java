@@ -26,7 +26,7 @@ public class SnippetLauncher {
 		for (int i = 1; i < count; i++) {
 			if (i == 132 || i == 133 || i == 318) continue; // avoid printing to printer
 			String className = "Snippet" + i;
-			Class clazz = null;
+			Class<?> clazz = null;
 			try {
 				clazz = Class.forName("org.eclipse.swt.snippets." + className);
 			} catch (ClassNotFoundException e) {}

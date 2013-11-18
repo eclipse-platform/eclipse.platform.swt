@@ -42,7 +42,7 @@ public class Snippet135 {
 		public int getColumnCount () {
 			return columnsName.length;
 		}
-		public Class getColumnClass (int col) {
+		public Class<?> getColumnClass (int col) {
 			if (col == 1) return Long.class;
 			if (col == 2) return Date.class;
 			return String.class;

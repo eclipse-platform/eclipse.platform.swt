@@ -63,15 +63,15 @@ public class Snippet154 {
 
 		/* Creating components */
 		int nrows = 1000, ncolumns = 10;
-		Vector rows = new Vector();
+		Vector<Vector<String>> rows = new Vector<Vector<String>>();
 		for (int i = 0; i < nrows; i++) {
-			Vector row = new Vector();
+			Vector<String> row = new Vector<String>();
 			for (int j = 0; j < ncolumns; j++) {
 				row.addElement("Item " + i + "-" + j);
 			}
 			rows.addElement(row);
 		}
-		Vector columns = new Vector();
+		Vector<String> columns = new Vector<String>();
 		for (int i = 0; i < ncolumns; i++) {
 			columns.addElement("Column " + i);
 		}
