@@ -41,6 +41,7 @@ class ToolTipTab extends Tab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -52,6 +53,7 @@ class ToolTipTab extends Tab {
 		visibleButton = new Button(toolTipGroup, SWT.CHECK);
 		visibleButton.setText(ControlExample.getResourceString("Visible"));
 		visibleButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setExampleWidgetVisibility ();
 			}
@@ -61,6 +63,7 @@ class ToolTipTab extends Tab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -82,6 +85,7 @@ class ToolTipTab extends Tab {
 	 * @param tabFolder org.eclipse.swt.widgets.TabFolder
 	 * @return the new page for the tab folder
 	 */
+	@Override
 	Composite createTabFolderPage (TabFolder tabFolder) {
 		super.createTabFolderPage (tabFolder);
 
@@ -92,6 +96,7 @@ class ToolTipTab extends Tab {
 		 * recalculate the preferred size correctly.
 		 */
 		tabFolderPage.addControlListener(new ControlAdapter() {
+			@Override
 			public void controlResized(ControlEvent e) {
 				setExampleWidgetSize ();
 			}
@@ -103,6 +108,7 @@ class ToolTipTab extends Tab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup () {
 		super.createStyleGroup ();
 	
@@ -119,10 +125,12 @@ class ToolTipTab extends Tab {
 		noIconButton.setText(ControlExample.getResourceString("No_Icon"));
 	}
 	
+	@Override
 	void createColorAndFontGroup () {
 		// ToolTip does not need a color and font group.
 	}
 	
+	@Override
 	void createOtherGroup () {
 		/* Create the group */
 		otherGroup = new Group (controlGroup, SWT.NONE);
@@ -140,11 +148,13 @@ class ToolTipTab extends Tab {
 
 		/* Add the listeners */
 		autoHideButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setExampleWidgetAutoHide ();
 			}
 		});
 		showInTrayButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				showExampleWidgetInTray ();
 			}
@@ -159,10 +169,12 @@ class ToolTipTab extends Tab {
 		autoHideButton.setSelection(true);
 	}
 	
+	@Override
 	void createSizeGroup () {
 		// ToolTip does not need a size group.
 	}
 	
+	@Override
 	void createBackgroundModeGroup () {
 		// ToolTip does not need a background mode group.
 	}
@@ -170,6 +182,7 @@ class ToolTipTab extends Tab {
 	/**
 	 * Disposes the "Example" widgets.
 	 */
+	@Override
 	void disposeExampleWidgets () {
 		disposeTrayItem();
 		super.disposeExampleWidgets();
@@ -178,6 +191,7 @@ class ToolTipTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	// Tab uses this for many things - widgets would only get set/get, listeners, and dispose.
 	Widget[] getExampleWidgets () {
 		return new Widget [] {toolTip1};
@@ -187,6 +201,7 @@ class ToolTipTab extends Tab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"Message", "Text"};
 	}
@@ -194,6 +209,7 @@ class ToolTipTab extends Tab {
 	/**
 	 * Gets the short text for the tab folder item.
 	 */
+	@Override
 	String getShortTabText() {
 		return "TT";
 	}
@@ -201,6 +217,7 @@ class ToolTipTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "ToolTip";
 	}
@@ -208,6 +225,7 @@ class ToolTipTab extends Tab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		showExampleWidgetInTray ();
 		setExampleWidgetAutoHide ();
@@ -223,6 +241,7 @@ class ToolTipTab extends Tab {
 	/**
 	 * Sets the visibility of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetVisibility () {
 		toolTip1.setVisible (visibleButton.getSelection ());
 	}

@@ -141,12 +141,14 @@ public class PaintExample {
 		item.setToolTipText(getResourceString(id + ".tooltip"));
 		item.setImage(tool.image);
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				tool.action.run();
 			}
 		});
 		final int childID = toolbar.indexOf(item);
 		toolbar.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+			@Override
 			public void getName(org.eclipse.swt.accessibility.AccessibleEvent e) {
 				if (e.childID == childID) {
 					e.result = getResourceString(id + ".description");
@@ -299,6 +301,7 @@ public class PaintExample {
 		airbrushRadiusScale.setSelection(toolSettings.airbrushRadius);
 		airbrushRadiusScale.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
 		airbrushRadiusScale.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				toolSettings.airbrushRadius = airbrushRadiusScale.getSelection();
 				updateToolSettings();
@@ -314,6 +317,7 @@ public class PaintExample {
 		airbrushIntensityScale.setSelection(toolSettings.airbrushIntensity);
 		airbrushIntensityScale.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
 		airbrushIntensityScale.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				toolSettings.airbrushIntensity = airbrushIntensityScale.getSelection();
 				updateToolSettings();

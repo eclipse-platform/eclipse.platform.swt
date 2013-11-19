@@ -262,6 +262,7 @@ abstract class Tab {
 		 * button is selected.
 		 */
 		SelectionListener selectionListener = new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				if ((event.widget.getStyle () & SWT.RADIO) != 0) {
 					if (!((Button) event.widget).getSelection ()) return;
@@ -308,6 +309,7 @@ abstract class Tab {
 			setGetButton.setText (ControlExample.getResourceString ("Set_Get"));
 			setGetButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 			setGetButton.addSelectionListener (new SelectionAdapter() {
+				@Override
 				public void widgetSelected (SelectionEvent e) {
 					if (getExampleWidgets().length >  0) {
 						if (setGetDialog == null) {
@@ -363,16 +365,19 @@ abstract class Tab {
 		colorDialog = new ColorDialog (shell);
 		fontDialog = new FontDialog (shell);
 		colorAndFontTable.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetDefaultSelected(SelectionEvent event) {
 				changeFontOrColor (colorAndFontTable.getSelectionIndex());
 			}
 		});
 		changeButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				changeFontOrColor (colorAndFontTable.getSelectionIndex());
 			}
 		});
 		defaultsButton.addSelectionListener(new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent e) {
 				resetColorsAndFonts ();
 			}
@@ -470,21 +475,25 @@ abstract class Tab {
 		
 		/* Add the listeners */
 		enabledButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setExampleWidgetEnabled ();
 			}
 		});
 		visibleButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setExampleWidgetVisibility ();
 			}
 		});
 		backgroundImageButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setExampleWidgetBackgroundImage ();
 			}
 		});
 		popupMenuButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setExampleWidgetPopupMenu ();
 			}
@@ -517,16 +526,19 @@ abstract class Tab {
 	
 		/* Add the listeners */
 		backgroundModeCombo.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setExampleGroupBackgroundMode ();
 			}
 		});
 		backgroundModeImageButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setExampleGroupBackgroundImage ();
 			}
 		});
 		backgroundModeColorButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setExampleGroupBackgroundColor ();
 			}
@@ -561,6 +573,7 @@ abstract class Tab {
 			if ((setFieldsMask & DOIT) != 0) doitCombo.setText(Boolean.toString(setFieldsEvent.doit));
 			doitCombo.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 			doitCombo.addSelectionListener(new SelectionAdapter () {
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					String newValue = doitCombo.getText();
 					if (newValue.length() == 0) {
@@ -584,6 +597,7 @@ abstract class Tab {
 			if ((setFieldsMask & DETAIL) != 0) detailCombo.setText (DETAIL_CONSTANTS[detailType][setFieldsEvent.detail]);
 			detailCombo.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 			detailCombo.addSelectionListener(new SelectionAdapter () {
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					String newValue = detailCombo.getText();
 					if (newValue.length() == 0) {
@@ -707,6 +721,7 @@ abstract class Tab {
 		data.horizontalAlignment = SWT.RIGHT;
 		ok.setLayoutData (data);
 		ok.addSelectionListener (new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				EVENT_INFO[index].setFields = setFieldsMask;
 				EVENT_INFO[index].event = setFieldsEvent;
@@ -803,6 +818,7 @@ abstract class Tab {
 		selectAll.setText(ControlExample.getResourceString ("Select_All"));
 		selectAll.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		selectAll.addSelectionListener (new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				TableItem [] items = table.getItems();
 				for (int i = 0; i < EVENT_INFO.length; i++) {
@@ -817,6 +833,7 @@ abstract class Tab {
 		deselectAll.setText(ControlExample.getResourceString ("Deselect_All"));
 		deselectAll.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		deselectAll.addSelectionListener (new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				TableItem [] items = table.getItems();
 				for (int i = 0; i < EVENT_INFO.length; i++) {
@@ -831,6 +848,7 @@ abstract class Tab {
 		editEvent.setText (ControlExample.getResourceString ("Edit_Event"));
 		editEvent.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_BEGINNING));
 		editEvent.addSelectionListener (new SelectionAdapter() {
+			@Override
 			public void widgetSelected (SelectionEvent e) {
 				Point pt = editEvent.getLocation();
 				pt = e.display.map(editEvent, null, pt);
@@ -842,6 +860,7 @@ abstract class Tab {
 		});
 		editEvent.setEnabled(false);
 		table.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				int fields = 0;
 				int index = table.getSelectionIndex();
@@ -850,6 +869,7 @@ abstract class Tab {
 				}
 				editEvent.setEnabled(fields != 0);
 			}
+			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				if (editEvent.getEnabled()) {
 					Point pt = editEvent.getLocation();
@@ -868,6 +888,7 @@ abstract class Tab {
 		dialog.setDefaultButton(ok);
 		ok.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		ok.addSelectionListener (new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				TableItem [] items = table.getItems();
 				for (int i = 0; i < EVENT_INFO.length; i++) {
@@ -913,6 +934,7 @@ abstract class Tab {
 		Button listenersButton = new Button (listenersGroup, SWT.PUSH);
 		listenersButton.setText (ControlExample.getResourceString ("Select_Listeners"));
 		listenersButton.addSelectionListener (new SelectionAdapter() {
+			@Override
 			public void widgetSelected (SelectionEvent e) {
 				createListenerSelectionDialog ();
 				recreateExampleWidgets ();
@@ -925,6 +947,7 @@ abstract class Tab {
 		final Button untypedEventsCheckbox = new Button (listenersGroup, SWT.CHECK);
 		untypedEventsCheckbox.setText (ControlExample.getResourceString ("UntypedEvents"));
 		untypedEventsCheckbox.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				untypedEvents = untypedEventsCheckbox.getSelection ();
 			}
@@ -936,6 +959,7 @@ abstract class Tab {
 		final Button listenCheckbox = new Button (listenersGroup, SWT.CHECK);
 		listenCheckbox.setText (ControlExample.getResourceString ("Listen"));
 		listenCheckbox.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				logging = listenCheckbox.getSelection ();
 				recreateExampleWidgets ();
@@ -949,6 +973,7 @@ abstract class Tab {
 		clearButton.setText (ControlExample.getResourceString ("Clear"));
 		clearButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 		clearButton.addSelectionListener (new SelectionAdapter() {
+			@Override
 			public void widgetSelected (SelectionEvent e) {
 				eventConsole.setText ("");
 			}
@@ -969,6 +994,7 @@ abstract class Tab {
 		eventConsole.setLayoutData (data);
 		createEventConsolePopup ();
 		eventConsole.addKeyListener (new KeyAdapter () {
+			@Override
 			public void keyPressed (KeyEvent e) {
 				if ((e.keyCode == 'A' || e.keyCode == 'a') && (e.stateMask & SWT.MOD1) != 0) {
 					eventConsole.selectAll ();
@@ -996,6 +1022,7 @@ abstract class Tab {
 		nameCombo.setVisibleItemCount(methodNames.length);
 		nameCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		nameCombo.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				resetLabels();
 			}
@@ -1005,6 +1032,7 @@ abstract class Tab {
 		setButton = new Button(dialog, SWT.PUSH);
 		setButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
 		setButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				setValue();
 				setText.selectAll();
@@ -1016,6 +1044,7 @@ abstract class Tab {
 		getButton = new Button(dialog, SWT.PUSH);
 		getButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
 		getButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				getValue();
 			}
@@ -1216,6 +1245,7 @@ abstract class Tab {
 		
 		/* Add the listeners */
 		SelectionAdapter selectionListener = new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setExampleWidgetSize ();
 			}

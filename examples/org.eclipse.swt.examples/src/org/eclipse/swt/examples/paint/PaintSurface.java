@@ -77,14 +77,17 @@ public class PaintSurface {
 			}			
 		});
 		paintCanvas.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseDown(MouseEvent event) {
 				processMouseEventCoordinates(event);
 				if (paintSession != null) paintSession.mouseDown(event);
 			}
+			@Override
 			public void mouseUp(MouseEvent event) {
 				processMouseEventCoordinates(event);
 				if (paintSession != null) paintSession.mouseUp(event);
 			}
+			@Override
 			public void mouseDoubleClick(MouseEvent event) {
 				processMouseEventCoordinates(event);
 				if (paintSession != null) paintSession.mouseDoubleClick(event);
@@ -149,6 +152,7 @@ public class PaintSurface {
 			}
 		});
 		paintCanvas.addControlListener(new ControlAdapter() {
+			@Override
 			public void controlResized(ControlEvent event) {
 				handleResize();
 			}			
@@ -158,6 +162,7 @@ public class PaintSurface {
 		ScrollBar horizontal = paintCanvas.getHorizontalBar();
 		horizontal.setVisible(true);
 		horizontal.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				scrollHorizontally((ScrollBar)event.widget);
 			}
@@ -165,6 +170,7 @@ public class PaintSurface {
 		ScrollBar vertical = paintCanvas.getVerticalBar();
 		vertical.setVisible(true);
 		vertical.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				scrollVertically((ScrollBar)event.widget);
 			}

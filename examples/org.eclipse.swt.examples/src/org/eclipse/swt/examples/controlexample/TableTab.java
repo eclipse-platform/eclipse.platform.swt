@@ -72,6 +72,7 @@ class TableTab extends ScrollableTab {
 	/**
 	 * Creates the "Colors and Fonts" group.
 	 */
+	@Override
 	void createColorAndFontGroup () {
 		super.createColorAndFontGroup();
 		
@@ -106,6 +107,7 @@ class TableTab extends ScrollableTab {
 		});
 	}
 
+	@Override
 	void changeFontOrColor(int index) {
 		switch (index) {
 		case ITEM_FOREGROUND_COLOR: {
@@ -190,6 +192,7 @@ class TableTab extends ScrollableTab {
 	/**
 	 * Creates the "Other" group.
 	 */
+	@Override
 	void createOtherGroup () {
 		super.createOtherGroup ();
 	
@@ -214,41 +217,49 @@ class TableTab extends ScrollableTab {
 
 		/* Add the listeners */
 		linesVisibleButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetLinesVisible ();
 			}
 		});
 		multipleColumns.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				recreateExampleWidgets ();
 			}
 		});
 		headerVisibleButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetHeaderVisible ();
 			}
 		});
 		sortIndicatorButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetSortIndicator ();
 			}
 		});
 		moveableColumns.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setColumnsMoveable ();
 			}
 		});
 		resizableColumns.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setColumnsResizable ();
 			}
 		});
 		headerImagesButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				recreateExampleWidgets ();
 			}
 		});
 		subImagesButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				recreateExampleWidgets ();
 			}
@@ -258,6 +269,7 @@ class TableTab extends ScrollableTab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -271,6 +283,7 @@ class TableTab extends ScrollableTab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {	
 		/* Compute the widget style */
 		int style = getDefaultStyle();
@@ -327,12 +340,14 @@ class TableTab extends ScrollableTab {
 	 * controls that allow the user to change the size of
 	 * the example widgets.
 	 */
+	@Override
 	void createSizeGroup () {
 		super.createSizeGroup();
 	
 		packColumnsButton = new Button (sizeGroup, SWT.PUSH);
 		packColumnsButton.setText (ControlExample.getResourceString("Pack_Columns"));
 		packColumnsButton.addSelectionListener(new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				packColumns ();
 				setExampleWidgetSize ();
@@ -343,6 +358,7 @@ class TableTab extends ScrollableTab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup () {
 		super.createStyleGroup ();
 		
@@ -363,6 +379,7 @@ class TableTab extends ScrollableTab {
 	 *
 	 * @return an array containing the example widget children's items
 	 */
+	@Override
 	Item [] getExampleWidgetItems () {
 		Item [] columns = table1.getColumns();
 		Item [] items = table1.getItems();
@@ -375,6 +392,7 @@ class TableTab extends ScrollableTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {table1};
 	}
@@ -383,10 +401,12 @@ class TableTab extends ScrollableTab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"ColumnOrder", "ItemCount", "Selection", "SelectionIndex", "ToolTipText", "TopIndex"};
 	}
 
+	@Override
 	String setMethodName(String methodRoot) {
 		/* Override to handle special case of int getSelectionIndex()/setSelection(int) */
 		return (methodRoot.equals("SelectionIndex")) ? "setSelection" : "set" + methodRoot;
@@ -400,6 +420,7 @@ class TableTab extends ScrollableTab {
 		}
 	}
 
+	@Override
 	Object[] parameterForType(String typeName, String value, Widget widget) {
 		if (value.equals("")) return new Object[] {new TableItem[0]}; // bug in Table?
 		if (typeName.equals("org.eclipse.swt.widgets.TableItem")) {
@@ -428,6 +449,7 @@ class TableTab extends ScrollableTab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "Table";
 	}
@@ -438,6 +460,7 @@ class TableTab extends ScrollableTab {
 	 * Also sets foreground and background color of TableItem [0]
 	 * to default settings.
 	 */
+	@Override
 	void resetColorsAndFonts () {
 		super.resetColorsAndFonts ();
 		Color oldColor = itemForegroundColor;
@@ -591,6 +614,7 @@ class TableTab extends ScrollableTab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		setItemBackground ();
 		setItemForeground ();
@@ -638,6 +662,7 @@ class TableTab extends ScrollableTab {
 				TableColumn column = columns[i];
 				if (i == 0) table1.setSortColumn(column);
 				SelectionListener listener = new SelectionAdapter() {
+					@Override
 					public void widgetSelected(SelectionEvent e) {
 						int sortDirection = SWT.DOWN;
 						if (e.widget == table1.getSortColumn()) {
@@ -671,12 +696,14 @@ class TableTab extends ScrollableTab {
 		table1.setLinesVisible (linesVisibleButton.getSelection ());
 	}
 	
+	@Override
 	protected void specialPopupMenuItems(Menu menu, Event event) {
     	MenuItem item = new MenuItem(menu, SWT.PUSH);
     	item.setText("getItem(Point) on mouse coordinates");
     	menuMouseCoords = table1.toControl(new Point(event.x, event.y));
     	item.addSelectionListener(new SelectionAdapter() {
-    		public void widgetSelected(SelectionEvent e) {
+    		@Override
+			public void widgetSelected(SelectionEvent e) {
     			eventConsole.append ("getItem(Point(" + menuMouseCoords + ")) returned: " + table1.getItem(menuMouseCoords));
     			eventConsole.append ("\n");
     		}

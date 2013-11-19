@@ -70,6 +70,7 @@ public class LayoutExample {
 		new LayoutExample(shell);
 		shell.setText(getResourceString("window.title"));
 		shell.addShellListener (new ShellAdapter () {
+			@Override
 			public void shellClosed(ShellEvent e) {
 				Shell [] shells = display.getShells();
 				for (int i = 0; i < shells.length; i++) {

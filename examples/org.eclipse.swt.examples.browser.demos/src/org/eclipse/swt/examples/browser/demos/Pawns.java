@@ -50,6 +50,7 @@ public void playRequest(byte[][] game, int type) {
 			}
 		}
 		new Thread() {
+			@Override
 			public void run() {
 				synchronized(Pawns.this) {
 					threadStop = false;

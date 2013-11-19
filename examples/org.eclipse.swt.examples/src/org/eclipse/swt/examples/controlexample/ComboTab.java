@@ -45,6 +45,7 @@ class ComboTab extends Tab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -58,6 +59,7 @@ class ComboTab extends Tab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -80,6 +82,7 @@ class ComboTab extends Tab {
 	 * @param tabFolder org.eclipse.swt.widgets.TabFolder
 	 * @return the new page for the tab folder
 	 */
+	@Override
 	Composite createTabFolderPage (TabFolder tabFolder) {
 		super.createTabFolderPage (tabFolder);
 
@@ -90,6 +93,7 @@ class ComboTab extends Tab {
 		 * recalculate the preferred size correctly.
 		 */
 		tabFolderPage.addControlListener(new ControlAdapter() {
+			@Override
 			public void controlResized(ControlEvent e) {
 				setExampleWidgetSize ();
 			}
@@ -101,6 +105,7 @@ class ComboTab extends Tab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup () {
 		super.createStyleGroup ();
 	
@@ -116,6 +121,7 @@ class ComboTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {combo1};
 	}
@@ -124,6 +130,7 @@ class ComboTab extends Tab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"Items", "Orientation", "Selection", "Text", "TextLimit", "ToolTipText", "VisibleItemCount"};
 	}
@@ -131,6 +138,7 @@ class ComboTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "Combo";
 	}
@@ -138,6 +146,7 @@ class ComboTab extends Tab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		dropDownButton.setSelection ((combo1.getStyle () & SWT.DROP_DOWN) != 0);

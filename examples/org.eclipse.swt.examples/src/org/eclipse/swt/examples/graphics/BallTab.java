@@ -54,6 +54,7 @@ public class BallTab extends AnimatedGraphicsTab {
 		}
 	}
 
+	@Override
 	public void dispose() {
 		bc[0] = bc[1] = bc[2] = bc[3] = bc[4] = null;
 	}
@@ -63,22 +64,27 @@ public class BallTab extends AnimatedGraphicsTab {
 		bc = new BallCollection[5];
 	}
 
+	@Override
 	public String getCategory() {
 		return GraphicsExample.getResourceString("Alpha"); //$NON-NLS-1$
 	}
 
+	@Override
 	public String getText() {
 		return GraphicsExample.getResourceString("Ball"); //$NON-NLS-1$
 	}
 
+	@Override
 	public String getDescription() {
 		return GraphicsExample.getResourceString("BallDescription"); //$NON-NLS-1$
 	}
 	
+	@Override
 	public int getInitialAnimationTime() {
 		return 10;
 	}
 
+	@Override
 	public void next(int width, int height) {
 		for (int i = 0; i < bc.length; i++) {
 			if (bc[i] == null) return;
@@ -120,6 +126,7 @@ public class BallTab extends AnimatedGraphicsTab {
 		}
 	}
 
+	@Override
 	public void paint(GC gc, int width, int height) {
 		if (!example.checkAdvancedGraphics()) return;
 		Device device = gc.getDevice();
@@ -140,9 +147,9 @@ public class BallTab extends AnimatedGraphicsTab {
 		for (int j = 0; j < bc.length; j++) {
 			for (int i = 0; i < bc[j].prevx.size(); i++) {
 				Transform transform = new Transform(device);
-				transform.translate(((Float) bc[j].prevx.get(bc[j].prevx.size()
-						- (i + 1))).floatValue(), ((Float) bc[j].prevy
-						.get(bc[j].prevy.size() - (i + 1))).floatValue());
+				transform.translate(bc[j].prevx.get(bc[j].prevx.size()
+						- (i + 1)).floatValue(), bc[j].prevy
+						.get(bc[j].prevy.size() - (i + 1)).floatValue());
 				gc.setTransform(transform);
 				transform.dispose();
 

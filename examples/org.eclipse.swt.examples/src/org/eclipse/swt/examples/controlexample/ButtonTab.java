@@ -42,6 +42,7 @@ class ButtonTab extends AlignableTab {
 	/**
 	 * Creates the "Control" group. 
 	 */
+	@Override
 	void createControlGroup () {
 		super.createControlGroup ();
 	
@@ -53,6 +54,7 @@ class ButtonTab extends AlignableTab {
 	
 		/* Add the listeners */
 		SelectionListener selectionListener = new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (!((Button) event.widget).getSelection()) return;
 				setExampleWidgetAlignment ();
@@ -65,6 +67,7 @@ class ButtonTab extends AlignableTab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -96,6 +99,7 @@ class ButtonTab extends AlignableTab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 	
 		/* Compute the widget style */
@@ -152,6 +156,7 @@ class ButtonTab extends AlignableTab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup() {
 		super.createStyleGroup ();
 	
@@ -177,6 +182,7 @@ class ButtonTab extends AlignableTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {button1, button2, button3, button4, button5, button6, button7, button8, button9};
 	}
@@ -185,6 +191,7 @@ class ButtonTab extends AlignableTab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"Grayed", "Selection", "Text", "ToolTipText"};
 	}
@@ -192,6 +199,7 @@ class ButtonTab extends AlignableTab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "Button";
 	}
@@ -199,6 +207,7 @@ class ButtonTab extends AlignableTab {
 	/**
 	 * Sets the alignment of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetAlignment () {
 		int alignment = 0;
 		if (leftButton.getSelection ()) alignment = SWT.LEFT;
@@ -220,6 +229,7 @@ class ButtonTab extends AlignableTab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		if (arrowButton.getSelection ()) {

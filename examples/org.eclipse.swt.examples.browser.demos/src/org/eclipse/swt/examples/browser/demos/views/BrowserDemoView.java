@@ -24,6 +24,7 @@ public class BrowserDemoView extends ViewPart {
 	
 	public BrowserDemoView() {
 	}
+	@Override
 	public void createPartControl(Composite parent) {
 		this.parent = parent;
 		parent.setLayout(new FillLayout());
@@ -44,6 +45,7 @@ public class BrowserDemoView extends ViewPart {
 		new EditorTab(item);
 	}
 	
+	@Override
 	public void setFocus() {
 	}
 	

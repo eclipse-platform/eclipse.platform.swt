@@ -185,6 +185,7 @@ public class TextEditor {
 		MenuItem openItem = new MenuItem(fileMenu, SWT.PUSH);
 		openItem.setText(getResourceString("Open_menuitem")); //$NON-NLS-1$
 		openItem.addSelectionListener(new SelectionAdapter () {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
 				dialog.setFilterNames(new String [] {getResourceString("Text_Documents")}); //$NON-NLS-1$
@@ -211,12 +212,14 @@ public class TextEditor {
 		final MenuItem saveItem = new MenuItem(fileMenu, SWT.PUSH);
 		saveItem.setText(getResourceString("Save_menuitem")); //$NON-NLS-1$
 		saveItem.addSelectionListener(new SelectionAdapter () {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				saveFile();
 			}											
 		});
 		
 		fileMenu.addMenuListener(new MenuAdapter() {
+			@Override
 			public void menuShown(MenuEvent event){
 				saveItem.setEnabled(fileName != null);
 			}			 			
@@ -225,6 +228,7 @@ public class TextEditor {
 		MenuItem saveAsItem = new MenuItem(fileMenu, SWT.PUSH);
 		saveAsItem.setText(getResourceString("SaveAs_menuitem")); //$NON-NLS-1$
 		saveAsItem.addSelectionListener(new SelectionAdapter () {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				FileDialog dialog = new FileDialog (shell, SWT.SAVE);
 				dialog.setFilterNames(new String [] {getResourceString("Text_Documents")}); //$NON-NLS-1$ 
@@ -243,6 +247,7 @@ public class TextEditor {
 		MenuItem exitItem = new MenuItem(fileMenu, SWT.PUSH);
 		exitItem.setText(getResourceString("Exit_menuitem")); //$NON-NLS-1$
 		exitItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				shell.dispose();
 			}
@@ -257,6 +262,7 @@ public class TextEditor {
 		cutItem.setImage(iCut);
 		cutItem.setAccelerator(SWT.MOD1 | 'x');
 		cutItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				styledText.cut();
 			}
@@ -267,6 +273,7 @@ public class TextEditor {
 		copyItem.setImage(iCopy);
 		copyItem.setAccelerator(SWT.MOD1 | 'c');
 		copyItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				styledText.copy();
 			}
@@ -277,6 +284,7 @@ public class TextEditor {
 		pasteItem.setImage(iPaste);
 		pasteItem.setAccelerator(SWT.MOD1 | 'v');
 		pasteItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				styledText.paste();
 			}
@@ -287,12 +295,14 @@ public class TextEditor {
 		selectAllItem.setText(getResourceString("SelectAll_menuitem")); //$NON-NLS-1$
 		selectAllItem.setAccelerator(SWT.MOD1 | 'a');
 		selectAllItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				styledText.selectAll();
 			}
 		});
 
 		editMenu.addMenuListener(new MenuAdapter() {
+			@Override
 			public void menuShown(MenuEvent event) {
 				int selectionCount = styledText.getSelectionCount();
 				cutItem.setEnabled(selectionCount > 0);
@@ -304,6 +314,7 @@ public class TextEditor {
 		MenuItem wrapItem = new MenuItem(editMenu, SWT.CHECK);
 		wrapItem.setText(getResourceString("Wrap_menuitem")); //$NON-NLS-1$
 		wrapItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				MenuItem item = (MenuItem) event.widget;
 				boolean enabled = item.getSelection();
@@ -321,6 +332,7 @@ public class TextEditor {
 		MenuItem justifyItem = new MenuItem(editMenu, SWT.CHECK);
 		justifyItem.setText(getResourceString("Justify_menuitem")); //$NON-NLS-1$
 		justifyItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				MenuItem item = (MenuItem) event.widget;
 				styledText.setJustify(item.getSelection());
@@ -332,6 +344,7 @@ public class TextEditor {
 		MenuItem setFontItem = new MenuItem(editMenu, SWT.PUSH);
 		setFontItem.setText(getResourceString("SetFont_menuitem")); //$NON-NLS-1$
 		setFontItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				FontDialog fontDialog = new FontDialog(shell);
 				fontDialog.setFontList(styledText.getFont().getFontData());
@@ -354,6 +367,7 @@ public class TextEditor {
 		leftAlignmentItem.setText(getResourceString("Left_menuitem")); //$NON-NLS-1$
 		leftAlignmentItem.setSelection(true);
 		leftAlignmentItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				styledText.setAlignment(SWT.LEFT);
 				updateToolBar();
@@ -364,6 +378,7 @@ public class TextEditor {
 		final MenuItem centerAlignmentItem = new MenuItem(alignmentMenu, SWT.RADIO);
 		centerAlignmentItem.setText(getResourceString("Center_menuitem")); //$NON-NLS-1$
 		centerAlignmentItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				styledText.setAlignment(SWT.CENTER);
 				updateToolBar();
@@ -373,6 +388,7 @@ public class TextEditor {
 		MenuItem rightAlignmentItem = new MenuItem(alignmentMenu, SWT.RADIO);
 		rightAlignmentItem.setText(getResourceString("Right_menuitem")); //$NON-NLS-1$
 		rightAlignmentItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				styledText.setAlignment(SWT.RIGHT);
 				updateToolBar();
@@ -387,6 +403,7 @@ public class TextEditor {
 		MenuItem leftToRightItem = new MenuItem(editOrientationMenu, SWT.RADIO);
 		leftToRightItem.setText(getResourceString("LeftToRight_menuitem")); //$NON-NLS-1$
 		leftToRightItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event){
 				styledText.setOrientation(SWT.LEFT_TO_RIGHT);
 			}
@@ -396,6 +413,7 @@ public class TextEditor {
 		MenuItem rightToLeftItem = new MenuItem(editOrientationMenu, SWT.RADIO);
 		rightToLeftItem.setText(getResourceString("RightToLeft_menuitem")); //$NON-NLS-1$
 		rightToLeftItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				styledText.setOrientation(SWT.RIGHT_TO_LEFT);
 			}
@@ -418,6 +436,7 @@ public class TextEditor {
 		comboItem.setText(getResourceString("Combo_menuitem")); //$NON-NLS-1$
 
 		buttonItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				Button button = new Button(styledText, SWT.PUSH);
 				button.setText(getResourceString("Button_menuitem")); //$NON-NLS-1$
@@ -426,6 +445,7 @@ public class TextEditor {
 		});
 
 		comboItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				Combo combo = new Combo(styledText, SWT.NONE);
 				combo.setText(getResourceString("Combo_menuitem")); //$NON-NLS-1$
@@ -437,6 +457,7 @@ public class TextEditor {
 		insertImageItem.setText(getResourceString("Image_menuitem")); //$NON-NLS-1$
 
 		insertImageItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
 				String fileName = fileDialog.open();
@@ -458,6 +479,7 @@ public class TextEditor {
 			Menu loadProfileMenu = new Menu(shell, SWT.DROP_DOWN);
 			loadProfileItem.setMenu(loadProfileMenu);
 			SelectionAdapter adapter = new SelectionAdapter() {
+				@Override
 				public void widgetSelected(SelectionEvent event) {
 					int profile = Integer.parseInt((String) event.widget.getData());
 					loadProfile(profile);
@@ -518,6 +540,7 @@ public class TextEditor {
 			}
 		});
 		menu.addMenuListener(new MenuAdapter() {
+			@Override
 			public void menuShown(MenuEvent event) {
 				int selectionCount = styledText.getSelectionCount();
 				cutItem.setEnabled(selectionCount > 0);
@@ -535,6 +558,7 @@ public class TextEditor {
 		boldControl.setImage(iBold);
 		boldControl.setToolTipText(getResourceString("Bold")); //$NON-NLS-1$
 		boldControl.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				setStyle(BOLD);
 			}
@@ -544,6 +568,7 @@ public class TextEditor {
 		italicControl.setImage(iItalic);
 		italicControl.setToolTipText(getResourceString("Italic")); //$NON-NLS-1$
 		italicControl.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				setStyle(ITALIC);
 			}
@@ -553,6 +578,7 @@ public class TextEditor {
 		underlineSingleItem = new MenuItem(underlineMenu, SWT.RADIO);
 		underlineSingleItem.setText(getResourceString("Single_menuitem")); //$NON-NLS-1$
 		underlineSingleItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (underlineSingleItem.getSelection()) {
 					setStyle(UNDERLINE_SINGLE);
@@ -564,6 +590,7 @@ public class TextEditor {
 		underlineDoubleItem = new MenuItem(underlineMenu, SWT.RADIO);
 		underlineDoubleItem.setText(getResourceString("Double_menuitem")); //$NON-NLS-1$
 		underlineDoubleItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (underlineDoubleItem.getSelection()) {
 					setStyle(UNDERLINE_DOUBLE);
@@ -574,6 +601,7 @@ public class TextEditor {
 		underlineSquiggleItem = new MenuItem(underlineMenu, SWT.RADIO);
 		underlineSquiggleItem.setText(getResourceString("Squiggle_menuitem")); //$NON-NLS-1$
 		underlineSquiggleItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (underlineSquiggleItem.getSelection()) {
 					setStyle(UNDERLINE_SQUIGGLE);
@@ -584,6 +612,7 @@ public class TextEditor {
 		underlineErrorItem = new MenuItem(underlineMenu, SWT.RADIO);
 		underlineErrorItem.setText(getResourceString("Error_menuitem")); //$NON-NLS-1$
 		underlineErrorItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (underlineErrorItem.getSelection()) {
 					setStyle(UNDERLINE_ERROR);
@@ -594,6 +623,7 @@ public class TextEditor {
 		MenuItem underlineColorItem = new MenuItem(underlineMenu, SWT.PUSH);
 		underlineColorItem.setText(getResourceString("Color_menuitem")); //$NON-NLS-1$
 		underlineColorItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				ColorDialog dialog = new ColorDialog(shell);
 				RGB rgb = underlineColor != null ? underlineColor.getRGB() : null;
@@ -616,6 +646,7 @@ public class TextEditor {
 		underlineControl.setImage(iUnderline);
 		underlineControl.setToolTipText(getResourceString("Underline")); //$NON-NLS-1$
 		underlineControl.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (event.detail == SWT.ARROW) {
 					Rectangle rect = underlineControl.getBounds();
@@ -635,6 +666,7 @@ public class TextEditor {
 		strikeoutControl.setImage(iStrikeout);
 		strikeoutControl.setToolTipText(getResourceString("Strikeout")); //$NON-NLS-1$
 		strikeoutControl.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (event.detail == SWT.ARROW) {
 					ColorDialog dialog = new ColorDialog(shell);
@@ -655,6 +687,7 @@ public class TextEditor {
 		borderSolidItem = new MenuItem(borderMenu, SWT.RADIO);
 		borderSolidItem.setText(getResourceString("Solid")); //$NON-NLS-1$
 		borderSolidItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event){
 				if (borderSolidItem.getSelection()) {
 					setStyle(BORDER_SOLID);
@@ -666,6 +699,7 @@ public class TextEditor {
 		borderDashItem = new MenuItem(borderMenu, SWT.RADIO);
 		borderDashItem.setText(getResourceString("Dash")); //$NON-NLS-1$
 		borderDashItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event){
 				if (borderDashItem.getSelection()) {
 					setStyle(BORDER_DASH);
@@ -676,6 +710,7 @@ public class TextEditor {
 		borderDotItem = new MenuItem(borderMenu, SWT.RADIO);
 		borderDotItem.setText(getResourceString("Dot")); //$NON-NLS-1$
 		borderDotItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event){
 				if (borderDotItem.getSelection()) {
 					setStyle(BORDER_DOT);
@@ -686,6 +721,7 @@ public class TextEditor {
 		MenuItem borderColorItem = new MenuItem(borderMenu, SWT.PUSH);
 		borderColorItem.setText(getResourceString("Color_menuitem")); //$NON-NLS-1$
 		borderColorItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event){
 				ColorDialog dialog = new ColorDialog(shell);
 				RGB rgb = borderColor != null ? borderColor.getRGB() : null;
@@ -707,6 +743,7 @@ public class TextEditor {
 		borderControl.setImage(iBorderStyle);
 		borderControl.setToolTipText(getResourceString("Box")); //$NON-NLS-1$
 		borderControl.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (event.detail == SWT.ARROW) {
 					Rectangle rect = borderControl.getBounds();
@@ -725,6 +762,7 @@ public class TextEditor {
 		foregroundItem.setImage(iTextForeground);
 		foregroundItem.setToolTipText(getResourceString("TextForeground")); //$NON-NLS-1$
 		foregroundItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {		
 				if (event.detail == SWT.ARROW || textForeground == null) {
 					ColorDialog dialog = new ColorDialog(shell);
@@ -745,6 +783,7 @@ public class TextEditor {
 		backgroundItem.setImage(iTextBackground);
 		backgroundItem.setToolTipText(getResourceString("TextBackground")); //$NON-NLS-1$
 		backgroundItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {			
 				if (event.detail == SWT.ARROW || textBackground == null) {
 					ColorDialog dialog = new ColorDialog(shell);
@@ -767,6 +806,7 @@ public class TextEditor {
 		if (USE_BASELINE) tooltip = "IncreaseBaseline"; //$NON-NLS-1$
 		baselineUpItem.setToolTipText(getResourceString(tooltip));
 		baselineUpItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (USE_BASELINE) {
 					setStyle(BASELINE_UP);
@@ -782,6 +822,7 @@ public class TextEditor {
 		if (USE_BASELINE) tooltip = "DecreaseBaseline"; //$NON-NLS-1$
 		baselineDownItem.setToolTipText(getResourceString(tooltip));
 		baselineDownItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (USE_BASELINE) {
 					setStyle(BASELINE_DOWN);
@@ -794,6 +835,7 @@ public class TextEditor {
 		linkItem.setImage(iLink);
 		linkItem.setToolTipText(getResourceString("Link")); //$NON-NLS-1$
 		linkItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				setLink();
 			}
@@ -813,6 +855,7 @@ public class TextEditor {
 		fontSizeControl.setItems(FONT_SIZES);
 		fontSizeControl.setVisibleItemCount(8);
 		SelectionAdapter adapter = new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				String name = fontNameControl.getText();
 				int size = Integer.parseInt(fontSizeControl.getText());
@@ -831,6 +874,7 @@ public class TextEditor {
 		blockSelectionItem.setImage(iBlockSelection);
 		blockSelectionItem.setToolTipText(getResourceString("BlockSelection")); //$NON-NLS-1$
 		blockSelectionItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				styledText.invokeAction(ST.TOGGLE_BLOCKSELECTION);
 			}
@@ -841,6 +885,7 @@ public class TextEditor {
 		leftAlignmentItem.setToolTipText(getResourceString("AlignLeft")); //$NON-NLS-1$
 		leftAlignmentItem.setSelection(true);
 		leftAlignmentItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				Point selection = styledText.getSelection();
 				int lineStart = styledText.getLineAtOffset(selection.x);
@@ -854,6 +899,7 @@ public class TextEditor {
 		centerAlignmentItem.setImage(iCenterAlignment);
 		centerAlignmentItem.setToolTipText(getResourceString("Center_menuitem")); //$NON-NLS-1$
 		centerAlignmentItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				Point selection = styledText.getSelection();
 				int lineStart = styledText.getLineAtOffset(selection.x);
@@ -867,6 +913,7 @@ public class TextEditor {
 		rightAlignmentItem.setImage(iRightAlignment);
 		rightAlignmentItem.setToolTipText(getResourceString("AlignRight")); //$NON-NLS-1$
 		rightAlignmentItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				Point selection = styledText.getSelection();
 				int lineStart = styledText.getLineAtOffset(selection.x);
@@ -880,6 +927,7 @@ public class TextEditor {
 		justifyAlignmentItem.setImage(iJustifyAlignment);
 		justifyAlignmentItem.setToolTipText(getResourceString("Justify")); //$NON-NLS-1$
 		justifyAlignmentItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				Point selection = styledText.getSelection();
 				int lineStart = styledText.getLineAtOffset(selection.x);
@@ -893,6 +941,7 @@ public class TextEditor {
 		bulletListItem.setImage(iBulletList);
 		bulletListItem.setToolTipText(getResourceString("BulletList")); //$NON-NLS-1$
 		bulletListItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				setBullet(ST.BULLET_DOT);}
 		});
@@ -901,6 +950,7 @@ public class TextEditor {
 		numberedListItem.setImage(iNumberedList);
 		numberedListItem.setToolTipText(getResourceString("NumberedList")); //$NON-NLS-1$
 		numberedListItem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				setBullet(ST.BULLET_NUMBER | ST.BULLET_TEXT);
 			}
@@ -916,6 +966,7 @@ public class TextEditor {
 		label.setText(getResourceString("Indent")); //$NON-NLS-1$
 		Spinner indent = new Spinner(composite, SWT.BORDER);
 		indent.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				Spinner spinner = (Spinner) event.widget;
 				styledText.setIndent(spinner.getSelection());
@@ -925,6 +976,7 @@ public class TextEditor {
 		label.setText(getResourceString("Spacing")); //$NON-NLS-1$
 		Spinner spacing = new Spinner(composite, SWT.BORDER);
 		spacing.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				Spinner spinner = (Spinner) event.widget;
 				styledText.setLineSpacing(spinner.getSelection());
@@ -944,6 +996,7 @@ public class TextEditor {
 			item.setSize(size);
 		}
 		coolBar.addControlListener(new ControlAdapter() {
+			@Override
 			public void controlResized(ControlEvent event) {
 				handleResize(event);
 			}
@@ -1249,6 +1302,7 @@ public class TextEditor {
 			}
 		});
 		shell.addControlListener(new ControlAdapter() {
+			@Override
 			public void controlResized(ControlEvent event) {
 				handleResize(event);
 			}

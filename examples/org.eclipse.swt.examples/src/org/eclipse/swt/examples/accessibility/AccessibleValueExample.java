@@ -46,26 +46,32 @@ public class AccessibleValueExample {
 		
 		Accessible accessible = canvas.getAccessible();
 		accessible.addAccessibleListener(new AccessibleAdapter() {
+			@Override
 			public void getName(AccessibleEvent e) {
 				e.result = "The value of this canvas is " + value;
 			}
 		});
 		accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
+			@Override
 			public void getRole(AccessibleControlEvent e) {
 				e.detail = ACC.ROLE_PROGRESSBAR;
 			}
 		});
 		accessible.addAccessibleValueListener(new AccessibleValueAdapter() {
+			@Override
 			public void setCurrentValue(AccessibleValueEvent e) {
 				value = e.value.intValue();
 				canvas.redraw();
 			}
+			@Override
 			public void getMinimumValue(AccessibleValueEvent e) {
 				e.value = new Integer(min);
 			}
+			@Override
 			public void getMaximumValue(AccessibleValueEvent e) {
 				e.value = new Integer(max);
 			}
+			@Override
 			public void getCurrentValue(AccessibleValueEvent e) {
 				e.value = new Integer(value);
 			}

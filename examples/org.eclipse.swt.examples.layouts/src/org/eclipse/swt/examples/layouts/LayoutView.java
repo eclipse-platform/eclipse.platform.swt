@@ -31,6 +31,7 @@ public class LayoutView extends ViewPart {
 	 * 
 	 * @see ViewPart#createPartControl
 	 */
+	@Override
 	public void createPartControl(Composite frame) {
 		instance = new LayoutExample(frame);
 	}
@@ -40,6 +41,7 @@ public class LayoutView extends ViewPart {
 	 * 
 	 * @see org.eclipse.ui.part.ViewPart#setFocus
 	 */
+	@Override
 	public void setFocus() {
 		instance.setFocus();
 	}
@@ -47,6 +49,7 @@ public class LayoutView extends ViewPart {
 	/**
 	 * Called when the View is to be disposed
 	 */	
+	@Override
 	public void dispose() {
 		instance.dispose();
 		instance = null;

@@ -77,7 +77,7 @@ public class BarChart extends Canvas {
 				// draw the x axis and item labels
 				gc.drawLine(leftX, bottomY, rect.x + rect.width - GAP, bottomY);
 				for (int i = 0; i < count; i++) {
-					Object [] dataItem = (Object []) data.elementAt(i);
+					Object [] dataItem = data.elementAt(i);
 					String itemLabel = (String)dataItem[0];
 					int x = leftX + AXIS_WIDTH + GAP + i * (unitWidth + GAP);
 					gc.drawString(itemLabel, x, bottomY + GAP);
@@ -85,7 +85,7 @@ public class BarChart extends Canvas {
 				// draw the bars
 				gc.setBackground(display.getSystemColor(color));
 				for (int i = 0; i < count; i++) {
-					Object [] dataItem = (Object []) data.elementAt(i);
+					Object [] dataItem = data.elementAt(i);
 					int itemValue = ((Integer)dataItem[1]).intValue();
 					int x = leftX + AXIS_WIDTH + GAP + i * (unitWidth + GAP);
 					gc.fillRectangle(x, bottomY - AXIS_WIDTH - itemValue * unitHeight, unitWidth, itemValue * unitHeight);
@@ -96,7 +96,7 @@ public class BarChart extends Canvas {
 						gc.drawFocus(rect.x, rect.y, rect.width, rect.height);
 					} else {
 						// draw the focus rectangle around the selected item
-						Object [] dataItem = (Object []) data.elementAt(selectedItem);
+						Object [] dataItem = data.elementAt(selectedItem);
 						int itemValue = ((Integer)dataItem[1]).intValue();
 						int x = leftX + AXIS_WIDTH + GAP + selectedItem * (unitWidth + GAP);
 						gc.drawFocus(x, bottomY - itemValue * unitHeight - AXIS_WIDTH, unitWidth, itemValue * unitHeight + AXIS_WIDTH + GAP + valueSize.y);
@@ -106,15 +106,18 @@ public class BarChart extends Canvas {
 		});
 		
 		addFocusListener(new FocusAdapter() {
+			@Override
 			public void focusGained(FocusEvent e) {
 				redraw();
 			}
+			@Override
 			public void focusLost(FocusEvent e) {
 				redraw();
 			}
 		});
 		
 		addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseDown(MouseEvent e) {
 				if (getClientArea().contains(e.x, e.y)) {
 					setFocus();
@@ -137,6 +140,7 @@ public class BarChart extends Canvas {
 		});
 		
 		addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyPressed(KeyEvent e) {
 				boolean change = false;
 				switch (e.keyCode) {
@@ -181,6 +185,7 @@ public class BarChart extends Canvas {
 		});
 
 		getAccessible().addAccessibleListener(new AccessibleAdapter() {
+			@Override
 			public void getName(AccessibleEvent e) {
 				MessageFormat formatter = new MessageFormat("");  //$NON_NLS$
 				formatter.applyPattern(bundle.getString("name"));  //$NON_NLS$
@@ -188,14 +193,15 @@ public class BarChart extends Canvas {
 				if (childID == ACC.CHILDID_SELF) {
 					e.result = title;
 				} else {
-					Object [] item = (Object [])data.elementAt(childID);
+					Object [] item = data.elementAt(childID);
 					e.result = formatter.format(item);
 				}
 			}
+			@Override
 			public void getDescription(AccessibleEvent e) {
 				int childID = e.childID;
 				if (childID != ACC.CHILDID_SELF) {
-					Object [] item = (Object [])data.elementAt(childID);
+					Object [] item = data.elementAt(childID);
 					String value = item[1].toString();
 					String colorName = bundle.getString("color" + color); //$NON_NLS$
 					MessageFormat formatter = new MessageFormat("");  //$NON_NLS$
@@ -206,6 +212,7 @@ public class BarChart extends Canvas {
 		});
 		
 		getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
+			@Override
 			public void getRole(AccessibleControlEvent e) {
 				if (e.childID == ACC.CHILDID_SELF) {
 					e.detail = ACC.ROLE_LIST;
@@ -213,9 +220,11 @@ public class BarChart extends Canvas {
 					e.detail = ACC.ROLE_LISTITEM;
 				}
 			}
+			@Override
 			public void getChildCount(AccessibleControlEvent e) {
 				e.detail = data.size();
 			}
+			@Override
 			public void getChildren(AccessibleControlEvent e) {
 				int count = data.size();
 				Object[] children = new Object[count];
@@ -224,6 +233,7 @@ public class BarChart extends Canvas {
 				}
 				e.children = children;
 			}
+			@Override
 			public void getChildAtPoint(AccessibleControlEvent e) {
 				Point testPoint = toControl(e.x, e.y);
 				int childID = ACC.CHILDID_NONE;
@@ -239,6 +249,7 @@ public class BarChart extends Canvas {
 				}
 				e.childID = childID;
 			}
+			@Override
 			public void getLocation(AccessibleControlEvent e) {
 				Rectangle location = null;
 				Point pt = null;
@@ -255,6 +266,7 @@ public class BarChart extends Canvas {
 				e.width = location.width;
 				e.height = location.height;
 			}
+			@Override
 			public void getFocus(AccessibleControlEvent e) {
 				int childID = ACC.CHILDID_NONE;
 				if (isFocusControl()) {
@@ -267,16 +279,19 @@ public class BarChart extends Canvas {
 				e.childID = childID;
 			
 			}
+			@Override
 			public void getSelection(AccessibleControlEvent e) {
 				e.childID = (selectedItem == -1) ? ACC.CHILDID_NONE : selectedItem;
 			}
+			@Override
 			public void getValue(AccessibleControlEvent e) {
 				int childID = e.childID;
 				if (childID != ACC.CHILDID_SELF) {
-					Object [] dataItem = (Object []) data.elementAt(childID);
+					Object [] dataItem = data.elementAt(childID);
 					e.result = ((Integer)dataItem[1]).toString();					
 				}
 			}
+			@Override
 			public void getState(AccessibleControlEvent e) {
 				int childID = e.childID;
 				e.detail = ACC.STATE_FOCUSABLE;
@@ -289,6 +304,7 @@ public class BarChart extends Canvas {
 		});
 	}
 	
+	@Override
 	public Point computeSize (int wHint, int hHint, boolean changed) {
 		checkWidget ();
 		int count = data.size();
@@ -297,7 +313,7 @@ public class BarChart extends Canvas {
 		Point valueSize = gc.stringExtent (new Integer(valueMax).toString());
 		int itemWidth = 0;
 		for (int i = 0; i < count; i++) {
-			Object [] dataItem = (Object []) data.elementAt(i);
+			Object [] dataItem = data.elementAt(i);
 			String itemLabel = (String)dataItem[0];
 			itemWidth = Math.max(itemWidth, gc.stringExtent (itemLabel).x);
 		}
@@ -386,7 +402,7 @@ public class BarChart extends Canvas {
 		int bottomY = rect.y + rect.height - 2 * GAP - valueSize.y;
 		int unitWidth = (rect.width - 4 * GAP - valueSize.x - AXIS_WIDTH) / data.size() - GAP;
 		int unitHeight = (rect.height - 3 * GAP - AXIS_WIDTH - 2 * valueSize.y) / ((valueMax - valueMin) / valueIncrement);
-		Object [] dataItem = (Object []) data.elementAt(index);
+		Object [] dataItem = data.elementAt(index);
 		int itemValue = ((Integer)dataItem[1]).intValue();
 		int x = leftX + AXIS_WIDTH + GAP + index * (unitWidth + GAP);
 		return new Rectangle(x, bottomY - itemValue * unitHeight - AXIS_WIDTH, unitWidth, itemValue * unitHeight + AXIS_WIDTH + GAP + valueSize.y);

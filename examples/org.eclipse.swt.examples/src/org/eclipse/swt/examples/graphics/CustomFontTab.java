@@ -60,18 +60,22 @@ public CustomFontTab(GraphicsExample example) {
 	styleValues = new int [] {SWT.NORMAL, SWT.ITALIC, SWT.BOLD, SWT.BOLD | SWT.ITALIC};
 }
 
+@Override
 public String getCategory() {
 	return GraphicsExample.getResourceString("Font"); //$NON-NLS-1$
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("CustomFont"); //$NON-NLS-1$
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("CustomFontDescription"); //$NON-NLS-1$
 }
 
+@Override
 public void dispose() {
 	if (menu != null) {
 		menu.dispose();
@@ -79,6 +83,7 @@ public void dispose() {
 	}
 }
 
+@Override
 public void createControlPanel(Composite parent) {
 
 	Composite mainComp = new Composite(parent, SWT.NONE);
@@ -168,6 +173,7 @@ public void createControlPanel(Composite parent) {
 /* (non-Javadoc)
  * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC, int, int)
  */
+@Override
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();

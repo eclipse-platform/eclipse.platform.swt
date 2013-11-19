@@ -33,6 +33,7 @@ class LabelTab extends AlignableTab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -56,6 +57,7 @@ class LabelTab extends AlignableTab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -94,6 +96,7 @@ class LabelTab extends AlignableTab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup() {
 		super.createStyleGroup ();
 		
@@ -121,6 +124,7 @@ class LabelTab extends AlignableTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {label1, label2, label3, label4, label5, label6};
 	}
@@ -129,6 +133,7 @@ class LabelTab extends AlignableTab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"Text", "ToolTipText"};
 	}
@@ -136,6 +141,7 @@ class LabelTab extends AlignableTab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "Label";
 	}
@@ -143,6 +149,7 @@ class LabelTab extends AlignableTab {
 	/**
 	 * Sets the alignment of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetAlignment () {
 		int alignment = 0;
 		if (leftButton.getSelection ()) alignment = SWT.LEFT;
@@ -159,6 +166,7 @@ class LabelTab extends AlignableTab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		boolean isSeparator = (label1.getStyle () & SWT.SEPARATOR) != 0;

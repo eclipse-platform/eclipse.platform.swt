@@ -22,18 +22,22 @@ public ImageScaleTab(GraphicsExample example) {
 	super(example);
 }
 
+@Override
 public String getCategory() {
 	return GraphicsExample.getResourceString("Image"); //$NON-NLS-1$
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("Scale"); //$NON-NLS-1$
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("ScaleDescription"); //$NON-NLS-1$
 }
 
+@Override
 public void paint(GC gc, int width, int height) {
 	Device device = gc.getDevice();
 	Image image = GraphicsExample.loadImage(device, GraphicsExample.class, "houses.png");

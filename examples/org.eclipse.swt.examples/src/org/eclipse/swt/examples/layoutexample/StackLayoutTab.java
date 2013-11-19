@@ -41,6 +41,7 @@ class StackLayoutTab extends Tab {
 	/**
 	 * Creates the widgets in the "child" group.
 	 */
+	@Override
 	void createChildWidgets() {
 		/* Add common controls */
 		super.createChildWidgets();
@@ -49,6 +50,7 @@ class StackLayoutTab extends Tab {
 		comboEditor = new TableEditor(table);
 		nameEditor = new TableEditor(table);
 		table.addMouseListener (new MouseAdapter() {
+			@Override
 			public void mouseDown(MouseEvent e) { 	
 				resetEditors();
 				index = table.getSelectionIndex();
@@ -67,7 +69,7 @@ class StackLayoutTab extends Tab {
 				createComboEditor(combo, comboEditor);
 				
 				nameText = new Text(table, SWT.SINGLE);
-				nameText.setText(((String[])data.elementAt(index))[NAME_COL]);
+				nameText.setText(data.elementAt(index)[NAME_COL]);
 				createTextEditor(nameText, nameEditor, NAME_COL);
 			}
 		});		
@@ -76,6 +78,7 @@ class StackLayoutTab extends Tab {
 	/**
 	 * Creates the control widgets.
 	 */
+	@Override
 	void createControlWidgets() {
         /* Controls the topControl in the StackLayout */
 		Group columnGroup = new Group (controlGroup, SWT.NONE);
@@ -87,7 +90,8 @@ class StackLayoutTab extends Tab {
 	    backButton.setEnabled(false);
 		backButton.setLayoutData(new GridData (SWT.END, SWT.CENTER, false, false));
 		backButton.addSelectionListener(new SelectionAdapter() {
-	        public void widgetSelected(SelectionEvent e) {
+	        @Override
+			public void widgetSelected(SelectionEvent e) {
 		    	setTopControl (currentLayer - 1);
 	        }
 		});
@@ -97,6 +101,7 @@ class StackLayoutTab extends Tab {
 		advanceButton.setText(">>");
 		advanceButton.setEnabled(false);
 		advanceButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 		    	setTopControl (currentLayer + 1);
 	        }
@@ -124,11 +129,13 @@ class StackLayoutTab extends Tab {
 	/**
 	 * Creates the example layout.
 	 */
+	@Override
 	void createLayout() {
 		stackLayout = new StackLayout();
 		layoutComposite.setLayout(stackLayout);
 	}
 	
+	@Override
 	void createLayoutComposite() {
 		layoutComposite = new Composite(layoutGroup, SWT.BORDER);
 		layoutComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
@@ -139,6 +146,7 @@ class StackLayoutTab extends Tab {
 	 * Disposes the editors without placing their contents
 	 * into the table.
 	 */
+	@Override
 	void disposeEditors() {
 		comboEditor.setEditor(null, null, -1);
 		combo.dispose();
@@ -148,6 +156,7 @@ class StackLayoutTab extends Tab {
 	/**
 	 * Generates code for the example layout.
 	 */
+	@Override
 	StringBuffer generateLayoutCode() {
 		StringBuffer code = new StringBuffer();
 		code.append("\t\tStackLayout stackLayout = new StackLayout ();\n");
@@ -168,6 +177,7 @@ class StackLayoutTab extends Tab {
 		return code;
 	}
 	
+	@Override
 	boolean needsCustom() {
 		return true;
 	}
@@ -175,6 +185,7 @@ class StackLayoutTab extends Tab {
 	/**
 	 * Returns the string to insert when a new child control is added to the table.
 	 */
+	@Override
 	String[] getInsertString (String name, String controlType) {
 		return new String [] {name, controlType};
 	}
@@ -182,6 +193,7 @@ class StackLayoutTab extends Tab {
 	/**
 	 * Returns the layout data field names.
 	 */
+	@Override
 	String[] getLayoutDataFieldNames() {
 		return new String[] {"Control Name", "Control Type"};
 	}
@@ -189,6 +201,7 @@ class StackLayoutTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText() {
 		return "StackLayout";
 	}
@@ -196,6 +209,7 @@ class StackLayoutTab extends Tab {
 	/**
 	 * Takes information from TableEditors and stores it.
 	 */
+	@Override
 	void resetEditors (boolean tab) {
 		TableItem oldItem = comboEditor.getItem ();
 		comboEditor.setEditor (null, null, -1);
@@ -209,7 +223,7 @@ class StackLayoutTab extends Tab {
 			String [] insert = new String [] {nameText.getText (), combo.getText ()};
 			data.setElementAt (insert, row);
 			for (int i = 0 ; i < TOTAL_COLS; i++) {
-				oldItem.setText (i, ((String [])data.elementAt (row)) [i]);
+				oldItem.setText (i, data.elementAt (row) [i]);
 			}
 			if (!tab) disposeEditors ();
 		}
@@ -237,6 +251,7 @@ class StackLayoutTab extends Tab {
 	/**
 	 * Sets the state of the layout.
 	 */
+	@Override
 	void setLayoutState() {
 		/* Set the margins and spacing */
 		stackLayout.marginWidth = marginWidth.getSelection();		

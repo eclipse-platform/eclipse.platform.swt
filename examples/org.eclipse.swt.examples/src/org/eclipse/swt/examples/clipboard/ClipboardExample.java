@@ -111,6 +111,7 @@ void createTextTransfer(Composite copyParent, Composite pasteParent) {
 	Button b = new Button(copyParent, SWT.PUSH);
 	b.setText("Copy");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			String data = copyText.getText();
 			if (data.length() > 0) {
@@ -132,6 +133,7 @@ void createTextTransfer(Composite copyParent, Composite pasteParent) {
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			String data = (String)clipboard.getContents(TextTransfer.getInstance());
 			if (data != null && data.length() > 0) {
@@ -156,6 +158,7 @@ void createRTFTransfer(Composite copyParent, Composite pasteParent){
 	Button b = new Button(copyParent, SWT.PUSH);
 	b.setText("Copy");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			String data = copyRtfText.getText();
 			if (data.length() > 0) {
@@ -197,6 +200,7 @@ void createRTFTransfer(Composite copyParent, Composite pasteParent){
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			String data = (String)clipboard.getContents(RTFTransfer.getInstance());
 			if (data != null && data.length() > 0) {
@@ -221,6 +225,7 @@ void createHTMLTransfer(Composite copyParent, Composite pasteParent){
 	Button b = new Button(copyParent, SWT.PUSH);
 	b.setText("Copy");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			String data = copyHtmlText.getText();
 			if (data.length() > 0) {
@@ -242,6 +247,7 @@ void createHTMLTransfer(Composite copyParent, Composite pasteParent){
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			String data = (String)clipboard.getContents(HTMLTransfer.getInstance());
 			if (data != null && data.length() > 0) {
@@ -271,6 +277,7 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 	Button b = new Button(copyParent, SWT.PUSH);
 	b.setText("Select file(s)");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			FileDialog dialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
 			String result = dialog.open();
@@ -288,6 +295,7 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 	b = new Button(copyParent, SWT.PUSH);
 	b.setText("Select directory");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
 			String result = dialog.open();
@@ -302,6 +310,7 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 	b = new Button(copyParent, SWT.PUSH);
 	b.setText("Copy");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			TableItem[] items = copyFileTable.getItems();
 			if (items.length > 0){
@@ -327,6 +336,7 @@ void createFileTransfer(Composite copyParent, Composite pasteParent){
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			String[] data = (String[])clipboard.getContents(FileTransfer.getInstance());
 			if (data != null && data.length > 0) {
@@ -407,6 +417,7 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 	Button openButton = new Button(copyParent, SWT.PUSH);
 	openButton.setText("Open Image");
 	openButton.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			FileDialog dialog = new FileDialog (shell, SWT.OPEN);
 			dialog.setText("Open an image file or cancel");
@@ -436,6 +447,7 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 	Button b = new Button(copyParent, SWT.PUSH);
 	b.setText("Copy");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			if (copyImage[0] != null) {
 				status.setText("");
@@ -502,6 +514,7 @@ void createImageTransfer(Composite copyParent, Composite pasteParent){
 	b = new Button(pasteParent, SWT.PUSH);
 	b.setText("Paste");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {		
 			ImageData data =(ImageData)clipboard.getContents(ImageTransfer.getInstance());
 			if (data != null) {
@@ -541,6 +554,7 @@ void createControlTransfer(Composite parent){
 	Button b = new Button(parent, SWT.PUSH);
 	b.setText("Cut");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			text.cut();
 		}
@@ -548,6 +562,7 @@ void createControlTransfer(Composite parent){
 	b = new Button(parent, SWT.PUSH);
 	b.setText("Copy");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			text.copy();
 		}
@@ -555,6 +570,7 @@ void createControlTransfer(Composite parent){
 	b = new Button(parent, SWT.PUSH);
 	b.setText("Paste");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			text.paste();
 		}
@@ -570,6 +586,7 @@ void createControlTransfer(Composite parent){
 	b = new Button(parent, SWT.PUSH);
 	b.setText("Cut");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			combo.cut();
 		}
@@ -577,6 +594,7 @@ void createControlTransfer(Composite parent){
 	b = new Button(parent, SWT.PUSH);
 	b.setText("Copy");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			combo.copy();
 		}
@@ -584,6 +602,7 @@ void createControlTransfer(Composite parent){
 	b = new Button(parent, SWT.PUSH);
 	b.setText("Paste");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			combo.paste();
 		}
@@ -597,6 +616,7 @@ void createControlTransfer(Composite parent){
 	b = new Button(parent, SWT.PUSH);
 	b.setText("Cut");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			styledText.cut();
 		}
@@ -604,6 +624,7 @@ void createControlTransfer(Composite parent){
 	b = new Button(parent, SWT.PUSH);
 	b.setText("Copy");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			styledText.copy();
 		}
@@ -611,6 +632,7 @@ void createControlTransfer(Composite parent){
 	b = new Button(parent, SWT.PUSH);
 	b.setText("Paste");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			styledText.paste();
 		}
@@ -629,6 +651,7 @@ void createAvailableTypes(Composite parent){
 	Button b = new Button(parent, SWT.PUSH);
 	b.setText("Get Available Types");
 	b.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			list.removeAll();
 			String[] names = clipboard.getAvailableTypeNames();

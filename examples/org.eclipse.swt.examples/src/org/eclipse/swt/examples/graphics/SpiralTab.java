@@ -32,6 +32,7 @@ public SpiralTab(GraphicsExample example) {
 	angle = -90;
 }
 
+@Override
 public void dispose() {
 	if (menu != null) {
 		menu.dispose();
@@ -45,6 +46,7 @@ public void dispose() {
  * 
  * @param parent The parent composite 
  */
+@Override
 public void createControlPanel(Composite parent) {
 	super.createControlPanel(parent);
 		
@@ -98,14 +100,17 @@ public void createControlPanel(Composite parent) {
 	});
 }
 
+@Override
 public String getCategory() {
 	return GraphicsExample.getResourceString("Misc"); //$NON-NLS-1$
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("Spiral"); //$NON-NLS-1$
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("SpiralDescription"); //$NON-NLS-1$
 }
@@ -113,6 +118,7 @@ public String getDescription() {
 /* (non-Javadoc)
  * @see org.eclipse.swt.examples.graphics.AnimatedGraphicsTab#getAnimationTime()
  */
+@Override
 public int getInitialAnimationTime() {
 	return 150;	
 }
@@ -120,6 +126,7 @@ public int getInitialAnimationTime() {
 /* (non-Javadoc)
  * @see org.eclipse.swt.examples.graphics.AnimatedGraphicsTab#next(int, int)
  */
+@Override
 public void next(int width, int height) {
 	if (angle == 270) {
 		angle = -90;
@@ -130,6 +137,7 @@ public void next(int width, int height) {
 /* (non-Javadoc)
  * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC, int, int)
  */
+@Override
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();

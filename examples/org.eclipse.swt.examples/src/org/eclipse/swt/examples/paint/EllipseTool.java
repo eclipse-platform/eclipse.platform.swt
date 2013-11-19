@@ -51,6 +51,7 @@ public class EllipseTool extends DragPaintSession implements PaintTool {
 	/*
 	 * Template methods for drawing
 	 */
+	@Override
 	protected Figure createFigure(Point a, Point b) {
 		ContainerFigure container = new ContainerFigure();
 		if (settings.commonFillType != ToolSettings.ftNone)

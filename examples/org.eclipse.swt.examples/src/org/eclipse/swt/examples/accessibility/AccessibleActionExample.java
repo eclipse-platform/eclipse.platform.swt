@@ -47,6 +47,7 @@ public class AccessibleActionExample {
 		button.setText("Button");
 		
 		final Canvas customButton = new Canvas(shell, SWT.NONE) {
+			@Override
 			public Point computeSize(int wHint, int hHint, boolean changed) {
 				GC gc = new GC(this);
 				Point point = gc.stringExtent(buttonText);
@@ -66,12 +67,14 @@ public class AccessibleActionExample {
 			}
 		});
 		customButton.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseDown(MouseEvent e) {
 				int actionIndex = (e.button == 1) ? 0 : 1;
 				customButtonAction(actionIndex);
 			}
 		});
 		customButton.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyPressed(KeyEvent e) {
 				int modifierKeys = e.stateMask & SWT.MODIFIER_MASK;
 				if (modifierKeys == SWT.CTRL || modifierKeys == 0) {
@@ -83,22 +86,27 @@ public class AccessibleActionExample {
 
 		Accessible accessible = customButton.getAccessible();
 		accessible.addAccessibleListener(new AccessibleAdapter() {
+			@Override
 			public void getName(AccessibleEvent e) {
 				e.result = buttonText;
 			}
+			@Override
 			public void getKeyboardShortcut(AccessibleEvent e) {
 				e.result = "CTRL+1"; // default action is 'action 1'
 			}
 		});
 		accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
+			@Override
 			public void getRole(AccessibleControlEvent e) {
 				e.detail = ACC.ROLE_PUSHBUTTON;
 			}
 		});
 		accessible.addAccessibleActionListener(new AccessibleActionAdapter() {
+			@Override
 			public void getActionCount(AccessibleActionEvent e) {
 				e.count = 2;
 			}
+			@Override
 			public void getName(AccessibleActionEvent e) {
 				if (0 <= e.index && e.index <= 1) {
 					if (e.localized) {
@@ -108,17 +116,20 @@ public class AccessibleActionExample {
 					}
 				}
 			}
+			@Override
 			public void getDescription(AccessibleActionEvent e) {
 				if (0 <= e.index && e.index <= 1) {
 					e.result = AccessibleActionExample.getResourceString("action" + e.index + "description");
 				}
 			}
+			@Override
 			public void doAction(AccessibleActionEvent e) {
 				if (0 <= e.index && e.index <= 1) {
 					customButtonAction(e.index);
 					e.result = ACC.OK;
 				}
 			}
+			@Override
 			public void getKeyBinding(AccessibleActionEvent e) {
 				switch (e.index) { 
 					case 0: e.result = "1;CTRL+1"; break;

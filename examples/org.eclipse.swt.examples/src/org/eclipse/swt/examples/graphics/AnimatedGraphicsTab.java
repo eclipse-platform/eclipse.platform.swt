@@ -35,6 +35,7 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 	 * 
 	 * @see org.eclipse.swt.examples.graphics.GraphicsTab#createControlPanel(org.eclipse.swt.widgets.Composite)
 	 */
+	@Override
 	public void createControlPanel(Composite parent) {
 		
 		// setup layout
@@ -105,6 +106,7 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 	/**
 	 *  Answer whether the receiver's drawing should be double bufferer.
 	 */
+	@Override
 	public boolean getDoubleBuffered() {
 		return true;
 	}

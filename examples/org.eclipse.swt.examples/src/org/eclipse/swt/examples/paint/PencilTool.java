@@ -51,6 +51,7 @@ public class PencilTool extends ContinuousPaintSession implements PaintTool {
 	/*
 	 * Template method for drawing
 	 */
+	@Override
 	public void render(final Point point) {
 		final PaintSurface ps = getPaintSurface();
 		ps.drawFigure(new PointFigure(settings.commonForegroundColor, point.x, point.y));

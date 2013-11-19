@@ -239,6 +239,7 @@ public class FileViewer {
 		simulateItem.setText(getResourceString("menu.File.SimulateOnly.text"));
 		simulateItem.setSelection(simulateOnly);
 		simulateItem.addSelectionListener(new SelectionAdapter () {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				simulateOnly = simulateItem.getSelection();
 			}
@@ -247,6 +248,7 @@ public class FileViewer {
 		MenuItem item = new MenuItem(menu, SWT.PUSH);
 		item.setText(getResourceString("menu.File.Close.text"));
 		item.addSelectionListener(new SelectionAdapter () {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				shell.close();
 			}
@@ -267,6 +269,7 @@ public class FileViewer {
 		MenuItem item = new MenuItem(menu, SWT.PUSH);
 		item.setText(getResourceString("menu.Help.About.text"));		
 		item.addSelectionListener(new SelectionAdapter () {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
 				box.setText(getResourceString("dialog.About.title"));
@@ -291,6 +294,7 @@ public class FileViewer {
 		item.setImage(iconCache.stockImages[iconCache.cmdParent]);
 		item.setToolTipText(getResourceString("tool.Parent.tiptext"));
 		item.addSelectionListener(new SelectionAdapter () {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				doParent();
 			}
@@ -299,11 +303,13 @@ public class FileViewer {
 		item.setImage(iconCache.stockImages[iconCache.cmdRefresh]);
 		item.setToolTipText(getResourceString("tool.Refresh.tiptext"));
 		item.addSelectionListener(new SelectionAdapter () {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				doRefresh();
 			}
 		});
 		SelectionAdapter unimplementedListener = new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
 				box.setText(getResourceString("dialog.NotImplemented.title"));
@@ -356,6 +362,7 @@ public class FileViewer {
 		combo = new Combo(parent, SWT.NONE);
 		combo.setLayoutData(layoutData);
 		combo.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				final File[] roots = (File[]) combo.getData(COMBODATA_ROOTS);
 				if (roots == null) return;
@@ -364,6 +371,7 @@ public class FileViewer {
 					notifySelectedDirectory(roots[selection]);
 				}
 			}
+			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				final String lastText = (String) combo.getData(COMBODATA_LASTTEXT);
 				String text = combo.getText();
@@ -415,12 +423,14 @@ public class FileViewer {
 			}
 		});
 		tree.addTreeListener(new TreeAdapter() {
+			@Override
 			public void treeExpanded(TreeEvent event) {
 				final TreeItem item = (TreeItem) event.item;
 				final Image image = (Image) item.getData(TREEITEMDATA_IMAGEEXPANDED);
 				if (image != null) item.setImage(image);
 				treeExpandItem(item);
 			}
+			@Override
 			public void treeCollapsed(TreeEvent event) {
 				final TreeItem item = (TreeItem) event.item;
 				final Image image = (Image) item.getData(TREEITEMDATA_IMAGECOLLAPSED);
@@ -481,17 +491,21 @@ public class FileViewer {
 		DropTarget dropTarget = new DropTarget(tree, DND.DROP_MOVE | DND.DROP_COPY);
 		dropTarget.setTransfer(new Transfer[] { FileTransfer.getInstance() });
 		dropTarget.addDropListener(new DropTargetAdapter() {
+			@Override
 			public void dragEnter(DropTargetEvent event) {
 				isDropping = true;
 			}
+			@Override
 			public void dragLeave(DropTargetEvent event) {
 				isDropping = false;
 				handleDeferredRefresh();
 			}
+			@Override
 			public void dragOver(DropTargetEvent event) {
 				dropTargetValidate(event, getTargetFile(event));
 				event.feedback |= DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
 			}
+			@Override
 			public void drop(DropTargetEvent event) {
 				File targetFile = getTargetFile(event);
 				if (dropTargetValidate(event, targetFile))
@@ -712,9 +726,11 @@ public class FileViewer {
 		}
 		table.setHeaderVisible(true);
 		table.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				notifySelectedFiles(getSelectedFiles());
 			}
+			@Override
 			public void widgetDefaultSelected(SelectionEvent event) {
 				doDefaultFileAction(getSelectedFiles());
 			}
@@ -781,17 +797,21 @@ public class FileViewer {
 		DropTarget dropTarget = new DropTarget(table, DND.DROP_MOVE | DND.DROP_COPY);
 		dropTarget.setTransfer(new Transfer[] { FileTransfer.getInstance() });
 		dropTarget.addDropListener(new DropTargetAdapter() {
+			@Override
 			public void dragEnter(DropTargetEvent event) {
 				isDropping = true;
 			}
+			@Override
 			public void dragLeave(DropTargetEvent event) {
 				isDropping = false;
 				handleDeferredRefresh();
 			}
+			@Override
 			public void dragOver(DropTargetEvent event) {
 				dropTargetValidate(event, getTargetFile(event));
 				event.feedback |= DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
 			}
+			@Override
 			public void drop(DropTargetEvent event) {
 				File targetFile = getTargetFile(event);
 				if (dropTargetValidate(event, targetFile))
@@ -1606,6 +1626,7 @@ public class FileViewer {
 			shell.setLayout(gridLayout);
 			shell.setText(getResourceString("progressDialog." + operationKeyName[style] + ".title"));
 			shell.addShellListener(new ShellAdapter() {
+				@Override
 				public void shellClosed(ShellEvent e) {
 					isCancelled = true;
 				}
@@ -1629,6 +1650,7 @@ public class FileViewer {
 			cancelButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_FILL));
 			cancelButton.setText(getResourceString("progressDialog.cancelButton.text"));
 			cancelButton.addSelectionListener(new SelectionAdapter() {
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					isCancelled = true;
 					cancelButton.setEnabled(false);

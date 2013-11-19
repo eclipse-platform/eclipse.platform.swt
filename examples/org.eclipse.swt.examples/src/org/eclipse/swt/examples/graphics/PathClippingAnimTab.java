@@ -35,18 +35,22 @@ public class PathClippingAnimTab extends AnimatedGraphicsTab {
 		super(example);
 	}
 
+	@Override
 	public String getCategory() {
 		return GraphicsExample.getResourceString("Clipping"); //$NON-NLS-1$
 	}
 
+	@Override
 	public String getText() {
 		return GraphicsExample.getResourceString("AnimPathClipping"); //$NON-NLS-1$
 	}
 	
+	@Override
 	public String getDescription() {
 		return GraphicsExample.getResourceString("AnimPathClippingDesc"); //$NON-NLS-1$
 	}
 
+	@Override
 	public void dispose() {
 		if (menu != null) {
 			menu.dispose();
@@ -57,6 +61,7 @@ public class PathClippingAnimTab extends AnimatedGraphicsTab {
 	/**
 	 * Creates the widgets used to control the drawing.
 	 */
+	@Override
 	public void createControlPanel(Composite parent) {
 		super.createControlPanel(parent);
 
@@ -93,6 +98,7 @@ public class PathClippingAnimTab extends AnimatedGraphicsTab {
 		});
 	}
 
+	@Override
 	public void next(int width, int height) {
 		angle = (angle + 5)%360;
 		if (vertical) {
@@ -116,6 +122,7 @@ public class PathClippingAnimTab extends AnimatedGraphicsTab {
 		}
 	}
 
+	@Override
 	public void paint(GC gc, int width, int height) {
 		if (!example.checkAdvancedGraphics()) return;
 		Device device = gc.getDevice();

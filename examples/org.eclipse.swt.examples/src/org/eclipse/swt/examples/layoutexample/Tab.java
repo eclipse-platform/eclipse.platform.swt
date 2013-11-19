@@ -65,6 +65,7 @@ abstract class Tab {
 
 	/* Listeners */
 	SelectionListener selectionListener = new SelectionAdapter () {
+		@Override
 		public void widgetSelected (SelectionEvent e) {
 			resetEditors ();
 		}
@@ -102,6 +103,7 @@ abstract class Tab {
 		add = new ToolItem(toolBar, SWT.DROP_DOWN);
 		add.setText(LayoutExample.getResourceString("Add"));	
 		add.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (event.detail == SWT.ARROW) {
 					ToolItem item = (ToolItem)event.widget;
@@ -111,6 +113,7 @@ abstract class Tab {
 						final MenuItem newItem = new MenuItem (menu, SWT.RADIO);
 						newItem.setText (OPTIONS [i]);						
 						newItem.addSelectionListener (new SelectionAdapter () {
+							@Override
 							public void widgetSelected (SelectionEvent event) {
 								MenuItem menuItem = (MenuItem)event.widget;
 								if (menuItem.getSelection ()) {
@@ -159,6 +162,7 @@ abstract class Tab {
 		delete = new ToolItem(toolBar, SWT.PUSH);
 		delete.setText (LayoutExample.getResourceString ("Delete"));
 		delete.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent e) {
 				resetEditors ();
 				int [] selected = table.getSelectionIndices ();
@@ -178,6 +182,7 @@ abstract class Tab {
 		clear = new ToolItem(toolBar, SWT.PUSH);
 		clear.setText (LayoutExample.getResourceString ("Clear"));
 		clear.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent e) {
 				resetEditors ();
 				children = layoutComposite.getChildren ();
@@ -196,6 +201,7 @@ abstract class Tab {
 		code = new ToolItem (toolBar, SWT.PUSH);
 		code.setText (LayoutExample.getResourceString ("Generate_Code"));
 		code.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				final Shell shell = new Shell();	
 				shell.setText(LayoutExample.getResourceString("Generated_Code"));
@@ -214,6 +220,7 @@ abstract class Tab {
 				select.setText(LayoutExample.getResourceString("Select_All"));
 				select.setAccelerator(SWT.MOD1 + 'A');
 				select.addSelectionListener(new SelectionAdapter() {
+					@Override
 					public void widgetSelected(SelectionEvent e) {
 						text.selectAll();
 					}
@@ -222,6 +229,7 @@ abstract class Tab {
 				copy.setText(LayoutExample.getResourceString("Copy"));
 				copy.setAccelerator(SWT.MOD1 + 'C');
 				copy.addSelectionListener(new SelectionAdapter() {
+					@Override
 					public void widgetSelected(SelectionEvent e) {
 						text.copy();
 					}
@@ -229,6 +237,7 @@ abstract class Tab {
 				MenuItem exit = new MenuItem(menu, SWT.PUSH);
 				exit.setText(LayoutExample.getResourceString("Exit"));
 				exit.addSelectionListener(new SelectionAdapter() {
+					@Override
 					public void widgetSelected(SelectionEvent e) {
 						shell.close();
 					}
@@ -320,6 +329,7 @@ abstract class Tab {
 		preferredButton.setText (LayoutExample.getResourceString ("Preferred_Size"));
 		preferredButton.setSelection (false);
 		preferredButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent e) {
 				resetEditors ();
 				GridData data = (GridData)layoutComposite.getLayoutData();

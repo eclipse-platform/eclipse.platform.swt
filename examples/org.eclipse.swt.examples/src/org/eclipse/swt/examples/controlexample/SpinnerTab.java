@@ -38,6 +38,7 @@ class SpinnerTab extends RangeTab {
 	/**
 	 * Creates the "Control" widget children.
 	 */
+	@Override
 	void createControlWidgets () {
 		super.createControlWidgets ();
 		createIncrementGroup ();
@@ -48,6 +49,7 @@ class SpinnerTab extends RangeTab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -61,6 +63,7 @@ class SpinnerTab extends RangeTab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -95,6 +98,7 @@ class SpinnerTab extends RangeTab {
 	
 		/* Add the listeners */
 		incrementSpinner.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent e) {		
 				setWidgetIncrement ();
 			}
@@ -123,6 +127,7 @@ class SpinnerTab extends RangeTab {
 
 		/* Add the listeners */
 		pageIncrementSpinner.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetPageIncrement ();
 			}
@@ -151,6 +156,7 @@ class SpinnerTab extends RangeTab {
 	
 		/* Add the listeners */
 		digitsSpinner.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent e) {		
 				setWidgetDigits ();
 			}
@@ -163,6 +169,7 @@ class SpinnerTab extends RangeTab {
 	 * @param tabFolder org.eclipse.swt.widgets.TabFolder
 	 * @return the new page for the tab folder
 	 */
+	@Override
 	Composite createTabFolderPage (TabFolder tabFolder) {
 		super.createTabFolderPage (tabFolder);
 
@@ -173,6 +180,7 @@ class SpinnerTab extends RangeTab {
 		 * recalculate the preferred size correctly.
 		 */
 		tabFolderPage.addControlListener(new ControlAdapter() {
+			@Override
 			public void controlResized(ControlEvent e) {
 				setExampleWidgetSize ();
 			}
@@ -184,6 +192,7 @@ class SpinnerTab extends RangeTab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup () {
 		orientationButtons = false;
 		super.createStyleGroup ();
@@ -198,6 +207,7 @@ class SpinnerTab extends RangeTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {spinner1};
 	}
@@ -206,6 +216,7 @@ class SpinnerTab extends RangeTab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"Selection", "TextLimit", "ToolTipText"};
 	}
@@ -213,6 +224,7 @@ class SpinnerTab extends RangeTab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "Spinner";
 	}
@@ -220,6 +232,7 @@ class SpinnerTab extends RangeTab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		readOnlyButton.setSelection ((spinner1.getStyle () & SWT.READ_ONLY) != 0);
@@ -234,6 +247,7 @@ class SpinnerTab extends RangeTab {
 	/**
 	 * Gets the default maximum of the "Example" widgets.
 	 */
+	@Override
 	int getDefaultMaximum () {
 		return spinner1.getMaximum();
 	}
@@ -241,6 +255,7 @@ class SpinnerTab extends RangeTab {
 	/**
 	 * Gets the default minimim of the "Example" widgets.
 	 */
+	@Override
 	int getDefaultMinimum () {
 		return spinner1.getMinimum();
 	}
@@ -248,6 +263,7 @@ class SpinnerTab extends RangeTab {
 	/**
 	 * Gets the default selection of the "Example" widgets.
 	 */
+	@Override
 	int getDefaultSelection () {
 		return spinner1.getSelection();
 	}
@@ -283,6 +299,7 @@ class SpinnerTab extends RangeTab {
 	/**
 	 * Sets the minimim of the "Example" widgets.
 	 */
+	@Override
 	void setWidgetMaximum () {
 		spinner1.setMaximum (maximumSpinner.getSelection ());
 	}
@@ -290,6 +307,7 @@ class SpinnerTab extends RangeTab {
 	/**
 	 * Sets the minimim of the "Example" widgets.
 	 */
+	@Override
 	void setWidgetMinimum () {
 		spinner1.setMinimum (minimumSpinner.getSelection ());
 	}
@@ -311,6 +329,7 @@ class SpinnerTab extends RangeTab {
 	/**
 	 * Sets the selection of the "Example" widgets.
 	 */
+	@Override
 	void setWidgetSelection () {
 		spinner1.setSelection (selectionSpinner.getSelection ());
 	}

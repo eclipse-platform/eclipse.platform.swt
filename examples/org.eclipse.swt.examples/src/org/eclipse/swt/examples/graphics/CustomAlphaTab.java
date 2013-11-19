@@ -32,18 +32,22 @@ public CustomAlphaTab(GraphicsExample example) {
 	super(example);
 }
 
+@Override
 public String getCategory() {
 	return GraphicsExample.getResourceString("Alpha"); //$NON-NLS-1$
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("CustomAlpha"); //$NON-NLS-1$
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("CustomAlphaDescription"); //$NON-NLS-1$
 }
 
+@Override
 public void dispose() {
 	if (menu != null) {
 		menu.dispose();
@@ -54,6 +58,7 @@ public void dispose() {
 /** 
  * Creates the widgets used to control the drawing.
  */
+@Override
 public void createControlPanel(Composite parent) {
 	super.createControlPanel(parent);
 	
@@ -109,11 +114,13 @@ public void createControlPanel(Composite parent) {
 	});
 }
 
+@Override
 public void next(int width, int height) {
 	
 	angle = (angle+1)%360;
 }
 
+@Override
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();

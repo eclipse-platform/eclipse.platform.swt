@@ -51,6 +51,7 @@ public class RectangleTool extends DragPaintSession implements PaintTool {
 	/*
 	 * Template method for drawing
 	 */
+	@Override
 	protected Figure createFigure(Point a, Point b) {
 		switch (settings.commonFillType) {
 			default:

@@ -29,11 +29,13 @@ public class PointFigure extends Figure {
 	public PointFigure(Color color, int x, int y) {
 		this.color = color; this.x = x; this.y = y;
 	}
+	@Override
 	public void draw(FigureDrawContext fdc) {
 		Point p = fdc.toClientPoint(x, y);
 		fdc.gc.setBackground(color);
 		fdc.gc.fillRectangle(p.x, p.y, 1, 1);
 	}
+	@Override
 	public void addDamagedRegion(FigureDrawContext fdc, Region region) {
 		region.add(fdc.toClientRectangle(x, y, x, y));
 	}

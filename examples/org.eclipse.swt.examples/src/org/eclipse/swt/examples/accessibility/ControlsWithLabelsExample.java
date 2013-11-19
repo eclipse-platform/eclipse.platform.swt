@@ -197,8 +197,10 @@ public class ControlsWithLabelsExample {
 		canvas.setCaret (new Caret(canvas, SWT.NONE));
 		/* Hook key listener so canvas will take focus during traversal in. */
 		canvas.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyPressed(KeyEvent e) {
 			}
+			@Override
 			public void keyReleased(KeyEvent e) {
 			}
 		});

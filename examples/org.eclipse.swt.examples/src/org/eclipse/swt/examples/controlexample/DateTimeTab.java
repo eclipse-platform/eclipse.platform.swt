@@ -33,6 +33,7 @@ class DateTimeTab extends Tab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -46,6 +47,7 @@ class DateTimeTab extends Tab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -66,6 +68,7 @@ class DateTimeTab extends Tab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup() {
 		super.createStyleGroup ();
 		
@@ -93,6 +96,7 @@ class DateTimeTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {dateTime1};
 	}
@@ -101,6 +105,7 @@ class DateTimeTab extends Tab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"Day", "Hours", "Minutes", "Month", "Seconds", "Year"};
 	}
@@ -108,6 +113,7 @@ class DateTimeTab extends Tab {
 	/**
 	 * Gets the short text for the tab folder item.
 	 */
+	@Override
 	String getShortTabText() {
 		return "DT";
 	}
@@ -115,6 +121,7 @@ class DateTimeTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "DateTime";
 	}
@@ -122,6 +129,7 @@ class DateTimeTab extends Tab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		dateButton.setSelection ((dateTime1.getStyle () & SWT.DATE) != 0);

@@ -37,6 +37,7 @@ public class RectangleFigure extends Figure {
 		this.lineStyle = lineStyle;
 		this.x1 = x1; this.y1 = y1; this.x2 = x2; this.y2 = y2;
 	}
+	@Override
 	public void draw(FigureDrawContext fdc) {
 		Rectangle r = fdc.toClientRectangle(x1, y1, x2, y2);
 		fdc.gc.setForeground(foregroundColor);
@@ -45,6 +46,7 @@ public class RectangleFigure extends Figure {
 		fdc.gc.drawRectangle(r.x, r.y, r.width - 1, r.height - 1);
 		fdc.gc.setLineStyle(SWT.LINE_SOLID);
 	}
+	@Override
 	public void addDamagedRegion(FigureDrawContext fdc, Region region) {
 		region.add(fdc.toClientRectangle(x1, y1, x2, y2));
 	}

@@ -43,6 +43,7 @@ public class LauncherView extends ViewPart {
 	 * 
 	 * @see ViewPart#createPartControl
 	 */
+	@Override
 	public void createPartControl(Composite parent) {
 		workbenchShell = getSite().getShell();
 		parent.setLayout(new SplitLayout());
@@ -116,6 +117,7 @@ public class LauncherView extends ViewPart {
 	 * 
 	 * @see org.eclipse.ui.part.ViewPart#setFocus
 	 */
+	@Override
 	public void setFocus()  {
 		launchTree.setFocus();
 		runButton.getShell().setDefaultButton(runButton);
@@ -124,6 +126,7 @@ public class LauncherView extends ViewPart {
 	/**
 	 * Called when the View is to be disposed
 	 */	
+	@Override
 	public void dispose() {
 		workbenchShell = null;
 		launchTree = null;

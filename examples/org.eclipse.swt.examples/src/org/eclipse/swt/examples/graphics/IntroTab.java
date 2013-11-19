@@ -30,6 +30,7 @@ public IntroTab(GraphicsExample example) {
 	super(example);
 }
 
+@Override
 public void dispose() {
 	if (image != null) image.dispose();
 	image = null;
@@ -37,18 +38,22 @@ public void dispose() {
 	font = null;
 }
 
+@Override
 public String getCategory() {
 	return GraphicsExample.getResourceString("Introduction"); //$NON-NLS-1$
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("SWT"); //$NON-NLS-1$
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("IntroductionDescription"); //$NON-NLS-1$
 }
 
+@Override
 public void next(int width, int height) {
     x += incX;
     y += incY;
@@ -71,6 +76,7 @@ public void next(int width, int height) {
     }
 }
 
+@Override
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();

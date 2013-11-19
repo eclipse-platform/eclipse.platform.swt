@@ -140,6 +140,7 @@ class ItemDescriptor {
 	 * 
 	 * @return true if this.getId().equalsIgnoreCase(other.getId())
 	 */
+	@Override
 	public boolean equals(Object other) {
 		if (other instanceof ItemDescriptor) {
 			ItemDescriptor otherDescriptor = (ItemDescriptor) other;
@@ -153,6 +154,7 @@ class ItemDescriptor {
 	 * 
 	 * @return the hashcode
 	 */
+	@Override
 	public int hashCode() {
 		return id.toUpperCase().hashCode();
 	}

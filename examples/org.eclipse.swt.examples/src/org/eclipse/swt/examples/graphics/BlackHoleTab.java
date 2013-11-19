@@ -21,19 +21,23 @@ public BlackHoleTab(GraphicsExample example) {
 	super(example);
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("BlackHole"); //$NON-NLS-1$
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("BlackHoleDescription"); //$NON-NLS-1$
 }
 
+@Override
 public void next(int width, int height) {
 	if (size > width * 3 / 2) size = 0;
 	else size += 10;
 }
 
+@Override
 public void paint(GC gc, int width, int height) {
 	Device device = gc.getDevice();
 	gc.setBackground(device.getSystemColor(SWT.COLOR_BLACK));

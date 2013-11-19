@@ -34,6 +34,7 @@ class CLabelTab extends AlignableTab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -49,6 +50,7 @@ class CLabelTab extends AlignableTab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -73,6 +75,7 @@ class CLabelTab extends AlignableTab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup() {
 		super.createStyleGroup ();
 		
@@ -88,6 +91,7 @@ class CLabelTab extends AlignableTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {label1, label2, label3};
 	}
@@ -96,6 +100,7 @@ class CLabelTab extends AlignableTab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"BottomMargin", "LeftMargin", "RightMargin", "Text", "ToolTipText", "TopMargin"};
 	}
@@ -103,6 +108,7 @@ class CLabelTab extends AlignableTab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "CLabel";
 	}
@@ -110,6 +116,7 @@ class CLabelTab extends AlignableTab {
 	/**
 	 * Sets the alignment of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetAlignment () {
 		int alignment = 0;
 		if (leftButton.getSelection ()) alignment = SWT.LEFT;
@@ -123,6 +130,7 @@ class CLabelTab extends AlignableTab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		leftButton.setSelection ((label1.getStyle () & SWT.LEFT) != 0);

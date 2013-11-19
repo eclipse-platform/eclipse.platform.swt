@@ -37,6 +37,7 @@ class TabFolderTab extends Tab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -50,6 +51,7 @@ class TabFolderTab extends Tab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -73,6 +75,7 @@ class TabFolderTab extends Tab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup() {
 		super.createStyleGroup ();
 		
@@ -91,6 +94,7 @@ class TabFolderTab extends Tab {
 	 *
 	 * @return an array containing the example widget children's items
 	 */
+	@Override
 	Item [] getExampleWidgetItems () {
 		return tabFolder1.getItems();
 	}
@@ -98,6 +102,7 @@ class TabFolderTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {tabFolder1};
 	}
@@ -106,15 +111,18 @@ class TabFolderTab extends Tab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"Selection", "SelectionIndex", "ToolTipText"};
 	}
 
+	@Override
 	String setMethodName(String methodRoot) {
 		/* Override to handle special case of int getSelectionIndex()/setSelection(int) */
 		return (methodRoot.equals("SelectionIndex")) ? "setSelection" : "set" + methodRoot;
 	}
 
+	@Override
 	Object[] parameterForType(String typeName, String value, Widget widget) {
 		if (value.equals("")) return new Object[] {new TabItem[0]};
 		if (typeName.equals("org.eclipse.swt.widgets.TabItem")) {
@@ -143,6 +151,7 @@ class TabFolderTab extends Tab {
 	/**
 	 * Gets the short text for the tab folder item.
 	 */
+	@Override
 	String getShortTabText() {
 		return "TF";
 	}
@@ -150,6 +159,7 @@ class TabFolderTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "TabFolder";
 	}
@@ -157,6 +167,7 @@ class TabFolderTab extends Tab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		topButton.setSelection ((tabFolder1.getStyle () & SWT.TOP) != 0);

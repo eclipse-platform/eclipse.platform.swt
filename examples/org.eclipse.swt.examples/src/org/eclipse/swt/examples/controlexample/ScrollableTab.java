@@ -28,6 +28,7 @@ abstract class ScrollableTab extends Tab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup () {
 		super.createStyleGroup ();
 	
@@ -49,6 +50,7 @@ abstract class ScrollableTab extends Tab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		Widget [] widgets = getExampleWidgets ();

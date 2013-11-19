@@ -29,6 +29,7 @@ public class CustomControlView extends ControlView {
 	 * 
 	 * @see ViewPart#createPartControl
 	 */
+	@Override
 	public void createPartControl(Composite frame) {
 		instance = new CustomControlExample(frame);
 	}

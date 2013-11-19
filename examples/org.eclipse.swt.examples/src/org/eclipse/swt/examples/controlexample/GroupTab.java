@@ -36,6 +36,7 @@ class GroupTab extends Tab {
 	/**
 	 * Creates the "Other" group.
 	 */
+	@Override
 	void createOtherGroup () {
 		super.createOtherGroup ();
 	
@@ -45,6 +46,7 @@ class GroupTab extends Tab {
 	
 		/* Add the listeners */
 		titleButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setTitleText ();
 			}
@@ -54,6 +56,7 @@ class GroupTab extends Tab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -67,6 +70,7 @@ class GroupTab extends Tab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -85,6 +89,7 @@ class GroupTab extends Tab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup() {
 		super.createStyleGroup ();
 		
@@ -107,6 +112,7 @@ class GroupTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {group1};
 	}
@@ -115,6 +121,7 @@ class GroupTab extends Tab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"Text", "ToolTipText"};
 	}
@@ -122,6 +129,7 @@ class GroupTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "Group";
 	}
@@ -141,6 +149,7 @@ class GroupTab extends Tab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		shadowEtchedInButton.setSelection ((group1.getStyle () & SWT.SHADOW_ETCHED_IN) != 0);

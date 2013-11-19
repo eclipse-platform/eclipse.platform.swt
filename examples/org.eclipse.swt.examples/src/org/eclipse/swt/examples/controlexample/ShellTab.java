@@ -95,6 +95,7 @@ class ShellTab extends Tab {
 		button.setBounds(20, 20, 120, 30);
 		button.setText(ControlExample.getResourceString("FullScreen"));
 		button.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				currentShell.setFullScreen(button.getSelection());
 			}
@@ -121,6 +122,7 @@ class ShellTab extends Tab {
 	/**
 	 * Creates the "Control" group. 
 	 */
+	@Override
 	void createControlGroup () {
 		/*
 		 * Create the "Control" group.  This is the group on the
@@ -161,6 +163,7 @@ class ShellTab extends Tab {
 	/**
 	 * Creates the "Control" widget children.
 	 */
+	@Override
 	void createControlWidgets () {
 	
 		/* Create the parent style buttons */
@@ -225,16 +228,19 @@ class ShellTab extends Tab {
 	
 		/* Add the listeners */
 		createButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				createButtonSelected(e);
 			}
 		});
 		closeAllButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				closeAllShells ();
 			}
 		});
 		SelectionListener decorationButtonListener = new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				decorationButtonSelected(event);
 			}
@@ -335,6 +341,7 @@ class ShellTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "Shell";
 	}

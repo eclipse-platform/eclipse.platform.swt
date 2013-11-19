@@ -49,6 +49,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 	 * @param parent
 	 *            The parent composite
 	 */
+	@Override
 	public void createControlPanel(Composite parent) {
 		super.createControlPanel(parent);
 
@@ -125,14 +126,17 @@ public class CountDownTab extends AnimatedGraphicsTab {
 		});
 	}
 
+	@Override
 	public String getCategory() {
 		return GraphicsExample.getResourceString("Misc"); //$NON-NLS-1$
 	}
 
+	@Override
 	public String getText() {
 		return GraphicsExample.getResourceString("Countdown"); //$NON-NLS-1$
 	}
 	
+	@Override
 	public String getDescription() {
 		return GraphicsExample.getResourceString("CountdownDescription"); //$NON-NLS-1$
 	}
@@ -142,6 +146,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 	 * 
 	 * @see org.eclipse.swt.examples.graphics.AnimatedGraphicsTab#getAnimationTime()
 	 */
+	@Override
 	public int getInitialAnimationTime() {
 		return 28;
 	}
@@ -151,6 +156,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 	 * 
 	 * @see org.eclipse.swt.examples.graphics.AnimatedGraphicsTab#next(int, int)
 	 */
+	@Override
 	public void next(int width, int height) {
 
 		if (angle == 270) {
@@ -170,6 +176,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 	 * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC,
 	 *      int, int)
 	 */
+	@Override
 	public void paint(GC gc, int width, int height) {
 		if (!example.checkAdvancedGraphics()) return;
 		Device device = gc.getDevice();

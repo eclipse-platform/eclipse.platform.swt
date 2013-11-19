@@ -34,11 +34,13 @@ public class SolidRoundedRectangleFigure extends Figure {
 		this.color = color; this.x1 = x1; this.y1 = y1; this.x2 = x2; this.y2 = y2;
 		this.diameter = diameter;
 	}
+	@Override
 	public void draw(FigureDrawContext fdc) {
 		Rectangle r = fdc.toClientRectangle(x1, y1, x2, y2);
 		fdc.gc.setBackground(color);
 		fdc.gc.fillRoundRectangle(r.x, r.y, r.width, r.height, diameter, diameter);
 	}
+	@Override
 	public void addDamagedRegion(FigureDrawContext fdc, Region region) {
 		region.add(fdc.toClientRectangle(x1, y1, x2, y2));
 	}

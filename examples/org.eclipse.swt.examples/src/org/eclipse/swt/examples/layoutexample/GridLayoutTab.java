@@ -60,6 +60,7 @@ class GridLayoutTab extends Tab {
 	/**
 	 * Creates the widgets in the "child" group.
 	 */
+	@Override
 	void createChildWidgets () {
 		/* Create the TraverseListener */
 		final TraverseListener traverseListener = new TraverseListener () {
@@ -103,6 +104,7 @@ class GridLayoutTab extends Tab {
 		minHeightEditor = new TableEditor (table);
 		excludeEditor = new TableEditor (table);
 		table.addMouseListener (new MouseAdapter () {
+			@Override
 			public void mouseDown(MouseEvent e) {
 				resetEditors();
 				index = table.getSelectionIndex ();
@@ -117,18 +119,18 @@ class GridLayoutTab extends Tab {
 				table.showSelection ();
 				
 				nameText = new Text (table, SWT.SINGLE);
-				nameText.setText (((String [])data.elementAt (index)) [NAME_COL]);
+				nameText.setText (data.elementAt (index) [NAME_COL]);
 				createTextEditor (nameText, nameEditor, NAME_COL);
 				
 				combo = new CCombo (table, SWT.READ_ONLY);
 				createComboEditor (combo, comboEditor);
 				
 				widthText = new Text (table, SWT.SINGLE);
-				widthText.setText (((String [])data.elementAt (index)) [WIDTH_COL]);
+				widthText.setText (data.elementAt (index) [WIDTH_COL]);
 				createTextEditor (widthText, widthEditor, WIDTH_COL);
 				
 				heightText = new Text (table, SWT.SINGLE);
-				heightText.setText (((String [])data.elementAt (index)) [HEIGHT_COL]);
+				heightText.setText (data.elementAt (index) [HEIGHT_COL]);
 				createTextEditor (heightText, heightEditor, HEIGHT_COL);
 				
 				String [] alignValues = new String [] {"BEGINNING","CENTER","END","FILL"};
@@ -170,27 +172,27 @@ class GridLayoutTab extends Tab {
 				vGrab.addTraverseListener (traverseListener);
                 
 				hSpan = new Text (table, SWT.SINGLE);
-				hSpan.setText (((String [])data.elementAt (index)) [HSPAN_COL]);
+				hSpan.setText (data.elementAt (index) [HSPAN_COL]);
 				createTextEditor (hSpan, hSpanEditor, HSPAN_COL);
 				
 				vSpan = new Text (table, SWT.SINGLE);
-				vSpan.setText (((String [])data.elementAt (index)) [VSPAN_COL]);
+				vSpan.setText (data.elementAt (index) [VSPAN_COL]);
 				createTextEditor (vSpan, vSpanEditor, VSPAN_COL);
 				
 				hIndent = new Text (table, SWT.SINGLE);
-				hIndent.setText (((String [])data.elementAt (index)) [HINDENT_COL]);
+				hIndent.setText (data.elementAt (index) [HINDENT_COL]);
 				createTextEditor (hIndent, hIndentEditor, HINDENT_COL);
 				
 				vIndent = new Text (table, SWT.SINGLE);
-				vIndent.setText (((String [])data.elementAt (index)) [VINDENT_COL]);
+				vIndent.setText (data.elementAt (index) [VINDENT_COL]);
 				createTextEditor (vIndent, vIndentEditor, VINDENT_COL);
 				
 				minWidthText = new Text (table, SWT.SINGLE);
-				minWidthText.setText (((String [])data.elementAt (index)) [MINWIDTH_COL]);
+				minWidthText.setText (data.elementAt (index) [MINWIDTH_COL]);
 				createTextEditor (minWidthText, minWidthEditor, MINWIDTH_COL);
 				
 				minHeightText = new Text (table, SWT.SINGLE);
-				minHeightText.setText (((String [])data.elementAt (index)) [MINHEIGHT_COL]);
+				minHeightText.setText (data.elementAt (index) [MINHEIGHT_COL]);
 				createTextEditor (minHeightText, minHeightEditor, MINHEIGHT_COL);
 
 				exclude = new CCombo (table, SWT.NONE);
@@ -264,6 +266,7 @@ class GridLayoutTab extends Tab {
 	/**
 	 * Creates the control widgets.
 	 */
+	@Override
 	void createControlWidgets () {
         /* Controls the columns in the GridLayout */
 		Group columnGroup = new Group (controlGroup, SWT.NONE);
@@ -326,6 +329,7 @@ class GridLayoutTab extends Tab {
 	/**
 	 * Creates the example layout.
 	 */
+	@Override
 	void createLayout () {
 		gridLayout = new GridLayout ();
 		layoutComposite.setLayout (gridLayout);
@@ -335,6 +339,7 @@ class GridLayoutTab extends Tab {
 	 * Disposes the editors without placing their contents
 	 * into the table.
 	 */
+	@Override
 	void disposeEditors () {
 		comboEditor.setEditor (null, null, -1);
 		combo.dispose ();
@@ -357,6 +362,7 @@ class GridLayoutTab extends Tab {
 	/**
 	 * Generates code for the example layout.
 	 */	
+	@Override
 	StringBuffer generateLayoutCode () {
 		StringBuffer code = new StringBuffer ();
 		code.append ("\t\tGridLayout gridLayout = new GridLayout (");
@@ -473,6 +479,7 @@ class GridLayoutTab extends Tab {
 	/**
 	 * Returns the string to insert when a new child control is added to the table.
 	 */
+	@Override
 	String[] getInsertString (String name, String controlType) {
 		return new String [] {name, controlType,
 				"-1","-1","BEGINNING","CENTER",
@@ -483,6 +490,7 @@ class GridLayoutTab extends Tab {
 	/**
 	 * Returns the layout data field names.
 	 */
+	@Override
 	String [] getLayoutDataFieldNames() {
 		return new String [] {
 			"Control Name",
@@ -506,6 +514,7 @@ class GridLayoutTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "GridLayout";
 	}
@@ -513,6 +522,7 @@ class GridLayoutTab extends Tab {
 	/**
 	 * Takes information from TableEditors and stores it.
 	 */
+	@Override
 	void resetEditors (boolean tab) {
 		TableItem oldItem = comboEditor.getItem ();
 		if (oldItem != null) {
@@ -571,7 +581,7 @@ class GridLayoutTab extends Tab {
 			};
 			data.setElementAt (insert, row);
 			for (int i = 0; i < TOTAL_COLS; i++) {
-				oldItem.setText (i, ((String [])data.elementAt (row)) [i]);
+				oldItem.setText (i, data.elementAt (row) [i]);
 			}
 			if (!tab) disposeEditors ();
 		}
@@ -586,6 +596,7 @@ class GridLayoutTab extends Tab {
 	 * Return the initial weight of the layout and control groups within the SashForm.
 	 * @return the desired sash weights for the tab page
 	 */
+	@Override
 	int[] sashWeights () {
 		return new int[] {35, 65};		
 	}
@@ -593,6 +604,7 @@ class GridLayoutTab extends Tab {
 	/**
 	 * Sets the layout data for the children of the layout.
 	 */
+	@Override
 	void setLayoutData () {
 		Control [] children = layoutComposite.getChildren ();
 		TableItem [] items = table.getItems ();
@@ -653,6 +665,7 @@ class GridLayoutTab extends Tab {
 	/**
 	 * Sets the state of the layout.
 	 */
+	@Override
 	void setLayoutState () {
 		/* Set the columns for the layout */
 		gridLayout.numColumns = numColumns.getSelection ();

@@ -38,6 +38,7 @@ class ToolBarTab extends Tab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -63,6 +64,7 @@ class ToolBarTab extends Tab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 	
 		/* Compute the widget style */
@@ -215,6 +217,7 @@ class ToolBarTab extends Tab {
 	/**
 	 * Creates the "Other" group.
 	 */
+	@Override
 	void createOtherGroup () {
 		super.createOtherGroup ();
 	
@@ -224,6 +227,7 @@ class ToolBarTab extends Tab {
 	
 		/* Add the listeners */
 		comboChildButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				recreateExampleWidgets ();
 			}
@@ -233,6 +237,7 @@ class ToolBarTab extends Tab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup() {
 		super.createStyleGroup();
 	
@@ -253,6 +258,7 @@ class ToolBarTab extends Tab {
 		borderButton.setText ("SWT.BORDER");
 	}
 	
+	@Override
 	void disposeExampleWidgets () {
 		super.disposeExampleWidgets ();
 	}
@@ -262,6 +268,7 @@ class ToolBarTab extends Tab {
 	 *
 	 * @return an array containing the example widget children's items
 	 */
+	@Override
 	Item [] getExampleWidgetItems () {
 		Item [] imageToolBarItems = imageToolBar.getItems();
 		Item [] textToolBarItems = textToolBar.getItems();
@@ -276,6 +283,7 @@ class ToolBarTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {imageToolBar, textToolBar, imageTextToolBar};
 	}
@@ -284,6 +292,7 @@ class ToolBarTab extends Tab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"ToolTipText"};
 	}
@@ -291,6 +300,7 @@ class ToolBarTab extends Tab {
 	/**
 	 * Gets the short text for the tab folder item.
 	 */
+	@Override
 	String getShortTabText() {
 		return "TB";
 	}
@@ -298,6 +308,7 @@ class ToolBarTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "ToolBar";
 	}
@@ -305,6 +316,7 @@ class ToolBarTab extends Tab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		horizontalButton.setSelection ((imageToolBar.getStyle () & SWT.HORIZONTAL) != 0);
@@ -323,6 +335,7 @@ class ToolBarTab extends Tab {
 	class DropDownSelectionListener extends SelectionAdapter {
 		private Menu    menu = null;
 		
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			// Create the menu if it has not already been created
 			if (menu == null) {

@@ -41,6 +41,7 @@ class ListTab extends ScrollableTab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -54,6 +55,7 @@ class ListTab extends ScrollableTab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -72,6 +74,7 @@ class ListTab extends ScrollableTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {list1};
 	}
@@ -80,6 +83,7 @@ class ListTab extends ScrollableTab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"Items", "Selection", "ToolTipText", "TopIndex"};
 	}
@@ -87,6 +91,7 @@ class ListTab extends ScrollableTab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "List";
 	}

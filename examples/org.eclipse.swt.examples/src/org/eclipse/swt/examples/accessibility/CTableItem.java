@@ -158,7 +158,7 @@ void addColumn (CTableColumn column) {
 			texts = newTexts;
 		}
 		if (index == 0) {
-			texts [1] = super.getText ();;
+			texts [1] = super.getText ();
 			super.setText ("");	//$NON-NLS-1$
 		}
 
@@ -379,6 +379,7 @@ void computeTextWidths (GC gc) {
 		}
 	}
 }
+@Override
 public void dispose () {
 	if (isDisposed ()) return;
 	CTable parent = this.parent;
@@ -416,12 +417,14 @@ Accessible getAccessible(final Accessible accessibleTable, final int columnIndex
 	if (accessibles [columnIndex] == null) {
 		Accessible accessible = new Accessible(accessibleTable);
 		accessible.addAccessibleListener(new AccessibleAdapter() {
+			@Override
 			public void getName(AccessibleEvent e) {
 				e.result = getText(columnIndex);
 				System.out.println("tableItem getName = " + e.result);
 			}
 		});
 		accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
+			@Override
 			public void getChild(AccessibleControlEvent e) {
 				/* CTable cells do not have children, so just return the index in parent. */
 				switch (e.childID) {
@@ -430,6 +433,7 @@ Accessible getAccessible(final Accessible accessibleTable, final int columnIndex
 						break;
 				}
 			}
+			@Override
 			public void getChildAtPoint(AccessibleControlEvent e) {
 				Point point = parent.toControl(e.x, e.y);
 				if (getBounds(columnIndex).contains(point)) {
@@ -438,10 +442,12 @@ Accessible getAccessible(final Accessible accessibleTable, final int columnIndex
 					e.childID = ACC.CHILDID_NONE;
 				}
 			}
+			@Override
 			public void getFocus(AccessibleControlEvent e) {
 				e.childID = (parent.focusItem == CTableItem.this && parent.isFocusControl()) ? 
 						ACC.CHILDID_SELF : ACC.CHILDID_NONE;
 			}
+			@Override
 			public void getLocation(AccessibleControlEvent e) {
 				Rectangle location = getBounds(columnIndex);
 				Point pt = parent.toDisplay(location.x, location.y);
@@ -450,9 +456,11 @@ Accessible getAccessible(final Accessible accessibleTable, final int columnIndex
 				e.width = location.width;
 				e.height = location.height;
 			}
+			@Override
 			public void getRole(AccessibleControlEvent e) {
 				e.detail = ACC.ROLE_TABLECELL;
 			}
+			@Override
 			public void getValue(AccessibleControlEvent e) {
 				e.result = getText(columnIndex);
 			}
@@ -904,6 +912,7 @@ Rectangle getHitBounds () {
 	}
 	return new Rectangle (contentX, parent.getItemY (this), width, parent.itemHeight);
 }
+@Override
 public Image getImage () {
 	checkWidget ();
 	if (!parent.checkData (this, true)) SWT.error (SWT.ERROR_WIDGET_DISPOSED);
@@ -982,6 +991,7 @@ public int getImageIndent () {
 	if (!parent.checkData (this, true)) SWT.error (SWT.ERROR_WIDGET_DISPOSED);
 	return imageIndent;	// TODO
 }
+@Override
 public String toString () {
 	if (!isDisposed () && (parent.getStyle () & SWT.VIRTUAL) != 0 && !cached) {
 		return "CTableItem {*virtual*}"; //$NON-NLS-1$
@@ -1048,6 +1058,7 @@ int getPreferredWidth (int columnIndex) {
 	}
 	return width + 2 * parent.getCellPadding ();
 }
+@Override
 public String getText () {
 	checkWidget ();
 	if (!parent.checkData (this, true)) SWT.error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1869,6 +1880,7 @@ public void setGrayed (boolean value) {
 		parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 	}
 }
+@Override
 public void setImage (Image value) {
 	checkWidget ();
 	setImage (0, value);
@@ -2014,6 +2026,7 @@ public void setImage (int columnIndex, Image value) {
  * 
  * @deprecated this functionality is not supported on most platforms
  */
+@Deprecated
 public void setImageIndent (int indent) {
 	checkWidget();
 	if (indent < 0) return;
@@ -2068,6 +2081,7 @@ public void setText (int columnIndex, String value) {
 			columnIndex);
 	}
 }
+@Override
 public void setText (String value) {
 	checkWidget ();
 	Rectangle bounds = getBounds (false);

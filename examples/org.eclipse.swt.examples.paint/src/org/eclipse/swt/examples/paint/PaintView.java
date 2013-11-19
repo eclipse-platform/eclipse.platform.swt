@@ -38,6 +38,7 @@ public class PaintView extends ViewPart {
 	 * 
 	 * @see ViewPart#createPartControl
 	 */
+	@Override
 	public void createPartControl(Composite parent) {
 		instance = new PaintExample(parent);
 		instance.createGUI(parent);
@@ -69,6 +70,7 @@ public class PaintView extends ViewPart {
 	/**
 	 * Called when the View is to be disposed
 	 */	
+	@Override
 	public void dispose() {
 		instance.dispose();
 		instance = null;
@@ -89,6 +91,7 @@ public class PaintView extends ViewPart {
 	 * 
 	 * @see org.eclipse.ui.part.ViewPart#setFocus
 	 */
+	@Override
 	public void setFocus() {
 		instance.setFocus();
 	}
@@ -112,7 +115,9 @@ public class PaintView extends ViewPart {
 					PaintExample.class,
 					PaintExample.getResourceString(id + ".image")));
 		}
+		@Override
 		public int getStyle() { return style; }
+		@Override
 		public void run() { action.run(); }
 	}
 }

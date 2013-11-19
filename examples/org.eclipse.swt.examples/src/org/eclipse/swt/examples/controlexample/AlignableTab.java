@@ -39,6 +39,7 @@ abstract class AlignableTab extends Tab {
 	/**
 	 * Creates the "Other" group. 
 	 */
+	@Override
 	void createOtherGroup () {
 		super.createOtherGroup ();
 		
@@ -59,6 +60,7 @@ abstract class AlignableTab extends Tab {
 	
 		/* Add the listeners */
 		SelectionListener selectionListener = new SelectionAdapter () {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				if (!((Button) event.widget).getSelection ()) return;
 				setExampleWidgetAlignment ();
@@ -77,6 +79,7 @@ abstract class AlignableTab extends Tab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		Widget [] widgets = getExampleWidgets ();

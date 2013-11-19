@@ -34,6 +34,7 @@ class SliderTab extends RangeTab {
 	/**
 	 * Creates the "Control" widget children.
 	 */
+	@Override
 	void createControlWidgets () {
 		super.createControlWidgets ();
 		createThumbGroup ();
@@ -44,6 +45,7 @@ class SliderTab extends RangeTab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -57,6 +59,7 @@ class SliderTab extends RangeTab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -91,6 +94,7 @@ class SliderTab extends RangeTab {
 	
 		/* Add the listeners */
 		incrementSpinner.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent e) {		
 				setWidgetIncrement ();
 			}
@@ -119,6 +123,7 @@ class SliderTab extends RangeTab {
 
 		/* Add the listeners */
 		pageIncrementSpinner.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetPageIncrement ();
 			}
@@ -147,6 +152,7 @@ class SliderTab extends RangeTab {
 
 		/* Add the listeners */
 		thumbSpinner.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetThumb ();
 			}
@@ -156,6 +162,7 @@ class SliderTab extends RangeTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {slider1};
 	}
@@ -164,6 +171,7 @@ class SliderTab extends RangeTab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"Selection", "ToolTipText"};
 	}
@@ -171,6 +179,7 @@ class SliderTab extends RangeTab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "Slider";
 	}
@@ -178,6 +187,7 @@ class SliderTab extends RangeTab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		if (!instance.startup) {
@@ -190,6 +200,7 @@ class SliderTab extends RangeTab {
 	/**
 	 * Gets the default maximum of the "Example" widgets.
 	 */
+	@Override
 	int getDefaultMaximum () {
 		return slider1.getMaximum();
 	}
@@ -197,6 +208,7 @@ class SliderTab extends RangeTab {
 	/**
 	 * Gets the default minimim of the "Example" widgets.
 	 */
+	@Override
 	int getDefaultMinimum () {
 		return slider1.getMinimum();
 	}
@@ -204,6 +216,7 @@ class SliderTab extends RangeTab {
 	/**
 	 * Gets the default selection of the "Example" widgets.
 	 */
+	@Override
 	int getDefaultSelection () {
 		return slider1.getSelection();
 	}
@@ -239,6 +252,7 @@ class SliderTab extends RangeTab {
 	/**
 	 * Sets the minimim of the "Example" widgets.
 	 */
+	@Override
 	void setWidgetMaximum () {
 		slider1.setMaximum (maximumSpinner.getSelection ());
 	}
@@ -246,6 +260,7 @@ class SliderTab extends RangeTab {
 	/**
 	 * Sets the minimim of the "Example" widgets.
 	 */
+	@Override
 	void setWidgetMinimum () {
 		slider1.setMinimum (minimumSpinner.getSelection ());
 	}
@@ -260,6 +275,7 @@ class SliderTab extends RangeTab {
 	/**
 	 * Sets the selection of the "Example" widgets.
 	 */
+	@Override
 	void setWidgetSelection () {
 		slider1.setSelection (selectionSpinner.getSelection ());
 	}

@@ -59,6 +59,7 @@ class CanvasTab extends Tab {
 	/**
 	 * Creates the "Other" group.
 	 */
+	@Override
 	void createOtherGroup () {
 		super.createOtherGroup ();
 	
@@ -70,6 +71,7 @@ class CanvasTab extends Tab {
 			
 		/* Add the listeners */
 		caretButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setCaret ();
 			}
@@ -79,6 +81,7 @@ class CanvasTab extends Tab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -92,6 +95,7 @@ class CanvasTab extends Tab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -125,6 +129,7 @@ class CanvasTab extends Tab {
 			}
 		});
 		canvas.addControlListener(new ControlAdapter() {
+			@Override
 			public void controlResized(ControlEvent event) {
 				Point size = canvas.getSize ();
 				maxX = size.x * 3 / 2; maxY = size.y * 3 / 2;
@@ -135,6 +140,7 @@ class CanvasTab extends Tab {
 		if (bar != null) {
 			hookListeners (bar);
 			bar.addSelectionListener(new SelectionAdapter() {
+				@Override
 				public void widgetSelected(SelectionEvent event) {
 					scrollHorizontal ((ScrollBar)event.widget);
 				}
@@ -144,6 +150,7 @@ class CanvasTab extends Tab {
 		if (bar != null) {
 			hookListeners (bar);
 			bar.addSelectionListener(new SelectionAdapter() {
+				@Override
 				public void widgetSelected(SelectionEvent event) {
 					scrollVertical ((ScrollBar)event.widget);
 				}
@@ -154,6 +161,7 @@ class CanvasTab extends Tab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup() {
 		super.createStyleGroup();
 	
@@ -184,6 +192,7 @@ class CanvasTab extends Tab {
 	 * @param tabFolder org.eclipse.swt.widgets.TabFolder
 	 * @return the new page for the tab folder
 	 */
+	@Override
 	Composite createTabFolderPage (TabFolder tabFolder) {
 		super.createTabFolderPage (tabFolder);
 
@@ -194,6 +203,7 @@ class CanvasTab extends Tab {
 		 * recalculate the preferred size correctly.
 		 */
 		tabFolderPage.addControlListener(new ControlAdapter() {
+			@Override
 			public void controlResized(ControlEvent e) {
 				setExampleWidgetSize ();
 			}
@@ -205,6 +215,7 @@ class CanvasTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {canvas};
 	}
@@ -213,6 +224,7 @@ class CanvasTab extends Tab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"ToolTipText"};
 	}
@@ -220,6 +232,7 @@ class CanvasTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "Canvas";
 	}
@@ -297,6 +310,7 @@ class CanvasTab extends Tab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		horizontalButton.setSelection ((canvas.getStyle () & SWT.H_SCROLL) != 0);

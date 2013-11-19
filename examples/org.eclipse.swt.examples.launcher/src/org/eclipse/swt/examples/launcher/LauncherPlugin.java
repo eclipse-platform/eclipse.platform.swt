@@ -65,7 +65,8 @@ public class LauncherPlugin extends AbstractUIPlugin {
 		plugin = this;
 	}
 
-    public void start(BundleContext context) throws Exception {
+    @Override
+	public void start(BundleContext context) throws Exception {
         super.start(context);
         resourceBundle = Platform.getResourceBundle(getBundle());
     }
@@ -73,6 +74,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	/**
 	 * Clean up
 	 */
+	@Override
 	public void stop(BundleContext context) throws Exception {
 		freeResources();
 		super.stop(context);

@@ -44,6 +44,7 @@ class CoolBarTab extends Tab {
 	/**
 	 * Creates the "Other" group.
 	 */
+	@Override
 	void createOtherGroup () {
 		super.createOtherGroup ();
 	
@@ -53,6 +54,7 @@ class CoolBarTab extends Tab {
 	
 		/* Add the listeners */
 		lockedButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetLocked ();
 			}
@@ -62,6 +64,7 @@ class CoolBarTab extends Tab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		coolBarGroup = new Group (exampleGroup, SWT.NONE);
@@ -73,6 +76,7 @@ class CoolBarTab extends Tab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		int style = getDefaultStyle(), itemStyle = 0;
 
@@ -219,6 +223,7 @@ class CoolBarTab extends Tab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup() {
 		super.createStyleGroup();
 	
@@ -242,6 +247,7 @@ class CoolBarTab extends Tab {
 	/**
 	 * Disposes the "Example" widgets.
 	 */
+	@Override
 	void disposeExampleWidgets () {
 		/* store the state of the toolbar if applicable */
 		if (coolBar != null) {
@@ -257,6 +263,7 @@ class CoolBarTab extends Tab {
 	 *
 	 * @return an array containing the example widget children's items
 	 */
+	@Override
 	Item [] getExampleWidgetItems () {
 		return coolBar.getItems();
 	}
@@ -264,6 +271,7 @@ class CoolBarTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {coolBar};
 	}
@@ -272,6 +280,7 @@ class CoolBarTab extends Tab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"ToolTipText"};
 	}
@@ -279,6 +288,7 @@ class CoolBarTab extends Tab {
 	/**
 	 * Gets the short text for the tab folder item.
 	 */
+	@Override
 	String getShortTabText() {
 		return "CB";
 	}
@@ -286,6 +296,7 @@ class CoolBarTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "CoolBar";
 	}
@@ -293,6 +304,7 @@ class CoolBarTab extends Tab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		horizontalButton.setSelection ((coolBar.getStyle () & SWT.HORIZONTAL) != 0);
@@ -319,12 +331,14 @@ class CoolBarTab extends Tab {
 		private Menu menu = null;
 		private boolean visible = false;
 		
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			// Create the menu if it has not already been created
 			if (menu == null) {
 				// Lazy create the menu.
 				menu = new Menu(shell, SWT.POP_UP | (coolBar.getStyle() & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT)));
 				menu.addMenuListener(new MenuAdapter() {
+					@Override
 					public void menuHidden(MenuEvent e) {
 						visible = false;
 					}
@@ -339,6 +353,7 @@ class CoolBarTab extends Tab {
 						 * when the user selects an item from the drop down menu.
 						 */
 						menuItem.addSelectionListener(new SelectionAdapter() {
+							@Override
 							public void widgetSelected(SelectionEvent e) {
 								setMenuVisible(false);
 							}
@@ -392,6 +407,7 @@ class CoolBarTab extends Tab {
 	class CoolItemSelectionListener extends SelectionAdapter {
 		private Menu menu = null;
 		
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			/**
 			 * A selection event will be fired when the cool item

@@ -27,18 +27,22 @@ public ShapesTab(GraphicsExample example) {
 	upDownValue = 0;
 }
 
+@Override
 public String getCategory() {
 	return GraphicsExample.getResourceString("Lines"); //$NON-NLS-1$
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("Shapes"); //$NON-NLS-1$
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("ShapesDescription"); //$NON-NLS-1$
 }
 
+@Override
 public void next(int width, int height) {
 	upDownValue += inc;
 
@@ -46,6 +50,7 @@ public void next(int width, int height) {
 	if (upDownValue < -5) inc = 1;
 }
 
+@Override
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();

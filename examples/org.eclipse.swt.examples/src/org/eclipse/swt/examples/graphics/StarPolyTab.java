@@ -25,6 +25,7 @@ public StarPolyTab(GraphicsExample example) {
 	radial = new int[POINTS * 2];
 }
 
+@Override
 public void createControlPanel(Composite parent) {
 	new Label(parent, SWT.NONE).setText(GraphicsExample.getResourceString("FillRule")); //$NON-NLS-1$
 	fillRuleCb = new Combo(parent, SWT.DROP_DOWN);
@@ -38,18 +39,22 @@ public void createControlPanel(Composite parent) {
 	});
 }
 
+@Override
 public String getCategory() {
 	return GraphicsExample.getResourceString("Polygons"); //$NON-NLS-1$
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("StarPolygon"); //$NON-NLS-1$
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("StarPolygonDescription"); //$NON-NLS-1$
 }
 
+@Override
 public void paint(GC gc, int width, int height) {
     int centerX = width / 2;
     int centerY = height / 2;

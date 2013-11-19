@@ -124,6 +124,7 @@ public class ImageAnalyzer {
 			data.widthHint = 75;
 			ok.setLayoutData(data);
 			ok.addSelectionListener(new SelectionAdapter() {
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					result = text.getText();
 					dialog.dispose();
@@ -135,6 +136,7 @@ public class ImageAnalyzer {
 			data.widthHint = 75;
 			cancel.setLayoutData(data);
 			cancel.addSelectionListener(new SelectionAdapter() {
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					dialog.dispose();
 				}
@@ -167,11 +169,13 @@ public class ImageAnalyzer {
 		
 		// Hook resize and dispose listeners.
 		shell.addControlListener(new ControlAdapter() {
+			@Override
 			public void controlResized(ControlEvent event) {
 				resizeShell(event);
 			}
 		});
 		shell.addShellListener(new ShellAdapter() {
+			@Override
 			public void shellClosed(ShellEvent e) {
 				animate = false; // stop any animation in progress
 				if (animateThread != null) {
@@ -256,6 +260,7 @@ public class ImageAnalyzer {
 			bundle.getString("Blue")});
 		backgroundCombo.select(backgroundCombo.indexOf(bundle.getString("White")));
 		backgroundCombo.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				changeBackground();
 			}
@@ -272,6 +277,7 @@ public class ImageAnalyzer {
 		}
 		imageTypeCombo.select(imageTypeCombo.indexOf("JPEG"));
 		imageTypeCombo.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				int index = imageTypeCombo.getSelectionIndex();
 				switch(index) {
@@ -329,6 +335,7 @@ public class ImageAnalyzer {
 		}
 		scaleXCombo.select(scaleXCombo.indexOf("1"));
 		scaleXCombo.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				scaleX();
 			}
@@ -344,6 +351,7 @@ public class ImageAnalyzer {
 		}
 		scaleYCombo.select(scaleYCombo.indexOf("1"));
 		scaleYCombo.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				scaleY();
 			}
@@ -359,6 +367,7 @@ public class ImageAnalyzer {
 		}
 		alphaCombo.select(alphaCombo.indexOf("255"));
 		alphaCombo.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				alpha();
 			}
@@ -372,6 +381,7 @@ public class ImageAnalyzer {
 		incrementalCheck.setText(bundle.getString("Incremental"));
 		incrementalCheck.setSelection(incremental);
 		incrementalCheck.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				incremental = ((Button)event.widget).getSelection();
 			}
@@ -382,6 +392,7 @@ public class ImageAnalyzer {
 		transparentCheck.setText(bundle.getString("Transparent"));
 		transparentCheck.setSelection(transparent);
 		transparentCheck.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				transparent = ((Button)event.widget).getSelection();
 				if (image != null) {
@@ -395,6 +406,7 @@ public class ImageAnalyzer {
 		maskCheck.setText(bundle.getString("Mask"));
 		maskCheck.setSelection(showMask);
 		maskCheck.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				showMask = ((Button)event.widget).getSelection();
 				if (image != null) {
@@ -408,6 +420,7 @@ public class ImageAnalyzer {
 		backgroundCheck.setText(bundle.getString("Background"));
 		backgroundCheck.setSelection(showBackground);
 		backgroundCheck.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				showBackground = ((Button)event.widget).getSelection();
 			}
@@ -423,6 +436,7 @@ public class ImageAnalyzer {
 		previousButton.setText(bundle.getString("Previous"));
 		previousButton.setEnabled(false);
 		previousButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				previous();
 			}
@@ -433,6 +447,7 @@ public class ImageAnalyzer {
 		nextButton.setText(bundle.getString("Next"));
 		nextButton.setEnabled(false);
 		nextButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				next();
 			}
@@ -443,6 +458,7 @@ public class ImageAnalyzer {
 		animateButton.setText(bundle.getString("Animate"));
 		animateButton.setEnabled(false);
 		animateButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				animate();
 			}
@@ -488,6 +504,7 @@ public class ImageAnalyzer {
 		horizontal.setMinimum(0);
 		horizontal.setEnabled(false);
 		horizontal.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				scrollHorizontally((ScrollBar)event.widget);
 			}
@@ -497,6 +514,7 @@ public class ImageAnalyzer {
 		vertical.setMinimum(0);
 		vertical.setEnabled(false);
 		vertical.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				scrollVertically((ScrollBar)event.widget);
 			}
@@ -592,6 +610,7 @@ public class ImageAnalyzer {
 		vertical.setIncrement(10);
 		vertical.setEnabled(false);
 		vertical.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				scrollPalette((ScrollBar)event.widget);
 			}
@@ -604,6 +623,7 @@ public class ImageAnalyzer {
 		gridData.horizontalAlignment = GridData.FILL;
 		sash.setLayoutData(gridData);
 		sash.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				if (event.detail != SWT.DRAG) {
 					((GridData)paletteCanvas.getLayoutData()).heightHint = SWT.DEFAULT;
@@ -649,6 +669,7 @@ public class ImageAnalyzer {
 		gridData.grabExcessVerticalSpace = true;
 		dataText.setLayoutData(gridData);
 		dataText.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseDown(MouseEvent event) {
 				if (image != null && event.button == 1) {
 					showColorForData();
@@ -656,6 +677,7 @@ public class ImageAnalyzer {
 			}
 		});
 		dataText.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyPressed(KeyEvent event) {
 				if (image != null) {
 					showColorForData();
@@ -693,6 +715,7 @@ public class ImageAnalyzer {
 		item.setText(bundle.getString("OpenFile"));
 		item.setAccelerator(SWT.MOD1 + 'O');
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				menuOpenFile();
 			}
@@ -703,6 +726,7 @@ public class ImageAnalyzer {
 		item.setText(bundle.getString("OpenURL"));
 		item.setAccelerator(SWT.MOD1 + 'U');
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				menuOpenURL();
 			}
@@ -712,6 +736,7 @@ public class ImageAnalyzer {
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("Reopen"));
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				menuReopen();
 			}
@@ -724,6 +749,7 @@ public class ImageAnalyzer {
 		item.setText(bundle.getString("LoadFile"));
 		item.setAccelerator(SWT.MOD1 + 'L');
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				menuLoad();
 			}
@@ -736,6 +762,7 @@ public class ImageAnalyzer {
 		item.setText(bundle.getString("Save"));
 		item.setAccelerator(SWT.MOD1 + 'S');
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				menuSave();
 			}
@@ -745,6 +772,7 @@ public class ImageAnalyzer {
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("Save_as"));
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				menuSaveAs();
 			}
@@ -754,6 +782,7 @@ public class ImageAnalyzer {
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("Save_mask_as"));
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				menuSaveMaskAs();
 			}
@@ -766,6 +795,7 @@ public class ImageAnalyzer {
 		item.setText(bundle.getString("Print"));
 		item.setAccelerator(SWT.MOD1 + 'P');
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				menuPrint();
 			}
@@ -777,6 +807,7 @@ public class ImageAnalyzer {
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("Exit"));
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				shell.close();
 			}
@@ -795,6 +826,7 @@ public class ImageAnalyzer {
 		item = new MenuItem(alphaMenu, SWT.PUSH);
 		item.setText("K");
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				menuComposeAlpha(ALPHA_CONSTANT);
 			}
@@ -804,6 +836,7 @@ public class ImageAnalyzer {
 		item = new MenuItem(alphaMenu, SWT.PUSH);
 		item.setText("(K + x) % 256");
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				menuComposeAlpha(ALPHA_X);
 			}
@@ -813,6 +846,7 @@ public class ImageAnalyzer {
 		item = new MenuItem(alphaMenu, SWT.PUSH);
 		item.setText("(K + y) % 256");
 		item.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				menuComposeAlpha(ALPHA_Y);
 			}
@@ -1032,6 +1066,7 @@ public class ImageAnalyzer {
 	void incrementalThreadStart() {
 		incrementalEvents = new Vector<ImageLoaderEvent>();
 		incrementalThread = new Thread("Incremental") {
+			@Override
 			public void run() {
 				// Draw the first ImageData increment.
 				while (incrementalEvents != null) {
@@ -1532,6 +1567,7 @@ public class ImageAnalyzer {
 		animate = !animate;
 		if (animate && image != null && imageDataArray.length > 1) {
 			animateThread = new Thread(bundle.getString("Animation")) {
+				@Override
 				public void run() {
 					// Pre-animation widget setup.
 					preAnimation();
@@ -2246,6 +2282,7 @@ public class ImageAnalyzer {
 		final int [] bmpType = new int[1];
 		bmpType[0] = SWT.IMAGE_BMP;
 		SelectionListener radioSelected = new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				Button radio = (Button) event.widget;
 				if (radio.getSelection()) bmpType[0] = ((Integer)radio.getData()).intValue();
@@ -2286,6 +2323,7 @@ public class ImageAnalyzer {
 		data.widthHint = 75;
 		ok.setLayoutData(data);
 		ok.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				dialog.close();
 			}

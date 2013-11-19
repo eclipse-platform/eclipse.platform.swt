@@ -40,10 +40,12 @@ class BrowserTab extends Tab {
 		super(instance);
 	}
 	
+	@Override
 	void createBackgroundModeGroup () {
 		// Browser does not need a background mode group.
 	}
 	
+	@Override
 	void createColorAndFontGroup () {
 		// Browser does not need a color and font group.
 	}
@@ -51,6 +53,7 @@ class BrowserTab extends Tab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -64,6 +67,7 @@ class BrowserTab extends Tab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -119,6 +123,7 @@ class BrowserTab extends Tab {
 	 * Creates the "Other" group.  This is typically
 	 * a child of the "Control" group.
 	 */
+	@Override
 	void createOtherGroup () {
 		super.createOtherGroup ();
 		backgroundImageButton.dispose ();
@@ -129,6 +134,7 @@ class BrowserTab extends Tab {
 	 * controls that allow the user to change the size of
 	 * the example widgets.
 	 */
+	@Override
 	void createSizeGroup () {
 		super.createSizeGroup ();
 		
@@ -140,6 +146,7 @@ class BrowserTab extends Tab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup () {
 		super.createStyleGroup ();
 	
@@ -168,6 +175,7 @@ class BrowserTab extends Tab {
 	 * @param tabFolder org.eclipse.swt.widgets.TabFolder
 	 * @return the new page for the tab folder
 	 */
+	@Override
 	Composite createTabFolderPage (final TabFolder tabFolder) {
 		super.createTabFolderPage (tabFolder);
 
@@ -178,6 +186,7 @@ class BrowserTab extends Tab {
 		 * recalculate the preferred size correctly.
 		 */
 		tabFolderPage.addControlListener(new ControlAdapter() {
+			@Override
 			public void controlResized(ControlEvent e) {
 				setExampleWidgetSize ();
 			}
@@ -188,6 +197,7 @@ class BrowserTab extends Tab {
 		 * dialog if this platform does not support the Browser.
 		 */
 		tabFolder.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (errorMessage != null && tabFolder.getSelection()[0].getText().equals(getTabText())) {
 					MessageBox dialog = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
@@ -203,6 +213,7 @@ class BrowserTab extends Tab {
 	/**
 	 * Disposes the "Example" widgets.
 	 */
+	@Override
 	void disposeExampleWidgets () {
 		/* store the state of the Browser if applicable */
 		if (browser != null) {
@@ -238,6 +249,7 @@ class BrowserTab extends Tab {
 	 * 
 	 * @return an array containing custom event names
 	 */
+	@Override
 	String [] getCustomEventNames () {
 		return new String [] {"AuthenticationListener", "CloseWindowListener", "LocationListener",
 				"OpenWindowListener", "ProgressListener", "StatusTextListener", "TitleListener",
@@ -247,6 +259,7 @@ class BrowserTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		if (browser != null) return new Widget [] {browser};
 		return super.getExampleWidgets();
@@ -256,6 +269,7 @@ class BrowserTab extends Tab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"Text", "Url", "ToolTipText"};
 	}
@@ -263,6 +277,7 @@ class BrowserTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "Browser";
 	}
@@ -270,6 +285,7 @@ class BrowserTab extends Tab {
 	/**
 	 * Hooks the custom listener specified by eventName.
 	 */
+	@Override
 	void hookCustomListener (final String eventName) {
 		if (browser == null) return;
 		if (eventName == "AuthenticationListener") {
@@ -339,6 +355,7 @@ class BrowserTab extends Tab {
 		}
 	}
 
+	@Override
 	boolean rtlSupport() {
 		return false;
 	}
@@ -346,6 +363,7 @@ class BrowserTab extends Tab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		mozillaButton.setSelection (browser == null ? false : (browser.getStyle () & SWT.MOZILLA) != 0);

@@ -33,12 +33,14 @@ public class TextFigure extends Figure {
 	public TextFigure(Color color, Font font, String text, int x, int y) {
 		this.color = color; this.font = font; this.text = text; this.x = x; this.y = y;
 	}
+	@Override
 	public void draw(FigureDrawContext fdc) {
 		Point p = fdc.toClientPoint(x, y);
 		fdc.gc.setFont(font);
 		fdc.gc.setForeground(color);
 		fdc.gc.drawText(text, p.x, p.y, true);
 	}
+	@Override
 	public void addDamagedRegion(FigureDrawContext fdc, Region region) {
 		Font oldFont = fdc.gc.getFont();
 		fdc.gc.setFont(font);

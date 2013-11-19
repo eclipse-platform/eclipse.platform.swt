@@ -96,6 +96,7 @@ class FormLayoutTab extends Tab {
 	/**
 	 * Creates the widgets in the "child" group.
 	 */
+	@Override
 	void createChildWidgets () {
 		/* Add common controls */
 		super.createChildWidgets ();
@@ -116,6 +117,7 @@ class FormLayoutTab extends Tab {
 		topEditor = new TableEditor (table);
 		bottomEditor = new TableEditor (table);
 		table.addMouseListener (new MouseAdapter () {
+			@Override
 			public void mouseDown(MouseEvent e) {
 				resetEditors();
 				index = table.getSelectionIndex ();
@@ -133,15 +135,15 @@ class FormLayoutTab extends Tab {
 				createComboEditor (combo, comboEditor);
 				
 				nameText = new Text (table, SWT.SINGLE);
-				nameText.setText (((String[])data.elementAt(index))[NAME_COL]);
+				nameText.setText (data.elementAt(index)[NAME_COL]);
 				createTextEditor(nameText, nameEditor, NAME_COL);
 				
 				widthText = new Text (table, SWT.SINGLE);
-				widthText.setText (((String [])data.elementAt (index)) [WIDTH_COL]);
+				widthText.setText (data.elementAt (index) [WIDTH_COL]);
 				createTextEditor (widthText, widthEditor, WIDTH_COL);
 				
 				heightText = new Text (table, SWT.SINGLE);
-				heightText.setText (((String [])data.elementAt (index)) [HEIGHT_COL]);
+				heightText.setText (data.elementAt (index) [HEIGHT_COL]);
 				createTextEditor (heightText, heightEditor, HEIGHT_COL);
 				
 				leftAttach = new Button (table, SWT.PUSH);
@@ -151,6 +153,7 @@ class FormLayoutTab extends Tab {
 				leftEditor.minimumWidth = leftAttach.computeSize (SWT.DEFAULT, SWT.DEFAULT).x;
 				leftEditor.setEditor (leftAttach, newItem, LEFT_COL);
 				leftAttach.addSelectionListener (new SelectionAdapter () {
+					@Override
 					public void widgetSelected (SelectionEvent e) {
 						Shell shell = tabFolderPage.getShell ();
 						AttachDialog dialog = new AttachDialog (shell);
@@ -169,6 +172,7 @@ class FormLayoutTab extends Tab {
 				rightEditor.minimumWidth = rightAttach.computeSize (SWT.DEFAULT, SWT.DEFAULT).x;
 				rightEditor.setEditor (rightAttach, newItem, RIGHT_COL);
 				rightAttach.addSelectionListener (new SelectionAdapter () {
+					@Override
 					public void widgetSelected (SelectionEvent e) {
 						Shell shell = tabFolderPage.getShell ();
 						AttachDialog dialog = new AttachDialog (shell);
@@ -188,6 +192,7 @@ class FormLayoutTab extends Tab {
 				topEditor.minimumWidth = topAttach.computeSize (SWT.DEFAULT, SWT.DEFAULT).x;
 				topEditor.setEditor (topAttach, newItem, TOP_COL);
 				topAttach.addSelectionListener (new SelectionAdapter () {
+					@Override
 					public void widgetSelected (SelectionEvent e) {
 						Shell shell = tabFolderPage.getShell ();
 						AttachDialog dialog = new AttachDialog (shell);
@@ -205,6 +210,7 @@ class FormLayoutTab extends Tab {
 				bottomEditor.minimumWidth = bottomAttach.computeSize (SWT.DEFAULT, SWT.DEFAULT).x;
 				bottomEditor.setEditor (bottomAttach, newItem, BOTTOM_COL);
 				bottomAttach.addSelectionListener (new SelectionAdapter () {
+					@Override
 					public void widgetSelected (SelectionEvent e) {
 						Shell shell = tabFolderPage.getShell ();
 						AttachDialog dialog = new AttachDialog (shell);
@@ -245,6 +251,7 @@ class FormLayoutTab extends Tab {
 	/**
 	 * Creates the control widgets.
 	 */
+	@Override
 	void createControlWidgets () {
 		/* Controls the margins and spacing of the FormLayout */
 		Group marginGroup = new Group (controlGroup, SWT.NONE);
@@ -287,6 +294,7 @@ class FormLayoutTab extends Tab {
 	/**
 	 * Creates the example layout.
 	 */
+	@Override
 	void createLayout () {
 		formLayout = new FormLayout ();
 		layoutComposite.setLayout (formLayout);
@@ -296,6 +304,7 @@ class FormLayoutTab extends Tab {
 	 * Disposes the editors without placing their contents
 	 * into the table.
 	 */
+	@Override
 	void disposeEditors () {
 		comboEditor.setEditor (null, null, -1);
 		combo.dispose ();
@@ -311,6 +320,7 @@ class FormLayoutTab extends Tab {
 	/**
 	 * Generates code for the example layout.
 	 */	
+	@Override
 	StringBuffer generateLayoutCode () {
 		StringBuffer code = new StringBuffer ();
 		code.append ("\t\tFormLayout formLayout = new FormLayout ();\n");
@@ -408,6 +418,7 @@ class FormLayoutTab extends Tab {
 	/**
 	 * Returns the string to insert when a new child control is added to the table.
 	 */
+	@Override
 	String[] getInsertString (String name, String controlType) {
 		return new String [] {name, controlType, "-1", "-1",
 				"0,0 (" + LayoutExample.getResourceString ("Default") + ")", "", 
@@ -417,6 +428,7 @@ class FormLayoutTab extends Tab {
 	/**
 	 * Returns the layout data field names.
 	 */
+	@Override
 	String [] getLayoutDataFieldNames() {
 		return new String [] {
 			"Control Name",
@@ -433,6 +445,7 @@ class FormLayoutTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "FormLayout";
 	}
@@ -440,6 +453,7 @@ class FormLayoutTab extends Tab {
 	/**
 	 * Takes information from TableEditors and stores it.
 	 */
+	@Override
 	void resetEditors (boolean tab) {
 		TableItem oldItem = comboEditor.getItem ();
 		if (oldItem != null) {
@@ -462,7 +476,7 @@ class FormLayoutTab extends Tab {
 			String[] insert = new String [] {nameText.getText(), combo.getText (), widthText.getText (), heightText.getText ()};
 			data.setElementAt (insert, row);
 			for (int i = 0 ; i < MODIFY_COLS; i++) {
-				oldItem.setText (i, ((String [])data.elementAt (row)) [i]);
+				oldItem.setText (i, data.elementAt (row) [i]);
 			}
 			if (!tab) disposeEditors ();
 		}
@@ -477,6 +491,7 @@ class FormLayoutTab extends Tab {
 	 * Return the initial weight of the layout and control groups within the SashForm.
 	 * @return the desired sash weights for the tab page
 	 */
+	@Override
 	int[] sashWeights () {
 		return new int[] {40, 60};		
 	}
@@ -527,6 +542,7 @@ class FormLayoutTab extends Tab {
 	/**
 	 * Sets the layout data for the children of the layout.
 	 */
+	@Override
 	void setLayoutData () {
 		Control [] children = layoutComposite.getChildren ();
 		TableItem [] items = table.getItems ();
@@ -579,6 +595,7 @@ class FormLayoutTab extends Tab {
 	/**
 	 * Sets the state of the layout.
 	 */
+	@Override
 	void setLayoutState () {
 		/* Set the margins and spacing */
 		formLayout.marginWidth = marginWidth.getSelection ();		
@@ -695,6 +712,7 @@ class FormLayoutTab extends Tab {
 			
 			/* Add listeners for choosing between position and control */
 			posButton.addSelectionListener (new SelectionAdapter () {
+				@Override
 				public void widgetSelected (SelectionEvent e) {
 					position.setEnabled (true);
 					control.setEnabled (false);
@@ -702,6 +720,7 @@ class FormLayoutTab extends Tab {
 				}
 			});
 			contButton.addSelectionListener (new SelectionAdapter () {
+				@Override
 				public void widgetSelected (SelectionEvent e) {
 					position.setEnabled (false);
 					control.setEnabled (true);
@@ -713,6 +732,7 @@ class FormLayoutTab extends Tab {
 			clear.setText (LayoutExample.getResourceString ("Clear"));
 			clear.setLayoutData (new GridData (SWT.END, SWT.CENTER, false, false));
 			clear.addSelectionListener (new SelectionAdapter () {
+				@Override
 				public void widgetSelected (SelectionEvent e) {
 					result = "";
 					shell.close ();
@@ -723,6 +743,7 @@ class FormLayoutTab extends Tab {
 			ok.setText (LayoutExample.getResourceString ("OK"));
 			ok.setLayoutData (new GridData (SWT.CENTER, SWT.CENTER, false, false));
 			ok.addSelectionListener (new SelectionAdapter () {
+				@Override
 				public void widgetSelected (SelectionEvent e) {
 					controlInput = control.getText ();
 					alignmentInput = alignment.getText ().substring (4);
@@ -751,6 +772,7 @@ class FormLayoutTab extends Tab {
 			Button cancel = new Button (shell, SWT.PUSH);
 			cancel.setText (LayoutExample.getResourceString ("Cancel"));
 			cancel.addSelectionListener (new SelectionAdapter () {
+				@Override
 				public void widgetSelected (SelectionEvent e) {
 					shell.close ();
 				}

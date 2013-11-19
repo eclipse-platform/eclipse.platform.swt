@@ -50,6 +50,7 @@ public SearchDialog(Shell parent) {
 	shell.setLayout(layout);
 	shell.setText(resAddressBook.getString("Search_dialog_title"));
 	shell.addShellListener(new ShellAdapter(){
+		@Override
 		public void shellClosed(ShellEvent e) {
 			// don't dispose of the shell, just hide it for later use
 			e.doit = false;
@@ -117,6 +118,7 @@ public SearchDialog(Shell parent) {
 	findButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 	findButton.setEnabled(false);
 	findButton.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			if (!findHandler.find()){
 				MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK | SWT.PRIMARY_MODAL);
@@ -131,6 +133,7 @@ public SearchDialog(Shell parent) {
 	cancelButton.setText(resAddressBook.getString("Cancel"));
 	cancelButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
 	cancelButton.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			shell.setVisible(false);
 		}

@@ -51,6 +51,7 @@ class SashFormTab extends Tab {
 	SashFormTab(ControlExample instance) {
 		super(instance);
 	}
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -60,6 +61,7 @@ class SashFormTab extends Tab {
 		sashFormGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		sashFormGroup.setText ("SashForm");
 	}
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -81,6 +83,7 @@ class SashFormTab extends Tab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup() {
 		super.createStyleGroup();
 	
@@ -99,6 +102,7 @@ class SashFormTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {form};
 	}
@@ -106,6 +110,7 @@ class SashFormTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "SashForm"; //$NON-NLS-1$
 	}
@@ -113,6 +118,7 @@ class SashFormTab extends Tab {
 		/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		horizontalButton.setSelection ((form.getStyle () & SWT.H_SCROLL) != 0);

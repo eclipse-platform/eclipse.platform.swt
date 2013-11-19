@@ -60,6 +60,7 @@ class SashTab extends Tab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		exampleGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
@@ -76,6 +77,7 @@ class SashTab extends Tab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		/*
 		 * Create the page.  This example does not use layouts.
@@ -98,6 +100,7 @@ class SashTab extends Tab {
 		
 		/* Add the listeners */
 		hSash.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				Rectangle rect = vSash.getParent().getClientArea();
 				event.y = Math.min (Math.max (event.y, SASH_LIMIT), rect.height - SASH_LIMIT);
@@ -108,6 +111,7 @@ class SashTab extends Tab {
 			}
 		});
 		vSash.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				Rectangle rect = vSash.getParent().getClientArea();
 				event.x = Math.min (Math.max (event.x, SASH_LIMIT), rect.width - SASH_LIMIT);
@@ -118,6 +122,7 @@ class SashTab extends Tab {
 			}
 		});
 		sashComp.addControlListener (new ControlAdapter () {
+			@Override
 			public void controlResized (ControlEvent event) {
 				resized ();
 			}
@@ -129,12 +134,14 @@ class SashTab extends Tab {
 	 * controls that allow the user to change the size of
 	 * the example widgets.
 	 */	
+	@Override
 	void createSizeGroup () {		
 	}
 	
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup() {
 		super.createStyleGroup ();
 	
@@ -143,6 +150,7 @@ class SashTab extends Tab {
 		smoothButton.setText("SWT.SMOOTH");
 	}
 	
+	@Override
 	void disposeExampleWidgets () {
 		sashComp.dispose();
 		sashComp = null;
@@ -151,6 +159,7 @@ class SashTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {hSash, vSash};
 	}
@@ -159,6 +168,7 @@ class SashTab extends Tab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"ToolTipText"};
 	}
@@ -166,6 +176,7 @@ class SashTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "Sash";
 	}
@@ -195,6 +206,7 @@ class SashTab extends Tab {
 	/**
 	 * Sets the size of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetSize () {
 		sashGroup.layout (true);
 	}
@@ -202,6 +214,7 @@ class SashTab extends Tab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		smoothButton.setSelection ((hSash.getStyle () & SWT.SMOOTH) != 0);

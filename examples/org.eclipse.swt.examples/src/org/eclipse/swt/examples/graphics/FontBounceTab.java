@@ -34,14 +34,17 @@ public FontBounceTab(GraphicsExample example) {
 	super(example);
 }
 
+@Override
 public String getCategory() {
 	return GraphicsExample.getResourceString("Font"); //$NON-NLS-1$
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("Bounce"); //$NON-NLS-1$
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("FontBounceDescription"); //$NON-NLS-1$
 }
@@ -49,6 +52,7 @@ public String getDescription() {
 /* (non-Javadoc)
  * @see org.eclipse.swt.examples.graphics.AnimatedGraphicsTab#next(int, int)
  */
+@Override
 public void next(int width, int height) {
 	x += incX;
     y += incY;
@@ -100,6 +104,7 @@ public void next(int width, int height) {
 /* (non-Javadoc)
  * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC, int, int)
  */
+@Override
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();

@@ -474,7 +474,7 @@ public void dispose() {
 	tabs = null;
 	if (resources != null) {
 		for (int i = 0; i < resources.size(); i++) {
-			if (resources.get(i) instanceof Resource) {
+			if (resources.get(i) != null) {
 				resources.get(i).dispose();
 			}
 		}

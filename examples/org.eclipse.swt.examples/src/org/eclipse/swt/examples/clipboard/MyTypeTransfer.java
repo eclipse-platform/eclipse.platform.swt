@@ -22,6 +22,7 @@ public class MyTypeTransfer extends ByteArrayTransfer {
 public static MyTypeTransfer getInstance () {
 	return _instance;
 }
+@Override
 public void javaToNative (Object object, TransferData transferData) {
 	if (!checkMyType(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
@@ -45,6 +46,7 @@ public void javaToNative (Object object, TransferData transferData) {
 	} catch (IOException e) {
 	}
 }
+@Override
 public Object nativeToJava(TransferData transferData){	
 	if (isSupportedType(transferData)) {
 		
@@ -79,9 +81,11 @@ public Object nativeToJava(TransferData transferData){
 
 	return null;
 }
+@Override
 protected String[] getTypeNames(){
 	return new String[]{MYTYPENAME};
 }
+@Override
 protected int[] getTypeIds(){
 	return new int[] {MYTYPEID};
 }
@@ -97,6 +101,7 @@ boolean checkMyType(Object object) {
 	}
 	return true;
 }
+@Override
 protected boolean validate(Object object) {
 	return checkMyType(object);
 }

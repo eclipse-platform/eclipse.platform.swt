@@ -64,15 +64,18 @@ public class Shape extends Canvas {
 		});
 		
 		addFocusListener(new FocusAdapter() {
+			@Override
 			public void focusGained(FocusEvent e) {
 				redraw();
 			}
+			@Override
 			public void focusLost(FocusEvent e) {
 				redraw();
 			}
 		});
 		
 		addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseDown(MouseEvent e) {
 				if (getClientArea().contains(e.x, e.y)) {
 					setFocus();
@@ -81,6 +84,7 @@ public class Shape extends Canvas {
 		});
 		
 		addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyPressed(KeyEvent e) {
 				// key listener enables traversal out
 			}
@@ -98,6 +102,7 @@ public class Shape extends Canvas {
 		});
 
 		getAccessible().addAccessibleListener(new AccessibleAdapter() {
+			@Override
 			public void getName(AccessibleEvent e) {
 				MessageFormat formatter = new MessageFormat("");
 				formatter.applyPattern(bundle.getString("name"));  //$NON_NLS$
@@ -108,9 +113,11 @@ public class Shape extends Canvas {
 		});
 		
 		getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
+			@Override
 			public void getRole(AccessibleControlEvent e) {
 				e.detail = ACC.ROLE_GRAPHIC;
 			}
+			@Override
 			public void getState(AccessibleControlEvent e) {
 				e.detail = ACC.STATE_FOCUSABLE;
 				if (isFocusControl()) e.detail |= ACC.STATE_FOCUSED;

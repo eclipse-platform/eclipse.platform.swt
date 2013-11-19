@@ -37,6 +37,7 @@ public class LineFigure extends Figure {
 		this.lineStyle = lineStyle;
 		this.x1 = x1; this.y1 = y1; this.x2 = x2; this.y2 = y2;
 	}
+	@Override
 	public void draw(FigureDrawContext fdc) {
 		Point p1 = fdc.toClientPoint(x1, y1);
 		Point p2 = fdc.toClientPoint(x2, y2);
@@ -46,6 +47,7 @@ public class LineFigure extends Figure {
 		fdc.gc.drawLine(p1.x, p1.y, p2.x, p2.y);
 		fdc.gc.setLineStyle(SWT.LINE_SOLID);
 	}
+	@Override
 	public void addDamagedRegion(FigureDrawContext fdc, Region region) {
 		region.add(fdc.toClientRectangle(x1, y1, x2, y2));
 	}

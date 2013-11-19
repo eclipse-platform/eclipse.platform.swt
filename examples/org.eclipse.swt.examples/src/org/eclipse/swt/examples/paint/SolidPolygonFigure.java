@@ -35,6 +35,7 @@ public class SolidPolygonFigure extends Figure {
 			points[i * 2 + 1] = vertices[i].y;
 		}
 	}
+	@Override
 	public void draw(FigureDrawContext fdc) {
 		int[] drawPoints = new int[points.length];
 		for (int i = 0; i < points.length; i += 2) {
@@ -44,6 +45,7 @@ public class SolidPolygonFigure extends Figure {
 		fdc.gc.setBackground(color);
 		fdc.gc.fillPolygon(drawPoints);
 	}
+	@Override
 	public void addDamagedRegion(FigureDrawContext fdc, Region region) {
 		int xmin = Integer.MAX_VALUE, ymin = Integer.MAX_VALUE;
 		int xmax = Integer.MIN_VALUE, ymax = Integer.MIN_VALUE;

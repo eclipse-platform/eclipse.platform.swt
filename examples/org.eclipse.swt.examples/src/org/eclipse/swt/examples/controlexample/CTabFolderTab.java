@@ -56,6 +56,7 @@ class CTabFolderTab extends Tab {
 	/**
 	 * Creates the "Colors and Fonts" group.
 	 */
+	@Override
 	void createColorAndFontGroup () {
 		super.createColorAndFontGroup();
 		
@@ -78,6 +79,7 @@ class CTabFolderTab extends Tab {
 		});
 	}
 
+	@Override
 	void changeFontOrColor(int index) {
 		switch (index) {
 			case SELECTION_FOREGROUND_COLOR: {
@@ -125,6 +127,7 @@ class CTabFolderTab extends Tab {
 	/**
 	 * Creates the "Other" group.
 	 */
+	@Override
 	void createOtherGroup () {
 		super.createOtherGroup ();
 	
@@ -133,6 +136,7 @@ class CTabFolderTab extends Tab {
 		simpleTabButton.setText (ControlExample.getResourceString("Set_Simple_Tabs"));
 		simpleTabButton.setSelection(true);
 		simpleTabButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setSimpleTabs();
 			}
@@ -142,6 +146,7 @@ class CTabFolderTab extends Tab {
 		singleTabButton.setText (ControlExample.getResourceString("Set_Single_Tabs"));
 		singleTabButton.setSelection(false);
 		singleTabButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setSingleTabs();
 			}
@@ -151,6 +156,7 @@ class CTabFolderTab extends Tab {
 		showMinButton.setText (ControlExample.getResourceString("Set_Min_Visible"));
 		showMinButton.setSelection(false);
 		showMinButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setMinimizeVisible();
 			}
@@ -160,6 +166,7 @@ class CTabFolderTab extends Tab {
 		showMaxButton.setText (ControlExample.getResourceString("Set_Max_Visible"));
 		showMaxButton.setSelection(false);
 		showMaxButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setMaximizeVisible();
 			}
@@ -169,6 +176,7 @@ class CTabFolderTab extends Tab {
 		topRightButton.setText (ControlExample.getResourceString("Set_Top_Right"));
 		topRightButton.setSelection(false);
 		topRightButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setTopRight();
 			}
@@ -177,6 +185,7 @@ class CTabFolderTab extends Tab {
 		imageButton = new Button (otherGroup, SWT.CHECK);
 		imageButton.setText (ControlExample.getResourceString("Set_Image"));
 		imageButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setImages();
 			}
@@ -186,6 +195,7 @@ class CTabFolderTab extends Tab {
 		unselectedImageButton.setText (ControlExample.getResourceString("Set_Unselected_Image_Visible"));
 		unselectedImageButton.setSelection(true);
 		unselectedImageButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setUnselectedImageVisible();
 			}
@@ -194,6 +204,7 @@ class CTabFolderTab extends Tab {
 		unselectedCloseButton.setText (ControlExample.getResourceString("Set_Unselected_Close_Visible"));
 		unselectedCloseButton.setSelection(true);
 		unselectedCloseButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setUnselectedCloseVisible();
 			}
@@ -203,6 +214,7 @@ class CTabFolderTab extends Tab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -216,6 +228,7 @@ class CTabFolderTab extends Tab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -249,6 +262,7 @@ class CTabFolderTab extends Tab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup() {
 		super.createStyleGroup ();
 		
@@ -283,6 +297,7 @@ class CTabFolderTab extends Tab {
 	 * 
 	 * @return an array containing custom event names
 	 */
+	@Override
 	String [] getCustomEventNames () {
 		return new String [] {"CTabFolderEvent"};
 	}
@@ -292,6 +307,7 @@ class CTabFolderTab extends Tab {
 	 *
 	 * @return an array containing the example widget children's items
 	 */
+	@Override
 	Item [] getExampleWidgetItems () {
 		return tabFolder1.getItems();
 	}
@@ -299,6 +315,7 @@ class CTabFolderTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {tabFolder1};
 	}
@@ -306,6 +323,7 @@ class CTabFolderTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "CTabFolder";
 	}
@@ -313,6 +331,7 @@ class CTabFolderTab extends Tab {
 	/**
 	 * Hooks the custom listener specified by eventName.
 	 */
+	@Override
 	void hookCustomListener (final String eventName) {
 		if (eventName == "CTabFolderEvent") {
 			tabFolder1.addCTabFolder2Listener (new CTabFolder2Listener () {
@@ -341,6 +360,7 @@ class CTabFolderTab extends Tab {
 	 * Also sets foreground and background color of the Node 1
 	 * TreeItems to default settings.
 	 */
+	@Override
 	void resetColorsAndFonts () {
 		super.resetColorsAndFonts ();
 		Color oldColor = selectionForegroundColor;
@@ -360,6 +380,7 @@ class CTabFolderTab extends Tab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState();
 		setSimpleTabs();

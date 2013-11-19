@@ -64,6 +64,7 @@ public Shell open(Display display) {
 	shell = new Shell(display);
 	shell.setLayout(new FillLayout());
 	shell.addShellListener(new ShellAdapter() {
+		@Override
 		public void shellClosed(ShellEvent e) {
 			e.doit = closeAddressBook();
 		}
@@ -84,6 +85,7 @@ public Shell open(Display display) {
 	table.setHeaderVisible(true);	
 	table.setMenu(createPopUpMenu());	
 	table.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
 			TableItem[] items = table.getSelection();
 			if (items.length > 0) editEntry(items[0]);
@@ -95,6 +97,7 @@ public Shell open(Display display) {
 		column.setWidth(150);
 		final int columnIndex = i;
 		column.addSelectionListener(new SelectionAdapter() {		
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				sort(columnIndex);
 			}
@@ -459,6 +462,7 @@ private void createFileMenu(Menu menuBar) {
 	 * some items in the Edit submenu.
 	 */
 	menu.addMenuListener(new MenuAdapter() {
+		@Override
 		public void menuShown(MenuEvent e) {
 			Menu menu = (Menu)e.widget;
 			MenuItem[] items = menu.getItems();
@@ -474,6 +478,7 @@ private void createFileMenu(Menu menuBar) {
 	subItem.setText(resAddressBook.getString("New_contact"));
 	subItem.setAccelerator(SWT.MOD1 + 'N');
 	subItem.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			newEntry();
 		}
@@ -482,6 +487,7 @@ private void createFileMenu(Menu menuBar) {
 	subItem.setText(resAddressBook.getString("Edit_contact"));
 	subItem.setAccelerator(SWT.MOD1 + 'E');
 	subItem.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			TableItem[] items = table.getSelection();
 			if (items.length == 0) return;
@@ -497,6 +503,7 @@ private void createFileMenu(Menu menuBar) {
 	subItem.setText(resAddressBook.getString("New_address_book"));
 	subItem.setAccelerator(SWT.MOD1 + 'B');
 	subItem.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			if (closeAddressBook()) {
 				newAddressBook();
@@ -509,6 +516,7 @@ private void createFileMenu(Menu menuBar) {
 	subItem.setText(resAddressBook.getString("Open_address_book"));
 	subItem.setAccelerator(SWT.MOD1 + 'O');
 	subItem.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			if (closeAddressBook()) {
 				openAddressBook();
@@ -521,6 +529,7 @@ private void createFileMenu(Menu menuBar) {
 	subItem.setText(resAddressBook.getString("Save_address_book"));
 	subItem.setAccelerator(SWT.MOD1 + 'S');
 	subItem.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			save();
 		}
@@ -531,6 +540,7 @@ private void createFileMenu(Menu menuBar) {
 	subItem.setText(resAddressBook.getString("Save_book_as"));
 	subItem.setAccelerator(SWT.MOD1 + 'A');
 	subItem.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			saveAs();
 		}
@@ -543,6 +553,7 @@ private void createFileMenu(Menu menuBar) {
 	subItem = new MenuItem(menu, SWT.NONE);
 	subItem.setText(resAddressBook.getString("Exit"));
 	subItem.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			shell.close();
 		}
@@ -572,6 +583,7 @@ private MenuItem createEditMenu(Menu menuBar) {
 	 * some items in the Edit submenu.
 	 */
 	menu.addMenuListener(new MenuAdapter() {
+		@Override
 		public void menuShown(MenuEvent e) {
 			Menu menu = (Menu)e.widget;
 			MenuItem[] items = menu.getItems();
@@ -589,6 +601,7 @@ private MenuItem createEditMenu(Menu menuBar) {
 	subItem.setText(resAddressBook.getString("Edit"));
 	subItem.setAccelerator(SWT.MOD1 + 'E');
 	subItem.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			TableItem[] items = table.getSelection();
 			if (items.length == 0) return;
@@ -601,6 +614,7 @@ private MenuItem createEditMenu(Menu menuBar) {
 	subItem.setText(resAddressBook.getString("Copy"));
 	subItem.setAccelerator(SWT.MOD1 + 'C');
 	subItem.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			TableItem[] items = table.getSelection();
 			if (items.length == 0) return;
@@ -616,6 +630,7 @@ private MenuItem createEditMenu(Menu menuBar) {
 	subItem.setText(resAddressBook.getString("Paste"));
 	subItem.setAccelerator(SWT.MOD1 + 'V');
 	subItem.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			if (copyBuffer == null) return;
 			TableItem item = new TableItem(table, SWT.NONE);
@@ -628,6 +643,7 @@ private MenuItem createEditMenu(Menu menuBar) {
 	subItem = new MenuItem(menu, SWT.NONE);
 	subItem.setText(resAddressBook.getString("Delete"));
 	subItem.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			TableItem[] items = table.getSelection();
 			if (items.length == 0) return;
@@ -663,6 +679,7 @@ private Menu createSortMenu() {
 		subitem.setText(columnNames [i]);
 		final int column = i;
 		subitem.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				sort(column);
 			}
@@ -694,6 +711,7 @@ private void createSearchMenu(Menu menuBar) {
 	item.setText(resAddressBook.getString("Find"));
 	item.setAccelerator(SWT.MOD1 + 'F');
 	item.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			searchDialog.setMatchCase(false);
 			searchDialog.setMatchWord(false);
@@ -709,6 +727,7 @@ private void createSearchMenu(Menu menuBar) {
 	item.setText(resAddressBook.getString("Find_next"));
 	item.setAccelerator(SWT.F3);
 	item.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			searchDialog.open();
 		}
@@ -730,6 +749,7 @@ private Menu createPopUpMenu() {
 	 * some items in the Edit submenu.
 	 */
 	popUpMenu.addMenuListener(new MenuAdapter() {
+		@Override
 		public void menuShown(MenuEvent e) {
 			Menu menu = (Menu)e.widget;
 			MenuItem[] items = menu.getItems();
@@ -746,6 +766,7 @@ private Menu createPopUpMenu() {
 	MenuItem item = new MenuItem(popUpMenu, SWT.PUSH);
 	item.setText(resAddressBook.getString("Pop_up_new"));
 	item.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			newEntry();
 		}
@@ -757,6 +778,7 @@ private Menu createPopUpMenu() {
 	item = new MenuItem(popUpMenu, SWT.PUSH);
 	item.setText(resAddressBook.getString("Pop_up_edit"));
 	item.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			TableItem[] items = table.getSelection();
 			if (items.length == 0) return;
@@ -768,6 +790,7 @@ private Menu createPopUpMenu() {
 	item = new MenuItem(popUpMenu, SWT.PUSH);
 	item.setText(resAddressBook.getString("Pop_up_copy"));
 	item.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			TableItem[] items = table.getSelection();
 			if (items.length == 0) return;
@@ -782,6 +805,7 @@ private Menu createPopUpMenu() {
 	item = new MenuItem(popUpMenu, SWT.PUSH);
 	item.setText(resAddressBook.getString("Pop_up_paste"));
 	item.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			if (copyBuffer == null) return;
 			TableItem item = new TableItem(table, SWT.NONE);
@@ -794,6 +818,7 @@ private Menu createPopUpMenu() {
 	item = new MenuItem(popUpMenu, SWT.PUSH);
 	item.setText(resAddressBook.getString("Pop_up_delete"));
 	item.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			TableItem[] items = table.getSelection();
 			if (items.length == 0) return;
@@ -808,6 +833,7 @@ private Menu createPopUpMenu() {
 	item = new MenuItem(popUpMenu, SWT.PUSH);
 	item.setText(resAddressBook.getString("Pop_up_find"));
 	item.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			searchDialog.open();
 		}
@@ -837,6 +863,7 @@ private void createHelpMenu(Menu menuBar) {
 	MenuItem subItem = new MenuItem(menu, SWT.NONE);
 	subItem.setText(resAddressBook.getString("About"));
 	subItem.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			MessageBox box = new MessageBox(shell, SWT.NONE);
 			box.setText(resAddressBook.getString("About_1") + shell.getText());

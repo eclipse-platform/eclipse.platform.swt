@@ -28,18 +28,22 @@ public InterpolationTab(GraphicsExample example) {
 	super(example);
 }
 
+@Override
 public String getCategory() {
 	return GraphicsExample.getResourceString("Image"); //$NON-NLS-1$
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("Interpolation"); //$NON-NLS-1$
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("ImageInterpolationDesc"); //$NON-NLS-1$
 }
 
+@Override
 public void createControlPanel(Composite parent) {
 	
 	Composite comp;
@@ -66,6 +70,7 @@ public void createControlPanel(Composite parent) {
 	});
 }
 
+@Override
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();

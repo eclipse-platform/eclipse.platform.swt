@@ -84,9 +84,11 @@ public class ContainerFigure extends Figure {
 		while (--nextIndex > 0) objectStack[nextIndex] = null;
 		nextIndex = 0;
 	}
+	@Override
 	public void draw(FigureDrawContext fdc) {
 		for (int i = 0; i < nextIndex; ++i) objectStack[i].draw(fdc);
 	}
+	@Override
 	public void addDamagedRegion(FigureDrawContext fdc, Region region) {
 		for (int i = 0; i < nextIndex; ++i) objectStack[i].addDamagedRegion(fdc, region);
 	}

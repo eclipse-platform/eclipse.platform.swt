@@ -29,18 +29,22 @@ public LineCapTab(GraphicsExample example) {
 	super(example);
 }
 
+@Override
 public String getCategory() {
 	return GraphicsExample.getResourceString("Lines"); //$NON-NLS-1$
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("LineCap"); //$NON-NLS-1$
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("LineCapDescription"); //$NON-NLS-1$
 }
 
+@Override
 public void dispose() {
 	if (menu != null) {
 		menu.dispose();
@@ -48,6 +52,7 @@ public void dispose() {
 	}
 }
 
+@Override
 public void createControlPanel(Composite parent) {
 	
 	Composite comp;
@@ -86,6 +91,7 @@ public void createControlPanel(Composite parent) {
 	});
 }
 
+@Override
 public void paint(GC gc, int width, int height) {
 	Device device = gc.getDevice();
 	

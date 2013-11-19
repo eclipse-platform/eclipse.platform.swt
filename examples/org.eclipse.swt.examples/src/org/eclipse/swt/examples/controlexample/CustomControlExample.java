@@ -29,6 +29,7 @@ public class CustomControlExample extends ControlExample {
 	/**
 	 * Answers the set of example Tabs
 	 */
+	@Override
 	Tab[] createTabs() {
 		return new Tab [] {
 			new CComboTab (this),

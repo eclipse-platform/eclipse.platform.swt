@@ -35,6 +35,7 @@ class TextTab extends ScrollableTab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -48,6 +49,7 @@ class TextTab extends ScrollableTab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -75,6 +77,7 @@ class TextTab extends ScrollableTab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup() {
 		super.createStyleGroup();
 	
@@ -111,6 +114,7 @@ class TextTab extends ScrollableTab {
 	 * @param tabFolder org.eclipse.swt.widgets.TabFolder
 	 * @return the new page for the tab folder
 	 */
+	@Override
 	Composite createTabFolderPage (TabFolder tabFolder) {
 		super.createTabFolderPage (tabFolder);
 
@@ -121,6 +125,7 @@ class TextTab extends ScrollableTab {
 		 * recalculate the preferred size correctly.
 		 */
 		tabFolderPage.addControlListener(new ControlAdapter() {
+			@Override
 			public void controlResized(ControlEvent e) {
 				setExampleWidgetSize ();
 			}
@@ -132,6 +137,7 @@ class TextTab extends ScrollableTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {text};
 	}
@@ -140,6 +146,7 @@ class TextTab extends ScrollableTab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"DoubleClickEnabled", "EchoChar", "Editable", "Message", "Orientation", "Selection", "Tabs", "Text", "TextLimit", "ToolTipText", "TopIndex"};
 	}
@@ -147,6 +154,7 @@ class TextTab extends ScrollableTab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "Text";
 	}
@@ -154,6 +162,7 @@ class TextTab extends ScrollableTab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		wrapButton.setSelection ((text.getStyle () & SWT.WRAP) != 0);

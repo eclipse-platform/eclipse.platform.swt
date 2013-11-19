@@ -31,18 +31,22 @@ public RegionClippingTab(GraphicsExample example) {
 	super(example);
 }
 
+@Override
 public String getCategory() {
 	return GraphicsExample.getResourceString("Clipping"); //$NON-NLS-1$
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("RegionClipping"); //$NON-NLS-1$
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("RegionClippingDescription"); //$NON-NLS-1$
 }
 
+@Override
 public void dispose() {
 	if (menu1 != null) {
 		menu1.dispose();
@@ -57,6 +61,7 @@ public void dispose() {
 /** 
  * Creates the widgets used to control the drawing.
  */
+@Override
 public void createControlPanel(Composite parent) {
 	// create drop down combo for choosing clipping
 	Composite comp = new Composite(parent, SWT.NONE);
@@ -138,6 +143,7 @@ public void createControlPanel(Composite parent) {
 	});
 }
 
+@Override
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();

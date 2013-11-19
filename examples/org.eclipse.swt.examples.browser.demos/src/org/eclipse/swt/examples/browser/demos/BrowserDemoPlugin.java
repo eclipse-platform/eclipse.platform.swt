@@ -31,11 +31,13 @@ public class BrowserDemoPlugin extends AbstractUIPlugin {
 		}
 	}
 
+	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		PLUGIN_PATH = Platform.resolve(plugin.getBundle().getEntry(".")).toString();
 	}
 
+	@Override
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 	}

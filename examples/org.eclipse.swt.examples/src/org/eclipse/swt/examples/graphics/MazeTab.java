@@ -96,22 +96,27 @@ public MazeTab(GraphicsExample example) {
 	isDone = isDone2 = isDone3 = false;
 }
 
+@Override
 public String getCategory() {
 	return GraphicsExample.getResourceString("Misc"); //$NON-NLS-1$
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("Maze"); //$NON-NLS-1$
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("MazeDescription"); //$NON-NLS-1$
 }
 
+@Override
 public int getInitialAnimationTime() {
 	return 50;
 }
 
+@Override
 public void dispose() {
 	if (image != null) {
 		image.dispose();
@@ -119,6 +124,7 @@ public void dispose() {
 	}
 }
 
+@Override
 public void createControlPanel(Composite parent) {
 	super.createControlPanel(parent);
 	
@@ -137,6 +143,7 @@ public void createControlPanel(Composite parent) {
 /* (non-Javadoc)
  * @see org.eclipse.swt.examples.graphics.AnimatedGraphicsTab#next(int, int)
  */
+@Override
 public void next(int width, int height) {
 
 	if (nextIndex+2 < nextCoord.size()) {
@@ -169,6 +176,7 @@ public void next(int width, int height) {
 /* (non-Javadoc)
  * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC, int, int)
  */
+@Override
 public void paint(GC gc, int width, int height) {
 	Device device = gc.getDevice();
 	

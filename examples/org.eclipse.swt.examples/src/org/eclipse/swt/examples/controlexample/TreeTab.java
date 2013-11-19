@@ -73,6 +73,7 @@ class TreeTab extends ScrollableTab {
 	/**
 	 * Creates the "Colors and Fonts" group.
 	 */
+	@Override
 	void createColorAndFontGroup () {
 		super.createColorAndFontGroup();
 		
@@ -107,6 +108,7 @@ class TreeTab extends ScrollableTab {
 		});
 	}
 
+	@Override
 	void changeFontOrColor(int index) {
 		switch (index) {
 		case ITEM_FOREGROUND_COLOR: {
@@ -191,6 +193,7 @@ class TreeTab extends ScrollableTab {
 	/**
 	 * Creates the "Other" group.
 	 */
+	@Override
 	void createOtherGroup () {
 		super.createOtherGroup ();
 	
@@ -214,41 +217,49 @@ class TreeTab extends ScrollableTab {
 	
 		/* Add the listeners */
 		linesVisibleButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetLinesVisible ();
 			}
 		});
 		multipleColumns.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				recreateExampleWidgets ();
 			}
 		});
 		headerVisibleButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetHeaderVisible ();
 			}
 		});
 		sortIndicatorButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetSortIndicator ();
 			}
 		});
 		moveableColumns.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setColumnsMoveable ();
 			}
 		});
 		resizableColumns.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setColumnsResizable ();
 			}
 		});
 		headerImagesButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				recreateExampleWidgets ();
 			}
 		});
 		subImagesButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				recreateExampleWidgets ();
 			}
@@ -258,6 +269,7 @@ class TreeTab extends ScrollableTab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -277,6 +289,7 @@ class TreeTab extends ScrollableTab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		/* Compute the widget style */
 		int style = getDefaultStyle();
@@ -391,12 +404,14 @@ class TreeTab extends ScrollableTab {
 	 * controls that allow the user to change the size of
 	 * the example widgets.
 	 */
+	@Override
 	void createSizeGroup () {
 		super.createSizeGroup();
 	
 		packColumnsButton = new Button (sizeGroup, SWT.PUSH);
 		packColumnsButton.setText (ControlExample.getResourceString("Pack_Columns"));
 		packColumnsButton.addSelectionListener(new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				packColumns (tree1);
 				packColumns (tree2);
@@ -408,6 +423,7 @@ class TreeTab extends ScrollableTab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup() {
 		super.createStyleGroup();
 		
@@ -426,6 +442,7 @@ class TreeTab extends ScrollableTab {
 	 *
 	 * @return an array containing the example widget children's items
 	 */
+	@Override
 	Item [] getExampleWidgetItems () {
 		/* Note: We do not bother collecting the tree items
 		 * because tree items don't have any events. If events
@@ -442,6 +459,7 @@ class TreeTab extends ScrollableTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {tree1, tree2};
 	}
@@ -450,10 +468,12 @@ class TreeTab extends ScrollableTab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"ColumnOrder", "Selection", "ToolTipText", "TopItem"};
 	}
 
+	@Override
 	Object[] parameterForType(String typeName, String value, Widget widget) {
 		if (typeName.equals("org.eclipse.swt.widgets.TreeItem")) {
 			TreeItem item = findItem(value, ((Tree) widget).getItems());
@@ -485,6 +505,7 @@ class TreeTab extends ScrollableTab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "Tree";
 	}
@@ -535,6 +556,7 @@ class TreeTab extends ScrollableTab {
 	 * Also sets foreground and background color of the Node 1
 	 * TreeItems to default settings.
 	 */
+	@Override
 	void resetColorsAndFonts () {
 		super.resetColorsAndFonts ();
 		Color oldColor = itemForegroundColor;
@@ -566,6 +588,7 @@ class TreeTab extends ScrollableTab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		setItemBackground ();
 		setItemForeground ();
@@ -732,6 +755,7 @@ class TreeTab extends ScrollableTab {
 			TreeColumn column = columns[i];
 			if (i == 0) tree.setSortColumn(column);
 			SelectionListener listener = new SelectionAdapter() {
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					int sortDirection = SWT.DOWN;
 					if (e.widget == tree.getSortColumn()) {
@@ -768,13 +792,15 @@ class TreeTab extends ScrollableTab {
 		tree2.setLinesVisible (linesVisibleButton.getSelection ());
 	}
 
+	@Override
 	protected void specialPopupMenuItems(Menu menu, Event event) {
     	MenuItem item = new MenuItem(menu, SWT.PUSH);
     	item.setText("getItem(Point) on mouse coordinates");
     	final Tree t = (Tree) event.widget;
     	menuMouseCoords = t.toControl(new Point(event.x, event.y));
     	item.addSelectionListener(new SelectionAdapter() {
-    		public void widgetSelected(SelectionEvent e) {
+    		@Override
+			public void widgetSelected(SelectionEvent e) {
     			eventConsole.append ("getItem(Point(" + menuMouseCoords + ")) returned: " + t.getItem(menuMouseCoords));
     			eventConsole.append ("\n");
     		}

@@ -34,6 +34,7 @@ class ProgressBarTab extends RangeTab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup() {
 		super.createExampleGroup ();
 
@@ -47,6 +48,7 @@ class ProgressBarTab extends RangeTab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 
 		/* Compute the widget style */
@@ -64,6 +66,7 @@ class ProgressBarTab extends RangeTab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup () {
 		super.createStyleGroup ();
 
@@ -77,6 +80,7 @@ class ProgressBarTab extends RangeTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {progressBar1};
 	}
@@ -85,6 +89,7 @@ class ProgressBarTab extends RangeTab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"Selection", "State", "ToolTipText"};
 	}
@@ -92,6 +97,7 @@ class ProgressBarTab extends RangeTab {
 	/**
 	 * Gets the short text for the tab folder item.
 	 */
+	@Override
 	String getShortTabText() {
 		return "PB";
 	}
@@ -99,6 +105,7 @@ class ProgressBarTab extends RangeTab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "ProgressBar";
 	}
@@ -106,6 +113,7 @@ class ProgressBarTab extends RangeTab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		if (indeterminateButton.getSelection ()) {
@@ -124,6 +132,7 @@ class ProgressBarTab extends RangeTab {
 	/**
 	 * Gets the default maximum of the "Example" widgets.
 	 */
+	@Override
 	int getDefaultMaximum () {
 		return progressBar1.getMaximum();
 	}
@@ -131,6 +140,7 @@ class ProgressBarTab extends RangeTab {
 	/**
 	 * Gets the default minimim of the "Example" widgets.
 	 */
+	@Override
 	int getDefaultMinimum () {
 		return progressBar1.getMinimum();
 	}
@@ -138,6 +148,7 @@ class ProgressBarTab extends RangeTab {
 	/**
 	 * Gets the default selection of the "Example" widgets.
 	 */
+	@Override
 	int getDefaultSelection () {
 		return progressBar1.getSelection();
 	}
@@ -145,6 +156,7 @@ class ProgressBarTab extends RangeTab {
 	/**
 	 * Sets the maximum of the "Example" widgets.
 	 */
+	@Override
 	void setWidgetMaximum () {
 		progressBar1.setMaximum (maximumSpinner.getSelection ());
 		updateSpinners ();
@@ -153,6 +165,7 @@ class ProgressBarTab extends RangeTab {
 	/**
 	 * Sets the minimim of the "Example" widgets.
 	 */
+	@Override
 	void setWidgetMinimum () {
 		progressBar1.setMinimum (minimumSpinner.getSelection ());
 		updateSpinners ();
@@ -161,6 +174,7 @@ class ProgressBarTab extends RangeTab {
 	/**
 	 * Sets the selection of the "Example" widgets.
 	 */
+	@Override
 	void setWidgetSelection () {
 		progressBar1.setSelection (selectionSpinner.getSelection ());
 		updateSpinners ();

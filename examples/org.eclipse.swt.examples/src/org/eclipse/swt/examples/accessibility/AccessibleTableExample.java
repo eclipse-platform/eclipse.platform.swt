@@ -73,6 +73,7 @@ public class AccessibleTableExample {
 		Button btn = new Button(btnGroup, SWT.PUSH);
 		btn.setText("Add rows");
 		btn.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				int currSize = table1.getItemCount();
 				int colCount = table1.getColumnCount();
@@ -88,6 +89,7 @@ public class AccessibleTableExample {
 		btn = new Button(btnGroup, SWT.PUSH);
 		btn.setText("Remove rows");
 		btn.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				int currSize = table1.getItemCount();
 				if (currSize > 0) {
@@ -98,6 +100,7 @@ public class AccessibleTableExample {
 		btn = new Button(btnGroup, SWT.PUSH);
 		btn.setText("Remove selected rows");
 		btn.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				CTableItem[] selectedItems = table1.getSelection();
 				for (int i = 0; i < selectedItems.length; i++) {
@@ -108,6 +111,7 @@ public class AccessibleTableExample {
 		btn = new Button(btnGroup, SWT.PUSH);
 		btn.setText("Add column");
 		btn.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				int currSize = table1.getColumnCount();
 				CTableColumn item = new CTableColumn(table1, SWT.NONE);
@@ -118,6 +122,7 @@ public class AccessibleTableExample {
 		btn = new Button(btnGroup, SWT.PUSH);
 		btn.setText("Remove last column");
 		btn.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				int colCount = table1.getColumnCount();
 				

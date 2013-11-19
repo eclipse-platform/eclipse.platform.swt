@@ -37,6 +37,7 @@ public GradientTab(GraphicsExample example) {
 /**
  * Dispose resources created by this tab.
  * */
+@Override
 public void dispose() {
 	for (int i = 0; i < resources.size(); i++) {
 		Object obj = resources.get(i);
@@ -55,14 +56,17 @@ public void dispose() {
 	}
 }
 
+@Override
 public String getCategory() {
 	return GraphicsExample.getResourceString("Gradient"); //$NON-NLS-1$
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("GradImage"); //$NON-NLS-1$
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("GradientImageDescription"); //$NON-NLS-1$
 }
@@ -70,6 +74,7 @@ public String getDescription() {
 /* (non-Javadoc)
  * @see org.eclipse.swt.examples.graphics.GraphicsTab#createControlPanel(org.eclipse.swt.widgets.Composite)
  */
+@Override
 public void createControlPanel(final Composite parent) {
 	final Display display = parent.getDisplay();
 	
@@ -151,6 +156,7 @@ public void createControlPanel(final Composite parent) {
  * This method draws the gradient patterns that make up the image. The image
  * consists of 4 rows, each consisting of 4 gradient patterns (total of 16).
  */
+@Override
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();

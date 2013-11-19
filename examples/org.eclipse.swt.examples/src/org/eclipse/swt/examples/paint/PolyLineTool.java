@@ -51,6 +51,7 @@ public class PolyLineTool extends SegmentedPaintSession implements PaintTool {
 	/*
 	 * Template methods for drawing
 	 */
+	@Override
 	protected Figure createFigure(Point[] points, int numPoints, boolean closed) {
 		ContainerFigure container = new ContainerFigure();
 		if (closed && settings.commonFillType != ToolSettings.ftNone && numPoints >= 3) {

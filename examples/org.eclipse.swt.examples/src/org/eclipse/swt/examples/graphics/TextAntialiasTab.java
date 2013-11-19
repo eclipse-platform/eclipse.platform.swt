@@ -36,18 +36,22 @@ public TextAntialiasTab(GraphicsExample example) {
 	super(example);
 }
 
+@Override
 public String getCategory() {
 	return GraphicsExample.getResourceString("Antialiasing"); //$NON-NLS-1$
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("Text"); //$NON-NLS-1$ 
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("AntialiasingTextDesc"); //$NON-NLS-1$
 }
 
+@Override
 public void dispose() {
 	if (menu != null) {
 		menu.dispose();
@@ -55,6 +59,7 @@ public void dispose() {
 	}
 }
 
+@Override
 public void createControlPanel(Composite parent) {
 
 	Composite comp;
@@ -111,6 +116,7 @@ public void createControlPanel(Composite parent) {
 /* (non-Javadoc)
  * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC, int, int)
  */
+@Override
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();

@@ -119,6 +119,7 @@ class MenuTab extends Tab {
 	/**
 	 * Creates the "Control" group. 
 	 */
+	@Override
 	void createControlGroup () {
 		/*
 		 * Create the "Control" group.  This is the group on the
@@ -152,6 +153,7 @@ class MenuTab extends Tab {
 	/**
 	 * Creates the "Control" widget children.
 	 */
+	@Override
 	void createControlWidgets () {
 	
 		/* Create the menu style buttons */
@@ -207,16 +209,19 @@ class MenuTab extends Tab {
 	
 		/* Add the listeners */
 		createButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				createButtonSelected(e);
 			}
 		});
 		closeAllButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				closeAllShells ();
 			}
 		});
 		subMenuButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				subSubMenuButton.setEnabled (subMenuButton.getSelection ());
 			}
@@ -311,6 +316,7 @@ class MenuTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "Menu";
 	}

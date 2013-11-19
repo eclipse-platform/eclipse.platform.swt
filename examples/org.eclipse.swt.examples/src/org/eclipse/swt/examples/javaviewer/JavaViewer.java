@@ -40,6 +40,7 @@ Menu createFileMenu() {
 	item.setText (resources.getString("Open_menuitem"));
 	item.setAccelerator(SWT.MOD1 + 'O');
 	item.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent event) {
 			openFile();
 		}
@@ -49,6 +50,7 @@ Menu createFileMenu() {
 	item = new MenuItem (menu, SWT.PUSH);
 	item.setText (resources.getString("Exit_menuitem"));
 	item.addSelectionListener (new SelectionAdapter () {
+		@Override
 		public void widgetSelected (SelectionEvent e) {
 			menuFileExit ();
 		}
@@ -73,6 +75,7 @@ void createShell (Display display) {
 	layout.numColumns = 1;
 	shell.setLayout(layout);
 	shell.addShellListener (new ShellAdapter () {
+		@Override
 		public void shellClosed (ShellEvent e) {
 			lineStyler.disposeColors();
 			text.removeLineStyleListener(lineStyler);

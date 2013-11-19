@@ -43,6 +43,7 @@ public class SplitLayout extends Layout {
 	/**
 	 * @see Layout#computeSize(Composite, int, int, boolean)
 	 */
+	@Override
 	protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 		if (wHint == SWT.DEFAULT) {
 			if (hHint == SWT.DEFAULT) {
@@ -82,6 +83,7 @@ public class SplitLayout extends Layout {
 	/**
 	 * @see Layout#layout(Composite, boolean)
 	 */
+	@Override
 	protected void layout(Composite composite, boolean flushCache) {
 		Rectangle clientArea = composite.getClientArea();
 		computeSize(composite, clientArea.width, clientArea.height, false);

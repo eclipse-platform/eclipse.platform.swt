@@ -106,6 +106,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 			ok.setText(PaintExample.getResourceString("OK"));
 			ok.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 			ok.addSelectionListener(new SelectionAdapter() {
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					drawText = field.getText();
 					dialog.dispose();
@@ -114,6 +115,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 			Button cancel = new Button(buttons, SWT.PUSH);
 			cancel.setText(PaintExample.getResourceString("Cancel"));
 			cancel.addSelectionListener(new SelectionAdapter() {
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					dialog.dispose();
 				}

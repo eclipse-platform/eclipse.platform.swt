@@ -34,6 +34,7 @@ abstract class RangeTab extends Tab {
 	/**
 	 * Creates the "Control" widget children.
 	 */
+	@Override
 	void createControlWidgets () {
 		/* Create controls specific to this example */
 		createMinimumGroup ();
@@ -63,6 +64,7 @@ abstract class RangeTab extends Tab {
 	
 		/* Add the listeners */
 		maximumSpinner.addSelectionListener(new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetMaximum ();
 			}
@@ -91,6 +93,7 @@ abstract class RangeTab extends Tab {
 
 		/* Add the listeners */
 		minimumSpinner.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetMinimum ();
 			}
@@ -121,6 +124,7 @@ abstract class RangeTab extends Tab {
 
 		/* Add the listeners */
 		selectionSpinner.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent event) {
 				setWidgetSelection ();
 			}
@@ -131,6 +135,7 @@ abstract class RangeTab extends Tab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup () {
 		super.createStyleGroup ();
 	
@@ -148,6 +153,7 @@ abstract class RangeTab extends Tab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		if (!instance.startup) {

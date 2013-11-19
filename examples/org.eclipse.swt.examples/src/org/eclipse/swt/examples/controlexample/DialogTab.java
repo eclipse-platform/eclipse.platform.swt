@@ -285,6 +285,7 @@ class DialogTab extends Tab {
 	/**
 	 * Creates the "Control" group. 
 	 */
+	@Override
 	void createControlGroup () {
 		/*
 		 * Create the "Control" group.  This is the group on the
@@ -314,6 +315,7 @@ class DialogTab extends Tab {
 	/**
 	 * Creates the "Control" widget children.
 	 */
+	@Override
 	void createControlWidgets () {
 	
 		/* Create the combo */
@@ -426,16 +428,19 @@ class DialogTab extends Tab {
 
 		/* Add the listeners */
 		dialogCombo.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				dialogSelected (event);
 			}
 		});
 		createButton.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				createButtonSelected (event);
 			}
 		});
 		SelectionListener buttonStyleListener = new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				buttonStyleSelected (event);
 			}
@@ -474,6 +479,7 @@ class DialogTab extends Tab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		exampleGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
@@ -491,6 +497,7 @@ class DialogTab extends Tab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		/*
 		 * Create a multi lined, scrolled text widget for output.
@@ -503,6 +510,7 @@ class DialogTab extends Tab {
 	/**
 	 * The platform dialogs do not have SWT listeners.
 	 */
+	@Override
 	void createListenersGroup () {
 	}
 
@@ -552,6 +560,7 @@ class DialogTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [0];
 	}
@@ -559,6 +568,7 @@ class DialogTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "Dialog";
 	}
@@ -566,6 +576,7 @@ class DialogTab extends Tab {
 	/**
 	 * Recreates the "Example" widgets.
 	 */
+	@Override
 	void recreateExampleWidgets () {
 		if (textWidget == null) {
 			super.recreateExampleWidgets ();

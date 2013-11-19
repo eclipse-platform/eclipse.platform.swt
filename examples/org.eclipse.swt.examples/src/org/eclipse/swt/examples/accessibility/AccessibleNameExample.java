@@ -35,6 +35,7 @@ public class AccessibleNameExample {
 		button = new Button(shell, SWT.PUSH);
 		button.setImage(image);
 		button.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+			@Override
 			public void getName(AccessibleEvent e) {
 				e.result = "Running man"; // the second button's accessible name is "Running man"
 			}

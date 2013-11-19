@@ -48,6 +48,7 @@ class RowLayoutTab extends Tab {
 	/**
 	 * Creates the widgets in the "child" group.
 	 */
+	@Override
 	void createChildWidgets () {
 		/* Add common controls */
 		super.createChildWidgets ();
@@ -59,6 +60,7 @@ class RowLayoutTab extends Tab {
 		heightEditor = new TableEditor (table);
 		excludeEditor = new TableEditor (table);
 		table.addMouseListener (new MouseAdapter () {
+			@Override
 			public void mouseDown(MouseEvent e) {
 				resetEditors();
 				index = table.getSelectionIndex ();
@@ -76,15 +78,15 @@ class RowLayoutTab extends Tab {
 				createComboEditor (combo, comboEditor);
 				
 				nameText = new Text(table, SWT.SINGLE);
-				nameText.setText(((String[])data.elementAt(index))[NAME_COL]);
+				nameText.setText(data.elementAt(index)[NAME_COL]);
 				createTextEditor(nameText, nameEditor, NAME_COL);
 				
 				widthText = new Text(table, SWT.SINGLE);
-				widthText.setText(((String[])data.elementAt(index))[WIDTH_COL]);
+				widthText.setText(data.elementAt(index)[WIDTH_COL]);
 				createTextEditor(widthText, widthEditor, WIDTH_COL);
 				
 				heightText = new Text(table, SWT.SINGLE);
-				heightText.setText (((String [])data.elementAt (index)) [HEIGHT_COL]);
+				heightText.setText (data.elementAt (index) [HEIGHT_COL]);
 				createTextEditor (heightText, heightEditor, HEIGHT_COL);
                 
 				String [] boolValues = new String [] {"false", "true"};
@@ -128,6 +130,7 @@ class RowLayoutTab extends Tab {
 	/**
 	 * Creates the control widgets.
 	 */
+	@Override
 	void createControlWidgets () {
 		/* Controls the type of RowLayout */
 		Group typeGroup = new Group (controlGroup, SWT.NONE);
@@ -214,6 +217,7 @@ class RowLayoutTab extends Tab {
 	/**
 	 * Creates the example layout.
 	 */
+	@Override
 	void createLayout () {
 		rowLayout = new RowLayout ();
 		layoutComposite.setLayout (rowLayout);
@@ -223,6 +227,7 @@ class RowLayoutTab extends Tab {
 	 * Disposes the editors without placing their contents
 	 * into the table.
 	 */
+	@Override
 	void disposeEditors () {
 		comboEditor.setEditor (null, null, -1);
 		combo.dispose ();
@@ -235,6 +240,7 @@ class RowLayoutTab extends Tab {
 	/**
 	 * Generates code for the example layout.
 	 */	
+	@Override
 	StringBuffer generateLayoutCode () {
 		StringBuffer code = new StringBuffer ();
 		code.append ("\t\tRowLayout rowLayout = new RowLayout ();\n");
@@ -313,6 +319,7 @@ class RowLayoutTab extends Tab {
 	/**
 	 * Returns the string to insert when a new child control is added to the table.
 	 */
+	@Override
 	String[] getInsertString (String name, String controlType) {
 		return new String [] {name, controlType, "-1", "-1", "false"};
 	}
@@ -320,6 +327,7 @@ class RowLayoutTab extends Tab {
 	/**
 	 * Returns the layout data field names.
 	 */
+	@Override
 	String [] getLayoutDataFieldNames() {
 		return new String [] { 
 			"Control Name",
@@ -333,6 +341,7 @@ class RowLayoutTab extends Tab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "RowLayout";
 	}
@@ -340,6 +349,7 @@ class RowLayoutTab extends Tab {
 	/**
 	 * Takes information from TableEditors and stores it.
 	 */
+	@Override
 	void resetEditors (boolean tab) {
 		TableItem oldItem = comboEditor.getItem ();
 		if (oldItem != null) {
@@ -364,7 +374,7 @@ class RowLayoutTab extends Tab {
 				nameText.getText(), combo.getText (), widthText.getText (), heightText.getText (), exclude.getText ()};
 			data.setElementAt (insert, row);
 			for (int i = 0 ; i < TOTAL_COLS; i++) {
-				oldItem.setText (i, ((String [])data.elementAt (row)) [i]);
+				oldItem.setText (i, data.elementAt (row) [i]);
 			}
 			if (!tab) disposeEditors ();
 		}
@@ -378,6 +388,7 @@ class RowLayoutTab extends Tab {
 	/**
 	 * Sets the layout data for the children of the layout.
 	 */
+	@Override
 	void setLayoutData () {
 		Control [] children = layoutComposite.getChildren ();
 		TableItem [] items = table.getItems ();
@@ -398,6 +409,7 @@ class RowLayoutTab extends Tab {
 	/**
 	 * Sets the state of the layout.
 	 */
+	@Override
 	void setLayoutState () {
 		/* Set the type of layout */
 		rowLayout.type = vertical.getSelection () ? SWT.VERTICAL : SWT.HORIZONTAL;

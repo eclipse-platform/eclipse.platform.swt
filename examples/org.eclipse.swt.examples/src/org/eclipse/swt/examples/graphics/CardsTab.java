@@ -41,18 +41,22 @@ public CardsTab(GraphicsExample example) {
 	super(example);
 }
 
+@Override
 public String getCategory() {
 	return GraphicsExample.getResourceString("Transform"); //$NON-NLS-1$
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("Cards"); //$NON-NLS-1$
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("CardsDescription"); //$NON-NLS-1$
 }
 
+@Override
 public void dispose() {
 	if (ace_club != null) {
 		ace_club.dispose();
@@ -65,6 +69,7 @@ public void dispose() {
 		ace_hearts = null;
 	}
 }
+@Override
 public void next(int width, int height) {
 	rotationAngle = (rotationAngle+10)%360;
 
@@ -118,6 +123,7 @@ public void next(int width, int height) {
 /* (non-Javadoc)
  * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC, int, int)
  */
+@Override
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();

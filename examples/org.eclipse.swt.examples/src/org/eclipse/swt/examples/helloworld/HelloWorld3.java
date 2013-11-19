@@ -38,6 +38,7 @@ public Shell open (Display display) {
 	label.setText (resHello.getString("Hello_world"));
 	label.pack();
 	shell.addControlListener(new ControlAdapter() {
+		@Override
 		public void controlResized(ControlEvent e) {
 			label.setBounds (shell.getClientArea ());
 		}

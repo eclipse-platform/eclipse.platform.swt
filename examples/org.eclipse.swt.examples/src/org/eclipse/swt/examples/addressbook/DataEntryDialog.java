@@ -55,6 +55,7 @@ private void createControlButtons() {
 	Button okButton = new Button(composite, SWT.PUSH);
 	okButton.setText(resAddressBook.getString("OK"));
 	okButton.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			shell.close();
 		}
@@ -63,6 +64,7 @@ private void createControlButtons() {
 	Button cancelButton = new Button(composite, SWT.PUSH);
 	cancelButton.setText(resAddressBook.getString("Cancel"));
 	cancelButton.addSelectionListener(new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent e) {
 			values = null;
 			shell.close();

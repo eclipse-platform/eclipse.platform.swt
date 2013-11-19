@@ -41,22 +41,27 @@ public class AlphaTab extends AnimatedGraphicsTab {
 		super(example);
 	}
 	
+	@Override
 	public String getCategory() {
 		return GraphicsExample.getResourceString("Alpha"); //$NON-NLS-1$
 	}
 
+	@Override
 	public String getText() {
 		return GraphicsExample.getResourceString("Alpha"); //$NON-NLS-1$
 	}
 	
+	@Override
 	public String getDescription() {
 		return GraphicsExample.getResourceString("AlphaDescription"); //$NON-NLS-1$
 	}
 	
+	@Override
 	public int getInitialAnimationTime() {
 		return 20;
 	}
 	
+	@Override
 	public void dispose() {
 		if (alphaImg1 != null) {
 			alphaImg1.dispose();
@@ -68,6 +73,7 @@ public class AlphaTab extends AnimatedGraphicsTab {
 		}
 	}
 
+	@Override
 	public void next(int width, int height) {
 		alphaValue = (alphaValue+5)%255;
 		
@@ -85,6 +91,7 @@ public class AlphaTab extends AnimatedGraphicsTab {
 	/** 
 	 * Paint the receiver into the specified GC. 
 	 */
+	@Override
 	public void paint(GC gc, int width, int height) {
 		if (!example.checkAdvancedGraphics()) return;
 		Device device = gc.getDevice();

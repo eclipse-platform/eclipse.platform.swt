@@ -68,6 +68,7 @@ public class ControlsWithAccessibleNamesExample {
 		new Label(shell, SWT.NONE).setText("Override Platform Name");
 		
 		AccessibleAdapter overrideAccessibleAdapter = new AccessibleAdapter() {
+			@Override
 			public void getName(AccessibleEvent e) {
 				Control control = ((Accessible) e.getSource()).getControl();
 				if (e.childID == ACC.CHILDID_SELF) {
@@ -76,6 +77,7 @@ public class ControlsWithAccessibleNamesExample {
 					e.result = "Overriding Platform Name For " + control.getData("child") + ": " + e.childID + " (was " + e.result + ")";
 				}
 			}
+			@Override
 			public void getHelp(AccessibleEvent e) {
 				Control control = ((Accessible) e.getSource()).getControl();
 				if (e.childID == ACC.CHILDID_SELF) {
@@ -369,9 +371,11 @@ public class ControlsWithAccessibleNamesExample {
 		canvas.setCaret (caret);
 		/* Hook key listener so canvas will take focus during traversal in. */
 		canvas.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyPressed(KeyEvent e) {
 				e.doit = true;
 			}
+			@Override
 			public void keyReleased(KeyEvent e) {
 				e.doit = true;
 			}
@@ -395,9 +399,11 @@ public class ControlsWithAccessibleNamesExample {
 		overrideCanvas.setCaret (caret);
 		/* Hook key listener so canvas will take focus during traversal in. */
 		overrideCanvas.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyPressed(KeyEvent e) {
 				e.doit = true;
 			}
+			@Override
 			public void keyReleased(KeyEvent e) {
 				e.doit = true;
 			}

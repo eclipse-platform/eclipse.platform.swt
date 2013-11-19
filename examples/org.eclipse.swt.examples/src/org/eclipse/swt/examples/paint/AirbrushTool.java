@@ -62,6 +62,7 @@ public class AirbrushTool extends ContinuousPaintSession implements PaintTool {
 	/*
 	 * Template method for drawing
 	 */
+	@Override
 	protected void render(Point point) {
 		// Draws a bunch (cachedNumPoints) of random pixels within a specified circle (cachedRadiusSquared).
 		ContainerFigure cfig = new ContainerFigure();

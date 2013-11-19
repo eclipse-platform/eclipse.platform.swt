@@ -31,6 +31,7 @@ public class ControlView extends ViewPart {
 	 * 
 	 * @see ViewPart#createPartControl
 	 */
+	@Override
 	public void createPartControl(Composite frame) {
 		instance = new ControlExample(frame);
 	}
@@ -40,6 +41,7 @@ public class ControlView extends ViewPart {
 	 * 
 	 * @see org.eclipse.ui.part.ViewPart#setFocus
 	 */
+	@Override
 	public void setFocus() {
 		instance.setFocus();
 	}
@@ -47,6 +49,7 @@ public class ControlView extends ViewPart {
 	/**
 	 * Called when the View is to be disposed
 	 */	
+	@Override
 	public void dispose() {
 		instance.dispose();
 		instance = null;

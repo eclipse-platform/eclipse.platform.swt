@@ -68,22 +68,27 @@ public CurvesSWTTab(GraphicsExample example) {
 	tBotDiffX1 = tBotDiffY1 = tBotDiffX2 = tBotDiffY2 = 0;
 }
 
+@Override
 public String getCategory() {
 	return GraphicsExample.getResourceString("Curves"); //$NON-NLS-1$
 }
 
+@Override
 public String getText() {
 	return GraphicsExample.getResourceString("SWT"); //$NON-NLS-1$
 }
 
+@Override
 public String getDescription() {
 	return GraphicsExample.getResourceString("CurvesSWTDescription"); //$NON-NLS-1$
 }
 
+@Override
 public boolean getDoubleBuffered() {
 	return true;
 }
 
+@Override
 public void dispose() {
 	if (mouseListener != null)
 		example.canvas.removeMouseListener(mouseListener);
@@ -120,6 +125,7 @@ private boolean isHovering(MouseEvent e) {
 /** 
  * Creates the widgets used to control the drawing.
  */
+@Override
 public void createControlPanel(Composite parent) {
 	if (cursor == null) { 
 		cursor = parent.getDisplay().getSystemCursor(SWT.CURSOR_HAND);
@@ -265,6 +271,7 @@ public void createControlPanel(Composite parent) {
 	example.canvas.addMouseListener(mouseListener);
 }
 
+@Override
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();

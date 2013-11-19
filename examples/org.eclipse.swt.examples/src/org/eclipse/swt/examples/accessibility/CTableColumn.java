@@ -244,6 +244,7 @@ void computeDisplayText (GC gc) {
 	}
 	displayText = text.substring (0, index - 1) + CTable.ELLIPSIS;
 }
+@Override
 public void dispose () {
 	if (isDisposed ()) return;
 	Rectangle parentBounds = parent.clientArea;
@@ -595,6 +596,7 @@ public void setAlignment (int alignment) {
 		parent.header.redraw (x, 1, width - 2, parent.getHeaderHeight () - 3, false);
 	}
 }
+@Override
 public int getStyle () {
 	int s = super.getStyle ();
 	return style | s;
@@ -603,6 +605,7 @@ void setStyle (int newStyle) {
 	int s = super.getStyle ();
 	style |= s | newStyle;
 }
+@Override
 public void setImage (Image value) {
 	checkWidget ();
 	if (value == super.getImage ()) return;
@@ -697,6 +700,7 @@ void setSortDirection (int value) {
 		parent.header.redraw (getX (), 1, width - 2, parent.getHeaderHeight () - 3, false);
 	}
 }
+@Override
 public void setText (String value) {
 	checkWidget ();
 	if (value == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
@@ -779,12 +783,14 @@ Accessible getAccessible(final Accessible accessibleTable) {
 	if (accessible == null) {
 		accessible = new Accessible(accessibleTable);
 		accessible.addAccessibleListener(new AccessibleAdapter() {
+			@Override
 			public void getName(AccessibleEvent e) {
 				e.result = getText();
 				System.out.println("tableColumn getName = " + e.result);
 			}
 		});
 		accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
+			@Override
 			public void getChildAtPoint(AccessibleControlEvent e) {
 				Point point = parent.toControl(e.x, e.y);
 				int x = getX();
@@ -794,9 +800,11 @@ Accessible getAccessible(final Accessible accessibleTable) {
 					e.childID = ACC.CHILDID_NONE;
 				}
 			}
+			@Override
 			public void getChildCount(AccessibleControlEvent e) {
 				e.detail = 0;
 			}
+			@Override
 			public void getLocation(AccessibleControlEvent e) {
 				Rectangle rect = parent.header.getBounds();
 				rect.x = getX();
@@ -806,6 +814,7 @@ Accessible getAccessible(final Accessible accessibleTable) {
 				e.width = width;
 				e.height = rect.height;
 			}
+			@Override
 			public void getRole(AccessibleControlEvent e) {
 				e.detail = ACC.ROLE_TABLECELL;
 			}

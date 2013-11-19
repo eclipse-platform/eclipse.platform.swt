@@ -34,6 +34,7 @@ class ScaleTab extends RangeTab {
 	/**
 	 * Creates the "Control" widget children.
 	 */
+	@Override
 	void createControlWidgets () {
 		super.createControlWidgets ();
 		createIncrementGroup ();
@@ -43,6 +44,7 @@ class ScaleTab extends RangeTab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -57,6 +59,7 @@ class ScaleTab extends RangeTab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -91,6 +94,7 @@ class ScaleTab extends RangeTab {
 	
 		/* Add the listeners */
 		incrementSpinner.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent e) {		
 				setWidgetIncrement ();
 			}
@@ -119,6 +123,7 @@ class ScaleTab extends RangeTab {
 
 		/* Add the listeners */
 		pageIncrementSpinner.addSelectionListener (new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetPageIncrement ();
 			}
@@ -128,6 +133,7 @@ class ScaleTab extends RangeTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {scale1};
 	}
@@ -136,6 +142,7 @@ class ScaleTab extends RangeTab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"Selection", "ToolTipText"};
 	}
@@ -143,6 +150,7 @@ class ScaleTab extends RangeTab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "Scale";
 	}
@@ -150,6 +158,7 @@ class ScaleTab extends RangeTab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		if (!instance.startup) {
@@ -161,6 +170,7 @@ class ScaleTab extends RangeTab {
 	/**
 	 * Gets the default maximum of the "Example" widgets.
 	 */
+	@Override
 	int getDefaultMaximum () {
 		return scale1.getMaximum();
 	}
@@ -168,6 +178,7 @@ class ScaleTab extends RangeTab {
 	/**
 	 * Gets the default minimim of the "Example" widgets.
 	 */
+	@Override
 	int getDefaultMinimum () {
 		return scale1.getMinimum();
 	}
@@ -175,6 +186,7 @@ class ScaleTab extends RangeTab {
 	/**
 	 * Gets the default selection of the "Example" widgets.
 	 */
+	@Override
 	int getDefaultSelection () {
 		return scale1.getSelection();
 	}
@@ -203,6 +215,7 @@ class ScaleTab extends RangeTab {
 	/**
 	 * Sets the minimim of the "Example" widgets.
 	 */
+	@Override
 	void setWidgetMaximum () {
 		scale1.setMaximum (maximumSpinner.getSelection ());
 	}
@@ -210,6 +223,7 @@ class ScaleTab extends RangeTab {
 	/**
 	 * Sets the minimim of the "Example" widgets.
 	 */
+	@Override
 	void setWidgetMinimum () {
 		scale1.setMinimum (minimumSpinner.getSelection ());
 	}
@@ -224,6 +238,7 @@ class ScaleTab extends RangeTab {
 	/**
 	 * Sets the selection of the "Example" widgets.
 	 */
+	@Override
 	void setWidgetSelection () {
 		scale1.setSelection (selectionSpinner.getSelection ());
 	}

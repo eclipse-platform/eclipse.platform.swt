@@ -111,6 +111,7 @@ public class CTable extends Composite {
 
 //TEMPORARY CODE
 boolean hasFocus;
+@Override
 public boolean isFocusControl() {
 	return hasFocus;
 }
@@ -436,6 +437,7 @@ int computeColumnIntersect (int x, int startColumn) {
 	}
 	return -1;
 }
+@Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -852,6 +854,7 @@ int getCellPadding () {
 Image getCheckmarkImage () {
 	return (Image) display.getData (ID_CHECKMARK);
 }
+@Override
 public Control[] getChildren () {
 	checkWidget ();
 	Control[] controls = super.getChildren ();
@@ -1757,6 +1760,7 @@ void initAccessibility () {
 	// TODO: does this all work if CTable is virtual?
 	final Accessible accessibleTable = getAccessible();
 	accessibleTable.addAccessibleListener(new AccessibleAdapter() {
+		@Override
 		public void getName(AccessibleEvent e) {
 			/* CTables take their name from the preceding Label, if any. */
 			Control[] siblings = getParent().getChildren();
@@ -1769,6 +1773,7 @@ void initAccessibility () {
 				}
 			}
 		}
+		@Override
 		public void getHelp(AccessibleEvent e) {
 			/* A CTable's toolTip text (if any) can be used as its help text. */
 			e.result = getToolTipText();
@@ -1780,6 +1785,7 @@ void initAccessibility () {
 		 * - cell ids are numbered in row-major order (starting from columnCount if there are columns)
 		 * Accessibles are returned in getChild.
 		 */
+		@Override
 		public void getChild(AccessibleControlEvent e) {
 			int childID = e.childID;
 			if (childID == ACC.CHILDID_CHILD_AT_INDEX) childID = e.detail; // childID == index
@@ -1796,6 +1802,7 @@ void initAccessibility () {
 				}
 			}
 		}
+		@Override
 		public void getChildAtPoint(AccessibleControlEvent e) {
 			Point point = toControl(e.x, e.y);
 			if (columns.length > 0 && point.y < getHeaderHeight ()) { // header cell
@@ -1816,9 +1823,11 @@ void initAccessibility () {
 				}
 			}
 		}
+		@Override
 		public void getChildCount(AccessibleControlEvent e) {
 			e.detail = columns.length > 0 ? columns.length + itemsCount * columns.length : itemsCount;
 		}
+		@Override
 		public void getChildren(AccessibleControlEvent e) {
 			int childIdCount = columns.length > 0 ? columns.length + itemsCount * columns.length : itemsCount;
 			Object[] children = new Object[childIdCount];
@@ -1827,9 +1836,11 @@ void initAccessibility () {
 			}
 			e.children = children;
 		}
+		@Override
 		public void getFocus(AccessibleControlEvent e) {
 			e.childID = isFocusControl() ? ACC.CHILDID_SELF : ACC.CHILDID_NONE;
 		}
+		@Override
 		public void getLocation(AccessibleControlEvent e) {
 			Rectangle location = null;
 			Point pt = null;
@@ -1858,9 +1869,11 @@ void initAccessibility () {
 				e.height = location.height;
 			}
 		}
+		@Override
 		public void getRole(AccessibleControlEvent e) {
 			e.detail = e.childID == ACC.CHILDID_SELF ? ACC.ROLE_TABLE : ACC.ROLE_TABLECELL;
 		}
+		@Override
 		public void getSelection(AccessibleControlEvent e) {
 			int columnCount = columns.length > 0 ? columns.length : 1;
 			int [] selectionIndices = getSelectionIndices();
@@ -1873,6 +1886,7 @@ void initAccessibility () {
 			}
 			e.children = selectedChildren;
 		}
+		@Override
 		public void getState(AccessibleControlEvent e) {
 			int state = ACC.STATE_NORMAL;
 			int childID = e.childID;
@@ -1906,17 +1920,21 @@ void initAccessibility () {
 		}
 	});
 	accessibleTable.addAccessibleTableListener(new AccessibleTableAdapter() {
+		@Override
 		public void deselectColumn(AccessibleTableEvent e) {
 			/* CTable does not support column selection. */
 		}
+		@Override
 		public void deselectRow(AccessibleTableEvent e) {
 			deselect(e.row);
 			e.result = ACC.OK;
 		}
+		@Override
 		public void getCaption(AccessibleTableEvent e) {
 			// TODO: What is a caption? How does it differ from name? Should app supply?
 			e.result = "This is the Custom Table's Test Caption";
 		}
+		@Override
 		public void getCell(AccessibleTableEvent e) {
 			int index = e.row;
 			if (0 <= index && index < itemsCount) {
@@ -1927,10 +1945,12 @@ void initAccessibility () {
 				}
 			}
 		}
+		@Override
 		public void getColumnCount(AccessibleTableEvent e) {
 			int columnCount = columns.length > 0 ? columns.length : 1;
 			e.count = columnCount;
 		}
+		@Override
 		public void getColumnDescription(AccessibleTableEvent e) {
 			// TODO: What is a description? How does it differ from name? Should app supply?
 			e.result = "This is the Custom Table's Test Description for column " + e.column;
@@ -1938,6 +1958,7 @@ void initAccessibility () {
 //		public void getColumnHeader(AccessibleTableEvent e) {
 //			e.accessible = header.getAccessible();
 //		}
+		@Override
 		public void getColumnHeaderCells(AccessibleTableEvent e) {
 			if (columns.length == 0) {
 				/* The CTable is being used as a list, and there are no headers. */
@@ -1951,20 +1972,25 @@ void initAccessibility () {
 				e.accessibles = accessibles;
 			}
 		}
+		@Override
 		public void getRowCount(AccessibleTableEvent e) {
 			e.count = itemsCount;
 		}
+		@Override
 		public void getRowDescription(AccessibleTableEvent e) {
 			// TODO: What is a description? How does it differ from name? Should app supply?
 			e.result = "This is the Custom Table's Test Description for row " + e.row;
 		}
+		@Override
 		public void getRowHeader(AccessibleTableEvent e) {
 			/* CTable does not support row headers. */
 		}
+		@Override
 		public void getSelectedCellCount(AccessibleTableEvent e) {
 			int columnCount = columns.length > 0 ? columns.length : 1;
 			e.count = selectedItems.length * columnCount;
 		}
+		@Override
 		public void getSelectedCells(AccessibleTableEvent e) {
 			int columnCount = columns.length > 0 ? columns.length : 1;
 			Accessible[] accessibles = new Accessible[selectedItems.length * columnCount];
@@ -1975,15 +2001,19 @@ void initAccessibility () {
 			}
 			e.accessibles = accessibles;
 		}
+		@Override
 		public void getSelectedColumnCount(AccessibleTableEvent e) {
 			e.count = 0; /* CTable does not support column selection. */
 		}
+		@Override
 		public void getSelectedColumns(AccessibleTableEvent e) {
 			/* CTable does not support column selection. */
 		}
+		@Override
 		public void getSelectedRowCount(AccessibleTableEvent e) {
 			e.count = selectedItems.length;
 		}
+		@Override
 		public void getSelectedRows(AccessibleTableEvent e) {
 			int[] selectedIndices = new int[selectedItems.length];
 			for (int i = 0; i < selectedItems.length; i++) {
@@ -1991,26 +2021,33 @@ void initAccessibility () {
 			}
 			e.selected = selectedIndices;
 		}
+		@Override
 		public void getSummary(AccessibleTableEvent e) {
 			// TODO: What is a summary? How does it differ from name? Should app supply?
 			e.result = "This is the Custom Table's Summary";
 		}
+		@Override
 		public void isColumnSelected(AccessibleTableEvent e) {
 			e.isSelected = false; /* CTable does not support column selection. */
 		}
+		@Override
 		public void isRowSelected(AccessibleTableEvent e) {
 			e.isSelected = isSelected(e.row);
 		}
+		@Override
 		public void selectColumn(AccessibleTableEvent e) {
 			/* CTable does not support column selection. */
 		}
+		@Override
 		public void selectRow(AccessibleTableEvent e) {
 			select(e.row);
 			e.result = ACC.OK;
 		}
+		@Override
 		public void setSelectedColumn(AccessibleTableEvent e) {
 			/* CTable does not support column selection. */
 		}
+		@Override
 		public void setSelectedRow(AccessibleTableEvent e) {
 			setSelection(e.row);
 			e.result = ACC.OK;
@@ -2100,6 +2137,7 @@ public boolean isSelected (int index) {
 	if (!(0 <= index && index < itemsCount)) return false;
 	return items [index].isSelected ();
 }
+@Override
 public void notifyListeners (int eventType, Event event) {
 	super.notifyListeners(eventType, event);
 	if (eventType == SWT.Selection && event.detail != SWT.CHECK) getAccessible().selectionChanged();
@@ -3230,10 +3268,12 @@ void reassignFocus () {
 		setFocusItem (null, false);		/* no items left */
 	}
 }
+@Override
 public void redraw () {
 	checkWidget ();
 	if (drawCount <= 0) super.redraw ();
 }
+@Override
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
 	if (drawCount <= 0) super.redraw (x, y, width, height, all);
@@ -3643,11 +3683,13 @@ void selectItem (CTableItem item, boolean addToSelection) {
 	item.getAccessible(getAccessible(), 0).selectionChanged();
 	getAccessible().selectionChanged();
 }
+@Override
 public void setBackground (Color color) {
 	checkWidget ();
 	if (color == null) color = display.getSystemColor (SWT.COLOR_LIST_BACKGROUND); 
 	super.setBackground (color);
 }
+@Override
 public void setForeground (Color color) {
 	checkWidget ();
 	if (color == null) color = display.getSystemColor (SWT.COLOR_LIST_FOREGROUND); 
@@ -3726,6 +3768,7 @@ void setFocusItem (CTableItem item, boolean redrawOldFocus) {
 	}
 	if (focusItem != null) focusItem.getAccessible(getAccessible(), 0).setFocus(ACC.CHILDID_SELF);
 }
+@Override
 public void setFont (Font value) {
 	checkWidget ();
 	Font oldFont = getFont ();
@@ -3928,10 +3971,12 @@ public void setLinesVisible (boolean value) {
 	linesVisible = value;
 	redraw ();
 }
+@Override
 public void setMenu (Menu menu) {
 	super.setMenu (menu);
 	header.setMenu (menu);
 }
+@Override
 public void setRedraw (boolean value) {
 	checkWidget();
 	if (value) {

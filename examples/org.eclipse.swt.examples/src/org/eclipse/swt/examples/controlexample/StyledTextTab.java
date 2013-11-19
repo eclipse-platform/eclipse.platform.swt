@@ -63,6 +63,7 @@ class StyledTextTab extends ScrollableTab {
 	/**
 	 * Creates the "Control" widget children.
 	 */
+	@Override
 	void createControlWidgets () {
 		super.createControlWidgets ();
 		
@@ -73,6 +74,7 @@ class StyledTextTab extends ScrollableTab {
 	/**
 	 * Creates the "Example" group.
 	 */
+	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
@@ -86,6 +88,7 @@ class StyledTextTab extends ScrollableTab {
 	/**
 	 * Creates the "Example" widgets.
 	 */
+	@Override
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
@@ -118,6 +121,7 @@ class StyledTextTab extends ScrollableTab {
 	/**
 	 * Creates the "Style" group.
 	 */
+	@Override
 	void createStyleGroup() {
 		super.createStyleGroup();
 	
@@ -184,6 +188,7 @@ class StyledTextTab extends ScrollableTab {
 		yellowButton = new Button (styledTextStyleGroup, SWT.PUSH);
 		yellowButton.setImage (yellowImage);
 		SelectionListener styleListener = new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent e) {
 				Point sel = styledText.getSelectionRange();
 				if ((sel == null) || (sel.y == 0)) return;
@@ -212,6 +217,7 @@ class StyledTextTab extends ScrollableTab {
 			}
 		};
 		SelectionListener colorListener = new SelectionAdapter () {
+			@Override
 			public void widgetSelected (SelectionEvent e) {
 				Point sel = styledText.getSelectionRange();
 				if ((sel == null) || (sel.y == 0)) return;
@@ -262,6 +268,7 @@ class StyledTextTab extends ScrollableTab {
 	 * @param tabFolder org.eclipse.swt.widgets.TabFolder
 	 * @return the new page for the tab folder
 	 */
+	@Override
 	Composite createTabFolderPage (TabFolder tabFolder) {
 		super.createTabFolderPage (tabFolder);
 
@@ -272,6 +279,7 @@ class StyledTextTab extends ScrollableTab {
 		 * recalculate the preferred size correctly.
 		 */
 		tabFolderPage.addControlListener(new ControlAdapter() {
+			@Override
 			public void controlResized(ControlEvent e) {
 				setExampleWidgetSize ();
 			}
@@ -283,6 +291,7 @@ class StyledTextTab extends ScrollableTab {
 	/**
 	 * Disposes the "Example" widgets.
 	 */
+	@Override
 	void disposeExampleWidgets () {
 		/* store the state of the styledText if applicable */
 		if (styledText != null) {
@@ -297,6 +306,7 @@ class StyledTextTab extends ScrollableTab {
 	 * 
 	 * @return an array containing custom event names
 	 */
+	@Override
 	String [] getCustomEventNames () {
 		return new String [] {
 				"ExtendedModifyListener", "BidiSegmentListener", "LineBackgroundListener",
@@ -307,6 +317,7 @@ class StyledTextTab extends ScrollableTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
+	@Override
 	Widget [] getExampleWidgets () {
 		return new Widget [] {styledText};
 	}
@@ -315,6 +326,7 @@ class StyledTextTab extends ScrollableTab {
 	 * Returns a list of set/get API method names (without the set/get prefix)
 	 * that can be used to set/get values in the example control(s).
 	 */
+	@Override
 	String[] getMethodNames() {
 		return new String[] {"Alignment", "BlockSelection", "BottomMargin", "CaretOffset", "DoubleClickEnabled", "Editable", "HorizontalIndex", "HorizontalPixel", "Indent", "Justify", "LeftMargin", "LineSpacing", "Orientation", "RightMargin", "Selection", "Tabs", "Text", "TextLimit", "ToolTipText", "TopIndex", "TopMargin", "TopPixel", "WordWrap"};
 	}
@@ -323,6 +335,7 @@ class StyledTextTab extends ScrollableTab {
 	/**
 	 * Gets the text for the tab folder item.
 	 */
+	@Override
 	String getTabText () {
 		return "StyledText";
 	}
@@ -330,6 +343,7 @@ class StyledTextTab extends ScrollableTab {
 	/**
 	 * Hooks the custom listener specified by eventName.
 	 */
+	@Override
 	void hookCustomListener (final String eventName) {
 		if (eventName == "ExtendedModifyListener") {
 			styledText.addExtendedModifyListener (new ExtendedModifyListener() {
@@ -401,6 +415,7 @@ class StyledTextTab extends ScrollableTab {
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
+	@Override
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		wrapButton.setSelection ((styledText.getStyle () & SWT.WRAP) != 0);
