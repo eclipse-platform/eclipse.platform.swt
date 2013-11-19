@@ -333,7 +333,7 @@ long /*int*/ gtk_preedit_changed (long /*int*/ imcontext) {
 				attr = OS.pango_attr_iterator_get (iterator, OS.PANGO_ATTR_UNDERLINE);
 				if (attr != 0) {
 					OS.memmove (attrInt, attr, PangoAttrInt.sizeof);
-					styles [i].underline = attrInt.value != OS.PANGO_UNDERLINE_NONE;;
+					styles [i].underline = attrInt.value != OS.PANGO_UNDERLINE_NONE;
 					styles [i].underlineStyle = SWT.UNDERLINE_SINGLE;
 					switch (attrInt.value) {
 						case OS.PANGO_UNDERLINE_DOUBLE:

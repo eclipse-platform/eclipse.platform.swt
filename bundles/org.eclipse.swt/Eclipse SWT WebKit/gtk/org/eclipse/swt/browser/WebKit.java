@@ -649,7 +649,7 @@ public void create (Composite parent, int style) {
 	eventFunction = new BrowserFunction (browser, "HandleWebKitEvent") { //$NON-NLS-1$
 		public Object function(Object[] arguments) {
 			return handleEventFromFunction (arguments) ? Boolean.TRUE : Boolean.FALSE;
-		};	
+		}
 	};
 
 	/*

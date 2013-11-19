@@ -42,7 +42,7 @@ public class Snippet347 {
 		exit.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				display.dispose();
-			};
+			}
 		});
 		Button b = new Button(shell, SWT.PUSH);
 		b.setText("Test");

@@ -201,7 +201,7 @@ public class Snippet361 {
 		try {
 			d = new Double(string);
 		} catch(NumberFormatException ex) {
-		};
+		}
 		return d;
 	}
 

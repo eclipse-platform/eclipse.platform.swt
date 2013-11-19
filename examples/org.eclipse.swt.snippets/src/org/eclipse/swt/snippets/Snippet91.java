@@ -58,7 +58,7 @@ public static void main (String [] args) {
 			} else {
 				event.doit = false;
 			}
-		};
+		}
 		public void dragSetData (DragSourceEvent event) {
 			event.data = dragSourceItem[0].getText();
 		}

@@ -29,7 +29,7 @@ public static void main(String[] args) {
 	Shell shell = new Shell(display);
 	shell.setLayout(new GridLayout());
 	final Text text = new Text(shell, SWT.BORDER);
-	text.setText("YYYY/MM/DD");;	
+	text.setText("YYYY/MM/DD");
 	final Calendar calendar = Calendar.getInstance();
 	text.addListener(SWT.Verify, new Listener() {
 		boolean ignore;

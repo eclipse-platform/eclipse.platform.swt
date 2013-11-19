@@ -52,7 +52,7 @@ public class Snippet354 {
 		exit.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				display.dispose();
-			};
+			}
 		});
 		
 		Listener keyDownFilter = new Listener() {
@@ -87,7 +87,7 @@ public class Snippet354 {
 			sysItem.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					System.out.println("Quit selected");
-				};
+				}
 			});
 			sysItem = getItem(systemMenu, SWT.ID_HIDE_OTHERS);
 			sysItem.addArmListener(armListener);
@@ -95,7 +95,7 @@ public class Snippet354 {
 				public void widgetSelected(SelectionEvent e) {
 					System.out.println("Hide others selected -- and blocked!");
 					e.doit = false;
-				};
+				}
 			});
 			sysItem = getItem(systemMenu, SWT.ID_HIDE);
 			sysItem.addArmListener(armListener);
@@ -103,21 +103,21 @@ public class Snippet354 {
 				public void widgetSelected(SelectionEvent e) {
 					System.out.println("Hide selected -- and blocked!");
 					e.doit = false;
-				};
+				}
 			});
 			sysItem = getItem(systemMenu, SWT.ID_PREFERENCES);
 			sysItem.addArmListener(armListener);
 			sysItem.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					System.out.println("Preferences selected");
-				};
+				}
 			});
 			sysItem = getItem(systemMenu, SWT.ID_ABOUT);
 			sysItem.addArmListener(armListener);
 			sysItem.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					System.out.println("About selected");
-				};
+				}
 			});
 			
 			int prefsIndex = systemMenu.indexOf(getItem(systemMenu, SWT.ID_PREFERENCES));
@@ -128,7 +128,7 @@ public class Snippet354 {
 			newAppMenuItem.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					System.out.println("SWT-added item selected");
-				};
+				}
 			});
 			Menu subMenu = new Menu(systemMenu);
 			

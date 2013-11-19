@@ -38,7 +38,7 @@ public class Snippet39 {
 		combo.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				System.out.println("Item selected");
-			};
+			}
 		});
 
 		shell.pack();
